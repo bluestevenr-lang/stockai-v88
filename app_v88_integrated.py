@@ -2090,7 +2090,7 @@ def _heat_remaining_seconds() -> int | None:
 
 
 @st.cache_data(ttl=43200, show_spinner=False)   # 12 小时缓存
-def get_market_heat(_cache_ver="v92"):
+def get_market_heat(_cache_ver="v93"):
     """
     【模块级】环球行业热力图 — 12小时 st.cache_data 缓存。
     定义在模块顶层，避免 rerun 时产生新实例导致缓存失效。
@@ -2150,15 +2150,40 @@ def get_market_heat(_cache_ver="v92"):
     except Exception:
         raw = None
 
+    # 单独下载缓存（批量失败时的兜底）
+    _single_cache = {}
+
     def _get_close(code):
+        # 先尝试从批量结果取
         try:
-            if raw is None:
-                return None
-            if hasattr(raw.columns, "levels"):    # MultiIndex
-                return raw[code]["Close"].dropna() if code in raw.columns.get_level_values(0) else None
-            return raw["Close"].dropna() if len(all_codes) == 1 else None
+            if raw is not None:
+                if hasattr(raw.columns, "levels"):   # MultiIndex
+                    lvl0 = raw.columns.get_level_values(0)
+                    if code in lvl0:
+                        s = raw[code]["Close"].dropna()
+                        if len(s) >= 5:
+                            return s
+                elif len(all_codes) == 1:
+                    s = raw["Close"].dropna()
+                    if len(s) >= 5:
+                        return s
         except Exception:
-            return None
+            pass
+        # 批量没拿到，单独下载兜底
+        if code in _single_cache:
+            return _single_cache[code]
+        try:
+            df2 = _yf.download(code, period="90d", progress=False, auto_adjust=True)
+            if df2 is not None and len(df2) >= 5:
+                if hasattr(df2.columns, "levels"):
+                    df2.columns = [c[0] if isinstance(c, tuple) else c for c in df2.columns]
+                s = df2["Close"].dropna()
+                _single_cache[code] = s
+                return s
+        except Exception:
+            pass
+        _single_cache[code] = None
+        return None
 
     results = []
     for sector_name, markets in SECTORS.items():
