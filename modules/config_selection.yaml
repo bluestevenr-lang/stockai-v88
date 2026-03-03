@@ -1,0 +1,47 @@
+# AI市场日报 - 选股引擎配置
+# 684母池（US240/HK200/CN240）轮换子池 + 二层候选（Explore + Trade）
+
+pool:
+  us_size: 240
+  hk_size: 200
+  cn_size: 240
+
+subpool:
+  anchor_ratio: 0.15      # Anchor 占母池比例
+  anchor_n: null         # 可选：固定 anchor 数量
+  explore_n: null        # 可选：每日 explore 数量
+  cycle_days: 6          # 5-7 天覆盖全池
+  min_subpool_size: 120
+
+candidate_pool:
+  min_per_type: 60       # ST/MT/LT 每套最少 60 只（explore）
+  max_per_type: 80       # 每套最多 80 只
+  explore_k:              # explore 每池目标
+    ST: 80
+    MT: 80
+    LT: 60
+  trade_quantile:        # 分位数闸门（无 min_score 时用）
+    ST: 0.70
+    MT: 0.60
+    LT: 0.50
+  min_score: 40          # 钉钉同源：score>=40 才入围，与钉钉 _screened_candidates 一致
+  trade_min_size:        # trade 每池最少
+    ST: 30
+    MT: 30
+    LT: 30
+
+fast_metrics:
+  min_data_days: 20
+  rsi_period: 14
+
+token_control:
+  max_chars_per_stock: 35
+  max_stocks_per_market: 180
+  max_wsj_candidates: 100
+
+token_guard:
+  max_candidates_per_market: 100
+  max_fields_per_candidate: 35
+
+cache:
+  ttl_hours: 24

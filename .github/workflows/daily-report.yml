@@ -1,0 +1,43 @@
+name: AI股市早晚报
+
+on:
+  schedule:
+    # 早报：北京时间 07:00 = UTC 23:00（前一天）
+    - cron: '0 23 * * *'
+    # 晚报：北京时间 19:00 = UTC 11:00
+    - cron: '0 11 * * *'
+  
+  # 允许手动触发
+  workflow_dispatch:
+
+jobs:
+  send-report:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v3
+    
+    - name: 设置 Python 环境
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: 安装依赖
+      run: |
+        python -m pip install --upgrade pip
+        pip install yfinance google-generativeai
+    
+    - name: 运行报告生成器
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        DINGTALK_WEBHOOK: ${{ secrets.DINGTALK_WEBHOOK }}
+        DINGTALK_SECRET: ${{ secrets.DINGTALK_SECRET }}
+      run: |
+        python auto_reporter.py
+    
+    - name: 显示执行结果
+      if: always()
+      run: |
+        echo "报告生成完成"
+        date

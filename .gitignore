@@ -1,0 +1,60 @@
+# ── Secrets（绝对不能上传）──────────────────────────────
+.streamlit/secrets.toml
+
+# ── Python 缓存 ──────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+
+# ── 本地扫描/简报缓存（运行时生成，不需要上传）──────────
+.cache_brief/
+scan_cache/
+
+# ── 备份文件（保留在本地即可）──────────────────────────
+app_backup_*.py
+app_v88_broken*.py
+app_v88_integrated_backup*.py
+app_v88_integrated_broken*.py
+backup_phase*.py
+backup_v88_*/
+auto_reporter_v*.py
+auto_reporter_final.py
+auto_report_v88_optimized.py
+
+# ── 测试文件 ─────────────────────────────────────────────
+test_*.py
+quick_test_*.py
+run_test.sh
+FINAL_TEST.md
+
+# ── 旧版文件 ─────────────────────────────────────────────
+app.py
+app_backup_v72.py
+aihub26/
+aihub26_deploy/
+ai/
+core/
+docs/
+providers/
+qlib_system/
+ui/
+
+# ── agent 记忆文件 ───────────────────────────────────────
+agent_memory_*.json
+
+# ── Excel / 截图 / 日志 ──────────────────────────────────
+*.xlsx
+~$*.xlsx
+*.png
+*.log
+*.txt
+*.md
+
+# ── macOS ────────────────────────────────────────────────
+.DS_Store
+
+# ── 环境 ─────────────────────────────────────────────────
+.env
+venv/
+.venv/

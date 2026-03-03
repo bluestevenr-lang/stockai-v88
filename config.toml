@@ -1,0 +1,43 @@
+# V88 StockAI 全局配置文件
+# 修改此文件后重启应用生效
+
+[features]
+enable_expectation_layer = true   # 宏观脉搏监控面板开关（false = 关闭顶部面板）
+enable_perf_layer        = true   # 性能监控开关
+
+[cache]
+ttl_fast    = 900    # 高频数据缓存（秒）：VIX、实时价格，15分钟
+ttl_daily   = 3600   # 日线数据缓存（秒）：日K线，1小时
+ttl_weekly  = 21600  # 周频数据缓存（秒）：宏观指标，6小时
+ttl_workday = 900    # 交易日宏观分析缓存（秒），15分钟
+ttl_weekend = 86400  # 非交易日缓存（秒），24小时
+ttl_heat    = 3600   # 行业热力图缓存（秒），1小时
+brief_ttl   = 43200  # AI市场简报缓存（秒），12小时
+scan_ttl    = 900    # 扫描结果缓存（秒），15分钟
+
+[data]
+retry_count     = 3   # 数据获取失败重试次数
+request_timeout = 8   # 单次请求超时（秒）
+macro_period    = "1y" # 宏观数据拉取周期（需覆盖MA200）
+
+[concurrency]
+max_workers   = 8   # 并发线程池上限
+task_timeout  = 15  # 单任务超时（秒）
+
+[technical]
+ma_short    = 50   # 短期均线周期
+ma_long     = 200  # 长期均线周期
+corr_window = 20   # 股债相关性计算窗口
+
+[vix]
+panic = 30  # 极度恐慌阈值（VIX > 30 → Risk Off）
+high  = 20  # 高波动阈值
+low   = 15  # 低波动阈值
+
+[rates]
+tnx_loose = 3.5  # 10Y美债宽松环境阈值（低于此利好成长股）
+tnx_tight = 4.5  # 10Y美债紧缩环境阈值（高于此利空高估值）
+
+[dollar]
+dxy_weak   = 100  # 弱美元阈值（利好新兴市场/大宗）
+dxy_strong = 105  # 强美元阈值（利空港股/A股）
