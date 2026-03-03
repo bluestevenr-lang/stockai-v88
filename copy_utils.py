@@ -48,48 +48,82 @@ class CopyUtils:
         copy_html = f"""
         <!DOCTYPE html>
         <html>
-        <head><meta charset="utf-8"></head>
-        <body style="margin:0;padding:8px;">
+        <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        </head>
+        <body style="margin:0;padding:6px;">
         <div id="copy_content_{safe_key}" style="display:none;">{escaped}</div>
-        <button id="copy_btn_{safe_key}" onclick="copyToClipboard_{safe_key}()" 
-                style="background-color:#3b82f6;color:white;border:none;padding:0.5rem 1rem;border-radius:4px;cursor:pointer;font-size:14px;">
+        <button id="copy_btn_{safe_key}" onclick="copyToClipboard_{safe_key}()"
+                style="background:#3b82f6;color:#fff;border:none;padding:0.5rem 1.2rem;
+                       border-radius:6px;cursor:pointer;font-size:14px;
+                       -webkit-tap-highlight-color:transparent;touch-action:manipulation;">
             {html.escape(button_text)}
         </button>
+        <!-- 手机端备用：可见文本框，用户长按全选复制 -->
+        <div id="mobile_fallback_{safe_key}" style="display:none;margin-top:8px;">
+            <textarea id="ta_{safe_key}" readonly
+                style="width:100%;height:80px;font-size:12px;border:1px solid #ccc;
+                       border-radius:4px;padding:4px;box-sizing:border-box;
+                       -webkit-user-select:text;user-select:text;"
+            >{escaped}</textarea>
+            <div style="font-size:11px;color:#888;margin-top:2px;">👆 长按文本框 → 全选 → 复制</div>
+        </div>
         <script>
         function copyToClipboard_{safe_key}() {{
             var el = document.getElementById('copy_content_{safe_key}');
             var text = el ? el.textContent : '';
+            var btn = document.getElementById('copy_btn_{safe_key}');
             function succeed() {{
-                var btn = document.getElementById('copy_btn_{safe_key}');
                 if (btn) {{
                     btn.textContent = '✅ 已复制';
-                    btn.style.backgroundColor = '#10b981';
+                    btn.style.background = '#10b981';
                     setTimeout(function() {{
                         btn.textContent = '{html.escape(button_text)}';
-                        btn.style.backgroundColor = '#3b82f6';
+                        btn.style.background = '#3b82f6';
                     }}, 2000);
                 }}
+                document.getElementById('mobile_fallback_{safe_key}').style.display = 'none';
             }}
+            function showMobileFallback() {{
+                var fb = document.getElementById('mobile_fallback_{safe_key}');
+                fb.style.display = 'block';
+                var ta = document.getElementById('ta_{safe_key}');
+                ta.focus();
+                ta.setSelectionRange(0, ta.value.length);
+                if (btn) {{ btn.textContent = '📋 请在下方长按复制'; btn.style.background = '#f59e0b'; }}
+            }}
+            // 1. 优先尝试现代 Clipboard API
             if (navigator.clipboard && navigator.clipboard.writeText) {{
                 navigator.clipboard.writeText(text).then(succeed).catch(function() {{
-                    fallbackCopy();
+                    iosCopy();
                 }});
             }} else {{
-                fallbackCopy();
+                iosCopy();
             }}
-            function fallbackCopy() {{
+            function iosCopy() {{
+                // 2. iOS 兼容方案：可见 textarea + setSelectionRange
                 var ta = document.createElement('textarea');
                 ta.value = text;
-                ta.style.position = 'fixed'; ta.style.left = '-9999px';
+                ta.setAttribute('readonly', '');
+                ta.style.cssText = 'position:fixed;top:0;left:0;width:2px;height:2px;' +
+                                   'padding:0;border:none;outline:none;opacity:0;';
                 document.body.appendChild(ta);
-                ta.select();
-                try {{
-                    if (document.execCommand('copy')) succeed();
-                    else alert('复制失败，请手动全选后 Ctrl+C');
-                }} catch (e) {{
-                    alert('复制失败: ' + e);
+                var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                if (isIOS) {{
+                    var range = document.createRange();
+                    range.selectNodeContents(ta);
+                    var sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                    ta.setSelectionRange(0, 999999);
+                }} else {{
+                    ta.select();
                 }}
+                var ok = false;
+                try {{ ok = document.execCommand('copy'); }} catch(e) {{}}
                 document.body.removeChild(ta);
+                if (ok) {{ succeed(); }} else {{ showMobileFallback(); }}
             }}
         }}
         </script>
