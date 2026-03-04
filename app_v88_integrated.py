@@ -10383,13 +10383,15 @@ def _fetch_macro_risk(force_refresh: bool = False) -> dict:
     _err_msg = ""
     try:
         model = genai.GenerativeModel(GEMINI_MODEL_NAME)
-        gen_cfg = genai.types.GenerationConfig(temperature=0.4, max_output_tokens=600)
+        # 600 对中文 JSON 太少，容易截断；改为 1500
+        gen_cfg = genai.types.GenerationConfig(temperature=0.4, max_output_tokens=1500)
         resp = model.generate_content(prompt, generation_config=gen_cfg)
         raw = resp.text.strip() if resp.text else ""
         if not raw:
             raise ValueError("API 返回空文本")
-        # 健壮 JSON 提取
-        _m = _re_json.search(r'\{[\s\S]*?\}', raw)
+        # 健壮 JSON 提取：用贪婪匹配取最外层完整 {} 块
+        # 注意：*? 是非贪婪，会在第一个 } 就停——这里必须用贪婪 *
+        _m = _re_json.search(r'\{[\s\S]*\}', raw)
         if _m:
             raw = _m.group(0)
         else:
