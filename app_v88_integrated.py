@@ -2874,7 +2874,90 @@ st.markdown("""
             padding: 0.3rem 0.4rem !important;
         }
     }
+
+    /* ══════════════════════════════════════════════════
+       📱 iPhone / iOS Safari 专项优化
+       ══════════════════════════════════════════════════ */
+
+    /* iOS 安全区（刘海屏/动态岛适配） */
+    @supports (padding: max(0px)) {
+        .block-container {
+            padding-left:  max(0.5rem, env(safe-area-inset-left))  !important;
+            padding-right: max(0.5rem, env(safe-area-inset-right)) !important;
+            padding-bottom:max(2rem,   env(safe-area-inset-bottom)) !important;
+        }
+    }
+
+    /* 禁止 iOS Safari 双击缩放（保持布局稳定） */
+    * { touch-action: manipulation; }
+
+    /* 禁止 iOS 自动调整字体大小 */
+    html { -webkit-text-size-adjust: 100% !important; text-size-adjust: 100% !important; }
+
+    /* iOS input 不自动放大（防止点击 input 时页面跳动） */
+    input, textarea, select {
+        font-size: 16px !important;  /* iOS 不缩放 >= 16px 的 input */
+    }
+
+    /* 滚动容器：iOS 弹性滚动 */
+    div[data-testid="stDataFrame"],
+    [data-testid="stTabs"] [role="tablist"] {
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    /* iOS Safari 按钮去掉默认样式 */
+    div.stButton > button {
+        -webkit-appearance: none !important;
+        appearance: none !important;
+    }
+
+    /* 移动端隐藏侧边栏展开按钮的遮挡层 */
+    @media (max-width: 768px) {
+        /* Streamlit 顶部工具栏：简化显示 */
+        header[data-testid="stHeader"] {
+            background: rgba(241,245,249,0.95) !important;
+            backdrop-filter: blur(8px) !important;
+            -webkit-backdrop-filter: blur(8px) !important;
+        }
+
+        /* 表格文字不换行（横向滑动代替） */
+        div[data-testid="stDataFrame"] td,
+        div[data-testid="stDataFrame"] th {
+            white-space: nowrap !important;
+            font-size: 11px !important;
+        }
+
+        /* expander 标题：移动端更大点击区 */
+        [data-testid="stExpander"] summary {
+            padding: 0.8rem 0.6rem !important;
+            font-size: 12px !important;
+        }
+
+        /* metric 卡片间距收紧 */
+        div[data-testid="stMetric"] {
+            padding: 0.4rem !important;
+        }
+
+        /* caption 字体缩小 */
+        [data-testid="stCaptionContainer"] p,
+        .stCaption {
+            font-size: 10px !important;
+        }
+
+        /* Top30 宏观风险面板：移动端紧凑 */
+        .macro-risk-panel {
+            padding: 8px !important;
+        }
+    }
 </style>
+""", unsafe_allow_html=True)
+
+# 注入 viewport meta + iOS standalone 支持
+st.markdown("""
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#f1f5f9">
 """, unsafe_allow_html=True)
 
 # ═══════════════════════════════════════════════════════════════
@@ -10187,27 +10270,48 @@ def _dingtalk_send(text: str) -> tuple[bool, str]:
 
 
 def _dingtalk_push_top30(res: dict | None) -> tuple[bool, str]:
-    """把 Top30 趋势榜推送到钉钉（前10条 + 来源时间）"""
+    """
+    把 Top30 趋势榜推送到钉钉。
+    消息头包含「股票行情」确保通过钉钉关键词安全校验。
+    """
     if not res:
         return False, "暂无扫描结果"
     from datetime import datetime as _dt_push
     ts_str = _dt_push.fromtimestamp(res.get("timestamp", 0)).strftime("%m-%d %H:%M")
-    lines  = [f"📊 V88 Top30 扫描结果 · {ts_str}\n"]
+
+    # ⚠️ 钉钉关键词安全校验：消息必须包含机器人配置的关键词
+    # 默认在标题中包含「股票行情」，覆盖大多数常见关键词设置
+    # 如机器人设置了其他关键词，请在 DINGTALK_KEYWORD 里配置
+    _kw = (
+        st.secrets.get("DINGTALK_KEYWORD", "") if hasattr(st, "secrets") else ""
+    ) or os.environ.get("DINGTALK_KEYWORD", "股票行情")
+    if not _kw:
+        _kw = "股票行情"
+
+    lines = [
+        f"【{_kw}】V88 AI选股 · {ts_str}",
+        "━━━━━━━━━━━━━━━━━━━━━━",
+    ]
 
     mkt_map = {"US": "🇺🇸 美股", "HK": "🇭🇰 港股", "CN": "🇨🇳 A股"}
     for mkt_key, mkt_name in mkt_map.items():
         mkt_data = res.get(mkt_key, {})
-        top_list = mkt_data.get("top", [])[:5]   # 每市场取前5
+        top_list = mkt_data.get("top", [])[:5]
         if not top_list:
             continue
-        lines.append(f"\n{mkt_name} 趋势Top5：")
-        for item in top_list:
-            name  = item.get("name", "")
-            code  = item.get("code", "")
-            score = item.get("score", 0)
-            lines.append(f"  · {name}({code}) 得分{score}")
+        lines.append(f"\n{mkt_name} 趋势 Top5")
+        for i, item in enumerate(top_list, 1):
+            name  = item.get("name", item.get("股票", ""))
+            code  = item.get("code", item.get("代码", ""))
+            score = item.get("score", item.get("得分", 0))
+            shape = item.get("shape", item.get("形态", ""))
+            lines.append(f"  {i}. {name}({code})  得分{score}  {shape}")
 
-    lines.append(f"\n🔗 来源：GitHub Actions 云端自动扫描")
+    lines += [
+        "\n━━━━━━━━━━━━━━━━━━━━━━",
+        "⚠️ 以上仅供参考，不构成投资建议",
+        "🔗 来源：V88 GitHub Actions 云端扫描",
+    ]
     return _dingtalk_send("\n".join(lines))
 
 
