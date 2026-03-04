@@ -10268,12 +10268,22 @@ def _scan_fetch_from_gist() -> dict | None:
         data = json.loads(content)
         if not data.get("timestamp"):
             raise ValueError("Gist 数据无 timestamp 字段")
-        # 同步写本地文件备用
+        # 同步写本地文件备用：只在 Gist 数据比本地文件更新时才覆写
+        # 防止旧 Gist 数据覆盖刚完成的本地扫描结果
         try:
             _BRIEF_CACHE_DIR.mkdir(exist_ok=True)
-            _SCAN_RESULTS_FILE.write_text(
-                json.dumps(data, ensure_ascii=False), encoding="utf-8"
-            )
+            gist_ts = data.get("timestamp", 0)
+            local_ts = 0
+            if _SCAN_RESULTS_FILE.exists():
+                try:
+                    _local = json.loads(_SCAN_RESULTS_FILE.read_text(encoding="utf-8"))
+                    local_ts = _local.get("timestamp", 0)
+                except Exception:
+                    pass
+            if gist_ts >= local_ts:   # Gist 更新或相同才写入
+                _SCAN_RESULTS_FILE.write_text(
+                    json.dumps(data, ensure_ascii=False), encoding="utf-8"
+                )
         except Exception:
             pass
         _gist_local_cache  = {**data, "_fetched_at": time.time()}
