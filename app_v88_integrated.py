@@ -2114,23 +2114,23 @@ def _heat_remaining_seconds() -> int | None:
 
 
 @st.cache_data(ttl=43200, show_spinner=False)   # 12 小时缓存
-def get_market_heat(_cache_ver="v94"):
+def get_market_heat(_cache_ver="v95"):
     """
     【模块级】环球行业热力图 — 12小时 st.cache_data 缓存。
     定义在模块顶层，避免 rerun 时产生新实例导致缓存失效。
     """
     # 使用 Yahoo Finance 直接可用的代码（港股统一用4位补零格式，避免批量下载代码归一化不匹配）
     SECTORS = {
-        "科技":     {"US": "NVDA",    "HK": "0700.HK",    "CN": "601138.SS"},
-        "健康护理": {"US": "JNJ",     "HK": "2269.HK",    "CN": "600276.SS"},
-        "公用事业": {"US": "NEE",     "HK": "0002.HK",    "CN": "600900.SS"},
-        "通信":     {"US": "T",       "HK": "0941.HK",    "CN": "600050.SS"},
-        "金融":     {"US": "JPM",     "HK": "2318.HK",    "CN": "600036.SS"},
-        "工业":     {"US": "CAT",     "HK": "0992.HK",    "CN": "601766.SS"},
-        "非必需消费": {"US": "TSLA",  "HK": "3690.HK",    "CN": "002594.SZ"},
-        "必需消费": {"US": "WMT",     "HK": "9633.HK",    "CN": "600519.SS"},
-        "原材料":   {"US": "LIN",     "HK": "2899.HK",    "CN": "600028.SS"},
-        "房地产":   {"US": "PLD",     "HK": "0016.HK",    "CN": "000002.SZ"},
+        "科技":       {"US": "NVDA",  "HK": "0700.HK",  "CN": "601138.SS"},
+        "健康护理":   {"US": "JNJ",   "HK": "2269.HK",  "CN": "600276.SS"},
+        "公用事业":   {"US": "NEE",   "HK": "0003.HK",  "CN": "600900.SS"},  # 0003=中华煤气，比0002稳
+        "通信":       {"US": "T",     "HK": "0728.HK",  "CN": "600050.SS"},  # 0728=中国电信
+        "金融":       {"US": "JPM",   "HK": "2318.HK",  "CN": "600036.SS"},
+        "工业":       {"US": "CAT",   "HK": "1211.HK",  "CN": "601766.SS"},  # 1211=比亚迪HK，流动性好
+        "非必需消费": {"US": "TSLA",  "HK": "3690.HK",  "CN": "002594.SZ"},
+        "必需消费":   {"US": "WMT",   "HK": "9633.HK",  "CN": "600519.SS"},
+        "原材料":     {"US": "LIN",   "HK": "2899.HK",  "CN": "600028.SS"},
+        "房地产":     {"US": "PLD",   "HK": "0016.HK",  "CN": "000002.SZ"},
     }
 
     import yfinance as _yf
@@ -9644,33 +9644,50 @@ _GIST_ID = (
     st.secrets.get("GIST_ID", "")
     if hasattr(st, "secrets") else ""
 ) or os.environ.get("GIST_ID", "")
-_GIST_RAW_URL = (
-    f"https://gist.githubusercontent.com/raw/{_GIST_ID}/scan_results.json"
-    if _GIST_ID else ""
-)
-
 # Gist 本地缓存（避免每 20 秒都请求）
 _gist_local_cache: dict = {}
-_GIST_LOCAL_TTL = 600   # 10 分钟内复用，不重复请求
+_GIST_LOCAL_TTL  = 600    # 10 分钟内复用，不重复请求
+_gist_last_sync_ts: float = 0.0
+_gist_last_sync_ok: bool  = False
 
 
 def _scan_fetch_from_gist() -> dict | None:
-    """从 GitHub Gist 拉取最新扫描结果（带本地10分钟短缓存）"""
+    """
+    用 GitHub API 拉取 Gist 内容（只需 GIST_ID，不需用户名）。
+    带 10 分钟本地短缓存，避免每 20 秒轮询。
+    """
+    global _gist_local_cache, _gist_last_sync_ts, _gist_last_sync_ok
     if not _GIST_ID:
         return None
-    global _gist_local_cache
+    # 本地缓存有效则直接返回
     cached = _gist_local_cache
     if cached and time.time() - cached.get("_fetched_at", 0) < _GIST_LOCAL_TTL:
         data = {k: v for k, v in cached.items() if k != "_fetched_at"}
         if time.time() - data.get("timestamp", 0) < _SCAN_RESULT_TTL:
             return data
+    # 用 GitHub Gist API（只需 gist_id，不需要用户名）
     try:
         import urllib.request as _ur
-        url = f"https://gist.githubusercontent.com/raw/{_GIST_ID}/scan_results.json"
-        with _ur.urlopen(url, timeout=10) as resp:
-            raw = resp.read().decode("utf-8")
-        data = json.loads(raw)
-        # 同步写本地文件（备用）
+        api_url = f"https://api.github.com/gists/{_GIST_ID}"
+        req = _ur.Request(api_url, headers={
+            "Accept": "application/vnd.github+json",
+            "User-Agent": "StockAI-V88",
+        })
+        with _ur.urlopen(req, timeout=12) as resp:
+            gist_json = json.loads(resp.read().decode("utf-8"))
+        # 从 Gist API 响应里取文件内容
+        files = gist_json.get("files", {})
+        content = None
+        for fname, fdata in files.items():
+            if "scan_results" in fname.lower() or fname.endswith(".json"):
+                content = fdata.get("content", "")
+                break
+        if not content:
+            raise ValueError("Gist 无有效文件内容")
+        data = json.loads(content)
+        if not data.get("timestamp"):
+            raise ValueError("Gist 数据无时间戳")
+        # 同步写本地文件备用
         try:
             _BRIEF_CACHE_DIR.mkdir(exist_ok=True)
             _SCAN_RESULTS_FILE.write_text(
@@ -9678,10 +9695,28 @@ def _scan_fetch_from_gist() -> dict | None:
             )
         except Exception:
             pass
-        _gist_local_cache = {**data, "_fetched_at": time.time()}
+        _gist_local_cache    = {**data, "_fetched_at": time.time()}
+        _gist_last_sync_ts   = time.time()
+        _gist_last_sync_ok   = True
         return data
-    except Exception:
+    except Exception as _e:
+        _gist_last_sync_ts  = time.time()
+        _gist_last_sync_ok  = False
         return None
+
+
+def _gist_sync_status() -> str:
+    """返回云端同步状态字符串，用于 UI 展示"""
+    if not _GIST_ID:
+        return "⚙️ 未配置 GIST_ID"
+    if _gist_last_sync_ts == 0:
+        return "🔄 云端尚未同步"
+    ago = int(time.time() - _gist_last_sync_ts)
+    t_str = f"{ago//60}分钟前" if ago >= 60 else f"{ago}秒前"
+    if _gist_last_sync_ok:
+        return f"☁️ 云端同步成功（{t_str}）"
+    else:
+        return f"⚠️ 云端同步失败（{t_str}）· 使用本地缓存"
 
 
 def _scan_write_heartbeat():
@@ -9776,6 +9811,73 @@ def _scan_force_clear():
             pass
 
 
+# ── 钉钉推送 ──────────────────────────────────────────────────────
+def _dingtalk_send(text: str) -> tuple[bool, str]:
+    """发送文本到钉钉机器人（支持加签）"""
+    webhook = (
+        st.secrets.get("DINGTALK_WEBHOOK", "")
+        if hasattr(st, "secrets") else ""
+    ) or os.environ.get("DINGTALK_WEBHOOK", "")
+    secret = (
+        st.secrets.get("DINGTALK_SECRET", "")
+        if hasattr(st, "secrets") else ""
+    ) or os.environ.get("DINGTALK_SECRET", "")
+
+    if not webhook:
+        return False, "未配置 DINGTALK_WEBHOOK"
+    try:
+        import urllib.request as _ur
+        import urllib.parse  as _up
+        url = webhook
+        if secret:
+            import hmac as _hmac, hashlib as _hs, base64 as _b64
+            ts    = str(round(time.time() * 1000))
+            sign_str = f"{ts}\n{secret}"
+            sig   = _b64.b64encode(
+                _hmac.new(secret.encode(), sign_str.encode(), _hs.sha256).digest()
+            ).decode()
+            url   = f"{webhook}&timestamp={ts}&sign={_up.quote_plus(sig)}"
+        payload = json.dumps({
+            "msgtype": "text",
+            "text":    {"content": text},
+            "at":      {"isAtAll": False},
+        }).encode("utf-8")
+        req = _ur.Request(url, data=payload,
+                          headers={"Content-Type": "application/json"})
+        with _ur.urlopen(req, timeout=10) as resp:
+            result = json.loads(resp.read().decode("utf-8"))
+        if result.get("errcode", -1) == 0:
+            return True, "ok"
+        return False, result.get("errmsg", "unknown")
+    except Exception as e:
+        return False, str(e)[:100]
+
+
+def _dingtalk_push_top30(res: dict | None) -> tuple[bool, str]:
+    """把 Top30 趋势榜推送到钉钉（前10条 + 来源时间）"""
+    if not res:
+        return False, "暂无扫描结果"
+    from datetime import datetime as _dt_push
+    ts_str = _dt_push.fromtimestamp(res.get("timestamp", 0)).strftime("%m-%d %H:%M")
+    lines  = [f"📊 V88 Top30 扫描结果 · {ts_str}\n"]
+
+    mkt_map = {"US": "🇺🇸 美股", "HK": "🇭🇰 港股", "CN": "🇨🇳 A股"}
+    for mkt_key, mkt_name in mkt_map.items():
+        mkt_data = res.get(mkt_key, {})
+        top_list = mkt_data.get("top", [])[:5]   # 每市场取前5
+        if not top_list:
+            continue
+        lines.append(f"\n{mkt_name} 趋势Top5：")
+        for item in top_list:
+            name  = item.get("name", "")
+            code  = item.get("code", "")
+            score = item.get("score", 0)
+            lines.append(f"  · {name}({code}) 得分{score}")
+
+    lines.append(f"\n🔗 来源：GitHub Actions 云端自动扫描")
+    return _dingtalk_send("\n".join(lines))
+
+
 with tab_quant:
 
     @st.fragment(run_every=20)
@@ -9791,13 +9893,23 @@ with tab_quant:
         _res    = _scan_read_results()           # None → 无有效结果
 
         # ── 标题行 ────────────────────────────────────────────────
-        _h_col1, _h_col2 = st.columns([5, 2])
+        _h_col1, _h_col2, _h_col3 = st.columns([4, 2, 2])
         with _h_col1:
             st.markdown(
                 '<p style="font-size:13px;font-weight:700;margin-bottom:0.2rem;">' +
                 '🏆 Top30 后台扫描 · 三市场 × 四策略</p>',
                 unsafe_allow_html=True,
             )
+        with _h_col3:
+            if st.button("📲 推送钉钉", key="top30_dingtalk_push",
+                         use_container_width=True,
+                         help="一键把 Top30 推荐发送到钉钉群"):
+                with st.spinner("推送中..."):
+                    _ok, _msg = _dingtalk_push_top30(_res)
+                if _ok:
+                    st.toast("✅ 已推送到钉钉", icon="📲")
+                else:
+                    st.toast(f"❌ 推送失败：{_msg}", icon="⚠️")
         with _h_col2:
             _lbl = _scan_result_label()
             if _lbl:
@@ -9834,9 +9946,15 @@ with tab_quant:
             return
 
         # ── 有结果：4-Tab 展示 ────────────────────────────────────
-        _ts_str = datetime.fromtimestamp(_res["timestamp"]).strftime("%m-%d %H:%M")
-        _src_tag = "☁️ 云端缓存" if _GIST_ID and _gist_local_cache.get("timestamp") == _res.get("timestamp") else "💻 本地扫描"
+        _ts_str  = datetime.fromtimestamp(_res["timestamp"]).strftime("%m-%d %H:%M")
+        _is_gist = _GIST_ID and _gist_local_cache.get("timestamp") == _res.get("timestamp")
+        _src_tag = "☁️ 云端缓存" if _is_gist else "💻 本地扫描"
+        _sync_st = _gist_sync_status()
         st.caption(f"📅 扫描完成于 {_ts_str}  ·  {_src_tag}  ·  {_scan_result_label()}  ·  20s 自动刷新")
+        if _GIST_ID:
+            _sync_color = "#10b981" if _gist_last_sync_ok else "#f59e0b"
+            st.markdown(f'<p style="font-size:11px;color:{_sync_color};margin:0">{_sync_st}</p>',
+                        unsafe_allow_html=True)
 
         _btn_c1, _btn_c2 = st.columns([8, 1])
         with _btn_c2:
