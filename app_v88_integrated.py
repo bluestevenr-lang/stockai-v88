@@ -10769,8 +10769,10 @@ with tab_quant:
                     return " ⚠️"
             return ""
 
-        def _render_market_col(col, items, mkt_label, key_prefix):
-            """渲染单市场结果列（含宏观风险行业警示）"""
+        def _render_market_col(col, items, mkt_label, key_prefix, tab_type="top"):
+            """渲染单市场结果列（含宏观风险行业警示）
+            tab_type: 'top'=趋势强势, 'coil'=蓄势潜伏, 'inflection'=拐点, 'breakout'=启动
+            """
             with col:
                 bm = _res.get(mkt_label[-2:] if mkt_label.endswith(("美股","港股","A股")) else mkt_label, {})
                 st.markdown(
@@ -10780,13 +10782,22 @@ with tab_quant:
                 if not items:
                     st.caption("暂无符合条件标的")
                     if "港" in mkt_label or "HK" in mkt_label:
-                        st.markdown(
-                            '<div style="font-size:11px;color:#f59e0b;line-height:1.5;">'
-                            '⚠️ 港股当前体制偏弱（Risk Off），恒指低于MA50，'
-                            '多数个股未达强势/蓄势评分门槛。'
-                            '<br>👉 可查看「拐点Top10」低吸或「启动Top10」追势。</div>',
-                            unsafe_allow_html=True
-                        )
+                        if tab_type == "top":
+                            # 趋势强势：Risk Off时正常没有，给出解释
+                            st.markdown(
+                                '<div style="font-size:11px;color:#f59e0b;line-height:1.5;">'
+                                '⚠️ 港股当前偏弱（Risk Off），趋势多头标的稀少。'
+                                '<br>👉 可看「蓄势潜伏」找筑底机会，或「拐点Top10」低吸。</div>',
+                                unsafe_allow_html=True
+                            )
+                        elif tab_type == "coil":
+                            # 蓄势潜伏：Risk Off也应该有，若仍空说明数据刚扫描/阈值未过
+                            st.markdown(
+                                '<div style="font-size:11px;color:#6b7280;line-height:1.5;">'
+                                '暂无达标蓄势标的（需量缩+ATR收缩+守住支撑同时满足）。'
+                                '<br>👉 可点「🔄 重扫」触发新一轮扫描。</div>',
+                                unsafe_allow_html=True
+                            )
                     return
                 # 在"信号"列追加宏观行业警示标
                 items_display = []
@@ -10852,14 +10863,14 @@ with tab_quant:
             _c1, _c2, _c3 = st.columns(3)
             for (_mkey, _mlabel), _col in zip(_mkt_cfg, [_c1, _c2, _c3]):
                 _items = _res.get(_mkey, {}).get("top", [])
-                _render_market_col(_col, _items, _mlabel, f"top_{_mkey}")
+                _render_market_col(_col, _items, _mlabel, f"top_{_mkey}", tab_type="top")
 
-        # Tab 2：蓄势潜伏
+        # Tab 2：蓄势潜伏（筑底积累，不受市场体制限制，Risk Off也应显示）
         with _t2:
             _c1, _c2, _c3 = st.columns(3)
             for (_mkey, _mlabel), _col in zip(_mkt_cfg, [_c1, _c2, _c3]):
                 _items = _res.get(_mkey, {}).get("coil", [])
-                _render_market_col(_col, _items, _mlabel, f"coil_{_mkey}")
+                _render_market_col(_col, _items, _mlabel, f"coil_{_mkey}", tab_type="coil")
 
         # Tab 3：拐点（赔率）
         with _t3:

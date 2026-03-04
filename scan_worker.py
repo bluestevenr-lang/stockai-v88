@@ -629,7 +629,10 @@ def _score_top(df) -> dict | None:
 
 
 def _score_coil(df) -> dict | None:
-    """蓄势潜伏：量缩价稳 + ATR 收缩 + 贴近均线"""
+    """蓄势潜伏：量缩价稳 + ATR 收缩 + 区间收窄。
+    注意：蓄势筑底的股票不要求在 MA50/MA200 以上——
+    恰恰是在均线以下积累能量才需要被识别，不受市场体制限制。
+    """
     if df is None or len(df) < 60:
         return None
     try:
@@ -647,32 +650,44 @@ def _score_coil(df) -> dict | None:
         atr10   = float((high - low).tail(10).mean())
         atr60   = float((high - low).tail(60).mean())
 
-        atr_contracting = atr10 < atr60 * 0.70
-        vol_drying      = float(volume.tail(10).mean()) < avg_v60 * 0.75
-
-        near_ma20    = abs(last_c / float(ma20.iloc[-1]) - 1) < 0.03
-        ma20_flat_up = float(ma20.iloc[-1]) >= float(ma20.iloc[-5]) if len(ma20) >= 5 else False
-        above_ma50   = last_c > float(ma50.iloc[-1])
-        above_ma200  = ma200 is not None and last_c > float(ma200.iloc[-1])
+        # ── 核心蓄势信号（无方向依赖）─────────────────────────────
+        atr_contracting   = atr10 < atr60 * 0.75           # ATR 收缩（放宽到75%）
+        vol_drying        = float(volume.tail(10).mean()) < avg_v60 * 0.80  # 量能萎缩（放宽）
 
         range60 = float(high.tail(60).max() - low.tail(60).min())
         range20 = float(high.tail(20).max() - low.tail(20).min())
-        range_contracting = range20 < range60 * 0.60 if range60 > 0 else False
+        range_contracting = range20 < range60 * 0.65 if range60 > 0 else False  # 区间收窄
 
+        # 价格不创新低（止跌企稳）
+        low20_min = float(low.tail(20).min())
+        low60_min = float(low.tail(60).min())
+        holding_support = low20_min >= low60_min * 0.98   # 近20日低点未破60日低点的2%内
+
+        # ── 加分项（有则更好，无则不扣分）────────────────────────
+        near_ma20    = abs(last_c / float(ma20.iloc[-1]) - 1) < 0.05   # 贴近MA20（放宽到5%）
+        ma20_flat    = abs(float(ma20.iloc[-1]) / float(ma20.iloc[-5]) - 1) < 0.02 if len(ma20) >= 5 else False
+        above_ma50   = last_c > float(ma50.iloc[-1])
+        above_ma200  = ma200 is not None and last_c > float(ma200.iloc[-1])
+
+        # 价格在60日高点75%~95%区间（有上涨空间但已回落）
         h60        = float(high.tail(60).max())
-        price_zone = h60 * 0.75 <= last_c <= h60 * 0.95 if h60 > 0 else False
+        price_zone = h60 * 0.70 <= last_c <= h60 * 0.97 if h60 > 0 else False
 
         score = 0
         signals = []
-        if atr_contracting:              score += 20; signals.append("🔇 波动收缩")
-        if vol_drying:                   score += 20; signals.append("📉 量能萎缩")
-        if near_ma20 and ma20_flat_up:   score += 15; signals.append("📐 贴近MA20")
-        if above_ma50:                   score += 15; signals.append("✅ 站上MA50")
-        if above_ma200:                  score += 15; signals.append("🏔 站上MA200")
-        if range_contracting:            score += 10; signals.append("🎯 区间收窄")
-        if price_zone:                   score += 5;  signals.append("📍 蓄势区")
+        # 核心信号（更高权重）
+        if atr_contracting:     score += 25; signals.append("🔇 波动收缩")
+        if vol_drying:          score += 25; signals.append("📉 量能萎缩")
+        if range_contracting:   score += 15; signals.append("🎯 区间收窄")
+        if holding_support:     score += 15; signals.append("🛡 守住支撑")
+        # 加分项
+        if near_ma20 and ma20_flat: score += 10; signals.append("📐 贴近MA20")
+        if price_zone:          score += 5;  signals.append("📍 蓄势区")
+        if above_ma50:          score += 5;  signals.append("✅ 站MA50")
+        if above_ma200:         score += 5;  signals.append("🏔 站MA200")
 
-        setup = "强蓄势" if score >= 70 else ("蓄势中" if score >= 45 else "弱蓄势")
+        setup = "强蓄势" if score >= 65 else ("蓄势中" if score >= 40 else "弱蓄势")
+        # 降低准入阈值到 35，让 Risk Off 市场中筑底股也能被识别
         return {"score": min(100, score), "signals": signals, "setup": setup}
     except Exception:
         return None
@@ -888,7 +903,7 @@ def _score_one_stock(args: tuple):
                       "理由": f"趋势多头·{top_r['setup']}",
                       "建议": top_r["setup"]}
 
-    if coil_r and coil_r["score"] >= 45:
+    if coil_r and coil_r["score"] >= 35:   # 阈值35，让筑底/Risk-Off市场中的蓄势股也能入池
         out["coil"] = {**base,
                        "得分": coil_r["score"], "形态": coil_r["setup"],
                        "信号": " ".join(coil_r["signals"][:3]),
