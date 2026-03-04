@@ -143,20 +143,25 @@ def fetch_df(yf_code: str, period: str = "1y", timeout: int = 10) -> pd.DataFram
             return df
         log.debug(f"Tushare 失败，降级 yfinance: {yf_code}")
 
-    # 其他 / Tushare 失败：yfinance
-    try:
-        import yfinance as yf
-        ticker = yf.Ticker(yf_code)
-        df = ticker.history(period=period, timeout=timeout)
-        if df is None or df.empty:
-            return None
-        # 兼容新版 yfinance MultiIndex 列
-        if hasattr(df.columns, "levels") and df.columns.nlevels == 2:
-            df.columns = [c[0] for c in df.columns]
-        return df
-    except Exception as e:
-        log.debug(f"yfinance {yf_code}: {e}")
-        return None
+    # 其他 / Tushare 失败：yfinance（带 UA 防 Yahoo Finance 限速）
+    _UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+           "AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36")
+    for _attempt in range(2):
+        try:
+            import yfinance as yf
+            ticker = yf.Ticker(yf_code)
+            df = ticker.history(period=period, timeout=timeout)
+            if df is None or df.empty:
+                time.sleep(1)
+                continue
+            # 兼容新版 yfinance MultiIndex 列
+            if hasattr(df.columns, "levels") and df.columns.nlevels == 2:
+                df.columns = [c[0] for c in df.columns]
+            return df
+        except Exception as e:
+            log.debug(f"yfinance {yf_code} attempt {_attempt+1}: {e}")
+            time.sleep(1.5)
+    return None
 
 
 def fetch_latest_price(yf_code: str) -> dict | None:

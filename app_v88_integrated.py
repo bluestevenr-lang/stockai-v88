@@ -657,12 +657,29 @@ class DataProvider:
             except Exception as _e:
                 self.logger.debug(f"Tushare {symbol} 失败，降级 yfinance: {_e}")
 
-        # 2b. 尝试从 yfinance 获取（带重试）
+        # 2b. 尝试从 yfinance 获取（带重试 + UA 防限速）
+        _ua_list = [
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Safari/605.1.15",
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/119.0.0.0 Safari/537.36",
+        ]
         for attempt in range(Config.RETRY_COUNT):
             try:
                 self.logger.info(f"📊 正在获取 {symbol} 数据... (尝试 {attempt+1}/{Config.RETRY_COUNT})")
+                # 轮换 User-Agent 降低 Yahoo Finance 限速概率
+                yf.utils.get_json.__globals__.get('requests', __import__('requests'))
+                import yfinance.utils as _yfu
+                try:
+                    _yfu.requests.utils  # 确认可用
+                    _s = _yfu.requests.Session()
+                    _s.headers.update({"User-Agent": _ua_list[attempt % len(_ua_list)]})
+                except Exception:
+                    pass
                 ticker = yf.Ticker(symbol)
                 df = ticker.history(period=period, timeout=Config.REQUEST_TIMEOUT)
+                # 兼容新版 yfinance MultiIndex 列
+                if df is not None and not df.empty and hasattr(df.columns, "levels") and df.columns.nlevels == 2:
+                    df.columns = [c[0] for c in df.columns]
                 
                 if df is not None and not df.empty and len(df) >= min_rows:
                     # 成功获取，更新缓存
@@ -672,13 +689,13 @@ class DataProvider:
                     self.logger.info(f"✅ 成功获取 {symbol} 数据，共 {len(df)} 条记录")
                     return df
                 else:
-                    self.logger.warning(f"⚠️  {symbol} 数据为空或过少")
+                    self.logger.warning(f"⚠️  {symbol} 数据为空或过少（{len(df) if df is not None else 0} 行）")
             
             except Exception as e:
                 self.logger.warning(f"⚠️  {symbol} 获取失败 (尝试 {attempt+1}): {str(e)[:100]}")
                 self.perf.error()
                 if attempt < Config.RETRY_COUNT - 1:
-                    time.sleep(1 * (attempt + 1))  # 递增延迟
+                    time.sleep(1.5 * (attempt + 1))  # 递增延迟
         
         # 3. 所有尝试失败，返回过期缓存（如果有）
         if cached_value is not None:
@@ -798,25 +815,31 @@ class ExpectationLayer:
                 self.perf.record('compute', elapsed)
                 return self._last_result
             
-            # 1. 获取数据（使用分层缓存）
+            # 1. 获取数据（先试 2y，失败降级 1y）
             self.logger.info("🔍 开始分析宏观市场体制...")
-            spy_df = self.dp.fetch_safe('SPY', period=Config.MACRO_PERIOD, data_type='weekly', force_refresh=force_refresh)
-            tlt_df = self.dp.fetch_safe('TLT', period=Config.MACRO_PERIOD, data_type='weekly', force_refresh=force_refresh)
+            spy_df = self.dp.fetch_safe('SPY', period='2y', data_type='weekly', force_refresh=force_refresh)
+            if spy_df is None or len(spy_df) < 50:
+                spy_df = self.dp.fetch_safe('SPY', period='1y', data_type='weekly', force_refresh=force_refresh)
+            tlt_df = self.dp.fetch_safe('TLT', period='2y', data_type='weekly', force_refresh=force_refresh)
+            if tlt_df is None or len(tlt_df) < 20:
+                tlt_df = self.dp.fetch_safe('TLT', period='1y', data_type='weekly', force_refresh=force_refresh)
             vix_df = self.dp.fetch_safe('^VIX', period=Config.MACRO_PERIOD, data_type='fast', force_refresh=force_refresh)
             
-            # 2. 检查数据完整性
-            if spy_df is None or len(spy_df) < 200:
-                return self._fallback_result("SPY数据不足，无法计算MA200", 'us')
+            # 2. 检查数据完整性（放宽：>50 行即可用 MA50 替代 MA200）
+            if spy_df is None or len(spy_df) < 50:
+                return self._fallback_result("SPY数据不足，无法分析", 'us')
             
             if vix_df is None or vix_df.empty:
-                return self._fallback_result("VIX数据不可用", 'us')
+                vix_df = self.dp.fetch_safe('^VIX', period='6mo', data_type='fast', force_refresh=force_refresh)
             
-            # 3. 计算技术指标
+            # 3. 计算技术指标（MA200 不足时用 MA50 代替）
             spy_price = float(spy_df['Close'].iloc[-1])
-            spy_df['MA50'] = spy_df['Close'].rolling(window=Config.MA_SHORT).mean()
-            spy_df['MA200'] = spy_df['Close'].rolling(window=Config.MA_LONG).mean()
-            ma50 = float(spy_df['MA50'].iloc[-1])
-            ma200 = float(spy_df['MA200'].iloc[-1])
+            spy_df['MA50']  = spy_df['Close'].rolling(window=min(50,  len(spy_df))).mean()
+            spy_df['MA200'] = spy_df['Close'].rolling(window=min(200, len(spy_df))).mean()
+            ma50  = float(spy_df['MA50'].iloc[-1])
+            # MA200 不足时用 MA50 兜底（并在 reason 中说明）
+            _ma200_ok = len(spy_df) >= 200
+            ma200 = float(spy_df['MA200'].iloc[-1]) if _ma200_ok else ma50
             
             # 4. 计算SPY与TLT的相关性
             correlation = 0.0
