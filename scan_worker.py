@@ -222,7 +222,7 @@ def _fallback_us():
         ("ABNB","Airbnb","ABNB"),("BKNG","Booking","BKNG"),("EXPE","Expedia","EXPE"),
         ("DASH","DoorDash","DASH"),("SHOP","Shopify","SHOP"),("ETSY","Etsy","ETSY"),
         ("EBAY","eBay","EBAY"),("ZM","Zoom","ZM"),("PTON","Peloton","PTON"),
-        ("WBD","华纳兄弟","WBD"),("PARA","派拉蒙","PARAA"),
+        ("WBD","华纳兄弟","WBD"),("LYV","Live Nation","LYV"),
         # ── 金融 ──
         ("JPM","摩根大通","JPM"),("BAC","美国银行","BAC"),("GS","高盛","GS"),
         ("MS","摩根士丹利","MS"),("BLK","贝莱德","BLK"),("V","Visa","V"),
