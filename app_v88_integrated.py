@@ -2724,6 +2724,133 @@ st.markdown("""
         opacity: 1 !important;
         filter: none !important;
     }
+
+    /* ══════════════════════════════════════════════════
+       📱 移动端适配（max-width: 768px）
+       ══════════════════════════════════════════════════ */
+    @media (max-width: 768px) {
+        /* 全局容器：缩减左右边距，给内容更多空间 */
+        .block-container {
+            padding-top: 1rem !important;
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+            padding-bottom: 2rem !important;
+        }
+
+        /* 字体：稍微缩小到移动端友好尺寸 */
+        html, body, [class*="css"] {
+            font-size: 12px !important;
+        }
+
+        /* 标题：防止截断 */
+        h1 { font-size: 16px !important; }
+        h2 { font-size: 14px !important; }
+        h3 { font-size: 13px !important; }
+
+        /* st.metric：数字加大可读性 */
+        div[data-testid="stMetric"] [data-testid="stMetricValue"] {
+            font-size: 18px !important;
+        }
+        div[data-testid="stMetric"] [data-testid="stMetricLabel"] {
+            font-size: 11px !important;
+        }
+
+        /* 表格：允许横向滚动，防止溢出 */
+        div[data-testid="stDataFrame"] {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+
+        /* 按钮：稍大点击区域，更易操作 */
+        div.stButton > button {
+            padding: 0.7rem 0.8rem !important;
+            font-size: 12px !important;
+            min-height: 44px !important;
+        }
+
+        /* 多列布局：允许 Streamlit columns 在窄屏正常流动 */
+        div[data-testid="stHorizontalBlock"] {
+            flex-wrap: wrap !important;
+        }
+        div[data-testid="stColumn"] {
+            min-width: 100px !important;
+        }
+
+        /* 侧边栏：收起时不占空间 */
+        section[data-testid="stSidebar"][aria-expanded="true"] {
+            width: 75vw !important;
+            min-width: 200px !important;
+        }
+
+        /* AI 卡片：减少内边距 */
+        .ai-card {
+            padding: 14px !important;
+            border-radius: 10px !important;
+        }
+
+        /* news-brief：移动端字体 */
+        .news-brief {
+            font-size: 13px !important;
+            padding: 1rem !important;
+        }
+        .news-brief h1 { font-size: 16px !important; }
+        .news-brief h2 { font-size: 14px !important; }
+        .news-brief p, .news-brief li { font-size: 12px !important; }
+
+        /* 复制按钮：更大点击区域 */
+        button[id*="copy"] {
+            padding: 6px 12px !important;
+            font-size: 12px !important;
+            min-height: 36px !important;
+        }
+
+        /* 防止长文本溢出 */
+        [data-testid="stMarkdown"] p,
+        [data-testid="stMarkdown"] span,
+        [data-testid="stCaption"] {
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+        }
+
+        /* Tab 标签：允许换行防止溢出 */
+        [data-testid="stTabs"] [role="tab"] {
+            font-size: 11px !important;
+            padding: 0.4rem 0.6rem !important;
+            white-space: nowrap !important;
+        }
+        [data-testid="stTabs"] [role="tablist"] {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+
+        /* 背景色确保对比度（暗色文字 on 浅色背景） */
+        html, body,
+        div[data-testid="stAppViewContainer"],
+        .block-container {
+            background-color: #f1f5f9 !important;
+            color: #1e293b !important;
+        }
+        /* inline style 的 div 文字颜色兜底 */
+        [data-testid="stMarkdown"] div,
+        [data-testid="stMarkdown"] p {
+            color: inherit !important;
+        }
+    }
+
+    /* 超小屏 iPhone SE / 375px */
+    @media (max-width: 400px) {
+        .block-container {
+            padding-left: 0.3rem !important;
+            padding-right: 0.3rem !important;
+        }
+        div[data-testid="stMetric"] [data-testid="stMetricValue"] {
+            font-size: 15px !important;
+        }
+        [data-testid="stTabs"] [role="tab"] {
+            font-size: 10px !important;
+            padding: 0.3rem 0.4rem !important;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
