@@ -414,7 +414,7 @@ class Config:
     MAX_WORKERS  = _TOML.get("concurrency", {}).get("max_workers",  8)
     TASK_TIMEOUT = _TOML.get("concurrency", {}).get("task_timeout", 15)
 
-    MACRO_ASSETS = ['SPY', 'TLT', 'GLD', '^VIX', '^TNX', 'DX-Y.NYB']
+    MACRO_ASSETS = ['SPY', 'QQQ', 'TLT', 'GLD', '^VIX', '^TNX', 'DX-Y.NYB']
 
     TNX_LOOSE = _TOML.get("rates", {}).get("tnx_loose", 3.5)
     TNX_TIGHT = _TOML.get("rates", {}).get("tnx_tight", 4.5)
@@ -963,7 +963,8 @@ class ExpectationLayer:
     def _compute_param_hash(self) -> str:
         """计算参数签名（用于增量刷新）"""
         import hashlib
-        params = f"{Config.MA_SHORT}_{Config.MA_LONG}_{Config.CORR_WINDOW}_{Config.VIX_PANIC}_{Config.VIX_HIGH}"
+        # v2: 加入 QQQ 纳斯达克，版本号变更强制旧缓存失效
+        params = f"v2_{Config.MA_SHORT}_{Config.MA_LONG}_{Config.CORR_WINDOW}_{Config.VIX_PANIC}_{Config.VIX_HIGH}"
         return hashlib.md5(params.encode()).hexdigest()[:8]
     
     def analyze_market_regime(self, force_refresh: bool = False) -> dict:
@@ -1120,7 +1121,7 @@ class ExpectationLayer:
             except Exception as e:
                 self.logger.warning(f"⚠️ GLD数据获取失败: {e}")
             
-            # 5.4 SPY/TLT 日变动
+            # 5.4 SPY/TLT/QQQ 日变动
             spy_prev = float(spy_df['Close'].iloc[-2]) if len(spy_df) >= 2 else spy_price
             spy_change_pct = ((spy_price - spy_prev) / spy_prev * 100) if spy_prev != 0 else 0
             tlt_price = 0.0
@@ -1129,6 +1130,18 @@ class ExpectationLayer:
                 tlt_price = float(tlt_df['Close'].iloc[-1])
                 tlt_prev = float(tlt_df['Close'].iloc[-2]) if len(tlt_df) >= 2 else tlt_price
                 tlt_change_pct = ((tlt_price - tlt_prev) / tlt_prev * 100) if tlt_prev != 0 else 0
+
+            # 5.5 纳斯达克100 ETF (QQQ)
+            qqq_price = 0.0
+            qqq_change_pct = 0.0
+            try:
+                qqq_df = self.dp.fetch_safe('QQQ', period=Config.MACRO_PERIOD, data_type='weekly', force_refresh=force_refresh)
+                if qqq_df is not None and not qqq_df.empty:
+                    qqq_price = float(qqq_df['Close'].iloc[-1])
+                    qqq_prev = float(qqq_df['Close'].iloc[-2]) if len(qqq_df) >= 2 else qqq_price
+                    qqq_change_pct = ((qqq_price - qqq_prev) / qqq_prev * 100) if qqq_prev != 0 else 0
+            except Exception as e:
+                self.logger.warning(f"⚠️ QQQ数据获取失败: {e}")
             
             # 6. 市场体制裁决（【V90】增强：加入美债+美元因素）
             verdict = "Neutral"
@@ -1184,6 +1197,8 @@ class ExpectationLayer:
                 'spy_change_pct': spy_change_pct,
                 'ma50': ma50,
                 'ma200': ma200,
+                'qqq_price': qqq_price,
+                'qqq_change_pct': qqq_change_pct,
                 'tlt_price': tlt_price,
                 'tlt_change_pct': tlt_change_pct,
                 'tnx_yield': tnx_yield,
@@ -1234,6 +1249,8 @@ class ExpectationLayer:
                 'spy_change_pct': 0.0,
                 'ma50': 0.0,
                 'ma200': 0.0,
+                'qqq_price': 0.0,
+                'qqq_change_pct': 0.0,
                 'tlt_price': 0.0,
                 'tlt_change_pct': 0.0,
                 'tnx_yield': 0.0,
@@ -1623,6 +1640,7 @@ def _get_data_provider():
 
 @st.cache_resource
 def _get_expectation_layer():
+    # v2: 新增 QQQ 纳斯达克100 指标 —— 此注释变更强制 cache_resource 创建新实例
     return ExpectationLayer(_get_data_provider(), _get_perf_monitor())
 
 _data_provider = _get_data_provider()
@@ -2577,7 +2595,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
                     .replace("VIX=", f'VIX{_s}(波动率指数)</span>=').replace("VIX(", f'VIX{_s}(波动率指数)</span>(')
                     .replace("MA50(", f'MA50{_s}(50日均线)</span>(').replace("MA200(", f'MA200{_s}(200日均线)</span>('))
         st.markdown("#### 🇺🇸 美国")
-        us_cols = st.columns(8)
+        us_cols = st.columns(9)
         with us_cols[0]:
             _v = us_result.get('vix_level', 0)
             _val = _safe_str_for_dom(_safe_num(_v, "{:.1f}") if _v else "N/A")
@@ -2589,33 +2607,38 @@ if Config.ENABLE_EXPECTATION_LAYER:
             _d = _safe_str_for_dom(f"{_safe_num(us_result.get('spy_change_pct', 0), '{:+.1f}')}%" if _v else None) or None
             st.metric("S&P500", _val, delta=_d)
         with us_cols[2]:
+            _v = us_result.get('qqq_price', 0)
+            _val = _safe_str_for_dom(f"${_safe_num(_v, '{:.1f}')}" if _v else "N/A")
+            _d = _safe_str_for_dom(f"{_safe_num(us_result.get('qqq_change_pct', 0), '{:+.1f}')}%" if _v else None) or None
+            st.metric("纳斯达克100", _val, delta=_d)
+        with us_cols[3]:
             _v = us_result.get('tlt_price', 0)
             _val = _safe_str_for_dom(f"${_safe_num(_v, '{:.1f}')}" if _v else "N/A")
             _d = _safe_str_for_dom(f"{_safe_num(us_result.get('tlt_change_pct', 0), '{:+.1f}')}%" if _v else None) or None
             st.metric("TLT (美债ETF)", _val, delta=_d)
-        with us_cols[3]:
+        with us_cols[4]:
             _v = us_result.get('gld_price', 0)
             _val = _safe_str_for_dom(f"${_safe_num(_v, '{:.1f}')}" if _v else "N/A")
             _d = _safe_str_for_dom(f"{_safe_num(us_result.get('gld_change_pct', 0), '{:+.1f}')}%" if _v else None) or None
             st.metric("GLD (黄金)", _val, delta=_d)
-        with us_cols[4]:
+        with us_cols[5]:
             _v = us_result.get('tnx_yield', 0)
             _val = _safe_str_for_dom(f"{_safe_num(_v, '{:.2f}')}%" if _v else "N/A")
             _d = _safe_str_for_dom(_safe_num(us_result.get('tnx_change', 0), "{:+.2f}") if _v else None) or None
             st.metric("10Y美债", _val, delta=_d, delta_color="inverse")
-        with us_cols[5]:
+        with us_cols[6]:
             _v = us_result.get('dxy_level', 0)
             _val = _safe_str_for_dom(_safe_num(_v, "{:.1f}") if _v else "N/A")
             _d = _safe_str_for_dom(f"{_safe_num(us_result.get('dxy_change_pct', 0), '{:+.1f}')}%" if _v else None) or None
             st.metric("DXY (美元)", _val, delta=_d, delta_color="inverse")
-        with us_cols[6]:
+        with us_cols[7]:
             _corr = us_result.get('correlation', None)
             _corr_val = _safe_str_for_dom(f"{_corr:.2f}" if _corr is not None else "N/A")
             _corr_desc = _sanitize_html(us_result.get('corr_desc', ''))
             st.metric("股债相关性", _corr_val)
             if _corr_desc:
                 st.caption(_corr_desc[:20])
-        with us_cols[7]:
+        with us_cols[8]:
             _us_v = us_result.get('verdict', 'Unknown')
             _us_color = "#10b981" if _us_v == "Risk On" else ("#ef4444" if _us_v == "Risk Off" else "#f59e0b")
             _us_v_safe = _sanitize_html(_us_v)
