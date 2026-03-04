@@ -1073,18 +1073,23 @@ class ExpectationLayer:
         try:
             self.logger.info("🔍 开始分析港股市场体制...")
             
-            # 获取恒生指数数据
-            hsi_df = self.dp.fetch_safe('^HSI', period=Config.MACRO_PERIOD, data_type='weekly', force_refresh=force_refresh)
+            # 获取恒生指数数据（优先2y以确保足够MA200行数，失败时降级1y）
+            hsi_df = None
+            for _hsi_period in ['2y', '1y', '6mo']:
+                hsi_df = self.dp.fetch_safe('^HSI', period=_hsi_period, data_type='weekly', force_refresh=force_refresh, min_rows=50)
+                if hsi_df is not None and len(hsi_df) >= 50:
+                    break
+
+            if hsi_df is None or len(hsi_df) < 50:
+                return self._fallback_result("恒生指数数据不足，无法分析", 'hk')
             
-            if hsi_df is None or len(hsi_df) < 200:
-                return self._fallback_result("恒生指数数据不足，无法计算MA200", 'hk')
-            
-            # 计算技术指标
+            # 计算技术指标（MA200不足时用MA50代替）
             hsi_price = float(hsi_df['Close'].iloc[-1])
             hsi_df['MA50'] = hsi_df['Close'].rolling(window=Config.MA_SHORT).mean()
             hsi_df['MA200'] = hsi_df['Close'].rolling(window=Config.MA_LONG).mean()
             ma50 = float(hsi_df['MA50'].iloc[-1])
-            ma200 = float(hsi_df['MA200'].iloc[-1])
+            _ma200_raw = hsi_df['MA200'].iloc[-1]
+            ma200 = float(_ma200_raw) if (_ma200_raw == _ma200_raw and _ma200_raw > 0) else ma50  # NaN时用MA50兜底
             
             # 计算波动率（替代VIX）
             returns = hsi_df['Close'].pct_change().dropna()
@@ -1190,18 +1195,23 @@ class ExpectationLayer:
         try:
             self.logger.info("🔍 开始分析A股市场体制...")
             
-            # 获取上证指数数据
-            sse_df = self.dp.fetch_safe('000001.SS', period=Config.MACRO_PERIOD, data_type='weekly', force_refresh=force_refresh)
+            # 获取上证指数数据（优先2y确保MA200数据充足，失败时降级）
+            sse_df = None
+            for _sse_period in ['2y', '1y', '6mo']:
+                sse_df = self.dp.fetch_safe('000001.SS', period=_sse_period, data_type='weekly', force_refresh=force_refresh, min_rows=50)
+                if sse_df is not None and len(sse_df) >= 50:
+                    break
+
+            if sse_df is None or len(sse_df) < 50:
+                return self._fallback_result("上证指数数据不足，无法分析", 'cn')
             
-            if sse_df is None or len(sse_df) < 200:
-                return self._fallback_result("上证指数数据不足，无法计算MA200", 'cn')
-            
-            # 计算技术指标
+            # 计算技术指标（MA200不足时用MA50代替）
             sse_price = float(sse_df['Close'].iloc[-1])
             sse_df['MA50'] = sse_df['Close'].rolling(window=Config.MA_SHORT).mean()
             sse_df['MA200'] = sse_df['Close'].rolling(window=Config.MA_LONG).mean()
             ma50 = float(sse_df['MA50'].iloc[-1])
-            ma200 = float(sse_df['MA200'].iloc[-1])
+            _ma200_raw = sse_df['MA200'].iloc[-1]
+            ma200 = float(_ma200_raw) if (_ma200_raw == _ma200_raw and _ma200_raw > 0) else ma50
             
             # 计算波动率
             returns = sse_df['Close'].pct_change().dropna()
