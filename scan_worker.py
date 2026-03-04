@@ -59,6 +59,7 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 _FORCE_RESCAN = "--force" in sys.argv
+_CLOUD_MODE   = "--cloud" in sys.argv   # GitHub Actions 模式：跳过心跳检查，扫完上传 Gist
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -660,6 +661,38 @@ def _scan_market(pool: list, market_key: str, bm_ticker: str,
 
 
 # ═══════════════════════════════════════════════════════════════
+# GitHub Gist 上传（云端模式专用）
+# ═══════════════════════════════════════════════════════════════
+
+def _upload_to_gist(json_str: str) -> bool:
+    """把扫描结果上传/更新到 GitHub Gist（供 Streamlit Cloud 读取）"""
+    gist_token = os.environ.get("GIST_TOKEN", "")
+    gist_id    = os.environ.get("GIST_ID", "")
+    if not gist_token or not gist_id:
+        log.warning("GIST_TOKEN / GIST_ID 未配置，跳过上传")
+        return False
+    try:
+        resp = requests.patch(
+            f"https://api.github.com/gists/{gist_id}",
+            headers={
+                "Authorization": f"token {gist_token}",
+                "Accept": "application/vnd.github+json",
+            },
+            json={"files": {"scan_results.json": {"content": json_str}}},
+            timeout=30,
+        )
+        if resp.status_code == 200:
+            log.info(f"✅ 结果已上传到 Gist: {gist_id}")
+            return True
+        else:
+            log.error(f"Gist 上传失败: {resp.status_code} {resp.text[:200]}")
+            return False
+    except Exception as e:
+        log.error(f"Gist 上传异常: {e}")
+        return False
+
+
+# ═══════════════════════════════════════════════════════════════
 # 主流程
 # ═══════════════════════════════════════════════════════════════
 
@@ -714,7 +747,7 @@ def main():
         ]
 
         for mkt_key, pool, bm_ticker, pct_start, pct_end in markets:
-            if not _heartbeat_alive():
+            if not _CLOUD_MODE and not _heartbeat_alive():
                 log.warning("心跳超时，终止")
                 _cleanup()
                 return
@@ -731,12 +764,14 @@ def main():
 
         # 写入最终结果
         final = {"timestamp": time.time(), **results}
-        RESULTS_FILE.write_text(
-            json.dumps(final, ensure_ascii=False, default=str),
-            encoding="utf-8",
-        )
+        result_json = json.dumps(final, ensure_ascii=False, default=str)
+        RESULTS_FILE.write_text(result_json, encoding="utf-8")
         log.info(f"✅ 扫描完成，结果已写入 {RESULTS_FILE}")
         _write_progress(100, "done", "全市场扫描完成 ✅")
+
+        # 云端模式：上传结果到 GitHub Gist
+        if _CLOUD_MODE:
+            _upload_to_gist(result_json)
 
     except Exception as e:
         log.error(f"扫描异常: {e}", exc_info=True)

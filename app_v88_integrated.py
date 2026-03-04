@@ -9610,7 +9610,51 @@ _SCAN_PROGRESS_FILE = _BRIEF_CACHE_DIR / "scan_progress.json"
 _SCAN_HEARTBEAT_FILE = _BRIEF_CACHE_DIR / "scan_heartbeat.json"
 _SCAN_PID_FILE      = _BRIEF_CACHE_DIR / "scan_worker.pid"
 _SCAN_WORKER_SCRIPT = Path(__file__).parent / "scan_worker.py"
-_SCAN_RESULT_TTL    = 4 * 3600    # 4 小时
+_SCAN_RESULT_TTL    = 6 * 3600    # 6 小时（匹配 GitHub Actions 每天4次节奏）
+
+# Gist 配置：从 Streamlit Secrets 或环境变量读取
+_GIST_ID = (
+    st.secrets.get("GIST_ID", "")
+    if hasattr(st, "secrets") else ""
+) or os.environ.get("GIST_ID", "")
+_GIST_RAW_URL = (
+    f"https://gist.githubusercontent.com/raw/{_GIST_ID}/scan_results.json"
+    if _GIST_ID else ""
+)
+
+# Gist 本地缓存（避免每 20 秒都请求）
+_gist_local_cache: dict = {}
+_GIST_LOCAL_TTL = 600   # 10 分钟内复用，不重复请求
+
+
+def _scan_fetch_from_gist() -> dict | None:
+    """从 GitHub Gist 拉取最新扫描结果（带本地10分钟短缓存）"""
+    if not _GIST_ID:
+        return None
+    global _gist_local_cache
+    cached = _gist_local_cache
+    if cached and time.time() - cached.get("_fetched_at", 0) < _GIST_LOCAL_TTL:
+        data = {k: v for k, v in cached.items() if k != "_fetched_at"}
+        if time.time() - data.get("timestamp", 0) < _SCAN_RESULT_TTL:
+            return data
+    try:
+        import urllib.request as _ur
+        url = f"https://gist.githubusercontent.com/raw/{_GIST_ID}/scan_results.json"
+        with _ur.urlopen(url, timeout=10) as resp:
+            raw = resp.read().decode("utf-8")
+        data = json.loads(raw)
+        # 同步写本地文件（备用）
+        try:
+            _BRIEF_CACHE_DIR.mkdir(exist_ok=True)
+            _SCAN_RESULTS_FILE.write_text(
+                json.dumps(data, ensure_ascii=False), encoding="utf-8"
+            )
+        except Exception:
+            pass
+        _gist_local_cache = {**data, "_fetched_at": time.time()}
+        return data
+    except Exception:
+        return None
 
 
 def _scan_write_heartbeat():
@@ -9625,7 +9669,12 @@ def _scan_write_heartbeat():
 
 
 def _scan_read_results() -> dict | None:
-    """读取扫描结果；若文件不存在或已过期返回 None"""
+    """读取扫描结果：优先 GitHub Gist（云端缓存），其次本地文件"""
+    # 1. 先尝试 Gist（GitHub Actions 写入的云端缓存）
+    gist_data = _scan_fetch_from_gist()
+    if gist_data and time.time() - gist_data.get("timestamp", 0) < _SCAN_RESULT_TTL:
+        return gist_data
+    # 2. 本地文件（本机手动扫描写入的）
     try:
         data = json.loads(_SCAN_RESULTS_FILE.read_text(encoding="utf-8"))
         if time.time() - data.get("timestamp", 0) < _SCAN_RESULT_TTL:
@@ -9736,9 +9785,12 @@ with tab_quant:
 
         # ── 无结果 / 过期：展示启动区域 ───────────────────────────
         if _res is None:
-            st.info("🔍 尚无扫描结果。点击下方按钮在**后台**启动全市场扫描（约 5-8 分钟），期间可正常使用其他功能。")
+            if _GIST_ID:
+                st.info("🔍 尚无扫描结果。云端 GitHub Actions 每天自动扫描4次，结果将自动同步。也可点下方按钮立即在本机后台扫描。")
+            else:
+                st.info("🔍 尚无扫描结果。点击下方按钮在**后台**启动全市场扫描（约 5-8 分钟），期间可正常使用其他功能。")
             _us_c, _hk_c, _cn_c = len(RAW_US), len(RAW_HK), len(RAW_CN_TOP)
-            st.caption(f"扫描池: 美股 {_us_c} + 港股 {_hk_c} + A股 {_cn_c} = {_us_c+_hk_c+_cn_c} 只 · 结果缓存 4 小时")
+            st.caption(f"扫描池: 美股 {_us_c} + 港股 {_hk_c} + A股 {_cn_c} = {_us_c+_hk_c+_cn_c} 只 · 结果缓存 6 小时")
             _btn_col1, _btn_col2 = st.columns([2, 1])
             with _btn_col1:
                 if st.button("🚀 启动后台全市场扫描", type="primary", use_container_width=True, key="top30_start_bg"):
@@ -9756,7 +9808,8 @@ with tab_quant:
 
         # ── 有结果：4-Tab 展示 ────────────────────────────────────
         _ts_str = datetime.fromtimestamp(_res["timestamp"]).strftime("%m-%d %H:%M")
-        st.caption(f"📅 扫描完成于 {_ts_str}  ·  {_scan_result_label()}  ·  20s 自动刷新")
+        _src_tag = "☁️ 云端缓存" if _GIST_ID and _gist_local_cache.get("timestamp") == _res.get("timestamp") else "💻 本地扫描"
+        st.caption(f"📅 扫描完成于 {_ts_str}  ·  {_src_tag}  ·  {_scan_result_label()}  ·  20s 自动刷新")
 
         _btn_c1, _btn_c2 = st.columns([8, 1])
         with _btn_c2:
