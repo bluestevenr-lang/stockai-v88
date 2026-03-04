@@ -733,7 +733,20 @@ class DataProvider:
                     return _stooq
             except Exception as _e:
                 self.logger.debug(f"Stooq {symbol} 失败: {_e}")
-        
+
+        # 2d-2. Stooq 也失败时，直连 Yahoo Finance v8 JSON API（绕过 yfinance 封装层）
+        if not (symbol.endswith('.HK') or symbol.endswith('.SS') or symbol.endswith('.SZ')):
+            try:
+                _yv8 = fetch_from_yahoo_direct(symbol, period=period)
+                if _yv8 is not None and len(_yv8) >= min_rows:
+                    self.cache_mgr.set(cache_key, _yv8, data_type)
+                    elapsed = (time.time() - start_time) * 1000
+                    self.perf.record('fetch', elapsed)
+                    self.logger.info(f"✅ YahooV8直连备用获取 {symbol}，共 {len(_yv8)} 条记录")
+                    return _yv8
+            except Exception as _e:
+                self.logger.debug(f"YahooV8 {symbol} 失败: {_e}")
+
         # 2e. 港股指数(^HSI/^HSTECH/^HSCE)尝试东方财富备用（yfinance 在 Cloud 常失败）
         if symbol in ('^HSI', '^HSTECH', '^HSCE') and USE_NEW_MODULES:
             try:
@@ -3382,6 +3395,66 @@ def fetch_from_stooq(symbol: str):
     except Exception as e:
         _safe_print(f"[Stooq] ❌ {symbol} 失败: {type(e).__name__}: {e}")
         return None
+
+
+def fetch_from_yahoo_direct(symbol: str, period: str = '1y') -> pd.DataFrame:
+    """
+    直连 Yahoo Finance v8 chart JSON API（不经过 yfinance 封装）。
+    yfinance 在 Streamlit Cloud 上因 IP 限制常失败，
+    直连 API 使用自定义 User-Agent 可绕过部分限制。
+    适用于：美股、ETF、指数（^VIX、^TNX、SPY 等）
+    """
+    _RANGE_MAP = {
+        '6mo': '6mo', '1y': '1y', '2y': '2y',
+        '3y': '3y', '5y': '5y',
+        '1mo': '1mo', '3mo': '3mo',
+    }
+    range_str = _RANGE_MAP.get(period, '1y')
+    # 不支持港股和A股
+    if symbol.endswith('.HK') or symbol.endswith('.SS') or symbol.endswith('.SZ'):
+        return None
+    try:
+        url = f'https://query1.finance.yahoo.com/v8/finance/chart/{symbol}'
+        params = {'interval': '1d', 'range': range_str, 'events': 'div,splits'}
+        hdrs = {
+            'User-Agent': ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                           'AppleWebKit/537.36 (KHTML, like Gecko) '
+                           'Chrome/124.0.0.0 Safari/537.36'),
+            'Accept': 'application/json',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Referer': 'https://finance.yahoo.com/',
+        }
+        r = requests.get(url, params=params, headers=hdrs, timeout=20, verify=False)
+        if r.status_code != 200:
+            _safe_print(f"[YahooV8] ❌ {symbol} HTTP {r.status_code}")
+            return None
+        data = r.json()
+        result = data.get('chart', {}).get('result')
+        if not result:
+            _safe_print(f"[YahooV8] ❌ {symbol} 无数据")
+            return None
+        result = result[0]
+        timestamps = result.get('timestamp', [])
+        quote = result.get('indicators', {}).get('quote', [{}])[0]
+        closes  = quote.get('close',  [])
+        opens   = quote.get('open',   [])
+        highs   = quote.get('high',   [])
+        lows    = quote.get('low',    [])
+        volumes = quote.get('volume', [])
+        if not timestamps or not closes:
+            return None
+        df = pd.DataFrame({
+            'Open': opens, 'High': highs, 'Low': lows,
+            'Close': closes, 'Volume': volumes,
+        }, index=pd.to_datetime(timestamps, unit='s', utc=True).tz_convert(None))
+        df.index.name = 'Date'
+        df = df.dropna(subset=['Close'])
+        _safe_print(f"[YahooV8] ✅ {symbol} 获取 {len(df)} 行")
+        return clean_df(df)
+    except Exception as e:
+        _safe_print(f"[YahooV8] ❌ {symbol} 失败: {type(e).__name__}: {e}")
+        return None
+
 
 def fetch_cyb_from_eastmoney():
     """

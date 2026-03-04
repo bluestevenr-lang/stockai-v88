@@ -4,7 +4,7 @@ numpy>=1.24.0
 plotly>=5.18.0
 # yfinance 0.2.37+ 需 curl_cffi 才能稳定访问 Yahoo；pin 0.5.10 兼顾本地与 Cloud
 yfinance>=0.2.37
-curl_cffi==0.5.10
+curl_cffi>=0.7.0
 requests>=2.31.0
 google-generativeai>=0.7.0
 urllib3>=2.0.0

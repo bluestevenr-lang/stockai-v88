@@ -168,8 +168,13 @@ def fetch_from_stooq(symbol: str) -> Optional[pd.DataFrame]:
         if symbol.endswith('.HK') or symbol.endswith('.SS') or symbol.endswith('.SZ'):
             return None
         
-        # 转换格式：AAPL->aapl.us, ^VIX->vi.f(CBOE), DX-Y.NYB->^dxy
-        _STOOQ_MAP = {'DX-Y.NYB': '^dxy', 'CNY=X': 'cny.us', 'HKD=X': 'hkd.us', '^VIX': 'vi.f', '^TNX': 'tnx.us', 'SPY': 'spy.us', 'TLT': 'tlt.us', 'GLD': 'gld.us'}
+        # 转换格式：AAPL->aapl.us, ^VIX->vi.f(CBOE), DX-Y.NYB->dx.f
+        _STOOQ_MAP = {
+            'DX-Y.NYB': 'dx.f', 'CNY=X': 'cnyusd.fx', 'HKD=X': 'hkdusd.fx',
+            '^VIX': 'vi.f', '^TNX': 'tnx.us', '^GSPC': 'sp500.us',
+            'SPY': 'spy.us', 'TLT': 'tlt.us', 'GLD': 'gld.us',
+            'QQQ': 'qqq.us', 'IWM': 'iwm.us',
+        }
         if symbol in _STOOQ_MAP:
             stooq_symbol = _STOOQ_MAP[symbol]
         else:
