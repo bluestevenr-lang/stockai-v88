@@ -126,14 +126,16 @@ _DAILY_CLEAR_FLAG: _Path_cls = _Path_cls(".cache_brief/_daily_clear_date.txt")
 
 def _check_daily_cache_clear() -> None:
     """
-    每天凌晨零点后，首次页面渲染时自动清零所有缓存。
-    清零内容：
-      - Streamlit st.cache_resource / st.cache_data（内存缓存）
-      - .cache_brief/ 内的简报、宏观风险、扫描等文件缓存
-      - scan_results.json
-    清零后调用 st.rerun()，让所有数据重新拉取。
+    每天凌晨零点后首次页面渲染时，自动清零全部缓存并触发重新扫描。
+
+    清零范围（全覆盖）：
+      ① Streamlit 内存缓存：st.cache_resource / st.cache_data
+      ② st.session_state 数据缓存（宏观风险、简报等会话级缓存）
+      ③ .cache_brief/  内所有 JSON/log 文件（简报、宏观、扫描结果、股池等）
+      ④ .cache_stock_data/  股票行情 pickle 文件
+      ⑤ 触发后台重扫（写入 rescan 标记，下次 fragment 渲染时拾起）
     """
-    today_str = str(_date_cls.today())   # e.g. "2026-03-05"
+    today_str = str(_date_cls.today())
 
     # 读取上次清零日期
     try:
@@ -144,33 +146,50 @@ def _check_daily_cache_clear() -> None:
     if last_clear == today_str:
         return   # 今天已清过，跳过
 
-    _safe_print(f"🌙 [{today_str}] 每日零点缓存自动清零...")
+    _safe_print(f"🌙 [{today_str}] 每日零点全量缓存清零开始...")
 
-    # 1. Streamlit 内置内存缓存
+    # ① Streamlit 内置内存缓存
     try:
         st.cache_resource.clear()
         st.cache_data.clear()
     except Exception:
         pass
 
-    # 2. 文件缓存目录（brief、macro_risk、scan_results 等）
+    # ② st.session_state 中的数据缓存键
+    _ss_keys_to_clear = [
+        "_macro_risk_result",       # 宏观风险评估
+        "_brief_content",           # AI 简报内容
+        "_brief_timestamp",         # 简报时间戳
+        "_scan_results_cache",      # 扫描结果内存缓存
+        "_gist_local_cache",        # Gist 本地缓存
+        "_heat_cache",              # 行业热力缓存
+    ]
+    for _k in _ss_keys_to_clear:
+        try:
+            st.session_state.pop(_k, None)
+        except Exception:
+            pass
+
+    # ③ .cache_brief/ 内所有文件（保留日期标记文件）
     try:
         import shutil as _shutil
         _brief_dir = _Path_cls(".cache_brief")
+        _KEEP_FILES = {"_daily_clear_date.txt"}
         if _brief_dir.exists():
             for _f in _brief_dir.iterdir():
-                if _f.name != "_daily_clear_date.txt":   # 保留标记文件本身
-                    try:
-                        if _f.is_file():
-                            _f.unlink()
-                        elif _f.is_dir():
-                            _shutil.rmtree(_f)
-                    except Exception:
-                        pass
+                if _f.name in _KEEP_FILES:
+                    continue
+                try:
+                    if _f.is_file():
+                        _f.unlink()
+                    elif _f.is_dir():
+                        _shutil.rmtree(_f)
+                except Exception:
+                    pass
     except Exception:
         pass
 
-    # 3. scan_results.json（让扫描结果次日重新生成）
+    # ③-b 根目录下的备用 scan_results.json
     try:
         _scan_f = _Path_cls("scan_results.json")
         if _scan_f.exists():
@@ -178,14 +197,38 @@ def _check_daily_cache_clear() -> None:
     except Exception:
         pass
 
-    # 4. 写入今天日期，防止本次 rerun 后再次触发
+    # ④ .cache_stock_data/ 股票行情 pickle 缓存（可能较大，全清保证数据新鲜）
+    try:
+        _stock_cache_dir = _Path_cls(".cache_stock_data")
+        if _stock_cache_dir.exists():
+            _cleared = 0
+            for _pf in _stock_cache_dir.glob("*.pkl"):
+                try:
+                    _pf.unlink()
+                    _cleared += 1
+                except Exception:
+                    pass
+            _safe_print(f"  ④ 已清除股票行情 pickle 缓存 {_cleared} 个")
+    except Exception:
+        pass
+
+    # ⑤ 全局 Gist 内存缓存变量重置（防止 Gist 旧结果在内存中滞留）
+    try:
+        global _gist_local_cache, _gist_last_sync_ts, _gist_last_sync_ok
+        _gist_local_cache  = None
+        _gist_last_sync_ts = 0
+        _gist_last_sync_ok = False
+    except Exception:
+        pass
+
+    # ⑥ 写入今天日期，防止 rerun 后再次触发
     try:
         _DAILY_CLEAR_FLAG.parent.mkdir(parents=True, exist_ok=True)
         _DAILY_CLEAR_FLAG.write_text(today_str, encoding="utf-8")
     except Exception:
         pass
 
-    _safe_print(f"✅ [{today_str}] 缓存清零完成，即将重新加载...")
+    _safe_print(f"✅ [{today_str}] 全量缓存清零完成，正在重新加载（将自动触发后台重扫）...")
     st.rerun()
 
 
