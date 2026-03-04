@@ -135,8 +135,13 @@ def _to_yf_code(code: str) -> str:
 # ═══════════════════════════════════════════════════════════════
 
 def _fetch_eastmoney(market: str, limit: int) -> list:
-    """从东方财富拉取股票池"""
-    url = "http://80.push2.eastmoney.com/api/qt/clist/get"
+    """从东方财富拉取股票池（尝试多个端点，兼容中国/海外 IP）"""
+    # 主端点（中国IP可用）+ 备用HTTPS端点
+    urls = [
+        "https://push2.eastmoney.com/api/qt/clist/get",
+        "http://80.push2.eastmoney.com/api/qt/clist/get",
+        "https://datacenter.eastmoney.com/securities/api/data/get",
+    ]
     fs_map = {
         "us": "m:105,m:106,m:107",
         "hk": "m:128",
@@ -145,66 +150,167 @@ def _fetch_eastmoney(market: str, limit: int) -> list:
     fs = fs_map.get(market)
     if not fs:
         return []
-    all_stocks = []
-    pn = 1
-    while len(all_stocks) < limit:
+
+    for url in urls[:2]:   # 只试前两个端点
+        all_stocks = []
+        pn = 1
         try:
-            time.sleep(0.5)
-            pz = min(200, limit - len(all_stocks))
-            params = {
-                "pn": pn, "pz": pz, "fs": fs,
-                "fields": "f12,f14,f20",
-                "ut": "bd1d9ddb04089700cf9c27f6f7426281",
-            }
-            resp = requests.get(url, params=params, timeout=10, verify=False)
-            diff = resp.json().get("data", {}).get("diff", [])
-            if isinstance(diff, dict):
-                diff = list(diff.values())
-            page = [
-                (x["f12"], x["f14"], _to_yf_code(x["f12"]))
-                for x in diff
-                if isinstance(x, dict) and x.get("f12") and x.get("f14")
-            ]
-            if not page:
-                break
-            all_stocks.extend(page)
-            if len(page) < pz:
-                break
-            pn += 1
+            while len(all_stocks) < limit:
+                time.sleep(0.3)
+                pz = min(200, limit - len(all_stocks))
+                params = {
+                    "pn": pn, "pz": pz, "fs": fs,
+                    "fields": "f12,f14,f20",
+                    "ut": "bd1d9ddb04089700cf9c27f6f7426281",
+                    "fid": "f20", "sort": "f20", "type": "rank",
+                }
+                resp = requests.get(url, params=params, timeout=15, verify=False)
+                diff = resp.json().get("data", {}).get("diff", [])
+                if isinstance(diff, dict):
+                    diff = list(diff.values())
+                page = [
+                    (x["f12"], x["f14"], _to_yf_code(x["f12"]))
+                    for x in diff
+                    if isinstance(x, dict) and x.get("f12") and x.get("f14")
+                ]
+                if not page:
+                    break
+                all_stocks.extend(page)
+                if len(page) < pz:
+                    break
+                pn += 1
+            if len(all_stocks) >= 20:
+                log.info(f"EastMoney {market} 获取 {len(all_stocks)} 只 via {url}")
+                return all_stocks[:limit]
         except Exception as e:
-            log.warning(f"EastMoney {market} page {pn} 失败: {e}")
-            break
-    return all_stocks[:limit]
+            log.warning(f"EastMoney {market} 端点 {url} 失败: {e}")
+            continue
+
+    return []   # 全部失败，由调用方触发 fallback
 
 
 def _fallback_us():
+    """美股备用池 ~120 只（S&P500 核心 + 中概）"""
     return [
-        ("AAPL","苹果","AAPL"),("MSFT","微软","MSFT"),("GOOGL","谷歌","GOOGL"),
-        ("AMZN","亚马逊","AMZN"),("META","Meta","META"),("NVDA","英伟达","NVDA"),
-        ("TSLA","特斯拉","TSLA"),("NFLX","奈飞","NFLX"),("JPM","摩根大通","JPM"),
-        ("V","Visa","V"),("MA","万事达","MA"),("UNH","联合健康","UNH"),
+        # 科技
+        ("AAPL","苹果","AAPL"),("MSFT","微软","MSFT"),("NVDA","英伟达","NVDA"),
+        ("GOOGL","谷歌A","GOOGL"),("META","Meta","META"),("AMZN","亚马逊","AMZN"),
+        ("TSLA","特斯拉","TSLA"),("AVGO","博通","AVGO"),("ORCL","甲骨文","ORCL"),
+        ("AMD","AMD","AMD"),("INTC","英特尔","INTC"),("QCOM","高通","QCOM"),
+        ("AMAT","应用材料","AMAT"),("MU","美光科技","MU"),("LRCX","泛林集团","LRCX"),
+        ("KLAC","科磊","KLAC"),("MRVL","迈威科技","MRVL"),("TXN","德州仪器","TXN"),
+        ("ADI","亚德诺","ADI"),("NXPI","恩智浦","NXPI"),
+        # 软件/云
+        ("CRM","Salesforce","CRM"),("NOW","ServiceNow","NOW"),("ADBE","Adobe","ADBE"),
+        ("INTU","Intuit","INTU"),("PLTR","Palantir","PLTR"),("SNOW","Snowflake","SNOW"),
+        ("DDOG","Datadog","DDOG"),("CRWD","CrowdStrike","CRWD"),("ZS","Zscaler","ZS"),
+        ("PANW","Palo Alto","PANW"),("NET","Cloudflare","NET"),("MDB","MongoDB","MDB"),
+        ("GTLB","GitLab","GTLB"),("PATH","UiPath","PATH"),("HUBS","HubSpot","HUBS"),
+        # 消费/零售
+        ("NFLX","奈飞","NFLX"),("DIS","迪士尼","DIS"),("COST","Costco","COST"),
+        ("WMT","沃尔玛","WMT"),("TGT","塔吉特","TGT"),("AMGN","安进","AMGN"),
+        ("NKE","耐克","NKE"),("SBUX","星巴克","SBUX"),("MCD","麦当劳","MCD"),
+        # 金融
+        ("JPM","摩根大通","JPM"),("BAC","美国银行","BAC"),("GS","高盛","GS"),
+        ("MS","摩根士丹利","MS"),("BLK","贝莱德","BLK"),("V","Visa","V"),
+        ("MA","万事达","MA"),("AXP","美国运通","AXP"),("SPGI","标普全球","SPGI"),
+        ("ICE","洲际交易所","ICE"),
+        # 医疗
+        ("UNH","联合健康","UNH"),("LLY","礼来","LLY"),("JNJ","强生","JNJ"),
+        ("ABBV","艾伯维","ABBV"),("MRK","默克","MRK"),("PFE","辉瑞","PFE"),
+        ("TMO","赛默飞","TMO"),("DHR","丹纳赫","DHR"),("ISRG","直觉手术","ISRG"),
+        ("REGN","再生元","REGN"),
+        # 工业/能源
+        ("CAT","卡特彼勒","CAT"),("DE","迪尔","DE"),("HON","霍尼韦尔","HON"),
+        ("GE","通用电气","GE"),("RTX","雷神技术","RTX"),("LMT","洛克希德","LMT"),
+        ("XOM","埃克森美孚","XOM"),("CVX","雪佛龙","CVX"),("COP","康菲石油","COP"),
+        ("NEE","NextEra Energy","NEE"),
+        # 中概
         ("BABA","阿里巴巴","BABA"),("BIDU","百度","BIDU"),("PDD","拼多多","PDD"),
-        ("JD","京东","JD"),("NIO","蔚来","NIO"),("PLTR","Palantir","PLTR"),
-        ("CRWD","CrowdStrike","CRWD"),("DDOG","Datadog","DDOG"),
+        ("JD","京东","JD"),("NIO","蔚来","NIO"),("XPEV","小鹏","XPEV"),
+        ("LI","理想","LI"),("BILI","哔哩哔哩","BILI"),("IQ","爱奇艺","IQ"),
+        ("TME","腾讯音乐","TME"),("VIPS","唯品会","VIPS"),("TCOM","携程","TCOM"),
+        # ETF/指数
+        ("SPY","标普500ETF","SPY"),("QQQ","纳斯达克ETF","QQQ"),
+        ("IWM","罗素2000ETF","IWM"),("XLK","科技ETF","XLK"),
+        ("SOXX","半导体ETF","SOXX"),("ARKK","ARK创新ETF","ARKK"),
     ]
 
 
 def _fallback_hk():
+    """港股备用池 ~80 只（恒指成分 + 科技/金融/消费）"""
     return [
-        ("0700","腾讯控股","700.HK"),("0941","中国移动","941.HK"),
-        ("1299","友邦保险","1299.HK"),("0005","汇丰控股","5.HK"),
-        ("0388","香港交易所","388.HK"),("1398","工商银行","1398.HK"),
-        ("3690","美团","3690.HK"),("9988","阿里巴巴","9988.HK"),
-        ("0883","中国海洋石油","883.HK"),("1810","小米集团","1810.HK"),
+        # 科技/互联网
+        ("0700","腾讯控股","0700.HK"),("9988","阿里巴巴","9988.HK"),
+        ("1810","小米集团","1810.HK"),("3690","美团","3690.HK"),
+        ("9618","京东集团","9618.HK"),("9999","网易","9999.HK"),
+        ("9961","携程集团","9961.HK"),("0268","金蝶国际","0268.HK"),
+        ("6618","京东健康","6618.HK"),("2382","舜宇光学","2382.HK"),
+        # 金融
+        ("0005","汇丰控股","0005.HK"),("0388","香港交易所","0388.HK"),
+        ("1299","友邦保险","1299.HK"),("2318","中国平安","2318.HK"),
+        ("1398","工商银行","1398.HK"),("3988","中国银行","3988.HK"),
+        ("0939","建设银行","0939.HK"),("1288","农业银行","1288.HK"),
+        ("2628","中国人寿","2628.HK"),("6881","中国银河","6881.HK"),
+        # 电信/基础设施
+        ("0941","中国移动","0941.HK"),("0728","中国电信","0728.HK"),
+        ("0762","中国联通","0762.HK"),("0002","中电控股","0002.HK"),
+        ("0003","香港中华煤气","0003.HK"),("0006","电能实业","0006.HK"),
+        # 消费
+        ("0291","华润啤酒","0291.HK"),("9633","农夫山泉","9633.HK"),
+        ("0168","青岛啤酒","0168.HK"),("2319","蒙牛乳业","2319.HK"),
+        ("6862","海底捞","6862.HK"),("0020","商汤科技","0020.HK"),
+        # 医疗
+        ("2269","药明生物","2269.HK"),("1177","中国生物制药","1177.HK"),
+        ("1093","石药集团","1093.HK"),("2196","上海医药","2196.HK"),
+        ("1801","信达生物","1801.HK"),("2359","药明康德","2359.HK"),
+        # 地产/工业
+        ("0016","新鸿基地产","0016.HK"),("0823","领展房产基金","0823.HK"),
+        ("0992","联想集团","0992.HK"),("1211","比亚迪","1211.HK"),
+        ("0883","中国海洋石油","0883.HK"),("0857","中国石油","0857.HK"),
+        ("2899","紫金矿业","2899.HK"),("0101","恒隆地产","0101.HK"),
+        # ETF
+        ("2800","盈富基金","2800.HK"),("3033","南方恒生科技","3033.HK"),
     ]
 
 
 def _fallback_cn():
+    """A股备用池 ~80 只（沪深300核心成分）"""
     return [
+        # 白酒/消费
         ("600519","贵州茅台","600519.SS"),("000858","五粮液","000858.SZ"),
+        ("000596","古井贡酒","000596.SZ"),("002304","洋河股份","002304.SZ"),
+        ("603369","今世缘","603369.SS"),("600779","水井坊","600779.SS"),
+        ("601088","中国神华","601088.SS"),("600809","山西汾酒","600809.SS"),
+        # 金融
         ("601318","中国平安","601318.SS"),("600036","招商银行","600036.SS"),
-        ("000001","平安银行","000001.SZ"),("300750","宁德时代","300750.SZ"),
-        ("601888","中国中免","601888.SS"),("002594","比亚迪","002594.SZ"),
+        ("601166","兴业银行","601166.SS"),("000001","平安银行","000001.SZ"),
+        ("600016","民生银行","600016.SS"),("601328","交通银行","601328.SS"),
+        ("601288","农业银行","601288.SS"),("600000","浦发银行","600000.SS"),
+        ("000002","万科A","000002.SZ"),("601601","中国太保","601601.SS"),
+        # 新能源/科技
+        ("300750","宁德时代","300750.SZ"),("002594","比亚迪","002594.SZ"),
+        ("601127","小康股份","601127.SS"),("002475","立讯精密","002475.SZ"),
+        ("600104","上汽集团","600104.SS"),("000625","长安汽车","000625.SZ"),
+        ("601238","广汽集团","601238.SS"),("300274","阳光电源","300274.SZ"),
+        ("601012","隆基绿能","601012.SS"),("300059","东方财富","300059.SZ"),
+        # 医药
+        ("600276","恒瑞医药","600276.SS"),("000538","云南白药","000538.SZ"),
+        ("600085","同仁堂","600085.SS"),("002007","华兰生物","002007.SZ"),
+        ("300015","爱尔眼科","300015.SZ"),("000661","长春高新","000661.SZ"),
+        ("603259","药明康德","603259.SS"),("600196","复星医药","600196.SS"),
+        # 工业/原材料
+        ("601899","紫金矿业","601899.SS"),("600019","宝钢股份","600019.SS"),
+        ("000333","美的集团","000333.SZ"),("000651","格力电器","000651.SZ"),
+        ("600900","长江电力","600900.SS"),("601766","中国中车","601766.SS"),
+        ("601088","中国神华","601088.SS"),("601857","中国石油","601857.SS"),
+        ("600028","中国石化","600028.SS"),("600048","保利发展","600048.SS"),
+        # 互联网/科技
+        ("002415","海康威视","002415.SZ"),("002230","科大讯飞","002230.SZ"),
+        ("300760","迈瑞医疗","300760.SZ"),("688981","中芯国际","688981.SS"),
+        ("000063","中兴通讯","000063.SZ"),("002049","紫光股份","002049.SZ"),
+        # ETF
+        ("510300","沪深300ETF","510300.SS"),("510500","中证500ETF","510500.SS"),
     ]
 
 
