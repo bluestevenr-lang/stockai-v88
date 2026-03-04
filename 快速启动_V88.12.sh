@@ -2,9 +2,9 @@
 # ================================================================
 # AI 皇冠双核 V88 - 守护启动脚本
 # 功能：
-#   1. 自动检测并安装依赖
+#   1. 自动检测并安装依赖（失败静默跳过，不影响启动）
 #   2. 守护进程模式：进程意外退出后 5 秒自动重拉
-#   3. app 内部每 24 小时触发 os.execv 重启，本脚本自动接管
+#   3. app 内部每天凌晨零点自动清零所有缓存并重载
 # ================================================================
 
 set -e
@@ -13,22 +13,17 @@ cd "$(dirname "$0")"
 echo "🚀 AI皇冠双核 V88 - 守护模式启动"
 echo "================================================================"
 
-# ── 依赖检查 ─────────────────────────────────────────────────────
-python3 -c "import curl_cffi; v=getattr(curl_cffi,'__version__','0'); assert tuple(int(x) for x in v.split('.')[:2]) >= (0,7), f'版本过低 {v}'" 2>/dev/null || {
-    echo "📦 安装/升级 curl_cffi..."
-    pip3 install "curl_cffi>=0.7.0" -q
+# ── 依赖检查（静默安装，pip 失败不影响启动）─────────────────────
+_install_if_missing() {
+    local pkg=$1 install_spec=${2:-$1}
+    python3 -c "import $pkg" 2>/dev/null || {
+        echo "📦 安装 $install_spec..."
+        pip3 install "$install_spec" -q 2>/dev/null || echo "⚠️  $install_spec 安装失败，已跳过（不影响主功能）"
+    }
 }
-
-python3 -c "import flask" 2>/dev/null || {
-    echo "📦 安装 flask..."
-    pip3 install flask -q
-}
-
-python3 -c "import openpyxl" 2>/dev/null || {
-    echo "📦 安装 openpyxl..."
-    pip3 install openpyxl -q
-}
-
+_install_if_missing curl_cffi "curl_cffi>=0.7.0"
+_install_if_missing flask flask
+_install_if_missing openpyxl openpyxl
 echo "✅ 依赖检查完成"
 echo ""
 

@@ -115,36 +115,78 @@ def _safe_print(*args, **kwargs):
         logging.debug(f"_safe_print: {args} {kwargs}")
 
 
-# ── 24 小时自动重启 ───────────────────────────────────────────────
-# 模块级时间戳：Python 进程首次加载本模块时记录，进程重启后重置
-_APP_PROCESS_START_TIME: float = time.time()
-_APP_AUTO_RESTART_SEC: int = 24 * 3600  # 24 小时
+# ── 每日凌晨零点自动清零缓存 ────────────────────────────────────
+# 用文件记录"今天是否已清过"，网页版和手机端使用同一逻辑。
+# 每次页面渲染时检查日期，零点后首次访问触发清零。
+from datetime import date as _date_cls
+from pathlib import Path as _Path_cls
+
+_DAILY_CLEAR_FLAG: _Path_cls = _Path_cls(".cache_brief/_daily_clear_date.txt")
 
 
-def _check_auto_restart() -> None:
+def _check_daily_cache_clear() -> None:
     """
-    在每次页面渲染时调用。
-    运行超过 24 小时后强制重启进程（本地）或清除全部缓存重跑（云端）。
-    这确保 @st.cache_resource 对象、文件缓存、第三方 session 都能定期刷新。
+    每天凌晨零点后，首次页面渲染时自动清零所有缓存。
+    清零内容：
+      - Streamlit st.cache_resource / st.cache_data（内存缓存）
+      - .cache_brief/ 内的简报、宏观风险、扫描等文件缓存
+      - scan_results.json
+    清零后调用 st.rerun()，让所有数据重新拉取。
     """
-    uptime = time.time() - _APP_PROCESS_START_TIME
-    if uptime < _APP_AUTO_RESTART_SEC:
-        return  # 未到 24 小时，直接返回
+    today_str = str(_date_cls.today())   # e.g. "2026-03-05"
 
-    _safe_print(f"⏰ 进程运行 {uptime/3600:.1f}h，触发 24h 自动重启...")
+    # 读取上次清零日期
     try:
-        # 先清除 Streamlit 所有缓存
+        last_clear = _DAILY_CLEAR_FLAG.read_text(encoding="utf-8").strip()
+    except Exception:
+        last_clear = ""
+
+    if last_clear == today_str:
+        return   # 今天已清过，跳过
+
+    _safe_print(f"🌙 [{today_str}] 每日零点缓存自动清零...")
+
+    # 1. Streamlit 内置内存缓存
+    try:
         st.cache_resource.clear()
         st.cache_data.clear()
-        # 尝试替换当前进程（本地环境）：os.execv 不创建子进程，直接替换自身
-        import os as _os, sys as _sys
-        _os.execv(_sys.executable, [_sys.executable] + _sys.argv)
-    except Exception as _e:
-        # Cloud / 受限环境：os.execv 不可用，降级为清缓存 + rerun
-        _safe_print(f"⚠️ os.execv 不可用 ({_e})，降级清缓存重跑")
-        st.cache_resource.clear()
-        st.cache_data.clear()
-        st.rerun()
+    except Exception:
+        pass
+
+    # 2. 文件缓存目录（brief、macro_risk、scan_results 等）
+    try:
+        import shutil as _shutil
+        _brief_dir = _Path_cls(".cache_brief")
+        if _brief_dir.exists():
+            for _f in _brief_dir.iterdir():
+                if _f.name != "_daily_clear_date.txt":   # 保留标记文件本身
+                    try:
+                        if _f.is_file():
+                            _f.unlink()
+                        elif _f.is_dir():
+                            _shutil.rmtree(_f)
+                    except Exception:
+                        pass
+    except Exception:
+        pass
+
+    # 3. scan_results.json（让扫描结果次日重新生成）
+    try:
+        _scan_f = _Path_cls("scan_results.json")
+        if _scan_f.exists():
+            _scan_f.unlink()
+    except Exception:
+        pass
+
+    # 4. 写入今天日期，防止本次 rerun 后再次触发
+    try:
+        _DAILY_CLEAR_FLAG.parent.mkdir(parents=True, exist_ok=True)
+        _DAILY_CLEAR_FLAG.write_text(today_str, encoding="utf-8")
+    except Exception:
+        pass
+
+    _safe_print(f"✅ [{today_str}] 缓存清零完成，即将重新加载...")
+    st.rerun()
 
 
 def _safe_str_for_dom(val):
@@ -1578,8 +1620,8 @@ logging.info("  - 并发线程池: 最大{}线程".format(Config.MAX_WORKERS))
 
 st.set_page_config(layout="wide", page_title="AI 皇冠双核", page_icon="👑", initial_sidebar_state="collapsed")
 
-# ── 24 小时自动重启检查（每次页面渲染时触发）──────────────────
-_check_auto_restart()
+# ── 每日凌晨零点缓存清零（每次页面渲染时检查日期）──────────────
+_check_daily_cache_clear()
 
 # ═══════════════════════════════════════════════════════════════
 # 【V89.5 修复】提前定义MY_GEMINI_KEY - 避免在全球市场概览中未定义错误
