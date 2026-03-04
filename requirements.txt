@@ -2,8 +2,9 @@ streamlit>=1.35.0
 pandas>=2.0.0
 numpy>=1.24.0
 plotly>=5.18.0
-yfinance>=0.2.37
-curl_cffi>=0.6.0
+# Streamlit Cloud 上 curl_cffi 有 SSL/TLS 兼容性问题，使用 yfinance 0.2.36 避免
+# 本地如需更好 Yahoo 兼容可单独安装: pip install yfinance>=0.2.37 curl_cffi>=0.6.0
+yfinance==0.2.36
 requests>=2.31.0
 google-generativeai>=0.7.0
 urllib3>=2.0.0
