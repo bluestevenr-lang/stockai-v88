@@ -10040,6 +10040,113 @@ def _scan_force_clear():
             pass
 
 
+# ── 宏观风险评估（Gemini）────────────────────────────────────────
+_MACRO_RISK_CACHE_FILE = _BRIEF_CACHE_DIR / "macro_risk_cache.json"
+_MACRO_RISK_TTL        = 6 * 3600   # 6小时刷新一次
+
+def _load_macro_risk_cache() -> dict | None:
+    try:
+        if _MACRO_RISK_CACHE_FILE.exists():
+            data = json.loads(_MACRO_RISK_CACHE_FILE.read_text(encoding="utf-8"))
+            if time.time() - data.get("ts", 0) < _MACRO_RISK_TTL:
+                return data
+    except Exception:
+        pass
+    return None
+
+
+def _save_macro_risk_cache(data: dict):
+    try:
+        _BRIEF_CACHE_DIR.mkdir(exist_ok=True)
+        _MACRO_RISK_CACHE_FILE.write_text(
+            json.dumps({**data, "ts": time.time()}, ensure_ascii=False),
+            encoding="utf-8"
+        )
+    except Exception:
+        pass
+
+
+def _fetch_macro_risk() -> dict:
+    """
+    调用 Gemini 评估当前全球宏观 / 地缘风险，返回结构化结果：
+    {
+      "risk_level": 1-5,          # 1=低风险, 5=极高风险
+      "risk_label": "中等风险",
+      "risk_color": "#f59e0b",
+      "summary": "两句话总结",
+      "key_risks": ["风险1", ...], # 最多4条
+      "hot_sectors": ["能源", ...],# 受益板块
+      "warn_sectors": ["科技", ...],# 受压板块
+      "bias": "防御",              # 进攻 / 均衡 / 防御
+      "bias_reason": "原因一句话",
+    }
+    """
+    cached = _load_macro_risk_cache()
+    if cached:
+        return cached
+
+    if not HAS_GEMINI or not MY_GEMINI_KEY:
+        return _macro_risk_fallback()
+
+    today = datetime.now().strftime("%Y年%m月%d日")
+    prompt = f"""今天是 {today}。请以全球顶级宏观对冲基金分析师的视角，综合评估当前的宏观与地缘政治风险对股票市场的影响。
+
+分析维度必须包括（但不限于）：
+1. 全球地缘冲突（俄乌、中东、台海、南海、全球贸易战）
+2. 全球经济周期（美联储利率、通胀、衰退预期）
+3. 中国经济（政策、房地产、内需、汇率）
+4. 大宗商品与能源价格（石油、黄金、铜）
+5. 美元指数与全球资金流向
+6. 近期重大政治事件（选举、制裁、关税）
+
+请用以下 JSON 格式输出（不要有任何代码块标记，直接输出 JSON）：
+{{
+  "risk_level": <1到5的整数，1=低风险极度乐观,5=极高风险需要规避>,
+  "risk_label": "<10字以内的风险描述>",
+  "summary": "<用两句话总结当前最关键的宏观背景，影响投资者最重要的信息>",
+  "key_risks": ["<风险1>", "<风险2>", "<风险3>", "<风险4>"],
+  "hot_sectors": ["<受益板块1>", "<受益板块2>", "<受益板块3>"],
+  "warn_sectors": ["<受压板块1>", "<受压板块2>", "<受压板块3>"],
+  "bias": "<进攻|均衡|防御 三选一>",
+  "bias_reason": "<一句话说明当前偏向的原因>"
+}}"""
+
+    try:
+        model = genai.GenerativeModel(GEMINI_MODEL_NAME)
+        resp  = model.generate_content(
+            prompt,
+            generation_config={"temperature": 0.3, "max_output_tokens": 600},
+        )
+        raw = resp.text.strip()
+        # 清理可能的 markdown 代码块
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+        data = json.loads(raw.strip())
+        # 根据 risk_level 设定颜色
+        _colors = {1: "#10b981", 2: "#22c55e", 3: "#f59e0b", 4: "#f97316", 5: "#ef4444"}
+        data["risk_color"] = _colors.get(int(data.get("risk_level", 3)), "#6b7280")
+        _save_macro_risk_cache(data)
+        return data
+    except Exception as e:
+        return _macro_risk_fallback()
+
+
+def _macro_risk_fallback() -> dict:
+    return {
+        "risk_level": 3,
+        "risk_label": "风险评估不可用",
+        "risk_color": "#6b7280",
+        "summary": "Gemini API 未配置或请求失败，无法获取宏观风险评估。",
+        "key_risks": [],
+        "hot_sectors": [],
+        "warn_sectors": [],
+        "bias": "均衡",
+        "bias_reason": "无法评估，建议保持均衡仓位",
+    }
+
+
 # ── 钉钉推送 ──────────────────────────────────────────────────────
 def _dingtalk_send(text: str) -> tuple[bool, str]:
     """发送文本到钉钉机器人（支持加签）"""
@@ -10191,12 +10298,76 @@ with tab_quant:
                 st.toast("🔄 已触发重新扫描", icon="🔄")
                 st.rerun()
 
+        # ── 宏观风险面板（Gemini 实时评估）──────────────────────────
+        _mr = _fetch_macro_risk()
+        _rl  = _mr.get("risk_level", 3)
+        _rc  = _mr.get("risk_color", "#6b7280")
+        _rlb = _mr.get("risk_label", "")
+        _bias= _mr.get("bias", "均衡")
+        _bias_icons = {"进攻": "⚔️", "均衡": "⚖️", "防御": "🛡️"}
+        _bias_icon  = _bias_icons.get(_bias, "⚖️")
+        _risk_bar   = "█" * _rl + "░" * (5 - _rl)
+
+        with st.expander(
+            f"🌍 宏观风险评估  {_risk_bar}  等级 {_rl}/5 · {_rlb}  |  {_bias_icon} 建议：{_bias}",
+            expanded=(_rl >= 3)   # 风险>=3 默认展开
+        ):
+            # 摘要
+            _summary = _mr.get("summary", "")
+            if _summary:
+                st.markdown(
+                    f'<div style="background:{_rc}18;border-left:4px solid {_rc};'
+                    f'padding:10px 14px;border-radius:6px;font-size:13px;'
+                    f'color:#1e293b;margin-bottom:10px;">'
+                    f'<b>📋 宏观背景</b><br>{_summary}</div>',
+                    unsafe_allow_html=True
+                )
+            # 三列：关键风险 / 受益板块 / 受压板块
+            _mc1, _mc2, _mc3 = st.columns(3)
+            with _mc1:
+                st.markdown("**⚠️ 关键风险**")
+                for r in _mr.get("key_risks", []):
+                    st.markdown(f"<small>• {r}</small>", unsafe_allow_html=True)
+            with _mc2:
+                st.markdown("**🚀 受益板块**")
+                for s in _mr.get("hot_sectors", []):
+                    st.markdown(f"<small style='color:#10b981'>▲ {s}</small>", unsafe_allow_html=True)
+            with _mc3:
+                st.markdown("**🔻 受压板块**")
+                for s in _mr.get("warn_sectors", []):
+                    st.markdown(f"<small style='color:#ef4444'>▼ {s}</small>", unsafe_allow_html=True)
+            # 操作建议
+            _br = _mr.get("bias_reason", "")
+            if _br:
+                _bias_bg = {"进攻": "#10b981", "均衡": "#3b82f6", "防御": "#ef4444"}
+                _bbg = _bias_bg.get(_bias, "#6b7280")
+                st.markdown(
+                    f'<div style="background:{_bbg};color:white;padding:8px 14px;'
+                    f'border-radius:6px;font-size:12px;margin-top:8px;">'
+                    f'{_bias_icon} <b>操作建议 · {_bias}</b>：{_br}</div>',
+                    unsafe_allow_html=True
+                )
+            st.caption(f"⏱ 宏观评估每6小时刷新 · 由 Gemini AI 生成 · 仅供参考，不构成投资建议")
+
+        # ── 4-Tab 扫描结果 ────────────────────────────────────────
+        # 把受压板块传给渲染函数，用于标注高风险个股
+        _warn_sectors_set = set(_mr.get("warn_sectors", []))
+
         _t1, _t2, _t3, _t4 = st.tabs(
             ["🔥 趋势强势", "🎯 蓄势潜伏", "🎯 拐点Top10（赔率）", "🚀 启动Top10（胜率）"]
         )
 
+        def _sector_warn_tag(industry: str) -> str:
+            """如果个股行业在宏观受压板块中，返回警示标记"""
+            if not industry or not _warn_sectors_set:
+                return ""
+            for ws in _warn_sectors_set:
+                if ws in industry or industry in ws:
+                    return " ⚠️"
+            return ""
+
         def _render_market_col(col, items, mkt_label, key_prefix):
-            """渲染单市场结果列"""
+            """渲染单市场结果列（含宏观风险行业警示）"""
             with col:
                 bm = _res.get(mkt_label[-2:] if mkt_label.endswith(("美股","港股","A股")) else mkt_label, {})
                 st.markdown(
@@ -10206,7 +10377,15 @@ with tab_quant:
                 if not items:
                     st.caption("暂无符合条件标的")
                     return
-                df_show = pd.DataFrame(items)
+                # 在"信号"列追加宏观行业警示标
+                items_display = []
+                for it in items:
+                    it2 = dict(it)
+                    tag = _sector_warn_tag(it2.get("行业", ""))
+                    if tag and "信号" in it2:
+                        it2["信号"] = str(it2["信号"]) + tag
+                    items_display.append(it2)
+                df_show = pd.DataFrame(items_display)
                 show_cols = [c for c in ["股票","代码","得分","形态","信号"] if c in df_show.columns]
                 sel = st.dataframe(
                     df_show[show_cols] if show_cols else df_show,
