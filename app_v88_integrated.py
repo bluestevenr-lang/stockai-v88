@@ -9651,6 +9651,70 @@ _gist_last_sync_ts: float = 0.0
 _gist_last_sync_ok: bool  = False
 
 
+def _ssl_http_get(url: str, headers: dict | None = None, timeout: int = 12) -> bytes:
+    """
+    带 macOS SSL fallback 的 GET 请求。
+    优先用 requests（SSL 更稳定），其次 urllib + ssl fallback。
+    """
+    hdrs = headers or {}
+    try:
+        import requests as _req
+        resp = _req.get(url, headers=hdrs, timeout=timeout, verify=True)
+        resp.raise_for_status()
+        return resp.content
+    except ImportError:
+        pass
+    except Exception:
+        pass
+    # urllib fallback（附带 macOS SSL 自动修复）
+    import urllib.request as _ur
+    import ssl as _ssl
+    try:
+        ctx = _ssl.create_default_context()
+        req = _ur.Request(url, headers=hdrs)
+        with _ur.urlopen(req, timeout=timeout, context=ctx) as r:
+            return r.read()
+    except _ssl.SSLError:
+        # macOS 本地证书缺失时跳过验证（开发环境兜底）
+        ctx = _ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode    = _ssl.CERT_NONE
+        req = _ur.Request(url, headers=hdrs)
+        with _ur.urlopen(req, timeout=timeout, context=ctx) as r:
+            return r.read()
+
+
+def _ssl_http_post(url: str, payload: bytes,
+                   headers: dict | None = None, timeout: int = 10) -> bytes:
+    """
+    带 macOS SSL fallback 的 POST 请求。
+    """
+    hdrs = {"Content-Type": "application/json", **(headers or {})}
+    try:
+        import requests as _req
+        resp = _req.post(url, data=payload, headers=hdrs, timeout=timeout, verify=True)
+        resp.raise_for_status()
+        return resp.content
+    except ImportError:
+        pass
+    except Exception:
+        pass
+    import urllib.request as _ur
+    import ssl as _ssl
+    try:
+        ctx = _ssl.create_default_context()
+        req = _ur.Request(url, data=payload, headers=hdrs)
+        with _ur.urlopen(req, timeout=timeout, context=ctx) as r:
+            return r.read()
+    except _ssl.SSLError:
+        ctx = _ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode    = _ssl.CERT_NONE
+        req = _ur.Request(url, data=payload, headers=hdrs)
+        with _ur.urlopen(req, timeout=timeout, context=ctx) as r:
+            return r.read()
+
+
 def _scan_fetch_from_gist() -> dict | None:
     """
     用 GitHub API 拉取 Gist 内容（只需 GIST_ID，不需用户名）。
@@ -9670,7 +9734,6 @@ def _scan_fetch_from_gist() -> dict | None:
         st.secrets.get("GIST_TOKEN", "") if hasattr(st, "secrets") else ""
     ) or os.environ.get("GIST_TOKEN", "")
     try:
-        import urllib.request as _ur
         api_url = f"https://api.github.com/gists/{_GIST_ID}"
         headers = {
             "Accept":     "application/vnd.github+json",
@@ -9678,9 +9741,8 @@ def _scan_fetch_from_gist() -> dict | None:
         }
         if _gist_token:
             headers["Authorization"] = f"Bearer {_gist_token}"
-        req = _ur.Request(api_url, headers=headers)
-        with _ur.urlopen(req, timeout=12) as resp:
-            gist_json = json.loads(resp.read().decode("utf-8"))
+        raw = _ssl_http_get(api_url, headers=headers, timeout=12)
+        gist_json = json.loads(raw.decode("utf-8"))
         # 从 Gist API 响应里取文件内容
         files = gist_json.get("files", {})
         if not files:
@@ -9843,31 +9905,28 @@ def _dingtalk_send(text: str) -> tuple[bool, str]:
     if not webhook:
         return False, "未配置 DINGTALK_WEBHOOK"
     try:
-        import urllib.request as _ur
-        import urllib.parse  as _up
+        import urllib.parse as _up
         url = webhook
         if secret:
             import hmac as _hmac, hashlib as _hs, base64 as _b64
-            ts    = str(round(time.time() * 1000))
+            ts       = str(round(time.time() * 1000))
             sign_str = f"{ts}\n{secret}"
-            sig   = _b64.b64encode(
+            sig      = _b64.b64encode(
                 _hmac.new(secret.encode(), sign_str.encode(), _hs.sha256).digest()
             ).decode()
-            url   = f"{webhook}&timestamp={ts}&sign={_up.quote_plus(sig)}"
+            url = f"{webhook}&timestamp={ts}&sign={_up.quote_plus(sig)}"
         payload = json.dumps({
             "msgtype": "text",
             "text":    {"content": text},
             "at":      {"isAtAll": False},
         }).encode("utf-8")
-        req = _ur.Request(url, data=payload,
-                          headers={"Content-Type": "application/json"})
-        with _ur.urlopen(req, timeout=10) as resp:
-            result = json.loads(resp.read().decode("utf-8"))
+        raw    = _ssl_http_post(url, payload=payload, timeout=10)
+        result = json.loads(raw.decode("utf-8"))
         if result.get("errcode", -1) == 0:
             return True, "ok"
         return False, result.get("errmsg", "unknown")
     except Exception as e:
-        return False, str(e)[:100]
+        return False, str(e)[:120]
 
 
 def _dingtalk_push_top30(res: dict | None) -> tuple[bool, str]:
