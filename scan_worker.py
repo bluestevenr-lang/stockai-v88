@@ -209,9 +209,9 @@ def _fallback_us():
         ("PANW","Palo Alto","PANW"),("NET","Cloudflare","NET"),("MDB","MongoDB","MDB"),
         ("HUBS","HubSpot","HUBS"),("TEAM","Atlassian","TEAM"),("WDAY","Workday","WDAY"),
         ("VEEV","Veeva","VEEV"),("GTLB","GitLab","GTLB"),("PATH","UiPath","PATH"),
-        ("AI","C3.ai","AI"),("SMAR","Smartsheet","SMAR"),("ZI","ZoomInfo","ZI"),
-        ("BILL","Bill.com","BILL"),("DOCN","DigitalOcean","DOCN"),("APP","AppLovin","APP"),
-        ("TTD","Trade Desk","TTD"),("RBLX","Roblox","RBLX"),("U","Unity","U"),
+        ("AI","C3.ai","AI"),("BILL","Bill.com","BILL"),("DOCN","DigitalOcean","DOCN"),
+        ("APP","AppLovin","APP"),("TTD","Trade Desk","TTD"),("RBLX","Roblox","RBLX"),
+        ("U","Unity","U"),("GTLB","GitLab","GTLB"),("TOST","Toast","TOST"),
         # ── 消费/零售/媒体 ──
         ("NFLX","奈飞","NFLX"),("DIS","迪士尼","DIS"),("COST","Costco","COST"),
         ("WMT","沃尔玛","WMT"),("TGT","塔吉特","TGT"),("NKE","耐克","NKE"),
@@ -222,6 +222,7 @@ def _fallback_us():
         ("ABNB","Airbnb","ABNB"),("BKNG","Booking","BKNG"),("EXPE","Expedia","EXPE"),
         ("DASH","DoorDash","DASH"),("SHOP","Shopify","SHOP"),("ETSY","Etsy","ETSY"),
         ("EBAY","eBay","EBAY"),("ZM","Zoom","ZM"),("PTON","Peloton","PTON"),
+        ("WBD","华纳兄弟","WBD"),("PARA","派拉蒙","PARAA"),
         # ── 金融 ──
         ("JPM","摩根大通","JPM"),("BAC","美国银行","BAC"),("GS","高盛","GS"),
         ("MS","摩根士丹利","MS"),("BLK","贝莱德","BLK"),("V","Visa","V"),
@@ -229,7 +230,7 @@ def _fallback_us():
         ("ICE","洲际交易所","ICE"),("CME","芝商所","CME"),("C","花旗","C"),
         ("WFC","富国银行","WFC"),("USB","美合银行","USB"),("PNC","PNC金融","PNC"),
         ("SCHW","嘉信理财","SCHW"),("COF","Capital One","COF"),("SYF","同步金融","SYF"),
-        ("PYPL","PayPal","PYPL"),("SQ","Block","SQ"),("COIN","Coinbase","COIN"),
+        ("PYPL","PayPal","PYPL"),("XYZ","Block","XYZ"),("COIN","Coinbase","COIN"),
         # ── 医疗健康 ──
         ("UNH","联合健康","UNH"),("LLY","礼来","LLY"),("JNJ","强生","JNJ"),
         ("ABBV","艾伯维","ABBV"),("MRK","默克","MRK"),("PFE","辉瑞","PFE"),
@@ -301,10 +302,10 @@ def _fallback_hk():
         ("0168","青岛啤酒","0168.HK"),("2319","蒙牛乳业","2319.HK"),
         ("6862","海底捞","6862.HK"),("0960","龙湖集团","0960.HK"),
         ("0322","康师傅控股","0322.HK"),("1929","周大福","1929.HK"),
-        ("0551","裕元集团","0551.HK"),("1230","雅士利","1230.HK"),
+        ("0551","裕元集团","0551.HK"),("0175","吉利汽车","0175.HK"),
         ("0027","银河娱乐","0027.HK"),("1128","永利澳门","1128.HK"),
         ("0880","澳博控股","0880.HK"),("1044","恒安国际","1044.HK"),
-        ("0494","利丰","0494.HK"),("2331","李宁","2331.HK"),
+        ("2331","李宁","2331.HK"),("0288","万洲国际","0288.HK"),
         ("6110","滔搏","6110.HK"),("9896","名创优品","9896.HK"),
         # ── 医疗 ──
         ("2269","药明生物","2269.HK"),("1177","中国生物制药","1177.HK"),
@@ -355,7 +356,7 @@ def _fallback_cn():
         ("601288","农业银行","601288.SS"),("600000","浦发银行","600000.SS"),
         ("601601","中国太保","601601.SS"),("600030","中信证券","600030.SS"),
         ("601688","华泰证券","601688.SS"),("000776","广发证券","000776.SZ"),
-        ("601198","东兴证券","601198.SS"),("600837","海通证券","600837.SS"),
+        ("601198","东兴证券","601198.SS"),("601995","中金公司","601995.SS"),
         ("000002","万科A","000002.SZ"),("600048","保利发展","600048.SS"),
         ("001979","招商蛇口","001979.SZ"),("600346","恒力石化","600346.SS"),
         # ── 新能源/汽车 ──
