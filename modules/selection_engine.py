@@ -439,9 +439,11 @@ def _build_typed_pool_with_metrics(
     """按 term 分类，返回 [(item, price, metrics), ...]，用于 quality_gate"""
     typed = []
     other = []
+    no_metrics = []  # 数据获取失败时保留标的，避免候选池为空（港股/A股 yfinance 失败时）
     for i, item in enumerate(subpool):
         m = metrics_list[i] if i < len(metrics_list) else None
         if not m:
+            no_metrics.append((item, 0.0, {}))
             continue
         t = _classify_term(m)
         price = m.get("close", 0.0)
@@ -452,6 +454,9 @@ def _build_typed_pool_with_metrics(
             other.append(entry)
     while len(typed) < min_size and other:
         typed.append(other.pop(0))
+    # 数据获取失败时，用 no_metrics 凑足 min_size，确保日报有港股/A股候选
+    while len(typed) < min_size and no_metrics:
+        typed.append(no_metrics.pop(0))
     return typed[:max_size]
 
 

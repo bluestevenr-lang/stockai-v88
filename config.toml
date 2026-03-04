@@ -17,7 +17,7 @@ scan_ttl    = 900    # 扫描结果缓存（秒），15分钟
 
 [data]
 retry_count     = 3   # 数据获取失败重试次数
-request_timeout = 8   # 单次请求超时（秒）
+request_timeout = 30  # 单次请求超时（秒）
 macro_period    = "1y" # 宏观数据拉取周期（需覆盖MA200）
 
 [concurrency]

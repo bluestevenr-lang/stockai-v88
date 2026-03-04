@@ -21,11 +21,16 @@ from flask import Flask, request, jsonify
 from datetime import datetime
 
 # ═══════════════════════════════════════════════════════════════
-# UTF-8 强制编码
+# UTF-8 强制编码（仅在支持 buffer 属性的流上重新包装，避免云端崩溃）
 # ═══════════════════════════════════════════════════════════════
 import io
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+try:
+    if hasattr(sys.stdout, 'buffer'):
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    if hasattr(sys.stderr, 'buffer'):
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+except Exception:
+    pass
 os.environ['PYTHONIOENCODING'] = 'utf-8'
 
 # ═══════════════════════════════════════════════════════════════
@@ -41,9 +46,11 @@ else:
 # ═══════════════════════════════════════════════════════════════
 # 配置
 # ═══════════════════════════════════════════════════════════════
-PORTFOLIO_FILE = "my_portfolio.xlsx"
+_BOT_DIR = os.path.dirname(os.path.abspath(__file__))
+PORTFOLIO_FILE = os.path.join(_BOT_DIR, "my_portfolio.xlsx")
 DINGTALK_WEBHOOK = os.environ.get('DINGTALK_WEBHOOK', '')
-DINGTALK_SECRET = os.environ.get('DINGTALK_SECRET', '')
+DINGTALK_SECRET  = os.environ.get('DINGTALK_SECRET', '')
+DINGTALK_KEYWORD = os.environ.get('DINGTALK_KEYWORD', '股票行情')
 
 app = Flask(__name__)
 
@@ -52,44 +59,45 @@ app = Flask(__name__)
 # ═══════════════════════════════════════════════════════════════
 def send_to_dingtalk(title, content):
     """发送markdown消息到钉钉"""
-    if not DINGTALK_WEBHOOK or not DINGTALK_SECRET:
-        print("⚠️  钉钉配置缺失")
+    if not DINGTALK_WEBHOOK:
+        print("⚠️  DINGTALK_WEBHOOK 未配置，跳过发送")
         return False
-    
+
     try:
-        # 生成签名
-        timestamp = str(round(time.time() * 1000))
-        secret_enc = DINGTALK_SECRET.encode('utf-8')
-        string_to_sign = f'{timestamp}\n{DINGTALK_SECRET}'
-        string_to_sign_enc = string_to_sign.encode('utf-8')
-        hmac_code = hmac.new(secret_enc, string_to_sign_enc, digestmod=hashlib.sha256).digest()
-        sign = urllib.parse.quote_plus(base64.b64encode(hmac_code).decode('ascii'))
-        
-        # 构建消息（包含关键词"日报"）
+        webhook_url = DINGTALK_WEBHOOK
+        # 仅在配置了签名密钥时才追加签名参数
+        if DINGTALK_SECRET:
+            timestamp = str(round(time.time() * 1000))
+            secret_enc = DINGTALK_SECRET.encode('utf-8')
+            string_to_sign = f'{timestamp}\n{DINGTALK_SECRET}'
+            hmac_code = hmac.new(secret_enc, string_to_sign.encode('utf-8'), digestmod=hashlib.sha256).digest()
+            sign = urllib.parse.quote_plus(base64.b64encode(hmac_code).decode('ascii'))
+            webhook_url = f"{DINGTALK_WEBHOOK}&timestamp={timestamp}&sign={sign}"
+
+        # 确保标题包含安全关键词，避免被 DingTalk 拦截
+        safe_title = title if DINGTALK_KEYWORD in title else f"{DINGTALK_KEYWORD} {title}"
         message = {
             "msgtype": "markdown",
             "markdown": {
-                "title": f"📢 {title}",
-                "text": f"### 📢 {title}\n\n{content}\n\n---\n*V88 AI日报系统*"
+                "title": f"📢 {safe_title}",
+                "text": f"### 📢 {safe_title}\n\n{content}\n\n---\n*V88 AI日报系统*"
             }
         }
-        
-        # 发送请求
-        webhook_url = f"{DINGTALK_WEBHOOK}&timestamp={timestamp}&sign={sign}"
+
         data = json.dumps(message, ensure_ascii=False).encode('utf-8')
         headers = {'Content-Type': 'application/json; charset=utf-8'}
         req = urllib.request.Request(webhook_url, data=data, headers=headers)
-        
+
         context = ssl._create_unverified_context()
-        with urllib.request.urlopen(req, timeout=10, context=context) as response:
+        with urllib.request.urlopen(req, timeout=15, context=context) as response:
             result = json.loads(response.read().decode('utf-8'))
             if result.get('errcode') == 0:
-                print(f"✅ 钉钉消息发送成功")
+                print("✅ 钉钉消息发送成功")
                 return True
             else:
                 print(f"❌ 钉钉返回错误: {result}")
                 return False
-                
+
     except Exception as e:
         print(f"❌ 钉钉发送异常: {e}")
         return False
@@ -229,9 +237,12 @@ def parse_command(text):
 def webhook():
     """接收钉钉消息"""
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True)
+        if not data:
+            print("⚠️  收到空或非 JSON 请求，已忽略")
+            return jsonify({"success": True})
         print(f"📥 收到钉钉消息: {json.dumps(data, ensure_ascii=False)}")
-        
+
         # 提取消息内容
         if 'text' in data and 'content' in data['text']:
             content = data['text']['content'].strip()

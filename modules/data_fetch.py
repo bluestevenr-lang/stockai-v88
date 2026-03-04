@@ -168,18 +168,32 @@ def fetch_from_stooq(symbol: str) -> Optional[pd.DataFrame]:
         if symbol.endswith('.HK') or symbol.endswith('.SS') or symbol.endswith('.SZ'):
             return None
         
-        # 转换格式：AAPL -> aapl.us
-        base_symbol = symbol.replace('.US', '').replace('.', '')
-        stooq_symbol = f"{base_symbol.lower()}.us"
+        # 转换格式：AAPL->aapl.us, ^VIX->vi.f(CBOE), DX-Y.NYB->^dxy
+        _STOOQ_MAP = {'DX-Y.NYB': '^dxy', 'CNY=X': 'cny.us', 'HKD=X': 'hkd.us', '^VIX': 'vi.f', '^TNX': 'tnx.us', 'SPY': 'spy.us', 'TLT': 'tlt.us', 'GLD': 'gld.us'}
+        if symbol in _STOOQ_MAP:
+            stooq_symbol = _STOOQ_MAP[symbol]
+        else:
+            base = symbol.replace('^', '').replace('.US', '').replace('.', '').replace('-', '').replace('.NYB', '').replace('=', '')
+            stooq_symbol = f"{base.lower()}.us"
         url = f"https://stooq.com/q/d/l/?s={stooq_symbol}&i=d"
         
-        # 读取CSV数据
+        # 读取CSV：优先 requests（Cloud 环境 pd.read_csv 直连常失败）
+        df = None
         try:
-            df = pd.read_csv(url, storage_options={'verify': False} if hasattr(pd, '__version__') and int(pd.__version__.split('.')[0]) >= 2 else {})
-        except:
-            df = pd.read_csv(url)
+            headers = {'User-Agent': 'Mozilla/5.0 (compatible; StockAI/1.0)'}
+            r = requests.get(url, timeout=15, verify=False, headers=headers)
+            if r.status_code == 200 and r.text.strip():
+                from io import StringIO
+                df = pd.read_csv(StringIO(r.text))
+        except Exception:
+            pass
+        if df is None or df.empty:
+            try:
+                df = pd.read_csv(url, storage_options={'verify': False} if hasattr(pd, '__version__') and int(pd.__version__.split('.')[0]) >= 2 else {})
+            except Exception:
+                df = pd.read_csv(url)
         
-        if df.empty or "Close" not in df.columns:
+        if df is None or df.empty or "Close" not in df.columns:
             return None
         
         # 处理日期索引
@@ -191,6 +205,55 @@ def fetch_from_stooq(symbol: str) -> Optional[pd.DataFrame]:
     
     except Exception as e:
         logging.debug(f"Stooq获取失败 {symbol}: {type(e).__name__}")
+        return None
+
+
+# ═══════════════════════════════════════════════════════════════
+# 数据源：东方财富（港股指数备用，yfinance 在 Cloud 常失败）
+# ═══════════════════════════════════════════════════════════════
+
+def fetch_hk_index_from_eastmoney(symbol: str) -> Optional[pd.DataFrame]:
+    """
+    从东方财富获取港股指数数据（^HSI/^HSTECH/^HSCE 等）
+    实测 secid: 100.HSI 恒生指数, 124.HSTECH 恒生科技, 100.HSCEI 国企指数
+    """
+    _EM_HK_MAP = {'^HSI': '100.HSI', '^HSTECH': '124.HSTECH', '^HSCE': '100.HSCEI'}
+    secid = _EM_HK_MAP.get(symbol)
+    if not secid:
+        return None
+    try:
+        em_url = "https://push2his.eastmoney.com/api/qt/stock/kline/get"
+        params = {
+            'secid': secid,
+            'fields1': 'f1,f2,f3,f4,f5,f6',
+            'fields2': 'f51,f52,f53,f54,f55,f56,f57,f58',
+            'klt': '101',
+            'fqt': '0',
+            'end': '20500101',
+            'lmt': '252'
+        }
+        r = requests.get(em_url, params=params, timeout=10, verify=False)
+        if r.status_code != 200:
+            return None
+        data = r.json()
+        if not data.get('data') or not data['data'].get('klines'):
+            return None
+        rows = []
+        for line in data['data']['klines']:
+            parts = line.split(',')
+            if len(parts) >= 6:
+                rows.append({
+                    'Date': parts[0], 'Open': float(parts[1]), 'Close': float(parts[2]),
+                    'High': float(parts[3]), 'Low': float(parts[4]), 'Volume': float(parts[5])
+                })
+        if not rows:
+            return None
+        df = pd.DataFrame(rows)
+        df['Date'] = pd.to_datetime(df['Date'])
+        df.set_index('Date', inplace=True)
+        return clean_df(df)
+    except Exception as e:
+        logging.debug(f"东财港股指数 {symbol} 失败: {type(e).__name__}")
         return None
 
 

@@ -9,7 +9,10 @@ __pycache__/
 
 # ── 本地扫描/简报缓存（运行时生成，不需要上传）──────────
 .cache_brief/
+.cache_stock_data/
 scan_cache/
+scan_results.json
+*.pkl
 
 # ── 备份文件（保留在本地即可）──────────────────────────
 app_backup_*.py

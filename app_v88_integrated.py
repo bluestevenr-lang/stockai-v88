@@ -288,7 +288,7 @@ class Config:
 
     CACHE_TTL       = _TOML.get("cache", {}).get("ttl_daily", 3600)
     RETRY_COUNT     = _TOML.get("data", {}).get("retry_count", 3)
-    REQUEST_TIMEOUT = _TOML.get("data", {}).get("request_timeout", 8)
+    REQUEST_TIMEOUT = _TOML.get("data", {}).get("request_timeout", 30)  # 从 8 升至 30 秒
 
     CACHE_TTL_FAST   = _TOML.get("cache", {}).get("ttl_fast",   900)
     CACHE_TTL_DAILY  = _TOML.get("cache", {}).get("ttl_daily",  3600)
@@ -322,7 +322,7 @@ class Config:
     CACHE_TTL_TRADING_HOURS = _TOML.get("cache", {}).get("ttl_workday", 900)
 
     PORTFOLIO_FILE    = 'my_portfolio.xlsx'
-    PORTFOLIO_ENABLED = True
+    PORTFOLIO_ENABLED = False  # 已禁用：持仓管理模块存在兼容性问题
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -596,9 +596,18 @@ class LayeredCacheManager:
         }
 
 
-# 全局实例（用于性能监控）
-_perf_monitor = PerformanceMonitor()
-_cache_manager = LayeredCacheManager(_perf_monitor)
+# 全局实例 —— 用 @st.cache_resource 使其在所有 rerun 之间持久化
+# 若不持久化，Streamlit 每次 rerun 都会重建空缓存，导致数据每次都重新拉取
+@st.cache_resource
+def _get_perf_monitor():
+    return PerformanceMonitor()
+
+@st.cache_resource
+def _get_cache_manager():
+    return LayeredCacheManager(_get_perf_monitor())
+
+_perf_monitor = _get_perf_monitor()
+_cache_manager = _get_cache_manager()
 
 # ═══════════════════════════════════════════════════════════════
 
@@ -673,7 +682,11 @@ class DataProvider:
                 self.logger.info(f"📊 正在获取 {symbol} 数据... (尝试 {attempt+1}/{Config.RETRY_COUNT})")
                 _sess = _make_yf_session(attempt)
                 ticker = yf.Ticker(symbol, session=_sess) if _sess else yf.Ticker(symbol)
-                df = ticker.history(period=period, timeout=Config.REQUEST_TIMEOUT)
+                # yfinance 部分版本不支持 timeout 参数，先尝试带 timeout，失败后不带
+                try:
+                    df = ticker.history(period=period, timeout=Config.REQUEST_TIMEOUT)
+                except TypeError:
+                    df = ticker.history(period=period)
                 # 兼容新版 yfinance MultiIndex 列
                 if df is not None and not df.empty and hasattr(df.columns, "levels") and df.columns.nlevels == 2:
                     df.columns = [c[0] for c in df.columns]
@@ -685,13 +698,54 @@ class DataProvider:
                     self.logger.info(f"✅ 成功获取 {symbol} 数据，共 {len(df)} 条记录")
                     return df
                 else:
-                    self.logger.warning(f"⚠️  {symbol} 数据为空或过少（{len(df) if df is not None else 0} 行）")
+                    self.logger.warning(f"⚠️  {symbol} 数据为空或过少（{len(df) if df is not None else 0} 行），等待后重试...")
+                    if attempt < Config.RETRY_COUNT - 1:
+                        time.sleep(2 * (attempt + 1))
             
             except Exception as e:
-                self.logger.warning(f"⚠️  {symbol} 获取失败 (尝试 {attempt+1}): {str(e)[:100]}")
+                self.logger.warning(f"⚠️  {symbol} 获取失败 (尝试 {attempt+1}): {str(e)[:120]}")
                 self.perf.error()
                 if attempt < Config.RETRY_COUNT - 1:
                     time.sleep(2 * (attempt + 1))  # 递增延迟 2s/4s/6s
+        
+        # 2c. A股：yfinance 失败时尝试东方财富备用（Tushare 需 token，Cloud 环境常失败）
+        if (symbol.endswith('.SS') or symbol.endswith('.SZ')) and USE_NEW_MODULES:
+            try:
+                _em_cn = mod_data.fetch_from_eastmoney(symbol)
+                if _em_cn is not None and len(_em_cn) >= min_rows:
+                    self.cache_mgr.set(cache_key, _em_cn, data_type)
+                    elapsed = (time.time() - start_time) * 1000
+                    self.perf.record('fetch', elapsed)
+                    self.logger.info(f"✅ 东财A股备用获取 {symbol}，共 {len(_em_cn)} 条记录")
+                    return _em_cn
+            except Exception as _e:
+                self.logger.debug(f"东财A股 {symbol} 失败: {_e}")
+        
+        # 2d. yfinance 失败时，美股/指数尝试 Stooq 备用（Streamlit Cloud 等环境 yfinance 常失败）
+        if not (symbol.endswith('.HK') or symbol.endswith('.SS') or symbol.endswith('.SZ')):
+            try:
+                _stooq = mod_data.fetch_from_stooq(symbol) if USE_NEW_MODULES else fetch_from_stooq(symbol)
+                if _stooq is not None and len(_stooq) >= min_rows:
+                    self.cache_mgr.set(cache_key, _stooq, data_type)
+                    elapsed = (time.time() - start_time) * 1000
+                    self.perf.record('fetch', elapsed)
+                    self.logger.info(f"✅ Stooq 备用获取 {symbol}，共 {len(_stooq)} 条记录")
+                    return _stooq
+            except Exception as _e:
+                self.logger.debug(f"Stooq {symbol} 失败: {_e}")
+        
+        # 2e. 港股指数(^HSI/^HSTECH/^HSCE)尝试东方财富备用（yfinance 在 Cloud 常失败）
+        if symbol in ('^HSI', '^HSTECH', '^HSCE') and USE_NEW_MODULES:
+            try:
+                _em = mod_data.fetch_hk_index_from_eastmoney(symbol)
+                if _em is not None and len(_em) >= min_rows:
+                    self.cache_mgr.set(cache_key, _em, data_type)
+                    elapsed = (time.time() - start_time) * 1000
+                    self.perf.record('fetch', elapsed)
+                    self.logger.info(f"✅ 东财港股指数备用获取 {symbol}，共 {len(_em)} 条记录")
+                    return _em
+            except Exception as _e:
+                self.logger.debug(f"东财港股指数 {symbol} 失败: {_e}")
         
         # 3. 所有尝试失败，返回过期缓存（如果有）
         if cached_value is not None:
@@ -1158,11 +1212,11 @@ class ExpectationLayer:
             hsi_prev = float(hsi_df['Close'].iloc[-2]) if len(hsi_df) >= 2 else hsi_price
             hsi_change_pct = ((hsi_price - hsi_prev) / hsi_prev * 100) if hsi_prev != 0 else 0
             
-            # 【V91.1】恒生科技/国企指数/港币：6mo日线 + min_rows=2，^HSTECH 失败时用 3033.HK ETF 兜底
+            # 【V91.1】恒生科技/国企指数/港币：^HSTECH 已从 Yahoo Finance 下架，直接用 3033.HK ETF
             hstech_price, hstech_chg, hstech_use_etf = 0.0, 0.0, False
             hsce_price, hsce_chg = 0.0, 0.0
             hkd_price, hkd_chg = 0.0, 0.0
-            for _sym in ['^HSTECH', '3033.HK']:
+            for _sym in ['3033.HK']:
                 hstech_df = self.dp.fetch_safe(_sym, period='6mo', data_type='daily', force_refresh=force_refresh, min_rows=2)
                 if hstech_df is not None and len(hstech_df) >= 2:
                     hstech_price = float(hstech_df['Close'].iloc[-1])
@@ -1426,9 +1480,17 @@ class ExpectationLayer:
             }
 
 
-# 初始化全局实例
-_data_provider = DataProvider(_cache_manager, _perf_monitor)
-_expectation_layer = ExpectationLayer(_data_provider, _perf_monitor)
+# 初始化全局实例 —— 同样持久化，确保缓存在 rerun 间有效
+@st.cache_resource
+def _get_data_provider():
+    return DataProvider(_get_cache_manager(), _get_perf_monitor())
+
+@st.cache_resource
+def _get_expectation_layer():
+    return ExpectationLayer(_get_data_provider(), _get_perf_monitor())
+
+_data_provider = _get_data_provider()
+_expectation_layer = _get_expectation_layer()
 
 # 【V89.2】初始化机构研究中心
 if INSTITUTIONAL_RESEARCH_AVAILABLE:
@@ -1674,9 +1736,9 @@ def render_cloud_search():
                         
                         is_in_basket = (code, name) in st.session_state.compare_basket
                         if is_in_basket:
-                            st.button("✅ 已在对比篮", key="search_compare", disabled=True, use_container_width=True)
+                            st.button("✅ 已在对比篮", key="search_compare", disabled=True, width='stretch')
                         else:
-                            if st.button("➕ 加入对比篮", key="search_compare", use_container_width=True):
+                            if st.button("➕ 加入对比篮", key="search_compare", width='stretch'):
                                 st.session_state.compare_basket.append((code, name))
                                 st.toast(f"✅ 已加入对比篮: {name}", icon="➕")
                                 st.rerun()
@@ -1698,7 +1760,7 @@ def render_cloud_search():
                 st.caption(code)
             
             with col2:
-                if st.button("🔍", key=f"hist_analyze_{i}", help="分析", use_container_width=True):
+                if st.button("🔍", key=f"hist_analyze_{i}", help="分析", width='stretch'):
                     st.session_state.scan_selected_code = code
                     st.session_state.scan_selected_name = name
                     st.session_state.pk_codes = []
@@ -1708,14 +1770,14 @@ def render_cloud_search():
             with col3:
                 is_in_basket = (code, name) in st.session_state.compare_basket
                 if is_in_basket:
-                    st.button("✅", key=f"hist_compare_{i}", disabled=True, use_container_width=True)
+                    st.button("✅", key=f"hist_compare_{i}", disabled=True, width='stretch')
                 else:
-                    if st.button("➕", key=f"hist_compare_{i}", help="加入对比", use_container_width=True):
+                    if st.button("➕", key=f"hist_compare_{i}", help="加入对比", width='stretch'):
                         st.session_state.compare_basket.append((code, name))
                         st.toast(f"✅ 已加入对比篮: {name}", icon="➕")
                         st.rerun()
         
-        if st.button("🗑️ 清空历史", key="search_clear_history", use_container_width=True):
+        if st.button("🗑️ 清空历史", key="search_clear_history", width='stretch'):
             st.session_state.search_history = []
             st.rerun()
 
@@ -1734,7 +1796,7 @@ def render_clickable_table(df_results, table_key):
         df_results = pd.DataFrame(df_results)
     
     if "代码" not in df_results.columns:
-        st.dataframe(df_results, use_container_width=True, hide_index=True, key=f"table_plain_{table_key}")
+        st.dataframe(df_results, width='stretch', hide_index=True, key=f"table_plain_{table_key}")
         return
     
     df_display = df_results.copy()
@@ -1756,7 +1818,7 @@ def render_clickable_table(df_results, table_key):
                 options=["-- 请选择 --"] + [f"{name} ({code})" for code, name in stock_options],
                 key=f"quick_select_{table_key}")
         with quick_col2:
-            if st.button("⚔️ 深度分析", key=f"quick_btn_{table_key}", type="primary", use_container_width=True):
+            if st.button("⚔️ 深度分析", key=f"quick_btn_{table_key}", type="primary", width='stretch'):
                 if quick_choice and quick_choice != "-- 请选择 --":
                     import re
                     m = re.search(r'\(([^)]+)\)', quick_choice)
@@ -1771,7 +1833,7 @@ def render_clickable_table(df_results, table_key):
     
     selection = st.dataframe(
         df_display,
-        use_container_width=True,
+        width='stretch',
         hide_index=True,
         on_select="rerun",
         selection_mode="multi-row",
@@ -1816,7 +1878,7 @@ def render_clickable_table(df_results, table_key):
     if len(selected_stocks) >= 2:
         col1, col2, col3 = st.columns(3)
         with col1:
-            if st.button(f"⚔️ 立即对比 {len(selected_stocks)}只", key=f"compare_{table_key}", type="primary", use_container_width=True):
+            if st.button(f"⚔️ 立即对比 {len(selected_stocks)}只", key=f"compare_{table_key}", type="primary", width='stretch'):
                 codes = [s[0] for s in selected_stocks]
                 names = [s[1] for s in selected_stocks]
                 st.session_state.pk_codes = codes
@@ -1826,7 +1888,7 @@ def render_clickable_table(df_results, table_key):
                 st.toast(f"⚔️ 开始对比 {len(selected_stocks)} 只股票", icon="⚔️")
                 st.rerun()
         with col2:
-            if st.button(f"➕ 加入对比篮 ({len(selected_stocks)}只)", key=f"add_basket_{table_key}", use_container_width=True):
+            if st.button(f"➕ 加入对比篮 ({len(selected_stocks)}只)", key=f"add_basket_{table_key}", width='stretch'):
                 added_count = 0
                 for code, name in selected_stocks:
                     if (code, name) not in st.session_state.compare_basket:
@@ -1838,7 +1900,7 @@ def render_clickable_table(df_results, table_key):
                 else:
                     st.toast("ℹ️ 这些股票已在对比篮中", icon="ℹ️")
         with col3:
-            if st.button("🗑️ 清除选择", key=f"clear_{table_key}", use_container_width=True):
+            if st.button("🗑️ 清除选择", key=f"clear_{table_key}", width='stretch'):
                 st.rerun()
 
 # ═══════════════════════════════════════════════════════════════
@@ -1880,7 +1942,7 @@ def _render_ai_market_analysis():
     st.caption("市场指数走势预测 + 舆情情绪分析 · 点击「一键分析」生成报告")
 
     if st.button("⚡ 一键分析全市场（美股＋港股＋A股）", key="btn_one_click_all_markets",
-                 type="primary", use_container_width=True):
+                 type="primary", width='stretch'):
         st.session_state['_one_click_all_markets'] = True
     _trigger_all = st.session_state.get('_one_click_all_markets', False)
 
@@ -2526,7 +2588,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
 
         _heat_rcol = st.columns([5, 1])[1]
         with _heat_rcol:
-            if st.button("🔄 强制刷新", key="refresh_heat", help="穿透全部缓存，重新拉取行业数据", use_container_width=True):
+            if st.button("🔄 强制刷新", key="refresh_heat", help="穿透全部缓存，重新拉取行业数据", width='stretch'):
                 get_market_heat.clear()
                 st.cache_data.clear()
                 try:
@@ -2544,7 +2606,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
         display_cols = ["行业", "🇺🇸 美股 5日 | 30日 | 60日", "🇭🇰 港股 5日 | 30日 | 60日", "🇨🇳 A股 5日 | 30日 | 60日"]
         selected_heat = st.dataframe(
             heat_df[display_cols],
-            use_container_width=True,
+            width='stretch',
             hide_index=True,
             on_select="rerun",
             selection_mode="single-row",
@@ -2556,7 +2618,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
             selected_row = heat_df.iloc[selected_idx]
             sector_name = selected_row["行业"]
             st.info(f"📊 已选择 **{sector_name}** 行业")
-            if st.button(f"🌍 一键分析全球{sector_name}行业（美股+港股+A股）", key="analyze_global_sector", use_container_width=True, type="primary"):
+            if st.button(f"🌍 一键分析全球{sector_name}行业（美股+港股+A股）", key="analyze_global_sector", width='stretch', type="primary"):
                 st.session_state.sector_analysis_name = sector_name
                 st.session_state.sector_analysis_market = "全球"
                 st.session_state.sector_analysis_codes = {
@@ -3273,9 +3335,9 @@ def fetch_from_stooq(symbol: str):
         if symbol.endswith('.HK') or symbol.endswith('.SS') or symbol.endswith('.SZ'):
             return None  # Stooq 不支持港股和A股
         
-        # 转换格式：AAPL -> aapl.us
-        base_symbol = symbol.replace('.US', '').replace('.', '')
-        stooq_symbol = f"{base_symbol.lower()}.us"
+        # 转换格式：AAPL->aapl.us, ^VIX->vi.f(CBOE)
+        _MAP = {'DX-Y.NYB': '^dxy', 'CNY=X': 'cny.us', 'HKD=X': 'hkd.us', '^VIX': 'vi.f', '^TNX': 'tnx.us'}
+        stooq_symbol = _MAP.get(symbol) or f"{symbol.replace('^','').replace('.','').replace('-','').replace('.NYB','').replace('=','').lower()}.us"
         url = f"https://stooq.com/q/d/l/?s={stooq_symbol}&i=d"
         
         # 创建不验证SSL的上下文（开发环境使用）
@@ -4212,21 +4274,49 @@ def call_gemini_api(prompt, model_name=None):
         return f"❌ Gemini API网络错误: {str(e)}"
 
 
-def call_gemini_api_stream(prompt, model_name=None):
-    """流式调用 Gemini，返回文字块生成器，用于 st.write_stream()"""
+def call_gemini_api_stream(prompt, model_name=None, max_output_tokens=8192):
+    """流式调用 Gemini，返回文字块生成器，用于 st.write_stream()
+    当流式失败（gRPC/None Stream）时自动降级为非流式单次返回。
+    """
     if not MY_GEMINI_KEY or not HAS_GEMINI:
         yield "❌ 请配置 Gemini API Key"
         return
+
+    m = model_name or GEMINI_MODEL_NAME
+    gen_cfg = genai.types.GenerationConfig(max_output_tokens=max_output_tokens)
+
+    # ── 第一优先：流式 ────────────────────────────────────────────
     try:
-        m = model_name or GEMINI_MODEL_NAME
-        model = genai.GenerativeModel(m)
-        gen_cfg = genai.types.GenerationConfig(max_output_tokens=8192)
-        response = model.generate_content(prompt, stream=True, generation_config=gen_cfg)
+        model_obj = genai.GenerativeModel(m)
+        response = model_obj.generate_content(prompt, stream=True, generation_config=gen_cfg)
         for chunk in response:
-            if chunk.text:
-                yield chunk.text
-    except Exception as e:
-        yield f"❌ AI分析失败: {str(e)}"
+            try:
+                if chunk.text:
+                    yield chunk.text
+            except Exception:
+                pass   # 跳过空/元数据 chunk
+        return  # 流式成功，直接结束
+    except Exception as e_stream:
+        err_str = str(e_stream)
+        _safe_print(f"⚠️ 流式调用失败({err_str})，降级非流式...")
+
+    # ── 降级：非流式（stream=False）────────────────────────────────
+    try:
+        model_obj2 = genai.GenerativeModel(m)
+        resp = model_obj2.generate_content(prompt, stream=False, generation_config=gen_cfg)
+        text = getattr(resp, "text", None)
+        if text:
+            yield text
+            return
+        # 尝试从 candidates 取
+        for cand in getattr(resp, "candidates", []):
+            for part in getattr(getattr(cand, "content", None), "parts", []):
+                if getattr(part, "text", None):
+                    yield part.text
+                    return
+        yield "❌ AI分析失败: 非流式也未返回内容"
+    except Exception as e_nostream:
+        yield f"❌ AI分析失败: {str(e_nostream)}"
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -5178,7 +5268,7 @@ def _render_portfolio_section():
         except Exception as e:
             logging.error(f"❌ 直接读取Excel失败: {str(e)}")
             # 降级到 PortfolioManager
-            portfolio_df = _portfolio_manager.read_portfolio()
+            portfolio_df = _portfolio_manager.get_dataframe() if _portfolio_manager else None
         
         # 【V89.6.2】显示读取状态
         if portfolio_df is not None and len(portfolio_df) > 0:
@@ -5249,7 +5339,7 @@ def _render_portfolio_section():
             
             col_create, col_open = st.columns(2)
             with col_create:
-                if st.button("📝 创建持仓模板", type="primary", use_container_width=True):
+                if st.button("📝 创建持仓模板", type="primary", width='stretch'):
                     if _portfolio_manager.create_template():
                         st.success(f"✅ 已创建持仓模板: {Config.PORTFOLIO_FILE}")
                         st.info("💡 请手动编辑Excel文件，添加您的真实持仓数据后刷新页面。")
@@ -5257,7 +5347,7 @@ def _render_portfolio_section():
                         st.error("❌ 创建模板失败")
             
             with col_open:
-                if st.button("📂 打开Excel编辑", use_container_width=True):
+                if st.button("📂 打开Excel编辑", width='stretch'):
                     import subprocess
                     import platform
                     try:
@@ -5301,7 +5391,7 @@ def _render_portfolio_section():
             edited_df = st.data_editor(
                 edit_df,
                 num_rows="dynamic",
-                use_container_width=True,
+                width='stretch',
                 column_config={
                     "股票代码": st.column_config.TextColumn(
                         "股票代码",
@@ -5349,9 +5439,9 @@ def _render_portfolio_section():
             # 操作按钮行
             btn_col1, btn_col2, btn_col3 = st.columns([1, 1, 2])
             with btn_col1:
-                _save_clicked = st.button("💾 保存修改", type="primary", use_container_width=True, disabled=not _has_change)
+                _save_clicked = st.button("💾 保存修改", type="primary", width='stretch', disabled=not _has_change)
             with btn_col2:
-                if st.button("📂 打开Excel", use_container_width=True, key="open_excel_btn"):
+                if st.button("📂 打开Excel", width='stretch', key="open_excel_btn"):
                     import subprocess
                     import platform
                     try:
@@ -5620,7 +5710,7 @@ def _render_portfolio_section():
                 return [color] * len(row)
             
             styled_df = display_df.style.apply(highlight_profit, axis=1)
-            st.dataframe(styled_df, use_container_width=True, height=400)
+            st.dataframe(styled_df, width='stretch', height=400)
             
             # 【V89.5】AI持仓组合分析
             st.markdown("---")
@@ -5690,7 +5780,7 @@ def _render_portfolio_section():
                         key="portfolio_market_select"
                     )
                     
-                    if st.button("🚀 启动市场组合分析", type="primary", key="portfolio_market_ai_btn", use_container_width=True):
+                    if st.button("🚀 启动市场组合分析", type="primary", key="portfolio_market_ai_btn", width='stretch'):
                         if MY_GEMINI_KEY:
                             with st.spinner(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · {selected_market}持仓组合"):
                                 try:
@@ -5766,7 +5856,7 @@ def _render_portfolio_section():
                                     with st.expander("📊 查看持仓明细", expanded=False):
                                         st.dataframe(
                                             pd.DataFrame(stocks_info),
-                                            use_container_width=True,
+                                            width='stretch',
                                             hide_index=True
                                         )
                                     
@@ -5795,7 +5885,7 @@ def _render_portfolio_section():
                                                  options=analyze_options,
                                                  key="portfolio_single_stock_select")
                     
-                    if selected_stock and st.button("🚀 启动深度分析", type="primary", key="portfolio_single_stock_btn", use_container_width=True):
+                    if selected_stock and st.button("🚀 启动深度分析", type="primary", key="portfolio_single_stock_btn", width='stretch'):
                         # 提取股票代码
                         import re
                         match = re.search(r'\(([^)]+)\)', selected_stock)
@@ -7063,7 +7153,7 @@ with st.sidebar:
             force_refresh_btn = st.button(
                 "🔄 强制刷新",
                 key="force_refresh_macro",
-                use_container_width=True,
+                width='stretch',
                 help="清除所有缓存，重新获取最新市场数据"
             )
             
@@ -7120,7 +7210,7 @@ with st.sidebar:
         
         col_compare, col_clear = st.columns(2)
         with col_compare:
-            if st.button("⚔️ 开始对比", type="primary", use_container_width=True):
+            if st.button("⚔️ 开始对比", type="primary", width='stretch'):
                 if len(st.session_state.compare_basket) >= 2:
                     codes = [item[0] for item in st.session_state.compare_basket]
                     names = [item[1] for item in st.session_state.compare_basket]
@@ -7134,7 +7224,7 @@ with st.sidebar:
                     st.warning("至少选择2只股票才能对比")
         
         with col_clear:
-            if st.button("🗑️ 清空", use_container_width=True):
+            if st.button("🗑️ 清空", width='stretch'):
                 st.session_state.compare_basket = []
                 st.rerun()
     else:
@@ -7146,7 +7236,7 @@ with st.sidebar:
     st.markdown('<p style="font-size: 12px; font-weight: 600; margin-top: 0.5rem; margin-bottom: 0.5rem;">📜 浏览个股历史</p>', unsafe_allow_html=True)
     if len(st.session_state.search_history) > 0:
         for i, (code, name) in enumerate(st.session_state.search_history[:8]):
-            if st.button(f"🔍 {name} ({code})", key=f"sidebar_hist_{i}_{code}", use_container_width=True, help=f"点击分析 {name}"):
+            if st.button(f"🔍 {name} ({code})", key=f"sidebar_hist_{i}_{code}", width='stretch', help=f"点击分析 {name}"):
                 st.session_state.scan_selected_code = code
                 st.session_state.scan_selected_name = name
                 st.session_state.pk_codes = []
@@ -7176,7 +7266,7 @@ with st.sidebar:
     proxy_port = st.text_input("本地代理端口", value="1082", key="proxy_port_input")
     st.session_state.proxy_port = (proxy_port or "1082").strip() or "1082"
     
-    if st.button("测试连接", use_container_width=True):
+    if st.button("测试连接", width='stretch'):
         purl = f"http://127.0.0.1:{st.session_state.proxy_port}"
         try:
             with ProxyContext(purl):
@@ -7207,7 +7297,7 @@ with st.sidebar:
     
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("🛠️ 系统诊断", use_container_width=True, type="secondary"):
+        if st.button("🛠️ 系统诊断", width='stretch', type="secondary"):
             with st.spinner("正在执行系统诊断..."):
                 diagnostic_result = run_system_diagnostic()
             
@@ -7215,7 +7305,7 @@ with st.sidebar:
             st.markdown("#### 诊断结果")
     
     with col2:
-        if st.button("🏥 股票池检查", use_container_width=True, type="secondary"):
+        if st.button("🏥 股票池检查", width='stretch', type="secondary"):
             with st.spinner("正在检查股票池健康状况..."):
                 us_pool, hk_pool, cn_pool = init_stock_pools()
                 
@@ -7245,14 +7335,14 @@ with st.sidebar:
     
     col_cache1, col_cache2 = st.columns(2)
     with col_cache1:
-        if st.button("🗑️ 清空缓存", use_container_width=True, help="清空所有本地缓存文件"):
+        if st.button("🗑️ 清空缓存", width='stretch', help="清空所有本地缓存文件"):
             local_cache.clear_all()
             st.cache_data.clear()
             st.success("✅ 缓存已清空")
             st.rerun()
     
     with col_cache2:
-        if st.button("📋 查看失败详情", use_container_width=True):
+        if st.button("📋 查看失败详情", width='stretch'):
             st.session_state.show_failed_stocks = True
             st.rerun()
     
@@ -7295,7 +7385,7 @@ with st.sidebar:
     col_pool1, col_pool2 = st.columns(2)
     
     with col_pool1:
-        if st.button("🔄 刷新股票池", use_container_width=True, help="重新从云端获取最新股票列表"):
+        if st.button("🔄 刷新股票池", width='stretch', help="重新从云端获取最新股票列表"):
             with st.spinner("正在刷新股票池..."):
                 # 清除缓存
                 st.cache_data.clear()
@@ -7303,7 +7393,7 @@ with st.sidebar:
                 st.rerun()
     
     with col_pool2:
-        if st.button("🗑️ 清除全部缓存", use_container_width=True):
+        if st.button("🗑️ 清除全部缓存", width='stretch'):
             st.cache_data.clear()
             st.success("✅ 缓存已清除")
             time.sleep(0.5)
@@ -7472,7 +7562,7 @@ if st.session_state.get('scan_selected_code'):
 
                 st.dataframe(
                     scan_result,
-                    use_container_width=True,
+                    width='stretch',
                     hide_index=True,
                     column_config={
                         "得分": st.column_config.ProgressColumn(
@@ -7650,17 +7740,17 @@ if execute_analysis and q_input:
         st.info("💡 **推荐测试股票：**")
         col_test1, col_test2, col_test3 = st.columns(3)
         with col_test1:
-            if st.button("🇺🇸 测试 AAPL", key="test_aapl_error", use_container_width=True):
+            if st.button("🇺🇸 测试 AAPL", key="test_aapl_error", width='stretch'):
                 st.session_state.scan_selected_code = "AAPL"
                 st.session_state.scan_selected_name = "苹果"
                 st.rerun()
         with col_test2:
-            if st.button("🇭🇰 测试 00700", key="test_hk_error", use_container_width=True):
+            if st.button("🇭🇰 测试 00700", key="test_hk_error", width='stretch'):
                 st.session_state.scan_selected_code = "00700"
                 st.session_state.scan_selected_name = "腾讯控股"
                 st.rerun()
         with col_test3:
-            if st.button("🇨🇳 测试 600519", key="test_cn_error", use_container_width=True):
+            if st.button("🇨🇳 测试 600519", key="test_cn_error", width='stretch'):
                 st.session_state.scan_selected_code = "600519"
                 st.session_state.scan_selected_name = "贵州茅台"
                 st.rerun()
@@ -7810,7 +7900,7 @@ if execute_analysis and q_input:
         )
         
         # 使用 on_select 捕获用户点击
-        _kline_event = st.plotly_chart(fig, use_container_width=True, on_select="rerun", key=f"kline_select_{target_c}")
+        _kline_event = st.plotly_chart(fig, width='stretch', on_select="rerun", key=f"kline_select_{target_c}")
         
         # K线图注释说明
         _chart_note_cols = st.columns(3)
@@ -7944,7 +8034,7 @@ if execute_analysis and q_input:
                 "🤖 AI分析止损止盈",
                 key=f"btn_entry_advisor_{target_c}",
                 type="primary",
-                use_container_width=True,
+                width='stretch',
                 help="AI根据支撑位、压力位、均线和量价结构，智能给出止损和多级止盈建议"
             )
             
@@ -8155,7 +8245,7 @@ if execute_analysis and q_input:
                             "⚡ 启动AI智能风控预测",
                             key=f"btn_ai_pred_{target_c}",
                             type="primary",
-                            use_container_width=True,
+                            width='stretch',
                             help="一键获取：AI预测（看涨概率/操作建议）+ 风控评估（三大风险预判 + 盈亏比 + 开仓建议）"
                         )
                         
@@ -8275,7 +8365,7 @@ if execute_analysis and q_input:
             
             _card_col1, _card_col2 = st.columns([1, 3])
             with _card_col1:
-                _gen_card = st.button("📸 生成卡片", key=f"btn_share_card_{target_c}", type="primary", use_container_width=True)
+                _gen_card = st.button("📸 生成卡片", key=f"btn_share_card_{target_c}", type="primary", width='stretch')
             with _card_col2:
                 st.caption("包含：价格涨跌、核心指标(VWAP/ATR/Kelly)、AI止损止盈、风控官警告、宏观环境")
             
@@ -8369,7 +8459,7 @@ if execute_analysis and q_input:
                 
                 _show_col1, _show_col2 = st.columns([2, 1])
                 with _show_col1:
-                    st.image(_card_data, caption=f"{target_c} 分析卡片（iPhone 17 尺寸）", use_container_width=True)
+                    st.image(_card_data, caption=f"{target_c} 分析卡片（iPhone 17 尺寸）", width='stretch')
                 with _show_col2:
                     st.download_button(
                         "📥 保存卡片到本地",
@@ -8377,7 +8467,7 @@ if execute_analysis and q_input:
                         file_name=f"StockAI_{target_c}_{datetime.now().strftime('%Y%m%d_%H%M')}.png",
                         mime="image/png",
                         key=f"download_card_{target_c}",
-                        use_container_width=True
+                        width='stretch'
                     )
                     st.caption("💡 保存后可直接在微信/钉钉/朋友圈分享")
                     st.caption("📐 卡片尺寸：1170×2532px（iPhone 17 Pro Max）")
@@ -8609,7 +8699,7 @@ if execute_analysis and q_input:
                                     "🚀 启动舆情分析", 
                                     key=f"btn_sentiment_{target_c}",
                                     type="primary",
-                                    use_container_width=True,
+                                    width='stretch',
                                     help="AI分析最新新闻、市场情绪、影响预判"
                                 )
                                 
@@ -8745,7 +8835,7 @@ if execute_analysis and q_input:
             st.markdown("### 📄 一键生成完整报告")
             st.caption("💡 汇总所有分析结果，生成可复制的完整投资报告")
             
-            if st.button("📋 生成完整报告", key="btn_generate_full_report", type="primary", use_container_width=True):
+            if st.button("📋 生成完整报告", key="btn_generate_full_report", type="primary", width='stretch'):
                 with st.status(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · 正在生成完整报告", expanded=False):
                     try:
                         # 收集所有数据
@@ -9304,7 +9394,7 @@ if execute_analysis and q_input:
         
         # 【V80.1修复】添加"清除分析"按钮，不自动清空
         st.markdown("---")
-        if st.button("🔄 清除当前分析", key="clear_analysis", use_container_width=True):
+        if st.button("🔄 清除当前分析", key="clear_analysis", width='stretch'):
             st.session_state.scan_selected_code = None
             st.session_state.scan_selected_name = None
             st.rerun()
@@ -9347,19 +9437,19 @@ if execute_analysis and q_input:
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            if st.button("🇺🇸 测试苹果(AAPL)", use_container_width=True):
+            if st.button("🇺🇸 测试苹果(AAPL)", width='stretch'):
                 st.session_state.scan_selected_code = "AAPL"
                 st.session_state.scan_selected_name = "苹果"
                 st.rerun()
                 
         with col2:
-            if st.button("🇭🇰 测试腾讯(00700)", use_container_width=True):
+            if st.button("🇭🇰 测试腾讯(00700)", width='stretch'):
                 st.session_state.scan_selected_code = "00700"
                 st.session_state.scan_selected_name = "腾讯控股"
                 st.rerun()
                 
         with col3:
-            if st.button("🇨🇳 测试茅台(600519)", use_container_width=True):
+            if st.button("🇨🇳 测试茅台(600519)", width='stretch'):
                 st.session_state.scan_selected_code = "600519"
                 st.session_state.scan_selected_name = "贵州茅台"
                 st.rerun()
@@ -9432,7 +9522,7 @@ with tab_scanner:
         # 【V89.6.4】添加清除缓存按钮
         clear_col1, clear_col2 = st.columns([3, 1])
         with clear_col2:
-            if st.button("🗑️ 清除扫描缓存", help="清除所有扫描结果缓存（含文件持久化）", use_container_width=True):
+            if st.button("🗑️ 清除扫描缓存", help="清除所有扫描结果缓存（含文件持久化）", width='stretch'):
                 st.session_state.scanner_results = {}
                 _clear_scan_cache_files()
                 st.toast("✅ 扫描缓存已清除", icon="🗑️")
@@ -9488,7 +9578,7 @@ with tab_scanner:
             with col_concurrent:
                 use_concurrent = st.checkbox("⚡ 并发扫描（6线程，速度快2-3倍）", value=True, help="默认开启，15分钟内同类型扫描使用缓存不重复执行")
             with col_cancel:
-                if st.button("🛑 取消", help="取消当前扫描", use_container_width=True):
+                if st.button("🛑 取消", help="取消当前扫描", width='stretch'):
                     st.session_state.cancel_scan['cancel'] = True
                     st.toast("正在取消扫描...", icon="🛑")
             
@@ -9496,12 +9586,12 @@ with tab_scanner:
             st.caption("💡 均线触底反弹策略：股价触及关键均线时，反弹概率大 | 🎯 市场状态自适应：先判状态再分流")
             c_btn1, c_btn2, c_btn3, c_btn4, c_btn5, c_btn6 = st.columns(6)
             
-            do_scan_ma30 = c_btn1.button("📊 MA30短线", help="月线支撑，适合短线波段（3-7天）", use_container_width=True)
-            do_scan_ma60 = c_btn2.button("📈 MA60季线", help="季线支撑，适合波段交易（1-3周）", use_container_width=True)
-            do_scan_ma120 = c_btn3.button("📉 MA120半年", help="半年线支撑，适合中线布局（1-3月）", use_container_width=True)
-            do_scan_top = c_btn4.button("🏆 综合评分", help="多维度量化评分，不限均线", use_container_width=True)
-            do_scan_regime = c_btn5.button("🎯 市场状态自适应", help="先判 BULL/RANGE/BEAR，再给动作建议", type="primary", use_container_width=True, disabled=not REGIME_ENGINE_AVAILABLE)
-            do_scan_safe = c_btn6.button("🛡️ 多重支撑", help="同时靠近多条均线，风险低", use_container_width=True)
+            do_scan_ma30 = c_btn1.button("📊 MA30短线", help="月线支撑，适合短线波段（3-7天）", width='stretch')
+            do_scan_ma60 = c_btn2.button("📈 MA60季线", help="季线支撑，适合波段交易（1-3周）", width='stretch')
+            do_scan_ma120 = c_btn3.button("📉 MA120半年", help="半年线支撑，适合中线布局（1-3月）", width='stretch')
+            do_scan_top = c_btn4.button("🏆 综合评分", help="多维度量化评分，不限均线", width='stretch')
+            do_scan_regime = c_btn5.button("🎯 市场状态自适应", help="先判 BULL/RANGE/BEAR，再给动作建议", type="primary", width='stretch', disabled=not REGIME_ENGINE_AVAILABLE)
+            do_scan_safe = c_btn6.button("🛡️ 多重支撑", help="同时靠近多条均线，风险低", width='stretch')
             
             risk_preference = st.selectbox("风险偏好（市场状态自适应）", ["保守", "平衡", "进攻"], index=1, key="risk_pref_scanner")
         
@@ -9789,7 +9879,7 @@ with tab_scanner:
                         file_name=f"scan_{result_info['type']}_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv",
                         mime="text/csv",
                         help="下载扫描结果为CSV文件",
-                        use_container_width=True
+                        width='stretch'
                     )
             
             # 【NEW V88 Phase 2】表格筛选功能
@@ -10145,84 +10235,80 @@ def _save_macro_risk_cache(data: dict):
         pass
 
 
-def _fetch_macro_risk() -> dict:
+def _fetch_macro_risk(force_refresh: bool = False) -> dict:
     """
-    调用 Gemini 评估当前全球宏观 / 地缘风险，返回结构化结果：
-    {
-      "risk_level": 1-5,          # 1=低风险, 5=极高风险
-      "risk_label": "中等风险",
-      "risk_color": "#f59e0b",
-      "summary": "两句话总结",
-      "key_risks": ["风险1", ...], # 最多4条
-      "hot_sectors": ["能源", ...],# 受益板块
-      "warn_sectors": ["科技", ...],# 受压板块
-      "bias": "防御",              # 进攻 / 均衡 / 防御
-      "bias_reason": "原因一句话",
-    }
+    调用 Gemini 评估当前全球宏观 / 地缘风险，返回结构化结果。
+    缓存优先级：文件缓存（6h）> st.session_state（会话级）> Gemini API
     """
-    cached = _load_macro_risk_cache()
-    if cached:
-        return cached
+    import re as _re_json
+
+    # 1. 文件缓存（6小时 TTL）
+    if not force_refresh:
+        cached = _load_macro_risk_cache()
+        if cached:
+            return cached
+        # 2. 会话缓存（防止每 20 秒重试失败的 API 调用）
+        _ss_key = "_macro_risk_result"
+        if _ss_key in st.session_state and not force_refresh:
+            return st.session_state[_ss_key]
 
     if not HAS_GEMINI or not MY_GEMINI_KEY:
-        return _macro_risk_fallback()
+        fb = _macro_risk_fallback("Gemini API Key 未配置")
+        st.session_state["_macro_risk_result"] = fb
+        return fb
 
     today = datetime.now().strftime("%Y年%m月%d日")
-    prompt = f"""今天是 {today}。请以全球顶级宏观对冲基金分析师的视角，综合评估当前的宏观与地缘政治风险对股票市场的影响。
+    prompt = f"""今天是 {today}。请以全球顶级宏观对冲基金分析师的视角评估当前宏观与地缘政治风险对股票市场的影响。
 
-分析维度必须包括（但不限于）：
-1. 全球地缘冲突（俄乌、中东、台海、南海、全球贸易战）
-2. 全球经济周期（美联储利率、通胀、衰退预期）
-3. 中国经济（政策、房地产、内需、汇率）
-4. 大宗商品与能源价格（石油、黄金、铜）
-5. 美元指数与全球资金流向
-6. 近期重大政治事件（选举、制裁、关税）
+请**直接**输出以下 JSON（不要 markdown 代码块，不要任何额外文字）：
+{{"risk_level": 3, "risk_label": "中等风险", "summary": "两句话总结宏观背景。", "key_risks": ["风险1","风险2","风险3","风险4"], "hot_sectors": ["板块1","板块2","板块3"], "warn_sectors": ["板块1","板块2","板块3"], "bias": "均衡", "bias_reason": "原因一句话"}}
 
-请用以下 JSON 格式输出（不要有任何代码块标记，直接输出 JSON）：
-{{
-  "risk_level": <1到5的整数，1=低风险极度乐观,5=极高风险需要规避>,
-  "risk_label": "<10字以内的风险描述>",
-  "summary": "<用两句话总结当前最关键的宏观背景，影响投资者最重要的信息>",
-  "key_risks": ["<风险1>", "<风险2>", "<风险3>", "<风险4>"],
-  "hot_sectors": ["<受益板块1>", "<受益板块2>", "<受益板块3>"],
-  "warn_sectors": ["<受压板块1>", "<受压板块2>", "<受压板块3>"],
-  "bias": "<进攻|均衡|防御 三选一>",
-  "bias_reason": "<一句话说明当前偏向的原因>"
-}}"""
+以上为格式示例，请用真实分析填充所有字段。risk_level 必须是 1-5 的整数。"""
 
+    _err_msg = ""
     try:
         model = genai.GenerativeModel(GEMINI_MODEL_NAME)
-        resp  = model.generate_content(
-            prompt,
-            generation_config={"temperature": 0.3, "max_output_tokens": 600},
-        )
-        raw = resp.text.strip()
-        # 清理可能的 markdown 代码块
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        data = json.loads(raw.strip())
-        # 根据 risk_level 设定颜色
+        gen_cfg = genai.types.GenerationConfig(temperature=0.4, max_output_tokens=600)
+        resp = model.generate_content(prompt, generation_config=gen_cfg)
+        raw = resp.text.strip() if resp.text else ""
+        if not raw:
+            raise ValueError("API 返回空文本")
+        # 健壮 JSON 提取
+        _m = _re_json.search(r'\{[\s\S]*?\}', raw)
+        if _m:
+            raw = _m.group(0)
+        else:
+            raw = raw.strip('`').strip()
+            if raw.lower().startswith('json'):
+                raw = raw[4:].strip()
+        data = json.loads(raw)
         _colors = {1: "#10b981", 2: "#22c55e", 3: "#f59e0b", 4: "#f97316", 5: "#ef4444"}
         data["risk_color"] = _colors.get(int(data.get("risk_level", 3)), "#6b7280")
+        data["_error"] = ""  # 无错误
         _save_macro_risk_cache(data)
+        st.session_state["_macro_risk_result"] = data
         return data
     except Exception as e:
-        return _macro_risk_fallback()
+        _err_msg = f"{type(e).__name__}: {e}"
+        _safe_print(f"⚠️ 宏观风险评估失败: {_err_msg}")
+
+    fb = _macro_risk_fallback(_err_msg)
+    st.session_state["_macro_risk_result"] = fb
+    return fb
 
 
-def _macro_risk_fallback() -> dict:
+def _macro_risk_fallback(err_detail: str = "") -> dict:
     return {
         "risk_level": 3,
         "risk_label": "风险评估不可用",
         "risk_color": "#6b7280",
-        "summary": "Gemini API 未配置或请求失败，无法获取宏观风险评估。",
+        "summary": "宏观风险评估暂时不可用，建议保持均衡仓位。",
         "key_risks": [],
         "hot_sectors": [],
         "warn_sectors": [],
         "bias": "均衡",
         "bias_reason": "无法评估，建议保持均衡仓位",
+        "_error": err_detail,  # 保存真实错误便于 UI 展示和诊断
     }
 
 
@@ -10335,7 +10421,7 @@ with tab_quant:
             )
         with _h_col3:
             if st.button("📲 推送钉钉", key="top30_dingtalk_push",
-                         use_container_width=True,
+                         width='stretch',
                          help="一键把 Top30 推荐发送到钉钉群"):
                 with st.spinner("推送中..."):
                     _ok, _msg = _dingtalk_push_top30(_res)
@@ -10365,12 +10451,12 @@ with tab_quant:
             st.caption(f"扫描池: 美股 {_us_c} + 港股 {_hk_c} + A股 {_cn_c} = {_us_c+_hk_c+_cn_c} 只 · 结果缓存 6 小时")
             _btn_col1, _btn_col2 = st.columns([2, 1])
             with _btn_col1:
-                if st.button("🚀 启动后台全市场扫描", type="primary", use_container_width=True, key="top30_start_bg"):
+                if st.button("🚀 启动后台全市场扫描", type="primary", width='stretch', key="top30_start_bg"):
                     _scan_start_worker(force=False)
                     st.toast("✅ 后台扫描已启动，约 5-8 分钟后结果自动刷新", icon="🚀")
                     st.rerun()
             with _btn_col2:
-                if st.button("🔄 强制重扫", use_container_width=True, key="top30_force_bg",
+                if st.button("🔄 强制重扫", width='stretch', key="top30_force_bg",
                              help="清除缓存并重新扫描"):
                     _scan_force_clear()
                     _scan_start_worker(force=True)
@@ -10392,13 +10478,24 @@ with tab_quant:
         _btn_c1, _btn_c2 = st.columns([8, 1])
         with _btn_c2:
             if st.button("🔄 重扫", key="top30_rescan",
-                         help="清除缓存并重新扫描", use_container_width=True):
+                         help="清除缓存并重新扫描", width='stretch'):
                 _scan_force_clear()
                 _scan_start_worker(force=True)
                 st.toast("🔄 已触发重新扫描", icon="🔄")
                 st.rerun()
 
         # ── 宏观风险面板（Gemini 实时评估）──────────────────────────
+        # 重试按钮（在 expander 外，方便点击）
+        _macro_retry_col, _ = st.columns([1, 8])
+        with _macro_retry_col:
+            if st.button("🔄", key="macro_risk_retry", help="重新获取宏观风险评估"):
+                st.session_state.pop("_macro_risk_result", None)
+                try:
+                    _MACRO_RISK_CACHE_FILE.unlink(missing_ok=True)
+                except Exception:
+                    pass
+                st.rerun()
+
         _mr = _fetch_macro_risk()
         _rl  = _mr.get("risk_level", 3)
         _rc  = _mr.get("risk_color", "#6b7280")
@@ -10407,10 +10504,11 @@ with tab_quant:
         _bias_icons = {"进攻": "⚔️", "均衡": "⚖️", "防御": "🛡️"}
         _bias_icon  = _bias_icons.get(_bias, "⚖️")
         _risk_bar   = "█" * _rl + "░" * (5 - _rl)
+        _mr_error   = _mr.get("_error", "")
 
         with st.expander(
             f"🌍 宏观风险评估  {_risk_bar}  等级 {_rl}/5 · {_rlb}  |  {_bias_icon} 建议：{_bias}",
-            expanded=(_rl >= 3)   # 风险>=3 默认展开
+            expanded=(_rl >= 3)
         ):
             # 摘要
             _summary = _mr.get("summary", "")
@@ -10420,6 +10518,15 @@ with tab_quant:
                     f'padding:10px 14px;border-radius:6px;font-size:13px;'
                     f'color:#1e293b;margin-bottom:10px;">'
                     f'<b>📋 宏观背景</b><br>{_summary}</div>',
+                    unsafe_allow_html=True
+                )
+            # 真实错误信息（便于诊断）
+            if _mr_error:
+                st.markdown(
+                    f'<div style="font-size:11px;color:#ef4444;padding:4px 8px;'
+                    f'background:#fef2f2;border-radius:4px;margin-bottom:6px;">'
+                    f'⚠️ API 错误：{_mr_error}<br>'
+                    f'<span style="color:#6b7280">点击上方 🔄 按钮重试</span></div>',
                     unsafe_allow_html=True
                 )
             # 三列：关键风险 / 受益板块 / 受压板块
@@ -10476,6 +10583,14 @@ with tab_quant:
                 )
                 if not items:
                     st.caption("暂无符合条件标的")
+                    if "港" in mkt_label or "HK" in mkt_label:
+                        st.markdown(
+                            '<div style="font-size:11px;color:#f59e0b;line-height:1.5;">'
+                            '⚠️ 港股当前体制偏弱（Risk Off），恒指低于MA50，'
+                            '多数个股未达强势/蓄势评分门槛。'
+                            '<br>👉 可查看「拐点Top10」低吸或「启动Top10」追势。</div>',
+                            unsafe_allow_html=True
+                        )
                     return
                 # 在"信号"列追加宏观行业警示标
                 items_display = []
@@ -10489,7 +10604,7 @@ with tab_quant:
                 show_cols = [c for c in ["股票","代码","得分","形态","信号"] if c in df_show.columns]
                 sel = st.dataframe(
                     df_show[show_cols] if show_cols else df_show,
-                    use_container_width=True,
+                    width='stretch',
                     hide_index=True,
                     height=min(400, 40 + 35 * len(items)),
                     on_select="rerun",
@@ -10606,7 +10721,7 @@ with tab_ai_select:
             cached = True
             st.info("📦 使用缓存（文件持久化）")
     
-    if st.button("🚀 一键 AI 选股（中美港 Top3）", type="primary", use_container_width=True):
+    if st.button("🚀 一键 AI 选股（中美港 Top3）", type="primary", width='stretch'):
         if cached:
             st.toast("📦 使用缓存，无需重新分析", icon="📦")
         else:
@@ -10639,7 +10754,7 @@ with tab_ai_select:
                 st.rerun()
     
     # 清除缓存按钮
-    if st.button("🗑️ 清除 AI 选股缓存", help="清除 AI 选股结果缓存", use_container_width=True):
+    if st.button("🗑️ 清除 AI 选股缓存", help="清除 AI 选股结果缓存", width='stretch'):
         st.session_state.ai_selector_results = None
         ckey = _scan_cache_key('ai_selector', 'all')
         try:
@@ -10703,7 +10818,7 @@ with tab_watchlist:
             remaining = (ttl - (time.time() - ts)) / 60
             st.info(f"📦 使用缓存 | 剩余 {remaining:.1f} 分钟有效")
     
-    if st.button("🚀 一键自选股分析（中美港逐只）", type="primary", use_container_width=True, key="btn_watchlist"):
+    if st.button("🚀 一键自选股分析（中美港逐只）", type="primary", width='stretch', key="btn_watchlist"):
         if cached:
             st.toast("📦 使用缓存，无需重新分析", icon="📦")
         else:
@@ -10720,7 +10835,7 @@ with tab_watchlist:
                 st.toast("✅ 自选股分析完成", icon="📋")
                 st.rerun()
     
-    if st.button("🗑️ 清除自选股分析缓存", help="清除自选股分析结果", use_container_width=True, key="btn_watchlist_clear"):
+    if st.button("🗑️ 清除自选股分析缓存", help="清除自选股分析结果", width='stretch', key="btn_watchlist_clear"):
         st.session_state.watchlist_analysis = None
         st.toast("✅ 已清除", icon="🗑️")
         st.rerun()
@@ -10789,7 +10904,7 @@ if st.session_state.get('pk_codes') and len(st.session_state.pk_codes) >= 2:
     if pk_results:
         # 显示对比表格
         df_pk_display = pd.DataFrame(pk_results)
-        st.dataframe(df_pk_display, use_container_width=True, hide_index=True)
+        st.dataframe(df_pk_display, width='stretch', hide_index=True)
         
         # AI 综合点评
         st.markdown("---")
@@ -10797,9 +10912,9 @@ if st.session_state.get('pk_codes') and len(st.session_state.pk_codes) >= 2:
         
         col_ai1, col_ai2 = st.columns([1, 4])
         with col_ai1:
-            gen_pk_ai = st.button("⚡ 生成分析", key="btn_pk_ai_main", type="primary", use_container_width=True)
+            gen_pk_ai = st.button("⚡ 生成分析", key="btn_pk_ai_main", type="primary", width='stretch')
         with col_ai2:
-            clear_pk = st.button("🔄 清除对比", key="btn_clear_pk", use_container_width=True)
+            clear_pk = st.button("🔄 清除对比", key="btn_clear_pk", width='stretch')
         
         if clear_pk:
             st.session_state.pk_codes = None
@@ -10855,39 +10970,9 @@ _BRIEF_CONTENT_STYLE = """<style>
 .news-brief strong { font-weight: 600 !important; color: #1f2937 !important; }
 </style>"""
 
-_brief_title_id = "brief-copy-all-btn"
 st.markdown(f"""
-<div style="display:flex; align-items:center; gap:10px; margin-bottom:1rem;">
+<div style="margin-bottom:0.5rem;">
   <span style="color:#1f2937; font-size:18px; font-weight:700;">📰 AI市场简报 · {_dt_brief.now().strftime("%Y-%m-%d")}</span>
-  <button id="{_brief_title_id}"
-    onclick="(function(){{
-      var ta = document.getElementById('brief-raw-content');
-      var txt = ta ? ta.value : '';
-      function _done(){{
-        var b=document.getElementById('{_brief_title_id}');
-        if(!b) return;
-        var orig=b.innerText; b.innerText='✅ 已复制';
-        setTimeout(function(){{b.innerText=orig;}},1500);
-      }}
-      if(navigator.clipboard && txt){{
-        navigator.clipboard.writeText(txt).then(_done).catch(function(){{
-          var t=document.createElement('textarea');
-          t.value=txt; document.body.appendChild(t);
-          t.select(); document.execCommand('copy');
-          document.body.removeChild(t); _done();
-        }});
-      }} else {{
-        var t=document.createElement('textarea');
-        t.value=txt; document.body.appendChild(t);
-        t.select(); document.execCommand('copy');
-        document.body.removeChild(t); _done();
-      }}
-    }})();"
-    style="padding:2px 8px; font-size:11px; color:#6b7280; background:#f3f4f6;
-           border:1px solid #d1d5db; border-radius:4px; cursor:pointer;
-           line-height:1.4; white-space:nowrap;">
-    📋 复制全文
-  </button>
 </div>
 """, unsafe_allow_html=True)
 
@@ -10918,7 +11003,7 @@ with _brief_cache_info_col:
         st.caption("⏳ 首次加载中，正在自动生成日报...")
 with _brief_btn_col:
     # 点击即清除缓存并重新生成，始终是强制刷新
-    do_generate = st.button("🔄 刷新简报", key="btn_market_brief", type="primary", use_container_width=True)
+    do_generate = st.button("🔄 刷新简报", key="btn_market_brief", type="primary", width='stretch')
     if do_generate:
         try:
             _BRIEF_CACHE_FILE.unlink(missing_ok=True)
@@ -10990,6 +11075,13 @@ if do_generate:
                     us_candidates = mod_selection.format_bundle_wsj_candidates(_sel_data, "US", "$", 100)
                     hk_candidates = mod_selection.format_bundle_wsj_candidates(_sel_data, "HK", "HK$", 100)
                     cn_candidates = mod_selection.format_bundle_wsj_candidates(_sel_data, "CN", "¥", 100)
+                    # 兜底：数据获取失败时候选池可能为空，用 pool 前15只确保 AI 有可选标的
+                    if not hk_candidates and hk_pool:
+                        hk_candidates = [f"{it[1]}({it[2]})" for it in hk_pool[:15]]
+                    if not cn_candidates and cn_pool:
+                        cn_candidates = [f"{it[1]}({it[2]})" for it in cn_pool[:15]]
+                    if not us_candidates and us_pool:
+                        us_candidates = [f"{it[1]}({it[2]})" for it in us_pool[:15]]
                     _use_expanded_pool = True
                 else:
                     _sel_data = None
@@ -11060,14 +11152,15 @@ if do_generate:
 严禁编造代码！A股/港股必须用数字代码（如 600519.SS、00700.HK）。
 
 【硬性规则】
-1) 每个市场固定3只：1 立即建仓 + 1 中期跟进 + 1 观察
-2) **最终推荐 3 只里至少 2 只必须来自 Trade 池**（优先选质量闸门通过的标的）
-3) 每只推荐首行必须写为 **名称(代码)** 格式（如 **苹果(AAPL)**），便于系统标注现价
-4) 观察 禁止给目标位和买入建议
-5) 每只必须含：证据状态灯、R/R、三类失效、触发、基本面承接、技术确认、动作标签、仓位建议
-6) 文末固定输出 数据 与 时间戳（Asia/Shanghai），并标注数据截点
-7) **跨日去重**：{_recent_block}上述代码在近3日已推荐，本次9只推荐中禁止出现这些代码；若候选池内无其他合格标的，则可降级为「观察」后选入，但不得再次列为「立即建仓」或「中期跟进」
-8) **行业多样性**：每个市场的3只推荐，必须覆盖至少2个不同行业/板块（如科技+医疗、消费+金融），禁止3只均来自同一行业
+1) 必须输出美股、港股、A股三个市场，每个市场固定3只（共9只），禁止只输出美股或遗漏港股/A股
+2) 每市场3只：1 立即建仓 + 1 中期跟进 + 1 观察
+3) **最终推荐 3 只里至少 2 只必须来自 Trade 池**（优先选质量闸门通过的标的）
+4) 每只推荐首行必须写为 **名称(代码)** 格式（如 **苹果(AAPL)**、**腾讯控股(00700.HK)**、**贵州茅台(600519.SS)**），便于系统标注现价
+5) 观察 禁止给目标位和买入建议
+6) 每只必须含：证据状态灯、R/R、三类失效、触发、基本面承接、技术确认、动作标签、仓位建议
+7) 文末固定输出 数据 与 时间戳（Asia/Shanghai），并标注数据截点
+8) **跨日去重**：{_recent_block}上述代码在近3日已推荐，本次9只推荐中禁止出现这些代码；若候选池内无其他合格标的，则可降级为「观察」后选入，但不得再次列为「立即建仓」或「中期跟进」
+9) **行业多样性**：每个市场的3只推荐，必须覆盖至少2个不同行业/板块（如科技+医疗、消费+金融），禁止3只均来自同一行业
 
 【V2.1 Action Gate】立即建仓 仅当以下全满足，否则自动降级 中期跟进 或 观察：
 a) 证据状态灯 == ✅
@@ -11206,6 +11299,8 @@ e) 失效条件含 基本面+结构+事件 三类
 
 ## 可执行推荐
 
+【⚠️ 硬性要求】必须输出美股、港股、A股三个市场，每个市场必须恰好3只（共9只）。禁止只输出美股或遗漏港股/A股。若某市场候选不足，可从该市场候选池降级选取「观察」凑足3只。
+
 每只推荐必须符合 Card Schema，含：代码|名称、动作标签、触发、来源(tier)、机会/风险概率、建仓区间、仓位上限+分批节奏、R/R、失效条件、时间戳。
 
 ### 🇺🇸 美股（固定3只：1 立即建仓 + 1 中期跟进 + 1 观察）
@@ -11258,16 +11353,110 @@ e) 失效条件含 基本面+结构+事件 三类
 时间戳: {_ts_shanghai} (Asia/Shanghai 上海时区)
 数据截点: {_ts_shanghai}
 
-【QA Checker】若任一推荐缺 Card Schema 字段、或与 Action Gate/Source Tiering 规则冲突，则输出：
-日报未通过质检
-错误项：[逐条列出具体错误，如「美股推荐1 缺 R/R」「港股推荐1 来源 Tier C 禁止 BUILD_NOW」]"""
+【QA Checker】若以下任一成立，则输出「日报未通过质检」并列出错误项：
+- 美股/港股/A股任一市场缺推荐或数量不足3只（必须共9只）
+- 任一推荐缺 Card Schema 字段
+- 与 Action Gate/Source Tiering 规则冲突
+错误项示例：「美股仅2只缺1只」「港股整段缺失」「A股整段缺失」「美股推荐1 缺 R/R」"""
             
             _brief_ph = st.empty()
             res = ""
-            for _chunk in call_gemini_api_stream(prompt, model_name=BRIEF_MODEL):
+            for _chunk in call_gemini_api_stream(prompt, model_name=BRIEF_MODEL, max_output_tokens=32768):
                 res += _chunk
                 _brief_ph.markdown(res + " ▌")
             _brief_ph.empty()
+            
+            # 【补全】若首次生成缺失港股/A股，或区块存在但推荐数不足3只，则补充调用
+            def _count_recs_in_section(text, emoji_flag):
+                """统计可执行推荐中某市场的推荐数量（按编号 1./2./3. 计）"""
+                import re as _r
+                rec_idx = text.find("## 可执行推荐")
+                if rec_idx < 0:
+                    rec_idx = 0
+                section = text[rec_idx:]
+                mkt_idx = section.find(f"### {emoji_flag}")
+                if mkt_idx < 0:
+                    return 0
+                sub = section[mkt_idx:]
+                next_sec = _r.search(r'\n###\s|\n##\s', sub[5:])
+                if next_sec:
+                    sub = sub[:next_sec.start() + 5]
+                return len(_r.findall(r'^\d+\.\s+\*\*', sub, _r.MULTILINE))
+
+            _hk_count = _count_recs_in_section(res, "🇭🇰")
+            _cn_count = _count_recs_in_section(res, "🇨🇳")
+            _need_hk = _hk_count < 3
+            _need_cn = _cn_count < 3
+
+            if res and not res.startswith("❌") and (_need_hk or _need_cn) and (hk_candidates or cn_candidates):
+                import re as _re_supp
+                _labels = ["立即建仓", "中期跟进", "观察"]
+
+                # ── 分别补全港股 / A股，各自单独调用和插入 ────────────────
+                def _supp_one_market(cur_res, emoji_flag, count, candidates, mkt_header, price_prefix, key_suffix):
+                    """补全单个市场缺失的推荐，返回更新后的 res"""
+                    if count >= 3 or not candidates:
+                        return cur_res
+                    missing_indices = list(range(count, 3))
+                    # 构建 prompt（只输出缺失的那几只，不重复 section 标题）
+                    _sp_lines = [
+                        f"日报推荐补全：以下是缺失的{mkt_header.split('（')[0].strip()}推荐，"
+                        f"当前已有{count}只，请输出第{count+1}到第3只。",
+                        "【严格要求】",
+                        "1. 不要输出 section 标题（### 开头的行），直接输出股票编号",
+                        "2. 每只输出完整 Card Schema（触发、机会概率/风险概率、建仓区间、仓位+分批、R/R、失效条件×3、证据灯、时间戳）",
+                        f"3. 必须从候选池选股，严禁编造",
+                        "",
+                    ]
+                    for i in missing_indices:
+                        _sp_lines.append(f"{i+1}. **[名称(代码)]** · **{_labels[i]}** · 现价 {price_prefix}X.XX")
+                    _sp_lines += [
+                        "",
+                        f"候选池：{', '.join(candidates[:15])}",
+                        "",
+                        "只输出以上格式，不要其他内容。"
+                    ]
+                    _sp = "\n".join(_sp_lines)
+                    try:
+                        with st.spinner(f"📝 补全{mkt_header.split('（')[0].strip().replace('### ','')}推荐..."):
+                            _sr = ""
+                            for _ck in call_gemini_api_stream(_sp, model_name=BRIEF_MODEL, max_output_tokens=4096):
+                                _sr += _ck
+                        if not _sr or _sr.startswith("❌"):
+                            return cur_res
+                        # 插入位置：找到该市场 section，在其末尾（下一个 ### 或 ## 之前）插入
+                        _mkt_pos = cur_res.find(f"### {emoji_flag}")
+                        if _mkt_pos >= 0:
+                            # 已有部分内容，在 section 末尾插入
+                            _after = cur_res[_mkt_pos + 5:]
+                            _ns = _re_supp.search(r'\n###\s|\n##\s', _after)
+                            if _ns:
+                                _ins = _mkt_pos + 5 + _ns.start()
+                                cur_res = cur_res[:_ins].rstrip() + "\n" + _sr.strip() + "\n\n" + cur_res[_ins:].lstrip()
+                            else:
+                                cur_res = cur_res.rstrip() + "\n" + _sr.strip()
+                        else:
+                            # 整个 section 缺失，追加在 风险提示 前或末尾
+                            _full_sec = f"\n{mkt_header}\n" + _sr.strip()
+                            if "## 风险提示" in cur_res:
+                                cur_res = cur_res.replace("## 风险提示", _full_sec.strip() + "\n\n## 风险提示", 1)
+                            else:
+                                cur_res = cur_res.rstrip() + "\n\n" + _full_sec.strip()
+                        return cur_res
+                    except Exception as _es:
+                        _safe_print(f"⚠️ 补全{key_suffix}失败: {_es}")
+                        return cur_res
+
+                if _need_hk and hk_candidates:
+                    res = _supp_one_market(res, "🇭🇰", _hk_count, hk_candidates,
+                                           "### 🇭🇰 港股（固定3只：1 立即建仓 + 1 中期跟进 + 1 观察）",
+                                           "HK$", "港股")
+                if _need_cn and cn_candidates:
+                    _cn_count2 = _count_recs_in_section(res, "🇨🇳")  # 重新计数（港股可能已插入）
+                    res = _supp_one_market(res, "🇨🇳", _cn_count2, cn_candidates,
+                                           "### 🇨🇳 A股（固定3只：1 立即建仓 + 1 中期跟进 + 1 观察）",
+                                           "¥", "A股")
+            
             # 【推荐个股现价】解析报告中的股票代码，拉取现价并标注
             if res and not res.startswith("❌"):
                 def _inject_current_prices(text, _fetch_fn):
@@ -11313,40 +11502,41 @@ e) 失效条件含 基本面+结构+事件 三类
                     f'美{_bundle_line("US")} · 港{_bundle_line("HK")} · A{_bundle_line("CN")}'
                     f'</div>'
                 )
-            # 显示日报内容（无段落级复制按钮，全文复制入口在标题旁）
-            st.markdown(_BRIEF_CONTENT_STYLE, unsafe_allow_html=True)
-            import re as _re
-            def _clean_brief(txt):
-                # 删除：风险提示、明日触发、数据/时间戳、选股复盘 整段
-                for pat in [
-                    r'\n?#{1,3}\s*风险提示.*?(?=\n#{1,3}\s|\Z)',
-                    r'\n?#{1,3}\s*明日触发.*?(?=\n#{1,3}\s|\Z)',
-                    r'\n?#{1,3}\s*数据[/／]时间[戳]?.*?(?=\n#{1,3}\s|\Z)',
-                    r'\n?数据[：:][^\n]*时间[戳]?[^\n]*\n?',
-                    r'\n?\*数据[：:][^\n]*\n?',
-                    r'\n?---\s*\n#{1,3}\s*选股复盘.*',
-                    r'\n?#{1,3}\s*选股复盘.*',
-                ]:
-                    txt = _re.sub(pat, '', txt, flags=_re.DOTALL)
-                return txt.rstrip()
-            _res_display = _clean_brief(res)
-            _res_escaped = _res_display.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
-            st.markdown(f'<textarea id="brief-raw-content" style="display:none;">{_res_escaped}</textarea>',
-                        unsafe_allow_html=True)
-            st.markdown(f'<div class="news-brief">{_res_display}</div>', unsafe_allow_html=True)
-            st.caption("📌 本报告由 AI 生成 · Gemini 2.5 Flash")
-            st.download_button(
-                "📥 下载简报",
-                data=res,
-                file_name=f"AI市场简报_{datetime.now().strftime('%Y%m%d')}.md",
-                mime="text/markdown",
-                key="download_market_brief"
-            )
-            
-            # 保存到session_state供分享卡片使用，并写入12小时文件缓存
-            st.session_state["market_brief_latest"] = res
-            st.session_state["_brief_auto_gen_done"] = True
-            _save_brief_cache(res)
+            # 显示日报内容（仅在生成成功时保存缓存，防止将错误文本写入缓存）
+            if res.startswith("❌"):
+                st.error(res)
+                st.caption("💡 生成失败，请稍后点击「🔄 刷新简报」重试")
+            else:
+                st.markdown(_BRIEF_CONTENT_STYLE, unsafe_allow_html=True)
+                import re as _re
+                def _clean_brief(txt):
+                    for pat in [
+                        r'\n?#{1,3}\s*风险提示.*?(?=\n#{1,3}\s|\Z)',
+                        r'\n?#{1,3}\s*明日触发.*?(?=\n#{1,3}\s|\Z)',
+                        r'\n?#{1,3}\s*数据[/／]时间[戳]?.*?(?=\n#{1,3}\s|\Z)',
+                        r'\n?数据[：:][^\n]*时间[戳]?[^\n]*\n?',
+                        r'\n?\*数据[：:][^\n]*\n?',
+                        r'\n?---\s*\n#{1,3}\s*选股复盘.*',
+                        r'\n?#{1,3}\s*选股复盘.*',
+                    ]:
+                        txt = _re.sub(pat, '', txt, flags=_re.DOTALL)
+                    return txt.rstrip()
+                _res_display = _clean_brief(res)
+                st.markdown(f'<div class="news-brief">{_res_display}</div>', unsafe_allow_html=True)
+                if COPY_UTILS_AVAILABLE:
+                    CopyUtils.create_copy_button(_res_display, button_text="📋 复制全文", key="brief_copy_new")
+                st.caption("📌 本报告由 AI 生成 · Gemini 2.5 Flash")
+                st.download_button(
+                    "📥 下载简报",
+                    data=res,
+                    file_name=f"AI市场简报_{datetime.now().strftime('%Y%m%d')}.md",
+                    mime="text/markdown",
+                    key="download_market_brief"
+                )
+                # 生成成功才保存到session_state和文件缓存
+                st.session_state["market_brief_latest"] = res
+                st.session_state["_brief_auto_gen_done"] = True
+                _save_brief_cache(res)
 
 # ── 缓存自动展示：刷新页面后无需重新生成，直接显示 ──────────────────────────
 elif "market_brief_latest" in st.session_state:
@@ -11366,10 +11556,10 @@ elif "market_brief_latest" in st.session_state:
             txt = _re.sub(pat, '', txt, flags=_re.DOTALL)
         return txt.rstrip()
     _auto_clean = _clean_brief(_auto_res)
-    _auto_escaped = _auto_clean.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
-    st.markdown(f'<textarea id="brief-raw-content" style="display:none;">{_auto_escaped}</textarea>',
-                unsafe_allow_html=True)
     st.markdown(f'<div class="news-brief">{_auto_clean}</div>', unsafe_allow_html=True)
+    # 【Fix】使用 CopyUtils（components.html iframe）确保复制按钮跨 DOM 边界可用
+    if COPY_UTILS_AVAILABLE:
+        CopyUtils.create_copy_button(_auto_clean, button_text="📋 复制全文", key="brief_copy_cached")
     st.caption("📌 本报告由 AI 生成 · Gemini 2.5 Flash · 来自12小时缓存")
     st.download_button(
         "📥 下载简报",
