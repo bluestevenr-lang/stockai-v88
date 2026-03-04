@@ -657,24 +657,22 @@ class DataProvider:
             except Exception as _e:
                 self.logger.debug(f"Tushare {symbol} 失败，降级 yfinance: {_e}")
 
-        # 2b. 尝试从 yfinance 获取（带重试 + 正确的 Session UA 注入）
-        _ua_list = [
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/17.3 Safari/605.1.15",
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/121.0.0.0 Safari/537.36",
-        ]
+        # 2b. 尝试从 yfinance 获取（带重试）
+        # 注意：新版 yfinance (>=0.2.37) 只接受 curl_cffi Session，
+        # 传入 requests.Session 会报错。优先用 curl_cffi，否则不传 session。
+        def _make_yf_session(attempt_idx: int):
+            try:
+                import curl_cffi.requests as _cffi
+                _impersonates = ["chrome110", "chrome120", "safari17_0"]
+                return _cffi.Session(impersonate=_impersonates[attempt_idx % len(_impersonates)])
+            except ImportError:
+                return None  # curl_cffi 未安装，yfinance 自行处理
+
         for attempt in range(Config.RETRY_COUNT):
             try:
                 self.logger.info(f"📊 正在获取 {symbol} 数据... (尝试 {attempt+1}/{Config.RETRY_COUNT})")
-                # 正确方式：把自定义 Session 传给 yf.Ticker（而非修改全局）
-                import requests as _req_mod
-                _session = _req_mod.Session()
-                _session.headers.update({
-                    "User-Agent": _ua_list[attempt % len(_ua_list)],
-                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-                    "Accept-Language": "en-US,en;q=0.5",
-                })
-                ticker = yf.Ticker(symbol, session=_session)
+                _sess = _make_yf_session(attempt)
+                ticker = yf.Ticker(symbol, session=_sess) if _sess else yf.Ticker(symbol)
                 df = ticker.history(period=period, timeout=Config.REQUEST_TIMEOUT)
                 # 兼容新版 yfinance MultiIndex 列
                 if df is not None and not df.empty and hasattr(df.columns, "levels") and df.columns.nlevels == 2:

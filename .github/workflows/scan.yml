@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install yfinance pandas requests tushare
+          pip install yfinance>=0.2.37 curl_cffi>=0.6.0 pandas requests tushare
 
       - name: Run cloud scan
         env:

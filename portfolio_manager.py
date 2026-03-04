@@ -9,13 +9,14 @@ import sys
 import pandas as pd
 from datetime import datetime
 
-# 强制UTF-8编码（Streamlit 等环境下 stdout 可能已关闭，需容错）
+# 强制UTF-8编码（仅命令行模式下尝试，Streamlit 环境跳过）
 import io
-try:
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
-except (ValueError, OSError, AttributeError):
-    pass  # 环境不支持时跳过，避免 I/O operation on closed file
+if __name__ == "__main__":
+    try:
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+    except (ValueError, OSError, AttributeError):
+        pass
 
 PORTFOLIO_FILE = 'my_portfolio.xlsx'
 
@@ -233,3 +234,40 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# ── PortfolioManager 类（供 app_v88_integrated.py 导入）────────────
+class PortfolioManager:
+    """持仓管理器：封装 portfolio_manager 模块的函数为类接口"""
+
+    def __init__(self, portfolio_file: str = PORTFOLIO_FILE):
+        self.portfolio_file = portfolio_file
+        # 临时覆盖全局文件路径
+        global PORTFOLIO_FILE
+        PORTFOLIO_FILE = portfolio_file
+
+    def load(self):
+        return load_portfolio()
+
+    def save(self, df):
+        return save_portfolio(df)
+
+    def show(self):
+        return show_portfolio()
+
+    def add(self, code, name, quantity, price, buy_date="", note=""):
+        return add_stock(code, name, quantity, price, buy_date, note)
+
+    def remove(self, code):
+        return remove_stock(code)
+
+    def update(self, code, quantity=None, price=None):
+        return update_stock(code, quantity, price)
+
+    def get_dataframe(self):
+        """返回持仓 DataFrame，失败返回空 DataFrame"""
+        df = load_portfolio()
+        if df is None:
+            import pandas as pd
+            return pd.DataFrame()
+        return df

@@ -143,21 +143,19 @@ def fetch_df(yf_code: str, period: str = "1y", timeout: int = 10) -> pd.DataFram
             return df
         log.debug(f"Tushare 失败，降级 yfinance: {yf_code}")
 
-    # 其他 / Tushare 失败：yfinance（正确注入 Session + UA）
-    _UA_LIST = [
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/17.3 Safari/605.1.15",
-    ]
+    # 其他 / Tushare 失败：yfinance
+    # 新版 yfinance (>=0.2.37) 需要 curl_cffi session，不能传 requests.Session
     for _attempt in range(2):
         try:
-            import requests as _req
             import yfinance as yf
-            _session = _req.Session()
-            _session.headers.update({
-                "User-Agent": _UA_LIST[_attempt % len(_UA_LIST)],
-                "Accept-Language": "en-US,en;q=0.9",
-            })
-            ticker = yf.Ticker(yf_code, session=_session)
+            # 优先 curl_cffi session（新版 yfinance 推荐）
+            _sess = None
+            try:
+                import curl_cffi.requests as _cffi
+                _sess = _cffi.Session(impersonate="chrome120")
+            except ImportError:
+                pass
+            ticker = yf.Ticker(yf_code, session=_sess) if _sess else yf.Ticker(yf_code)
             df = ticker.history(period=period, timeout=timeout)
             if df is None or df.empty:
                 time.sleep(1.5)
