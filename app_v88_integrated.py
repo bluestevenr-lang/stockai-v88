@@ -115,6 +115,38 @@ def _safe_print(*args, **kwargs):
         logging.debug(f"_safe_print: {args} {kwargs}")
 
 
+# ── 24 小时自动重启 ───────────────────────────────────────────────
+# 模块级时间戳：Python 进程首次加载本模块时记录，进程重启后重置
+_APP_PROCESS_START_TIME: float = time.time()
+_APP_AUTO_RESTART_SEC: int = 24 * 3600  # 24 小时
+
+
+def _check_auto_restart() -> None:
+    """
+    在每次页面渲染时调用。
+    运行超过 24 小时后强制重启进程（本地）或清除全部缓存重跑（云端）。
+    这确保 @st.cache_resource 对象、文件缓存、第三方 session 都能定期刷新。
+    """
+    uptime = time.time() - _APP_PROCESS_START_TIME
+    if uptime < _APP_AUTO_RESTART_SEC:
+        return  # 未到 24 小时，直接返回
+
+    _safe_print(f"⏰ 进程运行 {uptime/3600:.1f}h，触发 24h 自动重启...")
+    try:
+        # 先清除 Streamlit 所有缓存
+        st.cache_resource.clear()
+        st.cache_data.clear()
+        # 尝试替换当前进程（本地环境）：os.execv 不创建子进程，直接替换自身
+        import os as _os, sys as _sys
+        _os.execv(_sys.executable, [_sys.executable] + _sys.argv)
+    except Exception as _e:
+        # Cloud / 受限环境：os.execv 不可用，降级为清缓存 + rerun
+        _safe_print(f"⚠️ os.execv 不可用 ({_e})，降级清缓存重跑")
+        st.cache_resource.clear()
+        st.cache_data.clear()
+        st.rerun()
+
+
 def _safe_str_for_dom(val):
     """移除控制字符、NaN、Inf 等，防止 InvalidCharacterError。用于 st.metric / st.markdown 等"""
     if val is None:
@@ -1545,6 +1577,9 @@ logging.info("  - 并发线程池: 最大{}线程".format(Config.MAX_WORKERS))
 # ═══════════════════════════════════════════════════════════════
 
 st.set_page_config(layout="wide", page_title="AI 皇冠双核", page_icon="👑", initial_sidebar_state="collapsed")
+
+# ── 24 小时自动重启检查（每次页面渲染时触发）──────────────────
+_check_auto_restart()
 
 # ═══════════════════════════════════════════════════════════════
 # 【V89.5 修复】提前定义MY_GEMINI_KEY - 避免在全球市场概览中未定义错误
