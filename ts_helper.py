@@ -73,11 +73,21 @@ def is_cn(code: str) -> bool:
     return code.endswith(".SS") or code.endswith(".SZ")
 
 
+# ── 指数代码识别 ─────────────────────────────────────────────────
+_INDEX_PREFIXES = ("000001", "000300", "000016", "000905", "399001",
+                   "399006", "399300", "399400", "000852", "000688")
+
+def is_index(yf_code: str) -> bool:
+    """是否 A 股指数代码（上证/深证/沪深300/创业板等）"""
+    code6 = yf_code.split(".")[0]
+    return code6 in _INDEX_PREFIXES
+
+
 # ── 行情数据 ─────────────────────────────────────────────────────
 def fetch_daily_tushare(yf_code: str, days: int = 400) -> pd.DataFrame | None:
     """
     用 Tushare 拉取 A 股日线 OHLCV，返回标准 DataFrame（与 yfinance 列名一致）。
-    yf_code: 600519.SS 或 000858.SZ
+    yf_code: 600519.SS / 000858.SZ / 399006.SZ（指数自动用 index_daily）
     """
     if not is_cn(yf_code):
         return None
@@ -88,8 +98,13 @@ def fetch_daily_tushare(yf_code: str, days: int = 400) -> pd.DataFrame | None:
         ts_code = yf_to_ts(yf_code)
         end_d   = datetime.now().strftime("%Y%m%d")
         start_d = (datetime.now() - timedelta(days=days)).strftime("%Y%m%d")
-        df = pro.daily(ts_code=ts_code, start_date=start_d, end_date=end_d,
-                       fields="trade_date,open,high,low,close,vol")
+        # 指数用 index_daily，普通股票用 daily
+        if is_index(yf_code):
+            df = pro.index_daily(ts_code=ts_code, start_date=start_d, end_date=end_d,
+                                 fields="trade_date,open,high,low,close,vol")
+        else:
+            df = pro.daily(ts_code=ts_code, start_date=start_d, end_date=end_d,
+                           fields="trade_date,open,high,low,close,vol")
         if df is None or len(df) < 5:
             return None
         df = df.sort_values("trade_date").reset_index(drop=True)

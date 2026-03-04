@@ -9654,9 +9654,9 @@ _gist_last_sync_ok: bool  = False
 def _scan_fetch_from_gist() -> dict | None:
     """
     用 GitHub API 拉取 Gist 内容（只需 GIST_ID，不需用户名）。
-    带 10 分钟本地短缓存，避免每 20 秒轮询。
+    支持 GIST_TOKEN（可读 secret gist）；带 10 分钟本地短缓存。
     """
-    global _gist_local_cache, _gist_last_sync_ts, _gist_last_sync_ok
+    global _gist_local_cache, _gist_last_sync_ts, _gist_last_sync_ok, _gist_last_err
     if not _GIST_ID:
         return None
     # 本地缓存有效则直接返回
@@ -9665,28 +9665,36 @@ def _scan_fetch_from_gist() -> dict | None:
         data = {k: v for k, v in cached.items() if k != "_fetched_at"}
         if time.time() - data.get("timestamp", 0) < _SCAN_RESULT_TTL:
             return data
-    # 用 GitHub Gist API（只需 gist_id，不需要用户名）
+    # 读取可选的 GIST_TOKEN（用于 secret gist 或提高 API rate limit）
+    _gist_token = (
+        st.secrets.get("GIST_TOKEN", "") if hasattr(st, "secrets") else ""
+    ) or os.environ.get("GIST_TOKEN", "")
     try:
         import urllib.request as _ur
         api_url = f"https://api.github.com/gists/{_GIST_ID}"
-        req = _ur.Request(api_url, headers={
-            "Accept": "application/vnd.github+json",
+        headers = {
+            "Accept":     "application/vnd.github+json",
             "User-Agent": "StockAI-V88",
-        })
+        }
+        if _gist_token:
+            headers["Authorization"] = f"Bearer {_gist_token}"
+        req = _ur.Request(api_url, headers=headers)
         with _ur.urlopen(req, timeout=12) as resp:
             gist_json = json.loads(resp.read().decode("utf-8"))
         # 从 Gist API 响应里取文件内容
         files = gist_json.get("files", {})
+        if not files:
+            raise ValueError("Gist 为空（GitHub Actions 可能尚未运行）")
         content = None
         for fname, fdata in files.items():
             if "scan_results" in fname.lower() or fname.endswith(".json"):
                 content = fdata.get("content", "")
                 break
         if not content:
-            raise ValueError("Gist 无有效文件内容")
+            raise ValueError(f"Gist 文件中无 scan_results，现有文件: {list(files.keys())}")
         data = json.loads(content)
         if not data.get("timestamp"):
-            raise ValueError("Gist 数据无时间戳")
+            raise ValueError("Gist 数据无 timestamp 字段")
         # 同步写本地文件备用
         try:
             _BRIEF_CACHE_DIR.mkdir(exist_ok=True)
@@ -9695,28 +9703,37 @@ def _scan_fetch_from_gist() -> dict | None:
             )
         except Exception:
             pass
-        _gist_local_cache    = {**data, "_fetched_at": time.time()}
-        _gist_last_sync_ts   = time.time()
-        _gist_last_sync_ok   = True
+        _gist_local_cache  = {**data, "_fetched_at": time.time()}
+        _gist_last_sync_ts = time.time()
+        _gist_last_sync_ok = True
+        _gist_last_err     = ""
         return data
     except Exception as _e:
-        _gist_last_sync_ts  = time.time()
-        _gist_last_sync_ok  = False
+        _gist_last_sync_ts = time.time()
+        _gist_last_sync_ok = False
+        _gist_last_err     = str(_e)[:120]
         return None
+
+
+_gist_last_err: str = ""
 
 
 def _gist_sync_status() -> str:
     """返回云端同步状态字符串，用于 UI 展示"""
     if not _GIST_ID:
-        return "⚙️ 未配置 GIST_ID"
+        return "⚙️ 未配置 GIST_ID（Secrets 里加 GIST_ID = \"...\" 即可）"
     if _gist_last_sync_ts == 0:
-        return "🔄 云端尚未同步"
-    ago = int(time.time() - _gist_last_sync_ts)
-    t_str = f"{ago//60}分钟前" if ago >= 60 else f"{ago}秒前"
+        return "🔄 云端尚未同步（页面加载后首次轮询中）"
+    ago   = int(time.time() - _gist_last_sync_ts)
+    t_str = f"{ago//60}分{ago%60}秒前" if ago >= 60 else f"{ago}秒前"
     if _gist_last_sync_ok:
         return f"☁️ 云端同步成功（{t_str}）"
-    else:
-        return f"⚠️ 云端同步失败（{t_str}）· 使用本地缓存"
+    hint = ""
+    if "尚未运行" in _gist_last_err or "为空" in _gist_last_err:
+        hint = " · GitHub Actions 尚未写入数据，可手动触发"
+    elif "GIST_ID" in _gist_last_err or "404" in _gist_last_err:
+        hint = " · GIST_ID 有误，请检查 Secrets"
+    return f"⚠️ 云端读取失败（{t_str}）{hint}"
 
 
 def _scan_write_heartbeat():
