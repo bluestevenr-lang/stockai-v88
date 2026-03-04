@@ -643,7 +643,21 @@ class DataProvider:
             self.perf.record('fetch', elapsed)
             return cached_value
         
-        # 2. 尝试从yfinance获取（带重试）
+        # 2a. A股：优先 Tushare（全球可用，覆盖率高）
+        if symbol.endswith(".SS") or symbol.endswith(".SZ"):
+            try:
+                from ts_helper import fetch_df as _ts_fetch
+                _ts_df = _ts_fetch(symbol, period=period)
+                if _ts_df is not None and len(_ts_df) >= min_rows:
+                    self.cache_mgr.set(cache_key, _ts_df, data_type)
+                    elapsed = (time.time() - start_time) * 1000
+                    self.perf.record('fetch', elapsed)
+                    self.logger.info(f"✅ Tushare 获取 {symbol}，共 {len(_ts_df)} 条记录")
+                    return _ts_df
+            except Exception as _e:
+                self.logger.debug(f"Tushare {symbol} 失败，降级 yfinance: {_e}")
+
+        # 2b. 尝试从 yfinance 获取（带重试）
         for attempt in range(Config.RETRY_COUNT):
             try:
                 self.logger.info(f"📊 正在获取 {symbol} 数据... (尝试 {attempt+1}/{Config.RETRY_COUNT})")
@@ -2120,6 +2134,11 @@ def get_market_heat(_cache_ver="v94"):
     }
 
     import yfinance as _yf
+    try:
+        from ts_helper import fetch_daily_tushare as _ts_daily, is_cn as _is_cn
+        _has_ts = True
+    except Exception:
+        _has_ts = False
 
     def _calc_ret(series, days):
         try:
@@ -2178,6 +2197,14 @@ def get_market_heat(_cache_ver="v94"):
         return list(dict.fromkeys(variants))
 
     def _get_close(code):
+        # A股：优先 Tushare（90天已足够热力计算）
+        if _has_ts and _is_cn(code):
+            try:
+                s = _ts_daily(code, days=100)
+                if s is not None and len(s) >= 5:
+                    return s["Close"]
+            except Exception:
+                pass
         # 先尝试从批量结果取（含港股补零变体匹配）
         try:
             if raw is not None:

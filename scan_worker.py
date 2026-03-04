@@ -400,7 +400,19 @@ def _fallback_cn():
     ]
 
 
-# ── Tushare 单例 ────────────────────────────────────────────────
+# ── Tushare：优先用 ts_helper 共享模块 ──────────────────────────
+try:
+    from ts_helper import (
+        get_pro as _get_ts_pro_ext,
+        fetch_daily_tushare as _fetch_daily_ts_ext,
+        fetch_cn_stock_pool as _fetch_cn_pool_ext,
+        is_cn as _is_cn_ext,
+    )
+    _USE_TS_HELPER = True
+except Exception:
+    _USE_TS_HELPER = False
+
+# ── 本地 Tushare 单例（ts_helper 不可用时的备用）────────────────
 _ts_pro_instance = None
 
 def _get_ts_pro():
@@ -420,6 +432,9 @@ def _get_ts_pro():
 
 
 def _fetch_cn_pool_tushare(limit: int = 300) -> list:
+    if _USE_TS_HELPER:
+        return _fetch_cn_pool_ext(limit)
+    # 以下为本地实现兜底
     """
     Tushare 获取 A 股股票池（主板+中小板+创业板+科创板，上市状态）
     返回 [(code6, name, yf_code), ...]
@@ -448,6 +463,9 @@ def _fetch_cn_pool_tushare(limit: int = 300) -> list:
 
 
 def _fetch_df_tushare(yf_code: str):
+    if _USE_TS_HELPER:
+        return _fetch_daily_ts_ext(yf_code, days=400)
+    # 以下为本地实现兜底
     """
     A股专用数据获取（Tushare）
     yf_code: 600519.SS 或 000858.SZ

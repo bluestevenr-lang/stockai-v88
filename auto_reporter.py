@@ -28,6 +28,17 @@ import time
 import ssl
 import pandas as pd
 
+# Tushare A股数据助手（优先于 yfinance）
+try:
+    sys.path.insert(0, str(Path(__file__).parent))
+    from ts_helper import fetch_df as _ts_fetch_df, fetch_latest_price as _ts_price, is_cn as _ts_is_cn
+    _TS_AVAILABLE = True
+except Exception:
+    _TS_AVAILABLE = False
+    def _ts_is_cn(c): return c.endswith(".SS") or c.endswith(".SZ")
+    def _ts_fetch_df(c, **kw): return None
+    def _ts_price(c): return None
+
 import io
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
@@ -102,6 +113,11 @@ def _to_yf_cn_code(code):
 def _v88_fetch_price(code):
     try:
         yf_code = _to_yf_cn_code(code) if not code.endswith(".HK") and not code.endswith(".SS") and not code.endswith(".SZ") else code
+        # A股优先 Tushare
+        if _TS_AVAILABLE and _ts_is_cn(yf_code):
+            r = _ts_price(yf_code)
+            if r:
+                return r["price"]
         df = yf.Ticker(yf_code).history(period="5d", timeout=10)
         if df is not None and len(df) > 0 and "Close" in df.columns:
             return float(df["Close"].iloc[-1])
@@ -112,6 +128,13 @@ def _v88_fetch_price(code):
 
 def _v88_index_change(code, label):
     try:
+        # A股优先 Tushare
+        if _TS_AVAILABLE and _ts_is_cn(code):
+            r = _ts_price(code)
+            if r:
+                chg = r["change_pct"]
+                p   = r["price"]
+                return f"{label}: {p:.2f}（涨跌 {chg:+.2f}%）"
         df = yf.Ticker(code).history(period="5d", timeout=10)
         if df is not None and len(df) >= 2:
             last_close = float(df["Close"].iloc[-1])
@@ -519,7 +542,12 @@ def _screened_candidates(pool, min_score, prefix, market_label, max_per_type=40,
     def _worker(item):
         try:
             yf_code = item[2] if len(item) >= 3 else _to_yf_cn_code(item[0])
-            df = yf.Ticker(yf_code).history(period="1y", timeout=8)
+            # A股优先 Tushare
+            df = None
+            if _TS_AVAILABLE and _ts_is_cn(yf_code):
+                df = _ts_fetch_df(yf_code, period="1y")
+            if df is None:
+                df = yf.Ticker(yf_code).history(period="1y", timeout=8)
             if df is None or len(df) < 20:
                 return None
             df = df.apply(pd.to_numeric, errors="coerce").dropna().sort_index()
@@ -1271,11 +1299,22 @@ def _generate_report_fallback(report_type="evening"):
             tx_price  = yf.Ticker("0700.HK").history(period="2d")['Close'].iloc[-1]
             ali_price = yf.Ticker("9988.HK").history(period="2d")['Close'].iloc[-1]
             xm_price  = yf.Ticker("1810.HK").history(period="2d")['Close'].iloc[-1]
-            mt_price  = yf.Ticker("600519.SS").history(period="2d")['Close'].iloc[-1]
-            nd_price  = yf.Ticker("300750.SZ").history(period="2d")['Close'].iloc[-1]
-            wly_price = yf.Ticker("000858.SZ").history(period="2d")['Close'].iloc[-1]
         except Exception:
             tx_price, ali_price, xm_price = 360, 80, 18
+        try:
+            # A股优先 Tushare
+            def _cn_price(c, fallback):
+                if _TS_AVAILABLE:
+                    r = _ts_price(c)
+                    if r: return r["price"]
+                try:
+                    return yf.Ticker(c).history(period="2d")['Close'].iloc[-1]
+                except Exception:
+                    return fallback
+            mt_price  = _cn_price("600519.SS", 1650)
+            nd_price  = _cn_price("300750.SZ", 165)
+            wly_price = _cn_price("000858.SZ", 145)
+        except Exception:
             mt_price, nd_price, wly_price = 1650, 165, 145
 
     print("📝 正在生成降级报告...")
