@@ -724,9 +724,9 @@ def _score_top(df) -> dict | None:
         if ret60 > 10:                     score += 10; signals.append(f"60日+{ret60:.1f}%")
         if vol_surge:                      score += 10; signals.append("🔥 放量")
 
-        if score < 40:
+        if score < 30:
             return None
-        setup = "强势" if score >= 70 else "偏强"
+        setup = "强势" if score >= 70 else ("偏强" if score >= 50 else "弱强势")
         return {"score": min(100, score), "signals": signals, "setup": setup,
                 "dist_h": dist_h, "rsi": rsi}
     except Exception:

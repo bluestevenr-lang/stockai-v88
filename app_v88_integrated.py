@@ -10451,24 +10451,23 @@ def _fetch_macro_risk(force_refresh: bool = False) -> dict:
         return fb
 
     today = datetime.now().strftime("%Y年%m月%d日")
-    prompt = f"""今天是 {today}。请以全球顶级宏观对冲基金分析师的视角评估当前宏观与地缘政治风险对股票市场的影响。
+    prompt = f"""今天是 {today}。以全球宏观对冲基金视角评估当前市场风险。
 
-请**直接**输出以下 JSON（不要 markdown 代码块，不要任何额外文字）：
-{{"risk_level": 3, "risk_label": "中等风险", "summary": "两句话总结宏观背景。", "key_risks": ["风险1","风险2","风险3","风险4"], "hot_sectors": ["板块1","板块2","板块3"], "warn_sectors": ["板块1","板块2","板块3"], "bias": "均衡", "bias_reason": "原因一句话"}}
+直接输出JSON，不要代码块、不要注释、不要多余文字：
+{{"risk_level":3,"risk_label":"中等风险","summary":"一句话宏观概述","key_risks":["风险A","风险B","风险C"],"hot_sectors":["板块1","板块2"],"warn_sectors":["板块1","板块2"],"bias":"均衡","bias_reason":"简短理由"}}
 
-以上为格式示例，请用真实分析填充所有字段。risk_level 必须是 1-5 的整数。"""
+risk_level为1-5整数，其余字段用简短中文填写。"""
 
     _err_msg = ""
     try:
         model = genai.GenerativeModel(GEMINI_MODEL_NAME)
-        # 600 对中文 JSON 太少，容易截断；改为 1500
-        gen_cfg = genai.types.GenerationConfig(temperature=0.4, max_output_tokens=1500)
+        gen_cfg = genai.types.GenerationConfig(temperature=0.3, max_output_tokens=3000)
         resp = model.generate_content(prompt, generation_config=gen_cfg)
         raw = resp.text.strip() if resp.text else ""
         if not raw:
             raise ValueError("API 返回空文本")
-        # 健壮 JSON 提取：用贪婪匹配取最外层完整 {} 块
-        # 注意：*? 是非贪婪，会在第一个 } 就停——这里必须用贪婪 *
+
+        # 提取 JSON：贪婪匹配最外层 {} 块
         _m = _re_json.search(r'\{[\s\S]*\}', raw)
         if _m:
             raw = _m.group(0)
@@ -10476,10 +10475,58 @@ def _fetch_macro_risk(force_refresh: bool = False) -> dict:
             raw = raw.strip('`').strip()
             if raw.lower().startswith('json'):
                 raw = raw[4:].strip()
-        data = json.loads(raw)
+
+        # JSON 修复：补全截断的 JSON（末尾缺少 "、] 或 }）
+        def _repair_json(s: str) -> str:
+            s = s.rstrip()
+            # 统计未闭合的引号（奇数个说明字符串未关闭）
+            in_str = False
+            escaped = False
+            for ch in s:
+                if escaped:
+                    escaped = False
+                    continue
+                if ch == '\\':
+                    escaped = True
+                    continue
+                if ch == '"':
+                    in_str = not in_str
+            if in_str:
+                s += '"'   # 补上未关闭的字符串
+            # 补上未关闭的数组和对象
+            opens = {'[': ']', '{': '}'}
+            stack = []
+            in_s = False
+            esc = False
+            for ch in s:
+                if esc:
+                    esc = False
+                    continue
+                if ch == '\\':
+                    esc = True
+                    continue
+                if ch == '"':
+                    in_s = not in_s
+                    continue
+                if not in_s:
+                    if ch in opens:
+                        stack.append(opens[ch])
+                    elif ch in opens.values():
+                        if stack and stack[-1] == ch:
+                            stack.pop()
+            while stack:
+                s += stack.pop()
+            return s
+
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError:
+            repaired = _repair_json(raw)
+            data = json.loads(repaired)
+
         _colors = {1: "#10b981", 2: "#22c55e", 3: "#f59e0b", 4: "#f97316", 5: "#ef4444"}
         data["risk_color"] = _colors.get(int(data.get("risk_level", 3)), "#6b7280")
-        data["_error"] = ""  # 无错误
+        data["_error"] = ""
         _save_macro_risk_cache(data)
         st.session_state["_macro_risk_result"] = data
         return data
