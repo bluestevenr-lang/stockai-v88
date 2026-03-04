@@ -400,8 +400,86 @@ def _fallback_cn():
     ]
 
 
+# ── Tushare 单例 ────────────────────────────────────────────────
+_ts_pro_instance = None
+
+def _get_ts_pro():
+    """获取 Tushare pro_api 单例（懒初始化）"""
+    global _ts_pro_instance
+    if _ts_pro_instance is None:
+        token = os.environ.get("TUSHARE_TOKEN", "")
+        if token:
+            try:
+                import tushare as _ts
+                _ts.set_token(token)
+                _ts_pro_instance = _ts.pro_api()
+                log.info("Tushare 初始化成功")
+            except Exception as e:
+                log.warning(f"Tushare 初始化失败: {e}")
+    return _ts_pro_instance
+
+
+def _fetch_cn_pool_tushare(limit: int = 300) -> list:
+    """
+    Tushare 获取 A 股股票池（主板+中小板+创业板+科创板，上市状态）
+    返回 [(code6, name, yf_code), ...]
+    """
+    pro = _get_ts_pro()
+    if pro is None:
+        return []
+    try:
+        df = pro.stock_basic(exchange="", list_status="L",
+                             fields="ts_code,name,market")
+        if df is None or len(df) == 0:
+            return []
+        # 只保留沪深主流市场，排除北交所
+        df = df[df["market"].isin(["主板", "中小板", "创业板", "科创板"])]
+        pool = []
+        for _, row in df.iterrows():
+            ts_code = str(row["ts_code"])   # 600519.SH / 000858.SZ
+            name    = str(row["name"])
+            yf_code = (ts_code[:-3] + ".SS") if ts_code.endswith(".SH") else ts_code
+            pool.append((ts_code[:6], name, yf_code))
+        log.info(f"Tushare CN 股票池获取: {len(pool)} 只，取前 {limit} 只")
+        return pool[:limit]
+    except Exception as e:
+        log.warning(f"Tushare CN 股票池失败: {e}")
+        return []
+
+
+def _fetch_df_tushare(yf_code: str):
+    """
+    A股专用数据获取（Tushare）
+    yf_code: 600519.SS 或 000858.SZ
+    返回标准化 DataFrame [Open/High/Low/Close/Volume]
+    """
+    pro = _get_ts_pro()
+    if pro is None:
+        return None
+    if not (yf_code.endswith(".SS") or yf_code.endswith(".SZ")):
+        return None
+    try:
+        # yfinance .SS → Tushare .SH
+        ts_code = (yf_code[:-3] + ".SH") if yf_code.endswith(".SS") else yf_code
+        from datetime import datetime as _dt2, timedelta as _td2
+        end_d   = _dt2.now().strftime("%Y%m%d")
+        start_d = (_dt2.now() - _td2(days=400)).strftime("%Y%m%d")
+        df = pro.daily(ts_code=ts_code, start_date=start_d, end_date=end_d,
+                       fields="trade_date,open,high,low,close,vol")
+        if df is None or len(df) < 30:
+            return None
+        df = df.sort_values("trade_date").reset_index(drop=True)
+        df.index = pd.to_datetime(df["trade_date"], format="%Y%m%d")
+        df = df.rename(columns={"open": "Open", "high": "High", "low": "Low",
+                                 "close": "Close", "vol": "Volume"})
+        return df[["Open", "High", "Low", "Close", "Volume"]].astype(float)
+    except Exception as e:
+        log.debug(f"Tushare daily {yf_code}: {e}")
+        return None
+
+
 def _load_pool_or_fetch() -> tuple:
-    """尝试从缓存文件读取池，否则从东财拉取 → (us, hk, cn)"""
+    """获取股票池：缓存 → Tushare(CN) / 东财(US/HK) → 内置备用池"""
     try:
         if POOL_CACHE_FILE.exists():
             data = json.loads(POOL_CACHE_FILE.read_text(encoding="utf-8"))
@@ -414,11 +492,21 @@ def _load_pool_or_fetch() -> tuple:
     except Exception:
         pass
 
-    log.info("从东财拉取股票池...")
     _write_progress(2, "running", "正在拉取股票池...")
+
+    # US/HK：东财（中国IP有效）→ 内置备用池
     us = _fetch_eastmoney("us", 350) or _fallback_us()
     hk = _fetch_eastmoney("hk", 200) or _fallback_hk()
-    cn = _fetch_eastmoney("cn", 250) or _fallback_cn()
+
+    # CN：优先 Tushare（全球可用，覆盖率高）→ 东财 → 内置备用池
+    cn = _fetch_cn_pool_tushare(300)
+    if len(cn) < 50:
+        log.info("Tushare CN 池不足，尝试东财...")
+        cn = _fetch_eastmoney("cn", 250)
+    if len(cn) < 50:
+        log.info("东财 CN 池不足，使用内置备用池")
+        cn = _fallback_cn()
+
     try:
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
         POOL_CACHE_FILE.write_text(
@@ -436,15 +524,25 @@ def _load_pool_or_fetch() -> tuple:
 # ═══════════════════════════════════════════════════════════════
 
 def _fetch_df(yf_code: str):
-    """拉取最近 350 天日线数据"""
+    """
+    拉取最近 350 天日线数据。
+    A股（.SS/.SZ）：优先 Tushare → 失败再 yfinance
+    其他市场：直接 yfinance
+    """
+    # ── A股：Tushare 为主 ────────────────────────────────────────
+    if yf_code.endswith(".SS") or yf_code.endswith(".SZ"):
+        df = _fetch_df_tushare(yf_code)
+        if df is not None and len(df) >= 30:
+            return df
+        log.debug(f"Tushare 失败，降级 yfinance: {yf_code}")
+
+    # ── 其余市场 / Tushare 失败兜底：yfinance ────────────────────
     try:
         df = yf.download(yf_code, period="350d", progress=False, auto_adjust=True)
         if df is None or len(df) < 30:
             return None
-        # 处理 yfinance ≥ 0.2 的 MultiIndex columns
         if hasattr(df.columns, "levels"):
             df.columns = [c[0] if isinstance(c, tuple) else c for c in df.columns]
-        # 确保必要列存在
         for col in ("Close", "Open", "High", "Low", "Volume"):
             if col not in df.columns:
                 return None
