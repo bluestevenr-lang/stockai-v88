@@ -2100,23 +2100,23 @@ def _heat_remaining_seconds() -> int | None:
 
 
 @st.cache_data(ttl=43200, show_spinner=False)   # 12 小时缓存
-def get_market_heat(_cache_ver="v93"):
+def get_market_heat(_cache_ver="v94"):
     """
     【模块级】环球行业热力图 — 12小时 st.cache_data 缓存。
     定义在模块顶层，避免 rerun 时产生新实例导致缓存失效。
     """
-    # 使用 Yahoo Finance 直接可用的代码（省去 to_yf_cn_code 转换）
+    # 使用 Yahoo Finance 直接可用的代码（港股统一用4位补零格式，避免批量下载代码归一化不匹配）
     SECTORS = {
-        "科技":     {"US": "NVDA",    "HK": "700.HK",     "CN": "601138.SS"},
+        "科技":     {"US": "NVDA",    "HK": "0700.HK",    "CN": "601138.SS"},
         "健康护理": {"US": "JNJ",     "HK": "2269.HK",    "CN": "600276.SS"},
-        "公用事业": {"US": "NEE",     "HK": "2.HK",       "CN": "600900.SS"},
-        "通信":     {"US": "T",       "HK": "941.HK",     "CN": "600050.SS"},
+        "公用事业": {"US": "NEE",     "HK": "0002.HK",    "CN": "600900.SS"},
+        "通信":     {"US": "T",       "HK": "0941.HK",    "CN": "600050.SS"},
         "金融":     {"US": "JPM",     "HK": "2318.HK",    "CN": "600036.SS"},
-        "工业":     {"US": "CAT",     "HK": "992.HK",     "CN": "601766.SS"},
+        "工业":     {"US": "CAT",     "HK": "0992.HK",    "CN": "601766.SS"},
         "非必需消费": {"US": "TSLA",  "HK": "3690.HK",    "CN": "002594.SZ"},
         "必需消费": {"US": "WMT",     "HK": "9633.HK",    "CN": "600519.SS"},
-        "原材料":   {"US": "LIN",     "HK": "2899.HK",    "CN": "601899.SS"},
-        "房地产":   {"US": "PLD",     "HK": "16.HK",      "CN": "000002.SZ"},
+        "原材料":   {"US": "LIN",     "HK": "2899.HK",    "CN": "600028.SS"},
+        "房地产":   {"US": "PLD",     "HK": "0016.HK",    "CN": "000002.SZ"},
     }
 
     import yfinance as _yf
@@ -2163,35 +2163,56 @@ def get_market_heat(_cache_ver="v93"):
     # 单独下载缓存（批量失败时的兜底）
     _single_cache = {}
 
+    def _hk_variants(code):
+        """生成港股代码补零/去零两种变体，应对 yfinance 批量下载时自动补零"""
+        if not code.endswith(".HK"):
+            return [code]
+        stem = code[:-3]
+        variants = [code]
+        padded = stem.zfill(4) + ".HK"
+        stripped = stem.lstrip("0").rstrip() + ".HK" if stem.lstrip("0") else "0.HK"
+        if padded != code:
+            variants.append(padded)
+        if stripped != code and stripped != ".HK":
+            variants.append(stripped)
+        return list(dict.fromkeys(variants))
+
     def _get_close(code):
-        # 先尝试从批量结果取
+        # 先尝试从批量结果取（含港股补零变体匹配）
         try:
             if raw is not None:
-                if hasattr(raw.columns, "levels"):   # MultiIndex
-                    lvl0 = raw.columns.get_level_values(0)
-                    if code in lvl0:
-                        s = raw[code]["Close"].dropna()
-                        if len(s) >= 5:
-                            return s
+                if hasattr(raw.columns, "levels"):
+                    lvl0 = set(raw.columns.get_level_values(0))
+                    for _c in _hk_variants(code):
+                        if _c in lvl0:
+                            s = raw[_c]["Close"].dropna()
+                            if len(s) >= 5:
+                                return s
                 elif len(all_codes) == 1:
                     s = raw["Close"].dropna()
                     if len(s) >= 5:
                         return s
         except Exception:
             pass
-        # 批量没拿到，单独下载兜底
+        # 批量没拿到，逐变体单独下载兜底
         if code in _single_cache:
             return _single_cache[code]
-        try:
-            df2 = _yf.download(code, period="90d", progress=False, auto_adjust=True)
-            if df2 is not None and len(df2) >= 5:
-                if hasattr(df2.columns, "levels"):
-                    df2.columns = [c[0] if isinstance(c, tuple) else c for c in df2.columns]
+        for _c in _hk_variants(code):
+            try:
+                df2 = _yf.download(_c, period="90d", progress=False, auto_adjust=True)
+                if df2 is None or len(df2) < 5:
+                    continue
+                # 兼容新版 yfinance 返回 MultiIndex 列
+                if hasattr(df2.columns, "levels") and df2.columns.nlevels == 2:
+                    df2.columns = [c[0] for c in df2.columns]
+                if "Close" not in df2.columns:
+                    continue
                 s = df2["Close"].dropna()
-                _single_cache[code] = s
-                return s
-        except Exception:
-            pass
+                if len(s) >= 5:
+                    _single_cache[code] = s
+                    return s
+            except Exception:
+                continue
         _single_cache[code] = None
         return None
 
