@@ -913,18 +913,24 @@ class ExpectationLayer:
                     else:
                         corr_desc = "相关性弱（风格轮动为主）"
             
-            # 5. VIX分析
-            vix_level = float(vix_df['Close'].iloc[-1])
-            vix_prev = float(vix_df['Close'].iloc[-2]) if len(vix_df) >= 2 else vix_level
-            vix_change_pct = ((vix_level - vix_prev) / vix_prev * 100) if vix_prev != 0 else 0
-            if vix_level > Config.VIX_PANIC:
-                vix_status = "⚠️ 极度恐慌（现金为王）"
-            elif vix_level > Config.VIX_HIGH:
-                vix_status = "📈 高波动（需对冲）"
-            elif vix_level < Config.VIX_LOW:
-                vix_status = "📉 低波动（趋势延续）"
+            # 5. VIX分析（vix_df 两次获取均可能失败，需 None 保护）
+            if vix_df is None or vix_df.empty:
+                vix_level = 20.0
+                vix_change_pct = 0.0
+                vix_status = "数据不可用"
+                self.logger.warning("⚠️ VIX 数据两次获取均失败，使用默认值 20")
             else:
-                vix_status = "📊 中等波动（均衡应对）"
+                vix_level = float(vix_df['Close'].iloc[-1])
+                vix_prev = float(vix_df['Close'].iloc[-2]) if len(vix_df) >= 2 else vix_level
+                vix_change_pct = ((vix_level - vix_prev) / vix_prev * 100) if vix_prev != 0 else 0
+                if vix_level > Config.VIX_PANIC:
+                    vix_status = "⚠️ 极度恐慌（现金为王）"
+                elif vix_level > Config.VIX_HIGH:
+                    vix_status = "📈 高波动（需对冲）"
+                elif vix_level < Config.VIX_LOW:
+                    vix_status = "📉 低波动（趋势延续）"
+                else:
+                    vix_status = "📊 中等波动（均衡应对）"
             
             # 5.1 【V90 新增】10Y美债收益率 (^TNX)
             tnx_yield = 0.0
@@ -3326,40 +3332,55 @@ def fetch_from_stooq(symbol: str):
     从 Stooq 获取数据（免费、无需 API Key）
     适用于：美股、指数、ETF
     不适用：港股、A股
+    使用 requests 下载 CSV，比 pd.read_csv(url) 更稳定，支持超时和重试。
     """
     try:
-        import ssl
-        import urllib.request
-        
-        # Stooq 需要小写，格式：aapl.us
+        # Stooq 不支持港股和A股
         if symbol.endswith('.HK') or symbol.endswith('.SS') or symbol.endswith('.SZ'):
-            return None  # Stooq 不支持港股和A股
-        
-        # 转换格式：AAPL->aapl.us, ^VIX->vi.f(CBOE)
-        _MAP = {'DX-Y.NYB': '^dxy', 'CNY=X': 'cny.us', 'HKD=X': 'hkd.us', '^VIX': 'vi.f', '^TNX': 'tnx.us'}
-        stooq_symbol = _MAP.get(symbol) or f"{symbol.replace('^','').replace('.','').replace('-','').replace('.NYB','').replace('=','').lower()}.us"
-        url = f"https://stooq.com/q/d/l/?s={stooq_symbol}&i=d"
-        
-        # 创建不验证SSL的上下文（开发环境使用）
-        ssl_context = ssl._create_unverified_context()
-        
-        # 使用pandas读取，但需要先验证URL可访问
-        try:
-            df = pd.read_csv(url, storage_options={'verify': False} if hasattr(pd, '__version__') and int(pd.__version__.split('.')[0]) >= 2 else {})
-        except:
-            # 如果上面的方法不行，直接用pandas默认方法
-            df = pd.read_csv(url)
-        
-        if df.empty or "Close" not in df.columns:
             return None
-        
-        df["Date"] = pd.to_datetime(df["Date"])
-        df.set_index("Date", inplace=True)
+
+        # 符号映射：^VIX->vi.f, ^TNX->tnx.us, DX-Y.NYB->dx.f 等
+        _MAP = {
+            'DX-Y.NYB': 'dx.f',
+            'CNY=X': 'cnyusd.fx',
+            'HKD=X': 'hkdusd.fx',
+            '^VIX': 'vi.f',
+            '^TNX': 'tnx.us',
+            '^GSPC': 'sp500.us',
+            'GLD': 'gld.us',
+            'SPY': 'spy.us',
+            'TLT': 'tlt.us',
+            'QQQ': 'qqq.us',
+        }
+        stooq_sym = _MAP.get(symbol)
+        if not stooq_sym:
+            raw = symbol.replace('^', '').replace('.', '').replace('-', '').replace('=', '').lower()
+            stooq_sym = f"{raw}.us"
+
+        url = f"https://stooq.com/q/d/l/?s={stooq_sym}&i=d"
+        _safe_print(f"[Stooq] 请求 {symbol} → {url}")
+
+        # 用 requests 下载（比 pd.read_csv(url) 更稳定，可设超时）
+        resp = requests.get(url, timeout=20, verify=False,
+                            headers={'User-Agent': 'Mozilla/5.0'})
+        if resp.status_code != 200 or len(resp.content) < 50:
+            _safe_print(f"[Stooq] ❌ {symbol} HTTP {resp.status_code}")
+            return None
+
+        from io import StringIO
+        df = pd.read_csv(StringIO(resp.text))
+
+        if df.empty or 'Close' not in df.columns:
+            _safe_print(f"[Stooq] ❌ {symbol} 返回数据无 Close 列")
+            return None
+
+        df['Date'] = pd.to_datetime(df['Date'])
+        df.set_index('Date', inplace=True)
         df = df.sort_index()
-        
+        _safe_print(f"[Stooq] ✅ {symbol} 获取 {len(df)} 行")
         return clean_df(df)
     except Exception as e:
-        _safe_print(f"[Stooq] ❌ {symbol} 失败: {type(e).__name__}")
+        _safe_print(f"[Stooq] ❌ {symbol} 失败: {type(e).__name__}: {e}")
         return None
 
 def fetch_cyb_from_eastmoney():
