@@ -143,16 +143,24 @@ def fetch_df(yf_code: str, period: str = "1y", timeout: int = 10) -> pd.DataFram
             return df
         log.debug(f"Tushare 失败，降级 yfinance: {yf_code}")
 
-    # 其他 / Tushare 失败：yfinance（带 UA 防 Yahoo Finance 限速）
-    _UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-           "AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36")
+    # 其他 / Tushare 失败：yfinance（正确注入 Session + UA）
+    _UA_LIST = [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/17.3 Safari/605.1.15",
+    ]
     for _attempt in range(2):
         try:
+            import requests as _req
             import yfinance as yf
-            ticker = yf.Ticker(yf_code)
+            _session = _req.Session()
+            _session.headers.update({
+                "User-Agent": _UA_LIST[_attempt % len(_UA_LIST)],
+                "Accept-Language": "en-US,en;q=0.9",
+            })
+            ticker = yf.Ticker(yf_code, session=_session)
             df = ticker.history(period=period, timeout=timeout)
             if df is None or df.empty:
-                time.sleep(1)
+                time.sleep(1.5)
                 continue
             # 兼容新版 yfinance MultiIndex 列
             if hasattr(df.columns, "levels") and df.columns.nlevels == 2:
@@ -160,7 +168,7 @@ def fetch_df(yf_code: str, period: str = "1y", timeout: int = 10) -> pd.DataFram
             return df
         except Exception as e:
             log.debug(f"yfinance {yf_code} attempt {_attempt+1}: {e}")
-            time.sleep(1.5)
+            time.sleep(2)
     return None
 
 

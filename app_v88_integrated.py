@@ -657,32 +657,30 @@ class DataProvider:
             except Exception as _e:
                 self.logger.debug(f"Tushare {symbol} 失败，降级 yfinance: {_e}")
 
-        # 2b. 尝试从 yfinance 获取（带重试 + UA 防限速）
+        # 2b. 尝试从 yfinance 获取（带重试 + 正确的 Session UA 注入）
         _ua_list = [
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Safari/605.1.15",
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/119.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/17.3 Safari/605.1.15",
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/121.0.0.0 Safari/537.36",
         ]
         for attempt in range(Config.RETRY_COUNT):
             try:
                 self.logger.info(f"📊 正在获取 {symbol} 数据... (尝试 {attempt+1}/{Config.RETRY_COUNT})")
-                # 轮换 User-Agent 降低 Yahoo Finance 限速概率
-                yf.utils.get_json.__globals__.get('requests', __import__('requests'))
-                import yfinance.utils as _yfu
-                try:
-                    _yfu.requests.utils  # 确认可用
-                    _s = _yfu.requests.Session()
-                    _s.headers.update({"User-Agent": _ua_list[attempt % len(_ua_list)]})
-                except Exception:
-                    pass
-                ticker = yf.Ticker(symbol)
+                # 正确方式：把自定义 Session 传给 yf.Ticker（而非修改全局）
+                import requests as _req_mod
+                _session = _req_mod.Session()
+                _session.headers.update({
+                    "User-Agent": _ua_list[attempt % len(_ua_list)],
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "Accept-Language": "en-US,en;q=0.5",
+                })
+                ticker = yf.Ticker(symbol, session=_session)
                 df = ticker.history(period=period, timeout=Config.REQUEST_TIMEOUT)
                 # 兼容新版 yfinance MultiIndex 列
                 if df is not None and not df.empty and hasattr(df.columns, "levels") and df.columns.nlevels == 2:
                     df.columns = [c[0] for c in df.columns]
                 
                 if df is not None and not df.empty and len(df) >= min_rows:
-                    # 成功获取，更新缓存
                     self.cache_mgr.set(cache_key, df, data_type)
                     elapsed = (time.time() - start_time) * 1000
                     self.perf.record('fetch', elapsed)
@@ -695,7 +693,7 @@ class DataProvider:
                 self.logger.warning(f"⚠️  {symbol} 获取失败 (尝试 {attempt+1}): {str(e)[:100]}")
                 self.perf.error()
                 if attempt < Config.RETRY_COUNT - 1:
-                    time.sleep(1.5 * (attempt + 1))  # 递增延迟
+                    time.sleep(2 * (attempt + 1))  # 递增延迟 2s/4s/6s
         
         # 3. 所有尝试失败，返回过期缓存（如果有）
         if cached_value is not None:
