@@ -10321,19 +10321,30 @@ def _scan_write_heartbeat():
 
 
 def _scan_read_results() -> dict | None:
-    """读取扫描结果：优先 GitHub Gist（云端缓存），其次本地文件"""
-    # 1. 先尝试 Gist（GitHub Actions 写入的云端缓存）
-    gist_data = _scan_fetch_from_gist()
-    if gist_data and time.time() - gist_data.get("timestamp", 0) < _SCAN_RESULT_TTL:
-        return gist_data
-    # 2. 本地文件（本机手动扫描写入的）
+    """
+    读取扫描结果：比较本地文件与 GitHub Gist 的 timestamp，取最新的。
+    这样本地「重扫」的结果不会被旧 Gist 数据覆盖。
+    """
+    now = time.time()
+
+    # 1. 尝试本地文件
+    local_data = None
     try:
-        data = json.loads(_SCAN_RESULTS_FILE.read_text(encoding="utf-8"))
-        if time.time() - data.get("timestamp", 0) < _SCAN_RESULT_TTL:
-            return data
+        local_data = json.loads(_SCAN_RESULTS_FILE.read_text(encoding="utf-8"))
+        if now - local_data.get("timestamp", 0) >= _SCAN_RESULT_TTL:
+            local_data = None   # 已过期
     except Exception:
-        pass
-    return None
+        local_data = None
+
+    # 2. 尝试 Gist
+    gist_data = _scan_fetch_from_gist()
+    if gist_data and now - gist_data.get("timestamp", 0) >= _SCAN_RESULT_TTL:
+        gist_data = None   # Gist 也已过期
+
+    # 3. 优先使用更新（timestamp 更大）的来源，防止旧 Gist 覆盖新本地结果
+    if local_data and gist_data:
+        return local_data if local_data.get("timestamp", 0) >= gist_data.get("timestamp", 0) else gist_data
+    return local_data or gist_data
 
 
 def _scan_read_progress() -> dict:
