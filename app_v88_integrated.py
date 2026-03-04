@@ -3265,8 +3265,29 @@ class ProxyContext:
                 os.environ[key] = val
 
 def get_proxy_url():
-    port = st.session_state.get('proxy_port', '1082')
-    return f"http://127.0.0.1:{port}"
+    """
+    返回代理 URL。优先级：
+    1. secrets.toml 里的 PROXY_URL（云端/生产环境显式配置）
+    2. session_state 里用户手动设置的 proxy_port（本地调试）
+    3. 环境变量 HTTPS_PROXY（系统级代理）
+    4. 无代理（直连）—— Streamlit Cloud 标准情况
+    """
+    # 1. secrets 里显式配置
+    try:
+        proxy = st.secrets.get("PROXY_URL", "")
+        if proxy:
+            return proxy
+    except Exception:
+        pass
+    # 2. Streamlit Cloud / 云端环境：检测到 STREAMLIT_SHARING_MODE 时不用本地代理
+    if os.environ.get("STREAMLIT_SHARING_MODE") or os.environ.get("HOME", "").startswith("/home/"):
+        return None
+    # 3. 用户在 session_state 里手动设置了端口（本地调试）
+    port = st.session_state.get("proxy_port", "")
+    if port:
+        return f"http://127.0.0.1:{port}"
+    # 4. 直连
+    return None
 
 # ═══════════════════════════════════════════════════════════════
 # 3. 数据获取 - 【V75核心】添加重试机制
