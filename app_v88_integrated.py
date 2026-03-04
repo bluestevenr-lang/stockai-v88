@@ -10360,12 +10360,13 @@ def _fetch_macro_risk(force_refresh: bool = False) -> dict:
     # 1. 文件缓存（6小时 TTL）
     if not force_refresh:
         cached = _load_macro_risk_cache()
-        if cached:
+        if cached and not cached.get("_error"):   # 只返回成功的文件缓存
             return cached
-        # 2. 会话缓存（防止每 20 秒重试失败的 API 调用）
+        # 2. 会话缓存（防止每 20 秒重复调用）——只返回成功结果，错误结果不缓存
         _ss_key = "_macro_risk_result"
-        if _ss_key in st.session_state and not force_refresh:
-            return st.session_state[_ss_key]
+        _cached_ss = st.session_state.get(_ss_key)
+        if _cached_ss and not _cached_ss.get("_error"):
+            return _cached_ss
 
     if not HAS_GEMINI or not MY_GEMINI_KEY:
         fb = _macro_risk_fallback("Gemini API Key 未配置")
@@ -10410,7 +10411,8 @@ def _fetch_macro_risk(force_refresh: bool = False) -> dict:
         _safe_print(f"⚠️ 宏观风险评估失败: {_err_msg}")
 
     fb = _macro_risk_fallback(_err_msg)
-    st.session_state["_macro_risk_result"] = fb
+    # 失败结果不存入 session_state，下次 fragment 刷新时自动重试
+    # （只有成功结果才缓存，防止错误锁死）
     return fb
 
 
