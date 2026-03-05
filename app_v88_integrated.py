@@ -11332,7 +11332,7 @@ _BRIEF_CONTENT_STYLE = """<style>
 
 st.markdown(f"""
 <div style="margin-bottom:0.5rem;">
-  <span style="color:#1f2937; font-size:18px; font-weight:700;">📰 AI市场简报 · {_dt_brief.now().strftime("%Y-%m-%d")}</span>
+  <span style="color:#1f2937; font-size:18px; font-weight:700;">📰 AI市场简报 · {_dt_brief.now().strftime("%Y-%m-%d %H:%M")}</span>
 </div>
 """, unsafe_allow_html=True)
 
