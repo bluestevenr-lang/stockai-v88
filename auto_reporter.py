@@ -1524,122 +1524,101 @@ def generate_report_final(report_type="evening"):
         print(f"⚠️  主报告生成异常: {e}")
         return None, None
 
+# ─── 精华摘要（简化版，1次 Gemini 调用）────────────────────────────────────
+
+def generate_digest(report_type="morning"):
+    """
+    精华日报：三地指数 + 体制判断 + 3只精选推荐 + 一句话展望。
+    仅调用一次 Gemini，生成 1200 字以内的钉钉友好摘要。
+    """
+    now_sh  = datetime.now(TZ_SHANGHAI)
+    today   = now_sh.strftime("%Y年%m月%d日 %H:%M")
+    label   = "早报" if report_type == "morning" else "晚报"
+
+    # 获取三地指数
+    us_idx  = _v88_index_change("^GSPC",    "标普500")
+    ndx_idx = _v88_index_change("^IXIC",    "纳斯达克")
+    hk_idx  = _v88_index_change("^HSI",     "恒生")
+    cn_idx  = _v88_index_change("000001.SS","上证")
+
+    idx_block = "\n".join([us_idx, ndx_idx, hk_idx, cn_idx])
+
+    session_hint = (
+        "当前为亚市/港股+A股交易时段，重点关注港股、A股机会。"
+        if report_type == "morning" else
+        "当前为美市交易时段，重点关注美股机会。"
+    )
+
+    prompt = f"""你是机构交易员助手，当前时间 {today}（{label}）。
+{session_hint}
+
+【三地最新指数】
+{idx_block}
+
+请用中文生成一条精华钉钉摘要，严格控制在 1200 字以内，格式如下：
+
+## 📊 市场体制
+一句话判断当前是 Risk On / Risk Off / Neutral，说明核心理由（限40字）。
+
+## 📈 今日关注
+- 宏观：1条最重要的宏观/地缘事件及其对市场的影响（限50字）
+- 美股：1条关键板块/个股动向（限40字）
+- 港股/A股：1条关键动向（限40字）
+
+## 🎯 精选3只（每市场1只）
+格式：**代码 名称** | 操作：买入/关注 | 逻辑：15字以内 | 价位参考：XXX
+（美股1只、港股1只、A股1只，选当前时段最有机会的）
+
+## 💡 一句话展望
+限30字，点明今日最关键的交易主线。
+
+注意：
+- 语言简洁直接，机构风格，不啰嗦
+- 数字精确，不要模糊表达
+- 整体控制在1200字以内
+"""
+
+    result = _v88_call_gemini(prompt, use_grounding=False)
+    if result and not result.startswith("❌"):
+        return result
+
+    # 降级：纯数据摘要（无 Gemini）
+    return f"""## 📊 市场数据摘要（{today}）
+
+{idx_block}
+
+> 详细分析请查看 V88 AI 皇冠双核 App"""
+
+
 # ─── 主函数 ───────────────────────────────────────────────────────────────────
 
 def main():
-    """主函数：Part A（基本面+新闻）+ Part B（推荐）+ Part C（自选股持仓）分别推送"""
+    """主函数：精华版单条推送（1次 Gemini 调用，快速、简洁）"""
     report_type = sys.argv[1] if len(sys.argv) > 1 else (
         "evening" if datetime.now(TZ_SHANGHAI).hour >= 12 else "morning"
     )
+    label = "早报" if report_type == "morning" else "晚报"
 
     print(f"\n{'='*60}")
-    print(f"🚀 V88 AI 早晚报（Part A 基本面 + Part B 推荐 + Part C 持仓）")
+    print(f"🚀 V88 AI 钉钉精华{label}")
     print(f"{'='*60}\n")
 
-    # 1. 生成 Part A（基本面+新闻）和 Part B（推荐）
-    part_a_content, part_b_content = generate_report_final(report_type)
+    digest = generate_digest(report_type)
 
-    # 2. 生成 Part C（自选股持仓分析）
-    time.sleep(4)   # 避免 Gemini API 连续调用触发 429/403
-    part_c_content = generate_watchlist_report(report_type)
+    send_time = datetime.now(TZ_SHANGHAI).strftime('%Y/%m/%d %H:%M')
+    title = f"AI股市{label} · {send_time}"
 
-    base_title = "AI股市日报"
+    print(f"📤 推送精华摘要（约 {len(digest)} 字）...")
+    ok = send_to_dingtalk(title, digest, max_retries=3, part_type="A")
 
-    # Part A 超长时在段落边界截断
-    if part_a_content and len(part_a_content) > PART_A_TARGET_CHARS:
-        cut = part_a_content[:PART_A_TARGET_CHARS]
-        last_para = max(cut.rfind("\n\n"), cut.rfind("\n---"))
-        if last_para > PART_A_TARGET_CHARS * 0.7:
-            part_a_content = part_a_content[:last_para].strip() + "\n\n---\n*(Part A 已截断)*"
-        else:
-            part_a_content = cut + "\n\n---\n*(Part A 已截断)*"
-        print(f"⚠️  Part A 超长，已截断至约 {len(part_a_content)} 字")
-
-    # ── 推送 Part A ──────────────────────────────────────────────────────────
-    if part_a_content:
-        ok_a = False
-        for attempt in range(3):
-            send_time = datetime.now(TZ_SHANGHAI).strftime('%Y/%m/%d %H:%M')
-            title = f"{base_title} - {send_time} - Part A 基本面"
-            print(f"📤 推送 Part A（基本面+新闻，约 {len(part_a_content)} 字）"
-                  f"{' 重试' + str(attempt + 1) if attempt > 0 else ''}...")
-            ok_a = send_to_dingtalk(title, part_a_content, max_retries=3, part_type="A")
-            if ok_a:
-                break
-            if attempt < 2:
-                print("⏳ Part A 未送达，10 秒后重试...")
-                time.sleep(10)
-        if not ok_a:
-            print("⚠️ Part A 多次推送失败，降级为固定模板...")
-            fallback = _generate_report_fallback(report_type)
-            if fallback:
-                send_time = datetime.now(TZ_SHANGHAI).strftime('%Y/%m/%d %H:%M')
-                send_to_dingtalk(
-                    f"{base_title} - {send_time} - Part A（降级）",
-                    fallback, max_retries=2, part_type="A"
-                )
+    if ok:
+        print(f"✅ 钉钉推送完成")
     else:
-        print("⚠️ Part A 生成失败，降级为固定模板...")
-        fallback = _generate_report_fallback(report_type)
-        if fallback:
-            send_time = datetime.now(TZ_SHANGHAI).strftime('%Y/%m/%d %H:%M')
-            send_to_dingtalk(
-                f"{base_title} - {send_time} - Part A（降级）",
-                fallback, max_retries=2, part_type="A"
-            )
-    time.sleep(3)
+        print(f"❌ 推送失败，请检查钉钉配置")
 
-    # ── 推送 Part B ──────────────────────────────────────────────────────────
-    if part_b_content:
-        ok_b = False
-        for attempt in range(3):
-            send_time = datetime.now(TZ_SHANGHAI).strftime('%Y/%m/%d %H:%M')
-            title = f"{base_title} - {send_time} - Part B 推荐"
-            print(f"📤 推送 Part B（可执行推荐，约 {len(part_b_content)} 字）"
-                  f"{' 重试' + str(attempt + 1) if attempt > 0 else ''}...")
-            ok_b = send_to_dingtalk(title, part_b_content, max_retries=3, part_type="B")
-            if ok_b:
-                break
-            if attempt < 2:
-                print("⏳ Part B 未送达，10 秒后重试...")
-                time.sleep(10)
-        if not ok_b:
-            print("⚠️ Part B 多次推送失败")
-    else:
-        print("⚠️ Part B 生成失败，跳过推送")
-    time.sleep(3)
-
-    # ── 推送 Part C ──────────────────────────────────────────────────────────
-    if part_c_content:
-        ok_c = False
-        for attempt in range(3):
-            send_time = datetime.now(TZ_SHANGHAI).strftime('%Y/%m/%d %H:%M')
-            title = f"AI自选股日报 - {send_time} - Part C 持仓"
-            print(f"📤 推送 Part C（自选股持仓分析，约 {len(part_c_content)} 字）"
-                  f"{' 重试' + str(attempt + 1) if attempt > 0 else ''}...")
-            ok_c = send_to_dingtalk(title, part_c_content, max_retries=3, part_type="C")
-            if ok_c:
-                break
-            if attempt < 2:
-                print("⏳ Part C 未送达，10 秒后重试...")
-                time.sleep(10)
-        if not ok_c:
-            print("⚠️ Part C 多次推送失败")
-    else:
-        print("⚠️ Part C 生成失败，跳过推送")
-
-    print(f"\n✅ 全部完成！（Part A 基本面+新闻 | Part B 可执行推荐 | Part C 自选股持仓）\n")
-    print("=" * 60)
-    if part_a_content:
-        print("\n--- Part A 基本面+新闻 ---")
-        print(part_a_content[:600] + "..." if len(part_a_content) > 600 else part_a_content)
-    if part_b_content:
-        print("\n--- Part B 可执行推荐 ---")
-        print(part_b_content[:600] + "..." if len(part_b_content) > 600 else part_b_content)
-    if part_c_content:
-        print("\n--- Part C 自选股持仓 ---")
-        print(part_c_content[:600] + "..." if len(part_c_content) > 600 else part_c_content)
-    print("=" * 60)
+    print(f"\n{'='*60}")
+    print(digest[:800] + "..." if len(digest) > 800 else digest)
+    print(f"{'='*60}\n")
 
 
 if __name__ == "__main__":
