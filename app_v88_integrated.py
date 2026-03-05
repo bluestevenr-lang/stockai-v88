@@ -7301,7 +7301,7 @@ def run_ai_stock_selector(progress_callback=None):
 
 
 # ═══════════════════════════════════════════════════════════════
-# 8d. 【自选股分析】按中美港划分，逐只分析：催化、技术面、风险、操作建议
+# 8d. 【自选股分析】按中美港划分，逐只分析：催化、技术面、风险、操作建议（与钉钉日报同源）
 # ═══════════════════════════════════════════════════════════════
 def _get_watchlist_price(code):
     """获取自选股现价（fetch_stock_data 内部会做 to_yf_cn_code 转换）"""
@@ -7313,9 +7313,31 @@ def _get_watchlist_price(code):
         pass
     return None
 
+
+def _get_watchlist_scan_signals():
+    """获取自选股在V88扫描中的信号：强势/蓄势/拐点，供差异化操作建议（与钉钉日报同源）"""
+    try:
+        _path = _BRIEF_CACHE_DIR / "scan_results.json"
+        if not _path.exists():
+            return {}
+        data = json.loads(_path.read_text(encoding="utf-8"))
+        sig = {}
+        for mkt in ("US", "HK", "CN"):
+            d = data.get(mkt, {})
+            for cat, label in [("top", "强势"), ("coil", "蓄势"), ("breakout", "启动"), ("inflection", "拐点")]:
+                for s in d.get(cat, []):
+                    c = str(s.get("代码", "")).upper().strip()
+                    if c:
+                        sig[c] = (label, s.get("理由", ""), s.get("建议", ""))
+        return sig
+    except Exception:
+        return {}
+
+
 def run_watchlist_analysis(progress_callback=None):
     """
     自选股分析：按中美港划分，对每只逐只给出近期催化、技术面、风险点、操作建议。
+    注入V88扫描信号，强制差异化（加仓/减仓/持仓/观望），禁止全部观望。
     返回: (ai_report_str, error_msg)
     """
     def _update(msg):
@@ -7335,12 +7357,31 @@ def run_watchlist_analysis(progress_callback=None):
     
     input_data = "\n".join(price_lines)
     
-    # 2. 调用 Gemini
+    # 2. 获取V88扫描信号（与钉钉日报同源）
+    _update("正在读取V88量化扫描信号...")
+    scan_sigs = _get_watchlist_scan_signals()
+    scan_block_lines = []
+    for mkt, key in [("美股", "US"), ("港股", "HK"), ("A股", "CN")]:
+        in_scan = []
+        for code, name in WATCHLIST.get(key, []):
+            c = str(code).upper().strip()
+            if c in scan_sigs:
+                lbl, reason, _ = scan_sigs[c]
+                in_scan.append(f"{name}({code})【{lbl}】{reason}")
+        if in_scan:
+            em = "🇺🇸" if key == "US" else ("🇭🇰" if key == "HK" else "🇨🇳")
+            scan_block_lines.append(f"- {em} {mkt}：{'；'.join(in_scan)}")
+    scan_block = "\n".join(scan_block_lines) if scan_block_lines else "今日无持仓进榜"
+
+    # 3. 调用 Gemini
     _update(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · 自选股分析...")
     prompt = f"""你是顶级量化分析师，对以下用户的跨账户自选股进行逐只分析。
 
 【自选股及现价】
 {input_data}
+
+【V88量化扫描信号】以下持仓今日进入扫描榜（强势=趋势向好，蓄势=未启动，拐点=弱势反转）：
+{scan_block}
 
 【任务要求】
 按中美港划分，对每只自选股**逐只**给出：
@@ -7348,6 +7389,12 @@ def run_watchlist_analysis(progress_callback=None):
 2. **技术面**：关键支撑/压力、趋势判断
 3. **风险点**：1-2 条主要风险
 4. **操作建议**：持有/加仓/减仓/观望（简洁可执行）
+
+【操作规则】⚠️ 必须差异化，禁止全部或多数为观望：
+- 📈加仓：强势进榜+逻辑支持、或蓄势突破+催化明确，至少1-2只
+- 📉减仓：拐点进榜、技术破位、估值过高、基本面恶化，至少1只
+- 📌持仓：逻辑未变、继续持有
+- 🔍观望：短期不明朗、等待信号，不超过半数
 
 【输出格式】（严格按以下 Markdown 结构）
 ## 🇺🇸 美股自选
@@ -7370,7 +7417,7 @@ def run_watchlist_analysis(progress_callback=None):
 ### 2. ...
 （逐只分析 3 只）
 
-要求：每只 2-4 句，简洁可执行，避免空泛套话。"""
+要求：每只 2-4 句，简洁可执行，避免空泛套话；操作建议必须差异化。"""
     
     if not MY_GEMINI_KEY:
         return "", "❌ 未配置 Gemini API Key"
