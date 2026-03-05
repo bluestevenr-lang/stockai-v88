@@ -11309,6 +11309,7 @@ _module_header("📰", "AI市场简报", "Gemini实时市场分析", "#3b82f6", 
 st.markdown("---")
 
 from datetime import datetime as _dt_brief
+from zoneinfo import ZoneInfo as _ZI_brief
 
 # 共用样式常量
 _BRIEF_CONTENT_STYLE = """<style>
@@ -11332,7 +11333,7 @@ _BRIEF_CONTENT_STYLE = """<style>
 
 st.markdown(f"""
 <div style="margin-bottom:0.5rem;">
-  <span style="color:#1f2937; font-size:18px; font-weight:700;">📰 AI市场简报 · {_dt_brief.now().strftime("%Y-%m-%d %H:%M")}</span>
+  <span style="color:#1f2937; font-size:18px; font-weight:700;">📰 AI市场简报 · {_dt_brief.now(_ZI_brief("Asia/Shanghai")).strftime("%Y-%m-%d %H:%M")} CST</span>
 </div>
 """, unsafe_allow_html=True)
 
