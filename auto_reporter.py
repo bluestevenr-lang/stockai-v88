@@ -677,9 +677,10 @@ def send_to_dingtalk(title, content, max_retries=2, part_type="A"):
     if "日报" not in title and "日报" not in (content or ""):
         content = f"【AI股市日报】\n\n{content}"
 
-    header = f"## {title}\n\n"
-    # 关键词必须出现在消息内，否则钉钉机器人（关键词安全模式）会拒绝投递
-    footer = f"\n\n---\n*V88 AI · 机构简报 · {DINGTALK_KEYWORD}*"
+    # 关键词必须出现在消息内（钉钉关键词安全验证），放在 header 和 footer 双保险
+    kw = f" · {DINGTALK_KEYWORD}" if DINGTALK_KEYWORD else ""
+    header = f"## {title}{kw}\n\n"
+    footer = f"\n\n---\n*V88 AI · 机构简报{kw}*"
     body = f"{header}{content}{footer}"
 
     message = {
@@ -1524,70 +1525,159 @@ def generate_report_final(report_type="evening"):
         print(f"⚠️  主报告生成异常: {e}")
         return None, None
 
-# ─── 精华摘要（简化版，1次 Gemini 调用）────────────────────────────────────
+# ─── 精华摘要（富内容版，1次 Gemini 调用）──────────────────────────────────
+
+def _load_scan_results():
+    """从 scan_results.json 读取扫描结果，返回各市场 top/coil/breakout 精华"""
+    try:
+        cache_path = Path(__file__).parent / ".cache_brief" / "scan_results.json"
+        if not cache_path.exists():
+            return {}
+        data = json.loads(cache_path.read_text(encoding="utf-8"))
+        out = {}
+        for mkt in ("US", "HK", "CN"):
+            mdata = data.get(mkt, {})
+            out[mkt] = {
+                "top":       mdata.get("top", [])[:5],
+                "coil":      mdata.get("coil", [])[:3],
+                "breakout":  mdata.get("breakout", [])[:3],
+                "inflection":mdata.get("inflection", [])[:3],
+                "bm_ret5":   mdata.get("bm_ret5", 0),
+            }
+        return out
+    except Exception:
+        return {}
+
+
+def _fmt_stocks(stocks, max_n=5):
+    """把股票列表格式化成简短字符串供 prompt 使用"""
+    lines = []
+    for s in stocks[:max_n]:
+        code  = s.get("代码", "")
+        name  = s.get("股票", "")
+        price = s.get("现价", "N/A")
+        score = s.get("得分", "")
+        form  = s.get("形态", "")
+        reason= s.get("理由", "")
+        lines.append(f"  {name}({code}) ¥/$/HK${price} 得分{score} {form} {reason}")
+    return "\n".join(lines) if lines else "  暂无"
+
+
+def _fmt_watchlist_prices():
+    """获取自选股现价，格式化成 prompt 段落"""
+    lines = []
+    for mkt, stocks in WATCHLIST.items():
+        pfx = "$" if mkt == "US" else ("HK$" if mkt == "HK" else "¥")
+        for code, name in stocks:
+            p = _v88_fetch_price(code)
+            if p:
+                lines.append(f"  {name}({code}): {pfx}{p:.2f}")
+    return "\n".join(lines) if lines else "  数据获取中"
+
 
 def generate_digest(report_type="morning"):
     """
-    精华日报：三地指数 + 体制判断 + 3只精选推荐 + 一句话展望。
-    仅调用一次 Gemini，生成 1200 字以内的钉钉友好摘要。
+    精华日报：指数 + 市场体制 + Top推荐 + 自选股亮点 + 蓄势/启动精选。
+    1次 Gemini 调用，生成约 1800 字的钉钉摘要。
     """
     now_sh  = datetime.now(TZ_SHANGHAI)
     today   = now_sh.strftime("%Y年%m月%d日 %H:%M")
     label   = "早报" if report_type == "morning" else "晚报"
 
-    # 获取三地指数
-    us_idx  = _v88_index_change("^GSPC",    "标普500")
-    ndx_idx = _v88_index_change("^IXIC",    "纳斯达克")
-    hk_idx  = _v88_index_change("^HSI",     "恒生")
-    cn_idx  = _v88_index_change("000001.SS","上证")
-
+    # ── 三地指数 ──────────────────────────────────────────────────────────────
+    us_idx  = _v88_index_change("^GSPC",     "标普500")
+    ndx_idx = _v88_index_change("^IXIC",     "纳斯达克")
+    hk_idx  = _v88_index_change("^HSI",      "恒生指数")
+    cn_idx  = _v88_index_change("000001.SS", "上证综指")
     idx_block = "\n".join([us_idx, ndx_idx, hk_idx, cn_idx])
 
+    # ── 扫描结果 ───────────────────────────────────────────────────────────────
+    scan = _load_scan_results()
+
+    def _scan_block(mkt, label_mkt):
+        if not scan:
+            return f"{label_mkt}：扫描数据未就绪"
+        d = scan.get(mkt, {})
+        top_str = _fmt_stocks(d.get("top", []), 5)
+        coil_str = _fmt_stocks(d.get("coil", []), 3)
+        bo_str  = _fmt_stocks(d.get("breakout", []), 3)
+        inf_str = _fmt_stocks(d.get("inflection", []), 3)
+        bm = d.get("bm_ret5", 0)
+        return (
+            f"{label_mkt}（基准5日收益{bm:+.1f}%）\n"
+            f"  【趋势强势Top5】\n{top_str}\n"
+            f"  【蓄势潜伏Top3】\n{coil_str}\n"
+            f"  【启动突破Top3】\n{bo_str}\n"
+            f"  【拐点反转Top3】\n{inf_str}"
+        )
+
+    us_scan  = _scan_block("US", "🇺🇸 美股")
+    hk_scan  = _scan_block("HK", "🇭🇰 港股")
+    cn_scan  = _scan_block("CN", "🇨🇳 A股")
+
+    # ── 自选股现价 ─────────────────────────────────────────────────────────────
+    print("  📋 获取自选股现价...")
+    wl_prices = _fmt_watchlist_prices()
+
     session_hint = (
-        "当前为亚市/港股+A股交易时段，重点关注港股、A股机会。"
+        "当前为亚市交易时段（港股+A股开市），重点关注港股、A股机会。"
         if report_type == "morning" else
         "当前为美市交易时段，重点关注美股机会。"
     )
 
-    prompt = f"""你是机构交易员助手，当前时间 {today}（{label}）。
-{session_hint}
+    prompt = f"""你是机构交易员助手，当前时间 {today}（{label}）。{session_hint}
 
-【三地最新指数】
+=== 三地指数 ===
 {idx_block}
 
-请用中文生成一条精华钉钉摘要，严格控制在 1200 字以内，格式如下：
+=== 800只股票扫描结果（按得分排序）===
+{us_scan}
 
-## 📊 市场体制
-一句话判断当前是 Risk On / Risk Off / Neutral，说明核心理由（限40字）。
+{hk_scan}
 
-## 📈 今日关注
-- 宏观：1条最重要的宏观/地缘事件及其对市场的影响（限50字）
-- 美股：1条关键板块/个股动向（限40字）
-- 港股/A股：1条关键动向（限40字）
+{cn_scan}
 
-## 🎯 精选3只（每市场1只）
-格式：**代码 名称** | 操作：买入/关注 | 逻辑：15字以内 | 价位参考：XXX
-（美股1只、港股1只、A股1只，选当前时段最有机会的）
+=== 自选股持仓现价 ===
+{wl_prices}
 
-## 💡 一句话展望
-限30字，点明今日最关键的交易主线。
+请基于以上真实数据，用中文生成一份精华钉钉日报，要求：
+1. 严格控制在 2000 字以内
+2. 使用以下固定结构（不要改标题）：
 
-注意：
-- 语言简洁直接，机构风格，不啰嗦
-- 数字精确，不要模糊表达
-- 整体控制在1200字以内
-"""
+## 📊 市场体制与今日主线
+- 判断当前 Risk On / Risk Off / Neutral，说明理由（30字以内）
+- 今日最关键的宏观/市场驱动因素（2条，每条30字）
+
+## 🎯 今日精选推荐（各市场Top 3）
+每只格式：**代码 名称** 现价xxx | 操作：买入/关注/减持 | 逻辑：20字以内
+（美股3只、港股3只、A股3只，从扫描结果里选得分最高且逻辑清晰的）
+
+## 🌊 蓄势潜伏关注（各市场1只）
+每只格式：**代码 名称** | 建仓区间：xxx-xxx | 等待信号：20字
+
+## 📱 自选股亮点
+从自选股里选出2-3只值得今日重点关注的，说明原因（每条25字）
+
+## 💡 操盘要点
+3条简洁操盘建议，每条不超过25字
+
+注意：直接输出内容，不要添加多余解释，语言简洁专业。"""
 
     result = _v88_call_gemini(prompt, use_grounding=False)
     if result and not result.startswith("❌"):
         return result
 
-    # 降级：纯数据摘要（无 Gemini）
-    return f"""## 📊 市场数据摘要（{today}）
-
-{idx_block}
-
-> 详细分析请查看 V88 AI 皇冠双核 App"""
+    # ── 降级：纯数据（无 Gemini）──────────────────────────────────────────────
+    fallback_lines = [f"## 📊 市场数据摘要（{today}）\n", idx_block, ""]
+    if scan:
+        for mkt, mlabel in [("US","🇺🇸美股"),("HK","🇭🇰港股"),("CN","🇨🇳A股")]:
+            tops = scan.get(mkt,{}).get("top",[])[:3]
+            if tops:
+                fallback_lines.append(f"**{mlabel} Top3强势**")
+                for s in tops:
+                    fallback_lines.append(f"  {s.get('股票','')}({s.get('代码','')}) {s.get('现价','')}")
+    fallback_lines.append("\n> 详细分析请查看 V88 AI 皇冠双核 App")
+    return "\n".join(fallback_lines)
 
 
 # ─── 主函数 ───────────────────────────────────────────────────────────────────
