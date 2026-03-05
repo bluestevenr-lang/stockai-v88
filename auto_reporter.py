@@ -1159,10 +1159,27 @@ c) R/R ≥ 2.0（内部判定，不输出）
 
 # ─── Part C：自选股持仓分析（独立 Gemini 调用）──────────────────────────────
 
+def _get_watchlist_scan_signals():
+    """获取自选股在V88扫描中的信号：强势/蓄势/拐点/无，供 Part C 差异化操作建议"""
+    scan = _load_scan_results()
+    if not scan:
+        return {}
+    sig = {}
+    for mkt in ("US", "HK", "CN"):
+        d = scan.get(mkt, {})
+        for cat, label in [("top", "强势"), ("coil", "蓄势"), ("breakout", "启动"), ("inflection", "拐点")]:
+            for s in d.get(cat, []):
+                c = str(s.get("代码", "")).upper().strip()
+                if c:
+                    sig[c] = (label, s.get("理由", ""), s.get("建议", ""))
+    return sig
+
+
 def generate_watchlist_report(report_type="evening"):
     """
     Part C：自选股持仓分析。
     每只持仓一张卡片：事件 | 变量 | 资产影响 | 操作建议（持仓/加仓/减仓/观望）
+    注入V88扫描信号，强制差异化操作，禁止全部观望。
     """
     total = sum(len(v) for v in WATCHLIST.values())
     if total == 0:
@@ -1170,6 +1187,23 @@ def generate_watchlist_report(report_type="evening"):
     try:
         print(f"📋 正在生成 Part C（自选股持仓分析，{total}只）...")
         _watchlist_prices = _get_watchlist_prices()
+        scan_sigs = _get_watchlist_scan_signals()
+
+        # 按市场汇总：进榜股票及其信号
+        scan_block_lines = []
+        for mkt, stocks in WATCHLIST.items():
+            in_scan = []
+            for code, name in stocks:
+                c = str(code).upper().strip()
+                if c in scan_sigs:
+                    lbl, reason, _ = scan_sigs[c]
+                    in_scan.append(f"{name}({code})【{lbl}】{reason}")
+            if in_scan:
+                em = "🇺🇸" if mkt == "US" else ("🇭🇰" if mkt == "HK" else "🇨🇳")
+                lb = "美股" if mkt == "US" else ("港股" if mkt == "HK" else "A股")
+                scan_block_lines.append(f"- {em} {lb}：{'；'.join(in_scan)}")
+        scan_block = "\n".join(scan_block_lines) if scan_block_lines else "今日无持仓进榜"
+
         now_sh = datetime.now(TZ_SHANGHAI)
         today = now_sh.strftime("%Y年%m月%d日")
         _ts = now_sh.strftime("%Y-%m-%d %H:%M:%S")
@@ -1191,18 +1225,26 @@ def generate_watchlist_report(report_type="evening"):
 - 🇭🇰 港股持仓：{', '.join(f"{n}({c})" for c, n in WATCHLIST.get('HK', []))}
 - 🇨🇳 A股持仓：{', '.join(f"{n}({c})" for c, n in WATCHLIST.get('CN', []))}
 
-【自选股现价】（雅虎财经，供参考）
+【自选股现价】（雅虎财经）
 - 美股：{chr(10).join('  - ' + s for s in _watchlist_prices.get('US', []))}
 - 港股：{chr(10).join('  - ' + s for s in _watchlist_prices.get('HK', []))}
 - A股：{chr(10).join('  - ' + s for s in _watchlist_prices.get('CN', []))}
 
-【卡片规则】每只股票 = 一张卡片，格式固定：
+【V88量化扫描信号】以下持仓今日进入扫描榜（强势=趋势向好，蓄势=未启动，拐点=弱势反转）：
+{scan_block}
+
+【操作规则】⚠️ 必须差异化，禁止全部或多数为观望：
+- 📈加仓：强势进榜+逻辑支持、或蓄势突破+催化明确，至少1-2只
+- 📉减仓：拐点进榜、技术破位、估值过高、基本面恶化，至少1只
+- 📌持仓：逻辑未变、继续持有
+- 🔍观望：短期不明朗、等待信号，不超过半数
+- 无明确新催化时，24h内操作建议保持连贯，不频繁切换
+
+【卡片规则】每只股票 = 一张卡片：
 1) **事件**：该股相关事件（财报/公告/催化/技术信号），≤30字
 2) **变量**：关键决策变量（业绩预期/技术位/资金面），≤30字
 3) **资产影响**：对标的的影响结论，≤40字
 4) **📌 操作**：四选一且必须明确——📌持仓 | 📈加仓 | 📉减仓 | 🔍观望
-5) 技术破位、基本面恶化、风险升温、估值过高时，必须输出 📉减仓
-6) 操作建议须保持连续性：无明确新催化，24h内不得频繁切换
 
 【排版规则】
 - 每只股票前后空两行，用 `---` 分隔卡片
