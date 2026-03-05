@@ -64,6 +64,7 @@ GEMINI_MODEL = "gemini-2.5-flash"
 USE_GOOGLE_SEARCH_GROUNDING = os.environ.get('USE_GOOGLE_SEARCH_GROUNDING', '0') == '1'
 DINGTALK_WEBHOOK = os.environ.get('DINGTALK_WEBHOOK', '')
 DINGTALK_SECRET = os.environ.get('DINGTALK_SECRET', '')
+DINGTALK_KEYWORD = os.environ.get('DINGTALK_KEYWORD', '股票行情')   # 钉钉机器人安全关键词
 DINGTALK_MAX_CONTENT_CHARS = 5200
 PART_A_TARGET_CHARS = 5200
 PART_BC_MAX_CHARS = 5200
@@ -677,7 +678,8 @@ def send_to_dingtalk(title, content, max_retries=2, part_type="A"):
         content = f"【AI股市日报】\n\n{content}"
 
     header = f"## {title}\n\n"
-    footer = "\n\n---\n*V88 AI · 机构简报*"
+    # 关键词必须出现在消息内，否则钉钉机器人（关键词安全模式）会拒绝投递
+    footer = f"\n\n---\n*V88 AI · 机构简报 · {DINGTALK_KEYWORD}*"
     body = f"{header}{content}{footer}"
 
     message = {
@@ -1512,6 +1514,7 @@ def generate_report_final(report_type="evening"):
         if part_a:
             part_a = index_banner + part_a
 
+        time.sleep(4)   # 避免 Gemini API 连续调用触发 429/403
         part_b = generate_part_b_recs(report_type, data)
         if part_b:
             part_b = _strip_part_b_verbose(part_b)
@@ -1537,6 +1540,7 @@ def main():
     part_a_content, part_b_content = generate_report_final(report_type)
 
     # 2. 生成 Part C（自选股持仓分析）
+    time.sleep(4)   # 避免 Gemini API 连续调用触发 429/403
     part_c_content = generate_watchlist_report(report_type)
 
     base_title = "AI股市日报"

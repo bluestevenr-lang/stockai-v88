@@ -17,6 +17,7 @@ LOG_FILE="${LOG_DIR}/autoreporter_$(date '+%Y%m%d_%H%M').log"
     export TUSHARE_TOKEN="b59adc9011f54ebdc0e3197d6e6c0a0536a0c31d88d9153d67ac7711"
     export DINGTALK_WEBHOOK="https://oapi.dingtalk.com/robot/send?access_token=a06fce0541a9ad9d4fb3a0ebc26596805594d9750d33c06044bfa05e15bbbe7e"
     export DINGTALK_SECRET=""
+    export DINGTALK_KEYWORD="股票行情"
 
     cd "${PROJECT_DIR}" || { echo "❌ 无法进入项目目录"; exit 1; }
 
