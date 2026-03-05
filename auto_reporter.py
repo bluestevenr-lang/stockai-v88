@@ -1726,32 +1726,47 @@ def generate_digest(report_type="morning"):
 # ─── 主函数 ───────────────────────────────────────────────────────────────────
 
 def main():
-    """主函数：5板块精华日报，单条钉钉推送"""
+    """主函数：Part A（市场简报）+ Part B（推荐）+ Part C（自选股）三条钉钉推送"""
     report_type = sys.argv[1] if len(sys.argv) > 1 else (
         "evening" if datetime.now(TZ_SHANGHAI).hour >= 12 else "morning"
     )
     label = "早报" if report_type == "morning" else "晚报"
-
-    print(f"\n{'='*60}")
-    print(f"🚀 V88 AI 钉钉精华{label}")
-    print(f"{'='*60}\n")
-
-    digest = generate_digest(report_type)
-
     send_time = datetime.now(TZ_SHANGHAI).strftime('%Y/%m/%d %H:%M')
-    title = f"AI股市{label} · {send_time} · {DINGTALK_KEYWORD}"
-
-    print(f"📤 推送精华摘要（约 {len(digest)} 字）...")
-    ok = send_to_dingtalk(title, digest, max_retries=3, part_type="A")
-
-    if ok:
-        print(f"✅ 钉钉推送完成")
-    else:
-        print(f"❌ 推送失败，请检查钉钉配置")
 
     print(f"\n{'='*60}")
-    print(digest[:1000] + "..." if len(digest) > 1000 else digest)
+    print(f"🚀 V88 AI 钉钉{label}（A+B+C 三部分）")
     print(f"{'='*60}\n")
+
+    # ── Part A + B（市场简报 + 精选推荐）────────────────────────────────────
+    part_a, part_b = generate_report_final(report_type)
+
+    if part_a:
+        title_a = f"📰 AI{label} Part A · 市场简报 · {send_time} · {DINGTALK_KEYWORD}"
+        print(f"📤 推送 Part A（约 {len(part_a)} 字）...")
+        send_to_dingtalk(title_a, part_a, max_retries=3, part_type="A")
+    else:
+        print("⚠️  Part A 生成失败，跳过")
+
+    if part_b:
+        time.sleep(4)
+        title_b = f"🎯 AI{label} Part B · 精选推荐 · {send_time} · {DINGTALK_KEYWORD}"
+        print(f"📤 推送 Part B（约 {len(part_b)} 字）...")
+        send_to_dingtalk(title_b, part_b, max_retries=3, part_type="B")
+    else:
+        print("⚠️  Part B 生成失败，跳过")
+
+    # ── Part C（自选股持仓分析）──────────────────────────────────────────────
+    time.sleep(4)
+    print(f"📋 生成 Part C 自选股分析...")
+    part_c = generate_watchlist_report(report_type)
+    if part_c:
+        title_c = f"📋 AI{label} Part C · 自选股 · {send_time} · {DINGTALK_KEYWORD}"
+        print(f"📤 推送 Part C（约 {len(part_c)} 字）...")
+        send_to_dingtalk(title_c, part_c, max_retries=3, part_type="C")
+    else:
+        print("⚠️  Part C 生成失败，跳过")
+
+    print(f"\n✅ {label}推送完成（A+B+C）")
 
 
 if __name__ == "__main__":
