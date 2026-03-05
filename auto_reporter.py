@@ -14,7 +14,7 @@ import os
 import sys
 import re
 import yfinance as yf
-import google.generativeai as genai
+from google import genai as genai
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from pathlib import Path
@@ -155,14 +155,21 @@ def _v88_call_gemini(prompt, use_grounding=None):
         return "❌ 请配置 GEMINI_API_KEY"
     use_grounding = use_grounding if use_grounding is not None else USE_GOOGLE_SEARCH_GROUNDING
     try:
-        genai.configure(api_key=GEMINI_API_KEY)
-        model = genai.GenerativeModel(GEMINI_MODEL)
+        client = genai.Client(api_key=GEMINI_API_KEY)
         if use_grounding:
-            response = model.generate_content(prompt, tools=["google_search_retrieval"])
-            if hasattr(response, 'candidates') and response.candidates and hasattr(response.candidates[0], 'grounding_metadata') and response.candidates[0].grounding_metadata:
+            from google.genai import types as _genai_types
+            grounding_tool = _genai_types.Tool(google_search=_genai_types.GoogleSearch())
+            response = client.models.generate_content(
+                model=GEMINI_MODEL,
+                contents=prompt,
+                config=_genai_types.GenerateContentConfig(tools=[grounding_tool])
+            )
+            if (hasattr(response, 'candidates') and response.candidates
+                    and hasattr(response.candidates[0], 'grounding_metadata')
+                    and response.candidates[0].grounding_metadata):
                 print("  📡 已使用 Google Search grounding 获取实时来源")
         else:
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(model=GEMINI_MODEL, contents=prompt)
         if response and response.text:
             return response.text.strip()
         return "❌ Gemini 返回为空"
@@ -631,10 +638,13 @@ def _screened_candidates(pool, min_score, prefix, market_label, max_per_type=40,
 # ─── 钉钉推送 ────────────────────────────────────────────────────────────────
 
 def send_to_dingtalk(title, content, max_retries=2, part_type="A"):
-    """发送到钉钉（加签 + 关键词「日报」）。华尔街日报风格排版，超长自动截断。"""
-    if not DINGTALK_WEBHOOK or not DINGTALK_SECRET:
-        print("⚠️  钉钉配置缺失（需 DINGTALK_WEBHOOK 与 DINGTALK_SECRET）")
+    """发送到钉钉（支持加签模式和无签名关键词模式）。华尔街日报风格排版，超长自动截断。"""
+    if not DINGTALK_WEBHOOK:
+        print("⚠️  钉钉配置缺失（需 DINGTALK_WEBHOOK）")
         return False
+
+    if not DINGTALK_SECRET:
+        print("ℹ️  DINGTALK_SECRET 未配置，使用无签名模式（需钉钉机器人配置【关键词】安全验证）")
 
     if content:
         content = _format_dingtalk_wsj(content, part_type)
@@ -663,12 +673,16 @@ def send_to_dingtalk(title, content, max_retries=2, part_type="A"):
 
     for attempt in range(max_retries):
         try:
-            timestamp = str(round(time.time() * 1000))
-            secret_enc = DINGTALK_SECRET.encode('utf-8')
-            string_to_sign = f'{timestamp}\n{DINGTALK_SECRET}'
-            hmac_code = hmac.new(secret_enc, string_to_sign.encode('utf-8'), digestmod=hashlib.sha256).digest()
-            sign = urllib.parse.quote_plus(base64.b64encode(hmac_code).decode('ascii'))
-            webhook_url = f"{DINGTALK_WEBHOOK}&timestamp={timestamp}&sign={sign}"
+            # 有 SECRET 则加签，否则直接用 webhook URL（关键词安全模式）
+            if DINGTALK_SECRET:
+                timestamp = str(round(time.time() * 1000))
+                secret_enc = DINGTALK_SECRET.encode('utf-8')
+                string_to_sign = f'{timestamp}\n{DINGTALK_SECRET}'
+                hmac_code = hmac.new(secret_enc, string_to_sign.encode('utf-8'), digestmod=hashlib.sha256).digest()
+                sign = urllib.parse.quote_plus(base64.b64encode(hmac_code).decode('ascii'))
+                webhook_url = f"{DINGTALK_WEBHOOK}&timestamp={timestamp}&sign={sign}"
+            else:
+                webhook_url = DINGTALK_WEBHOOK
             req = urllib.request.Request(webhook_url, data=data, headers=headers)
             with urllib.request.urlopen(req, timeout=15, context=context) as response:
                 result = json.loads(response.read().decode('utf-8'))
