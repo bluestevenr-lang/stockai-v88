@@ -20,6 +20,12 @@ LOG_FILE="${LOG_DIR}/autoreporter_$(date '+%Y%m%d_%H%M').log"
 
     cd "${PROJECT_DIR}" || { echo "❌ 无法进入项目目录"; exit 1; }
 
+    # 确保新版 Gemini SDK 已安装
+    "${PYTHON_BIN}" -c "from google import genai" 2>/dev/null || {
+        echo "📦 安装 google-genai..."
+        "${PYTHON_BIN}" -m pip install -q google-genai
+    }
+
     # 根据当前时间自动决定早报/晚报（auto_reporter.py 内部也有判断，双重保险）
     HOUR=$(date '+%H')
     if [ "${HOUR}" -lt 12 ]; then
