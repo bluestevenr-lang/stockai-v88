@@ -65,7 +65,7 @@ USE_GOOGLE_SEARCH_GROUNDING = os.environ.get('USE_GOOGLE_SEARCH_GROUNDING', '0')
 DINGTALK_WEBHOOK = os.environ.get('DINGTALK_WEBHOOK', '')
 DINGTALK_SECRET = os.environ.get('DINGTALK_SECRET', '')
 DINGTALK_KEYWORD = os.environ.get('DINGTALK_KEYWORD', '股票行情')   # 钉钉机器人安全关键词
-DINGTALK_MAX_CONTENT_CHARS = 5200
+DINGTALK_MAX_CONTENT_CHARS = 4800
 PART_A_TARGET_CHARS = 5200
 PART_BC_MAX_CHARS = 5200
 PORTFOLIO_FILE = "my_portfolio.xlsx"
@@ -1641,7 +1641,7 @@ def generate_digest(report_type="morning"):
 {wl_prices}
 
 请基于以上真实数据，用中文生成一份精华钉钉日报，要求：
-1. 严格控制在 2000 字以内
+1. 严格控制在 3500 字以内
 2. 使用以下固定结构（不要改标题）：
 
 ## 📊 市场体制与今日主线
@@ -1655,8 +1655,10 @@ def generate_digest(report_type="morning"):
 ## 🌊 蓄势潜伏关注（各市场1只）
 每只格式：**代码 名称** | 建仓区间：xxx-xxx | 等待信号：20字
 
-## 📱 自选股亮点
-从自选股里选出2-3只值得今日重点关注的，说明原因（每条25字）
+## 📱 自选股全览（每只一句）
+对上方自选股现价列表中的每一只，逐一给出一句精华点评（15字以内）：
+格式：**名称(代码)** 现价xxx | 一句判断（涨/跌/震荡/关注/减持，加核心理由）
+所有持仓都要列出，不能遗漏。
 
 ## 💡 操盘要点
 3条简洁操盘建议，每条不超过25字
