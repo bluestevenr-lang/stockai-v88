@@ -33,6 +33,25 @@ import hashlib
 import shutil
 import logging
 
+# ── 从 .env 加载密钥（本地开发用；不覆盖已有环境变量）─────────────────────────
+def _load_env_file():
+    env_path = Path(__file__).parent / '.env'
+    if not env_path.exists():
+        return
+    try:
+        with open(env_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#') or '=' not in line:
+                    continue
+                k, _, v = line.partition('=')
+                k = k.strip(); v = v.strip().strip('"').strip("'")
+                if k and k not in os.environ:
+                    os.environ[k] = v
+    except Exception:
+        pass
+_load_env_file()
+
 # ── AI市场简报 12小时文件缓存 ──────────────────────────────────────────────
 _BRIEF_CACHE_DIR = Path(__file__).parent / ".cache_brief"
 _BRIEF_CACHE_FILE = _BRIEF_CACHE_DIR / "daily_brief.json"
@@ -1692,7 +1711,7 @@ try:
         MY_GEMINI_KEY = mod_config.GEMINI_API_KEY
         GEMINI_MODEL_NAME = mod_config.GEMINI_MODEL_NAME
     else:
-        MY_GEMINI_KEY = st.secrets.get("GEMINI_API_KEY", os.getenv("GEMINI_API_KEY", ""))
+        MY_GEMINI_KEY = (st.secrets.get("GEMINI_API_KEY", "") or os.getenv("GEMINI_API_KEY", ""))
         GEMINI_MODEL_NAME = "gemini-2.5-flash"
     
     # 配置Gemini API

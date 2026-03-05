@@ -13,6 +13,44 @@ AI股市早晚报 - 钉钉自动推送
 import os
 import sys
 import re
+from pathlib import Path
+
+# ── 优先从 .env 文件加载密钥（Python 解析，避免 shell 编码问题）──────────────
+def _load_env_file():
+    """读取 .env 文件并写入 os.environ（不覆盖已有环境变量）"""
+    env_path = Path(__file__).parent / '.env'
+    if not env_path.exists():
+        return
+    try:
+        with open(env_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                if '=' not in line:
+                    continue
+                key, _, val = line.partition('=')  # partition 只拆第一个 =，URL 安全
+                key = key.strip()
+                val = val.strip().strip('"').strip("'")
+                if key and key not in os.environ:  # 不覆盖系统已有变量
+                    os.environ[key] = val
+    except Exception as e:
+        print(f"⚠️  .env 加载失败: {e}")
+
+_load_env_file()
+
+# ── 诊断：打印关键 env 变量的前几个字符（不暴露完整值）──────────────────────
+def _diag_env():
+    for k in ('GEMINI_API_KEY', 'TUSHARE_TOKEN', 'DINGTALK_WEBHOOK', 'DINGTALK_SECRET', 'DINGTALK_KEYWORD'):
+        v = os.environ.get(k, '')
+        if v:
+            preview = v[:6] + '...' if len(v) > 6 else v
+            is_ascii = all(ord(c) < 128 for c in v)
+            print(f"  [{k}] = {repr(preview)}  ascii_safe={is_ascii}")
+        else:
+            print(f"  [{k}] = (未设置)")
+_diag_env()
+
 import yfinance as yf
 try:
     from google import genai as genai
@@ -24,7 +62,6 @@ except ImportError:
     _GENAI_NEW = False
 from datetime import datetime
 from zoneinfo import ZoneInfo
-from pathlib import Path
 import urllib.request
 import urllib.parse
 import json
@@ -1665,10 +1702,12 @@ def generate_digest(report_type="morning"):
 
 注意：直接输出内容，不要添加多余解释，语言简洁专业。"""
 
+    print("🤖 调用 Gemini 生成精华日报...")
     result = _v88_call_gemini(prompt, use_grounding=False)
     if result and not result.startswith("❌"):
         return result
 
+    print(f"⚠️  Gemini 失败，降级为纯数据: {result}")
     # ── 降级：纯数据（无 Gemini）──────────────────────────────────────────────
     fallback_lines = [f"## 📊 市场数据摘要（{today}）\n", idx_block, ""]
     if scan:

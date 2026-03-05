@@ -12,12 +12,19 @@ LOG_FILE="${LOG_DIR}/autoreporter_$(date '+%Y%m%d_%H%M').log"
 {
     echo "=== $(date '+%F %T') 钉钉AI日报启动 ==="
 
-    # 环境变量（来自 .streamlit/secrets.toml 对应值）
-    export GEMINI_API_KEY="AIzaSyBMOzUpUngDAnfXIae_VQdz3Gj-xCECR5w"
-    export TUSHARE_TOKEN="b59adc9011f54ebdc0e3197d6e6c0a0536a0c31d88d9153d67ac7711"
-    export DINGTALK_WEBHOOK="https://oapi.dingtalk.com/robot/send?access_token=3c50ad18b1ce2c55c6e7106a79e7551a37141c87ed399d6a26cd4db6f768ed24"
-    export DINGTALK_SECRET="SECc40f49d626b6fa5bfb4f6e8562ecc71124271e566da3e3dcc27821de52be0d0f"
-    export DINGTALK_KEYWORD=""
+    # ── 从 .env 加载环境变量（密钥不写入脚本）──────────────────────────────
+    ENV_FILE="${PROJECT_DIR}/.env"
+    if [ -f "${ENV_FILE}" ]; then
+        echo "📂 加载 .env 配置..."
+        # set -a 让所有赋值自动 export；source 直接执行 .env；set +a 恢复
+        set -a
+        source "${ENV_FILE}"
+        set +a
+    else
+        echo "⚠️  未找到 .env 文件：${ENV_FILE}"
+        echo "   请复制 .env.example 为 .env 并填入密钥"
+        exit 1
+    fi
 
     cd "${PROJECT_DIR}" || { echo "❌ 无法进入项目目录"; exit 1; }
 
