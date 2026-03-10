@@ -1877,23 +1877,34 @@ def main():
     print(f"🚀 V88 AI 钉钉{label}（A+B+C+D 四部分）")
     print(f"{'='*60}\n")
 
+    _send_ok = 0
+    _send_fail = 0
+
     # ── Part A + B（市场简报 + 精选推荐）────────────────────────────────────
     part_a, part_b = generate_report_final(report_type)
 
     if part_a:
         title_a = f"📰 AI{label} Part A · 市场简报 · {send_time} · {DINGTALK_KEYWORD}"
         print(f"📤 推送 Part A（约 {len(part_a)} 字）...")
-        send_to_dingtalk(title_a, part_a, max_retries=3, part_type="A")
+        if send_to_dingtalk(title_a, part_a, max_retries=3, part_type="A"):
+            _send_ok += 1
+        else:
+            _send_fail += 1
     else:
         print("⚠️  Part A 生成失败，跳过")
+        _send_fail += 1
 
     if part_b:
         time.sleep(4)
         title_b = f"🎯 AI{label} Part B · 精选推荐 · {send_time} · {DINGTALK_KEYWORD}"
         print(f"📤 推送 Part B（约 {len(part_b)} 字）...")
-        send_to_dingtalk(title_b, part_b, max_retries=3, part_type="B")
+        if send_to_dingtalk(title_b, part_b, max_retries=3, part_type="B"):
+            _send_ok += 1
+        else:
+            _send_fail += 1
     else:
         print("⚠️  Part B 生成失败，跳过")
+        _send_fail += 1
 
     # ── Part C（自选股持仓分析）──────────────────────────────────────────────
     time.sleep(4)
@@ -1902,9 +1913,13 @@ def main():
     if part_c:
         title_c = f"📋 AI{label} Part C · 自选股 · {send_time} · {DINGTALK_KEYWORD}"
         print(f"📤 推送 Part C（约 {len(part_c)} 字）...")
-        send_to_dingtalk(title_c, part_c, max_retries=3, part_type="C")
+        if send_to_dingtalk(title_c, part_c, max_retries=3, part_type="C"):
+            _send_ok += 1
+        else:
+            _send_fail += 1
     else:
         print("⚠️  Part C 生成失败，跳过")
+        _send_fail += 1
 
     # ── Part D（三大市场 AI 技术分析 · 走势预测）──────────────────────────────
     time.sleep(4)
@@ -1913,11 +1928,23 @@ def main():
     if part_d:
         title_d = f"📊 AI{label} Part D · 市场走势预测 · {send_time} · {DINGTALK_KEYWORD}"
         print(f"📤 推送 Part D（约 {len(part_d)} 字）...")
-        send_to_dingtalk(title_d, part_d, max_retries=3, part_type="D")
+        if send_to_dingtalk(title_d, part_d, max_retries=3, part_type="D"):
+            _send_ok += 1
+        else:
+            _send_fail += 1
     else:
         print("⚠️  Part D 生成失败，跳过")
+        _send_fail += 1
 
-    print(f"\n✅ {label}推送完成（A+B+C+D）")
+    print(f"\n{'='*60}")
+    print(f"📊 {label}推送结果: 成功 {_send_ok} / 失败 {_send_fail}")
+    print(f"{'='*60}")
+
+    if _send_ok == 0:
+        print("❌ 所有部分均推送失败！")
+        sys.exit(1)
+    elif _send_fail > 0:
+        print(f"⚠️  部分推送失败（{_send_fail} 个）")
 
 
 if __name__ == "__main__":

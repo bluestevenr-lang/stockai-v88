@@ -33,6 +33,8 @@ jobs:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         DINGTALK_WEBHOOK: ${{ secrets.DINGTALK_WEBHOOK }}
         DINGTALK_SECRET: ${{ secrets.DINGTALK_SECRET }}
+        DINGTALK_KEYWORD: "股票行情"
+        TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}
       run: |
         python auto_reporter.py
     

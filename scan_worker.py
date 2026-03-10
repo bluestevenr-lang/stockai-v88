@@ -649,28 +649,48 @@ def _load_pool_or_fetch() -> tuple:
 def _fetch_df(yf_code: str):
     """
     拉取最近 350 天日线数据。
-    A股（.SS/.SZ）：优先 Tushare → 失败再 yfinance
-    其他市场：直接 yfinance
+    优先通过 ts_helper.fetch_df（Tushare + curl_cffi yfinance），
+    不可用时本地兜底。
     """
-    # ── A股：Tushare 为主 ────────────────────────────────────────
+    # ── 优先 ts_helper（已集成 Tushare 熔断 + curl_cffi session）──
+    if _USE_TS_HELPER:
+        try:
+            from ts_helper import fetch_df as _ts_fetch
+            df = _ts_fetch(yf_code, period="350d", timeout=15)
+            if df is not None and len(df) >= 30:
+                _ok_cols = all(c in df.columns for c in ("Close", "Open", "High", "Low", "Volume"))
+                if _ok_cols:
+                    price = float(df["Close"].iloc[-1])
+                    if 0.001 < price < 1_000_000:
+                        return df
+        except Exception as e:
+            log.debug(f"ts_helper.fetch_df {yf_code}: {e}")
+
+    # ── A股 Tushare 备用路径（ts_helper 不可用时）────────────────
     if yf_code.endswith(".SS") or yf_code.endswith(".SZ"):
         df = _fetch_df_tushare(yf_code)
         if df is not None and len(df) >= 30:
             return df
         log.debug(f"Tushare 失败，降级 yfinance: {yf_code}")
 
-    # ── 其余市场 / Tushare 失败兜底：yfinance Ticker API（避免多线程缓存污染）────
+    # ── yfinance 兜底（带 curl_cffi session 防反爬）───────────────
     try:
-        ticker = yf.Ticker(yf_code)
+        _sess = None
+        try:
+            import curl_cffi.requests as _cffi
+            _sess = _cffi.Session(impersonate="chrome120")
+        except ImportError:
+            pass
+        ticker = yf.Ticker(yf_code, session=_sess) if _sess else yf.Ticker(yf_code)
         df = ticker.history(period="350d", auto_adjust=True)
         if df is None or len(df) < 30:
             return None
-        # 统一列名（Ticker.history 返回的列名已是标准格式，无需多层处理）
+        if hasattr(df.columns, "levels") and df.columns.nlevels == 2:
+            df.columns = [c[0] for c in df.columns]
         df.columns = [str(c).split()[0] if " " in str(c) else str(c) for c in df.columns]
         for col in ("Close", "Open", "High", "Low", "Volume"):
             if col not in df.columns:
                 return None
-        # 价格合理性校验：防止 yfinance 串台返回错误数据
         price = float(df["Close"].iloc[-1])
         if not (0.001 < price < 1_000_000):
             return None
@@ -955,11 +975,31 @@ def _gen_rationale(df, channel: str, result: dict) -> str:
 
 
 def _get_bm_return(ticker: str, days: int = 5) -> float:
-    """拉取基准指数 N 日收益率"""
+    """拉取基准指数 N 日收益率（A股指数优先 Tushare）"""
+    # A股指数优先 Tushare
+    if _USE_TS_HELPER and (ticker.endswith(".SS") or ticker.endswith(".SZ")):
+        try:
+            from ts_helper import fetch_daily_tushare as _ts_daily
+            df = _ts_daily(ticker, days=60)
+            if df is not None and len(df) >= days + 1:
+                closes = df["Close"].dropna()
+                if len(closes) >= days + 1:
+                    return float((closes.iloc[-1] / closes.iloc[-(days + 1)] - 1) * 100)
+        except Exception:
+            pass
     try:
-        df = yf.download(ticker, period="30d", progress=False, auto_adjust=True)
+        _sess = None
+        try:
+            import curl_cffi.requests as _cffi
+            _sess = _cffi.Session(impersonate="chrome120")
+        except ImportError:
+            pass
+        tk = yf.Ticker(ticker, session=_sess) if _sess else yf.Ticker(ticker)
+        df = tk.history(period="30d")
         if df is None or len(df) < days + 1:
             return 0.0
+        if hasattr(df.columns, "levels") and df.columns.nlevels == 2:
+            df.columns = [c[0] for c in df.columns]
         closes = df["Close"].dropna()
         if len(closes) < days + 1:
             return 0.0
