@@ -11361,7 +11361,7 @@ with tab_quant:
 
         # Tab 4：启动（胜率）
         with _t4:
-            st.caption("三中二（突破20日高 + 放量1.5x + 相对强度领跑）· 胜率佳 · 趋势介入窗口")
+            st.caption("突破20日高 / 放量1.3x / 相对强度领跑（满足≥1项）· 趋势启动窗口")
             for _mkey, _mlabel in _mkt_cfg:
                 _mkt_data = _res.get(_mkey, {})
                 _bm_r     = _mkt_data.get("bm_ret5", 0)
