@@ -85,6 +85,36 @@ def _save_brief_cache(content: str):
         logging.warning(f"简报缓存写入失败: {_e}")
 
 
+# ── AI报告通用文件缓存（市场分析 / 个股分析 共用）──────────────────────────
+_AI_REPORT_CACHE_DIR = _BRIEF_CACHE_DIR  # 复用同一缓存目录
+_AI_REPORT_TTL = 12 * 3600  # 12小时
+
+def _load_ai_report_cache(report_key: str):
+    """加载 AI 报告文件缓存，命中(<12h)返回 (data_dict, ts)，否则 (None, None)"""
+    try:
+        _f = _AI_REPORT_CACHE_DIR / f"ai_report_{report_key}.json"
+        if _f.exists():
+            data = json.loads(_f.read_text(encoding="utf-8"))
+            age = time.time() - data.get("timestamp", 0)
+            if age < _AI_REPORT_TTL:
+                return data.get("payload"), data.get("timestamp")
+    except Exception:
+        pass
+    return None, None
+
+
+def _save_ai_report_cache(report_key: str, payload):
+    """保存 AI 报告到文件缓存"""
+    try:
+        _AI_REPORT_CACHE_DIR.mkdir(exist_ok=True)
+        (_AI_REPORT_CACHE_DIR / f"ai_report_{report_key}.json").write_text(
+            json.dumps({"payload": payload, "timestamp": time.time()}, ensure_ascii=False),
+            encoding="utf-8",
+        )
+    except Exception as _e:
+        logging.warning(f"AI报告缓存写入失败({report_key}): {_e}")
+
+
 _BRIEF_HISTORY_FILE = _BRIEF_CACHE_DIR / "brief_history.json"
 
 def _append_brief_history(content: str):
@@ -184,6 +214,16 @@ def _check_daily_cache_clear() -> None:
         "_scan_results_cache",      # 扫描结果内存缓存
         "_gist_local_cache",        # Gist 本地缓存
         "_heat_cache",              # 行业热力缓存
+        "market_ai_us",             # AI市场分析-美股
+        "market_ai_hk",             # AI市场分析-港股
+        "market_ai_cn",             # AI市场分析-A股
+        "_us_tech_data",            # 美股技术数据
+        "_hk_tech_data",            # 港股技术数据
+        "_cn_tech_data",            # A股技术数据
+        "market_sentiment_us",      # 美股舆情
+        "market_sentiment_hk",      # 港股舆情
+        "market_sentiment_cn",      # A股舆情
+        "_market_ai_auto_done",     # 市场AI自动生成标志
     ]
     for _k in _ss_keys_to_clear:
         try:
@@ -2104,6 +2144,49 @@ except NameError:
 # ═══════════════════════════════════════════════════════════════
 # Fragment 函数：AI综合分析（局部刷新，按钮交互不触发全页重跑）
 # ═══════════════════════════════════════════════════════════════
+def _run_single_market_ai(market_name, index_code, market_result):
+    """执行单个市场的 AI 分析（技术预测 + 舆情），返回 {pred, tech, sentiment} 或 {}"""
+    result = {}
+    try:
+        if HAS_PREDICTION_ENGINE:
+            tech_df = fetch_stock_data(index_code)
+            _forecaster = MarketForecaster()
+            tech = _forecaster.analyze_market_technicals(tech_df, market_name) if tech_df is not None and len(tech_df) >= 20 else {}
+            ai_r = _forecaster.call_gemini_market_forecast([tech], MY_GEMINI_KEY)
+            result['pred'] = ai_r.get(market_name, 'AI分析结果为空')
+            result['tech'] = tech
+        if SENTIMENT_ANALYZER_AVAILABLE and _sentiment_analyzer:
+            sent_prompt = _sentiment_analyzer.generate_market_sentiment_prompt(market_name, market_result)
+            sent_resp = call_gemini_api(sent_prompt)
+            sent_metrics = _sentiment_analyzer.parse_sentiment_score(sent_resp)
+            result['sentiment'] = {'response': sent_resp, 'metrics': sent_metrics}
+    except Exception as e:
+        _safe_print(f"[AI市场分析] {market_name}分析失败: {e}")
+    return result
+
+
+def _load_market_ai_to_session():
+    """页面加载时：从文件缓存恢复 AI 市场分析到 session_state"""
+    for mk, ss_pred, ss_tech, ss_sent in [
+        ('us', 'market_ai_us', '_us_tech_data', 'market_sentiment_us'),
+        ('hk', 'market_ai_hk', '_hk_tech_data', 'market_sentiment_hk'),
+        ('cn', 'market_ai_cn', '_cn_tech_data', 'market_sentiment_cn'),
+    ]:
+        if ss_pred in st.session_state:
+            continue
+        cached, _ts = _load_ai_report_cache(f"market_{mk}")
+        if cached and isinstance(cached, dict):
+            if cached.get('pred'):
+                st.session_state[ss_pred] = cached['pred']
+            if cached.get('tech'):
+                st.session_state[ss_tech] = cached['tech']
+            if cached.get('sentiment'):
+                st.session_state[ss_sent] = cached['sentiment']
+
+
+_load_market_ai_to_session()
+
+
 @st.fragment
 def _render_ai_market_analysis():
     from datetime import datetime as _dt_ai
@@ -2117,216 +2200,113 @@ def _render_ai_market_analysis():
         return
 
     st.markdown(f"### 🤖 AI综合分析 · {_dt_ai.now().strftime('%Y-%m-%d')}")
-    st.caption("市场指数走势预测 + 舆情情绪分析 · 点击「一键分析」生成报告")
 
-    if st.button("⚡ 一键分析全市场（美股＋港股＋A股）", key="btn_one_click_all_markets",
-                 type="primary", width='stretch'):
-        st.session_state['_one_click_all_markets'] = True
-    _trigger_all = st.session_state.get('_one_click_all_markets', False)
+    _has_cached = any(k in st.session_state for k in ['market_ai_us', 'market_ai_hk', 'market_ai_cn'])
+    if _has_cached:
+        _cached_ts = None
+        for mk in ['us', 'hk', 'cn']:
+            _, _t = _load_ai_report_cache(f"market_{mk}")
+            if _t:
+                _cached_ts = _t
+                break
+        _ts_str = _dt_ai.fromtimestamp(_cached_ts).strftime('%H:%M') if _cached_ts else ""
+        st.caption(f"市场指数走势预测 + 舆情情绪分析 · 缓存自动加载{f' · 生成于 {_ts_str}' if _ts_str else ''}")
+    else:
+        st.caption("市场指数走势预测 + 舆情情绪分析")
+
+    _btn_cols = st.columns([3, 1])
+    with _btn_cols[0]:
+        _do_gen = st.button("⚡ 一键分析全市场（美股＋港股＋A股）", key="btn_one_click_all_markets",
+                     type="primary", use_container_width=True)
+    with _btn_cols[1]:
+        _do_refresh = st.button("🔄 强制刷新", key="btn_refresh_market_ai", use_container_width=True)
+
+    if _do_refresh:
+        for _k in ['market_ai_us', '_us_tech_data', 'market_sentiment_us',
+                    'market_ai_hk', '_hk_tech_data', 'market_sentiment_hk',
+                    'market_ai_cn', '_cn_tech_data', 'market_sentiment_cn',
+                    '_market_ai_auto_done']:
+            st.session_state.pop(_k, None)
+        for mk in ['us', 'hk', 'cn']:
+            try:
+                _rf = _AI_REPORT_CACHE_DIR / f"ai_report_market_{mk}.json"
+                if _rf.exists():
+                    _rf.unlink()
+            except Exception:
+                pass
+        _do_gen = True
+
+    _need_auto_gen = (not _has_cached
+                      and not st.session_state.get('_market_ai_auto_done')
+                      and MY_GEMINI_KEY)
+    _trigger_all = _do_gen or _need_auto_gen
+
+    if _need_auto_gen and not _do_gen:
+        st.session_state['_market_ai_auto_done'] = True
+
+    _markets_config = [
+        ('美股', '^GSPC', us_result, 'market_ai_us', '_us_tech_data', 'market_sentiment_us', 'us'),
+        ('港股', '^HSI', hk_result, 'market_ai_hk', '_hk_tech_data', 'market_sentiment_hk', 'hk'),
+        ('A股', '000001.SS', cn_result, 'market_ai_cn', '_cn_tech_data', 'market_sentiment_cn', 'cn'),
+    ]
+
+    if _trigger_all:
+        _overall_prog = st.progress(0)
+        _overall_stat = st.empty()
+        for _idx, (_mname, _mcode, _mresult, _ss_pred, _ss_tech, _ss_sent, _mk) in enumerate(_markets_config):
+            if _ss_pred in st.session_state and not _do_refresh:
+                _overall_prog.progress((_idx + 1) / 3)
+                continue
+            _overall_stat.info(f"📊 正在分析 {_mname}... ({_idx+1}/3)")
+            _overall_prog.progress((_idx + 0.2) / 3)
+            _r = _run_single_market_ai(_mname, _mcode, _mresult)
+            if _r.get('pred'):
+                st.session_state[_ss_pred] = _r['pred']
+            if _r.get('tech'):
+                st.session_state[_ss_tech] = _r['tech']
+            if _r.get('sentiment'):
+                st.session_state[_ss_sent] = _r['sentiment']
+            if _r:
+                _save_ai_report_cache(f"market_{_mk}", _r)
+            _overall_prog.progress((_idx + 1) / 3)
+        _overall_prog.empty()
+        _overall_stat.empty()
+        if any(_ss in st.session_state for _, _, _, _ss, _, _, _ in _markets_config):
+            st.success("✅ 全市场AI分析完成")
 
     ai_tabs = st.tabs(["🇺🇸 美股", "🇭🇰 港股", "🇨🇳 A股"])
 
-    with ai_tabs[0]:
-        _us_pred_key = 'market_ai_us'
-        sentiment_us_key = "market_sentiment_us"
-        if _trigger_all and 'market_ai_us' not in st.session_state:
-            _prog = st.progress(0)
-            _stat = st.empty()
-            try:
-                if HAS_PREDICTION_ENGINE:
-                    _stat.info("📊 获取标普500数据...")
-                    _prog.progress(0.15)
-                    _us_tech_df = fetch_stock_data("^GSPC")
-                    _prog.progress(0.3)
-                    _stat.info("🔍 技术分析中...")
-                    _forecaster = MarketForecaster()
-                    _us_tech = _forecaster.analyze_market_technicals(_us_tech_df, '美股') if _us_tech_df is not None and len(_us_tech_df) >= 20 else {}
-                    _prog.progress(0.45)
-                    _stat.info("🤖 AI预测走势...")
-                    _ai_r = _forecaster.call_gemini_market_forecast([_us_tech], MY_GEMINI_KEY)
-                    st.session_state[_us_pred_key] = _ai_r.get('美股', 'AI分析结果为空')
-                    st.session_state['_us_tech_data'] = _us_tech
-                if SENTIMENT_ANALYZER_AVAILABLE and _sentiment_analyzer:
-                    _prog.progress(0.6)
-                    _stat.info("🤖 分析市场舆情...")
-                    _sent_prompt = _sentiment_analyzer.generate_market_sentiment_prompt('美股', us_result)
-                    _prog.progress(0.75)
-                    _sent_resp = call_gemini_api(_sent_prompt)
-                    _sent_metrics = _sentiment_analyzer.parse_sentiment_score(_sent_resp)
-                    st.session_state[sentiment_us_key] = {'response': _sent_resp, 'metrics': _sent_metrics}
-                _prog.progress(1.0)
-                _prog.empty()
-                _stat.empty()
-                st.success("✅ 美股AI分析完成")
-            except Exception as e:
-                _prog.empty()
-                _stat.empty()
-                st.error(f"❌ 分析失败: {str(e)[:80]}")
-
-        if _us_pred_key in st.session_state:
-            _us_tech_d = st.session_state.get('_us_tech_data', {})
-            if _us_tech_d:
-                _tc1, _tc2, _tc3 = st.columns(3)
-                with _tc1:
-                    st.metric("当前价格", f"{_us_tech_d.get('current_price', 0):.2f}")
-                with _tc2:
-                    st.metric("技术趋势", _us_tech_d.get('trend', '震荡'))
-                with _tc3:
-                    st.metric("技术强度", f"{_us_tech_d.get('strength', 50)}/100")
-            if COPY_UTILS_AVAILABLE:
-                CopyUtils.create_copy_button(st.session_state[_us_pred_key], button_text="📋 复制全文", key="copy_us_pred_full")
-                CopyUtils.render_markdown_with_section_copy(st.session_state[_us_pred_key], key_prefix="us_pred")
-            else:
-                st.markdown(st.session_state[_us_pred_key])
-            st.caption(f"📌 AI生成 · 模型: {_ai_model_label()}")
-        elif not _trigger_all:
-            st.caption("点击「一键分析全市场」生成报告")
-
-        if sentiment_us_key in st.session_state:
-            _us_sent_d = st.session_state[sentiment_us_key]
-            _us_sent_m = _us_sent_d['metrics']
-            with st.expander(f"📰 舆情 | 评分 {_us_sent_m.get('sentiment_score', 50)}/100 · {_us_sent_m.get('sentiment_level', '中性')}", expanded=False):
+    for _tab, (_mname, _mcode, _mresult, _ss_pred, _ss_tech, _ss_sent, _mk) in zip(ai_tabs, _markets_config):
+        with _tab:
+            if _ss_pred in st.session_state:
+                _tech_d = st.session_state.get(_ss_tech, {})
+                if _tech_d:
+                    _tc1, _tc2, _tc3 = st.columns(3)
+                    with _tc1:
+                        st.metric("当前价格", f"{_tech_d.get('current_price', 0):.2f}")
+                    with _tc2:
+                        st.metric("技术趋势", _tech_d.get('trend', '震荡'))
+                    with _tc3:
+                        st.metric("技术强度", f"{_tech_d.get('strength', 50)}/100")
                 if COPY_UTILS_AVAILABLE:
-                    CopyUtils.create_copy_button(_us_sent_d['response'], button_text="📋 复制全文", key="copy_us_sent_full")
-                    CopyUtils.render_markdown_with_section_copy(_us_sent_d['response'], key_prefix="us_sent")
+                    CopyUtils.create_copy_button(st.session_state[_ss_pred], button_text="📋 复制全文", key=f"copy_{_mk}_pred_full")
+                    CopyUtils.render_markdown_with_section_copy(st.session_state[_ss_pred], key_prefix=f"{_mk}_pred")
                 else:
-                    st.markdown(_us_sent_d['response'])
+                    st.markdown(st.session_state[_ss_pred])
                 st.caption(f"📌 AI生成 · 模型: {_ai_model_label()}")
-
-    with ai_tabs[1]:
-        _hk_pred_key = 'market_ai_hk'
-        sentiment_hk_key = "market_sentiment_hk"
-        if _trigger_all and 'market_ai_hk' not in st.session_state:
-            _prog = st.progress(0)
-            _stat = st.empty()
-            try:
-                if HAS_PREDICTION_ENGINE:
-                    _stat.info("📊 获取恒指数据...")
-                    _prog.progress(0.15)
-                    _hk_tech_df = fetch_stock_data("^HSI")
-                    _prog.progress(0.3)
-                    _stat.info("🔍 技术分析中...")
-                    _forecaster = MarketForecaster()
-                    _hk_tech = _forecaster.analyze_market_technicals(_hk_tech_df, '港股') if _hk_tech_df is not None and len(_hk_tech_df) >= 20 else {}
-                    _prog.progress(0.45)
-                    _stat.info("🤖 AI预测走势...")
-                    _ai_r = _forecaster.call_gemini_market_forecast([_hk_tech], MY_GEMINI_KEY)
-                    st.session_state[_hk_pred_key] = _ai_r.get('港股', 'AI分析结果为空')
-                    st.session_state['_hk_tech_data'] = _hk_tech
-                if SENTIMENT_ANALYZER_AVAILABLE and _sentiment_analyzer:
-                    _prog.progress(0.6)
-                    _stat.info("🤖 分析市场舆情...")
-                    _sent_prompt = _sentiment_analyzer.generate_market_sentiment_prompt('港股', hk_result)
-                    _prog.progress(0.75)
-                    _sent_resp = call_gemini_api(_sent_prompt)
-                    _sent_metrics = _sentiment_analyzer.parse_sentiment_score(_sent_resp)
-                    st.session_state[sentiment_hk_key] = {'response': _sent_resp, 'metrics': _sent_metrics}
-                _prog.progress(1.0)
-                _prog.empty()
-                _stat.empty()
-                st.success("✅ 港股AI分析完成")
-            except Exception as e:
-                _prog.empty()
-                _stat.empty()
-                st.error(f"❌ 分析失败: {str(e)[:80]}")
-
-        if _hk_pred_key in st.session_state:
-            _hk_tech_d = st.session_state.get('_hk_tech_data', {})
-            if _hk_tech_d:
-                _tc1, _tc2, _tc3 = st.columns(3)
-                with _tc1:
-                    st.metric("当前价格", f"{_hk_tech_d.get('current_price', 0):.2f}")
-                with _tc2:
-                    st.metric("技术趋势", _hk_tech_d.get('trend', '震荡'))
-                with _tc3:
-                    st.metric("技术强度", f"{_hk_tech_d.get('strength', 50)}/100")
-            if COPY_UTILS_AVAILABLE:
-                CopyUtils.create_copy_button(st.session_state[_hk_pred_key], button_text="📋 复制全文", key="copy_hk_pred_full")
-                CopyUtils.render_markdown_with_section_copy(st.session_state[_hk_pred_key], key_prefix="hk_pred")
             else:
-                st.markdown(st.session_state[_hk_pred_key])
-            st.caption(f"📌 AI生成 · 模型: {_ai_model_label()}")
-        elif not _trigger_all:
-            st.caption("点击「一键分析全市场」生成报告")
+                st.caption("点击「一键分析全市场」或等待自动生成")
 
-        if sentiment_hk_key in st.session_state:
-            _hk_sent_d = st.session_state[sentiment_hk_key]
-            _hk_sent_m = _hk_sent_d['metrics']
-            with st.expander(f"📰 舆情 | 评分 {_hk_sent_m.get('sentiment_score', 50)}/100 · {_hk_sent_m.get('sentiment_level', '中性')}", expanded=False):
-                if COPY_UTILS_AVAILABLE:
-                    CopyUtils.create_copy_button(_hk_sent_d['response'], button_text="📋 复制全文", key="copy_hk_sent_full")
-                    CopyUtils.render_markdown_with_section_copy(_hk_sent_d['response'], key_prefix="hk_sent")
-                else:
-                    st.markdown(_hk_sent_d['response'])
-                st.caption(f"📌 AI生成 · 模型: {_ai_model_label()}")
-
-    with ai_tabs[2]:
-        _cn_pred_key = 'market_ai_cn'
-        sentiment_cn_key = "market_sentiment_cn"
-        if _trigger_all and 'market_ai_cn' not in st.session_state:
-            _prog = st.progress(0)
-            _stat = st.empty()
-            try:
-                if HAS_PREDICTION_ENGINE:
-                    _stat.info("📊 获取上证数据...")
-                    _prog.progress(0.15)
-                    _cn_tech_df = fetch_stock_data("000001.SS")
-                    _prog.progress(0.3)
-                    _stat.info("🔍 技术分析中...")
-                    _forecaster = MarketForecaster()
-                    _cn_tech = _forecaster.analyze_market_technicals(_cn_tech_df, 'A股') if _cn_tech_df is not None and len(_cn_tech_df) >= 20 else {}
-                    _prog.progress(0.45)
-                    _stat.info("🤖 AI预测走势...")
-                    _ai_r = _forecaster.call_gemini_market_forecast([_cn_tech], MY_GEMINI_KEY)
-                    st.session_state[_cn_pred_key] = _ai_r.get('A股', 'AI分析结果为空')
-                    st.session_state['_cn_tech_data'] = _cn_tech
-                if SENTIMENT_ANALYZER_AVAILABLE and _sentiment_analyzer:
-                    _prog.progress(0.6)
-                    _stat.info("🤖 分析市场舆情...")
-                    _sent_prompt = _sentiment_analyzer.generate_market_sentiment_prompt('A股', cn_result)
-                    _prog.progress(0.75)
-                    _sent_resp = call_gemini_api(_sent_prompt)
-                    _sent_metrics = _sentiment_analyzer.parse_sentiment_score(_sent_resp)
-                    st.session_state[sentiment_cn_key] = {'response': _sent_resp, 'metrics': _sent_metrics}
-                _prog.progress(1.0)
-                _prog.empty()
-                _stat.empty()
-                st.success("✅ A股AI分析完成")
-                st.session_state.pop('_one_click_all_markets', None)
-            except Exception as e:
-                _prog.empty()
-                _stat.empty()
-                st.error(f"❌ 分析失败: {str(e)[:80]}")
-
-        if _cn_pred_key in st.session_state:
-            _cn_tech_d = st.session_state.get('_cn_tech_data', {})
-            if _cn_tech_d:
-                _tc1, _tc2, _tc3 = st.columns(3)
-                with _tc1:
-                    st.metric("当前价格", f"{_cn_tech_d.get('current_price', 0):.2f}")
-                with _tc2:
-                    st.metric("技术趋势", _cn_tech_d.get('trend', '震荡'))
-                with _tc3:
-                    st.metric("技术强度", f"{_cn_tech_d.get('strength', 50)}/100")
-            if COPY_UTILS_AVAILABLE:
-                CopyUtils.create_copy_button(st.session_state[_cn_pred_key], button_text="📋 复制全文", key="copy_cn_pred_full")
-                CopyUtils.render_markdown_with_section_copy(st.session_state[_cn_pred_key], key_prefix="cn_pred")
-            else:
-                st.markdown(st.session_state[_cn_pred_key])
-            st.caption(f"📌 AI生成 · 模型: {_ai_model_label()}")
-        elif not _trigger_all:
-            st.caption("点击「一键分析全市场」生成报告")
-
-        if sentiment_cn_key in st.session_state:
-            _cn_sent_d = st.session_state[sentiment_cn_key]
-            _cn_sent_m = _cn_sent_d['metrics']
-            with st.expander(f"📰 舆情 | 评分 {_cn_sent_m.get('sentiment_score', 50)}/100 · {_cn_sent_m.get('sentiment_level', '中性')}", expanded=False):
-                if COPY_UTILS_AVAILABLE:
-                    CopyUtils.create_copy_button(_cn_sent_d['response'], button_text="📋 复制全文", key="copy_cn_sent_full")
-                    CopyUtils.render_markdown_with_section_copy(_cn_sent_d['response'], key_prefix="cn_sent")
-                else:
-                    st.markdown(_cn_sent_d['response'])
-                st.caption(f"📌 AI生成 · 模型: {_ai_model_label()}")
+            if _ss_sent in st.session_state:
+                _sent_d = st.session_state[_ss_sent]
+                _sent_m = _sent_d.get('metrics', {})
+                with st.expander(f"📰 舆情 | 评分 {_sent_m.get('sentiment_score', 50)}/100 · {_sent_m.get('sentiment_level', '中性')}", expanded=False):
+                    if COPY_UTILS_AVAILABLE:
+                        CopyUtils.create_copy_button(_sent_d['response'], button_text="📋 复制全文", key=f"copy_{_mk}_sent_full")
+                        CopyUtils.render_markdown_with_section_copy(_sent_d['response'], key_prefix=f"{_mk}_sent")
+                    else:
+                        st.markdown(_sent_d.get('response', ''))
+                    st.caption(f"📌 AI生成 · 模型: {_ai_model_label()}")
 
     _link_items = []
     for _mk, _mr in [('🇺🇸 美股', us_result), ('🇭🇰 港股', hk_result), ('🇨🇳 A股', cn_result)]:
@@ -8565,13 +8545,50 @@ if execute_analysis and q_input:
 
         # ═══════════════════════════════════════════════════════════════
         # 【V93】AI 综合分析（整合: 技术面 + 止损止盈 + 风控 + 行业 + 日线复盘）
+        # 文件缓存 + 自动加载 + 强制刷新
         # ═══════════════════════════════════════════════════════════════
         st.markdown("---")
         st.markdown("### 🤖 AI 综合分析")
-        st.caption("一键生成: 技术研判 · 止损止盈 · 风控评估 · 行业分析 · 操作建议")
 
         _unified_ai_cache_key = f"_unified_ai_{target_c}"
-        _run_unified_ai = st.button("⚡ 一键 AI 综合分析", key=f"btn_unified_ai_{target_c}", type="primary", width='stretch')
+
+        # 从文件缓存恢复（session_state 没有时）
+        if _unified_ai_cache_key not in st.session_state:
+            _cached_report, _cached_ts = _load_ai_report_cache(f"stock_{target_c}")
+            if _cached_report and isinstance(_cached_report, str):
+                st.session_state[_unified_ai_cache_key] = _cached_report
+
+        _has_stock_cache = _unified_ai_cache_key in st.session_state
+        if _has_stock_cache:
+            _, _sc_ts = _load_ai_report_cache(f"stock_{target_c}")
+            _sc_time = datetime.fromtimestamp(_sc_ts).strftime('%H:%M') if _sc_ts else ""
+            st.caption(f"技术研判 · 止损止盈 · 风控评估 · 行业分析 · 操作建议{f' · 缓存 {_sc_time}' if _sc_time else ''}")
+        else:
+            st.caption("一键生成: 技术研判 · 止损止盈 · 风控评估 · 行业分析 · 操作建议")
+
+        _btn_c1, _btn_c2 = st.columns([3, 1])
+        with _btn_c1:
+            _run_unified_ai = st.button("⚡ 一键 AI 综合分析" if not _has_stock_cache else "⚡ 重新生成 AI 综合分析",
+                                        key=f"btn_unified_ai_{target_c}", type="primary", use_container_width=True)
+        with _btn_c2:
+            _refresh_stock_ai = st.button("🔄 刷新", key=f"btn_refresh_stock_ai_{target_c}", use_container_width=True)
+
+        if _refresh_stock_ai:
+            st.session_state.pop(_unified_ai_cache_key, None)
+            try:
+                _rf = _AI_REPORT_CACHE_DIR / f"ai_report_stock_{target_c}.json"
+                if _rf.exists():
+                    _rf.unlink()
+            except Exception:
+                pass
+            _run_unified_ai = True
+            _has_stock_cache = False
+
+        # 自动生成：无缓存时首次自动触发
+        _stock_auto_key = f"_stock_ai_auto_{target_c}"
+        if not _has_stock_cache and not st.session_state.get(_stock_auto_key) and MY_GEMINI_KEY and not _run_unified_ai:
+            st.session_state[_stock_auto_key] = True
+            _run_unified_ai = True
 
         if _run_unified_ai and MY_GEMINI_KEY:
             with st.spinner(f"🤖 Gemini 综合分析中 · 模型: {_ai_model_label()} · 预计 15-30 秒..."):
@@ -8686,6 +8703,7 @@ K线形态: {_pattern_v} | 夏普比率: {_sharpe_v} | 最大回撤: {_maxdd_v}
 
                     if _unified_result and not _unified_result.startswith("❌"):
                         st.session_state[_unified_ai_cache_key] = _unified_result
+                        _save_ai_report_cache(f"stock_{target_c}", _unified_result)
                     else:
                         st.error(_unified_result or "❌ AI 分析生成失败，请重试")
                 except Exception as _uae:
