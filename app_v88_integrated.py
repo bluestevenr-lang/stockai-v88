@@ -4151,8 +4151,26 @@ def render_fundamentals_panel(fundamentals: dict, target_c: str):
             st.metric("共识", rec_cn)
         biz = fundamentals.get("business_summary", "")
         if biz:
-            with st.expander("📖 公司简介", expanded=False):
-                st.markdown(f'<p style="font-size:13px;line-height:1.8;color:#374151;">{biz[:500]}</p>', unsafe_allow_html=True)
+            with st.expander("📖 公司简介 & 业务概况", expanded=False):
+                _biz_cache_key = f"_biz_cn_{target_c}"
+                if _biz_cache_key in st.session_state and st.session_state[_biz_cache_key]:
+                    _biz_cn = st.session_state[_biz_cache_key]
+                else:
+                    _has_cjk = any('\u4e00' <= ch <= '\u9fff' for ch in biz[:50])
+                    if _has_cjk:
+                        _biz_cn = biz[:600]
+                    else:
+                        try:
+                            _biz_cn = call_gemini_api(
+                                f"请将以下公司简介翻译为简体中文，保持专业术语准确，只输出翻译结果：\n\n{biz[:600]}",
+                                model_name="gemini-2.0-flash"
+                            )
+                            if not _biz_cn or _biz_cn.startswith("❌"):
+                                _biz_cn = biz[:600]
+                        except Exception:
+                            _biz_cn = biz[:600]
+                    st.session_state[_biz_cache_key] = _biz_cn
+                st.markdown(f'<p style="font-size:13px;line-height:1.8;color:#374151;">{_biz_cn}</p>', unsafe_allow_html=True)
         return
 
     # ── 财报三表 Tabs ──
@@ -6745,29 +6763,27 @@ def _score_inflection(df) -> dict | None:
         l6m = float(low.tail(period).min())
         range6m = h6m - l6m
         pos6m = (last_c - l6m) / range6m if range6m > 0 else 0.5
-        in_bottom_40 = pos6m <= 0.40
+        in_bottom_50 = pos6m <= 0.50
 
         ret5  = float(close.iloc[-1] / close.iloc[-6] - 1) * 100  if len(close) >= 6  else 0
         ret20 = float(close.iloc[-1] / close.iloc[-21] - 1) * 100 if len(close) >= 21 else 0
 
-        # RSI底背离：近30日价格创新低但RSI > 前低点时的RSI（简化：近低时RSI > 40）
         recent_low_close = float(close.tail(20).min())
-        rsi_at_recent_low_approx = rsi   # 当前RSI作为代理（因为close处于低位）
-        rsi_divergence = (recent_low_close <= last_c * 1.02) and (rsi > 40)
+        rsi_divergence = (recent_low_close <= last_c * 1.03) and (rsi > 35)
 
-        rebound_signal = (ret5 > 0) and (ret20 < -5)
-        gate1 = in_bottom_40 and (rsi_divergence or rebound_signal)
+        rebound_signal = (ret5 > 0) and (ret20 < -3)
+        gate1 = in_bottom_50 and (rsi_divergence or rebound_signal)
 
         # ── Gate2：结构不再恶化 ──
         if len(low) >= 20:
             low10_recent = float(low.iloc[-10:].min())
             low10_prev   = float(low.iloc[-20:-10].min())
-            higher_lows  = low10_recent > low10_prev
+            higher_lows  = low10_recent > low10_prev * 0.99
         else:
             higher_lows = False
 
         low20_close = float(close.tail(20).min())
-        not_new_low = last_c > low20_close * 0.99   # 允许0.1%误差
+        not_new_low = last_c > low20_close * 0.98
         gate2 = higher_lows and not_new_low
 
         # ── Gate3：止跌量能改善 ──
@@ -6778,15 +6794,15 @@ def _score_inflection(df) -> dict | None:
         avg_vol_down = float(down_days["Volume"].mean()) if len(down_days) > 0 else 1
         gate3 = avg_vol_up > avg_vol_down
 
-        if not (gate1 and gate2 and gate3):
+        gates_met = sum([gate1, gate2, gate3])
+        if gates_met < 2:
             return None
 
-        # ── 评分（通过三关后按信号强度打分）──
+        # ── 评分（满足2关以上按信号强度打分）──
         score   = 0
         signals = []
 
-        # 价格位置越低赔率越好
-        bottom_score = int((0.40 - pos6m) / 0.40 * 30) if pos6m <= 0.40 else 0
+        bottom_score = int((0.50 - pos6m) / 0.50 * 30) if pos6m <= 0.50 else 0
         score += bottom_score
         signals.append(f"📍 底部{pos6m*100:.0f}%位")
 
@@ -6802,8 +6818,9 @@ def _score_inflection(df) -> dict | None:
         vol_ratio = avg_vol_up / avg_vol_down if avg_vol_down > 0 else 1
         score += min(15, int(vol_ratio * 5))
         signals.append(f"💰 买量/卖量={vol_ratio:.1f}x")
+        if gates_met == 3:  score += 10
 
-        setup = "强拐点" if score >= 65 else ("拐点中" if score >= 45 else "弱拐点")
+        setup = "强拐点" if score >= 65 else ("拐点中" if score >= 40 else "拐点")
         return {"score": min(100, score), "signals": signals, "setup": setup,
                 "gate1": gate1, "gate2": gate2, "gate3": gate3,
                 "pos6m": pos6m, "ret5": ret5, "ret20": ret20, "rsi": rsi}
@@ -6813,11 +6830,11 @@ def _score_inflection(df) -> dict | None:
 
 def _score_breakout_v2(df, benchmark_ret5: float = 0.0) -> dict | None:
     """
-    启动通道（胜率）— 三信号满足≥2/3才入池。
+    启动通道（胜率）— 三信号满足≥1/3即入池，满足越多分越高。
 
     Signal1 突破关键位：收盘 > 过去20日最高收盘价
-    Signal2 量能确认：今日量 > 20日均量 × 1.5
-    Signal3 相对强弱转强：个股5日涨幅 > 基准5日涨幅 + 2%
+    Signal2 量能确认：今日量 > 20日均量 × 1.3
+    Signal3 相对强弱转强：个股5日涨幅 > 基准5日涨幅 + 1.5%
     """
     if df is None or len(df) < 25 or "Close" not in df.columns:
         return None
@@ -6832,38 +6849,30 @@ def _score_breakout_v2(df, benchmark_ret5: float = 0.0) -> dict | None:
         last_v  = float(volume.iloc[-1])
         avg_v20 = float(volume.tail(20).mean())
 
-        # RSI
         delta = close.diff()
         gain = delta.where(delta > 0, 0).fillna(0)
         loss = (-delta.where(delta < 0, 0)).fillna(0)
         rsi  = float(100 - 100 / (1 + gain.ewm(com=13).mean().iloc[-1] /
                                    (loss.ewm(com=13).mean().iloc[-1] + 1e-10)))
 
-        # Signal1：突破20日最高收盘
         high20_prev = float(close.iloc[-21:-1].max()) if len(close) >= 21 else float(close.iloc[:-1].max())
         s1_breakout = last_c > high20_prev
         s1_margin   = (last_c / high20_prev - 1) * 100 if high20_prev > 0 else 0
 
-        # Signal2：放量
-        s2_volume   = last_v > avg_v20 * 1.5
+        s2_volume   = last_v > avg_v20 * 1.3
         s2_ratio    = last_v / avg_v20 if avg_v20 > 0 else 1
 
-        # Signal3：相对强弱
         ret5 = float((close.iloc[-1] / close.iloc[-6] - 1) * 100) if len(close) >= 6 else 0
-        s3_rs = ret5 > benchmark_ret5 + 2.0
+        s3_rs = ret5 > benchmark_ret5 + 1.5
 
         met = sum([s1_breakout, s2_volume, s3_rs])
-        if met < 2:
+        if met < 1:
             return None
 
-        # 强势收盘（加分项）
         daily_range = float(high.iloc[-1] - low.iloc[-1])
         strong_close = ((last_c - float(low.iloc[-1])) / daily_range > 0.70) if daily_range > 0 else False
+        rsi_ok = 45 <= rsi <= 80
 
-        # RSI 健康区间
-        rsi_ok = 50 <= rsi <= 78
-
-        # 评分
         score   = 0
         signals = []
 
@@ -6883,7 +6892,7 @@ def _score_breakout_v2(df, benchmark_ret5: float = 0.0) -> dict | None:
             score += 5
             signals.append(f"RSI{rsi:.0f}")
 
-        setup = "强启动" if score >= 70 else ("启动中" if score >= 50 else "弱启动")
+        setup = "强启动" if score >= 70 else ("启动中" if score >= 45 else "弱启动")
         return {"score": min(100, score), "signals": signals, "setup": setup,
                 "s1": s1_breakout, "s2": s2_volume, "s3": s3_rs,
                 "met": met, "ret5": ret5, "rsi": rsi}

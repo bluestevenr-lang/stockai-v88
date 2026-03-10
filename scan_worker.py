@@ -819,7 +819,7 @@ def _score_coil(df) -> dict | None:
 
 
 def _score_inflection(df) -> dict | None:
-    """拐点通道（赔率）：三关全中才入池"""
+    """拐点通道（赔率）：三关中满足 ≥ 2 关即入池"""
     if df is None or len(df) < 40:
         return None
     try:
@@ -840,20 +840,20 @@ def _score_inflection(df) -> dict | None:
         l6m    = float(low.tail(period).min())
         range6m = h6m - l6m
         pos6m   = (last_c - l6m) / range6m if range6m > 0 else 0.5
-        in_bottom_40 = pos6m <= 0.40
+        in_bottom_50 = pos6m <= 0.50
 
         ret5  = float(close.iloc[-1] / close.iloc[-6]  - 1) * 100 if len(close) >= 6  else 0
         ret20 = float(close.iloc[-1] / close.iloc[-21] - 1) * 100 if len(close) >= 21 else 0
 
-        rsi_divergence = (float(close.tail(20).min()) <= last_c * 1.02) and (rsi > 40)
-        rebound_signal = (ret5 > 0) and (ret20 < -5)
-        gate1 = in_bottom_40 and (rsi_divergence or rebound_signal)
+        rsi_divergence = (float(close.tail(20).min()) <= last_c * 1.03) and (rsi > 35)
+        rebound_signal = (ret5 > 0) and (ret20 < -3)
+        gate1 = in_bottom_50 and (rsi_divergence or rebound_signal)
 
         if len(low) >= 20:
-            higher_lows = float(low.iloc[-10:].min()) > float(low.iloc[-20:-10].min())
+            higher_lows = float(low.iloc[-10:].min()) > float(low.iloc[-20:-10].min()) * 0.99
         else:
             higher_lows = False
-        not_new_low = last_c > float(close.tail(20).min()) * 0.99
+        not_new_low = last_c > float(close.tail(20).min()) * 0.98
         gate2 = higher_lows and not_new_low
 
         recent_10  = df.tail(10).copy()
@@ -863,12 +863,13 @@ def _score_inflection(df) -> dict | None:
         avg_vol_down = float(down_days["Volume"].mean()) if len(down_days) > 0 else 1
         gate3 = avg_vol_up > avg_vol_down
 
-        if not (gate1 and gate2 and gate3):
+        gates_met = sum([gate1, gate2, gate3])
+        if gates_met < 2:
             return None
 
         score = 0
         signals = []
-        bottom_score = int((0.40 - pos6m) / 0.40 * 30) if pos6m <= 0.40 else 0
+        bottom_score = int((0.50 - pos6m) / 0.50 * 30) if pos6m <= 0.50 else 0
         score += bottom_score
         signals.append(f"📍 底部{pos6m*100:.0f}%位")
 
@@ -878,8 +879,9 @@ def _score_inflection(df) -> dict | None:
         vol_ratio = avg_vol_up / avg_vol_down if avg_vol_down > 0 else 1
         score += min(15, int(vol_ratio * 5))
         signals.append(f"💰 买/卖量={vol_ratio:.1f}x")
+        if gates_met == 3:  score += 10
 
-        setup = "强拐点" if score >= 65 else ("拐点中" if score >= 45 else "弱拐点")
+        setup = "强拐点" if score >= 65 else ("拐点中" if score >= 40 else "拐点")
         return {
             "score": min(100, score), "signals": signals, "setup": setup,
             "pos6m": pos6m, "ret5": ret5, "ret20": ret20, "rsi": rsi, "gate3": gate3,
@@ -889,7 +891,7 @@ def _score_inflection(df) -> dict | None:
 
 
 def _score_breakout_v2(df, bm_ret5: float = 0.0) -> dict | None:
-    """启动通道（胜率）：三信号满足 ≥ 2/3 才入池"""
+    """启动通道（胜率）：三信号满足 ≥ 1/3 即入池，满足越多分越高"""
     if df is None or len(df) < 25:
         return None
     try:
@@ -912,19 +914,19 @@ def _score_breakout_v2(df, bm_ret5: float = 0.0) -> dict | None:
         s1_breakout = last_c > high20_prev
         s1_margin   = (last_c / high20_prev - 1) * 100 if high20_prev > 0 else 0
 
-        s2_volume = last_v > avg_v20 * 1.5
+        s2_volume = last_v > avg_v20 * 1.3
         s2_ratio  = last_v / avg_v20 if avg_v20 > 0 else 1
 
         ret5  = float((close.iloc[-1] / close.iloc[-6] - 1) * 100) if len(close) >= 6 else 0
-        s3_rs = ret5 > bm_ret5 + 2.0
+        s3_rs = ret5 > bm_ret5 + 1.5
 
         met = sum([s1_breakout, s2_volume, s3_rs])
-        if met < 2:
+        if met < 1:
             return None
 
         daily_range  = float(high.iloc[-1] - low.iloc[-1])
         strong_close = ((last_c - float(low.iloc[-1])) / daily_range > 0.70) if daily_range > 0 else False
-        rsi_ok = 50 <= rsi <= 78
+        rsi_ok = 45 <= rsi <= 80
 
         score = 0
         signals = []
@@ -934,7 +936,7 @@ def _score_breakout_v2(df, bm_ret5: float = 0.0) -> dict | None:
         if strong_close:  score += 5;  signals.append("⬆️ 强收盘")
         if rsi_ok:        score += 5;  signals.append(f"RSI{rsi:.0f}")
 
-        setup = "强启动" if score >= 70 else ("启动中" if score >= 50 else "弱启动")
+        setup = "强启动" if score >= 70 else ("启动中" if score >= 45 else "弱启动")
         return {
             "score": min(100, score), "signals": signals, "setup": setup,
             "s1": s1_breakout, "s2": s2_volume, "s3": s3_rs,
