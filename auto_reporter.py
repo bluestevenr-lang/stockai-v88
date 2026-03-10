@@ -1765,10 +1765,108 @@ def generate_digest(report_type="morning"):
     return "\n".join(fallback_lines)
 
 
+# ─── Part D: AI三大市场技术分析（美股/港股/A股 走势预测）─────────────────────
+
+def _fetch_market_technicals(index_code, label):
+    """获取指数行情 + 计算技术指标，返回文本摘要"""
+    try:
+        df = yf.Ticker(index_code).history(period="60d", timeout=15)
+        if df is None or len(df) < 5:
+            return ""
+        last = df.iloc[-1]
+        prev = df.iloc[-2]
+        chg = (last['Close'] - prev['Close']) / prev['Close'] * 100
+        ma5 = df['Close'].rolling(5).mean().iloc[-1]
+        ma20 = df['Close'].rolling(20).mean().iloc[-1] if len(df) >= 20 else 0
+        ma60 = df['Close'].rolling(60).mean().iloc[-1] if len(df) >= 60 else 0
+
+        delta = df['Close'].diff()
+        gain = delta.where(delta > 0, 0).fillna(0)
+        loss = (-delta.where(delta < 0, 0)).fillna(0)
+        rs = gain.ewm(com=13).mean() / loss.ewm(com=13).mean()
+        rsi = (100 - (100 / (1 + rs))).iloc[-1]
+
+        last5 = df.tail(5)[['Open', 'High', 'Low', 'Close', 'Volume']]
+        l5_lines = []
+        for idx, row in last5.iterrows():
+            d = idx.strftime("%m-%d") if hasattr(idx, "strftime") else str(idx)[:5]
+            l5_lines.append(f"  {d} 开{row['Open']:.2f} 高{row['High']:.2f} 低{row['Low']:.2f} 收{row['Close']:.2f}")
+
+        return (f"{label}({index_code}) 最新: {last['Close']:.2f} 涨跌: {chg:+.2f}%\n"
+                f"MA5: {ma5:.2f} MA20: {ma20:.2f} MA60: {ma60:.2f} RSI: {rsi:.1f}\n"
+                f"最近5日:\n" + "\n".join(l5_lines))
+    except Exception as e:
+        print(f"  ⚠️ {label} 数据获取失败: {e}")
+        return f"{label}: 数据获取失败"
+
+
+def generate_market_ai_analysis(report_type="evening"):
+    """
+    Part D: 三大市场 AI 技术分析（走势预测 + 操作建议）
+    早报侧重港股A股，晚报侧重美股
+    """
+    print("📊 Part D: 获取三大市场技术数据...")
+    us_data = _fetch_market_technicals("^GSPC", "标普500")
+    hk_data = _fetch_market_technicals("^HSI", "恒生指数")
+    cn_data = _fetch_market_technicals("000001.SS", "上证综指")
+
+    focus_hint = (
+        "【早报侧重】港股、A股分析请更加详细（各≥300字）；美股可简要。"
+        if report_type == "morning" else
+        "【晚报侧重】美股分析请更加详细（≥300字）；港股、A股可简要。"
+    )
+
+    prompt = f"""你是华尔街顶级分析师。请基于以下三大市场的最新数据进行全面技术分析。
+
+【美股 · 标普500】
+{us_data}
+
+【港股 · 恒生指数】
+{hk_data}
+
+【A股 · 上证综指】
+{cn_data}
+
+{focus_hint}
+
+请按以下结构输出，全文中文，专业严谨（总计约1200-1800字）：
+
+## 🇺🇸 美股走势分析
+- 当前技术形态与趋势判断
+- 关键支撑位与压力位
+- 未来3-5日走势预测（上涨/下跌概率）
+- 操作建议
+
+## 🇭🇰 港股走势分析
+- 当前技术形态与趋势判断
+- 关键支撑位与压力位
+- 未来3-5日走势预测
+- 操作建议
+
+## 🇨🇳 A股走势分析
+- 当前技术形态与趋势判断
+- 关键支撑位与压力位
+- 未来3-5日走势预测
+- 操作建议
+
+## 📋 综合策略
+- 全球联动分析
+- 资产配置建议（美/港/A股仓位比例）
+- 本周重点关注事件"""
+
+    print("🤖 Part D: Gemini 分析三大市场走势...")
+    result = _v88_call_gemini(prompt)
+    if result and not result.startswith("❌"):
+        print(f"  ✅ Part D 生成成功（约 {len(result)} 字）")
+        return result
+    print(f"  ⚠️ Part D 生成失败: {(result or '')[:80]}")
+    return None
+
+
 # ─── 主函数 ───────────────────────────────────────────────────────────────────
 
 def main():
-    """主函数：Part A（市场简报）+ Part B（推荐）+ Part C（自选股）三条钉钉推送"""
+    """主函数：Part A（市场简报）+ Part B（推荐）+ Part C（自选股）+ Part D（市场AI分析）"""
     report_type = sys.argv[1] if len(sys.argv) > 1 else (
         "evening" if datetime.now(TZ_SHANGHAI).hour >= 12 else "morning"
     )
@@ -1776,7 +1874,7 @@ def main():
     send_time = datetime.now(TZ_SHANGHAI).strftime('%Y/%m/%d %H:%M')
 
     print(f"\n{'='*60}")
-    print(f"🚀 V88 AI 钉钉{label}（A+B+C 三部分）")
+    print(f"🚀 V88 AI 钉钉{label}（A+B+C+D 四部分）")
     print(f"{'='*60}\n")
 
     # ── Part A + B（市场简报 + 精选推荐）────────────────────────────────────
@@ -1808,7 +1906,18 @@ def main():
     else:
         print("⚠️  Part C 生成失败，跳过")
 
-    print(f"\n✅ {label}推送完成（A+B+C）")
+    # ── Part D（三大市场 AI 技术分析 · 走势预测）──────────────────────────────
+    time.sleep(4)
+    print(f"📊 生成 Part D 市场AI技术分析...")
+    part_d = generate_market_ai_analysis(report_type)
+    if part_d:
+        title_d = f"📊 AI{label} Part D · 市场走势预测 · {send_time} · {DINGTALK_KEYWORD}"
+        print(f"📤 推送 Part D（约 {len(part_d)} 字）...")
+        send_to_dingtalk(title_d, part_d, max_retries=3, part_type="D")
+    else:
+        print("⚠️  Part D 生成失败，跳过")
+
+    print(f"\n✅ {label}推送完成（A+B+C+D）")
 
 
 if __name__ == "__main__":
