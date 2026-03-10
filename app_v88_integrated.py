@@ -177,8 +177,10 @@ def _check_daily_cache_clear() -> None:
     # ② st.session_state 中的数据缓存键
     _ss_keys_to_clear = [
         "_macro_risk_result",       # 宏观风险评估
-        "_brief_content",           # AI 简报内容
-        "_brief_timestamp",         # 简报时间戳
+        "_brief_content",           # AI 简报内容（旧 key）
+        "_brief_timestamp",         # 简报时间戳（旧 key）
+        "market_brief_latest",      # AI 简报内容（当前 key）
+        "_brief_auto_gen_done",     # 简报自动生成标志
         "_scan_results_cache",      # 扫描结果内存缓存
         "_gist_local_cache",        # Gist 本地缓存
         "_heat_cache",              # 行业热力缓存
@@ -3943,6 +3945,289 @@ def fetch_eastmoney_stock_list(market="us", limit=350):
     except Exception as e:
         _safe_print(f"[股票池] ❌ {market.upper()}股API失败: {type(e).__name__}: {str(e)[:100]}")
         return []
+
+
+# ── 个股财报 & 行业信息获取 ─────────────────────────────────────────────────
+@st.cache_data(ttl=3600, show_spinner=False)
+def fetch_stock_fundamentals(code: str) -> dict:
+    """获取个股完整财报（损益表/资产负债表/现金流量表）+ 行业信息，1小时缓存"""
+    try:
+        yf_code = to_yf_cn_code(code)
+        tk = yf.Ticker(yf_code)
+        info = tk.info or {}
+
+        def _safe(key, default=None):
+            v = info.get(key, default)
+            return v if v is not None else default
+
+        # ── 基本信息 & 估值 ──
+        fundamentals = {
+            "company_name": _safe("longName") or _safe("shortName", ""),
+            "sector": _safe("sector", ""),
+            "industry": _safe("industry", ""),
+            "business_summary": _safe("longBusinessSummary", ""),
+            "market_cap": _safe("marketCap", 0),
+            "trailing_pe": _safe("trailingPE", 0),
+            "forward_pe": _safe("forwardPE", 0),
+            "price_to_book": _safe("priceToBook", 0),
+            "dividend_yield": _safe("dividendYield", 0),
+            "recommendation": _safe("recommendationKey", ""),
+            "target_mean_price": _safe("targetMeanPrice", 0),
+            "number_of_analysts": _safe("numberOfAnalystOpinions", 0),
+        }
+
+        # ── 损益表（年报，最近4年）──
+        def _stmt_to_dict(stmt_df):
+            """将 yfinance 财报 DataFrame 转成 {科目: {日期str: 值}} 的 dict"""
+            if stmt_df is None or stmt_df.empty:
+                return {}
+            result = {}
+            for row_name in stmt_df.index:
+                row_dict = {}
+                for col in stmt_df.columns:
+                    val = stmt_df.loc[row_name, col]
+                    date_key = col.strftime("%Y") if hasattr(col, "strftime") else str(col)[:4]
+                    try:
+                        row_dict[date_key] = float(val) if pd.notna(val) else None
+                    except (ValueError, TypeError):
+                        row_dict[date_key] = None
+                result[str(row_name)] = row_dict
+            return result
+
+        try:
+            fundamentals["income_stmt"] = _stmt_to_dict(tk.income_stmt)
+        except Exception:
+            fundamentals["income_stmt"] = {}
+        try:
+            fundamentals["balance_sheet"] = _stmt_to_dict(tk.balance_sheet)
+        except Exception:
+            fundamentals["balance_sheet"] = {}
+        try:
+            fundamentals["cashflow"] = _stmt_to_dict(tk.cashflow)
+        except Exception:
+            fundamentals["cashflow"] = {}
+        try:
+            fundamentals["quarterly_income"] = _stmt_to_dict(tk.quarterly_income_stmt)
+        except Exception:
+            fundamentals["quarterly_income"] = {}
+
+        return fundamentals
+    except Exception as e:
+        _safe_print(f"[财报] ❌ {code} 获取失败: {type(e).__name__}: {str(e)[:80]}")
+        return {}
+
+
+def _fmt_fin(val):
+    """格式化财报金额（自动亿/万）"""
+    if val is None:
+        return "-"
+    if abs(val) >= 1e12:
+        return f"{val/1e12:.2f}万亿"
+    if abs(val) >= 1e8:
+        return f"{val/1e8:.1f}亿"
+    if abs(val) >= 1e4:
+        return f"{val/1e4:.0f}万"
+    return f"{val:,.0f}"
+
+
+def _build_fin_table(stmt: dict, items: list, dates: list) -> pd.DataFrame:
+    """从财报 dict 构建展示表格。items = [(显示名, 科目key), ...]"""
+    rows = []
+    for label, key in items:
+        row = {"科目": label}
+        data = stmt.get(key, {})
+        for d in dates:
+            v = data.get(d)
+            row[d] = _fmt_fin(v) if v is not None else "-"
+        # 同比增长（最近两年）
+        if len(dates) >= 2:
+            v1 = data.get(dates[0])
+            v2 = data.get(dates[1])
+            if v1 is not None and v2 is not None and v2 != 0:
+                yoy = (v1 - v2) / abs(v2) * 100
+                row["同比"] = f"{yoy:+.1f}%"
+            else:
+                row["同比"] = "-"
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def render_fundamentals_panel(fundamentals: dict, target_c: str):
+    """渲染完整财报面板：损益表 + 资产负债表 + 现金流量表 + 行业背景"""
+    if not fundamentals:
+        st.caption("⚠️ 财报数据暂不可用（部分 A 股/港股可能无此数据）")
+        return
+
+    company_name = fundamentals.get("company_name", target_c)
+    sector = fundamentals.get("sector", "")
+    industry = fundamentals.get("industry", "")
+    mkt_cap = fundamentals.get("market_cap", 0)
+
+    # ── 公司头部 ──
+    _cap_str = _fmt_fin(mkt_cap) if mkt_cap else "N/A"
+    _pe_str = f"{fundamentals.get('trailing_pe', 0):.1f}" if fundamentals.get("trailing_pe") else "N/A"
+    _pb_str = f"{fundamentals.get('price_to_book', 0):.2f}" if fundamentals.get("price_to_book") else "N/A"
+    if sector or industry:
+        st.markdown(
+            f'<div style="background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:0.8rem 1.2rem;border-radius:8px;color:white;font-size:13px;margin-bottom:0.8rem;">'
+            f'🏢 <b>{company_name}</b> · {sector} · {industry}'
+            f'<span style="float:right;">市值 {_cap_str} · P/E {_pe_str} · P/B {_pb_str}</span></div>',
+            unsafe_allow_html=True)
+
+    income = fundamentals.get("income_stmt", {})
+    balance = fundamentals.get("balance_sheet", {})
+    cashflow = fundamentals.get("cashflow", {})
+    q_income = fundamentals.get("quarterly_income", {})
+
+    # 获取可用年份（倒序）
+    _all_dates = set()
+    for stmt in [income, balance, cashflow]:
+        for k, v in stmt.items():
+            if isinstance(v, dict):
+                _all_dates.update(v.keys())
+    dates = sorted(_all_dates, reverse=True)[:4]
+
+    if not dates:
+        # 没有财报数据，显示基本估值信息
+        hc = st.columns(5)
+        with hc[0]:
+            st.metric("市值", _cap_str)
+        with hc[1]:
+            st.metric("P/E", _pe_str)
+        with hc[2]:
+            st.metric("P/B", _pb_str)
+        with hc[3]:
+            st.metric("股息率", f"{fundamentals.get('dividend_yield', 0)*100:.2f}%" if fundamentals.get("dividend_yield") else "N/A")
+        with hc[4]:
+            rec = fundamentals.get("recommendation", "")
+            rec_cn = {"buy": "买入", "strong_buy": "强买", "hold": "持有", "sell": "卖出"}.get(rec, rec or "N/A")
+            st.metric("共识", rec_cn)
+        biz = fundamentals.get("business_summary", "")
+        if biz:
+            with st.expander("📖 公司简介", expanded=False):
+                st.markdown(f'<p style="font-size:13px;line-height:1.8;color:#374151;">{biz[:500]}</p>', unsafe_allow_html=True)
+        return
+
+    # ── 财报三表 Tabs ──
+    tab_is, tab_bs, tab_cf = st.tabs(["📋 损益表", "📊 资产负债表", "💵 现金流量表"])
+
+    with tab_is:
+        _is_items = [
+            ("营业收入", "Total Revenue"),
+            ("营业成本", "Cost Of Revenue"),
+            ("毛利润", "Gross Profit"),
+            ("营业费用", "Operating Expense"),
+            ("营业利润", "Operating Income"),
+            ("利息费用", "Interest Expense"),
+            ("税前利润", "Pretax Income"),
+            ("所得税", "Tax Provision"),
+            ("净利润", "Net Income"),
+            ("基本每股收益", "Basic EPS"),
+            ("稀释每股收益", "Diluted EPS"),
+            ("EBITDA", "EBITDA"),
+        ]
+        df_is = _build_fin_table(income, _is_items, dates)
+        if not df_is.empty and df_is.shape[1] > 1:
+            st.dataframe(df_is, use_container_width=True, hide_index=True)
+        else:
+            st.caption("⚠️ 损益表数据暂不可用")
+
+        # 季度利润趋势（如有）
+        if q_income:
+            q_dates = set()
+            for v in q_income.values():
+                if isinstance(v, dict):
+                    q_dates.update(v.keys())
+            q_dates = sorted(q_dates, reverse=True)[:8]
+            if q_dates:
+                with st.expander("📈 最近8季度利润趋势", expanded=False):
+                    _q_items = [
+                        ("营业收入", "Total Revenue"),
+                        ("营业利润", "Operating Income"),
+                        ("净利润", "Net Income"),
+                    ]
+                    df_q = _build_fin_table(q_income, _q_items, q_dates)
+                    st.dataframe(df_q, use_container_width=True, hide_index=True)
+
+    with tab_bs:
+        _bs_items = [
+            ("总资产", "Total Assets"),
+            ("流动资产", "Current Assets"),
+            ("现金及等价物", "Cash And Cash Equivalents"),
+            ("应收账款", "Accounts Receivable"),
+            ("存货", "Inventory"),
+            ("非流动资产", "Total Non Current Assets"),
+            ("固定资产净值", "Net PPE"),
+            ("总负债", "Total Liabilities Net Minority Interest"),
+            ("流动负债", "Current Liabilities"),
+            ("长期负债", "Long Term Debt"),
+            ("股东权益", "Stockholders Equity"),
+            ("留存收益", "Retained Earnings"),
+        ]
+        df_bs = _build_fin_table(balance, _bs_items, dates)
+        if not df_bs.empty and df_bs.shape[1] > 1:
+            st.dataframe(df_bs, use_container_width=True, hide_index=True)
+        else:
+            st.caption("⚠️ 资产负债表数据暂不可用")
+
+    with tab_cf:
+        _cf_items = [
+            ("经营活动现金流", "Operating Cash Flow"),
+            ("资本开支", "Capital Expenditure"),
+            ("自由现金流", "Free Cash Flow"),
+            ("投资活动现金流", "Investing Cash Flow"),
+            ("筹资活动现金流", "Financing Cash Flow"),
+            ("股票回购", "Repurchase Of Capital Stock"),
+            ("支付股息", "Cash Dividends Paid"),
+            ("现金净增加", "Changes In Cash"),
+            ("期末现金", "End Cash Position"),
+        ]
+        df_cf = _build_fin_table(cashflow, _cf_items, dates)
+        if not df_cf.empty and df_cf.shape[1] > 1:
+            st.dataframe(df_cf, use_container_width=True, hide_index=True)
+        else:
+            st.caption("⚠️ 现金流量表数据暂不可用")
+
+    # ── 关键财务比率（一行汇总）──
+    # 从损益表计算利润率
+    _latest = dates[0] if dates else None
+    if _latest and income:
+        _rev = (income.get("Total Revenue", {}) or {}).get(_latest)
+        _op = (income.get("Operating Income", {}) or {}).get(_latest)
+        _ni = (income.get("Net Income", {}) or {}).get(_latest)
+        _gp = (income.get("Gross Profit", {}) or {}).get(_latest)
+        _ta = (balance.get("Total Assets", {}) or {}).get(_latest)
+        _eq = (balance.get("Stockholders Equity", {}) or {}).get(_latest)
+        _tl = (balance.get("Total Liabilities Net Minority Interest", {}) or {}).get(_latest)
+
+        st.markdown(f"##### 📐 关键财务比率（{_latest}年报）")
+        rc = st.columns(6)
+        with rc[0]:
+            _gm = f"{_gp/_rev*100:.1f}%" if _rev and _gp else "N/A"
+            st.metric("毛利率", _gm)
+        with rc[1]:
+            _om = f"{_op/_rev*100:.1f}%" if _rev and _op else "N/A"
+            st.metric("营业利润率", _om)
+        with rc[2]:
+            _nm = f"{_ni/_rev*100:.1f}%" if _rev and _ni else "N/A"
+            st.metric("净利率", _nm)
+        with rc[3]:
+            _roe = f"{_ni/_eq*100:.1f}%" if _eq and _ni and _eq != 0 else "N/A"
+            st.metric("ROE", _roe)
+        with rc[4]:
+            _roa = f"{_ni/_ta*100:.1f}%" if _ta and _ni and _ta != 0 else "N/A"
+            st.metric("ROA", _roa)
+        with rc[5]:
+            _de = f"{_tl/_eq:.2f}" if _eq and _tl and _eq != 0 else "N/A"
+            st.metric("负债/权益", _de)
+
+    # ── 公司简介 ──
+    biz = fundamentals.get("business_summary", "")
+    if biz:
+        with st.expander("📖 公司简介 & 业务概况", expanded=False):
+            st.markdown(f'<p style="font-size:13px;line-height:1.8;color:#374151;">{biz[:600]}{"..." if len(biz) > 600 else ""}</p>', unsafe_allow_html=True)
+# ─────────────────────────────────────────────────────────────────────────────
+
 
 # 【V87.2】初始化股票池（带降级方案 + 安全限流）
 def init_stock_pools():
@@ -8248,11 +8533,170 @@ if execute_analysis and q_input:
             st.markdown(f'<div style="background: {_ce_signal_color}15; border-left: 4px solid {_ce_signal_color}; padding: 0.7rem 1rem; border-radius: 4px; margin: 0.5rem 0;"><span style="font-weight:600;">{_ce_signal}</span> &nbsp;|&nbsp; 当前价 <b>{_curr_price:.2f}</b> &nbsp;|&nbsp; 多头止损 <b style="color:#10b981">{_ce_long_val:.2f}</b> &nbsp;|&nbsp; 空头止损 <b style="color:#ef4444">{_ce_short_val:.2f}</b></div>', unsafe_allow_html=True)
         
         # ═══════════════════════════════════════════════════════════════
+        # 【V93】财务数据 & 行业背景面板
+        # ═══════════════════════════════════════════════════════════════
+        st.markdown("---")
+        st.markdown("### 📊 财务数据 & 行业背景")
+        st.caption("💡 来源: Yahoo Finance · 估值/盈利/资产质量/行业信息")
+        _fundamentals_cache_key = f"_fundamentals_{target_c}"
+        if _fundamentals_cache_key not in st.session_state:
+            with st.spinner("📥 获取财务数据..."):
+                st.session_state[_fundamentals_cache_key] = fetch_stock_fundamentals(target_c)
+        _fundamentals = st.session_state[_fundamentals_cache_key]
+        render_fundamentals_panel(_fundamentals, target_c)
+
+        # ═══════════════════════════════════════════════════════════════
+        # 【V93】AI 综合分析（整合: 技术面 + 止损止盈 + 风控 + 行业 + 日线复盘）
+        # ═══════════════════════════════════════════════════════════════
+        st.markdown("---")
+        st.markdown("### 🤖 AI 综合分析")
+        st.caption("一键生成: 技术研判 · 止损止盈 · 风控评估 · 行业分析 · 操作建议")
+
+        _unified_ai_cache_key = f"_unified_ai_{target_c}"
+        _run_unified_ai = st.button("⚡ 一键 AI 综合分析", key=f"btn_unified_ai_{target_c}", type="primary", width='stretch')
+
+        if _run_unified_ai and MY_GEMINI_KEY:
+            with st.spinner(f"🤖 Gemini 综合分析中 · 模型: {_ai_model_label()} · 预计 15-30 秒..."):
+                try:
+                    _curr_p = float(df['Close'].iloc[-1])
+                    _last5 = df.tail(5)[['Open','High','Low','Close','Volume']].to_string()
+                    _rsi_v = metrics.get('rsi', 50)
+                    _score_v = metrics.get('score', 0)
+                    _suggestion_v = metrics.get('suggestion', '观望')
+                    _sharpe_v = quant.get('sharpe', 'N/A')
+                    _maxdd_v = quant.get('max_dd', 'N/A')
+                    _pattern_v = metrics.get('pattern', '无')
+                    _vwap_v = ""
+                    if _chart_predictor:
+                        _af = _chart_predictor.calculate_alpha_factors()
+                        _rm = _chart_predictor.calculate_risk_engine()
+                        _vwap_v = f"VWAP(20日): {_af.get('vwap_20',0):.2f}, 偏离: {_af.get('vwap_deviation',0):+.2f}%, 信号: {_af.get('vwap_signal','无')}"
+                        _vwap_v += f"\n止损价(ATR): {_rm.get('stop_loss',0):.2f}, 建议仓位(Kelly): {_rm.get('kelly_position',5):.1f}%, 风险评级: {_rm.get('risk_grade','N/A')}"
+                    _fund_ctx = ""
+                    if _fundamentals:
+                        _f = _fundamentals
+                        _is = _f.get("income_stmt", {})
+                        _bs = _f.get("balance_sheet", {})
+                        _cf = _f.get("cashflow", {})
+                        _fin_dates = set()
+                        for _st in [_is, _bs, _cf]:
+                            for _v in _st.values():
+                                if isinstance(_v, dict):
+                                    _fin_dates.update(_v.keys())
+                        _fin_dates = sorted(_fin_dates, reverse=True)[:3]
+
+                        def _fv(stmt, key, yr):
+                            return (stmt.get(key, {}) or {}).get(yr)
+
+                        _fin_lines = []
+                        if _fin_dates:
+                            for _yr in _fin_dates:
+                                _rev = _fv(_is, "Total Revenue", _yr)
+                                _op = _fv(_is, "Operating Income", _yr)
+                                _ni = _fv(_is, "Net Income", _yr)
+                                _ta = _fv(_bs, "Total Assets", _yr)
+                                _tl = _fv(_bs, "Total Liabilities Net Minority Interest", _yr)
+                                _eq = _fv(_bs, "Stockholders Equity", _yr)
+                                _ocf = _fv(_cf, "Operating Cash Flow", _yr)
+                                _fcf = _fv(_cf, "Free Cash Flow", _yr)
+                                _fin_lines.append(
+                                    f"{_yr}: 营收{_fmt_fin(_rev)} 营业利润{_fmt_fin(_op)} 净利润{_fmt_fin(_ni)} "
+                                    f"总资产{_fmt_fin(_ta)} 总负债{_fmt_fin(_tl)} 股东权益{_fmt_fin(_eq)} "
+                                    f"经营现金流{_fmt_fin(_ocf)} 自由现金流{_fmt_fin(_fcf)}"
+                                )
+                        _fund_ctx = f"""
+【财报数据（年报）】
+{chr(10).join(_fin_lines) if _fin_lines else '暂无'}
+市值: {_fmt_fin(_f.get('market_cap',0))} | P/E: {_f.get('trailing_pe',0):.1f} | P/B: {_f.get('price_to_book',0):.2f}
+行业: {_f.get('sector','')} - {_f.get('industry','')}
+公司简介: {_f.get('business_summary','')[:200]}"""
+                    _mc_ctx = ""
+                    if mc:
+                        _mc_ctx = f"蒙特卡洛10日: 乐观P90={mc['p90']:.2f}, 中性P50={mc['p50']:.2f}, 悲观P10={mc['p10']:.2f}"
+
+                    _unified_prompt = f"""你是华尔街顶级分析师。请对 {target_c} 进行全面深度分析。
+
+【当前数据】
+最新价: {_curr_p:.2f} | RSI: {_rsi_v:.1f} | 综合评分: {_score_v}/100 | 系统建议: {_suggestion_v}
+K线形态: {_pattern_v} | 夏普比率: {_sharpe_v} | 最大回撤: {_maxdd_v}
+{_vwap_v}
+{_mc_ctx}
+
+【最近5日行情】
+{_last5}
+{_fund_ctx}
+
+请按以下结构输出（全文中文，专业严谨，约 800-1200 字）：
+
+## 一、技术面研判
+分析当前技术形态、趋势方向、关键支撑压力位、量价配合情况。给出短期（1-5日）和中期（1-3月）技术判断。
+
+## 二、止损止盈方案
+根据 ATR、支撑压力位、均线系统给出：
+- 建议入场区间
+- 止损价位及理由
+- 第一目标位、第二目标位
+- 建议仓位比例
+
+## 三、风控评估
+- 当前最大的3个风险因素
+- 盈亏比评估
+- 适合的投资者类型（激进/稳健/保守）
+
+## 四、财务面评价
+基于财务数据评价公司的：盈利质量、成长性、资产负债健康度、现金流质量。给出财务面评级（优秀/良好/一般/较差）。
+
+## 五、行业分析
+### 行业概况
+该公司所处行业的市场规模、发展阶段、竞争格局。
+### 行业优势
+该行业的核心优势（3-4条，如政策支持、市场需求、技术壁垒等）。
+### 行业劣势
+该行业面临的主要挑战和风险（3-4条，如监管、竞争、周期性等）。
+### 公司在行业中的地位
+该公司相对于同行的竞争优势或劣势。
+
+## 六、综合结论
+用2-3句话总结投资建议，给出操作评级（强烈推荐/推荐/中性/回避）。"""
+
+                    _unified_result = ""
+                    _unified_ph = st.empty()
+                    for _chunk in call_gemini_api_stream(_unified_prompt, model_name=GEMINI_MODEL_NAME, max_output_tokens=16384):
+                        _unified_result += _chunk
+                        _unified_ph.markdown(_unified_result + " ▌")
+                    _unified_ph.empty()
+
+                    if _unified_result and not _unified_result.startswith("❌"):
+                        st.session_state[_unified_ai_cache_key] = _unified_result
+                    else:
+                        st.error(_unified_result or "❌ AI 分析生成失败，请重试")
+                except Exception as _uae:
+                    st.error(f"❌ AI 综合分析失败: {str(_uae)[:100]}")
+
+        if _unified_ai_cache_key in st.session_state:
+            _ua_res = st.session_state[_unified_ai_cache_key]
+            st.markdown(f"""<style>
+.unified-report {{background:#f9fafb;padding:1.5rem;border-radius:8px;border-left:4px solid #6366f1;font-size:14px;line-height:1.8;color:#374151;}}
+.unified-report h2 {{font-size:17px !important;font-weight:700 !important;margin:1.2rem 0 0.5rem 0 !important;color:#1f2937 !important;border-bottom:1px solid #e5e7eb;padding-bottom:0.3rem;}}
+.unified-report h3 {{font-size:15px !important;font-weight:600 !important;margin:0.9rem 0 0.4rem 0 !important;color:#374151 !important;}}
+.unified-report p {{font-size:14px !important;margin:0.5rem 0 !important;}}
+.unified-report ul,.unified-report ol {{font-size:13px !important;margin:0.4rem 0 !important;padding-left:1.5rem !important;}}
+.unified-report li {{margin:0.3rem 0 !important;}}
+.unified-report strong {{font-weight:600 !important;color:#1f2937 !important;}}
+</style><div class="unified-report">{_ua_res}</div>""", unsafe_allow_html=True)
+            st.caption(f"📌 AI 综合分析 · 模型: {_ai_model_label()}")
+            if COPY_UTILS_AVAILABLE:
+                CopyUtils.create_copy_button(_ua_res, button_text="📋 复制分析报告", key=f"copy_unified_{target_c}")
+            st.download_button("📥 下载报告", data=_ua_res, file_name=f"AI综合分析_{target_c}_{datetime.now().strftime('%Y%m%d')}.md", mime="text/markdown", key=f"dl_unified_{target_c}")
+        elif not _run_unified_ai:
+            st.info("👆 点击上方按钮，一键生成包含技术面、止损止盈、风控、财务、行业的 AI 综合分析报告")
+
+        # ═══════════════════════════════════════════════════════════════
         # 【V90 新增】AI入场顾问 - 点击K线选定入场价 → AI给止损止盈
         # ═══════════════════════════════════════════════════════════════
         st.markdown("---")
-        st.markdown("### 🎯 AI入场顾问 - 选定价位获取止损止盈建议")
-        st.caption("📖 在上方K线图上框选/点击紫色圆点选定入场日期，或在下方手动选择。AI会根据支撑位、压力位、均线和量价结构智能给出止损止盈，不用死板公式")
+        with st.expander("🎯 入场点位选择 & AI止损止盈（可选）", expanded=False):
+            st.caption("📖 在K线图上框选/点击选定入场日期，或手动选择。AI给出精确止损止盈方案")
         
         # 解析图表点击事件
         _selected_entry_date = None
@@ -8467,12 +8911,10 @@ if execute_analysis and q_input:
             if not MY_GEMINI_KEY:
                 st.info("💡 配置 Gemini API Key 即可使用AI入场顾问")
         
-        # 【V88.12】前瞻预测层 - 机构生命线 + AI预测
+        # 【V88.12】前瞻预测层 - 机构生命线 + AI预测（已整合到AI综合分析，此处折叠备用）
         if HAS_PREDICTION_ENGINE:
-            st.markdown("---")
-            st.markdown("### 🔮 前瞻预测层 - 机构级智能分析")
             
-            with st.expander("📊 **机构生命线 & AI预测**", expanded=True):
+            with st.expander("📊 机构生命线 & AI预测（详细数据）", expanded=False):
                 try:
                     # 【V90】复用已创建的predictor（避免重复计算）
                     predictor = _chart_predictor if _chart_predictor else InstitutionalPredictor(df, target_c)
@@ -8684,8 +9126,6 @@ if execute_analysis and q_input:
         # ═══════════════════════════════════════════════════════════════
         if COPY_UTILS_AVAILABLE:
             st.markdown("---")
-            st.markdown("### 📸 一键生成分享卡片")
-            st.caption("📖 生成 iPhone 17 尺寸的精美分析卡片，可直接保存到相册分享给朋友")
             
             _card_col1, _card_col2 = st.columns([1, 3])
             with _card_col1:
@@ -8802,7 +9242,7 @@ if execute_analysis and q_input:
             from datetime import datetime as _dt_research
             st.markdown(f"### 🏦 机构研究报告 · {_dt_research.now().strftime('%Y-%m-%d')}")
             
-            with st.expander("📑 **个股深度研究 + 机会风险评估**", expanded=True):
+            with st.expander("📑 机构深度研究 + 机会风险评估（详细）", expanded=False):
                 try:
                     # 【V91.9】机构研究报告缓存：避免每次 rerun 都调 LLM，Running 结束后按钮可正常响应
                     # 【V91.10】统一缓存：交易日15分钟，非交易日24小时
@@ -9153,357 +9593,108 @@ if execute_analysis and q_input:
         
         # 【V90.3】独立个股舆情区块已整合到上方「机构研究报告→舆情分析」Tab中，不再重复显示
         
-        # 【V89.5】一键生成完整报告
-        if COPY_UTILS_AVAILABLE:
-            st.markdown("---")
-            st.markdown("### 📄 一键生成完整报告")
-            st.caption("💡 汇总所有分析结果，生成可复制的完整投资报告")
-            
-            if st.button("📋 生成完整报告", key="btn_generate_full_report", type="primary", width='stretch'):
-                with st.status(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · 正在生成完整报告", expanded=False):
-                    try:
-                        # 收集所有数据
-                        report_data = {
-                            'code': q_input,
-                            'name': target_c,
-                            'stock_data': df,
-                            'quant_metrics': quant,
-                            'risk_metrics': risk_metrics,
-                            'alpha_factors': alpha_factors,
-                        }
-                        
-                        # 收集机构研究数据（如果存在）
-                        if 'research_report' in locals():
-                            report_data['institutional_research'] = research_report
-                        
-                        # 收集舆情分析数据（如果存在）
-                        sentiment_cache_key = f"sentiment_{target_c}"
-                        if sentiment_cache_key in st.session_state:
-                            report_data['sentiment_analysis'] = st.session_state[sentiment_cache_key]
-                        
-                        # 生成报告
-                        full_report = ReportGenerator.generate_stock_summary_report(
-                            code=report_data['code'],
-                            name=report_data['name'],
-                            stock_data=report_data['stock_data'],
-                            quant_metrics=report_data.get('quant_metrics'),
-                            risk_metrics=report_data.get('risk_metrics'),
-                            alpha_factors=report_data.get('alpha_factors'),
-                            institutional_research=report_data.get('institutional_research'),
-                            sentiment_analysis=report_data.get('sentiment_analysis')
-                        )
-                        
-                        # 显示报告预览
-                        st.success("✅ 报告生成成功！")
-                        
-                        # 使用expander显示报告
-                        with st.expander("📖 查看完整报告", expanded=True):
-                            st.markdown(full_report)
-                            st.caption(f"📌 本报告由 AI 生成 · 模型: {_ai_model_label()}")
-                        
-                        # 【V90.2】复制按钮
-                        if COPY_UTILS_AVAILABLE:
-                            CopyUtils.create_copy_button(full_report, button_text="📋 复制完整报告", key=f"copy_full_rpt_{target_c}")
-                    
-                    except Exception as e:
-                        st.error(f"❌ 生成报告失败: {str(e)[:100]}")
-                        logging.error(f"生成报告异常: {e}")
-            
-            st.markdown("---")
-        
-        # 量化指标
-        st.markdown("#### 📊 量化回测指标")
-        
-        # 【V87.16】显示MACD和Bollinger Bands
-        if quant.get('macd_signal'):
-            st.markdown("##### 🔧 高级技术指标")
-            tech_col1, tech_col2 = st.columns(2)
-            
-            with tech_col1:
-                st.markdown("**MACD指标**")
-                st.caption(f"MACD: {quant.get('macd', 'N/A')} | Signal: {quant.get('signal', 'N/A')}")
-                st.caption(f"柱状图: {quant.get('histogram', 'N/A')}")
-                st.info(quant.get('macd_signal', 'N/A'))
-            
-            with tech_col2:
-                st.markdown("**布林带 (Bollinger Bands)**")
-                st.caption(f"上轨: {quant.get('bb_upper', 'N/A')} | 中轨: {quant.get('bb_middle', 'N/A')} | 下轨: {quant.get('bb_lower', 'N/A')}")
-                st.caption(f"带宽: {quant.get('bb_width', 'N/A')}")
-                st.info(quant.get('bb_position', 'N/A'))
-            
-            st.divider()
-        
-        st.markdown("##### 📈 基础回测指标")
-        qc1, qc2, qc3, qc4, qc5 = st.columns(5)
-        # 【V87.4】量化指标趋势判断
-        def get_quant_desc(metric, value):
-            if value == 'N/A' or value is None:
-                return "数据不足"
-            
-            try:
-                val = float(value.replace('%', '')) if isinstance(value, str) else float(value)
-            except:
-                return "数据异常"
-            
-            if metric == "夏普比率":
-                if val > 2:
-                    return "优秀 - 风险收益极佳"
-                elif val > 1:
-                    return "良好 - 风险收益不错"
-                elif val > 0:
-                    return "一般 - 收益覆盖风险"
-                else:
-                    return "较差 - 风险大于收益"
-            elif metric == "最大回撤":
-                val = abs(val)  # 确保为正值
-                if val < 10:
-                    return "优秀 - 回撤很小"
-                elif val < 20:
-                    return "良好 - 回撤可控"
-                elif val < 30:
-                    return "一般 - 回撤较大"
-                else:
-                    return "较差 - 回撤严重"
-            elif metric == "胜率":
-                if val > 60:
-                    return "优秀 - 胜率很高"
-                elif val > 50:
-                    return "良好 - 胜率过半"
-                elif val > 40:
-                    return "一般 - 胜率偏低"
-                else:
-                    return "较差 - 胜率很低"
-            elif metric == "盈亏比":
-                if val > 2:
-                    return "优秀 - 盈利远超亏损"
-                elif val > 1.5:
-                    return "良好 - 盈利大于亏损"
-                elif val > 1:
-                    return "一般 - 盈利略大于亏损"
-                else:
-                    return "较差 - 盈利小于亏损"
-            else:
-                return "正常范围"
-        
-        q_labels = [
-            ("夏普比率", quant.get('sharpe', 'N/A'), get_quant_desc("夏普比率", quant.get('sharpe', 'N/A'))),
-            ("最大回撤", quant.get('max_dd', 'N/A'), get_quant_desc("最大回撤", quant.get('max_dd', 'N/A'))),
-            ("年化波动", quant.get('volatility', 'N/A'), "价格波动幅度"),
-            ("胜率", quant.get('win_rate', 'N/A'), get_quant_desc("胜率", quant.get('win_rate', 'N/A'))),
-            ("盈亏比", quant.get('pl_ratio', 'N/A'), get_quant_desc("盈亏比", quant.get('pl_ratio', 'N/A')))
-        ]
-        for col, (title, val, desc) in zip([qc1, qc2, qc3, qc4, qc5], q_labels):
-            with col:
-                st.markdown(
-                    f'<div class="ai-card"><div class="ai-title">{title}</div><div style="font-size:12px;font-weight:bold;color:#2563eb;">{val}</div><div style="font-size:12px;color:#666;">{desc}</div></div>',
-                    unsafe_allow_html=True
-                )
-        
-        st.divider()
-        
-        # 【V83 P0.2】基准对比与风险指标
-        if risk_metrics:
-            # 【修复】安全获取benchmark_name，避免KeyError
-            benchmark_name = risk_metrics.get('benchmark_name', '市场基准')
-            st.markdown(f"#### 🎯 基准对比分析 (对比{benchmark_name})")
-            rc1, rc2, rc3, rc4 = st.columns(4)
-            # 【V87.4】增强基准对比指标说明
-            alpha_val = risk_metrics.get('alpha', 0)
-            beta_val = risk_metrics.get('beta', 1)
-            corr_val = risk_metrics.get('correlation', 0)
-            vol_val = risk_metrics.get('volatility', 0)
-            
-            # Alpha说明
-            if alpha_val > 0.1:
-                alpha_desc = "显著跑赢基准"
-            elif alpha_val > 0:
-                alpha_desc = "略微跑赢基准"
-            elif alpha_val > -0.1:
-                alpha_desc = "与基准持平"
-            else:
-                alpha_desc = "明显跑输基准"
-                
-            # Beta说明
-            if beta_val > 1.3:
-                beta_desc = "高风险高收益"
-            elif beta_val > 1.1:
-                beta_desc = "略高于市场"
-            elif beta_val > 0.9:
-                beta_desc = "与市场同步"
-            elif beta_val > 0.7:
-                beta_desc = "相对稳健"
-            else:
-                beta_desc = "低风险资产"
-                
-            # 相关系数说明
-            if abs(corr_val) > 0.8:
-                corr_desc = "高度相关"
-            elif abs(corr_val) > 0.5:
-                corr_desc = "中度相关"
-            else:
-                corr_desc = "相关性较弱"
-                
-            # 波动率说明
-            if vol_val > 0.4:
-                vol_desc = "波动剧烈"
-            elif vol_val > 0.25:
-                vol_desc = "波动较大"
-            elif vol_val > 0.15:
-                vol_desc = "波动适中"
-            else:
-                vol_desc = "波动较小"
-            
-            risk_labels = [
-                ("Alpha (α)", f"{alpha_val*100:+.2f}%", alpha_desc, "#10b981" if alpha_val > 0 else "#ef4444"),
-                ("Beta (β)", f"{beta_val:.2f}", beta_desc, "#6366f1"),
-                ("相关系数 (ρ)", f"{corr_val:.2f}", corr_desc, "#8b5cf6"),
-                ("波动率 (σ)", f"{vol_val*100:.1f}%", vol_desc, "#f59e0b")
-            ]
-            for col, (title, val, desc, color) in zip([rc1, rc2, rc3, rc4], risk_labels):
-                with col:
-                    st.markdown(
-                        f'<div class="ai-card"><div class="ai-title">{title}</div><div style="font-size:12px;font-weight:bold;color:{color};">{val}</div><div style="font-size:12px;color:#666;">{desc}</div></div>',
-                        unsafe_allow_html=True
-                    )
-            
-            # 解读Alpha和Beta（使用之前已定义的变量）
-            alpha_text = "✅ 超越基准" if alpha_val > 0 else "⚠️ 跑输基准"
-            beta_text = "高波动" if beta_val > 1.2 else ("低波动" if beta_val < 0.8 else "适中波动")
-            st.caption(f"💡 **解读**: {alpha_text}，{beta_text}，与基准相关性{'强' if abs(corr_val) > 0.7 else '中等'}")
-            st.divider()
-        
-        # 综合分析面板
-        st.markdown("### 🎯 综合分析")
-        kl_col1, kl_col2, kl_col3 = st.columns([1, 1, 1])
-        with kl_col1:
-            st.metric("综合评分", f"{metrics.get('score', 0)}/100", delta=f"{metrics.get('logic', '计算中')}")
-        with kl_col2:
-            st.metric("交易建议", metrics.get('suggestion', '观望'))
-        with kl_col3:
-            st.info(f"**K线形态**\n\n{metrics.get('pattern', '无数据')}")
-        
-        st.divider()
-        
-        # 双核评级
-        st.markdown("### 🏛️ 三核评级引擎（CANSLIM + 专业投机 + ESG）")
-        c_score1, c_score2 = st.columns(2)
-        
-        with c_score1:
-            st.markdown("#### 🦅 CANSLIM 因子")
-            st.table(pd.DataFrame(metrics['canslim_rows']))
-        
-        with c_score2:
-            st.markdown("#### 🚀 专业投机原理")
-            st.table(pd.DataFrame(metrics['spec_rows']))
-        
-        # 【V89.7 新增】ESG评级面板
+        # 【V93】一键生成完整报告已整合到上方「AI综合分析」
         st.markdown("---")
-        _esg_rows = metrics.get('esg_rows', [])
-        _esg_total = metrics.get('esg_total', 0)
-        _esg_grade = metrics.get('esg_grade', 'N/A')
-        _esg_label = metrics.get('esg_label', '')
-        _esg_e = metrics.get('esg_e', 0)
-        _esg_s = metrics.get('esg_s', 0)
-        _esg_g = metrics.get('esg_g', 0)
-        
-        st.markdown("#### 🌍 ESG 可持续发展评级")
-        esg_c1, esg_c2, esg_c3, esg_c4 = st.columns(4)
-        with esg_c1:
-            st.metric("🌿 环境 (E)", f"{_esg_e}/100", help="基于波动率稳定性评估经营可持续性")
-        with esg_c2:
-            st.metric("👥 社会 (S)", f"{_esg_s}/100", help="基于成交活跃度评估市场认可度")
-        with esg_c3:
-            st.metric("🏛️ 治理 (G)", f"{_esg_g}/100", help="基于均线趋势评估管理执行力")
-        with esg_c4:
-            st.metric("📊 ESG综合", f"{_esg_total}/100 ({_esg_grade})", help="E×30%+S×30%+G×40%")
-        
-        if _esg_rows:
-            st.table(pd.DataFrame(_esg_rows))
-        
-        # 【V91.10】长线法宝评级（LongCompounder + 安全边际，同CANSLIM/ESG表格形式）
-        if LongCompounderGate:
-            try:
-                lc_gate = LongCompounderGate()
-                lc_result = lc_gate.compute(df, target_c)
-                lc_rows = []
-                lc_score = lc_result.get("long_compounder_score", 50)
-                lc_pass = lc_result.get("passes_long_compounder_gate", False)
-                for fname, fkey, desc in [
-                    ("护城河代理", "moat_proxy", "价格稳定性、趋势稳健"),
-                    ("ROIC代理", "roic_proxy", "动量与回撤质量"),
-                    ("FCF质量代理", "fcf_quality_proxy", "量价配合"),
-                    ("利润率稳定代理", "margin_stability_proxy", "低波动=稳定性高"),
-                ]:
-                    val = lc_result.get(fkey, 0.5)
-                    score_int = int(val * 100)
-                    status = "✅" if score_int >= 60 else ("❌" if score_int < 40 else "🟡")
-                    lc_rows.append({"要素": fname, "状态": status, "说明": desc, "得分": f"{score_int}/100"})
-                lc_rows.append({"要素": "📊 长线法宝综合", "状态": "✅" if lc_pass else "❌", "说明": "护城河+ROIC+FCF+利润率稳定", "得分": f"{lc_score:.1f}/100"})
-                st.markdown("#### 📜 长线法宝评级（LongCompounder 框架）")
-                st.table(pd.DataFrame(lc_rows))
-                st.caption("📖 长线法宝：护城河、ROIC、FCF质量、利润率稳定，≥55分通过长线门槛")
-            except Exception as _lc_e:
-                st.caption("📖 长线法宝：数据不足时暂不显示")
-        
-        # 评分权重说明
-        st.caption("📐 **四维综合评分** = CANSLIM × 30% + 专业投机 × 30% + ESG × 20% + 风控 × 20%")
-        
+
+        # ═══════════════════════════════════════════════════════════════
+        # 【V93 精简】综合评分 + 核心量化指标（一屏呈现）
+        # ═══════════════════════════════════════════════════════════════
+        st.markdown("### 🎯 综合评分 & 量化指标")
+
+        # Row 1: 综合评分 + 交易建议 + K线形态
+        _s_c1, _s_c2, _s_c3, _s_c4, _s_c5 = st.columns(5)
+        with _s_c1:
+            st.metric("综合评分", f"{metrics.get('score', 0)}/100", delta=f"{metrics.get('logic', '计算中')}")
+        with _s_c2:
+            st.metric("交易建议", metrics.get('suggestion', '观望'))
+        with _s_c3:
+            rsi_val = metrics['rsi']
+            _rsi_icon = "🔴" if rsi_val > 70 else ("🟢" if rsi_val < 30 or rsi_val > 50 else "🟡")
+            st.metric(f"RSI {_rsi_icon}", f"{rsi_val:.1f}")
+        with _s_c4:
+            st.metric("夏普比率", quant.get('sharpe', 'N/A'))
+        with _s_c5:
+            st.metric("最大回撤", quant.get('max_dd', 'N/A'))
+
+        # Row 2: Alpha/Beta + 胜率/盈亏比 + MACD
+        _s2_c1, _s2_c2, _s2_c3, _s2_c4, _s2_c5 = st.columns(5)
+        alpha_val = risk_metrics.get('alpha', 0) if risk_metrics else 0
+        beta_val = risk_metrics.get('beta', 1) if risk_metrics else 1
+        with _s2_c1:
+            st.metric("Alpha (α)", f"{alpha_val*100:+.2f}%")
+        with _s2_c2:
+            st.metric("Beta (β)", f"{beta_val:.2f}")
+        with _s2_c3:
+            st.metric("胜率", quant.get('win_rate', 'N/A'))
+        with _s2_c4:
+            st.metric("盈亏比", quant.get('pl_ratio', 'N/A'))
+        with _s2_c5:
+            st.metric("K线形态", metrics.get('pattern', '无')[:8])
+
+        if quant.get('macd_signal'):
+            st.caption(f"📊 MACD: {quant.get('macd_signal','N/A')} | 布林带: {quant.get('bb_position','N/A')} | 乖离率: {metrics.get('bias',0):.2f}% | ATR: {metrics.get('atr',0):.2f}")
+
+        st.divider()
+
+        # ═══════════════════════════════════════════════════════════════
+        # 【V93 精简】评级引擎（折叠展示）
+        # ═══════════════════════════════════════════════════════════════
+        with st.expander("🏛️ 评级体系（CANSLIM / 专业投机 / ESG / 长线法宝）", expanded=False):
+            c_score1, c_score2 = st.columns(2)
+            with c_score1:
+                st.markdown("#### CANSLIM 因子")
+                st.table(pd.DataFrame(metrics['canslim_rows']))
+            with c_score2:
+                st.markdown("#### 专业投机原理")
+                st.table(pd.DataFrame(metrics['spec_rows']))
+
+            _esg_e = metrics.get('esg_e', 0)
+            _esg_s = metrics.get('esg_s', 0)
+            _esg_g = metrics.get('esg_g', 0)
+            _esg_total = metrics.get('esg_total', 0)
+            _esg_grade = metrics.get('esg_grade', 'N/A')
+            esg_c1, esg_c2, esg_c3, esg_c4 = st.columns(4)
+            with esg_c1:
+                st.metric("🌿 环境 (E)", f"{_esg_e}/100")
+            with esg_c2:
+                st.metric("👥 社会 (S)", f"{_esg_s}/100")
+            with esg_c3:
+                st.metric("🏛️ 治理 (G)", f"{_esg_g}/100")
+            with esg_c4:
+                st.metric("📊 ESG综合", f"{_esg_total}/100 ({_esg_grade})")
+            _esg_rows = metrics.get('esg_rows', [])
+            if _esg_rows:
+                st.table(pd.DataFrame(_esg_rows))
+
+            if LongCompounderGate:
+                try:
+                    lc_gate = LongCompounderGate()
+                    lc_result = lc_gate.compute(df, target_c)
+                    lc_rows = []
+                    lc_score = lc_result.get("long_compounder_score", 50)
+                    lc_pass = lc_result.get("passes_long_compounder_gate", False)
+                    for fname, fkey, desc in [
+                        ("护城河代理", "moat_proxy", "价格稳定性、趋势稳健"),
+                        ("ROIC代理", "roic_proxy", "动量与回撤质量"),
+                        ("FCF质量代理", "fcf_quality_proxy", "量价配合"),
+                        ("利润率稳定代理", "margin_stability_proxy", "低波动=稳定性高"),
+                    ]:
+                        val = lc_result.get(fkey, 0.5)
+                        score_int = int(val * 100)
+                        status = "✅" if score_int >= 60 else ("❌" if score_int < 40 else "🟡")
+                        lc_rows.append({"要素": fname, "状态": status, "说明": desc, "得分": f"{score_int}/100"})
+                    lc_rows.append({"要素": "📊 长线法宝综合", "状态": "✅" if lc_pass else "❌", "说明": "护城河+ROIC+FCF+利润率稳定", "得分": f"{lc_score:.1f}/100"})
+                    st.markdown("#### 长线法宝评级")
+                    st.table(pd.DataFrame(lc_rows))
+                except Exception:
+                    pass
+
+            st.caption("📐 **四维综合评分** = CANSLIM × 30% + 专业投机 × 30% + ESG × 20% + 风控 × 20%")
+
         st.divider()
         
-        # 【V82.10优化】基础指标 - 增加简要说明
-        c1, c2, c3, c4 = st.columns(4)
-        # 【V87.4】增强指标说明 - 添加趋势判断
-        rsi_val = metrics['rsi']
-        bias_val = metrics['bias']
-        atr_val = metrics['atr']
-        
-        # RSI判断
-        if rsi_val > 70:
-            rsi_desc = "超买区间，可能回调"
-            rsi_color = "🔴"
-        elif rsi_val > 50:
-            rsi_desc = "强势区间，趋势向上"
-            rsi_color = "🟢"
-        elif rsi_val > 30:
-            rsi_desc = "弱势区间，趋势向下"
-            rsi_color = "🟡"
-        else:
-            rsi_desc = "超卖区间，可能反弹"
-            rsi_color = "🟢"
-            
-        # 乖离率判断
-        if abs(bias_val) > 10:
-            bias_desc = "严重偏离，注意风险"
-            bias_color = "🔴"
-        elif abs(bias_val) > 5:
-            bias_desc = "适度偏离，正常波动"
-            bias_color = "🟡"
-        else:
-            bias_desc = "贴近均线，走势平稳"
-            bias_color = "🟢"
-        
-        # 【V87.4】ATR波动幅度判断
-        if atr_val > 10:
-            atr_desc = "波动极大，高风险高收益"
-            atr_color = "🔴"
-        elif atr_val > 5:
-            atr_desc = "波动较大，注意风险"
-            atr_color = "🟡"
-        elif atr_val > 2:
-            atr_desc = "波动适中，正常范围"
-            atr_color = "🟢"
-        else:
-            atr_desc = "波动较小，相对稳定"
-            atr_color = "🟢"
-        
-        c1.metric("最新价", f"{df['Close'].iloc[-1]:.2f}")
-        c2.metric("RSI (相对强弱)", f"{rsi_val:.1f}", help=f"RSI指标：{rsi_color} {rsi_desc}")
-        c3.metric("乖离率 (偏离度)", f"{bias_val:.2f}%", help=f"价格偏离度：{bias_color} {bias_desc}")
-        c4.metric("ATR (波动幅度)", f"{atr_val:.2f}", help=f"波动性指标：{atr_color} {atr_desc}")
-        
-        # 【V87.4】在指标下方显示更明显的说明
-        st.caption(f"💡 **指标解读**: RSI {rsi_val:.1f} {rsi_color}{rsi_desc} | 乖离率 {bias_val:.2f}% {bias_color}{bias_desc} | ATR {atr_val:.2f} {atr_color}{atr_desc}")
-        
+        # 【V93】基础指标已整合到上方「综合评分 & 量化指标」面板
+
         # 蒙特卡洛预测
         if mc:
             st.markdown("#### 🔮 蒙特卡洛推演 (10日)")
@@ -9537,75 +9728,23 @@ if execute_analysis and q_input:
         
         st.divider()
         
-        # AI 分析
-        from datetime import datetime as _dt_ai_analyst
-        st.markdown(f"#### 💬 AI 智能分析师 · {_dt_ai_analyst.now().strftime('%Y-%m-%d')}")
-        tab_daily, tab_weekly, tab_qa = st.tabs(["📅 日线复盘", "🔭 周线波段", "💬 通用问答"])
-        
-        with tab_daily:
-            st.markdown("**今日复盘**：最近5日OHLCV分析")
-            if st.button("⚡ 生成", key="btn_daily", type="primary"):
-                with st.status(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · 日线复盘", expanded=False):
-                    last_5 = df.tail(5)[['Open', 'High', 'Low', 'Close', 'Volume']].to_string()
-                    prompt = f"""分析 {target_c} 最近5日数据：
-{last_5}
-
-给出：
-1. 📊 资金流向
-2. 🎯 支撑压力位
-3. 📋 明日预案
-
-中文，300字内。"""
-                    result = call_gemini_api(prompt)
-                    st.success(result)
-                    st.caption(f"📌 本报告由 AI 生成 · 模型: {_ai_model_label()}")
-                    if COPY_UTILS_AVAILABLE:
-                        CopyUtils.create_copy_button(result, button_text="📋 复制", key="copy_daily")
-        
-        with tab_weekly:
-            st.markdown("**周线展望**：最近10周中期趋势")
-            if st.button("⚡ 生成", key="btn_weekly", type="primary"):
-                with st.status(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · 周线展望", expanded=False):
-                    try:
-                        df_weekly = df.resample('W').agg({
-                            'Open': 'first', 'High': 'max', 'Low': 'min',
-                            'Close': 'last', 'Volume': 'sum'
-                        }).dropna()
-                        if len(df_weekly) < 10:
-                            st.warning("数据不足10周")
-                        else:
-                            last_10w = df_weekly.tail(10)[['Open', 'High', 'Low', 'Close', 'Volume']].to_string()
-                            prompt = f"""分析 {target_c} 最近10周数据：
-{last_10w}
-
-给出：
-1. 📈 中期趋势
-2. ⚠️ 周线背离
-3. 💰 主力筹码
-
-中文，300字内。"""
-                            result = call_gemini_api(prompt)
-                            st.success(result)
-                            st.caption(f"📌 本报告由 AI 生成 · 模型: {_ai_model_label()}")
-                            if COPY_UTILS_AVAILABLE:
-                                CopyUtils.create_copy_button(result, button_text="📋 复制", key="copy_weekly")
-                    except Exception as e:
-                        st.error(f"重采样失败: {e}")
-        
-        # 【V90.3】tab_news 已删除，舆情功能统一在「机构研究报告→舆情分析」Tab
-        with tab_qa:
-            st.markdown("**通用问答**：自由提问")
-            q = st.text_input("输入问题", placeholder="如：该股适合长期持有吗？", key="qa_input")
-            if st.button("🚀 提问", key="btn_qa"):
-                if q:
-                    with st.status(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · 通用问答", expanded=False):
-                        curr_price = df['Close'].iloc[-1]
-                        prompt = f"{target_c} 当前价格 {curr_price:.2f}。问题：{q}\n\n简洁回答（200字内）。"
-                        result = call_gemini_api(prompt)
-                        st.info(result)
-                        st.caption(f"📌 本答复由 AI 生成 · 模型: {_ai_model_label()}")
-                else:
-                    st.warning("请先输入问题")
+        # 【V93】AI通用问答（日线/周线已整合到AI综合分析）
+        st.markdown("#### 💬 AI 问答")
+        _qa_col1, _qa_col2 = st.columns([4, 1])
+        with _qa_col1:
+            q = st.text_input("向 AI 提问", placeholder="如：该股适合长期持有吗？止损位设在哪？", key="qa_input")
+        with _qa_col2:
+            st.markdown("<br>", unsafe_allow_html=True)
+            _qa_go = st.button("🚀 提问", key="btn_qa", type="primary", width='stretch')
+        if _qa_go and q and MY_GEMINI_KEY:
+            with st.spinner(f"🤖 {_ai_model_label()} 思考中..."):
+                curr_price = df['Close'].iloc[-1]
+                prompt = f"{target_c} 当前价格 {curr_price:.2f}。问题：{q}\n\n简洁专业回答（300字内），可结合技术面和基本面。"
+                result = call_gemini_api(prompt)
+                st.info(result)
+                st.caption(f"📌 AI 生成 · {_ai_model_label()}")
+        elif _qa_go and not q:
+            st.warning("请先输入问题")
         
         st.divider()
         
@@ -11389,7 +11528,7 @@ BRIEF_MODEL = "gemini-2.5-flash"
 
 # ── 12小时文件缓存：打开页面即自动显示，无需点击 ─────────────────────────────
 _brief_cached_content, _brief_cached_ts = _load_brief_cache()
-if _brief_cached_content and "market_brief_latest" not in st.session_state:
+if _brief_cached_content:
     st.session_state["market_brief_latest"] = _brief_cached_content
 
 _brief_cache_info_col, _brief_btn_col = st.columns([4, 1])
@@ -11410,7 +11549,6 @@ with _brief_cache_info_col:
     else:
         st.caption("⏳ 首次加载中，正在自动生成日报...")
 with _brief_btn_col:
-    # 点击即清除缓存并重新生成，始终是强制刷新
     do_generate = st.button("🔄 刷新简报", key="btn_market_brief", type="primary", width='stretch')
     if do_generate:
         try:
@@ -11419,6 +11557,7 @@ with _brief_btn_col:
             pass
         st.session_state.pop("market_brief_latest", None)
         st.session_state.pop("_brief_auto_gen_done", None)
+        _brief_cached_content = None
 
 # 【自动生成】首次打开页面且无缓存时，自动触发生成，无需手动点击
 if (not _brief_cached_content
@@ -11976,6 +12115,14 @@ elif "market_brief_latest" in st.session_state:
         mime="text/markdown",
         key="download_market_brief_cached",
     )
+# ── 兜底：session_state 丢失但文件缓存存在时，重新加载显示 ──────────────────
+else:
+    _fallback_content, _fallback_ts = _load_brief_cache()
+    if _fallback_content:
+        st.session_state["market_brief_latest"] = _fallback_content
+        st.rerun()
+    else:
+        st.info("📭 暂无简报数据，请点击「🔄 刷新简报」生成")
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ═══════════════════════════════════════════════════════════════
