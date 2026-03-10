@@ -12145,20 +12145,149 @@ for msg in st.session_state.brief_chat_messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-if prompt := st.chat_input("输入问题，如：今天美股怎么看？茅台还能买吗？"):
+def _detect_stock_in_prompt(text: str):
+    """从用户问题中识别个股（中文名/英文代码），返回 (yf_code, display_name) 或 None"""
+    _name_to_code = {}
+    for code, name in STOCK_NAME_INDEX.items():
+        _name_to_code[name] = code
+    for pool in [RAW_US, RAW_HK, RAW_CN_TOP]:
+        for item in pool:
+            if len(item) >= 3:
+                _name_to_code[item[1]] = item[2]
+            elif len(item) >= 2:
+                _name_to_code[item[1]] = item[0]
+
+    for name, code in sorted(_name_to_code.items(), key=lambda x: -len(x[0])):
+        if name in text:
+            return (code, name)
+
+    _code_pat = re.findall(r'\b([A-Z]{1,5})\b', text.upper())
+    for c in _code_pat:
+        if c in STOCK_NAME_INDEX:
+            return (c, STOCK_NAME_INDEX[c])
+
+    _cn_pat = re.findall(r'(\d{5,6}(?:\.(?:SS|SZ|HK))?)', text)
+    for c in _cn_pat:
+        yf_c = to_yf_cn_code(c)
+        if yf_c in STOCK_NAME_INDEX:
+            return (yf_c, STOCK_NAME_INDEX[yf_c])
+        return (yf_c, c)
+
+    return None
+
+
+def _build_stock_context(yf_code: str, display_name: str) -> str:
+    """为检测到的个股自动获取行情 + 财报，构建 AI 上下文"""
+    parts = []
+    try:
+        df = fetch_stock_data(yf_code)
+        if df is not None and len(df) >= 5:
+            last = df.iloc[-1]
+            prev = df.iloc[-2]
+            chg = (last["Close"] - prev["Close"]) / prev["Close"] * 100 if prev["Close"] else 0
+            parts.append(f"【{display_name} ({yf_code}) 实时行情】")
+            parts.append(f"最新价: {last['Close']:.2f} | 涨跌: {chg:+.2f}%")
+            parts.append(f"今日: 开{last['Open']:.2f} 高{last['High']:.2f} 低{last['Low']:.2f} 量{last['Volume']:,.0f}")
+            last5 = df.tail(5)[["Open", "High", "Low", "Close", "Volume"]]
+            parts.append("最近5日行情:")
+            for idx, row in last5.iterrows():
+                d = idx.strftime("%m-%d") if hasattr(idx, "strftime") else str(idx)[:5]
+                parts.append(f"  {d} 开{row['Open']:.2f} 高{row['High']:.2f} 低{row['Low']:.2f} 收{row['Close']:.2f} 量{row['Volume']:,.0f}")
+
+            m = calculate_metrics_all(df, yf_code)
+            if m:
+                parts.append(f"RSI: {m['last'].get('RSI', 50):.1f} | 综合评分: {m.get('score', 0)}/100 | 建议: {m.get('suggestion', 'N/A')}")
+                parts.append(f"MA5: {m['last'].get('MA5',0):.2f} MA20: {m['last'].get('MA20',0):.2f} MA60: {m['last'].get('MA60',0):.2f}")
+    except Exception as e:
+        _safe_print(f"[AI问答] 行情获取失败 {yf_code}: {e}")
+
+    try:
+        fund = fetch_stock_fundamentals(yf_code)
+        if fund:
+            _is = fund.get("income_stmt", {})
+            _bs = fund.get("balance_sheet", {})
+            _cf = fund.get("cashflow", {})
+            _fin_dates = set()
+            for _st in [_is, _bs, _cf]:
+                for _v in _st.values():
+                    if isinstance(_v, dict):
+                        _fin_dates.update(_v.keys())
+            _fin_dates = sorted(_fin_dates, reverse=True)[:3]
+            if _fin_dates:
+                parts.append(f"\n【财报数据（年报）】")
+                for yr in _fin_dates:
+                    rev = (_is.get("Total Revenue", {}) or {}).get(yr)
+                    op = (_is.get("Operating Income", {}) or {}).get(yr)
+                    ni = (_is.get("Net Income", {}) or {}).get(yr)
+                    ta = (_bs.get("Total Assets", {}) or {}).get(yr)
+                    eq = (_bs.get("Stockholders Equity", {}) or {}).get(yr)
+                    ocf = (_cf.get("Operating Cash Flow", {}) or {}).get(yr)
+                    fcf = (_cf.get("Free Cash Flow", {}) or {}).get(yr)
+                    parts.append(
+                        f"{yr}: 营收{_fmt_fin(rev)} 营业利润{_fmt_fin(op)} 净利润{_fmt_fin(ni)} "
+                        f"总资产{_fmt_fin(ta)} 股东权益{_fmt_fin(eq)} "
+                        f"经营现金流{_fmt_fin(ocf)} 自由现金流{_fmt_fin(fcf)}"
+                    )
+            sect = fund.get("sector", "")
+            ind = fund.get("industry", "")
+            if sect or ind:
+                parts.append(f"行业: {sect} - {ind}")
+            pe = fund.get("trailing_pe", 0)
+            pb = fund.get("price_to_book", 0)
+            mc = fund.get("market_cap", 0)
+            if mc:
+                parts.append(f"市值: {_fmt_fin(mc)} | P/E: {pe:.1f} | P/B: {pb:.2f}")
+            biz = fund.get("business_summary", "")
+            if biz:
+                parts.append(f"公司简介: {biz[:200]}")
+    except Exception as e:
+        _safe_print(f"[AI问答] 财报获取失败 {yf_code}: {e}")
+
+    return "\n".join(parts) if parts else ""
+
+
+if prompt := st.chat_input("输入问题，如：今天美股怎么看？茅台还能买吗？拼多多怎么样？"):
     st.session_state.brief_chat_messages.append({"role": "user", "content": prompt})
-    with st.spinner("AI 思考中..."):
-        _ctx = ""
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    _stock_match = _detect_stock_in_prompt(prompt)
+    _stock_ctx = ""
+    if _stock_match:
+        _yf_code, _disp_name = _stock_match
+        with st.spinner(f"📊 正在获取 {_disp_name}({_yf_code}) 实时数据 + 财报..."):
+            _stock_ctx = _build_stock_context(_yf_code, _disp_name)
+
+    with st.spinner("🤖 AI 深度分析中..." if _stock_ctx else "AI 思考中..."):
+        _brief_ctx = ""
         if "market_brief_latest" in st.session_state and st.session_state.market_brief_latest:
-            _ctx = f"\n\n【参考：今日简报摘要】\n{st.session_state.market_brief_latest[:1500]}..."
-        _chat_prompt = f"""你是资深金融分析师。用户问题：{prompt}
-{_ctx}
+            _brief_ctx = f"\n\n【参考：今日市场简报】\n{st.session_state.market_brief_latest[:800]}"
+
+        if _stock_ctx:
+            _chat_prompt = f"""你是华尔街顶级分析师。用户问题：{prompt}
+
+{_stock_ctx}
+{_brief_ctx}
+
+请基于以上实际数据进行全面专业分析（600-1000字），包含：
+1. 基本面分析：财报趋势（营收/利润增长趋势、利润率变化）
+2. 技术面分析：当前价格、均线位置、RSI等指标判断
+3. 行业与竞争：行业前景、公司护城河
+4. 风险提示：主要风险因素
+5. 综合结论：明确的操作建议
+
+要求：引用具体数字，不要空泛分析。"""
+        else:
+            _chat_prompt = f"""你是资深金融分析师。用户问题：{prompt}
+{_brief_ctx}
 请简洁专业回答（300字内），可引用上述简报内容。"""
+
         try:
             reply = call_gemini_api(_chat_prompt, model_name=BRIEF_MODEL)
             reply = reply if reply and not reply.startswith("❌") else "抱歉，当前无法回答，请稍后重试。"
         except Exception as e:
             reply = f"❌ 调用失败: {str(e)[:80]}"
+
     st.session_state.brief_chat_messages.append({"role": "assistant", "content": reply})
     st.rerun()
 
