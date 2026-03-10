@@ -10522,7 +10522,7 @@ _SCAN_PROGRESS_FILE = _BRIEF_CACHE_DIR / "scan_progress.json"
 _SCAN_HEARTBEAT_FILE = _BRIEF_CACHE_DIR / "scan_heartbeat.json"
 _SCAN_PID_FILE      = _BRIEF_CACHE_DIR / "scan_worker.pid"
 _SCAN_WORKER_SCRIPT = Path(__file__).parent / "scan_worker.py"
-_SCAN_RESULT_TTL    = 6 * 3600    # 6 小时（匹配 GitHub Actions 每天4次节奏）
+_SCAN_RESULT_TTL    = 8 * 3600    # 8 小时（留余量，GitHub Actions 每6h一次）
 
 # Gist 配置：从 Streamlit Secrets 或环境变量读取
 _GIST_ID = (
@@ -10708,6 +10708,9 @@ def _scan_read_results() -> dict | None:
     """
     读取扫描结果：比较本地文件与 GitHub Gist 的 timestamp，取最新的。
     这样本地「重扫」的结果不会被旧 Gist 数据覆盖。
+
+    云端模式（_GIST_ID 已配置）：即使 Gist 数据过期，也返回并标记 _stale=True，
+    避免 GitHub Actions 下一次执行前出现"无结果"的空窗期。
     """
     now = time.time()
 
@@ -10716,19 +10719,29 @@ def _scan_read_results() -> dict | None:
     try:
         local_data = json.loads(_SCAN_RESULTS_FILE.read_text(encoding="utf-8"))
         if now - local_data.get("timestamp", 0) >= _SCAN_RESULT_TTL:
-            local_data = None   # 已过期
+            local_data = None
     except Exception:
         local_data = None
 
     # 2. 尝试 Gist
     gist_data = _scan_fetch_from_gist()
+    gist_stale = False
     if gist_data and now - gist_data.get("timestamp", 0) >= _SCAN_RESULT_TTL:
-        gist_data = None   # Gist 也已过期
+        if _GIST_ID:
+            gist_stale = True  # 云端模式：保留过期数据，标记为 stale
+        else:
+            gist_data = None
 
-    # 3. 优先使用更新（timestamp 更大）的来源，防止旧 Gist 覆盖新本地结果
+    # 3. 优先使用更新（timestamp 更大）的来源
     if local_data and gist_data:
-        return local_data if local_data.get("timestamp", 0) >= gist_data.get("timestamp", 0) else gist_data
-    return local_data or gist_data
+        chosen = local_data if local_data.get("timestamp", 0) >= gist_data.get("timestamp", 0) else gist_data
+        if chosen is gist_data and gist_stale:
+            chosen["_stale"] = True
+        return chosen
+    result = local_data or gist_data
+    if result is gist_data and gist_stale and result is not None:
+        result["_stale"] = True
+    return result
 
 
 def _scan_read_progress() -> dict:
@@ -11086,7 +11099,7 @@ with tab_quant:
             else:
                 st.info("🔍 尚无扫描结果。点击下方按钮在**后台**启动全市场扫描（约 5-8 分钟），期间可正常使用其他功能。")
             _us_c, _hk_c, _cn_c = len(RAW_US), len(RAW_HK), len(RAW_CN_TOP)
-            st.caption(f"扫描池: 美股 {_us_c} + 港股 {_hk_c} + A股 {_cn_c} = {_us_c+_hk_c+_cn_c} 只 · 结果缓存 6 小时")
+            st.caption(f"扫描池: 美股 {_us_c} + 港股 {_hk_c} + A股 {_cn_c} = {_us_c+_hk_c+_cn_c} 只 · 结果缓存 8 小时")
             _btn_col1, _btn_col2 = st.columns([2, 1])
             with _btn_col1:
                 if st.button("🚀 启动后台全市场扫描", type="primary", width='stretch', key="top30_start_bg"):
@@ -11105,9 +11118,17 @@ with tab_quant:
         # ── 有结果：4-Tab 展示 ────────────────────────────────────
         _ts_str  = datetime.fromtimestamp(_res["timestamp"]).strftime("%m-%d %H:%M")
         _is_gist = _GIST_ID and _gist_local_cache.get("timestamp") == _res.get("timestamp")
+        _is_stale = _res.get("_stale", False)
         _src_tag = "☁️ 云端缓存" if _is_gist else "💻 本地扫描"
+        if _is_stale:
+            _src_tag += " (待更新)"
         _sync_st = _gist_sync_status()
-        st.caption(f"📅 扫描完成于 {_ts_str}  ·  {_src_tag}  ·  {_scan_result_label()}  ·  20s 自动刷新")
+        _lbl = _scan_result_label()
+        if _is_stale and _lbl == "":
+            _lbl = "⏰ 等待云端自动更新"
+        st.caption(f"📅 扫描完成于 {_ts_str}  ·  {_src_tag}  ·  {_lbl}  ·  20s 自动刷新")
+        if _is_stale:
+            st.info("☁️ 云端数据等待 GitHub Actions 下一轮自动更新（每6小时），当前展示最近一次结果。")
         if _GIST_ID:
             _sync_color = "#10b981" if _gist_last_sync_ok else "#f59e0b"
             st.markdown(f'<p style="font-size:11px;color:{_sync_color};margin:0">{_sync_st}</p>',
