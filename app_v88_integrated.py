@@ -2222,16 +2222,13 @@ def _run_single_market_ai(market_name, index_code, market_result):
     return result
 
 
-def _load_or_generate_market_ai():
-    """页面加载时：① 从文件缓存恢复 → ② 无缓存则自动生成 AI 市场分析"""
-    _markets = [
-        ('us', '美股', '^GSPC', 'market_ai_us', '_us_tech_data', 'market_sentiment_us'),
-        ('hk', '港股', '^HSI', 'market_ai_hk', '_hk_tech_data', 'market_sentiment_hk'),
-        ('cn', 'A股', '000001.SS', 'market_ai_cn', '_cn_tech_data', 'market_sentiment_cn'),
-    ]
-
-    _any_missing = False
-    for mk, mname, mcode, ss_pred, ss_tech, ss_sent in _markets:
+def _load_market_ai_from_cache():
+    """页面加载时：从文件缓存恢复 AI 市场分析到 session_state（不调用API）"""
+    for mk, ss_pred, ss_tech, ss_sent in [
+        ('us', 'market_ai_us', '_us_tech_data', 'market_sentiment_us'),
+        ('hk', 'market_ai_hk', '_hk_tech_data', 'market_sentiment_hk'),
+        ('cn', 'market_ai_cn', '_cn_tech_data', 'market_sentiment_cn'),
+    ]:
         if ss_pred in st.session_state:
             continue
         cached, _ts = _load_ai_report_cache(f"market_{mk}")
@@ -2242,34 +2239,43 @@ def _load_or_generate_market_ai():
                 st.session_state[ss_tech] = cached['tech']
             if cached.get('sentiment'):
                 st.session_state[ss_sent] = cached['sentiment']
+
+# 先从文件缓存恢复（不依赖API函数，可以在模块加载早期执行）
+_load_market_ai_from_cache()
+
+
+def _auto_generate_market_ai():
+    """自动生成 AI 市场分析（必须在 fetch_stock_data/call_gemini_api 定义之后调用）"""
+    _markets = [
+        ('us', '美股', '^GSPC', 'market_ai_us', '_us_tech_data', 'market_sentiment_us'),
+        ('hk', '港股', '^HSI', 'market_ai_hk', '_hk_tech_data', 'market_sentiment_hk'),
+        ('cn', 'A股', '000001.SS', 'market_ai_cn', '_cn_tech_data', 'market_sentiment_cn'),
+    ]
+    _any_missing = any(ss not in st.session_state for _, _, _, ss, _, _ in _markets)
+    if (not _any_missing
+            or st.session_state.get('_market_ai_auto_done')
+            or not MY_GEMINI_KEY):
+        return
+
+    _safe_print("[AI市场分析] 无缓存，自动生成中...")
+    _all = st.session_state.get('all_markets', {})
+    for mk, mname, mcode, ss_pred, ss_tech, ss_sent in _markets:
+        if ss_pred in st.session_state:
+            continue
+        _safe_print(f"[AI市场分析] 正在分析 {mname}...")
+        _mresult = _all.get(f'{mk}_market', {'data_ok': False, 'verdict': 'Unknown', 'reason': ''})
+        _r = _run_single_market_ai(mname, mcode, _mresult)
+        if _r.get('pred'):
+            st.session_state[ss_pred] = _r['pred']
+            _save_ai_report_cache(f"market_{mk}", _r)
+            _safe_print(f"[AI市场分析] ✅ {mname} 完成")
         else:
-            _any_missing = True
-
-    # 自动生成：session_state 中仍缺失 且 尚未尝试过 且 有 API Key
-    if (_any_missing
-            and not st.session_state.get('_market_ai_auto_done')
-            and MY_GEMINI_KEY
-            and (HAS_PREDICTION_ENGINE or (SENTIMENT_ANALYZER_AVAILABLE and _sentiment_analyzer) or True)):
-        _safe_print("[AI市场分析] 无缓存，自动生成中...")
-        _all = st.session_state.get('all_markets', {})
-        for mk, mname, mcode, ss_pred, ss_tech, ss_sent in _markets:
-            if ss_pred in st.session_state:
-                continue
-            _safe_print(f"[AI市场分析] 正在分析 {mname}...")
-            _mresult = _all.get(f'{mk}_market', {'data_ok': False, 'verdict': 'Unknown', 'reason': ''})
-            _r = _run_single_market_ai(mname, mcode, _mresult)
-            if _r.get('pred'):
-                st.session_state[ss_pred] = _r['pred']
-                _save_ai_report_cache(f"market_{mk}", _r)
-                _safe_print(f"[AI市场分析] ✅ {mname} 完成")
-            if _r.get('tech'):
-                st.session_state[ss_tech] = _r['tech']
-            if _r.get('sentiment'):
-                st.session_state[ss_sent] = _r['sentiment']
-        st.session_state['_market_ai_auto_done'] = True
-
-
-_load_or_generate_market_ai()
+            _safe_print(f"[AI市场分析] ⚠️ {mname} 生成失败")
+        if _r.get('tech'):
+            st.session_state[ss_tech] = _r['tech']
+        if _r.get('sentiment'):
+            st.session_state[ss_sent] = _r['sentiment']
+    st.session_state['_market_ai_auto_done'] = True
 
 
 @st.fragment
@@ -2915,6 +2921,8 @@ if Config.ENABLE_EXPECTATION_LAYER:
 
         st.divider()
 
+        # AI市场分析：自动生成（此处 fetch_stock_data/call_gemini_api 已定义）
+        _auto_generate_market_ai()
         # AI综合分析（fragment 局部刷新）
         _render_ai_market_analysis()
         
