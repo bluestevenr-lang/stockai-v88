@@ -2145,54 +2145,39 @@ except NameError:
 # Fragment 函数：AI综合分析（局部刷新，按钮交互不触发全页重跑）
 # ═══════════════════════════════════════════════════════════════
 def _run_single_market_ai(market_name, index_code, market_result):
-    """执行单个市场的 AI 分析，返回 {pred, tech, sentiment} 或 {}。含 Gemini 直接降级。"""
+    """执行单个市场的 AI 分析。直接用 yfinance + genai，不依赖后面定义的函数。"""
     result = {}
-
-    # ── 方案 A：使用 MarketForecaster（如果可用）──
     try:
-        if HAS_PREDICTION_ENGINE:
-            tech_df = fetch_stock_data(index_code)
-            _forecaster = MarketForecaster()
-            tech = _forecaster.analyze_market_technicals(tech_df, market_name) if tech_df is not None and len(tech_df) >= 20 else {}
-            ai_r = _forecaster.call_gemini_market_forecast([tech], MY_GEMINI_KEY)
-            pred_text = ai_r.get(market_name, '')
-            if pred_text:
-                result['pred'] = pred_text
-                result['tech'] = tech
-    except Exception as e:
-        _safe_print(f"[AI市场分析] {market_name} MarketForecaster 失败: {e}")
+        _mkt_df = yf.Ticker(index_code).history(period="60d", timeout=15)
+        if _mkt_df is None or len(_mkt_df) < 5:
+            _safe_print(f"[AI市场分析] {market_name} 数据不足")
+            return result
 
-    # ── 方案 B 降级：直接调 Gemini（MarketForecaster 不可用或失败时）──
-    if not result.get('pred') and MY_GEMINI_KEY:
-        try:
-            _safe_print(f"[AI市场分析] {market_name} 使用 Gemini 直接分析（降级）")
-            _mkt_df = fetch_stock_data(index_code)
-            _mkt_ctx = ""
-            _tech_info = {}
-            if _mkt_df is not None and len(_mkt_df) >= 5:
-                _last = _mkt_df.iloc[-1]
-                _prev = _mkt_df.iloc[-2]
-                _chg = (_last['Close'] - _prev['Close']) / _prev['Close'] * 100 if _prev['Close'] else 0
-                _tech_info = {
-                    'current_price': float(_last['Close']),
-                    'trend': '上涨' if _chg > 0.5 else ('下跌' if _chg < -0.5 else '震荡'),
-                    'strength': min(100, max(0, int(50 + _chg * 5))),
-                }
-                _last5 = _mkt_df.tail(5)[['Open', 'High', 'Low', 'Close', 'Volume']]
-                _l5_str = ""
-                for _idx_r, _row in _last5.iterrows():
-                    _d = _idx_r.strftime("%m-%d") if hasattr(_idx_r, "strftime") else str(_idx_r)[:5]
-                    _l5_str += f"\n  {_d} 开{_row['Open']:.2f} 高{_row['High']:.2f} 低{_row['Low']:.2f} 收{_row['Close']:.2f}"
+        _last = _mkt_df.iloc[-1]
+        _prev = _mkt_df.iloc[-2]
+        _chg = (_last['Close'] - _prev['Close']) / _prev['Close'] * 100 if _prev['Close'] else 0
+        result['tech'] = {
+            'current_price': float(_last['Close']),
+            'trend': '上涨' if _chg > 0.5 else ('下跌' if _chg < -0.5 else '震荡'),
+            'strength': min(100, max(0, int(50 + _chg * 5))),
+        }
 
-                _ma5 = _mkt_df['Close'].rolling(5).mean().iloc[-1]
-                _ma20 = _mkt_df['Close'].rolling(20).mean().iloc[-1] if len(_mkt_df) >= 20 else 0
-                _ma60 = _mkt_df['Close'].rolling(60).mean().iloc[-1] if len(_mkt_df) >= 60 else 0
-                _mkt_ctx = f"最新价: {_last['Close']:.2f} | 涨跌: {_chg:+.2f}%\nMA5: {_ma5:.2f} MA20: {_ma20:.2f} MA60: {_ma60:.2f}\n最近5日:{_l5_str}"
+        _l5_lines = []
+        for _idx_r, _row in _mkt_df.tail(5).iterrows():
+            _d = _idx_r.strftime("%m-%d") if hasattr(_idx_r, "strftime") else str(_idx_r)[:5]
+            _l5_lines.append(f"  {_d} 开{_row['Open']:.2f} 高{_row['High']:.2f} 低{_row['Low']:.2f} 收{_row['Close']:.2f}")
 
-            _fallback_prompt = f"""你是资深金融分析师。请对 {market_name} 市场（指数 {index_code}）进行全面分析。
+        _ma5 = _mkt_df['Close'].rolling(5).mean().iloc[-1]
+        _ma20 = _mkt_df['Close'].rolling(20).mean().iloc[-1] if len(_mkt_df) >= 20 else 0
+        _ma60 = _mkt_df['Close'].rolling(60).mean().iloc[-1] if len(_mkt_df) >= 60 else 0
+
+        _prompt = f"""你是资深金融分析师。请对 {market_name} 市场（指数 {index_code}）进行全面分析。
 
 【市场数据】
-{_mkt_ctx if _mkt_ctx else '数据获取中'}
+最新价: {_last['Close']:.2f} | 涨跌: {_chg:+.2f}%
+MA5: {_ma5:.2f} MA20: {_ma20:.2f} MA60: {_ma60:.2f}
+最近5日:
+{chr(10).join(_l5_lines)}
 
 请用中文专业分析（600-800字），包含：
 1. 市场走势研判：当前趋势、关键支撑压力位
@@ -2201,23 +2186,14 @@ def _run_single_market_ai(market_name, index_code, market_result):
 4. 风险提示：主要风险因素
 5. 操作建议：仓位管理、策略方向"""
 
-            _fb_resp = call_gemini_api(_fallback_prompt)
-            if _fb_resp and not _fb_resp.startswith("❌"):
-                result['pred'] = _fb_resp
-                if _tech_info:
-                    result['tech'] = _tech_info
-        except Exception as e:
-            _safe_print(f"[AI市场分析] {market_name} Gemini 降级也失败: {e}")
-
-    # ── 舆情分析 ──
-    try:
-        if SENTIMENT_ANALYZER_AVAILABLE and _sentiment_analyzer:
-            sent_prompt = _sentiment_analyzer.generate_market_sentiment_prompt(market_name, market_result)
-            sent_resp = call_gemini_api(sent_prompt)
-            sent_metrics = _sentiment_analyzer.parse_sentiment_score(sent_resp)
-            result['sentiment'] = {'response': sent_resp, 'metrics': sent_metrics}
+        if HAS_GEMINI and MY_GEMINI_KEY:
+            _model = genai.GenerativeModel(GEMINI_MODEL_NAME)
+            _resp = _model.generate_content(_prompt)
+            _text = _resp.text if hasattr(_resp, 'text') else str(_resp)
+            if _text and len(_text) > 50:
+                result['pred'] = _text
     except Exception as e:
-        _safe_print(f"[AI市场分析] {market_name} 舆情分析失败: {e}")
+        _safe_print(f"[AI市场分析] {market_name} 失败: {type(e).__name__}: {str(e)[:100]}")
 
     return result
 
