@@ -4151,31 +4151,27 @@ def render_fundamentals_panel(fundamentals: dict, target_c: str):
             st.metric("共识", rec_cn)
         biz = fundamentals.get("business_summary", "")
         if biz:
-            with st.expander("📖 公司简介 & 业务概况", expanded=False):
-                _biz_cache_key = f"_biz_cn_{target_c}"
-                _biz_cn = st.session_state.get(_biz_cache_key, "")
-                if not _biz_cn:
-                    _has_cjk = any('\u4e00' <= ch <= '\u9fff' for ch in biz[:50])
-                    if _has_cjk:
-                        _biz_cn = biz[:600]
-                        st.session_state[_biz_cache_key] = _biz_cn
-                    else:
-                        try:
-                            _biz_cn = call_gemini_api(
-                                f"请将以下公司简介翻译为简体中文，保持专业术语准确，不要输出任何英文，只输出中文翻译结果：\n\n{biz[:800]}",
-                                model_name="gemini-2.0-flash"
-                            )
-                        except Exception:
-                            _biz_cn = ""
-                        _is_chinese = _biz_cn and not _biz_cn.startswith("❌") and any('\u4e00' <= ch <= '\u9fff' for ch in _biz_cn[:30])
-                        if _is_chinese:
-                            st.session_state[_biz_cache_key] = _biz_cn
-                        else:
-                            _biz_cn = ""
-                if _biz_cn:
-                    st.markdown(f'<p style="font-size:13px;line-height:1.8;color:#374151;">{_biz_cn}</p>', unsafe_allow_html=True)
+            _biz_cache_key = f"_biz_cn_{target_c}"
+            _biz_cn = st.session_state.get(_biz_cache_key, "")
+            if not _biz_cn:
+                _has_cjk = any('\u4e00' <= ch <= '\u9fff' for ch in biz[:50])
+                if _has_cjk:
+                    _biz_cn = biz[:600]
                 else:
-                    st.info("⏳ 公司简介翻译中，请稍后刷新页面查看")
+                    try:
+                        _biz_cn = call_gemini_api(
+                            f"请将以下公司简介翻译为简体中文，保持专业术语准确，不要输出任何英文，只输出中文翻译结果：\n\n{biz[:800]}",
+                            model_name="gemini-2.0-flash"
+                        )
+                    except Exception:
+                        _biz_cn = ""
+                    if not (_biz_cn and not _biz_cn.startswith("❌") and any('\u4e00' <= ch <= '\u9fff' for ch in _biz_cn[:30])):
+                        _biz_cn = ""
+                if _biz_cn:
+                    st.session_state[_biz_cache_key] = _biz_cn
+            if _biz_cn:
+                with st.expander("📖 公司简介 & 业务概况", expanded=False):
+                    st.markdown(f'<p style="font-size:13px;line-height:1.8;color:#374151;">{_biz_cn}</p>', unsafe_allow_html=True)
         return
 
     # ── 财报三表 Tabs ──
@@ -4291,34 +4287,30 @@ def render_fundamentals_panel(fundamentals: dict, target_c: str):
             _de = f"{_tl/_eq:.2f}" if _eq and _tl and _eq != 0 else "N/A"
             st.metric("负债/权益", _de)
 
-    # ── 公司简介（强制中文，翻译失败不缓存以便重试）──
+    # ── 公司简介（强制中文，翻译失败则隐藏）──
     biz = fundamentals.get("business_summary", "")
     if biz:
-        with st.expander("📖 公司简介 & 业务概况", expanded=False):
-            _biz_cache_key = f"_biz_cn_{target_c}"
-            _biz_cn = st.session_state.get(_biz_cache_key, "")
-            if not _biz_cn:
-                _has_cjk = any('\u4e00' <= ch <= '\u9fff' for ch in biz[:50])
-                if _has_cjk:
-                    _biz_cn = biz[:600]
-                    st.session_state[_biz_cache_key] = _biz_cn
-                else:
-                    try:
-                        _biz_cn = call_gemini_api(
-                            f"请将以下公司简介翻译为简体中文，保持专业术语准确，不要输出任何英文，只输出中文翻译结果：\n\n{biz[:800]}",
-                            model_name="gemini-2.0-flash"
-                        )
-                    except Exception:
-                        _biz_cn = ""
-                    _is_chinese = _biz_cn and not _biz_cn.startswith("❌") and any('\u4e00' <= ch <= '\u9fff' for ch in _biz_cn[:30])
-                    if _is_chinese:
-                        st.session_state[_biz_cache_key] = _biz_cn
-                    else:
-                        _biz_cn = ""
-            if _biz_cn:
-                st.markdown(f'<p style="font-size:13px;line-height:1.8;color:#374151;">{_biz_cn}</p>', unsafe_allow_html=True)
+        _biz_cache_key = f"_biz_cn_{target_c}"
+        _biz_cn = st.session_state.get(_biz_cache_key, "")
+        if not _biz_cn:
+            _has_cjk = any('\u4e00' <= ch <= '\u9fff' for ch in biz[:50])
+            if _has_cjk:
+                _biz_cn = biz[:600]
             else:
-                st.info("⏳ 公司简介翻译中，请稍后刷新页面查看")
+                try:
+                    _biz_cn = call_gemini_api(
+                        f"请将以下公司简介翻译为简体中文，保持专业术语准确，不要输出任何英文，只输出中文翻译结果：\n\n{biz[:800]}",
+                        model_name="gemini-2.0-flash"
+                    )
+                except Exception:
+                    _biz_cn = ""
+                if not (_biz_cn and not _biz_cn.startswith("❌") and any('\u4e00' <= ch <= '\u9fff' for ch in _biz_cn[:30])):
+                    _biz_cn = ""
+            if _biz_cn:
+                st.session_state[_biz_cache_key] = _biz_cn
+        if _biz_cn:
+            with st.expander("📖 公司简介 & 业务概况", expanded=False):
+                st.markdown(f'<p style="font-size:13px;line-height:1.8;color:#374151;">{_biz_cn}</p>', unsafe_allow_html=True)
 # ─────────────────────────────────────────────────────────────────────────────
 
 
