@@ -4149,29 +4149,28 @@ def render_fundamentals_panel(fundamentals: dict, target_c: str):
             rec = fundamentals.get("recommendation", "")
             rec_cn = {"buy": "买入", "strong_buy": "强买", "hold": "持有", "sell": "卖出"}.get(rec, rec or "N/A")
             st.metric("共识", rec_cn)
-        biz = fundamentals.get("business_summary", "")
-        if biz:
-            _biz_cache_key = f"_biz_cn_{target_c}"
-            _biz_cn = st.session_state.get(_biz_cache_key, "")
-            if not _biz_cn:
-                _has_cjk = any('\u4e00' <= ch <= '\u9fff' for ch in biz[:50])
-                if _has_cjk:
-                    _biz_cn = biz[:600]
-                else:
-                    try:
-                        _biz_cn = call_gemini_api(
-                            f"请将以下公司简介翻译为简体中文，保持专业术语准确，不要输出任何英文，只输出中文翻译结果：\n\n{biz[:800]}",
-                            model_name="gemini-2.0-flash"
-                        )
-                    except Exception:
-                        _biz_cn = ""
-                    if not (_biz_cn and not _biz_cn.startswith("❌") and any('\u4e00' <= ch <= '\u9fff' for ch in _biz_cn[:30])):
-                        _biz_cn = ""
-                if _biz_cn:
-                    st.session_state[_biz_cache_key] = _biz_cn
-            if _biz_cn:
-                with st.expander("📖 公司简介 & 业务概况", expanded=False):
-                    st.markdown(f'<p style="font-size:13px;line-height:1.8;color:#374151;">{_biz_cn}</p>', unsafe_allow_html=True)
+        _biz_cache_key = f"_biz_cn_{target_c}"
+        _biz_cn = st.session_state.get(_biz_cache_key, "")
+        if not _biz_cn:
+            _cname = fundamentals.get("company_name", target_c)
+            _sector = fundamentals.get("sector", "")
+            _industry = fundamentals.get("industry", "")
+            try:
+                _biz_cn = call_gemini_api(
+                    f"请用中文撰写「{_cname}」（股票代码：{target_c}，行业：{_sector}/{_industry}）的公司简介，"
+                    f"包括：主营业务、核心产品/服务、商业模式、市场地位。"
+                    f"要求：200-300字，专业简洁，全部中文，不要英文。",
+                    model_name="gemini-2.0-flash"
+                )
+            except Exception:
+                _biz_cn = ""
+            if _biz_cn and not _biz_cn.startswith("❌") and any('\u4e00' <= ch <= '\u9fff' for ch in _biz_cn[:30]):
+                st.session_state[_biz_cache_key] = _biz_cn
+            else:
+                _biz_cn = ""
+        if _biz_cn:
+            with st.expander("📖 公司简介 & 业务概况", expanded=False):
+                st.markdown(f'<p style="font-size:13px;line-height:1.8;color:#374151;">{_biz_cn}</p>', unsafe_allow_html=True)
         return
 
     # ── 财报三表 Tabs ──
@@ -4287,30 +4286,29 @@ def render_fundamentals_panel(fundamentals: dict, target_c: str):
             _de = f"{_tl/_eq:.2f}" if _eq and _tl and _eq != 0 else "N/A"
             st.metric("负债/权益", _de)
 
-    # ── 公司简介（强制中文，翻译失败则隐藏）──
-    biz = fundamentals.get("business_summary", "")
-    if biz:
-        _biz_cache_key = f"_biz_cn_{target_c}"
-        _biz_cn = st.session_state.get(_biz_cache_key, "")
-        if not _biz_cn:
-            _has_cjk = any('\u4e00' <= ch <= '\u9fff' for ch in biz[:50])
-            if _has_cjk:
-                _biz_cn = biz[:600]
-            else:
-                try:
-                    _biz_cn = call_gemini_api(
-                        f"请将以下公司简介翻译为简体中文，保持专业术语准确，不要输出任何英文，只输出中文翻译结果：\n\n{biz[:800]}",
-                        model_name="gemini-2.0-flash"
-                    )
-                except Exception:
-                    _biz_cn = ""
-                if not (_biz_cn and not _biz_cn.startswith("❌") and any('\u4e00' <= ch <= '\u9fff' for ch in _biz_cn[:30])):
-                    _biz_cn = ""
-            if _biz_cn:
-                st.session_state[_biz_cache_key] = _biz_cn
-        if _biz_cn:
-            with st.expander("📖 公司简介 & 业务概况", expanded=False):
-                st.markdown(f'<p style="font-size:13px;line-height:1.8;color:#374151;">{_biz_cn}</p>', unsafe_allow_html=True)
+    # ── 公司简介（AI 直接生成中文）──
+    _biz_cache_key = f"_biz_cn_{target_c}"
+    _biz_cn = st.session_state.get(_biz_cache_key, "")
+    if not _biz_cn:
+        _cname = fundamentals.get("company_name", target_c)
+        _sector = fundamentals.get("sector", "")
+        _industry = fundamentals.get("industry", "")
+        try:
+            _biz_cn = call_gemini_api(
+                f"请用中文撰写「{_cname}」（股票代码：{target_c}，行业：{_sector}/{_industry}）的公司简介，"
+                f"包括：主营业务、核心产品/服务、商业模式、市场地位。"
+                f"要求：200-300字，专业简洁，全部中文，不要英文。",
+                model_name="gemini-2.0-flash"
+            )
+        except Exception:
+            _biz_cn = ""
+        if _biz_cn and not _biz_cn.startswith("❌") and any('\u4e00' <= ch <= '\u9fff' for ch in _biz_cn[:30]):
+            st.session_state[_biz_cache_key] = _biz_cn
+        else:
+            _biz_cn = ""
+    if _biz_cn:
+        with st.expander("📖 公司简介 & 业务概况", expanded=False):
+            st.markdown(f'<p style="font-size:13px;line-height:1.8;color:#374151;">{_biz_cn}</p>', unsafe_allow_html=True)
 # ─────────────────────────────────────────────────────────────────────────────
 
 
