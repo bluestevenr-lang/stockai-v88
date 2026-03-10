@@ -4221,11 +4221,29 @@ def render_fundamentals_panel(fundamentals: dict, target_c: str):
             _de = f"{_tl/_eq:.2f}" if _eq and _tl and _eq != 0 else "N/A"
             st.metric("负债/权益", _de)
 
-    # ── 公司简介 ──
+    # ── 公司简介（英文自动翻译中文）──
     biz = fundamentals.get("business_summary", "")
     if biz:
         with st.expander("📖 公司简介 & 业务概况", expanded=False):
-            st.markdown(f'<p style="font-size:13px;line-height:1.8;color:#374151;">{biz[:600]}{"..." if len(biz) > 600 else ""}</p>', unsafe_allow_html=True)
+            _biz_cache_key = f"_biz_cn_{target_c}"
+            if _biz_cache_key in st.session_state and st.session_state[_biz_cache_key]:
+                _biz_cn = st.session_state[_biz_cache_key]
+            else:
+                _has_cjk = any('\u4e00' <= ch <= '\u9fff' for ch in biz[:50])
+                if _has_cjk:
+                    _biz_cn = biz[:600]
+                else:
+                    try:
+                        _biz_cn = call_gemini_api(
+                            f"请将以下公司简介翻译为简体中文，保持专业术语准确，只输出翻译结果：\n\n{biz[:600]}",
+                            model_name="gemini-2.0-flash"
+                        )
+                        if not _biz_cn or _biz_cn.startswith("❌"):
+                            _biz_cn = biz[:600]
+                    except Exception:
+                        _biz_cn = biz[:600]
+                st.session_state[_biz_cache_key] = _biz_cn
+            st.markdown(f'<p style="font-size:13px;line-height:1.8;color:#374151;">{_biz_cn}</p>', unsafe_allow_html=True)
 # ─────────────────────────────────────────────────────────────────────────────
 
 
