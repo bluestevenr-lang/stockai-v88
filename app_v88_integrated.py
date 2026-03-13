@@ -32,6 +32,7 @@ import pickle
 import hashlib
 import shutil
 import logging
+import re
 
 # ── 从 .env 加载密钥（本地开发用；不覆盖已有环境变量）─────────────────────────
 def _load_env_file():
@@ -51,6 +52,69 @@ def _load_env_file():
     except Exception:
         pass
 _load_env_file()
+
+# ── 启动自检：自动检测关键依赖和数据源 ─────────────────────────────────────────
+def _startup_health_check() -> dict:
+    """检测关键模块和数据源，返回状态字典"""
+    results = {}
+
+    # 1. 关键标准库
+    _required_modules = ['re', 'json', 'os', 'time', 'hashlib', 'logging', 'pickle']
+    missing = []
+    for mod in _required_modules:
+        try:
+            __import__(mod)
+        except ImportError:
+            missing.append(mod)
+    results['missing_imports'] = missing
+
+    # 2. yfinance 可用性
+    try:
+        import yfinance as _yf
+        _tk = _yf.Ticker("AAPL")
+        _info = _tk.fast_info
+        results['yfinance'] = 'ok'
+    except Exception as e:
+        results['yfinance'] = f'error:{e}'
+
+    # 3. HK 代码格式自检（核心逻辑验证）
+    try:
+        from modules.utils import to_yf_cn_code, get_hk_code_variants
+        assert to_yf_cn_code("00700") == "0700.HK", "00700 format error"
+        assert to_yf_cn_code("00836.HK") == "0836.HK", "00836.HK format error"
+        assert to_yf_cn_code("09992.HK") == "9992.HK", "09992.HK format error"
+        results['hk_code_fmt'] = 'ok'
+    except Exception as e:
+        results['hk_code_fmt'] = f'error:{e}'
+
+    # 4. 东方财富搜索 API 连通性（轻量测试）
+    try:
+        import requests as _req
+        _r = _req.get(
+            "https://search-codetable.eastmoney.com/codetable/search/web",
+            params={"input": "AAPL", "type": "14", "token": "D43BF722C8E33BDC906FB84D85E326E8", "count": 1},
+            timeout=5
+        )
+        results['eastmoney_api'] = 'ok' if _r.status_code == 200 else f'http:{_r.status_code}'
+    except Exception as e:
+        results['eastmoney_api'] = f'error:{e}'
+
+    return results
+
+if 'startup_health' not in st.session_state:
+    st.session_state.startup_health = _startup_health_check()
+    _h = st.session_state.startup_health
+    _issues = []
+    if _h.get('missing_imports'):
+        _issues.append(f"缺少模块: {', '.join(_h['missing_imports'])}")
+    if _h.get('hk_code_fmt', 'ok') != 'ok':
+        _issues.append(f"港股代码格式异常: {_h['hk_code_fmt']}")
+    if _h.get('yfinance', 'ok') != 'ok':
+        _issues.append(f"yfinance 异常: {_h['yfinance']}")
+    if _issues:
+        logging.warning(f"[启动自检] 发现问题: {'; '.join(_issues)}")
+    else:
+        logging.info("[启动自检] ✅ 所有检查通过")
 
 # ── AI市场简报 12小时文件缓存 ──────────────────────────────────────────────
 _BRIEF_CACHE_DIR = Path(__file__).parent / ".cache_brief"
@@ -3807,7 +3871,35 @@ def fetch_stock_data(code, return_source=False, return_quality=False):
                         break
         
         _safe_print(f"[fetch] ⚠️ {target_code} YFinance全部尝试失败，尝试备用源...")
-    
+
+    # ═══ 1.5️⃣ 【自动修复】港股代码格式容错：自动尝试所有格式变体 ═══
+    if target_code.endswith('.HK'):
+        from modules.utils import get_hk_code_variants
+        _variants = get_hk_code_variants(target_code)
+        _variants = [v for v in _variants if v != target_code]  # 排除已试过的主代码
+        if _variants:
+            _safe_print(f"[fetch][自动修复] {target_code} 港股格式容错，尝试变体: {_variants}")
+            for _alt_code in _variants:
+                for _params in [{"period": "1y", "auto_adjust": False}, {"period": "6mo", "auto_adjust": True}]:
+                    try:
+                        with ProxyContext(proxy_url):
+                            _tk = yf.Ticker(_alt_code)
+                            _df = _tk.history(**_params, timeout=15)
+                            _cleaned = clean_df(_df)
+                            if _cleaned is not None and len(_cleaned) > 0:
+                                _safe_print(f"[fetch][自动修复] ✅ 港股格式容错成功: {target_code} -> {_alt_code}")
+                                data_quality['source'] = f'Yahoo Finance (自动修复:{_alt_code})'
+                                data_quality['last_updated'] = pd.Timestamp.now()
+                                data_quality['is_delayed'] = True
+                                data_quality['data_points'] = len(_cleaned)
+                                data_quality['date_range'] = f"{_cleaned.index[0].date()} 至 {_cleaned.index[-1].date()}"
+                                result = (_cleaned, data_quality) if return_quality else (_cleaned, f"yfinance(自动修复:{_alt_code})") if return_source else _cleaned
+                                local_cache.set(cache_key, result)
+                                return result
+                    except Exception:
+                        continue
+            _safe_print(f"[fetch][自动修复] ❌ 港股所有格式变体均失败: {_variants}")
+
     # ═══ 2️⃣ 备用：Stooq（仅美股/指数）═══
     if not target_code.endswith('.HK') and not target_code.endswith('.SS') and not target_code.endswith('.SZ'):
         _safe_print(f"[fetch] 🔄 {target_code} 尝试Stooq备用源...")

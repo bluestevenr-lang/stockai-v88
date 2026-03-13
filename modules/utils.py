@@ -318,8 +318,8 @@ def to_yf_cn_code(code: str) -> str:
         if code.endswith('.HK'):
             base_code = code.split('.')[0]
             if len(base_code) == 5 and base_code.startswith('0'):
-                # 09992.HK -> 9992.HK
-                return base_code.lstrip('0') + '.HK'
+                # 09992.HK -> 9992.HK, 00836.HK -> 0836.HK
+                return base_code[1:] + '.HK'
         return code
     
     # 纯数字代码判断
@@ -348,6 +348,28 @@ def to_yf_cn_code(code: str) -> str:
         return code
     
     return code
+
+
+def get_hk_code_variants(code: str) -> list:
+    """
+    自动生成港股代码的所有可能格式变体，用于自动容错重试。
+    例如：0836.HK -> ['0836.HK', '836.HK', '00836.HK', '0836.HK']
+    """
+    if not code or not code.upper().endswith('.HK'):
+        return [code]
+    base = code.upper().split('.')[0].lstrip('0') or '0'
+    variants_set = []
+    seen = set()
+    for padded in [base, base.zfill(4), base.zfill(5)]:
+        candidate = f"{padded}.HK"
+        if candidate not in seen:
+            variants_set.append(candidate)
+            seen.add(candidate)
+    # 确保原始代码也在列表中
+    orig = code.upper()
+    if orig not in seen:
+        variants_set.insert(0, orig)
+    return variants_set
 
 
 def parse_market_from_code(code: str) -> str:
