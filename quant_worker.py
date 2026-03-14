@@ -39,9 +39,9 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-_CLOUD_MODE = "--cloud" in sys.argv
-_FORCE      = "--force" in sys.argv
-_SKIP_HOURS = "--skip-closed" in sys.argv   # VPS cron 模式下：非交易时段直接退出
+_CLOUD_MODE    = "--cloud" in sys.argv
+_FORCE         = "--force" in sys.argv
+_DAILY_REPORT  = "--daily-report" in sys.argv  # 每日日志总结推送钉钉
 
 # ── 路径 ──────────────────────────────────────────────────────────
 _DIR        = Path(__file__).parent
@@ -256,6 +256,88 @@ def _notify_summary(state: dict, action_count: int):
         f"**时间**: {_now_str()}"
     )
     _send_dingtalk("量化账户快报", content)
+
+
+def _send_daily_report(state: dict):
+    """每晚 21:00 发送当日量化交易日志总结到钉钉"""
+    initial   = state.get("initial_capital", INITIAL_CAPITAL)
+    cash      = state.get("capital", initial)
+    positions = state.get("positions", [])
+    trades    = state.get("trades", [])
+    equity_h  = state.get("equity_history", [])
+
+    # 账户总值
+    pos_val   = sum(p.get("cost", 0) for p in positions)
+    total     = cash + pos_val
+    profit    = total - initial
+    pct       = profit / initial * 100
+    emoji_pnl = "📈" if profit >= 0 else "📉"
+
+    # 今日交易记录（今天日期）
+    today = datetime.now().strftime("%Y-%m-%d")
+    today_trades = [
+        t for t in trades
+        if t.get("exit_time", "").startswith(today)
+        or t.get("entry_time", "").startswith(today)
+    ]
+    today_closed = [t for t in today_trades if t.get("exit_time", "").startswith(today)]
+    today_pnl    = sum(t.get("pnl", 0) for t in today_closed)
+
+    # 净值曲线最近7天
+    recent_eq = equity_h[-7:] if len(equity_h) >= 2 else equity_h
+    eq_trend  = "  ".join(
+        f"{e['date'][5:]}={'📈' if i==0 or e['equity']>=recent_eq[i-1]['equity'] else '📉'}{e['equity']:,.0f}"
+        for i, e in enumerate(recent_eq)
+    )
+
+    # 当前持仓列表
+    if positions:
+        pos_lines = "\n".join(
+            f"> {p.get('market','')} **{p.get('name', p['symbol'])}** "
+            f"入场 {p['entry_price']} · 数量 {p['quantity']}"
+            for p in positions
+        )
+    else:
+        pos_lines = "> 暂无持仓"
+
+    # 今日成交列表
+    if today_closed:
+        trade_lines = "\n".join(
+            f"> {'🟢' if t.get('pnl',0)>=0 else '🔴'} "
+            f"**{t.get('name', t['symbol'])}** "
+            f"{t['entry_price']}→{t['exit_price']} "
+            f"¥{t.get('pnl',0):+,.2f}（{t.get('exit_reason','')}）"
+            for t in today_closed[:10]
+        )
+    else:
+        trade_lines = "> 今日无平仓记录"
+
+    # 胜率统计
+    won  = sum(1 for t in trades if t.get("pnl", 0) > 0)
+    wr   = won / len(trades) * 100 if trades else 0
+
+    content = (
+        f"**{today} 量化交易日报**\n\n"
+        f"---\n\n"
+        f"**📊 账户概览**  \n"
+        f"> 总资产：¥{total:,.2f}  \n"
+        f"> 累计盈亏：{emoji_pnl} ¥{profit:+,.2f}（{pct:+.2f}%）  \n"
+        f"> 今日盈亏：{'🟢' if today_pnl>=0 else '🔴'} ¥{today_pnl:+,.2f}  \n"
+        f"> 历史胜率：{wr:.1f}%（共{len(trades)}笔）  \n\n"
+        f"---\n\n"
+        f"**📂 当前持仓（{len(positions)}只）**  \n"
+        f"{pos_lines}  \n\n"
+        f"---\n\n"
+        f"**📜 今日成交（{len(today_closed)}笔）**  \n"
+        f"{trade_lines}  \n\n"
+        f"---\n\n"
+        f"**📈 近期净值**  \n"
+        f"> {eq_trend}  \n\n"
+        f"---\n"
+        f"*策略：5分钟EMA金叉 · 止损1.5% · 止盈3%*"
+    )
+    _send_dingtalk("量化交易日报", content)
+    log.info("✅ 量化日报已发送到钉钉")
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -622,7 +704,14 @@ def update_equity(state: dict):
 def main():
     log.info(f"quant_worker 启动 ({'云端' if _CLOUD_MODE else '本地'} 模式)")
 
-    # 交易时段检测（VPS cron 每15分钟触发，非交易时段静默退出节省资源）
+    # 日报模式：直接读状态发送日报，不做扫描
+    if _DAILY_REPORT:
+        log.info("📋 日报模式")
+        state = load_state()
+        _send_daily_report(state)
+        return
+
+    # 交易时段检测（VPS cron 每5分钟触发，非交易时段静默退出节省资源）
     is_open, market_name = _is_trading_time()
     if not is_open and not _FORCE:
         log.info(f"⏸  {market_name}，非交易时段，跳过本次扫描（使用 --force 可强制运行）")
