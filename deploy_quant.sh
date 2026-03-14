@@ -26,9 +26,15 @@ ssh "$VPS_USER@$VPS_IP" "mkdir -p $WORK_DIR"
 
 # ── 2. 上传文件 ──────────────────────────────────────────────
 echo ""
-echo "▶ [2/3] 上传文件..."
-scp quant_worker.py         "$VPS_USER@$VPS_IP:$WORK_DIR/"
-scp quant_vps_setup.sh      "$VPS_USER@$VPS_IP:$WORK_DIR/"
+echo "▶ [2/3] 上传文件（量化策略 v2.0 模块化架构）..."
+scp main.py          "$VPS_USER@$VPS_IP:$WORK_DIR/"
+scp config.py        "$VPS_USER@$VPS_IP:$WORK_DIR/"
+scp indicators.py    "$VPS_USER@$VPS_IP:$WORK_DIR/"
+scp risk_manager.py  "$VPS_USER@$VPS_IP:$WORK_DIR/"
+scp scanner.py       "$VPS_USER@$VPS_IP:$WORK_DIR/"
+scp metrics.py       "$VPS_USER@$VPS_IP:$WORK_DIR/"
+scp quant_worker.py  "$VPS_USER@$VPS_IP:$WORK_DIR/"   # shim，保持旧调用不变
+scp quant_vps_setup.sh "$VPS_USER@$VPS_IP:$WORK_DIR/"
 echo "   ✅ 文件上传完成"
 
 # ── 3. 在 VPS 上执行安装脚本 ─────────────────────────────────

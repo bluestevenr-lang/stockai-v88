@@ -27,10 +27,11 @@ fi
 
 "$WORK_DIR/venv/bin/pip" install -q --upgrade pip
 "$WORK_DIR/venv/bin/pip" install -q \
-    yfinance>=0.2.37 \
+    "yfinance>=0.2.37" \
     pandas \
     numpy \
-    requests
+    requests \
+    "schedule>=1.2.0"
 
 echo "   ✅ Python 环境就绪: $WORK_DIR/venv"
 
@@ -74,9 +75,12 @@ set -a
 source "$ENV_FILE"
 set +a
 
-# 运行 Worker（附带时间戳日志）
+# 切换到工作目录（data/ logs/ 均为相对路径）
+cd "$WORK_DIR"
+
+# 运行 Worker（--once 单次扫描，cron 负责调度）
 echo "[\$(date '+%Y-%m-%d %H:%M:%S')] 开始扫描..." >> "$LOG_DIR/quant_worker.log"
-"$WORK_DIR/venv/bin/python3" "$WORK_DIR/quant_worker.py" --cloud \
+"$WORK_DIR/venv/bin/python3" "$WORK_DIR/main.py" --once --cloud \
     >> "$LOG_DIR/quant_worker.log" 2>&1
 echo "[\$(date '+%Y-%m-%d %H:%M:%S')] 扫描完成" >> "$LOG_DIR/quant_worker.log"
 RUNEOF

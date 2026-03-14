@@ -1,6 +1,6 @@
 streamlit>=1.35.0
 pandas>=2.0.0
-numpy>=1.24.0
+numpy>=1.26.0
 plotly>=5.18.0
 # yfinance 0.2.37+ 需 curl_cffi 才能稳定访问 Yahoo；pin 0.5.10 兼顾本地与 Cloud
 yfinance>=0.2.37
@@ -12,3 +12,4 @@ tomli>=2.0.0
 tushare>=1.2.89
 flask>=3.0.0
 openpyxl>=3.1.0
+schedule>=1.2.0

@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """
-quant_worker.py — 专业量化模拟交易后台引擎 V2
+quant_worker.py — 兼容性入口（v2.0 shim）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-运行模式:
-  python quant_worker.py              # 本地运行
-  python quant_worker.py --cloud      # GitHub Actions / VPS 模式（读写 Gist）
-  python quant_worker.py --force      # 强制扫描（忽略交易时段检测）
-  python quant_worker.py --daily-report  # 每日日报+学习总结 → 钉钉
+此文件保留仅为兼容 VPS cron 和 GitHub Actions 的调用命令不变。
+策略逻辑已全部迁移至 main.py（量化策略 v2.0 模块化架构）。
+
+运行方式（透传给 main.py）：
+  python quant_worker.py --cloud           # VPS cron 云端模式
+  python quant_worker.py --once --cloud    # 等价上面
+  python quant_worker.py --report --cloud  # 手动日报
+  python quant_worker.py --force           # 强制扫描（忽略交易时段）
 
 专业策略:
   进场: EMA20>EMA50(5m) + EMA20>EMA50(1h多周期) + 50<RSI<65 + MACD金叉零轴上
@@ -1060,75 +1063,14 @@ def update_equity(state: dict):
 # 主流程
 # ═══════════════════════════════════════════════════════════════
 
+# ─────────────────────────────────────────────────────────────────────────────
+# 兼容性 shim：所有逻辑已迁移至 main.py（量化策略 v2.0 模块化架构）
+# VPS cron / GitHub Actions 仍可用原命令调用，此处透传参数到 main.py
+# ─────────────────────────────────────────────────────────────────────────────
+
 def main():
-    log.info(f"quant_worker 启动 ({'云端' if _CLOUD_MODE else '本地'} 模式)")
-
-    # 日报模式：直接读状态发送日报，不做扫描
-    if _DAILY_REPORT:
-        log.info("📋 日报模式")
-        state = load_state()
-        _send_daily_report(state)
-        return
-
-    # 交易时段检测（VPS cron 每5分钟触发，非交易时段静默退出节省资源）
-    is_open, market_name = _is_trading_time()
-    if not is_open and not _FORCE:
-        log.info(f"⏸  {market_name}，非交易时段，跳过本次扫描（使用 --force 可强制运行）")
-        return
-
-    log.info(f"✅ 当前市场开盘：{market_name}")
-
-    state = load_state()
-    logs: list[dict] = []
-
-    log.info(f"资金: {state['capital']:.2f}  持仓: {len(state['positions'])}  历史交易: {len(state['trades'])}")
-
-    # Step 1: 检查离场
-    log.info("─── 检查离场条件 ───")
-    handle_exits(state, logs)
-
-    # Step 2: 扫描入场
-    log.info("─── 扫描入场信号 ───")
-    handle_entries(state, logs)
-
-    # Step 3: 更新净值曲线
-    log.info("─── 更新净值曲线 ───")
-    update_equity(state)
-
-    # Step 4: 记录本次扫描日志（追加到全局日志，保留最近 200 条）
-    if logs:
-        state["scan_logs"] = (logs + state.get("scan_logs", []))[:200]
-    else:
-        state["scan_logs"] = state.get("scan_logs", [])
-        # 无动作时也记录一行
-        state["scan_logs"].insert(0, {
-            "time":   _now_str(),
-            "action": "SCAN",
-            "symbol": "—",
-            "name":   "本次扫描无信号",
-            "price":  0,
-            "reason": f"持仓{len(state['positions'])} 可用资金{state['capital']:.0f}",
-        })
-        state["scan_logs"] = state["scan_logs"][:200]
-
-    # Step 5: 保存
-    save_state(state)
-
-    # Step 6: 钉钉摘要（有动作才发，静默扫描不打扰）
-    _notify_summary(state, len(logs))
-
-    # 打印统计
-    total_eq = state["capital"]
-    for p in state["positions"]:
-        total_eq += p.get("cost", 0)
-    profit = total_eq - INITIAL_CAPITAL
-    profit_pct = profit / INITIAL_CAPITAL * 100
-    log.info(
-        f"✅ 扫描完成 | 总资产={total_eq:.2f} | "
-        f"盈亏={profit:+.2f} ({profit_pct:+.2f}%) | "
-        f"持仓={len(state['positions'])} | "
-        f"本次动作={len(logs)} 条"
-    )
+    from main import main as _main_v2
+    _main_v2()
 
 
 if __name__ == "__main__":
