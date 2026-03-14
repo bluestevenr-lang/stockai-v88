@@ -1,0 +1,54 @@
+name: Quant Simulation Worker
+
+on:
+  schedule:
+    # 覆盖三市场交易时段（UTC）
+    # A股：UTC 01:30 / 03:00 / 05:00 / 06:30（北京 09:30/11:00/13:00/14:30）
+    # 港股：同 A 股时段
+    # 美股：UTC 14:30 / 16:30 / 18:30 / 20:30（北京 22:30/00:30/02:30/04:30）
+    - cron: '30 1 * * 1-5'   # 北京 09:30 A股/港股开盘
+    - cron: '0  3 * * 1-5'   # 北京 11:00 上午尾盘
+    - cron: '0  5 * * 1-5'   # 北京 13:00 午后开盘
+    - cron: '30 6 * * 1-5'   # 北京 14:30 收盘前
+    - cron: '30 14 * * 1-5'  # 北京 22:30 美股开盘
+    - cron: '30 16 * * 1-5'  # 北京 00:30 美股盘中
+    - cron: '30 18 * * 1-5'  # 北京 02:30 美股盘中
+    - cron: '30 20 * * 1-5'  # 北京 04:30 美股尾盘
+  workflow_dispatch:         # 支持手动触发
+
+jobs:
+  quant:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-quant-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-quant-pip-
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install yfinance>=0.2.37 pandas numpy requests
+
+      - name: Run quant worker
+        env:
+          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+          GIST_ID:    ${{ secrets.GIST_ID }}
+        run: python quant_worker.py --cloud
+
+      - name: Report result
+        if: always()
+        run: echo "Quant worker finished at $(TZ='Asia/Shanghai' date)"

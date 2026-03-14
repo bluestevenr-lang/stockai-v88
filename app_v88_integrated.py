@@ -10135,7 +10135,7 @@ except Exception as _e_port:
 # 【模块 ③】深度作战室 + 猎手战位 + Top30（作战室为首 Tab，点击后自动切换）
 # ═══════════════════════════════════════════════════════════════
 # 【V90.7】深度作战室作为第一个 Tab，解决"点击无反应"——选中后自动显示
-tab_warroom, tab_scanner, tab_quant, tab_ai_select, tab_watchlist = st.tabs(["⚔️ 深度作战室", "📡 猎手战位", "🏆 Top30 扫描", "🤖 AI选股", "📋 自选股分析"])
+tab_warroom, tab_scanner, tab_top30, tab_quant_sim, tab_ai_select, tab_watchlist = st.tabs(["⚔️ 深度作战室", "📡 猎手战位", "🏆 Top30 扫描", "🤖 量化模拟", "🤖 AI选股", "📋 自选股分析"])
 
 # 【V90.7】深度作战室 Tab - 完整分析内容在顶部区块渲染，此处仅占位
 with tab_warroom:
@@ -11149,7 +11149,17 @@ def _dingtalk_push_top30(res: dict | None) -> tuple[bool, str]:
     return _dingtalk_send("\n".join(lines))
 
 
-with tab_quant:
+with tab_quant_sim:
+    @st.fragment(run_every=300)
+    def _quant_sim_fragment():
+        try:
+            from modules.quant_sim import render_quant_sim_tab
+            render_quant_sim_tab()
+        except Exception as _qe:
+            st.error(f"量化模拟模块加载失败: {_qe}")
+    _quant_sim_fragment()
+
+with tab_top30:
 
     @st.fragment(run_every=20)
     def _top30_fragment():
