@@ -52,11 +52,11 @@ _STATE_FILE = _CACHE_DIR / "quant_state.json"
 INITIAL_CAPITAL  = 100_000.0   # 模拟初始资金（人民币等值）
 MAX_POSITIONS    = 5           # 最多同时持仓数
 POS_SIZE_PCT     = 0.18        # 单仓比例（占总资金）
-STOP_LOSS_PCT    = -0.05       # 止损 -5%
-TAKE_PROFIT_PCT  = +0.12       # 止盈 +12%
-TRAIL_FROM_HIGH  = 0.08        # 追踪止损：最高点回撤 8%
-KLINE_PERIOD     = "3mo"       # K 线获取周期
-KLINE_INTERVAL   = "1d"        # K 线粒度
+STOP_LOSS_PCT    = -0.015      # 止损 -1.5%（5分钟线适配）
+TAKE_PROFIT_PCT  = +0.03       # 止盈 +3%（5分钟线适配）
+TRAIL_FROM_HIGH  = 0.02        # 追踪止损：最高点回撤 2%
+KLINE_PERIOD     = "5d"        # K 线获取周期（5分钟线最多60天，取5天够用）
+KLINE_INTERVAL   = "5m"        # K 线粒度：5分钟
 
 # ── 关注股票池（覆盖用户持仓 + 热门标的）────────────────────────────
 WATCHLIST = {
@@ -540,11 +540,12 @@ def handle_entries(state: dict, logs: list):
             if not ind:
                 continue
 
-            # 入场条件
+            # 入场条件（5分钟线：要求更严格，减少噪音）
             long_ok = (
                 ind["ema20"] > ind["ema50"]
-                and 45 < ind["rsi"] < 68
+                and 50 < ind["rsi"] < 65          # RSI 区间收窄
                 and ind["macd"] > ind["macd_sig"]
+                and ind["macd"] > 0               # MACD 在零轴上方，确认趋势
             )
             if not long_ok:
                 log.info(f"  {sym} 无信号  EMA20{'>'if ind['ema20']>ind['ema50'] else '<'}EMA50"

@@ -91,14 +91,14 @@ echo "▶ [5/5] 安装 cron 定时任务..."
 # 先删除旧的量化 cron
 crontab -l 2>/dev/null | grep -v "$CRON_TAG" | crontab - 2>/dev/null || true
 
-# 写入新 cron（每15分钟全天运行，脚本内部判断交易时段自动跳过）
+# 写入新 cron（每5分钟，5分钟K线策略，脚本内部判断交易时段自动跳过）
 # 覆盖：A股+港股（UTC 01-08）+ 美股（UTC 14-21）+ 跨午夜美股（UTC 22-次日05）
 (crontab -l 2>/dev/null; cat << CRONEOF
-# ── 量化Worker：每15分钟，脚本内部自动判断是否交易时段 ──────
-*/15 1-8 * * 1-5 $WORK_DIR/run_quant.sh $CRON_TAG
-*/15 14-21 * * 1-5 $WORK_DIR/run_quant.sh $CRON_TAG
-*/15 22-23 * * 0-4 $WORK_DIR/run_quant.sh $CRON_TAG
-*/15 0-5 * * 2-6 $WORK_DIR/run_quant.sh $CRON_TAG
+# ── 量化Worker：每5分钟，5分钟K线策略，脚本内部自动判断是否交易时段 ──
+*/5 1-8 * * 1-5 $WORK_DIR/run_quant.sh $CRON_TAG
+*/5 14-21 * * 1-5 $WORK_DIR/run_quant.sh $CRON_TAG
+*/5 22-23 * * 0-4 $WORK_DIR/run_quant.sh $CRON_TAG
+*/5 0-5 * * 2-6 $WORK_DIR/run_quant.sh $CRON_TAG
 CRONEOF
 ) | crontab -
 
