@@ -41,6 +41,7 @@ log = logging.getLogger(__name__)
 
 _CLOUD_MODE = "--cloud" in sys.argv
 _FORCE      = "--force" in sys.argv
+_SKIP_HOURS = "--skip-closed" in sys.argv   # VPS cron 模式下：非交易时段直接退出
 
 # ── 路径 ──────────────────────────────────────────────────────────
 _DIR        = Path(__file__).parent
@@ -93,6 +94,46 @@ NAMES = {
     "600519.SS": "贵州茅台", "300750.SZ": "宁德时代", "601318.SS": "中国平安",
     "000858.SZ": "五粮液",   "601888.SS": "中国中免",
 }
+
+# ═══════════════════════════════════════════════════════════════
+# 交易时段检测
+# ═══════════════════════════════════════════════════════════════
+
+def _is_trading_time() -> tuple[bool, str]:
+    """
+    判断当前是否处于三市场任意一个交易时段（北京时间）。
+    返回 (is_open, market_name)。
+    """
+    now_utc = datetime.now(timezone.utc)
+    weekday = now_utc.weekday()   # 0=Mon … 4=Fri
+
+    if weekday >= 5:   # 周六/日全部休市
+        return False, "周末休市"
+
+    # 转换为北京时间（UTC+8）
+    bj_hour   = (now_utc.hour + 8) % 24
+    bj_minute = now_utc.minute
+    bj_time   = bj_hour * 60 + bj_minute   # 分钟数
+
+    # A股 09:15-11:35 / 13:00-15:05（含集合竞价缓冲）
+    cn_am = (9 * 60 + 15) <= bj_time <= (11 * 60 + 35)
+    cn_pm = (13 * 60)      <= bj_time <= (15 * 60 + 5)
+
+    # 港股 09:15-12:05 / 13:00-16:10
+    hk_am = (9 * 60 + 15)  <= bj_time <= (12 * 60 + 5)
+    hk_pm = (13 * 60)       <= bj_time <= (16 * 60 + 10)
+
+    # 美股 22:15-05:15 次日（北京时间跨午夜）
+    us_open = bj_time >= (22 * 60 + 15) or bj_time <= (5 * 60 + 15)
+
+    if cn_am or cn_pm:
+        return True, "A股"
+    if hk_am or hk_pm:
+        return True, "港股"
+    if us_open:
+        return True, "美股"
+    return False, "全部休市"
+
 
 # ═══════════════════════════════════════════════════════════════
 # 钉钉通知
@@ -579,6 +620,14 @@ def update_equity(state: dict):
 
 def main():
     log.info(f"quant_worker 启动 ({'云端' if _CLOUD_MODE else '本地'} 模式)")
+
+    # 交易时段检测（VPS cron 每15分钟触发，非交易时段静默退出节省资源）
+    is_open, market_name = _is_trading_time()
+    if not is_open and not _FORCE:
+        log.info(f"⏸  {market_name}，非交易时段，跳过本次扫描（使用 --force 可强制运行）")
+        return
+
+    log.info(f"✅ 当前市场开盘：{market_name}")
 
     state = load_state()
     logs: list[dict] = []
