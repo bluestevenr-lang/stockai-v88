@@ -505,6 +505,27 @@ def generate_validation_section(
     else:
         lines.append("  （今日暂无数据）")
 
+    # ── 大盘状态（L1 是否因市场弱还是参数问题）──
+    mkt_status_file = Path("data/market_status.json")
+    if mkt_status_file.exists():
+        try:
+            ms_data  = json.loads(mkt_status_file.read_text())
+            ms       = ms_data.get("status", {})
+            updated  = ms_data.get("updated_at", "")[:16]
+            _IDX     = {"US": "SPY", "HK": "恒生指数", "CN": "沪深300"}
+            parts    = []
+            for mkt in ["US", "HK", "CN"]:
+                if mkt not in ms:
+                    continue
+                s     = ms[mkt]
+                arrow = "▲" if s["above_ma200"] else "▼"
+                pct   = s["pct_vs_ma200"]
+                parts.append(f"{_IDX[mkt]} {arrow}MA200({pct:+.1f}%)")
+            if parts:
+                lines.append(f"  大盘状态: {' | '.join(parts)}  （更新:{updated}）")
+        except Exception:
+            pass
+
     # ── 分市场完整表格 ──────────────────────────
     lines += ["", "▶ 分市场累计绩效"]
     if mkt_stats:

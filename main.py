@@ -343,6 +343,16 @@ def run_scan(cloud: bool = False, force: bool = False):
             "by_market": {k: v for k, v in scanner._scan_stats.items()},
         })
 
+    # 3. 写入 market_status.json（指数 vs MA200，供日报大盘状态行读取）
+    if scanner._market_status:
+        MARKET_STATUS_FILE = Path("data/market_status.json")
+        MARKET_STATUS_FILE.write_text(
+            json.dumps(
+                {"updated_at": datetime.now().isoformat(), "status": scanner._market_status},
+                indent=2, ensure_ascii=False,
+            )
+        )
+
     # ── 处理开仓 / 平仓信号 ──────────────────
     for sig in signals:
         symbol = sig["symbol"]

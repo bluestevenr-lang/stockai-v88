@@ -60,6 +60,7 @@ class Scanner:
         # 每次 scan_all() 后可被外部读取，写入 filter_stats.json / scan_log.json
         self._filter_events: List[dict] = []    # [{layer, symbol, market, reason}]
         self._scan_stats: Dict[str, list] = {}  # {market: [scanned, signals]}
+        self._market_status: Dict[str, dict] = {}  # {market: {above_ma200, pct_vs_ma200, price, ma200}}
 
     # ─────────────────────────────────────────
     # 主扫描入口
@@ -73,6 +74,7 @@ class Scanner:
         signals = []
         self._filter_events = []
         self._scan_stats = {}
+        self._market_status = {}
         now = datetime.now()
 
         for market, symbols in WATCHLIST.items():
@@ -84,6 +86,20 @@ class Scanner:
             idx_daily = self._fetch(idx_sym, PRICE_INTERVAL_1D, period="1y")
             market_ok = is_above_ma200(idx_daily) if idx_daily is not None else False
             trend_ok  = is_trend_strong(idx_daily, cfg.adx_period, cfg.adx_threshold) if idx_daily is not None else False
+
+            # v2.1: 记录指数价格 vs MA200 距离（供日报大盘状态行使用）
+            if idx_daily is not None and len(idx_daily) >= 200:
+                try:
+                    ma200  = float(idx_daily["close"].rolling(200).mean().iloc[-1])
+                    price  = float(idx_daily["close"].iloc[-1])
+                    self._market_status[market] = {
+                        "above_ma200":  market_ok,
+                        "pct_vs_ma200": round((price - ma200) / ma200 * 100, 1),
+                        "price":        round(price, 2),
+                        "ma200":        round(ma200, 2),
+                    }
+                except Exception:
+                    pass
 
             mkt_scanned = 0
             mkt_signals = 0
