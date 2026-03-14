@@ -1,16 +1,29 @@
 #!/usr/bin/env python3
 """
-quant_worker.py — 量化模拟交易后台引擎
+quant_worker.py — 专业量化模拟交易后台引擎 V2
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 运行模式:
-  python quant_worker.py              # 本地运行（读写本地 quant_state.json）
-  python quant_worker.py --cloud      # GitHub Actions 模式（读写 Gist）
-  python quant_worker.py --force      # 忽略冷却，强制扫描
+  python quant_worker.py              # 本地运行
+  python quant_worker.py --cloud      # GitHub Actions / VPS 模式（读写 Gist）
+  python quant_worker.py --force      # 强制扫描（忽略交易时段检测）
+  python quant_worker.py --daily-report  # 每日日报+学习总结 → 钉钉
 
-策略逻辑:
-  进场: EMA20 > EMA50 且 45 < RSI(14) < 68
-  离场: 止损 -5% | 止盈 +12% | 追踪止损（最高点回撤 8%）
-  风控: 最多 5 个持仓 | 单仓位不超过总资金 20%
+专业策略:
+  进场: EMA20>EMA50(5m) + EMA20>EMA50(1h多周期) + 50<RSI<65 + MACD金叉零轴上
+        + 市场环境过滤（大盘在200MA上方）+ 黑名单过滤
+  止损: ATR动态止损（2×ATR14）而非固定比例
+  止盈: 无固定止盈，让利润奔跑
+  追踪: 分层追踪止损（盈利越多，保护越紧）
+        0-5%盈利 → 回撤8%止损
+        5-15%盈利 → 回撤6%止损
+        15-30%盈利 → 回撤5%止损
+        30%+盈利  → 回撤4%止损
+  风控: 最多5仓 | 单仓18% | 连亏3次黑名单14天
+
+累计学习:
+  每笔交易结束后更新统计
+  周维度分析：胜率/最优标的/最优时段/参数建议
+  每日日报包含学习总结
 """
 
 import os, sys, json, time, logging
@@ -49,14 +62,40 @@ _CACHE_DIR  = _DIR / ".cache_brief"
 _STATE_FILE = _CACHE_DIR / "quant_state.json"
 
 # ── 参数 ──────────────────────────────────────────────────────────
-INITIAL_CAPITAL  = 100_000.0   # 模拟初始资金（人民币等值）
-MAX_POSITIONS    = 5           # 最多同时持仓数
-POS_SIZE_PCT     = 0.18        # 单仓比例（占总资金）
-STOP_LOSS_PCT    = -0.015      # 止损 -1.5%（5分钟线适配）
-TAKE_PROFIT_PCT  = +0.03       # 止盈 +3%（5分钟线适配）
-TRAIL_FROM_HIGH  = 0.02        # 追踪止损：最高点回撤 2%
-KLINE_PERIOD     = "5d"        # K 线获取周期（5分钟线最多60天，取5天够用）
-KLINE_INTERVAL   = "5m"        # K 线粒度：5分钟
+INITIAL_CAPITAL      = 100_000.0  # 模拟初始资金
+MAX_POSITIONS        = 5          # 最多同时持仓
+POS_SIZE_PCT         = 0.18       # 单仓占总资金比例
+KLINE_PERIOD         = "5d"       # 5分钟K线周期
+KLINE_INTERVAL       = "5m"       # K线粒度
+KLINE_1H_PERIOD      = "1mo"      # 1小时K线（多周期确认）
+KLINE_1H_INTERVAL    = "1h"
+REGIME_PERIOD        = "1y"       # 市场环境K线周期（判断大盘趋势）
+
+# ATR 动态止损
+ATR_STOP_MULT        = 2.0        # 止损 = 入场价 - ATR × 2.0
+ATR_PERIOD           = 14
+
+# 分层追踪止损（盈利越多保护越紧）
+TRAIL_TIERS = [
+    (0.05, 0.08),          # 盈利 0~5%    → 回撤 8% 止损
+    (0.15, 0.06),          # 盈利 5~15%   → 回撤 6% 止损
+    (0.30, 0.05),          # 盈利 15~30%  → 回撤 5% 止损
+    (float("inf"), 0.04),  # 盈利 30%+    → 回撤 4% 止损
+]
+
+# RSI 入场区间
+RSI_LOW, RSI_HIGH    = 50, 65
+
+# 黑名单：连亏 N 次 → 冷静 M 天
+BLACKLIST_LOSS_COUNT = 3
+BLACKLIST_DAYS       = 14
+
+# 市场基准（用于环境过滤）
+REGIME_BENCHMARKS = {
+    "美股": "SPY",
+    "港股": "^HSI",
+    "A股":  "000300.SS",
+}
 
 # ── 关注股票池（覆盖用户持仓 + 热门标的）────────────────────────────
 WATCHLIST = {
@@ -320,6 +359,10 @@ def _send_daily_report(state: dict):
     won  = sum(1 for t in trades if t.get("pnl", 0) > 0)
     wr   = won / len(trades) * 100 if trades else 0
 
+    # 学习摘要
+    learning      = state.get("learning", _init_learning())
+    learn_summary = _learning_summary(learning)
+
     content = (
         f"**{today} 量化交易日报**\n\n"
         f"---\n\n"
@@ -337,11 +380,13 @@ def _send_daily_report(state: dict):
         f"---\n\n"
         f"**📈 近期净值**  \n"
         f"> {eq_trend}  \n\n"
+        f"---\n\n"
+        f"{learn_summary}\n\n"
         f"---\n"
-        f"*策略：5分钟EMA金叉 · 止损1.5% · 止盈3%*"
+        f"*策略：5m EMA金叉+1H共振+ATR止损+分层追踪+市场过滤*"
     )
     _send_dingtalk("量化交易日报", content)
-    log.info("✅ 量化日报已发送到钉钉")
+    log.info("✅ 量化日报（含学习总结）已发送到钉钉")
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -367,21 +412,33 @@ def _macd(series: pd.Series):
     signal = _ema(macd, 9)
     return macd, signal
 
+def _atr(df: pd.DataFrame, n: int = ATR_PERIOD) -> pd.Series:
+    """ATR 真实波幅均值"""
+    h = df["High"].squeeze()
+    l = df["Low"].squeeze()
+    c = df["Close"].squeeze()
+    tr = pd.concat([
+        h - l,
+        (h - c.shift(1)).abs(),
+        (l - c.shift(1)).abs(),
+    ], axis=1).max(axis=1)
+    return tr.ewm(com=n - 1, adjust=False).mean()
+
+
 def analyze(df: pd.DataFrame, realtime_price: float | None = None) -> dict:
     """
-    返回最新 bar 的技术指标。
-    realtime_price: 若提供，用实时报价替换 K 线末 bar 的收盘价作为当前价格，
-                    确保入场/出场价格与市场最新成交价一致。
+    返回最新 bar 的技术指标 + ATR。
+    realtime_price: 优先用实时报价替换 K 线末 bar 收盘价。
     """
     close = df["Close"].squeeze()
     if len(close) < 50:
         return {}
-    ema20 = _ema(close, 20)
-    ema50 = _ema(close, 50)
-    rsi   = _rsi(close, 14)
+    ema20          = _ema(close, 20)
+    ema50          = _ema(close, 50)
+    rsi            = _rsi(close, 14)
     macd, macd_sig = _macd(close)
+    atr_series     = _atr(df)
 
-    # 优先使用实时报价；若获取失败则降级使用 K 线末 bar 收盘价
     price = realtime_price if (realtime_price and realtime_price > 0) else float(close.iloc[-1])
 
     return {
@@ -392,8 +449,50 @@ def analyze(df: pd.DataFrame, realtime_price: float | None = None) -> dict:
         "rsi":          float(rsi.iloc[-1]),
         "macd":         float(macd.iloc[-1]),
         "macd_sig":     float(macd_sig.iloc[-1]),
+        "atr":          float(atr_series.iloc[-1]),
         "prev_close":   float(close.iloc[-2]) if len(close) >= 2 else None,
     }
+
+
+def analyze_1h(symbol: str) -> dict:
+    """获取1小时级别趋势方向（多周期确认）"""
+    try:
+        tk = yf.Ticker(symbol)
+        df = tk.history(period=KLINE_1H_PERIOD, interval=KLINE_1H_INTERVAL, auto_adjust=True)
+        if df is None or len(df) < 20:
+            return {"trend": "unknown"}
+        close  = df["Close"].squeeze()
+        ema20h = _ema(close, 20)
+        ema50h = _ema(close, 50)
+        return {
+            "trend":   "up" if ema20h.iloc[-1] > ema50h.iloc[-1] else "down",
+            "ema20h":  float(ema20h.iloc[-1]),
+            "ema50h":  float(ema50h.iloc[-1]),
+        }
+    except Exception:
+        return {"trend": "unknown"}
+
+
+def check_market_regime(market: str) -> bool:
+    """
+    市场环境过滤：大盘在200日均线上方才允许做多。
+    unknown → 宽松处理，允许交易。
+    """
+    benchmark = REGIME_BENCHMARKS.get(market)
+    if not benchmark:
+        return True
+    try:
+        tk = yf.Ticker(benchmark)
+        df = tk.history(period=REGIME_PERIOD, interval="1d", auto_adjust=True)
+        if df is None or len(df) < 200:
+            return True
+        close  = df["Close"].squeeze()
+        ma200  = close.rolling(200).mean()
+        is_bull = float(close.iloc[-1]) > float(ma200.iloc[-1])
+        log.info(f"  市场环境 [{market}] {benchmark}: {'牛市✅' if is_bull else '熊市⚠️'}")
+        return is_bull
+    except Exception:
+        return True   # 获取失败时宽松处理
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -578,8 +677,20 @@ def _now_str() -> str:
     return datetime.now().strftime("%Y-%m-%d %H:%M")
 
 
+def _layered_trail_pct(pnl_pct: float) -> float:
+    """根据当前盈利百分比返回对应的追踪止损回撤幅度"""
+    for threshold, trail in TRAIL_TIERS:
+        if pnl_pct < threshold:
+            return trail
+    return TRAIL_TIERS[-1][1]
+
+
 def check_exit(pos: dict, ind: dict) -> str | None:
-    """检查是否触发离场条件，返回离场原因或 None"""
+    """
+    专业离场逻辑：
+    1. ATR 动态硬止损（绝对保护底线，入场时计算好）
+    2. 分层追踪止损（让利润奔跑，无固定止盈上限）
+    """
     price  = ind["price"]
     entry  = pos["entry_price"]
     high   = pos.get("highest_price", entry)
@@ -589,14 +700,18 @@ def check_exit(pos: dict, ind: dict) -> str | None:
     if price > high:
         pos["highest_price"] = price
 
-    if pct <= STOP_LOSS_PCT:
-        return "止损"
-    if pct >= TAKE_PROFIT_PCT:
-        return "止盈"
-    # 追踪止损
-    trail_thresh = pos["highest_price"] * (1 - TRAIL_FROM_HIGH)
-    if price < trail_thresh and pct > 0:
-        return "追踪止损"
+    # 1. ATR 硬止损（入场时计算并存入 pos）
+    atr_stop = pos.get("atr_stop", entry * (1 - 0.08))  # 降级：无ATR时用-8%
+    if price <= atr_stop:
+        return f"ATR止损(-{(entry-price)/entry*100:.1f}%)"
+
+    # 2. 分层追踪止损（只在盈利时保护）
+    if pct > 0.01:   # 至少盈利1%才启动追踪
+        trail_pct    = _layered_trail_pct(pct)
+        trail_thresh = pos["highest_price"] * (1 - trail_pct)
+        if price < trail_thresh:
+            return f"追踪止损(回撤{trail_pct*100:.0f}%,盈利{pct*100:.1f}%)"
+
     return None
 
 
@@ -636,7 +751,7 @@ def handle_exits(state: dict, logs: list):
                 "exit_reason": reason,
             }
             state["trades"].insert(0, trade_rec)
-            state["trades"] = state["trades"][:100]   # 保留最新 100 条
+            state["trades"] = state["trades"][:100]
             state["capital"] += pnl
             logs.append({
                 "time":   _now_str(),
@@ -649,25 +764,201 @@ def handle_exits(state: dict, logs: list):
             })
             log.info(f"  平仓 {pos['symbol']} @ {price:.4f}  {reason}  PnL={pnl:+.2f}")
             _notify_close(pos, price, pnl, reason)
+            # 更新累计学习数据
+            update_learning(state, trade_rec)
         else:
             remaining.append(pos)
 
     state["positions"] = remaining
 
 
+# ═══════════════════════════════════════════════════════════════
+# 累计学习模块
+# ═══════════════════════════════════════════════════════════════
+
+def _init_learning() -> dict:
+    return {
+        "symbol_stats":  {},   # {sym: {trades, wins, total_pnl, avg_hold_hours}}
+        "market_stats":  {},   # {market: {trades, wins, total_pnl}}
+        "hour_stats":    {},   # {hour_str: {trades, wins}}
+        "rsi_stats":     {},   # {rsi_bucket: {trades, wins}}
+        "blacklist":     {},   # {sym: {reason, until, count}}
+        "consecutive_losses": {},  # {sym: count}
+        "last_updated":  "",
+        "total_trades":  0,
+        "total_wins":    0,
+    }
+
+
+def update_learning(state: dict, trade: dict):
+    """每笔交易关闭后更新累计学习数据"""
+    learning = state.setdefault("learning", _init_learning())
+    sym    = trade.get("symbol", "")
+    market = trade.get("market", "")
+    pnl    = trade.get("pnl", 0)
+    is_win = pnl > 0
+    rsi_entry = trade.get("rsi_at_entry", 0)
+
+    # 总计
+    learning["total_trades"] = learning.get("total_trades", 0) + 1
+    learning["total_wins"]   = learning.get("total_wins", 0) + (1 if is_win else 0)
+
+    # 标的统计
+    ss = learning["symbol_stats"].setdefault(sym, {"trades": 0, "wins": 0, "total_pnl": 0.0})
+    ss["trades"]    += 1
+    ss["wins"]      += 1 if is_win else 0
+    ss["total_pnl"] += pnl
+
+    # 市场统计
+    ms = learning["market_stats"].setdefault(market, {"trades": 0, "wins": 0, "total_pnl": 0.0})
+    ms["trades"]    += 1
+    ms["wins"]      += 1 if is_win else 0
+    ms["total_pnl"] += pnl
+
+    # 时段统计（入场小时）
+    try:
+        hour_str = trade.get("entry_time", "")[:13].split(" ")[-1]  # "HH"
+        hs = learning["hour_stats"].setdefault(hour_str, {"trades": 0, "wins": 0})
+        hs["trades"] += 1
+        hs["wins"]   += 1 if is_win else 0
+    except Exception:
+        pass
+
+    # RSI 区间统计
+    if rsi_entry > 0:
+        bucket = f"{int(rsi_entry//5)*5}-{int(rsi_entry//5)*5+5}"
+        rs = learning["rsi_stats"].setdefault(bucket, {"trades": 0, "wins": 0})
+        rs["trades"] += 1
+        rs["wins"]   += 1 if is_win else 0
+
+    # 黑名单：连亏处理
+    cl = learning.setdefault("consecutive_losses", {})
+    if is_win:
+        cl[sym] = 0
+    else:
+        cl[sym] = cl.get(sym, 0) + 1
+        if cl[sym] >= BLACKLIST_LOSS_COUNT:
+            until = (datetime.now() + __import__("datetime").timedelta(days=BLACKLIST_DAYS)).strftime("%Y-%m-%d")
+            learning["blacklist"][sym] = {
+                "reason": f"连亏{cl[sym]}次",
+                "until":  until,
+                "count":  cl[sym],
+            }
+            log.info(f"  ⚫ {sym} 加入黑名单至 {until}（连亏{cl[sym]}次）")
+
+    learning["last_updated"] = _now_str()
+
+
+def is_blacklisted(sym: str, learning: dict) -> bool:
+    """检查标的是否在黑名单有效期内"""
+    bl = learning.get("blacklist", {})
+    if sym not in bl:
+        return False
+    until = bl[sym].get("until", "")
+    today = datetime.now().strftime("%Y-%m-%d")
+    if today >= until:
+        del bl[sym]   # 自动解除
+        return False
+    return True
+
+
+def _learning_summary(learning: dict) -> str:
+    """生成学习模块文字摘要（用于日报）"""
+    total  = learning.get("total_trades", 0)
+    wins   = learning.get("total_wins", 0)
+    wr     = wins / total * 100 if total > 0 else 0
+
+    lines = [f"**📚 累计学习（共{total}笔交易 · 胜率{wr:.1f}%）**\n"]
+
+    # 最优标的 Top3
+    ss = learning.get("symbol_stats", {})
+    if ss:
+        ranked = sorted(ss.items(), key=lambda x: x[1]["total_pnl"], reverse=True)
+        top3   = ranked[:3]
+        worst1 = ranked[-1] if len(ranked) >= 1 else None
+        lines.append("**🏆 最优标的**")
+        for sym, d in top3:
+            wr_s = d["wins"] / d["trades"] * 100 if d["trades"] else 0
+            lines.append(f"> {NAMES.get(sym, sym)} 胜率{wr_s:.0f}% 累计¥{d['total_pnl']:+,.0f}")
+        if worst1 and worst1[1]["total_pnl"] < 0:
+            sym, d = worst1
+            lines.append(f"**⚠️ 最差标的**: {NAMES.get(sym, sym)} 累计¥{d['total_pnl']:+,.0f}")
+
+    # 最优市场
+    ms = learning.get("market_stats", {})
+    if ms:
+        best_mkt = max(ms.items(), key=lambda x: x[1]["total_pnl"])
+        lines.append(f"**🌍 最佳市场**: {best_mkt[0]} 累计¥{best_mkt[1]['total_pnl']:+,.0f}")
+
+    # 最优入场时段
+    hs = learning.get("hour_stats", {})
+    if hs:
+        best_hr = max(hs.items(), key=lambda x: x[1]["wins"] / max(x[1]["trades"], 1))
+        wr_h = best_hr[1]["wins"] / best_hr[1]["trades"] * 100 if best_hr[1]["trades"] else 0
+        lines.append(f"**⏰ 最佳入场时段**: {best_hr[0]}点 胜率{wr_h:.0f}%")
+
+    # 最优RSI区间
+    rs = learning.get("rsi_stats", {})
+    if rs:
+        best_rsi = max(rs.items(), key=lambda x: x[1]["wins"] / max(x[1]["trades"], 1))
+        wr_r = best_rsi[1]["wins"] / best_rsi[1]["trades"] * 100 if best_rsi[1]["trades"] else 0
+        lines.append(f"**📊 最佳RSI区间**: RSI {best_rsi[0]} 胜率{wr_r:.0f}%")
+
+    # 黑名单
+    bl = learning.get("blacklist", {})
+    if bl:
+        bl_names = [f"{NAMES.get(s, s)}(至{d['until']})" for s, d in bl.items()]
+        lines.append(f"**⚫ 黑名单**: {', '.join(bl_names)}")
+
+    # 建议（基于数据）
+    if total >= 10:
+        lines.append("\n**💡 系统建议**")
+        if wr < 45:
+            lines.append("> 整体胜率偏低，建议提高入场RSI阈值至55以上")
+        elif wr > 65:
+            lines.append("> 胜率良好，可考虑适当扩大仓位比例")
+        if len(bl) >= 2:
+            lines.append("> 多标的连续亏损，当前市场环境偏弱，建议减少开仓频率")
+    elif total > 0:
+        lines.append(f"\n> *数据积累中（{total}/10笔），建议积累10笔以上再参考*")
+    else:
+        lines.append("\n> *暂无交易数据，周一开盘后开始积累*")
+
+    return "\n".join(lines)
+
+
 def handle_entries(state: dict, logs: list):
-    """扫描入场信号"""
+    """专业版入场扫描：ATR止损 + 多周期确认 + 市场环境 + 黑名单过滤"""
     open_syms = {p["symbol"] for p in state["positions"]}
+    learning  = state.setdefault("learning", _init_learning())
+
+    # 缓存市场环境（每次扫描只查一次）
+    regime_cache: dict[str, bool] = {}
 
     for market, symbols in WATCHLIST.items():
         if len(state["positions"]) >= MAX_POSITIONS:
             break
+
+        # 市场环境检查（牛市才做多）
+        if market not in regime_cache:
+            regime_cache[market] = check_market_regime(market)
+        if not regime_cache[market]:
+            log.info(f"  [{market}] 大盘熊市，跳过该市场所有标的")
+            continue
+
         for sym in symbols:
             if sym in open_syms:
                 continue
             if len(state["positions"]) >= MAX_POSITIONS:
                 break
 
+            # 黑名单过滤
+            if is_blacklisted(sym, learning):
+                bl_info = learning["blacklist"].get(sym, {})
+                log.info(f"  {sym} ⚫黑名单至{bl_info.get('until','?')}，跳过")
+                continue
+
+            # 5分钟K线 + 实时价格
             df = fetch_kline(sym)
             if df is None:
                 continue
@@ -676,28 +967,37 @@ def handle_entries(state: dict, logs: list):
             if not ind:
                 continue
 
-            # 入场条件（5分钟线：要求更严格，减少噪音）
-            long_ok = (
+            # 5分钟入场条件
+            sig_5m = (
                 ind["ema20"] > ind["ema50"]
-                and 50 < ind["rsi"] < 65          # RSI 区间收窄
+                and RSI_LOW < ind["rsi"] < RSI_HIGH
                 and ind["macd"] > ind["macd_sig"]
-                and ind["macd"] > 0               # MACD 在零轴上方，确认趋势
+                and ind["macd"] > 0
             )
-            if not long_ok:
+            if not sig_5m:
                 src = "实时" if ind.get("price_source") == "realtime" else "K线"
-                log.info(f"  {sym} 无信号  EMA20{'>'if ind['ema20']>ind['ema50'] else '<'}EMA50"
-                         f"  RSI={ind['rsi']:.1f}  MACD={'✓' if ind['macd']>ind['macd_sig'] else '✗'}"
+                log.info(f"  {sym} 无5m信号  EMA{'↑'if ind['ema20']>ind['ema50'] else '↓'}"
+                         f"  RSI={ind['rsi']:.1f}  MACD={'✓'if ind['macd']>0 else '✗'}"
                          f"  价格={ind['price']:.4f}[{src}]")
                 continue
 
-            # 计算仓位
+            # 1小时多周期确认
+            tf1h = analyze_1h(sym)
+            if tf1h["trend"] == "down":
+                log.info(f"  {sym} 1H趋势向下，跳过（多周期不共振）")
+                continue
+
+            # 计算 ATR 动态止损价
+            atr_val  = ind.get("atr", ind["price"] * 0.01)
+            atr_stop = ind["price"] - ATR_STOP_MULT * atr_val
+
+            # 仓位计算
             budget   = state["capital"] * POS_SIZE_PCT
             price    = ind["price"]
             if price <= 0:
                 continue
             quantity = max(1, int(budget / price))
             cost     = quantity * price
-
             if cost > state["capital"] * 0.9:
                 log.info(f"  {sym} 资金不足，跳过")
                 continue
@@ -711,6 +1011,9 @@ def handle_entries(state: dict, logs: list):
                 "quantity":      quantity,
                 "cost":          round(cost, 2),
                 "highest_price": price,
+                "atr_stop":      round(atr_stop, 4),  # ATR动态止损价
+                "rsi_at_entry":  round(ind["rsi"], 1),
+                "atr_at_entry":  round(atr_val, 4),
             }
             state["positions"].append(pos)
             state["capital"] -= cost
@@ -721,9 +1024,9 @@ def handle_entries(state: dict, logs: list):
                 "symbol": sym,
                 "name":   NAMES.get(sym, sym),
                 "price":  round(price, 4),
-                "reason": f"EMA↑ RSI={ind['rsi']:.0f} MACD✓",
+                "reason": f"EMA↑ RSI={ind['rsi']:.0f} MACD✓ 1H共振 ATR止损={atr_stop:.2f}",
             })
-            log.info(f"  开仓 {sym} @ {price:.4f}  qty={quantity}  cost={cost:.2f}")
+            log.info(f"  开仓 {sym} @ {price:.4f}  qty={quantity}  ATR止损={atr_stop:.4f}")
             _notify_open(pos, ind)
 
 
