@@ -363,8 +363,12 @@ def _macd(series: pd.Series):
     signal = _ema(macd, 9)
     return macd, signal
 
-def analyze(df: pd.DataFrame) -> dict:
-    """返回最新 bar 的技术指标"""
+def analyze(df: pd.DataFrame, realtime_price: float | None = None) -> dict:
+    """
+    返回最新 bar 的技术指标。
+    realtime_price: 若提供，用实时报价替换 K 线末 bar 的收盘价作为当前价格，
+                    确保入场/出场价格与市场最新成交价一致。
+    """
     close = df["Close"].squeeze()
     if len(close) < 50:
         return {}
@@ -373,14 +377,18 @@ def analyze(df: pd.DataFrame) -> dict:
     rsi   = _rsi(close, 14)
     macd, macd_sig = _macd(close)
 
+    # 优先使用实时报价；若获取失败则降级使用 K 线末 bar 收盘价
+    price = realtime_price if (realtime_price and realtime_price > 0) else float(close.iloc[-1])
+
     return {
-        "price":     float(close.iloc[-1]),
-        "ema20":     float(ema20.iloc[-1]),
-        "ema50":     float(ema50.iloc[-1]),
-        "rsi":       float(rsi.iloc[-1]),
-        "macd":      float(macd.iloc[-1]),
-        "macd_sig":  float(macd_sig.iloc[-1]),
-        "prev_close": float(close.iloc[-2]) if len(close) >= 2 else None,
+        "price":        price,
+        "price_source": "realtime" if (realtime_price and realtime_price > 0) else "kline",
+        "ema20":        float(ema20.iloc[-1]),
+        "ema50":        float(ema50.iloc[-1]),
+        "rsi":          float(rsi.iloc[-1]),
+        "macd":         float(macd.iloc[-1]),
+        "macd_sig":     float(macd_sig.iloc[-1]),
+        "prev_close":   float(close.iloc[-2]) if len(close) >= 2 else None,
     }
 
 
@@ -388,7 +396,47 @@ def analyze(df: pd.DataFrame) -> dict:
 # 数据获取
 # ═══════════════════════════════════════════════════════════════
 
+# Yahoo Finance 请求头（与 V88 app 完全一致，避免被屏蔽）
+_YF_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/124.0.0.0 Safari/537.36"
+    ),
+    "Accept": "application/json",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": "https://finance.yahoo.com/",
+}
+
+
+def fetch_realtime_price(symbol: str) -> float | None:
+    """
+    通过 Yahoo Finance v8 API 获取最新实时报价（与 V88 同源）。
+    meta.regularMarketPrice 是当前最新成交价，无需等 5 分钟 bar 收盘。
+    """
+    try:
+        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
+        resp = requests.get(
+            url,
+            params={"interval": "1m", "range": "1d", "includePrePost": "false"},
+            headers=_YF_HEADERS,
+            timeout=10,
+            verify=False,
+        )
+        data = resp.json()
+        result = data.get("chart", {}).get("result")
+        if not result:
+            return None
+        meta = result[0].get("meta", {})
+        price = meta.get("regularMarketPrice") or meta.get("previousClose")
+        return float(price) if price else None
+    except Exception as e:
+        log.warning(f"  实时价格获取失败 {symbol}: {e}")
+        return None
+
+
 def fetch_kline(symbol: str) -> pd.DataFrame | None:
+    """获取 K 线数据用于指标计算（EMA/RSI/MACD）"""
     try:
         ticker = yf.Ticker(symbol)
         df = ticker.history(period=KLINE_PERIOD, interval=KLINE_INTERVAL, auto_adjust=True)
@@ -556,7 +604,8 @@ def handle_exits(state: dict, logs: list):
         if df is None or len(df) < 2:
             remaining.append(pos)
             continue
-        ind = analyze(df)
+        rt_price = fetch_realtime_price(pos["symbol"])
+        ind = analyze(df, rt_price)
         if not ind:
             remaining.append(pos)
             continue
@@ -618,7 +667,8 @@ def handle_entries(state: dict, logs: list):
             df = fetch_kline(sym)
             if df is None:
                 continue
-            ind = analyze(df)
+            rt_price = fetch_realtime_price(sym)
+            ind = analyze(df, rt_price)
             if not ind:
                 continue
 
@@ -630,8 +680,10 @@ def handle_entries(state: dict, logs: list):
                 and ind["macd"] > 0               # MACD 在零轴上方，确认趋势
             )
             if not long_ok:
+                src = "实时" if ind.get("price_source") == "realtime" else "K线"
                 log.info(f"  {sym} 无信号  EMA20{'>'if ind['ema20']>ind['ema50'] else '<'}EMA50"
-                         f"  RSI={ind['rsi']:.1f}  MACD={'✓' if ind['macd']>ind['macd_sig'] else '✗'}")
+                         f"  RSI={ind['rsi']:.1f}  MACD={'✓' if ind['macd']>ind['macd_sig'] else '✗'}"
+                         f"  价格={ind['price']:.4f}[{src}]")
                 continue
 
             # 计算仓位
