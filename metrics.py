@@ -486,8 +486,8 @@ def generate_validation_section(
             sc, sig = mkt_today[mkt]
             lines.append(f"  {MKT_CN.get(mkt, mkt)}: 评估{sc} 触发{sig}")
 
-    # ── 过滤层归因 ──────────────────────────────
-    lines += ["", "▶ 今日过滤层拦截（各层标的数 / 占比）"]
+    # ── 过滤层归因：总览 ────────────────────────
+    lines += ["", "▶ 今日过滤层拦截（总览）"]
     if attr.get("by_layer"):
         for layer in LAYER_ORDER:
             info = attr["by_layer"].get(layer)
@@ -505,26 +505,54 @@ def generate_validation_section(
     else:
         lines.append("  （今日暂无数据）")
 
-    # ── 大盘状态（L1 是否因市场弱还是参数问题）──
+    # ── 大盘状态（含临界判断）────────────────────
     mkt_status_file = Path("data/market_status.json")
     if mkt_status_file.exists():
         try:
-            ms_data  = json.loads(mkt_status_file.read_text())
-            ms       = ms_data.get("status", {})
-            updated  = ms_data.get("updated_at", "")[:16]
-            _IDX     = {"US": "SPY", "HK": "恒生指数", "CN": "沪深300"}
-            parts    = []
+            ms_data = json.loads(mkt_status_file.read_text())
+            ms      = ms_data.get("status", {})
+            updated = ms_data.get("updated_at", "")[:16]
+            _IDX    = {"US": "SPY", "HK": "恒生指数", "CN": "沪深300"}
+            parts   = []
             for mkt in ["US", "HK", "CN"]:
                 if mkt not in ms:
                     continue
                 s     = ms[mkt]
                 arrow = "▲" if s["above_ma200"] else "▼"
                 pct   = s["pct_vs_ma200"]
-                parts.append(f"{_IDX[mkt]} {arrow}MA200({pct:+.1f}%)")
+                # 临界状态：±1% 以内
+                if abs(pct) <= 1.0:
+                    zone = "【临界】"
+                else:
+                    zone = "【稳健】"
+                parts.append(f"{_IDX[mkt]} {arrow}MA200({pct:+.1f}%){zone}")
             if parts:
                 lines.append(f"  大盘状态: {' | '.join(parts)}  （更新:{updated}）")
         except Exception:
             pass
+
+    # ── 过滤层归因：按市场拆分 ──────────────────
+    by_mkt_filter = attr.get("by_market", {})
+    if by_mkt_filter:
+        lines += ["", "▶ 今日过滤层拦截（按市场拆分）"]
+        for mkt in ["CN", "HK", "US"]:
+            mkt_data = by_mkt_filter.get(mkt, {})
+            if not mkt_data:
+                continue
+            mkt_total = sum(mkt_data.values())
+            active_layers = [
+                l for l in LAYER_ORDER if mkt_data.get(l, 0) > 0
+            ]
+            if not active_layers:
+                continue
+            lines.append(f"  {MKT_CN.get(mkt, mkt)} ─────")
+            for layer in active_layers:
+                cnt = mkt_data[layer]
+                pct = round(cnt / mkt_total * 100, 1) if mkt_total else 0
+                name = LAYER_NAMES.get(layer, layer)
+                lines.append(
+                    f"    {layer:<4} {name:<14} {cnt:3d}次  {pct:5.1f}%"
+                )
 
     # ── 分市场完整表格 ──────────────────────────
     lines += ["", "▶ 分市场累计绩效"]
@@ -588,6 +616,19 @@ def generate_validation_section(
     lines += ["", "▶ 当前最需关注"]
     for issue in _diag_lines(attr, mkt_stats, density, trades):
         lines.append(f"  {issue}")
+
+    # ── 第一周观察提示（固定内容）───────────────
+    closed_count = len([t for t in trades if t.get("closed")])
+    if closed_count < 10:
+        lines += [
+            "",
+            "▶ 第一周观察提示",
+            f"  ① 当前已积累 {closed_count} 笔已平仓交易，目标 10 笔后开始评估参数",
+            "  ② 不建议现在调整任何策略参数",
+            "  ③ 重点观察：信号触发频率 / 各过滤层拦截占比 / 大盘临界状态",
+            "  ④ 临界状态的市场（距MA200 ±1%）L1高属正常，非参数问题",
+            "  ⑤ 第一份周报（周日21:00）出来后再决定是否优化",
+        ]
 
     return "\n".join(lines)
 
@@ -765,7 +806,7 @@ def generate_weekly_report(
     if not ranked:
         lines.append("  （本周暂无已平仓交易）")
 
-    lines += ["", "【本周过滤层拦截占比】"]
+    lines += ["", "【本周过滤层拦截占比（总览）】"]
     if wf_total > 0:
         for layer in LAYER_ORDER:
             cnt = week_filter.get(layer, 0)
@@ -777,6 +818,34 @@ def generate_weekly_report(
                 f"  {layer:<4} {LAYER_NAMES.get(layer, layer):<14} "
                 f"{cnt:4d}次  {pct:5.1f}%  {bar}"
             )
+
+        # 按市场拆分（聚合本周每天的 by_market 数据）
+        week_mkt_filter: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
+        for d_str, d_data in filter_stats.items():
+            if d_str in week_dates:
+                for mkt, mkt_layers in d_data.get("by_market", {}).items():
+                    for layer, cnt in mkt_layers.items():
+                        week_mkt_filter[mkt][layer] += cnt
+
+        if week_mkt_filter:
+            lines.append("")
+            lines.append("【本周过滤层拦截（按市场拆分）】")
+            for mkt in ["CN", "HK", "US"]:
+                if mkt not in week_mkt_filter:
+                    continue
+                mkt_layers = week_mkt_filter[mkt]
+                mkt_total  = sum(mkt_layers.values())
+                active     = [l for l in LAYER_ORDER if mkt_layers.get(l, 0) > 0]
+                if not active:
+                    continue
+                lines.append(f"  {MKT_CN.get(mkt, mkt)} ─────")
+                for layer in active:
+                    cnt = mkt_layers[layer]
+                    pct = round(cnt / mkt_total * 100, 1) if mkt_total else 0
+                    lines.append(
+                        f"    {layer:<4} {LAYER_NAMES.get(layer, layer):<14} "
+                        f"{cnt:4d}次  {pct:5.1f}%"
+                    )
     else:
         lines.append("  （本周暂无过滤数据）")
 
