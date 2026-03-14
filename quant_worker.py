@@ -18,6 +18,13 @@ import warnings
 from pathlib import Path
 from datetime import datetime, timezone
 
+import hmac
+import base64
+import hashlib
+import urllib.parse
+import urllib.request
+import ssl
+
 import pandas as pd
 import numpy as np
 import yfinance as yf
@@ -86,6 +93,129 @@ NAMES = {
     "600519.SS": "贵州茅台", "300750.SZ": "宁德时代", "601318.SS": "中国平安",
     "000858.SZ": "五粮液",   "601888.SS": "中国中免",
 }
+
+# ═══════════════════════════════════════════════════════════════
+# 钉钉通知
+# ═══════════════════════════════════════════════════════════════
+
+_DINGTALK_WEBHOOK = os.environ.get("DINGTALK_WEBHOOK", "")
+_DINGTALK_SECRET  = os.environ.get("DINGTALK_SECRET", "")
+_DINGTALK_KEYWORD = os.environ.get("DINGTALK_KEYWORD", "股票行情")
+
+
+def _send_dingtalk(title: str, content: str) -> bool:
+    """发送 Markdown 消息到钉钉（复用 dingtalk_bot.py 逻辑）"""
+    if not _DINGTALK_WEBHOOK:
+        return False
+    try:
+        url = _DINGTALK_WEBHOOK
+        if _DINGTALK_SECRET:
+            ts   = str(round(time.time() * 1000))
+            sign = urllib.parse.quote_plus(
+                base64.b64encode(
+                    hmac.new(
+                        _DINGTALK_SECRET.encode("utf-8"),
+                        f"{ts}\n{_DINGTALK_SECRET}".encode("utf-8"),
+                        digestmod=hashlib.sha256,
+                    ).digest()
+                ).decode("ascii")
+            )
+            url = f"{_DINGTALK_WEBHOOK}&timestamp={ts}&sign={sign}"
+
+        safe_title = title if _DINGTALK_KEYWORD in title else f"{_DINGTALK_KEYWORD} {title}"
+        msg = {
+            "msgtype": "markdown",
+            "markdown": {
+                "title": f"🤖 {safe_title}",
+                "text": f"### 🤖 {safe_title}\n\n{content}\n\n---\n*量化模拟 · V88*",
+            },
+        }
+        data = json.dumps(msg, ensure_ascii=False).encode("utf-8")
+        ctx  = ssl._create_unverified_context()
+        req  = urllib.request.Request(
+            url, data=data,
+            headers={"Content-Type": "application/json; charset=utf-8"},
+        )
+        with urllib.request.urlopen(req, timeout=15, context=ctx) as resp:
+            result = json.loads(resp.read().decode("utf-8"))
+            ok = result.get("errcode") == 0
+            log.info(f"钉钉{'✅' if ok else '❌'}: {result}")
+            return ok
+    except Exception as e:
+        log.warning(f"钉钉发送失败: {e}")
+        return False
+
+
+def _notify_open(pos: dict, ind: dict):
+    sym    = pos["symbol"]
+    name   = pos.get("name", sym)
+    market = pos.get("market", "")
+    price  = pos["entry_price"]
+    qty    = pos["quantity"]
+    cost   = pos["cost"]
+    stop   = round(price * (1 + STOP_LOSS_PCT), 4)
+    tp     = round(price * (1 + TAKE_PROFIT_PCT), 4)
+    rsi    = ind.get("rsi", 0)
+
+    content = (
+        f"**市场**: {market}  \n"
+        f"**标的**: {name}（{sym}）  \n"
+        f"**操作**: 🟢 开仓（做多）  \n"
+        f"**价格**: {price}  \n"
+        f"**数量**: {qty} 股  \n"
+        f"**成本**: ¥{cost:,.2f}  \n"
+        f"**止损**: {stop}（−{abs(STOP_LOSS_PCT)*100:.0f}%）  \n"
+        f"**止盈**: {tp}（+{TAKE_PROFIT_PCT*100:.0f}%）  \n"
+        f"**信号**: EMA金叉 · RSI={rsi:.1f} · MACD✓  \n"
+        f"**时间**: {_now_str()}"
+    )
+    _send_dingtalk("量化开仓信号", content)
+
+
+def _notify_close(pos: dict, exit_price: float, pnl: float, reason: str):
+    sym    = pos["symbol"]
+    name   = pos.get("name", sym)
+    market = pos.get("market", "")
+    entry  = pos["entry_price"]
+    qty    = pos["quantity"]
+    pnl_pct = (exit_price - entry) / entry * 100
+    emoji  = "🟢" if pnl >= 0 else "🔴"
+
+    content = (
+        f"**市场**: {market}  \n"
+        f"**标的**: {name}（{sym}）  \n"
+        f"**操作**: {emoji} 平仓（{reason}）  \n"
+        f"**入场**: {entry}  \n"
+        f"**出场**: {exit_price}  \n"
+        f"**数量**: {qty} 股  \n"
+        f"**盈亏**: {emoji} ¥{pnl:+,.2f}（{pnl_pct:+.2f}%）  \n"
+        f"**时间**: {_now_str()}"
+    )
+    _send_dingtalk("量化平仓通知", content)
+
+
+def _notify_summary(state: dict, action_count: int):
+    """每次扫描结束后发送状态摘要（仅有动作时发）"""
+    if action_count == 0:
+        return
+    initial  = state.get("initial_capital", INITIAL_CAPITAL)
+    cash     = state.get("capital", initial)
+    pos_val  = sum(p.get("cost", 0) for p in state.get("positions", []))
+    total    = cash + pos_val
+    profit   = total - initial
+    pct      = profit / initial * 100
+    emoji    = "📈" if profit >= 0 else "📉"
+
+    content = (
+        f"**本次动作**: {action_count} 条  \n"
+        f"**当前持仓**: {len(state.get('positions', []))} 只  \n"
+        f"**可用资金**: ¥{cash:,.2f}  \n"
+        f"**账户总值**: ¥{total:,.2f}  \n"
+        f"**累计盈亏**: {emoji} ¥{profit:+,.2f}（{pct:+.2f}%）  \n"
+        f"**时间**: {_now_str()}"
+    )
+    _send_dingtalk("量化账户快报", content)
+
 
 # ═══════════════════════════════════════════════════════════════
 # 技术指标计算
@@ -342,6 +472,7 @@ def handle_exits(state: dict, logs: list):
                 "reason": reason,
             })
             log.info(f"  平仓 {pos['symbol']} @ {price:.4f}  {reason}  PnL={pnl:+.2f}")
+            _notify_close(pos, price, pnl, reason)
         else:
             remaining.append(pos)
 
@@ -413,6 +544,7 @@ def handle_entries(state: dict, logs: list):
                 "reason": f"EMA↑ RSI={ind['rsi']:.0f} MACD✓",
             })
             log.info(f"  开仓 {sym} @ {price:.4f}  qty={quantity}  cost={cost:.2f}")
+            _notify_open(pos, ind)
 
 
 def update_equity(state: dict):
@@ -483,6 +615,9 @@ def main():
 
     # Step 5: 保存
     save_state(state)
+
+    # Step 6: 钉钉摘要（有动作才发，静默扫描不打扰）
+    _notify_summary(state, len(logs))
 
     # 打印统计
     total_eq = state["capital"]

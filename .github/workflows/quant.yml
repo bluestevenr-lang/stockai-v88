@@ -45,8 +45,11 @@ jobs:
 
       - name: Run quant worker
         env:
-          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
-          GIST_ID:    ${{ secrets.GIST_ID }}
+          GIST_TOKEN:        ${{ secrets.GIST_TOKEN }}
+          GIST_ID:           ${{ secrets.GIST_ID }}
+          DINGTALK_WEBHOOK:  ${{ secrets.DINGTALK_WEBHOOK }}
+          DINGTALK_SECRET:   ${{ secrets.DINGTALK_SECRET }}
+          DINGTALK_KEYWORD:  ${{ secrets.DINGTALK_KEYWORD }}
         run: python quant_worker.py --cloud
 
       - name: Report result
