@@ -302,7 +302,7 @@ def _migrate_old_state():
 # ─────────────────────────────────────────────
 # 核心扫描任务
 # ─────────────────────────────────────────────
-def run_scan(cloud: bool = False):
+def run_scan(cloud: bool = False, force: bool = False):
     logger.info("═" * 50)
     logger.info(f"开始扫描 [{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]")
 
@@ -311,7 +311,7 @@ def run_scan(cloud: bool = False):
     risk      = RiskManager(INITIAL_CAPITAL)
     scanner   = Scanner(risk, positions, trades)
 
-    signals = scanner.scan_all()
+    signals = scanner.scan_all(force=force)
 
     for sig in signals:
         symbol = sig["symbol"]
@@ -374,6 +374,9 @@ def run_scan(cloud: bool = False):
         logger.info("当前无持仓")
 
     # ── 云端模式：同步 Gist 供 V88 展示 ─────
+    total_pos = len(positions)
+    logger.info(f"扫描完成 | 持仓={total_pos} | 动作={len(signals)} 条")
+
     if cloud:
         trades = load_trades()
         risk_summary = risk.daily_summary()
@@ -441,7 +444,7 @@ def main():
         return
 
     if args.once:
-        run_scan(cloud=args.cloud)
+        run_scan(cloud=args.cloud, force=args.force)
         return
 
     # 常驻模式
@@ -451,7 +454,7 @@ def main():
     schedule.every(SCAN_INTERVAL_SEC).seconds.do(run_scan, cloud=args.cloud)
     schedule.every().day.at(REPORT_TIME).do(run_daily_report, cloud=args.cloud)
 
-    run_scan(cloud=args.cloud)   # 启动时立即扫描一次
+    run_scan(cloud=args.cloud, force=args.force)   # 启动时立即扫描一次
     while True:
         schedule.run_pending()
         time.sleep(10)

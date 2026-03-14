@@ -54,17 +54,18 @@ class Scanner:
     # ─────────────────────────────────────────
     # 主扫描入口
     # ─────────────────────────────────────────
-    def scan_all(self) -> List[dict]:
+    def scan_all(self, force: bool = False) -> List[dict]:
         """
         扫描所有标的，返回信号列表
         每个信号: {symbol, action, price, shares, reason, ...}
+        force=True 时跳过交易时段检查（测试用）
         """
         signals = []
         now = datetime.now()
 
         for market, symbols in WATCHLIST.items():
             cfg = MARKET_CONFIG[market]
-            if not self._is_trading_session(market, now):
+            if not force and not self._is_trading_session(market, now):
                 continue
 
             idx_sym = MARKET_INDEX[market]
