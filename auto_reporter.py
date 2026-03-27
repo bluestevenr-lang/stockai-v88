@@ -17,25 +17,33 @@ from pathlib import Path
 
 # ── 优先从 .env 文件加载密钥（Python 解析，避免 shell 编码问题）──────────────
 def _load_env_file():
-    """读取 .env 文件并写入 os.environ（不覆盖已有环境变量）"""
-    env_path = Path(__file__).parent / '.env'
-    if not env_path.exists():
-        return
-    try:
-        with open(env_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith('#'):
-                    continue
-                if '=' not in line:
-                    continue
-                key, _, val = line.partition('=')  # partition 只拆第一个 =，URL 安全
-                key = key.strip()
-                val = val.strip().strip('"').strip("'")
-                if key and key not in os.environ:  # 不覆盖系统已有变量
-                    os.environ[key] = val
-    except Exception as e:
-        print(f"⚠️  .env 加载失败: {e}")
+    """
+    加载 env 文件，优先级规则：
+      1. /root/.env.report（VPS 生产）—— 强制覆盖，确保生产配置永远优先
+      2. 脚本同目录的 .env（本地开发 / Streamlit）—— 不覆盖已有值
+      3. /root/.env（VPS 通用回退）—— 不覆盖已有值
+    """
+    def _parse(env_path: Path, force: bool = False):
+        try:
+            with open(env_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith('#') or '=' not in line:
+                        continue
+                    key, _, val = line.partition('=')
+                    key = key.strip()
+                    val = val.strip().strip('"').strip("'")
+                    if key and val and (force or key not in os.environ):
+                        os.environ[key] = val
+        except Exception as e:
+            print(f"⚠️  .env 加载失败 [{env_path}]: {e}")
+
+    # 1. VPS 生产配置（强制覆盖，最高优先级）
+    _parse(Path('/root/.env.report'), force=True)
+    # 2. 本地开发 / Streamlit（不覆盖，补充缺失值）
+    _parse(Path(__file__).parent / '.env', force=False)
+    # 3. VPS 通用回退（不覆盖）
+    _parse(Path('/root/.env'), force=False)
 
 _load_env_file()
 
@@ -51,7 +59,26 @@ def _diag_env():
             print(f"  [{k}] = (未设置)")
 _diag_env()
 
+import logging
 import yfinance as yf
+try:
+    from news_fetcher import (
+        fetch_stock_data as _nf_stock,
+        fetch_rss        as _nf_rss,
+        fetch_newsapi    as _nf_newsapi,
+        build_report_data,
+        RSS_SOURCES      as _NF_RSS_SOURCES,
+        NEWSAPI_TOPICS   as _NF_NEWSAPI_TOPICS,
+    )
+    _NEWS_FETCHER_OK = True
+except ImportError:
+    _NEWS_FETCHER_OK = False
+
+logger = logging.getLogger(__name__)
+
+# 每次运行只采集一次，供 Part A / C / D 共享
+_REPORT_DATA_CACHE: dict = {}
+
 try:
     from google import genai as genai
     _GENAI_NEW = True
@@ -60,7 +87,7 @@ except ImportError:
     warnings.filterwarnings("ignore", category=FutureWarning, module="google.generativeai")
     import google.generativeai as genai  # type: ignore
     _GENAI_NEW = False
-from datetime import datetime
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import urllib.request
 import urllib.parse
@@ -103,6 +130,7 @@ DINGTALK_WEBHOOK = os.environ.get('DINGTALK_WEBHOOK', '')
 DINGTALK_SECRET = os.environ.get('DINGTALK_SECRET', '')
 DINGTALK_KEYWORD = os.environ.get('DINGTALK_KEYWORD', '股票行情')   # 钉钉机器人安全关键词
 DINGTALK_MAX_CONTENT_CHARS = 4800
+FEISHU_WEBHOOK = os.environ.get('FEISHU_WEBHOOK', '')              # 飞书机器人 Webhook
 PART_A_TARGET_CHARS = 5200
 PART_BC_MAX_CHARS = 5200
 PORTFOLIO_FILE = "my_portfolio.xlsx"
@@ -111,7 +139,7 @@ PORTFOLIO_FILE = "my_portfolio.xlsx"
 WATCHLIST = {
     "US": [
         ("ABBV", "艾伯维"), ("ACMR", "ACM Research"), ("NVDA", "英伟达"), ("NVO", "诺和诺德"),
-        ("VOO", "标普500ETF"), ("BRK.B", "伯克希尔"), ("QQQM", "纳指100ETF"),
+        ("VOO", "标普500ETF"), ("BRK-B", "伯克希尔"), ("QQQM", "纳指100ETF"),
         ("GOOG", "谷歌"), ("PM", "菲利普莫里斯"), ("LLY", "礼来制药"), ("TSM", "台积电"),
         ("TSLA", "特斯拉"),
     ],
@@ -121,6 +149,8 @@ WATCHLIST = {
     ],
     "CN": [
         ("600519.SS", "贵州茅台"), ("688981.SS", "中芯国际"), ("601899.SS", "紫金矿业"),
+        ("688008.SS", "澜起科技"), ("600941.SS", "中国移动A"), ("000333.SZ", "美的集团"),
+        ("000001.SZ", "平安银行"), ("601669.SS", "中国电建"),
     ],
 }
 
@@ -759,6 +789,197 @@ def send_to_dingtalk(title, content, max_retries=2, part_type="A"):
             time.sleep(3)
     return False
 
+
+# ─── 飞书推送（消息卡片格式）────────────────────────────────────────────────
+
+def send_feishu(content: str, webhook_url: str = "") -> bool:
+    """
+    发送飞书消息卡片（interactive card）。
+    自动解析报告各节，失败时降级为纯文本推送。
+    """
+    import requests as _req
+
+    url = webhook_url or FEISHU_WEBHOOK
+    if not url:
+        print("⚠️  飞书配置缺失（需 FEISHU_WEBHOOK 环境变量）")
+        return False
+
+    # ── 辅助：提取两个 section 标记之间的内容 ──────────────────────────────
+    def _section(text: str, start: str, end: str = None) -> str:
+        if end:
+            m = re.search(
+                re.escape(start) + r"(.*?)" + re.escape(end),
+                text, re.DOTALL
+            )
+        else:
+            m = re.search(re.escape(start) + r"(.*?)$", text, re.DOTALL)
+        return m.group(1).strip() if m else ""
+
+    # ── 辅助：从三市场文本中提取单个市场块 ────────────────────────────────
+    def _market_block(text: str, market: str) -> str:
+        lines   = text.split("\n")
+        result  = []
+        capture = False
+        others  = [m for m in ("🇺🇸 美股", "🇭🇰 港股", "🇨🇳 A股", "联动与配置") if market not in m]
+        for line in lines:
+            if market in line:
+                capture = True
+                result.append(f"**{market}**")
+                continue
+            if capture:
+                if any(o in line for o in others):
+                    break
+                result.append(line)
+        return "\n".join(result[:10]).strip() or f"（{market} 数据解析中）"
+
+    # ── 提取各节 ─────────────────────────────────────────────────────────
+    导语   = _section(content, "## 今日导语",    "## 🔴")
+    核心   = _section(content, "## 🔴 核心事件", "## 📊")
+    三市场 = _section(content, "## 📊 三市场判断","## 🎯")
+    推荐   = _section(content, "## 🎯 精选推荐",  "## 📋")
+    持仓   = _section(content, "## 📋 持仓分析",  "## ⚠️")
+    风险   = _section(content, "## ⚠️ 风险提示",  None)
+
+    # ── 提取报告时间 ──────────────────────────────────────────────────────
+    dm = re.search(r"\d{4}/\d{2}/\d{2} \d{2}:\d{2}", content)
+    report_date = dm.group(0) if dm else datetime.now(TZ_SHANGHAI).strftime("%Y/%m/%d %H:%M")
+
+    # ── 构建卡片 JSON ─────────────────────────────────────────────────────
+    card = {
+        "msg_type": "interactive",
+        "card": {
+            "config": {"wide_screen_mode": True},
+            "header": {
+                "title": {
+                    "tag": "plain_text",
+                    "content": f"📈 V88 AI 日报 · {report_date}"
+                },
+                "template": "blue"
+            },
+            "elements": [
+                # 导语
+                {
+                    "tag": "div",
+                    "text": {"tag": "lark_md", "content": f"**今日导语**\n{导语}"}
+                },
+                {"tag": "hr"},
+
+                # 核心事件（最多 2000 字）
+                {
+                    "tag": "div",
+                    "text": {"tag": "lark_md",
+                             "content": f"**🔴 核心事件**\n{核心[:2000]}"}
+                },
+                {"tag": "hr"},
+
+                # 三市场判断 — 三列布局
+                {
+                    "tag": "div",
+                    "text": {"tag": "lark_md", "content": "**📊 三市场判断**"}
+                },
+                {
+                    "tag": "column_set",
+                    "flex_mode": "stretch",
+                    "background_style": "grey",
+                    "columns": [
+                        {
+                            "tag": "column", "width": "1",
+                            "elements": [{"tag": "div", "text": {
+                                "tag": "lark_md",
+                                "content": _market_block(三市场, "美股")
+                            }}]
+                        },
+                        {
+                            "tag": "column", "width": "1",
+                            "elements": [{"tag": "div", "text": {
+                                "tag": "lark_md",
+                                "content": _market_block(三市场, "港股")
+                            }}]
+                        },
+                        {
+                            "tag": "column", "width": "1",
+                            "elements": [{"tag": "div", "text": {
+                                "tag": "lark_md",
+                                "content": _market_block(三市场, "A股")
+                            }}]
+                        },
+                    ]
+                },
+                {"tag": "hr"},
+
+                # 精选推荐（最多 1500 字）
+                {
+                    "tag": "div",
+                    "text": {"tag": "lark_md",
+                             "content": f"**🎯 精选推荐**\n{推荐[:1500]}"}
+                },
+                {"tag": "hr"},
+
+                # 持仓分析（最多 3000 字）
+                {
+                    "tag": "div",
+                    "text": {"tag": "lark_md",
+                             "content": f"**📋 持仓分析**\n{持仓[:3000]}"}
+                },
+                {"tag": "hr"},
+
+                # 风险提示（最多 800 字）
+                {
+                    "tag": "div",
+                    "text": {"tag": "lark_md",
+                             "content": f"**⚠️ 风险提示**\n{风险[:800]}"}
+                },
+
+                # 底部注脚
+                {
+                    "tag": "note",
+                    "elements": [{
+                        "tag": "plain_text",
+                        "content": f"V88 AI · 数据来源：Guardian API + yfinance · {report_date}"
+                    }]
+                }
+            ]
+        }
+    }
+
+    # ── 先尝试卡片格式，失败自动降级纯文本 ──────────────────────────────
+    try:
+        r_card = _req.post(
+            url,
+            headers={"Content-Type": "application/json"},
+            data=json.dumps(card, ensure_ascii=False).encode("utf-8"),
+            timeout=15,
+        )
+        res_card = r_card.json()
+        if res_card.get("code") == 0:
+            print(f"✅ 飞书卡片推送成功（约 {len(content)} 字）")
+            return True
+        print(f"⚠️  飞书卡片推送失败（code={res_card.get('code')}），降级纯文本...")
+    except Exception as e:
+        print(f"⚠️  飞书卡片请求异常: {e}，降级纯文本...")
+
+    # ── 降级：纯文本（无字数限制，飞书支持约3万字）──────────────────────
+    try:
+        r_text = _req.post(
+            url,
+            headers={"Content-Type": "application/json"},
+            data=json.dumps(
+                {"msg_type": "text", "content": {"text": content}},
+                ensure_ascii=False
+            ).encode("utf-8"),
+            timeout=15,
+        )
+        res_text = r_text.json()
+        if res_text.get("code") == 0:
+            print(f"✅ 飞书纯文本推送成功（约 {len(content)} 字）")
+            return True
+        print(f"❌ 飞书纯文本推送失败: {res_text}")
+        return False
+    except Exception as e:
+        print(f"❌ 飞书推送异常: {e}")
+        return False
+
+
 # ─── 共享市场数据准备（Part A 与 Part B 共用候选池）──────────────────────────
 
 def _prepare_market_data(report_type="evening"):
@@ -866,125 +1087,119 @@ def generate_part_a_wsj(report_type, data):
     Part A：华尔街日报风格的基本面简报。
     - 聚焦：财报、战争/地缘政治、政治人物言论、三市场事件|变量|资产影响
     - 不含个股推荐（推荐在 Part B 单独输出）
-    - 目标篇幅：4000-5000字
+    - 目标篇幅：2000-2500字（精简版，去冗余保核心）
     """
     today = data["today"]
     _ts   = data["_ts"]
     indices = data["indices"]
     _market_status_block = data["market_status_block"]
     focus = (
-        "【早报侧重】港股、A股基本面与新闻请充分展开（≥800字/市场）；美股可简要概括。三市场均须完整输出。"
+        "【早报侧重】港股、A股基本面与新闻优先（≥400字/市场）；美股简要。三市场均须输出。"
         if report_type == "morning" else
-        "【晚报侧重】美股基本面与新闻请充分展开（≥800字/市场）；港股、A股可简要概括。三市场均须完整输出。"
+        "【晚报侧重】美股基本面与新闻优先（≥400字/市场）；港股、A股简要。三市场均须输出。"
     )
 
-    prompt = f"""你是华尔街日报首席市场记者。生成今日市场**基本面简报（Part A）**。
+    # 构建新闻块（已在 generate_report_final 里调用，这里直接取）
+    news_block = data.get("real_news_block") or _build_news_block()
 
-【职责边界】Part A 专注宏观、事件、新闻、基本面分析——**严禁输出个股推荐**（推荐在 Part B 单独输出）。
+    # 市场指数补充上下文（不作为新闻来源，仅作数字参考）
+    index_ctx = (
+        f"【指数收盘参考·禁止作为新闻来源引用】\n"
+        f"{indices.get('US', '')}\n"
+        f"{indices.get('HK', '')}\n"
+        f"{indices.get('CN', '')}\n"
+        f"休市状态：{_market_status_block}"
+    )
 
-{focus}
-
-【机构简报思维】去掉解释性文字，只保留决策变量。信息流：**事件 → 变量 → 资产影响**。
-
-【核心使命】以下三类须按 事件|变量|资产影响 输出，缺一不可：
-1) **财报**：事件（公司+日期）| 变量（预期/关键数据）| 资产影响
-2) **战争/地缘政治**（**必含，优先级最高**）：美伊以/中东/俄乌/制裁/能源/供应链。若有相关新闻必须输出，不得遗漏。
-3) **政治人物言论**：事件（政要/央行表态）| 变量 | 资产影响
-
-【篇幅目标】4000-5000字。每市场 事件+动作+核心变量 合计 ≥800字，充分展开精华决策变量。**禁止解释性文字**。
-
-【休市状态·权威数据】以下为 exchange_calendars 查询结果，**必须严格按此描述**：
-{_market_status_block}
-
-【指数数据】（括号内为实际交易日对比，必须严格引用，禁止编造）
-{indices.get('US', '美股数据获取中')}
-{indices.get('HK', '港股数据获取中')}
-{indices.get('CN', 'A股数据获取中')}
-
-【日期】{today} | 【校验时间】{_ts} (Asia/Shanghai)
-
-【阅读友好·华尔街日报风格】
-- 段落分开：大块之间空一行，小节之间用 `---` 分隔
-- 字体粗细：标题 **粗体**，关键变量/数字加粗强调
-- 符号点缀：适当使用 📰📊📈📉⚠️🔍；市场用 🇺🇸🇭🇰🇨🇳
-- 层次清晰：二级标题用 ##，三级用 ###；禁止大段挤在一起
-
-请严格按以下结构输出（不要称呼和废话）：
+    prompt = f"""{news_block}
 
 ---
+你是一位顶级机构分析师，职责是从上方真实新闻中筛选出
+今日最值得关注的市场事件，供专业投资者做决策参考。
 
-## 标题
-[一句话概括当日市场核心变化，含日期]
+{index_ctx}
 
----
+【早晚报侧重】{focus}
+【日期】{today} | 【时间戳】{_ts} (Asia/Shanghai)
 
-## 📰 今日重大事件
+【核心事件数量规则】
+- 最少输出 3 条核心事件，最多输出 10 条核心事件
+- 筛选标准（按优先级）：
+  1. 直接涉及持仓标的的新闻（必须包含，不够3条才补其他）
+     （ABBV/NVDA/LLY/TSM/GOOG/PM/NVO/BRK-B/VOO/QQQM/
+      0700.HK/0883.HK/1299.HK/0941.HK/
+      600519.SS/688981.SS/601899.SS）
+  2. 涉及持仓所在行业的新闻（医药/半导体/科技/能源/保险/电信）
+  3. 影响整体仓位方向的宏观新闻（美联储/央行/地缘政治/大宗商品）
+- 只有真正值得关注的事件才输出，宁少勿滥
+- 每条事件必须有真实来源URL，没有URL的不算核心事件
+- 如果真实新闻中有超过10条值得关注的事件，按以上优先级排序后取前10条
+- 如果真实新闻不足3条，直接写"今日真实新闻不足，仅X条核心事件"，不得用模型推断补充
 
-**格式：事件 | 变量 | 资产影响**（每行一条，禁止展开解释）
+【地区覆盖强制规则】核心事件中：
+- 必须至少有1条涉及港股/中国（香港市场/A股/人民币/中国经济/中资企业）
+- 必须至少有1条涉及美股（美国经济/美联储/美国科技/标普500）
+- 禁止所有核心事件全部来自同一地区
+- 若某地区真实新闻不足，在对应位置写明"[港股/A股] 今日无相关真实新闻"
 
-**财报**（至少 2 条）：
-- [公司][日期] | [预期/关注变量] | [资产影响]
-
-**战争/地缘政治 + 政治人物言论**（**必含**，美伊以/中东/俄乌等若有新闻必须输出）：
-- [事件] | [变量] | [资产影响]
-
----
-
-## 导语
-[1句变量摘要，含时间锚点，禁止展开解释]
-
----
-
-## 🇺🇸 美股基本面
-
-**📰 事件 | 变量 | 资产影响**（至少 3 条，机构简报，只输出决策变量）：
-- [事件] | [变量] | [资产影响]
-
-**📌 动作**：
-- 成长仓上限 [%]
-- 禁止 [标的/行为]
-- 允许 [操作]
-
-**📊 核心变量**：资金风格、核心矛盾、明日观察（禁止解释性文字）
+【任务】
+从上方真实新闻中，严格按以下结构输出，不得添加任何未出现在新闻中的内容：
 
 ---
-
-## 🇭🇰 港股基本面
-
-**📰 事件 | 变量 | 资产影响**（至少 3 条）：
-- [事件] | [变量] | [资产影响]
-
-**📌 动作**：
-- [3-5条可执行指令]
-
-**📊 核心变量**：资金风格、核心矛盾、明日观察
+## 今日导语（100字以内）
+用一句话概括今日市场核心情绪和主要驱动力。
 
 ---
+## 🔴 核心事件（3-10条，直接影响仓位决策，宁少勿滥）
 
-## 🇨🇳 A股基本面
+格式：
+### 1. 事件标题
+- 来源：[媒体名] · 时间 · URL
+- 变量：这条新闻的关键变量是什么
+- 对美股影响：📈/📉/➡️ + 一句话
+- 对港股影响：📈/📉/➡️ + 一句话
+- 对A股影响：📈/📉/➡️ + 一句话
+- 持仓关联：与持仓哪只标的直接相关（没有则写"无直接持仓关联"）
 
-**📰 事件 | 变量 | 资产影响**（至少 3 条）：
-- [事件] | [变量] | [资产影响]
-
-**📌 动作**：
-- [3-5条可执行指令]
-
-**📊 核心变量**：资金风格、核心矛盾、明日观察
-
----
-
-## 📋 明日触发-动作对照
-事件A → 动作X
-事件B → 动作Y
-事件C → 动作Z
-（事件|动作，禁止展开）
+### 2. （同上格式）
+### 3. （同上格式）
+...（如有更多值得关注的真实事件，继续输出至多10条）
 
 ---
+## ⚪ 次要事件（3-8条背景参考，一行一条，不足时写实际数量，不补充）
+格式：[来源] 标题 → 影响方向
 
-## 数据/时间戳
-数据: 雅虎财经收盘价
-时间戳: {_ts} (Asia/Shanghai)
-数据截点: {_ts}"""
+---
+## 三市场动作建议
+（须与核心事件逻辑一致，与 Part D 仓位比例保持一致）
+美股：成长仓上限X% | 禁止XX | 允许XX
+港股：仓位上限X% | XX
+A股：仓位上限X% | XX
+
+---
+## 明日必看
+最多3个，格式：时间 · 事件 · 预期影响
+
+---
+## 🔗 衔接 Part B
+基于以上宏观环境，当前值得关注的方向（2-3个，供 Part B 选股参考）：
+- 方向1: [行业/板块] — 逻辑: [一句话，含具体催化]
+- 方向2: [行业/板块] — 逻辑: [一句话]
+（Part B 的个股推荐应优先来自上述方向）
+
+---
+【次要事件过滤规则】以下类型文章禁止出现在次要事件中：
+- 标题包含"最好的X只股票"、"立即买入"、"值得买入"等投资建议性软文
+- 来源是个人博客或内容农场性质的文章（如 Seeking Alpha 个人作者文章）
+- 与今日市场事件无关的泛泛投资建议
+只保留：真实市场事件、公司公告、政策动态、经济数据类新闻
+
+【强制规则】
+1. 所有事件必须来自上方真实新闻，每条必须附带来源和链接
+2. 所有财务数字必须来自上方真实数据，不得修改或替换
+3. 如果某字段为 None 输出"暂无数据"，不得用估算值替代
+4. 不得编造任何未出现在上方数据中的内容
+5. 严禁使用虚构或示例公司名称（如 Quantum Dynamics Inc、Global Energy Corp、ABC Corp 等均为虚构，一经出现即视为违规）；所有公司名称必须来自上方新闻原文"""
 
     print("🤖 正在生成 Part A（基本面+新闻，华尔街日报版）...")
     result = _v88_call_gemini(prompt)
@@ -995,12 +1210,13 @@ def generate_part_a_wsj(report_type, data):
 
 # ─── Part B：可执行推荐（9只，独立 Gemini 调用）──────────────────────────────
 
-def generate_part_b_recs(report_type, data):
+def generate_part_b_recs(report_type, data, part_a_summary: str = ""):
     """
     Part B：可执行推荐，9只个股（美港A各3只）。
     - Card Schema 机构简报：动作标签、触发、机会/风险概率、建仓区间
     - 不含宏观分析（宏观已在 Part A 输出）
     - 每只推荐注入实时现价
+    - part_a_summary：由 generate_report_final() 统一提取后传入，BCD 共享
     """
     today    = data["today"]
     _ts      = data["_ts"]
@@ -1032,9 +1248,26 @@ def generate_part_b_recs(report_type, data):
             lines += [f"  [启动候选·胜率] {c}" for c in bo]
         return f"- {label}（主力{len(main)}只 + 拐点{len(inf)}只 + 启动{len(bo)}只）：\n" + "\n".join(lines)
 
-    prompt = f"""你是 V88 机构交易员。生成今日**可执行推荐（Part B）**。
+    _fundamentals_b = data.get("fundamentals_block", "")
+    _news_summary_b = part_a_summary or "（Part A 摘要未生成）"
+
+    prompt = f"""【今日真实新闻摘要（来自 Part A，必须基于此选股）】
+{_news_summary_b}
+
+【真实财务数据】
+{_fundamentals_b}
+
+【选股规则】
+1. 推荐的每只股票必须与上方至少一条真实新闻有逻辑关联
+2. 在"理由"字段中必须引用具体新闻标题
+3. 不得推荐与今日新闻完全无关的股票
+4. 若今日新闻利空某板块，禁止推荐该板块个股
+
+---
+你是 V88 机构交易员。生成今日**可执行推荐（Part B）**。
 
 【职责边界】Part B 仅含 9 只个股推荐——**严禁输出宏观分析**（宏观已在 Part A 输出）。
+【与 Part A 的衔接】Part B 的推荐必须优先来自上方新闻摘要中涉及的方向，并在每只股票的"理由"字段中注明与哪条新闻吻合；若某只推荐偏离上方新闻，须在理由中一句话说明原因。
 
 {focus}
 
@@ -1053,16 +1286,20 @@ A股/港股必须用数字代码（如 600519.SS、0700.HK）。
 
 【Card Schema·机构简报】每只推荐含以下字段：
 - **名称(代码)** · **动作标签** · 现价
-- 触发: [24h/72h，一句话，含催化事件]
-- 机会/风险: [X%/Y%] · 建仓区间: [具体价格区间]
-- 理由: 变量→预期差→价格位置→验证窗口（一行，30字以内）
+- 触发: [24h/72h，一句话，含具体催化事件、触发价格/时间点，必须注明来源媒体（如 Bloomberg、Reuters、WSJ、财新、公司公告等）；若无真实新闻则写：无近期相关新闻触发，基于基本面判断]
+- 机会/风险: [X%/Y%] · 建仓区间: [必须基于上方候选池传入的日报价（现价）× (1±3%~5%) 计算，严禁使用历史高价或52周高点]
+- 理由: 必须包含①**具体数字**（如PE=18x、RSI=42、距MA20=+3%、本季营收预期+15%）②预期差来源 ③验证时间窗口
+- 与Part A方向: [吻合/偏离+一句话说明]
+**禁止**：模糊描述（"趋势向好""技术良好""基本面扎实"等无数字支撑的表述一律不得出现）。
 **禁止输出**：来源、失效条件、仓位上限、R/R、证据状态灯、解释性段落。
+**建仓区间硬性约束**：建仓区间下限不得高于日报价的110%，上限不得高于日报价的115%；严禁将历史高价（如52周高点）混入区间计算。
 
 【V2.1 Action Gate】立即建仓 仅当以下全满足，否则自动降级：
 a) 触发时效 ≤ 72h
 b) 有明确催化（财报/事件/技术突破）
 c) R/R ≥ 2.0（内部判定，不输出）
 
+{data.get("fundamentals_block", "")}
 【日期】{today} | 【校验时间】{_ts} (Asia/Shanghai)
 
 请严格按以下结构输出（不要称呼和废话）：
@@ -1074,45 +1311,57 @@ c) R/R ≥ 2.0（内部判定，不输出）
 ### 🇺🇸 美股（3只：1 立即建仓 + 1 中期跟进 + 1 观察）
 
 1. **[名称(代码)]** · **立即建仓** · 现价 $X.XX
-   - 触发: [24h/72h 一句话，含催化]
+   - 触发: [24h/72h，含具体催化+触发价格，如"突破$X.XX确认"]
    - 机会/风险: [X%/Y%] · 建仓区间: [$X.XX–$X.XX]
+   - 理由: [含具体数字的一句话，如"PE=18x低于行业均值25x，RSI=42未超买，距MA20=+2%，Q1财报预期+15%验证"]
+   - 与Part A方向: [吻合/偏离+一句话]
 
 2. **[名称(代码)]** · **中期跟进** · 现价 $X.XX
-   - 触发: [一句话]
+   - 触发: [一句话，含具体条件]
    - 机会/风险: [X%/Y%] · 建仓区间: [$X.XX–$X.XX]
+   - 理由: [含具体数字]
+   - 与Part A方向: [一句话]
 
 3. **[名称(代码)]** · **观察** · 现价 $X.XX
-   - [升级条件，一句话]
+   - 升级条件: [具体触发，如"收盘站上$X.XX+成交量放大"]
 
 ---
 
 ### 🇭🇰 港股（3只：1 立即建仓 + 1 中期跟进 + 1 观察）
 
 1. **[名称(代码)]** · **立即建仓** · 现价 HK$X.XX
-   - 触发: [一句话]
+   - 触发: [一句话，含具体条件]
    - 机会/风险: [X%/Y%] · 建仓区间: [HK$X.XX–HK$X.XX]
+   - 理由: [含具体数字]
+   - 与Part A方向: [一句话]
 
 2. **[名称(代码)]** · **中期跟进** · 现价 HK$X.XX
    - 触发: [一句话]
    - 机会/风险: [X%/Y%] · 建仓区间: [HK$X.XX–HK$X.XX]
+   - 理由: [含具体数字]
+   - 与Part A方向: [一句话]
 
 3. **[名称(代码)]** · **观察** · 现价 HK$X.XX
-   - [升级条件，一句话]
+   - 升级条件: [具体触发]
 
 ---
 
 ### 🇨🇳 A股（3只：1 立即建仓 + 1 中期跟进 + 1 观察）
 
 1. **[名称(代码)]** · **立即建仓** · 现价 ¥X.XX
-   - 触发: [一句话]
+   - 触发: [一句话，含具体条件]
    - 机会/风险: [X%/Y%] · 建仓区间: [¥X.XX–¥X.XX]
+   - 理由: [含具体数字]
+   - 与Part A方向: [一句话]
 
 2. **[名称(代码)]** · **中期跟进** · 现价 ¥X.XX
    - 触发: [一句话]
    - 机会/风险: [X%/Y%] · 建仓区间: [¥X.XX–¥X.XX]
+   - 理由: [含具体数字]
+   - 与Part A方向: [一句话]
 
 3. **[名称(代码)]** · **观察** · 现价 ¥X.XX
-   - [升级条件，一句话]
+   - 升级条件: [具体触发]
 
 ---
 
@@ -1175,11 +1424,12 @@ def _get_watchlist_scan_signals():
     return sig
 
 
-def generate_watchlist_report(report_type="evening"):
+def generate_watchlist_report(report_type="evening", part_a_summary: str = ""):
     """
     Part C：自选股持仓分析。
     每只持仓一张卡片：事件 | 变量 | 资产影响 | 操作建议（持仓/加仓/减仓/观望）
     注入V88扫描信号，强制差异化操作，禁止全部观望。
+    part_a_summary：由 generate_report_final() 统一提取后传入，BCD 共享
     """
     total = sum(len(v) for v in WATCHLIST.values())
     if total == 0:
@@ -1204,6 +1454,11 @@ def generate_watchlist_report(report_type="evening"):
                 scan_block_lines.append(f"- {em} {lb}：{'；'.join(in_scan)}")
         scan_block = "\n".join(scan_block_lines) if scan_block_lines else "今日无持仓进榜"
 
+        # 从缓存取基本面 + 财报日（generate_report_final 已采集）
+        _cached_stocks   = _REPORT_DATA_CACHE.get("stocks",   {})
+        _cached_earnings = _REPORT_DATA_CACHE.get("earnings", {})
+        fundamentals_c = _format_fundamentals_from_cache(_cached_stocks, _cached_earnings) if _cached_stocks else ""
+
         now_sh = datetime.now(TZ_SHANGHAI)
         today = now_sh.strftime("%Y年%m月%d日")
         _ts = now_sh.strftime("%Y-%m-%d %H:%M:%S")
@@ -1213,7 +1468,21 @@ def generate_watchlist_report(report_type="evening"):
             "晚报侧重美股持仓分析；港股、A股持仓可简要。"
         )
 
-        prompt = f"""你是 V88 持仓分析师。生成今日**自选股持仓分析（Part C）**。
+        _news_summary_c = part_a_summary or "（Part A 摘要未生成）"
+
+        prompt = f"""{fundamentals_c}
+---
+【今日宏观背景（来自真实新闻）】
+{_news_summary_c}
+
+【持仓分析规则】
+1. 每只持仓的"事件"字段必须关联今日真实新闻
+2. 若今日有直接涉及该标的的新闻，必须在分析中体现
+3. 若今日无涉及该标的的新闻，写"今日无直接相关新闻"
+4. 操作建议必须与今日新闻逻辑一致，不得给出与新闻方向相反的建议
+
+---
+你是 V88 持仓分析师。生成今日**自选股持仓分析（Part C）**。
 
 【职责边界】每只持仓股出一张独立分析卡片，聚焦「当前该不该动、如何动」——**机构简报思维，零废话**。
 
@@ -1238,13 +1507,25 @@ def generate_watchlist_report(report_type="evening"):
 - 📉减仓：拐点进榜、技术破位、估值过高、基本面恶化，至少1只
 - 📌持仓：逻辑未变、继续持有
 - 🔍观望：短期不明朗、等待信号，不超过半数
-- 无明确新催化时，24h内操作建议保持连贯，不频繁切换
 
-【卡片规则】每只股票 = 一张卡片：
+【仓位约束规则】⚠️ 加仓数量必须与 Part D 仓位建议逻辑一致：
+- 当 Part D 建议美股仓位为X%时，美股加仓标的总数不超过1只（选最强的那只）
+- 当 Part D 建议港股仓位为X%时，港股加仓标的总数不超过1只
+- 当 Part D 建议A股仓位为X%时，A股加仓标的总数不超过1只
+- 其余标的一律维持持仓或观望，不得同时对多只标的给出加仓建议
+- 每只给出加仓建议的标的，操作说明后面必须追加一行：
+  "⚠️ 注：当前[美股/港股/A股]仓位建议X%，如加仓请相应减少其他持仓"
+- 若 Part D 尚未生成或仓位建议不明确，默认按保守原则：每个市场最多1只加仓
+
+【卡片规则】每只股票 = 一张卡片（条件触发格式）：
 1) **事件**：该股相关事件（财报/公告/催化/技术信号），≤30字
-2) **变量**：关键决策变量（业绩预期/技术位/资金面），≤30字
+2) **变量**：关键决策变量（业绩预期/技术位/资金面），≤30字，**必须含具体数字**
 3) **资产影响**：对标的的影响结论，≤40字
-4) **📌 操作**：四选一且必须明确——📌持仓 | 📈加仓 | 📉减仓 | 🔍观望
+4) **止损价**：**必填，禁止留空或写 N/A**。基于最近支撑位或均线给出具体价格（如"$X.XX / 若跌破则止损"）；若暂不持仓则写"建仓止损：$X.XX"
+5) **为什么是现在**：一句话说明当前时点的特殊性（如"财报窗口前48h""刚突破XX关键位""量化扫描今日进入强势榜"），禁止写"长期看好"类泛泛表述
+6) **📌 操作（条件触发）**：格式为——
+   「[动作]；触发条件：[具体条件，如价格/事件/时间]；若条件未满足则：[备选动作]」
+   示例：「📈加仓；触发条件：明日收盘站稳¥XXX以上；若未满足则：📌持仓」
 
 【排版规则】
 - 每只股票前后空两行，用 `---` 分隔卡片
@@ -1262,8 +1543,12 @@ def generate_watchlist_report(report_type="evening"):
 
 #### ⭐ 艾伯维(ABBV) | 现价 $X.XX | 📌持仓
 
-**事件** | **变量** | **资产影响**
-[事件≤30字] | [变量≤30字] | [资产影响≤40字]
+**事件** | **变量（含数字）** | **资产影响**
+[事件≤30字] | [变量≤30字，必须有具体数字] | [资产影响≤40字]
+
+**🛡 止损价**：$X.XX（[止损逻辑，如"跌破MA50"或"支撑位失守"]）
+**为什么是现在**：[一句话，说明当前时点特殊性]
+**📌 操作**：[动作]；触发条件：[具体条件]；若未满足则：[备选]
 
 ---
 
@@ -1277,8 +1562,12 @@ def generate_watchlist_report(report_type="evening"):
 
 #### ⭐ 腾讯控股(0700.HK) | 现价 HK$X.XX | [操作]
 
-**事件** | **变量** | **资产影响**
-[事件] | [变量] | [资产影响]
+**事件** | **变量（含数字）** | **资产影响**
+[事件] | [变量，必须有具体数字] | [资产影响]
+
+**🛡 止损价**：HK$X.XX（[止损逻辑]）
+**为什么是现在**：[一句话]
+**📌 操作**：[动作]；触发条件：[具体条件]；若未满足则：[备选]
 
 ---
 
@@ -1292,8 +1581,12 @@ def generate_watchlist_report(report_type="evening"):
 
 #### ⭐ 贵州茅台(600519.SS) | 现价 ¥X.XX | [操作]
 
-**事件** | **变量** | **资产影响**
-[事件] | [变量] | [资产影响]
+**事件** | **变量（含数字）** | **资产影响**
+[事件] | [变量，必须有具体数字] | [资产影响]
+
+**🛡 止损价**：¥X.XX（[止损逻辑]）
+**为什么是现在**：[一句话]
+**📌 操作**：[动作]；触发条件：[具体条件]；若未满足则：[备选]
 
 ---
 
@@ -1301,7 +1594,14 @@ def generate_watchlist_report(report_type="evening"):
 
 ---
 
-*数据: 雅虎财经 | 时间戳: {_ts} (Asia/Shanghai)*"""
+*数据: 雅虎财经 | 时间戳: {_ts} (Asia/Shanghai)*
+
+---
+【强制规则】
+1. 所有事件必须来自上方真实新闻，每条必须附带来源和链接
+2. 所有财务数字必须来自上方真实数据，不得修改或替换
+3. 如果某字段为 None 输出"暂无数据"，不得用估算值替代
+4. 不得编造任何未出现在上方数据中的内容"""
 
         report = _v88_call_gemini(prompt)
         if report and not report.startswith("❌"):
@@ -1579,14 +1879,603 @@ def _strip_part_b_verbose(text: str) -> str:
 
 # ─── 主报告生成入口 ───────────────────────────────────────────────────────────
 
+def _build_news_block() -> str:
+    """
+    构建注入 Part A 的完整新闻块。
+    来源：RSS（9个类别）+ NewsAPI 补充，每条含标题/来源/时间/摘要/URL。
+    格式严格对应新版 Part A prompt 的 {news_block} 占位符。
+    失败时返回提示字符串（不影响主流程，Part A 会写明"新闻不足"）。
+    """
+    if not _NEWS_FETCHER_OK:
+        return "（news_fetcher 模块未加载，新闻数据不可用）"
+    try:
+        from datetime import timedelta
+        yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+
+        lines = []
+        total = 0
+
+        # ── RSS：按类别采集，每类最多 3 条 ──────────────────────────
+        rss_cats = list(_NF_RSS_SOURCES.keys())
+        for cat in rss_cats:
+            articles = _nf_rss(cat)
+            if not articles:
+                continue
+            lines.append(f"\n📂 {cat}")
+            for a in articles[:3]:
+                pub  = (a.get("published_at") or "")[:16]
+                src  = a.get("source", "")
+                ttl  = a.get("title", "").strip()
+                desc = (a.get("description") or "").strip()[:120]
+                url  = a.get("url", "")
+                if not ttl:
+                    continue
+                lines.append(f"  • [{src}] {pub}")
+                lines.append(f"    {ttl}")
+                if desc:
+                    lines.append(f"    摘要: {desc}")
+                lines.append(f"    URL: {url}")
+                total += 1
+
+        # ── NewsAPI：补充深度新闻 ─────────────────────────────────
+        newsapi_topics = [
+            "Federal Reserve interest rate decision",
+            "earnings report quarterly results",
+            "geopolitical conflict war sanctions",
+            "China economy stimulus policy",
+        ]
+        seen_titles: set = {l.strip() for l in lines if l.strip().startswith("    ") and not l.strip().startswith("摘要") and not l.strip().startswith("URL")}
+        for topic in newsapi_topics:
+            articles = _nf_newsapi(topic, yesterday)
+            for a in articles[:3]:
+                ttl = (a.get("title") or "").strip()
+                if not ttl or ttl in seen_titles:
+                    continue
+                seen_titles.add(ttl)
+                pub  = (a.get("published_at") or "")[:10]
+                src  = a.get("source", "")
+                desc = (a.get("description") or "").strip()[:120]
+                url  = a.get("url", "")
+                lines.append(f"\n📂 NewsAPI · {topic}")
+                lines.append(f"  • [{src}] {pub}")
+                lines.append(f"    {ttl}")
+                if desc:
+                    lines.append(f"    摘要: {desc}")
+                lines.append(f"    URL: {url}")
+                total += 1
+
+        if total == 0:
+            return '（今日新闻数据暂无，请 Gemini 基于市场知识生成，并标注"来源：模型推断"）'
+
+        print(f"  📰 新闻块：{total} 条（RSS + NewsAPI）")
+        return "\n".join(lines)
+    except Exception as e:
+        print(f"  ⚠️ 新闻块构建失败（不影响主流程）: {e}")
+        return f"（新闻获取异常: {e}）"
+
+
+def _format_news_from_cache(articles: list) -> str:
+    """
+    将 build_report_data()["news"] 列表格式化为 Part A prompt 所需文本块。
+    格式：=== 头部 === + 每条 [来源] 标题 / 摘要 / 时间 / 链接 / ---
+    """
+    if not articles:
+        return ""
+    lines = ["=== 今日真实新闻（来自 NewsAPI，禁止使用以外的任何信息）==="]
+    for a in articles:
+        ttl  = (a.get("title") or "").strip()
+        if not ttl:
+            continue
+        src  = a.get("source") or "暂无来源"
+        desc = (a.get("description") or "").strip()[:200]
+        pub  = (a.get("published_at") or "")[:16]
+        url  = a.get("url") or "暂无链接"
+        lines.append(f"[{src}] {ttl}")
+        lines.append(f"摘要：{desc if desc else '暂无数据'}")
+        lines.append(f"时间：{pub if pub else '暂无数据'}")
+        lines.append(f"链接：{url}")
+        lines.append("---")
+    return "\n".join(lines)
+
+
+def _format_fundamentals_from_cache(stocks: dict, earnings: dict) -> str:
+    """
+    将 build_report_data()["stocks"] + ["earnings"] 格式化为 Part C prompt 所需文本块。
+    格式：=== 头部 === + 每只标的3行结构化数据 + ---
+    """
+    if not stocks:
+        return ""
+    lines = ["=== 真实财务数据（来自 yfinance）==="]
+    for sym, d in list(stocks.items()):
+        price   = d.get("price")
+        fpe     = d.get("forward_pe")
+        feps    = d.get("forward_eps")
+        target  = d.get("analyst_target")
+        rec     = d.get("recommendation") or "暂无数据"
+        div     = d.get("dividend_yield")
+        earn_dt = earnings.get(sym) or "暂无数据"
+        updated = d.get("updated_at", "")
+
+        # 货币前缀
+        if ".HK" in sym:
+            pfx = "HK$"
+        elif sym.endswith(".SS") or sym.endswith(".SZ"):
+            pfx = "¥"
+        else:
+            pfx = "$"
+
+        def _fmt_yield(val):
+            """yfinance 返回小数（0.065=6.5%）或已是百分比（6.5），统一转为 X.X% 显示。"""
+            if val is None or val == 0:
+                return "暂无数据"
+            if val < 1:                     # 小数形式，×100 转换
+                return f"{val * 100:.1f}%"
+            return f"{val:.1f}%"            # 已是百分比形式
+
+        price_s  = f"{pfx}{price:.2f}"   if price  is not None else "暂无数据"
+        feps_s   = f"{pfx}{feps:.2f}"    if feps   is not None else "暂无数据"
+        fpe_s    = f"{round(fpe, 1)}x"   if fpe    is not None else "暂无数据"
+        div_s    = _fmt_yield(div)
+        target_s = f"{pfx}{target:.0f}"  if target is not None else "暂无数据"
+
+        lines.append(f"[{sym}] 现价={price_s} | ForwardEPS={feps_s} | ForwardPE={fpe_s}")
+        lines.append(f"       股息率={div_s} | 分析师目标价={target_s} | 评级={rec}")
+        lines.append(f"       财报日期={earn_dt} | 数据更新={updated}")
+        lines.append("---")
+
+    print(f"  📊 基本面块：{len(stocks)} 只标的（含财报日）")
+    return "\n".join(lines) + "\n"
+
+
+def _build_fundamentals_block(watchlist_symbols: list) -> str:
+    """
+    从 news_fetcher 拉取自选股真实基本面数据，注入 Part B。
+    包含：PE / EPS / 分析师目标价 / 推荐评级 / 52周水位 / 财报日
+    """
+    if not _NEWS_FETCHER_OK or not watchlist_symbols:
+        return ""
+    try:
+        lines = ["【自选股真实基本面（来自 Yahoo Finance，Part B 理由必须引用这些数字）】"]
+        for sym in watchlist_symbols[:12]:  # 最多12只，避免超时
+            d = _nf_stock(sym)
+            price      = d.get("price")
+            fpe        = d.get("forward_pe")
+            feps       = d.get("forward_eps")
+            target     = d.get("analyst_target")
+            rec        = d.get("recommendation", "")
+            hi         = d.get("52w_high")
+            lo         = d.get("52w_low")
+            rev_g      = d.get("revenue_growth")
+            earn_g     = d.get("earnings_growth")
+
+            # 52周水位
+            water = ""
+            if price and hi and lo and hi != lo:
+                pct = round((price - lo) / (hi - lo) * 100)
+                water = f"52w水位{pct}%"
+
+            # 目标价上涨空间
+            upside = ""
+            if price and target and price > 0:
+                upside = f"目标价↑{round((target - price)/price*100)}%"
+
+            parts = [
+                f"现价{price}" if price else "",
+                f"ForwardPE={round(fpe,1)}" if fpe else "",
+                f"ForwardEPS={round(feps,2)}" if feps else "",
+                upside,
+                water,
+                f"评级:{rec}" if rec else "",
+                f"营收增速{round(rev_g*100)}%" if rev_g else "",
+                f"盈利增速{round(earn_g*100)}%" if earn_g else "",
+            ]
+            summary = "  ".join(p for p in parts if p)
+            lines.append(f"  {sym}: {summary}")
+
+        print(f"  📊 注入基本面数据：{len(watchlist_symbols)} 只")
+        return "\n".join(lines) + "\n"
+    except Exception as e:
+        print(f"  ⚠️ 基本面注入失败（不影响主流程）: {e}")
+        return ""
+
+
+# ─── 真实新闻报告路径（ai-daily-report-v2 日报，用于约束可执行推荐的触发事件）────────────────
+AI_DAILY_REPORT_PATHS = [
+    Path("/root/ai-daily-report-v2/data/daily_report.md"),  # VPS 生产
+    Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "daily_report.md",  # Mac 本地
+    Path(__file__).parent.parent / "ai-daily-report-v2" / "data" / "daily_report.md",
+]
+if os.environ.get("AI_DAILY_REPORT_PATH"):
+    AI_DAILY_REPORT_PATHS.insert(0, Path(os.environ["AI_DAILY_REPORT_PATH"]))
+
+
+def _load_real_news_report() -> str:
+    """
+    读取 ai-daily-report-v2 生成的日报，作为可执行推荐「触发条件」的唯一真实新闻来源。
+    若文件不存在或读取失败，返回空字符串（Prompt 中会退化为仅用 news_block 约束）。
+    """
+    for p in AI_DAILY_REPORT_PATHS:
+        try:
+            if p.exists():
+                content = p.read_text(encoding="utf-8-sig").strip()
+                if content and len(content) > 100:
+                    print(f"  ✅ 已注入真实新闻报告（{len(content)} 字）: {p}")
+                    return content
+        except Exception as e:
+            logger.debug("读取日报失败 %s: %s", p, e)
+    print("  ⚠️ 未找到 ai-daily-report-v2 日报，触发条件将仅基于上方 news_block 约束")
+    return ""
+
+
+# ─── 统一单次 AI 调用：完整报告生成 ──────────────────────────────────────────
+
+def generate_full_report(report_type: str = "evening") -> str:
+    """
+    一次 Gemini 调用生成完整报告（导语 + 核心事件 + 三市场 + 推荐 + 持仓 + 风险）。
+    替代原来的四次独立调用，内容逻辑更统一、不矛盾。
+    返回报告全文字符串，失败时返回 None。
+    """
+    global _REPORT_DATA_CACHE
+
+    now_sh  = datetime.now(TZ_SHANGHAI)
+    today   = now_sh.strftime("%Y年%m月%d日")
+    _ts     = now_sh.strftime("%Y-%m-%d %H:%M:%S")
+    focus   = (
+        "早报侧重港股、A股分析；美股简要。三市场均须输出。"
+        if report_type == "morning" else
+        "晚报侧重美股分析；港股、A股简要。三市场均须输出。"
+    )
+
+    # ── 1. 采集新闻 + 基本面（写入全局缓存供后续使用）────────────────────────
+    all_symbols = [code for mkt in ("US", "HK", "CN") for code, _ in WATCHLIST.get(mkt, [])]
+    print(f"📡 采集真实新闻与基本面数据（{len(all_symbols)}只标的）...")
+    try:
+        yesterday   = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+        report_data = build_report_data(watchlist=all_symbols, date_str=yesterday)
+        _REPORT_DATA_CACHE = report_data
+        news_block        = _format_news_from_cache(report_data.get("news", []))
+        fundamentals_block = _format_fundamentals_from_cache(
+            report_data.get("stocks", {}), report_data.get("earnings", {})
+        )
+        print(f"  ✅ 采集完成：{len(report_data.get('news', []))}条新闻 / {len(all_symbols)}只标的")
+    except Exception as e:
+        print(f"  ⚠️ 数据采集失败，降级使用旧方式: {e}")
+        news_block         = _build_news_block() or "（新闻数据获取失败）"
+        fundamentals_block = _build_fundamentals_block(all_symbols) or "（基本面数据获取失败）"
+
+    # ── 2. 市场技术数据 ───────────────────────────────────────────────────────
+    print("📊 获取三大市场技术数据...")
+    us_data = _fetch_market_technicals("^GSPC",     "标普500")
+    hk_data = _fetch_market_technicals("^HSI",      "恒生指数")
+    cn_data = _fetch_market_technicals("000001.SS", "上证综指")
+    market_data_block = (
+        f"美股 · 标普500\n{us_data}\n\n"
+        f"港股 · 恒生指数\n{hk_data}\n\n"
+        f"A股 · 上证综指\n{cn_data}"
+    )
+
+    # ── 3. 持仓列表（逐只枚举，确保 AI 覆盖全部 19 只）────────────────────
+    def _wl_lines(mkt, flag, label):
+        items = WATCHLIST.get(mkt, [])
+        return f"{flag} {label}持仓（{len(items)}只）：" + \
+               "、".join(f"{n}({c})" for c, n in items)
+
+    watchlist_block = "\n".join([
+        _wl_lines("US", "🇺🇸", "美股"),
+        _wl_lines("HK", "🇭🇰", "港股"),
+        _wl_lines("CN", "🇨🇳", "A股"),
+        f"合计 {sum(len(v) for v in WATCHLIST.values())} 只，持仓分析必须全部覆盖，一只不能遗漏",
+    ])
+
+    # ── 3.5 读取真实新闻报告（ai-daily-report-v2 日报，约束可执行推荐的触发事件）────
+    real_news_report = _load_real_news_report()
+
+    # ── 4. 构建统一 Prompt ────────────────────────────────────────────────────
+    _real_news_block = (
+        f"\n\n【真实新闻报告（来自 AI 日报，可执行推荐的触发条件必须来自此处）】\n{real_news_report}\n"
+        if real_news_report else ""
+    )
+    prompt = f"""【今日真实新闻（来自 Guardian + RSS + yfinance，禁止编造）】
+{news_block}{_real_news_block}
+
+【真实财务数据（来自 yfinance）】
+{fundamentals_block}
+
+【市场技术数据（来自 yfinance 行情）】
+{market_data_block}
+
+【持仓标的】
+{watchlist_block}
+
+【日期】{today} | 【时间戳】{_ts} (Asia/Shanghai)
+【侧重】{focus}
+
+---
+你是一位顶级机构分析师，基于以上真实数据，
+生成一份完整的今日市场分析报告。
+
+输出格式要求（飞书 Markdown 友好）：
+- 标题用 ## 和 ### 层级
+- 加粗用 **文字** 格式
+- 列表用 - 或 1. 2. 3. 有序列表
+- 各节之间用空行分隔，不用 --- 波折号
+- 每个核心事件之间用空行分隔
+- 方向标签：🟢涨 / 🔴跌 / 🟡震荡
+- 操作建议标签：✅持仓 / 📈加仓 / 📉减仓 / 👀观望
+
+## 今日导语
+用一句话概括今日市场核心情绪和主要驱动力。（100字以内）
+
+## 🔴 核心事件（3-10条，宁少勿滥）
+
+每条格式：
+
+**N. 事件标题**
+- **来源**：[媒体名] · 时间 · URL
+- **变量**：关键决策变量
+- 对美股影响：📈/📉/➡️ + 一句话
+- 对港股影响：📈/📉/➡️ + 一句话
+- 对A股影响：📈/📉/➡️ + 一句话
+- **持仓关联**：与上方持仓哪只标的直接相关（没有则写"无直接持仓关联"）
+
+## 📊 三市场判断
+
+### 🇺🇸 美股
+**方向**：🟢涨 / 🔴跌 / 🟡震荡（选一个）
+**概率**：上涨X% / 下跌X%（3-5个交易日）
+**关键位**：支撑 XXXX | 压力 XXXX
+**均线状态**：MA5/MA20/MA60 多头排列/空头排列/混乱
+**RSI**：XX（超买>70 / 超卖<30 / 中性）
+**核心逻辑**：2-3句话，必须引用上方至少一条核心事件
+**操作建议**：✅持仓 / 📈加仓 / 📉减仓 / 👀观望 + 一句话
+
+### 🇭🇰 港股
+（同上格式）
+
+### 🇨🇳 A股
+（同上格式）
+
+**联动与配置**
+- 三市场联动：强联动 / 弱联动 / 独立走势
+- 建议仓位：美X% / 港X% / AX%（最低不得低于10%，除非有明确系统性风险）
+- 本周最高优先级：一句话
+
+## 🎯 精选推荐（每个市场1-3只，必须与三市场判断方向一致）
+
+⚠️ **触发条件强制规则（禁止编造新闻）**：
+- **所有触发事件必须来自上方【今日真实新闻】或【真实新闻报告】列表**
+- **禁止编造任何新闻、事件、公告**。若找不到与标的相关的真实新闻，触发字段必须写：**「无近期相关新闻触发，基于基本面判断」**
+- 可执行推荐只能基于真实新闻列表中已有的事件，不得虚构催化、财报、政策等
+- **触发事件必须注明具体来源媒体名称**（如 Bloomberg、Reuters、WSJ、FT、财新、公司公告、SEC文件等）；禁止只写"据报道"或不注明来源
+
+每只格式：
+
+**[标的名称(代码)] | 现价 X.XX | 📈加仓/✅持仓**
+- **触发条件**：必须引用上方真实新闻中的具体事件，注明具体来源媒体名称（如 Bloomberg/Reuters/公司公告），或写「无近期相关新闻触发，基于基本面判断」
+- **机会/风险比**：X:1
+- **理由**：必须引用上方核心事件中的至少一条（注明事件标题）
+- **一致性**：与[美股/港股/A股]判断[方向]一致
+
+## 📋 持仓分析
+
+⚠️ 必须输出上方【持仓标的】中列出的全部标的，按以下三组分别输出，每组加标题（不加#号，直接输出）：
+
+🇺🇸 美股持仓
+（逐一输出 艾伯维ABBV / ACM Research ACMR / 英伟达NVDA / 诺和诺德NVO / 标普500ETF VOO / 伯克希尔BRK-B / 纳指ETF QQQM / 谷歌GOOG / 菲利普莫里斯PM / 礼来LLY / 台积电TSM / 特斯拉TSLA，共12只）
+
+🇭🇰 港股持仓
+（逐一输出 腾讯控股0700.HK / 中国海洋石油0883.HK / 友邦保险1299.HK / 中国移动0941.HK，共4只）
+
+🇨🇳 A股持仓
+（逐一输出 贵州茅台600519.SS / 中芯国际688981.SS / 紫金矿业601899.SS / 澜起科技688008.SS / 中国移动A 600941.SS / 美的集团000333.SZ / 平安银行000001.SZ / 中国电建601669.SS，共8只）
+
+【持仓操作建议判断规则】— 必须严格按此规则判断，不允许自由发挥：
+
+⚠️ **核心原则**：大盘跌 ≠ 全部观望。综合 相对强弱 + 技术面 + 标的属性 + 行业轮动 四维判断。
+
+---
+
+**一、相对强弱评判**（优先于大盘一刀切）
+- 若已知个股今日涨跌与大盘涨跌：**个股跑赢大盘**（今日跌幅 < 大盘跌幅）或**逆势上涨** → 维持持仓
+- 仅当 **个股跌幅 > 大盘跌幅 × 1.5** 时，才降级为观望
+- 若无个股涨跌数据，综合其他因素判断，不得仅因大盘跌而观望
+
+**二、技术面指标**（若上方【市场技术数据】或标的数据中有 RSI/MA）
+- RSI < 30（超卖）→ 考虑加仓，不轻易观望
+- RSI > 70（超买）→ 降级为观望
+- 价格在 MA20 上方 → 支撑持仓
+- 价格在 MA20 下方 **且** 跌破 MA50 → 降级为观望
+
+**三、防御型 vs 进攻型**（按标的属性差异化）
+**防御型**（VOO/BRK-B/PM/ABBV/LLY/中国移动0941/友邦保险1299/美的000333/平安银行000001）：
+  - 市场下跌时**维持持仓**，不轻易观望
+  - 止损条件更宽松，仅重大利空才减仓
+
+**进攻型**（NVDA/TSM/TSLA/ACMR/澜起科技688008/中芯国际688981）：
+  - 市场下跌时可降级观望
+  - 止损条件更严格，技术破位即减仓
+
+**四、行业轮动逻辑**（在操作建议中注明当前最强板块）
+- **能源板块强势**（油价涨/地缘催化）→ 中海油0883/紫金矿业601899 维持持仓
+- **科技/AI板块强势** → NVDA/TSM/澜起科技688008 维持持仓
+- **医药板块强势** → LLY/ABBV/诺和诺德NVO 维持持仓
+- 在每只标的「今日」说明中注明：当前最强板块为 [能源/科技/医药/消费/金融]
+
+---
+
+📈加仓（同时满足以下全部）：
+  - 现价 > 止损价
+  - 分析师目标价 > 现价 × 1.15（上涨空间 ≥ 15%）
+  - 今日有正面相关新闻
+  - 对应市场判断为 🟢涨 或 🟡震荡
+  - （可选）RSI < 30 超卖时优先考虑加仓
+
+✅持仓（满足以下任一即可）：
+  - 现价 > 止损价 且 分析师目标价 > 现价 且 今日无直接负面新闻
+  - **今日有正面相关新闻** 且 目标价 ≥ 现价×0.9，**即使大盘🔴跌也持仓**
+  - 今日无重大新闻 且 目标价 > 现价×1.05，**即使大盘🔴跌也持仓**
+  - **防御型标的** 且 市场跌 → 持仓（不轻易观望）
+  - **个股跑赢大盘**（跌幅 < 大盘跌幅）或逆势涨 → 持仓
+  - **所属板块当前最强**（能源/科技/医药轮动）→ 持仓
+
+👀观望（满足以下全部才观望，禁止因「大盘跌」而一刀切）：
+  - 大盘🔴跌 **且** 今日无正面新闻 **且** 目标价 < 现价×1.05
+  - 或：今日有负面相关新闻但尚未触发止损
+  - 或：RSI > 70 超买
+  - 或：**进攻型** 且 价格跌破 MA20 且 跌破 MA50
+  - 或：**个股跌幅 > 大盘跌幅 × 1.5**
+
+📉减仓（满足以下任一）：
+  - 分析师目标价 < 现价 × 0.9（低于现价 10% 以上）
+  - 今日有直接重大负面新闻 且 市场判断为 🔴跌
+  - 现价距止损价 < 3%
+  - **进攻型** 且 技术破位（跌破关键均线）
+
+判断示例（TSLA）：进攻型 | 目标价<现价×1.05 | 今日FSD负面 | 市场跌 → 📉减仓
+判断示例（GOOG/LLY/TSM/0883）：今日有正面新闻 → **即使大盘跌** → ✅持仓，注明板块
+判断示例（VOO/BRK-B/PM/ABBV/LLY/0941/1299）：防御型 → 市场跌时维持 ✅持仓
+判断示例（0883/601899）：能源板块强势 → ✅持仓，今日注明「能源强势」
+
+【强制差异化】每市场至少 40% 为 持仓 或 加仓，观望不超过 50%，减仓 1–3 只。禁止满屏观望。
+
+每只格式（严格单行，不换行，不允许任何其他格式变体）：
+⭐ 股票名(代码) 现价 | 操作 | 止损X | 今日：[15字内，含板块/相对强弱/新闻要点]
+
+要求：
+- 股票名和代码必须同时出现，格式为：名称(代码)
+- 货币：美股用$，港股用HK$，A股用¥
+- 分组标题直接写文字（不加#号，不加markdown语法）
+- 「今日」字段需注明：当前最强板块（能源/科技/医药等）、或个股相对强弱、或新闻要点
+
+输出示例（注意：防御型+板块强势+正面新闻→持仓）：
+⭐ 英伟达(NVDA) $180.25 | ✅持仓 | 止损$170 | 今日：科技强势，AI芯片需求强劲
+⭐ 礼来(LLY) $920 | ✅持仓 | 止损$900 | 今日：医药强势，减肥药利好
+⭐ 台积电(TSM) $334 | ✅持仓 | 止损$320 | 今日：科技强势，AI订单饱满
+⭐ 伯克希尔(BRK-B) $481 | ✅持仓 | 止损$470 | 今日：防御型，跑赢大盘
+⭐ 中国海洋石油(0883.HK) HK$29.58 | ✅持仓 | 止损HK$28 | 今日：能源强势，油价利好
+⭐ 特斯拉(TSLA) $391 | 📉减仓 | 止损$375 | 今日：进攻型破位，FSD调查
+⭐ 贵州茅台(600519.SS) ¥1413 | ✅持仓 | 止损¥1350 | 今日：无重大新闻
+
+硬性规则：
+- 三组全部输出，总计24只，一只不能遗漏
+- 止损价必填，不得写N/A，根据近期支撑位或均线给出具体价格
+- 今日事件必须来自上方核心事件，没有则写"无重大新闻"
+- 操作建议必须严格按上方判断规则，不允许主观臆断
+- **差异化强制**：每市场（美股/港股/A股）至少 40% 为 持仓 或 加仓，观望不超过 50%，减仓 1–3 只。禁止满屏观望。
+
+## ⚠️ 风险提示
+
+基于今日核心事件，列出3条最需要关注的风险（具体到事件，不得写泛泛表述）：
+
+1. [风险1]
+2. [风险2]
+3. [风险3]
+
+---
+【强制规则】
+1. 所有事件必须来自上方真实新闻，每条必须附带来源URL
+2. **精选推荐的「触发条件」必须来自上方【今日真实新闻】或【真实新闻报告】，且必须注明具体来源媒体名称（如 Bloomberg、Reuters、WSJ、财新、公司公告等），禁止编造。若无相关真实新闻，必须写「无近期相关新闻触发，基于基本面判断」**
+3. 精选推荐的理由必须引用上方核心事件，注明事件标题
+4. 持仓分析操作建议必须严格遵守【持仓操作建议判断规则】，不允许自由发挥
+5. 财务数字来自上方真实数据，不得修改或替换
+6. 股息率显示规则：yfinance返回小数（0.065=6.5%，val<1则×100；val≥1则直接显示），禁止显示为655%
+   验证：ABBV≈3.2%，中国移动≈6.5%，任何持仓股息率不得超过20%
+7. 严禁编造任何公司名称（如Quantum Dynamics Inc等虚构名称均违规）
+8. 精选推荐方向必须与三市场判断一致，禁止推荐与看跌市场相反方向的标的
+9. 持仓分析目标价规则：
+   - 若 分析师目标价 < 现价×0.9（低于现价 10% 以上）→ 不得持仓/加仓，建议减仓
+   - 若 分析师目标价 < 现价 但差距 < 10%（目标价 ≥ 现价×0.9），且当日有正面新闻 → 建议持仓，不得减仓
+   - 若 分析师目标价 < 现价 且差距 < 10%，且当日无正面新闻 → 观望
+10. 差异化强制：大盘跌时不得一刀切全部观望。综合 相对强弱+技术面+防御/进攻型+行业轮动 判断；防御型、板块强势、有正面新闻的标的必须 持仓；每市场至少 40% 持仓/加仓，观望不超过 50%。"""
+
+    print("🤖 正在生成完整报告（单次AI调用）...")
+    result = _v88_call_gemini(prompt)
+    if result and not result.startswith("❌"):
+        print(f"  ✅ 完整报告生成成功（约 {len(result)} 字）")
+        return result
+    print(f"  ⚠️ 完整报告生成失败: {(result or '')[:80]}")
+    return None
+
+
+# ─── Part A 核心事件摘要提取（模块级，供 BCD 共享）──────────────────────────────
+
+def _extract_part_a_summary(text: str) -> str:
+    """
+    从 Part A 全文中提取核心事件摘要，格式化为 BCD 共享的简洁摘要块。
+    优先提取 🔴 核心事件段落，不足时退化为前 800 字。
+    """
+    if not text:
+        return "（Part A 未生成，无可用事件摘要）"
+    # 尝试提取"核心事件"段落
+    m = re.search(r"(##\s*🔴\s*核心事件.+?)(?=\n##|\Z)", text, re.S)
+    if m:
+        snippet = m.group(1).strip()
+        return snippet[:1200] if len(snippet) > 1200 else snippet
+    # 退而求其次：取前 800 字
+    return text[:800].strip() + ("…" if len(text) > 800 else "")
+
+
 def generate_report_final(report_type="evening"):
     """
     主报告生成：共用一次市场数据准备，然后分别调用 Gemini 生成 Part A 和 Part B。
-    返回 (part_a_content, part_b_content)，失败时对应项为 None。
+    - 统一调用 build_report_data() 一次，结果写入 _REPORT_DATA_CACHE 供 Part C / D 复用。
+    - Part A 使用 report_data["news"] 格式化的新闻块
+    - Part B 使用 report_data["stocks"] + ["earnings"] 格式化的基本面块
+    返回 (part_a_content, part_b_content, part_a_summary)，失败时对应项为 None/""。
     """
+    global _REPORT_DATA_CACHE
     try:
         print(f"🤖 正在准备市场数据（800池筛选，约 2-5 分钟）...")
         data = _prepare_market_data(report_type)
+
+        # ── 统一数据采集：新闻 + 基本面（一次调用，供 A/B/C/D 共享） ────────────
+        if _NEWS_FETCHER_OK:
+            yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+            all_symbols = [
+                code
+                for mkt in ("US", "HK", "CN")
+                for code, _ in WATCHLIST.get(mkt, [])
+            ]
+            print(f"📡 正在采集真实新闻与基本面数据（{len(all_symbols)}只标的）...")
+            try:
+                report_data = build_report_data(
+                    watchlist=all_symbols,
+                    date_str=yesterday,
+                )
+                _REPORT_DATA_CACHE = report_data
+                logger.info(
+                    f"真实数据注入完成：{len(report_data.get('news', []))}条新闻 / "
+                    f"{len(report_data.get('stocks', {}))}只标的"
+                )
+                print(
+                    f"  ✅ 采集完成：{len(report_data.get('news', []))}条新闻 / "
+                    f"{len(report_data.get('stocks', {}))}只标的"
+                )
+
+                # 将新闻列表格式化成 Part A 所需文本块
+                news_block = _format_news_from_cache(report_data.get("news", []))
+                if news_block:
+                    data["real_news_block"] = news_block
+
+                # 将基本面数据格式化成 Part B 所需文本块
+                fundamentals_block = _format_fundamentals_from_cache(
+                    report_data.get("stocks", {}),
+                    report_data.get("earnings", {}),
+                )
+                if fundamentals_block:
+                    data["fundamentals_block"] = fundamentals_block
+
+            except Exception as e:
+                print(f"  ⚠️ 数据采集失败，降级使用旧方式: {e}")
+                # 降级：分散调用保证不崩
+                news_block = _build_news_block()
+                if news_block:
+                    data["real_news_block"] = news_block
+                fundamentals_block = _build_fundamentals_block(all_symbols)
+                if fundamentals_block:
+                    data["fundamentals_block"] = fundamentals_block
+        else:
+            print("  ⚠️ news_fetcher 不可用，跳过新闻/基本面注入")
 
         index_banner = _build_index_banner()
 
@@ -1594,15 +2483,19 @@ def generate_report_final(report_type="evening"):
         if part_a:
             part_a = index_banner + part_a
 
+        # ── 提取 Part A 核心事件摘要，供 BCD 共享 ─────────────────────────────
+        part_a_summary = _extract_part_a_summary(part_a)
+        data["part_a_summary"] = part_a_summary
+
         time.sleep(4)   # 避免 Gemini API 连续调用触发 429/403
-        part_b = generate_part_b_recs(report_type, data)
+        part_b = generate_part_b_recs(report_type, data, part_a_summary=part_a_summary)
         if part_b:
             part_b = _strip_part_b_verbose(part_b)
 
-        return part_a, part_b
+        return part_a, part_b, part_a_summary
     except Exception as e:
         print(f"⚠️  主报告生成异常: {e}")
-        return None, None
+        return None, None, ""
 
 # ─── 精华摘要（富内容版，1次 Gemini 调用）──────────────────────────────────
 
@@ -1800,9 +2693,12 @@ def _fetch_market_technicals(index_code, label):
         return f"{label}: 数据获取失败"
 
 
-def generate_market_ai_analysis(report_type="evening"):
+def generate_market_ai_analysis(report_type="evening", part_a_result: str = None, part_a_summary: str = ""):
     """
     Part D: 三大市场 AI 技术分析（走势预测 + 操作建议）
+    - market_data_block: 真实行情数据（yfinance）
+    - part_a_summary: 由 generate_report_final() 统一提取后传入，BCD 共享
+      （part_a_result 保留作向后兼容，优先使用 part_a_summary）
     早报侧重港股A股，晚报侧重美股
     """
     print("📊 Part D: 获取三大市场技术数据...")
@@ -1810,49 +2706,80 @@ def generate_market_ai_analysis(report_type="evening"):
     hk_data = _fetch_market_technicals("^HSI", "恒生指数")
     cn_data = _fetch_market_technicals("000001.SS", "上证综指")
 
-    focus_hint = (
-        "【早报侧重】港股、A股分析请更加详细（各≥300字）；美股可简要。"
-        if report_type == "morning" else
-        "【晚报侧重】美股分析请更加详细（≥300字）；港股、A股可简要。"
+    # ── 构建 market_data_block ────────────────────────────────────────────────
+    market_data_block = (
+        f"美股 · 标普500\n{us_data}\n\n"
+        f"港股 · 恒生指数\n{hk_data}\n\n"
+        f"A股 · 上证综指\n{cn_data}"
     )
 
-    prompt = f"""你是华尔街顶级分析师。请基于以下三大市场的最新数据进行全面技术分析。
+    # ── 使用统一传入的 part_a_summary（由 generate_report_final 提取，BCD 共享）────
+    # 向后兼容：若未传入 part_a_summary 但传入了 part_a_result，则降级提取
+    if not part_a_summary and part_a_result:
+        m = re.search(r"(##\s*🔴\s*核心事件.+?)(?=\n##|\Z)", part_a_result, re.S)
+        if m:
+            snippet = m.group(1).strip()
+            part_a_summary = snippet[:900] if len(snippet) > 900 else snippet
+        else:
+            part_a_summary = part_a_result[:800].strip() + ("…" if len(part_a_result) > 800 else "")
+    if not part_a_summary:
+        part_a_summary = "（Part A 摘要未生成）"
 
-【美股 · 标普500】
-{us_data}
+    prompt = f"""【今日核心驱动事件（来自 Part A 真实新闻）】
+{part_a_summary}
 
-【港股 · 恒生指数】
-{hk_data}
+【技术分析规则】
+1. 核心逻辑必须引用今日至少一条真实事件（来自上方摘要）
+2. 不得只用技术面解释走势，必须结合新闻基本面
+3. 若今日有重大地缘政治或央行事件，必须在对应市场的核心逻辑中体现
 
-【A股 · 上证综指】
-{cn_data}
+---
+你是一位专业技术分析师，基于真实行情数据对三个市场做出
+清晰、可执行的走势判断。
 
-{focus_hint}
+【真实行情数据（来自 yfinance）】
+{market_data_block}
 
-请按以下结构输出，全文中文，专业严谨（总计约1200-1800字）：
+【任务】
+对美股、港股、A股分别输出以下结构，每个市场字数控制在150-200字：
 
-## 🇺🇸 美股走势分析
-- 当前技术形态与趋势判断
-- 关键支撑位与压力位
-- 未来3-5日走势预测（上涨/下跌概率）
-- 操作建议
+---
+## 🇺🇸 美股
+**方向**：涨 / 跌 / 震荡（选一个）
+**概率**：上涨X% / 下跌X%（3-5个交易日）
+**关键位**：支撑 XXXX | 压力 XXXX
+**均线状态**：MA5 / MA20 / MA60 多头排列 / 空头排列 / 混乱
+**RSI**：XX（超买>70 / 超卖<30 / 中性）
+**核心逻辑**：2-3句话，说清楚为什么这个方向，必须引用今日至少一条核心事件
+**操作建议**：一句话，具体到动作（持仓 / 减仓至X% / 等待X信号）
 
-## 🇭🇰 港股走势分析
-- 当前技术形态与趋势判断
-- 关键支撑位与压力位
-- 未来3-5日走势预测
-- 操作建议
+---
+## 🇭🇰 港股
+（同上格式）
 
-## 🇨🇳 A股走势分析
-- 当前技术形态与趋势判断
-- 关键支撑位与压力位
-- 未来3-5日走势预测
-- 操作建议
+---
+## 🇨🇳 A股
+（同上格式）
 
-## 📋 综合策略
-- 全球联动分析
-- 资产配置建议（美/港/A股仓位比例）
-- 本周重点关注事件"""
+---
+## 联动与配置
+- 三市场联动判断：强联动 / 弱联动 / 独立走势
+- 建议仓位：美X% / 港X% / AX%（须与 Part A 三市场动作建议中的仓位上限一致）
+- 本周最高优先级：一句话
+
+---
+【仓位建议规则】
+- 仓位建议必须与 Part A 三市场动作建议一致，不得自行推翻
+- 最低仓位建议不得低于10%，除非 Part A 明确指出该市场存在系统性风险需要清仓
+- 禁止出现 美0% / 港0% / A0% 等清零建议，除非有明确系统性风险事件支撑
+- 若 Part A 动作建议不明确，按技术面给出合理区间（如"美30-50%"），不得写0%
+
+【强制规则】
+1. 方向判断必须基于上方真实行情数据，不得凭空判断
+2. 支撑压力位必须是真实的价格数字，来自行情数据
+3. 核心逻辑必须引用今日至少一条真实事件，不得脱离新闻
+4. 三市场格式必须统一，不允许某个市场写得特别长或特别短
+5. 操作建议必须具体，不允许写"保持观望"或"视情况而定"等模糊表述"""
 
     print("🤖 Part D: Gemini 分析三大市场走势...")
     result = _v88_call_gemini(prompt)
@@ -1866,85 +2793,73 @@ def generate_market_ai_analysis(report_type="evening"):
 # ─── 主函数 ───────────────────────────────────────────────────────────────────
 
 def main():
-    """主函数：Part A（市场简报）+ Part B（推荐）+ Part C（自选股）+ Part D（市场AI分析）"""
+    """主函数：Part A（市场简报）+ Part B（推荐）+ Part C（自选股）
+    Part D（AI市场技术分析）已停用，节省 Gemini token。
+    进程锁防止 cron/watchdog 短时间内重复触发。
+    """
+    import fcntl, tempfile
+    _lock_path = os.path.join(tempfile.gettempdir(), "auto_reporter.lock")
+    _lock_fd = open(_lock_path, "w")
+    try:
+        fcntl.flock(_lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        print("⚠️  auto_reporter 已在运行（进程锁），本次跳过，避免重复推送")
+        _lock_fd.close()
+        return
+
+    try:
+        _main_body()
+    finally:
+        fcntl.flock(_lock_fd, fcntl.LOCK_UN)
+        _lock_fd.close()
+
+
+def _main_body():
+    """实际报告逻辑（由 main() 在进程锁内调用）。
+    ── 新架构：一次 AI 调用生成完整报告，通过飞书推送 ──
+    """
     report_type = sys.argv[1] if len(sys.argv) > 1 else (
         "evening" if datetime.now(TZ_SHANGHAI).hour >= 12 else "morning"
     )
-    label = "早报" if report_type == "morning" else "晚报"
+    label     = "早报" if report_type == "morning" else "晚报"
     send_time = datetime.now(TZ_SHANGHAI).strftime('%Y/%m/%d %H:%M')
 
     print(f"\n{'='*60}")
-    print(f"🚀 V88 AI 钉钉{label}（A+B+C+D 四部分）")
+    print(f"🚀 V88 AI 飞书{label}（单次AI调用，完整报告）")
     print(f"{'='*60}\n")
 
-    _send_ok = 0
-    _send_fail = 0
+    # ── 单次 AI 调用生成完整报告 ─────────────────────────────────────────────
+    report = generate_full_report(report_type)
 
-    # ── Part A + B（市场简报 + 精选推荐）────────────────────────────────────
-    part_a, part_b = generate_report_final(report_type)
-
-    if part_a:
-        title_a = f"📰 AI{label} Part A · 市场简报 · {send_time} · {DINGTALK_KEYWORD}"
-        print(f"📤 推送 Part A（约 {len(part_a)} 字）...")
-        if send_to_dingtalk(title_a, part_a, max_retries=3, part_type="A"):
-            _send_ok += 1
-        else:
-            _send_fail += 1
+    if report:
+        header  = f"📰 V88 AI {label} · {send_time}\n{'='*50}\n\n"
+        payload = header + report
+        print(f"📤 飞书推送完整报告（约 {len(payload)} 字）...")
+        ok = send_feishu(payload)
     else:
-        print("⚠️  Part A 生成失败，跳过")
-        _send_fail += 1
-
-    if part_b:
-        time.sleep(4)
-        title_b = f"🎯 AI{label} Part B · 精选推荐 · {send_time} · {DINGTALK_KEYWORD}"
-        print(f"📤 推送 Part B（约 {len(part_b)} 字）...")
-        if send_to_dingtalk(title_b, part_b, max_retries=3, part_type="B"):
-            _send_ok += 1
-        else:
-            _send_fail += 1
-    else:
-        print("⚠️  Part B 生成失败，跳过")
-        _send_fail += 1
-
-    # ── Part C（自选股持仓分析）──────────────────────────────────────────────
-    time.sleep(4)
-    print(f"📋 生成 Part C 自选股分析...")
-    part_c = generate_watchlist_report(report_type)
-    if part_c:
-        title_c = f"📋 AI{label} Part C · 自选股 · {send_time} · {DINGTALK_KEYWORD}"
-        print(f"📤 推送 Part C（约 {len(part_c)} 字）...")
-        if send_to_dingtalk(title_c, part_c, max_retries=3, part_type="C"):
-            _send_ok += 1
-        else:
-            _send_fail += 1
-    else:
-        print("⚠️  Part C 生成失败，跳过")
-        _send_fail += 1
-
-    # ── Part D（三大市场 AI 技术分析 · 走势预测）──────────────────────────────
-    time.sleep(4)
-    print(f"📊 生成 Part D 市场AI技术分析...")
-    part_d = generate_market_ai_analysis(report_type)
-    if part_d:
-        title_d = f"📊 AI{label} Part D · 市场走势预测 · {send_time} · {DINGTALK_KEYWORD}"
-        print(f"📤 推送 Part D（约 {len(part_d)} 字）...")
-        if send_to_dingtalk(title_d, part_d, max_retries=3, part_type="D"):
-            _send_ok += 1
-        else:
-            _send_fail += 1
-    else:
-        print("⚠️  Part D 生成失败，跳过")
-        _send_fail += 1
+        print("⚠️  报告生成失败，跳过推送")
+        ok = False
 
     print(f"\n{'='*60}")
-    print(f"📊 {label}推送结果: 成功 {_send_ok} / 失败 {_send_fail}")
+    print(f"📊 {label}推送结果: {'✅ 成功' if ok else '❌ 失败'}")
     print(f"{'='*60}")
 
-    if _send_ok == 0:
-        print("❌ 所有部分均推送失败！")
+    if not ok:
+        print("❌ 推送失败！")
         sys.exit(1)
-    elif _send_fail > 0:
-        print(f"⚠️  部分推送失败（{_send_fail} 个）")
+
+    # ── 以下为旧版四次调用 + 钉钉推送（已停用，保留供回滚参考）─────────────
+    # part_a, part_b, part_a_summary = generate_report_final(report_type)
+    # if part_a:
+    #     send_to_dingtalk(f"📰 AI{label} Part A · {send_time}", part_a, part_type="A")
+    # if part_b:
+    #     send_to_dingtalk(f"🎯 AI{label} Part B · {send_time}", part_b, part_type="B")
+    # part_c = generate_watchlist_report(report_type, part_a_summary=part_a_summary)
+    # if part_c:
+    #     send_to_dingtalk(f"📋 AI{label} Part C · {send_time}", part_c, part_type="C")
+    # part_d = generate_market_ai_analysis(report_type, part_a_result=part_a, part_a_summary=part_a_summary)
+    # if part_d:
+    #     send_to_dingtalk(f"📊 AI{label} Part D · {send_time}", part_d, part_type="D")
 
 
 if __name__ == "__main__":

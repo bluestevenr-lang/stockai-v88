@@ -38,7 +38,7 @@ CACHE_DIR = ".cache_stock_data"
 # 代理配置
 # ═══════════════════════════════════════════════════════════════
 PROXY_HOST = "127.0.0.1"
-PROXY_PORT = 1082
+PROXY_PORT = 7897
 PROXY_HTTP = f"http://{PROXY_HOST}:{PROXY_PORT}"
 PROXY_HTTPS = f"http://{PROXY_HOST}:{PROXY_PORT}"
 

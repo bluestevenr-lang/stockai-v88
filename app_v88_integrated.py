@@ -53,6 +53,16 @@ def _load_env_file():
         pass
 _load_env_file()
 
+# ── 强制设置代理环境变量（Clash 127.0.0.1:7897）────────────────────────────
+# 使用直接赋值而非 setdefault，防止被 IDE/外部 shell 的残留代理覆盖
+_PROXY_ADDR = "127.0.0.1:7897"
+for _pk, _pv in [
+    ('http_proxy', f'http://{_PROXY_ADDR}'), ('https_proxy', f'http://{_PROXY_ADDR}'),
+    ('HTTP_PROXY', f'http://{_PROXY_ADDR}'), ('HTTPS_PROXY', f'http://{_PROXY_ADDR}'),
+    ('ALL_PROXY', f'socks5://{_PROXY_ADDR}'),
+]:
+    os.environ[_pk] = _pv
+
 # ── 启动自检：自动检测关键依赖和数据源 ─────────────────────────────────────────
 def _startup_health_check() -> dict:
     """检测关键模块和数据源，返回状态字典"""
@@ -68,13 +78,11 @@ def _startup_health_check() -> dict:
             missing.append(mod)
     results['missing_imports'] = missing
 
-    # 2. yfinance 可用性
+    # 2. yfinance 可用性（仅检测模块可导入，不发网络请求——避免启动时触发 rate limit）
     try:
         import yfinance as _yf
-        _tk = _yf.Ticker("AAPL")
-        _info = _tk.fast_info
         results['yfinance'] = 'ok'
-    except Exception as e:
+    except ImportError as e:
         results['yfinance'] = f'error:{e}'
 
     # 3. HK 代码格式自检（核心逻辑验证）
@@ -87,17 +95,8 @@ def _startup_health_check() -> dict:
     except Exception as e:
         results['hk_code_fmt'] = f'error:{e}'
 
-    # 4. 东方财富搜索 API 连通性（轻量测试）
-    try:
-        import requests as _req
-        _r = _req.get(
-            "https://search-codetable.eastmoney.com/codetable/search/web",
-            params={"input": "AAPL", "type": "14", "token": "D43BF722C8E33BDC906FB84D85E326E8", "count": 1},
-            timeout=5
-        )
-        results['eastmoney_api'] = 'ok' if _r.status_code == 200 else f'http:{_r.status_code}'
-    except Exception as e:
-        results['eastmoney_api'] = f'error:{e}'
+    # 4. 东方财富搜索 API 连通性（延迟到首次使用时检测，不在启动时阻塞）
+    results['eastmoney_api'] = 'deferred'
 
     return results
 
@@ -177,6 +176,33 @@ def _save_ai_report_cache(report_key: str, payload):
         )
     except Exception as _e:
         logging.warning(f"AI报告缓存写入失败({report_key}): {_e}")
+
+
+# ── 真实新闻报告（ai-daily-report-v2 日报，约束日报触发事件，禁止编造）────────────────
+_AI_DAILY_REPORT_PATHS = [
+    Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "daily_report.md",  # Mac 本地优先
+    Path("/root/ai-daily-report-v2/data/daily_report.md"),  # VPS 备选
+]
+if os.environ.get("AI_DAILY_REPORT_PATH"):
+    _AI_DAILY_REPORT_PATHS.insert(0, Path(os.environ["AI_DAILY_REPORT_PATH"]))
+
+
+def _load_real_news_report() -> str:
+    """
+    读取 ai-daily-report-v2 生成的日报，作为可执行推荐「触发」字段的唯一真实新闻来源。
+    若文件不存在或读取失败，返回空字符串。
+    """
+    for p in _AI_DAILY_REPORT_PATHS:
+        try:
+            if p.exists():
+                content = p.read_text(encoding="utf-8-sig").strip()
+                if content and len(content) > 100:
+                    _safe_print(f"  ✅ 已注入真实新闻报告（{len(content)} 字）: {p}")
+                    return content
+        except Exception as e:
+            logging.debug("读取日报失败 %s: %s", p, e)
+    _safe_print("  ⚠️ 未找到 ai-daily-report-v2 日报，触发字段将受下方规则约束")
+    return ""
 
 
 _BRIEF_HISTORY_FILE = _BRIEF_CACHE_DIR / "brief_history.json"
@@ -490,8 +516,118 @@ logging.info("=" * 60)
 try:
     import yfinance as yf
     HAS_YFINANCE = True
+    # 禁用 yfinance 内部 SQLite 缓存，防止多线程并发时 OperationalError: database is locked
+    try:
+        from yfinance import cache as _yf_cache
+        _yf_cache._TzCacheManager._tz_cache = _yf_cache._TzCacheDummy()
+        _yf_cache._CookieCacheManager._cookie_cache = _yf_cache._CookieCacheDummy()
+        logging.info("✅ 已禁用 yfinance SQLite 缓存（防止多线程 OperationalError）")
+    except Exception as _e:
+        logging.debug(f"yfinance 缓存配置跳过: {_e}")
 except ImportError:
     HAS_YFINANCE = False
+
+# ── 全局 yfinance OperationalError 熔断器 ──────────────────────────────────
+# OperationalError（SQLite锁）连续出现时，直接跳过 yfinance，走备用源
+_YF_OPSERR_COUNT = 0
+_YF_OPSERR_THRESHOLD = 3
+_YF_OPSERR_DISABLED_UNTIL = 0.0
+_YF_OPSERR_COOLDOWN = 300  # 5分钟冷却
+
+def _yf_check_operational_error(e: Exception) -> bool:
+    """检测是否为 SQLite OperationalError，触发熔断"""
+    global _YF_OPSERR_COUNT, _YF_OPSERR_DISABLED_UNTIL
+    err_name = type(e).__name__
+    if err_name == 'OperationalError' or 'OperationalError' in str(e):
+        _YF_OPSERR_COUNT += 1
+        if _YF_OPSERR_COUNT >= _YF_OPSERR_THRESHOLD:
+            _YF_OPSERR_DISABLED_UNTIL = time.time() + _YF_OPSERR_COOLDOWN
+            logging.warning(f"🚫 yfinance OperationalError 连续 {_YF_OPSERR_COUNT} 次，熔断 {_YF_OPSERR_COOLDOWN}s")
+        return True
+    _YF_OPSERR_COUNT = 0
+    return False
+
+def _yf_opserr_blocked() -> bool:
+    """yfinance 是否因 OperationalError 被熔断"""
+    global _YF_OPSERR_DISABLED_UNTIL, _YF_OPSERR_COUNT
+    if _YF_OPSERR_DISABLED_UNTIL > 0 and time.time() < _YF_OPSERR_DISABLED_UNTIL:
+        return True
+    if _YF_OPSERR_DISABLED_UNTIL > 0:
+        _YF_OPSERR_DISABLED_UNTIL = 0.0
+        _YF_OPSERR_COUNT = 0
+    return False
+
+# ── 全局 yfinance Rate Limit 熔断器 ──────────────────────────────────────
+# 一旦触发 rate limit，60 秒内不再向 Yahoo Finance 发请求，直接降级到备用源
+_YF_RATE_LIMITED_UNTIL = 0.0        # Unix timestamp，限流解除时间
+_YF_RATE_LIMIT_COOLDOWN = 60        # 冷却秒数
+
+def _yf_is_rate_limited() -> bool:
+    return time.time() < _YF_RATE_LIMITED_UNTIL
+
+# ── 智能代理端口自动探测 ──────────────────────────────────────────────────
+# 自动从 macOS 系统网络设置读取当前代理端口，避免代理软件换端口后整个应用瘫痪
+_AUTO_PROXY_PORT = None
+
+def _detect_system_proxy_port() -> str:
+    """从 macOS 系统代理设置自动读取当前 HTTP 代理端口"""
+    global _AUTO_PROXY_PORT
+    if _AUTO_PROXY_PORT is not None:
+        return _AUTO_PROXY_PORT
+    try:
+        import subprocess
+        out = subprocess.check_output(["scutil", "--proxy"], timeout=2, text=True)
+        port = None
+        enabled = False
+        for line in out.splitlines():
+            line = line.strip()
+            if "HTTPEnable" in line and "1" in line:
+                enabled = True
+            if "HTTPPort" in line:
+                port = line.split(":")[-1].strip()
+        if enabled and port and port.isdigit():
+            _AUTO_PROXY_PORT = port
+            logging.info(f"✅ 自动检测系统代理端口: {port}")
+            return port
+    except Exception:
+        pass
+    _AUTO_PROXY_PORT = "7897"
+    return _AUTO_PROXY_PORT
+
+# ── 全局代理健康检测 ──────────────────────────────────────────────────────
+_PROXY_DEAD = False
+_PROXY_CHECKED = False
+
+def _check_proxy_health():
+    """快速检测代理是否可用（TCP 连接测试，不依赖外部域名）"""
+    global _PROXY_DEAD, _PROXY_CHECKED
+    if _PROXY_CHECKED:
+        return
+    _PROXY_CHECKED = True
+    _port = _detect_system_proxy_port()
+    if not _port:
+        _PROXY_DEAD = True
+        logging.warning("🚫 未检测到系统代理端口")
+        return
+    import socket
+    try:
+        _sock = socket.create_connection(("127.0.0.1", int(_port)), timeout=2)
+        _sock.close()
+        _PROXY_DEAD = False
+        logging.info(f"✅ 代理 127.0.0.1:{_port} 可用（TCP 连接正常）")
+    except Exception:
+        _PROXY_DEAD = True
+        logging.warning(f"🚫 代理 127.0.0.1:{_port} 不可用，数据源将绕过代理直连")
+
+def _is_proxy_dead() -> bool:
+    if not _PROXY_CHECKED:
+        _check_proxy_health()
+    return _PROXY_DEAD
+
+def _yf_mark_rate_limited():
+    global _YF_RATE_LIMITED_UNTIL
+    _YF_RATE_LIMITED_UNTIL = time.time() + _YF_RATE_LIMIT_COOLDOWN
+    logging.warning(f"🚫 Yahoo Finance rate limited，{_YF_RATE_LIMIT_COOLDOWN}s 内跳过 yfinance，使用备用源")
 
 # 【V87.11】导入 Google Gemini API
 try:
@@ -529,8 +665,8 @@ class Config:
     ENABLE_PERF_LAYER        = _TOML.get("features", {}).get("enable_perf_layer", True)
 
     CACHE_TTL       = _TOML.get("cache", {}).get("ttl_daily", 3600)
-    RETRY_COUNT     = _TOML.get("data", {}).get("retry_count", 3)
-    REQUEST_TIMEOUT = _TOML.get("data", {}).get("request_timeout", 30)  # 从 8 升至 30 秒
+    RETRY_COUNT     = _TOML.get("data", {}).get("retry_count", 1)
+    REQUEST_TIMEOUT = _TOML.get("data", {}).get("request_timeout", 5)
 
     CACHE_TTL_FAST   = _TOML.get("cache", {}).get("ttl_fast",   900)
     CACHE_TTL_DAILY  = _TOML.get("cache", {}).get("ttl_daily",  3600)
@@ -852,6 +988,113 @@ _perf_monitor = _get_perf_monitor()
 _cache_manager = _get_cache_manager()
 
 # ═══════════════════════════════════════════════════════════════
+# 东方财富万能数据源（Yahoo 被封时的主力替代）
+# 覆盖：美股、港股、A股、全球指数、汇率
+# ★ 必须在 DataProvider 之前定义，因为 fetch_safe() 会调用它
+# ═══════════════════════════════════════════════════════════════
+_EM_SECID_KNOWN = {
+    'SPY': '107.SPY', 'QQQ': '105.QQQ', 'TLT': '105.TLT', 'GLD': '107.GLD',
+    'IWM': '107.IWM', 'EEM': '107.EEM', 'XLF': '107.XLF', 'VTI': '107.VTI',
+    'NVDA': '105.NVDA', 'AAPL': '105.AAPL', 'TSLA': '105.TSLA', 'MSFT': '105.MSFT',
+    'GOOGL': '105.GOOGL', 'GOOG': '105.GOOG', 'META': '105.META', 'AMZN': '105.AMZN',
+    'NFLX': '105.NFLX', 'AMD': '105.AMD', 'INTC': '105.INTC', 'AVGO': '105.AVGO',
+    'JPM': '106.JPM', 'JNJ': '106.JNJ', 'WMT': '106.WMT', 'CAT': '106.CAT',
+    'PLD': '106.PLD', 'NEE': '106.NEE', 'LIN': '106.LIN', 'T': '106.T',
+    'V': '106.V', 'MA': '106.MA', 'BAC': '106.BAC', 'GS': '106.GS',
+    'UNH': '106.UNH', 'HD': '106.HD', 'DIS': '106.DIS', 'KO': '106.KO',
+    'PG': '106.PG', 'MRK': '106.MRK', 'ABBV': '106.ABBV', 'PFE': '106.PFE',
+    'XOM': '106.XOM', 'CVX': '106.CVX', 'CRM': '106.CRM',
+    'NVO': '105.NVO', 'LLY': '106.LLY', 'TSM': '106.TSM', 'PM': '106.PM',
+    'ACMR': '105.ACMR', 'BRK-B': '106.BRK.B', 'QQQM': '105.QQQM', 'VOO': '107.VOO',
+    '^HSI': '100.HSI', '^HSTECH': '124.HSTECH', '^HSCE': '100.HSCEI',
+    '^GSPC': '100.SPX', '^DJI': '100.DJIA', '^IXIC': '100.NDX',
+    '^VIX': '100.VIX', '^TNX': '100.UST10Y',
+    'DX-Y.NYB': '100.UDI',
+    'CNY=X': '119.USDCNH', 'HKD=X': '119.USDHKD',
+}
+
+_DIRECT_SESSION = requests.Session()
+_DIRECT_SESSION.trust_env = False
+_DIRECT_SESSION.verify = False
+
+_EM_BASE = "https://push2his.eastmoney.com/api/qt/stock/kline/get"
+
+def fetch_from_eastmoney_universal(symbol: str, period: str = '1y') -> pd.DataFrame:
+    """
+    东方财富万能数据源 - 使用 HTTP 直连（不走 HTTPS，彻底避开代理/SSL 拦截）
+    trust_env=False 的 Session 彻底绕过所有代理环境变量
+    """
+    try:
+        secid = _EM_SECID_KNOWN.get(symbol)
+
+        if not secid:
+            if symbol.endswith('.SS'):
+                code = symbol.replace('.SS', '')
+                secid = f"1.{code}"
+            elif symbol.endswith('.SZ'):
+                code = symbol.replace('.SZ', '')
+                secid = f"0.{code}"
+            elif symbol.endswith('.HK'):
+                code = symbol.replace('.HK', '').zfill(5)
+                secid = f"116.{code}"
+            else:
+                for mkt in ['105', '106', '107']:
+                    _test_secid = f"{mkt}.{symbol}"
+                    try:
+                        _tr = _DIRECT_SESSION.get(
+                            _EM_BASE,
+                            params={'secid': _test_secid, 'fields1': 'f1,f3', 'fields2': 'f51,f52', 'klt': '101', 'fqt': '1', 'end': '20500101', 'lmt': '1'},
+                            timeout=3)
+                        if _tr.status_code == 200:
+                            _td = _tr.json()
+                            if _td.get('data') and _td['data'].get('klines'):
+                                secid = _test_secid
+                                break
+                    except Exception:
+                        continue
+                if not secid:
+                    return None
+
+        is_index = secid.startswith('100.') or secid.startswith('124.')
+        fqt_val = '0' if is_index else '1'
+        lmt_map = {'6mo': '130', '1y': '252', '2y': '504', '3y': '756'}
+        lmt = lmt_map.get(period, '252')
+
+        r = _DIRECT_SESSION.get(
+            _EM_BASE,
+            params={
+                'secid': secid, 'fields1': 'f1,f2,f3,f4,f5,f6',
+                'fields2': 'f51,f52,f53,f54,f55,f56,f57,f58',
+                'klt': '101', 'fqt': fqt_val, 'end': '20500101', 'lmt': lmt,
+            },
+            timeout=5)
+
+        if r.status_code != 200:
+            return None
+        data = r.json()
+        if not data.get('data') or not data['data'].get('klines'):
+            return None
+
+        rows = []
+        for line in data['data']['klines']:
+            parts = line.split(',')
+            if len(parts) >= 6:
+                rows.append({
+                    'Date': parts[0], 'Open': float(parts[1]), 'Close': float(parts[2]),
+                    'High': float(parts[3]), 'Low': float(parts[4]), 'Volume': float(parts[5])
+                })
+        if not rows:
+            return None
+        df = pd.DataFrame(rows)
+        df['Date'] = pd.to_datetime(df['Date'])
+        df.set_index('Date', inplace=True)
+        _safe_print(f"[东财] ✅ {symbol} → {secid}  {len(df)} 行")
+        return df
+    except Exception as e:
+        _safe_print(f"[东财] ❌ {symbol} 失败: {type(e).__name__}: {str(e)[:80]}")
+        return None
+
+# ═══════════════════════════════════════════════════════════════
 
 class DataProvider:
     """
@@ -889,11 +1132,31 @@ class DataProvider:
         # 1. 检查分层缓存
         cached_value, is_stale = self.cache_mgr.get(cache_key, data_type, force_refresh)
         if cached_value is not None and not is_stale:
-            # 缓存新鲜，直接返回
             elapsed = (time.time() - start_time) * 1000
             self.perf.record('fetch', elapsed)
             return cached_value
         
+        # 1b. Rate limit 冷却期：直接返回过期缓存（有总比没有好）
+        if cached_value is not None and is_stale and _yf_is_rate_limited():
+            self.logger.info(f"⏭️ {symbol} rate limit 期间使用过期缓存")
+            elapsed = (time.time() - start_time) * 1000
+            self.perf.record('fetch', elapsed)
+            return cached_value
+        
+        # 2-pre. 东方财富万能源作为第一数据源（HTTP 直连，0.2s 极速，无需代理）
+        try:
+            _em_df = fetch_from_eastmoney_universal(symbol, period=period)
+            if _em_df is not None and len(_em_df) >= min_rows:
+                self.cache_mgr.set(cache_key, _em_df, data_type)
+                elapsed = (time.time() - start_time) * 1000
+                self.perf.record('fetch', elapsed)
+                self.logger.info(f"✅ 东财万能源获取 {symbol}，共 {len(_em_df)} 条记录 ({elapsed:.0f}ms)")
+                return _em_df
+            else:
+                self.logger.warning(f"⚠️ 东财万能源 {symbol} 返回空或不足 min_rows={min_rows}")
+        except Exception as _e:
+            self.logger.warning(f"⚠️ 东财万能源 {symbol} 异常: {type(_e).__name__}: {str(_e)[:100]}")
+
         # 2a. A股：优先 Tushare（全球可用，覆盖率高）
         if symbol.endswith(".SS") or symbol.endswith(".SZ"):
             try:
@@ -908,47 +1171,53 @@ class DataProvider:
             except Exception as _e:
                 self.logger.debug(f"Tushare {symbol} 失败，降级 yfinance: {_e}")
 
-        # 2b. 尝试从 yfinance 获取（带重试）
-        # 注意：新版 yfinance (>=0.2.37) 只接受 curl_cffi Session，
-        # 传入 requests.Session 会报错。优先用 curl_cffi，否则不传 session。
+        # 2b. 尝试从 yfinance 获取（带重试 + rate limit 熔断）
         def _make_yf_session(attempt_idx: int):
             try:
                 import curl_cffi.requests as _cffi
                 _impersonates = ["chrome110", "chrome120", "safari17_0"]
                 return _cffi.Session(impersonate=_impersonates[attempt_idx % len(_impersonates)])
             except ImportError:
-                return None  # curl_cffi 未安装，yfinance 自行处理
+                return None
 
-        for attempt in range(Config.RETRY_COUNT):
-            try:
-                self.logger.info(f"📊 正在获取 {symbol} 数据... (尝试 {attempt+1}/{Config.RETRY_COUNT})")
-                _sess = _make_yf_session(attempt)
-                ticker = yf.Ticker(symbol, session=_sess) if _sess else yf.Ticker(symbol)
-                # yfinance 部分版本不支持 timeout 参数，先尝试带 timeout，失败后不带
+        if _yf_is_rate_limited() or _yf_opserr_blocked():
+            self.logger.warning(f"⏭️ {symbol} 跳过 yfinance（{'rate limit' if _yf_is_rate_limited() else 'OperationalError'} 冷却中），直接尝试备用源")
+        else:
+            for attempt in range(Config.RETRY_COUNT):
                 try:
-                    df = ticker.history(period=period, timeout=Config.REQUEST_TIMEOUT)
-                except TypeError:
-                    df = ticker.history(period=period)
-                # 兼容新版 yfinance MultiIndex 列
-                if df is not None and not df.empty and hasattr(df.columns, "levels") and df.columns.nlevels == 2:
-                    df.columns = [c[0] for c in df.columns]
+                    self.logger.info(f"📊 正在获取 {symbol} 数据... (尝试 {attempt+1}/{Config.RETRY_COUNT})")
+                    _sess = _make_yf_session(attempt)
+                    ticker = yf.Ticker(symbol, session=_sess) if _sess else yf.Ticker(symbol)
+                    try:
+                        df = ticker.history(period=period, timeout=Config.REQUEST_TIMEOUT)
+                    except TypeError:
+                        df = ticker.history(period=period)
+                    if df is not None and not df.empty and hasattr(df.columns, "levels") and df.columns.nlevels == 2:
+                        df.columns = [c[0] for c in df.columns]
+                    
+                    if df is not None and not df.empty and len(df) >= min_rows:
+                        self.cache_mgr.set(cache_key, df, data_type)
+                        elapsed = (time.time() - start_time) * 1000
+                        self.perf.record('fetch', elapsed)
+                        self.logger.info(f"✅ 成功获取 {symbol} 数据，共 {len(df)} 条记录")
+                        return df
+                    else:
+                        self.logger.warning(f"⚠️  {symbol} 数据为空或过少（{len(df) if df is not None else 0} 行），等待后重试...")
+                        if attempt < Config.RETRY_COUNT - 1:
+                            time.sleep(1 * (attempt + 1))
                 
-                if df is not None and not df.empty and len(df) >= min_rows:
-                    self.cache_mgr.set(cache_key, df, data_type)
-                    elapsed = (time.time() - start_time) * 1000
-                    self.perf.record('fetch', elapsed)
-                    self.logger.info(f"✅ 成功获取 {symbol} 数据，共 {len(df)} 条记录")
-                    return df
-                else:
-                    self.logger.warning(f"⚠️  {symbol} 数据为空或过少（{len(df) if df is not None else 0} 行），等待后重试...")
+                except Exception as e:
+                    _err_str = str(e)
+                    self.logger.warning(f"⚠️  {symbol} 获取失败 (尝试 {attempt+1}): {_err_str[:120]}")
+                    self.perf.error()
+                    if _yf_check_operational_error(e):
+                        self.logger.warning(f"⚠️  {symbol} OperationalError（SQLite锁），跳过 yfinance 走备用源")
+                        break
+                    if 'Rate' in _err_str or 'Too Many' in _err_str or 'RateLimit' in type(e).__name__:
+                        _yf_mark_rate_limited()
+                        break
                     if attempt < Config.RETRY_COUNT - 1:
-                        time.sleep(2 * (attempt + 1))
-            
-            except Exception as e:
-                self.logger.warning(f"⚠️  {symbol} 获取失败 (尝试 {attempt+1}): {str(e)[:120]}")
-                self.perf.error()
-                if attempt < Config.RETRY_COUNT - 1:
-                    time.sleep(2 * (attempt + 1))  # 递增延迟 2s/4s/6s
+                        time.sleep(1 * (attempt + 1))
         
         # 2c. A股：yfinance 失败时尝试东方财富备用（Tushare 需 token，Cloud 环境常失败）
         if (symbol.endswith('.SS') or symbol.endswith('.SZ')) and USE_NEW_MODULES:
@@ -1002,14 +1271,26 @@ class DataProvider:
             except Exception as _e:
                 self.logger.debug(f"东财港股指数 {symbol} 失败: {_e}")
         
-        # 3. 所有尝试失败，返回过期缓存（如果有）
+        # 3. 最终兜底：东方财富万能源（无论 rate limit 状态都尝试）
+        try:
+            _em_last = fetch_from_eastmoney_universal(symbol, period=period)
+            if _em_last is not None and len(_em_last) >= min_rows:
+                self.cache_mgr.set(cache_key, _em_last, data_type)
+                elapsed = (time.time() - start_time) * 1000
+                self.perf.record('fetch', elapsed)
+                self.logger.info(f"✅ 东财兜底获取 {symbol}，共 {len(_em_last)} 条记录")
+                return _em_last
+        except Exception as _e:
+            self.logger.debug(f"东财兜底 {symbol} 也失败: {_e}")
+
+        # 4. 所有尝试失败，返回过期缓存（如果有）
         if cached_value is not None:
             self.logger.warning(f"⚠️  {symbol} 获取失败，使用过期缓存")
             elapsed = (time.time() - start_time) * 1000
             self.perf.record('fetch', elapsed)
             return cached_value
         
-        # 4. 完全失败，返回None
+        # 5. 完全失败，返回None
         self.logger.error(f"❌ {symbol} 数据获取完全失败，无可用缓存")
         elapsed = (time.time() - start_time) * 1000
         self.perf.record('fetch', elapsed)
@@ -1698,10 +1979,31 @@ class ExpectationLayer:
         }
         """
         try:
-            # 并发获取三大市场分析
-            us_result = self.analyze_market_regime(force_refresh)
-            hk_result = self.analyze_hk_market_regime(force_refresh)
-            cn_result = self.analyze_cn_market_regime(force_refresh)
+            from concurrent.futures import ThreadPoolExecutor, as_completed
+            _market_fns = {
+                'us': lambda: self.analyze_market_regime(force_refresh),
+                'hk': lambda: self.analyze_hk_market_regime(force_refresh),
+                'cn': lambda: self.analyze_cn_market_regime(force_refresh),
+            }
+            _market_results = {}
+            with ThreadPoolExecutor(max_workers=3) as _pool:
+                _futs = {_pool.submit(fn): key for key, fn in _market_fns.items()}
+                try:
+                    for _f in as_completed(_futs, timeout=45):
+                        _k = _futs[_f]
+                        try:
+                            _market_results[_k] = _f.result(timeout=45)
+                        except Exception as _fe:
+                            self.logger.error(f"❌ {_k} 市场分析线程异常: {_fe}")
+                            _market_results[_k] = self._fallback_result(f"{_k}分析异常", _k)
+                except TimeoutError:
+                    self.logger.warning("⚠️ 部分市场分析超时，使用已完成的结果")
+                    for _f, _k in _futs.items():
+                        if _k not in _market_results:
+                            _market_results[_k] = self._fallback_result(f"{_k}分析超时", _k)
+            us_result = _market_results.get('us', self._fallback_result("美股分析超时", 'us'))
+            hk_result = _market_results.get('hk', self._fallback_result("港股分析超时", 'hk'))
+            cn_result = _market_results.get('cn', self._fallback_result("A股分析超时", 'cn'))
             
             # 综合分析
             risk_on_count = sum(1 for r in [us_result, hk_result, cn_result] 
@@ -1771,6 +2073,13 @@ def _get_expectation_layer():
 _data_provider = _get_data_provider()
 _expectation_layer = _get_expectation_layer()
 
+
+@st.cache_data(ttl=300, show_spinner=False)
+def _cached_expectation_all_markets(_ts: int | None = None):
+    """模块级缓存：全球市场宏观分析（避免嵌套函数导致缓存不稳定）"""
+    return _expectation_layer.analyze_all_markets(force_refresh=False)
+
+
 # 【V89.2】初始化机构研究中心
 if INSTITUTIONAL_RESEARCH_AVAILABLE:
     _institutional_research = InstitutionalResearch(_data_provider, _perf_monitor)
@@ -1820,10 +2129,10 @@ try:
         MY_GEMINI_KEY = (st.secrets.get("GEMINI_API_KEY", "") or os.getenv("GEMINI_API_KEY", ""))
         GEMINI_MODEL_NAME = "gemini-2.5-flash"
     
-    # 配置Gemini API
+    # 配置Gemini API（使用REST传输避免gRPC通过HTTP代理失败）
     if HAS_GEMINI and MY_GEMINI_KEY:
-        genai.configure(api_key=MY_GEMINI_KEY)
-        logging.info(f"✅ Gemini API配置完成: {GEMINI_MODEL_NAME}")
+        genai.configure(api_key=MY_GEMINI_KEY, transport="rest")
+        logging.info(f"✅ Gemini API配置完成(REST): {GEMINI_MODEL_NAME}")
 except Exception as e:
     MY_GEMINI_KEY = ""
     GEMINI_MODEL_NAME = "gemini-2.5-flash"
@@ -1895,7 +2204,7 @@ def render_cloud_search():
                     "token": "D43BF722C8E33BDC906FB84D85E326E8",
                     "count": 50
                 }
-                response = requests.get(search_url, params=params, timeout=5)
+                response = _DIRECT_SESSION.get(search_url, params=params, timeout=5)
                 if response.status_code == 200:
                     data = response.json()
                     if data and 'QuotationCodeTable' in data and 'Data' in data['QuotationCodeTable']:
@@ -2208,11 +2517,21 @@ except NameError:
 # ═══════════════════════════════════════════════════════════════
 # Fragment 函数：AI综合分析（局部刷新，按钮交互不触发全页重跑）
 # ═══════════════════════════════════════════════════════════════
+@st.cache_data(ttl=300, show_spinner=False)
+def _cached_yf_history_for_ai(index_code: str, period: str = "60d"):
+    """yfinance 指数日线缓存，避免 AI 分析区重复拉取。"""
+    import yfinance as _yf
+    try:
+        return _yf.Ticker(index_code).history(period=period, timeout=15)
+    except TypeError:
+        return _yf.Ticker(index_code).history(period=period)
+
+
 def _run_single_market_ai(market_name, index_code, market_result):
     """执行单个市场的 AI 分析。直接用 yfinance + genai，不依赖后面定义的函数。"""
     result = {}
     try:
-        _mkt_df = yf.Ticker(index_code).history(period="60d", timeout=15)
+        _mkt_df = _cached_yf_history_for_ai(index_code, "60d")
         if _mkt_df is None or len(_mkt_df) < 5:
             _safe_print(f"[AI市场分析] {market_name} 数据不足")
             return result
@@ -2286,6 +2605,9 @@ _load_market_ai_from_cache()
 
 def _auto_generate_market_ai():
     """自动生成 AI 市场分析（必须在 fetch_stock_data/call_gemini_api 定义之后调用）"""
+    # 默认关闭首屏自动 Gemini 三连调用，避免长时间空白；用户点击「一键分析全市场」后再生成
+    if not st.session_state.get("v88_auto_ai_market", False):
+        return
     _markets = [
         ('us', '美股', '^GSPC', 'market_ai_us', '_us_tech_data', 'market_sentiment_us'),
         ('hk', '港股', '^HSI', 'market_ai_hk', '_hk_tech_data', 'market_sentiment_hk'),
@@ -2321,6 +2643,9 @@ def _auto_generate_market_ai():
 @st.fragment
 def _render_ai_market_analysis():
     from datetime import datetime as _dt_ai
+    if not st.session_state.get("all_markets"):
+        st.info("💡 请先在上方选择「仅宏观脉搏」或「全部加载」并完成数据拉取，再使用下方「一键分析全市场」。")
+        return
     _all = st.session_state.get('all_markets', {})
     us_result = _all.get('us_market', {'data_ok': False, 'verdict': 'Unknown', 'reason': ''})
     hk_result = _all.get('hk_market', {'data_ok': False, 'verdict': 'Unknown', 'reason': ''})
@@ -2481,8 +2806,8 @@ def _heat_remaining_seconds() -> int | None:
         return None
 
 
-@st.cache_data(ttl=43200, show_spinner=False)   # 12 小时缓存
-def get_market_heat(_cache_ver="v95"):
+@st.cache_data(ttl=300, show_spinner=False)   # 5 分钟缓存，与宏观层一致，避免冷启动过长
+def get_market_heat(_cache_ver="v96"):
     """
     【模块级】环球行业热力图 — 12小时 st.cache_data 缓存。
     定义在模块顶层，避免 rerun 时产生新实例导致缓存失效。
@@ -2540,14 +2865,9 @@ def get_market_heat(_cache_ver="v95"):
         all_codes.extend(markets.values())
     all_codes = list(dict.fromkeys(all_codes))   # 去重保序
 
-    # 批量下载（一次请求，节省时间）
-    try:
-        raw = _yf.download(all_codes, period="90d", progress=False,
-                           auto_adjust=True, group_by="ticker")
-    except Exception:
-        raw = None
+    # 不再批量下载 yfinance（Yahoo 限流严重），全部走东方财富逐个获取
+    raw = None
 
-    # 单独下载缓存（批量失败时的兜底）
     _single_cache = {}
 
     def _hk_variants(code):
@@ -2565,7 +2885,7 @@ def get_market_heat(_cache_ver="v95"):
         return list(dict.fromkeys(variants))
 
     def _get_close(code):
-        # A股：优先 Tushare（90天已足够热力计算）
+        # A股：优先 Tushare
         if _has_ts and _is_cn(code):
             try:
                 s = _ts_daily(code, days=100)
@@ -2573,47 +2893,48 @@ def get_market_heat(_cache_ver="v95"):
                     return s["Close"]
             except Exception:
                 pass
-        # 先尝试从批量结果取（含港股补零变体匹配）
+
+        # 东方财富万能源作为第一数据源（ALL 市场，0.2s/个，无需代理）
         try:
-            if raw is not None:
-                if hasattr(raw.columns, "levels"):
-                    lvl0 = set(raw.columns.get_level_values(0))
-                    for _c in _hk_variants(code):
-                        if _c in lvl0:
-                            s = raw[_c]["Close"].dropna()
-                            if len(s) >= 5:
-                                return s
-                elif len(all_codes) == 1:
-                    s = raw["Close"].dropna()
-                    if len(s) >= 5:
-                        return s
+            _em_df = fetch_from_eastmoney_universal(code, period='6mo')
+            if _em_df is not None and len(_em_df) >= 5 and 'Close' in _em_df.columns:
+                _single_cache[code] = _em_df["Close"]
+                return _em_df["Close"]
         except Exception:
             pass
-        # 批量没拿到，逐变体单独下载兜底
+
+        # 东方财富失败时，尝试 yfinance 兜底
         if code in _single_cache:
             return _single_cache[code]
-        for _c in _hk_variants(code):
-            try:
-                df2 = _yf.download(_c, period="90d", progress=False, auto_adjust=True)
-                if df2 is None or len(df2) < 5:
+        if not _yf_opserr_blocked():
+            for _c in _hk_variants(code):
+                try:
+                    df2 = _yf.download(_c, period="90d", progress=False, auto_adjust=True)
+                    if df2 is None or len(df2) < 5:
+                        continue
+                    if hasattr(df2.columns, "levels") and df2.columns.nlevels == 2:
+                        df2.columns = [c[0] for c in df2.columns]
+                    if "Close" not in df2.columns:
+                        continue
+                    s = df2["Close"].dropna()
+                    if len(s) >= 5:
+                        _single_cache[code] = s
+                        return s
+                except Exception as _e:
+                    if _yf_check_operational_error(_e):
+                        break
                     continue
-                # 兼容新版 yfinance 返回 MultiIndex 列
-                if hasattr(df2.columns, "levels") and df2.columns.nlevels == 2:
-                    df2.columns = [c[0] for c in df2.columns]
-                if "Close" not in df2.columns:
-                    continue
-                s = df2["Close"].dropna()
-                if len(s) >= 5:
-                    _single_cache[code] = s
-                    return s
-            except Exception:
-                continue
         _single_cache[code] = None
         return None
 
     results = []
     for sector_name, markets in SECTORS.items():
-        row = {"行业": sector_name}
+        row = {
+            "行业": sector_name,
+            "_us_code": markets.get("US", ""),
+            "_hk_code": markets.get("HK", ""),
+            "_cn_code": markets.get("CN", ""),
+        }
         for mkt_key, col_name in [("US", "🇺🇸 美股 5日 | 30日 | 60日"),
                                    ("HK", "🇭🇰 港股 5日 | 30日 | 60日"),
                                    ("CN", "🇨🇳 A股 5日 | 30日 | 60日")]:
@@ -2643,6 +2964,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
     st.markdown(f'<div style="font-family: Georgia, \'Times New Roman\', SimSun, 宋体, serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 0.4rem 1rem; border-radius: 8px; margin-bottom: 1rem; width: 100%;"><div style="font-family: inherit; color: white; margin: 0; text-align: center; font-size: 12px; font-weight: 700;">🌍 全球市场概览 · 实时监控三大市场体制·把握全球资金流向</div><div style="font-family: inherit; color: rgba(255,255,255,0.7); margin: 0.15rem 0 0 0; text-align: center; font-size: 11px;">📅 {_global_today} {_global_weekday} · 北京 {_bj_time} · 纳斯达克 {_nasdaq_time} ET</div></div>', unsafe_allow_html=True)
 
     try:
+        st.caption("⏳ **加载提示**：下方步骤会显示进度；默认「仅宏观脉搏」首屏最快。长时间空白时请缩小加载范围或检查网络。")
         # 检查是否请求强制刷新
         force_refresh = st.session_state.get('force_refresh_requested', False)
         if force_refresh:
@@ -2656,24 +2978,48 @@ if Config.ENABLE_EXPECTATION_LAYER:
         # 启动性能监控
         _perf_monitor.start()
 
-        @st.cache_data(ttl=300, show_spinner=False)
-        def _cached_all_markets(_ts=None):
-            return _expectation_layer.analyze_all_markets(force_refresh=False)
-
         _cache_ts = int(time.time() // 300)  # 每5分钟变一次，触发缓存刷新
-        all_markets = _cached_all_markets(_ts=_cache_ts)
-        
-        # 【V89.2】保存到session_state供机构研究中心使用
-        st.session_state.all_markets = all_markets
-        
-        us_result = all_markets['us_market']
-        hk_result = all_markets['hk_market']
-        cn_result = all_markets['cn_market']
-        summary = all_markets['summary']
-        
-        # 顶部：全球综合状态
-        st.markdown("### 🌐 全球市场综合")
-        summary_col1, summary_col2, summary_col3 = st.columns([2, 1, 1])
+        if "v88_overview_mode" not in st.session_state:
+            st.session_state.v88_overview_mode = "both"
+        _overview_mode = st.radio(
+            "📂 首屏加载范围（默认全部加载：宏观脉搏 + 行业热力）",
+            options=["macro", "heat", "both"],
+            format_func=lambda x: {
+                "macro": "📡 仅宏观脉搏（VIX / 三市场体制）",
+                "heat": "🌡️ 仅行业热力",
+                "both": "📡 + 🌡️ 全部加载",
+            }[x],
+            horizontal=True,
+            key="v88_overview_mode",
+            help="行业热力需逐个标的请求，耗时更长；可与宏观分开加载。",
+        )
+        st.checkbox(
+            "首屏自动请求 AI 市场分析（需 Gemini，较慢；默认关闭）",
+            key="v88_auto_ai_market",
+        )
+
+        all_markets = None
+        heat_df = None
+        if _overview_mode in ("macro", "both"):
+            with st.spinner("🌐 正在加载全球市场宏观数据…"):
+                all_markets = _cached_expectation_all_markets(_ts=_cache_ts)
+            st.session_state.all_markets = all_markets
+        else:
+            all_markets = st.session_state.get("all_markets")
+
+        if _overview_mode in ("heat", "both"):
+            with st.spinner("🌡️ 正在加载行业热力图…"):
+                heat_df = get_market_heat()
+
+        if all_markets is None:
+            st.info("📡 **宏观数据未加载。** 请在上方选择「仅宏观脉搏」或「全部加载」后等待片刻。")
+        else:
+            us_result = all_markets['us_market']
+            hk_result = all_markets['hk_market']
+            cn_result = all_markets['cn_market']
+            summary = all_markets['summary']
+            st.markdown("### 🌐 全球市场综合")
+            summary_col1, summary_col2, summary_col3 = st.columns([2, 1, 1])
         
         with summary_col1:
             global_verdict = summary['global_verdict']
@@ -2864,62 +3210,67 @@ if Config.ENABLE_EXPECTATION_LAYER:
         
 
         # ═══════════════════════════════════════════════════════════════
-        # 行业热力
+        # 行业热力（懒加载：仅在选择「仅行业热力」或「全部」时拉取）
         # ═══════════════════════════════════════════════════════════════
         st.markdown(f"### 🌡️ 行业热力 · {_dt_global.now().strftime('%Y-%m-%d')}")
 
-        # 缓存倒计时
-        _heat_remain = _heat_remaining_seconds()
-        if _heat_remain is not None and _heat_remain > 0:
-            _heat_h, _heat_m = divmod(_heat_remain // 60, 60)
-            _heat_countdown = f"⏱ 缓存剩余 {_heat_h}h {_heat_m:02d}m"
+        if heat_df is None:
+            st.caption("💡 当前未加载行业热力。请在上方选择「仅行业热力」或「全部加载」。")
         else:
-            _heat_countdown = "⏱ 缓存已过期"
-        _heat_load_bj = _dt_global.now(ZoneInfo("Asia/Shanghai")).strftime("%H:%M")
-        st.caption(f"环球行业资金走向 · 点击行业可一键 AI 分析 · 📊 代表性个股涨跌幅（5/30/60日） · {_heat_countdown} · 加载于 {_heat_load_bj} 北京")
+            # 缓存倒计时
+            _heat_remain = _heat_remaining_seconds()
+            if _heat_remain is not None and _heat_remain > 0:
+                _heat_h, _heat_m = divmod(_heat_remain // 60, 60)
+                _heat_countdown = f"⏱ 缓存剩余 {_heat_h}h {_heat_m:02d}m"
+            else:
+                _heat_countdown = "⏱ 缓存已过期"
+            _heat_load_bj = _dt_global.now(ZoneInfo("Asia/Shanghai")).strftime("%H:%M")
+            st.caption(f"环球行业资金走向 · 点击行业可一键 AI 分析 · 📊 代表性个股涨跌幅（5/30/60日） · {_heat_countdown} · 加载于 {_heat_load_bj} 北京")
 
-        _heat_rcol = st.columns([5, 1])[1]
-        with _heat_rcol:
-            if st.button("🔄 强制刷新", key="refresh_heat", help="穿透全部缓存，重新拉取行业数据", width='stretch'):
-                get_market_heat.clear()
-                st.cache_data.clear()
-                try:
-                    local_cache.clear_all()
-                except Exception:
-                    pass
-                # 清除时间戳让倒计时归零
-                try:
-                    _HEAT_CACHE_TS_FILE.unlink(missing_ok=True)
-                except Exception:
-                    pass
-                st.rerun()
+            _heat_rcol = st.columns([5, 1])[1]
+            with _heat_rcol:
+                if st.button("🔄 强制刷新", key="refresh_heat", help="穿透全部缓存，重新拉取行业数据", width='stretch'):
+                    get_market_heat.clear()
+                    try:
+                        _cached_expectation_all_markets.clear()
+                    except Exception:
+                        pass
+                    st.cache_data.clear()
+                    try:
+                        local_cache.clear_all()
+                    except Exception:
+                        pass
+                    try:
+                        _HEAT_CACHE_TS_FILE.unlink(missing_ok=True)
+                    except Exception:
+                        pass
+                    st.rerun()
 
-        heat_df = get_market_heat()
-        display_cols = ["行业", "🇺🇸 美股 5日 | 30日 | 60日", "🇭🇰 港股 5日 | 30日 | 60日", "🇨🇳 A股 5日 | 30日 | 60日"]
-        selected_heat = st.dataframe(
-            heat_df[display_cols],
-            width='stretch',
-            hide_index=True,
-            on_select="rerun",
-            selection_mode="single-row",
-            key="heat_table"
-        )
+            display_cols = ["行业", "🇺🇸 美股 5日 | 30日 | 60日", "🇭🇰 港股 5日 | 30日 | 60日", "🇨🇳 A股 5日 | 30日 | 60日"]
+            selected_heat = st.dataframe(
+                heat_df[display_cols],
+                width='stretch',
+                hide_index=True,
+                on_select="rerun",
+                selection_mode="single-row",
+                key="heat_table"
+            )
 
-        if selected_heat and len(selected_heat.selection.rows) > 0:
-            selected_idx = selected_heat.selection.rows[0]
-            selected_row = heat_df.iloc[selected_idx]
-            sector_name = selected_row["行业"]
-            st.info(f"📊 已选择 **{sector_name}** 行业")
-            if st.button(f"🌍 一键分析全球{sector_name}行业（美股+港股+A股）", key="analyze_global_sector", width='stretch', type="primary"):
-                st.session_state.sector_analysis_name = sector_name
-                st.session_state.sector_analysis_market = "全球"
-                st.session_state.sector_analysis_codes = {
-                    "us": selected_row["_us_code"],
-                    "hk": selected_row["_hk_code"],
-                    "cn": selected_row["_cn_code"]
-                }
-                st.toast(f"🚀 AI分析全球{sector_name}行业中...", icon="🌍")
-                st.rerun()
+            if selected_heat and len(selected_heat.selection.rows) > 0:
+                selected_idx = selected_heat.selection.rows[0]
+                selected_row = heat_df.iloc[selected_idx]
+                sector_name = selected_row["行业"]
+                st.info(f"📊 已选择 **{sector_name}** 行业")
+                if st.button(f"🌍 一键分析全球{sector_name}行业（美股+港股+A股）", key="analyze_global_sector", width='stretch', type="primary"):
+                    st.session_state.sector_analysis_name = sector_name
+                    st.session_state.sector_analysis_market = "全球"
+                    st.session_state.sector_analysis_codes = {
+                        "us": selected_row["_us_code"],
+                        "hk": selected_row["_hk_code"],
+                        "cn": selected_row["_cn_code"]
+                    }
+                    st.toast(f"🚀 AI分析全球{sector_name}行业中...", icon="🌍")
+                    st.rerun()
 
         if 'sector_analysis_name' in st.session_state and st.session_state.sector_analysis_name:
             sector_name_s = st.session_state.sector_analysis_name
@@ -3365,7 +3716,7 @@ else:
         - 5分钟过期时间
         - 500MB容量限制，超出自动清理最旧的缓存
         """
-        def __init__(self, cache_dir=".cache_stock_data", max_size_mb=500, ttl_seconds=300):
+        def __init__(self, cache_dir=".cache_stock_data", max_size_mb=500, ttl_seconds=900):
             self.cache_dir = Path(cache_dir)
             self.cache_dir.mkdir(exist_ok=True)
             self.max_size_bytes = max_size_mb * 1024 * 1024
@@ -3557,11 +3908,14 @@ def get_proxy_url():
     # 2. Streamlit Cloud / 云端环境：检测到 STREAMLIT_SHARING_MODE 时不用本地代理
     if os.environ.get("STREAMLIT_SHARING_MODE") or os.environ.get("HOME", "").startswith("/home/"):
         return None
-    # 3. 用户在 session_state 里手动设置了端口（本地调试）
-    port = st.session_state.get("proxy_port", "")
+    # 3. 代理不可用时直连
+    if _is_proxy_dead():
+        return None
+    # 4. 用户在 session_state 里手动设置了端口，或自动探测系统代理
+    port = st.session_state.get("proxy_port", "") or _detect_system_proxy_port()
     if port:
         return f"http://127.0.0.1:{port}"
-    # 4. 直连
+    # 5. 直连
     return None
 
 # ═══════════════════════════════════════════════════════════════
@@ -3669,8 +4023,7 @@ def fetch_from_stooq(symbol: str):
         url = f"https://stooq.com/q/d/l/?s={stooq_sym}&i=d"
         _safe_print(f"[Stooq] 请求 {symbol} → {url}")
 
-        # 用 requests 下载（比 pd.read_csv(url) 更稳定，可设超时）
-        resp = requests.get(url, timeout=20, verify=False,
+        resp = _DIRECT_SESSION.get(url, timeout=5,
                             headers={'User-Agent': 'Mozilla/5.0'})
         if resp.status_code != 200 or len(resp.content) < 50:
             _safe_print(f"[Stooq] ❌ {symbol} HTTP {resp.status_code}")
@@ -3700,13 +4053,15 @@ def fetch_from_yahoo_direct(symbol: str, period: str = '1y') -> pd.DataFrame:
     直连 API 使用自定义 User-Agent 可绕过部分限制。
     适用于：美股、ETF、指数（^VIX、^TNX、SPY 等）
     """
+    if _yf_is_rate_limited():
+        _safe_print(f"[YahooV8] ⏭️ {symbol} 跳过（Yahoo rate limit 冷却中）")
+        return None
     _RANGE_MAP = {
         '6mo': '6mo', '1y': '1y', '2y': '2y',
         '3y': '3y', '5y': '5y',
         '1mo': '1mo', '3mo': '3mo',
     }
     range_str = _RANGE_MAP.get(period, '1y')
-    # 不支持港股和A股
     if symbol.endswith('.HK') or symbol.endswith('.SS') or symbol.endswith('.SZ'):
         return None
     try:
@@ -3720,7 +4075,7 @@ def fetch_from_yahoo_direct(symbol: str, period: str = '1y') -> pd.DataFrame:
             'Accept-Language': 'en-US,en;q=0.9',
             'Referer': 'https://finance.yahoo.com/',
         }
-        r = requests.get(url, params=params, headers=hdrs, timeout=20, verify=False)
+        r = _DIRECT_SESSION.get(url, params=params, headers=hdrs, timeout=5)
         if r.status_code != 200:
             _safe_print(f"[YahooV8] ❌ {symbol} HTTP {r.status_code}")
             return None
@@ -3759,7 +4114,7 @@ def fetch_cyb_from_eastmoney():
     """
     try:
         em_url = "https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=0.399006&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57,f58&klt=101&fqt=0&end=20500101&lmt=252"
-        r = requests.get(em_url, timeout=10, verify=False)
+        r = _DIRECT_SESSION.get(em_url, timeout=10)
         if r.status_code != 200:
             return None
         data = r.json()
@@ -3813,6 +4168,28 @@ def fetch_stock_data(code, return_source=False, return_quality=False):
     proxy_url = get_proxy_url()
     data_source = "无数据"
     
+    # 【速度优化】东方财富万能源作为第一数据源（0.2s，无需代理）
+    try:
+        _em_df = fetch_from_eastmoney_universal(target_code, period='1y')
+        if _em_df is not None and len(_em_df) > 0:
+            _safe_print(f"[fetch] ✅ 东财万能源获取 {target_code}")
+            data_source = "eastmoney"
+            data_quality = {
+                'source': '东方财富', 'last_updated': pd.Timestamp.now(),
+                'is_delayed': True, 'data_points': len(_em_df),
+                'date_range': f"{_em_df.index[0].date()} 至 {_em_df.index[-1].date()}" if len(_em_df) > 0 else None
+            }
+            if return_quality:
+                result = (_em_df, data_quality)
+            elif return_source:
+                result = (_em_df, data_source)
+            else:
+                result = _em_df
+            local_cache.set(cache_key, result)
+            return result
+    except Exception as _em_e:
+        _safe_print(f"[fetch] ⚠️ 东财万能源 {target_code} 失败: {_em_e}")
+    
     # 【V83 P0.1】数据质量元数据
     data_quality = {
         'source': '无数据',
@@ -3822,34 +4199,34 @@ def fetch_stock_data(code, return_source=False, return_quality=False):
         'date_range': None
     }
     
-    # ═══ 1️⃣ 主力：yfinance ═══
-    if HAS_YFINANCE:
+    # ═══ 1️⃣ 主力：yfinance（rate limit + OperationalError 熔断保护）═══
+    if HAS_YFINANCE and not _yf_is_rate_limited() and not _yf_opserr_blocked():
         param_combinations = [
             {"period": "1y", "auto_adjust": False},
-            {"period": "2y", "auto_adjust": True},
             {"period": "6mo", "auto_adjust": False},
-            {"period": "max", "auto_adjust": False},
         ]
         
+        _hit_rate_limit = False
+        _hit_opserr = False
         for idx, params in enumerate(param_combinations):
-            for retry in range(3):
+            if _hit_rate_limit or _hit_opserr:
+                break
+            for retry in range(1):
                 try:
                     with ProxyContext(proxy_url):
                         tk = yf.Ticker(target_code)
-                        df = tk.history(**params, timeout=15)
+                        df = tk.history(**params, timeout=5)
                         cleaned = clean_df(df)
                         if cleaned is not None and len(cleaned) > 0:
                             logging.info(f"✅ {target_code} YFinance成功 (参数{idx+1}, 重试{retry+1}/3)")
                             data_source = "yfinance"
                             
-                            # 【V83 P0.1】填充数据质量元数据
                             data_quality['source'] = 'Yahoo Finance'
                             data_quality['last_updated'] = pd.Timestamp.now()
-                            data_quality['is_delayed'] = True  # Yahoo Finance免费版有15-20分钟延迟
+                            data_quality['is_delayed'] = True
                             data_quality['data_points'] = len(cleaned)
                             data_quality['date_range'] = f"{cleaned.index[0].date()} 至 {cleaned.index[-1].date()}"
                             
-                            # 【V87.15】保存到本地缓存
                             if return_quality:
                                 result = (cleaned, data_quality)
                             elif return_source:
@@ -3860,10 +4237,19 @@ def fetch_stock_data(code, return_source=False, return_quality=False):
                             local_cache.set(cache_key, result)
                             return result
                 except Exception as e:
+                    _err_name = type(e).__name__
+                    _err_str = str(e)
+                    if _yf_check_operational_error(e):
+                        logging.warning(f"⚠️ {target_code} OperationalError，跳过 yfinance 走备用源")
+                        _hit_opserr = True
+                        break
+                    if 'Rate' in _err_str or 'Too Many' in _err_str or 'RateLimit' in _err_name:
+                        _yf_mark_rate_limited()
+                        _hit_rate_limit = True
+                        break
                     if retry < 2:
-                        # 【V87.16】指数退避重试
-                        wait_time = 0.5 * (2 ** retry)  # 0.5s, 1s, 2s
-                        logging.warning(f"⚠️ {target_code} YFinance失败 (参数{idx+1}, 重试{retry+1}/3): {type(e).__name__}, 等待{wait_time}s")
+                        wait_time = 0.5 * (2 ** retry)
+                        logging.warning(f"⚠️ {target_code} YFinance失败 (参数{idx+1}, 重试{retry+1}/3): {_err_name}, 等待{wait_time}s")
                         time.sleep(wait_time)
                         continue
                     else:
@@ -3871,6 +4257,10 @@ def fetch_stock_data(code, return_source=False, return_quality=False):
                         break
         
         _safe_print(f"[fetch] ⚠️ {target_code} YFinance全部尝试失败，尝试备用源...")
+    elif _yf_is_rate_limited():
+        _safe_print(f"[fetch] ⏭️ {target_code} 跳过 yfinance（rate limit 冷却中）")
+    elif _yf_opserr_blocked():
+        _safe_print(f"[fetch] ⏭️ {target_code} 跳过 yfinance（OperationalError 冷却中）")
 
     # ═══ 1.5️⃣ 【自动修复】港股代码格式容错：自动尝试所有格式变体 ═══
     if target_code.endswith('.HK'):
@@ -3884,7 +4274,7 @@ def fetch_stock_data(code, return_source=False, return_quality=False):
                     try:
                         with ProxyContext(proxy_url):
                             _tk = yf.Ticker(_alt_code)
-                            _df = _tk.history(**_params, timeout=15)
+                            _df = _tk.history(**_params, timeout=8)
                             _cleaned = clean_df(_df)
                             if _cleaned is not None and len(_cleaned) > 0:
                                 _safe_print(f"[fetch][自动修复] ✅ 港股格式容错成功: {target_code} -> {_alt_code}")
@@ -3899,6 +4289,27 @@ def fetch_stock_data(code, return_source=False, return_quality=False):
                     except Exception:
                         continue
             _safe_print(f"[fetch][自动修复] ❌ 港股所有格式变体均失败: {_variants}")
+
+    # ═══ 1.8️⃣ 东方财富万能源（Yahoo 被封时主力替代）═══
+    try:
+        _em_univ = fetch_from_eastmoney_universal(target_code)
+        if _em_univ is not None and len(_em_univ) > 0:
+            _safe_print(f"[fetch] ✅ {target_code} 东财万能源成功")
+            data_quality['source'] = '东方财富'
+            data_quality['last_updated'] = pd.Timestamp.now()
+            data_quality['is_delayed'] = True
+            data_quality['data_points'] = len(_em_univ)
+            data_quality['date_range'] = f"{_em_univ.index[0].date()} 至 {_em_univ.index[-1].date()}"
+            if return_quality:
+                result = (_em_univ, data_quality)
+            elif return_source:
+                result = (_em_univ, "东方财富")
+            else:
+                result = _em_univ
+            local_cache.set(cache_key, result)
+            return result
+    except Exception as _em_e:
+        _safe_print(f"[fetch] 东财万能源 {target_code} 失败: {_em_e}")
 
     # ═══ 2️⃣ 备用：Stooq（仅美股/指数）═══
     if not target_code.endswith('.HK') and not target_code.endswith('.SS') and not target_code.endswith('.SZ'):
@@ -3939,7 +4350,7 @@ def fetch_stock_data(code, return_source=False, return_quality=False):
             fqt_val = 0 if is_index else 1
             em_url = f"https://push2his.eastmoney.com/api/qt/stock/kline/get?secid={secid}&fields1=f1,f2,f3,f4,f5,f6&fields2=f51,f52,f53,f54,f55,f56,f57,f58&klt=101&fqt={fqt_val}&end=20500101&lmt=252"
             
-            response = requests.get(em_url, timeout=10, verify=False)
+            response = _DIRECT_SESSION.get(em_url, timeout=10)
             if response.status_code == 200:
                 data = response.json()
                 if data.get('data') and data['data'].get('klines'):
@@ -4053,7 +4464,7 @@ def fetch_eastmoney_stock_list(market="us", limit=350):
                 params = {"pn": pn, "pz": pz, "fs": "m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23", "fields": "f12,f14,f20", "ut": "bd1d9ddb04089700cf9c27f6f7426281"}
             else:
                 return []
-            response = requests.get(url, params=params, timeout=10, verify=False)
+            response = _DIRECT_SESSION.get(url, params=params, timeout=10)
             if response.status_code != 200:
                 break
             data = response.json()
@@ -7896,7 +8307,7 @@ if SENTIMENT_ANALYZER_AVAILABLE and _sentiment_analyzer:
 # ═══════════════════════════════════════════════════════════════
 # 10. Session State 初始化
 # ═══════════════════════════════════════════════════════════════
-if 'proxy_port' not in st.session_state: st.session_state.proxy_port = "1082"
+if 'proxy_port' not in st.session_state: st.session_state.proxy_port = _detect_system_proxy_port()
 if 'scan_selected_code' not in st.session_state: st.session_state.scan_selected_code = None
 if 'scan_selected_name' not in st.session_state: st.session_state.scan_selected_name = None
 if 'trigger_analysis' not in st.session_state: st.session_state.trigger_analysis = False
@@ -8038,8 +8449,9 @@ with st.sidebar:
     
     # 代理设置
     st.markdown('<p style="font-size: 12px; font-weight: 600; margin-top: 1rem; margin-bottom: 0.3rem;">⚙️ 网络设置</p>', unsafe_allow_html=True)
-    proxy_port = st.text_input("本地代理端口", value="1082", key="proxy_port_input")
-    st.session_state.proxy_port = (proxy_port or "1082").strip() or "1082"
+    _default_port = _detect_system_proxy_port()
+    proxy_port = st.text_input("本地代理端口", value=_default_port, key="proxy_port_input")
+    st.session_state.proxy_port = (proxy_port or _default_port).strip() or _default_port
     
     if st.button("测试连接", width='stretch'):
         purl = f"http://127.0.0.1:{st.session_state.proxy_port}"
@@ -11782,7 +12194,7 @@ with _brief_cache_info_col:
             f"已缓存 {_brief_age_h:.1f}h · ⏳ 剩余 {_brief_remain_str}"
         )
     else:
-        st.caption("⏳ 首次加载中，正在自动生成日报...")
+        st.caption("⏳ 首次将自动生成日报（已优化为轻量模式：跳过684池选股与批量询价，优先出文）…")
 with _brief_btn_col:
     do_generate = st.button("🔄 刷新简报", key="btn_market_brief", type="primary", width='stretch')
     if do_generate:
@@ -11792,17 +12204,22 @@ with _brief_btn_col:
             pass
         st.session_state.pop("market_brief_latest", None)
         st.session_state.pop("_brief_auto_gen_done", None)
+        st.session_state.pop("_brief_auto_gen_attempted", None)
+        st.session_state.pop("_brief_skip_heavy_bundle", None)
         _brief_cached_content = None
 
-# 【自动生成】首次打开页面且无缓存时，自动触发生成，无需手动点击
+# 【自动生成】首次打开页面且无缓存时，自动触发生成（轻量路径，避免选股引擎+全池询价卡死）
 if (not _brief_cached_content
         and "market_brief_latest" not in st.session_state
-        and not st.session_state.get("_brief_auto_gen_done")):
-    st.session_state["_brief_auto_gen_done"] = True
+        and not st.session_state.get("_brief_auto_gen_attempted")):
+    st.session_state["_brief_auto_gen_attempted"] = True
+    st.session_state["_brief_skip_heavy_bundle"] = True
     do_generate = True
 # ─────────────────────────────────────────────────────────────────────────────
 
 if do_generate:
+    try:
+        _skip_heavy = st.session_state.get("_brief_skip_heavy_bundle", False)
         with st.spinner("🤖 Gemini 2.5 Flash 分析中..."):
             # 【V87.4】增强市场简报 - 获取实时数据
             us_pool, hk_pool, cn_pool = init_stock_pools()
@@ -11834,11 +12251,18 @@ if do_generate:
             except:
                 pass
             
-            # 【选股引擎】二层候选：Explore（覆盖广）+ Trade（质量闸门），当天缓存复用
+            # 【选股引擎】二层候选（首次自动简报 _skip_heavy 时跳过，避免 684 池+全池询价卡死）
             _date_str = datetime.now().strftime("%Y-%m-%d")
             _cache_key = f"_market_brief_bundle_{_date_str}"
             _sel_data = None
-            if SELECTION_ENGINE_AVAILABLE and mod_selection:
+            _use_expanded_pool = False
+            us_candidates = hk_candidates = cn_candidates = []
+
+            if _skip_heavy:
+                us_candidates = [f"{it[1]}({it[2]})" for it in us_pool[:15]]
+                hk_candidates = [f"{it[1]}({it[2]})" for it in hk_pool[:15]]
+                cn_candidates = [f"{it[1]}({it[2]})" for it in cn_pool[:15]]
+            elif SELECTION_ENGINE_AVAILABLE and mod_selection:
                 if _cache_key not in st.session_state:
                     with st.spinner("📊 选股引擎：684池二层候选筛选中（Explore+Trade）..."):
                         try:
@@ -11857,7 +12281,6 @@ if do_generate:
                     us_candidates = mod_selection.format_bundle_wsj_candidates(_sel_data, "US", "$", 100)
                     hk_candidates = mod_selection.format_bundle_wsj_candidates(_sel_data, "HK", "HK$", 100)
                     cn_candidates = mod_selection.format_bundle_wsj_candidates(_sel_data, "CN", "¥", 100)
-                    # 兜底：数据获取失败时候选池可能为空，用 pool 前15只确保 AI 有可选标的
                     if not hk_candidates and hk_pool:
                         hk_candidates = [f"{it[1]}({it[2]})" for it in hk_pool[:15]]
                     if not cn_candidates and cn_pool:
@@ -11868,9 +12291,9 @@ if do_generate:
                 else:
                     _sel_data = None
                     _use_expanded_pool = False
-            else:
-                _use_expanded_pool = False
-            if not SELECTION_ENGINE_AVAILABLE or not mod_selection or not _sel_data:
+
+            if (not _skip_heavy
+                    and (not SELECTION_ENGINE_AVAILABLE or not mod_selection or not _sel_data)):
                 from concurrent.futures import ThreadPoolExecutor, as_completed
                 def _get_close_price(yf_code):
                     try:
@@ -11915,12 +12338,20 @@ if do_generate:
                 if _recent_codes else ""
             )
 
+            # 读取真实新闻报告（ai-daily-report-v2 日报），约束触发事件禁止编造
+            _real_news_report = _load_real_news_report()
+            _real_news_block = (
+                f"\n\n【真实新闻报告（以下为今日真实新闻，可执行推荐的「触发」字段必须来自此处，禁止编造）】\n{_real_news_report}\n"
+                if _real_news_report else ""
+            )
+
             prompt = f"""生成 WSJ-style 正文格式日报（非聊天体、非社群体、非钉钉模板），专业、客观、可核验。
 **硬性要求**：战争/地缘政治（美国、伊朗、以色列、中东冲突、俄乌、制裁等）若有新闻必须输出，不得遗漏。此类敏感新闻对市场影响重大，优先级最高。
 
 【数据口径】雅虎财经收盘价 | 【校验时间】{_ts_shanghai} (Asia/Shanghai 上海时区)
 
 【日期】{today}
+{_real_news_block}
 
 【指数数据】（括号内为实际交易日对比，请严格引用，禁止编造）
 {indices_data.get('US', '美股数据获取中')}
@@ -11943,6 +12374,8 @@ if do_generate:
 7) 文末固定输出 数据 与 时间戳（Asia/Shanghai），并标注数据截点
 8) **跨日去重**：{_recent_block}上述代码在近3日已推荐，本次9只推荐中禁止出现这些代码；若候选池内无其他合格标的，则可降级为「观察」后选入，但不得再次列为「立即建仓」或「中期跟进」
 9) **行业多样性**：每个市场的3只推荐，必须覆盖至少2个不同行业/板块（如科技+医疗、消费+金融），禁止3只均来自同一行业
+10) **触发事件禁止编造**：若上方提供了【真实新闻报告】，则所有「触发」字段的事件必须来自该报告，且必须注明具体来源媒体名称（如 Bloomberg、Reuters、WSJ、财新、公司公告等）；若未提供或找不到对应新闻，触发字段必须写：无近期相关新闻触发，基于基本面判断。严禁编造任何新闻事件（如产能扩充、财报数据等）
+11) **建仓区间必须基于当前实时价格计算**：建仓区间 = 候选池中传入的日报价（即当前实时收盘价）× (1 ± 3%~5%)。严禁使用任何历史高价、52周高点、历史缓存价格计算建仓区间。若候选池已提供「日报价 $X.XX」，则建仓区间下限不得高于该价格的110%，上限不得高于该价格的115%。
 
 【V2.1 Action Gate】立即建仓 仅当以下全满足，否则自动降级 中期跟进 或 观察：
 a) 证据状态灯 == ✅
@@ -12188,8 +12621,12 @@ e) 失效条件含 基本面+结构+事件 三类
                         "1. 不要输出 section 标题（### 开头的行），直接输出股票编号",
                         "2. 每只输出完整 Card Schema（触发、机会概率/风险概率、建仓区间、仓位+分批、R/R、失效条件×3、证据灯、时间戳）",
                         f"3. 必须从候选池选股，严禁编造",
+                        "4. 触发事件必须来自真实新闻，且必须注明具体来源媒体名称（如 Bloomberg、Reuters、WSJ、财新、公司公告等）；若无相关真实新闻，触发字段写：无近期相关新闻触发，基于基本面判断",
+                        "5. 建仓区间必须基于传入的当前实时价格（日报价）计算（现价 ×(1±3%~5%)），严禁使用历史高价或缓存价格",
                         "",
                     ]
+                    if _real_news_report:
+                        _sp_lines.insert(2, f"【真实新闻报告】\n{_real_news_report}\n")
                     for i in missing_indices:
                         _sp_lines.append(f"{i+1}. **[名称(代码)]** · **{_labels[i]}** · 现价 {price_prefix}X.XX")
                     _sp_lines += [
@@ -12319,6 +12756,12 @@ e) 失效条件含 基本面+结构+事件 三类
                 st.session_state["market_brief_latest"] = res
                 st.session_state["_brief_auto_gen_done"] = True
                 _save_brief_cache(res)
+                st.session_state.pop("_brief_skip_heavy_bundle", None)
+
+    except Exception as _brief_err:
+        logging.exception("AI市场简报生成失败")
+        st.error(f"❌ 简报生成失败：{type(_brief_err).__name__}: {str(_brief_err)[:280]}")
+        st.caption("💡 请检查网络与 Gemini API；点击「🔄 刷新简报」可重试（将走完整选股+询价流程）。")
 
 # ── 缓存自动展示：刷新页面后无需重新生成，直接显示 ──────────────────────────
 elif "market_brief_latest" in st.session_state:
@@ -12356,6 +12799,8 @@ else:
     if _fallback_content:
         st.session_state["market_brief_latest"] = _fallback_content
         st.rerun()
+    elif st.session_state.get("_brief_auto_gen_attempted") and not st.session_state.get("market_brief_latest"):
+        st.warning("📭 简报尚未生成成功。请点击「🔄 刷新简报」重试（完整模式含选股引擎）。")
     else:
         st.info("📭 暂无简报数据，请点击「🔄 刷新简报」生成")
 # ─────────────────────────────────────────────────────────────────────────────
