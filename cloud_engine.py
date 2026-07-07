@@ -23,7 +23,17 @@ NAME_MAP = {
     "紫金矿业": "601899.SS", "隆基": "601012.SS", "美的": "000333.SZ", "海康": "002415.SZ",
     "恒瑞": "600276.SS", "长江电力": "600900.SS", "药明康德": "603259.SS", "东方财富": "300059.SZ",
     "海光": "688041.SS", "海光信息": "688041.SS", "中信证券": "600030.SS", "立讯": "002475.SZ",
-    "中国移动": "600941.SS", "工商银行": "601398.SS", "中国石油": "601857.SS", "中国神华": "601088.SS",
+    "立讯精密": "002475.SZ", "中国移动": "600941.SS", "工商银行": "601398.SS", "中国石油": "601857.SS",
+    "中国神华": "601088.SS", "亨通光电": "600487.SS", "亨通": "600487.SS", "中际旭创": "300308.SZ",
+    "北方华创": "002371.SZ", "寒武纪": "688256.SS", "韦尔股份": "603501.SS", "兆易创新": "603986.SS",
+    "闻泰科技": "600745.SS", "汇川技术": "300124.SZ", "阳光电源": "300274.SZ", "通威股份": "600438.SS",
+    "赛力斯": "601127.SS", "长城汽车": "601633.SS", "长安汽车": "000625.SZ", "京东方": "000725.SZ",
+    "TCL科技": "000100.SZ", "紫光国微": "002049.SZ", "澜起科技": "688008.SS", "中微公司": "688012.SS",
+    "药明康德A": "603259.SS", "爱尔眼科": "300015.SZ", "片仔癀": "600436.SS", "云南白药": "000538.SZ",
+    "山西汾酒": "600809.SS", "泸州老窖": "000568.SZ", "洋河": "002304.SZ", "海天味业": "603288.SS",
+    "牧原": "002714.SZ", "温氏": "300498.SZ", "三一重工": "600031.SS", "中国建筑": "601668.SS",
+    "中国中免": "601888.SS", "顺丰": "002352.SZ", "格力": "000651.SZ", "海尔": "600690.SS",
+    "科大讯飞": "002230.SZ", "金山办公": "688111.SS", "用友": "600588.SS", "恒生电子": "600570.SS",
     # 美股
     "苹果": "AAPL", "英伟达": "NVDA", "微软": "MSFT", "谷歌": "GOOG", "亚马逊": "AMZN",
     "特斯拉": "TSLA", "台积电": "TSM", "meta": "META", "脸书": "META", "奈飞": "NFLX",
@@ -33,10 +43,39 @@ NAME_MAP = {
 }
 
 
+def _eastmoney_search(query: str):
+    """东财搜索接口：任意中文名/拼音/代码 → yahoo 代码。与 V88 桌面同一数据源。
+    MktNum: 1→.SS 沪  0→.SZ 深  116→.HK 港  155→美股。取第一个匹配。失败返回 None。"""
+    import requests
+    try:
+        s = requests.Session(); s.trust_env = False
+        r = s.get("https://searchapi.eastmoney.com/api/suggest/get",
+                  params={"input": query, "type": "14",
+                          "token": "D43BF722C8E33BDC906FB84D85E326E8", "count": 10},
+                  proxies={"http": None, "https": None},  # 强制直连，不受代理环境干扰
+                  headers={"User-Agent": "Mozilla/5.0"}, timeout=6)
+        data = (r.json().get("QuotationCodeTable") or {}).get("Data") or []
+        for it in data:
+            code = str(it.get("Code", "")).strip()
+            mkt = str(it.get("MktNum", ""))
+            if not code:
+                continue
+            if mkt == "1":
+                return code + ".SS"
+            if mkt == "0":
+                return code + ".SZ"
+            if mkt == "116":
+                return code.zfill(4) + ".HK"
+            if mkt == "155":
+                return code  # 美股
+        return None
+    except Exception:
+        return None
+
+
 def to_yf(code: str) -> str:
     """归一化：中文名/拼音→代码；AAPL→AAPL｜0700→0700.HK｜600519→600519.SS｜000001→000001.SZ"""
     raw = str(code).strip()
-    # 简搜：先查中文名/别名映射（不区分大小写）
     if raw in NAME_MAP:
         return NAME_MAP[raw]
     low = raw.lower()
@@ -52,13 +91,15 @@ def to_yf(code: str) -> str:
             return c + (".SS" if c[0] in ("6", "5", "9") else ".SZ")
         if len(c) <= 5:
             return c.zfill(4) + ".HK"  # 港股
-    return c
+    # 含中文/拼音等 → 东财搜索（任意名字，覆盖冷门票如 亨通光电）
+    hit = _eastmoney_search(raw)
+    return hit if hit else c
 
 
 def is_chinese_name(code: str) -> bool:
-    """判断输入是否为无法识别的中文名（用于给友好提示）"""
+    """无法识别的中文名判断（东财也搜不到时才提示）"""
     raw = str(code).strip()
-    return any("一" <= ch <= "鿿" for ch in raw) and raw not in NAME_MAP
+    return any("一" <= ch <= "鿿" for ch in raw) and raw not in NAME_MAP and not _eastmoney_search(raw)
 
 
 def fetch(symbol: str):
@@ -294,11 +335,12 @@ def trend_pulse(df):
 
 
 def analyze(code: str) -> dict:
-    """搜索入口：代码/中文名 → {symbol, tp} 或 {error}"""
-    if is_chinese_name(code):
-        return {"error": f"没收录「{code}」这个名字。请改用代码搜索：美股用字母(如 AAPL)、"
-                         f"港股用数字(如 0700)、A股用6位数字(如 600519)。常用票也可直接打名字，如 腾讯/茅台/英伟达。"}
-    sym = to_yf(code)
+    """搜索入口：代码/中文名/拼音 → {symbol, full} 或 {error}。只解析一次(含东财搜索)。"""
+    raw = str(code).strip()
+    sym = to_yf(raw)  # 单次解析：内置映射→代码归一→东财搜索
+    # 若仍是中文/无法解析（东财也没搜到）→ 友好提示
+    if any("一" <= ch <= "鿿" for ch in sym):
+        return {"error": f"没找到「{raw}」。可换个说法(全称/简称)或直接用代码：美股字母(AAPL)、港股数字(0700)、A股6位(600519)。"}
     df = fetch(sym)
     if df is None:
         return {"error": f"未取到 {sym} 的行情（代码可能有误，或该股云端暂时取不到数据，A股偶发，可稍后重试）"}
