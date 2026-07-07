@@ -69,127 +69,228 @@ def fetch(symbol: str):
     except Exception:
         return None
 
+def _clamp(x, lo=0.0, hi=100.0):
+    return max(lo, min(hi, x))
 
-def trend_pulse(df: pd.DataFrame) -> dict | None:
-    """与桌面版 analyze_trend_pulse 同口径的精简版。"""
+
+def analyze_trend_full(df, sector_strength=None):
+    """
+    【V99】综合量价趋势判断：8项分数拆解 + 9态量价 + 9段趋势 + 6级水位 +
+    MACD/均线全细节 + 8种动作(带买入区/回踩点/加仓点/止损/减仓/失效)。
+    sector_strength: 可选 0-100 板块热度(有则计入板块强度分，无则中性并标注)。
+    返回结构化 dict，纯确定性计算。
+    """
     try:
-        if df is None or len(df) < 30:
+        if df is None or len(df) < 35:
             return None
         c = df["Close"].dropna()
         v = df["Volume"].fillna(0)
         hi, lo = df["High"], df["Low"]
-        last = float(c.iloc[-1])
+        last = float(c.iloc[-1]); prev = float(c.iloc[-2])
         ma = {n: float(c.rolling(min(n, len(c))).mean().iloc[-1]) for n in (5, 10, 20, 55, 120)}
-        ma20_up = float(c.rolling(20).mean().iloc[-1]) > float(c.rolling(20).mean().iloc[-5]) if len(c) >= 25 else True
+        ma20_series = c.rolling(20).mean()
+        ma20_up = float(ma20_series.iloc[-1]) > float(ma20_series.iloc[-5]) if len(c) >= 25 else True
 
+        # MACD
         dif = c.ewm(span=12, adjust=False).mean() - c.ewm(span=26, adjust=False).mean()
         dea = dif.ewm(span=9, adjust=False).mean()
         hist = dif - dea
         macd_gold = float(dif.iloc[-1]) > float(dea.iloc[-1])
-        hist_rising = len(hist) >= 3 and float(hist.iloc[-1]) > float(hist.iloc[-3])
+        just_cross = macd_gold and float(dif.iloc[-2]) <= float(dea.iloc[-2])
+        just_dead = (not macd_gold) and float(dif.iloc[-2]) >= float(dea.iloc[-2])
+        hist_now, hist_prev = float(hist.iloc[-1]), float(hist.iloc[-3])
+        hist_expand = abs(hist_now) > abs(hist_prev)
+        red = hist_now > 0
+        # 背离(近30日)：价新高但DIF未新高=顶背离；价新低但DIF未新低=底背离
+        div = ""
+        if len(c) >= 30:
+            p_hi_now = float(hi.tail(5).max()); p_hi_prev = float(hi.iloc[-25:-5].max())
+            d_hi_now = float(dif.tail(5).max()); d_hi_prev = float(dif.iloc[-25:-5].max())
+            p_lo_now = float(lo.tail(5).min()); p_lo_prev = float(lo.iloc[-25:-5].min())
+            d_lo_now = float(dif.tail(5).min()); d_lo_prev = float(dif.iloc[-25:-5].min())
+            if p_hi_now > p_hi_prev and d_hi_now < d_hi_prev:
+                div = "⚠️顶背离(价新高MACD走弱)"
+            elif p_lo_now < p_lo_prev and d_lo_now > d_lo_prev:
+                div = "🌱底背离(价新低MACD走强)"
 
+        # RSI
         delta = c.diff()
         rs_ = delta.clip(lower=0).ewm(com=13).mean() / (-delta.clip(upper=0)).ewm(com=13).mean()
         rsi = float((100 - 100 / (1 + rs_)).iloc[-1])
 
-        v5, v20 = float(v.tail(5).mean()), float(v.tail(20).mean()) or 1.0
+        # 量能
+        v5, v10, v20 = float(v.tail(5).mean()), float(v.tail(10).mean()), float(v.tail(20).mean()) or 1.0
         volr = v5 / v20
+        vold = float(v.iloc[-1]) / v20
+        vol_prev = float(v.iloc[-2]) or 1.0
+        vol_up_today = float(v.iloc[-1]) > vol_prev
+        chg1 = (last / prev - 1) * 100
         chg5 = (last / float(c.iloc[-6]) - 1) * 100 if len(c) >= 6 else 0.0
         chg20 = (last / float(c.iloc[-21]) - 1) * 100 if len(c) >= 21 else 0.0
         bias20 = (last / ma[20] - 1) * 100 if ma[20] else 0.0
 
-        h60 = float(hi.tail(60).max())
-        l20 = float(lo.tail(20).min())
-        l250 = float(lo.tail(min(250, len(lo))).min())
-        h250 = float(hi.tail(min(250, len(hi))).max())
+        # 位置/关键位
+        h60 = float(hi.tail(60).max()); l20 = float(lo.tail(20).min())
+        l250 = float(lo.tail(min(250, len(lo))).min()); h250 = float(hi.tail(min(250, len(hi))).max())
         pos52 = (last - l250) / (h250 - l250) * 100 if h250 > l250 else 50.0
         new_high_60 = float(hi.iloc[-1]) >= h60 * 0.995
-        support = max(ma[20], l20) if last > ma[20] else max(ma[55], l20)
-        resistance = h60 if last < h60 * 0.99 else h250
+        near_ma20 = abs(last - ma[20]) / ma[20] < 0.02 if ma[20] else False
+        support = round(max(ma[20], l20) if last > ma[20] else max(ma[55], l20), 2)
+        resistance = round(h60 if last < h60 * 0.99 else h250, 2)
 
-        reasons = []
-        if chg5 > 1.5 and volr >= 1.1:
-            vp, vpg = "📈 放量上涨·量价健康", 2
-            reasons.append(f"5日+{chg5:.1f}%且量比{volr:.2f}放大，资金进场")
-        elif chg5 > 1.5 and volr < 0.85:
-            vp, vpg = "⚠️ 缩量上涨·上攻乏力", 1
-            reasons.append(f"上涨但量比仅{volr:.2f}，追高动能存疑")
-        elif chg5 < -1.5 and volr < 0.9:
-            vp, vpg = "🔄 缩量回调·抛压有限", 1
-            reasons.append(f"回调{chg5:.1f}%但缩量({volr:.2f})，正常回踩概率大")
-        elif chg5 < -1.5 and volr >= 1.2:
-            vp, vpg = "🚨 放量下跌·出货嫌疑", 0
-            reasons.append(f"下跌{chg5:.1f}%且放量({volr:.2f})，主动抛压明显")
-        elif volr >= 1.5 and abs(chg5) < 1.5:
-            vp, vpg = "⚠️ 放量滞涨·分歧加大", 0
-            reasons.append(f"量比{volr:.2f}放大但价格滞涨，多空分歧")
+        # ── 均线细节 ──
+        above = {n: last > ma[n] for n in (5, 10, 20, 55)}
+        bull_align = last > ma[5] > ma[20] > ma[55]
+        ma_txt = "、".join(f"MA{n}{'✅' if above[n] else '❌'}" for n in (5, 10, 20, 55))
+        ma_state = ("多头排列" if bull_align else
+                    ("站上MA20未站MA55" if above[20] and not above[55] else
+                     ("跌破MA20" if not above[20] else "均线纠缠")))
+        if near_ma20 and above[20] and ma20_up:
+            ma_state += "·回踩MA20不破"
+
+        # ── 9态量价关系 ──
+        if chg5 > 2 and new_high_60 and volr >= 1.15:
+            vp, vp_lv = "放量突破·强势确认", 2
+        elif chg1 > 1 and vold >= 1.2:
+            vp, vp_lv = "放量上涨·健康进攻", 2
+        elif chg1 > 1 and vold < 0.85:
+            vp, vp_lv = "缩量上涨·动力不足", 1
+        elif chg1 > 0.3 and not vol_up_today:
+            vp, vp_lv = "价涨量跌·反弹质量一般", 1
+        elif chg1 < -1 and vold < 0.85:
+            vp, vp_lv = "缩量回调·健康回踩", 1
+        elif chg1 < -0.3 and not vol_up_today:
+            vp, vp_lv = "价跌量缩·暂时正常调整", 1
+        elif chg1 < -1 and vold >= 1.2:
+            vp, vp_lv = "放量下跌·风险释放/资金出逃", 0
+        elif chg1 < -0.3 and vol_up_today:
+            vp, vp_lv = "价跌量增·趋势转弱风险", 0
+        elif vold >= 1.5 and abs(chg1) < 1 and pos52 > 65:
+            vp, vp_lv = "放量滞涨·高位分歧警惕出货", 0
         else:
-            vp, vpg = "➖ 量价中性", 1
+            vp, vp_lv = "量价中性", 1
 
-        if last < ma[20] < ma[55] and chg5 < 0 and (vpg == 0 or last < ma[120]):
-            stage = "🔴 破位下跌"
-            reasons.append(f"价({last:.2f})<MA20({ma[20]:.2f})<MA55，均线空头")
-        elif last < ma[20] and (not ma20_up or not macd_gold):
-            stage = "🟠 趋势转弱"
-            reasons.append(f"跌破MA20({ma[20]:.2f})" + ("且MACD死叉" if not macd_gold else "，MA20走平向下"))
-        elif volr >= 1.5 and abs(chg5) < 1.5 and pos52 > 70:
-            stage = "🟡 放量滞涨"
+        # ── 6级水位 ──
+        if pos52 < 25:
+            water, water_adv, water_risk = "低位", "可试仓", 15
+        elif pos52 < 40:
+            water, water_adv, water_risk = "中低位", "可回踩买", 30
+        elif pos52 < 60:
+            water, water_adv, water_risk = "中位", "看趋势确认", 50
+        elif pos52 < 78:
+            water, water_adv, water_risk = "中高位", "不追高·只等回踩", 68
+        elif pos52 < 92:
+            water, water_adv, water_risk = "高位", "只持有或减仓", 85
+        else:
+            water, water_adv, water_risk = "极高位", "防止回撤", 95
+
+        # ── 9段趋势阶段 ──
+        if last < ma[20] < ma[55] and chg5 < 0 and (vp_lv == 0 or last < ma[120]):
+            stage = "破位下跌"
+        elif last < ma[20] and (not ma20_up or just_dead or not macd_gold):
+            stage = "趋势转弱"
+        elif vold >= 1.5 and abs(chg1) < 1 and pos52 > 65:
+            stage = "放量滞涨"
         elif pos52 > 80 and abs(chg5) < 3 and not new_high_60:
-            stage = "🟡 高位震荡"
-            reasons.append(f"52周高位({pos52:.0f}%)横盘，未创新高")
-        elif last > ma[5] > ma[20] and new_high_60 and macd_gold:
-            stage = "🚀 主升阶段"
-            reasons.append("多头排列+创60日新高+MACD金叉")
-        elif last > ma[20] > ma[55] and macd_gold:
-            stage = "🟢 趋势确认"
-            reasons.append("站稳MA20/MA55多头排列，MACD金叉")
-        elif last > ma[20] and pos52 < 45 and volr > 1.05:
-            stage = "🌱 底部启动"
-            reasons.append(f"低位({pos52:.0f}%)放量站上MA20")
+            stage = "高位震荡"
+        elif bull_align and new_high_60 and macd_gold:
+            stage = "主升阶段"
+        elif above[20] and above[55] and macd_gold and pos52 >= 45:
+            stage = "趋势延续"
+        elif above[20] and macd_gold and pos52 < 55:
+            stage = "启动确认"
+        elif above[20] and pos52 < 45 and volr > 1.05:
+            stage = "底部启动"
+        elif pos52 < 35 and not above[20]:
+            stage = "底部试探"
         else:
-            stage = "➖ 震荡整理"
+            stage = "震荡整理"
 
-        if stage == "🔴 破位下跌":
-            action = "🛑 趋势破坏，剔除/离场"
-            invalid = f"重新站上MA20({ma[20]:.2f})且缩量企稳3日"
-        elif stage == "🟠 趋势转弱":
-            action = "🛑 持有者跌破止损离场；空仓者回避"
+        # ── 8项分数拆解(各0-100) ──
+        s_price = _clamp(50 + chg20 * 1.6 + (12 if above[20] else -12) + (8 if above[55] else -8))
+        s_vol = _clamp(50 + (volr - 1) * 120 * (1 if chg5 >= 0 else -1))
+        s_macd = _clamp((70 if macd_gold else 30) + (15 if (red and hist_expand) else (-15 if (not red and hist_expand) else 0))
+                        + (10 if just_cross else 0) + (10 if div.startswith("🌱") else (-10 if div.startswith("⚠️") else 0)))
+        s_ma = _clamp(sum([above[5], above[10], above[20], above[55]]) * 22 + (12 if bull_align else 0))
+        s_vph = {0: 20, 1: 55, 2: 90}[vp_lv]
+        s_water = _clamp(100 - water_risk)          # 水位越高风险越大→分越低
+        s_sector = float(sector_strength) if sector_strength is not None else 50.0
+        s_catalyst = 50.0                            # 云端个股新闻催化难判，中性；桌面版可注入
+        weights = {"价格趋势": (s_price, 0.20), "均线结构": (s_ma, 0.18), "MACD": (s_macd, 0.15),
+                   "成交量": (s_vol, 0.12), "量价健康": (s_vph, 0.15), "水位风险": (s_water, 0.10),
+                   "板块强度": (s_sector, 0.05), "资金新闻": (s_catalyst, 0.05)}
+        total = int(round(sum(sc * w for sc, w in weights.values())))
+
+        # ── 8种动作 + 全价位 ──
+        buy_lo, buy_hi = round(ma[20], 2), round(last, 2) if last > ma[20] else round(ma[20] * 1.02, 2)
+        pullback = round(ma[10] if above[10] else ma[20], 2)
+        breakout = round(max(h60, resistance), 2)
+        stop = round(min(ma[55], l20) if stage not in ("底部试探", "底部启动") else l20, 2)
+        reduce = round(resistance, 2)
+
+        if stage == "破位下跌":
+            action, concl = "🛑 趋势破坏，剔除/离场", "回避"
+            invalid = f"重新站上MA20({ma[20]:.2f})并缩量企稳3日才重新评估"
+        elif stage == "趋势转弱":
+            action, concl = "🛑 跌破止损离场；空仓者回避", "回避"
             invalid = f"收复MA20({ma[20]:.2f})并放量收阳"
-        elif stage == "🟡 放量滞涨":
-            action = "📉 冲高减仓（先落袋一部分）"
-            invalid = f"缩量整理后再放量突破{resistance:.2f}"
-        elif stage == "🟡 高位震荡":
-            action = "✋ 不追高；持有可持有但设好止损"
-            invalid = f"跌破MA20({ma[20]:.2f})即减仓"
-        elif stage == "🚀 主升阶段":
+        elif stage in ("放量滞涨", "高位震荡"):
+            action = "📉 冲高减仓/不追高" + (f"，接近{reduce:.2f}或放量滞涨减仓" if stage == "放量滞涨" else "")
+            concl = "减仓"
+            invalid = f"跌破MA20({ma[20]:.2f})即离场；缩量整理后放量破{breakout:.2f}方可回补"
+        elif stage == "主升阶段":
             if bias20 > 8 or rsi > 75:
-                action = f"✋ 短线过热(乖离{bias20:+.1f}%/RSI{rsi:.0f})·不追，等回踩MA10({ma[10]:.2f})"
-                reasons.append(f"乖离{bias20:+.1f}%、RSI{rsi:.0f}，短线透支")
+                action, concl = f"✋ 短线过热(乖离{bias20:+.1f}%/RSI{rsi:.0f})·不追，回踩MA10({pullback:.2f})再上", "持有"
             else:
-                action = f"🟢 继续持有；新买回踩MA10({ma[10]:.2f})分批"
-            invalid = f"收盘跌破MA20({ma[20]:.2f})且放量"
-        elif stage == "🟢 趋势确认":
-            action = (f"🟢 可以买：{ma[20]:.2f}~{last:.2f}分批" if vpg >= 1
+                action, concl = f"🟢 持有；突破{breakout:.2f}放量可加仓", "进攻"
+            invalid = f"收盘跌破MA20({ma[20]:.2f})且放量，主升结束"
+        elif stage in ("趋势延续", "启动确认"):
+            action = (f"🟢 可以买：{buy_lo:.2f}~{buy_hi:.2f}分批；突破{breakout:.2f}放量加仓" if vp_lv >= 1
                       else f"⏳ 等回踩MA20({ma[20]:.2f})企稳再买")
-            invalid = f"收盘跌破MA55({ma[55]:.2f})"
-        elif stage == "🌱 底部启动":
-            action = f"🧪 只能试仓(≤半仓)，止损{l20:.2f}"
-            invalid = f"跌回启动前低点{l20:.2f}"
+            concl = "进攻" if vp_lv >= 1 else "等待"
+            invalid = f"收盘跌破MA55({ma[55]:.2f})趋势失效"
+        elif stage in ("底部启动", "底部试探"):
+            action, concl = f"🧪 只能试仓(≤半仓)，止损{l20:.2f}；站稳MA20放量再加", "试仓"
+            invalid = f"跌回启动前低{l20:.2f}，启动失败"
         else:
-            action = f"⏳ 观望：站稳MA20({ma[20]:.2f})+放量再介入"
-            invalid = "—"
+            action, concl = f"⏳ 观望：站稳MA20({ma[20]:.2f})+放量再介入", "等待"
+            invalid = "站上MA20且放量突破前高"
 
-        align = sum([last > ma[5], ma[5] > ma[20], ma[20] > ma[55], last > ma[120]])
-        score = int(max(0, min(100, align * 7.5 + (10 if macd_gold else 0) + (10 if hist_rising else 0)
-                               + vpg * 10 + max(0, min(15, 7.5 + chg20 * 0.75))
-                               + (15 if (45 <= rsi <= 70 and abs(bias20) < 8) else (7 if rsi < 80 else 0)))))
-        return {"last": round(last, 2), "score": score, "stage": stage, "vp": vp, "action": action,
-                "support": round(support, 2), "resistance": round(resistance, 2), "invalid": invalid,
-                "reasons": reasons[:4], "rsi": round(rsi), "bias20": round(bias20, 1), "volr": round(volr, 2),
-                "chg5": round(chg5, 1), "chg20": round(chg20, 1), "pos52": round(pos52),
-                "ma": {k: round(x, 2) for k, x in ma.items()}}
+        macd_txt = (("金叉" if macd_gold else "死叉")
+                    + ("·刚金叉" if just_cross else ("·刚死叉" if just_dead else ""))
+                    + ("·红柱扩大" if (red and hist_expand) else ("·红柱缩小" if (red and not hist_expand) else
+                       ("·绿柱扩大" if (not red and hist_expand) else "·绿柱缩小")))
+                    + ("·" + div if div else ""))
+
+        return {
+            "last": round(last, 2), "total": total, "stage": stage, "vp": vp, "vp_lv": vp_lv,
+            "water": water, "water_adv": water_adv, "pos52": round(pos52),
+            "macd_txt": macd_txt, "ma_txt": ma_txt, "ma_state": ma_state,
+            "action": action, "conclusion": concl,
+            "buy_zone": f"{buy_lo:.2f}~{buy_hi:.2f}", "pullback": pullback, "breakout": breakout,
+            "stop": stop, "reduce": reduce, "invalid": invalid,
+            "support": support, "resistance": resistance,
+            "rsi": round(rsi), "bias20": round(bias20, 1), "volr": round(volr, 2),
+            "chg5": round(chg5, 1), "chg20": round(chg20, 1),
+            "breakdown": {k: (round(sc), w) for k, (sc, w) in weights.items()},
+            "sector_known": sector_strength is not None,
+            "ma": {k: round(x, 2) for k, x in ma.items()},
+        }
     except Exception:
         return None
+
+
+# 旧接口兼容：trend_pulse 返回精简子集，避免其它调用处报错
+def trend_pulse(df):
+    r = analyze_trend_full(df)
+    if not r:
+        return None
+    return {"last": r["last"], "score": r["total"], "stage": r["stage"], "vp": r["vp"],
+            "action": r["action"], "support": r["support"], "resistance": r["resistance"],
+            "invalid": r["invalid"], "reasons": [], "rsi": r["rsi"], "bias20": r["bias20"],
+            "volr": r["volr"], "chg5": r["chg5"], "chg20": r["chg20"], "pos52": r["pos52"],
+            "ma": r["ma"]}
+
 
 
 def analyze(code: str) -> dict:
@@ -201,7 +302,7 @@ def analyze(code: str) -> dict:
     df = fetch(sym)
     if df is None:
         return {"error": f"未取到 {sym} 的行情（代码可能有误，或该股云端暂时取不到数据，A股偶发，可稍后重试）"}
-    tp = trend_pulse(df)
-    if not tp:
+    r = analyze_trend_full(df)
+    if not r:
         return {"error": "数据不足，无法计算"}
-    return {"symbol": sym, "tp": tp, "asof": str(df.index[-1])[:10]}
+    return {"symbol": sym, "full": r, "asof": str(df.index[-1])[:10]}

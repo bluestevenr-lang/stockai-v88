@@ -127,23 +127,45 @@ elif _nav == "🔍 个股搜索":
         if r.get("error"):
             st.error(r["error"])
         else:
-            tp = r["tp"]
-            m1, m2, m3 = st.columns(3)
-            m1.metric("趋势分", f"{tp['score']}/100")
-            m2.metric("现价", f"{tp['last']}")
-            m3.metric("RSI", f"{tp['rsi']}")
-            st.markdown(f"### {tp['stage']}　{tp['vp']}")
-            st.success(f"**动作：{tp['action']}**")
-            m4, m5, m6 = st.columns(3)
-            m4.metric("支撑", f"{tp['support']}")
-            m5.metric("压力", f"{tp['resistance']}")
-            m6.metric("量比", f"{tp['volr']}")
-            st.markdown(f"**失效条件**：{tp['invalid']}")
-            if tp.get("reasons"):
-                st.markdown("**依据**：" + "；".join(tp["reasons"]))
-            st.caption(f"20日动量 {tp['chg20']:+.1f}% ｜ 乖离MA20 {tp['bias20']:+.1f}% ｜ "
-                       f"52周位置 {tp['pos52']}% ｜ 数据截至 {r['asof']}")
-            st.caption("💡 阶段=趋势位置｜量价=资金意图｜动作可直接执行。深度五维评分见 Mac/局域网 V88")
+            f = r["full"]
+            _concl_color = {"进攻": "🟢", "试仓": "🧪", "持有": "🔵", "等待": "⏳", "减仓": "🟡", "回避": "🔴"}
+            # ① 总分 + 一句话结论
+            c1, c2, c3 = st.columns([1, 1, 1])
+            c1.metric("趋势总分", f"{f['total']}/100")
+            c2.metric("现价", f"{f['last']}")
+            c3.metric("RSI", f"{f['rsi']}")
+            st.markdown(f"### {_concl_color.get(f['conclusion'],'')} 一句话结论：**{f['conclusion']}**")
+            st.success(f"**操作建议：{f['action']}**")
+
+            # ② 六行状态速览
+            st.markdown(
+                f"- **趋势阶段**：{f['stage']}\n"
+                f"- **量价状态**：{f['vp']}\n"
+                f"- **水位判断**：{f['water']}（{f['pos52']}%）→ {f['water_adv']}\n"
+                f"- **MACD状态**：{f['macd_txt']}\n"
+                f"- **均线状态**：{f['ma_state']}（{f['ma_txt']}）\n"
+                f"- **失效条件**：{f['invalid']}")
+
+            # ③ 可执行价位
+            st.markdown("##### 🎯 可执行价位")
+            p1, p2, p3 = st.columns(3)
+            p1.metric("买入区间", f['buy_zone'])
+            p2.metric("回踩买点", f"{f['pullback']}")
+            p3.metric("突破加仓", f"{f['breakout']}")
+            p4, p5, p6 = st.columns(3)
+            p4.metric("止损位", f"{f['stop']}")
+            p5.metric("减仓位", f"{f['reduce']}")
+            p6.metric("支撑/压力", f"{f['support']}/{f['resistance']}")
+
+            # ④ 趋势分拆解(8项)
+            with st.expander("📐 趋势分拆解（8项子分 → 总分）", expanded=False):
+                _bd = f["breakdown"]
+                _rows = [{"维度": k, "得分": sc, "权重": f"{int(w*100)}%",
+                          "加权": round(sc * w, 1)} for k, (sc, w) in _bd.items()]
+                st.dataframe(_rows, hide_index=True, use_container_width=True)
+                if not f["sector_known"]:
+                    st.caption("_板块强度/资金新闻在云端按中性50计（需完整数据）；主判断由价格/均线/MACD/量价/水位驱动_")
+            st.caption(f"20日动量 {f['chg20']:+.1f}% ｜ 乖离MA20 {f['bias20']:+.1f}% ｜ 量比 {f['volr']} ｜ 数据截至 {r['asof']}")
 
 # ── 📊 日报 / 📅 周报 ────────────────────────────────────────
 elif _nav in ("📊 日报", "📅 周报"):
