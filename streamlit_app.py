@@ -88,8 +88,14 @@ def gh_diag(path: str, what: str = "数据"):
 st.title("☁️ V88 云端版")
 st.caption("24小时在线 · 数据每交易日 07:00/14:00/21:00 自动更新 · 与 Mac 开关机无关")
 
-if not _tok():
-    st.error("未配置 GH_TOKEN（App Settings → Secrets），无法读取数据仓。")
+_t_check = str(_tok()).strip()
+if not _t_check:
+    st.error("🔑 未配置 GH_TOKEN（右下 Manage app → Settings → Secrets），无法读取数据仓。")
+    st.stop()
+if (not _t_check.isascii()) or (" " in _t_check) or not _t_check.lower().startswith(("gho_", "ghp_", "github_pat_")):
+    st.error(f"🔑 GH_TOKEN 不是有效令牌（当前值开头:「{_t_check[:8]}…」，像是占位文字没替换）。\n\n"
+             "去 Manage app → Settings → Secrets，把 GH_TOKEN 的引号里换成真实令牌"
+             "（gho_ 或 ghp_ 开头的一长串英文数字），保存后等 1 分钟刷新本页。")
     st.stop()
 
 _nav = st.radio("导航", ["🧭 导航", "📊 日报", "📅 周报", "📈 大盘板块", "💼 持仓", "🔁 复盘"],
