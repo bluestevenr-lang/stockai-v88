@@ -57,7 +57,7 @@ with c_rf:
     if st.button("🔄", help="强制刷新"):
         pub_text.clear(); pub_journal_list.clear(); st.rerun()
 with c_nav:
-    _nav = st.radio("导航", ["🧭 导航", "📊 日报", "📅 周报", "📈 大盘板块", "🔁 复盘"],
+    _nav = st.radio("导航", ["🧭 导航", "🔍 个股搜索", "📊 日报", "📅 周报", "📈 大盘板块", "🔁 复盘"],
                     horizontal=True, label_visibility="collapsed")
 
 _snap_raw = pub_text("market_snapshot.json")
@@ -110,6 +110,40 @@ if _nav == "🧭 导航":
         with st.expander("🎯 今日操作榜（中长短×中美港 各Top3·实价校准）", expanded=True):
             st.markdown(_rep[_i:_j if _j > 0 else _i + 3000])
     st.caption("💡 持仓建议为隐私内容，请在飞书推送或 Mac/局域网 V88 查看")
+
+# ── 🔍 个股搜索（云端实时·趋势脉搏）────────────────────────────
+elif _nav == "🔍 个股搜索":
+    st.markdown("#### 🔍 个股搜索 · 买卖前必看")
+    st.caption("输入代码：美股 AAPL｜港股 0700｜A股 600519 / 000001")
+    _code = st.text_input("股票代码", value="", placeholder="AAPL / 0700 / 600519",
+                          label_visibility="collapsed").strip()
+    if st.button("📊 分析", type="primary", use_container_width=True) and _code:
+        with st.spinner(f"分析 {_code} 中..."):
+            try:
+                import cloud_engine
+                r = cloud_engine.analyze(_code)
+            except Exception as e:
+                r = {"error": f"引擎异常：{type(e).__name__}"}
+        if r.get("error"):
+            st.error(r["error"])
+        else:
+            tp = r["tp"]
+            m1, m2, m3 = st.columns(3)
+            m1.metric("趋势分", f"{tp['score']}/100")
+            m2.metric("现价", f"{tp['last']}")
+            m3.metric("RSI", f"{tp['rsi']}")
+            st.markdown(f"### {tp['stage']}　{tp['vp']}")
+            st.success(f"**动作：{tp['action']}**")
+            m4, m5, m6 = st.columns(3)
+            m4.metric("支撑", f"{tp['support']}")
+            m5.metric("压力", f"{tp['resistance']}")
+            m6.metric("量比", f"{tp['volr']}")
+            st.markdown(f"**失效条件**：{tp['invalid']}")
+            if tp.get("reasons"):
+                st.markdown("**依据**：" + "；".join(tp["reasons"]))
+            st.caption(f"20日动量 {tp['chg20']:+.1f}% ｜ 乖离MA20 {tp['bias20']:+.1f}% ｜ "
+                       f"52周位置 {tp['pos52']}% ｜ 数据截至 {r['asof']}")
+            st.caption("💡 阶段=趋势位置｜量价=资金意图｜动作可直接执行。深度五维评分见 Mac/局域网 V88")
 
 # ── 📊 日报 / 📅 周报 ────────────────────────────────────────
 elif _nav in ("📊 日报", "📅 周报"):
