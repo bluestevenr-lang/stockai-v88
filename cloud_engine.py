@@ -43,6 +43,56 @@ NAME_MAP = {
 }
 
 
+# ── 离线全市场名录（A股全部5200+/港股/美股，云端免网络秒搜）──
+_NAMES_CACHE = None
+
+def _load_names():
+    global _NAMES_CACHE
+    if _NAMES_CACHE is None:
+        import json as _j
+        from pathlib import Path as _P
+        try:
+            _NAMES_CACHE = _j.loads((_P(__file__).parent / "stock_names.json").read_text(encoding="utf-8"))
+        except Exception:
+            _NAMES_CACHE = []
+    return _NAMES_CACHE
+
+
+def search_candidates(query: str, limit: int = 15):
+    """离线名录搜索：精确 > 前缀 > 包含。返回 [(name, code, market)]，重名全列出供选择。"""
+    q = str(query).strip()
+    if not q:
+        return []
+    names = _load_names()
+    exact, prefix, contain = [], [], []
+    ql = q.lower()
+    for e in names:
+        n = e["n"]
+        if n == q:
+            exact.append(e)
+        elif n.startswith(q) or n.lower().startswith(ql):
+            prefix.append(e)
+        elif q in n or ql in n.lower():
+            contain.append(e)
+    out, seen = [], set()
+    for e in exact + prefix + contain:
+        if e["c"] not in seen:
+            seen.add(e["c"])
+            out.append((e["n"], e["c"], e["m"]))
+        if len(out) >= limit:
+            break
+    return out
+
+
+def name_of(code: str) -> str:
+    """代码反查名称（用于结果标题显示全名）"""
+    c = str(code).strip().upper()
+    for e in _load_names():
+        if e["c"].upper() == c:
+            return e["n"]
+    return ""
+
+
 def _eastmoney_search(query: str):
     """东财搜索接口：任意中文名/拼音/代码 → yahoo 代码。与 V88 桌面同一数据源。
     MktNum: 1→.SS 沪  0→.SZ 深  116→.HK 港  155→美股。取第一个匹配。失败返回 None。"""
@@ -91,7 +141,10 @@ def to_yf(code: str) -> str:
             return c + (".SS" if c[0] in ("6", "5", "9") else ".SZ")
         if len(c) <= 5:
             return c.zfill(4) + ".HK"  # 港股
-    # 含中文/拼音等 → 东财搜索（任意名字，覆盖冷门票如 亨通光电）
+    # 含中文/拼音等 → 离线全市场名录(云端免网络) → 东财搜索兜底
+    cands = search_candidates(raw, limit=1)
+    if cands:
+        return cands[0][1]
     hit = _eastmoney_search(raw)
     return hit if hit else c
 
@@ -99,7 +152,9 @@ def to_yf(code: str) -> str:
 def is_chinese_name(code: str) -> bool:
     """无法识别的中文名判断（东财也搜不到时才提示）"""
     raw = str(code).strip()
-    return any("一" <= ch <= "鿿" for ch in raw) and raw not in NAME_MAP and not _eastmoney_search(raw)
+    if not any("一" <= ch <= "鿿" for ch in raw):
+        return False
+    return raw not in NAME_MAP and not search_candidates(raw, limit=1) and not _eastmoney_search(raw)
 
 
 def fetch(symbol: str):
@@ -268,9 +323,22 @@ def analyze_trend_full(df, sector_strength=None):
         obv = (_sign * v).cumsum()
         obv5 = float(obv.iloc[-1] - obv.iloc[-6]) if len(obv) >= 6 else 0.0
         obv20 = float(obv.iloc[-1] - obv.iloc[-21]) if len(obv) >= 21 else 0.0
+        # 连续流入/流出天数（OBV逐日方向的尾部连击）
+        _obv_d = obv.diff().dropna()
+        streak, streak_dir = 0, 0
+        for _x in reversed(_obv_d.tail(10).tolist()):
+            _d1 = 1 if _x > 0 else (-1 if _x < 0 else 0)
+            if streak == 0 and _d1 != 0:
+                streak_dir = _d1; streak = 1
+            elif _d1 == streak_dir and _d1 != 0:
+                streak += 1
+            else:
+                break
         s_capital = _clamp(50 + (25 if obv5 > 0 else -25) + (15 if obv20 > 0 else -15))
-        cap_desc = (f"OBV能量潮：近5日{'↑资金净流入' if obv5 > 0 else '↓资金净流出'}"
-                    f"·近20日{'↑流入' if obv20 > 0 else '↓流出'}")
+        _burst = "·爆发式放量" if volr >= 1.5 else ("·温和放量" if volr >= 1.1 else ("·量能萎缩" if volr < 0.85 else ""))
+        cap_desc = (f"资金{'连续' + str(streak) + '天' if streak >= 2 else '今日'}"
+                    f"{'流入' if streak_dir > 0 else '流出'}"
+                    f"·5日净{'流入' if obv5 > 0 else '流出'}·20日净{'流入' if obv20 > 0 else '流出'}{_burst}")
 
         # 每一维的「实际情况」——分数只是结论，这里说清到底发生了什么
         _vol_pct = (volr - 1) * 100

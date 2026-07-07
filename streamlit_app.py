@@ -114,19 +114,46 @@ if _nav == "🧭 导航":
 # ── 🔍 个股搜索（云端实时·趋势脉搏）────────────────────────────
 elif _nav == "🔍 个股搜索":
     st.markdown("#### 🔍 个股搜索 · 买卖前必看")
-    st.caption("可打**中文名**（腾讯/茅台/英伟达）或**代码**（AAPL｜0700｜600519）")
-    _code = st.text_input("股票代码", value="", placeholder="腾讯 / 茅台 / AAPL / 0700 / 600519",
+    st.caption("中文名（A股全市场5200+/港股/美股离线秒搜）或代码（AAPL｜0700｜600519）· 重名会列出让你选")
+    import cloud_engine
+    _code = st.text_input("股票代码", value="", placeholder="中微 / 腾讯 / 茅台 / AAPL / 600519",
                           label_visibility="collapsed").strip()
-    if st.button("📊 分析", type="primary", use_container_width=True) and _code:
-        with st.spinner(f"分析 {_code} 中..."):
+    if st.button("🔎 搜索", type="primary", use_container_width=True) and _code:
+        _has_cn = any("一" <= ch <= "鿿" for ch in _code)
+        if not _has_cn:  # 代码型输入直接定标的
+            _sym0 = cloud_engine.to_yf(_code)
+            st.session_state["_sch_cands"] = [(cloud_engine.name_of(_sym0) or _sym0, _sym0, "")]
+        else:            # 名字型输入 → 离线名录候选（重名全列）
+            st.session_state["_sch_cands"] = cloud_engine.search_candidates(_code)
+
+    _cands = st.session_state.get("_sch_cands")
+    _target = None
+    if _cands is not None and len(_cands) == 0:
+        st.error("没找到匹配。可换个说法(全称/简称)或直接用代码：美股字母(AAPL)、港股数字(0700)、A股6位(600519)。")
+    elif _cands and len(_cands) == 1:
+        _target = _cands[0]
+    elif _cands and len(_cands) > 1:
+        st.info(f"找到 {len(_cands)} 个匹配，请选择：")
+        _opts = [f"{n}（{c}·{m}）" for n, c, m in _cands]
+        _sel = st.selectbox("选择股票", _opts, label_visibility="collapsed")
+        if st.button("✅ 就是这只，开始分析", type="primary", use_container_width=True):
+            _target = _cands[_opts.index(_sel)]
+
+    if _target:
+        _tname, _tsym, _tmkt = _target
+        with st.spinner(f"分析 {_tname}（{_tsym}）中..."):
             try:
-                import cloud_engine
-                r = cloud_engine.analyze(_code)
+                _df = cloud_engine.fetch(_tsym)
+                _full = cloud_engine.analyze_trend_full(_df) if _df is not None else None
+                r = ({"full": _full, "symbol": _tsym, "name": _tname, "asof": str(_df.index[-1])[:10]}
+                     if _full else {"error": f"未取到 {_tname}（{_tsym}）的行情，稍后重试或换代码搜索"})
             except Exception as e:
                 r = {"error": f"引擎异常：{type(e).__name__}"}
         if r.get("error"):
             st.error(r["error"])
         else:
+            # 先看清是哪只（全名+代码），再看分析
+            st.markdown(f"## 📌 {r.get('name') or r['symbol']}（{r['symbol']}）")
             f = r["full"]
             _concl_color = {"进攻": "🟢", "试仓": "🧪", "持有": "🔵", "等待": "⏳", "减仓": "🟡", "回避": "🔴"}
             # ① 总分 + 一句话结论
