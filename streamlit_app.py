@@ -114,8 +114,8 @@ if _nav == "🧭 导航":
 # ── 🔍 个股搜索（云端实时·趋势脉搏）────────────────────────────
 elif _nav == "🔍 个股搜索":
     st.markdown("#### 🔍 个股搜索 · 买卖前必看")
-    st.caption("输入代码：美股 AAPL｜港股 0700｜A股 600519 / 000001")
-    _code = st.text_input("股票代码", value="", placeholder="AAPL / 0700 / 600519",
+    st.caption("可打**中文名**（腾讯/茅台/英伟达）或**代码**（AAPL｜0700｜600519）")
+    _code = st.text_input("股票代码", value="", placeholder="腾讯 / 茅台 / AAPL / 0700 / 600519",
                           label_visibility="collapsed").strip()
     if st.button("📊 分析", type="primary", use_container_width=True) and _code:
         with st.spinner(f"分析 {_code} 中..."):

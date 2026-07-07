@@ -7,19 +7,58 @@ cloud_engine.py — 云端版个股搜索引擎（自包含·免重引擎·Strea
 import pandas as pd
 
 
+# 常用中文名/拼音/别名 → yahoo 代码（简搜：手机直接打名字）
+NAME_MAP = {
+    # 港股
+    "腾讯": "0700.HK", "腾讯控股": "0700.HK", "tencent": "0700.HK",
+    "阿里": "9988.HK", "阿里巴巴": "9988.HK", "alibaba": "9988.HK",
+    "美团": "3690.HK", "小米": "1810.HK", "京东": "9618.HK", "快手": "1024.HK",
+    "比亚迪港": "1211.HK", "中芯港": "0981.HK", "理想": "2015.HK", "小鹏": "9868.HK",
+    "网易港": "9999.HK", "药明生物": "2269.HK", "友邦": "1299.HK", "港交所": "0388.HK",
+    "中国移动港": "0941.HK", "中海油": "0883.HK", "中国平安港": "2318.HK", "李宁": "2331.HK",
+    # A股
+    "茅台": "600519.SS", "贵州茅台": "600519.SS", "宁德": "300750.SZ", "宁德时代": "300750.SZ",
+    "五粮液": "000858.SZ", "比亚迪": "002594.SZ", "平安": "601318.SS", "中国平安": "601318.SS",
+    "招行": "600036.SS", "招商银行": "600036.SS", "中芯国际": "688981.SS", "紫金": "601899.SS",
+    "紫金矿业": "601899.SS", "隆基": "601012.SS", "美的": "000333.SZ", "海康": "002415.SZ",
+    "恒瑞": "600276.SS", "长江电力": "600900.SS", "药明康德": "603259.SS", "东方财富": "300059.SZ",
+    "海光": "688041.SS", "海光信息": "688041.SS", "中信证券": "600030.SS", "立讯": "002475.SZ",
+    "中国移动": "600941.SS", "工商银行": "601398.SS", "中国石油": "601857.SS", "中国神华": "601088.SS",
+    # 美股
+    "苹果": "AAPL", "英伟达": "NVDA", "微软": "MSFT", "谷歌": "GOOG", "亚马逊": "AMZN",
+    "特斯拉": "TSLA", "台积电": "TSM", "meta": "META", "脸书": "META", "奈飞": "NFLX",
+    "美光": "MU", "博通": "AVGO", "超微": "AMD", "英特尔": "INTC", "甲骨文": "ORCL",
+    "强生": "JNJ", "礼来": "LLY", "默沙东": "MRK", "辉瑞": "PFE", "可口可乐": "KO",
+    "摩根大通": "JPM", "伯克希尔": "BRK-B", "spacex": "SPCX", "网易": "NTES", "拼多多": "PDD",
+}
+
+
 def to_yf(code: str) -> str:
-    """代码归一化：AAPL→AAPL｜0700→0700.HK｜600519→600519.SS｜000001→000001.SZ"""
-    c = str(code).strip().upper()
+    """归一化：中文名/拼音→代码；AAPL→AAPL｜0700→0700.HK｜600519→600519.SS｜000001→000001.SZ"""
+    raw = str(code).strip()
+    # 简搜：先查中文名/别名映射（不区分大小写）
+    if raw in NAME_MAP:
+        return NAME_MAP[raw]
+    low = raw.lower()
+    if low in NAME_MAP:
+        return NAME_MAP[low]
+    c = raw.upper()
     if "." in c:
         return c
     if c.isalpha():
-        return c  # 美股
+        return c  # 美股代码
     if c.isdigit():
         if len(c) == 6:
             return c + (".SS" if c[0] in ("6", "5", "9") else ".SZ")
         if len(c) <= 5:
             return c.zfill(4) + ".HK"  # 港股
     return c
+
+
+def is_chinese_name(code: str) -> bool:
+    """判断输入是否为无法识别的中文名（用于给友好提示）"""
+    raw = str(code).strip()
+    return any("一" <= ch <= "鿿" for ch in raw) and raw not in NAME_MAP
 
 
 def fetch(symbol: str):
@@ -154,11 +193,14 @@ def trend_pulse(df: pd.DataFrame) -> dict | None:
 
 
 def analyze(code: str) -> dict:
-    """搜索入口：代码 → {symbol, tp} 或 {error}"""
+    """搜索入口：代码/中文名 → {symbol, tp} 或 {error}"""
+    if is_chinese_name(code):
+        return {"error": f"没收录「{code}」这个名字。请改用代码搜索：美股用字母(如 AAPL)、"
+                         f"港股用数字(如 0700)、A股用6位数字(如 600519)。常用票也可直接打名字，如 腾讯/茅台/英伟达。"}
     sym = to_yf(code)
     df = fetch(sym)
     if df is None:
-        return {"error": f"未取到 {sym} 的行情（代码错误，或该市场数据云端暂不可用）"}
+        return {"error": f"未取到 {sym} 的行情（代码可能有误，或该股云端暂时取不到数据，A股偶发，可稍后重试）"}
     tp = trend_pulse(df)
     if not tp:
         return {"error": "数据不足，无法计算"}
