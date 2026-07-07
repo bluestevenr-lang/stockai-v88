@@ -32,29 +32,58 @@ if _pw:
                 st.error("密码错误")
         st.stop()
 
-# ── 私有数据仓读取（10分钟缓存）──────────────────────────────
+# ── 私有数据仓读取 ───────────────────────────────────────────
+# 【V98.2】只缓存成功结果：失败抛异常(st.cache_data 不缓存异常)，
+# 避免"文件刚入库但 App 还在缓存 10 分钟前的失败"这种假性未就绪。
+class _GhErr(Exception):
+    def __init__(self, code):
+        self.code = code
+
 def _tok():
     return st.secrets.get("GH_TOKEN", "")
 
 @st.cache_data(ttl=600, show_spinner=False)
+def _gh_fetch(path: str, raw: bool = True) -> str:
+    r = requests.get(f"https://api.github.com/repos/{DATA_REPO}/contents/{path}",
+                     headers={"Authorization": f"Bearer {_tok()}",
+                              "Accept": "application/vnd.github.raw" if raw else "application/vnd.github+json"},
+                     timeout=15)
+    if r.status_code != 200:
+        raise _GhErr(r.status_code)
+    return r.text
+
 def gh_text(path: str):
     try:
-        r = requests.get(f"https://api.github.com/repos/{DATA_REPO}/contents/{path}",
-                         headers={"Authorization": f"Bearer {_tok()}",
-                                  "Accept": "application/vnd.github.raw"}, timeout=15)
-        return r.text if r.status_code == 200 else None
+        return _gh_fetch(path, True)
+    except _GhErr as e:
+        st.session_state.setdefault("_gh_errs", {})[path] = e.code
+        return None
     except Exception:
+        st.session_state.setdefault("_gh_errs", {})[path] = 0
         return None
 
-@st.cache_data(ttl=600, show_spinner=False)
 def gh_listdir(path: str):
     try:
-        r = requests.get(f"https://api.github.com/repos/{DATA_REPO}/contents/{path}",
-                         headers={"Authorization": f"Bearer {_tok()}",
-                                  "Accept": "application/vnd.github+json"}, timeout=15)
-        return [x["name"] for x in r.json()] if r.status_code == 200 else []
+        return [x["name"] for x in json.loads(_gh_fetch(path, False))]
+    except _GhErr as e:
+        st.session_state.setdefault("_gh_errs", {})[path] = e.code
+        return []
     except Exception:
         return []
+
+def gh_diag(path: str, what: str = "数据"):
+    """读取失败时给出具体原因+解法，并提供强制刷新（清缓存重拉）。"""
+    code = st.session_state.get("_gh_errs", {}).get(path)
+    if code in (401, 403):
+        st.error(f"🔑 GH_TOKEN 无效或过期（HTTP {code}）。去 App 右下 Manage app → Settings → Secrets 更新 GH_TOKEN。")
+    elif code == 404:
+        st.info(f"📭 {what}还没入库（每交易日 07:00/14:00/21:00 自动生成，生成后自动出现）")
+    else:
+        st.warning(f"🌐 {what}读取失败（网络波动），点下方刷新重试")
+    if st.button("🔄 强制刷新", key=f"rf_{path}"):
+        _gh_fetch.clear()
+        st.session_state.pop("_gh_errs", None)
+        st.rerun()
 
 st.title("☁️ V88 云端版")
 st.caption("24小时在线 · 数据每交易日 07:00/14:00/21:00 自动更新 · 与 Mac 开关机无关")
@@ -107,7 +136,7 @@ if _nav == "🧭 导航":
         if _hints:
             st.markdown("**板块轮动**：" + " ｜ ".join(_hints[:5]))
     else:
-        st.info("📭 快照未就绪（等下一次定时任务生成）")
+        gh_diag("data/market_snapshot.json", "大盘快照")
     _i = _rep.find("## 🎯 今日操作榜")
     if _i > 0:
         _j = _rep.find("## 二、", _i)
@@ -120,7 +149,7 @@ if _nav == "🧭 导航":
             if any(x in _ln for x in ("⚠️", "🛑", "🔔")) and "|" in _ln:
                 _pp = [x.strip() for x in _ln.split("|") if x.strip()]
                 if len(_pp) >= 7:
-                    _alerts.append(f"- **{_pp[0]}**：{_pp[6]}")
+                    _alerts.append(f"- **{_pp[0]}**：{_pp[-1]}")  # 最后一列=框架行动,防列数变化
         st.markdown("**⚡ 持仓触发提醒**" if _alerts else "**⚡ 持仓触发提醒**：今日无触发 ✅")
         if _alerts:
             st.markdown("\n".join(_alerts[:6]))
@@ -132,7 +161,7 @@ elif _nav in ("📊 日报", "📅 周报"):
     if _txt:
         st.markdown(_txt)
     else:
-        st.warning("报告未就绪（等下一次定时任务生成并入库）")
+        gh_diag(_f, "报告")
 
 # ── 📈 大盘板块 ──────────────────────────────────────────────
 elif _nav == "📈 大盘板块":
@@ -152,7 +181,7 @@ elif _nav == "📈 大盘板块":
                 st.markdown("**板块（近5日）**：领涨 " + "、".join(f"{s['name']} {s['chg5d']:+.1f}%" for s in top[:3])
                             + (" ｜ 落后 " + "、".join(f"{s['name']} {s['chg5d']:+.1f}%" for s in top[-3:][::-1]) if len(top) > 5 else ""))
     else:
-        st.warning("快照未就绪")
+        gh_diag("data/market_snapshot.json", "大盘快照")
 
 # ── 💼 持仓 ─────────────────────────────────────────────────
 elif _nav == "💼 持仓":
@@ -174,7 +203,7 @@ elif _nav == "💼 持仓":
             st.markdown("---")
             st.markdown(_rep[_k:_k + 3000])
     else:
-        st.warning("positions.json 读取失败")
+        gh_diag("positions.json", "持仓数据")
 
 # ── 🔁 复盘 ─────────────────────────────────────────────────
 elif _nav == "🔁 复盘":
