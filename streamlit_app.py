@@ -19,13 +19,14 @@ st.set_page_config(page_title="V88 云端版", page_icon="☁️", layout="cente
                    initial_sidebar_state="collapsed")
 
 # ── 访问密码门 ───────────────────────────────────────────────
-_pw = st.secrets.get("APP_PASSWORD", "")
+# 全部转成字符串再比较：Secrets 里写 5630 不带引号会变成数字，防呆处理
+_pw = str(st.secrets.get("APP_PASSWORD", "") or "").strip()
 if _pw:
     if not st.session_state.get("_auth_ok"):
         st.title("☁️ V88 云端版")
         _in = st.text_input("访问密码", type="password")
         if st.button("进入", type="primary", use_container_width=True):
-            if _in == _pw:
+            if str(_in).strip() == _pw:
                 st.session_state["_auth_ok"] = True
                 st.rerun()
             else:
@@ -40,7 +41,7 @@ class _GhErr(Exception):
         self.code = code
 
 def _tok():
-    return st.secrets.get("GH_TOKEN", "")
+    return str(st.secrets.get("GH_TOKEN", "") or "").strip().strip('"').strip("'")
 
 @st.cache_data(ttl=600, show_spinner=False)
 def _gh_fetch(path: str, raw: bool = True) -> str:
