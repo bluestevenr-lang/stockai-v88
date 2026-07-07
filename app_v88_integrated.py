@@ -10977,7 +10977,8 @@ if st.session_state.get('scan_selected_code'):
                                 f"- 止损位：{_F['stop']} ｜ 减仓位：{_F['reduce']}\n"
                                 f"- 失效条件：{_F['invalid']}")
                             _bd99 = _F["breakdown"]
-                            st.dataframe([{"维度": k, "得分": sc, "权重": f"{int(w*100)}%"} for k, (sc, w) in _bd99.items()],
+                            st.dataframe([{"维度": k, "实际情况": d, "得分": sc, "权重": f"{int(w*100)}%"}
+                                          for k, (sc, w, d) in _bd99.items()],
                                          hide_index=True, width='stretch')
                 except Exception as _e99:
                     _tp = analyze_trend_pulse(df_temp, target_c)

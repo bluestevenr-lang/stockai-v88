@@ -154,6 +154,12 @@ def analyze_trend_full(df, sector_strength=None):
             elif p_lo_now < p_lo_prev and d_lo_now > d_lo_prev:
                 div = "🌱底背离(价新低MACD走强)"
 
+        macd_txt = (("金叉" if macd_gold else "死叉")
+                    + ("·刚金叉" if just_cross else ("·刚死叉" if just_dead else ""))
+                    + ("·红柱扩大" if (red and hist_expand) else ("·红柱缩小" if (red and not hist_expand) else
+                       ("·绿柱扩大" if (not red and hist_expand) else "·绿柱缩小")))
+                    + ("·" + div if div else ""))
+
         # RSI
         delta = c.diff()
         rs_ = delta.clip(lower=0).ewm(com=13).mean() / (-delta.clip(upper=0)).ewm(com=13).mean()
@@ -256,11 +262,39 @@ def analyze_trend_full(df, sector_strength=None):
         s_vph = {0: 20, 1: 55, 2: 90}[vp_lv]
         s_water = _clamp(100 - water_risk)          # 水位越高风险越大→分越低
         s_sector = float(sector_strength) if sector_strength is not None else 50.0
-        s_catalyst = 50.0                            # 云端个股新闻催化难判，中性；桌面版可注入
-        weights = {"价格趋势": (s_price, 0.20), "均线结构": (s_ma, 0.18), "MACD": (s_macd, 0.15),
-                   "成交量": (s_vol, 0.12), "量价健康": (s_vph, 0.15), "水位风险": (s_water, 0.10),
-                   "板块强度": (s_sector, 0.05), "资金新闻": (s_catalyst, 0.05)}
-        total = int(round(sum(sc * w for sc, w in weights.values())))
+
+        # 资金动向：OBV 能量潮（涨日+量、跌日-量的累积），比"新闻催化"实在
+        _sign = (c.diff() > 0).astype(int) * 2 - 1
+        obv = (_sign * v).cumsum()
+        obv5 = float(obv.iloc[-1] - obv.iloc[-6]) if len(obv) >= 6 else 0.0
+        obv20 = float(obv.iloc[-1] - obv.iloc[-21]) if len(obv) >= 21 else 0.0
+        s_capital = _clamp(50 + (25 if obv5 > 0 else -25) + (15 if obv20 > 0 else -15))
+        cap_desc = (f"OBV能量潮：近5日{'↑资金净流入' if obv5 > 0 else '↓资金净流出'}"
+                    f"·近20日{'↑流入' if obv20 > 0 else '↓流出'}")
+
+        # 每一维的「实际情况」——分数只是结论，这里说清到底发生了什么
+        _vol_pct = (volr - 1) * 100
+        descs = {
+            "价格趋势": f"20日{chg20:+.1f}%·5日{chg5:+.1f}%·{'站上' if above[20] else '跌破'}MA20",
+            "均线结构": f"{ma_state}（{ma_txt}）",
+            "MACD": macd_txt,
+            "成交量": f"5日均量较20日{'放大' if _vol_pct > 8 else ('缩减' if _vol_pct < -8 else '持平')}{_vol_pct:+.0f}%·今日量比{vold:.2f}",
+            "量价健康": vp,
+            "水位风险": f"{water}({pos52:.0f}%)·距压力{(resistance / last - 1) * 100:+.1f}%·距支撑{(support / last - 1) * 100:+.1f}%",
+            "板块强度": (f"板块资金轮入·热度{s_sector:.0f}" if (sector_strength is not None and s_sector >= 70)
+                     else (f"板块涨势退潮·热度{s_sector:.0f}" if (sector_strength is not None and s_sector <= 30)
+                           else ("所属板块中性" if sector_strength is not None else "未接板块数据·按中性50"))),
+            "资金动向": cap_desc,
+        }
+        weights = {"价格趋势": (s_price, 0.20, descs["价格趋势"]),
+                   "均线结构": (s_ma, 0.18, descs["均线结构"]),
+                   "MACD": (s_macd, 0.15, descs["MACD"]),
+                   "成交量": (s_vol, 0.12, descs["成交量"]),
+                   "量价健康": (s_vph, 0.15, descs["量价健康"]),
+                   "水位风险": (s_water, 0.10, descs["水位风险"]),
+                   "板块强度": (s_sector, 0.05, descs["板块强度"]),
+                   "资金动向": (s_capital, 0.05, descs["资金动向"])}
+        total = int(round(sum(sc * w for sc, w, _ in weights.values())))
 
         # ── 8种动作 + 全价位 ──
         buy_lo, buy_hi = round(ma[20], 2), round(last, 2) if last > ma[20] else round(ma[20] * 1.02, 2)
@@ -297,11 +331,6 @@ def analyze_trend_full(df, sector_strength=None):
             action, concl = f"⏳ 观望：站稳MA20({ma[20]:.2f})+放量再介入", "等待"
             invalid = "站上MA20且放量突破前高"
 
-        macd_txt = (("金叉" if macd_gold else "死叉")
-                    + ("·刚金叉" if just_cross else ("·刚死叉" if just_dead else ""))
-                    + ("·红柱扩大" if (red and hist_expand) else ("·红柱缩小" if (red and not hist_expand) else
-                       ("·绿柱扩大" if (not red and hist_expand) else "·绿柱缩小")))
-                    + ("·" + div if div else ""))
 
         return {
             "last": round(last, 2), "total": total, "stage": stage, "vp": vp, "vp_lv": vp_lv,
@@ -313,7 +342,7 @@ def analyze_trend_full(df, sector_strength=None):
             "support": support, "resistance": resistance,
             "rsi": round(rsi), "bias20": round(bias20, 1), "volr": round(volr, 2),
             "chg5": round(chg5, 1), "chg20": round(chg20, 1),
-            "breakdown": {k: (round(sc), w) for k, (sc, w) in weights.items()},
+            "breakdown": {k: (round(sc), w, d) for k, (sc, w, d) in weights.items()},
             "sector_known": sector_strength is not None,
             "ma": {k: round(x, 2) for k, x in ma.items()},
         }

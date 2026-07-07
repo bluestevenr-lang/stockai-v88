@@ -160,11 +160,11 @@ elif _nav == "🔍 个股搜索":
             # ④ 趋势分拆解(8项)
             with st.expander("📐 趋势分拆解（8项子分 → 总分）", expanded=False):
                 _bd = f["breakdown"]
-                _rows = [{"维度": k, "得分": sc, "权重": f"{int(w*100)}%",
-                          "加权": round(sc * w, 1)} for k, (sc, w) in _bd.items()]
+                _rows = [{"维度": k, "实际情况": d, "得分": sc, "权重": f"{int(w*100)}%"}
+                         for k, (sc, w, d) in _bd.items()]
                 st.dataframe(_rows, hide_index=True, use_container_width=True)
                 if not f["sector_known"]:
-                    st.caption("_板块强度/资金新闻在云端按中性50计（需完整数据）；主判断由价格/均线/MACD/量价/水位驱动_")
+                    st.caption("_板块强度云端按中性50计；资金动向=OBV能量潮真实数据；主判断由价格/均线/MACD/量价/水位驱动_")
             st.caption(f"20日动量 {f['chg20']:+.1f}% ｜ 乖离MA20 {f['bias20']:+.1f}% ｜ 量比 {f['volr']} ｜ 数据截至 {r['asof']}")
 
 # ── 📊 日报 / 📅 周报 ────────────────────────────────────────
