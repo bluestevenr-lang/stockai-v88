@@ -1,0 +1,35 @@
+name: live-data
+
+# 云端实时层：每小时刷新大盘快照 + 热点新闻流到 data 分支 pub/
+# （完整日报仍由私有仓 v88-daily-report 每时段一次生成：北京时间 07/14/21）
+# 公共仓 Actions 分钟数免费，不占私仓额度。
+
+on:
+  schedule:
+    - cron: "7 * * * *"   # 每小时第7分
+  workflow_dispatch: {}
+
+concurrency:
+  group: live-data
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install deps
+        run: pip install --quiet yfinance pandas feedparser requests
+      - name: Build & publish live data
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RSS_PROXY: ""            # 美国节点直连全部源
+        run: python live_publish.py

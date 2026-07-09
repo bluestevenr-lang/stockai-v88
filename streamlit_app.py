@@ -9,8 +9,53 @@ GitHub Actions 每交易日 07:00/14:00/21:00 自动发布（已剔除持仓明�
 import json
 import requests
 import streamlit as st
+from datetime import datetime, timezone, timedelta
 
 PUB_BASE = "https://raw.githubusercontent.com/bluestevenr-lang/stockai-v88/data/pub"
+
+# ── 三时段体系（北京时间）：时段一 00-08 / 时段二 08-16 / 时段三 16-24 ──
+BJT = timezone(timedelta(hours=8))
+
+def _now_bjt():
+    return datetime.now(BJT)
+
+def _parse_ts(s):
+    """解析 '2026-07-09 21:33' / ISO 等时间串 → BJT datetime；失败 None"""
+    s = str(s or "").strip()
+    if not s:
+        return None
+    for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M"):
+        try:
+            return datetime.strptime(s, fmt).replace(tzinfo=BJT)
+        except Exception:
+            pass
+    try:
+        d = datetime.fromisoformat(s.replace("Z", "+00:00"))
+        return d.astimezone(BJT) if d.tzinfo else d.replace(tzinfo=BJT)
+    except Exception:
+        return None
+
+def _period_of(dt):
+    return ("🌙 时段一 00-08", "☀️ 时段二 08-16", "🌆 时段三 16-24")[dt.hour // 8]
+
+def _fresh_caption(ts, what="数据"):
+    """统一新鲜度标注：生成时间 · 距今 · 所属时段 · 是否本时段"""
+    dt = _parse_ts(ts)
+    if not dt:
+        return f"🕐 {what}时间未知"
+    now = _now_bjt()
+    age_h = (now - dt).total_seconds() / 3600
+    same = _period_of(now) == _period_of(dt) and dt.date() == now.date()
+    flag = "✅ 本时段" if same else f"⚠️ 属 {_period_of(dt)}" + ("" if dt.date() == now.date() else f"·{dt.strftime('%m-%d')}")
+    return f"🕐 {what}生成于 {dt.strftime('%m-%d %H:%M')} · {age_h:.1f}小时前 · 现在{_period_of(_now_bjt())} · {flag}"
+
+@st.cache_data(ttl=120, show_spinner=False)
+def pub_meta() -> dict:
+    try:
+        r = requests.get(f"{PUB_BASE}/meta.json", timeout=10)
+        return r.json() if r.status_code == 200 else {}
+    except Exception:
+        return {}
 
 st.set_page_config(page_title="V88 云端版", page_icon="☁️", layout="centered",
                    initial_sidebar_state="collapsed")
@@ -57,7 +102,7 @@ with c_rf:
     if st.button("🔄", help="强制刷新"):
         pub_text.clear(); pub_journal_list.clear(); st.rerun()
 with c_nav:
-    _nav = st.radio("导航", ["🧭 导航", "🏆 全选榜单", "🔍 个股搜索", "📊 日报", "📅 周报", "📈 大盘板块", "🔁 复盘"],
+    _nav = st.radio("导航", ["🧭 导航", "🔥 热点新闻", "🏆 全选榜单", "🔍 个股搜索", "📊 日报", "📅 周报", "📈 大盘板块", "🔁 复盘"],
                     horizontal=True, label_visibility="collapsed")
 
 _snap_raw = pub_text("market_snapshot.json")
@@ -74,7 +119,11 @@ _NOT_READY = "📭 数据生成中（每交易日 07:00/14:00/21:00 自动发布
 if _nav == "🧭 导航":
     _rep = pub_text("daily_report.md") or ""
     st.markdown("#### 🧭 今日导航 · 该关注什么")
-    st.caption(f"温度定仓位 → 轮动定板块 → 操作榜定标的 ｜ 数据 {(_snap or {}).get('generated_at', '—')}")
+    st.caption("温度定仓位 → 轮动定板块 → 操作榜定标的")
+    st.caption(_fresh_caption((_snap or {}).get("generated_at"), "行情快照") + " · 每小时更新")
+    _meta0 = pub_meta()
+    if _meta0.get("daily_report_ts"):
+        st.caption(_fresh_caption(_meta0["daily_report_ts"], "日报/操作榜") + " · 每时段更新（07/14/21点）")
     if _snap and _snap.get("markets"):
         for _mkt in ("美股", "A股", "港股"):
             _t = (_snap["markets"].get(_mkt) or {}).get("temperature")
@@ -104,12 +153,65 @@ if _nav == "🧭 导航":
             st.markdown("**板块轮动**：" + " ｜ ".join(_hints[:5]))
     else:
         st.info(_NOT_READY)
+    # 🔥 最新热点（直接可见，详情见「🔥 热点新闻」页）
+    try:
+        _nl0 = json.loads(pub_text("news_live.json") or "{}")
+        _its0 = _nl0.get("items") or []
+        if _its0:
+            st.markdown("**🔥 最新热点**（北京时间·实际发生时间）：")
+            for _it0 in _its0[:5]:
+                _d0 = _parse_ts(_it0.get("time"))
+                _t0 = _d0.strftime("%H:%M") if _d0 else "--"
+                st.markdown(f"- `{_t0}` {_it0.get('s','')}｜{str(_it0.get('t',''))[:60]}")
+            st.caption("👉 完整实时新闻流见顶部「🔥 热点新闻」页（时段筛选/来源/链接）")
+    except Exception:
+        pass
     _i = _rep.find("## 🎯 今日操作榜")
     if _i > 0:
         _j = _rep.find("## 二、", _i)
         with st.expander("🎯 今日操作榜（中长短×中美港 各Top3·实价校准）", expanded=True):
             st.markdown(_rep[_i:_j if _j > 0 else _i + 3000])
     st.caption("💡 持仓建议为隐私内容，请在飞书推送或 Mac/局域网 V88 查看")
+
+# ── 🔥 热点新闻（每小时自动更新·每条带实际发生时间·三时段筛选）──────────
+elif _nav == "🔥 热点新闻":
+    st.markdown("#### 🔥 热点新闻 · 实时流")
+    _nl_raw = pub_text("news_live.json")
+    _nl = None
+    if _nl_raw:
+        try:
+            _nl = json.loads(_nl_raw)
+        except Exception:
+            _nl = None
+    if not _nl or not _nl.get("items"):
+        st.info("📭 新闻流生成中（每小时自动抓取，可点右上 🔄 刷新）")
+    else:
+        st.caption(_fresh_caption(_nl.get("generated_at"), "新闻流") + " · 每小时自动更新 · 10个中外RSS源")
+        _po = ["全部（近72小时）", "🌙 今日·时段一 00-08", "☀️ 今日·时段二 08-16", "🌆 今日·时段三 16-24"]
+        _psel = st.selectbox("⏱ 时段筛选（北京时间）", _po)
+        _today = _now_bjt().date()
+        _shown = 0
+        for _it in _nl["items"]:
+            _dt = _parse_ts(_it.get("time"))
+            if _psel != _po[0]:
+                if not _dt or _dt.date() != _today:
+                    continue
+                _pidx = _po.index(_psel) - 1  # 0/1/2
+                if _dt.hour // 8 != _pidx:
+                    continue
+            _tstr = _dt.strftime("%m-%d %H:%M") if _dt else "——"
+            _ttl = str(_it.get("t", "")).replace("[", "［").replace("]", "］")
+            _url = _it.get("url") or ""
+            _line = (f"**`{_tstr}`** ｜ {_it.get('s','')} ｜ [{_ttl}]({_url})" if _url
+                     else f"**`{_tstr}`** ｜ {_it.get('s','')} ｜ {_ttl}")
+            st.markdown(_line)
+            _shown += 1
+            if _shown >= 50:
+                break
+        if _shown == 0:
+            st.caption("该时段暂无新闻（时间为新闻实际发生时间·北京时间）")
+        else:
+            st.caption(f"共 {_shown} 条 · 时间均为新闻实际发生时间（北京时间）· 深度分析见 📊 日报（每时段生成一次）")
 
 # ── 🏆 全选榜单（V88 最近一次「一键全策略」扫描结果，V88是主体·云端跟随）──
 elif _nav == "🏆 全选榜单":
@@ -125,7 +227,7 @@ elif _nav == "🏆 全选榜单":
         st.info("📭 暂无榜单（V88 桌面端跑过「一键全策略」后自动同步到这里，交易日 09:00/16:00/22:30 自动扫描）")
     else:
         import pandas as pd
-        st.caption(f"📅 扫描于 {_scan.get('generated_at', '?')}（{_scan.get('scan_market', '')}）· 由 Mac V88 五维引擎产出，云端只展示不重算")
+        st.caption(_fresh_caption(_scan.get("generated_at"), "扫描榜单") + f"（{_scan.get('scan_market', '')}）· 由 Mac V88 五维引擎产出，云端只展示不重算")
         _df = pd.DataFrame(_scan["rows"])
         if "市场" in _df.columns and "得分" in _df.columns:
             _df["市场排名"] = (_df.groupby("市场")["得分"]
@@ -236,6 +338,11 @@ elif _nav == "🔍 个股搜索":
 elif _nav in ("📊 日报", "📅 周报"):
     _txt = pub_text("daily_report.md" if _nav == "📊 日报" else "weekly_report.md")
     if _txt:
+        _meta1 = pub_meta()
+        _mk1 = "daily_report_ts" if _nav == "📊 日报" else "weekly_report_ts"
+        if _meta1.get(_mk1):
+            st.caption(_fresh_caption(_meta1[_mk1], "本报告")
+                       + (" · 每时段更新（北京时间07/14/21点）" if _nav == "📊 日报" else " · 每周日更新"))
         st.markdown(_txt)
         st.caption("💡 持仓建议为隐私内容，不在云端公开显示；见飞书或 Mac 版")
     else:
@@ -245,7 +352,7 @@ elif _nav in ("📊 日报", "📅 周报"):
 elif _nav == "📈 大盘板块":
     st.markdown("#### 📈 大盘走势与板块轮动")
     if _snap:
-        st.caption(f"📅 快照生成于 {_snap.get('generated_at', '?')}")
+        st.caption(_fresh_caption(_snap.get("generated_at"), "行情快照") + " · 每小时自动更新")
         for mkt, blk in _snap.get("markets", {}).items():
             st.markdown(f"### {mkt}")
             _t = blk.get("temperature")
