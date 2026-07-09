@@ -57,7 +57,7 @@ with c_rf:
     if st.button("🔄", help="强制刷新"):
         pub_text.clear(); pub_journal_list.clear(); st.rerun()
 with c_nav:
-    _nav = st.radio("导航", ["🧭 导航", "🔍 个股搜索", "📊 日报", "📅 周报", "📈 大盘板块", "🔁 复盘"],
+    _nav = st.radio("导航", ["🧭 导航", "🏆 全选榜单", "🔍 个股搜索", "📊 日报", "📅 周报", "📈 大盘板块", "🔁 复盘"],
                     horizontal=True, label_visibility="collapsed")
 
 _snap_raw = pub_text("market_snapshot.json")
@@ -110,6 +110,44 @@ if _nav == "🧭 导航":
         with st.expander("🎯 今日操作榜（中长短×中美港 各Top3·实价校准）", expanded=True):
             st.markdown(_rep[_i:_j if _j > 0 else _i + 3000])
     st.caption("💡 持仓建议为隐私内容，请在飞书推送或 Mac/局域网 V88 查看")
+
+# ── 🏆 全选榜单（V88 最近一次「一键全策略」扫描结果，V88是主体·云端跟随）──
+elif _nav == "🏆 全选榜单":
+    st.markdown("#### 🏆 一键全策略榜单 · 中美港分市场排名")
+    _scan_raw = pub_text("scan_latest.json")
+    _scan = None
+    if _scan_raw:
+        try:
+            _scan = json.loads(_scan_raw)
+        except Exception:
+            _scan = None
+    if not _scan or not _scan.get("rows"):
+        st.info("📭 暂无榜单（V88 桌面端跑过「一键全策略」后自动同步到这里，交易日 09:00/16:00/22:30 自动扫描）")
+    else:
+        import pandas as pd
+        st.caption(f"📅 扫描于 {_scan.get('generated_at', '?')}（{_scan.get('scan_market', '')}）· 由 Mac V88 五维引擎产出，云端只展示不重算")
+        _df = pd.DataFrame(_scan["rows"])
+        if "市场" in _df.columns and "得分" in _df.columns:
+            _df["市场排名"] = (_df.groupby("市场")["得分"]
+                            .rank(ascending=False, method="first").astype(int))
+            _cols = _df.columns.tolist()
+            _cols.insert(_cols.index("市场") + 1, _cols.pop(_cols.index("市场排名")))
+            _df = _df[_cols]
+        c_m, c_s = st.columns(2)
+        with c_m:
+            _mopts = ["🌍 全部"] + [m for m in ("🇺🇸美股", "🇨🇳A股", "🇭🇰港股")
+                                   if "市场" in _df.columns and m in _df["市场"].unique()]
+            _mp = st.selectbox("🌏 市场", _mopts)
+            if _mp != "🌍 全部":
+                _df = _df[_df["市场"] == _mp]
+        with c_s:
+            if "得分" in _df.columns:
+                _sb = st.selectbox("📊 得分", ["全部", "≥70 强势", "≥55 良好", "≥40 及格"])
+                _smap = {"≥70 强势": 70, "≥55 良好": 55, "≥40 及格": 40}
+                if _sb in _smap:
+                    _df = _df[_df["得分"] >= _smap[_sb]]
+        st.dataframe(_df, hide_index=True, use_container_width=True, height=560)
+        st.caption("💡 得分=五维综合评分 ｜ MACD/量价：明显放量≥+20%·温和放量+8%~20%·持平±8%·明显缩量≤-20% ｜ 操作指引与止损/目标由引擎按实时价确定，与桌面 V88 同源")
 
 # ── 🔍 个股搜索（云端实时·趋势脉搏）────────────────────────────
 elif _nav == "🔍 个股搜索":

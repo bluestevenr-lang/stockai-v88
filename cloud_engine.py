@@ -346,7 +346,9 @@ def analyze_trend_full(df, sector_strength=None):
             "价格趋势": f"20日{chg20:+.1f}%·5日{chg5:+.1f}%·{'站上' if above[20] else '跌破'}MA20",
             "均线结构": f"{ma_state}（{ma_txt}）",
             "MACD": macd_txt,
-            "成交量": f"5日均量较20日{'放大' if _vol_pct > 8 else ('缩减' if _vol_pct < -8 else '持平')}{_vol_pct:+.0f}%·今日量比{vold:.2f}",
+            "成交量": (("明显放量" if _vol_pct >= 20 else "温和放量" if _vol_pct >= 8 else
+                     "明显缩量" if _vol_pct <= -20 else "温和缩量" if _vol_pct <= -8 else "量能持平")
+                    + f"·5日均量较20日{_vol_pct:+.0f}%·今日量比{vold:.2f}"),
             "量价健康": vp,
             "水位风险": f"{water}({pos52:.0f}%)·距压力{(resistance / last - 1) * 100:+.1f}%·距支撑{(support / last - 1) * 100:+.1f}%",
             "板块强度": (f"板块资金轮入·热度{s_sector:.0f}" if (sector_strength is not None and s_sector >= 70)
