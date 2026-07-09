@@ -256,7 +256,9 @@ elif _nav == "🔍 个股搜索":
     st.markdown("#### 🔍 个股搜索 · 买卖前必看")
     st.caption("中文名（A股全市场5200+/港股/美股离线秒搜）或代码（AAPL｜0700｜600519）· 重名会列出让你选")
     import cloud_engine
-    _code = st.text_input("股票代码", value="", placeholder="中微 / 腾讯 / 茅台 / AAPL / 600519",
+    if not cloud_engine._load_names():
+        st.warning("⚠️ 离线名录加载失败（stock_names.json），中文名搜索暂不可用，请直接输代码或稍后重试")
+    _code = st.text_input("股票代码", value="", placeholder="中烟香港 / 腾讯 / 茅台 / AAPL / 600519",
                           label_visibility="collapsed").strip()
     if st.button("🔎 搜索", type="primary", use_container_width=True) and _code:
         _has_cn = any("一" <= ch <= "鿿" for ch in _code)

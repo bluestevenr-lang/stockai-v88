@@ -81,6 +81,17 @@ def search_candidates(query: str, limit: int = 15):
             out.append((e["n"], e["c"], e["m"]))
         if len(out) >= limit:
             break
+    # 名录未命中 → NAME_MAP 别名兜底（"亨通"/"宁德"等简称、拼音小写）
+    if not out:
+        for alias, code in NAME_MAP.items():
+            if q == alias or ql == alias.lower() or (len(q) >= 2 and q in alias):
+                mkt = ("港股" if code.endswith(".HK") else
+                       ("A股" if code.endswith((".SS", ".SZ")) else "美股"))
+                if code not in seen:
+                    seen.add(code)
+                    out.append((alias, code, mkt))
+                if len(out) >= limit:
+                    break
     return out
 
 
