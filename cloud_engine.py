@@ -438,6 +438,141 @@ def analyze_trend_full(df, sector_strength=None):
         return None
 
 
+def horizon_scores(df, idx_close=None, full=None):
+    """【V101】三期限「可买性」评分 —— 三端唯一实现（V88桌面/云端日报/轻量版共用）。
+    设计定则（用户确立）：高分=现在值得买；每一分都有可复算的因子依据，逻辑链全透明。
+
+    ┌ 短线(1-5日) ─ 动能30 + 相对强度RS20 25 + 量价确认20 + 时机位置15 + 均线形态10
+    ├ 中线(1-3月) ─ 趋势结构30 + 引擎质量25 + 中期动量20 + RS60 15 + 量能持续10
+    └ 长线(6月+)  ─ 长期结构30 + 引擎质量25 + 稳定性20 + RS120 15 + 价值位置10
+    末端统一叠加 V100 时机闸门：减仓≤58 / 回避≤45 / 等待≤64 / 试仓≤68。
+
+    参数：df=个股OHLCV；idx_close=对应大盘收盘序列(缺省按超额0算RS)；
+         full=analyze_trend_full(df) 结果(传入则复用，不传内部计算)。
+    返回 {"short"/"mid"/"long": {"score": int, "why": 逻辑链str},
+          "gate": 引擎结论, "gate_note": 降分说明, "rs20": float, "chg20": float}
+    """
+    try:
+        if full is None:
+            full = analyze_trend_full(df)
+        if not full or df is None or len(df) < 40:
+            return None
+        c = df["Close"].dropna()
+        v = df["Volume"].fillna(0)
+        last = float(c.iloc[-1])
+        n = len(c)
+
+        def _lin(x, lo, hi):
+            return max(0.0, min(1.0, (x - lo) / (hi - lo))) if hi > lo else 0.0
+
+        def _chg(days):
+            return (last / float(c.iloc[-days - 1]) - 1) * 100 if n > days else 0.0
+
+        chg5, chg20 = float(full.get("chg5", 0)), float(full.get("chg20", 0))
+        chg60, chg120 = _chg(60), _chg(120)
+
+        def _ichg(days):
+            try:
+                if idx_close is None or len(idx_close) <= days:
+                    return 0.0
+                return (float(idx_close.iloc[-1]) / float(idx_close.iloc[-days - 1]) - 1) * 100
+            except Exception:
+                return 0.0
+
+        rs20, rs60, rs120 = chg20 - _ichg(20), chg60 - _ichg(60), chg120 - _ichg(120)
+
+        ma = full["ma"]  # {5,10,20,55,120}
+        above = {k: last > ma[k] for k in (5, 10, 20, 55)}
+        ma200 = float(c.rolling(min(200, n)).mean().iloc[-1])
+        ma200_prev = float(c.rolling(min(200, n)).mean().iloc[-21]) if n >= 221 else ma200
+        ma20s = c.rolling(20).mean()
+        ma20_up = n >= 25 and float(ma20s.iloc[-1]) > float(ma20s.iloc[-5])
+        bull_align = last > ma[5] > ma[20] > ma[55]
+
+        dif = c.ewm(span=12, adjust=False).mean() - c.ewm(span=26, adjust=False).mean()
+        dea = dif.ewm(span=9, adjust=False).mean()
+        hist = dif - dea
+        macd_gold = float(dif.iloc[-1]) > float(dea.iloc[-1])
+        red = float(hist.iloc[-1]) > 0
+        hist_expand = len(hist) >= 3 and abs(float(hist.iloc[-1])) > abs(float(hist.iloc[-3]))
+
+        volr = float(full.get("volr", 1.0))
+        _sign = (c.diff() > 0).astype(int) * 2 - 1
+        obv = (_sign * v).cumsum()
+        obv20 = float(obv.iloc[-1] - obv.iloc[-21]) if len(obv) >= 21 else 0.0
+        vol60 = float(c.pct_change().tail(60).std() or 0) * 100
+        _w = c.tail(min(120, n))
+        dd120 = float(((_w.cummax() - _w) / _w.cummax()).max()) * 100 if len(_w) > 5 else 0.0
+
+        rsi = float(full["rsi"]); bias20 = float(full["bias20"])
+        pos52 = float(full["pos52"]); vp_lv = int(full["vp_lv"])
+        room = (float(full.get("resistance", last)) / last - 1) * 100 if last else 0.0
+
+        # ── ⚡ 短线(1-5日)：动能延续是第一性——强者恒强的持续期通常3-5日 ──
+        s_mom = 8 * macd_gold + 6 * (red and hist_expand) + 10 * _lin(chg5, -2, 6) + 6 * (chg20 > 0)
+        s_rs = 25 * _lin(rs20, -5, 12)
+        s_vp = {2: 20, 1: 11, 0: 3}[vp_lv]
+        s_pos = 6 * (1 - _lin(rsi, 68, 85)) + 6 * (1 - _lin(bias20, 5, 12)) + 3 * _lin(room, 1, 5)
+        s_ma = 4 * above[5] + 3 * above[10] + 3 * above[20]
+        short = s_mom + s_rs + s_vp + s_pos + s_ma
+        why_s = (f"动能{s_mom:.0f}/30({'金叉' if macd_gold else '死叉'}"
+                 f"{'·柱体扩大' if hist_expand and red else ''}·5日{chg5:+.1f}%)"
+                 f" · RS{s_rs:.0f}/25(20日超额{rs20:+.1f}%)"
+                 f" · 量价{s_vp}/20({str(full.get('vp','')).split('·')[0]})"
+                 f" · 时机{s_pos:.0f}/15(RSI{rsi:.0f}·乖离{bias20:+.1f}%·距压力{room:+.1f}%)"
+                 f" · 均线{s_ma:.0f}/10")
+
+        # ── 🚀 中线(1-3月)：趋势结构>一切——多头排列+站稳季线的延续概率最高 ──
+        m_tr = 12 * bull_align + 8 * above[55] + 5 * ma20_up + 5 * above[20]
+        m_q = 25 * float(full["total"]) / 100.0
+        m_mo = 12 * _lin(chg60, -5, 30) + 8 * _lin(chg20, -3, 15)
+        m_rs = 15 * _lin(rs60, -8, 20)
+        m_vol = 5 * (obv20 > 0) + 5 * (0.9 <= volr <= 2.0)
+        mid = m_tr + m_q + m_mo + m_rs + m_vol
+        why_m = (f"趋势{m_tr:.0f}/30({'多头排列' if bull_align else ('站上MA55' if above[55] else '结构未成')})"
+                 f" · 质量{m_q:.0f}/25(引擎{full['total']})"
+                 f" · 动量{m_mo:.0f}/20(60日{chg60:+.1f}%)"
+                 f" · RS{m_rs:.0f}/15(60日超额{rs60:+.1f}%)"
+                 f" · 量能{m_vol:.0f}/10({'OBV20日净流入' if obv20 > 0 else 'OBV净流出'}"
+                 f"{'·温和放量' if 0.9 <= volr <= 2.0 else ''})")
+
+        # ── 🏛 长线(6月+)：年线之上+低波动+长期跑赢大盘，买点还要位置不过热 ──
+        l_st = 12 * (last > ma200) + 8 * (ma[55] > ma200) + 10 * (ma200 > ma200_prev)
+        l_q = 25 * float(full["total"]) / 100.0
+        l_sb = 12 * (1 - _lin(vol60, 1.2, 4.0)) + 8 * (1 - _lin(dd120, 15, 45))
+        l_rs = 15 * _lin(rs120, -10, 30)
+        l_ps = 10 * (1 - _lin(pos52, 75, 97))
+        long_ = l_st + l_q + l_sb + l_rs + l_ps
+        why_l = (f"结构{l_st:.0f}/30({'年线上方' if last > ma200 else '年线下方'}"
+                 f"{'·年线上行' if ma200 > ma200_prev else ''})"
+                 f" · 质量{l_q:.0f}/25"
+                 f" · 稳定{l_sb:.0f}/20(日波动{vol60:.1f}%·120日回撤{dd120:.0f}%)"
+                 f" · RS{l_rs:.0f}/15(120日超额{rs120:+.1f}%)"
+                 f" · 位置{l_ps:.0f}/10(52周水位{pos52:.0f}%)")
+
+        # ── V100 时机闸门（最终裁决：能不能现在买）──
+        concl = str(full.get("conclusion", ""))
+        cap = {"回避": 45, "减仓": 58, "等待": 64, "试仓": 68}.get(concl)
+        gate_note = ""
+        if cap is not None:
+            if max(short, mid, long_) > cap:
+                gate_note = f"⏳时机闸门：{full.get('stage', '')}·{concl}→三期限分上限{cap}"
+            short, mid, long_ = min(short, cap), min(mid, cap), min(long_, cap)
+        # 主升过热（乖离/RSI过高，引擎动作=✋不追）：短线分封顶72——短线不追高；
+        # 中长线保留原分，回踩MA10/MA20即是买点
+        elif concl == "持有" and "过热" in str(full.get("action", "")) and short > 72:
+            short = 72.0
+            gate_note = (gate_note + "；" if gate_note else "") + "✋主升过热→短线分上限72(等回踩)"
+
+        return {"short": {"score": int(round(short)), "why": why_s},
+                "mid": {"score": int(round(mid)), "why": why_m},
+                "long": {"score": int(round(long_)), "why": why_l},
+                "gate": concl, "gate_note": gate_note,
+                "rs20": round(rs20, 1), "chg20": round(chg20, 1)}
+    except Exception:
+        return None
+
+
 # 旧接口兼容：trend_pulse 返回精简子集，避免其它调用处报错
 def trend_pulse(df):
     r = analyze_trend_full(df)
