@@ -32,4 +32,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RSS_PROXY: ""            # 美国节点直连全部源
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}  # 英文标题批量翻译
         run: python live_publish.py

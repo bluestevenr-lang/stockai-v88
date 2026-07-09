@@ -62,6 +62,60 @@ def _hot_topics(items, top=8):
         merged[_TOPIC_MERGE.get(w, w)] += n
     return [{"w": w, "n": n} for w, n in merged.most_common(top) if n >= 2]
 
+
+
+def _translate_titles(items):
+    """【V88·新闻中文化】英文标题→中文：复用上一版已译结果(按url)，只译新增；
+    DeepSeek 单次批量调用，失败保留原文。译文放 t，原文存 t_en。"""
+    import os
+    import requests as _rq
+    prev = {}
+    try:
+        r = _rq.get("https://raw.githubusercontent.com/bluestevenr-lang/stockai-v88/data/pub/news_live.json",
+                    timeout=10)
+        if r.status_code == 200:
+            for p in r.json().get("items", []):
+                if p.get("url") and p.get("zh"):
+                    prev[p["url"]] = p["t"]
+    except Exception:
+        pass
+    todo = []
+    for it in items:
+        t = str(it.get("t", ""))
+        if any("\u4e00" <= ch <= "\u9fff" for ch in t):
+            continue  # 已是中文
+        if it.get("url") in prev:
+            it["t_en"], it["t"], it["zh"] = t, prev[it["url"]], 1
+        else:
+            todo.append(it)
+    key = os.getenv("DEEPSEEK_API_KEY", "").strip()
+    if not key or not todo:
+        return
+    todo = todo[:50]
+    numbered = "\n".join(f"{i + 1}. {it['t']}" for i, it in enumerate(todo))
+    try:
+        resp = _rq.post("https://api.deepseek.com/v1/chat/completions",
+                        headers={"Authorization": f"Bearer {key}"},
+                        json={"model": "deepseek-v4-flash", "temperature": 0.1, "max_tokens": 3000,
+                              "messages": [{"role": "user", "content":
+                                  "把下面每条财经新闻标题翻译成简洁中文，公司名/指数名保留惯用译名，"
+                                  "逐行输出「序号. 译文」，不要任何多余内容：\n" + numbered}]},
+                        timeout=75)
+        out_map = {}
+        for ln in resp.json()["choices"][0]["message"]["content"].strip().splitlines():
+            ln = ln.strip()
+            if "." in ln[:4]:
+                try:
+                    num, txt = ln.split(".", 1)
+                    out_map[int(num.strip())] = txt.strip()
+                except Exception:
+                    continue
+        for i, it in enumerate(todo):
+            if out_map.get(i + 1):
+                it["t_en"], it["t"], it["zh"] = it["t"], out_map[i + 1][:140], 1
+    except Exception as e:
+        print(f"[translate] 翻译失败(保留原文): {str(e)[:80]}")
+
 def _now_bjt_str():
     return datetime.now(BJT).strftime("%Y-%m-%d %H:%M")
 
@@ -108,6 +162,7 @@ def build_news() -> str:
         if not out:
             print("[live] 新闻 0 条，跳过发布（保留云端上一版新闻流）")
             return ""
+        _translate_titles(out[:60])  # 英文标题→中文（发布的前60条）
         return json.dumps({"generated_at": _now_bjt_str(), "count": len(out),
                            "topics": _hot_topics(out), "items": out[:60]},
                           ensure_ascii=False, indent=1)
