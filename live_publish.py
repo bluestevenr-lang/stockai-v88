@@ -20,6 +20,9 @@ from pathlib import Path
 
 BASE = Path(__file__).resolve().parent
 sys.path.insert(0, str(BASE / "src"))
+# 同步副本模块（market_snapshot/news_fetcher）需要这两个目录才能落盘/写日志
+for _d in ("data", "logs"):
+    (BASE / _d).mkdir(exist_ok=True)
 
 BJT = timezone(timedelta(hours=8))
 PUB_REPO = "bluestevenr-lang/stockai-v88"
