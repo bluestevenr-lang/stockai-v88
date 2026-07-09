@@ -27,7 +27,7 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Install deps
-        run: pip install --quiet yfinance pandas feedparser requests
+        run: pip install --quiet yfinance pandas feedparser requests python-dotenv
       - name: Build & publish live data
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -33,6 +33,7 @@ def _now_bjt_str():
 def build_snapshot() -> str:
     """跑真实行情快照，返回 data/market_snapshot.json 内容（失败返回空）"""
     try:
+        (BASE / "data").mkdir(exist_ok=True)  # runner 上无此目录，快照写盘前先建
         from market_snapshot import generate_market_snapshot
         generate_market_snapshot()
         fp = BASE / "data" / "market_snapshot.json"
