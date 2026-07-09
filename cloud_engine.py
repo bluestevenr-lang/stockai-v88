@@ -413,6 +413,13 @@ def analyze_trend_full(df, sector_strength=None):
             invalid = "站上MA20且放量突破前高"
 
 
+        # 【V100·用户定则】分数=现在值得买：时机差（减仓/回避/等待类结论）强制压分，
+        # 高分从此代表"可以直接买"；持仓者的减仓提示由 action 单独说明。
+        _timing_caps = {"回避": 45, "减仓": 58, "等待": 64, "试仓": 68}
+        _tcap = _timing_caps.get(concl)
+        if _tcap is not None and total > _tcap:
+            total = _tcap
+
         return {
             "last": round(last, 2), "total": total, "stage": stage, "vp": vp, "vp_lv": vp_lv,
             "water": water, "water_adv": water_adv, "pos52": round(pos52),
