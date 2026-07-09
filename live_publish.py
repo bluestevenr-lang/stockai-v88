@@ -19,6 +19,9 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent
+# 顺序关键：src 必须排在仓库根之前——根目录有旧版同名 news_fetcher.py 会遮蔽同步副本；
+# 根目录仍需在 path 里（market_snapshot 要 import 根目录的 cloud_engine 拐点识别）
+sys.path.insert(0, str(BASE))
 sys.path.insert(0, str(BASE / "src"))
 # 同步副本模块（market_snapshot/news_fetcher）需要这两个目录才能落盘/写日志
 for _d in ("data", "logs"):
@@ -28,6 +31,36 @@ BJT = timezone(timedelta(hours=8))
 PUB_REPO = "bluestevenr-lang/stockai-v88"
 PUB_BRANCH = "data"
 
+
+
+
+_TOPIC_WORDS = ["AI", "人工智能", "芯片", "半导体", "存储", "算力", "英伟达", "台积电", "苹果", "特斯拉",
+                "微软", "谷歌", "Meta", "亚马逊", "美联储", "降息", "加息", "通胀", "CPI", "关税", "财报",
+                "IPO", "并购", "原油", "油价", "黄金", "比特币", "加密", "美元", "国债", "收益率", "地缘",
+                "伊朗", "俄乌", "中东", "房地产", "新能源", "光伏", "锂电", "汽车", "机器人", "医药", "创新药",
+                "白酒", "消费", "银行", "券商", "恒指", "纳指", "标普", "科创", "汇率", "人民币", "出口",
+                "PMI", "GDP", "Fed", "tariff", "earnings", "chip", "semiconductor", "oil", "gold",
+                "bitcoin", "inflation", "rate cut", "Nvidia", "Apple", "Tesla"]
+_TOPIC_MERGE = {"人工智能": "AI", "chip": "芯片", "semiconductor": "芯片", "存储": "芯片", "算力": "AI",
+                "Fed": "美联储", "rate cut": "降息", "tariff": "关税", "oil": "原油", "油价": "原油",
+                "gold": "黄金", "bitcoin": "比特币", "加密": "比特币", "earnings": "财报",
+                "inflation": "通胀", "Nvidia": "英伟达", "Apple": "苹果", "Tesla": "特斯拉"}
+
+
+def _hot_topics(items, top=8):
+    """【V88·热点主题榜】确定性关键词聚类：标题扫词→计数→同义合并→Top8（无LLM，可复算）"""
+    from collections import Counter
+    cnt = Counter()
+    for it in items:
+        t = str(it.get("t") or it.get("title") or "")
+        tl = t.lower()
+        for w in _TOPIC_WORDS:
+            if (w.lower() in tl) if w.isascii() else (w in t):
+                cnt[w] += 1
+    merged = Counter()
+    for w, n in cnt.items():
+        merged[_TOPIC_MERGE.get(w, w)] += n
+    return [{"w": w, "n": n} for w, n in merged.most_common(top) if n >= 2]
 
 def _now_bjt_str():
     return datetime.now(BJT).strftime("%Y-%m-%d %H:%M")
@@ -76,7 +109,8 @@ def build_news() -> str:
             print("[live] 新闻 0 条，跳过发布（保留云端上一版新闻流）")
             return ""
         return json.dumps({"generated_at": _now_bjt_str(), "count": len(out),
-                           "items": out[:60]}, ensure_ascii=False, indent=1)
+                           "topics": _hot_topics(out), "items": out[:60]},
+                          ensure_ascii=False, indent=1)
     except Exception as e:
         print(f"[live] news 失败: {e}")
         return ""

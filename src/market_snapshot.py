@@ -88,12 +88,26 @@ def _fetch_metrics(symbol: str, name: str) -> dict | None:
             trend = "🔄 震荡偏强"
         else:
             trend = "🔄 震荡偏弱"
+        # 【V88·拐点识别】放量+破趋势=拐点（指数与个股同引擎；量能缺失自动降级价格判定）
+        turning, turning_prompt = "", ""
+        try:
+            try:
+                from cloud_engine import turning_point as _tpf
+            except ImportError:
+                from src.cloud_engine import turning_point as _tpf
+            _t = _tpf(df)
+            if _t and _t.get("side"):
+                turning = _t["brief"]
+                turning_prompt = "；".join(_t["signals"]) + "。👉 " + _t["prompt"]
+        except Exception:
+            pass
         return {
             "symbol": symbol, "name": name, "last": round(last, 2),
             "chg1d": round(chg1d, 2), "chg5d": round(chg5d, 2), "chg20d": round(chg20d, 2),
             "vs_ma20": round((last / ma20 - 1) * 100, 2),
             "vs_ma60": round((last / ma60 - 1) * 100, 2),
             "trend": trend, "vol_ratio": vol_ratio,
+            "turning": turning, "turning_prompt": turning_prompt,
         }
     except Exception as e:
         logger.warning(f"[{name} {symbol}] 抓取失败: {type(e).__name__}: {str(e)[:80]}")
@@ -134,7 +148,11 @@ def _render_market(market: str, indices: list, sectors: list) -> str:
         lines.append(
             f"- **{ix['name']}** {ix['last']}（今日 {ix['chg1d']:+.1f}% / 5日 {ix['chg5d']:+.1f}% / 20日 {ix['chg20d']:+.1f}%）"
             f"｜距MA20 {ix['vs_ma20']:+.1f}%｜{ix['trend']}"
+            + (f"｜**{ix['turning']}**" if ix.get("turning") else "")
         )
+        # 【V88·拐点识别】指数放量破位/放量突破时，给出证据与判断提示词
+        if ix.get("turning_prompt"):
+            lines.append(f"  - 🔀 拐点详情：{ix['turning_prompt']}")
     # 板块强弱榜
     if sectors:
         # 【V98】板块热度分 0-100 = 动量50% + 量能30% + 月趋势20%（附在每个板块上）

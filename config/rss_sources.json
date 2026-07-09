@@ -61,6 +61,20 @@
       "category": "cn_markets",
       "language": "zh",
       "proxy": true
+    },
+    {
+      "name": "WSJ - Markets",
+      "url": "https://feeds.content.dowjones.io/public/rss/RSSMarketsMain",
+      "language": "en",
+      "proxy": null,
+      "category": "global_markets"
+    },
+    {
+      "name": "Google News - EN Markets",
+      "url": "https://news.google.com/rss/search?q=stock%20market%20OR%20fed%20OR%20nasdaq%20when:1d&hl=en-US&gl=US&ceid=US:en",
+      "language": "en",
+      "proxy": true,
+      "category": "global_markets"
     }
   ],
   "settings": {

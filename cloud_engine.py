@@ -420,7 +420,7 @@ def analyze_trend_full(df, sector_strength=None):
         if _tcap is not None and total > _tcap:
             total = _tcap
 
-        return {
+        _res = {
             "last": round(last, 2), "total": total, "stage": stage, "vp": vp, "vp_lv": vp_lv,
             "water": water, "water_adv": water_adv, "pos52": round(pos52),
             "macd_txt": macd_txt, "ma_txt": ma_txt, "ma_state": ma_state,
@@ -434,8 +434,130 @@ def analyze_trend_full(df, sector_strength=None):
             "sector_known": sector_strength is not None,
             "ma": {k: round(x, 2) for k, x in ma.items()},
         }
+        # 【V88·拐点识别】随分析结果一并返回（放量+破趋势=拐点，含判断提示词）
+        try:
+            _res["turning"] = turning_point(df, full=_res)
+        except Exception:
+            _res["turning"] = None
+        return _res
     except Exception:
         return None
+
+
+def turning_point(df, full=None):
+    """【V88·拐点识别】用户定则：**放量+破趋势=拐点**，系统必须直接标出来，
+    并给出「你该确认什么」的判断提示词——不给分数，给准确的量价事实。
+    个股与大盘指数通用（指数量能=成交量口径一致即可）。
+
+    顶部拐点信号（任一命中）：
+      ①放量跌破MA20（昨在上今在下·今日量≥20日均量1.3倍） ②放量长阴（跌≥3%·量≥1.5倍）
+      ③MACD顶背离+刚死叉 ④高位放量滞涨（52周位置>70%·量≥1.5倍·涨跌<1%） ⑤跌破20日低点
+    底部拐点信号（任一命中）：
+      ①放量收复MA20 ②放量长阳（涨≥3%·量≥1.5倍） ③MACD底背离+刚金叉
+      ④放量突破60日新高
+    返回 {"side": "top"/"bottom"/None, "label": 短标签, "signals": [明白话证据],
+          "prompt": 判断提示词, "brief": 表格用一句话} 或 None（数据不足）。
+    """
+    try:
+        if full is None:
+            full = analyze_trend_full(df)
+        if not full or df is None or len(df) < 30:
+            return None
+        c = df["Close"].dropna()
+        v = df["Volume"].fillna(0)
+        hi, lo = df["High"], df["Low"]
+        last, prev = float(c.iloc[-1]), float(c.iloc[-2])
+        chg1 = (last / prev - 1) * 100
+        v20 = float(v.tail(20).mean()) or 1.0
+        vold = float(v.iloc[-1]) / v20          # 今日量/20日均量
+        # 量能数据可用性：部分指数(如上证)yfinance历史成交量为0，此时降级纯价格判定
+        has_vol = int((v.tail(20) > 0).sum()) >= 14
+        _vol_tag = "" if has_vol else "（该标的量能数据缺失，按价格判定）"
+        ma20 = float(full["ma"][20])
+        ma20_prev = float(c.rolling(20).mean().iloc[-2]) if len(c) >= 21 else ma20
+        macd_txt = str(full.get("macd_txt", ""))
+        pos52 = float(full.get("pos52", 50))
+        h60 = float(hi.tail(60).max())
+        l20 = float(lo.tail(20).min())
+        l20_prev = float(lo.iloc[-21:-1].min()) if len(lo) >= 21 else l20
+        today_low, today_high = float(lo.iloc[-1]), float(hi.iloc[-1])
+
+        top_sig, bot_sig = [], []
+        # 放量穿越MA20：近3个交易日内发生过即报（拐点常在事发后1-2天才被注意到）
+        ma20s = c.rolling(20).mean()
+        for k in range(0, min(3, len(c) - 21)):
+            _cl_k = float(c.iloc[-1 - k]); _cl_k1 = float(c.iloc[-2 - k])
+            _ma_k = float(ma20s.iloc[-1 - k]); _ma_k1 = float(ma20s.iloc[-2 - k])
+            _vd_k = float(v.iloc[-1 - k]) / v20
+            _when = "今日" if k == 0 else f"{k}日前"
+            _vtxt = f"，当日量为20日均量{_vd_k:.1f}倍" if has_vol else _vol_tag
+            if _cl_k1 > _ma_k1 and _cl_k < _ma_k and (not has_vol or _vd_k >= 1.3):
+                top_sig.append(f"{'放量' if has_vol else ''}跌破MA20（{_when}）：收 {_cl_k:.2f} 破位（MA20≈{_ma_k:.2f}）{_vtxt}"
+                               + ("，至今未收回" if last < ma20 else "，但已收回MA20上方"))
+                break
+            if _cl_k1 < _ma_k1 and _cl_k > _ma_k and (not has_vol or _vd_k >= 1.3):
+                bot_sig.append(f"{'放量' if has_vol else ''}收复MA20（{_when}）：收 {_cl_k:.2f} 站回MA20（≈{_ma_k:.2f}）上方{_vtxt}——资金回场"
+                               + ("，至今站稳" if last > ma20 else "，但又跌回MA20下方"))
+                break
+        # 顶部
+        if chg1 <= -3 and (not has_vol or vold >= 1.5):
+            top_sig.append(f"{'放量' if has_vol else ''}长阴：单日{chg1:+.1f}%" + (f"，量{vold:.1f}倍——主动抛售" if has_vol else _vol_tag))
+        if "顶背离" in macd_txt and ("刚死叉" in macd_txt or "死叉" in macd_txt):
+            top_sig.append("MACD顶背离+死叉：价创新高但动能走弱，随后死叉确认")
+        if has_vol and pos52 > 70 and vold >= 1.5 and abs(chg1) < 1:
+            top_sig.append(f"高位放量滞涨：52周{pos52:.0f}%高位，量{vold:.1f}倍但价不动——大概率对倒出货")
+        if last < l20_prev:
+            top_sig.append(f"跌破20日低点 {l20_prev:.2f}：短期趋势结构破坏")
+        # 底部
+        if chg1 >= 3 and (not has_vol or vold >= 1.5):
+            bot_sig.append(f"{'放量' if has_vol else ''}长阳：单日{chg1:+.1f}%" + (f"，量{vold:.1f}倍——主动买入" if has_vol else _vol_tag))
+        if "底背离" in macd_txt and "金叉" in macd_txt:
+            bot_sig.append("MACD底背离+金叉：价创新低但动能转强，金叉确认")
+        if float(hi.iloc[-1]) >= h60 * 0.995 and (not has_vol or vold >= 1.3):
+            bot_sig.append(f"{'放量' if has_vol else ''}突破60日新高（{h60:.2f}）：上行趋势启动/延续")
+
+        if not top_sig and not bot_sig:
+            return {"side": None, "label": "", "signals": [], "prompt": "", "brief": ""}
+        # 两侧同时命中时取信号多的一侧（如放量长阳但破20日低不可能同真，防御性处理）
+        side = "top" if len(top_sig) >= len(bot_sig) else "bottom"
+        sigs = top_sig if side == "top" else bot_sig
+        if side == "top":
+            label = "⚠️ 顶部拐点信号"
+            prompt = (f"你来确认三件事：①明日能否收回MA20（{ma20:.2f}）——收不回=拐点成立；"
+                      f"②量能是否持续放大（连续两日≥1.3倍=资金在跑）；"
+                      f"③是否跌破今日低点 {today_low:.2f}——破了立即执行纪律，不要等反弹")
+        else:
+            label = "🔄 底部拐点信号"
+            prompt = (f"你来确认三件事：①明日能否守住MA20（{ma20:.2f}）——缩量不破=拐点成立；"
+                      f"②突破后量能是否延续（缩量新高是假突破）；"
+                      f"③回踩不破今日低点 {today_low:.2f} 即是买点，破了信号作废")
+        return {"side": side, "label": label, "signals": sigs, "prompt": prompt,
+                "brief": f"{'⚠️顶拐' if side == 'top' else '🔄底拐'}:{sigs[0].split('：')[0]}"}
+    except Exception:
+        return None
+
+
+def plain_readout(full, turning=None):
+    """【V88·明白话判读】不给分数，给准确的量价事实 + 判断要点。
+    返回 markdown 行列表：K线形态 / MACD细节 / 量能事实 / 关键位 / 拐点提示。"""
+    try:
+        if not full:
+            return []
+        lines = []
+        volr, chg5, chg20 = full.get("volr", 1.0), full.get("chg5", 0), full.get("chg20", 0)
+        ma = full["ma"]
+        lines.append(f"**量价事实**：{full['vp']}｜5日均量是20日的 {volr:.2f} 倍｜5日{chg5:+.1f}%·20日{chg20:+.1f}%")
+        lines.append(f"**MACD**：{full['macd_txt']}（金叉=多头动能，红柱扩大=加速，缩小=衰减，背离=价与动能唱反调）")
+        lines.append(f"**均线**：{full['ma_state']}｜MA20={ma[20]:.2f}·MA55={ma[55]:.2f}——收盘站上/跌破MA20是趋势第一分界")
+        lines.append(f"**关键位**：支撑 {full['support']}｜压力 {full['resistance']}｜跌破 {full['stop']} 趋势失效")
+        if turning and turning.get("side"):
+            lines.append(f"**{turning['label']}**：" + "；".join(turning["signals"]))
+            lines.append(f"👉 **判断提示**：{turning['prompt']}")
+        else:
+            lines.append("**拐点**：暂无放量破位/放量突破信号——趋势延续中，按上方关键位执行即可")
+        return lines
+    except Exception:
+        return []
 
 
 def horizon_scores(df, idx_close=None, full=None):

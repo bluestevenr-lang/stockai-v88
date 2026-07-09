@@ -186,7 +186,10 @@ elif _nav == "🔥 热点新闻":
     if not _nl or not _nl.get("items"):
         st.info("📭 新闻流生成中（每小时自动抓取，可点右上 🔄 刷新）")
     else:
-        st.caption(_fresh_caption(_nl.get("generated_at"), "新闻流") + " · 每小时自动更新 · 10个中外RSS源")
+        st.caption(_fresh_caption(_nl.get("generated_at"), "新闻流") + " · 每小时自动更新 · 12个中外RSS源")
+        _tps = _nl.get("topics") or []
+        if _tps:
+            st.markdown("**🔥 热点主题**：" + " · ".join(f"`{t['w']}({t['n']})`" for t in _tps))
         _po = ["全部（近72小时）", "🌙 今日·时段一 00-08", "☀️ 今日·时段二 08-16", "🌆 今日·时段三 16-24"]
         _psel = st.selectbox("⏱ 时段筛选（北京时间）", _po)
         _today = _now_bjt().date()
@@ -305,6 +308,16 @@ elif _nav == "🔍 个股搜索":
             c3.metric("RSI", f"{f['rsi']}")
             st.markdown(f"### {_concl_color.get(f['conclusion'],'')} 一句话结论：**{f['conclusion']}**")
             st.success(f"**操作建议：{f['action']}**")
+            # 【V88·拐点识别】放量+破趋势=拐点，直接亮出证据与判断提示词
+            _turn = f.get("turning") or {}
+            if _turn.get("side"):
+                (st.error if _turn["side"] == "top" else st.info)(
+                    f"**{_turn['label']}**：" + "；".join(_turn["signals"]) + f"\n\n👉 {_turn['prompt']}")
+            # 【V88·明白话判读】量价/K线/MACD 事实与要点（不是分数）
+            _ro = cloud_engine.plain_readout(f, _turn if _turn.get("side") else None)
+            if _ro:
+                with st.expander("📖 量价判读（事实+要点，你来拍板）", expanded=True):
+                    st.markdown("\n".join(f"- {ln}" for ln in _ro))
 
             # ② 六行状态速览
             st.markdown(
@@ -361,7 +374,10 @@ elif _nav == "📈 大盘板块":
             if _t:
                 st.markdown(f"🌡 温度 **{_t['temp']}/100** {_t['label']}（趋势{_t['trend']}/宽度{_t['breadth']}/动量{_t['momentum']}/量能{_t.get('vol_heat','—')}）→ 仓位 {_t['position']}")
             for ix in blk.get("indices", []):
-                st.markdown(f"- **{ix['name']}** {ix['last']}（5日 {ix['chg5d']:+.1f}% / 20日 {ix['chg20d']:+.1f}%）｜{ix['trend']}")
+                st.markdown(f"- **{ix['name']}** {ix['last']}（5日 {ix['chg5d']:+.1f}% / 20日 {ix['chg20d']:+.1f}%）｜{ix['trend']}"
+                            + (f"｜**{ix['turning']}**" if ix.get("turning") else ""))
+                if ix.get("turning_prompt"):
+                    st.caption(f"🔀 拐点详情：{ix['turning_prompt']}")
             secs = blk.get("sectors", [])
             if secs:
                 top = sorted(secs, key=lambda x: x["chg5d"], reverse=True)
