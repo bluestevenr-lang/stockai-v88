@@ -128,6 +128,11 @@ except Exception:
     pass
 
 def jump_stock(name, code):
+    try:
+        import cloud_engine as _cej
+        code = _cej.to_yf(str(code))  # SH:600519→600519.SS / 06055→6055.HK 等规格化
+    except Exception:
+        pass
     st.session_state["_nav_jump"] = (name, code, "")
     st.rerun()
 
