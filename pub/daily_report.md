@@ -4,20 +4,20 @@
 
 ## 一、今日总览 📋
 
-**1.** 【事实】SK海力士今晚登陆纳斯达克，募资265亿美元创纪录，芯片股盘前普跌
-- 来源：新浪财经、BBC、Investing.com | 时间：12:44-13:01 UTC
-- 影响市场：美股 / A股 / 港股
-- 💡 AI判断：全球存储龙头赴美上市是今日最大事件，首日表现将直接牵动全球半导体板块走向，短期情绪偏谨慎但中期AI需求逻辑未变 [N2][N4][N11]
-
-**2.** 【事实】乌克兰加强攻击克里米亚附近油轮，俄罗斯燃料短缺加剧，Delta航空创历史最高燃油成本
-- 来源：CNBC、MarketWatch | 时间：12:28-13:13 UTC
+**1.** 【事实】SK海力士登陆纳斯达克，募资265亿美元，AI存储需求成焦点
+- 来源：Investing.com | 时间：12:55 UTC
 - 影响市场：美股 / 全市场
-- 💡 AI判断：地缘风险推升能源价格，航空运输板块承压，能源股短期受益但需警惕油价过快上涨对需求的抑制 [N1][N9]
+- 💡 AI判断：SK海力士美国首秀是今日全球AI产业链最重要事件，HBM价格翻倍预期强化存储主线 [2][4][24]
 
-**3.** 【事实】Circle获OCC批准运营信托银行，股价涨12%；美银警告日本市场可能预示全球大跌
-- 来源：CNBC、华尔街见闻 | 时间：12:09-12:31 UTC
-- 影响市场：美股 / 宏观
-- 💡 AI判断：稳定币合规化利好金融科技，但美银的"金丝雀"警告需警惕全球市场过热风险 [N7][N14]
+**2.** 【事实】乌克兰升级对克里米亚附近油轮攻击，IEA警告汽柴油供应紧张
+- 来源：CNBC | 时间：13:13 UTC
+- 影响市场：全市场
+- 💡 AI判断：地缘冲突推升能源成本，达美航空创纪录燃油成本已敲响警钟，航空、运输板块承压 [1][7][11]
+
+**3.** 【事实】中国国常会研究新兴支柱产业培育，高盛发布中国AI大模型深度报告
+- 来源：36氪 | 时间：11:24 UTC
+- 影响市场：A股
+- 💡 AI判断：政策面+基本面共振，紫光股份业绩预增83%-123%，东阳光签130亿算力合同，AI算力链景气确认 [8][9][16][18]
 
 ---
 
@@ -66,58 +66,58 @@
 ---
 ## 二、🇺🇸 美股
 
-> **今日主线判断**：AI主线偏强但短期情绪谨慎，SK海力士上市是核心变量，能源板块因地缘风险走强
+> **今日主线判断**：AI硬件主线强势，SK海力士上市+AMD新品催化，但油价与利率上行形成短期扰动
 
 ### 重点行业（最多3个）
-- **半导体/存储**：中性 — SK海力士上市首日表现将决定板块短期方向，HBM价格翻倍预期支撑中期逻辑 [N5][N11]
-- **航空运输**：利空 — Delta创历史最高燃油成本，利润承压，地缘风险加剧成本端压力 [N1][N9]
-- **金融科技**：利好 — Circle获银行牌照涨12%，稳定币合规化加速，板块估值重估 [N7]
+- **半导体/存储**：多 — SK海力士纳斯达克首秀，HBM价格2027年翻倍预期，AI存储需求确认 [2][4][24]
+- **航空运输**：空 — 达美航空创纪录燃油成本侵蚀利润，IEA警告供应紧张 [7][11]
+- **金融科技**：多 — Circle获OCC批准运营信托银行，股价涨12%，合规利好 [5]
 
 ### 推荐/观察个股（最多3只）
 
 | 代码 | 名称 | 类型 | 逻辑 | 触发新闻 | 置信度 |
 |------|------|------|------|----------|--------|
-| `[US:META]` | Meta | 推荐 | 盘前涨超4%，AI广告变现加速，短线动能强劲 | [N22] | 高 |
-| `[US:AMD]` | AMD | 观察 | Venice CPU发布在即，性能提升超70%，催化在即 | [N33] | 中 |
-| `[US:DELL]` | 戴尔 | 观察 | 五维引擎m分64，RS+15.8，AI服务器需求持续 | [引擎] | 中 |
+| `[US:SKHynix]` | SK海力士 | 推荐 | 纳斯达克上市首日，HBM价格翻倍预期，AI存储龙头 | [2][4][24] | 高 |
+| `[US:AMD]` | AMD | 观察 | Venice CPU本月发布，性能提升70%+，对标英伟达 | [27] | 中 |
+| `[US:DAL]` | 达美航空 | 观察 | 创纪录营收但燃油成本承压，关注票价能否持续支撑利润 | [7][30] | 中 |
 
 ---
 
 ## 三、🇨🇳 A股
 
-> **今日主线判断**：结构性机会突出，算力/AI产业链业绩爆发，新能源汽车承压
+> **今日主线判断**：AI算力链业绩爆发，紫光股份/东阳光领涨，政策面国常会培育新兴支柱产业
 
 ### 重点行业（最多3个）
-- **算力/AI**：利好 — 紫光股份业绩预增超80%，东阳光签130亿算力合同，行业景气度确认 [N10][N13]
-- **新能源汽车**：利空 — 广汽集团预亏超40亿，行业价格战持续，盈利压力加大 [N8]
-- **封测/半导体**：中性 — 主力资金加仓封测龙头，但存储赛道资金流出，分化明显 [N31]
+- **AI算力/硬件**：多 — 紫光股份中报预增83%-123%，东阳光签130亿算力合同，亿道信息预增14倍 [8][9][13]
+- **新能源汽车**：空 — 广汽集团预亏40-46亿元，行业价格战持续 [6]
+- **消费**：分化 — 倍轻松/巨力索具遭处罚，泡泡玛特获段永平增持 [10][12][34]
 
 ### 推荐/观察个股（最多3只）
 
 | 代码 | 名称 | 类型 | 逻辑 | 触发新闻 | 置信度 |
 |------|------|------|------|----------|--------|
-| `[SZ:000938]` | 紫光股份 | 推荐 | 半年报预增83.5%-122.9%，智算需求爆发，业绩催化明确 | [N10] | 高 |
-| `[SH:600673]` | 东阳光 | 观察 | 子公司签130-150亿算力服务合同，算力赛道核心受益 | [N13] | 中 |
-| `[SH:688981]` | 中芯国际 | 观察 | 五维引擎m分93，RS+27.8，国产替代+存储周期复苏双驱动 | [引擎] | 中 |
+| `[SZ:000938]` | 紫光股份 | 推荐 | 中报预增83%-123%，AI算力+国产替代双驱动，引擎s分82 | [8] | 高 |
+| `[SH:600673]` | 东阳光 | 观察 | 130-150亿算力服务采购合同，算力业务爆发 | [9] | 中 |
+| `[SH:688981]` | 中芯国际 | 观察 | 引擎m分93，国产替代+AI芯片需求，中线景气上行 | 无近期新闻催化，基于引擎评分 | 高 |
 
 ---
 
 ## 四、🇭🇰 港股
 
-> **今日主线判断**：偏中性，中概股盘前普涨情绪传导，关注希音IPO备案进展
+> **今日主线判断**：偏防御，能源与消费龙头获资金关注，泡泡玛特获大佬增持是亮点
 
 ### 重点行业（最多3个）
-- **互联网平台**：利好 — 中概股美股盘前普涨，阿里巴巴涨超2%，情绪传导至港股 [N20]
-- **消费/跨境电商**：利好 — 希音港股IPO获证监会备案，有望成为年内最大IPO之一 [N12]
-- **生物医药**：中性 — 药明生物五维引擎评分高，但板块整体缺乏短期催化 [引擎]
+- **消费**：多 — 段永平增持泡泡玛特至7.65%，消费龙头获大佬背书 [34]
+- **能源**：中性 — IEA警告供应紧张，油价波动影响能源股 [11]
+- **生物医药**：中性 — 药明生物引擎m分84，RS+28.8，估值修复中 [35]
 
 ### 推荐/观察个股（最多3只）
 
 | 代码 | 名称 | 类型 | 逻辑 | 触发新闻 | 置信度 |
 |------|------|------|------|----------|--------|
-| `[HK:1810]` | 小米集团-W | 观察 | 中概股盘前普涨情绪传导，港股科技板块有望跟涨 | [N20] | 中 |
-| `[HK:2269]` | 药明生物 | 观察 | 五维引擎m分84，RS+28.8，生物医药板块估值修复中 | [引擎] | 中 |
-| `[HK:0700]` | 腾讯控股 | 观察 | 五维引擎m分51，估值低位，等待AI应用落地催化 | [引擎] | 低 |
+| `[HK:9992]` | 泡泡玛特 | 观察 | 段永平增持至7.65%，消费龙头获大佬背书 | [34] | 中 |
+| `[HK:2269]` | 药明生物 | 观察 | 引擎m分84，RS+28.8，生物医药板块估值修复 | 无近期新闻催化，基于引擎评分 | 高 |
+| `[HK:0700]` | 腾讯控股 | 观察 | 引擎m分51，AI+游戏+广告多轮驱动，估值合理 | 无近期新闻催化，基于引擎评分 | 中 |
 
 ---
 
@@ -171,17 +171,17 @@
 ---
 ## 五、⚠️ 风险提示
 
-1. **SK海力士上市首日表现不及预期** | 影响市场：美股/A股/港股 | 原因：若首日破发或涨幅有限，可能引发全球存储板块回调，A股封测、存储概念股承压 [N2][N11]
-2. **地缘风险推升油价超预期** | 影响市场：美股/A股 | 原因：乌克兰攻击油轮加剧供应中断风险，航空、运输板块成本端承压，通胀预期回升可能推迟美联储降息 [N1][N9]
-3. **美银"金丝雀"警告：日本市场可能预示全球大跌** | 影响市场：全市场 | 原因：美银指出当前市场极度乐观，日本市场作为领先指标若出现回调，可能引发全球风险资产抛售 [N14]
+1. **地缘冲突升级** | 影响市场：全市场 | 乌克兰攻击克里米亚油轮，俄罗斯燃料短缺，能源价格波动加剧，航空/运输板块成本承压 [1][7]
+2. **芯片板块技术回调** | 影响市场：美股 | BTIG警告芯片股指数发出"不祥信号"，经历强劲上涨后可能大幅回调 [19]
+3. **日本市场"金丝雀"预警** | 影响市场：全市场 | 美银警告"所有人满仓做多"的共识过度，日本市场可能预示全球大跌 [29]
 
 ---
-*数据来源: MarketWatch - Top Stories, 华尔街见闻, Google News - EN Markets, 36氪 - 快讯, Google News - 中文市场聚合, Investing.com - Stock Market News, CNBC - Top News | 生成时间: 2026-07-10T13:18:14.743037+00:00*
+*数据来源: 华尔街见闻, SCMP - Business, CNBC - Top News, 36氪 - 快讯, MarketWatch - Top Stories, WSJ - Markets, Investing.com - Stock Market News, FT - Markets | 生成时间: 2026-07-10T13:21:24.182798+00:00*
 *本报告由 AI 自动生成，仅供参考，不构成投资建议。*
 
 ---
 
-## 📈 大盘走势与板块轮动（量化快照 · 2026-07-10 13:18）
+## 📈 大盘走势与板块轮动（量化快照 · 2026-07-10 13:21）
 
 > 以下数字由真实行情直接计算（指数/行业ETF，5日=一周动量，20日=一月动量），非AI生成。
 
@@ -249,12 +249,22 @@
 > 编号与正文 [N] 对应。Tier A=一手/监管来源，Tier B=主流专业媒体，Tier C=聚合或二手来源。
 
 - **[1] Tier B · CNBC - Top News · 2026-07-10T13:13:22+00:00**：[Ukraine escalates attacks on tankers near Crimea as Russian fuel shortages bite](https://www.cnbc.com/2026/07/10/ukraine-russia-crimea-fuel-oil.html)
-- **[2] Tier C · Google News - 中文市场聚合 · 2026-07-10T13:01:38+00:00**：[SK海力士创纪录赴美上市 美股期指涨跌不一 芯片股盘前普遍下跌 | 今夜看点 - 新浪财经](https://news.google.com/rss/articles/CBMibkFVX3lxTFBmWHRSMFktNmdQZ2Z0V1RCSVJwelEzaDRYUDA5bmoxWlBhcXU0T2ZvVWZfUG1tVVZiMlI1M1Iwb3FzZEhpd0NyUmdfUTJXMjdrcTJNLTFucWNWbEplNEFzX1ZHZW42Z0VYMjk0aUlR?oc=5)
-- **[3] Tier C · Investing.com - Stock Market News · 2026-07-10T12:55:29+00:00**：[SK Hynix’s marquee US debut to test AI appetite](https://www.investing.com/news/stock-market-news/sk-hynix-set-for-marquee-us-debut-in-test-for-ai-appetite-4785365)
+- **[2] Tier C · Investing.com - Stock Market News · 2026-07-10T12:55:29+00:00**：[SK Hynix’s marquee US debut to test AI appetite](https://www.investing.com/news/stock-market-news/sk-hynix-set-for-marquee-us-debut-in-test-for-ai-appetite-4785365)
 - **[4] Tier C · 36氪 - 快讯 · 2026-07-10T12:44:11+00:00**：[SK海力士本周五登陆纳斯达克,募资265亿美元跻身大型IPO](https://36kr.com/newsflashes/3889804779731457?f=rss)
-- **[5] Tier C · Investing.com - Stock Market News · 2026-07-10T12:41:59+00:00**：[HBM prices could double by 2027 on surging AI demand, DigiTimes reports](https://www.investing.com/news/stock-market-news/hbm-prices-could-double-by-2027-on-surging-ai-demand-digitimes-reports-4786153)
-- **[6] Tier C · Google News - EN Markets · 2026-07-10T12:38:38+00:00**：[SK Hynix: South Korean chip giant raises $26.5bn in US share sale - BBC](https://news.google.com/rss/articles/CBMiWkFVX3lxTE1ZeE04bDRibnhWODAyWUlqWFVVODVmRkF6S0hRX3R5VUJMOF9MUHJ4bTQxSUxPa3hVUHFXdXA3aGhOeDhtZHhBYk5pVktoWTZKeFROUUx4RFlrUQ?oc=5)
-- **[7] Tier B · CNBC - Top News · 2026-07-10T12:31:40+00:00**：[Stablecoin issuer Circle just got the greenlight to operate as a bank. The shares are up 12%](https://www.cnbc.com/2026/07/10/circle-gets-an-occ-bank-charter-as-stablecoin-competition-heats-up-shares-surge-14percent.html)
-- **[8] Tier C · 36氪 - 快讯 · 2026-07-10T12:30:47+00:00**：[广汽集团:预计上半年净亏损40.6亿元-45.7亿元](https://36kr.com/newsflashes/3889793585265415?f=rss)
-- **[9] Tier B · MarketWatch - Top Stories · 2026-07-10T12:28:00+00:00**：[Delta absorbs highest fuel costs in its history, but also books record revenue](https://www.marketwatch.com/story/delta-reports-record-revenue-and-a-profit-beat-even-as-fuel-costs-surge-b1e33336?mod=mw_rss_topstories)
-- **[10] Tier C · 36氪 - 快讯 · 2026-07-10T12:27:45+00:00**：[紫光股份:预计上半年归母净利润同比增长83.50%-122.89%](https://36kr.com/newsflashes/3889798601882120?f=rss)
+- **[5] Tier B · CNBC - Top News · 2026-07-10T12:31:40+00:00**：[Stablecoin issuer Circle just got the greenlight to operate as a bank. The shares are up 12%](https://www.cnbc.com/2026/07/10/circle-gets-an-occ-bank-charter-as-stablecoin-competition-heats-up-shares-surge-14percent.html)
+- **[6] Tier C · 36氪 - 快讯 · 2026-07-10T12:30:47+00:00**：[广汽集团:预计上半年净亏损40.6亿元-45.7亿元](https://36kr.com/newsflashes/3889793585265415?f=rss)
+- **[7] Tier B · MarketWatch - Top Stories · 2026-07-10T12:28:00+00:00**：[Delta absorbs highest fuel costs in its history, but also books record revenue](https://www.marketwatch.com/story/delta-reports-record-revenue-and-a-profit-beat-even-as-fuel-costs-surge-b1e33336?mod=mw_rss_topstories)
+- **[8] Tier C · 36氪 - 快讯 · 2026-07-10T12:27:45+00:00**：[紫光股份:预计上半年归母净利润同比增长83.50%-122.89%](https://36kr.com/newsflashes/3889798601882120?f=rss)
+- **[9] Tier C · 36氪 - 快讯 · 2026-07-10T12:10:37+00:00**：[东阳光:控股子公司签署130亿元至150亿元算力服务采购合同](https://36kr.com/newsflashes/3889768614492931?f=rss)
+- **[10] Tier C · 36氪 - 快讯 · 2026-07-10T12:08:11+00:00**：[巨力索具:收到河北证监局行政处罚决定书](https://36kr.com/newsflashes/3889771405949445?f=rss)
+- **[11] Tier B · FT - Markets · 2026-07-10T12:06:16+00:00**：[IEA warns of petrol and diesel supply crunch](https://www.ft.com/content/54261075-72c5-4b47-9d53-8c94738201e3)
+- **[12] Tier C · 36氪 - 快讯 · 2026-07-10T11:50:57+00:00**：[倍轻松:因信息披露违法违规 公司及实控人等遭合计罚款1010万元](https://36kr.com/newsflashes/3889752502467072?f=rss)
+- **[13] Tier C · 36氪 - 快讯 · 2026-07-10T11:37:38+00:00**：[亿道信息:预计上半年净利润同比增长1442.02%-1792.48%](https://36kr.com/newsflashes/3889749329328647?f=rss)
+- **[16] Tier C · 36氪 - 快讯 · 2026-07-10T11:24:19+00:00**：[国常会:研究新兴支柱产业培育有关工作](https://36kr.com/newsflashes/3889736240937733?f=rss)
+- **[18] Tier C · 华尔街见闻 · 2026-07-10T13:14:38+00:00**：[高盛深度报告:谁将成为中国AI大模型行业的长期赢家?](https://wallstreetcn.com/articles/3776665)
+- **[19] Tier B · CNBC - Top News · 2026-07-10T13:12:23+00:00**：[Key chip stock index flashing 'ominous signals,' says BTIG](https://www.cnbc.com/2026/07/10/key-chip-stock-index-flashing-ominous-signals-says-btig.html)
+- **[24] Tier C · Investing.com - Stock Market News · 2026-07-10T12:41:59+00:00**：[HBM prices could double by 2027 on surging AI demand, DigiTimes reports](https://www.investing.com/news/stock-market-news/hbm-prices-could-double-by-2027-on-surging-ai-demand-digitimes-reports-4786153)
+- **[27] Tier C · 36氪 - 快讯 · 2026-07-10T12:22:53+00:00**：[消息称AMD将于本月发布Venice CPU](https://36kr.com/newsflashes/3889784854870537?f=rss)
+- **[29] Tier C · 华尔街见闻 · 2026-07-10T12:09:29+00:00**：[“所有人都在满仓做多”!美银:盯紧日本市场,这将是预告全球大跌的“金丝雀”](https://wallstreetcn.com/articles/3776662)
+- **[30] Tier B · CNBC - Top News · 2026-07-10T11:59:16+00:00**：[Delta expects higher airfare to last, bringing 2026 profit goal in reach, CEO says](https://www.cnbc.com/2026/07/10/delta-air-lines-dal-q2-2026-earnings.html)
+- **[34] Tier C · 36氪 - 快讯 · 2026-07-10T11:35:52+00:00**：[段永平增持泡泡玛特 持股比例升至7.65%](https://36kr.com/newsflashes/3889747606895105?f=rss)
