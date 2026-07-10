@@ -61,10 +61,21 @@ def pub_meta() -> dict:
 st.set_page_config(page_title="V88 云端版", page_icon="☁️", layout="centered",
                    initial_sidebar_state="collapsed")
 
+def exp_md(title: str, md_text: str, expanded: bool = False):
+    """【V88·段落复制】统一段落组件：折叠段右上角带📋复制（st.code自带复制按钮）"""
+    with st.expander(title, expanded=expanded):
+        _c1, _c2 = st.columns([6, 1])
+        with _c2.popover("📋", use_container_width=True):
+            st.code(md_text, language=None)
+        st.markdown(md_text)
+
+
 # ── 可选访问密码（数字/文字、带不带引号都兼容）──────────────
 _pw = str(st.secrets.get("APP_PASSWORD", "") or "").strip()
 if _pw and not st.session_state.get("_auth_ok"):
-    st.title("☁️ V88 云端版")
+    
+
+st.title("☁️ V88 云端版")
     _in = st.text_input("访问密码", type="password")
     if st.button("进入", type="primary", use_container_width=True):
         if str(_in).strip() == _pw:
@@ -214,13 +225,13 @@ if _nav == "🧭 导航":
     _ipb = _rep.find("## 💎 深度回调机会池")
     if _ipb > 0:
         _jpb = _rep.find("\n## ", _ipb + 5)
-        with st.expander("💎 深度回调机会池（优质股·回撤≥30%·企稳信号）", expanded=False):
-            st.markdown(_rep[_ipb:_jpb if _jpb > 0 else _ipb + 2500])
+        exp_md("💎 深度回调机会池（优质股·回撤≥30%·企稳信号）",
+               _rep[_ipb:_jpb if _jpb > 0 else _ipb + 2500])
     _i = _rep.find("## 🎯 今日操作榜")
     if _i > 0:
         _j = _rep.find("## 二、", _i)
-        with st.expander("🎯 今日操作榜（按门槛入选·允许无机会·实价校准）", expanded=True):
-            st.markdown(_rep[_i:_j if _j > 0 else _i + 3000])
+        exp_md("🎯 今日操作榜（按门槛入选·允许无机会·实价校准）",
+               _rep[_i:_j if _j > 0 else _i + 3000], expanded=True)
     elif not _report_sync_ok:
         st.info("📭 操作榜等待权威日报与冻结快照完成一致性校验。")
     try:

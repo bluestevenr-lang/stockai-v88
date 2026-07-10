@@ -11220,7 +11220,10 @@ def _render_today_nav():
         if _i > 0:
             _j = _rep.find("## 二、", _i)
             with st.expander("🎯 今日操作榜（短线/长线 Top3）", expanded=False):
-                st.markdown(_rep[_i + len("## 🎯 今日操作榜"):_j if _j > 0 else _i + 2500])
+                _ops_txt99 = _rep[_i + len("## 🎯 今日操作榜"):_j if _j > 0 else _i + 2500]
+                with st.popover("📋 复制操作榜"):
+                    st.code(_ops_txt99, language=None)
+                st.markdown(_ops_txt99)
         else:
             st.caption("操作榜待日报生成后显示")
     with _c_hold:
