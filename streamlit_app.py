@@ -222,27 +222,19 @@ if _nav == "🧭 导航":
                     _ob.append(_lnw[2:].replace("**", "")[:60])
                 if len(_ob) >= 3:
                     break
+        def _lnk(nm, cd):
+            return f'<a href="?q={cd}" target="_self" style="color:inherit;text-decoration:underline dotted 1px;">{nm}</a>'
         if _fx:
             st.success("**⭐ 今日重点关注（引擎买入档 Top3）** · 点股票名直接深度分析")
-            for _i9, _item in enumerate(_fx):
-                _cA, _cB = st.columns([1, 4])
-                _nm9, _cd9 = _item.get("n", ""), _item.get("c", "")
-                if _cA.button(f"🔍 {_nm9}", key=f"cfx_{_i9}", use_container_width=True):
-                    jump_stock(_nm9, _cd9)
-                _cB.markdown(_item.get("t", ""))
+            _h = "<br>".join(f"🟢 <b>{_lnk(x['n'], x['c'])}</b> {x['t'].replace(chr(10)*2, '<br>&nbsp;&nbsp;')}" for x in _fx)
+            st.markdown(f"<div style='line-height:1.9'>{_h}</div>", unsafe_allow_html=True)
         if _ob:
-            st.warning("**👁 重点观察触发**（含你搜索过的个股）\n\n" + "\n\n".join(_ob))
             import re as _re9
-            _obp = []
-            for _l9 in _ob:
-                _m9 = _re9.search(r"([\u4e00-\u9fffA-Za-z0-9\-·]+)（([A-Z0-9\.]+)）", _l9)
-                if _m9:
-                    _obp.append((_m9.group(1), _m9.group(2)))
-            if _obp:
-                _cs9 = st.columns(min(4, len(_obp)))
-                for _i9, (_nm9, _cd9) in enumerate(_obp[:4]):
-                    if _cs9[_i9 % len(_cs9)].button(f"🔍 {_nm9}", key=f"cob_{_i9}", use_container_width=True):
-                        jump_stock(_nm9, _cd9)
+            _obl = [_re9.sub(r"([\u4e00-\u9fffA-Za-z0-9\-·]+)（([A-Z0-9\.]+)）",
+                             lambda m: _lnk(m.group(1), m.group(2)) + f"（{m.group(2)}）", _l9)
+                    for _l9 in _ob]
+            st.warning("**👁 重点观察触发**（点股票名直接分析）")
+            st.markdown("<div style='line-height:1.9'>" + "<br>".join(_obl) + "</div>", unsafe_allow_html=True)
     except Exception:
         pass
     st.caption("温度定仓位 → 轮动定板块 → 操作榜定标的")
