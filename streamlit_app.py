@@ -111,9 +111,29 @@ c_nav, c_rf = st.columns([5, 1])
 with c_rf:
     if st.button("🔄", help="强制刷新"):
         pub_text.clear(); pub_journal_list.clear(); st.rerun()
+# 【V88·个股点击】跳转机制：任何页面点股票名→搜索页自动分析；支持 ?q=代码 深链
+_jump = st.session_state.pop("_nav_jump", None)
+if _jump:
+    st.session_state["_nav"] = "🔍 个股搜索"
+    st.session_state["_sch_cands"] = [_jump]
+try:
+    _qp = st.query_params.get("q")
+    if _qp and not st.session_state.get("_qp_done"):
+        st.session_state["_qp_done"] = True
+        import cloud_engine as _ceq
+        _sym = _ceq.to_yf(_qp)
+        st.session_state["_nav"] = "🔍 个股搜索"
+        st.session_state["_sch_cands"] = [(_ceq.name_of(_sym) or _qp, _sym, "")]
+except Exception:
+    pass
+
+def jump_stock(name, code):
+    st.session_state["_nav_jump"] = (name, code, "")
+    st.rerun()
+
 with c_nav:
     _nav = st.radio("导航", ["🧭 导航", "🔥 热点新闻", "🏆 全选榜单", "🔍 个股搜索", "📊 日报", "📅 周报", "📈 大盘板块", "🔁 复盘"],
-                    horizontal=True, label_visibility="collapsed")
+                    horizontal=True, label_visibility="collapsed", key="_nav")
 
 _snap_raw = pub_text("market_snapshot.json")
 _snap = None
@@ -181,9 +201,12 @@ if _nav == "🧭 导航":
             for _lnf in _rep[_iop:_iop + 4000].splitlines():
                 if "买入/建仓" in _lnf and _lnf.strip().startswith("|"):
                     _cf = [x.strip() for x in _lnf.split("|") if x.strip()]
-                    if len(_cf) >= 6:
-                        _rsn = (_cf[6].split("｜")[0].replace("**", "").strip() if len(_cf) >= 7 else "")
-                        _fx.append(f"🟢 **{_cf[2]}** {_cf[3].replace('**','')[:40]}\n  └ {_rsn[:60]}")
+                    if len(_cf) >= 7:
+                        _tk = _cf[1].strip("`[] ")
+                        _cd = _tk.split(":", 1)[1] if ":" in _tk else _tk
+                        _rsn = _cf[6].split("｜")[0].replace("**", "").strip()
+                        _fx.append({"n": _cf[2], "c": _cd,
+                                    "t": f"{_cf[3].replace('**','')[:40]}\n\n└ {_rsn[:60]}"})
                 if len(_fx) >= 3:
                     break
         _iwa = _rep.find("## ⚡ 关注股预警")
@@ -195,9 +218,26 @@ if _nav == "🧭 导航":
                 if len(_ob) >= 3:
                     break
         if _fx:
-            st.success("**⭐ 今日重点关注（引擎买入档 Top3）**\n\n" + "\n\n".join(_fx))
+            st.success("**⭐ 今日重点关注（引擎买入档 Top3）** · 点股票名直接深度分析")
+            for _i9, _item in enumerate(_fx):
+                _cA, _cB = st.columns([1, 4])
+                _nm9, _cd9 = _item.get("n", ""), _item.get("c", "")
+                if _cA.button(f"🔍 {_nm9}", key=f"cfx_{_i9}", use_container_width=True):
+                    jump_stock(_nm9, _cd9)
+                _cB.markdown(_item.get("t", ""))
         if _ob:
             st.warning("**👁 重点观察触发**（含你搜索过的个股）\n\n" + "\n\n".join(_ob))
+            import re as _re9
+            _obp = []
+            for _l9 in _ob:
+                _m9 = _re9.search(r"([\u4e00-\u9fffA-Za-z0-9\-·]+)（([A-Z0-9\.]+)）", _l9)
+                if _m9:
+                    _obp.append((_m9.group(1), _m9.group(2)))
+            if _obp:
+                _cs9 = st.columns(min(4, len(_obp)))
+                for _i9, (_nm9, _cd9) in enumerate(_obp[:4]):
+                    if _cs9[_i9 % len(_cs9)].button(f"🔍 {_nm9}", key=f"cob_{_i9}", use_container_width=True):
+                        jump_stock(_nm9, _cd9)
     except Exception:
         pass
     st.caption("温度定仓位 → 轮动定板块 → 操作榜定标的")
