@@ -73,9 +73,7 @@ def exp_md(title: str, md_text: str, expanded: bool = False):
 # ── 可选访问密码（数字/文字、带不带引号都兼容）──────────────
 _pw = str(st.secrets.get("APP_PASSWORD", "") or "").strip()
 if _pw and not st.session_state.get("_auth_ok"):
-    
-
-st.title("☁️ V88 云端版")
+    st.title("☁️ V88 云端版")
     _in = st.text_input("访问密码", type="password")
     if st.button("进入", type="primary", use_container_width=True):
         if str(_in).strip() == _pw:
