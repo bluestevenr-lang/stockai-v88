@@ -173,6 +173,32 @@ _NOT_READY = "📭 数据生成中（每交易日 07:00/14:00/21:00 自动发布
 if _nav == "🧭 导航":
     _rep = _report_text if _report_sync_ok else ""
     st.markdown("#### 🧭 今日导航 · 该关注什么")
+    # 【V88·今日焦点】醒目置顶：重点推荐 + 重点观察触发
+    try:
+        _fx, _ob = [], []
+        _iop = _rep.find("## 🎯 今日操作榜")
+        if _iop > 0:
+            for _lnf in _rep[_iop:_iop + 4000].splitlines():
+                if "买入/建仓" in _lnf and _lnf.strip().startswith("|"):
+                    _cf = [x.strip() for x in _lnf.split("|") if x.strip()]
+                    if len(_cf) >= 6:
+                        _fx.append(f"🟢 **{_cf[2]}** {_cf[3].replace('**','')[:46]}")
+                if len(_fx) >= 3:
+                    break
+        _iwa = _rep.find("## ⚡ 关注股预警")
+        if _iwa > 0:
+            for _lnw in _rep[_iwa:_iwa + 2000].splitlines():
+                _lnw = _lnw.strip()
+                if _lnw.startswith("- ") and any(_lnw[2:].startswith(x) for x in ("❗", "⚠️", "🔄", "📅")):
+                    _ob.append(_lnw[2:].replace("**", "")[:60])
+                if len(_ob) >= 3:
+                    break
+        if _fx:
+            st.success("**⭐ 今日重点关注（引擎买入档 Top3）**\n\n" + "\n\n".join(_fx))
+        if _ob:
+            st.warning("**👁 重点观察触发**（含你搜索过的个股）\n\n" + "\n\n".join(_ob))
+    except Exception:
+        pass
     st.caption("温度定仓位 → 轮动定板块 → 操作榜定标的")
     st.caption(_fresh_caption((_snap or {}).get("generated_at"), "行情快照") + " · 每小时更新")
     _meta0 = pub_meta()
