@@ -27,7 +27,7 @@ jobs:
           git clone -q --depth 1 https://x-access-token:${PT}@github.com/bluestevenr-lang/v88-daily-report.git priv
           cd priv && python src/intraday_alert.py
           git config user.name v88bot && git config user.email v88@bot
-          git add data/alert_state.json 2>/dev/null || true
+          git add data/alert_state.json data/push_state.json 2>/dev/null || true
           git commit -m "intraday alert state" 2>/dev/null || true
           git pull --rebase -q origin main 2>/dev/null || true
           git push -q origin main 2>/dev/null || true
