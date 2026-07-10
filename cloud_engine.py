@@ -707,6 +707,32 @@ def horizon_scores(df, idx_close=None, full=None):
         return None
 
 
+def analysis_text(name, symbol, full, asof=""):
+    """【V88·复制纪要】把个股分析组装成可直接粘贴的纯文本决策纪要（微信/笔记友好）。
+    桌面与云端共用同一格式，保证复制出去的内容两端一致。"""
+    try:
+        if not full:
+            return ""
+        t = full.get("turning") or {}
+        lines = [
+            f"📌 {name}（{symbol}）现价 {full['last']} ｜ {asof or ''}".rstrip(" ｜"),
+            f"结论：{full['conclusion']} ｜ {full['action']}",
+            f"趋势：{full['stage']}（总分{full['total']}/100）｜ 量价：{full['vp']}",
+            f"水位：{full['water']}({full['pos52']}%)→{full['water_adv']} ｜ MACD：{full['macd_txt']}",
+            f"均线：{full['ma_state']} ｜ RSI{full['rsi']} ｜ 量比{full['volr']}",
+            f"价位：买入区{full['buy_zone']} ｜ 回踩{full['pullback']} ｜ 突破加仓{full['breakout']}",
+            f"　　　止损{full['stop']} ｜ 减仓{full['reduce']} ｜ 支撑{full['support']}/压力{full['resistance']}",
+            f"失效：{full['invalid']}",
+        ]
+        if t.get("side"):
+            lines.append(f"{t['label']}：" + "；".join(t["signals"]))
+            lines.append(f"👉 {t['prompt']}")
+        lines.append("—— V88 引擎自动生成，仅供研究参考")
+        return "\n".join(lines)
+    except Exception:
+        return ""
+
+
 # 旧接口兼容：trend_pulse 返回精简子集，避免其它调用处报错
 def trend_pulse(df):
     r = analyze_trend_full(df)

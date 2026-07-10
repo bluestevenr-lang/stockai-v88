@@ -190,6 +190,12 @@ elif _nav == "🔥 热点新闻":
         _tps = _nl.get("topics") or []
         if _tps:
             st.markdown("**🔥 热点主题**：" + " · ".join(f"`{t['w']}({t['n']})`" for t in _tps))
+        # 【V88·复制】新闻清单一键复制（前30条：时间｜来源｜标题）
+        with st.popover("📋 复制新闻清单", use_container_width=True):
+            _cp_news = "\n".join(f"{(it.get('time') or '')[-11:]}｜{it.get('s','')}｜{it.get('t','')}"
+                                  for it in (_nl.get("items") or [])[:30])
+            st.code(("🔥 热点主题：" + "、".join(f"{t['w']}({t['n']})" for t in _tps) + "\n\n" if _tps else "")
+                    + _cp_news, language=None)
         _po = ["全部（近72小时）", "🌙 今日·时段一 00-08", "☀️ 今日·时段二 08-16", "🌆 今日·时段三 16-24"]
         _psel = st.selectbox("⏱ 时段筛选（北京时间）", _po)
         _today = _now_bjt().date()
@@ -251,6 +257,8 @@ elif _nav == "🏆 全选榜单":
                 _smap = {"≥70 强势": 70, "≥55 良好": 55, "≥40 及格": 40}
                 if _sb in _smap:
                     _df = _df[_df["得分"] >= _smap[_sb]]
+        st.download_button("📥 导出榜单CSV", data=_df.to_csv(index=False, encoding="utf-8-sig"),
+                           file_name="V88全选榜单.csv", mime="text/csv", use_container_width=True)
         st.dataframe(_df, hide_index=True, use_container_width=True, height=560)
         st.caption("💡 得分=五维综合评分 ｜ MACD/量价：明显放量≥+20%·温和放量+8%~20%·持平±8%·明显缩量≤-20% ｜ 操作指引与止损/目标由引擎按实时价确定，与桌面 V88 同源")
 
@@ -348,6 +356,11 @@ elif _nav == "🔍 个股搜索":
                 if not f["sector_known"]:
                     st.caption("_板块强度云端按中性50计；资金动向=OBV能量潮真实数据；主判断由价格/均线/MACD/量价/水位驱动_")
             st.caption(f"20日动量 {f['chg20']:+.1f}% ｜ 乖离MA20 {f['bias20']:+.1f}% ｜ 量比 {f['volr']} ｜ 数据截至 {r['asof']}")
+            # 【V88·复制纪要】整段分析一键复制（st.code 自带复制按钮，微信/笔记直接粘贴）
+            _cp_txt = cloud_engine.analysis_text(r.get('name') or r['symbol'], r['symbol'], f, r.get('asof', ''))
+            if _cp_txt:
+                with st.expander("📋 复制分析纪要（右上角复制按钮）", expanded=False):
+                    st.code(_cp_txt, language=None)
 
 # ── 📊 日报 / 📅 周报 ────────────────────────────────────────
 elif _nav in ("📊 日报", "📅 周报"):
@@ -358,6 +371,13 @@ elif _nav in ("📊 日报", "📅 周报"):
         if _meta1.get(_mk1):
             st.caption(_fresh_caption(_meta1[_mk1], "本报告")
                        + (" · 每时段更新（北京时间07/14/21点）" if _nav == "📊 日报" else " · 每周日更新"))
+        # 【V88·复制】下载 md 原文 + 复制全文（st.code 右上角自带复制按钮）
+        _cc1, _cc2 = st.columns(2)
+        _fn = "V88日报.md" if _nav == "📊 日报" else "V88周报.md"
+        _cc1.download_button("📥 下载原文", data=_txt, file_name=_fn,
+                             mime="text/markdown", use_container_width=True)
+        with _cc2.popover("📋 复制全文", use_container_width=True):
+            st.code(_txt[:12000], language=None)
         st.markdown(_txt)
         st.caption("💡 持仓建议为隐私内容，不在云端公开显示；见飞书或 Mac 版")
     else:
