@@ -116,14 +116,60 @@ if 'startup_health' not in st.session_state:
     else:
         logging.info("[启动自检] ✅ 所有检查通过")
 
-# ── AI市场简报 12小时文件缓存 ──────────────────────────────────────────────
+# ── AI市场简报 1小时文件缓存（权威日报迁移前的兼容层）──────────────────────
 _BRIEF_CACHE_DIR = Path(__file__).parent / ".cache_brief"
 _BRIEF_CACHE_FILE = _BRIEF_CACHE_DIR / "daily_brief.json"
 _BRIEF_CACHE_TTL = 3600  # 1小时（由 config.toml [cache].brief_ttl 覆盖；2026-07-09 全模块统一1小时）
+_AUTHORITATIVE_REPORT = Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "daily_report.md"
+_AUTHORITATIVE_MANIFEST = _AUTHORITATIVE_REPORT.parent / "report_manifest.json"
+_AUTHORITATIVE_SNAPSHOT = _AUTHORITATIVE_REPORT.parent / "market_snapshot.json"
+_AUTHORITATIVE_BRIEF_META = {}
+
+
+def _load_authoritative_brief():
+    """Load the single report shared by desktop, cloud and Feishu."""
+    global _AUTHORITATIVE_BRIEF_META
+    if not _AUTHORITATIVE_REPORT.exists():
+        _AUTHORITATIVE_BRIEF_META = {"status": "missing", "issues": ["权威日报文件不存在"]}
+        return None, None
+    ts = _AUTHORITATIVE_REPORT.stat().st_mtime
+    try:
+        raw_content = _AUTHORITATIVE_REPORT.read_text(encoding="utf-8-sig")
+        content = raw_content.strip()
+    except Exception as exc:
+        _AUTHORITATIVE_BRIEF_META = {"status": "failed", "issues": [f"日报读取失败: {exc}"]}
+        return None, ts
+    if not _AUTHORITATIVE_MANIFEST.exists():
+        _AUTHORITATIVE_BRIEF_META = {
+            "status": "legacy", "snapshot_id": "", "issues": ["等待下一轮任务生成新版质检清单"]
+        }
+        return content, ts
+    try:
+        manifest = json.loads(_AUTHORITATIVE_MANIFEST.read_text(encoding="utf-8"))
+        snapshot = json.loads(_AUTHORITATIVE_SNAPSHOT.read_text(encoding="utf-8"))
+        issues = list((manifest.get("quality") or {}).get("issues") or [])
+        if (manifest.get("quality") or {}).get("status") != "passed":
+            _AUTHORITATIVE_BRIEF_META = {**manifest, "status": "failed", "issues": issues}
+            return None, ts
+        if manifest.get("snapshot_id") != snapshot.get("snapshot_id"):
+            issues.append("日报与行情快照版本不一致")
+        if hashlib.sha256(raw_content.encode("utf-8")).hexdigest() != manifest.get("report_sha256"):
+            issues.append("日报正文校验和不一致")
+        if issues:
+            _AUTHORITATIVE_BRIEF_META = {**manifest, "status": "failed", "issues": issues}
+            return None, ts
+        _AUTHORITATIVE_BRIEF_META = {**manifest, "status": "passed", "issues": []}
+        return content, ts
+    except Exception as exc:
+        _AUTHORITATIVE_BRIEF_META = {"status": "failed", "issues": [f"质检清单解析失败: {exc}"]}
+        return None, ts
 
 
 def _load_brief_cache():
-    """加载简报文件缓存，命中（<12h）返回 (content, ts)，否则 (None, None)"""
+    """优先加载三端共用的权威日报；旧缓存仅用于尚未迁移的环境。"""
+    authoritative, authoritative_ts = _load_authoritative_brief()
+    if _AUTHORITATIVE_REPORT.exists():
+        return authoritative, authoritative_ts
     try:
         if _BRIEF_CACHE_FILE.exists():
             data = json.loads(_BRIEF_CACHE_FILE.read_text(encoding="utf-8"))
@@ -154,7 +200,7 @@ _AI_REPORT_CACHE_DIR = _BRIEF_CACHE_DIR  # 复用同一缓存目录
 _AI_REPORT_TTL = 3600  # 1小时（全模块统一）
 
 def _load_ai_report_cache(report_key: str):
-    """加载 AI 报告文件缓存，命中(<12h)返回 (data_dict, ts)，否则 (None, None)"""
+    """加载 AI 报告文件缓存，命中(<1h)返回 (data_dict, ts)，否则 (None, None)"""
     try:
         _f = _AI_REPORT_CACHE_DIR / f"ai_report_{report_key}.json"
         if _f.exists():
@@ -317,8 +363,8 @@ def _audit_professional_brief(content: str, has_real_news_report: bool = False) 
             continue
         block = mkt.group(0)
         cards = re.findall(r"^\d+\.\s+\*\*", block, re.M)
-        if len(cards) != 3:
-            issues.append(f"{market_name}推荐数量应为3只，当前为{len(cards)}只")
+        if len(cards) > 3:
+            issues.append(f"{market_name}推荐数量最多3只，当前为{len(cards)}只")
         for field in ["触发", "来源", "机会概率/风险概率", "建仓区间", "仓位上限", "R/R", "失效条件", "数据时间戳"]:
             if field not in block:
                 issues.append(f"{market_name}推荐缺字段：{field}")
@@ -2712,6 +2758,7 @@ def render_cloud_search():
                             st.session_state.scan_selected_name = name
                             st.session_state.pk_codes = []
                             st.session_state.pk_names = []
+                            _search_history_persist(code, name)  # 【V88·搜索习惯】
                             # 【V96.1】搜索过的个股自动加入自选股（上限20只，先进先出）
                             if _watchlist_add(code, name):
                                 st.toast(f"✅ 已选中 {name}，并加入自选股", icon="🎯")
@@ -3987,6 +4034,27 @@ if Config.ENABLE_EXPECTATION_LAYER:
             hk_result = all_markets['hk_market']
             cn_result = all_markets['cn_market']
             summary = all_markets['summary']
+            # 指数展示与权威日报共用同一快照；宏观代理指标(VIX/SPY/TLT等)仍来自宏观模块。
+            try:
+                _canonical_snapshot = json.loads(_AUTHORITATIVE_SNAPSHOT.read_text(encoding="utf-8"))
+                _cn_ix = (_canonical_snapshot.get("markets", {}).get("A股", {}).get("indices") or [])
+                _hk_ix = (_canonical_snapshot.get("markets", {}).get("港股", {}).get("indices") or [])
+                if _cn_ix:
+                    cn_result["index_level"] = _cn_ix[0].get("last")
+                    cn_result["index_change_pct"] = _cn_ix[0].get("chg1d")
+                if len(_cn_ix) >= 3:
+                    cn_result["cyb_price"] = _cn_ix[2].get("last")
+                    cn_result["cyb_change_pct"] = _cn_ix[2].get("chg1d")
+                    cn_result["cyb_use_etf"] = "ETF" in str(_cn_ix[2].get("name", ""))
+                if _hk_ix:
+                    hk_result["index_level"] = _hk_ix[0].get("last")
+                    hk_result["index_change_pct"] = _hk_ix[0].get("chg1d")
+                if len(_hk_ix) >= 2:
+                    hk_result["hstech_price"] = _hk_ix[1].get("last")
+                    hk_result["hstech_change_pct"] = _hk_ix[1].get("chg1d")
+                    hk_result["hstech_use_etf"] = "ETF" in str(_hk_ix[1].get("name", ""))
+            except Exception as _snap_sync_error:
+                logging.warning(f"权威快照覆盖宏观指数失败: {_snap_sync_error}")
             st.markdown("### 🌐 全球市场综合")
             summary_col1, summary_col2, summary_col3 = st.columns([2, 1, 1])
         
@@ -4050,12 +4118,12 @@ if Config.ENABLE_EXPECTATION_LAYER:
             _v = us_result.get('spy_price', 0)
             _val = _safe_str_for_dom(f"${_safe_num(_v, '{:.1f}')}" if _v and (_v == _v) else "N/A")
             _d = _safe_str_for_dom(f"{_safe_num(us_result.get('spy_change_pct', 0), '{:+.1f}')}%" if _v else None) or None
-            st.metric("S&P500", _val, delta=_d)
+            st.metric("SPY（标普500 ETF）", _val, delta=_d)
         with us_cols[2]:
             _v = us_result.get('qqq_price', 0)
             _val = _safe_str_for_dom(f"${_safe_num(_v, '{:.1f}')}" if _v else "N/A")
             _d = _safe_str_for_dom(f"{_safe_num(us_result.get('qqq_change_pct', 0), '{:+.1f}')}%" if _v else None) or None
-            st.metric("纳斯达克100", _val, delta=_d)
+            st.metric("QQQ（纳指100 ETF）", _val, delta=_d)
         with us_cols[3]:
             _v = us_result.get('tlt_price', 0)
             _val = _safe_str_for_dom(f"${_safe_num(_v, '{:.1f}')}" if _v else "N/A")
@@ -4113,7 +4181,8 @@ if Config.ENABLE_EXPECTATION_LAYER:
             _cyb = cn_result.get('cyb_price', 0)
             _cy_val = f"{_cyb:.0f}" if _cyb and _cyb > 0 else "N/A"
             _cy_d = f"{cn_result.get('cyb_change_pct', 0):+.2f}%" if _cyb and _cyb > 0 else None
-            st.metric("创业板指", _safe_str_for_dom(_cy_val), delta=_safe_str_for_dom(_cy_d) if _cy_d else None)
+            _cy_label = "创业板ETF代理" if cn_result.get("cyb_use_etf") else "创业板指"
+            st.metric(_cy_label, _safe_str_for_dom(_cy_val), delta=_safe_str_for_dom(_cy_d) if _cy_d else None)
         with cn_cols[3]:
             st.metric("波动率", _safe_str_for_dom(f"{_cn_vol:.1f}%" if _cn_vol and _cn_vol > 0 else "N/A"))
         with cn_cols[4]:
@@ -4167,13 +4236,19 @@ if Config.ENABLE_EXPECTATION_LAYER:
         
         # 宏观综合解读条 - 英文术语括号中文小一号
         try:
-            _pos_cap = int(float(us_result.get('position_cap', 80)))
-            if _pos_cap != _pos_cap or _pos_cap < 0 or _pos_cap > 100: _pos_cap = 80
-        except (TypeError, ValueError): _pos_cap = 80
-        _macro_reason = _reason_cn(us_result.get('reason', ''))
+            _market_caps = [int(float(r.get('position_cap', 80))) for r in (us_result, hk_result, cn_result)]
+            _market_caps = [x for x in _market_caps if 0 <= x <= 100]
+            _pos_cap = min(_market_caps) if _market_caps else 80
+            if summary.get('risk_off_count', 0) >= 2:
+                _pos_cap = min(_pos_cap, 30)
+        except (TypeError, ValueError):
+            _pos_cap = 30 if summary.get('risk_off_count', 0) >= 2 else 80
+        _macro_reason = _reason_cn(
+            f"{summary.get('global_reason', '')}；美国：{us_result.get('reason', '')}"
+        )
         _cap_color = "#10b981" if _pos_cap >= 70 else ("#f59e0b" if _pos_cap >= 50 else "#ef4444")
         st.markdown(f'<div style="font-family: Georgia, \'Times New Roman\', SimSun, 宋体, serif; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 1rem 1.5rem; border-radius: 8px; margin-top: 0.5rem; display: flex; align-items: center; gap: 1rem;"><div style="font-family: inherit; color: white; flex: 1; font-size: 12px;">💡 <b>宏观解读</b>：{_macro_reason}</div><div style="font-family: inherit; background: {_cap_color}; color: white; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 700; font-size: 12px; white-space: nowrap;">仓位上限 {_pos_cap}%</div></div>', unsafe_allow_html=True)
-        st.markdown('📖 仓位上限 = 基于VIX<span style="font-size: 0.9em;">(波动率指数)</span> + 美债收益率 + 市场体制的综合建议。Risk Off<span style="font-size: 0.9em;">(风险规避)</span>时建议最多30%仓位，避免满仓硬扛', unsafe_allow_html=True)
+        st.markdown('📖 全局仓位上限取三市场建议中的最低值；当至少两个市场处于 Risk Off<span style="font-size: 0.9em;">(风险规避)</span>时，上限固定不超过30%。', unsafe_allow_html=True)
         
         st.divider()
         
@@ -4749,6 +4824,22 @@ WATCHLIST = {
 # 【V96.1】动态自选股：watchlist.json 持久化 · 搜索过的个股自动加入 · 上限20只
 # ═══════════════════════════════════════════════════════════════
 _WATCHLIST_FILE = Path(__file__).parent / "watchlist.json"
+_SEARCH_HIST_FILE = Path(__file__).parent / "search_history.json"
+
+def _search_history_persist(code, name):
+    """【V88·搜索习惯】搜索历史落盘（次数+最近时间）——关注股预警的依据之一"""
+    try:
+        d = {}
+        if _SEARCH_HIST_FILE.exists():
+            d = json.loads(_SEARCH_HIST_FILE.read_text(encoding="utf-8"))
+        e = d.get(str(code)) or {"name": name, "n": 0}
+        e["n"] = int(e.get("n", 0)) + 1
+        e["name"], e["ts"] = name, time.time()
+        d[str(code)] = e
+        _SEARCH_HIST_FILE.write_text(json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8")
+    except Exception:
+        pass
+
 _WATCHLIST_MAX = 20
 
 def _watchlist_save(d):
@@ -9486,6 +9577,20 @@ def _prefetch_pool(pool, progress_callback=None):
 # ═══════════════════════════════════════════════════════════════
 # 8a2. 【V92 一页全策略】单次取数+单次评分，一张表看全所有策略关键信息
 # ═══════════════════════════════════════════════════════════════
+def _mk_reason(m, score):
+    """【V88·推荐理由】一句话说清基本面+技术面优势（全部来自真实计算，无编造）"""
+    try:
+        _tf = m.get('trend_full') or {}
+        _rs = m.get('rs20')
+        _rs_txt = (f"RS{_rs:+.0f}领跑" if (_rs or 0) > 3 else ("跑输大盘" if (_rs or 0) < -3 else "RS中性"))
+        _vp0 = str(_tf.get('vp', '')).split('·')[0]
+        tech = f"技术:{_tf.get('stage', '—')}·{_vp0}·{_rs_txt}" if _tf else f"技术:{_rs_txt}"
+        fund = f"基本面:ESG {m.get('esg_grade', '—')}级·综合{score}分"
+        return f"{tech}｜{fund}"
+    except Exception:
+        return ""
+
+
 def build_action_guidance(score, rs20, pos_pct, touch_count, last_close, trade_plan, regime_str="N/A", trend=None):
     """
     【V94.3】统一操作指引：猎手战位一键筛选与个股搜索共用同一套决策逻辑，
@@ -9864,6 +9969,10 @@ def run_unified_scan(pool, scan_market, risk_preference="平衡", use_concurrent
                 "多重支撑": (f"✅×{touch_count}" if touch_count >= 2 else ""),
                 "MACD/量价": macd_vp,
                 "拐点": ((m.get('trend_full') or {}).get('turning') or {}).get('brief', ''),
+                # 【V88·当日买入区间】推荐可买(≥62分且指引非回避)才给区间，其余留空
+                "买入区间": (f"{m['trade_plan']['entry_low']:.2f}~{m['trade_plan']['entry_high']:.2f}"
+                          if m.get('trade_plan') and score >= 62 and action[:1] in ('🟢', '🔵', '🟡') else ""),
+                "推荐理由": _mk_reason(m, score),
                 "操作指引": action,
                 "止损/目标": stop_target,
             }
@@ -10005,6 +10114,9 @@ def run_horizon_top10(progress_callback=None):
                 "_why_s": _hs['short']['why'] + _gate,
                 "_why_m": _hs['mid']['why'] + _gate,
                 "_why_l": _hs['long']['why'] + _gate,
+                "_plan_s": _hs['short'].get('plan', ''),
+                "_plan_m": _hs['mid'].get('plan', ''),
+                "_plan_l": _hs['long'].get('plan', ''),
             })
         except Exception:
             continue
@@ -10023,6 +10135,7 @@ def run_horizon_top10(progress_callback=None):
                 row = {k: v for k, v in r.items() if not k.startswith("_")}
                 row["期限分"] = int(r[key])
                 # 【V88·三期限引擎】逻辑链全透明：该期限每个因子拿了多少分、依据是什么
+                row["操作剧本"] = r.get("_plan" + key, "")
                 row["入选逻辑"] = r.get("_why" + key, "")
                 out.append(row)
                 cnt += 1
@@ -11012,8 +11125,93 @@ def _render_today_nav():
                     _hints.append(f"🧊 {_mkt}·**{s['name']}** 退潮（20日{s['chg20d']:+.1f}%但5日{s['chg5d']:+.1f}%）")
         if _hints:
             st.markdown("**板块轮动**：" + " ｜ ".join(_hints[:5]))
+        # 【V88·复制】今日导航摘要一键复制（温度/指数/拐点/轮动）
+        try:
+            _cpn = [f"🧭 V88今日导航 {_gen}"]
+            for _mkt in ("美股", "A股", "港股"):
+                _b9 = _snap["markets"].get(_mkt) or {}
+                _t9 = _b9.get("temperature") or {}
+                if _t9:
+                    _cpn.append(f"{_mkt} 温度{_t9.get('temp','?')}/100 {_t9.get('label','')} 仓位{_t9.get('position','?')}")
+                for _x9 in (_b9.get("indices") or [])[:3]:
+                    _cpn.append(f"  {_x9['trend']} {_x9['name']} {_x9['last']}｜5日{_x9['chg5d']:+.1f}%"
+                                + (f"｜{_x9['turning']}" if _x9.get('turning') else ""))
+            if _hints:
+                _cpn.append("板块轮动：" + "；".join(h.replace('**', '') for h in _hints[:5]))
+            with st.popover("📋 复制导航摘要"):
+                st.code("\n".join(_cpn), language=None)
+        except Exception:
+            pass
     else:
         st.info("📭 大盘快照尚未生成（每日07:00/14:00/21:00自动更新）")
+
+    # 【V88·关注股预警】自选股+搜索习惯+持仓 → 拐点/止盈止损/纪律提示
+    try:
+        _wa = st.session_state.get('watch_alerts_v88')
+        if not _wa or time.time() - _wa.get('ts', 0) > 3600:
+            _pool_wa = {}
+            try:
+                for _mk9, _lst9 in (_watchlist_load() or {}).items():
+                    for _c9, _n9 in list(_lst9)[:10]:
+                        _pool_wa[str(_c9)] = _n9
+            except Exception:
+                pass
+            try:
+                if _SEARCH_HIST_FILE.exists():
+                    _sh9 = json.loads(_SEARCH_HIST_FILE.read_text(encoding="utf-8"))
+                    for _c9, _e9 in sorted(_sh9.items(), key=lambda x: -x[1].get("n", 0))[:8]:
+                        _pool_wa.setdefault(_c9, _e9.get("name", _c9))
+            except Exception:
+                pass
+            try:
+                _pj9 = json.loads((_repo / "positions.json").read_text(encoding="utf-8"))
+                for _acc9 in (_pj9.get("accounts") or {}).values():
+                    for _h9 in (_acc9.get("holdings") or []):
+                        if _h9.get("code") and "⚠️" not in str(_h9["code"]):
+                            _pool_wa.setdefault(str(_h9["code"]), _h9.get("name", ""))
+            except Exception:
+                pass
+            import cloud_engine as _ce_wa
+            _alerts9 = []
+            for _c9, _n9 in list(_pool_wa.items())[:18]:
+                try:
+                    _df9 = fetch_stock_data(to_yf_cn_code(_c9))
+                    _f9 = _ce_wa.analyze_trend_full(_df9)
+                    if not _f9:
+                        continue
+                    _t9 = _f9.get("turning") or {}
+                    _last9 = _f9["last"]
+                    if _last9 < _f9["stop"]:
+                        _alerts9.append(f"❗ **{_n9}**({_c9})：现价{_last9}已破止损位{_f9['stop']}——纪律：离场/减仓，不要扛")
+                    elif _t9.get("side") == "top":
+                        _alerts9.append(f"⚠️ **{_n9}**({_c9})：{_t9['brief']}｜止盈参考：减仓位{_f9['reduce']}·跌破{_f9['stop']}离场")
+                    elif _t9.get("side") == "bottom":
+                        _alerts9.append(f"🔄 **{_n9}**({_c9})：{_t9['brief']}｜回踩买点{_f9['pullback']}·止损{_f9['stop']}")
+                    elif _f9.get("stage") in ("放量滞涨", "高位震荡") and _f9.get("pos52", 0) > 80:
+                        _alerts9.append(f"🟡 **{_n9}**({_c9})：{_f9['stage']}·52周{_f9['pos52']}%——冲高减仓位{_f9['reduce']}")
+                except Exception:
+                    continue
+            _wa = {"ts": time.time(), "alerts": _alerts9, "n": len(_pool_wa)}
+            st.session_state['watch_alerts_v88'] = _wa
+        if _wa.get("alerts"):
+            with st.expander(f"⚡ 关注股预警（自选+常搜+持仓 共{_wa['n']}只 · {len(_wa['alerts'])}条触发）", expanded=True):
+                st.markdown("\n".join(f"- {a}" for a in _wa["alerts"]))
+                with st.popover("📋 复制预警"):
+                    st.code("\n".join(a.replace("**", "") for a in _wa["alerts"]), language=None)
+        else:
+            st.caption(f"⚡ 关注股预警：{_wa.get('n', 0)}只关注股暂无拐点/止损触发（1小时自动复查）")
+    except Exception as _we9:
+        logging.debug(f"关注股预警异常: {_we9}")
+
+    # 【V88·深度回调机会池】优质股回撤≥30%关注名单（日报流水线生成，三端同源）
+    _ipb = _rep.find("## 💎 深度回调机会池")
+    if _ipb > 0:
+        _jpb = _rep.find("\n## ", _ipb + 5)
+        with st.expander("💎 深度回调机会池（优质股·回撤≥30%·企稳信号）", expanded=False):
+            _pbtxt = _rep[_ipb:_jpb if _jpb > 0 else _ipb + 2500]
+            st.markdown(_pbtxt)
+            with st.popover("📋 复制机会池"):
+                st.code(_pbtxt, language=None)
 
     # ③ 今日操作榜（短线/长线 Top3，来自日报，AI+真实新闻锚定）＋ ④ 持仓触发提醒
     _c_ops, _c_hold = st.columns([3, 2])
@@ -11256,6 +11454,28 @@ if st.session_state.get('scan_selected_code'):
                             if _ro99:
                                 st.markdown("##### 📖 量价判读（事实+要点，你来拍板）")
                                 st.markdown("\n".join(f"- {ln}" for ln in _ro99))
+                            _fu99 = None
+                            try:
+                                _fu99 = _ce.fundamentals(target_c)
+                                if _fu99:
+                                    st.markdown(f"**🧾 基本面**：`{_fu99['tag']}`  \n{_fu99['line']}")
+                            except Exception:
+                                pass
+                            _pl99 = _ce.horizon_plans(_F, df_temp)
+                            if _pl99:
+                                st.markdown("##### ⏱ 分期限剧本（短线做T｜中线锚MA55｜长线锚年线）")
+                                st.markdown("\n".join(f"- {_pl99[k]}" for k in ("short", "mid", "long") if _pl99.get(k)))
+                            with st.expander("📖 术语速查（每个数值高低代表什么，非专业版）"):
+                                st.markdown(_ce.GLOSSARY_MD)
+                            # 【V88·复制纪要】整段分析一键复制（与云端同格式）
+                            _cp99 = _ce.analysis_text(stock_name, target_c, _F, fund=_fu99)
+                            if _cp99:
+                                if COPY_UTILS_AVAILABLE:
+                                    CopyUtils.create_copy_button(_cp99, button_text="📋 复制分析纪要",
+                                                                 key=f"copy_trend_{target_c}")
+                                else:
+                                    with st.expander("📋 复制分析纪要", expanded=False):
+                                        st.code(_cp99, language=None)
                             _bd99 = _F["breakdown"]
                             st.dataframe([{"维度": k, "实际情况": d, "得分": sc, "权重": f"{int(w*100)}%"}
                                           for k, (sc, w, d) in _bd99.items()],
@@ -13747,6 +13967,15 @@ with tab_scanner:
                         help="下载扫描结果为CSV文件",
                         width='stretch'
                     )
+                    # 【V88·复制】榜单Top20一键复制成微信友好文本
+                    with st.popover("📋 复制Top20", use_container_width=True):
+                        _cp_rows = result_info['data'][:20]
+                        _cp_lines = [f"📊 V88·{result_info.get('type','')}榜单 {pd.Timestamp.now().strftime('%m-%d %H:%M')}"]
+                        for _i9, _r9 in enumerate(_cp_rows):
+                            _cp_lines.append(
+                                f"{_i9+1}. {_r9.get('市场','')}{_r9.get('名称','')}({_r9.get('代码','')}) "
+                                f"分{_r9.get('得分', _r9.get('评分',''))} {_r9.get('拐点','')} {_r9.get('操作指引','')}".strip())
+                        st.code("\n".join(_cp_lines), language=None)
             
             # 【NEW V88 Phase 2】表格筛选功能
             df_results = pd.DataFrame(result_info['data'])
@@ -13849,6 +14078,12 @@ with tab_scanner:
                     st.caption(f"🔍 筛选后: {len(df_results)} 只 / 总共 {len(result_info['data'])} 只")
             
             render_clickable_table(df_results, result_info['key'])
+            with st.expander("📖 术语速查（得分/RSI/RS/量比…高低怎么看）"):
+                try:
+                    import cloud_engine as _ce_g2
+                    st.markdown(_ce_g2.GLOSSARY_MD)
+                except Exception:
+                    pass
         
         st.divider()
         st.markdown("---")
@@ -14990,7 +15225,7 @@ st.markdown(f"""
 # 【V92】固定使用 DeepSeek V3，不再提供模型选择
 BRIEF_MODEL = "deepseek-v4-flash"
 
-# ── 12小时文件缓存：打开页面即自动显示，无需点击 ─────────────────────────────
+# ── 三端统一权威日报：桌面/云端/飞书使用同一正文与冻结快照 ───────────────────
 _brief_cached_content, _brief_cached_ts = _load_brief_cache()
 if _brief_cached_content:
     st.session_state["market_brief_latest"] = _brief_cached_content
@@ -14999,39 +15234,37 @@ _brief_cache_info_col, _brief_btn_col = st.columns([4, 1])
 with _brief_cache_info_col:
     if _brief_cached_ts:
         _brief_age_h = (time.time() - _brief_cached_ts) / 3600
-        _brief_remain_h = max(0.0, 12.0 - _brief_age_h)
+        _brief_remain_h = max(0.0, (_BRIEF_CACHE_TTL / 3600) - _brief_age_h)
         _brief_remain_m = int(_brief_remain_h * 60)
         _brief_gen_dt = _dt_brief.fromtimestamp(_brief_cached_ts).strftime("%m-%d %H:%M")
         _brief_remain_str = (
             f"{_brief_remain_h:.1f}h" if _brief_remain_h >= 1
             else f"{_brief_remain_m}min"
         )
-        st.caption(
-            f"📦 缓存简报 · {_brief_gen_dt} 生成 · "
-            f"已缓存 {_brief_age_h:.1f}h · ⏳ 剩余 {_brief_remain_str}"
-        )
+        _brief_status = _AUTHORITATIVE_BRIEF_META.get("status")
+        _sid = _AUTHORITATIVE_BRIEF_META.get("snapshot_id", "")
+        if _brief_status == "passed":
+            st.caption(f"✅ 权威日报 · {_brief_gen_dt} 生成 · Snapshot `{_sid}` · 已缓存 {_brief_age_h:.1f}h")
+        elif _brief_status == "legacy":
+            st.caption(f"ℹ️ 权威日报旧协议 · {_brief_gen_dt} 生成 · 下一轮任务自动升级质检清单")
+        else:
+            st.caption(f"⚠️ 权威日报不可用 · {_brief_gen_dt}")
+        if _brief_age_h > _BRIEF_CACHE_TTL / 3600:
+            st.warning("行情快照已超过1小时：报告仅作历史阅读，交易动作需等待下一轮权威日报。")
     else:
-        st.caption("⏳ 首次将自动生成日报（已优化为轻量模式：跳过684池选股与批量询价，优先出文）…")
+        st.caption("📭 权威日报尚未生成；桌面端不会另写一份口径不同的报告。")
 with _brief_btn_col:
-    do_generate = st.button("🔄 刷新简报", key="btn_market_brief", type="primary", width='stretch')
-    if do_generate:
-        try:
-            _BRIEF_CACHE_FILE.unlink(missing_ok=True)
-        except Exception:
-            pass
+    _reload_authoritative = st.button("🔄 重新载入", key="btn_market_brief", type="primary", width='stretch')
+    do_generate = False
+    if _reload_authoritative:
         st.session_state.pop("market_brief_latest", None)
-        st.session_state.pop("_brief_auto_gen_done", None)
-        st.session_state.pop("_brief_auto_gen_attempted", None)
-        st.session_state.pop("_brief_skip_heavy_bundle", None)
-        _brief_cached_content = None
+        st.rerun()
 
-# 【自动生成】首次打开页面且无缓存时，自动触发生成（轻量路径，避免选股引擎+全池询价卡死）
-if (not _brief_cached_content
-        and "market_brief_latest" not in st.session_state
-        and not st.session_state.get("_brief_auto_gen_attempted")):
-    st.session_state["_brief_auto_gen_attempted"] = True
-    st.session_state["_brief_skip_heavy_bundle"] = True
-    do_generate = True
+if _AUTHORITATIVE_BRIEF_META.get("status") == "failed":
+    _issues = _AUTHORITATIVE_BRIEF_META.get("issues") or ["未知质检错误"]
+    st.error("权威日报未通过硬质检，已停止展示交易建议：" + "；".join(_issues))
+
+# 不再由桌面端二次改写日报。权威流水线失败时宁可空缺，也不生成另一套价格与动作。
 # ─────────────────────────────────────────────────────────────────────────────
 
 if do_generate:
@@ -15257,15 +15490,15 @@ if do_generate:
 5) 若真实新闻报告为空，不得声称“今日/近日某媒体报道了某事件”；只能基于指数数据、候选池价格和基本面常识做保守判断。
 
 【硬性规则】
-1) 必须输出美股、港股、A股三个市场，每个市场固定3只（共9只），禁止只输出美股或遗漏港股/A股
-2) 每市场3只的目标配置为：1 立即建仓 + 1 中期跟进 + 1 观察；但若立即建仓不满足 BUILD_NOW 判定器，必须降级，不得硬凑“立即建仓”
+1) 必须覆盖美股、港股、A股三个市场；每市场最多3只，允许0只，无合格标的必须写“今日无高置信机会”
+2) 动作由证据决定；不满足 BUILD_NOW 判定器必须降级，不得硬凑“立即建仓”或推荐数量
 3) **最终推荐 3 只里至少 2 只必须来自 Trade 池**（若候选池含 Trade 标记，优先选质量闸门通过的标的）
 4) 每只推荐首行必须写为 **名称(代码)** 格式（如 **苹果(AAPL)**、**腾讯控股(00700.HK)**、**贵州茅台(600519.SS)**），便于系统标注现价
 5) 观察 禁止给目标位和买入建议
 6) 每只必须含：证据状态灯、R/R、三类失效、触发、基本面承接、技术确认、动作标签、仓位建议
 7) 文末固定输出 数据 与 时间戳（Asia/Shanghai），并标注数据截点
 8) **跨日去重**：{_recent_block}上述代码在近3日已推荐，本次9只推荐中禁止出现这些代码；若候选池内无其他合格标的，则可降级为「观察」后选入，但不得再次列为「立即建仓」或「中期跟进」
-9) **行业多样性**：每个市场的3只推荐，必须覆盖至少2个不同行业/板块（如科技+医疗、消费+金融），禁止3只均来自同一行业
+9) **行业多样性**：某市场推荐达到2只以上时，应覆盖至少2个不同行业/板块；不得为满足多样性降低准入门槛
 10) **触发事件禁止编造**：若上方提供了【真实新闻报告】，则所有「触发」字段的事件必须来自该报告，且必须注明具体来源媒体名称（如 Bloomberg、Reuters、WSJ、财新、公司公告等）；若未提供或找不到对应新闻，触发字段必须写：无近期相关新闻触发，基于基本面判断。严禁编造任何新闻事件（如产能扩充、财报数据等）
 11) **建仓区间必须基于当前实时价格计算**：建仓区间 = 候选池中传入的日报价（即当前实时收盘价）× (1 ± 3%~5%)。严禁使用任何历史高价、52周高点、历史缓存价格计算建仓区间。若候选池已提供「日报价 $X.XX」，则建仓区间下限不得高于该价格的110%，上限不得高于该价格的115%。
 
@@ -15354,7 +15587,7 @@ e) 失效条件含 基本面+结构+事件 三类
 
 ---
 
-## 🎯 今日操作榜（中长短 × 中美港 · 各Top3）
+## 🎯 今日操作榜（中长短 × 中美港 · 每市场最多3只）
 
 3期限 × 3市场 各选Top3。短线看技术+动能+72h催化；中线看综合+趋势排列；长线看基本面+估值+长期趋势。榜内标的必须与下方各市场推荐一致，宁缺毋滥（不足3只列实际数量并注明；无合格标的写"今日无高置信机会"，禁止硬凑）。价位以候选池「日报价」为唯一基准±3%计算，候选池外标的写"以现价为锚"。
 
@@ -15447,12 +15680,12 @@ e) 失效条件含 基本面+结构+事件 三类
 
 ## 可执行推荐
 
-【⚠️ 硬性要求】必须输出美股、港股、A股三个市场，每个市场必须恰好3只（共9只）。禁止只输出美股或遗漏港股/A股。若某市场候选不足，可从该市场候选池降级选取「观察」凑足3只。
+【⚠️ 硬性要求】必须覆盖美股、港股、A股三个市场，每市场最多3只、允许0只。若候选不足，写“今日无高置信机会”，禁止降级凑数。
 动作标签必须由证据决定：只有满足 BUILD_NOW 的标的才能写「立即建仓」；否则写「中期跟进」或「观察」，并说明缺失的触发条件。
 
 每只推荐必须符合 Card Schema，含：代码|名称、动作标签、触发、来源(tier)、机会/风险概率、建仓区间、仓位上限+分批节奏、R/R、失效条件、时间戳。
 
-### 🇺🇸 美股（固定3只：动作由证据决定，禁止硬凑立即建仓）
+### 🇺🇸 美股（0-3只：动作与数量均由证据决定）
 1. **[代码|名称]** · **[立即建仓/中期跟进/观察]**（立即建仓须满足 Action Gate 全条件）
    - 触发: [24h/72h] [事件] [来源·Tier A/B]
    - 机会概率/风险概率: [%/%]
@@ -15471,12 +15704,12 @@ e) 失效条件含 基本面+结构+事件 三类
    - **升级条件**：满足 2/3 项 → 升级为 中期跟进
    - **降级条件**：[具体条件]
 
-### 🇭🇰 港股（固定3只：动作由证据决定，禁止硬凑立即建仓）
+### 🇭🇰 港股（0-3只：动作与数量均由证据决定）
 1. **[代码|名称]** · **[立即建仓/中期跟进/观察]** · [Card Schema 全字段]
 2. **[代码|名称]** · **[中期跟进/观察]** · [Card Schema 全字段]
 3. **[代码|名称]** · **观察** · [Card Schema 全字段 + 升级/降级条件]
 
-### 🇨🇳 A股（固定3只：动作由证据决定，禁止硬凑立即建仓）
+### 🇨🇳 A股（0-3只：动作与数量均由证据决定）
 1. **[代码|名称]** · **[立即建仓/中期跟进/观察]** · [Card Schema 全字段]
 2. **[代码|名称]** · **[中期跟进/观察]** · [Card Schema 全字段]
 3. **[代码|名称]** · **观察** · [Card Schema 全字段 + 升级/降级条件]
@@ -15503,7 +15736,7 @@ e) 失效条件含 基本面+结构+事件 三类
 数据截点: {_ts_shanghai}
 
 【QA Checker】若以下任一成立，则输出「日报未通过质检」并列出错误项：
-- 美股/港股/A股任一市场缺推荐或数量不足3只（必须共9只）
+- 美股/港股/A股任一市场超过3只，或在无合格标的时仍硬凑推荐
 - 任一推荐缺 Card Schema 字段
 - 与 Action Gate/Source Tiering 规则冲突
 错误项示例：「美股仅2只缺1只」「港股整段缺失」「A股整段缺失」「美股推荐1 缺 R/R」"""
@@ -15681,6 +15914,8 @@ e) 失效条件含 基本面+结构+事件 三类
                 st.markdown(_BRIEF_CONTENT_STYLE, unsafe_allow_html=True)
                 import re as _re
                 def _clean_brief(txt):
+                    if _AUTHORITATIVE_REPORT.exists():
+                        return txt.rstrip()
                     for pat in [
                         r'\n?#{1,3}\s*风险提示.*?(?=\n#{1,3}\s|\Z)',
                         r'\n?#{1,3}\s*明日触发.*?(?=\n#{1,3}\s|\Z)',
@@ -15721,12 +15956,14 @@ e) 失效条件含 基本面+结构+事件 三类
         st.error(f"❌ 简报生成失败：{type(_brief_err).__name__}: {str(_brief_err)[:280]}")
         st.caption("💡 请检查网络与 Gemini API；点击「🔄 刷新简报」可重试（将走完整选股+询价流程）。")
 
-# ── 缓存自动展示：刷新页面后无需重新生成，直接显示 ──────────────────────────
+# ── 权威日报自动展示：刷新页面后直接恢复同一份正文 ───────────────────────────
 elif "market_brief_latest" in st.session_state:
     _auto_res = st.session_state["market_brief_latest"]
     st.markdown(_BRIEF_CONTENT_STYLE, unsafe_allow_html=True)
     import re as _re
     def _clean_brief(txt):
+        if _AUTHORITATIVE_REPORT.exists():
+            return txt.rstrip()
         for pat in [
             r'\n?#{1,3}\s*风险提示.*?(?=\n#{1,3}\s|\Z)',
             r'\n?#{1,3}\s*明日触发.*?(?=\n#{1,3}\s|\Z)',
@@ -15743,7 +15980,7 @@ elif "market_brief_latest" in st.session_state:
     # 【Fix】使用 CopyUtils（components.html iframe）确保复制按钮跨 DOM 边界可用
     if COPY_UTILS_AVAILABLE:
         CopyUtils.create_copy_button(_auto_clean, button_text="📋 复制全文", key="brief_copy_cached")
-    st.caption("📌 本报告由 AI 生成 · DeepSeek V3 · 来自12小时缓存")
+    st.caption("📌 权威日报 · AI叙事 + 确定性选股/报价/质检 · 桌面/云端/飞书同源")
     st.download_button(
         "📥 下载简报",
         data=_auto_res,

@@ -223,6 +223,22 @@ if _nav == "🧭 导航":
             st.markdown(_rep[_i:_j if _j > 0 else _i + 3000])
     elif not _report_sync_ok:
         st.info("📭 操作榜等待权威日报与冻结快照完成一致性校验。")
+    try:
+        _navcp = []
+        for _mkt in ("美股", "A股", "港股"):
+            _b = (_snap or {}).get("markets", {}).get(_mkt) or {}
+            _t = _b.get("temperature") or {}
+            _tr = _b.get("turn_risk") or {}
+            if _t:
+                _navcp.append(f"{_mkt} 温度{_t.get('temp','?')}/100 {_t.get('label','')} 仓位{_t.get('position','?')}"
+                              + (f"｜{_tr['text']}" if _tr.get('text') else ""))
+            for _x in (_b.get("indices") or [])[:3]:
+                _navcp.append(f"  {_x['trend']} {_x['name']} {_x['last']}｜5日{_x['chg5d']:+.1f}%"
+                              + (f"｜{_x['turning']}" if _x.get('turning') else ""))
+        with st.popover("📋 复制本页导航摘要"):
+            st.code("\n".join(_navcp) or "无数据", language=None)
+    except Exception:
+        pass
     st.caption("💡 持仓建议为隐私内容，请在飞书推送或 Mac/局域网 V88 查看")
 
 # ── 🔥 热点新闻（每小时自动更新·每条带实际发生时间·三时段筛选）──────────
@@ -317,6 +333,9 @@ elif _nav == "🏆 全选榜单":
                            file_name="V88全选榜单.csv", mime="text/csv", use_container_width=True)
         st.dataframe(_df, hide_index=True, use_container_width=True, height=560)
         st.caption("💡 得分=五维综合评分 ｜ MACD/量价：明显放量≥+20%·温和放量+8%~20%·持平±8%·明显缩量≤-20% ｜ 操作指引与止损/目标由引擎按实时价确定，与桌面 V88 同源")
+        with st.expander("📖 术语速查（数值高低怎么看）"):
+            import cloud_engine as _ceg
+            st.markdown(_ceg.GLOSSARY_MD)
 
 # ── 🔍 个股搜索（云端实时·趋势脉搏）────────────────────────────
 elif _nav == "🔍 个股搜索":
@@ -420,6 +439,8 @@ elif _nav == "🔍 个股搜索":
             if _pl:
                 st.markdown("##### ⏱ 分期限剧本（短线做T｜中线锚MA55｜长线锚年线）")
                 st.markdown("\n".join(f"- {_pl[k]}" for k in ("short", "mid", "long") if _pl.get(k)))
+            with st.expander("📖 术语速查（每个数值高低代表什么，非专业版）"):
+                st.markdown(cloud_engine.GLOSSARY_MD)
             # 【V88·复制纪要】整段分析一键复制（st.code 自带复制按钮，微信/笔记直接粘贴）
             _cp_txt = cloud_engine.analysis_text(r.get('name') or r['symbol'], r['symbol'], f, r.get('asof', ''), fund=_fu if '_fu' in dir() else None)
             if _cp_txt:
@@ -460,6 +481,16 @@ elif _nav in ("📊 日报", "📅 周报"):
 # ── 📈 大盘板块 ──────────────────────────────────────────────
 elif _nav == "📈 大盘板块":
     st.markdown("#### 📈 大盘走势与板块轮动")
+    if _snap:
+        with st.popover("📋 复制大盘摘要"):
+            _mp = []
+            for _mk2, _b2 in (_snap.get("markets") or {}).items():
+                _t2 = _b2.get("temperature") or {}
+                _mp.append(f"{_mk2} 温度{_t2.get('temp','?')}/100 {_t2.get('label','')}")
+                for _x2 in (_b2.get("indices") or []):
+                    _mp.append(f"  {_x2['name']} {_x2['last']} 5日{_x2['chg5d']:+.1f}% {_x2['trend']}"
+                               + (f" {_x2['turning']}" if _x2.get('turning') else ""))
+            st.code("\n".join(_mp), language=None)
     if _snap:
         st.caption(_fresh_caption(_snap.get("generated_at"), "行情快照") + " · 每小时自动更新")
         for mkt, blk in _snap.get("markets", {}).items():
