@@ -91,7 +91,14 @@ def _translate_titles(items):
     key = os.getenv("DEEPSEEK_API_KEY", "").strip()
     if not key or not todo:
         return
-    todo = todo[:50]
+    # 【成本铁律·新闻token≤¥3/月】只在6个整点档调用翻译（07/09/12/15/18/21 BJT），
+    # 其余小时靠上一版缓存复用（老标题仍是中文，新标题最多延迟2-3小时汉化）。
+    # 实际月耗估算 ~16万token ≈ ¥0.3，留足余量。
+    from datetime import datetime as _dt9, timezone as _tz9, timedelta as _td9
+    if _dt9.now(_tz9(_td9(hours=8))).hour not in (7, 9, 12, 15, 18, 21):
+        print(f"[translate] 非翻译档，跳过LLM（{len(todo)}条新标题待下一档，缓存已复用）")
+        return
+    todo = todo[:35]
     numbered = "\n".join(f"{i + 1}. {it['t']}" for i, it in enumerate(todo))
     try:
         resp = _rq.post("https://api.deepseek.com/v1/chat/completions",
