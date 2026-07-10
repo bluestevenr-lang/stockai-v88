@@ -183,7 +183,8 @@ def _yf_norm(symbol: str) -> str:
 def fetch(symbol: str):
     import yfinance as yf
     try:
-        df = yf.Ticker(_yf_norm(symbol)).history(period="6mo")
+        # 1年历史：长线剧本锚定真年线MA200、RS120有效——与日报排名器口径统一
+        df = yf.Ticker(_yf_norm(symbol)).history(period="1y")
         return df if df is not None and len(df) >= 30 else None
     except Exception:
         return None
