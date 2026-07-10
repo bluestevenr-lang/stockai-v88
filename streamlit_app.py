@@ -166,6 +166,11 @@ if _nav == "🧭 导航":
             st.caption("👉 完整实时新闻流见顶部「🔥 热点新闻」页（时段筛选/来源/链接）")
     except Exception:
         pass
+    _ipb = _rep.find("## 💎 深度回调机会池")
+    if _ipb > 0:
+        _jpb = _rep.find("\n## ", _ipb + 5)
+        with st.expander("💎 深度回调机会池（优质股·回撤≥30%·企稳信号）", expanded=False):
+            st.markdown(_rep[_ipb:_jpb if _jpb > 0 else _ipb + 2500])
     _i = _rep.find("## 🎯 今日操作榜")
     if _i > 0:
         _j = _rep.find("## 二、", _i)
