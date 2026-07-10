@@ -61,13 +61,42 @@ def pub_meta() -> dict:
 st.set_page_config(page_title="V88 云端版", page_icon="☁️", layout="centered",
                    initial_sidebar_state="collapsed")
 
+def _linkify_md(md: str) -> str:
+    """【V88·全局个股可点击】日报md里的 `[US:META]` token 与 名称（CODE）全部变内联链接
+    （?q=深链，字体字号不变）。表格行同时把名称列也链接化。"""
+    import re as _re
+    def _t2c(pre, cd):
+        return {"US": cd, "SH": cd, "SZ": cd, "HK": cd}.get(pre, cd)
+    out = []
+    for ln in md.splitlines():
+        m = _re.search(r"\[(US|SH|SZ|HK):([A-Za-z0-9\.\-]+)\]", ln)
+        if m and ln.strip().startswith("|"):
+            code = _t2c(m.group(1), m.group(2))
+            cells = ln.split("|")
+            for idx in range(len(cells)):
+                c = cells[idx].strip()
+                if _re.fullmatch(r"`?\[(US|SH|SZ|HK):[A-Za-z0-9\.\-]+\]`?", c):
+                    cells[idx] = f' <a href="?q={code}" target="_self" style="color:inherit;text-decoration:underline dotted 1px;">{c.strip("`")}</a> '
+                    # 名称列=token列的下一列
+                    if idx + 1 < len(cells) and cells[idx + 1].strip():
+                        nm = cells[idx + 1].strip()
+                        cells[idx + 1] = f' <a href="?q={code}" target="_self" style="color:inherit;text-decoration:underline dotted 1px;">{nm}</a> '
+                    break
+            ln = "|".join(cells)
+        else:
+            ln = _re.sub(r"\*\*([\u4e00-\u9fffA-Za-z0-9\-·]{2,14})\*\*[（(]([A-Za-z0-9\.\-]{2,12})[）)]",
+                         lambda mm: f'<b><a href="?q={mm.group(2)}" target="_self" style="color:inherit;text-decoration:underline dotted 1px;">{mm.group(1)}</a></b>（{mm.group(2)}）', ln)
+        out.append(ln)
+    return "\n".join(out)
+
+
 def exp_md(title: str, md_text: str, expanded: bool = False):
     """【V88·段落复制】统一段落组件：折叠段右上角带📋复制（st.code自带复制按钮）"""
     with st.expander(title, expanded=expanded):
         _c1, _c2 = st.columns([6, 1])
         with _c2.popover("📋", use_container_width=True):
             st.code(md_text, language=None)
-        st.markdown(md_text)
+        st.markdown(_linkify_md(md_text), unsafe_allow_html=True)
 
 
 # ── 可选访问密码（数字/文字、带不带引号都兼容）──────────────
@@ -224,6 +253,8 @@ if _nav == "🧭 导航":
                     break
         def _lnk(nm, cd):
             return f'<a href="?q={cd}" target="_self" style="color:inherit;text-decoration:underline dotted 1px;">{nm}</a>'
+        if not _fx:
+            st.info("⭐ **今日重点关注：今日无买入档推荐**（无标的通过 75分+催化 双门槛）——观察为主，现金也是仓位")
         if _fx:
             st.success("**⭐ 今日重点关注（引擎买入档 Top3）** · 点股票名直接深度分析")
             _h = "<br>".join(f"🟢 <b>{_lnk(x['n'], x['c'])}</b> {x['t'].replace(chr(10)*2, '<br>&nbsp;&nbsp;')}" for x in _fx)
