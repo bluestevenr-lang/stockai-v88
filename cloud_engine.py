@@ -572,6 +572,35 @@ def plain_readout(full, turning=None):
         return []
 
 
+def horizon_plans(full, df=None):
+    """【V88·分期限剧本】把"该拿多久、到哪做什么、什么波动可以忽略"说成三句话。
+    短线=做T区间+天数；中线=锚MA55·日内波动忽略；长线=锚年线·月度波动忽略。全实价。"""
+    try:
+        if not full:
+            return {}
+        ma = full["ma"]
+        last = float(full["last"])
+        ma_long, ma_long_nm = ma.get(120), "半年线MA120"
+        try:
+            if df is not None and len(df) >= 200:
+                c = df["Close"].dropna()
+                ma_long, ma_long_nm = round(float(c.rolling(200).mean().iloc[-1]), 2), "年线MA200"
+        except Exception:
+            pass
+        up_pct = (float(full["breakout"]) / last - 1) * 100 if last else 0
+        return {
+            "short": (f"⏱1-5日·做T剧本：回踩 {full['pullback']} 接 → 冲高 {full['reduce']} 出；"
+                      f"当日买入区 {full['buy_zone']}；目标 {full['breakout']}({up_pct:+.0f}%)；"
+                      f"跌破 {full['support']} 当日离场不过夜"),
+            "mid": (f"⏱1-3月·趋势剧本：锚=MA55({ma[55]})——收盘不破就拿住，日内±3%波动全部忽略；"
+                    f"回踩 MA20({ma[20]}) 是加仓点不是卖点；收盘连续2日破MA55才改判"),
+            "long": (f"⏱6月+·仓位剧本：锚={ma_long_nm}({ma_long})——月度波动忽略，季度复查一次；"
+                     f"只要收盘站在{ma_long_nm}上方，短中期回调都是持有区；破位且20日收不回才退出"),
+        }
+    except Exception:
+        return {}
+
+
 def horizon_scores(df, idx_close=None, full=None):
     """【V88·三期限引擎】三期限「可买性」评分 —— 三端唯一实现（V88桌面/云端日报/轻量版共用）。
     设计定则（用户确立）：高分=现在值得买；每一分都有可复算的因子依据，逻辑链全透明。
@@ -698,9 +727,10 @@ def horizon_scores(df, idx_close=None, full=None):
             short = 72.0
             gate_note = (gate_note + "；" if gate_note else "") + "✋主升过热→短线分上限72(等回踩)"
 
-        return {"short": {"score": int(round(short)), "why": why_s},
-                "mid": {"score": int(round(mid)), "why": why_m},
-                "long": {"score": int(round(long_)), "why": why_l},
+        _plans = horizon_plans(full, df)
+        return {"short": {"score": int(round(short)), "why": why_s, "plan": _plans.get("short", "")},
+                "mid": {"score": int(round(mid)), "why": why_m, "plan": _plans.get("mid", "")},
+                "long": {"score": int(round(long_)), "why": why_l, "plan": _plans.get("long", "")},
                 "gate": concl, "gate_note": gate_note,
                 "rs20": round(rs20, 1), "chg20": round(chg20, 1)}
     except Exception:
@@ -727,6 +757,10 @@ def analysis_text(name, symbol, full, asof=""):
         if t.get("side"):
             lines.append(f"{t['label']}：" + "；".join(t["signals"]))
             lines.append(f"👉 {t['prompt']}")
+        _pl = horizon_plans(full)
+        for _k in ("short", "mid", "long"):
+            if _pl.get(_k):
+                lines.append(_pl[_k])
         lines.append("—— V88 引擎自动生成，仅供研究参考")
         return "\n".join(lines)
     except Exception:
