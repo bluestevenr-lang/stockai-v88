@@ -215,6 +215,34 @@ def compute_temperature(indices: list, sectors: list) -> dict:
             "momentum": round(momentum), "vol_heat": round(vol_heat), "label": label, "position": pos}
 
 
+
+
+def compute_turn_risk(indices, temp):
+    """【B2·市场转向概率】指数拐点+温度+量能合成（规则式，可复算）。
+    顶部转向风险：指数出现顶拐/高温/放量滞涨/急跌；底部转机：底拐/冰点/放量回升。"""
+    try:
+        if not indices:
+            return None
+        n = len(indices)
+        top = sum(1 for ix in indices if str(ix.get("turning", "")).startswith("⚠️"))
+        bot = sum(1 for ix in indices if str(ix.get("turning", "")).startswith("🔄"))
+        t = float((temp or {}).get("temp", 50) or 50)
+        vr = sum(float(ix.get("vol_ratio", 1) or 1) for ix in indices) / n
+        chg5 = sum(float(ix.get("chg5d", 0) or 0) for ix in indices) / n
+        risk = (35 * min(1.0, top / max(1, n * 0.5))
+                + (25 if t >= 70 else (10 if t >= 60 else 0))
+                + (15 if (vr >= 1.4 and chg5 < 1) else 0)
+                + (15 if chg5 < -2 else 0))
+        opp = (35 * min(1.0, bot / max(1, n * 0.5))
+               + (25 if t <= 30 else (10 if t <= 40 else 0))
+               + (15 if (vr >= 1.3 and chg5 > 0) else 0))
+        _lv = lambda x: "高" if x >= 55 else ("中" if x >= 30 else "低")
+        return {"top_risk": int(risk), "bottom_opp": int(opp),
+                "text": f"顶部转向风险 {_lv(risk)}({int(risk)}/100) ｜ 底部转机信号 {_lv(opp)}({int(opp)}/100)"}
+    except Exception:
+        return None
+
+
 def generate_market_snapshot() -> str:
     """生成完整的大盘+板块轮动 Markdown 段落，并落盘 JSON。失败返回空串。"""
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -238,8 +266,10 @@ def generate_market_snapshot() -> str:
             continue
         any_data = True
         market_blocks.append(_render_market(market, indices, sectors))
+        _temp = compute_temperature(indices, sectors)
         payload[market] = {"indices": indices, "sectors": sectors,
-                           "temperature": compute_temperature(indices, sectors)}
+                           "temperature": _temp,
+                           "turn_risk": compute_turn_risk(indices, _temp)}
     if not any_data:
         return ""
 
@@ -263,6 +293,9 @@ def generate_market_snapshot() -> str:
             temp_lines.append(
                 f"- **{market} {t['temp']}/100** {t['label']}（趋势{t['trend']}/宽度{t['breadth']}/动量{t['momentum']}/量能{t.get('vol_heat','—')}）"
                 f"→ 建议仓位 **{t['position']}**{_bx_txt}")
+            _tr = (payload.get(market) or {}).get("turn_risk")
+            if _tr:
+                temp_lines.append(f"  - 🔮 {market}转向概率：{_tr['text']}")
     if _temps:
         _avg = int(round(sum(_temps) / len(_temps)))
         temp_lines.append(f"- **三市场综合 {_avg}/100** ｜ 温度=趋势35%+宽度35%+动量15%+量能15%，全部实价计算")
