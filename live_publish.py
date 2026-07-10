@@ -255,6 +255,11 @@ def publish(files: dict) -> bool:
             for name, content in files.items():
                 (pub / name).write_text(content, encoding="utf-8")
                 meta[name.replace(".json", "").replace(".md", "") + "_ts"] = now
+                if name == "market_snapshot.json":
+                    try:
+                        meta["live_snapshot_id"] = json.loads(content).get("snapshot_id", "")
+                    except Exception:
+                        pass
             mf.write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
             env = {**os.environ, "GIT_AUTHOR_NAME": "v88live", "GIT_AUTHOR_EMAIL": "v88@live",
                    "GIT_COMMITTER_NAME": "v88live", "GIT_COMMITTER_EMAIL": "v88@live"}

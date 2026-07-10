@@ -1,11 +1,12 @@
 """
-V88 云端版（Streamlit Community Cloud · 完全免令牌）
+V88 云端版（Streamlit Community Cloud · 数据读取免令牌）
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 24小时在线，与 Mac 开关机无关。数据从公开分支免令牌读取：
   https://raw.githubusercontent.com/bluestevenr-lang/stockai-v88/data/pub/
 GitHub Actions 每交易日 07:00/14:00/21:00 自动发布（已剔除持仓明细，保护隐私）。
 用户无需配置任何 Secrets；可选设 APP_PASSWORD 加一道访问密码。
 """
+import hashlib
 import json
 import requests
 import streamlit as st
@@ -95,7 +96,7 @@ def pub_journal_list():
 
 
 st.title("☁️ V88 云端版")
-st.caption("24小时在线 · 数据每交易日 07:00/14:00/21:00 自动更新 · 与 Mac 开关机无关 · 免登录免配置")
+st.caption("24小时在线 · 日报每交易日07:00/14:00/21:00更新 · 行情每小时更新 · 访问权限由Streamlit部署设置控制")
 
 c_nav, c_rf = st.columns([5, 1])
 with c_rf:
@@ -113,11 +114,55 @@ if _snap_raw:
     except Exception:
         _snap = None
 
+# ── 报告协议：日报绑定冻结快照，小时级实时快照可独立前进 ──────────────
+def _json_text(name: str) -> dict:
+    try:
+        return json.loads(pub_text(name) or "{}")
+    except Exception:
+        return {}
+
+
+_report_manifest = _json_text("report_manifest.json")
+_report_snapshot = _json_text("report_snapshot.json") or _snap or {}
+_source_ledger = _json_text("source_ledger.json")
+_report_text = pub_text("daily_report.md") or ""
+_contract_available = bool(_report_manifest)
+_report_sync_ok = True
+_report_block_reason = ""
+if _contract_available:
+    _quality = (_report_manifest.get("quality") or {}).get("status")
+    _manifest_sid = _report_manifest.get("snapshot_id")
+    _snapshot_sid = _report_snapshot.get("snapshot_id")
+    _manifest_sha = _report_manifest.get("report_sha256")
+    _report_sha = hashlib.sha256(_report_text.encode("utf-8")).hexdigest()
+    if _quality != "passed":
+        _report_sync_ok = False
+        _report_block_reason = "权威日报未通过硬质检"
+    elif not _manifest_sid or _manifest_sid != _snapshot_sid:
+        _report_sync_ok = False
+        _report_block_reason = "日报与冻结行情快照仍在同步"
+    elif not _manifest_sha or _manifest_sha != _report_sha:
+        _report_sync_ok = False
+        _report_block_reason = "日报正文与质量清单仍在同步"
+else:
+    _report_sync_ok = False
+    _report_block_reason = "旧版日报缺少硬质检清单"
+
+if not _contract_available:
+    st.warning("⚠️ 旧版日报缺少硬质检清单，交易建议暂不展示；下一次日报任务完成后自动升级。")
+elif not _report_sync_ok:
+    st.warning(f"⚠️ {_report_block_reason}，交易建议暂不展示；实时市场快照仍可查看。")
+else:
+    st.caption(
+        f"✅ 报告硬质检通过 · Snapshot `{_report_manifest.get('snapshot_id')}` · "
+        f"来源 {_report_manifest.get('source_count', 0)} 条"
+    )
+
 _NOT_READY = "📭 数据生成中（每交易日 07:00/14:00/21:00 自动发布，稍后自动出现，可点右上 🔄 刷新）"
 
 # ── 🧭 导航 ─────────────────────────────────────────────────
 if _nav == "🧭 导航":
-    _rep = pub_text("daily_report.md") or ""
+    _rep = _report_text if _report_sync_ok else ""
     st.markdown("#### 🧭 今日导航 · 该关注什么")
     st.caption("温度定仓位 → 轮动定板块 → 操作榜定标的")
     st.caption(_fresh_caption((_snap or {}).get("generated_at"), "行情快照") + " · 每小时更新")
@@ -174,8 +219,10 @@ if _nav == "🧭 导航":
     _i = _rep.find("## 🎯 今日操作榜")
     if _i > 0:
         _j = _rep.find("## 二、", _i)
-        with st.expander("🎯 今日操作榜（中长短×中美港 各Top3·实价校准）", expanded=True):
+        with st.expander("🎯 今日操作榜（按门槛入选·允许无机会·实价校准）", expanded=True):
             st.markdown(_rep[_i:_j if _j > 0 else _i + 3000])
+    elif not _report_sync_ok:
+        st.info("📭 操作榜等待权威日报与冻结快照完成一致性校验。")
     st.caption("💡 持仓建议为隐私内容，请在飞书推送或 Mac/局域网 V88 查看")
 
 # ── 🔥 热点新闻（每小时自动更新·每条带实际发生时间·三时段筛选）──────────
@@ -381,7 +428,9 @@ elif _nav == "🔍 个股搜索":
 
 # ── 📊 日报 / 📅 周报 ────────────────────────────────────────
 elif _nav in ("📊 日报", "📅 周报"):
-    _txt = pub_text("daily_report.md" if _nav == "📊 日报" else "weekly_report.md")
+    _txt = _report_text if _nav == "📊 日报" else pub_text("weekly_report.md")
+    if _nav == "📊 日报" and not _report_sync_ok:
+        _txt = None
     if _txt:
         _meta1 = pub_meta()
         _mk1 = "daily_report_ts" if _nav == "📊 日报" else "weekly_report_ts"
@@ -396,6 +445,14 @@ elif _nav in ("📊 日报", "📅 周报"):
         with _cc2.popover("📋 复制全文", use_container_width=True):
             st.code(_txt[:12000], language=None)
         st.markdown(_txt)
+        if _nav == "📊 日报" and _source_ledger.get("sources"):
+            with st.expander("🔗 可核验来源（原文链接）", expanded=False):
+                for _src in _source_ledger["sources"][:20]:
+                    _label = f"[{_src.get('id')}] Tier {_src.get('tier')} · {_src.get('source')}"
+                    if _src.get("url"):
+                        st.markdown(f"- [{_label} · {_src.get('title')}]({_src.get('url')})")
+                    else:
+                        st.markdown(f"- {_label} · {_src.get('title')}（缺原文链接）")
         st.caption("💡 持仓建议为隐私内容，不在云端公开显示；见飞书或 Mac 版")
     else:
         st.info(_NOT_READY if _nav == "📊 日报" else "📅 周报每周日生成")

@@ -5,6 +5,7 @@ market_snapshot.py - 大盘走势 + 板块轮动量化快照
 全部数字来自真实行情计算，不经过大模型，杜绝编造。
 """
 
+import hashlib
 import json
 import logging
 from concurrent.futures import ThreadPoolExecutor
@@ -302,8 +303,17 @@ def generate_market_snapshot() -> str:
     temp_lines.append("")
     blocks = header + temp_lines + market_blocks
     try:
+        _snapshot_core = {"generated_at": now, "markets": payload}
+        _canonical = json.dumps(
+            _snapshot_core, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        )
+        _snapshot_id = "snap-" + hashlib.sha256(_canonical.encode("utf-8")).hexdigest()[:16]
         OUTPUT_JSON.write_text(
-            json.dumps({"generated_at": now, "markets": payload}, ensure_ascii=False, indent=2),
+            json.dumps({
+                "schema_version": "v88.snapshot/2.0",
+                "snapshot_id": _snapshot_id,
+                **_snapshot_core,
+            }, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
     except Exception as e:
