@@ -86,6 +86,8 @@ def _linkify_md(md: str) -> str:
         else:
             ln = _re.sub(r"\*\*([\u4e00-\u9fffA-Za-z0-9\-·]{2,14})\*\*[（(]([A-Za-z0-9\.\-]{2,12})[）)]",
                          lambda mm: f'<b><a href="?q={mm.group(2)}" target="_self" style="color:inherit;text-decoration:underline dotted 1px;">{mm.group(1)}</a></b>（{mm.group(2)}）', ln)
+            ln = _re.sub(r"(?<![>\w])([\u4e00-\u9fffA-Za-z0-9\-·]{2,14})[（(]([A-Z0-9]{1,8}(?:\.[A-Z]{2})?)[）)]",
+                         lambda mm: f'<a href="?q={mm.group(2)}" target="_self" style="color:inherit;text-decoration:underline dotted 1px;">{mm.group(1)}</a>（{mm.group(2)}）', ln)
         out.append(ln)
     return "\n".join(out)
 
