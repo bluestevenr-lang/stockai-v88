@@ -182,7 +182,7 @@ if _nav == "🧭 导航":
                 if "买入/建仓" in _lnf and _lnf.strip().startswith("|"):
                     _cf = [x.strip() for x in _lnf.split("|") if x.strip()]
                     if len(_cf) >= 6:
-                        _fx.append(f"🟢 **{_cf[2]}** {_cf[3].replace('**','')[:46]}")
+                        _fx.append(f"🟢 **{_cf[2]}** {_cf[3].replace('**','')[:60]}")
                 if len(_fx) >= 3:
                     break
         _iwa = _rep.find("## ⚡ 关注股预警")

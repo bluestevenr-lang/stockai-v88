@@ -602,6 +602,28 @@ def horizon_plans(full, df=None):
         return {}
 
 
+
+
+def entry_style(full):
+    """【V88·买法判定】高分只回答"值不值得买"，这里回答"该怎么买"：
+    极高位/乖离大/距压力太近 → 等回踩；现价在买入区且位置健康 → 现价分批；
+    否则 → 突破放量再跟。首页推荐必须带买法，杜绝"97%高位裸喊买入"。
+    返回 (标签, 提示价)：("回踩买","302.44") / ("现价分批","") / ("突破跟","317.4")"""
+    try:
+        pos52 = float(full.get("pos52", 50))
+        bias20 = float(full.get("bias20", 0))
+        last = float(full.get("last", 0))
+        room = (float(full.get("resistance", last)) / last - 1) * 100 if last else 0
+        buy_hi = float(str(full.get("buy_zone", "0~0")).split("~")[-1] or 0)
+        if pos52 >= 90 or bias20 > 6 or (0 <= room < 3):
+            return ("回踩买", str(full.get("pullback", "")))
+        if last <= buy_hi * 1.005 and pos52 < 85:
+            return ("现价分批", "")
+        return ("突破跟", str(full.get("breakout", "")))
+    except Exception:
+        return ("现价分批", "")
+
+
 def horizon_scores(df, idx_close=None, full=None):
     """【V88·三期限引擎】三期限「可买性」评分 —— 三端唯一实现（V88桌面/云端日报/轻量版共用）。
     设计定则（用户确立）：高分=现在值得买；每一分都有可复算的因子依据，逻辑链全透明。
