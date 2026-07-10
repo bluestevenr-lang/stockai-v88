@@ -342,9 +342,8 @@ elif _nav == "🏆 全选榜单":
                            file_name="V88全选榜单.csv", mime="text/csv", use_container_width=True)
         st.dataframe(_df, hide_index=True, use_container_width=True, height=560)
         st.caption("💡 得分=五维综合评分 ｜ MACD/量价：明显放量≥+20%·温和放量+8%~20%·持平±8%·明显缩量≤-20% ｜ 操作指引与止损/目标由引擎按实时价确定，与桌面 V88 同源")
-        with st.expander("📖 术语速查（数值高低怎么看）"):
-            import cloud_engine as _ceg
-            st.markdown(_ceg.GLOSSARY_MD)
+        import cloud_engine as _ceg
+        exp_md("📖 术语速查（数值高低怎么看）", _ceg.GLOSSARY_MD)
 
 # ── 🔍 个股搜索（云端实时·趋势脉搏）────────────────────────────
 elif _nav == "🔍 个股搜索":
@@ -408,8 +407,8 @@ elif _nav == "🔍 个股搜索":
             # 【V88·明白话判读】量价/K线/MACD 事实与要点（不是分数）
             _ro = cloud_engine.plain_readout(f, _turn if _turn.get("side") else None)
             if _ro:
-                with st.expander("📖 量价判读（事实+要点，你来拍板）", expanded=True):
-                    st.markdown("\n".join(f"- {ln}" for ln in _ro))
+                exp_md("📖 量价判读（事实+要点，你来拍板）",
+                       "\n".join(f"- {ln}" for ln in _ro), expanded=True)
 
             # ② 六行状态速览
             st.markdown(
@@ -434,6 +433,9 @@ elif _nav == "🔍 个股搜索":
             # ④ 趋势分拆解(8项)
             with st.expander("📐 趋势分拆解（8项子分 → 总分）", expanded=False):
                 _bd = f["breakdown"]
+                with st.popover("📋 复制拆解"):
+                    st.code("\n".join(f"{k}: {d}｜{sc}分×{int(w*100)}%"
+                                       for k, (sc, w, d) in _bd.items()), language=None)
                 _rows = [{"维度": k, "实际情况": d, "得分": sc, "权重": f"{int(w*100)}%"}
                          for k, (sc, w, d) in _bd.items()]
                 st.dataframe(_rows, hide_index=True, use_container_width=True)
@@ -448,8 +450,7 @@ elif _nav == "🔍 个股搜索":
             if _pl:
                 st.markdown("##### ⏱ 分期限剧本（短线做T｜中线锚MA55｜长线锚年线）")
                 st.markdown("\n".join(f"- {_pl[k]}" for k in ("short", "mid", "long") if _pl.get(k)))
-            with st.expander("📖 术语速查（每个数值高低代表什么，非专业版）"):
-                st.markdown(cloud_engine.GLOSSARY_MD)
+            exp_md("📖 术语速查（每个数值高低代表什么，非专业版）", cloud_engine.GLOSSARY_MD)
             # 【V88·复制纪要】整段分析一键复制（st.code 自带复制按钮，微信/笔记直接粘贴）
             _cp_txt = cloud_engine.analysis_text(r.get('name') or r['symbol'], r['symbol'], f, r.get('asof', ''), fund=_fu if '_fu' in dir() else None)
             if _cp_txt:
@@ -477,6 +478,8 @@ elif _nav in ("📊 日报", "📅 周报"):
         st.markdown(_txt)
         if _nav == "📊 日报" and _source_ledger.get("sources"):
             with st.expander("🔗 可核验来源（原文链接）", expanded=False):
+                with st.popover("📋 复制来源清单"):
+                    st.code(str(_source_ledger)[:6000], language=None)
                 for _src in _source_ledger["sources"][:20]:
                     _label = f"[{_src.get('id')}] Tier {_src.get('tier')} · {_src.get('source')}"
                     if _src.get("url"):
