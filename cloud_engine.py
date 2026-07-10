@@ -168,10 +168,22 @@ def is_chinese_name(code: str) -> bool:
     return raw not in NAME_MAP and not search_candidates(raw, limit=1) and not _eastmoney_search(raw)
 
 
+def _yf_norm(symbol: str) -> str:
+    """Yahoo 代码规格化：港股用4位数字（06055.HK→6055.HK，00700.HK→0700.HK）。
+    Tushare/东财名录是5位制，直接喂 yfinance 会取不到行情——统一在取数入口转换。"""
+    s = str(symbol).strip().upper()
+    if s.endswith(".HK"):
+        try:
+            return f"{int(s[:-3]):04d}.HK"
+        except Exception:
+            return s
+    return s
+
+
 def fetch(symbol: str):
     import yfinance as yf
     try:
-        df = yf.Ticker(symbol).history(period="6mo")
+        df = yf.Ticker(_yf_norm(symbol)).history(period="6mo")
         return df if df is not None and len(df) >= 30 else None
     except Exception:
         return None
