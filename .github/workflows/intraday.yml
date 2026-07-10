@@ -1,0 +1,33 @@
+name: V88 盘中即时预警（公共仓免费运行）
+
+# 分钟计费按 workflow 所在仓库——公共仓=免费。代码与私密数据运行时从私仓拉取，绝不落公开。
+on:
+  schedule:
+    - cron: "35 1-8,13-20 * * 1-5"   # BJT 09:35-16:35 & 21:35-04:35 工作日
+  workflow_dispatch: {}
+
+concurrency:
+  group: v88-intraday
+  cancel-in-progress: false
+
+jobs:
+  alert:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet yfinance pandas requests
+      - name: Run alert inside private checkout
+        env:
+          FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+          PT: ${{ secrets.PRIVATE_TOKEN }}
+        run: |
+          git clone -q --depth 1 https://x-access-token:${PT}@github.com/bluestevenr-lang/v88-daily-report.git priv
+          cd priv && python src/intraday_alert.py
+          git config user.name v88bot && git config user.email v88@bot
+          git add data/alert_state.json 2>/dev/null || true
+          git commit -m "intraday alert state" 2>/dev/null || true
+          git pull --rebase -q origin main 2>/dev/null || true
+          git push -q origin main 2>/dev/null || true

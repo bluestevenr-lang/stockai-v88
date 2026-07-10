@@ -1,0 +1,24 @@
+name: V88 健康自检（公共仓免费运行）
+
+on:
+  schedule:
+    - cron: "23 */6 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet requests
+      - name: Check
+        env:
+          FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+          GITHUB_TOKEN: ${{ secrets.PRIVATE_TOKEN }}
+          PT: ${{ secrets.PRIVATE_TOKEN }}
+        run: |
+          git clone -q --depth 1 https://x-access-token:${PT}@github.com/bluestevenr-lang/v88-daily-report.git priv
+          python priv/src/health_check.py
