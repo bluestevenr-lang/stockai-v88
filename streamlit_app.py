@@ -218,6 +218,10 @@ elif _nav == "🔥 热点新闻":
             _url = _it.get("url") or ""
             _line = (f"**`{_tstr}`** ｜ {_it.get('s','')} ｜ [{_ttl}]({_url})" if _url
                      else f"**`{_tstr}`** ｜ {_it.get('s','')} ｜ {_ttl}")
+            # 【C1·新闻映射】相关标的直接可见（复制名字即可去个股搜索查）
+            _rel = " ".join(f"`{x['n']}({x['c']})`" for x in (_it.get("stk") or [])[:3])
+            if _rel:
+                _line += f" ｜ 📌{_rel}"
             st.markdown(_line)
             _shown += 1
             if _shown >= 50:

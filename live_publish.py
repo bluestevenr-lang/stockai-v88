@@ -116,6 +116,53 @@ def _translate_titles(items):
     except Exception as e:
         print(f"[translate] 翻译失败(保留原文): {str(e)[:80]}")
 
+
+
+_STK_IDX = None
+
+def _stock_index():
+    """【C1·新闻映射】公司名→代码索引：NAME_MAP精选 + 全市场名录(名字≥3字防误匹配)"""
+    global _STK_IDX
+    if _STK_IDX is None:
+        idx = {}
+        try:
+            try:
+                from cloud_engine import NAME_MAP
+            except ImportError:
+                from src.cloud_engine import NAME_MAP
+            for n, c in NAME_MAP.items():
+                if len(n) >= 2 and not n.isascii():
+                    idx[n] = c
+        except Exception:
+            pass
+        try:
+            import json as _j
+            from pathlib import Path as _P
+            _f = _P(__file__).resolve().parent / "stock_names.json"
+            if not _f.exists():
+                _f = _P(__file__).resolve().parent.parent / "stock_names.json"
+            for e in _j.loads(_f.read_text(encoding="utf-8")):
+                if len(e["n"]) >= 3:
+                    idx.setdefault(e["n"], e["c"])
+        except Exception:
+            pass
+        _STK_IDX = idx
+    return _STK_IDX
+
+
+def _match_stocks(title):
+    """标题→相关标的（最多3个）"""
+    out = []
+    try:
+        for n, c in _stock_index().items():
+            if n in title:
+                out.append({"n": n, "c": c})
+                if len(out) >= 3:
+                    break
+    except Exception:
+        pass
+    return out
+
 def _now_bjt_str():
     return datetime.now(BJT).strftime("%Y-%m-%d %H:%M")
 
@@ -152,6 +199,7 @@ def build_news() -> str:
             except Exception:
                 tb, sort_key = "", 0
             out.append({"t": str(it.get("title", ""))[:140],
+                        "stk": _match_stocks(str(it.get("title", ""))),
                         "s": it.get("source", ""),
                         "url": it.get("link", ""),
                         "time": tb, "cat": it.get("source_category", ""),
