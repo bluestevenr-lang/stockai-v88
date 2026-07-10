@@ -738,7 +738,55 @@ def horizon_scores(df, idx_close=None, full=None):
         return None
 
 
-def analysis_text(name, symbol, full, asof=""):
+
+
+def fundamentals(symbol):
+    """【V88·真实基本面】yfinance info 关键字段：估值/成长/盈利质量。
+    取不到的字段如实标注"—"，绝不编造。返回 {字段dict, "line": 一行展示, "tag": 简评}。"""
+    import yfinance as yf
+    try:
+        info = yf.Ticker(_yf_norm(symbol)).info or {}
+        pe = info.get("trailingPE")
+        fpe = info.get("forwardPE")
+        pb = info.get("priceToBook")
+        rg = info.get("revenueGrowth")
+        eg = info.get("earningsGrowth")
+        gm = info.get("grossMargins")
+        roe = info.get("returnOnEquity")
+        mcap = info.get("marketCap")
+        div = info.get("dividendYield")
+
+        def _f(v, pct=False, d1=False):
+            if v is None:
+                return "—"
+            return f"{v * 100:.0f}%" if pct else (f"{v:.1f}" if d1 else f"{v:,.0f}")
+
+        _mc = f"{mcap / 1e9:.0f}B" if mcap else "—"
+        line = (f"PE {_f(pe, d1=True)}(前瞻{_f(fpe, d1=True)}) ｜ PB {_f(pb, d1=True)} ｜ "
+                f"营收增速 {_f(rg, pct=True)} ｜ 盈利增速 {_f(eg, pct=True)} ｜ "
+                f"毛利率 {_f(gm, pct=True)} ｜ ROE {_f(roe, pct=True)} ｜ 市值 {_mc}"
+                + (f" ｜ 股息 {_f(div, d1=True)}%" if div else ""))
+        tags = []
+        if rg is not None:
+            tags.append("成长强" if rg > 0.15 else ("成长平稳" if rg > 0.03 else "营收承压"))
+        if pe is not None:
+            if pe < 0:
+                tags.append("亏损中")
+            elif pe < 15:
+                tags.append("估值低")
+            elif pe > 40 and (rg or 0) < 0.20:
+                tags.append("估值贵(增速不匹配)")
+            elif pe > 40:
+                tags.append("高估值高成长")
+        if roe is not None and roe > 0.18:
+            tags.append("盈利质量优(ROE>18%)")
+        return {"pe": pe, "pb": pb, "rev_growth": rg, "roe": roe, "mcap": mcap,
+                "line": line, "tag": "·".join(tags) or "数据有限"}
+    except Exception:
+        return None
+
+
+def analysis_text(name, symbol, full, asof="", fund=None):
     """【V88·复制纪要】把个股分析组装成可直接粘贴的纯文本决策纪要（微信/笔记友好）。
     桌面与云端共用同一格式，保证复制出去的内容两端一致。"""
     try:
@@ -758,6 +806,8 @@ def analysis_text(name, symbol, full, asof=""):
         if t.get("side"):
             lines.append(f"{t['label']}：" + "；".join(t["signals"]))
             lines.append(f"👉 {t['prompt']}")
+        if fund and fund.get("line"):
+            lines.append(f"基本面：{fund['tag']} ｜ {fund['line']}")
         _pl = horizon_plans(full)
         for _k in ("short", "mid", "long"):
             if _pl.get(_k):

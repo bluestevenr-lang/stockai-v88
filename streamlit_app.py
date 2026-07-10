@@ -365,12 +365,16 @@ elif _nav == "🔍 个股搜索":
                 if not f["sector_known"]:
                     st.caption("_板块强度云端按中性50计；资金动向=OBV能量潮真实数据；主判断由价格/均线/MACD/量价/水位驱动_")
             st.caption(f"20日动量 {f['chg20']:+.1f}% ｜ 乖离MA20 {f['bias20']:+.1f}% ｜ 量比 {f['volr']} ｜ 数据截至 {r['asof']}")
+            # 【E1·真实基本面】估值/成长/盈利质量（取不到如实标"—"）
+            _fu = cloud_engine.fundamentals(_tsym)
+            if _fu:
+                st.markdown(f"**🧾 基本面**：`{_fu['tag']}`  \n{_fu['line']}")
             _pl = cloud_engine.horizon_plans(f, _df)
             if _pl:
                 st.markdown("##### ⏱ 分期限剧本（短线做T｜中线锚MA55｜长线锚年线）")
                 st.markdown("\n".join(f"- {_pl[k]}" for k in ("short", "mid", "long") if _pl.get(k)))
             # 【V88·复制纪要】整段分析一键复制（st.code 自带复制按钮，微信/笔记直接粘贴）
-            _cp_txt = cloud_engine.analysis_text(r.get('name') or r['symbol'], r['symbol'], f, r.get('asof', ''))
+            _cp_txt = cloud_engine.analysis_text(r.get('name') or r['symbol'], r['symbol'], f, r.get('asof', ''), fund=_fu if '_fu' in dir() else None)
             if _cp_txt:
                 with st.expander("📋 复制分析纪要（右上角复制按钮）", expanded=False):
                     st.code(_cp_txt, language=None)
