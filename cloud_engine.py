@@ -583,6 +583,82 @@ _NEWS_POS = ("上调", "超预期", "中标", "回购", "增持", "获批", "大
              "upgrade", "beat", "buyback", "approval", "record", "surge", "partnership")
 
 
+# ── 【V88·个股→板块映射】与 market_snapshot 的板块名严格对齐（三端唯一实现）──
+# 美股: 科技/通信/可选消费/必选消费/金融/医疗/能源/工业/材料/公用事业
+# A股: 半导体芯片/新能源车/白酒/医药/证券/银行/有色金属/军工/消费/煤炭
+# 港股: 恒生科技/国企蓝筹/高股息
+_SECTOR_SEED = {
+    # 美股（代码直查）
+    "NVDA": "科技", "AAPL": "科技", "MSFT": "科技", "AMD": "科技", "AVGO": "科技", "TSM": "科技",
+    "MU": "科技", "CRWD": "科技", "ORCL": "科技", "QQQM": "科技", "SMH": "科技", "INTC": "科技",
+    "GOOG": "通信", "GOOGL": "通信", "META": "通信", "NFLX": "通信", "DIS": "通信",
+    "AMZN": "可选消费", "TSLA": "可选消费", "HD": "可选消费", "NKE": "可选消费", "SBUX": "可选消费",
+    "KO": "必选消费", "PEP": "必选消费", "WMT": "必选消费", "COST": "必选消费", "PG": "必选消费",
+    "JPM": "金融", "BAC": "金融", "V": "金融", "MA": "金融", "GS": "金融", "BRK-B": "金融",
+    "LLY": "医疗", "JNJ": "医疗", "UNH": "医疗", "PFE": "医疗", "MRK": "医疗", "ABBV": "医疗",
+    "XOM": "能源", "CVX": "能源", "COP": "能源",
+    "BA": "工业", "CAT": "工业", "GE": "工业", "SPCX": "工业", "LMT": "工业",
+    "LIN": "材料", "FCX": "材料", "NEE": "公用事业",
+}
+# 名称关键词→板块（按市场，从上到下先命中先得）
+_SECTOR_KEYS = {
+    "A股": [(("半导体", "芯片", "电子", "中微", "寒武纪", "海光", "中芯"), "半导体芯片"),
+            (("宁德", "比亚迪", "锂", "新能源", "光伏", "隆基"), "新能源车"),
+            (("茅台", "五粮液", "泸州", "汾酒", "酒"), "白酒"),
+            (("医药", "药业", "生物", "医疗", "疫苗", "恒瑞"), "医药"),
+            (("证券", "东方财富"), "证券"), (("银行",), "银行"),
+            (("黄金", "紫金", "铜", "铝业", "矿业", "有色", "稀土"), "有色金属"),
+            (("军工", "航天", "中航", "船舶", "兵器"), "军工"),
+            (("煤", "神华", "兖矿"), "煤炭"),
+            (("食品", "乳业", "家电", "美的", "格力", "海尔", "消费"), "消费"),
+            (("石油", "海油", "中石化"), "有色金属")],  # A股快照无能源板块，油气挂靠资源类
+    "港股": [(("腾讯", "美团", "小米", "京东", "阿里", "快手", "网易", "百度", "哔哩", "科技"), "恒生科技"),
+             (("移动", "电信", "联通", "石油", "海油", "神华", "建行", "工行", "中行", "银行", "保险", "中烟"), "国企蓝筹"),
+             (("汇丰", "恒生", "长和", "电能", "中电", "煤气"), "高股息")],
+    "美股": [(("芯片", "半导体", "科技", "软件", "微软", "苹果", "英伟达", "英特尔"), "科技"),
+             (("谷歌", "脸书", "奈飞", "迪士尼"), "通信"),
+             (("亚马逊", "特斯拉"), "可选消费"), (("礼来", "强生", "辉瑞", "默沙东", "联合健康"), "医疗"),
+             (("摩根", "高盛", "花旗", "银行"), "金融"), (("埃克森", "雪佛龙", "石油"), "能源")],
+}
+
+
+def _market_of(code: str) -> str:
+    c = str(code).upper()
+    if c.endswith((".SS", ".SZ", ".SH")):
+        return "A股"
+    if c.endswith(".HK"):
+        return "港股"
+    return "美股"
+
+
+def sector_of(code: str, name: str = ""):
+    """个股→(市场, 快照板块名)；映射不到返回 (市场, None)——热度维度静默，不硬凑。"""
+    mkt = _market_of(code)
+    c = str(code).upper().split(".")[0] if mkt == "美股" else str(code).upper()
+    seed = _SECTOR_SEED.get(str(code).upper()) or _SECTOR_SEED.get(c)
+    if seed:
+        return mkt, seed
+    for keys, sec in _SECTOR_KEYS.get(mkt, []):
+        if any(k in str(name) for k in keys):
+            return mkt, sec
+    return mkt, None
+
+
+def sector_heat_of(code: str, name: str = "", snapshot_markets: dict = None):
+    """板块热度→共振维度值：热度≥65=+1(轮入)，≤35=-1(退潮)，中间=0，映射不到=None。
+    snapshot_markets = market_snapshot.json 的 markets 字典（调用方各自加载，三端路径不同）。"""
+    if not snapshot_markets:
+        return None
+    mkt, sec = sector_of(code, name)
+    if not sec:
+        return None
+    for s in (snapshot_markets.get(mkt) or {}).get("sectors") or []:
+        if s.get("name") == sec and s.get("heat") is not None:
+            h = float(s["heat"])
+            return (1 if h >= 65 else (-1 if h <= 35 else 0)), f"{sec}(热度{h:.0f})"
+    return None
+
+
 def news_direction(title: str) -> str:
     """确定性关键词判新闻方向：利好/利空/''（中性）。不用LLM。"""
     t = str(title or "").lower()
@@ -657,10 +733,11 @@ def smart_watch_signal(f, catalyst=None, earnings_days=None, sector_heat=None):
         elif d == "利空":
             fund_s.append(f"消息:利空(Tier {catalyst['tier']}) {_src}")
     if sector_heat is not None:
-        if sector_heat > 0:
-            fund_b.append("行业:板块轮入·热度上行")
-        elif sector_heat < 0:
-            fund_s.append("行业:板块退潮")
+        _sh, _sn = sector_heat if isinstance(sector_heat, (tuple, list)) else (sector_heat, "所属板块")
+        if _sh > 0:
+            fund_b.append(f"行业:{_sn}轮入·热度上行")
+        elif _sh < 0:
+            fund_s.append(f"行业:{_sn}退潮")
     earn_note = f"📅{earnings_days}天后财报·博弈期波动放大" if earnings_days is not None and 0 <= earnings_days <= 5 else ""
 
     # ── 共振判定：≥2 个维度才触发 ──

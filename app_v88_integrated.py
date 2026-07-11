@@ -11363,6 +11363,10 @@ def _render_today_nav():
             except Exception:
                 pass
             import cloud_engine as _ce_wa
+            try:  # 【行业热度维度】与飞书/云端同一份冻结快照
+                _mkts9 = json.loads((_repo / "data" / "market_snapshot.json").read_text(encoding="utf-8")).get("markets") or {}
+            except Exception:
+                _mkts9 = {}
             _alerts9 = []
             for _c9, _n9 in list(_pool_wa.items())[:18]:
                 try:
@@ -11375,7 +11379,7 @@ def _render_today_nav():
                         _alerts9.append(f"❗ **{_n9}**({_c9})：现价{_last9}已破止损位{_f9['stop']}——纪律：离场/减仓，不要扛")
                     else:
                         # 【V88·多因子共振】买入/减仓须≥2维度（技术/量价/消息）共振，单指标不触发（与云端/飞书同源）
-                        _sw9 = _ce_wa.smart_watch_signal(_f9)
+                        _sw9 = _ce_wa.smart_watch_signal(_f9, sector_heat=_ce_wa.sector_heat_of(_c9, _n9, _mkts9))
                         if _sw9:
                             _ic9 = "🛒" if _sw9["side"] == "buy" else "⚠️"
                             _hd9 = "触发条件" if _sw9["side"] == "buy" else "风险原因"
