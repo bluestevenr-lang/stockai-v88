@@ -18,14 +18,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install --quiet yfinance pandas requests
+      - run: pip install --quiet yfinance pandas requests python-dotenv
       - name: Run alert inside private checkout
         env:
           FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
           PT: ${{ secrets.PRIVATE_TOKEN }}
         run: |
           git clone -q --depth 1 https://x-access-token:${PT}@github.com/bluestevenr-lang/v88-daily-report.git priv
-          cd priv && python src/intraday_alert.py
+          cd priv
+          # 依赖预检：缺包在这里就报错，不再等真实运行才发现
+          python -c "import sys; sys.path.insert(0,'src'); import feishu_push, intraday_alert"
+          python src/intraday_alert.py
           git config user.name v88bot && git config user.email v88@bot
           git add data/alert_state.json data/push_state.json 2>/dev/null || true
           git commit -m "intraday alert state" 2>/dev/null || true
