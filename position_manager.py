@@ -123,6 +123,86 @@ def candidates_for(token: str, limit: int = 6) -> list:
     return (search_candidates(token.strip(), limit=limit) or []) if search_candidates else ([(nm, code, "")] if code else [])
 
 
+def record_trade(token: str, shares, buy_px=None, sell_px=None, date: str = "",
+                 reason: str = "", account: str = "", chosen_code: str = None):
+    """【结构化录单】表单入口（桌面/云端持仓终端表单调用，与一行指令同一套底层）。
+    买入=填 buy_px；卖出=填 sell_px（buy_px 留空）；date=成交日期 YYYY-MM-DD（空=今天）。
+    返回 (msg, needs)：needs 非空表示简称多解，UI 弹窗确认后带 chosen_code 重呼。"""
+    try:
+        shares = int(float(shares))
+    except (TypeError, ValueError):
+        return "股数须为数字", None
+    if buy_px and sell_px:
+        return "买入价与卖出价只能填一个（卖出时买入价留空）", None
+    if not buy_px and not sell_px:
+        return "买入价/卖出价至少填一个", None
+    _dt = ""
+    if str(date or "").strip():
+        try:
+            _dt = datetime.strptime(str(date).strip()[:10], "%Y-%m-%d").strftime("%Y-%m-%d")
+        except ValueError:
+            return f"成交日期格式应为 YYYY-MM-DD，收到：{date}", None
+
+    if sell_px:  # ── 卖出/减仓：持仓内模糊找，显式卖价入账 ──
+        pj = _load()
+        acc, a, h = _find(pj, str(token))
+        if not h:
+            return f"未找到持仓「{token}」，先核对名称", None
+        qty = h.get("shares") or 0
+        n = min(shares, qty) if shares > 0 else qty
+        px = float(sell_px)
+        pnl = round((px / h["cost"] - 1) * 100, 2) if h.get("cost") else None
+        _log_trade({"date": (_dt or datetime.now(BJT).strftime("%Y-%m-%d")) + datetime.now(BJT).strftime(" %H:%M" if not _dt else ""),
+                    "action": "卖出" if n >= qty else "减仓", "name": h.get("name"), "code": h.get("code"),
+                    "shares": n, "cost": h.get("cost"), "sell_price": px, "pnl_pct": pnl,
+                    "reason": reason or "", "account": acc})
+        if n >= qty:
+            a["holdings"] = [x for x in a["holdings"] if x is not h]
+            verdict = f"已清仓 {h.get('name')} {qty}股 @ {px}"
+        else:
+            h["shares"] = qty - n
+            verdict = f"已减仓 {h.get('name')} {n}股 @ {px}，剩{h['shares']}股"
+        _save(pj)
+        return verdict + (f"，盈亏{pnl:+.1f}%（已记{_dt or '今日'}交易日志）" if pnl is not None else ""), None
+
+    # ── 买入/加仓：简称→全称，多解交 UI 弹窗 ──
+    if chosen_code:
+        code = chosen_code
+        name = (name_of(code) if name_of else "") or str(token)
+    else:
+        cands = candidates_for(str(token))
+        if not cands:
+            return f"名录未找到「{token}」——可直接输代码（如 600938 / 0700.HK / NVDA）", None
+        if len(cands) > 1:
+            return f"「{token}」有 {len(cands)} 个匹配，请选择", cands
+        name, code = cands[0][0], cands[0][1]
+    cost = float(buy_px)
+    pj = _load()
+    acc0, _, h = _find(pj, code)
+    if h:
+        tot = h["shares"] + shares
+        h["cost"] = round((h["cost"] * h["shares"] + cost * shares) / tot, 4)
+        h["shares"] = tot
+        verdict = f"已加仓 {name}({code}) +{shares}股 @ {cost}，共{tot}股，摊薄成本{h['cost']}（{acc0}）"
+    else:
+        a = pj.setdefault("accounts", {}).setdefault(account or DEFAULT_ACCOUNT, {"type": "手动", "holdings": []})
+        a.setdefault("holdings", []).append({"name": name, "code": code, "shares": shares, "cost": cost})
+        verdict = f"已录入 {name}({code}) {shares}股 @ {cost}（{account or DEFAULT_ACCOUNT}）"
+    _log_trade({"date": (_dt or datetime.now(BJT).strftime("%Y-%m-%d")) + datetime.now(BJT).strftime(" %H:%M" if not _dt else ""),
+                "action": "加仓" if h else "买入", "name": name, "code": code,
+                "shares": shares, "cost": cost, "reason": reason or "", "account": account or DEFAULT_ACCOUNT})
+    _save(pj)
+    return verdict, None
+
+
+def holdings_rows() -> list:
+    """当前持仓一览（渲染用），录入后立即可见——终端的'记忆'。"""
+    pj = _load()
+    return [{"账户": acc, "名称": h.get("name"), "代码": h.get("code"),
+             "股数": h.get("shares"), "成本": h.get("cost"), "类别": h.get("class", "")}
+            for acc, a, h in _iter_holdings(pj)]
+
+
 def handle(line: str, reason: str = "", chosen_code: str = None) -> str:
     """CLI 入口：多解时自动取名录首选（UI 请用 handle_ex 走弹窗确认）。"""
     msg, needs = handle_ex(line, reason=reason, chosen_code=chosen_code)

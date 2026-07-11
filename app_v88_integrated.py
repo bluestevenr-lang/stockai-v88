@@ -11399,17 +11399,23 @@ def _render_today_nav():
     except Exception as _we9:
         logging.debug(f"关注股预警异常: {_we9}")
 
-    # 【V88·持仓终端】简化输入直改私仓 positions.json 并自动 commit（三端同源，2026-07-11）
-    with st.expander("💼 持仓终端（简化输入：`中国海油 18.5 1000`｜`卖 海油`｜`查`）", expanded=False):
-        _lc0 = _rep.find("## 💼 持仓生命周期") if _rep else -1
-        if _lc0 > 0:
-            _lc1 = _rep.find("\n## ", _lc0 + 5)
-            st.markdown(_rep[_lc0:_lc1 if _lc1 > 0 else len(_rep)])
-        _ptc1, _ptc2 = st.columns([3, 2])
-        _pt_cmd = _ptc1.text_input("指令", placeholder="中国海油 18.5 1000 ｜ 卖 海油 500 ｜ 查",
-                                   key="_pt_cmd_desk", label_visibility="collapsed")
-        _pt_reason = _ptc2.text_input("原因", placeholder="操作原因(选填,随日志留档)",
-                                      key="_pt_reason_desk", label_visibility="collapsed")
+    # 【V88·持仓终端】结构化表单+常驻持仓表（录入即落盘私仓 positions.json 并显示——所见即所存）
+    with st.expander("💼 持仓终端（简称自动识别全称 · 卖出价留空=买入 · 每笔带成交日期）", expanded=False):
+        import sys as _sysf
+        if str(_repo / "src") not in _sysf.path:
+            _sysf.path.insert(0, str(_repo / "src"))
+        import position_manager as _pmf
+        if st.session_state.get("_pt_flash"):
+            st.success(st.session_state.pop("_pt_flash"))
+        # ── 结构化录单表单 ──
+        _f1, _f2, _f3, _f4, _f5 = st.columns([2.2, 1.3, 1.3, 1.3, 1.6])
+        _pt_name = _f1.text_input("名称/简称/代码", placeholder="腾讯 / 海油 / NVDA", key="_ptf_name")
+        _pt_buy = _f2.text_input("买入价", placeholder="469", key="_ptf_buy")
+        _pt_sell = _f3.text_input("卖出价(空=买入)", placeholder="", key="_ptf_sell")
+        _pt_qty = _f4.text_input("股数", placeholder="100", key="_ptf_qty")
+        from datetime import date as _date9
+        _pt_date = _f5.date_input("成交日期", value=_date9.today(), key="_ptf_date")
+        _pt_reason = st.text_input("原因(选填,随日志留档)", placeholder="如：回踩买点 / 止盈一半", key="_pt_reason_desk")
 
         def _pt_git_sync(_label):
             import subprocess as _sp9
@@ -11425,22 +11431,26 @@ def _render_today_nav():
             st.caption("☁️ 已同步私仓（云端/飞书下一轮生效）" if _p9.returncode == 0
                        else "⚠️ 本地已改，私仓推送失败——网络恢复后自动随下次提交带上")
 
-        def _pt_run(_cmd, _reason, _chosen=None):
-            import sys as _sys9
-            if str(_repo / "src") not in _sys9.path:
-                _sys9.path.insert(0, str(_repo / "src"))
-            import position_manager as _pm9
-            _msg9, _needs9 = _pm9.handle_ex(_cmd, reason=_reason, chosen_code=_chosen)
-            if _needs9:  # 简称多解（"海油"→中国海油/海油工程…）→ 弹窗确认
-                st.session_state["_pt_pending"] = {"cmd": _cmd, "reason": _reason, "cands": _needs9}
+        def _pt_run_form(_kw, _chosen=None):
+            _msg9, _needs9 = _pmf.record_trade(chosen_code=_chosen, **_kw)
+            if _needs9:  # 简称多解（"腾讯"→腾讯/腾讯控股/腾讯音乐…）→ 弹窗确认
+                st.session_state["_pt_pending"] = {"kw": _kw, "cands": _needs9}
                 st.rerun()
-            st.success(_msg9)
-            if _cmd.split()[0] not in ("查", "查询"):
-                _pt_git_sync(_cmd)
+            if _msg9.startswith(("已录入", "已加仓", "已清仓", "已减仓")):
+                _pt_git_sync(f"{_kw.get('token', '')}")
+                st.session_state["_pt_flash"] = _msg9 + "　✅已落盘并同步私仓"
+                st.rerun()  # 立刻刷新下方持仓表——所见即所存
+            else:
+                st.error(_msg9)
 
-        if st.button("▶ 执行", key="_pt_go_desk") and _pt_cmd.strip():
+        if st.button("▶ 记一笔", type="primary", key="_pt_go_desk") and _pt_name.strip():
             try:
-                _pt_run(_pt_cmd.strip(), _pt_reason.strip())
+                _pt_run_form({"token": _pt_name.strip(), "shares": _pt_qty or 0,
+                              "buy_px": float(_pt_buy) if _pt_buy.strip() else None,
+                              "sell_px": float(_pt_sell) if _pt_sell.strip() else None,
+                              "date": str(_pt_date), "reason": _pt_reason.strip()})
+            except ValueError:
+                st.error("价格/股数须为数字")
             except Exception as _pe9:
                 st.error(f"持仓终端异常: {_pe9}")
 
@@ -11455,13 +11465,47 @@ def _render_today_nav():
                     _code_sel = _pd["cands"][_opts.index(_sel)][1]
                     st.session_state.pop("_pt_pending")
                     try:
-                        _pt_run(_pd["cmd"], _pd["reason"], _chosen=_code_sel)
+                        _pt_run_form(_pd["kw"], _chosen=_code_sel)
                     except Exception as _pe9:
                         st.error(f"持仓终端异常: {_pe9}")
                 if _c2d.button("✕ 取消", key="_pt_pick_no"):
                     st.session_state.pop("_pt_pending")
                     st.rerun()
             _pt_pick_dialog()
+
+        # ── 常驻持仓表+最近交易（读盘实时渲染，刷新页面不丢——这就是"记忆"）──
+        try:
+            _rows_pt = _pmf.holdings_rows()
+            if _rows_pt:
+                st.dataframe(_rows_pt, hide_index=True, use_container_width=True, height=min(38 * len(_rows_pt) + 40, 300))
+            _tr_fp = _repo / "journal" / "trades.json"
+            if _tr_fp.exists():
+                _trs = json.loads(_tr_fp.read_text(encoding="utf-8"))[-5:]
+                if _trs:
+                    st.caption("最近5笔：" + "　".join(
+                        f"{t.get('date','')[:10]} {t.get('action','')}{t.get('name','')}{t.get('shares','')}股"
+                        f"@{t.get('sell_price') or t.get('cost','')}" for t in reversed(_trs)))
+        except Exception:
+            pass
+        # 高级：一行指令（老语法保留）
+        with st.popover("⌨️ 一行指令"):
+            _pt_cmd = st.text_input("指令", placeholder="中国海油 18.5 1000 ｜ 卖 海油 500 #止盈 ｜ 查",
+                                    key="_pt_cmd_desk", label_visibility="collapsed")
+            if st.button("执行", key="_pt_go_line") and _pt_cmd.strip():
+                try:
+                    _msgL, _needsL = _pmf.handle_ex(_pt_cmd.strip(), reason=_pt_reason.strip())
+                    if _needsL:
+                        st.warning(_msgL + "——请改用上方表单录入以弹窗选择")
+                    else:
+                        st.success(_msgL)
+                        if _pt_cmd.strip() not in ("查", "查询"):
+                            _pt_git_sync(_pt_cmd.strip())
+                except Exception as _pe9:
+                    st.error(f"异常: {_pe9}")
+        _lc0 = _rep.find("## 💼 持仓生命周期") if _rep else -1
+        if _lc0 > 0:
+            _lc1 = _rep.find("\n## ", _lc0 + 5)
+            st.markdown(_rep[_lc0:_lc1 if _lc1 > 0 else len(_rep)])
 
     # 【V88·深度回调机会池】优质股回撤≥30%关注名单（日报流水线生成，三端同源）
     _ipb = _rep.find("## 💎 深度回调机会池")

@@ -698,26 +698,46 @@ elif _nav == "💼 持仓终端":
             if _tr_raw:
                 _pm.TRADES.parent.mkdir(exist_ok=True)
                 _pm.TRADES.write_text(_tr_raw, encoding="utf-8")
-            st.caption("语法：`中国海油 18.5 1000 [账户] [核心|成长]` 买入/加仓 ｜ `卖 海油 500 #止盈一半` ｜ `查`（#后=原因）")
-            _cc1, _cc2 = st.columns([3, 2])
-            _cmd = _cc1.text_input("指令", placeholder="中国海油 18.5 1000", key="_pt_cmd", label_visibility="collapsed")
-            _rsn = _cc2.text_input("原因", placeholder="操作原因(选填,随日志留档)", key="_pt_rsn", label_visibility="collapsed")
+            if st.session_state.get("_ct_flash"):
+                st.success(st.session_state.pop("_ct_flash"))
+            # ── 结构化录单：简称自动识别全称，卖出价留空=买入，每笔带成交日期 ──
+            _f1, _f2, _f3, _f4, _f5 = st.columns([2.2, 1.3, 1.3, 1.3, 1.6])
+            _ct_name = _f1.text_input("名称/简称/代码", placeholder="腾讯 / 海油 / NVDA", key="_ctf_name")
+            _ct_buy = _f2.text_input("买入价", placeholder="469", key="_ctf_buy")
+            _ct_sell = _f3.text_input("卖出价(空=买入)", placeholder="", key="_ctf_sell")
+            _ct_qty = _f4.text_input("股数", placeholder="100", key="_ctf_qty")
+            from datetime import date as _date9
+            _ct_date = _f5.date_input("成交日期", value=_date9.today(), key="_ctf_date")
+            _ct_rsn = st.text_input("原因(选填,随日志留档)", placeholder="如：回踩买点 / 止盈一半", key="_pt_rsn")
 
-            def _pt_exec(_c, _r, _chosen=None):
-                _out, _needs = _pm.handle_ex(_c, reason=_r, chosen_code=_chosen)
+            def _pt_exec(_kw, _chosen=None):
+                _out, _needs = _pm.record_trade(chosen_code=_chosen, **_kw)
                 if _needs:  # 简称多解 → 弹窗确认
-                    st.session_state["_ct_pending"] = {"cmd": _c, "reason": _r, "cands": _needs}
+                    st.session_state["_ct_pending"] = {"kw": _kw, "cands": _needs}
                     st.rerun()
+                if not _out.startswith(("已录入", "已加仓", "已清仓", "已减仓")):
+                    st.error(_out)
+                    return
                 _new_pos = _pm.POS.read_text(encoding="utf-8")
                 _ok = True
                 if _new_pos != _pos_raw:
-                    _ok = _priv_put("positions.json", _new_pos, _pos_sha, f"持仓终端(云端): {_c[:40]}")
+                    _ok = _priv_put("positions.json", _new_pos, _pos_sha, f"持仓终端(云端): {_kw.get('token', '')[:40]}")
                 if _pm.TRADES.exists() and _pm.TRADES.read_text(encoding="utf-8") != (_tr_raw or ""):
                     _priv_put("journal/trades.json", _pm.TRADES.read_text(encoding="utf-8"), _tr_sha, "持仓终端(云端): 交易日志")
-                (st.success if _ok else st.error)(_out if _ok else f"{_out}（⚠️私仓写入失败，请重试）")
+                if _ok:
+                    st.session_state["_ct_flash"] = _out + "　✅已落盘私仓"
+                    st.cache_data.clear()
+                    st.rerun()  # 刷新下方持仓表——所见即所存
+                st.error(f"{_out}（⚠️私仓写入失败，请重试）")
 
-            if st.button("▶ 执行", type="primary") and _cmd.strip():
-                _pt_exec(_cmd.strip(), _rsn.strip())
+            if st.button("▶ 记一笔", type="primary") and _ct_name.strip():
+                try:
+                    _pt_exec({"token": _ct_name.strip(), "shares": _ct_qty or 0,
+                              "buy_px": float(_ct_buy) if _ct_buy.strip() else None,
+                              "sell_px": float(_ct_sell) if _ct_sell.strip() else None,
+                              "date": str(_ct_date), "reason": _ct_rsn.strip()})
+                except ValueError:
+                    st.error("价格/股数须为数字")
             if st.session_state.get("_ct_pending"):
                 @st.dialog("该简称有多个匹配，请确认标的")
                 def _ct_pick():
@@ -728,7 +748,7 @@ elif _nav == "💼 持仓终端":
                     if _d1.button("✅ 确认", type="primary"):
                         _code_sel = _pd["cands"][_opts.index(_sel)][1]
                         st.session_state.pop("_ct_pending")
-                        _pt_exec(_pd["cmd"], _pd["reason"], _chosen=_code_sel)
+                        _pt_exec(_pd["kw"], _chosen=_code_sel)
                     if _d2.button("✕ 取消"):
                         st.session_state.pop("_ct_pending")
                         st.rerun()
@@ -740,6 +760,14 @@ elif _nav == "💼 持仓终端":
                           "股数": h.get("shares"), "成本": h.get("cost")}
                          for acc, a in (_pj.get("accounts") or {}).items() for h in (a.get("holdings") or [])]
                 st.dataframe(_rows, hide_index=True, use_container_width=True)
+            except Exception:
+                pass
+            try:
+                _trs = json.loads(_tr_raw or "[]")[-5:]
+                if _trs:
+                    st.caption("最近5笔：" + "　".join(
+                        f"{t.get('date', '')[:10]} {t.get('action', '')}{t.get('name', '')}{t.get('shares', '')}股"
+                        f"@{t.get('sell_price') or t.get('cost', '')}" for t in reversed(_trs)))
             except Exception:
                 pass
             # 【V88·自选分级】A=盘中实时预警 B=日报观察 C=长期跟踪（watch_levels.json 私仓单一权威）
