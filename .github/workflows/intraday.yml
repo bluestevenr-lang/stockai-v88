@@ -30,7 +30,7 @@ jobs:
           python -c "import sys; sys.path.insert(0,'src'); import feishu_push, intraday_alert"
           python src/intraday_alert.py
           git config user.name v88bot && git config user.email v88@bot
-          git add data/alert_state.json data/push_state.json 2>/dev/null || true
+          git add -f data/alert_state.json data/push_state.json data/position_peaks.json 2>/dev/null || true
           git commit -m "intraday alert state" 2>/dev/null || true
           git pull --rebase -q origin main 2>/dev/null || true
           git push -q origin main 2>/dev/null || true

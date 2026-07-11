@@ -184,7 +184,7 @@ def jump_stock(name, code):
     st.rerun()
 
 with c_nav:
-    _nav = st.radio("导航", ["🧭 导航", "🔥 热点新闻", "🏆 全选榜单", "🔍 个股搜索", "📊 日报", "📅 周报", "📈 大盘板块", "🔁 复盘"],
+    _nav = st.radio("导航", ["🧭 导航", "🔥 热点新闻", "🏆 全选榜单", "🔍 个股搜索", "📊 日报", "📅 周报", "📈 大盘板块", "🔁 复盘", "💼 持仓终端"],
                     horizontal=True, label_visibility="collapsed", key="_nav")
 
 _snap_raw = pub_text("market_snapshot.json")
@@ -652,6 +652,98 @@ elif _nav == "🔁 复盘":
             except Exception:
                 st.code(_raw[:800])
         st.caption("完整收益核算与命中率见每周日推送的周报「🔁 推荐复盘」章节")
+
+elif _nav == "💼 持仓终端":
+    # 【V88·持仓终端】简化输入直写私仓 positions.json（PRIVATE_TOKEN），数据不进公开分支。
+    # 2026-07-11 用户授权：云端可输入+查看持仓（Streamlit登录+APP_PASSWORD双重门禁）。
+    st.markdown("#### 💼 持仓终端")
+    _tok = str(st.secrets.get("PRIVATE_TOKEN", "") or "").strip()
+    if not _tok:
+        st.warning("需在 share.streamlit.io → App settings → Secrets 配置 PRIVATE_TOKEN（私仓读写令牌）后启用")
+    else:
+        import base64 as _b64
+        import tempfile as _tf
+        from pathlib import Path
+        _API = "https://api.github.com/repos/bluestevenr-lang/v88-daily-report/contents"
+        _HDR = {"Authorization": f"token {_tok}", "Accept": "application/vnd.github+json"}
+
+        def _priv_get(path):
+            try:
+                r = requests.get(f"{_API}/{path}", headers=_HDR, timeout=12)
+                if r.status_code != 200:
+                    return None, None
+                j = r.json()
+                return _b64.b64decode(j["content"]).decode("utf-8"), j["sha"]
+            except Exception:
+                return None, None
+
+        def _priv_put(path, text, sha, msg):
+            body = {"message": msg, "content": _b64.b64encode(text.encode()).decode()}
+            if sha:
+                body["sha"] = sha
+            r = requests.put(f"{_API}/{path}", headers=_HDR, json=body, timeout=15)
+            return r.status_code in (200, 201)
+
+        import position_manager as _pm
+        _tmp = Path(_tf.mkdtemp())
+        _pm.POS, _pm.TRADES = _tmp / "positions.json", _tmp / "journal" / "trades.json"
+        _pos_raw, _pos_sha = _priv_get("positions.json")
+        _tr_raw, _tr_sha = _priv_get("journal/trades.json")
+        if _pos_raw is None:
+            st.error("私仓 positions.json 读取失败（令牌权限或网络）")
+        else:
+            _pm.POS.write_text(_pos_raw, encoding="utf-8")
+            if _tr_raw:
+                _pm.TRADES.parent.mkdir(exist_ok=True)
+                _pm.TRADES.write_text(_tr_raw, encoding="utf-8")
+            st.caption("语法：`中国海油 18.5 1000 [账户] [核心|成长]` 买入/加仓 ｜ `卖 海油 [500|全部]` ｜ `查`")
+            _cmd = st.text_input("指令", placeholder="中国海油 18.5 1000", key="_pt_cmd")
+            if st.button("▶ 执行", type="primary") and _cmd.strip():
+                _out = _pm.handle(_cmd.strip())
+                _new_pos = _pm.POS.read_text(encoding="utf-8")
+                _ok = True
+                if _new_pos != _pos_raw:
+                    _ok = _priv_put("positions.json", _new_pos, _pos_sha, f"持仓终端(云端): {_cmd.strip()[:40]}")
+                if _pm.TRADES.exists() and _pm.TRADES.read_text(encoding="utf-8") != (_tr_raw or ""):
+                    _priv_put("journal/trades.json", _pm.TRADES.read_text(encoding="utf-8"), _tr_sha, "持仓终端(云端): 交易日志")
+                (st.success if _ok else st.error)(_out if _ok else f"{_out}（⚠️私仓写入失败，请重试）")
+            # ── 持仓总览 + 按需生命周期体检 ──
+            try:
+                _pj = json.loads(_pos_raw)
+                _rows = [{"账户": acc, "名称": h.get("name"), "代码": h.get("code"),
+                          "股数": h.get("shares"), "成本": h.get("cost")}
+                         for acc, a in (_pj.get("accounts") or {}).items() for h in (a.get("holdings") or [])]
+                st.dataframe(_rows, hide_index=True, use_container_width=True)
+            except Exception:
+                pass
+            if st.button("🔍 生命周期体检（成本实算·移动止盈·约30秒）"):
+                import yfinance as _yf
+                import position_lifecycle as _pl
+                from position_manager import _resolve  # noqa 复用名录
+                from cloud_engine import analyze_trend_full as _atf2
+                _peaks_raw, _ = _priv_get("data/position_peaks.json")
+                _peaks = json.loads(_peaks_raw) if _peaks_raw else {}
+                _out_rows, _bar = [], st.progress(0.0)
+                _hl = [(acc, h) for acc, a in (json.loads(_pos_raw).get("accounts") or {}).items()
+                       for h in (a.get("holdings") or []) if h.get("cost") and "⚠️" not in str(h.get("code", ""))]
+                for _i, (acc, h) in enumerate(_hl):
+                    _bar.progress((_i + 1) / max(len(_hl), 1))
+                    from cloud_engine import _yf_norm as _yfc
+                    try:
+                        _df = _yf.Ticker(_yfc(str(h["code"]))).history(period="6mo")
+                        _f = _atf2(_df) if _df is not None and len(_df) >= 35 else None
+                        _r = _pl.assess(h, _f, _peaks) if _f else {}
+                        if _r:
+                            _out_rows.append({"持仓": f"{h.get('name')}({h.get('code')})",
+                                              "浮盈": f"{_r['pnl']:+.1f}%", "峰值": f"{_r['peak']:+.1f}%",
+                                              "阶段": _r["stage"], "动作": _r["action"],
+                                              "信号": "；".join(_r["signals"]) or "—",
+                                              "减仓/退出": f"{_r['reduce']}；{_r['exit']}"})
+                    except Exception:
+                        continue
+                _bar.empty()
+                st.dataframe(_out_rows, hide_index=True, use_container_width=True)
+                st.caption("规则：峰值浮盈≥15%进利润保护期；回撤超10点或趋势破坏→锁盈减仓；+20%起逐档评估；成长-10%/核心-12%破MA55纪律退出")
 
 st.divider()
 st.caption("V88 云端版 · 仅供研究参考，不构成投资建议")

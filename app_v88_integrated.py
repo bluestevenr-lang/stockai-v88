@@ -11362,6 +11362,40 @@ def _render_today_nav():
     except Exception as _we9:
         logging.debug(f"关注股预警异常: {_we9}")
 
+    # 【V88·持仓终端】简化输入直改私仓 positions.json 并自动 commit（三端同源，2026-07-11）
+    with st.expander("💼 持仓终端（简化输入：`中国海油 18.5 1000`｜`卖 海油`｜`查`）", expanded=False):
+        _lc0 = _rep.find("## 💼 持仓生命周期") if _rep else -1
+        if _lc0 > 0:
+            _lc1 = _rep.find("\n## ", _lc0 + 5)
+            st.markdown(_rep[_lc0:_lc1 if _lc1 > 0 else len(_rep)])
+        _pt_cmd = st.text_input("指令", placeholder="中国海油 18.5 1000 [账户] [核心|成长] ｜ 卖 海油 500 ｜ 查",
+                                key="_pt_cmd_desk", label_visibility="collapsed")
+        if st.button("▶ 执行", key="_pt_go_desk") and _pt_cmd.strip():
+            try:
+                import sys as _sys9
+                if str(_repo / "src") not in _sys9.path:
+                    _sys9.path.insert(0, str(_repo / "src"))
+                import position_manager as _pm9
+                _out9 = _pm9.handle(_pt_cmd.strip())
+                st.success(_out9)
+                if _pt_cmd.strip() not in ("查", "查询"):
+                    import subprocess as _sp9
+                    _r9 = _sp9.run(["git", "-C", str(_repo), "add", "-f", "positions.json", "journal/trades.json"],
+                                   capture_output=True, text=True)
+                    _sp9.run(["git", "-C", str(_repo), "commit", "-m", f"持仓终端(桌面): {_pt_cmd.strip()[:40]}"],
+                             capture_output=True, text=True)
+                    _p9 = _sp9.run(["git", "-C", str(_repo), "push", "origin", "main"],
+                                   capture_output=True, text=True)
+                    if _p9.returncode != 0:
+                        _sp9.run(["git", "-C", str(_repo), "pull", "--rebase", "-X", "theirs", "origin", "main"],
+                                 capture_output=True, text=True)
+                        _p9 = _sp9.run(["git", "-C", str(_repo), "push", "origin", "main"],
+                                       capture_output=True, text=True)
+                    st.caption("☁️ 已同步私仓（云端/飞书下一轮生效）" if _p9.returncode == 0
+                               else "⚠️ 本地已改，私仓推送失败——网络恢复后自动随下次提交带上")
+            except Exception as _pe9:
+                st.error(f"持仓终端异常: {_pe9}")
+
     # 【V88·深度回调机会池】优质股回撤≥30%关注名单（日报流水线生成，三端同源）
     _ipb = _rep.find("## 💎 深度回调机会池")
     if _ipb <= 0 and _rep:

@@ -172,6 +172,8 @@ def _yf_norm(symbol: str) -> str:
     """Yahoo 代码规格化：港股用4位数字（06055.HK→6055.HK，00700.HK→0700.HK）。
     Tushare/东财名录是5位制，直接喂 yfinance 会取不到行情——统一在取数入口转换。"""
     s = str(symbol).strip().upper()
+    if s.endswith(".SH"):  # 券商制式 600941.SH → Yahoo 制式 .SS
+        return s[:-3] + ".SS"
     if s.endswith(".HK"):
         try:
             return f"{int(s[:-3]):04d}.HK"
