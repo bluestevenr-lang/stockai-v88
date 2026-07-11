@@ -2786,6 +2786,7 @@ def render_cloud_search():
                             _search_history_persist(code, name)  # 【V88·搜索习惯】
                             # 【V96.1】搜索过的个股自动加入自选股（上限20只，先进先出）
                             if _watchlist_add(code, name):
+                                st.session_state["_wl_new_pick"] = (code, name)  # rerun后弹窗选A/B/C
                                 st.toast(f"✅ 已选中 {name}，并加入自选股", icon="🎯")
                             else:
                                 st.toast(f"✅ 已选中 {name}，正在分析...", icon="🎯")
@@ -4937,6 +4938,37 @@ def _watchlist_remove(code):
 
 # 动态覆盖内置（Streamlit 每次交互重跑脚本，文件读取保持最新）
 WATCHLIST = _watchlist_load()
+
+# 【V88·自选分级弹窗】搜索新加自选后弹窗选 A/B/C（A=盘中实时预警 B=日报观察 C=长期跟踪）
+if st.session_state.get("_wl_new_pick"):
+    @st.dialog("🏷️ 设置自选关注级别")
+    def _wl_pick_level_dialog():
+        _cdp, _nmp = st.session_state["_wl_new_pick"]
+        st.markdown(f"**{_nmp}**（{_cdp}）已加入自选，选择关注级别：")
+        _lv_desc = {"A": "A · 重点关注（盘中每小时实时预警）", "B": "B · 观察（随日报扫描,默认）",
+                    "C": "C · 长期跟踪（低频关注）"}
+        _lv_sel = st.radio("级别", ["A", "B", "C"], index=1,
+                           format_func=lambda x: _lv_desc[x], key="_wl_lv_radio")
+        if st.button("✅ 确定", type="primary", key="_wl_lv_ok"):
+            try:
+                import sys as _syslv
+                _repo_lv = Path.home() / "Desktop" / "ai-daily-report-v2"
+                if str(_repo_lv / "src") not in _syslv.path:
+                    _syslv.path.insert(0, str(_repo_lv / "src"))
+                from watch_alerts import watch_levels as _lvl, save_watch_levels as _lvs
+                _d = _lvl()
+                _d[str(_cdp)] = _lv_sel
+                _lvs(_d)
+                import subprocess as _splv
+                _splv.run(["git", "-C", str(_repo_lv), "add", "-f", "watch_levels.json"], capture_output=True)
+                _splv.run(["git", "-C", str(_repo_lv), "commit", "-m", f"自选分级: {_nmp}={_lv_sel}"], capture_output=True)
+                _splv.Popen(["git", "-C", str(_repo_lv), "push", "origin", "main"],
+                            stdout=_splv.DEVNULL, stderr=_splv.DEVNULL)
+            except Exception:
+                pass
+            st.session_state.pop("_wl_new_pick", None)
+            st.rerun()
+    _wl_pick_level_dialog()
 
 # ═══════════════════════════════════════════════════════════════
 # 1.5 【V88】本地文件缓存系统（使用新的LRU版本）
@@ -11369,33 +11401,63 @@ def _render_today_nav():
         if _lc0 > 0:
             _lc1 = _rep.find("\n## ", _lc0 + 5)
             st.markdown(_rep[_lc0:_lc1 if _lc1 > 0 else len(_rep)])
-        _pt_cmd = st.text_input("指令", placeholder="中国海油 18.5 1000 [账户] [核心|成长] ｜ 卖 海油 500 ｜ 查",
-                                key="_pt_cmd_desk", label_visibility="collapsed")
+        _ptc1, _ptc2 = st.columns([3, 2])
+        _pt_cmd = _ptc1.text_input("指令", placeholder="中国海油 18.5 1000 ｜ 卖 海油 500 ｜ 查",
+                                   key="_pt_cmd_desk", label_visibility="collapsed")
+        _pt_reason = _ptc2.text_input("原因", placeholder="操作原因(选填,随日志留档)",
+                                      key="_pt_reason_desk", label_visibility="collapsed")
+
+        def _pt_git_sync(_label):
+            import subprocess as _sp9
+            _sp9.run(["git", "-C", str(_repo), "add", "-f", "positions.json", "journal/trades.json",
+                      "watch_levels.json"], capture_output=True, text=True)
+            _sp9.run(["git", "-C", str(_repo), "commit", "-m", f"持仓终端(桌面): {_label[:40]}"],
+                     capture_output=True, text=True)
+            _p9 = _sp9.run(["git", "-C", str(_repo), "push", "origin", "main"], capture_output=True, text=True)
+            if _p9.returncode != 0:
+                _sp9.run(["git", "-C", str(_repo), "pull", "--rebase", "-X", "theirs", "origin", "main"],
+                         capture_output=True, text=True)
+                _p9 = _sp9.run(["git", "-C", str(_repo), "push", "origin", "main"], capture_output=True, text=True)
+            st.caption("☁️ 已同步私仓（云端/飞书下一轮生效）" if _p9.returncode == 0
+                       else "⚠️ 本地已改，私仓推送失败——网络恢复后自动随下次提交带上")
+
+        def _pt_run(_cmd, _reason, _chosen=None):
+            import sys as _sys9
+            if str(_repo / "src") not in _sys9.path:
+                _sys9.path.insert(0, str(_repo / "src"))
+            import position_manager as _pm9
+            _msg9, _needs9 = _pm9.handle_ex(_cmd, reason=_reason, chosen_code=_chosen)
+            if _needs9:  # 简称多解（"海油"→中国海油/海油工程…）→ 弹窗确认
+                st.session_state["_pt_pending"] = {"cmd": _cmd, "reason": _reason, "cands": _needs9}
+                st.rerun()
+            st.success(_msg9)
+            if _cmd.split()[0] not in ("查", "查询"):
+                _pt_git_sync(_cmd)
+
         if st.button("▶ 执行", key="_pt_go_desk") and _pt_cmd.strip():
             try:
-                import sys as _sys9
-                if str(_repo / "src") not in _sys9.path:
-                    _sys9.path.insert(0, str(_repo / "src"))
-                import position_manager as _pm9
-                _out9 = _pm9.handle(_pt_cmd.strip())
-                st.success(_out9)
-                if _pt_cmd.strip() not in ("查", "查询"):
-                    import subprocess as _sp9
-                    _r9 = _sp9.run(["git", "-C", str(_repo), "add", "-f", "positions.json", "journal/trades.json"],
-                                   capture_output=True, text=True)
-                    _sp9.run(["git", "-C", str(_repo), "commit", "-m", f"持仓终端(桌面): {_pt_cmd.strip()[:40]}"],
-                             capture_output=True, text=True)
-                    _p9 = _sp9.run(["git", "-C", str(_repo), "push", "origin", "main"],
-                                   capture_output=True, text=True)
-                    if _p9.returncode != 0:
-                        _sp9.run(["git", "-C", str(_repo), "pull", "--rebase", "-X", "theirs", "origin", "main"],
-                                 capture_output=True, text=True)
-                        _p9 = _sp9.run(["git", "-C", str(_repo), "push", "origin", "main"],
-                                       capture_output=True, text=True)
-                    st.caption("☁️ 已同步私仓（云端/飞书下一轮生效）" if _p9.returncode == 0
-                               else "⚠️ 本地已改，私仓推送失败——网络恢复后自动随下次提交带上")
+                _pt_run(_pt_cmd.strip(), _pt_reason.strip())
             except Exception as _pe9:
                 st.error(f"持仓终端异常: {_pe9}")
+
+        if st.session_state.get("_pt_pending"):
+            @st.dialog("该简称有多个匹配，请确认标的")
+            def _pt_pick_dialog():
+                _pd = st.session_state["_pt_pending"]
+                _opts = [f"{nm}（{cd}·{mk}）" for nm, cd, mk in _pd["cands"]]
+                _sel = st.selectbox("候选", _opts, key="_pt_pick_sel")
+                _c1d, _c2d = st.columns(2)
+                if _c1d.button("✅ 确认", type="primary", key="_pt_pick_ok"):
+                    _code_sel = _pd["cands"][_opts.index(_sel)][1]
+                    st.session_state.pop("_pt_pending")
+                    try:
+                        _pt_run(_pd["cmd"], _pd["reason"], _chosen=_code_sel)
+                    except Exception as _pe9:
+                        st.error(f"持仓终端异常: {_pe9}")
+                if _c2d.button("✕ 取消", key="_pt_pick_no"):
+                    st.session_state.pop("_pt_pending")
+                    st.rerun()
+            _pt_pick_dialog()
 
     # 【V88·深度回调机会池】优质股回撤≥30%关注名单（日报流水线生成，三端同源）
     _ipb = _rep.find("## 💎 深度回调机会池")
@@ -15237,18 +15299,47 @@ with tab_watchlist:
     st.markdown(f"**当前自选股 {_wl_total}/{_WATCHLIST_MAX}**　"
                 f"<span style='font-size:12px;color:#6b7280'>🔍 搜索过的个股自动加入 · 满{_WATCHLIST_MAX}只时淘汰最早的 · 点 ✕ 移除</span>",
                 unsafe_allow_html=True)
+    # 【V88·自选分级】A=重点关注(盘中实时预警) B=观察(日报) C=长期跟踪；单一权威=私仓 watch_levels.json
+    try:
+        import sys as _syswl
+        _repo_wl = Path.home() / "Desktop" / "ai-daily-report-v2"
+        if str(_repo_wl / "src") not in _syswl.path:
+            _syswl.path.insert(0, str(_repo_wl / "src"))
+        from watch_alerts import watch_levels as _wl_levels_load, save_watch_levels as _wl_levels_save
+        _wl_lv = _wl_levels_load()
+    except Exception:
+        _wl_lv, _wl_levels_save = {}, None
+    st.caption("级别：**A**=重点关注·盘中每小时实时预警｜**B**=观察·随日报扫描｜**C**=长期跟踪。改动即存并同步私仓。")
     col1, col2, col3 = st.columns(3)
+    _wl_changed = False
     for _col, _mk, _flag in ((col1, "US", "🇺🇸 美股"), (col2, "HK", "🇭🇰 港股"), (col3, "CN", "🇨🇳 A股")):
         with _col:
             st.markdown(f"**{_flag}**（{len(WATCHLIST.get(_mk, []))}）")
             for code, name in WATCHLIST.get(_mk, []):
-                _c1, _c2 = st.columns([5, 1])
-                _c1.markdown(f"<div style='font-size:13px;padding:2px 0'>• {name} <span style='color:#9ca3af'>({code})</span></div>",
+                _c1, _clv, _c2 = st.columns([4, 2, 1])
+                _c1.markdown(f"<div style='font-size:13px;padding:6px 0 0 0'>• {name} <span style='color:#9ca3af'>({code})</span></div>",
                              unsafe_allow_html=True)
+                _cur_lv = _wl_lv.get(str(code), "B")
+                _new_lv = _clv.selectbox("级别", ["A", "B", "C"], index=["A", "B", "C"].index(_cur_lv),
+                                         key=f"wl_lv_{code}", label_visibility="collapsed")
+                if _new_lv != _cur_lv and _wl_levels_save:
+                    _wl_lv[str(code)] = _new_lv
+                    _wl_levels_save(_wl_lv)
+                    _wl_changed = True
                 if _c2.button("✕", key=f"wl_rm_{code}", help=f"从自选股移除 {name}"):
                     _watchlist_remove(code)
                     st.toast(f"已移除 {name}", icon="🗑️")
                     st.rerun()
+    if _wl_changed:
+        try:
+            import subprocess as _spwl
+            _spwl.run(["git", "-C", str(_repo_wl), "add", "-f", "watch_levels.json"], capture_output=True)
+            _spwl.run(["git", "-C", str(_repo_wl), "commit", "-m", "自选分级调整(桌面)"], capture_output=True)
+            _spwl.Popen(["git", "-C", str(_repo_wl), "push", "origin", "main"],
+                        stdout=_spwl.DEVNULL, stderr=_spwl.DEVNULL)
+            st.toast("✅ 级别已保存并后台同步私仓", icon="🏷️")
+        except Exception:
+            st.toast("级别已本地保存，私仓同步失败", icon="⚠️")
     
     if 'watchlist_analysis' not in st.session_state:
         st.session_state.watchlist_analysis = None

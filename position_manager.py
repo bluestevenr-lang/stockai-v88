@@ -3,11 +3,13 @@ position_manager.py — 【V88·持仓终端】简化输入，三端共用（桌
 
 语法（一行一条，中英文空格均可）：
   中国海油 18.5 1000            买入/更新（名称|代码 成本 股数，可加账户名、"核心"/"成长"）
-  买 海油 18.5 1000 东财-A      同上（"买"可省略；名称支持名录模糊匹配）
+  买 海油 18.5 1000 东财-A      同上（"买"可省略；名称支持名录模糊匹配与中文简称）
   卖 中国海油                   清仓（自动按现价归档已实现盈亏到 journal/trades.json）
-  卖 中国海油 500               减仓500股
+  卖 中国海油 500 #止盈一半     减仓500股；# 后为操作原因，随日志留档
   查                            列出全部持仓
 
+模糊匹配多解时（如"海油"）：handle_ex 返回候选列表，由 UI 弹窗确认后带 chosen_code 重呼。
+每笔买卖日志固定记录：日期/价格/数量/原因/账户。
 positions.json 仍是唯一权威底稿；本模块只做结构化读写，不做任何行情判断。
 """
 import json
@@ -113,8 +115,36 @@ def _live_price(code: str):
         return None
 
 
-def handle(line: str) -> str:
-    """处理一行指令，返回给用户看的结果文本。"""
+def candidates_for(token: str, limit: int = 6) -> list:
+    """名称→候选列表 [(name, code, market)]，供 UI 多解弹窗。代码/唯一名返回单条。"""
+    nm, code = _resolve(token)
+    if code and (_CODE_RE.match(token.strip()) or not search_candidates):
+        return [(nm, code, "")]
+    return (search_candidates(token.strip(), limit=limit) or []) if search_candidates else ([(nm, code, "")] if code else [])
+
+
+def handle(line: str, reason: str = "", chosen_code: str = None) -> str:
+    """CLI 入口：多解时自动取名录首选（UI 请用 handle_ex 走弹窗确认）。"""
+    msg, needs = handle_ex(line, reason=reason, chosen_code=chosen_code)
+    return msg
+
+
+def handle_ex(line: str, reason: str = "", chosen_code: str = None):
+    """处理一行指令。返回 (msg, needs)：
+    needs=None 表示已执行完毕；needs=[(name,code,market),…] 表示名称多解，
+    UI 应弹窗让用户选定后，携带 chosen_code 再次调用。
+    reason：操作原因（UI 单独输入框，或指令内 # 后缀），随交易日志留档。"""
+    line = str(line or "")
+    if "#" in line:  # 指令内联原因：卖 海油 500 #止盈一半
+        line, _r = line.split("#", 1)
+        reason = reason or _r.strip()
+    msg = _handle_core(line, reason, chosen_code)
+    if isinstance(msg, tuple):
+        return msg
+    return msg, None
+
+
+def _handle_core(line: str, reason: str = "", chosen_code: str = None):
     parts = line.replace("，", " ").replace(",", " ").split()
     if not parts:
         return "空指令。语法：名称 成本 股数 ｜ 卖 名称 [股数] ｜ 查"
@@ -136,9 +166,10 @@ def handle(line: str) -> str:
         n = qty if len(parts) < 3 or parts[2] in ("全部", "all") else min(int(float(parts[2])), qty)
         px = _live_price(h["code"]) or h.get("last_seen_price") or 0
         pnl = round((px / h["cost"] - 1) * 100, 2) if h.get("cost") and px else None
-        _log_trade({"date": datetime.now(BJT).strftime("%Y-%m-%d %H:%M"), "action": "卖出",
+        _log_trade({"date": datetime.now(BJT).strftime("%Y-%m-%d %H:%M"), "action": "卖出" if len(parts) < 3 or parts[2] in ("全部", "all") else "减仓",
                     "name": h.get("name"), "code": h.get("code"), "shares": n,
-                    "cost": h.get("cost"), "sell_price": px, "pnl_pct": pnl, "account": acc})
+                    "cost": h.get("cost"), "sell_price": px, "pnl_pct": pnl,
+                    "reason": reason or "", "account": acc})
         if n >= qty:
             a["holdings"] = [x for x in a["holdings"] if x is not h]
             verdict = f"已清仓 {h.get('name')} {qty}股"
@@ -161,9 +192,16 @@ def handle(line: str) -> str:
         return f"成本/股数须为数字，收到：{cost_s} / {shares_s}"
     cls = next((x for x in rest if x in ("核心", "成长")), "")
     account = next((x for x in rest if x not in ("核心", "成长")), DEFAULT_ACCOUNT)
-    name, code = _resolve(nm_in)
-    if not code:
-        return f"名录未找到「{nm_in}」——可直接输代码（如 600938 / 0700.HK / NVDA）"
+    if chosen_code:  # UI 弹窗确认后的二次调用
+        code = chosen_code
+        name = (name_of(code) if name_of else "") or nm_in
+    else:
+        cands = candidates_for(nm_in)
+        if not cands:
+            return f"名录未找到「{nm_in}」——可直接输代码（如 600938 / 0700.HK / NVDA）"
+        if len(cands) > 1:  # 多解 → 交还 UI 弹窗确认（"海油"→中国海油/海油工程/…）
+            return (f"「{nm_in}」有 {len(cands)} 个匹配，请选择", cands)
+        name, code = cands[0][0], cands[0][1]
     pj = _load()
     acc0, _, h = _find(pj, code)
     if h:  # 已持有 → 加权平均成本
@@ -180,8 +218,9 @@ def handle(line: str) -> str:
             entry["class"] = cls
         a.setdefault("holdings", []).append(entry)
         verdict = f"已录入 {name}({code}) {shares}股 成本{cost}（{account}）"
-    _log_trade({"date": datetime.now(BJT).strftime("%Y-%m-%d %H:%M"), "action": "买入",
-                "name": name, "code": code, "shares": shares, "cost": cost, "account": account})
+    _log_trade({"date": datetime.now(BJT).strftime("%Y-%m-%d %H:%M"), "action": "加仓" if h else "买入",
+                "name": name, "code": code, "shares": shares, "cost": cost,
+                "reason": reason or "", "account": account})
     _save(pj)
     return verdict
 

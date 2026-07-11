@@ -698,17 +698,41 @@ elif _nav == "💼 持仓终端":
             if _tr_raw:
                 _pm.TRADES.parent.mkdir(exist_ok=True)
                 _pm.TRADES.write_text(_tr_raw, encoding="utf-8")
-            st.caption("语法：`中国海油 18.5 1000 [账户] [核心|成长]` 买入/加仓 ｜ `卖 海油 [500|全部]` ｜ `查`")
-            _cmd = st.text_input("指令", placeholder="中国海油 18.5 1000", key="_pt_cmd")
-            if st.button("▶ 执行", type="primary") and _cmd.strip():
-                _out = _pm.handle(_cmd.strip())
+            st.caption("语法：`中国海油 18.5 1000 [账户] [核心|成长]` 买入/加仓 ｜ `卖 海油 500 #止盈一半` ｜ `查`（#后=原因）")
+            _cc1, _cc2 = st.columns([3, 2])
+            _cmd = _cc1.text_input("指令", placeholder="中国海油 18.5 1000", key="_pt_cmd", label_visibility="collapsed")
+            _rsn = _cc2.text_input("原因", placeholder="操作原因(选填,随日志留档)", key="_pt_rsn", label_visibility="collapsed")
+
+            def _pt_exec(_c, _r, _chosen=None):
+                _out, _needs = _pm.handle_ex(_c, reason=_r, chosen_code=_chosen)
+                if _needs:  # 简称多解 → 弹窗确认
+                    st.session_state["_ct_pending"] = {"cmd": _c, "reason": _r, "cands": _needs}
+                    st.rerun()
                 _new_pos = _pm.POS.read_text(encoding="utf-8")
                 _ok = True
                 if _new_pos != _pos_raw:
-                    _ok = _priv_put("positions.json", _new_pos, _pos_sha, f"持仓终端(云端): {_cmd.strip()[:40]}")
+                    _ok = _priv_put("positions.json", _new_pos, _pos_sha, f"持仓终端(云端): {_c[:40]}")
                 if _pm.TRADES.exists() and _pm.TRADES.read_text(encoding="utf-8") != (_tr_raw or ""):
                     _priv_put("journal/trades.json", _pm.TRADES.read_text(encoding="utf-8"), _tr_sha, "持仓终端(云端): 交易日志")
                 (st.success if _ok else st.error)(_out if _ok else f"{_out}（⚠️私仓写入失败，请重试）")
+
+            if st.button("▶ 执行", type="primary") and _cmd.strip():
+                _pt_exec(_cmd.strip(), _rsn.strip())
+            if st.session_state.get("_ct_pending"):
+                @st.dialog("该简称有多个匹配，请确认标的")
+                def _ct_pick():
+                    _pd = st.session_state["_ct_pending"]
+                    _opts = [f"{nm}（{cd}·{mk}）" for nm, cd, mk in _pd["cands"]]
+                    _sel = st.selectbox("候选", _opts)
+                    _d1, _d2 = st.columns(2)
+                    if _d1.button("✅ 确认", type="primary"):
+                        _code_sel = _pd["cands"][_opts.index(_sel)][1]
+                        st.session_state.pop("_ct_pending")
+                        _pt_exec(_pd["cmd"], _pd["reason"], _chosen=_code_sel)
+                    if _d2.button("✕ 取消"):
+                        st.session_state.pop("_ct_pending")
+                        st.rerun()
+                _ct_pick()
             # ── 持仓总览 + 按需生命周期体检 ──
             try:
                 _pj = json.loads(_pos_raw)
@@ -718,6 +742,34 @@ elif _nav == "💼 持仓终端":
                 st.dataframe(_rows, hide_index=True, use_container_width=True)
             except Exception:
                 pass
+            # 【V88·自选分级】A=盘中实时预警 B=日报观察 C=长期跟踪（watch_levels.json 私仓单一权威）
+            with st.expander("🏷️ 自选分级管理（A重点·实时预警｜B观察·日报｜C长期跟踪）"):
+                _wl_raw, _ = _priv_get("watchlist_v88.json")
+                _lvl_raw, _lvl_sha = _priv_get("watch_levels.json")
+                try:
+                    _wl_all = [(str(c), n) for lst in (json.loads(_wl_raw or "{}") or {}).values()
+                               for c, n in (lst if isinstance(lst, list) else [])]
+                except Exception:
+                    _wl_all = []
+                _lvls = json.loads(_lvl_raw) if _lvl_raw else {}
+                if not _wl_all:
+                    st.caption("自选池为空或读取失败")
+                else:
+                    _new_lvls = dict(_lvls)
+                    for _wc, _wn in _wl_all[:30]:
+                        _l1, _l2 = st.columns([4, 2])
+                        _l1.markdown(f"<div style='padding:6px 0 0 0'>• {_wn} <span style='color:#9ca3af'>({_wc})</span></div>",
+                                     unsafe_allow_html=True)
+                        _new_lvls[_wc] = _l2.selectbox("级别", ["A", "B", "C"],
+                                                       index=["A", "B", "C"].index(_lvls.get(_wc, "B")),
+                                                       key=f"_ct_lv_{_wc}", label_visibility="collapsed")
+                    if st.button("💾 保存分级", key="_ct_lv_save"):
+                        _ok_lv = _priv_put("watch_levels.json",
+                                           json.dumps({k: v for k, v in sorted(_new_lvls.items())},
+                                                      ensure_ascii=False, indent=1),
+                                           _lvl_sha, "自选分级调整(云端)")
+                        (st.success if _ok_lv else st.error)("已保存——盘中预警只扫A级+持仓，下轮生效" if _ok_lv else "保存失败，请重试")
+
             if st.button("🔍 生命周期体检（成本实算·移动止盈·约30秒）"):
                 import yfinance as _yf
                 import position_lifecycle as _pl
