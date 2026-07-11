@@ -62,36 +62,52 @@ st.set_page_config(page_title="V88 云端版", page_icon="☁️", layout="cente
                    initial_sidebar_state="collapsed")
 
 def _linkify_md(md: str) -> str:
-    """【V88·全局个股可点击】日报md里的 `[US:META]` token 与 名称（CODE）全部变内联链接
-    （?q=深链，字体字号不变）。表格行同时把名称列也链接化。"""
+    """【V88·全局个股可点击 v2】两件事：①个股名/token→内联链接（?q=深链）
+    ②markdown表格整体转HTML表格——md表格单元格内的HTML前端渲染不可靠，HTML表格100%可点。"""
     import re as _re
-    def _t2c(pre, cd):
-        return {"US": cd, "SH": cd, "SZ": cd, "HK": cd}.get(pre, cd)
-    out = []
-    for ln in md.splitlines():
-        m = _re.search(r"\[(US|SH|SZ|HK):([A-Za-z0-9\.\-]+)\]", ln)
-        if m and ln.strip().startswith("|"):
-            code = _t2c(m.group(1), m.group(2))
-            cells = ln.split("|")
-            for idx in range(len(cells)):
-                c = cells[idx].strip()
-                if _re.fullmatch(r"`?\[(US|SH|SZ|HK):[A-Za-z0-9\.\-]+\]`?", c):
-                    cells[idx] = f' <a href="?q={code}" target="_self" style="color:inherit;text-decoration:underline dotted 1px;">{c.strip("`")}</a> '
-                    # 名称列=token列的下一列
-                    if idx + 1 < len(cells) and cells[idx + 1].strip():
-                        nm = cells[idx + 1].strip()
-                        cells[idx + 1] = f' <a href="?q={code}" target="_self" style="color:inherit;text-decoration:underline dotted 1px;">{nm}</a> '
-                    break
-            ln = "|".join(cells)
-        else:
-            ln = _re.sub(r"\*\*([\u4e00-\u9fffA-Za-z0-9\-·]{2,14})\*\*[（(]([A-Za-z0-9\.\-]{2,12})[）)]",
-                         lambda mm: f'<b><a href="?q={mm.group(2)}" target="_self" style="color:inherit;text-decoration:underline dotted 1px;">{mm.group(1)}</a></b>（{mm.group(2)}）', ln)
-            ln = _re.sub(r"(?<![>\w])([\u4e00-\u9fffA-Za-z0-9\-·]{2,14})[（(]([A-Z0-9]{1,8}(?:\.[A-Z]{2})?)[）)]",
-                         lambda mm: f'<a href="?q={mm.group(2)}" target="_self" style="color:inherit;text-decoration:underline dotted 1px;">{mm.group(1)}</a>（{mm.group(2)}）', ln)
-        out.append(ln)
+    A = '<a href="?q={c}" target="_self" style="color:inherit;text-decoration:underline dotted 1px;">{t}</a>'
+
+    def _link_inline(txt):
+        txt = _re.sub(r"`?\[(US|SH|SZ|HK):([A-Za-z0-9\.\-]+)\]`?",
+                      lambda m: A.format(c=m.group(2), t=f"[{m.group(1)}:{m.group(2)}]"), txt)
+        txt = _re.sub(r"\*\*([\u4e00-\u9fffA-Za-z0-9\-·]{2,14})\*\*[（(]([A-Z0-9]{1,8}(?:\.[A-Z]{2})?)[）)]",
+                      lambda m: "<b>" + A.format(c=m.group(2), t=m.group(1)) + f"</b>（{m.group(2)}）", txt)
+        txt = _re.sub(r"(?<![>\w])([\u4e00-\u9fffA-Za-z0-9\-·]{2,14})[（(]([A-Z0-9]{1,8}(?:\.[A-Z]{2})?)[）)]",
+                      lambda m: A.format(c=m.group(2), t=m.group(1)) + f"（{m.group(2)}）", txt)
+        return txt
+
+    def _row_cells(ln):
+        return [c.strip() for c in ln.strip().strip("|").split("|")]
+
+    out, i, lines = [], 0, md.splitlines()
+    while i < len(lines):
+        ln = lines[i]
+        # 表格块：表头|分隔|数据行... → HTML表格
+        if (ln.strip().startswith("|") and i + 1 < len(lines)
+                and _re.match(r"^\s*\|[\s:\-|]+\|\s*$", lines[i + 1])):
+            hdr = _row_cells(ln)
+            i += 2
+            rows = []
+            while i < len(lines) and lines[i].strip().startswith("|"):
+                cells = _row_cells(lines[i])
+                # token行：把名称列也链接化（token列的下一列）
+                for k, c in enumerate(cells):
+                    mt = _re.fullmatch(r"`?\[(US|SH|SZ|HK):([A-Za-z0-9\.\-]+)\]`?", c)
+                    if mt and k + 1 < len(cells) and cells[k + 1] and "<a " not in cells[k + 1]:
+                        cells[k + 1] = A.format(c=mt.group(2), t=cells[k + 1])
+                rows.append([_link_inline(c) for c in cells])
+                i += 1
+            _md_b = lambda t: _re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", t)
+            html = ['<table style="border-collapse:collapse;width:100%;font-size:0.9em;">',
+                    "<tr>" + "".join(f'<th style="border:1px solid #ddd;padding:4px 8px;text-align:left;">{_md_b(h)}</th>' for h in hdr) + "</tr>"]
+            for r in rows:
+                html.append("<tr>" + "".join(f'<td style="border:1px solid #ddd;padding:4px 8px;">{_md_b(c)}</td>' for c in r) + "</tr>")
+            html.append("</table>")
+            out.append("".join(html))
+            continue
+        out.append(_link_inline(ln))
+        i += 1
     return "\n".join(out)
-
-
 def exp_md(title: str, md_text: str, expanded: bool = False):
     """【V88·段落复制】统一段落组件：折叠段右上角带📋复制（st.code自带复制按钮）"""
     with st.expander(title, expanded=expanded):

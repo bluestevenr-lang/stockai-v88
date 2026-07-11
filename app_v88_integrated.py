@@ -959,6 +959,31 @@ def market_of_code(code: str) -> str:
         return "🇨🇳A股"
     return "🇺🇸美股"
 
+@st.cache_data(ttl=3600, show_spinner=False)
+def _ath_pct(symbol: str):
+    """距历史最高点：(水位%, 高点日期, 距今天数)。全量历史真ATH（上证含2007年顶），1小时缓存"""
+    try:
+        import yfinance as _yfa
+        h = _yfa.Ticker(symbol).history(period="max")["Close"].dropna()
+        if len(h) < 100:
+            return None
+        pct = (float(h.iloc[-1]) / float(h.max()) - 1) * 100
+        d_ath = h.idxmax()
+        days = (h.index[-1] - d_ath).days
+        return (pct, str(d_ath)[:10], int(days))
+    except Exception:
+        return None
+
+
+def _ath_txt(symbol):
+    r = _ath_pct(symbol)
+    if r is None:
+        return ""
+    pct, d, days = r
+    _dur = f"{days/365:.1f}年" if days >= 365 else f"{days}天"
+    return f" | 距历史最高 {pct:+.1f}%（{d} 创下·已 {_dur}）"
+
+
 def _scan_cache_key(scan_type: str, scan_market: str, risk_pref: str = None) -> str:
     """生成扫描缓存文件键"""
     key = f"{scan_type}_{scan_market}"
@@ -2865,12 +2890,26 @@ def render_clickable_table(df_results, table_key):
                         st.toast(f"✅ 已选中 {n}，跳转深度作战室", icon="🎯")
                         st.rerun()
     
+    # 【V88·个股可点击】st.dataframe 不渲染HTML，用原生 LinkColumn 让「名称」列可点
+    # （点击=新标签打开 ?q=代码 深链→自动深度分析+入观察池；勾选行的老机制照旧可用）
+    _link_cfg = {}
+    _name_col = "名称" if "名称" in df_display.columns else ("股票" if "股票" in df_display.columns else None)
+    _orig_name_series = df_display[_name_col].copy() if _name_col else None  # 【V88·个股可点击】保留原名，供下方 selected_stocks 提取用，避免被URL覆盖污染
+    if _name_col and "代码" in df_display.columns:
+        try:
+            df_display[_name_col] = df_display.apply(
+                lambda r: f"?q={str(r['代码']).strip()}&stk={str(r[_name_col]).strip()}", axis=1)
+            _link_cfg[_name_col] = st.column_config.LinkColumn(
+                _name_col, display_text=r"stk=(.+)$", help="点击=深度分析并加入重点观察")
+        except Exception:
+            pass
     selection = st.dataframe(
         df_display,
         width='stretch',
         hide_index=True,
         on_select="rerun",
         selection_mode="multi-row",
+        column_config=_link_cfg or None,
         key=f"table_{table_key}"
     )
     
@@ -2888,8 +2927,10 @@ def render_clickable_table(df_results, table_key):
                 try:
                     row = df_display.iloc[idx]
                     code = str(row['代码']).strip()
-                    if '股票' in row and row['股票'] and str(row['股票']).strip():
+                    if '股票' in row and row['股票'] and str(row['股票']).strip() and '股票' != _name_col:
                         name = str(row['股票']).strip()
+                    elif _orig_name_series is not None and str(_orig_name_series.iloc[idx]).strip():
+                        name = str(_orig_name_series.iloc[idx]).strip()
                     elif '名称' in row and row['名称'] and str(row['名称']).strip():
                         name = str(row['名称']).strip()
                     else:
@@ -4158,7 +4199,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
             st.markdown(f'<div style="font-family: Georgia, \'Times New Roman\', SimSun, 宋体, serif; background:{_us_color};color:white;padding:0.6rem;border-radius:6px;font-weight:600;text-align:center;margin-top:1.2rem;font-size:12px;">{_us_v_safe}</div>', unsafe_allow_html=True)
         _vix_st = _sanitize_html(us_result.get("vix_status", ""))
         _reason_safe = _sanitize_html(us_result.get("reason", ""))[:120]
-        st.caption(f"[美国] {_vix_st} | {_reason_safe}")
+        st.caption(f"[美国] {_vix_st} | {_reason_safe}{_ath_txt('^GSPC')}")
         
         # 第二行：A股（6个指标：上证、沪深300、创业板、波动率、人民币、体制）
         st.markdown("#### 🇨🇳 A股")
@@ -4194,7 +4235,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
             _cn_v_safe = _sanitize_html(_cn_v)
             st.markdown(f'<div style="font-family: Georgia, \'Times New Roman\', SimSun, 宋体, serif; background:{_cn_color};color:white;padding:0.6rem;border-radius:6px;font-weight:600;text-align:center;margin-top:1.2rem;">{_cn_v_safe}</div>', unsafe_allow_html=True)
         _cn_vol_st = _sanitize_html(cn_result.get("vol_status", ""))
-        st.markdown(f'<p style="font-size: 12px; color: #666;">[A股] {_cn_vol_st} | {_reason_cn(cn_result.get("reason", ""))[:80]}</p>', unsafe_allow_html=True)
+        st.markdown(f'<p style="font-size: 12px; color: #666;">[A股] {_cn_vol_st} | {_reason_cn(cn_result.get("reason", ""))[:80]}{_ath_txt("000001.SS")}</p>', unsafe_allow_html=True)
         
         # 第三行：港股（6个指标：恒指、恒生科技、国企指数、波动率、港币、体制）
         st.markdown("#### 🇭🇰 港股")
@@ -4232,7 +4273,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
             _hk_v_safe = _sanitize_html(_hk_v)
             st.markdown(f'<div style="font-family: Georgia, \'Times New Roman\', SimSun, 宋体, serif; background:{_hk_color};color:white;padding:0.6rem;border-radius:6px;font-weight:600;text-align:center;margin-top:1.2rem;">{_hk_v_safe}</div>', unsafe_allow_html=True)
         _hk_vol_st = _sanitize_html(hk_result.get("vol_status", ""))
-        st.markdown(f'<p style="font-size: 12px; color: #666;">[港股] {_hk_vol_st} | {_reason_cn(hk_result.get("reason", ""))[:80]}</p>', unsafe_allow_html=True)
+        st.markdown(f'<p style="font-size: 12px; color: #666;">[港股] {_hk_vol_st} | {_reason_cn(hk_result.get("reason", ""))[:80]}{_ath_txt("^HSI")}</p>', unsafe_allow_html=True)
         
         # 宏观综合解读条 - 英文术语括号中文小一号
         try:
@@ -4843,6 +4884,13 @@ def _search_history_persist(code, name):
 _WATCHLIST_MAX = 20
 
 def _watchlist_save(d):
+    # 【V88·重点观察同步】搜索过的个股自动入观察池，镜像到私仓目录随日报提交上云
+    try:
+        import json as _j
+        (Path.home() / "Desktop" / "ai-daily-report-v2" / "watchlist_v88.json").write_text(
+            _j.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8")
+    except Exception:
+        pass
     try:
         _WATCHLIST_FILE.write_text(json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8")
     except Exception as _e:
@@ -11035,8 +11083,80 @@ def _module_header(icon, title, subtitle="", color_from="#667eea", color_to="#76
 # 【V96】首页·今日导航：回答"我今天该关注/买什么"
 # 数据全部来自本地日报/快照文件（每日3次自动更新），零网络请求、秒开、无闪烁
 # ═══════════════════════════════════════════════════════════════
+
+
+def _linkify_md(md: str) -> str:
+    """【V88·全局个股可点击 v2】两件事：①个股名/token→内联链接（?q=深链）
+    ②markdown表格整体转HTML表格——md表格单元格内的HTML前端渲染不可靠，HTML表格100%可点。"""
+    import re as _re
+    A = '<a href="?q={c}" target="_self" style="color:inherit;text-decoration:underline dotted 1px;">{t}</a>'
+
+    def _link_inline(txt):
+        txt = _re.sub(r"`?\[(US|SH|SZ|HK):([A-Za-z0-9\.\-]+)\]`?",
+                      lambda m: A.format(c=m.group(2), t=f"[{m.group(1)}:{m.group(2)}]"), txt)
+        txt = _re.sub(r"\*\*([\u4e00-\u9fffA-Za-z0-9\-·]{2,14})\*\*[（(]([A-Z0-9]{1,8}(?:\.[A-Z]{2})?)[）)]",
+                      lambda m: "<b>" + A.format(c=m.group(2), t=m.group(1)) + f"</b>（{m.group(2)}）", txt)
+        txt = _re.sub(r"(?<![>\w])([\u4e00-\u9fffA-Za-z0-9\-·]{2,14})[（(]([A-Z0-9]{1,8}(?:\.[A-Z]{2})?)[）)]",
+                      lambda m: A.format(c=m.group(2), t=m.group(1)) + f"（{m.group(2)}）", txt)
+        return txt
+
+    def _row_cells(ln):
+        return [c.strip() for c in ln.strip().strip("|").split("|")]
+
+    out, i, lines = [], 0, md.splitlines()
+    while i < len(lines):
+        ln = lines[i]
+        # 表格块：表头|分隔|数据行... → HTML表格
+        if (ln.strip().startswith("|") and i + 1 < len(lines)
+                and _re.match(r"^\s*\|[\s:\-|]+\|\s*$", lines[i + 1])):
+            hdr = _row_cells(ln)
+            i += 2
+            rows = []
+            while i < len(lines) and lines[i].strip().startswith("|"):
+                cells = _row_cells(lines[i])
+                # token行：把名称列也链接化（token列的下一列）
+                for k, c in enumerate(cells):
+                    mt = _re.fullmatch(r"`?\[(US|SH|SZ|HK):([A-Za-z0-9\.\-]+)\]`?", c)
+                    if mt and k + 1 < len(cells) and cells[k + 1] and "<a " not in cells[k + 1]:
+                        cells[k + 1] = A.format(c=mt.group(2), t=cells[k + 1])
+                rows.append([_link_inline(c) for c in cells])
+                i += 1
+            _md_b = lambda t: _re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", t)
+            html = ['<table style="border-collapse:collapse;width:100%;font-size:0.9em;">',
+                    "<tr>" + "".join(f'<th style="border:1px solid #ddd;padding:4px 8px;text-align:left;">{_md_b(h)}</th>' for h in hdr) + "</tr>"]
+            for r in rows:
+                html.append("<tr>" + "".join(f'<td style="border:1px solid #ddd;padding:4px 8px;">{_md_b(c)}</td>' for c in r) + "</tr>")
+            html.append("</table>")
+            out.append("".join(html))
+            continue
+        out.append(_link_inline(ln))
+        i += 1
+    return "\n".join(out)
+def _stk_link(name, code):
+    """【V88·内联可点个股】不改字体字号，名字即链接（?q=深链→自动深度分析+入观察池）"""
+    return f'<a href="?q={code}" target="_self" style="color:inherit;text-decoration:underline dotted 1px;">{name}</a>'
+
+
 def _render_today_nav():
     _repo = Path.home() / "Desktop" / "ai-daily-report-v2"
+    # ?q= 深链：点击任何内联个股名到达这里
+    try:
+        _q0 = st.query_params.get("q")
+        if _q0 and st.session_state.get("_q_done") != _q0:
+            st.session_state["_q_done"] = _q0
+            _nm0 = _q0
+            try:
+                import cloud_engine as _ceq0
+                _nm0 = _ceq0.name_of(_ceq0.to_yf(_q0)) or _q0
+            except Exception:
+                pass
+            _search_history_persist(_q0, _nm0)
+            _watchlist_add(_q0, _nm0)
+            st.session_state.scan_selected_code = _q0
+            st.session_state.scan_selected_name = _nm0
+            st.toast(f"🔍 {_nm0} 深度分析中（已入重点观察）", icon="⭐")
+    except Exception:
+        pass
     try:
         _snap = json.loads((_repo / "data" / "market_snapshot.json").read_text(encoding="utf-8"))
     except Exception:
@@ -11074,6 +11194,45 @@ def _render_today_nav():
         pass
 
     st.markdown("### 🧭 今日导航 · 该关注什么")
+    # 【V88·今日焦点】醒目置顶：重点推荐（引擎买入档）+ 重点观察（搜索过的个股）
+    def _tok2code(tok):
+        tok = str(tok).strip("`[] ")
+        return tok.split(":", 1)[1] if ":" in tok else tok
+
+    try:
+        _fxp = []
+        _iop = _rep.find("## 🎯 今日操作榜")
+        if _iop > 0:
+            for _lnf in _rep[_iop:_iop + 4000].splitlines():
+                if "买入/建仓" in _lnf and _lnf.strip().startswith("|"):
+                    _cf = [x.strip() for x in _lnf.split("|") if x.strip()]
+                    if len(_cf) >= 7:
+                        _fxp.append((_cf[2], _tok2code(_cf[1]), _cf[3].replace('**', '')[:40],
+                                     _cf[6].split("｜")[0].replace("**", "").strip()[:60]))
+                if len(_fxp) >= 3:
+                    break
+        if not _fxp:
+            st.info("⭐ **今日重点关注：今日无买入档推荐**（无标的同时通过 75分+72小时催化 双门槛）——观察为主，现金也是仓位")
+        if _fxp:
+            _fx_html = "<br>".join(
+                f"🟢 <b>{_stk_link(_n9, _c9)}</b> {_d9}<br>&nbsp;&nbsp;└ {_r9}"
+                for _n9, _c9, _d9, _r9 in _fxp)
+            st.success("**⭐ 今日重点关注（引擎买入档 Top3）** · 点股票名直接深度分析")
+            st.markdown(f"<div style='line-height:1.9'>{_fx_html}</div>", unsafe_allow_html=True)
+        _wl9 = _watchlist_load() or {}
+        _obs = []
+        for _mk9, _lst9 in _wl9.items():
+            for _c9, _n9 in list(_lst9)[-4:]:
+                _obs.append((_n9, _c9))
+        if _obs:
+            _wa9 = st.session_state.get('watch_alerts_v88') or {}
+            _obs_html = "、".join(_stk_link(_n9, _c9) for _n9, _c9 in _obs[:12])
+            st.markdown(
+                f"👁 <b>重点观察个股</b>（搜索/点击即自动加入，移除在「自选股」Tab）：{_obs_html}"
+                + (f" ｜ ⚡{len(_wa9.get('alerts') or [])} 条触发（见下方预警）" if _wa9.get('alerts') else ""),
+                unsafe_allow_html=True)
+    except Exception:
+        pass
     _gen = (_snap or {}).get("generated_at", "")
     st.caption(f"💡 不知道买什么先看这里：温度定仓位 → 水位定方向 → 轮动定板块 → 操作榜定标的 → 持仓提醒定纪律 ｜ 数据时间 {_gen}{_stale_note}")
 
@@ -11205,11 +11364,13 @@ def _render_today_nav():
 
     # 【V88·深度回调机会池】优质股回撤≥30%关注名单（日报流水线生成，三端同源）
     _ipb = _rep.find("## 💎 深度回调机会池")
+    if _ipb <= 0 and _rep:
+        st.caption("💎 深度回调机会池：今日无新入池标的")
     if _ipb > 0:
         _jpb = _rep.find("\n## ", _ipb + 5)
         with st.expander("💎 深度回调机会池（优质股·回撤≥30%·企稳信号）", expanded=False):
             _pbtxt = _rep[_ipb:_jpb if _jpb > 0 else _ipb + 2500]
-            st.markdown(_pbtxt)
+            st.markdown(_linkify_md(_pbtxt), unsafe_allow_html=True)
             with st.popover("📋 复制机会池"):
                 st.code(_pbtxt, language=None)
 
@@ -11220,10 +11381,10 @@ def _render_today_nav():
         if _i > 0:
             _j = _rep.find("## 二、", _i)
             with st.expander("🎯 今日操作榜（短线/长线 Top3）", expanded=False):
-                _ops_txt99 = _rep[_i + len("## 🎯 今日操作榜"):_j if _j > 0 else _i + 2500]
+                _ops_txt99 = _linkify_md(_rep[_i + len("## 🎯 今日操作榜"):_j if _j > 0 else _i + 2500])
                 with st.popover("📋 复制操作榜"):
                     st.code(_ops_txt99, language=None)
-                st.markdown(_ops_txt99)
+                st.markdown(_ops_txt99, unsafe_allow_html=True)
         else:
             st.caption("操作榜待日报生成后显示")
     with _c_hold:
