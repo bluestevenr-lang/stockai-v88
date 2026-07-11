@@ -11338,22 +11338,23 @@ def _render_today_nav():
                     _f9 = _ce_wa.analyze_trend_full(_df9)
                     if not _f9:
                         continue
-                    _t9 = _f9.get("turning") or {}
                     _last9 = _f9["last"]
                     if _last9 < _f9["stop"]:
                         _alerts9.append(f"❗ **{_n9}**({_c9})：现价{_last9}已破止损位{_f9['stop']}——纪律：离场/减仓，不要扛")
-                    elif _t9.get("side") == "top":
-                        _alerts9.append(f"⚠️ **{_n9}**({_c9})：{_t9['brief']}｜止盈参考：减仓位{_f9['reduce']}·跌破{_f9['stop']}离场")
-                    elif _t9.get("side") == "bottom":
-                        _alerts9.append(f"🔄 **{_n9}**({_c9})：{_t9['brief']}｜回踩买点{_f9['pullback']}·止损{_f9['stop']}")
-                    elif _f9.get("stage") in ("放量滞涨", "高位震荡") and _f9.get("pos52", 0) > 80:
-                        _alerts9.append(f"🟡 **{_n9}**({_c9})：{_f9['stage']}·52周{_f9['pos52']}%——冲高减仓位{_f9['reduce']}")
+                    else:
+                        # 【V88·多因子共振】买入/减仓须≥2维度（技术/量价/消息）共振，单指标不触发（与云端/飞书同源）
+                        _sw9 = _ce_wa.smart_watch_signal(_f9)
+                        if _sw9:
+                            _ic9 = "🛒" if _sw9["side"] == "buy" else "⚠️"
+                            _hd9 = "触发条件" if _sw9["side"] == "buy" else "风险原因"
+                            _alerts9.append(f"{_ic9} **{_n9}**({_c9})：**{_sw9['action']}**｜{_hd9}："
+                                            + "＋".join(_sw9["conditions"][:4]) + f"｜{_sw9['zone']}")
                 except Exception:
                     continue
             _wa = {"ts": time.time(), "alerts": _alerts9, "n": len(_pool_wa)}
             st.session_state['watch_alerts_v88'] = _wa
         if _wa.get("alerts"):
-            with st.expander(f"⚡ 关注股预警（自选+常搜+持仓 共{_wa['n']}只 · {len(_wa['alerts'])}条触发）", expanded=True):
+            with st.expander(f"⚡ 自选股智能预警（自选+常搜+持仓 共{_wa['n']}只 · {len(_wa['alerts'])}条触发 · 多因子共振）", expanded=True):
                 st.markdown("\n".join(f"- {a}" for a in _wa["alerts"]))
                 with st.popover("📋 复制预警"):
                     st.code("\n".join(a.replace("**", "") for a in _wa["alerts"]), language=None)

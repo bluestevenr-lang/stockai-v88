@@ -261,7 +261,9 @@ if _nav == "🧭 导航":
                                     "t": f"{_cf[3].replace('**','')[:40]}\n\n└ {_rsn[:60]}"})
                 if len(_fx) >= 3:
                     break
-        _iwa = _rep.find("## ⚡ 关注股预警")
+        _iwa = _rep.find("## ⚡ 自选股智能预警")
+        if _iwa < 0:
+            _iwa = _rep.find("## ⚡ 关注股预警")
         if _iwa > 0:
             for _lnw in _rep[_iwa:_iwa + 2000].splitlines():
                 _lnw = _lnw.strip()

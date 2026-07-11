@@ -575,6 +575,116 @@ def plain_readout(full, turning=None):
         return []
 
 
+_NEWS_NEG = ("下调", "暴跌", "大跌", "诉讼", "调查", "处罚", "罚款", "裁员", "亏损", "召回",
+             "退市", "减持", "违规", "警告", "下滑", "萎缩", "破产", "违约", "禁令", "制裁",
+             "downgrade", "lawsuit", "probe", "recall", "layoff", "miss", "fraud", "ban")
+_NEWS_POS = ("上调", "超预期", "中标", "回购", "增持", "获批", "大涨", "暴涨", "合作", "突破",
+             "创新高", "扩产", "订单", "分红", "利好", "发布", "上市", "涨价", "扭亏",
+             "upgrade", "beat", "buyback", "approval", "record", "surge", "partnership")
+
+
+def news_direction(title: str) -> str:
+    """确定性关键词判新闻方向：利好/利空/''（中性）。不用LLM。"""
+    t = str(title or "").lower()
+    neg = sum(1 for w in _NEWS_NEG if w in t)
+    pos = sum(1 for w in _NEWS_POS if w in t)
+    return "利空" if neg > pos else ("利好" if pos > neg else "")
+
+
+def smart_watch_signal(f, catalyst=None, earnings_days=None, sector_heat=None):
+    """【V88·自选股智能预警】多因子共振判买入/减仓（2026-07-11 用户定则）：
+    不允许单一指标触发信号——技术面/量价面/基本消息面 三个维度至少两个共振才出信号，防假突破防噪音。
+    买入提醒必须说明触发条件（趋势突破/放量/指标共振/催化）；减仓提醒必须说明风险原因。
+    输出明确动作 + 触发价格区间 + 风险等级。三端唯一实现（桌面/云端/飞书日报与盘中共用）。
+
+    f = analyze_trend_full 输出；catalyst = {"title","tier","source","url"}（72h内直接个股催化）；
+    earnings_days = 距财报天数（≤5 视为博弈期）；sector_heat = 行业热度 +1轮入/-1退潮/None未知。
+    返回 None（无信号=持有/观望）或
+    {side:'buy'/'reduce', action, conditions[带维度标签], zone, risk:'低/中/高', earnings_note}
+    """
+    if not f:
+        return None
+    macd, stage, vp = str(f.get("macd_txt", "")), f.get("stage", ""), str(f.get("vp", ""))
+    t = f.get("turning") or {}
+    cap = ""
+    try:
+        cap = f["breakdown"]["资金动向"][2]  # OBV 描述："资金连续N天流入·5日净流入·…"
+    except Exception:
+        pass
+    last, volr = f.get("last", 0), f.get("volr", 1.0)
+    ma = f.get("ma") or {}
+
+    # ── 维度① 技术面 ──
+    tech_b, tech_s = [], []
+    if "金叉" in macd and "死叉" not in macd:
+        tech_b.append("技术:MACD金叉")
+    if stage in ("底部启动", "启动确认", "趋势延续", "主升"):
+        tech_b.append(f"技术:趋势阶段={stage}")
+    if t.get("side") == "bottom":
+        tech_b.append(f"技术:底部拐点({t.get('brief', '')})")
+    if "多头" in str(f.get("ma_state", "")):
+        tech_b.append("技术:均线多头排列")
+    if f.get("breakout") and last and last >= float(f["breakout"]):
+        tech_b.append(f"技术:突破压力位{f['breakout']}")
+    if "死叉" in macd or "顶背离" in macd:
+        tech_s.append(f"技术:{'MACD死叉' if '死叉' in macd else 'MACD顶背离'}")
+    if stage in ("趋势转弱", "破位下跌", "放量滞涨"):
+        tech_s.append(f"技术:趋势破坏({stage})")
+    if t.get("side") == "top":
+        tech_s.append(f"技术:顶部拐点({t.get('brief', '')})")
+    if ma.get(20) and ma.get(55) and last and last < ma[20] and last < ma[55]:
+        tech_s.append("技术:跌破MA20与MA55")
+
+    # ── 维度② 量价/资金面 ──
+    vol_b, vol_s = [], []
+    if "放量突破" in vp or "放量上涨" in vp:
+        vol_b.append(f"量价:{vp.split('·')[0]}(量比{volr:.1f})")
+    # 资金维度：单日流向噪音大，须"连续≥2天"或"5日净流向"才算共振条件
+    if ("连续" in cap and "流入" in cap.split("·")[0]) or "5日净流入" in cap:
+        vol_b.append(f"资金:{cap.split('·')[0]}" + ("·5日净流入" if "5日净流入" in cap else ""))
+    if "放量下跌" in vp or "价跌量增" in vp or "放量滞涨" in vp:
+        vol_s.append(f"量价:{vp.split('·')[0]}(量比{volr:.1f})")
+    if ("连续" in cap and "流出" in cap.split("·")[0]) or "5日净流出" in cap:
+        vol_s.append(f"资金:{cap.split('·')[0]}" + ("·5日净流出" if "5日净流出" in cap else ""))
+
+    # ── 维度③ 基本面/消息面 ──
+    fund_b, fund_s = [], []
+    if catalyst and catalyst.get("tier") in ("A", "B"):
+        d = news_direction(catalyst.get("title", ""))
+        _src = f"{catalyst.get('source', '')}·{str(catalyst.get('title', ''))[:30]}"
+        if d == "利好":
+            fund_b.append(f"催化:利好(Tier {catalyst['tier']}) {_src}")
+        elif d == "利空":
+            fund_s.append(f"消息:利空(Tier {catalyst['tier']}) {_src}")
+    if sector_heat is not None:
+        if sector_heat > 0:
+            fund_b.append("行业:板块轮入·热度上行")
+        elif sector_heat < 0:
+            fund_s.append("行业:板块退潮")
+    earn_note = f"📅{earnings_days}天后财报·博弈期波动放大" if earnings_days is not None and 0 <= earnings_days <= 5 else ""
+
+    # ── 共振判定：≥2 个维度才触发 ──
+    b_dims = [x for x in (tech_b, vol_b, fund_b) if x]
+    s_dims = [x for x in (tech_s, vol_s, fund_s) if x]
+    total, concl = f.get("total", 0), f.get("conclusion", "")
+
+    if (len(s_dims) >= 2):
+        conds = [c for d in s_dims for c in d]
+        risk = "高" if len(s_dims) >= 3 or "破位" in stage else "中"
+        return {"side": "reduce", "action": f"减仓（风险等级:{risk}）", "conditions": conds,
+                "zone": f"减仓参考{f.get('reduce', '—')}·跌破{f.get('stop', '—')}离场",
+                "risk": risk, "earnings_note": earn_note}
+    if (len(b_dims) >= 2 and total >= 62 and concl not in ("回避", "减仓", "等待")
+            and not tech_s and not vol_s and not fund_s):  # 任一维度现卖出信号则否决买入，防假突破
+        conds = [c for d in b_dims for c in d]
+        risk = "低" if len(b_dims) >= 3 else "中"
+        return {"side": "buy", "action": f"买入（信号可信度:{'高' if risk == '低' else '中'}·风险等级:{risk}）",
+                "conditions": conds,
+                "zone": f"买入区{f.get('buy_zone', '—')}·止损{f.get('stop', '—')}",
+                "risk": risk, "earnings_note": earn_note}
+    return None
+
+
 def horizon_plans(full, df=None):
     """【V88·分期限剧本】把"该拿多久、到哪做什么、什么波动可以忽略"说成三句话。
     短线=做T区间+天数；中线=锚MA55·日内波动忽略；长线=锚年线·月度波动忽略。全实价。"""
