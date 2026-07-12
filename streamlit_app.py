@@ -61,6 +61,30 @@ def pub_meta() -> dict:
 st.set_page_config(page_title="V88 云端版", page_icon="☁️", layout="centered",
                    initial_sidebar_state="collapsed")
 
+@st.cache_data(ttl=3600, show_spinner=False)
+def _cloud_ath_many(codes: tuple) -> dict:
+    """云端个股历史最高水位：距全历史最高百分比及相隔天数。"""
+    from concurrent.futures import ThreadPoolExecutor
+    import yfinance as yf
+
+    def _one(code):
+        raw = str(code).strip().upper()
+        yc = raw.replace(".SH", ".SS")
+        if yc.isdigit() and len(yc) == 6:
+            yc += ".SS" if yc[0] in "569" else ".SZ"
+        try:
+            close = yf.Ticker(yc).history(period="max")["Close"].dropna()
+            if len(close) < 6:
+                return raw, "历史水位待核"
+            last, ath = float(close.iloc[-1]), float(close.max())
+            days = int((close.index[-1] - close.idxmax()).days)
+            return raw, f"距历史最高{(last / ath - 1) * 100:+.1f}%｜高点相隔{days}天"
+        except Exception:
+            return raw, "历史水位待核"
+
+    with ThreadPoolExecutor(max_workers=min(8, max(1, len(codes)))) as ex:
+        return dict(ex.map(_one, codes))
+
 def _linkify_md(md: str) -> str:
     """【V88·全局个股可点击 v2】两件事：①个股名/token→内联链接（?q=深链）
     ②markdown表格整体转HTML表格——md表格单元格内的HTML前端渲染不可靠，HTML表格100%可点。"""
@@ -242,8 +266,45 @@ else:
 _NOT_READY = "📭 数据生成中（每交易日 07:00/14:00/21:00 自动发布，稍后自动出现，可点右上 🔄 刷新）"
 
 # ── 🧭 导航 ─────────────────────────────────────────────────
+def _linkify_cloud(md: str) -> str:
+    """【V88·云端个股可点】把 [US:CODE] token 与 **名称**（CODE） 转成 ?q= 深链（蓝色可点）。"""
+    import re as _rc
+    _A = '<a href="?q={c}" target="_self" style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{t}</a>'
+    md = _rc.sub(r"`?\[(US|SH|SZ|HK):([A-Za-z0-9\.\-]+)\]`?",
+                 lambda m: _A.format(c=m.group(2), t=f"[{m.group(1)}:{m.group(2)}]"), md)
+    md = _rc.sub(r"\*\*([一-鿿A-Za-z0-9\-·]{2,14})\*\*[（(]([A-Z0-9]{1,8}(?:\.[A-Z]{2})?)[）)]",
+                 lambda m: _A.format(c=m.group(2), t=m.group(1)) + f"（{m.group(2)}）", md)
+    return md
+
+
+# 【V88·非交易日判定】meta 里 outlook_ts 为今日 → 非交易日（流水线仅非交易日发前瞻）
+def _cloud_is_nontrading(meta: dict) -> bool:
+    from datetime import datetime as _dt, timezone as _tz, timedelta as _td
+    _today = _dt.now(_tz(_td(hours=8))).strftime("%Y-%m-%d")
+    _ots = str((meta or {}).get("outlook_ts") or "")
+    if _ots.startswith(_today):
+        return True
+    # 兜底：北京时间周末
+    return _dt.now(_tz(_td(hours=8))).weekday() >= 5
+
+
 if _nav == "🧭 导航":
     _rep = _report_text if _report_sync_ok else ""
+    _meta_nav = pub_meta()
+    # ── 非交易日：置顶「下一交易日前瞻」──
+    if _cloud_is_nontrading(_meta_nav):
+        _outlook_txt = pub_text("outlook.md") or ""
+        if _outlook_txt.strip():
+            st.markdown("#### 🔮 下一交易日前瞻 · 非交易日看这里")
+            if _meta_nav.get("outlook_ts"):
+                st.caption(_fresh_caption(_meta_nav["outlook_ts"], "前瞻") + " · 非交易日生成")
+            st.markdown(_linkify_cloud(_outlook_txt), unsafe_allow_html=True)
+            with st.popover("📋 复制前瞻"):
+                st.code(_outlook_txt, language=None)
+            st.divider()
+            st.caption("下方为最近交易日的行情快照与温度定位（供延续参考）：")
+        else:
+            st.info("🔮 下一交易日前瞻生成中，稍后点右上 🔄 刷新。")
     st.markdown("#### 🧭 今日导航 · 该关注什么")
     # 【V88·今日焦点】醒目置顶：重点推荐 + 重点观察触发
     try:
@@ -272,7 +333,7 @@ if _nav == "🧭 导航":
                 if len(_ob) >= 3:
                     break
         def _lnk(nm, cd):
-            return f'<a href="?q={cd}" target="_self" style="color:inherit;text-decoration:underline dotted 1px;">{nm}</a>'
+            return f'<a href="?q={cd}" target="_self" style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{nm}</a>'
         if not _fx:
             st.info("⭐ **今日重点关注：今日无买入档推荐**（无标的通过 75分+催化 双门槛）——观察为主，现金也是仓位")
         if _fx:
@@ -590,7 +651,10 @@ elif _nav in ("📊 日报", "📅 周报"):
                              mime="text/markdown", use_container_width=True)
         with _cc2.popover("📋 复制全文", use_container_width=True):
             st.code(_txt[:12000], language=None)
-        st.markdown(_txt)
+        _ledger_marker = "## 🔗 可核验来源台账"
+        _ledger_pos = _txt.find(_ledger_marker)
+        _report_body = _txt[:_ledger_pos].rstrip() if _ledger_pos >= 0 else _txt
+        st.markdown(_report_body)
         if _nav == "📊 日报" and _source_ledger.get("sources"):
             with st.expander("🔗 可核验来源（原文链接）", expanded=False):
                 with st.popover("📋 复制来源清单"):
@@ -598,9 +662,12 @@ elif _nav in ("📊 日报", "📅 周报"):
                 for _src in _source_ledger["sources"][:20]:
                     _label = f"[{_src.get('id')}] Tier {_src.get('tier')} · {_src.get('source')}"
                     if _src.get("url"):
-                        st.markdown(f"- [{_label} · {_src.get('title')}]({_src.get('url')})")
+                        st.markdown(f"<div style='font-size:9px;line-height:1.3'>• "
+                                    f"<a href='{_src.get('url')}' target='_blank'>{_label} · {_src.get('title')}</a></div>",
+                                    unsafe_allow_html=True)
                     else:
-                        st.markdown(f"- {_label} · {_src.get('title')}（缺原文链接）")
+                        st.markdown(f"<div style='font-size:9px;line-height:1.3'>• {_label} · "
+                                    f"{_src.get('title')}（缺原文链接）</div>", unsafe_allow_html=True)
         st.caption("💡 持仓建议为隐私内容，不在云端公开显示；见飞书或 Mac 版")
     else:
         st.info(_NOT_READY if _nav == "📊 日报" else "📅 周报每周日生成")
@@ -759,6 +826,13 @@ elif _nav == "💼 持仓终端":
                 _rows = [{"账户": acc, "名称": h.get("name"), "代码": h.get("code"),
                           "股数": h.get("shares"), "成本": h.get("cost")}
                          for acc, a in (_pj.get("accounts") or {}).items() for h in (a.get("holdings") or [])]
+                _hold_codes = tuple(dict.fromkeys(str(r.get("代码", "")).upper() for r in _rows if r.get("代码")))
+                _hold_bar = st.progress(0, text="计算持仓历史最高水位…")
+                _hold_water = _cloud_ath_many(_hold_codes) if _hold_codes else {}
+                _hold_bar.progress(1.0, text="持仓历史最高水位计算完成")
+                _hold_bar.empty()
+                for _r in _rows:
+                    _r["历史水位"] = _hold_water.get(str(_r.get("代码", "")).upper(), "历史水位待核")
                 st.dataframe(_rows, hide_index=True, use_container_width=True)
             except Exception:
                 pass
@@ -770,8 +844,8 @@ elif _nav == "💼 持仓终端":
                         f"@{t.get('sell_price') or t.get('cost', '')}" for t in reversed(_trs)))
             except Exception:
                 pass
-            # 【V88·自选分级】A=盘中实时预警 B=日报观察 C=长期跟踪（watch_levels.json 私仓单一权威）
-            with st.expander("🏷️ 自选分级管理（A重点·实时预警｜B观察·日报｜C长期跟踪）"):
+            # 【V88·自选分级】A=对应市场交易日盘中每3小时 B=每天 C=每周低频
+            with st.expander("🏷️ 自选分级管理（A盘中每3小时｜B每天｜C每周低频）"):
                 _wl_raw, _ = _priv_get("watchlist_v88.json")
                 _lvl_raw, _lvl_sha = _priv_get("watch_levels.json")
                 try:
@@ -784,9 +858,16 @@ elif _nav == "💼 持仓终端":
                     st.caption("自选池为空或读取失败")
                 else:
                     _new_lvls = dict(_lvls)
+                    _wl_codes = tuple(dict.fromkeys(str(c).upper() for c, _n in _wl_all))
+                    _wl_bar = st.progress(0, text="计算自选股历史最高水位…")
+                    _wl_water = _cloud_ath_many(_wl_codes) if _wl_codes else {}
+                    _wl_bar.progress(1.0, text="自选股历史最高水位计算完成")
+                    _wl_bar.empty()
                     for _wc, _wn in _wl_all[:30]:
                         _l1, _l2 = st.columns([4, 2])
-                        _l1.markdown(f"<div style='padding:6px 0 0 0'>• {_wn} <span style='color:#9ca3af'>({_wc})</span></div>",
+                        _ww = _wl_water.get(str(_wc).upper(), "历史水位待核")
+                        _l1.markdown(f"<div style='padding:4px 0 0 0'>• {_wn} <span style='color:#9ca3af'>({_wc})</span>"
+                                     f"<div style='font-size:9px;color:#64748b;margin-left:10px'>{_ww}</div></div>",
                                      unsafe_allow_html=True)
                         _new_lvls[_wc] = _l2.selectbox("级别", ["A", "B", "C"],
                                                        index=["A", "B", "C"].index(_lvls.get(_wc, "B")),
