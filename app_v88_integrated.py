@@ -4850,7 +4850,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
         import traceback
         traceback.print_exc()
 
-    st.markdown("---")  # 分隔线
+    # 宏观卡片与主功能紧接；不再用高分隔线额外占用纵向空间。
 
 # 【V90.3】性能监控已移到左侧边栏
 
@@ -11397,7 +11397,13 @@ with st.sidebar:
 # 12. 主界面 - 标题（修复遮挡）
 # ═══════════════════════════════════════════════════════════════
 st.markdown(
-    '<div style="text-align:center;margin:.2rem 0 .45rem;color:#64748b;font-size:11px;">👑 V88 · 同源行情 / AI日报 / 持仓决策</div>',
+    '''<style>
+    div[data-testid="stElementContainer"]:has(.v88-mini-brand){
+        margin-top:-1.75rem!important;margin-bottom:-.55rem!important;min-height:10px!important;
+    }
+    .v88-mini-brand{text-align:left;margin:0!important;padding:0!important;color:#7b8798;
+        font-size:9px!important;line-height:1!important;white-space:nowrap;}
+    </style><div class="v88-mini-brand">👑 V88 · 同源行情 / AI日报 / 持仓决策</div>''',
     unsafe_allow_html=True
 )
 # 【V90.7】选中股票后置顶提示
