@@ -496,8 +496,12 @@ if _nav == "🧭 导航":
         _rot_cloud = (_snap or {}).get("rotation_forecast") or {}
         if _rot_cloud:
             st.markdown("**🧠 板块热度与轮换周期思维导图（日 / 周 / 月）**")
-            from rotation_ui import rotation_map_html as _rotation_map_html_cloud
-            st.markdown(_rotation_map_html_cloud(_rot_cloud, "v88-cloud-nav-rotation"), unsafe_allow_html=True)
+            from rotation_ui import rotation_map_html as _rotation_map_html_cloud, available_markets as _am_cloud
+            _mk_c = _am_cloud(_rot_cloud)
+            _focus_c = (st.radio("时钟聚焦市场", _mk_c, horizontal=True, key="v88_cloud_nav_rot_focus",
+                                 label_visibility="collapsed")
+                        if len(_mk_c) > 1 else (_mk_c[0] if _mk_c else "美股"))
+            st.markdown(_rotation_map_html_cloud(_rot_cloud, "v88-cloud-nav-rotation", _focus_c), unsafe_allow_html=True)
     else:
         st.info(_NOT_READY)
     # 🔥 最新热点（直接可见，详情见「🔥 热点新闻」页）

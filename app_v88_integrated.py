@@ -11843,8 +11843,12 @@ def _render_today_nav():
         if _rot_forecast9:
             st.markdown("**🧠 板块热度与轮换周期思维导图（日 / 周 / 月）**")
             try:
-                from rotation_ui import rotation_map_html as _rotation_map_html9
-                st.markdown(_rotation_map_html9(_rot_forecast9, "v88-nav-rotation"), unsafe_allow_html=True)
+                from rotation_ui import rotation_map_html as _rotation_map_html9, available_markets as _am9
+                _mk9 = _am9(_rot_forecast9)
+                _focus9 = (st.radio("时钟聚焦市场", _mk9, horizontal=True, key="v88_nav_rot_focus",
+                                    label_visibility="collapsed")
+                           if len(_mk9) > 1 else (_mk9[0] if _mk9 else "美股"))
+                st.markdown(_rotation_map_html9(_rot_forecast9, "v88-nav-rotation", _focus9), unsafe_allow_html=True)
             except Exception as _rot_ui_e9:
                 logging.debug(f"轮转导图渲染失败: {_rot_ui_e9}")
         # 【V88·复制】今日导航摘要一键复制（温度/指数/拐点/轮动）

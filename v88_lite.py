@@ -204,8 +204,12 @@ if _nav == "🧭 导航":
         _rot_lite = (_snap or {}).get("rotation_forecast") or {}
         if _rot_lite:
             st.markdown("**🧠 板块热度与轮换周期思维导图（日 / 周 / 月）**")
-            from rotation_ui import rotation_map_html as _rotation_map_html_lite
-            st.markdown(_rotation_map_html_lite(_rot_lite, "v88-lite-nav-rotation"), unsafe_allow_html=True)
+            from rotation_ui import rotation_map_html as _rotation_map_html_lite, available_markets as _am_lite
+            _mk_l = _am_lite(_rot_lite)
+            _focus_l = (st.radio("时钟聚焦市场", _mk_l, horizontal=True, key="v88_lite_nav_rot_focus",
+                                 label_visibility="collapsed")
+                        if len(_mk_l) > 1 else (_mk_l[0] if _mk_l else "美股"))
+            st.markdown(_rotation_map_html_lite(_rot_lite, "v88-lite-nav-rotation", _focus_l), unsafe_allow_html=True)
     else:
         st.info("📭 大盘快照未生成（日报流水线每日 07:00/14:00/21:00 更新）")
 
