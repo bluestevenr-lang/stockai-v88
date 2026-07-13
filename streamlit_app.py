@@ -348,7 +348,22 @@ if _nav == "🧭 导航":
         def _lnk(nm, cd):
             return f'<a href="?q={cd}" target="_self" style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{nm}</a>'
         if not _fx:
-            st.info("⭐ **今日重点关注：今日无买入档推荐**（无标的通过 75分+催化 双门槛）——观察为主，现金也是仓位")
+            if _quality == "plan_b":
+                st.info("⭐ **今日策略：不强制给买入指令，转为机会观察＋风险保护**——优先保护仓位、已有利润和整体胜率")
+                _pb_lines = []
+                _pb_market = ""
+                _pb_start = _rep.find("## 六、🔭 明日与本周参考")
+                for _pbl in (_rep[_pb_start:] if _pb_start >= 0 else "").splitlines():
+                    if _pbl.startswith("### "):
+                        _pb_market = _pbl.replace("### ", "").strip()
+                    elif "**观察个股**：" in _pbl:
+                        _pb_lines.append(f"<b>{_pb_market}·机会观察</b>：{_pbl.split('：', 1)[-1]}")
+                    elif "**风险保护**：" in _pbl:
+                        _pb_lines.append(f"<b>{_pb_market}·风险保护</b>：{_pbl.split('：', 1)[-1]}")
+                if _pb_lines:
+                    st.markdown("<div style='line-height:1.75;font-size:12px'>" + "<br>".join(_pb_lines) + "</div>", unsafe_allow_html=True)
+            else:
+                st.info("⭐ **今日无强制买入信号**（未同时通过75分＋72小时催化）——继续观察并保护仓位，现金也是仓位")
         if _fx:
             st.success("**⭐ 今日重点关注（引擎买入档 Top3）** · 点股票名直接深度分析")
             _h = "<br>".join(f"🟢 <b>{_lnk(x['n'], x['c'])}</b> {x['t'].replace(chr(10)*2, '<br>&nbsp;&nbsp;')}" for x in _fx)
