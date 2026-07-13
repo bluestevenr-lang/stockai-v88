@@ -13,7 +13,16 @@ import json
 import time
 from pathlib import Path
 
-BASE = Path(__file__).resolve().parent.parent
+# 【V88·路径兜底】兼容两处拷贝：私仓 src/position_lifecycle.py（根在 parent.parent）与
+# StockAI 根目录这份（根在 parent）。以 positions.json 所在目录为准，避免读到仓库外。
+def _find_base() -> Path:
+    here = Path(__file__).resolve().parent
+    for cand in (here, here.parent):
+        if (cand / "positions.json").exists() or (cand / "data").is_dir():
+            return cand
+    return here
+
+BASE = _find_base()
 PEAKS = BASE / "data" / "position_peaks.json"
 
 # 利润保护期定则
@@ -66,15 +75,26 @@ def _trend_broken(f: dict) -> list:
     return sig
 
 
-def assess(h: dict, f: dict, peaks: dict = None) -> dict:
+# 【V88·关注紧迫度】今日 > 明日 > 本周 > 本月（越靠前越紧）。用户拍板：按此四档关注卖点。
+_URGENCY_ORDER = ["本月", "本周", "明日", "今日"]
+
+def _bump(u: str, steps: int = 1) -> str:
+    i = min(len(_URGENCY_ORDER) - 1, _URGENCY_ORDER.index(u) + max(0, steps))
+    return _URGENCY_ORDER[i]
+
+
+def assess(h: dict, f: dict, peaks: dict = None,
+           news_dir: int = 0, risk_probs: dict = None) -> dict:
     """单条持仓生命周期判定。
 
     h: positions.json 的 holding（需 cost；shares/name/code 可选）
     f: cloud_engine.analyze_trend_full 输出（含实时 last）
     peaks: load_peaks() 的字典，传入则就地更新峰值/里程碑（调用方负责 save）
+    news_dir: 该标的当日新闻催化方向（-1利空/0中性/+1利好；来自 live news_live.json）
+    risk_probs: RiskForecaster.forecast() 输出（含 p_drawdown 回撤概率），可选
 
-    返回 {stage, action, pnl, peak, signals[], hold, reduce, exit}
-    action ∈ 持有 / 评估减仓 / 减仓 / 退出
+    返回 {stage, action, pnl, peak, signals[], hold, reduce, exit, urgency, news_dir}
+    action ∈ 持有 / 评估减仓 / 减仓 / 退出；urgency ∈ 今日 / 明日 / 本周 / 本月
     """
     cost = float(h.get("cost") or 0)
     last = float(f.get("last") or 0)
@@ -145,9 +165,92 @@ def assess(h: dict, f: dict, peaks: dict = None) -> dict:
         reduce = "减仓触发:趋势破坏信号"
         exit_ = f"退出触发:亏至{LOSS_GROWTH if cls == '成长' else LOSS_CORE:.0f}%纪律线"
 
+    # ── 【P0】新闻催化 + 回撤概率并入卖出判断 ──
+    p_dd = None
+    if risk_probs:
+        try:
+            p_dd = float(risk_probs.get("p_drawdown"))
+        except Exception:
+            p_dd = None
+    if news_dir and news_dir < 0:                 # 负面催化：升级动作
+        signals.append("🔻利空催化")
+        if action == "持有":
+            action = "评估减仓"
+        elif action == "评估减仓":
+            action = "减仓"
+    elif news_dir and news_dir > 0:               # 正面催化：仅标注，不改卖出
+        signals.append("🔺利好催化")
+    if p_dd is not None and p_dd >= 0.60 and action == "持有":
+        action = "评估减仓"
+    if p_dd is not None and p_dd >= 0.60:
+        signals.append(f"📈回撤概率{p_dd * 100:.0f}%")
+
+    # ── 【P1】关注紧迫度：今日 / 明日 / 本周 / 本月 ──
+    urgency = {"退出": "今日", "减仓": "今日", "评估减仓": "明日"}.get(action, "本月")
+    if action == "持有" and any(str(s).startswith("🎯") for s in signals):
+        urgency = "本周"                          # 有评估档里程碑：本周留意
+    if news_dir and news_dir < 0:
+        urgency = _bump(urgency, 1)               # 利空催化：紧一档
+    if p_dd is not None and p_dd >= 0.60:
+        urgency = _bump(urgency, 1)               # 高回撤概率：紧一档
+
     return {"stage": stage, "action": action, "cls": cls,
             "pnl": round(pnl, 1), "peak": round(peak, 1), "signals": signals,
-            "hold": hold, "reduce": reduce, "exit": exit_}
+            "hold": hold, "reduce": reduce, "exit": exit_,
+            "urgency": urgency, "news_dir": news_dir}
+
+
+def _norm_code(c) -> str:
+    """代码归一：去交易所后缀/前缀，便于持仓与新闻标的互相匹配。"""
+    return str(c or "").upper().split(".")[0].lstrip("SHZ") or str(c or "").upper()
+
+
+def _news_dir_map() -> dict:
+    """code → 当日新闻催化方向(-1/0/1)，同标的取最负面一条。
+    来源 live 发布的 news_live.json：本地 data/ 优先，否则拉公开分支（含 dir 字段）。"""
+    items = None
+    try:
+        items = json.loads((BASE / "data" / "news_live.json").read_text(encoding="utf-8")).get("items")
+    except Exception:
+        items = None
+    if not items:
+        try:
+            import requests
+            r = requests.get("https://raw.githubusercontent.com/bluestevenr-lang/stockai-v88/data/pub/news_live.json",
+                             timeout=8)
+            items = r.json().get("items") if r.status_code == 200 else None
+        except Exception:
+            items = None
+    m = {}
+    for it in (items or []):
+        d = int(it.get("dir", 0) or 0)
+        for s in (it.get("stk") or []):
+            c = _norm_code(s.get("c", ""))
+            if not c:
+                continue
+            m[c] = min(m.get(c, 0), d) if d < 0 else (m.get(c, 0) or d)
+    return m
+
+
+def _risk_probs_from_df(df):
+    """用日线算 RSI/MA 喂 RiskForecaster，返回三概率（含 p_drawdown）；失败 None。"""
+    try:
+        try:
+            from modules.regime.risk_forecaster import RiskForecaster
+        except Exception:
+            from src.modules.regime.risk_forecaster import RiskForecaster
+        c = df["Close"].astype(float)
+        delta = c.diff()
+        up = delta.clip(lower=0).rolling(14).mean()
+        dn = (-delta.clip(upper=0)).rolling(14).mean()
+        rsi = 100 - 100 / (1 + up / dn.replace(0, 1e-9))
+        last = {"Close": float(c.iloc[-1]),
+                "MA20": float(c.rolling(20).mean().iloc[-1]),
+                "MA60": float(c.rolling(60).mean().iloc[-1]),
+                "RSI": float(rsi.iloc[-1])}
+        return RiskForecaster().forecast(df, last)
+    except Exception:
+        return None
 
 
 def build_section() -> str:
@@ -164,6 +267,8 @@ def build_section() -> str:
     except Exception:
         return ""
     peaks = load_peaks()
+    nmap = _news_dir_map()
+    _URANK = {"今日": 0, "明日": 1, "本周": 2, "本月": 3}
     rows = []
     for acc, a in (pj.get("accounts") or {}).items():
         for h in (a.get("holdings") or []):
@@ -175,25 +280,31 @@ def build_section() -> str:
                 f = _atf(df) if df is not None and len(df) >= 35 else None
                 if not f:
                     continue
-                r = assess(h, f, peaks)
+                _nd = nmap.get(_norm_code(code), 0)
+                _rp = _risk_probs_from_df(df)
+                r = assess(h, f, peaks, news_dir=_nd, risk_probs=_rp)
                 if not r:
                     continue
                 mark = {"退出": "❗", "减仓": "⚠️", "评估减仓": "🎯"}.get(r["action"], "")
                 sig = "；".join(r["signals"]) or "—"
-                rows.append((0 if r["action"] in ("退出", "减仓") else 1,
+                # 紧迫度并进「动作」列首（不新增列，省版面）；新闻催化只在信号里留最小 🔻/🔺 标。
+                _act = f"{r['urgency']}·{mark}{r['action']}"
+                rows.append((_URANK.get(r["urgency"], 3),
+                             0 if r["action"] in ("退出", "减仓") else 1,
                              f"| {h.get('name')}（{code}） | {r['pnl']:+.1f}% | {r['peak']:+.1f}% | "
-                             f"{r['stage']} | {mark}{r['action']} | {sig} | {r['reduce']}；{r['exit']} |"))
+                             f"{r['stage']} | {_act} | {sig} | {r['reduce']}；{r['exit']} |"))
             except Exception:
                 continue
     save_peaks(peaks)
     if not rows:
         return ""
-    rows.sort(key=lambda x: x[0])
+    rows.sort(key=lambda x: (x[0], x[1]))
     return ("## 💼 持仓生命周期（成本实算·移动止盈·不预测顶部只管纪律）\n\n"
-            "> 峰值浮盈≥15%进利润保护期；从峰值回撤超10点或趋势破坏→锁盈减仓；"
-            "+20%起每档评估兑现；成长股-10%/核心资产-12%破MA55纪律退出。\n\n"
-            "| 持仓 | 浮盈 | 峰值 | 阶段 | 动作 | 当前信号 | 减仓/退出触发 |\n"
-            "|---|---|---|---|---|---|---|\n" + "\n".join(r[1] for r in rows) + "\n\n---\n")
+            "> 关注紧迫度：今日>明日>本周>本月（并入动作列首）。峰值浮盈≥15%进利润保护期；"
+            "从峰值回撤超10点或趋势破坏→锁盈减仓；+20%起每档评估兑现；成长股-10%/核心资产-12%破MA55纪律退出。"
+            "🔻利空催化/🔺利好催化=当日新闻方向；回撤概率≥60%或利空催化会自动收紧动作与紧迫度。\n\n"
+            "| 持仓 | 浮盈 | 峰值 | 阶段 | 关注·动作 | 当前信号 | 减仓/退出触发 |\n"
+            "|---|---|---|---|---|---|---|\n" + "\n".join(r[2] for r in rows) + "\n\n---\n")
 
 
 def append_section() -> dict:

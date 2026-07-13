@@ -463,7 +463,9 @@ if _nav == "🧭 导航":
             for _it0 in _its0[:5]:
                 _d0 = _parse_ts(_it0.get("time"))
                 _t0 = _d0.strftime("%H:%M") if _d0 else "--"
-                st.markdown(f"- `{_t0}` {_it0.get('s','')}｜{str(_it0.get('t',''))[:60]}")
+                _dd0 = int(_it0.get("dir", 0) or 0)
+                _dm0 = "🔻" if _dd0 < 0 else ("🔺" if _dd0 > 0 else "")
+                st.markdown(f"- {_dm0}`{_t0}` {_it0.get('s','')}｜{str(_it0.get('t',''))[:60]}")
             st.caption("👉 完整实时新闻流见顶部「🔥 热点新闻」页（时段筛选/来源/链接）")
     except Exception:
         pass
@@ -514,6 +516,19 @@ elif _nav == "🔥 热点新闻":
         _tps = _nl.get("topics") or []
         if _tps:
             st.markdown("**🔥 热点主题**：" + " · ".join(f"`{t['w']}({t['n']})`" for t in _tps))
+        # 【V88·单条重大通道】补足热点榜漏掉的突发（单条即入，标最小字号，不占版面）
+        _mj = _nl.get("major_news") or []
+        if _mj:
+            _ml = []
+            for _m in _mj[:6]:
+                _g = "🔻" if _m.get("dir", 0) < 0 else ("🔺" if _m.get("dir", 0) > 0 else "•")
+                _rl = "／".join(x.get("n", "") for x in (_m.get("stk") or [])[:2])
+                _tt = str(_m.get("t", ""))[:46]
+                _uu = _m.get("url") or ""
+                _ttl = f"<a href='{_uu}' target='_blank' style='color:inherit'>{_tt}</a>" if _uu else _tt
+                _ml.append(f"{_g} {_ttl}" + (f" <span style='opacity:.6'>{_rl}</span>" if _rl else ""))
+            st.markdown("<div style='font-size:0.78em;line-height:1.5;opacity:.9'>"
+                        "<b>🚨 单条重大</b>　" + "　".join(_ml) + "</div>", unsafe_allow_html=True)
         # 【V88·复制】新闻清单一键复制（前30条：时间｜来源｜标题）
         with st.popover("📋 复制新闻清单", use_container_width=True):
             _cp_news = "\n".join(f"{(it.get('time') or '')[-11:]}｜{it.get('s','')}｜{it.get('t','')}"
@@ -535,13 +550,16 @@ elif _nav == "🔥 热点新闻":
             _tstr = _dt.strftime("%m-%d %H:%M") if _dt else "——"
             _ttl = str(_it.get("t", "")).replace("[", "［").replace("]", "］")
             _url = _it.get("url") or ""
-            _line = (f"**`{_tstr}`** ｜ {_it.get('s','')} ｜ [{_ttl}]({_url})" if _url
-                     else f"**`{_tstr}`** ｜ {_it.get('s','')} ｜ {_ttl}")
-            # 【C1·新闻映射】相关标的直接可见（复制名字即可去个股搜索查）
-            _rel = " ".join(f"`{x['n']}({x['c']})`" for x in (_it.get("stk") or [])[:3])
+            # 【V88·新闻方向标·最小字号】🔻利空/🔺利好，单glyph前置，不占版面
+            _d = int(_it.get("dir", 0) or 0)
+            _dm = "🔻 " if _d < 0 else ("🔺 " if _d > 0 else "")
+            _line = (f"{_dm}**`{_tstr}`** ｜ {_it.get('s','')} ｜ [{_ttl}]({_url})" if _url
+                     else f"{_dm}**`{_tstr}`** ｜ {_it.get('s','')} ｜ {_ttl}")
+            # 【C1·新闻映射】相关标的（最小字号，弱化不占版面）
+            _rel = "／".join(x.get("n", "") for x in (_it.get("stk") or [])[:3])
             if _rel:
-                _line += f" ｜ 📌{_rel}"
-            st.markdown(_line)
+                _line += f" <span style='font-size:0.72em;opacity:.6'>📌{_rel}</span>"
+            st.markdown(_line, unsafe_allow_html=True)
             _shown += 1
             if _shown >= 50:
                 break
@@ -960,6 +978,7 @@ elif _nav == "💼 持仓终端":
                 from cloud_engine import analyze_trend_full as _atf2
                 _peaks_raw, _ = _priv_get("data/position_peaks.json")
                 _peaks = json.loads(_peaks_raw) if _peaks_raw else {}
+                _nmap = _pl._news_dir_map()  # 当日新闻催化方向（并入卖出判断）
                 _out_rows, _bar = [], st.progress(0.0)
                 _hl = [(acc, h) for acc, a in (json.loads(_pos_raw).get("accounts") or {}).items()
                        for h in (a.get("holdings") or []) if h.get("cost") and "⚠️" not in str(h.get("code", ""))]
@@ -969,9 +988,12 @@ elif _nav == "💼 持仓终端":
                     try:
                         _df = _yf.Ticker(_yfc(str(h["code"]))).history(period="6mo")
                         _f = _atf2(_df) if _df is not None and len(_df) >= 35 else None
-                        _r = _pl.assess(h, _f, _peaks) if _f else {}
+                        _nd = _nmap.get(_pl._norm_code(str(h.get("code", ""))), 0)
+                        _rp = _pl._risk_probs_from_df(_df) if _f is not None else None
+                        _r = _pl.assess(h, _f, _peaks, news_dir=_nd, risk_probs=_rp) if _f else {}
                         if _r:
-                            _out_rows.append({"持仓": f"{h.get('name')}({h.get('code')})",
+                            _out_rows.append({"关注": _r.get("urgency", ""),
+                                              "持仓": f"{h.get('name')}({h.get('code')})",
                                               "浮盈": f"{_r['pnl']:+.1f}%", "峰值": f"{_r['peak']:+.1f}%",
                                               "阶段": _r["stage"], "动作": _r["action"],
                                               "信号": "；".join(_r["signals"]) or "—",
@@ -979,8 +1001,11 @@ elif _nav == "💼 持仓终端":
                     except Exception:
                         continue
                 _bar.empty()
+                _urank = {"今日": 0, "明日": 1, "本周": 2, "本月": 3}
+                _out_rows.sort(key=lambda x: _urank.get(x.get("关注", ""), 3))
                 st.dataframe(_out_rows, hide_index=True, use_container_width=True)
-                st.caption("规则：峰值浮盈≥15%进利润保护期；回撤超10点或趋势破坏→锁盈减仓；+20%起逐档评估；成长-10%/核心-12%破MA55纪律退出")
+                st.caption("关注紧迫度：今日>明日>本周>本月。规则：峰值浮盈≥15%进利润保护期；回撤超10点或趋势破坏→锁盈减仓；"
+                           "+20%起逐档评估；成长-10%/核心-12%破MA55纪律退出。🔻利空催化/回撤概率≥60%→自动收紧动作与紧迫度")
 
 st.divider()
 st.caption("V88 云端版 · 仅供研究参考，不构成投资建议")

@@ -47,6 +47,48 @@ _TOPIC_MERGE = {"人工智能": "AI", "chip": "芯片", "semiconductor": "芯片
                 "inflation": "通胀", "Nvidia": "英伟达", "Apple": "苹果", "Tesla": "特斯拉"}
 
 
+# ── 【V88·新闻方向/重大度】纯词典可复算，无LLM：利好+1/利空-1/中性0；major=单条重大 ──
+_NEG_WORDS = ("暴跌", "跳水", "大跌", "重挫", "崩盘", "跌停", "闪崩", "亏损", "预亏", "爆雷", "违约", "债务",
+              "减持", "套现", "质押", "停牌", "退市", "立案", "调查", "处罚", "罚款", "制裁", "裁员", "下调",
+              "下修", "不及预期", "低于预期", "警告", "诉讼", "召回", "造假", "解禁", "抛售", "利空", "预警",
+              "plunge", "tumble", "slump", "crash", "sink", "slide", "warn", "cut guidance", "miss",
+              "misses", "lawsuit", "probe", "recall", "downgrade", "bankrupt", "default", "selloff",
+              "layoff", "sanction", "tariff")
+_POS_WORDS = ("涨停", "大涨", "暴涨", "飙升", "新高", "创新高", "增持", "回购", "中标", "获批", "获得", "超预期",
+              "高于预期", "上调", "扭亏", "预增", "订单", "突破", "利好", "分红", "并购", "收购",
+              "surge", "soar", "jump", "rally", "beats", "record high", "upgrade", "raises guidance",
+              "buyback", "approval", "approved", "wins")
+_MAJOR_WORDS = ("停牌", "退市", "立案", "收购", "并购", "重组", "要约", "业绩预告", "预亏", "预增", "减持",
+                "回购", "制裁", "涨停", "跌停", "暴跌", "暴涨", "闪崩", "爆雷", "违约", "召回", "造假", "解禁",
+                "halt", "delist", "acquisition", "merger", "buyout", "bankrupt", "default", "recall",
+                "probe", "sanction")
+
+
+def _news_dir(title: str):
+    """标题→(方向 dir∈{-1,0,1}, major 重大bool)。纯词典，可复算。"""
+    t = str(title or "")
+    tl = t.lower()
+    def _hit(words):
+        return sum(1 for w in words if (w.lower() in tl if w.isascii() else w in t))
+    neg, pos = _hit(_NEG_WORDS), _hit(_POS_WORDS)
+    d = -1 if neg > pos else (1 if pos > neg else 0)
+    major = any((w.lower() in tl if w.isascii() else w in t) for w in _MAJOR_WORDS)
+    return d, major
+
+
+def _major_news(items, top=6):
+    """【V88·单条重大通道】单条即入：命中重大词 或（有相关标的且方向强烈）。补足热点榜漏掉的突发。"""
+    out = []
+    for it in items:
+        if it.get("major") or (it.get("stk") and it.get("dir")):
+            out.append({"t": it.get("t", ""), "dir": it.get("dir", 0),
+                        "stk": it.get("stk", []), "url": it.get("url", ""),
+                        "s": it.get("s", ""), "time": it.get("time", "")})
+        if len(out) >= top:
+            break
+    return out
+
+
 def _hot_topics(items, top=8):
     """【V88·热点主题榜】确定性关键词聚类：标题扫词→计数→同义合并→Top8（无LLM，可复算）"""
     from collections import Counter
@@ -205,12 +247,18 @@ def build_news() -> str:
                 sort_key = dt.timestamp()
             except Exception:
                 tb, sort_key = "", 0
-            out.append({"t": str(it.get("title", ""))[:140],
-                        "stk": _match_stocks(str(it.get("title", ""))),
-                        "s": it.get("source", ""),
-                        "url": it.get("link", ""),
-                        "time": tb, "cat": it.get("source_category", ""),
-                        "_k": sort_key})
+            _title = str(it.get("title", ""))
+            _d, _mj = _news_dir(_title)
+            _row = {"t": _title[:140],
+                    "stk": _match_stocks(_title),
+                    "dir": _d,
+                    "s": it.get("source", ""),
+                    "url": it.get("link", ""),
+                    "time": tb, "cat": it.get("source_category", ""),
+                    "_k": sort_key}
+            if _mj:
+                _row["major"] = 1
+            out.append(_row)
         out.sort(key=lambda x: -x["_k"])
         for o in out:
             o.pop("_k", None)
@@ -219,7 +267,8 @@ def build_news() -> str:
             return ""
         _translate_titles(out[:60])  # 英文标题→中文（发布的前60条）
         return json.dumps({"generated_at": _now_bjt_str(), "count": len(out),
-                           "topics": _hot_topics(out), "items": out[:60]},
+                           "topics": _hot_topics(out), "major_news": _major_news(out[:60]),
+                           "items": out[:60]},
                           ensure_ascii=False, indent=1)
     except Exception as e:
         print(f"[live] news 失败: {e}")
