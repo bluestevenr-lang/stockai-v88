@@ -148,9 +148,10 @@ def exp_md(title: str, md_text: str, expanded: bool = False):
 
 
 @st.cache_data(ttl=300, show_spinner=False)
-def pub_text(name: str):
+def pub_text(name: str, publish_version: str = "legacy"):
     try:
-        r = requests.get(f"{PUB_BASE}/{name}", timeout=12)
+        # publish_version参与Streamlit缓存键；新发布版本出现时旧缓存立即失效。
+        r = requests.get(f"{PUB_BASE}/{name}?v={publish_version}", timeout=12)
         return r.text if r.status_code == 200 else None
     except Exception:
         return None
@@ -173,7 +174,7 @@ st.caption("24小时在线 · 日报每交易日07:00/14:00/21:00更新 · 行�
 c_nav, c_rf = st.columns([5, 1])
 with c_rf:
     if st.button("🔄", help="强制刷新"):
-        pub_text.clear(); pub_journal_list.clear(); st.rerun()
+        pub_meta.clear(); pub_text.clear(); pub_journal_list.clear(); st.rerun()
 # 【V88·个股点击】跳转机制：任何页面点股票名→搜索页自动分析；支持 ?q=代码 深链
 _jump = st.session_state.pop("_nav_jump", None)
 if _jump:
@@ -203,7 +204,9 @@ with c_nav:
     _nav = st.radio("导航", ["🧭 导航", "🔥 热点新闻", "🏆 全选榜单", "🔍 个股搜索", "📊 日报", "📅 周报", "📈 大盘板块", "🔁 复盘", "💼 持仓终端"],
                     horizontal=True, label_visibility="collapsed", key="_nav")
 
-_snap_raw = pub_text("market_snapshot.json")
+_pub_state = pub_meta()
+_PUB_VERSION = str(_pub_state.get("publish_version") or _pub_state.get("daily_report_ts") or "legacy")
+_snap_raw = pub_text("market_snapshot.json", _PUB_VERSION)
 _snap = None
 if _snap_raw:
     try:
@@ -212,17 +215,26 @@ if _snap_raw:
         _snap = None
 
 # ── 报告协议：日报绑定冻结快照，小时级实时快照可独立前进 ──────────────
-def _json_text(name: str) -> dict:
+def _json_text(name: str, publish_version: str = _PUB_VERSION) -> dict:
     try:
-        return json.loads(pub_text(name) or "{}")
+        return json.loads(pub_text(name, publish_version) or "{}")
     except Exception:
         return {}
 
 
-_report_manifest = _json_text("report_manifest.json")
-_report_snapshot = _json_text("report_snapshot.json") or _snap or {}
-_source_ledger = _json_text("source_ledger.json")
-_report_text = pub_text("daily_report.md") or ""
+_report_bundle = _json_text("report_bundle.json")
+if (_report_bundle.get("schema_version") == "v88.report.bundle/1.0"
+        and _report_bundle.get("report") and _report_bundle.get("manifest")):
+    _report_manifest = _report_bundle.get("manifest") or {}
+    _report_snapshot = _report_bundle.get("snapshot") or _snap or {}
+    _source_ledger = _report_bundle.get("source_ledger") or {}
+    _report_text = str(_report_bundle.get("report") or "")
+else:
+    # 兼容尚未发布原子包的旧数据分支。
+    _report_manifest = _json_text("report_manifest.json")
+    _report_snapshot = _json_text("report_snapshot.json") or _snap or {}
+    _source_ledger = _json_text("source_ledger.json")
+    _report_text = pub_text("daily_report.md", _PUB_VERSION) or ""
 _contract_available = bool(_report_manifest)
 _report_sync_ok = True
 _report_block_reason = ""
