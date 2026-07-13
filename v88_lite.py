@@ -201,6 +201,11 @@ if _nav == "🧭 导航":
                     _hints.append(f"🧊 {_mkt}·{s['name']} 退潮")
         if _hints:
             st.markdown("**板块轮动**：" + " ｜ ".join(_hints[:5]))
+        _rot_lite = (_snap or {}).get("rotation_forecast") or {}
+        if _rot_lite:
+            st.markdown("**🧭 下一轮板块轮转预警（明日 · 下周 · 半个月）**")
+            from rotation_ui import rotation_map_html as _rotation_map_html_lite
+            st.markdown(_rotation_map_html_lite(_rot_lite, "v88-lite-nav-rotation"), unsafe_allow_html=True)
     else:
         st.info("📭 大盘快照未生成（日报流水线每日 07:00/14:00/21:00 更新）")
 
@@ -424,6 +429,9 @@ elif _nav == "📈 大盘板块":
     if p:
         snap = json.loads(p.read_text(encoding="utf-8"))
         st.caption(f"📅 快照生成于 {snap.get('generated_at','?')}")
+        if snap.get("rotation_forecast"):
+            from rotation_ui import rotation_map_html as _rotation_map_html_lite_market
+            st.markdown(_rotation_map_html_lite_market(snap["rotation_forecast"], "v88-lite-market-rotation"), unsafe_allow_html=True)
         for mkt, blk in snap.get("markets", {}).items():
             st.markdown(f"### {mkt}")
             _t = blk.get("temperature")
