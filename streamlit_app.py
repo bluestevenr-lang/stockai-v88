@@ -50,7 +50,7 @@ def _fresh_caption(ts, what="数据"):
     flag = "✅ 本时段" if same else f"⚠️ 属 {_period_of(dt)}" + ("" if dt.date() == now.date() else f"·{dt.strftime('%m-%d')}")
     return f"🕐 {what}生成于 {dt.strftime('%m-%d %H:%M')} · {age_h:.1f}小时前 · 现在{_period_of(_now_bjt())} · {flag}"
 
-@st.cache_data(ttl=120, show_spinner=False)
+@st.cache_data(ttl=15, show_spinner=False)
 def pub_meta() -> dict:
     try:
         r = requests.get(f"{PUB_BASE}/meta.json", timeout=10)
