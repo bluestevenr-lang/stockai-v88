@@ -169,7 +169,7 @@ def pub_journal_list():
 
 
 st.title("☁️ V88 云端版")
-st.caption("24小时在线 · 日报每交易日07:00/14:00/21:00更新 · 三市行情盘中各3次（约每3小时） · 访问权限由Streamlit部署设置控制")
+st.caption("24小时在线 · 日报每交易日07:00/14:00/21:00更新 · 三市行情盘中每30分钟刷新 · 访问权限由Streamlit部署设置控制")
 
 c_nav, c_rf = st.columns([5, 1])
 with c_rf:
@@ -290,15 +290,26 @@ def _linkify_cloud(md: str) -> str:
     return md
 
 
-# 【V88·非交易日判定】meta 里 outlook_ts 为今日 → 非交易日（流水线仅非交易日发前瞻）
-def _cloud_is_nontrading(meta: dict) -> bool:
+# 【V88·非交易日判定】以真实交易日历为准（周末 + 可选 holidays.txt），与桌面端 _v88_is_trading_day 同源。
+# 【修复】不再用 meta 的 outlook_ts 判交易日：live_publish 每轮都会把 outlook_ts 盖成当前时间，
+# 交易日（如 2026-07-13 周一）也会被误判为非交易日，错误置顶周日的"下一交易日前瞻"。
+def _cloud_is_nontrading(meta: dict = None) -> bool:
     from datetime import datetime as _dt, timezone as _tz, timedelta as _td
-    _today = _dt.now(_tz(_td(hours=8))).strftime("%Y-%m-%d")
-    _ots = str((meta or {}).get("outlook_ts") or "")
-    if _ots.startswith(_today):
+    import os as _os
+    _d = _dt.now(_tz(_td(hours=8)))
+    if _d.weekday() >= 5:            # 周六 / 周日
         return True
-    # 兜底：北京时间周末
-    return _dt.now(_tz(_td(hours=8))).weekday() >= 5
+    _today = _d.strftime("%Y-%m-%d")
+    try:                            # 可选节假日表（与桌面端 holidays.txt 同源；缺失则仅按周末）
+        _hf = _os.path.join(_os.path.dirname(__file__), "holidays.txt")
+        with open(_hf, encoding="utf-8") as _f:
+            _hol = {ln.strip().split()[0] for ln in _f
+                    if ln.strip() and not ln.strip().startswith("#")}
+        if _today in _hol:
+            return True
+    except Exception:
+        pass
+    return False
 
 
 if _nav == "🧭 导航":
@@ -410,7 +421,7 @@ if _nav == "🧭 导航":
     except Exception:
         pass
     st.caption("温度定仓位 → 轮动定板块 → 操作榜定标的")
-    st.caption(_fresh_caption((_snap or {}).get("generated_at"), "行情快照") + " · 交易日盘中各3次（约每3小时）")
+    st.caption(_fresh_caption((_snap or {}).get("generated_at"), "行情快照") + " · 交易日盘中每30分钟刷新")
     _meta0 = pub_meta()
     if _meta0.get("daily_report_ts"):
         st.caption(_fresh_caption(_meta0["daily_report_ts"], "日报/操作榜") + " · 每时段更新（07/14/21点）")
@@ -746,7 +757,7 @@ elif _nav == "📈 大盘板块":
                                + (f" {_x2['turning']}" if _x2.get('turning') else ""))
             st.code("\n".join(_mp), language=None)
     if _snap:
-        st.caption(_fresh_caption(_snap.get("generated_at"), "行情快照") + " · 交易日盘中各3次（约每3小时）")
+        st.caption(_fresh_caption(_snap.get("generated_at"), "行情快照") + " · 交易日盘中每30分钟刷新")
         for mkt, blk in _snap.get("markets", {}).items():
             st.markdown(f"### {mkt}")
             _t = blk.get("temperature")
