@@ -50,17 +50,17 @@ def rotation_map_html(forecast: dict, element_id: str = "v88-rotation-map") -> s
     warning_html = (f'<div class="rf-warning">⚠️ {escape("；".join(warnings))}</div>' if warnings else "")
     analysis_time = escape(str(forecast.get("analysis_time") or "未知"))
     return f'''<style>
-#{safe_id}{{color:var(--foreground);margin:.35rem 0 .6rem}}
-#{safe_id} .rf-meta{{display:flex;gap:.75rem;flex-wrap:wrap;color:var(--muted-foreground);font-size:11px;margin-bottom:.35rem}}
+#{safe_id}{{color:var(--foreground,var(--text-color));margin:.35rem 0 .6rem}}
+#{safe_id} .rf-meta{{display:flex;gap:.75rem;flex-wrap:wrap;color:var(--muted-foreground,var(--text-color));font-size:11px;margin-bottom:.35rem}}
 #{safe_id} .rf-lane{{display:grid;grid-template-columns:minmax(82px,.7fr) 18px minmax(120px,1fr) 18px minmax(120px,1fr) 18px minmax(120px,1fr);align-items:stretch;gap:.25rem;margin:.3rem 0}}
-#{safe_id} .rf-market,#{safe_id} .rf-node{{background:color-mix(in srgb,var(--secondary) 72%,transparent);color:var(--secondary-foreground);padding:.45rem .55rem;border-radius:7px;display:flex;flex-direction:column;justify-content:center;min-width:0}}
-#{safe_id} .rf-node{{background:color-mix(in srgb,var(--primary) 11%,var(--card));color:var(--card-foreground)}}
+#{safe_id} .rf-market,#{safe_id} .rf-node{{background:color-mix(in srgb,currentColor 7%,transparent);color:inherit;padding:.45rem .55rem;border-radius:7px;display:flex;flex-direction:column;justify-content:center;min-width:0}}
+#{safe_id} .rf-node{{background:color-mix(in srgb,currentColor 4%,transparent)}}
 #{safe_id} .rf-node b{{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
-#{safe_id} small,#{safe_id} .rf-node span{{font-size:11px;color:var(--muted-foreground);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+#{safe_id} small,#{safe_id} .rf-node span{{font-size:11px;color:var(--muted-foreground,var(--text-color));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
 #{safe_id} .rf-rule{{font-size:11px}}
-#{safe_id} .rf-period{{color:var(--foreground)!important}}
-#{safe_id} .rf-arrow{{display:flex;align-items:center;justify-content:center;color:var(--muted-foreground)}}
-#{safe_id} .rf-warning{{font-size:11px;color:var(--destructive);margin-top:.35rem}}
+#{safe_id} .rf-period{{color:var(--foreground,var(--text-color))!important}}
+#{safe_id} .rf-arrow{{display:flex;align-items:center;justify-content:center;color:var(--muted-foreground,var(--text-color))}}
+#{safe_id} .rf-warning{{font-size:11px;color:var(--destructive,var(--primary-color));margin-top:.35rem}}
 @media(max-width:700px){{#{safe_id} .rf-lane{{grid-template-columns:1fr}}#{safe_id} .rf-arrow{{transform:rotate(90deg);height:12px}}}}
 </style>
 <div id="{safe_id}" role="figure" aria-label="中美港下一轮板块轮转导图">
