@@ -123,13 +123,17 @@ _BRIEF_CACHE_TTL = 3600  # 1小时（由 config.toml [cache].brief_ttl 覆盖；
 _AUTHORITATIVE_REPORT = Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "daily_report.md"
 _AUTHORITATIVE_MANIFEST = _AUTHORITATIVE_REPORT.parent / "report_manifest.json"
 _AUTHORITATIVE_SNAPSHOT = _AUTHORITATIVE_REPORT.parent / "market_snapshot.json"
+_AUTHORITATIVE_PLAN_B_REPORT = _AUTHORITATIVE_REPORT.parent / "daily_report.plan_b.md"
+_AUTHORITATIVE_PLAN_B_MANIFEST = _AUTHORITATIVE_REPORT.parent / "report_manifest.plan_b.json"
 _AUTHORITATIVE_BRIEF_META = {}
 
 
 def _validate_plan_a(report_path, manifest_path, snapshot_path, check_snapshot=True):
-    """判定某份报告是否满足硬质检。返回 (content, ts, status_dict) 或 (None, ts, status_dict)。
-    check_snapshot=False 用于校验 last_good（Plan B）——它没有配套的历史快照文件，
-    不能拿"今天"的实时快照去比对一份可能是几天前的报告，那样比对必然不一致、永远判失败。"""
+    """判定某份报告是否满足硬质检。返回 (content, ts, status_dict)。
+    ★关键：质检失败时也把正文交出来（content 非空），由调用方决定是否作为 Plan B 用——
+    因为质检失败往往只是"权威新闻来源不足3条A/B级"，而报告里的操作榜/评分/温度是确定性引擎
+    今日实算的真实数据，完全可用，不该跟着新闻叙事一起被丢掉。content 仅在文件缺失/读不出时才为 None。
+    check_snapshot=False 仅保留为旧协议兼容；当前Plan B必须绑定当天快照。"""
     if not report_path.exists():
         return None, None, {"status": "missing", "issues": ["报告文件不存在"]}
     ts = report_path.stat().st_mtime
@@ -143,66 +147,56 @@ def _validate_plan_a(report_path, manifest_path, snapshot_path, check_snapshot=T
     try:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         snapshot = json.loads(snapshot_path.read_text(encoding="utf-8")) if (check_snapshot and snapshot_path.exists()) else {}
-        issues = list((manifest.get("quality") or {}).get("issues") or [])
-        if (manifest.get("quality") or {}).get("status") != "passed":
-            return None, ts, {**manifest, "status": "failed", "issues": issues}
+        # Plan B 的 issues 是“Plan A为何降级”的说明，不是 Plan B 自身无效。
+        advisory_issues = list((manifest.get("quality") or {}).get("issues") or [])
+        validation_issues = []
+        _quality_status = (manifest.get("quality") or {}).get("status")
+        if _quality_status not in ("passed", "plan_b"):
+            return content, ts, {**manifest, "status": "failed", "issues": advisory_issues}
         if snapshot and manifest.get("snapshot_id") != snapshot.get("snapshot_id"):
-            issues.append("日报与行情快照版本不一致")
+            validation_issues.append("日报与行情快照版本不一致")
         if hashlib.sha256(raw_content.encode("utf-8")).hexdigest() != manifest.get("report_sha256"):
-            issues.append("日报正文校验和不一致")
-        if issues:
-            return None, ts, {**manifest, "status": "failed", "issues": issues}
-        return content, ts, {**manifest, "status": "passed", "issues": []}
+            validation_issues.append("日报正文校验和不一致")
+        if validation_issues:
+            return content, ts, {**manifest, "status": "failed", "issues": validation_issues}
+        return content, ts, {**manifest, "status": _quality_status, "issues": advisory_issues}
     except Exception as exc:
-        return None, ts, {"status": "failed", "issues": [f"质检清单解析失败: {exc}"]}
-
-
-_PLAN_AB_CACHE = {}
+        return content, ts, {"status": "failed", "issues": [f"质检清单解析失败: {exc}"]}
 
 
 def _load_report_planab():
     """【V88·全站统一 Plan A/B】唯一数据源：桌面今日导航/AI简报/云端 三处必须调用同一份，禁止各读各的。
-    Plan A=今日报告硬质检通过；今日不通过则回退 Plan B=daily_report.last_good.md（流水线自留的最近一次通过版）；
-    都没有则 Plan 缺失=如实告知，不静默留空。返回 (content, meta)。meta.status ∈ passed/legacy/degraded/missing。
-    5分钟内同一次rerun缓存，避免重复IO。"""
+    Plan A=今日报告硬质检通过；Plan B=基于当天新闻/快照/榜单生成的纯观察安全版，绝不复制历史日报；
+    都没有则如实告知。返回 (content, meta)。
+    文件很小，逐次读取以确保Plan B生成后立即生效，避免旧“missing”状态残留。"""
     global _AUTHORITATIVE_BRIEF_META
-    _cache_key = "planab"
-    _now = time.time()
-    _cached = _PLAN_AB_CACHE.get(_cache_key)
-    if _cached and _now - _cached[0] < 300:
-        _AUTHORITATIVE_BRIEF_META = _cached[2]
-        return _cached[1]
 
     content, ts, meta = _validate_plan_a(_AUTHORITATIVE_REPORT, _AUTHORITATIVE_MANIFEST, _AUTHORITATIVE_SNAPSHOT)
     if content is not None and meta.get("status") in ("passed", "legacy"):
         result = (content, {**meta, "plan": "A", "ts": ts})
         _AUTHORITATIVE_BRIEF_META = result[1]
-        _PLAN_AB_CACHE[_cache_key] = (_now, result, result[1])
         return result
 
-    # Plan A 不合格：尝试 Plan B（流水线自留的最近一次通过质检的报告）
+    # Plan A 不合格：只接受当天、同快照、校验和一致的安全 Plan B。
     _today_issues = meta.get("issues") or []
-    _lg_report = _AUTHORITATIVE_REPORT.parent / "daily_report.last_good.md"
-    _lg_manifest = _AUTHORITATIVE_REPORT.parent / "report_manifest.last_good.json"
-    lg_content, lg_ts, lg_meta = _validate_plan_a(_lg_report, _lg_manifest, _AUTHORITATIVE_SNAPSHOT, check_snapshot=False)
-    if lg_content is not None:
-        result = (lg_content, {**lg_meta, "plan": "B", "status": "degraded",
-                               "ts": lg_ts, "today_issues": _today_issues, "today_ts": ts})
+    pb_content, pb_ts, pb_meta = _validate_plan_a(
+        _AUTHORITATIVE_PLAN_B_REPORT, _AUTHORITATIVE_PLAN_B_MANIFEST, _AUTHORITATIVE_SNAPSHOT)
+    _today_bj = datetime.now().strftime("%Y-%m-%d")
+    if (pb_content is not None and pb_meta.get("status") == "plan_b"
+            and str(pb_meta.get("generated_at") or "")[:10] == _today_bj):
+        result = (pb_content, {**pb_meta, "plan": "B", "status": "plan_b",
+                               "ts": pb_ts, "today_issues": _today_issues, "today_ts": ts})
         _AUTHORITATIVE_BRIEF_META = result[1]
-        _PLAN_AB_CACHE[_cache_key] = (_now, result, result[1])
         return result
 
     # Plan A/B 均不可用：真空，如实告知
     result = (None, {"plan": None, "status": "missing", "issues": _today_issues, "ts": ts})
     _AUTHORITATIVE_BRIEF_META = result[1]
-    _PLAN_AB_CACHE[_cache_key] = (_now, result, result[1])
     return result
 
 
 def _load_authoritative_brief():
-    """兼容旧调用名：等价于 _load_report_planab()。Plan A/B 都返回正文（Plan B=最近一次通过质检的
-    历史报告，正文本身当时是合格的，标的价位是当时的合法价位，只是"不是今天"——UI 层须标注降级，
-    不能把 Plan B 正文当空处理，那正是本次要修的 bug）。"""
+    """兼容旧调用名：Plan A为硬质检版，Plan B为当天纯观察安全版。"""
     content, meta = _load_report_planab()
     return content, meta.get("ts")
 
@@ -11583,14 +11577,14 @@ def _render_today_nav():
 
     # 【V88·Plan A/B统一标注】与下方AI简报模块共用同一状态，避免"这里显示分数、简报说数据不可信"的割裂
     _pab_status = _rep_planab_meta.get("status")
-    if _pab_status == "degraded":
+    if _pab_status == "plan_b":
         _pab_ts = _rep_planab_meta.get("ts")
         _pab_str = datetime.fromtimestamp(_pab_ts).strftime("%m-%d %H:%M") if _pab_ts else "—"
         _pab_issues = _rep_planab_meta.get("today_issues") or []
-        st.warning(f"🟡 今日报告未过质检（{'；'.join(_pab_issues) or '未知问题'}），下方数据来自最近一次通过质检的报告"
-                  f"（{_pab_str}），非实时——评分/操作建议均为当时数据，仅供参考，请勿据此当日实盘操作。")
+        st.warning(f"🟡 Plan B当日安全版（{'；'.join(_pab_issues) or 'Plan A条件不足'}）· {_pab_str}生成。"
+                  "内容来自今日新闻、今日快照及今日引擎榜单；所有标的仅作观察，不沿用历史日报。")
     elif _pab_status == "missing":
-        st.error("📭 今日与历史均无可用报告（Plan A/B均不可用），下方暂无操作榜/评分数据，请等待下一轮流水线生成。")
+        st.error("📭 今日Plan A与当天安全Plan B均未生成，下方暂无操作榜/评分数据，请等待本轮流水线完成。")
 
     # 【V88·非交易日前瞻置顶】把 outlook.md 前瞻正文醒目展示（个股名可点深度分析）
     if not _is_trading:
@@ -11615,6 +11609,17 @@ def _render_today_nav():
     try:
         _fxp = []
         _iop = _rep.find("## 🎯 今日操作榜")
+        _pb_focus_lines = []
+        if _pab_status == "plan_b":
+            _pb_sec = _rep[_rep.find("## 六、🔭 明日与本周参考"):]
+            _pb_market = ""
+            for _pbl in _pb_sec.splitlines():
+                if _pbl.startswith("### "):
+                    _pb_market = _pbl.replace("### ", "").strip()
+                elif "**观察个股**：" in _pbl:
+                    _pb_focus_lines.append(f"<b>{_pb_market}·机会观察</b>：{_pbl.split('**：', 1)[-1] if '**：' in _pbl else _pbl.split('：', 1)[-1]}")
+                elif "**风险保护**：" in _pbl:
+                    _pb_focus_lines.append(f"<b>{_pb_market}·风险保护</b>：{_pbl.split('**：', 1)[-1] if '**：' in _pbl else _pbl.split('：', 1)[-1]}")
         if _iop > 0:
             for _lnf in _rep[_iop:_iop + 4000].splitlines():
                 if "买入/建仓" in _lnf and _lnf.strip().startswith("|"):
@@ -11625,7 +11630,12 @@ def _render_today_nav():
                 if len(_fxp) >= 3:
                     break
         if not _fxp:
-            st.info("⭐ **今日重点关注：今日无买入档推荐**（无标的同时通过 75分+72小时催化 双门槛）——观察为主，现金也是仓位")
+            if _pab_status == "plan_b":
+                st.info("⭐ **今日策略：不强制给买入指令，转为机会观察＋风险保护**——优先保护仓位、已有利润和整体胜率")
+                if _pb_focus_lines:
+                    st.markdown("<div style='line-height:1.75;font-size:12px'>" + "<br>".join(_pb_focus_lines) + "</div>", unsafe_allow_html=True)
+            else:
+                st.info("⭐ **今日无强制买入信号**（未同时通过75分＋72小时催化）——继续观察并保护仓位，现金也是仓位")
         if _fxp:
             _fx_html = "<br>".join(
                 f"🟢 <b>{_stk_link(_n9, _c9)}</b> {_d9}<br>&nbsp;&nbsp;└ {_r9}"
@@ -11778,8 +11788,10 @@ def _render_today_nav():
     # 【V88·关注股预警】自选股+搜索习惯+持仓 → 拐点/止盈止损/纪律提示
     try:
         _wa = st.session_state.get('watch_alerts_v88')
-        if not _wa or time.time() - _wa.get('ts', 0) > 3600:
+        if not _wa or _wa.get('rule_version') != 3 or time.time() - _wa.get('ts', 0) > 3600:
             _pool_wa = {}
+            _holds_wa = set()
+            _hold_map_wa = {}
             try:
                 for _mk9, _lst9 in (_watchlist_load() or {}).items():
                     for _c9, _n9 in list(_lst9)[:10]:
@@ -11798,25 +11810,54 @@ def _render_today_nav():
                 for _acc9 in (_pj9.get("accounts") or {}).values():
                     for _h9 in (_acc9.get("holdings") or []):
                         if _h9.get("code") and "⚠️" not in str(_h9["code"]):
-                            _pool_wa.setdefault(str(_h9["code"]), _h9.get("name", ""))
+                            _hc9 = str(_h9["code"])
+                            _holds_wa.add(_hc9)
+                            _hold_map_wa[_hc9] = _h9
+                            _pool_wa.setdefault(_hc9, _h9.get("name", ""))
             except Exception:
                 pass
             import cloud_engine as _ce_wa
+            import sys as _sys_wa
+            if str(_repo / "src") not in _sys_wa.path:
+                _sys_wa.path.insert(0, str(_repo / "src"))
+            from watch_alerts import sharp_drop_signal as _sharp_wa, market_change_for as _mchg_wa, watch_levels as _levels_fn_wa
+            from position_lifecycle import dynamic_priority as _dyn_level_wa, load_peaks as _load_peaks_wa
+            _levels_wa = _levels_fn_wa()
+            _peaks_wa = _load_peaks_wa()
             try:  # 【行业热度维度】与飞书/云端同一份冻结快照
                 _mkts9 = json.loads((_repo / "data" / "market_snapshot.json").read_text(encoding="utf-8")).get("markets") or {}
             except Exception:
                 _mkts9 = {}
+            _pool_wa = dict(sorted(_pool_wa.items(), key=lambda kv: (
+                0 if kv[0] in _holds_wa else (1 if _levels_wa.get(kv[0], "B") == "A" else 2))))
             _alerts9 = []
-            for _c9, _n9 in list(_pool_wa.items())[:18]:
+            _holding_levels9 = {}
+            for _c9, _n9 in list(_pool_wa.items())[:60]:
                 try:
                     _df9 = fetch_stock_data(to_yf_cn_code(_c9))
                     _f9 = _ce_wa.analyze_trend_full(_df9)
                     if not _f9:
                         continue
                     _last9 = _f9["last"]
+                    _sharp9 = _sharp_wa(_df9, _f9, holding=_c9 in _holds_wa,
+                                        level=_levels_wa.get(_c9, "B"),
+                                        market_chg=_mchg_wa(_c9, _mkts9))
+                    _dyn9, _dyn_reason9 = _levels_wa.get(_c9, "B"), ""
+                    if _c9 in _holds_wa:
+                        _dyn9, _dyn_reason9 = _dyn_level_wa(
+                            _hold_map_wa[_c9], _f9,
+                            peak_pnl=((_peaks_wa.get(_c9) or {}).get("peak_pnl")),
+                            sharp=bool(_sharp9))
+                        _holding_levels9[_c9] = {"level": _dyn9, "reason": _dyn_reason9}
                     if _last9 < _f9["stop"]:
-                        _alerts9.append(f"❗ **{_n9}**({_c9})：现价{_last9}已破止损位{_f9['stop']}——纪律：离场/减仓，不要扛")
+                        _alerts9.append(f"❗ [持仓·A自动] **{_n9}**({_c9})：现价{_last9}已破止损位{_f9['stop']}——纪律：离场/减仓，不要扛")
                     else:
+                        if _sharp9:
+                            _who9 = "持仓" if _c9 in _holds_wa else "A级重点"
+                            _level_tag9 = f"[持仓·{_dyn9}自动]" if _c9 in _holds_wa else "[A级重点]"
+                            _alerts9.insert(0, f"{_sharp9['severity']} {_level_tag9} **{_n9}**({_c9})：{_who9}急跌预警｜"
+                                            + "＋".join(_sharp9["facts"]) + f"｜{_sharp9['action']}")
+                            continue
                         # 【V88·多因子共振】买入/减仓须≥2维度（技术/量价/消息）共振，单指标不触发（与云端/飞书同源）
                         _sw9 = _ce_wa.smart_watch_signal(_f9, sector_heat=_ce_wa.sector_heat_of(_c9, _n9, _mkts9))
                         if _sw9:
@@ -11824,11 +11865,19 @@ def _render_today_nav():
                             _hd9 = "触发条件" if _sw9["side"] == "buy" else "风险原因"
                             _alerts9.append(f"{_ic9} **{_n9}**({_c9})：**{_sw9['action']}**｜{_hd9}："
                                             + "＋".join(_sw9["conditions"][:4]) + f"｜{_sw9['zone']}")
+                        elif _c9 in _holds_wa and _dyn9 == "A":
+                            _alerts9.insert(0, f"⚠️ [持仓·A自动] **{_n9}**({_c9})：{_dyn_reason9}｜"
+                                                "优先复核减仓/止损与利润保护")
                 except Exception:
                     continue
-            _wa = {"ts": time.time(), "alerts": _alerts9, "n": len(_pool_wa)}
+            _wa = {"ts": time.time(), "alerts": _alerts9, "n": len(_pool_wa), "rule_version": 3,
+                   "holding_levels": _holding_levels9}
             st.session_state['watch_alerts_v88'] = _wa
         if _wa.get("alerts"):
+            _critical9 = [a for a in _wa["alerts"] if ("急跌预警" in a or "已破止损" in a
+                                                               or "顶部拐点" in a or "持仓·A自动" in a)]
+            if _critical9:
+                st.error("🚨 **持仓/重点风险优先**\n\n" + "\n\n".join(f"- {a}" for a in _critical9[:8]))
             with st.expander(f"⚡ 自选股智能预警（自选+常搜+持仓 共{_wa['n']}只 · {len(_wa['alerts'])}条触发 · 多因子共振）", expanded=True):
                 st.markdown("\n".join(f"- {a}" for a in _wa["alerts"]))
                 with st.popover("📋 复制预警"):
@@ -11982,7 +12031,12 @@ def _render_today_nav():
                     else:
                         _pc = st.columns(_pt_widths)
                         for _ci9, _key9 in enumerate(("账户", "名称", "代码", "股数", "成本", "类别")):
-                            _pc[_ci9].write(str(_row9.get(_key9, "")))
+                            _val9 = str(_row9.get(_key9, ""))
+                            if _key9 == "类别":
+                                _dl9 = ((_wa.get("holding_levels") or {}).get(str(_row9.get("代码", ""))) or {})
+                                if _dl9.get("level"):
+                                    _val9 = f"{_val9 or '持仓'} · {_dl9['level']}级"
+                            _pc[_ci9].write(_val9)
                         _pc[6].write(_px_txt9)
                         _pc[7].markdown(_pnl_txt9, unsafe_allow_html=True)
                         _pc[8].caption(_row_water9)
@@ -12191,16 +12245,14 @@ with _brief_cache_info_col:
             st.caption(f"✅ 权威日报(Plan A) · {_brief_gen_dt} 生成 · Snapshot `{_sid}` · 已缓存 {_brief_age_h:.1f}h")
         elif _brief_status == "legacy":
             st.caption(f"ℹ️ 权威日报旧协议 · {_brief_gen_dt} 生成 · 下一轮任务自动升级质检清单")
-        elif _brief_status == "degraded":
-            _today_ts9 = _AUTHORITATIVE_BRIEF_META.get("today_ts")
-            _today_str9 = _dt_brief.fromtimestamp(_today_ts9).strftime("%m-%d %H:%M") if _today_ts9 else "—"
-            st.caption(f"🟡 Plan B降级 · 今日报告未过质检，展示最近一次通过质检的报告（生成于 {_brief_gen_dt}）")
+        elif _brief_status == "plan_b":
+            st.caption(f"🟡 Plan B当日安全版 · {_brief_gen_dt}生成 · 今日新闻/快照/榜单 · 仅观察")
         else:
-            st.caption(f"📭 今日与历史均无可用报告")
-        if _brief_status == "degraded":
+            st.caption(f"📭 今日Plan A与当天安全Plan B均不可用")
+        if _brief_status == "plan_b":
             _today_issues9 = _AUTHORITATIVE_BRIEF_META.get("today_issues") or ["未知质检问题"]
-            st.warning(f"⚠️ 今日报告未过质检（{'；'.join(_today_issues9)}），以下为最近一次有效报告（{_brief_gen_dt}），"
-                      f"其中的价位/建议均为当时数据，非今日实时——刷新简报可重新生成今日版本。")
+            st.warning(f"⚠️ Plan A未过质检（{'；'.join(_today_issues9)}）；以下为当天重新生成的Plan B，"
+                      "保留今日热点、观察股及明日/本周参考，但不提供直接交易动作。")
         elif _brief_age_h > _BRIEF_CACHE_TTL / 3600:
             st.warning("行情快照已超过1小时：报告仅作历史阅读，交易动作需等待下一轮权威日报。")
     else:
@@ -12214,9 +12266,9 @@ with _brief_btn_col:
 
 if _AUTHORITATIVE_BRIEF_META.get("status") == "missing":
     _issues = _AUTHORITATIVE_BRIEF_META.get("issues") or ["未知质检错误"]
-    st.error("今日报告未过质检，且无历史可回退（Plan A/B均不可用）：" + "；".join(_issues))
+    st.error("今日Plan A未过质检，且当天安全Plan B生成失败：" + "；".join(_issues))
 
-# 不再由桌面端二次改写日报。权威流水线失败时回退 Plan B(last_good)，两者皆无才真正空缺。
+# 不再由桌面端二次改写日报。Plan A失败时只读取流水线当天生成的安全Plan B。
 # ─────────────────────────────────────────────────────────────────────────────
 
 if do_generate:
@@ -12442,8 +12494,8 @@ if do_generate:
 5) 若真实新闻报告为空，不得声称“今日/近日某媒体报道了某事件”；只能基于指数数据、候选池价格和基本面常识做保守判断。
 
 【硬性规则】
-1) 必须覆盖美股、港股、A股三个市场；每市场最多3只，允许0只，无合格标的必须写“今日无高置信机会”
-2) 动作由证据决定；不满足 BUILD_NOW 判定器必须降级，不得硬凑“立即建仓”或推荐数量
+1) 必须覆盖美股、港股、A股三个市场；每市场必须给1-3只重点标的。高置信不足3只可减少数量；若无买点，必须从趋势、基本面、行业或大跌风险逻辑给出观察股
+2) 动作由证据决定；不满足 BUILD_NOW 必须降级为观察或风险观察。不得硬凑买入，但不能整段空白
 3) **最终推荐 3 只里至少 2 只必须来自 Trade 池**（若候选池含 Trade 标记，优先选质量闸门通过的标的）
 4) 每只推荐首行必须写为 **名称(代码)** 格式（如 **苹果(AAPL)**、**腾讯控股(00700.HK)**、**贵州茅台(600519.SS)**），便于系统标注现价
 5) 观察 禁止给目标位和买入建议
@@ -12541,7 +12593,7 @@ e) 失效条件含 基本面+结构+事件 三类
 
 ## 🎯 今日操作榜（中长短 × 中美港 · 每市场最多3只）
 
-3期限 × 3市场 各选Top3。短线看技术+动能+72h催化；中线看综合+趋势排列；长线看基本面+估值+长期趋势。榜内标的必须与下方各市场推荐一致，宁缺毋滥（不足3只列实际数量并注明；无合格标的写"今日无高置信机会"，禁止硬凑）。价位以候选池「日报价」为唯一基准±3%计算，候选池外标的写"以现价为锚"。
+3期限 × 3市场各列1-3只。短线看技术+动能+72h催化；中线看综合+趋势排列；长线看基本面+估值+长期趋势。高置信不足3只列实际数量；若无人达到买入门槛，必须补充候补观察或潜在大跌风险股，用于保护仓位、利润与胜率，禁止硬凑买入。价位以候选池「日报价」为唯一基准±3%计算，观察股不输出交易价位。
 
 ### ⚡ 短线（1-5日）
 | 市场 | 代码 | 名称 | 方向 | 参考价位 | 理由 |
@@ -12632,12 +12684,12 @@ e) 失效条件含 基本面+结构+事件 三类
 
 ## 可执行推荐
 
-【⚠️ 硬性要求】必须覆盖美股、港股、A股三个市场，每市场最多3只、允许0只。若候选不足，写“今日无高置信机会”，禁止降级凑数。
+【⚠️ 硬性要求】必须覆盖美股、港股、A股三个市场，每市场1-3只。高置信不足3只可以减少；若无买点，必须给出至少1只重点观察或风险保护标的，不得空白，也不得降低买入门槛。
 动作标签必须由证据决定：只有满足 BUILD_NOW 的标的才能写「立即建仓」；否则写「中期跟进」或「观察」，并说明缺失的触发条件。
 
 每只推荐必须符合 Card Schema，含：代码|名称、动作标签、触发、来源(tier)、机会/风险概率、建仓区间、仓位上限+分批节奏、R/R、失效条件、时间戳。
 
-### 🇺🇸 美股（0-3只：动作与数量均由证据决定）
+### 🇺🇸 美股（1-3只：无买点时列观察/风险保护）
 1. **[代码|名称]** · **[立即建仓/中期跟进/观察]**（立即建仓须满足 Action Gate 全条件）
    - 触发: [24h/72h] [事件] [来源·Tier A/B]
    - 机会概率/风险概率: [%/%]
@@ -12656,12 +12708,12 @@ e) 失效条件含 基本面+结构+事件 三类
    - **升级条件**：满足 2/3 项 → 升级为 中期跟进
    - **降级条件**：[具体条件]
 
-### 🇭🇰 港股（0-3只：动作与数量均由证据决定）
+### 🇭🇰 港股（1-3只：无买点时列观察/风险保护）
 1. **[代码|名称]** · **[立即建仓/中期跟进/观察]** · [Card Schema 全字段]
 2. **[代码|名称]** · **[中期跟进/观察]** · [Card Schema 全字段]
 3. **[代码|名称]** · **观察** · [Card Schema 全字段 + 升级/降级条件]
 
-### 🇨🇳 A股（0-3只：动作与数量均由证据决定）
+### 🇨🇳 A股（1-3只：无买点时列观察/风险保护）
 1. **[代码|名称]** · **[立即建仓/中期跟进/观察]** · [Card Schema 全字段]
 2. **[代码|名称]** · **[中期跟进/观察]** · [Card Schema 全字段]
 3. **[代码|名称]** · **观察** · [Card Schema 全字段 + 升级/降级条件]
@@ -17101,7 +17153,7 @@ def _build_holdings_context() -> str:
         _rep = _rep or ""
         _j = _rep.find("## 💼 我的持仓·框架化建议")
         if _j > 0:
-            _tag9 = "（⚠️Plan B历史数据，非今日实时）" if _rep_meta9.get("status") == "degraded" else ""
+            _tag9 = "（⚠️Plan B当日安全版，仅观察）" if _rep_meta9.get("status") == "plan_b" else ""
             parts.append(f"【今日规则引擎结论】{_tag9}\n" + _rep[_j:_j + 1800])
     except Exception:
         pass
