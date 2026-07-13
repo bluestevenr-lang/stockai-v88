@@ -78,7 +78,10 @@ def _cloud_ath_many(codes: tuple) -> dict:
                 return raw, "历史水位待核"
             last, ath = float(close.iloc[-1]), float(close.max())
             days = int((close.index[-1] - close.idxmax()).days)
-            return raw, f"距历史最高{(last / ath - 1) * 100:+.1f}%｜高点相隔{days}天"
+            _w52 = close.tail(min(252, len(close)))
+            _lo52, _hi52 = float(_w52.min()), float(_w52.max())
+            _p52 = (last - _lo52) / (_hi52 - _lo52) * 100 if _hi52 > _lo52 else 50.0
+            return raw, f"距历史最高{(last / ath - 1) * 100:+.1f}%｜高点相隔{days}天·52周{_p52:.0f}%"
         except Exception:
             return raw, "历史水位待核"
 

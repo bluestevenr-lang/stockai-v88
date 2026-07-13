@@ -1045,16 +1045,21 @@ def market_of_code(code: str) -> str:
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def _ath_pct(symbol: str):
-    """距历史最高点：(水位%, 高点日期, 距今天数, 最新收盘价)。全量历史真ATH（上证含2007年顶），1小时缓存"""
+    """距历史最高点：(水位%, 高点日期, 距今天数, 最新收盘价, 52周分位%)。全量历史真ATH（上证含2007年顶），1小时缓存"""
     try:
         import yfinance as _yfa
         h = _yfa.Ticker(symbol).history(period="max")["Close"].dropna()
         if len(h) < 100:
             return None
-        pct = (float(h.iloc[-1]) / float(h.max()) - 1) * 100
+        last = float(h.iloc[-1])
+        pct = (last / float(h.max()) - 1) * 100
         d_ath = h.idxmax()
         days = (h.index[-1] - d_ath).days
-        return (pct, str(d_ath)[:10], int(days), float(h.iloc[-1]))
+        # 【V88·双水位】另算近52周（约252交易日）分位：现价在一年高低之间的位置
+        _w52 = h.tail(min(252, len(h)))
+        _lo52, _hi52 = float(_w52.min()), float(_w52.max())
+        _p52 = (last - _lo52) / (_hi52 - _lo52) * 100 if _hi52 > _lo52 else 50.0
+        return (pct, str(d_ath)[:10], int(days), last, round(_p52))
     except Exception:
         return None
 
@@ -1097,8 +1102,10 @@ def _ath_txt(symbol):
     if r is None:
         return ""
     pct, d, days = r[0], r[1], r[2]
+    _p52 = r[4] if len(r) > 4 else None
     _dur = f"{days/365:.1f}年" if days >= 365 else f"{days}天"
-    return f" | 距历史最高 {pct:+.1f}%（{d} 创下·已 {_dur}）"
+    _s52 = f" · 52周位置 {int(_p52)}%" if _p52 is not None else ""
+    return f" | 距历史最高 {pct:+.1f}%（{d} 创下·已 {_dur}）{_s52}"
 
 
 @st.cache_data(ttl=3600, show_spinner=False)
@@ -1112,7 +1119,9 @@ def _ath_many_display(codes: tuple) -> dict:
         if not _r:
             return _raw, "历史水位待核"
         _pct, _date, _days = _r[0], _r[1], _r[2]
-        return _raw, f"距历史最高{float(_pct):+.1f}%｜高点相隔{int(_days)}天"
+        _p52 = _r[4] if len(_r) > 4 else None
+        _s52 = f"·52周{int(_p52)}%" if _p52 is not None else ""
+        return _raw, f"距历史最高{float(_pct):+.1f}%｜高点相隔{int(_days)}天{_s52}"
 
     with _AthPool(max_workers=min(8, max(1, len(codes)))) as _ex:
         return dict(_ex.map(_one, codes))
@@ -4471,8 +4480,10 @@ if Config.ENABLE_EXPECTATION_LAYER:
             if not _wr:
                 return "待核", "距历史高"
             _pct, _ath_date, _days = _wr[0], _wr[1], _wr[2]
+            _p52 = _wr[4] if len(_wr) > 4 else None
             _duration = f"{_days / 365:.1f}年前" if _days >= 365 else f"{_days}天前"
-            return f"{float(_pct):+.1f}%", f"高点{_duration}"
+            _sub = f"高点{_duration}" + (f" · 52周{int(_p52)}%" if _p52 is not None else "")
+            return f"{float(_pct):+.1f}%", _sub
 
         with _v88_running("计算三市场历史水位"):
             _water_us = _water_text("^GSPC")
