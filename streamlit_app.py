@@ -433,6 +433,8 @@ if _nav == "🧭 导航":
             _t = (_snap["markets"].get(_mkt) or {}).get("temperature")
             if _t:
                 st.markdown(f"🌡 **{_mkt} {_t['temp']}/100** {_t['label']} → 仓位 **{_t['position']}**")
+                if _t.get("verdict"):
+                    st.caption(f"🧭 研判：{_t['verdict']}")
         st.markdown("---")
         for _mkt in ("美股", "A股", "港股"):
             _ixs = ((_snap["markets"].get(_mkt) or {}).get("indices")) or []
@@ -784,6 +786,8 @@ elif _nav == "📈 大盘板块":
             _t = blk.get("temperature")
             if _t:
                 st.markdown(f"🌡 温度 **{_t['temp']}/100** {_t['label']}（趋势{_t['trend']}/宽度{_t['breadth']}/动量{_t['momentum']}/量能{_t.get('vol_heat','—')}）→ 仓位 {_t['position']}")
+                if _t.get("verdict"):
+                    st.markdown(f"🧭 **研判**：{_t['verdict']}")
             for ix in blk.get("indices", []):
                 st.markdown(f"- **{ix['name']}** {ix['last']}（5日 {ix['chg5d']:+.1f}% / 20日 {ix['chg20d']:+.1f}%）｜{ix['trend']}"
                             + (f"｜**{ix['turning']}**" if ix.get("turning") else ""))

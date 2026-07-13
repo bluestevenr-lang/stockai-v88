@@ -3277,7 +3277,8 @@ def _build_market_ai_context():
                 'trend': '上涨' if _chg5 > 0.5 else ('下跌' if _chg5 < -0.5 else '震荡'),
                 'strength': int(t.get("temp", 50) or 50),  # 强度=市场温度（趋势+宽度+动量+量能）
             }
-        lines = [f"[{mname}] 温度{t.get('temp', '?')}/100 {t.get('label', '')}·建议仓位{t.get('position', '?')}"]
+        lines = [f"[{mname}] 温度{t.get('temp', '?')}/100 {t.get('label', '')}·建议仓位{t.get('position', '?')}"
+                 + (f"·🧭研判{t.get('verdict')}" if t.get('verdict') else "")]
         for ix in ixs[:3]:
             lines.append(f"  {ix.get('name')}: {ix.get('last')}｜5日{float(ix.get('chg5d', 0) or 0):+.1f}%｜距MA20 {float(ix.get('vs_ma20', 0) or 0):+.1f}%｜{ix.get('trend', '')}")
         secs = blk.get("sectors") or []

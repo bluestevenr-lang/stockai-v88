@@ -212,8 +212,28 @@ def compute_temperature(indices: list, sectors: list) -> dict:
         label, pos = "🟠 偏冷", "30-50%"
     else:
         label, pos = "🔵 冰点", "≤30%（仅留核心层大跌加仓弹药）"
+    # 【V88·自动研判】把温度+今日/月涨跌+量能 说成人话结论：
+    # 关键区分"见顶派发(高温+高位+滞涨→警惕)" vs "情绪冰点(低温+杀跌→接近弹药、属正常调整)"。
+    c1 = sum(ix.get("chg1d", 0) for ix in indices) / len(indices) if indices else 0.0
+    _down = c1 <= -1.2          # 今日均跌超1.2%＝明显下杀
+    _up = c1 >= 1.2
+    if temp >= 75:
+        verdict = ("⚠️ 高位过热放量下杀·防趋势反转，触发中线兑现纪律" if _down
+                   else "⚠️ 高位过热·放量滞涨防派发，落袋为先" if (vol_heat >= 60 and abs(mom_raw) < 1.5)
+                   else "🔥 过热惯性·可持有但设好回撤线、不新追高")
+    elif temp < 30:
+        verdict = ("🧊 情绪冰点·恐慌杀跌接近弹药区（属正常调整非见顶，核心层分批备弹、不追杀）" if (_down or vol_heat >= 70)
+                   else "🧊 情绪冰点·地量磨底（等企稳信号再动，不逆势加主题）")
+    elif temp < 45:
+        verdict = ("🟠 转弱调整·控节奏（未到弹药区，减主题不加杠杆）" if _down
+                   else "🟠 偏冷震荡·轻仓等右侧信号")
+    else:
+        verdict = ("🟡 获利回吐/正常回调（趋势未破，回踩看支撑再定）" if _down
+                   else "🟢 趋势偏暖·持有为主（回踩加、不追高）" if (_up and temp >= 60)
+                   else "🟡 中性震荡·跟随主线轮动")
     return {"temp": temp, "trend": round(trend), "breadth": round(breadth),
-            "momentum": round(momentum), "vol_heat": round(vol_heat), "label": label, "position": pos}
+            "momentum": round(momentum), "vol_heat": round(vol_heat),
+            "label": label, "position": pos, "verdict": verdict}
 
 
 
@@ -294,6 +314,8 @@ def generate_market_snapshot() -> str:
             temp_lines.append(
                 f"- **{market} {t['temp']}/100** {t['label']}（趋势{t['trend']}/宽度{t['breadth']}/动量{t['momentum']}/量能{t.get('vol_heat','—')}）"
                 f"→ 建议仓位 **{t['position']}**{_bx_txt}")
+            if t.get("verdict"):
+                temp_lines.append(f"  - 🧭 研判：**{t['verdict']}**")
             _tr = (payload.get(market) or {}).get("turn_risk")
             if _tr:
                 temp_lines.append(f"  - 🔮 {market}转向概率：{_tr['text']}")

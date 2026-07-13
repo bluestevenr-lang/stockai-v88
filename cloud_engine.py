@@ -261,6 +261,17 @@ def analyze_trend_full(df, sector_strength=None):
         h60 = float(hi.tail(60).max()); l20 = float(lo.tail(20).min())
         l250 = float(lo.tail(min(250, len(lo))).min()); h250 = float(hi.tail(min(250, len(hi))).max())
         pos52 = (last - l250) / (h250 - l250) * 100 if h250 > l250 else 50.0
+        # 【V88·双水位】在 52周分位旁再给"距最高"：按本次数据窗口的真实跨度诚实标注
+        _wh = float(c.max())
+        _ath_pct_w = (last / _wh - 1) * 100 if _wh else 0.0
+        try:
+            _win_days = int((c.index[-1] - c.index[0]).days)
+            _ath_days_w = int((c.index[-1] - c.idxmax()).days)
+        except Exception:
+            _win_days, _ath_days_w = len(c), None
+        _ath_lbl = ("历史高" if _win_days >= 1000 else
+                    (f"{_win_days // 365 + 1}年高" if _win_days >= 365 else "区间高"))
+        _ath_days_txt = f"·{_ath_days_w}天前" if _ath_days_w is not None else ""
         new_high_60 = float(hi.iloc[-1]) >= h60 * 0.995
         near_ma20 = abs(last - ma[20]) / ma[20] < 0.02 if ma[20] else False
         support = round(max(ma[20], l20) if last > ma[20] else max(ma[55], l20), 2)
@@ -376,7 +387,7 @@ def analyze_trend_full(df, sector_strength=None):
                      "明显缩量" if _vol_pct <= -20 else "温和缩量" if _vol_pct <= -8 else "量能持平")
                     + f"·5日均量较20日{_vol_pct:+.0f}%·今日量比{vold:.2f}"),
             "量价健康": vp,
-            "水位风险": f"{water}({pos52:.0f}%)·距压力{(resistance / last - 1) * 100:+.1f}%·距支撑{(support / last - 1) * 100:+.1f}%",
+            "水位风险": f"{water}·52周{pos52:.0f}%·距{_ath_lbl}{_ath_pct_w:+.0f}%{_ath_days_txt}·距压力{(resistance / last - 1) * 100:+.1f}%·距支撑{(support / last - 1) * 100:+.1f}%",
             "板块强度": (f"板块资金轮入·热度{s_sector:.0f}" if (sector_strength is not None and s_sector >= 70)
                      else (f"板块涨势退潮·热度{s_sector:.0f}" if (sector_strength is not None and s_sector <= 30)
                            else ("所属板块中性" if sector_strength is not None else "未接板块数据·按中性50"))),
