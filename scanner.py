@@ -23,8 +23,11 @@ v2.1 新增：
 
 from __future__ import annotations
 import logging
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timezone, timedelta
 from typing import Dict, List, Optional
+
+# 配置中的交易时段为北京时间 (UTC+8)，扫描时统一用北京时
+BEIJING_TZ = timezone(timedelta(hours=8))
 
 import pandas as pd
 import requests
@@ -75,7 +78,8 @@ class Scanner:
         self._filter_events = []
         self._scan_stats = {}
         self._market_status = {}
-        now = datetime.now()
+        # 使用北京时间判断交易时段（config 中 TRADING_SESSIONS 为 UTC+8）
+        now = datetime.now(timezone.utc).astimezone(BEIJING_TZ)
 
         for market, symbols in WATCHLIST.items():
             cfg = MARKET_CONFIG[market]
@@ -237,11 +241,22 @@ class Scanner:
         realtime = self._fetch_realtime(symbol)
         price    = realtime if realtime else float(df_5m["close"].iloc[-1])
 
-        entry    = pos["entry_price"]
+        entry = pos.get("entry_price")
+        if entry is None:
+            logger.warning(f"[EXIT SKIP] {symbol}: 持仓缺少 entry_price，跳过出场检查")
+            return None
         peak     = max(pos.get("peak_price",  price), price)
         floor    = min(pos.get("floor_price", price), price)   # v2.1: 追踪最低价
-        atr_stop = pos["atr_stop"]
-        shares   = pos["shares"]
+        # 兼容旧版 positions.json 缺少 atr_stop：用当前 K 线重新计算并回写
+        atr_stop = pos.get("atr_stop")
+        if atr_stop is None:
+            atr_stop = get_atr_stop(df_5m, price, cfg.atr_period, cfg.atr_multiplier)
+            self.positions[symbol]["atr_stop"] = atr_stop
+            logger.debug(f"[EXIT] {symbol}: 补全 atr_stop={atr_stop:.4f}")
+        shares = pos.get("shares")
+        if shares is None or shares <= 0:
+            logger.warning(f"[EXIT SKIP] {symbol}: 持仓缺少或无效 shares，跳过出场检查")
+            return None
         comm     = cfg.commission_rate
         slip     = cfg.slippage_rate
 
@@ -305,6 +320,7 @@ class Scanner:
     # 时间过滤
     # ─────────────────────────────────────────
     def _check_open_time(self, cfg, now: datetime) -> bool:
+        # now 应由 scan_all 传入北京时间
         t = now.time()
         for start_str, end_str in cfg.open_time_blackout:
             start = time.fromisoformat(start_str)
@@ -318,7 +334,11 @@ class Scanner:
         session = TRADING_SESSIONS.get(market, {})
         if not session:
             return True
-        t     = now.time()
+        # 确保用北京时间比较（config 中时段为 UTC+8）
+        if now.tzinfo is None:
+            t = now.replace(tzinfo=timezone.utc).astimezone(BEIJING_TZ).time()
+        else:
+            t = now.astimezone(BEIJING_TZ).time()
         start = time.fromisoformat(session["start"])
         end   = time.fromisoformat(session["end"])
         if start <= end:

@@ -23,6 +23,42 @@ from datetime import datetime, timedelta
 
 log = logging.getLogger(__name__)
 
+# ── 直连 HTTP 客户端（关键：Tushare 是国内接口，必须绕开 Clash 代理直连）──────
+# 全局代理(HTTP_PROXY/HTTPS_PROXY)是给 yfinance/DeepSeek 用的，Tushare 走代理会
+# ProxyError 或超时。这里用 trust_env=False + proxies={} 强制直连，且并发安全
+# （不改全局 os.environ）。
+import requests as _rq
+
+_TS_HTTP = None
+_TS_API_URL = "https://api.tushare.pro"
+
+def _get_http():
+    global _TS_HTTP
+    if _TS_HTTP is None:
+        s = _rq.Session()
+        s.trust_env = False           # 忽略环境里的 *_PROXY
+        s.proxies = {"http": None, "https": None}
+        _TS_HTTP = s
+    return _TS_HTTP
+
+def _ts_query(api_name: str, params: dict, fields: str = "", timeout: int = 12):
+    """直连调用 Tushare HTTP API，返回 DataFrame；失败抛异常由上层处理。"""
+    token = _read_token()
+    if not token:
+        raise RuntimeError("TUSHARE_TOKEN 未配置")
+    r = _get_http().post(
+        _TS_API_URL,
+        json={"api_name": api_name, "token": token, "params": params, "fields": fields},
+        timeout=timeout,
+    )
+    d = r.json()
+    if d.get("code") != 0:
+        raise RuntimeError(d.get("msg") or f"Tushare {api_name} 返回 code={d.get('code')}")
+    data = d.get("data") or {}
+    cols = data.get("fields") or []
+    items = data.get("items") or []
+    return pd.DataFrame(items, columns=cols)
+
 # ── 熔断器参数 ────────────────────────────────────────────────────
 _TS_FAIL_THRESHOLD  = 5      # 连续失败 N 次后熔断
 _TS_COOLDOWN_SEC    = 1800   # 熔断冷却时间（30分钟后自动尝试恢复）
@@ -137,19 +173,15 @@ def fetch_daily_tushare(yf_code: str, days: int = 400) -> pd.DataFrame | None:
     """
     if not is_cn(yf_code):
         return None
-    pro = get_pro()
-    if pro is None:
+    if not _ts_circuit_ok():
         return None
     try:
         ts_code = yf_to_ts(yf_code)
         end_d   = datetime.now().strftime("%Y%m%d")
         start_d = (datetime.now() - timedelta(days=days)).strftime("%Y%m%d")
-        if is_index(yf_code):
-            df = pro.index_daily(ts_code=ts_code, start_date=start_d, end_date=end_d,
-                                 fields="trade_date,open,high,low,close,vol")
-        else:
-            df = pro.daily(ts_code=ts_code, start_date=start_d, end_date=end_d,
-                           fields="trade_date,open,high,low,close,vol")
+        api = "index_daily" if is_index(yf_code) else "daily"
+        df = _ts_query(api, {"ts_code": ts_code, "start_date": start_d, "end_date": end_d},
+                       fields="trade_date,open,high,low,close,vol")
         if df is None or len(df) < 5:
             _ts_record_failure()
             return None
@@ -232,21 +264,20 @@ def fetch_latest_price(yf_code: str) -> dict | None:
     获取最新价 + 涨跌幅，返回 {price, change_pct, prev_close}
     A 股优先 Tushare，其余 yfinance
     """
-    if is_cn(yf_code):
-        pro = get_pro()
-        if pro:
-            try:
-                ts_code = yf_to_ts(yf_code)
-                df = pro.daily(ts_code=ts_code, fields="trade_date,close,pct_chg,pre_close")
-                if df is not None and len(df) >= 1:
-                    row = df.iloc[0]
-                    return {
-                        "price":      float(row["close"]),
-                        "change_pct": float(row["pct_chg"]),
-                        "prev_close": float(row["pre_close"]),
-                    }
-            except Exception as e:
-                log.debug(f"Tushare latest {yf_code}: {e}")
+    if is_cn(yf_code) and _ts_circuit_ok():
+        try:
+            ts_code = yf_to_ts(yf_code)
+            df = _ts_query("daily", {"ts_code": ts_code},
+                           fields="trade_date,close,pct_chg,pre_close")
+            if df is not None and len(df) >= 1:
+                row = df.iloc[0]
+                return {
+                    "price":      float(row["close"]),
+                    "change_pct": float(row["pct_chg"]),
+                    "prev_close": float(row["pre_close"]),
+                }
+        except Exception as e:
+            log.debug(f"Tushare latest {yf_code}: {e}")
 
     # yfinance fallback
     try:
@@ -269,12 +300,11 @@ def fetch_cn_stock_pool(limit: int = 300) -> list:
     返回 [(code6, name, yf_code), ...]
     Token 失效时返回空列表，由上层代码触发备用池。
     """
-    pro = get_pro()
-    if pro is None:
+    if not _ts_circuit_ok():
         return []
     try:
-        df = pro.stock_basic(exchange="", list_status="L",
-                             fields="ts_code,name,market")
+        df = _ts_query("stock_basic", {"exchange": "", "list_status": "L"},
+                       fields="ts_code,name,market")
         if df is None or len(df) == 0:
             _ts_record_failure()
             return []
@@ -303,18 +333,57 @@ def fetch_cn_stock_pool(limit: int = 300) -> list:
 
 def get_tushare_status() -> dict:
     """返回 Tushare 当前状态（供 UI 诊断用）"""
-    ok = _ts_circuit_ok() and _pro_ok is True and _pro is not None
-    if _ts_disabled_until > time.time():
+    has_token = bool(_read_token())
+    ok = _ts_circuit_ok() and has_token
+    if not has_token:
+        status = "未配置 Token"
+    elif _ts_disabled_until > time.time():
         remaining = int(_ts_disabled_until - time.time())
         status = f"熔断中（{remaining//60}分{remaining%60}秒后恢复）"
-    elif _pro_ok is None:
-        status = "未配置或初始化失败"
-    elif _pro_ok is False:
-        status = "未初始化"
     else:
-        status = "正常"
+        status = "正常（直连）"
     return {
         "available": ok,
         "status": status,
         "fail_count": _ts_fail_count,
     }
+
+
+def fetch_cn_top_pool(limit: int = 500) -> list:
+    """
+    【V94.3】A股市值榜股票池（东财不可用时的二级云端源）。
+    与 fetch_cn_stock_pool 的区别：按总市值降序（真实权重股在前），
+    并剔除 ST/*ST/退市/北交所。返回 [(code6, name, yf_code), ...]
+    """
+    if not _ts_circuit_ok():
+        return []
+    try:
+        today = datetime.now().strftime("%Y%m%d")
+        start = (datetime.now() - timedelta(days=10)).strftime("%Y%m%d")
+        cal = _ts_query("trade_cal", {"exchange": "SSE", "start_date": start,
+                                      "end_date": today, "is_open": 1}, "cal_date")
+        trade_date = str(cal["cal_date"].max())
+        db = _ts_query("daily_basic", {"trade_date": trade_date}, "ts_code,total_mv")
+        basic = _ts_query("stock_basic", {"list_status": "L"}, "ts_code,name")
+        df = (db.merge(basic, on="ts_code")
+                .dropna(subset=["total_mv"])
+                .sort_values("total_mv", ascending=False))
+        pool = []
+        for _, row in df.iterrows():
+            ts_code = str(row["ts_code"])
+            name = str(row["name"])
+            nm = name.upper()
+            if nm.startswith(("ST", "*ST", "PT", "S*ST", "SST")) or "退" in nm:
+                continue
+            if ts_code.endswith(".BJ"):   # 北交所 yfinance 无行情
+                continue
+            pool.append((ts_code[:6], name, ts_to_yf(ts_code)))
+            if len(pool) >= limit:
+                break
+        log.info(f"Tushare A股市值榜股池: {len(pool)} 只（交易日 {trade_date}）")
+        _ts_record_success()
+        return pool
+    except Exception as e:
+        _ts_record_failure()
+        log.warning(f"Tushare A股市值榜股池失败: {e}")
+        return []

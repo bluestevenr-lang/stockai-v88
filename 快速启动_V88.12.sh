@@ -5,20 +5,62 @@
 #   1. 自动检测并安装依赖（失败静默跳过，不影响启动）
 #   2. 守护进程模式：进程意外退出后 5 秒自动重拉
 #   3. app 内部每天凌晨零点自动清零所有缓存并重载
+# 说明：本脚本与 v88_master_launch.sh 使用一致的运行环境
+#       （arm64 + 框架版 Python + 代理 + DeepSeek Key）
 # ================================================================
 
-set -e
+# 注意：这里【不能】用 set -e。
+# 守护循环依赖捕获 streamlit 的非零退出码后重启，
+# set -e 会在 streamlit 非零退出时直接终止脚本，使重启逻辑失效。
+
 cd "$(dirname "$0")"
 
 echo "🚀 AI皇冠双核 V88 - 守护模式启动"
 echo "================================================================"
 
+# ── 选择 Python 解释器（优先框架版 3.14，回退到 python3）──────────
+PYTHON_BIN="/Library/Frameworks/Python.framework/Versions/3.14/bin/python3.14"
+if [ ! -x "$PYTHON_BIN" ]; then
+    PYTHON_BIN="$(command -v python3)"
+fi
+
+# Apple Silicon 上强制 arm64；其他架构留空
+ARCH_PREFIX=""
+if [ "$(uname -m)" = "arm64" ]; then
+    ARCH_PREFIX="arch -arm64"
+fi
+
+RUN_STREAMLIT() {
+    # 用 -m streamlit 而非裸 streamlit，避免 Finder 双击时 PATH 缺失
+    $ARCH_PREFIX "$PYTHON_BIN" -m streamlit "$@"
+}
+
+# ── 代理与 API Key（与 v88_master_launch.sh 保持一致）─────────────
+#    yfinance 需要代理才能访问 Yahoo Finance（中国被墙）
+#    Clash 会自动将国内流量（如东财）直连，海外流量走代理
+export http_proxy="http://127.0.0.1:7897"
+export https_proxy="http://127.0.0.1:7897"
+export ALL_PROXY="http://127.0.0.1:7897"
+export HTTP_PROXY="http://127.0.0.1:7897"
+export HTTPS_PROXY="http://127.0.0.1:7897"
+ENV_FILE="$HOME/Desktop/StockAI/.env"
+if [ -f "$ENV_FILE" ]; then
+    set -a
+    source "$ENV_FILE"
+    set +a
+fi
+
+# ── 清理 8501 端口上的旧实例（避免“端口已被占用”启动失败）───────
+pkill -9 -f 'streamlit run app_v88_integrated.py' 2>/dev/null
+for p in $(lsof -ti:8501 2>/dev/null); do kill -9 "$p" 2>/dev/null; done
+sleep 1
+
 # ── 依赖检查（静默安装，pip 失败不影响启动）─────────────────────
 _install_if_missing() {
     local pkg=$1 install_spec=${2:-$1}
-    python3 -c "import $pkg" 2>/dev/null || {
+    "$PYTHON_BIN" -c "import $pkg" 2>/dev/null || {
         echo "📦 安装 $install_spec..."
-        pip3 install "$install_spec" -q 2>/dev/null || echo "⚠️  $install_spec 安装失败，已跳过（不影响主功能）"
+        "$PYTHON_BIN" -m pip install "$install_spec" -q 2>/dev/null || echo "⚠️  $install_spec 安装失败，已跳过（不影响主功能）"
     }
 }
 _install_if_missing curl_cffi "curl_cffi>=0.7.0"
@@ -46,13 +88,13 @@ while true; do
 
     # 启动 Streamlit（headless=false 让系统自动打开浏览器，仅首次）
     if [ $RESTART_COUNT -eq 1 ]; then
-        streamlit run app_v88_integrated.py \
+        RUN_STREAMLIT run app_v88_integrated.py \
             --server.headless false \
             --server.port 8501 \
             --browser.serverAddress localhost
     else
         # 重启时不再重新打开浏览器
-        streamlit run app_v88_integrated.py \
+        RUN_STREAMLIT run app_v88_integrated.py \
             --server.headless true \
             --server.port 8501
     fi

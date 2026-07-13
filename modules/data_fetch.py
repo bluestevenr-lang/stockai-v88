@@ -82,7 +82,7 @@ def get_proxy_url() -> str:
     # 从session_state获取（Streamlit环境）
     try:
         import streamlit as st
-        port = st.session_state.get('proxy_port', '1082')
+        port = st.session_state.get('proxy_port', '7897')
         return f"http://127.0.0.1:{port}"
     except:
         # 非Streamlit环境，使用默认配置
@@ -186,7 +186,7 @@ def fetch_from_stooq(symbol: str) -> Optional[pd.DataFrame]:
         df = None
         try:
             headers = {'User-Agent': 'Mozilla/5.0 (compatible; StockAI/1.0)'}
-            r = requests.get(url, timeout=15, verify=False, headers=headers)
+            r = requests.get(url, timeout=5, verify=False, headers=headers)
             if r.status_code == 200 and r.text.strip():
                 from io import StringIO
                 df = pd.read_csv(StringIO(r.text))
@@ -237,7 +237,7 @@ def fetch_hk_index_from_eastmoney(symbol: str) -> Optional[pd.DataFrame]:
             'end': '20500101',
             'lmt': '252'
         }
-        r = requests.get(em_url, params=params, timeout=10, verify=False)
+        r = requests.get(em_url, params=params, timeout=10, verify=False, proxies={"http": None, "https": None})
         if r.status_code != 200:
             return None
         data = r.json()
@@ -401,6 +401,7 @@ def fetch_stock_data(
     data_source = "无数据"
     
     # ═══ 1️⃣ 主力：yfinance ═══
+    _hit_opserr = False
     if HAS_YFINANCE:
         param_combinations = [
             {"period": "1y", "auto_adjust": False},
@@ -410,6 +411,8 @@ def fetch_stock_data(
         ]
         
         for idx, params in enumerate(param_combinations):
+            if _hit_opserr:
+                break
             for retry in range(YFINANCE_MAX_RETRIES):
                 try:
                     with ProxyContext(proxy_url):
@@ -442,17 +445,24 @@ def fetch_stock_data(
                             return result if (return_quality or return_source) else cleaned
                 
                 except Exception as e:
+                    _err_name = type(e).__name__
+                    if _err_name == 'OperationalError' or 'OperationalError' in str(e):
+                        logging.warning(f"⚠️ {target_code} OperationalError（SQLite锁），跳过 yfinance 走备用源")
+                        _hit_opserr = True
+                        break
                     if retry < YFINANCE_MAX_RETRIES - 1:
-                        # 指数退避重试
                         wait_time = YFINANCE_RETRY_DELAY * (2 ** retry)
-                        logging.warning(f"⚠️ {target_code} YFinance失败 (参数{idx+1}, 重试{retry+1}/{YFINANCE_MAX_RETRIES}): {type(e).__name__}, 等待{wait_time}s")
+                        logging.warning(f"⚠️ {target_code} YFinance失败 (参数{idx+1}, 重试{retry+1}/{YFINANCE_MAX_RETRIES}): {_err_name}, 等待{wait_time}s")
                         time.sleep(wait_time)
                         continue
                     else:
                         logging.error(f"❌ {target_code} YFinance参数{idx+1}全部失败")
                         break
         
-        logging.warning(f"{target_code} YFinance全部尝试失败，尝试备用源...")
+        if not _hit_opserr:
+            logging.warning(f"{target_code} YFinance全部尝试失败，尝试备用源...")
+        else:
+            logging.info(f"{target_code} OperationalError 快速跳转备用源")
     
     # ═══ 2️⃣ 备用：Stooq（仅美股/指数）═══
     if not target_code.endswith('.HK') and not target_code.endswith('.SS') and not target_code.endswith('.SZ'):

@@ -151,12 +151,12 @@ def _fetch_eastmoney(market: str, limit: int) -> list:
     if not fs:
         return []
 
-    for url in urls[:2]:   # 只试前两个端点
+    for url in urls[:1]:   # 东财不可达时只试 1 个端点，快速降级到内置池
         all_stocks = []
         pn = 1
         try:
             while len(all_stocks) < limit:
-                time.sleep(0.3)
+                time.sleep(0.1)
                 pz = min(200, limit - len(all_stocks))
                 params = {
                     "pn": pn, "pz": pz, "fs": fs,
@@ -164,7 +164,7 @@ def _fetch_eastmoney(market: str, limit: int) -> list:
                     "ut": "bd1d9ddb04089700cf9c27f6f7426281",
                     "fid": "f20", "sort": "f20", "type": "rank",
                 }
-                resp = requests.get(url, params=params, timeout=15, verify=False)
+                resp = requests.get(url, params=params, timeout=5, verify=False)
                 diff = resp.json().get("data", {}).get("diff", [])
                 if isinstance(diff, dict):
                     diff = list(diff.values())

@@ -203,6 +203,56 @@ def holdings_rows() -> list:
             for acc, a, h in _iter_holdings(pj)]
 
 
+def remove_holding(account: str, code: str) -> str:
+    """从持仓底稿中直接移除一只股票（用于持仓表逐行删除按钮，不生成卖出交易）。"""
+    pj = _load()
+    accounts = pj.get("accounts") or {}
+    a = accounts.get(account)
+    if not a:
+        return f"未找到账户「{account}」"
+    holdings = a.get("holdings") or []
+    target = next((h for h in holdings if str(h.get("code", "")).upper() == str(code).upper()), None)
+    if not target:
+        return f"未找到持仓「{code}」"
+    a["holdings"] = [h for h in holdings if h is not target]
+    _save(pj)
+    return f"已删除持仓 {target.get('name') or code}（{code}）"
+
+
+def update_holding(original_account: str, original_code: str, *, account: str, name: str,
+                   code: str, shares, cost, category: str = "") -> str:
+    """修改一条持仓的全部可见字段；账户变化时将该条记录移动到新账户。"""
+    try:
+        shares = int(float(shares))
+        cost = float(cost)
+    except (TypeError, ValueError):
+        return "股数和成本必须是数字"
+    account, name, code = str(account).strip(), str(name).strip(), str(code).strip().upper()
+    if not account or not name or not code:
+        return "账户、名称、代码不能为空"
+    if shares < 0 or cost < 0:
+        return "股数和成本不能小于 0"
+
+    pj = _load()
+    accounts = pj.get("accounts") or {}
+    source = accounts.get(original_account)
+    if not source:
+        return f"未找到账户「{original_account}」"
+    holdings = source.get("holdings") or []
+    target = next((h for h in holdings
+                   if str(h.get("code", "")).upper() == str(original_code).upper()), None)
+    if not target:
+        return f"未找到持仓「{original_code}」"
+
+    updated = dict(target)
+    updated.update({"name": name, "code": code, "shares": shares, "cost": cost, "class": str(category).strip()})
+    source["holdings"] = [h for h in holdings if h is not target]
+    dest = accounts.setdefault(account, {"type": source.get("type", "手动"), "holdings": []})
+    dest.setdefault("holdings", []).append(updated)
+    _save(pj)
+    return f"已修改持仓 {name}（{code}）"
+
+
 def handle(line: str, reason: str = "", chosen_code: str = None) -> str:
     """CLI 入口：多解时自动取名录首选（UI 请用 handle_ex 走弹窗确认）。"""
     msg, needs = handle_ex(line, reason=reason, chosen_code=chosen_code)

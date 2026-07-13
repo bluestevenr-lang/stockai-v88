@@ -48,6 +48,7 @@ from metrics import (
     append_scan_entry, update_filter_stats,
     load_scan_log, load_filter_stats,
 )
+from weekend_report import generate_weekend_holdings_report
 
 # ─────────────────────────────────────────────
 # 目录 & 日志
@@ -343,6 +344,16 @@ def run_scan(cloud: bool = False, force: bool = False):
             "by_market": {k: v for k, v in scanner._scan_stats.items()},
         })
 
+        # 3. 写入 last_filter_events.json（周报 Block 2 使用：per-symbol 最新层位）
+        _LAST_FE = Path("data/last_filter_events.json")
+        _LAST_FE.write_text(
+            json.dumps(
+                {"updated_at": datetime.now().isoformat(),
+                 "events": scanner._filter_events},
+                indent=2, ensure_ascii=False,
+            )
+        )
+
     # 3. 写入 market_status.json（指数 vs MA200，供日报大盘状态行读取）
     if scanner._market_status:
         MARKET_STATUS_FILE = Path("data/market_status.json")
@@ -497,6 +508,29 @@ def run_weekly_report(cloud: bool = False):
 
 
 # ─────────────────────────────────────────────
+# 周六持仓周报（每周六 09:00）
+# ─────────────────────────────────────────────
+def run_weekend_holdings_report(cloud: bool = False):
+    """
+    生成周六持仓周报 v1 并发钉钉。
+    包含：持仓天数 / 追踪止盈线 / 52周水位 / 均线距离 / 相对强弱 / 状态标签。
+    """
+    logger.info("生成周六持仓周报 v1...")
+    report = generate_weekend_holdings_report()
+    print("\n" + report)
+
+    today = date.today()
+    report_path = Path(f"logs/weekend_holdings_{today}.txt")
+    report_path.write_text(report, encoding="utf-8")
+    logger.info(f"持仓周报已保存至 {report_path}")
+
+    send_dingtalk(
+        f"## 📋 量化持仓周报 v1 — {today}\n\n```\n{report}\n```",
+        title=f"持仓周报 {today}",
+    )
+
+
+# ─────────────────────────────────────────────
 # 旧格式数据迁移（quant_state.json → v2 格式）
 # ─────────────────────────────────────────────
 
@@ -543,12 +577,13 @@ def _migrate_old_state():
 # ─────────────────────────────────────────────
 def main():
     parser = argparse.ArgumentParser(description="量化策略 v2.1")
-    parser.add_argument("--report",       action="store_true", help="生成今日日报后退出")
-    parser.add_argument("--daily-report", action="store_true", help="同 --report（旧版兼容）")
-    parser.add_argument("--weekly",       action="store_true", help="生成本周周报后退出")
-    parser.add_argument("--once",         action="store_true", help="扫描一次后退出（cron 模式）")
-    parser.add_argument("--cloud",        action="store_true", help="启用 Gist 同步（VPS 云端模式）")
-    parser.add_argument("--force",        action="store_true", help="忽略交易时段检查，强制扫描")
+    parser.add_argument("--report",            action="store_true", help="生成今日日报后退出")
+    parser.add_argument("--daily-report",      action="store_true", help="同 --report（旧版兼容）")
+    parser.add_argument("--weekly",            action="store_true", help="生成本周周报后退出")
+    parser.add_argument("--weekend-holdings",  action="store_true", help="生成周六持仓周报 v1 后退出")
+    parser.add_argument("--once",              action="store_true", help="扫描一次后退出（cron 模式）")
+    parser.add_argument("--cloud",             action="store_true", help="启用 Gist 同步（VPS 云端模式）")
+    parser.add_argument("--force",             action="store_true", help="忽略交易时段检查，强制扫描")
     args = parser.parse_args()
 
     if args.daily_report:
@@ -564,18 +599,27 @@ def main():
         run_weekly_report(cloud=args.cloud)
         return
 
+    if args.weekend_holdings:
+        run_weekend_holdings_report(cloud=args.cloud)
+        return
+
     if args.once:
         run_scan(cloud=args.cloud, force=args.force)
         return
 
     # ── 常驻模式 ───────────────────────────────
     logger.info("量化策略 v2.1 启动，常驻模式")
-    logger.info(f"扫描间隔: {SCAN_INTERVAL_SEC}s | 日报: {REPORT_TIME} | 周报: 周日 {REPORT_TIME}")
+    logger.info(
+        f"扫描间隔: {SCAN_INTERVAL_SEC}s | "
+        f"日报: {REPORT_TIME} | 周报: 周日 {REPORT_TIME} | 持仓周报: 周六 09:00"
+    )
 
     schedule.every(SCAN_INTERVAL_SEC).seconds.do(run_scan, cloud=args.cloud)
     schedule.every().day.at(REPORT_TIME).do(run_daily_report, cloud=args.cloud)
-    # 周日发周报（weekday=6 即周日）
+    # 周日发周报
     schedule.every().sunday.at(REPORT_TIME).do(run_weekly_report, cloud=args.cloud)
+    # 周六 09:00 发持仓周报
+    schedule.every().saturday.at("09:00").do(run_weekend_holdings_report, cloud=args.cloud)
 
     run_scan(cloud=args.cloud, force=args.force)   # 启动时立即扫描一次
     while True:
