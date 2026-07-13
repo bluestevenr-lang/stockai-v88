@@ -4373,15 +4373,15 @@ if Config.ENABLE_EXPECTATION_LAYER:
                 _macro_ai_ts = max(_macro_ai_ts or 0, _macro_t)
         _macro_ai_time_text = (pd.Timestamp.fromtimestamp(_macro_ai_ts, tz="Asia/Shanghai").strftime("%m/%d %H:%M")
                                if _macro_ai_ts else "尚未生成")
-        _mc_title, _mc_b1, _mc_b2 = st.columns([6, 2, 1])
+        _mc_title, _mc_b1, _mc_b2 = st.columns([10, 1.5, 0.7])
         with _mc_title:
             st.markdown(f'<div class="v88-macro-title" style="margin:.35rem 0 .2rem"><b>📡 宏观脉搏</b>'
                         f'<span>AI解读 {_macro_ai_time_text} · 今日{_macro_ai_state.get("runs", 0)}/3次 · 盘中每3h ｜ 最近收盘 {_dt_global.now().strftime("%m/%d %H:%M")}</span></div>',
                         unsafe_allow_html=True)
         with _mc_b1:
-            _macro_ai_generate = st.button("⚡ 更新AI增强解读", key="btn_macro_ai_generate", use_container_width=True)
+            _macro_ai_generate = st.button("⚡ AI解读", key="btn_macro_ai_generate", help="更新AI增强解读", use_container_width=True)
         with _mc_b2:
-            _macro_ai_refresh = st.button("🔄 刷新", key="btn_macro_ai_refresh", use_container_width=True)
+            _macro_ai_refresh = st.button("🔄", key="btn_macro_ai_refresh", help="刷新", use_container_width=True)
         if _macro_ai_refresh:
             for _k in ['market_ai_us', '_us_tech_data', 'market_sentiment_us',
                        'market_ai_hk', '_hk_tech_data', 'market_sentiment_hk',
