@@ -14008,7 +14008,9 @@ K线形态: {_pattern_v} | 夏普比率: {_sharpe_v} | 最大回撤: {_maxdd_v}
         
         # 确认入场信息条
         _final_date_str = _final_date.strftime('%Y-%m-%d') if hasattr(_final_date, 'strftime') else str(_final_date)
-        st.markdown(f'<div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); padding: 0.8rem 1.5rem; border-radius: 8px; display: flex; align-items: center; justify-content: space-between;"><div style="color: white;"><span style="font-size: 12px;">📍 入场点位确认</span><br><span style="font-size: 12px; font-weight: 700;">{target_c} @ {_final_price:.2f}</span><span style="font-size: 12px; margin-left: 12px; opacity: 0.85;">({_final_date_str})</span></div></div>', unsafe_allow_html=True)
+        st.markdown(f'''<style>
+        .v88-entry-confirm,.v88-entry-confirm div,.v88-entry-confirm span{{color:#fff!important;}}
+        </style><div class="v88-entry-confirm" style="background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);padding:.8rem 1.5rem;border-radius:8px;display:flex;align-items:center;justify-content:space-between;"><div><span style="font-size:12px;">📍 入场点位确认</span><br><span style="font-size:12px;font-weight:700;">{target_c} @ {_final_price:.2f}</span><span style="font-size:12px;margin-left:12px;opacity:.85;">({_final_date_str})</span></div></div>''', unsafe_allow_html=True)
         
         # AI分析按钮
         if MY_GEMINI_KEY and HAS_PREDICTION_ENGINE:
@@ -14345,7 +14347,20 @@ K线形态: {_pattern_v} | 夏普比率: {_sharpe_v} | 最大回撤: {_maxdd_v}
             
             _card_col1, _card_col2 = st.columns([1, 3])
             with _card_col1:
-                _gen_card = st.button("📸 生成卡片", key=f"btn_share_card_{target_c}", type="primary", width='stretch')
+                with st.container(key="v88_share_card_action"):
+                    st.markdown('''<style>
+                    div[class*="st-key-v88_share_card_action"] button[kind="primary"]{
+                        background:#fff!important;border:1px solid #2563eb!important;color:#2563eb!important;
+                    }
+                    div[class*="st-key-v88_share_card_action"] button[kind="primary"] *,
+                    div[class*="st-key-v88_share_card_action"] button[kind="primary"] p{
+                        color:#2563eb!important;
+                    }
+                    div[class*="st-key-v88_share_card_action"] button[kind="primary"]:hover{
+                        background:#eff6ff!important;border-color:#1d4ed8!important;
+                    }
+                    </style>''', unsafe_allow_html=True)
+                    _gen_card = st.button("📸 生成卡片", key=f"btn_share_card_{target_c}", type="primary", width='stretch')
             with _card_col2:
                 st.caption("包含：价格涨跌、核心指标(VWAP/ATR/Kelly)、AI止损止盈、风控官警告、宏观环境")
             
