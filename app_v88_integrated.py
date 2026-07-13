@@ -11578,6 +11578,38 @@ def _render_today_nav():
                 for _n9, _c9, _d9, _r9 in _fxp)
             st.success("**⭐ 今日重点关注（引擎买入档 Top3）** · 点股票名直接深度分析")
             st.markdown(f"<div style='line-height:1.9'>{_fx_html}</div>", unsafe_allow_html=True)
+        # 【V88·各市场高分】买入档常因缺72h催化而空 → 顶出操作榜各市场Top3，保证美/A/港都露脸（点名分析）
+        import re as _rem2
+        _rows_mk = []
+        if _iop > 0:
+            for _lnm in _rep[_iop:_iop + 6000].splitlines():
+                if not _lnm.strip().startswith("|"):
+                    continue
+                _cm = [x.strip() for x in _lnm.split("|") if x.strip()]
+                if len(_cm) < 5:
+                    continue
+                _mm = _rem2.search(r"\[(US|SH|SZ|HK):([A-Za-z0-9\.\-]+)\]", _cm[1])
+                _sm = _rem2.search(r"\d+", _cm[4])
+                if not _mm or not _sm:
+                    continue
+                _mk3 = "🇺🇸 美股" if "美股" in _cm[0] else ("🇨🇳 A股" if "A股" in _cm[0] else ("🇭🇰 港股" if "港股" in _cm[0] else None))
+                if _mk3:
+                    _rows_mk.append((_mk3, int(_sm.group()), _cm[2], _mm.group(2)))
+        _mk_html9 = []
+        for _mk3 in ("🇺🇸 美股", "🇨🇳 A股", "🇭🇰 港股"):
+            _seen3, _lst3 = set(), []
+            for _m3, _s3, _n3, _c3 in sorted([r for r in _rows_mk if r[0] == _mk3], key=lambda x: -x[1]):
+                if _c3 in _seen3:
+                    continue
+                _seen3.add(_c3)
+                _lst3.append(f"{_stk_link(_n3, _c3)}({_s3})")
+                if len(_lst3) >= 3:
+                    break
+            if _lst3:
+                _mk_html9.append(f"<b>{_mk3}</b>：" + "、".join(_lst3))
+        if _mk_html9:
+            st.markdown("**🌍 各市场引擎高分榜（操作榜 Top3 · 点名直接深度分析）**")
+            st.markdown("<div style='line-height:1.9'>" + "<br>".join(_mk_html9) + "</div>", unsafe_allow_html=True)
         _wl9 = _watchlist_load() or {}
         _obs = []
         for _mk9, _lst9 in _wl9.items():

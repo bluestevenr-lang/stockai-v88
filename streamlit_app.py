@@ -141,18 +141,10 @@ def exp_md(title: str, md_text: str, expanded: bool = False):
         st.markdown(_linkify_md(md_text), unsafe_allow_html=True)
 
 
-# ── 可选访问密码（数字/文字、带不带引号都兼容）──────────────
-_pw = str(st.secrets.get("APP_PASSWORD", "") or "").strip()
-if _pw and not st.session_state.get("_auth_ok"):
-    st.title("☁️ V88 云端版")
-    _in = st.text_input("访问密码", type="password")
-    if st.button("进入", type="primary", use_container_width=True):
-        if str(_in).strip() == _pw:
-            st.session_state["_auth_ok"] = True
-            st.rerun()
-        else:
-            st.error("密码错误")
-    st.stop()
+# ── 【2026-07-13 用户要求·去掉代码密码门】访问控制改由 Streamlit 后台「邮箱授权」
+# (share.streamlit.io → Settings → Sharing → Specific people) 承担，更省事。
+# 无 PRIVATE_TOKEN 时云端只展示公开脱敏数据(日报/行情/榜单)，去密码不泄露持仓。
+# ⚠️ 若要在云端显示持仓(配 PRIVATE_TOKEN)，务必先在后台设好邮箱授权，否则持仓对任何知道网址的人可见。
 
 
 @st.cache_data(ttl=300, show_spinner=False)
@@ -340,6 +332,38 @@ if _nav == "🧭 导航":
             st.success("**⭐ 今日重点关注（引擎买入档 Top3）** · 点股票名直接深度分析")
             _h = "<br>".join(f"🟢 <b>{_lnk(x['n'], x['c'])}</b> {x['t'].replace(chr(10)*2, '<br>&nbsp;&nbsp;')}" for x in _fx)
             st.markdown(f"<div style='line-height:1.9'>{_h}</div>", unsafe_allow_html=True)
+        # 【V88·各市场高分】买入档常因缺72h催化而空 → 顶出操作榜各市场Top3，保证美/A/港都露脸（点名分析）
+        import re as _rem2
+        _rows_mk = []
+        if _iop > 0:
+            for _lnm in _rep[_iop:_iop + 6000].splitlines():
+                if not _lnm.strip().startswith("|"):
+                    continue
+                _cm = [x.strip() for x in _lnm.split("|") if x.strip()]
+                if len(_cm) < 5:
+                    continue
+                _mm = _rem2.search(r"\[(US|SH|SZ|HK):([A-Za-z0-9\.\-]+)\]", _cm[1])
+                _sm = _rem2.search(r"\d+", _cm[4])
+                if not _mm or not _sm:
+                    continue
+                _mk3 = "🇺🇸 美股" if "美股" in _cm[0] else ("🇨🇳 A股" if "A股" in _cm[0] else ("🇭🇰 港股" if "港股" in _cm[0] else None))
+                if _mk3:
+                    _rows_mk.append((_mk3, int(_sm.group()), _cm[2], _mm.group(2)))
+        _mk_html = []
+        for _mk3 in ("🇺🇸 美股", "🇨🇳 A股", "🇭🇰 港股"):
+            _seen3, _lst3 = set(), []
+            for _m3, _s3, _n3, _c3 in sorted([r for r in _rows_mk if r[0] == _mk3], key=lambda x: -x[1]):
+                if _c3 in _seen3:
+                    continue
+                _seen3.add(_c3)
+                _lst3.append(f"{_lnk(_n3, _c3)}({_s3})")
+                if len(_lst3) >= 3:
+                    break
+            if _lst3:
+                _mk_html.append(f"<b>{_mk3}</b>：" + "、".join(_lst3))
+        if _mk_html:
+            st.markdown("**🌍 各市场引擎高分榜（操作榜 Top3 · 点名直接深度分析）**")
+            st.markdown("<div style='line-height:1.9'>" + "<br>".join(_mk_html) + "</div>", unsafe_allow_html=True)
         if _ob:
             import re as _re9
             _obl = [_re9.sub(r"([\u4e00-\u9fffA-Za-z0-9\-·]+)（([A-Z0-9\.]+)）",
@@ -729,7 +753,10 @@ elif _nav == "💼 持仓终端":
     _tok = str(st.secrets.get("PRIVATE_TOKEN", "") or "").strip()
     if not _tok:
         st.warning("需在 share.streamlit.io → App settings → Secrets 配置 PRIVATE_TOKEN（私仓读写令牌）后启用")
+        st.caption("🔒 隐私铁律：持仓属私域。配 PRIVATE_TOKEN 前，务必先在后台 Settings → Sharing 设「邮箱授权」限定可访问人，"
+                   "否则持仓会对任何知道网址的人可见。仅你自己用可放心开。")
     else:
+        st.caption("🔒 已启用持仓（私仓读写）。请确认后台已设邮箱授权，此页含真实持仓，勿公开分享网址。")
         import base64 as _b64
         import tempfile as _tf
         from pathlib import Path
