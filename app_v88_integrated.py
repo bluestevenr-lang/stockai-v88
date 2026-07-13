@@ -40,7 +40,6 @@ def _load_env_file():
     if not env_path.exists():
         return
     try:
-        st.caption("⏳ 加载过程显示进度；长时间空白时请检查网络。原有指标全部保留并紧凑展示。")
         with open(env_path, 'r', encoding='utf-8') as f:
             for line in f:
                 line = line.strip()
@@ -2679,19 +2678,8 @@ h1, [data-testid="stHeading"] h1 { font-size: 22px !important; font-weight: 700 
 h2, [data-testid="stHeading"] h2 { font-size: 18px !important; font-weight: 700 !important; color: #1e3a5f !important; }
 h3, [data-testid="stHeading"] h3 { font-size: 16px !important; font-weight: 600 !important; color: #2c4a6e !important; }
 
-/* 按钮：主按钮深蓝，次按钮浅灰蓝 */
-button[data-testid="stBaseButton-primary"] {
-    background: #1e3a5f !important; border: none !important; color: #fff !important;
-    border-radius: 8px !important; font-weight: 600 !important; font-size: 13px !important;
-}
-button[data-testid="stBaseButton-primary"]:hover { background: #2c4a6e !important; }
-button[data-testid="stBaseButton-secondary"],
-button[data-testid="stBaseButton-minimal"] {
-    border: 1px solid #cbd5e1 !important; color: #334155 !important;
-    border-radius: 8px !important; font-size: 13px !important; background: #fff !important;
-}
-button[data-testid="stBaseButton-secondary"]:hover,
-button[data-testid="stBaseButton-minimal"]:hover { background: #f1f5f9 !important; border-color: #94a3b8 !important; }
+/* 【2026-07-13 用户要求·撤销深蓝按钮】主按钮深蓝#1e3a5f看不清，移除本次新增的覆盖
+   → 回到调整之前：primary 用主题默认亮蓝 #2563eb + 白字，secondary 由下方通用按钮样式接管 */
 
 /* Expander 折叠区：不同内容类型用不同左边框色 */
 details[data-testid="stExpander"] {
@@ -4374,25 +4362,26 @@ if Config.ENABLE_EXPECTATION_LAYER:
         .v88-macro-ai-active .v88-macro-ai{max-height:82px;overflow:auto}
         @media(max-width:900px){.v88-macro-card{min-height:auto}.v88-macro-kpi b{font-size:13px}}
         </style>""", unsafe_allow_html=True)
-        st.markdown(f'<div class="v88-macro-title"><b>📡 宏观脉搏</b><span>最近收盘 · 页面 {_dt_global.now().strftime("%m/%d %H:%M")}</span></div>', unsafe_allow_html=True)
-
         # AI 日报增强解读并入三市场卡片：一次请求同时生成三市场，继续复用原文件缓存。
         _auto_generate_market_ai()
-        _ai_ctrl1, _ai_ctrl2, _ai_ctrl3 = st.columns([3, 1, 7])
-        with _ai_ctrl1:
+        # 【V88·页眉压缩】AI解读状态并入宏观脉搏标题行(图一11px灰字)，标题与两按钮同排一行，两行→一行
+        _macro_ai_state = _market_ai_schedule_state()
+        _macro_ai_ts = None
+        for _macro_mk in ('us', 'hk', 'cn'):
+            _, _macro_t = _load_ai_report_cache(f"market_{_macro_mk}")
+            if _macro_t:
+                _macro_ai_ts = max(_macro_ai_ts or 0, _macro_t)
+        _macro_ai_time_text = (pd.Timestamp.fromtimestamp(_macro_ai_ts, tz="Asia/Shanghai").strftime("%m/%d %H:%M")
+                               if _macro_ai_ts else "尚未生成")
+        _mc_title, _mc_b1, _mc_b2 = st.columns([6, 2, 1])
+        with _mc_title:
+            st.markdown(f'<div class="v88-macro-title" style="margin:.35rem 0 .2rem"><b>📡 宏观脉搏</b>'
+                        f'<span>AI解读 {_macro_ai_time_text} · 今日{_macro_ai_state.get("runs", 0)}/3次 · 盘中每3h ｜ 最近收盘 {_dt_global.now().strftime("%m/%d %H:%M")}</span></div>',
+                        unsafe_allow_html=True)
+        with _mc_b1:
             _macro_ai_generate = st.button("⚡ 更新AI增强解读", key="btn_macro_ai_generate", use_container_width=True)
-        with _ai_ctrl2:
+        with _mc_b2:
             _macro_ai_refresh = st.button("🔄 刷新", key="btn_macro_ai_refresh", use_container_width=True)
-        with _ai_ctrl3:
-            _macro_ai_state = _market_ai_schedule_state()
-            _macro_ai_ts = None
-            for _macro_mk in ('us', 'hk', 'cn'):
-                _, _macro_t = _load_ai_report_cache(f"market_{_macro_mk}")
-                if _macro_t:
-                    _macro_ai_ts = max(_macro_ai_ts or 0, _macro_t)
-            _macro_ai_time_text = (pd.Timestamp.fromtimestamp(_macro_ai_ts, tz="Asia/Shanghai").strftime("%m/%d %H:%M")
-                                   if _macro_ai_ts else "尚未生成")
-            st.caption(f"分析数据时间：{_macro_ai_time_text}｜盘中每3小时｜今日自动 {_macro_ai_state.get('runs', 0)}/3 次")
         if _macro_ai_refresh:
             for _k in ['market_ai_us', '_us_tech_data', 'market_sentiment_us',
                        'market_ai_hk', '_hk_tech_data', 'market_sentiment_hk',
