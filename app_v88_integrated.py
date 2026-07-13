@@ -11788,9 +11788,10 @@ def _render_today_nav():
     # 【V88·关注股预警】自选股+搜索习惯+持仓 → 拐点/止盈止损/纪律提示
     try:
         _wa = st.session_state.get('watch_alerts_v88')
-        if not _wa or _wa.get('rule_version') != 3 or time.time() - _wa.get('ts', 0) > 3600:
+        if not _wa or _wa.get('rule_version') != 4 or time.time() - _wa.get('ts', 0) > 3600:
             _pool_wa = {}
             _holds_wa = set()
+            _claims_wa = {}
             _hold_map_wa = {}
             try:
                 for _mk9, _lst9 in (_watchlist_load() or {}).items():
@@ -11798,6 +11799,13 @@ def _render_today_nav():
                         _pool_wa[str(_c9)] = _n9
             except Exception:
                 pass
+            try:
+                _pcj9 = json.loads((_repo / "position_claims.json").read_text(encoding="utf-8"))
+                _claims_wa = _pcj9.get("claims", _pcj9) if isinstance(_pcj9, dict) else {}
+                for _cc9, _cv9 in _claims_wa.items():
+                    _pool_wa.setdefault(str(_cc9), (_cv9 or {}).get("name", str(_cc9)))
+            except Exception:
+                _claims_wa = {}
             try:
                 if _SEARCH_HIST_FILE.exists():
                     _sh9 = json.loads(_SEARCH_HIST_FILE.read_text(encoding="utf-8"))
@@ -11816,6 +11824,7 @@ def _render_today_nav():
                             _pool_wa.setdefault(_hc9, _h9.get("name", ""))
             except Exception:
                 pass
+            _risk_holds_wa = _holds_wa | set(_claims_wa)
             import cloud_engine as _ce_wa
             import sys as _sys_wa
             if str(_repo / "src") not in _sys_wa.path:
@@ -11829,7 +11838,7 @@ def _render_today_nav():
             except Exception:
                 _mkts9 = {}
             _pool_wa = dict(sorted(_pool_wa.items(), key=lambda kv: (
-                0 if kv[0] in _holds_wa else (1 if _levels_wa.get(kv[0], "B") == "A" else 2))))
+                0 if kv[0] in _risk_holds_wa else (1 if _levels_wa.get(kv[0], "B") == "A" else 2))))
             _alerts9 = []
             _holding_levels9 = {}
             for _c9, _n9 in list(_pool_wa.items())[:60]:
@@ -11839,7 +11848,7 @@ def _render_today_nav():
                     if not _f9:
                         continue
                     _last9 = _f9["last"]
-                    _sharp9 = _sharp_wa(_df9, _f9, holding=_c9 in _holds_wa,
+                    _sharp9 = _sharp_wa(_df9, _f9, holding=_c9 in _risk_holds_wa,
                                         level=_levels_wa.get(_c9, "B"),
                                         market_chg=_mchg_wa(_c9, _mkts9))
                     _dyn9, _dyn_reason9 = _levels_wa.get(_c9, "B"), ""
@@ -11850,13 +11859,18 @@ def _render_today_nav():
                             sharp=bool(_sharp9))
                         _holding_levels9[_c9] = {"level": _dyn9, "reason": _dyn_reason9}
                     if _last9 < _f9["stop"]:
-                        _alerts9.append(f"❗ [持仓·A自动] **{_n9}**({_c9})：现价{_last9}已破止损位{_f9['stop']}——纪律：离场/减仓，不要扛")
+                        if _c9 in _claims_wa:
+                            _alerts9.append(f"❗ [疑似持仓·待补录] **{_n9}**({_c9})：现价{_last9}已破技术防守位{_f9['stop']}——立即复核仓位；成本/股数待补录")
+                        else:
+                            _alerts9.append(f"❗ [持仓·A自动] **{_n9}**({_c9})：现价{_last9}已破止损位{_f9['stop']}——纪律：离场/减仓，不要扛")
                     else:
                         if _sharp9:
-                            _who9 = "持仓" if _c9 in _holds_wa else "A级重点"
-                            _level_tag9 = f"[持仓·{_dyn9}自动]" if _c9 in _holds_wa else "[A级重点]"
+                            _who9 = "正式持仓" if _c9 in _holds_wa else ("疑似持仓" if _c9 in _claims_wa else "A级重点")
+                            _level_tag9 = (f"[持仓·{_dyn9}自动]" if _c9 in _holds_wa else
+                                           ("[疑似持仓·待补录]" if _c9 in _claims_wa else "[A级重点]"))
                             _alerts9.insert(0, f"{_sharp9['severity']} {_level_tag9} **{_n9}**({_c9})：{_who9}急跌预警｜"
-                                            + "＋".join(_sharp9["facts"]) + f"｜{_sharp9['action']}")
+                                            + "＋".join(_sharp9["facts"]) + f"｜{_sharp9['action']}"
+                                            + ("｜成本/股数待补录" if _c9 in _claims_wa else ""))
                             continue
                         # 【V88·多因子共振】买入/减仓须≥2维度（技术/量价/消息）共振，单指标不触发（与云端/飞书同源）
                         _sw9 = _ce_wa.smart_watch_signal(_f9, sector_heat=_ce_wa.sector_heat_of(_c9, _n9, _mkts9))
@@ -11870,12 +11884,13 @@ def _render_today_nav():
                                                 "优先复核减仓/止损与利润保护")
                 except Exception:
                     continue
-            _wa = {"ts": time.time(), "alerts": _alerts9, "n": len(_pool_wa), "rule_version": 3,
+            _wa = {"ts": time.time(), "alerts": _alerts9, "n": len(_pool_wa), "rule_version": 4,
                    "holding_levels": _holding_levels9}
             st.session_state['watch_alerts_v88'] = _wa
         if _wa.get("alerts"):
             _critical9 = [a for a in _wa["alerts"] if ("急跌预警" in a or "已破止损" in a
-                                                               or "顶部拐点" in a or "持仓·A自动" in a)]
+                                                               or "顶部拐点" in a or "持仓·A自动" in a
+                                                               or "疑似持仓" in a)]
             if _critical9:
                 st.error("🚨 **持仓/重点风险优先**\n\n" + "\n\n".join(f"- {a}" for a in _critical9[:8]))
             with st.expander(f"⚡ 自选股智能预警（自选+常搜+持仓 共{_wa['n']}只 · {len(_wa['alerts'])}条触发 · 多因子共振）", expanded=True):
@@ -11895,6 +11910,10 @@ def _render_today_nav():
         import position_manager as _pmf
         if st.session_state.get("_pt_flash"):
             st.success(st.session_state.pop("_pt_flash"))
+        _claim_rows9 = _pmf.claimed_holding_rows()
+        if _claim_rows9:
+            _claim_names9 = "、".join(f"{r['名称']}({r['代码']})" for r in _claim_rows9)
+            st.warning(f"⚠️ 疑似持仓待补录：{_claim_names9}。已按持仓优先预警；补齐账户、股数和成本后自动启用浮盈/峰值回撤/个性化止损。")
         # ── 结构化录单表单 ──
         _f1, _f2, _f3, _f4, _f5 = st.columns([2.2, 1.3, 1.3, 1.3, 1.6])
         _pt_name = _f1.text_input("名称/简称/代码", placeholder="腾讯 / 海油 / NVDA", key="_ptf_name")
@@ -11907,8 +11926,8 @@ def _render_today_nav():
 
         def _pt_git_sync(_label):
             import subprocess as _sp9
-            _sp9.run(["git", "-C", str(_repo), "add", "-f", "positions.json", "journal/trades.json",
-                      "watch_levels.json"], capture_output=True, text=True)
+            _sp9.run(["git", "-C", str(_repo), "add", "-f", "positions.json", "position_claims.json",
+                      "journal/trades.json", "watch_levels.json"], capture_output=True, text=True)
             _sp9.run(["git", "-C", str(_repo), "commit", "-m", f"持仓终端(桌面): {_label[:40]}"],
                      capture_output=True, text=True)
             _p9 = _sp9.run(["git", "-C", str(_repo), "push", "origin", "main"], capture_output=True, text=True)
