@@ -11860,14 +11860,14 @@ def _render_today_nav():
                         _holding_levels9[_c9] = {"level": _dyn9, "reason": _dyn_reason9}
                     if _last9 < _f9["stop"]:
                         if _c9 in _claims_wa:
-                            _alerts9.append(f"❗ [疑似持仓·待补录] **{_n9}**({_c9})：现价{_last9}已破技术防守位{_f9['stop']}——立即复核仓位；成本/股数待补录")
+                            _alerts9.append(f"❗ [已确认持仓·资料待补录] **{_n9}**({_c9})：现价{_last9}已破技术防守位{_f9['stop']}——立即复核仓位；成本/股数待补录")
                         else:
                             _alerts9.append(f"❗ [持仓·A自动] **{_n9}**({_c9})：现价{_last9}已破止损位{_f9['stop']}——纪律：离场/减仓，不要扛")
                     else:
                         if _sharp9:
-                            _who9 = "正式持仓" if _c9 in _holds_wa else ("疑似持仓" if _c9 in _claims_wa else "A级重点")
+                            _who9 = "正式持仓" if _c9 in _holds_wa else ("已确认持仓" if _c9 in _claims_wa else "A级重点")
                             _level_tag9 = (f"[持仓·{_dyn9}自动]" if _c9 in _holds_wa else
-                                           ("[疑似持仓·待补录]" if _c9 in _claims_wa else "[A级重点]"))
+                                           ("[已确认持仓·资料待补录]" if _c9 in _claims_wa else "[A级重点]"))
                             _alerts9.insert(0, f"{_sharp9['severity']} {_level_tag9} **{_n9}**({_c9})：{_who9}急跌预警｜"
                                             + "＋".join(_sharp9["facts"]) + f"｜{_sharp9['action']}"
                                             + ("｜成本/股数待补录" if _c9 in _claims_wa else ""))
@@ -11890,7 +11890,7 @@ def _render_today_nav():
         if _wa.get("alerts"):
             _critical9 = [a for a in _wa["alerts"] if ("急跌预警" in a or "已破止损" in a
                                                                or "顶部拐点" in a or "持仓·A自动" in a
-                                                               or "疑似持仓" in a)]
+                                                               or "已确认持仓" in a)]
             if _critical9:
                 st.error("🚨 **持仓/重点风险优先**\n\n" + "\n\n".join(f"- {a}" for a in _critical9[:8]))
             with st.expander(f"⚡ 自选股智能预警（自选+常搜+持仓 共{_wa['n']}只 · {len(_wa['alerts'])}条触发 · 多因子共振）", expanded=True):
@@ -11913,7 +11913,7 @@ def _render_today_nav():
         _claim_rows9 = _pmf.claimed_holding_rows()
         if _claim_rows9:
             _claim_names9 = "、".join(f"{r['名称']}({r['代码']})" for r in _claim_rows9)
-            st.warning(f"⚠️ 疑似持仓待补录：{_claim_names9}。已按持仓优先预警；补齐账户、股数和成本后自动启用浮盈/峰值回撤/个性化止损。")
+            st.warning(f"⚠️ 已确认持仓·资料待补录：{_claim_names9}。已按持仓优先预警；补齐账户、股数和成本后自动启用浮盈/峰值回撤/个性化止损。")
         # ── 结构化录单表单 ──
         _f1, _f2, _f3, _f4, _f5 = st.columns([2.2, 1.3, 1.3, 1.3, 1.6])
         _pt_name = _f1.text_input("名称/简称/代码", placeholder="腾讯 / 海油 / NVDA", key="_ptf_name")
