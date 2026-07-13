@@ -1,7 +1,7 @@
 {
   "schema_version": "v88.snapshot/2.0",
-  "snapshot_id": "snap-d1ab34d629f8a86f",
-  "generated_at": "2026-07-13 07:19",
+  "snapshot_id": "snap-85c144da15d8551b",
+  "generated_at": "2026-07-13 07:57",
   "markets": {
     "美股": {
       "indices": [
@@ -222,7 +222,8 @@
         "momentum": 58,
         "vol_heat": 15,
         "label": "🔥 过热",
-        "position": "6-7成（过热防回撤，触发中线兑现纪律）"
+        "position": "6-7成（过热防回撤，触发中线兑现纪律）",
+        "verdict": "🔥 过热惯性·可持有但设好回撤线、不新追高"
       },
       "turn_risk": {
         "top_risk": 25,
@@ -434,7 +435,8 @@
         "momentum": 2,
         "vol_heat": 100,
         "label": "🔵 冰点",
-        "position": "≤30%（仅留核心层大跌加仓弹药）"
+        "position": "≤30%（仅留核心层大跌加仓弹药）",
+        "verdict": "🧊 情绪冰点·恐慌杀跌接近弹药区（属正常调整非见顶，核心层分批备弹、不追杀）"
       },
       "turn_risk": {
         "top_risk": 65,
@@ -447,12 +449,12 @@
         {
           "symbol": "^HSI",
           "name": "恒生指数",
-          "last": 24217.63,
-          "chg1d": 0.18,
-          "chg5d": 2.55,
-          "chg20d": -0.13,
-          "vs_ma20": 2.05,
-          "vs_ma60": -3.43,
+          "last": 24188.86,
+          "chg1d": 0.06,
+          "chg5d": 2.42,
+          "chg20d": -0.25,
+          "vs_ma20": 1.94,
+          "vs_ma60": -3.54,
           "trend": "🔄 震荡偏强",
           "vol_ratio": 0.84,
           "turning": "",
@@ -462,13 +464,13 @@
           "symbol": "3033.HK",
           "name": "恒生科技(ETF代理)",
           "last": 4.59,
-          "chg1d": -0.91,
-          "chg5d": 3.05,
-          "chg20d": 0.7,
-          "vs_ma20": 2.66,
-          "vs_ma60": -2.64,
+          "chg1d": -1.04,
+          "chg5d": 2.92,
+          "chg20d": 0.57,
+          "vs_ma20": 2.53,
+          "vs_ma60": -2.76,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 1.07,
+          "vol_ratio": 1.08,
           "turning": "",
           "turning_prompt": ""
         }
@@ -478,13 +480,13 @@
           "symbol": "3033.HK",
           "name": "恒生科技",
           "last": 4.59,
-          "chg1d": -0.91,
-          "chg5d": 3.05,
-          "chg20d": 0.7,
-          "vs_ma20": 2.66,
-          "vs_ma60": -2.64,
+          "chg1d": -1.04,
+          "chg5d": 2.92,
+          "chg20d": 0.57,
+          "vs_ma20": 2.53,
+          "vs_ma60": -2.76,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 1.07,
+          "vol_ratio": 1.08,
           "turning": "",
           "turning_prompt": "",
           "heat": 59
@@ -492,14 +494,14 @@
         {
           "symbol": "2828.HK",
           "name": "国企蓝筹",
-          "last": 83.02,
-          "chg1d": 0.44,
-          "chg5d": 3.41,
-          "chg20d": -1.14,
-          "vs_ma20": 2.59,
-          "vs_ma60": -3.18,
+          "last": 82.9,
+          "chg1d": 0.29,
+          "chg5d": 3.26,
+          "chg20d": -1.29,
+          "vs_ma20": 2.45,
+          "vs_ma60": -3.31,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 1.25,
+          "vol_ratio": 1.26,
           "turning": "",
           "turning_prompt": "",
           "heat": 67
@@ -507,12 +509,12 @@
         {
           "symbol": "3110.HK",
           "name": "高股息",
-          "last": 29.56,
-          "chg1d": -0.14,
-          "chg5d": -0.14,
-          "chg20d": -5.07,
-          "vs_ma20": -0.65,
-          "vs_ma60": -6.49,
+          "last": 29.58,
+          "chg1d": -0.07,
+          "chg5d": -0.07,
+          "chg20d": -5.01,
+          "vs_ma20": -0.59,
+          "vs_ma60": -6.43,
           "trend": "📉 空头排列",
           "vol_ratio": 0.64,
           "turning": "",
@@ -524,10 +526,11 @@
         "temp": 59,
         "trend": 50,
         "breadth": 67,
-        "momentum": 78,
-        "vol_heat": 43,
+        "momentum": 77,
+        "vol_heat": 44,
         "label": "🟡 中性",
-        "position": "50-65%"
+        "position": "50-65%",
+        "verdict": "🟡 中性震荡·跟随主线轮动"
       },
       "turn_risk": {
         "top_risk": 0,
