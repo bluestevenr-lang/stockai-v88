@@ -232,7 +232,7 @@ if _contract_available:
     _snapshot_sid = _report_snapshot.get("snapshot_id")
     _manifest_sha = _report_manifest.get("report_sha256")
     _report_sha = hashlib.sha256(_report_text.encode("utf-8")).hexdigest()
-    if _quality != "passed":
+    if _quality not in ("passed", "plan_b"):
         _report_sync_ok = False
         _report_block_reason = "权威日报未通过硬质检"
     elif not _manifest_sid or _manifest_sid != _snapshot_sid:
@@ -245,8 +245,7 @@ else:
     _report_sync_ok = False
     _report_block_reason = "旧版日报缺少硬质检清单"
 
-# 【V88·Plan A/B 统一标注】publish_public.py 质检不过时从不覆盖公开分支，云端天然retain
-# 最近一次通过质检的版本（隐式 Plan B）——这里补上诚实标注，不让用户误以为是"今日实时"。
+# 【V88·Plan A/B】Plan B必须是当天新闻+快照+榜单生成的纯观察版，禁止沿用历史日报。
 _report_gen_date = str(_report_manifest.get("generated_at") or "")[:10]
 _today_bj = (__import__("datetime").datetime.now(__import__("zoneinfo").ZoneInfo("Asia/Shanghai"))
             .strftime("%Y-%m-%d"))
@@ -254,10 +253,11 @@ if not _contract_available:
     st.warning("⚠️ 旧版日报缺少硬质检清单，交易建议暂不展示；下一次日报任务完成后自动升级。")
 elif not _report_sync_ok:
     st.warning(f"⚠️ {_report_block_reason}，交易建议暂不展示；实时市场快照仍可查看。")
+elif _quality == "plan_b":
+    st.warning(f"🟡 Plan B当日安全版 · {_report_gen_date} · Snapshot `{_report_manifest.get('snapshot_id')}` · "
+              "基于今日新闻/行情/榜单生成，所有标的仅观察，并含明日与本周参考。")
 elif _report_gen_date and _report_gen_date != _today_bj:
-    st.warning(f"🟡 Plan B：今日尚无通过质检的新报告，以下展示最近一次通过质检的版本"
-              f"（生成于 {_report_gen_date}）· Snapshot `{_report_manifest.get('snapshot_id')}` · "
-              f"评分/操作建议为当时数据，非今日实时。")
+    st.warning(f"⚠️ 公开日报不是今日版本（{_report_gen_date}），暂不作为Plan B展示。")
 else:
     st.caption(
         f"✅ 报告硬质检通过(Plan A) · Snapshot `{_report_manifest.get('snapshot_id')}` · "
