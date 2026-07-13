@@ -123,8 +123,20 @@ def candidates_for(token: str, limit: int = 6) -> list:
     return (search_candidates(token.strip(), limit=limit) or []) if search_candidates else ([(nm, code, "")] if code else [])
 
 
+def _level(value, default="B") -> str:
+    value = str(value or "").strip().upper()
+    return value if value in ("A", "B", "C") else default
+
+
+def account_names() -> list[str]:
+    """返回持仓底稿中的现有账户，供桌面/云端下拉选择。"""
+    names = [str(x).strip() for x in (_load().get("accounts") or {}) if str(x).strip()]
+    return names or [DEFAULT_ACCOUNT]
+
+
 def record_trade(token: str, shares, buy_px=None, sell_px=None, date: str = "",
-                 reason: str = "", account: str = "", chosen_code: str = None):
+                 reason: str = "", account: str = "", chosen_code: str = None,
+                 level: str = ""):
     """【结构化录单】表单入口（桌面/云端持仓终端表单调用，与一行指令同一套底层）。
     买入=填 buy_px；卖出=填 sell_px（buy_px 留空）；date=成交日期 YYYY-MM-DD（空=今天）。
     返回 (msg, needs)：needs 非空表示简称多解，UI 弹窗确认后带 chosen_code 重呼。"""
@@ -183,14 +195,18 @@ def record_trade(token: str, shares, buy_px=None, sell_px=None, date: str = "",
         tot = h["shares"] + shares
         h["cost"] = round((h["cost"] * h["shares"] + cost * shares) / tot, 4)
         h["shares"] = tot
+        if str(level or "").strip():
+            h["level"] = _level(level)
         verdict = f"已加仓 {name}({code}) +{shares}股 @ {cost}，共{tot}股，摊薄成本{h['cost']}（{acc0}）"
     else:
         a = pj.setdefault("accounts", {}).setdefault(account or DEFAULT_ACCOUNT, {"type": "手动", "holdings": []})
-        a.setdefault("holdings", []).append({"name": name, "code": code, "shares": shares, "cost": cost})
+        a.setdefault("holdings", []).append({"name": name, "code": code, "shares": shares,
+                                              "cost": cost, "level": _level(level)})
         verdict = f"已录入 {name}({code}) {shares}股 @ {cost}（{account or DEFAULT_ACCOUNT}）"
     _log_trade({"date": (_dt or datetime.now(BJT).strftime("%Y-%m-%d")) + datetime.now(BJT).strftime(" %H:%M" if not _dt else ""),
                 "action": "加仓" if h else "买入", "name": name, "code": code,
-                "shares": shares, "cost": cost, "reason": reason or "", "account": account or DEFAULT_ACCOUNT})
+                "shares": shares, "cost": cost, "reason": reason or "", "account": account or DEFAULT_ACCOUNT,
+                "level": _level(level)})
     _save(pj)
     return verdict, None
 
@@ -199,7 +215,8 @@ def holdings_rows() -> list:
     """当前持仓一览（渲染用），录入后立即可见——终端的'记忆'。"""
     pj = _load()
     return [{"账户": acc, "名称": h.get("name"), "代码": h.get("code"),
-             "股数": h.get("shares"), "成本": h.get("cost"), "类别": h.get("class", "")}
+             "股数": h.get("shares"), "成本": h.get("cost"), "类别": h.get("class", ""),
+             "级别": _level(h.get("level"))}
             for acc, a, h in _iter_holdings(pj)]
 
 
@@ -220,7 +237,7 @@ def remove_holding(account: str, code: str) -> str:
 
 
 def update_holding(original_account: str, original_code: str, *, account: str, name: str,
-                   code: str, shares, cost, category: str = "") -> str:
+                   code: str, shares, cost, category: str = "", level: str = "B") -> str:
     """修改一条持仓的全部可见字段；账户变化时将该条记录移动到新账户。"""
     try:
         shares = int(float(shares))
@@ -245,7 +262,8 @@ def update_holding(original_account: str, original_code: str, *, account: str, n
         return f"未找到持仓「{original_code}」"
 
     updated = dict(target)
-    updated.update({"name": name, "code": code, "shares": shares, "cost": cost, "class": str(category).strip()})
+    updated.update({"name": name, "code": code, "shares": shares, "cost": cost,
+                    "class": str(category).strip(), "level": _level(level)})
     source["holdings"] = [h for h in holdings if h is not target]
     dest = accounts.setdefault(account, {"type": source.get("type", "手动"), "holdings": []})
     dest.setdefault("holdings", []).append(updated)

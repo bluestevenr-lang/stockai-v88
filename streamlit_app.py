@@ -61,6 +61,30 @@ def pub_meta() -> dict:
 st.set_page_config(page_title="V88 云端版", page_icon="☁️", layout="centered",
                    initial_sidebar_state="collapsed")
 
+# 三端统一可读性：示例浅灰、实际值黑；白底按钮蓝字、蓝底按钮白字。
+st.markdown("""
+<style>
+input, textarea { color:#111827!important; -webkit-text-fill-color:#111827!important; }
+input::placeholder, textarea::placeholder {
+  color:#9ca3af!important; -webkit-text-fill-color:#9ca3af!important; opacity:1!important;
+}
+[data-baseweb="select"], [data-baseweb="select"] > div { background:#fff!important; }
+[data-baseweb="select"] *, [data-testid="stSelectbox"] * { color:#111827!important; }
+button[kind="secondary"], button[data-testid="stBaseButton-secondary"] {
+  background:#fff!important; border-color:#2563eb!important; color:#1d4ed8!important;
+}
+button[kind="secondary"] *, button[data-testid="stBaseButton-secondary"] * { color:#1d4ed8!important; }
+button[kind="primary"], button[data-testid="stBaseButton-primary"] {
+  background:#2563eb!important; border-color:#2563eb!important; color:#fff!important;
+}
+button[kind="primary"] *, button[data-testid="stBaseButton-primary"] * { color:#fff!important; }
+button[kind="primary"]:disabled, button[data-testid="stBaseButton-primary"]:disabled {
+  background:#fff!important; border:1px solid #2563eb!important; color:#1d4ed8!important; opacity:.62!important;
+}
+button[kind="primary"]:disabled *, button[data-testid="stBaseButton-primary"]:disabled * { color:#1d4ed8!important; }
+</style>
+""", unsafe_allow_html=True)
+
 @st.cache_data(ttl=3600, show_spinner=False)
 def _cloud_ath_many(codes: tuple) -> dict:
     """云端个股历史最高水位：距全历史最高百分比及相隔天数。"""
@@ -853,6 +877,8 @@ elif _nav == "💼 持仓终端":
             return r.status_code in (200, 201)
 
         import position_manager as _pm
+        import importlib as _ilc
+        _pm = _ilc.reload(_pm)
         _tmp = Path(_tf.mkdtemp())
         _pm.POS, _pm.TRADES = _tmp / "positions.json", _tmp / "journal" / "trades.json"
         _pos_raw, _pos_sha = _priv_get("positions.json")
@@ -867,13 +893,17 @@ elif _nav == "💼 持仓终端":
             if st.session_state.get("_ct_flash"):
                 st.success(st.session_state.pop("_ct_flash"))
             # ── 结构化录单：简称自动识别全称，卖出价留空=买入，每笔带成交日期 ──
-            _f1, _f2, _f3, _f4, _f5 = st.columns([2.2, 1.3, 1.3, 1.3, 1.6])
+            _ct_accounts = _pm.account_names()
+            _f1, _f2, _f3, _f4, _f5, _f6, _f7 = st.columns([2.0, 1.05, 1.15, .9, 1.25, 1.2, .65])
             _ct_name = _f1.text_input("名称/简称/代码", placeholder="腾讯 / 海油 / NVDA", key="_ctf_name")
             _ct_buy = _f2.text_input("买入价", placeholder="469", key="_ctf_buy")
             _ct_sell = _f3.text_input("卖出价(空=买入)", placeholder="", key="_ctf_sell")
             _ct_qty = _f4.text_input("股数", placeholder="100", key="_ctf_qty")
             from datetime import date as _date9
             _ct_date = _f5.date_input("成交日期", value=_date9.today(), key="_ctf_date")
+            _ct_account = _f6.selectbox("账户", _ct_accounts, key="_ctf_account")
+            _ct_level = _f7.selectbox("级别", ["A", "B", "C"], index=1, key="_ctf_level",
+                                      help="人工基础级别；持仓风险仍会自动升为A级")
             _ct_rsn = st.text_input("原因(选填,随日志留档)", placeholder="如：回踩买点 / 止盈一半", key="_pt_rsn")
 
             def _pt_exec(_kw, _chosen=None):
@@ -901,7 +931,8 @@ elif _nav == "💼 持仓终端":
                     _pt_exec({"token": _ct_name.strip(), "shares": _ct_qty or 0,
                               "buy_px": float(_ct_buy) if _ct_buy.strip() else None,
                               "sell_px": float(_ct_sell) if _ct_sell.strip() else None,
-                              "date": str(_ct_date), "reason": _ct_rsn.strip()})
+                              "date": str(_ct_date), "reason": _ct_rsn.strip(),
+                              "account": _ct_account, "level": _ct_level})
                 except ValueError:
                     st.error("价格/股数须为数字")
             if st.session_state.get("_ct_pending"):
@@ -923,7 +954,8 @@ elif _nav == "💼 持仓终端":
             try:
                 _pj = json.loads(_pos_raw)
                 _rows = [{"账户": acc, "名称": h.get("name"), "代码": h.get("code"),
-                          "股数": h.get("shares"), "成本": h.get("cost")}
+                          "股数": h.get("shares"), "成本": h.get("cost"),
+                          "类别": h.get("class", ""), "级别": str(h.get("level") or "B").upper()}
                          for acc, a in (_pj.get("accounts") or {}).items() for h in (a.get("holdings") or [])]
                 _hold_codes = tuple(dict.fromkeys(str(r.get("代码", "")).upper() for r in _rows if r.get("代码")))
                 _hold_bar = st.progress(0, text="计算持仓历史最高水位…")

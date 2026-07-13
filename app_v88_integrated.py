@@ -2730,6 +2730,24 @@ button[kind="primary"] [data-testid="stMarkdownContainer"] p,
 button[data-testid="stBaseButton-primary"] [data-testid="stMarkdownContainer"] p {
     color: #ffffff !important;
 }
+button[kind="primary"], button[data-testid="stBaseButton-primary"] {
+    background: #2563eb !important; border-color: #2563eb !important;
+}
+
+/* 按钮必须保持可读：白底蓝字、蓝底白字；禁用主按钮也不能白底白字。 */
+button[kind="secondary"], button[data-testid="stBaseButton-secondary"] {
+    background: #ffffff !important; border-color: #2563eb !important; color: #1d4ed8 !important;
+}
+button[kind="secondary"] *, button[data-testid="stBaseButton-secondary"] * {
+    color: #1d4ed8 !important;
+}
+button[kind="primary"]:disabled, button[data-testid="stBaseButton-primary"]:disabled {
+    background: #ffffff !important; border: 1px solid #2563eb !important;
+    color: #1d4ed8 !important; opacity: .62 !important;
+}
+button[kind="primary"]:disabled *, button[data-testid="stBaseButton-primary"]:disabled * {
+    color: #1d4ed8 !important;
+}
 
 /* 【2026-07-13 用户要求·撤销深蓝按钮】主按钮深蓝#1e3a5f看不清，移除本次新增的覆盖
    → 回到调整之前：primary 用主题默认亮蓝 #2563eb + 白字，secondary 由下方通用按钮样式接管 */
@@ -2762,6 +2780,13 @@ hr, [data-testid="stDivider"] { border-color: #e5e9f0 !important; opacity: .6; }
 
 /* 输入框统一圆角 */
 input, textarea, [data-baseweb="select"] { border-radius: 8px !important; }
+/* 示例/默认提示浅灰；用户实际输入与下拉已选值保持黑色。 */
+input, textarea { color: #111827 !important; -webkit-text-fill-color: #111827 !important; }
+input::placeholder, textarea::placeholder {
+    color: #9ca3af !important; -webkit-text-fill-color: #9ca3af !important; opacity: 1 !important;
+}
+[data-baseweb="select"], [data-baseweb="select"] > div { background: #ffffff !important; }
+[data-baseweb="select"] *, [data-testid="stSelectbox"] * { color: #111827 !important; }
 
 /* caption / 辅助文字：从灰色升级为蓝灰 */
 .stCaption, [data-testid="stCaptionContainer"] span { color: #5a6378 !important; }
@@ -11811,7 +11836,9 @@ def _render_today_nav():
     else:
         st.info("📭 大盘快照尚未生成（每日07:00/14:00/21:00自动更新）")
 
-    # 【V88·关注股预警】自选股+搜索习惯+持仓 → 拐点/止盈止损/纪律提示
+    # 【V88·关注股预警】底层仍统一扫描自选+常搜+持仓；页面展示分流：
+    # 持仓风险只进入下方“持仓决策中心”，自选预警不再重复罗列正式持仓。
+    _critical9, _wa = [], {}
     try:
         _wa = st.session_state.get('watch_alerts_v88')
         if not _wa or _wa.get('rule_version') != 4 or time.time() - _wa.get('ts', 0) > 3600:
@@ -11914,40 +11941,123 @@ def _render_today_nav():
                    "holding_levels": _holding_levels9}
             st.session_state['watch_alerts_v88'] = _wa
         if _wa.get("alerts"):
-            _critical9 = [a for a in _wa["alerts"] if ("急跌预警" in a or "已破止损" in a
-                                                               or "顶部拐点" in a or "持仓·A自动" in a
-                                                               or "已确认持仓" in a)]
-            if _critical9:
-                st.error("🚨 **持仓/重点风险优先**\n\n" + "\n\n".join(f"- {a}" for a in _critical9[:8]))
-            with st.expander(f"⚡ 自选股智能预警（自选+常搜+持仓 共{_wa['n']}只 · {len(_wa['alerts'])}条触发 · 多因子共振）", expanded=True):
-                st.markdown("\n".join(f"- {a}" for a in _wa["alerts"]))
-                with st.popover("📋 复制预警"):
-                    st.code("\n".join(a.replace("**", "") for a in _wa["alerts"]), language=None)
+            _critical9 = [a for a in _wa["alerts"]
+                          if "[持仓" in a or "[已确认持仓" in a]
+            _watch_only9 = [a for a in _wa["alerts"] if a not in _critical9 and "[持仓" not in a]
+            if _watch_only9:
+                with st.expander(f"⚡ 自选/常搜智能预警（{len(_watch_only9)}条触发 · 多因子共振）", expanded=False):
+                    st.markdown("\n".join(f"- {_linkify_md(a)}" for a in _watch_only9), unsafe_allow_html=True)
+                    with st.popover("📋 复制预警"):
+                        st.code("\n".join(a.replace("**", "") for a in _watch_only9), language=None)
+            elif not _critical9:
+                st.caption(f"⚡ 关注股预警：{_wa.get('n', 0)}只关注股暂无拐点/止损触发（1小时自动复查）")
         else:
             st.caption(f"⚡ 关注股预警：{_wa.get('n', 0)}只关注股暂无拐点/止损触发（1小时自动复查）")
     except Exception as _we9:
         logging.debug(f"关注股预警异常: {_we9}")
 
-    # 【V88·持仓终端】结构化表单+常驻持仓表（录入即落盘私仓 positions.json 并显示——所见即所存）
-    with st.expander("💼 持仓终端（简称自动识别全称 · 卖出价留空=买入 · 每笔带成交日期）", expanded=False):
+    # 【V88·持仓决策中心】唯一持仓展示：完整日报分析 + 实时风险 + 可修改底稿。
+    with st.expander("💼 持仓决策中心（中美港同源分析 · 可修改）", expanded=True):
         import sys as _sysf
         if str(_repo / "src") not in _sysf.path:
             _sysf.path.insert(0, str(_repo / "src"))
         import position_manager as _pmf
+        # Streamlit 热更新不会自动重载已 import 的模块；升级持仓字段后立即使用新接口，无需重启 V88。
+        import importlib as _ilf9
+        _pmf = _ilf9.reload(_pmf)
         if st.session_state.get("_pt_flash"):
             st.success(st.session_state.pop("_pt_flash"))
         _claim_rows9 = _pmf.claimed_holding_rows()
         if _claim_rows9:
             _claim_names9 = "、".join(f"{r['名称']}({r['代码']})" for r in _claim_rows9)
             st.warning(f"⚠️ 已确认持仓·资料待补录：{_claim_names9}。已按持仓优先预警；补齐账户、股数和成本后自动启用浮盈/峰值回撤/个性化止损。")
+        _rows_pt = _pmf.holdings_rows()
+
+        # ── 唯一持仓分析：复用日报最完整的“基本面+技术面+新闻面+综合建议”，按市场拆分。 ──
+        if _critical9:
+            _risk_html9 = "<br>".join(f"• {_linkify_md(a)}" for a in _critical9[:10])
+            st.markdown(
+                f'<div style="background:#fee2e2;border-left:4px solid #ef4444;border-radius:8px;'
+                f'padding:.65rem .8rem;color:#7f1d1d;font-size:12px"><b>🚨 持仓风险优先</b><br>{_risk_html9}</div>',
+                unsafe_allow_html=True)
+
+        def _holding_advice_rows9(_text):
+            _start9 = _text.find("## 💼 我的持仓·框架化建议")
+            if _start9 < 0:
+                return [], ""
+            _end9 = _text.find("\n## ", _start9 + 5)
+            _sec9 = _text[_start9:_end9 if _end9 > 0 else len(_text)]
+            _time9 = next((ln.lstrip("> ").replace("**", "") for ln in _sec9.splitlines()
+                           if "分析生成时间" in ln), "")
+            _header9, _out9 = None, []
+            for _ln9 in _sec9.splitlines():
+                if not _ln9.strip().startswith("|"):
+                    continue
+                _cells9 = [c.strip().replace("**", "") for c in _ln9.strip().strip("|").split("|")]
+                if not _cells9 or all(set(c) <= set(":- ") for c in _cells9):
+                    continue
+                if _cells9[0] == "持仓":
+                    _header9 = _cells9
+                    continue
+                if _header9 and len(_cells9) >= len(_header9):
+                    _out9.append(dict(zip(_header9, _cells9)))
+            return _out9, _time9
+
+        _advice_rows9, _advice_time9 = _holding_advice_rows9(_rep)
+        _advice_by_name9 = {}
+        for _ar9 in _advice_rows9:
+            _advice_by_name9.setdefault(str(_ar9.get("持仓", "")).strip(), []).append(_ar9)
+        _combined_hold9 = []
+        for _hr9 in _rows_pt:
+            _nm9 = str(_hr9.get("名称", "")).strip()
+            _choices9 = _advice_by_name9.get(_nm9) or []
+            _ar9 = _choices9.pop(0) if _choices9 else {}
+            _combined_hold9.append({**_ar9, **_hr9, "市场": market_of_code(str(_hr9.get("代码", "")))})
+
+        if _advice_time9:
+            st.caption("🕒 " + _advice_time9)
+        if _combined_hold9:
+            _market_specs9 = (("🇺🇸美股", "🇺🇸 美股"), ("🇭🇰港股", "🇭🇰 港股"), ("🇨🇳A股", "🇨🇳 A股"))
+            _market_tabs9 = st.tabs([
+                f"{_label9}（{sum(1 for r in _combined_hold9 if r['市场'] == _mk9)}）"
+                for _mk9, _label9 in _market_specs9
+            ])
+            for _tab9, (_mk9, _label9) in zip(_market_tabs9, _market_specs9):
+                with _tab9:
+                    _mr9 = [r for r in _combined_hold9 if r["市场"] == _mk9]
+                    if not _mr9:
+                        st.caption("暂无该市场持仓")
+                        continue
+                    _tbl9 = ["|持仓|级别|层|现价|盈亏|历史水位|基本面|技术面|新闻面|综合建议|",
+                             "|---|---|---|---:|---:|---|---|---|---|---|"]
+                    for _r9 in _mr9:
+                        _code9 = str(_r9.get("代码", ""))
+                        _base9 = str(_r9.get("级别") or "B").upper()
+                        _dyn9 = ((_wa.get("holding_levels") or {}).get(_code9) or {}).get("level", _base9)
+                        _lv9 = f"{_base9}级" if _dyn9 == _base9 else f"{_base9}→{_dyn9}"
+                        _vals9 = [f"{_r9.get('名称','')}（{_code9}）", _lv9, _r9.get("层", _r9.get("类别", "—")) or "—",
+                                  _r9.get("现价", "—"), _r9.get("盈亏", "—"), _r9.get("历史水位", "—"),
+                                  _r9.get("基本面", "待下轮日报"), _r9.get("技术面", "待下轮日报"),
+                                  _r9.get("新闻面", "待下轮日报"), _r9.get("综合建议", "待下轮日报")]
+                        _tbl9.append("|" + "|".join(str(v).replace("|", "／") for v in _vals9) + "|")
+                    st.markdown(_linkify_md("\n".join(_tbl9)), unsafe_allow_html=True)
+        else:
+            st.caption("持仓分析待本轮日报生成；下方仍可维护持仓资料。")
+
+        st.markdown("##### ✎ 持仓资料维护")
+        st.caption("账户、名称、代码、股数、成本、类别与基础级别均可修改；风险出现时系统仍会自动升为A级。")
         # ── 结构化录单表单 ──
-        _f1, _f2, _f3, _f4, _f5 = st.columns([2.2, 1.3, 1.3, 1.3, 1.6])
+        _pt_accounts = _pmf.account_names()
+        _f1, _f2, _f3, _f4, _f5, _f6, _f7 = st.columns([2.0, 1.05, 1.15, .9, 1.25, 1.2, .65])
         _pt_name = _f1.text_input("名称/简称/代码", placeholder="腾讯 / 海油 / NVDA", key="_ptf_name")
         _pt_buy = _f2.text_input("买入价", placeholder="469", key="_ptf_buy")
         _pt_sell = _f3.text_input("卖出价(空=买入)", placeholder="", key="_ptf_sell")
         _pt_qty = _f4.text_input("股数", placeholder="100", key="_ptf_qty")
         from datetime import date as _date9
         _pt_date = _f5.date_input("成交日期", value=_date9.today(), key="_ptf_date")
+        _pt_account = _f6.selectbox("账户", _pt_accounts, key="_ptf_account")
+        _pt_level = _f7.selectbox("级别", ["A", "B", "C"], index=1, key="_ptf_level",
+                                  help="人工基础级别；急跌、亏损或拐点风险仍会自动升为A级")
         _pt_reason = st.text_input("原因(选填,随日志留档)", placeholder="如：回踩买点 / 止盈一半", key="_pt_reason_desk")
 
         def _pt_git_sync(_label):
@@ -11981,7 +12091,8 @@ def _render_today_nav():
                 _pt_run_form({"token": _pt_name.strip(), "shares": _pt_qty or 0,
                               "buy_px": float(_pt_buy) if _pt_buy.strip() else None,
                               "sell_px": float(_pt_sell) if _pt_sell.strip() else None,
-                              "date": str(_pt_date), "reason": _pt_reason.strip()})
+                              "date": str(_pt_date), "reason": _pt_reason.strip(),
+                              "account": _pt_account, "level": _pt_level})
             except ValueError:
                 st.error("价格/股数须为数字")
             except Exception as _pe9:
@@ -12022,9 +12133,10 @@ def _render_today_nav():
                     _t = f"{_amt:+,.0f}" + (f"（{_pct:+.1f}%）" if _pct is not None else "")
                     return f'<span style="color:{_c};font-size:13px">{_t}</span>'
                 # 自定义逐行渲染，提供与自选股一致的 × 删除入口。
-                _pt_widths = [1.05, 1.2, 1, .7, .7, .65, .75, 1.05, 1.35, .65]
+                _pt_widths = [1.0, 1.12, .92, .6, .65, .55, .52, .68, 1.0, 1.25, .62]
                 _ph = st.columns(_pt_widths)
-                for _hc, _ht in zip(_ph, ("账户", "名称", "代码", "股数", "成本", "类别", "现价", "盈亏", "历史水位", "操作")):
+                for _hc, _ht in zip(_ph, ("账户", "名称", "代码", "股数", "成本", "类别", "级别",
+                                                   "现价", "盈亏", "历史水位", "操作")):
                     _hc.caption(_ht)
                 for _ri9, _row9 in enumerate(_rows_pt):
                     _edit_id9 = f"{_row9.get('账户')}|{_row9.get('代码')}"
@@ -12049,20 +12161,31 @@ def _render_today_nav():
                         pass
                     if st.session_state.get("_pt_edit_row") == _edit_id9:
                         _pc = st.columns(_pt_widths)
-                        _ev_acc9 = _pc[0].text_input("账户", value=str(_row9.get("账户", "")), key=f"_pe_acc_{_ri9}", label_visibility="collapsed")
+                        _acc_opts9 = list(_pt_accounts)
+                        if str(_row9.get("账户", "")) not in _acc_opts9:
+                            _acc_opts9.append(str(_row9.get("账户", "")))
+                        _ev_acc9 = _pc[0].selectbox("账户", _acc_opts9,
+                                                   index=_acc_opts9.index(str(_row9.get("账户", ""))),
+                                                   key=f"_pe_acc_{_ri9}", label_visibility="collapsed")
                         _ev_nm9 = _pc[1].text_input("名称", value=str(_row9.get("名称", "")), key=f"_pe_nm_{_ri9}", label_visibility="collapsed")
                         _ev_cd9 = _pc[2].text_input("代码", value=str(_row9.get("代码", "")), key=f"_pe_cd_{_ri9}", label_visibility="collapsed")
                         _ev_sh9 = _pc[3].text_input("股数", value=str(_row9.get("股数", "")), key=f"_pe_sh_{_ri9}", label_visibility="collapsed")
                         _ev_co9 = _pc[4].text_input("成本", value=str(_row9.get("成本", "")), key=f"_pe_co_{_ri9}", label_visibility="collapsed")
                         _ev_cl9 = _pc[5].text_input("类别", value=str(_row9.get("类别", "")), key=f"_pe_cl_{_ri9}", label_visibility="collapsed")
-                        _pc[6].caption(_px_txt9)
-                        _pc[7].markdown(_pnl_txt9, unsafe_allow_html=True)
-                        _pc[8].caption(_row_water9)
-                        _save_col9, _cancel_col9 = _pc[9].columns(2)
+                        _base_lv9 = str(_row9.get("级别") or "B").upper()
+                        _base_lv9 = _base_lv9 if _base_lv9 in ("A", "B", "C") else "B"
+                        _ev_lv9 = _pc[6].selectbox("级别", ["A", "B", "C"],
+                                                  index=["A", "B", "C"].index(_base_lv9),
+                                                  key=f"_pe_lv_{_ri9}", label_visibility="collapsed")
+                        _pc[7].caption(_px_txt9)
+                        _pc[8].markdown(_pnl_txt9, unsafe_allow_html=True)
+                        _pc[9].caption(_row_water9)
+                        _save_col9, _cancel_col9 = _pc[10].columns(2)
                         if _save_col9.button("✓", key=f"_pt_save_{_ri9}", help="保存修改"):
                             _msg_edit9 = _pmf.update_holding(
                                 _row9.get("账户", ""), _row9.get("代码", ""), account=_ev_acc9,
-                                name=_ev_nm9, code=_ev_cd9, shares=_ev_sh9, cost=_ev_co9, category=_ev_cl9)
+                                name=_ev_nm9, code=_ev_cd9, shares=_ev_sh9, cost=_ev_co9,
+                                category=_ev_cl9, level=_ev_lv9)
                             if _msg_edit9.startswith("已修改"):
                                 st.session_state.pop("_pt_edit_row", None)
                                 _pt_git_sync(_msg_edit9)
@@ -12076,16 +12199,21 @@ def _render_today_nav():
                     else:
                         _pc = st.columns(_pt_widths)
                         for _ci9, _key9 in enumerate(("账户", "名称", "代码", "股数", "成本", "类别")):
-                            _val9 = str(_row9.get(_key9, ""))
-                            if _key9 == "类别":
-                                _dl9 = ((_wa.get("holding_levels") or {}).get(str(_row9.get("代码", ""))) or {})
-                                if _dl9.get("level"):
-                                    _val9 = f"{_val9 or '持仓'} · {_dl9['level']}级"
-                            _pc[_ci9].write(_val9)
-                        _pc[6].write(_px_txt9)
-                        _pc[7].markdown(_pnl_txt9, unsafe_allow_html=True)
-                        _pc[8].caption(_row_water9)
-                        _edit_col9, _del_col9 = _pc[9].columns(2)
+                            if _key9 == "名称":
+                                _pc[_ci9].markdown(_stk_link(str(_row9.get("名称", "")),
+                                                             str(_row9.get("代码", ""))),
+                                                    unsafe_allow_html=True)
+                            else:
+                                _pc[_ci9].write(str(_row9.get(_key9, "")))
+                        _base_lv9 = str(_row9.get("级别") or "B").upper()
+                        _dl9 = ((_wa.get("holding_levels") or {}).get(str(_row9.get("代码", ""))) or {})
+                        _effective_lv9 = str(_dl9.get("level") or _base_lv9)
+                        _lv_txt9 = f"{_base_lv9}级" if _effective_lv9 == _base_lv9 else f"{_base_lv9}→{_effective_lv9}"
+                        _pc[6].write(_lv_txt9)
+                        _pc[7].write(_px_txt9)
+                        _pc[8].markdown(_pnl_txt9, unsafe_allow_html=True)
+                        _pc[9].caption(_row_water9)
+                        _edit_col9, _del_col9 = _pc[10].columns(2)
                         if _edit_col9.button("✎", key=f"_pt_edit_{_ri9}", help=f"修改 {_row9.get('名称')}"):
                             st.session_state["_pt_edit_row"] = _edit_id9
                             st.rerun()
@@ -12145,11 +12273,6 @@ def _render_today_nav():
                             _pt_git_sync(_pt_cmd.strip())
                 except Exception as _pe9:
                     st.error(f"异常: {_pe9}")
-        _lc0 = _rep.find("## 💼 持仓生命周期") if _rep else -1
-        if _lc0 > 0:
-            _lc1 = _rep.find("\n## ", _lc0 + 5)
-            st.markdown(_linkify_md(_rep[_lc0:_lc1 if _lc1 > 0 else len(_rep)]), unsafe_allow_html=True)
-
     # 【V88·深度回调机会池】优质股回撤≥30%关注名单（日报流水线生成，三端同源）
     _ipb = _rep.find("## 💎 深度回调机会池")
     if _ipb <= 0 and _rep:
@@ -12162,33 +12285,17 @@ def _render_today_nav():
             with st.popover("📋 复制机会池"):
                 st.code(_pbtxt, language=None)
 
-    # ③ 今日操作榜（短线/长线 Top3，来自日报，AI+真实新闻锚定）＋ ④ 持仓触发提醒
-    _c_ops, _c_hold = st.columns([3, 2])
-    with _c_ops:
-        _i = _rep.find("## 🎯 今日操作榜")
-        if _i > 0:
-            _j = _rep.find("## 二、", _i)
-            with st.expander("🎯 今日操作榜（短线/长线 Top3）", expanded=False):
-                _ops_txt99 = _linkify_md(_rep[_i + len("## 🎯 今日操作榜"):_j if _j > 0 else _i + 2500])
-                with st.popover("📋 复制操作榜"):
-                    st.code(_ops_txt99, language=None)
-                st.markdown(_ops_txt99, unsafe_allow_html=True)
-        else:
-            st.caption("操作榜待日报生成后显示")
-    with _c_hold:
-        _k = _rep.find("## 💼 我的持仓·框架化建议")
-        _alerts = []
-        if _k > 0:
-            for _ln in _rep[_k:_k + 2500].splitlines():
-                if any(x in _ln for x in ("⚠️", "🛑", "🔔")) and "|" in _ln:
-                    _p = [x.strip() for x in _ln.split("|") if x.strip()]
-                    if len(_p) >= 7:
-                        _alerts.append(f"- **{_p[0]}**：{_p[-1]}")  # 最后一列=框架行动,防列数变化
-        if _alerts:
-            st.markdown("**⚡ 持仓触发提醒**")
-            st.markdown("\n".join(_alerts[:6]))
-        elif _k > 0:
-            st.markdown("**⚡ 持仓触发提醒**：今日无触发 ✅")
+    # 今日操作榜仍保留；旧“持仓触发提醒”已并入唯一的持仓决策中心。
+    _i = _rep.find("## 🎯 今日操作榜")
+    if _i > 0:
+        _j = _rep.find("## 二、", _i)
+        with st.expander("🎯 今日操作榜（短线/长线 Top3）", expanded=False):
+            _ops_txt99 = _linkify_md(_rep[_i + len("## 🎯 今日操作榜"):_j if _j > 0 else _i + 2500])
+            with st.popover("📋 复制操作榜"):
+                st.code(_ops_txt99, language=None)
+            st.markdown(_ops_txt99, unsafe_allow_html=True)
+    else:
+        st.caption("操作榜待日报生成后显示")
 
 
 try:
@@ -12197,13 +12304,8 @@ except Exception as _nav_e:
     st.caption(f"今日导航暂不可用: {str(_nav_e)[:50]}")
 st.markdown("---")
 
-# ═══════════════════════════════════════════════════════════════
-# 【模块 ②】我的持仓（标题在 _render_portfolio_section 内部）
-# ═══════════════════════════════════════════════════════════════
-try:
-    _render_portfolio_section()
-except Exception as _e_port:
-    st.warning(f"⚠️ 持仓模块加载异常: {str(_e_port)[:60]}")
+# 用户明确要求删除重复持仓展示：旧 Excel“我的持仓/AI组合分析”不再渲染；
+# 数据与函数保留兼容，唯一入口为上方“持仓决策中心”。
 
 # ═══════════════════════════════════════════════════════════════
 # 【V90.3】行业热力已整合到「全球市场概览」第4个Tab
@@ -12246,6 +12348,13 @@ def _render_brief_with_ledger(_content, _key):
     _marker = "## 🔗 可核验来源台账"
     _idx = str(_content).find(_marker)
     _main = str(_content)[:_idx].rstrip() if _idx >= 0 else str(_content)
+    # 用户明确要求持仓只出现一次：日报正文中的两套持仓章节已在上方
+    # “持仓决策中心”合并为中美港同源分析，这里删除重复展示但不改报告源文件。
+    for _holding_heading in ("## 💼 持仓生命周期", "## 💼 我的持仓·框架化建议"):
+        _hs = _main.find(_holding_heading)
+        if _hs >= 0:
+            _he = _main.find("\n## ", _hs + len(_holding_heading))
+            _main = (_main[:_hs].rstrip() + "\n\n" + (_main[_he:] if _he >= 0 else "")).strip()
     _ledger = str(_content)[_idx:].strip() if _idx >= 0 else ""
     st.markdown(f'<div class="news-brief">{_linkify_md(_main)}</div>', unsafe_allow_html=True)
     if _ledger:
@@ -16866,24 +16975,46 @@ with tab_watchlist:
     _wl_changed = False
     for _col, _mk, _flag in ((col1, "US", "🇺🇸 美股"), (col2, "HK", "🇭🇰 港股"), (col3, "CN", "🇨🇳 A股")):
         with _col:
-            st.markdown(f"**{_flag}**（{len(WATCHLIST.get(_mk, []))}）")
-            for code, name in WATCHLIST.get(_mk, []):
-                _c1, _clv, _c2 = st.columns([4, 2, 1])
-                _water_line = _wl_water.get(str(code).upper(), "历史水位待核")
-                _c1.markdown(f"<div style='font-size:13px;padding:4px 0 0 0'>• {name} <span style='color:#9ca3af'>({code})</span>"
-                             f"<div style='font-size:9px;color:#64748b;margin-left:10px'>{_water_line}</div></div>",
-                             unsafe_allow_html=True)
-                _cur_lv = _wl_lv.get(str(code), "B")
-                _new_lv = _clv.selectbox("级别", ["A", "B", "C"], index=["A", "B", "C"].index(_cur_lv),
-                                         key=f"wl_lv_{code}", label_visibility="collapsed")
-                if _new_lv != _cur_lv and _wl_levels_save:
-                    _wl_lv[str(code)] = _new_lv
-                    _wl_levels_save(_wl_lv)
-                    _wl_changed = True
-                if _c2.button("✕", key=f"wl_rm_{code}", help=f"从自选股移除 {name}"):
-                    _watchlist_remove(code)
-                    st.toast(f"已移除 {name}", icon="🗑️")
-                    st.rerun()
+            _market_rows_wl = list(WATCHLIST.get(_mk, []))
+            _lv_counts_wl = {lv: sum(1 for code, _ in _market_rows_wl
+                                     if str(_wl_lv.get(str(code), "B")).upper() == lv)
+                             for lv in ("A", "B", "C")}
+            st.markdown(
+                f"**{_flag}**（{len(_market_rows_wl)}）　"
+                f"<span style='font-size:9px;color:#dc2626'>A {_lv_counts_wl['A']}</span> · "
+                f"<span style='font-size:9px;color:#2563eb'>B {_lv_counts_wl['B']}</span> · "
+                f"<span style='font-size:9px;color:#64748b'>C {_lv_counts_wl['C']}</span>",
+                unsafe_allow_html=True)
+            for _group_lv, _group_name, _group_color in (
+                    ("A", "A级重点", "#dc2626"), ("B", "B级观察", "#2563eb"), ("C", "C级低频", "#64748b")):
+                _group_rows = [(code, name) for code, name in _market_rows_wl
+                               if str(_wl_lv.get(str(code), "B")).upper() == _group_lv]
+                if not _group_rows:
+                    continue
+                st.markdown(
+                    f"<div style='font-size:10px;font-weight:700;color:{_group_color};margin:.35rem 0 .1rem 0;"
+                    f"border-bottom:1px solid #e5e7eb'>{_group_name}（{len(_group_rows)}）</div>",
+                    unsafe_allow_html=True)
+                for code, name in _group_rows:
+                    _c1, _clv, _c2 = st.columns([4, 1.6, .7])
+                    _water_line = _wl_water.get(str(code).upper(), "历史水位待核")
+                    _c1.markdown(
+                        f"<div style='font-size:12px;padding:3px 0 0 0'>• {_stk_link(name, code)} "
+                        f"<span style='color:#9ca3af;font-size:10px'>({code})</span>"
+                        f"<div style='font-size:9px;color:#64748b;margin-left:10px'>{_water_line}</div></div>",
+                        unsafe_allow_html=True)
+                    _cur_lv = str(_wl_lv.get(str(code), "B")).upper()
+                    _cur_lv = _cur_lv if _cur_lv in ("A", "B", "C") else "B"
+                    _new_lv = _clv.selectbox("级别", ["A", "B", "C"], index=["A", "B", "C"].index(_cur_lv),
+                                             key=f"wl_lv_{code}", label_visibility="collapsed")
+                    if _new_lv != _cur_lv and _wl_levels_save:
+                        _wl_lv[str(code)] = _new_lv
+                        _wl_levels_save(_wl_lv)
+                        _wl_changed = True
+                    if _c2.button("✕", key=f"wl_rm_{code}", help=f"从自选股移除 {name}"):
+                        _watchlist_remove(code)
+                        st.toast(f"已移除 {name}", icon="🗑️")
+                        st.rerun()
     if _wl_changed:
         try:
             import subprocess as _spwl
