@@ -11573,6 +11573,27 @@ def _render_today_nav():
     _rep, _rep_planab_meta = _load_report_planab()
     _rep = _rep or ""
 
+    def _analysis_label9(_ts, _what="分析"):
+        """重点提示统一显示分析发生时间；缓存展示时绝不冒充当前刷新时间。"""
+        try:
+            if isinstance(_ts, (int, float)):
+                _dt9 = datetime.fromtimestamp(float(_ts))
+            else:
+                _raw9 = str(_ts or "").strip().replace("Z", "+00:00")
+                _dt9 = datetime.fromisoformat(_raw9) if _raw9 else None
+                if _dt9 and _dt9.tzinfo:
+                    from datetime import timezone as _tz9, timedelta as _td9
+                    _dt9 = _dt9.astimezone(_tz9(_td9(hours=8))).replace(tzinfo=None)
+            return (f"🕒 {_what}于 {_dt9.strftime('%Y-%m-%d %H:%M')}（北京时间）"
+                    if _dt9 else f"🕒 {_what}时间未知")
+        except Exception:
+            return f"🕒 {_what}时间未知"
+
+    _report_analysis_ts9 = (_rep_planab_meta.get("generated_at")
+                            or (_snap or {}).get("generated_at")
+                            or _rep_planab_meta.get("ts"))
+    _report_analysis_note9 = _analysis_label9(_report_analysis_ts9)
+
     # 【V88·非交易日判定】周末/节假日：无"今日盘中"，改看"下一交易日前瞻"
     def _v88_is_trading_day(_d=None):
         from datetime import datetime as _dtt
@@ -11633,9 +11654,9 @@ def _render_today_nav():
         _pab_str = datetime.fromtimestamp(_pab_ts).strftime("%m-%d %H:%M") if _pab_ts else "—"
         _pab_issues = _rep_planab_meta.get("today_issues") or []
         st.warning(f"🟡 Plan B当日安全版（{'；'.join(_pab_issues) or 'Plan A条件不足'}）· {_pab_str}生成。"
-                  "内容来自今日新闻、今日快照及今日引擎榜单；所有标的仅作观察，不沿用历史日报。")
+                  f"内容来自今日新闻、今日快照及今日引擎榜单；所有标的仅作观察，不沿用历史日报。 · {_report_analysis_note9}")
     elif _pab_status == "missing":
-        st.error("📭 今日Plan A与当天安全Plan B均未生成，下方暂无操作榜/评分数据，请等待本轮流水线完成。")
+        st.error(f"📭 今日Plan A与当天安全Plan B均未生成，下方暂无操作榜/评分数据，请等待本轮流水线完成。 · {_report_analysis_note9}")
 
     # 【V88·非交易日前瞻置顶】把 outlook.md 前瞻正文醒目展示（个股名可点深度分析）
     if not _is_trading:
@@ -11682,16 +11703,16 @@ def _render_today_nav():
                     break
         if not _fxp:
             if _pab_status == "plan_b":
-                st.info("⭐ **今日策略：不强制给买入指令，转为机会观察＋风险保护**——优先保护仓位、已有利润和整体胜率")
+                st.info(f"⭐ **今日策略：不强制给买入指令，转为机会观察＋风险保护**——优先保护仓位、已有利润和整体胜率 · {_report_analysis_note9}")
                 if _pb_focus_lines:
                     st.markdown("<div style='line-height:1.75;font-size:12px'>" + "<br>".join(_pb_focus_lines) + "</div>", unsafe_allow_html=True)
             else:
-                st.info("⭐ **今日无强制买入信号**（未同时通过75分＋72小时催化）——继续观察并保护仓位，现金也是仓位")
+                st.info(f"⭐ **今日无强制买入信号**（未同时通过75分＋72小时催化）——继续观察并保护仓位，现金也是仓位 · {_report_analysis_note9}")
         if _fxp:
             _fx_html = "<br>".join(
                 f"🟢 <b>{_stk_link(_n9, _c9)}</b> {_d9}<br>&nbsp;&nbsp;└ {_r9}"
                 for _n9, _c9, _d9, _r9 in _fxp)
-            st.success("**⭐ 今日重点关注（引擎买入档 Top3）** · 点股票名直接深度分析")
+            st.success(f"**⭐ 今日重点关注（引擎买入档 Top3）** · 点股票名直接深度分析 · {_report_analysis_note9}")
             st.markdown(f"<div style='line-height:1.9'>{_fx_html}</div>", unsafe_allow_html=True)
         # 【V88·各市场高分】买入档常因缺72h催化而空 → 顶出操作榜各市场Top3，保证美/A/港都露脸（点名分析）
         import re as _rem2
@@ -11723,7 +11744,7 @@ def _render_today_nav():
             if _lst3:
                 _mk_html9.append(f"<b>{_mk3}</b>：" + "、".join(_lst3))
         if _mk_html9:
-            st.markdown("**🌍 各市场引擎高分榜（操作榜 Top3 · 点名直接深度分析）**")
+            st.markdown(f"**🌍 各市场引擎高分榜（操作榜 Top3 · 点名直接深度分析）**　<span style='font-size:11px;color:#64748b'>{_report_analysis_note9}</span>", unsafe_allow_html=True)
             st.markdown("<div style='line-height:1.9'>" + "<br>".join(_mk_html9) + "</div>", unsafe_allow_html=True)
         _wl9 = _watchlist_load() or {}
         _obs = []
@@ -11737,6 +11758,7 @@ def _render_today_nav():
                 f"👁 <b>重点观察个股</b>（搜索/点击即自动加入，移除在「自选股」Tab）：{_obs_html}"
                 + (f" ｜ ⚡{len(_wa9.get('alerts') or [])} 条触发（见下方预警）" if _wa9.get('alerts') else ""),
                 unsafe_allow_html=True)
+            st.caption(_analysis_label9((_wa9 or {}).get("ts") or _report_analysis_ts9, "重点观察分析"))
         # 显式新增入口：无需先去搜索页，今日导航内即可加入自选。
         _wl_add_c1, _wl_add_c2 = st.columns([5, 1])
         _wl_add_token = _wl_add_c1.text_input(
@@ -11940,15 +11962,16 @@ def _render_today_nav():
             _wa = {"ts": time.time(), "alerts": _alerts9, "n": len(_pool_wa), "rule_version": 4,
                    "holding_levels": _holding_levels9}
             st.session_state['watch_alerts_v88'] = _wa
+        _alert_analysis_note9 = _analysis_label9(_wa.get("ts"), "预警分析")
         if _wa.get("alerts"):
             _critical9 = [a for a in _wa["alerts"]
                           if "[持仓" in a or "[已确认持仓" in a]
             _watch_only9 = [a for a in _wa["alerts"] if a not in _critical9 and "[持仓" not in a]
             if _watch_only9:
-                with st.expander(f"⚡ 自选/常搜智能预警（{len(_watch_only9)}条触发 · 多因子共振）", expanded=False):
+                with st.expander(f"⚡ 自选/常搜智能预警（{len(_watch_only9)}条触发 · 多因子共振） · {_alert_analysis_note9}", expanded=False):
                     st.markdown("\n".join(f"- {_linkify_md(a)}" for a in _watch_only9), unsafe_allow_html=True)
                     with st.popover("📋 复制预警"):
-                        st.code("\n".join(a.replace("**", "") for a in _watch_only9), language=None)
+                        st.code(_alert_analysis_note9 + "\n" + "\n".join(a.replace("**", "") for a in _watch_only9), language=None)
             elif not _critical9:
                 st.caption(f"⚡ 关注股预警：{_wa.get('n', 0)}只关注股暂无拐点/止损触发（1小时自动复查）")
         else:
@@ -11970,15 +11993,17 @@ def _render_today_nav():
         _claim_rows9 = _pmf.claimed_holding_rows()
         if _claim_rows9:
             _claim_names9 = "、".join(f"{r['名称']}({r['代码']})" for r in _claim_rows9)
-            st.warning(f"⚠️ 已确认持仓·资料待补录：{_claim_names9}。已按持仓优先预警；补齐账户、股数和成本后自动启用浮盈/峰值回撤/个性化止损。")
+            st.warning(f"⚠️ 已确认持仓·资料待补录：{_claim_names9}。已按持仓优先预警；补齐账户、股数和成本后自动启用浮盈/峰值回撤/个性化止损。 · {_analysis_label9((_wa or {}).get('ts'), '持仓识别分析')}")
         _rows_pt = _pmf.holdings_rows()
 
         # ── 唯一持仓分析：复用日报最完整的“基本面+技术面+新闻面+综合建议”，按市场拆分。 ──
         if _critical9:
             _risk_html9 = "<br>".join(f"• {_linkify_md(a)}" for a in _critical9[:10])
+            _risk_time9 = _analysis_label9(_wa.get("ts"), "预警分析")
             st.markdown(
                 f'<div style="background:#fee2e2;border-left:4px solid #ef4444;border-radius:8px;'
-                f'padding:.65rem .8rem;color:#7f1d1d;font-size:12px"><b>🚨 持仓风险优先</b><br>{_risk_html9}</div>',
+                f'padding:.65rem .8rem;color:#7f1d1d;font-size:12px"><b>🚨 持仓风险优先</b>'
+                f'<span style="float:right;font-size:10px;color:#991b1b">{_risk_time9}</span><br>{_risk_html9}</div>',
                 unsafe_allow_html=True)
 
         def _holding_advice_rows9(_text):

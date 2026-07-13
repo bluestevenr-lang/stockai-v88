@@ -50,6 +50,13 @@ def _fresh_caption(ts, what="数据"):
     flag = "✅ 本时段" if same else f"⚠️ 属 {_period_of(dt)}" + ("" if dt.date() == now.date() else f"·{dt.strftime('%m-%d')}")
     return f"🕐 {what}生成于 {dt.strftime('%m-%d %H:%M')} · {age_h:.1f}小时前 · 现在{_period_of(_now_bjt())} · {flag}"
 
+def _analysis_label(ts, what="分析"):
+    """重点提示统一显示真正的分析生成时间，而不是页面打开/刷新时间。"""
+    dt = _parse_ts(ts)
+    if not dt:
+        return f"🕒 {what}时间未知"
+    return f"🕒 {what}于 {dt.strftime('%Y-%m-%d %H:%M')}（北京时间）"
+
 @st.cache_data(ttl=15, show_spinner=False)
 def pub_meta() -> dict:
     try:
@@ -286,17 +293,18 @@ else:
 
 # 【V88·Plan A/B】Plan B必须是当天新闻+快照+榜单生成的纯观察版，禁止沿用历史日报。
 _report_gen_date = str(_report_manifest.get("generated_at") or "")[:10]
+_global_analysis_note = _analysis_label(_report_manifest.get("generated_at"), "报告分析")
 _today_bj = (__import__("datetime").datetime.now(__import__("zoneinfo").ZoneInfo("Asia/Shanghai"))
             .strftime("%Y-%m-%d"))
 if not _contract_available:
-    st.warning("⚠️ 旧版日报缺少硬质检清单，交易建议暂不展示；下一次日报任务完成后自动升级。")
+    st.warning(f"⚠️ 旧版日报缺少硬质检清单，交易建议暂不展示；下一次日报任务完成后自动升级。 · {_global_analysis_note}")
 elif not _report_sync_ok:
-    st.warning(f"⚠️ {_report_block_reason}，交易建议暂不展示；实时市场快照仍可查看。")
+    st.warning(f"⚠️ {_report_block_reason}，交易建议暂不展示；实时市场快照仍可查看。 · {_global_analysis_note}")
 elif _quality == "plan_b":
     st.warning(f"🟡 Plan B当日安全版 · {_report_gen_date} · Snapshot `{_report_manifest.get('snapshot_id')}` · "
-              "基于今日新闻/行情/榜单生成，所有标的仅观察，并含明日与本周参考。")
+              f"基于今日新闻/行情/榜单生成，所有标的仅观察，并含明日与本周参考。 · {_global_analysis_note}")
 elif _report_gen_date and _report_gen_date != _today_bj:
-    st.warning(f"⚠️ 公开日报不是今日版本（{_report_gen_date}），暂不作为Plan B展示。")
+    st.warning(f"⚠️ 公开日报不是今日版本（{_report_gen_date}），暂不作为Plan B展示。 · {_global_analysis_note}")
 else:
     st.caption(
         f"✅ 报告硬质检通过(Plan A) · Snapshot `{_report_manifest.get('snapshot_id')}` · "
@@ -342,6 +350,10 @@ def _cloud_is_nontrading(meta: dict = None) -> bool:
 if _nav == "🧭 导航":
     _rep = _report_text if _report_sync_ok else ""
     _meta_nav = pub_meta()
+    _nav_analysis_ts = (_report_manifest.get("generated_at")
+                        or _meta_nav.get("daily_report_ts")
+                        or (_snap or {}).get("generated_at"))
+    _nav_analysis_note = _analysis_label(_nav_analysis_ts)
     # ── 非交易日：置顶「下一交易日前瞻」──
     if _cloud_is_nontrading(_meta_nav):
         _outlook_txt = pub_text("outlook.md") or ""
@@ -387,7 +399,7 @@ if _nav == "🧭 导航":
             return f'<a href="?q={cd}" target="_self" style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{nm}</a>'
         if not _fx:
             if _quality == "plan_b":
-                st.info("⭐ **今日策略：不强制给买入指令，转为机会观察＋风险保护**——优先保护仓位、已有利润和整体胜率")
+                st.info(f"⭐ **今日策略：不强制给买入指令，转为机会观察＋风险保护**——优先保护仓位、已有利润和整体胜率 · {_nav_analysis_note}")
                 _pb_lines = []
                 _pb_market = ""
                 _pb_start = _rep.find("## 六、🔭 明日与本周参考")
@@ -401,9 +413,9 @@ if _nav == "🧭 导航":
                 if _pb_lines:
                     st.markdown("<div style='line-height:1.75;font-size:12px'>" + "<br>".join(_pb_lines) + "</div>", unsafe_allow_html=True)
             else:
-                st.info("⭐ **今日无强制买入信号**（未同时通过75分＋72小时催化）——继续观察并保护仓位，现金也是仓位")
+                st.info(f"⭐ **今日无强制买入信号**（未同时通过75分＋72小时催化）——继续观察并保护仓位，现金也是仓位 · {_nav_analysis_note}")
         if _fx:
-            st.success("**⭐ 今日重点关注（引擎买入档 Top3）** · 点股票名直接深度分析")
+            st.success(f"**⭐ 今日重点关注（引擎买入档 Top3）** · 点股票名直接深度分析 · {_nav_analysis_note}")
             _h = "<br>".join(f"🟢 <b>{_lnk(x['n'], x['c'])}</b> {x['t'].replace(chr(10)*2, '<br>&nbsp;&nbsp;')}" for x in _fx)
             st.markdown(f"<div style='line-height:1.9'>{_h}</div>", unsafe_allow_html=True)
         # 【V88·各市场高分】买入档常因缺72h催化而空 → 顶出操作榜各市场Top3，保证美/A/港都露脸（点名分析）
@@ -436,14 +448,14 @@ if _nav == "🧭 导航":
             if _lst3:
                 _mk_html.append(f"<b>{_mk3}</b>：" + "、".join(_lst3))
         if _mk_html:
-            st.markdown("**🌍 各市场引擎高分榜（操作榜 Top3 · 点名直接深度分析）**")
+            st.markdown(f"**🌍 各市场引擎高分榜（操作榜 Top3 · 点名直接深度分析）**　<span style='font-size:11px;color:#64748b'>{_nav_analysis_note}</span>", unsafe_allow_html=True)
             st.markdown("<div style='line-height:1.9'>" + "<br>".join(_mk_html) + "</div>", unsafe_allow_html=True)
         if _ob:
             import re as _re9
             _obl = [_re9.sub(r"([\u4e00-\u9fffA-Za-z0-9\-·]+)（([A-Z0-9\.]+)）",
                              lambda m: _lnk(m.group(1), m.group(2)) + f"（{m.group(2)}）", _l9)
                     for _l9 in _ob]
-            st.warning("**👁 重点观察触发**（点股票名直接分析）")
+            st.warning(f"**👁 重点观察触发**（点股票名直接分析） · {_nav_analysis_note}")
             st.markdown("<div style='line-height:1.9'>" + "<br>".join(_obl) + "</div>", unsafe_allow_html=True)
     except Exception:
         pass

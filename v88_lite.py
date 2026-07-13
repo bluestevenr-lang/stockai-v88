@@ -212,13 +212,21 @@ if _nav == "🧭 导航":
             st.markdown(_rep[_i + len("## 🎯 今日操作榜"):_j if _j > 0 else _i + 2500])
     _k = _rep.find("## 💼 我的持仓·框架化建议")
     if _k > 0:
+        _analysis_ts = ""
+        try:
+            import re as _re_time
+            _mt = _re_time.search(r"分析生成(?:时间)?[：:]\s*([^｜\n]+)", _rep[:1200])
+            _analysis_ts = (_mt.group(1).replace("**", "").strip() if _mt else "")
+        except Exception:
+            pass
         _alerts = []
         for _ln in _rep[_k:_k + 2500].splitlines():
             if any(x in _ln for x in ("⚠️", "🛑", "🔔")) and "|" in _ln:
                 _pp = [x.strip() for x in _ln.split("|") if x.strip()]
                 if len(_pp) >= 7:
                     _alerts.append(f"- **{_pp[0]}**：{_pp[-1]}")  # 最后一列=框架行动,防列数变化
-        st.markdown("**⚡ 持仓触发提醒**" if _alerts else "**⚡ 持仓触发提醒**：今日无触发 ✅")
+        _time_note = f" · 🕒 分析于 {_analysis_ts}" if _analysis_ts else " · 🕒 分析时间未知"
+        st.markdown(("**⚡ 持仓触发提醒**" if _alerts else "**⚡ 持仓触发提醒**：今日无触发 ✅") + _time_note)
         if _alerts:
             st.markdown("\n".join(_alerts[:6]))
 
