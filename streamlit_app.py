@@ -495,7 +495,7 @@ if _nav == "🧭 导航":
             st.markdown("**板块轮动**：" + " ｜ ".join(_hints[:5]))
         _rot_cloud = (_snap or {}).get("rotation_forecast") or {}
         if _rot_cloud:
-            st.markdown("**🧭 下一轮板块轮转预警（明日 · 下周 · 半个月）**")
+            st.markdown("**🧠 板块热度与轮换周期思维导图（日 / 周 / 月）**")
             from rotation_ui import rotation_map_html as _rotation_map_html_cloud
             st.markdown(_rotation_map_html_cloud(_rot_cloud, "v88-cloud-nav-rotation"), unsafe_allow_html=True)
     else:
@@ -811,7 +811,7 @@ elif _nav in ("📊 日报", "📅 周报"):
 elif _nav == "📈 大盘板块":
     st.markdown("#### 📈 大盘走势与板块轮动")
     if _snap and _snap.get("rotation_forecast"):
-        st.markdown("##### 🧭 下一轮板块轮转预警")
+        st.markdown("##### 🧠 板块热度与轮换周期思维导图（日 / 周 / 月）")
         from rotation_ui import rotation_map_html as _rotation_map_html_market
         st.markdown(_rotation_map_html_market(_snap["rotation_forecast"], "v88-cloud-market-rotation"), unsafe_allow_html=True)
     if _snap:

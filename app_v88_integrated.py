@@ -11838,10 +11838,10 @@ def _render_today_nav():
                     _hints.append(f"🧊 {_mkt}·**{s['name']}** 退潮（20日{s['chg20d']:+.1f}%但5日{s['chg5d']:+.1f}%）")
         if _hints:
             st.markdown("**板块轮动**：" + " ｜ ".join(_hints[:5]))
-        # ③ 下一轮轮转导图：冻结快照中的明日/下周/半个月同源预测，三端不重复计算。
+        # ③ 板块热度思维导图：直接承接上方轮动内容，展示日/周/月同源预测。
         _rot_forecast9 = (_snap or {}).get("rotation_forecast") or {}
         if _rot_forecast9:
-            st.markdown("**🧭 下一轮板块轮转预警（明日 · 下周 · 半个月）**")
+            st.markdown("**🧠 板块热度与轮换周期思维导图（日 / 周 / 月）**")
             try:
                 from rotation_ui import rotation_map_html as _rotation_map_html9
                 st.markdown(_rotation_map_html9(_rot_forecast9, "v88-nav-rotation"), unsafe_allow_html=True)
