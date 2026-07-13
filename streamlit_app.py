@@ -169,7 +169,7 @@ def pub_journal_list():
 
 
 st.title("☁️ V88 云端版")
-st.caption("24小时在线 · 日报每交易日07:00/14:00/21:00更新 · 行情每小时更新 · 访问权限由Streamlit部署设置控制")
+st.caption("24小时在线 · 日报每交易日07:00/14:00/21:00更新 · 三市行情盘中各3次（约每3小时） · 访问权限由Streamlit部署设置控制")
 
 c_nav, c_rf = st.columns([5, 1])
 with c_rf:
@@ -410,7 +410,7 @@ if _nav == "🧭 导航":
     except Exception:
         pass
     st.caption("温度定仓位 → 轮动定板块 → 操作榜定标的")
-    st.caption(_fresh_caption((_snap or {}).get("generated_at"), "行情快照") + " · 每小时更新")
+    st.caption(_fresh_caption((_snap or {}).get("generated_at"), "行情快照") + " · 交易日盘中各3次（约每3小时）")
     _meta0 = pub_meta()
     if _meta0.get("daily_report_ts"):
         st.caption(_fresh_caption(_meta0["daily_report_ts"], "日报/操作榜") + " · 每时段更新（07/14/21点）")
@@ -486,7 +486,7 @@ if _nav == "🧭 导航":
         pass
     st.caption("💡 持仓建议为隐私内容，请在飞书推送或 Mac/局域网 V88 查看")
 
-# ── 🔥 热点新闻（每小时自动更新·每条带实际发生时间·三时段筛选）──────────
+# ── 🔥 热点新闻（随盘中快照同步·每条带实际发生时间·三时段筛选）──────────
 elif _nav == "🔥 热点新闻":
     st.markdown("#### 🔥 热点新闻 · 实时流")
     _nl_raw = pub_text("news_live.json")
@@ -497,9 +497,9 @@ elif _nav == "🔥 热点新闻":
         except Exception:
             _nl = None
     if not _nl or not _nl.get("items"):
-        st.info("📭 新闻流生成中（每小时自动抓取，可点右上 🔄 刷新）")
+        st.info("📭 新闻流生成中（随盘中快照同步抓取，可点右上 🔄 刷新）")
     else:
-        st.caption(_fresh_caption(_nl.get("generated_at"), "新闻流") + " · 每小时自动更新 · 12个中外RSS源")
+        st.caption(_fresh_caption(_nl.get("generated_at"), "新闻流") + " · 随三市盘中快照同步 · 12个中外RSS源")
         _tps = _nl.get("topics") or []
         if _tps:
             st.markdown("**🔥 热点主题**：" + " · ".join(f"`{t['w']}({t['n']})`" for t in _tps))
@@ -746,7 +746,7 @@ elif _nav == "📈 大盘板块":
                                + (f" {_x2['turning']}" if _x2.get('turning') else ""))
             st.code("\n".join(_mp), language=None)
     if _snap:
-        st.caption(_fresh_caption(_snap.get("generated_at"), "行情快照") + " · 每小时自动更新")
+        st.caption(_fresh_caption(_snap.get("generated_at"), "行情快照") + " · 交易日盘中各3次（约每3小时）")
         for mkt, blk in _snap.get("markets", {}).items():
             st.markdown(f"### {mkt}")
             _t = blk.get("temperature")
