@@ -126,47 +126,89 @@ _AUTHORITATIVE_SNAPSHOT = _AUTHORITATIVE_REPORT.parent / "market_snapshot.json"
 _AUTHORITATIVE_BRIEF_META = {}
 
 
-def _load_authoritative_brief():
-    """Load the single report shared by desktop, cloud and Feishu."""
-    global _AUTHORITATIVE_BRIEF_META
-    if not _AUTHORITATIVE_REPORT.exists():
-        _AUTHORITATIVE_BRIEF_META = {"status": "missing", "issues": ["权威日报文件不存在"]}
-        return None, None
-    ts = _AUTHORITATIVE_REPORT.stat().st_mtime
+def _validate_plan_a(report_path, manifest_path, snapshot_path, check_snapshot=True):
+    """判定某份报告是否满足硬质检。返回 (content, ts, status_dict) 或 (None, ts, status_dict)。
+    check_snapshot=False 用于校验 last_good（Plan B）——它没有配套的历史快照文件，
+    不能拿"今天"的实时快照去比对一份可能是几天前的报告，那样比对必然不一致、永远判失败。"""
+    if not report_path.exists():
+        return None, None, {"status": "missing", "issues": ["报告文件不存在"]}
+    ts = report_path.stat().st_mtime
     try:
-        raw_content = _AUTHORITATIVE_REPORT.read_text(encoding="utf-8-sig")
+        raw_content = report_path.read_text(encoding="utf-8-sig")
         content = raw_content.strip()
     except Exception as exc:
-        _AUTHORITATIVE_BRIEF_META = {"status": "failed", "issues": [f"日报读取失败: {exc}"]}
-        return None, ts
-    if not _AUTHORITATIVE_MANIFEST.exists():
-        _AUTHORITATIVE_BRIEF_META = {
-            "status": "legacy", "snapshot_id": "", "issues": ["等待下一轮任务生成新版质检清单"]
-        }
-        return content, ts
+        return None, ts, {"status": "failed", "issues": [f"日报读取失败: {exc}"]}
+    if not manifest_path.exists():
+        return content, ts, {"status": "legacy", "snapshot_id": "", "issues": ["等待下一轮任务生成新版质检清单"]}
     try:
-        manifest = json.loads(_AUTHORITATIVE_MANIFEST.read_text(encoding="utf-8"))
-        snapshot = json.loads(_AUTHORITATIVE_SNAPSHOT.read_text(encoding="utf-8"))
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        snapshot = json.loads(snapshot_path.read_text(encoding="utf-8")) if (check_snapshot and snapshot_path.exists()) else {}
         issues = list((manifest.get("quality") or {}).get("issues") or [])
         if (manifest.get("quality") or {}).get("status") != "passed":
-            _AUTHORITATIVE_BRIEF_META = {**manifest, "status": "failed", "issues": issues}
-            return None, ts
-        if manifest.get("snapshot_id") != snapshot.get("snapshot_id"):
+            return None, ts, {**manifest, "status": "failed", "issues": issues}
+        if snapshot and manifest.get("snapshot_id") != snapshot.get("snapshot_id"):
             issues.append("日报与行情快照版本不一致")
         if hashlib.sha256(raw_content.encode("utf-8")).hexdigest() != manifest.get("report_sha256"):
             issues.append("日报正文校验和不一致")
         if issues:
-            _AUTHORITATIVE_BRIEF_META = {**manifest, "status": "failed", "issues": issues}
-            return None, ts
-        _AUTHORITATIVE_BRIEF_META = {**manifest, "status": "passed", "issues": []}
-        return content, ts
+            return None, ts, {**manifest, "status": "failed", "issues": issues}
+        return content, ts, {**manifest, "status": "passed", "issues": []}
     except Exception as exc:
-        _AUTHORITATIVE_BRIEF_META = {"status": "failed", "issues": [f"质检清单解析失败: {exc}"]}
-        return None, ts
+        return None, ts, {"status": "failed", "issues": [f"质检清单解析失败: {exc}"]}
+
+
+_PLAN_AB_CACHE = {}
+
+
+def _load_report_planab():
+    """【V88·全站统一 Plan A/B】唯一数据源：桌面今日导航/AI简报/云端 三处必须调用同一份，禁止各读各的。
+    Plan A=今日报告硬质检通过；今日不通过则回退 Plan B=daily_report.last_good.md（流水线自留的最近一次通过版）；
+    都没有则 Plan 缺失=如实告知，不静默留空。返回 (content, meta)。meta.status ∈ passed/legacy/degraded/missing。
+    5分钟内同一次rerun缓存，避免重复IO。"""
+    global _AUTHORITATIVE_BRIEF_META
+    _cache_key = "planab"
+    _now = time.time()
+    _cached = _PLAN_AB_CACHE.get(_cache_key)
+    if _cached and _now - _cached[0] < 300:
+        _AUTHORITATIVE_BRIEF_META = _cached[2]
+        return _cached[1]
+
+    content, ts, meta = _validate_plan_a(_AUTHORITATIVE_REPORT, _AUTHORITATIVE_MANIFEST, _AUTHORITATIVE_SNAPSHOT)
+    if content is not None and meta.get("status") in ("passed", "legacy"):
+        result = (content, {**meta, "plan": "A", "ts": ts})
+        _AUTHORITATIVE_BRIEF_META = result[1]
+        _PLAN_AB_CACHE[_cache_key] = (_now, result, result[1])
+        return result
+
+    # Plan A 不合格：尝试 Plan B（流水线自留的最近一次通过质检的报告）
+    _today_issues = meta.get("issues") or []
+    _lg_report = _AUTHORITATIVE_REPORT.parent / "daily_report.last_good.md"
+    _lg_manifest = _AUTHORITATIVE_REPORT.parent / "report_manifest.last_good.json"
+    lg_content, lg_ts, lg_meta = _validate_plan_a(_lg_report, _lg_manifest, _AUTHORITATIVE_SNAPSHOT, check_snapshot=False)
+    if lg_content is not None:
+        result = (lg_content, {**lg_meta, "plan": "B", "status": "degraded",
+                               "ts": lg_ts, "today_issues": _today_issues, "today_ts": ts})
+        _AUTHORITATIVE_BRIEF_META = result[1]
+        _PLAN_AB_CACHE[_cache_key] = (_now, result, result[1])
+        return result
+
+    # Plan A/B 均不可用：真空，如实告知
+    result = (None, {"plan": None, "status": "missing", "issues": _today_issues, "ts": ts})
+    _AUTHORITATIVE_BRIEF_META = result[1]
+    _PLAN_AB_CACHE[_cache_key] = (_now, result, result[1])
+    return result
+
+
+def _load_authoritative_brief():
+    """兼容旧调用名：等价于 _load_report_planab()。Plan A/B 都返回正文（Plan B=最近一次通过质检的
+    历史报告，正文本身当时是合格的，标的价位是当时的合法价位，只是"不是今天"——UI 层须标注降级，
+    不能把 Plan B 正文当空处理，那正是本次要修的 bug）。"""
+    content, meta = _load_report_planab()
+    return content, meta.get("ts")
 
 
 def _load_brief_cache():
-    """优先加载三端共用的权威日报；旧缓存仅用于尚未迁移的环境。"""
+    """优先加载三端共用的权威日报（Plan A/B 统一出口）；旧缓存仅用于尚未迁移的环境。"""
     authoritative, authoritative_ts = _load_authoritative_brief()
     if _AUTHORITATIVE_REPORT.exists():
         return authoritative, authoritative_ts
@@ -11480,10 +11522,11 @@ def _render_today_nav():
         _snap = json.loads((_repo / "data" / "market_snapshot.json").read_text(encoding="utf-8"))
     except Exception:
         _snap = None
-    try:
-        _rep = (_repo / "data" / "daily_report.md").read_text(encoding="utf-8")
-    except Exception:
-        _rep = ""
+    # 【V88·全站统一Plan A/B】不再绕过质检直读文件——首页/简报/云端三处共用同一份数据+同一套状态。
+    # 之前的bug：这里曾直接 read_text 无视质检结果，简报模块却拦截未过质检的报告，
+    # 导致"简报说数据源不足停止展示"而首页仍在显示同一份报告里的评分——现在统一为同一数据源。
+    _rep, _rep_planab_meta = _load_report_planab()
+    _rep = _rep or ""
 
     # 【V88·非交易日判定】周末/节假日：无"今日盘中"，改看"下一交易日前瞻"
     def _v88_is_trading_day(_d=None):
@@ -11537,6 +11580,17 @@ def _render_today_nav():
         pass
 
     st.markdown("### 🧭 今日导航 · 该关注什么" if _is_trading else "### 🔮 下一交易日前瞻 · 非交易日看这里")
+
+    # 【V88·Plan A/B统一标注】与下方AI简报模块共用同一状态，避免"这里显示分数、简报说数据不可信"的割裂
+    _pab_status = _rep_planab_meta.get("status")
+    if _pab_status == "degraded":
+        _pab_ts = _rep_planab_meta.get("ts")
+        _pab_str = datetime.fromtimestamp(_pab_ts).strftime("%m-%d %H:%M") if _pab_ts else "—"
+        _pab_issues = _rep_planab_meta.get("today_issues") or []
+        st.warning(f"🟡 今日报告未过质检（{'；'.join(_pab_issues) or '未知问题'}），下方数据来自最近一次通过质检的报告"
+                  f"（{_pab_str}），非实时——评分/操作建议均为当时数据，仅供参考，请勿据此当日实盘操作。")
+    elif _pab_status == "missing":
+        st.error("📭 今日与历史均无可用报告（Plan A/B均不可用），下方暂无操作榜/评分数据，请等待下一轮流水线生成。")
 
     # 【V88·非交易日前瞻置顶】把 outlook.md 前瞻正文醒目展示（个股名可点深度分析）
     if not _is_trading:
@@ -12134,12 +12188,20 @@ with _brief_cache_info_col:
         _brief_status = _AUTHORITATIVE_BRIEF_META.get("status")
         _sid = _AUTHORITATIVE_BRIEF_META.get("snapshot_id", "")
         if _brief_status == "passed":
-            st.caption(f"✅ 权威日报 · {_brief_gen_dt} 生成 · Snapshot `{_sid}` · 已缓存 {_brief_age_h:.1f}h")
+            st.caption(f"✅ 权威日报(Plan A) · {_brief_gen_dt} 生成 · Snapshot `{_sid}` · 已缓存 {_brief_age_h:.1f}h")
         elif _brief_status == "legacy":
             st.caption(f"ℹ️ 权威日报旧协议 · {_brief_gen_dt} 生成 · 下一轮任务自动升级质检清单")
+        elif _brief_status == "degraded":
+            _today_ts9 = _AUTHORITATIVE_BRIEF_META.get("today_ts")
+            _today_str9 = _dt_brief.fromtimestamp(_today_ts9).strftime("%m-%d %H:%M") if _today_ts9 else "—"
+            st.caption(f"🟡 Plan B降级 · 今日报告未过质检，展示最近一次通过质检的报告（生成于 {_brief_gen_dt}）")
         else:
-            st.caption(f"⚠️ 权威日报不可用 · {_brief_gen_dt}")
-        if _brief_age_h > _BRIEF_CACHE_TTL / 3600:
+            st.caption(f"📭 今日与历史均无可用报告")
+        if _brief_status == "degraded":
+            _today_issues9 = _AUTHORITATIVE_BRIEF_META.get("today_issues") or ["未知质检问题"]
+            st.warning(f"⚠️ 今日报告未过质检（{'；'.join(_today_issues9)}），以下为最近一次有效报告（{_brief_gen_dt}），"
+                      f"其中的价位/建议均为当时数据，非今日实时——刷新简报可重新生成今日版本。")
+        elif _brief_age_h > _BRIEF_CACHE_TTL / 3600:
             st.warning("行情快照已超过1小时：报告仅作历史阅读，交易动作需等待下一轮权威日报。")
     else:
         st.caption("📭 权威日报尚未生成；桌面端不会另写一份口径不同的报告。")
@@ -12150,11 +12212,11 @@ with _brief_btn_col:
         st.session_state.pop("market_brief_latest", None)
         st.rerun()
 
-if _AUTHORITATIVE_BRIEF_META.get("status") == "failed":
+if _AUTHORITATIVE_BRIEF_META.get("status") == "missing":
     _issues = _AUTHORITATIVE_BRIEF_META.get("issues") or ["未知质检错误"]
-    st.error("权威日报未通过硬质检，已停止展示交易建议：" + "；".join(_issues))
+    st.error("今日报告未过质检，且无历史可回退（Plan A/B均不可用）：" + "；".join(_issues))
 
-# 不再由桌面端二次改写日报。权威流水线失败时宁可空缺，也不生成另一套价格与动作。
+# 不再由桌面端二次改写日报。权威流水线失败时回退 Plan B(last_good)，两者皆无才真正空缺。
 # ─────────────────────────────────────────────────────────────────────────────
 
 if do_generate:
@@ -17035,10 +17097,12 @@ def _build_holdings_context() -> str:
     parts.append(f"【投资框架硬规则】\n{_rules}")
     # 3) 当日规则引擎结论（日报里的持仓段，含实时触发的减仓/卖出候选）
     try:
-        _rep = (_repo / "data" / "daily_report.md").read_text(encoding="utf-8")
+        _rep, _rep_meta9 = _load_report_planab()
+        _rep = _rep or ""
         _j = _rep.find("## 💼 我的持仓·框架化建议")
         if _j > 0:
-            parts.append("【今日规则引擎结论】\n" + _rep[_j:_j + 1800])
+            _tag9 = "（⚠️Plan B历史数据，非今日实时）" if _rep_meta9.get("status") == "degraded" else ""
+            parts.append(f"【今日规则引擎结论】{_tag9}\n" + _rep[_j:_j + 1800])
     except Exception:
         pass
     return "\n\n".join(parts) if parts else ""
