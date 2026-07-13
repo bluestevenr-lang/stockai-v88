@@ -2714,6 +2714,14 @@ h1, [data-testid="stHeading"] h1 { font-size: 22px !important; font-weight: 700 
 h2, [data-testid="stHeading"] h2 { font-size: 18px !important; font-weight: 700 !important; color: #1e3a5f !important; }
 h3, [data-testid="stHeading"] h3 { font-size: 16px !important; font-weight: 600 !important; color: #2c4a6e !important; }
 
+/* 蓝底主按钮统一白字：覆盖全局 Markdown 深色正文规则。 */
+button[kind="primary"], button[data-testid="stBaseButton-primary"],
+button[kind="primary"] *, button[data-testid="stBaseButton-primary"] *,
+button[kind="primary"] [data-testid="stMarkdownContainer"] p,
+button[data-testid="stBaseButton-primary"] [data-testid="stMarkdownContainer"] p {
+    color: #ffffff !important;
+}
+
 /* 【2026-07-13 用户要求·撤销深蓝按钮】主按钮深蓝#1e3a5f看不清，移除本次新增的覆盖
    → 回到调整之前：primary 用主题默认亮蓝 #2563eb + 白字，secondary 由下方通用按钮样式接管 */
 
