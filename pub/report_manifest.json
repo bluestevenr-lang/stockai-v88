@@ -1,13 +1,17 @@
 {
   "schema_version": "v88.report/2.0",
-  "snapshot_id": "snap-a16a63e41a304e97",
-  "generated_at": "2026-07-14T22:51:45.137439+08:00",
-  "report_sha256": "79bf9147bfc4ad6f8d012bed0713343c108838c24f5bcc673a4afa010b5601a1",
+  "snapshot_id": "snap-69eecb838e66c955",
+  "generated_at": "2026-07-15T07:58:35.454556+08:00",
+  "report_sha256": "2fbf61f06c2e91428f9143e699e652bdbafbb150975db06678c8102199674aac",
   "quality": {
-    "status": "passed",
-    "issues": []
+    "status": "plan_b",
+    "issues": [
+      "A/B级专业来源少于3条"
+    ],
+    "safety": "observe_only",
+    "current_day": true
   },
   "source_count": 50,
-  "operation_row_count": 26,
+  "operation_row_count": 20,
   "visibility": "public_redacted"
 }

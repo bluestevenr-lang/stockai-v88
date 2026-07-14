@@ -1,729 +1,606 @@
 {
- "generated_at": "2026-07-15 04:35",
- "count": 471,
+ "generated_at": "2026-07-15 07:58",
+ "count": 295,
  "topics": [
   {
    "w": "AI",
-   "n": 93
-  },
-  {
-   "w": "财报",
-   "n": 36
+   "n": 52
   },
   {
    "w": "芯片",
-   "n": 34
+   "n": 22
+  },
+  {
+   "w": "财报",
+   "n": 16
   },
   {
    "w": "通胀",
-   "n": 26
+   "n": 15
   },
   {
    "w": "原油",
-   "n": 18
+   "n": 8
   },
   {
-   "w": "黄金",
-   "n": 17
+   "w": "美元",
+   "n": 7
   },
   {
-   "w": "CPI",
-   "n": 11
+   "w": "苹果",
+   "n": 6
   },
   {
-   "w": "美联储",
-   "n": 11
-  }
- ],
- "major_news": [
-  {
-   "t": "IBM stock craters 25%, the worst day on record, after issuing second-quarter earnings warning",
-   "dir": -1,
-   "stk": [
-    {
-     "n": "IBM",
-     "c": "IBM"
-    }
-   ],
-   "url": "https://www.cnbc.com/2026/07/14/ibm-warns-second-quarter-earnings-fell-short-of-expectations.html",
-   "s": "CNBC - Top News",
-   "time": "2026-07-15 04:22"
-  },
-  {
-   "t": "IBM’s stock just had its worst day ever after the surprise release of an earnings miss",
-   "dir": -1,
-   "stk": [
-    {
-     "n": "IBM",
-     "c": "IBM"
-    }
-   ],
-   "url": "https://www.marketwatch.com/story/ibms-stock-dives-toward-worst-day-in-nearly-40-years-after-the-surprise-release-of-an-earnings-miss-8519741e?mod=mw_rss_topstories",
-   "s": "MarketWatch - Top Stories",
-   "time": "2026-07-15 04:21"
-  },
-  {
-   "t": "Lucid denies bankruptcy talk, but the stock still sinks to a record low",
-   "dir": -1,
-   "stk": [
-    {
-     "n": "Lucid",
-     "c": "LCID"
-    }
-   ],
-   "url": "https://www.marketwatch.com/story/lucid-denies-bankruptcy-talk-but-the-stock-still-sinks-to-a-record-low-82f87d0d?mod=mw_rss_topstories",
-   "s": "MarketWatch - Top Stories",
-   "time": "2026-07-15 04:21"
-  },
-  {
-   "t": "Employees sue Meta, alleging discrimination in using AI to make layoffs",
-   "dir": -1,
-   "stk": [
-    {
-     "n": "Meta",
-     "c": "META"
-    }
-   ],
-   "url": "https://www.cnbc.com/2026/07/14/meta-lawsuit-layoffs-ai.html",
-   "s": "CNBC - Top News",
-   "time": "2026-07-15 04:19"
-  },
-  {
-   "t": "港股中国版Palantir集体暴涨：首日最高涨超260%，多股翻倍 - 凤凰网",
-   "dir": 1,
-   "stk": [
-    {
-     "n": "Palantir",
-     "c": "PLTR"
-    }
-   ],
-   "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE1va21hTEVzYm4tWm0tRHRmMHY1N0ZSbDdBdG1feEVWTTFVVVBTUFRyRXc2NmFuT01fUGRXdG5ISWdMdERCMmtzM3QwbGlzR1NQ?oc=5",
-   "s": "Google News - 中文市场聚合",
-   "time": "2026-07-15 04:11"
-  },
-  {
-   "t": "IBM shares plunge 25% as customers shift spending to AI",
-   "dir": -1,
-   "stk": [
-    {
-     "n": "IBM",
-     "c": "IBM"
-    }
-   ],
-   "url": "https://www.ft.com/content/da478c37-7a32-415d-9f30-3b2981149f95",
-   "s": "FT - Markets",
-   "time": "2026-07-15 04:11"
+   "w": "IPO",
+   "n": 6
   }
  ],
  "items": [
   {
-   "t": "7月15日收盘：芯片股推动美股收高，温和通胀数据推动市场反弹 - 新浪网",
+   "t": "苹果股票获得罕见的看跌评级,KeyBanc表示需求和估值令人担心",
+   "stk": [
+    {
+     "n": "苹果",
+     "c": "AAPL"
+    }
+   ],
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3896125233743752?f=rss",
+   "time": "2026-07-15 07:51",
+   "cat": "tech"
+  },
+  {
+   "t": "密集调研硬科技公司,外资持续看好中国股票",
    "stk": [],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijwJBVV95cUxNUHZIemVYWHRoaWdzbmNmZE41UHlDYnpqbUFFNVVoS1VVQWFETXJVdFZyaXM0MV9qRzRrS09tS1dGclp2akQ3ZHlwTmc1WEg5NWk3ZmRSUFpMUlhqUmxqU2xHSVFPeV83cXQ4YjhGZ0hLNkhSbWhUSG5NUWJTWEo3ZjlsVVRLYl9lSmdYZHVCOXc1aUdiMDNPZTBudWs3bFRfWUFNQ1lSczYzWktWd2VfZ1ZSZnNBWUZkeU5aWldrNGU3aGROOWNyRGwzVmE4bkVENWtfZm1fdmh0UjZnVkNXSjU2emVpMGN4dkF1cWtfN25Pb3VsWWhCbnNndEY0NXVBMHprLVkzVXZSaGF4V2o4?oc=5",
-   "time": "2026-07-15 04:33",
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3896123051312769?f=rss",
+   "time": "2026-07-15 07:48",
+   "cat": "tech"
+  },
+  {
+   "t": "美国通胀降温,美股指全线反弹,SK海力士ADR飙升27%,IBM暴跌25%,美油闪跌",
+   "stk": [
+    {
+     "n": "IBM",
+     "c": "IBM"
+    }
+   ],
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3776859",
+   "time": "2026-07-15 07:46",
    "cat": "cn_markets"
   },
   {
-   "t": "Strong Bank Earnings, Cool Inflation Data Lift U.S. Stocks",
+   "t": "美股收盘:三大指数集体收涨,大型科技股多数上涨#7月14日美股走势 - 搜狐网",
    "stk": [],
-   "dir": 0,
-   "s": "WSJ - Markets",
-   "url": "https://www.wsj.com/finance/stocks/strong-bank-earnings-cool-inflation-data-lift-u-s-stocks-7f0e85fe?mod=rss_markets_main",
-   "time": "2026-07-15 04:30",
-   "cat": "global_markets"
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOVXJfVElnYVg3cFBLdDRJUjZ1YWVtSnpNOGowb0ZtY2xpcXR5ZGNpeGlObkVrdFFWdnpqV0Jib3lFemlBdGdyN0VqVkdhQ2lXUTJSZnJjRE1OcEhNcDlNcUNkSXJDRDBkWnRGYU9VX1JRODFBcVdpNmwydjBzQVFGMW5CTHdlVXdyS0Z0Nw?oc=5",
+   "time": "2026-07-15 07:45",
+   "cat": "cn_markets"
   },
   {
-   "t": "GE HealthCare Technologies Inc. stock falls Tuesday, underperforms market - MarketWatch",
+   "t": "美国会众议院通过永久实行夏令时法案",
    "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiywFBVV95cUxPcEg0NWdySWxqWFAxLVhyaU54eEFfbG5JZVlkTkh4Mlg2YlQ3VjJKaW56dGUyMnFsVHlYaUJWcEc5X0V0aERZTk5ZODZxZjhxVG1jbXJMUHNGdUYyN3ZmNXJsbG9sdW04bXY1czJEYkk1bHVsZFJ0QlI1TFRQS21ONkZTVUZQYWFRekw3VGd6cEU5Z0pteXBIMTJDaXAtYlNDMU5TQmRZbDZRTnJaOTdDRjh6NG92bVVIVjduUzBGMEoyVzc4LUhzQk5hdw?oc=5",
-   "time": "2026-07-15 04:30",
-   "cat": "global_markets"
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3896120079779457?f=rss",
+   "time": "2026-07-15 07:45",
+   "cat": "tech"
   },
   {
-   "t": "Stryker Corp. stock underperforms Tuesday when compared to competitors - MarketWatch",
+   "t": "美股芯片股走强,SK海力士大涨逾27% - 凤凰网",
    "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxQbEZCS0hUMG1IMWtMcUtrNzJxUFo4dC1uZzQ1OVBNZFY1b3dlcmRQQkMzSUxYX1hwM2U1RmM3aE5CLWNxaVRYTEJLVExzMUNXMDA0alRhMExlNmI0bmdkNm9nZEZDanhVeHVJN0NZcURvMGdSamE1Z19icmpmSEdOYjMxUHY2Y2ZLU25yZFpOWEpaMXd1ZjBXQkt0a19maEkwcHBQdXJPdENmazNYNmRoZS1YelNMQWU3ZXlkYzV5VVM0SElOcngybw?oc=5",
-   "time": "2026-07-15 04:30",
-   "cat": "global_markets"
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE91YlVsSlNuVFkxVHFjT2RwRzZvM2NXbVp0MEFOQXo2Yi02YllMRFpmMXJFTndadlRxd1N3d0ZfYnRGQURVOXZBNm5mVTNORnlP?oc=5",
+   "time": "2026-07-15 07:44",
+   "cat": "cn_markets"
   },
   {
-   "t": "NetApp Inc. stock outperforms competitors on strong trading day - MarketWatch",
+   "t": "A股分红派息转增一览:46股今日股权登记 - 新浪财经",
    "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxQbVlneFN1LTF4QkJ3RVd4YXpRaGY5VVFGTDZvTlp1U19uaGtaaXZkYUFlTDN3UkJTTnFPQlpFSDJLWEhfNXQyZ0JkdERYb0lXSTdWZmZLcU1yV3NBbnhDUXVqSWlVVTJUYVlmWlFvUE9xNzU2T1BHQ01HZ0RTU1pHTWNOXzRDYWNMeXBuR21FUU9FM1RuYkZ5LTNmbzN1a1pINzloaDBMSjYtVl80R19PMUh2SElGT0NDV2tvbEdQbw?oc=5",
-   "time": "2026-07-15 04:30",
-   "cat": "global_markets"
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE12X0haMXV1bjF1WjFOWUgxZkthQWxlSTFMbGxEZk1TaTN1dm04RnRadlRoaFl3cXJYRVRVdFNYTGZWOG5RLTUydVUtbw?oc=5",
+   "time": "2026-07-15 07:42",
+   "cat": "cn_markets"
   },
   {
-   "t": "Hewlett Packard Enterprise Co. stock outperforms competitors on strong trading day - MarketWatch",
+   "t": "OpenAI正在开发化身AI伴侣的智能音箱,作为其首款硬件产品",
    "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxQMzluenhhOW5ScnNzOEdEWWxVZWpQUkxEOG9QOUFZb0ViR2dDR20tdEt4ay1PSW1RTVBJQ1NXUmJQT2VVZ3lkSG9QR2E2ZkpoLWFkSkxkdjd6SW9yQ1Z0Uk5UZ2xZaldtOGw3LVlXQi1CMTQ5YXlpM0NhNHRrSXFEV3JsbHVKSi1qRW9hbTdtQ00tUF9HdXFVSkV2QkdLeGs4VFpqSkZPOWk4SVZ5aUhOU2FRamh4eDhFaHdjZmwwYi1ucUMyYm5TSzRfdzVib2NsRjlNdDYxelM?oc=5",
-   "time": "2026-07-15 04:30",
-   "cat": "global_markets"
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3896117655373699?f=rss",
+   "time": "2026-07-15 07:42",
+   "cat": "tech"
   },
   {
-   "t": "Intuitive Surgical Inc. stock underperforms Tuesday when compared to competitors - MarketWatch",
+   "t": "高盛建议做多中国AI产业, A股优于港股,硬科技优于软科技 - 新浪财经",
+   "stk": [],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMihwFBVV95cUxOYk5GUjJ2SHFXR0VLVzVyY3JlOFNsNS13aDdickNWeVBiYkFZVnB1OGphVTlHLTlpcU9acjMtUDItSWI2eHJ1UWduMDRaY2s5NUgxWXJKVlFQbFhjdk5ybXcyS3RVaHVMTDV0d0MyWDJZQzR1X0lyOGZQMXFFY1p0c1ZlZFRxMUE?oc=5",
+   "time": "2026-07-15 07:41",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "巴菲特年度捐赠名单剔除盖茨基金会,计划到2034年捐出剩余财富",
+   "stk": [],
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3896116749092743?f=rss",
+   "time": "2026-07-15 07:40",
+   "cat": "tech"
+  },
+  {
+   "t": "SK海力士美股狂飙市值一夜疯涨2万亿坐稳全球存储龙头|存储芯片|股价|美光|涨价|三星_手机新浪网 - 新浪财经",
    "stk": [
     {
-     "n": "Intuitive",
-     "c": "ISRG"
+     "n": "美光",
+     "c": "MU"
     }
    ],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxPRmZYNW1uc3BndHZIcnYzT3J4Vmh6Y1dTUHJKaF9kUkp4NXQ4M1pRay00NC1GdlExdDUxS1BnNXBHR1F4dFVuaGFDS2FTNlJMRVlOdl9WcTc4YWd0VDdzdTlPSlJrUFRFcUtJX3dtTHBub2loN2N0NUxKNi00blpsNXQ3MXdBZXhNZ3Q2VjFnX2Q5QmxFc0hFMXhhTFRYOGM2RV9pRGpnbjZRdVhEOTZoVWxGQm4zd3E0WHAxcmdFNDcwdzlnQUM5V2hZTFkxVFg1VGhoYVZB?oc=5",
-   "time": "2026-07-15 04:30",
-   "cat": "global_markets"
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMimAJBVV95cUxOLTliN2dDNTZPMHFSYlJPYzFSdkdXQi1yTUF2ZnZpdFBZQ252Mk5fRzlxeFhHc0hCOUFXaGZCOEN3Q0RKZ29IYmRnRlUyYTVCRHVDM2JjeTJtLW8tNEZ2QVRvNENmMzNGbXgwbWREUVk2T2p2bDZQa29xYWl5QzBkN0xZTDd1dDBYXzlfWnMzWm1PYkZ4Zzh6dEVzNWZqU1FXNTBKRHZhUHdMSjVieUcwQjBiRGdiUzlvZXF3NDFyTHZISk9UVFJWU0xnLThEWTJWSHVFOXFBc1dFczVWTFFROTNJa0hDdDFUQkVEVUFpQ2M1anh1QjhBWG9XaUJBVmY0eEtrSDA0TTRoazNCYVRIOWJzcmRMVl9x?oc=5",
+   "time": "2026-07-15 07:39",
+   "cat": "cn_markets"
   },
   {
-   "t": "Monolithic Power Systems Inc. stock outperforms competitors on strong trading day - MarketWatch",
+   "t": "内部人抛售：应用光电子(纳斯达克:AAOI)首席财务官抛售488,360美元股票",
    "stk": [],
-   "dir": 0,
    "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxPdFgtTF9FalAzV3NxT25nN0VOdks0RGRXSjM1YWY4aHlfM2ZfM0d2MEdScEpqS0dMR2RrZXg4STBwdGhob3BWQ3BaSUlLclV3dmdzVHVvcHM3ODlQdE4zMnRudkpDc1l1a21Wc2RfV0FPY05Yc1RXdXFHTXJmRnUtc01wT19yS3NHcndEQlNEdHdYQ2VCdjhPM29CNU83N0pKQ1dzek5LMnBCWWF4SDFpNXhiZHlSZWptVE5JdS01RTc1R2Nkc0JkSi16T2N0MFNNLWotRjdJTQ?oc=5",
-   "time": "2026-07-15 04:30",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Fair Isaac Corp. stock outperforms competitors despite losses on the day - MarketWatch",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiywFBVV95cUxQWmZ0dm5mclFBN0g2ZF9WVkF1dWRxRGFjVlloLXVMR3ZrS1lqdWtyQXdUSmhJck91QTFoXzBISWF6V2NJWEY1NUdBb1VGWGdBQzkzUGlQUFhrSFA4VjhzT3JKUE5vSTVWZ0V5Q1BsWVlUV1I4MnRQblFWb0dhUmlDdks1dXJqMTlRZ0JBRkx1UHFnOXVhNFAxWDlVZTYtUGNHMl8zSE1HVGlkS016MUdVdlZXRmxMQ2kwaGFkN0drS2c3WHFOQ0pmZzRjRQ?oc=5",
-   "time": "2026-07-15 04:30",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Medtronic PLC stock underperforms Tuesday when compared to competitors - MarketWatch",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiygFBVV95cUxQOVk5cEhaSGNKVFJ3dEktTnZobTlsN2pkUmZ4a1hOLTZYYkZzOU13MGJ1WWx0TTBtY3hFX2dHWWZuczRqLVNIWGNNUDZKN2ZtU3Y3NTNHam5hanhaVUxaMUNOVzBiMlB0elMtNEJncHlqb2dtRVA4LWtuUmtHVmlMZW5vVlhrUF9YREJHa1hxbUVOOEdubUF6Q2diVDZfbXA5dmNHY3F0NEhiZFpXYzJXUVphV014ZWdrOTZxT0NuOVd6T0NmVTgydkpR?oc=5",
-   "time": "2026-07-15 04:30",
-   "cat": "global_markets"
-  },
-  {
-   "t": "HCA Healthcare Inc. stock outperforms competitors despite losses on the day - MarketWatch",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxQVXpfbHdlbUQwcWpXTmVIZjNZNHZYa1FmMWdjc2tfbE9JLUczbUtDOTV4bDFSR25DUFluMTY5WFlFSV95dEh1ZjBLbEticnNPblp0eF9SVnhJRlktdFoyOEZ3MWVZM256aWtDNnZFaGc5c2Z1TFNKaC10UGNQSDRGTTZaclJxQ0RhV1NkX3ZWRTVCU01hcTQ3TUpiWi03amJEU1BZbjkyLXBVT18wNVZWTjNWclVTckNyb21icXNzQ3J3VkFmMFJTOEo1Ny00ajQ?oc=5",
-   "time": "2026-07-15 04:30",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Universal Health Services Inc. Cl B stock outperforms competitors despite losses on the day - MarketWatch",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxNRzhMTGgtQWItTUs3dVRVYnlvRmNZMlFJWjFEX3MyMmJ0TkFfWlNFX1ltMHRXRThMWWNvcE5zamlZTkljbTlGMkVuTWM4M0FZQi05OUpNTllNczFTczduaGc4QUZBVFNVdl9LbkdiLXBVZG10T1lDcERxNG1zX1oxN2haNzlPX2kyYlFQcElZbGoya1JtNndkZGlvZ01aT3NSMTZLLUhQdDF0TmxJdW9lQ1lTNXg1X3Y0YWhUTlVia3duMUFjQW91b091VDBsVkIyOXo0VTVfQmUta3J0ZnVzQ251Qlg?oc=5",
-   "time": "2026-07-15 04:30",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Every 20 Vivakor shares are expected to become one on July 17 - Stock Titan",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxPY29HZlRtWU1pdkZuTXlMTG9UQWdsamd0WE1DeWZGNk5lbVNIR0lBa3NrSHA2UjNQVGQwWWxFVXRzbHU1SDRkZk93RVQySlJ0WWNiRzF5Wk9WU1BjZnNUS3FXVDczS1FDSWpIR1prbkdTaGlOUk9tVFZEOE9QWDlTM1ItVmFUd2ZwSzF1MUk2aUU4ODB4UzlPLXFtRQ?oc=5",
-   "time": "2026-07-15 04:30",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Geron's New Business Chief Gets Option on 1.7M Shares - Stock Titan",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxNc0ZGR255UmNZWmRTektNRXBJQ0FPSEdkTWNvVGxmRmprdExRdU5tdjh4N2xaZnhjSlNvOVZWektMMUpOWW4tb0hHTFRMVU84aVVJdTNwWENpNWE0WWt3OUQ0dGZzcTdZZV9jTDY4V1Jld2lwem5RMjVoRzdzNmxWWF9oeFB3RVFfNk1nbnFNNEUxcF83VDZmOGF3WjloQU1FX1J0TG8tLTRWY1Qya25Sb09BY1ZnQnVaSk0zaFdubkc?oc=5",
-   "time": "2026-07-15 04:26",
-   "cat": "global_markets"
-  },
-  {
-   "t": "CoStar (CSGP) Stock Trades Down, Here Is Why - StockStory",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxQa3VYNWZfNmF3ajRFZXduWDlWZFkzbGlTYmR2Smc0RHZLQk1oR0ExOWlDZWRzeExGTk5YTEFLclBVel9qWHJLcnROVVBCVTN4R3h0bkJTY0JfYVJTSER6NnA2N2ttNHJVU1RZYTE5OThVYWZNeDhCUU85YllCUnlxMV9ndkRtWXVCNDFVZGl2dW05WjE1NGRUZmc4dHVIRFRDLUlwR1JaVnk?oc=5",
-   "time": "2026-07-15 04:24",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Why The Trade Desk (TTD) Shares Are Sliding Today - StockStory",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxQR3pXd2NfQUxXYjM1VGVtYS1EZ0NUUjRqMlVfQmtTUXYwWC1TQmtEa1pqeXhadl85VURJUkhIUW4yNThYTEdkZm4zSTM4SE5oVUlqQ2NBZnFWRWlWWTcyV242WGhfeU5vM3BqM3BsMnNObGtNWVZrbVBfOTYwTGM1aGZzcmcwQ0hDY3ZaazVfZWJxLUcydlNRbTNsaFp1S21rYXEwVjZ1YnoyYmp4RE9r?oc=5",
-   "time": "2026-07-15 04:24",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Why Wingstop (WING) Shares Are Falling Today - StockStory",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxOV3FydllsdjB5MVlSZHNueWtIQjB2ZWl0RWY5YVVReW5vakxQRElZQnpzeWhuSXRYVXVjZVRPU19TNUxHLS1EX21QLUFsVFJ4d1NyOGJNczhHNENINE04UVVoTXh0aGRTYnBha2c5VV9rQ29SNHFvT0V1Wk1EeXhyb0FkV3pHUEo4cTI5MjNBcmxMSm9IRGtmVGIySGx2UEh2dDVkaUVNQzRfUQ?oc=5",
-   "time": "2026-07-15 04:24",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Why Shutterstock (SSTK) Shares Are Sliding Today - StockStory",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxQXzd3X1ZkTzBtRUNPUFU4U0dpcVU4R0d3bWl4V3R1QWxGOEk3WUV4aTc2ZTY0LXdrNWVmSTk1NVlJdl9OLVh1Z05Ld1ZraE9CWThaZThJaUgtbm1oNXBTRks1YTF1R29WZFB3NEZSN0VMLVFCSkgzUUxOODRxeDMwNll2X1RMNm05Q1JnMGxOREVLWEFtMERvM2hwR3VwNC1PYjctSzVXOXdQUQ?oc=5",
-   "time": "2026-07-15 04:24",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Why Paramount (PSKY) Shares Are Trading Lower Today - StockStory",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNTHlaY2NaeGlXV244MzdicC04UVJtNUNXZlZ5N0JiZEpTR3VfMExzaUx0T3h3dmhxczJOeGxrREpWaTJKRlFlRHo5dmxTd0xVbTRrWWFXSGlGQTg4eEdiSE83aEdzNWY3b1UyZUV4MnZEUE9vdDQ0dm5RMTJvN0FFc1lPR21LU3hwbTlPZ2RSUXVqUzc0LTJ6SXliRDdZR1JNbEtZOEgzZ2ZYNnktemdGOXF2OA?oc=5",
-   "time": "2026-07-15 04:24",
-   "cat": "global_markets"
-  },
-  {
-   "t": "1 Wall Street Analyst Sees Spacex's Stock Soaring by Over 450%. What Are the Chances of It Happening? - The Motley Fool",
-   "stk": [],
-   "dir": 1,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxOV3pXWE5uQzhqSjJ2Yk4wbF9BRUxTc1pYZzUySGhEM2pHUGZlell4WkhVU3dNRHpiU09WandOWllST0pHZS1hakJtZDFjcExsX01JdUtFRElxbXpfUndFbExFVng1UHRVdEVwTVNFbFV0b1FEUEpyd3pUWkxoc2F0c29ORzVuQ0VYc0RnWkJjVWNSekpTYVpwaA?oc=5",
-   "time": "2026-07-15 04:24",
-   "cat": "global_markets"
-  },
-  {
-   "t": "The Chip Stock Behind Nvidia's AI Servers Just Landed on the Nasdaq - The Motley Fool",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxNN0c4M0dnMmxtYVZjN0oyOENUd2h1a1ZBajNzYzRydF9oV2NCTThrNXhRRVRCa2FPODNVcU9HT1VmVXhyUXNOZmJxSWFWNnFYZVg0cjlOaXJzN085TzZWbEJ3dHYxaTJIaGN4TGo5RkZCVUJvWkFEU1dsSGJ1VjM3UFhNS0xKUURKYzdKMVd5UE1sZUFWZ1Fv?oc=5",
-   "time": "2026-07-15 04:24",
-   "cat": "global_markets"
-  },
-  {
-   "t": "SpaceX Joins the Nasdaq-100. Has the Index Become Too Risky to Track? - The Motley Fool",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNeklSRXlTMlo4ckZrX0xrREp0ZmFFT2NGbGhKOVpaYjdncVkwZlVSY2tjRjJOaE04UFpZbk9qek1UUUdNVWRad2VjQUhqX0xxU0dUX092RG13ZW0xNnZtQ1VWelRUN0dTRGYtMG54amlzWXlhczY3bElRclZ6RHM0bzhkN0s5NldNMHE1cVNuVnV4anRzbkcyeA?oc=5",
-   "time": "2026-07-15 04:24",
-   "cat": "global_markets"
-  },
-  {
-   "t": "IBM stock craters 25%, the worst day on record, after issuing second-quarter earnings warning",
-   "stk": [
-    {
-     "n": "IBM",
-     "c": "IBM"
-    }
-   ],
-   "dir": -1,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/14/ibm-warns-second-quarter-earnings-fell-short-of-expectations.html",
-   "time": "2026-07-15 04:22",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Skip the lettuce, cook your other greens and more advice on avoiding cyclosporiasis",
-   "stk": [],
-   "dir": 0,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/skip-the-lettuce-cook-your-other-greens-and-more-advice-on-avoiding-cyclosporiasis-ec2aed46?mod=mw_rss_topstories",
-   "time": "2026-07-15 04:22",
-   "cat": "global_markets"
-  },
-  {
-   "t": "IBM’s stock just had its worst day ever after the surprise release of an earnings miss",
-   "stk": [
-    {
-     "n": "IBM",
-     "c": "IBM"
-    }
-   ],
-   "dir": -1,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/ibms-stock-dives-toward-worst-day-in-nearly-40-years-after-the-surprise-release-of-an-earnings-miss-8519741e?mod=mw_rss_topstories",
-   "time": "2026-07-15 04:21",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Lucid denies bankruptcy talk, but the stock still sinks to a record low",
-   "stk": [
-    {
-     "n": "Lucid",
-     "c": "LCID"
-    }
-   ],
-   "dir": -1,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/lucid-denies-bankruptcy-talk-but-the-stock-still-sinks-to-a-record-low-82f87d0d?mod=mw_rss_topstories",
-   "time": "2026-07-15 04:21",
+   "url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxQX1FVWXpjQlJ5a1BEaVZYOXpIcVNxN09pYmpYRXNpcGRTQUhhalVoT05EZDNnS1JXbFZHNmk0c0lCVG1JY3dkT19MSTNRMGJ4WEdHU0doOXV3WTZZVVE3TlFQbkRZWGRYOFo4QTJkSjMzR0ZjRDNzcVNIWjRsVFQ1OHduMFJYNHl0bUt2b1kwZE1yNE9Ic1BhWl8xVnlkeWJnR0d0SUxrT1BMVHh1VmNlUGJqNjNQRXBPaElWQjBpZ2pkYkhiMW9CUXJqVm0?oc=5",
+   "time": "2026-07-15 07:39",
    "cat": "global_markets",
-   "major": 1
+   "t_en": "Insider Selling: Applied Optoelectronics (NASDAQ:AAOI) CFO Sells $488,360.00 in Stock - MarketBeat",
+   "zh": 1
   },
   {
-   "t": "Employees sue Meta, alleging discrimination in using AI to make layoffs",
-   "stk": [
-    {
-     "n": "Meta",
-     "c": "META"
-    }
-   ],
-   "dir": -1,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/14/meta-lawsuit-layoffs-ai.html",
-   "time": "2026-07-15 04:19",
-   "cat": "global_markets"
-  },
-  {
-   "t": "U.S. strikes Iran before Hormuz Strait blockade restarts",
+   "t": "内部人抛售：AppFolio(纳斯达克:APPF)主要股东抛售200股股票",
    "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/14/iran-strikes-hormuz-strait-blockade-trump-tolls.html",
-   "time": "2026-07-15 04:19",
-   "cat": "global_markets"
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxPWmplYjd3YVExM0ZlTjUySGZ0ZHhZNDI1M1NtWTBKTnluSF9MUDl0YVc4aUI3bzJZUThPeEJLQXA2TXhkM0lJalE4dFduU3B5NE9WRjMyLVRqQnU1MUZzN0Y5WUo5N2VhNnlkT3lOSW9hbi1ya21oZlI1NXJUUl9vel80TmRTdFhUWk11UkRURXVJdlZJVUc5eUZqbHN3Z2M2Z0pmOFVBXzRUWWE5dy1UR0xvc2hzekk2NzlWbUpjc3pGcGJMN0QwLVNKaUw2UQ?oc=5",
+   "time": "2026-07-15 07:39",
+   "cat": "global_markets",
+   "t_en": "Insider Selling: AppFolio (NASDAQ:APPF) Major Shareholder Sells 200 Shares of Stock - MarketBeat",
+   "zh": 1
   },
   {
-   "t": "Oil prices rise as U.S. launches new Iran airstrikes, while Trump abandons Strait of Hormuz fee",
+   "t": "Netskope(纳斯达克:NTSK)董事购入241,628股股票",
    "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/14/oil-prices-today-brent-wti-hormuz-trump-toll-iran.html",
-   "time": "2026-07-15 04:16",
-   "cat": "global_markets"
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxOaF9mX1p1cno1RUFOZWNhTGRlVDZ1WGdRUVgydjRpRmFOcUg5ZG5tVUFZSWRKeUJsLUpYSTBjbGRYVmhSTHlvTnhzUFhXWEROQXpKekdWeVFFRHJHWlZMd0QyOUllRk5ZellnSzhsekdWcWgza3ExeGRpSHFMSkFKVVZnRjBiRVowejQ0ekJIWmthajF1Z2RZZ1B3UU9MZDFvZEJ0NFR1UVlGN3ZNaTZMYlZlWm95QQ?oc=5",
+   "time": "2026-07-15 07:39",
+   "cat": "global_markets",
+   "t_en": "Netskope (NASDAQ:NTSK) Director Purchases 241,628 Shares of Stock - MarketBeat",
+   "zh": 1
   },
   {
-   "t": "周二（7月14日），美股行业ETF涨跌各异，半导体ETF收涨2.51%，全球科技股指数ETF、科技行业ETF至多涨1.65%，银行业ETF跌0.06%，全球航空业ETF、日常消费品ETF至多跌1.38%，医疗业ETF跌1.93%。 - 搜狐网",
+   "t": "美股收涨,存储巨头暴涨27%;特朗普威胁下周袭击伊朗桥梁发电厂 - 搜狐网",
    "stk": [],
-   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNNE93VmFNY0Qtc2xBdXA5SDZQLVdUeExHeVYzRTZXNjZkOE5wOGZKWm90UEhPNWlqX2VHN3VnSHlwaXI3LVk5OUM3U0pvdGZucUs1eU5TUnpZRWpjem5SUGxYSWZ2OE9pUkx2WktYRVBrTWRTalBId3JlUG12MjlqWEhkYURrY3R2?oc=5",
-   "time": "2026-07-15 04:16",
+   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQNFg1OThpZlY0MVJibC1Zd0c4Vk5qemFyQmdKSnFaZ2FFeEFxZ25kd0dYb1l2d00wTk9rT2o4NDExOExhOVo3M1MxUGxfVGNuTXNLOERyRGVWaG01WktYUnQ0MWdIVUhhSlFPRkhrM1NwZU1NZFBIcW55aGFqdnF3ZVhHM1VfNHRCYURfdQ?oc=5",
+   "time": "2026-07-15 07:39",
    "cat": "cn_markets"
   },
   {
-   "t": "Australian Oilseeds Holdings (COOT) gains extra 180 days to meet Nasdaq bid rule - Stock Titan",
+   "t": "长鑫科技IPO定价出炉,专家呼吁理性看待企业创新成长价值",
    "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxNenZnZHRNN0dmYlBTNnVmcmN2aXBLMHRSM3BuQVRVTndzX3ZrWFpaSTlxMWxGV082dXMtUEhGU1BPTm9OaDJXenQ0dmJfRjNRdHJrTjhwT1JvYXRDOTNBaW00cHI2OUtPaU9KbVUtOTgzUDQzVEphb1paNHh2TkpKNTRDUzRCenNMMloycTNlZHB1Yll3TkJOUTdzU05USDNLc3RrNnk4dmRnRXUtYnNWLTNOZUw0XzQyeHdOY0U5ekNfNGkwWjR3?oc=5",
-   "time": "2026-07-15 04:15",
-   "cat": "global_markets"
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3896113102259845?f=rss",
+   "time": "2026-07-15 07:38",
+   "cat": "tech"
   },
   {
-   "t": "I’m 67 with a $140,000 pension. Should I wait until 70 to claim Social Security so my wife gets more?",
+   "t": "需求井喷,高端算力服务大单频现",
    "stk": [],
-   "dir": 0,
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3896079105918856?f=rss",
+   "time": "2026-07-15 07:37",
+   "cat": "tech"
+  },
+  {
+   "t": "英特尔斥资50亿欧元扩建爱尔兰工厂,押注AI驱动芯片需求",
+   "stk": [
+    {
+     "n": "英特尔",
+     "c": "INTC"
+    }
+   ],
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3895682732476295?f=rss",
+   "time": "2026-07-15 07:35",
+   "cat": "tech"
+  },
+  {
+   "t": "A股股票回购一览:23家公司披露回购进展 - 金融界",
+   "stk": [],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTFBjT2pOano0LVJVUUVfekNqelR4ZTZpRS1FQkNieEdjNjBOZ1F0TVBGU0YzWnFzUG0xYXo4Y1BOWTJBRVVLY1BGZy1Tc3F1bXBWMzhxR3ZMRUF3VE1fbGVnNVU2T2xSZ3NWbTRZVGczMA?oc=5",
+   "time": "2026-07-15 07:34",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "华尔街见闻早餐FM-Radio | 2026年7月15日",
+   "stk": [],
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3776948",
+   "time": "2026-07-15 07:33",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "A股股票回购一览:23家公司披露回购进展 - 星岛环球网",
+   "stk": [],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE53MnRmbFFuNFJLMjU1V1RRQkxMYkV6RFB2NFRGRzdwUDhDeFIzMVpSOWlVLVE5RWMweHBBdnhlZkdOZWluYmZiYkE2d2JxcFFucEpWQjQ3NElYWnBrY3VrWmNzQzlwR1E?oc=5",
+   "time": "2026-07-15 07:33",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Uber据悉深入洽谈收购德国外卖公司Delivery Hero",
+   "stk": [
+    {
+     "n": "Uber",
+     "c": "UBER"
+    }
+   ],
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3895678709827465?f=rss",
+   "time": "2026-07-15 07:32",
+   "cat": "tech"
+  },
+  {
+   "t": "这个被忽视的指数比标普500更适合投资",
+   "stk": [],
    "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/im-67-with-a-140-000-pension-should-i-wait-until-70-to-claim-social-security-so-my-wife-gets-more-63759d48?mod=mw_rss_topstories",
-   "time": "2026-07-15 04:15",
-   "cat": "global_markets"
+   "url": "https://www.marketwatch.com/story/this-overlooked-index-is-a-better-investment-than-the-s-p-500-74c7e698?mod=mw_rss_topstories",
+   "time": "2026-07-15 07:32",
+   "cat": "global_markets",
+   "t_en": "This overlooked index is a better investment than the S&P 500",
+   "zh": 1
   },
   {
-   "t": "Trinity Capital to Transfer Listing to New York Stock Exchange - PR Newswire",
+   "t": "A股限售股解禁一览:21.25亿元市值限售股今日解禁 - 星岛环球网",
    "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxQT2ZXYkU3ZUU5cno2ZTZGWGtkbkh6UzhDeWg4M2p1ekJlSlZjX2tOY2thNEhPRFZZcXM4TFFBOHYzbVNhaFJacUV0U0VVWW1vV2hCWVhJRE5TNm11d2U0N0dXVlBaRWU1VkNYMGFWOFMtVzlaU0Q1WXdKb2ZYa1NMWTFPNHBud3FZbHZXSC1HUFJaM2NRMFhhV3NMbjJuTDFSQ19mdkU3emQtS21rZnBuUEVTRWg0eF9RSEE?oc=5",
-   "time": "2026-07-15 04:15",
-   "cat": "global_markets"
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTE9qUExwOVZOcmlGZU44eFJscngxa0lUNnVlLTAwMXZSTTNYS09LSzNFcG1CeGhFOWtScGZGUlMtVjQ0Uy1idHJnSjBDclNTOFdoTUo0aTlZVmlJdlpYZktRSE9zT2I?oc=5",
+   "time": "2026-07-15 07:32",
+   "cat": "cn_markets"
   },
   {
-   "t": "US Stocks Close Higher, Nasdaq Gains 0.90% - bloomingbit",
+   "t": "A股限售股解禁一览:21.25亿元市值限售股今日解禁 - 新浪财经",
    "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE9MSURwcEVFSElSM1RLMHM4RWJpQjFJeFhETmxTQXE4OFdqRDdrSTNMMmNLdlBZRXM5S2tmTC1zZUVKRzl0UmRiN2JVVHJoWU9lOEZ0Zg?oc=5",
-   "time": "2026-07-15 04:14",
-   "cat": "global_markets"
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE1YdUFhcjNWdHo3ZzAzdzhmbGp0dEsxaF9GMWZoRTZvcFdWelE0OHlPZkd3Nk93LV9zaXdlaW9XX2x1c25fNHEwaU03WQ?oc=5",
+   "time": "2026-07-15 07:31",
+   "cat": "cn_markets"
   },
   {
-   "t": "Writers Guild sues to block Paramount deal saying it would hurt writers",
+   "t": "公募基金密集举牌港股创新药:是拐点已至,还是结构性腾挪? - 新浪财经",
    "stk": [],
-   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMi_AFBVV95cUxNV1BfMTJxRURWdnhtUHFGLUpRQnNSRUJseG9sM0xPcGdKXzdkdk1EZ0ZtLTRqTjdJTHFEeDJPVUZ1R01SWGJPMlhsWTRGTHBsR2w0WmJjQUR2S3dLQzM4TndWcmswaDNmWGpEX1hIYWpBWVJ0dl9hdzdBTXVrQnNNa3VPbG1VYUIxUHNOdmtVSm5xLTI1RmJQUjJzUjN0WGM4eFVOZ2NnNnhCZEI5dHJSVGJWZER3ZlRiWFNqeTRWcEFwTVVuYU1xN295RUhXd0RTOV91Y0ZRMjR2eUZGVGswYlIyRjRVLXV6ZTNvXzc0dmpPMjE3VncySkdmWWE?oc=5",
+   "time": "2026-07-15 07:31",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "市场波动加剧,公募机构打造多资产配置拼图",
+   "stk": [],
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3896079946827392?f=rss",
+   "time": "2026-07-15 07:29",
+   "cat": "tech"
+  },
+  {
+   "t": "头部公募掀起南下“举牌潮”,港股创新药开启估值修复行情",
+   "stk": [],
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3896077748029315?f=rss",
+   "time": "2026-07-15 07:27",
+   "cat": "tech"
+  },
+  {
+   "t": "亚太股指反弹,韩国出手救市,A股PCB强势爆发,“易中天”成交超900亿 - 新浪网",
+   "stk": [],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxPaGVHMzlkaXRTTVdXanBCYnM0T25mdUZnVG9pZ3l3YUdJRTNWRzVOTC1nUXo3UzZBamo2cTdUbF9MelpyMW9VaWJyMjFxS1dEbUllc1ZtRXh4a2dCVG9QNDNMVTZJa3FFWW5rRXYzeUpncEhoaHpyUEgyTXpSTGdic093?oc=5",
+   "time": "2026-07-15 07:27",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "大类资产市场日评 | 双创领跌A股大幅调整,债市信心不足偏弱下行 - 新浪网",
+   "stk": [],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE1tNXZVdHduRGhxOE5UcjZ4bGtybV9QeE9NSjhGVkRLeVJaVjkxWWhPU00wZE1sdHZaR2lSS3JyTGg0czZTczFYU1BEd1hob3RsSVdiT2NkYkJ3R2dBcndFLW4tRzBYdFMyZEpBblNKdDlTUQ?oc=5",
+   "time": "2026-07-15 07:27",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "A股探底回升 沪指收复年线 科技股强势回归显韧性 - 新浪财经",
+   "stk": [],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNOWhZSzlSUlFoZmJsSGNfdDZMWVNqODBDa25lVnJRdnJ1UWF1X21aeThRWUhDT0NHdFE1THBpUXlaMEJoWXNLVVlSX2Rqb3VzbGZwRl9YNFJXYXFkTURiXzRqcy0xcWE2SWxCUUF4N2dkQ1IydU5URmJnN29WMWktWVFsVG03M1dvMzJXN19nYkRHdktUZmV3cw?oc=5",
+   "time": "2026-07-15 07:26",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "2026年度票房破190亿",
+   "stk": [],
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3895681277806467?f=rss",
+   "time": "2026-07-15 07:25",
+   "cat": "tech"
+  },
+  {
+   "t": "A股按摩椅龙头,出资做LP了 - 新浪网",
+   "stk": [],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE5vSGsxcHV3OFBteUdJNVFWX2pJY0NqNEtyQlRIa25xb1REdldvcU8ydF9Id0RMVG1DQk0wU1A2NDJabVV1NWJiSUw3TzBwTHByQU1uUGtxYi15RDdtaUNvRmsza05RSmdtQlBjZkwtQmxOZw?oc=5",
+   "time": "2026-07-15 07:25",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "港股中期业绩预告陆续出炉,科技有色领跑 - 新浪网",
+   "stk": [],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE1HV2dqS0stODdNNGEyLW5ac1ZNQjBuWklJOHhROWw4NERzTnZiaW1XUDdmQ0lfOXlLZ1BZOUVhd1dCTG9UcGxoZnNsYURSQmdWN29PcVg2SUx3eU5tOXl2cnUzd3BqN2lVYjFGelgzQURpdw?oc=5",
+   "time": "2026-07-15 07:25",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "利空突袭,暴跌超25%!美股科技“老登”崩了!美联储主席,最新发声 - 搜狐网",
+   "stk": [],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNcmpVdUg5SmlDOTF2anJDSXludTB2RGh3V0hSMFl2UnRVSTJiVEhsSVVuLWNtVHA3R1B5ZlhHck9mNXpnWkVtS2NSdFNWRlRSaERlSFNTOXZmNFd3dFhBdnJXbHFOTTlTRENrV3VuVS10cnV5T2w4YXIxSzRzUmVWLThPTUdlTDct?oc=5",
+   "time": "2026-07-15 07:23",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Anthropic推出面向教师的Claude",
+   "stk": [],
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3895679544215169?f=rss",
+   "time": "2026-07-15 07:22",
+   "cat": "tech"
+  },
+  {
+   "t": "谷歌DeepMind负责人呼吁美国牵头成立人工智能标准监管机构",
+   "stk": [
+    {
+     "n": "谷歌",
+     "c": "GOOG"
+    }
+   ],
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3895677977954181?f=rss",
+   "time": "2026-07-15 07:20",
+   "cat": "tech"
+  },
+  {
+   "t": "美股收涨,芯片股飙高,海力士暴涨27%,IBM跌25%,国际油价走高,金银齐涨 - 新浪财经",
+   "stk": [
+    {
+     "n": "IBM",
+     "c": "IBM"
+    }
+   ],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1iMDlyQ3JaN000TFNMTURlZHpVQUNQTzRPZnJ6eTlEcnlIMTg0N2xGYWVaU3ZKZ2Q3MmN4MUR4RTJjbS0zWEVab1p4eEtweW0ySmJvT3Y5dmJkb0pCTHRKQWo2MldkT1RLcXFWajdB?oc=5",
+   "time": "2026-07-15 07:18",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "加州新电动车补贴方案出炉,特斯拉成最大赢家",
+   "stk": [
+    {
+     "n": "特斯拉",
+     "c": "TSLA"
+    }
+   ],
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3895663340373632?f=rss",
+   "time": "2026-07-15 07:17",
+   "cat": "tech"
+  },
+  {
+   "t": "沃什称美联储对高通胀零容忍",
+   "stk": [],
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3895676957591173?f=rss",
+   "time": "2026-07-15 07:16",
+   "cat": "tech"
+  },
+  {
+   "t": "欧盟与英国正式签署有关直布罗陀的条约",
+   "stk": [],
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3895669736523652?f=rss",
+   "time": "2026-07-15 07:14",
+   "cat": "tech"
+  },
+  {
+   "t": "长鑫科技市值在A股排名第28",
+   "stk": [],
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3895674192594560?f=rss",
+   "time": "2026-07-15 07:11",
+   "cat": "tech"
+  },
+  {
+   "t": "重视量化交易泛滥,保护中小投资者 - 新浪网",
+   "stk": [],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE5VbEFkZXQ2eUh1MW5kSHFNcVFmbGF0SXcxZ2R6RVh2cUNQRnRUVk9JbGI0OHZhTzRONkRBcDlDVGQ2Z1B5V1MzNWxxMW1rY0ZTVGR5Yl9vWHRzNHpWa2tZcG9iQ2pNbFdwZjlqM3V1MEZ2Zw?oc=5",
+   "time": "2026-07-15 07:08",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "威兆半导体递表港交所",
+   "stk": [
+    {
+     "n": "港交所",
+     "c": "0388.HK"
+    }
+   ],
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3895672473962368?f=rss",
+   "time": "2026-07-15 07:08",
+   "cat": "tech"
+  },
+  {
+   "t": "马士基调整远东至北欧及地中海旺季附加费",
+   "stk": [],
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3895671196387208?f=rss",
+   "time": "2026-07-15 07:06",
+   "cat": "tech"
+  },
+  {
+   "t": "港股早报|我国集成电路和稀土上半年出口大增 热门中概股走势分歧 - 新浪财经",
+   "stk": [],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTFBTRjZTRi1Kb3hlVWVBWVFoSF9MZEFRbmZSQ2lLSWtoWkl2aHRRUXlPUVJ6RWZDSkRVak5MNXZlTS1XSzR5Qzk3U3dTT1BMMUk3RXZiNlM2TnMxZm0yQW5yeTIwdDJBQW5mLTVfY21B?oc=5",
+   "time": "2026-07-15 07:06",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "A股V字反弹 科技股领涨 - 搜狐网",
+   "stk": [],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPMTEwM0pGYm8tOUZxNGdDNFhpXzFrcHhnRUtTMWRZckFHZUZIZl9oQThaZUg2Q3JyZUZaNXVlTEwyVGlLRlpnUWdKeUNyTVd4TnNmN2xPb3ZSRHBhSVo3UVZhRG1uTzBZTWplZjVSSkwtRnlsdWtWaU1QWHdCbTFiYTBGTDVXSmYtemxHZw?oc=5",
+   "time": "2026-07-15 07:02",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "苹果评估AI模型压缩技术:270亿参数大模型可直接运行于iPhone,为Siri升级铺路",
+   "stk": [
+    {
+     "n": "苹果",
+     "c": "AAPL"
+    }
+   ],
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3776951",
+   "time": "2026-07-15 07:02",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "零售业新政来了!A股公司预喜中报频传,这些明星企业排队IPO - 凤凰网",
+   "stk": [],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTFBOUFdRNm8yRUJMNTFHdlBIVDB1RTBaR2tlVjVFaW8tanNHUkN6OUNMTGdQTVoxbjhnTmJpN1RGQmZVWG9QeDVJbk1HTm0zZmY4?oc=5",
+   "time": "2026-07-15 06:50",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "SK海力士美股单日暴涨27%,较韩股溢价超50%!期权上市刺激交投,资金押注短期看涨",
+   "stk": [],
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3776944",
+   "time": "2026-07-15 06:32",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "保税科技A股股东户数增加281户增幅0.41%,流通A股户均持股1.76万股降幅0.41%,户均持股市值5.31万元增幅5.18% - 新浪财经",
+   "stk": [
+    {
+     "n": "保税科技",
+     "c": "600794.SS"
+    }
+   ],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMikgJBVV95cUxPcklhWURGZEtDQjNmTVBpMFlEVGFUNFZoTEo4SlpiSWc3YWNWZHB5VDRzZWhJcU82WFZVWmhIejcyQWE0S29UVllKaktaVWFfRGxuaU5ucTRfdllXbWZMRjk4UjkxR0M4WjRtMUk5ZFpLZjdpMDRhZ0VNSkZ0UVZBNkN4cm41dk1mVjIteTBSSUFLcF9tOGZMT0VpWmVDMDFyRFF3OGxMZFpwM0xKX0xfSFlycExYMVZLUms1WjNrVnoyQVZnQ1ZONVhPb3NyS0NSUVNlMm93MGZaYVhqVXlMMVU0amNBRUoybVpydm1nRjl1Wm1aR0VlbzBTQ25qQ2JZWVRYNjJKNk1oMFpXTDYxMXR3?oc=5",
+   "time": "2026-07-15 06:31",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "新宝股份A股股东户数增加480户增幅1.46%,流通A股户均持股2.42万股降幅1.44%,户均持股市值27.14万元降幅0.10% - 新浪财经",
+   "stk": [
+    {
+     "n": "新宝股份",
+     "c": "002705.SZ"
+    }
+   ],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiggJBVV95cUxNQzY5LWJEa3pYNXc0Y1U0UEZaQnM2Ny1pS2g2NnpEYml6dmYwVXJlSXZWbzVBWGJXWFV6THVnVmRFaEcxMkRqNjNJc3JFWlpZYmJ4QVQxRWpwVlpCSmVPRnFxUUVrTVo2MXNiVGVCdmdjRlpvMGkxdlJjZ0FNUXNWR0JuUjJPNEwyeFdtZEdOd0xxUDJPZmt1eTlLZDY0YkNIbV9KbklON2pDQmZ6bmdremVScUNVdUdRR3BvQzJLSmtNQWFoTnFQUHV5eENHUnBWdlRXZXhxWE5sTGtBTkh1RHpEZWxJUE9IODBVZ1dmMTJVZlJfWHRPbnVpOXhIeVRRdVE?oc=5",
+   "time": "2026-07-15 06:31",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "深圳瑞捷A股股东户数增加511户增幅7.01%,流通A股户均持股1.21万股降幅6.55%,户均持股市值20.52万元降幅22.97% - 新浪财经",
+   "stk": [
+    {
+     "n": "深圳瑞捷",
+     "c": "300977.SZ"
+    }
+   ],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxNNnQwQldJV2lwSlFZcWw4ZHVtVGRUZzRZN09DZ29OTHEzYnJPTWhzMllyNHh4dzFGQzQxbzFFMEV6WXE2cGtjQ0NmQ2NUQkNqMmlVNU8xaVFMd2tKQUZXR0ZZVG9yUlFWWlMyc3VOcWgxaTlyVWpuczhLXzB0SDZLVmtJUjBiYnJObTZiRVRxOW42ZldmeUlUR3R1SjBUYlJwcVd1aV91LVVGYkJmV2NDd1Y0N3lCZHRsaWZlSGxDQmV1SEZNQldrWm4wcWxsM1FxUUVLSXpLWGI2NVNndTYzNDdpYU1HLUh2ejZOUTR6bWFKTEZHakpXR3lPRzBKUQ?oc=5",
+   "time": "2026-07-15 06:31",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Anthropic推出教师版Claude,Stride股价承压下跌",
+   "stk": [],
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3776949",
+   "time": "2026-07-15 06:25",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "编剧工会起诉阻止派拉蒙交易，称其损害编剧利益",
+   "stk": [],
    "s": "Investing.com - Stock Market News",
    "url": "https://www.investing.com/news/stock-market-news/writers-guild-sues-to-block-paramount-deal-saying-it-would-hurt-writers-4791612",
-   "time": "2026-07-15 04:12",
-   "cat": "global_markets"
+   "time": "2026-07-15 06:24",
+   "cat": "global_markets",
+   "t_en": "Writers Guild sues to block Paramount deal, saying it would hurt writers",
+   "zh": 1
   },
   {
-   "t": "21观公司丨A股“股价王”竞赛与CPO热点台前幕后 - 凤凰网",
+   "t": "李大霄:贵金属世纪大震荡美股下行,对周一开盘有何影响? - 新浪网",
    "stk": [],
-   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE5jT2hjazNMVDRsTDhaRU42d2kwakdiTnhpODlYWFYxTWZreTY2VllQclhhc0JZckJQU3FQVkJ2ZzlpbFYtVDNJdHp4S0JUU1Z5?oc=5",
-   "time": "2026-07-15 04:11",
+   "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxOYlNmUGlkZGcxVDU5dU5pTnFWM0lFM0w2Sm5CejN0aVBNdlZYNVNjSnNla2Z4MTdyT3lWa2Y4X1JkSzl5TVA5RURFTGdyMWFYNnlKcFBwSzJ0akkzMzc4NmxDUjFhUjI0a0huUEQ0QXZ4R05OU3pUX1N3Yko0dUJPQkJzbw?oc=5",
+   "time": "2026-07-15 06:13",
    "cat": "cn_markets"
   },
   {
-   "t": "港股中国版Palantir集体暴涨：首日最高涨超260%，多股翻倍 - 凤凰网",
-   "stk": [
-    {
-     "n": "Palantir",
-     "c": "PLTR"
-    }
-   ],
-   "dir": 1,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE1va21hTEVzYm4tWm0tRHRmMHY1N0ZSbDdBdG1feEVWTTFVVVBTUFRyRXc2NmFuT01fUGRXdG5ISWdMdERCMmtzM3QwbGlzR1NQ?oc=5",
-   "time": "2026-07-15 04:11",
-   "cat": "cn_markets",
-   "major": 1
-  },
-  {
-   "t": "IBM shares plunge 25% as customers shift spending to AI",
-   "stk": [
-    {
-     "n": "IBM",
-     "c": "IBM"
-    }
-   ],
-   "dir": -1,
-   "s": "FT - Markets",
-   "url": "https://www.ft.com/content/da478c37-7a32-415d-9f30-3b2981149f95",
-   "time": "2026-07-15 04:11",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Cybersecurity stocks rally on AI spending change comments from IBM's Krishna",
-   "stk": [
-    {
-     "n": "IBM",
-     "c": "IBM"
-    }
-   ],
-   "dir": 1,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/14/cybersecurity-stocks-ai-spending-mythos.html",
-   "time": "2026-07-15 04:11",
-   "cat": "global_markets"
-  },
-  {
-   "t": "特朗普宣布与伊拉克将达成\"大规模\"石油协议，伊拉克总理：美军9月底前须撤离",
+   "t": "调查发现滥用驾驶辅助系统是道路安全最大风险",
    "stk": [],
-   "dir": 0,
-   "s": "华尔街见闻",
-   "url": "https://wallstreetcn.com/articles/3776942",
-   "time": "2026-07-15 04:10",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Stocks Rise on Hot Earnings, Cool Inflation: Stock Market Today - Kiplinger",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOY1NGZmMzcVhaZmVINVBuSVozNkY5WFozSmlXdVpaU1VFRklCQlpzVHVVSUt6Z2drU0NsbGdaTU00cXpmeE1FMzA5T2VFVGJUbV91QzA0NV90UVZ3dS1iMEpuZTZfSVFrcmZldUw3VW1vcUZtOUZZLTVaalZXb1dzYURRY2ZaajZSS2dudkN1dDdLVmxQU2Y1a3hGYUZUY0RqVlhkUGhQaw?oc=5",
-   "time": "2026-07-15 04:10",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Stocks end higher as cooling CPI data, scrapping of Hormuz fee offsets IBM slide",
-   "stk": [
-    {
-     "n": "IBM",
-     "c": "IBM"
-    }
-   ],
-   "dir": -1,
    "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/us-stock-futures-fall-amid-more-iran-strikes-q2-earnings-inflation-on-tap-4789609",
-   "time": "2026-07-15 04:08",
-   "cat": "global_markets"
+   "url": "https://www.investing.com/news/stock-market-news/misuse-of-driverassistance-systems-biggest-risk-to-road-safety-survey-finds-4791961",
+   "time": "2026-07-15 06:12",
+   "cat": "global_markets",
+   "t_en": "Misuse of driver-assistance systems biggest risk to road safety, survey finds",
+   "zh": 1
   },
   {
-   "t": "Big Banks’ Profits Surge in Red-Hot Quarter",
+   "t": "马斯克未经许可的xAI电力项目污染对黑人社区影响最严重",
    "stk": [],
-   "dir": 1,
-   "s": "WSJ - Markets",
-   "url": "https://www.wsj.com/finance/stocks/big-banks-profits-surge-in-red-hot-quarter-944ff257?mod=rss_markets_main",
-   "time": "2026-07-15 04:08",
-   "cat": "global_markets"
-  },
-  {
-   "t": "7月15日收盘：芯片股推动美股收高，温和通胀数据推动市场反弹 - 搜狐网",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNUUlzZm5GTG5GclRHSkY0X2tfdGx1enE3dF80em0tTHN0UEZHZ0hqVEV5eVI0RzkzenJxMXFZS1JZQ1ZCWnFPYnFucXRfaEVxU0pGYVlUZlpYQW81TFAzWDYtejhFUDFMajhrcjRIMVZSTFFJbzVtMXJjQXNRMURfenpnQ2FsWDJvQjNXeg?oc=5",
-   "time": "2026-07-15 04:07",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "7月15日收盘：芯片股推动美股收高，温和通胀数据推动市场反弹 - 新浪财经",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxPU2VTaFc0dUJhNFBzRWVVNW4wVG9TLVBva3RLbTBUX2xNSTc4VWY1b2hZXzNMTEJuUjVZZVVJMVNtakc5T25XNWItak9xY3Bkd2ZObzg4VkVzNUp3S3hJWGlQRnJZYnYyZi10WnRjcUotNkc3ZEZ1bXZMQ1l1X3dsQVhtTUo2ZVctYktfNVR0WTVpR1BjVy1Ub1RZWC01YXFMYVc2Vjg5ajRlT1FoaEQtYnlZR20tSnRoRjRPNERwVkJqQ0hfekFwZTZ6Vm1JZ1I5LWJYMW40bVRfTDRsaFBR?oc=5",
-   "time": "2026-07-15 04:07",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "S&P 500 and Nasdaq end higher on cool inflation data, solid bank earnings",
-   "stk": [],
-   "dir": 0,
    "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/wall-st-futures-mixed-ahead-of-cpi-bank-earnings-usiran-tensions-in-focus-4790080",
-   "time": "2026-07-15 04:06",
-   "cat": "global_markets"
+   "url": "https://www.investing.com/news/stock-market-news/pollution-from-musks-unpermitted-xai-power-project-hits-hardest-in-black-communities-4790181",
+   "time": "2026-07-15 06:07",
+   "cat": "global_markets",
+   "t_en": "Pollution from Musk’s unpermitted xAI power project hits hardest in Black communities",
+   "zh": 1
   },
   {
-   "t": "U.S. stocks advance after cooler inflation print, higher oil prices - Seeking Alpha",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMikgFBVV95cUxPSThmQWFnZk9wZ2l2VTdLVE5oeUoyQ2lxRFRwU1owOVJhZ3lnRW45TE9sNHVWSjZNOHBYeDNtX3ROTmU0YzZmaldkQXBIOVVkb0tnWDh0a0VuT1JjTzJoTG9tWDdjTUlmbkpaZXowajJNc29oS0U1UWtPYVc3cThfbXpyUWNHMHZCVVd6WUtDdjVEQQ?oc=5",
-   "time": "2026-07-15 04:05",
-   "cat": "global_markets"
-  },
-  {
-   "t": "美股三大指数集体收涨 存储概念股大涨 - 东方财富",
+   "t": "7月14日(周二)热门美股、中概股收盘一览 - 东方财富",
    "stk": [
     {
      "n": "东方财富",
      "c": "300059.SZ"
     }
    ],
-   "dir": 1,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE8zZi00OTVxb0ZEUWZtYm5jNDVSMVU0djZiOF9vRnhYUFVDZDJSVVhsUXJ4bGd1UDdsTEktTzVoZjI0RmE2NWR3aDZkZ3NGdi0tQzZCZTdxOHR4WTQ4cTBLcGZZMA?oc=5",
-   "time": "2026-07-15 04:04",
+   "url": "https://news.google.com/rss/articles/CBMiY0FVX3lxTFBVSThuNEFCaE5Tc1YwbVREQ0wtR2R4NkxKc05HNExIV01zSGFoUktnalloZ1JDQ3dPV2J4bmM2Uzlab1o4dWNfRGlST1dGUE1PZzNDRFN0Q0RxXzE1Y0xZNXhoQQ?oc=5",
+   "time": "2026-07-15 06:04",
    "cat": "cn_markets"
   },
   {
-   "t": "Lucid dismisses report that it is weighing filing for bankruptcy or going private after shares plunge",
-   "stk": [
-    {
-     "n": "Lucid",
-     "c": "LCID"
-    }
-   ],
-   "dir": -1,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/14/lucid-stock-lcid-bankruptcy-report.html",
-   "time": "2026-07-15 04:04",
-   "cat": "global_markets",
-   "major": 1
-  },
-  {
-   "t": "Stock market today: Dow, S&P 500, Nasdaq rise as Fed rate-hike bets ease, chip stocks rally - Yahoo Finance",
+   "t": "今日股市：纳斯达克寻求延续周二涨势",
    "stk": [],
-   "dir": 1,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNRDFJSDlzUkxqcVNvbUZSQWFmbVlrcjdPZDVJTGlVVWlQMEpQeGdkZ2t5Ml9fTmp4clF0RkoyYTUxU0JhU29DWHo3Sy1yZXJpVjNMQWYwWFhCelpVZzh2YW5VS085aFVhczBpTHlUYUgzbUEwa1lOcmVKaG94RV9Fc2xDam42TVl1ek1RLXpSNUFqamFLc2xhYmIzZDg3cHpaYVdlMENHN0wzZw?oc=5",
-   "time": "2026-07-15 04:01",
-   "cat": "global_markets"
-  },
-  {
-   "t": "美股收盘：三大股指集体收涨 - 新浪网",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE94LVdDRUdSZzItNWh0T05QVGxSRXBNcU00TWlEaXcxVlFHOEZrdzJKTVdYWkJyd2dUYnpfckVzR0w0dXlrQ2JDY3pGcw?oc=5",
-   "time": "2026-07-15 04:00",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "IBM Stock’s 25% Plunge Just Proved the Market Is Incredibly Dangerous. How to Protect Yourself and Still Profit. - Barchart.com",
-   "stk": [
-    {
-     "n": "IBM",
-     "c": "IBM"
-    }
-   ],
-   "dir": -1,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMi5wFBVV95cUxPOUFPZEZoVzJXdk9NWXRneEFKQm8wNE01VUV4aEctOTdqUWRZVWx3ckdwUlhtRE5TdW5rMmdYRENRSWFwQUhOT2s3eE1PRFR6NFZPdUhLdVBPZWVpMi1kQm53QmVLWlFKa3JadVpiVkttazFvQXdoZlU5LW82V215Sjl5bzA2OFBGLW5pcDV4Q29Ka3RlUldWV1VDdG1JalQwTFJ6ZXRmXzhibno0bnJGTmtvUWdmNFEtajFvZzlaZGhLRUR0aG5fV1F4Y3paUEZiUjRtRWJxYnphODI0WWduMUFKVGhtT1k?oc=5",
-   "time": "2026-07-15 04:00",
-   "cat": "global_markets"
-  },
-  {
-   "t": "‘They are relentless’: A scammer is trying to change the email on my empty Robinhood account. What do they have to gain?",
-   "stk": [],
-   "dir": 0,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/they-are-relentless-a-scammer-is-trying-to-change-the-email-on-my-empty-robinhood-account-what-do-they-have-to-gain-26103dac?mod=mw_rss_topstories",
-   "time": "2026-07-15 04:00",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Everything is awesome for banks",
-   "stk": [],
-   "dir": 0,
-   "s": "FT - Markets",
-   "url": "https://www.ft.com/content/6d9ea937-a83a-430f-8f5b-68fb27e15058",
-   "time": "2026-07-15 04:00",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Stifel Favors Lumentum in Optical Components Sector",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/stifel-favors-lumentum-in-optical-components-sector-93CH-4791558",
-   "time": "2026-07-15 03:59",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Treasury Yields, Dollar Fall as U.S. Inflation Cools Down",
-   "stk": [],
-   "dir": 0,
    "s": "WSJ - Markets",
-   "url": "https://www.wsj.com/finance/jgbs-mixed-may-be-weighed-by-declines-in-u-s-treasurys-a3a67b11?mod=rss_markets_main",
-   "time": "2026-07-15 03:59",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Cooler-than-expected CPI is ‘a huge relief’ for the stock market – JPMorgan’s Gabriela Santos (SP500:) - Seeking Alpha",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxNOWdzTlFhUTZITDVxN2RUeHBqSFBDR2luVlIwTEtDcXJ4M2I1T0NCb3lmczhlcjg4cmJ5TGcxUGNKcnhGZEpMZWRqcHJxMEJHQVhYMDk3TWw3WlJrUUp3WFBCNVU2UjJodjhLVm8wdmZrUHZnQXU3bWFMaVJ6aTU3Vzl0VjYwZEdodlBKVWJEbERMdF9yU2Y1WlkxZjJBRVdsSlZhcEc4UGtMNWZOaWZQX3N6SU1WMXRveTNiUVpzS0E0dGUwVlE?oc=5",
-   "time": "2026-07-15 03:54",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Here’s the inflation breakdown for June 2026 — in one chart",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/14/inflation-cpi-june-2026-in-one-chart.html",
-   "time": "2026-07-15 03:53",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Lucid shares pare losses after rebuffing bankruptcy rumors",
-   "stk": [
-    {
-     "n": "Lucid",
-     "c": "LCID"
-    }
-   ],
-   "dir": -1,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/ev-maker-lucids-shares-cut-in-half-amid-reports-of-possible-bankruptcy-4791467",
-   "time": "2026-07-15 03:53",
+   "url": "https://www.wsj.com/finance/live/stock-market-today-dow-sp-500-nasdaq-07-15-2026-2a3dd235?mod=rss_markets_main",
+   "time": "2026-07-15 06:01",
    "cat": "global_markets",
-   "major": 1
-  },
-  {
-   "t": "The Cult of Equities - A Wealth of Common Sense",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTFBuUHZ4cXBZTXRIcTdiSXE3THF2d3ROTkN3UW5FTnFTTTVSMjF2V0tGN3dTSzRQdkwtWFFENkluQWpFT1FYQWs5a01XQ2NhMG0xM1ByOEhYcjBvS0hTYTNLWGQxX1RnYVVDb0JqMWVONA?oc=5",
-   "time": "2026-07-15 03:52",
-   "cat": "global_markets"
+   "t_en": "Stock Market Today: Nasdaq Looks to Build on Tuesday Rally",
+   "zh": 1
   }
  ]
 }
