@@ -502,6 +502,11 @@ if _nav == "🧭 导航":
                                  label_visibility="collapsed")
                         if len(_mk_c) > 1 else (_mk_c[0] if _mk_c else "美股"))
             st.markdown(_rotation_map_html_cloud(_rot_cloud, "v88-cloud-nav-rotation", _focus_c), unsafe_allow_html=True)
+        _cyc_cloud = (_snap or {}).get("cycle_scan") or {}
+        if _cyc_cloud.get("stocks"):
+            st.markdown("**🌀 个股周期切换（持仓+自选·哪些股票进入下一周期）**")
+            from rotation_ui import stock_cycle_html as _stock_cycle_html_cloud
+            st.markdown(_stock_cycle_html_cloud(_cyc_cloud, "v88-cloud-nav-cycle"), unsafe_allow_html=True)
     else:
         st.info(_NOT_READY)
     # 🔥 最新热点（直接可见，详情见「🔥 热点新闻」页）

@@ -210,6 +210,11 @@ if _nav == "🧭 导航":
                                  label_visibility="collapsed")
                         if len(_mk_l) > 1 else (_mk_l[0] if _mk_l else "美股"))
             st.markdown(_rotation_map_html_lite(_rot_lite, "v88-lite-nav-rotation", _focus_l), unsafe_allow_html=True)
+        _cyc_lite = (_snap or {}).get("cycle_scan") or {}
+        if _cyc_lite.get("stocks"):
+            st.markdown("**🌀 个股周期切换（持仓+自选·哪些股票进入下一周期）**")
+            from rotation_ui import stock_cycle_html as _stock_cycle_html_lite
+            st.markdown(_stock_cycle_html_lite(_cyc_lite, "v88-lite-nav-cycle"), unsafe_allow_html=True)
     else:
         st.info("📭 大盘快照未生成（日报流水线每日 07:00/14:00/21:00 更新）")
 

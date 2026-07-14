@@ -11851,6 +11851,15 @@ def _render_today_nav():
                 st.markdown(_rotation_map_html9(_rot_forecast9, "v88-nav-rotation", _focus9), unsafe_allow_html=True)
             except Exception as _rot_ui_e9:
                 logging.debug(f"轮转导图渲染失败: {_rot_ui_e9}")
+        # ④ 个股周期切换：持仓+自选，蓄势/领涨/派发/退潮 + 即将切换方向。
+        _cyc9 = (_snap or {}).get("cycle_scan") or {}
+        if _cyc9.get("stocks"):
+            st.markdown("**🌀 个股周期切换（持仓+自选·哪些股票进入下一周期）**")
+            try:
+                from rotation_ui import stock_cycle_html as _stock_cycle_html9
+                st.markdown(_stock_cycle_html9(_cyc9, "v88-nav-cycle"), unsafe_allow_html=True)
+            except Exception as _cyc_ui_e9:
+                logging.debug(f"个股周期渲染失败: {_cyc_ui_e9}")
         # 【V88·复制】今日导航摘要一键复制（温度/指数/拐点/轮动）
         try:
             _cpn = [f"🧭 V88今日导航 {_gen}"]

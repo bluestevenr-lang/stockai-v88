@@ -59,9 +59,9 @@ def _node(x: float, y: float, color: str, conf: str, title: str) -> str:
 def _swimlane_svg(market: str, trajectory: list) -> str:
     if not trajectory:
         return ""
-    W, H = 700, 172
+    W, H = 700, 132
     cols = {"明日": 150, "下周": 330, "半个月": 510}
-    top, bot = 34, 142
+    top, bot = 26, 108
     span = bot - top
 
     lo, hi = 38.0, 72.0  # 收窄纵轴到真实热度区间，放大板块之间的差异
@@ -79,7 +79,7 @@ def _swimlane_svg(market: str, trajectory: list) -> str:
         p.append(f'<text class="ph" x="90" y="{yy+4:.0f}" text-anchor="end">{label}</text>')
     for h, x in cols.items():
         p.append(f'<line class="grid" x1="{x}" y1="{top}" x2="{x}" y2="{bot}"/>')
-        p.append(f'<text class="mut" x="{x}" y="22" text-anchor="middle">{HORIZON_SHORT[h]}</text>')
+        p.append(f'<text class="mut" x="{x}" y="16" text-anchor="middle">{HORIZON_SHORT[h]}</text>')
     end_labels = []
     for i, t in enumerate(trajectory):
         color = SECTOR_COLORS[i % len(SECTOR_COLORS)]
@@ -110,8 +110,8 @@ def _swimlane_svg(market: str, trajectory: list) -> str:
 def _clock_svg(market: str, trajectory: list, heat: dict) -> str:
     if not trajectory:
         return ""
-    W, H = 700, 224
-    cx, cy, R = 150, 112, 86
+    W, H = 700, 194
+    cx, cy, R = 150, 94, 74
     p = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="{escape(market)}板块轮动时钟与走向">']
     p.append('<defs><marker id="rf-arrow" markerWidth="7" markerHeight="7" refX="5" refY="3" '
              'orient="auto"><path d="M0 0 L6 3 L0 6 Z" fill="context-stroke"/></marker></defs>')
@@ -214,6 +214,87 @@ def _rich_rotation_html(forecast: dict, element_id: str, focus_market: str) -> s
         f'<span>横轴=明日/下周/半月 · 纵轴热→温→冷</span>'
         f'<span>悬停节点看触发/失效</span></div>'
         f'</div>'
+    )
+
+
+_CYCLE_CSS = """
+#__ID__{color:var(--foreground,var(--text-color));margin:.25rem 0 .6rem;--cy-up:#22c55e;--cy-down:#ef4444;--cy-hold:#9aa3b2}
+#__ID__ .cy-meta{color:var(--muted-foreground,var(--text-color));font-size:11px;margin-bottom:.3rem}
+#__ID__ .cy-card{background:color-mix(in srgb,currentColor 6%,transparent);border-radius:9px;padding:.5rem .6rem;margin:.4rem 0}
+#__ID__ svg{display:block;width:100%;height:auto;overflow:visible}
+#__ID__ svg text{font-size:11px;font-family:inherit}
+#__ID__ .grid{stroke:color-mix(in srgb,currentColor 16%,transparent);stroke-width:1}
+#__ID__ .axis{stroke:color-mix(in srgb,currentColor 34%,transparent);stroke-width:1}
+#__ID__ .ph{fill:var(--muted-foreground,var(--text-color));opacity:.75}
+#__ID__ .cy-list{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.3rem}
+#__ID__ .cy-col b{font-size:12px}
+#__ID__ .cy-row{font-size:11px;color:var(--muted-foreground,var(--text-color));margin:.15rem 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#__ID__ .cy-nm{color:var(--foreground,var(--text-color))}
+#__ID__ .cy-up{color:var(--cy-up)}#__ID__ .cy-down{color:var(--cy-down)}
+@media(max-width:560px){#__ID__ .cy-list{grid-template-columns:1fr}}
+"""
+
+
+def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle") -> str:
+    """个股周期切换：一张个股级周期钟(点=个股,按相位落位,切换带箭头) + ↑/↓ 分组清单。
+    cycle = {analysis_time, stocks:[{code,name,phase,direction,headline,up,down,confidence,horizon,pos52,...}]}"""
+    stocks = (cycle or {}).get("stocks") or []
+    if not stocks:
+        return ""
+    safe_id = re.sub(r"[^a-zA-Z0-9_-]", "-", element_id)
+    W, H = 700, 196
+    cx, cy, R = 350, 96, 78
+    p = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="个股周期切换时钟">']
+    p.append('<defs>'
+             '<marker id="cyu" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="var(--cy-up)"/></marker>'
+             '<marker id="cyd" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="var(--cy-down)"/></marker>'
+             '</defs>')
+    p.append(f'<circle class="grid" cx="{cx}" cy="{cy}" r="{R}" fill="none"/>')
+    p.append(f'<circle class="grid" cx="{cx}" cy="{cy}" r="{R*0.5:.0f}" fill="none" stroke-dasharray="3 4"/>')
+    p.append(f'<line class="axis" x1="{cx}" y1="{cy-R}" x2="{cx}" y2="{cy+R}"/>')
+    p.append(f'<line class="axis" x1="{cx-R}" y1="{cy}" x2="{cx+R}" y2="{cy}"/>')
+    p.append(f'<text class="ph" x="{cx}" y="{cy-R-6}" text-anchor="middle">领涨启动</text>')
+    p.append(f'<text class="ph" x="{cx}" y="{cy+R+16}" text-anchor="middle">退潮杀跌</text>')
+    p.append(f'<text class="ph" x="{cx+R+6}" y="{cy+4}" text-anchor="start">高位派发</text>')
+    p.append(f'<text class="ph" x="{cx-R-6}" y="{cy+4}" text-anchor="end">低位蓄势</text>')
+    ups, downs = [], []
+    for s in stocks:
+        pos52 = float(s.get("pos52") or 50)
+        up, down = float(s.get("up") or 0), float(s.get("down") or 0)
+        direction = s.get("direction")
+        strength = max(-1.0, min(1.0, (pos52 - 50) / 50.0))
+        mom = max(-1.0, min(1.0, (up - down) / 60.0))
+        x = cx + strength * R * 0.8
+        y = cy - mom * R * 0.8
+        if direction == "up":
+            color, mk = "var(--cy-up)", "cyu"; ups.append(s)
+            p.append(f'<line x1="{x:.0f}" y1="{y:.0f}" x2="{x:.0f}" y2="{y-18:.0f}" stroke="{color}" stroke-width="1.5" marker-end="url(#{mk})"/>')
+        elif direction == "down":
+            color, mk = "var(--cy-down)", "cyd"; downs.append(s)
+            p.append(f'<line x1="{x:.0f}" y1="{y:.0f}" x2="{x:.0f}" y2="{y+18:.0f}" stroke="{color}" stroke-width="1.5" marker-end="url(#{mk})"/>')
+        else:
+            color = "var(--cy-hold)"
+        p.append(f'<circle cx="{x:.0f}" cy="{y:.0f}" r="4.5" fill="{color}"><title>{escape(s.get("name",""))}·{escape(s.get("headline",""))}</title></circle>')
+
+    def _rows(items, cls):
+        out = []
+        for s in items[:8]:
+            out.append(f'<div class="cy-row"><span class="cy-nm">{escape(str(s.get("name","")))}</span> '
+                       f'{escape(str(s.get("phase","")))} · {s.get("confidence","")}置信 · {escape(str(s.get("horizon","")))} · 52周{s.get("pos52","")}%</div>')
+        return "".join(out) or '<div class="cy-row">—</div>'
+    p.append('</svg>')
+    svg = "".join(p)
+    css = _CYCLE_CSS.replace("__ID__", safe_id)
+    at = escape(str((cycle or {}).get("analysis_time") or ""))
+    return (
+        f'<style>{css}</style>'
+        f'<div id="{safe_id}" role="figure" aria-label="个股周期切换扫描">'
+        f'<div class="cy-meta">🕒 {at} · 点=个股按周期相位落位，箭头=即将切换方向</div>'
+        f'<div class="cy-card">{svg}</div>'
+        f'<div class="cy-list">'
+        f'<div class="cy-col"><b class="cy-up">🟢 即将进入上行周期</b>{_rows(ups, "cy-up")}</div>'
+        f'<div class="cy-col"><b class="cy-down">🔴 即将进入下行周期</b>{_rows(downs, "cy-down")}</div>'
+        f'</div></div>'
     )
 
 
