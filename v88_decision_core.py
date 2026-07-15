@@ -51,7 +51,7 @@ def _series(df, name):
     return pd.to_numeric(raw, errors="coerce").dropna()
 
 
-def build_horizon_facts(df, full=None) -> dict:
+def build_horizon_facts(df, full=None, horizons=HORIZONS) -> dict:
     """生成唯一的2/4/6/8/16周行情底稿；分数是方向先验，不是胜率。"""
     close = _series(df, "Close")
     high = _series(df, "High")
@@ -65,7 +65,7 @@ def build_horizon_facts(df, full=None) -> dict:
     stage_bias = 6 if any(x in stage for x in ("主升", "启动", "多头", "强势")) else (
         -6 if any(x in stage for x in ("破位", "退潮", "下跌", "转弱")) else 0)
     out = {}
-    for weeks in HORIZONS:
+    for weeks in tuple(horizons or HORIZONS):
         target_days = weeks * 5
         n = min(target_days, len(close) - 1)
         if n < 5:
@@ -251,3 +251,179 @@ def compact_text(card):
     return (f"统一分{card['unified_score']}（短{card['short_score']}/中{card['medium_score']}/长{card['long_score']}）｜"
             f"上{card['p_up']}%/下{card['p_down']}%（规则情景）｜盈亏比{card['rr']:.2f}｜"
             f"期望{card['expected_pct']:+.1f}%｜{card['action']}｜分析{card['analysis_time']}")
+
+
+def _anchor_frame(df, anchor_time, anchor_price):
+    """构建“当时可见”的行情截面；锚点日只使用用户提供的价格，杜绝日内未来函数。"""
+    if df is None or len(df) == 0:
+        return None, None, "行情为空"
+    try:
+        ts = pd.Timestamp(anchor_time)
+        if ts.tzinfo is not None:
+            ts = ts.tz_convert(BJT).tz_localize(None)
+        price = float(anchor_price)
+    except (TypeError, ValueError, OverflowError):
+        return None, None, "分析时间或价格无效"
+    if not math.isfinite(price) or price <= 0:
+        return None, None, "分析价格必须大于0"
+
+    work = df.copy()
+    raw_idx = pd.to_datetime(work.index, errors="coerce")
+    if getattr(raw_idx, "tz", None) is not None:
+        raw_idx = raw_idx.tz_convert(BJT).tz_localize(None)
+    work.index = raw_idx
+    work = work[~work.index.isna()].sort_index()
+    # 历史日内锚点不能读取该日收盘、高低或成交量；只保留此前交易日，再追加用户价格。
+    before = work[work.index.normalize() < ts.normalize()].copy()
+    if len(before) < 12:
+        return None, ts, "锚点前有效行情不足12个交易日"
+    vol = _series(before, "Volume")
+    synthetic_volume = float(vol.tail(20).mean()) if len(vol) else 0.0
+    row = {col: np.nan for col in before.columns}
+    for col in ("Open", "High", "Low", "Close"):
+        if col in row:
+            row[col] = price
+    if "Volume" in row:
+        row["Volume"] = synthetic_volume
+    anchor_row = pd.DataFrame([row], index=[ts])
+    return pd.concat([before, anchor_row]).sort_index(), ts, ""
+
+
+def evaluate_anchor_outlook(df, anchor_time, anchor_price, *, action="观察",
+                            name="", code="", analysis_time=None) -> dict:
+    """按个人决策时间/价格推算2、5、8、16周，并跟踪到期后的真实结果。
+
+    预测段只读取锚点前数据；当前价格和到期收益放在 ``tracking``，不参与旧预测。
+    概率是同源规则情景估计，不是已校准的真实胜率。
+    """
+    hist, ts, error = _anchor_frame(df, anchor_time, anchor_price)
+    if error:
+        return {"schema": SCHEMA, "score_version": SCORE_VERSION, "error": error,
+                "name": name, "code": code}
+    close = _series(hist, "Close")
+    last = float(anchor_price)
+    ma20 = _num(close.tail(20).mean(), last)
+    ma60 = _num(close.tail(60).mean(), ma20)
+    stage = ("多头趋势" if last > ma20 > ma60 else
+             ("转弱下跌" if last < ma20 < ma60 else "震荡整理"))
+    base_facts = build_horizon_facts(hist, {"stage": stage}, horizons=(2, 5, 8, 16))
+    horizons = base_facts.get("horizons") or {}
+    if not horizons:
+        return {"schema": SCHEMA, "score_version": SCORE_VERSION,
+                "error": base_facts.get("error", "锚点行情不足"), "name": name, "code": code}
+
+    daily_ret = close.pct_change().replace([np.inf, -np.inf], np.nan).dropna()
+    daily_vol_pct = _num(daily_ret.tail(60).std()) * 100
+    atr_pct = _num(base_facts.get("atr14")) / last * 100 if last else 0.0
+    rows = []
+    for weeks in (2, 5, 8, 16):
+        fact = horizons.get(f"{weeks}周") or {}
+        score = int(round(_clip(fact.get("rule_score", 50), 15, 85)))
+        p_up, p_down = score, 100 - score
+        trading_days = weeks * 5
+        sigma_move = daily_vol_pct * math.sqrt(trading_days)
+        slope = _num(fact.get("slope_pct"))
+        resistance = _num(fact.get("resistance"), last)
+        support = _num(fact.get("support"), last)
+        resistance_gap = max(0.0, (resistance / last - 1) * 100) if last else 0.0
+        support_gap = max(0.0, (1 - support / last) * 100) if last else 0.0
+        noise = max(sigma_move * 0.65, atr_pct * math.sqrt(max(trading_days, 1) / 14), 1.5)
+        upside = _clip(max(resistance_gap, max(slope, 0) * 0.55, noise), 1.0, 40.0)
+        downside = _clip(max(support_gap, max(-slope, 0) * 0.55, noise), 1.0, 30.0)
+        rr = round(upside / downside, 2) if downside else 0.0
+        ev = round(p_up / 100 * upside - p_down / 100 * downside, 1)
+        break_even = round(100 / (1 + rr), 1) if rr else 100.0
+        view = ("偏涨" if p_up >= 58 and ev > 0 else
+                ("偏跌" if p_up <= 42 or ev < -1 else "震荡"))
+        rows.append({
+            "weeks": weeks, "label": f"{weeks}周", "score": score,
+            "p_up": p_up, "p_down": p_down, "probability_kind": "规则情景估计（非回测胜率）",
+            "upside_pct": round(upside, 1), "downside_pct": round(downside, 1),
+            "target_price": round(last * (1 + upside / 100), 3),
+            "risk_price": round(last * (1 - downside / 100), 3),
+            "rr": rr, "expected_pct": ev, "break_even_p": break_even,
+            "view": view, "sample_days": fact.get("sample_days", 0),
+            "trigger": f"站稳{last:.3f}并突破{max(last, resistance):.3f}",
+            "invalid": f"跌破{last * (1 - downside / 100):.3f}后重评",
+        })
+
+    weights = {2: .25, 5: .30, 8: .25, 16: .20}
+    weighted_p = round(sum(r["p_up"] * weights[r["weeks"]] for r in rows))
+    weighted_ev = round(sum(r["expected_pct"] * weights[r["weeks"]] for r in rows), 1)
+    weighted_rr = round(sum(r["rr"] * weights[r["weeks"]] for r in rows), 2)
+    long_rows = [r for r in rows if r["weeks"] >= 5]
+    long_bull = all(r["p_up"] >= 55 for r in long_rows)
+    long_bear = all(r["p_up"] <= 45 for r in long_rows)
+    if weighted_p >= 58 and long_bull and weighted_ev > 0:
+        overall = "偏多·等待触发后分批参与"
+    elif weighted_p <= 42 and long_bear:
+        overall = "偏空·卖出或回避有依据"
+    elif (rows[0]["p_up"] >= 58 and rows[-1]["p_up"] <= 48) or (
+            rows[0]["p_up"] <= 42 and rows[-1]["p_up"] >= 52):
+        overall = "周期分歧·避免一次性决策"
+    else:
+        overall = "中性·分批处理并等待确认"
+
+    action_text = str(action or "观察")
+    if any(x in action_text for x in ("卖", "清仓", "减仓")):
+        if overall.startswith("偏多"):
+            review = "当时不宜一次性清仓；宜分批锁利并保留回补条件"
+        elif overall.startswith("偏空"):
+            review = "当时卖出具备概率与赔率依据"
+        else:
+            review = "卖出并非明显错误，但宜分批并预设买回条件"
+    elif any(x in action_text for x in ("买", "加仓")):
+        review = ("当时买入具备多周期依据" if overall.startswith("偏多") else
+                  "当时买入依据不足，需缩小仓位并服从失效位")
+    else:
+        review = "用2/5/8/16周触发与失效条件继续跟踪"
+
+    # 真实结果只用于复盘，不回填或改写预测。
+    work = df.copy()
+    idx = pd.to_datetime(work.index, errors="coerce")
+    if getattr(idx, "tz", None) is not None:
+        idx = idx.tz_convert(BJT).tz_localize(None)
+    work.index = idx
+    work = work[~work.index.isna()].sort_index()
+    after = work[work.index.normalize() > ts.normalize()]
+    tracking_rows = []
+    for row in rows:
+        need = row["weeks"] * 5
+        if len(after) >= need:
+            actual_price = _num(_series(after.iloc[:need], "Close").iloc[-1])
+            actual_return = round((actual_price / last - 1) * 100, 1) if last else 0.0
+            status = "已到期"
+        else:
+            actual_price, actual_return = None, None
+            status = f"待验证（已有{len(after)}/{need}个交易日）"
+        tracking_rows.append({"weeks": row["weeks"], "status": status,
+                              "actual_price": actual_price, "actual_return_pct": actual_return})
+    current_close = _series(work, "Close")
+    _latest_market_ts = pd.Timestamp(current_close.index[-1]) if len(current_close) else None
+    _market_covers_anchor = bool(
+        _latest_market_ts is not None
+        and _latest_market_ts.normalize() >= ts.normalize()
+    )
+    current_price = _num(current_close.iloc[-1]) if _market_covers_anchor else None
+    since_anchor_pct = (round((current_price / last - 1) * 100, 1)
+                        if current_price is not None and last else None)
+    now = analysis_time or datetime.now(BJT).strftime("%Y-%m-%d %H:%M")
+    sig_raw = f"{base_facts.get('data_signature')}|{ts.isoformat()}|{last:.6f}|{action_text}"
+    return {
+        "schema": "v88.personal-anchor/1.0", "score_version": SCORE_VERSION,
+        "name": name, "code": code, "anchor_time": ts.strftime("%Y-%m-%d %H:%M"),
+        "anchor_price": round(last, 4), "anchor_action": action_text,
+        "analysis_time": now, "data_asof": base_facts.get("asof", ""),
+        "data_signature": hashlib.sha256(sig_raw.encode("utf-8")).hexdigest()[:12],
+        "no_lookahead": True, "stage_at_anchor": stage,
+        "weighted_p_up": weighted_p, "weighted_p_down": 100 - weighted_p,
+        "weighted_rr": weighted_rr, "weighted_expected_pct": weighted_ev,
+        "overall_action": overall, "decision_review": review,
+        "horizons": rows,
+        "tracking": {"current_price": round(current_price, 4) if current_price is not None else None,
+                     "since_anchor_pct": since_anchor_pct,
+                     "market_covers_anchor": _market_covers_anchor,
+                     "market_asof": (str(_latest_market_ts)[:19]
+                                     if _latest_market_ts is not None else ""),
+                     "rows": tracking_rows},
+    }

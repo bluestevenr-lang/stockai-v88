@@ -780,6 +780,78 @@ elif _nav == "🔍 个股搜索":
                     )
             except Exception as _hz_cloud_exc:
                 st.warning(f"五周期走势暂不可用：{type(_hz_cloud_exc).__name__}")
+
+            # 【V88·个人决策锚点】云端与网页版调用同一个无未来函数核心。
+            st.markdown("##### 🧷 我的决策锚点 · 2/5/8/16周")
+            st.caption(
+                "输入当时分析/成交的时间与价格；预测仅使用该时点以前的行情。"
+                "概率为规则情景估计（非回测胜率），后续实绩只用于复盘。"
+            )
+            try:
+                import pandas as pd
+                from v88_decision_core import evaluate_anchor_outlook as _evaluate_cloud_anchor
+
+                _ca_last_date = pd.Timestamp(_df.index[-1]).date()
+                _ca_last_price = float(pd.to_numeric(_df["Close"], errors="coerce").dropna().iloc[-1])
+                _ca1, _ca2, _ca3, _ca4 = st.columns(4)
+                with _ca1:
+                    _ca_date = st.date_input(
+                        "分析/操作日期", value=_ca_last_date,
+                        min_value=pd.Timestamp(_df.index[12]).date(), max_value=_now_bjt().date(),
+                        key=f"cloud_anchor_date_{_tsym}")
+                with _ca2:
+                    _ca_clock = st.time_input(
+                        "当时时间", value=datetime.strptime("09:45", "%H:%M").time(),
+                        key=f"cloud_anchor_time_{_tsym}")
+                with _ca3:
+                    _ca_price = st.number_input(
+                        "当时价格", min_value=0.0001, value=_ca_last_price, format="%.4f",
+                        key=f"cloud_anchor_price_{_tsym}")
+                with _ca4:
+                    _ca_action = st.selectbox(
+                        "当时动作", ["观察", "买入", "加仓", "减仓", "卖出", "清仓"],
+                        key=f"cloud_anchor_action_{_tsym}")
+
+                if st.button("🧠 按当时视角推算", type="primary", use_container_width=True,
+                             key=f"cloud_anchor_run_{_tsym}"):
+                    _ca_bar = st.progress(25, text="正在截断锚点后的行情…")
+                    _ca_bar.progress(65, text="正在计算2/5/8/16周概率、赔率和期望…")
+                    st.session_state[f"cloud_anchor_result_{_tsym}"] = _evaluate_cloud_anchor(
+                        _df, datetime.combine(_ca_date, _ca_clock), _ca_price,
+                        action=_ca_action, name=_tname, code=_tsym,
+                        analysis_time=_now_bjt().strftime("%Y-%m-%d %H:%M"),
+                    )
+                    _ca_bar.progress(100, text="当时视角推算完成")
+                    _ca_bar.empty()
+
+                _ca_result = st.session_state.get(f"cloud_anchor_result_{_tsym}") or {}
+                if _ca_result.get("error"):
+                    st.error(_ca_result["error"])
+                elif _ca_result:
+                    _cm1, _cm2, _cm3, _cm4 = st.columns(4)
+                    _cm1.metric("综合上/下", f"{_ca_result.get('weighted_p_up')}%/"
+                                f"{_ca_result.get('weighted_p_down')}%")
+                    _cm2.metric("综合盈亏比", f"{_ca_result.get('weighted_rr', 0):.2f}")
+                    _cm3.metric("综合期望", f"{_ca_result.get('weighted_expected_pct', 0):+.1f}%")
+                    _ca_track = _ca_result.get('tracking') or {}
+                    _ca_since = _ca_track.get('since_anchor_pct')
+                    _cm4.metric("锚点后实绩", (f"{_ca_since:+.1f}%" if _ca_since is not None else "待最新行情"))
+                    st.info(f"**当时结论：{_ca_result.get('overall_action')}**｜"
+                            f"动作复盘：{_ca_result.get('decision_review')}")
+                    _ca_rows = [{
+                        "周期": x.get("label"),
+                        "上涨/下跌": f"{x.get('p_up')}%/{x.get('p_down')}%",
+                        "上涨/下跌空间": f"+{x.get('upside_pct')}% / -{x.get('downside_pct')}%",
+                        "目标/风险价": f"{x.get('target_price')} / {x.get('risk_price')}",
+                        "盈亏比": x.get("rr"), "期望值": f"{x.get('expected_pct'):+.1f}%",
+                        "判断": x.get("view"), "触发": x.get("trigger"), "失效": x.get("invalid"),
+                    } for x in (_ca_result.get("horizons") or [])]
+                    st.dataframe(_ca_rows, hide_index=True, use_container_width=True)
+                    st.caption(f"🔒 无未来函数：是｜口径{_ca_result.get('score_version')}｜"
+                               f"预测签名{_ca_result.get('data_signature')}｜"
+                               f"生成于{_ca_result.get('analysis_time')}")
+            except Exception as _ca_exc:
+                st.warning(f"个人决策锚点暂不可用：{type(_ca_exc).__name__}")
             # 【V88·拐点识别】放量+破趋势=拐点，直接亮出证据与判断提示词
             _turn = f.get("turning") or {}
             if _turn.get("side"):

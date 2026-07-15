@@ -4,7 +4,12 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from v88_decision_core import SCORE_VERSION, build_horizon_facts, evaluate_decision
+from v88_decision_core import (
+    SCORE_VERSION,
+    build_horizon_facts,
+    evaluate_anchor_outlook,
+    evaluate_decision,
+)
 
 
 def _prices(direction=1, n=100):
@@ -69,6 +74,72 @@ def test_changed_market_data_changes_signature():
     df.iloc[-1, df.columns.get_loc("Close")] += 2
     b = build_horizon_facts(df)
     assert a["data_signature"] != b["data_signature"]
+
+
+def test_anchor_outlook_is_no_lookahead_and_has_all_horizons():
+    df = _prices(1, 180)
+    anchor_pos = 100
+    anchor_time = df.index[anchor_pos] + pd.Timedelta(hours=9, minutes=45)
+    anchor_price = float(df.Close.iloc[anchor_pos])
+    first = evaluate_anchor_outlook(
+        df, anchor_time, anchor_price,
+        action="卖出", name="测试", code="TEST",
+        analysis_time="固定",
+    )
+
+    changed = df.copy()
+    changed.iloc[anchor_pos + 1:, changed.columns.get_loc("Close")] *= 2.5
+    changed.iloc[anchor_pos + 1:, changed.columns.get_loc("High")] *= 2.5
+    changed.iloc[anchor_pos + 1:, changed.columns.get_loc("Low")] *= 2.5
+    second = evaluate_anchor_outlook(
+        changed, anchor_time, anchor_price,
+        action="卖出", name="测试", code="TEST",
+        analysis_time="固定",
+    )
+
+    assert first["no_lookahead"] is True
+    assert [row["weeks"] for row in first["horizons"]] == [2, 5, 8, 16]
+    assert first["data_signature"] == second["data_signature"]
+    assert first["horizons"] == second["horizons"]
+    assert first["overall_action"] == second["overall_action"]
+    # 锚点后的真实走势会改变跟踪结果，但不能改写当时预测。
+    assert first["tracking"] != second["tracking"]
+
+
+def test_anchor_outlook_exposes_probability_odds_and_ev():
+    df = _prices(1, 180)
+    row = evaluate_anchor_outlook(
+        df, df.index[120] + pd.Timedelta(hours=10), float(df.Close.iloc[120]),
+        action="观察", name="测试", code="TEST",
+    )
+    assert not row.get("error")
+    assert row["weighted_p_up"] + row["weighted_p_down"] == 100
+    for horizon in row["horizons"]:
+        assert horizon["p_up"] + horizon["p_down"] == 100
+        assert horizon["rr"] >= 0
+        assert "expected_pct" in horizon
+        assert "target_price" in horizon
+        assert "risk_price" in horizon
+        assert horizon["probability_kind"] == "规则情景估计（非回测胜率）"
+
+
+def test_anchor_sell_review_is_staged_not_mechanical():
+    df = _prices(1, 180)
+    row = evaluate_anchor_outlook(
+        df, df.index[150] + pd.Timedelta(hours=9, minutes=45),
+        float(df.Close.iloc[150]), action="卖出",
+    )
+    assert any(word in row["decision_review"] for word in ("分批", "卖出具备"))
+
+
+def test_anchor_newer_than_market_snapshot_does_not_fake_tracking_return():
+    df = _prices(1, 120)
+    anchor_time = df.index[-1] + pd.Timedelta(days=1, hours=9, minutes=45)
+    row = evaluate_anchor_outlook(df, anchor_time, float(df.Close.iloc[-1]), action="卖出")
+    assert not row.get("error")
+    assert row["tracking"]["market_covers_anchor"] is False
+    assert row["tracking"]["current_price"] is None
+    assert row["tracking"]["since_anchor_pct"] is None
 
 
 def test_cloud_and_web_distribution_are_byte_identical():

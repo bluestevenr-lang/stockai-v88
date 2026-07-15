@@ -14126,6 +14126,219 @@ if execute_analysis and q_input:
         except Exception as _hz_exc:
             logging.exception("个股五周期分析失败")
             st.warning(f"五周期走势暂不可用：{type(_hz_exc).__name__}")
+
+        # ═══════════════════════════════════════════════════════════════
+        # 【V88·个人决策锚点】按“当时的时间+价格”重建2/5/8/16周判断。
+        # 旧预测单独留档；锚点后的行情只用于到期复盘，绝不反向改写原结论。
+        # ═══════════════════════════════════════════════════════════════
+        st.markdown("### 🧷 我的决策锚点 · 2/5/8/16周")
+        st.caption(
+            "选择你当时分析/买卖的时间和价格，系统只读取该时点以前的行情；"
+            "上/下概率为规则情景估计（非回测胜率），后续行情仅用于复盘。"
+        )
+        try:
+            from v88_decision_core import evaluate_anchor_outlook as _evaluate_anchor_outlook
+
+            _anchor_name = st.session_state.get("scan_selected_name") or target_c
+            _anchor_store = Path.home() / "Desktop" / "ai-daily-report-v2" / "journal" / "decision_anchors.json"
+
+            def _anchor_code_key(_value):
+                _raw = str(_value or "").strip().upper().replace(" ", "")
+                _raw = _raw.replace(".SS", ".SH")
+                if _raw.endswith(".HK"):
+                    try:
+                        return f"HK:{int(_raw[:-3])}"
+                    except ValueError:
+                        return _raw
+                _base = _raw.split(".")[0]
+                if _base.isdigit() and len(_base) == 6:
+                    return f"CN:{_base}"
+                return _raw
+
+            def _read_anchor_records():
+                try:
+                    _payload = json.loads(_anchor_store.read_text(encoding="utf-8"))
+                    return _payload if isinstance(_payload, list) else list(_payload.get("records") or [])
+                except Exception:
+                    return []
+
+            def _save_anchor_record(_record):
+                _records = _read_anchor_records()
+                _record_key = (f"{_anchor_code_key(_record.get('code'))}|{_record.get('anchor_time')}|"
+                               f"{_record.get('anchor_price')}|{_record.get('anchor_action')}")
+                _records = [r for r in _records if
+                            f"{_anchor_code_key(r.get('code'))}|{r.get('anchor_time')}|"
+                            f"{r.get('anchor_price')}|{r.get('anchor_action')}" != _record_key]
+                _records.append(_record)
+                _anchor_store.parent.mkdir(parents=True, exist_ok=True)
+                _tmp = _anchor_store.with_suffix(".tmp")
+                _tmp.write_text(json.dumps(_records[-300:], ensure_ascii=False, indent=2), encoding="utf-8")
+                _tmp.replace(_anchor_store)
+
+            # 能匹配成交日志时一键带入；腾讯等未记账的历史卖出仍可手动输入。
+            _trade_choices = [{"label": "手动输入", "trade": None}]
+            _trade_path = Path.home() / "Desktop" / "ai-daily-report-v2" / "journal" / "trades.json"
+            try:
+                _all_trades = json.loads(_trade_path.read_text(encoding="utf-8"))
+                for _trade in reversed(_all_trades if isinstance(_all_trades, list) else []):
+                    if _anchor_code_key(_trade.get("code")) != _anchor_code_key(target_c):
+                        continue
+                    _trade_price = _trade.get("sell_price") or _trade.get("cost")
+                    if not _trade_price:
+                        continue
+                    _trade_choices.append({
+                        "label": (f"{str(_trade.get('date',''))[:16]}  {_trade.get('action','操作')} "
+                                  f"@{_trade_price}"),
+                        "trade": _trade,
+                    })
+            except Exception:
+                pass
+
+            _anchor_pick = st.selectbox(
+                "从历史成交带入（没有记录就手动输入）",
+                options=list(range(len(_trade_choices))),
+                format_func=lambda i: _trade_choices[i]["label"],
+                key=f"anchor_trade_pick_{target_c}",
+            )
+            _picked_trade = _trade_choices[_anchor_pick]["trade"]
+            _pick_state_key = f"anchor_trade_last_{target_c}"
+            if _picked_trade and st.session_state.get(_pick_state_key) != _anchor_pick:
+                try:
+                    _picked_ts = pd.Timestamp(_picked_trade.get("date"))
+                    st.session_state[f"anchor_date_{target_c}"] = _picked_ts.date()
+                    st.session_state[f"anchor_time_{target_c}"] = (
+                        _picked_ts.time() if (_picked_ts.hour or _picked_ts.minute)
+                        else datetime.strptime("09:45", "%H:%M").time())
+                    st.session_state[f"anchor_price_{target_c}"] = float(
+                        _picked_trade.get("sell_price") or _picked_trade.get("cost"))
+                    _picked_action = str(_picked_trade.get("action") or "观察")
+                    if "清" in _picked_action:
+                        _picked_action = "清仓"
+                    elif "卖" in _picked_action:
+                        _picked_action = "卖出"
+                    elif "减" in _picked_action:
+                        _picked_action = "减仓"
+                    elif "加" in _picked_action:
+                        _picked_action = "加仓"
+                    elif "买" in _picked_action:
+                        _picked_action = "买入"
+                    else:
+                        _picked_action = "观察"
+                    st.session_state[f"anchor_action_{target_c}"] = _picked_action
+                except Exception:
+                    pass
+            st.session_state[_pick_state_key] = _anchor_pick
+
+            _last_trade_date = pd.Timestamp(df.index[-1]).date()
+            _last_trade_price = float(pd.to_numeric(df["Close"], errors="coerce").dropna().iloc[-1])
+            _ac1, _ac2, _ac3, _ac4 = st.columns([1.2, 1, 1.1, 1.1])
+            with _ac1:
+                _anchor_date = st.date_input(
+                    "分析/操作日期", value=_last_trade_date,
+                    min_value=pd.Timestamp(df.index[12]).date(), max_value=datetime.now().date(),
+                    key=f"anchor_date_{target_c}",
+                )
+            with _ac2:
+                _anchor_clock = st.time_input(
+                    "当时时间", value=datetime.strptime("09:45", "%H:%M").time(),
+                    key=f"anchor_time_{target_c}",
+                )
+            with _ac3:
+                _anchor_price = st.number_input(
+                    "当时价格", min_value=0.0001, value=_last_trade_price,
+                    format="%.4f", key=f"anchor_price_{target_c}",
+                    help="使用你的实际成交价或当时分析价",
+                )
+            with _ac4:
+                _anchor_action = st.selectbox(
+                    "当时动作", ["观察", "买入", "加仓", "减仓", "卖出", "清仓"],
+                    key=f"anchor_action_{target_c}",
+                )
+
+            _anchor_run = st.button(
+                "🧠 按当时视角推算并保存",
+                key=f"anchor_run_{target_c}", type="primary", width="stretch",
+                help="生成可留档的2/5/8/16周概率、盈亏比、期望值和失效条件",
+            )
+            _anchor_result_key = f"anchor_result_{target_c}"
+            if _anchor_run:
+                _anchor_dt = datetime.combine(_anchor_date, _anchor_clock)
+                _anchor_bar = st.progress(15, text="正在截断锚点后的行情…")
+                _anchor_bar.progress(55, text="正在计算2/5/8/16周概率与盈亏比…")
+                _anchor_result = _evaluate_anchor_outlook(
+                    df, _anchor_dt, _anchor_price, action=_anchor_action,
+                    name=_anchor_name, code=target_c,
+                    analysis_time=datetime.now().strftime("%Y-%m-%d %H:%M"),
+                )
+                _anchor_bar.progress(90, text="正在固化预测版本，供以后复盘…")
+                if not _anchor_result.get("error"):
+                    _save_anchor_record(_anchor_result)
+                    st.session_state[_anchor_result_key] = _anchor_result
+                    _anchor_bar.progress(100, text="决策锚点已保存")
+                    st.success("已保存：未来行情不会改写这份当时结论。")
+                else:
+                    st.error(_anchor_result.get("error"))
+                _anchor_bar.empty()
+
+            _saved_for_stock = [r for r in _read_anchor_records()
+                                if _anchor_code_key(r.get("code")) == _anchor_code_key(target_c)]
+            if _saved_for_stock:
+                _saved_for_stock.sort(key=lambda r: str(r.get("anchor_time") or ""), reverse=True)
+                _saved_pick = st.selectbox(
+                    "已保存的决策锚点",
+                    options=list(range(len(_saved_for_stock))),
+                    format_func=lambda i: (f"{_saved_for_stock[i].get('anchor_time')} "
+                                           f"{_saved_for_stock[i].get('anchor_action')} "
+                                           f"@{_saved_for_stock[i].get('anchor_price')}"),
+                    key=f"anchor_saved_pick_{target_c}",
+                )
+                if not _anchor_run:
+                    st.session_state[_anchor_result_key] = _saved_for_stock[_saved_pick]
+
+            _anchor_result = st.session_state.get(_anchor_result_key) or {}
+            if _anchor_result and not _anchor_result.get("error"):
+                _am1, _am2, _am3, _am4 = st.columns(4)
+                _am1.metric("综合上/下", f"{_anchor_result.get('weighted_p_up')}% / "
+                            f"{_anchor_result.get('weighted_p_down')}%",
+                            help="规则情景估计，不是回测胜率")
+                _am2.metric("综合盈亏比", f"{_anchor_result.get('weighted_rr', 0):.2f}",
+                            help="估计上涨空间÷估计下跌空间，越大越好")
+                _am3.metric("综合期望", f"{_anchor_result.get('weighted_expected_pct', 0):+.1f}%",
+                            help="上涨概率×上涨空间－下跌概率×下跌空间，>0较好")
+                _anchor_track = _anchor_result.get('tracking') or {}
+                _anchor_since = _anchor_track.get('since_anchor_pct')
+                _am4.metric("锚点后实绩", (f"{_anchor_since:+.1f}%" if _anchor_since is not None else "待最新行情"),
+                            help="仅用于复盘，不参与当时预测")
+                st.info(
+                    f"**当时结论：{_anchor_result.get('overall_action')}**｜"
+                    f"动作复盘：{_anchor_result.get('decision_review')}｜"
+                    f"锚点{_anchor_result.get('anchor_time')} @ {_anchor_result.get('anchor_price')}"
+                )
+                _anchor_rows = []
+                for _row in _anchor_result.get("horizons") or []:
+                    _anchor_rows.append({
+                        "周期": _row.get("label"),
+                        "上涨/下跌": f"{_row.get('p_up')}% / {_row.get('p_down')}%",
+                        "上涨空间": f"+{_row.get('upside_pct')}%",
+                        "下跌风险": f"-{_row.get('downside_pct')}%",
+                        "目标/风险价": f"{_row.get('target_price')} / {_row.get('risk_price')}",
+                        "盈亏比": _row.get("rr"),
+                        "期望值": f"{_row.get('expected_pct'):+.1f}%",
+                        "判断": _row.get("view"),
+                        "触发": _row.get("trigger"),
+                        "失效": _row.get("invalid"),
+                    })
+                st.dataframe(_anchor_rows, hide_index=True, use_container_width=True)
+                _track_rows = (_anchor_result.get("tracking") or {}).get("rows") or []
+                st.caption(
+                    f"🔒 无未来函数：是｜口径{_anchor_result.get('score_version')}｜"
+                    f"预测签名{_anchor_result.get('data_signature')}｜生成于{_anchor_result.get('analysis_time')}｜"
+                    f"行情截至{_anchor_track.get('market_asof') or '未知'}｜"
+                    + "；".join(f"{r.get('weeks')}周{r.get('status')}" for r in _track_rows)
+                )
+        except Exception as _anchor_exc:
+            logging.exception("个人决策锚点失败")
+            st.warning(f"个人决策锚点暂不可用：{type(_anchor_exc).__name__}")
         
         # ═══════════════════════════════════════════════════════════════
         # 【V90 升级】K线图 + 机构作战层（VWAP + Chandelier Exit）
