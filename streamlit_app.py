@@ -123,7 +123,7 @@ def _linkify_md(md: str) -> str:
     """【V88·全局个股可点击 v2】两件事：①个股名/token→内联链接（?q=深链）
     ②markdown表格整体转HTML表格——md表格单元格内的HTML前端渲染不可靠，HTML表格100%可点。"""
     import re as _re
-    A = '<a href="?q={c}" target="_self" style="color:inherit;text-decoration:underline dotted 1px;">{t}</a>'
+    A = '<a href="?q={c}&focus=deep" target="_self" style="color:inherit;text-decoration:underline dotted 1px;">{t}</a>'
 
     def _link_inline(txt):
         txt = _re.sub(r"`?\[(US|SH|SZ|HK):([A-Za-z0-9\.\-]+)\]`?",
@@ -216,8 +216,9 @@ if _jump:
     st.session_state["_sch_cands"] = [_jump]
 try:
     _qp = st.query_params.get("q")
-    if _qp and not st.session_state.get("_qp_done"):
-        st.session_state["_qp_done"] = True
+    if _qp and st.session_state.get("_qp_done") != _qp:
+        # 记录已处理的具体代码；布尔标记会导致同一会话点击第二只股票时不切换。
+        st.session_state["_qp_done"] = _qp
         import cloud_engine as _ceq
         _sym = _ceq.to_yf(_qp)
         st.session_state["_nav"] = "🔍 个股搜索"
@@ -317,7 +318,7 @@ _NOT_READY = "📭 数据生成中（每交易日 07:00/14:00/21:00 自动发布
 def _linkify_cloud(md: str) -> str:
     """【V88·云端个股可点】把 [US:CODE] token 与 **名称**（CODE） 转成 ?q= 深链（蓝色可点）。"""
     import re as _rc
-    _A = '<a href="?q={c}" target="_self" style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{t}</a>'
+    _A = '<a href="?q={c}&focus=deep" target="_self" style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{t}</a>'
     md = _rc.sub(r"`?\[(US|SH|SZ|HK):([A-Za-z0-9\.\-]+)\]`?",
                  lambda m: _A.format(c=m.group(2), t=f"[{m.group(1)}:{m.group(2)}]"), md)
     md = _rc.sub(r"\*\*([一-鿿A-Za-z0-9\-·]{2,14})\*\*[（(]([A-Z0-9]{1,8}(?:\.[A-Z]{2})?)[）)]",
@@ -397,7 +398,7 @@ if _nav == "🧭 导航":
                 if len(_ob) >= 3:
                     break
         def _lnk(nm, cd):
-            return f'<a href="?q={cd}" target="_self" style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{nm}</a>'
+            return f'<a href="?q={cd}&focus=deep" target="_self" style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{nm}</a>'
         if not _fx:
             if _quality == "plan_b":
                 st.info(f"⭐ **今日策略：不强制给买入指令，转为机会观察＋风险保护**——优先保护仓位、已有利润和整体胜率 · {_nav_analysis_note}")
@@ -717,6 +718,49 @@ elif _nav == "🔍 个股搜索":
             c3.metric("RSI", f"{f['rsi']}")
             st.markdown(f"### {_concl_color.get(f['conclusion'],'')} 一句话结论：**{f['conclusion']}**")
             st.success(f"**操作建议：{f['action']}**")
+
+            # 【V88·云端个股五周期】点击直达后自动显示2/4/6/8/16周，
+            # 行情规则先算、DeepSeek thinking-high再复核，失败也不伪装AI结果。
+            st.markdown("##### 🧭 2/4/6/8/16周周期走势判断")
+            st.caption("综合置信度表示证据一致性，不是回测胜率；同一行情快照复用6小时思考缓存。")
+            _fu = None
+            try:
+                import stock_horizon as _stock_horizon_cloud
+                _fu = cloud_engine.fundamentals(_tsym)
+                _rel_lines = [ln.strip() for ln in str(_report_text or "").splitlines()
+                              if (_tsym.split(".")[0] in ln or _tname in ln)][:8]
+                _hz_context = ((f"基本面:{(_fu or {}).get('line', '暂无')}；")
+                               + f"日报相关:{'；'.join(_rel_lines)[:700]}")
+                _hz_bar = st.progress(0, text="正在计算五周期量价底稿…")
+                _hz_bar.progress(35, text="DeepSeek思考模式复核中…")
+                _hz_result = _stock_horizon_cloud.analyze(
+                    _tname, _tsym, _df, full=f, context=_hz_context,
+                    api_key=str(st.secrets.get("DEEPSEEK_API_KEY", "") or ""),
+                )
+                _hz_bar.progress(100, text="五周期走势分析完成")
+                _hz_bar.empty()
+                _hz_rows = _stock_horizon_cloud.table_rows(_hz_result)
+                if _hz_rows:
+                    st.dataframe(_hz_rows, hide_index=True, use_container_width=True)
+                _hz_review = _hz_result.get("review") or {}
+                if _hz_review.get("status") in ("completed", "cached"):
+                    st.info(
+                        f"🧠 **思考复核**：{_hz_review.get('summary', '五周期复核完成')} ｜ "
+                        f"相位：{_hz_review.get('cycle_phase', '震荡')} ｜ "
+                        f"动作：{_hz_review.get('action', '观察')} ｜ "
+                        f"失效：{_hz_review.get('invalid_summary', '破位后重评')}"
+                    )
+                    st.caption(
+                        f"模型：{_hz_review.get('model', 'deepseek-v4-flash')} · thinking-high ｜ "
+                        f"分析于 {_hz_review.get('analysis_time', '缓存时间待核')}"
+                    )
+                else:
+                    st.warning(
+                        f"DeepSeek思考复核未完成（{_hz_review.get('reason', _hz_review.get('status', '未知'))}）；"
+                        "当前仅展示量化底稿。"
+                    )
+            except Exception as _hz_cloud_exc:
+                st.warning(f"五周期走势暂不可用：{type(_hz_cloud_exc).__name__}")
             # 【V88·拐点识别】放量+破趋势=拐点，直接亮出证据与判断提示词
             _turn = f.get("turning") or {}
             if _turn.get("side"):
@@ -761,7 +805,7 @@ elif _nav == "🔍 个股搜索":
                     st.caption("_板块强度云端按中性50计；资金动向=OBV能量潮真实数据；主判断由价格/均线/MACD/量价/水位驱动_")
             st.caption(f"20日动量 {f['chg20']:+.1f}% ｜ 乖离MA20 {f['bias20']:+.1f}% ｜ 量比 {f['volr']} ｜ 数据截至 {r['asof']}")
             # 【E1·真实基本面】估值/成长/盈利质量（取不到如实标"—"）
-            _fu = cloud_engine.fundamentals(_tsym)
+            _fu = _fu if _fu is not None else cloud_engine.fundamentals(_tsym)
             if _fu:
                 st.markdown(f"**🧾 基本面**：`{_fu['tag']}`  \n{_fu['line']}")
             _pl = cloud_engine.horizon_plans(f, _df)

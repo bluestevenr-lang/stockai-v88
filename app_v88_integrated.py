@@ -3171,9 +3171,10 @@ def render_clickable_table(df_results, table_key):
     if _name_col and "代码" in df_display.columns:
         try:
             df_display[_name_col] = df_display.apply(
-                lambda r: f"?q={str(r['代码']).strip()}&stk={str(r[_name_col]).strip()}", axis=1)
+                lambda r: (f"?q={str(r['代码']).strip()}&focus=deep"
+                           f"&stk={str(r[_name_col]).strip()}#v88-deep-analysis"), axis=1)
             _link_cfg[_name_col] = st.column_config.LinkColumn(
-                _name_col, display_text=r"stk=(.+)$", help="点击=深度分析并加入重点观察")
+                _name_col, display_text=r"stk=([^#]+)", help="点击=深度分析并加入重点观察")
         except Exception:
             pass
     selection = st.dataframe(
@@ -11526,7 +11527,8 @@ def _linkify_md(md: str) -> str:
     """【V88·全局个股可点击 v2】两件事：①个股名/token→内联链接（?q=深链）
     ②markdown表格整体转HTML表格——md表格单元格内的HTML前端渲染不可靠，HTML表格100%可点。"""
     import re as _re
-    A = '<a href="?q={c}" target="_self" style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{t}</a>'
+    A = ('<a href="?q={c}&focus=deep#v88-deep-analysis" target="_self" '
+         'style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{t}</a>')
 
     def _link_inline(txt):
         txt = _re.sub(r"`?\[(US|SH|SZ|HK):([A-Za-z0-9\.\-]+)\]`?",
@@ -11571,7 +11573,8 @@ def _linkify_md(md: str) -> str:
     return "\n".join(out)
 def _stk_link(name, code):
     """【V88·内联可点个股】不改字体字号，名字即链接（?q=深链→自动深度分析+入观察池）"""
-    return f'<a href="?q={code}" target="_self" style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{name}</a>'
+    return (f'<a href="?q={code}&focus=deep#v88-deep-analysis" target="_self" '
+            f'style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{name}</a>')
 
 
 def _render_today_nav():
@@ -11579,6 +11582,15 @@ def _render_today_nav():
     # ?q= 深链：点击任何内联个股名到达这里
     try:
         _q0 = st.query_params.get("q")
+        _focus0 = st.query_params.get("focus")
+        if _q0 and _focus0 == "deep":
+            # 同一只股票再次点击也必须重新定位；该请求只消费一次，避免
+            # 用户在深度报告内操作组件时页面反复跳回报告顶部。
+            st.session_state["_deep_scroll_pending"] = str(_q0)
+            try:
+                del st.query_params["focus"]
+            except Exception:
+                pass
         if _q0 and st.session_state.get("_q_done") != _q0:
             st.session_state["_q_done"] = _q0
             _nm0 = _q0
@@ -13444,6 +13456,52 @@ else:
 # ─────────────────────────────────────────────────────────────────────────────
 
 
+# 【V88·个股直达】所有个股点击统一落到这里，不再让用户在长页面中寻找。
+st.markdown('<div id="v88-deep-analysis"></div>', unsafe_allow_html=True)
+_deep_code_now = st.session_state.get("scan_selected_code")
+if (_deep_code_now and
+        st.session_state.get("_deep_scroll_seen_code") != str(_deep_code_now)):
+    st.session_state["_deep_scroll_pending"] = str(_deep_code_now)
+    st.session_state["_deep_scroll_seen_code"] = str(_deep_code_now)
+
+_deep_scroll_code = st.session_state.pop("_deep_scroll_pending", None)
+if _deep_scroll_code:
+    try:
+        import streamlit.components.v1 as _components_deep
+        _components_deep.html(
+            """<script>
+            (() => {
+              let tries = 0;
+              let stable = 0;
+              const jump = () => {
+                const el = parent.document.getElementById('v88-deep-analysis');
+                if (el) {
+                  el.scrollIntoView({behavior: 'instant', block: 'start'});
+                  const top = el.getBoundingClientRect().top;
+                  stable = Math.abs(top) < 12 ? stable + 1 : 0;
+                  return true;
+                }
+                stable = 0;
+                return false;
+              };
+              // Streamlit会分批把首页、持仓和深度报告插入DOM。首次找到锚点就停止
+              // 会在后续模块完成后发生位置漂移，因此持续校正，直到稳定约2秒。
+              jump();
+              const timer = setInterval(() => {
+                tries += 1;
+                jump();
+                if ((stable >= 8 && tries >= 8) || tries > 180) clearInterval(timer);
+              }, 250);
+            })();
+            </script>""",
+            height=0,
+        )
+    except Exception:
+        pass
+
+if _deep_code_now:
+    st.markdown("### ⚔️ 个股深度分析")
+
 # 【V92】全量云端搜索 - 从侧边栏移至主区域，作为作战室入口
 render_cloud_search()
 st.markdown("---")
@@ -13898,6 +13956,65 @@ if execute_analysis and q_input:
                 st.error(f"❌ 指标计算失败: {type(e).__name__}")
                 st.info(f"错误详情: {str(e)}")
                 st.stop()
+
+        # ═══════════════════════════════════════════════════════════════
+        # 【V88·个股五周期】2/4/6/8/16周量化底稿 + DeepSeek thinking-high
+        # 点击任一个股均自动执行；同一行情快照缓存6小时，控制7元/月总预算。
+        # ═══════════════════════════════════════════════════════════════
+        st.markdown("### 🧭 2/4/6/8/16周周期走势判断")
+        st.caption("量化行情先算底稿，DeepSeek V4 Flash思考模式复核；综合置信度表示证据一致性，不是回测胜率。")
+        try:
+            import stock_horizon as _stock_horizon
+            _hz_last = str(df.index[-1])[:19]
+            _hz_cache_key = f"_stock_horizon_{target_c}_{_hz_last}"
+            if _hz_cache_key not in st.session_state:
+                _hz_bar = st.progress(0, text="正在计算五周期量价底稿…")
+                _hz_bar.progress(35, text="量化底稿完成，DeepSeek思考模式复核中…")
+                _hz_news_parts = []
+                for _hz_news in (news_headlines or [])[:8]:
+                    if isinstance(_hz_news, dict):
+                        _hz_news_parts.append(str(_hz_news.get("title") or _hz_news.get("headline") or ""))
+                    else:
+                        _hz_news_parts.append(str(_hz_news))
+                _hz_context = (f"系统评分:{(metrics or {}).get('score', '—')}；"
+                               f"系统建议:{(metrics or {}).get('suggestion', '—')}；"
+                               f"近期新闻:{'；'.join(x for x in _hz_news_parts if x)[:700]}")
+                _hz_result = _stock_horizon.analyze(
+                    st.session_state.get("scan_selected_name") or target_c,
+                    target_c,
+                    df,
+                    full=(metrics or {}).get("trend_full") or {},
+                    context=_hz_context,
+                )
+                st.session_state[_hz_cache_key] = _hz_result
+                _hz_bar.progress(100, text="五周期走势分析完成")
+                _hz_bar.empty()
+            else:
+                _hz_result = st.session_state[_hz_cache_key]
+
+            _hz_review = _hz_result.get("review") or {}
+            _hz_rows = _stock_horizon.table_rows(_hz_result)
+            if _hz_rows:
+                st.dataframe(_hz_rows, hide_index=True, use_container_width=True)
+            if _hz_review.get("status") in ("completed", "cached"):
+                st.info(
+                    f"🧠 **思考复核**：{_hz_review.get('summary', '五周期复核完成')} ｜ "
+                    f"周期相位：{_hz_review.get('cycle_phase', '震荡')} ｜ "
+                    f"综合动作：{_hz_review.get('action', '观察')} ｜ "
+                    f"失效条件：{_hz_review.get('invalid_summary', '破位后重评')}"
+                )
+                st.caption(
+                    f"模型：{_hz_review.get('model', 'deepseek-v4-flash')} · thinking-high ｜ "
+                    f"分析于 {_hz_review.get('analysis_time', '缓存时间待核')}"
+                )
+            else:
+                st.warning(
+                    f"DeepSeek思考复核未完成（{_hz_review.get('reason', _hz_review.get('status', '未知'))}）；"
+                    "当前仅展示量化底稿，不冒充AI结论。"
+                )
+        except Exception as _hz_exc:
+            logging.exception("个股五周期分析失败")
+            st.warning(f"五周期走势暂不可用：{type(_hz_exc).__name__}")
         
         # ═══════════════════════════════════════════════════════════════
         # 【V90 升级】K线图 + 机构作战层（VWAP + Chandelier Exit）
