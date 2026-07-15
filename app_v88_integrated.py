@@ -11660,6 +11660,118 @@ def _render_today_nav():
 
     st.markdown("### 🧭 今日导航 · 该关注什么" if _is_trading else "### 🔮 下一交易日前瞻 · 非交易日看这里")
 
+    # 【V88·第一屏自选决策台】先占住标题下方的位置，扫描完成后再回填。
+    # 这样无需重复请求行情，也能让“我的自选”真正排在大盘、日报和持仓之前。
+    _watch_front_slot9 = st.empty()
+
+    def _render_front_watch_board9(_wa9, _time_note9):
+        """把规则概率与盈亏比做成第一屏主视觉；详细预警仍在原模块保留。"""
+        _all9 = list((_wa9 or {}).get("decisions") or [])
+        _watch9 = [d for d in _all9 if d.get("scope") == "自选"]
+        if not _watch9:
+            with _watch_front_slot9.container():
+                st.info("⭐ 我的自选股决策台正在计算；完成后将在这里显示上涨/下跌概率与盈亏比。")
+            return
+
+        def _rr_state9(_rr9):
+            _v9 = float(_rr9 or 0)
+            if _v9 >= 2:
+                return "优秀", "#1d4ed8", "#dbeafe"
+            if _v9 >= 1.5:
+                return "可关注", "#2563eb", "#eff6ff"
+            if _v9 >= 1:
+                return "偏低", "#b45309", "#fffbeb"
+            return "不合格", "#b91c1c", "#fef2f2"
+
+        def _card9(_d9):
+            _rr9 = float(_d9.get("rr") or 0)
+            _rr_txt9, _rr_color9, _rr_bg9 = _rr_state9(_rr9)
+            _up9, _down9 = int(_d9.get("p_up") or 0), int(_d9.get("p_down") or 0)
+            _exp9 = float(_d9.get("expected_pct") or 0)
+            _exp_color9 = "#dc2626" if _exp9 > 0 else ("#16a34a" if _exp9 < 0 else "#64748b")
+            _level9 = str(_d9.get("level") or "B")
+            _action9 = str(_d9.get("action") or "观察")
+            _reason9 = str(_d9.get("reason") or "证据不足，等待确认")[:20]
+            _at9 = str(_d9.get("analysis_time") or "时间未知")
+            return f"""
+            <div class="v88-watch-card">
+              <div class="v88-watch-card-head">
+                <div><span class="v88-level v88-level-{_level9}">{_level9}级</span>
+                {_stk_link(_d9.get('name') or _d9.get('code'), _d9.get('code'))}
+                <span class="v88-code">{_d9.get('code')}</span></div>
+                <b class="v88-action">{_action9}</b>
+              </div>
+              <div class="v88-prob-row">
+                <div class="v88-prob v88-up"><small>上涨概率<br>（越大越有利）</small><b>{_up9}%</b></div>
+                <div class="v88-prob v88-down"><small>下跌概率<br>（越小越有利）</small><b>{_down9}%</b></div>
+                <div class="v88-prob v88-rr" style="border-color:{_rr_color9};background:{_rr_bg9}">
+                  <small>盈亏比<br>（越大越好）</small><b style="color:{_rr_color9}">{_rr9:.2f}</b>
+                  <em style="color:{_rr_color9}">{_rr_txt9}</em>
+                </div>
+              </div>
+              <div class="v88-watch-foot"><span>期望值 <b style="color:{_exp_color9}">{_exp9:+.1f}%</b>（&gt;0为正）</span>
+              <span>{_reason9}</span><span>🕒 {_at9}</span></div>
+            </div>"""
+
+        _market_order9 = ("🇺🇸美股", "🇭🇰港股", "🇨🇳A股")
+        _groups9 = {m: [] for m in _market_order9}
+        for _d9 in _watch9:
+            _m9 = str(_d9.get("market") or market_of_code(_d9.get("code", "")))
+            _groups9.setdefault(_m9, []).append(_d9)
+        for _m9 in _groups9:
+            _groups9[_m9].sort(key=lambda d: (
+                0 if d.get("level") == "A" else (1 if d.get("level") == "B" else 2),
+                -float(d.get("p_down") or 0), -float(d.get("rr") or 0)))
+
+        _cols_html9 = []
+        for _m9 in _market_order9:
+            _rows9 = _groups9.get(_m9) or []
+            if not _rows9:
+                continue
+            _cols_html9.append(
+                f'<section class="v88-watch-market"><h4>{_m9} <span>{len(_rows9)}只</span></h4>'
+                + "".join(_card9(d) for d in _rows9) + "</section>")
+
+        with _watch_front_slot9.container():
+            import textwrap as _textwrap9
+            # 先对不含动态卡片的模板去缩进，再替换动态内容；否则卡片中的零缩进行
+            # 会让 Markdown 把最外层 div 误判成代码块。
+            _board_tpl9 = _textwrap9.dedent("""
+            <style>
+            .v88-watch-shell{border:1px solid #bfdbfe;border-radius:12px;background:#f8fbff;padding:10px 11px 8px;margin:2px 0 10px}
+            .v88-watch-title{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:8px}
+            .v88-watch-title h3{margin:0;color:#123a70;font-size:18px;line-height:1.25}
+            .v88-watch-title p{margin:0;color:#64748b;font-size:10px;text-align:right}
+            .v88-watch-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;align-items:start}
+            .v88-watch-market{min-width:0}
+            .v88-watch-market h4{margin:0 0 5px;padding:4px 7px;border-radius:6px;background:#eaf2ff;color:#173b68;font-size:13px}
+            .v88-watch-market h4 span{float:right;color:#64748b;font-size:10px;font-weight:500}
+            .v88-watch-card{background:#fff;border:1px solid #dbe4f0;border-radius:8px;padding:7px;margin-bottom:6px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+            .v88-watch-card-head{display:flex;justify-content:space-between;align-items:center;gap:5px;font-size:12px;line-height:1.25}
+            .v88-watch-card-head a{color:#173b68!important;text-decoration:none!important;font-weight:700!important}
+            .v88-code{color:#94a3b8;font-size:9px;margin-left:3px}
+            .v88-action{color:#1d4ed8;font-size:10px;white-space:nowrap}
+            .v88-level{display:inline-block;padding:1px 4px;border-radius:4px;font-size:9px;margin-right:3px;color:#fff}
+            .v88-level-A{background:#dc2626} .v88-level-B{background:#2563eb} .v88-level-C{background:#64748b}
+            .v88-prob-row{display:grid;grid-template-columns:1fr 1fr 1.12fr;gap:4px;margin-top:6px}
+            .v88-prob{min-width:0;border:1px solid;border-radius:6px;padding:4px 5px;display:grid;grid-template-columns:1fr auto;align-items:center}
+            .v88-prob small{font-size:8px;line-height:1.25;color:#64748b}
+            .v88-prob b{font-size:20px;line-height:1}
+            .v88-up{border-color:#fecaca;background:#fff7f7} .v88-up b{color:#dc2626}
+            .v88-down{border-color:#bbf7d0;background:#f5fff8} .v88-down b{color:#16a34a}
+            .v88-rr em{grid-column:1/-1;text-align:right;font-style:normal;font-size:8px;line-height:1;margin-top:2px}
+            .v88-watch-foot{display:flex;flex-wrap:wrap;gap:3px 9px;margin-top:5px;color:#64748b;font-size:9px;line-height:1.3}
+            @media(max-width:1100px){.v88-watch-grid{grid-template-columns:1fr}}
+            </style>
+            <div class="v88-watch-shell">
+              <div class="v88-watch-title"><h3>⭐ 我的自选股 · 概率与盈亏比决策台</h3>
+              <p>规则概率估计（非回测胜率）｜点击股票名进入深度分析<br>__TIME__</p></div>
+              <div class="v88-watch-grid">__COLUMNS__</div>
+            </div>
+            """).replace("__TIME__", _time_note9).replace("__COLUMNS__", "".join(_cols_html9))
+            st.markdown(
+                _board_tpl9, unsafe_allow_html=True)
+
     # 【V88·Plan A/B统一标注】与下方AI简报模块共用同一状态，避免"这里显示分数、简报说数据不可信"的割裂
     _pab_status = _rep_planab_meta.get("status")
     if _pab_status == "plan_b":
@@ -11899,15 +12011,18 @@ def _render_today_nav():
     _critical9, _wa = [], {}
     try:
         _wa = st.session_state.get('watch_alerts_v88')
-        if not _wa or _wa.get('rule_version') != 5 or time.time() - _wa.get('ts', 0) > 15 * 60:
+        if not _wa or _wa.get('rule_version') != 6 or time.time() - _wa.get('ts', 0) > 15 * 60:
             _pool_wa = {}
+            _watch_codes_wa = set()
             _holds_wa = set()
             _claims_wa = {}
             _hold_map_wa = {}
             try:
                 for _mk9, _lst9 in (_watchlist_load() or {}).items():
                     for _c9, _n9 in list(_lst9)[:10]:
-                        _pool_wa[str(_c9)] = _n9
+                        _c9 = str(_c9)
+                        _watch_codes_wa.add(_c9)
+                        _pool_wa[_c9] = _n9
             except Exception:
                 pass
             try:
@@ -11982,7 +12097,10 @@ def _render_today_nav():
                         _f9, holding=_hold_map_wa.get(_c9), action_hint=_hint9,
                         analysis_time=datetime.now().strftime("%m-%d %H:%M"))
                     _decisions9.append({"code": _c9, "name": _n9,
-                                        "scope": "持仓" if _c9 in _risk_holds_wa else "自选",
+                                        "scope": ("持仓" if _c9 in _risk_holds_wa else
+                                                  ("自选" if _c9 in _watch_codes_wa else "常搜")),
+                                        "level": (_dyn9 if _c9 in _holds_wa else _levels_wa.get(_c9, "B")),
+                                        "market": market_of_code(_c9),
                                         **_dc9})
                     if _last9 < _f9["stop"]:
                         if _c9 in _claims_wa:
@@ -12013,17 +12131,15 @@ def _render_today_nav():
                     continue
             _scan_prog9.empty()
             _scan_status9.empty()
-            _decisions9.sort(key=lambda x: (0 if x["scope"] == "持仓" else 1, -x["p_down"]))
+            _decisions9.sort(key=lambda x: (
+                0 if x["scope"] == "自选" else (1 if x["scope"] == "持仓" else 2),
+                0 if x.get("level") == "A" else (1 if x.get("level") == "B" else 2),
+                -x["p_down"]))
             _wa = {"ts": time.time(), "alerts": _alerts9, "decisions": _decisions9,
-                   "n": len(_pool_wa), "rule_version": 5, "holding_levels": _holding_levels9}
+                   "n": len(_pool_wa), "rule_version": 6, "holding_levels": _holding_levels9}
             st.session_state['watch_alerts_v88'] = _wa
         _alert_analysis_note9 = _analysis_label9(_wa.get("ts"), "预警分析")
-        if _wa.get("decisions"):
-            _top_dec9 = list(_wa["decisions"])[:6]
-            st.markdown(f"**🎯 盘中决策卡（持仓优先·规则概率非回测胜率）**　<span style='font-size:10px;color:#64748b'>{_alert_analysis_note9}</span>", unsafe_allow_html=True)
-            st.markdown("<div style='font-size:11px;line-height:1.75'>" + "<br>".join(
-                f"{d['scope']}｜{_stk_link(d['name'], d['code'])}｜上行{d['p_up']}%（越大越有利）/下行{d['p_down']}%（越小越有利）｜盈亏比{d['rr']:.2f}（越大越好）｜<b>{d['action']}</b>：{d['reason']}"
-                for d in _top_dec9) + "</div>", unsafe_allow_html=True)
+        _render_front_watch_board9(_wa, _alert_analysis_note9)
         if _wa.get("alerts"):
             _critical9 = [a for a in _wa["alerts"]
                           if "[持仓" in a or "[已确认持仓" in a]
