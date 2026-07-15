@@ -203,19 +203,16 @@ if _nav == "🧭 导航":
         if _hints:
             st.markdown("**板块轮动**：" + " ｜ ".join(_hints[:5]))
         _rot_lite = (_snap or {}).get("rotation_forecast") or {}
-        if _rot_lite:
-            st.markdown("**🧠 板块热度与轮换周期思维导图（日 / 周 / 月）**")
-            from rotation_ui import rotation_map_html as _rotation_map_html_lite, available_markets as _am_lite
+        _cyc_lite = (_snap or {}).get("cycle_scan") or {}
+        if _rot_lite or _cyc_lite.get("stocks"):
+            st.markdown("**🧭 板块轮动＋个股周期总览（日 / 周 / 半月）**")
+            from rotation_ui import combined_cycle_dashboard_html as _cycle_board_lite, available_markets as _am_lite
             _mk_l = _am_lite(_rot_lite)
             _focus_l = (st.radio("时钟聚焦市场", _mk_l, horizontal=True, key="v88_lite_nav_rot_focus",
                                  label_visibility="collapsed")
                         if len(_mk_l) > 1 else (_mk_l[0] if _mk_l else "美股"))
-            st.markdown(_rotation_map_html_lite(_rot_lite, "v88-lite-nav-rotation", _focus_l), unsafe_allow_html=True)
-        _cyc_lite = (_snap or {}).get("cycle_scan") or {}
-        if _cyc_lite.get("stocks"):
-            st.markdown("**🌀 个股周期切换（持仓+自选·哪些股票进入下一周期）**")
-            from rotation_ui import stock_cycle_html as _stock_cycle_html_lite
-            st.markdown(_stock_cycle_html_lite(_cyc_lite, "v88-lite-nav-cycle"), unsafe_allow_html=True)
+            st.markdown(_cycle_board_lite(_rot_lite, _cyc_lite, "v88-lite-nav-cycle-board", _focus_l),
+                        unsafe_allow_html=True)
     else:
         st.info("📭 大盘快照未生成（日报流水线每日 07:00/14:00/21:00 更新）")
 

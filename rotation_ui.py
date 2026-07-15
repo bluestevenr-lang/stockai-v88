@@ -161,7 +161,8 @@ def _clock_svg(market: str, trajectory: list, heat: dict) -> str:
     return "".join(p)
 
 
-def _rich_rotation_html(forecast: dict, element_id: str, focus_market: str) -> str:
+def _rich_rotation_html(forecast: dict, element_id: str, focus_market: str,
+                        compact: bool = False) -> str:
     safe_id = re.sub(r"[^a-zA-Z0-9_-]", "-", element_id)
     trajectories = forecast.get("trajectories") or {}
     heat_all = forecast.get("market_heat") or {}
@@ -175,7 +176,8 @@ def _rich_rotation_html(forecast: dict, element_id: str, focus_market: str) -> s
     clock = _clock_svg(focus, trajectories.get(focus) or [], heat_all.get(focus) or {}) if focus else ""
 
     cards = []
-    for market in ("美股", "A股", "港股"):
+    _card_markets = (focus,) if compact and focus else ("美股", "A股", "港股")
+    for market in _card_markets:
         traj = trajectories.get(market) or []
         if not traj:
             continue
@@ -201,6 +203,18 @@ def _rich_rotation_html(forecast: dict, element_id: str, focus_market: str) -> s
     warning_html = (f'<div class="rf-warning">⚠️ {escape("；".join(warnings))}</div>' if warnings else "")
 
     css = _ROTATION_CSS.replace("__ID__", safe_id)
+    if compact:
+        css += f"""
+#{safe_id}{{margin:0}}
+#{safe_id} .rf-meta,#{safe_id} .rf-foot,#{safe_id} .rf-warning{{font-size:8px;line-height:1.25}}
+#{safe_id} .rf-meta{{gap:.35rem;margin-bottom:.16rem}}
+#{safe_id} .rf-root{{font-size:10px;margin:0 auto .2rem;padding:.18rem .45rem}}
+#{safe_id} .rf-root small,#{safe_id} .rf-mkt span{{font-size:8px}}
+#{safe_id} .rf-card{{padding:.2rem .28rem .08rem;margin:.2rem 0}}
+#{safe_id} .rf-mkt{{font-size:9px;margin:0}}
+#{safe_id} svg text{{font-size:8px}}
+#{safe_id} .rf-foot{{gap:.35rem;margin-top:.15rem}}
+"""
     clock_block = (f'<div class="rf-card">{clock}</div>' if clock else "")
     return (
         f'<style>{css}</style>'
@@ -305,12 +319,61 @@ def available_markets(forecast: dict) -> list:
 
 
 def rotation_map_html(forecast: dict, element_id: str = "v88-rotation-map",
-                      focus_market: str = "美股") -> str:
+                      focus_market: str = "美股", compact: bool = False) -> str:
     if not forecast or not forecast.get("markets"):
         return ""
     if forecast.get("trajectories"):
-        return _rich_rotation_html(forecast, element_id, focus_market)
+        return _rich_rotation_html(forecast, element_id, focus_market, compact=compact)
     return _legacy_rotation_html(forecast, element_id)
+
+
+def combined_cycle_dashboard_html(forecast: dict, cycle: dict,
+                                  element_id: str = "v88-cycle-dashboard",
+                                  focus_market: str = "美股") -> str:
+    """把板块轮动与个股周期并排收口为一个紧凑模块；数据内容不删，只压缩视觉层级。"""
+    safe_id = re.sub(r"[^a-zA-Z0-9_-]", "-", element_id)
+    sector_html = (rotation_map_html(forecast, f"{safe_id}-sector", focus_market, compact=True)
+                   if forecast else "")
+    stock_html = stock_cycle_html(cycle, f"{safe_id}-stock") if cycle else ""
+
+    def _split_style(html: str):
+        """样式统一移到总容器之前，避免 Streamlit 把嵌套 style/h4 拆出双栏。"""
+        m = re.match(r"\s*(<style>.*?</style>)(.*)\Z", html or "", flags=re.S)
+        return (m.group(1), m.group(2)) if m else ("", html or "")
+
+    sector_style, sector_body = _split_style(sector_html)
+    stock_style, stock_body = _split_style(stock_html)
+    panels = []
+    if sector_body:
+        panels.append('<div class="cc-panel"><div class="cc-title">🧠 板块轮动 · 日／周／半月</div>'
+                      + sector_body + '</div>')
+    if stock_body:
+        panels.append('<div class="cc-panel"><div class="cc-title">🎯 个股周期 · 持仓＋自选</div>'
+                      + stock_body + '</div>')
+    if not panels:
+        return ""
+    single = " cc-single" if len(panels) == 1 else ""
+    return f'''<style>
+#{safe_id}{{margin:.22rem 0 .5rem;color:var(--foreground,var(--text-color))}}
+#{safe_id} .cc-head{{display:flex;justify-content:space-between;gap:.5rem;align-items:baseline;
+  margin:0 0 .25rem;padding:.26rem .45rem;background:color-mix(in srgb,currentColor 5%,transparent);border-radius:7px}}
+#{safe_id} .cc-head b{{font-size:11px}} #{safe_id} .cc-head span{{font-size:8px;color:var(--muted-foreground,var(--text-color))}}
+#{safe_id} .cc-grid{{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.42rem;align-items:start}}
+#{safe_id} .cc-grid.cc-single{{grid-template-columns:1fr}}
+#{safe_id} .cc-panel{{min-width:0;border:1px solid color-mix(in srgb,currentColor 11%,transparent);border-radius:8px;padding:.28rem .36rem;background:color-mix(in srgb,currentColor 3%,transparent)}}
+#{safe_id} .cc-title{{font-size:10px;font-weight:700;margin:0 0 .18rem;color:var(--foreground,var(--text-color))}}
+#{safe_id} .cy-meta{{font-size:8px;margin-bottom:.15rem}}
+#{safe_id} .cy-card{{padding:.2rem .28rem;margin:.2rem 0}}
+#{safe_id} .cy-card svg text{{font-size:8px}}
+#{safe_id} .cy-list{{gap:.25rem;margin-top:.15rem}}
+#{safe_id} .cy-col b{{font-size:9px}}
+#{safe_id} .cy-row{{font-size:8px;line-height:1.25;margin:.08rem 0}}
+@media(max-width:920px){{#{safe_id} .cc-grid{{grid-template-columns:1fr}}}}
+</style>{sector_style}{stock_style}
+<div id="{safe_id}" role="figure" aria-label="板块轮动与个股周期综合总览">
+  <div class="cc-head"><b>🧭 周期总览</b><span>左看板块方向 · 右看持仓/自选切换 · 悬停查看触发与失效</span></div>
+  <div class="cc-grid{single}">{''.join(panels)}</div>
+</div>'''
 
 
 def _legacy_rotation_html(forecast: dict, element_id: str = "v88-rotation-map") -> str:

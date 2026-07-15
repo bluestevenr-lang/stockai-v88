@@ -11982,28 +11982,21 @@ def _render_today_nav():
                     _hints.append(f"🧊 {_mkt}·**{s['name']}** 退潮（20日{s['chg20d']:+.1f}%但5日{s['chg5d']:+.1f}%）")
         if _hints:
             st.markdown("**板块轮动**：" + " ｜ ".join(_hints[:5]))
-        # ③ 板块热度思维导图：直接承接上方轮动内容，展示日/周/月同源预测。
+        # ③+④ 周期总览：板块轮动与个股切换合并为同一行双栏，信息保留、字号压小。
         _rot_forecast9 = (_snap or {}).get("rotation_forecast") or {}
-        if _rot_forecast9:
-            st.markdown("**🧠 板块热度与轮换周期思维导图（日 / 周 / 月）**")
+        _cyc9 = (_snap or {}).get("cycle_scan") or {}
+        if _rot_forecast9 or _cyc9.get("stocks"):
+            st.markdown("**🧭 板块轮动＋个股周期总览（日 / 周 / 半月）**")
             try:
-                from rotation_ui import rotation_map_html as _rotation_map_html9, available_markets as _am9
+                from rotation_ui import combined_cycle_dashboard_html as _cycle_board9, available_markets as _am9
                 _mk9 = _am9(_rot_forecast9)
                 _focus9 = (st.radio("时钟聚焦市场", _mk9, horizontal=True, key="v88_nav_rot_focus",
                                     label_visibility="collapsed")
                            if len(_mk9) > 1 else (_mk9[0] if _mk9 else "美股"))
-                st.markdown(_rotation_map_html9(_rot_forecast9, "v88-nav-rotation", _focus9), unsafe_allow_html=True)
+                st.markdown(_cycle_board9(_rot_forecast9, _cyc9, "v88-nav-cycle-board", _focus9),
+                            unsafe_allow_html=True)
             except Exception as _rot_ui_e9:
-                logging.debug(f"轮转导图渲染失败: {_rot_ui_e9}")
-        # ④ 个股周期切换：持仓+自选，蓄势/领涨/派发/退潮 + 即将切换方向。
-        _cyc9 = (_snap or {}).get("cycle_scan") or {}
-        if _cyc9.get("stocks"):
-            st.markdown("**🌀 个股周期切换（持仓+自选·哪些股票进入下一周期）**")
-            try:
-                from rotation_ui import stock_cycle_html as _stock_cycle_html9
-                st.markdown(_stock_cycle_html9(_cyc9, "v88-nav-cycle"), unsafe_allow_html=True)
-            except Exception as _cyc_ui_e9:
-                logging.debug(f"个股周期渲染失败: {_cyc_ui_e9}")
+                logging.debug(f"周期总览渲染失败: {_rot_ui_e9}")
         # 【V88·复制】今日导航摘要一键复制（温度/指数/拐点/轮动）
         try:
             _cpn = [f"🧭 V88今日导航 {_gen}"]
