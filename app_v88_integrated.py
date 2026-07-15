@@ -2694,6 +2694,10 @@ logging.info("  - 并发线程池: 最大{}线程".format(Config.MAX_WORKERS))
 
 st.set_page_config(layout="wide", page_title="AI 皇冠双核", page_icon="👑", initial_sidebar_state="collapsed")
 
+# 首屏占位：定义稍后才可用的今日导航函数后回填到这里，使“大盘/持仓/自选/预警”
+# 在视觉顺序上始终排第一，原有后续模块全部保留。
+_v88_front_decision_slot = st.empty()
+
 # 【V88界面修改原则】默认只新增、压缩与重排；不得删除或隐藏原有内容，
 # 除非用户明确提出“删除”。紧凑版必须保留原指标与原功能入口。
 
@@ -7386,6 +7390,10 @@ def call_gemini_api(prompt, model_name=None):
     返回:
         AI生成的文本响应
     """
+    from v88_ai_budget import reserve as _web_budget_reserve, settle as _web_budget_settle
+    _budget_ticket = _web_budget_reserve(prompt, output_tokens=2200)
+    if not _budget_ticket:
+        return "⚠️ 网页AI月度1元配额已用完；确定性行情、持仓、自选和预警继续正常运行"
     _ds_key = os.getenv("DEEPSEEK_API_KEY", "")
     if _ds_key:
         try:
@@ -7398,10 +7406,13 @@ def call_gemini_api(prompt, model_name=None):
                 timeout=120
             )
             if _r.status_code == 200:
-                return _r.json()["choices"][0]["message"]["content"]
+                _body = _r.json()
+                _web_budget_settle(_budget_ticket, _body.get("usage"), ok=True)
+                return _body["choices"][0]["message"]["content"]
         except Exception as _de:
             logging.warning(f"DeepSeek requests failed: {_de}")
     if not MY_DEEPSEEK_KEY:
+        _web_budget_settle(_budget_ticket, ok=False)
         return "❌ 请配置 DEEPSEEK_API_KEY"
     if AI_PROVIDER == "deepseek" and _deepseek_client:
         try:
@@ -7410,8 +7421,10 @@ def call_gemini_api(prompt, model_name=None):
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.3, max_tokens=8192, timeout=120,
             )
+            _web_budget_settle(_budget_ticket, getattr(response, "usage", None) and response.usage.model_dump(), ok=True)
             return response.choices[0].message.content
         except Exception as e:
+            _web_budget_settle(_budget_ticket, ok=False)
             logging.error(f"❌ DeepSeek API异常: {str(e)}")
             return f"❌ DeepSeek API错误: {str(e)}"
     return "❌ DeepSeek API调用失败，请检查API Key和网络"
@@ -11789,6 +11802,7 @@ def _render_today_nav():
         pass
     _gen = (_snap or {}).get("generated_at", "")
     st.caption(f"💡 不知道买什么先看这里：温度定仓位 → 水位定方向 → 轮动定板块 → 操作榜定标的 → 持仓提醒定纪律 ｜ 数据时间 {_gen}{_stale_note}")
+    st.caption("参数白话：上行概率（越大越有利）｜下行概率（越小越有利）｜盈亏比（越大越好，>1才有正向空间）｜期望值（>0才是正期望）｜ATR（越大波动越大）｜历史水位（越接近0%越靠近历史最高点）")
 
     # 🌡 市场温度计（能不能做 · 做多大仓位）
     if _snap and _snap.get("markets"):
@@ -11885,7 +11899,7 @@ def _render_today_nav():
     _critical9, _wa = [], {}
     try:
         _wa = st.session_state.get('watch_alerts_v88')
-        if not _wa or _wa.get('rule_version') != 4 or time.time() - _wa.get('ts', 0) > 3600:
+        if not _wa or _wa.get('rule_version') != 5 or time.time() - _wa.get('ts', 0) > 15 * 60:
             _pool_wa = {}
             _holds_wa = set()
             _claims_wa = {}
@@ -11928,6 +11942,7 @@ def _render_today_nav():
                 _sys_wa.path.insert(0, str(_repo / "src"))
             from watch_alerts import sharp_drop_signal as _sharp_wa, market_change_for as _mchg_wa, watch_levels as _levels_fn_wa
             from position_lifecycle import dynamic_priority as _dyn_level_wa, load_peaks as _load_peaks_wa
+            from decision_support import estimate_decision as _estimate_decision_wa, compact_text as _compact_decision_wa
             _levels_wa = _levels_fn_wa()
             _peaks_wa = _load_peaks_wa()
             try:  # 【行业热度维度】与飞书/云端同一份冻结快照
@@ -11937,6 +11952,7 @@ def _render_today_nav():
             _pool_wa = dict(sorted(_pool_wa.items(), key=lambda kv: (
                 0 if kv[0] in _risk_holds_wa else (1 if _levels_wa.get(kv[0], "B") == "A" else 2))))
             _alerts9 = []
+            _decisions9 = []
             _holding_levels9 = {}
             for _c9, _n9 in list(_pool_wa.items())[:60]:
                 try:
@@ -11955,11 +11971,19 @@ def _render_today_nav():
                             peak_pnl=((_peaks_wa.get(_c9) or {}).get("peak_pnl")),
                             sharp=bool(_sharp9))
                         _holding_levels9[_c9] = {"level": _dyn9, "reason": _dyn_reason9}
+                    _hint9 = ("评估减仓" if (_sharp9 or (_c9 in _holds_wa and _dyn9 == "A"))
+                              else ("持有" if _c9 in _holds_wa else "观察"))
+                    _dc9 = _estimate_decision_wa(
+                        _f9, holding=_hold_map_wa.get(_c9), action_hint=_hint9,
+                        analysis_time=datetime.now().strftime("%m-%d %H:%M"))
+                    _decisions9.append({"code": _c9, "name": _n9,
+                                        "scope": "持仓" if _c9 in _risk_holds_wa else "自选",
+                                        **_dc9})
                     if _last9 < _f9["stop"]:
                         if _c9 in _claims_wa:
-                            _alerts9.append(f"❗ [已确认持仓·资料待补录] **{_n9}**({_c9})：现价{_last9}已破技术防守位{_f9['stop']}——立即复核仓位；成本/股数待补录")
+                            _alerts9.append(f"❗ [已确认持仓·资料待补录] **{_n9}**({_c9})：现价{_last9}已破技术防守位{_f9['stop']}——立即复核仓位｜{_compact_decision_wa(_dc9)}｜成本/股数待补录")
                         else:
-                            _alerts9.append(f"❗ [持仓·A自动] **{_n9}**({_c9})：现价{_last9}已破止损位{_f9['stop']}——纪律：离场/减仓，不要扛")
+                            _alerts9.append(f"❗ [持仓·A自动] **{_n9}**({_c9})：现价{_last9}已破止损位{_f9['stop']}——纪律复核离场/减仓｜{_compact_decision_wa(_dc9)}")
                     else:
                         if _sharp9:
                             _who9 = "正式持仓" if _c9 in _holds_wa else ("已确认持仓" if _c9 in _claims_wa else "A级重点")
@@ -11967,6 +11991,7 @@ def _render_today_nav():
                                            ("[已确认持仓·资料待补录]" if _c9 in _claims_wa else "[A级重点]"))
                             _alerts9.insert(0, f"{_sharp9['severity']} {_level_tag9} **{_n9}**({_c9})：{_who9}急跌预警｜"
                                             + "＋".join(_sharp9["facts"]) + f"｜{_sharp9['action']}"
+                                            + f"｜{_compact_decision_wa(_dc9)}"
                                             + ("｜成本/股数待补录" if _c9 in _claims_wa else ""))
                             continue
                         # 【V88·多因子共振】买入/减仓须≥2维度（技术/量价/消息）共振，单指标不触发（与云端/飞书同源）
@@ -11975,16 +12000,23 @@ def _render_today_nav():
                             _ic9 = "🛒" if _sw9["side"] == "buy" else "⚠️"
                             _hd9 = "触发条件" if _sw9["side"] == "buy" else "风险原因"
                             _alerts9.append(f"{_ic9} **{_n9}**({_c9})：**{_sw9['action']}**｜{_hd9}："
-                                            + "＋".join(_sw9["conditions"][:4]) + f"｜{_sw9['zone']}")
+                                            + "＋".join(_sw9["conditions"][:4]) + f"｜{_sw9['zone']}｜{_compact_decision_wa(_dc9)}")
                         elif _c9 in _holds_wa and _dyn9 == "A":
                             _alerts9.insert(0, f"⚠️ [持仓·A自动] **{_n9}**({_c9})：{_dyn_reason9}｜"
                                                 "优先复核减仓/止损与利润保护")
                 except Exception:
                     continue
-            _wa = {"ts": time.time(), "alerts": _alerts9, "n": len(_pool_wa), "rule_version": 4,
-                   "holding_levels": _holding_levels9}
+            _decisions9.sort(key=lambda x: (0 if x["scope"] == "持仓" else 1, -x["p_down"]))
+            _wa = {"ts": time.time(), "alerts": _alerts9, "decisions": _decisions9,
+                   "n": len(_pool_wa), "rule_version": 5, "holding_levels": _holding_levels9}
             st.session_state['watch_alerts_v88'] = _wa
         _alert_analysis_note9 = _analysis_label9(_wa.get("ts"), "预警分析")
+        if _wa.get("decisions"):
+            _top_dec9 = list(_wa["decisions"])[:6]
+            st.markdown(f"**🎯 盘中决策卡（持仓优先·规则概率非回测胜率）**　<span style='font-size:10px;color:#64748b'>{_alert_analysis_note9}</span>", unsafe_allow_html=True)
+            st.markdown("<div style='font-size:11px;line-height:1.75'>" + "<br>".join(
+                f"{d['scope']}｜{_stk_link(d['name'], d['code'])}｜上行{d['p_up']}%（越大越有利）/下行{d['p_down']}%（越小越有利）｜盈亏比{d['rr']:.2f}（越大越好）｜<b>{d['action']}</b>：{d['reason']}"
+                for d in _top_dec9) + "</div>", unsafe_allow_html=True)
         if _wa.get("alerts"):
             _critical9 = [a for a in _wa["alerts"]
                           if "[持仓" in a or "[已确认持仓" in a]
@@ -11995,9 +12027,9 @@ def _render_today_nav():
                     with st.popover("📋 复制预警"):
                         st.code(_alert_analysis_note9 + "\n" + "\n".join(a.replace("**", "") for a in _watch_only9), language=None)
             elif not _critical9:
-                st.caption(f"⚡ 关注股预警：{_wa.get('n', 0)}只关注股暂无拐点/止损触发（1小时自动复查）")
+                st.caption(f"⚡ 关注股预警：{_wa.get('n', 0)}只关注股暂无触发（持仓15分钟｜A盘中3小时｜B每天｜C每周）")
         else:
-            st.caption(f"⚡ 关注股预警：{_wa.get('n', 0)}只关注股暂无拐点/止损触发（1小时自动复查）")
+            st.caption(f"⚡ 关注股预警：{_wa.get('n', 0)}只关注股暂无触发（持仓15分钟｜A盘中3小时｜B每天｜C每周）")
     except Exception as _we9:
         logging.debug(f"关注股预警异常: {_we9}")
 
@@ -12346,7 +12378,14 @@ def _render_today_nav():
 
 
 try:
-    _render_today_nav()
+    with _v88_front_decision_slot.container():
+        _render_today_nav()
+        try:
+            from v88_ai_budget import status as _web_budget_status
+            _wb = _web_budget_status()
+            st.caption(f"💰 AI预算：云端主流水线6元/月＋网页按需1元/月＝总上限7元｜网页已用¥{_wb['spent']:.3f}")
+        except Exception:
+            pass
 except Exception as _nav_e:
     st.caption(f"今日导航暂不可用: {str(_nav_e)[:50]}")
 st.markdown("---")

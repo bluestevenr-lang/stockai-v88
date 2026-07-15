@@ -168,6 +168,7 @@ if _nav == "🧭 导航":
         _rep = _rp.read_text(encoding="utf-8-sig")
 
     st.markdown("#### 🧭 今日导航 · 该关注什么")
+    st.caption("参数白话：上行概率（越大越有利）｜下行概率（越小越有利）｜盈亏比（越大越好）｜ATR（越大波动越大）｜历史水位（越接近0%越靠近历史最高点）")
     st.caption(f"温度定仓位 → 水位定方向 → 轮动定板块 → 操作榜定标的 → 持仓提醒定纪律 ｜ 数据 {(_snap or {}).get('generated_at','—')}")
 
     if _snap and _snap.get("markets"):

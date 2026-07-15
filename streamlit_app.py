@@ -203,7 +203,7 @@ def pub_journal_list():
 
 
 st.title("☁️ V88 云端版")
-st.caption("24小时在线 · 日报每交易日07:00/14:00/21:00更新 · 三市行情盘中每30分钟刷新 · 访问权限由Streamlit部署设置控制")
+st.caption("24小时在线 · 日报每交易日07:00/13:00/19:00更新 · 持仓盘中每15分钟风险快扫 · 访问权限由Streamlit部署设置控制")
 
 c_nav, c_rf = st.columns([5, 1])
 with c_rf:
@@ -369,6 +369,7 @@ if _nav == "🧭 导航":
         else:
             st.info("🔮 下一交易日前瞻生成中，稍后点右上 🔄 刷新。")
     st.markdown("#### 🧭 今日导航 · 该关注什么")
+    st.caption("参数白话：上行概率（越大越有利）｜下行概率（越小越有利）｜盈亏比（越大越好，>1才有正向空间）｜期望值（>0才是正期望）｜ATR（越大波动越大）｜历史水位（越接近0%越靠近历史最高点）")
     # 【V88·今日焦点】醒目置顶：重点推荐 + 重点观察触发
     try:
         _fx, _ob = [], []
@@ -460,10 +461,10 @@ if _nav == "🧭 导航":
     except Exception:
         pass
     st.caption("温度定仓位 → 轮动定板块 → 操作榜定标的")
-    st.caption(_fresh_caption((_snap or {}).get("generated_at"), "行情快照") + " · 交易日盘中每30分钟刷新")
+    st.caption(_fresh_caption((_snap or {}).get("generated_at"), "行情快照") + " · 持仓盘中每15分钟快扫；强思考最多每6小时")
     _meta0 = pub_meta()
     if _meta0.get("daily_report_ts"):
-        st.caption(_fresh_caption(_meta0["daily_report_ts"], "日报/操作榜") + " · 每时段更新（07/14/21点）")
+        st.caption(_fresh_caption(_meta0["daily_report_ts"], "日报/操作榜") + " · 每时段更新（07/13/19点）")
     if _snap and _snap.get("markets"):
         for _mkt in ("美股", "A股", "港股"):
             _t = (_snap["markets"].get(_mkt) or {}).get("temperature")
@@ -787,7 +788,7 @@ elif _nav in ("📊 日报", "📅 周报"):
         _mk1 = "daily_report_ts" if _nav == "📊 日报" else "weekly_report_ts"
         if _meta1.get(_mk1):
             st.caption(_fresh_caption(_meta1[_mk1], "本报告")
-                       + (" · 每时段更新（北京时间07/14/21点）" if _nav == "📊 日报" else " · 每周日更新"))
+                       + (" · 每时段更新（北京时间07/13/19点）" if _nav == "📊 日报" else " · 每周日更新"))
         # 【V88·复制】下载 md 原文 + 复制全文（st.code 右上角自带复制按钮）
         _cc1, _cc2 = st.columns(2)
         _fn = "V88日报.md" if _nav == "📊 日报" else "V88周报.md"
