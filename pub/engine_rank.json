@@ -1,7 +1,7 @@
 {
  "schema_version": "v88.rank/2.0",
- "snapshot_id": "snap-69eecb838e66c955",
- "generated_at": "2026-07-14 23:58",
+ "snapshot_id": "snap-00017217c561e829",
+ "generated_at": "2026-07-15 07:57",
  "thresholds": {
   "minimum": {
    "short": 60,
@@ -15,118 +15,214 @@
   "美股": {
    "short": [
     {
-     "token": "US:LLY",
-     "name": "礼来",
-     "score": 34,
-     "last": 1152.54,
-     "chg20": 1.7,
-     "rs": 1.7
+     "token": "US:META",
+     "name": "Meta",
+     "score": 85,
+     "last": 661.04,
+     "chg20": 16.7,
+     "rs": 15.1
+    },
+    {
+     "token": "US:ADBE",
+     "name": "Adobe",
+     "score": 74,
+     "last": 230.61,
+     "chg20": 5.4,
+     "rs": 3.8
+    },
+    {
+     "token": "US:MA",
+     "name": "万事达",
+     "score": 74,
+     "last": 537.7,
+     "chg20": 10.7,
+     "rs": 9.1
+    },
+    {
+     "token": "US:CRM",
+     "name": "Salesforce",
+     "score": 70,
+     "last": 171.22,
+     "chg20": 2.9,
+     "rs": 1.3
+    },
+    {
+     "token": "US:NTES",
+     "name": "网易",
+     "score": 69,
+     "last": 131.43,
+     "chg20": 4.6,
+     "rs": 3.0
     }
    ],
    "mid": [
     {
-     "token": "US:LLY",
-     "name": "礼来",
-     "score": 45,
-     "last": 1152.54,
-     "chg20": 1.7,
-     "rs": 1.7
+     "token": "US:DELL",
+     "name": "戴尔",
+     "score": 64,
+     "last": 457.54,
+     "chg20": 15.7,
+     "rs": 14.1
+    },
+    {
+     "token": "US:AMD",
+     "name": "AMD",
+     "score": 63,
+     "last": 534.39,
+     "chg20": 9.4,
+     "rs": 7.8
+    },
+    {
+     "token": "US:AAPL",
+     "name": "苹果",
+     "score": 58,
+     "last": 317.31,
+     "chg20": 7.3,
+     "rs": 5.7
+    },
+    {
+     "token": "US:BAC",
+     "name": "美银",
+     "score": 58,
+     "last": 59.5,
+     "chg20": 7.9,
+     "rs": 6.3
+    },
+    {
+     "token": "US:V",
+     "name": "Visa",
+     "score": 58,
+     "last": 357.75,
+     "chg20": 12.1,
+     "rs": 10.5
     }
    ],
    "long": [
     {
-     "token": "US:LLY",
-     "name": "礼来",
-     "score": 45,
-     "last": 1152.54,
-     "chg20": 1.7,
-     "rs": 1.7
+     "token": "US:AVGO",
+     "name": "博通",
+     "score": 65,
+     "last": 384.05,
+     "chg20": -0.2,
+     "rs": -1.8
+    },
+    {
+     "token": "US:NVDA",
+     "name": "英伟达",
+     "score": 64,
+     "last": 203.53,
+     "chg20": -0.7,
+     "rs": -2.3
+    },
+    {
+     "token": "US:GOOG",
+     "name": "谷歌",
+     "score": 64,
+     "last": 357.33,
+     "chg20": -0.2,
+     "rs": -1.8
+    },
+    {
+     "token": "US:AMZN",
+     "name": "亚马逊",
+     "score": 64,
+     "last": 247.31,
+     "chg20": 2.4,
+     "rs": 0.8
+    },
+    {
+     "token": "US:AMD",
+     "name": "AMD",
+     "score": 64,
+     "last": 534.39,
+     "chg20": 9.4,
+     "rs": 7.8
     }
    ]
   },
   "A股": {
    "short": [
     {
+     "token": "SH:688111",
+     "name": "金山办公",
+     "score": 97,
+     "last": 236.71,
+     "chg20": 11.1,
+     "rs": 14.5
+    },
+    {
      "token": "SH:600900",
      "name": "长江电力",
-     "score": 89,
-     "last": 28.55,
-     "chg20": 3.6,
-     "rs": 6.5
+     "score": 90,
+     "last": 28.68,
+     "chg20": 5.5,
+     "rs": 8.9
     },
     {
-     "token": "SH:600028",
-     "name": "中国石化",
+     "token": "SZ:300760",
+     "name": "迈瑞医疗",
+     "score": 90,
+     "last": 146.0,
+     "chg20": 2.2,
+     "rs": 5.6
+    },
+    {
+     "token": "SH:600887",
+     "name": "伊利股份",
+     "score": 90,
+     "last": 25.93,
+     "chg20": 4.6,
+     "rs": 8.0
+    },
+    {
+     "token": "SH:600519",
+     "name": "贵州茅台",
      "score": 88,
-     "last": 5.03,
-     "chg20": 3.1,
-     "rs": 6.0
-    },
-    {
-     "token": "SH:601857",
-     "name": "中国石油",
-     "score": 86,
-     "last": 10.0,
-     "chg20": 1.5,
-     "rs": 4.4
-    },
-    {
-     "token": "SH:603259",
-     "name": "药明康德",
-     "score": 85,
-     "last": 127.51,
-     "chg20": 28.3,
-     "rs": 31.2
-    },
-    {
-     "token": "SZ:000333",
-     "name": "美的集团",
-     "score": 78,
-     "last": 81.18,
-     "chg20": 5.4,
-     "rs": 8.3
+     "last": 1251.06,
+     "chg20": 2.0,
+     "rs": 5.4
     }
    ],
    "mid": [
     {
      "token": "SH:603259",
      "name": "药明康德",
-     "score": 85,
-     "last": 127.51,
-     "chg20": 28.3,
-     "rs": 31.2
-    },
-    {
-     "token": "SH:600900",
-     "name": "长江电力",
-     "score": 64,
-     "last": 28.55,
-     "chg20": 3.6,
-     "rs": 6.5
+     "score": 93,
+     "last": 131.5,
+     "chg20": 34.0,
+     "rs": 37.4
     },
     {
      "token": "SH:688981",
      "name": "中芯国际",
-     "score": 64,
-     "last": 160.99,
-     "chg20": 23.3,
-     "rs": 26.2
+     "score": 78,
+     "last": 153.64,
+     "chg20": 18.1,
+     "rs": 21.5
     },
     {
-     "token": "SH:688041",
-     "name": "海光信息",
-     "score": 64,
-     "last": 340.85,
-     "chg20": 13.9,
-     "rs": 16.8
+     "token": "SH:600276",
+     "name": "恒瑞医药",
+     "score": 76,
+     "last": 57.5,
+     "chg20": 21.4,
+     "rs": 24.8
     },
     {
-     "token": "SZ:000333",
-     "name": "美的集团",
-     "score": 59,
-     "last": 81.18,
-     "chg20": 5.4,
-     "rs": 8.3
+     "token": "SH:600900",
+     "name": "长江电力",
+     "score": 65,
+     "last": 28.68,
+     "chg20": 5.5,
+     "rs": 8.9
+    },
+    {
+     "token": "SZ:000651",
+     "name": "格力电器",
+     "score": 63,
+     "last": 39.83,
+     "chg20": 6.8,
+     "rs": 10.2
     }
    ],
    "long": [
@@ -134,169 +230,169 @@
      "token": "SH:601988",
      "name": "中国银行",
      "score": 83,
-     "last": 5.87,
-     "chg20": -2.3,
-     "rs": 0.6
-    },
-    {
-     "token": "SH:600900",
-     "name": "长江电力",
-     "score": 77,
-     "last": 28.55,
-     "chg20": 3.6,
-     "rs": 6.5
+     "last": 5.88,
+     "chg20": -0.7,
+     "rs": 2.7
     },
     {
      "token": "SZ:000333",
      "name": "美的集团",
-     "score": 75,
-     "last": 81.18,
-     "chg20": 5.4,
-     "rs": 8.3
+     "score": 77,
+     "last": 82.67,
+     "chg20": 10.0,
+     "rs": 13.4
     },
     {
      "token": "SH:603259",
      "name": "药明康德",
-     "score": 75,
-     "last": 127.51,
-     "chg20": 28.3,
-     "rs": 31.2
+     "score": 77,
+     "last": 131.5,
+     "chg20": 34.0,
+     "rs": 37.4
     },
     {
-     "token": "SH:601857",
-     "name": "中国石油",
-     "score": 66,
-     "last": 10.0,
-     "chg20": 1.5,
-     "rs": 4.4
+     "token": "SH:600900",
+     "name": "长江电力",
+     "score": 76,
+     "last": 28.68,
+     "chg20": 5.5,
+     "rs": 8.9
+    },
+    {
+     "token": "SH:688981",
+     "name": "中芯国际",
+     "score": 74,
+     "last": 153.64,
+     "chg20": 18.1,
+     "rs": 21.5
     }
    ]
   },
   "港股": {
    "short": [
     {
+     "token": "HK:3690",
+     "name": "美团-W",
+     "score": 82,
+     "last": 83.2,
+     "chg20": 6.3,
+     "rs": 6.5
+    },
+    {
      "token": "HK:0316",
      "name": "东方海外",
-     "score": 87,
-     "last": 138.1,
-     "chg20": 5.7,
-     "rs": 5.8
-    },
-    {
-     "token": "HK:2269",
-     "name": "药明生物",
-     "score": 76,
-     "last": 38.2,
-     "chg20": 22.9,
-     "rs": 23.0
-    },
-    {
-     "token": "HK:0388",
-     "name": "港交所",
-     "score": 74,
-     "last": 389.0,
-     "chg20": 2.2,
-     "rs": 2.3
+     "score": 77,
+     "last": 141.4,
+     "chg20": 7.1,
+     "rs": 7.3
     },
     {
      "token": "HK:9618",
      "name": "京东集团-SW",
-     "score": 73,
-     "last": 113.8,
-     "chg20": 1.1,
-     "rs": 1.2
+     "score": 74,
+     "last": 115.6,
+     "chg20": 2.8,
+     "rs": 3.0
     },
     {
      "token": "HK:9988",
      "name": "阿里巴巴-W",
-     "score": 71,
-     "last": 110.8,
-     "chg20": 0.5,
-     "rs": 0.6
+     "score": 73,
+     "last": 113.3,
+     "chg20": 3.7,
+     "rs": 3.9
+    },
+    {
+     "token": "HK:0388",
+     "name": "港交所",
+     "score": 73,
+     "last": 392.8,
+     "chg20": 1.6,
+     "rs": 1.8
     }
    ],
    "mid": [
     {
      "token": "HK:2269",
      "name": "药明生物",
-     "score": 79,
-     "last": 38.2,
-     "chg20": 22.9,
-     "rs": 23.0
-    },
-    {
-     "token": "HK:2628",
-     "name": "中国人寿",
-     "score": 68,
-     "last": 28.62,
-     "chg20": -2.5,
-     "rs": -2.4
-    },
-    {
-     "token": "HK:9999",
-     "name": "网易-S",
-     "score": 57,
-     "last": 201.8,
-     "chg20": 1.1,
-     "rs": 1.2
+     "score": 83,
+     "last": 39.56,
+     "chg20": 27.9,
+     "rs": 28.1
     },
     {
      "token": "HK:0316",
      "name": "东方海外",
-     "score": 53,
-     "last": 138.1,
-     "chg20": 5.7,
-     "rs": 5.8
+     "score": 60,
+     "last": 141.4,
+     "chg20": 7.1,
+     "rs": 7.3
     },
     {
      "token": "HK:3690",
      "name": "美团-W",
+     "score": 55,
+     "last": 83.2,
+     "chg20": 6.3,
+     "rs": 6.5
+    },
+    {
+     "token": "HK:9999",
+     "name": "网易-S",
+     "score": 52,
+     "last": 203.0,
+     "chg20": 1.3,
+     "rs": 1.5
+    },
+    {
+     "token": "HK:0700",
+     "name": "腾讯控股",
      "score": 51,
-     "last": 79.2,
-     "chg20": 1.7,
-     "rs": 1.8
+     "last": 473.0,
+     "chg20": 2.9,
+     "rs": 3.1
     }
    ],
    "long": [
     {
      "token": "HK:0316",
      "name": "东方海外",
-     "score": 74,
-     "last": 138.1,
-     "chg20": 5.7,
-     "rs": 5.8
-    },
-    {
-     "token": "HK:2628",
-     "name": "中国人寿",
-     "score": 68,
-     "last": 28.62,
-     "chg20": -2.5,
-     "rs": -2.4
+     "score": 73,
+     "last": 141.4,
+     "chg20": 7.1,
+     "rs": 7.3
     },
     {
      "token": "HK:0175",
      "name": "吉利汽车",
-     "score": 65,
-     "last": 18.31,
-     "chg20": -4.4,
-     "rs": -4.3
+     "score": 66,
+     "last": 18.41,
+     "chg20": -8.1,
+     "rs": -7.9
     },
     {
      "token": "HK:0883",
      "name": "中海油",
      "score": 64,
-     "last": 22.8,
-     "chg20": -8.5,
-     "rs": -8.4
+     "last": 22.94,
+     "chg20": -5.2,
+     "rs": -5.0
     },
     {
      "token": "HK:0857",
      "name": "中国石油股份",
      "score": 64,
-     "last": 9.57,
-     "chg20": -4.7,
-     "rs": -4.6
+     "last": 9.52,
+     "chg20": -1.8,
+     "rs": -1.6
+    },
+    {
+     "token": "HK:1398",
+     "name": "工商银行",
+     "score": 64,
+     "last": 6.8,
+     "chg20": -5.0,
+     "rs": -4.8
     }
    ]
   }
@@ -304,90 +400,108 @@
  "risk": {
   "美股": [
    {
-    "token": "US:LLY",
-    "name": "礼来",
-    "score": 34,
-    "last": 1152.54,
-    "chg20": 1.7,
-    "rs": 1.7,
+    "token": "US:MU",
+    "name": "美光",
+    "score": 26,
+    "last": 937.0,
+    "chg20": -5.9,
+    "rs": -7.5,
+    "reason": "短线评分尾部，防破位或利润回吐"
+   },
+   {
+    "token": "US:LRCX",
+    "name": "泛林",
+    "score": 26,
+    "last": 329.92,
+    "chg20": -8.9,
+    "rs": -10.5,
+    "reason": "短线评分尾部，防破位或利润回吐"
+   },
+   {
+    "token": "US:MRVL",
+    "name": "迈威尔",
+    "score": 26,
+    "last": 217.53,
+    "chg20": -22.5,
+    "rs": -24.1,
     "reason": "短线评分尾部，防破位或利润回吐"
    }
   ],
   "A股": [
    {
-    "token": "SH:601012",
-    "name": "隆基绿能",
-    "score": 26,
-    "last": 11.73,
-    "chg20": -12.3,
-    "rs": -9.4,
-    "reason": "短线评分尾部，防破位或利润回吐"
-   },
-   {
     "token": "SZ:002475",
     "name": "立讯精密",
     "score": 26,
-    "last": 61.67,
-    "chg20": -9.5,
-    "rs": -6.6,
+    "last": 60.47,
+    "chg20": -10.1,
+    "rs": -6.7,
     "reason": "短线评分尾部，防破位或利润回吐"
    },
    {
     "token": "SZ:300124",
     "name": "汇川技术",
     "score": 26,
-    "last": 60.25,
+    "last": 61.04,
     "chg20": -13.1,
-    "rs": -10.2,
+    "rs": -9.7,
+    "reason": "短线评分尾部，防破位或利润回吐"
+   },
+   {
+    "token": "SZ:300750",
+    "name": "宁德时代",
+    "score": 41,
+    "last": 373.0,
+    "chg20": -7.6,
+    "rs": -4.2,
     "reason": "短线评分尾部，防破位或利润回吐"
    }
   ],
   "港股": [
    {
-    "token": "HK:0288",
-    "name": "万洲国际",
-    "score": 30,
-    "last": 8.11,
-    "chg20": -8.0,
+    "token": "HK:2628",
+    "name": "中国人寿",
+    "score": 18,
+    "last": 27.92,
+    "chg20": -8.1,
     "rs": -7.9,
     "reason": "短线评分尾部，防破位或利润回吐"
    },
    {
-    "token": "HK:0700",
-    "name": "腾讯控股",
-    "score": 38,
-    "last": 456.2,
-    "chg20": -1.6,
-    "rs": -1.5,
+    "token": "HK:1928",
+    "name": "金沙中国",
+    "score": 26,
+    "last": 12.97,
+    "chg20": -9.0,
+    "rs": -8.8,
     "reason": "短线评分尾部，防破位或利润回吐"
    },
    {
-    "token": "HK:0175",
-    "name": "吉利汽车",
-    "score": 41,
-    "last": 18.31,
-    "chg20": -4.4,
-    "rs": -4.3,
+    "token": "HK:0288",
+    "name": "万洲国际",
+    "score": 37,
+    "last": 8.1,
+    "chg20": -8.5,
+    "rs": -8.3,
     "reason": "短线评分尾部，防破位或利润回吐"
    }
   ]
  },
  "breadth": {
   "美股": {
-   "total": 1,
-   "up_pct": 0,
-   "above20_pct": 0,
-   "newhigh60": 0
+   "total": 50,
+   "up_pct": 48,
+   "above20_pct": 56,
+   "newhigh60": 3
   },
   "A股": {
    "total": 36,
-   "up_pct": 64,
-   "above20_pct": 69,
-   "newhigh60": 3
+   "up_pct": 81,
+   "above20_pct": 78,
+   "newhigh60": 4
   },
   "港股": {
    "total": 30,
-   "up_pct": 77,
+   "up_pct": 70,
    "above20_pct": 87,
    "newhigh60": 1
   }
