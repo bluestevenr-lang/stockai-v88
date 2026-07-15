@@ -41,6 +41,11 @@ def _series(df, name):
 
 def build_horizon_facts(df, full=None) -> dict:
     """生成五档可审计行情底稿。方向是量化先验，不是未来胜率。"""
+    # 唯一实现位于 v88_decision_core；本模块只保留兼容入口与可视化。
+    from v88_decision_core import build_horizon_facts as _canonical_facts
+    return _canonical_facts(df, full=full)
+
+    # 以下旧实现保留一版仅便于历史审计，不再执行。
     close = _series(df, "Close")
     high = _series(df, "High")
     low = _series(df, "Low")
@@ -341,6 +346,33 @@ def cycle_alignment(facts: dict) -> dict:
 
 def align_decision_card(card: dict, facts: dict) -> dict:
     """用五周期底稿覆盖首页孤立短线概率；周期冲突拥有最高降级权。"""
+    from v88_decision_core import evaluate_decision
+    base = dict(card or {})
+    synthetic_last = float((facts or {}).get("last") or 100)
+    upside = float(base.get("upside_pct") or 0)
+    downside = float(base.get("downside_pct") or 0)
+    full = {
+        "last": synthetic_last,
+        "total": base.get("trend_quality_score", 50),
+        "resistance": base.get("resistance") or synthetic_last * (1 + upside / 100),
+        "stop": base.get("stop") or synthetic_last * (1 - downside / 100),
+    }
+    hint = base.get("action", "观察")
+    # 兼容旧两步调用：旧卡的“回避”只是初筛结果，不是已确认的风险指令。
+    if hint == "回避":
+        hint = "观察"
+    canonical = evaluate_decision(
+        full=full, facts=facts,
+        holding=base.get("holding"),
+        action_hint=hint,
+        analysis_time=base.get("analysis_time"),
+    )
+    if hint in ("退出", "清仓", "减仓", "评估减仓"):
+        canonical["entry_note"] = "持仓先执行风险复核"
+    base.update(canonical)
+    return base
+
+    # 以下旧实现保留一版仅便于历史审计，不再执行。
     out = dict(card or {})
     align = cycle_alignment(facts)
     out.update({
@@ -550,8 +582,10 @@ def cycle_visual_html(result: dict, name: str, symbol: str,
     review_mode = ("thinking-high" if review.get("status") in ("completed", "cached")
                    else "规则底稿·AI未复核")
     summary = escape(str(review.get("summary") or "五周期量价底稿"))
-    display_action = (alignment["safe_action"] if alignment["conflict"]
-                      else str(review.get("action") or "观察"))
+    decision = (result or {}).get("decision") or {}
+    display_action = (str(decision.get("action")) if decision.get("action") else
+                      (alignment["safe_action"] if alignment["conflict"]
+                       else str(review.get("action") or "观察")))
     action = escape(display_action)
     invalid = escape(str(review.get("invalid_summary") or "突破/跌破关键位重评"))
     css = f'''
@@ -582,7 +616,7 @@ def cycle_visual_html(result: dict, name: str, symbol: str,
         f'<small>🕒 分析于 {analysis_time} · {model} · {review_mode}</small></div>'
         f'<div class="grid2"><div class="card">{"".join(clock)}</div><div class="card">{"".join(traj)}</div></div>'
         f'<div class="summary"><b>{summary}</b><span>{escape(alignment["note"])}</span>'
-        f'<span>{"⚠️ 周期冲突·" if alignment["conflict"] else "周期口径一致·"}综合动作：{action}</span>'
+        f'<span>{"⚠️ 周期冲突·" if alignment["conflict"] else "统一口径·"}综合动作：{action}</span>'
         f'<span>失效：{invalid}</span></div>'
         f'<div class="hz-details">{"".join(detail_rows)}</div>'
         f'<div class="foot">图形用于周期与条件复核；方向热度和置信度均不是历史胜率，也不替代盈亏比与仓位纪律。</div>'

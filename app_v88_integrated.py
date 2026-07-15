@@ -1129,7 +1129,8 @@ def _ath_many_display(codes: tuple) -> dict:
 
 def _scan_cache_key(scan_type: str, scan_market: str, risk_pref: str = None) -> str:
     """生成扫描缓存文件键"""
-    key = f"{scan_type}_{scan_market}"
+    # 评分口径升级必须换缓存命名空间，禁止旧分数在新页面继续展示。
+    key = f"v88u2_{scan_type}_{scan_market}"
     if scan_type == 'regime' and risk_pref:
         key += f"_{risk_pref}"
     return key.replace(" ", "_")
@@ -9795,10 +9796,16 @@ def batch_scan_analysis(pool, scan_type="TOP", ma_target=None, progress_callback
             if df is not None:
                 m = calculate_metrics_all(df, c_fixed)
             if m:
+                from v88_decision_core import evaluate_decision as _evaluate_batch_decision
+                _decision = _evaluate_batch_decision(
+                    df, m.get('trend_full') or {}, name=name, code=code)
+                if _decision.get("error"):
+                    continue
+                _unified_score = int(_decision["unified_score"])
                 is_hit = False
                 
                 if scan_type == "TOP":
-                    if m['score'] > 40: is_hit = True
+                    if _unified_score > 40: is_hit = True
                 elif scan_type == "COIL":
                     _coil = _score_coil(df)
                     if _coil and _coil['score'] >= 45:
@@ -9827,7 +9834,7 @@ def batch_scan_analysis(pool, scan_type="TOP", ma_target=None, progress_callback
                     else:
                         min_score, tolerance = 45, 0.05
                     
-                    if m['score'] > min_score:
+                    if _unified_score > min_score:
                         ma_col = f'MA{ma_target}'
                         if ma_col in m['df'].columns:
                             ma_val = m['df'][ma_col].iloc[-1]
@@ -9849,7 +9856,7 @@ def batch_scan_analysis(pool, scan_type="TOP", ma_target=None, progress_callback
                 
                 if is_hit:
                     # 【V87.12】优化趋势判断 - 结合评分和技术指标
-                    score = m['score']
+                    score = _unified_score
                     ma200 = m['last'].get('MA200', 0)
                     rsi = m['rsi']
                     
@@ -9898,7 +9905,7 @@ def batch_scan_analysis(pool, scan_type="TOP", ma_target=None, progress_callback
                     else:
                         water_level = "➖"
                     
-                    _display_score = m.get('_special_score', m['score'])
+                    _display_score = _unified_score
                     _signals_str   = " ".join(m.get('_special_signals', []))
                     _setup_str     = m.get('_special_setup', m['suggestion'])
                     results.append({
@@ -9906,10 +9913,15 @@ def batch_scan_analysis(pool, scan_type="TOP", ma_target=None, progress_callback
                         "代码": code,
                         "行业": get_sector(code, name),
                         "得分": _display_score,
+                        "口径": _decision.get("score_version"),
+                        "短/中/长": f"{_decision['short_score']}/{_decision['medium_score']}/{_decision['long_score']}",
+                        "上/下估计": f"{_decision['p_up']}%/{_decision['p_down']}%",
+                        "盈亏比": f"{_decision['rr']:.2f}",
+                        "期望值": f"{_decision['expected_pct']:+.1f}%",
                         "ESG": f"{m.get('esg_total', 0)} ({m.get('esg_grade', 'N/A')})",
                         "长期": long_term,
                         "短期": short_term,
-                        "建议": _setup_str if scan_type in ("COIL", "BREAKOUT") else m['suggestion'],
+                        "建议": _decision['action'],
                         "策略": _signals_str if scan_type in ("COIL", "BREAKOUT") else m['logic'],
                         "资金": capital,
                         "水位": water_level,
@@ -10345,7 +10357,13 @@ def run_unified_scan(pool, scan_market, risk_preference="平衡", use_concurrent
                 return ('err', None)
 
             m = calculate_metrics_all(df, c_fixed)
-            if not m or m['score'] <= 35:
+            if not m:
+                return ('skip', None)
+
+            from v88_decision_core import evaluate_decision as _evaluate_scan_decision
+            _decision = _evaluate_scan_decision(
+                df, m.get('trend_full') or {}, name=name, code=code)
+            if _decision.get("error") or _decision.get("unified_score", 0) <= 35:
                 return ('skip', None)
 
             mdf = m['df']
@@ -10395,14 +10413,14 @@ def run_unified_scan(pool, scan_market, risk_preference="平衡", use_concurrent
                 pos_pct = 50.0
             pos52 = max(-100, min(100, round((pos_pct - 50) * 2)))
 
-            score = int(m['score'])
+            score = int(_decision['unified_score'])
             _bear = str(regime_str).upper().startswith("BEAR")
 
             # 【V94.3】操作指引与止损/目标：统一决策函数（与个股搜索共用，口径一致）
             # 【V88·时机闸门】趋势结论复用评分内核已算好的（评分本身已做时机压分）
-            action, stop_target = build_action_guidance(
-                score, m.get('rs20'), pos_pct, touch_count, last_close,
-                m.get('trade_plan'), regime_str, trend=m.get('trend_full'))
+            action = _decision.get("action", "观察")
+            stop_target = (f"防守{_decision.get('stop') or '—'} → 压力"
+                           f"{_decision.get('resistance') or '—'}（盈亏比{_decision.get('rr', 0):.2f}）")
 
             # 【V99.6】MACD/量价列：量能变化必须明示方向与幅度，不写模糊的"增长"。
             # 阈值：5日均量较20日均量 ≥+20% 明显放量 / +8%~+20% 温和放量 /
@@ -10436,6 +10454,12 @@ def run_unified_scan(pool, scan_market, risk_preference="平衡", use_concurrent
                 "行业": get_sector(code, name),
                 "现价": f"{m['last_price']:.2f}",
                 "得分": score,
+                "口径": _decision.get("score_version"),
+                "短/中/长": (f"{_decision.get('short_score')}/"
+                             f"{_decision.get('medium_score')}/{_decision.get('long_score')}"),
+                "上/下估计": f"{_decision.get('p_up')}%/{_decision.get('p_down')}%",
+                "盈亏比": f"{_decision.get('rr', 0):.2f}",
+                "期望值": f"{_decision.get('expected_pct', 0):+.1f}%",
                 "RSI": int(m.get('rsi', 0) or 0),
                 "20日动量": f"{m.get('chg20d', 0) or 0:+.1f}%",
                 "RS强度": (f"{m['rs20']:+.1f}" if m.get('rs20') is not None else "—"),
@@ -10449,7 +10473,7 @@ def run_unified_scan(pool, scan_market, risk_preference="平衡", use_concurrent
                 # 【V88·当日买入区间】推荐可买(≥62分且指引非回避)才给区间，其余留空
                 "买入区间": (f"{m['trade_plan']['entry_low']:.2f}~{m['trade_plan']['entry_high']:.2f}"
                           if m.get('trade_plan') and score >= 62 and action[:1] in ('🟢', '🔵', '🟡') else ""),
-                "推荐理由": _mk_reason(m, score),
+                "推荐理由": _decision.get("entry_note", "等待确认"),
                 "操作指引": action,
                 "止损/目标": stop_target,
             }
@@ -10554,32 +10578,26 @@ def run_horizon_top10(progress_callback=None):
             if df is None or len(df) < 60:
                 continue
             m = calculate_metrics_all(df, cfix)
-            if not m or m['score'] < 40:
+            if not m:
                 continue
             mdf = m['df']
             last = float(m['last_price'])
             score = int(m['score'])
             rs = m.get('rs20')
 
-            # 【V88·三期限引擎】三期限可买性评分：三端唯一实现 cloud_engine.horizon_scores
-            # （因子权重表+逻辑链全透明，末端含 V88 时机闸门），公式不再本地重复
-            import cloud_engine as _ce101
-            _icode = "000001.SS" if mkt == "A股" else ("^HSI" if mkt == "港股" else "^GSPC")
-            try:
-                _idf101 = fetch_stock_data(_icode)
-                _iclose = _idf101['Close'] if _idf101 is not None else None
-            except Exception:
-                _iclose = None
-            _hs = _ce101.horizon_scores(mdf, idx_close=_iclose, full=m.get('trend_full'))
-            if not _hs:
+            # 三期限榜也只读唯一决策底稿，不再使用另一套 horizon_scores。
+            from v88_decision_core import evaluate_decision as _evaluate_top_decision
+            _dc101 = _evaluate_top_decision(mdf, m.get('trend_full') or {}, name=name, code=code)
+            if _dc101.get("error"):
                 continue
-            _gate = f"｜{_hs['gate_note']}" if _hs.get('gate_note') else ""
 
             l250 = float(mdf['Low'].tail(250).min())
             h250 = float(mdf['High'].tail(250).max())
             pos = (last - l250) / (h250 - l250) * 100 if h250 > l250 else 50.0
-            act, stp = build_action_guidance(score, rs, pos, 0, last, m.get('trade_plan'),
-                                             trend=m.get('trend_full'))
+            score = int(_dc101["unified_score"])
+            act = _dc101["action"]
+            stp = (f"防守{_dc101.get('stop') or '—'}→压力"
+                   f"{_dc101.get('resistance') or '—'}")
 
             rows.append({
                 "市场": mkt, "代码": code, "名称": name,
@@ -10587,13 +10605,17 @@ def run_horizon_top10(progress_callback=None):
                 "RS强度": (f"{rs:+.1f}" if rs is not None else "—"),
                 "20日动量": f"{m.get('chg20d', 0) or 0:+.1f}%",
                 "操作指引": act, "止损/目标": stp,
-                "_s": _hs['short']['score'], "_m": _hs['mid']['score'], "_l": _hs['long']['score'],
-                "_why_s": _hs['short']['why'] + _gate,
-                "_why_m": _hs['mid']['why'] + _gate,
-                "_why_l": _hs['long']['why'] + _gate,
-                "_plan_s": _hs['short'].get('plan', ''),
-                "_plan_m": _hs['mid'].get('plan', ''),
-                "_plan_l": _hs['long'].get('plan', ''),
+                "口径": _dc101.get("score_version"),
+                "上/下估计": f"{_dc101['p_up']}%/{_dc101['p_down']}%",
+                "盈亏比": f"{_dc101['rr']:.2f}",
+                "期望值": f"{_dc101['expected_pct']:+.1f}%",
+                "_s": _dc101['short_score'], "_m": _dc101['medium_score'], "_l": _dc101['long_score'],
+                "_why_s": f"2周方向分{_dc101['short_score']}｜{_dc101['entry_note']}",
+                "_why_m": f"4/6/8周均分{_dc101['medium_score']}｜{_dc101['entry_note']}",
+                "_why_l": f"16周方向分{_dc101['long_score']}｜{_dc101['entry_note']}",
+                "_plan_s": _dc101['action'],
+                "_plan_m": _dc101['action'],
+                "_plan_l": _dc101['action'],
             })
         except Exception:
             continue
@@ -10692,7 +10714,12 @@ def run_regime_scan(pool, use_concurrent, scan_market, risk_preference="平衡",
 
             m = calculate_metrics_all(df, c_fixed)
             score_threshold = 35 if (USE_POTENTIAL_ENGINE and gap_engine) else 40
-            if not m or m['score'] <= score_threshold:
+            if not m:
+                continue
+            from v88_decision_core import evaluate_decision as _evaluate_regime_decision
+            _decision = _evaluate_regime_decision(
+                df, m.get('trend_full') or {}, name=name, code=code)
+            if _decision.get("error") or _decision.get("unified_score", 0) <= score_threshold:
                 continue
 
             last = m['last']
@@ -10720,8 +10747,7 @@ def run_regime_scan(pool, use_concurrent, scan_market, risk_preference="平衡",
                 position_level=pos_level,
                 position_percentile=pos_pct,
             )
-            if not qr["pass"] and qr["data_quality_flag"] == "FAIL":
-                continue
+            # 旧质量门只作为辅助告警，不得再让同一只股票在不同模块被无声剔除。
 
             # feature_vector
             fv = {
@@ -10761,9 +10787,7 @@ def run_regime_scan(pool, use_concurrent, scan_market, risk_preference="平衡",
             vt_check = {}
             if margin_gate:
                 vt_check = MarginOfSafetyGate.check_value_trap(sector_raw, m.get('logic', ''), m.get('suggestion', ''))
-            if vt_check.get("is_value_trap"):
-                stats['failed'] += 1
-                continue
+            # 价值陷阱保留为风险证据，由唯一动作引擎降级；不在本模块另行删除标的。
 
             # OpportunityClassifier（按质量分做动作分类，LONG_CORE 需 allows_long_core）
             cl_res = classifier.classify(regime, int(quality_score), fv, qr["pass"], allows_long_core=allows_long_core)
@@ -10793,7 +10817,7 @@ def run_regime_scan(pool, use_concurrent, scan_market, risk_preference="平衡",
                 capital = "📉 缩量"
 
             # 长期/短期
-            score = m['score']
+            score = _decision['unified_score']
             ma200 = last.get('MA200', 0)
             if score >= 75 and ma200 > 0 and last_price > ma200:
                 long_term = "📈 多头"
@@ -10851,14 +10875,18 @@ def run_regime_scan(pool, use_concurrent, scan_market, risk_preference="平衡",
 
             results.append({
                 "股票": name, "代码": code, "行业": sector_display,
-                "得分": m['score'], "ESG": f"{m.get('esg_total', 0)} ({m.get('esg_grade', 'N/A')})",
+                "得分": _decision['unified_score'],
+                "口径": _decision['score_version'],
+                "短/中/长": f"{_decision['short_score']}/{_decision['medium_score']}/{_decision['long_score']}",
+                "盈亏比": f"{_decision['rr']:.2f}", "期望值": f"{_decision['expected_pct']:+.1f}%",
+                "ESG": f"{m.get('esg_total', 0)} ({m.get('esg_grade', 'N/A')})",
                 "硬事实校验": qa_label,
                 "长期": long_term, "短期": short_term, "建议": m['suggestion'],
                 "策略": m['logic'], "资金": capital, "水位": water_str,
                 "现价": f"{last_price:.2f}",
-                "动作标签": f"{action_emoji} {action_label}",
-                "机会概率": f"{risk_probs['p_up_continuation']*100:.0f}%",
-                "风险概率": f"{risk_probs['p_drawdown']*100:.0f}%",
+                "动作标签": _decision['action'],
+                "机会概率": f"{_decision['p_up']}%",
+                "风险概率": f"{_decision['p_down']}%",
                 "建议仓位": action_res["suggested_position_range"],
                 "分批节奏": action_res["tranche_plan"],
                 "持有期": action_res.get("holding_period", "N/A"),
@@ -10891,7 +10919,7 @@ def run_regime_scan(pool, use_concurrent, scan_market, risk_preference="平衡",
     regime_info = mr.evaluate(index_df, breadth_above, max(1, breadth_total))
 
     top_n = 50 if (USE_POTENTIAL_ENGINE and ExpectationGapEngine) else 30
-    sorted_results = sorted(results, key=lambda x: x.get('regime_adjusted_score', x['得分']), reverse=True)[:top_n]
+    sorted_results = sorted(results, key=lambda x: x['得分'], reverse=True)[:top_n]
     from zoneinfo import ZoneInfo
     ts_str = datetime.now(ZoneInfo("Asia/Shanghai")).strftime("%Y-%m-%d %H:%M:%S") + " CST"
     return sorted_results, stats, regime_info, {
@@ -10933,7 +10961,8 @@ def run_ai_stock_selector(progress_callback=None):
             return _cb
         _update(f"正在扫描 {market_name}...")
         try:
-            res, stats = batch_scan_analysis(pool, scan_type="TOP", ma_target=None, progress_callback=_make_progress(market_name))
+            res, stats, _meta = run_unified_scan(
+                pool, market_name, "平衡", True, progress_callback=_make_progress(market_name))
             # 按得分排序，取前15
             sorted_res = sorted(res, key=lambda x: x.get('得分', 0), reverse=True)[:15]
             all_candidates[market_name] = sorted_res
@@ -11770,6 +11799,11 @@ def _render_today_nav():
             _hz9 = str(_d9.get("horizon") or "2周")
             _long9 = int(_d9.get("long_p_up") or 50)
             _cycle9 = str(_d9.get("cycle_note") or "4-16周待计算")
+            _score9 = int(_d9.get("unified_score") or 0)
+            _short9 = int(_d9.get("short_score") or 0)
+            _medium9 = int(_d9.get("medium_score") or 0)
+            _long_score9 = int(_d9.get("long_score") or 0)
+            _sig9 = str(_d9.get("data_signature") or "无签名")
             _entry9 = str(_d9.get("entry_note") or "入场条件待核")
             _conflict9 = bool(_d9.get("cycle_conflict"))
             if _conflict9:
@@ -11798,8 +11832,9 @@ def _render_today_nav():
                 </div>
               </div>
               <div class="v88-watch-foot"><span>{_hz9}情景期望 <b style="color:{_exp_color9}">{_exp9:+.1f}%</b>{_exp_suffix9}</span>
+              <span><b>统一分{_score9}</b>（短{_short9}/中{_medium9}/长{_long_score9}）</span>
               <span class="{'v88-cycle-warn' if _conflict9 else ''}">{'⚠️ ' if _conflict9 else ''}{_cycle9}</span>
-              <span>{_entry9}</span><span>🕒 {_at9}</span></div>
+              <span>{_entry9}</span><span>数据签名 {_sig9} · 🕒 {_at9}</span></div>
             </div>"""
 
         _market_order9 = ("🇺🇸美股", "🇭🇰港股", "🇨🇳A股")
@@ -11855,8 +11890,8 @@ def _render_today_nav():
             @media(max-width:1100px){.v88-watch-grid{grid-template-columns:1fr}}
             </style>
             <div class="v88-watch-shell">
-              <div class="v88-watch-title"><h3>⭐ 我的自选股 · 2周概率＋4—16周一致性决策台</h3>
-              <p>与深度分析共用五周期底稿；冲突自动降级｜点击股票名进入深度分析<br>__TIME__</p></div>
+              <div class="v88-watch-title"><h3>⭐ 我的自选股 · V88唯一评分决策台</h3>
+              <p>统一分=短20%＋中25%＋长20%＋趋势15%＋赔率20%｜点击股票名进入深度分析<br>__TIME__</p></div>
               <div class="v88-watch-grid">__COLUMNS__</div>
             </div>
             """).replace("__TIME__", _time_note9).replace("__COLUMNS__", "".join(_cols_html9))
@@ -12070,7 +12105,7 @@ def _render_today_nav():
     _critical9, _wa = [], {}
     try:
         _wa = st.session_state.get('watch_alerts_v88')
-        if not _wa or _wa.get('rule_version') != 8 or time.time() - _wa.get('ts', 0) > 15 * 60:
+        if not _wa or _wa.get('rule_version') != 9 or time.time() - _wa.get('ts', 0) > 15 * 60:
             _pool_wa = {}
             _watch_codes_wa = set()
             _holds_wa = set()
@@ -12117,7 +12152,7 @@ def _render_today_nav():
                 _sys_wa.path.insert(0, str(_repo / "src"))
             from watch_alerts import sharp_drop_signal as _sharp_wa, market_change_for as _mchg_wa, watch_levels as _levels_fn_wa
             from position_lifecycle import dynamic_priority as _dyn_level_wa, load_peaks as _load_peaks_wa
-            from decision_support import estimate_decision as _estimate_decision_wa, compact_text as _compact_decision_wa
+            from v88_decision_core import evaluate_decision as _evaluate_decision_wa, compact_text as _compact_decision_wa
             _levels_wa = _levels_fn_wa()
             _peaks_wa = _load_peaks_wa()
             try:  # 【行业热度维度】与飞书/云端同一份冻结快照
@@ -12153,14 +12188,11 @@ def _render_today_nav():
                         _holding_levels9[_c9] = {"level": _dyn9, "reason": _dyn_reason9}
                     _hint9 = ("评估减仓" if (_sharp9 or (_c9 in _holds_wa and _dyn9 == "A"))
                               else ("持有" if _c9 in _holds_wa else "观察"))
-                    _dc9 = _estimate_decision_wa(
-                        _f9, holding=_hold_map_wa.get(_c9), action_hint=_hint9,
-                        analysis_time=datetime.now().strftime("%m-%d %H:%M"))
-                    # 首页与深度分析必须共用同一份2/4/6/8/16周底稿；
-                    # 周期冲突优先降级，正期望/高盈亏比不得单独升级。
-                    import stock_horizon as _stock_horizon_wa
-                    _hf9 = _stock_horizon_wa.build_horizon_facts(_df9, full=_f9)
-                    _dc9 = _stock_horizon_wa.align_decision_card(_dc9, _hf9)
+                    # 首页、搜索、持仓、预警、深度分析全部只读唯一决策引擎。
+                    _dc9 = _evaluate_decision_wa(
+                        _df9, _f9, holding=_hold_map_wa.get(_c9), action_hint=_hint9,
+                        analysis_time=datetime.now().strftime("%m-%d %H:%M"),
+                        name=_n9, code=_c9)
                     _decisions9.append({"code": _c9, "name": _n9,
                                         "in_watchlist": _c9 in _watch_codes_wa,
                                         "scope": ("持仓" if _c9 in _risk_holds_wa else
@@ -12202,7 +12234,7 @@ def _render_today_nav():
                 0 if x.get("level") == "A" else (1 if x.get("level") == "B" else 2),
                 -x["p_down"]))
             _wa = {"ts": time.time(), "alerts": _alerts9, "decisions": _decisions9,
-                   "n": len(_pool_wa), "rule_version": 8, "holding_levels": _holding_levels9}
+                   "n": len(_pool_wa), "rule_version": 9, "holding_levels": _holding_levels9}
             st.session_state['watch_alerts_v88'] = _wa
         _alert_analysis_note9 = _analysis_label9(_wa.get("ts"), "预警分析")
         _render_front_watch_board9(_wa, _alert_analysis_note9)
@@ -13548,7 +13580,7 @@ if st.session_state.get('scan_selected_code'):
     
     # 【V82.9新增】显示扫描分析表格
     st.markdown("#### 📊 扫描结果（勾选2-4只股票进行对比）")
-    st.caption("💡 提示：以下是该股票的综合评分和策略建议")
+    st.caption("💡 与首页、自选、持仓、云端和飞书共用 V88-U2.0 唯一评分底稿")
     
     # 【V96】闪烁修复：页面任何交互都会触发 rerun 并重跑本块，原进度条每次
     # 挂载/卸载+sleep(0.2) 造成"不断闪现搜索/字符波动"。15分钟内同一代码
@@ -13648,15 +13680,24 @@ if st.session_state.get('scan_selected_code'):
                         if (_t_low <= _mav <= _t_high) or abs(_d) < 8:
                             _touch += 1
                 _pos_pct = (m['last_price'] - l250) / (h250 - l250) * 100 if h250 > l250 else 50.0
-                # 【V88·时机闸门】操作指引与趋势引擎对齐（评分内核已时机压分，结论直接复用）
-                _action, _stop_target = build_action_guidance(
-                    int(m['score']), m.get('rs20'), _pos_pct, _touch,
-                    float(m['last_price']), m.get('trade_plan'), trend=m.get('trend_full'))
+                from v88_decision_core import evaluate_decision as _evaluate_search_decision
+                _search_dc = _evaluate_search_decision(
+                    df_temp, m.get('trend_full') or {}, name=stock_name, code=q_input)
+                _action = _search_dc.get('action', '观察')
+                _stop_target = (f"防守{_search_dc.get('stop') or '—'} → 压力"
+                                f"{_search_dc.get('resistance') or '—'}")
                 scan_result = pd.DataFrame([{
                     "代码": q_input,
                     "名称": stock_name,
                     "市场": sector,
-                    "得分": m['score'],
+                    "统一分": _search_dc.get('unified_score', 0),
+                    "短/中/长": (f"{_search_dc.get('short_score', 0)}/"
+                                  f"{_search_dc.get('medium_score', 0)}/"
+                                  f"{_search_dc.get('long_score', 0)}"),
+                    "2周上/下估计": f"{_search_dc.get('p_up', 0)}%/{_search_dc.get('p_down', 0)}%",
+                    "盈亏比": f"{_search_dc.get('rr', 0):.2f}",
+                    "期望值": f"{_search_dc.get('expected_pct', 0):+.1f}%",
+                    "评分口径": _search_dc.get('score_version', 'V88-U2.0'),
                     "20日动量": f"{m.get('chg20d', 0) or 0:+.1f}%",
                     "RS强度": (f"{m['rs20']:+.1f}" if m.get('rs20') is not None else "—"),
                     "ESG": f"{_esg_t} ({_esg_g})",
@@ -13682,8 +13723,8 @@ if st.session_state.get('scan_selected_code'):
                     width='stretch',
                     hide_index=True,
                     column_config={
-                        "得分": st.column_config.ProgressColumn(
-                            "得分",
+                        "统一分": st.column_config.ProgressColumn(
+                            "统一分",
                             format="%d",
                             min_value=0,
                             max_value=100,
@@ -13986,6 +14027,7 @@ if execute_analysis and q_input:
         st.markdown("### 🧭 个股周期轮换总览（深度分析第一判断）")
         st.caption("先看周期象限与2/4/6/8/16周走向，再看明细和K线；置信度表示证据一致性，不是回测胜率。")
         _hz_align = {}
+        _hz_decision = {}
         try:
             import stock_horizon as _stock_horizon
             # 与首页自选卡使用同一套趋势阶段，避免“启动确认”在首页加权、
@@ -14013,8 +14055,7 @@ if execute_analysis and q_input:
                         _hz_news_parts.append(str(_hz_news.get("title") or _hz_news.get("headline") or ""))
                     else:
                         _hz_news_parts.append(str(_hz_news))
-                _hz_context = (f"系统评分:{(metrics or {}).get('score', '—')}；"
-                               f"系统建议:{(metrics or {}).get('suggestion', '—')}；"
+                _hz_context = ("买卖评分与动作仅由V88-U2.0唯一决策核心给出；"
                                f"近期新闻:{'；'.join(x for x in _hz_news_parts if x)[:700]}")
                 _hz_result = _stock_horizon.analyze(
                     st.session_state.get("scan_selected_name") or target_c,
@@ -14031,8 +14072,29 @@ if execute_analysis and q_input:
 
             _hz_review = _hz_result.get("review") or {}
             _hz_align = _stock_horizon.cycle_alignment(_hz_result.get("facts") or {})
-            _hz_action = (_hz_align.get("safe_action") if _hz_align.get("conflict")
-                          else _hz_review.get("action", "观察"))
+            from v88_decision_core import evaluate_decision as _evaluate_deep_decision
+            _hz_decision = _evaluate_deep_decision(
+                df, _hz_full, facts=_hz_result.get("facts") or {},
+                analysis_time=datetime.now().strftime("%m-%d %H:%M"),
+                name=st.session_state.get("scan_selected_name") or target_c,
+                code=target_c)
+            _hz_action = _hz_decision.get("action", "观察")
+            _hz_result = dict(_hz_result, decision=_hz_decision)
+            _ud1, _ud2, _ud3, _ud4, _ud5 = st.columns(5)
+            _ud1.metric("唯一统一分", _hz_decision.get("unified_score", "—"),
+                        help="短20%＋中25%＋长20%＋趋势质量15%＋入场赔率20%")
+            _ud2.metric("短/中/长", f"{_hz_decision.get('short_score','—')}/"
+                        f"{_hz_decision.get('medium_score','—')}/{_hz_decision.get('long_score','—')}")
+            _ud3.metric("2周上/下", f"{_hz_decision.get('p_up','—')}%/"
+                        f"{_hz_decision.get('p_down','—')}%",
+                        help="规则情景估计，不是回测胜率")
+            _ud4.metric("盈亏比", f"{_hz_decision.get('rr',0):.2f}",
+                        help="潜在收益÷潜在风险，越大越好")
+            _ud5.metric("情景期望", f"{_hz_decision.get('expected_pct',0):+.1f}%",
+                        help="概率加权收益，>0为正期望")
+            st.info(f"**统一动作：{_hz_action}**｜{_hz_decision.get('entry_note','')}｜"
+                    f"口径{_hz_decision.get('score_version')}｜数据签名"
+                    f"{_hz_decision.get('data_signature')}｜分析{_hz_decision.get('analysis_time')}")
             _hz_rows = _stock_horizon.table_rows(_hz_result)
             _hz_visual = _stock_horizon.cycle_visual_html(
                 _hz_result,
@@ -14268,8 +14330,7 @@ if execute_analysis and q_input:
                     _curr_p = float(df['Close'].iloc[-1])
                     _last5 = df.tail(5)[['Open','High','Low','Close','Volume']].to_string()
                     _rsi_v = metrics.get('rsi', 50)
-                    _score_v = metrics.get('score', 0)
-                    _suggestion_v = metrics.get('suggestion', '观望')
+                    _score_v = metrics.get('score', 0)  # 旧研究质量分，仅用于下方因子归因
                     _sharpe_v = quant.get('sharpe', 'N/A')
                     _maxdd_v = quant.get('max_dd', 'N/A')
                     _pattern_v = metrics.get('pattern', '无')
@@ -14334,18 +14395,15 @@ if execute_analysis and q_input:
                     # 【V94.4】把统一操作指引喂给 AI，强制与系统口径对齐
                     _guide_ctx = ""
                     try:
-                        _mdf_g = metrics.get('df')
-                        if _mdf_g is not None and len(_mdf_g) > 20:
-                            _lc_g = float(_mdf_g['Close'].iloc[-1])
-                            _l250g = float(_mdf_g['Low'].tail(250).min())
-                            _h250g = float(_mdf_g['High'].tail(250).max())
-                            _ppg = (_lc_g - _l250g) / (_h250g - _l250g) * 100 if _h250g > _l250g else 50.0
-                            _act_g, _st_g = build_action_guidance(
-                                int(_score_v), metrics.get('rs20'), _ppg, 0, _lc_g, metrics.get('trade_plan'),
-                                trend=metrics.get('trend_full'))
-                            _rs_txt = (f"{metrics['rs20']:+.1f}%" if metrics.get('rs20') is not None else "N/A")
-                            _guide_ctx = (f"系统操作指引: {_act_g} | {_st_g}\n"
-                                          f"20日动量: {metrics.get('chg20d', 0) or 0:+.1f}% | RS强度(相对大盘): {_rs_txt}")
+                        if _hz_decision:
+                            _guide_ctx = (
+                                f"V88唯一动作: {_hz_decision['action']}｜统一分{_hz_decision['unified_score']}"
+                                f"（短{_hz_decision['short_score']}/中{_hz_decision['medium_score']}/长{_hz_decision['long_score']}）\n"
+                                f"2周上/下: {_hz_decision['p_up']}%/{_hz_decision['p_down']}%｜"
+                                f"盈亏比: {_hz_decision['rr']:.2f}｜期望: {_hz_decision['expected_pct']:+.1f}%｜"
+                                f"{_hz_decision['entry_note']}｜口径{_hz_decision['score_version']}")
+                        if not _guide_ctx:
+                            _guide_ctx = "V88唯一决策底稿暂不可用：禁止输出买入/卖出动作，等待数据恢复。"
                     except Exception:
                         pass
 
@@ -14367,7 +14425,7 @@ if execute_analysis and q_input:
                             return ok, bad
                         _c_ok, _c_bad = _factor_digest(metrics.get("canslim_rows"))
                         _s_ok, _s_bad = _factor_digest(metrics.get("spec_rows"))
-                        _score_ctx = f"""【五维评分归因（总分 {_score_v}/100，用于解释分数来源，勿逐条复述）】
+                        _score_ctx = f"""【辅助研究质量归因（研究分 {_score_v}/100，不决定买卖，勿逐条复述）】
 成长质量(CANSLIM) — 达标: {', '.join(_c_ok) or '无'} ｜ 未达标: {', '.join(_c_bad) or '无'}
 趋势与动能 — 达标: {', '.join(_s_ok) or '无'} ｜ 未达标: {', '.join(_s_bad) or '无'}
 动能维度 {metrics.get('mom_score','N/A')}/100 ｜ ESG {metrics.get('esg_total','N/A')}({metrics.get('esg_grade','N/A')})"""
@@ -14377,11 +14435,12 @@ if execute_analysis and q_input:
                     # 【V88·统一裁决硬门】所有后续AI必须服从顶部同源五周期结论。
                     # 周期冲突时，基本面再好、短期期望再正，也不能输出推荐/建仓。
                     _cycle_gate_ctx = ""
-                    if _hz_align:
+                    if _hz_decision:
                         _cycle_gate_ctx = f"""
 【最高优先级五周期统一裁决（不可推翻）】
-周期口径：{_hz_align.get('note', '待核')}；状态：{_hz_align.get('status', '待核')}；安全动作：{_hz_align.get('safe_action', '观察')}。
-是否周期冲突：{'是' if _hz_align.get('conflict') else '否'}。
+统一分：{_hz_decision.get('unified_score')}（短{_hz_decision.get('short_score')}/中{_hz_decision.get('medium_score')}/长{_hz_decision.get('long_score')}）；
+上/下估计：{_hz_decision.get('p_up')}%/{_hz_decision.get('p_down')}%；盈亏比{_hz_decision.get('rr')}；期望{_hz_decision.get('expected_pct')}%；
+统一动作：{_hz_decision.get('action')}；周期状态：{_hz_decision.get('cycle_status')}；是否冲突：{'是' if _hz_decision.get('cycle_conflict') else '否'}。
 若为“是”：操作评级最高只能写“中性”或“回避”，仓位必须为0%，买点必须写“不参与，等待周期共振”；
 不得因基本面优秀、短期反弹概率、正期望或高盈亏比输出“推荐/强烈推荐/建仓/逢低吸纳”。
 必须明确区分2周与4-16周，不得把短期反弹解释成中长期转多。"""
@@ -14407,7 +14466,7 @@ if execute_analysis and q_input:
 【标的】{target_c}
 
 【实时数据】
-最新价: {_curr_p:.2f} | RSI: {_rsi_v:.1f} | 综合评分: {_score_v}/100 | 系统建议: {_suggestion_v}
+最新价: {_curr_p:.2f} | RSI: {_rsi_v:.1f} | 唯一统一分: {_hz_decision.get('unified_score','待核')}/100 | 统一动作: {_hz_decision.get('action','待核')}
 {_guide_ctx}
 K线形态: {_pattern_v} | 夏普比率: {_sharpe_v} | 最大回撤: {_maxdd_v}
 {_vwap_v}
@@ -14479,22 +14538,28 @@ K线形态: {_pattern_v} | 夏普比率: {_sharpe_v} | 最大回撤: {_maxdd_v}
 
         if _unified_ai_cache_key in st.session_state:
             _ua_res = st.session_state[_unified_ai_cache_key]
-            _ua_conflict = bool((_hz_align or {}).get("conflict"))
+            _ua_action = str((_hz_decision or {}).get("action") or "观察")
+            _ua_conflict = bool((_hz_decision or {}).get("cycle_conflict"))
+            _ua_no_entry_actions = {
+                "回避", "仅观察·不追涨", "等待短线止跌", "趋势偏多·等待回踩",
+                "观察", "持有观察·不加仓", "减仓", "评估减仓", "退出", "清仓",
+            }
+            _ua_entry_blocked = _ua_conflict or _ua_action in _ua_no_entry_actions
             # 不能只检查“推荐”两个字：周期冲突时，AI若偷偷给了非零仓位或买点，
             # 同样属于可执行性冲突。三项必须同时通过才允许作为建议展示。
             _ua_plain = re.sub(r"[*_#]", "", str(_ua_res))
             _ua_safe_rating = bool(re.search(r"【操作评级：\s*(?:中性|回避)", _ua_plain))
             _ua_zero_position = bool(re.search(r"仓位与节奏\s*[:：]\s*0%", _ua_plain))
             _ua_no_buy = bool(re.search(r"买点\s*[:：]\s*(?:不参与|不建议买|等待)", _ua_plain))
-            _ua_unsafe = bool(_ua_conflict and not (
+            _ua_unsafe = bool(_ua_entry_blocked and not (
                 _ua_safe_rating and _ua_zero_position and _ua_no_buy))
-            if _ua_conflict:
+            if _ua_entry_blocked:
                 st.warning(
-                    f"⚠️ **最高优先级周期裁决**：{_hz_align.get('note', '周期冲突')}；"
-                    f"统一动作：**{_hz_align.get('safe_action', '仅观察')}**。"
+                    f"⚠️ **V88唯一决策裁决**：{_hz_decision.get('cycle_note', '当前不满足新开仓条件')}；"
+                    f"统一动作：**{_ua_action}**。"
                     "正期望和高盈亏比只代表2周情景，不得升级为买入。")
             if _ua_unsafe:
-                st.error("⛔ 该AI报告未同时满足‘中性/回避＋0%仓位＋不参与’，与五周期硬门冲突，已停止作为操作建议展示。请点击重新生成。")
+                st.error("⛔ 该AI报告未同时满足‘中性/回避＋0%仓位＋不参与’，与V88唯一决策底稿冲突，已停止作为操作建议展示。请点击重新生成。")
                 with st.expander("查看被否决的旧报告（仅供审计，不可执行）", expanded=False):
                     st.markdown(_ua_res)
                 _ua_res = ""
@@ -15436,9 +15501,9 @@ K线形态: {_pattern_v} | 夏普比率: {_sharpe_v} | 最大回撤: {_maxdd_v}
         st.markdown("---")
 
         # ═══════════════════════════════════════════════════════════════
-        # 【V93 精简】综合评分 + 核心量化指标（一屏呈现）
+        # 旧五维模型只作为研究底稿；唯一分/概率/RR/EV/动作已在页面首屏展示。
         # ═══════════════════════════════════════════════════════════════
-        st.markdown("### 🎯 综合评分 & 量化指标")
+        st.markdown("### 🔬 辅助研究指标（不另算买卖结论）")
 
         # 【V88.13】交易量异常解读面板
         _vol_anomaly = analyze_volume_anomaly(df)
@@ -15474,12 +15539,12 @@ K线形态: {_pattern_v} | 夏普比率: {_sharpe_v} | 最大回撤: {_maxdd_v}
                 }
                 st.metric("量能信号", _sig_map.get(_vol_anomaly["signal"], "中性"))
 
-        # Row 1: 综合评分 + 交易建议 + K线形态
+        # Row 1: 旧研究质量因子 + K线形态（不得覆盖 V88-U2.0 动作）
         _s_c1, _s_c2, _s_c3, _s_c4, _s_c5 = st.columns(5)
         with _s_c1:
-            st.metric("综合评分", f"{metrics.get('score', 0)}/100", delta=f"{metrics.get('logic', '计算中')}")
+            st.metric("研究质量分", f"{metrics.get('score', 0)}/100", delta="仅作证据")
         with _s_c2:
-            st.metric("交易建议", metrics.get('suggestion', '观望'))
+            st.metric("V88唯一动作", (_hz_decision or {}).get('action', '待核'))
         with _s_c3:
             rsi_val = metrics['rsi']
             _rsi_icon = "🔴" if rsi_val > 70 else ("🟢" if rsi_val < 30 or rsi_val > 50 else "🟡")
@@ -15498,9 +15563,9 @@ K线形态: {_pattern_v} | 夏普比率: {_sharpe_v} | 最大回撤: {_maxdd_v}
         with _s2_c2:
             st.metric("Beta (β)", f"{beta_val:.2f}")
         with _s2_c3:
-            st.metric("胜率", quant.get('win_rate', 'N/A'))
+            st.metric("历史样本胜率", quant.get('win_rate', 'N/A'))
         with _s2_c4:
-            st.metric("盈亏比", quant.get('pl_ratio', 'N/A'))
+            st.metric("历史样本盈亏比", quant.get('pl_ratio', 'N/A'))
         with _s2_c5:
             st.metric("K线形态", metrics.get('pattern', '无')[:8])
 
@@ -15562,7 +15627,7 @@ K线形态: {_pattern_v} | 夏普比率: {_sharpe_v} | 最大回撤: {_maxdd_v}
                 except Exception:
                     pass
 
-            st.caption("📐 **五维综合评分** = CANSLIM × 25% + 专业投机 × 25% + 动能与相对强度 × 20% + ESG × 15% + 风控 × 15%")
+            st.caption("📐 以上五维分仅作基本面/质量研究证据；买卖动作、概率、盈亏比与排名一律以页面首屏 V88-U2.0 唯一决策底稿为准。")
 
         st.divider()
         
@@ -16020,7 +16085,7 @@ with tab_scanner:
             do_scan_ma30 = c_btn1.button("📊 MA30短线", help="月线支撑，适合短线波段（3-7天）", width='stretch')
             do_scan_ma60 = c_btn2.button("📈 MA60季线", help="季线支撑，适合波段交易（1-3周）", width='stretch')
             do_scan_ma120 = c_btn3.button("📉 MA120半年", help="半年线支撑，适合中线布局（1-3月）", width='stretch')
-            do_scan_top = c_btn4.button("🏆 综合评分", help="多维度量化评分，不限均线", width='stretch')
+            do_scan_top = c_btn4.button("🏆 V88统一分", help="短中长期、概率、盈亏比与周期轮转统一评分", width='stretch')
             do_scan_regime = c_btn5.button("🎯 市场状态自适应", help="先判 BULL/RANGE/BEAR，再给动作建议", type="primary", width='stretch', disabled=not REGIME_ENGINE_AVAILABLE)
             do_scan_safe = c_btn6.button("🛡️ 多重支撑", help="同时靠近多条均线，风险低", width='stretch')
             
@@ -16149,11 +16214,11 @@ with tab_scanner:
                 st.toast("📦 使用缓存，无需重新扫描", icon="📦")
             else:
                 pool = _pick_pool()
-                res, stats = run_scan("TOP", None, pool, use_concurrent, "综合评分 Top", "🏆")
+                res, stats = run_scan("TOP", None, pool, use_concurrent, "V88统一分 Top", "🏆")
                 st.session_state.scanner_results = {
                     'type': 'top', 'scan_market': scan_market,
-                    'title': f"#### 🏆 综合评分 Top 榜单 ({scan_market})",
-                    'caption': "💡 多维度量化评分：CANSLIM + 专业投机原理 + 技术指标，不限均线",
+                    'title': f"#### 🏆 V88唯一统一分 Top 榜单 ({scan_market})",
+                    'caption': "💡 唯一口径：短20%＋中25%＋长20%＋趋势质量15%＋入场胜算20%；同时显示概率、盈亏比、EV与动作",
                     'data': res, 'stats': stats, 'key': 'top_table',
                     'scan_timestamp': time.time(),
                 }
@@ -16273,7 +16338,13 @@ with tab_scanner:
                             m = calculate_metrics_all(df, c_fixed)
                             # 【V86修复】多重均线支撑：同时靠近MA30/MA60/MA120
                             # 降低评分要求，放宽容差
-                            if m and m['score'] > 35:  # 【V86】从45降到35
+                            if m:
+                                from v88_decision_core import evaluate_decision as _evaluate_safe_decision
+                                _safe_dc = _evaluate_safe_decision(
+                                    df, m.get('trend_full') or {}, name=name, code=code)
+                            else:
+                                _safe_dc = {}
+                            if m and _safe_dc.get('unified_score', 0) > 35:
                                 last_close = m['last']['Close']
                                 last_low = m['last']['Low']
                                 last_high = m['last']['High']
@@ -16295,13 +16366,18 @@ with tab_scanner:
                                 
                                 # 【V86】打印调试信息
                                 if touch_count >= 2:
-                                    _safe_print(f"[多重支撑] ✅ {code} ({name}): 触及{touch_count}条均线 - {', '.join(touch_mas)}, 评分={m['score']}")
+                                    _safe_print(f"[多重支撑] ✅ {code} ({name}): 触及{touch_count}条均线 - {', '.join(touch_mas)}, 统一分={_safe_dc['unified_score']}")
                                 
                                 # 只有触及2条或以上均线才算"多重支撑"
                                 if touch_count >= 2:
                                     res_combined.append({
                                         "市场": mkt_label, "代码": code, "名称": name,
-                                        "评分": m['score'], "策略": m['logic'],
+                                        "统一分": _safe_dc['unified_score'],
+                                        "短/中/长": f"{_safe_dc['short_score']}/{_safe_dc['medium_score']}/{_safe_dc['long_score']}",
+                                        "上/下估计": f"{_safe_dc['p_up']}%/{_safe_dc['p_down']}%",
+                                        "盈亏比": f"{_safe_dc['rr']:.2f}",
+                                        "期望值": f"{_safe_dc['expected_pct']:+.1f}%",
+                                        "动作": _safe_dc['action'], "口径": _safe_dc['score_version'],
                                         "现价": f"{m['last_price']:.2f}",
                                         "触发": " + ".join(touch_mas)
                                     })
@@ -16326,7 +16402,7 @@ with tab_scanner:
                 if stats_safe['failed'] > 0:
                     display_scan_failures(stats_safe['errors'], stats_safe['failed'])
             
-                res_combined = sorted(res_combined, key=lambda x: x['评分'], reverse=True)[:50]
+                res_combined = sorted(res_combined, key=lambda x: x['统一分'], reverse=True)[:50]
                 st.session_state.scanner_results = {
                     'type': 'safe_zone', 'scan_market': scan_market,
                     'title': f"#### 🛡️ 多重均线支撑 (安全区) ({scan_market})",
@@ -17591,17 +17667,24 @@ if st.session_state.get('pk_codes') and len(st.session_state.pk_codes) >= 2:
             
             # 安全获取metrics数据
             if metrics:
+                from v88_decision_core import evaluate_decision as _evaluate_pk_decision
+                _pk_dc = _evaluate_pk_decision(
+                    df_pk, metrics.get('trend_full') or {}, name=name, code=code)
                 pk_results.append({
                     "股票": name,
                     "代码": code,
                     "当前价": f"{df_pk['Close'].iloc[-1]:.2f}",
-                    "综合评分": metrics.get('score', 0),
-                    "建议": metrics.get('suggestion', '观望'),
+                    "统一分": _pk_dc.get('unified_score', 0),
+                    "短/中/长": f"{_pk_dc.get('short_score',0)}/{_pk_dc.get('medium_score',0)}/{_pk_dc.get('long_score',0)}",
+                    "2周上/下估计": f"{_pk_dc.get('p_up',0)}%/{_pk_dc.get('p_down',0)}%",
+                    "盈亏比": f"{_pk_dc.get('rr',0):.2f}",
+                    "期望值": f"{_pk_dc.get('expected_pct',0):+.1f}%",
+                    "建议": _pk_dc.get('action', '观察'),
+                    "口径": _pk_dc.get('score_version', 'V88-U2.0'),
                     "RSI": f"{metrics.get('rsi', 50):.1f}",
                     "夏普比率": quant.get('sharpe', 'N/A'),
                     "最大回撤": quant.get('max_dd', 'N/A'),
-                    "胜率": quant.get('win_rate', 'N/A'),
-                    "盈亏比": quant.get('pl_ratio', 'N/A')
+                    "历史样本胜率": quant.get('win_rate', 'N/A')
                 })
     
     # 【V87.17】清除进度条
@@ -17631,7 +17714,9 @@ if st.session_state.get('pk_codes') and len(st.session_state.pk_codes) >= 2:
         if gen_pk_ai:
             with _v88_running(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · PK对比分析"):
                 pk_summary = "\n".join([
-                    f"{r['股票']}({r['代码']}): 评分{r['综合评分']}, {r['建议']}, RSI={r['RSI']}, 夏普={r['夏普比率']}"
+                    f"{r['股票']}({r['代码']}): 统一分{r['统一分']}, {r['建议']}, "
+                    f"短中长{r['短/中/长']}, 上下估计{r['2周上/下估计']}, "
+                    f"盈亏比{r['盈亏比']}, 期望值{r['期望值']}, RSI={r['RSI']}"
                     for r in pk_results
                 ])
                 
@@ -17725,16 +17810,20 @@ def _build_stock_context(yf_code: str, display_name: str) -> str:
 
             m = calculate_metrics_all(df, yf_code)
             if m:
-                parts.append(f"RSI: {m['last'].get('RSI', 50):.1f} | 综合评分: {m.get('score', 0)}/100 | 建议: {m.get('suggestion', 'N/A')}")
-                parts.append(f"MA5: {m['last'].get('MA5',0):.2f} MA20: {m['last'].get('MA20',0):.2f} MA60: {m['last'].get('MA60',0):.2f}")
+                parts.append(f"RSI: {m['last'].get('RSI', 50):.1f} | MA5: {m['last'].get('MA5',0):.2f} MA20: {m['last'].get('MA20',0):.2f} MA60: {m['last'].get('MA60',0):.2f}")
             # 【V99】综合量价趋势注入：8分拆解/9段/9态/6水位/全价位——回答必须与此口径一致
             try:
                 import cloud_engine as _ce2
                 _F2 = _ce2.analyze_trend_full(df)
                 if _F2:
+                    from v88_decision_core import evaluate_decision as _evaluate_chat_decision
+                    _chat_dc = _evaluate_chat_decision(df, _F2, name=display_name, code=yf_code)
                     parts.append(
-                        f"\n【综合量价趋势判断(系统判定,回答须与此一致)】\n"
-                        f"趋势总分: {_F2['total']}/100 | 一句话结论: {_F2['conclusion']}\n"
+                        f"\n【V88-U2.0唯一决策底稿(回答须与此一致)】\n"
+                        f"统一分: {_chat_dc['unified_score']}/100 | 短/中/长: {_chat_dc['short_score']}/{_chat_dc['medium_score']}/{_chat_dc['long_score']}\n"
+                        f"2周上/下估计: {_chat_dc['p_up']}%/{_chat_dc['p_down']}% | 盈亏比: {_chat_dc['rr']:.2f} | 期望值: {_chat_dc['expected_pct']:+.1f}%\n"
+                        f"唯一动作: {_chat_dc['action']} | 口径: {_chat_dc['score_version']} | 数据签名: {_chat_dc['data_signature']}\n"
+                        f"辅助趋势证据: {_F2['conclusion']}\n"
                         f"趋势阶段: {_F2['stage']} | 量价状态: {_F2['vp']}\n"
                         f"水位: {_F2['water']}({_F2['pos52']}%)→{_F2['water_adv']} | MACD: {_F2['macd_txt']}\n"
                         f"均线: {_F2['ma_state']}({_F2['ma_txt']})\n"

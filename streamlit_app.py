@@ -660,7 +660,7 @@ elif _nav == "🏆 全选榜单":
         st.download_button("📥 导出榜单CSV", data=_df.to_csv(index=False, encoding="utf-8-sig"),
                            file_name="V88全选榜单.csv", mime="text/csv", use_container_width=True)
         st.dataframe(_df, hide_index=True, use_container_width=True, height=560)
-        st.caption("💡 得分=五维综合评分 ｜ MACD/量价：明显放量≥+20%·温和放量+8%~20%·持平±8%·明显缩量≤-20% ｜ 操作指引与止损/目标由引擎按实时价确定，与桌面 V88 同源")
+        st.caption("💡 得分=V88唯一统一分（短20%＋中25%＋长20%＋趋势15%＋赔率20%）｜表内同时显示概率、盈亏比与期望值｜口径V88-U2.0")
         import cloud_engine as _ceg
         exp_md("📖 术语速查（数值高低怎么看）", _ceg.GLOSSARY_MD)
 
@@ -711,13 +711,24 @@ elif _nav == "🔍 个股搜索":
             st.markdown(f"## 📌 {r.get('name') or r['symbol']}（{r['symbol']}）")
             f = r["full"]
             _concl_color = {"进攻": "🟢", "试仓": "🧪", "持有": "🔵", "等待": "⏳", "减仓": "🟡", "回避": "🔴"}
-            # ① 总分 + 一句话结论
-            c1, c2, c3 = st.columns([1, 1, 1])
-            c1.metric("趋势总分", f"{f['total']}/100")
-            c2.metric("现价", f"{f['last']}")
-            c3.metric("RSI", f"{f['rsi']}")
-            st.markdown(f"### {_concl_color.get(f['conclusion'],'')} 一句话结论：**{f['conclusion']}**")
-            st.success(f"**操作建议：{f['action']}**")
+            from v88_decision_core import evaluate_decision as _evaluate_cloud_decision
+            _cloud_decision = _evaluate_cloud_decision(_df, f, name=_tname, code=_tsym)
+            c1, c2, c3, c4, c5 = st.columns(5)
+            c1.metric("唯一统一分", _cloud_decision["unified_score"])
+            c2.metric("短/中/长", f"{_cloud_decision['short_score']}/"
+                      f"{_cloud_decision['medium_score']}/{_cloud_decision['long_score']}")
+            c3.metric("2周上/下", f"{_cloud_decision['p_up']}%/{_cloud_decision['p_down']}%")
+            c4.metric("盈亏比", f"{_cloud_decision['rr']:.2f}")
+            c5.metric("情景期望", f"{_cloud_decision['expected_pct']:+.1f}%")
+            st.info(f"**统一动作：{_cloud_decision['action']}**｜{_cloud_decision['entry_note']}｜"
+                    f"口径{_cloud_decision['score_version']}｜数据签名{_cloud_decision['data_signature']}｜"
+                    f"分析{_cloud_decision['analysis_time']}")
+            with st.expander("📎 辅助技术底稿（不另行决定买卖）", expanded=False):
+                c1a, c2a, c3a = st.columns(3)
+                c1a.metric("趋势质量辅助", f"{f['total']}/100")
+                c2a.metric("现价", f"{f['last']}")
+                c3a.metric("RSI", f"{f['rsi']}")
+                st.markdown(f"{_concl_color.get(f['conclusion'],'')} 技术阶段：**{f['conclusion']}**｜{f['action']}")
 
             # 【V88·云端个股五周期】点击直达后自动显示2/4/6/8/16周，
             # 行情规则先算、DeepSeek thinking-high再复核，失败也不伪装AI结果。
@@ -741,8 +752,8 @@ elif _nav == "🔍 个股搜索":
                 _hz_bar.empty()
                 _hz_rows = _stock_horizon_cloud.table_rows(_hz_result)
                 _hz_align = _stock_horizon_cloud.cycle_alignment(_hz_result.get("facts") or {})
-                _hz_action = (_hz_align.get("safe_action") if _hz_align.get("conflict")
-                              else (_hz_result.get("review") or {}).get("action", "观察"))
+                _hz_action = _cloud_decision["action"]
+                _hz_result = dict(_hz_result, decision=_cloud_decision)
                 _hz_visual = _stock_horizon_cloud.cycle_visual_html(
                     _hz_result, _tname, _tsym, f"v88-cloud-stock-cycle-{_tsym}")
                 if _hz_visual:

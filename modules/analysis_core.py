@@ -590,6 +590,12 @@ def batch_scan_analysis(
     Returns:
         (results, stats) 元组
     """
+    # 串行仅是并发度=1；评分、概率、RR、EV和动作必须与并发入口完全同源。
+    return batch_scan_analysis_concurrent(
+        pool, scan_type=scan_type, ma_target=ma_target,
+        progress_callback=progress_callback, max_workers=1)
+
+    # 下方旧实现保留作历史审计，不再可达。
     from .data_fetch import fetch_stock_data
     import time
     
@@ -737,25 +743,50 @@ def batch_scan_analysis_concurrent(
                     'error': '指标计算失败'
                 }
             
-            # 根据扫描类型筛选
+            # 所有并发/串行/搜索入口只允许调用 V88-U2.0 唯一决策核心。
+            # 本模块旧 CANSLIM 分仅保留作研究因子，不再决定排名、概率或动作。
+            from v88_decision_core import evaluate_decision
+            decision = evaluate_decision(df, {}, name=name, code=code)
+            if decision.get("error"):
+                return None, {
+                    'code': code,
+                    'name': name,
+                    'error': decision.get('error', '统一评分失败')
+                }
+
             should_include = False
-            
+            unified_score = int(decision['unified_score'])
             if scan_type == "TOP":
-                should_include = m['score'] >= 35
-            elif scan_type == "MA30" and ma_target == 30:
-                last_close = m['last']['Close']
-                ma30 = m['df']['MA30'].iloc[-1] if 'MA30' in m['df'].columns else 0
-                if ma30 > 0:
-                    distance = abs(last_close - ma30) / ma30
-                    should_include = distance < 0.05
+                should_include = unified_score > 40
+            elif scan_type in ("MA30", "MA_TOUCH") and ma_target:
+                last_close = float(m['last']['Close'])
+                ma_col = f'MA{ma_target}'
+                ma_value = m['df'][ma_col].iloc[-1] if ma_col in m['df'].columns else 0
+                tolerance = {30: 0.02, 60: 0.03, 120: 0.05}.get(ma_target, 0.05)
+                min_score = {30: 50, 60: 45, 120: 40}.get(ma_target, 45)
+                last_low = float(m['last'].get('Low', last_close))
+                last_high = float(m['last'].get('High', last_close))
+                if ma_value > 0 and unified_score > min_score:
+                    touched = last_low <= ma_value <= last_high
+                    close_to = abs(last_close - ma_value) / ma_value < tolerance
+                    should_include = touched or close_to
+            elif scan_type in ("COIL", "BREAKOUT"):
+                # 形态按钮只定义候选场景，仍由唯一分与动作决定是否展示。
+                should_include = unified_score > 40
             
             if should_include:
                 return {
                     '股票': name,
                     '代码': code,
-                    '得分': m['score'],
+                    '得分': unified_score,
+                    '口径': decision['score_version'],
+                    '短/中/长': f"{decision['short_score']}/{decision['medium_score']}/{decision['long_score']}",
+                    '上/下估计': f"{decision['p_up']}%/{decision['p_down']}%",
+                    '盈亏比': f"{decision['rr']:.2f}",
+                    '期望值': f"{decision['expected_pct']:+.1f}%",
                     '行业': get_sector(code, name),  # 【V90.9】板块→行业
-                    '建议': m['suggestion'],
+                    '建议': decision['action'],
+                    '现价': f"{float(m['last']['Close']):.2f}",
                 }, None
             else:
                 return None, None  # 不满足条件，非错误
