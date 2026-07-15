@@ -497,7 +497,7 @@ if _nav == "🧭 导航":
         _rot_cloud = (_snap or {}).get("rotation_forecast") or {}
         _cyc_cloud = (_snap or {}).get("cycle_scan") or {}
         if _rot_cloud or _cyc_cloud.get("stocks"):
-            st.markdown("**🧭 板块轮动＋个股周期总览（日 / 周 / 半月）**")
+            st.markdown("**🧭 板块轮动＋个股周期总览（2 / 5 / 8 / 16周＋预计拐点）**")
             from rotation_ui import combined_cycle_dashboard_html as _cycle_board_cloud, available_markets as _am_cloud
             _mk_c = _am_cloud(_rot_cloud)
             _focus_c = (st.radio("时钟聚焦市场", _mk_c, horizontal=True, key="v88_cloud_nav_rot_focus",

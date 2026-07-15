@@ -25,7 +25,7 @@ class _LayoutParser(HTMLParser):
             self.style_inside = True
         if inside and "cc-panel" in attrs.get("class", "").split():
             self.panel_count += 1
-        if inside and attrs.get("aria-label") == "中美港板块热度轮动时钟与日周月走向泳道":
+        if inside and attrs.get("aria-label") == "中美港板块热度轮动时钟与2至16周拐点走向":
             self.sector_inside = True
         if inside and attrs.get("aria-label") == "个股周期切换扫描":
             self.stock_inside = True
@@ -41,13 +41,16 @@ class _LayoutParser(HTMLParser):
 def _sample_forecast():
     points = {
         horizon: {"score": score, "confidence": "高", "trigger": "量能", "invalid": "破位"}
-        for horizon, score in (("明日", 69), ("下周", 64), ("半个月", 56))
+        for horizon, score in (("2周", 69), ("5周", 64), ("8周", 60), ("16周", 56))
     }
     return {
         "analysis_time": "2026-07-15 12:00",
         "markets": {"美股": {}},
         "market_heat": {"美股": {"score": 59, "label": "中性"}},
-        "trajectories": {"美股": [{"name": "能源", "points": points}]},
+        "trajectories": {"美股": [{
+            "name": "能源", "points": points,
+            "turning": {"horizon": "5周", "type": "顶部转弱", "confidence": "中"},
+        }]},
     }
 
 
@@ -70,5 +73,8 @@ def test_combined_cycle_dashboard_keeps_both_modules_in_compact_grid():
     assert parser.sector_inside
     assert parser.stock_inside
     assert not parser.style_inside
+    assert html.count("<style>") == 1
     assert "grid-template-columns:minmax(0,1fr) minmax(0,1fr)" in html
     assert "@media(max-width:920px)" in html
+    assert "2／5／8／16周＋拐点" in html
+    assert "预计拐点：顶部转弱" in html

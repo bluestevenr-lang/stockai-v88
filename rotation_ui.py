@@ -1,12 +1,15 @@
-"""V88 板块热度与日/周/月轮换思维导图（网页/云端/Lite 共用）。"""
+"""V88 板块热度与2/5/8/16周轮换、拐点思维导图（网页/云端/Lite 共用）。"""
 from html import escape
 import re
 
 
-HORIZONS = ("明日", "下周", "半个月")
-HORIZON_LABELS = {"明日": "日线·明日", "下周": "周线·下周", "半个月": "月线·半个月"}
+HORIZONS = ("2周", "5周", "8周", "16周")
+LEGACY_HORIZONS = ("明日", "下周", "半个月")
+HORIZON_LABELS = {**{h: f"周期·{h}" for h in HORIZONS},
+                  "明日": "日线·明日", "下周": "周线·下周", "半个月": "月线·半个月"}
 MARKET_ICONS = {"美股": "🇺🇸", "A股": "🇨🇳", "港股": "🇭🇰"}
-HORIZON_SHORT = {"明日": "明日 (日)", "下周": "下周 (周)", "半个月": "半月 (月)"}
+HORIZON_SHORT = {**{h: h for h in HORIZONS},
+                 "明日": "明日 (日)", "下周": "下周 (周)", "半个月": "半月 (月)"}
 SECTOR_COLORS = ("#3b82f6", "#8b5cf6", "#14b8a6", "#f97316", "#ec4899")
 
 _ROTATION_CSS = """
@@ -46,6 +49,12 @@ def _phase(strength: float, mom: float) -> str:
     return "退潮杀跌"
 
 
+def _trajectory_horizons(trajectory: list) -> tuple:
+    """新版优先；旧缓存尚未被下一轮流水线替换时仍可正常显示。"""
+    keys = {h for item in (trajectory or []) for h in (item.get("points") or {})}
+    return HORIZONS if any(h in keys for h in HORIZONS) else LEGACY_HORIZONS
+
+
 def _node(x: float, y: float, color: str, conf: str, title: str) -> str:
     tip = f"<title>{escape(title)}</title>"
     if conf == "高":
@@ -60,7 +69,9 @@ def _swimlane_svg(market: str, trajectory: list) -> str:
     if not trajectory:
         return ""
     W, H = 700, 132
-    cols = {"明日": 150, "下周": 330, "半个月": 510}
+    horizons = _trajectory_horizons(trajectory)
+    x_positions = (125, 255, 385, 515) if len(horizons) == 4 else (150, 330, 510)
+    cols = dict(zip(horizons, x_positions))
     top, bot = 26, 108
     span = bot - top
 
@@ -71,7 +82,7 @@ def _swimlane_svg(market: str, trajectory: list) -> str:
         return bot - (s - lo) / (hi - lo) * span
 
     yb1, yb2 = yv(60), yv(48)  # 热≥60 / 温48-60 / 冷<48
-    p = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="{escape(market)}板块日周月热度走向泳道">']
+    p = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="{escape(market)}板块2至16周热度与拐点走向">']
     p.append(f'<rect class="b-hot" x="96" y="{top}" width="420" height="{yb1-top:.0f}"/>')
     p.append(f'<rect class="b-warm" x="96" y="{yb1:.0f}" width="420" height="{yb2-yb1:.0f}"/>')
     p.append(f'<rect class="b-cold" x="96" y="{yb2:.0f}" width="420" height="{bot-yb2:.0f}"/>')
@@ -83,7 +94,7 @@ def _swimlane_svg(market: str, trajectory: list) -> str:
     end_labels = []
     for i, t in enumerate(trajectory):
         color = SECTOR_COLORS[i % len(SECTOR_COLORS)]
-        seq = [(cols[h], yv(t["points"][h]["score"]), h) for h in HORIZONS if h in t["points"]]
+        seq = [(cols[h], yv(t["points"][h]["score"]), h) for h in horizons if h in t["points"]]
         if not seq:
             continue
         pts = " ".join(f"{x:.0f},{y:.0f}" for x, y, _ in seq)
@@ -94,6 +105,10 @@ def _swimlane_svg(market: str, trajectory: list) -> str:
             title = (f'{t["name"]}·{h}：热度{pt["score"]}/100 · {pt["confidence"]}置信\n'
                      f'触发 {pt.get("trigger","")}｜失效 {pt.get("invalid","")}')
             p.append(_node(x, y, color, pt["confidence"], title))
+            turn = t.get("turning") or {}
+            if h == turn.get("horizon"):
+                p.append(f'<circle cx="{x:.0f}" cy="{y:.0f}" r="8" fill="none" stroke="{color}" '
+                         f'stroke-width="1.5" stroke-dasharray="2 2"><title>预计拐点：{escape(str(turn.get("type", "待确认")))}</title></circle>')
         end_labels.append([seq[-1][1], seq[-1][0], color, t["name"]])
     # 右端标签防重叠：按 y 排序后强制最小行距
     end_labels.sort()
@@ -124,14 +139,15 @@ def _clock_svg(market: str, trajectory: list, heat: dict) -> str:
     p.append(f'<text class="ph" x="{cx+R+6}" y="{cy+4}" text-anchor="start">高位派发</text>')
     p.append(f'<text class="ph" x="{cx-R-6}" y="{cy+4}" text-anchor="end">低位蓄势</text>')
     legend = []
+    horizons = _trajectory_horizons(trajectory)
     for i, t in enumerate(trajectory):
         color = SECTOR_COLORS[i % len(SECTOR_COLORS)]
-        scores = [t["points"][h]["score"] for h in HORIZONS if h in t["points"]]
+        scores = [t["points"][h]["score"] for h in horizons if h in t["points"]]
         if not scores:
             continue
         avg = sum(scores) / len(scores)
-        near = t["points"].get("明日", {}).get("score", avg)
-        far = t["points"].get("半个月", {}).get("score", avg)
+        near = t["points"].get(horizons[0], {}).get("score", avg)
+        far = t["points"].get(horizons[-1], {}).get("score", avg)
         strength = max(-1.0, min(1.0, (avg - 50) / 20.0))
         mom = max(-1.0, min(1.0, (far - near) / 12.0))
         x = cx + strength * R * 0.78
@@ -143,10 +159,12 @@ def _clock_svg(market: str, trajectory: list, heat: dict) -> str:
                  f'<title>{escape(t["name"])}</title></circle>')
         phase = _phase(strength, mom)
         ly = 44 + len(legend) * 27
+        turn = t.get("turning") or {}
+        turn_text = (f' · 拐点{escape(str(turn.get("horizon")))}' if turn.get("horizon") else '')
         legend.append(
             f'<rect x="310" y="{ly-9}" width="12" height="12" rx="3" fill="{color}"/>'
             f'<text class="lbl" x="330" y="{ly}">{escape(t["name"])} · {phase}</text>'
-            f'<text class="mut" x="330" y="{ly+13}">明日{int(near)} → 半月{int(far)} 热度</text>'
+            f'<text class="mut" x="330" y="{ly+13}">{horizons[0]}{int(near)} → {horizons[-1]}{int(far)} 热度{turn_text}</text>'
         )
     heat_txt = ""
     if heat:
@@ -218,14 +236,14 @@ def _rich_rotation_html(forecast: dict, element_id: str, focus_market: str,
     clock_block = (f'<div class="rf-card">{clock}</div>' if clock else "")
     return (
         f'<style>{css}</style>'
-        f'<div id="{safe_id}" role="figure" aria-label="中美港板块热度轮动时钟与日周月走向泳道">'
+        f'<div id="{safe_id}" role="figure" aria-label="中美港板块热度轮动时钟与2至16周拐点走向">'
         f'<div class="rf-meta"><span>🕒 分析于 {analysis_time}（北京时间）</span>'
         f'<span>{review_label}</span><span>条件成立才升级，失效即撤销</span></div>'
         f'<div class="rf-root"><b>🧠 板块热度 · 轮动时钟与走向</b>'
-        f'<small>日线 → 周线 → 月线</small></div>'
+        f'<small>2周 → 5周 → 8周 → 16周（圆环=预计拐点）</small></div>'
         f'{clock_block}{"".join(cards)}{warning_html}'
         f'<div class="rf-foot"><span>● 实心=高置信 ◐ 半实=中 ○ 空心=低</span>'
-        f'<span>横轴=明日/下周/半月 · 纵轴热→温→冷</span>'
+        f'<span>横轴=2/5/8/16周 · 纵轴热→温→冷 · 圆环=预计拐点</span>'
         f'<span>悬停节点看触发/失效</span></div>'
         f'</div>'
     )
@@ -292,7 +310,8 @@ def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle") -> str:
 
     def _rows(items, cls):
         out = []
-        for s in items[:8]:
+        # 自选与持仓全部展示，不按8只截断；长清单由页面自然向下延伸。
+        for s in items:
             out.append(f'<div class="cy-row"><span class="cy-nm">{escape(str(s.get("name","")))}</span> '
                        f'{escape(str(s.get("phase","")))} · {s.get("confidence","")}置信 · {escape(str(s.get("horizon","")))} · 52周{s.get("pos52","")}%</div>')
         return "".join(out) or '<div class="cy-row">—</div>'
@@ -337,15 +356,18 @@ def combined_cycle_dashboard_html(forecast: dict, cycle: dict,
     stock_html = stock_cycle_html(cycle, f"{safe_id}-stock") if cycle else ""
 
     def _split_style(html: str):
-        """样式统一移到总容器之前，避免 Streamlit 把嵌套 style/h4 拆出双栏。"""
+        """抽出纯CSS并合进唯一style，避免Streamlit把第二个style内容显示成正文。"""
         m = re.match(r"\s*(<style>.*?</style>)(.*)\Z", html or "", flags=re.S)
-        return (m.group(1), m.group(2)) if m else ("", html or "")
+        if not m:
+            return "", html or ""
+        style = re.sub(r"^<style>|</style>$", "", m.group(1), flags=re.S)
+        return style, m.group(2)
 
     sector_style, sector_body = _split_style(sector_html)
     stock_style, stock_body = _split_style(stock_html)
     panels = []
     if sector_body:
-        panels.append('<div class="cc-panel"><div class="cc-title">🧠 板块轮动 · 日／周／半月</div>'
+        panels.append('<div class="cc-panel"><div class="cc-title">🧠 板块轮动 · 2／5／8／16周＋拐点</div>'
                       + sector_body + '</div>')
     if stock_body:
         panels.append('<div class="cc-panel"><div class="cc-title">🎯 个股周期 · 持仓＋自选</div>'
@@ -365,13 +387,15 @@ def combined_cycle_dashboard_html(forecast: dict, cycle: dict,
 #{safe_id} .cy-meta{{font-size:8px;margin-bottom:.15rem}}
 #{safe_id} .cy-card{{padding:.2rem .28rem;margin:.2rem 0}}
 #{safe_id} .cy-card svg text{{font-size:8px}}
-#{safe_id} .cy-list{{gap:.25rem;margin-top:.15rem}}
+#{safe_id} .cy-list{{gap:.25rem;margin-top:.15rem;max-height:190px;overflow:auto;padding-right:2px}}
 #{safe_id} .cy-col b{{font-size:9px}}
 #{safe_id} .cy-row{{font-size:8px;line-height:1.25;margin:.08rem 0}}
 @media(max-width:920px){{#{safe_id} .cc-grid{{grid-template-columns:1fr}}}}
-</style>{sector_style}{stock_style}
+{sector_style}
+{stock_style}
+</style>
 <div id="{safe_id}" role="figure" aria-label="板块轮动与个股周期综合总览">
-  <div class="cc-head"><b>🧭 周期总览</b><span>左看板块方向 · 右看持仓/自选切换 · 悬停查看触发与失效</span></div>
+  <div class="cc-head"><b>🧭 周期总览</b><span>左看2/5/8/16周板块与拐点 · 右看全部持仓/自选切换 · 悬停查看触发与失效</span></div>
   <div class="cc-grid{single}">{''.join(panels)}</div>
 </div>'''
 
@@ -381,6 +405,9 @@ def _legacy_rotation_html(forecast: dict, element_id: str = "v88-rotation-map") 
         return ""
     safe_id = re.sub(r"[^a-zA-Z0-9_-]", "-", element_id)
     reviewed = ((forecast.get("strong_review") or {}).get("focus") or {})
+    market_maps = forecast.get("markets") or {}
+    _legacy_keys = {h for rows in market_maps.values() for h in (rows or {})}
+    view_horizons = HORIZONS if any(h in _legacy_keys for h in HORIZONS) else LEGACY_HORIZONS
     review_status = (forecast.get("strong_review") or {}).get("status")
     review_label = "🧠 最强思考已复核" if review_status == "completed" else "🧠 最强思考待下一轮"
     branches = []
@@ -395,7 +422,7 @@ def _legacy_rotation_html(forecast: dict, element_id: str = "v88-rotation-map") 
         heat_text = (f"当前热度 {heat_score}/100 · {heat.get('label', '中性')}"
                      if heat_score is not None else "当前热度待下一轮更新")
         nodes = []
-        for horizon in HORIZONS:
+        for horizon in view_horizons:
             candidates = horizons.get(horizon) or []
             if not candidates:
                 nodes.append('<div class="rf-node rf-empty">暂无候选</div>')
@@ -450,9 +477,9 @@ def _legacy_rotation_html(forecast: dict, element_id: str = "v88-rotation-map") 
 #{safe_id} .rf-warning{{font-size:11px;color:var(--destructive,var(--primary-color));margin-top:.35rem}}
 @media(max-width:700px){{#{safe_id} .rf-tree{{grid-template-columns:1fr}}#{safe_id} .rf-branch:before{{display:none}}}}
 </style>
-<div id="{safe_id}" role="figure" aria-label="中美港板块热度与日周月轮换思维导图">
+<div id="{safe_id}" role="figure" aria-label="中美港板块热度与周期轮换思维导图">
   <div class="rf-meta"><span>🕒 分析于 {analysis_time}（北京时间）</span><span>{review_label}</span><span>条件成立才升级，失效即撤销</span></div>
-  <div class="rf-root"><b>🧠 中美港板块热度与周期预测</b><small>日线 → 周线 → 月线</small></div>
+  <div class="rf-root"><b>🧠 中美港板块热度与周期预测</b><small>2周 → 5周 → 8周 → 16周</small></div>
   <div class="rf-tree">{''.join(branches)}</div>
   {warning_html}
 </div>'''

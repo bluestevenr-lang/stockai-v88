@@ -205,7 +205,7 @@ if _nav == "🧭 导航":
         _rot_lite = (_snap or {}).get("rotation_forecast") or {}
         _cyc_lite = (_snap or {}).get("cycle_scan") or {}
         if _rot_lite or _cyc_lite.get("stocks"):
-            st.markdown("**🧭 板块轮动＋个股周期总览（日 / 周 / 半月）**")
+            st.markdown("**🧭 板块轮动＋个股周期总览（2 / 5 / 8 / 16周＋预计拐点）**")
             from rotation_ui import combined_cycle_dashboard_html as _cycle_board_lite, available_markets as _am_lite
             _mk_l = _am_lite(_rot_lite)
             _focus_l = (st.radio("时钟聚焦市场", _mk_l, horizontal=True, key="v88_lite_nav_rot_focus",

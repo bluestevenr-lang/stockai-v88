@@ -5328,7 +5328,25 @@ def _watchlist_load():
     try:
         d = json.loads(_WATCHLIST_FILE.read_text(encoding="utf-8"))
         if isinstance(d, dict) and any(k in d for k in ("US", "HK", "CN")):
-            return {k: [tuple(x) for x in d.get(k, [])] for k in ("US", "HK", "CN")}
+            # 旧数据曾把裸6位A股代码误放进US；读取时规范代码、按真实市场归类并去重。
+            clean = {"US": [], "HK": [], "CN": []}
+            seen = set()
+            for rows in d.values():
+                for row in rows or []:
+                    if not isinstance(row, (list, tuple)) or len(row) < 2:
+                        continue
+                    code, name = str(row[0]).strip().upper(), str(row[1])
+                    if code.isdigit() and len(code) == 6:
+                        code += ".SS" if code[0] in "569" else ".SZ"
+                    if code.endswith(".SH"):
+                        code = code[:-3] + ".SS"
+                    if code in seen:
+                        continue
+                    seen.add(code)
+                    clean[_watchlist_market(code)].append((code, name))
+            if clean != {k: [tuple(x) for x in d.get(k, [])] for k in ("US", "HK", "CN")}:
+                _watchlist_save(clean)
+            return clean
     except Exception:
         pass
     d = {k: list(v) for k, v in WATCHLIST.items()}  # 首次从内置初始化
@@ -5339,7 +5357,7 @@ def _watchlist_market(code):
     c = str(code).upper()
     if c.endswith(".HK"):
         return "HK"
-    if c.endswith(".SS") or c.endswith(".SZ"):
+    if c.endswith((".SS", ".SH", ".SZ")) or (c.isdigit() and len(c) == 6):
         return "CN"
     return "US"
 
@@ -11709,7 +11727,8 @@ def _render_today_nav():
     def _render_front_watch_board9(_wa9, _time_note9):
         """把规则概率与盈亏比做成第一屏主视觉；详细预警仍在原模块保留。"""
         _all9 = list((_wa9 or {}).get("decisions") or [])
-        _watch9 = [d for d in _all9 if d.get("scope") == "自选"]
+        # “同时是持仓”的标的仍属于自选，不能因为风险优先分类而从自选台消失。
+        _watch9 = [d for d in _all9 if d.get("in_watchlist") or d.get("scope") == "自选"]
         if not _watch9:
             with _watch_front_slot9.container():
                 st.info("⭐ 我的自选股决策台正在计算；完成后将在这里显示上涨/下跌概率与盈亏比。")
@@ -11986,7 +12005,7 @@ def _render_today_nav():
         _rot_forecast9 = (_snap or {}).get("rotation_forecast") or {}
         _cyc9 = (_snap or {}).get("cycle_scan") or {}
         if _rot_forecast9 or _cyc9.get("stocks"):
-            st.markdown("**🧭 板块轮动＋个股周期总览（日 / 周 / 半月）**")
+            st.markdown("**🧭 板块轮动＋个股周期总览（2 / 5 / 8 / 16周＋预计拐点）**")
             try:
                 from rotation_ui import combined_cycle_dashboard_html as _cycle_board9, available_markets as _am9
                 _mk9 = _am9(_rot_forecast9)
@@ -12022,7 +12041,7 @@ def _render_today_nav():
     _critical9, _wa = [], {}
     try:
         _wa = st.session_state.get('watch_alerts_v88')
-        if not _wa or _wa.get('rule_version') != 6 or time.time() - _wa.get('ts', 0) > 15 * 60:
+        if not _wa or _wa.get('rule_version') != 7 or time.time() - _wa.get('ts', 0) > 15 * 60:
             _pool_wa = {}
             _watch_codes_wa = set()
             _holds_wa = set()
@@ -12030,7 +12049,8 @@ def _render_today_nav():
             _hold_map_wa = {}
             try:
                 for _mk9, _lst9 in (_watchlist_load() or {}).items():
-                    for _c9, _n9 in list(_lst9)[:10]:
+                    # 每个市场的自选全部扫描；不得以10只截断或因同时持仓而漏显。
+                    for _c9, _n9 in list(_lst9):
                         _c9 = str(_c9)
                         _watch_codes_wa.add(_c9)
                         _pool_wa[_c9] = _n9
@@ -12108,6 +12128,7 @@ def _render_today_nav():
                         _f9, holding=_hold_map_wa.get(_c9), action_hint=_hint9,
                         analysis_time=datetime.now().strftime("%m-%d %H:%M"))
                     _decisions9.append({"code": _c9, "name": _n9,
+                                        "in_watchlist": _c9 in _watch_codes_wa,
                                         "scope": ("持仓" if _c9 in _risk_holds_wa else
                                                   ("自选" if _c9 in _watch_codes_wa else "常搜")),
                                         "level": (_dyn9 if _c9 in _holds_wa else _levels_wa.get(_c9, "B")),
@@ -12147,7 +12168,7 @@ def _render_today_nav():
                 0 if x.get("level") == "A" else (1 if x.get("level") == "B" else 2),
                 -x["p_down"]))
             _wa = {"ts": time.time(), "alerts": _alerts9, "decisions": _decisions9,
-                   "n": len(_pool_wa), "rule_version": 6, "holding_levels": _holding_levels9}
+                   "n": len(_pool_wa), "rule_version": 7, "holding_levels": _holding_levels9}
             st.session_state['watch_alerts_v88'] = _wa
         _alert_analysis_note9 = _analysis_label9(_wa.get("ts"), "预警分析")
         _render_front_watch_board9(_wa, _alert_analysis_note9)
