@@ -11770,9 +11770,16 @@ def _render_today_nav():
             _hz9 = str(_d9.get("horizon") or "2周")
             _long9 = int(_d9.get("long_p_up") or 50)
             _cycle9 = str(_d9.get("cycle_note") or "4-16周待计算")
+            _entry9 = str(_d9.get("entry_note") or "入场条件待核")
             _conflict9 = bool(_d9.get("cycle_conflict"))
             if _conflict9:
                 _rr_txt9, _rr_color9, _rr_bg9 = "短期赔率≠可买", "#b45309", "#fffbeb"
+            elif "小仓试错" in _action9:
+                _rr_txt9, _rr_color9, _rr_bg9 = "概率补偿·仅小仓", "#2563eb", "#eff6ff"
+            elif "试仓复核" in _action9:
+                _rr_txt9, _rr_color9, _rr_bg9 = "入场门槛通过", "#1d4ed8", "#dbeafe"
+            elif "等待回踩" in _action9:
+                _rr_txt9, _rr_color9, _rr_bg9 = "当前价不划算", "#b45309", "#fffbeb"
             _exp_suffix9 = "（周期冲突，不升级）" if _conflict9 else ""
             return f"""
             <div class="v88-watch-card{' v88-watch-conflict' if _conflict9 else ''}">
@@ -11792,7 +11799,7 @@ def _render_today_nav():
               </div>
               <div class="v88-watch-foot"><span>{_hz9}情景期望 <b style="color:{_exp_color9}">{_exp9:+.1f}%</b>{_exp_suffix9}</span>
               <span class="{'v88-cycle-warn' if _conflict9 else ''}">{'⚠️ ' if _conflict9 else ''}{_cycle9}</span>
-              <span>{_reason9}</span><span>🕒 {_at9}</span></div>
+              <span>{_entry9}</span><span>🕒 {_at9}</span></div>
             </div>"""
 
         _market_order9 = ("🇺🇸美股", "🇭🇰港股", "🇨🇳A股")

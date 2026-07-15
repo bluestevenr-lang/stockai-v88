@@ -97,3 +97,44 @@ def test_visual_fallback_labels_rule_not_ai():
     assert "规则偏涨" in html
     assert "AI偏涨" not in html
     assert "规则上行估计：76%" in html
+
+
+def test_bullish_cycles_bad_price_waits_instead_of_avoid():
+    facts = {"horizons": {
+        "2周": {"rule_score": 62}, "4周": {"rule_score": 72},
+        "6周": {"rule_score": 73}, "8周": {"rule_score": 74},
+        "16周": {"rule_score": 73},
+    }}
+    aligned = stock_horizon.align_decision_card(
+        {"upside_pct": .9, "downside_pct": 10, "rr": .09,
+         "expected_pct": -2.4, "action": "回避"}, facts)
+    assert aligned["cycle_status"] == "多周期偏涨"
+    assert aligned["action"] == "趋势偏多·等待回踩"
+    assert aligned["break_even_p"] == 91.7
+    assert "当前赔率不足" in aligned["entry_note"]
+
+
+def test_bullish_cycles_allow_controlled_aggressive_entry():
+    facts = {"horizons": {
+        "2周": {"rule_score": 72}, "4周": {"rule_score": 58},
+        "6周": {"rule_score": 59}, "8周": {"rule_score": 58},
+        "16周": {"rule_score": 58},
+    }}
+    aligned = stock_horizon.align_decision_card(
+        {"upside_pct": 9, "downside_pct": 10.8, "rr": .83,
+         "expected_pct": 3, "action": "观察"}, facts)
+    assert aligned["action"] == "共振·小仓试错"
+    assert aligned["probability_edge"] >= 8
+
+
+def test_holding_risk_action_cannot_be_overridden_by_bullish_cycle():
+    facts = {"horizons": {
+        "2周": {"rule_score": 75}, "4周": {"rule_score": 70},
+        "6周": {"rule_score": 68}, "8周": {"rule_score": 66},
+        "16周": {"rule_score": 64},
+    }}
+    aligned = stock_horizon.align_decision_card(
+        {"upside_pct": 20, "downside_pct": 8, "rr": 2.5,
+         "expected_pct": 12, "action": "评估减仓"}, facts)
+    assert aligned["action"] == "评估减仓"
+    assert aligned["entry_note"] == "持仓先执行风险复核"

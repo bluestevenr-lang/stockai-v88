@@ -357,22 +357,51 @@ def align_decision_card(card: dict, facts: dict) -> dict:
     out["expected_pct"] = round(
         (align["p_up"] / 100) * upside - (align["p_down"] / 100) * downside, 1)
     rr = float(out.get("rr") or 0)
+    break_even_p = round(100 / (1 + rr), 1) if rr > 0 else 100.0
+    probability_edge = round(align["p_up"] - break_even_p, 1)
+    out["break_even_p"] = break_even_p
+    out["probability_edge"] = probability_edge
+    original_action = str(out.get("action") or "观察")
+    protective_action = original_action in ("退出", "清仓", "减仓", "评估减仓")
+    holding_like = protective_action or "持有" in original_action
     if align["conflict"]:
         out["action"] = align["safe_action"]
         out["reason"] = align["note"][:20]
+        out["entry_note"] = "周期未共振，不建立新仓"
+    elif protective_action:
+        # 持仓风险优先级高于看涨周期，避免周期结论掩盖止损/利润保护。
+        out["action"] = original_action
+        out["reason"] = f"风险动作优先｜{align['note']}"[:20]
+        out["entry_note"] = "持仓先执行风险复核"
     elif align["status"] == "多周期偏跌":
-        _holding_like = any(x in str(out.get("action") or "")
-                            for x in ("持有", "减仓", "退出", "清仓"))
-        out["action"] = "持仓保护" if _holding_like else "回避"
+        out["action"] = "持仓保护" if holding_like else "回避"
         out["reason"] = align["note"][:20]
-    elif align["status"] == "多周期偏涨" and rr >= 1.5 and out["expected_pct"] > 1:
-        out["action"] = "多周期共振·试仓复核"
+        out["entry_note"] = "方向与赔率均不支持新仓"
+    elif align["status"] == "多周期偏涨":
+        if rr >= 1.5 and out["expected_pct"] > 1:
+            out["action"] = ("持有·加仓复核" if holding_like
+                             else "多周期共振·试仓复核")
+            out["entry_note"] = f"标准门槛通过｜概率优势{probability_edge:+.1f}点"
+        elif (align["p_up"] >= 65 and rr >= 0.8 and
+              out["expected_pct"] >= 2 and probability_edge >= 8):
+            # 个人激进风格的受控入口：仍须多周期共振、正期望和足够概率优势，
+            # 但允许盈亏比略低于1时用小仓试错，绝不等同重仓买入。
+            out["action"] = ("持有·小幅加仓复核" if holding_like
+                             else "共振·小仓试错")
+            out["entry_note"] = f"激进门槛通过｜概率优势{probability_edge:+.1f}点"
+        else:
+            out["action"] = ("持有观察·不加仓" if holding_like
+                             else "趋势偏多·等待回踩")
+            out["entry_note"] = (f"当前赔率不足｜需上行估计>{break_even_p:.1f}%"
+                                 if probability_edge <= 0 else
+                                 f"概率有利但赔率不足｜优势{probability_edge:+.1f}点")
         out["reason"] = align["note"][:20]
     else:
         # 未共振时不得因单一正期望升级成买入语言。
         if str(out.get("action") or "") in ("试仓复核", "持有/试仓复核"):
             out["action"] = "仅观察·待共振"
         out["reason"] = align["note"][:20]
+        out["entry_note"] = "周期未共振，等待确认"
     return out
 
 
