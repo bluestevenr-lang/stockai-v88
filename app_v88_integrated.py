@@ -11954,7 +11954,12 @@ def _render_today_nav():
             _alerts9 = []
             _decisions9 = []
             _holding_levels9 = {}
-            for _c9, _n9 in list(_pool_wa.items())[:60]:
+            _scan_items9 = list(_pool_wa.items())[:60]
+            _scan_prog9 = st.progress(0)
+            _scan_status9 = st.empty()
+            for _idx9, (_c9, _n9) in enumerate(_scan_items9, 1):
+                _scan_prog9.progress(_idx9 / max(1, len(_scan_items9)))
+                _scan_status9.caption(f"⏳ 正在计算持仓/自选概率 {_idx9}/{len(_scan_items9)}：{_n9}")
                 try:
                     _df9 = fetch_stock_data(to_yf_cn_code(_c9))
                     _f9 = _ce_wa.analyze_trend_full(_df9)
@@ -12006,6 +12011,8 @@ def _render_today_nav():
                                                 "优先复核减仓/止损与利润保护")
                 except Exception:
                     continue
+            _scan_prog9.empty()
+            _scan_status9.empty()
             _decisions9.sort(key=lambda x: (0 if x["scope"] == "持仓" else 1, -x["p_down"]))
             _wa = {"ts": time.time(), "alerts": _alerts9, "decisions": _decisions9,
                    "n": len(_pool_wa), "rule_version": 5, "holding_levels": _holding_levels9}
