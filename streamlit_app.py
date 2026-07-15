@@ -923,19 +923,72 @@ elif _nav == "💼 持仓终端":
                 _pm.TRADES.write_text(_tr_raw, encoding="utf-8")
             if st.session_state.get("_ct_flash"):
                 st.success(st.session_state.pop("_ct_flash"))
-            # ── 结构化录单：简称自动识别全称，卖出价留空=买入，每笔带成交日期 ──
+            # ── 结构化录单：显式选择买/卖；买入支持简称联想，卖出从现持仓选择。 ──
+            try:
+                _ct_pj = json.loads(_pos_raw)
+            except Exception:
+                _ct_pj = {"accounts": {}}
+            _ct_hold_rows = [
+                {"账户": acc, "名称": h.get("name"), "代码": h.get("code"),
+                 "股数": h.get("shares"), "成本": h.get("cost"),
+                 "级别": str(h.get("level") or "B").upper()}
+                for acc, a in (_ct_pj.get("accounts") or {}).items()
+                for h in (a.get("holdings") or [])
+            ]
+            _ct_action = st.radio("交易类型", ["买入 / 加仓", "卖出 / 减仓"], horizontal=True,
+                                  key="_ctf_action", help="卖出会写入交易日志并计算已实现盈亏")
             _ct_accounts = _pm.account_names()
-            _f1, _f2, _f3, _f4, _f5, _f6, _f7 = st.columns([2.0, 1.05, 1.15, .9, 1.25, 1.2, .65])
-            _ct_name = _f1.text_input("名称/简称/代码", placeholder="腾讯 / 海油 / NVDA", key="_ctf_name")
-            _ct_buy = _f2.text_input("买入价", placeholder="469", key="_ctf_buy")
-            _ct_sell = _f3.text_input("卖出价(空=买入)", placeholder="", key="_ctf_sell")
-            _ct_qty = _f4.text_input("股数", placeholder="100", key="_ctf_qty")
             from datetime import date as _date9
-            _ct_date = _f5.date_input("成交日期", value=_date9.today(), key="_ctf_date")
-            _ct_account = _f6.selectbox("账户", _ct_accounts, key="_ctf_account")
-            _ct_level = _f7.selectbox("级别", ["A", "B", "C"], index=1, key="_ctf_level",
-                                      help="人工基础级别；持仓风险仍会自动升为A级")
-            _ct_rsn = st.text_input("原因(选填,随日志留档)", placeholder="如：回踩买点 / 止盈一半", key="_pt_rsn")
+            _ct_buy, _ct_sell, _ct_qty, _ct_chosen = "", "", "", None
+            _ct_date = _date9.today()
+
+            if _ct_action == "买入 / 加仓":
+                _f1, _f2, _f3, _f4, _f5, _f6 = st.columns([2.1, 2.25, 1.0, .85, 1.15, .65])
+                _ct_name = _f1.text_input("名称/简称/代码", placeholder="中微 / 腾讯 / NVDA", key="_ctf_buy_name")
+                _ct_cands = []
+                if _ct_name.strip():
+                    try:
+                        _ct_cands = _pm.candidates_for(_ct_name.strip(), limit=6) or []
+                    except Exception:
+                        _ct_cands = []
+                if _ct_cands:
+                    _ct_opts = [f"{n}（{c}·{m}）" for n, c, m in _ct_cands]
+                    _ct_pick = _f2.selectbox("简称匹配（请选择）", _ct_opts, key="_ctf_buy_match")
+                    _ct_chosen = _ct_cands[_ct_opts.index(_ct_pick)][1]
+                else:
+                    _f2.text_input("简称匹配", value="输入简称后自动显示全称和代码", disabled=True,
+                                   key="_ctf_buy_match_empty")
+                _ct_buy = _f3.text_input("买入价", placeholder="469", key="_ctf_buy_price")
+                _ct_qty = _f4.text_input("买入股数", placeholder="100", key="_ctf_buy_qty")
+                _ct_date = _f5.date_input("成交日期", value=_date9.today(), key="_ctf_buy_date")
+                _ct_account = _f6.selectbox("账户", _ct_accounts, key="_ctf_buy_account")
+                _ct_level = st.selectbox("关注级别", ["A", "B", "C"], index=1, key="_ctf_buy_level",
+                                         help="人工基础级别；持仓风险仍会自动升为A级")
+                _ct_token = _ct_name.strip()
+                _ct_button = "✅ 确认买入 / 加仓"
+            else:
+                _ct_sell_map = {
+                    f"{r.get('名称')}（{r.get('代码')}｜{r.get('账户')}｜现持{r.get('股数')}股）": r
+                    for r in _ct_hold_rows
+                }
+                if not _ct_sell_map:
+                    st.warning("当前没有可卖出的正式持仓")
+                    _ct_selected = {}
+                else:
+                    _s1, _s2, _s3, _s4 = st.columns([3.0, 1.0, 1.05, 1.25])
+                    _ct_sell_label = _s1.selectbox("选择要卖出的持仓", list(_ct_sell_map), key="_ctf_sell_holding")
+                    _ct_selected = _ct_sell_map[_ct_sell_label]
+                    _ct_sell = _s2.text_input("实际卖出价", placeholder="必填", key="_ctf_sell_price")
+                    _ct_qty = _s3.text_input("卖出股数", placeholder="留空=全部", key="_ctf_sell_qty")
+                    _ct_date = _s4.date_input("成交日期", value=_date9.today(), key="_ctf_sell_date")
+                    st.caption(f"将从 {_ct_selected.get('账户')} 卖出 {_ct_selected.get('名称')}；留空股数表示全部清仓。")
+                _ct_token = str(_ct_selected.get("代码") or "")
+                _ct_account = str(_ct_selected.get("账户") or (_ct_accounts[0] if _ct_accounts else ""))
+                _ct_level = str(_ct_selected.get("级别") or "B")
+                _ct_button = "🟥 确认卖出 / 减仓"
+
+            _ct_rsn = st.text_input("原因（选填，随日志留档）", placeholder="如：止盈一半 / 逻辑失效 / 情绪操作复盘",
+                                     key="_pt_rsn")
 
             def _pt_exec(_kw, _chosen=None):
                 _out, _needs = _pm.record_trade(chosen_code=_chosen, **_kw)
@@ -957,13 +1010,13 @@ elif _nav == "💼 持仓终端":
                     st.rerun()  # 刷新下方持仓表——所见即所存
                 st.error(f"{_out}（⚠️私仓写入失败，请重试）")
 
-            if st.button("▶ 记一笔", type="primary") and _ct_name.strip():
+            if st.button(_ct_button, type="primary") and _ct_token:
                 try:
-                    _pt_exec({"token": _ct_name.strip(), "shares": _ct_qty or 0,
+                    _pt_exec({"token": _ct_token, "shares": _ct_qty or 0,
                               "buy_px": float(_ct_buy) if _ct_buy.strip() else None,
                               "sell_px": float(_ct_sell) if _ct_sell.strip() else None,
                               "date": str(_ct_date), "reason": _ct_rsn.strip(),
-                              "account": _ct_account, "level": _ct_level})
+                              "account": _ct_account, "level": _ct_level}, _chosen=_ct_chosen)
                 except ValueError:
                     st.error("价格/股数须为数字")
             if st.session_state.get("_ct_pending"):
@@ -1008,8 +1061,61 @@ elif _nav == "💼 持仓终端":
                 pass
             # 【V88·自选分级】A=对应市场交易日盘中每3小时 B=每天 C=每周低频
             with st.expander("🏷️ 自选分级管理（A盘中每3小时｜B每天｜C每周低频）"):
-                _wl_raw, _ = _priv_get("watchlist_v88.json")
+                _wl_raw, _wl_sha = _priv_get("watchlist_v88.json")
                 _lvl_raw, _lvl_sha = _priv_get("watch_levels.json")
+                # 云端也可直接按名称/简称/代码加入自选，与桌面同一私仓底稿。
+                _w1, _w2, _w3 = st.columns([2.1, 2.4, 1.1])
+                _wl_token = _w1.text_input("新增自选股", placeholder="中微 / 腾讯 / NVDA", key="_ct_wl_add")
+                _wl_cands, _wl_choice = [], None
+                if _wl_token.strip():
+                    try:
+                        import cloud_engine as _ce_wl
+                        _wl_cands = _ce_wl.search_candidates(_wl_token.strip(), limit=6) or []
+                    except Exception:
+                        _wl_cands = []
+                if _wl_cands:
+                    _wl_opts = [f"{n}（{c}·{m}）" for n, c, m in _wl_cands]
+                    _wl_pick = _w2.selectbox("简称匹配", _wl_opts, key="_ct_wl_match")
+                    _wl_choice = _wl_cands[_wl_opts.index(_wl_pick)]
+                else:
+                    _w2.text_input("简称匹配", value="输入简称后自动显示全称和代码", disabled=True,
+                                   key="_ct_wl_match_empty")
+                _wl_level_new = _w3.selectbox("级别", ["A", "B", "C"], index=1, key="_ct_wl_new_level")
+                if st.button("＋ 加入自选股", key="_ct_wl_add_btn"):
+                    if not _wl_token.strip():
+                        st.warning("请先输入股票名称、简称或代码")
+                    elif not _wl_choice:
+                        st.error("未识别该股票，请换用准确代码")
+                    else:
+                        try:
+                            _wl_obj = json.loads(_wl_raw or "{}") or {"US": [], "HK": [], "CN": []}
+                        except Exception:
+                            _wl_obj = {"US": [], "HK": [], "CN": []}
+                        _wn, _wc = _wl_choice[0], _wl_choice[1]
+                        _wm = "HK" if _wc.endswith(".HK") else ("CN" if _wc.endswith((".SS", ".SZ")) else "US")
+                        _exists = any(str(c).upper() == str(_wc).upper()
+                                      for rows in _wl_obj.values() for c, _n in (rows or []))
+                        if _exists:
+                            st.info(f"{_wn}（{_wc}）已在自选中")
+                        else:
+                            _wl_obj.setdefault(_wm, []).append([_wc, _wn])
+                            while sum(len(v) for v in _wl_obj.values()) > 20:
+                                _big = max(_wl_obj, key=lambda k: len(_wl_obj[k]))
+                                if _wl_obj[_big]:
+                                    _wl_obj[_big].pop(0)
+                            _new_levels = json.loads(_lvl_raw) if _lvl_raw else {}
+                            _new_levels[_wc] = _wl_level_new
+                            _ok_wl = _priv_put("watchlist_v88.json",
+                                               json.dumps(_wl_obj, ensure_ascii=False, indent=1),
+                                               _wl_sha, f"新增自选(云端): {_wn}")
+                            if _ok_wl:
+                                _priv_put("watch_levels.json",
+                                          json.dumps(_new_levels, ensure_ascii=False, indent=1),
+                                          _lvl_sha, f"自选分级(云端): {_wn}={_wl_level_new}")
+                                st.success(f"已加入 {_wn}（{_wc}）· {_wl_level_new}级")
+                                st.rerun()
+                            else:
+                                st.error("自选写入失败，请重试")
                 try:
                     _wl_all = [(str(c), n) for lst in (json.loads(_wl_raw or "{}") or {}).values()
                                for c, n in (lst if isinstance(lst, list) else [])]

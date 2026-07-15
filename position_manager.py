@@ -157,9 +157,17 @@ def record_trade(token: str, shares, buy_px=None, sell_px=None, date: str = "",
 
     if sell_px:  # ── 卖出/减仓：持仓内模糊找，显式卖价入账 ──
         pj = _load()
-        acc, a, h = _find(pj, str(token))
+        if str(account or "").strip():
+            # UI 已让用户明确选择账户；同一股票存在多账户时必须卖所选账户，不能取第一条。
+            q = str(token).strip()
+            _hits = [(ac, aa, hh) for ac, aa, hh in _iter_holdings(pj)
+                     if ac == str(account).strip()
+                     and (q in (hh.get("name") or "") or q.upper() == str(hh.get("code", "")).upper())]
+            acc, a, h = _hits[0] if _hits else (None, None, None)
+        else:
+            acc, a, h = _find(pj, str(token))
         if not h:
-            return f"未找到持仓「{token}」，先核对名称", None
+            return f"未在账户「{account or '全部'}」找到持仓「{token}」，先核对选择", None
         qty = h.get("shares") or 0
         n = min(shares, qty) if shares > 0 else qty
         px = float(sell_px)

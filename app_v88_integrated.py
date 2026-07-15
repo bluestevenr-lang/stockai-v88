@@ -11664,6 +11664,48 @@ def _render_today_nav():
     # 这样无需重复请求行情，也能让“我的自选”真正排在大盘、日报和持仓之前。
     _watch_front_slot9 = st.empty()
 
+    def _render_front_watch_add9():
+        """置顶自选台直接录入；名称/简称/代码均可，并让多解结果先选择再加入。"""
+        _wa1, _wa2, _wa3 = st.columns([4.2, 3.4, 1.25])
+        _token9 = _wa1.text_input(
+            "新增自选股", placeholder="输入名称/简称/代码，如：中微 / 腾讯 / NVDA",
+            key="_front_wl_add", label_visibility="collapsed")
+        _cands9, _chosen9 = [], None
+        if _token9.strip():
+            try:
+                import cloud_engine as _ce_add9
+                _cands9 = _ce_add9.search_candidates(_token9.strip(), limit=6) or []
+            except Exception:
+                _cands9 = []
+        if _cands9:
+            _opts9 = [f"{n}（{c}·{m}）" for n, c, m in _cands9]
+            _pick9 = _wa2.selectbox("简称匹配", _opts9, key="_front_wl_candidate",
+                                    label_visibility="collapsed")
+            _chosen9 = _cands9[_opts9.index(_pick9)]
+        else:
+            _wa2.caption("输入简称后，这里会显示匹配的全称与代码")
+        if _wa3.button("＋ 加入自选", key="_front_wl_add_btn", use_container_width=True):
+            if not _token9.strip():
+                st.warning("请先输入股票名称、简称或代码")
+            else:
+                try:
+                    import cloud_engine as _ce_add9
+                    if _chosen9:
+                        _nm_add9, _cd_add9 = _chosen9[0], _chosen9[1]
+                    else:
+                        _cd_add9 = _ce_add9.to_yf(_token9.strip())
+                        _nm_add9 = _ce_add9.name_of(_cd_add9) or _token9.strip()
+                    if _watchlist_add(_cd_add9, _nm_add9):
+                        # 新增后立刻让第一屏概率台重扫，不能继续展示15分钟旧缓存。
+                        st.session_state.pop("watch_alerts_v88", None)
+                        st.session_state["_wl_new_pick"] = (_cd_add9, _nm_add9)
+                        st.toast(f"已加入自选：{_nm_add9}（{_cd_add9}）", icon="⭐")
+                        st.rerun()
+                    else:
+                        st.info(f"{_nm_add9}（{_cd_add9}）已在自选中")
+                except Exception as _add_e9:
+                    st.error(f"未识别该股票，请换用准确代码：{str(_add_e9)[:60]}")
+
     def _render_front_watch_board9(_wa9, _time_note9):
         """把规则概率与盈亏比做成第一屏主视觉；详细预警仍在原模块保留。"""
         _all9 = list((_wa9 or {}).get("decisions") or [])
@@ -11671,6 +11713,7 @@ def _render_today_nav():
         if not _watch9:
             with _watch_front_slot9.container():
                 st.info("⭐ 我的自选股决策台正在计算；完成后将在这里显示上涨/下跌概率与盈亏比。")
+                _render_front_watch_add9()
             return
 
         def _rr_state9(_rr9):
@@ -11771,6 +11814,7 @@ def _render_today_nav():
             """).replace("__TIME__", _time_note9).replace("__COLUMNS__", "".join(_cols_html9))
             st.markdown(
                 _board_tpl9, unsafe_allow_html=True)
+            _render_front_watch_add9()
 
     # 【V88·Plan A/B统一标注】与下方AI简报模块共用同一状态，避免"这里显示分数、简报说数据不可信"的割裂
     _pab_status = _rep_planab_meta.get("status")
@@ -11884,32 +11928,6 @@ def _render_today_nav():
                 + (f" ｜ ⚡{len(_wa9.get('alerts') or [])} 条触发（见下方预警）" if _wa9.get('alerts') else ""),
                 unsafe_allow_html=True)
             st.caption(_analysis_label9((_wa9 or {}).get("ts") or _report_analysis_ts9, "重点观察分析"))
-        # 显式新增入口：无需先去搜索页，今日导航内即可加入自选。
-        _wl_add_c1, _wl_add_c2 = st.columns([5, 1])
-        _wl_add_token = _wl_add_c1.text_input(
-            "新增自选", placeholder="输入名称或代码，如：英伟达 / 0700.HK / 600519",
-            key="_nav_wl_add", label_visibility="collapsed")
-        if _wl_add_c2.button("＋ 加入自选", key="_nav_wl_add_btn", use_container_width=True):
-            _tok9 = _wl_add_token.strip()
-            if not _tok9:
-                st.warning("请先输入股票名称或代码")
-            else:
-                try:
-                    import cloud_engine as _ce_add9
-                    _cands9 = _ce_add9.search_candidates(_tok9, limit=1) or []
-                    if _cands9:
-                        _nm_add9, _cd_add9 = _cands9[0][0], _cands9[0][1]
-                    else:
-                        _cd_add9 = _ce_add9.to_yf(_tok9)
-                        _nm_add9 = _ce_add9.name_of(_cd_add9) or _tok9
-                    if _watchlist_add(_cd_add9, _nm_add9):
-                        st.session_state["_wl_new_pick"] = (_cd_add9, _nm_add9)
-                        st.toast(f"已加入自选：{_nm_add9}（{_cd_add9}）", icon="⭐")
-                        st.rerun()
-                    else:
-                        st.info(f"{_nm_add9}（{_cd_add9}）已在自选中")
-                except Exception as _add_e9:
-                    st.error(f"未识别该股票，请换用准确代码：{str(_add_e9)[:60]}")
     except Exception:
         pass
     _gen = (_snap or {}).get("generated_at", "")
@@ -12246,21 +12264,65 @@ def _render_today_nav():
         else:
             st.caption("持仓分析待本轮日报生成；下方仍可维护持仓资料。")
 
-        st.markdown("##### ✎ 持仓资料维护")
-        st.caption("账户、名称、代码、股数、成本、类别与基础级别均可修改；风险出现时系统仍会自动升为A级。")
-        # ── 结构化录单表单 ──
+        st.markdown("##### ✎ 持仓交易与资料维护")
+        st.caption("先明确选择买入或卖出；买入支持中文简称联想，卖出直接从当前持仓选择。账户、股数、成本和基础级别仍可在下表修改。")
+        # ── 结构化录单表单：买卖分流，避免用“卖出价是否为空”猜操作。 ──
+        _pt_action = st.radio("交易类型", ["买入 / 加仓", "卖出 / 减仓"], horizontal=True,
+                              key="_ptf_action", help="卖出会写入交易日志并计算已实现盈亏；下表×仅用于纠错删除")
         _pt_accounts = _pmf.account_names()
-        _f1, _f2, _f3, _f4, _f5, _f6, _f7 = st.columns([2.0, 1.05, 1.15, .9, 1.25, 1.2, .65])
-        _pt_name = _f1.text_input("名称/简称/代码", placeholder="腾讯 / 海油 / NVDA", key="_ptf_name")
-        _pt_buy = _f2.text_input("买入价", placeholder="469", key="_ptf_buy")
-        _pt_sell = _f3.text_input("卖出价(空=买入)", placeholder="", key="_ptf_sell")
-        _pt_qty = _f4.text_input("股数", placeholder="100", key="_ptf_qty")
         from datetime import date as _date9
-        _pt_date = _f5.date_input("成交日期", value=_date9.today(), key="_ptf_date")
-        _pt_account = _f6.selectbox("账户", _pt_accounts, key="_ptf_account")
-        _pt_level = _f7.selectbox("级别", ["A", "B", "C"], index=1, key="_ptf_level",
-                                  help="人工基础级别；急跌、亏损或拐点风险仍会自动升为A级")
-        _pt_reason = st.text_input("原因(选填,随日志留档)", placeholder="如：回踩买点 / 止盈一半", key="_pt_reason_desk")
+        _pt_buy, _pt_sell, _pt_qty, _pt_chosen = "", "", "", None
+        _pt_date = _date9.today()
+
+        if _pt_action == "买入 / 加仓":
+            _f1, _f2, _f3, _f4, _f5, _f6 = st.columns([2.1, 2.25, 1.0, .85, 1.15, .65])
+            _pt_name = _f1.text_input("名称/简称/代码", placeholder="中微 / 腾讯 / NVDA", key="_ptf_buy_name")
+            _pt_cands = []
+            if _pt_name.strip():
+                try:
+                    _pt_cands = _pmf.candidates_for(_pt_name.strip(), limit=6) or []
+                except Exception:
+                    _pt_cands = []
+            if _pt_cands:
+                _pt_opts = [f"{n}（{c}·{m}）" for n, c, m in _pt_cands]
+                _pt_pick = _f2.selectbox("简称匹配（请选择）", _pt_opts, key="_ptf_buy_match")
+                _pt_chosen = _pt_cands[_pt_opts.index(_pt_pick)][1]
+            else:
+                _f2.text_input("简称匹配", value="输入简称后自动显示全称和代码", disabled=True,
+                               key="_ptf_buy_match_empty")
+            _pt_buy = _f3.text_input("买入价", placeholder="469", key="_ptf_buy_price")
+            _pt_qty = _f4.text_input("买入股数", placeholder="100", key="_ptf_buy_qty")
+            _pt_date = _f5.date_input("成交日期", value=_date9.today(), key="_ptf_buy_date")
+            _pt_account = _f6.selectbox("账户", _pt_accounts, key="_ptf_buy_account")
+            _pt_level = st.selectbox("关注级别", ["A", "B", "C"], index=1, key="_ptf_buy_level",
+                                     help="人工基础级别；急跌、亏损或拐点风险仍会自动升为A级")
+            _pt_token = _pt_name.strip()
+            _pt_button = "✅ 确认买入 / 加仓"
+        else:
+            _pt_holds = _pmf.holdings_rows()
+            _pt_sell_map = {
+                f"{r.get('名称')}（{r.get('代码')}｜{r.get('账户')}｜现持{r.get('股数')}股）": r
+                for r in _pt_holds
+            }
+            if not _pt_sell_map:
+                st.warning("当前没有可卖出的正式持仓")
+                _pt_selected = {}
+            else:
+                _s1, _s2, _s3, _s4 = st.columns([3.0, 1.0, 1.05, 1.25])
+                _pt_sell_label = _s1.selectbox("选择要卖出的持仓", list(_pt_sell_map), key="_ptf_sell_holding")
+                _pt_selected = _pt_sell_map[_pt_sell_label]
+                _pt_sell = _s2.text_input("实际卖出价", placeholder="必填", key="_ptf_sell_price")
+                _pt_qty = _s3.text_input("卖出股数", placeholder="留空=全部", key="_ptf_sell_qty")
+                _pt_date = _s4.date_input("成交日期", value=_date9.today(), key="_ptf_sell_date")
+                st.caption(f"将从 {_pt_selected.get('账户')} 卖出 {_pt_selected.get('名称')}；留空股数表示全部清仓。")
+            _pt_name = str(_pt_selected.get("代码") or "")
+            _pt_token = _pt_name
+            _pt_account = str(_pt_selected.get("账户") or (_pt_accounts[0] if _pt_accounts else ""))
+            _pt_level = str(_pt_selected.get("级别") or "B")
+            _pt_button = "🟥 确认卖出 / 减仓"
+
+        _pt_reason = st.text_input("原因（选填，随交易日志留档）", placeholder="如：止盈一半 / 逻辑失效 / 情绪操作复盘",
+                                   key="_pt_reason_desk")
 
         def _pt_git_sync(_label):
             import subprocess as _sp9
@@ -12288,13 +12350,13 @@ def _render_today_nav():
             else:
                 st.error(_msg9)
 
-        if st.button("▶ 记一笔", type="primary", key="_pt_go_desk") and _pt_name.strip():
+        if st.button(_pt_button, type="primary", key="_pt_go_desk") and _pt_token:
             try:
-                _pt_run_form({"token": _pt_name.strip(), "shares": _pt_qty or 0,
+                _pt_run_form({"token": _pt_token, "shares": _pt_qty or 0,
                               "buy_px": float(_pt_buy) if _pt_buy.strip() else None,
                               "sell_px": float(_pt_sell) if _pt_sell.strip() else None,
                               "date": str(_pt_date), "reason": _pt_reason.strip(),
-                              "account": _pt_account, "level": _pt_level})
+                              "account": _pt_account, "level": _pt_level}, _chosen=_pt_chosen)
             except ValueError:
                 st.error("价格/股数须为数字")
             except Exception as _pe9:
