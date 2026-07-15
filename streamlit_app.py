@@ -721,8 +721,8 @@ elif _nav == "🔍 个股搜索":
 
             # 【V88·云端个股五周期】点击直达后自动显示2/4/6/8/16周，
             # 行情规则先算、DeepSeek thinking-high再复核，失败也不伪装AI结果。
-            st.markdown("##### 🧭 2/4/6/8/16周周期走势判断")
-            st.caption("综合置信度表示证据一致性，不是回测胜率；同一行情快照复用6小时思考缓存。")
+            st.markdown("##### 🧭 个股周期轮换总览（深度分析第一判断）")
+            st.caption("先看周期象限与2/4/6/8/16周走向；同一行情快照复用6小时思考缓存。")
             _fu = None
             try:
                 import stock_horizon as _stock_horizon_cloud
@@ -740,6 +740,10 @@ elif _nav == "🔍 个股搜索":
                 _hz_bar.progress(100, text="五周期走势分析完成")
                 _hz_bar.empty()
                 _hz_rows = _stock_horizon_cloud.table_rows(_hz_result)
+                _hz_visual = _stock_horizon_cloud.cycle_visual_html(
+                    _hz_result, _tname, _tsym, f"v88-cloud-stock-cycle-{_tsym}")
+                if _hz_visual:
+                    st.markdown(_hz_visual, unsafe_allow_html=True)
                 if _hz_rows:
                     st.dataframe(_hz_rows, hide_index=True, use_container_width=True)
                 _hz_review = _hz_result.get("review") or {}

@@ -35,3 +35,13 @@ def test_without_key_keeps_deterministic_fallback(monkeypatch):
     result = stock_horizon.analyze("测试", "TEST", _frame(1))
     assert result["review"]["status"] == "no_key"
     assert len(stock_horizon.table_rows(result)) == 5
+
+
+def test_cycle_visual_contains_full_first_screen_content(monkeypatch):
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    result = stock_horizon.analyze("测试公司", "TEST", _frame(1))
+    html = stock_horizon.cycle_visual_html(result, "测试公司", "TEST")
+    for text in ("领涨启动", "高位派发", "退潮杀跌", "低位蓄势",
+                 "2周", "4周", "6周", "8周", "16周",
+                 "预计拐点", "触发", "失效", "分析于"):
+        assert text in html

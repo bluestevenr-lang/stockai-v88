@@ -13961,8 +13961,8 @@ if execute_analysis and q_input:
         # 【V88·个股五周期】2/4/6/8/16周量化底稿 + DeepSeek thinking-high
         # 点击任一个股均自动执行；同一行情快照缓存6小时，控制7元/月总预算。
         # ═══════════════════════════════════════════════════════════════
-        st.markdown("### 🧭 2/4/6/8/16周周期走势判断")
-        st.caption("量化行情先算底稿，DeepSeek V4 Flash思考模式复核；综合置信度表示证据一致性，不是回测胜率。")
+        st.markdown("### 🧭 个股周期轮换总览（深度分析第一判断）")
+        st.caption("先看周期象限与2/4/6/8/16周走向，再看明细和K线；置信度表示证据一致性，不是回测胜率。")
         try:
             import stock_horizon as _stock_horizon
             _hz_last = str(df.index[-1])[:19]
@@ -13994,6 +13994,14 @@ if execute_analysis and q_input:
 
             _hz_review = _hz_result.get("review") or {}
             _hz_rows = _stock_horizon.table_rows(_hz_result)
+            _hz_visual = _stock_horizon.cycle_visual_html(
+                _hz_result,
+                st.session_state.get("scan_selected_name") or target_c,
+                target_c,
+                f"v88-stock-cycle-{target_c}",
+            )
+            if _hz_visual:
+                st.markdown(_hz_visual, unsafe_allow_html=True)
             if _hz_rows:
                 st.dataframe(_hz_rows, hide_index=True, use_container_width=True)
             if _hz_review.get("status") in ("completed", "cached"):
