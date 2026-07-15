@@ -298,6 +298,84 @@ def table_rows(result) -> list[dict]:
     return rows
 
 
+def cycle_alignment(facts: dict) -> dict:
+    """统一首页决策卡与深度分析的周期方向口径（仅用可审计规则底稿）。"""
+    horizons = (facts or {}).get("horizons") or {}
+    short = horizons.get("2周") or next(iter(horizons.values()), {})
+    short_up = int(round(_clip(short.get("rule_score") or 50, 15, 85)))
+    long_scores = [float((horizons.get(f"{w}周") or {}).get("rule_score"))
+                   for w in (4, 6, 8, 16)
+                   if (horizons.get(f"{w}周") or {}).get("rule_score") is not None]
+    long_up = int(round(sum(long_scores) / len(long_scores))) if long_scores else short_up
+    short_side = "偏涨" if short_up >= 58 else ("偏跌" if short_up <= 42 else "震荡")
+    long_side = "偏涨" if long_up >= 58 else ("偏跌" if long_up <= 42 else "震荡")
+    long_tone = ("偏涨" if long_up >= 58 else ("偏强" if long_up >= 52 else
+                 ("偏跌" if long_up <= 42 else ("偏弱" if long_up <= 48 else "震荡"))))
+    # 不只拦“完全反向”，也拦短期很强但中长线均值已落到50以下的期限错配。
+    # 紫金矿业这类2周反弹、4-16周持续转弱必须自动降级，不能继续显示可关注。
+    conflict = ((short_side == "偏涨" and long_up <= 48) or
+                (short_side == "偏跌" and long_up >= 52))
+    if short_side == "偏涨" and long_up <= 48:
+        status, action = "短弹长弱", "仅观察·不追涨"
+    elif short_side == "偏跌" and long_up >= 52:
+        status, action = "短空长修", "等短线止跌"
+    elif short_side == long_side == "偏涨":
+        status, action = "多周期偏涨", "再核盈亏比"
+    elif short_side == long_side == "偏跌":
+        status, action = "多周期偏跌", "回避/保护"
+    else:
+        status, action = "周期未共振", "仅观察"
+    return {
+        "horizon": "2周",
+        "p_up": short_up,
+        "p_down": 100 - short_up,
+        "long_p_up": long_up,
+        "short_side": short_side,
+        "long_side": long_side,
+        "conflict": conflict,
+        "status": status,
+        "safe_action": action,
+        "note": f"2周{short_side}{short_up}%｜4-16周{long_tone}{long_up}%",
+    }
+
+
+def align_decision_card(card: dict, facts: dict) -> dict:
+    """用五周期底稿覆盖首页孤立短线概率；周期冲突拥有最高降级权。"""
+    out = dict(card or {})
+    align = cycle_alignment(facts)
+    out.update({
+        "horizon": align["horizon"],
+        "p_up": align["p_up"],
+        "p_down": align["p_down"],
+        "long_p_up": align["long_p_up"],
+        "cycle_conflict": align["conflict"],
+        "cycle_status": align["status"],
+        "cycle_note": align["note"],
+    })
+    upside = float(out.get("upside_pct") or 0)
+    downside = float(out.get("downside_pct") or 0)
+    out["expected_pct"] = round(
+        (align["p_up"] / 100) * upside - (align["p_down"] / 100) * downside, 1)
+    rr = float(out.get("rr") or 0)
+    if align["conflict"]:
+        out["action"] = align["safe_action"]
+        out["reason"] = align["note"][:20]
+    elif align["status"] == "多周期偏跌":
+        _holding_like = any(x in str(out.get("action") or "")
+                            for x in ("持有", "减仓", "退出", "清仓"))
+        out["action"] = "持仓保护" if _holding_like else "回避"
+        out["reason"] = align["note"][:20]
+    elif align["status"] == "多周期偏涨" and rr >= 1.5 and out["expected_pct"] > 1:
+        out["action"] = "多周期共振·试仓复核"
+        out["reason"] = align["note"][:20]
+    else:
+        # 未共振时不得因单一正期望升级成买入语言。
+        if str(out.get("action") or "") in ("试仓复核", "持有/试仓复核"):
+            out["action"] = "仅观察·待共振"
+        out["reason"] = align["note"][:20]
+    return out
+
+
 def _visual_score(fact: dict, review: dict) -> float:
     """把量化先验与AI方向复核合成仅供画图的热度坐标，不冒充胜率。"""
     rule = _clip(fact.get("rule_score") or 50, 15, 85)
@@ -332,6 +410,7 @@ def cycle_visual_html(result: dict, name: str, symbol: str,
     """个股深度分析首屏周期图：象限时钟 + 2/4/6/8/16周走向 + 触发/失效。"""
     facts = (result or {}).get("facts") or {}
     review = (result or {}).get("review") or {}
+    review_source = "AI" if review.get("status") in ("completed", "cached") else "规则"
     fact_rows = facts.get("horizons") or {}
     ai_rows = review.get("horizons") or {}
     points = []
@@ -343,7 +422,9 @@ def cycle_visual_html(result: dict, name: str, symbol: str,
         ai = ai_rows.get(label) or {}
         points.append({
             "label": label,
-            "score": _visual_score(fact, ai),
+            # 主轨迹必须与首页卡片完全同源；AI仅作为解释复核，不再改写坐标或动作。
+            "score": round(_clip(fact.get("rule_score") or 50, 15, 85), 1),
+            "rule_up": int(round(_clip(fact.get("rule_score") or 50, 15, 85))),
             "view": ai.get("view") or fact.get("rule_view") or "震荡",
             "confidence": int(ai.get("confidence") or fact.get("rule_confidence") or 50),
             "reason": _brief(ai.get("reason") or "量价底稿判断", 20),
@@ -369,6 +450,7 @@ def cycle_visual_html(result: dict, name: str, symbol: str,
     arrow_dy = -24 if direction == "升温" else (24 if direction == "退潮" else 0)
     color = "#16a34a" if direction == "升温" else ("#ef4444" if direction == "退潮" else "#64748b")
     turn = _turning_candidate(points)
+    alignment = cycle_alignment(facts)
 
     # 左侧周期象限。
     cw, ch, cx, cy, radius = 430, 224, 154, 112, 76
@@ -421,16 +503,17 @@ def cycle_visual_html(result: dict, name: str, symbol: str,
         if ring:
             traj.append(f'<circle cx="{x}" cy="{y:.0f}" r="11" fill="none" stroke="{color}" stroke-width="2" stroke-dasharray="3 2"/>')
         fill = color if point["confidence"] >= 65 else "var(--card-bg,#fff)"
-        traj.append(f'<circle cx="{x}" cy="{y:.0f}" r="6" fill="{fill}" stroke="{color}" stroke-width="2"><title>{point["label"]}·{point["view"]}·置信{point["confidence"]}%（非胜率）·{escape(point["reason"])}</title></circle>')
-        traj.append(f'<text class="tiny" x="{x}" y="{min(th-8, y+22):.0f}" text-anchor="middle">{point["view"]}·{point["confidence"]}%</text>')
-    traj.append(f'<text class="note" x="54" y="214">横轴=2/4/6/8/16周 · 纵轴=综合方向热度 · 虚线环=预计拐点 · 置信度非胜率</text>')
+        traj.append(f'<circle cx="{x}" cy="{y:.0f}" r="6" fill="{fill}" stroke="{color}" stroke-width="2"><title>{point["label"]}·{review_source}{point["view"]}·证据一致性{point["confidence"]}%（非胜率）·{escape(point["reason"])}</title></circle>')
+        traj.append(f'<text class="tiny" x="{x}" y="{min(th-8, y+22):.0f}" text-anchor="middle">{review_source}{point["view"]}·{point["confidence"]}%</text>')
+    traj.append(f'<text class="note" x="54" y="214">横轴=2/4/6/8/16周 · 纵轴=综合方向热度 · 虚线环=预计拐点 · 百分比=证据一致性</text>')
     traj.append('</svg>')
 
     # 每档条件完整保留在紧凑文字区，触发/风险均来自同一轮AI复核。
     detail_rows = []
     for p in points:
         detail_rows.append(
-            f'<div class="hz-row"><b>{p["label"]} {p["view"]} {p["confidence"]}%</b>'
+            f'<div class="hz-row"><b>{p["label"]} {review_source}{p["view"]}·一致性{p["confidence"]}%</b>'
+            f'<span>规则上行估计：{p["rule_up"]}%</span>'
             f'<span>理由：{escape(p["reason"])}</span><span>触发：{escape(p["catalyst"])}</span>'
             f'<span>风险：{escape(p["risk"])}</span></div>')
     analysis_time = escape(str(review.get("analysis_time") or facts.get("asof") or "时间待更新"))
@@ -438,7 +521,9 @@ def cycle_visual_html(result: dict, name: str, symbol: str,
     review_mode = ("thinking-high" if review.get("status") in ("completed", "cached")
                    else "规则底稿·AI未复核")
     summary = escape(str(review.get("summary") or "五周期量价底稿"))
-    action = escape(str(review.get("action") or "观察"))
+    display_action = (alignment["safe_action"] if alignment["conflict"]
+                      else str(review.get("action") or "观察"))
+    action = escape(display_action)
     invalid = escape(str(review.get("invalid_summary") or "突破/跌破关键位重评"))
     css = f'''
 <style>
@@ -467,7 +552,9 @@ def cycle_visual_html(result: dict, name: str, symbol: str,
         f'<div class="head"><b>🧭 个股周期轮换总览 · 2/4/6/8/16周＋拐点</b>'
         f'<small>🕒 分析于 {analysis_time} · {model} · {review_mode}</small></div>'
         f'<div class="grid2"><div class="card">{"".join(clock)}</div><div class="card">{"".join(traj)}</div></div>'
-        f'<div class="summary"><b>{summary}</b><span>综合动作：{action}</span><span>失效：{invalid}</span></div>'
+        f'<div class="summary"><b>{summary}</b><span>{escape(alignment["note"])}</span>'
+        f'<span>{"⚠️ 周期冲突·" if alignment["conflict"] else "周期口径一致·"}综合动作：{action}</span>'
+        f'<span>失效：{invalid}</span></div>'
         f'<div class="hz-details">{"".join(detail_rows)}</div>'
         f'<div class="foot">图形用于周期与条件复核；方向热度和置信度均不是历史胜率，也不替代盈亏比与仓位纪律。</div>'
         '</div>'

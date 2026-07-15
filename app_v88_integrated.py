@@ -11767,8 +11767,15 @@ def _render_today_nav():
             _action9 = str(_d9.get("action") or "观察")
             _reason9 = str(_d9.get("reason") or "证据不足，等待确认")[:20]
             _at9 = str(_d9.get("analysis_time") or "时间未知")
+            _hz9 = str(_d9.get("horizon") or "2周")
+            _long9 = int(_d9.get("long_p_up") or 50)
+            _cycle9 = str(_d9.get("cycle_note") or "4-16周待计算")
+            _conflict9 = bool(_d9.get("cycle_conflict"))
+            if _conflict9:
+                _rr_txt9, _rr_color9, _rr_bg9 = "短期赔率≠可买", "#b45309", "#fffbeb"
+            _exp_suffix9 = "（周期冲突，不升级）" if _conflict9 else ""
             return f"""
-            <div class="v88-watch-card">
+            <div class="v88-watch-card{' v88-watch-conflict' if _conflict9 else ''}">
               <div class="v88-watch-card-head">
                 <div><span class="v88-level v88-level-{_level9}">{_level9}级</span>
                 {_stk_link(_d9.get('name') or _d9.get('code'), _d9.get('code'))}
@@ -11776,14 +11783,15 @@ def _render_today_nav():
                 <b class="v88-action">{_action9}</b>
               </div>
               <div class="v88-prob-row">
-                <div class="v88-prob v88-up"><small>上涨概率<br>（越大越有利）</small><b>{_up9}%</b></div>
-                <div class="v88-prob v88-down"><small>下跌概率<br>（越小越有利）</small><b>{_down9}%</b></div>
+                <div class="v88-prob v88-up"><small>{_hz9}上行估计<br>（同源规则）</small><b>{_up9}%</b></div>
+                <div class="v88-prob v88-down"><small>{_hz9}下行估计<br>（同源规则）</small><b>{_down9}%</b></div>
                 <div class="v88-prob v88-rr" style="border-color:{_rr_color9};background:{_rr_bg9}">
-                  <small>盈亏比<br>（越大越好）</small><b style="color:{_rr_color9}">{_rr9:.2f}</b>
+                  <small>关键位盈亏比<br>（越大越好）</small><b style="color:{_rr_color9}">{_rr9:.2f}</b>
                   <em style="color:{_rr_color9}">{_rr_txt9}</em>
                 </div>
               </div>
-              <div class="v88-watch-foot"><span>期望值 <b style="color:{_exp_color9}">{_exp9:+.1f}%</b>（&gt;0为正）</span>
+              <div class="v88-watch-foot"><span>{_hz9}情景期望 <b style="color:{_exp_color9}">{_exp9:+.1f}%</b>{_exp_suffix9}</span>
+              <span class="{'v88-cycle-warn' if _conflict9 else ''}">{'⚠️ ' if _conflict9 else ''}{_cycle9}</span>
               <span>{_reason9}</span><span>🕒 {_at9}</span></div>
             </div>"""
 
@@ -11821,6 +11829,8 @@ def _render_today_nav():
             .v88-watch-market h4{margin:0 0 5px;padding:4px 7px;border-radius:6px;background:#eaf2ff;color:#173b68;font-size:13px}
             .v88-watch-market h4 span{float:right;color:#64748b;font-size:10px;font-weight:500}
             .v88-watch-card{background:#fff;border:1px solid #dbe4f0;border-radius:8px;padding:7px;margin-bottom:6px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+            .v88-watch-conflict{border:2px solid #f59e0b;background:#fffdf5}
+            .v88-cycle-warn{color:#b45309;font-weight:700}
             .v88-watch-card-head{display:flex;justify-content:space-between;align-items:center;gap:5px;font-size:12px;line-height:1.25}
             .v88-watch-card-head a{color:#173b68!important;text-decoration:none!important;font-weight:700!important}
             .v88-code{color:#94a3b8;font-size:9px;margin-left:3px}
@@ -11838,8 +11848,8 @@ def _render_today_nav():
             @media(max-width:1100px){.v88-watch-grid{grid-template-columns:1fr}}
             </style>
             <div class="v88-watch-shell">
-              <div class="v88-watch-title"><h3>⭐ 我的自选股 · 概率与盈亏比决策台</h3>
-              <p>规则概率估计（非回测胜率）｜点击股票名进入深度分析<br>__TIME__</p></div>
+              <div class="v88-watch-title"><h3>⭐ 我的自选股 · 2周概率＋4—16周一致性决策台</h3>
+              <p>与深度分析共用五周期底稿；冲突自动降级｜点击股票名进入深度分析<br>__TIME__</p></div>
               <div class="v88-watch-grid">__COLUMNS__</div>
             </div>
             """).replace("__TIME__", _time_note9).replace("__COLUMNS__", "".join(_cols_html9))
@@ -12053,7 +12063,7 @@ def _render_today_nav():
     _critical9, _wa = [], {}
     try:
         _wa = st.session_state.get('watch_alerts_v88')
-        if not _wa or _wa.get('rule_version') != 7 or time.time() - _wa.get('ts', 0) > 15 * 60:
+        if not _wa or _wa.get('rule_version') != 8 or time.time() - _wa.get('ts', 0) > 15 * 60:
             _pool_wa = {}
             _watch_codes_wa = set()
             _holds_wa = set()
@@ -12139,6 +12149,11 @@ def _render_today_nav():
                     _dc9 = _estimate_decision_wa(
                         _f9, holding=_hold_map_wa.get(_c9), action_hint=_hint9,
                         analysis_time=datetime.now().strftime("%m-%d %H:%M"))
+                    # 首页与深度分析必须共用同一份2/4/6/8/16周底稿；
+                    # 周期冲突优先降级，正期望/高盈亏比不得单独升级。
+                    import stock_horizon as _stock_horizon_wa
+                    _hf9 = _stock_horizon_wa.build_horizon_facts(_df9, full=_f9)
+                    _dc9 = _stock_horizon_wa.align_decision_card(_dc9, _hf9)
                     _decisions9.append({"code": _c9, "name": _n9,
                                         "in_watchlist": _c9 in _watch_codes_wa,
                                         "scope": ("持仓" if _c9 in _risk_holds_wa else
@@ -12180,7 +12195,7 @@ def _render_today_nav():
                 0 if x.get("level") == "A" else (1 if x.get("level") == "B" else 2),
                 -x["p_down"]))
             _wa = {"ts": time.time(), "alerts": _alerts9, "decisions": _decisions9,
-                   "n": len(_pool_wa), "rule_version": 7, "holding_levels": _holding_levels9}
+                   "n": len(_pool_wa), "rule_version": 8, "holding_levels": _holding_levels9}
             st.session_state['watch_alerts_v88'] = _wa
         _alert_analysis_note9 = _analysis_label9(_wa.get("ts"), "预警分析")
         _render_front_watch_board9(_wa, _alert_analysis_note9)
@@ -13963,9 +13978,24 @@ if execute_analysis and q_input:
         # ═══════════════════════════════════════════════════════════════
         st.markdown("### 🧭 个股周期轮换总览（深度分析第一判断）")
         st.caption("先看周期象限与2/4/6/8/16周走向，再看明细和K线；置信度表示证据一致性，不是回测胜率。")
+        _hz_align = {}
         try:
             import stock_horizon as _stock_horizon
-            _hz_last = str(df.index[-1])[:19]
+            # 与首页自选卡使用同一套趋势阶段，避免“启动确认”在首页加权、
+            # 深度分析却漏传阶段而产生同股同周期分差。
+            _hz_full = (metrics or {}).get("trend_full") or {}
+            try:
+                import cloud_engine as _ce_hz_same
+                _hz_full = _ce_hz_same.analyze_trend_full(df) or _hz_full
+            except Exception:
+                pass
+            # 不能只按交易日期缓存：盘中价格/成交量已变化时，继续复用旧底稿会让
+            # 首页概率与深度分析互相打架。用末价+末量组成同源行情签名。
+            _hz_last_px = float(pd.to_numeric(df["Close"], errors="coerce").dropna().iloc[-1])
+            _hz_last_vol = (float(pd.to_numeric(df["Volume"], errors="coerce").dropna().iloc[-1])
+                            if "Volume" in df and not pd.to_numeric(df["Volume"], errors="coerce").dropna().empty else 0.0)
+            _hz_stage = str((_hz_full or {}).get("stage") or "阶段待核")
+            _hz_last = f"{str(df.index[-1])[:19]}_{_hz_last_px:.4f}_{_hz_last_vol:.0f}_{len(df)}_{_hz_stage}"
             _hz_cache_key = f"_stock_horizon_{target_c}_{_hz_last}"
             if _hz_cache_key not in st.session_state:
                 _hz_bar = st.progress(0, text="正在计算五周期量价底稿…")
@@ -13983,7 +14013,7 @@ if execute_analysis and q_input:
                     st.session_state.get("scan_selected_name") or target_c,
                     target_c,
                     df,
-                    full=(metrics or {}).get("trend_full") or {},
+                    full=_hz_full,
                     context=_hz_context,
                 )
                 st.session_state[_hz_cache_key] = _hz_result
@@ -13993,6 +14023,9 @@ if execute_analysis and q_input:
                 _hz_result = st.session_state[_hz_cache_key]
 
             _hz_review = _hz_result.get("review") or {}
+            _hz_align = _stock_horizon.cycle_alignment(_hz_result.get("facts") or {})
+            _hz_action = (_hz_align.get("safe_action") if _hz_align.get("conflict")
+                          else _hz_review.get("action", "观察"))
             _hz_rows = _stock_horizon.table_rows(_hz_result)
             _hz_visual = _stock_horizon.cycle_visual_html(
                 _hz_result,
@@ -14008,7 +14041,8 @@ if execute_analysis and q_input:
                 st.info(
                     f"🧠 **思考复核**：{_hz_review.get('summary', '五周期复核完成')} ｜ "
                     f"周期相位：{_hz_review.get('cycle_phase', '震荡')} ｜ "
-                    f"综合动作：{_hz_review.get('action', '观察')} ｜ "
+                    f"周期口径：{_hz_align.get('note', '待核')} ｜ "
+                    f"综合动作：{_hz_action} ｜ "
                     f"失效条件：{_hz_review.get('invalid_summary', '破位后重评')}"
                 )
                 st.caption(
@@ -14179,17 +14213,19 @@ if execute_analysis and q_input:
         st.markdown("---")
         st.markdown("### 🤖 AI 综合分析")
 
-        _unified_ai_cache_key = f"_unified_ai_{target_c}"
+        # v2缓存强制淘汰未接入五周期裁决的旧报告，防止旧“推荐”继续与顶部结论冲突。
+        _stock_ai_report_key = f"stock_consensus_v2_{target_c}"
+        _unified_ai_cache_key = f"_unified_ai_consensus_v2_{target_c}"
 
         # 从文件缓存恢复（session_state 没有时）
         if _unified_ai_cache_key not in st.session_state:
-            _cached_report, _cached_ts = _load_ai_report_cache(f"stock_{target_c}")
+            _cached_report, _cached_ts = _load_ai_report_cache(_stock_ai_report_key)
             if _cached_report and isinstance(_cached_report, str):
                 st.session_state[_unified_ai_cache_key] = _cached_report
 
         _has_stock_cache = _unified_ai_cache_key in st.session_state
         if _has_stock_cache:
-            _, _sc_ts = _load_ai_report_cache(f"stock_{target_c}")
+            _, _sc_ts = _load_ai_report_cache(_stock_ai_report_key)
             _sc_time = datetime.fromtimestamp(_sc_ts).strftime('%H:%M') if _sc_ts else ""
             st.caption(f"技术研判 · 止损止盈 · 风控评估 · 行业分析 · 操作建议{f' · 缓存 {_sc_time}' if _sc_time else ''}")
         else:
@@ -14205,7 +14241,7 @@ if execute_analysis and q_input:
         if _refresh_stock_ai:
             st.session_state.pop(_unified_ai_cache_key, None)
             try:
-                _rf = _AI_REPORT_CACHE_DIR / f"ai_report_stock_{target_c}.json"
+                _rf = _AI_REPORT_CACHE_DIR / f"ai_report_{_stock_ai_report_key}.json"
                 if _rf.exists():
                     _rf.unlink()
             except Exception:
@@ -14220,7 +14256,7 @@ if execute_analysis and q_input:
             _run_unified_ai = True
 
         if _run_unified_ai and MY_GEMINI_KEY:
-            with _v88_running(f"🤖 Gemini 综合分析中 · 模型: {_ai_model_label()} · 预计 15-30 秒..."):
+            with _v88_running(f"🤖 {_ai_model_label()} 综合分析中 · 预计 15-30 秒..."):
                 try:
                     _curr_p = float(df['Close'].iloc[-1])
                     _last5 = df.tail(5)[['Open','High','Low','Close','Volume']].to_string()
@@ -14331,6 +14367,18 @@ if execute_analysis and q_input:
                     except Exception:
                         pass
 
+                    # 【V88·统一裁决硬门】所有后续AI必须服从顶部同源五周期结论。
+                    # 周期冲突时，基本面再好、短期期望再正，也不能输出推荐/建仓。
+                    _cycle_gate_ctx = ""
+                    if _hz_align:
+                        _cycle_gate_ctx = f"""
+【最高优先级五周期统一裁决（不可推翻）】
+周期口径：{_hz_align.get('note', '待核')}；状态：{_hz_align.get('status', '待核')}；安全动作：{_hz_align.get('safe_action', '观察')}。
+是否周期冲突：{'是' if _hz_align.get('conflict') else '否'}。
+若为“是”：操作评级最高只能写“中性”或“回避”，仓位必须为0%，买点必须写“不参与，等待周期共振”；
+不得因基本面优秀、短期反弹概率、正期望或高盈亏比输出“推荐/强烈推荐/建仓/逢低吸纳”。
+必须明确区分2周与4-16周，不得把短期反弹解释成中长期转多。"""
+
                     # 【V94.5】注入真实新闻日报：本股/其行业若在今日新闻中，催化必须锚定真实
                     # 事件并注明媒体；无相关新闻则写明，严禁编造（与新闻日报同一条铁律）
                     _stock_news_ctx = ""
@@ -14359,6 +14407,7 @@ K线形态: {_pattern_v} | 夏普比率: {_sharpe_v} | 最大回撤: {_maxdd_v}
 {_mc_ctx}
 {_vol_ctx}
 {_score_ctx}
+{_cycle_gate_ctx}
 
 【最近5日行情】
 {_last5}
@@ -14366,6 +14415,7 @@ K线形态: {_pattern_v} | 夏普比率: {_sharpe_v} | 最大回撤: {_maxdd_v}
 {_stock_news_ctx}
 
 ━━━ 写作纪律（违反任一条即不合格）━━━
+0. 【五周期统一裁决】是最高优先级硬门，任何基本面、估值或短线信号都无权推翻；冲突时严禁推荐和建仓。
 1. 先证据、后判断：每个判断必须挂靠上方某个具体数据/因子/新闻，不得空谈。
 2. 事实 / 推断 / 策略三分：事实照录不夸大；推断必须写出传导链（信号→对盈利或资金的影响→对价格或估值的影响）；策略必须带失效条件。
 3. 不复述数据原文，要给数字背后的含义与相互印证/矛盾之处（如"RS为负但站上年线"这类冲突必须点破并裁决）。
@@ -14414,7 +14464,7 @@ K线形态: {_pattern_v} | 夏普比率: {_sharpe_v} | 最大回撤: {_maxdd_v}
 
                     if _unified_result and not _unified_result.startswith("❌"):
                         st.session_state[_unified_ai_cache_key] = _unified_result
-                        _save_ai_report_cache(f"stock_{target_c}", _unified_result)
+                        _save_ai_report_cache(_stock_ai_report_key, _unified_result)
                     else:
                         st.error(_unified_result or "❌ AI 分析生成失败，请重试")
                 except Exception as _uae:
@@ -14422,7 +14472,27 @@ K线形态: {_pattern_v} | 夏普比率: {_sharpe_v} | 最大回撤: {_maxdd_v}
 
         if _unified_ai_cache_key in st.session_state:
             _ua_res = st.session_state[_unified_ai_cache_key]
-            st.markdown(f"""<style>
+            _ua_conflict = bool((_hz_align or {}).get("conflict"))
+            # 不能只检查“推荐”两个字：周期冲突时，AI若偷偷给了非零仓位或买点，
+            # 同样属于可执行性冲突。三项必须同时通过才允许作为建议展示。
+            _ua_plain = re.sub(r"[*_#]", "", str(_ua_res))
+            _ua_safe_rating = bool(re.search(r"【操作评级：\s*(?:中性|回避)", _ua_plain))
+            _ua_zero_position = bool(re.search(r"仓位与节奏\s*[:：]\s*0%", _ua_plain))
+            _ua_no_buy = bool(re.search(r"买点\s*[:：]\s*(?:不参与|不建议买|等待)", _ua_plain))
+            _ua_unsafe = bool(_ua_conflict and not (
+                _ua_safe_rating and _ua_zero_position and _ua_no_buy))
+            if _ua_conflict:
+                st.warning(
+                    f"⚠️ **最高优先级周期裁决**：{_hz_align.get('note', '周期冲突')}；"
+                    f"统一动作：**{_hz_align.get('safe_action', '仅观察')}**。"
+                    "正期望和高盈亏比只代表2周情景，不得升级为买入。")
+            if _ua_unsafe:
+                st.error("⛔ 该AI报告未同时满足‘中性/回避＋0%仓位＋不参与’，与五周期硬门冲突，已停止作为操作建议展示。请点击重新生成。")
+                with st.expander("查看被否决的旧报告（仅供审计，不可执行）", expanded=False):
+                    st.markdown(_ua_res)
+                _ua_res = ""
+            if _ua_res:
+                st.markdown(f"""<style>
 .unified-report {{background:#f9fafb;padding:1.5rem;border-radius:8px;border-left:4px solid #6366f1;font-size:14px;line-height:1.8;color:#374151;}}
 .unified-report h2 {{font-size:17px !important;font-weight:700 !important;margin:1.2rem 0 0.5rem 0 !important;color:#1f2937 !important;border-bottom:1px solid #e5e7eb;padding-bottom:0.3rem;}}
 .unified-report h3 {{font-size:15px !important;font-weight:600 !important;margin:0.9rem 0 0.4rem 0 !important;color:#374151 !important;}}
@@ -14431,10 +14501,10 @@ K线形态: {_pattern_v} | 夏普比率: {_sharpe_v} | 最大回撤: {_maxdd_v}
 .unified-report li {{margin:0.3rem 0 !important;}}
 .unified-report strong {{font-weight:600 !important;color:#1f2937 !important;}}
 </style><div class="unified-report">{_ua_res}</div>""", unsafe_allow_html=True)
-            st.caption(f"📌 AI 综合分析 · 模型: {_ai_model_label()}")
-            if COPY_UTILS_AVAILABLE:
-                CopyUtils.create_copy_button(_ua_res, button_text="📋 复制分析报告", key=f"copy_unified_{target_c}")
-            st.download_button("📥 下载报告", data=_ua_res, file_name=f"AI综合分析_{target_c}_{datetime.now().strftime('%Y%m%d')}.md", mime="text/markdown", key=f"dl_unified_{target_c}")
+                st.caption(f"📌 AI 综合分析 · 模型: {_ai_model_label()}")
+                if COPY_UTILS_AVAILABLE:
+                    CopyUtils.create_copy_button(_ua_res, button_text="📋 复制分析报告", key=f"copy_unified_{target_c}")
+                st.download_button("📥 下载报告", data=_ua_res, file_name=f"AI综合分析_{target_c}_{datetime.now().strftime('%Y%m%d')}.md", mime="text/markdown", key=f"dl_unified_{target_c}")
         elif not _run_unified_ai:
             st.info("👆 点击上方按钮，一键生成包含技术面、止损止盈、风控、财务、行业的 AI 综合分析报告")
 

@@ -740,6 +740,9 @@ elif _nav == "🔍 个股搜索":
                 _hz_bar.progress(100, text="五周期走势分析完成")
                 _hz_bar.empty()
                 _hz_rows = _stock_horizon_cloud.table_rows(_hz_result)
+                _hz_align = _stock_horizon_cloud.cycle_alignment(_hz_result.get("facts") or {})
+                _hz_action = (_hz_align.get("safe_action") if _hz_align.get("conflict")
+                              else (_hz_result.get("review") or {}).get("action", "观察"))
                 _hz_visual = _stock_horizon_cloud.cycle_visual_html(
                     _hz_result, _tname, _tsym, f"v88-cloud-stock-cycle-{_tsym}")
                 if _hz_visual:
@@ -751,7 +754,8 @@ elif _nav == "🔍 个股搜索":
                     st.info(
                         f"🧠 **思考复核**：{_hz_review.get('summary', '五周期复核完成')} ｜ "
                         f"相位：{_hz_review.get('cycle_phase', '震荡')} ｜ "
-                        f"动作：{_hz_review.get('action', '观察')} ｜ "
+                        f"周期口径：{_hz_align.get('note', '待核')} ｜ "
+                        f"动作：{_hz_action} ｜ "
                         f"失效：{_hz_review.get('invalid_summary', '破位后重评')}"
                     )
                     st.caption(
