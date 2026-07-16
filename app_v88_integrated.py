@@ -11926,6 +11926,33 @@ def _render_today_nav():
     st.caption(f"💡 不知道买什么先看这里：温度定仓位 → 水位定方向 → 轮动定板块 → 操作榜定标的 → 持仓提醒定纪律 ｜ 数据时间 {_gen}{_stale_note}")
     st.caption("参数白话：上行概率（越大越有利）｜下行概率（越小越有利）｜盈亏比（越大越好，>1才有正向空间）｜期望值（>0才是正期望）｜ATR（越大波动越大）｜历史水位（越接近0%越靠近历史最高点）")
 
+    # 【V88·AI预算统计+超额预警】（2026-07-16 用户点单：即将用超要有预警）
+    # 两本账：云端流水线（私仓 ai_budget.json，上限8元）+ 网页版AI（本地1元），总9元/月
+    try:
+        _bj9 = json.loads((_repo / "data" / "ai_budget.json").read_text(encoding="utf-8"))
+        _cloud_spent9 = float(_bj9.get("spent_rmb", 0) or 0)
+        _cloud_cap9 = 8.0
+        try:
+            import v88_ai_budget as _wb9
+            _web9 = _wb9.status()
+            _web_spent9, _web_cap9 = float(_web9.get("spent", 0)), float(_web9.get("cap", 1))
+        except Exception:
+            _web_spent9, _web_cap9 = 0.0, 1.0
+        _tot_spent9 = _cloud_spent9 + _web_spent9
+        _tot_cap9 = _cloud_cap9 + _web_cap9
+        _pct9 = _tot_spent9 / _tot_cap9 * 100 if _tot_cap9 else 0
+        _bar9 = "▓" * int(round(_pct9 / 10)) + "░" * (10 - int(round(_pct9 / 10)))
+        _line9 = (f"🧮 AI预算（{_bj9.get('month', '')}）：**{_tot_spent9:.2f} / {_tot_cap9:g}元**"
+                  f"（{_pct9:.0f}%）{_bar9}　云端{_cloud_spent9:.2f}/{_cloud_cap9:g}｜网页{_web_spent9:.2f}/{_web_cap9:g}")
+        if _pct9 >= 95:
+            st.error(_line9 + "　🚨 本月预算即将用尽——AI点评/翻译将自动降级为规则模板，核心引擎不受影响")
+        elif _pct9 >= 80:
+            st.warning(_line9 + "　⚠️ 已用超八成，注意月底前的思考模式调用")
+        else:
+            st.caption(_line9)
+    except Exception:
+        pass
+
     # 🌡 市场温度计（能不能做 · 做多大仓位）
     if _snap and _snap.get("markets"):
         _tl = []
@@ -12632,14 +12659,11 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
         _ipo_rows9 = _ipo9.get("rows") or []
         if _ipo_rows9:
             st.caption(f"🕒 {_ipo9.get('generated_at', '')} · 评级=确定性规则+AI一句话 · 打新决策以正式公告为准")
-            for _mk9x in ("A股", "美股", "港股"):
-                _sub9 = [r for r in _ipo_rows9 if r.get("market") == _mk9x]
-                if not _sub9:
-                    continue
-                st.markdown(f"**{_mk9x}**（{len(_sub9)}只）")
-                _tb9 = []
-                for _r9x in _sub9[:10]:
-                    if _mk9x == "A股":
+
+            def _ipo_tb9(_lst9):
+                _out9 = []
+                for _r9x in _lst9:
+                    if _r9x.get("market") == "A股":
                         _d9x = str(_r9x.get("apply_date") or "")
                         _d9x = f"{_d9x[:4]}-{_d9x[4:6]}-{_d9x[6:]}" if len(_d9x) == 8 else _d9x
                         _px9 = (f"{_r9x.get('price')}元/PE{_r9x.get('pe'):g}" if _r9x.get("price") else "未披露")
@@ -12648,10 +12672,22 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
                         _d9x = str(_r9x.get("apply_date") or "")
                         _px9 = _r9x.get("price_range") or "未披露"
                         _sz9 = f"募{_r9x.get('raise_usd', 0) / 1e8:.1f}亿$" if _r9x.get("raise_usd") else "—"
-                    _tb9.append({"新股": f"{_r9x.get('name')}（{_r9x.get('code')}）",
-                                 "申购/定价日": _d9x, "价格/PE": _px9, "规模": _sz9,
-                                 "评级": _r9x.get("grade", ""), "点评": _r9x.get("ai") or _r9x.get("why", "")})
-                st.dataframe(_tb9, hide_index=True, use_container_width=True)
+                    _out9.append({"市场": _r9x.get("market"), "新股": f"{_r9x.get('name')}（{_r9x.get('code')}）",
+                                  "申购/定价日": _d9x, "价格/PE": _px9, "规模": _sz9,
+                                  "评级": _r9x.get("grade", ""), "点评": _r9x.get("ai") or _r9x.get("why", "")})
+                return _out9
+
+            # 【用户定则】只推荐Top3：评级最优+申购日最近置顶，其余进完整清单
+            _rank9 = {"✅ 值得打": 0, "🔎 重点关注": 1, "🔎 关注": 2, "✅ 常规打": 3,
+                      "⚪ 一般": 4, "⚠️ 谨慎": 5, "🚫 回避": 6}
+            _picks9 = sorted(_ipo_rows9, key=lambda r: (_rank9.get(r.get("grade", ""), 9),
+                                                        str(r.get("apply_date") or "")))[:3]
+            st.markdown("**📌 打新推荐 Top3**")
+            st.dataframe(_ipo_tb9(_picks9), hide_index=True, use_container_width=True)
+            _rest9 = [r for r in _ipo_rows9 if r not in _picks9]
+            if _rest9:
+                with st.expander(f"完整清单（其余 {len(_rest9)} 只，含谨慎/回避）"):
+                    st.dataframe(_ipo_tb9(_rest9), hide_index=True, use_container_width=True)
             if not any(r.get("market") == "港股" for r in _ipo_rows9):
                 st.caption("港股招股数据源接入中；当前以 A股/美股为准。")
         else:
