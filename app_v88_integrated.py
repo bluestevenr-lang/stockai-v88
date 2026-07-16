@@ -11328,6 +11328,149 @@ def _stk_link(name, code):
             f'style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{name}</a>')
 
 
+# 【V88·决策卡·共用】自选决策台与持仓决策台共用同一张卡片（短/中/长/16周概率走势条+盈亏比+期望）。
+# 2026-07-16 用户要求持仓也变成自选那样的概率决策台，故把卡片渲染提为模块级复用。
+_V88_CARD_CSS = """
+<style>
+.v88-watch-shell{border:1px solid #bfdbfe;border-radius:12px;background:#f8fbff;padding:10px 11px 8px;margin:2px 0 10px}
+.v88-watch-title{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:8px}
+.v88-watch-title h3{margin:0;color:#123a70;font-size:18px;line-height:1.25}
+.v88-watch-title p{margin:0;color:#64748b;font-size:10px;text-align:right}
+.v88-watch-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;align-items:start}
+.v88-watch-market{min-width:0}
+.v88-watch-market h4{margin:0 0 5px;padding:4px 7px;border-radius:6px;background:#eaf2ff;color:#173b68;font-size:13px}
+.v88-watch-market h4 span{float:right;color:#64748b;font-size:10px;font-weight:500}
+.v88-watch-card{background:#fff;border:1px solid #dbe4f0;border-radius:8px;padding:7px;margin-bottom:6px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.v88-watch-conflict{border:2px solid #f59e0b;background:#fffdf5}
+.v88-watch-pending{border-style:dashed;background:#fafbfc;opacity:.85}
+.v88-cycle-warn{color:#b45309;font-weight:700}
+.v88-watch-card-head{display:flex;justify-content:space-between;align-items:center;gap:5px;font-size:12px;line-height:1.25}
+.v88-watch-card-head a{color:#173b68!important;text-decoration:none!important;font-weight:700!important}
+.v88-code{color:#94a3b8;font-size:9px;margin-left:3px}
+.v88-action{color:#1d4ed8;font-size:10px;white-space:nowrap}
+.v88-level{display:inline-block;padding:1px 4px;border-radius:4px;font-size:9px;margin-right:3px;color:#fff}
+.v88-level-A{background:#dc2626} .v88-level-B{background:#2563eb} .v88-level-C{background:#64748b}
+.v88-cyc-head{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:9px;color:#64748b}
+.v88-cyc-trend{font-weight:700;color:#334155}
+.v88-cyc-strip{display:flex;gap:4px;margin-top:3px}
+.v88-cyc{flex:1;min-width:0;text-align:center;border:1px solid #e5eaf1;border-radius:5px;padding:3px 1px;background:#fff}
+.v88-cyc i{display:block;font-style:normal;font-size:8px;color:#94a3b8;line-height:1.2}
+.v88-cyc b{font-size:15px;line-height:1.2}
+.v88-spark-wrap{margin-top:4px;line-height:0}
+.v88-spark{width:100%;height:auto;display:block}
+.v88-rrline{margin-top:5px;font-size:10px;color:#64748b}
+.v88-rrline b{font-size:14px} .v88-rrline em{font-style:normal;font-size:9px}
+.v88-watch-foot{display:flex;flex-wrap:wrap;gap:3px 9px;margin-top:5px;color:#64748b;font-size:9px;line-height:1.3}
+@media(max-width:1100px){.v88-watch-grid{grid-template-columns:1fr}}
+</style>
+"""
+
+
+def _v88_rr_state9(_rr9):
+    _v9 = float(_rr9 or 0)
+    if _v9 >= 2:
+        return "优秀", "#1d4ed8", "#dbeafe"
+    if _v9 >= 1.5:
+        return "可关注", "#2563eb", "#eff6ff"
+    if _v9 >= 1:
+        return "偏低", "#b45309", "#fffbeb"
+    return "不合格", "#b91c1c", "#fef2f2"
+
+
+def _v88_decision_card(_d9):
+    """一张决策卡的 HTML：多周期上涨概率走势条 + 盈亏比 + 期望 + 动作。自选/持仓共用。"""
+    if _d9.get("_pending"):
+        return f"""
+    <div class="v88-watch-card v88-watch-pending">
+      <div class="v88-watch-card-head">
+        <div>{_stk_link(_d9.get('name') or _d9.get('code'), _d9.get('code'))}
+        <span class="v88-code">{_d9.get('code')}</span></div>
+        <b class="v88-action">计算中</b>
+      </div>
+      <div class="v88-watch-foot"><span>信号计算中或数据暂缺，稍后自动刷新；点名称可先看深度分析</span></div>
+    </div>"""
+    _rr9 = float(_d9.get("rr") or 0)
+    _rr_txt9, _rr_color9, _rr_bg9 = _v88_rr_state9(_rr9)
+    _up9, _down9 = int(_d9.get("p_up") or 0), int(_d9.get("p_down") or 0)
+    _exp9 = float(_d9.get("expected_pct") or 0)
+    _exp_color9 = "#dc2626" if _exp9 > 0 else ("#16a34a" if _exp9 < 0 else "#64748b")
+    _level9 = str(_d9.get("level") or "B")
+    _action9 = str(_d9.get("action") or "观察")
+    _at9 = str(_d9.get("analysis_time") or "时间未知")
+    _score9 = int(_d9.get("unified_score") or 0)
+    _medium9 = int(_d9.get("medium_score") or 0)
+    _long_score9 = int(_d9.get("long_score") or 0)
+    _entry9 = str(_d9.get("entry_note") or "入场条件待核")
+    _conflict9 = bool(_d9.get("cycle_conflict"))
+    if _conflict9:
+        _rr_txt9, _rr_color9, _rr_bg9 = "短期赔率≠可买", "#b45309", "#fffbeb"
+    elif "小仓试错" in _action9:
+        _rr_txt9, _rr_color9, _rr_bg9 = "概率补偿·仅小仓", "#2563eb", "#eff6ff"
+    elif "试仓复核" in _action9:
+        _rr_txt9, _rr_color9, _rr_bg9 = "入场门槛通过", "#1d4ed8", "#dbeafe"
+    elif "等待回踩" in _action9:
+        _rr_txt9, _rr_color9, _rr_bg9 = "当前价不划算", "#b45309", "#fffbeb"
+    _exp_suffix9 = "（周期冲突，不升级）" if _conflict9 else ""
+    _facts_h9 = ((_d9.get("facts") or {}).get("horizons") or {})
+    _cyc_probs9 = []
+    for _lab9 in ("2周", "4周", "6周", "8周", "16周"):
+        _rs9 = (_facts_h9.get(_lab9) or {}).get("rule_score")
+        if _rs9 is not None:
+            _cyc_probs9.append((_lab9, int(round(float(_rs9)))))
+    if len(_cyc_probs9) < 4:
+        _cyc_probs9 = [("2周", _up9), ("4周", _medium9), ("8周", _medium9), ("16周", _long_score9)]
+
+    def _cyc_col9(_p):
+        return "#dc2626" if _p >= 55 else ("#16a34a" if _p <= 45 else "#64748b")
+    _c_first9, _c_last9 = _cyc_probs9[0][1], _cyc_probs9[-1][1]
+    _trend9 = ("↗ 越远越强" if (_c_last9 - _c_first9 >= 8 and _c_last9 >= 59) else
+               ("↘ 越远越弱" if (_c_first9 - _c_last9 >= 8 and _c_last9 <= 41) else
+                ("↗ 趋中性" if _c_last9 - _c_first9 >= 8 else
+                 ("↘ 趋中性" if _c_first9 - _c_last9 >= 8 else "→ 各周期均衡"))))
+    _trend_col9 = ("#dc2626" if _c_last9 - _c_first9 >= 8 else
+                   ("#16a34a" if _c_first9 - _c_last9 >= 8 else "#94a3b8"))
+    _spk_w9, _spk_h9, _sn9 = 200, 48, len(_cyc_probs9)
+
+    def _spk_y9(_p):
+        return round(18 + 18 * (1 - (min(90, max(20, _p)) - 20) / 70), 1)
+    _pts9 = [(round(16 + _i9 * (_spk_w9 - 32) / max(1, _sn9 - 1), 1),
+              _spk_y9(_p9x), _p9x, _l9x)
+             for _i9, (_l9x, _p9x) in enumerate(_cyc_probs9)]
+    _base_y9 = _spk_y9(50)
+    _poly9 = " ".join(f"{x},{y}" for x, y, _, _ in _pts9)
+    _marks9 = "".join(
+        f'<circle cx="{x}" cy="{y}" r="2.6" fill="{_cyc_col9(p)}"/>'
+        f'<text x="{x}" y="10" text-anchor="middle" font-size="9" font-weight="700" '
+        f'fill="{_cyc_col9(p)}">{p}%</text>'
+        f'<text x="{x}" y="46" text-anchor="middle" font-size="8" fill="#94a3b8">{lab}</text>'
+        for x, y, p, lab in _pts9)
+    _spark9 = (
+        f'<svg class="v88-spark" viewBox="0 0 {_spk_w9} {_spk_h9}">'
+        f'<line x1="10" y1="{_base_y9}" x2="{_spk_w9 - 10}" y2="{_base_y9}" stroke="#e2e8f0" '
+        f'stroke-width="1" stroke-dasharray="3 3"/>'
+        f'<polyline points="{_poly9}" fill="none" stroke="{_trend_col9}" stroke-width="2" '
+        f'stroke-linejoin="round" stroke-linecap="round"/>{_marks9}</svg>')
+    return f"""
+    <div class="v88-watch-card{' v88-watch-conflict' if _conflict9 else ''}">
+      <div class="v88-watch-card-head">
+        <div><span class="v88-level v88-level-{_level9}">{_level9}级</span>
+        {_stk_link(_d9.get('name') or _d9.get('code'), _d9.get('code'))}
+        <span class="v88-code">{_d9.get('code')}</span></div>
+        <b class="v88-action" style="color:{_act_color_of9(_action9)}">{_action9}</b>
+      </div>
+      <div class="v88-cyc-head">
+        <span>各周期上涨概率（红涨/绿跌·看趋势）</span>
+        <span class="v88-cyc-trend">{_trend9}</span>
+      </div>
+      <div class="v88-spark-wrap">{_spark9}</div>
+      <div class="v88-rrline">关键位盈亏比 <b style="color:{_rr_color9}">{_rr9:.2f}</b>
+        <em style="color:{_rr_color9}">（{_rr_txt9}）</em></div>
+      <div class="v88-watch-foot"><span>未来2周情景期望 <b style="color:{_exp_color9}">{_exp9:+.1f}%</b>{_exp_suffix9}</span>
+      <span><b>统一分{_score9}</b></span>
+      <span>{_entry9}</span><span>🕒 {_at9}</span></div>
+    </div>"""
+
+
 def _render_l3_cycle_board(_snap, _is_trading):
     """【V88·三层周期概率总览】大盘→板块同屏（自选=上方决策台，共三层）。
 
@@ -11728,119 +11871,7 @@ def _render_today_nav():
                 _render_front_watch_add9()
             return
 
-        def _rr_state9(_rr9):
-            _v9 = float(_rr9 or 0)
-            if _v9 >= 2:
-                return "优秀", "#1d4ed8", "#dbeafe"
-            if _v9 >= 1.5:
-                return "可关注", "#2563eb", "#eff6ff"
-            if _v9 >= 1:
-                return "偏低", "#b45309", "#fffbeb"
-            return "不合格", "#b91c1c", "#fef2f2"
-
-        def _card9(_d9):
-            if _d9.get("_pending"):
-                # 自选里但信号还没算出来的：占位，保证"所有自选都在场"，别让它凭空消失。
-                return f"""
-            <div class="v88-watch-card v88-watch-pending">
-              <div class="v88-watch-card-head">
-                <div>{_stk_link(_d9.get('name') or _d9.get('code'), _d9.get('code'))}
-                <span class="v88-code">{_d9.get('code')}</span></div>
-                <b class="v88-action">计算中</b>
-              </div>
-              <div class="v88-watch-foot"><span>信号计算中或数据暂缺，稍后自动刷新；点名称可先看深度分析</span></div>
-            </div>"""
-            _rr9 = float(_d9.get("rr") or 0)
-            _rr_txt9, _rr_color9, _rr_bg9 = _rr_state9(_rr9)
-            _up9, _down9 = int(_d9.get("p_up") or 0), int(_d9.get("p_down") or 0)
-            _exp9 = float(_d9.get("expected_pct") or 0)
-            _exp_color9 = "#dc2626" if _exp9 > 0 else ("#16a34a" if _exp9 < 0 else "#64748b")
-            _level9 = str(_d9.get("level") or "B")
-            _action9 = str(_d9.get("action") or "观察")
-            _reason9 = str(_d9.get("reason") or "证据不足，等待确认")[:20]
-            _at9 = str(_d9.get("analysis_time") or "时间未知")
-            _hz9 = str(_d9.get("horizon") or "2周")
-            _long9 = int(_d9.get("long_p_up") or 50)
-            _cycle9 = str(_d9.get("cycle_note") or "4-16周待计算")
-            _score9 = int(_d9.get("unified_score") or 0)
-            _short9 = int(_d9.get("short_score") or 0)
-            _medium9 = int(_d9.get("medium_score") or 0)
-            _long_score9 = int(_d9.get("long_score") or 0)
-            _sig9 = str(_d9.get("data_signature") or "无签名")
-            _entry9 = str(_d9.get("entry_note") or "入场条件待核")
-            _conflict9 = bool(_d9.get("cycle_conflict"))
-            if _conflict9:
-                _rr_txt9, _rr_color9, _rr_bg9 = "短期赔率≠可买", "#b45309", "#fffbeb"
-            elif "小仓试错" in _action9:
-                _rr_txt9, _rr_color9, _rr_bg9 = "概率补偿·仅小仓", "#2563eb", "#eff6ff"
-            elif "试仓复核" in _action9:
-                _rr_txt9, _rr_color9, _rr_bg9 = "入场门槛通过", "#1d4ed8", "#dbeafe"
-            elif "等待回踩" in _action9:
-                _rr_txt9, _rr_color9, _rr_bg9 = "当前价不划算", "#b45309", "#fffbeb"
-            _exp_suffix9 = "（周期冲突，不升级）" if _conflict9 else ""
-            # 【多周期上涨概率】周期越多越能看趋势：取统一引擎的 2/4/6/8/16周方向分（rule_score=上涨概率）。
-            _facts_h9 = ((_d9.get("facts") or {}).get("horizons") or {})
-            _cyc_probs9 = []
-            for _lab9 in ("2周", "4周", "6周", "8周", "16周"):
-                _rs9 = (_facts_h9.get(_lab9) or {}).get("rule_score")
-                if _rs9 is not None:
-                    _cyc_probs9.append((_lab9, int(round(float(_rs9)))))
-            if len(_cyc_probs9) < 4:   # 兜底：facts 不全时用短/中/长三桶展开成4档
-                _cyc_probs9 = [("2周", _up9), ("4周", _medium9),
-                               ("8周", _medium9), ("16周", _long_score9)]
-
-            def _cyc_col9(_p):
-                return "#dc2626" if _p >= 55 else ("#16a34a" if _p <= 45 else "#64748b")
-            _c_first9, _c_last9 = _cyc_probs9[0][1], _cyc_probs9[-1][1]
-            # 【V88·相位一致性】末档必须真强(≥59)/真弱(≤41)才说强弱，中性带只说趋中性
-            _trend9 = ("↗ 越远越强" if (_c_last9 - _c_first9 >= 8 and _c_last9 >= 59) else
-                       ("↘ 越远越弱" if (_c_first9 - _c_last9 >= 8 and _c_last9 <= 41) else
-                        ("↗ 趋中性" if _c_last9 - _c_first9 >= 8 else
-                         ("↘ 趋中性" if _c_first9 - _c_last9 >= 8 else "→ 各周期均衡"))))
-            # 【迷你走势条】5档概率带数值标签的 sparkline：线随趋势上色(红涨/绿跌/灰平)、
-            # 点随各档上色、上标数值下标周期、配 50% 虚线基线，一眼看形态。
-            _trend_col9 = ("#dc2626" if _c_last9 - _c_first9 >= 8 else
-                           ("#16a34a" if _c_first9 - _c_last9 >= 8 else "#94a3b8"))
-            _spk_w9, _spk_h9, _sn9 = 200, 48, len(_cyc_probs9)
-
-            def _spk_y9(_p):
-                return round(18 + 18 * (1 - (min(90, max(20, _p)) - 20) / 70), 1)
-            _pts9 = [(round(16 + _i9 * (_spk_w9 - 32) / max(1, _sn9 - 1), 1),
-                      _spk_y9(_p9x), _p9x, _l9x)
-                     for _i9, (_l9x, _p9x) in enumerate(_cyc_probs9)]
-            _base_y9 = _spk_y9(50)
-            _poly9 = " ".join(f"{x},{y}" for x, y, _, _ in _pts9)
-            _marks9 = "".join(
-                f'<circle cx="{x}" cy="{y}" r="2.6" fill="{_cyc_col9(p)}"/>'
-                f'<text x="{x}" y="10" text-anchor="middle" font-size="9" font-weight="700" '
-                f'fill="{_cyc_col9(p)}">{p}%</text>'
-                f'<text x="{x}" y="46" text-anchor="middle" font-size="8" fill="#94a3b8">{lab}</text>'
-                for x, y, p, lab in _pts9)
-            _spark9 = (
-                f'<svg class="v88-spark" viewBox="0 0 {_spk_w9} {_spk_h9}">'
-                f'<line x1="10" y1="{_base_y9}" x2="{_spk_w9 - 10}" y2="{_base_y9}" stroke="#e2e8f0" '
-                f'stroke-width="1" stroke-dasharray="3 3"/>'
-                f'<polyline points="{_poly9}" fill="none" stroke="{_trend_col9}" stroke-width="2" '
-                f'stroke-linejoin="round" stroke-linecap="round"/>{_marks9}</svg>')
-            return f"""
-            <div class="v88-watch-card{' v88-watch-conflict' if _conflict9 else ''}">
-              <div class="v88-watch-card-head">
-                <div><span class="v88-level v88-level-{_level9}">{_level9}级</span>
-                {_stk_link(_d9.get('name') or _d9.get('code'), _d9.get('code'))}
-                <span class="v88-code">{_d9.get('code')}</span></div>
-                <b class="v88-action" style="color:{_act_color_of9(_action9)}">{_action9}</b>
-              </div>
-              <div class="v88-cyc-head">
-                <span>各周期上涨概率（红涨/绿跌·看趋势）</span>
-                <span class="v88-cyc-trend">{_trend9}</span>
-              </div>
-              <div class="v88-spark-wrap">{_spark9}</div>
-              <div class="v88-rrline">关键位盈亏比 <b style="color:{_rr_color9}">{_rr9:.2f}</b>
-                <em style="color:{_rr_color9}">（{_rr_txt9}）</em></div>
-              <div class="v88-watch-foot"><span>未来2周情景期望 <b style="color:{_exp_color9}">{_exp9:+.1f}%</b>{_exp_suffix9}</span>
-              <span><b>统一分{_score9}</b></span>
-              <span>{_entry9}</span><span>🕒 {_at9}</span></div>
-            </div>"""
+        _card9 = _v88_decision_card
 
         _market_order9 = ("🇺🇸美股", "🇭🇰港股", "🇨🇳A股")
         _groups9 = {m: [] for m in _market_order9}
@@ -11883,46 +11914,13 @@ def _render_today_nav():
             # 先对不含动态卡片的模板去缩进，再替换动态内容；否则卡片中的零缩进行
             # 会让 Markdown 把最外层 div 误判成代码块。
             _board_tpl9 = _textwrap9.dedent("""
-            <style>
-            .v88-watch-shell{border:1px solid #bfdbfe;border-radius:12px;background:#f8fbff;padding:10px 11px 8px;margin:2px 0 10px}
-            .v88-watch-title{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:8px}
-            .v88-watch-title h3{margin:0;color:#123a70;font-size:18px;line-height:1.25}
-            .v88-watch-title p{margin:0;color:#64748b;font-size:10px;text-align:right}
-            .v88-watch-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;align-items:start}
-            .v88-watch-market{min-width:0}
-            .v88-watch-market h4{margin:0 0 5px;padding:4px 7px;border-radius:6px;background:#eaf2ff;color:#173b68;font-size:13px}
-            .v88-watch-market h4 span{float:right;color:#64748b;font-size:10px;font-weight:500}
-            .v88-watch-card{background:#fff;border:1px solid #dbe4f0;border-radius:8px;padding:7px;margin-bottom:6px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
-            .v88-watch-conflict{border:2px solid #f59e0b;background:#fffdf5}
-            .v88-watch-pending{border-style:dashed;background:#fafbfc;opacity:.85}
-            .v88-cycle-warn{color:#b45309;font-weight:700}
-            .v88-watch-card-head{display:flex;justify-content:space-between;align-items:center;gap:5px;font-size:12px;line-height:1.25}
-            .v88-watch-card-head a{color:#173b68!important;text-decoration:none!important;font-weight:700!important}
-            .v88-code{color:#94a3b8;font-size:9px;margin-left:3px}
-            .v88-action{color:#1d4ed8;font-size:10px;white-space:nowrap}
-            .v88-level{display:inline-block;padding:1px 4px;border-radius:4px;font-size:9px;margin-right:3px;color:#fff}
-            .v88-level-A{background:#dc2626} .v88-level-B{background:#2563eb} .v88-level-C{background:#64748b}
-            .v88-cyc-head{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:9px;color:#64748b}
-            .v88-cyc-trend{font-weight:700;color:#334155}
-            .v88-cyc-strip{display:flex;gap:4px;margin-top:3px}
-            .v88-cyc{flex:1;min-width:0;text-align:center;border:1px solid #e5eaf1;border-radius:5px;padding:3px 1px;background:#fff}
-            .v88-cyc i{display:block;font-style:normal;font-size:8px;color:#94a3b8;line-height:1.2}
-            .v88-cyc b{font-size:15px;line-height:1.2}
-            .v88-spark-wrap{margin-top:4px;line-height:0}
-            .v88-spark{width:100%;height:auto;display:block}
-            .v88-rrline{margin-top:5px;font-size:10px;color:#64748b}
-            .v88-rrline b{font-size:14px} .v88-rrline em{font-style:normal;font-size:9px}
-            .v88-watch-foot{display:flex;flex-wrap:wrap;gap:3px 9px;margin-top:5px;color:#64748b;font-size:9px;line-height:1.3}
-            @media(max-width:1100px){.v88-watch-grid{grid-template-columns:1fr}}
-            </style>
             <div class="v88-watch-shell">
               <div class="v88-watch-title"><h3>⭐ 我的自选股 · V88唯一评分决策台</h3>
               <p>统一分=短20%＋中25%＋长20%＋趋势15%＋赔率20%｜点击股票名进入深度分析<br>__TIME__</p></div>
               <div class="v88-watch-grid">__COLUMNS__</div>
             </div>
             """).replace("__TIME__", _time_note9).replace("__COLUMNS__", "".join(_cols_html9))
-            st.markdown(
-                _board_tpl9, unsafe_allow_html=True)
+            st.markdown(_V88_CARD_CSS + _board_tpl9, unsafe_allow_html=True)
             _render_front_watch_add9()
 
     # 【V88·Plan A/B统一标注】与下方AI简报模块共用同一状态，避免"这里显示分数、简报说数据不可信"的割裂
@@ -12355,7 +12353,13 @@ def _render_today_nav():
         if _wa.get("alerts"):
             _critical9 = [a for a in _wa["alerts"]
                           if "[持仓" in a or "[已确认持仓" in a]
-            _watch_only9 = [a for a in _wa["alerts"] if a not in _critical9 and "[持仓" not in a]
+            # 【V88·持仓归位持仓台 2026-07-16】持仓票(含smart_watch减仓信号，此前无"[持仓"标记
+            # 会漏进图二)一律移出预警文本列表——持仓改由下方「💼持仓·概率决策台」卡片呈现。
+            _hold_codes9x = {str(d.get("code")) for d in (_wa.get("decisions") or [])
+                             if d.get("scope") == "持仓"}
+            _watch_only9 = [a for a in _wa["alerts"]
+                            if a not in _critical9 and "[持仓" not in a
+                            and not any(f"({_hc})" in a for _hc in _hold_codes9x)]
             if _watch_only9:
                 with st.expander(f"⚡ 自选/常搜智能预警（{len(_watch_only9)}条触发 · 多因子共振） · {_alert_analysis_note9}", expanded=False):
                     st.markdown("\n".join(f"- {_linkify_md(a)}" for a in _watch_only9), unsafe_allow_html=True)
@@ -12394,6 +12398,36 @@ def _render_today_nav():
                 f'padding:.65rem .8rem;color:#7f1d1d;font-size:12px"><b>🚨 持仓风险优先</b>'
                 f'<span style="float:right;font-size:10px;color:#991b1b">{_risk_time9}</span><br>{_risk_html9}</div>',
                 unsafe_allow_html=True)
+
+        # 【V88·持仓概率决策台 2026-07-16】持仓也变成自选那样的卡片：中/短/长/16周上涨概率走势条+盈亏比+期望。
+        # 数据用预警扫描的同一份唯一决策(scope=持仓)，与自选决策台一字同源。
+        try:
+            _hold_dec9 = [d for d in (_wa.get("decisions") or []) if d.get("scope") == "持仓"]
+            if _hold_dec9:
+                _hg9 = {"🇺🇸美股": [], "🇭🇰港股": [], "🇨🇳A股": []}
+                for _d9 in _hold_dec9:
+                    _hg9.setdefault(str(_d9.get("market") or market_of_code(_d9.get("code", ""))), []).append(_d9)
+                for _mk9 in _hg9:
+                    _hg9[_mk9].sort(key=lambda d: -float(d.get("p_up") or 0))
+                _cols_h9 = []
+                for _mk9 in ("🇺🇸美股", "🇭🇰港股", "🇨🇳A股"):
+                    _r9 = _hg9.get(_mk9) or []
+                    if not _r9:
+                        continue
+                    _cols_h9.append(f'<section class="v88-watch-market"><h4>{_mk9} <span>{len(_r9)}只</span></h4>'
+                                    + "".join(_v88_decision_card(d) for d in _r9) + "</section>")
+                _htime9 = _analysis_label9(_wa.get("ts"), "持仓分析")
+                st.markdown(
+                    _V88_CARD_CSS
+                    + '<div class="v88-watch-shell"><div class="v88-watch-title">'
+                    + '<h3>💼 我的持仓 · 概率决策台</h3>'
+                    + f'<p>短/中/长/16周上涨概率走势条+盈亏比，与自选台同源｜点名进深度分析<br>{_htime9}</p></div>'
+                    + f'<div class="v88-watch-grid">{"".join(_cols_h9)}</div></div>',
+                    unsafe_allow_html=True)
+                st.caption("持仓概率与自选同一套引擎；数字=各周期上涨概率%（红≥55偏涨/绿≤45偏跌/灰中性），"
+                           "破止损见上方🚨红框。下方表格为基本面/技术面/新闻面完整分析。")
+        except Exception as _hpe9:
+            logging.debug(f"持仓决策台渲染失败: {_hpe9}")
 
         def _holding_advice_rows9(_text):
             _start9 = _text.find("## 💼 我的持仓·框架化建议")
