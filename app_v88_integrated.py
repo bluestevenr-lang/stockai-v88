@@ -11358,10 +11358,14 @@ def _render_l3_cycle_board(_snap, _is_trading):
             return "<span style='color:#94a3b8'>计算中</span>"
         _seg9 = " ".join(f"<span style='color:{_pcol9(p)}'>{lab}<b>{p}</b></span>"
                          for lab, p in _probs)
+        # 【V88·相位一致性】"越远越强"必须末档真强（≥59）才说，末档在中性带只说趋中性
         _d9 = _probs[-1][1] - _probs[0][1]
-        _arrow9 = ("<b style='color:#dc2626'>↗越远越强</b>" if _d9 >= 8 else
-                   ("<b style='color:#16a34a'>↘越远越弱</b>" if _d9 <= -8 else
-                    "<span style='color:#94a3b8'>→均衡</span>"))
+        _last9v = _probs[-1][1]
+        _arrow9 = ("<b style='color:#dc2626'>↗越远越强</b>" if (_d9 >= 8 and _last9v >= 59) else
+                   ("<b style='color:#16a34a'>↘越远越弱</b>" if (_d9 <= -8 and _last9v <= 41) else
+                    ("<span style='color:#94a3b8'>↗趋中性</span>" if _d9 >= 8 else
+                     ("<span style='color:#94a3b8'>↘趋中性</span>" if _d9 <= -8 else
+                      "<span style='color:#94a3b8'>→均衡</span>"))))
         return f"{_seg9}　{_arrow9}"
 
     st.markdown("**🧭 三层周期·概率总览**　<span style='font-size:11px;color:#64748b'>"
@@ -11671,8 +11675,11 @@ def _render_today_nav():
             def _cyc_col9(_p):
                 return "#dc2626" if _p >= 55 else ("#16a34a" if _p <= 45 else "#64748b")
             _c_first9, _c_last9 = _cyc_probs9[0][1], _cyc_probs9[-1][1]
-            _trend9 = ("↗ 越远越强" if _c_last9 - _c_first9 >= 8 else
-                       ("↘ 越远越弱" if _c_first9 - _c_last9 >= 8 else "→ 各周期均衡"))
+            # 【V88·相位一致性】末档必须真强(≥59)/真弱(≤41)才说强弱，中性带只说趋中性
+            _trend9 = ("↗ 越远越强" if (_c_last9 - _c_first9 >= 8 and _c_last9 >= 59) else
+                       ("↘ 越远越弱" if (_c_first9 - _c_last9 >= 8 and _c_last9 <= 41) else
+                        ("↗ 趋中性" if _c_last9 - _c_first9 >= 8 else
+                         ("↘ 趋中性" if _c_first9 - _c_last9 >= 8 else "→ 各周期均衡"))))
             # 【迷你走势条】5档概率带数值标签的 sparkline：线随趋势上色(红涨/绿跌/灰平)、
             # 点随各档上色、上标数值下标周期、配 50% 虚线基线，一眼看形态。
             _trend_col9 = ("#dc2626" if _c_last9 - _c_first9 >= 8 else

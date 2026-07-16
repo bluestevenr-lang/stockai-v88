@@ -106,6 +106,19 @@ def build_horizon_facts(df, full=None, horizons=HORIZONS, unit="week") -> dict:
             + _clip(slope_move, -15, 15) * 0.65
             + _clip(ma_bias, -10, 10) * 0.65
             + volume_push + stage_bias, 15, 85))
+        # 【V88·相位一致性】（2026-07-16 用户抓矛盾：礼来周期导图"派发→退潮"，
+        # 16周分却77"越远越强"）。远期分公式本质是后视镜动量——过去涨得多分就高；
+        # 当下相位不支持时必须回归中性带，全端只许一套嘴：
+        # 派发/退潮相位 → 远期(≥8周或≥60日)分封顶55；低位启动相位 → 远期分下限45。
+        phase_note = ""
+        _is_far = (period >= 60) if _by_day else (period >= 8)
+        if _is_far and full:
+            _stg = str(full.get("stage") or "")
+            _p52 = _num(full.get("pos52"), 50)
+            if _stg in ("高位震荡", "放量滞涨", "趋势转弱", "破位下跌") and score > 55:
+                score, phase_note = 55, f"派发相位（{_stg}）·远期动量分封顶55"
+            elif _stg in ("底部启动", "启动确认") and _p52 <= 50 and score < 45:
+                score, phase_note = 45, f"启动相位（{_stg}）·远期分回归中性"
         out[f"{period}{_suffix}"] = {
             "weeks": weeks, "periods": period, "unit": unit, "sample_days": n,
             "return_pct": round(ret, 1), "slope_pct": round(slope_move, 1),
@@ -114,6 +127,7 @@ def build_horizon_facts(df, full=None, horizons=HORIZONS, unit="week") -> dict:
             "support": round(recent_low, 3), "resistance": round(recent_high, 3),
             "rule_score": score,
             "rule_view": "偏涨" if score >= 59 else ("偏跌" if score <= 41 else "震荡"),
+            "phase_note": phase_note,
             "rule_confidence": round(_clip(50 + abs(score - 50) * 1.2, 50, 88)),
         }
     raw_sig = {

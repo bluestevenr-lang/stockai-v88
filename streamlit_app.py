@@ -486,9 +486,12 @@ if _nav == "🧭 导航":
                 _seg = " ".join(f"<span style='color:{_pcol3(int(p))}'>{lab}<b>{int(p)}</b></span>"
                                 for lab, p in _probs)
                 _d = int(_probs[-1][1]) - int(_probs[0][1])
-                _arw = ("<b style='color:#dc2626'>↗越远越强</b>" if _d >= 8 else
-                        ("<b style='color:#16a34a'>↘越远越弱</b>" if _d <= -8 else
-                         "<span style='color:#94a3b8'>→均衡</span>"))
+                _lv = int(_probs[-1][1])
+                _arw = ("<b style='color:#dc2626'>↗越远越强</b>" if (_d >= 8 and _lv >= 59) else
+                        ("<b style='color:#16a34a'>↘越远越弱</b>" if (_d <= -8 and _lv <= 41) else
+                         ("<span style='color:#94a3b8'>↗趋中性</span>" if _d >= 8 else
+                          ("<span style='color:#94a3b8'>↘趋中性</span>" if _d <= -8 else
+                           "<span style='color:#94a3b8'>→均衡</span>"))))
                 return f"{_seg}　{_arw}"
 
             _cols3 = st.columns(3)
