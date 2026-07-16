@@ -1183,6 +1183,20 @@ elif _nav == "💼 持仓终端":
                 st.dataframe(_rows, hide_index=True, use_container_width=True)
             except Exception:
                 pass
+            # 【V88·持仓信念文字】≤50字/只（私仓 data/position_conviction.json，随日报生成）
+            try:
+                _cv_raw, _ = _priv_get("data/position_conviction.json")
+                _cv = json.loads(_cv_raw or "{}")
+                _cv_items = _cv.get("items") or {}
+                if _cv_items:
+                    _cv_lines = [f"🧠 **{v.get('name')}**：{v.get('text')}"
+                                 for v in _cv_items.values() if v.get("text")]
+                    with st.expander(f"🧠 持仓信念速记（{len(_cv_lines)}只 · {_cv.get('generated_at', '')}）",
+                                     expanded=True):
+                        st.markdown("\n\n".join(_cv_lines))
+                        st.caption("≤50字/只·压住情绪用：跌回成本不是卖出理由，破线才是")
+            except Exception:
+                pass
             try:
                 _trs = json.loads(_tr_raw or "[]")[-5:]
                 if _trs:

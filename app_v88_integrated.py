@@ -12289,6 +12289,26 @@ def _render_today_nav():
                                   _r9.get("新闻面", "待下轮日报"), _r9.get("综合建议", "待下轮日报")]
                         _tbl9.append("|" + "|".join(str(v).replace("|", "／") for v in _vals9) + "|")
                     st.markdown(_linkify_md("\n".join(_tbl9)), unsafe_allow_html=True)
+                    # 【V88·持仓信念文字】≤50字/只：动作+依据+情绪镜子（北极星：压住追高/割肉）
+                    try:
+                        _conv9 = json.loads((_repo / "data" / "position_conviction.json")
+                                            .read_text(encoding="utf-8"))
+                        _citems9 = _conv9.get("items") or {}
+                        _clines9 = []
+                        for _r9 in _mr9:
+                            _ci9 = _citems9.get(str(_r9.get("代码", "")))
+                            if _ci9 and _ci9.get("text"):
+                                _clines9.append(f"🧠 <b>{_ci9.get('name')}</b>：{_ci9['text']}")
+                        if _clines9:
+                            st.markdown(
+                                "<div style='background:#f0f9ff;border-left:3px solid #0284c7;"
+                                "border-radius:6px;padding:.5rem .7rem;font-size:12px;line-height:1.9'>"
+                                + "<br>".join(_clines9)
+                                + f"<br><span style='color:#64748b;font-size:10px'>信念速记·"
+                                f"{_conv9.get('generated_at', '')}·跌回成本不是卖出理由，破线才是</span></div>",
+                                unsafe_allow_html=True)
+                    except Exception:
+                        pass
         else:
             st.caption("持仓分析待本轮日报生成；下方仍可维护持仓资料。")
 

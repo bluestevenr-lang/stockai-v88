@@ -19,6 +19,7 @@ from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent
 POS = BASE / "positions.json"
+CLAIMS = BASE / "position_claims.json"
 TRADES = BASE / "journal" / "trades.json"
 BJT = timezone(timedelta(hours=8))
 DEFAULT_ACCOUNT = "手动录入"
@@ -67,6 +68,41 @@ def _load() -> dict:
 def _save(pj: dict):
     pj["updated_at"] = datetime.now(BJT).strftime("%Y-%m-%d %H:%M") + "（持仓终端·北京时间）"
     POS.write_text(json.dumps(pj, ensure_ascii=False, indent=1), encoding="utf-8")
+
+
+def load_position_claims() -> dict:
+    """用户已确认“我持有”、但尚缺账户/股数/成本的临时底稿。
+
+    该底稿只提高风险保护优先级，绝不参与盈亏、峰值回撤或个性化止损计算。
+    """
+    try:
+        raw = json.loads(CLAIMS.read_text(encoding="utf-8"))
+        rows = raw.get("claims", raw) if isinstance(raw, dict) else {}
+        return {str(k): v for k, v in rows.items() if isinstance(v, dict)}
+    except Exception:
+        return {}
+
+
+def _save_position_claims(rows: dict):
+    payload = {
+        "_说明": "用户已确认持有但资料未完整；按持仓风险优先保护，不计算个性化盈亏。",
+        "updated_at": datetime.now(BJT).strftime("%Y-%m-%d %H:%M（北京时间）"),
+        "claims": rows,
+    }
+    CLAIMS.write_text(json.dumps(payload, ensure_ascii=False, indent=1), encoding="utf-8")
+
+
+def resolve_position_claim(code: str):
+    """正式持仓落盘后自动清除同代码的待补录声明。"""
+    rows = load_position_claims()
+    if rows.pop(str(code), None) is not None:
+        _save_position_claims(rows)
+
+
+def claimed_holding_rows() -> list:
+    return [{"名称": v.get("name", k), "代码": k, "状态": "已确认持仓·资料待补录",
+             "缺少": "账户、股数、成本", "确认来源": v.get("source", "用户确认")}
+            for k, v in load_position_claims().items()]
 
 
 def _iter_holdings(pj):
@@ -134,6 +170,55 @@ def account_names() -> list[str]:
     return names or [DEFAULT_ACCOUNT]
 
 
+def emotion_guard(side: str, code: str, name: str = "", pnl_pct=None) -> list:
+    """【V88·情绪防错】录单体检（北极星案例：腾讯——涨上去买、跌下来卖，亏5万）。
+
+    买入=追高检测（引擎结论非买点/5日冲高/52周高位滞涨）；
+    卖出=情绪割肉检测（亏损离场但趋势未破、纪律线未触发）。
+    确定性零成本，只警示不拦截；警示写入交易日志 emotion_flags 供复盘核算。
+    """
+    warns = []
+    try:
+        try:
+            import cloud_engine as _ce
+        except ImportError:
+            from src import cloud_engine as _ce
+        df = _ce.fetch(_ce.to_yf(str(code)))
+        if df is None or len(df) < 35:
+            return warns
+        f = _ce.analyze_trend_full(df) or {}
+    except Exception:
+        return warns
+    try:
+        stage = str(f.get("stage") or "")
+        concl = str(f.get("conclusion") or "")
+        pos52 = float(f.get("pos52") or 50)
+        chg5 = float(f.get("chg5") or 0)
+        macd = str(f.get("macd_txt") or "")
+        if side == "buy":
+            ev = []
+            if concl in ("减仓", "回避", "等待"):
+                ev.append(f"引擎结论「{concl}」＝现在不是买点")
+            if chg5 >= 8:
+                ev.append(f"5日已冲高{chg5:+.1f}%")
+            if pos52 >= 85 and stage in ("高位震荡", "放量滞涨", "主升"):
+                ev.append(f"52周{pos52:.0f}%高位·{stage}")
+            if ev:
+                warns.append("🧯情绪防错·疑似追高：" + "、".join(ev)
+                             + f"｜回踩买点参考 {f.get('pullback') or f.get('buy_zone') or '—'}"
+                             + "。涨上去才买，正是腾讯亏损的前一半——已照录，但请复核。")
+        elif side == "sell" and pnl_pct is not None and float(pnl_pct) < 0:
+            broken = (stage in ("破位下跌", "趋势转弱") or "死叉" in macd or "顶背离" in macd)
+            if not broken:
+                warns.append(f"🧯情绪防错·疑似情绪割肉：亏损{float(pnl_pct):+.1f}%离场，"
+                             f"但趋势未破（{stage}·{f.get('vp', '')}）"
+                             f"｜纪律退出线：{f.get('invalid') or f.get('stop') or '—'}"
+                             + "。跌下来就卖，正是腾讯亏损的后一半——已照录，但请复核。")
+    except Exception:
+        pass
+    return warns
+
+
 def record_trade(token: str, shares, buy_px=None, sell_px=None, date: str = "",
                  reason: str = "", account: str = "", chosen_code: str = None,
                  level: str = ""):
@@ -172,10 +257,14 @@ def record_trade(token: str, shares, buy_px=None, sell_px=None, date: str = "",
         n = min(shares, qty) if shares > 0 else qty
         px = float(sell_px)
         pnl = round((px / h["cost"] - 1) * 100, 2) if h.get("cost") else None
-        _log_trade({"date": (_dt or datetime.now(BJT).strftime("%Y-%m-%d")) + datetime.now(BJT).strftime(" %H:%M" if not _dt else ""),
-                    "action": "卖出" if n >= qty else "减仓", "name": h.get("name"), "code": h.get("code"),
-                    "shares": n, "cost": h.get("cost"), "sell_price": px, "pnl_pct": pnl,
-                    "reason": reason or "", "account": acc})
+        _eg = emotion_guard("sell", h.get("code") or "", h.get("name") or "", pnl_pct=pnl)
+        _row = {"date": (_dt or datetime.now(BJT).strftime("%Y-%m-%d")) + datetime.now(BJT).strftime(" %H:%M" if not _dt else ""),
+                "action": "卖出" if n >= qty else "减仓", "name": h.get("name"), "code": h.get("code"),
+                "shares": n, "cost": h.get("cost"), "sell_price": px, "pnl_pct": pnl,
+                "reason": reason or "", "account": acc}
+        if _eg:
+            _row["emotion_flags"] = _eg
+        _log_trade(_row)
         if n >= qty:
             a["holdings"] = [x for x in a["holdings"] if x is not h]
             verdict = f"已清仓 {h.get('name')} {qty}股 @ {px}"
@@ -183,7 +272,8 @@ def record_trade(token: str, shares, buy_px=None, sell_px=None, date: str = "",
             h["shares"] = qty - n
             verdict = f"已减仓 {h.get('name')} {n}股 @ {px}，剩{h['shares']}股"
         _save(pj)
-        return verdict + (f"，盈亏{pnl:+.1f}%（已记{_dt or '今日'}交易日志）" if pnl is not None else ""), None
+        _msg = verdict + (f"，盈亏{pnl:+.1f}%（已记{_dt or '今日'}交易日志）" if pnl is not None else "")
+        return (_msg + ("\n" + "\n".join(_eg) if _eg else "")), None
 
     # ── 买入/加仓：简称→全称，多解交 UI 弹窗 ──
     if chosen_code:
@@ -211,12 +301,17 @@ def record_trade(token: str, shares, buy_px=None, sell_px=None, date: str = "",
         a.setdefault("holdings", []).append({"name": name, "code": code, "shares": shares,
                                               "cost": cost, "level": _level(level)})
         verdict = f"已录入 {name}({code}) {shares}股 @ {cost}（{account or DEFAULT_ACCOUNT}）"
-    _log_trade({"date": (_dt or datetime.now(BJT).strftime("%Y-%m-%d")) + datetime.now(BJT).strftime(" %H:%M" if not _dt else ""),
-                "action": "加仓" if h else "买入", "name": name, "code": code,
-                "shares": shares, "cost": cost, "reason": reason or "", "account": account or DEFAULT_ACCOUNT,
-                "level": _level(level)})
+    _eg = emotion_guard("buy", code, name)
+    _row = {"date": (_dt or datetime.now(BJT).strftime("%Y-%m-%d")) + datetime.now(BJT).strftime(" %H:%M" if not _dt else ""),
+            "action": "加仓" if h else "买入", "name": name, "code": code,
+            "shares": shares, "cost": cost, "reason": reason or "", "account": account or DEFAULT_ACCOUNT,
+            "level": _level(level)}
+    if _eg:
+        _row["emotion_flags"] = _eg
+    _log_trade(_row)
     _save(pj)
-    return verdict, None
+    resolve_position_claim(code)
+    return verdict + ("\n" + "\n".join(_eg) if _eg else ""), None
 
 
 def holdings_rows() -> list:
@@ -229,7 +324,7 @@ def holdings_rows() -> list:
 
 
 def remove_holding(account: str, code: str) -> str:
-    """从持仓底稿中直接移除一只股票（用于持仓表逐行删除按钮，不生成卖出交易）。"""
+    """从持仓底稿中直接移除一只股票（不生成卖出交易）。"""
     pj = _load()
     accounts = pj.get("accounts") or {}
     a = accounts.get(account)
@@ -246,7 +341,7 @@ def remove_holding(account: str, code: str) -> str:
 
 def update_holding(original_account: str, original_code: str, *, account: str, name: str,
                    code: str, shares, cost, category: str = "", level: str = "B") -> str:
-    """修改一条持仓的全部可见字段；账户变化时将该条记录移动到新账户。"""
+    """修改持仓；账户只能从现有账户选择，级别保存为人工基础 A/B/C。"""
     try:
         shares = int(float(shares))
         cost = float(cost)
@@ -276,6 +371,7 @@ def update_holding(original_account: str, original_code: str, *, account: str, n
     dest = accounts.setdefault(account, {"type": source.get("type", "手动"), "holdings": []})
     dest.setdefault("holdings", []).append(updated)
     _save(pj)
+    resolve_position_claim(code)
     return f"已修改持仓 {name}（{code}）"
 
 
@@ -378,6 +474,7 @@ def _handle_core(line: str, reason: str = "", chosen_code: str = None):
                 "name": name, "code": code, "shares": shares, "cost": cost,
                 "reason": reason or "", "account": account})
     _save(pj)
+    resolve_position_claim(code)
     return verdict
 
 
