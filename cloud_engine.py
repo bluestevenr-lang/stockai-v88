@@ -213,6 +213,15 @@ def analyze_trend_full(df, sector_strength=None):
         ma20_series = c.rolling(20).mean()
         ma20_up = float(ma20_series.iloc[-1]) > float(ma20_series.iloc[-5]) if len(c) >= 25 else True
 
+        # 【V88·波动率】ATR14（供止损做波动率自适应：高波动放宽、低波动收紧）
+        try:
+            _pc = df["Close"].shift()
+            _tr = pd.concat([(hi - lo), (hi - _pc).abs(), (lo - _pc).abs()], axis=1).max(axis=1)
+            atr = float(_tr.rolling(14).mean().iloc[-1])
+            atr_pct = round(atr / last * 100, 1) if last else 0.0
+        except Exception:
+            atr, atr_pct = 0.0, 0.0
+
         # MACD
         dif = c.ewm(span=12, adjust=False).mean() - c.ewm(span=26, adjust=False).mean()
         dea = dif.ewm(span=9, adjust=False).mean()
@@ -455,6 +464,7 @@ def analyze_trend_full(df, sector_strength=None):
             "stop": stop, "reduce": reduce, "invalid": invalid,
             "support": support, "resistance": resistance,
             "rsi": round(rsi), "bias20": round(bias20, 1), "volr": round(volr, 2),
+            "atr": round(atr, 2), "atr_pct": atr_pct,
             "chg5": round(chg5, 1), "chg20": round(chg20, 1),
             "breakdown": {k: (round(sc), w, d) for k, (sc, w, d) in weights.items()},
             "sector_known": sector_strength is not None,
