@@ -11481,6 +11481,21 @@ def _render_today_nav():
 
     _is_trading = _v88_is_trading_day()
 
+    # 【V88·30分钟自动刷新】交易日页面挂机时，自选决策数据超30分钟自动整页重跑一次。
+    # fragment 每5分钟只查一次时间戳（无渲染无闪烁），数据过期才触发全页刷新；
+    # 非交易日不自动刷（省流量定则 2026-07-16）。
+    @st.fragment(run_every=300)
+    def _auto_refresh_tick9():
+        try:
+            if not _is_trading:
+                return
+            _wa0 = st.session_state.get("watch_alerts_v88") or {}
+            if _wa0.get("ts") and time.time() - float(_wa0["ts"]) > 30 * 60:
+                st.rerun(scope="app")
+        except Exception:
+            pass
+    _auto_refresh_tick9()
+
     # 【V99.7】及时性保障：快照/日报文件超过1小时 → 后台自动重跑生成流水线
     # （launchd 定时之外的兜底：只要打开 V88 就能触发，1小时节流防重复）
     # 交易日兜底跑完整流水线；非交易日兜底只生成前瞻 outlook.md
