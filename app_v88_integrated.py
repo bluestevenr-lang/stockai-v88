@@ -12622,6 +12622,44 @@ except Exception as _nav_e:
 st.markdown("---")
 
 # ═══════════════════════════════════════════════════════════════
+# 【V88·打新雷达】中美港新股申购日历+评级（2026-07-16 用户点单：热门打新从来没提示过）。
+# 数据由私仓日报流水线生成（A股=Tushare/美股=Nasdaq/港股源接入中），这里零网络秒开。
+# ═══════════════════════════════════════════════════════════════
+with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）", expanded=False):
+    try:
+        _ipo9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "ipo_radar.json")
+                           .read_text(encoding="utf-8"))
+        _ipo_rows9 = _ipo9.get("rows") or []
+        if _ipo_rows9:
+            st.caption(f"🕒 {_ipo9.get('generated_at', '')} · 评级=确定性规则+AI一句话 · 打新决策以正式公告为准")
+            for _mk9x in ("A股", "美股", "港股"):
+                _sub9 = [r for r in _ipo_rows9 if r.get("market") == _mk9x]
+                if not _sub9:
+                    continue
+                st.markdown(f"**{_mk9x}**（{len(_sub9)}只）")
+                _tb9 = []
+                for _r9x in _sub9[:10]:
+                    if _mk9x == "A股":
+                        _d9x = str(_r9x.get("apply_date") or "")
+                        _d9x = f"{_d9x[:4]}-{_d9x[4:6]}-{_d9x[6:]}" if len(_d9x) == 8 else _d9x
+                        _px9 = (f"{_r9x.get('price')}元/PE{_r9x.get('pe'):g}" if _r9x.get("price") else "未披露")
+                        _sz9 = f"募{_r9x.get('funds_yi'):g}亿" if _r9x.get("funds_yi") else f"{_r9x.get('amount_wan'):g}万股"
+                    else:
+                        _d9x = str(_r9x.get("apply_date") or "")
+                        _px9 = _r9x.get("price_range") or "未披露"
+                        _sz9 = f"募{_r9x.get('raise_usd', 0) / 1e8:.1f}亿$" if _r9x.get("raise_usd") else "—"
+                    _tb9.append({"新股": f"{_r9x.get('name')}（{_r9x.get('code')}）",
+                                 "申购/定价日": _d9x, "价格/PE": _px9, "规模": _sz9,
+                                 "评级": _r9x.get("grade", ""), "点评": _r9x.get("ai") or _r9x.get("why", "")})
+                st.dataframe(_tb9, hide_index=True, use_container_width=True)
+            if not any(r.get("market") == "港股" for r in _ipo_rows9):
+                st.caption("港股招股数据源接入中；当前以 A股/美股为准。")
+        else:
+            st.info("未来窗口内暂无披露的新股申购/定价（随日报每日更新）。")
+    except Exception:
+        st.info("打新雷达数据待今日日报生成（07/13/19点自动更新）。")
+
+# ═══════════════════════════════════════════════════════════════
 # 【V88·全行业机会雷达】主动发现"起步"的板块与个股（含医疗），治"后知后觉"。
 # 用同一套个股前瞻引擎(evaluate_forward_outlook)扫全行业，纯确定性、不耗AI预算。
 # 按需触发+缓存，避免拖慢首屏。暂不推送飞书（用户授权后再单独接）。
