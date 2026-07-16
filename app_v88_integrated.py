@@ -14054,9 +14054,17 @@ if execute_analysis and q_input:
         # ═══════════════════════════════════════════════════════════════
         try:
             from v88_decision_core import evaluate_forward_outlook as _evaluate_forward_outlook
+            # 【V88·入场时机确认】传入趋势引擎价位（买入区/回踩/突破/止损），
+            # 让前瞻给出"现在可进/双路径"的交易日窗口，不再只会说等更低价
+            _fwd_full9 = None
+            try:
+                import cloud_engine as _ce_fwd9
+                _fwd_full9 = _ce_fwd9.analyze_trend_full(df)
+            except Exception:
+                _fwd_full9 = None
             _fwd = _evaluate_forward_outlook(
                 df, name=(st.session_state.get("scan_selected_name") or target_c),
-                code=target_c)
+                code=target_c, full=_fwd_full9)
             if _fwd.get("error"):
                 st.info(f"个股前瞻暂不可用：{_fwd['error']}")
             else:
@@ -14075,6 +14083,9 @@ if execute_analysis and q_input:
                 _fm4.metric("阶段", _fwd.get("stage", "—"),
                             help="多头/震荡/转弱，由最新价与MA20/MA60关系判定")
                 st.success(f"**结论：{_fwd.get('overall_action')}** ｜ 操作建议：{_fwd.get('suggestion')}")
+                _ep9 = _fwd.get("entry_plan") or {}
+                if _ep9.get("mid_text") or _ep9.get("long_text"):
+                    st.caption(f"{_ep9.get('mid_text', '')}　｜　{_ep9.get('long_text', '')}")
                 _fwd_rows = []
                 for _fr in _fwd.get("horizons") or []:
                     _fwd_rows.append({

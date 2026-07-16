@@ -173,6 +173,122 @@ def _scenario_prices(full, facts):
     return last, resistance, stop, _clip(upside, 0.5, 40), _clip(downside, 0.5, 30)
 
 
+def _price_f(x, d=0.0):
+    try:
+        return float(str(x).replace(",", "").strip())
+    except (TypeError, ValueError):
+        return d
+
+
+def entry_timing(full, *, short=50.0, medium=50.0, long_avg=50.0, action="", rr=1.5) -> dict:
+    """【V88·入场时机确认】（2026-07-16 用户定纲：短线以交易日数确认，中长线以周数+区间价格确认）
+
+    治的病：系统入场建议永远锚在比现价低的回踩位，从不说"现在可进"，
+    导致实际进场时机失准（腾讯案例）。三条铁规：
+    ① 现价已在买入区且结构良性 → 明说「现在可进」+ 有效交易日窗 + 作废价；
+    ② 等回踩必须给【双路径】：回踩接 或 N个交易日内放量突破改追——两条都是进场路，不再干等；
+    ③ 中线=4-8周区间价分批（破MA55失效），长线=16周+区间（破年线才退）。
+    纯确定性，只消费 analyze_trend_full 的既有价位，不新造价格。
+    """
+    full = full or {}
+    last = _price_f(full.get("last"))
+    if last <= 0:
+        return {}
+    _bz = str(full.get("buy_zone") or "").split("~")
+    buy_lo, buy_hi = _price_f(_bz[0]), _price_f(_bz[-1])
+    pullback = _price_f(full.get("pullback"))
+    breakout = _price_f(full.get("breakout"))
+    stop = _price_f(full.get("stop"))
+    stage = str(full.get("stage") or "")
+    vp = str(full.get("vp") or "")
+    macd = str(full.get("macd_txt") or "")
+    ma_txt = str(full.get("ma_txt") or "")
+    pos52 = _price_f(full.get("pos52"), 50)
+    bias20 = _price_f(full.get("bias20"))
+    chg5 = _price_f(full.get("chg5"))
+    volr = _price_f(full.get("volr"), 1.0)
+    ma = full.get("ma") or {}
+    ma20 = _price_f(ma.get(20) or ma.get("20"))
+    ma55 = _price_f(ma.get(55) or ma.get("55"))
+    ma120 = _price_f(ma.get(120) or ma.get("120"))
+
+    def _bday(n):
+        try:
+            d = pd.Timestamp(datetime.now(BJT).date()) + pd.tseries.offsets.BDay(n)
+            return d.strftime("%m-%d")
+        except Exception:
+            return f"+{n}交易日"
+
+    benign = stage in ("底部试探", "底部启动", "启动确认", "趋势延续", "主升")
+    toxic = (stage in ("破位下跌", "趋势转弱", "放量滞涨")
+             or "顶背离" in macd or float(short) <= 42)
+    action = str(action or "")
+    # 【短线绿灯只看短线的理】2周方向分≥58 + 非防守/冲突动作即可亮灯（2026-07-16 用户定纲：
+    # 短线以交易日确认，不再拿16周共振卡1-5日的进场——那是"用长线标准审短线"的错位）。
+    # 长线未共振时绿灯降格为"仅短线仓"，止损纪律更硬。
+    _blocked = any(k in action for k in ("回避", "保护", "止跌", "仅观察"))
+    action_go = float(short) >= 58 and not _blocked and float(rr) >= 1.2
+    _short_only = float(long_avg) < 55
+    _tag = "（长线未共振·仅短线仓，破线立走）" if _short_only else ""
+
+    if toxic:
+        mode, days = "不进", 0
+        s_text = f"🚫 短线不进（{stage or '趋势恶化'}·2周方向分{short:.0f}）；放量收复MA20({ma20:g})再评估"
+        note = "🚫短线不进"
+    elif action_go and buy_lo > 0 and buy_lo <= last <= buy_hi * 1.005 and benign and chg5 < 8 and bias20 <= 6:
+        mode, days = "现价可进", 3
+        s_text = (f"✅ 现在可进：现价{last:g}已在买入区{buy_lo:g}~{buy_hi:g}内——"
+                  f"今日~{_bday(3)}（3个交易日）分批有效；跌破{stop:g}作废{_tag}")
+        note = f"✅现价可进·{_bday(3)}前·破{stop:g}废" + ("·仅短线" if _short_only else "")
+    elif action_go and pullback > 0 and abs(last - pullback) / pullback <= 0.015 and benign:
+        mode, days = "回踩到位", 2
+        s_text = (f"✅ 回踩到位：现价{last:g}贴住回踩位{pullback:g}——"
+                  f"今日~{_bday(2)}（2个交易日）企稳即接；跌破{stop:g}止损{_tag}")
+        note = f"✅回踩到位·{_bday(2)}前·止损{stop:g}" + ("·仅短线" if _short_only else "")
+    elif action_go and breakout > 0 and last >= breakout * 0.995 and volr >= 1.15 and "放量" in vp and chg5 < 10:
+        mode, days = "突破确认", 2
+        s_text = (f"✅ 突破确认：放量站上{breakout:g}——今日~{_bday(2)}（2个交易日）内跟进；"
+                  f"收盘跌回{breakout:g}下方作废{_tag}")
+        note = f"✅突破确认·{_bday(2)}前有效" + ("·仅短线" if _short_only else "")
+    elif any(k in action for k in ("仅观察", "止跌", "回避", "保护")):
+        mode, days = "等待", 0
+        s_text = (f"⏳ 周期未共振（{action}）：先看回踩{pullback:g}是否企稳、"
+                  f"突破{breakout:g}是否放量——触发后重核共振再进，不直接下单")
+        note = f"⏳共振不足·先盯{pullback:g}/{breakout:g}"
+    elif benign or float(short) >= 55:
+        mode, days = "双路径待触发", 5
+        s_text = (f"⏳ 双路径（{_bday(5)}前任一触发即进）：①回踩{pullback:g}企稳接；"
+                  f"②不回踩而放量站上{breakout:g}→改按突破进，不再等更低价")
+        note = f"⏳双路径:回踩{pullback:g}/突破{breakout:g}·{_bday(5)}前"
+    else:
+        mode, days = "等待", 0
+        s_text = f"⏳ 未到进场条件：回踩{pullback:g}或放量突破{breakout:g}，二者都没有就不动"
+        note = f"⏳等回踩{pullback:g}或突破{breakout:g}"
+
+    if float(medium) >= 55 and (ma55 > 0 and last > ma55 or "多头排列" in ma_txt):
+        _m_lo = round(min(pullback if pullback > 0 else ma20, ma20 * 0.99) or last * 0.97, 2)
+        _m_hi = round(max(buy_hi, ma20 * 1.03) or last, 2)
+        m_text = f"🎯 中线（4-8周）：区间{_m_lo:g}~{_m_hi:g}分批建仓；收盘连续2日破MA55({ma55:g})失效"
+    elif float(medium) >= 48:
+        m_text = f"⏳ 中线（4-8周）：待周线站稳MA55({ma55:g})再启动区间建仓"
+    else:
+        m_text = "🚫 中线结构未修复，不建仓"
+
+    if float(long_avg) >= 55 and pos52 <= 70 and (ma120 <= 0 or last > ma120):
+        _l_lo = round((ma55 * 0.95) if ma55 > 0 else last * 0.9, 2)
+        _l_hi = round(buy_hi or last, 2)
+        l_text = f"🏛 长线（16周+）：区间{_l_lo:g}~{_l_hi:g}分批；跌破年线({ma120:g})且20日收不回才退出"
+    elif float(long_avg) >= 50:
+        l_text = "🏛 长线（16周+）：方向分未达55，先跟踪不建仓"
+    else:
+        l_text = "🚫 长线不参与"
+
+    return {"mode": mode, "days_valid": days, "note": note,
+            "short_text": s_text, "mid_text": m_text, "long_text": l_text,
+            "zone": [buy_lo, buy_hi], "pullback": pullback,
+            "breakout": breakout, "stop": stop}
+
+
 def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
                       action_hint="观察", analysis_time=None, name="", code="") -> dict:
     """返回所有模块必须展示/保存的唯一决策记录。"""
@@ -237,6 +353,16 @@ def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
                     ("多周期偏涨" if short_side == long_side == "偏涨" else
                      ("多周期偏跌" if short_side == long_side == "偏跌" else "周期未共振")))
     reason = f"{cycle_status}｜赔率{rr:.2f}"[:20]
+    # 【V88·入场时机确认】短线=交易日窗口，中长线=周数+区间；等回踩必带突破改追双路径
+    entry_plan = {}
+    try:
+        if full.get("last") and full.get("buy_zone"):
+            entry_plan = entry_timing(full, short=short, medium=medium,
+                                      long_avg=long_avg, action=action, rr=rr)
+            if entry_plan.get("note"):
+                entry_note = f"{entry_plan['note']}｜{entry_note}"
+    except Exception:
+        entry_plan = {}
     return {
         "schema": SCHEMA, "score_version": SCORE_VERSION,
         "score_weights": dict(SCORE_WEIGHTS), "data_signature": facts.get("data_signature", ""),
@@ -254,6 +380,7 @@ def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
         "stop": round(stop, 3), "short_side": short_side, "long_side": long_side,
         "cycle_conflict": conflict, "cycle_status": cycle_status,
         "action": action, "reason": reason, "entry_note": entry_note,
+        "entry_plan": entry_plan,
         "cycle_note": f"2周{short_side}{round(short)}%｜4-16周{long_side}{round(long_avg)}%",
         "facts": facts,
     }
@@ -363,7 +490,7 @@ def _forward_horizon_rows(close, last, base_facts, days_tuple):
 
 
 def evaluate_forward_outlook(df, *, name="", code="", analysis_time=None,
-                             days_tuple=HORIZON_DAYS) -> dict:
+                             days_tuple=HORIZON_DAYS, full=None) -> dict:
     """【当下前瞻】用最新收盘价，推算未来 5/10/20/60/120 交易日的上涨/下跌概率、
     盈亏比、目标/风险价，并给一句「拿/加/减/回避」建议。个股主动研判入口。
     概率是同源规则情景估计，不是回测胜率。"""
@@ -389,6 +516,15 @@ def evaluate_forward_outlook(df, *, name="", code="", analysis_time=None,
         suggestion = "短长背离，别一次性动手，分批并盯失效位"
     else:
         suggestion = "中性观望，等概率与赔率同时转好再动"
+    # 【V88·入场时机确认】传入趋势引擎结果时，把"何时进/什么价"落到交易日和区间
+    entry_plan = {}
+    try:
+        if full and full.get("last") and full.get("buy_zone"):
+            entry_plan = entry_timing(full, short=wp, medium=wp, long_avg=wp)
+            if entry_plan.get("short_text"):
+                suggestion = f"{suggestion}｜{entry_plan['short_text']}"
+    except Exception:
+        entry_plan = {}
     now = analysis_time or datetime.now(BJT).strftime("%Y-%m-%d %H:%M")
     return {
         "schema": "v88.stock-forward/1.0", "score_version": SCORE_VERSION,
@@ -398,6 +534,7 @@ def evaluate_forward_outlook(df, *, name="", code="", analysis_time=None,
         "weighted_p_up": wp, "weighted_p_down": 100 - wp,
         "weighted_rr": wrr, "weighted_expected_pct": wev,
         "overall_action": overall, "suggestion": suggestion,
+        "entry_plan": entry_plan,
         "probability_kind": "规则情景估计（非回测胜率）",
         "horizons": rows,
     }

@@ -6,6 +6,7 @@ import pandas as pd
 
 from v88_decision_core import (
     HORIZON_DAYS,
+    entry_timing,
     SCORE_VERSION,
     build_horizon_facts,
     evaluate_anchor_outlook,
@@ -172,3 +173,61 @@ def test_cloud_and_web_distribution_are_byte_identical():
     here = Path(__file__).resolve().parents[1] / "v88_decision_core.py"
     cloud = Path.home() / "Desktop" / "ai-daily-report-v2" / "src" / "v88_decision_core.py"
     assert hashlib.sha256(here.read_bytes()).digest() == hashlib.sha256(cloud.read_bytes()).digest()
+
+
+# ── 【V88·入场时机确认】短线按交易日、中长线按周+区间、等回踩必带双路径 ──
+
+def _et_full(**kw):
+    base = {"last": 100.0, "buy_zone": "98~101", "pullback": 97.0, "breakout": 104.0,
+            "stop": 94.0, "stage": "启动确认", "vp": "放量上涨·量价健康",
+            "macd_txt": "金叉·红柱扩大", "ma_txt": "多头排列",
+            "pos52": 55, "bias20": 2, "chg5": 3, "volr": 1.3,
+            "ma": {20: 98.0, 55: 95.0, 120: 90.0}}
+    base.update(kw)
+    return base
+
+
+def test_entry_in_buy_zone_says_enter_now_with_day_window():
+    ep = entry_timing(_et_full(), short=70, medium=60, long_avg=58,
+                      action="多周期共振·试仓复核")
+    assert ep["mode"] == "现价可进"
+    assert "现在可进" in ep["short_text"] and "3个交易日" in ep["short_text"]
+    assert "作废" in ep["short_text"]
+
+
+def test_entry_extended_price_gives_dual_path_not_only_lower():
+    ep = entry_timing(_et_full(last=110.0, breakout=115.0), short=70, medium=60, long_avg=58,
+                      action="多周期共振·试仓复核")
+    assert ep["mode"] == "双路径待触发"
+    assert "回踩97" in ep["short_text"] and "突破" in ep["short_text"]
+    assert "不再等更低价" in ep["short_text"]
+
+
+def test_entry_breakout_confirmation():
+    ep = entry_timing(_et_full(last=104.2), short=70, medium=60, long_avg=58,
+                      action="多周期共振·试仓复核")
+    assert ep["mode"] == "突破确认"
+
+
+def test_entry_toxic_stage_blocks():
+    ep = entry_timing(_et_full(stage="破位下跌"), short=30, medium=40, long_avg=45)
+    assert ep["mode"] == "不进"
+
+
+def test_entry_conflict_action_requires_resonance_recheck():
+    ep = entry_timing(_et_full(last=110.0, breakout=115.0), short=60, medium=45, long_avg=44,
+                      action="仅观察·不追涨")
+    assert ep["mode"] == "等待" and "重核共振" in ep["short_text"]
+
+
+def test_entry_midline_gives_week_range():
+    ep = entry_timing(_et_full(), short=70, medium=60, long_avg=58,
+                      action="多周期共振·试仓复核")
+    assert "4-8周" in ep["mid_text"] and "~" in ep["mid_text"] and "MA55" in ep["mid_text"]
+
+
+def test_evaluate_decision_carries_entry_plan():
+    df = _prices(1)
+    full = _et_full(last=float(df.Close.iloc[-1]))
+    dc = evaluate_decision(df, full, name="T", code="TEST")
+    assert "entry_plan" in dc
