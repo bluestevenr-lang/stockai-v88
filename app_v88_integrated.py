@@ -12733,6 +12733,41 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
         st.info("打新雷达数据待今日日报生成（07/13/19点自动更新）。")
 
 # ═══════════════════════════════════════════════════════════════
+# 【V88·涨停接力雷达】A股涨停主线+连板梯队+接力候选（2026-07-16 用户点单：市场天天有涨停，
+# 系统不该说"今天无推荐"）。数据由私仓日报流水线生成，这里零网络秒开。
+# ═══════════════════════════════════════════════════════════════
+with st.expander("🔥 涨停接力雷达 · A股短线主线（打板高风险·非价值投资）", expanded=False):
+    try:
+        _zt9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "limit_up_radar.json")
+                          .read_text(encoding="utf-8"))
+        if _zt9.get("total"):
+            st.caption(f"🕒 {_zt9.get('generated_at', '')} · 全市场涨停 {_zt9['total']} 只"
+                       f"（首板 {_zt9.get('first_boards', 0)} 只）· ⚠️ T+1情绪博弈，追高即接盘")
+            _mls9 = _zt9.get("mainlines") or []
+            if _mls9:
+                st.markdown("**📈 今日主线**")
+                for _m9 in _mls9:
+                    st.markdown(f"- **{_m9['industry']}**（{_m9['count']}只·最高{_m9['max_boards']}板）："
+                                + "、".join(_m9["leaders"]))
+            _lad9 = _zt9.get("ladder") or []
+            if _lad9:
+                st.markdown("**🪜 连板梯队**：" + " ｜ ".join(
+                    f"{_l9['boards']}板：{'、'.join(_l9['names'][:3])}" for _l9 in _lad9[:4]))
+            _rel9 = _zt9.get("relay") or []
+            if _rel9:
+                st.markdown("**🎯 接力候选**（主线内首板·零炸板·封单≥1亿·明日惯性看点）")
+                st.dataframe([{"个股": f"{r['name']}（{r['code']}）", "主线": r["industry"],
+                               "封单额": f"{r['seal_yi']}亿", "换手": f"{r['turnover']}%"} for r in _rel9],
+                             hide_index=True, use_container_width=True)
+                st.caption("打板须设分时止损，破封单立走，不追隔日高开。系统只梳理方向与梯队，打不打由你按纪律定。")
+            else:
+                st.caption("主线内暂无封板强度达标的首板接力候选（情绪偏弱/炸板多，谨慎）。")
+        else:
+            st.info("今日无涨停数据（休市或数据源未更新，随日报每时段刷新）。")
+    except Exception:
+        st.info("涨停接力雷达数据待今日日报生成（A股交易日07/13/19点更新）。")
+
+# ═══════════════════════════════════════════════════════════════
 # 【V88·全行业机会雷达】主动发现"起步"的板块与个股（含医疗），治"后知后觉"。
 # 用同一套个股前瞻引擎(evaluate_forward_outlook)扫全行业，纯确定性、不耗AI预算。
 # 按需触发+缓存，避免拖慢首屏。暂不推送飞书（用户授权后再单独接）。
