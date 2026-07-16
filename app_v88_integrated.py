@@ -12719,6 +12719,14 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
                 with st.expander(f"完整清单（其余 {len(_rest9)} 只，含谨慎/回避）"):
                     st.dataframe(_ipo_tb9(_rest9), hide_index=True, use_container_width=True)
             st.caption("A股/美股=申购或定价日；港股=招股截止日、规模列为入场费/手（数据源：Tushare/Nasdaq/富途）。")
+            _listed9 = _ipo9.get("hk_listed") or []
+            if _listed9:
+                _win9 = sum(1 for x in _listed9 if str(x.get("first_day", "")).startswith("+"))
+                with st.expander(f"📉 近期港股打新回看（{len(_listed9)}只上市·首日红盘{_win9}只，验证打新性价比）"):
+                    st.dataframe([{"新股": f"{x.get('name')}（{x.get('code')}）",
+                                   "暗盘": x.get("dark") or "—", "首日": x.get("first_day") or "—",
+                                   "较发行价累计": x.get("cum") or "—"} for x in _listed9],
+                                 hide_index=True, use_container_width=True)
         else:
             st.info("未来窗口内暂无披露的新股申购/定价（随日报每日更新）。")
     except Exception:
