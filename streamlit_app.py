@@ -473,6 +473,57 @@ if _nav == "🧭 导航":
                 st.markdown(f"🌡 **{_mkt} {_t['temp']}/100** {_t['label']} → 仓位 **{_t['position']}**")
                 if _t.get("verdict"):
                     st.caption(f"🧭 研判：{_t['verdict']}")
+        # 【V88·三层周期概率总览】与桌面首屏同源：大盘(快照l3)+板块(轮动轨迹)，自选见预警/日报
+        try:
+            _traj3 = ((_snap or {}).get("rotation_forecast") or {}).get("trajectories") or {}
+
+            def _pcol3(_p):
+                return "#dc2626" if _p >= 55 else ("#16a34a" if _p <= 45 else "#64748b")
+
+            def _chain3(_probs):
+                if not _probs:
+                    return "<span style='color:#94a3b8'>—</span>"
+                _seg = " ".join(f"<span style='color:{_pcol3(int(p))}'>{lab}<b>{int(p)}</b></span>"
+                                for lab, p in _probs)
+                _d = int(_probs[-1][1]) - int(_probs[0][1])
+                _arw = ("<b style='color:#dc2626'>↗越远越强</b>" if _d >= 8 else
+                        ("<b style='color:#16a34a'>↘越远越弱</b>" if _d <= -8 else
+                         "<span style='color:#94a3b8'>→均衡</span>"))
+                return f"{_seg}　{_arw}"
+
+            _cols3 = st.columns(3)
+            _any3 = False
+            for _ci3, _mkt3 in enumerate(("美股", "A股", "港股")):
+                _blk3 = (_snap["markets"].get(_mkt3) or {})
+                _l33 = _blk3.get("l3") or {}
+                _rows3 = []
+                if _l33.get("probs"):
+                    _rows3.append(f"<div style='margin-bottom:3px'>📈 <b>{_l33.get('name')}</b> "
+                                  f"<span style='color:#475569'>{_l33.get('stage')}</span> · {_l33.get('action')}<br>"
+                                  f"<span style='font-size:12px'>{_chain3(_l33['probs'])}</span></div>")
+                _tl3 = sorted((_traj3.get(_mkt3) or []),
+                              key=lambda t: -((t.get("points") or {}).get("2周") or {}).get("score", 0))
+                for _t3, _fl3 in ([(_tl3[0], "🔥")] if _tl3 else []) + \
+                                 ([(_tl3[-1], "🧊")] if len(_tl3) > 2 else []):
+                    _pts3 = _t3.get("points") or {}
+                    _pp3 = [(k, int((_pts3.get(k) or {}).get("score", 0)))
+                            for k in ("2周", "5周", "8周", "16周") if _pts3.get(k)]
+                    _tg3 = str((_pts3.get("2周") or {}).get("trigger") or _t3.get("reason") or "")[:18]
+                    _rows3.append(f"<div style='margin-bottom:3px'>{_fl3} <b>{_t3.get('name')}</b> "
+                                  f"<span style='font-size:11px;color:#64748b'>{_tg3}</span><br>"
+                                  f"<span style='font-size:12px'>{_chain3(_pp3)}</span></div>")
+                if _rows3:
+                    _any3 = True
+                    with _cols3[_ci3]:
+                        st.markdown(
+                            f"<div style='border:1px solid #dbe4f0;border-radius:8px;padding:7px 9px;"
+                            f"background:#fff;box-shadow:0 1px 2px rgba(15,23,42,.04)'>"
+                            f"<div style='font-size:12px;color:#334155;margin-bottom:4px'><b>{_mkt3}</b></div>"
+                            + "".join(_rows3) + "</div>", unsafe_allow_html=True)
+            if _any3:
+                st.caption("🧭 三层周期·概率总览｜数字=各周期上涨概率%（规则情景估计）·红涨绿跌｜自选层见 ⚡预警与日报")
+        except Exception:
+            pass
         st.markdown("---")
         for _mkt in ("美股", "A股", "港股"):
             _ixs = ((_snap["markets"].get(_mkt) or {}).get("indices")) or []

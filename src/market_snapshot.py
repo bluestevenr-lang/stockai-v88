@@ -9,7 +9,7 @@ import hashlib
 import json
 import logging
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -17,10 +17,10 @@ OUTPUT_JSON = BASE_DIR / "data" / "market_snapshot.json"
 
 logger = logging.getLogger("market_snapshot")
 
-# 大盘指数（创业板指 399006 在雅虎数据残缺，用创业板ETF 159915 代理）
+# 大盘指数：创业板优先取真实指数 399006；仅在取数失败时才回退 ETF 159915。
 INDICES = {
     "美股": [("^GSPC", "标普500"), ("^IXIC", "纳斯达克"), ("^DJI", "道琼斯")],
-    "A股": [("000001.SS", "上证指数"), ("399001.SZ", "深证成指"), ("159915.SZ", "创业板(ETF代理)")],
+    "A股": [("000001.SS", "上证指数"), ("399001.SZ", "深证成指"), ("399006.SZ", "创业板指")],
     "港股": [("^HSI", "恒生指数"), ("3033.HK", "恒生科技(ETF代理)")],
 }
 
@@ -266,7 +266,7 @@ def compute_turn_risk(indices, temp):
 
 def generate_market_snapshot() -> str:
     """生成完整的大盘+板块轮动 Markdown 段落，并落盘 JSON。失败返回空串。"""
-    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    now = datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M")
     header = [
         "",
         "---",
@@ -281,6 +281,12 @@ def generate_market_snapshot() -> str:
     any_data = False
     for market in ("美股", "A股", "港股"):
         indices = _fetch_group(INDICES[market])
+        if market == "A股" and not any(x.get("symbol") == "399006.SZ" for x in indices):
+            _cyb_etf = _fetch_metrics("159915.SZ", "创业板ETF代理")
+            if _cyb_etf:
+                _cyb_etf["unit"] = "元"
+                indices.append(_cyb_etf)
+                logger.warning("[创业板指] 399006 取数失败，已回退到 159915 ETF 代理")
         sectors = _fetch_group(SECTORS[market])
         if not indices and not sectors:
             logger.warning(f"[{market}] 指数与板块数据均获取失败，跳过")
@@ -293,6 +299,36 @@ def generate_market_snapshot() -> str:
                            "turn_risk": compute_turn_risk(indices, _temp)}
     if not any_data:
         return ""
+
+    # 【V88·三层周期概率总览】大盘层：主指数 2/4/6/8/16 周方向分
+    # （与桌面首屏/自选决策台同一套 v88_decision_core 口径，供云端/飞书消费）
+    _L3_IDX = {"美股": ("标普500", "^GSPC"), "A股": ("上证指数", "000001.SS"),
+               "港股": ("恒生指数", "^HSI")}
+    for market, (_nm, _sym) in _L3_IDX.items():
+        if market not in payload:
+            continue
+        try:
+            import yfinance as yf
+            from v88_decision_core import evaluate_decision
+            from cloud_engine import analyze_trend_full
+            _df = yf.Ticker(_sym).history(period="1y")
+            if _df is None or len(_df) < 40:
+                continue
+            try:
+                _full = analyze_trend_full(_df) or {}
+            except Exception:
+                _full = {}
+            _dc = evaluate_decision(_df, _full, name=_nm, code=_sym)
+            if _dc.get("error"):
+                continue
+            _hz = ((_dc.get("facts") or {}).get("horizons") or {})
+            _probs = [[_lab, int(round(float((_hz.get(_lab) or {}).get("rule_score"))))]
+                      for _lab in ("2周", "4周", "6周", "8周", "16周")
+                      if (_hz.get(_lab) or {}).get("rule_score") is not None]
+            payload[market]["l3"] = {"name": _nm, "stage": str(_full.get("stage") or "—"),
+                                     "action": str(_dc.get("action") or "观察"), "probs": _probs}
+        except Exception as _l3e:
+            logger.debug(f"[{market}] 三层大盘层计算失败: {_l3e}")
 
     # 🌡 市场温度计（回答"现在市场能不能做"，置于快照最前）
     # 【V98.1】附引擎池宽度详情（上涨家数比/站上MA20比/60日新高数）
@@ -319,27 +355,60 @@ def generate_market_snapshot() -> str:
             _tr = (payload.get(market) or {}).get("turn_risk")
             if _tr:
                 temp_lines.append(f"  - 🔮 {market}转向概率：{_tr['text']}")
+            _l3 = (payload.get(market) or {}).get("l3")
+            if _l3 and _l3.get("probs"):
+                _chain = " ".join(f"{lab}{p}%" for lab, p in _l3["probs"])
+                temp_lines.append(f"  - 📈 {_l3['name']} {_l3['stage']}·{_l3['action']}｜各周期上行概率：{_chain}（规则情景估计）")
     if _temps:
         _avg = int(round(sum(_temps) / len(_temps)))
         temp_lines.append(f"- **三市场综合 {_avg}/100** ｜ 温度=趋势35%+宽度35%+动量15%+量能15%，全部实价计算")
     temp_lines.append("")
-    blocks = header + temp_lines + market_blocks
+    _rotation_forecast = {}
+    _rotation_md = ""
+    _cycle_scan = {}
     try:
         _snapshot_core = {"generated_at": now, "markets": payload}
         _canonical = json.dumps(
             _snapshot_core, ensure_ascii=False, sort_keys=True, separators=(",", ":")
         )
         _snapshot_id = "snap-" + hashlib.sha256(_canonical.encode("utf-8")).hexdigest()[:16]
+        # 【V88·下一轮轮转】同一冻结快照先量化筛选，再仅调用一次 thinking-high 联合复核三市场。
+        try:
+            from rotation_forecast import build_rotation_forecast, render_markdown
+            _rotation_forecast = build_rotation_forecast(payload, _snapshot_id, now)
+            _rotation_md = render_markdown(_rotation_forecast)
+        except Exception as _rf_exc:
+            logger.warning(f"轮转预测失败，保留基础快照: {_rf_exc}")
+            _rotation_md = ""
+        # 【V88·个股周期切换】持仓+自选周期扫描，同 09:00/21:00 节奏（时段闸门内才重算）。
+        _cycle_scan = {}
+        try:
+            from cycle_scan import build_cycle_scan
+            _cycle_scan = build_cycle_scan(payload)
+        except Exception as _cs_exc:
+            logger.warning(f"个股周期扫描失败，保留基础快照: {_cs_exc}")
         OUTPUT_JSON.write_text(
             json.dumps({
                 "schema_version": "v88.snapshot/2.0",
                 "snapshot_id": _snapshot_id,
+                "rotation_forecast": _rotation_forecast,
+                "cycle_scan": _cycle_scan,
                 **_snapshot_core,
             }, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
     except Exception as e:
         logger.warning(f"快照JSON写入失败: {e}")
+    # 思维导图紧跟三市场明细，和“大盘走势与板块轮动”保持为同一内容，不另起孤立模块。
+    _cycle_md = ""
+    try:
+        from cycle_scan import render_markdown as _render_cycle_md
+        _cycle_md = _render_cycle_md(_cycle_scan)
+    except Exception:
+        _cycle_md = ""
+    blocks = (header + temp_lines + market_blocks
+              + ([_rotation_md] if _rotation_md else [])
+              + ([_cycle_md] if _cycle_md else []))
     return "\n".join(blocks)
 
 

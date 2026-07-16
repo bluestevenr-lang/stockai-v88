@@ -309,6 +309,21 @@ def publish(files: dict) -> bool:
                     meta = {}
             now = _now_bjt_str()
             for name, content in files.items():
+                if name == "market_snapshot.json":
+                    # 【V88·完整快照保护】live 精简快照不得抹掉私仓发布的完整字段：
+                    # rotation_forecast/cycle_scan 由私仓 09:00/时段流水线产出，
+                    # live 只更新行情部分，缺失字段从旧 pub 版本继承（云端轮动导图/三层板靠它们）。
+                    try:
+                        _new = json.loads(content)
+                        _old_fp = pub / name
+                        if _old_fp.exists():
+                            _old = json.loads(_old_fp.read_text(encoding="utf-8"))
+                            for _k in ("rotation_forecast", "cycle_scan"):
+                                if not _new.get(_k) and _old.get(_k):
+                                    _new[_k] = _old[_k]
+                            content = json.dumps(_new, ensure_ascii=False, indent=2)
+                    except Exception:
+                        pass
                 (pub / name).write_text(content, encoding="utf-8")
                 meta[name.replace(".json", "").replace(".md", "") + "_ts"] = now
                 if name == "market_snapshot.json":
