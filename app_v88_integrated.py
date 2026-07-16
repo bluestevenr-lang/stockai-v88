@@ -11394,9 +11394,13 @@ def _render_l3_cycle_board(_snap, _is_trading):
                       "<span style='color:#94a3b8'>→均衡</span>"))))
         return f"{_seg9}　{_arrow9}"
 
-    st.markdown("**🧭 三层周期·概率总览**　<span style='font-size:11px;color:#64748b'>"
-                "自选=上方决策台 ｜ 数字=各周期上涨概率%（规则情景估计）·红涨绿跌</span>",
-                unsafe_allow_html=True)
+    st.markdown(
+        "**🧭 三层周期·概率总览**　<span style='font-size:11px;color:#64748b'>"
+        "数字=该周期<b>上涨概率%</b>（规则情景估计，非胜率）：<span style='color:#dc2626'>红≥55偏涨</span>／"
+        "<span style='color:#16a34a'>绿≤45偏跌</span>／<span style='color:#64748b'>灰=中性</span>。"
+        "末尾箭头=周期间趋势（越远越强/弱/趋中性），与左侧「阶段·动作」是两件事：动作说<b>现在能不能买</b>、"
+        "箭头说<b>越往后越强还是越弱</b></span>",
+        unsafe_allow_html=True)
     _cols9 = st.columns(3)
     for _ci9, _mk9 in enumerate(("美股", "A股", "港股")):
         with _cols9[_ci9]:

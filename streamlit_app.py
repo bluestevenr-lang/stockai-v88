@@ -542,7 +542,11 @@ if _nav == "🧭 导航":
                             f"<div style='font-size:12px;color:#334155;margin-bottom:4px'><b>{_mkt3}</b></div>"
                             + "".join(_rows3) + "</div>", unsafe_allow_html=True)
             if _any3:
-                st.caption("🧭 三层周期·概率总览｜数字=各周期上涨概率%（规则情景估计）·红涨绿跌｜自选层见 ⚡预警与日报")
+                st.markdown("<span style='font-size:11px;color:#64748b'>🧭 三层周期·概率总览｜数字=该周期<b>上涨概率%</b>"
+                            "（规则情景估计非胜率）：<span style='color:#dc2626'>红≥55偏涨</span>／"
+                            "<span style='color:#16a34a'>绿≤45偏跌</span>／灰=中性。箭头=周期间趋势，"
+                            "与左侧「阶段·动作」（现在能不能买）是两件事｜自选层见 ⚡预警与日报</span>",
+                            unsafe_allow_html=True)
         except Exception:
             pass
         st.markdown("---")

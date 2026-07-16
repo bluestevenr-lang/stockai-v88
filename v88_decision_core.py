@@ -111,13 +111,18 @@ def build_horizon_facts(df, full=None, horizons=HORIZONS, unit="week") -> dict:
         # 当下相位不支持时必须回归中性带，全端只许一套嘴：
         # 派发/退潮相位 → 远期(≥8周或≥60日)分封顶55；低位启动相位 → 远期分下限45。
         phase_note = ""
-        _is_far = (period >= 60) if _by_day else (period >= 8)
-        if _is_far and full:
+        if full:
             _stg = str(full.get("stage") or "")
             _p52 = _num(full.get("pos52"), 50)
-            if _stg in ("高位震荡", "放量滞涨", "趋势转弱", "破位下跌") and score > 55:
+            _hard_down = _stg in ("破位下跌", "趋势转弱")   # 已在下跌趋势→中期档就该收敛、不显看涨红
+            _distrib = _stg in ("高位震荡", "放量滞涨")       # 高位派发未破位→仅远档收敛
+            _mid = (period >= 20) if _by_day else (period >= 4)
+            _far = (period >= 60) if _by_day else (period >= 8)
+            if _hard_down and _mid and score > 52:
+                score, phase_note = 52, f"{_stg}·中期分收敛至中性（下跌趋势不显看涨）"
+            elif _distrib and _far and score > 55:
                 score, phase_note = 55, f"派发相位（{_stg}）·远期动量分封顶55"
-            elif _stg in ("底部启动", "启动确认") and _p52 <= 50 and score < 45:
+            elif _stg in ("底部启动", "启动确认") and _p52 <= 50 and _far and score < 45:
                 score, phase_note = 45, f"启动相位（{_stg}）·远期分回归中性"
         out[f"{period}{_suffix}"] = {
             "weeks": weeks, "periods": period, "unit": unit, "sample_days": n,
