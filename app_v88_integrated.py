@@ -11562,6 +11562,76 @@ def _render_today_nav():
 
     st.markdown("### 🧭 今日导航 · 该关注什么" if _is_trading else "### 🔮 下一交易日前瞻 · 非交易日看这里")
 
+    # 【V88·系统健康条】（2026-07-16 用户点单）一眼看整个系统在正常运转还是哪里卡了：
+    # 数据新鲜度 / AI预算 / 三端同步 / 云端在线。10分钟缓存，不拖首屏。
+    try:
+        _hb = st.session_state.get("_sys_health9")
+        if not _hb or time.time() - _hb.get("ts", 0) > 600:
+            _hb = {"ts": time.time()}
+            # 数据新鲜度
+            try:
+                _snap_age = (time.time() - (_repo / "data" / "market_snapshot.json").stat().st_mtime) / 60
+                _hb["data_min"] = int(_snap_age)
+            except Exception:
+                _hb["data_min"] = None
+            # 三端同步：决策核心两端逐字节
+            try:
+                import hashlib as _hl9
+                _a = _hl9.sha256((Path.cwd() / "v88_decision_core.py").read_bytes()).hexdigest()
+                _b = _hl9.sha256((_repo / "src" / "v88_decision_core.py").read_bytes()).hexdigest()
+                _hb["sync_ok"] = (_a == _b)
+            except Exception:
+                _hb["sync_ok"] = None
+            # AI预算
+            try:
+                _bj = json.loads((_repo / "data" / "ai_budget.json").read_text(encoding="utf-8"))
+                _wb = 0.0
+                try:
+                    import v88_ai_budget as _wbm
+                    _wb = float(_wbm.status().get("spent", 0))
+                except Exception:
+                    _wb = 0.0
+                _hb["budget"] = round(float(_bj.get("spent_rmb", 0)) + _wb, 2)
+            except Exception:
+                _hb["budget"] = None
+            # 云端在线：/_stcore/health 返回200=在线，303=被登录墙挡(保活失效)，超时=挂了
+            try:
+                import requests as _rq9
+                _r9 = _rq9.get("https://stockai-v88.streamlit.app/_stcore/health",
+                               timeout=8, allow_redirects=False)
+                _hb["cloud"] = ("online" if _r9.status_code == 200 else
+                                ("walled" if _r9.status_code in (302, 303, 307) else "down"))
+            except Exception:
+                _hb["cloud"] = "down"
+            st.session_state["_sys_health9"] = _hb
+        # 渲染
+        _parts9 = []
+        _dm = _hb.get("data_min")
+        if _dm is not None:
+            _parts9.append((f"📊 数据{_dm}分钟前" if _dm < 90 else f"⚠️ 数据{_dm//60}小时前偏旧",
+                            "#16a34a" if _dm < 90 else "#ea580c"))
+        _bd = _hb.get("budget")
+        if _bd is not None:
+            _bp = _bd / 9 * 100
+            _parts9.append((f"🧮 预算{_bd}/9元", "#dc2626" if _bp >= 95 else ("#ea580c" if _bp >= 80 else "#64748b")))
+        _sy = _hb.get("sync_ok")
+        if _sy is not None:
+            _parts9.append(("🔗 三端同步✓" if _sy else "🔗 三端漂移⚠️", "#16a34a" if _sy else "#dc2626"))
+        _cl = _hb.get("cloud")
+        _cl_txt = {"online": ("☁️ 云端在线", "#16a34a"),
+                   "walled": ("☁️ 云端被登录墙挡·保活失效", "#dc2626"),
+                   "down": ("☁️ 云端离线·需重启", "#dc2626")}.get(_cl)
+        if _cl_txt:
+            _parts9.append(_cl_txt)
+        st.markdown("🩺 " + " ｜ ".join(f"<span style='color:{c};font-weight:600'>{t}</span>"
+                                        for t, c in _parts9),
+                    unsafe_allow_html=True)
+        if _hb.get("cloud") in ("walled", "down"):
+            st.caption("云端异常：Streamlit Cloud 需人工在 share.streamlit.io 点 Reboot；"
+                       "若长期需保活，把该 App 的 Sharing 改为 Public（隐私仍由密码门+持仓Token保护，见下方说明）。")
+    except Exception:
+        pass
+
     # 【V88·第一屏自选决策台】先占住标题下方的位置，扫描完成后再回填。
     # 这样无需重复请求行情，也能让“我的自选”真正排在大盘、日报和持仓之前。
     _watch_front_slot9 = st.empty()

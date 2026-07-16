@@ -19,8 +19,16 @@ jobs:
     steps:
       - name: Ping app health + home
         run: |
-          URL="https://v88-cloud.streamlit.app"
-          echo "Ping $URL/_stcore/health"
-          curl -sSL --max-time 60 -o /dev/null -w "health: %{http_code}\n" "$URL/_stcore/health" || true
-          echo "Ping $URL (home)"
-          curl -sSL --max-time 90 -o /dev/null -w "home: %{http_code}\n" "$URL/" || true
+          # 【V88·真实保活检测 2026-07-16】不跟随重定向，看真实状态码：
+          # 200=在线保活成功；303/302=被 Streamlit 登录墙挡(private app，保活无效，
+          #   需在 share.streamlit.io 把 Sharing 改 Public 才能真正保活)；其它=可能休眠/崩溃。
+          for URL in "https://stockai-v88.streamlit.app" "https://v88-cloud.streamlit.app"; do
+            CODE=$(curl -s --max-time 30 --max-redirs 0 -o /dev/null -w "%{http_code}" "$URL/_stcore/health" || echo "000")
+            echo "$URL/_stcore/health -> $CODE"
+            case "$CODE" in
+              200) echo "  ✅ 在线，保活有效" ;;
+              301|302|303|307|308) echo "  ⚠️ 被登录墙挡(private)：匿名保活无效，app 仍会休眠。根治=改 Sharing 为 Public。" ;;
+              *) echo "  ❗ 非预期($CODE)：可能休眠或崩溃，尝试唤醒 home……"
+                 curl -sSL --max-time 90 -o /dev/null -w "  home wake -> %{http_code}\n" "$URL/" || true ;;
+            esac
+          done
