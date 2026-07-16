@@ -167,6 +167,106 @@ def _cache_write(key, data):
         pass
 
 
+def _fallback_reason(label, view, stage):
+    """无 AI / 超预算时的兜底：不出现术语，用大白话说清方向与操作。"""
+    if view == "偏涨":
+        return f"{stage}，{label}方向偏多、上行空间大于回撤风险，可持有或回踩分批跟进"
+    if view == "偏跌":
+        return f"{stage}，{label}方向偏弱、下行风险大于上行空间，宜观望或减仓等企稳"
+    return f"{stage}，{label}多空拉锯、方向未定，等站稳突破或跌破关键价再动"
+
+
+# 三类对象各自的"人话理由"要融合的三方面（个股/大盘/板块共用一套引擎，口径一致）。
+_REASON_KINDS = {
+    "个股": ("个股研判官", "基本面 + 个股新闻 + 技术面"),
+    "大盘": ("大盘研判官", "宏观政策 + 资金面情绪 + 技术面"),
+    "板块": ("板块研判官", "行业景气逻辑 + 板块催化新闻 + 技术面"),
+}
+
+
+def forward_reasons(name, symbol, fwd, context="", api_key="", kind="个股", allow_ai=True) -> dict:
+    """给「当下前瞻」的每个周期配一句中文人话理由（按 kind 融合基本面/宏观/行业 + 新闻 + 技术面，
+    不出现术语），供阅读者看懂。DeepSeek 思考模式生成，超预算/无Key/失败时回退到确定性大白话。
+    概率仍由确定性引擎给出，这里只负责把理由讲人话，不改概率。个股/大盘/板块共用此函数。
+
+    allow_ai=False 时强制走确定性大白话，即使环境里有 Key 也不调用 AI、不花预算——
+    页面「默认规则版、手动才开思考模式」的预算闸门靠它。"""
+    role, fuse = _REASON_KINDS.get(kind, _REASON_KINDS["个股"])
+    rows = fwd.get("horizons") or []
+    stage = str(fwd.get("stage") or "当前")
+    fallback = {
+        "status": "fallback", "mode": "deterministic",
+        "overall": f"{stage}，综合上涨概率{fwd.get('weighted_p_up')}%，{fwd.get('overall_action', '')}",
+        "reasons": {r.get("label"): _fallback_reason(r.get("label"), r.get("view"), stage) for r in rows},
+    }
+    key = str(api_key or os.getenv("DEEPSEEK_API_KEY", "")).strip()
+    if not allow_ai or not key or not rows:
+        return fallback
+    _facts = {r.get("label"): {"方向": r.get("view"), "上涨概率": r.get("p_up"),
+                               "上行空间%": r.get("upside_pct"), "下行风险%": r.get("downside_pct"),
+                               "目标价": r.get("target_price"), "风险价": r.get("risk_price")}
+              for r in rows}
+    ckey = _cache_key(f"reason:{kind}:{symbol}", _facts, context)
+    cached = _cache_read(ckey)
+    if cached and cached.get("reasons"):
+        return cached
+    labels = "、".join(r.get("label") for r in rows)
+    prompt = (
+        f"你是V88{role}。请为{name}({symbol})的未来 {labels} 各写一句中文人话，"
+        f"说明该周期判断的理由。硬性要求：①每句必须融合『{fuse}』三方面；"
+        "②绝对不要出现 RSI、斜率、乖离率、MACD、均线、盈亏比 等术语或数字参数，要像跟朋友解释；"
+        "③每句不超过40字，直接说方向和为什么；④不得编造价格、新闻或财报，证据不足就说依据有限；"
+        "⑤每句要各不相同，对应不同周期。必须用强思考但只输出严格JSON："
+        "{\"overall\":\"一句话总结，不超30字\",\"reasons\":{" +
+        "，".join(f'\"{r.get("label")}\":\"…\"' for r in rows) + "}}。\n"
+        f"确定性行情事实（只可参考方向，不要照抄数字）：{json.dumps(_facts, ensure_ascii=False)}\n"
+        f"趋势阶段：{stage}\n"
+        f"参考信息（{fuse}，只可使用其中明确事实，可能为空）：{_brief(context, 1500)}"
+    )
+    try:
+        from v88_ai_budget import reserve, settle
+        ticket = reserve(prompt, output_tokens=1400)
+    except Exception:
+        ticket = {"id": "untracked", "rmb": 0}
+        settle = lambda *a, **k: None
+    if not ticket:
+        return dict(fallback, status="budget")
+    try:
+        response = requests.post(
+            "https://api.deepseek.com/v1/chat/completions",
+            headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+            json={"model": os.getenv("DEEPSEEK_REVIEW_MODEL", "deepseek-v4-flash"),
+                  "messages": [{"role": "user", "content": prompt}],
+                  "thinking": {"type": "enabled"}, "reasoning_effort": "high",
+                  "temperature": 0.3, "max_tokens": 3000},
+            timeout=150,
+        )
+        if response.status_code != 200:
+            settle(ticket, ok=False)
+            return dict(fallback, status="failed")
+        body = response.json()
+        settle(ticket, body.get("usage"), ok=True)
+        parsed = _parse_json(body["choices"][0]["message"].get("content", "")) or {}
+        ai_reasons = parsed.get("reasons") or {}
+        reasons = {}
+        for r in rows:
+            lab = r.get("label")
+            reasons[lab] = _brief(ai_reasons.get(lab) or fallback["reasons"][lab], 44)
+        result = {"status": "completed", "mode": "thinking-high",
+                  "model": os.getenv("DEEPSEEK_REVIEW_MODEL", "deepseek-v4-flash"),
+                  "analysis_time": datetime.now(BJT).strftime("%Y-%m-%d %H:%M（北京时间）"),
+                  "overall": _brief(parsed.get("overall") or fallback["overall"], 30),
+                  "reasons": reasons}
+        _cache_write(ckey, result)
+        return result
+    except Exception:
+        try:
+            settle(ticket, ok=False)
+        except Exception:
+            pass
+        return dict(fallback, status="failed")
+
+
 def thinking_review(name, symbol, facts, context="", api_key="") -> dict:
     """DeepSeek thinking-high 复核；失败时返回状态，由页面继续展示规则底稿。"""
     key = str(api_key or os.getenv("DEEPSEEK_API_KEY", "")).strip()

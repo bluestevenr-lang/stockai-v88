@@ -17,6 +17,10 @@ import pandas as pd
 SCHEMA = "v88.stock-decision/2.0"
 SCORE_VERSION = "V88-U2.0"
 HORIZONS = (2, 4, 6, 8, 16)
+# 个股「交易日」阶梯：5≈1周 / 10≈2周 / 20≈1月 / 60≈1季 / 120≈半年。
+# 「当下前瞻」与「锚点复盘」共用同一条，短中长一屏看全（用户 2026-07-16 拍板，改此一行即可调档）。
+HORIZON_DAYS = (5, 10, 20, 60, 120)
+HORIZON_DAY_WEIGHTS = {5: 0.15, 10: 0.20, 20: 0.25, 60: 0.25, 120: 0.15}
 BJT = timezone(timedelta(hours=8))
 SCORE_WEIGHTS = {
     "short": 0.20,       # 2周
@@ -51,8 +55,12 @@ def _series(df, name):
     return pd.to_numeric(raw, errors="coerce").dropna()
 
 
-def build_horizon_facts(df, full=None, horizons=HORIZONS) -> dict:
-    """生成唯一的2/4/6/8/16周行情底稿；分数是方向先验，不是胜率。"""
+def build_horizon_facts(df, full=None, horizons=HORIZONS, unit="week") -> dict:
+    """生成唯一的多周期行情底稿；分数是方向先验，不是胜率。
+
+    unit='week'：档位按周（2/4/6/8/16 周，系统统一评分主口径，全局不变）。
+    unit='day' ：档位按交易日（个人决策锚点用 2/5/8/16 交易日）。
+    """
     close = _series(df, "Close")
     high = _series(df, "High")
     low = _series(df, "Low")
@@ -64,11 +72,15 @@ def build_horizon_facts(df, full=None, horizons=HORIZONS) -> dict:
     stage = str((full or {}).get("stage") or "")
     stage_bias = 6 if any(x in stage for x in ("主升", "启动", "多头", "强势")) else (
         -6 if any(x in stage for x in ("破位", "退潮", "下跌", "转弱")) else 0)
+    _by_day = str(unit) == "day"
+    _suffix = "日" if _by_day else "周"
+    _min_sample = 2 if _by_day else 5
     out = {}
-    for weeks in tuple(horizons or HORIZONS):
-        target_days = weeks * 5
+    for period in tuple(horizons or HORIZONS):
+        weeks = period                         # 兼容旧字段名；按日口径时其值即交易日数
+        target_days = period if _by_day else period * 5
         n = min(target_days, len(close) - 1)
-        if n < 5:
+        if n < _min_sample:
             continue
         window = close.iloc[-(n + 1):]
         start = float(window.iloc[0])
@@ -94,8 +106,8 @@ def build_horizon_facts(df, full=None, horizons=HORIZONS) -> dict:
             + _clip(slope_move, -15, 15) * 0.65
             + _clip(ma_bias, -10, 10) * 0.65
             + volume_push + stage_bias, 15, 85))
-        out[f"{weeks}周"] = {
-            "weeks": weeks, "sample_days": n,
+        out[f"{period}{_suffix}"] = {
+            "weeks": weeks, "periods": period, "unit": unit, "sample_days": n,
             "return_pct": round(ret, 1), "slope_pct": round(slope_move, 1),
             "ma_bias_pct": round(ma_bias, 1), "ret5_pct": round(ret5, 1),
             "volume_ratio": round(vol_ratio, 2), "drawdown_pct": round(drawdown, 1),
@@ -289,38 +301,21 @@ def _anchor_frame(df, anchor_time, anchor_price):
     return pd.concat([before, anchor_row]).sort_index(), ts, ""
 
 
-def evaluate_anchor_outlook(df, anchor_time, anchor_price, *, action="观察",
-                            name="", code="", analysis_time=None) -> dict:
-    """按个人决策时间/价格推算2、5、8、16周，并跟踪到期后的真实结果。
-
-    预测段只读取锚点前数据；当前价格和到期收益放在 ``tracking``，不参与旧预测。
-    概率是同源规则情景估计，不是已校准的真实胜率。
-    """
-    hist, ts, error = _anchor_frame(df, anchor_time, anchor_price)
-    if error:
-        return {"schema": SCHEMA, "score_version": SCORE_VERSION, "error": error,
-                "name": name, "code": code}
-    close = _series(hist, "Close")
-    last = float(anchor_price)
-    ma20 = _num(close.tail(20).mean(), last)
-    ma60 = _num(close.tail(60).mean(), ma20)
-    stage = ("多头趋势" if last > ma20 > ma60 else
-             ("转弱下跌" if last < ma20 < ma60 else "震荡整理"))
-    base_facts = build_horizon_facts(hist, {"stage": stage}, horizons=(2, 5, 8, 16))
+def _forward_horizon_rows(close, last, base_facts, days_tuple):
+    """由收盘序列 + 多周期底稿算出每档「交易日」的概率/上下空间/盈亏比/期望，
+    并给加权汇总与总体建议。概率是同源规则情景估计，不是回测胜率。
+    「当下前瞻」evaluate_forward_outlook 与「锚点复盘」evaluate_anchor_outlook 共用此核，
+    保证个股走势判断只有一套算法。"""
     horizons = base_facts.get("horizons") or {}
-    if not horizons:
-        return {"schema": SCHEMA, "score_version": SCORE_VERSION,
-                "error": base_facts.get("error", "锚点行情不足"), "name": name, "code": code}
-
     daily_ret = close.pct_change().replace([np.inf, -np.inf], np.nan).dropna()
     daily_vol_pct = _num(daily_ret.tail(60).std()) * 100
     atr_pct = _num(base_facts.get("atr14")) / last * 100 if last else 0.0
     rows = []
-    for weeks in (2, 5, 8, 16):
-        fact = horizons.get(f"{weeks}周") or {}
+    for days in days_tuple:
+        fact = horizons.get(f"{days}日") or {}
         score = int(round(_clip(fact.get("rule_score", 50), 15, 85)))
         p_up, p_down = score, 100 - score
-        trading_days = weeks * 5
+        trading_days = days
         sigma_move = daily_vol_pct * math.sqrt(trading_days)
         slope = _num(fact.get("slope_pct"))
         resistance = _num(fact.get("resistance"), last)
@@ -336,7 +331,7 @@ def evaluate_anchor_outlook(df, anchor_time, anchor_price, *, action="观察",
         view = ("偏涨" if p_up >= 58 and ev > 0 else
                 ("偏跌" if p_up <= 42 or ev < -1 else "震荡"))
         rows.append({
-            "weeks": weeks, "label": f"{weeks}周", "score": score,
+            "days": days, "weeks": days, "label": f"{days}日", "score": score,
             "p_up": p_up, "p_down": p_down, "probability_kind": "规则情景估计（非回测胜率）",
             "upside_pct": round(upside, 1), "downside_pct": round(downside, 1),
             "target_price": round(last * (1 + upside / 100), 3),
@@ -346,14 +341,15 @@ def evaluate_anchor_outlook(df, anchor_time, anchor_price, *, action="观察",
             "trigger": f"站稳{last:.3f}并突破{max(last, resistance):.3f}",
             "invalid": f"跌破{last * (1 - downside / 100):.3f}后重评",
         })
-
-    weights = {2: .25, 5: .30, 8: .25, 16: .20}
-    weighted_p = round(sum(r["p_up"] * weights[r["weeks"]] for r in rows))
-    weighted_ev = round(sum(r["expected_pct"] * weights[r["weeks"]] for r in rows), 1)
-    weighted_rr = round(sum(r["rr"] * weights[r["weeks"]] for r in rows), 2)
-    long_rows = [r for r in rows if r["weeks"] >= 5]
-    long_bull = all(r["p_up"] >= 55 for r in long_rows)
-    long_bear = all(r["p_up"] <= 45 for r in long_rows)
+    raw_w = {d: HORIZON_DAY_WEIGHTS.get(d, 1.0) for d in days_tuple}
+    wsum = sum(raw_w.values()) or 1.0
+    weights = {d: v / wsum for d, v in raw_w.items()}
+    weighted_p = round(sum(r["p_up"] * weights[r["days"]] for r in rows))
+    weighted_ev = round(sum(r["expected_pct"] * weights[r["days"]] for r in rows), 1)
+    weighted_rr = round(sum(r["rr"] * weights[r["days"]] for r in rows), 2)
+    long_rows = [r for r in rows if r["days"] > days_tuple[0]]
+    long_bull = bool(long_rows) and all(r["p_up"] >= 55 for r in long_rows)
+    long_bear = bool(long_rows) and all(r["p_up"] <= 45 for r in long_rows)
     if weighted_p >= 58 and long_bull and weighted_ev > 0:
         overall = "偏多·等待触发后分批参与"
     elif weighted_p <= 42 and long_bear:
@@ -363,6 +359,75 @@ def evaluate_anchor_outlook(df, anchor_time, anchor_price, *, action="观察",
         overall = "周期分歧·避免一次性决策"
     else:
         overall = "中性·分批处理并等待确认"
+    return rows, weighted_p, weighted_ev, weighted_rr, overall
+
+
+def evaluate_forward_outlook(df, *, name="", code="", analysis_time=None,
+                             days_tuple=HORIZON_DAYS) -> dict:
+    """【当下前瞻】用最新收盘价，推算未来 5/10/20/60/120 交易日的上涨/下跌概率、
+    盈亏比、目标/风险价，并给一句「拿/加/减/回避」建议。个股主动研判入口。
+    概率是同源规则情景估计，不是回测胜率。"""
+    close = _series(df, "Close")
+    if len(close) < 12:
+        return {"schema": "v88.stock-forward/1.0", "score_version": SCORE_VERSION,
+                "error": "有效行情不足12个交易日", "name": name, "code": code}
+    last = float(close.iloc[-1])
+    ma20 = _num(close.tail(20).mean(), last)
+    ma60 = _num(close.tail(60).mean(), ma20)
+    stage = ("多头趋势" if last > ma20 > ma60 else
+             ("转弱下跌" if last < ma20 < ma60 else "震荡整理"))
+    base_facts = build_horizon_facts(df, {"stage": stage}, horizons=days_tuple, unit="day")
+    if not (base_facts.get("horizons") or {}):
+        return {"schema": "v88.stock-forward/1.0", "score_version": SCORE_VERSION,
+                "error": base_facts.get("error", "行情不足"), "name": name, "code": code}
+    rows, wp, wev, wrr, overall = _forward_horizon_rows(close, last, base_facts, days_tuple)
+    if overall.startswith("偏多"):
+        suggestion = "持有可继续拿/回踩分批加；空仓等触发再进"
+    elif overall.startswith("偏空"):
+        suggestion = "持有宜减仓或收紧止损；空仓回避"
+    elif overall.startswith("周期分歧"):
+        suggestion = "短长背离，别一次性动手，分批并盯失效位"
+    else:
+        suggestion = "中性观望，等概率与赔率同时转好再动"
+    now = analysis_time or datetime.now(BJT).strftime("%Y-%m-%d %H:%M")
+    return {
+        "schema": "v88.stock-forward/1.0", "score_version": SCORE_VERSION,
+        "name": name, "code": code, "last": round(last, 4), "stage": stage,
+        "analysis_time": now, "data_asof": base_facts.get("asof", ""),
+        "data_signature": base_facts.get("data_signature", ""),
+        "weighted_p_up": wp, "weighted_p_down": 100 - wp,
+        "weighted_rr": wrr, "weighted_expected_pct": wev,
+        "overall_action": overall, "suggestion": suggestion,
+        "probability_kind": "规则情景估计（非回测胜率）",
+        "horizons": rows,
+    }
+
+
+def evaluate_anchor_outlook(df, anchor_time, anchor_price, *, action="观察",
+                            name="", code="", analysis_time=None) -> dict:
+    """按个人决策时间/价格推算 5/10/20/60/120 个交易日，并跟踪到期后的真实结果。
+
+    预测段只读取锚点前数据；当前价格和到期收益放在 ``tracking``，不参与旧预测。
+    概率是同源规则情景估计，不是已校准的真实胜率。
+    """
+    hist, ts, error = _anchor_frame(df, anchor_time, anchor_price)
+    if error:
+        return {"schema": SCHEMA, "score_version": SCORE_VERSION, "error": error,
+                "name": name, "code": code}
+    close = _series(hist, "Close")
+    last = float(anchor_price)
+    ma20 = _num(close.tail(20).mean(), last)
+    ma60 = _num(close.tail(60).mean(), ma20)
+    stage = ("多头趋势" if last > ma20 > ma60 else
+             ("转弱下跌" if last < ma20 < ma60 else "震荡整理"))
+    base_facts = build_horizon_facts(hist, {"stage": stage}, horizons=HORIZON_DAYS, unit="day")
+    horizons = base_facts.get("horizons") or {}
+    if not horizons:
+        return {"schema": SCHEMA, "score_version": SCORE_VERSION,
+                "error": base_facts.get("error", "锚点行情不足"), "name": name, "code": code}
+
+    rows, weighted_p, weighted_ev, weighted_rr, overall = _forward_horizon_rows(
+        close, last, base_facts, HORIZON_DAYS)
 
     action_text = str(action or "观察")
     if any(x in action_text for x in ("卖", "清仓", "减仓")):
@@ -376,7 +441,7 @@ def evaluate_anchor_outlook(df, anchor_time, anchor_price, *, action="观察",
         review = ("当时买入具备多周期依据" if overall.startswith("偏多") else
                   "当时买入依据不足，需缩小仓位并服从失效位")
     else:
-        review = "用2/5/8/16周触发与失效条件继续跟踪"
+        review = "用 5/10/20/60/120 交易日触发与失效条件继续跟踪"
 
     # 真实结果只用于复盘，不回填或改写预测。
     work = df.copy()
@@ -388,7 +453,7 @@ def evaluate_anchor_outlook(df, anchor_time, anchor_price, *, action="观察",
     after = work[work.index.normalize() > ts.normalize()]
     tracking_rows = []
     for row in rows:
-        need = row["weeks"] * 5
+        need = row["days"]
         if len(after) >= need:
             actual_price = _num(_series(after.iloc[:need], "Close").iloc[-1])
             actual_return = round((actual_price / last - 1) * 100, 1) if last else 0.0
@@ -396,7 +461,7 @@ def evaluate_anchor_outlook(df, anchor_time, anchor_price, *, action="观察",
         else:
             actual_price, actual_return = None, None
             status = f"待验证（已有{len(after)}/{need}个交易日）"
-        tracking_rows.append({"weeks": row["weeks"], "status": status,
+        tracking_rows.append({"days": row["days"], "weeks": row["days"], "status": status,
                               "actual_price": actual_price, "actual_return_pct": actual_return})
     current_close = _series(work, "Close")
     _latest_market_ts = pd.Timestamp(current_close.index[-1]) if len(current_close) else None

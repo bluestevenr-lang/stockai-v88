@@ -2698,6 +2698,9 @@ st.set_page_config(layout="wide", page_title="AI 皇冠双核", page_icon="👑"
 # 首屏占位：定义稍后才可用的今日导航函数后回填到这里，使“大盘/持仓/自选/预警”
 # 在视觉顺序上始终排第一，原有后续模块全部保留。
 _v88_front_decision_slot = st.empty()
+# 【V88·搜索前置】搜索框占位排在“大盘/持仓/自选/预警”速览带之下、其余重模块之上，
+# 让点开就能秒搜，无需滚到下方深度作战室。真正渲染在自选工具就绪后（约¼页处）回填。
+_v88_search_slot = st.empty()
 
 # 【V88界面修改原则】默认只新增、压缩与重排；不得删除或隐藏原有内容，
 # 除非用户明确提出“删除”。紧凑版必须保留原指标与原功能入口。
@@ -2798,7 +2801,7 @@ input::placeholder, textarea::placeholder {
 </style>
 """, unsafe_allow_html=True)
 
-# 【V100·统一运行反馈】未知时长任务使用浏览器端持续动画，Python阻塞时动画仍会运动，
+# 【V88·统一运行反馈】未知时长任务使用浏览器端持续动画，Python阻塞时动画仍会运动，
 # 明确告诉用户页面没有死机；已知总量的扫描继续使用真实百分比进度条。
 from contextlib import contextmanager as _contextmanager
 
@@ -3546,7 +3549,8 @@ def _render_ai_market_analysis():
                     with _tc2:
                         st.metric("技术趋势", _tech_d.get('trend', '震荡'))
                     with _tc3:
-                        st.metric("技术强度", f"{_tech_d.get('strength', 50)}/100")
+                        st.metric("技术强度", f"{_tech_d.get('strength', 50)}/100",
+                                  help="0–100，越高越强势；>60 偏强，<40 偏弱。")
                 if COPY_UTILS_AVAILABLE:
                     CopyUtils.create_copy_button(st.session_state[_ss_pred], button_text="📋 复制全文", key=f"copy_{_mk}_pred_full")
                     CopyUtils.render_markdown_with_section_copy(st.session_state[_ss_pred], key_prefix=f"{_mk}_pred")
@@ -3555,17 +3559,6 @@ def _render_ai_market_analysis():
                 st.caption(f"📌 AI生成 · 模型: {_ai_model_label()}")
             else:
                 st.caption("点击「一键分析全市场」或等待自动生成")
-
-            if _ss_sent in st.session_state:
-                _sent_d = st.session_state[_ss_sent]
-                _sent_m = _sent_d.get('metrics', {})
-                with st.expander(f"📰 舆情 | 评分 {_sent_m.get('sentiment_score', 50)}/100 · {_sent_m.get('sentiment_level', '中性')}", expanded=False):
-                    if COPY_UTILS_AVAILABLE:
-                        CopyUtils.create_copy_button(_sent_d['response'], button_text="📋 复制全文", key=f"copy_{_mk}_sent_full")
-                        CopyUtils.render_markdown_with_section_copy(_sent_d['response'], key_prefix=f"{_mk}_sent")
-                    else:
-                        st.markdown(_sent_d.get('response', ''))
-                    st.caption(f"📌 AI生成 · 模型: {_ai_model_label()}")
 
     _link_items = []
     for _mk, _mr in [('🇺🇸 美股', us_result), ('🇭🇰 港股', hk_result), ('🇨🇳 A股', cn_result)]:
@@ -4389,7 +4382,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
             _sum_color = "#10b981" if _r_on >= 2 else ("#ef4444" if _r_off >= 2 else "#f59e0b")
 
         # ═══════════════════════════════════════════════════════════════
-        # 【V100·紧凑首页】三市场关键指标一屏展示；完整明细默认折叠。
+        # 【V88·紧凑首页】三市场关键指标一屏展示；完整明细默认折叠。
         def _macro_ai_text(_text, _market):
             _txt = str(_text or "").replace(f"【{_market}】", "").strip()
             _txt = _txt.split("\n\n---", 1)[0].strip()
@@ -4577,272 +4570,8 @@ if Config.ENABLE_EXPECTATION_LAYER:
             f'美国：{_macro_cn(us_result.get("reason", ""))}　｜　A股：{_macro_cn(cn_result.get("reason", ""))}　｜　'
             f'港股：{_macro_cn(hk_result.get("reason", ""))}</div>', unsafe_allow_html=True)
 
-        if False:  # 旧版完整明细保留在代码中，不再显示下拉框
-            # 【V90】宏观脉搏监控 - 三行布局，每行一个市场，指标横向排列
-            # ═══════════════════════════════════════════════════════════════
-            st.markdown("### 📡 宏观脉搏监控")
-            _macro_fetch_bj = _dt_global.now(ZoneInfo("Asia/Shanghai")).strftime("%m/%d %H:%M")
-            _macro_fetch_ny = _dt_global.now(ZoneInfo("America/New_York")).strftime("%H:%M ET")
-            st.caption(f"💡 机构交易员的「上帝视角」——在看个股之前，先看天气 · 📅 数据截至最近收盘 · 页面加载于 {_macro_fetch_bj} 北京 / {_macro_fetch_ny}")
-        
-            # 修复 InvalidCharacterError：移除控制字符、null、无效 Unicode，转义 HTML 特殊字符
-            def _sanitize_html(s):
-                if s is None: return ""
-                s = str(s)
-                if s.lower() in ("nan", "inf", "-inf", "infinity", "-infinity"):
-                    return "N/A"
-                s = "".join(c for c in s if ord(c) >= 32 or c in "\n\t\r")
-                s = s.replace("\x00", "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
-                return s
-            def _safe_num(val, fmt="{:.1f}", default="N/A"):
-                try:
-                    v = float(val)
-                    if v != v or v == float("inf") or v == float("-inf"): return default
-                    return fmt.format(v)
-                except (TypeError, ValueError): return default
-            # 英文术语→括号中文（小一号）辅助函数
-            def _reason_cn(s):
-                s = _sanitize_html(s or "")
-                _s = '<span style="font-size: 0.85em;">'
-                return (s.replace("SPY在", f'SPY{_s}(标普500ETF)</span>在').replace("SPY(", f'SPY{_s}(标普500ETF)</span>(')
-                        .replace("VIX=", f'VIX{_s}(波动率指数)</span>=').replace("VIX(", f'VIX{_s}(波动率指数)</span>(')
-                        .replace("MA50(", f'MA50{_s}(50日均线)</span>(').replace("MA200(", f'MA200{_s}(200日均线)</span>('))
-            st.markdown("#### 🇺🇸 美国")
-            us_cols = st.columns(9)
-            with us_cols[0]:
-                _v = us_result.get('vix_level', 0)
-                _val = _safe_str_for_dom(_safe_num(_v, "{:.1f}") if _v else "N/A")
-                _d = _safe_str_for_dom(f"{_safe_num(us_result.get('vix_change_pct', 0), '{:+.1f}')}%" if _v else None) or None
-                st.metric("VIX (波动率)", _val, delta=_d, delta_color="inverse")
-            with us_cols[1]:
-                _v = us_result.get('spy_price', 0)
-                _val = _safe_str_for_dom(f"${_safe_num(_v, '{:.1f}')}" if _v and (_v == _v) else "N/A")
-                _d = _safe_str_for_dom(f"{_safe_num(us_result.get('spy_change_pct', 0), '{:+.1f}')}%" if _v else None) or None
-                st.metric("SPY（标普500 ETF）", _val, delta=_d)
-            with us_cols[2]:
-                _v = us_result.get('qqq_price', 0)
-                _val = _safe_str_for_dom(f"${_safe_num(_v, '{:.1f}')}" if _v else "N/A")
-                _d = _safe_str_for_dom(f"{_safe_num(us_result.get('qqq_change_pct', 0), '{:+.1f}')}%" if _v else None) or None
-                st.metric("QQQ（纳指100 ETF）", _val, delta=_d)
-            with us_cols[3]:
-                _v = us_result.get('tlt_price', 0)
-                _val = _safe_str_for_dom(f"${_safe_num(_v, '{:.1f}')}" if _v else "N/A")
-                _d = _safe_str_for_dom(f"{_safe_num(us_result.get('tlt_change_pct', 0), '{:+.1f}')}%" if _v else None) or None
-                st.metric("TLT (美债ETF)", _val, delta=_d)
-            with us_cols[4]:
-                _v = us_result.get('gld_price', 0)
-                _val = _safe_str_for_dom(f"${_safe_num(_v, '{:.1f}')}" if _v else "N/A")
-                _d = _safe_str_for_dom(f"{_safe_num(us_result.get('gld_change_pct', 0), '{:+.1f}')}%" if _v else None) or None
-                st.metric("GLD (黄金)", _val, delta=_d)
-            with us_cols[5]:
-                _v = us_result.get('tnx_yield', 0)
-                _val = _safe_str_for_dom(f"{_safe_num(_v, '{:.2f}')}%" if _v else "N/A")
-                _d = _safe_str_for_dom(_safe_num(us_result.get('tnx_change', 0), "{:+.2f}") if _v else None) or None
-                st.metric("10Y美债", _val, delta=_d, delta_color="inverse")
-            with us_cols[6]:
-                _v = us_result.get('dxy_level', 0)
-                _val = _safe_str_for_dom(_safe_num(_v, "{:.1f}") if _v else "N/A")
-                _d = _safe_str_for_dom(f"{_safe_num(us_result.get('dxy_change_pct', 0), '{:+.1f}')}%" if _v else None) or None
-                st.metric("DXY (美元)", _val, delta=_d, delta_color="inverse")
-            with us_cols[7]:
-                _corr = us_result.get('correlation', None)
-                _corr_val = _safe_str_for_dom(f"{_corr:.2f}" if _corr is not None else "N/A")
-                _corr_desc = _sanitize_html(us_result.get('corr_desc', ''))
-                st.metric("股债相关性", _corr_val)
-                if _corr_desc:
-                    st.caption(_corr_desc[:20])
-            with us_cols[8]:
-                _us_v = us_result.get('verdict', 'Unknown')
-                _us_color = "#10b981" if _us_v == "Risk On" else ("#ef4444" if _us_v == "Risk Off" else "#f59e0b")
-                _us_v_safe = _sanitize_html(_us_v)
-                st.markdown(f'<div style="font-family: inherit; background:{_us_color};color:white;padding:0.6rem;border-radius:6px;font-weight:600;text-align:center;margin-top:1.2rem;font-size:12px;">{_us_v_safe}</div>', unsafe_allow_html=True)
-            _vix_st = _sanitize_html(us_result.get("vix_status", ""))
-            _reason_safe = _sanitize_html(us_result.get("reason", ""))[:120]
-            st.caption(f"[美国] {_vix_st} | {_reason_safe}{_ath_txt('^GSPC')}")
-        
-            # 第二行：A股（6个指标：上证、沪深300、创业板、波动率、人民币、体制）
-            st.markdown("#### 🇨🇳 A股")
-            cn_cols = st.columns(6)
-            _cn_idx = cn_result.get('index_level', 0)
-            _cn_chg = cn_result.get('index_change_pct', 0)
-            _cn_vol = cn_result.get('volatility', 0)
-            _cn_v = cn_result.get('verdict', 'Unknown')
-            _cn_color = "#10b981" if _cn_v == "Risk On" else ("#ef4444" if _cn_v == "Risk Off" else "#f59e0b")
-            with cn_cols[0]:
-                _cn_val = f"{_cn_idx:.0f}" if _cn_idx and _cn_idx == _cn_idx and _cn_idx > 0 else "N/A"
-                _cn_d = f"{_cn_chg:+.2f}%" if _cn_idx and _cn_idx > 0 and _cn_chg == _cn_chg else None
-                st.metric("上证指数", _safe_str_for_dom(_cn_val), delta=_safe_str_for_dom(_cn_d) if _cn_d else None)
-            with cn_cols[1]:
-                _hs300 = cn_result.get('hs300_price', 0)
-                _hs_val = f"{_hs300:.0f}" if _hs300 and _hs300 > 0 else "N/A"
-                _hs_d = f"{cn_result.get('hs300_change_pct', 0):+.2f}%" if _hs300 and _hs300 > 0 else None
-                st.metric("沪深300", _safe_str_for_dom(_hs_val), delta=_safe_str_for_dom(_hs_d) if _hs_d else None)
-            with cn_cols[2]:
-                _cyb = cn_result.get('cyb_price', 0)
-                _cy_val = f"{_cyb:.0f}" if _cyb and _cyb > 0 else "N/A"
-                _cy_d = f"{cn_result.get('cyb_change_pct', 0):+.2f}%" if _cyb and _cyb > 0 else None
-                _cy_is_etf = bool(cn_result.get("cyb_use_etf"))
-                _cy_label = "创业板ETF代理" if _cy_is_etf else "创业板指"
-                if _cy_is_etf:
-                    _cy_val = f"{_cyb:.3f} 元" if _cyb and _cyb > 0 else "N/A"
-                else:
-                    _cy_val = f"{_cyb:.0f} 点" if _cyb and _cyb > 0 else "N/A"
-                st.metric(_cy_label, _safe_str_for_dom(_cy_val), delta=_safe_str_for_dom(_cy_d) if _cy_d else None)
-            with cn_cols[3]:
-                st.metric("波动率", _safe_str_for_dom(f"{_cn_vol:.1f}%" if _cn_vol and _cn_vol > 0 else "N/A"))
-            with cn_cols[4]:
-                _cny = cn_result.get('cny_price', 0)
-                _cny_val = f"{_cny:.4f}" if _cny and _cny > 0 else "N/A"
-                _cny_d = f"{cn_result.get('cny_change_pct', 0):+.2f}%" if _cny and _cny > 0 else None
-                st.metric("人民币", _safe_str_for_dom(_cny_val), delta=_safe_str_for_dom(_cny_d) if _cny_d else None)
-            with cn_cols[5]:
-                _cn_v_safe = _sanitize_html(_cn_v)
-                st.markdown(f'<div style="font-family: inherit; background:{_cn_color};color:white;padding:0.6rem;border-radius:6px;font-weight:600;text-align:center;margin-top:1.2rem;">{_cn_v_safe}</div>', unsafe_allow_html=True)
-            _cn_vol_st = _sanitize_html(cn_result.get("vol_status", ""))
-            st.markdown(f'<p style="font-size: 12px; color: #666;">[A股] {_cn_vol_st} | {_reason_cn(cn_result.get("reason", ""))[:80]}{_ath_txt("000001.SS")}</p>', unsafe_allow_html=True)
-        
-            # 第三行：港股（6个指标：恒指、恒生科技、国企指数、波动率、港币、体制）
-            st.markdown("#### 🇭🇰 港股")
-            hk_cols = st.columns(6)
-            _hk_idx = hk_result.get('index_level', 0)
-            _hk_chg = hk_result.get('index_change_pct', 0)
-            _hk_vol = hk_result.get('volatility', 0)
-            _hk_v = hk_result.get('verdict', 'Unknown')
-            _hk_color = "#10b981" if _hk_v == "Risk On" else ("#ef4444" if _hk_v == "Risk Off" else "#f59e0b")
-            with hk_cols[0]:
-                _hk_val = f"{_hk_idx:.0f}" if _hk_idx and _hk_idx == _hk_idx and _hk_idx > 0 else "N/A"
-                _hk_d = f"{_hk_chg:+.2f}%" if _hk_idx and _hk_idx > 0 and _hk_chg == _hk_chg else None
-                st.metric("恒生指数", _safe_str_for_dom(_hk_val), delta=_safe_str_for_dom(_hk_d) if _hk_d else None)
-            with hk_cols[1]:
-                _hstech = hk_result.get('hstech_price', 0)
-                _use_etf = hk_result.get('hstech_use_etf', False)
-                _label = _safe_str_for_dom("恒生科技(ETF)" if _use_etf else "恒生科技")
-                _fmt = f"{_hstech:.2f}" if _use_etf else f"{_hstech:.0f}"
-                _hst_val = _fmt if _hstech and _hstech == _hstech and _hstech > 0 else "N/A"
-                _hst_d = f"{hk_result.get('hstech_change_pct', 0):+.2f}%" if _hstech and _hstech > 0 else None
-                st.metric(_label, _safe_str_for_dom(_hst_val), delta=_safe_str_for_dom(_hst_d) if _hst_d else None)
-            with hk_cols[2]:
-                _hsce = hk_result.get('hsce_price', 0)
-                _hsce_val = f"{_hsce:.0f}" if _hsce and _hsce > 0 else "N/A"
-                _hsce_d = f"{hk_result.get('hsce_change_pct', 0):+.2f}%" if _hsce and _hsce > 0 else None
-                st.metric("国企指数", _safe_str_for_dom(_hsce_val), delta=_safe_str_for_dom(_hsce_d) if _hsce_d else None)
-            with hk_cols[3]:
-                st.metric("波动率", _safe_str_for_dom(f"{_hk_vol:.1f}%" if _hk_vol and _hk_vol > 0 else "N/A"))
-            with hk_cols[4]:
-                _hkd = hk_result.get('hkd_price', 0)
-                _hkd_val = f"{_hkd:.4f}" if _hkd and _hkd > 0 else "N/A"
-                _hkd_d = f"{hk_result.get('hkd_change_pct', 0):+.2f}%" if _hkd and _hkd > 0 else None
-                st.metric("港币", _safe_str_for_dom(_hkd_val), delta=_safe_str_for_dom(_hkd_d) if _hkd_d else None)
-            with hk_cols[5]:
-                _hk_v_safe = _sanitize_html(_hk_v)
-                st.markdown(f'<div style="font-family: inherit; background:{_hk_color};color:white;padding:0.6rem;border-radius:6px;font-weight:600;text-align:center;margin-top:1.2rem;">{_hk_v_safe}</div>', unsafe_allow_html=True)
-            _hk_vol_st = _sanitize_html(hk_result.get("vol_status", ""))
-            st.markdown(f'<p style="font-size: 12px; color: #666;">[港股] {_hk_vol_st} | {_reason_cn(hk_result.get("reason", ""))[:80]}{_ath_txt("^HSI")}</p>', unsafe_allow_html=True)
-        
-            # 宏观综合解读条 - 英文术语括号中文小一号
-            try:
-                _market_caps = [int(float(r.get('position_cap', 80))) for r in (us_result, hk_result, cn_result)]
-                _market_caps = [x for x in _market_caps if 0 <= x <= 100]
-                _pos_cap = min(_market_caps) if _market_caps else 80
-                if summary.get('risk_off_count', 0) >= 2:
-                    _pos_cap = min(_pos_cap, 30)
-            except (TypeError, ValueError):
-                _pos_cap = 30 if summary.get('risk_off_count', 0) >= 2 else 80
-            _macro_reason = _reason_cn(
-                f"{summary.get('global_reason', '')}；美国：{us_result.get('reason', '')}"
-            )
-            _cap_color = "#10b981" if _pos_cap >= 70 else ("#f59e0b" if _pos_cap >= 50 else "#ef4444")
-            st.markdown(f'<div style="font-family: inherit; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 1rem 1.5rem; border-radius: 8px; margin-top: 0.5rem; display: flex; align-items: center; gap: 1rem;"><div style="font-family: inherit; color: white; flex: 1; font-size: 12px;">💡 <b>宏观解读</b>：{_macro_reason}</div><div style="font-family: inherit; background: {_cap_color}; color: white; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 700; font-size: 12px; white-space: nowrap;">仓位上限 {_pos_cap}%</div></div>', unsafe_allow_html=True)
-            st.markdown('📖 全局仓位上限取三市场建议中的最低值；当至少两个市场处于 Risk Off<span style="font-size: 0.9em;">(风险规避)</span>时，上限固定不超过30%。', unsafe_allow_html=True)
-
         # 【2026-07-12 用户要求】此处原有 st.divider()：下方行业热力已停用(if False)，
         # 连续空分隔线只留末尾一条，删除以压缩版面。
-
-        # ═══════════════════════════════════════════════════════════════
-        # 行业热力（懒加载：仅在选择「仅行业热力」或「全部」时拉取）
-        # ═══════════════════════════════════════════════════════════════
-        # 行业热力不再在首页渲染，避免空占位和完整模块占用大量纵向空间。
-        if False:
-            pass
-        elif False:
-            # 缓存倒计时
-            _heat_remain = _heat_remaining_seconds()
-            if _heat_remain is not None and _heat_remain > 0:
-                _heat_h, _heat_m = divmod(_heat_remain // 60, 60)
-                _heat_countdown = f"⏱ 缓存剩余 {_heat_h}h {_heat_m:02d}m"
-            else:
-                _heat_countdown = "⏱ 缓存已过期"
-            _heat_load_bj = _dt_global.now(ZoneInfo("Asia/Shanghai")).strftime("%H:%M")
-            st.caption(f"环球行业资金走向 · 轮动天数 · 52周水位 · 中美港论坛热度(大数据代理) · 点击行业可 AI 分析 · {_heat_countdown} · 加载于 {_heat_load_bj} 北京")
-
-            _heat_rcol = st.columns([5, 1])[1]
-            with _heat_rcol:
-                if st.button("🔄 强制刷新", key="refresh_heat", help="穿透全部缓存，重新拉取行业数据", width='stretch'):
-                    get_market_heat.clear()
-                    try:
-                        _cached_expectation_all_markets.clear()
-                    except Exception:
-                        pass
-                    st.cache_data.clear()
-                    try:
-                        local_cache.clear_all()
-                    except Exception:
-                        pass
-                    try:
-                        _HEAT_CACHE_TS_FILE.unlink(missing_ok=True)
-                        _HEAT_DF_FILE.unlink(missing_ok=True)
-                    except Exception:
-                        pass
-                    st.rerun()
-
-            selected_heat = _render_sector_heat_panel(heat_df)
-
-            if selected_heat and hasattr(selected_heat, 'selection') and len(selected_heat.selection.rows) > 0:
-                selected_idx = selected_heat.selection.rows[0]
-                _disp_df = st.session_state.get("_heat_view_df", heat_df)
-                _sel_row = _disp_df.iloc[selected_idx]
-                sector_name = _sel_row["行业"]
-                selected_row = heat_df[heat_df["行业"] == sector_name].iloc[0]
-                _flow_sum = selected_row.get("_flow_summary", "")
-                st.info(f"📊 **{sector_name}** · {selected_row.get('资金动向', '—')} · 建议：**{selected_row.get('操作建议', '观望')}**")
-                if _flow_sum:
-                    st.caption(f"💰 {_flow_sum} · {selected_row.get('跨市场对比', '')}")
-                # 论坛热度详情
-                _forum_detail_cols = st.columns(3)
-                for _fi, (_fk, _fl, _ff) in enumerate([
-                    ("US", "🇺🇸 美股论坛", "Reddit/WSB"),
-                    ("HK", "🇭🇰 港股论坛", "雪球/富途"),
-                    ("CN", "🇨🇳 A股论坛", "雪球/东财股吧"),
-                ]):
-                    _fd = selected_row.get(f"_forum_{_fk}", {})
-                    with _forum_detail_cols[_fi]:
-                        st.metric(
-                            _fl,
-                            f"{_fd.get('icon', '⚪')} {_fd.get('score', 50)}/100",
-                            delta=_fd.get("level", "平淡"),
-                        )
-                        st.caption(f"数据源: {_ff} · 轮动/量价大数据代理")
-                st.caption("💡 **轮动天数**：连续跑赢基准=资金流入(🟢+N天)；跑输=流出(🔴-N天)。**水位**：52周区间位置，高=近高点，低=近低点。")
-                if st.button(f"🌍 一键分析全球{sector_name}行业（美股+港股+A股）", key="analyze_global_sector", width='stretch', type="primary"):
-                    st.session_state.sector_analysis_name = sector_name
-                    st.session_state.sector_analysis_market = "全球"
-                    st.session_state.sector_analysis_codes = {
-                        "us": selected_row["_us_code"],
-                        "hk": selected_row["_hk_code"],
-                        "cn": selected_row["_cn_code"]
-                    }
-                    st.session_state.sector_analysis_heat = {
-                        "us_rot": selected_row.get("🇺🇸 轮动·水位", "N/A"),
-                        "hk_rot": selected_row.get("🇭🇰 轮动·水位", "N/A"),
-                        "cn_rot": selected_row.get("🇨🇳 轮动·水位", "N/A"),
-                        "forum": selected_row.get("💬 论坛热度(大数据)", "N/A"),
-                        "us_forum": selected_row.get("_forum_US", {}),
-                        "hk_forum": selected_row.get("_forum_HK", {}),
-                        "cn_forum": selected_row.get("_forum_CN", {}),
-                    }
-                    st.toast(f"🚀 AI分析全球{sector_name}行业中...", icon="🌍")
-                    st.rerun()
-
         if 'sector_analysis_name' in st.session_state and st.session_state.sector_analysis_name:
             sector_name_s = st.session_state.sector_analysis_name
             codes_s = st.session_state.sector_analysis_codes
@@ -5303,15 +5032,30 @@ def _search_history_persist(code, name):
         d = {}
         if _SEARCH_HIST_FILE.exists():
             d = json.loads(_SEARCH_HIST_FILE.read_text(encoding="utf-8"))
-        e = d.get(str(code)) or {"name": name, "n": 0}
+        key = _canonical_code(code)  # 归一：搜"腾讯"(0700.HK)与"腾讯控股"(00700.HK)合并同一条
+        e = d.get(key) or {"name": name, "n": 0}
         e["n"] = int(e.get("n", 0)) + 1
         e["name"], e["ts"] = name, time.time()
-        d[str(code)] = e
+        d[key] = e
         _SEARCH_HIST_FILE.write_text(json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8")
     except Exception:
         pass
 
 _WATCHLIST_MAX = 20
+
+def _canonical_code(code):
+    """把同一只票的不同写法归一，只用于去重比较（不改展示代码）。
+    港股按数字补零到5位：00700.HK == 0700.HK；A股裸6位补市场后缀；.SH→.SS。"""
+    c = str(code).strip().upper()
+    if c.endswith(".HK"):
+        digits = re.sub(r"\D", "", c[:-3])
+        return (digits.lstrip("0").zfill(5) + ".HK") if digits else c
+    if c.endswith(".SH"):
+        c = c[:-3] + ".SS"
+    if c.isdigit() and len(c) == 6:
+        c += ".SS" if c[0] in "569" else ".SZ"
+    return c
+
 
 def _watchlist_save(d):
     # 【V88·重点观察同步】搜索过的个股自动入观察池，镜像到私仓目录随日报提交上云
@@ -5342,9 +5086,11 @@ def _watchlist_load():
                         code += ".SS" if code[0] in "569" else ".SZ"
                     if code.endswith(".SH"):
                         code = code[:-3] + ".SS"
-                    if code in seen:
+                    # 按归一代码去重：00700.HK 与 0700.HK 视为同一只，保留先出现的（名称更规范）。
+                    canon = _canonical_code(code)
+                    if canon in seen:
                         continue
-                    seen.add(code)
+                    seen.add(canon)
                     clean[_watchlist_market(code)].append((code, name))
             if clean != {k: [tuple(x) for x in d.get(k, [])] for k in ("US", "HK", "CN")}:
                 _watchlist_save(clean)
@@ -5367,7 +5113,9 @@ def _watchlist_add(code, name):
     """搜索选中的个股自动加入自选股；总量>20 时从最长的市场列表头部淘汰最早的。"""
     d = _watchlist_load()
     mkt = _watchlist_market(code)
-    if any(c == code for c, _ in d.get(mkt, [])):
+    # 归一去重：搜索"腾讯"补进 0700.HK 时，已有 00700.HK 就不再重复加。
+    _canon = _canonical_code(code)
+    if any(_canonical_code(c) == _canon for c, _ in d.get(mkt, [])):
         return False
     d.setdefault(mkt, []).append((code, name))
     while sum(len(v) for v in d.values()) > _WATCHLIST_MAX:
@@ -5385,6 +5133,14 @@ def _watchlist_remove(code):
 
 # 动态覆盖内置（Streamlit 每次交互重跑脚本，文件读取保持最新）
 WATCHLIST = _watchlist_load()
+
+# 【V88·搜索前置】自选/历史工具就绪后，立刻把个股搜索回填到页顶槽位。
+# 比原先渲染在深度作战室（约¾页处）大幅提前，点开首屏即可搜索。
+try:
+    with _v88_search_slot.container():
+        render_cloud_search()
+except Exception as _v88_search_slot_err:
+    st.caption(f"顶部搜索暂不可用（不影响下方功能）：{str(_v88_search_slot_err)[:60]}")
 
 # 【V88·自选分级弹窗】A=对应市场交易日盘中每3小时 B=每天 C=每周低频
 if st.session_state.get("_wl_new_pick"):
@@ -5638,58 +5394,6 @@ def get_proxy_url():
 # ═══════════════════════════════════════════════════════════════
 # 3. 数据获取 - 【V75核心】添加重试机制
 # ═══════════════════════════════════════════════════════════════
-def clean_df(df):
-    """清洗数据"""
-    if False:  # removed fallback placeholder
-        special_codes = {
-            'BRK.B': 'BRK-B',
-            'BRK.A': 'BRK-A',
-            'BF.B': 'BF-B',
-            'BF.A': 'BF-A',
-        }
-        if code in special_codes:
-            old_code = code
-            code = special_codes[code]
-            logging.info(f"📝 特殊代码修正: {old_code} -> {code}")
-        
-        # 【V87.4 Critical Fix】已经有后缀的需要检查港股前导零问题
-        if code.endswith(".SS") or code.endswith(".SZ"): 
-            return code
-        elif code.endswith(".HK"):
-            # 检查港股前导零问题：09992.HK -> 9992.HK
-            hk_num = code[:-3]  # 去掉 .HK
-            if hk_num.isdigit() and len(hk_num) == 5 and hk_num.startswith('0'):
-                # 去掉前导零：09992 -> 9992
-                corrected_num = hk_num[1:]
-                return f"{corrected_num}.HK"
-            else:
-                return code
-        
-        # 沪市改为 .SS
-        if code.endswith(".SH"): 
-            return code[:-3] + ".SS"
-        
-        # 纯数字代码判断
-        if code.isdigit():
-            # 【V75.2 最终修复】港股代码：保留4位数字（去掉最左边的一个0）
-            if len(code) == 5:
-                # 00700 -> 0700.HK (✅ Yahoo Finance 要求)
-                # 02318 -> 2318.HK
-                # 09988 -> 9988.HK
-                hk_code = code[1:]  # 去掉第一个字符（最左边的0）
-                return f"{hk_code}.HK"
-            elif len(code) == 4:
-                # 已经是4位的直接加后缀
-                return f"{code}.HK"
-            
-            # A股代码（6位）
-            if code.startswith("6") or code.startswith("5"): 
-                return f"{code}.SS"  # 沪市
-            if code.startswith("0") or code.startswith("3"): 
-                return f"{code}.SZ"  # 深市
-        
-        return code
-
 def clean_df(df):
     """清洗数据"""
     if df is None or df.empty: return None
@@ -8361,6 +8065,68 @@ def fetch_news_headlines(code):
         return []
 
 # ═══════════════════════════════════════════════════════════════
+# 【V88·人话理由（预算自适应，个股/大盘/板块共用）】
+# 默认规则版（不烧钱）；手动点按钮才切思考模式并立刻出结果；预算用满自动关、按钮禁用。
+# ═══════════════════════════════════════════════════════════════
+_REASON_FUSE_LABEL = {"个股": "基本面＋新闻＋技术面",
+                      "大盘": "宏观＋资金＋技术面",
+                      "板块": "行业＋催化＋技术面"}
+
+
+def render_readable_reasons(fwd, *, kind, symbol, name, context="", key_prefix=""):
+    """在 fwd（含 horizons: label/view/p_up…）下方渲染每周期一句人话理由。
+    预算自适应：默认规则版；点按钮切思考模式；预算到底自动关。个股/大盘/板块通用。"""
+    try:
+        from stock_horizon import forward_reasons as _forward_reasons
+    except Exception as _e:
+        st.caption(f"判断理由暂不可用：{type(_e).__name__}")
+        return
+    try:
+        from v88_ai_budget import status as _wbs
+        _remaining = float((_wbs() or {}).get("remaining", 0))
+    except Exception:
+        _remaining = 1.0
+    _exhausted = _remaining <= 0.0008
+    _sk = f"_reason_think_{key_prefix}_{symbol}"
+    _think_on = bool(st.session_state.get(_sk, False))
+
+    st.markdown(f"#### 🗣️ 各周期判断理由（人话版：{_REASON_FUSE_LABEL.get(kind, '')}）")
+    if _exhausted:
+        st.button("🧠 开启思考模式精讲", key=f"btn{_sk}", disabled=True,
+                  help="AI预算已用满，思考模式已自动关闭")
+        st.caption(f"💤 AI预算已用满（剩¥{_remaining:.3f}），思考模式自动关闭，当前为规则版。补预算后可再开。")
+        _think_on = False
+        st.session_state[_sk] = False
+    else:
+        _lab = "🔄 重新用思考模式精讲" if _think_on else "🧠 开启思考模式精讲（消耗预算，点了立刻生成）"
+        if st.button(_lab, key=f"btn{_sk}"):
+            _think_on = True
+            st.session_state[_sk] = True
+
+    if _think_on and not _exhausted:
+        with st.spinner("🧠 DeepSeek 思考模式：把每档判断讲成人话…"):
+            _out = _forward_reasons(
+                name, symbol, fwd, context=context, kind=kind, allow_ai=True,
+                api_key=st.session_state.get("MY_DEEPSEEK_KEY", "") or os.getenv("DEEPSEEK_API_KEY", ""))
+    else:
+        # 默认规则版：allow_ai=False 强制不调用 AI、不花预算（即使环境有 Key）。
+        _out = _forward_reasons(name, symbol, fwd, context=context, kind=kind, allow_ai=False)
+
+    if _out.get("overall"):
+        st.success(f"**一句话：{_out.get('overall')}**")
+    _m = _out.get("reasons") or {}
+    for _r in fwd.get("horizons") or []:
+        _lb = _r.get("label")
+        st.markdown(f"- **{_lb}**（上涨概率 {_r.get('p_up')}%）：{_m.get(_lb) or '—'}")
+    _stt = _out.get("status")
+    if _stt in ("completed", "cached"):
+        st.caption(f"🧠 {_out.get('model', 'deepseek-v4-flash')} · 思考模式 ｜ 生成于 {_out.get('analysis_time', '—')}")
+    elif _stt == "budget":
+        st.caption("ℹ️ 预算闸门触发，已回退规则版。概率与盈亏比不受影响。")
+    else:
+        st.caption("ℹ️ 当前为规则版大白话理由（点上方按钮用思考模式精讲）。概率与盈亏比不受影响。")
+
+# ═══════════════════════════════════════════════════════════════
 # 【V83 P1】交易计划与风险预算
 # ═══════════════════════════════════════════════════════════════
 def calculate_trade_plan(df, code):
@@ -8633,25 +8399,6 @@ def _render_portfolio_section():
         if portfolio_df is None or len(portfolio_df) == 0:
             st.warning(f"⚠️ 未读取到持仓数据。请检查 **{Config.PORTFOLIO_FILE}** 文件是否有有效数据。")
             
-            # 【V89.6】添加调试信息
-            with st.expander("🔍 调试信息（如果Excel有数据但不显示，请查看此处）"):
-                st.code(f"""
-文件路径: {file_path}
-文件是否存在: {os.path.exists(file_path)}
-文件大小: {os.path.getsize(file_path) if os.path.exists(file_path) else 'N/A'} 字节
-最后修改时间: {file_mtime_str}
-
-可能的原因:
-1. Excel文件正在被其他程序打开（请关闭Excel后刷新）
-2. Excel文件格式不正确（sheet名称必须是"我的持仓"）
-3. Excel中没有有效数据（检查必填列: 股票代码、股票名称、持仓数量、买入价格）
-4. 数据被清洗过滤掉了（持仓数量和买入价格必须>0）
-
-解决方法:
-→ 点击下方"📝 创建持仓模板"重新生成模板
-→ 或手动打开Excel文件检查内容
-→ 确认保存后点击"🔄 强制刷新"
-                """)
             
             col_create, col_open = st.columns(2)
             with col_create:
@@ -8838,22 +8585,6 @@ def _render_portfolio_section():
             st.markdown("---")
             st.markdown("### 💰 价格数据")
             
-            # 【调试面板】显示当前缓存状态
-            with st.expander("🔍 缓存状态（调试）", expanded=False):
-                st.code(f"""
-强制刷新: {force_refresh_price}
-缓存存在: {has_cache}
-时间戳存在: {has_timestamp}
-当前时间: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(current_time))}
-""")
-                if has_timestamp:
-                    cache_age = current_time - st.session_state[cache_timestamp_key]
-                    st.code(f"""
-缓存时间: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(st.session_state[cache_timestamp_key]))}
-缓存年龄: {cache_age:.0f}秒 ({cache_age/3600:.2f}小时)
-缓存TTL: {cache_ttl}秒 ({cache_ttl/3600:.0f}小时)
-是否有效: {cache_age < cache_ttl}
-""")
             
             logging.info(f"📊 持仓价格缓存检查: force_refresh={force_refresh_price}, has_cache={has_cache}, has_timestamp={has_timestamp}")
             
@@ -11226,23 +10957,6 @@ with st.sidebar:
     if USE_NEW_MODULES:
         st.markdown('<p style="font-family: inherit; font-size: 12px; font-weight: 700; margin-bottom: 0.5rem;">👑 AI 皇冠双核 V88</p>', unsafe_allow_html=True)
         st.caption("✨ 模块化架构 | LRU缓存")
-    # 📱 手机端访问地址（与电脑同一 WiFi）
-    try:
-        import socket as _sock
-        _lan_ip = "本机IP"
-        _s = _sock.socket(_sock.AF_INET, _sock.SOCK_DGRAM)
-        _s.connect(("8.8.8.8", 80))
-        _lan_ip = _s.getsockname()[0]
-        _s.close()
-    except Exception:
-        _lan_ip = "本机IP"
-    _mobile_url = f"http://{_lan_ip}:8501"
-    with st.expander("📱 手机端访问", expanded=False):
-        st.markdown(f"**同一 WiFi 下手机浏览器打开：**")
-        st.code(_mobile_url, language=None)
-        st.caption("💡 行业热力 → 勾选「📱卡片」可筛选 · 扫描结果可按首字母/得分筛选")
-        st.caption("⚠️ 若打不开：启动脚本需带 `--server.address 0.0.0.0`（run_app.sh 已配置）")
-    st.divider()
     
     # 【V90.3】系统性能与数据刷新（从主区域移到侧边栏）
     if Config.ENABLE_PERF_LAYER and Config.ENABLE_EXPECTATION_LAYER:
@@ -11480,24 +11194,6 @@ with st.sidebar:
     
     st.divider()
     
-    # 【V87】刷新股票池
-    st.markdown("### 🔄 股票池管理")
-    col_pool1, col_pool2 = st.columns(2)
-    
-    with col_pool1:
-        if st.button("🔄 刷新股票池", width='stretch', help="重新从云端获取最新股票列表"):
-            with _v88_running("正在刷新股票池..."):
-                # 清除缓存
-                st.cache_data.clear()
-                # 重新加载
-                st.rerun()
-    
-    with col_pool2:
-        if st.button("🗑️ 清除全部缓存", width='stretch'):
-            st.cache_data.clear()
-            st.success("✅ 缓存已清除")
-            time.sleep(0.5)
-            st.rerun()
 
 # ═══════════════════════════════════════════════════════════════
 # 12. 主界面 - 标题（修复遮挡）
@@ -11764,6 +11460,24 @@ def _render_today_nav():
                         st.info(f"{_nm_add9}（{_cd_add9}）已在自选中")
                 except Exception as _add_e9:
                     st.error(f"未识别该股票，请换用准确代码：{str(_add_e9)[:60]}")
+        st.caption("💡 搜名称/简称会列出候选后加入；直接输代码（如 NVDA、00700.HK、600519.SS）可一步加入。")
+        # 删除自选：完整可管理。
+        try:
+            _wl_now9 = _watchlist_load()
+            _all_pairs9 = [(c, n, k) for k in ("US", "HK", "CN") for c, n in (_wl_now9.get(k) or [])]
+            if _all_pairs9:
+                with st.expander("🗑️ 管理 / 删除自选", expanded=False):
+                    _rm_opts9 = [f"{n}（{c}）" for c, n, _k in _all_pairs9]
+                    _rm_pick9 = st.multiselect("选择要删除的自选股", _rm_opts9, key="_front_wl_remove")
+                    if st.button("删除选中", key="_front_wl_remove_btn") and _rm_pick9:
+                        for _sel9 in _rm_pick9:
+                            _code_rm9 = _all_pairs9[_rm_opts9.index(_sel9)][0]
+                            _watchlist_remove(_code_rm9)
+                        st.session_state.pop("watch_alerts_v88", None)
+                        st.toast(f"已删除 {len(_rm_pick9)} 只自选", icon="🗑️")
+                        st.rerun()
+        except Exception:
+            pass
 
     def _render_front_watch_board9(_wa9, _time_note9):
         """把规则概率与盈亏比做成第一屏主视觉；详细预警仍在原模块保留。"""
@@ -11787,6 +11501,17 @@ def _render_today_nav():
             return "不合格", "#b91c1c", "#fef2f2"
 
         def _card9(_d9):
+            if _d9.get("_pending"):
+                # 自选里但信号还没算出来的：占位，保证"所有自选都在场"，别让它凭空消失。
+                return f"""
+            <div class="v88-watch-card v88-watch-pending">
+              <div class="v88-watch-card-head">
+                <div>{_stk_link(_d9.get('name') or _d9.get('code'), _d9.get('code'))}
+                <span class="v88-code">{_d9.get('code')}</span></div>
+                <b class="v88-action">计算中</b>
+              </div>
+              <div class="v88-watch-foot"><span>信号计算中或数据暂缺，稍后自动刷新；点名称可先看深度分析</span></div>
+            </div>"""
             _rr9 = float(_d9.get("rr") or 0)
             _rr_txt9, _rr_color9, _rr_bg9 = _rr_state9(_rr9)
             _up9, _down9 = int(_d9.get("p_up") or 0), int(_d9.get("p_down") or 0)
@@ -11815,6 +11540,47 @@ def _render_today_nav():
             elif "等待回踩" in _action9:
                 _rr_txt9, _rr_color9, _rr_bg9 = "当前价不划算", "#b45309", "#fffbeb"
             _exp_suffix9 = "（周期冲突，不升级）" if _conflict9 else ""
+            # 【多周期上涨概率】周期越多越能看趋势：取统一引擎的 2/4/6/8/16周方向分（rule_score=上涨概率）。
+            _facts_h9 = ((_d9.get("facts") or {}).get("horizons") or {})
+            _cyc_probs9 = []
+            for _lab9 in ("2周", "4周", "6周", "8周", "16周"):
+                _rs9 = (_facts_h9.get(_lab9) or {}).get("rule_score")
+                if _rs9 is not None:
+                    _cyc_probs9.append((_lab9, int(round(float(_rs9)))))
+            if len(_cyc_probs9) < 4:   # 兜底：facts 不全时用短/中/长三桶展开成4档
+                _cyc_probs9 = [("2周", _up9), ("4周", _medium9),
+                               ("8周", _medium9), ("16周", _long_score9)]
+
+            def _cyc_col9(_p):
+                return "#dc2626" if _p >= 55 else ("#16a34a" if _p <= 45 else "#64748b")
+            _c_first9, _c_last9 = _cyc_probs9[0][1], _cyc_probs9[-1][1]
+            _trend9 = ("↗ 越远越强" if _c_last9 - _c_first9 >= 8 else
+                       ("↘ 越远越弱" if _c_first9 - _c_last9 >= 8 else "→ 各周期均衡"))
+            # 【迷你走势条】5档概率带数值标签的 sparkline：线随趋势上色(红涨/绿跌/灰平)、
+            # 点随各档上色、上标数值下标周期、配 50% 虚线基线，一眼看形态。
+            _trend_col9 = ("#dc2626" if _c_last9 - _c_first9 >= 8 else
+                           ("#16a34a" if _c_first9 - _c_last9 >= 8 else "#94a3b8"))
+            _spk_w9, _spk_h9, _sn9 = 200, 48, len(_cyc_probs9)
+
+            def _spk_y9(_p):
+                return round(18 + 18 * (1 - (min(90, max(20, _p)) - 20) / 70), 1)
+            _pts9 = [(round(16 + _i9 * (_spk_w9 - 32) / max(1, _sn9 - 1), 1),
+                      _spk_y9(_p9x), _p9x, _l9x)
+                     for _i9, (_l9x, _p9x) in enumerate(_cyc_probs9)]
+            _base_y9 = _spk_y9(50)
+            _poly9 = " ".join(f"{x},{y}" for x, y, _, _ in _pts9)
+            _marks9 = "".join(
+                f'<circle cx="{x}" cy="{y}" r="2.6" fill="{_cyc_col9(p)}"/>'
+                f'<text x="{x}" y="10" text-anchor="middle" font-size="9" font-weight="700" '
+                f'fill="{_cyc_col9(p)}">{p}%</text>'
+                f'<text x="{x}" y="46" text-anchor="middle" font-size="8" fill="#94a3b8">{lab}</text>'
+                for x, y, p, lab in _pts9)
+            _spark9 = (
+                f'<svg class="v88-spark" viewBox="0 0 {_spk_w9} {_spk_h9}">'
+                f'<line x1="10" y1="{_base_y9}" x2="{_spk_w9 - 10}" y2="{_base_y9}" stroke="#e2e8f0" '
+                f'stroke-width="1" stroke-dasharray="3 3"/>'
+                f'<polyline points="{_poly9}" fill="none" stroke="{_trend_col9}" stroke-width="2" '
+                f'stroke-linejoin="round" stroke-linecap="round"/>{_marks9}</svg>')
             return f"""
             <div class="v88-watch-card{' v88-watch-conflict' if _conflict9 else ''}">
               <div class="v88-watch-card-head">
@@ -11823,18 +11589,16 @@ def _render_today_nav():
                 <span class="v88-code">{_d9.get('code')}</span></div>
                 <b class="v88-action">{_action9}</b>
               </div>
-              <div class="v88-prob-row">
-                <div class="v88-prob v88-up"><small>{_hz9}上行估计<br>（同源规则）</small><b>{_up9}%</b></div>
-                <div class="v88-prob v88-down"><small>{_hz9}下行估计<br>（同源规则）</small><b>{_down9}%</b></div>
-                <div class="v88-prob v88-rr" style="border-color:{_rr_color9};background:{_rr_bg9}">
-                  <small>关键位盈亏比<br>（越大越好）</small><b style="color:{_rr_color9}">{_rr9:.2f}</b>
-                  <em style="color:{_rr_color9}">{_rr_txt9}</em>
-                </div>
+              <div class="v88-cyc-head">
+                <span>各周期上涨概率（红涨/绿跌·看趋势）</span>
+                <span class="v88-cyc-trend">{_trend9}</span>
               </div>
-              <div class="v88-watch-foot"><span>{_hz9}情景期望 <b style="color:{_exp_color9}">{_exp9:+.1f}%</b>{_exp_suffix9}</span>
-              <span><b>统一分{_score9}</b>（短{_short9}/中{_medium9}/长{_long_score9}）</span>
-              <span class="{'v88-cycle-warn' if _conflict9 else ''}">{'⚠️ ' if _conflict9 else ''}{_cycle9}</span>
-              <span>{_entry9}</span><span>数据签名 {_sig9} · 🕒 {_at9}</span></div>
+              <div class="v88-spark-wrap">{_spark9}</div>
+              <div class="v88-rrline">关键位盈亏比 <b style="color:{_rr_color9}">{_rr9:.2f}</b>
+                <em style="color:{_rr_color9}">（{_rr_txt9}）</em></div>
+              <div class="v88-watch-foot"><span>未来2周情景期望 <b style="color:{_exp_color9}">{_exp9:+.1f}%</b>{_exp_suffix9}</span>
+              <span><b>统一分{_score9}</b></span>
+              <span>{_entry9}</span><span>🕒 {_at9}</span></div>
             </div>"""
 
         _market_order9 = ("🇺🇸美股", "🇭🇰港股", "🇨🇳A股")
@@ -11842,10 +11606,27 @@ def _render_today_nav():
         for _d9 in _watch9:
             _m9 = str(_d9.get("market") or market_of_code(_d9.get("code", "")))
             _groups9.setdefault(_m9, []).append(_d9)
+
+        # 【所有自选都要在】把还没算出信号的自选股补一张"计算中"占位卡，保证全都在场。
+        _mkt_map9 = {"US": "🇺🇸美股", "HK": "🇭🇰港股", "CN": "🇨🇳A股"}
+        _seen_canon9 = {_canonical_code(str(d.get("code") or "")) for d in _watch9}
+        try:
+            _wl_all9 = _watchlist_load()
+        except Exception:
+            _wl_all9 = {}
+        _pending9 = {}
+        for _mk_key9, _mk_label9 in _mkt_map9.items():
+            for _c_wl9, _n_wl9 in (_wl_all9.get(_mk_key9) or []):
+                if _canonical_code(_c_wl9) not in _seen_canon9:
+                    _groups9.setdefault(_mk_label9, []).append(
+                        {"code": _c_wl9, "name": _n_wl9, "_pending": True})
+                    _pending9[_c_wl9] = True
+
         for _m9 in _groups9:
             _groups9[_m9].sort(key=lambda d: (
+                1 if d.get("_pending") else 0,   # 占位卡沉底
                 0 if d.get("level") == "A" else (1 if d.get("level") == "B" else 2),
-                -float(d.get("p_down") or 0), -float(d.get("rr") or 0)))
+                -float(d.get("p_up") or 0), -float(d.get("rr") or 0)))  # 上涨概率高的靠前
 
         _cols_html9 = []
         for _m9 in _market_order9:
@@ -11872,6 +11653,7 @@ def _render_today_nav():
             .v88-watch-market h4 span{float:right;color:#64748b;font-size:10px;font-weight:500}
             .v88-watch-card{background:#fff;border:1px solid #dbe4f0;border-radius:8px;padding:7px;margin-bottom:6px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
             .v88-watch-conflict{border:2px solid #f59e0b;background:#fffdf5}
+            .v88-watch-pending{border-style:dashed;background:#fafbfc;opacity:.85}
             .v88-cycle-warn{color:#b45309;font-weight:700}
             .v88-watch-card-head{display:flex;justify-content:space-between;align-items:center;gap:5px;font-size:12px;line-height:1.25}
             .v88-watch-card-head a{color:#173b68!important;text-decoration:none!important;font-weight:700!important}
@@ -11879,13 +11661,16 @@ def _render_today_nav():
             .v88-action{color:#1d4ed8;font-size:10px;white-space:nowrap}
             .v88-level{display:inline-block;padding:1px 4px;border-radius:4px;font-size:9px;margin-right:3px;color:#fff}
             .v88-level-A{background:#dc2626} .v88-level-B{background:#2563eb} .v88-level-C{background:#64748b}
-            .v88-prob-row{display:grid;grid-template-columns:1fr 1fr 1.12fr;gap:4px;margin-top:6px}
-            .v88-prob{min-width:0;border:1px solid;border-radius:6px;padding:4px 5px;display:grid;grid-template-columns:1fr auto;align-items:center}
-            .v88-prob small{font-size:8px;line-height:1.25;color:#64748b}
-            .v88-prob b{font-size:20px;line-height:1}
-            .v88-up{border-color:#fecaca;background:#fff7f7} .v88-up b{color:#dc2626}
-            .v88-down{border-color:#bbf7d0;background:#f5fff8} .v88-down b{color:#16a34a}
-            .v88-rr em{grid-column:1/-1;text-align:right;font-style:normal;font-size:8px;line-height:1;margin-top:2px}
+            .v88-cyc-head{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:9px;color:#64748b}
+            .v88-cyc-trend{font-weight:700;color:#334155}
+            .v88-cyc-strip{display:flex;gap:4px;margin-top:3px}
+            .v88-cyc{flex:1;min-width:0;text-align:center;border:1px solid #e5eaf1;border-radius:5px;padding:3px 1px;background:#fff}
+            .v88-cyc i{display:block;font-style:normal;font-size:8px;color:#94a3b8;line-height:1.2}
+            .v88-cyc b{font-size:15px;line-height:1.2}
+            .v88-spark-wrap{margin-top:4px;line-height:0}
+            .v88-spark{width:100%;height:auto;display:block}
+            .v88-rrline{margin-top:5px;font-size:10px;color:#64748b}
+            .v88-rrline b{font-size:14px} .v88-rrline em{font-style:normal;font-size:9px}
             .v88-watch-foot{display:flex;flex-wrap:wrap;gap:3px 9px;margin-top:5px;color:#64748b;font-size:9px;line-height:1.3}
             @media(max-width:1100px){.v88-watch-grid{grid-template-columns:1fr}}
             </style>
@@ -12029,6 +11814,61 @@ def _render_today_nav():
             st.markdown("🌡 **市场温度**：" + " ｜ ".join(_tl)
                         + "　<span style='font-size:12px;color:#6b7280'>温度=趋势40%+宽度40%+动量20%，全实价计算</span>",
                         unsafe_allow_html=True)
+
+    # ═══════════════════════════════════════════════════════════════
+    # 【V88·大盘&板块前瞻】与个股同一套引擎(evaluate_forward_outlook)+同一条5/10/20/60/120日阶梯，
+    # 给大盘指数、板块代表ETF 的 概率+盈亏比+每周期人话理由（预算自适应）。选一个才算，不拖首屏。
+    # ═══════════════════════════════════════════════════════════════
+    with st.expander("🎯 大盘 & 板块 前瞻 · 概率＋盈亏比＋人话理由（5/10/20/60/120日）", expanded=False):
+        _MKT_IDX = {"美股·标普500": "^GSPC", "美股·纳指100": "^IXIC",
+                    "港股·恒生": "^HSI", "港股·恒生科技": "^HSTECH",
+                    "A股·上证指数": "000001.SS", "A股·沪深300": "000300.SS"}
+        _SEC_PROXY = {"医疗·美(XLV)": "XLV", "科技·美(XLK)": "XLK", "半导体·美(SOXX)": "SOXX",
+                      "金融·美(XLF)": "XLF", "能源·美(XLE)": "XLE", "消费·美(XLY)": "XLY",
+                      "医药·A(512010)": "512010.SS", "券商·A(512880)": "512880.SS",
+                      "新能源·A(516160)": "516160.SS"}
+        _fc1, _fc2 = st.columns(2)
+        with _fc1:
+            _mk_pick = st.selectbox("大盘指数", ["（不选）"] + list(_MKT_IDX), key="fwd_mkt_pick")
+        with _fc2:
+            _sc_pick = st.selectbox("板块（代表ETF）", ["（不选）"] + list(_SEC_PROXY), key="fwd_sec_pick")
+
+        def _render_index_forward(_label, _sym, _kind, _kp):
+            try:
+                from v88_decision_core import evaluate_forward_outlook as _efo
+                _idf = fetch_stock_data(_sym)
+                if _idf is None or len(_idf) < 30:
+                    st.info(f"{_label}：行情不足，换一个试试")
+                    return
+                _f = _efo(_idf, name=_label, code=_sym)
+                if _f.get("error"):
+                    st.info(f"{_label}：{_f['error']}")
+                    return
+                st.markdown(f"**{_label} · 当下前瞻**")
+                _m1, _m2, _m3, _m4 = st.columns(4)
+                _m1.metric("综合上/下概率", f"{_f['weighted_p_up']}% / {_f['weighted_p_down']}%")
+                _m2.metric("综合盈亏比", f"{_f.get('weighted_rr', 0):.2f}", help="越大越好")
+                _m3.metric("综合期望", f"{_f.get('weighted_expected_pct', 0):+.1f}%", help=">0较好")
+                _m4.metric("阶段", _f.get("stage", "—"))
+                st.success(f"**结论：{_f.get('overall_action')}** ｜ {_f.get('suggestion')}")
+                _rows = [{"周期(交易日)": r.get("label"),
+                          "上涨/下跌概率": f"{r.get('p_up')}% / {r.get('p_down')}%",
+                          "上涨空间": f"+{r.get('upside_pct')}%", "下跌风险": f"-{r.get('downside_pct')}%",
+                          "盈亏比(越大越好)": r.get("rr"), "期望值(>0较好)": f"{r.get('expected_pct'):+.1f}%",
+                          "判断": r.get("view")} for r in (_f.get("horizons") or [])]
+                st.dataframe(_rows, hide_index=True, use_container_width=True)
+                render_readable_reasons(_f, kind=_kind, symbol=_sym, name=_label,
+                                        context="", key_prefix=_kp)
+            except Exception as _e:
+                logging.exception("大盘/板块前瞻失败")
+                st.caption(f"{_label} 前瞻暂不可用：{type(_e).__name__}")
+
+        if _mk_pick != "（不选）":
+            _render_index_forward(_mk_pick, _MKT_IDX[_mk_pick], "大盘", "mkt")
+        if _sc_pick != "（不选）":
+            _render_index_forward(_sc_pick, _SEC_PROXY[_sc_pick], "板块", "sec")
+        if _mk_pick == "（不选）" and _sc_pick == "（不选）":
+            st.caption("选一个大盘指数或板块，看它未来 5/10/20/60/120 日的概率、盈亏比和人话理由。")
 
     # ① 三大市场指数水位
     if _snap and _snap.get("markets"):
@@ -12617,30 +12457,6 @@ def _render_today_nav():
                             _pt_git_sync(_pt_cmd.strip())
                 except Exception as _pe9:
                     st.error(f"异常: {_pe9}")
-    # 【V88·深度回调机会池】优质股回撤≥30%关注名单（日报流水线生成，三端同源）
-    _ipb = _rep.find("## 💎 深度回调机会池")
-    if _ipb <= 0 and _rep:
-        st.caption("💎 深度回调机会池：今日无新入池标的")
-    if _ipb > 0:
-        _jpb = _rep.find("\n## ", _ipb + 5)
-        with st.expander("💎 深度回调机会池（优质股·回撤≥30%·企稳信号）", expanded=False):
-            _pbtxt = _rep[_ipb:_jpb if _jpb > 0 else _ipb + 2500]
-            st.markdown(_linkify_md(_pbtxt), unsafe_allow_html=True)
-            with st.popover("📋 复制机会池"):
-                st.code(_pbtxt, language=None)
-
-    # 今日操作榜仍保留；旧“持仓触发提醒”已并入唯一的持仓决策中心。
-    _i = _rep.find("## 🎯 今日操作榜")
-    if _i > 0:
-        _j = _rep.find("## 二、", _i)
-        with st.expander("🎯 今日操作榜（短线/长线 Top3）", expanded=False):
-            _ops_txt99 = _linkify_md(_rep[_i + len("## 🎯 今日操作榜"):_j if _j > 0 else _i + 2500])
-            with st.popover("📋 复制操作榜"):
-                st.code(_ops_txt99, language=None)
-            st.markdown(_ops_txt99, unsafe_allow_html=True)
-    else:
-        st.caption("操作榜待日报生成后显示")
-
 
 try:
     with _v88_front_decision_slot.container():
@@ -12654,6 +12470,74 @@ try:
 except Exception as _nav_e:
     st.caption(f"今日导航暂不可用: {str(_nav_e)[:50]}")
 st.markdown("---")
+
+# ═══════════════════════════════════════════════════════════════
+# 【V88·全行业机会雷达】主动发现"起步"的板块与个股（含医疗），治"后知后觉"。
+# 用同一套个股前瞻引擎(evaluate_forward_outlook)扫全行业，纯确定性、不耗AI预算。
+# 按需触发+缓存，避免拖慢首屏。暂不推送飞书（用户授权后再单独接）。
+# ═══════════════════════════════════════════════════════════════
+with st.expander("🛰️ 全行业机会雷达 · 谁在起步（含医疗，主动发现）", expanded=False):
+    st.caption(
+        "扫一篮子覆盖各行业的龙头，用未来 5/10/20/60/120 交易日概率+盈亏比找'正在起步'的板块和个股。"
+        "概率=规则情景估计（非回测胜率）。首版为按需扫描，点下方按钮刷新。"
+    )
+    _radar_state = st.session_state.get("_forward_radar_result")
+    _radar_go = st.button("🛰️ 扫描全行业机会（约30-60秒）", key="btn_forward_radar")
+    if _radar_go:
+        try:
+            from stock_forward_radar import scan_forward_opportunities, DEFAULT_POOL
+            from modules.sector_map import get_sector as _radar_sector
+            _rbar = st.progress(0, text="正在逐只计算前瞻概率与盈亏比…")
+
+            def _radar_fetch(_c):
+                try:
+                    return fetch_stock_data(_c)
+                except Exception:
+                    return None
+
+            _rp = {"i": 0}
+
+            def _fetch_with_progress(_c):
+                _rp["i"] += 1
+                _rbar.progress(min(0.95, _rp["i"] / max(1, len(DEFAULT_POOL))),
+                               text=f"扫描中 {_rp['i']}/{len(DEFAULT_POOL)}：{_c}")
+                return _radar_fetch(_c)
+
+            _radar_state = scan_forward_opportunities(
+                fetch_fn=_fetch_with_progress, get_sector_fn=_radar_sector)
+            _radar_state["_ts"] = datetime.now().strftime("%Y-%m-%d %H:%M")
+            st.session_state["_forward_radar_result"] = _radar_state
+            _rbar.progress(1.0, text="完成")
+            _rbar.empty()
+        except Exception as _radar_e:
+            logging.exception("全行业机会雷达失败")
+            st.warning(f"机会雷达暂不可用：{type(_radar_e).__name__}")
+    if _radar_state and not _radar_state.get("error"):
+        st.caption(f"扫描 {_radar_state.get('scanned')}/{_radar_state.get('pool_size')} 只 · "
+                   f"生成于 {_radar_state.get('_ts', '—')}")
+        _hot = [s for s in (_radar_state.get("sectors") or []) if s.get("hot")]
+        if _hot:
+            st.markdown("**🔥 正在起步的板块**")
+            st.dataframe([{
+                "板块": s["sector"], "平均上涨概率": f"{s['avg_p_up']}%",
+                "平均盈亏比": s["avg_rr"], "起步只数": s["starting_count"],
+                "代表个股": "、".join(s["starting_names"]),
+            } for s in _hot], hide_index=True, use_container_width=True)
+        else:
+            st.info("当前没有明显'起步'的板块；下面仍列出机会分最高的个股。")
+        _sg = _radar_state.get("starting_stocks") or _radar_state.get("stocks") or []
+        if _sg:
+            st.markdown("**⭐ 个股机会榜（机会分从高到低）**")
+            st.dataframe([{
+                "个股": f"{r['name']}({r['code']})", "板块": r["sector"],
+                "阶段": r["stage"], "综合上涨概率": f"{r['p_up']}%",
+                "盈亏比(越大越好)": r["rr"], "期望(>0较好)": f"{r['ev']:+.1f}%",
+                "机会分": r["opp_score"], "起步": "🔥" if r["starting"] else "",
+                "建议": r["suggestion"],
+            } for r in _sg], hide_index=True, use_container_width=True)
+        st.caption("⚠️ 观察清单非买入指令；点上方搜索框输入代码可看该股完整深度分析。")
+    elif not _radar_go:
+        st.info("点上方按钮扫描。找到'起步'板块（如医疗）时会在这里高亮，避免后知后觉。")
 
 # 用户明确要求删除重复持仓展示：旧 Excel“我的持仓/AI组合分析”不再渲染；
 # 数据与函数保留兼容，唯一入口为上方“持仓决策中心”。
@@ -13556,8 +13440,8 @@ if _deep_scroll_code:
 if _deep_code_now:
     st.markdown("### ⚔️ 个股深度分析")
 
-# 【V92】全量云端搜索 - 从侧边栏移至主区域，作为作战室入口
-render_cloud_search()
+# 【V92→V88】全量云端搜索已前置到页顶槽位（_v88_search_slot），此处不再重复渲染，
+# 避免 stock_search_input 组件键重复。深度分析仍从 session_state 读取选中股票。
 st.markdown("---")
 
 # 【V77.1调试】检测点击触发 - 添加详细日志
@@ -14021,6 +13905,89 @@ if execute_analysis and q_input:
                 st.stop()
 
         # ═══════════════════════════════════════════════════════════════
+        # 【V88·个股当下前瞻】用最新价，主动给这只票未来 5/10/20/60/120 交易日的
+        # 上涨/下跌概率 + 盈亏比 + 一句拿/加/减/回避。用户最需要的"个股走概率"入口。
+        # 放在最前、纯确定性计算，不等 AI，秒出——解决"系统不及时给信号"。
+        # ═══════════════════════════════════════════════════════════════
+        try:
+            from v88_decision_core import evaluate_forward_outlook as _evaluate_forward_outlook
+            _fwd = _evaluate_forward_outlook(
+                df, name=(st.session_state.get("scan_selected_name") or target_c),
+                code=target_c)
+            if _fwd.get("error"):
+                st.info(f"个股前瞻暂不可用：{_fwd['error']}")
+            else:
+                st.markdown("### 🎯 个股当下前瞻 · 未来 5 / 10 / 20 / 60 / 120 交易日 概率 + 盈亏比")
+                st.caption(
+                    "用最新收盘价向前看：短(5-10日)看该不该继续拿、长(60-120日)看趋势能走多远。"
+                    "概率=规则情景估计（非回测胜率），代表方向占优程度。"
+                )
+                _fm1, _fm2, _fm3, _fm4 = st.columns(4)
+                _fm1.metric("综合上/下概率", f"{_fwd['weighted_p_up']}% / {_fwd['weighted_p_down']}%",
+                            help="5档加权，规则情景估计非胜率")
+                _fm2.metric("综合盈亏比", f"{_fwd.get('weighted_rr', 0):.2f}",
+                            help="上涨空间÷下跌空间，越大越好，≥2优秀")
+                _fm3.metric("综合期望", f"{_fwd.get('weighted_expected_pct', 0):+.1f}%",
+                            help="概率×空间的净期望，>0较好")
+                _fm4.metric("阶段", _fwd.get("stage", "—"),
+                            help="多头/震荡/转弱，由最新价与MA20/MA60关系判定")
+                st.success(f"**结论：{_fwd.get('overall_action')}** ｜ 操作建议：{_fwd.get('suggestion')}")
+                _fwd_rows = []
+                for _fr in _fwd.get("horizons") or []:
+                    _fwd_rows.append({
+                        "周期(交易日)": _fr.get("label"),
+                        "上涨/下跌概率": f"{_fr.get('p_up')}% / {_fr.get('p_down')}%",
+                        "上涨空间": f"+{_fr.get('upside_pct')}%",
+                        "下跌风险": f"-{_fr.get('downside_pct')}%",
+                        "目标/风险价": f"{_fr.get('target_price')} / {_fr.get('risk_price')}",
+                        "盈亏比(越大越好)": _fr.get("rr"),
+                        "期望值(>0较好)": f"{_fr.get('expected_pct'):+.1f}%",
+                        "判断": _fr.get("view"),
+                    })
+                st.dataframe(_fwd_rows, hide_index=True, use_container_width=True)
+
+                # 【V88·每档判断理由讲人话】基本面+个股新闻+技术面融合成一句中文，不出现术语。
+                # 预算自适应：默认规则版，手动点按钮切思考模式，预算到底自动关（render_readable_reasons）。
+                _fwd_ctx_parts = []
+                try:
+                    _fwd_fn = fetch_stock_fundamentals(target_c) or {}
+                    _fb = []
+                    for _k, _lab in (("sector", "行业"), ("industry", "细分"),
+                                     ("trailing_pe", "市盈率"), ("price_to_book", "市净率"),
+                                     ("dividend_yield", "股息率"), ("recommendation", "机构评级")):
+                        _v = _fwd_fn.get(_k)
+                        if _v not in (None, "", 0):
+                            _fb.append(f"{_lab}{_v}")
+                    if _fwd_fn.get("business_summary"):
+                        _fb.append("主营:" + str(_fwd_fn["business_summary"])[:120])
+                    if _fb:
+                        _fwd_ctx_parts.append("基本面:" + "、".join(str(x) for x in _fb))
+                except Exception:
+                    pass
+                try:
+                    _fwd_news = fetch_news_headlines(target_c) or []
+                    _fwd_titles = [(n.get("title") if isinstance(n, dict) else str(n))
+                                   for n in _fwd_news[:5]]
+                    _fwd_titles = [t for t in _fwd_titles if t]
+                    if _fwd_titles:
+                        _fwd_ctx_parts.append("近期新闻:" + "；".join(_fwd_titles))
+                except Exception:
+                    pass
+                _fwd_ctx = " | ".join(_fwd_ctx_parts)
+                render_readable_reasons(
+                    _fwd, kind="个股", symbol=target_c,
+                    name=st.session_state.get("scan_selected_name") or target_c,
+                    context=_fwd_ctx, key_prefix="stock")
+
+                st.caption(
+                    f"🔒 口径{_fwd.get('score_version')}｜数据签名{_fwd.get('data_signature')}｜"
+                    f"行情截至{_fwd.get('data_asof') or '未知'}｜生成于{_fwd.get('analysis_time')}"
+                )
+        except Exception as _fwd_exc:
+            logging.exception("个股当下前瞻失败")
+            st.warning(f"个股前瞻暂不可用：{type(_fwd_exc).__name__}")
+
+        # ═══════════════════════════════════════════════════════════════
         # 【V88·个股五周期】2/4/6/8/16周量化底稿 + DeepSeek thinking-high
         # 点击任一个股均自动执行；同一行情快照缓存6小时，控制7元/月总预算。
         # ═══════════════════════════════════════════════════════════════
@@ -14128,13 +14095,35 @@ if execute_analysis and q_input:
             st.warning(f"五周期走势暂不可用：{type(_hz_exc).__name__}")
 
         # ═══════════════════════════════════════════════════════════════
-        # 【V88·个人决策锚点】按“当时的时间+价格”重建2/5/8/16周判断。
+        # 【V88·参数图例】用户不熟的指标一次讲清：值大好还是小好。纯说明，不改数据。
+        # ═══════════════════════════════════════════════════════════════
+        with st.expander("📖 参数怎么看（括号里=大了好还是小了好）", expanded=False):
+            st.markdown(
+                "- **综合分 / 统一分**（0–100，越高越偏多）：>60 偏多，40–60 震荡，<40 偏跌。\n"
+                "- **上涨概率 p_up**（越高越可能涨）：规则情景估计，**不是回测真实胜率**，只代表方向占优程度。\n"
+                "- **盈亏比 RR**（越大越好）：上涨空间÷下跌空间。≥2 优秀，1.5–2 可关注，<1 冒险不划算。\n"
+                "- **期望值 EV**（越大越好，**>0 才有正期望**）：概率×上涨空间 − 概率×下跌空间。\n"
+                "- **概率优势 edge**（越大越占优，>0 才划算）：真实概率 − 盈亏比要求的保本概率。\n"
+                "- **RSI**（**不是越大越好**）：50 中性；>70 超买（偏贵、易回调），<30 超卖（偏便宜、易反弹）。\n"
+                "- **ATR / 波动率**（越大风险越高）：数值大=波动剧烈、止损要放宽；小=平稳。\n"
+                "- **距历史高 / 水位**（越低越安全）：越高越贵、回撤空间大；越低越接近底部、安全边际高。\n"
+                "- **52 周分位**（越低越便宜）：0–100%，靠近 0=一年最低位，靠近 100=一年最高位。\n"
+                "- **量比**（>1 为放量）：越大资金越活跃；放量上涨=承接强，放量下跌=出逃要警惕。\n"
+                "- **换手率**（适中为宜）：越高越活跃/分歧大；异常放大要警惕见顶。\n"
+                "- **乖离率 / 距均线**（正=强，过大要防回踩）：价在均线上方为强势，偏离过大易回调。\n"
+                "- **目标价 / 风险价**：目标价=上行看到的位置；**跌破风险价就该重新评估**，不是自动卖点。\n"
+                "- **市盈率 PE / 市净率 PB**（一般越低越便宜）：需结合成长性，并非绝对越小越好。"
+            )
+
+        # ═══════════════════════════════════════════════════════════════
+        # 【V88·个人决策锚点】按“当时的时间+价格”重建 5/10/20/60/120 交易日判断。
         # 旧预测单独留档；锚点后的行情只用于到期复盘，绝不反向改写原结论。
         # ═══════════════════════════════════════════════════════════════
-        st.markdown("### 🧷 我的决策锚点 · 2/5/8/16周")
+        st.markdown("### 🧷 我的决策锚点(事后复盘) · 5 / 10 / 20 / 60 / 120 交易日")
         st.caption(
-            "选择你当时分析/买卖的时间和价格，系统只读取该时点以前的行情；"
-            "上/下概率为规则情景估计（非回测胜率），后续行情仅用于复盘。"
+            "填你当时分析/买卖的**时间和价格**，系统只读取该时点以前的行情，"
+            "推算未来 2、5、8、16 个交易日的上涨/下跌概率与盈亏比，并复盘当时决策是否有依据。"
+            "上/下概率为规则情景估计（非回测胜率，仅代表方向占优程度），后续行情仅用于复盘。"
         )
         try:
             from v88_decision_core import evaluate_anchor_outlook as _evaluate_anchor_outlook
@@ -14258,13 +14247,13 @@ if execute_analysis and q_input:
             _anchor_run = st.button(
                 "🧠 按当时视角推算并保存",
                 key=f"anchor_run_{target_c}", type="primary", width="stretch",
-                help="生成可留档的2/5/8/16周概率、盈亏比、期望值和失效条件",
+                help="生成可留档的 5/10/20/60/120 交易日概率、盈亏比、期望值和失效条件",
             )
             _anchor_result_key = f"anchor_result_{target_c}"
             if _anchor_run:
                 _anchor_dt = datetime.combine(_anchor_date, _anchor_clock)
                 _anchor_bar = st.progress(15, text="正在截断锚点后的行情…")
-                _anchor_bar.progress(55, text="正在计算2/5/8/16周概率与盈亏比…")
+                _anchor_bar.progress(55, text="正在计算 5/10/20/60/120 交易日概率与盈亏比…")
                 _anchor_result = _evaluate_anchor_outlook(
                     df, _anchor_dt, _anchor_price, action=_anchor_action,
                     name=_anchor_name, code=target_c,
@@ -14317,13 +14306,13 @@ if execute_analysis and q_input:
                 _anchor_rows = []
                 for _row in _anchor_result.get("horizons") or []:
                     _anchor_rows.append({
-                        "周期": _row.get("label"),
-                        "上涨/下跌": f"{_row.get('p_up')}% / {_row.get('p_down')}%",
+                        "周期(交易日)": _row.get("label"),
+                        "上涨/下跌概率": f"{_row.get('p_up')}% / {_row.get('p_down')}%",
                         "上涨空间": f"+{_row.get('upside_pct')}%",
                         "下跌风险": f"-{_row.get('downside_pct')}%",
                         "目标/风险价": f"{_row.get('target_price')} / {_row.get('risk_price')}",
-                        "盈亏比": _row.get("rr"),
-                        "期望值": f"{_row.get('expected_pct'):+.1f}%",
+                        "盈亏比(越大越好)": _row.get("rr"),
+                        "期望值(>0较好)": f"{_row.get('expected_pct'):+.1f}%",
                         "判断": _row.get("view"),
                         "触发": _row.get("trigger"),
                         "失效": _row.get("invalid"),
@@ -14334,7 +14323,7 @@ if execute_analysis and q_input:
                     f"🔒 无未来函数：是｜口径{_anchor_result.get('score_version')}｜"
                     f"预测签名{_anchor_result.get('data_signature')}｜生成于{_anchor_result.get('analysis_time')}｜"
                     f"行情截至{_anchor_track.get('market_asof') or '未知'}｜"
-                    + "；".join(f"{r.get('weeks')}周{r.get('status')}" for r in _track_rows)
+                    + "；".join(f"{r.get('days', r.get('weeks'))}日{r.get('status')}" for r in _track_rows)
                 )
         except Exception as _anchor_exc:
             logging.exception("个人决策锚点失败")
@@ -14793,1219 +14782,6 @@ K线形态: {_pattern_v} | 夏普比率: {_sharpe_v} | 最大回撤: {_maxdd_v}
         elif not _run_unified_ai:
             st.info("👆 点击上方按钮，一键生成包含技术面、止损止盈、风控、财务、行业的 AI 综合分析报告")
 
-        # ═══════════════════════════════════════════════════════════════
-        # 【V90 新增】AI入场顾问 - 点击K线选定入场价 → AI给止损止盈
-        # ═══════════════════════════════════════════════════════════════
-        st.markdown("---")
-        with st.expander("🎯 入场点位选择 & AI止损止盈（可选）", expanded=False):
-            st.caption("📖 在K线图上框选/点击选定入场日期，或手动选择。AI给出精确止损止盈方案")
-        
-        # 解析图表点击事件
-        _selected_entry_date = None
-        _selected_entry_price = None
-        _selected_candle = None
-        
-        if _kline_event and hasattr(_kline_event, 'selection') and _kline_event.selection:
-            _sel = _kline_event.selection
-            _sel_points = _sel.get('points', []) if isinstance(_sel, dict) else (getattr(_sel, 'points', []) if hasattr(_sel, 'points') else [])
-            if _sel_points and len(_sel_points) > 0:
-                _first_point = _sel_points[0]
-                _sel_x = _first_point.get('x', None)
-                if _sel_x:
-                    try:
-                        import pandas as pd
-                        _sel_date = pd.Timestamp(_sel_x)
-                        # 找到对应日期的数据
-                        if _sel_date in df.index:
-                            _selected_entry_date = _sel_date
-                            _selected_entry_price = float(df.loc[_sel_date, 'Close'])
-                            _selected_candle = {
-                                'Open': float(df.loc[_sel_date, 'Open']),
-                                'High': float(df.loc[_sel_date, 'High']),
-                                'Low': float(df.loc[_sel_date, 'Low']),
-                                'Close': float(df.loc[_sel_date, 'Close']),
-                                'Volume': float(df.loc[_sel_date, 'Volume'])
-                            }
-                            st.success(f"✅ 已从K线图选中：**{_sel_date.strftime('%Y-%m-%d')}** | 收盘价 **{_selected_entry_price:.2f}**")
-                    except Exception as _sel_err:
-                        logging.warning(f"选点解析失败: {_sel_err}")
-        
-        # 手动选择（备用 + 微调）
-        with st.expander("📅 手动选择日期 / 微调入场价", expanded=(_selected_entry_date is None)):
-            _ea_col1, _ea_col2, _ea_col3 = st.columns([2, 2, 1])
-            
-            # 日期列表（最近60个交易日倒序）
-            _date_options = df.index[-60:].tolist()[::-1]
-            _date_labels = [d.strftime('%Y-%m-%d (%a)') if hasattr(d, 'strftime') else str(d) for d in _date_options]
-            
-            with _ea_col1:
-                _default_idx = 0
-                if _selected_entry_date and _selected_entry_date in _date_options:
-                    _default_idx = _date_options.index(_selected_entry_date)
-                _manual_date_label = st.selectbox(
-                    "选择交易日",
-                    options=_date_labels,
-                    index=_default_idx,
-                    key=f"entry_date_sel_{target_c}",
-                    help="选择你打算入场的交易日"
-                )
-                _manual_date_idx = _date_labels.index(_manual_date_label)
-                _manual_date = _date_options[_manual_date_idx]
-                _manual_candle = {
-                    'Open': float(df.loc[_manual_date, 'Open']),
-                    'High': float(df.loc[_manual_date, 'High']),
-                    'Low': float(df.loc[_manual_date, 'Low']),
-                    'Close': float(df.loc[_manual_date, 'Close']),
-                    'Volume': float(df.loc[_manual_date, 'Volume'])
-                }
-            
-            with _ea_col2:
-                _default_price = _selected_entry_price if _selected_entry_price else _manual_candle['Close']
-                _manual_price = st.number_input(
-                    "入场价格（可微调）",
-                    min_value=0.01,
-                    value=float(_default_price),
-                    step=0.01,
-                    format="%.2f",
-                    key=f"entry_price_input_{target_c}",
-                    help="默认为选定日的收盘价，你可以改为你的实际/计划买入价"
-                )
-            
-            with _ea_col3:
-                st.markdown("<br>", unsafe_allow_html=True)
-                _use_manual = st.checkbox("使用手动选择", value=(_selected_entry_date is None), key=f"use_manual_{target_c}")
-            
-            # 显示选定K线信息
-            _final_date = _manual_date if _use_manual else (_selected_entry_date or _manual_date)
-            _final_price = _manual_price if _use_manual else (_selected_entry_price or _manual_price)
-            _final_candle = _manual_candle if _use_manual else (_selected_candle or _manual_candle)
-            
-            _ohlc_cols = st.columns(5)
-            with _ohlc_cols[0]:
-                st.metric("开盘", f"{_final_candle['Open']:.2f}")
-            with _ohlc_cols[1]:
-                st.metric("最高", f"{_final_candle['High']:.2f}")
-            with _ohlc_cols[2]:
-                st.metric("最低", f"{_final_candle['Low']:.2f}")
-            with _ohlc_cols[3]:
-                st.metric("收盘", f"{_final_candle['Close']:.2f}")
-            with _ohlc_cols[4]:
-                st.metric("成交量", f"{_final_candle['Volume']:,.0f}")
-        
-        # 确认入场信息条
-        _final_date_str = _final_date.strftime('%Y-%m-%d') if hasattr(_final_date, 'strftime') else str(_final_date)
-        st.markdown(f'''<style>
-        .v88-entry-confirm,.v88-entry-confirm div,.v88-entry-confirm span{{color:#fff!important;}}
-        </style><div class="v88-entry-confirm" style="background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);padding:.8rem 1.5rem;border-radius:8px;display:flex;align-items:center;justify-content:space-between;"><div><span style="font-size:12px;">📍 入场点位确认</span><br><span style="font-size:12px;font-weight:700;">{target_c} @ {_final_price:.2f}</span><span style="font-size:12px;margin-left:12px;opacity:.85;">({_final_date_str})</span></div></div>''', unsafe_allow_html=True)
-        
-        # AI分析按钮
-        if MY_GEMINI_KEY and HAS_PREDICTION_ENGINE:
-            _ea_cache_key = f"entry_advisor_{target_c}_{_final_date_str}_{_final_price:.2f}"
-            
-            _run_ea = st.button(
-                "🤖 AI分析止损止盈",
-                key=f"btn_entry_advisor_{target_c}",
-                type="primary",
-                width='stretch',
-                help="AI根据支撑位、压力位、均线和量价结构，智能给出止损和多级止盈建议"
-            )
-            
-            if _run_ea:
-                _ea_prog = st.progress(0)
-                _ea_stat = st.empty()
-                
-                try:
-                    import time as _ea_time
-                    _ea_start = _ea_time.time()
-                    
-                    _ea_stat.text("🤖 AI策略师正在分析你的入场点位... 20%")
-                    _ea_prog.progress(0.2)
-                    
-                    _ea_predictor = _chart_predictor if _chart_predictor else InstitutionalPredictor(df, target_c)
-                    _ea_predictor.calculate_alpha_factors()
-                    _ea_predictor.calculate_risk_engine()
-                    
-                    _ea_stat.text("🤖 正在计算止损止盈... 50%")
-                    _ea_prog.progress(0.5)
-                    
-                    _macro_ctx = st.session_state.get('all_markets', {}).get('us_market', {})
-                    
-                    _ea_result = _ea_predictor.call_gemini_entry_advisor(
-                        MY_GEMINI_KEY,
-                        entry_price=_final_price,
-                        entry_date=_final_date_str,
-                        candle_data=_final_candle,
-                        model_name=GEMINI_MODEL_NAME,
-                        macro_context=_macro_ctx
-                    )
-                    
-                    _ea_elapsed = _ea_time.time() - _ea_start
-                    _ea_prog.progress(0.9)
-                    _ea_stat.text(f"✅ 分析完成（耗时{_ea_elapsed:.1f}秒）")
-                    _ea_time.sleep(0.3)
-                    _ea_prog.progress(1.0)
-                    _ea_time.sleep(0.3)
-                    _ea_prog.empty()
-                    _ea_stat.empty()
-                    
-                    st.session_state[_ea_cache_key] = _ea_result
-                
-                except Exception as _ea_err:
-                    _ea_prog.empty()
-                    _ea_stat.empty()
-                    st.error(f"❌ AI分析失败: {str(_ea_err)[:80]}")
-            
-            elif _ea_cache_key in st.session_state:
-                _ea_result = st.session_state[_ea_cache_key]
-            else:
-                _ea_result = None
-            
-            # 显示AI止损止盈结果
-            if _ea_result and _ea_result.get('stop_loss', 0) > 0:
-                st.markdown("#### 📊 AI止损止盈方案")
-                
-                # 入场评分
-                _grade = _ea_result.get('entry_grade', '')
-                _grade_color = "#10b981" if 'A' in _grade else ("#3b82f6" if 'B' in _grade else ("#f59e0b" if 'C' in _grade else "#ef4444"))
-                
-                # 价格可视化条
-                _sl = _ea_result.get('stop_loss', 0)
-                _tp1 = _ea_result.get('take_profit_1', 0)
-                _tp2 = _ea_result.get('take_profit_2', 0)
-                _sl_pct = ((_final_price - _sl) / _final_price * 100) if _sl > 0 else 0
-                _tp1_pct = ((_tp1 - _final_price) / _final_price * 100) if _tp1 > 0 else 0
-                _tp2_pct = ((_tp2 - _final_price) / _final_price * 100) if _tp2 > 0 else 0
-                
-                # 四列展示
-                _ea_show_cols = st.columns(4)
-                
-                with _ea_show_cols[0]:
-                    st.markdown(f'<div style="background: {_grade_color}18; border: 2px solid {_grade_color}; padding: 1rem; border-radius: 8px; text-align: center;"><div style="font-size: 12px; color: #888;">入场评分</div><div style="font-size: 12px; font-weight: 800; color: {_grade_color}; margin: 0.3rem 0;">{_grade}</div></div>', unsafe_allow_html=True)
-                    st.markdown(f'<p style="font-size:12px;color:#888;">📖 A=绝佳入场点，B=不错可做，C=一般谨慎，D=不建议入场</p>', unsafe_allow_html=True)
-                
-                with _ea_show_cols[1]:
-                    st.markdown(f'<div style="background: #fef2f2; border: 2px solid #ef4444; padding: 1rem; border-radius: 8px; text-align: center;"><div style="font-size: 12px; color: #888;">🔻 止损价</div><div style="font-size: 12px; font-weight: 700; color: #ef4444; margin: 0.3rem 0;">{_sl:.2f}</div><div style="font-size: 12px; color: #ef4444;">-{_sl_pct:.1f}%</div></div>', unsafe_allow_html=True)
-                    st.markdown(f'<p style="font-size:12px;color:#888;">📖 {_ea_result.get("stop_loss_reason", "")}</p>', unsafe_allow_html=True)
-                
-                with _ea_show_cols[2]:
-                    st.markdown(f'<div style="background: #f0fdf4; border: 2px solid #10b981; padding: 1rem; border-radius: 8px; text-align: center;"><div style="font-size: 12px; color: #888;">🎯 止盈1（保守）</div><div style="font-size: 12px; font-weight: 700; color: #10b981; margin: 0.3rem 0;">{_tp1:.2f}</div><div style="font-size: 12px; color: #10b981;">+{_tp1_pct:.1f}%</div></div>', unsafe_allow_html=True)
-                    st.markdown(f'<p style="font-size:12px;color:#888;">📖 {_ea_result.get("take_profit_1_reason", "")}</p>', unsafe_allow_html=True)
-                
-                with _ea_show_cols[3]:
-                    st.markdown(f'<div style="background: #eff6ff; border: 2px solid #3b82f6; padding: 1rem; border-radius: 8px; text-align: center;"><div style="font-size: 12px; color: #888;">🚀 止盈2（激进）</div><div style="font-size: 12px; font-weight: 700; color: #3b82f6; margin: 0.3rem 0;">{_tp2:.2f}</div><div style="font-size: 12px; color: #3b82f6;">+{_tp2_pct:.1f}%</div></div>', unsafe_allow_html=True)
-                    st.markdown(f'<p style="font-size:12px;color:#888;">📖 {_ea_result.get("take_profit_2_reason", "")}</p>', unsafe_allow_html=True)
-                
-                # 盈亏比可视化
-                if _sl_pct > 0 and _tp1_pct > 0:
-                    _rr1 = _tp1_pct / _sl_pct
-                    _rr2 = _tp2_pct / _sl_pct if _tp2_pct > 0 else 0
-                    _rr_color = "#10b981" if _rr1 >= 2 else ("#f59e0b" if _rr1 >= 1.5 else "#ef4444")
-                    st.markdown(f'<div style="background: #f8fafc; padding: 0.6rem 1rem; border-radius: 6px; border: 1px solid #e2e8f0; margin-top: 0.5rem;"><span style="font-size:12px;">📐 <b>盈亏比</b>：保守目标 <b style="color:{_rr_color};">{_rr1:.1f}:1</b>{"&nbsp;&nbsp;|&nbsp;&nbsp;激进目标 <b style=" + chr(34) + "color:#3b82f6;" + chr(34) + ">" + f"{_rr2:.1f}:1</b>" if _rr2 > 0 else ""}&nbsp;&nbsp;|&nbsp;&nbsp;持仓周期 <b>{_ea_result.get("hold_period", "")}</b></span></div>', unsafe_allow_html=True)
-                    st.caption("📖 盈亏比 = 预期盈利/预期亏损。≥2:1是好交易，<1.5:1不值得冒险")
-                
-                # 策略总结
-                _strategy = _ea_result.get('strategy_summary', '')
-                if _strategy:
-                    st.markdown(f'<div style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 1rem 1.5rem; border-radius: 8px; margin-top: 0.8rem;"><div style="color: #94a3b8; font-size: 12px; margin-bottom: 0.3rem;">📝 AI策略总结</div><div style="color: white; font-size: 12px; line-height: 1.6;">{_strategy}</div></div>', unsafe_allow_html=True)
-                    st.caption(f"📌 本报告由 AI 生成 · 模型: {_ai_model_label()}")
-            
-            elif _ea_result is None:
-                st.info("👆 在K线图上选定入场点（框选紫色圆点），或在上方手动选择日期和价格，然后点击按钮获取AI止损止盈建议")
-        else:
-            if not MY_GEMINI_KEY:
-                st.info("💡 配置 DeepSeek API Key 即可使用AI入场顾问")
-        
-        # 【V88.12】前瞻预测层 - 机构生命线 + AI预测（已整合到AI综合分析，此处折叠备用）
-        if HAS_PREDICTION_ENGINE:
-            
-            with st.expander("📊 机构生命线 & AI预测（详细数据）", expanded=False):
-                try:
-                    # 【V90】复用已创建的predictor（避免重复计算）
-                    predictor = _chart_predictor if _chart_predictor else InstitutionalPredictor(df, target_c)
-                    alpha_factors = predictor.calculate_alpha_factors()
-                    risk_metrics = predictor.calculate_risk_engine()
-                    
-                    # 1. VWAP机构生命线
-                    st.markdown("#### 💰 机构生命线 (VWAP)")
-                    st.caption("成交量加权平均价 - 机构大单平均成本线")
-                    
-                    vwap_cols = st.columns([2, 2, 3])
-                    with vwap_cols[0]:
-                        vwap_val = alpha_factors.get('vwap_20', 0)
-                        if vwap_val:
-                            st.metric("VWAP(20日)", f"{vwap_val:.2f}")
-                            st.markdown('<p style="font-size:12px;color:#888;">📖 过去20天机构大单的平均买入成本</p>', unsafe_allow_html=True)
-                    
-                    with vwap_cols[1]:
-                        vwap_dev = alpha_factors.get('vwap_deviation', 0)
-                        st.metric("偏离度", f"{vwap_dev:+.2f}%", 
-                                 delta_color="normal" if vwap_dev > 0 else "inverse")
-                        _vwap_dev_hint = "价格高于机构成本→多头" if vwap_dev > 0 else "价格低于机构成本→空头"
-                        st.markdown(f'<p style="font-size:12px;color:#888;">📖 {_vwap_dev_hint}。偏离>5%=强势但追高风险大</p>', unsafe_allow_html=True)
-                    
-                    with vwap_cols[2]:
-                        st.info(alpha_factors.get('vwap_signal', '⚪ 无信号'))
-                        st.markdown('<p style="font-size:12px;color:#888;">📖 VWAP信号：强势=安全持有，偏空=警惕回调，弱势=不建议新仓</p>', unsafe_allow_html=True)
-                    
-                    st.divider()
-                    
-                    # 2. Alpha因子矩阵
-                    st.markdown("#### 🎯 Alpha因子矩阵")
-                    st.caption("📖 Alpha因子 = 超越大盘的收益来源。机构用这些因子寻找「别人看不到的信号」")
-                    alpha_cols = st.columns(3)
-                    
-                    with alpha_cols[0]:
-                        st.markdown("**RSI背离**")
-                        st.info(alpha_factors.get('rsi_divergence', '⚪ 无数据'))
-                        st.markdown('<p style="font-size:12px;color:#888;">📖 RSI=相对强弱指标(0-100)。<b>底背离</b>=价格新低但RSI未新低→反弹信号；<b>顶背离</b>=价格新高但RSI未新高→见顶信号</p>', unsafe_allow_html=True)
-                    
-                    with alpha_cols[1]:
-                        st.markdown("**布林带挤压**")
-                        st.info(alpha_factors.get('bb_squeeze', '⚪ 无数据'))
-                        st.markdown('<p style="font-size:12px;color:#888;">📖 布林带=价格波动通道。<b>极度挤压</b>=波动率极低，即将爆发大行情（方向不定）；<b>扩张</b>=趋势正在展开</p>', unsafe_allow_html=True)
-                    
-                    with alpha_cols[2]:
-                        st.markdown("**量价背离**")
-                        st.info(alpha_factors.get('volume_price_divergence', '⚪ 无数据'))
-                        st.markdown('<p style="font-size:12px;color:#888;">📖 价格上涨但成交量下降=上涨无力，假突破风险高；价格下跌但成交量萎缩=抛压减弱，可能见底</p>', unsafe_allow_html=True)
-                    
-                    st.divider()
-                    
-                    # 3. 风险引擎
-                    st.markdown("#### ⚡ 风险引擎 - 动态止损 & 仓位管理")
-                    st.caption("📖 风险引擎 = 机构的「安全气囊」。不是帮你赚钱，而是帮你在撞车时活下来")
-                    
-                    risk_cols = st.columns(4)
-                    with risk_cols[0]:
-                        stop_loss = risk_metrics.get('stop_loss', 0)
-                        if stop_loss:
-                            st.metric("止损价", f"{stop_loss:.2f}")
-                            st.caption(f"🛡️ {risk_metrics.get('stop_loss_pct', 0):.2f}% ATR止损")
-                            st.markdown('<p style="font-size:12px;color:#888;">📖 止损价=当前价-2.5×ATR。跌到此价必须卖出，不抱幻想。这是机构铁律</p>', unsafe_allow_html=True)
-                    
-                    with risk_cols[1]:
-                        kelly_pos = risk_metrics.get('kelly_position', 5)
-                        st.metric("建议仓位", f"{kelly_pos:.1f}%")
-                        st.caption("📊 Kelly公式计算")
-                        st.markdown('<p style="font-size:12px;color:#888;">📖 Kelly公式=数学最优仓位。基于历史胜率和盈亏比。用0.25倍Kelly（保守策略），防止过度自信</p>', unsafe_allow_html=True)
-                    
-                    with risk_cols[2]:
-                        st.metric("风险评级", risk_metrics.get('risk_grade', '未评级'))
-                        st.caption("💎 A级最优")
-                        st.markdown('<p style="font-size:12px;color:#888;">📖 A级(&lt;3%)=低风险可重仓；B级(3-5%)=正常仓位；C级(5-8%)=轻仓；D级(&gt;8%)=不建议</p>', unsafe_allow_html=True)
-                    
-                    with risk_cols[3]:
-                        atr = risk_metrics.get('atr', 0)
-                        if atr:
-                            st.metric("ATR波动率", f"{atr:.2f}")
-                            st.caption("📈 14日平均真实范围")
-                            st.markdown('<p style="font-size:12px;color:#888;">📖 ATR=平均真实波幅，衡量股票每天的「正常」波动幅度。ATR越大=波动越剧烈=止损要设更宽</p>', unsafe_allow_html=True)
-                    
-                    st.divider()
-                    
-                    # 4. AI智能风控预测（合并预测+风控，一键触发）
-                    st.markdown("#### 🤖 AI智能风控预测")
-                    st.caption("💡 基于VWAP、Alpha因子、风险指标，预测未来3-5日走势 + 开仓前风控评估（潜在风险预判、盈亏比、纪律建议）")
-                    
-                    if MY_GEMINI_KEY:
-                        prediction_cache_key = f"ai_prediction_{target_c}"
-                        pm_cache_key = f"pre_mortem_{target_c}"
-                        
-                        run_combined = st.button(
-                            "⚡ 启动AI智能风控预测",
-                            key=f"btn_ai_pred_{target_c}",
-                            type="primary",
-                            width='stretch',
-                            help="一键获取：AI预测（看涨概率/操作建议）+ 风控评估（三大风险预判 + 盈亏比 + 开仓建议）"
-                        )
-                        
-                        if run_combined:
-                            prog = st.progress(0)
-                            status = st.empty()
-                            try:
-                                import time as _t
-                                _start = _t.time()
-                                status.text(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · 准备数据... 10%")
-                                prog.progress(0.1)
-                                
-                                ai_prediction = predictor.call_gemini_oracle(MY_GEMINI_KEY, GEMINI_MODEL_NAME)
-                                st.session_state[prediction_cache_key] = ai_prediction
-                                status.text(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · 风控评估... 50%")
-                                prog.progress(0.5)
-                                
-                                _macro_ctx = st.session_state.get('all_markets', {}).get('us_market', {})
-                                _pm_predictor = predictor
-                                _pm_predictor.calculate_alpha_factors()
-                                _pm_predictor.calculate_risk_engine()
-                                pm_result = _pm_predictor.call_gemini_pre_mortem(
-                                    MY_GEMINI_KEY, GEMINI_MODEL_NAME, macro_context=_macro_ctx
-                                )
-                                st.session_state[pm_cache_key] = pm_result
-                                
-                                status.text(f"✅ 分析完成（耗时{_t.time()-_start:.1f}秒）")
-                                prog.progress(1.0)
-                                _t.sleep(0.5)
-                            except Exception as e:
-                                st.error(f"❌ AI智能风控预测失败: {str(e)[:100]}")
-                                # 清除缓存，避免显示旧结果
-                                if prediction_cache_key in st.session_state:
-                                    del st.session_state[prediction_cache_key]
-                                if pm_cache_key in st.session_state:
-                                    del st.session_state[pm_cache_key]
-                                ai_prediction = {}
-                                pm_result = None
-                            finally:
-                                prog.empty()
-                                status.empty()
-                        
-                        ai_prediction = st.session_state.get(prediction_cache_key, {})
-                        pm_result = st.session_state.get(pm_cache_key)
-                        
-                        if ai_prediction or pm_result:
-                            if ai_prediction:
-                                st.markdown("##### 📈 AI预测结果")
-                                ai_cols = st.columns([1, 1, 2])
-                                with ai_cols[0]:
-                                    prob = ai_prediction.get('bullish_prob', 50)
-                                    prob_color = "🟢" if prob > 55 else ("🔴" if prob < 45 else "🟡")
-                                    st.metric(f"{prob_color} 看涨概率", f"{prob}%")
-                                with ai_cols[1]:
-                                    st.metric("市场状态", ai_prediction.get('regime', '震荡'))
-                                with ai_cols[2]:
-                                    st.info(f"**操作建议**: {ai_prediction.get('verdict', '观望')}")
-                                st.warning(f"⚠️ **关键风险**: {ai_prediction.get('key_risk', '需关注市场变化')}")
-                                st.markdown("---")
-                            
-                            if pm_result:
-                                st.markdown("##### 🛡️ 风控评估 - 潜在风险预判")
-                                st.caption("📖 开仓前预判：若这笔交易亏损，最可能的原因")
-                                _risk_items = [
-                                    ('1', pm_result.get('risk_1', '分析中...')),
-                                    ('2', pm_result.get('risk_2', '分析中...')),
-                                    ('3', pm_result.get('risk_3', '分析中...'))
-                                ]
-                                for _ri_num, _ri_text in _risk_items:
-                                    st.markdown(f'<div style="background: #fef2f2; border-left: 4px solid #ef4444; padding: 0.8rem 1rem; border-radius: 4px; margin-bottom: 0.5rem;"><span style="font-weight:700; color:#ef4444;">风险 #{_ri_num}</span>：{_ri_text}</div>', unsafe_allow_html=True)
-                                st.markdown("##### 🎯 交易纪律")
-                                _pm_risk = predictor.risk_metrics if hasattr(predictor, 'risk_metrics') else {}
-                                _pm_stop = _pm_risk.get('stop_loss', 0)
-                                _pm_kelly = _pm_risk.get('kelly_position', 5)
-                                _pm_stop_pct = _pm_risk.get('stop_loss_pct', 0)
-                                _rr_ratio = pm_result.get('reward_risk_ratio', 0)
-                                _position_amt = 100000 * _pm_kelly / 100 if _pm_kelly else 0
-                                _max_loss = _position_amt * _pm_stop_pct / 100 if _pm_stop_pct > 0 else 0
-                                disc_cols = st.columns(4)
-                                with disc_cols[0]:
-                                    st.metric("硬止损价", f"{_pm_stop:.2f}" if _pm_stop > 0 else "N/A")
-                                with disc_cols[1]:
-                                    st.metric("建议仓位", f"{_pm_kelly:.1f}%")
-                                with disc_cols[2]:
-                                    st.metric("最大亏损", f"¥{_max_loss:,.0f}" if _max_loss > 0 else "N/A")
-                                with disc_cols[3]:
-                                    _rr_color = "#10b981" if _rr_ratio >= 2.0 else ("#f59e0b" if _rr_ratio >= 1.5 else "#ef4444")
-                                    st.metric("盈亏比", f"{_rr_ratio:.1f}:1" if _rr_ratio > 0 else "N/A")
-                                _pm_verdict = pm_result.get('verdict', '分析中...')
-                                if '允许开仓' in _pm_verdict:
-                                    _verdict_bg = "linear-gradient(135deg, #10b981 0%, #059669 100%)"
-                                    _verdict_icon = "🟢"
-                                elif '减半' in _pm_verdict:
-                                    _verdict_bg = "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
-                                    _verdict_icon = "🟡"
-                                else:
-                                    _verdict_bg = "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"
-                                    _verdict_icon = "🔴"
-                                st.markdown(f'<div style="background: {_verdict_bg}; padding: 1.2rem 1.5rem; border-radius: 10px; margin-top: 0.5rem;"><div style="color: white; font-size: 12px; font-weight: 700;">{_verdict_icon} 风控判定：{_pm_verdict}</div></div>', unsafe_allow_html=True)
-                            st.caption(f"📌 本报告由 AI 生成 · 模型: {_ai_model_label()}")
-                        else:
-                            st.info("👆 点击上方按钮一键获取AI预测 + 风控评估（预测未来走势 + 开仓前风险预判）")
-                    else:
-                        st.info("💡 配置 DeepSeek API Key 即可启用AI智能风控预测")
-                
-                except Exception as e:
-                    st.error(f"预测层加载失败: {str(e)[:100]}")
-                    logging.error(f"预测层异常: {e}")
-        
-        # ═══════════════════════════════════════════════════════════════
-        # 【V90 新增】一键生成分享卡片（iPhone 17 尺寸）
-        # ═══════════════════════════════════════════════════════════════
-        if COPY_UTILS_AVAILABLE:
-            st.markdown("---")
-            
-            _card_col1, _card_col2 = st.columns([1, 3])
-            with _card_col1:
-                with st.container(key="v88_share_card_action"):
-                    st.markdown('''<style>
-                    div[class*="st-key-v88_share_card_action"] button[kind="primary"]{
-                        background:#fff!important;border:1px solid #2563eb!important;color:#2563eb!important;
-                    }
-                    div[class*="st-key-v88_share_card_action"] button[kind="primary"] *,
-                    div[class*="st-key-v88_share_card_action"] button[kind="primary"] p{
-                        color:#2563eb!important;
-                    }
-                    div[class*="st-key-v88_share_card_action"] button[kind="primary"]:hover{
-                        background:#eff6ff!important;border-color:#1d4ed8!important;
-                    }
-                    </style>''', unsafe_allow_html=True)
-                    _gen_card = st.button("📸 生成卡片", key=f"btn_share_card_{target_c}", type="primary", width='stretch')
-            with _card_col2:
-                st.caption("包含：价格涨跌、核心指标(VWAP/ATR/Kelly)、AI止损止盈、风控官警告、宏观环境")
-            
-            if _gen_card:
-                with _v88_running("正在生成分享卡片..."):
-                    try:
-                        # 收集当前所有分析数据
-                        _card_price = float(df['Close'].iloc[-1])
-                        _card_prev = float(df['Close'].iloc[-2]) if len(df) >= 2 else _card_price
-                        _card_chg = ((_card_price - _card_prev) / _card_prev * 100) if _card_prev else 0
-                        
-                        # 从已有的分析结果中提取数据
-                        _card_alpha = _chart_predictor.alpha_factors if _chart_predictor and hasattr(_chart_predictor, 'alpha_factors') else {}
-                        _card_risk = _chart_predictor.risk_metrics if _chart_predictor and hasattr(_chart_predictor, 'risk_metrics') else {}
-                        
-                        # 宏观数据
-                        _card_macro = st.session_state.get('all_markets', {}).get('us_market', {})
-                        _card_macro_v = _card_macro.get('verdict', '') if _card_macro.get('data_ok', False) else ''
-                        
-                        # AI入场顾问数据（如果有）
-                        _card_ea = None
-                        for _ck in st.session_state:
-                            if _ck.startswith(f"entry_advisor_{target_c}"):
-                                _card_ea = st.session_state[_ck]
-                                break
-                        
-                        # Pre-Mortem数据（如果有）
-                        _card_pm = None
-                        for _pk in st.session_state:
-                            if _pk.startswith(f"pre_mortem_{target_c}"):
-                                _card_pm = st.session_state[_pk]
-                                break
-                        
-                        _pm_risks = []
-                        if _card_pm:
-                            for _rk in ['risk_1', 'risk_2', 'risk_3']:
-                                _rv = _card_pm.get(_rk, '')
-                                if _rv and '分析中' not in _rv:
-                                    _pm_risks.append(_rv)
-                        
-                        # 提取最近30天收盘价用于迷你走势图
-                        _recent_closes = []
-                        try:
-                            _rc_series = df['Close'].tail(30)
-                            _recent_closes = [float(v) for v in _rc_series.values if v == v]  # 排除NaN
-                        except Exception:
-                            _recent_closes = []
-                        
-                        # 尝试获取AI市场简报（如果有）
-                        _card_brief = ""
-                        for _brief_key in st.session_state:
-                            if _brief_key.startswith("market_brief_") and isinstance(st.session_state[_brief_key], str):
-                                _card_brief = st.session_state[_brief_key][:300]  # 限制长度
-                                break
-                        
-                        # 生成卡片
-                        _card_bytes = ShareCardGenerator.generate_stock_card(
-                            code=target_c,
-                            price=_card_price,
-                            change_pct=_card_chg,
-                            score=int(m.get('score', 0)) if m else 0,
-                            suggestion=m.get('suggestion', '') if m else '',
-                            vwap=_card_alpha.get('vwap_20', 0),
-                            vwap_dev=_card_alpha.get('vwap_deviation', 0),
-                            atr=_card_risk.get('atr', 0),
-                            stop_loss=_card_risk.get('stop_loss', 0),
-                            kelly_pct=_card_risk.get('kelly_position', 0),
-                            risk_grade=_card_risk.get('risk_grade', ''),
-                            entry_grade=_card_ea.get('entry_grade', '') if _card_ea else '',
-                            ai_stop_loss=_card_ea.get('stop_loss', 0) if _card_ea else 0,
-                            ai_tp1=_card_ea.get('take_profit_1', 0) if _card_ea else 0,
-                            ai_tp2=_card_ea.get('take_profit_2', 0) if _card_ea else 0,
-                            ai_strategy=_card_ea.get('strategy_summary', '') if _card_ea else '',
-                            macro_verdict=_card_macro_v,
-                            position_cap=_card_macro.get('position_cap', 80),
-                            pre_mortem_risks=_pm_risks,
-                            recent_prices=_recent_closes,
-                            market_brief=_card_brief
-                        )
-                        
-                        st.session_state[f"share_card_{target_c}"] = _card_bytes
-                        st.success("✅ 分享卡片已生成！")
-                    
-                    except Exception as _card_err:
-                        st.error(f"❌ 卡片生成失败: {str(_card_err)[:80]}")
-            
-            # 显示和下载卡片
-            _card_cache_key = f"share_card_{target_c}"
-            if _card_cache_key in st.session_state:
-                _card_data = st.session_state[_card_cache_key]
-                
-                _show_col1, _show_col2 = st.columns([2, 1])
-                with _show_col1:
-                    st.image(_card_data, caption=f"{target_c} 分析卡片（iPhone 17 尺寸）", width='stretch')
-                with _show_col2:
-                    st.download_button(
-                        "📥 保存卡片到本地",
-                        data=_card_data,
-                        file_name=f"StockAI_{target_c}_{datetime.now().strftime('%Y%m%d_%H%M')}.png",
-                        mime="image/png",
-                        key=f"download_card_{target_c}",
-                        width='stretch'
-                    )
-                    st.caption("💡 保存后可直接在微信/钉钉/朋友圈分享")
-                    st.caption("📐 卡片尺寸：1170×2532px（iPhone 17 Pro Max）")
-        
-        # 【V89.2】机构研究中心 - 个股深度分析
-        if INSTITUTIONAL_RESEARCH_AVAILABLE and _institutional_research:
-            st.markdown("---")
-            from datetime import datetime as _dt_research
-            st.markdown(f"### 🏦 机构研究报告 · {_dt_research.now().strftime('%Y-%m-%d')}")
-            
-            with st.expander("📑 机构深度研究 + 机会风险评估（详细）", expanded=False):
-                try:
-                    # 【V91.9】机构研究报告缓存：避免每次 rerun 都调 LLM，Running 结束后按钮可正常响应
-                    # 【V91.10】统一缓存：交易日15分钟，非交易日24小时
-                    _research_cache_key = f"_research_report_{target_c}"
-                    _research_ttl = get_smart_cache_ttl('daily')
-                    _research_now = _time_module.time()
-                    _research_cached = (_research_cache_key in st.session_state and
-                        (_research_now - st.session_state.get(f"{_research_cache_key}_ts", 0)) <= _research_ttl)
-                    if _research_cached:
-                        research_report = st.session_state[_research_cache_key]
-                        _safe_print(f"[机构研究] 使用缓存报告")
-                    else:
-                        # 【V91.10】延迟加载：点击生成才执行，首屏秒开，目标 20 秒内完成
-                        _gen_btn_key = f"_research_gen_btn_{target_c}"
-                        if st.button("🚀 生成机构研究报告", key=_gen_btn_key, type="primary"):
-                            with _v88_running(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · 机构研究报告..."):
-                                try:
-                                    _all_mkts = st.session_state.get('all_markets', {})
-                                    if target_c.endswith('.SS') or target_c.endswith('.SZ'):
-                                        market_regime = _all_mkts.get('cn_market', {})
-                                    elif target_c.endswith('.HK'):
-                                        market_regime = _all_mkts.get('hk_market', {})
-                                    else:
-                                        market_regime = _all_mkts.get('us_market', {})
-                                    _df_r = df.tail(126) if df is not None and len(df) > 126 else df  # 半年数据，加快生成
-                                    research_report = _institutional_research.comprehensive_report(
-                                        target_c, _df_r, market_regime
-                                    )
-                                    if research_report and isinstance(research_report, dict) and len(research_report) > 0:
-                                        st.session_state[_research_cache_key] = research_report
-                                        st.session_state[f"{_research_cache_key}_ts"] = _research_now
-                                        st.rerun()
-                                    else:
-                                        st.error("❌ 报告生成失败（返回为空），请检查数据或稍后重试")
-                                        research_report = None
-                                except Exception as _re:
-                                    st.error(f"❌ 机构研究报告生成异常: {str(_re)[:100]}")
-                                    logging.error(f"机构研究报告异常: {_re}")
-                                    research_report = None
-                        else:
-                            research_report = None
-                            st.info("👆 点击上方按钮生成机构研究报告（约 20 秒内完成，报告生成后缓存：1小时）")
-                    
-                    if research_report:
-                        # 执行摘要
-                        st.markdown("#### 📋 执行摘要")
-                        exec_summary = research_report.get('executive_summary', {})
-                        
-                        summary_cols = st.columns(5)
-                        with summary_cols[0]:
-                            rating = exec_summary.get('rating', '未评级')
-                            rating_color = "#10b981" if '推荐' in rating else "#f59e0b" if '中性' in rating else "#ef4444"
-                            st.markdown(f'<div style="background: {rating_color}20; padding: 0.8rem; border-radius: 6px; border-left: 3px solid {rating_color};"><div style="font-size: 12px; color: gray;">综合评级</div><div style="font-size: 12px; font-weight: 600; color: {rating_color}; margin-top: 0.2rem;">{rating}</div></div>', unsafe_allow_html=True)
-                        
-                        with summary_cols[1]:
-                            action = exec_summary.get('action', '观望')
-                            st.markdown(f'<div style="background: #3b82f620; padding: 0.8rem; border-radius: 6px; border-left: 3px solid #3b82f6;"><div style="font-size: 12px; color: gray;">操作建议</div><div style="font-size: 12px; font-weight: 600; color: #3b82f6; margin-top: 0.2rem;">{action}</div></div>', unsafe_allow_html=True)
-                        
-                        with summary_cols[2]:
-                            tech_score = exec_summary.get('technical_score', 0)
-                            st.metric("技术评分", f"{tech_score}/100", 
-                                     delta="优秀" if tech_score >= 70 else "一般" if tech_score >= 50 else "较弱")
-                        
-                        with summary_cols[3]:
-                            opp_score = exec_summary.get('opportunity_score', 0)
-                            st.metric("机会评分", f"{opp_score}/100",
-                                     delta="高机会" if opp_score >= 70 else "中等" if opp_score >= 50 else "低机会")
-                        
-                        with summary_cols[4]:
-                            risk_score = exec_summary.get('risk_score', 50)
-                            st.metric("风险评分", f"{risk_score}/100",
-                                     delta="高风险" if risk_score >= 70 else "中等" if risk_score >= 40 else "低风险",
-                                     delta_color="inverse")
-                        
-                        st.divider()
-                        
-                        # Tab布局：个股研究 | 机会雷达 | 风险预警 | 舆情分析
-                        research_tabs = st.tabs(["📊 个股深度研究", "🎯 机会雷达", "⚠️ 风险预警", "📰 舆情分析"])
-                        
-                        # Tab 1: 个股深度研究
-                        with research_tabs[0]:
-                            stock_research = research_report.get('stock_research', {})
-                            
-                            # 趋势分析
-                            st.markdown("##### 📈 趋势分析")
-                            trend = stock_research.get('trend_analysis', {})
-                            trend_col1, trend_col2 = st.columns(2)
-                            
-                            with trend_col1:
-                                st.info(f"**趋势状态**: {trend.get('status', '未知')}")
-                                st.metric("趋势评分", f"{trend.get('score', 0)}/100")
-                            
-                            with trend_col2:
-                                st.metric("MA5", f"${trend.get('ma5', 0):.2f}")
-                                st.metric("MA20", f"${trend.get('ma20', 0):.2f}")
-                                st.metric("MA50", f"${trend.get('ma50', 0):.2f}")
-                            
-                            st.caption(f"💡 偏离MA20: {trend.get('deviation_from_ma20', 0):+.2f}%")
-                            
-                            # 动量信号
-                            st.markdown("##### ⚡ 动量信号")
-                            signals = stock_research.get('momentum_signals', [])
-                            if signals:
-                                for signal in signals:
-                                    if '⚠️' in signal or '🔴' in signal:
-                                        st.warning(signal)
-                                    elif '✅' in signal or '🟢' in signal:
-                                        st.success(signal)
-                                    else:
-                                        st.info(signal)
-                            
-                            # 价格目标
-                            st.markdown("##### 🎯 价格目标")
-                            target = stock_research.get('price_target', {})
-                            target_cols = st.columns(4)
-                            
-                            with target_cols[0]:
-                                st.metric("当前价", f"${target.get('current_price', 0):.2f}")
-                            with target_cols[1]:
-                                st.metric("目标高位", f"${target.get('target_high', 0):.2f}", delta="上涨空间")
-                            with target_cols[2]:
-                                st.metric("目标低位", f"${target.get('target_low', 0):.2f}", delta="下跌空间", delta_color="inverse")
-                            with target_cols[3]:
-                                st.metric("止损价", f"${target.get('stop_loss', 0):.2f}", delta="风控线", delta_color="inverse")
-                            
-                            st.caption(f"⏰ 时间视野: {target.get('time_horizon', '1-2月')}")
-                        
-                        # Tab 2: 机会雷达
-                        with research_tabs[1]:
-                            opportunity = research_report.get('opportunity', {})
-                            
-                            # 机会评分卡
-                            st.markdown("##### 🎯 机会评估")
-                            opp_col1, opp_col2, opp_col3 = st.columns(3)
-                            
-                            with opp_col1:
-                                opp_level = opportunity.get('opportunity_level', '低')
-                                st.markdown(f'<div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 1.2rem; border-radius: 8px; color: white;"><div style="font-size: 12px; opacity: 0.9;">机会等级</div><div style="font-size: 12px; font-weight: 600; margin-top: 0.3rem;">{opp_level}</div></div>', unsafe_allow_html=True)
-                            
-                            with opp_col2:
-                                entry_timing = opportunity.get('entry_timing', '观望')
-                                st.markdown(f'<div style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); padding: 1.2rem; border-radius: 8px; color: white;"><div style="font-size: 12px; opacity: 0.9;">入场时机</div><div style="font-size: 12px; font-weight: 600; margin-top: 0.3rem;">{entry_timing}</div></div>', unsafe_allow_html=True)
-                            
-                            with opp_col3:
-                                position_size = opportunity.get('position_size_suggestion', '轻仓')
-                                st.markdown(f'<div style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); padding: 1.2rem; border-radius: 8px; color: white;"><div style="font-size: 12px; opacity: 0.9;">建议仓位</div><div style="font-size: 12px; font-weight: 600; margin-top: 0.3rem;">{position_size}</div></div>', unsafe_allow_html=True)
-                            
-                            # 催化剂
-                            st.markdown("##### 💡 催化剂分析")
-                            catalysts = opportunity.get('catalysts', [])
-                            if catalysts:
-                                for i, catalyst in enumerate(catalysts, 1):
-                                    st.success(f"**{i}.** {catalyst}")
-                            else:
-                                st.info("暂无明确催化剂")
-                            
-                            # 最优入场价
-                            st.markdown("##### 💰 最优入场价")
-                            optimal_price = opportunity.get('optimal_entry_price', 0)
-                            st.metric("建议买入价", f"${optimal_price:.2f}")
-                            st.caption("💡 根据技术分析和风险收益比计算")
-                        
-                        # Tab 3: 风险预警
-                        with research_tabs[2]:
-                            risk_warn = research_report.get('risk_warning', {})
-                            
-                            # 风险等级
-                            st.markdown("##### ⚠️ 风险评估")
-                            risk_level = risk_warn.get('risk_level', '中')
-                            risk_color = "#ef4444" if '高' in risk_level else "#f59e0b" if '中' in risk_level else "#10b981"
-                            
-                            risk_col1, risk_col2 = st.columns([1, 2])
-                            with risk_col1:
-                                st.markdown(f'<div style="background: {risk_color}20; padding: 1.5rem; border-radius: 8px; border: 2px solid {risk_color}; text-align: center;"><div style="font-size: 12px; color: gray;">风险等级</div><div style="font-size: 12px; font-weight: 700; color: {risk_color}; margin-top: 0.5rem;">{risk_level}</div></div>', unsafe_allow_html=True)
-                            
-                            with risk_col2:
-                                st.metric("风险评分", f"{risk_warn.get('risk_score', 50)}/100",
-                                         delta="高风险" if risk_warn.get('risk_score', 50) >= 70 else "低风险",
-                                         delta_color="inverse")
-                                
-                                max_dd = risk_warn.get('max_drawdown_tolerance', 0.15)
-                                st.metric("最大回撤容忍", f"{max_dd*100:.1f}%")
-                            
-                            # 风险因素
-                            st.markdown("##### 🚨 风险因素")
-                            risk_factors = risk_warn.get('risk_factors', [])
-                            if risk_factors:
-                                for factor in risk_factors:
-                                    st.warning(factor)
-                            else:
-                                st.success("✅ 暂无重大风险因素")
-                            
-                            # 风险缓释建议
-                            st.markdown("##### 🛡️ 风险缓释建议")
-                            mitigations = risk_warn.get('risk_mitigation', [])
-                            if mitigations:
-                                for i, mitigation in enumerate(mitigations, 1):
-                                    st.info(f"**{i}.** {mitigation}")
-                            
-                            # 止损价
-                            st.markdown("##### 🔻 止损管理")
-                            stop_loss_price = risk_warn.get('stop_loss_price', 0)
-                            if stop_loss_price > 0:
-                                st.error(f"**严格止损价**: ${stop_loss_price:.2f}")
-                                st.caption("⚠️ 跌破该价位应立即止损，不抱幻想")
-                        
-                        # Tab 4: 舆情分析
-                        with research_tabs[3]:
-                            st.markdown("##### 📰 AI舆情分析")
-                            st.caption("💡 基于最新市场新闻、公司公告、行业动态的综合舆情评估")
-                            
-                            # 【V89.4】使用舆情分析器生成提示词
-                            if SENTIMENT_ANALYZER_AVAILABLE and _sentiment_analyzer and MY_GEMINI_KEY:
-                                # 生成按钮（使用session_state缓存）
-                                sentiment_cache_key = f"sentiment_{target_c}"
-                                
-                                run_sentiment = st.button(
-                                    "🚀 启动舆情分析", 
-                                    key=f"btn_sentiment_{target_c}",
-                                    type="primary",
-                                    width='stretch',
-                                    help="AI分析最新新闻、市场情绪、影响预判"
-                                )
-                                
-                                if run_sentiment:
-                                    # 【V89.7 修复】根据股票代码选择正确的市场regime
-                                    _all_mkts_sent = st.session_state.get('all_markets', {})
-                                    if target_c.endswith('.SS') or target_c.endswith('.SZ'):
-                                        _sent_regime = _all_mkts_sent.get('cn_market', {})
-                                    elif target_c.endswith('.HK'):
-                                        _sent_regime = _all_mkts_sent.get('hk_market', {})
-                                    else:
-                                        _sent_regime = _all_mkts_sent.get('us_market', {})
-                                    
-                                    prompt = _sentiment_analyzer.generate_stock_sentiment_prompt(
-                                        target_c, df, _sent_regime
-                                    )
-                                    
-                                    # 进度显示
-                                    sentiment_progress = st.progress(0)
-                                    sentiment_status = st.empty()
-                                    
-                                    try:
-                                        sentiment_status.info(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · 舆情分析...")
-                                        sentiment_progress.progress(0.2)
-                                        
-                                        sentiment_status.info(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · 评估市场情绪...")
-                                        sentiment_progress.progress(0.4)
-                                        
-                                        sentiment_status.info(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · 预判影响...")
-                                        sentiment_progress.progress(0.6)
-                                        
-                                        # 调用AI
-                                        ai_response = call_gemini_api(prompt)
-                                        sentiment_progress.progress(1.0)
-                                        
-                                        # 【V91.8】API 返回错误时直接提示，不当作成功报告
-                                        if isinstance(ai_response, str) and (ai_response.startswith("❌") or "失败" in ai_response[:20]):
-                                            sentiment_progress.empty()
-                                            sentiment_status.empty()
-                                            st.error(ai_response[:150])
-                                        else:
-                                            # 解析评分
-                                            sentiment_metrics = _sentiment_analyzer.parse_sentiment_score(ai_response)
-                                            
-                                            # 缓存结果
-                                            st.session_state[sentiment_cache_key] = {
-                                                'response': ai_response,
-                                                'metrics': sentiment_metrics
-                                            }
-                                            
-                                            sentiment_progress.empty()
-                                            sentiment_status.empty()
-                                    
-                                    except Exception as e:
-                                        sentiment_progress.empty()
-                                        sentiment_status.empty()
-                                        st.error(f"❌ 舆情分析失败: {str(e)[:80]}")
-                                
-                                # 显示结果
-                                if sentiment_cache_key in st.session_state:
-                                    sentiment_data = st.session_state[sentiment_cache_key]
-                                    sentiment_metrics = sentiment_data.get('metrics', {})
-                                    ai_response = sentiment_data.get('response', '')
-                                    
-                                    # 显示舆情评分卡
-                                    st.markdown("---")
-                                    st.markdown("##### 📊 舆情评分卡")
-                                    
-                                    sent_col1, sent_col2, sent_col3 = st.columns(3)
-                                    
-                                    with sent_col1:
-                                        score = sentiment_metrics.get('sentiment_score', 50)
-                                        color = _sentiment_analyzer.get_sentiment_color(score)
-                                        icon = _sentiment_analyzer.get_sentiment_icon(score)
-                                        st.markdown(f'<div style="background: {color}20; padding: 1rem; border-radius: 8px; border-left: 4px solid {color};"><div style="font-size: 12px; color: gray;">舆情评分</div><div style="font-size: 12px; font-weight: 700; color: {color}; margin-top: 0.3rem;">{icon} {score}/100</div></div>', unsafe_allow_html=True)
-                                    
-                                    with sent_col2:
-                                        level = sentiment_metrics.get('sentiment_level', '中性')
-                                        st.metric("舆情等级", level)
-                                    
-                                    with sent_col3:
-                                        impact = sentiment_metrics.get('short_term_impact', '震荡')
-                                        impact_icon = "📈" if impact == '上涨' else "📉" if impact == '下跌' else "📊"
-                                        st.metric("短期影响", f"{impact_icon} {impact}")
-                                    
-                                    st.markdown("---")
-                                    
-                                    # 显示完整报告
-                                    st.markdown("##### 📑 完整舆情报告")
-                                    st.markdown("""
-                                    <style>
-                                    .sentiment-report {
-                                        font-size: 12px !important;
-                                        line-height: 1.8;
-                                        color: #374151;
-                                        padding: 1rem;
-                                        background-color: #f9fafb;
-                                        border-radius: 8px;
-                                        border-left: 4px solid #3b82f6;
-                                    }
-                                    .sentiment-report h2 {
-                                        font-size: 12px !important;
-                                        font-weight: 600 !important;
-                                        margin: 1rem 0 0.5rem 0 !important;
-                                        color: #1f2937 !important;
-                                    }
-                                    </style>
-                                    """, unsafe_allow_html=True)
-                                    
-                                    # 【V90.3】段落级复制
-                                    if COPY_UTILS_AVAILABLE:
-                                        CopyUtils.render_markdown_with_section_copy(ai_response, key_prefix=f"sent_{target_c}")
-                                    else:
-                                        st.markdown(f'<div class="sentiment-report">{ai_response}</div>', unsafe_allow_html=True)
-                                    st.caption(f"📌 本报告由 AI 生成 · 模型: {_ai_model_label()}")
-                                else:
-                                    st.info("👆 点击上方按钮启动AI舆情分析（分析新闻、市场情绪、影响预判）")
-                            
-                            elif not MY_GEMINI_KEY:
-                                st.info("💡 配置 DeepSeek API Key 即可启用AI舆情分析功能")
-                            else:
-                                st.warning("⚠️ 舆情分析模块未加载")
-                
-                except Exception as e:
-                    st.error(f"机构研究报告生成失败: {str(e)[:100]}")
-                    logging.error(f"机构研究异常: {e}")
-        
-        # 【V90.3】独立个股舆情区块已整合到上方「机构研究报告→舆情分析」Tab中，不再重复显示
-        
-        # 【V93】一键生成完整报告已整合到上方「AI综合分析」
-        st.markdown("---")
-
-        # ═══════════════════════════════════════════════════════════════
-        # 旧五维模型只作为研究底稿；唯一分/概率/RR/EV/动作已在页面首屏展示。
-        # ═══════════════════════════════════════════════════════════════
-        st.markdown("### 🔬 辅助研究指标（不另算买卖结论）")
-
-        # 【V88.13】交易量异常解读面板
-        _vol_anomaly = analyze_volume_anomaly(df)
-        if _vol_anomaly:
-            _va_color = _vol_anomaly.get("color", "#6b7280")
-            _va_trend = _vol_anomaly.get("trend_note", "")
-            _va_action = _vol_anomaly.get("action_hint", "")
-            st.markdown(
-                f'<div style="background:{_va_color}12;border-left:4px solid {_va_color};'
-                f'padding:0.9rem 1.1rem;border-radius:6px;margin-bottom:0.8rem;">'
-                f'<div style="font-weight:700;color:{_va_color};font-size:13px;">'
-                f'📊 交易量异常 · {_vol_anomaly["anomaly_type"]} '
-                f'({_vol_anomaly["vol_ratio"]:.1f}x均量 · 日涨跌{_vol_anomaly["price_chg_1d"]:+.1f}%)</div>'
-                f'<div style="font-size:12px;color:#374151;margin-top:0.4rem;line-height:1.7;">'
-                f'{_vol_anomaly["explanation"]}</div>'
-                f'{f"<div style=\'font-size:12px;font-weight:600;color:{_va_color};margin-top:0.35rem;\'>👉 {_va_action}</div>" if _va_action else ""}'
-                f'{f"<div style=\'font-size:11px;color:#6b7280;margin-top:0.3rem;\'>{_va_trend}</div>" if _va_trend else ""}'
-                f'</div>',
-                unsafe_allow_html=True,
-            )
-            _va_c1, _va_c2, _va_c3, _va_c4 = st.columns(4)
-            with _va_c1:
-                st.metric("量比(20日)", f"{_vol_anomaly['vol_ratio']:.2f}x")
-            with _va_c2:
-                st.metric("日涨跌", f"{_vol_anomaly['price_chg_1d']:+.2f}%")
-            with _va_c3:
-                st.metric("5日量能趋势", f"{_vol_anomaly['vol_trend_5d']:+.1f}%")
-            with _va_c4:
-                _sig_map = {
-                    "bullish": "📈 看涨信号", "bearish": "📉 看跌信号",
-                    "caution_up": "⚠️ 缩量涨·谨慎", "caution_down": "🔍 缩量跌·观察",
-                    "turning": "🔄 变盘信号", "neutral": "➖ 中性",
-                }
-                st.metric("量能信号", _sig_map.get(_vol_anomaly["signal"], "中性"))
-
-        # Row 1: 旧研究质量因子 + K线形态（不得覆盖 V88-U2.0 动作）
-        _s_c1, _s_c2, _s_c3, _s_c4, _s_c5 = st.columns(5)
-        with _s_c1:
-            st.metric("研究质量分", f"{metrics.get('score', 0)}/100", delta="仅作证据")
-        with _s_c2:
-            st.metric("V88唯一动作", (_hz_decision or {}).get('action', '待核'))
-        with _s_c3:
-            rsi_val = metrics['rsi']
-            _rsi_icon = "🔴" if rsi_val > 70 else ("🟢" if rsi_val < 30 or rsi_val > 50 else "🟡")
-            st.metric(f"RSI {_rsi_icon}", f"{rsi_val:.1f}")
-        with _s_c4:
-            st.metric("夏普比率", quant.get('sharpe', 'N/A'))
-        with _s_c5:
-            st.metric("最大回撤", quant.get('max_dd', 'N/A'))
-
-        # Row 2: Alpha/Beta + 胜率/盈亏比 + MACD
-        _s2_c1, _s2_c2, _s2_c3, _s2_c4, _s2_c5 = st.columns(5)
-        alpha_val = risk_metrics.get('alpha', 0) if risk_metrics else 0
-        beta_val = risk_metrics.get('beta', 1) if risk_metrics else 1
-        with _s2_c1:
-            st.metric("Alpha (α)", f"{alpha_val*100:+.2f}%")
-        with _s2_c2:
-            st.metric("Beta (β)", f"{beta_val:.2f}")
-        with _s2_c3:
-            st.metric("历史样本胜率", quant.get('win_rate', 'N/A'))
-        with _s2_c4:
-            st.metric("历史样本盈亏比", quant.get('pl_ratio', 'N/A'))
-        with _s2_c5:
-            st.metric("K线形态", metrics.get('pattern', '无')[:8])
-
-        if quant.get('macd_signal'):
-            st.caption(f"📊 MACD: {quant.get('macd_signal','N/A')} | 布林带: {quant.get('bb_position','N/A')} | 乖离率: {metrics.get('bias',0):.2f}% | ATR: {metrics.get('atr',0):.2f}")
-
-        st.divider()
-
-        # ═══════════════════════════════════════════════════════════════
-        # 【V93 精简】评级引擎（折叠展示）
-        # ═══════════════════════════════════════════════════════════════
-        with st.expander("🏛️ 评级体系（CANSLIM / 专业投机 / ESG / 长线法宝）", expanded=False):
-            c_score1, c_score2 = st.columns(2)
-            with c_score1:
-                st.markdown("#### CANSLIM 因子")
-                st.table(pd.DataFrame(metrics['canslim_rows']))
-            with c_score2:
-                st.markdown("#### 专业投机原理")
-                st.table(pd.DataFrame(metrics['spec_rows']))
-
-            _esg_e = metrics.get('esg_e', 0)
-            _esg_s = metrics.get('esg_s', 0)
-            _esg_g = metrics.get('esg_g', 0)
-            _esg_total = metrics.get('esg_total', 0)
-            _esg_grade = metrics.get('esg_grade', 'N/A')
-            esg_c1, esg_c2, esg_c3, esg_c4 = st.columns(4)
-            with esg_c1:
-                st.metric("🌿 环境 (E)", f"{_esg_e}/100")
-            with esg_c2:
-                st.metric("👥 社会 (S)", f"{_esg_s}/100")
-            with esg_c3:
-                st.metric("🏛️ 治理 (G)", f"{_esg_g}/100")
-            with esg_c4:
-                st.metric("📊 ESG综合", f"{_esg_total}/100 ({_esg_grade})")
-            _esg_rows = metrics.get('esg_rows', [])
-            if _esg_rows:
-                st.table(pd.DataFrame(_esg_rows))
-
-            if LongCompounderGate:
-                try:
-                    lc_gate = LongCompounderGate()
-                    lc_result = lc_gate.compute(df, target_c)
-                    lc_rows = []
-                    lc_score = lc_result.get("long_compounder_score", 50)
-                    lc_pass = lc_result.get("passes_long_compounder_gate", False)
-                    for fname, fkey, desc in [
-                        ("护城河代理", "moat_proxy", "价格稳定性、趋势稳健"),
-                        ("ROIC代理", "roic_proxy", "动量与回撤质量"),
-                        ("FCF质量代理", "fcf_quality_proxy", "量价配合"),
-                        ("利润率稳定代理", "margin_stability_proxy", "低波动=稳定性高"),
-                    ]:
-                        val = lc_result.get(fkey, 0.5)
-                        score_int = int(val * 100)
-                        status = "✅" if score_int >= 60 else ("❌" if score_int < 40 else "🟡")
-                        lc_rows.append({"要素": fname, "状态": status, "说明": desc, "得分": f"{score_int}/100"})
-                    lc_rows.append({"要素": "📊 长线法宝综合", "状态": "✅" if lc_pass else "❌", "说明": "护城河+ROIC+FCF+利润率稳定", "得分": f"{lc_score:.1f}/100"})
-                    st.markdown("#### 长线法宝评级")
-                    st.table(pd.DataFrame(lc_rows))
-                except Exception:
-                    pass
-
-            st.caption("📐 以上五维分仅作基本面/质量研究证据；买卖动作、概率、盈亏比与排名一律以页面首屏 V88-U2.0 唯一决策底稿为准。")
-
-        st.divider()
-        
-        # 【V93】基础指标已整合到上方「综合评分 & 量化指标」面板
-
-        # 蒙特卡洛预测
-        if mc:
-            st.markdown("#### 🔮 蒙特卡洛推演 (10日)")
-            m1, m2, m3 = st.columns(3)
-            curr = df['Close'].iloc[-1]
-            p90_chg = (mc['p90'] - curr) / curr * 100 if curr > 0 else 0
-            p50_chg = (mc['p50'] - curr) / curr * 100 if curr > 0 else 0
-            p10_chg = (mc['p10'] - curr) / curr * 100 if curr > 0 else 0
-            # 【V87.4】蒙特卡洛预测趋势说明
-            def get_trend_desc(change_pct):
-                if change_pct > 15:
-                    return "大幅上涨"
-                elif change_pct > 5:
-                    return "温和上涨"
-                elif change_pct > -5:
-                    return "横盘震荡"
-                elif change_pct > -15:
-                    return "温和下跌"
-                else:
-                    return "大幅下跌"
-            
-            with m1: 
-                st.metric("乐观 (P90)", f"{mc['p90']:.2f}", f"{p90_chg:+.1f}%")
-                st.caption(f"📈 {get_trend_desc(p90_chg)}")
-            with m2: 
-                st.metric("中性 (P50)", f"{mc['p50']:.2f}", f"{p50_chg:+.1f}%")
-                st.caption(f"📊 {get_trend_desc(p50_chg)}")
-            with m3: 
-                st.metric("悲观 (P10)", f"{mc['p10']:.2f}", f"{p10_chg:+.1f}%")
-                st.caption(f"📉 {get_trend_desc(p10_chg)}")
-        
-        st.divider()
-        
-        # 【V93】AI通用问答（日线/周线已整合到AI综合分析）
-        st.markdown("#### 💬 AI 问答")
-        _qa_col1, _qa_col2 = st.columns([4, 1])
-        with _qa_col1:
-            q = st.text_input("向 AI 提问", placeholder="如：该股适合长期持有吗？止损位设在哪？", key="qa_input")
-        with _qa_col2:
-            st.markdown("<br>", unsafe_allow_html=True)
-            _qa_go = st.button("🚀 提问", key="btn_qa", type="primary", width='stretch')
-        if _qa_go and q and MY_GEMINI_KEY:
-            with _v88_running(f"🤖 {_ai_model_label()} 思考中..."):
-                curr_price = df['Close'].iloc[-1]
-                prompt = f"{target_c} 当前价格 {curr_price:.2f}。问题：{q}\n\n简洁专业回答（300字内），可结合技术面和基本面。"
-                result = call_gemini_api(prompt)
-                st.info(result)
-                st.caption(f"📌 AI 生成 · {_ai_model_label()}")
-        elif _qa_go and not q:
-            st.warning("请先输入问题")
-        
-        st.divider()
-        
-        # 【V83 P1】机构式交易计划与风险预算
-        if metrics and metrics.get('trade_plan'):
-            trade_plan = metrics['trade_plan']
-            st.markdown("### 📋 机构式交易计划")
-            st.caption("💡 基于ATR和均线系统计算的专业交易计划，仅供参考，不构成投资建议")
-            
-            # 交易计划表格
-            tp_col1, tp_col2, tp_col3 = st.columns(3)
-            
-            with tp_col1:
-                st.markdown("##### 🎯 入场策略")
-                
-                # 【V87.4】入场策略趋势判断
-                current_price = trade_plan['current_price']
-                entry_low = trade_plan['entry_low']
-                entry_high = trade_plan['entry_high']
-                entry_mid = trade_plan['entry_mid']
-                
-                # 判断当前价格位置
-                if current_price < entry_low:
-                    entry_status = "🟢 当前价格偏低，适合买入"
-                elif current_price > entry_high:
-                    entry_status = "🔴 当前价格偏高，建议等待"
-                else:
-                    entry_status = "🟡 当前价格在区间内，可考虑"
-                
-                st.metric("入场区间（低）", f"${entry_low:.2f}")
-                st.metric("入场区间（高）", f"${entry_high:.2f}")
-                st.metric("最佳入场价", f"${entry_mid:.2f}", 
-                         delta=f"{((entry_mid - current_price) / current_price * 100):+.1f}%")
-                st.caption(entry_status)
-            
-            with tp_col2:
-                st.markdown("##### 🛡️ 风险控制")
-                
-                # 【V87.15修复】风险判断结合评分和止损距离
-                risk_pct = trade_plan['risk_per_share'] / current_price * 100
-                score = metrics.get('score', 50)
-                
-                # 综合评分和止损距离判断风险
-                if score >= 75:
-                    # 高分股票：风险较低
-                    if risk_pct > 20:
-                        risk_status = "🟡 止损较宽，但基本面优秀"
-                    else:
-                        risk_status = "🟢 风险较低，基本面优秀"
-                elif score >= 60:
-                    # 中高分股票：风险适中
-                    if risk_pct > 15:
-                        risk_status = "🟡 风险适中，止损较宽"
-                    else:
-                        risk_status = "🟢 风险可控，基本面良好"
-                else:
-                    # 低分股票：风险较高
-                    if risk_pct > 15:
-                        risk_status = "🔴 风险较高，谨慎操作"
-                    elif risk_pct > 10:
-                        risk_status = "🟡 风险适中，需谨慎"
-                    else:
-                        risk_status = "🟢 止损较紧，风险可控"
-                
-                st.metric("止损位", f"${trade_plan['stop_loss']:.2f}",
-                         delta=f"-{trade_plan['risk_per_share']:.2f} ({risk_pct:.1f}%)")
-                st.metric("单股风险", f"${trade_plan['risk_per_share']:.2f}")
-                st.metric("风险预算", f"{trade_plan['risk_budget_pct']:.1f}%", help="单笔交易风险占总资金比例")
-                st.caption(risk_status)
-            
-            with tp_col3:
-                st.markdown("##### 🎁 目标获利")
-                
-                # 【V87.4】目标获利趋势判断
-                risk_reward_ratio = trade_plan['risk_reward_ratio']
-                reward_15r_pct = trade_plan['reward_15r'] / current_price * 100
-                reward_2r_pct = trade_plan['reward_2r'] / current_price * 100
-                
-                if risk_reward_ratio >= 2.0:
-                    rr_status = "🟢 优秀盈亏比，值得考虑"
-                elif risk_reward_ratio >= 1.5:
-                    rr_status = "🟡 良好盈亏比，可接受"
-                elif risk_reward_ratio >= 1.0:
-                    rr_status = "🟡 基本盈亏比，谨慎考虑"
-                else:
-                    rr_status = "🔴 盈亏比偏低，不建议"
-                
-                st.metric("目标位1 (1.5R)", f"${trade_plan['take_profit_15r']:.2f}",
-                         delta=f"+{trade_plan['reward_15r']:.2f} ({reward_15r_pct:.1f}%)")
-                st.metric("目标位2 (2R)", f"${trade_plan['take_profit_2r']:.2f}",
-                         delta=f"+{trade_plan['reward_2r']:.2f} ({reward_2r_pct:.1f}%)")
-                st.metric("盈亏比", f"{risk_reward_ratio:.2f}:1")
-                st.caption(rr_status)
-            
-            st.divider()
-            
-            # 【V83 P1.5】风险预算仓位建议
-            st.markdown("##### 💰 仓位建议（基于风险预算）")
-            st.info(f"""
-**建议仓位上限**：{trade_plan['max_position']} 股（约 ${trade_plan['position_value']:,.0f}）
-
-📌 **计算逻辑**：
-- 总资金：$100,000（可在代码中调整）
-- 风险预算：{trade_plan['risk_budget_pct']:.1f}%（单笔最大亏损 $1,000）
-- 单股风险：${trade_plan['risk_per_share']:.2f}（当前价 - 止损价）
-- 最大仓位 = 风险预算金额 ÷ 单股风险
-
-⚠️ **注意**：这是理论最大仓位，实际操作应结合资金管理策略分批建仓。
-            """)
-        
         # 【V80.1修复】添加"清除分析"按钮，不自动清空
         st.markdown("---")
         if st.button("🔄 清除当前分析", key="clear_analysis", width='stretch'):
@@ -16089,7 +14865,7 @@ if os.environ.get("V88_ENGINE_ONLY") == "1":
 # 【模块 ③】深度作战室 + 猎手战位 + Top30（作战室为首 Tab，点击后自动切换）
 # ═══════════════════════════════════════════════════════════════
 # 【V90.7】深度作战室作为第一个 Tab，解决"点击无反应"——选中后自动显示
-tab_warroom, tab_scanner, tab_top30, tab_ai_select, tab_watchlist = st.tabs(["⚔️ 深度作战室", "📡 猎手战位", "🏆 Top30 扫描", "🤖 AI选股", "📋 自选股分析"])
+tab_warroom, tab_scanner, tab_watchlist = st.tabs(["⚔️ 深度作战室", "📡 猎手战位", "📋 自选股分析"])
 
 # 【V90.7】深度作战室 Tab - 完整分析内容在顶部区块渲染，此处仅占位
 with tab_warroom:
@@ -17320,410 +16096,6 @@ def _dingtalk_push_top30(res: dict | None) -> tuple[bool, str]:
     ]
     return _dingtalk_send("\n".join(lines))
 
-
-with tab_top30:
-
-    @st.fragment(run_every=20)
-    def _top30_fragment():
-        # ── 心跳：告知 scan_worker 页面仍在线 ────────────────────
-        _scan_write_heartbeat()
-
-        # ── 读取当前状态 ──────────────────────────────────────────
-        _prog   = _scan_read_progress()
-        _status = _prog.get("status", "idle")
-        _pct    = _prog.get("pct", 0)
-        _detail = _prog.get("detail", "")
-        _res    = _scan_read_results()           # None → 无有效结果
-
-        # ── 标题行 ────────────────────────────────────────────────
-        _h_col1, _h_col2, _h_col3 = st.columns([4, 2, 2])
-        with _h_col1:
-            st.markdown(
-                '<p style="font-size:13px;font-weight:700;margin-bottom:0.2rem;">' +
-                '🏆 Top30 后台扫描 · 三市场 × 四策略</p>',
-                unsafe_allow_html=True,
-            )
-        with _h_col3:
-            if st.button("📲 推送钉钉", key="top30_dingtalk_push",
-                         width='stretch',
-                         help="一键把 Top30 推荐发送到钉钉群"):
-                with _v88_running("推送中..."):
-                    _ok, _msg = _dingtalk_push_top30(_res)
-                if _ok:
-                    st.toast("✅ 已推送到钉钉", icon="📲")
-                else:
-                    st.toast(f"❌ 推送失败：{_msg}", icon="⚠️")
-        with _h_col2:
-            _lbl = _scan_result_label()
-            if _lbl:
-                st.caption(_lbl)
-
-        # ── 进行中：进度条 ────────────────────────────────────────
-        if _status == "running" or (_scan_worker_running() and _res is None):
-            st.info(f"⏳ 后台扫描中… {_detail}")
-            st.progress(min(_pct, 99) / 100)
-            st.caption("扫描完成后结果将自动展示，页面将每 20 秒自动刷新")
-            return
-
-        # ── 无结果 / 过期：展示启动区域 ───────────────────────────
-        if _res is None:
-            if _GIST_ID:
-                st.info("🔍 尚无扫描结果。云端 GitHub Actions 每天自动扫描4次，结果将自动同步。也可点下方按钮立即在本机后台扫描。")
-            else:
-                st.info("🔍 尚无扫描结果。点击下方按钮在**后台**启动全市场扫描（约 5-8 分钟），期间可正常使用其他功能。")
-            _us_c, _hk_c, _cn_c = len(RAW_US), len(RAW_HK), len(RAW_CN_TOP)
-            st.caption(f"扫描池: 美股 {_us_c} + 港股 {_hk_c} + A股 {_cn_c} = {_us_c+_hk_c+_cn_c} 只 · 结果缓存 8 小时")
-            _btn_col1, _btn_col2 = st.columns([2, 1])
-            with _btn_col1:
-                if st.button("🚀 启动后台全市场扫描", type="primary", width='stretch', key="top30_start_bg"):
-                    _scan_start_worker(force=False)
-                    st.toast("✅ 后台扫描已启动，约 5-8 分钟后结果自动刷新", icon="🚀")
-                    st.rerun()
-            with _btn_col2:
-                if st.button("🔄 强制重扫", width='stretch', key="top30_force_bg",
-                             help="清除缓存并重新扫描"):
-                    _scan_force_clear()
-                    _scan_start_worker(force=True)
-                    st.toast("🔄 已清除缓存，强制重新扫描", icon="🔄")
-                    st.rerun()
-            return
-
-        # ── 有结果：4-Tab 展示 ────────────────────────────────────
-        _ts_str  = datetime.fromtimestamp(_res["timestamp"]).strftime("%m-%d %H:%M")
-        _is_gist = _GIST_ID and _gist_local_cache.get("timestamp") == _res.get("timestamp")
-        _is_stale = _res.get("_stale", False)
-        _src_tag = "☁️ 云端缓存" if _is_gist else "💻 本地扫描"
-        if _is_stale:
-            _src_tag += " (待更新)"
-        _sync_st = _gist_sync_status()
-        _lbl = _scan_result_label()
-        if _is_stale and _lbl == "":
-            _lbl = "⏰ 等待云端自动更新"
-        st.caption(f"📅 扫描完成于 {_ts_str}  ·  {_src_tag}  ·  {_lbl}  ·  20s 自动刷新")
-        if _is_stale:
-            st.info("☁️ 云端数据等待 GitHub Actions 下一轮自动更新（每6小时），当前展示最近一次结果。")
-        if _GIST_ID:
-            _sync_color = "#10b981" if _gist_last_sync_ok else "#f59e0b"
-            st.markdown(f'<p style="font-size:11px;color:{_sync_color};margin:0">{_sync_st}</p>',
-                        unsafe_allow_html=True)
-
-        _btn_c1, _btn_c2 = st.columns([8, 1])
-        with _btn_c2:
-            if st.button("🔄 重扫", key="top30_rescan",
-                         help="清除缓存并重新扫描", width='stretch'):
-                _scan_force_clear()
-                _scan_start_worker(force=True)
-                st.toast("🔄 已触发重新扫描", icon="🔄")
-                st.rerun()
-
-        # ── 宏观风险面板（Gemini 实时评估）──────────────────────────
-        # 重试按钮（在 expander 外，方便点击）
-        _macro_retry_col, _ = st.columns([1, 8])
-        with _macro_retry_col:
-            if st.button("🔄", key="macro_risk_retry", help="重新获取宏观风险评估"):
-                st.session_state.pop("_macro_risk_result", None)
-                try:
-                    _MACRO_RISK_CACHE_FILE.unlink(missing_ok=True)
-                except Exception:
-                    pass
-                st.rerun()
-
-        _mr = _fetch_macro_risk()
-        _rl  = _mr.get("risk_level", 3)
-        _rc  = _mr.get("risk_color", "#6b7280")
-        _rlb = _mr.get("risk_label", "")
-        _bias= _mr.get("bias", "均衡")
-        _bias_icons = {"进攻": "⚔️", "均衡": "⚖️", "防御": "🛡️"}
-        _bias_icon  = _bias_icons.get(_bias, "⚖️")
-        _risk_bar   = "█" * _rl + "░" * (5 - _rl)
-        _mr_error   = _mr.get("_error", "")
-
-        with st.expander(
-            f"🌍 宏观风险评估  {_risk_bar}  等级 {_rl}/5 · {_rlb}  |  {_bias_icon} 建议：{_bias}",
-            expanded=(_rl >= 3)
-        ):
-            # 摘要
-            _summary = _mr.get("summary", "")
-            if _summary:
-                st.markdown(
-                    f'<div style="background:{_rc}18;border-left:4px solid {_rc};'
-                    f'padding:10px 14px;border-radius:6px;font-size:13px;'
-                    f'color:#1e293b;margin-bottom:10px;">'
-                    f'<b>📋 宏观背景</b><br>{_summary}</div>',
-                    unsafe_allow_html=True
-                )
-            # 真实错误信息（便于诊断）
-            if _mr_error:
-                st.markdown(
-                    f'<div style="font-size:11px;color:#ef4444;padding:4px 8px;'
-                    f'background:#fef2f2;border-radius:4px;margin-bottom:6px;">'
-                    f'⚠️ API 错误：{_mr_error}<br>'
-                    f'<span style="color:#6b7280">点击上方 🔄 按钮重试</span></div>',
-                    unsafe_allow_html=True
-                )
-            # 三列：关键风险 / 受益板块 / 受压板块
-            _mc1, _mc2, _mc3 = st.columns(3)
-            with _mc1:
-                st.markdown("**⚠️ 关键风险**")
-                for r in _mr.get("key_risks", []):
-                    st.markdown(f"<small>• {r}</small>", unsafe_allow_html=True)
-            with _mc2:
-                st.markdown("**🚀 受益板块**")
-                for s in _mr.get("hot_sectors", []):
-                    st.markdown(f"<small style='color:#10b981'>▲ {s}</small>", unsafe_allow_html=True)
-            with _mc3:
-                st.markdown("**🔻 受压板块**")
-                for s in _mr.get("warn_sectors", []):
-                    st.markdown(f"<small style='color:#ef4444'>▼ {s}</small>", unsafe_allow_html=True)
-            # 操作建议
-            _br = _mr.get("bias_reason", "")
-            if _br:
-                _bias_bg = {"进攻": "#10b981", "均衡": "#3b82f6", "防御": "#ef4444"}
-                _bbg = _bias_bg.get(_bias, "#6b7280")
-                st.markdown(
-                    f'<div style="background:{_bbg};color:white;padding:8px 14px;'
-                    f'border-radius:6px;font-size:12px;margin-top:8px;">'
-                    f'{_bias_icon} <b>操作建议 · {_bias}</b>：{_br}</div>',
-                    unsafe_allow_html=True
-                )
-            st.caption(f"⏱ 宏观评估每6小时刷新 · 由 Gemini AI 生成 · 仅供参考，不构成投资建议")
-
-        # ── 4-Tab 扫描结果 ────────────────────────────────────────
-        # 把受压板块传给渲染函数，用于标注高风险个股
-        _warn_sectors_set = set(_mr.get("warn_sectors", []))
-
-        _t1, _t2, _t3, _t4 = st.tabs(
-            ["🔥 趋势强势", "🎯 蓄势潜伏", "🎯 拐点Top10（赔率）", "🚀 启动Top10（胜率）"]
-        )
-
-        def _sector_warn_tag(industry: str) -> str:
-            """如果个股行业在宏观受压板块中，返回警示标记"""
-            if not industry or not _warn_sectors_set:
-                return ""
-            for ws in _warn_sectors_set:
-                if ws in industry or industry in ws:
-                    return " ⚠️"
-            return ""
-
-        def _render_market_col(col, items, mkt_label, key_prefix, tab_type="top"):
-            """渲染单市场结果列（含宏观风险行业警示）
-            tab_type: 'top'=趋势强势, 'coil'=蓄势潜伏, 'inflection'=拐点, 'breakout'=启动
-            """
-            with col:
-                bm = _res.get(mkt_label[-2:] if mkt_label.endswith(("美股","港股","A股")) else mkt_label, {})
-                st.markdown(
-                    f'<p style="font-size:12px;font-weight:600;margin-bottom:4px;">{mkt_label}</p>',
-                    unsafe_allow_html=True,
-                )
-                if not items:
-                    st.caption("暂无符合条件标的")
-                    if "港" in mkt_label or "HK" in mkt_label:
-                        if tab_type == "top":
-                            # 趋势强势：Risk Off时正常没有，给出解释
-                            st.markdown(
-                                '<div style="font-size:11px;color:#f59e0b;line-height:1.5;">'
-                                '⚠️ 港股当前偏弱（Risk Off），趋势多头标的稀少。'
-                                '<br>👉 可看「蓄势潜伏」找筑底机会，或「拐点Top10」低吸。</div>',
-                                unsafe_allow_html=True
-                            )
-                        elif tab_type == "coil":
-                            # 蓄势潜伏：Risk Off也应该有，若仍空说明数据刚扫描/阈值未过
-                            st.markdown(
-                                '<div style="font-size:11px;color:#6b7280;line-height:1.5;">'
-                                '暂无达标蓄势标的（需量缩+ATR收缩+守住支撑同时满足）。'
-                                '<br>👉 可点「🔄 重扫」触发新一轮扫描。</div>',
-                                unsafe_allow_html=True
-                            )
-                    return
-                # 在"信号"列追加宏观行业警示标
-                items_display = []
-                for it in items:
-                    it2 = dict(it)
-                    tag = _sector_warn_tag(it2.get("行业", ""))
-                    if tag and "信号" in it2:
-                        it2["信号"] = str(it2["信号"]) + tag
-                    items_display.append(it2)
-                df_show = pd.DataFrame(items_display)
-                show_cols = [c for c in ["股票","代码","得分","形态","信号"] if c in df_show.columns]
-                sel = st.dataframe(
-                    df_show[show_cols] if show_cols else df_show,
-                    width='stretch',
-                    hide_index=True,
-                    height=min(400, 40 + 35 * len(items)),
-                    on_select="rerun",
-                    selection_mode="single-row",
-                    key=f"{key_prefix}_df",
-                )
-                try:
-                    if sel and hasattr(sel, "selection") and sel.selection and sel.selection.rows:
-                        idx  = sel.selection.rows[0]
-                        row  = items[idx]
-                        st.session_state.scan_selected_code = row["代码"]
-                        st.session_state.scan_selected_name = row["股票"]
-                        st.toast(f"✅ 已选中 {row['股票']}", icon="🎯")
-                        st.rerun()
-                except Exception:
-                    pass
-
-        def _render_dual_col(col, items, title, color, key_prefix):
-            """渲染拐点/启动双通道列（含可展开理由）"""
-            with col:
-                st.markdown(
-                    f'<p style="font-size:12px;font-weight:700;color:{color};margin-bottom:4px;">{title}</p>',
-                    unsafe_allow_html=True,
-                )
-                if not items:
-                    st.caption("暂无符合条件标的")
-                    return
-                for i, row in enumerate(items, 1):
-                    exp_label = (f"{i}. **{row['股票']}** `{row['代码']}` · "
-                                 f"{row.get('形态','')} · 得分 {row['得分']}")
-                    with st.expander(exp_label, expanded=(i <= 3)):
-                        st.markdown(f"**信号**：{row.get('信号','')}")
-                        st.markdown(f"**理由**：{row.get('理由','')}")
-                        st.caption(f"行业：{row.get('行业','')} ｜ 现价：{row.get('现价','')}")
-                        if st.button(f"🔍 深度分析 {row['股票']}",
-                                     key=f"{key_prefix}_{i}_{row['代码']}"):
-                            st.session_state.scan_selected_code = row["代码"]
-                            st.session_state.scan_selected_name = row["股票"]
-                            st.rerun()
-
-        _mkt_cfg = [
-            ("US", "🇺🇸 美股"),
-            ("HK", "🇭🇰 港股"),
-            ("CN", "🇨🇳 A股"),
-        ]
-
-        # Tab 1：趋势强势
-        with _t1:
-            _c1, _c2, _c3 = st.columns(3)
-            for (_mkey, _mlabel), _col in zip(_mkt_cfg, [_c1, _c2, _c3]):
-                _items = _res.get(_mkey, {}).get("top", [])
-                _render_market_col(_col, _items, _mlabel, f"top_{_mkey}", tab_type="top")
-
-        # Tab 2：蓄势潜伏（筑底积累，不受市场体制限制，Risk Off也应显示）
-        with _t2:
-            _c1, _c2, _c3 = st.columns(3)
-            for (_mkey, _mlabel), _col in zip(_mkt_cfg, [_c1, _c2, _c3]):
-                _items = _res.get(_mkey, {}).get("coil", [])
-                _render_market_col(_col, _items, _mlabel, f"coil_{_mkey}", tab_type="coil")
-
-        # Tab 3：拐点（赔率）
-        with _t3:
-            st.caption("三关全中（底部位置 + 结构不创新低 + 止跌买量）· 赔率佳 · 低吸布局窗口")
-            for _mkey, _mlabel in _mkt_cfg:
-                _mkt_data = _res.get(_mkey, {})
-                _bm_r     = _mkt_data.get("bm_ret5", 0)
-                st.markdown(f"**{_mlabel}** · 基准5日 {_bm_r:+.1f}%")
-                _dc1, _dc2 = st.columns(2)
-                _render_dual_col(_dc1, _mkt_data.get("inflection", []),
-                                 "🎯 拐点Top10", "#8b5cf6", f"inf_{_mkey}")
-                # 占位（右列空）
-                with _dc2:
-                    st.empty()
-                st.divider()
-
-        # Tab 4：启动（胜率）
-        with _t4:
-            st.caption("突破20日高 / 放量1.3x / 相对强度领跑（满足≥1项）· 趋势启动窗口")
-            for _mkey, _mlabel in _mkt_cfg:
-                _mkt_data = _res.get(_mkey, {})
-                _bm_r     = _mkt_data.get("bm_ret5", 0)
-                st.markdown(f"**{_mlabel}** · 基准5日 {_bm_r:+.1f}%")
-                _dc1, _dc2 = st.columns(2)
-                with _dc1:
-                    st.empty()
-                _render_dual_col(_dc2, _mkt_data.get("breakout", []),
-                                 "🚀 启动Top10", "#10b981", f"bo_{_mkey}")
-                st.divider()
-
-    _top30_fragment()
-
-# 【V91.9】AI选股 Tab - Gemini 筛选短中长期好股，中美港各 Top3，15分钟缓存
-with tab_ai_select:
-    st.markdown("#### 🤖 三期限选股 · 短/中/长线各 Top30")
-    st.markdown("<div style='font-size:13px;color:#4b5563;line-height:1.9'>"
-                "中美港<b>每市场各10只</b>组成 Top30 · 五维引擎确定性打分（无AI编造）｜"
-                "<span style='background:#fef3c7;padding:1px 8px;border-radius:8px'>⚡短线 = 动能45% + RS30% + 综合25%</span>　"
-                "<span style='background:#dbeafe;padding:1px 8px;border-radius:8px'>🚀中线 = 综合45% + 动能30% + 趋势排列25%</span>　"
-                "<span style='background:#dcfce7;padding:1px 8px;border-radius:8px'>🏛长线 = 综合40% + 年线趋势30% + 低波动30%</span>"
-                "</div>", unsafe_allow_html=True)
-
-    if 'horizon_top10' not in st.session_state:
-        st.session_state.horizon_top10 = None
-
-    ttl = get_smart_cache_ttl('daily')
-    cached = False
-    if st.session_state.horizon_top10:
-        ts = st.session_state.horizon_top10.get('scan_timestamp', 0)
-        if (time.time() - ts) < ttl:
-            cached = True
-            remaining = (ttl - (time.time() - ts)) / 60
-            st.info(f"📦 使用缓存 | 剩余 {remaining:.1f} 分钟有效")
-    if not cached:
-        loaded = _load_scan_cache_from_file('horizon_top10', 'all')
-        if loaded:
-            st.session_state.horizon_top10 = loaded
-            cached = True
-            st.info("📦 使用缓存（文件持久化）")
-
-    c_run, c_clear = st.columns([3, 1])
-    with c_run:
-        if st.button("🚀 生成 短/中/长线 Top30（约400只池，2-3分钟）", type="primary", width='stretch'):
-            if cached:
-                st.toast("📦 使用缓存，无需重新扫描", icon="📦")
-            else:
-                progress_bar = st.progress(0)
-                status_text = st.empty()
-                _hz_t0 = time.time()
-
-                def _hz_prog(cur, total, name):
-                    progress_bar.progress(min(1.0, cur / max(1, total)))
-                    _el = time.time() - _hz_t0
-                    _eta = (_el / cur * (total - cur)) if cur > 3 else 0
-                    status_text.text(f"⏱ 已用 {_el:.0f}s · 预计剩余 {_eta:.0f}s ｜ 扫描 {cur}/{total} - {name}")
-
-                _hz = run_horizon_top10(progress_callback=_hz_prog)
-                progress_bar.empty()
-                status_text.empty()
-                st.session_state.horizon_top10 = {
-                    'type': 'horizon_top10', 'scan_market': 'all',
-                    **_hz, 'scan_timestamp': time.time(),
-                }
-                _save_scan_cache_to_file(st.session_state.horizon_top10)
-                st.toast("✅ 三期限 Top10 已生成", icon="🎯")
-                st.rerun()
-    with c_clear:
-        if st.button("🗑️ 清缓存", width='stretch', key="hz_clear"):
-            st.session_state.horizon_top10 = None
-            try:
-                fp = SCAN_CACHE_DIR / f"{_scan_cache_key('horizon_top10', 'all')}.pkl"
-                if fp.exists():
-                    fp.unlink()
-            except Exception:
-                pass
-            st.rerun()
-
-    if st.session_state.horizon_top10:
-        _hz = st.session_state.horizon_top10
-        _t_s, _t_m, _t_l = st.tabs(["⚡ 短线 Top30（1-5日）", "🚀 中线 Top30（1-3月）", "🏛 长线 Top30（6月+）"])
-        _col_order = ["排名", "市场", "代码", "名称", "期限分", "综合分", "RS强度", "20日动量", "现价", "操作指引", "止损/目标"]
-        for _tab, _key, _note in (
-            (_t_s, "short", "动能与相对强度主导，配合日报操作榜使用；破止损当天离场"),
-            (_t_m, "mid", "综合评分+均线多头排列，适合分批建仓、周报轮动信号跟踪"),
-            (_t_l, "long", "年线之上+低波动的质量型标的，适合核心仓，逢大跌加仓"),
-        ):
-            with _tab:
-                st.caption(f"💡 {_note}")
-                _arr = _hz.get(_key, [])
-                if _arr:
-                    _df = pd.DataFrame(_arr)
-                    _df = _df[[c for c in _col_order if c in _df.columns]]
-                    render_clickable_table(_df, f"horizon_{_key}")
-                else:
-                    st.info("暂无合格标的（宁缺毋滥）")
-
-# 【自选股分析】按中美港划分，逐只分析：催化、技术面、风险、操作建议（与钉钉日报同源）
 with tab_watchlist:
     st.markdown("#### 📋 自选股分析")
     st.caption("💡 按中美港划分，对每只自选股逐只分析：近期催化、技术面、风险点、操作建议（持有/加仓/减仓/观望）")
