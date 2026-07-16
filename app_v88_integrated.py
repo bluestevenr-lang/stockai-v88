@@ -11302,6 +11302,108 @@ def _stk_link(name, code):
             f'style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{name}</a>')
 
 
+def _render_l3_cycle_board(_snap, _is_trading):
+    """【V88·三层周期概率总览】大盘→板块同屏（自选=上方决策台，共三层）。
+
+    北极星定纲(2026-07-16)：三层都要看到轮转周期与下一周期方向概率（中美港）。
+    口径：大盘=统一引擎 2/4/6/8/16 周方向分（与自选决策台完全同源）；
+    板块=rotation_forecast 轨迹 2/5/8/16 周（09:00/21:00 交易日更新）。
+    纯确定性引擎，零 LLM 成本；概率=规则情景估计（非回测胜率）。
+    """
+    _rot9 = (_snap or {}).get("rotation_forecast") or {}
+    _traj9 = _rot9.get("trajectories") or {}
+    _key9, _ttl9 = "_l3_board9", (1800 if _is_trading else 3600)
+    _cache9 = st.session_state.get(_key9) or {}
+    if not _cache9.get("mkts") or time.time() - _cache9.get("ts", 0) > _ttl9:
+        _idx_map9 = {"美股": ("标普500", "^GSPC"), "A股": ("上证指数", "000001.SS"),
+                     "港股": ("恒生指数", "^HSI")}
+        _mkts9 = {}
+        try:
+            from v88_decision_core import evaluate_decision as _ed9
+            import cloud_engine as _ce9
+            for _mk9, (_nm9, _sym9) in _idx_map9.items():
+                try:
+                    _df9 = fetch_stock_data(_sym9)
+                    if _df9 is None or len(_df9) < 40:
+                        continue
+                    try:
+                        _full9 = _ce9.analyze_trend_full(_df9) or {}
+                    except Exception:
+                        _full9 = {}
+                    _dc9 = _ed9(_df9, _full9, name=_nm9, code=_sym9)
+                    if _dc9.get("error"):
+                        continue
+                    _hz9 = ((_dc9.get("facts") or {}).get("horizons") or {})
+                    _probs9 = [(_lab9, int(round(float((_hz9.get(_lab9) or {}).get("rule_score")))))
+                               for _lab9 in ("2周", "4周", "6周", "8周", "16周")
+                               if (_hz9.get(_lab9) or {}).get("rule_score") is not None]
+                    _mkts9[_mk9] = {"name": _nm9, "stage": str(_full9.get("stage") or "—"),
+                                    "action": str(_dc9.get("action") or "观察"), "probs": _probs9}
+                except Exception:
+                    continue
+        except Exception:
+            logging.debug("三层总览大盘层计算失败", exc_info=True)
+        if _mkts9:
+            _cache9 = {"ts": time.time(), "mkts": _mkts9}
+            st.session_state[_key9] = _cache9
+    _mkts9 = _cache9.get("mkts") or {}
+    if not _mkts9 and not _traj9:
+        return
+
+    def _pcol9(_p):
+        return "#dc2626" if _p >= 55 else ("#16a34a" if _p <= 45 else "#64748b")
+
+    def _chain9(_probs):
+        if not _probs:
+            return "<span style='color:#94a3b8'>计算中</span>"
+        _seg9 = " ".join(f"<span style='color:{_pcol9(p)}'>{lab}<b>{p}</b></span>"
+                         for lab, p in _probs)
+        _d9 = _probs[-1][1] - _probs[0][1]
+        _arrow9 = ("<b style='color:#dc2626'>↗越远越强</b>" if _d9 >= 8 else
+                   ("<b style='color:#16a34a'>↘越远越弱</b>" if _d9 <= -8 else
+                    "<span style='color:#94a3b8'>→均衡</span>"))
+        return f"{_seg9}　{_arrow9}"
+
+    st.markdown("**🧭 三层周期·概率总览**　<span style='font-size:11px;color:#64748b'>"
+                "自选=上方决策台 ｜ 数字=各周期上涨概率%（规则情景估计）·红涨绿跌</span>",
+                unsafe_allow_html=True)
+    _cols9 = st.columns(3)
+    for _ci9, _mk9 in enumerate(("美股", "A股", "港股")):
+        with _cols9[_ci9]:
+            _rows9 = []
+            _m9 = _mkts9.get(_mk9)
+            if _m9:
+                _rows9.append(
+                    f"<div style='margin-bottom:3px'>📈 <b>{_m9['name']}</b> "
+                    f"<span style='color:#475569'>{_m9['stage']}</span> · {_m9['action']}<br>"
+                    f"<span style='font-size:12px'>{_chain9(_m9['probs'])}</span></div>")
+            _tl9 = sorted((_traj9.get(_mk9) or []),
+                          key=lambda t: -((t.get("points") or {}).get("2周") or {}).get("score", 0))
+            for _t9, _flag9 in ([(_tl9[0], "🔥")] if _tl9 else []) + \
+                               ([(_tl9[-1], "🧊")] if len(_tl9) > 2 else []):
+                _pts9 = _t9.get("points") or {}
+                _probs9 = [(k, int((_pts9.get(k) or {}).get("score", 0)))
+                           for k in ("2周", "5周", "8周", "16周") if _pts9.get(k)]
+                _trg9 = str((_pts9.get("2周") or {}).get("trigger") or _t9.get("reason") or "")[:18]
+                _rows9.append(
+                    f"<div style='margin-bottom:3px'>{_flag9} <b>{_t9.get('name')}</b> "
+                    f"<span style='font-size:11px;color:#64748b'>{_trg9}</span><br>"
+                    f"<span style='font-size:12px'>{_chain9(_probs9)}</span></div>")
+            if _rows9:
+                st.markdown(
+                    f"<div style='border:1px solid #dbe4f0;border-radius:8px;padding:7px 9px;"
+                    f"background:#fff;box-shadow:0 1px 2px rgba(15,23,42,.04)'>"
+                    f"<div style='font-size:12px;color:#334155;margin-bottom:4px'><b>{_mk9}</b></div>"
+                    + "".join(_rows9) + "</div>", unsafe_allow_html=True)
+    _ts9 = _rot9.get("analysis_time") or _cache9.get("ts")
+    try:
+        _ts_txt9 = (datetime.fromtimestamp(float(_ts9)).strftime("%H:%M") if isinstance(_ts9, (int, float))
+                    else str(_ts9)[:16])
+    except Exception:
+        _ts_txt9 = "—"
+    st.caption(f"🕒 大盘层实时算（{'30分钟' if _is_trading else '1小时'}缓存）｜板块层随轮动预测更新（{_ts_txt9}）")
+
+
 def _render_today_nav():
     _repo = Path.home() / "Desktop" / "ai-daily-report-v2"
     # ?q= 深链：点击任何内联个股名到达这里
@@ -11814,6 +11916,12 @@ def _render_today_nav():
             st.markdown("🌡 **市场温度**：" + " ｜ ".join(_tl)
                         + "　<span style='font-size:12px;color:#6b7280'>温度=趋势40%+宽度40%+动量20%，全实价计算</span>",
                         unsafe_allow_html=True)
+
+    # 【V88·三层周期概率总览】北极星定纲：大盘/板块/自选三层同屏看周期+下一周期概率
+    try:
+        _render_l3_cycle_board(_snap, _is_trading)
+    except Exception:
+        logging.debug("三层周期总览渲染失败", exc_info=True)
 
     # ═══════════════════════════════════════════════════════════════
     # 【V88·大盘&板块前瞻】与个股同一套引擎(evaluate_forward_outlook)+同一条5/10/20/60/120日阶梯，
