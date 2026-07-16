@@ -11632,6 +11632,23 @@ def _render_today_nav():
     except Exception:
         pass
 
+    # 【V88·轮动挂钩仓位】持仓/自选正好踩今日涨停主线 → 导航顶部醒目高亮（2026-07-16 用户点单）
+    try:
+        _zt_hits9 = (json.loads((_repo / "data" / "limit_up_radar.json").read_text(encoding="utf-8"))
+                     .get("watch_hits") or [])
+        if _zt_hits9:
+            _hl9 = "；".join(
+                f"{'💼' if h['source']=='持仓' else '👁'}{h['name']}属主线**{h['industry']}**"
+                f"({h['count']}只涨停·{h['max_boards']}板)" for h in _zt_hits9[:4])
+            st.markdown(
+                f"<div style='background:#fef3c7;border-left:4px solid #f59e0b;border-radius:8px;"
+                f"padding:.6rem .8rem;font-size:13px;margin:.3rem 0'>⭐ <b>你的仓位正踩今日主线</b>："
+                f"{_linkify_md(_hl9)}　<span style='color:#92400e;font-size:11px'>"
+                f"轮动共振=短线动能，但别因涨停情绪改变原有纪律</span></div>",
+                unsafe_allow_html=True)
+    except Exception:
+        pass
+
     # 【V88·第一屏自选决策台】先占住标题下方的位置，扫描完成后再回填。
     # 这样无需重复请求行情，也能让“我的自选”真正排在大盘、日报和持仓之前。
     _watch_front_slot9 = st.empty()
