@@ -12694,6 +12694,10 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
                         _d9x = f"{_d9x[:4]}-{_d9x[4:6]}-{_d9x[6:]}" if len(_d9x) == 8 else _d9x
                         _px9 = (f"{_r9x.get('price')}元/PE{_r9x.get('pe'):g}" if _r9x.get("price") else "未披露")
                         _sz9 = f"募{_r9x.get('funds_yi'):g}亿" if _r9x.get("funds_yi") else f"{_r9x.get('amount_wan'):g}万股"
+                    elif _r9x.get("market") == "港股":
+                        _d9x = str(_r9x.get("apply_date") or "")
+                        _px9 = _r9x.get("price_range") or "未披露"
+                        _sz9 = f"入场费{_r9x.get('entrance_fee')}港元" if _r9x.get("entrance_fee") else "—"
                     else:
                         _d9x = str(_r9x.get("apply_date") or "")
                         _px9 = _r9x.get("price_range") or "未披露"
@@ -12714,8 +12718,7 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
             if _rest9:
                 with st.expander(f"完整清单（其余 {len(_rest9)} 只，含谨慎/回避）"):
                     st.dataframe(_ipo_tb9(_rest9), hide_index=True, use_container_width=True)
-            if not any(r.get("market") == "港股" for r in _ipo_rows9):
-                st.caption("港股招股数据源接入中；当前以 A股/美股为准。")
+            st.caption("A股/美股=申购或定价日；港股=招股截止日、规模列为入场费/手（数据源：Tushare/Nasdaq/富途）。")
         else:
             st.info("未来窗口内暂无披露的新股申购/定价（随日报每日更新）。")
     except Exception:
