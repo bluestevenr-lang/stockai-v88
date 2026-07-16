@@ -11248,6 +11248,31 @@ def _module_header(icon, title, subtitle="", color_from="#667eea", color_to="#76
 # ═══════════════════════════════════════════════════════════════
 
 
+_ACT_COLORS9 = [
+    (re.compile(r"(买入|建仓|加仓|试仓)"), "#dc2626"),      # 买入类=红（进攻）
+    (re.compile(r"(评估减仓|冲高减仓|减仓|锁盈)"), "#ea580c"),  # 减仓类=橙（部分退出）
+    (re.compile(r"(卖出|清仓|退出|止损|破位离场)"), "#16a34a"),  # 卖出类=绿（离场）
+    (re.compile(r"(持有|拿住)"), "#2563eb"),                # 持有=蓝
+    (re.compile(r"(回避)"), "#0891b2"),                     # 回避=青
+]
+
+
+def _act_colorize9(text: str) -> str:
+    """【V88·动作分色】（2026-07-16 用户定则：买入/卖出/减仓等动作词全系统不同颜色）
+    买入类=红 / 减仓类=橙 / 卖出退出类=绿 / 持有=蓝 / 回避=青。用于 markdown/HTML 渲染处。"""
+    for _rx9, _col9 in _ACT_COLORS9:
+        text = _rx9.sub(lambda m: f"<span style='color:{_col9};font-weight:700'>{m.group(1)}</span>", text)
+    return text
+
+
+def _act_color_of9(action: str) -> str:
+    """取动作字符串的主色（卡片单动作标签用）。"""
+    for _rx9, _col9 in _ACT_COLORS9:
+        if _rx9.search(str(action or "")):
+            return _col9
+    return "#334155"
+
+
 def _linkify_md(md: str) -> str:
     """【V88·全局个股可点击 v2】两件事：①个股名/token→内联链接（?q=深链）
     ②markdown表格整体转HTML表格——md表格单元格内的HTML前端渲染不可靠，HTML表格100%可点。"""
@@ -11295,7 +11320,8 @@ def _linkify_md(md: str) -> str:
             continue
         out.append(_link_inline(ln))
         i += 1
-    return "\n".join(out)
+    # 【V88·动作分色】所有 markdown 渲染统一出口上色（买红/减橙/卖绿/持蓝/避青）
+    return _act_colorize9("\n".join(out))
 def _stk_link(name, code):
     """【V88·内联可点个股】不改字体字号，名字即链接（?q=深链→自动深度分析+入观察池）"""
     return (f'<a href="?q={code}&focus=deep#v88-deep-analysis" target="_self" '
@@ -11711,7 +11737,7 @@ def _render_today_nav():
                 <div><span class="v88-level v88-level-{_level9}">{_level9}级</span>
                 {_stk_link(_d9.get('name') or _d9.get('code'), _d9.get('code'))}
                 <span class="v88-code">{_d9.get('code')}</span></div>
-                <b class="v88-action">{_action9}</b>
+                <b class="v88-action" style="color:{_act_color_of9(_action9)}">{_action9}</b>
               </div>
               <div class="v88-cyc-head">
                 <span>各周期上涨概率（红涨/绿跌·看趋势）</span>

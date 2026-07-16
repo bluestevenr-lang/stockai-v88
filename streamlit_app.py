@@ -315,6 +315,23 @@ else:
 _NOT_READY = "📭 数据生成中（每交易日 07:00/14:00/21:00 自动发布，稍后自动出现，可点右上 🔄 刷新）"
 
 # ── 🧭 导航 ─────────────────────────────────────────────────
+import re as _re_act
+_ACT_COLORS = [
+    (_re_act.compile(r"(买入|建仓|加仓|试仓)"), "#dc2626"),      # 买入类=红
+    (_re_act.compile(r"(评估减仓|冲高减仓|减仓|锁盈)"), "#ea580c"),  # 减仓类=橙
+    (_re_act.compile(r"(卖出|清仓|退出|止损|破位离场)"), "#16a34a"),  # 卖出类=绿
+    (_re_act.compile(r"(持有|拿住)"), "#2563eb"),                # 持有=蓝
+    (_re_act.compile(r"(回避)"), "#0891b2"),                     # 回避=青
+]
+
+
+def _act_colorize(text: str) -> str:
+    """【V88·动作分色】买红/减橙/卖绿/持蓝/避青——与桌面端同一套色规。"""
+    for _rx, _col in _ACT_COLORS:
+        text = _rx.sub(lambda m: f"<span style='color:{_col};font-weight:700'>{m.group(1)}</span>", text)
+    return text
+
+
 def _linkify_cloud(md: str) -> str:
     """【V88·云端个股可点】把 [US:CODE] token 与 **名称**（CODE） 转成 ?q= 深链（蓝色可点）。"""
     import re as _rc
@@ -323,7 +340,8 @@ def _linkify_cloud(md: str) -> str:
                  lambda m: _A.format(c=m.group(2), t=f"[{m.group(1)}:{m.group(2)}]"), md)
     md = _rc.sub(r"\*\*([一-鿿A-Za-z0-9\-·]{2,14})\*\*[（(]([A-Z0-9]{1,8}(?:\.[A-Z]{2})?)[）)]",
                  lambda m: _A.format(c=m.group(2), t=m.group(1)) + f"（{m.group(2)}）", md)
-    return md
+    # 【V88·动作分色】云端所有 markdown 渲染统一出口上色
+    return _act_colorize(md)
 
 
 # 【V88·非交易日判定】以真实交易日历为准（周末 + 可选 holidays.txt），与桌面端 _v88_is_trading_day 同源。
@@ -985,7 +1003,8 @@ elif _nav in ("📊 日报", "📅 周报"):
         _ledger_marker = "## 🔗 可核验来源台账"
         _ledger_pos = _txt.find(_ledger_marker)
         _report_body = _txt[:_ledger_pos].rstrip() if _ledger_pos >= 0 else _txt
-        st.markdown(_report_body)
+        # 【V88·动作分色】日报正文买红/减橙/卖绿/持蓝/避青（同桌面色规）
+        st.markdown(_act_colorize(_report_body), unsafe_allow_html=True)
         if _nav == "📊 日报" and _source_ledger.get("sources"):
             with st.expander("🔗 可核验来源（原文链接）", expanded=False):
                 with st.popover("📋 复制来源清单"):
