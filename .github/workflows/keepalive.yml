@@ -1,10 +1,11 @@
 name: Keep Streamlit Cloud Awake
 
-# 每30分钟 ping 云端 App，保持活跃防止因无访问而休眠。
+# 每小时 ping 云端 App，保持活跃防止因无访问而休眠（休眠阈值以天计，每小时绰绰有余）。
 # 公开仓 Actions 免费、不占私仓配额。已睡着的需人工点「Yes, get this app back up!」唤醒一次。
+# 【V88·省流量定则 2026-07-16】30分钟→60分钟，运行次数减半。
 on:
   schedule:
-    - cron: "*/30 * * * *"   # 每30分钟
+    - cron: "13 * * * *"   # 每小时
   workflow_dispatch: {}
 
 concurrency:
