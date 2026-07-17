@@ -11368,15 +11368,15 @@ _V88_CARD_CSS = """
 .v88-watch-market{min-width:0}
 .v88-watch-market h4{margin:0 0 5px;padding:4px 7px;border-radius:6px;background:#eaf2ff;color:#173b68;font-size:13px}
 .v88-watch-market h4 span{float:right;color:#64748b;font-size:12px;font-weight:500}
-.v88-watch-card{background:#fff;border:1px solid #dbe4f0;border-radius:8px;padding:5px 6px;margin-bottom:5px;box-shadow:0 1px 2px rgba(15,23,42,.04);height:168px;overflow:hidden;display:flex;flex-direction:column}
+.v88-watch-card{background:#fff;border:1px solid #dbe4f0;border-radius:8px;padding:6px 7px;margin-bottom:5px;box-shadow:0 1px 2px rgba(15,23,42,.04);height:186px;overflow:hidden;display:flex;flex-direction:column}
 .v88-watch-conflict{border:2px solid #f59e0b;background:#fffdf5}
-.v88-watch-pending{border-style:dashed;background:#fafbfc;opacity:.85;height:168px}
+.v88-watch-pending{border-style:dashed;background:#fafbfc;opacity:.85;height:186px}
 .v88-cycle-warn{color:#b45309;font-weight:700}
-.v88-watch-card-head{display:flex;justify-content:space-between;align-items:center;gap:5px;font-size:12px;line-height:1.25}
+.v88-watch-card-head{display:flex;justify-content:space-between;align-items:center;gap:5px;font-size:14px;line-height:1.3}
 .v88-name-line{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .v88-watch-card-head a{color:#173b68!important;text-decoration:none!important;font-weight:700!important}
 .v88-code{color:#94a3b8;font-size:12px;margin-left:3px}
-.v88-action{color:#1d4ed8;font-size:12px;white-space:nowrap}
+.v88-action{color:#1d4ed8;font-size:13px;white-space:nowrap}
 .v88-level{display:inline-block;padding:1px 4px;border-radius:4px;font-size:12px;margin-right:3px;color:#fff}
 .v88-level-A{background:#dc2626} .v88-level-B{background:#2563eb} .v88-level-C{background:#64748b}
 .v88-cyc-head{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:12px;color:#64748b}
@@ -11387,9 +11387,9 @@ _V88_CARD_CSS = """
 .v88-cyc b{font-size:15px;line-height:1.2}
 .v88-spark-wrap{margin-top:2px;line-height:0}
 .v88-spark{width:100%;height:auto;max-height:58px;display:block}
-.v88-rrline{margin-top:3px;font-size:12px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.v88-rrline b{font-size:13px} .v88-rrline em{font-style:normal;font-size:12px}
-.v88-watch-foot{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;gap:2px 8px;margin-top:3px;color:#64748b;font-size:12px;line-height:1.3;overflow:hidden}
+.v88-rrline{margin-top:3px;font-size:14px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v88-rrline b{font-size:15px} .v88-rrline em{font-style:normal;font-size:12px}
+.v88-watch-foot{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;gap:2px 8px;margin-top:3px;color:#475569;font-size:14px;line-height:1.35;overflow:hidden}
 .v88-watch-foot span{margin-right:8px}
 @media(max-width:1100px){.v88-watch-grid{grid-template-columns:1fr}}
 </style>
@@ -11440,6 +11440,33 @@ def _v88_decision_card(_d9):
     _medium9 = int(_d9.get("medium_score") or 0)
     _long_score9 = int(_d9.get("long_score") or 0)
     _entry9 = str(_d9.get("entry_note") or "入场条件待核")
+    # 【V88·买卖视角分离 2026-07-17 用户定纲】自选=买入视角(有上升通道必给"何时/何区间进")；
+    # 持仓=卖出视角(盈利奔跑的关键是何时下车:冲高减/目标位/破位全走三线)。
+    _scope9x = str(_d9.get("scope") or "")
+    _plan9x = _d9.get("trade_plan") or {}
+
+    def _pnum9x(_v):
+        try:
+            return f"{float(_v):g}"
+        except (TypeError, ValueError):
+            return ""
+    if _scope9x == "持仓":
+        _t60m = re.search(r"目标([\d.]+)", str((_plan9x.get("mid") or {}).get("out") or ""))
+        _res9x, _stop9x = _pnum9x(_d9.get("resistance")), _pnum9x(_d9.get("stop"))
+        _parts9x = [x for x in (
+            f"冲{_res9x}减半" if _res9x else "",
+            f"目标{_t60m.group(1)}(60日)" if _t60m else "",
+            f"破{_stop9x}全走" if _stop9x else "") if x]
+        if _parts9x:
+            _entry9 = "<b style='color:#ea580c'>💰卖点</b>:" + "·".join(_parts9x)
+    elif ("不进" in _entry9 or "等" in _entry9) and (float(_d9.get("medium_score") or 0) >= 58
+                                                    or float(_d9.get("long_score") or 0) >= 58):
+        _mid_in9x = str((_plan9x.get("mid") or {}).get("in") or "")
+        _zone9x = re.search(r"区间([\d.]+~[\d.]+)", _mid_in9x)
+        _inv9x = re.search(r"MA55\(([\d.]+)\)", _mid_in9x)
+        if _zone9x:
+            _entry9 = (f"<b style='color:#dc2626'>🎯中线买点</b>:区间{_zone9x.group(1)}分批(4-8周)"
+                       + (f"·破{_inv9x.group(1)}废" if _inv9x else ""))
 
     def _side_word9(_v):
         _v = float(_v or 50)
