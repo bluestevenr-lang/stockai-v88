@@ -4651,6 +4651,10 @@ if Config.ENABLE_EXPECTATION_LAYER:
 
     # 宏观卡片与主功能紧接；不再用高分隔线额外占用纵向空间。
 
+
+# 【V88·大盘宏观归位】三层周期总览组的占位:紧贴宏观脉搏正下方,由今日导航回填
+_l3_group_slot = st.empty()
+
 # 【V90.3】性能监控已移到左侧边栏
 
 st.markdown("""
@@ -12305,141 +12309,144 @@ def _render_today_nav():
                         + "　<span style='font-size:12px;color:#6b7280'>温度=趋势40%+宽度40%+动量20%，全实价计算</span>",
                         unsafe_allow_html=True)
 
-    # 【V88·三层周期概率总览】北极星定纲：大盘/板块/自选三层同屏看周期+下一周期概率
-    # 【模块可折叠】顶部折叠开关，默认展开
-    try:
-        with st.expander("🧭 三层周期·概率总览（大盘/板块/自选）", expanded=True):
-            _render_l3_cycle_board(_snap, _is_trading)
-    except Exception:
-        logging.debug("三层周期总览渲染失败", exc_info=True)
+    # 【V88·大盘宏观归位 2026-07-17 用户点单】三层总览+大盘前瞻+大盘环境 用slot传送到
+    # 「全球市场概览/宏观脉搏」正下方,让同属大盘宏观的两块上下相邻(逻辑归并)。
+    with _l3_group_slot.container():
+        # 【V88·三层周期概率总览】北极星定纲：大盘/板块/自选三层同屏看周期+下一周期概率
+        # 【模块可折叠】顶部折叠开关，默认展开
+        try:
+            with st.expander("🧭 三层周期·概率总览（大盘/板块/自选）", expanded=True):
+                _render_l3_cycle_board(_snap, _is_trading)
+        except Exception:
+            logging.debug("三层周期总览渲染失败", exc_info=True)
 
-    # ═══════════════════════════════════════════════════════════════
-    # 【V88·大盘&板块前瞻】与个股同一套引擎(evaluate_forward_outlook)+同一条5/10/20/60/120日阶梯，
-    # 给大盘指数、板块代表ETF 的 概率+盈亏比+每周期人话理由（预算自适应）。选一个才算，不拖首屏。
-    # ═══════════════════════════════════════════════════════════════
-    with st.expander("🎯 大盘 & 板块 前瞻 · 概率＋盈亏比＋人话理由（5/10/20/60/120日）", expanded=False):
-        _MKT_IDX = {"美股·标普500": "^GSPC", "美股·纳指100": "^IXIC",
-                    "港股·恒生": "^HSI", "港股·恒生科技": "^HSTECH",
-                    "A股·上证指数": "000001.SS", "A股·沪深300": "000300.SS"}
-        _SEC_PROXY = {"医疗·美(XLV)": "XLV", "科技·美(XLK)": "XLK", "半导体·美(SOXX)": "SOXX",
-                      "金融·美(XLF)": "XLF", "能源·美(XLE)": "XLE", "消费·美(XLY)": "XLY",
-                      "医药·A(512010)": "512010.SS", "券商·A(512880)": "512880.SS",
-                      "新能源·A(516160)": "516160.SS"}
-        _fc1, _fc2 = st.columns(2)
-        with _fc1:
-            _mk_pick = st.selectbox("大盘指数", ["（不选）"] + list(_MKT_IDX), key="fwd_mkt_pick")
-        with _fc2:
-            _sc_pick = st.selectbox("板块（代表ETF）", ["（不选）"] + list(_SEC_PROXY), key="fwd_sec_pick")
+        # ═══════════════════════════════════════════════════════════════
+        # 【V88·大盘&板块前瞻】与个股同一套引擎(evaluate_forward_outlook)+同一条5/10/20/60/120日阶梯，
+        # 给大盘指数、板块代表ETF 的 概率+盈亏比+每周期人话理由（预算自适应）。选一个才算，不拖首屏。
+        # ═══════════════════════════════════════════════════════════════
+        with st.expander("🎯 大盘 & 板块 前瞻 · 概率＋盈亏比＋人话理由（5/10/20/60/120日）", expanded=False):
+            _MKT_IDX = {"美股·标普500": "^GSPC", "美股·纳指100": "^IXIC",
+                        "港股·恒生": "^HSI", "港股·恒生科技": "^HSTECH",
+                        "A股·上证指数": "000001.SS", "A股·沪深300": "000300.SS"}
+            _SEC_PROXY = {"医疗·美(XLV)": "XLV", "科技·美(XLK)": "XLK", "半导体·美(SOXX)": "SOXX",
+                          "金融·美(XLF)": "XLF", "能源·美(XLE)": "XLE", "消费·美(XLY)": "XLY",
+                          "医药·A(512010)": "512010.SS", "券商·A(512880)": "512880.SS",
+                          "新能源·A(516160)": "516160.SS"}
+            _fc1, _fc2 = st.columns(2)
+            with _fc1:
+                _mk_pick = st.selectbox("大盘指数", ["（不选）"] + list(_MKT_IDX), key="fwd_mkt_pick")
+            with _fc2:
+                _sc_pick = st.selectbox("板块（代表ETF）", ["（不选）"] + list(_SEC_PROXY), key="fwd_sec_pick")
 
-        def _render_index_forward(_label, _sym, _kind, _kp):
-            try:
-                from v88_decision_core import evaluate_forward_outlook as _efo
-                _idf = fetch_stock_data(_sym)
-                if _idf is None or len(_idf) < 30:
-                    st.info(f"{_label}：行情不足，换一个试试")
-                    return
-                _f = _efo(_idf, name=_label, code=_sym)
-                if _f.get("error"):
-                    st.info(f"{_label}：{_f['error']}")
-                    return
-                st.markdown(f"**{_label} · 当下前瞻**")
-                _m1, _m2, _m3, _m4 = st.columns(4)
-                _m1.metric("综合上/下概率", f"{_f['weighted_p_up']}% / {_f['weighted_p_down']}%")
-                _m2.metric("综合盈亏比", f"{_f.get('weighted_rr', 0):.2f}", help="越大越好")
-                _m3.metric("综合期望", f"{_f.get('weighted_expected_pct', 0):+.1f}%", help=">0较好")
-                _m4.metric("阶段", _f.get("stage", "—"))
-                st.success(f"**结论：{_f.get('overall_action')}** ｜ {_f.get('suggestion')}")
-                _rows = [{"周期(交易日)": r.get("label"),
-                          "上涨/下跌概率": f"{r.get('p_up')}% / {r.get('p_down')}%",
-                          "上涨空间": f"+{r.get('upside_pct')}%", "下跌风险": f"-{r.get('downside_pct')}%",
-                          "盈亏比(越大越好)": r.get("rr"), "期望值(>0较好)": f"{r.get('expected_pct'):+.1f}%",
-                          "判断": r.get("view")} for r in (_f.get("horizons") or [])]
-                st.dataframe(_rows, hide_index=True, use_container_width=True)
-                render_readable_reasons(_f, kind=_kind, symbol=_sym, name=_label,
-                                        context="", key_prefix=_kp)
-            except Exception as _e:
-                logging.exception("大盘/板块前瞻失败")
-                st.caption(f"{_label} 前瞻暂不可用：{type(_e).__name__}")
-
-        if _mk_pick != "（不选）":
-            _render_index_forward(_mk_pick, _MKT_IDX[_mk_pick], "大盘", "mkt")
-        if _sc_pick != "（不选）":
-            _render_index_forward(_sc_pick, _SEC_PROXY[_sc_pick], "板块", "sec")
-        if _mk_pick == "（不选）" and _sc_pick == "（不选）":
-            st.caption("选一个大盘指数或板块，看它未来 5/10/20/60/120 日的概率、盈亏比和人话理由。")
-
-    # 【V88·版面梳理 2026-07-17】水位/轮动提醒/周期导图/复制摘要合并收进「大盘环境」
-    # （三层总览已给概览,这里是细节层,默认收起减乱）
-    with st.expander("🌍 大盘环境 · 指数水位/板块轮动/周期导图", expanded=False):
-        # ① 三大市场指数水位
-        if _snap and _snap.get("markets"):
-            _cols = st.columns(3)
-            for _ci, _mkt in enumerate(("美股", "A股", "港股")):
-                _blk = _snap["markets"].get(_mkt) or {}
-                with _cols[_ci]:
-                    st.markdown(f"**{_mkt}**")
-                    for _ix in (_blk.get("indices") or [])[:3]:
-                        _tn99 = _ix.get("turning") or ""
-                        st.markdown(
-                            f"<div style='font-size:13px;line-height:1.7'>{_ix['trend']} {_ix['name']} "
-                            f"<b>{_ix['last']}</b>｜5日{_ix['chg5d']:+.1f}%｜距MA20 {_ix['vs_ma20']:+.1f}%"
-                            + (f"｜<b style='color:#dc2626'>{_tn99}</b>" if _tn99.startswith("⚠️")
-                               else (f"｜<b style='color:#16a34a'>{_tn99}</b>" if _tn99 else ""))
-                            + "</div>", unsafe_allow_html=True)
-                        if _ix.get("turning_prompt"):
-                            st.caption(f"🔀 {_ix['name']}拐点：{_ix['turning_prompt']}")
-            # ② 板块轮动提醒（用快照数据重算 5日vs20日 排名跃迁）
-            _hints = []
-            for _mkt in ("美股", "A股", "港股"):
-                _secs = ((_snap["markets"].get(_mkt) or {}).get("sectors")) or []
-                if len(_secs) < 4:
-                    continue
-                _n = len(_secs)
-                _r5 = {s["symbol"]: i for i, s in enumerate(sorted(_secs, key=lambda x: -x["chg5d"]))}
-                _r20 = {s["symbol"]: i for i, s in enumerate(sorted(_secs, key=lambda x: -x["chg20d"]))}
-                _jump = max(2, _n // 3)
-                for s in _secs:
-                    _d = _r20[s["symbol"]] - _r5[s["symbol"]]
-                    if _d >= _jump and s["chg5d"] > 0:
-                        _hints.append(f"🔥 {_mkt}·**{s['name']}** 轮入（5日{s['chg5d']:+.1f}%，排名{_r20[s['symbol']]+1}→{_r5[s['symbol']]+1}）")
-                    elif _d <= -_jump and s["chg20d"] > 0:
-                        _hints.append(f"🧊 {_mkt}·**{s['name']}** 退潮（20日{s['chg20d']:+.1f}%但5日{s['chg5d']:+.1f}%）")
-            if _hints:
-                st.markdown("**板块轮动**：" + " ｜ ".join(_hints[:5]))
-            # ③+④ 周期总览：板块轮动与个股切换合并为同一行双栏，信息保留、字号压小。
-            _rot_forecast9 = (_snap or {}).get("rotation_forecast") or {}
-            _cyc9 = (_snap or {}).get("cycle_scan") or {}
-            if _rot_forecast9 or _cyc9.get("stocks"):
-                st.markdown("**🧭 板块轮动＋个股周期总览（2 / 5 / 8 / 16周＋预计拐点）**")
+            def _render_index_forward(_label, _sym, _kind, _kp):
                 try:
-                    from rotation_ui import combined_cycle_dashboard_html as _cycle_board9, available_markets as _am9
-                    _mk9 = _am9(_rot_forecast9)
-                    _focus9 = (st.radio("时钟聚焦市场", _mk9, horizontal=True, key="v88_nav_rot_focus",
-                                        label_visibility="collapsed")
-                               if len(_mk9) > 1 else (_mk9[0] if _mk9 else "美股"))
-                    st.markdown(_cycle_board9(_rot_forecast9, _cyc9, "v88-nav-cycle-board", _focus9),
-                                unsafe_allow_html=True)
-                except Exception as _rot_ui_e9:
-                    logging.debug(f"周期总览渲染失败: {_rot_ui_e9}")
-            # 【V88·复制】今日导航摘要一键复制（温度/指数/拐点/轮动）
-            try:
-                _cpn = [f"🧭 V88今日导航 {_gen}"]
+                    from v88_decision_core import evaluate_forward_outlook as _efo
+                    _idf = fetch_stock_data(_sym)
+                    if _idf is None or len(_idf) < 30:
+                        st.info(f"{_label}：行情不足，换一个试试")
+                        return
+                    _f = _efo(_idf, name=_label, code=_sym)
+                    if _f.get("error"):
+                        st.info(f"{_label}：{_f['error']}")
+                        return
+                    st.markdown(f"**{_label} · 当下前瞻**")
+                    _m1, _m2, _m3, _m4 = st.columns(4)
+                    _m1.metric("综合上/下概率", f"{_f['weighted_p_up']}% / {_f['weighted_p_down']}%")
+                    _m2.metric("综合盈亏比", f"{_f.get('weighted_rr', 0):.2f}", help="越大越好")
+                    _m3.metric("综合期望", f"{_f.get('weighted_expected_pct', 0):+.1f}%", help=">0较好")
+                    _m4.metric("阶段", _f.get("stage", "—"))
+                    st.success(f"**结论：{_f.get('overall_action')}** ｜ {_f.get('suggestion')}")
+                    _rows = [{"周期(交易日)": r.get("label"),
+                              "上涨/下跌概率": f"{r.get('p_up')}% / {r.get('p_down')}%",
+                              "上涨空间": f"+{r.get('upside_pct')}%", "下跌风险": f"-{r.get('downside_pct')}%",
+                              "盈亏比(越大越好)": r.get("rr"), "期望值(>0较好)": f"{r.get('expected_pct'):+.1f}%",
+                              "判断": r.get("view")} for r in (_f.get("horizons") or [])]
+                    st.dataframe(_rows, hide_index=True, use_container_width=True)
+                    render_readable_reasons(_f, kind=_kind, symbol=_sym, name=_label,
+                                            context="", key_prefix=_kp)
+                except Exception as _e:
+                    logging.exception("大盘/板块前瞻失败")
+                    st.caption(f"{_label} 前瞻暂不可用：{type(_e).__name__}")
+
+            if _mk_pick != "（不选）":
+                _render_index_forward(_mk_pick, _MKT_IDX[_mk_pick], "大盘", "mkt")
+            if _sc_pick != "（不选）":
+                _render_index_forward(_sc_pick, _SEC_PROXY[_sc_pick], "板块", "sec")
+            if _mk_pick == "（不选）" and _sc_pick == "（不选）":
+                st.caption("选一个大盘指数或板块，看它未来 5/10/20/60/120 日的概率、盈亏比和人话理由。")
+
+        # 【V88·版面梳理 2026-07-17】水位/轮动提醒/周期导图/复制摘要合并收进「大盘环境」
+        # （三层总览已给概览,这里是细节层,默认收起减乱）
+        with st.expander("🌍 大盘环境 · 指数水位/板块轮动/周期导图", expanded=False):
+            # ① 三大市场指数水位
+            if _snap and _snap.get("markets"):
+                _cols = st.columns(3)
+                for _ci, _mkt in enumerate(("美股", "A股", "港股")):
+                    _blk = _snap["markets"].get(_mkt) or {}
+                    with _cols[_ci]:
+                        st.markdown(f"**{_mkt}**")
+                        for _ix in (_blk.get("indices") or [])[:3]:
+                            _tn99 = _ix.get("turning") or ""
+                            st.markdown(
+                                f"<div style='font-size:13px;line-height:1.7'>{_ix['trend']} {_ix['name']} "
+                                f"<b>{_ix['last']}</b>｜5日{_ix['chg5d']:+.1f}%｜距MA20 {_ix['vs_ma20']:+.1f}%"
+                                + (f"｜<b style='color:#dc2626'>{_tn99}</b>" if _tn99.startswith("⚠️")
+                                   else (f"｜<b style='color:#16a34a'>{_tn99}</b>" if _tn99 else ""))
+                                + "</div>", unsafe_allow_html=True)
+                            if _ix.get("turning_prompt"):
+                                st.caption(f"🔀 {_ix['name']}拐点：{_ix['turning_prompt']}")
+                # ② 板块轮动提醒（用快照数据重算 5日vs20日 排名跃迁）
+                _hints = []
                 for _mkt in ("美股", "A股", "港股"):
-                    _b9 = _snap["markets"].get(_mkt) or {}
-                    _t9 = _b9.get("temperature") or {}
-                    if _t9:
-                        _cpn.append(f"{_mkt} 温度{_t9.get('temp','?')}/100 {_t9.get('label','')} 仓位{_t9.get('position','?')}")
-                    for _x9 in (_b9.get("indices") or [])[:3]:
-                        _cpn.append(f"  {_x9['trend']} {_x9['name']} {_x9['last']}｜5日{_x9['chg5d']:+.1f}%"
-                                    + (f"｜{_x9['turning']}" if _x9.get('turning') else ""))
+                    _secs = ((_snap["markets"].get(_mkt) or {}).get("sectors")) or []
+                    if len(_secs) < 4:
+                        continue
+                    _n = len(_secs)
+                    _r5 = {s["symbol"]: i for i, s in enumerate(sorted(_secs, key=lambda x: -x["chg5d"]))}
+                    _r20 = {s["symbol"]: i for i, s in enumerate(sorted(_secs, key=lambda x: -x["chg20d"]))}
+                    _jump = max(2, _n // 3)
+                    for s in _secs:
+                        _d = _r20[s["symbol"]] - _r5[s["symbol"]]
+                        if _d >= _jump and s["chg5d"] > 0:
+                            _hints.append(f"🔥 {_mkt}·**{s['name']}** 轮入（5日{s['chg5d']:+.1f}%，排名{_r20[s['symbol']]+1}→{_r5[s['symbol']]+1}）")
+                        elif _d <= -_jump and s["chg20d"] > 0:
+                            _hints.append(f"🧊 {_mkt}·**{s['name']}** 退潮（20日{s['chg20d']:+.1f}%但5日{s['chg5d']:+.1f}%）")
                 if _hints:
-                    _cpn.append("板块轮动：" + "；".join(h.replace('**', '') for h in _hints[:5]))
-                with st.popover("📋 复制导航摘要"):
-                    st.code("\n".join(_cpn), language=None)
-            except Exception:
-                pass
-        else:
-            st.info("📭 大盘快照尚未生成（每日07:00/14:00/21:00自动更新）")
+                    st.markdown("**板块轮动**：" + " ｜ ".join(_hints[:5]))
+                # ③+④ 周期总览：板块轮动与个股切换合并为同一行双栏，信息保留、字号压小。
+                _rot_forecast9 = (_snap or {}).get("rotation_forecast") or {}
+                _cyc9 = (_snap or {}).get("cycle_scan") or {}
+                if _rot_forecast9 or _cyc9.get("stocks"):
+                    st.markdown("**🧭 板块轮动＋个股周期总览（2 / 5 / 8 / 16周＋预计拐点）**")
+                    try:
+                        from rotation_ui import combined_cycle_dashboard_html as _cycle_board9, available_markets as _am9
+                        _mk9 = _am9(_rot_forecast9)
+                        _focus9 = (st.radio("时钟聚焦市场", _mk9, horizontal=True, key="v88_nav_rot_focus",
+                                            label_visibility="collapsed")
+                                   if len(_mk9) > 1 else (_mk9[0] if _mk9 else "美股"))
+                        st.markdown(_cycle_board9(_rot_forecast9, _cyc9, "v88-nav-cycle-board", _focus9),
+                                    unsafe_allow_html=True)
+                    except Exception as _rot_ui_e9:
+                        logging.debug(f"周期总览渲染失败: {_rot_ui_e9}")
+                # 【V88·复制】今日导航摘要一键复制（温度/指数/拐点/轮动）
+                try:
+                    _cpn = [f"🧭 V88今日导航 {_gen}"]
+                    for _mkt in ("美股", "A股", "港股"):
+                        _b9 = _snap["markets"].get(_mkt) or {}
+                        _t9 = _b9.get("temperature") or {}
+                        if _t9:
+                            _cpn.append(f"{_mkt} 温度{_t9.get('temp','?')}/100 {_t9.get('label','')} 仓位{_t9.get('position','?')}")
+                        for _x9 in (_b9.get("indices") or [])[:3]:
+                            _cpn.append(f"  {_x9['trend']} {_x9['name']} {_x9['last']}｜5日{_x9['chg5d']:+.1f}%"
+                                        + (f"｜{_x9['turning']}" if _x9.get('turning') else ""))
+                    if _hints:
+                        _cpn.append("板块轮动：" + "；".join(h.replace('**', '') for h in _hints[:5]))
+                    with st.popover("📋 复制导航摘要"):
+                        st.code("\n".join(_cpn), language=None)
+                except Exception:
+                    pass
+            else:
+                st.info("📭 大盘快照尚未生成（每日07:00/14:00/21:00自动更新）")
 
     # 【V88·关注股预警】底层仍统一扫描自选+常搜+持仓；页面展示分流：
     # 持仓风险只进入下方“持仓决策中心”，自选预警不再重复罗列正式持仓。
