@@ -11807,15 +11807,51 @@ def _v88_load_news():
     return _V88_NEWS_CACHE["news"]
 
 
+def _v88_rating_moves():
+    """近3日机构评级动作缓存（异动归因最高优先源）。"""
+    import time as _t
+    _c = _V88_NEWS_CACHE.setdefault("_ratings", {"ts": 0, "rows": []})
+    if _t.time() - _c["ts"] < 600 and _c["rows"]:
+        return _c["rows"]
+    try:
+        _d = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+                         "institutional_signals.json").read_text(encoding="utf-8"))
+        _c["rows"] = [r for r in ((_d.get("reports")) or _d.get("all_reports") or [])
+                      if r.get("stock")]
+        # 兼容:reports_n 版落盘无全量列表时,用共识+共振里的条目
+        if not _c["rows"]:
+            _c["rows"] = []
+        _c["ts"] = _t.time()
+    except Exception:
+        _c["rows"] = []
+    return _c["rows"]
+
+
 def _v88_move_reason(chg, *, names=(), scope_hint="", max_len=34):
     """异动一句原因。chg=今日涨跌%; names=命中优先的名字(个股名/板块名/市场名);
-    scope_hint=market_scope 关键词(A股/港股/美股)。|chg|<1.5 返回空。"""
+    scope_hint=market_scope 关键词(A股/港股/美股)。|chg|<1.5 返回空。
+    优先级:①机构评级变动(下调致跌/上调首予致涨=最精准因果)②新闻匹配。"""
     try:
         chg = float(chg)
     except (TypeError, ValueError):
         return ""
     if abs(chg) < 1.5:
         return ""
+    # 【V88·评级变动归因 2026-07-18 用户批准】跌配下调、涨配上调/首次买入
+    _nm_list = [str(n) for n in names if n and len(str(n)) >= 2]
+    if _nm_list:
+        for _r in _v88_rating_moves():
+            if str(_r.get("stock")) not in _nm_list:
+                continue
+            _ch, _rt = str(_r.get("change") or ""), str(_r.get("rating") or "")
+            if chg < 0 and (_ch == "下调" or any(k in _rt for k in ("减持", "卖出", "中性"))
+                            and _ch in ("下调",)):
+                return (f"{_r.get('org')}下调评级"
+                        + (f"{_r.get('last_rating')}→{_rt}" if _r.get("last_rating") else f"至{_rt}")
+                        + f"({_r.get('date', '')[5:]})所致")[:max_len]
+            if chg > 0 and (_ch in ("上调", "首次") and any(k in _rt for k in ("买", "增持", "Buy"))):
+                _tg = f"·目标{_r.get('target'):g}" if _r.get("target") else ""
+                return (f"{_r.get('org')}{_ch}{_rt}评级{_tg}({_r.get('date', '')[5:]})提振")[:max_len]
     _want = "空" if chg < 0 else "好"
     _names = [str(n) for n in names if n]
     _best, _bsc = "", 0
