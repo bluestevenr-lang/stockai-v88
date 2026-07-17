@@ -11557,7 +11557,7 @@ def _render_l3_cycle_board(_snap, _is_trading):
         return f"{_seg9}　{_arrow9}"
 
     st.markdown(
-        "**🧭 三层周期·概率总览**　<span style='font-size:12px;color:#64748b'>"
+        "<span style='font-size:12px;color:#64748b'>"
         "数字=该周期<b>上涨概率%</b>（规则情景估计，非胜率）：<span style='color:#dc2626'>红≥55偏涨</span>／"
         "<span style='color:#16a34a'>绿≤45偏跌</span>／<span style='color:#64748b'>灰=中性</span>。"
         "末尾箭头=周期间趋势（越远越强/弱/趋中性），与左侧「阶段·动作」是两件事：动作说<b>现在能不能买</b>、"
@@ -11932,15 +11932,18 @@ def _render_today_nav():
             import textwrap as _textwrap9
             # 先对不含动态卡片的模板去缩进，再替换动态内容；否则卡片中的零缩进行
             # 会让 Markdown 把最外层 div 误判成代码块。
+            # 【V88·模块可折叠 2026-07-17 用户定纲】功能区顶部统一折叠开关（默认展开）；
+            # 标题上提到 expander label，模板内不再重复大标题。
             _board_tpl9 = _textwrap9.dedent("""
             <div class="v88-watch-shell">
-              <div class="v88-watch-title"><h3>⭐ 我的自选股 · V88唯一评分决策台</h3>
-              <p>统一分=短20%＋中25%＋长20%＋趋势15%＋赔率20%｜点击股票名进入深度分析<br>__TIME__</p></div>
+              <div class="v88-watch-title">
+              <p>统一分=短20%＋中25%＋长20%＋趋势15%＋赔率20%｜点击股票名进入深度分析｜__TIME__</p></div>
               <div class="v88-watch-grid">__COLUMNS__</div>
             </div>
             """).replace("__TIME__", _time_note9).replace("__COLUMNS__", "".join(_cols_html9))
-            st.markdown(_V88_CARD_CSS + _board_tpl9, unsafe_allow_html=True)
-            _render_front_watch_add9()
+            with st.expander(f"⭐ 我的自选股 · V88唯一评分决策台（{len(_watch9)}只）", expanded=True):
+                st.markdown(_V88_CARD_CSS + _board_tpl9, unsafe_allow_html=True)
+                _render_front_watch_add9()
 
     # 【V88·Plan A/B统一标注】与下方AI简报模块共用同一状态，避免"这里显示分数、简报说数据不可信"的割裂
     _pab_status = _rep_planab_meta.get("status")
@@ -12101,8 +12104,10 @@ def _render_today_nav():
                         unsafe_allow_html=True)
 
     # 【V88·三层周期概率总览】北极星定纲：大盘/板块/自选三层同屏看周期+下一周期概率
+    # 【模块可折叠】顶部折叠开关，默认展开
     try:
-        _render_l3_cycle_board(_snap, _is_trading)
+        with st.expander("🧭 三层周期·概率总览（大盘/板块/自选）", expanded=True):
+            _render_l3_cycle_board(_snap, _is_trading)
     except Exception:
         logging.debug("三层周期总览渲染失败", exc_info=True)
 
@@ -12432,22 +12437,23 @@ def _render_today_nav():
                             + _v88_decision_card(_h9x) + '</div>')
                 _dh_cards9 = "".join(_dh_wrap9(h) for h in _horses9[:9])
                 _nk9 = sum(1 for h in _horses9 if h.get("grade") == "重点")
-                st.markdown(
-                    _V88_CARD_CSS
-                    + '<div class="v88-watch-shell" style="border-color:#fbbf24;background:#fffdf5">'
-                    + '<div class="v88-watch-title"><h3>🐴 黑马雷达 · 全选大池复判达标'
-                    + f'（🔴重点{_nk9}·🟡待观察{len(_horses9) - _nk9}）</h3>'
-                    + f'<p>严门槛:2周分≥58+盈亏比≥1.2+非派发+时机在窗｜🔴=多源共振或高分高赔率｜{_fn_txt9}<br>'
-                    + f'🕒 {_dh9.get("generated_at", "")}</p></div>'
-                    + f'<div class="v88-watch-grid">{_dh_cards9}</div></div>',
-                    unsafe_allow_html=True)
-                for _h9 in _horses9[:3]:
-                    _src9 = "＋".join(_h9.get("sources") or [])
-                    _tc9 = _h9.get("touch") or ""
-                    _pl9 = (_h9.get("trade_plan") or {}).get("short") or {}
-                    st.caption(f"{'🔴' if _h9.get('grade') == '重点' else '🟡'} {_h9.get('name')}："
-                               f"来源[{_src9[:40]}]{('·' + _tc9) if _tc9 else ''} ｜ "
-                               f"{str(_pl9.get('in', ''))[:60]} → {str(_pl9.get('out', ''))[:40]}")
+                with st.expander(f"🐴 黑马雷达 · 全选大池复判达标（🔴重点{_nk9}·🟡待观察{len(_horses9) - _nk9}）",
+                                 expanded=True):
+                    st.markdown(
+                        _V88_CARD_CSS
+                        + '<div class="v88-watch-shell" style="border-color:#fbbf24;background:#fffdf5">'
+                        + '<div class="v88-watch-title">'
+                        + f'<p>严门槛:2周分≥58+盈亏比≥1.2+非派发+时机在窗｜🔴=多源共振或高分高赔率｜{_fn_txt9}｜'
+                        + f'🕒 {_dh9.get("generated_at", "")}</p></div>'
+                        + f'<div class="v88-watch-grid">{_dh_cards9}</div></div>',
+                        unsafe_allow_html=True)
+                    for _h9 in _horses9[:3]:
+                        _src9 = "＋".join(_h9.get("sources") or [])
+                        _tc9 = _h9.get("touch") or ""
+                        _pl9 = (_h9.get("trade_plan") or {}).get("short") or {}
+                        st.caption(f"{'🔴' if _h9.get('grade') == '重点' else '🟡'} {_h9.get('name')}："
+                                   f"来源[{_src9[:40]}]{('·' + _tc9) if _tc9 else ''} ｜ "
+                                   f"{str(_pl9.get('in', ''))[:60]} → {str(_pl9.get('out', ''))[:40]}")
             else:
                 st.caption(f"🐴 黑马雷达：今日无达标黑马（{_fn_txt9}）——严门槛宁缺毋滥，拦截原因如上。")
         except Exception:
