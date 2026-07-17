@@ -11399,9 +11399,9 @@ _V88_CARD_CSS = """
 .v88-watch-market{min-width:0}
 .v88-watch-market h4{margin:0 0 5px;padding:4px 7px;border-radius:6px;background:#eaf2ff;color:#173b68;font-size:13px}
 .v88-watch-market h4 span{float:right;color:#64748b;font-size:12px;font-weight:500}
-.v88-watch-card{background:#fff;border:1px solid #dbe4f0;border-radius:8px;padding:6px 7px;margin-bottom:5px;box-shadow:0 1px 2px rgba(15,23,42,.04);height:186px;overflow:hidden;display:flex;flex-direction:column}
+.v88-watch-card{background:#fff;border:1px solid #dbe4f0;border-radius:8px;padding:6px 7px;margin-bottom:5px;box-shadow:0 1px 2px rgba(15,23,42,.04);height:216px;overflow:hidden;display:flex;flex-direction:column}
 .v88-watch-conflict{border:2px solid #f59e0b;background:#fffdf5}
-.v88-watch-pending{border-style:dashed;background:#fafbfc;opacity:.85;height:186px}
+.v88-watch-pending{border-style:dashed;background:#fafbfc;opacity:.85;height:216px}
 .v88-cycle-warn{color:#b45309;font-weight:700}
 .v88-watch-card-head{display:flex;justify-content:space-between;align-items:center;gap:5px;font-size:14px;line-height:1.3}
 .v88-name-line{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -11581,6 +11581,7 @@ def _v88_decision_card(_d9):
         <span class="v88-code">{_d9.get('code')}</span></div>
         <b class="v88-action" style="color:{_act_color_of9(_action_disp9)}">{_action_disp9}</b>
       </div>
+      {(f'<div style="font-size:12px;color:#b91c1c;line-height:1.3;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">📌' + str(_d9.get('move_reason')) + '</div>') if _d9.get('move_reason') else ''}
       <div class="v88-cyc-head">
         <span>各周期上涨概率（红涨/绿跌·看趋势）</span>
         <span class="v88-cyc-trend">{_trend9}</span>
@@ -11588,10 +11589,10 @@ def _v88_decision_card(_d9):
       <div class="v88-spark-wrap">{_spark9}</div>
       <div class="v88-rrline">关键位盈亏比 <b style="color:{_rr_color9}">{_rr9:.2f}</b>
         <em style="color:{_rr_color9}">（{_rr_txt9}）</em></div>
+      <div style="font-size:12px;line-height:1.3;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{_entry9}</div>
       <div class="v88-watch-foot"><span>短(2周)期望<b style="color:{_exp_color9}">{_exp9:+.1f}%</b>{_exp_suffix9}</span>
       <span>中(4-8周){_mlabel9}</span><span>长(16-32周){_llabel9}</span>
-      <span><b>统一分{_score9}</b></span>
-      <span>{_entry9}</span><span>🕒 {_at9}</span></div>
+      <span><b>统一分{_score9}</b></span><span>🕒 {_at9}</span></div>
     </div>"""
 
 
@@ -11743,6 +11744,70 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
     _html.append("</div>")
     st.markdown("".join(_html), unsafe_allow_html=True)
     st.caption("候选=一键全选池∪引擎Top榜∪触底触线（黑马漏斗复判）∪自选/持仓 · 按交易日滚动 · 💼持仓👁自选🐴黑马")
+
+
+
+# 【V88·异动归因引擎 2026-07-17 用户定纲】大盘/板块/个股任一当天大异动→一句为什么。
+# 三层共用同一套:新闻方向匹配(跌找利空/涨找利好)+带因果词优先+命中名称(市场/板块/个股)+中文。零AI。
+_V88_CAUSE_WORDS = ("因", "由于", "受", "预期", "担忧", "导致", "引发", "拖累", "冲击",
+                    "下调", "上调", "抛售", "避险", "回吐", "获利", "政策", "加息", "降息",
+                    "利空", "利好", "财报", "业绩", "订单", "涨价", "减产", "制裁", "合作")
+_V88_NEWS_CACHE = {"ts": 0, "news": []}
+
+
+def _v88_load_news():
+    import time as _t
+    if _t.time() - _V88_NEWS_CACHE["ts"] < 300 and _V88_NEWS_CACHE["news"]:
+        return _V88_NEWS_CACHE["news"]
+    try:
+        _na = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+                          "news_analyzed.json").read_text(encoding="utf-8"))
+        _V88_NEWS_CACHE["news"] = _na.get("news") or []
+        _V88_NEWS_CACHE["ts"] = _t.time()
+    except Exception:
+        _V88_NEWS_CACHE["news"] = []
+    return _V88_NEWS_CACHE["news"]
+
+
+def _v88_move_reason(chg, *, names=(), scope_hint="", max_len=34):
+    """异动一句原因。chg=今日涨跌%; names=命中优先的名字(个股名/板块名/市场名);
+    scope_hint=market_scope 关键词(A股/港股/美股)。|chg|<1.5 返回空。"""
+    try:
+        chg = float(chg)
+    except (TypeError, ValueError):
+        return ""
+    if abs(chg) < 1.5:
+        return ""
+    _want = "空" if chg < 0 else "好"
+    _names = [str(n) for n in names if n]
+    _best, _bsc = "", 0
+    for _n in _v88_load_news():
+        if _want not in str(_n.get("impact_direction") or ""):
+            continue
+        _txt = str(_n.get("cleaned_title") or _n.get("title") or "")
+        if sum(1 for c in _txt if "一" <= c <= "鿿") < 4:
+            _txt = str(_n.get("analysis_summary") or _txt)
+        if not _txt:
+            continue
+        _blob = _txt + str(_n.get("affected_sectors") or "") + str(_n.get("affected_tickers") or "")
+        _sc = 0
+        if _names and any(_nm in _blob for _nm in _names):
+            _sc += 6                          # 命中个股/板块名=最相关
+        if scope_hint and scope_hint in str(_n.get("market_scope") or ""):
+            _sc += 5
+        elif ("综合" in str(_n.get("market_scope") or "") or "宏观" in str(_n.get("market_scope") or "")):
+            _sc += 1
+        if _sc == 0:
+            continue                          # 与该标的/市场无关的不用
+        _sc += (3 if "高" in str(_n.get("impact_level") or "")
+                else (1 if "中" in str(_n.get("impact_level") or "") else 0))
+        if any(_w in _txt for _w in _V88_CAUSE_WORDS):
+            _sc += 3                          # 带因果="为什么"
+        if sum(1 for c in _txt if "一" <= c <= "鿿") >= 4:
+            _sc += 2
+        if _sc > _bsc:
+            _best, _bsc = _txt[:max_len], _sc
+    return _best
 
 
 
@@ -11929,44 +11994,15 @@ def _render_l3_cycle_board(_snap, _is_trading):
                 pass
             # 【V88·大盘异动分市场归因 2026-07-17 用户点单】中美港每个异动大盘各给一句"为什么"：
             # 方向匹配(大跌找利空/大涨找利好)+该市场scope+带因果词(因/受/预期/抛售…)+高影响+中文,择优1条。
-            _why_news9 = {}                               # {市场: "为什么"}
-            try:
-                _na9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
-                                   "news_analyzed.json").read_text(encoding="utf-8"))
-                _want9 = "空" if _dirn9 == "大跌" else "好"
-                _cause9 = ("因", "由于", "受", "预期", "担忧", "导致", "引发", "拖累", "冲击",
-                           "下调", "上调", "抛售", "避险", "回吐", "获利", "政策", "加息", "降息", "利空", "利好")
-                _all_news9 = _na9.get("news") or []
-                for _mk9y in _movers9:
-                    _best9, _bestsc9 = "", 0
-                    for _n in _all_news9:
-                        if _want9 not in str(_n.get("impact_direction") or ""):
-                            continue
-                        _scope9 = str(_n.get("market_scope") or "")
-                        if _mk9y in _scope9:
-                            _ssc9 = 5                      # 精确讲这个大盘,本土原因优先
-                        elif ("综合" in _scope9 or "宏观" in _scope9):
-                            _ssc9 = 1                      # 跨市场宏观也算但降权
-                        else:
-                            continue
-                        _t9 = str(_n.get("cleaned_title") or _n.get("title") or "")
-                        _zh9 = sum(1 for c in _t9 if "一" <= c <= "鿿")
-                        if _zh9 < 4:
-                            _t9 = str(_n.get("analysis_summary") or _t9)
-                        if not _t9:
-                            continue
-                        _sc9 = _ssc9 + (3 if "高" in str(_n.get("impact_level") or "")
-                                        else (1 if "中" in str(_n.get("impact_level") or "") else 0))
-                        if any(_w in _t9 for _w in _cause9):
-                            _sc9 += 3                      # 带因果解释="为什么"最优先
-                        if sum(1 for c in _t9 if "一" <= c <= "鿿") >= 4:
-                            _sc9 += 2
-                        if _sc9 > _bestsc9:
-                            _best9, _bestsc9 = _t9[:36], _sc9
-                    if _best9:
-                        _why_news9[_mk9y] = _best9
-            except Exception:
-                pass
+            _why_news9 = {}                               # {市场: "为什么"}(共用归因引擎)
+            for _mk9y in _movers9:
+                _lead9 = [str(s.get("name", "")) for s in sorted(
+                    (((_snap or {}).get("markets") or {}).get(_mk9y, {}).get("sectors") or []),
+                    key=lambda s: s.get("chg1d", 0), reverse=(_movers9[_mk9y] > 0))[:3]]
+                _r9y = _v88_move_reason(_movers9[_mk9y], names=[_mk9y] + _lead9,
+                                        scope_hint=_mk9y, max_len=36)
+                if _r9y:
+                    _why_news9[_mk9y] = _r9y
             _col9x = "#16a34a" if _dirn9 == "大跌" else "#dc2626"
             _bg9x = "#f0fdf4" if _dirn9 == "大跌" else "#fef2f2"
             st.markdown(
@@ -12014,9 +12050,13 @@ def _render_l3_cycle_board(_snap, _is_trading):
                 _probs9 = [(k, int((_pts9.get(k) or {}).get("score", 0)))
                            for k in ("2周", "5周", "8周", "16周") if _pts9.get(k)]
                 _trg9 = str((_pts9.get("2周") or {}).get("trigger") or _t9.get("reason") or "")[:18]
+                # 【V88·板块异动归因】板块今日大异动时,用新闻替动量trigger说"为什么"
+                _sec_chg9 = float((_t9.get("facts") or {}).get("1d", 0) or 0)
+                _sec_reason9 = _v88_move_reason(_sec_chg9, names=[_t9.get("name", "")], max_len=22)
+                _trg_disp9 = (f"📌{_sec_reason9}" if _sec_reason9 else _trg9)
                 _rows9.append(
                     f"<div style='margin-bottom:3px'>{_flag9} <b>{_t9.get('name')}</b> "
-                    f"<span style='font-size:12px;color:#64748b'>{_trg9}</span><br>"
+                    f"<span style='font-size:12px;color:{'#b91c1c' if _sec_reason9 else '#64748b'}'>{_trg_disp9}</span><br>"
                     f"<span style='font-size:12px'>{_chain9(_probs9)}</span></div>")
             if _rows9:
                 st.markdown(
@@ -12819,6 +12859,9 @@ def _render_today_nav():
                                         "pos52": _f9.get("pos52"),
                                         "peak_pnl": (_peaks_wa.get(_c9) or {}).get("peak_pnl"),
                                         "hold_cost": (_hold_map_wa.get(_c9) or {}).get("cost"),
+                                        "move_reason": _v88_move_reason(
+                                            _today_chg9, names=[_n9],
+                                            scope_hint=market_of_code(_c9)[-2:]),
                                         **_dc9})
                     if _last9 < _f9["stop"]:
                         if _c9 in _claims_wa:
