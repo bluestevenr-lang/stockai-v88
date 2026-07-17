@@ -4480,10 +4480,22 @@ if Config.ENABLE_EXPECTATION_LAYER:
                 st.markdown(f'<div class="v88-macro-title" style="margin:.35rem 0 .2rem"><b>📡 宏观脉搏</b>'
                             f'<span>AI解读 {_macro_ai_time_text} · 今日{_macro_ai_state.get("runs", 0)}/3次 · 盘中每3h ｜ 最近收盘 {_dt_global.now().strftime("%m/%d %H:%M")}</span></div>',
                             unsafe_allow_html=True)
+            # 【V88·按钮矮化 2026-07-17 用户要求】这两个按钮要和左侧文字行同高，
+            # Streamlit 原生按钮默认 35px 高；用 container(key=) 精确限定 CSS 只改这两个按钮
+            # （不能全局改 stButton，会误伤全站其它按钮）。
+            st.markdown("""<style>
+            .st-key-v88-macro-ai-btnbox button, .st-key-v88-macro-ai-btnbox2 button{
+              min-height:0!important;height:22px!important;padding:0 8px!important;
+              font-size:12px!important;line-height:1!important}
+            .st-key-v88-macro-ai-btnbox [data-testid="stTooltipHoverTarget"],
+            .st-key-v88-macro-ai-btnbox2 [data-testid="stTooltipHoverTarget"]{display:flex;align-items:center}
+            </style>""", unsafe_allow_html=True)
             with _mc_b1:
-                _macro_ai_generate = st.button("⚡ AI解读", key="btn_macro_ai_generate", help="更新AI增强解读", use_container_width=True)
+                with st.container(key="v88-macro-ai-btnbox"):
+                    _macro_ai_generate = st.button("⚡ AI解读", key="btn_macro_ai_generate", help="更新AI增强解读", use_container_width=True)
             with _mc_b2:
-                _macro_ai_refresh = st.button("🔄", key="btn_macro_ai_refresh", help="刷新", use_container_width=True)
+                with st.container(key="v88-macro-ai-btnbox2"):
+                    _macro_ai_refresh = st.button("🔄", key="btn_macro_ai_refresh", help="刷新", use_container_width=True)
             if _macro_ai_refresh:
                 for _k in ['market_ai_us', '_us_tech_data', 'market_sentiment_us',
                            'market_ai_hk', '_hk_tech_data', 'market_sentiment_hk',
