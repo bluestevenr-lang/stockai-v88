@@ -12386,21 +12386,30 @@ def _render_today_nav():
         try:
             _dh9 = st.session_state.get("_darkhorse9")
             if not _dh9 or time.time() - _dh9.get("_ts", 0) > 1800:
-                _excl9 = set()
+                # 优先读云端/流水线产物（全选大池116只版，6小时内新鲜）——桌面秒开
+                _dh9 = None
                 try:
-                    for _lst9x in (_watchlist_load() or {}).values():
-                        for _cx9, _nx9 in _lst9x:
-                            _excl9.add(str(_cx9).upper().split(".")[0].lstrip("0") or str(_cx9))
+                    _dh_disk9 = json.loads((_repo / "data" / "darkhorse.json").read_text(encoding="utf-8"))
+                    if time.time() - float(_dh_disk9.get("ts", 0)) < 6 * 3600:
+                        _dh9 = _dh_disk9
                 except Exception:
-                    pass
-                for _dx9 in (_wa.get("decisions") or []):
-                    if _dx9.get("scope") == "持仓":
-                        _cx9 = str(_dx9.get("code") or "").upper().split(".")[0]
-                        _excl9.add(_cx9.lstrip("0") or _cx9)
-                import darkhorse_radar as _dhm9
-                import importlib as _il_dh9
-                _dhm9 = _il_dh9.reload(_dhm9)
-                _dh9 = _dhm9.build_darkhorse(_excl9)
+                    _dh9 = None
+                if _dh9 is None:
+                    _excl9 = set()
+                    try:
+                        for _lst9x in (_watchlist_load() or {}).values():
+                            for _cx9, _nx9 in _lst9x:
+                                _excl9.add(str(_cx9).upper().split(".")[0].lstrip("0") or str(_cx9))
+                    except Exception:
+                        pass
+                    for _dx9 in (_wa.get("decisions") or []):
+                        if _dx9.get("scope") == "持仓":
+                            _cx9 = str(_dx9.get("code") or "").upper().split(".")[0]
+                            _excl9.add(_cx9.lstrip("0") or _cx9)
+                    import darkhorse_radar as _dhm9
+                    import importlib as _il_dh9
+                    _dhm9 = _il_dh9.reload(_dhm9)
+                    _dh9 = _dhm9.build_darkhorse(_excl9)
                 _dh9["_ts"] = time.time()
                 st.session_state["_darkhorse9"] = _dh9
             _fn9 = _dh9.get("funnel") or {}
@@ -12410,12 +12419,25 @@ def _render_today_nav():
                         + ("（拦截：" + "、".join(f"{k}{v}" for k, v in (_fn9.get('blocked') or {}).items() if v)
                            + "）" if not _horses9 else ""))
             if _horses9:
-                _dh_cards9 = "".join(_v88_decision_card(h) for h in _horses9[:6])
+                # 【分级分色】🔴重点=红左边条,🟡待观察=琥珀左边条（用户定纲：不同颜色标出）
+                def _dh_wrap9(_h9x):
+                    _key9x = _h9x.get("grade") == "重点"
+                    _bc9x = "#dc2626" if _key9x else "#f59e0b"
+                    _bg9x = "#fef2f2" if _key9x else "#fffbeb"
+                    _badge9x = ("🔴 重点黑马" if _key9x else "🟡 待观察")
+                    return (f'<div style="border-left:4px solid {_bc9x};border-radius:8px;'
+                            f'background:{_bg9x};padding:2px 0 2px 6px;margin-bottom:6px">'
+                            f'<div style="font-size:12px;font-weight:700;color:{_bc9x};'
+                            f'padding:2px 0 0 4px">{_badge9x}</div>'
+                            + _v88_decision_card(_h9x) + '</div>')
+                _dh_cards9 = "".join(_dh_wrap9(h) for h in _horses9[:9])
+                _nk9 = sum(1 for h in _horses9 if h.get("grade") == "重点")
                 st.markdown(
                     _V88_CARD_CSS
                     + '<div class="v88-watch-shell" style="border-color:#fbbf24;background:#fffdf5">'
-                    + '<div class="v88-watch-title"><h3>🐴 黑马雷达 · 你没关注但系统复判达标的票</h3>'
-                    + f'<p>严门槛:2周分≥{58}+盈亏比≥1.2+非派发+时机在窗｜多源共振置顶｜{_fn_txt9}<br>'
+                    + '<div class="v88-watch-title"><h3>🐴 黑马雷达 · 全选大池复判达标'
+                    + f'（🔴重点{_nk9}·🟡待观察{len(_horses9) - _nk9}）</h3>'
+                    + f'<p>严门槛:2周分≥58+盈亏比≥1.2+非派发+时机在窗｜🔴=多源共振或高分高赔率｜{_fn_txt9}<br>'
                     + f'🕒 {_dh9.get("generated_at", "")}</p></div>'
                     + f'<div class="v88-watch-grid">{_dh_cards9}</div></div>',
                     unsafe_allow_html=True)
@@ -12423,7 +12445,8 @@ def _render_today_nav():
                     _src9 = "＋".join(_h9.get("sources") or [])
                     _tc9 = _h9.get("touch") or ""
                     _pl9 = (_h9.get("trade_plan") or {}).get("short") or {}
-                    st.caption(f"🐴 {_h9.get('name')}：来源[{_src9}]{('·' + _tc9) if _tc9 else ''} ｜ "
+                    st.caption(f"{'🔴' if _h9.get('grade') == '重点' else '🟡'} {_h9.get('name')}："
+                               f"来源[{_src9[:40]}]{('·' + _tc9) if _tc9 else ''} ｜ "
                                f"{str(_pl9.get('in', ''))[:60]} → {str(_pl9.get('out', ''))[:40]}")
             else:
                 st.caption(f"🐴 黑马雷达：今日无达标黑马（{_fn_txt9}）——严门槛宁缺毋滥，拦截原因如上。")
