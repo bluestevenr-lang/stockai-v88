@@ -11994,15 +11994,30 @@ def _render_l3_cycle_board(_snap, _is_trading):
                 pass
             # 【V88·大盘异动分市场归因 2026-07-17 用户点单】中美港每个异动大盘各给一句"为什么"：
             # 方向匹配(大跌找利空/大涨找利好)+该市场scope+带因果词(因/受/预期/抛售…)+高影响+中文,择优1条。
-            _why_news9 = {}                               # {市场: "为什么"}(共用归因引擎)
+            # 【V88·异动归因升级 2026-07-17 用户点单】优先思考模式主动归因(云端产物,带driver),
+            # 无思考结论时退回新闻匹配兜底(即时零成本)。
+            _ma9 = {}
+            try:
+                _maj9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+                                    "move_attribution.json").read_text(encoding="utf-8"))
+                if _maj9.get("status") == "completed":
+                    _ma9 = _maj9.get("reasons") or {}
+            except Exception:
+                _ma9 = {}
+            _why_news9 = {}                               # {市场: (为什么, 是否思考)}
             for _mk9y in _movers9:
+                _think9 = _ma9.get(_mk9y) or {}
+                if _think9.get("why"):
+                    _drv9 = _think9.get("driver") or ""
+                    _why_news9[_mk9y] = ((f"[{_drv9}] " if _drv9 else "") + _think9["why"], True)
+                    continue
                 _lead9 = [str(s.get("name", "")) for s in sorted(
                     (((_snap or {}).get("markets") or {}).get(_mk9y, {}).get("sectors") or []),
                     key=lambda s: s.get("chg1d", 0), reverse=(_movers9[_mk9y] > 0))[:3]]
                 _r9y = _v88_move_reason(_movers9[_mk9y], names=[_mk9y] + _lead9,
                                         scope_hint=_mk9y, max_len=36)
                 if _r9y:
-                    _why_news9[_mk9y] = _r9y
+                    _why_news9[_mk9y] = (_r9y, False)
             _col9x = "#16a34a" if _dirn9 == "大跌" else "#dc2626"
             _bg9x = "#f0fdf4" if _dirn9 == "大跌" else "#fef2f2"
             st.markdown(
@@ -12012,10 +12027,11 @@ def _render_l3_cycle_board(_snap, _is_trading):
                 + (f"　｜　{'；'.join(_why9)}" if _why9 else "")
                 + ("".join(
                     f"<br><span style='font-size:12px;color:#475569'>"
-                    f"📉 <b style='color:{_col9x}'>{_mk9z}{_dirn9}原因</b>：{_why_z9}</span>"
+                    f"{'🧠' if _why_z9[1] else '📉'} <b style='color:{_col9x}'>{_mk9z}{_dirn9}原因</b>："
+                    f"{_why_z9[0]}</span>"
                     for _mk9z, _why_z9 in _why_news9.items())
-                   + ("<br><span style='font-size:12px;color:#94a3b8'>（详见热点新闻）</span>"
-                      if _why_news9 else ""))
+                   + ("<br><span style='font-size:12px;color:#94a3b8'>"
+                      "（🧠=AI思考综合归因 · 📉=新闻匹配）</span>" if _why_news9 else ""))
                 + "</div>", unsafe_allow_html=True)
     except Exception:
         pass
