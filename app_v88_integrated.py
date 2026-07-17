@@ -11937,12 +11937,18 @@ def _render_today_verdict(_snap, _repo):
     _cut = {}
     try:
         _idc = _jv.loads((_repo / "data" / "intraday_decisions.json").read_text(encoding="utf-8"))
+        # 【V88·减仓必附10字原因 2026-07-18 用户定纲】优先归因引擎(新闻/评级),否则用系统证据链
+        _wa_map9 = {str(d.get("code")): d for d in
+                    ((st.session_state.get("watch_alerts_v88") or {}).get("decisions") or [])}
         for _r in (_idc.get("rows") or []):
             if _r.get("scope") == "持仓" and any(k in str(_r.get("action", ""))
                                                 for k in ("减", "退", "清", "止损")):
                 _nm = _r.get("name")
                 if _nm not in _cut or (_r.get("p_down", 0) > _cut[_nm][1]):
-                    _cut[_nm] = (_r.get("action"), _r.get("p_down", 0), _r.get("code"))
+                    _wd9 = _wa_map9.get(str(_r.get("code"))) or {}
+                    _why10 = (str(_wd9.get("move_reason") or "")[:10]
+                              or str(_wd9.get("stage") or _r.get("reason") or "趋势转弱")[:10])
+                    _cut[_nm] = (_r.get("action"), _r.get("p_down", 0), _r.get("code"), _why10)
     except Exception:
         pass
 
@@ -11968,9 +11974,12 @@ def _render_today_verdict(_snap, _repo):
         _html.append("<div style='font-size:13px;margin-bottom:3px'>🟢 <b>可进场</b>：今日无严门槛绿灯，"
                      "空仓等待也是决策（现金也是仓位）</div>")
     if _cut:
-        _cut_txt = "、".join(f"{_stk_link(_v[2] and (_k) or _k, _v[2] or _k)}"
-                            f"<b style='color:#ea580c'>{_v[0]}</b>" for _k, _v in
-                            sorted(_cut.items(), key=lambda x: -x[1][1])[:5])
+        _cut_txt = "、".join(
+            f"{_stk_link(_v[2] and (_k) or _k, _v[2] or _k)}"
+            f"<b style='color:#ea580c'>{_v[0]}</b>"
+            + (f"<span style='font-size:12px;color:#94a3b8'>({_v[3]})</span>"
+               if len(_v) > 3 and _v[3] else "")
+            for _k, _v in sorted(_cut.items(), key=lambda x: -x[1][1])[:5])
         _html.append(f"<div style='font-size:13px;margin-bottom:3px'>🔴 <b style='color:#ea580c'>"
                      f"持仓要处理</b>：{_cut_txt}</div>")
     _html.append(f"<div style='font-size:12px;color:#475569;margin-top:2px'>📏 <b>今日纪律</b>：{_rule}</div>")
@@ -12561,9 +12570,11 @@ def _render_today_nav():
             return tok.split(":", 1)[1] if ":" in tok else tok
 
         try:
-            _fxp = []
-            _iop = _rep.find("## 🎯 今日操作榜")
+            # 【V88·去重统一口径 2026-07-18 用户点单】原"⭐引擎买入档Top3"与今日总决断
+            # 「🟢可进场」是两套"今天买"(操作榜=75分+催化 vs 总决断=时机绿灯),口径不同造成
+            # 图一图二推荐打架——整块删除,全页"今天买"只留总决断绿灯一个口径(省渲染省流量)。
             _pb_focus_lines = []
+            _iop = _rep.find("## 🎯 今日操作榜")
             if _pab_status == "plan_b":
                 _pb_sec = _rep[_rep.find("## 六、🔭 明日与本周参考"):]
                 _pb_market = ""
@@ -12574,28 +12585,9 @@ def _render_today_nav():
                         _pb_focus_lines.append(f"<b>{_pb_market}·机会观察</b>：{_pbl.split('**：', 1)[-1] if '**：' in _pbl else _pbl.split('：', 1)[-1]}")
                     elif "**风险保护**：" in _pbl:
                         _pb_focus_lines.append(f"<b>{_pb_market}·风险保护</b>：{_pbl.split('**：', 1)[-1] if '**：' in _pbl else _pbl.split('：', 1)[-1]}")
-            if _iop > 0:
-                for _lnf in _rep[_iop:_iop + 4000].splitlines():
-                    if "买入/建仓" in _lnf and _lnf.strip().startswith("|"):
-                        _cf = [x.strip() for x in _lnf.split("|") if x.strip()]
-                        if len(_cf) >= 7:
-                            _fxp.append((_cf[2], _tok2code(_cf[1]), _cf[3].replace('**', '')[:40],
-                                         _cf[6].split("｜")[0].replace("**", "").strip()[:60]))
-                    if len(_fxp) >= 3:
-                        break
-            if not _fxp:
-                if _pab_status == "plan_b":
-                    st.info(f"⭐ **今日策略：不强制给买入指令，转为机会观察＋风险保护**——优先保护仓位、已有利润和整体胜率 · {_report_analysis_note9}")
-                    if _pb_focus_lines:
-                        st.markdown("<div style='line-height:1.75;font-size:12px'>" + "<br>".join(_pb_focus_lines) + "</div>", unsafe_allow_html=True)
-                else:
-                    st.info(f"⭐ **{'今日' if _is_trading else '下一交易日'}无强制买入信号**（未同时通过75分＋72小时催化）——继续观察并保护仓位，现金也是仓位 · {_report_analysis_note9}")
-            if _fxp:
-                _fx_html = "<br>".join(
-                    f"🟢 <b>{_stk_link(_n9, _c9)}</b> {_d9}<br>&nbsp;&nbsp;└ {_r9}"
-                    for _n9, _c9, _d9, _r9 in _fxp)
-                st.success(f"**⭐ {'今日' if _is_trading else '下一交易日'}重点关注（引擎买入档 Top3）** · 点股票名直接深度分析 · {_report_analysis_note9}")
-                st.markdown(f"<div style='line-height:1.9'>{_fx_html}</div>", unsafe_allow_html=True)
+                st.info(f"⭐ **今日策略：不强制给买入指令，转为机会观察＋风险保护** · {_report_analysis_note9}")
+                if _pb_focus_lines:
+                    st.markdown("<div style='line-height:1.75;font-size:12px'>" + "<br>".join(_pb_focus_lines) + "</div>", unsafe_allow_html=True)
             # 【V88·各市场高分】买入档常因缺72h催化而空 → 顶出操作榜各市场Top3，保证美/A/港都露脸（点名分析）
             import re as _rem2
             _rows_mk = []
