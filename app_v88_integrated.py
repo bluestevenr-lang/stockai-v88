@@ -12696,56 +12696,70 @@ def _render_today_nav():
         # 【V88·大盘&板块前瞻】与个股同一套引擎(evaluate_forward_outlook)+同一条5/10/20/60/120日阶梯，
         # 给大盘指数、板块代表ETF 的 概率+盈亏比+每周期人话理由（预算自适应）。选一个才算，不拖首屏。
         # ═══════════════════════════════════════════════════════════════
-        with st.expander("🎯 大盘 & 板块 前瞻 · 概率＋盈亏比＋人话理由（5/10/20/60/120日）", expanded=False):
-            _MKT_IDX = {"美股·标普500": "^GSPC", "美股·纳指100": "^IXIC",
-                        "港股·恒生": "^HSI", "港股·恒生科技": "^HSTECH",
-                        "A股·上证指数": "000001.SS", "A股·沪深300": "000300.SS"}
-            _SEC_PROXY = {"医疗·美(XLV)": "XLV", "科技·美(XLK)": "XLK", "半导体·美(SOXX)": "SOXX",
-                          "金融·美(XLF)": "XLF", "能源·美(XLE)": "XLE", "消费·美(XLY)": "XLY",
-                          "医药·A(512010)": "512010.SS", "券商·A(512880)": "512880.SS",
-                          "新能源·A(516160)": "516160.SS"}
-            _fc1, _fc2 = st.columns(2)
-            with _fc1:
-                _mk_pick = st.selectbox("大盘指数", ["（不选）"] + list(_MKT_IDX), key="fwd_mkt_pick")
-            with _fc2:
-                _sc_pick = st.selectbox("板块（代表ETF）", ["（不选）"] + list(_SEC_PROXY), key="fwd_sec_pick")
+        with st.expander("🎯 大盘 & 板块 前瞻 · 概率＋盈亏比（5/10/20/60/120日 · 免选直出）", expanded=False):
+            # 【V88·免手选可视化 2026-07-18 用户点单】不再下拉选择:左=中美港大盘,右=板块,
+            # 同一套 evaluate_forward_outlook 引擎同一缓存(30分钟)——左右逻辑共联。
+            _FW_IDX9 = (("美股·标普500", "^GSPC"), ("A股·上证指数", "000001.SS"), ("港股·恒生指数", "^HSI"))
+            _FW_SEC9 = (("科技·美", "XLK"), ("半导体·美", "SOXX"), ("医疗·美", "XLV"),
+                        ("金融·美", "XLF"), ("能源·美", "XLE"), ("消费·美", "XLY"),
+                        ("医药·A", "512010.SS"), ("券商·A", "512880.SS"), ("新能源·A", "516160.SS"))
+            _fwp9 = st.session_state.get("_fw_panel9")
+            if not _fwp9 or time.time() - _fwp9.get("ts", 0) > 1800:
+                _fwp9 = {"ts": time.time(), "idx": [], "sec": []}
+                with st.spinner("同引擎计算中美港大盘与九大板块前瞻…"):
+                    try:
+                        from v88_decision_core import evaluate_forward_outlook as _efo_p9
+                        for _lb9, _sy9 in _FW_IDX9 + _FW_SEC9:
+                            try:
+                                _dfp9 = fetch_stock_data(_sy9)
+                                if _dfp9 is None or len(_dfp9) < 30:
+                                    continue
+                                _fw9 = _efo_p9(_dfp9, name=_lb9, code=_sy9)
+                                if _fw9.get("error"):
+                                    continue
+                                _row9 = {"label": _lb9, "p_up": _fw9.get("weighted_p_up"),
+                                         "rr": _fw9.get("weighted_rr"), "ev": _fw9.get("weighted_expected_pct"),
+                                         "stage": _fw9.get("stage"), "act": _fw9.get("overall_action"),
+                                         "chain": [(r.get("label"), r.get("p_up"))
+                                                   for r in (_fw9.get("horizons") or [])]}
+                                (_fwp9["idx"] if any(_sy9 == s2 for _, s2 in _FW_IDX9)
+                                 else _fwp9["sec"]).append(_row9)
+                            except Exception:
+                                continue
+                    except Exception:
+                        pass
+                st.session_state["_fw_panel9"] = _fwp9
+            _colL9, _colR9 = st.columns([1, 1.3])
 
-            def _render_index_forward(_label, _sym, _kind, _kp):
-                try:
-                    from v88_decision_core import evaluate_forward_outlook as _efo
-                    _idf = fetch_stock_data(_sym)
-                    if _idf is None or len(_idf) < 30:
-                        st.info(f"{_label}：行情不足，换一个试试")
-                        return
-                    _f = _efo(_idf, name=_label, code=_sym)
-                    if _f.get("error"):
-                        st.info(f"{_label}：{_f['error']}")
-                        return
-                    st.markdown(f"**{_label} · 当下前瞻**")
-                    _m1, _m2, _m3, _m4 = st.columns(4)
-                    _m1.metric("综合上/下概率", f"{_f['weighted_p_up']}% / {_f['weighted_p_down']}%")
-                    _m2.metric("综合盈亏比", f"{_f.get('weighted_rr', 0):.2f}", help="越大越好")
-                    _m3.metric("综合期望", f"{_f.get('weighted_expected_pct', 0):+.1f}%", help=">0较好")
-                    _m4.metric("阶段", _f.get("stage", "—"))
-                    st.success(f"**结论：{_f.get('overall_action')}** ｜ {_f.get('suggestion')}")
-                    _rows = [{"周期(交易日)": r.get("label"),
-                              "上涨/下跌概率": f"{r.get('p_up')}% / {r.get('p_down')}%",
-                              "上涨空间": f"+{r.get('upside_pct')}%", "下跌风险": f"-{r.get('downside_pct')}%",
-                              "盈亏比(越大越好)": r.get("rr"), "期望值(>0较好)": f"{r.get('expected_pct'):+.1f}%",
-                              "判断": r.get("view")} for r in (_f.get("horizons") or [])]
-                    st.dataframe(_rows, hide_index=True, use_container_width=True)
-                    render_readable_reasons(_f, kind=_kind, symbol=_sym, name=_label,
-                                            context="", key_prefix=_kp)
-                except Exception as _e:
-                    logging.exception("大盘/板块前瞻失败")
-                    st.caption(f"{_label} 前瞻暂不可用：{type(_e).__name__}")
-
-            if _mk_pick != "（不选）":
-                _render_index_forward(_mk_pick, _MKT_IDX[_mk_pick], "大盘", "mkt")
-            if _sc_pick != "（不选）":
-                _render_index_forward(_sc_pick, _SEC_PROXY[_sc_pick], "板块", "sec")
-            if _mk_pick == "（不选）" and _sc_pick == "（不选）":
-                st.caption("选一个大盘指数或板块，看它未来 5/10/20/60/120 日的概率、盈亏比和人话理由。")
+            def _fw_chain9(_ch9):
+                return " ".join(
+                    f"<span style='color:{'#dc2626' if (p or 0) >= 55 else ('#16a34a' if (p or 0) <= 45 else '#64748b')}'>"
+                    f"{lb}<b>{p}%</b></span>" for lb, p in (_ch9 or []))
+            with _colL9:
+                st.markdown("**🌍 大盘（中美港）**")
+                for _r9 in _fwp9.get("idx") or []:
+                    _evc9 = "#dc2626" if (_r9.get("ev") or 0) > 0 else "#16a34a"
+                    st.markdown(
+                        f"<div style='border:1px solid #dbe4f0;border-radius:8px;padding:6px 8px;margin-bottom:5px'>"
+                        f"<b>{_r9['label']}</b> <span style='color:#475569'>{_r9.get('stage', '')}</span> · {_r9.get('act', '')}<br>"
+                        f"<span style='font-size:13px'>上涨<b>{_r9.get('p_up')}%</b> ｜ 盈亏比<b>{(_r9.get('rr') or 0):.2f}</b>"
+                        f" ｜ 期望<b style='color:{_evc9}'>{(_r9.get('ev') or 0):+.1f}%</b></span><br>"
+                        f"<span style='font-size:12px'>{_fw_chain9(_r9.get('chain'))}</span></div>",
+                        unsafe_allow_html=True)
+            with _colR9:
+                st.markdown("**🧩 板块（代表ETF·同引擎）**")
+                _sec_rows9 = sorted(_fwp9.get("sec") or [], key=lambda r: -(r.get("p_up") or 0))
+                _sec_html9 = ["<div style='font-size:13px;line-height:1.75'>"]
+                for _r9 in _sec_rows9:
+                    _pc9 = "#dc2626" if (_r9.get("p_up") or 0) >= 55 else ("#16a34a" if (_r9.get("p_up") or 0) <= 45 else "#64748b")
+                    _sec_html9.append(
+                        f"<div style='border-bottom:1px solid #eef2f7;padding:2px 0'>"
+                        f"<b>{_r9['label']}</b> 上涨<b style='color:{_pc9}'>{_r9.get('p_up')}%</b>"
+                        f" · 期望{(_r9.get('ev') or 0):+.1f}% · {_r9.get('act', '')[:10]}"
+                        f"　<span style='font-size:12px'>{_fw_chain9((_r9.get('chain') or [])[:3])}</span></div>")
+                _sec_html9.append("</div>")
+                st.markdown("".join(_sec_html9), unsafe_allow_html=True)
+            st.caption("大盘与板块同一套前瞻引擎、同一缓存时间——左右口径天然一致 · 30分钟刷新 · 概率=规则情景估计")
 
         # 【V88·版面梳理 2026-07-17】水位/轮动提醒/周期导图/复制摘要合并收进「大盘环境」
         # （三层总览已给概览,这里是细节层,默认收起减乱）
