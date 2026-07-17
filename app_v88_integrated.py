@@ -11355,11 +11355,11 @@ _V88_CARD_CSS = """
 .v88-watch-title{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:8px}
 .v88-watch-title h3{margin:0;color:#123a70;font-size:18px;line-height:1.25}
 .v88-watch-title p{margin:0;color:#64748b;font-size:12px;text-align:right}
-.v88-watch-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;align-items:start}
+.v88-watch-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:start}
 .v88-watch-market{min-width:0}
 .v88-watch-market h4{margin:0 0 5px;padding:4px 7px;border-radius:6px;background:#eaf2ff;color:#173b68;font-size:13px}
 .v88-watch-market h4 span{float:right;color:#64748b;font-size:12px;font-weight:500}
-.v88-watch-card{background:#fff;border:1px solid #dbe4f0;border-radius:8px;padding:7px;margin-bottom:6px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.v88-watch-card{background:#fff;border:1px solid #dbe4f0;border-radius:8px;padding:5px 6px;margin-bottom:5px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
 .v88-watch-conflict{border:2px solid #f59e0b;background:#fffdf5}
 .v88-watch-pending{border-style:dashed;background:#fafbfc;opacity:.85}
 .v88-cycle-warn{color:#b45309;font-weight:700}
@@ -11375,11 +11375,11 @@ _V88_CARD_CSS = """
 .v88-cyc{flex:1;min-width:0;text-align:center;border:1px solid #e5eaf1;border-radius:5px;padding:3px 1px;background:#fff}
 .v88-cyc i{display:block;font-style:normal;font-size:12px;color:#94a3b8;line-height:1.2}
 .v88-cyc b{font-size:15px;line-height:1.2}
-.v88-spark-wrap{margin-top:4px;line-height:0}
-.v88-spark{width:100%;height:auto;display:block}
-.v88-rrline{margin-top:5px;font-size:12px;color:#64748b}
-.v88-rrline b{font-size:14px} .v88-rrline em{font-style:normal;font-size:12px}
-.v88-watch-foot{display:flex;flex-wrap:wrap;gap:3px 9px;margin-top:5px;color:#64748b;font-size:12px;line-height:1.3}
+.v88-spark-wrap{margin-top:2px;line-height:0}
+.v88-spark{width:100%;height:auto;max-height:58px;display:block}
+.v88-rrline{margin-top:3px;font-size:12px;color:#64748b}
+.v88-rrline b{font-size:13px} .v88-rrline em{font-style:normal;font-size:12px}
+.v88-watch-foot{display:flex;flex-wrap:wrap;gap:2px 8px;margin-top:3px;color:#64748b;font-size:12px;line-height:1.25}
 @media(max-width:1100px){.v88-watch-grid{grid-template-columns:1fr}}
 </style>
 """
@@ -11448,26 +11448,28 @@ def _v88_decision_card(_d9):
                  ("↘ 趋中性" if _c_first9 - _c_last9 >= 8 else "→ 各周期均衡"))))
     _trend_col9 = ("#dc2626" if _c_last9 - _c_first9 >= 8 else
                    ("#16a34a" if _c_first9 - _c_last9 >= 8 else "#94a3b8"))
-    _spk_w9, _spk_h9, _sn9 = 200, 48, len(_cyc_probs9)
+    # 【V88·卡片瘦身 2026-07-17 用户反馈"板块太大"】走势图压扁(viewBox更宽更矮)——
+    # svg width:100% 会随卡宽等比放大,加宽viewBox即让实际高度和字号显著变小,更精致。
+    _spk_w9, _spk_h9, _sn9 = 320, 34, len(_cyc_probs9)
 
     def _spk_y9(_p):
-        return round(18 + 18 * (1 - (min(90, max(20, _p)) - 20) / 70), 1)
+        return round(12 + 13 * (1 - (min(90, max(20, _p)) - 20) / 70), 1)
     _pts9 = [(round(16 + _i9 * (_spk_w9 - 32) / max(1, _sn9 - 1), 1),
               _spk_y9(_p9x), _p9x, _l9x)
              for _i9, (_l9x, _p9x) in enumerate(_cyc_probs9)]
     _base_y9 = _spk_y9(50)
     _poly9 = " ".join(f"{x},{y}" for x, y, _, _ in _pts9)
     _marks9 = "".join(
-        f'<circle cx="{x}" cy="{y}" r="2.6" fill="{_cyc_col9(p)}"/>'
-        f'<text x="{x}" y="10" text-anchor="middle" font-size="9" font-weight="700" '
+        f'<circle cx="{x}" cy="{y}" r="2.1" fill="{_cyc_col9(p)}"/>'
+        f'<text x="{x}" y="7" text-anchor="middle" font-size="7.5" font-weight="700" '
         f'fill="{_cyc_col9(p)}">{p}%</text>'
-        f'<text x="{x}" y="46" text-anchor="middle" font-size="8" fill="#94a3b8">{lab}</text>'
+        f'<text x="{x}" y="33" text-anchor="middle" font-size="6.5" fill="#94a3b8">{lab}</text>'
         for x, y, p, lab in _pts9)
     _spark9 = (
         f'<svg class="v88-spark" viewBox="0 0 {_spk_w9} {_spk_h9}">'
         f'<line x1="10" y1="{_base_y9}" x2="{_spk_w9 - 10}" y2="{_base_y9}" stroke="#e2e8f0" '
         f'stroke-width="1" stroke-dasharray="3 3"/>'
-        f'<polyline points="{_poly9}" fill="none" stroke="{_trend_col9}" stroke-width="2" '
+        f'<polyline points="{_poly9}" fill="none" stroke="{_trend_col9}" stroke-width="1.6" '
         f'stroke-linejoin="round" stroke-linecap="round"/>{_marks9}</svg>')
     return f"""
     <div class="v88-watch-card{' v88-watch-conflict' if _conflict9 else ''}">
