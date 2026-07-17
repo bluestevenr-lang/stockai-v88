@@ -11440,8 +11440,19 @@ def _v88_decision_card(_d9):
     _medium9 = int(_d9.get("medium_score") or 0)
     _long_score9 = int(_d9.get("long_score") or 0)
     _entry9 = str(_d9.get("entry_note") or "入场条件待核")
+
+    def _side_word9(_v):
+        _v = float(_v or 50)
+        return (f"<b style='color:#dc2626'>偏强{_v:.0f}</b>" if _v >= 58 else
+                (f"<b style='color:#16a34a'>偏弱{_v:.0f}</b>" if _v <= 42 else f"中性{_v:.0f}"))
+    _mlabel9 = _side_word9(_medium9)
+    _llabel9 = _side_word9(_long_score9)
     _conflict9 = bool(_d9.get("cycle_conflict"))
-    if _conflict9:
+    # 【V88·盈亏比语境化 2026-07-17 用户抓矛盾】"优秀却减仓"——盈亏比=若进场的赔率结构,
+    # 不是"现在该买"。风控/等待状态下明说关系,不让用户猜。
+    if any(k in _action9 for k in ("减仓", "退出", "回避", "清仓")) and _rr9 >= 1.5:
+        _rr_txt9, _rr_color9, _rr_bg9 = "赔率优·但风控优先", "#b45309", "#fffbeb"
+    elif _conflict9:
         _rr_txt9, _rr_color9, _rr_bg9 = "短期赔率≠可买", "#b45309", "#fffbeb"
     elif "小仓试错" in _action9:
         _rr_txt9, _rr_color9, _rr_bg9 = "概率补偿·仅小仓", "#2563eb", "#eff6ff"
@@ -11452,12 +11463,13 @@ def _v88_decision_card(_d9):
     _exp_suffix9 = "（周期冲突，不升级）" if _conflict9 else ""
     _facts_h9 = ((_d9.get("facts") or {}).get("horizons") or {})
     _cyc_probs9 = []
-    for _lab9 in ("2周", "4周", "6周", "8周", "16周"):
+    for _lab9 in ("2周", "4周", "8周", "16周", "32周"):
         _rs9 = (_facts_h9.get(_lab9) or {}).get("rule_score")
         if _rs9 is not None:
             _cyc_probs9.append((_lab9, int(round(float(_rs9)))))
     if len(_cyc_probs9) < 4:
-        _cyc_probs9 = [("2周", _up9), ("4周", _medium9), ("8周", _medium9), ("16周", _long_score9)]
+        _cyc_probs9 = [("2周", _up9), ("4周", _medium9), ("8周", _medium9),
+                       ("16周", _long_score9), ("32周", _long_score9)]
 
     def _cyc_col9(_p):
         return "#dc2626" if _p >= 55 else ("#16a34a" if _p <= 45 else "#64748b")
@@ -11506,7 +11518,8 @@ def _v88_decision_card(_d9):
       <div class="v88-spark-wrap">{_spark9}</div>
       <div class="v88-rrline">关键位盈亏比 <b style="color:{_rr_color9}">{_rr9:.2f}</b>
         <em style="color:{_rr_color9}">（{_rr_txt9}）</em></div>
-      <div class="v88-watch-foot"><span>未来2周情景期望 <b style="color:{_exp_color9}">{_exp9:+.1f}%</b>{_exp_suffix9}</span>
+      <div class="v88-watch-foot"><span>短(2周)期望<b style="color:{_exp_color9}">{_exp9:+.1f}%</b>{_exp_suffix9}</span>
+      <span>中(4-8周){_mlabel9}</span><span>长(16-32周){_llabel9}</span>
       <span><b>统一分{_score9}</b></span>
       <span>{_entry9}</span><span>🕒 {_at9}</span></div>
     </div>"""
@@ -11652,7 +11665,7 @@ def _render_l3_cycle_board(_snap, _is_trading):
     """【V88·三层周期概率总览】大盘→板块同屏（自选=上方决策台，共三层）。
 
     北极星定纲(2026-07-16)：三层都要看到轮转周期与下一周期方向概率（中美港）。
-    口径：大盘=统一引擎 2/4/6/8/16 周方向分（与自选决策台完全同源）；
+    口径：大盘=统一引擎 2/4/8/16/32 周方向分（与自选决策台完全同源）；
     板块=rotation_forecast 轨迹 2/5/8/16 周（09:00/21:00 交易日更新）。
     纯确定性引擎，零 LLM 成本；概率=规则情景估计（非回测胜率）。
     """
@@ -11681,7 +11694,7 @@ def _render_l3_cycle_board(_snap, _is_trading):
                         continue
                     _hz9 = ((_dc9.get("facts") or {}).get("horizons") or {})
                     _probs9 = [(_lab9, int(round(float((_hz9.get(_lab9) or {}).get("rule_score")))))
-                               for _lab9 in ("2周", "4周", "6周", "8周", "16周")
+                               for _lab9 in ("2周", "4周", "8周", "16周", "32周")
                                if (_hz9.get(_lab9) or {}).get("rule_score") is not None]
                     _mkts9[_mk9] = {"name": _nm9, "stage": str(_full9.get("stage") or "—"),
                                     "action": str(_dc9.get("action") or "观察"), "probs": _probs9}
@@ -14863,11 +14876,11 @@ if execute_analysis and q_input:
             st.warning(f"个股前瞻暂不可用：{type(_fwd_exc).__name__}")
 
         # ═══════════════════════════════════════════════════════════════
-        # 【V88·个股五周期】2/4/6/8/16周量化底稿 + DeepSeek thinking-high
+        # 【V88·个股五周期】2/4/8/16/32周量化底稿 + DeepSeek thinking-high
         # 点击任一个股均自动执行；同一行情快照缓存6小时，控制7元/月总预算。
         # ═══════════════════════════════════════════════════════════════
         st.markdown("### 🧭 个股周期轮换总览（深度分析第一判断）")
-        st.caption("先看周期象限与2/4/6/8/16周走向，再看明细和K线；置信度表示证据一致性，不是回测胜率。")
+        st.caption("先看周期象限与2/4/8/16/32周走向，再看明细和K线；置信度表示证据一致性，不是回测胜率。")
         _hz_align = {}
         _hz_decision = {}
         try:

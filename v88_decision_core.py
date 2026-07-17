@@ -15,8 +15,11 @@ import pandas as pd
 
 
 SCHEMA = "v88.stock-decision/2.0"
-SCORE_VERSION = "V88-U2.0"
-HORIZONS = (2, 4, 6, 8, 16)
+SCORE_VERSION = "V88-U2.1"   # 2026-07-17 用户定纲:周期体系翻倍律重构(2/4/8/16/32周),战绩按版本分段
+# 【V88·翻倍律周期 2026-07-17 用户定纲】旧2/4/6/8/16的4/6/8三档挤在中期高度相关(常年同值),
+# 16周(3.7月)截断在动量甜区(3-12月,Jegadeesh-Titman)门口。翻倍律=市场分形自相似
+# (Mandelbrot/缠论级别递归/艾略特浪级),每档信息独立:4周锚MA20月线、16周贴季度、32周入动量甜区。
+HORIZONS = (2, 4, 8, 16, 32)
 # 个股「交易日」阶梯：5≈1周 / 10≈2周 / 20≈1月 / 60≈1季 / 120≈半年。
 # 「当下前瞻」与「锚点复盘」共用同一条，短中长一屏看全（用户 2026-07-16 拍板，改此一行即可调档）。
 HORIZON_DAYS = (5, 10, 20, 60, 120)
@@ -24,8 +27,8 @@ HORIZON_DAY_WEIGHTS = {5: 0.15, 10: 0.20, 20: 0.25, 60: 0.25, 120: 0.15}
 BJT = timezone(timedelta(hours=8))
 SCORE_WEIGHTS = {
     "short": 0.20,       # 2周
-    "medium": 0.25,      # 4/6/8周均值
-    "long": 0.20,        # 16周
+    "medium": 0.25,      # 4/8周均值
+    "long": 0.20,        # 16/32周均值
     "trend_quality": 0.15,
     "entry_odds": 0.20,
 }
@@ -58,7 +61,7 @@ def _series(df, name):
 def build_horizon_facts(df, full=None, horizons=HORIZONS, unit="week") -> dict:
     """生成唯一的多周期行情底稿；分数是方向先验，不是胜率。
 
-    unit='week'：档位按周（2/4/6/8/16 周，系统统一评分主口径，全局不变）。
+    unit='week'：档位按周（2/4/8/16/32 翻倍律，系统统一评分主口径）。
     unit='day' ：档位按交易日（个人决策锚点用 2/5/8/16 交易日）。
     """
     close = _series(df, "Close")
@@ -117,7 +120,7 @@ def build_horizon_facts(df, full=None, horizons=HORIZONS, unit="week") -> dict:
             _hard_down = _stg in ("破位下跌", "趋势转弱")   # 已在下跌趋势→中期档就该收敛、不显看涨红
             _distrib = _stg in ("高位震荡", "放量滞涨")       # 高位派发未破位→仅远档收敛
             _mid = (period >= 20) if _by_day else (period >= 4)
-            _far = (period >= 60) if _by_day else (period >= 8)
+            _far = (period >= 60) if _by_day else (period >= 16)
             if _hard_down and _mid and score > 52:
                 score, phase_note = 52, f"{_stg}·中期分收敛至中性（下跌趋势不显看涨）"
             elif _distrib and _far and score > 55:
@@ -426,9 +429,9 @@ def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
         return {"schema": SCHEMA, "score_version": SCORE_VERSION,
                 "error": facts.get("error", "行情不足"), "name": name, "code": code}
     short = _num((horizons.get("2周") or {}).get("rule_score"), 50)
-    medium = _mean_scores(horizons, ("4周", "6周", "8周"), short)
-    long_ = _num((horizons.get("16周") or {}).get("rule_score"), medium)
-    long_avg = _mean_scores(horizons, ("4周", "6周", "8周", "16周"), medium)
+    medium = _mean_scores(horizons, ("4周", "8周"), short)
+    long_ = _mean_scores(horizons, ("16周", "32周"), medium)
+    long_avg = _mean_scores(horizons, ("4周", "8周", "16周", "32周"), medium)
     trend_quality = _clip(full.get("total", 50), 0, 100)
 
     last, resistance, stop, upside, downside = _scenario_prices(full, facts)
@@ -508,7 +511,7 @@ def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
         "cycle_conflict": conflict, "cycle_status": cycle_status,
         "action": action, "reason": reason, "entry_note": entry_note,
         "entry_plan": entry_plan,
-        "cycle_note": f"2周{short_side}{round(short)}%｜4-16周{long_side}{round(long_avg)}%",
+        "cycle_note": f"2周{short_side}{round(short)}%｜4-32周{long_side}{round(long_avg)}%",
         "facts": facts,
     }
 

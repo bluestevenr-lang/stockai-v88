@@ -806,10 +806,10 @@ elif _nav == "🔍 个股搜索":
                 c3a.metric("RSI", f"{f['rsi']}")
                 st.markdown(f"{_concl_color.get(f['conclusion'],'')} 技术阶段：**{f['conclusion']}**｜{f['action']}")
 
-            # 【V88·云端个股五周期】点击直达后自动显示2/4/6/8/16周，
+            # 【V88·云端个股五周期】点击直达后自动显示2/4/8/16/32周，
             # 行情规则先算、DeepSeek thinking-high再复核，失败也不伪装AI结果。
             st.markdown("##### 🧭 个股周期轮换总览（深度分析第一判断）")
-            st.caption("先看周期象限与2/4/6/8/16周走向；同一行情快照复用6小时思考缓存。")
+            st.caption("先看周期象限与2/4/8/16/32周走向；同一行情快照复用6小时思考缓存。")
             _fu = None
             try:
                 import stock_horizon as _stock_horizon_cloud
