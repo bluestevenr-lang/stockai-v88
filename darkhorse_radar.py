@@ -53,6 +53,15 @@ def _canon(code: str) -> str:
     return c.lstrip("0") or c
 
 
+def _market_of(code: str) -> str:
+    c = str(code or "").upper()
+    if c.endswith(".HK"):
+        return "🇭🇰港股"
+    if c.endswith((".SS", ".SZ", ".SH")):
+        return "🇨🇳A股"
+    return "🇺🇸美股"
+
+
 def collect_candidates(extra: list | None = None) -> list[tuple]:
     """第1层发现：返回 [(yf_code, name, [来源,...]), ...]（同票多源合并）。"""
     from cloud_engine import to_yf
@@ -190,7 +199,7 @@ def build_darkhorse(exclude_codes: set, extra: list | None = None,
                                "entry_note", "cycle_note", "analysis_time", "facts")},
                            "sources": sources, "touch": _touch_lines(full),
                            "trade_plan": plan, "scope": "黑马",
-                           "level": "B", "market": ""})
+                           "level": "B", "market": _market_of(code)})
         except Exception:
             blocked["数据"] += 1
             continue

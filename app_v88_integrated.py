@@ -12442,7 +12442,18 @@ def _render_today_nav():
                             f'<div style="font-size:12px;font-weight:700;color:{_bc9x};'
                             f'padding:2px 0 0 4px">{_badge9x}</div>'
                             + _v88_decision_card(_h9x) + '</div>')
-                _dh_cards9 = "".join(_dh_wrap9(h) for h in _horses9[:15])
+                # 【V88·市场分列 2026-07-17 用户修正】与自选/持仓台同构：一列一个市场，不混排
+                _dh_groups9 = {"🇺🇸美股": [], "🇭🇰港股": [], "🇨🇳A股": []}
+                for _hx9 in _horses9[:15]:
+                    _mk_h9 = _hx9.get("market") or market_of_code(_hx9.get("code", ""))
+                    _dh_groups9.setdefault(_mk_h9, []).append(_hx9)
+                _dh_cols9 = []
+                for _mk_h9 in ("🇺🇸美股", "🇭🇰港股", "🇨🇳A股"):
+                    _hs9 = _dh_groups9.get(_mk_h9) or []
+                    if not _hs9:
+                        continue
+                    _dh_cols9.append(f'<section class="v88-watch-market"><h4>{_mk_h9} <span>{len(_hs9)}只</span></h4>'
+                                     + "".join(_dh_wrap9(h) for h in _hs9) + "</section>")
                 _nk9 = sum(1 for h in _horses9 if h.get("grade") == "重点")
                 with st.expander(f"🐴 黑马雷达 · 全选大池复判达标（🔴重点{_nk9}·🟡待观察{len(_horses9) - _nk9}）",
                                  expanded=True):
@@ -12452,7 +12463,7 @@ def _render_today_nav():
                         + '<div class="v88-watch-title">'
                         + f'<p>严门槛:2周分≥58+盈亏比≥1.2+非派发+时机在窗｜🔴=多源共振或高分高赔率｜{_fn_txt9}｜'
                         + f'🕒 {_dh9.get("generated_at", "")}</p></div>'
-                        + f'<div class="v88-watch-grid">{_dh_cards9}</div></div>',
+                        + f'<div class="v88-watch-grid">{"".join(_dh_cols9)}</div></div>',
                         unsafe_allow_html=True)
                     # 【预期视角】按2周情景期望排序——"预期涨幅最大"直接排名（用户点单：要有效预期）
                     _ev_top9 = sorted(_horses9, key=lambda h: -float(h.get("expected_pct") or 0))[:5]
