@@ -4450,7 +4450,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
             .v88-macro-kpi{min-width:0}.v88-macro-kpi>span{display:block;color:#5a6378;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
             .v88-macro-kpi b{display:block;font-size:14px;line-height:1.2;color:#1a1a2e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
             .v88-macro-kpi small{font-size:12px}.v88-up{color:#dc2626!important}.v88-down{color:#16a34a!important}.v88-flat{color:#5a6378!important}
-            .v88-cn-note{display:inline!important;font-size:.58em!important;line-height:1!important;color:#8893a7;font-weight:400;margin-left:1px}.v88-macro-reason{font-size:12px;color:#5a6378;margin-top:.35rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+            .v88-macro-card .v88-cn-note{display:inline!important;font-size:.58em!important;line-height:1!important;color:#8893a7;font-weight:400;margin-left:1px}.v88-macro-reason{font-size:12px;color:#5a6378;margin-top:.35rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
             .v88-macro-dense{height:174px;min-height:174px;padding:.38rem .52rem}
             .v88-macro-dense .v88-macro-head{margin-bottom:.2rem}
             .v88-macro-dense .v88-macro-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:.18rem .3rem}
