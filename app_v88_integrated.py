@@ -11453,8 +11453,20 @@ def _v88_decision_card(_d9):
     if _scope9x == "持仓":
         _t60m = re.search(r"目标([\d.]+)", str((_plan9x.get("mid") or {}).get("out") or ""))
         _res9x, _stop9x = _pnum9x(_d9.get("resistance")), _pnum9x(_d9.get("stop"))
+        # 【V88·动态奔跑线 2026-07-17 用户批准】trailing stop 做活：与生命周期同口径
+        # (TRAIL_DD=10：峰值浮盈回撤超10个百分点→锁盈)，换算成价格画在卡上。
+        # 峰值浮盈≤10点时锁盈线无意义，退回静态"冲阻力减半"。
+        _first9x = f"冲{_res9x}减半" if _res9x else ""
+        try:
+            _pk9x = float(_d9.get("peak_pnl") or 0)
+            _cost9x = float(_d9.get("hold_cost") or 0)
+            if _pk9x > 10 and _cost9x > 0:
+                _run9x = _cost9x * (1 + (_pk9x - 10) / 100)
+                _first9x = f"奔跑线{_run9x:.2f}(峰盈{_pk9x:.0f}%回撤10点锁盈)"
+        except (TypeError, ValueError):
+            pass
         _parts9x = [x for x in (
-            f"冲{_res9x}减半" if _res9x else "",
+            _first9x,
             f"目标{_t60m.group(1)}(60日)" if _t60m else "",
             f"破{_stop9x}全走" if _stop9x else "") if x]
         if _parts9x:
@@ -12549,6 +12561,11 @@ def _render_today_nav():
                             _pool_wa.setdefault(_hc9, _h9.get("name", ""))
             except Exception:
                 pass
+            # 【V88·动态奔跑线】峰值浮盈数据（盘中Actions每小时回写），供持仓卡换算锁盈价
+            try:
+                _peaks_wa = json.loads((_repo / "data" / "position_peaks.json").read_text(encoding="utf-8"))
+            except Exception:
+                _peaks_wa = {}
             _risk_holds_wa = _holds_wa | set(_claims_wa)
             import cloud_engine as _ce_wa
             import sys as _sys_wa
@@ -12625,6 +12642,8 @@ def _render_today_nav():
                                         "stage": _f9.get("stage"),
                                         "broke_stop": bool(_last9 < _f9.get("stop", 0)),
                                         "pos52": _f9.get("pos52"),
+                                        "peak_pnl": (_peaks_wa.get(_c9) or {}).get("peak_pnl"),
+                                        "hold_cost": (_hold_map_wa.get(_c9) or {}).get("cost"),
                                         **_dc9})
                     if _last9 < _f9["stop"]:
                         if _c9 in _claims_wa:
