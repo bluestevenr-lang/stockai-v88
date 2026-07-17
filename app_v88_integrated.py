@@ -8129,9 +8129,12 @@ _REASON_FUSE_LABEL = {"个股": "基本面＋新闻＋技术面",
                       "板块": "行业＋催化＋技术面"}
 
 
+@st.fragment
 def render_readable_reasons(fwd, *, kind, symbol, name, context="", key_prefix=""):
     """在 fwd（含 horizons: label/view/p_up…）下方渲染每周期一句人话理由。
-    预算自适应：默认规则版；点按钮切思考模式；预算到底自动关。个股/大盘/板块通用。"""
+    预算自适应：默认规则版；点按钮切思考模式；预算到底自动关。个股/大盘/板块通用。
+    【V88·原地交互铁律 2026-07-18 用户点单】st.fragment=点按钮只重跑本块：
+    页面不滚动不整页刷新，精讲内容原地出现——治"点了像刷新页面,要找半天"。"""
     try:
         from stock_horizon import forward_reasons as _forward_reasons
     except Exception as _e:
@@ -15875,305 +15878,310 @@ if execute_analysis and q_input:
         # 文件缓存 + 自动加载 + 强制刷新
         # ═══════════════════════════════════════════════════════════════
         st.markdown("---")
-        st.markdown("### 🤖 AI 综合分析")
+        # 【V88·原地交互铁律 2026-07-18 用户点单】fragment=点击只重跑本块：
+        # 页面不滚动、深度页其余部分不重画，生成结果原地出现。
+        @st.fragment
+        def _unified_ai_frag():
+            st.markdown("### 🤖 AI 综合分析")
 
-        # v2缓存强制淘汰未接入五周期裁决的旧报告，防止旧“推荐”继续与顶部结论冲突。
-        _stock_ai_report_key = f"stock_consensus_v2_{target_c}"
-        _unified_ai_cache_key = f"_unified_ai_consensus_v2_{target_c}"
+            # v2缓存强制淘汰未接入五周期裁决的旧报告，防止旧“推荐”继续与顶部结论冲突。
+            _stock_ai_report_key = f"stock_consensus_v2_{target_c}"
+            _unified_ai_cache_key = f"_unified_ai_consensus_v2_{target_c}"
 
-        # 从文件缓存恢复（session_state 没有时）
-        if _unified_ai_cache_key not in st.session_state:
-            _cached_report, _cached_ts = _load_ai_report_cache(_stock_ai_report_key)
-            if _cached_report and isinstance(_cached_report, str):
-                st.session_state[_unified_ai_cache_key] = _cached_report
+            # 从文件缓存恢复（session_state 没有时）
+            if _unified_ai_cache_key not in st.session_state:
+                _cached_report, _cached_ts = _load_ai_report_cache(_stock_ai_report_key)
+                if _cached_report and isinstance(_cached_report, str):
+                    st.session_state[_unified_ai_cache_key] = _cached_report
 
-        _has_stock_cache = _unified_ai_cache_key in st.session_state
-        if _has_stock_cache:
-            _, _sc_ts = _load_ai_report_cache(_stock_ai_report_key)
-            _sc_time = datetime.fromtimestamp(_sc_ts).strftime('%H:%M') if _sc_ts else ""
-            st.caption(f"技术研判 · 止损止盈 · 风控评估 · 行业分析 · 操作建议{f' · 缓存 {_sc_time}' if _sc_time else ''}")
-        else:
-            st.caption("一键生成: 技术研判 · 止损止盈 · 风控评估 · 行业分析 · 操作建议")
+            _has_stock_cache = _unified_ai_cache_key in st.session_state
+            if _has_stock_cache:
+                _, _sc_ts = _load_ai_report_cache(_stock_ai_report_key)
+                _sc_time = datetime.fromtimestamp(_sc_ts).strftime('%H:%M') if _sc_ts else ""
+                st.caption(f"技术研判 · 止损止盈 · 风控评估 · 行业分析 · 操作建议{f' · 缓存 {_sc_time}' if _sc_time else ''}")
+            else:
+                st.caption("一键生成: 技术研判 · 止损止盈 · 风控评估 · 行业分析 · 操作建议")
 
-        _btn_c1, _btn_c2 = st.columns([3, 1])
-        with _btn_c1:
-            _run_unified_ai = st.button("⚡ 一键 AI 综合分析" if not _has_stock_cache else "⚡ 重新生成 AI 综合分析",
-                                        key=f"btn_unified_ai_{target_c}", type="primary", use_container_width=True)
-        with _btn_c2:
-            _refresh_stock_ai = st.button("🔄 刷新", key=f"btn_refresh_stock_ai_{target_c}", use_container_width=True)
+            _btn_c1, _btn_c2 = st.columns([3, 1])
+            with _btn_c1:
+                _run_unified_ai = st.button("⚡ 一键 AI 综合分析" if not _has_stock_cache else "⚡ 重新生成 AI 综合分析",
+                                            key=f"btn_unified_ai_{target_c}", type="primary", use_container_width=True)
+            with _btn_c2:
+                _refresh_stock_ai = st.button("🔄 刷新", key=f"btn_refresh_stock_ai_{target_c}", use_container_width=True)
 
-        if _refresh_stock_ai:
-            st.session_state.pop(_unified_ai_cache_key, None)
-            try:
-                _rf = _AI_REPORT_CACHE_DIR / f"ai_report_{_stock_ai_report_key}.json"
-                if _rf.exists():
-                    _rf.unlink()
-            except Exception:
-                pass
-            _run_unified_ai = True
-            _has_stock_cache = False
-
-        # 自动生成：无缓存时首次自动触发
-        _stock_auto_key = f"_stock_ai_auto_{target_c}"
-        if not _has_stock_cache and not st.session_state.get(_stock_auto_key) and MY_GEMINI_KEY and not _run_unified_ai:
-            st.session_state[_stock_auto_key] = True
-            _run_unified_ai = True
-
-        if _run_unified_ai and MY_GEMINI_KEY:
-            with _v88_running(f"🤖 {_ai_model_label()} 综合分析中 · 预计 15-30 秒..."):
+            if _refresh_stock_ai:
+                st.session_state.pop(_unified_ai_cache_key, None)
                 try:
-                    _curr_p = float(df['Close'].iloc[-1])
-                    _last5 = df.tail(5)[['Open','High','Low','Close','Volume']].to_string()
-                    _rsi_v = metrics.get('rsi', 50)
-                    _score_v = metrics.get('score', 0)  # 旧研究质量分，仅用于下方因子归因
-                    _sharpe_v = quant.get('sharpe', 'N/A')
-                    _maxdd_v = quant.get('max_dd', 'N/A')
-                    _pattern_v = metrics.get('pattern', '无')
-                    _vwap_v = ""
-                    if _chart_predictor:
-                        _af = _chart_predictor.calculate_alpha_factors()
-                        _rm = _chart_predictor.calculate_risk_engine()
-                        _vwap_v = f"VWAP(20日): {_af.get('vwap_20',0):.2f}, 偏离: {_af.get('vwap_deviation',0):+.2f}%, 信号: {_af.get('vwap_signal','无')}"
-                        _vwap_v += f"\n止损价(ATR): {_rm.get('stop_loss',0):.2f}, 建议仓位(Kelly): {_rm.get('kelly_position',5):.1f}%, 风险评级: {_rm.get('risk_grade','N/A')}"
-                    _fund_ctx = ""
-                    if _fundamentals:
-                        _f = _fundamentals
-                        _is = _f.get("income_stmt", {})
-                        _bs = _f.get("balance_sheet", {})
-                        _cf = _f.get("cashflow", {})
-                        _fin_dates = set()
-                        for _st in [_is, _bs, _cf]:
-                            for _v in _st.values():
-                                if isinstance(_v, dict):
-                                    _fin_dates.update(_v.keys())
-                        _fin_dates = sorted(_fin_dates, reverse=True)[:3]
+                    _rf = _AI_REPORT_CACHE_DIR / f"ai_report_{_stock_ai_report_key}.json"
+                    if _rf.exists():
+                        _rf.unlink()
+                except Exception:
+                    pass
+                _run_unified_ai = True
+                _has_stock_cache = False
 
-                        def _fv(stmt, key, yr):
-                            return (stmt.get(key, {}) or {}).get(yr)
+            # 自动生成：无缓存时首次自动触发
+            _stock_auto_key = f"_stock_ai_auto_{target_c}"
+            if not _has_stock_cache and not st.session_state.get(_stock_auto_key) and MY_GEMINI_KEY and not _run_unified_ai:
+                st.session_state[_stock_auto_key] = True
+                _run_unified_ai = True
 
-                        _fin_lines = []
-                        if _fin_dates:
-                            for _yr in _fin_dates:
-                                _rev = _fv(_is, "Total Revenue", _yr)
-                                _op = _fv(_is, "Operating Income", _yr)
-                                _ni = _fv(_is, "Net Income", _yr)
-                                _ta = _fv(_bs, "Total Assets", _yr)
-                                _tl = _fv(_bs, "Total Liabilities Net Minority Interest", _yr)
-                                _eq = _fv(_bs, "Stockholders Equity", _yr)
-                                _ocf = _fv(_cf, "Operating Cash Flow", _yr)
-                                _fcf = _fv(_cf, "Free Cash Flow", _yr)
-                                _fin_lines.append(
-                                    f"{_yr}: 营收{_fmt_fin(_rev)} 营业利润{_fmt_fin(_op)} 净利润{_fmt_fin(_ni)} "
-                                    f"总资产{_fmt_fin(_ta)} 总负债{_fmt_fin(_tl)} 股东权益{_fmt_fin(_eq)} "
-                                    f"经营现金流{_fmt_fin(_ocf)} 自由现金流{_fmt_fin(_fcf)}"
-                                )
-                        _fund_ctx = f"""
-【财报数据（年报）】
-{chr(10).join(_fin_lines) if _fin_lines else '暂无'}
-市值: {_fmt_fin(_f.get('market_cap',0))} | P/E: {_f.get('trailing_pe',0):.1f} | P/B: {_f.get('price_to_book',0):.2f}
-行业: {_f.get('sector','')} - {_f.get('industry','')}
-公司简介: {_f.get('business_summary','')[:200]}"""
-                    _mc_ctx = ""
-                    if mc:
-                        _mc_ctx = f"蒙特卡洛10日: 乐观P90={mc['p90']:.2f}, 中性P50={mc['p50']:.2f}, 悲观P10={mc['p10']:.2f}"
-
-                    _vol_ctx = ""
-                    _va = analyze_volume_anomaly(df)
-                    if _va:
-                        _vol_ctx = f"""
-【交易量异常解读（系统已标注）】
-类型: {_va['anomaly_type']} | 量比: {_va['vol_ratio']:.1f}x | 日涨跌: {_va['price_chg_1d']:+.1f}%
-信号: {_va['signal']} | 5日量能趋势: {_va['vol_trend_5d']:+.1f}%
-解读: {_va['explanation'].replace('**', '')}
-{_va.get('trend_note', '')}"""
-
-                    # 【V94.4】把统一操作指引喂给 AI，强制与系统口径对齐
-                    _guide_ctx = ""
+            if _run_unified_ai and MY_GEMINI_KEY:
+                with _v88_running(f"🤖 {_ai_model_label()} 综合分析中 · 预计 15-30 秒..."):
                     try:
+                        _curr_p = float(df['Close'].iloc[-1])
+                        _last5 = df.tail(5)[['Open','High','Low','Close','Volume']].to_string()
+                        _rsi_v = metrics.get('rsi', 50)
+                        _score_v = metrics.get('score', 0)  # 旧研究质量分，仅用于下方因子归因
+                        _sharpe_v = quant.get('sharpe', 'N/A')
+                        _maxdd_v = quant.get('max_dd', 'N/A')
+                        _pattern_v = metrics.get('pattern', '无')
+                        _vwap_v = ""
+                        if _chart_predictor:
+                            _af = _chart_predictor.calculate_alpha_factors()
+                            _rm = _chart_predictor.calculate_risk_engine()
+                            _vwap_v = f"VWAP(20日): {_af.get('vwap_20',0):.2f}, 偏离: {_af.get('vwap_deviation',0):+.2f}%, 信号: {_af.get('vwap_signal','无')}"
+                            _vwap_v += f"\n止损价(ATR): {_rm.get('stop_loss',0):.2f}, 建议仓位(Kelly): {_rm.get('kelly_position',5):.1f}%, 风险评级: {_rm.get('risk_grade','N/A')}"
+                        _fund_ctx = ""
+                        if _fundamentals:
+                            _f = _fundamentals
+                            _is = _f.get("income_stmt", {})
+                            _bs = _f.get("balance_sheet", {})
+                            _cf = _f.get("cashflow", {})
+                            _fin_dates = set()
+                            for _st in [_is, _bs, _cf]:
+                                for _v in _st.values():
+                                    if isinstance(_v, dict):
+                                        _fin_dates.update(_v.keys())
+                            _fin_dates = sorted(_fin_dates, reverse=True)[:3]
+
+                            def _fv(stmt, key, yr):
+                                return (stmt.get(key, {}) or {}).get(yr)
+
+                            _fin_lines = []
+                            if _fin_dates:
+                                for _yr in _fin_dates:
+                                    _rev = _fv(_is, "Total Revenue", _yr)
+                                    _op = _fv(_is, "Operating Income", _yr)
+                                    _ni = _fv(_is, "Net Income", _yr)
+                                    _ta = _fv(_bs, "Total Assets", _yr)
+                                    _tl = _fv(_bs, "Total Liabilities Net Minority Interest", _yr)
+                                    _eq = _fv(_bs, "Stockholders Equity", _yr)
+                                    _ocf = _fv(_cf, "Operating Cash Flow", _yr)
+                                    _fcf = _fv(_cf, "Free Cash Flow", _yr)
+                                    _fin_lines.append(
+                                        f"{_yr}: 营收{_fmt_fin(_rev)} 营业利润{_fmt_fin(_op)} 净利润{_fmt_fin(_ni)} "
+                                        f"总资产{_fmt_fin(_ta)} 总负债{_fmt_fin(_tl)} 股东权益{_fmt_fin(_eq)} "
+                                        f"经营现金流{_fmt_fin(_ocf)} 自由现金流{_fmt_fin(_fcf)}"
+                                    )
+                            _fund_ctx = f"""
+    【财报数据（年报）】
+    {chr(10).join(_fin_lines) if _fin_lines else '暂无'}
+    市值: {_fmt_fin(_f.get('market_cap',0))} | P/E: {_f.get('trailing_pe',0):.1f} | P/B: {_f.get('price_to_book',0):.2f}
+    行业: {_f.get('sector','')} - {_f.get('industry','')}
+    公司简介: {_f.get('business_summary','')[:200]}"""
+                        _mc_ctx = ""
+                        if mc:
+                            _mc_ctx = f"蒙特卡洛10日: 乐观P90={mc['p90']:.2f}, 中性P50={mc['p50']:.2f}, 悲观P10={mc['p10']:.2f}"
+
+                        _vol_ctx = ""
+                        _va = analyze_volume_anomaly(df)
+                        if _va:
+                            _vol_ctx = f"""
+    【交易量异常解读（系统已标注）】
+    类型: {_va['anomaly_type']} | 量比: {_va['vol_ratio']:.1f}x | 日涨跌: {_va['price_chg_1d']:+.1f}%
+    信号: {_va['signal']} | 5日量能趋势: {_va['vol_trend_5d']:+.1f}%
+    解读: {_va['explanation'].replace('**', '')}
+    {_va.get('trend_note', '')}"""
+
+                        # 【V94.4】把统一操作指引喂给 AI，强制与系统口径对齐
+                        _guide_ctx = ""
+                        try:
+                            if _hz_decision:
+                                _guide_ctx = (
+                                    f"V88唯一动作: {_hz_decision['action']}｜统一分{_hz_decision['unified_score']}"
+                                    f"（短{_hz_decision['short_score']}/中{_hz_decision['medium_score']}/长{_hz_decision['long_score']}）\n"
+                                    f"2周上/下: {_hz_decision['p_up']}%/{_hz_decision['p_down']}%｜"
+                                    f"盈亏比: {_hz_decision['rr']:.2f}｜期望: {_hz_decision['expected_pct']:+.1f}%｜"
+                                    f"{_hz_decision['entry_note']}｜口径{_hz_decision['score_version']}")
+                            if not _guide_ctx:
+                                _guide_ctx = "V88唯一决策底稿暂不可用：禁止输出买入/卖出动作，等待数据恢复。"
+                        except Exception:
+                            pass
+
+                        # 【V94.5】评分归因：把五维评分的通过/未通过因子摊开，让 AI 的每个判断
+                        # 都能锚定到具体因子——这是"参考性"的核心（等同日报的事实台账，可追溯）
+                        _score_ctx = ""
+                        try:
+                            def _factor_digest(rows):
+                                ok, bad = [], []
+                                for r in (rows or []):
+                                    tag = str(r.get("因子", "")).strip()
+                                    note = str(r.get("说明", "")).strip()
+                                    state = str(r.get("状态", ""))
+                                    item = f"{tag}({note})" if note else tag
+                                    if "✅" in state:
+                                        ok.append(item)
+                                    elif "❌" in state or "⚠️" in state:
+                                        bad.append(item)
+                                return ok, bad
+                            _c_ok, _c_bad = _factor_digest(metrics.get("canslim_rows"))
+                            _s_ok, _s_bad = _factor_digest(metrics.get("spec_rows"))
+                            _score_ctx = f"""【辅助研究质量归因（研究分 {_score_v}/100，不决定买卖，勿逐条复述）】
+    成长质量(CANSLIM) — 达标: {', '.join(_c_ok) or '无'} ｜ 未达标: {', '.join(_c_bad) or '无'}
+    趋势与动能 — 达标: {', '.join(_s_ok) or '无'} ｜ 未达标: {', '.join(_s_bad) or '无'}
+    动能维度 {metrics.get('mom_score','N/A')}/100 ｜ ESG {metrics.get('esg_total','N/A')}({metrics.get('esg_grade','N/A')})"""
+                        except Exception:
+                            pass
+
+                        # 【V88·统一裁决硬门】所有后续AI必须服从顶部同源五周期结论。
+                        # 周期冲突时，基本面再好、短期期望再正，也不能输出推荐/建仓。
+                        _cycle_gate_ctx = ""
                         if _hz_decision:
-                            _guide_ctx = (
-                                f"V88唯一动作: {_hz_decision['action']}｜统一分{_hz_decision['unified_score']}"
-                                f"（短{_hz_decision['short_score']}/中{_hz_decision['medium_score']}/长{_hz_decision['long_score']}）\n"
-                                f"2周上/下: {_hz_decision['p_up']}%/{_hz_decision['p_down']}%｜"
-                                f"盈亏比: {_hz_decision['rr']:.2f}｜期望: {_hz_decision['expected_pct']:+.1f}%｜"
-                                f"{_hz_decision['entry_note']}｜口径{_hz_decision['score_version']}")
-                        if not _guide_ctx:
-                            _guide_ctx = "V88唯一决策底稿暂不可用：禁止输出买入/卖出动作，等待数据恢复。"
-                    except Exception:
-                        pass
+                            _cycle_gate_ctx = f"""
+    【最高优先级五周期统一裁决（不可推翻）】
+    统一分：{_hz_decision.get('unified_score')}（短{_hz_decision.get('short_score')}/中{_hz_decision.get('medium_score')}/长{_hz_decision.get('long_score')}）；
+    上/下估计：{_hz_decision.get('p_up')}%/{_hz_decision.get('p_down')}%；盈亏比{_hz_decision.get('rr')}；期望{_hz_decision.get('expected_pct')}%；
+    统一动作：{_hz_decision.get('action')}；周期状态：{_hz_decision.get('cycle_status')}；是否冲突：{'是' if _hz_decision.get('cycle_conflict') else '否'}。
+    若为“是”：操作评级最高只能写“中性”或“回避”，仓位必须为0%，买点必须写“不参与，等待周期共振”；
+    不得因基本面优秀、短期反弹概率、正期望或高盈亏比输出“推荐/强烈推荐/建仓/逢低吸纳”。
+    必须明确区分2周与4-16周，不得把短期反弹解释成中长期转多。"""
 
-                    # 【V94.5】评分归因：把五维评分的通过/未通过因子摊开，让 AI 的每个判断
-                    # 都能锚定到具体因子——这是"参考性"的核心（等同日报的事实台账，可追溯）
-                    _score_ctx = ""
-                    try:
-                        def _factor_digest(rows):
-                            ok, bad = [], []
-                            for r in (rows or []):
-                                tag = str(r.get("因子", "")).strip()
-                                note = str(r.get("说明", "")).strip()
-                                state = str(r.get("状态", ""))
-                                item = f"{tag}({note})" if note else tag
-                                if "✅" in state:
-                                    ok.append(item)
-                                elif "❌" in state or "⚠️" in state:
-                                    bad.append(item)
-                            return ok, bad
-                        _c_ok, _c_bad = _factor_digest(metrics.get("canslim_rows"))
-                        _s_ok, _s_bad = _factor_digest(metrics.get("spec_rows"))
-                        _score_ctx = f"""【辅助研究质量归因（研究分 {_score_v}/100，不决定买卖，勿逐条复述）】
-成长质量(CANSLIM) — 达标: {', '.join(_c_ok) or '无'} ｜ 未达标: {', '.join(_c_bad) or '无'}
-趋势与动能 — 达标: {', '.join(_s_ok) or '无'} ｜ 未达标: {', '.join(_s_bad) or '无'}
-动能维度 {metrics.get('mom_score','N/A')}/100 ｜ ESG {metrics.get('esg_total','N/A')}({metrics.get('esg_grade','N/A')})"""
-                    except Exception:
-                        pass
+                        # 【V94.5】注入真实新闻日报：本股/其行业若在今日新闻中，催化必须锚定真实
+                        # 事件并注明媒体；无相关新闻则写明，严禁编造（与新闻日报同一条铁律）
+                        _stock_news_ctx = ""
+                        try:
+                            _rnr = _load_real_news_report()
+                            if _rnr:
+                                _stock_news_ctx = f"""
+    【今日真实新闻报告（催化事件的唯一合法来源）】
+    {_rnr[:3200]}
+    ——若上文出现与 {target_c} 直接相关的公司/行业/宏观事件，须在分析中引用并注明媒体来源；若无，须明确写"今日无直接相关新闻催化"。严禁编造任何未在上文出现的事件、财报数字或政策。"""
+                        except Exception:
+                            pass
 
-                    # 【V88·统一裁决硬门】所有后续AI必须服从顶部同源五周期结论。
-                    # 周期冲突时，基本面再好、短期期望再正，也不能输出推荐/建仓。
-                    _cycle_gate_ctx = ""
-                    if _hz_decision:
-                        _cycle_gate_ctx = f"""
-【最高优先级五周期统一裁决（不可推翻）】
-统一分：{_hz_decision.get('unified_score')}（短{_hz_decision.get('short_score')}/中{_hz_decision.get('medium_score')}/长{_hz_decision.get('long_score')}）；
-上/下估计：{_hz_decision.get('p_up')}%/{_hz_decision.get('p_down')}%；盈亏比{_hz_decision.get('rr')}；期望{_hz_decision.get('expected_pct')}%；
-统一动作：{_hz_decision.get('action')}；周期状态：{_hz_decision.get('cycle_status')}；是否冲突：{'是' if _hz_decision.get('cycle_conflict') else '否'}。
-若为“是”：操作评级最高只能写“中性”或“回避”，仓位必须为0%，买点必须写“不参与，等待周期共振”；
-不得因基本面优秀、短期反弹概率、正期望或高盈亏比输出“推荐/强烈推荐/建仓/逢低吸纳”。
-必须明确区分2周与4-16周，不得把短期反弹解释成中长期转多。"""
+                        # 【V94.5】证据链纪要：移植 AI 新闻日报的"参考性"内核——先证据后判断、
+                        # 每个结论走"信号→传导→价格/估值影响"链条、事实/推断/策略三分、失效条件可证伪、
+                        # 标注置信度、禁绝对化语言。深度来自证据密度，不是字数堆砌。
+                        _unified_prompt = f"""你是买方机构的首席分析师，为投委会写一份可直接决策的个股研判。标准对标机构晨会纪要：事实可追溯、推理有链条、结论可执行、风险能证伪。禁止聊天体、行业科普、教科书式铺陈。
 
-                    # 【V94.5】注入真实新闻日报：本股/其行业若在今日新闻中，催化必须锚定真实
-                    # 事件并注明媒体；无相关新闻则写明，严禁编造（与新闻日报同一条铁律）
-                    _stock_news_ctx = ""
-                    try:
-                        _rnr = _load_real_news_report()
-                        if _rnr:
-                            _stock_news_ctx = f"""
-【今日真实新闻报告（催化事件的唯一合法来源）】
-{_rnr[:3200]}
-——若上文出现与 {target_c} 直接相关的公司/行业/宏观事件，须在分析中引用并注明媒体来源；若无，须明确写"今日无直接相关新闻催化"。严禁编造任何未在上文出现的事件、财报数字或政策。"""
-                    except Exception:
-                        pass
+    【标的】{target_c}
 
-                    # 【V94.5】证据链纪要：移植 AI 新闻日报的"参考性"内核——先证据后判断、
-                    # 每个结论走"信号→传导→价格/估值影响"链条、事实/推断/策略三分、失效条件可证伪、
-                    # 标注置信度、禁绝对化语言。深度来自证据密度，不是字数堆砌。
-                    _unified_prompt = f"""你是买方机构的首席分析师，为投委会写一份可直接决策的个股研判。标准对标机构晨会纪要：事实可追溯、推理有链条、结论可执行、风险能证伪。禁止聊天体、行业科普、教科书式铺陈。
+    【实时数据】
+    最新价: {_curr_p:.2f} | RSI: {_rsi_v:.1f} | 唯一统一分: {_hz_decision.get('unified_score','待核')}/100 | 统一动作: {_hz_decision.get('action','待核')}
+    {_guide_ctx}
+    K线形态: {_pattern_v} | 夏普比率: {_sharpe_v} | 最大回撤: {_maxdd_v}
+    {_vwap_v}
+    {_mc_ctx}
+    {_vol_ctx}
+    {_score_ctx}
+    {_cycle_gate_ctx}
 
-【标的】{target_c}
+    【最近5日行情】
+    {_last5}
+    {_fund_ctx}
+    {_stock_news_ctx}
 
-【实时数据】
-最新价: {_curr_p:.2f} | RSI: {_rsi_v:.1f} | 唯一统一分: {_hz_decision.get('unified_score','待核')}/100 | 统一动作: {_hz_decision.get('action','待核')}
-{_guide_ctx}
-K线形态: {_pattern_v} | 夏普比率: {_sharpe_v} | 最大回撤: {_maxdd_v}
-{_vwap_v}
-{_mc_ctx}
-{_vol_ctx}
-{_score_ctx}
-{_cycle_gate_ctx}
+    ━━━ 写作纪律（违反任一条即不合格）━━━
+    0. 【五周期统一裁决】是最高优先级硬门，任何基本面、估值或短线信号都无权推翻；冲突时严禁推荐和建仓。
+    1. 先证据、后判断：每个判断必须挂靠上方某个具体数据/因子/新闻，不得空谈。
+    2. 事实 / 推断 / 策略三分：事实照录不夸大；推断必须写出传导链（信号→对盈利或资金的影响→对价格或估值的影响）；策略必须带失效条件。
+    3. 不复述数据原文，要给数字背后的含义与相互印证/矛盾之处（如"RS为负但站上年线"这类冲突必须点破并裁决）。
+    4. 催化只能引用上方【真实新闻报告】中的事件并注明媒体；无相关新闻写"今日无直接相关新闻催化，基于基本面/技术结构判断"。严禁编造事件、财报数字、政策、订单。
+    5. 禁绝对化语言（必涨/确定/无风险/一定）。凡推断用"可能/倾向/若…则…"。数据缺失直接写"数据不足"。
+    6. 与【系统操作指引】结论一致时明确认同；不一致时必须给出分歧理由并说明你更信哪一方及为什么。
+    7. 全文 550-800 字，信息密度优先——每句都要么是证据、要么是由证据推出的判断，无一句废话。
 
-【最近5日行情】
-{_last5}
-{_fund_ctx}
-{_stock_news_ctx}
+    ━━━ 严格按此结构输出（中文）━━━
 
-━━━ 写作纪律（违反任一条即不合格）━━━
-0. 【五周期统一裁决】是最高优先级硬门，任何基本面、估值或短线信号都无权推翻；冲突时严禁推荐和建仓。
-1. 先证据、后判断：每个判断必须挂靠上方某个具体数据/因子/新闻，不得空谈。
-2. 事实 / 推断 / 策略三分：事实照录不夸大；推断必须写出传导链（信号→对盈利或资金的影响→对价格或估值的影响）；策略必须带失效条件。
-3. 不复述数据原文，要给数字背后的含义与相互印证/矛盾之处（如"RS为负但站上年线"这类冲突必须点破并裁决）。
-4. 催化只能引用上方【真实新闻报告】中的事件并注明媒体；无相关新闻写"今日无直接相关新闻催化，基于基本面/技术结构判断"。严禁编造事件、财报数字、政策、订单。
-5. 禁绝对化语言（必涨/确定/无风险/一定）。凡推断用"可能/倾向/若…则…"。数据缺失直接写"数据不足"。
-6. 与【系统操作指引】结论一致时明确认同；不一致时必须给出分歧理由并说明你更信哪一方及为什么。
-7. 全文 550-800 字，信息密度优先——每句都要么是证据、要么是由证据推出的判断，无一句废话。
+    ## 📌 一句话结论
+    **【操作评级：强烈推荐 / 推荐 / 中性 / 回避】** ｜ 核心逻辑一句话（≤50字，点明主要矛盾）
 
-━━━ 严格按此结构输出（中文）━━━
+    ## 🔗 核心逻辑链（2-3条，每条是一条完整传导链）
+    - [信号/证据] → [对盈利或资金面的影响] → [对价格/估值的含义] → [因此该怎么看]
+    （示例格式，需替换为真实内容；成长股写盈利兑现链，题材股写资金/情绪链，价值股写估值修复链）
 
-## 📌 一句话结论
-**【操作评级：强烈推荐 / 推荐 / 中性 / 回避】** ｜ 核心逻辑一句话（≤50字，点明主要矛盾）
+    ## 📊 证据台账
+    | 证据 | 归属 | 含义 | 置信度 |
+    |---|---|---|---|
+    | [具体数据/因子/新闻] | 技术/基本面/资金/催化 | [对决策的直接含义] | 高/中/低 |
+    （至少4行，须覆盖技术面、基本面、资金/动能、催化四类各≥1条；相互矛盾的证据要并列并在结论中裁决）
 
-## 🔗 核心逻辑链（2-3条，每条是一条完整传导链）
-- [信号/证据] → [对盈利或资金面的影响] → [对价格/估值的含义] → [因此该怎么看]
-（示例格式，需替换为真实内容；成长股写盈利兑现链，题材股写资金/情绪链，价值股写估值修复链）
+    ## 🎯 执行方案
+    - **买点**：具体价位 + 触发条件（如"缩量回踩X并收阳"）；不建议买写"不参与，等信号"
+    - **止损**：具体价位 + 一句理由（破位含义）
+    - **目标**：第一目标 / 第二目标 具体价位 + 各自阻力依据
+    - **仓位与节奏**：百分比 + 分批方式（回避=0%）
+    - **盈亏比**：结合上方系统盈亏比给出你的评估
 
-## 📊 证据台账
-| 证据 | 归属 | 含义 | 置信度 |
-|---|---|---|---|
-| [具体数据/因子/新闻] | 技术/基本面/资金/催化 | [对决策的直接含义] | 高/中/低 |
-（至少4行，须覆盖技术面、基本面、资金/动能、催化四类各≥1条；相互矛盾的证据要并列并在结论中裁决）
+    ## ⚠️ 失效条件（三类各1条，须可证伪、可执行）
+    - **技术失效**：出现什么形态/价位立即离场
+    - **基本面失效**：哪个经营指标或财务信号恶化则证伪逻辑
+    - **催化失效**：预期中的催化未兑现或反向的判定标准
 
-## 🎯 执行方案
-- **买点**：具体价位 + 触发条件（如"缩量回踩X并收阳"）；不建议买写"不参与，等信号"
-- **止损**：具体价位 + 一句理由（破位含义）
-- **目标**：第一目标 / 第二目标 具体价位 + 各自阻力依据
-- **仓位与节奏**：百分比 + 分批方式（回避=0%）
-- **盈亏比**：结合上方系统盈亏比给出你的评估
+    ## 🔄 跟踪信号
+    - **转多**：出现什么可上调评级（1条）
+    - **转空**：出现什么必须立刻放弃（1条）"""
 
-## ⚠️ 失效条件（三类各1条，须可证伪、可执行）
-- **技术失效**：出现什么形态/价位立即离场
-- **基本面失效**：哪个经营指标或财务信号恶化则证伪逻辑
-- **催化失效**：预期中的催化未兑现或反向的判定标准
+                        _unified_result = ""
+                        _unified_ph = st.empty()
+                        for _chunk in call_gemini_api_stream(_unified_prompt, model_name=GEMINI_MODEL_NAME, max_output_tokens=4096):
+                            _unified_result += _chunk
+                            _unified_ph.markdown(_unified_result + " ▌")
+                        _unified_ph.empty()
 
-## 🔄 跟踪信号
-- **转多**：出现什么可上调评级（1条）
-- **转空**：出现什么必须立刻放弃（1条）"""
+                        if _unified_result and not _unified_result.startswith("❌"):
+                            st.session_state[_unified_ai_cache_key] = _unified_result
+                            _save_ai_report_cache(_stock_ai_report_key, _unified_result)
+                        else:
+                            st.error(_unified_result or "❌ AI 分析生成失败，请重试")
+                    except Exception as _uae:
+                        st.error(f"❌ AI 综合分析失败: {str(_uae)[:100]}")
 
-                    _unified_result = ""
-                    _unified_ph = st.empty()
-                    for _chunk in call_gemini_api_stream(_unified_prompt, model_name=GEMINI_MODEL_NAME, max_output_tokens=4096):
-                        _unified_result += _chunk
-                        _unified_ph.markdown(_unified_result + " ▌")
-                    _unified_ph.empty()
-
-                    if _unified_result and not _unified_result.startswith("❌"):
-                        st.session_state[_unified_ai_cache_key] = _unified_result
-                        _save_ai_report_cache(_stock_ai_report_key, _unified_result)
-                    else:
-                        st.error(_unified_result or "❌ AI 分析生成失败，请重试")
-                except Exception as _uae:
-                    st.error(f"❌ AI 综合分析失败: {str(_uae)[:100]}")
-
-        if _unified_ai_cache_key in st.session_state:
-            _ua_res = st.session_state[_unified_ai_cache_key]
-            _ua_action = str((_hz_decision or {}).get("action") or "观察")
-            _ua_conflict = bool((_hz_decision or {}).get("cycle_conflict"))
-            _ua_no_entry_actions = {
-                "回避", "仅观察·不追涨", "等待短线止跌", "趋势偏多·等待回踩",
-                "观察", "持有观察·不加仓", "减仓", "评估减仓", "退出", "清仓",
-            }
-            _ua_entry_blocked = _ua_conflict or _ua_action in _ua_no_entry_actions
-            # 不能只检查“推荐”两个字：周期冲突时，AI若偷偷给了非零仓位或买点，
-            # 同样属于可执行性冲突。三项必须同时通过才允许作为建议展示。
-            _ua_plain = re.sub(r"[*_#]", "", str(_ua_res))
-            _ua_safe_rating = bool(re.search(r"【操作评级：\s*(?:中性|回避)", _ua_plain))
-            _ua_zero_position = bool(re.search(r"仓位与节奏\s*[:：]\s*0%", _ua_plain))
-            _ua_no_buy = bool(re.search(r"买点\s*[:：]\s*(?:不参与|不建议买|等待)", _ua_plain))
-            _ua_unsafe = bool(_ua_entry_blocked and not (
-                _ua_safe_rating and _ua_zero_position and _ua_no_buy))
-            if _ua_entry_blocked:
-                st.warning(
-                    f"⚠️ **V88唯一决策裁决**：{_hz_decision.get('cycle_note', '当前不满足新开仓条件')}；"
-                    f"统一动作：**{_ua_action}**。"
-                    "正期望和高盈亏比只代表2周情景，不得升级为买入。")
-            if _ua_unsafe:
-                st.error("⛔ 该AI报告未同时满足‘中性/回避＋0%仓位＋不参与’，与V88唯一决策底稿冲突，已停止作为操作建议展示。请点击重新生成。")
-                with st.expander("查看被否决的旧报告（仅供审计，不可执行）", expanded=False):
-                    st.markdown(_ua_res)
-                _ua_res = ""
-            if _ua_res:
-                st.markdown(f"""<style>
-.unified-report {{background:#f9fafb;padding:1.5rem;border-radius:8px;border-left:4px solid #6366f1;font-size:14px;line-height:1.8;color:#374151;}}
-.unified-report h2 {{font-size:17px !important;font-weight:700 !important;margin:1.2rem 0 0.5rem 0 !important;color:#1f2937 !important;border-bottom:1px solid #e5e7eb;padding-bottom:0.3rem;}}
-.unified-report h3 {{font-size:15px !important;font-weight:600 !important;margin:0.9rem 0 0.4rem 0 !important;color:#374151 !important;}}
-.unified-report p {{font-size:14px !important;margin:0.5rem 0 !important;}}
-.unified-report ul,.unified-report ol {{font-size:13px !important;margin:0.4rem 0 !important;padding-left:1.5rem !important;}}
-.unified-report li {{margin:0.3rem 0 !important;}}
-.unified-report strong {{font-weight:600 !important;color:#1f2937 !important;}}
-</style><div class="unified-report">{_ua_res}</div>""", unsafe_allow_html=True)
-                st.caption(f"📌 AI 综合分析 · 模型: {_ai_model_label()}")
-                if COPY_UTILS_AVAILABLE:
-                    CopyUtils.create_copy_button(_ua_res, button_text="📋 复制分析报告", key=f"copy_unified_{target_c}")
-                st.download_button("📥 下载报告", data=_ua_res, file_name=f"AI综合分析_{target_c}_{datetime.now().strftime('%Y%m%d')}.md", mime="text/markdown", key=f"dl_unified_{target_c}")
-        elif not _run_unified_ai:
-            st.info("👆 点击上方按钮，一键生成包含技术面、止损止盈、风控、财务、行业的 AI 综合分析报告")
+            if _unified_ai_cache_key in st.session_state:
+                _ua_res = st.session_state[_unified_ai_cache_key]
+                _ua_action = str((_hz_decision or {}).get("action") or "观察")
+                _ua_conflict = bool((_hz_decision or {}).get("cycle_conflict"))
+                _ua_no_entry_actions = {
+                    "回避", "仅观察·不追涨", "等待短线止跌", "趋势偏多·等待回踩",
+                    "观察", "持有观察·不加仓", "减仓", "评估减仓", "退出", "清仓",
+                }
+                _ua_entry_blocked = _ua_conflict or _ua_action in _ua_no_entry_actions
+                # 不能只检查“推荐”两个字：周期冲突时，AI若偷偷给了非零仓位或买点，
+                # 同样属于可执行性冲突。三项必须同时通过才允许作为建议展示。
+                _ua_plain = re.sub(r"[*_#]", "", str(_ua_res))
+                _ua_safe_rating = bool(re.search(r"【操作评级：\s*(?:中性|回避)", _ua_plain))
+                _ua_zero_position = bool(re.search(r"仓位与节奏\s*[:：]\s*0%", _ua_plain))
+                _ua_no_buy = bool(re.search(r"买点\s*[:：]\s*(?:不参与|不建议买|等待)", _ua_plain))
+                _ua_unsafe = bool(_ua_entry_blocked and not (
+                    _ua_safe_rating and _ua_zero_position and _ua_no_buy))
+                if _ua_entry_blocked:
+                    st.warning(
+                        f"⚠️ **V88唯一决策裁决**：{_hz_decision.get('cycle_note', '当前不满足新开仓条件')}；"
+                        f"统一动作：**{_ua_action}**。"
+                        "正期望和高盈亏比只代表2周情景，不得升级为买入。")
+                if _ua_unsafe:
+                    st.error("⛔ 该AI报告未同时满足‘中性/回避＋0%仓位＋不参与’，与V88唯一决策底稿冲突，已停止作为操作建议展示。请点击重新生成。")
+                    with st.expander("查看被否决的旧报告（仅供审计，不可执行）", expanded=False):
+                        st.markdown(_ua_res)
+                    _ua_res = ""
+                if _ua_res:
+                    st.markdown(f"""<style>
+    .unified-report {{background:#f9fafb;padding:1.5rem;border-radius:8px;border-left:4px solid #6366f1;font-size:14px;line-height:1.8;color:#374151;}}
+    .unified-report h2 {{font-size:17px !important;font-weight:700 !important;margin:1.2rem 0 0.5rem 0 !important;color:#1f2937 !important;border-bottom:1px solid #e5e7eb;padding-bottom:0.3rem;}}
+    .unified-report h3 {{font-size:15px !important;font-weight:600 !important;margin:0.9rem 0 0.4rem 0 !important;color:#374151 !important;}}
+    .unified-report p {{font-size:14px !important;margin:0.5rem 0 !important;}}
+    .unified-report ul,.unified-report ol {{font-size:13px !important;margin:0.4rem 0 !important;padding-left:1.5rem !important;}}
+    .unified-report li {{margin:0.3rem 0 !important;}}
+    .unified-report strong {{font-weight:600 !important;color:#1f2937 !important;}}
+    </style><div class="unified-report">{_ua_res}</div>""", unsafe_allow_html=True)
+                    st.caption(f"📌 AI 综合分析 · 模型: {_ai_model_label()}")
+                    if COPY_UTILS_AVAILABLE:
+                        CopyUtils.create_copy_button(_ua_res, button_text="📋 复制分析报告", key=f"copy_unified_{target_c}")
+                    st.download_button("📥 下载报告", data=_ua_res, file_name=f"AI综合分析_{target_c}_{datetime.now().strftime('%Y%m%d')}.md", mime="text/markdown", key=f"dl_unified_{target_c}")
+            elif not _run_unified_ai:
+                st.info("👆 点击上方按钮，一键生成包含技术面、止损止盈、风控、财务、行业的 AI 综合分析报告")
+        _unified_ai_frag()
 
         # 【V80.1修复】添加"清除分析"按钮，不自动清空
         st.markdown("---")
@@ -17678,31 +17686,35 @@ if st.session_state.get('pk_codes') and len(st.session_state.pk_codes) >= 2:
         st.markdown("---")
         st.markdown("#### 🤖 AI 综合点评")
         
-        col_ai1, col_ai2 = st.columns([1, 4])
-        with col_ai1:
-            gen_pk_ai = st.button("⚡ 生成分析", key="btn_pk_ai_main", type="primary", width='stretch')
-        with col_ai2:
-            clear_pk = st.button("🔄 清除对比", key="btn_clear_pk", width='stretch')
+        # 【V88·原地交互铁律 2026-07-18】fragment：生成分析原地出现，不整页重跑对比扫描。
+        @st.fragment
+        def _pk_ai_frag():
+            col_ai1, col_ai2 = st.columns([1, 4])
+            with col_ai1:
+                gen_pk_ai = st.button("⚡ 生成分析", key="btn_pk_ai_main", type="primary", width='stretch')
+            with col_ai2:
+                clear_pk = st.button("🔄 清除对比", key="btn_clear_pk", width='stretch')
         
-        if clear_pk:
-            st.session_state.pk_codes = None
-            st.session_state.pk_names = None
-            st.rerun()
+            if clear_pk:
+                st.session_state.pk_codes = None
+                st.session_state.pk_names = None
+                st.rerun()
         
-        if gen_pk_ai:
-            with _v88_running(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · PK对比分析"):
-                pk_summary = "\n".join([
-                    f"{r['股票']}({r['代码']}): 统一分{r['统一分']}, {r['建议']}, "
-                    f"短中长{r['短/中/长']}, 上下估计{r['2周上/下估计']}, "
-                    f"盈亏比{r['盈亏比']}, 期望值{r['期望值']}, RSI={r['RSI']}"
-                    for r in pk_results
-                ])
+            if gen_pk_ai:
+                with _v88_running(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · PK对比分析"):
+                    pk_summary = "\n".join([
+                        f"{r['股票']}({r['代码']}): 统一分{r['统一分']}, {r['建议']}, "
+                        f"短中长{r['短/中/长']}, 上下估计{r['2周上/下估计']}, "
+                        f"盈亏比{r['盈亏比']}, 期望值{r['期望值']}, RSI={r['RSI']}"
+                        for r in pk_results
+                    ])
                 
-                prompt = _load_prompt("pk_analysis.txt", pk_summary=pk_summary)
-                result = st.write_stream(call_gemini_api_stream(prompt))
-                st.caption(f"📌 AI生成 · 模型: {_ai_model_label()}")
-                if COPY_UTILS_AVAILABLE:
-                    CopyUtils.create_copy_button(result, button_text="📋 复制", key="copy_pk")
+                    prompt = _load_prompt("pk_analysis.txt", pk_summary=pk_summary)
+                    result = st.write_stream(call_gemini_api_stream(prompt))
+                    st.caption(f"📌 AI生成 · 模型: {_ai_model_label()}")
+                    if COPY_UTILS_AVAILABLE:
+                        CopyUtils.create_copy_button(result, button_text="📋 复制", key="copy_pk")
+        _pk_ai_frag()
 
 
 
