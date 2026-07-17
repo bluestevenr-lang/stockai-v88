@@ -12287,6 +12287,14 @@ def _render_today_nav():
             st.session_state.scan_selected_code = _q0
             st.session_state.scan_selected_name = _nm0
             st.toast(f"🔍 {_nm0} 深度分析中（已入重点观察）", icon="⭐")
+        # 【2026-07-18 用户抓bug】?q= 消费后必须从地址栏删掉（focus早就删了,q漏了）——
+        # 否则每次刷新/快捷方式重开都是新会话,_q_done清零,残留的 ?q=SO 反复触发
+        # 同一只股的深度分析("怎么老跳SO")。深链=一次性指令,用完即焚。
+        if _q0:
+            try:
+                del st.query_params["q"]
+            except Exception:
+                pass
     except Exception:
         pass
     try:
