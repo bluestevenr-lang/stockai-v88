@@ -101,7 +101,25 @@ def collect_candidates(extra: list | None = None) -> list[tuple]:
                 _add(_code, _nm, f"全选池·{_mkt}")
     except Exception as e:
         logger.debug(f"全选池源失败: {e}")
-    # ④ 机会雷达等会话内产出（由 app 传入 [(code,name,source),...]）
+    # ④ 财报临近（未来7天美股财报·市值≥百亿）——财报=最硬的预期催化事由
+    try:
+        import requests
+        _hdr = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
+        for _delta in range(1, 8):
+            _d = (datetime.now(BJT) + timedelta(days=_delta))
+            if _d.weekday() >= 5:
+                continue
+            _ds = _d.strftime("%Y-%m-%d")
+            r = requests.get(f"https://api.nasdaq.com/api/calendar/earnings?date={_ds}",
+                             headers=_hdr, timeout=12)
+            for it in ((r.json().get("data") or {}).get("rows")) or []:
+                _mc = str(it.get("marketCap") or "").replace("$", "").replace(",", "")
+                if _mc.isdigit() and len(_mc) >= 11:      # ≥百亿美元
+                    _add(str(it.get("symbol") or ""), it.get("name"),
+                         f"财报{_d.strftime('%m-%d')}")
+    except Exception as e:
+        logger.debug(f"财报日历源失败: {e}")
+    # ⑤ 机会雷达等会话内产出（由 app 传入 [(code,name,source),...]）
     for code, name, source in (extra or []):
         try:
             _add(to_yf(str(code)), name, source)
@@ -128,7 +146,7 @@ def _touch_lines(full: dict) -> str:
 
 
 def build_darkhorse(exclude_codes: set, extra: list | None = None,
-                    max_judge: int = 140) -> dict:
+                    max_judge: int = 180) -> dict:
     """整条漏斗。exclude_codes=自选+持仓的 canonical 集（纯黑马）。"""
     from cloud_engine import fetch, analyze_trend_full
     from v88_decision_core import evaluate_decision, evaluate_forward_outlook, build_trade_plan
@@ -182,12 +200,15 @@ def build_darkhorse(exclude_codes: set, extra: list | None = None,
     horses.sort(key=lambda h: (0 if h.get("grade") == "重点" else 1,
                                -len(h.get("sources") or []),
                                -float(h.get("short_score") or 0)))
+    # 🔴重点全部保留（用户反馈推荐不够,不截断重点）,🟡待观察最多8只
+    _keys = [h for h in horses if h.get("grade") == "重点"]
+    _rest = [h for h in horses if h.get("grade") != "重点"][:8]
     result = {
         "ts": time.time(),
         "generated_at": datetime.now(BJT).strftime("%Y-%m-%d %H:%M"),
         "funnel": {"found": found, "excluded_watch": excluded, "judged": judged,
                    "passed": len(horses), "blocked": blocked},
-        "horses": horses[:10],
+        "horses": _keys + _rest,
     }
     try:
         OUT.parent.mkdir(exist_ok=True)
