@@ -8198,13 +8198,20 @@ def render_readable_reasons(fwd, *, kind, symbol, name, context="", key_prefix="
                         or (_bc9r and len(_bc9r) >= 4 and _bc9r in str(_n9r.get("affected_tickers", "")))):
                     _dir9r = str(_n9r.get("impact_direction") or "")
                     _tag9r = ("🔴利好" if "好" in _dir9r else ("🟢利空" if "空" in _dir9r else "⚪中性"))
-                    _nws9r.append(f"{str(_n9r.get('title'))[:42]}（{_tag9r}）")
+                    # 【2026-07-18 出处铁律】消息必带媒体名
+                    _src9r = str(_n9r.get("source") or "").split(" - ")[0].strip()[:16] or "新闻流"
+                    _nws9r.append(f"{str(_n9r.get('title'))[:42]}（{_tag9r}·{_src9r}）")
                 if len(_nws9r) >= 2:
                     break
         except Exception:
             pass
         if _prof9r:
             st.markdown(f"🏢 **这是家什么公司**：{_prof9r}")
+        # 【V88·基本面必带定性 2026-07-18 全系统】有研报覆盖就给行业优势句(带出处);
+        # 消息面下方已有专行,这里只取机构研报,不重复。
+        _eg9r = _v88_fund_edge(name, inst_only=True)
+        if _eg9r:
+            st.markdown(_eg9r)
         if _nws9r:
             st.markdown("📰 **近日消息面**：" + "；".join(_nws9r))
         else:
@@ -11893,6 +11900,58 @@ def _v88_move_reason(chg, *, names=(), scope_hint="", max_len=34, require_name=F
     return _best
 
 
+def _v88_fund_edge(name, *, inst_only=False, max_len=34):
+    """【V88·基本面必带定性 2026-07-18 用户点单·全系统】PE/PB数字之外必须有一句
+    "凭什么"的行业优势或消息匹配，且机构信息必标出处：
+    ①近3日机构研报标题（机构名+日期，出处=东财研报库）
+    ②名称硬命中的近日新闻（带媒体名出处）
+    ③都没有→如实说明，不编。inst_only=True 只回①（调用处已有自己的新闻行时用）。"""
+    _nm = str(name or "").strip()
+    if len(_nm) < 2:
+        return ""
+    try:
+        for _rp in _v88_rating_moves():
+            _st = str(_rp.get("stock") or "")
+            if _st and (_st in _nm or _nm in _st):
+                return (f"🏭 机构定性：{_rp.get('org')}「{str(_rp.get('title') or '')[:max_len]}」"
+                        f"·评级{_rp.get('rating') or '—'}"
+                        f"（{str(_rp.get('date') or '')[5:]}·出处:东财研报库）")
+    except Exception:
+        pass
+    if inst_only:
+        return ""
+    try:
+        # 名称命中里挑最可读的一条：中文文本>纯英文、标题直接命中>仅在关联标的里、方向明确加分
+        _best, _bsc = None, 0
+        for _n in _v88_load_news():
+            _txt = str(_n.get("cleaned_title") or _n.get("title") or "")
+            if sum(1 for c in _txt if "一" <= c <= "鿿") < 4:
+                _alt = str(_n.get("analysis_summary") or "")
+                if sum(1 for c in _alt if "一" <= c <= "鿿") >= 4:
+                    _txt = _alt
+            _blob = (_txt + str(_n.get("title") or "") + str(_n.get("affected_tickers") or "")
+                     + str(_n.get("affected_sectors") or ""))
+            if _nm not in _blob:
+                continue
+            _sc = 1
+            if _nm in _txt:
+                _sc += 4
+            if sum(1 for c in _txt if "一" <= c <= "鿿") >= 4:
+                _sc += 3
+            _dir = str(_n.get("impact_direction") or "")
+            if ("好" in _dir) or ("空" in _dir):
+                _sc += 1
+            if _sc > _bsc:
+                _best, _bsc = (_txt, _dir, _n), _sc
+        if _best:
+            _txt, _dir, _n = _best
+            _tag = "🔴利好" if "好" in _dir else ("🟢利空" if "空" in _dir else "⚪中性")
+            _src = str(_n.get("source") or "").split(" - ")[0].strip()[:16] or "新闻流"
+            return f"📰 消息定性：{_txt[:max_len]}（{_tag}·出处:{_src}）"
+    except Exception:
+        pass
+    return "🏭 近3日无该股研报/直接新闻——行业优势以数字与走势为准（如实说明，不编）"
+
 
 def _render_today_verdict(_snap, _repo):
     """【V88·今日总决断 2026-07-17 用户点单】把各模块结论浓缩成"今天该干什么"——
@@ -13644,8 +13703,10 @@ with st.expander("🏛️ 机构风向标 · 权威研报评级×系统推荐池
     try:
         _inst9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
                              "institutional_signals.json").read_text(encoding="utf-8"))
+        # 【2026-07-18 出处铁律】机构信息(尤其带评级/家数得分的)必须写明出自哪里
         st.caption(f"🕒 {_inst9.get('generated_at', '')} · 近3日研报{_inst9.get('reports_n', 0)}篇 · "
-                   "研报全文为付费品,此处为公开评级/目标价精华 · AI综合仅供参考")
+                   "📚 出处：券商研报评级/目标价/标题=东财研报库(公开数据)；外资观点=新闻流标题原文。"
+                   "研报全文为付费品,此处为公开精华 · AI综合仅供参考")
         _aib9 = _inst9.get("ai_brief") or {}
         if _aib9:
             st.markdown(f"**🧭 机构综合布局**：主线 **{_aib9.get('机构共识主线', '—')}** ｜ "
@@ -13653,11 +13714,14 @@ with st.expander("🏛️ 机构风向标 · 权威研报评级×系统推荐池
             _tl9x = "".join(f"<div style='padding:2px 0'><b>{_k9}</b>：{_aib9[_k9]}</div>"
                             for _k9 in ("明天", "本周", "下周", "本月及下月") if _aib9.get(_k9))
             st.markdown(f"<div style='background:#f8fafc;border-left:3px solid #7c3aed;"
-                        f"border-radius:6px;padding:.4rem .7rem;font-size:13px'>{_tl9x}</div>",
+                        f"border-radius:6px;padding:.4rem .7rem;font-size:13px'>{_tl9x}"
+                        f"<div style='padding:2px 0;color:#94a3b8'>出处：AI综合自上述东财研报库近3日"
+                        f"研报+新闻流外资观点，非任何机构原话</div></div>",
                         unsafe_allow_html=True)
         _res9x = _inst9.get("resonance") or []
         if _res9x:
-            st.markdown("**🤝 机构×系统共振**（机构覆盖且在你的池/持仓/自选——双重背书）")
+            st.markdown("**🤝 机构×系统共振**（机构覆盖且在你的池/持仓/自选——双重背书·"
+                        "评级与目标价出处:东财研报库,机构名见「覆盖机构」列）")
             st.dataframe([{"股票": x["stock"], "在系统": x["source"],
                            "覆盖机构": "、".join(x["orgs"][:3]) + (f" 等{len(x['orgs'])}家" if len(x["orgs"]) > 3 else ""),
                            "看多家数": x["buy_n"],
@@ -13666,14 +13730,16 @@ with st.expander("🏛️ 机构风向标 · 权威研报评级×系统推荐池
                           for x in _res9x], hide_index=True, use_container_width=True)
         _cons9 = _inst9.get("consensus") or []
         if _cons9:
-            # 【2026-07-18 用户点单】共识股不只给家数,每只附≤30字研报精华
-            st.markdown("**📌 机构共识股**（≥2家覆盖·附研报精华）")
+            # 【2026-07-18 用户点单】共识股不只给家数,每只附≤30字研报精华+机构名出处
+            st.markdown("**📌 机构共识股**（≥2家覆盖·附研报精华·出处:东财研报库）")
             st.markdown("<div style='font-size:13px;line-height:1.6'>" + "".join(
-                f"<div>· {_stk_link(c['stock'], c['stock'])}（{len(c['orgs'])}家）："
+                f"<div>· {_stk_link(c['stock'], c['stock'])}"
+                f"（{'、'.join((c.get('orgs') or [])[:2])}"
+                f"{('等' + str(len(c['orgs'])) + '家') if len(c.get('orgs') or []) > 2 else ''}）："
                 f"<span style='color:#475569'>{c.get('gist') or '—'}</span></div>"
                 for c in _cons9[:8]) + "</div>", unsafe_allow_html=True)
         if _inst9.get("org_news"):
-            st.markdown("**🌐 外资/权威观点**：" + "<br>".join(
+            st.markdown("**🌐 外资/权威观点**（出处:新闻流标题原文）：" + "<br>".join(
                 f"· {t}" for t in _inst9["org_news"][:5]), unsafe_allow_html=True)
     except Exception:
         st.info("机构风向标数据随日报流水线生成（交易日07/13/19点），稍后刷新。")
@@ -14962,33 +15028,10 @@ if st.session_state.get('scan_selected_code'):
                             try:
                                 _fu99 = _ce.fundamentals(target_c)
                                 if _fu99:
-                                    # 【V88·基本面必带定性 2026-07-18 用户点单】数字之外必须有一句
-                                    # "凭什么"——优先机构研报标题(行业优势定性)→命中新闻→行业定位,命不中如实说。
-                                    _edge99 = ""
-                                    try:
-                                        _inst99 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" /
-                                                              "data" / "institutional_signals.json")
-                                                             .read_text(encoding="utf-8"))
-                                        _nm99 = st.session_state.get("scan_selected_name") or ""
-                                        for _rp99 in (_inst99.get("reports") or []):
-                                            if _rp99.get("stock") and (str(_rp99["stock"]) in str(_nm99)
-                                                                       or str(_nm99) in str(_rp99["stock"])):
-                                                _edge99 = (f"🏭 机构定性：{_rp99.get('org')}「"
-                                                           f"{str(_rp99.get('title') or '')[:34]}」"
-                                                           f"·评级{_rp99.get('rating') or '—'}")
-                                                break
-                                    except Exception:
-                                        pass
-                                    if not _edge99:
-                                        _mv99 = _v88_move_reason(2.0, names=[str(st.session_state.get('scan_selected_name') or '')],
-                                                                 max_len=34, require_name=True) or \
-                                                _v88_move_reason(-2.0, names=[str(st.session_state.get('scan_selected_name') or '')],
-                                                                 max_len=34, require_name=True)
-                                        if _mv99:
-                                            _edge99 = f"📰 近日消息定性：{_mv99}"
-                                    if not _edge99:
-                                        _edge99 = "🏭 近3日无该股研报/直接新闻——行业优势以数字与走势为准（如实说明）"
-                                    st.markdown(f"**🧾 基本面**：`{_fu99['tag']}`  \n{_fu99['line']}  \n{_edge99}")
+                                    # 【V88·基本面必带定性 2026-07-18 用户点单·全系统】共用 _v88_fund_edge。
+                                    _edge99 = _v88_fund_edge(st.session_state.get("scan_selected_name") or "")
+                                    st.markdown(f"**🧾 基本面**：`{_fu99['tag']}`  \n{_fu99['line']}"
+                                                + (f"  \n{_edge99}" if _edge99 else ""))
                             except Exception:
                                 pass
                             _pl99 = _ce.horizon_plans(_F, df_temp)
