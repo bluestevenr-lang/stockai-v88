@@ -905,11 +905,8 @@ def _normalize_hk_for_yahoo(symbol: str) -> str:
 # 【DeepSeek迁移】
 try:
     from openai import OpenAI as _OpenAI
-    HAS_GEMINI = True
-    try:
-        import google.generativeai as genai
-    except ImportError:
-        genai = None
+    HAS_GEMINI = True                 # 历史变量名，实为"LLM(DeepSeek)可用"
+    genai = None                      # 【V88·清Gemini残留 2026-07-17】已全面迁移DeepSeek，不再import Gemini
 except ImportError:
     HAS_GEMINI = False
     _OpenAI = None
