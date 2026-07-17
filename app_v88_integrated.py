@@ -11490,6 +11490,92 @@ def _v88_decision_card(_d9):
     </div>"""
 
 
+def _render_today_verdict(_snap, _repo):
+    """【V88·今日总决断 2026-07-17 用户点单】把各模块结论浓缩成"今天该干什么"——
+    治大跌日"满屏观察=没推荐"。纯整合层零AI零流量：
+    定调(实时涨跌+温度)→仓位纲领→可进(黑马绿灯)→持仓要处理(盘中落盘)→纪律。"""
+    import json as _jv
+    _chg = {}
+    for _mk, (_nm, _sym) in {"美股": ("标普500", "^GSPC"), "A股": ("上证指数", "000001.SS"),
+                             "港股": ("恒生指数", "^HSI")}.items():
+        try:
+            _c = fetch_stock_data(_sym)["Close"]
+            _chg[_mk] = (float(_c.iloc[-1]) / float(_c.iloc[-2]) - 1) * 100
+        except Exception:
+            continue
+    if not _chg:
+        return
+    _lo, _hi = min(_chg.values()), max(_chg.values())
+    if _lo <= -1.5:
+        _tone, _tcol, _tbg = "🛡️ 防守日", "#16a34a", "#f0fdf4"
+        _rule = ("大跌日现金也是仓位——逻辑没破的别恐慌割、破位破止损的别扛；"
+                 "抄底要等企稳信号，别接下落的刀")
+    elif _hi >= 1.5:
+        _tone, _tcol, _tbg = "⚔️ 进攻日", "#dc2626", "#fef2f2"
+        _rule = "普涨日别追高——在手的拿住，新进的等回踩或突破确认，别 FOMO 追板"
+    else:
+        _tone, _tcol, _tbg = "⚖️ 分化/中性日", "#2563eb", "#eff6ff"
+        _rule = "平衡日按既定计划执行，不因单日波动改纪律"
+    _pos = []
+    for _mk in ("美股", "A股", "港股"):
+        _t = ((_snap or {}).get("markets") or {}).get(_mk, {}).get("temperature") or {}
+        if _t:
+            _ps = str(_t.get("position", "")).split("（")[0]
+            _cg = _chg.get(_mk)
+            _cc = "#dc2626" if (_cg or 0) > 0.05 else ("#16a34a" if (_cg or 0) < -0.05 else "#64748b")
+            _pos.append(f"{_mk}<b>{_t.get('temp', '?')}°</b>"
+                        + (f"<b style='color:{_cc}'>{_cg:+.1f}%</b>" if _cg is not None else "")
+                        + f"→{_ps}")
+    _go = []
+    try:
+        _dh = _jv.loads((_repo / "data" / "darkhorse.json").read_text(encoding="utf-8"))
+        for _h in (_dh.get("horses") or []):
+            if ((_h.get("trade_plan") or {}).get("short") or {}).get("mode") in (
+                    "现价可进", "回踩到位", "突破确认"):
+                _go.append(_h)
+    except Exception:
+        pass
+    _cut = {}
+    try:
+        _idc = _jv.loads((_repo / "data" / "intraday_decisions.json").read_text(encoding="utf-8"))
+        for _r in (_idc.get("rows") or []):
+            if _r.get("scope") == "持仓" and any(k in str(_r.get("action", ""))
+                                                for k in ("减", "退", "清", "止损")):
+                _nm = _r.get("name")
+                if _nm not in _cut or (_r.get("p_down", 0) > _cut[_nm][1]):
+                    _cut[_nm] = (_r.get("action"), _r.get("p_down", 0), _r.get("code"))
+    except Exception:
+        pass
+
+    _html = [f"<div style='background:{_tbg};border:1px solid {_tcol}33;border-left:4px solid {_tcol};"
+             f"border-radius:10px;padding:.6rem .85rem;margin:.2rem 0 .5rem'>"
+             f"<div style='font-size:15px;font-weight:800;color:{_tcol};margin-bottom:4px'>"
+             f"📢 今日总决断 · {_tone}</div>"]
+    if _pos:
+        _html.append(f"<div style='font-size:13px;margin-bottom:3px'>🎯 <b>仓位纲领</b>："
+                     + " ｜ ".join(_pos) + "</div>")
+    if _go:
+        _go_txt = "、".join(f"{_stk_link(h.get('name'), h.get('code'))}"
+                           f"<span style='font-size:12px;color:#64748b'>"
+                           f"({h.get('market', '')[-2:]}{('·' + h['touch']) if h.get('touch') else ''})</span>"
+                           for h in _go[:5])
+        _html.append(f"<div style='font-size:13px;margin-bottom:3px'>🟢 <b style='color:#dc2626'>"
+                     f"可进场</b>（严门槛绿灯 {len(_go)} 只）：{_go_txt}"
+                     f"<span style='font-size:12px;color:#64748b'>——仓位按上方纲领，别越线重仓</span></div>")
+    else:
+        _html.append("<div style='font-size:13px;margin-bottom:3px'>🟢 <b>可进场</b>：今日无严门槛绿灯，"
+                     "空仓等待也是决策（现金也是仓位）</div>")
+    if _cut:
+        _cut_txt = "、".join(f"{_stk_link(_v[2] and (_k) or _k, _v[2] or _k)}"
+                            f"<b style='color:#ea580c'>{_v[0]}</b>" for _k, _v in
+                            sorted(_cut.items(), key=lambda x: -x[1][1])[:5])
+        _html.append(f"<div style='font-size:13px;margin-bottom:3px'>🔴 <b style='color:#ea580c'>"
+                     f"持仓要处理</b>：{_cut_txt}</div>")
+    _html.append(f"<div style='font-size:12px;color:#475569;margin-top:2px'>📏 <b>今日纪律</b>：{_rule}</div>")
+    _html.append("</div>")
+    st.markdown("".join(_html), unsafe_allow_html=True)
+
+
 def _render_l3_cycle_board(_snap, _is_trading):
     """【V88·三层周期概率总览】大盘→板块同屏（自选=上方决策台，共三层）。
 
@@ -11868,6 +11954,12 @@ def _render_today_nav():
                 unsafe_allow_html=True)
     except Exception:
         pass
+
+    # 【V88·今日总决断】第一眼给"今天该干什么"——定调/可进/持仓要处理/纪律,治"满屏观察=没推荐"
+    try:
+        _render_today_verdict(_snap, _repo)
+    except Exception:
+        logging.debug("今日总决断渲染失败", exc_info=True)
 
     # 【V88·第一屏自选决策台】先占住标题下方的位置，扫描完成后再回填。
     # 这样无需重复请求行情，也能让“我的自选”真正排在大盘、日报和持仓之前。
