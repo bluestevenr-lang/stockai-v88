@@ -14962,7 +14962,33 @@ if st.session_state.get('scan_selected_code'):
                             try:
                                 _fu99 = _ce.fundamentals(target_c)
                                 if _fu99:
-                                    st.markdown(f"**🧾 基本面**：`{_fu99['tag']}`  \n{_fu99['line']}")
+                                    # 【V88·基本面必带定性 2026-07-18 用户点单】数字之外必须有一句
+                                    # "凭什么"——优先机构研报标题(行业优势定性)→命中新闻→行业定位,命不中如实说。
+                                    _edge99 = ""
+                                    try:
+                                        _inst99 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" /
+                                                              "data" / "institutional_signals.json")
+                                                             .read_text(encoding="utf-8"))
+                                        _nm99 = st.session_state.get("scan_selected_name") or ""
+                                        for _rp99 in (_inst99.get("reports") or []):
+                                            if _rp99.get("stock") and (str(_rp99["stock"]) in str(_nm99)
+                                                                       or str(_nm99) in str(_rp99["stock"])):
+                                                _edge99 = (f"🏭 机构定性：{_rp99.get('org')}「"
+                                                           f"{str(_rp99.get('title') or '')[:34]}」"
+                                                           f"·评级{_rp99.get('rating') or '—'}")
+                                                break
+                                    except Exception:
+                                        pass
+                                    if not _edge99:
+                                        _mv99 = _v88_move_reason(2.0, names=[str(st.session_state.get('scan_selected_name') or '')],
+                                                                 max_len=34, require_name=True) or \
+                                                _v88_move_reason(-2.0, names=[str(st.session_state.get('scan_selected_name') or '')],
+                                                                 max_len=34, require_name=True)
+                                        if _mv99:
+                                            _edge99 = f"📰 近日消息定性：{_mv99}"
+                                    if not _edge99:
+                                        _edge99 = "🏭 近3日无该股研报/直接新闻——行业优势以数字与走势为准（如实说明）"
+                                    st.markdown(f"**🧾 基本面**：`{_fu99['tag']}`  \n{_fu99['line']}  \n{_edge99}")
                             except Exception:
                                 pass
                             _pl99 = _ce.horizon_plans(_F, df_temp)
