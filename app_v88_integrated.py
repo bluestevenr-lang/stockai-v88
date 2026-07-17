@@ -11556,6 +11556,55 @@ def _render_l3_cycle_board(_snap, _is_trading):
                       "<span style='color:#94a3b8'>→均衡</span>"))))
         return f"{_seg9}　{_arrow9}"
 
+    # 【V88·大盘异动即时横幅 2026-07-17 用户点单】大跌日必须一眼看到"跌了多少+为什么"。
+    # 今日涨跌独立于30分钟卡片缓存,每次渲染现算(fetch有15分钟缓存+60秒实时价,准实时零流量)。
+    _live_chg9 = {}
+    try:
+        for _mk9x, (_nm9x, _sym9x) in {"美股": ("标普500", "^GSPC"), "A股": ("上证指数", "000001.SS"),
+                                       "港股": ("恒生指数", "^HSI")}.items():
+            try:
+                _dfx9 = fetch_stock_data(_sym9x)
+                _cx9 = _dfx9["Close"]
+                _live_chg9[_mk9x] = (float(_cx9.iloc[-1]) / float(_cx9.iloc[-2]) - 1) * 100
+            except Exception:
+                continue
+        _movers9 = {k: v for k, v in _live_chg9.items() if abs(v) >= 1.5}
+        if _movers9:
+            _dirn9 = "大跌" if min(_movers9.values()) < 0 else "大涨"
+            _mv_txt9 = "、".join(f"{k} <b>{v:+.2f}%</b>" for k, v in
+                                 sorted(_movers9.items(), key=lambda x: x[1]))
+            # 为什么：领跌/领涨板块(快照) + 当日最新头条(新闻流)
+            _why9 = []
+            try:
+                for _mk9y in _movers9:
+                    _secs9 = ((_snap or {}).get("markets") or {}).get(_mk9y, {}).get("sectors") or []
+                    if _secs9:
+                        _sorted9 = sorted(_secs9, key=lambda s: s.get("chg1d", 0),
+                                          reverse=(_movers9[_mk9y] > 0))
+                        _why9.append(f"{_mk9y}{'领涨' if _movers9[_mk9y] > 0 else '领跌'}:" + "、".join(
+                            f"{s['name']}{s.get('chg1d', 0):+.1f}%" for s in _sorted9[:2]))
+            except Exception:
+                pass
+            _news9 = []
+            try:
+                _na9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+                                   "news_analyzed.json").read_text(encoding="utf-8"))
+                _news9 = [str(n.get("title") or "")[:44] for n in (_na9.get("news") or [])[:2]]
+            except Exception:
+                pass
+            _col9x = "#16a34a" if _dirn9 == "大跌" else "#dc2626"
+            _bg9x = "#f0fdf4" if _dirn9 == "大跌" else "#fef2f2"
+            st.markdown(
+                f"<div style='background:{_bg9x};border-left:4px solid {_col9x};border-radius:8px;"
+                f"padding:.55rem .8rem;font-size:13px;margin-bottom:.4rem'>"
+                f"🚨 <b style='color:{_col9x}'>今日{_dirn9}</b>：{_mv_txt9}"
+                + (f"　｜　{'；'.join(_why9)}" if _why9 else "")
+                + (f"<br><span style='font-size:12px;color:#64748b'>📰 最新头条：{'｜'.join(_news9)}"
+                   f"（详见热点新闻）</span>" if _news9 else "")
+                + "</div>", unsafe_allow_html=True)
+    except Exception:
+        pass
+
     st.markdown(
         "<span style='font-size:12px;color:#64748b'>"
         "数字=该周期<b>上涨概率%</b>（规则情景估计，非胜率）：<span style='color:#dc2626'>红≥55偏涨</span>／"
@@ -11569,8 +11618,13 @@ def _render_l3_cycle_board(_snap, _is_trading):
             _rows9 = []
             _m9 = _mkts9.get(_mk9)
             if _m9:
+                _lc9 = _live_chg9.get(_mk9)
+                _lc_html9 = ""
+                if _lc9 is not None:
+                    _lc_col9 = "#dc2626" if _lc9 > 0.05 else ("#16a34a" if _lc9 < -0.05 else "#64748b")
+                    _lc_html9 = f" <b style='color:{_lc_col9}'>今日{_lc9:+.2f}%</b>"
                 _rows9.append(
-                    f"<div style='margin-bottom:3px'>📈 <b>{_m9['name']}</b> "
+                    f"<div style='margin-bottom:3px'>📈 <b>{_m9['name']}</b>{_lc_html9} "
                     f"<span style='color:#475569'>{_m9['stage']}</span> · {_m9['action']}<br>"
                     f"<span style='font-size:12px'>{_chain9(_m9['probs'])}</span></div>")
             _tl9 = sorted((_traj9.get(_mk9) or []),
