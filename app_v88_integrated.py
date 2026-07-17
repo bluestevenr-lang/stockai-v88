@@ -2716,6 +2716,10 @@ h4 { font-size: 14px !important; }
 
 # 首屏占位：定义稍后才可用的今日导航函数后回填到这里，使“大盘/持仓/自选/预警”
 # 在视觉顺序上始终排第一，原有后续模块全部保留。
+# 【V88·宏观置顶 2026-07-17 用户定纲】大盘宏观区(全球概览/宏观脉搏/三层总览)置于页面最顶,
+# 先看大势定调再看自己的票。由下方全球概览块通过 slot 回填。
+_macro_top_slot = st.empty()
+
 _v88_front_decision_slot = st.empty()
 # 【V88·搜索前置】搜索框占位排在“大盘/持仓/自选/预警”速览带之下、其余重模块之上，
 # 让点开就能秒搜，无需滚到下方深度作战室。真正渲染在自选工具就绪后（约¼页处）回填。
@@ -4296,364 +4300,365 @@ def get_market_heat(_cache_ver="v98"):
 # 全球市场概览
 # ═══════════════════════════════════════════════════════════════
 if Config.ENABLE_EXPECTATION_LAYER:
-    from datetime import datetime as _dt_global
-    from zoneinfo import ZoneInfo
-    _global_today = _dt_global.now().strftime("%Y-%m-%d")
-    _global_weekday_cn = {"Monday": "周一", "Tuesday": "周二", "Wednesday": "周三", "Thursday": "周四", "Friday": "周五", "Saturday": "周六", "Sunday": "周日"}
-    _global_weekday = _global_weekday_cn.get(_dt_global.now().strftime("%A"), "")
-    _bj_time = _dt_global.now(ZoneInfo("Asia/Shanghai")).strftime("%H:%M")
-    _nasdaq_time = _dt_global.now(ZoneInfo("America/New_York")).strftime("%m/%d %H:%M")
-    st.markdown(
-        f'<div style="display:flex;justify-content:space-between;align-items:center;padding:.15rem .45rem;'
-        f'margin:0 0 .25rem;border-bottom:1px solid #e2e8f0;font-size:12px">'
-        f'<b style="color:#334155;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">🌍 全球市场概览 · 实时监控三大市场体制 · 把握全球资金流向</b>'
-        f'<span style="color:#1e3a5f;font-weight:600">{_global_today} {_global_weekday} · 纽约{_nasdaq_time} · 北京{_bj_time}</span></div>',
-        unsafe_allow_html=True)
+    with _macro_top_slot.container():
+        from datetime import datetime as _dt_global
+        from zoneinfo import ZoneInfo
+        _global_today = _dt_global.now().strftime("%Y-%m-%d")
+        _global_weekday_cn = {"Monday": "周一", "Tuesday": "周二", "Wednesday": "周三", "Thursday": "周四", "Friday": "周五", "Saturday": "周六", "Sunday": "周日"}
+        _global_weekday = _global_weekday_cn.get(_dt_global.now().strftime("%A"), "")
+        _bj_time = _dt_global.now(ZoneInfo("Asia/Shanghai")).strftime("%H:%M")
+        _nasdaq_time = _dt_global.now(ZoneInfo("America/New_York")).strftime("%m/%d %H:%M")
+        st.markdown(
+            f'<div style="display:flex;justify-content:space-between;align-items:center;padding:.15rem .45rem;'
+            f'margin:0 0 .25rem;border-bottom:1px solid #e2e8f0;font-size:12px">'
+            f'<b style="color:#334155;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">🌍 全球市场概览 · 实时监控三大市场体制 · 把握全球资金流向</b>'
+            f'<span style="color:#1e3a5f;font-weight:600">{_global_today} {_global_weekday} · 纽约{_nasdaq_time} · 北京{_bj_time}</span></div>',
+            unsafe_allow_html=True)
 
-    try:
-        # 检查是否请求强制刷新
-        force_refresh = st.session_state.get('force_refresh_requested', False)
-        if force_refresh:
-            st.session_state['force_refresh_requested'] = False
-            st.cache_data.clear()
-            try:
-                local_cache.clear_all()   # 穿透文件缓存层，彻底刷新
-            except Exception:
-                pass
-
-        # 启动性能监控
-        _perf_monitor.start()
-
-        _cache_ts = int(time.time() // 300)  # 每5分钟变一次，触发缓存刷新
-        # 首页只保留宏观脉搏。行业热力首页模块已移除，底层函数仍保留供其他功能复用。
-        _overview_mode = "macro"
-        st.checkbox(
-            "首屏自动请求AI（人工智能）市场分析",
-            key="v88_auto_ai_market",
-            help="仅美股、港股或A股交易日盘中运行；每3小时一次，每天最多3次；一次请求同时分析三市场。",
-        )
-
-        all_markets = None
-        heat_df = None
-        if _overview_mode in ("macro", "both"):
-            with _v88_running("🌐 正在加载全球市场宏观数据…"):
-                all_markets = _cached_expectation_all_markets(_ts=_cache_ts)
-            st.session_state.all_markets = all_markets
-        else:
-            all_markets = st.session_state.get("all_markets")
-
-        if _overview_mode in ("heat", "both"):
-            with _v88_running("🌡️ 正在加载行业热力图…"):
-                heat_df = get_market_heat()
-
-        if all_markets is None:
-            st.info("📡 **宏观数据未加载。** 请在上方选择「仅宏观脉搏」或「全部加载」后等待片刻。")
-        else:
-            us_result = all_markets['us_market']
-            hk_result = all_markets['hk_market']
-            cn_result = all_markets['cn_market']
-            summary = all_markets['summary']
-            # 指数展示与权威日报共用同一快照；宏观代理指标(VIX/SPY/TLT等)仍来自宏观模块。
-            try:
-                _canonical_snapshot = json.loads(_AUTHORITATIVE_SNAPSHOT.read_text(encoding="utf-8"))
-                _cn_ix = (_canonical_snapshot.get("markets", {}).get("A股", {}).get("indices") or [])
-                _hk_ix = (_canonical_snapshot.get("markets", {}).get("港股", {}).get("indices") or [])
-                if _cn_ix:
-                    cn_result["index_level"] = _cn_ix[0].get("last")
-                    cn_result["index_change_pct"] = _cn_ix[0].get("chg1d")
-                if len(_cn_ix) >= 3:
-                    # 宏观模块已优先通过东方财富获取真实创业板指 399006。
-                    # 只有真实指数缺失时，才允许快照中的 ETF 代理覆盖。
-                    _cyb_snap9 = _cn_ix[2]
-                    _cyb_live9 = float(cn_result.get("cyb_price") or 0)
-                    _snap_is_etf9 = "ETF" in str(_cyb_snap9.get("name", ""))
-                    if _cyb_live9 <= 0 or not _snap_is_etf9:
-                        cn_result["cyb_price"] = _cyb_snap9.get("last")
-                        cn_result["cyb_change_pct"] = _cyb_snap9.get("chg1d")
-                        cn_result["cyb_use_etf"] = _snap_is_etf9
-                if _hk_ix:
-                    hk_result["index_level"] = _hk_ix[0].get("last")
-                    hk_result["index_change_pct"] = _hk_ix[0].get("chg1d")
-                if len(_hk_ix) >= 2:
-                    hk_result["hstech_price"] = _hk_ix[1].get("last")
-                    hk_result["hstech_change_pct"] = _hk_ix[1].get("chg1d")
-                    hk_result["hstech_use_etf"] = "ETF" in str(_hk_ix[1].get("name", ""))
-            except Exception as _snap_sync_error:
-                logging.warning(f"权威快照覆盖宏观指数失败: {_snap_sync_error}")
-            def _macro_cn(_text):
-                """宏观区英文术语追加小号中文括注，不改变卡片尺寸。"""
-                _text = str(_text or "")
-                _terms = (
-                    ("Risk On", "风险偏好"), ("Risk Off", "风险规避"),
-                    ("VIX", "波动率"), ("SPY", "标普500交易型基金"),
-                    ("QQQ", "纳指100交易型基金"), ("TLT", "美债交易型基金"),
-                    ("DXY", "美元指数"), ("10Y", "十年美债"),
-                    ("MA200", "200日均线"), ("MA50", "50日均线"),
-                )
-                for _en, _cn in _terms:
-                    _text = _text.replace(_en, f'{_en}<span class="v88-cn-note">（{_cn}）</span>')
-                return _text
-            global_verdict = summary['global_verdict']
-            _gv = "".join(c for c in str(global_verdict) if ord(c) >= 32 or c in "\n\t\r").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
-            _gr = "".join(c for c in str(summary.get("global_reason", "")) if ord(c) >= 32 or c in "\n\t\r").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
-            _r_on = summary.get('risk_on_count', 0)
-            _r_off = summary.get('risk_off_count', 0)
-            _sum_color = "#10b981" if _r_on >= 2 else ("#ef4444" if _r_off >= 2 else "#f59e0b")
-
-        # ═══════════════════════════════════════════════════════════════
-        # 【V88·紧凑首页】三市场关键指标一屏展示；完整明细默认折叠。
-        def _macro_ai_text(_text, _market):
-            _txt = str(_text or "").replace(f"【{_market}】", "").strip()
-            _txt = _txt.split("\n\n---", 1)[0].strip()
-            _txt = _txt.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-            _txt = re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", _txt)
-            return _macro_cn(_txt).replace("\n", "<br>")
-
-        def _macro_card(_title, _verdict, _items, _reason, _ai_text="", _market=""):
-            _risk_on = str(_verdict) == "Risk On"
-            _accent = "#10b981" if _risk_on else ("#ef4444" if str(_verdict) == "Risk Off" else "#f59e0b")
-            _cells = []
-            for _lbl, _val, _chg in _items:
-                _chg_text = str(_chg).strip()
-                _mchg = re.match(r"[-+]\d+(?:\.\d+)?", _chg_text)
-                _nchg = float(_mchg.group()) if _mchg else 0.0
-                _chg_cls = "v88-up" if _nchg > 0 else ("v88-down" if _nchg < 0 else "v88-flat")
-                _arrow = "↑ " if _nchg > 0 else ("↓ " if _nchg < 0 else "")
-                _cells.append(
-                    f'<div class="v88-macro-kpi"><span>{_macro_cn(_lbl)}</span><b>{_val}</b>'
-                    f'<small class="{_chg_cls}">{_arrow}{_macro_cn(_chg)}</small></div>')
-            _cells = "".join(_cells)
-            _dense_cls = " v88-macro-dense" if len(_items) > 6 else ""
-            _ai_cls = " v88-macro-ai-active" if _macro_ai_active else ""
-            _ai_html = (_macro_ai_text(_ai_text, _market) if _ai_text
-                        else "AI（人工智能）增强：点击上方按钮按需生成")
-            st.markdown(
-                f'<div class="v88-macro-card{_dense_cls}{_ai_cls}" style="border-top:3px solid {_accent}">'
-                f'<div class="v88-macro-head"><b>{_title}</b><em style="color:{_accent}">{_macro_cn(_verdict)}</em></div>'
-                f'<div class="v88-macro-grid">{_cells}</div>'
-                f'<div class="v88-macro-reason">{_macro_cn(_reason)}</div>'
-                f'<div class="v88-macro-ai"><b>🤖 AI（人工智能）增强</b><br>{_ai_html}</div></div>',
-                unsafe_allow_html=True)
-
-        st.markdown("""<style>
-        .v88-macro-title{display:flex;align-items:center;justify-content:space-between;margin:.15rem 0 .45rem}
-        .v88-macro-title b{font-size:15px;color:#1e3a5f}.v88-macro-title span{font-size:12px;color:#5a6378}
-        .v88-macro-card{background:#fff;border:1px solid #dce3ed;border-radius:10px;padding:.4rem .55rem;height:174px;min-height:174px;overflow:hidden;box-shadow:0 1px 3px rgba(30,58,95,.06)}
-        .v88-macro-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem}
-        .v88-macro-head b{font-size:13px;color:#1a1a2e}.v88-macro-head em{font-style:normal;font-weight:700;font-size:12px}
-        .v88-macro-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.35rem}
-        .v88-macro-kpi{min-width:0}.v88-macro-kpi>span{display:block;color:#5a6378;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .v88-macro-kpi b{display:block;font-size:14px;line-height:1.2;color:#1a1a2e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .v88-macro-kpi small{font-size:12px}.v88-up{color:#dc2626!important}.v88-down{color:#16a34a!important}.v88-flat{color:#5a6378!important}
-        .v88-cn-note{display:inline!important;font-size:.58em!important;line-height:1!important;color:#8893a7;font-weight:400;margin-left:1px}.v88-macro-reason{font-size:12px;color:#5a6378;margin-top:.35rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .v88-macro-dense{height:174px;min-height:174px;padding:.38rem .52rem}
-        .v88-macro-dense .v88-macro-head{margin-bottom:.2rem}
-        .v88-macro-dense .v88-macro-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:.18rem .3rem}
-        .v88-macro-dense .v88-macro-kpi>span{font-size:12px}
-        .v88-macro-dense .v88-macro-kpi b{font-size:13px;line-height:1.08}
-        .v88-macro-dense .v88-macro-kpi small{display:block;font-size:12px;line-height:1.1;white-space:nowrap}
-        .v88-macro-dense .v88-cn-note{font-size:.52em!important}
-        .v88-macro-dense .v88-macro-reason{font-size:12px;margin-top:.18rem}
-        .v88-macro-ai{font-size:12px;line-height:1.35;color:#3d4f6a;border-top:1px dashed #dce3ed;margin-top:.28rem;padding-top:.25rem;max-height:34px;overflow:hidden}
-        .v88-macro-ai-active{height:232px;min-height:232px}
-        .v88-macro-ai-active .v88-macro-ai{max-height:82px;overflow:auto}
-        @media(max-width:900px){.v88-macro-card{min-height:auto}.v88-macro-kpi b{font-size:13px}}
-        </style>""", unsafe_allow_html=True)
-        # AI 日报增强解读并入三市场卡片：一次请求同时生成三市场，继续复用原文件缓存。
-        _auto_generate_market_ai()
-        # 【V88·页眉压缩】AI解读状态并入宏观脉搏标题行(图一11px灰字)，标题与两按钮同排一行，两行→一行
-        _macro_ai_state = _market_ai_schedule_state()
-        _macro_ai_ts = None
-        for _macro_mk in ('us', 'hk', 'cn'):
-            _, _macro_t = _load_ai_report_cache(f"market_{_macro_mk}")
-            if _macro_t:
-                _macro_ai_ts = max(_macro_ai_ts or 0, _macro_t)
-        _macro_ai_time_text = (pd.Timestamp.fromtimestamp(_macro_ai_ts, tz="Asia/Shanghai").strftime("%m/%d %H:%M")
-                               if _macro_ai_ts else "尚未生成")
-        _mc_title, _mc_b1, _mc_b2 = st.columns([10, 1.5, 0.7])
-        with _mc_title:
-            st.markdown(f'<div class="v88-macro-title" style="margin:.35rem 0 .2rem"><b>📡 宏观脉搏</b>'
-                        f'<span>AI解读 {_macro_ai_time_text} · 今日{_macro_ai_state.get("runs", 0)}/3次 · 盘中每3h ｜ 最近收盘 {_dt_global.now().strftime("%m/%d %H:%M")}</span></div>',
-                        unsafe_allow_html=True)
-        with _mc_b1:
-            _macro_ai_generate = st.button("⚡ AI解读", key="btn_macro_ai_generate", help="更新AI增强解读", use_container_width=True)
-        with _mc_b2:
-            _macro_ai_refresh = st.button("🔄", key="btn_macro_ai_refresh", help="刷新", use_container_width=True)
-        if _macro_ai_refresh:
-            for _k in ['market_ai_us', '_us_tech_data', 'market_sentiment_us',
-                       'market_ai_hk', '_hk_tech_data', 'market_sentiment_hk',
-                       'market_ai_cn', '_cn_tech_data', 'market_sentiment_cn',
-                       '_market_ai_auto_done']:
-                st.session_state.pop(_k, None)
-            for _mk in ('us', 'hk', 'cn'):
+        try:
+            # 检查是否请求强制刷新
+            force_refresh = st.session_state.get('force_refresh_requested', False)
+            if force_refresh:
+                st.session_state['force_refresh_requested'] = False
+                st.cache_data.clear()
                 try:
-                    _rf = _AI_REPORT_CACHE_DIR / f"ai_report_market_{_mk}.json"
-                    if _rf.exists():
-                        _rf.unlink()
+                    local_cache.clear_all()   # 穿透文件缓存层，彻底刷新
                 except Exception:
                     pass
-            _macro_ai_generate = True
-        if _macro_ai_generate:
-            with _v88_running("AI增强解读 · 单次分析美股、港股、A股"):
-                _macro_ai_results = _run_all_markets_ai()
-            _macro_ai_saved = 0
-            for _mk, _ss_pred, _ss_tech in (
-                ('us', 'market_ai_us', '_us_tech_data'),
-                ('hk', 'market_ai_hk', '_hk_tech_data'),
-                ('cn', 'market_ai_cn', '_cn_tech_data'),
-            ):
-                _mr = _macro_ai_results.get(_mk) or {}
-                if _mr.get('pred'):
-                    st.session_state[_ss_pred] = _mr['pred']
-                    _save_ai_report_cache(f"market_{_mk}", _mr)
-                    _macro_ai_saved += 1
-                if _mr.get('tech'):
-                    st.session_state[_ss_tech] = _mr['tech']
-            if _macro_ai_saved:
-                st.session_state['_market_ai_auto_done'] = True
-                st.rerun()
+
+            # 启动性能监控
+            _perf_monitor.start()
+
+            _cache_ts = int(time.time() // 300)  # 每5分钟变一次，触发缓存刷新
+            # 首页只保留宏观脉搏。行业热力首页模块已移除，底层函数仍保留供其他功能复用。
+            _overview_mode = "macro"
+            st.checkbox(
+                "首屏自动请求AI（人工智能）市场分析",
+                key="v88_auto_ai_market",
+                help="仅美股、港股或A股交易日盘中运行；每3小时一次，每天最多3次；一次请求同时分析三市场。",
+            )
+
+            all_markets = None
+            heat_df = None
+            if _overview_mode in ("macro", "both"):
+                with _v88_running("🌐 正在加载全球市场宏观数据…"):
+                    all_markets = _cached_expectation_all_markets(_ts=_cache_ts)
+                st.session_state.all_markets = all_markets
             else:
-                st.error("AI增强解读生成失败，请稍后重试")
+                all_markets = st.session_state.get("all_markets")
 
-        _macro_ai_us = st.session_state.get('market_ai_us', '')
-        _macro_ai_hk = st.session_state.get('market_ai_hk', '')
-        _macro_ai_cn = st.session_state.get('market_ai_cn', '')
-        _macro_ai_active = bool(_macro_ai_us or _macro_ai_hk or _macro_ai_cn)
-        def _water_text(_symbol):
-            _wr = _ath_pct(_symbol)
-            if not _wr:
-                return "待核", "距历史高"
-            _pct, _ath_date, _days = _wr[0], _wr[1], _wr[2]
-            _p52 = _wr[4] if len(_wr) > 4 else None
-            _duration = f"{_days / 365:.1f}年前" if _days >= 365 else f"{_days}天前"
-            _sub = f"高点{_duration}" + (f" · 52周{int(_p52)}%" if _p52 is not None else "")
-            return f"{float(_pct):+.1f}%", _sub
+            if _overview_mode in ("heat", "both"):
+                with _v88_running("🌡️ 正在加载行业热力图…"):
+                    heat_df = get_market_heat()
 
-        with _v88_running("计算三市场历史水位"):
-            _water_us = _water_text("^GSPC")
-            _water_cn = _water_text("000001.SS")
-            _water_hk = _water_text("^HSI")
-        _mc1, _mc2, _mc3 = st.columns(3)
-        with _mc1:
-            _macro_card("🇺🇸 美国", us_result.get("verdict", "—"), [
-                ("VIX", f"{float(us_result.get('vix_level') or 0):.1f}", f"{float(us_result.get('vix_change_pct') or 0):+.1f}%"),
-                ("SPY", f"${float(us_result.get('spy_price') or 0):.1f}", f"{float(us_result.get('spy_change_pct') or 0):+.1f}%"),
-                ("QQQ", f"${float(us_result.get('qqq_price') or 0):.1f}", f"{float(us_result.get('qqq_change_pct') or 0):+.1f}%"),
-                ("TLT", f"${float(us_result.get('tlt_price') or 0):.1f}", f"{float(us_result.get('tlt_change_pct') or 0):+.1f}%"),
-                ("黄金", f"${float(us_result.get('gld_price') or 0):.1f}", f"{float(us_result.get('gld_change_pct') or 0):+.1f}%"),
-                ("10Y", f"{float(us_result.get('tnx_yield') or 0):.2f}%", f"{float(us_result.get('tnx_change') or 0):+.2f}"),
-                ("DXY", f"{float(us_result.get('dxy_level') or 0):.1f}", f"{float(us_result.get('dxy_change_pct') or 0):+.1f}%"),
-                ("股债相关", f"{float(us_result.get('correlation') or 0):.2f}", str(us_result.get('corr_desc') or '')[:8]),
-                ("水位", _water_us[0], _water_us[1]),
-            ], str(us_result.get("reason", ""))[:44], _macro_ai_us, "美股")
-        with _mc2:
-            _cyb9 = float(cn_result.get("cyb_price") or 0)
-            _cyb_txt9 = f"{_cyb9:.3f}元" if cn_result.get("cyb_use_etf") else f"{_cyb9:.0f}点"
-            _macro_card("🇨🇳 A股", cn_result.get("verdict", "—"), [
-                ("上证", f"{float(cn_result.get('index_level') or 0):.0f}", f"{float(cn_result.get('index_change_pct') or 0):+.1f}%"),
-                ("沪深300", f"{float(cn_result.get('hs300_price') or 0):.0f}", f"{float(cn_result.get('hs300_change_pct') or 0):+.1f}%"),
-                ("创业板", _cyb_txt9, f"{float(cn_result.get('cyb_change_pct') or 0):+.1f}%"),
-                ("波动率", f"{float(cn_result.get('volatility') or 0):.1f}%", "风险温度"),
-                ("人民币", f"{float(cn_result.get('cny_price') or 0):.4f}", f"{float(cn_result.get('cny_change_pct') or 0):+.1f}%"),
-                ("水位", _water_cn[0], _water_cn[1]),
-            ], str(cn_result.get("reason", ""))[:44], _macro_ai_cn, "A股")
-        with _mc3:
-            _macro_card("🇭🇰 港股", hk_result.get("verdict", "—"), [
-                ("恒指", f"{float(hk_result.get('index_level') or 0):.0f}", f"{float(hk_result.get('index_change_pct') or 0):+.1f}%"),
-                ("恒生科技", f"{float(hk_result.get('hstech_price') or 0):.2f}", f"{float(hk_result.get('hstech_change_pct') or 0):+.1f}%"),
-                ("国企指数", f"{float(hk_result.get('hsce_price') or 0):.0f}", f"{float(hk_result.get('hsce_change_pct') or 0):+.1f}%"),
-                ("波动率", f"{float(hk_result.get('volatility') or 0):.1f}%", "风险温度"),
-                ("港币", f"{float(hk_result.get('hkd_price') or 0):.4f}", f"{float(hk_result.get('hkd_change_pct') or 0):+.1f}%"),
-                ("水位", _water_hk[0], _water_hk[1]),
-            ], str(hk_result.get("reason", ""))[:44], _macro_ai_hk, "港股")
-
-        _macro_cross = ""
-        for _macro_ai_source in (_macro_ai_us, _macro_ai_hk, _macro_ai_cn):
-            _macro_link_match = re.search(r"(?:\*\*)?跨市场联动(?:\*\*)?[：:]\s*([^\n]+)", str(_macro_ai_source or ""))
-            if _macro_link_match:
-                _macro_cross = _macro_link_match.group(1).strip()
-                break
-        if _macro_cross:
-            _macro_cross_html = _macro_cn(_macro_cross.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
-            st.markdown(f'<div style="font-size:12px;color:#64748b;margin:.18rem .2rem"><b>🔗 跨市场联动</b>：{_macro_cross_html}</div>', unsafe_allow_html=True)
-
-        # 原宏观解读内容不删除：改为紧凑文字直接展示，不再占用大型指标区。
-        try:
-            _compact_caps = [int(float(x.get('position_cap', 80))) for x in (us_result, cn_result, hk_result)]
-            _compact_cap = min(x for x in _compact_caps if 0 <= x <= 100)
-        except Exception:
-            _compact_cap = 30 if _r_off >= 2 else 80
-        st.markdown(
-            f'<div style="font-size:12px;color:#3d4f6a;line-height:1.55;margin:.15rem .2rem .35rem">'
-            f'<b style="color:#1e3a5f">宏观解读</b>：{_macro_cn(_gr)}　｜　<b style="color:#1e3a5f">全局仓位上限 {_compact_cap}%</b><br>'
-            f'美国：{_macro_cn(us_result.get("reason", ""))}　｜　A股：{_macro_cn(cn_result.get("reason", ""))}　｜　'
-            f'港股：{_macro_cn(hk_result.get("reason", ""))}</div>', unsafe_allow_html=True)
-
-        # 【2026-07-12 用户要求】此处原有 st.divider()：下方行业热力已停用(if False)，
-        # 连续空分隔线只留末尾一条，删除以压缩版面。
-        if 'sector_analysis_name' in st.session_state and st.session_state.sector_analysis_name:
-            sector_name_s = st.session_state.sector_analysis_name
-            codes_s = st.session_state.sector_analysis_codes
-
-            st.markdown("---")
-            st.markdown(f"### 🌍 全球{sector_name_s}行业 AI综合分析")
-            st.caption(f"📅 {_dt_global.now().strftime('%Y-%m-%d %A')}")
-
-            if st.button("❌ 关闭", key="close_sector_analysis"):
-                st.session_state.sector_analysis_name = None
-                st.session_state.sector_analysis_market = None
-                st.session_state.sector_analysis_codes = None
-                st.session_state.pop("sector_analysis_heat", None)
-                st.rerun()
-
-            if not MY_DEEPSEEK_KEY:
-                st.error("❌ 未配置 DeepSeek API Key")
+            if all_markets is None:
+                st.info("📡 **宏观数据未加载。** 请在上方选择「仅宏观脉搏」或「全部加载」后等待片刻。")
             else:
-                from datetime import datetime as _dt_sector
-                today_s = _dt_sector.now().strftime("%Y年%m月%d日")
-
-                _heat_ctx = st.session_state.get("sector_analysis_heat", {})
-                _us_f = _heat_ctx.get("us_forum", {})
-                _hk_f = _heat_ctx.get("hk_forum", {})
-                _cn_f = _heat_ctx.get("cn_forum", {})
-                prompt_s = _load_prompt(
-                    "sector_analysis.txt",
-                    sector_name=sector_name_s,
-                    today=today_s,
-                    us_code=codes_s["us"],
-                    hk_code=codes_s["hk"],
-                    cn_code=codes_s["cn"],
-                    us_rotation=_heat_ctx.get("us_rot", "N/A"),
-                    hk_rotation=_heat_ctx.get("hk_rot", "N/A"),
-                    cn_rotation=_heat_ctx.get("cn_rot", "N/A"),
-                    forum_heat=_heat_ctx.get("forum", "N/A"),
-                    us_forum_score=f"{_us_f.get('score', 50)}/100 ({_us_f.get('level', '平淡')})",
-                    hk_forum_score=f"{_hk_f.get('score', 50)}/100 ({_hk_f.get('level', '平淡')})",
-                    cn_forum_score=f"{_cn_f.get('score', 50)}/100 ({_cn_f.get('level', '平淡')})",
-                )
+                us_result = all_markets['us_market']
+                hk_result = all_markets['hk_market']
+                cn_result = all_markets['cn_market']
+                summary = all_markets['summary']
+                # 指数展示与权威日报共用同一快照；宏观代理指标(VIX/SPY/TLT等)仍来自宏观模块。
                 try:
-                    analysis_text_s = st.write_stream(call_gemini_api_stream(prompt_s))
-                    if COPY_UTILS_AVAILABLE:
-                        CopyUtils.create_copy_button(analysis_text_s, button_text="📋 复制全文", key="copy_global_sector_full")
-                    st.caption(f"📌 AI生成 · 模型: {_ai_model_label()}")
-                except Exception as e:
-                    st.error(f"❌ AI分析失败: {type(e).__name__}: {str(e)}")
+                    _canonical_snapshot = json.loads(_AUTHORITATIVE_SNAPSHOT.read_text(encoding="utf-8"))
+                    _cn_ix = (_canonical_snapshot.get("markets", {}).get("A股", {}).get("indices") or [])
+                    _hk_ix = (_canonical_snapshot.get("markets", {}).get("港股", {}).get("indices") or [])
+                    if _cn_ix:
+                        cn_result["index_level"] = _cn_ix[0].get("last")
+                        cn_result["index_change_pct"] = _cn_ix[0].get("chg1d")
+                    if len(_cn_ix) >= 3:
+                        # 宏观模块已优先通过东方财富获取真实创业板指 399006。
+                        # 只有真实指数缺失时，才允许快照中的 ETF 代理覆盖。
+                        _cyb_snap9 = _cn_ix[2]
+                        _cyb_live9 = float(cn_result.get("cyb_price") or 0)
+                        _snap_is_etf9 = "ETF" in str(_cyb_snap9.get("name", ""))
+                        if _cyb_live9 <= 0 or not _snap_is_etf9:
+                            cn_result["cyb_price"] = _cyb_snap9.get("last")
+                            cn_result["cyb_change_pct"] = _cyb_snap9.get("chg1d")
+                            cn_result["cyb_use_etf"] = _snap_is_etf9
+                    if _hk_ix:
+                        hk_result["index_level"] = _hk_ix[0].get("last")
+                        hk_result["index_change_pct"] = _hk_ix[0].get("chg1d")
+                    if len(_hk_ix) >= 2:
+                        hk_result["hstech_price"] = _hk_ix[1].get("last")
+                        hk_result["hstech_change_pct"] = _hk_ix[1].get("chg1d")
+                        hk_result["hstech_use_etf"] = "ETF" in str(_hk_ix[1].get("name", ""))
+                except Exception as _snap_sync_error:
+                    logging.warning(f"权威快照覆盖宏观指数失败: {_snap_sync_error}")
+                def _macro_cn(_text):
+                    """宏观区英文术语追加小号中文括注，不改变卡片尺寸。"""
+                    _text = str(_text or "")
+                    _terms = (
+                        ("Risk On", "风险偏好"), ("Risk Off", "风险规避"),
+                        ("VIX", "波动率"), ("SPY", "标普500交易型基金"),
+                        ("QQQ", "纳指100交易型基金"), ("TLT", "美债交易型基金"),
+                        ("DXY", "美元指数"), ("10Y", "十年美债"),
+                        ("MA200", "200日均线"), ("MA50", "50日均线"),
+                    )
+                    for _en, _cn in _terms:
+                        _text = _text.replace(_en, f'{_en}<span class="v88-cn-note">（{_cn}）</span>')
+                    return _text
+                global_verdict = summary['global_verdict']
+                _gv = "".join(c for c in str(global_verdict) if ord(c) >= 32 or c in "\n\t\r").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+                _gr = "".join(c for c in str(summary.get("global_reason", "")) if ord(c) >= 32 or c in "\n\t\r").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+                _r_on = summary.get('risk_on_count', 0)
+                _r_off = summary.get('risk_off_count', 0)
+                _sum_color = "#10b981" if _r_on >= 2 else ("#ef4444" if _r_off >= 2 else "#f59e0b")
 
-        # 【2026-07-12 用户要求】此处原有 st.divider()，与下方"---"重复，删除以压缩版面。
-        # AI增强解读已经并入上方三张宏观卡片，不再重复渲染独立大模块。
+            # ═══════════════════════════════════════════════════════════════
+            # 【V88·紧凑首页】三市场关键指标一屏展示；完整明细默认折叠。
+            def _macro_ai_text(_text, _market):
+                _txt = str(_text or "").replace(f"【{_market}】", "").strip()
+                _txt = _txt.split("\n\n---", 1)[0].strip()
+                _txt = _txt.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                _txt = re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", _txt)
+                return _macro_cn(_txt).replace("\n", "<br>")
+
+            def _macro_card(_title, _verdict, _items, _reason, _ai_text="", _market=""):
+                _risk_on = str(_verdict) == "Risk On"
+                _accent = "#10b981" if _risk_on else ("#ef4444" if str(_verdict) == "Risk Off" else "#f59e0b")
+                _cells = []
+                for _lbl, _val, _chg in _items:
+                    _chg_text = str(_chg).strip()
+                    _mchg = re.match(r"[-+]\d+(?:\.\d+)?", _chg_text)
+                    _nchg = float(_mchg.group()) if _mchg else 0.0
+                    _chg_cls = "v88-up" if _nchg > 0 else ("v88-down" if _nchg < 0 else "v88-flat")
+                    _arrow = "↑ " if _nchg > 0 else ("↓ " if _nchg < 0 else "")
+                    _cells.append(
+                        f'<div class="v88-macro-kpi"><span>{_macro_cn(_lbl)}</span><b>{_val}</b>'
+                        f'<small class="{_chg_cls}">{_arrow}{_macro_cn(_chg)}</small></div>')
+                _cells = "".join(_cells)
+                _dense_cls = " v88-macro-dense" if len(_items) > 6 else ""
+                _ai_cls = " v88-macro-ai-active" if _macro_ai_active else ""
+                _ai_html = (_macro_ai_text(_ai_text, _market) if _ai_text
+                            else "AI（人工智能）增强：点击上方按钮按需生成")
+                st.markdown(
+                    f'<div class="v88-macro-card{_dense_cls}{_ai_cls}" style="border-top:3px solid {_accent}">'
+                    f'<div class="v88-macro-head"><b>{_title}</b><em style="color:{_accent}">{_macro_cn(_verdict)}</em></div>'
+                    f'<div class="v88-macro-grid">{_cells}</div>'
+                    f'<div class="v88-macro-reason">{_macro_cn(_reason)}</div>'
+                    f'<div class="v88-macro-ai"><b>🤖 AI（人工智能）增强</b><br>{_ai_html}</div></div>',
+                    unsafe_allow_html=True)
+
+            st.markdown("""<style>
+            .v88-macro-title{display:flex;align-items:center;justify-content:space-between;margin:.15rem 0 .45rem}
+            .v88-macro-title b{font-size:15px;color:#1e3a5f}.v88-macro-title span{font-size:12px;color:#5a6378}
+            .v88-macro-card{background:#fff;border:1px solid #dce3ed;border-radius:10px;padding:.4rem .55rem;height:174px;min-height:174px;overflow:hidden;box-shadow:0 1px 3px rgba(30,58,95,.06)}
+            .v88-macro-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem}
+            .v88-macro-head b{font-size:13px;color:#1a1a2e}.v88-macro-head em{font-style:normal;font-weight:700;font-size:12px}
+            .v88-macro-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.35rem}
+            .v88-macro-kpi{min-width:0}.v88-macro-kpi>span{display:block;color:#5a6378;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+            .v88-macro-kpi b{display:block;font-size:14px;line-height:1.2;color:#1a1a2e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+            .v88-macro-kpi small{font-size:12px}.v88-up{color:#dc2626!important}.v88-down{color:#16a34a!important}.v88-flat{color:#5a6378!important}
+            .v88-cn-note{display:inline!important;font-size:.58em!important;line-height:1!important;color:#8893a7;font-weight:400;margin-left:1px}.v88-macro-reason{font-size:12px;color:#5a6378;margin-top:.35rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+            .v88-macro-dense{height:174px;min-height:174px;padding:.38rem .52rem}
+            .v88-macro-dense .v88-macro-head{margin-bottom:.2rem}
+            .v88-macro-dense .v88-macro-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:.18rem .3rem}
+            .v88-macro-dense .v88-macro-kpi>span{font-size:12px}
+            .v88-macro-dense .v88-macro-kpi b{font-size:13px;line-height:1.08}
+            .v88-macro-dense .v88-macro-kpi small{display:block;font-size:12px;line-height:1.1;white-space:nowrap}
+            .v88-macro-dense .v88-cn-note{font-size:.52em!important}
+            .v88-macro-dense .v88-macro-reason{font-size:12px;margin-top:.18rem}
+            .v88-macro-ai{font-size:12px;line-height:1.35;color:#3d4f6a;border-top:1px dashed #dce3ed;margin-top:.28rem;padding-top:.25rem;max-height:34px;overflow:hidden}
+            .v88-macro-ai-active{height:232px;min-height:232px}
+            .v88-macro-ai-active .v88-macro-ai{max-height:82px;overflow:auto}
+            @media(max-width:900px){.v88-macro-card{min-height:auto}.v88-macro-kpi b{font-size:13px}}
+            </style>""", unsafe_allow_html=True)
+            # AI 日报增强解读并入三市场卡片：一次请求同时生成三市场，继续复用原文件缓存。
+            _auto_generate_market_ai()
+            # 【V88·页眉压缩】AI解读状态并入宏观脉搏标题行(图一11px灰字)，标题与两按钮同排一行，两行→一行
+            _macro_ai_state = _market_ai_schedule_state()
+            _macro_ai_ts = None
+            for _macro_mk in ('us', 'hk', 'cn'):
+                _, _macro_t = _load_ai_report_cache(f"market_{_macro_mk}")
+                if _macro_t:
+                    _macro_ai_ts = max(_macro_ai_ts or 0, _macro_t)
+            _macro_ai_time_text = (pd.Timestamp.fromtimestamp(_macro_ai_ts, tz="Asia/Shanghai").strftime("%m/%d %H:%M")
+                                   if _macro_ai_ts else "尚未生成")
+            _mc_title, _mc_b1, _mc_b2 = st.columns([10, 1.5, 0.7])
+            with _mc_title:
+                st.markdown(f'<div class="v88-macro-title" style="margin:.35rem 0 .2rem"><b>📡 宏观脉搏</b>'
+                            f'<span>AI解读 {_macro_ai_time_text} · 今日{_macro_ai_state.get("runs", 0)}/3次 · 盘中每3h ｜ 最近收盘 {_dt_global.now().strftime("%m/%d %H:%M")}</span></div>',
+                            unsafe_allow_html=True)
+            with _mc_b1:
+                _macro_ai_generate = st.button("⚡ AI解读", key="btn_macro_ai_generate", help="更新AI增强解读", use_container_width=True)
+            with _mc_b2:
+                _macro_ai_refresh = st.button("🔄", key="btn_macro_ai_refresh", help="刷新", use_container_width=True)
+            if _macro_ai_refresh:
+                for _k in ['market_ai_us', '_us_tech_data', 'market_sentiment_us',
+                           'market_ai_hk', '_hk_tech_data', 'market_sentiment_hk',
+                           'market_ai_cn', '_cn_tech_data', 'market_sentiment_cn',
+                           '_market_ai_auto_done']:
+                    st.session_state.pop(_k, None)
+                for _mk in ('us', 'hk', 'cn'):
+                    try:
+                        _rf = _AI_REPORT_CACHE_DIR / f"ai_report_market_{_mk}.json"
+                        if _rf.exists():
+                            _rf.unlink()
+                    except Exception:
+                        pass
+                _macro_ai_generate = True
+            if _macro_ai_generate:
+                with _v88_running("AI增强解读 · 单次分析美股、港股、A股"):
+                    _macro_ai_results = _run_all_markets_ai()
+                _macro_ai_saved = 0
+                for _mk, _ss_pred, _ss_tech in (
+                    ('us', 'market_ai_us', '_us_tech_data'),
+                    ('hk', 'market_ai_hk', '_hk_tech_data'),
+                    ('cn', 'market_ai_cn', '_cn_tech_data'),
+                ):
+                    _mr = _macro_ai_results.get(_mk) or {}
+                    if _mr.get('pred'):
+                        st.session_state[_ss_pred] = _mr['pred']
+                        _save_ai_report_cache(f"market_{_mk}", _mr)
+                        _macro_ai_saved += 1
+                    if _mr.get('tech'):
+                        st.session_state[_ss_tech] = _mr['tech']
+                if _macro_ai_saved:
+                    st.session_state['_market_ai_auto_done'] = True
+                    st.rerun()
+                else:
+                    st.error("AI增强解读生成失败，请稍后重试")
+
+            _macro_ai_us = st.session_state.get('market_ai_us', '')
+            _macro_ai_hk = st.session_state.get('market_ai_hk', '')
+            _macro_ai_cn = st.session_state.get('market_ai_cn', '')
+            _macro_ai_active = bool(_macro_ai_us or _macro_ai_hk or _macro_ai_cn)
+            def _water_text(_symbol):
+                _wr = _ath_pct(_symbol)
+                if not _wr:
+                    return "待核", "距历史高"
+                _pct, _ath_date, _days = _wr[0], _wr[1], _wr[2]
+                _p52 = _wr[4] if len(_wr) > 4 else None
+                _duration = f"{_days / 365:.1f}年前" if _days >= 365 else f"{_days}天前"
+                _sub = f"高点{_duration}" + (f" · 52周{int(_p52)}%" if _p52 is not None else "")
+                return f"{float(_pct):+.1f}%", _sub
+
+            with _v88_running("计算三市场历史水位"):
+                _water_us = _water_text("^GSPC")
+                _water_cn = _water_text("000001.SS")
+                _water_hk = _water_text("^HSI")
+            _mc1, _mc2, _mc3 = st.columns(3)
+            with _mc1:
+                _macro_card("🇺🇸 美国", us_result.get("verdict", "—"), [
+                    ("VIX", f"{float(us_result.get('vix_level') or 0):.1f}", f"{float(us_result.get('vix_change_pct') or 0):+.1f}%"),
+                    ("SPY", f"${float(us_result.get('spy_price') or 0):.1f}", f"{float(us_result.get('spy_change_pct') or 0):+.1f}%"),
+                    ("QQQ", f"${float(us_result.get('qqq_price') or 0):.1f}", f"{float(us_result.get('qqq_change_pct') or 0):+.1f}%"),
+                    ("TLT", f"${float(us_result.get('tlt_price') or 0):.1f}", f"{float(us_result.get('tlt_change_pct') or 0):+.1f}%"),
+                    ("黄金", f"${float(us_result.get('gld_price') or 0):.1f}", f"{float(us_result.get('gld_change_pct') or 0):+.1f}%"),
+                    ("10Y", f"{float(us_result.get('tnx_yield') or 0):.2f}%", f"{float(us_result.get('tnx_change') or 0):+.2f}"),
+                    ("DXY", f"{float(us_result.get('dxy_level') or 0):.1f}", f"{float(us_result.get('dxy_change_pct') or 0):+.1f}%"),
+                    ("股债相关", f"{float(us_result.get('correlation') or 0):.2f}", str(us_result.get('corr_desc') or '')[:8]),
+                    ("水位", _water_us[0], _water_us[1]),
+                ], str(us_result.get("reason", ""))[:44], _macro_ai_us, "美股")
+            with _mc2:
+                _cyb9 = float(cn_result.get("cyb_price") or 0)
+                _cyb_txt9 = f"{_cyb9:.3f}元" if cn_result.get("cyb_use_etf") else f"{_cyb9:.0f}点"
+                _macro_card("🇨🇳 A股", cn_result.get("verdict", "—"), [
+                    ("上证", f"{float(cn_result.get('index_level') or 0):.0f}", f"{float(cn_result.get('index_change_pct') or 0):+.1f}%"),
+                    ("沪深300", f"{float(cn_result.get('hs300_price') or 0):.0f}", f"{float(cn_result.get('hs300_change_pct') or 0):+.1f}%"),
+                    ("创业板", _cyb_txt9, f"{float(cn_result.get('cyb_change_pct') or 0):+.1f}%"),
+                    ("波动率", f"{float(cn_result.get('volatility') or 0):.1f}%", "风险温度"),
+                    ("人民币", f"{float(cn_result.get('cny_price') or 0):.4f}", f"{float(cn_result.get('cny_change_pct') or 0):+.1f}%"),
+                    ("水位", _water_cn[0], _water_cn[1]),
+                ], str(cn_result.get("reason", ""))[:44], _macro_ai_cn, "A股")
+            with _mc3:
+                _macro_card("🇭🇰 港股", hk_result.get("verdict", "—"), [
+                    ("恒指", f"{float(hk_result.get('index_level') or 0):.0f}", f"{float(hk_result.get('index_change_pct') or 0):+.1f}%"),
+                    ("恒生科技", f"{float(hk_result.get('hstech_price') or 0):.2f}", f"{float(hk_result.get('hstech_change_pct') or 0):+.1f}%"),
+                    ("国企指数", f"{float(hk_result.get('hsce_price') or 0):.0f}", f"{float(hk_result.get('hsce_change_pct') or 0):+.1f}%"),
+                    ("波动率", f"{float(hk_result.get('volatility') or 0):.1f}%", "风险温度"),
+                    ("港币", f"{float(hk_result.get('hkd_price') or 0):.4f}", f"{float(hk_result.get('hkd_change_pct') or 0):+.1f}%"),
+                    ("水位", _water_hk[0], _water_hk[1]),
+                ], str(hk_result.get("reason", ""))[:44], _macro_ai_hk, "港股")
+
+            _macro_cross = ""
+            for _macro_ai_source in (_macro_ai_us, _macro_ai_hk, _macro_ai_cn):
+                _macro_link_match = re.search(r"(?:\*\*)?跨市场联动(?:\*\*)?[：:]\s*([^\n]+)", str(_macro_ai_source or ""))
+                if _macro_link_match:
+                    _macro_cross = _macro_link_match.group(1).strip()
+                    break
+            if _macro_cross:
+                _macro_cross_html = _macro_cn(_macro_cross.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
+                st.markdown(f'<div style="font-size:12px;color:#64748b;margin:.18rem .2rem"><b>🔗 跨市场联动</b>：{_macro_cross_html}</div>', unsafe_allow_html=True)
+
+            # 原宏观解读内容不删除：改为紧凑文字直接展示，不再占用大型指标区。
+            try:
+                _compact_caps = [int(float(x.get('position_cap', 80))) for x in (us_result, cn_result, hk_result)]
+                _compact_cap = min(x for x in _compact_caps if 0 <= x <= 100)
+            except Exception:
+                _compact_cap = 30 if _r_off >= 2 else 80
+            st.markdown(
+                f'<div style="font-size:12px;color:#3d4f6a;line-height:1.55;margin:.15rem .2rem .35rem">'
+                f'<b style="color:#1e3a5f">宏观解读</b>：{_macro_cn(_gr)}　｜　<b style="color:#1e3a5f">全局仓位上限 {_compact_cap}%</b><br>'
+                f'美国：{_macro_cn(us_result.get("reason", ""))}　｜　A股：{_macro_cn(cn_result.get("reason", ""))}　｜　'
+                f'港股：{_macro_cn(hk_result.get("reason", ""))}</div>', unsafe_allow_html=True)
+
+            # 【2026-07-12 用户要求】此处原有 st.divider()：下方行业热力已停用(if False)，
+            # 连续空分隔线只留末尾一条，删除以压缩版面。
+            if 'sector_analysis_name' in st.session_state and st.session_state.sector_analysis_name:
+                sector_name_s = st.session_state.sector_analysis_name
+                codes_s = st.session_state.sector_analysis_codes
+
+                st.markdown("---")
+                st.markdown(f"### 🌍 全球{sector_name_s}行业 AI综合分析")
+                st.caption(f"📅 {_dt_global.now().strftime('%Y-%m-%d %A')}")
+
+                if st.button("❌ 关闭", key="close_sector_analysis"):
+                    st.session_state.sector_analysis_name = None
+                    st.session_state.sector_analysis_market = None
+                    st.session_state.sector_analysis_codes = None
+                    st.session_state.pop("sector_analysis_heat", None)
+                    st.rerun()
+
+                if not MY_DEEPSEEK_KEY:
+                    st.error("❌ 未配置 DeepSeek API Key")
+                else:
+                    from datetime import datetime as _dt_sector
+                    today_s = _dt_sector.now().strftime("%Y年%m月%d日")
+
+                    _heat_ctx = st.session_state.get("sector_analysis_heat", {})
+                    _us_f = _heat_ctx.get("us_forum", {})
+                    _hk_f = _heat_ctx.get("hk_forum", {})
+                    _cn_f = _heat_ctx.get("cn_forum", {})
+                    prompt_s = _load_prompt(
+                        "sector_analysis.txt",
+                        sector_name=sector_name_s,
+                        today=today_s,
+                        us_code=codes_s["us"],
+                        hk_code=codes_s["hk"],
+                        cn_code=codes_s["cn"],
+                        us_rotation=_heat_ctx.get("us_rot", "N/A"),
+                        hk_rotation=_heat_ctx.get("hk_rot", "N/A"),
+                        cn_rotation=_heat_ctx.get("cn_rot", "N/A"),
+                        forum_heat=_heat_ctx.get("forum", "N/A"),
+                        us_forum_score=f"{_us_f.get('score', 50)}/100 ({_us_f.get('level', '平淡')})",
+                        hk_forum_score=f"{_hk_f.get('score', 50)}/100 ({_hk_f.get('level', '平淡')})",
+                        cn_forum_score=f"{_cn_f.get('score', 50)}/100 ({_cn_f.get('level', '平淡')})",
+                    )
+                    try:
+                        analysis_text_s = st.write_stream(call_gemini_api_stream(prompt_s))
+                        if COPY_UTILS_AVAILABLE:
+                            CopyUtils.create_copy_button(analysis_text_s, button_text="📋 复制全文", key="copy_global_sector_full")
+                        st.caption(f"📌 AI生成 · 模型: {_ai_model_label()}")
+                    except Exception as e:
+                        st.error(f"❌ AI分析失败: {type(e).__name__}: {str(e)}")
+
+            # 【2026-07-12 用户要求】此处原有 st.divider()，与下方"---"重复，删除以压缩版面。
+            # AI增强解读已经并入上方三张宏观卡片，不再重复渲染独立大模块。
         
-    except Exception as e:
-        # 宏观模块异常不影响主应用
-        st.warning(f"⚠️  全球市场概览加载异常，主功能不受影响。错误信息: {str(e)[:100]}")
-        logging.error(f"宏观仪表盘渲染异常: {e}")
-        import traceback
-        traceback.print_exc()
+        except Exception as e:
+            # 宏观模块异常不影响主应用
+            st.warning(f"⚠️  全球市场概览加载异常，主功能不受影响。错误信息: {str(e)[:100]}")
+            logging.error(f"宏观仪表盘渲染异常: {e}")
+            import traceback
+            traceback.print_exc()
 
-    # 宏观卡片与主功能紧接；不再用高分隔线额外占用纵向空间。
+        # 宏观卡片与主功能紧接；不再用高分隔线额外占用纵向空间。
+        # 三层周期总览组占位:紧贴宏观脉搏下方(容器内末尾),由今日导航回填
+        _l3_group_slot = st.empty()
 
 
-# 【V88·大盘宏观归位】三层周期总览组的占位:紧贴宏观脉搏正下方,由今日导航回填
-_l3_group_slot = st.empty()
 
 # 【V90.3】性能监控已移到左侧边栏
 
