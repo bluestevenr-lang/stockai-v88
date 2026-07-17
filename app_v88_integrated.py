@@ -11927,42 +11927,44 @@ def _render_l3_cycle_board(_snap, _is_trading):
                             f"{s['name']}{s.get('chg1d', 0):+.1f}%" for s in _sorted9[:2]))
             except Exception:
                 pass
-            # 【V88·异动30字原因 2026-07-17 用户点单】不再取任意前2条,精准挑"为什么"：
-            # 方向匹配(大跌找利空/大涨找利好)+影响级高优先+命中领跌/领涨板块加权,用AI分析摘要。
-            _news9 = []
+            # 【V88·大盘异动分市场归因 2026-07-17 用户点单】中美港每个异动大盘各给一句"为什么"：
+            # 方向匹配(大跌找利空/大涨找利好)+该市场scope+带因果词(因/受/预期/抛售…)+高影响+中文,择优1条。
+            _why_news9 = {}                               # {市场: "为什么"}
             try:
                 _na9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
                                    "news_analyzed.json").read_text(encoding="utf-8"))
-                _want9 = "空" if _dirn9 == "大跌" else "好"          # 大跌→利空,大涨→利好
-                _mover_secs9 = set()
+                _want9 = "空" if _dirn9 == "大跌" else "好"
+                _cause9 = ("因", "由于", "受", "预期", "担忧", "导致", "引发", "拖累", "冲击",
+                           "下调", "上调", "抛售", "避险", "回吐", "获利", "政策", "加息", "降息", "利空", "利好")
+                _all_news9 = _na9.get("news") or []
                 for _mk9y in _movers9:
-                    for _s in (((_snap or {}).get("markets") or {}).get(_mk9y, {}).get("sectors") or []):
-                        _mover_secs9.add(str(_s.get("name", "")))
-                _mover_mkts9 = set(_movers9)               # 异动市场名(A股/港股/美股)
-                _scored9 = []
-                for _n in (_na9.get("news") or []):
-                    _dir9 = str(_n.get("impact_direction") or "")
-                    if _want9 not in _dir9:
-                        continue
-                    # 中文优先：标题中文占比高的用标题,否则用AI摘要,都尽量中文
-                    _t_title9 = str(_n.get("title") or "")
-                    _zh9 = sum(1 for c in _t_title9 if "一" <= c <= "鿿")
-                    _txt9 = (_t_title9 if _zh9 >= 4
-                             else str(_n.get("analysis_summary") or _n.get("cleaned_title") or _t_title9))
-                    if not _txt9:
-                        continue
-                    _lv9 = str(_n.get("impact_level") or "")
-                    _sc9 = (3 if "高" in _lv9 else (1 if "中" in _lv9 else 0))
-                    if any(_ms and (_ms in str(_n.get("affected_sectors") or "")) for _ms in _mover_secs9):
-                        _sc9 += 2
-                    if any(_mm in str(_n.get("market_scope") or "") for _mm in _mover_mkts9):
-                        _sc9 += 2                          # 命中异动市场(讲的就是这个大盘)
-                    if sum(1 for c in _txt9 if "一" <= c <= "鿿") >= 4:
-                        _sc9 += 2                          # 中文可读优先
-                    if _sc9 > 0:
-                        _scored9.append((_sc9, _txt9[:38]))
-                _scored9.sort(key=lambda x: -x[0])
-                _news9 = [t for _, t in _scored9[:2]]
+                    _best9, _bestsc9 = "", 0
+                    for _n in _all_news9:
+                        if _want9 not in str(_n.get("impact_direction") or ""):
+                            continue
+                        _scope9 = str(_n.get("market_scope") or "")
+                        if _mk9y in _scope9:
+                            _ssc9 = 5                      # 精确讲这个大盘,本土原因优先
+                        elif ("综合" in _scope9 or "宏观" in _scope9):
+                            _ssc9 = 1                      # 跨市场宏观也算但降权
+                        else:
+                            continue
+                        _t9 = str(_n.get("cleaned_title") or _n.get("title") or "")
+                        _zh9 = sum(1 for c in _t9 if "一" <= c <= "鿿")
+                        if _zh9 < 4:
+                            _t9 = str(_n.get("analysis_summary") or _t9)
+                        if not _t9:
+                            continue
+                        _sc9 = _ssc9 + (3 if "高" in str(_n.get("impact_level") or "")
+                                        else (1 if "中" in str(_n.get("impact_level") or "") else 0))
+                        if any(_w in _t9 for _w in _cause9):
+                            _sc9 += 3                      # 带因果解释="为什么"最优先
+                        if sum(1 for c in _t9 if "一" <= c <= "鿿") >= 4:
+                            _sc9 += 2
+                        if _sc9 > _bestsc9:
+                            _best9, _bestsc9 = _t9[:36], _sc9
+                    if _best9:
+                        _why_news9[_mk9y] = _best9
             except Exception:
                 pass
             _col9x = "#16a34a" if _dirn9 == "大跌" else "#dc2626"
@@ -11972,8 +11974,12 @@ def _render_l3_cycle_board(_snap, _is_trading):
                 f"padding:.55rem .8rem;font-size:13px;margin-bottom:.4rem'>"
                 f"🚨 <b style='color:{_col9x}'>今日{_dirn9}</b>：{_mv_txt9}"
                 + (f"　｜　{'；'.join(_why9)}" if _why9 else "")
-                + (f"<br><span style='font-size:12px;color:#64748b'>📉 <b>{'大跌' if _dirn9 == '大跌' else '大涨'}原因</b>："
-                   f"{'｜'.join(_news9)}（详见热点新闻）</span>" if _news9 else "")
+                + ("".join(
+                    f"<br><span style='font-size:12px;color:#475569'>"
+                    f"📉 <b style='color:{_col9x}'>{_mk9z}{_dirn9}原因</b>：{_why_z9}</span>"
+                    for _mk9z, _why_z9 in _why_news9.items())
+                   + ("<br><span style='font-size:12px;color:#94a3b8'>（详见热点新闻）</span>"
+                      if _why_news9 else ""))
                 + "</div>", unsafe_allow_html=True)
     except Exception:
         pass
