@@ -8168,6 +8168,47 @@ def render_readable_reasons(fwd, *, kind, symbol, name, context="", key_prefix="
         # 默认规则版：allow_ai=False 强制不调用 AI、不花预算（即使环境有 Key）。
         _out = _forward_reasons(name, symbol, fwd, context=context, kind=kind, allow_ai=False)
 
+    # 【V88·基本面+新闻必到场 2026-07-18 用户点单】标着"基本面+新闻+技术面"就必须真有：
+    # 🏢这是家什么公司 + 📰近日什么消息导致判断——规则版也要有,不许只剩技术套话。
+    if kind == "个股":
+        _prof9r = ""
+        try:
+            _fn0r = fetch_stock_fundamentals(symbol) or {}
+            _pb9r = []
+            for _k9r, _lab9r in (("sector", "行业"), ("industry", "细分")):
+                if _fn0r.get(_k9r):
+                    _pb9r.append(f"{_lab9r} {_fn0r[_k9r]}")
+            for _k9r, _lab9r in (("trailing_pe", "市盈率"), ("price_to_book", "市净率")):
+                try:
+                    if _fn0r.get(_k9r):
+                        _pb9r.append(f"{_lab9r}{float(_fn0r[_k9r]):.1f}")
+                except (TypeError, ValueError):
+                    pass
+            _prof9r = " · ".join(_pb9r)
+        except Exception:
+            _prof9r = ""
+        _nws9r = []
+        try:
+            _na0r = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+                                "news_analyzed.json").read_text(encoding="utf-8"))
+            _bc9r = str(symbol).split(".")[0].lstrip("0")
+            for _n9r in _na0r.get("news") or []:
+                _blob9r = str(_n9r.get("title", "")) + str(_n9r.get("affected_tickers", ""))
+                if ((len(str(name)) >= 2 and str(name) in _blob9r)
+                        or (_bc9r and len(_bc9r) >= 4 and _bc9r in str(_n9r.get("affected_tickers", "")))):
+                    _dir9r = str(_n9r.get("impact_direction") or "")
+                    _tag9r = ("🔴利好" if "好" in _dir9r else ("🟢利空" if "空" in _dir9r else "⚪中性"))
+                    _nws9r.append(f"{str(_n9r.get('title'))[:42]}（{_tag9r}）")
+                if len(_nws9r) >= 2:
+                    break
+        except Exception:
+            pass
+        if _prof9r:
+            st.markdown(f"🏢 **这是家什么公司**：{_prof9r}")
+        if _nws9r:
+            st.markdown("📰 **近日消息面**：" + "；".join(_nws9r))
+        else:
+            st.caption("📰 近3日新闻流中无该股直接消息——本次判断以技术面与估值为主（如实说明，不编事由）。")
     if _out.get("overall"):
         st.success(f"**一句话：{_out.get('overall')}**")
     _m = _out.get("reasons") or {}

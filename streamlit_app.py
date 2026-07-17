@@ -850,9 +850,9 @@ elif _nav == "🔍 个股搜索":
                         f"分析于 {_hz_review.get('analysis_time', '缓存时间待核')}"
                     )
                 else:
-                    st.warning(
-                        f"DeepSeek思考复核未完成（{_hz_review.get('reason', _hz_review.get('status', '未知'))}）；"
-                        "当前仅展示量化底稿。"
+                    st.caption(
+                        "ℹ️ 云端为轻量只读版，个股分析用**确定性规则底稿**（各周期概率/动量/量比/支撑压力"
+                        "+规则人话理由，上表已完整）；AI思考复核仅在桌面版按需运行，不在公开云端调用（省钱+防滥用）。"
                     )
             except Exception as _hz_cloud_exc:
                 st.warning(f"五周期走势暂不可用：{type(_hz_cloud_exc).__name__}")

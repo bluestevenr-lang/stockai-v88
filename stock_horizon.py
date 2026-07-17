@@ -375,10 +375,33 @@ def analyze(name, symbol, df, full=None, context="", api_key="") -> dict:
     return {"facts": facts, "review": review}
 
 
+def _rule_reason(fact: dict) -> str:
+    """无 AI 复核时的规则版人话理由（纯确定性拼装）——云端没配 key 也有实质分析,不留"等待AI复核"占位。"""
+    _v = str(fact.get("rule_view") or "震荡")
+    _ret = float(fact.get("return_pct") or 0)
+    _vr = float(fact.get("volume_ratio") or 1)
+    _bias = float(fact.get("ma_bias_pct") or 0)
+    _parts = []
+    if _v == "偏涨":
+        _parts.append(f"区间{_ret:+.1f}%走强" if _ret > 0 else "结构偏多")
+    elif _v == "偏跌":
+        _parts.append(f"区间{_ret:+.1f}%走弱" if _ret < 0 else "结构偏空")
+    else:
+        _parts.append(f"区间{_ret:+.1f}%横向震荡")
+    if _vr >= 1.2:
+        _parts.append(f"放量({_vr:.1f}倍)")
+    elif _vr <= 0.75:
+        _parts.append("缩量")
+    if abs(_bias) >= 3:
+        _parts.append(f"{'上' if _bias > 0 else '下'}偏均线{abs(_bias):.0f}%")
+    return "、".join(_parts) + "（规则底稿）"
+
+
 def table_rows(result) -> list[dict]:
     facts = (result or {}).get("facts") or {}
     review = (result or {}).get("review") or {}
     ai_rows = review.get("horizons") or {}
+    _has_ai = review.get("status") in ("completed", "cached")
     rows = []
     for weeks in HORIZONS:
         label = f"{weeks}周"
@@ -391,13 +414,13 @@ def table_rows(result) -> list[dict]:
         rows.append({
             "周期": label,
             "量化底稿": f"{fact.get('rule_view')}({fact.get('rule_score')}/100)",
-            "思考复核": view,
+            "思考复核": view if _has_ai else "—（未接AI）",
             "综合置信度": f"{int(confidence)}%（非胜率）",
             "历史动量": f"{fact.get('return_pct', 0):+.1f}%",
             "量比": fact.get("volume_ratio"),
-            "理由": ai.get("reason") or "等待AI复核",
+            "理由": ai.get("reason") or _rule_reason(fact),
             "催化": ai.get("catalyst") or "—",
-            "风险": ai.get("risk") or "—",
+            "风险": ai.get("risk") or f"跌破{fact.get('support')}转弱",
             "支撑/压力": f"{fact.get('support')} / {fact.get('resistance')}",
         })
     return rows
@@ -588,9 +611,9 @@ def cycle_visual_html(result: dict, name: str, symbol: str,
             "rule_up": int(round(_clip(fact.get("rule_score") or 50, 15, 85))),
             "view": ai.get("view") or fact.get("rule_view") or "震荡",
             "confidence": int(ai.get("confidence") or fact.get("rule_confidence") or 50),
-            "reason": _brief(ai.get("reason") or "量价底稿判断", 20),
-            "catalyst": _brief(ai.get("catalyst") or "等待条件触发", 20),
-            "risk": _brief(ai.get("risk") or "趋势反向", 20),
+            "reason": _brief(ai.get("reason") or _rule_reason(fact), 24),
+            "catalyst": _brief(ai.get("catalyst") or "—", 20),
+            "risk": _brief(ai.get("risk") or f"跌破{fact.get('support')}转弱", 20),
             "support": fact.get("support"),
             "resistance": fact.get("resistance"),
         })
