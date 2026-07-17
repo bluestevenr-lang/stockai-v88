@@ -4414,7 +4414,24 @@ if Config.ENABLE_EXPECTATION_LAYER:
                 _txt = re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", _txt)
                 return _macro_cn(_txt).replace("\n", "<br>")
 
-            def _macro_card(_title, _verdict, _items, _reason, _ai_text="", _market=""):
+            def _move_note9(_mkt_cn9, _chg9):
+                """【V88·异动30字归因 2026-07-17 用户点单】大跌/大涨(|chg|≥1.5%)时用领跌/领涨板块拼原因,零AI。"""
+                try:
+                    _chg9 = float(_chg9)
+                    if abs(_chg9) < 1.5:
+                        return ""
+                    _secs9 = ((_canonical_snapshot.get("markets", {}).get(_mkt_cn9, {}) or {}).get("sectors")) or []
+                    if _chg9 < 0:
+                        _t9 = [x for x in sorted(_secs9, key=lambda s: s.get("chg1d", 0))[:2] if x.get("chg1d", 0) < 0]
+                        _who9 = "/".join(f"{x['name']}{x.get('chg1d', 0):+.0f}%" for x in _t9)
+                        return (f"🔻今日{_chg9:+.1f}% {_who9}领跌" if _who9 else f"🔻今日{_chg9:+.1f}% 普跌")[:30]
+                    _t9 = [x for x in sorted(_secs9, key=lambda s: -s.get("chg1d", 0))[:2] if x.get("chg1d", 0) > 0]
+                    _who9 = "/".join(f"{x['name']}{x.get('chg1d', 0):+.0f}%" for x in _t9)
+                    return (f"🔺今日{_chg9:+.1f}% {_who9}领涨" if _who9 else f"🔺今日{_chg9:+.1f}% 普涨")[:30]
+                except Exception:
+                    return ""
+
+            def _macro_card(_title, _verdict, _items, _reason, _ai_text="", _market="", _move=""):
                 _risk_on = str(_verdict) == "Risk On"
                 _accent = "#10b981" if _risk_on else ("#ef4444" if str(_verdict) == "Risk Off" else "#f59e0b")
                 _cells = []
@@ -4436,31 +4453,33 @@ if Config.ENABLE_EXPECTATION_LAYER:
                     f'<div class="v88-macro-card{_dense_cls}{_ai_cls}" style="border-top:3px solid {_accent}">'
                     f'<div class="v88-macro-head"><b>{_title}</b><em style="color:{_accent}">{_macro_cn(_verdict)}</em></div>'
                     f'<div class="v88-macro-grid">{_cells}</div>'
-                    f'<div class="v88-macro-reason">{_macro_cn(_reason)}</div>'
-                    f'<div class="v88-macro-ai"><b>🤖 AI（人工智能）增强</b><br>{_ai_html}</div></div>',
+                    f'<div class="v88-macro-ai"><span class="v88-macro-reason-inline">'
+                    f'{("<b style=\"color:#b91c1c\">" + _move + "</b> ｜ ") if _move else ""}{_macro_cn(_reason)}</span>'
+                    f'<b>🤖 AI（人工智能）增强</b> {_ai_html}</div></div>',
                     unsafe_allow_html=True)
 
             st.markdown("""<style>
             .v88-macro-title{display:flex;align-items:center;justify-content:space-between;margin:.15rem 0 .45rem}
             .v88-macro-title b{font-size:15px;color:#1e3a5f}.v88-macro-title span{font-size:12px;color:#5a6378}
-            .v88-macro-card{background:#fff;border:1px solid #dce3ed;border-radius:10px;padding:.4rem .55rem;height:174px;min-height:174px;overflow:hidden;box-shadow:0 1px 3px rgba(30,58,95,.06)}
+            .v88-macro-card{background:#fff;border:1px solid #dce3ed;border-radius:10px;padding:.4rem .55rem;height:158px;min-height:158px;overflow:hidden;box-shadow:0 1px 3px rgba(30,58,95,.06)}
             .v88-macro-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem}
-            .v88-macro-head b{font-size:13px;color:#1a1a2e}.v88-macro-head em{font-style:normal;font-weight:700;font-size:12px}
+            .v88-macro-head b{font-size:14px;color:#1a1a2e}.v88-macro-head em{font-style:normal;font-weight:700;font-size:13px}
             .v88-macro-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.35rem}
             .v88-macro-kpi{min-width:0}.v88-macro-kpi>span{display:block;color:#5a6378;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
             .v88-macro-kpi b{display:block;font-size:14px;line-height:1.2;color:#1a1a2e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
             .v88-macro-kpi small{font-size:12px}.v88-up{color:#dc2626!important}.v88-down{color:#16a34a!important}.v88-flat{color:#5a6378!important}
-            .v88-macro-card .v88-cn-note{display:inline!important;font-size:.58em!important;line-height:1!important;color:#8893a7;font-weight:400;margin-left:1px}.v88-macro-reason{font-size:12px;color:#5a6378;margin-top:.35rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-            .v88-macro-dense{height:174px;min-height:174px;padding:.38rem .52rem}
+            .v88-macro-card .v88-cn-note{display:inline!important;font-size:.72em!important;line-height:1!important;color:#8893a7;font-weight:400;margin-left:1px}.v88-macro-reason{font-size:12px;color:#5a6378;margin-top:.35rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+            .v88-macro-dense{height:158px;min-height:158px;padding:.38rem .52rem}
             .v88-macro-dense .v88-macro-head{margin-bottom:.2rem}
             .v88-macro-dense .v88-macro-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:.18rem .3rem}
             .v88-macro-dense .v88-macro-kpi>span{font-size:12px}
             .v88-macro-dense .v88-macro-kpi b{font-size:13px;line-height:1.08}
             .v88-macro-dense .v88-macro-kpi small{display:block;font-size:12px;line-height:1.1;white-space:nowrap}
-            .v88-macro-dense .v88-cn-note{font-size:.52em!important}
+            .v88-macro-dense .v88-cn-note{font-size:.66em!important}
             .v88-macro-dense .v88-macro-reason{font-size:12px;margin-top:.18rem}
-            .v88-macro-ai{font-size:12px;line-height:1.35;color:#3d4f6a;border-top:1px dashed #dce3ed;margin-top:.28rem;padding-top:.25rem;max-height:34px;overflow:hidden}
-            .v88-macro-ai-active{height:232px;min-height:232px}
+            .v88-macro-ai{font-size:12px;line-height:1.35;color:#3d4f6a;border-top:1px dashed #dce3ed;margin-top:.28rem;padding-top:.25rem;max-height:50px;overflow:hidden}
+            .v88-macro-reason-inline{display:block;font-size:12px;color:#5a6378;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+            .v88-macro-ai-active{height:216px;min-height:216px}
             .v88-macro-ai-active .v88-macro-ai{max-height:82px;overflow:auto}
             @media(max-width:900px){.v88-macro-card{min-height:auto}.v88-macro-kpi b{font-size:13px}}
             </style>""", unsafe_allow_html=True)
@@ -4562,7 +4581,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
                     ("DXY", f"{float(us_result.get('dxy_level') or 0):.1f}", f"{float(us_result.get('dxy_change_pct') or 0):+.1f}%"),
                     ("股债相关", f"{float(us_result.get('correlation') or 0):.2f}", str(us_result.get('corr_desc') or '')[:8]),
                     ("水位", _water_us[0], _water_us[1]),
-                ], str(us_result.get("reason", ""))[:44], _macro_ai_us, "美股")
+                ], str(us_result.get("reason", ""))[:44], _macro_ai_us, "美股", _move_note9("美股", us_result.get("spy_change_pct")))
             with _mc2:
                 _cyb9 = float(cn_result.get("cyb_price") or 0)
                 _cyb_txt9 = f"{_cyb9:.3f}元" if cn_result.get("cyb_use_etf") else f"{_cyb9:.0f}点"
@@ -4573,7 +4592,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
                     ("波动率", f"{float(cn_result.get('volatility') or 0):.1f}%", "风险温度"),
                     ("人民币", f"{float(cn_result.get('cny_price') or 0):.4f}", f"{float(cn_result.get('cny_change_pct') or 0):+.1f}%"),
                     ("水位", _water_cn[0], _water_cn[1]),
-                ], str(cn_result.get("reason", ""))[:44], _macro_ai_cn, "A股")
+                ], str(cn_result.get("reason", ""))[:44], _macro_ai_cn, "A股", _move_note9("A股", cn_result.get("index_change_pct")))
             with _mc3:
                 _macro_card("🇭🇰 港股", hk_result.get("verdict", "—"), [
                     ("恒指", f"{float(hk_result.get('index_level') or 0):.0f}", f"{float(hk_result.get('index_change_pct') or 0):+.1f}%"),
@@ -4582,7 +4601,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
                     ("波动率", f"{float(hk_result.get('volatility') or 0):.1f}%", "风险温度"),
                     ("港币", f"{float(hk_result.get('hkd_price') or 0):.4f}", f"{float(hk_result.get('hkd_change_pct') or 0):+.1f}%"),
                     ("水位", _water_hk[0], _water_hk[1]),
-                ], str(hk_result.get("reason", ""))[:44], _macro_ai_hk, "港股")
+                ], str(hk_result.get("reason", ""))[:44], _macro_ai_hk, "港股", _move_note9("港股", hk_result.get("index_change_pct")))
 
             _macro_cross = ""
             for _macro_ai_source in (_macro_ai_us, _macro_ai_hk, _macro_ai_cn):
@@ -11411,7 +11430,7 @@ _V88_CARD_CSS = """
 def _v88_rr_state9(_rr9):
     _v9 = float(_rr9 or 0)
     if _v9 >= 2:
-        return "优秀", "#1d4ed8", "#dbeafe"
+        return "优秀·上行空间足", "#1d4ed8", "#dbeafe"
     if _v9 >= 1.5:
         return "可关注", "#2563eb", "#eff6ff"
     if _v9 >= 1:
