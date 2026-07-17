@@ -11873,7 +11873,10 @@ def _render_today_verdict(_snap, _repo):
              f"<div style='font-size:15px;font-weight:800;color:{_tcol};margin-bottom:4px'>"
              f"📢 今日总决断 · {_tone}</div>"]
     if _pos:
-        _html.append(f"<div style='font-size:13px;margin-bottom:3px'>🎯 <b>仓位纲领</b>："
+        # 【V88·数值必带说明 2026-07-17 用户点单】裸数值堆一起看不懂→内联释义
+        _html.append(f"<div style='font-size:13px;margin-bottom:3px'>🎯 <b>仓位纲领</b>"
+                     "<span style='font-size:12px;color:#94a3b8'>（市场 温度°/今日涨跌 → 建议仓位；"
+                     "温度越高越热越该轻仓）</span>："
                      + " ｜ ".join(_pos) + "</div>")
     if _go:
         _go_txt = "、".join(f"{_stk_link(h.get('name'), h.get('code'))}"
