@@ -11368,11 +11368,12 @@ _V88_CARD_CSS = """
 .v88-watch-market{min-width:0}
 .v88-watch-market h4{margin:0 0 5px;padding:4px 7px;border-radius:6px;background:#eaf2ff;color:#173b68;font-size:13px}
 .v88-watch-market h4 span{float:right;color:#64748b;font-size:12px;font-weight:500}
-.v88-watch-card{background:#fff;border:1px solid #dbe4f0;border-radius:8px;padding:5px 6px;margin-bottom:5px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.v88-watch-card{background:#fff;border:1px solid #dbe4f0;border-radius:8px;padding:5px 6px;margin-bottom:5px;box-shadow:0 1px 2px rgba(15,23,42,.04);height:168px;overflow:hidden;display:flex;flex-direction:column}
 .v88-watch-conflict{border:2px solid #f59e0b;background:#fffdf5}
-.v88-watch-pending{border-style:dashed;background:#fafbfc;opacity:.85}
+.v88-watch-pending{border-style:dashed;background:#fafbfc;opacity:.85;height:168px}
 .v88-cycle-warn{color:#b45309;font-weight:700}
 .v88-watch-card-head{display:flex;justify-content:space-between;align-items:center;gap:5px;font-size:12px;line-height:1.25}
+.v88-name-line{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .v88-watch-card-head a{color:#173b68!important;text-decoration:none!important;font-weight:700!important}
 .v88-code{color:#94a3b8;font-size:12px;margin-left:3px}
 .v88-action{color:#1d4ed8;font-size:12px;white-space:nowrap}
@@ -11386,9 +11387,10 @@ _V88_CARD_CSS = """
 .v88-cyc b{font-size:15px;line-height:1.2}
 .v88-spark-wrap{margin-top:2px;line-height:0}
 .v88-spark{width:100%;height:auto;max-height:58px;display:block}
-.v88-rrline{margin-top:3px;font-size:12px;color:#64748b}
+.v88-rrline{margin-top:3px;font-size:12px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .v88-rrline b{font-size:13px} .v88-rrline em{font-style:normal;font-size:12px}
-.v88-watch-foot{display:flex;flex-wrap:wrap;gap:2px 8px;margin-top:3px;color:#64748b;font-size:12px;line-height:1.25}
+.v88-watch-foot{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;gap:2px 8px;margin-top:3px;color:#64748b;font-size:12px;line-height:1.3;overflow:hidden}
+.v88-watch-foot span{margin-right:8px}
 @media(max-width:1100px){.v88-watch-grid{grid-template-columns:1fr}}
 </style>
 """
@@ -11424,6 +11426,15 @@ def _v88_decision_card(_d9):
     _exp_color9 = "#dc2626" if _exp9 > 0 else ("#16a34a" if _exp9 < 0 else "#64748b")
     _level9 = str(_d9.get("level") or "B")
     _action9 = str(_d9.get("action") or "观察")
+    # 【V88·动作语境化 2026-07-17 用户抓矛盾】"长期看好却评估减仓"是两层信号的呈现问题：
+    # 风控动作=当日风险指令(非长期观点)→前缀"今日风控·"；时机绿灯却大字"观察"→升级显示可进。
+    _ep_mode9 = str((_d9.get("entry_plan") or {}).get("mode") or "")
+    _action_disp9 = _action9
+    if any(k in _action9 for k in ("减仓", "退出", "回避", "清仓")) and float(_d9.get("expected_pct") or 0) > 1:
+        _action_disp9 = f"今日风控·{_action9}"
+    elif _ep_mode9 in ("现价可进", "回踩到位", "突破确认") and any(
+            k in _action9 for k in ("观察", "等待回踩", "持有观察")):
+        _action_disp9 = f"⏱{_ep_mode9}·仅短线"
     _at9 = str(_d9.get("analysis_time") or "时间未知")
     _score9 = int(_d9.get("unified_score") or 0)
     _medium9 = int(_d9.get("medium_score") or 0)
@@ -11483,10 +11494,10 @@ def _v88_decision_card(_d9):
     return f"""
     <div class="v88-watch-card{' v88-watch-conflict' if _conflict9 else ''}">
       <div class="v88-watch-card-head">
-        <div><span class="v88-level v88-level-{_level9}">{_level9}级</span>
+        <div class="v88-name-line"><span class="v88-level v88-level-{_level9}">{_level9}级</span>
         {_stk_link(_d9.get('name') or _d9.get('code'), _d9.get('code'))}
         <span class="v88-code">{_d9.get('code')}</span></div>
-        <b class="v88-action" style="color:{_act_color_of9(_action9)}">{_action9}</b>
+        <b class="v88-action" style="color:{_act_color_of9(_action_disp9)}">{_action_disp9}</b>
       </div>
       <div class="v88-cyc-head">
         <span>各周期上涨概率（红涨/绿跌·看趋势）</span>
