@@ -308,6 +308,61 @@ def entry_timing(full, *, short=50.0, medium=50.0, long_avg=50.0, action="", rr=
             "breakout": breakout, "stop": stop}
 
 
+def diagnose_today(*, scope="自选", today_chg=0.0, market_chg=0.0, stage="",
+                   broke_stop=False, pos52=50, action="", entry_mode="",
+                   pnl_pct=None, name="") -> dict:
+    """【V88·今日逐只解读 2026-07-17 用户点单】说清"今天这只能不能动、为什么"——
+    区分破位该躲 vs 错杀可低吸，杜绝"永远等回踩"的万能废话。返回 {verdict动作, why人话, kind}。
+
+    scope: 持仓/自选/常搜；today_chg 今日涨跌%；market_chg 对应大盘今日涨跌%；
+    stage: analyze_trend_full 阶段；broke_stop: 是否破止损；pos52: 52周分位；pnl_pct: 持仓浮盈亏%。
+    """
+    _hold = scope == "持仓"
+    _rel = today_chg - market_chg          # 相对大盘强弱（>0抗跌/领涨，<0更弱）
+    _pos = float(pos52 or 50)
+    _down_stage = stage in ("破位下跌", "趋势转弱", "放量滞涨")
+    _up_stage = stage in ("底部启动", "启动确认", "趋势延续", "主升阶段")
+
+    # ① 破位型：技术已坏——不是等回踩，是逻辑破了
+    if broke_stop or _down_stage:
+        if _hold:
+            return {"kind": "破位", "verdict": "减仓/离场",
+                    "why": f"已{'破止损' if broke_stop else stage}，趋势坏了——这不是回踩是逻辑破了，"
+                           f"按纪律减/走，别扛" + (f"（浮亏{pnl_pct:+.0f}%别越亏越拿）" if (pnl_pct or 0) < -3 else "")}
+        return {"kind": "破位", "verdict": "回避·不接刀",
+                "why": f"今日{today_chg:+.1f}%且已{'破止损位' if broke_stop else stage}——"
+                       f"现在买就是接下落的刀，等重新放量站上MA20再看，不是等回踩那种低吸"}
+
+    # ② 个股利空型：跌幅远超大盘（弱于大盘3个点以上）
+    if today_chg < -1 and _rel <= -3:
+        return {"kind": "个股利空", "verdict": ("先减半·查因" if _hold else "回避·先查因"),
+                "why": f"今日{today_chg:+.1f}%、比大盘弱{abs(_rel):.0f}个点——普跌解释不了这个跌幅，"
+                       f"多半有个股利空，查明原因再决定，别急着{'扛' if _hold else '抄'}"}
+
+    # ③ 错杀型：大盘普跌拖累，但自身逻辑没破（抗跌或跟跌但阶段良性）
+    if market_chg <= -1.2 and (_up_stage or _rel >= -0.5) and not _down_stage:
+        _low = _pos <= 30
+        if _hold:
+            return {"kind": "错杀", "verdict": "拿住·别割",
+                    "why": f"大盘{market_chg:+.1f}%普跌拖累，但它{('抗跌' if _rel > 0.5 else '跟跌未破位')}、"
+                           f"逻辑没坏——是错杀不是变质，别在恐慌里割在地板上"}
+        return {"kind": "错杀", "verdict": ("可低吸·分批" if _low else "观察·等企稳"),
+                "why": f"大盘{market_chg:+.1f}%普跌错杀，它{('已在52周低位' + str(int(_pos)) + '%' if _low else '逻辑没破')}——"
+                       f"{'今天跌下来反而是低吸机会，分批别一把' if _low else '等缩量企稳信号确认再进，别追跌'}"}
+
+    # ④ 绿灯型：入场时机已达标
+    if entry_mode in ("现价可进", "回踩到位", "突破确认"):
+        return {"kind": "可进", "verdict": "可进场",
+                "why": f"今日{today_chg:+.1f}%、时机已到（{entry_mode}）——{'持仓可加' if _hold else '空仓可按计划分批进'}，仓位看大盘定调"}
+
+    # ⑤ 其余：跟随统一动作，但说人话
+    if _hold:
+        return {"kind": "持有", "verdict": action or "持有观察",
+                "why": f"今日{today_chg:+.1f}%，逻辑未破也未到加仓点——拿住看纪律，破位再走"}
+    return {"kind": "观察", "verdict": "观察·等触发",
+            "why": f"今日{today_chg:+.1f}%，方向/赔率未同时到位——等回踩企稳或放量突破，二者都没有就不动"}
+
+
 def build_trade_plan(full, entry_plan=None, forward=None) -> dict:
     """【V88·三段作战计划】（2026-07-16 用户定纲：要明确"未来哪一天进、到什么区间出、什么时段出"）
 

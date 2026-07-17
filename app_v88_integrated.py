@@ -11490,6 +11490,56 @@ def _v88_decision_card(_d9):
     </div>"""
 
 
+def _render_my_stocks_today(_wa, _live_chg):
+    """【V88·我的票·今日逐只怎么办 2026-07-17 用户点单】对持仓+自选+重点关注,
+    逐只说清"今天能不能动+为什么"——区分破位该躲vs错杀可低吸,不再满屏"等回踩"。"""
+    _decs = [d for d in (_wa or {}).get("decisions") or []
+             if d.get("scope") in ("持仓", "自选") or d.get("in_watchlist")]
+    if not _decs:
+        return
+    try:
+        from v88_decision_core import diagnose_today as _diag9
+    except Exception:
+        return
+    _mkt_chg = {"🇺🇸美股": _live_chg.get("美股", 0), "🇭🇰港股": _live_chg.get("港股", 0),
+                "🇨🇳A股": _live_chg.get("A股", 0)}
+    _kind_col = {"破位": "#dc2626", "个股利空": "#b91c1c", "错杀": "#16a34a",
+                 "可进": "#16a34a", "持有": "#2563eb", "观察": "#64748b"}
+    _rows = []
+    for _d in _decs:
+        _mk = _d.get("market") or market_of_code(_d.get("code", ""))
+        _diag = _diag9(scope=_d.get("scope", "自选"),
+                       today_chg=float(_d.get("today_chg") or 0),
+                       market_chg=float(_mkt_chg.get(_mk, 0) or 0),
+                       stage=str(_d.get("stage") or ""),
+                       broke_stop=bool(_d.get("broke_stop")),
+                       pos52=_d.get("pos52") or 50,
+                       action=str(_d.get("action") or ""),
+                       entry_mode=((_d.get("entry_plan") or {}).get("mode") or ""),
+                       name=_d.get("name", ""))
+        _rows.append((_d, _diag))
+    # 排序：破位/利空最前（要处理），其次错杀低吸机会，再持有观察
+    _order = {"破位": 0, "个股利空": 0, "错杀": 1, "可进": 1, "持有": 2, "观察": 3}
+    _rows.sort(key=lambda x: (0 if x[0].get("scope") == "持仓" else 1,
+                              _order.get(x[1]["kind"], 9), float(x[0].get("today_chg") or 0)))
+    with st.expander(f"📌 我的票 · 今日逐只怎么办（能不能动+为什么 · {len(_rows)}只）", expanded=True):
+        st.caption("区分「破位该躲」和「错杀可低吸」——不是永远等回踩。点名进深度分析。")
+        _html = ["<div style='font-size:13px;line-height:1.5'>"]
+        for _d, _diag in _rows:
+            _tag = "💼" if _d.get("scope") == "持仓" else "👁"
+            _tc = float(_d.get("today_chg") or 0)
+            _tcol = "#dc2626" if _tc > 0.05 else ("#16a34a" if _tc < -0.05 else "#64748b")
+            _kc = _kind_col.get(_diag["kind"], "#334155")
+            _html.append(
+                f"<div style='padding:4px 0;border-bottom:1px solid #eef2f7'>"
+                f"{_tag} {_stk_link(_d.get('name'), _d.get('code'))} "
+                f"<b style='color:{_tcol}'>{_tc:+.1f}%</b> "
+                f"<b style='color:{_kc}'>[{_diag['kind']}·{_diag['verdict']}]</b><br>"
+                f"<span style='font-size:12px;color:#475569'>└ {_diag['why']}</span></div>")
+        _html.append("</div>")
+        st.markdown("".join(_html), unsafe_allow_html=True)
+
+
 def _render_today_verdict(_snap, _repo):
     """【V88·今日总决断 2026-07-17 用户点单】把各模块结论浓缩成"今天该干什么"——
     治大跌日"满屏观察=没推荐"。纯整合层零AI零流量：
@@ -12492,6 +12542,13 @@ def _render_today_nav():
                             _plan9 = _btp_wa(_f9, _dc9.get("entry_plan"), _fwd_wa9)
                     except Exception:
                         _plan9 = {}
+                    # 【V88·今日逐只解读所需】顺手存今日涨跌/阶段/破位（数据在手，零额外成本）
+                    try:
+                        _tcc9 = _df9["Close"]
+                        _today_chg9 = ((float(_tcc9.iloc[-1]) / float(_tcc9.iloc[-2]) - 1) * 100
+                                       if len(_tcc9) >= 2 else 0.0)
+                    except Exception:
+                        _today_chg9 = 0.0
                     _decisions9.append({"code": _c9, "name": _n9,
                                         "in_watchlist": _c9 in _watch_codes_wa,
                                         "scope": ("持仓" if _c9 in _risk_holds_wa else
@@ -12499,6 +12556,10 @@ def _render_today_nav():
                                         "level": (_dyn9 if _c9 in _holds_wa else _levels_wa.get(_c9, "B")),
                                         "market": market_of_code(_c9),
                                         "trade_plan": _plan9,
+                                        "today_chg": round(_today_chg9, 2),
+                                        "stage": _f9.get("stage"),
+                                        "broke_stop": bool(_last9 < _f9.get("stop", 0)),
+                                        "pos52": _f9.get("pos52"),
                                         **_dc9})
                     if _last9 < _f9["stop"]:
                         if _c9 in _claims_wa:
@@ -12538,6 +12599,19 @@ def _render_today_nav():
             st.session_state['watch_alerts_v88'] = _wa
         _alert_analysis_note9 = _analysis_label9(_wa.get("ts"), "预警分析")
         _render_front_watch_board9(_wa, _alert_analysis_note9)
+
+        # 【V88·我的票·今日逐只怎么办】紧跟自选台：对持仓+自选逐只说清能不能动+为什么
+        try:
+            _mkchg9 = {}
+            for _mk9m, _sym9m in {"美股": "^GSPC", "A股": "000001.SS", "港股": "^HSI"}.items():
+                try:
+                    _c9m = fetch_stock_data(_sym9m)["Close"]
+                    _mkchg9[_mk9m] = (float(_c9m.iloc[-1]) / float(_c9m.iloc[-2]) - 1) * 100
+                except Exception:
+                    _mkchg9[_mk9m] = 0.0
+            _render_my_stocks_today(_wa, _mkchg9)
+        except Exception:
+            logging.debug("我的票逐只解读渲染失败", exc_info=True)
 
         # 【V88·黑马雷达 2026-07-17】各发现模块产出→统一引擎复判→严门槛出黑马（纯黑马:排除自选/持仓）
         # 用户拍板:第一屏、宁缺毋滥、漏斗数字透明。30分钟缓存,不拖首屏。
