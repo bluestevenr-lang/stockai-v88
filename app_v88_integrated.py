@@ -11831,7 +11831,7 @@ def _v88_rating_moves():
     return _c["rows"]
 
 
-def _v88_move_reason(chg, *, names=(), scope_hint="", max_len=34):
+def _v88_move_reason(chg, *, names=(), scope_hint="", max_len=34, require_name=False):
     """异动一句原因。chg=今日涨跌%; names=命中优先的名字(个股名/板块名/市场名);
     scope_hint=market_scope 关键词(A股/港股/美股)。|chg|<1.5 返回空。
     优先级:①机构评级变动(下调致跌/上调首予致涨=最精准因果)②新闻匹配。"""
@@ -11869,7 +11869,12 @@ def _v88_move_reason(chg, *, names=(), scope_hint="", max_len=34):
             continue
         _blob = _txt + str(_n.get("affected_sectors") or "") + str(_n.get("affected_tickers") or "")
         _sc = 0
-        if _names and any(_nm in _blob for _nm in _names):
+        _name_hit = bool(_names and any(_nm in _blob for _nm in _names))
+        # 【V88·相关性硬门槛 2026-07-18 用户抓错配】个股/板块归因必须名称真命中——
+        # 否则"中烟香港配全球科技股抛售"这类市场级新闻会被错当个股原因。命不中宁缺毋滥。
+        if require_name and not _name_hit:
+            continue
+        if _name_hit:
             _sc += 6                          # 命中个股/板块名=最相关
         if scope_hint and scope_hint in str(_n.get("market_scope") or ""):
             _sc += 5
@@ -12172,7 +12177,7 @@ def _render_l3_cycle_board(_snap, _is_trading):
                 _trg9 = str((_pts9.get("2周") or {}).get("trigger") or _t9.get("reason") or "")[:18]
                 # 【V88·板块异动归因】板块今日大异动时,用新闻替动量trigger说"为什么"
                 _sec_chg9 = float((_t9.get("facts") or {}).get("1d", 0) or 0)
-                _sec_reason9 = _v88_move_reason(_sec_chg9, names=[_t9.get("name", "")], max_len=22)
+                _sec_reason9 = _v88_move_reason(_sec_chg9, names=[_t9.get("name", "")], max_len=22, require_name=True)
                 _trg_disp9 = (f"📌{_sec_reason9}" if _sec_reason9 else _trg9)
                 _rows9.append(
                     f"<div style='margin-bottom:3px'>{_flag9} <b>{_t9.get('name')}</b> "
@@ -12978,7 +12983,8 @@ def _render_today_nav():
                                         "hold_cost": (_hold_map_wa.get(_c9) or {}).get("cost"),
                                         "move_reason": _v88_move_reason(
                                             _today_chg9, names=[_n9],
-                                            scope_hint=market_of_code(_c9)[-2:]),
+                                            scope_hint=market_of_code(_c9)[-2:],
+                                            require_name=True),
                                         **_dc9})
                     if _last9 < _f9["stop"]:
                         if _c9 in _claims_wa:
