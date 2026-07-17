@@ -11925,13 +11925,27 @@ def _render_today_verdict(_snap, _repo):
             _pos.append(f"{_mk}<b>{_t.get('temp', '?')}°</b>"
                         + (f"<b style='color:{_cc}'>{_cg:+.1f}%</b>" if _cg is not None else "")
                         + f"→{_ps}")
-    _go = []
+    # 【V88·可进场单一事实源 2026-07-18 用户抓不统一】原来只读黑马6小时落盘快照,
+    # 与自选台15分钟实时数据时点不同→同一票(OTIS)两处说法分裂。
+    # 修:①实时优先——自选/持仓 session 绿灯(与决策台同一份数据,天然一致)
+    #    ②黑马落盘只补充"你还没关注的",同票以实时为准;每只带来源标签。
+    _go, _seen_go = [], set()
+    try:
+        for _d in ((st.session_state.get("watch_alerts_v88") or {}).get("decisions") or []):
+            if ((_d.get("entry_plan") or {}).get("mode")) in ("现价可进", "回踩到位", "突破确认"):
+                _go.append({**_d, "_src": ("💼持仓" if _d.get("scope") == "持仓" else "👁自选")})
+                _seen_go.add(str(_d.get("code")).upper().split(".")[0].lstrip("0"))
+    except Exception:
+        pass
     try:
         _dh = _jv.loads((_repo / "data" / "darkhorse.json").read_text(encoding="utf-8"))
         for _h in (_dh.get("horses") or []):
+            _hc = str(_h.get("code") or "").upper().split(".")[0].lstrip("0")
+            if _hc in _seen_go:
+                continue                     # 已被实时数据覆盖(如后来加入自选的票),以实时为准
             if ((_h.get("trade_plan") or {}).get("short") or {}).get("mode") in (
                     "现价可进", "回踩到位", "突破确认"):
-                _go.append(_h)
+                _go.append({**_h, "_src": "🐴黑马"})
     except Exception:
         pass
     _cut = {}
@@ -11963,10 +11977,10 @@ def _render_today_verdict(_snap, _repo):
                      "温度越高越热越该轻仓）</span>："
                      + " ｜ ".join(_pos) + "</div>")
     if _go:
-        _go_txt = "、".join(f"{_stk_link(h.get('name'), h.get('code'))}"
+        _go_txt = "、".join(f"{h.get('_src', '')}{_stk_link(h.get('name'), h.get('code'))}"
                            f"<span style='font-size:12px;color:#64748b'>"
                            f"({h.get('market', '')[-2:]}{('·' + h['touch']) if h.get('touch') else ''})</span>"
-                           for h in _go[:5])
+                           for h in _go[:6])
         _html.append(f"<div style='font-size:13px;margin-bottom:3px'>🟢 <b style='color:#dc2626'>"
                      f"可进场</b>（严门槛绿灯 {len(_go)} 只）：{_go_txt}"
                      f"<span style='font-size:12px;color:#64748b'>——仓位按上方纲领，别越线重仓</span></div>")
