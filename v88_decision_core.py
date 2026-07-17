@@ -308,6 +308,59 @@ def entry_timing(full, *, short=50.0, medium=50.0, long_avg=50.0, action="", rr=
             "breakout": breakout, "stop": stop}
 
 
+def build_trade_plan(full, entry_plan=None, forward=None) -> dict:
+    """【V88·三段作战计划】（2026-07-16 用户定纲：要明确"未来哪一天进、到什么区间出、什么时段出"）
+
+    组装自现有引擎、不新算价格（一套判断）：
+    - 短线：entry_timing 的日期窗进场 + 10日目标价出 + 止损作废（能给具体日期）；
+    - 中线：4-8周区间分批 + 60日目标价出（≈1季） + 连续2日破MA55作废；
+    - 长线：16周+区间 + 120日目标价出 + 破年线20日收不回退出。
+    中长线给"区间+条件+周数"而非拍日历日——中长线进场靠条件确认，拍具体日是伪精确。
+    """
+    ep = entry_plan or {}
+    fwd = forward or {}
+    hz = {str(r.get("label")): r for r in (fwd.get("horizons") or [])}
+
+    def _tp(label):
+        r = hz.get(label) or {}
+        return r.get("target_price"), r.get("risk_price"), r.get("p_up")
+
+    t10, r10, p10 = _tp("10日")
+    t60, _, p60 = _tp("60日")
+    t120, _, p120 = _tp("120日")
+    stop = _price_f(ep.get("stop") or full.get("stop"))
+    plan = {}
+
+    def _no_entry(_in):
+        # 没进场就没有出场目标——不建仓/不进/不参与时目标价只会误导
+        return any(k in str(_in) for k in ("不进", "不建仓", "不参与"))
+
+    _s_in = str(ep.get("short_text") or "").split("；")[0] or "等待触发"
+    plan["short"] = {
+        "in": _s_in,
+        "out": ("——（未进场无出场）" if _no_entry(_s_in) else
+                (f"目标{t10:g}（10个交易日内·上行概率{p10}%）" if t10 else "目标待行情足量后给出")),
+        "invalid": ("——" if _no_entry(_s_in) else (f"跌破{stop:g}作废" if stop else "破止损作废")),
+        "mode": ep.get("mode", ""),
+    }
+    _m_in = str(ep.get("mid_text") or "中线条件未确认")
+    plan["mid"] = {
+        "in": _m_in,
+        "out": ("——（未建仓无出场）" if _no_entry(_m_in) else
+                (f"目标{t60:g}（≈1季·60交易日·上行概率{p60}%）" if t60 else "目标待确认")),
+        "invalid": "——" if _no_entry(_m_in) else "收盘连续2日破MA55失效",
+    }
+    _l_in = str(ep.get("long_text") or "长线条件未确认")
+    plan["long"] = {
+        "in": _l_in,
+        "out": ("——（未建仓无出场）" if _no_entry(_l_in) else
+                (f"目标{t120:g}（≈半年·120交易日·上行概率{p120}%）" if t120 else "目标待确认")),
+        "invalid": "——" if _no_entry(_l_in) else "跌破年线且20日收不回退出",
+    }
+    plan["probability_kind"] = "规则情景估计（非回测胜率）"
+    return plan
+
+
 def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
                       action_hint="观察", analysis_time=None, name="", code="") -> dict:
     """返回所有模块必须展示/保存的唯一决策记录。"""

@@ -12305,12 +12305,23 @@ def _render_today_nav():
                         _df9, _f9, holding=_hold_map_wa.get(_c9), action_hint=_hint9,
                         analysis_time=datetime.now().strftime("%m-%d %H:%M"),
                         name=_n9, code=_c9)
+                    # 【V88·三段作战计划】顺手组装（前瞻日阶梯纯确定性，几毫秒/只）
+                    _plan9 = {}
+                    try:
+                        from v88_decision_core import (evaluate_forward_outlook as _efo_wa,
+                                                       build_trade_plan as _btp_wa)
+                        _fwd_wa9 = _efo_wa(_df9, name=_n9, code=_c9, full=_f9)
+                        if not _fwd_wa9.get("error"):
+                            _plan9 = _btp_wa(_f9, _dc9.get("entry_plan"), _fwd_wa9)
+                    except Exception:
+                        _plan9 = {}
                     _decisions9.append({"code": _c9, "name": _n9,
                                         "in_watchlist": _c9 in _watch_codes_wa,
                                         "scope": ("持仓" if _c9 in _risk_holds_wa else
                                                   ("自选" if _c9 in _watch_codes_wa else "常搜")),
                                         "level": (_dyn9 if _c9 in _holds_wa else _levels_wa.get(_c9, "B")),
                                         "market": market_of_code(_c9),
+                                        "trade_plan": _plan9,
                                         **_dc9})
                     if _last9 < _f9["stop"]:
                         if _c9 in _claims_wa:
@@ -12803,6 +12814,37 @@ st.markdown("---")
 # 【V88·打新雷达】中美港新股申购日历+评级（2026-07-16 用户点单：热门打新从来没提示过）。
 # 数据由私仓日报流水线生成（A股=Tushare/美股=Nasdaq/港股源接入中），这里零网络秒开。
 # ═══════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════
+# 【V88·三段作战计划台】（2026-07-16 用户定纲）持仓+自选每只一行：
+# 短线=日期窗进/10日目标出/止损废；中线=区间分批/60日目标/破MA55废；长线=区间/120日目标/破年线退。
+# 数据来自预警扫描顺手组装的 trade_plan（与决策台同一份唯一决策，零额外请求）。
+# ═══════════════════════════════════════════════════════════════
+with st.expander("📋 三段作战计划台 · 哪天进/到哪出/何时废（持仓+自选）", expanded=False):
+    try:
+        _wa_tp9 = st.session_state.get('watch_alerts_v88') or {}
+        _tp_rows9 = [d for d in (_wa_tp9.get("decisions") or [])
+                     if d.get("trade_plan") and d.get("scope") in ("持仓", "自选")]
+        if _tp_rows9:
+            st.caption("短线能给具体日期窗；中长线=区间+触发条件+周数（拍日历日是伪精确）。"
+                       "目标价=规则情景估计非承诺 · " + _analysis_label9(_wa_tp9.get("ts"), "计划生成"))
+            _tp_rows9.sort(key=lambda d: (0 if d.get("scope") == "持仓" else 1,
+                                          -float(d.get("p_up") or 0)))
+            _md9 = ["| 标的 | 段 | 进 | 出 | 作废线 |", "|---|---|---|---|---|"]
+            for _d9 in _tp_rows9:
+                _p9 = _d9["trade_plan"]
+                _tag9 = "💼" if _d9.get("scope") == "持仓" else "👁"
+                _nm9 = f"{_tag9}**{_d9.get('name')}**（{_d9.get('code')}）"
+                for _seg9, _lab9 in (("short", "短"), ("mid", "中"), ("long", "长")):
+                    _s9 = _p9.get(_seg9) or {}
+                    _md9.append(f"| {_nm9 if _seg9 == 'short' else ''} | {_lab9} "
+                                f"| {str(_s9.get('in', ''))[:60]} | {str(_s9.get('out', ''))[:40]} "
+                                f"| {str(_s9.get('invalid', ''))[:24]} |")
+            st.markdown(_linkify_md("\n".join(_md9)), unsafe_allow_html=True)
+        else:
+            st.info("计划随首屏自选/持仓扫描生成（约15分钟一轮），稍后刷新即可看到。")
+    except Exception:
+        logging.debug("三段作战计划台渲染失败", exc_info=True)
+
 with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）", expanded=False):
     try:
         _ipo9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "ipo_radar.json")
@@ -14364,6 +14406,19 @@ if execute_analysis and q_input:
                 _ep9 = _fwd.get("entry_plan") or {}
                 if _ep9.get("mid_text") or _ep9.get("long_text"):
                     st.caption(f"{_ep9.get('mid_text', '')}　｜　{_ep9.get('long_text', '')}")
+                # 【V88·三段作战计划】哪天进/到哪出/何时废，一张卡说全（与计划台同源）
+                try:
+                    from v88_decision_core import build_trade_plan as _btp_deep9
+                    _plan_deep9 = _btp_deep9(_fwd_full9 or {}, _ep9, _fwd)
+                    _pl_md9 = ["| 段 | 进 | 出 | 作废线 |", "|---|---|---|---|"]
+                    for _seg9d, _lab9d in (("short", "⚡短线"), ("mid", "🎯中线"), ("long", "🏛长线")):
+                        _s9d = _plan_deep9.get(_seg9d) or {}
+                        _pl_md9.append(f"| {_lab9d} | {_s9d.get('in', '')} | {_s9d.get('out', '')} "
+                                       f"| {_s9d.get('invalid', '')} |")
+                    st.markdown("**📋 三段作战计划**（目标价=规则情景估计）")
+                    st.markdown(_linkify_md("\n".join(_pl_md9)), unsafe_allow_html=True)
+                except Exception:
+                    pass
                 _fwd_rows = []
                 for _fr in _fwd.get("horizons") or []:
                     _fwd_rows.append({
