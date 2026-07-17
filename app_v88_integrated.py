@@ -11972,123 +11972,127 @@ def _render_today_nav():
         st.divider()
         st.caption("下方为最近交易日的行情快照与温度定位（供延续参考）：")
     # 【V88·今日焦点】醒目置顶：重点推荐（引擎买入档）+ 重点观察（搜索过的个股）
-    def _tok2code(tok):
-        tok = str(tok).strip("`[] ")
-        return tok.split(":", 1)[1] if ":" in tok else tok
+    # 【模块可折叠】今日焦点整块折叠（默认展开）
+    with st.expander("⭐ 今日焦点 · 重点关注 / 高分榜 / 重点观察", expanded=True):
+        def _tok2code(tok):
+            tok = str(tok).strip("`[] ")
+            return tok.split(":", 1)[1] if ":" in tok else tok
 
-    try:
-        _fxp = []
-        _iop = _rep.find("## 🎯 今日操作榜")
-        _pb_focus_lines = []
-        if _pab_status == "plan_b":
-            _pb_sec = _rep[_rep.find("## 六、🔭 明日与本周参考"):]
-            _pb_market = ""
-            for _pbl in _pb_sec.splitlines():
-                if _pbl.startswith("### "):
-                    _pb_market = _pbl.replace("### ", "").strip()
-                elif "**观察个股**：" in _pbl:
-                    _pb_focus_lines.append(f"<b>{_pb_market}·机会观察</b>：{_pbl.split('**：', 1)[-1] if '**：' in _pbl else _pbl.split('：', 1)[-1]}")
-                elif "**风险保护**：" in _pbl:
-                    _pb_focus_lines.append(f"<b>{_pb_market}·风险保护</b>：{_pbl.split('**：', 1)[-1] if '**：' in _pbl else _pbl.split('：', 1)[-1]}")
-        if _iop > 0:
-            for _lnf in _rep[_iop:_iop + 4000].splitlines():
-                if "买入/建仓" in _lnf and _lnf.strip().startswith("|"):
-                    _cf = [x.strip() for x in _lnf.split("|") if x.strip()]
-                    if len(_cf) >= 7:
-                        _fxp.append((_cf[2], _tok2code(_cf[1]), _cf[3].replace('**', '')[:40],
-                                     _cf[6].split("｜")[0].replace("**", "").strip()[:60]))
-                if len(_fxp) >= 3:
-                    break
-        if not _fxp:
-            if _pab_status == "plan_b":
-                st.info(f"⭐ **今日策略：不强制给买入指令，转为机会观察＋风险保护**——优先保护仓位、已有利润和整体胜率 · {_report_analysis_note9}")
-                if _pb_focus_lines:
-                    st.markdown("<div style='line-height:1.75;font-size:12px'>" + "<br>".join(_pb_focus_lines) + "</div>", unsafe_allow_html=True)
-            else:
-                st.info(f"⭐ **今日无强制买入信号**（未同时通过75分＋72小时催化）——继续观察并保护仓位，现金也是仓位 · {_report_analysis_note9}")
-        if _fxp:
-            _fx_html = "<br>".join(
-                f"🟢 <b>{_stk_link(_n9, _c9)}</b> {_d9}<br>&nbsp;&nbsp;└ {_r9}"
-                for _n9, _c9, _d9, _r9 in _fxp)
-            st.success(f"**⭐ 今日重点关注（引擎买入档 Top3）** · 点股票名直接深度分析 · {_report_analysis_note9}")
-            st.markdown(f"<div style='line-height:1.9'>{_fx_html}</div>", unsafe_allow_html=True)
-        # 【V88·各市场高分】买入档常因缺72h催化而空 → 顶出操作榜各市场Top3，保证美/A/港都露脸（点名分析）
-        import re as _rem2
-        _rows_mk = []
-        if _iop > 0:
-            for _lnm in _rep[_iop:_iop + 6000].splitlines():
-                if not _lnm.strip().startswith("|"):
-                    continue
-                _cm = [x.strip() for x in _lnm.split("|") if x.strip()]
-                if len(_cm) < 5:
-                    continue
-                _mm = _rem2.search(r"\[(US|SH|SZ|HK):([A-Za-z0-9\.\-]+)\]", _cm[1])
-                _sm = _rem2.search(r"\d+", _cm[4])
-                if not _mm or not _sm:
-                    continue
-                _mk3 = "🇺🇸 美股" if "美股" in _cm[0] else ("🇨🇳 A股" if "A股" in _cm[0] else ("🇭🇰 港股" if "港股" in _cm[0] else None))
-                if _mk3:
-                    _rows_mk.append((_mk3, int(_sm.group()), _cm[2], _mm.group(2)))
-        _mk_html9 = []
-        for _mk3 in ("🇺🇸 美股", "🇨🇳 A股", "🇭🇰 港股"):
-            _seen3, _lst3 = set(), []
-            for _m3, _s3, _n3, _c3 in sorted([r for r in _rows_mk if r[0] == _mk3], key=lambda x: -x[1]):
-                if _c3 in _seen3:
-                    continue
-                _seen3.add(_c3)
-                _lst3.append(f"{_stk_link(_n3, _c3)}({_s3})")
-                if len(_lst3) >= 3:
-                    break
-            if _lst3:
-                _mk_html9.append(f"<b>{_mk3}</b>：" + "、".join(_lst3))
-        if _mk_html9:
-            st.markdown(f"**🌍 各市场引擎高分榜（操作榜 Top3 · 点名直接深度分析）**　<span style='font-size:12px;color:#64748b'>{_report_analysis_note9}</span>", unsafe_allow_html=True)
-            st.markdown("<div style='line-height:1.9'>" + "<br>".join(_mk_html9) + "</div>", unsafe_allow_html=True)
-        _wl9 = _watchlist_load() or {}
-        _obs = []
-        for _mk9, _lst9 in _wl9.items():
-            for _c9, _n9 in list(_lst9)[-4:]:
-                _obs.append((_n9, _c9))
-        if _obs:
-            _wa9 = st.session_state.get('watch_alerts_v88') or {}
-            _obs_html = "、".join(_stk_link(_n9, _c9) for _n9, _c9 in _obs[:12])
-            st.markdown(
-                f"👁 <b>重点观察个股</b>（搜索/点击即自动加入，移除在「自选股」Tab）：{_obs_html}"
-                + (f" ｜ ⚡{len(_wa9.get('alerts') or [])} 条触发（见下方预警）" if _wa9.get('alerts') else ""),
-                unsafe_allow_html=True)
-            st.caption(_analysis_label9((_wa9 or {}).get("ts") or _report_analysis_ts9, "重点观察分析"))
-    except Exception:
-        pass
-    _gen = (_snap or {}).get("generated_at", "")
-    st.caption(f"💡 不知道买什么先看这里：温度定仓位 → 水位定方向 → 轮动定板块 → 操作榜定标的 → 持仓提醒定纪律 ｜ 数据时间 {_gen}{_stale_note}")
-    st.caption("参数白话：上行概率（越大越有利）｜下行概率（越小越有利）｜盈亏比（越大越好，>1才有正向空间）｜期望值（>0才是正期望）｜ATR（越大波动越大）｜历史水位（越接近0%越靠近历史最高点）")
-
-    # 【V88·AI预算统计+超额预警】（2026-07-16 用户点单：即将用超要有预警）
-    # 两本账：云端流水线（私仓 ai_budget.json，上限8元）+ 网页版AI（本地1元），总9元/月
-    try:
-        _bj9 = json.loads((_repo / "data" / "ai_budget.json").read_text(encoding="utf-8"))
-        _cloud_spent9 = float(_bj9.get("spent_rmb", 0) or 0)
-        _cloud_cap9 = 8.0
         try:
-            import v88_ai_budget as _wb9
-            _web9 = _wb9.status()
-            _web_spent9, _web_cap9 = float(_web9.get("spent", 0)), float(_web9.get("cap", 1))
+            _fxp = []
+            _iop = _rep.find("## 🎯 今日操作榜")
+            _pb_focus_lines = []
+            if _pab_status == "plan_b":
+                _pb_sec = _rep[_rep.find("## 六、🔭 明日与本周参考"):]
+                _pb_market = ""
+                for _pbl in _pb_sec.splitlines():
+                    if _pbl.startswith("### "):
+                        _pb_market = _pbl.replace("### ", "").strip()
+                    elif "**观察个股**：" in _pbl:
+                        _pb_focus_lines.append(f"<b>{_pb_market}·机会观察</b>：{_pbl.split('**：', 1)[-1] if '**：' in _pbl else _pbl.split('：', 1)[-1]}")
+                    elif "**风险保护**：" in _pbl:
+                        _pb_focus_lines.append(f"<b>{_pb_market}·风险保护</b>：{_pbl.split('**：', 1)[-1] if '**：' in _pbl else _pbl.split('：', 1)[-1]}")
+            if _iop > 0:
+                for _lnf in _rep[_iop:_iop + 4000].splitlines():
+                    if "买入/建仓" in _lnf and _lnf.strip().startswith("|"):
+                        _cf = [x.strip() for x in _lnf.split("|") if x.strip()]
+                        if len(_cf) >= 7:
+                            _fxp.append((_cf[2], _tok2code(_cf[1]), _cf[3].replace('**', '')[:40],
+                                         _cf[6].split("｜")[0].replace("**", "").strip()[:60]))
+                    if len(_fxp) >= 3:
+                        break
+            if not _fxp:
+                if _pab_status == "plan_b":
+                    st.info(f"⭐ **今日策略：不强制给买入指令，转为机会观察＋风险保护**——优先保护仓位、已有利润和整体胜率 · {_report_analysis_note9}")
+                    if _pb_focus_lines:
+                        st.markdown("<div style='line-height:1.75;font-size:12px'>" + "<br>".join(_pb_focus_lines) + "</div>", unsafe_allow_html=True)
+                else:
+                    st.info(f"⭐ **今日无强制买入信号**（未同时通过75分＋72小时催化）——继续观察并保护仓位，现金也是仓位 · {_report_analysis_note9}")
+            if _fxp:
+                _fx_html = "<br>".join(
+                    f"🟢 <b>{_stk_link(_n9, _c9)}</b> {_d9}<br>&nbsp;&nbsp;└ {_r9}"
+                    for _n9, _c9, _d9, _r9 in _fxp)
+                st.success(f"**⭐ 今日重点关注（引擎买入档 Top3）** · 点股票名直接深度分析 · {_report_analysis_note9}")
+                st.markdown(f"<div style='line-height:1.9'>{_fx_html}</div>", unsafe_allow_html=True)
+            # 【V88·各市场高分】买入档常因缺72h催化而空 → 顶出操作榜各市场Top3，保证美/A/港都露脸（点名分析）
+            import re as _rem2
+            _rows_mk = []
+            if _iop > 0:
+                for _lnm in _rep[_iop:_iop + 6000].splitlines():
+                    if not _lnm.strip().startswith("|"):
+                        continue
+                    _cm = [x.strip() for x in _lnm.split("|") if x.strip()]
+                    if len(_cm) < 5:
+                        continue
+                    _mm = _rem2.search(r"\[(US|SH|SZ|HK):([A-Za-z0-9\.\-]+)\]", _cm[1])
+                    _sm = _rem2.search(r"\d+", _cm[4])
+                    if not _mm or not _sm:
+                        continue
+                    _mk3 = "🇺🇸 美股" if "美股" in _cm[0] else ("🇨🇳 A股" if "A股" in _cm[0] else ("🇭🇰 港股" if "港股" in _cm[0] else None))
+                    if _mk3:
+                        _rows_mk.append((_mk3, int(_sm.group()), _cm[2], _mm.group(2)))
+            _mk_html9 = []
+            for _mk3 in ("🇺🇸 美股", "🇨🇳 A股", "🇭🇰 港股"):
+                _seen3, _lst3 = set(), []
+                for _m3, _s3, _n3, _c3 in sorted([r for r in _rows_mk if r[0] == _mk3], key=lambda x: -x[1]):
+                    if _c3 in _seen3:
+                        continue
+                    _seen3.add(_c3)
+                    _lst3.append(f"{_stk_link(_n3, _c3)}({_s3})")
+                    if len(_lst3) >= 3:
+                        break
+                if _lst3:
+                    _mk_html9.append(f"<b>{_mk3}</b>：" + "、".join(_lst3))
+            if _mk_html9:
+                st.markdown(f"**🌍 各市场引擎高分榜（操作榜 Top3 · 点名直接深度分析）**　<span style='font-size:12px;color:#64748b'>{_report_analysis_note9}</span>", unsafe_allow_html=True)
+                st.markdown("<div style='line-height:1.9'>" + "<br>".join(_mk_html9) + "</div>", unsafe_allow_html=True)
+            _wl9 = _watchlist_load() or {}
+            _obs = []
+            for _mk9, _lst9 in _wl9.items():
+                for _c9, _n9 in list(_lst9)[-4:]:
+                    _obs.append((_n9, _c9))
+            if _obs:
+                _wa9 = st.session_state.get('watch_alerts_v88') or {}
+                _obs_html = "、".join(_stk_link(_n9, _c9) for _n9, _c9 in _obs[:12])
+                st.markdown(
+                    f"👁 <b>重点观察个股</b>（搜索/点击即自动加入，移除在「自选股」Tab）：{_obs_html}"
+                    + (f" ｜ ⚡{len(_wa9.get('alerts') or [])} 条触发（见下方预警）" if _wa9.get('alerts') else ""),
+                    unsafe_allow_html=True)
+                st.caption(_analysis_label9((_wa9 or {}).get("ts") or _report_analysis_ts9, "重点观察分析"))
         except Exception:
-            _web_spent9, _web_cap9 = 0.0, 1.0
-        _tot_spent9 = _cloud_spent9 + _web_spent9
-        _tot_cap9 = _cloud_cap9 + _web_cap9
-        _pct9 = _tot_spent9 / _tot_cap9 * 100 if _tot_cap9 else 0
-        _bar9 = "▓" * int(round(_pct9 / 10)) + "░" * (10 - int(round(_pct9 / 10)))
-        _line9 = (f"🧮 AI预算（{_bj9.get('month', '')}）：**{_tot_spent9:.2f} / {_tot_cap9:g}元**"
-                  f"（{_pct9:.0f}%）{_bar9}　云端{_cloud_spent9:.2f}/{_cloud_cap9:g}｜网页{_web_spent9:.2f}/{_web_cap9:g}")
-        if _pct9 >= 95:
-            st.error(_line9 + "　🚨 本月预算即将用尽——AI点评/翻译将自动降级为规则模板，核心引擎不受影响")
-        elif _pct9 >= 80:
-            st.warning(_line9 + "　⚠️ 已用超八成，注意月底前的思考模式调用")
-        else:
-            st.caption(_line9)
-    except Exception:
-        pass
+            pass
+    # 【模块可折叠】使用指引与AI预算收进折叠区（默认收起）
+    with st.expander("📖 使用指引 · 参数白话 / AI预算", expanded=False):
+        _gen = (_snap or {}).get("generated_at", "")
+        st.caption(f"💡 不知道买什么先看这里：温度定仓位 → 水位定方向 → 轮动定板块 → 操作榜定标的 → 持仓提醒定纪律 ｜ 数据时间 {_gen}{_stale_note}")
+        st.caption("参数白话：上行概率（越大越有利）｜下行概率（越小越有利）｜盈亏比（越大越好，>1才有正向空间）｜期望值（>0才是正期望）｜ATR（越大波动越大）｜历史水位（越接近0%越靠近历史最高点）")
+
+        # 【V88·AI预算统计+超额预警】（2026-07-16 用户点单：即将用超要有预警）
+        # 两本账：云端流水线（私仓 ai_budget.json，上限8元）+ 网页版AI（本地1元），总9元/月
+        try:
+            _bj9 = json.loads((_repo / "data" / "ai_budget.json").read_text(encoding="utf-8"))
+            _cloud_spent9 = float(_bj9.get("spent_rmb", 0) or 0)
+            _cloud_cap9 = 8.0
+            try:
+                import v88_ai_budget as _wb9
+                _web9 = _wb9.status()
+                _web_spent9, _web_cap9 = float(_web9.get("spent", 0)), float(_web9.get("cap", 1))
+            except Exception:
+                _web_spent9, _web_cap9 = 0.0, 1.0
+            _tot_spent9 = _cloud_spent9 + _web_spent9
+            _tot_cap9 = _cloud_cap9 + _web_cap9
+            _pct9 = _tot_spent9 / _tot_cap9 * 100 if _tot_cap9 else 0
+            _bar9 = "▓" * int(round(_pct9 / 10)) + "░" * (10 - int(round(_pct9 / 10)))
+            _line9 = (f"🧮 AI预算（{_bj9.get('month', '')}）：**{_tot_spent9:.2f} / {_tot_cap9:g}元**"
+                      f"（{_pct9:.0f}%）{_bar9}　云端{_cloud_spent9:.2f}/{_cloud_cap9:g}｜网页{_web_spent9:.2f}/{_web_cap9:g}")
+            if _pct9 >= 95:
+                st.error(_line9 + "　🚨 本月预算即将用尽——AI点评/翻译将自动降级为规则模板，核心引擎不受影响")
+            elif _pct9 >= 80:
+                st.warning(_line9 + "　⚠️ 已用超八成，注意月底前的思考模式调用")
+            else:
+                st.caption(_line9)
+        except Exception:
+            pass
 
     # 🌡 市场温度计（能不能做 · 做多大仓位）
     if _snap and _snap.get("markets"):
