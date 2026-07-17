@@ -12778,11 +12778,29 @@ def _render_today_nav():
                     _cols_h9.append(f'<section class="v88-watch-market"><h4>{_mk9} <span>{len(_r9)}只</span></h4>'
                                     + "".join(_v88_decision_card(d) for d in _r9) + "</section>")
                 _htime9 = _analysis_label9(_wa.get("ts"), "持仓分析")
+                # 【V88·持仓组合体检】把持仓当一盘棋的思考模式判断（每天一次,读落盘零成本）
+                _pcx_html9 = ""
+                try:
+                    _pcx9 = json.loads((_repo / "data" / "portfolio_checkup.json").read_text(encoding="utf-8"))
+                    if _pcx9.get("status") == "completed":
+                        _chain_txt9 = "　".join(
+                            f"🔗<b>{c.get('链名')}</b>({len(c.get('成员') or [])}只:{c.get('敞口说明', '')[:24]})"
+                            for c in (_pcx9.get("chains") or [])[:3])
+                        _pcx_html9 = (
+                            f"<div style='background:#f5f3ff;border-left:4px solid #7c3aed;border-radius:8px;"
+                            f"padding:.5rem .7rem;font-size:12px;margin-bottom:6px'>"
+                            f"<b style='color:#7c3aed'>🧩 组合体检（强思考·{_pcx9.get('generated_at', '')[:16]}）</b><br>"
+                            f"{_chain_txt9}<br>"
+                            f"⚠️ <b>{_pcx9.get('top_risk', '')}</b><br>"
+                            f"💡 {_pcx9.get('advice', '')}</div>")
+                except Exception:
+                    _pcx_html9 = ""
                 st.markdown(
                     _V88_CARD_CSS
                     + '<div class="v88-watch-shell"><div class="v88-watch-title">'
                     + '<h3>💼 我的持仓 · 概率决策台</h3>'
                     + f'<p>短/中/长/16周上涨概率走势条+盈亏比，与自选台同源｜点名进深度分析<br>{_htime9}</p></div>'
+                    + _pcx_html9
                     + f'<div class="v88-watch-grid">{"".join(_cols_h9)}</div></div>',
                     unsafe_allow_html=True)
                 st.caption("持仓概率与自选同一套引擎；数字=各周期上涨概率%（红≥55偏涨/绿≤45偏跌/灰中性），"
