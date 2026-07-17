@@ -13522,6 +13522,44 @@ with st.expander("📋 三段作战计划台 · 哪天进/到哪出/何时废（
     except Exception:
         logging.debug("三段作战计划台渲染失败", exc_info=True)
 
+# ═══════════════════════════════════════════════════════════════
+# 【V88·机构风向标 2026-07-18 用户点单】权威机构研报评级/外资观点综合分析推荐池,
+# AI按时间档(明天/本周/下周/本月下月)给布局。私仓流水线生成,这里零网络秒开。
+# ═══════════════════════════════════════════════════════════════
+with st.expander("🏛️ 机构风向标 · 权威研报评级×系统推荐池（明天/本周/下周布局）", expanded=False):
+    try:
+        _inst9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+                             "institutional_signals.json").read_text(encoding="utf-8"))
+        st.caption(f"🕒 {_inst9.get('generated_at', '')} · 近3日研报{_inst9.get('reports_n', 0)}篇 · "
+                   "研报全文为付费品,此处为公开评级/目标价精华 · AI综合仅供参考")
+        _aib9 = _inst9.get("ai_brief") or {}
+        if _aib9:
+            st.markdown(f"**🧭 机构综合布局**：主线 **{_aib9.get('机构共识主线', '—')}** ｜ "
+                        f"分歧 {_aib9.get('机构分歧', '—')}")
+            _tl9x = "".join(f"<div style='padding:2px 0'><b>{_k9}</b>：{_aib9[_k9]}</div>"
+                            for _k9 in ("明天", "本周", "下周", "本月及下月") if _aib9.get(_k9))
+            st.markdown(f"<div style='background:#f8fafc;border-left:3px solid #7c3aed;"
+                        f"border-radius:6px;padding:.4rem .7rem;font-size:13px'>{_tl9x}</div>",
+                        unsafe_allow_html=True)
+        _res9x = _inst9.get("resonance") or []
+        if _res9x:
+            st.markdown("**🤝 机构×系统共振**（机构覆盖且在你的池/持仓/自选——双重背书）")
+            st.dataframe([{"股票": x["stock"], "在系统": x["source"],
+                           "覆盖机构": "、".join(x["orgs"][:3]) + (f" 等{len(x['orgs'])}家" if len(x["orgs"]) > 3 else ""),
+                           "看多家数": x["buy_n"],
+                           "最高目标价": (max(x["targets"]) if x.get("targets") else "—")}
+                          for x in _res9x], hide_index=True, use_container_width=True)
+        _cons9 = _inst9.get("consensus") or []
+        if _cons9:
+            st.markdown("**📌 机构共识股**（≥2家覆盖）：" + "、".join(
+                f"{_stk_link(c['stock'], c['stock'])}({len(c['orgs'])}家)" for c in _cons9[:8]),
+                unsafe_allow_html=True)
+        if _inst9.get("org_news"):
+            st.markdown("**🌐 外资/权威观点**：" + "<br>".join(
+                f"· {t}" for t in _inst9["org_news"][:5]), unsafe_allow_html=True)
+    except Exception:
+        st.info("机构风向标数据随日报流水线生成（交易日07/13/19点），稍后刷新。")
+
 with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）", expanded=False):
     try:
         _ipo9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "ipo_radar.json")
