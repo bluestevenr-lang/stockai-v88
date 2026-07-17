@@ -11611,6 +11611,11 @@ def _v88_decision_card(_d9):
         f'stroke-width="1" stroke-dasharray="3 3"/>'
         f'<polyline points="{_poly9}" fill="none" stroke="{_trend_col9}" stroke-width="1.6" '
         f'stroke-linejoin="round" stroke-linecap="round"/>{_marks9}</svg>')
+    # 【V88·乱码修复 2026-07-18】归因行并到上一行尾:独立行在无归因时会生成"缩进+空"的
+    # 空白行→Markdown按"HTML块遇空行终止"把后续卡片/市场列全打成源代码(用户抓的乱码+只剩美股)。
+    _mv_html9 = ((f'<div style="font-size:12px;color:#b91c1c;line-height:1.3;margin-top:2px;'
+                  f'white-space:nowrap;overflow:hidden;text-overflow:ellipsis">📌'
+                  + str(_d9.get('move_reason')) + '</div>') if _d9.get('move_reason') else '')
     return f"""
     <div class="v88-watch-card{' v88-watch-conflict' if _conflict9 else ''}">
       <div class="v88-watch-card-head">
@@ -11618,8 +11623,7 @@ def _v88_decision_card(_d9):
         {_stk_link(_d9.get('name') or _d9.get('code'), _d9.get('code'))}
         <span class="v88-code">{_d9.get('code')}</span></div>
         <b class="v88-action" style="color:{_act_color_of9(_action_disp9)}">{_action_disp9}</b>
-      </div>
-      {(f'<div style="font-size:12px;color:#b91c1c;line-height:1.3;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">📌' + str(_d9.get('move_reason')) + '</div>') if _d9.get('move_reason') else ''}
+      </div>{_mv_html9}
       <div class="v88-cyc-head">
         <span>各周期上涨概率（红涨/绿跌·看趋势）</span>
         <span class="v88-cyc-trend">{_trend9}</span>
@@ -13579,8 +13583,13 @@ with st.expander("📋 三段作战计划台 · 哪天进/到哪出/何时废（
         _tp_rows9 = [d for d in (_wa_tp9.get("decisions") or [])
                      if d.get("trade_plan") and d.get("scope") in ("持仓", "自选")]
         if _tp_rows9:
+            # 【修复2026-07-18】原用 _analysis_label9(今日导航局部函数)→顶层NameError被except吞→整块空白
+            try:
+                _tp_ts9 = datetime.fromtimestamp(float(_wa_tp9.get("ts") or 0)).strftime("%m-%d %H:%M")
+            except Exception:
+                _tp_ts9 = "—"
             st.caption("短线能给具体日期窗；中长线=区间+触发条件+周数（拍日历日是伪精确）。"
-                       "目标价=规则情景估计非承诺 · " + _analysis_label9(_wa_tp9.get("ts"), "计划生成"))
+                       f"目标价=规则情景估计非承诺 · 🕒 计划生成于 {_tp_ts9}")
             _tp_rows9.sort(key=lambda d: (0 if d.get("scope") == "持仓" else 1,
                                           -float(d.get("p_up") or 0)))
             _md9 = ["| 标的 | 段 | 进 | 出 | 作废线 |", "|---|---|---|---|---|"]
@@ -13596,8 +13605,10 @@ with st.expander("📋 三段作战计划台 · 哪天进/到哪出/何时废（
             st.markdown(_linkify_md("\n".join(_md9)), unsafe_allow_html=True)
         else:
             st.info("计划随首屏自选/持仓扫描生成（约15分钟一轮），稍后刷新即可看到。")
-    except Exception:
-        logging.debug("三段作战计划台渲染失败", exc_info=True)
+    except Exception as _tp_e9:
+        # 不再静默吞错——空白区块比报错更迷惑（图四空白事故教训）
+        st.caption(f"⚠️ 计划台渲染异常：{type(_tp_e9).__name__}，已记录日志")
+        logging.warning("三段作战计划台渲染失败", exc_info=True)
 
 # ═══════════════════════════════════════════════════════════════
 # 【V88·机构风向标 2026-07-18 用户点单】权威机构研报评级/外资观点综合分析推荐池,
@@ -13624,13 +13635,17 @@ with st.expander("🏛️ 机构风向标 · 权威研报评级×系统推荐池
             st.dataframe([{"股票": x["stock"], "在系统": x["source"],
                            "覆盖机构": "、".join(x["orgs"][:3]) + (f" 等{len(x['orgs'])}家" if len(x["orgs"]) > 3 else ""),
                            "看多家数": x["buy_n"],
-                           "最高目标价": (max(x["targets"]) if x.get("targets") else "—")}
+                           "最高目标价": (max(x["targets"]) if x.get("targets") else "—"),
+                           "研报精华": x.get("gist") or "—"}
                           for x in _res9x], hide_index=True, use_container_width=True)
         _cons9 = _inst9.get("consensus") or []
         if _cons9:
-            st.markdown("**📌 机构共识股**（≥2家覆盖）：" + "、".join(
-                f"{_stk_link(c['stock'], c['stock'])}({len(c['orgs'])}家)" for c in _cons9[:8]),
-                unsafe_allow_html=True)
+            # 【2026-07-18 用户点单】共识股不只给家数,每只附≤30字研报精华
+            st.markdown("**📌 机构共识股**（≥2家覆盖·附研报精华）")
+            st.markdown("<div style='font-size:13px;line-height:1.6'>" + "".join(
+                f"<div>· {_stk_link(c['stock'], c['stock'])}（{len(c['orgs'])}家）："
+                f"<span style='color:#475569'>{c.get('gist') or '—'}</span></div>"
+                for c in _cons9[:8]) + "</div>", unsafe_allow_html=True)
         if _inst9.get("org_news"):
             st.markdown("**🌐 外资/权威观点**：" + "<br>".join(
                 f"· {t}" for t in _inst9["org_news"][:5]), unsafe_allow_html=True)
