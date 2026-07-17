@@ -11645,6 +11645,107 @@ def _render_my_stocks_today(_wa, _live_chg):
         st.markdown("".join(_html), unsafe_allow_html=True)
 
 
+def _next_trading_day9(_repo):
+    """下一交易日（跳周末+holidays.txt），返回 (date, '07-21周一')。"""
+    from datetime import date as _date, timedelta as _td
+    _hol = set()
+    try:
+        _hol = {ln.strip().split()[0] for ln in (_repo / "holidays.txt").read_text(encoding="utf-8").splitlines()
+                if ln.strip() and not ln.strip().startswith("#")}
+    except Exception:
+        pass
+    _wk = "一二三四五六日"
+    _d = _date.today() + _td(days=1)
+    for _ in range(15):
+        if _d.weekday() < 5 and _d.strftime("%Y-%m-%d") not in _hol:
+            return _d, f"{_d.strftime('%m-%d')}周{_wk[_d.weekday()]}"
+        _d += _td(days=1)
+    return _d, _d.strftime("%m-%d")
+
+
+def _render_four_tier_recos9(_wa, _repo, _is_trading):
+    """【V88·四档推荐 2026-07-17 用户定纲】今日/明天/本周/下周四档常在，按交易日滚动；
+    休市时"今日"档如实显示休市、由"明天=下一交易日"接棒——不再休市还喊今日关注。
+    候选=用户指定三类源并集（一键全选池+引擎榜Top+触底触线=黑马漏斗复判结果）∪ 自选/持仓决策。
+    分档（纯现成引擎输出零新计算）：今日=时机绿灯；明天=涨停接力隔日惯性；
+    本周=双路径5日窗；下周=中线(4-8周)分≥58蓄势或下周财报催化。
+    """
+    import json as _jf
+    _, _ntd_label = _next_trading_day9(_repo)
+    _cands = {}
+    try:
+        for _h in (_jf.loads((_repo / "data" / "darkhorse.json").read_text(encoding="utf-8"))
+                   .get("horses") or []):
+            _cands[str(_h.get("code"))] = {**_h, "_tag": "🐴"}
+    except Exception:
+        pass
+    for _d in (_wa or {}).get("decisions") or []:
+        if _d.get("scope") in ("持仓", "自选"):
+            _c = str(_d.get("code"))
+            _tag = "💼" if _d.get("scope") == "持仓" else "👁"
+            if _c in _cands:
+                _cands[_c]["_tag"] = _tag + _cands[_c].get("_tag", "")
+            else:
+                _cands[_c] = {**_d, "_tag": _tag}
+    _relay_codes = set()
+    try:
+        _relay_codes = {str(r.get("code")) for r in
+                        (_jf.loads((_repo / "data" / "limit_up_radar.json").read_text(encoding="utf-8"))
+                         .get("relay") or [])}
+    except Exception:
+        pass
+    _tiers = {"today": [], "tomorrow": [], "week": [], "next_week": []}
+    for _c, _h in _cands.items():
+        _ep = _h.get("entry_plan") or {}
+        _mode = str(_ep.get("mode") or "")
+        _med = float(_h.get("medium_score") or 0)
+        _srcs = _h.get("sources") or []
+        _canon_c = _c.split(".")[0].lstrip("0") or _c
+        if any(str(_r).split(".")[0].lstrip("0") == _canon_c for _r in _relay_codes):
+            _tiers["tomorrow"].append(_h)
+        elif _mode in ("现价可进", "回踩到位", "突破确认"):
+            _tiers["today"].append(_h)
+        elif _mode == "双路径待触发":
+            _tiers["week"].append(_h)
+        elif _med >= 58 or any("财报" in str(s) for s in _srcs):
+            _tiers["next_week"].append(_h)
+    for _k in _tiers:
+        _tiers[_k].sort(key=lambda h: (-len(h.get("sources") or []),
+                                       -float(h.get("short_score") or h.get("p_up") or 0)))
+
+    def _row9(_h):
+        _pl = ((_h.get("trade_plan") or {}).get("short") or {})
+        _hint = str(_pl.get("in") or _h.get("entry_note") or "")[:44]
+        _tc = _h.get("touch") or ""
+        return (f"{_h.get('_tag', '')}{_stk_link(_h.get('name'), _h.get('code'))}"
+                f"<span style='font-size:12px;color:#64748b'>"
+                f"{('·' + _tc) if _tc else ''} {_hint}</span>")
+
+    _meta9 = [
+        ("today", ("🟢 今日推荐" if _is_trading else "⏸ 今日（休市）"),
+         "时机绿灯·盘中可执行" if _is_trading else f"休市无今日盘——看「明天({_ntd_label})」档"),
+        ("tomorrow", f"🌅 明天推荐（{_ntd_label}）", "涨停接力惯性+隔日窗口"),
+        ("week", "📅 本周推荐", "双路径5日窗：回踩接或放量突破改追"),
+        ("next_week", "🗓 下周推荐", "中线蓄势(4-8周分≥58)或下周财报催化"),
+    ]
+    _html = ["<div style='font-size:14px;line-height:1.7'>"]
+    for _k, _title, _sub in _meta9:
+        _lst = _tiers[_k][:5]
+        _html.append(f"<div style='margin:2px 0'><b>{_title}</b>"
+                     f"<span style='font-size:12px;color:#94a3b8'>（{_sub}）</span>：")
+        if _k == "today" and not _is_trading:
+            _html.append("<span style='color:#94a3b8'>—</span>")
+        elif _lst:
+            _html.append("　".join(_row9(h) for h in _lst))
+        else:
+            _html.append("<span style='color:#94a3b8'>本档暂无达标（宁缺毋滥）</span>")
+        _html.append("</div>")
+    _html.append("</div>")
+    st.markdown("".join(_html), unsafe_allow_html=True)
+    st.caption("候选=一键全选池∪引擎Top榜∪触底触线（黑马漏斗复判）∪自选/持仓 · 按交易日滚动 · 💼持仓👁自选🐴黑马")
+
+
+
 def _render_today_verdict(_snap, _repo):
     """【V88·今日总决断 2026-07-17 用户点单】把各模块结论浓缩成"今天该干什么"——
     治大跌日"满屏观察=没推荐"。纯整合层零AI零流量：
@@ -11826,11 +11927,42 @@ def _render_l3_cycle_board(_snap, _is_trading):
                             f"{s['name']}{s.get('chg1d', 0):+.1f}%" for s in _sorted9[:2]))
             except Exception:
                 pass
+            # 【V88·异动30字原因 2026-07-17 用户点单】不再取任意前2条,精准挑"为什么"：
+            # 方向匹配(大跌找利空/大涨找利好)+影响级高优先+命中领跌/领涨板块加权,用AI分析摘要。
             _news9 = []
             try:
                 _na9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
                                    "news_analyzed.json").read_text(encoding="utf-8"))
-                _news9 = [str(n.get("title") or "")[:44] for n in (_na9.get("news") or [])[:2]]
+                _want9 = "空" if _dirn9 == "大跌" else "好"          # 大跌→利空,大涨→利好
+                _mover_secs9 = set()
+                for _mk9y in _movers9:
+                    for _s in (((_snap or {}).get("markets") or {}).get(_mk9y, {}).get("sectors") or []):
+                        _mover_secs9.add(str(_s.get("name", "")))
+                _mover_mkts9 = set(_movers9)               # 异动市场名(A股/港股/美股)
+                _scored9 = []
+                for _n in (_na9.get("news") or []):
+                    _dir9 = str(_n.get("impact_direction") or "")
+                    if _want9 not in _dir9:
+                        continue
+                    # 中文优先：标题中文占比高的用标题,否则用AI摘要,都尽量中文
+                    _t_title9 = str(_n.get("title") or "")
+                    _zh9 = sum(1 for c in _t_title9 if "一" <= c <= "鿿")
+                    _txt9 = (_t_title9 if _zh9 >= 4
+                             else str(_n.get("analysis_summary") or _n.get("cleaned_title") or _t_title9))
+                    if not _txt9:
+                        continue
+                    _lv9 = str(_n.get("impact_level") or "")
+                    _sc9 = (3 if "高" in _lv9 else (1 if "中" in _lv9 else 0))
+                    if any(_ms and (_ms in str(_n.get("affected_sectors") or "")) for _ms in _mover_secs9):
+                        _sc9 += 2
+                    if any(_mm in str(_n.get("market_scope") or "") for _mm in _mover_mkts9):
+                        _sc9 += 2                          # 命中异动市场(讲的就是这个大盘)
+                    if sum(1 for c in _txt9 if "一" <= c <= "鿿") >= 4:
+                        _sc9 += 2                          # 中文可读优先
+                    if _sc9 > 0:
+                        _scored9.append((_sc9, _txt9[:38]))
+                _scored9.sort(key=lambda x: -x[0])
+                _news9 = [t for _, t in _scored9[:2]]
             except Exception:
                 pass
             _col9x = "#16a34a" if _dirn9 == "大跌" else "#dc2626"
@@ -11840,8 +11972,8 @@ def _render_l3_cycle_board(_snap, _is_trading):
                 f"padding:.55rem .8rem;font-size:13px;margin-bottom:.4rem'>"
                 f"🚨 <b style='color:{_col9x}'>今日{_dirn9}</b>：{_mv_txt9}"
                 + (f"　｜　{'；'.join(_why9)}" if _why9 else "")
-                + (f"<br><span style='font-size:12px;color:#64748b'>📰 最新头条：{'｜'.join(_news9)}"
-                   f"（详见热点新闻）</span>" if _news9 else "")
+                + (f"<br><span style='font-size:12px;color:#64748b'>📉 <b>{'大跌' if _dirn9 == '大跌' else '大涨'}原因</b>："
+                   f"{'｜'.join(_news9)}（详见热点新闻）</span>" if _news9 else "")
                 + "</div>", unsafe_allow_html=True)
     except Exception:
         pass
@@ -12274,7 +12406,13 @@ def _render_today_nav():
         st.caption("下方为最近交易日的行情快照与温度定位（供延续参考）：")
     # 【V88·今日焦点】醒目置顶：重点推荐（引擎买入档）+ 重点观察（搜索过的个股）
     # 【模块可折叠】今日焦点整块折叠（默认展开）
-    with st.expander("⭐ 今日焦点 · 重点关注 / 高分榜 / 重点观察", expanded=True):
+    with st.expander("⭐ 推荐中心 · 今日/明天/本周/下周 四档 + 高分榜 + 重点观察", expanded=True):
+        # 【V88·四档推荐】置于推荐中心最顶（用户定纲：四档常在,按交易日滚动,休市不喊今日）
+        try:
+            _render_four_tier_recos9(st.session_state.get('watch_alerts_v88') or {}, _repo, _is_trading)
+            st.markdown("<hr style='margin:4px 0;border:none;border-top:1px dashed #e2e8f0'>", unsafe_allow_html=True)
+        except Exception:
+            logging.debug("四档推荐渲染失败", exc_info=True)
         def _tok2code(tok):
             tok = str(tok).strip("`[] ")
             return tok.split(":", 1)[1] if ":" in tok else tok
@@ -12308,12 +12446,12 @@ def _render_today_nav():
                     if _pb_focus_lines:
                         st.markdown("<div style='line-height:1.75;font-size:12px'>" + "<br>".join(_pb_focus_lines) + "</div>", unsafe_allow_html=True)
                 else:
-                    st.info(f"⭐ **今日无强制买入信号**（未同时通过75分＋72小时催化）——继续观察并保护仓位，现金也是仓位 · {_report_analysis_note9}")
+                    st.info(f"⭐ **{'今日' if _is_trading else '下一交易日'}无强制买入信号**（未同时通过75分＋72小时催化）——继续观察并保护仓位，现金也是仓位 · {_report_analysis_note9}")
             if _fxp:
                 _fx_html = "<br>".join(
                     f"🟢 <b>{_stk_link(_n9, _c9)}</b> {_d9}<br>&nbsp;&nbsp;└ {_r9}"
                     for _n9, _c9, _d9, _r9 in _fxp)
-                st.success(f"**⭐ 今日重点关注（引擎买入档 Top3）** · 点股票名直接深度分析 · {_report_analysis_note9}")
+                st.success(f"**⭐ {'今日' if _is_trading else '下一交易日'}重点关注（引擎买入档 Top3）** · 点股票名直接深度分析 · {_report_analysis_note9}")
                 st.markdown(f"<div style='line-height:1.9'>{_fx_html}</div>", unsafe_allow_html=True)
             # 【V88·各市场高分】买入档常因缺72h催化而空 → 顶出操作榜各市场Top3，保证美/A/港都露脸（点名分析）
             import re as _rem2
