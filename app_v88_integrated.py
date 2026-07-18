@@ -11976,6 +11976,36 @@ _V88_CAUSE_WORDS = ("因", "由于", "受", "预期", "担忧", "导致", "引�
 _V88_NEWS_CACHE = {"ts": 0, "news": []}
 
 
+def _v88_fast_news9():
+    """【V88·情报采集层 2026-07-18 用户点单"爬虫是我们的优势"】东财7x24快讯
+    (免费JSON,机构观点/政策/公司急事,盘中机器速度)——30分钟缓存,国内直连零代理。
+    并入桌面新闻池:凭什么定性/消息归因自动受益,出处标'东财7x24快讯'。"""
+    import time as _t
+    _c = _V88_NEWS_CACHE.setdefault("_fast", {"ts": 0, "rows": []})
+    if _t.time() - _c["ts"] < 1800 and _c["rows"]:
+        return _c["rows"]
+    try:
+        import requests as _rqf
+        _sf = _rqf.Session()
+        _sf.trust_env = False
+        _r = _sf.get("https://np-listapi.eastmoney.com/comm/web/getFastNewsList", timeout=10,
+                     headers={"User-Agent": "Mozilla/5.0", "Referer": "https://kuaixun.eastmoney.com/"},
+                     params={"client": "web", "biz": "web_724", "fastColumn": "102",
+                             "sortEnd": "", "pageSize": 40, "req_trace": "1"})
+        _rows = ((_r.json().get("data") or {}).get("fastNewsList")) or []
+        _c["rows"] = [{"title": str(it.get("title") or it.get("summary") or ""),
+                       "cleaned_title": str(it.get("title") or it.get("summary") or ""),
+                       "analysis_summary": str(it.get("summary") or ""),
+                       "source": "东财7x24快讯", "impact_direction": "",
+                       "affected_tickers": "", "affected_sectors": "", "market_scope": ""}
+                      for it in _rows if (it.get("title") or it.get("summary"))]
+        _c["ts"] = _t.time()
+    except Exception:
+        _c["rows"] = _c.get("rows") or []
+        _c["ts"] = _t.time()
+    return _c["rows"]
+
+
 def _v88_load_news():
     import time as _t
     if _t.time() - _V88_NEWS_CACHE["ts"] < 300 and _V88_NEWS_CACHE["news"]:
@@ -11983,7 +12013,8 @@ def _v88_load_news():
     try:
         _na = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
                           "news_analyzed.json").read_text(encoding="utf-8"))
-        _V88_NEWS_CACHE["news"] = _na.get("news") or []
+        # AI分析池在前(带方向,归因用),7x24快讯垫后(无方向,凭什么定性用)
+        _V88_NEWS_CACHE["news"] = (_na.get("news") or []) + _v88_fast_news9()
         _V88_NEWS_CACHE["ts"] = _t.time()
     except Exception:
         _V88_NEWS_CACHE["news"] = []
@@ -12365,6 +12396,20 @@ def _render_today_verdict(_snap, _repo):
                      "<span style='font-size:12px;color:#94a3b8'>（市场 温度°/今日涨跌 → 建议仓位；"
                      "温度越高越热越该轻仓）</span>："
                      + " ｜ ".join(_pos) + "</div>")
+    # 【V88·凭什么铁律·大盘版 2026-07-18】定调旁必有一句宏观/策略定性(说人话的why)
+    try:
+        _medge_seen9, _medge_txts9 = set(), []
+        for _mk9e in ("美股", "A股", "港股"):
+            _e9e = _v88_market_edge(_mk9e)
+            if _e9e and _e9e not in _medge_seen9:
+                _medge_seen9.add(_e9e)
+                _medge_txts9.append(_e9e)
+        _html.append("<div style='font-size:12px;color:#64748b;margin-bottom:3px'>"
+                     + (" ".join(_medge_txts9[:2]) if _medge_txts9
+                        else "🏛️ 近3日无策略研报直接定性——今日定调为量价与温度实算（如实说明）")
+                     + "</div>")
+    except Exception:
+        pass
     if _go:
         # 【V88·胜率闭环 2026-07-18 借鉴外部提示词唯一可取点】绿灯旁挂实盘对账：
         # 同类入场信号近30日到期核算的真实命中率（非规则估计），命中<45%明示收紧执行。
