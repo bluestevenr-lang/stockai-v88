@@ -1061,6 +1061,23 @@ def _ath_pct(symbol: str):
         return None
 
 
+@st.cache_data(ttl=3600, show_spinner=False)
+def _price_extremes9(symbol: str):
+    """【V88·公司档案 2026-07-18】历史最高/最低+52周高低(全量历史,像东财盘口)。"""
+    try:
+        import yfinance as _yfe
+        h = _yfe.Ticker(symbol).history(period="max")["Close"].dropna()
+        if len(h) < 20:
+            return None
+        last = float(h.iloc[-1])
+        w52 = h.tail(min(252, len(h)))
+        return {"hist_high": float(h.max()), "hist_high_date": str(h.idxmax())[:10],
+                "hist_low": float(h.min()), "hist_low_date": str(h.idxmin())[:10],
+                "w52_high": float(w52.max()), "w52_low": float(w52.min()), "last": last}
+    except Exception:
+        return None
+
+
 def _yf_norm_code(code: str) -> str:
     """持仓/自选代码 → yfinance 代码（.SH→.SS，6位纯数字补后缀）"""
     _yf = str(code).strip().upper().replace(".SH", ".SS")
@@ -15507,6 +15524,39 @@ if st.session_state.get('scan_selected_code'):
                             if _ro99:
                                 st.markdown("##### 📖 量价判读（事实+要点，你来拍板）")
                                 st.markdown("\n".join(f"- {ln}" for ln in _ro99))
+                            # 【V88·公司档案 2026-07-18 用户点单"像东财一样看到公司介绍/历史价"】
+                            # 中文简介(东财F10三市场,7天缓存)+历史/52周高低+股息率+财报日,全带出处。
+                            try:
+                                from stock_profile import get_profile as _gp9
+                                _prof9d = _gp9(target_c) or {}
+                                _ext9d = _price_extremes9(to_yf_cn_code(target_c) if 'to_yf_cn_code' in globals() else target_c)
+                                if _prof9d.get("profile") or _ext9d:
+                                    _lines9d = []
+                                    if _prof9d.get("profile"):
+                                        _lines9d.append(f"{str(_prof9d['profile'])[:180]}…"
+                                                        f"（出处:{_prof9d.get('source', '')}）")
+                                    if _ext9d:
+                                        _lp9d = _ext9d["last"]
+                                        _dh9d = (_lp9d / _ext9d["hist_high"] - 1) * 100
+                                        _p529d = ((_lp9d - _ext9d["w52_low"]) /
+                                                  (_ext9d["w52_high"] - _ext9d["w52_low"]) * 100
+                                                  if _ext9d["w52_high"] > _ext9d["w52_low"] else 50)
+                                        _lines9d.append(
+                                            f"历史最高 **{_ext9d['hist_high']:.2f}**"
+                                            f"（{_ext9d['hist_high_date'][:7]}·现距{_dh9d:+.1f}%）"
+                                            f" ｜ 历史最低 {_ext9d['hist_low']:.2f}"
+                                            f" ｜ 52周 {_ext9d['w52_low']:.2f}~{_ext9d['w52_high']:.2f}"
+                                            f"（现价处52周{_p529d:.0f}%位,越低越接近一年低点·按收盘价口径,与行情软件盘中高低点略有差异）")
+                                    try:
+                                        _dy9d = (fetch_stock_fundamentals(target_c) or {}).get("dividend_yield")
+                                        if _dy9d:
+                                            _dy9v = float(_dy9d)
+                                            _lines9d.append(f"股息率TTM {(_dy9v * 100 if _dy9v < 1 else _dy9v):.2f}%（出处:Yahoo）")
+                                    except Exception:
+                                        pass
+                                    st.markdown("**📇 公司档案**  \n" + "  \n".join(_lines9d))
+                            except Exception:
+                                pass
                             _fu99 = None
                             try:
                                 _fu99 = _ce.fundamentals(target_c)
