@@ -4500,7 +4500,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
             st.markdown("""<style>
             .v88-macro-title{display:flex;align-items:center;justify-content:space-between;margin:.15rem 0 .45rem}
             .v88-macro-title b{font-size:15px;color:#1e3a5f}.v88-macro-title span{font-size:12px;color:#5a6378}
-            .v88-macro-card{background:#fff;border:1px solid #dce3ed;border-radius:10px;padding:.4rem .55rem;height:158px;min-height:158px;overflow:hidden;box-shadow:0 1px 3px rgba(30,58,95,.06)}
+            .v88-macro-card{background:#fff;border:1px solid #dce3ed;border-radius:10px;padding:.4rem .55rem;height:200px;min-height:200px;overflow:hidden;box-shadow:0 1px 3px rgba(30,58,95,.06)}/* 2026-07-18 用户抓水位裁剪:158px只装得下2行KPI,美股卡9项=3行,第三行(DXY/股债相关/水位)被overflow裁掉;三卡仍等高 */
             .v88-macro-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem}
             .v88-macro-head b{font-size:14px;color:#1a1a2e}.v88-macro-head em{font-style:normal;font-weight:700;font-size:13px}
             .v88-macro-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.35rem}
@@ -4508,7 +4508,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
             .v88-macro-kpi b{display:block;font-size:14px;line-height:1.2;color:#1a1a2e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
             .v88-macro-kpi small{font-size:12px}.v88-up{color:#dc2626!important}.v88-down{color:#16a34a!important}.v88-flat{color:#5a6378!important}
             .v88-macro-card .v88-cn-note{display:inline!important;font-size:.72em!important;line-height:1!important;color:#8893a7;font-weight:400;margin-left:1px}.v88-macro-reason{font-size:12px;color:#5a6378;margin-top:.35rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-            .v88-macro-dense{height:158px;min-height:158px;padding:.38rem .52rem}
+            .v88-macro-dense{height:200px;min-height:200px;padding:.38rem .52rem}
             .v88-macro-dense .v88-macro-head{margin-bottom:.2rem}
             .v88-macro-dense .v88-macro-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:.18rem .3rem}
             .v88-macro-dense .v88-macro-kpi>span{font-size:12px}
