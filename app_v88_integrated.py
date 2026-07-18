@@ -11926,6 +11926,22 @@ def _v88_rating_moves():
     return _c["rows"]
 
 
+def _v88_announcements():
+    """【V88·公告事件雷达 2026-07-18】私仓落盘的自选/持仓池公告事件（10分钟内存缓存）。
+    {canon_code: {name, code, items:[{date,title,dir,note,icon}]}}"""
+    import time as _t
+    _c = _V88_NEWS_CACHE.setdefault("_ann", {"ts": 0, "d": {}})
+    if _t.time() - _c["ts"] < 600 and _c["d"]:
+        return _c["d"]
+    try:
+        _c["d"] = (json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+                               "announcements.json").read_text(encoding="utf-8")).get("events")) or {}
+    except Exception:
+        _c["d"] = {}
+    _c["ts"] = _t.time()
+    return _c["d"]
+
+
 def _v88_move_reason(chg, *, names=(), scope_hint="", max_len=34, require_name=False):
     """异动一句原因。chg=今日涨跌%; names=命中优先的名字(个股名/板块名/市场名);
     scope_hint=market_scope 关键词(A股/港股/美股)。|chg|<1.5 返回空。
@@ -11951,6 +11967,18 @@ def _v88_move_reason(chg, *, names=(), scope_hint="", max_len=34, require_name=F
             if chg > 0 and (_ch in ("上调", "首次") and any(k in _rt for k in ("买", "增持", "Buy"))):
                 _tg = f"·目标{_r.get('target'):g}" if _r.get("target") else ""
                 return (f"{_r.get('org')}{_ch}{_rt}评级{_tg}({_r.get('date', '')[5:]})提振")[:max_len]
+    # 【V88·公告源 2026-07-18 久吾高科案】评级之后、媒体新闻之前——公司公告是强因果：
+    # 方向事件须与涨跌同向(回购配涨/减持配跌)；⚡两面事件(可转债等)涨跌都可标注。
+    if _nm_list:
+        for _blk in _v88_announcements().values():
+            if str(_blk.get("name")) not in _nm_list:
+                continue
+            for _a in (_blk.get("items") or []):
+                _ad = _a.get("dir")
+                if ((chg > 0 and _ad == "bull") or (chg < 0 and _ad == "bear")
+                        or _ad == "event"):
+                    return (f"{_a.get('icon', '')}公告:{str(_a.get('note') or _a.get('title'))[:14]}"
+                            f"({str(_a.get('date', ''))[5:]}·出处:公司公告)")[:max_len]
     _want = "空" if chg < 0 else "好"
     _names = [str(n) for n in names if n]
     _best, _bsc = "", 0
@@ -15234,6 +15262,32 @@ if st.session_state.get('scan_selected_code'):
                                     _edge99 = _v88_fund_edge(st.session_state.get("scan_selected_name") or "")
                                     st.markdown(f"**🧾 基本面**：`{_fu99['tag']}`  \n{_fu99['line']}"
                                                 + (f"  \n{_edge99}" if _edge99 else ""))
+                            except Exception:
+                                pass
+                            # 【V88·公告事件行 2026-07-18 用户点单·久吾高科案】媒体新闻抓不到的
+                            # 公司公告(可转债/回购/减持…)按需单查(30分钟缓存,A股港股;美股不覆盖)。
+                            # 事件只做语境化——不推翻上方周期裁决。
+                            try:
+                                _evk9 = f"_ann_stock_{target_c}"
+                                _evc9 = st.session_state.get(_evk9)
+                                import time as _tev9
+                                if not _evc9 or _tev9.time() - float(_evc9.get("ts") or 0) > 1800:
+                                    import sys as _sysev9
+                                    _repo_ev9 = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
+                                    if _repo_ev9 not in _sysev9.path:
+                                        _sysev9.path.insert(0, _repo_ev9)
+                                    from announcement_radar import fetch_for as _ann_fetch9, DIR_TXT as _dirtxt9
+                                    _evc9 = {"ts": _tev9.time(), "items": _ann_fetch9(target_c),
+                                             "dirtxt": dict(_dirtxt9)}
+                                    st.session_state[_evk9] = _evc9
+                                if _evc9.get("items"):
+                                    _ev_lines9 = "  \n".join(
+                                        f"{_e9['icon']} {str(_e9['date'])[5:]}「{str(_e9['title'])[:30]}」"
+                                        f"——{_e9['note']}（{(_evc9.get('dirtxt') or {}).get(_e9.get('dir'), '')}）"
+                                        for _e9 in _evc9["items"][:3])
+                                    st.markdown(f"**⚡ 公司公告事件**（近5日·出处:东财公告库）  \n{_ev_lines9}")
+                                    st.caption("事件只做语境参考，不推翻上方周期裁决；⚡两面事件（可转债/定增）"
+                                               "既有抢权/输血的一面也有摊薄的一面——若上方判「回避」，最多短线纪律小仓博弈。")
                             except Exception:
                                 pass
                             _pl99 = _ce.horizon_plans(_F, df_temp)
