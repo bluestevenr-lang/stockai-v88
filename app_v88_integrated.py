@@ -11744,13 +11744,23 @@ def _v88_decision_card(_d9):
     # 【V88·凭什么铁律 2026-07-18 用户定纲】每张卡必有一句定性——有据(研报/公告/新闻)
     # 或明示"纯技术驱动",不许只有数字。
     _edge_s9 = _v88_fund_edge_short(_d9.get("name") or "")
-    _hot_rk9 = (_v88_intel9().get("hot_map") or {}).get(
-        _canonical_code(str(_d9.get("code") or "")))
+    # 【V88·双榜拥挤 2026-07-18】东财人气榜+雪球热股(匿名token已通):双榜同上=更硬反指标
+    _intel_d9 = _v88_intel9()
+    _cn_card9 = _canonical_code(str(_d9.get("code") or ""))
+    _hot9 = (_intel_d9.get("hot_map") or {}).get(_cn_card9)
+    _xq_only9 = None if _hot9 else (_intel_d9.get("xq_map") or {}).get(_cn_card9)
+    if _hot9 and _hot9.get("xq"):
+        _hot_txt9 = f' <b style="color:#dc2626">🔥🔥双榜拥挤 东#{_hot9["rank"]}·雪#{_hot9["xq"]}（散户扎堆·反指标更硬）</b>'
+    elif _hot9:
+        _hot_txt9 = f' <b style="color:#b45309">🔥东财人气榜#{_hot9["rank"]}·散户扎堆拥挤提示</b>'
+    elif _xq_only9:
+        _hot_txt9 = f' <b style="color:#b45309">🔥雪球热股#{_xq_only9}·散户扎堆拥挤提示</b>'
+    else:
+        _hot_txt9 = ''
     _edge_html9 = ('<div style="font-size:12px;color:#475569;white-space:nowrap;overflow:hidden;'
                    'text-overflow:ellipsis;margin-top:1px">💡'
                    + (_edge_s9 or "无研报/新闻定性——纯技术驱动（如实说明）")
-                   + (f' <b style="color:#b45309">🔥人气榜#{_hot_rk9}·散户扎堆拥挤提示</b>'
-                      if _hot_rk9 else '') + '</div>')
+                   + _hot_txt9 + '</div>')
     _dgk9 = str(_d9.get("diag_kind") or "")
     _dg_col9 = {"破位": "#dc2626", "个股利空": "#b91c1c", "错杀": "#16a34a",
                 "可进": "#16a34a", "持有": "#2563eb"}.get(_dgk9, "#64748b")
@@ -12234,8 +12244,11 @@ def _v88_intel9():
         _raw = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
                            "intel_feed.json").read_text(encoding="utf-8"))
         _c["d"] = {"policy": _raw.get("policy") or [],
-                   "hot_map": {str(h.get("canon")): int(h.get("rank") or 0)
-                               for h in (_raw.get("hot") or [])}}
+                   "hot_map": {str(h.get("canon")): {"rank": int(h.get("rank") or 0),
+                                                     "xq": h.get("xq_rank")}
+                               for h in (_raw.get("hot") or [])},
+                   "xq_map": {str(x.get("canon")): int(x.get("rank") or 0)
+                              for x in (_raw.get("hot_xq") or [])}}
     except Exception:
         _c["d"] = {"policy": [], "hot_map": {}}
     _c["ts"] = _t.time()

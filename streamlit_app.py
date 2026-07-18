@@ -1143,8 +1143,9 @@ elif _nav == "🛰️ 雷达族":
                         + (f"（{_p9c.get('date')}）" if _p9c.get("date") else ""))
         _hot9c = _intel9c.get("hot") or []
         if _hot9c:
-            st.caption("🔥 东财人气榜Top10（散户扎堆=短期拥挤提示·反指标语义）："
-                       + "、".join(f"#{h.get('rank')} {h.get('code')}" for h in _hot9c[:10]))
+            st.caption("🔥 东财人气榜Top10（散户扎堆=拥挤提示·反指标；标⚡=雪球热股同榜,信号更硬）："
+                       + "、".join(f"#{h.get('rank')} {h.get('code')}{'⚡' if h.get('xq_rank') else ''}"
+                                  for h in _hot9c[:10]))
         st.caption(f"🕒 {_intel9c.get('generated_at', '')} · 出处:发改委/央行官网直采+东财股吧")
     else:
         st.info("政策/人气数据待流水线发布。")
