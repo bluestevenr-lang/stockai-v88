@@ -12194,6 +12194,29 @@ def _v88_market_edge(market):
     return ""
 
 
+def _v88_sector_edge9(label):
+    """【V88·板块定性 2026-07-18 用户点单"轮动全是数学模型"】复用私仓 rotation_forecast.
+    sector_edge(行业研报>板块新闻,带出处);30分钟缓存;空=调用处标'纯量价模型'。"""
+    import time as _t
+    _c = _V88_NEWS_CACHE.setdefault("_sec_edge", {"ts": 0, "d": {}})
+    if _t.time() - _c["ts"] > 1800:
+        _c["d"], _c["ts"] = {}, _t.time()
+    _k = str(label)
+    if _k in _c["d"]:
+        return _c["d"][_k]
+    try:
+        import sys as _sy9e
+        _p9e = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
+        if _p9e not in _sy9e.path:
+            _sy9e.path.insert(0, _p9e)
+        from rotation_forecast import sector_edge as _se9e
+        # 标签形如"医药·A/科技·美"——取·前主体再查(私仓别名表按纯板块名收录)
+        _c["d"][_k] = _se9e(_k.strip("🇺🇸🇨🇳🇭🇰 ").split("·")[0].strip())
+    except Exception:
+        _c["d"][_k] = ""
+    return _c["d"][_k]
+
+
 def _render_today_verdict(_snap, _repo):
     """【V88·今日总决断 2026-07-17 用户点单】把各模块结论浓缩成"今天该干什么"——
     治大跌日"满屏观察=没推荐"。纯整合层零AI零流量：
@@ -13161,12 +13184,19 @@ def _render_today_nav():
                 _sec_html9 = ["<div style='font-size:13px;line-height:1.75'>"]
                 for _r9 in _sec_rows9:
                     _pc9 = "#dc2626" if (_r9.get("p_up") or 0) >= 55 else ("#16a34a" if (_r9.get("p_up") or 0) <= 45 else "#64748b")
+                    _sedge9 = _v88_sector_edge9(_r9.get('label', ''))
                     _sec_html9.append(
                         f"<div style='border-bottom:1px solid #eef2f7;padding:2px 0'>"
                         f"<b>{_r9['label']}</b> 上涨<b style='color:{_pc9}'>{_r9.get('p_up')}%</b>"
                         f" · 期望{(_r9.get('ev') or 0):+.1f}% · {_r9.get('act', '')[:10]}"
-                        f"　<span style='font-size:12px'>{_fw_chain9((_r9.get('chain') or [])[:3])}</span></div>")
+                        f"　<span style='font-size:12px'>{_fw_chain9((_r9.get('chain') or [])[:3])}</span>"
+                        + (f"<br><span style='font-size:12px;color:#64748b'>🏛️{_sedge9}</span>" if _sedge9 else "")
+                        + "</div>")
                 _sec_html9.append("</div>")
+                _n_noedge9 = sum(1 for _r9x in _sec_rows9 if not _v88_sector_edge9(_r9x.get('label', '')))
+                if _n_noedge9:
+                    _sec_html9.append(f"<div style='font-size:12px;color:#94a3b8'>"
+                                      f"未标🏛️的{_n_noedge9}个板块=近3日无行业研报/板块新闻——纯量价模型信号（如实说明）</div>")
                 st.markdown("".join(_sec_html9), unsafe_allow_html=True)
             st.caption("大盘与板块同一套前瞻引擎、同一缓存时间——左右口径天然一致 · 30分钟刷新 · 概率=规则情景估计")
 
