@@ -1143,9 +1143,18 @@ elif _nav == "🛰️ 雷达族":
                         + (f"（{_p9c.get('date')}）" if _p9c.get("date") else ""))
         _hot9c = _intel9c.get("hot") or []
         if _hot9c:
-            st.caption("🔥 东财人气榜Top10（散户扎堆=拥挤提示·反指标；标⚡=雪球热股同榜,信号更硬）："
-                       + "、".join(f"#{h.get('rank')} {h.get('code')}{'⚡' if h.get('xq_rank') else ''}"
-                                  for h in _hot9c[:10]))
+            st.markdown("**🔥 散户情绪三榜**（反指标：越热闹越要冷静，不是买入榜）")
+            st.caption("🇨🇳 东财人气榜：" + "、".join(
+                f"#{h.get('rank')} {h.get('code')}{'🔥🔥雪#' + str(h.get('xq_rank')) if h.get('xq_rank') else ''}"
+                for h in _hot9c[:10]))
+        _xq9c = _intel9c.get("hot_xq") or []
+        if _xq9c:
+            st.caption("❄️ 雪球热股：" + "、".join(
+                f"#{x.get('rank')} {x.get('name')}" for x in _xq9c[:10]))
+        _us9c = _intel9c.get("hot_us") or []
+        if _us9c:
+            st.caption("🇺🇸 雅虎热搜：" + "、".join(
+                f"#{u.get('rank')} {u.get('symbol')}" for u in _us9c[:10]))
         st.caption(f"🕒 {_intel9c.get('generated_at', '')} · 出处:发改委/央行官网直采+东财股吧")
     else:
         st.info("政策/人气数据待流水线发布。")

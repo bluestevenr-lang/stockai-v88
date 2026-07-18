@@ -12273,7 +12273,11 @@ def _v88_intel9():
                                                      "xq": h.get("xq_rank")}
                                for h in (_raw.get("hot") or [])},
                    "xq_map": {str(x.get("canon")): int(x.get("rank") or 0)
-                              for x in (_raw.get("hot_xq") or [])}}
+                              for x in (_raw.get("hot_xq") or [])},
+                   "hot_raw": _raw.get("hot") or [],
+                   "hot_xq_raw": _raw.get("hot_xq") or [],
+                   "hot_us_raw": _raw.get("hot_us") or [],
+                   "generated_at": _raw.get("generated_at", "")}
     except Exception:
         _c["d"] = {"policy": [], "hot_map": {}}
     _c["ts"] = _t.time()
@@ -14380,6 +14384,45 @@ with st.expander("⚡ 公告事件雷达 · 自选+持仓公司公告（可转�
             st.caption("硬边界：事件只做语境参考，不推翻周期裁决；⚡两面事件若该股被判「回避」，最多短线纪律小仓。")
     except Exception:
         st.info("公告事件数据随日报流水线生成（交易日 07/13/19 点），稍后刷新。")
+
+# 【V88·散户情绪三榜 2026-07-19 用户问"热榜细节在哪"】此前只做池内命中提示,
+# 这里给完整三榜详情——反指标语义:越热闹越要冷静,不是买入榜。
+with st.expander("🔥 散户情绪三榜 · 东财人气/雪球热股/雅虎热搜（反指标·拥挤观察）", expanded=False):
+    try:
+        _i3h9 = _v88_intel9()
+        _c1h9, _c2h9, _c3h9 = st.columns(3)
+        with _c1h9:
+            st.markdown("**🇨🇳 东财股吧人气榜**")
+            _rows_e9 = []
+            for _h9x in (_i3h9.get("hot_raw") or [])[:10]:
+                _nm9x = str(_h9x.get("canon") or _h9x.get("code"))
+                try:
+                    import cloud_engine as _ce_h9
+                    _sc9x = str(_h9x.get("code") or "")
+                    _yf9x = (_sc9x[2:] + (".SS" if _sc9x[:2] == "SH" else ".SZ")) if _sc9x[:2] in ("SH", "SZ") else _sc9x
+                    _nm9x = _ce_h9.name_of(_yf9x) or _nm9x
+                except Exception:
+                    pass
+                _dual9x = "🔥🔥" if _h9x.get("xq_rank") else ""
+                _rows_e9.append(f"<div>#{_h9x.get('rank')} {_stk_link(_nm9x, _yf9x if 'SH' in str(_h9x.get('code', '')) or 'SZ' in str(_h9x.get('code', '')) else _h9x.get('code'))}"
+                                f" {_dual9x}{('<span style=\'color:#94a3b8;font-size:12px\'>雪#' + str(_h9x.get('xq_rank')) + '</span>') if _h9x.get('xq_rank') else ''}</div>")
+            st.markdown("<div style='font-size:13px;line-height:1.7'>" + "".join(_rows_e9) + "</div>",
+                        unsafe_allow_html=True)
+        with _c2h9:
+            st.markdown("**❄️ 雪球热股榜**")
+            st.markdown("<div style='font-size:13px;line-height:1.7'>" + "".join(
+                f"<div>#{_x9h.get('rank')} {_stk_link(_x9h.get('name'), _x9h.get('code'))}</div>"
+                for _x9h in (_i3h9.get("hot_xq_raw") or [])[:10]) + "</div>", unsafe_allow_html=True)
+        with _c3h9:
+            st.markdown("**🇺🇸 雅虎美股热搜**")
+            st.markdown("<div style='font-size:13px;line-height:1.7'>" + "".join(
+                f"<div>#{_u9h.get('rank')} {_stk_link(_u9h.get('symbol'), _u9h.get('symbol'))}</div>"
+                for _u9h in (_i3h9.get("hot_us_raw") or [])[:10]) + "</div>", unsafe_allow_html=True)
+        st.caption(f"🕒 {_i3h9.get('generated_at', '')} · 出处:东财股吧/雪球(匿名token)/雅虎trending · "
+                   "🔥🔥=东财雪球双榜同上(拥挤信号更硬) · 交易日随流水线6小时更新 · "
+                   "纪律:人气榜=散户扎堆反指标——你的票冲上榜是提醒冷静的钟,不是加仓的号")
+    except Exception:
+        st.info("情绪榜数据待流水线生成。")
 
 with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）", expanded=False):
     _rl_ipo9 = _v88_rate_line9("ipo_hk", "港股新股首日")
