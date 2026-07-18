@@ -14493,6 +14493,62 @@ with st.expander("🛰️ 全行业机会雷达 · 谁在起步（含医疗，�
     elif not _radar_go:
         st.info("点上方按钮扫描。找到'起步'板块（如医疗）时会在这里高亮，避免后知后觉。")
 
+# 【V88·触底拐点机会池 2026-07-19 用户点单恢复+现代化】前身"深度回调机会池"。
+# 优质池116只里"跌得深(52周双口径)且拐点已现"的中美港各Top10——仍在寻底的不收。
+with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现（中美港各Top10）", expanded=False):
+    st.caption("三闸门：①优质池出身(116只行业龙头) ②深水位(距52周高≤-25%或52周分位≤20%) "
+               "③拐点已现(放量收复MA20/放量长阳/底背离金叉/底部启动确认)——仍在寻底的不收，宁缺毋滥。"
+               "概率=规则情景估计(非回测胜率)；观察清单非买入指令，进场仍走时机灯纪律。")
+    _btp_state9 = st.session_state.get("_bottom_turn_pool9")
+    _btp_go9 = st.button("💎 扫描触底拐点（116只·约2-4分钟）", key="btn_bottom_turn9")
+    if _btp_go9:
+        try:
+            import sys as _sy_btp
+            _p_btp = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
+            if _p_btp not in _sy_btp.path:
+                _sy_btp.path.insert(0, _p_btp)
+            from horizon_rank_cloud import POOLS as _POOLS_btp
+            from bottom_turn_pool import scan_bottom_turns as _sbt9
+            import cloud_engine as _ce_btp
+            from v88_decision_core import evaluate_forward_outlook as _efo_btp
+            with _v88_running("触底拐点扫描 · 优质池116只（深水位+拐点双闸）"):
+                _btp_state9 = _sbt9(
+                    lambda c: fetch_stock_data(to_yf_cn_code(c)),
+                    _ce_btp.analyze_trend_full, _efo_btp, _POOLS_btp,
+                    extremes_fn=lambda c: _price_extremes9(to_yf_cn_code(c)))
+            _btp_state9["ts"] = time.time()
+            st.session_state["_bottom_turn_pool9"] = _btp_state9
+        except Exception as _btp_e9:
+            st.error(f"⚠️ 扫描异常: {str(_btp_e9)[:80]}")
+    if _btp_state9:
+        st.caption(f"🕒 扫描于 {datetime.fromtimestamp(_btp_state9.get('ts', 0)).strftime('%m-%d %H:%M')}"
+                   f" · 扫{_btp_state9.get('scanned', 0)}只 → 深水位{_btp_state9.get('deep', 0)}只"
+                   f" → 拐点已现{_btp_state9.get('turned', 0)}只（漏斗数字透明）")
+        _any_btp9 = False
+        for _mk_btp9 in ("美股", "A股", "港股"):
+            _rows_btp9 = (_btp_state9.get("markets") or {}).get(_mk_btp9) or []
+            if not _rows_btp9:
+                continue
+            _any_btp9 = True
+            st.markdown(f"**{'🇺🇸' if _mk_btp9 == '美股' else ('🇨🇳' if _mk_btp9 == 'A股' else '🇭🇰')} "
+                        f"{_mk_btp9}（{len(_rows_btp9)}只）**")
+            st.markdown("<div style='font-size:13px;line-height:1.75'>" + "".join(
+                f"<div style='border-bottom:1px solid #eef2f7;padding:3px 0'>"
+                f"<b>机会分{_r9b['score']}</b> {_stk_link(_r9b['name'], _r9b['code'])} "
+                f"<span style='color:#64748b'>现价{_r9b['last']} · 距52周高{_r9b['dd52']}%"
+                f" · 52周{_r9b['p52']}%位{('·' + _r9b['hist']) if _r9b.get('hist') else ''}</span><br>"
+                f"<span style='font-size:12px;color:#16a34a'>🔄 {_r9b['turn_label']}：{_r9b['turn_sigs']}</span>"
+                f"<span style='font-size:12px;color:#475569'>｜上涨{_r9b['p_up']}%·盈亏比{_r9b['rr']}"
+                f"·期望{_r9b['ev']:+.1f}%｜支撑{_r9b.get('support', '—')}·破{_r9b.get('stop', '—')}废</span>"
+                + ((lambda _e: f"<br><span style='font-size:12px;color:#475569'>💡{_e}</span>" if _e else "")(
+                    _v88_fund_edge_short(_r9b['name'])))
+                + "</div>"
+                for _r9b in _rows_btp9) + "</div>", unsafe_allow_html=True)
+        if not _any_btp9:
+            st.info("本轮无'深水位+拐点已现'双闸达标的优质股——宁缺毋滥，仍在寻底的不硬凑。")
+    elif not _btp_go9:
+        st.info("点上方按钮扫描。专抓'优质股跌深了且拐点信号已出现'的时刻——比等回踩更早半步。")
+
 # 用户明确要求删除重复持仓展示：旧 Excel“我的持仓/AI组合分析”不再渲染；
 # 数据与函数保留兼容，唯一入口为上方“持仓决策中心”。
 
