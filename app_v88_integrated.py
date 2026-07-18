@@ -12033,6 +12033,50 @@ def _render_today_verdict(_snap, _repo):
     except Exception:
         pass
 
+    # 【V88·绿灯留痕对账 2026-07-18 用户点单】推荐不许无声蒸发（"昨天有OTIS今天没了"）：
+    # 每次渲染把绿灯榜落盘；与上一榜（不同日期）对账，掉榜必须给下榜理由。
+    # 已按昨日绿灯进场的仍按原计划（止损/作废价/目标）执行——下榜=窗口或条件变化，不是翻案。
+    _dropped = []
+    try:
+        _gl_fp = _repo / "data" / "greenlight_log.json"
+        _today9 = datetime.now().strftime("%Y-%m-%d")
+        try:
+            _gl = _jv.loads(_gl_fp.read_text(encoding="utf-8"))
+        except Exception:
+            _gl = {}
+        _cur_items = {}
+        for _h in _go:
+            _ck9 = str(_h.get("code") or "").upper().split(".")[0].lstrip("0")
+            _cur_items[_ck9] = {
+                "name": _h.get("name"), "code": _h.get("code"),
+                "mode": ((_h.get("entry_plan") or {}).get("mode")
+                         or ((_h.get("trade_plan") or {}).get("short") or {}).get("mode") or "绿灯")}
+        _last9 = _gl.get("last") or {}
+        if _last9.get("date") and _last9["date"] != _today9:
+            _gl["prev"] = _last9
+        _gl["last"] = {"date": _today9, "items": _cur_items}
+        _prev9 = _gl.get("prev") or {}
+        _wa_all9 = {str(d.get("code") or "").upper().split(".")[0].lstrip("0"): d for d in
+                    ((st.session_state.get("watch_alerts_v88") or {}).get("decisions") or [])}
+        for _ck9, _it9 in (_prev9.get("items") or {}).items():
+            if _ck9 in _cur_items:
+                continue
+            _d9 = _wa_all9.get(_ck9) or {}
+            _mode9 = str((_d9.get("entry_plan") or {}).get("mode") or "")
+            if _it9.get("name") in _cut:
+                _why9 = "已转减仓信号"
+            elif _mode9 and _mode9 not in ("现价可进", "回踩到位", "突破确认"):
+                _why9 = f"时机灯转「{_mode9}」"
+            elif _d9:
+                _why9 = "绿灯条件今日不满足"
+            else:
+                _why9 = "本轮未覆盖计算（黑马榜轮换）"
+            _dropped.append((_it9.get("name") or _ck9, _it9.get("code") or _ck9,
+                             _prev9.get("date") or "上一交易日", _why9))
+        _gl_fp.write_text(_jv.dumps(_gl, ensure_ascii=False, indent=1), encoding="utf-8")
+    except Exception:
+        pass
+
     _html = [f"<div style='background:{_tbg};border:1px solid {_tcol}33;border-left:4px solid {_tcol};"
              f"border-radius:10px;padding:.6rem .85rem;margin:.2rem 0 .5rem'>"
              f"<div style='font-size:15px;font-weight:800;color:{_tcol};margin-bottom:4px'>"
@@ -12044,16 +12088,25 @@ def _render_today_verdict(_snap, _repo):
                      "温度越高越热越该轻仓）</span>："
                      + " ｜ ".join(_pos) + "</div>")
     if _go:
+        # 【2026-07-18 用户抓截断】原[:6]静默截掉尾部（"8只只见6只"，OTIS就这样凭空消失）——全量显示
         _go_txt = "、".join(f"{h.get('_src', '')}{_stk_link(h.get('name'), h.get('code'))}"
                            f"<span style='font-size:12px;color:#64748b'>"
                            f"({h.get('market', '')[-2:]}{('·' + h['touch']) if h.get('touch') else ''})</span>"
-                           for h in _go[:6])
+                           for h in _go)
         _html.append(f"<div style='font-size:13px;margin-bottom:3px'>🟢 <b style='color:#dc2626'>"
                      f"可进场</b>（严门槛绿灯 {len(_go)} 只）：{_go_txt}"
                      f"<span style='font-size:12px;color:#64748b'>——仓位按上方纲领，别越线重仓</span></div>")
     else:
         _html.append("<div style='font-size:13px;margin-bottom:3px'>🟢 <b>可进场</b>：今日无严门槛绿灯，"
                      "空仓等待也是决策（现金也是仓位）</div>")
+    if _dropped:
+        _dr_txt = "、".join(
+            f"{_stk_link(_n9, _c9)}<span style='font-size:12px;color:#94a3b8'>（{_dt9}在榜·{_w9}）</span>"
+            for _n9, _c9, _dt9, _w9 in _dropped[:6])
+        _html.append("<div style='font-size:13px;margin-bottom:3px'>⬇️ <b style='color:#64748b'>下榜说明</b>："
+                     + _dr_txt +
+                     "<span style='font-size:12px;color:#94a3b8'>——绿灯=入场时机窗口开启，下榜=窗口关闭或条件变化；"
+                     "已按当日绿灯进场的，继续按原计划止损/作废价/目标执行，下榜不是翻案</span></div>")
     if _cut:
         _cut_txt = "、".join(
             f"{_stk_link(_v[2] and (_k) or _k, _v[2] or _k)}"
