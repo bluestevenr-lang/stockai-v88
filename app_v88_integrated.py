@@ -13983,6 +13983,23 @@ with st.expander("⚡ 公告事件雷达 · 自选+持仓公司公告（可转�
         st.caption(f"🕒 {_annj9.get('generated_at', '')} · 池{_annj9.get('pool_n', 0)}只 · "
                    "出处:东财公告库（A股+港股；美股8-K不覆盖，如实说明） · "
                    "交易日随流水线更新；盘中出新事件自动推飞书预警（48h同事件只推一次）")
+        # 【V88·全市场可转债日历 2026-07-18 用户点单】低频事件全市场一网打尽,
+        # 申购/上市提前预警;⭐=正股在你的池内(抢权窗口重点)。
+        _cbs9 = _annj9.get("cb_calendar") or []
+        if _cbs9:
+            _tdy9 = datetime.now().strftime("%Y-%m-%d")
+            st.markdown("**🌐 全市场可转债日历**（近期申购/上市·出处:东财可转债数据）")
+            st.markdown("<div style='font-size:13px;line-height:1.7'>" + "".join(
+                f"<div>· <b>{_x9.get('bond')}</b>（正股 {_stk_link(_x9.get('stock'), _x9.get('stock_code'))}）"
+                + (f"申购日<b>{_x9.get('apply_date')}</b>" if str(_x9.get('apply_date') or '') >= _tdy9
+                   else f"已申购·上市日{_x9.get('list_date') or '待定'}")
+                + f"·评级{_x9.get('rating')}·{_x9.get('scale')}亿"
+                f"<span style='color:#64748b'>——{_x9.get('note')}</span>"
+                + ("<b style='color:#b45309'> ⭐池内正股·抢权窗口</b>" if _x9.get('in_pool') else "")
+                + "</div>"
+                for _x9 in _cbs9[:8]) + "</div>", unsafe_allow_html=True)
+            st.caption("申购日当天/前一天盘中会自动推飞书提醒；转债打新顶格申购不占资金，"
+                       "抢权博弈两面（配售权vs摊薄+登记日后惯性回落），仅短线纪律仓。")
         _evs_all9 = _annj9.get("events") or {}
         if not _evs_all9:
             st.info("近5日池内无可转债/回购/减持等公告事件——无事件也是信息（如实说明）。")
