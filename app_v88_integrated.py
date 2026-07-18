@@ -14500,30 +14500,40 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
                "③拐点已现(放量收复MA20/放量长阳/底背离金叉/底部启动确认)——仍在寻底的不收，宁缺毋滥。"
                "概率=规则情景估计(非回测胜率)；观察清单非买入指令，进场仍走时机灯纪律。")
     _btp_state9 = st.session_state.get("_bottom_turn_pool9")
-    _btp_go9 = st.button("💎 扫描触底拐点（116只·约2-4分钟）", key="btn_bottom_turn9")
+    # 【2026-07-19 用户点单二期】大样本:全市场股票池(与一键全选同池,676-1300只),
+    # 并发8线程闸门筛选;闸③机会分≥55才上榜(精准高分,宁缺毋滥)。
+    _btp_go9 = st.button(f"💎 扫描触底拐点（全市场大池{len(RAW_US)+len(RAW_HK)+len(RAW_CN_TOP)}只"
+                         "·首扫约6-12分钟,缓存命中更快）", key="btn_bottom_turn9")
     if _btp_go9:
         try:
-            import sys as _sy_btp
-            _p_btp = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
-            if _p_btp not in _sy_btp.path:
-                _sy_btp.path.insert(0, _p_btp)
-            from horizon_rank_cloud import POOLS as _POOLS_btp
             from bottom_turn_pool import scan_bottom_turns as _sbt9
             import cloud_engine as _ce_btp
             from v88_decision_core import evaluate_forward_outlook as _efo_btp
-            with _v88_running("触底拐点扫描 · 优质池116只（深水位+拐点双闸）"):
-                _btp_state9 = _sbt9(
-                    lambda c: fetch_stock_data(to_yf_cn_code(c)),
-                    _ce_btp.analyze_trend_full, _efo_btp, _POOLS_btp,
-                    extremes_fn=lambda c: _price_extremes9(to_yf_cn_code(c)))
+            _mk_pool9 = lambda raw: {"codes": [(str(it[2] if len(it) >= 3 else it[0]), str(it[1]))
+                                               for it in raw]}
+            _pools_big9 = {"美股": _mk_pool9(RAW_US), "港股": _mk_pool9(RAW_HK),
+                           "A股": _mk_pool9(RAW_CN_TOP)}
+            _prog_btp9 = st.progress(0)
+            _stat_btp9 = st.empty()
+            def _cb_btp9(done, total, turned):
+                _prog_btp9.progress(min(1.0, done / max(1, total)))
+                _stat_btp9.caption(f"⏳ 闸门筛选 {done}/{total} · 拐点已现 {turned} 只")
+            _btp_state9 = _sbt9(
+                lambda c: fetch_stock_data(to_yf_cn_code(c)),
+                _ce_btp.analyze_trend_full, _efo_btp, _pools_big9,
+                extremes_fn=lambda c: _price_extremes9(to_yf_cn_code(c)),
+                max_workers=8, min_score=55, progress_cb=_cb_btp9)
+            _prog_btp9.empty()
+            _stat_btp9.empty()
             _btp_state9["ts"] = time.time()
             st.session_state["_bottom_turn_pool9"] = _btp_state9
         except Exception as _btp_e9:
             st.error(f"⚠️ 扫描异常: {str(_btp_e9)[:80]}")
     if _btp_state9:
         st.caption(f"🕒 扫描于 {datetime.fromtimestamp(_btp_state9.get('ts', 0)).strftime('%m-%d %H:%M')}"
-                   f" · 扫{_btp_state9.get('scanned', 0)}只 → 深水位{_btp_state9.get('deep', 0)}只"
-                   f" → 拐点已现{_btp_state9.get('turned', 0)}只（漏斗数字透明）")
+                   f" · 大池{_btp_state9.get('pool_size', 0)}只 → 有效{_btp_state9.get('scanned', 0)}"
+                   f" → 深水位{_btp_state9.get('deep', 0)} → 拐点已现{_btp_state9.get('turned', 0)}"
+                   f" → 低分淘汰{_btp_state9.get('cut_low', 0)}（机会分≥55才上榜·漏斗透明）")
         _any_btp9 = False
         for _mk_btp9 in ("美股", "A股", "港股"):
             _rows_btp9 = (_btp_state9.get("markets") or {}).get(_mk_btp9) or []
