@@ -2754,6 +2754,24 @@ _v88_front_decision_slot = st.empty()
 # 让点开就能秒搜，无需滚到下方深度作战室。真正渲染在自选工具就绪后（约¼页处）回填。
 _v88_search_slot = st.empty()
 
+# 【V88·两池归一 2026-07-18 用户定纲】全站个股池只收两个模块：💼持仓 → ⭐自选。
+# 散落各处的持仓/自选渲染块全部路由进这两个容器（container对象可多次with追加）；
+# 其余主题模块（轮动/新闻/推荐/各雷达）保持领域视角，不再各自另设持仓/自选小灶。
+_v88_hold_slot9 = st.empty()
+_v88_watch_slot9 = st.empty()
+_v88_hold_mod9 = _v88_hold_slot9.container()
+_v88_watch_mod9 = _v88_watch_slot9.container()
+with _v88_hold_mod9:
+    st.markdown('<div style="font-size:17px;font-weight:800;color:#123a70;'
+                'border-left:4px solid #2563eb;padding-left:.5rem;margin:.4rem 0 .05rem">'
+                '💼 持仓 <span style="font-size:12px;color:#94a3b8;font-weight:400">'
+                '——持仓个股的全部信息只在此模块</span></div>', unsafe_allow_html=True)
+with _v88_watch_mod9:
+    st.markdown('<div style="font-size:17px;font-weight:800;color:#123a70;'
+                'border-left:4px solid #f59e0b;padding-left:.5rem;margin:.4rem 0 .05rem">'
+                '⭐ 自选 <span style="font-size:12px;color:#94a3b8;font-weight:400">'
+                '——自选个股的全部信息只在此模块</span></div>', unsafe_allow_html=True)
+
 # 【V88界面修改原则】默认只新增、压缩与重排；不得删除或隐藏原有内容，
 # 除非用户明确提出“删除”。紧凑版必须保留原指标与原功能入口。
 
@@ -11733,11 +11751,13 @@ def _v88_decision_card(_d9):
     </div>"""
 
 
-def _render_my_stocks_today(_wa, _live_chg):
+def _render_my_stocks_today(_wa, _live_chg, *, scopes=("持仓", "自选"), container=None):
     """【V88·我的票·今日逐只怎么办 2026-07-17 用户点单】对持仓+自选+重点关注,
-    逐只说清"今天能不能动+为什么"——区分破位该躲vs错杀可低吸,不再满屏"等回踩"。"""
+    逐只说清"今天能不能动+为什么"——区分破位该躲vs错杀可低吸,不再满屏"等回踩"。
+    【两池归一 2026-07-18】scopes/container: 持仓部分进💼持仓模块,自选部分进⭐自选模块。"""
     _decs = [d for d in (_wa or {}).get("decisions") or []
-             if d.get("scope") in ("持仓", "自选") or d.get("in_watchlist")]
+             if (d.get("scope") in scopes or ("自选" in scopes and d.get("in_watchlist")
+                                              and d.get("scope") != "持仓"))]
     if not _decs:
         return
     try:
@@ -11765,7 +11785,9 @@ def _render_my_stocks_today(_wa, _live_chg):
     _order = {"破位": 0, "个股利空": 0, "错杀": 1, "可进": 1, "持有": 2, "观察": 3}
     _rows.sort(key=lambda x: (0 if x[0].get("scope") == "持仓" else 1,
                               _order.get(x[1]["kind"], 9), float(x[0].get("today_chg") or 0)))
-    with st.expander(f"📌 我的票 · 今日逐只怎么办（能不能动+为什么 · {len(_rows)}只）", expanded=True):
+    _pool_word9 = "持仓" if tuple(scopes) == ("持仓",) else ("自选" if tuple(scopes) == ("自选",) else "我的票")
+    _ctx9r = container if container is not None else st.container()
+    with _ctx9r, st.expander(f"📌 {_pool_word9} · 今日逐只怎么办（能不能动+为什么 · {len(_rows)}只）", expanded=True):
         st.caption("区分「破位该躲」和「错杀可低吸」——不是永远等回踩。点名进深度分析。")
         _html = ["<div style='font-size:13px;line-height:1.5'>"]
         for _d, _diag in _rows:
@@ -12681,7 +12703,7 @@ def _render_today_nav():
 
     # 【V88·第一屏自选决策台】先占住标题下方的位置，扫描完成后再回填。
     # 这样无需重复请求行情，也能让“我的自选”真正排在大盘、日报和持仓之前。
-    _watch_front_slot9 = st.empty()
+    # 【两池归一 2026-07-18】原第一屏独立slot废弃,自选台直接进⭐自选模块容器
 
     def _render_front_watch_add9():
         """置顶自选台直接录入；名称/简称/代码均可，并让多解结果先选择再加入。"""
@@ -12749,7 +12771,7 @@ def _render_today_nav():
         # “同时是持仓”的标的仍属于自选，不能因为风险优先分类而从自选台消失。
         _watch9 = [d for d in _all9 if d.get("in_watchlist") or d.get("scope") == "自选"]
         if not _watch9:
-            with _watch_front_slot9.container():
+            with _v88_watch_mod9:
                 st.info("⭐ 我的自选股决策台正在计算；完成后将在这里显示上涨/下跌概率与盈亏比。")
                 _render_front_watch_add9()
             return
@@ -12792,7 +12814,7 @@ def _render_today_nav():
                 f'<section class="v88-watch-market"><h4>{_m9} <span>{len(_rows9)}只</span></h4>'
                 + "".join(_card9(d) for d in _rows9) + "</section>")
 
-        with _watch_front_slot9.container():
+        with _v88_watch_mod9:
             import textwrap as _textwrap9
             # 先对不含动态卡片的模板去缩进，再替换动态内容；否则卡片中的零缩进行
             # 会让 Markdown 把最外层 div 误判成代码块。
@@ -13302,10 +13324,12 @@ def _render_today_nav():
                     continue
             _scan_prog9.empty()
             _scan_status9.empty()
+            # 【2026-07-18修】新股简版记录(_short_history)没有p_down——裸取键曾KeyError
+            # 炸掉整个扫描段(自选台/预警/逐只全灭),一律.get兜底。
             _decisions9.sort(key=lambda x: (
-                0 if x["scope"] == "自选" else (1 if x["scope"] == "持仓" else 2),
+                0 if x.get("scope") == "自选" else (1 if x.get("scope") == "持仓" else 2),
                 0 if x.get("level") == "A" else (1 if x.get("level") == "B" else 2),
-                -x["p_down"]))
+                -float(x.get("p_down") or 0)))
             _wa = {"ts": time.time(), "alerts": _alerts9, "decisions": _decisions9,
                    "n": len(_pool_wa), "rule_version": 9, "holding_levels": _holding_levels9}
             st.session_state['watch_alerts_v88'] = _wa
@@ -13321,7 +13345,8 @@ def _render_today_nav():
                     _mkchg9[_mk9m] = (float(_c9m.iloc[-1]) / float(_c9m.iloc[-2]) - 1) * 100
                 except Exception:
                     _mkchg9[_mk9m] = 0.0
-            _render_my_stocks_today(_wa, _mkchg9)
+            _render_my_stocks_today(_wa, _mkchg9, scopes=("持仓",), container=_v88_hold_mod9)
+            _render_my_stocks_today(_wa, _mkchg9, scopes=("自选",), container=_v88_watch_mod9)
         except Exception:
             logging.debug("我的票逐只解读渲染失败", exc_info=True)
 
@@ -13425,19 +13450,21 @@ def _render_today_nav():
                             if a not in _critical9 and "[持仓" not in a
                             and not any(f"({_hc})" in a for _hc in _hold_codes9x)]
             if _watch_only9:
-                with st.expander(f"⚡ 自选/常搜智能预警（{len(_watch_only9)}条触发 · 多因子共振） · {_alert_analysis_note9}", expanded=False):
+                with _v88_watch_mod9, st.expander(f"⚡ 预警触发（自选/常搜 · 多因子共振 · {len(_watch_only9)}条） · {_alert_analysis_note9}", expanded=False):
                     st.markdown("\n".join(f"- {_linkify_md(a)}" for a in _watch_only9), unsafe_allow_html=True)
                     with st.popover("📋 复制预警"):
                         st.code(_alert_analysis_note9 + "\n" + "\n".join(a.replace("**", "") for a in _watch_only9), language=None)
             elif not _critical9:
-                st.caption(f"⚡ 关注股预警：{_wa.get('n', 0)}只关注股暂无触发（持仓15分钟｜A盘中3小时｜B每天｜C每周）")
+                with _v88_watch_mod9:
+                    st.caption(f"⚡ 预警：{_wa.get('n', 0)}只关注股暂无触发（持仓15分钟｜A盘中3小时｜B每天｜C每周）")
         else:
-            st.caption(f"⚡ 关注股预警：{_wa.get('n', 0)}只关注股暂无触发（持仓15分钟｜A盘中3小时｜B每天｜C每周）")
+            with _v88_watch_mod9:
+                st.caption(f"⚡ 预警：{_wa.get('n', 0)}只关注股暂无触发（持仓15分钟｜A盘中3小时｜B每天｜C每周）")
     except Exception as _we9:
-        logging.debug(f"关注股预警异常: {_we9}")
+        logging.debug(f"关注股预警异常: {_we9}", exc_info=True)
 
     # 【V88·持仓决策中心】唯一持仓展示：完整日报分析 + 实时风险 + 可修改底稿。
-    with st.expander("💼 持仓决策中心（中美港同源分析 · 可修改）", expanded=True):
+    with _v88_hold_mod9, st.expander("📊 决策中心 · 概率卡+完整分析+生命周期+录单（中美港同源 · 可修改）", expanded=True):
         import sys as _sysf
         if str(_repo / "src") not in _sysf.path:
             _sysf.path.insert(0, str(_repo / "src"))
