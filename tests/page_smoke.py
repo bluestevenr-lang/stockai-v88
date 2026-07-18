@@ -31,8 +31,7 @@ for _attr in ("markdown", "caption", "expander", "info", "warning", "error", "su
 _page = "\n".join(_texts)
 
 MUST_HAVE = [
-    "💼 持仓",                # 两池归一·持仓模块头
-    "⭐ 自选",                # 两池归一·自选模块头
+    "我的股票池",              # 一池归一·持仓+自选合并模块头(金名=双重身份)
     "决策中心 · 概率卡",       # 持仓决策中心
     "推荐中心",                # 四档推荐
     "公告事件雷达",            # 事件雷达

@@ -2774,20 +2774,18 @@ _v88_search_slot = st.empty()
 # 【V88·两池归一 2026-07-18 用户定纲】全站个股池只收两个模块：💼持仓 → ⭐自选。
 # 散落各处的持仓/自选渲染块全部路由进这两个容器（container对象可多次with追加）；
 # 其余主题模块（轮动/新闻/推荐/各雷达）保持领域视角，不再各自另设持仓/自选小灶。
+# 【V88·一池归一 2026-07-18 用户定纲二次迭代】持仓+自选融合为一个模块缩小版面：
+# 金色名=既是持仓又是自选(双重身份醒目) / 💼=纯持仓 / ⭐=纯自选。
+# 两个容器变量保留(散落块的路由不用改),都指向同一个容器。
 _v88_hold_slot9 = st.empty()
-_v88_watch_slot9 = st.empty()
 _v88_hold_mod9 = _v88_hold_slot9.container()
-_v88_watch_mod9 = _v88_watch_slot9.container()
+_v88_watch_mod9 = _v88_hold_mod9
 with _v88_hold_mod9:
     st.markdown('<div style="font-size:17px;font-weight:800;color:#123a70;'
-                'border-left:4px solid #2563eb;padding-left:.5rem;margin:.4rem 0 .05rem">'
-                '💼 持仓 <span style="font-size:12px;color:#94a3b8;font-weight:400">'
-                '——持仓个股的全部信息只在此模块</span></div>', unsafe_allow_html=True)
-with _v88_watch_mod9:
-    st.markdown('<div style="font-size:17px;font-weight:800;color:#123a70;'
-                'border-left:4px solid #f59e0b;padding-left:.5rem;margin:.4rem 0 .05rem">'
-                '⭐ 自选 <span style="font-size:12px;color:#94a3b8;font-weight:400">'
-                '——自选个股的全部信息只在此模块</span></div>', unsafe_allow_html=True)
+                'border-left:4px solid #b8860b;padding-left:.5rem;margin:.4rem 0 .05rem">'
+                '📊 我的股票池（持仓＋自选） <span style="font-size:12px;color:#94a3b8;font-weight:400">'
+                '——两池全部信息只在此模块；<b style="color:#b8860b">金色名=持仓∩自选</b>·💼纯持仓·⭐纯自选</span></div>',
+                unsafe_allow_html=True)
 
 # 【V88界面修改原则】默认只新增、压缩与重排；不得删除或隐藏原有内容，
 # 除非用户明确提出“删除”。紧凑版必须保留原指标与原功能入口。
@@ -11531,6 +11529,7 @@ _V88_CARD_CSS = """
 .v88-watch-card-head{display:flex;justify-content:space-between;align-items:center;gap:5px;font-size:14px;line-height:1.3}
 .v88-name-line{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .v88-watch-card-head a{color:#173b68!important;text-decoration:none!important;font-weight:700!important}
+.v88-watch-card-head a.v88-dual{color:#b8860b!important;font-weight:800!important}/* 一池归一:金名=持仓∩自选,压过上行!important */
 .v88-code{color:#94a3b8;font-size:12px;margin-left:3px}
 .v88-action{color:#1d4ed8;font-size:13px;white-space:nowrap}
 .v88-level{display:inline-block;padding:1px 4px;border-radius:4px;font-size:12px;margin-right:3px;color:#fff}
@@ -11772,11 +11771,21 @@ def _v88_decision_card(_d9):
     _mv_html9 = ((f'<div style="font-size:12px;color:#b91c1c;line-height:1.3;margin-top:2px;'
                   f'white-space:nowrap;overflow:hidden;text-overflow:ellipsis">📌'
                   + str(_d9.get('move_reason')) + '</div>') if _d9.get('move_reason') else '')
+    # 【一池归一 2026-07-18】双重身份金色名(#b8860b)醒目;纯持仓💼/纯自选⭐小标
+    _is_hold9 = str(_d9.get("scope") or "") == "持仓"
+    _is_watch9 = bool(_d9.get("in_watchlist")) or str(_d9.get("scope") or "") == "自选"
+    _dual9 = _is_hold9 and _is_watch9
+    _pool_tag9 = "" if _dual9 else ("💼" if _is_hold9 else ("⭐" if _is_watch9 else ""))
+    # class方案压过 .v88-watch-card-head a 的 !important(内联style会被它盖掉,实机案发)
+    _name_html9 = (f'<a class="v88-dual" href="?q={_d9.get("code")}&focus=deep#v88-deep-analysis" '
+                   f'target="_self" style="cursor:pointer">'
+                   f'{_d9.get("name") or _d9.get("code")}</a>' if _dual9
+                   else _stk_link(_d9.get('name') or _d9.get('code'), _d9.get('code')))
     return f"""
     <div class="v88-watch-card{' v88-watch-conflict' if _conflict9 else ''}">
       <div class="v88-watch-card-head">
         <div class="v88-name-line"><span class="v88-level v88-level-{_level9}">{_level9}级</span>
-        {_stk_link(_d9.get('name') or _d9.get('code'), _d9.get('code'))}
+        {_pool_tag9}{_name_html9}
         <span class="v88-code">{_d9.get('code')}</span></div>
         <b class="v88-action" style="color:{_act_color_of9(_action_disp9)}">{_action_disp9}</b>
       </div>{_mv_html9}{_edge_html9}{_diag_html9}
@@ -12998,8 +13007,9 @@ def _render_today_nav():
     def _render_front_watch_board9(_wa9, _time_note9):
         """把规则概率与盈亏比做成第一屏主视觉；详细预警仍在原模块保留。"""
         _all9 = list((_wa9 or {}).get("decisions") or [])
-        # “同时是持仓”的标的仍属于自选，不能因为风险优先分类而从自选台消失。
-        _watch9 = [d for d in _all9 if d.get("in_watchlist") or d.get("scope") == "自选"]
+        # 【一池归一 2026-07-18】全池board:持仓+自选都进同一张卡片网格
+        _watch9 = [d for d in _all9 if d.get("in_watchlist")
+                   or d.get("scope") in ("自选", "持仓")]
         if not _watch9:
             with _v88_watch_mod9:
                 st.info("⭐ 我的自选股决策台正在计算；完成后将在这里显示上涨/下跌概率与盈亏比。")
@@ -13777,16 +13787,11 @@ def _render_today_nav():
                             f"💡 {_pcx9.get('advice', '')}</div>")
                 except Exception:
                     _pcx_html9 = ""
-                st.markdown(
-                    _V88_CARD_CSS
-                    + '<div class="v88-watch-shell"><div class="v88-watch-title">'
-                    + '<h3>💼 我的持仓 · 概率决策台</h3>'
-                    + f'<p>短/中/长/16周上涨概率走势条+盈亏比，与自选台同源｜点名进深度分析<br>{_htime9}</p></div>'
-                    + _pcx_html9
-                    + f'<div class="v88-watch-grid">{"".join(_cols_h9)}</div></div>',
-                    unsafe_allow_html=True)
-                st.caption("持仓概率与自选同一套引擎；首点「今天」=当前阶段+5日动量实算起点（空心点·非预测），"
-                           "其后数字=各周期上涨概率%（红≥55偏涨/绿≤45偏跌/灰中性），"
+                # 【一池归一 2026-07-18】持仓概率卡已并入上方"我的股票池"网格(金名=双重身份,
+                # 💼=纯持仓)——此处只留独有的组合体检,重复网格撤掉缩小版面。
+                if _pcx_html9:
+                    st.markdown(_pcx_html9, unsafe_allow_html=True)
+                st.caption("💼 持仓概率卡已并入上方「我的股票池」（金色名=持仓∩自选·💼纯持仓）；"
                            "破止损见上方🚨红框。下方表格为基本面/技术面/新闻面完整分析。")
         except Exception as _hpe9:
             logging.debug(f"持仓决策台渲染失败: {_hpe9}")
