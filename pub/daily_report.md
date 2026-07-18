@@ -207,26 +207,3 @@
 
 ---
 
-## 🔗 可核验来源台账
-
-> 编号与正文 [N] 对应。Tier A=一手/监管来源，Tier B=主流专业媒体，Tier C=聚合或二手来源。
-
-- **[1] Tier C · 华尔街见闻 · 2026-07-17T00:12:49+00:00**：[SpaceX取消“星舰”第13次试飞任务,马斯克:将换发动机,下周初重新尝试发射](https://wallstreetcn.com/articles/3777153)
-- **[2] Tier C · 华尔街见闻 · 2026-07-16T22:25:25+00:00**：[谷歌大跌5%!报道:Gemini旗舰模型发布延期,编程能力不及预期,落后OpenAI](https://wallstreetcn.com/articles/3777141)
-- **[4] Tier C · 华尔街见闻 · 2026-07-16T16:09:30+00:00**：[华尔街点评台积电财报:毛利率”略弱“,资本支出意外增加提振AI供应链信心](https://wallstreetcn.com/articles/3777134)
-- **[5] Tier B · CNBC - Top News · 2026-07-17T12:05:24+00:00**：[Nasdaq futures fall 2% as global chip sell-off continues: Live updates](https://www.cnbc.com/2026/07/16/stock-market-today-live-updates.html)
-- **[6] Tier C · Investing.com - Stock Market News · 2026-07-17T11:48:08+00:00**：[TSX futures inch lower amid worries over AI trajectory, Mideast tensions](https://www.investing.com/news/stock-market-news/tsx-futures-inch-lower-amid-worries-over-ai-trajectory-mideast-tensions-4798206)
-- **[7] Tier C · Google News - 中文市场聚合 · 2026-07-17T11:33:52+00:00**：[创新药遭“错杀”?AH十余股狂泻逾10%!港股通创新药ETF(520880)、场内唯一药ETF同创历史最大单日跌幅 - 新浪财经](https://news.google.com/rss/articles/CBMiogJBVV95cUxOZ2RaMGVRMHhaVm1aRGxXbjFxVk5JMk5DUndxTjBqSTNncmZlV0U1dUNULWN1dWhvYmFHdVd4ek9VVDd2a0NieXFhNTFUTS1oaFNHTmxhY2ZZZWVUdTRaX0t5Z09xRlZYRDJwSGt1NXZ0UkhwLU1nUzNnYzNQdjBHcVRneHlZcXhfNHdETnh4VmN1ZzJnc0Jpd3NRaHlpN3ZVanRPQW5zOEtOVW9GX0tJU09xZzJCUzZGWWNfYzBDTFNDVWo0MU53U3hLTEFvVG4zODdIT1JwQzZ1YlVDTXRpSVBmV1lESGVmMlY0cDdjNGFXX1R3bWF6Rk1DR1BRN1d3bGR4c3pYS0thU0JtUHNyVjNwUVEwZ3JWbmpHakxMeDdhdw?oc=5)
-- **[8] Tier C · Google News - EN Markets · 2026-07-17T11:33:33+00:00**：[Was ¥4.3 Trillion Really Wiped Out from China’s Stock Market Today? - Disruption Banking](https://news.google.com/rss/articles/CBMitwFBVV95cUxObmxLeENNZkx4REdxdjRIM2hlN0JVdkN2ZEp6LTY3QkxzX09UTV9vLU9VTnY5bU1Pa2JaUHBISmdndGxmYUxoVklZQmtjTVVETDN5NkdVdUxMWWRkM3JXbnJ1aHJrMHZHeERVLWIwM1plenMtbjBYSWVUcjdkVUd0eTNYUlBZREdocHhJYnR4Z2ROb09oRWo3UllwSTRsZnN3eFdGRlFGQ2s5YUdoUkxBRFpEbzh4MDA?oc=5)
-- **[10] Tier C · 华尔街见闻 · 2026-07-17T11:05:09+00:00**：[科技股抛售潮蔓延,纳指100期货跌1.5%,盘前存储股跌幅收窄,布油涨2%,黄金失守4000美元](https://wallstreetcn.com/articles/3777186)
-- **[11] Tier C · 华尔街见闻 · 2026-07-17T10:55:17+00:00**：[目标价翻倍至2581元!高盛:英伟达推动3.2T光模块需求加速,中际旭创迎来估值重塑](https://wallstreetcn.com/articles/3777219)
-- **[12] Tier C · Google News - 中文市场聚合 · 2026-07-17T10:50:19+00:00**：[港股收评:恒指跌1.78%、恒科跌4.37%;百度、阿里、腾讯齐跌 - 凤凰网](https://news.google.com/rss/articles/CBMiUEFVX3lxTFBRMWkwQ2xfVWRCdmxPTlkxNW95dzJkaV9VcFgxcDVqNU9MUmpMUFYwbUtMNm84aUdQLVp3TXN0NTg3N2txN2F0WngtbUlMcEVL?oc=5)
-- **[14] Tier C · Google News - 中文市场聚合 · 2026-07-17T10:16:21+00:00**：[晚报丨全球科技股抛售潮蔓延,美股存储概念盘前部分转涨;摩根大通称美股还有“去杠杆空间”;美银警告:黄金跌势远未结束;英特尔扩大与谷歌合作;SK海力士回调之际,崔泰源喊话坚守 - 东方财富](https://news.google.com/rss/articles/CBMiX0FVX3lxTFBxNXRxWGUyYU15cWgxV0hVQzNmTVBQdzNUQkFVWlUybW13LXZjRGp4SFJsQ3FoYy1lSVNwdmZBa2RYQWE2SWlXR2JPU3VXcXhCMVRYa2gyRkxZVHFFZTBj?oc=5)
-- **[15] Tier B · MarketWatch - Top Stories · 2026-07-17T10:05:00+00:00**：[SpaceX postponed a crucial launch — now its stock is set to slide even further below the IPO price](https://www.marketwatch.com/story/spacex-postponed-a-crucial-launch-now-its-stock-is-set-to-slide-even-further-below-the-ipo-price-143adfe0?mod=mw_rss_topstories)
-- **[17] Tier C · Google News - 中文市场聚合 · 2026-07-17T08:12:45+00:00**：[7月17日港股收盘:恒指跌1.78% 中芯国际领跌成分股 - 东方财富](https://news.google.com/rss/articles/CBMiYEFVX3lxTFBmVU04RDU3R1JHRy0taHh2OWx1V2F1U1ZrQ0ZtdVJZRFc1Q0xfblh3V2lRek5JLUVMdXRPSmNaNTdrWDUtcUlZX1ZGUmNUTldMSjZ2YU5DSVdsRWc0SldHXw?oc=5)
-- **[18] Tier C · Google News - 中文市场聚合 · 2026-07-17T06:29:31+00:00**：[美科技巨头大跳水!谷歌旗舰最强模型Gemini 3.5 Pro发布延期 - 东方财富](https://news.google.com/rss/articles/CBMiYEFVX3lxTE1KTUFPcXd6MXY4NHVVX1lKc0J1X0RRZ0Ytei11REhEdEppRTFkT3ZyNHY1OXdJbmp5ZVVfUTI5RDRBbEdQUmllaWFqVlA2VHdMWjVhdkJuT2huUVVFUDV1Qg?oc=5)
-- **[23] Tier C · 华尔街见闻 · 2026-07-16T19:15:46+00:00**：[五年来最大升级!苹果OLED版iPad mini最快今秋发布,入门款和Air明年更新](https://wallstreetcn.com/articles/3777137)
-- **[26] Tier C · Google News - 中文市场聚合 · 2026-07-15T21:36:29+00:00**：[全球市场:美股三大指数收涨 存储概念股逆市大跌 苹果涨超4%创历史新高 - 东方财富](https://news.google.com/rss/articles/CBMiZkFVX3lxTE12dUtJem8yZ2xWVFFtaWg1UE1iMDBUNTMyVjhXaVNoTmwtTjMxbEY0S1VRX282ZmxRZnRaS2tWU2ZPNVl1ZUI4TU8xeHE3V1Z0MFd6Wl80UXk5Z3pxVGhrcGxBRUpWQQ?oc=5)
-- **[38] Tier C · 36氪 - 快讯 · 2026-07-17T11:19:35+00:00**：[高盛看好通宇通讯低轨卫星相关业务前景](https://36kr.com/newsflashes/3899640637687689?f=rss)
-- **[39] Tier C · 36氪 - 快讯 · 2026-07-17T11:18:22+00:00**：[国科微:拟定增募资不超过50.61亿元,用于端侧AI芯片研发及产业化项目等](https://36kr.com/newsflashes/3899639438280323?f=rss)
-- **[41] Tier C · Google News - 中文市场聚合 · 2026-07-17T11:09:35+00:00**：[港股上市公司年内积极回购,上半年累计金额超900亿港元 - 新浪网](https://news.google.com/rss/articles/CBMickFVX3lxTE05eFVRampicE5fUUZ6NUlZNWROQnpvclZnTWJqTGE4eWI0ZEJ5eExUaHpfWFlsX0JaaVRld2RCbWZhT284Y1Q3R3M5S0toR1MtVDJrc1dIRWFRTDIzUl9Qd2hmYkR4S0FjV3RIWGhtMzNyQQ?oc=5)

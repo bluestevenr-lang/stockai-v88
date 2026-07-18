@@ -1,0 +1,140 @@
+[
+  {
+    "schema": "v88.personal-anchor/1.0",
+    "score_version": "V88-U2.0",
+    "name": "腾讯控股",
+    "code": "0700.HK",
+    "anchor_time": "2026-07-15 09:45",
+    "anchor_price": 474.0,
+    "anchor_action": "观察",
+    "analysis_time": "2026-07-16 09:44",
+    "data_asof": "2026-07-15 09:45:00",
+    "data_signature": "32b3ca142b4d",
+    "no_lookahead": true,
+    "stage_at_anchor": "震荡整理",
+    "weighted_p_up": 59,
+    "weighted_p_down": 41,
+    "weighted_rr": 0.52,
+    "weighted_expected_pct": -0.5,
+    "overall_action": "中性·分批处理并等待确认",
+    "decision_review": "用2/5/8/16交易日触发与失效条件继续跟踪",
+    "horizons": [
+      {
+        "days": 2,
+        "weeks": 2,
+        "label": "2日",
+        "score": 57,
+        "p_up": 57,
+        "p_down": 43,
+        "probability_kind": "规则情景估计（非回测胜率）",
+        "upside_pct": 2.3,
+        "downside_pct": 5.6,
+        "target_price": 484.706,
+        "risk_price": 447.4,
+        "rr": 0.4,
+        "expected_pct": -1.1,
+        "break_even_p": 71.4,
+        "view": "偏跌",
+        "sample_days": 2,
+        "trigger": "站稳474.000并突破474.000",
+        "invalid": "跌破447.400后重评"
+      },
+      {
+        "days": 5,
+        "weeks": 5,
+        "label": "5日",
+        "score": 49,
+        "p_up": 49,
+        "p_down": 51,
+        "probability_kind": "规则情景估计（非回测胜率）",
+        "upside_pct": 3.6,
+        "downside_pct": 5.6,
+        "target_price": 490.927,
+        "risk_price": 447.4,
+        "rr": 0.64,
+        "expected_pct": -1.1,
+        "break_even_p": 61.0,
+        "view": "偏跌",
+        "sample_days": 5,
+        "trigger": "站稳474.000并突破485.000",
+        "invalid": "跌破447.400后重评"
+      },
+      {
+        "days": 8,
+        "weeks": 8,
+        "label": "8日",
+        "score": 64,
+        "p_up": 64,
+        "p_down": 36,
+        "probability_kind": "规则情景估计（非回测胜率）",
+        "upside_pct": 4.5,
+        "downside_pct": 10.3,
+        "target_price": 495.411,
+        "risk_price": 425.4,
+        "rr": 0.44,
+        "expected_pct": -0.8,
+        "break_even_p": 69.4,
+        "view": "震荡",
+        "sample_days": 8,
+        "trigger": "站稳474.000并突破485.000",
+        "invalid": "跌破425.400后重评"
+      },
+      {
+        "days": 16,
+        "weeks": 16,
+        "label": "16日",
+        "score": 71,
+        "p_up": 71,
+        "p_down": 29,
+        "probability_kind": "规则情景估计（非回测胜率）",
+        "upside_pct": 7.6,
+        "downside_pct": 13.3,
+        "target_price": 510.237,
+        "risk_price": 411.0,
+        "rr": 0.58,
+        "expected_pct": 1.6,
+        "break_even_p": 63.3,
+        "view": "偏涨",
+        "sample_days": 16,
+        "trigger": "站稳474.000并突破485.000",
+        "invalid": "跌破411.000后重评"
+      }
+    ],
+    "tracking": {
+      "current_price": 474.0,
+      "since_anchor_pct": 0.0,
+      "market_covers_anchor": true,
+      "market_asof": "2026-07-15 00:00:00",
+      "rows": [
+        {
+          "days": 2,
+          "weeks": 2,
+          "status": "待验证（已有0/2个交易日）",
+          "actual_price": null,
+          "actual_return_pct": null
+        },
+        {
+          "days": 5,
+          "weeks": 5,
+          "status": "待验证（已有0/5个交易日）",
+          "actual_price": null,
+          "actual_return_pct": null
+        },
+        {
+          "days": 8,
+          "weeks": 8,
+          "status": "待验证（已有0/8个交易日）",
+          "actual_price": null,
+          "actual_return_pct": null
+        },
+        {
+          "days": 16,
+          "weeks": 16,
+          "status": "待验证（已有0/16个交易日）",
+          "actual_price": null,
+          "actual_return_pct": null
+        }
+      ]
+    }
+  }
+]
