@@ -11630,22 +11630,46 @@ def _v88_decision_card(_d9):
                  ("↘ 趋中性" if _c_first9 - _c_last9 >= 8 else "→ 各周期均衡"))))
     _trend_col9 = ("#dc2626" if _c_last9 - _c_first9 >= 8 else
                    ("#16a34a" if _c_first9 - _c_last9 >= 8 else "#94a3b8"))
+    # 【V88·今天锚点 2026-07-18 用户点单】卡片走势条同样从"今天"画起，2周前不是空白——
+    # 今天=当前阶段基准位(蓄势/底部45·领涨/主升62·派发/滞涨55·退潮/破位38·其余50,
+    # 与深度页象限口径一致)+近5日实际动量微调；空心点=实算起点,实心点=各周期预测。
+    _stage9x = str((_d9.get("facts") or {}).get("stage") or _d9.get("stage") or "")
+    if any(_k in _stage9x for _k in ("蓄势", "底部")):
+        _pb9x = 45
+    elif any(_k in _stage9x for _k in ("领涨", "主升", "启动", "延续", "多头")):
+        _pb9x = 62
+    elif any(_k in _stage9x for _k in ("派发", "滞涨", "高位")):
+        _pb9x = 55
+    elif any(_k in _stage9x for _k in ("退潮", "破位", "转弱", "下跌")):
+        _pb9x = 38
+    else:
+        _pb9x = 50
+    try:
+        _r5x9 = float((_facts_h9.get("2周") or {}).get("ret5_pct") or 0)
+    except (TypeError, ValueError):
+        _r5x9 = 0.0
+    _now9x = int(round(max(20, min(80, _pb9x + max(-6.0, min(6.0, _r5x9)) * 1.2))))
     # 【V88·卡片瘦身 2026-07-17 用户反馈"板块太大"】走势图压扁(viewBox更宽更矮)——
     # svg width:100% 会随卡宽等比放大,加宽viewBox即让实际高度和字号显著变小,更精致。
-    _spk_w9, _spk_h9, _sn9 = 320, 34, len(_cyc_probs9)
+    _spk_src9 = [("今天", _now9x)] + _cyc_probs9
+    _spk_w9, _spk_h9, _sn9 = 320, 34, len(_spk_src9)
 
     def _spk_y9(_p):
         return round(12 + 13 * (1 - (min(90, max(20, _p)) - 20) / 70), 1)
     _pts9 = [(round(16 + _i9 * (_spk_w9 - 32) / max(1, _sn9 - 1), 1),
               _spk_y9(_p9x), _p9x, _l9x)
-             for _i9, (_l9x, _p9x) in enumerate(_cyc_probs9)]
+             for _i9, (_l9x, _p9x) in enumerate(_spk_src9)]
     _base_y9 = _spk_y9(50)
     _poly9 = " ".join(f"{x},{y}" for x, y, _, _ in _pts9)
     _marks9 = "".join(
-        f'<circle cx="{x}" cy="{y}" r="2.1" fill="{_cyc_col9(p)}"/>'
-        f'<text x="{x}" y="7" text-anchor="middle" font-size="7.5" font-weight="700" '
-        f'fill="{_cyc_col9(p)}">{p}%</text>'
-        f'<text x="{x}" y="33" text-anchor="middle" font-size="6.5" fill="#94a3b8">{lab}</text>'
+        (f'<circle cx="{x}" cy="{y}" r="2.3" fill="var(--card-bg,#fff)" stroke="#475569" stroke-width="1.1"/>'
+         f'<text x="{x}" y="7" text-anchor="middle" font-size="7.5" font-weight="700" fill="#475569">现在</text>'
+         f'<text x="{x}" y="33" text-anchor="middle" font-size="6.5" fill="#94a3b8">今天</text>')
+        if lab == "今天" else
+        (f'<circle cx="{x}" cy="{y}" r="2.1" fill="{_cyc_col9(p)}"/>'
+         f'<text x="{x}" y="7" text-anchor="middle" font-size="7.5" font-weight="700" '
+         f'fill="{_cyc_col9(p)}">{p}%</text>'
+         f'<text x="{x}" y="33" text-anchor="middle" font-size="6.5" fill="#94a3b8">{lab}</text>')
         for x, y, p, lab in _pts9)
     _spark9 = (
         f'<svg class="v88-spark" viewBox="0 0 {_spk_w9} {_spk_h9}">'
@@ -11667,7 +11691,7 @@ def _v88_decision_card(_d9):
         <b class="v88-action" style="color:{_act_color_of9(_action_disp9)}">{_action_disp9}</b>
       </div>{_mv_html9}
       <div class="v88-cyc-head">
-        <span>各周期上涨概率（红涨/绿跌·看趋势）</span>
+        <span>今天→各周期上涨概率（红涨/绿跌·看趋势）</span>
         <span class="v88-cyc-trend">{_trend9}</span>
       </div>
       <div class="v88-spark-wrap">{_spark9}</div>
@@ -13374,7 +13398,8 @@ def _render_today_nav():
                     + _pcx_html9
                     + f'<div class="v88-watch-grid">{"".join(_cols_h9)}</div></div>',
                     unsafe_allow_html=True)
-                st.caption("持仓概率与自选同一套引擎；数字=各周期上涨概率%（红≥55偏涨/绿≤45偏跌/灰中性），"
+                st.caption("持仓概率与自选同一套引擎；首点「今天」=当前阶段+5日动量实算起点（空心点·非预测），"
+                           "其后数字=各周期上涨概率%（红≥55偏涨/绿≤45偏跌/灰中性），"
                            "破止损见上方🚨红框。下方表格为基本面/技术面/新闻面完整分析。")
         except Exception as _hpe9:
             logging.debug(f"持仓决策台渲染失败: {_hpe9}")
