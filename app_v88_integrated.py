@@ -14145,7 +14145,7 @@ with st.expander("🛰️ 全行业机会雷达 · 谁在起步（含医疗，�
         "概率=规则情景估计（非回测胜率）。首版为按需扫描，点下方按钮刷新。"
     )
     _radar_state = st.session_state.get("_forward_radar_result")
-    _radar_go = st.button("🛰️ 扫描全行业机会（约30-60秒）", key="btn_forward_radar")
+    _radar_go = st.button("🛰️ 扫描全行业机会 · 中美港（约60-90秒）", key="btn_forward_radar")
     if _radar_go:
         try:
             from stock_forward_radar import scan_forward_opportunities, DEFAULT_POOL
@@ -14180,8 +14180,10 @@ with st.expander("🛰️ 全行业机会雷达 · 谁在起步（含医疗，�
                    f"生成于 {_radar_state.get('_ts', '—')}")
         _hot = [s for s in (_radar_state.get("sectors") or []) if s.get("hot")]
         if _hot:
-            st.markdown("**🔥 正在起步的板块**")
+            st.markdown("**🔥 正在起步的板块**（按 市场×板块 拆开，中美港各自有行）")
+            _mk_icon_fr9 = {"美股": "🇺🇸美股", "A股": "🇨🇳A股", "港股": "🇭🇰港股"}
             st.dataframe([{
+                "市场": _mk_icon_fr9.get(s.get("market"), s.get("market", "—")),
                 "板块": s["sector"], "平均上涨概率": f"{s['avg_p_up']}%",
                 "平均盈亏比": s["avg_rr"], "起步只数": s["starting_count"],
                 "代表个股": "、".join(s["starting_names"]),
@@ -14192,7 +14194,9 @@ with st.expander("🛰️ 全行业机会雷达 · 谁在起步（含医疗，�
         if _sg:
             st.markdown("**⭐ 个股机会榜（机会分从高到低）**")
             st.dataframe([{
-                "个股": f"{r['name']}({r['code']})", "板块": r["sector"],
+                "个股": f"{r['name']}({r['code']})",
+                "市场": {"美股": "🇺🇸", "A股": "🇨🇳", "港股": "🇭🇰"}.get(r.get("market"), ""),
+                "板块": r["sector"],
                 "阶段": r["stage"], "综合上涨概率": f"{r['p_up']}%",
                 "盈亏比(越大越好)": r["rr"], "期望(>0较好)": f"{r['ev']:+.1f}%",
                 "机会分": r["opp_score"], "起步": "🔥" if r["starting"] else "",
