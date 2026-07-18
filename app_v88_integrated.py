@@ -11988,6 +11988,22 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
     _html.append("</div>")
     st.markdown("".join(_html), unsafe_allow_html=True)
     st.caption("候选=一键全选池∪引擎Top榜∪触底触线（黑马漏斗复判）∪自选/持仓 · 按交易日滚动 · 💼持仓👁自选🐴黑马")
+    # 【V88·统一战绩总账 2026-07-19】推荐旁必挂自己的实盘成功率(自我监督)
+    try:
+        _eng9s = ((_v88_success9().get("types") or {}).get("engine")) or {}
+        _eg_parts9 = []
+        for _lb9s, _k9s in (("短线", "short"), ("中线", "mid"), ("长线", "long")):
+            _e9s = _eng9s.get(_k9s) or {}
+            _eg_parts9.append(f"{_lb9s}{str(_e9s.get('rate')) + '%' if _e9s.get('rate') is not None else '未到期'}"
+                              f"(n={_e9s.get('n', 0)})")
+        _lines9s = [x for x in (
+            ("📊 引擎榜到期核算：" + "·".join(_eg_parts9) + "（扣0.3%摩擦·出处:引擎战绩）") if _eng9s else "",
+            _v88_rate_line9("entry_green", "入场绿灯"),
+        ) if x]
+        if _lines9s:
+            st.caption("　｜　".join(_lines9s))
+    except Exception:
+        pass
 
 
 
@@ -12262,6 +12278,36 @@ def _v88_intel9():
         _c["d"] = {"policy": [], "hot_map": {}}
     _c["ts"] = _t.time()
     return _c["d"]
+
+
+def _v88_success9():
+    """【V88·统一战绩总账 2026-07-19 用户点单】各推荐类型的实盘成功率(私仓落盘,10分钟缓存)。"""
+    import time as _t
+    _c = _V88_NEWS_CACHE.setdefault("_succ", {"ts": 0, "d": {}})
+    if _t.time() - _c["ts"] < 600 and _c["d"]:
+        return _c["d"]
+    try:
+        _c["d"] = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+                              "success_rates.json").read_text(encoding="utf-8"))
+    except Exception:
+        _c["d"] = {}
+    _c["ts"] = _t.time()
+    return _c["d"]
+
+
+def _v88_rate_line9(key, label):
+    """一句可挂在模块头的实盘成功率(诚实版:样本<5报积累中)。key不存在返回空。"""
+    _t9 = (_v88_success9().get("types") or {}).get(key) or {}
+    if not _t9:
+        return ""
+    _n9 = int(_t9.get("n") or 0)
+    _r9 = _t9.get("rate")
+    _avg9 = _t9.get("avg")
+    if _r9 is None:
+        return f"📊 {label}实盘成功率：样本积累中（{_n9}次·<5不报率，防小样本噪音）"
+    return (f"📊 {label}实盘成功率 {_r9}%（{_n9}次"
+            + (f"·均{_avg9:+.1f}%" if _avg9 is not None else "")
+            + f"·{_t9.get('note', '')}·非规则估计）")
 
 
 def _v88_market_edge(market):
@@ -13663,6 +13709,9 @@ def _render_today_nav():
                     _dh_cols9.append(f'<section class="v88-watch-market"><h4>{_mk_h9} <span>{len(_hs9)}只</span></h4>'
                                      + "".join(_dh_wrap9(h) for h in _hs9) + "</section>")
                 _nk9 = sum(1 for h in _horses9 if h.get("grade") == "重点")
+                _rl_dh9 = _v88_rate_line9("darkhorse", "黑马池")
+                if _rl_dh9:
+                    st.caption(_rl_dh9)
                 with st.expander(f"🐴 黑马雷达 · 全选大池复判达标（🔴重点{_nk9}·🟡待观察{len(_horses9) - _nk9}）",
                                  expanded=True):
                     st.markdown(
@@ -14333,6 +14382,9 @@ with st.expander("⚡ 公告事件雷达 · 自选+持仓公司公告（可转�
         st.info("公告事件数据随日报流水线生成（交易日 07/13/19 点），稍后刷新。")
 
 with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）", expanded=False):
+    _rl_ipo9 = _v88_rate_line9("ipo_hk", "港股新股首日")
+    if _rl_ipo9:
+        st.caption(_rl_ipo9)
     try:
         _ipo9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "ipo_radar.json")
                            .read_text(encoding="utf-8"))
@@ -14391,6 +14443,9 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
 # 系统不该说"今天无推荐"）。数据由私仓日报流水线生成，这里零网络秒开。
 # ═══════════════════════════════════════════════════════════════
 with st.expander("🔥 涨停接力雷达 · A股短线主线（打板高风险·非价值投资）", expanded=False):
+    _rl_relay9 = _v88_rate_line9("relay", "接力候选隔日红盘")
+    if _rl_relay9:
+        st.caption(_rl_relay9)
     try:
         _zt9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "limit_up_radar.json")
                           .read_text(encoding="utf-8"))
@@ -14496,9 +14551,12 @@ with st.expander("🛰️ 全行业机会雷达 · 谁在起步（含医疗，�
 # 【V88·触底拐点机会池 2026-07-19 用户点单恢复+现代化】前身"深度回调机会池"。
 # 优质池116只里"跌得深(52周双口径)且拐点已现"的中美港各Top10——仍在寻底的不收。
 with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现（中美港各Top10）", expanded=False):
-    st.caption("三闸门：①优质池出身(116只行业龙头) ②深水位(距52周高≤-25%或52周分位≤20%) "
+    st.caption("三闸门：①全市场大池 ②深水位(距52周高≤-25%或52周分位≤20%) "
                "③拐点已现(放量收复MA20/放量长阳/底背离金叉/底部启动确认)——仍在寻底的不收，宁缺毋滥。"
                "概率=规则情景估计(非回测胜率)；观察清单非买入指令，进场仍走时机灯纪律。")
+    _rl_bt9 = _v88_rate_line9("bottom_turn", "触底拐点池")
+    if _rl_bt9:
+        st.caption(_rl_bt9)
     _btp_state9 = st.session_state.get("_bottom_turn_pool9")
     # 【2026-07-19 用户点单二期】大样本:全市场股票池(与一键全选同池,676-1300只),
     # 并发8线程闸门筛选;闸③机会分≥55才上榜(精准高分,宁缺毋滥)。
@@ -14527,6 +14585,27 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
             _stat_btp9.empty()
             _btp_state9["ts"] = time.time()
             st.session_state["_bottom_turn_pool9"] = _btp_state9
+            # 【战绩总账】上榜即记档(去重按 code:date)——3天后由 success_ledger 到期核算
+            try:
+                _sig_fp9 = Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "bottom_turn_signals.json"
+                try:
+                    _sig_log9 = json.loads(_sig_fp9.read_text(encoding="utf-8"))
+                except Exception:
+                    _sig_log9 = []
+                _seen_sig9 = {str(x.get("id")) for x in _sig_log9}
+                _today_sig9 = datetime.now().strftime("%Y-%m-%d")
+                for _mk9s2, _rows9s2 in (_btp_state9.get("markets") or {}).items():
+                    for _r9s2 in _rows9s2:
+                        _id9s2 = f"{_r9s2['code']}:{_today_sig9}"
+                        if _id9s2 in _seen_sig9:
+                            continue
+                        _seen_sig9.add(_id9s2)
+                        _sig_log9.append({"id": _id9s2, "date": _today_sig9,
+                                          "code": _r9s2["code"], "name": _r9s2["name"],
+                                          "score": _r9s2["score"], "last": _r9s2["last"]})
+                _sig_fp9.write_text(json.dumps(_sig_log9[-400:], ensure_ascii=False), encoding="utf-8")
+            except Exception:
+                pass
         except Exception as _btp_e9:
             st.error(f"⚠️ 扫描异常: {str(_btp_e9)[:80]}")
     if _btp_state9:
