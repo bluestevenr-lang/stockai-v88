@@ -11530,6 +11530,25 @@ def _v88_decision_card(_d9):
       </div>
       <div class="v88-watch-foot"><span>信号计算中或数据暂缺，稍后自动刷新；点名称可先看深度分析</span></div>
     </div>"""
+    if _d9.get("_short_history"):
+        # 【V88·新股如实卡 2026-07-18 SPCX案发】历史不足35根K线,多周期概率算不动——
+        # 如实说明并给现价/近5日/上市以来三个真实数字,不给假信号不装"计算中"。
+        _c5x = float(_d9.get("chg5") or 0)
+        _cix = float(_d9.get("ipo_chg") or 0)
+        return f"""
+    <div class="v88-watch-card v88-watch-pending">
+      <div class="v88-watch-card-head">
+        <div>{_stk_link(_d9.get('name') or _d9.get('code'), _d9.get('code'))}
+        <span class="v88-code">{_d9.get('code')}</span></div>
+        <b class="v88-action" style="color:#b45309">新股·数据积累中</b>
+      </div>
+      <div style="font-size:12px;color:#64748b;line-height:1.4">上市仅{_d9.get('bars')}个交易日，
+      多周期概率需≥35根K线——历史不足不给假信号（如实说明）</div>
+      <div class="v88-rrline">现价 <b>{_d9.get('last')}</b>
+        ｜近5日<b style="color:{'#dc2626' if _c5x >= 0 else '#16a34a'}">{_c5x:+.1f}%</b>
+        ｜上市以来<b style="color:{'#dc2626' if _cix >= 0 else '#16a34a'}">{_cix:+.1f}%</b></div>
+      <div class="v88-watch-foot"><span>新股波动大、无均线结构，只按纪律小仓参与；点名称看K线与深度分析</span></div>
+    </div>"""
     _rr9 = float(_d9.get("rr") or 0)
     _rr_txt9, _rr_color9, _rr_bg9 = _v88_rr_state9(_rr9)
     _up9, _down9 = int(_d9.get("p_up") or 0), int(_d9.get("p_down") or 0)
@@ -13101,7 +13120,13 @@ def _render_today_nav():
             _alerts9 = []
             _decisions9 = []
             _holding_levels9 = {}
-            _scan_items9 = list(_pool_wa.items())[:60]
+            # 【V88·禁静默截断 2026-07-18】持仓+自选必须全算（"所有自选都要在场"），
+            # 只允许截"常搜"尾部——否则超60只时尾部票永远"计算中"却谎称稍后刷新。
+            _core_scan9 = [(c, n) for c, n in _pool_wa.items()
+                           if c in _risk_holds_wa or c in _watch_codes_wa]
+            _rest_scan9 = [(c, n) for c, n in _pool_wa.items()
+                           if not (c in _risk_holds_wa or c in _watch_codes_wa)]
+            _scan_items9 = _core_scan9 + _rest_scan9[:max(0, 60 - len(_core_scan9))]
             _scan_prog9 = st.progress(0)
             _scan_status9 = st.empty()
             for _idx9, (_c9, _n9) in enumerate(_scan_items9, 1):
@@ -13111,6 +13136,27 @@ def _render_today_nav():
                     _df9 = fetch_stock_data(to_yf_cn_code(_c9))
                     _f9 = _ce_wa.analyze_trend_full(_df9)
                     if not _f9:
+                        # 【V88·新股如实卡 2026-07-18 SPCX案发】历史<35根K线引擎算不动——
+                        # 原来静默continue→占位卡永远"计算中"撒谎。改为落一条简版记录：
+                        # 现价/近5日/上市以来涨跌，明说"历史不足不给假信号"。
+                        try:
+                            _bars9 = 0 if _df9 is None else len(_df9)
+                            if _df9 is not None and _bars9 >= 2:
+                                _clo9 = _df9["Close"].dropna()
+                                _lastp9 = float(_clo9.iloc[-1])
+                                _decisions9.append({
+                                    "code": _c9, "name": _n9, "_short_history": True,
+                                    "in_watchlist": _c9 in _watch_codes_wa,
+                                    "scope": ("持仓" if _c9 in _risk_holds_wa else
+                                              ("自选" if _c9 in _watch_codes_wa else "常搜")),
+                                    "level": _levels_wa.get(_c9, "B"),
+                                    "market": market_of_code(_c9),
+                                    "bars": _bars9, "last": round(_lastp9, 2),
+                                    "chg5": round((_lastp9 / float(_clo9.iloc[-min(6, len(_clo9))]) - 1) * 100, 1),
+                                    "ipo_chg": round((_lastp9 / float(_clo9.iloc[0]) - 1) * 100, 1),
+                                })
+                        except Exception:
+                            pass
                         continue
                     _last9 = _f9["last"]
                     _sharp9 = _sharp_wa(_df9, _f9, holding=_c9 in _risk_holds_wa,
