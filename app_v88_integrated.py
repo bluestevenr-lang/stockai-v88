@@ -14005,14 +14005,23 @@ with st.expander("⚡ 公告事件雷达 · 自选+持仓公司公告（可转�
         _pipe9 = _annj9.get("cb_pipeline") or []
         if _pipe9:
             _pc9 = _annj9.get("cb_pipe_counts") or {}
-            st.markdown("**🟢 已注册待发·即将申购储备**（申购日随时公告·出处:集思录）")
+            # 【2026-07-18 用户点单"看不出重点"】按确定性关注分排序+分色,裸数值带说明
+            st.markdown("**🟢 已注册待发·即将申购储备**（申购日随时公告·按关注分排序·出处:集思录）")
             st.markdown("<div style='font-size:13px;line-height:1.7'>" + "".join(
-                f"<div>· {_stk_link(_x9.get('stock'), _x9.get('stock_code'))} "
-                f"{str(_x9.get('stage_date'))[5:]}同意注册·{_x9.get('scale')}亿"
+                f"<div>· <b style='color:"
+                + ("#dc2626" if _x9.get('tag') == '🔴重点' else
+                   ("#b45309" if _x9.get('tag') == '🟡关注' else "#94a3b8"))
+                + f"'>{_x9.get('tag', '')}{_x9.get('score', '')}分</b> "
+                f"{_stk_link(_x9.get('stock'), _x9.get('stock_code'))} "
+                f"{str(_x9.get('stage_date'))[5:]}同意注册"
+                f"<span style='color:#64748b'>｜{_x9.get('why', '')}</span>"
                 + ("<b style='color:#b45309'> ⭐池内正股</b>" if _x9.get('in_pool') else "")
                 + "</div>"
                 for _x9 in _pipe9[:6]) + "</div>", unsafe_allow_html=True)
-            st.caption(f"注册待发共{_pc9.get('reg', len(_pipe9))}只｜过会排队{_pc9.get('passed', 0)}只"
+            st.caption(f"关注分=确定性规则（转股价值≥100含权足+30 / 规模≤5亿稀缺+20 / PB>1可下修+10 "
+                       f"/ 注册≤30天+10 / 池内正股+15 / 底分15），非AI非收益预测；"
+                       f"转股价值=正股价÷转股价×100，≥100=转债一上市就有股性支撑。"
+                       f"注册待发共{_pc9.get('reg', len(_pipe9))}只｜过会排队{_pc9.get('passed', 0)}只"
                        f"·更早期(受理/股东大会/预案){_pc9.get('early', 0)}只——注册批文一般12个月内有效，"
                        "公告申购日后自动进上方日历并推提醒。")
         _evs_all9 = _annj9.get("events") or {}
