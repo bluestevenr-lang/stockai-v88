@@ -2713,6 +2713,38 @@ h4 { font-size: 14px !important; }
 
 # 首屏占位：定义稍后才可用的今日导航函数后回填到这里，使“大盘/持仓/自选/预警”
 # 在视觉顺序上始终排第一，原有后续模块全部保留。
+# 【V88·此刻按钮 2026-07-18 用户点单】全站缓存都是固定节奏，右上角给一个总开关：
+# 点了才强制用此刻最新数据（清会话缓存+st.cache_data+行情pkl文件缓存后整页重算），
+# 不点一律走原缓存零额外流量。AI解读类不受此按钮影响（守预算，仍按各自节流）。
+_now_c1, _now_c2 = st.columns([8.5, 1.5])
+with _now_c2:
+    if st.button("📡 此刻最新", key="btn_force_now", use_container_width=True,
+                 help="强制用此刻最新行情重算全页（约30-60秒）；不点则按原缓存节奏。AI解读不重跑、不花预算。"):
+        import time as _tnow9
+        if _tnow9.time() - float(st.session_state.get("_force_now_ts") or 0) < 60:
+            st.toast("60秒内刚强刷过，当前已是此刻数据", icon="⏳")
+        else:
+            st.session_state["_force_now_ts"] = _tnow9.time()
+            # watch_alerts_v88=自选/持仓/预警/四档推荐共用的一份30分钟会话缓存
+            for _k9 in ("watch_alerts_v88", "_fw_panel9"):
+                st.session_state.pop(_k9, None)
+            try:
+                st.cache_data.clear()
+            except Exception:
+                pass
+            try:
+                for _f9 in (Path(__file__).parent / ".cache_stock_data").glob("*.pkl"):
+                    _f9.unlink()
+            except Exception:
+                pass
+            st.toast("📡 已切换到此刻最新数据，全页重算中…", icon="📡")
+            st.rerun()
+    _fnts9 = float(st.session_state.get("_force_now_ts") or 0)
+    if _fnts9:
+        import time as _tnow9b
+        st.markdown(f"<div style='font-size:12px;color:#94a3b8;text-align:center'>"
+                    f"此刻数据·{int((_tnow9b.time()-_fnts9)/60)}分钟前</div>", unsafe_allow_html=True)
+
 # 【V88·宏观置顶 2026-07-17 用户定纲】大盘宏观区(全球概览/宏观脉搏/三层总览)置于页面最顶,
 # 先看大势定调再看自己的票。由下方全球概览块通过 slot 回填。
 _macro_top_slot = st.empty()
