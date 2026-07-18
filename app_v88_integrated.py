@@ -14000,6 +14000,21 @@ with st.expander("⚡ 公告事件雷达 · 自选+持仓公司公告（可转�
                 for _x9 in _cbs9[:8]) + "</div>", unsafe_allow_html=True)
             st.caption("申购日当天/前一天盘中会自动推飞书提醒；转债打新顶格申购不占资金，"
                        "抢权博弈两面（配售权vs摊薄+登记日后惯性回落），仅短线纪律仓。")
+        # 【V88·即将申购储备 2026-07-18 用户点单"已申购的没操作空间"】同意注册=
+        # 申购日随时公告(一般数周内),提前进入观察;池内正股注册当轮盘中就会推飞书。
+        _pipe9 = _annj9.get("cb_pipeline") or []
+        if _pipe9:
+            _pc9 = _annj9.get("cb_pipe_counts") or {}
+            st.markdown("**🟢 已注册待发·即将申购储备**（申购日随时公告·出处:集思录）")
+            st.markdown("<div style='font-size:13px;line-height:1.7'>" + "".join(
+                f"<div>· {_stk_link(_x9.get('stock'), _x9.get('stock_code'))} "
+                f"{str(_x9.get('stage_date'))[5:]}同意注册·{_x9.get('scale')}亿"
+                + ("<b style='color:#b45309'> ⭐池内正股</b>" if _x9.get('in_pool') else "")
+                + "</div>"
+                for _x9 in _pipe9[:6]) + "</div>", unsafe_allow_html=True)
+            st.caption(f"注册待发共{_pc9.get('reg', len(_pipe9))}只｜过会排队{_pc9.get('passed', 0)}只"
+                       f"·更早期(受理/股东大会/预案){_pc9.get('early', 0)}只——注册批文一般12个月内有效，"
+                       "公告申购日后自动进上方日历并推提醒。")
         _evs_all9 = _annj9.get("events") or {}
         if not _evs_all9:
             st.info("近5日池内无可转债/回购/减持等公告事件——无事件也是信息（如实说明）。")
