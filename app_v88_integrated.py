@@ -11961,10 +11961,12 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
         _hint = str(_pl.get("in") or _h.get("entry_note") or "")[:44]
         _tc = _h.get("touch") or ""
         _eg9 = _v88_fund_edge_short(_h.get("name") or "", max_len=14)
+        _hn9 = _v88_hot_note9(_h.get("code"))
         return (f"{_h.get('_tag', '')}{_stk_link(_h.get('name'), _h.get('code'))}"
                 f"<span style='font-size:12px;color:#64748b'>"
                 f"{('·' + _tc) if _tc else ''} {_hint}</span>"
-                + (f"<span style='font-size:12px;color:#94a3b8'>——{_eg9}</span>" if _eg9 else ""))
+                + (f"<span style='font-size:12px;color:#94a3b8'>——{_eg9}</span>" if _eg9 else "")
+                + (f"<span style='font-size:12px;color:#b45309'>{_hn9}</span>" if _hn9 else ""))
 
     _meta9 = [
         ("today", ("🟢 今日推荐" if _is_trading else "⏸ 今日（休市）"),
@@ -12274,6 +12276,8 @@ def _v88_intel9():
                                for h in (_raw.get("hot") or [])},
                    "xq_map": {str(x.get("canon")): int(x.get("rank") or 0)
                               for x in (_raw.get("hot_xq") or [])},
+                   "us_map": {str(u.get("symbol", "")).upper(): int(u.get("rank") or 0)
+                              for u in (_raw.get("hot_us") or [])},
                    "hot_raw": _raw.get("hot") or [],
                    "hot_xq_raw": _raw.get("hot_xq") or [],
                    "hot_us_raw": _raw.get("hot_us") or [],
@@ -12312,6 +12316,28 @@ def _v88_rate_line9(key, label):
     return (f"📊 {label}实盘成功率 {_r9}%（{_n9}次"
             + (f"·均{_avg9:+.1f}%" if _avg9 is not None else "")
             + f"·{_t9.get('note', '')}·非规则估计）")
+
+
+def _v88_hot_note9(code):
+    """【V88·推荐×热议点拨 2026-07-19 用户点单】推荐股恰好在热榜→括号就地点拨。
+    双榜>雪球>东财>雅虎;语义=情绪助燃但拥挤,提醒纪律,不是加分项。"""
+    try:
+        _d = _v88_intel9()
+        _cn = _canonical_code(str(code or ""))
+        _h = (_d.get("hot_map") or {}).get(_cn)
+        if _h and _h.get("xq"):
+            return f"（🔥🔥东雪双榜热议一致·东#{_h['rank']}雪#{_h['xq']}——情绪助燃但拥挤,严守作废价）"
+        _xq = (_d.get("xq_map") or {}).get(_cn)
+        if _xq:
+            return f"（🔥雪球热议一致·雪#{_xq}——散户关注升温,防冲高回落）"
+        if _h:
+            return f"（🔥东财人气一致·东#{_h['rank']}）"
+        _us = (_d.get("us_map") or {}).get(str(code or "").upper().split(".")[0])
+        if _us:
+            return f"（🔥雅虎热搜一致·#{_us}）"
+    except Exception:
+        pass
+    return ""
 
 
 def _v88_market_edge(market):
@@ -12540,6 +12566,7 @@ def _render_today_verdict(_snap, _repo):
         _go_txt = "、".join(f"{h.get('_src', '')}{_stk_link(h.get('name'), h.get('code'))}"
                            f"<span style='font-size:12px;color:#64748b'>"
                            f"({h.get('market', '')[-2:]}{('·' + h['touch']) if h.get('touch') else ''})</span>"
+                           + (f"<span style='font-size:12px;color:#b45309'>{_v88_hot_note9(h.get('code'))}</span>")
                            for h in _go)
         _html.append(f"<div style='font-size:13px;margin-bottom:3px'>🟢 <b style='color:#dc2626'>"
                      f"可进场</b>（严门槛绿灯 {len(_go)} 只）：{_go_txt}"
@@ -14691,6 +14718,8 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
                 f"·期望{_r9b['ev']:+.1f}%｜支撑{_r9b.get('support', '—')}·破{_r9b.get('stop', '—')}废</span>"
                 + ((lambda _e: f"<br><span style='font-size:12px;color:#475569'>💡{_e}</span>" if _e else "")(
                     _v88_fund_edge_short(_r9b['name'])))
+                + ((lambda _hn: f"<span style='font-size:12px;color:#b45309'>{_hn}</span>" if _hn else "")(
+                    _v88_hot_note9(_r9b.get('code'))))
                 + "</div>"
                 for _r9b in _rows_btp9) + "</div>", unsafe_allow_html=True)
         if not _any_btp9:
