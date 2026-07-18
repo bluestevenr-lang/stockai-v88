@@ -1077,6 +1077,16 @@ elif _nav == "🛰️ 雷达族":
         except Exception:
             return {}
 
+    _succ9c = _pub_json9("success_rates.json")
+
+    def _rate9c(key, label):
+        _t9c = ((_succ9c.get("types") or {}).get(key)) or {}
+        if not _t9c:
+            return ""
+        if _t9c.get("rate") is None:
+            return f"📊 {label}：样本积累中（{_t9c.get('n', 0)}次·<5不报率）"
+        return f"📊 {label}实盘 {_t9c.get('rate')}%（{_t9c.get('n')}次·{_t9c.get('note', '')}）"
+
     _ipo9c = _pub_json9("ipo_radar.json")
     st.markdown("#### 🆕 打新雷达（中美港新股 · Top3优先）")
     _ipo_rows9c = (_ipo9c.get("rows") or [])
@@ -1085,6 +1095,9 @@ elif _nav == "🛰️ 雷达族":
                        if k in r} or r for r in _ipo_rows9c[:10]],
                      hide_index=True, use_container_width=True)
         st.caption(f"🕒 {_ipo9c.get('generated_at', '')} · 出处:Tushare/Nasdaq/富途（A/美/港）")
+        _ipor9c = _rate9c("ipo_hk", "港股新股首日上涨率")
+        if _ipor9c:
+            st.caption(_ipor9c)
     else:
         st.info("打新数据待流水线发布（交易日更新）。")
 
@@ -1145,16 +1158,24 @@ elif _nav == "🛰️ 雷达族":
         if _hot9c:
             st.markdown("**🔥 散户情绪三榜**（反指标：越热闹越要冷静，不是买入榜）")
             st.caption("🇨🇳 东财人气榜：" + "、".join(
-                f"#{h.get('rank')} {h.get('code')}{'🔥🔥雪#' + str(h.get('xq_rank')) if h.get('xq_rank') else ''}"
+                f"#{h.get('rank')} {h.get('code')}"
+                + (f"{h.get('chg'):+.1f}%" if isinstance(h.get("chg"), (int, float)) else "")
+                + str(h.get("impact") or "").replace("拥挤观察", "")
+                + ('🔥🔥雪#' + str(h.get('xq_rank')) if h.get('xq_rank') else '')
                 for h in _hot9c[:10]))
         _xq9c = _intel9c.get("hot_xq") or []
         if _xq9c:
             st.caption("❄️ 雪球热股：" + "、".join(
-                f"#{x.get('rank')} {x.get('name')}" for x in _xq9c[:10]))
+                f"#{x.get('rank')} {x.get('name')}"
+                + (f"{x.get('chg'):+.1f}%" if isinstance(x.get("chg"), (int, float)) else "")
+                for x in _xq9c[:10]))
         _us9c = _intel9c.get("hot_us") or []
         if _us9c:
             st.caption("🇺🇸 雅虎热搜：" + "、".join(
                 f"#{u.get('rank')} {u.get('symbol')}" for u in _us9c[:10]))
+        _hd9c = _rate9c("hot_dual", "双榜热股隔日(上涨率低=反指标成立)")
+        if _hd9c:
+            st.caption(_hd9c)
         st.caption(f"🕒 {_intel9c.get('generated_at', '')} · 出处:发改委/央行官网直采+东财股吧")
     else:
         st.info("政策/人气数据待流水线发布。")
