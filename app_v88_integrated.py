@@ -14404,23 +14404,40 @@ with st.expander("🔥 散户情绪三榜 · 东财人气/雪球热股/雅虎热
                 except Exception:
                     pass
                 _dual9x = "🔥🔥" if _h9x.get("xq_rank") else ""
+                # 【热度影响 2026-07-19】当日涨跌+确定性判读:热了会怎样一眼可见
+                _chg9x = _h9x.get("chg")
+                _chg_html9x = (f"<b style='color:{'#dc2626' if _chg9x > 0 else '#16a34a'}'>{_chg9x:+.1f}%</b>"
+                               if isinstance(_chg9x, (int, float)) else "")
+                _imp9x = str(_h9x.get("impact") or "")
+                _imp_html9x = (f"<span style='font-size:12px;color:"
+                               + ("#dc2626" if "过热" in _imp9x else ("#b45309" if ("冰点" in _imp9x or "蹿升" in _imp9x) else "#94a3b8"))
+                               + f"'>{_imp9x}</span>") if _imp9x else ""
                 _rows_e9.append(f"<div>#{_h9x.get('rank')} {_stk_link(_nm9x, _yf9x if 'SH' in str(_h9x.get('code', '')) or 'SZ' in str(_h9x.get('code', '')) else _h9x.get('code'))}"
+                                f" {_chg_html9x} {_imp_html9x}"
                                 f" {_dual9x}{('<span style=\'color:#94a3b8;font-size:12px\'>雪#' + str(_h9x.get('xq_rank')) + '</span>') if _h9x.get('xq_rank') else ''}</div>")
             st.markdown("<div style='font-size:13px;line-height:1.7'>" + "".join(_rows_e9) + "</div>",
                         unsafe_allow_html=True)
         with _c2h9:
             st.markdown("**❄️ 雪球热股榜**")
             st.markdown("<div style='font-size:13px;line-height:1.7'>" + "".join(
-                f"<div>#{_x9h.get('rank')} {_stk_link(_x9h.get('name'), _x9h.get('code'))}</div>"
+                f"<div>#{_x9h.get('rank')} {_stk_link(_x9h.get('name'), _x9h.get('code'))} "
+                + (f"<b style='color:{'#dc2626' if _x9h.get('chg', 0) > 0 else '#16a34a'}'>{_x9h.get('chg'):+.1f}%</b> "
+                   if isinstance(_x9h.get("chg"), (int, float)) else "")
+                + (f"<span style='font-size:12px;color:#94a3b8'>热度{'+' if (_x9h.get('heat_chg') or 0) >= 0 else ''}{_x9h.get('heat_chg')}</span>"
+                   if _x9h.get("heat_chg") is not None else "")
+                + f"</div>"
                 for _x9h in (_i3h9.get("hot_xq_raw") or [])[:10]) + "</div>", unsafe_allow_html=True)
         with _c3h9:
             st.markdown("**🇺🇸 雅虎美股热搜**")
             st.markdown("<div style='font-size:13px;line-height:1.7'>" + "".join(
                 f"<div>#{_u9h.get('rank')} {_stk_link(_u9h.get('symbol'), _u9h.get('symbol'))}</div>"
                 for _u9h in (_i3h9.get("hot_us_raw") or [])[:10]) + "</div>", unsafe_allow_html=True)
+        _hd9v = _v88_rate_line9("hot_dual", "双榜热股隔日")
         st.caption(f"🕒 {_i3h9.get('generated_at', '')} · 出处:东财股吧/雪球(匿名token)/雅虎trending · "
-                   "🔥🔥=东财雪球双榜同上(拥挤信号更硬) · 交易日随流水线6小时更新 · "
-                   "纪律:人气榜=散户扎堆反指标——你的票冲上榜是提醒冷静的钟,不是加仓的号")
+                   "🔥🔥=东财雪球双榜同上(拥挤信号更硬) · 判读:🔴热+大涨=过热追高险 🟠热+大跌=情绪冰点查错杀"
+                   " ⚡排名蹿升=情绪突变 · 交易日随流水线6小时更新 · "
+                   "纪律:人气榜=散户扎堆反指标——你的票冲上榜是提醒冷静的钟,不是加仓的号"
+                   + (f"　｜　{_hd9v}（上涨率低=反指标被实盘证实）" if _hd9v else ""))
     except Exception:
         st.info("情绪榜数据待流水线生成。")
 
