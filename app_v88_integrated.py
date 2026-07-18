@@ -4536,7 +4536,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
             .v88-macro-dense .v88-macro-reason{font-size:12px;margin-top:.18rem}
             .v88-macro-ai{font-size:12px;line-height:1.35;color:#3d4f6a;border-top:1px dashed #dce3ed;margin-top:.28rem;padding-top:.25rem;max-height:50px;overflow:hidden}
             .v88-macro-reason-inline{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-size:12px;color:#5a6378;white-space:normal;overflow:hidden;margin-bottom:2px}
-            .v88-macro-ai-active{height:234px;min-height:234px}
+            .v88-macro-ai-active{height:252px;min-height:252px}
             .v88-macro-ai-active .v88-macro-ai{max-height:82px;overflow:auto}
             @media(max-width:900px){.v88-macro-card{min-height:auto}.v88-macro-kpi b{font-size:13px}}
             </style>""", unsafe_allow_html=True)
@@ -11507,9 +11507,9 @@ _V88_CARD_CSS = """
 .v88-watch-market{min-width:0}
 .v88-watch-market h4{margin:0 0 5px;padding:4px 7px;border-radius:6px;background:#eaf2ff;color:#173b68;font-size:13px}
 .v88-watch-market h4 span{float:right;color:#64748b;font-size:12px;font-weight:500}
-.v88-watch-card{background:#fff;border:1px solid #dbe4f0;border-radius:8px;padding:6px 7px;margin-bottom:5px;box-shadow:0 1px 2px rgba(15,23,42,.04);height:234px;overflow:hidden;display:flex;flex-direction:column}
+.v88-watch-card{background:#fff;border:1px solid #dbe4f0;border-radius:8px;padding:6px 7px;margin-bottom:5px;box-shadow:0 1px 2px rgba(15,23,42,.04);height:252px;overflow:hidden;display:flex;flex-direction:column}
 .v88-watch-conflict{border:2px solid #f59e0b;background:#fffdf5}
-.v88-watch-pending{border-style:dashed;background:#fafbfc;opacity:.85;height:234px}
+.v88-watch-pending{border-style:dashed;background:#fafbfc;opacity:.85;height:252px}
 .v88-cycle-warn{color:#b45309;font-weight:700}
 .v88-watch-card-head{display:flex;justify-content:space-between;align-items:center;gap:5px;font-size:14px;line-height:1.3}
 .v88-name-line{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -11730,6 +11730,12 @@ def _v88_decision_card(_d9):
     _edge_html9 = ('<div style="font-size:12px;color:#475569;white-space:nowrap;overflow:hidden;'
                    'text-overflow:ellipsis;margin-top:1px">💡'
                    + (_edge_s9 or "无研报/新闻定性——纯技术驱动（如实说明）") + '</div>')
+    _dgk9 = str(_d9.get("diag_kind") or "")
+    _dg_col9 = {"破位": "#dc2626", "个股利空": "#b91c1c", "错杀": "#16a34a",
+                "可进": "#16a34a", "持有": "#2563eb"}.get(_dgk9, "#64748b")
+    _diag_html9 = ((f'<div style="font-size:12px;color:{_dg_col9};white-space:nowrap;overflow:hidden;'
+                    f'text-overflow:ellipsis;margin-top:1px">🩺{_d9.get("diag_verdict") or _dgk9}·'
+                    + str(_d9.get("diag_why") or "")[:34] + '</div>') if _dgk9 else '')
     # 【V88·乱码修复 2026-07-18】归因行并到上一行尾:独立行在无归因时会生成"缩进+空"的
     # 空白行→Markdown按"HTML块遇空行终止"把后续卡片/市场列全打成源代码(用户抓的乱码+只剩美股)。
     _mv_html9 = ((f'<div style="font-size:12px;color:#b91c1c;line-height:1.3;margin-top:2px;'
@@ -11742,7 +11748,7 @@ def _v88_decision_card(_d9):
         {_stk_link(_d9.get('name') or _d9.get('code'), _d9.get('code'))}
         <span class="v88-code">{_d9.get('code')}</span></div>
         <b class="v88-action" style="color:{_act_color_of9(_action_disp9)}">{_action_disp9}</b>
-      </div>{_mv_html9}{_edge_html9}
+      </div>{_mv_html9}{_edge_html9}{_diag_html9}
       <div class="v88-cyc-head">
         <span>今天→各周期上涨概率（红涨/绿跌·看趋势）</span>
         <span class="v88-cyc-trend">{_trend9}</span>
@@ -11755,6 +11761,37 @@ def _v88_decision_card(_d9):
       <span>中(4-8周){_mlabel9}</span><span>长(16-32周){_llabel9}</span>
       <span><b>统一分{_score9}</b></span><span>🕒 {_at9}</span></div>
     </div>"""
+
+
+def _v88_attach_diag9(_wa, _live_chg):
+    """【V88·一票一卡 2026-07-18 用户抓模块内重复】把 diagnose_today 结论写进
+    每条决策(diag_kind/verdict/why)由决策卡🩺行呈现——逐只不再独立成区，
+    同一只票在一个模块里只出现一次。"""
+    try:
+        from v88_decision_core import diagnose_today as _diag9
+    except Exception:
+        return
+    _mkt_chg = {"🇺🇸美股": _live_chg.get("美股", 0), "🇭🇰港股": _live_chg.get("港股", 0),
+                "🇨🇳A股": _live_chg.get("A股", 0)}
+    for _d in (_wa or {}).get("decisions") or []:
+        if _d.get("_pending") or _d.get("_short_history"):
+            continue
+        try:
+            _mk = _d.get("market") or market_of_code(_d.get("code", ""))
+            _dg = _diag9(scope=_d.get("scope", "自选"),
+                         today_chg=float(_d.get("today_chg") or 0),
+                         market_chg=float(_mkt_chg.get(_mk, 0) or 0),
+                         stage=str(_d.get("stage") or ""),
+                         broke_stop=bool(_d.get("broke_stop")),
+                         pos52=_d.get("pos52") or 50,
+                         action=str(_d.get("action") or ""),
+                         entry_mode=((_d.get("entry_plan") or {}).get("mode") or ""),
+                         name=_d.get("name", ""))
+            _d["diag_kind"] = _dg.get("kind")
+            _d["diag_verdict"] = _dg.get("verdict")
+            _d["diag_why"] = _dg.get("why")
+        except Exception:
+            continue
 
 
 def _render_my_stocks_today(_wa, _live_chg, *, scopes=("持仓", "自选"), container=None):
@@ -13405,9 +13442,8 @@ def _render_today_nav():
                    "n": len(_pool_wa), "rule_version": 9, "holding_levels": _holding_levels9}
             st.session_state['watch_alerts_v88'] = _wa
         _alert_analysis_note9 = _analysis_label9(_wa.get("ts"), "预警分析")
-        _render_front_watch_board9(_wa, _alert_analysis_note9)
-
-        # 【V88·我的票·今日逐只怎么办】紧跟自选台：对持仓+自选逐只说清能不能动+为什么
+        # 【V88·一票一卡 2026-07-18 用户抓重复】逐只诊断先附着到决策,由卡片🩺行呈现,
+        # 不再另开"逐只怎么办"独立区(同一票模块内只出现一次)。
         try:
             _mkchg9 = {}
             for _mk9m, _sym9m in {"美股": "^GSPC", "A股": "000001.SS", "港股": "^HSI"}.items():
@@ -13416,10 +13452,10 @@ def _render_today_nav():
                     _mkchg9[_mk9m] = (float(_c9m.iloc[-1]) / float(_c9m.iloc[-2]) - 1) * 100
                 except Exception:
                     _mkchg9[_mk9m] = 0.0
-            _render_my_stocks_today(_wa, _mkchg9, scopes=("持仓",), container=_v88_hold_mod9)
-            _render_my_stocks_today(_wa, _mkchg9, scopes=("自选",), container=_v88_watch_mod9)
+            _v88_attach_diag9(_wa, _mkchg9)
         except Exception:
-            logging.debug("我的票逐只解读渲染失败", exc_info=True)
+            logging.debug("逐只诊断附着失败", exc_info=True)
+        _render_front_watch_board9(_wa, _alert_analysis_note9)
 
         # 【V88·黑马雷达 2026-07-17】各发现模块产出→统一引擎复判→严门槛出黑马（纯黑马:排除自选/持仓）
         # 用户拍板:第一屏、宁缺毋滥、漏斗数字透明。30分钟缓存,不拖首屏。
@@ -13553,13 +13589,24 @@ def _render_today_nav():
 
         # ── 唯一持仓分析：复用日报最完整的“基本面+技术面+新闻面+综合建议”，按市场拆分。 ──
         if _critical9:
-            _risk_html9 = "<br>".join(f"• {_linkify_md(a)}" for a in _critical9[:10])
+            # 【V88·一票一卡 2026-07-18 用户抓重复】原文本墙每行重复卡片同源数字(统一分/
+            # 概率/盈亏比/期望)——压成一行名单,细节看下方各卡;原文收进popover备查。
+            _names_r9, _seen_r9 = [], set()
+            for _a9 in _critical9:
+                _m9r = re.search(r"\*\*(.+?)\*\*", str(_a9))
+                _nm9r = _m9r.group(1) if _m9r else str(_a9)[:8]
+                if _nm9r not in _seen_r9:
+                    _seen_r9.add(_nm9r)
+                    _names_r9.append(_nm9r)
             _risk_time9 = _analysis_label9(_wa.get("ts"), "预警分析")
             st.markdown(
                 f'<div style="background:#fee2e2;border-left:4px solid #ef4444;border-radius:8px;'
-                f'padding:.65rem .8rem;color:#7f1d1d;font-size:12px"><b>🚨 持仓风险优先</b>'
-                f'<span style="float:right;font-size:12px;color:#991b1b">{_risk_time9}</span><br>{_risk_html9}</div>',
+                f'padding:.5rem .8rem;color:#7f1d1d;font-size:13px"><b>🚨 持仓风险优先 {len(_names_r9)}只</b>：'
+                + "、".join(_names_r9[:12])
+                + f'<span style="font-size:12px;color:#991b1b">——急跌/破位纪律复核,动作与数字见下方各卡(同源不重复) · {_risk_time9}</span></div>',
                 unsafe_allow_html=True)
+            with st.popover("📄 预警原文备查"):
+                st.markdown("\n".join(f"- {a}" for a in _critical9[:10]))
 
         # 【V88·持仓概率决策台 2026-07-16】持仓也变成自选那样的卡片：中/短/长/16周上涨概率走势条+盈亏比+期望。
         # 数据用预警扫描的同一份唯一决策(scope=持仓)，与自选决策台一字同源。
@@ -13668,7 +13715,10 @@ def _render_today_nav():
                         _vals9 = [f"{_r9.get('名称','')}（{_code9}）", _lv9, _r9.get("层", _r9.get("类别", "—")) or "—",
                                   _r9.get("现价", "—"), _r9.get("盈亏", "—"), _r9.get("历史水位", "—"),
                                   _r9.get("基本面", "待下轮日报"), _r9.get("技术面", "待下轮日报"),
-                                  _r9.get("新闻面", "待下轮日报"), _r9.get("综合建议", "待下轮日报")]
+                                  _r9.get("新闻面", "待下轮日报"),
+                                  # 【一票一卡】剥掉与概率卡重复的尾巴(规则概率/盈亏比/期望在卡上)
+                                  re.sub(r"(?:<br>)?规则概率\(非回测\):[^<]*", "",
+                                         str(_r9.get("综合建议", "待下轮日报")))]
                         _tbl9.append("|" + "|".join(str(v).replace("|", "／") for v in _vals9) + "|")
                     st.markdown(_linkify_md("\n".join(_tbl9)), unsafe_allow_html=True)
                     # 【V88·持仓信念文字】≤50字/只：动作+依据+情绪镜子（北极星：压住追高/割肉）
