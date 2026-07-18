@@ -11744,9 +11744,13 @@ def _v88_decision_card(_d9):
     # 【V88·凭什么铁律 2026-07-18 用户定纲】每张卡必有一句定性——有据(研报/公告/新闻)
     # 或明示"纯技术驱动",不许只有数字。
     _edge_s9 = _v88_fund_edge_short(_d9.get("name") or "")
+    _hot_rk9 = (_v88_intel9().get("hot_map") or {}).get(
+        _canonical_code(str(_d9.get("code") or "")))
     _edge_html9 = ('<div style="font-size:12px;color:#475569;white-space:nowrap;overflow:hidden;'
                    'text-overflow:ellipsis;margin-top:1px">💡'
-                   + (_edge_s9 or "无研报/新闻定性——纯技术驱动（如实说明）") + '</div>')
+                   + (_edge_s9 or "无研报/新闻定性——纯技术驱动（如实说明）")
+                   + (f' <b style="color:#b45309">🔥人气榜#{_hot_rk9}·散户扎堆拥挤提示</b>'
+                      if _hot_rk9 else '') + '</div>')
     _dgk9 = str(_d9.get("diag_kind") or "")
     _dg_col9 = {"破位": "#dc2626", "个股利空": "#b91c1c", "错杀": "#16a34a",
                 "可进": "#16a34a", "持有": "#2563eb"}.get(_dgk9, "#64748b")
@@ -12219,6 +12223,25 @@ def _v88_fund_edge_short(name, max_len=22):
     return ""
 
 
+def _v88_intel9():
+    """【V88·情报二期 2026-07-18】政策直采+人气榜(私仓落盘,10分钟缓存)。
+    返回 {policy:[...], hot_map:{canon:rank}}"""
+    import time as _t
+    _c = _V88_NEWS_CACHE.setdefault("_intel", {"ts": 0, "d": {}})
+    if _t.time() - _c["ts"] < 600 and _c["d"]:
+        return _c["d"]
+    try:
+        _raw = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+                           "intel_feed.json").read_text(encoding="utf-8"))
+        _c["d"] = {"policy": _raw.get("policy") or [],
+                   "hot_map": {str(h.get("canon")): int(h.get("rank") or 0)
+                               for h in (_raw.get("hot") or [])}}
+    except Exception:
+        _c["d"] = {"policy": [], "hot_map": {}}
+    _c["ts"] = _t.time()
+    return _c["d"]
+
+
 def _v88_market_edge(market):
     """大盘级定性:近3日策略/宏观研报标题按市场关键词命中(出处:东财研报库),
     命不中如实空——调用处明示"纯量价驱动"。10分钟缓存。"""
@@ -12239,6 +12262,12 @@ def _v88_market_edge(market):
     for _t9 in _c["d"].get("titles") or []:
         if any(k in str(_t9) for k in _kw):
             return f"🏛️{str(_t9)[:30]}（出处:东财研报库·近3日策略报告）"
+    # 【情报二期】策略研报没提→政策原文兜底(中国市场;美股不适用)
+    if str(market)[-2:] in ("A股", "港股"):
+        for _p9 in (_v88_intel9().get("policy") or []):
+            if _p9.get("src") == "发改委":
+                return (f"📜政策:{str(_p9.get('title'))[:26]}"
+                        f"（{str(_p9.get('date'))[5:]}·出处:发改委官网直采）")
     return ""
 
 
