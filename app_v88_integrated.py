@@ -13974,6 +13974,36 @@ with st.expander("🏛️ 机构风向标 · 权威研报评级×系统推荐池
     except Exception:
         st.info("机构风向标数据随日报流水线生成（交易日07/13/19点），稍后刷新。")
 
+# 【V88·公告事件雷达常驻板块 2026-07-18 用户点单】"未来可以提醒或主动"——
+# 自选+持仓的公司公告(可转债/回购/减持…)主动摆上台面;盘中新事件另有飞书预警。
+with st.expander("⚡ 公告事件雷达 · 自选+持仓公司公告（可转债/回购/减持·主动提醒）", expanded=False):
+    try:
+        _annj9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+                             "announcements.json").read_text(encoding="utf-8"))
+        st.caption(f"🕒 {_annj9.get('generated_at', '')} · 池{_annj9.get('pool_n', 0)}只 · "
+                   "出处:东财公告库（A股+港股；美股8-K不覆盖，如实说明） · "
+                   "交易日随流水线更新；盘中出新事件自动推飞书预警（48h同事件只推一次）")
+        _evs_all9 = _annj9.get("events") or {}
+        if not _evs_all9:
+            st.info("近5日池内无可转债/回购/减持等公告事件——无事件也是信息（如实说明）。")
+        else:
+            _grp9 = {}
+            for _blk9 in _evs_all9.values():
+                for _e9 in (_blk9.get("items") or []):
+                    _grp9.setdefault(str(_e9.get("dir")), []).append((_blk9, _e9))
+            for _dk9, _hd9 in (("event", "⚡ 事件博弈（两面：抢权/输血 vs 摊薄——只语境化不翻案）"),
+                               ("bull", "🔴 偏多公告"), ("bear", "🟢 偏空公告")):
+                if _grp9.get(_dk9):
+                    st.markdown(f"**{_hd9}**")
+                    st.markdown("<div style='font-size:13px;line-height:1.7'>" + "".join(
+                        f"<div>· {_stk_link(_b9.get('name'), _b9.get('code'))} "
+                        f"{str(_e9.get('date'))[5:]}「{str(_e9.get('title'))[:30]}」"
+                        f"<span style='color:#64748b'>——{_e9.get('note')}</span></div>"
+                        for _b9, _e9 in _grp9[_dk9][:8]) + "</div>", unsafe_allow_html=True)
+            st.caption("硬边界：事件只做语境参考，不推翻周期裁决；⚡两面事件若该股被判「回避」，最多短线纪律小仓。")
+    except Exception:
+        st.info("公告事件数据随日报流水线生成（交易日 07/13/19 点），稍后刷新。")
+
 with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）", expanded=False):
     try:
         _ipo9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "ipo_radar.json")
