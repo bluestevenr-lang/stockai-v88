@@ -629,7 +629,15 @@ def cycle_visual_html(result: dict, name: str, symbol: str,
         "派发": (0.62, 0.02), "退潮": (0.02, 0.62), "震荡": (0.0, 0.0),
     }
     px, py = phase_xy[phase_key]
-    delta = points[-1]["score"] - points[0]["score"]
+    # 【V88·今天锚点 2026-07-18 用户点单】走向图必须从"今天"画起，2周前不能是空白。
+    # 今天热度=当前相位基准位 + 近5日实际动量微调（相位与左侧象限钟同一口径）。
+    _phase_base = {"蓄势": 45, "领涨": 62, "派发": 55, "退潮": 38, "震荡": 50}[phase_key]
+    try:
+        _ret5_now = float((fact_rows.get("2周") or {}).get("ret5_pct") or 0)
+    except (TypeError, ValueError):
+        _ret5_now = 0.0
+    now_score = round(_clip(_phase_base + _clip(_ret5_now, -6, 6) * 1.2, 20, 80), 1)
+    delta = points[-1]["score"] - now_score
     direction = "升温" if delta >= 2 else ("退潮" if delta <= -2 else "震荡")
     arrow_dy = -24 if direction == "升温" else (24 if direction == "退潮" else 0)
     color = "#16a34a" if direction == "升温" else ("#ef4444" if direction == "退潮" else "#64748b")
@@ -658,30 +666,41 @@ def cycle_visual_html(result: dict, name: str, symbol: str,
     clock.append(f'<circle cx="{mx:.0f}" cy="{my:.0f}" r="8" fill="{color}"><title>{escape(name)}·{escape(phase)}·{direction}</title></circle>')
     clock.append(f'<text class="title" x="286" y="58">{escape(name)} · {escape(symbol)}</text>')
     clock.append(f'<text class="value" x="286" y="86">当前相位：{escape(phase)}</text>')
-    clock.append(f'<text class="value" x="286" y="110">周期走向：{direction} {points[0]["score"]:.0f}→{points[-1]["score"]:.0f}</text>')
+    clock.append(f'<text class="value" x="286" y="110">周期走向：{direction} 今天{now_score:.0f}→{points[-1]["label"]}{points[-1]["score"]:.0f}</text>')
     clock.append(f'<text class="value" x="286" y="134">预计拐点：{escape(turn["label"])}</text>')
     clock.append(f'<text class="note" x="286" y="160">圆点=当前相位 · 箭头=周期方向</text>')
     clock.append('</svg>')
 
-    # 右侧五周期热度轨迹；分数是方向坐标，不称为概率/胜率。
+    # 右侧走向轨迹：起点=今天（实算），其后=各周期预测；分数是方向坐标，不称为概率/胜率。
     tw, th, top, bottom = 700, 224, 42, 178
-    xs = [82, 204, 326, 448, 570][:len(points)]
+    _n_cols = len(points) + 1
+    xs = [74 + i * (580 - 74) / max(1, _n_cols - 1) for i in range(_n_cols)]
     def y_of(score):
         return bottom - (float(score) - 20) / 60 * (bottom - top)
     y60, y45 = y_of(60), y_of(45)
-    traj = [f'<svg viewBox="0 0 {tw} {th}" role="img" aria-label="{escape(name)}二四六八十六周周期走向">']
+    traj = [f'<svg viewBox="0 0 {tw} {th}" role="img" aria-label="{escape(name)}今天至十六周周期走向">']
     traj.append(f'<rect class="hot" x="54" y="{top}" width="550" height="{y60-top:.0f}"/>')
     traj.append(f'<rect class="warm" x="54" y="{y60:.0f}" width="550" height="{y45-y60:.0f}"/>')
     traj.append(f'<rect class="cold" x="54" y="{y45:.0f}" width="550" height="{bottom-y45:.0f}"/>')
     for label, yy in (("热", (top+y60)/2), ("温", (y60+y45)/2), ("冷", (y45+bottom)/2)):
         traj.append(f'<text class="mut" x="44" y="{yy+4:.0f}" text-anchor="end">{label}</text>')
+    # 今天锚点列
+    _x0 = xs[0]
+    _y_now = y_of(now_score)
+    traj.append(f'<line class="grid" x1="{_x0:.0f}" y1="{top}" x2="{_x0:.0f}" y2="{bottom}"/>')
+    traj.append(f'<text class="mut" x="{_x0:.0f}" y="26" text-anchor="middle">今天</text>')
     seq = []
-    for x, point in zip(xs, points):
+    for x, point in zip(xs[1:], points):
         y = y_of(point["score"])
         seq.append((x, y, point))
-        traj.append(f'<line class="grid" x1="{x}" y1="{top}" x2="{x}" y2="{bottom}"/>')
-        traj.append(f'<text class="mut" x="{x}" y="26" text-anchor="middle">{point["label"]}</text>')
-    traj.append('<polyline points="' + ' '.join(f'{x},{y:.0f}' for x, y, _ in seq) + f'" fill="none" stroke="{color}" stroke-width="3" stroke-linejoin="round"/>')
+        traj.append(f'<line class="grid" x1="{x:.0f}" y1="{top}" x2="{x:.0f}" y2="{bottom}"/>')
+        traj.append(f'<text class="mut" x="{x:.0f}" y="26" text-anchor="middle">{point["label"]}</text>')
+    traj.append('<polyline points="' + f'{_x0:.0f},{_y_now:.0f} '
+                + ' '.join(f'{x:.0f},{y:.0f}' for x, y, _ in seq)
+                + f'" fill="none" stroke="{color}" stroke-width="3" stroke-linejoin="round"/>')
+    traj.append(f'<circle cx="{_x0:.0f}" cy="{_y_now:.0f}" r="6" fill="{color}" stroke="var(--card-bg,#fff)" stroke-width="2">'
+                f'<title>今天热度{now_score:.0f}/100（当前相位{escape(phase)}+近5日{_ret5_now:+.1f}%实算，非预测）</title></circle>')
+    traj.append(f'<text class="tiny" x="{_x0:.0f}" y="{min(th-8, _y_now+22):.0f}" text-anchor="middle">现在·{escape(phase_key)}</text>')
     for x, y, point in seq:
         ring = point["label"] == turn.get("horizon")
         if ring:
@@ -689,7 +708,7 @@ def cycle_visual_html(result: dict, name: str, symbol: str,
         fill = color if point["confidence"] >= 65 else "var(--card-bg,#fff)"
         traj.append(f'<circle cx="{x}" cy="{y:.0f}" r="6" fill="{fill}" stroke="{color}" stroke-width="2"><title>{point["label"]}·{review_source}{point["view"]}·证据一致性{point["confidence"]}%（非胜率）·{escape(point["reason"])}</title></circle>')
         traj.append(f'<text class="tiny" x="{x}" y="{min(th-8, y+22):.0f}" text-anchor="middle">{review_source}{point["view"]}·{point["confidence"]}%</text>')
-    traj.append(f'<text class="note" x="54" y="214">横轴=2/4/6/8/16周 · 纵轴=综合方向热度 · 虚线环=预计拐点 · 百分比=证据一致性</text>')
+    traj.append(f'<text class="note" x="54" y="214">横轴=今天→各周期（今天=当前相位+5日动量实算，其后=预测） · 纵轴=综合方向热度 · 虚线环=预计拐点 · 百分比=证据一致性</text>')
     traj.append('</svg>')
 
     # 每档条件完整保留在紧凑文字区，触发/风险均来自同一轮AI复核。

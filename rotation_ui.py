@@ -70,7 +70,15 @@ def _swimlane_svg(market: str, trajectory: list) -> str:
         return ""
     W, H = 700, 132
     horizons = _trajectory_horizons(trajectory)
-    x_positions = (125, 255, 385, 515) if len(horizons) == 4 else (150, 330, 510)
+    # 【V88·今天锚点 2026-07-18 用户点单】线从"今天"画起，2周前不再是空白。
+    # 旧缓存无 now 字段时按原版画（下一轮流水线自然补齐）。
+    has_now = any(isinstance(t.get("now"), (int, float)) for t in trajectory)
+    if has_now:
+        x_positions = (218, 318, 418, 514) if len(horizons) == 4 else (250, 382, 514)
+        x_today = 118
+    else:
+        x_positions = (125, 255, 385, 515) if len(horizons) == 4 else (150, 330, 510)
+        x_today = None
     cols = dict(zip(horizons, x_positions))
     top, bot = 26, 108
     span = bot - top
@@ -82,12 +90,15 @@ def _swimlane_svg(market: str, trajectory: list) -> str:
         return bot - (s - lo) / (hi - lo) * span
 
     yb1, yb2 = yv(60), yv(48)  # 热≥60 / 温48-60 / 冷<48
-    p = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="{escape(market)}板块2至16周热度与拐点走向">']
+    p = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="{escape(market)}板块今天至16周热度与拐点走向">']
     p.append(f'<rect class="b-hot" x="96" y="{top}" width="420" height="{yb1-top:.0f}"/>')
     p.append(f'<rect class="b-warm" x="96" y="{yb1:.0f}" width="420" height="{yb2-yb1:.0f}"/>')
     p.append(f'<rect class="b-cold" x="96" y="{yb2:.0f}" width="420" height="{bot-yb2:.0f}"/>')
     for label, yy in (("热", (top+yb1)/2), ("温", (yb1+yb2)/2), ("冷", (yb2+bot)/2)):
         p.append(f'<text class="ph" x="90" y="{yy+4:.0f}" text-anchor="end">{label}</text>')
+    if x_today is not None:
+        p.append(f'<line class="grid" x1="{x_today}" y1="{top}" x2="{x_today}" y2="{bot}"/>')
+        p.append(f'<text class="mut" x="{x_today}" y="16" text-anchor="middle">今天</text>')
     for h, x in cols.items():
         p.append(f'<line class="grid" x1="{x}" y1="{top}" x2="{x}" y2="{bot}"/>')
         p.append(f'<text class="mut" x="{x}" y="16" text-anchor="middle">{HORIZON_SHORT[h]}</text>')
@@ -97,10 +108,17 @@ def _swimlane_svg(market: str, trajectory: list) -> str:
         seq = [(cols[h], yv(t["points"][h]["score"]), h) for h in horizons if h in t["points"]]
         if not seq:
             continue
+        if x_today is not None and isinstance(t.get("now"), (int, float)):
+            _ny = yv(t["now"])
+            seq.insert(0, (x_today, _ny, "今天"))
+            p.append(f'<circle cx="{x_today}" cy="{_ny:.0f}" r="3.4" fill="{color}">'
+                     f'<title>{escape(t["name"])}·今天热度{t["now"]:.0f}/100（当日动量+MA20位置+量能实算）</title></circle>')
         pts = " ".join(f"{x:.0f},{y:.0f}" for x, y, _ in seq)
         p.append(f'<polyline points="{pts}" fill="none" stroke="{color}" stroke-width="2" '
                  f'stroke-linejoin="round" stroke-linecap="round"/>')
         for x, y, h in seq:
+            if h == "今天":
+                continue  # 今天锚点已单独画，points里没有它
             pt = t["points"][h]
             title = (f'{t["name"]}·{h}：热度{pt["score"]}/100 · {pt["confidence"]}置信\n'
                      f'触发 {pt.get("trigger","")}｜失效 {pt.get("invalid","")}')
@@ -161,10 +179,11 @@ def _clock_svg(market: str, trajectory: list, heat: dict) -> str:
         ly = 44 + len(legend) * 27
         turn = t.get("turning") or {}
         turn_text = (f' · 拐点{escape(str(turn.get("horizon")))}' if turn.get("horizon") else '')
+        _now_txt = (f'今天{int(t["now"])} → ' if isinstance(t.get("now"), (int, float)) else '')
         legend.append(
             f'<rect x="310" y="{ly-9}" width="12" height="12" rx="3" fill="{color}"/>'
             f'<text class="lbl" x="330" y="{ly}">{escape(t["name"])} · {phase}</text>'
-            f'<text class="mut" x="330" y="{ly+13}">{horizons[0]}{int(near)} → {horizons[-1]}{int(far)} 热度{turn_text}</text>'
+            f'<text class="mut" x="330" y="{ly+13}">{_now_txt}{horizons[0]}{int(near)} → {horizons[-1]}{int(far)} 热度{turn_text}</text>'
         )
     heat_txt = ""
     if heat:
@@ -240,10 +259,10 @@ def _rich_rotation_html(forecast: dict, element_id: str, focus_market: str,
         f'<div class="rf-meta"><span>🕒 分析于 {analysis_time}（北京时间）</span>'
         f'<span>{review_label}</span><span>条件成立才升级，失效即撤销</span></div>'
         f'<div class="rf-root"><b>🧠 板块热度 · 轮动时钟与走向</b>'
-        f'<small>2周 → 5周 → 8周 → 16周（圆环=预计拐点）</small></div>'
+        f'<small>今天 → 2周 → 5周 → 8周 → 16周（圆环=预计拐点）</small></div>'
         f'{clock_block}{"".join(cards)}{warning_html}'
         f'<div class="rf-foot"><span>● 实心=高置信 ◐ 半实=中 ○ 空心=低</span>'
-        f'<span>横轴=2/5/8/16周 · 纵轴热→温→冷 · 圆环=预计拐点</span>'
+        f'<span>横轴=今天→2/5/8/16周（今天=实算起点，其后=预测） · 纵轴热→温→冷 · 圆环=预计拐点</span>'
         f'<span>悬停节点看触发/失效</span></div>'
         f'</div>'
     )
