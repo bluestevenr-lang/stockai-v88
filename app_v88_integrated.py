@@ -2952,8 +2952,30 @@ def _load_prompt(name: str, **kwargs) -> str:
 # ═══════════════════════════════════════════════════════════════
 # 【V92】全量云端搜索 - 从侧边栏移至深度作战室主区域
 # ═══════════════════════════════════════════════════════════════
+def _local_name_search9(search_key):
+    """【2026-07-18修】东财API挂时的本地降级——原直接引用 STOCK_NAME_INDEX(定义在
+    4000行之后,脚本自上而下执行到这里还不存在)必 NameError('久吾高科'案发)。
+    改为:①cloud_engine 离线名录(8208条,含全量A股) ②内置索引 globals 安全兜底。"""
+    _out9 = []
+    try:
+        import cloud_engine as _ce_srch9
+        for _nm9s, _cd9s, _mk9s in (_ce_srch9.search_candidates(search_key, limit=15) or []):
+            _out9.append((_cd9s, _nm9s))
+    except Exception:
+        pass
+    if not _out9:
+        for code, name in (globals().get("STOCK_NAME_INDEX") or {}).items():
+            if (search_key.upper() in code.upper() or search_key in name
+                    or search_key.upper() in code.split('.')[0].upper()):
+                _out9.append((code, name))
+    return _out9
+
+
 def render_cloud_search():
     """东方财富API全量搜索 - 渲染在主内容区（深度作战室顶部）"""
+    # 【2026-07-18修】本函数经slot提前执行,早于11083行的初始化——先补位防AttributeError
+    if 'search_history' not in st.session_state:
+        st.session_state.search_history = []
     st.markdown("""
     <div style="padding: 0.4rem 0 0.2rem 0; margin-bottom: 0.5rem; border-left: 3px solid #00d4aa; padding-left: 0.8rem;">
         <span style="font-size: 13px; font-weight: 700; color: #00d4aa;">🔍 个股搜索</span>
@@ -3021,27 +3043,15 @@ def render_cloud_search():
 
                 if len(all_matches) == 0:
                     _search_prog.progress(0.3)
-                    _search_status.text("🔍 API失败，降级到本地索引...")
-                    _safe_print("[东方财富API] 失败，降级到本地索引")
-                    _idx_total = len(STOCK_NAME_INDEX)
-                    for _idx, (code, name) in enumerate(STOCK_NAME_INDEX.items()):
-                        if _idx_total > 0 and _idx % 50 == 0:
-                            _search_prog.progress(0.3 + 0.6 * (_idx / _idx_total))
-                            _search_status.text(f"🔍 本地索引搜索... {_idx}/{_idx_total} ({100*_idx/_idx_total:.0f}%)")
-                        if (search_key.upper() in code.upper() or search_key in name or search_key.upper() in code.split('.')[0].upper()):
-                            all_matches.append((code, name))
-                
+                    _search_status.text("🔍 API失败，降级到本地名录…")
+                    _safe_print("[东方财富API] 失败，降级到本地名录")
+                    all_matches.extend(_local_name_search9(search_key))
+
             except Exception as e:
                 _safe_print(f"[东方财富API] 错误: {e}")
                 _search_prog.progress(0.2)
-                _search_status.text("🔍 API异常，降级到本地索引...")
-                _idx_total = len(STOCK_NAME_INDEX)
-                for _idx, (code, name) in enumerate(STOCK_NAME_INDEX.items()):
-                    if _idx_total > 0 and _idx % 50 == 0:
-                        _search_prog.progress(0.2 + 0.7 * (_idx / _idx_total))
-                        _search_status.text(f"🔍 本地索引... {_idx}/{_idx_total} ({100*_idx/_idx_total:.0f}%)")
-                    if (search_key.upper() in code.upper() or search_key in name or search_key.upper() in code.split('.')[0].upper()):
-                        all_matches.append((code, name))
+                _search_status.text("🔍 API异常，降级到本地名录…")
+                all_matches.extend(_local_name_search9(search_key))
 
             _search_prog.progress(1.0)
             _search_status.text(f"✅ 搜索完成，共 {len(all_matches)} 个结果 · 用时 {time.time()-_search_t0:.1f}s")
@@ -12163,6 +12173,30 @@ def _render_today_verdict(_snap, _repo):
                      "温度越高越热越该轻仓）</span>："
                      + " ｜ ".join(_pos) + "</div>")
     if _go:
+        # 【V88·胜率闭环 2026-07-18 借鉴外部提示词唯一可取点】绿灯旁挂实盘对账：
+        # 同类入场信号近30日到期核算的真实命中率（非规则估计），命中<45%明示收紧执行。
+        # 1小时session缓存（核算要回查行情）。
+        _esb9 = st.session_state.get("_entry_sb9")
+        import time as _tsb9
+        if not _esb9 or _tsb9.time() - float(_esb9.get("ts") or 0) > 3600:
+            try:
+                import sys as _sys9b
+                if str(_repo / "src") not in _sys9b.path:
+                    _sys9b.path.insert(0, str(_repo / "src"))
+                from entry_scoreboard import score as _esb_score9
+                _s9 = _esb_score9(30)
+                _esb9 = {"ts": _tsb9.time(), "n": _s9["n"], "right": _s9["right"],
+                         "avg": (round(sum(_r["chg_pct"] for _r in _s9["rows"]) / _s9["n"], 1)
+                                 if _s9["n"] else 0.0)}
+            except Exception:
+                _esb9 = {"ts": _tsb9.time(), "n": 0}
+            st.session_state["_entry_sb9"] = _esb9
+        _esb_txt9 = ""
+        if _esb9.get("n"):
+            _rate9 = round(100 * _esb9["right"] / _esb9["n"])
+            _esb_txt9 = (f"｜实盘对账：近30日同类绿灯{_esb9['n']}次·命中{_rate9}%"
+                         f"·均{_esb9['avg']:+.1f}%（出处:入场日志到期核算）"
+                         + ("——命中偏低，只挑与板块相位共振的执行" if _rate9 < 45 else ""))
         # 【2026-07-18 用户抓截断】原[:6]静默截掉尾部（"8只只见6只"，OTIS就这样凭空消失）——全量显示
         _go_txt = "、".join(f"{h.get('_src', '')}{_stk_link(h.get('name'), h.get('code'))}"
                            f"<span style='font-size:12px;color:#64748b'>"
@@ -12170,7 +12204,7 @@ def _render_today_verdict(_snap, _repo):
                            for h in _go)
         _html.append(f"<div style='font-size:13px;margin-bottom:3px'>🟢 <b style='color:#dc2626'>"
                      f"可进场</b>（严门槛绿灯 {len(_go)} 只）：{_go_txt}"
-                     f"<span style='font-size:12px;color:#64748b'>——仓位按上方纲领，别越线重仓</span></div>")
+                     f"<span style='font-size:12px;color:#64748b'>——仓位按上方纲领，别越线重仓{_esb_txt9}</span></div>")
     else:
         _html.append("<div style='font-size:13px;margin-bottom:3px'>🟢 <b>可进场</b>：今日无严门槛绿灯，"
                      "空仓等待也是决策（现金也是仓位）</div>")
@@ -13502,7 +13536,8 @@ def _render_today_nav():
                     for _r9 in _mr9:
                         _code9 = str(_r9.get("代码", ""))
                         _base9 = str(_r9.get("级别") or "B").upper()
-                        _dyn9 = ((_wa.get("holding_levels") or {}).get(_code9) or {}).get("level", _base9)
+                        # 【2026-07-18修】_wa可能为None(扫描未跑/被此刻按钮清缓存)——曾炸掉整个今日导航
+                        _dyn9 = (((_wa or {}).get("holding_levels") or {}).get(_code9) or {}).get("level", _base9)
                         _lv9 = f"{_base9}级" if _dyn9 == _base9 else f"{_base9}→{_dyn9}"
                         _vals9 = [f"{_r9.get('名称','')}（{_code9}）", _lv9, _r9.get("层", _r9.get("类别", "—")) or "—",
                                   _r9.get("现价", "—"), _r9.get("盈亏", "—"), _r9.get("历史水位", "—"),
