@@ -236,7 +236,7 @@ def jump_stock(name, code):
     st.rerun()
 
 with c_nav:
-    _nav = st.radio("导航", ["🧭 导航", "🔥 热点新闻", "🏆 全选榜单", "🔍 个股搜索", "📊 日报", "📅 周报", "📈 大盘板块", "🔁 复盘", "💼 持仓终端"],
+    _nav = st.radio("导航", ["🧭 导航", "🔥 热点新闻", "🏆 全选榜单", "🔍 个股搜索", "📊 日报", "📅 周报", "📈 大盘板块", "🛰️ 雷达族", "🔁 复盘", "💼 持仓终端"],
                     horizontal=True, label_visibility="collapsed", key="_nav")
 
 _pub_state = pub_meta()
@@ -1066,6 +1066,87 @@ elif _nav == "📈 大盘板块":
         st.info(_NOT_READY)
 
 # ── 🔁 复盘 ─────────────────────────────────────────────────
+elif _nav == "🛰️ 雷达族":
+    # 【V88·三端同步 2026-07-18 用户点单】打新/公告可转债/机构/黑马与桌面同一份落盘数据。
+    st.markdown("### 🛰️ 雷达族（打新 / 公告事件·可转债 / 机构风向标 / 黑马）")
+    st.caption("与桌面版同一份交易日落盘数据；深度交互分析（实时重算/K线作战层）在桌面版。")
+
+    def _pub_json9(name):
+        try:
+            return json.loads(pub_text(name, _PUB_VERSION) or "")
+        except Exception:
+            return {}
+
+    _ipo9c = _pub_json9("ipo_radar.json")
+    st.markdown("#### 🆕 打新雷达（中美港新股 · Top3优先）")
+    _ipo_rows9c = (_ipo9c.get("rows") or [])
+    if _ipo_rows9c:
+        st.dataframe([{k: r.get(k) for k in ("市场", "名称", "代码", "申购日", "评级", "要点")
+                       if k in r} or r for r in _ipo_rows9c[:10]],
+                     hide_index=True, use_container_width=True)
+        st.caption(f"🕒 {_ipo9c.get('generated_at', '')} · 出处:Tushare/Nasdaq/富途（A/美/港）")
+    else:
+        st.info("打新数据待流水线发布（交易日更新）。")
+
+    _annc9 = _pub_json9("announcements.json")
+    st.markdown("#### ⚡ 公告事件雷达 · 全市场可转债")
+    if _annc9:
+        _cbs9c = _annc9.get("cb_calendar") or []
+        if _cbs9c:
+            st.markdown("**🌐 可转债日历**（出处:东财可转债数据）")
+            for _x9c in _cbs9c[:6]:
+                st.markdown(f"- **{_x9c.get('bond')}**（正股 {_x9c.get('stock')}）"
+                            f"申购日{_x9c.get('apply_date')}·评级{_x9c.get('rating')}"
+                            f"·{_x9c.get('scale')}亿——{_x9c.get('note')}"
+                            + ("　⭐池内正股·抢权窗口" if _x9c.get("in_pool") else ""))
+        _pipe9c = _annc9.get("cb_pipeline") or []
+        if _pipe9c:
+            st.markdown("**🟢 已注册待发·即将申购储备**（按关注分排序·出处:集思录）")
+            for _x9c in _pipe9c[:6]:
+                st.markdown(f"- {_x9c.get('tag', '')}{_x9c.get('score', '')}分 **{_x9c.get('stock')}** "
+                            f"{str(_x9c.get('stage_date', ''))[5:]}同意注册｜{_x9c.get('why', '')}"
+                            + ("　⭐池内" if _x9c.get("in_pool") else ""))
+        _evs9c = _annc9.get("events") or {}
+        if _evs9c:
+            st.markdown("**📌 池内公告事件**（近5日·出处:东财公告库）")
+            for _blk9c in list(_evs9c.values())[:8]:
+                for _e9c in (_blk9c.get("items") or [])[:2]:
+                    st.markdown(f"- {_e9c.get('icon')} **{_blk9c.get('name')}** "
+                                f"{_e9c.get('date')}「{str(_e9c.get('title'))[:30]}」——{_e9c.get('note')}")
+        st.caption("硬边界：事件只做语境参考，不推翻周期裁决；⚡两面事件若该股被判「回避」，最多短线纪律小仓。")
+    else:
+        st.info("公告/可转债数据待流水线发布（交易日更新）。")
+
+    _inst9c = _pub_json9("institutional_signals.json")
+    st.markdown("#### 🏛️ 机构风向标")
+    if _inst9c:
+        st.caption(f"🕒 {_inst9c.get('generated_at', '')} · 研报{_inst9c.get('reports_n', 0)}篇 · "
+                   "出处:东财研报库(公开评级/目标价/标题)；外资观点=新闻流标题原文 · AI综合仅供参考")
+        _aib9c = _inst9c.get("ai_brief") or {}
+        if _aib9c:
+            st.markdown(f"**🧭 机构综合布局**：主线 **{_aib9c.get('机构共识主线', '—')}** ｜ "
+                        f"分歧 {_aib9c.get('机构分歧', '—')}")
+            for _k9c in ("明天", "本周", "下周", "本月及下月"):
+                if _aib9c.get(_k9c):
+                    st.markdown(f"- **{_k9c}**：{_aib9c[_k9c]}")
+        for _c9c in (_inst9c.get("consensus") or [])[:6]:
+            st.markdown(f"- 📌 **{_c9c.get('stock')}**（{'、'.join((_c9c.get('orgs') or [])[:2])}）："
+                        f"{_c9c.get('gist') or '—'}")
+    else:
+        st.info("机构数据待流水线发布。")
+
+    _dh9c = _pub_json9("darkhorse.json")
+    st.markdown("#### 🐴 黑马池（严门槛复判）")
+    _horses9c = (_dh9c.get("horses") or [])
+    if _horses9c:
+        for _h9c in _horses9c[:8]:
+            st.markdown(f"- {'🔴' if _h9c.get('grade') == '重点' else '🟡'} "
+                        f"**{_h9c.get('name')}**（{_h9c.get('code')}·{_h9c.get('market', '')}）"
+                        f"{str(_h9c.get('reason') or _h9c.get('why') or '')[:40]}")
+        st.caption(f"🕒 {_dh9c.get('generated_at', '')} · 纯黑马=排除自选/持仓 · 宁缺毋滥")
+    else:
+        st.info("黑马数据待流水线发布。")
+
 elif _nav == "🔁 复盘":
     st.markdown("#### 🔁 推荐复盘 · 说话要算数")
     _files = pub_journal_list()
