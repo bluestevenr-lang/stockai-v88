@@ -666,48 +666,89 @@ if _nav == "🧭 导航":
         _gate_note9 = ("<div style='font-size:11px;color:#94a3b8;margin:2px 0 6px'>"
                        "↑↓≈=较前一档，链首=今天锚点（阶段+5日动量，与桌面同口径）；"
                        "概率为规则情景估计</div>")
-        if _gate_go9:
-            st.markdown(f"**🐉 龙虎门 · 上攻关注**（黑马严门槛绿灯 {len(_gate_go9)} 只·出处:黑马漏斗复判）")
-            _rl_lh9 = _rate_g9("entry_green", "入场绿灯")
-            if _rl_lh9:
-                st.caption(_rl_lh9)
-            st.markdown(
-                "<div style='display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px'>"
-                + "".join(_gcard9(h, "#dc2626", "#fef2f2",
-                                  ("🎯高把握·" if (int(h.get("p_up") or 0) >= 60
-                                                and float(h.get("rr") or 0) >= 1.5) else "")
-                                  + "🐉 " + str(((h.get('trade_plan') or {}).get('short') or {}).get('mode') or '绿灯'))
-                          for h in sorted(_gate_go9,
-                                          key=lambda h: -(int(h.get("p_up") or 0)
-                                                          + (8 if float(h.get("rr") or 0) >= 1.5 else 0))))
-                + "</div>" + _gate_note9, unsafe_allow_html=True)
-            st.caption("完整龙虎门(含自选/持仓实时绿灯)在桌面版；此处为公开黑马部分。")
-        _tok_g9 = str(st.secrets.get("PRIVATE_TOKEN", "") or "").strip()
-        if _tok_g9:
-            try:
-                import base64 as _b64g9
-                _rg9 = requests.get(
-                    "https://api.github.com/repos/bluestevenr-lang/v88-daily-report/contents/data/intraday_decisions.json",
-                    headers={"Authorization": f"token {_tok_g9}",
-                             "Accept": "application/vnd.github+json"}, timeout=12)
-                _idc9 = json.loads(_b64g9.b64decode(_rg9.json().get("content") or "").decode("utf-8"))
-                _cut_g9 = [r for r in (_idc9.get("rows") or [])
-                           if any(k in str(r.get("action", "")) for k in ("减", "退", "清", "止损"))]
-                if _cut_g9:
-                    st.markdown(f"**⚔️ 地狱门 · 拐点/破位先躲**（{len(_cut_g9)} 只·盘中落盘·🔒私径）")
-                    _rl_gg9 = _rate_g9("gate_guard", "地狱门警示")
-                    st.caption(_rl_gg9 or "📊 地狱门警示实盘成功率：样本积累中（警示后≥3天下跌=躲对了，反向口径）")
-                    st.markdown(
-                        "<div style='display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px'>"
-                        + "".join(_gcard9(r, "#16a34a", "#f0fdf4",
-                                          ("🎯高把握·" if int(r.get("p_down") or 0) >= 60 else "")
-                                          + "⚔️ " + str(r.get("reason") or "拐点/破位警示")[:14])
-                                  for r in sorted(_cut_g9, key=lambda r: -int(r.get("p_down") or 0)))
-                        + "</div>" + _gate_note9, unsafe_allow_html=True)
-            except Exception:
-                st.caption("⚔️ 地狱门：私仓数据读取失败，稍后刷新。")
-        else:
-            st.caption("⚔️ 地狱门（含持仓，属私域）：需配 PRIVATE_TOKEN 才在云端显示——隐私铁律，桌面/飞书不受限。")
+
+        # 【V88·双门同一模块 2026-07-19 用户定纲】左半=地狱门(先躲)、右半=龙虎门(上攻)，
+        # 各按中美港三部分分列——与桌面「双门决断」模块同构。
+        def _gate_mkey9c(_d9g):
+            _m9g = str(_d9g.get("market") or "")
+            if "美股" in _m9g:
+                return "🇺🇸美股"
+            if "港股" in _m9g:
+                return "🇭🇰港股"
+            if "A股" in _m9g:
+                return "🇨🇳A股"
+            _c9g = str(_d9g.get("code") or "").upper()
+            if _c9g.endswith(".HK") or (_c9g.isdigit() and len(_c9g) in (4, 5)):
+                return "🇭🇰港股"
+            if _c9g.endswith((".SS", ".SZ")) or (_c9g.isdigit() and len(_c9g) == 6):
+                return "🇨🇳A股"
+            return "🇺🇸美股"
+
+        def _gate_grid9c(_pairs9):
+            _out9 = []
+            for _mk9g in ("🇺🇸美股", "🇭🇰港股", "🇨🇳A股"):
+                _its9 = [h for k, h in _pairs9 if k == _mk9g]
+                if _its9:
+                    _out9.append(f"<div style='font-size:12px;font-weight:700;color:#64748b;"
+                                 f"margin:4px 0 2px'>{_mk9g}（{len(_its9)}只）</div>"
+                                 "<div style='display:grid;gap:6px'>" + "".join(_its9) + "</div>")
+            return "".join(_out9)
+        st.markdown("**🚪 双门决断 · ⚔️地狱门（先躲·左） ⟷ 🐉龙虎门（上攻·右）**　"
+                    "<span style='font-size:12px;color:#94a3b8'>预测主力模块·中美港分列</span>",
+                    unsafe_allow_html=True)
+        _colGG9c, _colLH9c = st.columns(2)
+        with _colLH9c:
+            if _gate_go9:
+                st.markdown(f"<div style='background:#fef2f2;border-left:4px solid #dc2626;border-radius:8px;"
+                            f"padding:.35rem .5rem'><b style='color:#dc2626'>🐉 龙虎门 · 上攻关注</b>"
+                            f"（黑马严门槛绿灯 {len(_gate_go9)} 只）</div>", unsafe_allow_html=True)
+                _rl_lh9 = _rate_g9("entry_green", "入场绿灯")
+                if _rl_lh9:
+                    st.caption(_rl_lh9)
+                _lh_pairs9 = [(_gate_mkey9c(h),
+                               _gcard9(h, "#dc2626", "#fef2f2",
+                                       ("🎯高把握·" if (int(h.get("p_up") or 0) >= 60
+                                                     and float(h.get("rr") or 0) >= 1.5) else "")
+                                       + "🐉 " + str(((h.get('trade_plan') or {}).get('short') or {})
+                                                     .get('mode') or '绿灯')))
+                              for h in sorted(_gate_go9,
+                                              key=lambda h: -(int(h.get("p_up") or 0)
+                                                              + (8 if float(h.get("rr") or 0) >= 1.5 else 0)))]
+                st.markdown(_gate_grid9c(_lh_pairs9) + _gate_note9, unsafe_allow_html=True)
+                st.caption("完整龙虎门(含自选/持仓实时绿灯)在桌面版；此处为公开黑马部分。")
+            else:
+                st.caption("🐉 龙虎门：今日无严门槛绿灯——空仓等待也是决策。")
+        with _colGG9c:
+            _tok_g9 = str(st.secrets.get("PRIVATE_TOKEN", "") or "").strip()
+            if _tok_g9:
+                try:
+                    import base64 as _b64g9
+                    _rg9 = requests.get(
+                        "https://api.github.com/repos/bluestevenr-lang/v88-daily-report/contents/data/intraday_decisions.json",
+                        headers={"Authorization": f"token {_tok_g9}",
+                                 "Accept": "application/vnd.github+json"}, timeout=12)
+                    _idc9 = json.loads(_b64g9.b64decode(_rg9.json().get("content") or "").decode("utf-8"))
+                    _cut_g9 = [r for r in (_idc9.get("rows") or [])
+                               if any(k in str(r.get("action", "")) for k in ("减", "退", "清", "止损"))]
+                    if _cut_g9:
+                        st.markdown(f"<div style='background:#f0fdf4;border-left:4px solid #16a34a;"
+                                    f"border-radius:8px;padding:.35rem .5rem'><b style='color:#16a34a'>"
+                                    f"⚔️ 地狱门 · 拐点/破位先躲</b>（{len(_cut_g9)} 只·盘中落盘·🔒私径）</div>",
+                                    unsafe_allow_html=True)
+                        _rl_gg9 = _rate_g9("gate_guard", "地狱门警示")
+                        st.caption(_rl_gg9 or "📊 地狱门警示实盘成功率：样本积累中（警示后≥3天下跌=躲对了，反向口径）")
+                        _gg_pairs9 = [(_gate_mkey9c(r),
+                                       _gcard9(r, "#16a34a", "#f0fdf4",
+                                               ("🎯高把握·" if int(r.get("p_down") or 0) >= 60 else "")
+                                               + "⚔️ " + str(r.get("reason") or "拐点/破位警示")[:14]))
+                                      for r in sorted(_cut_g9, key=lambda r: -int(r.get("p_down") or 0))]
+                        st.markdown(_gate_grid9c(_gg_pairs9) + _gate_note9, unsafe_allow_html=True)
+                    else:
+                        st.caption("⚔️ 地狱门：今日无警示名单。")
+                except Exception:
+                    st.caption("⚔️ 地狱门：私仓数据读取失败，稍后刷新。")
+            else:
+                st.caption("⚔️ 地狱门（含持仓，属私域）：需配 PRIVATE_TOKEN 才在云端显示——隐私铁律，桌面/飞书不受限。")
     except Exception:
         pass
 
