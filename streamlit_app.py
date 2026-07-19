@@ -584,6 +584,46 @@ if _nav == "🧭 导航":
                         unsafe_allow_html=True)
     else:
         st.info(_NOT_READY)
+    # 【V88·双门 2026-07-19 用户点单"云端也要有龙虎门/鬼门关"】
+    # 龙虎门=公开黑马绿灯(pub安全);鬼门关含持仓名→走PRIVATE_TOKEN私径,无token如实提示。
+    try:
+        _dh_g9 = {}
+        try:
+            _dh_g9 = json.loads(pub_text("darkhorse.json", _PUB_VERSION) or "")
+        except Exception:
+            _dh_g9 = {}
+        _gate_go9 = [h for h in (_dh_g9.get("horses") or [])
+                     if ((h.get("trade_plan") or {}).get("short") or {}).get("mode")
+                     in ("现价可进", "回踩到位", "突破确认")]
+        if _gate_go9:
+            st.markdown("**🐉 龙虎门 · 上攻关注**（黑马严门槛绿灯·出处:黑马漏斗复判）")
+            st.markdown("、".join(
+                f"{h.get('name')}({h.get('code')}·{(((h.get('trade_plan') or {}).get('short') or {}).get('mode'))})"
+                for h in _gate_go9[:8]))
+            st.caption("完整龙虎门(含自选/持仓实时绿灯)与胜率对账在桌面版；此处为公开黑马部分。")
+        _tok_g9 = str(st.secrets.get("PRIVATE_TOKEN", "") or "").strip()
+        if _tok_g9:
+            try:
+                import base64 as _b64g9
+                _rg9 = requests.get(
+                    "https://api.github.com/repos/bluestevenr-lang/v88-daily-report/contents/data/intraday_decisions.json",
+                    headers={"Authorization": f"token {_tok_g9}",
+                             "Accept": "application/vnd.github+json"}, timeout=12)
+                _idc9 = json.loads(_b64g9.b64decode(_rg9.json().get("content") or "").decode("utf-8"))
+                _cut_g9 = [r for r in (_idc9.get("rows") or [])
+                           if any(k in str(r.get("action", "")) for k in ("减", "退", "清", "止损"))]
+                if _cut_g9:
+                    st.markdown("**⚔️ 鬼门关 · 拐点/破位先躲**（盘中落盘·🔒私径）")
+                    st.markdown("、".join(
+                        f"{r.get('name')} {r.get('action')}(下行{r.get('p_down', '—')}%)"
+                        for r in _cut_g9[:10]))
+            except Exception:
+                st.caption("⚔️ 鬼门关：私仓数据读取失败，稍后刷新。")
+        else:
+            st.caption("⚔️ 鬼门关（含持仓，属私域）：需配 PRIVATE_TOKEN 才在云端显示——隐私铁律，桌面/飞书不受限。")
+    except Exception:
+        pass
+
     # 🔥 最新热点（直接可见，详情见「🔥 热点新闻」页）
     try:
         _nl0 = json.loads(pub_text("news_live.json") or "{}")
