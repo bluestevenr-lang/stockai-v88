@@ -11724,16 +11724,27 @@ def _v88_decision_card(_d9):
              for _i9, (_l9x, _p9x) in enumerate(_spk_src9)]
     _base_y9 = _spk_y9(50)
     _poly9 = " ".join(f"{x},{y}" for x, y, _, _ in _pts9)
-    _marks9 = "".join(
-        (f'<circle cx="{x}" cy="{y}" r="2.3" fill="var(--card-bg,#fff)" stroke="#475569" stroke-width="1.1"/>'
-         f'<text x="{x}" y="7" text-anchor="middle" font-size="7.5" font-weight="700" fill="#475569">现在</text>'
-         f'<text x="{x}" y="33" text-anchor="middle" font-size="6.5" fill="#94a3b8">今天</text>')
-        if lab == "今天" else
-        (f'<circle cx="{x}" cy="{y}" r="2.1" fill="{_cyc_col9(p)}"/>'
-         f'<text x="{x}" y="7" text-anchor="middle" font-size="7.5" font-weight="700" '
-         f'fill="{_cyc_col9(p)}">{p}%</text>'
-         f'<text x="{x}" y="33" text-anchor="middle" font-size="6.5" fill="#94a3b8">{lab}</text>')
-        for x, y, p, lab in _pts9)
+    # 【V88·逐点方向符号 2026-07-19 用户点单】每个%后跟↑↓(相对前一点;2周的箭头=相对今天锚点)
+    _marks_parts9 = []
+    _prev_p9m = None
+    for x, y, p, lab in _pts9:
+        if lab == "今天":
+            _marks_parts9.append(
+                f'<circle cx="{x}" cy="{y}" r="2.3" fill="var(--card-bg,#fff)" stroke="#475569" stroke-width="1.1"/>'
+                f'<text x="{x}" y="7" text-anchor="middle" font-size="7.5" font-weight="700" fill="#475569">现在</text>'
+                f'<text x="{x}" y="33" text-anchor="middle" font-size="6.5" fill="#94a3b8">今天</text>')
+        else:
+            _ar9m = ""
+            if _prev_p9m is not None:
+                _dd9m = p - _prev_p9m
+                _ar9m = "↑" if _dd9m >= 1 else ("↓" if _dd9m <= -1 else "≈")
+            _marks_parts9.append(
+                f'<circle cx="{x}" cy="{y}" r="2.1" fill="{_cyc_col9(p)}"/>'
+                f'<text x="{x}" y="7" text-anchor="middle" font-size="7.5" font-weight="700" '
+                f'fill="{_cyc_col9(p)}">{p}%{_ar9m}</text>'
+                f'<text x="{x}" y="33" text-anchor="middle" font-size="6.5" fill="#94a3b8">{lab}</text>')
+        _prev_p9m = p
+    _marks9 = "".join(_marks_parts9)
     _spark9 = (
         f'<svg class="v88-spark" viewBox="0 0 {_spk_w9} {_spk_h9}">'
         f'<line x1="10" y1="{_base_y9}" x2="{_spk_w9 - 10}" y2="{_base_y9}" stroke="#e2e8f0" '
@@ -12650,8 +12661,20 @@ def _render_l3_cycle_board(_snap, _is_trading):
     def _chain9(_probs):
         if not _probs:
             return "<span style='color:#94a3b8'>计算中</span>"
-        _seg9 = " ".join(f"<span style='color:{_pcol9(p)}'>{lab}<b>{p}</b></span>"
-                         for lab, p in _probs)
+        # 【V88·逐点方向符号 2026-07-19 用户点单】每个数字后面直接标↑↓(相对前一档),
+        # 不用脑补趋势;|差|<1标≈。首档无前档不标。
+        _parts9c = []
+        _prev9c = None
+        for lab, p in _probs:
+            _ar9c = ""
+            if _prev9c is not None:
+                _dd9c = p - _prev9c
+                _ar9c = ("<span style='color:#dc2626'>↑</span>" if _dd9c >= 1 else
+                         ("<span style='color:#16a34a'>↓</span>" if _dd9c <= -1 else
+                          "<span style='color:#94a3b8'>≈</span>"))
+            _parts9c.append(f"<span style='color:{_pcol9(p)}'>{lab}<b>{p}</b></span>{_ar9c}")
+            _prev9c = p
+        _seg9 = " ".join(_parts9c)
         # 【V88·相位一致性】"越远越强"必须末档真强（≥59）才说，末档在中性带只说趋中性
         _d9 = _probs[-1][1] - _probs[0][1]
         _last9v = _probs[-1][1]
@@ -13350,9 +13373,19 @@ def _render_today_nav():
             _colL9, _colR9 = st.columns([1, 1.3])
 
             def _fw_chain9(_ch9):
-                return " ".join(
-                    f"<span style='color:{'#dc2626' if (p or 0) >= 55 else ('#16a34a' if (p or 0) <= 45 else '#64748b')}'>"
-                    f"{lb}<b>{p}%</b></span>" for lb, p in (_ch9 or []))
+                # 【逐点方向符号 2026-07-19】每点后跟↑↓(相对前一档)
+                _out9f, _pv9f = [], None
+                for lb, p in (_ch9 or []):
+                    _c9f = '#dc2626' if (p or 0) >= 55 else ('#16a34a' if (p or 0) <= 45 else '#64748b')
+                    _ar9f = ""
+                    if _pv9f is not None and p is not None:
+                        _dd9f = p - _pv9f
+                        _ar9f = ("<span style='color:#dc2626'>↑</span>" if _dd9f >= 1 else
+                                 ("<span style='color:#16a34a'>↓</span>" if _dd9f <= -1 else
+                                  "<span style='color:#94a3b8'>≈</span>"))
+                    _out9f.append(f"<span style='color:{_c9f}'>{lb}<b>{p}%</b></span>{_ar9f}")
+                    _pv9f = p
+                return " ".join(_out9f)
             with _colL9:
                 st.markdown("**🌍 大盘（中美港）**")
                 for _r9 in _fwp9.get("idx") or []:
