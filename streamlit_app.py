@@ -584,8 +584,8 @@ if _nav == "🧭 导航":
                         unsafe_allow_html=True)
     else:
         st.info(_NOT_READY)
-    # 【V88·双门 2026-07-19 用户点单"云端也要有龙虎门/鬼门关"】
-    # 龙虎门=公开黑马绿灯(pub安全);鬼门关含持仓名→走PRIVATE_TOKEN私径,无token如实提示。
+    # 【V88·双门 2026-07-19 用户点单"云端也要有龙虎门/地狱门"】
+    # 龙虎门=公开黑马绿灯(pub安全);地狱门含持仓名→走PRIVATE_TOKEN私径,无token如实提示。
     try:
         _dh_g9 = {}
         try:
@@ -674,8 +674,12 @@ if _nav == "🧭 导航":
             st.markdown(
                 "<div style='display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px'>"
                 + "".join(_gcard9(h, "#dc2626", "#fef2f2",
-                                  "🐉 " + str(((h.get('trade_plan') or {}).get('short') or {}).get('mode') or '绿灯'))
-                          for h in _gate_go9)
+                                  ("🎯高把握·" if (int(h.get("p_up") or 0) >= 60
+                                                and float(h.get("rr") or 0) >= 1.5) else "")
+                                  + "🐉 " + str(((h.get('trade_plan') or {}).get('short') or {}).get('mode') or '绿灯'))
+                          for h in sorted(_gate_go9,
+                                          key=lambda h: -(int(h.get("p_up") or 0)
+                                                          + (8 if float(h.get("rr") or 0) >= 1.5 else 0))))
                 + "</div>" + _gate_note9, unsafe_allow_html=True)
             st.caption("完整龙虎门(含自选/持仓实时绿灯)在桌面版；此处为公开黑马部分。")
         _tok_g9 = str(st.secrets.get("PRIVATE_TOKEN", "") or "").strip()
@@ -690,19 +694,68 @@ if _nav == "🧭 导航":
                 _cut_g9 = [r for r in (_idc9.get("rows") or [])
                            if any(k in str(r.get("action", "")) for k in ("减", "退", "清", "止损"))]
                 if _cut_g9:
-                    st.markdown(f"**⚔️ 鬼门关 · 拐点/破位先躲**（{len(_cut_g9)} 只·盘中落盘·🔒私径）")
-                    _rl_gg9 = _rate_g9("gate_guard", "鬼门关警示")
-                    st.caption(_rl_gg9 or "📊 鬼门关警示实盘成功率：样本积累中（警示后≥3天下跌=躲对了，反向口径）")
+                    st.markdown(f"**⚔️ 地狱门 · 拐点/破位先躲**（{len(_cut_g9)} 只·盘中落盘·🔒私径）")
+                    _rl_gg9 = _rate_g9("gate_guard", "地狱门警示")
+                    st.caption(_rl_gg9 or "📊 地狱门警示实盘成功率：样本积累中（警示后≥3天下跌=躲对了，反向口径）")
                     st.markdown(
                         "<div style='display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px'>"
                         + "".join(_gcard9(r, "#16a34a", "#f0fdf4",
-                                          "⚔️ " + str(r.get("reason") or "拐点/破位警示")[:14])
-                                  for r in _cut_g9)
+                                          ("🎯高把握·" if int(r.get("p_down") or 0) >= 60 else "")
+                                          + "⚔️ " + str(r.get("reason") or "拐点/破位警示")[:14])
+                                  for r in sorted(_cut_g9, key=lambda r: -int(r.get("p_down") or 0)))
                         + "</div>" + _gate_note9, unsafe_allow_html=True)
             except Exception:
-                st.caption("⚔️ 鬼门关：私仓数据读取失败，稍后刷新。")
+                st.caption("⚔️ 地狱门：私仓数据读取失败，稍后刷新。")
         else:
-            st.caption("⚔️ 鬼门关（含持仓，属私域）：需配 PRIVATE_TOKEN 才在云端显示——隐私铁律，桌面/飞书不受限。")
+            st.caption("⚔️ 地狱门（含持仓，属私域）：需配 PRIVATE_TOKEN 才在云端显示——隐私铁律，桌面/飞书不受限。")
+    except Exception:
+        pass
+
+    # 【V88·手机研究包·大盘版 2026-07-19 用户点单】Mac/Win关机也能拿系统数据——
+    # 把大盘温度+三层链+轮动+龙虎门+实盘对账打包成可复制文本,手机贴给Claude综合研判。
+    try:
+        _mb_env9 = []
+        for _mk9b in ("美股", "A股", "港股"):
+            _blk9b = (((_snap or {}).get("markets") or {}).get(_mk9b) or {})
+            _t9b = _blk9b.get("temperature") or {}
+            _l39b = _blk9b.get("l3") or {}
+            _ch9b = " ".join(f"{lab}{int(p)}" for lab, p in (_l39b.get("probs") or []))
+            if _t9b or _ch9b:
+                _mb_env9.append(f"{_mk9b}：温度{_t9b.get('temp', '?')}°"
+                                f"（{str(_t9b.get('position', '')).split('（')[0]}）"
+                                + (f"｜{_l39b.get('name')}周期链 {_ch9b}｜阶段{_l39b.get('stage')}"
+                                   if _ch9b else ""))
+        _mb_rot9 = []
+        _traj9b = ((_snap or {}).get("rotation_forecast") or {}).get("trajectories") or {}
+        for _mk9b, _tl9b in _traj9b.items():
+            _top9b = sorted(_tl9b or [], key=lambda t: -((t.get("points") or {})
+                                                         .get("2周") or {}).get("score", 0))
+            if _top9b:
+                _p29b = ((_top9b[0].get("points") or {}).get("2周") or {}).get("score")
+                _mb_rot9.append(f"{_mk9b}最强板块:{_top9b[0].get('name')}(2周{_p29b})")
+        # 双门try若早退,_gate_go9/_sr_g9可能未定义——globals兜底,别让研究包整体消失
+        _mb_go9 = "、".join(f"{h.get('name')}({h.get('code')})"
+                           for h in (globals().get("_gate_go9") or [])) or "今日无绿灯"
+        _mb_sr9 = []
+        for _k9b, _l9b in (("entry_green", "入场绿灯"), ("darkhorse", "黑马"),
+                           ("gate_guard", "地狱门警示"), ("relay", "涨停接力")):
+            _v9b = (globals().get("_sr_g9") or {}).get(_k9b) or {}
+            if _v9b.get("rate") is not None:
+                _mb_sr9.append(f"{_l9b}{_v9b['rate']}%(n{_v9b.get('n')})")
+        _mb_txt9 = (
+            f"【V88系统研究包·大盘】生成{_now_bjt():%Y-%m-%d %H:%M}北京\n"
+            + ("■ 三大市场：\n" + "\n".join("  " + x for x in _mb_env9) + "\n" if _mb_env9 else "")
+            + (f"■ 板块轮动：{'｜'.join(_mb_rot9)}\n" if _mb_rot9 else "")
+            + f"■ 龙虎门（严门槛绿灯）：{_mb_go9}\n"
+            + (f"■ 系统实盘对账（到期核算）：{'·'.join(_mb_sr9)}\n" if _mb_sr9 else "")
+            + "■ 口径：温度=水位+情绪合成，越高越该轻仓；周期链数字=该档上涨概率（规则情景估计非胜率）\n"
+            + "→ 请结合你能获取的最新宏观/政策/资金面信息，与以上V88数据交叉验证，回答：\n"
+              "①明天/下周大盘方向判断与理由；②当前最值得关注的板块与个股逻辑；"
+              "③仓位建议；④V88数据与你认知冲突的点。注意生成时间，行情有时效。")
+        with st.expander("📱 手机研究包 · 大盘版（复制给任何Claude对话综合研判）", expanded=False):
+            st.caption("用法：手机浏览器打开本页→复制下面整段→粘贴到手机Claude对话。"
+                       "个股版在「🔍 个股搜索」页搜完自动生成。Mac/Win关机也能用。")
+            st.code(_mb_txt9, language=None)
     except Exception:
         pass
 
@@ -978,6 +1031,61 @@ elif _nav == "🔍 个股搜索":
                     )
             except Exception as _hz_cloud_exc:
                 st.warning(f"五周期走势暂不可用：{type(_hz_cloud_exc).__name__}")
+
+            # 【V88·手机研究包 2026-07-19 用户点单】Mac/Win关机也要能拿系统数据——
+            # 云端实时引擎算完→打包成一段可复制文本,手机端粘贴给Claude,让它结合
+            # V88确定性口径+它自己的最新信息做综合分析。零依赖桌面,纯云端。
+            try:
+                _mp_hz9 = (_cloud_decision.get("facts") or {}).get("horizons") or {}
+                _mp_chain9 = " ".join(
+                    f"{_k9m}{int(round(float((_mp_hz9.get(_k9m) or {}).get('rule_score'))))}"
+                    for _k9m in ("2周", "4周", "8周", "16周", "32周")
+                    if (_mp_hz9.get(_k9m) or {}).get("rule_score") is not None) or "走势链缺失"
+                _mp_env9 = []
+                try:
+                    for _mk9m in ("美股", "A股", "港股"):
+                        _t9m = (((_snap or {}).get("markets") or {}).get(_mk9m) or {}).get("temperature") or {}
+                        if _t9m:
+                            _mp_env9.append(f"{_mk9m}{_t9m.get('temp', '?')}°"
+                                            f"({str(_t9m.get('position', '')).split('（')[0]})")
+                except Exception:
+                    pass
+                _mp_sr9 = []
+                try:
+                    _sr9m = (json.loads(pub_text("success_rates.json", _PUB_VERSION) or "{}")
+                             .get("types") or {})
+                    for _k9m, _l9m in (("entry_green", "入场绿灯"), ("darkhorse", "黑马"),
+                                       ("gate_guard", "地狱门警示")):
+                        _v9m = _sr9m.get(_k9m) or {}
+                        if _v9m.get("rate") is not None:
+                            _mp_sr9.append(f"{_l9m}{_v9m['rate']}%(n{_v9m.get('n')})")
+                except Exception:
+                    pass
+                _mp_txt9 = (
+                    f"【V88系统研究包】{_tname}（{_tsym}）· 生成{_now_bjt():%Y-%m-%d %H:%M}北京\n"
+                    f"■ 系统结论：{_cloud_decision.get('action')}｜统一分{_cloud_decision.get('unified_score')}"
+                    f"（短{_cloud_decision.get('short_score')}/中{_cloud_decision.get('medium_score')}"
+                    f"/长{_cloud_decision.get('long_score')}）｜2周上涨{_cloud_decision.get('p_up')}%"
+                    f"/下行{_cloud_decision.get('p_down')}%｜盈亏比{_cloud_decision.get('rr')}"
+                    f"｜2周期望{_cloud_decision.get('expected_pct'):+.1f}%\n"
+                    f"■ 入场/时机：{_cloud_decision.get('entry_note')}\n"
+                    f"■ 周期链（各档上涨概率，规则情景估计非胜率）：{_mp_chain9}｜技术阶段：{f.get('conclusion')}\n"
+                    f"■ 关键价位：现价{f.get('last')}｜阻力{_cloud_decision.get('resistance')}"
+                    f"｜止损{_cloud_decision.get('stop')}\n"
+                    + (f"■ 大盘环境：{'｜'.join(_mp_env9)}\n" if _mp_env9 else "")
+                    + (f"■ 系统实盘对账（到期核算）：{'·'.join(_mp_sr9)}\n" if _mp_sr9 else "")
+                    + "■ 口径：统一分=短20%+中25%+长20%+趋势15%+赔率20%；周期=2/4/8/16/32交易周翻倍律；"
+                      "概率为确定性规则情景估计，非回测胜率\n"
+                    + "→ 请结合你能获取的最新新闻/基本面/行业信息，与以上V88确定性引擎数据交叉验证，回答：\n"
+                      "①同意/不同意系统动作，理由；②该股当前的催化与风险事由（要具体事件，不要泛泛）；"
+                      "③给出何时买/何时卖的具体条件（价位或信号）；④指出系统数据与你认知冲突的点。"
+                      "注意上面的生成时间，行情有时效。")
+                with st.expander("📱 手机研究包 · 复制给任何Claude对话综合分析", expanded=False):
+                    st.caption("用法：手机浏览器打开本云端页→搜这只股→复制下面整段→粘贴到手机Claude对话。"
+                               "Mac/Win关机也能用（本页数据=云端实时计算+pub快照）。")
+                    st.code(_mp_txt9, language=None)
+            except Exception:
+                pass
 
             # 【V88·个人决策锚点】云端与网页版调用同一个无未来函数核心。
             st.markdown("##### 🧷 我的决策锚点 · 2/5/8/16周")
