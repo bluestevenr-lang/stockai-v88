@@ -11697,16 +11697,7 @@ def _v88_decision_card(_d9):
     # 今天=当前阶段基准位(蓄势/底部45·领涨/主升62·派发/滞涨55·退潮/破位38·其余50,
     # 与深度页象限口径一致)+近5日实际动量微调；空心点=实算起点,实心点=各周期预测。
     _stage9x = str((_d9.get("facts") or {}).get("stage") or _d9.get("stage") or "")
-    if any(_k in _stage9x for _k in ("蓄势", "底部")):
-        _pb9x = 45
-    elif any(_k in _stage9x for _k in ("领涨", "主升", "启动", "延续", "多头")):
-        _pb9x = 62
-    elif any(_k in _stage9x for _k in ("派发", "滞涨", "高位")):
-        _pb9x = 55
-    elif any(_k in _stage9x for _k in ("退潮", "破位", "转弱", "下跌")):
-        _pb9x = 38
-    else:
-        _pb9x = 50
+    _pb9x = _v88_stage_base9(_stage9x)
     try:
         _r5x9 = float((_facts_h9.get("2周") or {}).get("ret5_pct") or 0)
     except (TypeError, ValueError):
@@ -12236,6 +12227,20 @@ def _v88_fund_edge(name, *, inst_only=False, max_len=34):
     return "🏭 近3日无该股研报/直接新闻——行业优势以数字与走势为准（如实说明，不编）"
 
 
+def _v88_stage_base9(stage):
+    """【V88·今天锚点统一口径】阶段→现在热度基准位(与深度页象限/决策卡同一张表)。"""
+    _s = str(stage or "")
+    if any(k in _s for k in ("蓄势", "底部")):
+        return 45
+    if any(k in _s for k in ("领涨", "主升", "启动", "延续", "多头")):
+        return 62
+    if any(k in _s for k in ("派发", "滞涨", "高位")):
+        return 55
+    if any(k in _s for k in ("退潮", "破位", "转弱", "下跌")):
+        return 38
+    return 50
+
+
 def _v88_fund_edge_short(name, max_len=22):
     """【V88·凭什么铁律 2026-07-18 用户定纲】任何数字结论旁的一句定性(≤22字):
     ①机构研报标题(出处:研报库) ②公告事件 ③名称命中新闻——都没有返回空,
@@ -12684,13 +12689,16 @@ def _render_l3_cycle_board(_snap, _is_trading):
     def _pcol9(_p):
         return "#dc2626" if _p >= 55 else ("#16a34a" if _p <= 45 else "#64748b")
 
-    def _chain9(_probs):
+    def _chain9(_probs, _now9c=None):
         if not _probs:
             return "<span style='color:#94a3b8'>计算中</span>"
-        # 【V88·逐点方向符号 2026-07-19 用户点单】每个数字后面直接标↑↓(相对前一档),
-        # 不用脑补趋势;|差|<1标≈。首档无前档不标。
+        # 【V88·逐点方向符号+现在锚点 2026-07-19 用户点单】链首灰「现在」=阶段基准+动量
+        # 实算起点(非预测),2周箭头相对现在;之后每档相对前一档标↑↓≈。
         _parts9c = []
         _prev9c = None
+        if _now9c is not None:
+            _parts9c.append(f"<span style='color:#94a3b8'>现在<b>{int(_now9c)}</b></span>")
+            _prev9c = _now9c
         for lab, p in _probs:
             _ar9c = ""
             if _prev9c is not None:
@@ -12788,6 +12796,7 @@ def _render_l3_cycle_board(_snap, _is_trading):
         "<span style='font-size:12px;color:#64748b'>"
         "数字=该周期<b>上涨概率%</b>（规则情景估计，非胜率）：<span style='color:#dc2626'>红≥55偏涨</span>／"
         "<span style='color:#16a34a'>绿≤45偏跌</span>／<span style='color:#64748b'>灰=中性</span>。"
+        "链首灰字「现在」=当前阶段基准+近日动量<b>实算起点</b>（非预测），2周的箭头=相对「现在」；"
         "数字后小箭头=<b>较前一档</b>升↑/降↓/平≈（看每段涨落）；末尾大箭头=整条链总结（越远越强/弱/趋中性），"
         "与左侧「阶段·动作」是两件事：动作说<b>现在能不能买</b>、"
         "箭头说<b>越往后越强还是越弱</b></span>",
@@ -12806,7 +12815,7 @@ def _render_l3_cycle_board(_snap, _is_trading):
                 _rows9.append(
                     f"<div style='margin-bottom:3px'>📈 <b>{_m9['name']}</b>{_lc_html9} "
                     f"<span style='color:#475569'>{_m9['stage']}</span> · {_m9['action']}<br>"
-                    f"<span style='font-size:12px'>{_chain9(_m9['probs'])}</span></div>")
+                    f"<span style='font-size:12px'>{_chain9(_m9['probs'], max(20, min(80, _v88_stage_base9(_m9.get('stage')) + max(-6.0, min(6.0, float(_lc9 or 0))) * 1.2)))}</span></div>")
             _tl9 = sorted((_traj9.get(_mk9) or []),
                           key=lambda t: -((t.get("points") or {}).get("2周") or {}).get("score", 0))
             for _t9, _flag9 in ([(_tl9[0], "🔥")] if _tl9 else []) + \
@@ -12822,7 +12831,7 @@ def _render_l3_cycle_board(_snap, _is_trading):
                 _rows9.append(
                     f"<div style='margin-bottom:3px'>{_flag9} <b>{_t9.get('name')}</b> "
                     f"<span style='font-size:12px;color:{'#b91c1c' if _sec_reason9 else '#64748b'}'>{_trg_disp9}</span><br>"
-                    f"<span style='font-size:12px'>{_chain9(_probs9)}</span></div>")
+                    f"<span style='font-size:12px'>{_chain9(_probs9, _t9.get('now'))}</span></div>")
             if _rows9:
                 st.markdown(
                     f"<div style='border:1px solid #dbe4f0;border-radius:8px;padding:7px 9px;"
@@ -13385,9 +13394,16 @@ def _render_today_nav():
                                 _fw9 = _efo_p9(_dfp9, name=_lb9, code=_sy9)
                                 if _fw9.get("error"):
                                     continue
+                                try:
+                                    _cl9p = _dfp9["Close"].dropna()
+                                    _r5p9 = (float(_cl9p.iloc[-1]) / float(_cl9p.iloc[-min(6, len(_cl9p))]) - 1) * 100
+                                except Exception:
+                                    _r5p9 = 0.0
                                 _row9 = {"label": _lb9, "p_up": _fw9.get("weighted_p_up"),
                                          "rr": _fw9.get("weighted_rr"), "ev": _fw9.get("weighted_expected_pct"),
                                          "stage": _fw9.get("stage"), "act": _fw9.get("overall_action"),
+                                         "now": round(max(20, min(80, _v88_stage_base9(_fw9.get("stage"))
+                                                                   + max(-6.0, min(6.0, _r5p9)) * 1.2))),
                                          "chain": [(r.get("label"), r.get("p_up"))
                                                    for r in (_fw9.get("horizons") or [])]}
                                 (_fwp9["idx"] if any(_sy9 == s2 for _, s2 in _FW_IDX9)
@@ -13399,9 +13415,12 @@ def _render_today_nav():
                 st.session_state["_fw_panel9"] = _fwp9
             _colL9, _colR9 = st.columns([1, 1.3])
 
-            def _fw_chain9(_ch9):
-                # 【逐点方向符号 2026-07-19】每点后跟↑↓(相对前一档)
+            def _fw_chain9(_ch9, _now9f=None):
+                # 【逐点方向符号+现在锚点 2026-07-19】链首灰「现在」,2周箭头相对现在
                 _out9f, _pv9f = [], None
+                if _now9f is not None:
+                    _out9f.append(f"<span style='color:#94a3b8'>现在<b>{int(_now9f)}</b></span>")
+                    _pv9f = _now9f
                 for lb, p in (_ch9 or []):
                     _c9f = '#dc2626' if (p or 0) >= 55 else ('#16a34a' if (p or 0) <= 45 else '#64748b')
                     _ar9f = ""
@@ -13422,7 +13441,7 @@ def _render_today_nav():
                         f"<b>{_r9['label']}</b> <span style='color:#475569'>{_r9.get('stage', '')}</span> · {_r9.get('act', '')}<br>"
                         f"<span style='font-size:13px'>上涨<b>{_r9.get('p_up')}%</b> ｜ 盈亏比<b>{(_r9.get('rr') or 0):.2f}</b>"
                         f" ｜ 期望<b style='color:{_evc9}'>{(_r9.get('ev') or 0):+.1f}%</b></span><br>"
-                        f"<span style='font-size:12px'>{_fw_chain9(_r9.get('chain'))}</span>"
+                        f"<span style='font-size:12px'>{_fw_chain9(_r9.get('chain'), _r9.get('now'))}</span>"
                         + ((lambda _me9: f"<br><span style='font-size:12px;color:#64748b'>{_me9}</span>"
                             if _me9 else "<br><span style='font-size:12px;color:#94a3b8'>"
                             "近3日无该市场策略研报——纯量价驱动（如实说明）</span>")(
@@ -13440,7 +13459,7 @@ def _render_today_nav():
                         f"<div style='border-bottom:1px solid #eef2f7;padding:2px 0'>"
                         f"<b>{_r9['label']}</b> 上涨<b style='color:{_pc9}'>{_r9.get('p_up')}%</b>"
                         f" · 期望{(_r9.get('ev') or 0):+.1f}% · {_r9.get('act', '')[:10]}"
-                        f"　<span style='font-size:12px'>{_fw_chain9((_r9.get('chain') or [])[:3])}</span>"
+                        f"　<span style='font-size:12px'>{_fw_chain9((_r9.get('chain') or [])[:3], _r9.get('now'))}</span>"
                         + (f"<br><span style='font-size:12px;color:#64748b'>🏛️{_sedge9}</span>" if _sedge9 else "")
                         + "</div>")
                 _sec_html9.append("</div>")
