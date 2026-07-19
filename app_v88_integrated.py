@@ -12467,7 +12467,7 @@ def _render_today_verdict(_snap, _repo):
                 _go.append({**_h, "_src": "🐴黑马"})
     except Exception:
         pass
-    _cut = {}
+    _cut, _cut_d = {}, {}   # _cut_d: 名称→完整决策dict（双门卡片化用，能配到session实时数据的才有）
     try:
         _idc = _jv.loads((_repo / "data" / "intraday_decisions.json").read_text(encoding="utf-8"))
         # 【V88·减仓必附10字原因 2026-07-18 用户定纲】优先归因引擎(新闻/评级),否则用系统证据链
@@ -12481,7 +12481,10 @@ def _render_today_verdict(_snap, _repo):
                     _wd9 = _wa_map9.get(str(_r.get("code"))) or {}
                     _why10 = (str(_wd9.get("move_reason") or "")[:10]
                               or str(_wd9.get("stage") or _r.get("reason") or "趋势转弱")[:10])
+                    # 卡片数据源:session实时优先,没有(如首屏未算完)用盘中落盘行兜底——
+                    # intraday行本就是完整决策dict(含facts走势链),卡片自带analysis_time如实标时点
                     _cut[_nm] = (_r.get("action"), _r.get("p_down", 0), _r.get("code"), _why10)
+                    _cut_d[_nm] = _wd9 or _r
     except Exception:
         pass
 
@@ -12506,6 +12509,31 @@ def _render_today_verdict(_snap, _repo):
             _tag_gd = "💼" if _d.get("scope") == "持仓" else "👁"
             if _nm not in _cut or float(_d.get("p_down") or 0) > _cut[_nm][1]:
                 _cut[_nm] = (_tag_gd + _act, float(_d.get("p_down") or 0), _d.get("code"), _why10)
+                _cut_d[_nm] = _d
+    except Exception:
+        pass
+
+    # 【V88·鬼门关记档 2026-07-19 双门卡片化】警示名单落盘→总账反向核算(警示后≥3天跌=躲对了)。
+    # 与绿灯留痕同理:说话要算数,警示也要对账。按 code:date 去重,保留最近400条。
+    try:
+        _gg_fp = _repo / "data" / "gate_guard_signals.json"
+        _tdy_gg = datetime.now().strftime("%Y-%m-%d")
+        try:
+            _gg_rows = _jv.loads(_gg_fp.read_text(encoding="utf-8"))
+        except Exception:
+            _gg_rows = []
+        _gg_seen = {str(r.get("id")) for r in _gg_rows}
+        _gg_new = False
+        for _k9g, _v9g in _cut.items():
+            _id9g = f"{_v9g[2] or _k9g}:{_tdy_gg}"
+            if _id9g in _gg_seen:
+                continue
+            _gg_rows.append({"id": _id9g, "date": _tdy_gg, "code": _v9g[2],
+                             "name": _k9g, "action": _v9g[0], "why": _v9g[3]})
+            _gg_new = True
+        if _gg_new:
+            _gg_fp.write_text(_jv.dumps(_gg_rows[-400:], ensure_ascii=False, indent=1),
+                              encoding="utf-8")
     except Exception:
         pass
 
@@ -12636,6 +12664,54 @@ def _render_today_verdict(_snap, _repo):
     _html.append(f"<div style='font-size:12px;color:#475569;margin-top:2px'>📏 <b>今日纪律</b>：{_rule}</div>")
     _html.append("</div>")
     st.markdown("".join(_html), unsafe_allow_html=True)
+
+    # 【V88·双门卡片化 2026-07-19 用户点单"像自选一样卡片化,要有16周走势和成功率"】
+    # 上方文字行=快读定调,这里=细看:与自选台同一张决策卡(今天锚点+2/4/8/16/32周走势条
+    # +💡凭什么+🩺诊断),门头挂统一战绩总账成功率行。红边=龙虎门,绿边=鬼门关。
+    try:
+        if _go:
+            with st.expander(f"🐉 龙虎门 · 卡片细看（{len(_go)} 只·与自选台同款走势条）",
+                             expanded=False):
+                st.caption((_v88_rate_line9("entry_green", "入场绿灯")
+                            or "📊 入场绿灯实盘成功率：样本积累中")
+                           + "｜卡片口径与自选决策台完全同源，走势条=今天→2/4/8/16/32周")
+                _lh_cards9 = "".join(
+                    f'<div style="border-left:4px solid #dc2626;border-radius:8px;'
+                    f'background:#fef2f2;padding:2px 0 2px 6px;margin-bottom:6px">'
+                    f'<div style="font-size:12px;font-weight:700;color:#dc2626;'
+                    f'padding:2px 0 0 4px">🐉 {_h9c.get("_src", "")} 上攻关注'
+                    f'{_v88_hot_note9(_h9c.get("code"))}</div>'
+                    + _v88_decision_card(_h9c) + '</div>' for _h9c in _go)
+                st.markdown(_V88_CARD_CSS + f'<div class="v88-watch-grid">{_lh_cards9}</div>',
+                            unsafe_allow_html=True)
+        if _cut:
+            _gg_cards9, _gg_miss9 = [], []
+            for _k9c, _v9c in sorted(_cut.items(), key=lambda x: -x[1][1]):
+                _dd9c = _cut_d.get(_k9c)
+                if not _dd9c:
+                    _gg_miss9.append(_k9c)   # 禁静默截断:配不到实时数据的如实列名
+                    continue
+                _gg_cards9.append(
+                    f'<div style="border-left:4px solid #16a34a;border-radius:8px;'
+                    f'background:#f0fdf4;padding:2px 0 2px 6px;margin-bottom:6px">'
+                    f'<div style="font-size:12px;font-weight:700;color:#16a34a;'
+                    f'padding:2px 0 0 4px">⚔️ {_v9c[0]}（{_v9c[3]}）</div>'
+                    + _v88_decision_card(_dd9c) + '</div>')
+            if _gg_cards9 or _gg_miss9:
+                with st.expander(f"⚔️ 鬼门关 · 卡片细看（{len(_gg_cards9)} 只·先躲名单完整证据链）",
+                                 expanded=False):
+                    st.caption((_v88_rate_line9("gate_guard", "鬼门关警示")
+                                or "📊 鬼门关警示实盘成功率：样本积累中（警示后≥3天下跌=躲对了，反向口径）")
+                               + "｜卡片=完整证据链，💼持仓按纪律执行、👁自选别接刀")
+                    if _gg_cards9:
+                        st.markdown(_V88_CARD_CSS
+                                    + f'<div class="v88-watch-grid">{"".join(_gg_cards9)}</div>',
+                                    unsafe_allow_html=True)
+                    if _gg_miss9:
+                        st.caption("以下 " + str(len(_gg_miss9)) + " 只来自盘中落盘、本轮session未覆盖实时计算，"
+                                   "暂无卡片（下轮自选/持仓刷新自动补齐）：" + "、".join(_gg_miss9))
+    except Exception:
+        pass
 
 
 def _render_l3_cycle_board(_snap, _is_trading):

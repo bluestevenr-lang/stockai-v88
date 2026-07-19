@@ -595,12 +595,89 @@ if _nav == "🧭 导航":
         _gate_go9 = [h for h in (_dh_g9.get("horses") or [])
                      if ((h.get("trade_plan") or {}).get("short") or {}).get("mode")
                      in ("现价可进", "回踩到位", "突破确认")]
+        # 【V88·双门卡片化 2026-07-19 用户点单"像自选一样卡片化+16周走势+成功率"】
+        # 与桌面同口径mini卡:今天锚点(阶段基准+5日动量)+2/4/8/16/32周逐点箭头链+统一战绩总账。
+        try:
+            _sr_g9 = (json.loads(pub_text("success_rates.json", _PUB_VERSION) or "{}")
+                      .get("types") or {})
+        except Exception:
+            _sr_g9 = {}
+
+        def _rate_g9(key, label):
+            _t = _sr_g9.get(key) or {}
+            if not _t:
+                return ""
+            if _t.get("rate") is None:
+                return f"📊 {label}实盘成功率：样本积累中（{_t.get('n', 0)}次·<5不报率）"
+            return (f"📊 {label}实盘成功率 {_t['rate']}%（{_t.get('n')}次"
+                    + (f"·均{_t['avg']:+.1f}%" if _t.get("avg") is not None else "")
+                    + f"·{_t.get('note', '')}·非规则估计）")
+
+        def _now_g9(_d):
+            # 今天锚点=阶段基准(与桌面 _v88_stage_base9 同一张表)+5日动量微调(±6clip×1.2),clip 20-80
+            _s = str((_d.get("facts") or {}).get("stage") or _d.get("cycle_status") or "")
+            _b = (45 if any(k in _s for k in ("蓄势", "底部")) else
+                  62 if any(k in _s for k in ("领涨", "主升", "启动", "延续", "多头")) else
+                  55 if any(k in _s for k in ("派发", "滞涨", "高位")) else
+                  38 if any(k in _s for k in ("退潮", "破位", "转弱", "下跌")) else 50)
+            try:
+                _r5 = float((((_d.get("facts") or {}).get("horizons") or {})
+                             .get("2周") or {}).get("ret5_pct") or 0)
+            except (TypeError, ValueError):
+                _r5 = 0.0
+            return int(max(20, min(80, _b + max(-6.0, min(6.0, _r5)) * 1.2)))
+
+        def _gchain9(_d):
+            _hz = (_d.get("facts") or {}).get("horizons") or {}
+            _probs = [(k, int(round(float((_hz.get(k) or {}).get("rule_score")))))
+                      for k in ("2周", "4周", "8周", "16周", "32周")
+                      if (_hz.get(k) or {}).get("rule_score") is not None]
+            if not _probs:
+                return "<span style='color:#94a3b8'>走势链数据缺失·细节看桌面版</span>"
+            _nw = _now_g9(_d)
+            _out = [f"<span style='color:#94a3b8'>现在<b>{_nw}</b></span>"]
+            _prev = _nw
+            for _lab, _p in _probs:
+                _ar = ("<b style='color:#dc2626'>↑</b>" if _p - _prev >= 1 else
+                       ("<b style='color:#16a34a'>↓</b>" if _p - _prev <= -1 else
+                        "<span style='color:#94a3b8'>≈</span>"))
+                _pc = "#dc2626" if _p >= 55 else ("#16a34a" if _p <= 45 else "#64748b")
+                _out.append(f"{_ar}<span style='color:{_pc}'>{_lab}<b>{_p}</b></span>")
+                _prev = _p
+            return " ".join(_out)
+
+        def _gcard9(_d, _bc, _bg, _head):
+            _rr = _d.get("rr")
+            _ex = _d.get("expected_pct")
+            _meta = " ｜ ".join(x for x in (
+                f"盈亏比<b>{float(_rr):.1f}</b>" if _rr is not None else "",
+                f"2周期望<b>{float(_ex):+.1f}%</b>" if _ex is not None else "",
+                f"下行<b>{int(_d.get('p_down') or 0)}%</b>" if _d.get("p_down") else "") if x)
+            return (f"<div style='border:1px solid {_bc}44;border-left:4px solid {_bc};"
+                    f"border-radius:8px;background:{_bg};padding:.45rem .6rem'>"
+                    f"<div style='font-size:12px;font-weight:700;color:{_bc}'>{_head}</div>"
+                    f"<div style='font-size:13px'><b>{_d.get('name')}</b> "
+                    f"<span style='color:#94a3b8;font-size:11px'>{_d.get('code')}</span> "
+                    f"<b style='color:{_bc}'>{_d.get('action') or ''}</b></div>"
+                    f"<div style='font-size:12px;margin:2px 0'>{_gchain9(_d)}</div>"
+                    + (f"<div style='font-size:11px;color:#64748b'>{_meta}</div>" if _meta else "")
+                    + "</div>")
+
+        _gate_note9 = ("<div style='font-size:11px;color:#94a3b8;margin:2px 0 6px'>"
+                       "↑↓≈=较前一档，链首=今天锚点（阶段+5日动量，与桌面同口径）；"
+                       "概率为规则情景估计</div>")
         if _gate_go9:
-            st.markdown("**🐉 龙虎门 · 上攻关注**（黑马严门槛绿灯·出处:黑马漏斗复判）")
-            st.markdown("、".join(
-                f"{h.get('name')}({h.get('code')}·{(((h.get('trade_plan') or {}).get('short') or {}).get('mode'))})"
-                for h in _gate_go9[:8]))
-            st.caption("完整龙虎门(含自选/持仓实时绿灯)与胜率对账在桌面版；此处为公开黑马部分。")
+            st.markdown(f"**🐉 龙虎门 · 上攻关注**（黑马严门槛绿灯 {len(_gate_go9)} 只·出处:黑马漏斗复判）")
+            _rl_lh9 = _rate_g9("entry_green", "入场绿灯")
+            if _rl_lh9:
+                st.caption(_rl_lh9)
+            st.markdown(
+                "<div style='display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px'>"
+                + "".join(_gcard9(h, "#dc2626", "#fef2f2",
+                                  "🐉 " + str(((h.get('trade_plan') or {}).get('short') or {}).get('mode') or '绿灯'))
+                          for h in _gate_go9)
+                + "</div>" + _gate_note9, unsafe_allow_html=True)
+            st.caption("完整龙虎门(含自选/持仓实时绿灯)在桌面版；此处为公开黑马部分。")
         _tok_g9 = str(st.secrets.get("PRIVATE_TOKEN", "") or "").strip()
         if _tok_g9:
             try:
@@ -613,10 +690,15 @@ if _nav == "🧭 导航":
                 _cut_g9 = [r for r in (_idc9.get("rows") or [])
                            if any(k in str(r.get("action", "")) for k in ("减", "退", "清", "止损"))]
                 if _cut_g9:
-                    st.markdown("**⚔️ 鬼门关 · 拐点/破位先躲**（盘中落盘·🔒私径）")
-                    st.markdown("、".join(
-                        f"{r.get('name')} {r.get('action')}(下行{r.get('p_down', '—')}%)"
-                        for r in _cut_g9[:10]))
+                    st.markdown(f"**⚔️ 鬼门关 · 拐点/破位先躲**（{len(_cut_g9)} 只·盘中落盘·🔒私径）")
+                    _rl_gg9 = _rate_g9("gate_guard", "鬼门关警示")
+                    st.caption(_rl_gg9 or "📊 鬼门关警示实盘成功率：样本积累中（警示后≥3天下跌=躲对了，反向口径）")
+                    st.markdown(
+                        "<div style='display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px'>"
+                        + "".join(_gcard9(r, "#16a34a", "#f0fdf4",
+                                          "⚔️ " + str(r.get("reason") or "拐点/破位警示")[:14])
+                                  for r in _cut_g9)
+                        + "</div>" + _gate_note9, unsafe_allow_html=True)
             except Exception:
                 st.caption("⚔️ 鬼门关：私仓数据读取失败，稍后刷新。")
         else:
