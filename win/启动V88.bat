@@ -16,8 +16,8 @@ git -C "%REPORT%" pull --rebase --autostash origin main
 
 REM —— 代理（Clash for Windows 默认混合端口 7890；改成你的端口）——
 REM  国内访问 Yahoo 必需；东财/集思录等国内源代码里已强制直连不受影响。
-set "http_proxy=http://127.0.0.1:7890"
-set "https_proxy=http://127.0.0.1:7890"
+set "http_proxy=http://127.0.0.1:7897"
+set "https_proxy=http://127.0.0.1:7897"
 set "HTTP_PROXY=%http_proxy%"
 set "HTTPS_PROXY=%https_proxy%"
 
