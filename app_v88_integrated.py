@@ -12480,6 +12480,30 @@ def _render_today_verdict(_snap, _repo):
     except Exception:
         pass
 
+    # 【V88·鬼门关 2026-07-19 用户点单】龙虎门(上攻)的对仗面——拐点/破位/利空先躲名单:
+    # 持仓cut(盘中落盘)之外,并入 自选+持仓 的破位/顶拐/个股利空(diagnose+阶段),
+    # 每只带10字原因(优先消息归因=技术+新闻双源),同名去重取更严重者。
+    try:
+        for _d in ((st.session_state.get("watch_alerts_v88") or {}).get("decisions") or []):
+            if _d.get("scope") not in ("持仓", "自选") and not _d.get("in_watchlist"):
+                continue
+            _dgk = str(_d.get("diag_kind") or "")
+            _stg = str(_d.get("stage") or "")
+            _bad = (_dgk in ("破位", "个股利空") or _d.get("broke_stop")
+                    or any(k in _stg for k in ("破位", "顶拐", "放量滞涨"))
+                    or any(k in str(_d.get("action") or "") for k in ("减仓", "退出", "清仓", "回避")))
+            if not _bad:
+                continue
+            _nm = _d.get("name")
+            _why10 = (str(_d.get("move_reason") or "")[:10]
+                      or str(_d.get("diag_why") or _stg or "趋势转弱")[:10])
+            _act = str(_d.get("action") or ("破位回避" if _dgk == "破位" else "拐点警示"))
+            _tag_gd = "💼" if _d.get("scope") == "持仓" else "👁"
+            if _nm not in _cut or float(_d.get("p_down") or 0) > _cut[_nm][1]:
+                _cut[_nm] = (_tag_gd + _act, float(_d.get("p_down") or 0), _d.get("code"), _why10)
+    except Exception:
+        pass
+
     # 【V88·绿灯留痕对账 2026-07-18 用户点单】推荐不许无声蒸发（"昨天有OTIS今天没了"）：
     # 每次渲染把绿灯榜落盘；与上一榜（不同日期）对账，掉榜必须给下榜理由。
     # 已按昨日绿灯进场的仍按原计划（止损/作废价/目标）执行——下榜=窗口或条件变化，不是翻案。
@@ -12579,11 +12603,11 @@ def _render_today_verdict(_snap, _repo):
                            f"({h.get('market', '')[-2:]}{('·' + h['touch']) if h.get('touch') else ''})</span>"
                            + (f"<span style='font-size:12px;color:#b45309'>{_v88_hot_note9(h.get('code'))}</span>")
                            for h in _go)
-        _html.append(f"<div style='font-size:13px;margin-bottom:3px'>🟢 <b style='color:#dc2626'>"
-                     f"可进场</b>（严门槛绿灯 {len(_go)} 只）：{_go_txt}"
+        _html.append(f"<div style='font-size:13px;margin-bottom:3px'>🐉 <b style='color:#dc2626'>"
+                     f"龙虎门 · 上攻关注</b>（严门槛绿灯 {len(_go)} 只·技术时机+消息加持）：{_go_txt}"
                      f"<span style='font-size:12px;color:#64748b'>——仓位按上方纲领，别越线重仓{_esb_txt9}</span></div>")
     else:
-        _html.append("<div style='font-size:13px;margin-bottom:3px'>🟢 <b>可进场</b>：今日无严门槛绿灯，"
+        _html.append("<div style='font-size:13px;margin-bottom:3px'>🐉 <b>龙虎门</b>：今日无严门槛绿灯，"
                      "空仓等待也是决策（现金也是仓位）</div>")
     if _dropped:
         _dr_txt = "、".join(
@@ -12596,12 +12620,14 @@ def _render_today_verdict(_snap, _repo):
     if _cut:
         _cut_txt = "、".join(
             f"{_stk_link(_v[2] and (_k) or _k, _v[2] or _k)}"
-            f"<b style='color:#ea580c'>{_v[0]}</b>"
+            f"<b style='color:#16a34a'>{_v[0]}</b>"
             + (f"<span style='font-size:12px;color:#94a3b8'>({_v[3]})</span>"
                if len(_v) > 3 and _v[3] else "")
-            for _k, _v in sorted(_cut.items(), key=lambda x: -x[1][1])[:5])
-        _html.append(f"<div style='font-size:13px;margin-bottom:3px'>🔴 <b style='color:#ea580c'>"
-                     f"持仓要处理</b>：{_cut_txt}</div>")
+            for _k, _v in sorted(_cut.items(), key=lambda x: -x[1][1]))
+        _html.append(f"<div style='font-size:13px;margin-bottom:3px'>⚔️ <b style='color:#16a34a'>"
+                     f"鬼门关 · 拐点/破位先躲</b>（持仓+自选 {len(_cut)} 只·技术+消息双源）：{_cut_txt}"
+                     f"<span style='font-size:12px;color:#94a3b8'>——💼持仓按纪律减/走，👁自选别接刀；"
+                     f"括号=10字原因（优先新闻归因）</span></div>")
     _html.append(f"<div style='font-size:12px;color:#475569;margin-top:2px'>📏 <b>今日纪律</b>：{_rule}</div>")
     _html.append("</div>")
     st.markdown("".join(_html), unsafe_allow_html=True)
