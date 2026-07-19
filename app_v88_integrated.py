@@ -14584,13 +14584,31 @@ with st.expander("🏛️ 机构风向标 · 权威研报评级×系统推荐池
         if _aib9:
             st.markdown(f"**🧭 机构综合布局**：主线 **{_aib9.get('机构共识主线', '—')}** ｜ "
                         f"分歧 {_aib9.get('机构分歧', '—')}")
-            _tl9x = "".join(f"<div style='padding:2px 0'><b>{_k9}</b>：{_aib9[_k9]}</div>"
-                            for _k9 in ("明天", "本周", "下周", "本月及下月") if _aib9.get(_k9))
-            st.markdown(f"<div style='background:#f8fafc;border-left:3px solid #7c3aed;"
-                        f"border-radius:6px;padding:.4rem .7rem;font-size:13px'>{_tl9x}"
-                        f"<div style='padding:2px 0;color:#94a3b8'>出处：AI综合自上述东财研报库近3日"
-                        f"研报+新闻流外资观点，非任何机构原话</div></div>",
-                        unsafe_allow_html=True)
+            # 【V88·分市场 2026-07-19 用户点单"没说明中美港哪个市场"】三市场各一栏;
+            # 兼容旧扁平结构(无市场键→单栏原样,不炸)。
+            _mkts9x = [(_m9, _fl9) for _m9, _fl9 in (("A股", "🇨🇳"), ("港股", "🇭🇰"), ("美股", "🇺🇸"))
+                       if isinstance(_aib9.get(_m9), dict)]
+            if _mkts9x:
+                _cols9x = st.columns(len(_mkts9x))
+                for _ci9, (_m9, _fl9) in enumerate(_mkts9x):
+                    _sub9 = _aib9[_m9]
+                    _rows9x = "".join(
+                        f"<div style='padding:1px 0'><b style='color:#7c3aed'>{_k9}</b>：{_sub9[_k9]}</div>"
+                        for _k9 in ("明天", "本周", "下周", "本月及下月") if _sub9.get(_k9))
+                    with _cols9x[_ci9]:
+                        st.markdown(f"<div style='background:#f8fafc;border-left:3px solid #7c3aed;"
+                                    f"border-radius:6px;padding:.4rem .6rem;font-size:12px'>"
+                                    f"<div style='font-weight:800;margin-bottom:2px'>{_fl9} {_m9}</div>"
+                                    f"{_rows9x}</div>", unsafe_allow_html=True)
+                st.caption("出处：AI综合自东财研报库近3日研报+新闻流外资观点，按三市场分别归纳，非任何机构原话")
+            else:
+                _tl9x = "".join(f"<div style='padding:2px 0'><b>{_k9}</b>：{_aib9[_k9]}</div>"
+                                for _k9 in ("明天", "本周", "下周", "本月及下月") if _aib9.get(_k9))
+                st.markdown(f"<div style='background:#f8fafc;border-left:3px solid #7c3aed;"
+                            f"border-radius:6px;padding:.4rem .7rem;font-size:13px'>{_tl9x}"
+                            f"<div style='padding:2px 0;color:#94a3b8'>出处：AI综合自上述东财研报库近3日"
+                            f"研报+新闻流外资观点，非任何机构原话（下轮流水线升级为三市场分列）</div></div>",
+                            unsafe_allow_html=True)
         _res9x = _inst9.get("resonance") or []
         if _res9x:
             st.markdown("**🤝 机构×系统共振**（机构覆盖且在你的池/持仓/自选——双重背书·"

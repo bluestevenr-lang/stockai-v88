@@ -1416,9 +1416,20 @@ elif _nav == "🛰️ 雷达族":
         if _aib9c:
             st.markdown(f"**🧭 机构综合布局**：主线 **{_aib9c.get('机构共识主线', '—')}** ｜ "
                         f"分歧 {_aib9c.get('机构分歧', '—')}")
-            for _k9c in ("明天", "本周", "下周", "本月及下月"):
-                if _aib9c.get(_k9c):
-                    st.markdown(f"- **{_k9c}**：{_aib9c[_k9c]}")
+            # 【V88·分市场 2026-07-19】三市场各一栏;兼容旧扁平结构
+            _mkts9c = [(_m, _fl) for _m, _fl in (("A股", "🇨🇳"), ("港股", "🇭🇰"), ("美股", "🇺🇸"))
+                       if isinstance(_aib9c.get(_m), dict)]
+            if _mkts9c:
+                for _m, _fl in _mkts9c:
+                    _sub = _aib9c[_m]
+                    _cells = "｜".join(f"{k}:{_sub[k]}" for k in ("明天", "本周", "下周", "本月及下月")
+                                       if _sub.get(k))
+                    if _cells:
+                        st.markdown(f"- {_fl} **{_m}**：{_cells}")
+            else:
+                for _k9c in ("明天", "本周", "下周", "本月及下月"):
+                    if _aib9c.get(_k9c):
+                        st.markdown(f"- **{_k9c}**：{_aib9c[_k9c]}")
         for _c9c in (_inst9c.get("consensus") or [])[:6]:
             st.markdown(f"- 📌 **{_c9c.get('stock')}**（{'、'.join((_c9c.get('orgs') or [])[:2])}）："
                         f"{_c9c.get('gist') or '—'}")
