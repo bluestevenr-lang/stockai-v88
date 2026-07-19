@@ -11801,7 +11801,7 @@ def _v88_decision_card(_d9):
         <b class="v88-action" style="color:{_act_color_of9(_action_disp9)}">{_action_disp9}</b>
       </div>{_mv_html9}{_edge_html9}{_diag_html9}
       <div class="v88-cyc-head">
-        <span>今天→各周期上涨概率（红涨/绿跌·看趋势）</span>
+        <span>今天→各周期上涨概率（红涨绿跌；↑↓≈=较前一档升/降/平,2周较「今天」）</span>
         <span class="v88-cyc-trend">{_trend9}</span>
       </div>
       <div class="v88-spark-wrap">{_spark9}</div>
@@ -12788,7 +12788,8 @@ def _render_l3_cycle_board(_snap, _is_trading):
         "<span style='font-size:12px;color:#64748b'>"
         "数字=该周期<b>上涨概率%</b>（规则情景估计，非胜率）：<span style='color:#dc2626'>红≥55偏涨</span>／"
         "<span style='color:#16a34a'>绿≤45偏跌</span>／<span style='color:#64748b'>灰=中性</span>。"
-        "末尾箭头=周期间趋势（越远越强/弱/趋中性），与左侧「阶段·动作」是两件事：动作说<b>现在能不能买</b>、"
+        "数字后小箭头=<b>较前一档</b>升↑/降↓/平≈（看每段涨落）；末尾大箭头=整条链总结（越远越强/弱/趋中性），"
+        "与左侧「阶段·动作」是两件事：动作说<b>现在能不能买</b>、"
         "箭头说<b>越往后越强还是越弱</b></span>",
         unsafe_allow_html=True)
     _cols9 = st.columns(3)
@@ -13448,7 +13449,8 @@ def _render_today_nav():
                     _sec_html9.append(f"<div style='font-size:12px;color:#94a3b8'>"
                                       f"未标🏛️的{_n_noedge9}个板块=近3日无行业研报/板块新闻——纯量价模型信号（如实说明）</div>")
                 st.markdown("".join(_sec_html9), unsafe_allow_html=True)
-            st.caption("大盘与板块同一套前瞻引擎、同一缓存时间——左右口径天然一致 · 30分钟刷新 · 概率=规则情景估计")
+            st.caption("大盘与板块同一套前瞻引擎、同一缓存时间——左右口径天然一致 · 30分钟刷新 · "
+                       "概率=规则情景估计 · 数字后↑↓≈=较前一档升/降/平（每段涨落，非对当天涨跌的预测）")
 
         # 【V88·版面梳理 2026-07-17】水位/轮动提醒/周期导图/复制摘要合并收进「大盘环境」
         # （三层总览已给概览,这里是细节层,默认收起减乱）
