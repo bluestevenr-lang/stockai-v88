@@ -166,6 +166,9 @@ def build_darkhorse(exclude_codes: set, extra: list | None = None,
     excluded = found - len(fresh)
     fresh = fresh[:max_judge]
     horses, judged, blocked = [], 0, {"相位": 0, "方向分": 0, "赔率": 0, "时机": 0, "数据": 0}
+    # 【V88·相对最优候选 2026-07-19 用户点单】未过严门槛者不再只留计数——保留完整
+    # 评分明细，落出"相对最优候选榜"：严门槛纪律不变，但0达标时也要有结果可研究。
+    near = []
     for code, name, sources in fresh:
         try:
             df = fetch(code)
@@ -178,18 +181,32 @@ def build_darkhorse(exclude_codes: set, extra: list | None = None,
             if dc.get("error"):
                 blocked["数据"] += 1
                 continue
-            if str(full.get("stage") or "") in BAD_STAGES:
-                blocked["相位"] += 1
-                continue
-            if float(dc.get("short_score") or 0) < MIN_SHORT:
-                blocked["方向分"] += 1
-                continue
-            if float(dc.get("rr") or 0) < MIN_RR:
-                blocked["赔率"] += 1
-                continue
+            _stage = str(full.get("stage") or "")
+            _short = float(dc.get("short_score") or 0)
+            _rr = float(dc.get("rr") or 0)
             ep = dc.get("entry_plan") or {}
-            if ep.get("mode") not in OK_MODES:
+            _mode = str(ep.get("mode") or "")
+            why = ""
+            if _stage in BAD_STAGES:
+                blocked["相位"] += 1
+                why = f"相位:{_stage}"
+            elif _short < MIN_SHORT:
+                blocked["方向分"] += 1
+                why = f"2周分{_short:.0f}<{MIN_SHORT}"
+            elif _rr < MIN_RR:
+                blocked["赔率"] += 1
+                why = f"赔率{_rr:.2f}<{MIN_RR}"
+            elif _mode not in OK_MODES:
                 blocked["时机"] += 1
+                why = f"时机:{_mode or '未定'}"
+            if why:
+                near.append({**{k: dc.get(k) for k in
+                                ("name", "code", "last", "unified_score", "short_score",
+                                 "p_up", "p_down", "rr", "expected_pct", "action")},
+                             "stage": _stage, "mode": _mode, "why_blocked": why,
+                             "bad_stage": _stage in BAD_STAGES,
+                             "sources": sources, "touch": _touch_lines(full),
+                             "market": _market_of(code)})
                 continue
             fwd = evaluate_forward_outlook(df, name=name, code=code, full=full)
             plan = build_trade_plan(full, ep, fwd if not fwd.get("error") else None)
@@ -212,12 +229,37 @@ def build_darkhorse(exclude_codes: set, extra: list | None = None,
     # 🔴重点全部保留（用户反馈推荐不够,不截断重点）,🟡待观察最多8只
     _keys = [h for h in horses if h.get("grade") == "重点"]
     _rest = [h for h in horses if h.get("grade") != "重点"][:8]
+    # 【相对最优候选榜 2026-07-19】每市场取未达标者前3（良性相位优先→统一分→短线分），
+    # 补算三期限前瞻给中/长视角（fetch命中缓存不重复下载）。研究参考，非绿灯非建议。
+    runners = []
+    for _mkt in ("🇺🇸美股", "🇨🇳A股", "🇭🇰港股"):
+        runners.extend(sorted(
+            [r for r in near if r.get("market") == _mkt],
+            key=lambda r: (1 if r.get("bad_stage") else 0,
+                           -float(r.get("unified_score") or 0),
+                           -float(r.get("short_score") or 0)))[:3])
+    for r in runners:
+        r.pop("bad_stage", None)
+        try:
+            _df_r = fetch(r["code"])
+            _full_r = analyze_trend_full(_df_r)
+            _fwd_r = evaluate_forward_outlook(_df_r, name=r.get("name"),
+                                              code=r.get("code"), full=_full_r)
+            if not _fwd_r.get("error"):
+                r["horizons"] = [
+                    {"label": str(h.get("label")), "p_up": h.get("p_up"),
+                     "target_price": h.get("target_price")}
+                    for h in (_fwd_r.get("horizons") or [])
+                    if str(h.get("label")) in ("10日", "60日", "120日")]
+        except Exception:
+            continue
     result = {
         "ts": time.time(),
         "generated_at": datetime.now(BJT).strftime("%Y-%m-%d %H:%M"),
         "funnel": {"found": found, "excluded_watch": excluded, "judged": judged,
                    "passed": len(horses), "blocked": blocked},
         "horses": _keys + _rest,
+        "runners": runners,
     }
     try:
         OUT.parent.mkdir(exist_ok=True)

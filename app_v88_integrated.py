@@ -13768,6 +13768,38 @@ def _render_today_nav():
                                    f"{str(_pl9.get('in', ''))[:60]} → {str(_pl9.get('out', ''))[:40]}")
             else:
                 st.caption(f"🐴 黑马雷达：今日无达标黑马（{_fn_txt9}）——严门槛宁缺毋滥，拦截原因如上。")
+            # 【V88·相对最优候选榜 2026-07-19 用户点单】0达标也要有结果：被拦截者中
+            # 每市场前3，标明差在哪+三期限概率——研究参考，非绿灯非建议，纪律不松。
+            _runners9 = _dh9.get("runners") or []
+            if _runners9:
+                _rn_grp9 = {}
+                for _r9 in _runners9:
+                    _rn_grp9.setdefault(_r9.get("market") or "", []).append(_r9)
+                with st.expander(f"📊 相对最优候选 · 未过严门槛（{len(_runners9)}只·仅相对排序·研究参考非建议）",
+                                 expanded=not _horses9):
+                    st.caption("严门槛纪律不变——以下是被拦截候选中的相对最优：⛔后为差在哪；"
+                               "10/60/120日=对应交易日内上涨概率（规则情景估计，非胜率）")
+                    for _mk9r in ("🇺🇸美股", "🇨🇳A股", "🇭🇰港股"):
+                        _rs9 = _rn_grp9.get(_mk9r) or []
+                        if not _rs9:
+                            continue
+                        _rn_lines9 = []
+                        for _r9 in _rs9:
+                            _hz9 = {str(_h9r.get("label")): _h9r for _h9r in (_r9.get("horizons") or [])}
+                            _hz_txt9 = " ".join(
+                                f"{_lb9}↑{(_hz9.get(_lb9) or {}).get('p_up', '—')}%"
+                                for _lb9 in ("10日", "60日", "120日"))
+                            _rn_lines9.append(
+                                f"<div style='font-size:13px;margin:2px 0'>"
+                                f"{_stk_link(_r9.get('name'), _r9.get('code'))} "
+                                f"统一分{float(_r9.get('unified_score') or 0):.0f}·"
+                                f"短线分{float(_r9.get('short_score') or 0):.0f}·"
+                                f"赔率{float(_r9.get('rr') or 0):.1f}·"
+                                f"预期<b>{float(_r9.get('expected_pct') or 0):+.1f}%</b> ｜ "
+                                f"{_hz_txt9} ｜ {_r9.get('stage') or '—'} ｜ "
+                                f"<span style='color:#b45309'>⛔{_r9.get('why_blocked') or ''}</span></div>")
+                        st.markdown(f"**{_mk9r}**（{len(_rs9)}只）" + "".join(_rn_lines9),
+                                    unsafe_allow_html=True)
         except Exception:
             logging.debug("黑马雷达渲染失败", exc_info=True)
         if _wa.get("alerts"):
