@@ -11522,7 +11522,7 @@ _V88_CARD_CSS = """
 .v88-watch-market{min-width:0}
 .v88-watch-market h4{margin:0 0 5px;padding:4px 7px;border-radius:6px;background:#eaf2ff;color:#173b68;font-size:13px}
 .v88-watch-market h4 span{float:right;color:#64748b;font-size:12px;font-weight:500}
-.v88-watch-card{background:#fff;border:1px solid #dbe4f0;border-radius:8px;padding:6px 7px;margin-bottom:5px;box-shadow:0 1px 2px rgba(15,23,42,.04);height:252px;overflow:hidden;display:flex;flex-direction:column}
+.v88-watch-card{background:#fff;border:1px solid #dbe4f0;border-radius:8px;padding:6px 7px;margin-bottom:5px;box-shadow:0 1px 2px rgba(15,23,42,.04);min-height:266px;display:flex;flex-direction:column}/* 右上角周期主判断3行后改min-height自适应(铁律:内容行数会变的卡禁fixed height裁剪) */
 .v88-watch-conflict{border:2px solid #f59e0b;background:#fffdf5}
 .v88-watch-pending{border-style:dashed;background:#fafbfc;opacity:.85;height:252px}
 .v88-cycle-warn{color:#b45309;font-weight:700}
@@ -11783,13 +11783,31 @@ def _v88_decision_card(_d9):
                    f'target="_self" style="cursor:pointer">'
                    f'{_d9.get("name") or _d9.get("code")}</a>' if _dual9
                    else _stk_link(_d9.get('name') or _d9.get('code'), _d9.get('code')))
+    # 【V88·右上角周期主判断 2026-07-19 用户定纲】"明天"这种24小时判断不是主角——
+    # 右上角主位=1-2周区间判断(方向概率+大概率波动区间,明天大涨大跌也先看本周整体),
+    # 次行=中长期周数判断,当日动作降级为末行小字(纪律指令仍在,只是不再当主角)。
+    _wk2_word9 = "偏涨" if _up9 >= 58 else ("偏跌" if _up9 <= 42 else "震荡")
+    _wk2_col9 = "#dc2626" if _up9 >= 58 else ("#16a34a" if _up9 <= 42 else "#64748b")
+    _updn9h = ""
+    try:
+        _u9h = float(_d9.get("upside_pct") or 0)
+        _dn9h = float(_d9.get("downside_pct") or 0)
+        if _u9h or _dn9h:
+            _updn9h = f"区间-{abs(_dn9h):.0f}%~+{_u9h:.0f}%｜"
+    except (TypeError, ValueError):
+        pass
+    _head_right9 = (
+        f'<div style="text-align:right;line-height:1.3;flex-shrink:0">'
+        f'<b class="v88-action" style="color:{_wk2_col9}">1-2周{_wk2_word9}{_up9}%</b>'
+        f'<div style="font-size:10.5px;color:#475569">{_updn9h}中(4-8周){_mlabel9}·长(16-32周){_llabel9}</div>'
+        f'<div style="font-size:10.5px;color:{_act_color_of9(_action_disp9)}">今日动作:{_action_disp9}</div></div>')
     return f"""
     <div class="v88-watch-card{' v88-watch-conflict' if _conflict9 else ''}">
       <div class="v88-watch-card-head">
         <div class="v88-name-line"><span class="v88-level v88-level-{_level9}">{_level9}级</span>
         {_pool_tag9}{_name_html9}
         <span class="v88-code">{_d9.get('code')}</span></div>
-        <b class="v88-action" style="color:{_act_color_of9(_action_disp9)}">{_action_disp9}</b>
+        {_head_right9}
       </div>{_mv_html9}{_edge_html9}{_diag_html9}
       <div class="v88-cyc-head">
         <span>今天→各周期上涨概率（红涨绿跌；↑↓≈=较前一档升/降/平,2周较「今天」）</span>

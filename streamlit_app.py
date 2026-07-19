@@ -653,12 +653,17 @@ if _nav == "🧭 导航":
                 f"盈亏比<b>{float(_rr):.1f}</b>" if _rr is not None else "",
                 f"2周期望<b>{float(_ex):+.1f}%</b>" if _ex is not None else "",
                 f"下行<b>{int(_d.get('p_down') or 0)}%</b>" if _d.get("p_down") else "") if x)
+            # 【V88·周期主判断 2026-07-19 用户定纲】主位=1-2周判断,当日动作降为小字(与桌面卡同口径)
+            _pu9 = int(_d.get("p_up") or 0)
+            _w2w9 = "偏涨" if _pu9 >= 58 else ("偏跌" if _pu9 <= 42 else "震荡")
+            _w2c9 = "#dc2626" if _pu9 >= 58 else ("#16a34a" if _pu9 <= 42 else "#64748b")
             return (f"<div style='border:1px solid {_bc}44;border-left:4px solid {_bc};"
                     f"border-radius:8px;background:{_bg};padding:.45rem .6rem'>"
                     f"<div style='font-size:12px;font-weight:700;color:{_bc}'>{_head}</div>"
                     f"<div style='font-size:13px'><b>{_d.get('name')}</b> "
                     f"<span style='color:#94a3b8;font-size:11px'>{_d.get('code')}</span> "
-                    f"<b style='color:{_bc}'>{_d.get('action') or ''}</b></div>"
+                    f"<b style='color:{_w2c9}'>1-2周{_w2w9}{_pu9}%</b>"
+                    f"<span style='font-size:11px;color:#64748b'>·今日:{_d.get('action') or ''}</span></div>"
                     f"<div style='font-size:12px;margin:2px 0'>{_gchain9(_d)}</div>"
                     + (f"<div style='font-size:11px;color:#64748b'>{_meta}</div>" if _meta else "")
                     + "</div>")
@@ -1104,11 +1109,12 @@ elif _nav == "🔍 个股搜索":
                     pass
                 _mp_txt9 = (
                     f"【V88系统研究包】{_tname}（{_tsym}）· 生成{_now_bjt():%Y-%m-%d %H:%M}北京\n"
-                    f"■ 系统结论：{_cloud_decision.get('action')}｜统一分{_cloud_decision.get('unified_score')}"
-                    f"（短{_cloud_decision.get('short_score')}/中{_cloud_decision.get('medium_score')}"
-                    f"/长{_cloud_decision.get('long_score')}）｜2周上涨{_cloud_decision.get('p_up')}%"
-                    f"/下行{_cloud_decision.get('p_down')}%｜盈亏比{_cloud_decision.get('rr')}"
-                    f"｜2周期望{_cloud_decision.get('expected_pct'):+.1f}%\n"
+                    f"■ 主判断（周期口径·24小时涨跌不改主判断）：1-2周上涨{_cloud_decision.get('p_up')}%"
+                    f"/下行{_cloud_decision.get('p_down')}%｜中(4-8周)分{_cloud_decision.get('medium_score')}"
+                    f"｜长(16-32周)分{_cloud_decision.get('long_score')}"
+                    f"｜统一分{_cloud_decision.get('unified_score')}（短{_cloud_decision.get('short_score')}）\n"
+                    f"■ 今日动作（纪律指令，次于主判断）：{_cloud_decision.get('action')}"
+                    f"｜盈亏比{_cloud_decision.get('rr')}｜2周期望{_cloud_decision.get('expected_pct'):+.1f}%\n"
                     f"■ 入场/时机：{_cloud_decision.get('entry_note')}\n"
                     f"■ 周期链（各档上涨概率，规则情景估计非胜率）：{_mp_chain9}｜技术阶段：{f.get('conclusion')}\n"
                     f"■ 关键价位：现价{f.get('last')}｜阻力{_cloud_decision.get('resistance')}"
