@@ -1,6 +1,6 @@
 {
   "schema_version": "v88.snapshot/2.0",
-  "snapshot_id": "snap-39a8d84b364b8ca4",
+  "snapshot_id": "snap-76e801a6b715a9d2",
   "rotation_forecast": {
     "schema_version": "v88.rotation/1.3",
     "snapshot_id": "snap-705062cd93551f46",
@@ -2260,7 +2260,7 @@
       }
     ]
   },
-  "generated_at": "2026-07-20 16:10",
+  "generated_at": "2026-07-20 18:43",
   "markets": {
     "美股": {
       "indices": [
@@ -2509,10 +2509,6 @@
           [
             "16周",
             52
-          ],
-          [
-            "32周",
-            52
           ]
         ]
       }
@@ -2548,18 +2544,19 @@
           "turning_prompt": ""
         },
         {
-          "symbol": "399006.SZ",
-          "name": "创业板指",
-          "last": 3443.1,
-          "chg1d": 0.42,
-          "chg5d": -7.53,
-          "chg20d": -21.02,
-          "vs_ma20": -13.25,
-          "vs_ma60": -12.64,
+          "symbol": "159915.SZ",
+          "name": "创业板ETF代理",
+          "last": 3.48,
+          "chg1d": 0.4,
+          "chg5d": -7.3,
+          "chg20d": -20.6,
+          "vs_ma20": -12.86,
+          "vs_ma60": -12.12,
           "trend": "🔄 震荡偏弱",
-          "vol_ratio": 1.0,
+          "vol_ratio": 1.34,
           "turning": "",
-          "turning_prompt": ""
+          "turning_prompt": "",
+          "unit": "元"
         }
       ],
       "sectors": [
@@ -2749,10 +2746,6 @@
           [
             "16周",
             36
-          ],
-          [
-            "32周",
-            35
           ]
         ]
       }
@@ -2762,12 +2755,12 @@
         {
           "symbol": "^HSI",
           "name": "恒生指数",
-          "last": 25104.26,
-          "chg1d": 2.21,
-          "chg5d": 3.68,
-          "chg20d": 4.93,
-          "vs_ma20": 5.48,
-          "vs_ma60": 0.62,
+          "last": 25143.05,
+          "chg1d": 2.36,
+          "chg5d": 3.84,
+          "chg20d": 5.09,
+          "vs_ma20": 5.63,
+          "vs_ma60": 0.77,
           "trend": "🔄 震荡偏强",
           "vol_ratio": 0.79,
           "turning": "",
@@ -2776,12 +2769,12 @@
         {
           "symbol": "3033.HK",
           "name": "恒生科技(ETF代理)",
-          "last": 4.66,
-          "chg1d": 2.69,
-          "chg5d": 1.44,
-          "chg20d": 3.19,
-          "vs_ma20": 3.78,
-          "vs_ma60": -0.77,
+          "last": 4.65,
+          "chg1d": 2.56,
+          "chg5d": 1.31,
+          "chg20d": 3.06,
+          "vs_ma20": 3.65,
+          "vs_ma60": -0.89,
           "trend": "🔄 震荡偏强",
           "vol_ratio": 0.93,
           "turning": "",
@@ -2792,27 +2785,27 @@
         {
           "symbol": "3033.HK",
           "name": "恒生科技",
-          "last": 4.66,
-          "chg1d": 2.69,
-          "chg5d": 1.44,
-          "chg20d": 3.19,
-          "vs_ma20": 3.78,
-          "vs_ma60": -0.77,
+          "last": 4.65,
+          "chg1d": 2.56,
+          "chg5d": 1.31,
+          "chg20d": 3.06,
+          "vs_ma20": 3.65,
+          "vs_ma60": -0.89,
           "trend": "🔄 震荡偏强",
           "vol_ratio": 0.93,
           "turning": "",
           "turning_prompt": "",
-          "heat": 51
+          "heat": 50
         },
         {
           "symbol": "2828.HK",
           "name": "国企蓝筹",
-          "last": 86.16,
-          "chg1d": 2.94,
-          "chg5d": 3.83,
-          "chg20d": 5.56,
-          "vs_ma20": 6.3,
-          "vs_ma60": 1.01,
+          "last": 86.02,
+          "chg1d": 2.77,
+          "chg5d": 3.66,
+          "chg20d": 5.39,
+          "vs_ma20": 6.13,
+          "vs_ma60": 0.85,
           "trend": "🔄 震荡偏强",
           "vol_ratio": 0.88,
           "turning": "",
@@ -2822,14 +2815,14 @@
         {
           "symbol": "3110.HK",
           "name": "高股息",
-          "last": 30.82,
-          "chg1d": 1.38,
-          "chg5d": 4.05,
-          "chg20d": 2.39,
-          "vs_ma20": 4.13,
-          "vs_ma60": -1.89,
+          "last": 30.86,
+          "chg1d": 1.51,
+          "chg5d": 4.19,
+          "chg20d": 2.52,
+          "vs_ma20": 4.26,
+          "vs_ma60": -1.77,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 1.4,
+          "vol_ratio": 1.41,
           "turning": "",
           "turning_prompt": "",
           "heat": 77
@@ -2865,15 +2858,11 @@
           ],
           [
             "8周",
-            44
+            45
           ],
           [
             "16周",
-            43
-          ],
-          [
-            "32周",
-            41
+            44
           ]
         ]
       }
