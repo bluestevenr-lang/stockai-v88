@@ -591,13 +591,33 @@ if _nav == "🧭 导航":
     # 持仓破位警示属私域→见下方双门模块(PRIVATE_TOKEN私径)。
     try:
         _tw_dh9 = json.loads(pub_text("darkhorse.json", _PUB_VERSION) or "{}")
-        _tw_relay9 = set()
-        try:
-            _tw_relay9 = {str(r.get("code")) for r in
-                          (json.loads(pub_text("limit_up_radar.json", _PUB_VERSION) or "{}")
-                           .get("relay") or [])}
-        except Exception:
-            pass
+
+        def _tw_upside9(_h):
+            """上行空间%：阻力位/短线目标/中线目标÷现价。【可买纪律 2026-07-20】<10%或不明→不推。"""
+            try:
+                _u = float(_h.get("upside_pct") or 0)
+                if _u:
+                    return _u
+            except (TypeError, ValueError):
+                pass
+            try:
+                _last = float(_h.get("last") or 0)
+            except (TypeError, ValueError):
+                _last = 0.0
+            if _last <= 0:
+                return None
+            import re as _re9t
+            _cands = []
+            for _leg in ("short", "mid"):
+                _m = _re9t.search(r"目标([\d.]+)",
+                                  str(((_h.get("trade_plan") or {}).get(_leg) or {}).get("out") or ""))
+                if _m:
+                    try:
+                        _cands.append((float(_m.group(1)) / _last - 1) * 100)
+                    except ValueError:
+                        continue
+            # 取最大者=完整波段空间（短线10日目标常仅5%上下）
+            return max(_cands) if _cands else None
 
         def _tw_hz9(_h, _lab):
             try:
@@ -614,18 +634,21 @@ if _nav == "🧭 导航":
             return "纯技术驱动"
 
         _tw_tiers9 = {_k: {"bull": [], "bear": []} for _k in ("t1", "t2", "t3")}
+        _tw_skip9 = 0
         for _h in (_tw_dh9.get("horses") or []):
             _md9 = str(((_h.get("trade_plan") or {}).get("short") or {}).get("mode") or "")
             _s2t, _s4t, _s8t = _tw_hz9(_h, "2周"), _tw_hz9(_h, "4周"), _tw_hz9(_h, "8周")
             _pu9t = int(_h.get("p_up") or 0) or (_s2t or 0)
-            _cc9t = str(_h.get("code") or "").split(".")[0].lstrip("0")
             # 🐉 看涨漏斗（同侧只进最先命中的一档）
-            if any(str(_r).split(".")[0].lstrip("0") == _cc9t for _r in _tw_relay9):
-                _tw_tiers9["t1"]["bull"].append((_h, max(_pu9t, 55), "今日·涨停接力"))
-            elif _md9 in ("现价可进", "回踩到位", "突破确认"):
-                _tw_tiers9["t1"]["bull"].append((_h, _pu9t or 55, f"今日·{_md9}"))
-            elif _md9 == "双路径待触发":
-                _tw_tiers9["t1"]["bull"].append((_h, _pu9t or 52, "本周·双路径待触发"))
+            # 【可买纪律 2026-07-20 用户定纲】涨停接力(做T性质)撤出推荐；空间<10%或不明不推
+            if _md9 in ("现价可进", "回踩到位", "突破确认", "双路径待触发"):
+                _up9t = _tw_upside9(_h)
+                if _up9t is None or _up9t < 10:
+                    _tw_skip9 += 1
+                elif _md9 == "双路径待触发":
+                    _tw_tiers9["t1"]["bull"].append((_h, _pu9t or 52, f"本周·双路径待触发·空间约+{_up9t:.0f}%"))
+                else:
+                    _tw_tiers9["t1"]["bull"].append((_h, _pu9t or 55, f"今日·{_md9}·空间约+{_up9t:.0f}%"))
             elif _s2t is not None and _s2t >= 58:
                 _tw_tiers9["t2"]["bull"].append((_h, _s2t, "下周·短周期走强"))
             elif _s4t is not None and _s4t >= 58:
@@ -692,7 +715,9 @@ if _nav == "🧭 导航":
         st.markdown("".join(_tw_html9), unsafe_allow_html=True)
         st.caption("🐉看涨=龙虎门口径(上攻)｜⚔️看跌=鬼门关口径(先躲) · 概率=引擎对应周期方向分"
                    "(规则情景估计,非回测真实胜率)，🎯=概率≥65%高把握 · 事由=触发条件/周期备注(无据标纯技术) · "
-                   "云端候选=公开黑马池∪涨停接力；持仓/自选实时档看桌面版，持仓破位警示见下方双门(私径)")
+                   "可买纪律:非做T/非接力·上行空间≥10%才推"
+                   + (f"(已剔除{_tw_skip9}只空间不足/不明的绿灯)" if _tw_skip9 else "")
+                   + " · 云端候选=公开黑马池；持仓/自选实时档看桌面版，持仓破位警示见下方双门(私径)")
     except Exception:
         pass
     # 【V88·双门 2026-07-19 用户点单"云端也要有龙虎门/地狱门"】
