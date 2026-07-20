@@ -584,6 +584,117 @@ if _nav == "🧭 导航":
                         unsafe_allow_html=True)
     else:
         st.info(_NOT_READY)
+    # 【V88·三档双向关注 2026-07-20 用户定纲】与桌面「关注中心」同口径：
+    # ①今日及本周 ②下周 ③本月及下月，每档🐉看涨(龙虎门口径)+⚔️看跌(鬼门关口径)，
+    # 每只带导致涨/跌的事+概率标注(对应周期方向分,🎯=概率≥65高把握)。
+    # 云端候选=公开黑马池∪涨停接力(pub安全)；持仓/自选实时决策在桌面session不重算,
+    # 持仓破位警示属私域→见下方双门模块(PRIVATE_TOKEN私径)。
+    try:
+        _tw_dh9 = json.loads(pub_text("darkhorse.json", _PUB_VERSION) or "{}")
+        _tw_relay9 = set()
+        try:
+            _tw_relay9 = {str(r.get("code")) for r in
+                          (json.loads(pub_text("limit_up_radar.json", _PUB_VERSION) or "{}")
+                           .get("relay") or [])}
+        except Exception:
+            pass
+
+        def _tw_hz9(_h, _lab):
+            try:
+                _v = (((_h.get("facts") or {}).get("horizons") or {}).get(_lab) or {}).get("rule_score")
+                return int(round(float(_v))) if _v is not None else None
+            except (TypeError, ValueError):
+                return None
+
+        def _tw_why9(_h):
+            for _t in (str(_h.get("touch") or ""), str(_h.get("cycle_note") or ""),
+                       str(_h.get("entry_note") or "")):
+                if _t.strip():
+                    return _t.strip()[:20]
+            return "纯技术驱动"
+
+        _tw_tiers9 = {_k: {"bull": [], "bear": []} for _k in ("t1", "t2", "t3")}
+        for _h in (_tw_dh9.get("horses") or []):
+            _md9 = str(((_h.get("trade_plan") or {}).get("short") or {}).get("mode") or "")
+            _s2t, _s4t, _s8t = _tw_hz9(_h, "2周"), _tw_hz9(_h, "4周"), _tw_hz9(_h, "8周")
+            _pu9t = int(_h.get("p_up") or 0) or (_s2t or 0)
+            _cc9t = str(_h.get("code") or "").split(".")[0].lstrip("0")
+            # 🐉 看涨漏斗（同侧只进最先命中的一档）
+            if any(str(_r).split(".")[0].lstrip("0") == _cc9t for _r in _tw_relay9):
+                _tw_tiers9["t1"]["bull"].append((_h, max(_pu9t, 55), "今日·涨停接力"))
+            elif _md9 in ("现价可进", "回踩到位", "突破确认"):
+                _tw_tiers9["t1"]["bull"].append((_h, _pu9t or 55, f"今日·{_md9}"))
+            elif _md9 == "双路径待触发":
+                _tw_tiers9["t1"]["bull"].append((_h, _pu9t or 52, "本周·双路径待触发"))
+            elif _s2t is not None and _s2t >= 58:
+                _tw_tiers9["t2"]["bull"].append((_h, _s2t, "下周·短周期走强"))
+            elif _s4t is not None and _s4t >= 58:
+                _tw_tiers9["t3"]["bull"].append((_h, _s4t, "本月·4周周期走强"))
+            elif _s8t is not None and _s8t >= 58:
+                _tw_tiers9["t3"]["bull"].append((_h, _s8t, "下月·8周周期走强"))
+            # ⚔️ 看跌漏斗
+            _pd9t = int(_h.get("p_down") or 0)
+            if any(_k in str(_h.get("action") or "") for _k in ("减仓", "退出", "清仓", "回避", "止损")):
+                _tw_tiers9["t1"]["bear"].append((_h, _pd9t or 55, "今日·风控动作"))
+            elif _s2t is not None and _s2t <= 42:
+                _tw_tiers9["t1"]["bear"].append((_h, 100 - _s2t, "本周·2周周期转弱"))
+            elif _s4t is not None and _s4t <= 42:
+                _tw_tiers9["t3"]["bear"].append((_h, 100 - _s4t, "本月·4周周期偏弱"))
+            elif _s8t is not None and _s8t <= 42:
+                _tw_tiers9["t3"]["bear"].append((_h, 100 - _s8t, "下月·8周周期偏弱"))
+        for _k9t in _tw_tiers9:
+            for _sd9t in ("bull", "bear"):
+                _tw_tiers9[_k9t][_sd9t].sort(key=lambda x: -x[1])
+        # 🏛 机构风向标一句话（下周/本月档补充；分市场新结构，某市场无材料如实跳过）
+        _tw_ab9 = {}
+        try:
+            _ab_raw9 = (json.loads(pub_text("institutional_signals.json", _PUB_VERSION) or "{}")
+                        .get("ai_brief") or {})
+            for _mk9t, _v9t in _ab_raw9.items():
+                if isinstance(_v9t, dict):
+                    for _kk9t in ("下周", "本月及下月"):
+                        _t9t = str(_v9t.get(_kk9t) or "")
+                        if _t9t and "无该市场机构材料" not in _t9t:
+                            _tw_ab9.setdefault(_kk9t, []).append(f"{_mk9t}:{_t9t[:26]}")
+        except Exception:
+            pass
+
+        def _tw_item9(_h, _p, _s, _bear):
+            _pc9t = "#16a34a" if _bear else "#dc2626"
+            return (f"<b>{_h.get('name')}</b><span style='color:#94a3b8;font-size:11px'>"
+                    f"{_h.get('code')}</span><span style='font-size:12px;color:#64748b'>"
+                    f"[{_s}]·{_tw_why9(_h)}</span>"
+                    f"<b style='color:{_pc9t};font-size:12px'>·{'🎯' if _p >= 65 else ''}"
+                    f"{'跌' if _bear else '涨'}概率{_p}%</b>")
+
+        st.markdown("**⭐ 关注中心 · ①今日及本周 ②下周 ③本月及下月**　"
+                    "<span style='font-size:12px;color:#94a3b8'>三档双向(看涨/看跌+概率)·与桌面同口径</span>",
+                    unsafe_allow_html=True)
+        _tw_html9 = ["<div style='font-size:13.5px;line-height:1.8'>"]
+        for _k9t, _tt9t, _abk9t in (("t1", "🟢 ① 今日关注 及 本周关注", None),
+                                    ("t2", "🗓 ② 下周关注", "下周"),
+                                    ("t3", "📆 ③ 本月关注 及 下月关注", "本月及下月")):
+            _bl9t = _tw_tiers9[_k9t]["bull"][:5]
+            _br9t = _tw_tiers9[_k9t]["bear"][:5]
+            _tw_html9.append(f"<div style='margin:3px 0 1px'><b>{_tt9t}</b></div>")
+            _tw_html9.append(
+                "<div style='margin-left:8px'>🐉 <b style='color:#dc2626;font-size:12.5px'>看涨</b>："
+                + ("　".join(_tw_item9(_h, _p, _s, False) for _h, _p, _s in _bl9t) if _bl9t
+                   else "<span style='color:#94a3b8'>本档暂无达标（宁缺毋滥）</span>") + "</div>")
+            _tw_html9.append(
+                "<div style='margin-left:8px'>⚔️ <b style='color:#16a34a;font-size:12.5px'>看跌</b>："
+                + ("　".join(_tw_item9(_h, _p, _s, True) for _h, _p, _s in _br9t) if _br9t
+                   else "<span style='color:#94a3b8'>暂无预警（公开池无破位/转弱信号）</span>") + "</div>")
+            if _abk9t and _tw_ab9.get(_abk9t):
+                _tw_html9.append("<div style='margin-left:8px;font-size:12px;color:#64748b'>🏛 机构风向："
+                                 + "｜".join(_tw_ab9[_abk9t][:3]) + "</div>")
+        _tw_html9.append("</div>")
+        st.markdown("".join(_tw_html9), unsafe_allow_html=True)
+        st.caption("🐉看涨=龙虎门口径(上攻)｜⚔️看跌=鬼门关口径(先躲) · 概率=引擎对应周期方向分"
+                   "(规则情景估计,非回测真实胜率)，🎯=概率≥65%高把握 · 事由=触发条件/周期备注(无据标纯技术) · "
+                   "云端候选=公开黑马池∪涨停接力；持仓/自选实时档看桌面版，持仓破位警示见下方双门(私径)")
+    except Exception:
+        pass
     # 【V88·双门 2026-07-19 用户点单"云端也要有龙虎门/地狱门"】
     # 龙虎门=公开黑马绿灯(pub安全);地狱门含持仓名→走PRIVATE_TOKEN私径,无token如实提示。
     try:

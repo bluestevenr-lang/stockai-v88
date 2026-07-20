@@ -11927,12 +11927,13 @@ def _next_trading_day9(_repo):
 
 
 def _render_four_tier_recos9(_wa, _repo, _is_trading):
-    """【V88·四档推荐 2026-07-17 用户定纲】今日/明天/本周/下周四档常在，按交易日滚动；
-    休市时"今日"档如实显示休市、由"明天=下一交易日"接棒——不再休市还喊今日关注。
-    候选=用户指定三类源并集（一键全选池+引擎榜Top+触底触线=黑马漏斗复判结果）∪ 自选/持仓决策。
-    分档（纯现成引擎输出零新计算）：今日=时机绿灯；明天=涨停接力隔日惯性；
-    本周=双路径5日窗；下周=中线(4-8周)分≥58蓄势或下周财报催化。
-    """
+    """【V88·三档双向关注 2026-07-20 用户定纲】原"今日/明天/本周/下周"四档推荐改为三档关注：
+    ①今日及本周 ②下周 ③本月及下月。每档双向对仗——🐉看涨(龙虎门口径·上攻)＋⚔️看跌(鬼门关口径·先躲)，
+    每只必带「导致涨/跌的事」(消息归因>研报/新闻定性>技术阶段,无据如实标纯技术)＋成功概率标注
+    (看涨=对应周期上涨概率/看跌=对应周期下行概率;🎯=概率≥65高把握)。零新计算,全用现成引擎输出。
+    档期口径：今日=时机绿灯/涨停接力(休市如实由下一交易日接棒)；本周=双路径5日窗(2周分)；
+    下周=中线蓄势(4-8周分≥58)或下周财报催化；本月=4周周期分；下月=8周周期分(≥58看涨/≤42看跌)。
+    候选=一键全选池+引擎榜Top+触底触线(黑马漏斗复判)∪自选/持仓决策。"""
     import json as _jf
     _, _ntd_label = _next_trading_day9(_repo)
     _cands = {}
@@ -11943,7 +11944,7 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
     except Exception:
         pass
     for _d in (_wa or {}).get("decisions") or []:
-        if _d.get("scope") in ("持仓", "自选"):
+        if _d.get("scope") in ("持仓", "自选") or _d.get("in_watchlist"):
             _c = str(_d.get("code"))
             _tag = "💼" if _d.get("scope") == "持仓" else "👁"
             if _c in _cands:
@@ -11957,59 +11958,114 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
                          .get("relay") or [])}
     except Exception:
         pass
-    _tiers = {"today": [], "tomorrow": [], "week": [], "next_week": []}
+
+    def _hzsc9(_h, _lab):
+        """某周期引擎方向分(0-100,>50偏涨)；无则None。"""
+        try:
+            _v = (((_h.get("facts") or {}).get("horizons") or {}).get(_lab) or {}).get("rule_score")
+            return int(round(float(_v))) if _v is not None else None
+        except (TypeError, ValueError):
+            return None
+
+    def _why9(_h, _bear):
+        """导致涨/跌的事：消息归因 > 研报/新闻定性 > 诊断结论/技术阶段 > 触发条件；无据如实标。"""
+        for _t in (str(_h.get("move_reason") or ""),
+                   _v88_fund_edge_short(_h.get("name") or "", max_len=18) or "",
+                   (str(_h.get("diag_why") or "") if _bear else ""),
+                   (str(_h.get("stage") or "") if _bear else str(_h.get("touch") or "")),
+                   str((_h.get("entry_plan") or {}).get("mode") or "")):
+            _t = str(_t).strip()
+            if _t:
+                return _t[:22]
+        return "无消息面·纯技术驱动"
+
+    # 双向分档：看涨/看跌各自独立走 elif 漏斗（一只票同侧只进最先命中的一档，不重复刷屏）
+    _tiers9 = {_k: {"bull": [], "bear": []} for _k in ("t1", "t2", "t3")}
     for _c, _h in _cands.items():
         _ep = _h.get("entry_plan") or {}
-        _mode = str(_ep.get("mode") or "")
+        _mode = str(_ep.get("mode") or ((_h.get("trade_plan") or {}).get("short") or {}).get("mode") or "")
         _med = float(_h.get("medium_score") or 0)
         _srcs = _h.get("sources") or []
+        _s2 = _hzsc9(_h, "2周")
+        _pup = int(_h.get("p_up") or 0) or (_s2 or 0)
+        _pdn = int(_h.get("p_down") or 0)
+        _s4, _s8 = _hzsc9(_h, "4周"), _hzsc9(_h, "8周")
         _canon_c = _c.split(".")[0].lstrip("0") or _c
+        # ── 🐉 看涨（龙虎门口径） ──
         if any(str(_r).split(".")[0].lstrip("0") == _canon_c for _r in _relay_codes):
-            _tiers["tomorrow"].append(_h)
+            _tiers9["t1"]["bull"].append((_h, max(_pup, 55), "今日·涨停接力惯性"))
         elif _mode in ("现价可进", "回踩到位", "突破确认"):
-            _tiers["today"].append(_h)
+            _tiers9["t1"]["bull"].append((_h, _pup or 55, f"今日·{_mode}"))
         elif _mode == "双路径待触发":
-            _tiers["week"].append(_h)
-        elif _med >= 58 or any("财报" in str(s) for s in _srcs):
-            _tiers["next_week"].append(_h)
-    for _k in _tiers:
-        _tiers[_k].sort(key=lambda h: (-len(h.get("sources") or []),
-                                       -float(h.get("short_score") or h.get("p_up") or 0)))
+            _tiers9["t1"]["bull"].append((_h, _pup or 52, "本周·双路径待触发"))
+        elif _med >= 58:
+            _tiers9["t2"]["bull"].append((_h, int(round(_med)), "下周·中线蓄势"))
+        elif any("财报" in str(_s) for _s in _srcs):
+            _tiers9["t2"]["bull"].append((_h, _pup or int(round(_med)) or 52, "下周·财报催化"))
+        elif _s4 is not None and _s4 >= 58:
+            _tiers9["t3"]["bull"].append((_h, _s4, "本月·4周周期走强"))
+        elif _s8 is not None and _s8 >= 58:
+            _tiers9["t3"]["bull"].append((_h, _s8, "下月·8周周期走强"))
+        # ── ⚔️ 看跌（鬼门关口径） ──
+        _dgk = str(_h.get("diag_kind") or "")
+        _stg = str(_h.get("stage") or "")
+        _bad_now = (_dgk in ("破位", "个股利空") or _h.get("broke_stop")
+                    or any(_k in _stg for _k in ("破位", "顶拐", "放量滞涨"))
+                    or any(_k in str(_h.get("action") or "")
+                           for _k in ("减仓", "退出", "清仓", "回避", "止损")))
+        if _bad_now:
+            _tiers9["t1"]["bear"].append((_h, _pdn or (100 - _pup if _pup else 55),
+                                          "今日·" + (_dgk or "破位/拐点先躲")))
+        elif _s2 is not None and _s2 <= 42:
+            _tiers9["t1"]["bear"].append((_h, 100 - _s2, "本周·2周周期转弱"))
+        elif 0 < _med <= 42:
+            _tiers9["t2"]["bear"].append((_h, 100 - int(round(_med)), "下周·中线转弱"))
+        elif _s4 is not None and _s4 <= 42:
+            _tiers9["t3"]["bear"].append((_h, 100 - _s4, "本月·4周周期偏弱"))
+        elif _s8 is not None and _s8 <= 42:
+            _tiers9["t3"]["bear"].append((_h, 100 - _s8, "下月·8周周期偏弱"))
+    for _k in _tiers9:
+        for _sd in ("bull", "bear"):
+            _tiers9[_k][_sd].sort(key=lambda x: -x[1])
 
-    def _row9(_h):
-        _pl = ((_h.get("trade_plan") or {}).get("short") or {})
-        _hint = str(_pl.get("in") or _h.get("entry_note") or "")[:44]
-        _tc = _h.get("touch") or ""
-        _eg9 = _v88_fund_edge_short(_h.get("name") or "", max_len=14)
+    def _item9(_h, _prob, _sub, _bear):
+        _pc = "#16a34a" if _bear else "#dc2626"
+        _star = "🎯" if _prob >= 65 else ""
         _hn9 = _v88_hot_note9(_h.get("code"))
         return (f"{_h.get('_tag', '')}{_stk_link(_h.get('name'), _h.get('code'))}"
-                f"<span style='font-size:12px;color:#64748b'>"
-                f"{('·' + _tc) if _tc else ''} {_hint}</span>"
-                + (f"<span style='font-size:12px;color:#94a3b8'>——{_eg9}</span>" if _eg9 else "")
+                f"<span style='font-size:12px;color:#94a3b8'>[{_sub}]</span>"
+                f"<span style='font-size:12px;color:#64748b'>·{_why9(_h, _bear)}</span>"
+                f"<b style='color:{_pc};font-size:12.5px'>·{_star}{'跌' if _bear else '涨'}概率{_prob}%</b>"
                 + (f"<span style='font-size:12px;color:#b45309'>{_hn9}</span>" if _hn9 else ""))
 
+    _t1_title = ("🟢 ① 今日关注 及 本周关注" if _is_trading
+                 else f"⏸ ① 今日(休市·看{_ntd_label}) 及 本周关注")
+    _t1_sub = ("今日=时机绿灯/涨停接力·盘中可执行；本周=双路径5日窗" if _is_trading
+               else f"休市——「今日」由下一交易日({_ntd_label})接棒；本周=双路径5日窗")
     _meta9 = [
-        ("today", ("🟢 今日推荐" if _is_trading else "⏸ 今日（休市）"),
-         "时机绿灯·盘中可执行" if _is_trading else f"休市无今日盘——看「明天({_ntd_label})」档"),
-        ("tomorrow", f"🌅 明天推荐（{_ntd_label}）", "涨停接力惯性+隔日窗口"),
-        ("week", "📅 本周推荐", "双路径5日窗：回踩接或放量突破改追"),
-        ("next_week", "🗓 下周推荐", "中线蓄势(4-8周分≥58)或下周财报催化"),
+        ("t1", _t1_title, _t1_sub),
+        ("t2", "🗓 ② 下周关注", "中线蓄势(4-8周分≥58)/下周财报催化；看跌=中线周期分转弱"),
+        ("t3", "📆 ③ 本月关注 及 下月关注", "本月=4周周期分·下月=8周周期分（≥58看涨/≤42看跌）"),
     ]
-    _html = ["<div style='font-size:14px;line-height:1.7'>"]
+    _html = ["<div style='font-size:14px;line-height:1.8'>"]
     for _k, _title, _sub in _meta9:
-        _lst = _tiers[_k][:5]
-        _html.append(f"<div style='margin:2px 0'><b>{_title}</b>"
-                     f"<span style='font-size:12px;color:#94a3b8'>（{_sub}）</span>：")
-        if _k == "today" and not _is_trading:
-            _html.append("<span style='color:#94a3b8'>—</span>")
-        elif _lst:
-            _html.append("　".join(_row9(h) for h in _lst))
-        else:
-            _html.append("<span style='color:#94a3b8'>本档暂无达标（宁缺毋滥）</span>")
+        _bulls9 = _tiers9[_k]["bull"][:6]
+        _bears9 = _tiers9[_k]["bear"][:6]
+        _html.append(f"<div style='margin:4px 0 2px'><b>{_title}</b>"
+                     f"<span style='font-size:12px;color:#94a3b8'>（{_sub}）</span></div>")
+        _html.append("<div style='margin-left:10px'>🐉 <b style='color:#dc2626;font-size:13px'>看涨</b>：")
+        _html.append("　".join(_item9(_h, _p, _s, False) for _h, _p, _s in _bulls9) if _bulls9
+                     else "<span style='color:#94a3b8'>本档暂无达标（宁缺毋滥）</span>")
+        _html.append("</div>")
+        _html.append("<div style='margin-left:10px'>⚔️ <b style='color:#16a34a;font-size:13px'>看跌</b>：")
+        _html.append("　".join(_item9(_h, _p, _s, True) for _h, _p, _s in _bears9) if _bears9
+                     else "<span style='color:#94a3b8'>暂无预警（无破位/周期转弱信号）</span>")
         _html.append("</div>")
     _html.append("</div>")
     st.markdown("".join(_html), unsafe_allow_html=True)
-    st.caption("候选=一键全选池∪引擎Top榜∪触底触线（黑马漏斗复判）∪自选/持仓 · 按交易日滚动 · 💼持仓👁自选🐴黑马")
+    st.caption("🐉看涨=龙虎门口径(上攻·红)｜⚔️看跌=鬼门关口径(先躲·绿) · 概率=引擎对应周期方向分"
+               "(规则情景估计,非回测真实胜率)，🎯=概率≥65%高把握 · 事由优先级:消息归因>研报定性>技术阶段"
+               "(无据如实标纯技术) · 候选=一键全选池∪引擎Top∪黑马漏斗∪自选/持仓 · 💼持仓👁自选🐴黑马")
     # 【V88·统一战绩总账 2026-07-19】推荐旁必挂自己的实盘成功率(自我监督)
     try:
         _eng9s = ((_v88_success9().get("types") or {}).get("engine")) or {}
@@ -13399,13 +13455,14 @@ def _render_today_nav():
         st.caption("下方为最近交易日的行情快照与温度定位（供延续参考）：")
     # 【V88·今日焦点】醒目置顶：重点推荐（引擎买入档）+ 重点观察（搜索过的个股）
     # 【模块可折叠】今日焦点整块折叠（默认展开）
-    with st.expander("⭐ 推荐中心 · 今日/明天/本周/下周 四档 + 高分榜 + 重点观察", expanded=True):
-        # 【V88·四档推荐】置于推荐中心最顶（用户定纲：四档常在,按交易日滚动,休市不喊今日）
+    with st.expander("⭐ 关注中心 · ①今日及本周 ②下周 ③本月及下月 三档双向(看涨/看跌+概率) + 高分榜 + 重点观察", expanded=True):
+        # 【V88·三档双向关注 2026-07-20 用户定纲】置于关注中心最顶：三档常在,每档看涨(龙虎门)+
+        # 看跌(鬼门关)双向,每只带导致涨/跌的事+成功概率标注;按交易日滚动,休市不喊今日。
         try:
             _render_four_tier_recos9(st.session_state.get('watch_alerts_v88') or {}, _repo, _is_trading)
             st.markdown("<hr style='margin:4px 0;border:none;border-top:1px dashed #e2e8f0'>", unsafe_allow_html=True)
         except Exception:
-            logging.debug("四档推荐渲染失败", exc_info=True)
+            logging.debug("三档双向关注渲染失败", exc_info=True)
         def _tok2code(tok):
             tok = str(tok).strip("`[] ")
             return tok.split(":", 1)[1] if ":" in tok else tok
