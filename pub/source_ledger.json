@@ -1,39 +1,57 @@
 {
   "schema_version": "v88.report/2.0",
-  "generated_at": "2026-07-20T07:56:57.987752+08:00",
+  "generated_at": "2026-07-20T09:41:01.605391+08:00",
   "sources": [
     {
       "id": 1,
-      "title": "SpaceX将“星舰”第13次试飞推迟至7月23日",
-      "source": "36氪 - 快讯",
-      "published_at": "2026-07-19T23:00:38+00:00",
-      "url": "https://36kr.com/newsflashes/3903160957978496?f=rss",
+      "title": "Foxconn wins estimated $52 billion SpaceX AI server order - Economic Daily",
+      "source": "Investing.com - Stock Market News",
+      "published_at": "2026-07-20T00:33:10+00:00",
+      "url": "https://www.investing.com/news/stock-market-news/foxconn-wins-estimated-52-billion-spacex-ai-server-order--economic-daily-4799762",
       "tier": "C",
-      "market_scope": "美股",
+      "market_scope": "综合",
       "affected_tickers": []
     },
     {
       "id": 2,
-      "title": "10天借出10%股份!空头猛扑SpaceX",
+      "title": "本周重磅日程:欧央行利率决议;谷歌、特斯拉、IBM、英特尔与宁德时代财报",
       "source": "华尔街见闻",
-      "published_at": "2026-07-19T01:48:01+00:00",
-      "url": "https://wallstreetcn.com/articles/3777331",
+      "published_at": "2026-07-19T11:12:12+00:00",
+      "url": "https://wallstreetcn.com/articles/3777171",
+      "tier": "C",
+      "market_scope": "宏观",
+      "affected_tickers": [
+        "GOOGL·谷歌",
+        "TSLA·特斯拉",
+        "IBM·IBM",
+        "INTC·英特尔",
+        "300750.SZ·宁德时代"
+      ]
+    },
+    {
+      "id": 3,
+      "title": "美股半导体指数跌入熊市 芯片股溃败时苹果盘中夺回市值第一AI牛市迎来“换锚”时刻 - 上海有色金属网",
+      "source": "Google News - 中文市场聚合",
+      "published_at": "2026-07-19T09:27:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE95WHAwdDMyR25XSVBhSHRWVElTUmNQM3dYUklmSzVidUZqSkhyZi1nelBrTXZtZFIzREJLVXhyZjZxbVppbV9DUE1n?oc=5",
+      "tier": "C",
+      "market_scope": "美股",
+      "affected_tickers": [
+        "AAPL·苹果"
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Elon Musk's SpaceX has lost $1T in market cap since mid-June as Starship launch is scrubbed",
+      "source": "Yahoo Finance - Top",
+      "published_at": "2026-07-18T15:00:00+00:00",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/elon-musks-spacex-lost-1t-150000833.html",
       "tier": "C",
       "market_scope": "美股",
       "affected_tickers": []
     },
     {
-      "id": 3,
-      "title": "Traders are increasingly betting against SpaceX just weeks after IPO",
-      "source": "FT - Markets",
-      "published_at": "2026-07-18T11:00:02+00:00",
-      "url": "https://www.ft.com/content/2b96703d-440b-46db-8d86-9fff9ecc59d5?syn-25a6b1a6=1",
-      "tier": "B",
-      "market_scope": "美股",
-      "affected_tickers": []
-    },
-    {
-      "id": 4,
+      "id": 5,
       "title": "SpaceX市值已经蒸发了1万亿美元",
       "source": "华尔街见闻",
       "published_at": "2026-07-18T02:23:13+00:00",
@@ -43,7 +61,20 @@
       "affected_tickers": []
     },
     {
-      "id": 5,
+      "id": 6,
+      "title": "“老登”逆袭!苹果短暂超越英伟达,成为全球最高市值公司",
+      "source": "华尔街见闻",
+      "published_at": "2026-07-18T01:22:48+00:00",
+      "url": "https://wallstreetcn.com/articles/3777276",
+      "tier": "C",
+      "market_scope": "美股",
+      "affected_tickers": [
+        "AAPL·苹果",
+        "NVDA·英伟达"
+      ]
+    },
+    {
+      "id": 7,
       "title": "SpaceX身陷股价破发泥潭之际,向五角大楼兜售数十亿美元AI算力",
       "source": "华尔街见闻",
       "published_at": "2026-07-17T21:56:48+00:00",
@@ -53,7 +84,7 @@
       "affected_tickers": []
     },
     {
-      "id": 6,
+      "id": 8,
       "title": "SpaceX and Pentagon Discuss Data-Center Deal",
       "source": "WSJ - Markets",
       "published_at": "2026-07-17T21:46:00+00:00",
@@ -63,7 +94,7 @@
       "affected_tickers": []
     },
     {
-      "id": 7,
+      "id": 9,
       "title": "美股半导体指数跌入熊市,芯片股溃败时苹果盘中夺回市值第一,AI牛市迎来“换锚”时刻?",
       "source": "华尔街见闻",
       "published_at": "2026-07-17T21:14:49+00:00",
@@ -72,162 +103,88 @@
       "market_scope": "美股",
       "affected_tickers": [
         "NVDA·英伟达",
-        "AMD·超微半导体",
-        "AVGO·博通",
-        "AAPL·苹果"
-      ]
-    },
-    {
-      "id": 8,
-      "title": "SpaceX市值蒸发超万亿!IPO后星舰首飞推迟,每一秒倒计时都成了\"公开财报\"",
-      "source": "华尔街见闻",
-      "published_at": "2026-07-17T21:11:32+00:00",
-      "url": "https://wallstreetcn.com/articles/3777228",
-      "tier": "C",
-      "market_scope": "美股",
-      "affected_tickers": []
-    },
-    {
-      "id": 9,
-      "title": "苹果市值反超英伟达!汇丰坚定看好AI换机超级周期,上调苹果目标价至366美元",
-      "source": "华尔街见闻",
-      "published_at": "2026-07-17T14:22:13+00:00",
-      "url": "https://wallstreetcn.com/articles/3777238",
-      "tier": "C",
-      "market_scope": "美股",
-      "affected_tickers": [
-        "AAPL·苹果",
-        "NVDA·英伟达"
+        "AMD·超威半导体",
+        "AVGO·博通"
       ]
     },
     {
       "id": 10,
-      "title": "TSMC is accelerating Arizona factory buildout to capitalize on AI 'megatrend,' CFO says",
-      "source": "CNBC - Top News",
-      "published_at": "2026-07-19T23:42:33+00:00",
-      "url": "https://www.cnbc.com/2026/07/20/tsmc-arizona-fab-capacity-ai-chip-demand.html",
-      "tier": "B",
-      "market_scope": "美股",
-      "affected_tickers": [
-        "TSM·台积电"
-      ]
+      "title": "A股重大利好!中国国新、中国诚通两大央企600亿增持 - Jiemian.com",
+      "source": "Google News - 中文市场聚合",
+      "published_at": "2026-07-20T01:28:21+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE5oT2pYQWpoQ0dyR1ZiX1NWU1JRZDdsVktjWEpqYUdsR29QUEdIUDU3NDlMV3RGekpVWkxoQUlWUXJuSEVLQllScXZUR3dFME5aa0NLcFNHbl8?oc=5",
+      "tier": "C",
+      "market_scope": "A股",
+      "affected_tickers": []
     },
     {
       "id": 11,
-      "title": "Oil prices surge, stock futures flat as fighting between U.S. and Iran intensifies",
+      "title": "Exclusive-Samsung cuts US jobs, offers relocations ahead of HQ move",
+      "source": "Investing.com - Stock Market News",
+      "published_at": "2026-07-20T01:18:49+00:00",
+      "url": "https://www.investing.com/news/stock-market-news/samsung-electronics-america-to-reduce-workforce-by-739-in-new-jersey-us-warn-notice-says-4799679",
+      "tier": "C",
+      "market_scope": "综合",
+      "affected_tickers": [
+        "005930.KS·三星电子"
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Oil prices surge, stock futures inch higher as fighting between U.S. and Iran intensifies",
       "source": "MarketWatch - Top Stories",
-      "published_at": "2026-07-19T23:30:00+00:00",
+      "published_at": "2026-07-20T01:18:00+00:00",
       "url": "https://www.marketwatch.com/story/oil-prices-surge-stock-futures-dip-as-fighting-between-u-s-and-iran-intensifies-6fb37c79?mod=mw_rss_topstories",
       "tier": "B",
       "market_scope": "宏观",
       "affected_tickers": []
     },
     {
-      "id": 12,
-      "title": "韩国承诺放宽韩元获取渠道,力争实现“自由兑换货币”目标",
-      "source": "36氪 - 快讯",
-      "published_at": "2026-07-19T23:25:39+00:00",
-      "url": "https://36kr.com/newsflashes/3903171813607303?f=rss",
-      "tier": "C",
-      "market_scope": "宏观",
-      "affected_tickers": []
-    },
-    {
       "id": 13,
-      "title": "TSMC expects ’strong, multi-year’ demand for AI chips as it ramps up Arizona investment",
-      "source": "Investing.com - Stock Market News",
-      "published_at": "2026-07-19T23:18:33+00:00",
-      "url": "https://www.investing.com/news/stock-market-news/tsmc-expects-strong-multiyear-demand-for-ai-chips-as-it-ramps-up-arizona-investment-4799752",
-      "tier": "C",
-      "market_scope": "美股",
-      "affected_tickers": [
-        "TSM·台积电"
-      ]
-    },
-    {
-      "id": 14,
-      "title": "调查:美联储7月维持利率不变的概率85.6%",
-      "source": "36氪 - 快讯",
-      "published_at": "2026-07-19T23:15:28+00:00",
-      "url": "https://36kr.com/newsflashes/3903168672056960?f=rss",
-      "tier": "C",
-      "market_scope": "宏观",
-      "affected_tickers": []
-    },
-    {
-      "id": 15,
-      "title": "台积电将美国投资承诺增至2650亿美元,称AI需求和竞争压力推动扩产",
-      "source": "36氪 - 快讯",
-      "published_at": "2026-07-19T23:13:19+00:00",
-      "url": "https://36kr.com/newsflashes/3903173412161415?f=rss",
-      "tier": "C",
-      "market_scope": "美股",
-      "affected_tickers": [
-        "TSM·台积电"
-      ]
-    },
-    {
-      "id": 16,
-      "title": "U.S. death toll rises again as Iran war escalates over the weekend",
+      "title": "Brent breaks past $90 as U.S.-Iran conflict rages on",
       "source": "CNBC - Top News",
-      "published_at": "2026-07-19T23:00:25+00:00",
-      "url": "https://www.cnbc.com/2026/07/19/us-says-it-targeted-iran-forces-after-deaths-of-two-american-troops.html",
+      "published_at": "2026-07-20T01:16:33+00:00",
+      "url": "https://www.cnbc.com/2026/07/20/oil-prices-today-brent-wti-crude-us-iran-centcom-hormuz.html",
       "tier": "B",
       "market_scope": "宏观",
       "affected_tickers": []
     },
     {
-      "id": 17,
-      "title": "上海上半年GDP同比增长5.6%",
+      "id": 14,
+      "title": "腾讯云ADP 4.0海外版发布,要把企业级智能体带到全球市场 | 最前线",
       "source": "36氪 - 快讯",
-      "published_at": "2026-07-19T23:00:00+00:00",
-      "url": "https://36kr.com/newsflashes/3903160326670212?f=rss",
+      "published_at": "2026-07-20T01:30:27+00:00",
+      "url": "https://36kr.com/p/3901396207584902?f=rss",
       "tier": "C",
-      "market_scope": "宏观",
-      "affected_tickers": []
+      "market_scope": "港股",
+      "affected_tickers": [
+        "0700.HK·腾讯控股"
+      ]
     },
     {
-      "id": 18,
+      "id": 15,
       "title": "SpaceX targeting Starship test flight by Thursday after botched launch",
       "source": "Investing.com - Stock Market News",
       "published_at": "2026-07-19T23:42:37+00:00",
       "url": "https://www.investing.com/news/stock-market-news/spacex-targeting-starship-test-flight-by-thursday-after-botched-launch-4799753",
       "tier": "C",
-      "market_scope": "美股",
-      "affected_tickers": []
-    },
-    {
-      "id": 19,
-      "title": "Alphabet's Gemini 3.5 Pro Is Late and the Stock Is Slipping. Is the AI Leader Falling Behind?",
-      "source": "Yahoo Finance - Top",
-      "published_at": "2026-07-19T20:43:00+00:00",
-      "url": "https://finance.yahoo.com/technology/ai/articles/alphabets-gemini-3-5-pro-204300449.html",
-      "tier": "C",
-      "market_scope": "美股",
-      "affected_tickers": []
-    },
-    {
-      "id": 20,
-      "title": "Can an Apple lawsuit derail OpenAI’s hardware plans?",
-      "source": "Yahoo Finance - Top",
-      "published_at": "2026-07-19T19:24:45+00:00",
-      "url": "https://finance.yahoo.com/technology/ai/articles/apple-lawsuit-derail-openai-hardware-192445049.html",
-      "tier": "C",
-      "market_scope": "美股",
-      "affected_tickers": []
-    },
-    {
-      "id": 21,
-      "title": "本周重磅日程:欧央行利率决议;谷歌、特斯拉、IBM、英特尔与宁德时代财报",
-      "source": "华尔街见闻",
-      "published_at": "2026-07-19T11:12:12+00:00",
-      "url": "https://wallstreetcn.com/articles/3777171",
-      "tier": "C",
       "market_scope": "综合",
       "affected_tickers": []
     },
     {
-      "id": 22,
+      "id": 16,
+      "title": "港股本周要闻前瞻|宁德时代将公布业绩 海外多家科技巨头财报来袭 - 新浪财经",
+      "source": "Google News - 中文市场聚合",
+      "published_at": "2026-07-19T23:09:09+00:00",
+      "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1XRXJoQjJlOTQ0X1o2UnFvMkVualBGaFJxNUhuSlByUkhFSG5Id3dOc2c5NzNEU3RKckpXaU9FOWtYdUVKUHpjWmxhaTZaTXdKcXpPd2p5VDFibnRjVG5DaHllZ0ExVzlHRnhoWVlR?oc=5",
+      "tier": "C",
+      "market_scope": "港股",
+      "affected_tickers": [
+        "300750.SZ·宁德时代"
+      ]
+    },
+    {
+      "id": 17,
       "title": "对话腾讯云副总裁吴运声:企业专属Agent为何仍然重要",
       "source": "华尔街见闻",
       "published_at": "2026-07-19T09:15:50+00:00",
@@ -239,7 +196,7 @@
       ]
     },
     {
-      "id": 23,
+      "id": 18,
       "title": "英伟达:从“一次性训练”的大模型到“后训练改进”的Agent,算力需求正在变化",
       "source": "华尔街见闻",
       "published_at": "2026-07-19T08:45:08+00:00",
@@ -251,7 +208,17 @@
       ]
     },
     {
-      "id": 24,
+      "id": 19,
+      "title": "Down 45%, is SpaceX stock a ticking timebomb? - Yahoo Finance UK",
+      "source": "Google News - EN Markets",
+      "published_at": "2026-07-19T07:05:21+00:00",
+      "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPcUdnMlktRnBUdnkwWm52bkNHWTZDZ3RGNll5ZW9yQ0o2NFl4Y1dlREM4aUg5RnFxcWVPN1RTNC1hYjhsUHluVVcyN0RDc2dWZ3Q1RGVuZ0VmZjNycm9vSzVpR1drNDQzcnNkV1JfVjFOc0RwVlRXSDY0SjBLdmFnTFpGQQ?oc=5",
+      "tier": "C",
+      "market_scope": "美股",
+      "affected_tickers": []
+    },
+    {
+      "id": 20,
       "title": "SemiAnalysis:Kimi K3的KDA机制提高注意力效率,但将需要更多的GPU、HBM、DRAM和网络,而非更少!",
       "source": "华尔街见闻",
       "published_at": "2026-07-19T06:32:55+00:00",
@@ -263,288 +230,331 @@
       ]
     },
     {
-      "id": 25,
-      "title": "“老登”逆袭!苹果短暂超越英伟达,成为全球最高市值公司",
+      "id": 21,
+      "title": "10天借出10%股份!空头猛扑SpaceX",
       "source": "华尔街见闻",
-      "published_at": "2026-07-18T01:22:48+00:00",
-      "url": "https://wallstreetcn.com/articles/3777276",
+      "published_at": "2026-07-19T01:48:01+00:00",
+      "url": "https://wallstreetcn.com/articles/3777331",
       "tier": "C",
       "market_scope": "美股",
       "affected_tickers": []
     },
     {
-      "id": 26,
-      "title": "报道:苹果与美国司法部就反垄断案进行早期和解谈判",
-      "source": "华尔街见闻",
-      "published_at": "2026-07-17T19:40:38+00:00",
-      "url": "https://wallstreetcn.com/articles/3777258",
-      "tier": "C",
-      "market_scope": "美股",
-      "affected_tickers": [
-        "AAPL·苹果"
-      ]
-    },
-    {
-      "id": 27,
-      "title": "氪星晚报|阿里1688将推出AI时代B2B交易互联互通开放标准;英特尔与Google Cloud宣布深化战略合作;铁路部门试点提前60天预约购票服务",
-      "source": "36氪 - 快讯",
-      "published_at": "2026-07-17T13:01:42+00:00",
-      "url": "https://36kr.com/p/3896564485572489?f=rss",
-      "tier": "C",
-      "market_scope": "综合",
-      "affected_tickers": [
-        "9988.HK·阿里巴巴",
-        "INTC·英特尔",
-        "GOOGL·谷歌"
-      ]
-    },
-    {
-      "id": 28,
-      "title": "头部ETF规模座次大洗牌,产品百花齐放生态今非昔比",
-      "source": "36氪 - 快讯",
-      "published_at": "2026-07-19T23:44:31+00:00",
-      "url": "https://36kr.com/newsflashes/3903204082845568?f=rss",
-      "tier": "C",
-      "market_scope": "A股",
-      "affected_tickers": []
-    },
-    {
-      "id": 29,
-      "title": "近一月数十只基金逆势斩获超20%收益率,赚钱主线明显分化",
-      "source": "36氪 - 快讯",
-      "published_at": "2026-07-19T23:42:40+00:00",
-      "url": "https://36kr.com/newsflashes/3903185603004294?f=rss",
-      "tier": "C",
-      "market_scope": "A股",
-      "affected_tickers": []
-    },
-    {
-      "id": 30,
-      "title": "年内超80城发放补贴降低购房成本",
-      "source": "36氪 - 快讯",
-      "published_at": "2026-07-19T23:39:03+00:00",
-      "url": "https://36kr.com/newsflashes/3903185007642503?f=rss",
-      "tier": "C",
-      "market_scope": "宏观",
-      "affected_tickers": []
-    },
-    {
-      "id": 31,
-      "title": "公募基金看好长鑫科技上市,称若估值合理“必配”",
-      "source": "36氪 - 快讯",
-      "published_at": "2026-07-19T23:36:52+00:00",
-      "url": "https://36kr.com/newsflashes/3903183827502977?f=rss",
-      "tier": "C",
-      "market_scope": "A股",
-      "affected_tickers": []
-    },
-    {
-      "id": 32,
-      "title": "AI行情现分歧,基金经理调仓动作出现明显差异",
-      "source": "36氪 - 快讯",
-      "published_at": "2026-07-19T23:33:04+00:00",
-      "url": "https://36kr.com/newsflashes/3903182048954244?f=rss",
-      "tier": "C",
-      "market_scope": "综合",
-      "affected_tickers": []
-    },
-    {
-      "id": 33,
-      "title": "多家国产厂商展示超节点产品,算力竞逐各显神通",
-      "source": "36氪 - 快讯",
-      "published_at": "2026-07-19T23:28:15+00:00",
-      "url": "https://36kr.com/newsflashes/3903172568647558?f=rss",
-      "tier": "C",
-      "market_scope": "A股",
-      "affected_tickers": []
-    },
-    {
-      "id": 34,
-      "title": "光通信全线预告高增,订单能见度充足",
-      "source": "36氪 - 快讯",
-      "published_at": "2026-07-19T23:18:29+00:00",
-      "url": "https://36kr.com/newsflashes/3903169691322245?f=rss",
-      "tier": "C",
-      "market_scope": "A股",
-      "affected_tickers": [
-        "300502.SZ·新易盛",
-        "300394.SZ·天孚通信",
-        "002281.SZ·光迅科技",
-        "601869.SH·长飞光纤",
-        "600487.SH·亨通光电",
-        "600105.SH·永鼎股份",
-        "300620.SZ·光库科技",
-        "300902.SZ·剑桥科技",
-        "688205.SH·德科立",
-        "300183.SZ·东田微"
-      ]
-    },
-    {
-      "id": 35,
-      "title": "Homebuyers lose ground as housing affordability slams shut",
+      "id": 22,
+      "title": "Price Prediction: Tesla Poised for 12% Rally as Profit Margins Improve",
       "source": "Yahoo Finance - Top",
-      "published_at": "2026-07-19T23:17:00+00:00",
-      "url": "https://finance.yahoo.com/real-estate/articles/homebuyers-lose-ground-housing-affordability-231700764.html",
-      "tier": "C",
-      "market_scope": "综合",
-      "affected_tickers": []
-    },
-    {
-      "id": 36,
-      "title": "量价同步修复,京深楼市释放企稳信号",
-      "source": "36氪 - 快讯",
-      "published_at": "2026-07-19T23:11:06+00:00",
-      "url": "https://36kr.com/newsflashes/3903165360473985?f=rss",
-      "tier": "C",
-      "market_scope": "A股",
-      "affected_tickers": []
-    },
-    {
-      "id": 37,
-      "title": "月之暗面Kimi团队:算力紧缺,会员暂停开放",
-      "source": "36氪 - 快讯",
-      "published_at": "2026-07-19T23:08:02+00:00",
-      "url": "https://36kr.com/newsflashes/3903168228706180?f=rss",
-      "tier": "C",
-      "market_scope": "A股",
-      "affected_tickers": []
-    },
-    {
-      "id": 38,
-      "title": "AI优化设计并结合人类视觉感知,“隐身于眼前”的无人机研制成功",
-      "source": "36氪 - 快讯",
-      "published_at": "2026-07-19T23:03:06+00:00",
-      "url": "https://36kr.com/newsflashes/3903163375110018?f=rss",
-      "tier": "C",
-      "market_scope": "综合",
-      "affected_tickers": []
-    },
-    {
-      "id": 39,
-      "title": "华尔街见闻早餐FM-Radio | 2026年7月20日",
-      "source": "华尔街见闻",
-      "published_at": "2026-07-19T23:00:13+00:00",
-      "url": "https://wallstreetcn.com/articles/3777272",
+      "published_at": "2026-07-18T14:30:27+00:00",
+      "url": "https://finance.yahoo.com/markets/stocks/articles/price-prediction-tesla-poised-12-143027428.html",
       "tier": "C",
       "market_scope": "美股",
       "affected_tickers": [
-        "NVDA·英伟达"
+        "TSLA·Tesla"
       ]
     },
     {
-      "id": 40,
-      "title": "Trump Media (DJT) Climbs on Paid Early-Access to Market-Moving Posts",
-      "source": "Yahoo Finance - Top",
-      "published_at": "2026-07-19T22:46:04+00:00",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/trump-media-djt-climbs-paid-224604918.html",
-      "tier": "C",
-      "market_scope": "美股",
-      "affected_tickers": [
-        "DJT·Trump Media"
-      ]
-    },
-    {
-      "id": 41,
-      "title": "Even With Elon Musk's SpaceX Stock (SPCX) Down Below Its IPO Price, I'd Still Rather Buy This Dividend Stock in July",
-      "source": "Yahoo Finance - Top",
-      "published_at": "2026-07-19T22:58:00+00:00",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/even-elon-musks-spacex-stock-225800936.html",
-      "tier": "C",
-      "market_scope": "美股",
-      "affected_tickers": [
-        "SPCX·SpaceX"
-      ]
-    },
-    {
-      "id": 42,
-      "title": "Jensen Huang's $4 Trillion Artificial Intelligence (AI) Projection Could Propel Nvidia's Market Cap to $20 Trillion",
-      "source": "Yahoo Finance - Top",
-      "published_at": "2026-07-19T19:38:00+00:00",
-      "url": "https://finance.yahoo.com/markets/stocks/articles/jensen-huangs-4-trillion-artificial-193800547.html",
-      "tier": "C",
+      "id": 23,
+      "title": "Traders are increasingly betting against SpaceX just weeks after IPO",
+      "source": "FT - Markets",
+      "published_at": "2026-07-18T11:00:02+00:00",
+      "url": "https://www.ft.com/content/2b96703d-440b-46db-8d86-9fff9ecc59d5?syn-25a6b1a6=1",
+      "tier": "B",
       "market_scope": "美股",
       "affected_tickers": []
     },
     {
-      "id": 43,
+      "id": 24,
       "title": "9点1氪丨ofo停更5年突然发文,运营主体仍处存续状态;苹果市值重返全球第一;乐事回应“蓝色薯片”来源",
       "source": "36氪 - 快讯",
       "published_at": "2026-07-18T01:05:45+00:00",
       "url": "https://36kr.com/p/3900449325287305?f=rss",
       "tier": "C",
       "market_scope": "综合",
+      "affected_tickers": [
+        "AAPL·苹果"
+      ]
+    },
+    {
+      "id": 25,
+      "title": "海康威视:董事长提议实施2026年中期利润分配方案,拟10派5.5元",
+      "source": "36氪 - 快讯",
+      "published_at": "2026-07-20T01:33:11+00:00",
+      "url": "https://36kr.com/newsflashes/3903310908114819?f=rss",
+      "tier": "C",
+      "market_scope": "A股",
+      "affected_tickers": [
+        "002415.SZ·海康威视"
+      ]
+    },
+    {
+      "id": 26,
+      "title": "Summer of SK Hynix: A Nation’s High-Stakes AI Chip Gamble That’s Reshaping the Global Tech Landscape - 36Kr",
+      "source": "Google News - EN Markets",
+      "published_at": "2026-07-20T01:32:59+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE5ILWpEaTkzdWFsaXhzR2xnQ0RQV01hRnpaby1ST1lSNUxRek1COUJJeUhweHlIZjRJUHJCRUc4eEo4YzVTdDlDWUJqYkZWckZ6SWlZ?oc=5",
+      "tier": "C",
+      "market_scope": "宏观",
+      "affected_tickers": [
+        "000660.KS·SK海力士"
+      ]
+    },
+    {
+      "id": 27,
+      "title": "“博顿光电”完成超亿元人民币B+轮融资",
+      "source": "36氪 - 快讯",
+      "published_at": "2026-07-20T01:31:14+00:00",
+      "url": "https://36kr.com/newsflashes/3903309004031879?f=rss",
+      "tier": "C",
+      "market_scope": "综合",
+      "affected_tickers": []
+    },
+    {
+      "id": 28,
+      "title": "7月17日A股ETF富国(159078)份额增加500.00万份,最新份额1.97亿份,最新规模1.76亿元 - 新浪财经",
+      "source": "Google News - 中文市场聚合",
+      "published_at": "2026-07-20T01:27:04+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiigJBVV95cUxQRVlKZ0t1NU9DR0EtemF5aFIwSjQ0enFJRXpNTVFYRV9qYXpsV29LajFwU2Z5ZGlwS0pYaEVMVjk1dmJnd29YZkRqWnA0dS1VTGdWR3YwTXlUc1pFSHk0SFlnRVExQ0RiZVlaV21FclY0Q3o3SjdwNEhMY3RWb2FoODFKZl9JSmp2N3NmR3ZLQlZyUloxYUM0NUYtNE9rZG1QV1IzUVIzY0pNZ3h0dVJ3VkRwT1dkejRIV20zNHRwWTI3UXZoTWxqcTNjX0FHckhweEg1VHpWbEdDYkxSYjFGOXVsOTFLNTZ5N3NUMmNFNkh4SVlhRmNmMF8zbXJzNW42WnVQYkdoci1YZw?oc=5",
+      "tier": "B",
+      "market_scope": "A股",
+      "affected_tickers": [
+        "159078·富国"
+      ]
+    },
+    {
+      "id": 29,
+      "title": "A股三大指数集体高开,长盈通涨超13%",
+      "source": "36氪 - 快讯",
+      "published_at": "2026-07-20T01:26:57+00:00",
+      "url": "https://36kr.com/newsflashes/3903304788985732?f=rss",
+      "tier": "C",
+      "market_scope": "A股",
+      "affected_tickers": []
+    },
+    {
+      "id": 30,
+      "title": "A股开盘:三大指数集体高开 - 新浪财经",
+      "source": "Google News - 中文市场聚合",
+      "published_at": "2026-07-20T01:26:31+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE5sX1M4VDhtLW8xMGJXU2R6aWRtbk5tdnNIenY4bkFfNTZGQ3dpSUxWT0lPUlpxakl3dmdWUE9iVTlPWWdxXzcyQ2x3dw?oc=5",
+      "tier": "C",
+      "market_scope": "A股",
+      "affected_tickers": []
+    },
+    {
+      "id": 31,
+      "title": "7月20日港股开盘:恒指高开1.11% 百济神州领涨成分股 - 东方财富",
+      "source": "Google News - 中文市场聚合",
+      "published_at": "2026-07-20T01:26:20+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE8xaW1RVmlSXzEzUTBzVWpNNXJQaWtYTkdVbjZab01ZSHdNOUtIY3ZpcUNZVV9zY3Atdm9hQm8wQmdjUmtUYTJaLVFGY0hQU2pMNlhIcWRyRDhPM2plS25kWA?oc=5",
+      "tier": "C",
+      "market_scope": "港股",
+      "affected_tickers": [
+        "6160.HK·百济神州"
+      ]
+    },
+    {
+      "id": 32,
+      "title": "恒指开盘涨1.11%,恒生科技指数涨2.2%",
+      "source": "36氪 - 快讯",
+      "published_at": "2026-07-20T01:23:26+00:00",
+      "url": "https://36kr.com/newsflashes/3903301330749062?f=rss",
+      "tier": "C",
+      "market_scope": "港股",
+      "affected_tickers": [
+        "1347.HK·华虹半导体",
+        "9896.HK·名创优品",
+        "9988.HK·阿里巴巴",
+        "0257.HK·光大环境"
+      ]
+    },
+    {
+      "id": 33,
+      "title": "从烤披萨到拿快递,满场跑的机器人终于要进你家了|WAIC 2026全面探展",
+      "source": "36氪 - 快讯",
+      "published_at": "2026-07-20T01:20:44+00:00",
+      "url": "https://36kr.com/p/3902007640459145?f=rss",
+      "tier": "C",
+      "market_scope": "综合",
+      "affected_tickers": []
+    },
+    {
+      "id": 34,
+      "title": "6月贵州辖区A股上市公司最大涨幅96.09% - gzastv.cn",
+      "source": "Google News - 中文市场聚合",
+      "published_at": "2026-07-20T01:18:30+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1WQXJOR3A0ZXRQRzNWekszVlZ1TF9kcVhDUkRsMFNJUnhOVXNTb29KNmNrYi16ODJxQXFCWUV3UmdfX0Z1NDRCcHVNM3JBOTU1UV84Y21yaXdKaHM?oc=5",
+      "tier": "C",
+      "market_scope": "A股",
+      "affected_tickers": []
+    },
+    {
+      "id": 35,
+      "title": "7月20日人民币对美元中间价调贬14个基点",
+      "source": "36氪 - 快讯",
+      "published_at": "2026-07-20T01:17:47+00:00",
+      "url": "https://36kr.com/newsflashes/3903295769905030?f=rss",
+      "tier": "C",
+      "market_scope": "宏观",
+      "affected_tickers": []
+    },
+    {
+      "id": 36,
+      "title": "长安汽车计划扩建泰国工厂产能",
+      "source": "36氪 - 快讯",
+      "published_at": "2026-07-20T01:16:07+00:00",
+      "url": "https://36kr.com/newsflashes/3903294132881027?f=rss",
+      "tier": "C",
+      "market_scope": "A股",
+      "affected_tickers": [
+        "000625.SZ·长安汽车"
+      ]
+    },
+    {
+      "id": 37,
+      "title": "AI软件开发平台Emergent以15亿美元估值完成C轮融资",
+      "source": "36氪 - 快讯",
+      "published_at": "2026-07-20T01:10:59+00:00",
+      "url": "https://36kr.com/newsflashes/3903289090180741?f=rss",
+      "tier": "C",
+      "market_scope": "综合",
+      "affected_tickers": []
+    },
+    {
+      "id": 38,
+      "title": "《美股》散户及华尔街在SpaceX(SPCX.US)投资陷入亏损 但未有轻易放弃 - Moomoo",
+      "source": "Google News - 中文市场聚合",
+      "published_at": "2026-07-20T01:28:52+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE81cUVSWGFnVzFFWlljbVVVSzluaHlfQ0p1RGp6dGxfbElCakFQSGNGWVhua3Bxa0tNNjBRMk1hR21PMXl1Q1ZGMExZOWUxd3JkZTFRZ2FtR3EyUQ?oc=5",
+      "tier": "C",
+      "market_scope": "美股",
+      "affected_tickers": [
+        "SPCX.US·SpaceX"
+      ]
+    },
+    {
+      "id": 39,
+      "title": "SpaceX moves Starship launch attempt to Thursday",
+      "source": "Investing.com - Stock Market News",
+      "published_at": "2026-07-20T01:24:28+00:00",
+      "url": "https://www.investing.com/news/stock-market-news/spacex-moves-starship-launch-attempt-to-thursday-4799747",
+      "tier": "C",
+      "market_scope": "综合",
+      "affected_tickers": []
+    },
+    {
+      "id": 40,
+      "title": "对话腾讯首席科学家张正友:AI仍是“缸中之脑”,腾讯Tairos欲破具身落地难题",
+      "source": "华尔街见闻",
+      "published_at": "2026-07-19T23:56:19+00:00",
+      "url": "https://wallstreetcn.com/articles/3777373",
+      "tier": "C",
+      "market_scope": "港股",
+      "affected_tickers": [
+        "0700.HK·腾讯控股"
+      ]
+    },
+    {
+      "id": 41,
+      "title": "How to Invest in SpaceX Stock After Its Nasdaq-100 Debut - Yahoo Finance",
+      "source": "Google News - EN Markets",
+      "published_at": "2026-07-19T12:50:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxQVlp5Q0VfckxMd0dnczJ4ZkRCV2tGZmdrZzIxTEw5T09Ub0FESWYyZFBfSHBmMl81Rm11YnlkUlQ2UHhUcE5Xb2l6dDFlaGhpeklNSUhBUnJEamYyazJsaUwxVXlXREdpcmZGVlZXUXkwa3dOWUUtUWk0Q2x5UkM0cDBLTjYxb09nT1Y3VlBwd3o0emV6NGtFYUZzYw?oc=5",
+      "tier": "C",
+      "market_scope": "美股",
+      "affected_tickers": []
+    },
+    {
+      "id": 42,
+      "title": "CEO: SpaceX's record IPO was the space economy's opening act. Here's what comes next.",
+      "source": "Yahoo Finance - Top",
+      "published_at": "2026-07-18T14:06:18+00:00",
+      "url": "https://finance.yahoo.com/technology/article/ceo-spacexs-record-ipo-was-the-space-economys-opening-act-heres-what-comes-next-140618299.html",
+      "tier": "C",
+      "market_scope": "美股",
+      "affected_tickers": []
+    },
+    {
+      "id": 43,
+      "title": "港股周观点 | 基本面能否支撑港股再平衡交易进阶 - 新浪网",
+      "source": "Google News - 中文市场聚合",
+      "published_at": "2026-07-20T01:32:00+00:00",
+      "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE5wU3pBaHFiWFhEYkpTaDViUmpxSC04M0JaTFRNNnp6blhjWXZXTVI4R29Mb25OVE1mclBwT2lBUVZ2bjVvWDhZeXZnMGJaMDdZUlRYZGxqclZPRGY0cE1SV24tSlZDMEk4WDZXRVFFMDEwQQ?oc=5",
+      "tier": "C",
+      "market_scope": "港股",
       "affected_tickers": []
     },
     {
       "id": 44,
-      "title": "SpaceX and the myth of independent Wall St research",
-      "source": "FT - Markets",
-      "published_at": "2026-07-17T17:00:07+00:00",
-      "url": "https://www.ft.com/content/ce345155-d897-4f49-b7c8-13680e3b5434",
-      "tier": "B",
-      "market_scope": "美股",
+      "title": "半年涨幅几乎归零!A股这一周到底发生了啥? - 中华网财经",
+      "source": "Google News - 中文市场聚合",
+      "published_at": "2026-07-20T01:31:13+00:00",
+      "url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE1FRXZQUWJ4bFQwSzNYakotMThITXl3dHJmTXlKQnNSUktybDB5SjlJY1pXMUNDTG0zQVhDVlBGZmVydUFrMFo1eEVfajd2Zm9wcF9lVGJJaTljT1NaUHl1MHNQVUlUbDBBR2RFZGVhVEozY1U?oc=5",
+      "tier": "C",
+      "market_scope": "A股",
       "affected_tickers": []
     },
     {
       "id": 45,
-      "title": "Stocks making the biggest moves premarket: Netflix, SpaceX, Alphabet and more",
-      "source": "CNBC - Finance",
-      "published_at": "2026-07-17T11:47:57+00:00",
-      "url": "https://www.cnbc.com/2026/07/17/stocks-making-the-biggest-moves-premarket-nflx-spcx-googl-and-more.html",
-      "tier": "B",
-      "market_scope": "美股",
-      "affected_tickers": [
-        "NFLX·奈飞",
-        "GOOGL·谷歌"
-      ]
+      "title": "A股开盘:三大指数集体高开 - 东方财富",
+      "source": "Google News - 中文市场聚合",
+      "published_at": "2026-07-20T01:28:23+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE5CTFNNSHhYdUdOckxBOTc4MElNT2luQmxMdUV3WEhpTGpfSWJ4akprNzN5cUt6a1l0NVFmMFlrb1JRdjFVY00wSDA3alNhcTBDM2ZEOUxrUk91aURodE12Qg?oc=5",
+      "tier": "C",
+      "market_scope": "A股",
+      "affected_tickers": []
     },
     {
       "id": 46,
-      "title": "从“炼模型”到“拼落地”,一级市场重估AI投资逻辑",
-      "source": "36氪 - 快讯",
-      "published_at": "2026-07-19T23:36:11+00:00",
-      "url": "https://36kr.com/newsflashes/3903183134541440?f=rss",
+      "title": "科技重挫创新药巨震,A股还有靠谱避风港吗 - 中华网财经",
+      "source": "Google News - 中文市场聚合",
+      "published_at": "2026-07-20T01:27:49+00:00",
+      "url": "https://news.google.com/rss/articles/CBMic0FVX3lxTFBJdWJ3bXZPWmhWWTVleUpnMGU0U2pGY1lQTjd3ODAtZVNuSzJ6aEJMaUxLbm0wM28xdjg5VGdNRzRFZDVLeE5seGs2ekZqTzd5YnhKV19tanZBUy1XTm40M1Z2WkQ0UHRCTU5KWTNvNnVPYlk?oc=5",
       "tier": "C",
-      "market_scope": "综合",
+      "market_scope": "A股",
       "affected_tickers": []
     },
     {
       "id": 47,
-      "title": "恒星绘架座β星周围存在第三颗行星,为地面直接成像发现的最暗系外行星",
-      "source": "36氪 - 快讯",
-      "published_at": "2026-07-19T23:21:26+00:00",
-      "url": "https://36kr.com/newsflashes/3903170626078601?f=rss",
+      "title": "7月17日港股通金融ETF易方达(159091)份额减少5300.00万份,最新份额9937.42万份,最新规模1.00亿元 - 新浪财经",
+      "source": "Google News - 中文市场聚合",
+      "published_at": "2026-07-20T01:17:03+00:00",
+      "url": "https://news.google.com/rss/articles/CBMirAJBVV95cUxQNzVwWjVtUGRrMElBNEs0QjVQNzNTMW9HUllHVUNvdGlzZnBWckF5cXRiYWtuYnFMVWtMRFAwR0VuRWIzNEVZTGJjeVJlY0NHRmFKc0h3elhTbnBjVlJFQUxmOTlrVUNpQWx2alc5M2FmWDUySlJsVW9Dc05hVGVHbklfV2hiZi1YZG91aXZURl9GTnFrWms1cXljSDV4V3h2SkhBQTUyVklkaEw1amtRR1NUaFVZN3RXN3pxR3NCYWNPZnRyRG9WekZjU0l6V3lkTGhWY0ROODVRbnZkaGFoaXcxNnVPQkgyeFZhTGZ2VnB5WThZWlpYTHd1OHdaX1NpeHNsb29wM1ljczR1THoxZjNqLVpTSVA2MXpKajdwZzdHRlctckZQRmoyQWk?oc=5",
       "tier": "C",
-      "market_scope": "综合",
-      "affected_tickers": []
+      "market_scope": "A股",
+      "affected_tickers": [
+        "159091·港股通金融ETF易方达"
+      ]
     },
     {
       "id": 48,
-      "title": "科学家开发出更坚韧耐磨的银涂层",
-      "source": "36氪 - 快讯",
-      "published_at": "2026-07-19T23:02:23+00:00",
-      "url": "https://36kr.com/newsflashes/3903162669778568?f=rss",
+      "title": "7月17日港股通互联网ETF鹏华(159040)份额减少500.00万份,最新份额5948.11万份,最新规模6620.24万元 - 新浪财经",
+      "source": "Google News - 中文市场聚合",
+      "published_at": "2026-07-20T01:15:01+00:00",
+      "url": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxOMWZUbDRpNHFwM3ZGV1g4S01LMDZVVnhtTHdjWkdGcWVVM0hZNzU5SXNvZTNvaVhLVnJkWC0zY2ZqMmo5SUJrX3FrMWF6c3F3M19BMnlOVUJSenY1VTlrYWtjZmdWT3F2b09WN3BQMS1GZ25rU2tKN1J4S09zRDk4MjBVUlhOVGlQMnFfcDYyWXowOU80a3FqOGtpREV6TmRnb2RvUTJsTWM5ZHNJOEg5NzZUVUJsNm45UTFyM19wM3RsalRhdDRjaXpkaFVtRFE4UFIxVGg4NkVDVHdoY0tXdXVzX0lUMkl0bWFrNkFvSTlXTTdBajVBaTFqMVNMZw?oc=5",
       "tier": "C",
-      "market_scope": "综合",
-      "affected_tickers": []
+      "market_scope": "A股",
+      "affected_tickers": [
+        "159040.SZ·港股通互联网ETF鹏华"
+      ]
     },
     {
       "id": 49,
-      "title": "What It Takes to Retire in Hawaii at 62 on $1.5 Million Without Touching Your Principal",
-      "source": "Yahoo Finance - Top",
-      "published_at": "2026-07-19T22:55:43+00:00",
-      "url": "https://finance.yahoo.com/markets/articles/takes-retire-hawaii-62-1-225543221.html",
+      "title": "7月17日港股通信息技术ETF汇添富(526030)份额增加400.00万份,最新份额1.79亿份,最新规模1.48亿元 - 新浪财经",
+      "source": "Google News - 中文市场聚合",
+      "published_at": "2026-07-20T01:12:59+00:00",
+      "url": "https://news.google.com/rss/articles/CBMiiAJBVV95cUxNNmtDQlRUcU1yYzNZd1VpNEJ1UVdmWGN2cmU0emczV0kxZ21SZ3BuZ0dCbDhISm9fLUdZMm1Ubm0tZmxnbzFKYjczeERUdGNnanNiUVAyNUtwM2pIQ1AtUzlhX0lLOFBrMDdJQnZjRTQtcEs0Vk5oRkdZX2tUUlJSbThJMkEtR1RmNm56Q1BNdFFINFEyMHFJTGRiMWFNeWFoY0Vmck5CSWJtLVpaeDJxSFNiQTRWU1dxVC1qVy1udGZKM09JTHNTRF9JdkRxNy1PaWFDUnprYkZocEs5bHVyTmdGdVgxbFFobzVyWTZYZTQ0R2VseG5xZE92MDctTlk2elR5UUY5REk?oc=5",
       "tier": "C",
-      "market_scope": "综合",
-      "affected_tickers": []
+      "market_scope": "A股",
+      "affected_tickers": [
+        "526030.SH·港股通信息技术ETF汇添富"
+      ]
     },
     {
       "id": 50,
-      "title": "Spain wins the World Cup by beating Argentina 1-0 on Ferran Torres' goal in extra time",
-      "source": "CNBC - Top News",
-      "published_at": "2026-07-19T22:47:25+00:00",
-      "url": "https://www.cnbc.com/2026/07/19/spain-wins-the-world-cup-by-beating-argentina-1-0-on-ferran-torres-goal-in-extra-time.html",
-      "tier": "B",
+      "title": "中金财富期货:铝价短期内预计震荡调整运行",
+      "source": "36氪 - 快讯",
+      "published_at": "2026-07-20T01:09:19+00:00",
+      "url": "https://36kr.com/newsflashes/3903287447619208?f=rss",
+      "tier": "C",
       "market_scope": "综合",
       "affected_tickers": []
     }
