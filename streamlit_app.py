@@ -690,6 +690,49 @@ if _nav == "🧭 导航":
                     f"<b style='color:{_pc9t};font-size:12px'>·{'🎯' if _p >= 65 else ''}"
                     f"{'跌' if _bear else '涨'}概率{_p}%</b>")
 
+        # 【V88·计划做T 2026-07-20 用户定纲】做T可以：把握分≥90·最多3只·必标【计划做T】。
+        # 把握分与桌面同口径：基45+封单(≥5亿+25/≥2亿+15/≥1亿+8)+换手3~15%+10+主线共振+15
+        # +近30日接力命中≥60%再+10；硬校准上限=60+实盘命中率÷2(战绩差的日子凑不出90,如实空档)。
+        _t_cells9c = []
+        try:
+            _zt9c = json.loads(pub_text("limit_up_radar.json", _PUB_VERSION) or "{}")
+            _rr9c = ((json.loads(pub_text("success_rates.json", _PUB_VERSION) or "{}")
+                      .get("types") or {}).get("relay") or {}).get("rate")
+            _cap9c = 60 + (float(_rr9c) / 2 if _rr9c is not None else 0)
+            _mains9c = {str(m.get("industry")) for m in (_zt9c.get("mainlines") or [])[:3]}
+            _tt9c = []
+            for _r9c in (_zt9c.get("relay") or []):
+                _sc9c, _wy9c = 45.0, []
+                _seal9c = float(_r9c.get("seal_yi") or 0)
+                if _seal9c >= 5:
+                    _sc9c += 25
+                    _wy9c.append(f"封单{_seal9c:.1f}亿·极强")
+                elif _seal9c >= 2:
+                    _sc9c += 15
+                    _wy9c.append(f"封单{_seal9c:.1f}亿·较强")
+                elif _seal9c >= 1:
+                    _sc9c += 8
+                    _wy9c.append(f"封单{_seal9c:.1f}亿")
+                _to9c = float(_r9c.get("turnover") or 0)
+                if 3 <= _to9c <= 15:
+                    _sc9c += 10
+                    _wy9c.append(f"换手{_to9c:.0f}%适中")
+                if str(_r9c.get("industry") or "") in _mains9c:
+                    _sc9c += 15
+                    _wy9c.append(f"主线「{_r9c.get('industry')}」共振")
+                if _rr9c is not None and float(_rr9c) >= 60:
+                    _sc9c += 10
+                    _wy9c.append(f"近期接力命中{_rr9c}%")
+                _tt9c.append((min(_sc9c, _cap9c), _r9c, "、".join(_wy9c) or "仅入榜无加分项"))
+            for _sc9c, _r9c, _wy9c in sorted(_tt9c, key=lambda x: -x[0])[:3]:
+                if _sc9c >= 90:
+                    _t_cells9c.append(
+                        f"<b style='color:#b45309'>【计划做T】{_r9c.get('name')}</b>"
+                        f"<span style='color:#94a3b8;font-size:11px'>{_r9c.get('code')}</span>"
+                        f"<b style='color:#b45309'>·🎯把握{int(round(_sc9c))}分</b>"
+                        f"<span style='font-size:12px;color:#64748b'>·{_wy9c}·当日往返不留仓</span>")
+        except Exception:
+            pass
         st.markdown("**⭐ 关注中心 · ①今日及本周 ②下周 ③本月及下月**　"
                     "<span style='font-size:12px;color:#94a3b8'>三档双向(看涨/看跌+概率)·与桌面同口径</span>",
                     unsafe_allow_html=True)
@@ -700,9 +743,11 @@ if _nav == "🧭 导航":
             _bl9t = _tw_tiers9[_k9t]["bull"][:5]
             _br9t = _tw_tiers9[_k9t]["bear"][:5]
             _tw_html9.append(f"<div style='margin:3px 0 1px'><b>{_tt9t}</b></div>")
+            _bull_cells9t = (list(_t_cells9c) if _k9t == "t1" else []) \
+                + [_tw_item9(_h, _p, _s, False) for _h, _p, _s in _bl9t]
             _tw_html9.append(
                 "<div style='margin-left:8px'>🐉 <b style='color:#dc2626;font-size:12.5px'>看涨</b>："
-                + ("　".join(_tw_item9(_h, _p, _s, False) for _h, _p, _s in _bl9t) if _bl9t
+                + ("　".join(_bull_cells9t) if _bull_cells9t
                    else "<span style='color:#94a3b8'>本档暂无达标（宁缺毋滥）</span>") + "</div>")
             _tw_html9.append(
                 "<div style='margin-left:8px'>⚔️ <b style='color:#16a34a;font-size:12.5px'>看跌</b>："
@@ -715,8 +760,9 @@ if _nav == "🧭 导航":
         st.markdown("".join(_tw_html9), unsafe_allow_html=True)
         st.caption("🐉看涨=龙虎门口径(上攻)｜⚔️看跌=鬼门关口径(先躲) · 概率=引擎对应周期方向分"
                    "(规则情景估计,非回测真实胜率)，🎯=概率≥65%高把握 · 事由=触发条件/周期备注(无据标纯技术) · "
-                   "可买纪律:非做T/非接力·上行空间≥10%才推"
+                   "可买纪律:波段票上行空间≥10%才推"
                    + (f"(已剔除{_tw_skip9}只空间不足/不明的绿灯)" if _tw_skip9 else "")
+                   + " · 做T仅收把握分≥90·最多3只·必标【计划做T】·当日往返不留仓"
                    + " · 云端候选=公开黑马池；持仓/自选实时档看桌面版，持仓破位警示见下方双门(私径)")
     except Exception:
         pass

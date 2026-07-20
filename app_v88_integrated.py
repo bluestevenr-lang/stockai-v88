@@ -11998,6 +11998,70 @@ def _v88_upside_pct9(_d):
     return max(_cands) if _cands else None
 
 
+_V88_T_RULE9 = ("计划做T：竞价弱转强/开盘回封确认再接，当日冲高即了结不恋战，破昨收即止损，不转波段")
+
+
+def _v88_t_plan9(_repo, _max_n=3):
+    """【V88·计划做T 2026-07-20 用户定纲】做T可以做，但只推把握分≥90的、最多3只，必须明标"计划做T"。
+    把握分(0-100·可解释零AI)：基45 ＋封单(≥5亿+25/≥2亿+15/≥1亿+8) ＋换手甜区3~15%+10
+    ＋涨停主线板块共振+15 ＋近30日接力实盘命中≥60%再+10；
+    硬校准：上限=60+实盘命中率÷2——战绩差时系统性压分(当前命中22%→上限71，
+    意味着接力环境差的日子永远凑不出90分，如实空档宁缺毋滥，不硬凑3只)。
+    返回 (入选列表≤3只, 一句口径说明)。"""
+    import json as _jt
+    try:
+        _zt = _jt.loads((_repo / "data" / "limit_up_radar.json").read_text(encoding="utf-8"))
+    except Exception:
+        return [], "接力雷达数据缺失——今日无做T档"
+    _rate = None
+    try:
+        _rt = (_jt.loads((_repo / "data" / "success_rates.json").read_text(encoding="utf-8"))
+               .get("types") or {}).get("relay") or {}
+        _rate = _rt.get("rate")
+    except Exception:
+        pass
+    _cap = 60 + (float(_rate) / 2 if _rate is not None else 0)
+    _mains = {str(m.get("industry")) for m in (_zt.get("mainlines") or [])[:3]}
+    _out = []
+    for _r in (_zt.get("relay") or []):
+        _sc = 45.0
+        _why = []
+        try:
+            _seal = float(_r.get("seal_yi") or 0)
+        except (TypeError, ValueError):
+            _seal = 0.0
+        if _seal >= 5:
+            _sc += 25
+            _why.append(f"封单{_seal:.1f}亿·极强")
+        elif _seal >= 2:
+            _sc += 15
+            _why.append(f"封单{_seal:.1f}亿·较强")
+        elif _seal >= 1:
+            _sc += 8
+            _why.append(f"封单{_seal:.1f}亿")
+        try:
+            _to = float(_r.get("turnover") or 0)
+        except (TypeError, ValueError):
+            _to = 0.0
+        if 3 <= _to <= 15:
+            _sc += 10
+            _why.append(f"换手{_to:.0f}%适中")
+        _ind = str(_r.get("industry") or "")
+        if _ind and _ind in _mains:
+            _sc += 15
+            _why.append(f"主线「{_ind}」共振")
+        if _rate is not None and float(_rate) >= 60:
+            _sc += 10
+            _why.append(f"近期接力命中{_rate}%")
+        _sc = min(_sc, _cap)
+        _out.append({"name": _r.get("name"), "code": _r.get("code"),
+                     "score": int(round(_sc)), "why": "、".join(_why) or "仅入榜无加分项"})
+    _out = [x for x in sorted(_out, key=lambda x: -x["score"]) if x["score"] >= 90][:_max_n]
+    _note = (f"准入:把握分≥90·最多3只·近30日接力实盘命中{_rate}%(把握分上限{_cap:.0f})"
+             if _rate is not None else "准入:把握分≥90·最多3只·接力战绩样本积累中")
+    return _out, _note
+
+
 def _render_four_tier_recos9(_wa, _repo, _is_trading):
     """【V88·三档双向关注 2026-07-20 用户定纲】原"今日/明天/本周/下周"四档推荐改为三档关注：
     ①今日及本周 ②下周 ③本月及下月。每档双向对仗——🐉看涨(龙虎门口径·上攻)＋⚔️看跌(鬼门关口径·先躲)，
@@ -12107,11 +12171,22 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
                 f"<b style='color:{_pc};font-size:12.5px'>·{_star}{'跌' if _bear else '涨'}概率{_prob}%</b>"
                 + (f"<span style='font-size:12px;color:#b45309'>{_hn9}</span>" if _hn9 else ""))
 
+    # 【V88·计划做T并档 2026-07-20 用户定纲】做T可以：把握分≥90·最多3只·必须明标【计划做T】
+    _t_items9 = []
+    try:
+        _tps9f, _ = _v88_t_plan9(_repo)
+        _t_items9 = [
+            f"<b style='color:#b45309'>【计划做T】</b>{_stk_link(_t9['name'], _t9['code'])}"
+            f"<b style='color:#b45309'>·🎯把握{_t9['score']}分</b>"
+            f"<span style='font-size:12px;color:#64748b'>·{_t9['why']}·当日往返不留仓</span>"
+            for _t9 in _tps9f]
+    except Exception:
+        pass
     _t1_title = ("🟢 ① 今日关注 及 本周关注" if _is_trading
                  else f"⏸ ① 今日(休市·看{_ntd_label}) 及 本周关注")
     _t1_sub = (("今日=时机绿灯·盘中可执行；本周=双路径5日窗" if _is_trading
                 else f"休市——「今日」由下一交易日({_ntd_label})接棒；本周=双路径5日窗")
-               + "·非做T·空间≥10%才推")
+               + "·波段票空间≥10%才推·做T仅收把握≥90分最多3只")
     _meta9 = [
         ("t1", _t1_title, _t1_sub),
         ("t2", "🗓 ② 下周关注", "中线蓄势(4-8周分≥58)/下周财报催化；看跌=中线周期分转弱"),
@@ -12123,8 +12198,10 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
         _bears9 = _tiers9[_k]["bear"][:6]
         _html.append(f"<div style='margin:4px 0 2px'><b>{_title}</b>"
                      f"<span style='font-size:12px;color:#94a3b8'>（{_sub}）</span></div>")
+        _bull_cells9 = ([] if _k != "t1" else list(_t_items9)) \
+            + [_item9(_h, _p, _s, False) for _h, _p, _s in _bulls9]
         _html.append("<div style='margin-left:10px'>🐉 <b style='color:#dc2626;font-size:13px'>看涨</b>：")
-        _html.append("　".join(_item9(_h, _p, _s, False) for _h, _p, _s in _bulls9) if _bulls9
+        _html.append("　".join(_bull_cells9) if _bull_cells9
                      else "<span style='color:#94a3b8'>本档暂无达标（宁缺毋滥）</span>")
         _html.append("</div>")
         _html.append("<div style='margin-left:10px'>⚔️ <b style='color:#16a34a;font-size:13px'>看跌</b>：")
@@ -12138,7 +12215,7 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
                "(无据如实标纯技术) · 候选=一键全选池∪引擎Top∪黑马漏斗∪自选/持仓 · 💼持仓👁自选🐴黑马"
                + (f" · 已按纪律剔除{_skip_small9}只上行空间<10%/空间不明的绿灯(小空间不值得动)"
                   if _skip_small9 else "")
-               + " · 涨停接力类(做T性质)已整体撤出推荐")
+               + " · 做T仅收把握分≥90·最多3只·必标【计划做T】·当日往返不留仓,其余接力类不推")
     # 【V88·统一战绩总账 2026-07-19】推荐旁必挂自己的实盘成功率(自我监督)
     try:
         _eng9s = ((_v88_success9().get("types") or {}).get("engine")) or {}
@@ -12862,12 +12939,29 @@ def _render_today_verdict(_snap, _repo):
             f"{_md9b}(时机绿灯)；基本面:{_fund9b}</span></div>")
     _html.append("<div style='margin:4px 0 2px;border-top:1px dashed #e2e8f0;padding-top:4px'>"
                  "<b style='font-size:13px;color:#dc2626'>🐉 现在可买·当天/本周</b>"
-                 "<span style='font-size:12px;color:#94a3b8'>（硬门槛:非做T/非接力·上行空间≥10%·波段持有为主）</span>："
+                 "<span style='font-size:12px;color:#94a3b8'>（硬门槛:波段票上行空间≥10%·波段持有为主）</span>："
                  + ("".join(_buy_rows9[:5]) if _buy_rows9
                     else "<span style='font-size:13px;color:#475569'>今天没有过硬门槛的买点——空仓等待也是决策，别为了买而买</span>")
                  + (f"<div style='font-size:12px;color:#94a3b8'>另有{_skip_buy9}只时机绿灯因空间&lt;10%或空间不明被纪律剔除"
                     f"（小空间不值得动，完整名单在下方双门模块）</div>" if _skip_buy9 else "")
                  + "</div>")
+    # ── ③b 计划做T（2026-07-20 用户定纲：做T可以，但把握分≥90才推、最多3只、必须明标"计划做T"） ──
+    try:
+        _tps9, _tnote9 = _v88_t_plan9(_repo)
+        _html.append("<div style='margin:2px 0'>"
+                     "<b style='font-size:13px;color:#b45309'>🔁 计划做T·当日往返</b>"
+                     f"<span style='font-size:12px;color:#94a3b8'>（{_tnote9}）</span>："
+                     + ("　".join(
+                         f"<b style='color:#b45309'>【计划做T】</b>{_stk_link(t['name'], t['code'])}"
+                         f"<b style='color:#b45309'>把握{t['score']}分</b>"
+                         f"<span style='font-size:12px;color:#64748b'>·{t['why']}</span>"
+                         for t in _tps9) if _tps9
+                        else "<span style='font-size:13px;color:#475569'>今日无把握分≥90的做T机会——"
+                             "做T宁缺毋滥,把握不足不硬凑</span>")
+                     + (f"<div style='font-size:12px;color:#94a3b8'>纪律：{_V88_T_RULE9}</div>" if _tps9 else "")
+                     + "</div>")
+    except Exception:
+        pass
     _html.append(f"<div style='font-size:12px;color:#94a3b8;margin-top:2px'>🚪 展开看细节：双门决断模块"
                  f"（⚔️先躲{len(_cut)}只｜🐉绿灯{len(_go)}只·含卡片证据链）、三档关注、持仓/自选决策台</div>")
     _html.append(f"<div style='font-size:12px;color:#475569;margin-top:2px'>📏 <b>今日纪律</b>：{_rule}</div>")
