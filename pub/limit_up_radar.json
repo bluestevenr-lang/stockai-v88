@@ -1,96 +1,154 @@
 {
- "generated_at": "2026-07-21 07:53",
+ "generated_at": "2026-07-21 15:39",
  "date": "20260721",
- "total": 53,
- "first_boards": 46,
+ "total": 121,
+ "first_boards": 116,
  "mainlines": [
   {
-   "industry": "电力",
-   "count": 17,
-   "max_boards": 3,
-   "leaders": [
-    "立新能源(3板)",
-    "乐山电力(2板)",
-    "华银电力(2板)",
-    "桂冠电力(2板)"
-   ]
-  },
-  {
-   "industry": "煤炭开采",
-   "count": 6,
+   "industry": "半导体",
+   "count": 28,
    "max_boards": 1,
    "leaders": [
-    "大有能源(1板)",
-    "郑州煤电(1板)",
-    "中煤能源(1板)",
-    "兖矿能源(1板)"
+    "先导基电(1板)",
+    "雅克科技(1板)",
+    "北方华创(1板)",
+    "托伦斯(1板)"
    ]
   },
   {
-   "industry": "化学原料",
-   "count": 3,
+   "industry": "元件",
+   "count": 8,
+   "max_boards": 1,
+   "leaders": [
+    "博敏电子(1板)",
+    "顺络电子(1板)",
+    "广合科技(1板)",
+    "江海股份(1板)"
+   ]
+  },
+  {
+   "industry": "光学光电",
+   "count": 7,
    "max_boards": 2,
    "leaders": [
-    "金牛化工(2板)",
-    "江苏索普(1板)",
-    "善水科技(1板)"
+    "联创电子(2板)",
+    "惠科股份(1板)",
+    "沃格光电(1板)",
+    "水晶光电(1板)"
    ]
   },
   {
-   "industry": "IT服务Ⅱ",
-   "count": 3,
+   "industry": "汽车零部",
+   "count": 7,
    "max_boards": 1,
    "leaders": [
-    "美利云(1板)",
-    "浪潮软件(1板)",
-    "浙大网新(1板)"
+    "万通智控(1板)",
+    "科华控股(1板)",
+    "鑫宏业(1板)",
+    "长源东谷(1板)"
    ]
   },
   {
    "industry": "专用设备",
-   "count": 2,
+   "count": 4,
    "max_boards": 1,
    "leaders": [
-    "山东墨龙(1板)",
-    "运机集团(1板)"
+    "一拖股份(1板)",
+    "力聚热能(1板)",
+    "正帆科技(1板)",
+    "深科达(1板)"
    ]
   }
  ],
  "ladder": [
   {
-   "boards": 3,
+   "boards": 4,
    "names": [
     "立新能源"
    ]
   },
   {
+   "boards": 3,
+   "names": [
+    "华银电力"
+   ]
+  },
+  {
    "boards": 2,
    "names": [
-    "乐山电力",
-    "华银电力",
-    "金牛化工",
-    "桂冠电力",
-    "湖南发展",
-    "深南电A"
+    "美利云",
+    "中嘉博创",
+    "联创电子"
    ]
   }
  ],
  "relay": [
   {
-   "name": "美利云",
-   "code": "000815",
-   "industry": "IT服务Ⅱ",
-   "seal_yi": 1.79,
-   "turnover": 2.3
+   "name": "兆易创新",
+   "code": "603986",
+   "industry": "半导体",
+   "seal_yi": 10.49,
+   "turnover": 11.1
   },
   {
-   "name": "华电能源",
-   "code": "600726",
-   "industry": "电力",
-   "seal_yi": 1.56,
-   "turnover": 1.7
+   "name": "华虹宏力",
+   "code": "688347",
+   "industry": "半导体",
+   "seal_yi": 4.49,
+   "turnover": 8.7
+  },
+  {
+   "name": "生益科技",
+   "code": "600183",
+   "industry": "元件",
+   "seal_yi": 2.65,
+   "turnover": 3.8
+  },
+  {
+   "name": "托伦斯",
+   "code": "301583",
+   "industry": "半导体",
+   "seal_yi": 2.47,
+   "turnover": 39.6
+  },
+  {
+   "name": "利通电子",
+   "code": "603629",
+   "industry": "消费电子",
+   "seal_yi": 2.28,
+   "turnover": 10.2
+  },
+  {
+   "name": "爱丽家居",
+   "code": "603221",
+   "industry": "家居用品",
+   "seal_yi": 2.09,
+   "turnover": 0.1
+  },
+  {
+   "name": "赤峰黄金",
+   "code": "600988",
+   "industry": "贵金属",
+   "seal_yi": 1.99,
+   "turnover": 4.9
+  },
+  {
+   "name": "雅克科技",
+   "code": "002409",
+   "industry": "半导体",
+   "seal_yi": 1.86,
+   "turnover": 14.3
   }
  ],
- "watch_hits": [],
- "ts": 1784591617.9226582
+ "watch_hits": [
+  {
+   "name": "中微公司",
+   "code": "688012.SS",
+   "source": "自选",
+   "industry": "半导体",
+   "count": 28,
+   "max_boards": 1
+  }
+ ],
+ "ts": 1784619611.2340102
 }
