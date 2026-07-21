@@ -1,6 +1,6 @@
 {
- "ts": 1784619706.743689,
- "generated_at": "2026-07-21 15:41（北京时间）",
+ "ts": 1784678122.8796895,
+ "generated_at": "2026-07-22 07:55（北京时间）",
  "pool_n": 20,
  "events_n": 2,
  "events": {
@@ -9,8 +9,8 @@
    "code": "300631.SZ",
    "items": [
     {
-     "date": "2026-07-21",
-     "title": "久吾高科:向不特定对象发行可转换公司债券网上发行中签率及优先配售结果公告",
+     "date": "2026-07-22",
+     "title": "久吾高科:向不特定对象发行可转换公司债券中签号码公告",
      "dir": "event",
      "note": "可转债：抢权效应vs摊薄",
      "icon": "⚡"
@@ -33,26 +33,37 @@
  },
  "cb_calendar": [
   {
-   "bond": "N圣泉转",
-   "stock": "圣泉集团",
-   "stock_code": "605589",
-   "apply_date": "2026-06-25",
-   "list_date": "2026-07-21",
-   "rating": "AA+sti",
-   "scale": 25,
+   "bond": "炬申转债",
+   "stock": "炬申股份",
+   "stock_code": "001202",
+   "apply_date": "2026-07-24",
+   "list_date": "",
+   "rating": "AA-",
+   "scale": 3.8,
    "note": "评级稳·打新可参与",
    "in_pool": false
   },
   {
-   "bond": "久吾转02",
-   "stock": "久吾高科",
-   "stock_code": "300631",
-   "apply_date": "2026-07-20",
+   "bond": "申能转债",
+   "stock": "申能股份",
+   "stock_code": "600642",
+   "apply_date": "2026-07-24",
    "list_date": "",
-   "rating": "A+",
-   "scale": 3,
-   "note": "评级偏低·上市溢价波动大",
-   "in_pool": true
+   "rating": "AAA",
+   "scale": 20,
+   "note": "评级稳·打新可参与",
+   "in_pool": false
+  },
+  {
+   "bond": "肇民转债",
+   "stock": "肇民科技",
+   "stock_code": "301000",
+   "apply_date": "2026-07-09",
+   "list_date": "2026-07-24",
+   "rating": "AA-",
+   "scale": 5.9,
+   "note": "评级稳·打新可参与",
+   "in_pool": false
   }
  ],
  "cb_pipeline": [
@@ -62,27 +73,13 @@
    "stage": "同意注册",
    "stage_date": "2026-07-16",
    "scale": "10.000",
-   "pma_rt": "101.20",
+   "pma_rt": "100.90",
    "pb": "3.031",
    "price": "6.76",
    "in_pool": true,
    "score": 84,
    "tag": "🔴重点",
    "why": "转股价值101足·10亿中盘·PB3.0可下修"
-  },
-  {
-   "stock": "炬申股份",
-   "stock_code": "001202",
-   "stage": "同意注册",
-   "stage_date": "2026-06-27",
-   "scale": "3.800",
-   "pma_rt": "94.51",
-   "pb": "2.542",
-   "price": "13.09",
-   "in_pool": false,
-   "score": 67,
-   "tag": "🟡关注",
-   "why": "转股价值95弱·3.8亿小盘稀缺·PB2.5可下修"
   },
   {
    "stock": "三鑫医疗",
@@ -104,7 +101,7 @@
    "stage": "同意注册",
    "stage_date": "2026-06-26",
    "scale": "15.330",
-   "pma_rt": "106.21",
+   "pma_rt": "105.67",
    "pb": "6.769",
    "price": "60.20",
    "in_pool": false,
@@ -113,32 +110,18 @@
    "why": "转股价值106足·15.33亿大盘·PB6.8可下修"
   },
   {
-   "stock": "申能股份",
-   "stock_code": "600642",
-   "stage": "同意注册",
-   "stage_date": "2026-03-18",
-   "scale": "20.000",
-   "pma_rt": "103.69",
-   "pb": "1.003",
-   "price": "8.71",
-   "in_pool": false,
-   "score": 51,
-   "tag": "⚪一般",
-   "why": "转股价值104足·20亿大盘·PB1.0可下修"
-  },
-  {
    "stock": "玉禾田",
    "stock_code": "300815",
    "stage": "同意注册",
    "stage_date": "2026-04-22",
    "scale": "15.000",
-   "pma_rt": "90.02",
+   "pma_rt": "91.73",
    "pb": "1.307",
    "price": "15.42",
    "in_pool": false,
    "score": 49,
    "tag": "⚪一般",
-   "why": "转股价值90弱·15亿中盘·PB1.3可下修"
+   "why": "转股价值92弱·15亿中盘·PB1.3可下修"
   },
   {
    "stock": "中仑新材",
@@ -146,13 +129,13 @@
    "stage": "同意注册",
    "stage_date": "2026-07-16",
    "scale": "10.680",
-   "pma_rt": "78.47",
+   "pma_rt": "80.57",
    "pb": "3.002",
    "price": "18.33",
    "in_pool": false,
    "score": 47,
    "tag": "⚪一般",
-   "why": "转股价值78弱·10.68亿中盘·PB3.0可下修"
+   "why": "转股价值81弱·10.68亿中盘·PB3.0可下修"
   },
   {
    "stock": "电工合金",
@@ -160,17 +143,45 @@
    "stage": "同意注册",
    "stage_date": "2026-07-03",
    "scale": "5.450",
-   "pma_rt": "83.69",
+   "pma_rt": "86.06",
    "pb": "4.216",
    "price": "12.78",
    "in_pool": false,
    "score": 47,
    "tag": "⚪一般",
-   "why": "转股价值84弱·5.45亿中盘·PB4.2可下修"
+   "why": "转股价值86弱·5.45亿中盘·PB4.2可下修"
+  },
+  {
+   "stock": "奥普特",
+   "stock_code": "688686",
+   "stage": "同意注册",
+   "stage_date": "2026-06-30",
+   "scale": "12.700",
+   "pma_rt": "78.22",
+   "pb": "4.699",
+   "price": "120.34",
+   "in_pool": false,
+   "score": 47,
+   "tag": "⚪一般",
+   "why": "转股价值78弱·12.7亿中盘·PB4.7可下修"
+  },
+  {
+   "stock": "振华股份",
+   "stock_code": "603067",
+   "stage": "同意注册",
+   "stage_date": "2026-06-30",
+   "scale": "8.780",
+   "pma_rt": "77.07",
+   "pb": "6.360",
+   "price": "32.44",
+   "in_pool": false,
+   "score": 47,
+   "tag": "⚪一般",
+   "why": "转股价值77弱·8.78亿中盘·PB6.4可下修"
   }
  ],
  "cb_pipe_counts": {
-  "reg": 13,
+  "reg": 11,
   "passed": 13,
   "early": 66
  },
