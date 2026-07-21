@@ -13010,20 +13010,37 @@ def _render_today_verdict(_snap, _repo):
         _fund9b = (_v88_fund_edge_short(_h9b.get("name") or "", max_len=22)
                    or "无研报/新闻定性——纯技术驱动(如实说明)")
         _stg9b = str(_h9b.get("stage") or (_h9b.get("facts") or {}).get("stage") or "").strip()
+        # 【V88·逐只实盘成功率角标 2026-07-20】每只推荐末尾摊开"同类到期命中率"——
+        # 来源标签决定挂哪类战绩:黑马🐴→darkhorse,其余→entry_green(入场绿灯)。
+        _rate_key9b = "darkhorse" if "黑马" in str(_h9b.get("_src", "")) else "entry_green"
+        _rt9b = (_v88_success9().get("types") or {}).get(_rate_key9b) or {}
+        if _rt9b.get("rate") is not None:
+            _badge9b = (f"<b style='color:{'#16a34a' if _rt9b['rate'] >= 55 else ('#dc2626' if _rt9b['rate'] < 45 else '#b45309')}'>"
+                        f"📊同类实盘{_rt9b['rate']}%(n{_rt9b.get('n', 0)})</b>")
+        else:
+            _badge9b = f"<span style='color:#94a3b8'>📊同类战绩积累中(n{_rt9b.get('n', 0)})</span>"
         _buy_rows9.append(
             f"<div style='font-size:13px;line-height:1.5;margin:1px 0'>"
             f"{_h9b.get('_src', '')}{_stk_link(_h9b.get('name'), _h9b.get('code'))} "
             f"<b style='color:#dc2626'>{_md9b}·涨概率{int(_h9b.get('p_up') or 0)}%·盈亏比{float(_h9b.get('rr') or 0):.1f}"
-            f"·空间约+{_ups9b:.0f}%</b>"
+            f"·空间约+{_ups9b:.0f}%</b> "
+            f"<span style='font-size:12px'>{_badge9b}</span>"
             f"<br><span style='font-size:12px;color:#475569'>└ 技术面:{(_stg9b + '、') if _stg9b else ''}"
             f"{_md9b}(时机绿灯)；基本面:{_fund9b}</span></div>")
     if _brk9:
         _buy_rows9 = []
     _gate_note9 = "、".join(f"{_k}×{_v}" for _k, _v in _gate_skips9.items())
+    # 【V88·推荐必带实盘成功率 2026-07-20 用户定纲"推荐个股一定要加上成功率"】
+    # 标题旁挂这类推荐的到期核算真实命中率(非情景概率)——农业银行/埃克森"感觉一般"就是
+    # 情景概率还行但历史命中一般,把真实战绩摊开你才知道该信几分。样本<5如实说积累中。
+    _buy_rate9 = _v88_rate_line9("entry_green", "同类买点")
     _html.append("<div style='margin:4px 0 2px;border-top:1px dashed #e2e8f0;padding-top:4px'>"
                  "<b style='font-size:13px;color:#dc2626'>🐉 现在可买·当天/本周</b>"
                  "<span style='font-size:12px;color:#94a3b8'>（严选五闸:概率≥65·盈亏比≥1.5·无周期冲突"
-                 "·大盘顺风·非双榜拥挤＋空间≥10%＋战绩熔断——宁可少推不可错推）</span>："
+                 "·大盘顺风·非双榜拥挤＋空间≥10%＋战绩熔断——宁可少推不可错推）</span>"
+                 + (f"<div style='font-size:12px;color:#0369a1;margin:2px 0'>{_buy_rate9}</div>"
+                    if _buy_rate9 else "")
+                 + "："
                  + ("".join(_buy_rows9[:5]) if _buy_rows9
                     else ("<span style='font-size:13px;color:#475569'>"
                           + (f"⛔ {_brk9}" if _brk9
@@ -13179,20 +13196,21 @@ def _render_today_verdict(_snap, _repo):
                         or "📊 入场绿灯实盘成功率：样本积累中")
                        + _gate_tighten9("entry_green") + _esb_txt9)
             if _go:
-                # 文字名单·按市场分列（全量不截断,2026-07-18铁律）
+                # 【V88·名单清爽化 2026-07-20 用户点单"一定要这么乱的排列么"】名单只留名字+涨概率,
+                # 触线MA55/52周低位等技术细节+热议全部移到下方「卡片细看」——名单一眼扫完不糊成一片。
                 _go_mk9 = {}
                 for _h9c in _go:
+                    _pu9c = int(_h9c.get("p_up") or 0)
+                    _pc9c = "#dc2626" if _pu9c >= 60 else ("#16a34a" if _pu9c <= 45 else "#64748b")
                     _go_mk9.setdefault(_gate_mkey9(_h9c), []).append(
-                        f"{_h9c.get('_src', '')}{_stk_link(_h9c.get('name'), _h9c.get('code'))}"
-                        f"<span style='font-size:12px;color:#64748b'>"
-                        f"{('·' + _h9c['touch']) if _h9c.get('touch') else ''}</span>"
-                        + f"<span style='font-size:12px;color:#b45309'>{_v88_hot_note9(_h9c.get('code'))}</span>")
+                        f"{_stk_link(_h9c.get('name'), _h9c.get('code'))}"
+                        + (f"<span style='font-size:12px;color:{_pc9c}'>{_pu9c}%</span>" if _pu9c else ""))
                 _go_rows9 = "".join(
                     f"<div style='font-size:13px;margin-bottom:2px'><b>{_mk9s}</b>："
-                    + "、".join(_go_mk9[_mk9s]) + "</div>"
+                    + " ".join(_go_mk9[_mk9s]) + "</div>"
                     for _mk9s in _MKS9 if _go_mk9.get(_mk9s))
                 st.markdown(_go_rows9
-                            + "<div style='font-size:12px;color:#94a3b8'>仓位按决断卡纲领，别越线重仓</div>",
+                            + "<div style='font-size:12px;color:#94a3b8'>数字=1-2周涨概率·触线/热议等细节见下方卡片细看；仓位按纲领别越线</div>",
                             unsafe_allow_html=True)
                 _go_sorted9 = sorted(_go, key=lambda h: -(int(h.get("p_up") or 0)
                                                           + (8 if float(h.get("rr") or 0) >= 1.5 else 0)))
