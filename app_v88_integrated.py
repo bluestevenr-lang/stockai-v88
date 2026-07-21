@@ -11998,6 +11998,77 @@ def _v88_upside_pct9(_d):
     return max(_cands) if _cands else None
 
 
+_V88_MKT_SCORES_CACHE9 = {"ts": 0.0, "scores": {}}
+
+
+def _v88_market_scores9(_repo):
+    """各大盘2周方向分（顺风闸用），10分钟缓存。"""
+    import time as _tm
+    if _tm.time() - _V88_MKT_SCORES_CACHE9["ts"] < 600 and _V88_MKT_SCORES_CACHE9["scores"]:
+        return _V88_MKT_SCORES_CACHE9["scores"]
+    _out = {}
+    try:
+        _s = json.loads((_repo / "data" / "market_snapshot.json").read_text(encoding="utf-8"))
+        for _mk, _blk in (_s.get("markets") or {}).items():
+            for _lb, _pv in ((_blk.get("l3") or {}).get("probs") or []):
+                if _lb == "2周":
+                    _out[_mk] = int(_pv)
+                    break
+    except Exception:
+        pass
+    _V88_MKT_SCORES_CACHE9.update({"ts": _tm.time(), "scores": _out})
+    return _out
+
+
+def _v88_buy_gate9(_d, _repo):
+    """【V88·推送严选五闸 2026-07-20 用户定纲"推送成功率一定要高"】买入推送只留多信号共振：
+    ①概率闸 2周上涨概率≥65 ②赔率闸 盈亏比≥1.5 ③周期冲突否决
+    ④顺风闸 所属大盘2周分≥45（逆势买入=历史主要亏损源，大盘弱势整市场停推买入）
+    ⑤拥挤闸 东财+雪球双榜热股=散户扎堆反指标，硬否决。
+    宁可少推不可错推——严选提高的是"推给你的"命中率，完整候选仍在双门/黑马模块可看。
+    返回 (通过?, 未过原因)。战绩熔断（类型命中<40%整类停推）由调用方执行。"""
+    _pu = int(_d.get("p_up") or 0)
+    if _pu < 65:
+        return False, ("概率数据缺失" if not _pu else f"概率{_pu}%<65")
+    try:
+        _rr = float(_d.get("rr") or 0)
+    except (TypeError, ValueError):
+        _rr = 0.0
+    if _rr < 1.5:
+        return False, ("赔率数据缺失" if not _rr else f"盈亏比{_rr:.1f}<1.5")
+    if _d.get("cycle_conflict"):
+        return False, "周期冲突"
+    _mk = str(_d.get("market") or "")
+    if not any(_k in _mk for _k in ("美股", "港股", "A股")):
+        try:
+            _mk = market_of_code(str(_d.get("code") or "")) or ""
+        except Exception:
+            _mk = ""
+    for _k, _v in _v88_market_scores9(_repo).items():
+        if _k in _mk and _v is not None and _v < 45:
+            return False, f"{_k}大盘2周分{_v}·逆风停推"
+    try:
+        _cn = _canonical_code(str(_d.get("code") or ""))
+        _hot = (_v88_intel9().get("hot_map") or {}).get(_cn)
+        if _hot and _hot.get("xq"):
+            return False, "双榜拥挤·反指标"
+    except Exception:
+        pass
+    return True, ""
+
+
+def _v88_gate_breaker9(_type_key="entry_green"):
+    """战绩熔断：该信号类型近30日实盘命中<40% → 整类停推（返回熔断说明，None=不熔断）。"""
+    try:
+        _t = (_v88_success9().get("types") or {}).get(_type_key) or {}
+        if _t.get("rate") is not None and int(_t["rate"]) < 40:
+            return (f"该类型近30日实盘命中仅{_t['rate']}%（n={_t.get('n', 0)}）<40%——"
+                    "战绩熔断，整类停推直至命中回升（说话要算数：打不准就先闭嘴）")
+    except Exception:
+        pass
+    return None
+
+
 _V88_T_RULE9 = ("计划做T：竞价弱转强/开盘回封确认再接，当日冲高即了结不恋战，破昨收即止损，不转波段")
 
 
@@ -12123,9 +12194,12 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
         _pdn = int(_h.get("p_down") or 0)
         _s4, _s8 = _hzsc9(_h, "4周"), _hzsc9(_h, "8周")
         # ── 🐉 看涨（龙虎门口径） ──
+        # 【V88·推送严选五闸 2026-07-20】今日/本周档=可执行买入推送→过 _v88_buy_gate9
+        # （概率≥65+盈亏比≥1.5+无周期冲突+大盘顺风+非拥挤），宁可少推不可错推
         if _mode in ("现价可进", "回踩到位", "突破确认", "双路径待触发"):
             _ups9 = _v88_upside_pct9(_h)
-            if _ups9 is None or _ups9 < 10:
+            _ok9g, _ = _v88_buy_gate9(_h, _repo)
+            if _ups9 is None or _ups9 < 10 or not _ok9g:
                 _skip_small9 += 1
             elif _mode == "双路径待触发":
                 _tiers9["t1"]["bull"].append((_h, _pup or 52, f"本周·双路径待触发·空间约+{_ups9:.0f}%"))
@@ -12213,8 +12287,8 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
     st.caption("🐉看涨=龙虎门口径(上攻·红)｜⚔️看跌=鬼门关口径(先躲·绿) · 概率=引擎对应周期方向分"
                "(规则情景估计,非回测真实胜率)，🎯=概率≥65%高把握 · 事由优先级:消息归因>研报定性>技术阶段"
                "(无据如实标纯技术) · 候选=一键全选池∪引擎Top∪黑马漏斗∪自选/持仓 · 💼持仓👁自选🐴黑马"
-               + (f" · 已按纪律剔除{_skip_small9}只上行空间<10%/空间不明的绿灯(小空间不值得动)"
-                  if _skip_small9 else "")
+               + (f" · 严选五闸(概率≥65/盈亏比≥1.5/无周期冲突/大盘顺风/非拥挤)+空间≥10%已拦{_skip_small9}只"
+                  "——宁可少推不可错推,完整候选在双门/黑马模块" if _skip_small9 else "")
                + " · 做T仅收把握分≥90·最多3只·必标【计划做T】·当日往返不留仓,其余接力类不推")
     # 【V88·统一战绩总账 2026-07-19】推荐旁必挂自己的实盘成功率(自我监督)
     try:
@@ -12919,12 +12993,17 @@ def _render_today_verdict(_snap, _repo):
                     + "、".join(_watch_warn9[:6]) + "</div>" if _watch_warn9 else "")
                  + "</div>")
 
-    # ── ③ 现在可买（硬门槛：非做T + 上行空间≥10%；每只带why） ──
-    _buy_rows9, _skip_buy9 = [], 0
+    # ── ③ 现在可买（推送严选五闸+战绩熔断 2026-07-20 用户定纲"推送成功率一定要高"） ──
+    _buy_rows9, _skip_buy9, _gate_skips9 = [], 0, {}
+    _brk9 = _v88_gate_breaker9("entry_green")
     for _h9b in sorted(_go, key=lambda h: -(int(h.get("p_up") or 0))):
         _ups9b = _v88_upside_pct9(_h9b)
         if _ups9b is None or _ups9b < 10:
             _skip_buy9 += 1
+            continue
+        _ok9b, _no9b = _v88_buy_gate9(_h9b, _repo)
+        if not _ok9b:
+            _gate_skips9[_no9b] = _gate_skips9.get(_no9b, 0) + 1
             continue
         _md9b = str((_h9b.get("entry_plan") or {}).get("mode")
                     or ((_h9b.get("trade_plan") or {}).get("short") or {}).get("mode") or "")
@@ -12934,16 +13013,26 @@ def _render_today_verdict(_snap, _repo):
         _buy_rows9.append(
             f"<div style='font-size:13px;line-height:1.5;margin:1px 0'>"
             f"{_h9b.get('_src', '')}{_stk_link(_h9b.get('name'), _h9b.get('code'))} "
-            f"<b style='color:#dc2626'>{_md9b}·涨概率{int(_h9b.get('p_up') or 0)}%·空间约+{_ups9b:.0f}%</b>"
+            f"<b style='color:#dc2626'>{_md9b}·涨概率{int(_h9b.get('p_up') or 0)}%·盈亏比{float(_h9b.get('rr') or 0):.1f}"
+            f"·空间约+{_ups9b:.0f}%</b>"
             f"<br><span style='font-size:12px;color:#475569'>└ 技术面:{(_stg9b + '、') if _stg9b else ''}"
             f"{_md9b}(时机绿灯)；基本面:{_fund9b}</span></div>")
+    if _brk9:
+        _buy_rows9 = []
+    _gate_note9 = "、".join(f"{_k}×{_v}" for _k, _v in _gate_skips9.items())
     _html.append("<div style='margin:4px 0 2px;border-top:1px dashed #e2e8f0;padding-top:4px'>"
                  "<b style='font-size:13px;color:#dc2626'>🐉 现在可买·当天/本周</b>"
-                 "<span style='font-size:12px;color:#94a3b8'>（硬门槛:波段票上行空间≥10%·波段持有为主）</span>："
+                 "<span style='font-size:12px;color:#94a3b8'>（严选五闸:概率≥65·盈亏比≥1.5·无周期冲突"
+                 "·大盘顺风·非双榜拥挤＋空间≥10%＋战绩熔断——宁可少推不可错推）</span>："
                  + ("".join(_buy_rows9[:5]) if _buy_rows9
-                    else "<span style='font-size:13px;color:#475569'>今天没有过硬门槛的买点——空仓等待也是决策，别为了买而买</span>")
-                 + (f"<div style='font-size:12px;color:#94a3b8'>另有{_skip_buy9}只时机绿灯因空间&lt;10%或空间不明被纪律剔除"
-                    f"（小空间不值得动，完整名单在下方双门模块）</div>" if _skip_buy9 else "")
+                    else ("<span style='font-size:13px;color:#475569'>"
+                          + (f"⛔ {_brk9}" if _brk9
+                             else "今天没有过五闸的买点——空仓等待也是决策，别为了买而买")
+                          + "</span>"))
+                 + ((f"<div style='font-size:12px;color:#94a3b8'>严选拦下：{_gate_note9}"
+                     + (f"；另{_skip_buy9}只空间&lt;10%" if _skip_buy9 else "")
+                     + "（完整候选在下方双门模块，被拦≠看空，只是把握不够不进推送）</div>")
+                    if (_gate_skips9 or _skip_buy9) else "")
                  + "</div>")
     # ── ③b 计划做T（2026-07-20 用户定纲：做T可以，但把握分≥90才推、最多3只、必须明标"计划做T"） ──
     try:
