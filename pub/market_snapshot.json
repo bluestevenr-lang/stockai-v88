@@ -1,6 +1,6 @@
 {
   "schema_version": "v88.snapshot/2.0",
-  "snapshot_id": "snap-d18f52d1eb9d2ac7",
+  "snapshot_id": "snap-9868ab15ce2c368c",
   "rotation_forecast": {
     "schema_version": "v88.rotation/1.3",
     "snapshot_id": "snap-890e849bb968ec41",
@@ -2288,49 +2288,49 @@
       }
     ]
   },
-  "generated_at": "2026-07-22 20:27",
+  "generated_at": "2026-07-22 22:59",
   "markets": {
     "美股": {
       "indices": [
         {
           "symbol": "^GSPC",
           "name": "标普500",
-          "last": 7509.2,
-          "chg1d": 0.89,
-          "chg5d": -0.46,
-          "chg20d": 0.49,
-          "vs_ma20": 0.42,
-          "vs_ma60": 1.09,
+          "last": 7504.78,
+          "chg1d": -0.06,
+          "chg5d": -0.89,
+          "chg20d": 1.89,
+          "vs_ma20": 0.26,
+          "vs_ma60": 0.95,
           "trend": "📈 多头排列",
-          "vol_ratio": 0.96,
+          "vol_ratio": 0.84,
           "turning": "",
           "turning_prompt": ""
         },
         {
           "symbol": "^IXIC",
           "name": "纳斯达克",
-          "last": 25837.21,
-          "chg1d": 1.29,
-          "chg5d": -1.03,
-          "chg20d": -1.26,
-          "vs_ma20": -0.03,
-          "vs_ma60": -0.49,
+          "last": 25745.53,
+          "chg1d": -0.35,
+          "chg5d": -1.99,
+          "chg20d": 0.62,
+          "vs_ma20": -0.42,
+          "vs_ma60": -0.9,
           "trend": "📉 空头排列",
-          "vol_ratio": 0.83,
+          "vol_ratio": 0.77,
           "turning": "",
           "turning_prompt": ""
         },
         {
           "symbol": "^DJI",
           "name": "道琼斯",
-          "last": 52224.64,
-          "chg1d": 0.74,
-          "chg5d": -0.54,
-          "chg20d": 0.99,
-          "vs_ma20": -0.23,
-          "vs_ma60": 2.44,
+          "last": 52282.06,
+          "chg1d": 0.11,
+          "chg5d": -0.72,
+          "chg20d": 1.19,
+          "vs_ma20": -0.18,
+          "vs_ma60": 2.45,
           "trend": "🔄 震荡偏弱",
-          "vol_ratio": 0.88,
+          "vol_ratio": 0.76,
           "turning": "",
           "turning_prompt": ""
         }
@@ -2339,104 +2339,104 @@
         {
           "symbol": "XLK",
           "name": "科技",
-          "last": 180.78,
-          "chg1d": 2.89,
-          "chg5d": -1.55,
-          "chg20d": -5.92,
-          "vs_ma20": -0.85,
-          "vs_ma60": 0.64,
+          "last": 180.24,
+          "chg1d": -0.3,
+          "chg5d": -0.74,
+          "chg20d": -2.15,
+          "vs_ma20": -1.04,
+          "vs_ma60": 0.15,
           "trend": "🔄 震荡偏弱",
-          "vol_ratio": 0.88,
+          "vol_ratio": 0.78,
           "turning": "",
           "turning_prompt": "",
-          "heat": 39
+          "heat": 37
         },
         {
           "symbol": "XLC",
           "name": "通信",
-          "last": 110.03,
-          "chg1d": -0.69,
-          "chg5d": -1.27,
-          "chg20d": 2.97,
-          "vs_ma20": 0.33,
-          "vs_ma60": -2.34,
+          "last": 109.91,
+          "chg1d": -0.11,
+          "chg5d": -3.06,
+          "chg20d": 2.46,
+          "vs_ma20": 0.1,
+          "vs_ma60": -2.37,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 0.79,
+          "vol_ratio": 0.68,
           "turning": "",
           "turning_prompt": "",
-          "heat": 39
+          "heat": 30
         },
         {
           "symbol": "XLY",
           "name": "可选消费",
-          "last": 114.87,
-          "chg1d": 0.23,
-          "chg5d": -0.89,
-          "chg20d": -0.06,
-          "vs_ma20": -1.07,
-          "vs_ma60": -1.9,
+          "last": 114.28,
+          "chg1d": -0.52,
+          "chg5d": -2.33,
+          "chg20d": 0.45,
+          "vs_ma20": -1.6,
+          "vs_ma60": -2.35,
           "trend": "📉 空头排列",
-          "vol_ratio": 0.93,
+          "vol_ratio": 0.8,
           "turning": "",
           "turning_prompt": "",
-          "heat": 45
+          "heat": 36
         },
         {
           "symbol": "XLP",
           "name": "必选消费",
-          "last": 84.06,
-          "chg1d": -0.94,
-          "chg5d": 0.77,
-          "chg20d": 2.29,
-          "vs_ma20": -0.2,
-          "vs_ma60": 0.43,
-          "trend": "🔄 震荡偏弱",
-          "vol_ratio": 0.91,
+          "last": 84.36,
+          "chg1d": 0.35,
+          "chg5d": 1.06,
+          "chg20d": 0.76,
+          "vs_ma20": 0.11,
+          "vs_ma60": 0.74,
+          "trend": "📈 多头排列",
+          "vol_ratio": 0.87,
           "turning": "",
           "turning_prompt": "",
-          "heat": 48
+          "heat": 46
         },
         {
           "symbol": "XLF",
           "name": "金融",
-          "last": 56.11,
-          "chg1d": 0.12,
-          "chg5d": -0.12,
-          "chg20d": 4.49,
-          "vs_ma20": 1.58,
-          "vs_ma60": 5.97,
+          "last": 55.97,
+          "chg1d": -0.24,
+          "chg5d": -1.03,
+          "chg20d": 3.89,
+          "vs_ma20": 1.15,
+          "vs_ma60": 5.55,
           "trend": "📈 多头排列",
-          "vol_ratio": 1.07,
+          "vol_ratio": 0.87,
           "turning": "",
           "turning_prompt": "",
-          "heat": 54
+          "heat": 43
         },
         {
           "symbol": "XLV",
           "name": "医疗",
-          "last": 160.25,
-          "chg1d": 0.63,
-          "chg5d": 1.24,
-          "chg20d": 6.79,
-          "vs_ma20": 0.27,
-          "vs_ma60": 5.73,
-          "trend": "📈 多头排列",
-          "vol_ratio": 0.84,
+          "last": 160.1,
+          "chg1d": -0.09,
+          "chg5d": 1.15,
+          "chg20d": 5.21,
+          "vs_ma20": -0.07,
+          "vs_ma60": 5.44,
+          "trend": "🔄 震荡偏弱",
+          "vol_ratio": 0.69,
           "turning": "",
           "turning_prompt": "",
-          "heat": 47
+          "heat": 40
         },
         {
           "symbol": "XLE",
           "name": "能源",
-          "last": 58.5,
-          "chg1d": 0.97,
-          "chg5d": 2.72,
-          "chg20d": 8.21,
-          "vs_ma20": 6.05,
-          "vs_ma60": 3.41,
+          "last": 59.45,
+          "chg1d": 1.62,
+          "chg5d": 5.22,
+          "chg20d": 9.16,
+          "vs_ma20": 7.28,
+          "vs_ma60": 5.0,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 0.92,
+          "vol_ratio": 0.8,
           "turning": "",
           "turning_prompt": "",
           "heat": 55
@@ -2444,70 +2444,70 @@
         {
           "symbol": "XLI",
           "name": "工业",
-          "last": 178.66,
-          "chg1d": 0.3,
-          "chg5d": -0.99,
-          "chg20d": -1.73,
-          "vs_ma20": -1.5,
-          "vs_ma60": 1.41,
+          "last": 179.08,
+          "chg1d": 0.24,
+          "chg5d": -0.54,
+          "chg20d": 0.52,
+          "vs_ma20": -1.29,
+          "vs_ma60": 1.58,
           "trend": "🔄 震荡偏弱",
-          "vol_ratio": 0.94,
-          "turning": "",
-          "turning_prompt": "",
-          "heat": 44
-        },
-        {
-          "symbol": "XLB",
-          "name": "材料",
-          "last": 50.1,
-          "chg1d": 0.14,
-          "chg5d": -1.07,
-          "chg20d": -2.94,
-          "vs_ma20": -1.58,
-          "vs_ma60": -1.77,
-          "trend": "📉 空头排列",
-          "vol_ratio": 0.87,
+          "vol_ratio": 0.8,
           "turning": "",
           "turning_prompt": "",
           "heat": 40
         },
         {
-          "symbol": "XLU",
-          "name": "公用事业",
-          "last": 44.92,
-          "chg1d": -0.04,
-          "chg5d": -1.69,
-          "chg20d": 0.45,
-          "vs_ma20": -1.12,
-          "vs_ma60": 0.09,
-          "trend": "🔄 震荡偏弱",
-          "vol_ratio": 0.92,
+          "symbol": "XLB",
+          "name": "材料",
+          "last": 50.71,
+          "chg1d": 1.21,
+          "chg5d": 0.41,
+          "chg20d": -0.32,
+          "vs_ma20": -0.37,
+          "vs_ma60": -0.55,
+          "trend": "📉 空头排列",
+          "vol_ratio": 0.73,
           "turning": "",
           "turning_prompt": "",
-          "heat": 43
+          "heat": 38
+        },
+        {
+          "symbol": "XLU",
+          "name": "公用事业",
+          "last": 45.74,
+          "chg1d": 1.83,
+          "chg5d": 1.15,
+          "chg20d": 1.49,
+          "vs_ma20": 0.61,
+          "vs_ma60": 1.93,
+          "trend": "📈 多头排列",
+          "vol_ratio": 0.84,
+          "turning": "",
+          "turning_prompt": "",
+          "heat": 45
         },
         {
           "symbol": "XLRE",
           "name": "房地产",
-          "last": 45.2,
-          "chg1d": -0.07,
-          "chg5d": 1.62,
-          "chg20d": 2.68,
-          "vs_ma20": 1.14,
-          "vs_ma60": 2.37,
+          "last": 45.13,
+          "chg1d": -0.15,
+          "chg5d": 1.28,
+          "chg20d": 1.1,
+          "vs_ma20": 0.92,
+          "vs_ma60": 2.15,
           "trend": "📈 多头排列",
-          "vol_ratio": 0.78,
+          "vol_ratio": 0.65,
           "turning": "",
           "turning_prompt": "",
-          "heat": 44
+          "heat": 37
         }
       ],
       "temperature": {
         "temp": 45,
         "trend": 50,
-        "breadth": 45,
-        "momentum": 43,
-        "vol_heat": 34,
+        "breadth": 55,
+        "momentum": 38,
+        "vol_heat": 19,
         "label": "🟡 中性",
         "position": "50-65%",
         "verdict": "🟡 中性震荡·跟随主线轮动"
@@ -2528,7 +2528,7 @@
           ],
           [
             "4周",
-            52
+            53
           ],
           [
             "8周",
@@ -2536,10 +2536,6 @@
           ],
           [
             "16周",
-            55
-          ],
-          [
-            "32周",
             55
           ]
         ]
@@ -2576,18 +2572,19 @@
           "turning_prompt": ""
         },
         {
-          "symbol": "399006.SZ",
-          "name": "创业板指",
-          "last": 3566.73,
-          "chg1d": -3.23,
-          "chg5d": -6.25,
-          "chg20d": -16.1,
-          "vs_ma20": -8.76,
-          "vs_ma60": -9.41,
+          "symbol": "159915.SZ",
+          "name": "创业板ETF代理",
+          "last": 3.59,
+          "chg1d": -3.32,
+          "chg5d": -6.32,
+          "chg20d": -15.78,
+          "vs_ma20": -8.79,
+          "vs_ma60": -9.29,
           "trend": "📉 空头排列",
-          "vol_ratio": 1.0,
+          "vol_ratio": 1.76,
           "turning": "",
-          "turning_prompt": ""
+          "turning_prompt": "",
+          "unit": "元"
         }
       ],
       "sectors": [
@@ -2746,7 +2743,7 @@
         "temp": 33,
         "trend": 0,
         "breadth": 50,
-        "momentum": 6,
+        "momentum": 5,
         "vol_heat": 100,
         "label": "🟠 偏冷",
         "position": "30-50%",
@@ -2777,10 +2774,6 @@
           [
             "16周",
             35
-          ],
-          [
-            "32周",
-            39
           ]
         ]
       }
@@ -2898,10 +2891,6 @@
           [
             "16周",
             52
-          ],
-          [
-            "32周",
-            48
           ]
         ]
       }
