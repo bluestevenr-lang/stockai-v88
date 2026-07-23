@@ -1,6 +1,6 @@
 {
   "schema_version": "v88.snapshot/2.0",
-  "snapshot_id": "snap-d2a133e52af97acb",
+  "snapshot_id": "snap-3a41a8d6f42f6bec",
   "rotation_forecast": {
     "schema_version": "v88.rotation/1.3",
     "snapshot_id": "snap-847adeb4cffb82db",
@@ -1658,7 +1658,7 @@
   "cycle_scan": {
     "schema_version": "v88.cycle/1.1",
     "slot": "2026-07-23-am",
-    "analysis_time": "2026-07-23 15:37",
+    "analysis_time": "2026-07-23 20:25",
     "stocks": [
       {
         "code": "600519.SS",
@@ -1790,7 +1790,7 @@
         "sector_phase": null,
         "p_up": 66,
         "unified_score": 68,
-        "rr": 3.23,
+        "rr": 3.2,
         "entry_note": "✅回踩到位·07-27前·止损88.65·仅短线｜周期未充分共振，等待触发"
       },
       {
@@ -2183,14 +2183,14 @@
         "down": 8.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 35,
+        "pos52": 36,
         "trigger": "放量突破/跌破MA20 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 70,
-        "unified_score": 69,
-        "rr": 2.41,
-        "entry_note": "✅回踩到位·07-27前·止损21.3｜周期未充分共振，等待触发"
+        "p_up": 71,
+        "unified_score": 70,
+        "rr": 2.17,
+        "entry_note": "⏳双路径:回踩26.69/突破32.88·07-30前｜周期未充分共振，等待触发"
       },
       {
         "code": "NVDA",
@@ -2346,7 +2346,7 @@
       }
     ]
   },
-  "generated_at": "2026-07-23 17:20",
+  "generated_at": "2026-07-23 20:25",
   "markets": {
     "美股": {
       "indices": [
@@ -2595,6 +2595,10 @@
           [
             "16周",
             55
+          ],
+          [
+            "32周",
+            55
           ]
         ]
       }
@@ -2630,19 +2634,18 @@
           "turning_prompt": ""
         },
         {
-          "symbol": "159915.SZ",
-          "name": "创业板ETF代理",
-          "last": 3.6,
-          "chg1d": 0.31,
-          "chg5d": -3.38,
-          "chg20d": -18.16,
-          "vs_ma20": -7.57,
-          "vs_ma60": -8.99,
+          "symbol": "399006.SZ",
+          "name": "创业板指",
+          "last": 3575.52,
+          "chg1d": 0.25,
+          "chg5d": -3.17,
+          "chg20d": -18.22,
+          "vs_ma20": -7.6,
+          "vs_ma60": -9.16,
           "trend": "📉 空头排列",
-          "vol_ratio": 1.71,
+          "vol_ratio": 1.0,
           "turning": "",
-          "turning_prompt": "",
-          "unit": "元"
+          "turning_prompt": ""
         }
       ],
       "sectors": [
@@ -2801,16 +2804,16 @@
         "temp": 44,
         "trend": 0,
         "breadth": 70,
-        "momentum": 30,
+        "momentum": 31,
         "vol_heat": 100,
         "label": "🟠 偏冷",
         "position": "30-50%",
         "verdict": "🟠 偏冷震荡·轻仓等右侧信号"
       },
       "turn_risk": {
-        "top_risk": 30,
+        "top_risk": 15,
         "bottom_opp": 0,
-        "text": "顶部转向风险 中(30/100) ｜ 底部转机信号 低(0/100)"
+        "text": "顶部转向风险 低(15/100) ｜ 底部转机信号 低(0/100)"
       },
       "l3": {
         "name": "上证指数",
@@ -2832,6 +2835,10 @@
           [
             "16周",
             36
+          ],
+          [
+            "32周",
+            39
           ]
         ]
       }
@@ -2949,6 +2956,10 @@
           [
             "16周",
             45
+          ],
+          [
+            "32周",
+            42
           ]
         ]
       }
