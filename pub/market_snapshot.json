@@ -1,6 +1,6 @@
 {
   "schema_version": "v88.snapshot/2.0",
-  "snapshot_id": "snap-272e6fb20b897c51",
+  "snapshot_id": "snap-d2a133e52af97acb",
   "rotation_forecast": {
     "schema_version": "v88.rotation/1.3",
     "snapshot_id": "snap-847adeb4cffb82db",
@@ -2346,7 +2346,7 @@
       }
     ]
   },
-  "generated_at": "2026-07-23 15:37",
+  "generated_at": "2026-07-23 17:20",
   "markets": {
     "美股": {
       "indices": [
@@ -2595,10 +2595,6 @@
           [
             "16周",
             55
-          ],
-          [
-            "32周",
-            55
           ]
         ]
       }
@@ -2634,18 +2630,19 @@
           "turning_prompt": ""
         },
         {
-          "symbol": "399006.SZ",
-          "name": "创业板指",
-          "last": 3575.52,
-          "chg1d": 0.25,
-          "chg5d": -3.17,
-          "chg20d": -18.22,
-          "vs_ma20": -7.6,
-          "vs_ma60": -9.16,
+          "symbol": "159915.SZ",
+          "name": "创业板ETF代理",
+          "last": 3.6,
+          "chg1d": 0.31,
+          "chg5d": -3.38,
+          "chg20d": -18.16,
+          "vs_ma20": -7.57,
+          "vs_ma60": -8.99,
           "trend": "📉 空头排列",
-          "vol_ratio": 1.0,
+          "vol_ratio": 1.71,
           "turning": "",
-          "turning_prompt": ""
+          "turning_prompt": "",
+          "unit": "元"
         }
       ],
       "sectors": [
@@ -2804,16 +2801,16 @@
         "temp": 44,
         "trend": 0,
         "breadth": 70,
-        "momentum": 31,
+        "momentum": 30,
         "vol_heat": 100,
         "label": "🟠 偏冷",
         "position": "30-50%",
         "verdict": "🟠 偏冷震荡·轻仓等右侧信号"
       },
       "turn_risk": {
-        "top_risk": 15,
+        "top_risk": 30,
         "bottom_opp": 0,
-        "text": "顶部转向风险 低(15/100) ｜ 底部转机信号 低(0/100)"
+        "text": "顶部转向风险 中(30/100) ｜ 底部转机信号 低(0/100)"
       },
       "l3": {
         "name": "上证指数",
@@ -2835,10 +2832,6 @@
           [
             "16周",
             36
-          ],
-          [
-            "32周",
-            39
           ]
         ]
       }
@@ -2848,12 +2841,12 @@
         {
           "symbol": "^HSI",
           "name": "恒生指数",
-          "last": 25170.69,
-          "chg1d": 1.12,
-          "chg5d": 0.65,
-          "chg20d": 7.51,
-          "vs_ma20": 4.72,
-          "vs_ma60": 1.08,
+          "last": 25210.81,
+          "chg1d": 1.28,
+          "chg5d": 0.81,
+          "chg20d": 7.68,
+          "vs_ma20": 4.88,
+          "vs_ma60": 1.24,
           "trend": "🔄 震荡偏强",
           "vol_ratio": 0.76,
           "turning": "",
@@ -2863,13 +2856,13 @@
           "symbol": "3033.HK",
           "name": "恒生科技(ETF代理)",
           "last": 4.61,
-          "chg1d": 0.57,
-          "chg5d": -2.99,
-          "chg20d": 4.68,
-          "vs_ma20": 1.84,
-          "vs_ma60": -1.65,
+          "chg1d": 0.66,
+          "chg5d": -2.91,
+          "chg20d": 4.77,
+          "vs_ma20": 1.93,
+          "vs_ma60": -1.57,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 1.22,
+          "vol_ratio": 1.23,
           "turning": "",
           "turning_prompt": ""
         }
@@ -2879,16 +2872,16 @@
           "symbol": "3033.HK",
           "name": "恒生科技",
           "last": 4.61,
-          "chg1d": 0.57,
-          "chg5d": -2.99,
-          "chg20d": 4.68,
-          "vs_ma20": 1.84,
-          "vs_ma60": -1.65,
+          "chg1d": 0.66,
+          "chg5d": -2.91,
+          "chg20d": 4.77,
+          "vs_ma20": 1.93,
+          "vs_ma60": -1.57,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 1.22,
+          "vol_ratio": 1.23,
           "turning": "",
           "turning_prompt": "",
-          "heat": 55
+          "heat": 56
         },
         {
           "symbol": "2828.HK",
@@ -2900,36 +2893,36 @@
           "vs_ma20": 4.87,
           "vs_ma60": 0.89,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 0.83,
+          "vol_ratio": 0.85,
           "turning": "",
           "turning_prompt": "",
-          "heat": 46
+          "heat": 47
         },
         {
           "symbol": "3110.HK",
           "name": "高股息",
-          "last": 31.1,
-          "chg1d": 1.17,
-          "chg5d": 2.03,
-          "chg20d": 5.71,
-          "vs_ma20": 4.39,
-          "vs_ma60": -0.71,
+          "last": 31.14,
+          "chg1d": 1.3,
+          "chg5d": 2.17,
+          "chg20d": 5.85,
+          "vs_ma20": 4.51,
+          "vs_ma60": -0.59,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 1.69,
+          "vol_ratio": 1.72,
           "turning": "",
           "turning_prompt": "",
-          "heat": 87
+          "heat": 89
         }
       ],
       "temperature": {
-        "temp": 74,
+        "temp": 75,
         "trend": 75,
         "breadth": 100,
-        "momentum": 38,
-        "vol_heat": 48,
-        "label": "🟢 偏暖",
-        "position": "65-80%",
-        "verdict": "🟡 中性震荡·跟随主线轮动"
+        "momentum": 40,
+        "vol_heat": 49,
+        "label": "🔥 过热",
+        "position": "6-7成（过热防回撤，触发中线兑现纪律）",
+        "verdict": "🔥 过热惯性·可持有但设好回撤线、不新追高"
       },
       "turn_risk": {
         "top_risk": 25,
@@ -2947,7 +2940,7 @@
           ],
           [
             "4周",
-            64
+            65
           ],
           [
             "8周",
@@ -2956,10 +2949,6 @@
           [
             "16周",
             45
-          ],
-          [
-            "32周",
-            42
           ]
         ]
       }
