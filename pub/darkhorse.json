@@ -1,6 +1,6 @@
 {
- "ts": 1784907246.174788,
- "generated_at": "2026-07-24 23:34",
+ "ts": 1784907832.6177201,
+ "generated_at": "2026-07-24 23:43",
  "funnel": {
   "found": 400,
   "excluded_watch": 24,
@@ -12,12 +12,12 @@
   },
   "passed": 5,
   "blocked": {
-   "相位": 124,
+   "相位": 127,
    "方向分": 9,
    "赔率": 13,
    "时机": 0,
    "数据": 1,
-   "单源": 88
+   "单源": 85
   }
  },
  "horses": [
@@ -34,7 +34,7 @@
    "action": "多周期共振·试仓复核",
    "entry_note": "⏳双路径:回踩38.16/突破43.38·07-31前｜标准门槛通过；概率优势+33.7点",
    "cycle_note": "2周偏涨71%｜4-32周偏涨67%",
-   "analysis_time": "2026-07-24 23:32",
+   "analysis_time": "2026-07-24 23:43",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-24 00:00:00",
@@ -178,7 +178,7 @@
    "action": "共振·小仓试错",
    "entry_note": "⏳双路径:回踩9.76/突破11.86·07-31前｜激进门槛通过；概率优势+30.5点",
    "cycle_note": "2周偏涨71%｜4-32周偏涨60%",
-   "analysis_time": "2026-07-24 23:32",
+   "analysis_time": "2026-07-24 23:43",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-24 00:00:00",
@@ -321,7 +321,7 @@
    "action": "观察",
    "entry_note": "✅现价可进·07-29前·破12.77废·仅短线｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨70%｜4-32周震荡51%",
-   "analysis_time": "2026-07-24 23:32",
+   "analysis_time": "2026-07-24 23:43",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-24 00:00:00",
@@ -464,7 +464,7 @@
    "action": "观察",
    "entry_note": "✅现价可进·07-29前·破71.4废｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨65%｜4-32周震荡58%",
-   "analysis_time": "2026-07-24 23:32",
+   "analysis_time": "2026-07-24 23:43",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-24 00:00:00",
@@ -607,7 +607,7 @@
    "action": "观察",
    "entry_note": "⏳双路径:回踩25.04/突破32.88·07-31前｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨64%｜4-32周震荡56%",
-   "analysis_time": "2026-07-24 23:32",
+   "analysis_time": "2026-07-24 23:43",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-24 00:00:00",
@@ -742,7 +742,7 @@
   {
    "name": "Penske Automotive Group, Inc.",
    "code": "PAG",
-   "last": 218.165,
+   "last": 218.175,
    "unified_score": 71,
    "short_score": 82,
    "p_up": 82,
@@ -762,30 +762,67 @@
     {
      "label": "10日",
      "p_up": 82,
-     "target_price": 232.324
+     "target_price": 232.335
     },
     {
      "label": "60日",
      "p_up": 85,
-     "target_price": 248.883
+     "target_price": 248.894
     },
     {
      "label": "120日",
      "p_up": 85,
-     "target_price": 255.273
+     "target_price": 255.285
+    }
+   ]
+  },
+  {
+   "name": "Cenovus Energy Inc",
+   "code": "CVE",
+   "last": 29.18,
+   "unified_score": 70,
+   "short_score": 67,
+   "p_up": 67,
+   "p_down": 33,
+   "rr": 1.15,
+   "expected_pct": 3.6,
+   "action": "共振·小仓试错",
+   "stage": "趋势延续",
+   "mode": "双路径待触发",
+   "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
+   "sources": [
+    "财报07-29"
+   ],
+   "touch": "",
+   "market": "🇺🇸美股",
+   "horizons": [
+    {
+     "label": "10日",
+     "p_up": 67,
+     "target_price": 30.854
+    },
+    {
+     "label": "60日",
+     "p_up": 50,
+     "target_price": 32.803
+    },
+    {
+     "label": "120日",
+     "p_up": 80,
+     "target_price": 34.643
     }
    ]
   },
   {
    "name": "PayPal Holdings, Inc.",
    "code": "PYPL",
-   "last": 56.19,
-   "unified_score": 70,
+   "last": 56.04,
+   "unified_score": 69,
    "short_score": 85,
    "p_up": 85,
    "p_down": 15,
-   "rr": 0.15,
-   "expected_pct": -0.4,
+   "rr": 0.17,
+   "expected_pct": -0.1,
    "action": "趋势偏多·等待回踩",
    "stage": "启动确认",
    "mode": "双路径待触发",
@@ -799,54 +836,17 @@
     {
      "label": "10日",
      "p_up": 85,
-     "target_price": 62.669
+     "target_price": 62.395
     },
     {
      "label": "60日",
-     "p_up": 80,
-     "target_price": 64.612
+     "p_up": 79,
+     "target_price": 64.394
     },
     {
      "label": "120日",
      "p_up": 75,
-     "target_price": 68.105
-    }
-   ]
-  },
-  {
-   "name": "Cenovus Energy Inc",
-   "code": "CVE",
-   "last": 29.22,
-   "unified_score": 70,
-   "short_score": 67,
-   "p_up": 67,
-   "p_down": 33,
-   "rr": 1.12,
-   "expected_pct": 3.4,
-   "action": "共振·小仓试错",
-   "stage": "趋势延续",
-   "mode": "双路径待触发",
-   "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
-   "sources": [
-    "财报07-29"
-   ],
-   "touch": "",
-   "market": "🇺🇸美股",
-   "horizons": [
-    {
-     "label": "10日",
-     "p_up": 68,
-     "target_price": 30.934
-    },
-    {
-     "label": "60日",
-     "p_up": 50,
-     "target_price": 32.866
-    },
-    {
-     "label": "120日",
-     "p_up": 80,
-     "target_price": 34.714
+     "target_price": 67.876
     }
    ]
   },
