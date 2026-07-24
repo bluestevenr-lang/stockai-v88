@@ -12204,6 +12204,8 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
     # 【V88·空档给理由 2026-07-21 用户点单"下周本月零推荐总有原因和关注点吧"】
     # 没达标≠没信息：收集离门槛最近的候选(50-57.9分),空档时亮出来"差几分+关注什么"。
     _near9 = {"t2": [], "t3": []}
+    # 看跌侧近警示(2026-07-24 用户抓"看跌空档也不许无说明"):离转弱线≤42最近的43-48分候选
+    _near_bear9 = {"t1": [], "t2": [], "t3": []}
     for _c, _h in _cands.items():
         _ep = _h.get("entry_plan") or {}
         _mode = str(_ep.get("mode") or ((_h.get("trade_plan") or {}).get("short") or {}).get("mode") or "")
@@ -12258,6 +12260,16 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
             _tiers9["t3"]["bear"].append((_h, 100 - _s4, "本月·4周周期偏弱"))
         elif _s8 is not None and _s8 <= 42:
             _tiers9["t3"]["bear"].append((_h, 100 - _s8, "下月·8周周期偏弱"))
+        else:
+            # 【V88·看跌空档也给理由 2026-07-24 用户抓"地狱门没上榜也没原因"】
+            # 未触发警示的收集"离转弱线(≤42)最近的"——空档时亮出来差几分,不许空白无说明。
+            if _s2 is not None and 42 < _s2 <= 48:
+                _near_bear9["t1"].append((_h, _s2, "2周分"))
+            if 42 < _med <= 48:
+                _near_bear9["t2"].append((_h, _med, "中线分"))
+            _swk9 = min((x for x in (_s4, _s8) if x is not None), default=None)
+            if _swk9 is not None and 42 < _swk9 <= 48:
+                _near_bear9["t3"].append((_h, _swk9, "4-8周分"))
     for _k in _tiers9:
         for _sd in ("bull", "bear"):
             _tiers9[_k][_sd].sort(key=lambda x: -x[1])
@@ -12321,6 +12333,18 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
         _bears9 = _tiers9[_k]["bear"][:6]
         _html.append(f"<div style='margin:4px 0 2px'><b>{_title}</b>"
                      f"<span style='font-size:12px;color:#94a3b8'>（{_sub}）</span></div>")
+        # 大盘该档方向分——看涨/看跌两侧空档共用(2026-07-24修:原只在看涨空档算,看跌空档引用会NameError)
+        _hz_map9 = {"t1": "2周", "t2": "2周", "t3": "4周"}
+        _mkt_ps9, _avg9z, _ps_txt9 = [], 50.0, ""
+        for _mk9z in ("美股", "A股", "港股"):
+            _p9z = dict((x[0], x[1]) for x in
+                        (((_l3mkts9.get(_mk9z) or {})
+                          .get("l3") or {}).get("probs") or [])).get(_hz_map9[_k])
+            if _p9z is not None:
+                _mkt_ps9.append((_mk9z, int(_p9z)))
+        if _mkt_ps9:
+            _avg9z = sum(p for _, p in _mkt_ps9) / len(_mkt_ps9)
+            _ps_txt9 = "·".join(f"{m[0]}{p}%" for m, p in _mkt_ps9)
         _bull_cells9 = ([] if _k != "t1" else list(_t_items9)) \
             + [_item9(_h, _p, _s, False) for _h, _p, _s in _bulls9]
         _html.append("<div style='margin-left:10px'>🐉 <b style='color:#dc2626;font-size:13px'>看涨</b>：")
@@ -12330,18 +12354,8 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
             # 【V88·空档给理由 2026-07-21 用户定纲"没推荐就说明原因,可能大跌要给跌幅量+概率"】
             # ①大盘该档三市场方向分→偏空时明说"跌概率X%"(=100-方向分,与三层总览同源)
             # ②近门槛候选差几分。跌幅统计区间在决断卡「🔮大盘四档预判」灰字(±1σ),此处引用不重算。
-            _hz_map9 = {"t1": "2周", "t2": "2周", "t3": "4周"}
-            _mkt_ps9 = []
-            for _mk9z in ("美股", "A股", "港股"):
-                _p9z = dict((x[0], x[1]) for x in
-                            (((_l3mkts9.get(_mk9z) or {})
-                              .get("l3") or {}).get("probs") or [])).get(_hz_map9[_k])
-                if _p9z is not None:
-                    _mkt_ps9.append((_mk9z, int(_p9z)))
             _mkt_note9 = ""
             if _mkt_ps9:
-                _avg9z = sum(p for _, p in _mkt_ps9) / len(_mkt_ps9)
-                _ps_txt9 = "·".join(f"{m[0]}{p}%" for m, p in _mkt_ps9)
                 if _avg9z <= 45:
                     _mkt_note9 = (f"<b style='color:#16a34a'>原因:大盘该档偏空(方向分{_ps_txt9}"
                                   f"→平均跌概率约{100 - _avg9z:.0f}%)</b>——偏空期引擎收紧买入防的就是大跌，"
@@ -12364,8 +12378,31 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
                              "候选池该周期普遍在58分以下，转红自动入档</span>")
         _html.append("</div>")
         _html.append("<div style='margin-left:10px'>⚔️ <b style='color:#16a34a;font-size:13px'>看跌</b>：")
-        _html.append("　".join(_item9(_h, _p, _s, True) for _h, _p, _s in _bears9) if _bears9
-                     else "<span style='color:#94a3b8'>暂无预警（无破位/周期转弱信号）</span>")
+        if _bears9:
+            _html.append("　".join(_item9(_h, _p, _s, True) for _h, _p, _s in _bears9))
+        else:
+            # 【V88·看跌空档必给原因 2026-07-24 用户抓"没上榜也没说明,不允许空白"】
+            # ①说清门槛(≤42分/破位/顶拐/利空才警示,当前无一触发) ②大盘该档对照
+            # (大盘弱但个股没破位=阴跌市信号滞后,如实点破) ③离警示线最近的候选差几分。
+            _bmk_note9 = ""
+            if _mkt_ps9:
+                if _avg9z <= 45:
+                    _bmk_note9 = (f"<b style='color:#b45309'>注意:大盘该档偏弱(方向分{_ps_txt9})"
+                                  "但个股均未触发破位/顶拐/转弱硬信号(≤42分)——阴跌市个股信号"
+                                  "常滞后于大盘,别把'无警示'当'安全',防区间看🔮四档预判</b>；")
+                else:
+                    _bmk_note9 = f"大盘该档{_ps_txt9}·个股无一触发警示条件；"
+            _nrb9 = sorted(_near_bear9.get(_k) or [], key=lambda x: x[1])[:3]
+            if _nrb9:
+                _nrb_cells9 = "、".join(
+                    f"{_stk_link(_h9b.get('name'), _h9b.get('code'))}"
+                    f"<span style='font-size:12px;color:#64748b'>({_lb9b}{int(_sc9b)}·再跌{int(_sc9b) - 42}分触发警示)</span>"
+                    for _h9b, _sc9b, _lb9b in _nrb9)
+                _html.append(f"<span style='color:#94a3b8'>暂无预警（门槛:周期分≤42或破位/顶拐/利空）。"
+                             f"{_bmk_note9}离警示最近：</span>" + _nrb_cells9)
+            else:
+                _html.append(f"<span style='color:#94a3b8'>暂无预警（门槛:周期分≤42或破位/顶拐/利空）。"
+                             f"{_bmk_note9}候选池该周期均在48分以上，无临近警示者</span>")
         _html.append("</div>")
     _html.append("</div>")
     st.markdown("".join(_html), unsafe_allow_html=True)
@@ -13399,7 +13436,16 @@ def _render_today_verdict(_snap, _repo):
                             st.caption("以下 " + str(len(_gg_miss9)) + " 只本轮session未覆盖实时计算，"
                                        "暂无卡片（下轮刷新自动补齐）：" + "、".join(_gg_miss9))
             else:
-                st.caption("今日无拐点/破位警示——持仓自选暂无需先躲的名单")
+                # 【V88·空档必给原因 2026-07-24 用户抓"没上榜也没说明"】亮门槛+离警示最近的持仓/自选
+                _gg_near9 = sorted(
+                    [d for d in ((st.session_state.get("watch_alerts_v88") or {}).get("decisions") or [])
+                     if int(d.get("p_down") or 0) >= 40],
+                    key=lambda d: -int(d.get("p_down") or 0))[:3]
+                _gg_near_txt9 = ("；下行概率最高：" + "、".join(
+                    f"{d.get('name')}(下行{int(d.get('p_down') or 0)}%)" for d in _gg_near9)
+                    + "——未达警示条件，先观察" if _gg_near9 else "")
+                st.caption("今日无拐点/破位警示（门槛:破位/顶拐/个股利空/破止损/减仓动作,当前持仓自选无一触发）"
+                           + _gg_near_txt9 + "。大盘偏弱时个股信号可能滞后，防区间看决断卡🔮四档预判。")
 
         # ── 右半：🐉 龙虎门 ─────────────────────────────
         with _colLH9:
