@@ -464,9 +464,10 @@ def analyze_trend_full(df, sector_strength=None):
                     if _rr_g < 1.2:
                         _good_entry = (breakout + 1.5 * _stop_ref) / 2.5
                         concl = "等待"
-                        action = (f"⚖️ 赔率不足不追：到压力 {breakout:.2f} 空间/到失效 {_stop_ref:.2f} 风险"
-                                  f"≈{max(_rr_g, 0):.2f}<1.2——回踩 {_good_entry:.2f} 附近再买(彼处赔率≥1.5"
-                                  f"·买入后止损 {max(_stop_ref, _good_entry * 0.92):.2f})")
+                        action = (f"🎯 更优买点 {_good_entry:.2f}（彼处赔率≥1.5·买入后止损 "
+                                  f"{max(_stop_ref, _good_entry * 0.92):.2f}）——当前价买入赔率仅"
+                                  f"{max(_rr_g, 0):.2f}(到压力 {breakout:.2f} 空间/到失效 {_stop_ref:.2f} 风险)"
+                                  f"，不是不买，是换位置赢面更大")
         except Exception:
             pass
         try:
@@ -478,10 +479,23 @@ def analyze_trend_full(df, sector_strength=None):
         except Exception:
             pass
         try:
-            _r10_g = c.pct_change().tail(10).abs()
-            if len(_r10_g) and float(_r10_g.max()) >= 0.08:
-                action += ("｜⚡近10日有±8%大跳空：疑事件驱动(并购/财报/政策)，"
-                           "均线与动量指标或失真——先查消息面，按事件逻辑而非趋势逻辑操作")
+            _r10_g = c.pct_change().tail(10)
+            if len(_r10_g) and float(_r10_g.abs().max()) >= 0.08:
+                # 【准确>保守 2026-07-25 用户定纲】不止警示——量化事件带:跳空前收盘=回撤下沿参照,
+                # 近10日最高=事件上沿参照,报出当前带内位置与上下空间,按事件赔率决策(借GPT审计法)。
+                _jidx_g = _r10_g.abs().idxmax()
+                _pre_g = float(c.shift().loc[_jidx_g])
+                _hi_g = float(c.tail(10).max())
+                _band_g = _hi_g - _pre_g
+                if _band_g > 0 and last:
+                    _pos_g = max(0.0, min(100.0, (last - _pre_g) / _band_g * 100))
+                    _up_g = (_hi_g - last) / last * 100
+                    _dn_g2 = (last - _pre_g) / last * 100
+                    action += (f"｜⚡事件驱动带（近10日±8%跳空·均线动量或失真）："
+                               f"下沿 {_pre_g:.2f}(跳空前)~上沿 {_hi_g:.2f}(事件高点)，当前位于带内{_pos_g:.0f}%"
+                               f"——上行剩+{_up_g:.1f}%/回撤风险-{_dn_g2:.1f}%，按事件赔率而非趋势指标决策")
+                else:
+                    action += "｜⚡近10日±8%大跳空：疑事件驱动，指标或失真，按事件逻辑决策"
         except Exception:
             pass
 
