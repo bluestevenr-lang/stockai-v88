@@ -13625,7 +13625,8 @@ def _render_today_verdict(_snap, _repo):
             _rows9w = []
             for _mk9w, _plain9w in (("🇺🇸美股", "美股"), ("🇨🇳A股", "A股"), ("🇭🇰港股", "港股")):
                 _ds9w = sorted(_dir_mk9w[_dirkey9w].get(_mk9w) or [],
-                               key=lambda s: {"高": 0, "中": 1, "低": 2}.get(str(s.get("confidence")), 3))
+                               key=lambda s: ({"高": 0, "中": 1, "低": 2}.get(str(s.get("confidence")), 3),
+                                              -float(s.get("strength") or 0)))
                 _shown9w = _ds9w[:8]
                 _more9w = (f"<span style='font-size:12px;color:#94a3b8'>等{len(_ds9w)}只(全量在周期总览)</span>"
                            if len(_ds9w) > 8 else "")
