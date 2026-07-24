@@ -13525,6 +13525,50 @@ def _render_today_verdict(_snap, _repo):
     except Exception:
         pass
 
+    # 【V88·即将调整提醒前置 2026-07-24 用户点单"放在前端今日导读里"】个股顶拐/退潮+板块拐点,
+    # 中美港分列常显(不折叠);空市场也给原因(空白无说明铁律)。数据与右侧周期总览完全同源零新计算。
+    try:
+        _cyc_st9w = ((_snap or {}).get("cycle_scan") or {}).get("stocks") or []
+        _traj_all9w = ((_snap or {}).get("rotation_forecast") or {}).get("trajectories") or {}
+
+        def _mkt_of_code9w(code):
+            _c = str(code or "").upper()
+            if _c.endswith(".HK") or (_c.isdigit() and len(_c) in (4, 5)):
+                return "🇭🇰港股"
+            if _c.endswith((".SS", ".SZ")) or (_c.isdigit() and len(_c) == 6):
+                return "🇨🇳A股"
+            return "🇺🇸美股"
+        _down_mk9w = {"🇺🇸美股": [], "🇨🇳A股": [], "🇭🇰港股": []}
+        for _s9w in _cyc_st9w:
+            if _s9w.get("direction") == "down":
+                _down_mk9w[_mkt_of_code9w(_s9w.get("code"))].append(_s9w)
+        _rows9w = []
+        for _mk9w, _plain9w in (("🇺🇸美股", "美股"), ("🇨🇳A股", "A股"), ("🇭🇰港股", "港股")):
+            _ds9w = _down_mk9w.get(_mk9w) or []
+            _st_txt9w = ("、".join(
+                f"{_stk_link(_s.get('name'), _s.get('code'))}"
+                f"<span style='font-size:12px;color:#64748b'>({_s.get('phase')}·{_s.get('confidence')}置信"
+                + (f"·1-2周涨概率{int(_s['p_up'])}%" if _s.get("p_up") is not None else "")
+                + ")</span>" for _s in _ds9w)
+                if _ds9w else
+                "<span style='color:#94a3b8'>暂无个股顶拐/退潮信号（门槛:周期方向切换=向下,当前该市场池内无一触发——相位未到不硬报）</span>")
+            _sec9w = [f"{_t.get('name')}(拐点{(_t.get('turning') or {}).get('horizon')}"
+                      f"·{(_t.get('turning') or {}).get('type')})"
+                      for _t in (_traj_all9w.get(_plain9w) or [])
+                      if "顶部转弱" in str((_t.get("turning") or {}).get("type"))]
+            _sec_txt9w = ("｜<b>板块拐点</b>:" + "、".join(_sec9w)) if _sec9w else "｜板块:无顶部转弱拐点"
+            _rows9w.append(f"<div style='font-size:12.5px;margin:1px 0'><b>{_mk9w}</b> {_st_txt9w}"
+                           f"<span style='font-size:12px;color:#b45309'>{_sec_txt9w}</span></div>")
+        st.markdown(
+            "<div style='background:#fffbeb;border:1px solid #f59e0b44;border-left:4px solid #f59e0b;"
+            "border-radius:8px;padding:.45rem .7rem;margin:.3rem 0'>"
+            "<b style='font-size:13px'>⚠️ 即将调整提醒 · 个股顶拐/退潮＋板块拐点</b>"
+            "<span style='font-size:12px;color:#94a3b8'>（中美港常显·出处:个股周期扫描+板块轮动拐点,"
+            "交易日09:00/21:00更新·与周期总览同源）</span>"
+            + "".join(_rows9w) + "</div>", unsafe_allow_html=True)
+    except Exception:
+        _v88_sentinel9(_repo, "即将调整提醒")
+
 
 def _render_l3_cycle_board(_snap, _is_trading):
     """【V88·三层周期概率总览】大盘→板块同屏（自选=上方决策台，共三层）。
