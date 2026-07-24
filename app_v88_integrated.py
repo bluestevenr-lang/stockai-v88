@@ -4498,6 +4498,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
                     _text = str(_text or "")
                     _terms = (
                         ("Risk On", "风险偏好"), ("Risk Off", "风险规避"),
+                        ("Neutral", "中性观望"),   # 2026-07-24用户抓漏:裸英文无中文=呈现病
                         ("VIX", "波动率"), ("SPY", "标普500交易型基金"),
                         ("QQQ", "纳指100交易型基金"), ("TLT", "美债交易型基金"),
                         ("DXY", "美元指数"), ("10Y", "十年美债"),
@@ -15818,8 +15819,18 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
                         _d9x = str(_r9x.get("apply_date") or "")
                         _px9 = _r9x.get("price_range") or "未披露"
                         _sz9 = f"募{_r9x.get('raise_usd', 0) / 1e8:.1f}亿$" if _r9x.get("raise_usd") else "—"
+                    # 【V88·中签率公示 2026-07-24 用户点单】A股=Tushare ballot,港股=富途luckyRatio,
+                    # 美股=配售制无中签率(如实);未披露标"待披露"不留空。
+                    if _r9x.get("market") == "A股":
+                        _bl9 = _r9x.get("ballot_pct")
+                        _lot9 = f"{float(_bl9):g}%" if _bl9 else "待披露"
+                    elif _r9x.get("market") == "港股":
+                        _lr9 = _r9x.get("lucky_ratio")
+                        _lot9 = (f"{_lr9}" + ("" if "%" in str(_lr9) else "%")) if _lr9 else "待披露"
+                    else:
+                        _lot9 = "配售制·无中签率"
                     _out9.append({"市场": _r9x.get("market"), "新股": f"{_r9x.get('name')}（{_r9x.get('code')}）",
-                                  "申购/定价日": _d9x, "价格/PE": _px9, "规模": _sz9,
+                                  "申购/定价日": _d9x, "价格/PE": _px9, "规模": _sz9, "中签率": _lot9,
                                   "评级": _r9x.get("grade", ""), "点评": _r9x.get("ai") or _r9x.get("why", "")})
                 return _out9
 

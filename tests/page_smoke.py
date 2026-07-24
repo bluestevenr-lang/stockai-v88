@@ -50,6 +50,18 @@ for _w in WARN_ONLY:
     if _w not in _page:
         print(f"内容自检: ⚠️ 槽内项未采集到(AppTest盲区,请以浏览器实测为准): {_w}")
 bad = [m for m in MUST_NOT if m in _page]
+# 【V88·呈现层巡检 2026-07-24 用户抓"Neutral没中文,这该自愈系统发现"】
+# 裸英文状态词后面必须跟中文括注——出现即坏味道,不等用户抓。
+import re as _re_ui
+_naked = []
+for _w in ("Neutral", "Risk On", "Risk Off"):
+    if _re_ui.search(_re_ui.escape(_w) + r"(?!（|<span|\s*（)", _page):
+        # 该词至少出现一次未带括注(宽松:只要存在任一带括注实例则视为已处理)
+        if (_w + "（") not in _page and (_w + '<span') not in _page:
+            _naked.append(_w)
+if _naked:
+    bad.append(f"裸英文状态词无中文括注:{'、'.join(_naked)}")
+
 # "待下轮日报"少量正常(个别新持仓),泛滥=日报解析挂了(manifest质检被拒等)
 _pending_n = _page.count("待下轮日报")
 flood = _pending_n >= 12
