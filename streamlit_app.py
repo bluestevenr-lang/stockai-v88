@@ -367,6 +367,54 @@ def _cloud_is_nontrading(meta: dict = None) -> bool:
 
 
 if _nav == "🧭 导航":
+    # 【V88·今日指令牌·云端版 2026-07-25 用户"全系统更新"】与桌面同款开屏三要素:
+    # 定调+三市场周概率 / 进攻·防守点名 / 实盘战绩+✨最新升级。全读pub零计算。
+    try:
+        _bn_cells9c, _bn_chgs9c = [], []
+        for _bm9c in ("美股", "A股", "港股"):
+            _bb9c = ((_snap or {}).get("markets") or {}).get(_bm9c) or {}
+            _bl9c = dict((x[0], x[1]) for x in ((_bb9c.get("l3") or {}).get("probs") or []))
+            _bc9c = float(((_bb9c.get("indices") or [{}])[0] or {}).get("chg1d") or 0)
+            _bn_chgs9c.append(_bc9c)
+            if _bl9c.get("2周") is not None:
+                _p9c2 = int(_bl9c["2周"])
+                _pc9c2 = "#dc2626" if _p9c2 >= 55 else ("#16a34a" if _p9c2 <= 45 else "#64748b")
+                _bn_cells9c.append(f"{_bm9c}周概率<b style='color:{_pc9c2}'>{_p9c2}%</b>")
+        _bn_tone9c, _bn_tc9c = (("🛡️ 防守日", "#16a34a") if (_bn_chgs9c and min(_bn_chgs9c) <= -1.5) else
+                                (("⚔️ 进攻日", "#dc2626") if (_bn_chgs9c and max(_bn_chgs9c) >= 1.5) else
+                                 ("⚖️ 中性日", "#2563eb")))
+        _bn_go9c = []
+        try:
+            for _bh9c in (json.loads(pub_text("darkhorse.json", _PUB_VERSION) or "{}").get("horses") or []):
+                if ((_bh9c.get("trade_plan") or {}).get("short") or {}).get("mode") in (
+                        "现价可进", "回踩到位", "突破确认"):
+                    _bn_go9c.append((_bh9c.get("name"), int(_bh9c.get("p_up") or 0)))
+        except Exception:
+            pass
+        _bn_go9c.sort(key=lambda x: -x[1])
+        _bn_go_txt9c = ("、".join(f"{n}{p}%" for n, p in _bn_go9c[:2])
+                        + (f" 等{len(_bn_go9c)}只" if len(_bn_go9c) > 2 else "")) if _bn_go9c             else "今日无绿灯(现金也是仓位)"
+        _bn_new9c = ""
+        try:
+            _cl9c = (json.loads(pub_text("v88_changelog.json", _PUB_VERSION) or "{}").get("rows") or [])
+            if _cl9c:
+                _bn_new9c = ("　<span style='background:#fef9c3;border-radius:4px;padding:0 4px'>✨新:"
+                             + str(_cl9c[0].get("t"))[:36] + "</span>")
+        except Exception:
+            pass
+        st.markdown(
+            f"<div style='background:linear-gradient(90deg,{_bn_tc9c}11,transparent);"
+            f"border:1px solid {_bn_tc9c}44;border-left:5px solid {_bn_tc9c};border-radius:10px;"
+            f"padding:.5rem .8rem;margin-bottom:.4rem'>"
+            f"<div style='font-size:15px;font-weight:800;color:{_bn_tc9c}'>📣 今日V88 · {_bn_tone9c}"
+            f"<span style='font-size:12.5px;font-weight:400;color:#475569'>　{'｜'.join(_bn_cells9c)}</span></div>"
+            f"<div style='font-size:13px;margin-top:2px'>🐉 <b style='color:#dc2626'>进攻</b>:{_bn_go_txt9c}"
+            f"　⚔️ <b style='color:#16a34a'>防守</b>:见下方地狱门(持仓属私域)"
+            + _bn_new9c + "</div>"
+            f"<div style='font-size:11px;color:#94a3b8'>与桌面同源(pub快照)·明细在下方双门/关注中心/四档预判</div>"
+            "</div>", unsafe_allow_html=True)
+    except Exception:
+        pass
     _rep = _report_text if _report_sync_ok else ""
     _meta_nav = pub_meta()
     _nav_analysis_ts = (_report_manifest.get("generated_at")
