@@ -12767,6 +12767,58 @@ def _v88_market_edge(market):
     return ""
 
 
+def _v88_mkt_why9(mk, _repo):
+    """【V88·大盘why带出处 2026-07-21 用户点单"原因要下划线可点出自的新闻链接,美股港股也要有"】
+    返回可点击的"今天为什么"HTML片段,三级兜底保证三市场都有：
+    ①AI异动归因(src_idx回填新闻→下划线链接) ②新闻直配(该市场高影响Top1,带链接,明标非AI)
+    ③策略研报/政策定性 ④如实"无显著消息"。10分钟缓存。"""
+    import time as _t
+    _c = _V88_NEWS_CACHE.setdefault("_mkt_why", {"ts": 0, "d": {}})
+    if _t.time() - _c["ts"] > 600:
+        _c["d"], _c["ts"] = {}, _t.time()
+    if mk in _c["d"]:
+        return _c["d"][mk]
+    _out = ""
+    try:
+        _ma = json.loads((_repo / "data" / "move_attribution.json").read_text(encoding="utf-8"))
+        _r = ((_ma.get("reasons") or {}).get(mk) or {}) if _ma.get("status") == "completed" else {}
+        if _r.get("why"):
+            _src = _r.get("src") or {}
+            if _src.get("u"):
+                _out = (f"<a href='{_src['u']}' target='_blank' "
+                        f"style='color:inherit;text-decoration:underline'>{str(_r['why'])[:40]}</a>"
+                        f"<span style='font-size:11px;color:#94a3b8'>"
+                        f"（出处:{_src.get('s') or '新闻'}·点击看原文）</span>")
+            else:
+                _out = (f"{str(_r['why'])[:40]}"
+                        f"<span style='font-size:11px;color:#94a3b8'>（出处:AI异动归因·思考模式）</span>")
+    except Exception:
+        pass
+    if not _out:
+        try:   # ②新闻直配:该市场scope命中+高影响的最新一条,带原文链接,明标非AI归因
+            _ns = (json.loads((_repo / "data" / "news_analyzed.json").read_text(encoding="utf-8"))
+                   .get("news") or [])
+            for _n in _ns:
+                _sc = str(_n.get("market_scope") or "")
+                if (mk in _sc or "宏观" in _sc or "综合" in _sc) and "高" in str(_n.get("impact_level") or ""):
+                    _tt = str(_n.get("cleaned_title") or _n.get("title") or "")[:36]
+                    _uu = str(_n.get("link") or "")
+                    if _tt:
+                        _out = ((f"<a href='{_uu}' target='_blank' "
+                                 f"style='color:inherit;text-decoration:underline'>{_tt}</a>" if _uu else _tt)
+                                + f"<span style='font-size:11px;color:#94a3b8'>"
+                                  f"（新闻直配·非AI归因·{str(_n.get('source') or '')[:12]}）</span>")
+                        break
+        except Exception:
+            pass
+    if not _out:
+        _out = _v88_market_edge(mk) or ""
+    if not _out:
+        _out = "今日无显著消息驱动——纯量价与温度实算（如实）"
+    _c["d"][mk] = _out
+    return _out
+
+
 def _v88_sector_edge9(label):
     """【V88·板块定性 2026-07-18 用户点单"轮动全是数学模型"】复用私仓 rotation_forecast.
     sector_edge(行业研报>板块新闻,带出处);30分钟缓存;空=调用处标'纯量价模型'。"""
@@ -13004,8 +13056,9 @@ def _render_today_verdict(_snap, _repo):
             _tech9m = (f"技术面:{_l39m.get('name') or '指数'}处「{_l39m.get('stage') or '—'}」"
                        + (f"、2周上涨概率{_p29m}%" if _p29m is not None else "")
                        + f"→<b style='color:{_wc9m}'>{_word9m}</b>")
-            _why9m = str((_ma_r9.get(_mk9m) or {}).get("why") or "")[:38]
-            _news9m = f"；今天为什么:{_why9m}" if _why9m else ""
+            # 【V88·三市场都有why+可点击出处 2026-07-21 用户点单】helper三级兜底,
+            # AI归因带新闻下划线链接>新闻直配(明标非AI)>研报/政策>如实无消息——永不空。
+            _news9m = f"；今天为什么:{_v88_mkt_why9(_mk9m, _repo)}"
             _turn9m = ""
             if int(_tr9m.get("top_risk") or 0) >= 40:
                 _turn9m = f"；<b style='color:#b45309'>⚠️顶部转向风险{_tr9m['top_risk']}/100·冲高别加仓</b>"
@@ -13082,13 +13135,12 @@ def _render_today_verdict(_snap, _repo):
             if not _cells9v:
                 continue
             _rs9v = _ma9v.get(_mk9v) or {}
-            _why9v = (f"❓为什么动:[{_rs9v.get('driver', '')}] {_rs9v.get('why', '')}（出处:AI异动归因·思考模式）"
-                      if _rs9v.get("why")
-                      else (_v88_market_edge(_mk9v) or "今日无异动归因/研报定性——纯量价与温度实算（如实）"))
+            _drv9v = f"[{_rs9v.get('driver')}] " if _rs9v.get("driver") else ""
             _fc_rows9.append(
                 f"<div style='font-size:12.5px;margin:1px 0'><b>{_mk9v}</b>："
                 + " ｜ ".join(_cells9v)
-                + f"<br><span style='font-size:12px;color:#64748b'>└ {str(_why9v)[:90]}</span></div>")
+                + f"<br><span style='font-size:12px;color:#64748b'>└ ❓为什么动:{_drv9v}"
+                + _v88_mkt_why9(_mk9v, _repo) + "</span></div>")
         if _fc_rows9:
             _html.append("<div style='margin:3px 0;border-top:1px dashed #e2e8f0;padding-top:3px'>"
                          "<b style='font-size:13px'>🔮 大盘四档预判</b>"
