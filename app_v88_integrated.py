@@ -14731,7 +14731,7 @@ def _render_today_nav():
                         _V88_CARD_CSS
                         + '<div class="v88-watch-shell" style="border-color:#fbbf24;background:#fffdf5">'
                         + '<div class="v88-watch-title">'
-                        + f'<p>严门槛:2周分≥58+盈亏比≥1.2+非派发+时机在窗｜🔴=多源共振或高分高赔率｜{_fn_txt9}｜'
+                        + f'<p>严门槛:2周分≥62+多源共振(≥2源)+盈亏比≥1.2+非派发+时机在窗｜🔴=多源共振或高分高赔率｜{_fn_txt9}｜'
                         + f'🕒 {_dh9.get("generated_at", "")}</p></div>'
                         + f'<div class="v88-watch-grid">{"".join(_dh_cols9)}</div></div>',
                         unsafe_allow_html=True)

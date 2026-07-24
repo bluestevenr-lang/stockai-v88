@@ -33,7 +33,10 @@ OUT = REPO / "data" / "darkhorse.json"
 logger = logging.getLogger(__name__)
 
 # 严门槛（用户拍板：宁缺毋滥）
-MIN_SHORT = 58        # 2周方向分
+# 【V88·战绩自省提案获批 2026-07-24 用户"可以 按你的逻辑来"】129次实盘到期核算命中仅40%→
+# 收紧:2周分58→62 + 新增多源共振硬门槛(≥2发现源才入黑马,单源候选进相对最优榜可研究不推)。
+MIN_SHORT = 62        # 2周方向分（原58,自省提案上调）
+MIN_SOURCES = 2       # 发现源数（多源共振=硬门槛,原来只用于分级）
 MIN_RR = 1.2          # 盈亏比
 BAD_STAGES = ("高位震荡", "放量滞涨", "趋势转弱", "破位下跌")
 OK_MODES = ("现价可进", "回踩到位", "突破确认", "双路径待触发")
@@ -190,6 +193,9 @@ def build_darkhorse(exclude_codes: set, extra: list | None = None,
             if _stage in BAD_STAGES:
                 blocked["相位"] += 1
                 why = f"相位:{_stage}"
+            elif len(sources or []) < MIN_SOURCES:
+                blocked["单源"] = blocked.get("单源", 0) + 1
+                why = f"仅{len(sources or [])}个发现源<{MIN_SOURCES}(自省提案:须多源共振)"
             elif _short < MIN_SHORT:
                 blocked["方向分"] += 1
                 why = f"2周分{_short:.0f}<{MIN_SHORT}"
@@ -311,7 +317,7 @@ def build_section() -> str:
               f"→复判{fn.get('judged', 0)}→达标{fn.get('passed', 0)}")
     lines = ["## 🐴 黑马雷达（全选池复判 · 纯黑马）", "",
              f"> 🕒 {data.get('generated_at', '')} · 漏斗:{fn_txt} · "
-             "严门槛:2周分≥58+盈亏比≥1.2+非派发+时机在窗 · 概率=规则情景估计", ""]
+             "严门槛:2周分≥62+多源共振(≥2源)+盈亏比≥1.2+非派发+时机在窗 · 概率=规则情景估计", ""]
     if not horses:
         blocked = "、".join(f"{k}{v}" for k, v in (fn.get("blocked") or {}).items() if v)
         lines.append(f"- 今日无达标黑马（拦截：{blocked or '候选不足'}）——宁缺毋滥。")
