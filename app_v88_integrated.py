@@ -2772,6 +2772,7 @@ _now_c1, _now_c2 = st.columns([8.5, 1.5])
 with _now_c2:
     if st.button("📡 此刻最新", key="btn_force_now", use_container_width=True,
                  help="强制用此刻最新行情重算全页（约30-60秒）；不点则按原缓存节奏。AI解读不重跑、不花预算。"):
+        _v88_usage9(Path.home() / "Desktop" / "ai-daily-report-v2", "此刻最新")   # 【点击热力】
         import time as _tnow9
         if _tnow9.time() - float(st.session_state.get("_force_now_ts") or 0) < 60:
             st.toast("60秒内刚强刷过，当前已是此刻数据", icon="⏳")
@@ -12819,6 +12820,44 @@ def _v88_mkt_why9(mk, _repo):
     return _out
 
 
+def _v88_sentinel9(_repo, module, exc=None):
+    """【V88·异常哨兵 2026-07-24 用户批准三层自愈A层】被吞异常落盘显影——
+    三档段曾静默崩半天没人知道(病根:except pass)。健康条亮当日计数,
+    会话开工必读必修(铁律,已获批:bug发现即修+事后汇报)。保留最近100条。"""
+    try:
+        import traceback as _tb9
+        _fp = _repo / "data" / "render_errors.json"
+        try:
+            _rows = json.loads(_fp.read_text(encoding="utf-8"))
+        except Exception:
+            _rows = []
+        _rows.append({"ts": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                      "module": str(module)[:40],
+                      "err": (str(exc)[:500] if exc is not None else _tb9.format_exc()[-500:])})
+        _fp.write_text(json.dumps(_rows[-100:], ensure_ascii=False, indent=1), encoding="utf-8")
+    except Exception:
+        pass
+
+
+def _v88_usage9(_repo, event):
+    """【V88·点击热力 2026-07-24 用户批准三层自愈C层】本地记录使用事件——
+    「🧬系统自省」展示7日热力+主动提减法。只存本机data/(gitignore),不上传。保留30天。"""
+    try:
+        _fp = _repo / "data" / "usage_log.json"
+        try:
+            _d = json.loads(_fp.read_text(encoding="utf-8"))
+        except Exception:
+            _d = {}
+        _day = datetime.now().strftime("%Y-%m-%d")
+        _d.setdefault(_day, {})
+        _d[_day][str(event)] = int(_d[_day].get(str(event), 0)) + 1
+        for _k in sorted(_d)[:-30]:
+            _d.pop(_k, None)
+        _fp.write_text(json.dumps(_d, ensure_ascii=False, indent=1), encoding="utf-8")
+    except Exception:
+        pass
+
+
 def _v88_sector_edge9(label):
     """【V88·板块定性 2026-07-18 用户点单"轮动全是数学模型"】复用私仓 rotation_forecast.
     sector_edge(行业研报>板块新闻,带出处);30分钟缓存;空=调用处标'纯量价模型'。"""
@@ -13850,6 +13889,19 @@ def _render_today_nav():
                    "down": ("☁️ 云端离线·需重启", "#dc2626")}.get(_cl)
         if _cl_txt:
             _parts9.append(_cl_txt)
+        # 【V88·异常哨兵 2026-07-24】今日被吞渲染异常计数——不再让模块静默消失
+        try:
+            _re9h = json.loads((_repo / "data" / "render_errors.json").read_text(encoding="utf-8"))
+            _tdy9h = datetime.now().strftime("%Y-%m-%d")
+            _err_tdy9 = [r for r in _re9h if str(r.get("ts", "")).startswith(_tdy9h)]
+            if _err_tdy9:
+                _mods9h = "、".join(sorted({str(r.get("module")) for r in _err_tdy9})[:3])
+                _parts9.append((f"🚨 哨兵:今日吞掉{len(_err_tdy9)}个异常({_mods9h})——跟我说一声即修",
+                                "#dc2626"))
+            else:
+                _parts9.append(("🛡️ 哨兵:今日零静默异常", "#16a34a"))
+        except Exception:
+            _parts9.append(("🛡️ 哨兵:待首个记录", "#94a3b8"))
         st.markdown("🩺 " + " ｜ ".join(f"<span style='color:{c};font-weight:600'>{t}</span>"
                                         for t, c in _parts9),
                     unsafe_allow_html=True)
@@ -13858,6 +13910,48 @@ def _render_today_nav():
                        "若长期需保活，把该 App 的 Sharing 改为 Public（隐私仍由密码门+持仓Token保护，见下方说明）。")
     except Exception:
         pass
+
+    # 【V88·系统自省 2026-07-24 用户批准三层自愈B+C层】战绩提案待批+使用热力。
+    # 提案=战绩总账到期核算自动生成(零AI规则化),只列不执行——用户一句话批准才改规则(定纲红线)。
+    try:
+        _sr_d9 = {}
+        try:
+            _sr_d9 = json.loads((_repo / "data" / "self_review.json").read_text(encoding="utf-8"))
+        except Exception:
+            _sr_d9 = {}
+        _props9 = _sr_d9.get("proposals") or []
+        _usage_d9 = {}
+        try:
+            _usage_d9 = json.loads((_repo / "data" / "usage_log.json").read_text(encoding="utf-8"))
+        except Exception:
+            _usage_d9 = {}
+        _SIG_CN9 = {"entry_green": "入场绿灯", "darkhorse": "黑马池", "gate_guard": "地狱门警示",
+                    "relay": "涨停接力", "hot_dual": "双榜热股", "cycle_turn": "个股周期象限",
+                    "bottom_turn": "触底拐点", "ipo_hk": "港股打新"}
+        with st.expander(f"🧬 系统自省 · 待批改进提案 {len(_props9)} 条 ＋ 使用热力（三层自愈·2026-07-24启用）",
+                         expanded=bool(_props9)):
+            if _props9:
+                st.markdown("**📋 改进提案**（战绩到期核算自动生成·**回复我一句话批准才执行**，不批不动规则）")
+                for _p9s in _props9[:6]:
+                    st.markdown(f"- **{_SIG_CN9.get(_p9s.get('signal'), _p9s.get('signal'))}** "
+                                f"实盘命中{_p9s.get('rate')}%（n{_p9s.get('n')}）→ 提案：{_p9s.get('proposal')}")
+                st.caption(f"生成于 {_sr_d9.get('generated_at', '')} · 出处:统一战绩总账到期核算 · 每周一刷新")
+            else:
+                st.caption("📋 暂无待批提案——战绩样本到期后每周一自动体检，命中差的信号会在这里给改进方案等你批。")
+            from datetime import timedelta as _td9u
+            _days7 = [(datetime.now() - _td9u(days=_i9u)).strftime("%Y-%m-%d") for _i9u in range(7)]
+            _agg9u = {}
+            for _d9u in _days7:
+                for _e9u, _n9u in (_usage_d9.get(_d9u) or {}).items():
+                    _agg9u[_e9u] = _agg9u.get(_e9u, 0) + int(_n9u)
+            if _agg9u:
+                _top9u = sorted(_agg9u.items(), key=lambda x: -x[1])[:8]
+                st.caption("🖱️ 近7日使用热力（只存本机不上传）：" + "、".join(f"{k}×{v}" for k, v in _top9u)
+                           + "——长期零使用的模块我会主动提减法")
+            else:
+                st.caption("🖱️ 使用热力开始记录（点按钮/搜索会计数，只存本机不上传）")
+    except Exception:
+        _v88_sentinel9(_repo, "系统自省面板")
 
     # 【V88·轮动挂钩仓位】持仓/自选正好踩今日涨停主线 → 导航顶部醒目高亮（2026-07-16 用户点单）
     try:
@@ -14049,6 +14143,7 @@ def _render_today_nav():
             st.markdown("<hr style='margin:4px 0;border:none;border-top:1px dashed #e2e8f0'>", unsafe_allow_html=True)
         except Exception:
             logging.debug("三档双向关注渲染失败", exc_info=True)
+            _v88_sentinel9(_repo, "三档双向关注")   # 【哨兵】曾静默崩半天,现在落盘显影
         def _tok2code(tok):
             tok = str(tok).strip("`[] ")
             return tok.split(":", 1)[1] if ":" in tok else tok
@@ -15527,6 +15622,8 @@ with st.expander("🛰️ 全行业机会雷达 · 谁在起步（含医疗，�
     )
     _radar_state = st.session_state.get("_forward_radar_result")
     _radar_go = st.button("🛰️ 扫描全行业机会 · 中美港（约60-90秒）", key="btn_forward_radar")
+    if _radar_go:
+        _v88_usage9(Path.home() / "Desktop" / "ai-daily-report-v2", "机会雷达扫描")   # 【点击热力】
     if _radar_go:
         try:
             from stock_forward_radar import scan_forward_opportunities, DEFAULT_POOL
