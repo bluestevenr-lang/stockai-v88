@@ -1,51 +1,378 @@
 {
- "generated_at": "2026-07-25 03:24",
- "count": 499,
+ "generated_at": "2026-07-25 04:45",
+ "count": 306,
  "topics": [
   {
    "w": "AI",
-   "n": 93
+   "n": 61
   },
   {
    "w": "原油",
-   "n": 48
-  },
-  {
-   "w": "芯片",
-   "n": 25
+   "n": 24
   },
   {
    "w": "财报",
-   "n": 23
+   "n": 11
   },
   {
-   "w": "特斯拉",
-   "n": 12
-  },
-  {
-   "w": "关税",
-   "n": 10
-  },
-  {
-   "w": "黄金",
-   "n": 9
+   "w": "芯片",
+   "n": 11
   },
   {
    "w": "美元",
    "n": 9
+  },
+  {
+   "w": "特斯拉",
+   "n": 7
+  },
+  {
+   "w": "Meta",
+   "n": 6
+  },
+  {
+   "w": "关税",
+   "n": 6
   }
  ],
  "major_news": [
   {
-   "t": "Trump says US to launch EU probe over ’illegal’ Google fine",
+   "t": "Paramount agrees to delay WBD acquisition to as late as June 2027 amid legal challenge",
+   "dir": 0,
+   "stk": [],
+   "url": "https://www.cnbc.com/2026/07/24/paramount-wbd-merger-delay.html",
+   "s": "CNBC - Top News",
+   "time": "2026-07-25 04:37"
+  },
+  {
+   "t": "营收指引上修、EPS原地踏步：美国运通利润超预期后暴跌6%，市场在为“增长代价”重新定价",
+   "dir": 0,
+   "stk": [
+    {
+     "n": "美国运通",
+     "c": "AXP"
+    }
+   ],
+   "url": "https://wallstreetcn.com/articles/3777905",
+   "s": "华尔街见闻",
+   "time": "2026-07-25 04:33"
+  },
+  {
+   "t": "Paramount delays Warner Bros. merger until June amid lawsuit",
    "dir": -1,
    "stk": [],
-   "url": "https://www.investing.com/news/stock-market-news/trump-says-us-to-launch-eu-probe-over-illegal-google-fine-4812345",
+   "url": "https://www.investing.com/news/stock-market-news/paramount-delays-warner-bros-merger-until-june-amid-lawsuit-4812438",
    "s": "Investing.com - Stock Market News",
-   "time": "2026-07-25 02:36"
+   "time": "2026-07-25 03:47"
+  },
+  {
+   "t": "Nvidia, Microsoft, Meta warn against 'premature restrictions' of open-weight models",
+   "dir": -1,
+   "stk": [
+    {
+     "n": "Meta",
+     "c": "META"
+    }
+   ],
+   "url": "https://www.cnbc.com/2026/07/24/nvidia-microsoft-meta-open-weight-ai-models.html",
+   "s": "CNBC - Top News",
+   "time": "2026-07-25 01:55"
   }
  ],
  "items": [
+  {
+   "t": "Paramount agrees to delay WBD acquisition to as late as June 2027 amid legal challenge",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/24/paramount-wbd-merger-delay.html",
+   "time": "2026-07-25 04:37",
+   "cat": "global_markets",
+   "major": 1
+  },
+  {
+   "t": "营收指引上修、EPS原地踏步：美国运通利润超预期后暴跌6%，市场在为“增长代价”重新定价",
+   "stk": [
+    {
+     "n": "美国运通",
+     "c": "AXP"
+    }
+   ],
+   "dir": 0,
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3777905",
+   "time": "2026-07-25 04:33",
+   "cat": "cn_markets",
+   "major": 1
+  },
+  {
+   "t": "香港微调杠杆及反向产品监管框架，引入投资者保障新措施",
+   "stk": [],
+   "dir": 0,
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3777907",
+   "time": "2026-07-25 04:33",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Moody's says 'unprecedented' AI spending threatens credit quality of Amazon, Meta, Alphabet and others",
+   "stk": [
+    {
+     "n": "Meta",
+     "c": "META"
+    }
+   ],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/24/moodys-ai-spending-credit-quality-amazon-meta-alphabet.html",
+   "time": "2026-07-25 04:33",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Moody's says 'unprecedented' AI spending threatens credit quality of Amazon, Meta, Alphabet and others",
+   "stk": [
+    {
+     "n": "Meta",
+     "c": "META"
+    }
+   ],
+   "dir": 0,
+   "s": "CNBC - Finance",
+   "url": "https://www.cnbc.com/2026/07/24/moodys-ai-spending-credit-quality-amazon-meta-alphabet.html",
+   "time": "2026-07-25 04:33",
+   "cat": "global_finance"
+  },
+  {
+   "t": "FDA advisers say six popular peptides can be compounded. Here are the issues they considered.",
+   "stk": [],
+   "dir": 0,
+   "s": "MarketWatch - Top Stories",
+   "url": "https://www.marketwatch.com/story/fda-advisers-vote-against-sleep-peptide-as-they-debate-safety-and-health-claims-2bc85739?mod=mw_rss_topstories",
+   "time": "2026-07-25 04:26",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Trump defends DOJ subpoenas of NY Times reporters; Google also was targeted",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/24/trump-doj-subpoenas-new-york-times-google.html",
+   "time": "2026-07-25 04:23",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Musk's bad week: Tesla suffers worst slump since 2022, SpaceX drops ahead of Starship test flight",
+   "stk": [],
+   "dir": -1,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/24/tesla-tsla-spacex-spcx-stock-starship-test-flight-musk-bad-week.html",
+   "time": "2026-07-25 04:20",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Spending Worries Weigh On Tech Shares",
+   "stk": [],
+   "dir": 0,
+   "s": "WSJ - Markets",
+   "url": "https://www.wsj.com/finance/stocks/spending-worries-weigh-on-tech-shares-5a6ba62e?mod=rss_markets_main",
+   "time": "2026-07-25 04:20",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Nasdaq lags on angst over AI spending ahead of earnings reports",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/wall-st-futures-rise-after-tech-rout-mideast-tariffs-in-focus-4810955",
+   "time": "2026-07-25 04:19",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Waymo explores ending Uber partnership, Financial Times reports",
+   "stk": [
+    {
+     "n": "Uber",
+     "c": "UBER"
+    }
+   ],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/waymo-explores-ending-uber-partnership-financial-times-reports-4812481",
+   "time": "2026-07-25 04:19",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Megacap earnings and Fed meeting could test a market on edge next week. Here’s what’s ahead",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/24/stock-market-next-week-outlook-for-july-27-31-2026.html",
+   "time": "2026-07-25 04:17",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Oil Prices Ease Pressure on Treasury Yields",
+   "stk": [],
+   "dir": 0,
+   "s": "WSJ - Markets",
+   "url": "https://www.wsj.com/finance/investing/jgbs-edge-lower-tracking-declines-in-u-s-treasurys-f3e6bacb?mod=rss_markets_main",
+   "time": "2026-07-25 04:13",
+   "cat": "global_markets"
+  },
+  {
+   "t": "I’m 38, lost my job, and have to move back in with my parents. What did I do wrong?",
+   "stk": [],
+   "dir": 0,
+   "s": "MarketWatch - Top Stories",
+   "url": "https://www.marketwatch.com/story/i-lost-my-job-my-emergency-fund-is-running-out-and-now-i-have-to-move-back-in-with-my-parents-what-did-i-do-wrong-cf1c0f9f?mod=mw_rss_topstories",
+   "time": "2026-07-25 04:11",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Stocks post weekly losses amid widening Iran conflict, AI worries, and tariffs",
+   "stk": [],
+   "dir": -1,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/us-stock-futures-steady-after-techfueled-wipeout-tariffs-iran-tensions-in-focus-4810435",
+   "time": "2026-07-25 04:09",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Paramount agrees to pause Warner Bros deal while case plays out",
+   "stk": [],
+   "dir": -1,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/paramount-agrees-to-pause-warner-bros-deal-while-case-plays-out-4812448",
+   "time": "2026-07-25 04:07",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Bond market anxiety is growing over AI capex budgets",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/24/bond-market-anxiety-ai-capex-spending.html",
+   "time": "2026-07-25 04:07",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Treasury yields slide as oil prices fall amid hopes for new U.S.-Iran peace talks",
+   "stk": [],
+   "dir": -1,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/24/treasury-yields-bonds-us-debt.html",
+   "time": "2026-07-25 04:04",
+   "cat": "global_markets"
+  },
+  {
+   "t": "黄仁勋首推支持开源AI模型，奥特曼意外呼应，马斯克称所有涉及X系统的代码将开源",
+   "stk": [],
+   "dir": 0,
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3777898",
+   "time": "2026-07-25 04:01",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Strait of Hormuz traffic may not return to normal for 12 months or more, according to prediction markets",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/24/odds-that-the-straits-traffic-returns-to-normal-drop-on-kalshi.html",
+   "time": "2026-07-25 03:58",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Why is DigitalOcean stock sliding today?",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/why-is-digitalocean-stock-sliding-today-93CH-4812450",
+   "time": "2026-07-25 03:55",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Why is Lightspeed Commerce stock climbing today?",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/why-is-lightspeed-commerce-stock-climbing-today-93CH-4812449",
+   "time": "2026-07-25 03:55",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Rare access reveals changing face of Mapuche struggle in Chile",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/rare-access-reveals-changing-face-of-mapuche-struggle-in-chile-4811073",
+   "time": "2026-07-25 03:55",
+   "cat": "global_markets"
+  },
+  {
+   "t": "CDC says massive cyclospora outbreak is now in nine states",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/24/cyclospora-cdc-says-outbreak-is-in-nine-states.html",
+   "time": "2026-07-25 03:53",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Why is Surgery Partners stock rallying today?",
+   "stk": [],
+   "dir": 1,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/why-is-surgery-partners-stock-rallying-today-93CH-4812444",
+   "time": "2026-07-25 03:50",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Why is Vir Biotechnology stock sliding today?",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/why-is-vir-biotechnology-stock-sliding-today-93CH-4812443",
+   "time": "2026-07-25 03:50",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Paramount delays Warner Bros. merger until June amid lawsuit",
+   "stk": [],
+   "dir": -1,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/paramount-delays-warner-bros-merger-until-june-amid-lawsuit-4812438",
+   "time": "2026-07-25 03:47",
+   "cat": "global_markets",
+   "major": 1
+  },
+  {
+   "t": "1 hyperscaler megacap down, 3 to go. Alphabet raises the stakes on AI spending",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/24/1-hyperscaler-megacap-down-3-to-go-alphabet-raises-the-stakes-on-ai-spending.html",
+   "time": "2026-07-25 03:41",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Trump threatens EU with 'substantial TARIFF' for 'ROBBING' U.S. tech giants",
+   "stk": [],
+   "dir": -1,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/24/trump-tariffs-eu-trade-google-apple-tech.html",
+   "time": "2026-07-25 03:39",
+   "cat": "global_markets"
+  },
+  {
+   "t": "The world is facing its largest oil shock ever. Here is why prices are not higher.",
+   "stk": [],
+   "dir": 0,
+   "s": "MarketWatch - Top Stories",
+   "url": "https://www.marketwatch.com/story/the-world-is-facing-its-largest-oil-shock-ever-here-is-why-prices-are-not-higher-0bb943c7?mod=mw_rss_topstories",
+   "time": "2026-07-25 03:31",
+   "cat": "global_markets"
+  },
   {
    "t": "Don’t rush to save Social Security, AARP tells Congress: ‘It should be debated openly — not through an accelerated process’",
    "stk": [],
@@ -53,15 +380,6 @@
    "s": "MarketWatch - Top Stories",
    "url": "https://www.marketwatch.com/story/dont-rush-to-save-social-security-aarp-tells-congress-it-should-be-debated-openly-not-through-an-accelerated-process-96cfb75d?mod=mw_rss_topstories",
    "time": "2026-07-25 03:17",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Nano Nuclear Energy (NASDAQ:NNE) Stock Price Down 7.7% - Here's What Happened - MarketBeat",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxNRzFFdk9TQVdFZ2lHRnUzOHhKTmQtR1hyUVdkbzRmb3ZTd19QTFMyNkMtWEV2NUlFb05FcmJwVmRiZlFldk5YTUgyaGRCVS1CSURaamVnWW5kNGNucWh2RjRBRXIwYjJkQkR6Y0NZUTBMd2hteVhxcHh3ai02T1EyTFVRaDRGVTZuX0ZiSzF6NXM2NXE2bXJ0LWI3QXFTQ0JfbUw1ZWZ3V0p1LWt6NWlteHBSYUE5emV6T290WXI2TjY?oc=5",
-   "time": "2026-07-25 03:15",
    "cat": "global_markets"
   },
   {
@@ -101,108 +419,6 @@
    "cat": "global_markets"
   },
   {
-   "t": "Megacap earnings and Fed meeting could test a market on edge next week. Here’s what’s ahead",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/24/stock-market-next-week-outlook-for-july-27-31-2026.html",
-   "time": "2026-07-25 03:10",
-   "cat": "global_markets"
-  },
-  {
-   "t": "凯盛新材A股股东户数减少2714户降幅6.63%，流通A股户均持股1.12万股增幅7.10%，户均持股市值16.88万元降幅16.39% - 新浪网",
-   "stk": [
-    {
-     "n": "凯盛新材",
-     "c": "301069.SZ"
-    }
-   ],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiigJBVV95cUxOZE9aOWFlcFdOcU1VcEdSME9GS0pHZDhQRjV2cVdjNGNTX1hick5rWS1ZOVd1ZmJTT3NORmRiLUQtclVfUjI2Yl9PZktNdEw3cnFtS1BMYzYzMjlveWQ3Yl9PTnFiZ3AyTkpPcjE4bGg3amlCcjVaeUJXTHkwUVVFLTlKVkZTWllZWm1hbXRqZ2ppX3pVbnBhT0M2TFBORGY5TTF0cWp4eVlYSk05NkxRU0ZrdWhXTlhEalp1b0JjMlUwOVFVa0lFRkNOT1hqN1loTVJISG9QTDU5cnJvUjVjem9yc3F6NWZpcHRHLTFNekcwVmtDUTNWcGtIdUFsQnNHNXh0dDFvNWFLUQ?oc=5",
-   "time": "2026-07-25 03:09",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "华润材料A股股东户数增加435户增幅1.88%，流通A股户均持股6.24万股降幅1.85%，户均持股市值39.02万元降幅3.70% - 新浪网",
-   "stk": [
-    {
-     "n": "华润材料",
-     "c": "301090.SZ"
-    }
-   ],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAJBVV95cUxOeThYdjUtN1lsYWg2TFNzZ0Q4VVZHSFFVT2htNF94U05QTF9wR3R4YVlRSWs5STdiRFhXUmZ0QmN6ZmF1M0x3SkUwVVZSUzBncEJuZE5sbTNwT0V2TTltYVMzWUNYX0FDZkRoZ2hNNENWdHNUV2F5YXlHYS1YTVNaaWw2QVBacWZHbC1JbFZXMktTZDBjUkNzelhWU0Z0V1BXSWpMWlEwb3BpNTBDSThRSm1pQ3AzUHdzWVVfaUFZREl1aUNkTzFrSTl4SUcwSG5yX2F2dkRvLVdfU2ozTFpkTjZLZU5ONGIxRWNBUTVWOW9NRUkxS2VzdU1tclgyb0xyb1dQUXg0c0JJbGhT?oc=5",
-   "time": "2026-07-25 03:09",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Google welcomes US government engagement on EU fine",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/google-welcomes-us-government-engagement-on-eu-fine-93CH-4812410",
-   "time": "2026-07-25 03:08",
-   "cat": "global_markets"
-  },
-  {
-   "t": "西高院A股股东户数减少1302户降幅9.43%，流通A股户均持股1.25万股增幅10.41%，户均持股市值24.22万元增幅2.13% - 新浪网",
-   "stk": [
-    {
-     "n": "西高院",
-     "c": "688334.SS"
-    }
-   ],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMirAJBVV95cUxPVHBVaEE4bHpySmpjN0F3QjZWdWFGdHVaNjMydkdnSHA1Sjl6VzJkNm9lN1k4em4zVnpMS3FYX19HR0V0WGRMUEpOOWt6R2ppdTQ3dmVkV28tVWNyMmt0VXcxa2FOa2I0cVN6dFVFalc3N0hNWEo3NGRzVUJJM085OEhfLWdzUUpUQWJ2cnExNU1oeGhDTU9yUUhEbkpaNm5OR1JEWTRVbEtaNk5PVFhVd2VqMVB3czMwVGlTWFJ1UlpFM2VvWGt4TlphN1dlQWRhWWZzdzU1d1RzUDBfR3BOTHkweGJTNkpyUlN5Wl9udHNONzh1cnhPSzVLNVBySDRqOEhnSFhldXNhbjVRVExsNmR5WlNrWTM3QWZlUHFqdnEydWR3MWxlQ2xOZVA?oc=5",
-   "time": "2026-07-25 03:03",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "金冠股份A股股东户数减少463户降幅1.36%，流通A股户均持股2.46万股增幅1.38%，户均持股市值7.85万元降幅5.99% - 新浪网",
-   "stk": [
-    {
-     "n": "金冠股份",
-     "c": "300510.SZ"
-    }
-   ],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxOVG50MXFyT2R3YXR3Sl9IU3ByWjZYREFZby1hUnI1ODEwQXJDZHpzTmg2LTdmUDJ3NVE5VVBrM3BUeFdhb2RCYWswSkNfb3gzNkdrYnJEbG1Mb3ZKQTJ1bkxmTllzM0gyM1p0cXFyRXNJOEpzSjlEU3VrWDVqZDVWUk13ZVRNeDkzUEJhUFQ5RUZwcVNNdHV6RHhERV9yNGlBdFd3Z1VaUkJJSWJTdWhLT2syYjY4RXYtUXdoNkFIQldlMmtQZ2x2aEo3X1NTeWN4WVNYUWxMSlRoQXgwcTdqdVkwRTFPYkxkYmJHMUpFOHp3RmxlRVEyb3BFM3YtUQ?oc=5",
-   "time": "2026-07-25 03:03",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "东华科技A股股东户数减少1300户降幅4.47%，流通A股户均持股2.54万股增幅4.68%，户均持股市值22.38万元降幅7.98% - 新浪网",
-   "stk": [
-    {
-     "n": "东华科技",
-     "c": "002140.SZ"
-    }
-   ],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTFBubkF2MzNXX1doX2JrRnBaYlhGdl84V09wTHlrOEtlM2RocGs1X1k5VVlLRmE0V0xoTDZ2X1hhVDNrTmNBRmtUbnZ3UTV1SV81TDB3WFVIS0pINEplTTNyMGdJSk9TQVRuZU9rUmx0ekQwaFNsNXFvZg?oc=5",
-   "time": "2026-07-25 03:03",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "通程控股A股股东户数增加800户增幅3.80%，流通A股户均持股2.49万股降幅3.66%，户均持股市值11.64万元降幅0.03% - 新浪网",
-   "stk": [
-    {
-     "n": "通程控股",
-     "c": "000419.SZ"
-    }
-   ],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9EcFNmX2M3WVZ0ZzhTTzN6aUhKTktwRTBuNk9YdHd6R21yNjE4TTlaNjZqOWtfTmtqMlFTcHhhSVRKT21BakNuaHJMS3VNRjlJZ3JubTdfSS0xNnhzcUpzYVZxeWJnaUFWMWlJZV9jV3BjRDFTRzk3ZQ?oc=5",
-   "time": "2026-07-25 03:03",
-   "cat": "cn_markets"
-  },
-  {
    "t": "‘I’m still confused’: I sold $80,000 in shares on June 30, so why didn’t I receive my dividend?",
    "stk": [],
    "dir": 0,
@@ -219,29 +435,6 @@
    "url": "https://www.marketwatch.com/story/the-30-year-treasury-yield-is-closing-in-on-5-2-a-surge-to-6-could-slam-stocks-fa9631fb?mod=mw_rss_topstories",
    "time": "2026-07-25 02:58",
    "cat": "global_markets"
-  },
-  {
-   "t": "美股周五尾盘涨跌不一，标普500指数转跌，芯片股持续下跌 - 新浪财经",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMihwFBVV95cUxOcmsxbmxISXR0TndURVZBc1hYVDIzZWNHUGdfb0txbGc1dE4wc09xcFozcE90c3pXYTNncjZRcmtKaDlfMk0zZWJlWFBvRnBXY3lVMFFSYkRYSGZjd2JfUDE2SHktVTFmNVpEWE50bEoxTGtxOTBlX0NQYkI4R1BadUloNHM1LVU?oc=5",
-   "time": "2026-07-25 02:57",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "英伟达等逾20家科技公司联署公开信支持开放权重AI模型，马斯克：所有涉及X系统的代码将开源",
-   "stk": [
-    {
-     "n": "英伟达",
-     "c": "NVDA"
-    }
-   ],
-   "dir": 0,
-   "s": "华尔街见闻",
-   "url": "https://wallstreetcn.com/articles/3777898",
-   "time": "2026-07-25 02:51",
-   "cat": "cn_markets"
   },
   {
    "t": "Trump considers ‘massive attack’ on Iran; Pakistan reportedly seeks to restart stalled peace talks",
@@ -271,57 +464,12 @@
    "cat": "global_markets"
   },
   {
-   "t": "Treasury yields slide as oil prices fall amid hopes for new U.S.-Iran peace talks",
-   "stk": [],
-   "dir": -1,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/24/treasury-yields-bonds-us-debt.html",
-   "time": "2026-07-25 02:46",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Trump threatens EU with 'substantial TARIFF' for 'ROBBING' U.S. tech giants",
-   "stk": [],
-   "dir": -1,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/24/trump-tariffs-eu-trade-google-apple-tech.html",
-   "time": "2026-07-25 02:46",
-   "cat": "global_markets"
-  },
-  {
    "t": "Over half of Americans with debt spend 25% of their income paying it off. Is a 0% APR card the right move?",
    "stk": [],
    "dir": 0,
    "s": "CNBC - Top News",
    "url": "https://www.cnbc.com/select/should-you-use-0-percent-apr-card-pay-off-debt/",
    "time": "2026-07-25 02:45",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Why is Scribe Therapeutics stock surging today?",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/why-is-scribe-therapeutics-stock-surging-today-93CH-4812397",
-   "time": "2026-07-25 02:44",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Why Experts Say Earnings Growth May Be Stalling—and What That Means For Stocks - Investopedia",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxOUWZOSzZRcGRBVjEtaDJ2dDhfdTc4MXNSR2RQdlFqaVotV3RhTHJHR250R3YzaWlXSWFqc3JsdXZPdUlzT2NvRVVYdmxIQnctS0QxR3MyZmJkdlZXZnROSS1hSE1naTNqU1hRV2R3SlVaY09LVk1zZFhENUhKeVZJeXZtSEo0eDhiTHJtaHJUWVNXTHpkVFpkTDQtY0xxV2hFRTd0TGUtVDh5bFZ5QjNDYkpDbEU3eHhHRTdPVk00eG5oSFhNcmg4dVpJN0Mtd04y?oc=5",
-   "time": "2026-07-25 02:44",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Stock Market Today : Crude Oil Slips on New Hopes for Peace Talks Headline - marketscreener.com",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxNYjJLeHM2NDRlOVpja3NDazBvSmYxVWlDV05sd1BqSkhQVUhGNmxrS2c1ZDFQQzJUazFVX19YUktCMzVJc0dZeWZqSEVDOFVERzVOeFVtYTdXYlljNVJNaUx4Z1FKXzZRaXB3TDE3MnM5Wk82YWdtRzRub2JrMlhmVFdkdnZDdVVhTVE0OFRJUVZOQ09xMWN1amZ2aTZKcG1NQmJ4Tng5ZkVwN1U3N0daRkRHSDlqRnlyZmg0dzVKSWVkQlU?oc=5",
-   "time": "2026-07-25 02:42",
    "cat": "global_markets"
   },
   {
@@ -334,20 +482,6 @@
    "cat": "global_markets"
   },
   {
-   "t": "平安恒生港股通科技主题交易型开放式指数证券投资基金基金经理变更公告 - 新浪网",
-   "stk": [
-    {
-     "n": "平安",
-     "c": "601318.SS"
-    }
-   ],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9VcXRvTk9LZnZUYXpzT0gtejNIQTRLa1VIeExMbUxCaFJRdFlKbFhmT1FIMmlncmZza0w2bkdiQ2VSWUNHY1B2T3FrMFREM2NIemJLT3Vzc3NSYV9ubkVPN0RVbGJ0VXE2LUtaNXlMSTZPdmY4N2hNcA?oc=5",
-   "time": "2026-07-25 02:39",
-   "cat": "cn_markets"
-  },
-  {
    "t": "Why Intel, Micron and other major chip stocks are falling — even as the rest of tech holds up",
    "stk": [],
    "dir": 0,
@@ -355,93 +489,6 @@
    "url": "https://www.marketwatch.com/story/why-micron-and-other-major-chip-stocks-are-falling-even-as-the-rest-of-tech-holds-up-506851dc?mod=mw_rss_topstories",
    "time": "2026-07-25 02:37",
    "cat": "global_markets"
-  },
-  {
-   "t": "Trump says US to launch EU probe over ’illegal’ Google fine",
-   "stk": [],
-   "dir": -1,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/trump-says-us-to-launch-eu-probe-over-illegal-google-fine-4812345",
-   "time": "2026-07-25 02:36",
-   "cat": "global_markets",
-   "major": 1
-  },
-  {
-   "t": "The 'sell chips, buy software' trade reappears as Wall Street caps off another volatile week",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/24/the-sell-chips-buy-software-trade-reappears-as-wall-street-caps-off-another-volatile-week.html",
-   "time": "2026-07-25 02:36",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Alphabet Q2: The Market Lost Its Mind (NASDAQ:GOOG) - Seeking Alpha",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxOanU4S3V3Y2d5bVVnS0U5X1doQjU0a0tHQlZNV082Vk1zSGlUejlXMTNCTmRnOUFQdzBXYUhlMEhFbko3MktxNFlrOHc5d21SeDBreHZIRVpyRHl2UUNER1M3N3kwM2IxbE5BTUJ4MVV1U2tadFJ6akh0WkhmbEIzSzJvOA?oc=5",
-   "time": "2026-07-25 02:35",
-   "cat": "global_markets"
-  },
-  {
-   "t": "美股周五早盘涨跌不一，美光下跌5.7% - 新浪网",
-   "stk": [
-    {
-     "n": "美光",
-     "c": "MU"
-    }
-   ],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMinwJBVV95cUxNdHpmTHZ5N05oZFh4VlFwcW9XMXd5amUyRGdaR19TcURpY0gtSVlBclBjVVJJVC1Lb2g5NGo4TE13Mmc3NXpZSlBPbi1uWVpBRVNTNzdTWmNqRThIUFlBZFhwQWhMSmhhd2VTZVR4VFVENXJKMS14T0d4S1EzUzViOHJXSkNPT2VvZ1ZPakg1QjNOLWtCbGdpcnZOWVNxM1hTRjY3cmptUGtma2ZBNXN0cl9uVERPVlowWG5IU1hHM281aGd3ZkluN0lXV29PdXFRU2dfeHlHNDFxdVdWcXFKc1ZQTVMzdUlveklsLWwtRUp6Y29abms0bFVmQm0zb3ozUFE2VFZfLWFHTExJYlRQNTlWVkVpSkk1MTQ2VW56TQ?oc=5",
-   "time": "2026-07-25 02:35",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Stocks set for weekly losses amid widening Iran conflict, AI worries, and tariffs",
-   "stk": [],
-   "dir": -1,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/us-stock-futures-steady-after-techfueled-wipeout-tariffs-iran-tensions-in-focus-4810435",
-   "time": "2026-07-25 02:32",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Farmers are already set for a $55 billion payday — why does Washington want to give them more?",
-   "stk": [],
-   "dir": 0,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/farmers-are-already-set-for-a-55-billion-payday-why-does-washington-want-to-give-them-even-more-b81b3f09?mod=mw_rss_topstories",
-   "time": "2026-07-25 02:31",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Can AI-powered ETFs beat the stock market?",
-   "stk": [],
-   "dir": 0,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/can-ai-powered-etfs-beat-the-stock-market-c5be6a9b?mod=mw_rss_topstories",
-   "time": "2026-07-25 02:31",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Opinion: Can AI-powered ETFs beat the stock market? - MarketWatch",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPLU9LMlVEZFhKSHRab2tTeUFQNlY0d0xOdzBDRm5yMFlJM1piblozYV9OSDB4cmlGLThheDBmQXNwWC16V2hUYWdEaHo5NGxoUXZGdnp3NVRfdnljdkZwLUpCME91X0JmcGVueERaaEpiYzlPTmw2MlNHS2dTSTRHM3BNZ3E4ajFxMXV0dg?oc=5",
-   "time": "2026-07-25 02:31",
-   "cat": "global_markets"
-  },
-  {
-   "t": "热门板块速睇：美股盘中光通信走弱，Lumentum领跌 - Moomoo",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxQbmhoUXB1bUlOQW5qeWtCQjNSMG13U25SeG9POXdoYy10d2xKU2JCTldkRTRDbV9sM3lESnY0MTBPMkFSUUc4Wl9uWDVsUFN1WUpxMkhsczBfdEE2dVA4X3RnU0oySnpKSXhqbVBxWmlsSWx4d2pGUGtZWnBvM01VS0V0dk54b3F6QWstd2FsOGN1bmZ5bEpXcVc3RWNDaGNpYnpmekNvZTBZN2RpNUczRkl2RmhkcFFGMFRNc1prYTFzUQ?oc=5",
-   "time": "2026-07-25 02:30",
-   "cat": "cn_markets"
   },
   {
    "t": "Why bond investors are pushing up some of your interest rates",
@@ -453,222 +500,157 @@
    "cat": "global_markets"
   },
   {
-   "t": "AMD Stock Scores Price-Target Hikes On AI Computer News - Investor's Business Daily",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxQWlF3bi1xTzc3dktoTWswWExSRW1oXzlJWHd5RWhzWUhoeXpRS1ZMOGFlTlhvMjJ3anZ2NlJfWlVxMDVWd181OGw1RDdsUlgxMVJ2QnFfTVZWc0xpOUg3Vk9wOWg3ZC1SWlpUTFpUT0NkaW1VV2c5eU5yU19PLVNxQl9hWEVseWpuTlZnekZrbGd5WUE?oc=5",
-   "time": "2026-07-25 02:27",
-   "cat": "global_markets"
-  },
-  {
-   "t": "港股公告精选｜裕元集团上半年盈利或同比降逾5成 中国中冶前6月新签合同额超4100亿元 - 财联社",
-   "stk": [
-    {
-     "n": "中国中冶",
-     "c": "601618.SS"
-    },
-    {
-     "n": "裕元集团",
-     "c": "00551.HK"
-    }
-   ],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiRkFVX3lxTE9WSEhMZl9MM3dfaVM0U1J6b200M3kzSnN6YV9Dazd0MTVhRjhfbE5NSjFaNnE0RXJhRWVYb1FTN2xEVHNvblE?oc=5",
-   "time": "2026-07-25 02:25",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Bank of America hikes common stock dividend by 14%",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/bank-of-america-hikes-common-stock-dividend-by-14-4811882",
-   "time": "2026-07-25 02:24",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Moody's says 'unprecedented' AI spending threatens credit quality of Amazon, Meta, Alphabet and others",
+   "t": "Nvidia, Microsoft, Meta warn against 'premature restrictions' of open-weight models",
    "stk": [
     {
      "n": "Meta",
      "c": "META"
     }
    ],
+   "dir": -1,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/24/nvidia-microsoft-meta-open-weight-ai-models.html",
+   "time": "2026-07-25 01:55",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Why the Federal Reserve should hike rates next week",
+   "stk": [],
    "dir": 0,
    "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/24/moodys-ai-spending-credit-quality-amazon-meta-alphabet.html",
-   "time": "2026-07-25 02:20",
+   "url": "https://www.cnbc.com/2026/07/24/why-the-federal-reserve-should-hike-rates-next-week.html",
+   "time": "2026-07-25 01:54",
    "cat": "global_markets"
   },
   {
-   "t": "Moody's says 'unprecedented' AI spending threatens credit quality of Amazon, Meta, Alphabet and others",
+   "t": "Comex Gold Ends the Week 1.37% Higher at $4067.60",
+   "stk": [],
+   "dir": 0,
+   "s": "WSJ - Markets",
+   "url": "https://www.wsj.com/finance/commodities-futures/gold-declines-on-stronger-dollar-fed-rate-hike-prospects-71b26469?mod=rss_markets_main",
+   "time": "2026-07-25 01:44",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Trader who successfully shorted Tesla into earnings now sets sights on this high flyer",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/24/trader-who-successfully-shorted-tesla-into-earnings-now-sets-sights-on-this-high-flyer-.html",
+   "time": "2026-07-25 01:28",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Analyst Report: ServiceNow Inc",
    "stk": [
     {
-     "n": "Meta",
-     "c": "META"
+     "n": "ServiceNow",
+     "c": "NOW"
     }
    ],
    "dir": 0,
-   "s": "CNBC - Finance",
-   "url": "https://www.cnbc.com/2026/07/24/moodys-ai-spending-credit-quality-amazon-meta-alphabet.html",
-   "time": "2026-07-25 02:20",
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/research/reports/ARGUS_3664_AnalystReport_1784913967000?yptr=yahoo&ncid=yahooproperties_plusresear_nm5q6ze1cei",
+   "time": "2026-07-25 01:26",
    "cat": "global_finance"
   },
   {
-   "t": "Nvidia, Microsoft and other tech giants back open-source AI models",
+   "t": "Analyst Report: American Express Co",
    "stk": [],
    "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/nvidia-microsoft-and-other-tech-giants-back-opensource-ai-models-4812383",
-   "time": "2026-07-25 02:19",
-   "cat": "global_markets"
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/research/reports/ARGUS_2751_AnalystReport_1784913967000?yptr=yahoo&ncid=yahooproperties_plusresear_nm5q6ze1cei",
+   "time": "2026-07-25 01:26",
+   "cat": "global_finance"
   },
   {
-   "t": "Piper Sandler names top oil stocks",
+   "t": "Analyst Report: DR Horton Inc",
    "stk": [],
    "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/piper-sandler-names-top-oil-stocks-93CH-4812382",
-   "time": "2026-07-25 02:18",
-   "cat": "global_markets"
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/research/reports/ARGUS_3671_AnalystReport_1784913967000?yptr=yahoo&ncid=yahooproperties_plusresear_nm5q6ze1cei",
+   "time": "2026-07-25 01:26",
+   "cat": "global_finance"
   },
   {
-   "t": "Exclusive-Blackstone, Donerail among final bidders for yacht retailer MarineMax, sources say",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/exclusiveblackstone-donerail-among-final-bidders-for-yacht-retailer-marinemax-sources-say-4812300",
-   "time": "2026-07-25 02:18",
-   "cat": "global_markets"
-  },
-  {
-   "t": "隆利科技A股股东户数减少1237户降幅5.95%，流通A股户均持股1.14万股增幅6.33%，户均持股市值10.09万元降幅21.08% - 新浪网",
-   "stk": [
-    {
-     "n": "隆利科技",
-     "c": "300752.SZ"
-    }
-   ],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMikgJBVV95cUxNY0h4aTRaaWlWemg4clBPT3FzVGcxdF9ScVRTQWZxOURWTWtxUnRQcm1wY1NObF80aERFdndVYXQ1UmI5d0Z3Mk9BR2hLbmpieGpMcVBKb3RlbnF2LWtfRjVNdnRwLTVXVzRrdFlfMjF6ZWU1R0Rfck1Ta2FHYTB0VzN3Z2lBaXExMmRTUEl0RmgtNHVobmVGNUprenN6eXpGUmJOaFVPU0t0Wl92a0J0a3RWQW9fVmhCQS1NM0FZRGRmQTUwV0tXREpad3lWdG9PYmdxbmJuS2lwdDBYcHhQUERfV2xNNm5reDVTeGtrbHhLREN3REpiYmF0TGJ0eU5rVm9NbGhHM2hBSFFDS3NqdTJn?oc=5",
-   "time": "2026-07-25 02:18",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Your retirement math may have a surprising flaw",
-   "stk": [],
-   "dir": 0,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/your-retirement-math-may-have-a-surprising-flaw-2d8f58d8?mod=mw_rss_topstories",
-   "time": "2026-07-25 02:14",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Why Did Intel Stock Drop Friday? - The Motley Fool",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTE54S2k4S1NXWENFYU5ULWplQTVyd3dmakdQOHJQU3B2MU5RLVhTNGdXZnhJUWJKNlAtVFZIVkNZRkhoMVNGYXExVnliR0lJZHNFRC1EbXJyQ0lnVFJqRktlQmtFbndGb091VlZiODZyRzVvSTZ6TW1CaDdTcHBzYTA?oc=5",
-   "time": "2026-07-25 02:13",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Strait of Hormuz traffic may not return to normal for 12 months or more, according to prediction markets",
+   "t": "Anthropic's new AI model rivals Fable 5 and is cheaper as businesses fret about costs",
    "stk": [],
    "dir": 0,
    "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/24/odds-that-the-straits-traffic-returns-to-normal-drop-on-kalshi.html",
-   "time": "2026-07-25 02:12",
+   "url": "https://www.cnbc.com/2026/07/24/anthropic-claude-opus-5-ai-fable-5-cost.html",
+   "time": "2026-07-25 01:20",
    "cat": "global_markets"
   },
   {
-   "t": "戴维医疗A股股东户数增加400户增幅2.41%，流通A股户均持股8455.38股降幅2.35%，户均持股市值8.08万元降幅1.01% - 新浪网",
-   "stk": [
-    {
-     "n": "戴维医疗",
-     "c": "300314.SZ"
-    }
-   ],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMimAJBVV95cUxQa1N5a0ZIR2lPZy1uNjh5SVhEQ0t2VHlhWFhHWElXcjZZSHlnQm1kbXk4WGxFTDVQdnJZaHAtRU05YzZ6M0FFS2hUdWFSRnpFQi1BVW5fUHdTdmhxbS1pRnJGUDlsMmxXVTF4T08tV0EtOEE3WWxHSjQ4VGt6ODM1Tlc1N3FyeUVoZzFkRHZQZ2Q3MllfaERlUDZhd0VxUEZVVUhwbTI5bWxXYjZTTTItZDZaVVVPWEpUUVUwWHNkZENLSEVKZGppdk1KMHpsOFVmTDU5OVVTcGdnc0Q0V29IVnBpek4ycDF4bFRPdGZ0WjJMSXp3aGlERW5LRjlVeGRoUXFCUFVlQlYzdFpUVk55ZzdlWGVUYWdM?oc=5",
-   "time": "2026-07-25 02:11",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "国缆检测A股股东户数减少46户降幅0.61%，流通A股户均持股1.03万股增幅0.61%，户均持股市值41.41万元降幅9.92% - 新浪网",
-   "stk": [
-    {
-     "n": "国缆检测",
-     "c": "301289.SZ"
-    }
-   ],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMimAJBVV95cUxNRFBNbV93YXZ5SExFd0lRTmE4eFAwYkdCU2Jxb1FuVlZJSHZaU2htYll0ZHQ4SDdncnRWSndRRncwMFhOMWI5RFpUZ1BPR1M0WktwV0lCenllS0RER0w3RzluQXZzalU5LUxlVFRhbkdlMjlIUWlFQjZRZHNMeE40VU5VOXRWU2lueGE1OUlPeno0NTZ2S0JILW9nWjBwY3VlSWNlYUVESWx1NDhROV9EY2NaUXhrbzdyX25Qa1lwQ1J1bUp6NjI0Yi11eWhZSktVSDZnOVFkTWZLaWg0TUU1SHpwQUszaFkxVDBNUWpCVGpMb3g5dHEwdjRROC05MmJiLWZXenFzMjc0Q2tza3ZmQ0dSdkV1a3pV?oc=5",
-   "time": "2026-07-25 02:11",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Disney options trading jumps with focus on July calls",
+   "t": "Market Update: AXP, DHI, INTC, PM, AAL, NOW",
    "stk": [],
-   "dir": 1,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/disney-options-trading-jumps-with-focus-on-july-calls-93CH-4812378",
-   "time": "2026-07-25 02:09",
+   "dir": 0,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/research/reports/ARGUS_47724_MarketUpdate_1784913067000?yptr=yahoo&ncid=yahooproperties_plusresear_nm5q6ze1cei",
+   "time": "2026-07-25 01:11",
+   "cat": "global_finance"
+  },
+  {
+   "t": "中国模型加速AI明星“内卷”，Anthropic上新Opus 5，性能逼近Fable 5价格打对折，刷新ARC-AGI-3纪录",
+   "stk": [],
+   "dir": 0,
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3777901",
+   "time": "2026-07-25 00:58",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Ship insurers restrict war coverage for Saudi Arabian cargoes in Red Sea",
+   "stk": [],
+   "dir": 0,
+   "s": "FT - Markets",
+   "url": "https://www.ft.com/content/52aa89e9-f014-498e-8415-2c435a1c858d?syn-25a6b1a6=1",
+   "time": "2026-07-25 00:38",
    "cat": "global_markets"
   },
   {
-   "t": "Stock market today: Dow, S&P 500, Nasdaq recover as oil eases, new Trump tariffs take effect - Yahoo Finance",
+   "t": "Basic Materials Roundup: Market Talk",
    "stk": [],
-   "dir": -1,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxQTUFYaE1xaFRzalhQdWRXZ1d5dEpsQWlsVzBfS1V6RU52aG5reW8wRnZYdFk0LV93RVdxOFIzYnhteDM5RnBkOURtYWhpWXhJNjVmUkoxczRHVVFnbU1KQzFlaTQ4bVJ2MldmbGhhcU1kY2hIVndoaEY3ZXF1T2xocGM5TkNxM2FsY2hpcXltckJHQ0xSb0Rybm5BamN1Nmpfay1ObzF1d1I?oc=5",
-   "time": "2026-07-25 02:09",
+   "dir": 0,
+   "s": "WSJ - Markets",
+   "url": "https://www.wsj.com/business/basic-materials-roundup-market-talk-cc25794c?mod=rss_markets_main",
+   "time": "2026-07-25 00:30",
    "cat": "global_markets"
   },
   {
-   "t": "SanDisk, American Express among market cap stock movers on Friday",
+   "t": "Financial Services Roundup: Market Talk",
    "stk": [],
    "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/sandisk-american-express-among-market-cap-stock-movers-on-friday-93CH-4812376",
-   "time": "2026-07-25 02:04",
+   "s": "WSJ - Markets",
+   "url": "https://www.wsj.com/business/financial-services-roundup-market-talk-db220057?mod=rss_markets_main",
+   "time": "2026-07-25 00:24",
    "cat": "global_markets"
   },
   {
-   "t": "袁记食品获港股上市备案，“轻资产”饺子竞速千亿赛道 - 凤凰网",
+   "t": "LeBron James joining Philadelphia 76ers for record-extending 24th NBA season",
    "stk": [],
    "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE1fTlQ1ZUxVZ0hlTElLSlZ2cnVPMlFmQXg5VjYwc3VhUUtGMFpNdm4zbWpWenp5R1ZSQlJQV1VtTVNPWTFjRW5pXzFqalRJaFIw?oc=5",
-   "time": "2026-07-25 02:04",
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/24/lebron-james-76ers-philadelphia-24th-nba-season.html",
+   "time": "2026-07-25 00:22",
+   "cat": "global_markets"
+  },
+  {
+   "t": "“还没结束，情况正在恶化！”汇丰警示：双咽喉梗阻引发大宗商品“超强挤压”",
+   "stk": [],
+   "dir": 0,
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3777896",
+   "time": "2026-07-25 00:17",
    "cat": "cn_markets"
   },
   {
-   "t": "洪汇新材A股股东户数减少484户降幅3.62%，流通A股户均持股1.16万股增幅3.75%，户均持股市值11.92万元增幅1.29% - 新浪网",
-   "stk": [
-    {
-     "n": "洪汇新材",
-     "c": "002802.SZ"
-    }
-   ],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijgJBVV95cUxQX05USExTa2ZSbFFQUnMzUW0wajQ2UXZ0TUl0X2owa1RnaGh2bnhqZmxubGxiM054bFoyOWE0YjBieTRyemZQaUlJTzlseEd6aUJqMV9McTVRT25iaXlraGFnWkVRVXBkYm95X2l1OWw3OGdsYS16UXl0a0k5ME13ZmktWVBIRnJBZUlTV20tY09tdlRiZVU0aDJ3akM1d3FjWXFseWo4QmR3REdrQTZ6WkdzeXRwSlZMUmpoMURrMDZRd0lGRTJxUGxLbU9rc0drQ3NHckFPWUtVSDRjdlQ4SEtOTVRoVkxoYzVzQlFsUFV6U2Myb0hJdHh3VzFESldZZFBZdFNqZW5fT2VaVmc?oc=5",
-   "time": "2026-07-25 02:03",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Stock Market: Nasdaq Skids As Oil Prices Jump, Google And Tesla Plunge: Weekly Review - Investor's Business Daily",
+   "t": "Pentagon lowers official Iran war death toll, omitting four killed this month",
    "stk": [],
    "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNM2ZocHZPZUpHNDRydjY3NVNKbzhhb1lJcnRWcG5KWllMN0xPeEFQLWEtQ1VlWWtCaFc2N2MxeFpkUzJveTJscGsyTFd0S1NLWnQ1Vm9jRW1XQ1BkZzlZV1JSdEZ3OE9TRkJPY0kycWpsQ1kyZlVWZlFZUnJIX1B4MXl6ZjhfUFMtMWNnNEM2dGlfWS14bnZ1bQ?oc=5",
-   "time": "2026-07-25 02:01",
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/24/pentagon-removed-four-official-iran-war-death-toll.html",
+   "time": "2026-07-24 23:41",
    "cat": "global_markets"
   }
  ]
