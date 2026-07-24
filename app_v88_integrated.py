@@ -12895,6 +12895,66 @@ def _v88_usage9(_repo, event):
         pass
 
 
+def _v88_phase_turn_full9(_repo, force=False):
+    """【V88·全池双向相位扫描 2026-07-24 用户点单"要在最全股票池960只里筛选+要有低谷转强"】
+    扫 RAW_US+RAW_HK+RAW_CN_TOP 全市场大池,找相位切换股:direction=down(顶拐/退潮·转弱)
+    + direction=up(低谷→启动·转强)。8线程并发,6小时缓存落盘 data/phase_turn_full.json。
+    force=False 只读缓存(秒开,无缓存返回None由调用处给按钮);force=True 实扫(首扫5-15分钟)。"""
+    _fp = _repo / "data" / "phase_turn_full.json"
+    _cached = None
+    try:
+        _cached = json.loads(_fp.read_text(encoding="utf-8"))
+    except Exception:
+        _cached = None
+    if not force:
+        if _cached and time.time() - float(_cached.get("ts") or 0) < 6 * 3600:
+            return _cached
+        return _cached      # 过期缓存也返回(标注时间),无缓存None
+    import sys as _sy9p
+    if str(_repo / "src") not in _sy9p.path:
+        _sy9p.path.insert(0, str(_repo / "src"))
+    from cloud_engine import fetch as _fetch9p, analyze_trend_full as _atf9p
+    from stock_cycle import cycle_phase as _cph9p
+    from concurrent.futures import ThreadPoolExecutor as _TPE9p
+    _pool9p, _seen9p = [], set()
+    for _grp9p in (RAW_US, RAW_HK, RAW_CN_TOP):
+        for _it9p in _grp9p:
+            _c9p = _it9p[2] if len(_it9p) > 2 else _it9p[0]
+            if _c9p and _c9p not in _seen9p:
+                _seen9p.add(_c9p)
+                _pool9p.append((_c9p, _it9p[1]))
+
+    def _one9p(_item9p):
+        _c9p, _n9p = _item9p
+        try:
+            _df9p = _fetch9p(_c9p)
+            if _df9p is None or len(_df9p) < 60:
+                return None
+            _r9p = _cph9p(_atf9p(_df9p))
+            if not _r9p or _r9p.get("direction") not in ("up", "down"):
+                return None
+            return {"code": _c9p, "name": _n9p, "direction": _r9p.get("direction"),
+                    "phase": _r9p.get("phase"), "confidence": _r9p.get("confidence"),
+                    "pos52": _r9p.get("pos52"),
+                    "strength": round(max(float(_r9p.get("up") or 0),
+                                          float(_r9p.get("down") or 0)), 1)}
+        except Exception:
+            return None
+    _out9p = []
+    with _TPE9p(max_workers=8) as _ex9p:
+        for _r9p in _ex9p.map(_one9p, _pool9p):
+            if _r9p:
+                _out9p.append(_r9p)
+    _d9p = {"ts": time.time(), "scanned": len(_pool9p),
+            "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "stocks": _out9p}
+    try:
+        _fp.write_text(json.dumps(_d9p, ensure_ascii=False), encoding="utf-8")
+    except Exception:
+        pass
+    return _d9p
+
+
 def _v88_sector_edge9(label):
     """【V88·板块定性 2026-07-18 用户点单"轮动全是数学模型"】复用私仓 rotation_forecast.
     sector_edge(行业研报>板块新闻,带出处);30分钟缓存;空=调用处标'纯量价模型'。"""
@@ -13525,11 +13585,20 @@ def _render_today_verdict(_snap, _repo):
     except Exception:
         pass
 
-    # 【V88·即将调整提醒前置 2026-07-24 用户点单"放在前端今日导读里"】个股顶拐/退潮+板块拐点,
-    # 中美港分列常显(不折叠);空市场也给原因(空白无说明铁律)。数据与右侧周期总览完全同源零新计算。
+    # 【V88·即将调整提醒·双向+全池 2026-07-24 用户点单"低谷转强也要+个股在最全960只池里筛"】
+    # ⚠️转弱(顶拐/退潮)+🌱转强(低谷→启动)双向对仗;数据源优先全池扫描缓存(676-1300只),
+    # 无缓存退持仓自选池(如实标池子大小)+给扫描按钮。空市场也给原因(空白无说明铁律)。
     try:
-        _cyc_st9w = ((_snap or {}).get("cycle_scan") or {}).get("stocks") or []
         _traj_all9w = ((_snap or {}).get("rotation_forecast") or {}).get("trajectories") or {}
+        _full9w = _v88_phase_turn_full9(_repo)
+        if _full9w and _full9w.get("stocks"):
+            _src_st9w = _full9w["stocks"]
+            _pool_tag9w = (f"全市场大池{_full9w.get('scanned')}只·扫描于{_full9w.get('generated_at')}"
+                           + ("·<b style='color:#b45309'>已超6小时可重扫</b>"
+                              if time.time() - float(_full9w.get("ts") or 0) > 6 * 3600 else ""))
+        else:
+            _src_st9w = ((_snap or {}).get("cycle_scan") or {}).get("stocks") or []
+            _pool_tag9w = f"当前池=持仓+自选{len(_src_st9w)}只·点下方按钮扫全市场大池"
 
         def _mkt_of_code9w(code):
             _c = str(code or "").upper()
@@ -13538,34 +13607,59 @@ def _render_today_verdict(_snap, _repo):
             if _c.endswith((".SS", ".SZ")) or (_c.isdigit() and len(_c) == 6):
                 return "🇨🇳A股"
             return "🇺🇸美股"
-        _down_mk9w = {"🇺🇸美股": [], "🇨🇳A股": [], "🇭🇰港股": []}
-        for _s9w in _cyc_st9w:
-            if _s9w.get("direction") == "down":
-                _down_mk9w[_mkt_of_code9w(_s9w.get("code"))].append(_s9w)
-        _rows9w = []
-        for _mk9w, _plain9w in (("🇺🇸美股", "美股"), ("🇨🇳A股", "A股"), ("🇭🇰港股", "港股")):
-            _ds9w = _down_mk9w.get(_mk9w) or []
-            _st_txt9w = ("、".join(
-                f"{_stk_link(_s.get('name'), _s.get('code'))}"
-                f"<span style='font-size:12px;color:#64748b'>({_s.get('phase')}·{_s.get('confidence')}置信"
-                + (f"·1-2周涨概率{int(_s['p_up'])}%" if _s.get("p_up") is not None else "")
-                + ")</span>" for _s in _ds9w)
-                if _ds9w else
-                "<span style='color:#94a3b8'>暂无个股顶拐/退潮信号（门槛:周期方向切换=向下,当前该市场池内无一触发——相位未到不硬报）</span>")
-            _sec9w = [f"{_t.get('name')}(拐点{(_t.get('turning') or {}).get('horizon')}"
-                      f"·{(_t.get('turning') or {}).get('type')})"
-                      for _t in (_traj_all9w.get(_plain9w) or [])
-                      if "顶部转弱" in str((_t.get("turning") or {}).get("type"))]
-            _sec_txt9w = ("｜<b>板块拐点</b>:" + "、".join(_sec9w)) if _sec9w else "｜板块:无顶部转弱拐点"
-            _rows9w.append(f"<div style='font-size:12.5px;margin:1px 0'><b>{_mk9w}</b> {_st_txt9w}"
-                           f"<span style='font-size:12px;color:#b45309'>{_sec_txt9w}</span></div>")
+        _dir_mk9w = {"down": {"🇺🇸美股": [], "🇨🇳A股": [], "🇭🇰港股": []},
+                     "up": {"🇺🇸美股": [], "🇨🇳A股": [], "🇭🇰港股": []}}
+        for _s9w in _src_st9w:
+            _d9wv = str(_s9w.get("direction") or "")
+            if _d9wv in ("up", "down"):
+                _dir_mk9w[_d9wv][_mkt_of_code9w(_s9w.get("code"))].append(_s9w)
+
+        def _cell9w(_s):
+            _extra9w = (f"·1-2周涨概率{int(_s['p_up'])}%" if _s.get("p_up") is not None
+                        else (f"·强度{_s.get('strength')}" if _s.get("strength") is not None else ""))
+            return (f"{_stk_link(_s.get('name'), _s.get('code'))}"
+                    f"<span style='font-size:12px;color:#64748b'>({_s.get('phase')}"
+                    f"·{_s.get('confidence')}置信{_extra9w})</span>")
+
+        def _side_rows9w(_dirkey9w, _sec_kw9w, _sec_lbl9w, _empty_msg9w):
+            _rows9w = []
+            for _mk9w, _plain9w in (("🇺🇸美股", "美股"), ("🇨🇳A股", "A股"), ("🇭🇰港股", "港股")):
+                _ds9w = sorted(_dir_mk9w[_dirkey9w].get(_mk9w) or [],
+                               key=lambda s: {"高": 0, "中": 1, "低": 2}.get(str(s.get("confidence")), 3))
+                _shown9w = _ds9w[:8]
+                _more9w = (f"<span style='font-size:12px;color:#94a3b8'>等{len(_ds9w)}只(全量在周期总览)</span>"
+                           if len(_ds9w) > 8 else "")
+                _st_txt9w = ("、".join(_cell9w(_s) for _s in _shown9w) + _more9w) if _ds9w else \
+                    f"<span style='color:#94a3b8'>{_empty_msg9w}</span>"
+                _sec9w = [f"{_t.get('name')}(拐点{(_t.get('turning') or {}).get('horizon')})"
+                          for _t in (_traj_all9w.get(_plain9w) or [])
+                          if _sec_kw9w in str((_t.get("turning") or {}).get("type"))]
+                _sec_txt9w = (f"｜<b>板块{_sec_lbl9w}</b>:" + "、".join(_sec9w)) if _sec9w \
+                    else f"｜板块:无{_sec_lbl9w}拐点"
+                _rows9w.append(f"<div style='font-size:12.5px;margin:1px 0'><b>{_mk9w}</b> {_st_txt9w}"
+                               f"<span style='font-size:12px;color:#b45309'>{_sec_txt9w}</span></div>")
+            return "".join(_rows9w)
         st.markdown(
             "<div style='background:#fffbeb;border:1px solid #f59e0b44;border-left:4px solid #f59e0b;"
             "border-radius:8px;padding:.45rem .7rem;margin:.3rem 0'>"
-            "<b style='font-size:13px'>⚠️ 即将调整提醒 · 个股顶拐/退潮＋板块拐点</b>"
-            "<span style='font-size:12px;color:#94a3b8'>（中美港常显·出处:个股周期扫描+板块轮动拐点,"
-            "交易日09:00/21:00更新·与周期总览同源）</span>"
-            + "".join(_rows9w) + "</div>", unsafe_allow_html=True)
+            "<b style='font-size:13px'>⚠️ 即将转弱 · 个股顶拐/退潮＋板块顶部拐点</b>"
+            f"<span style='font-size:12px;color:#94a3b8'>（{_pool_tag9w}）</span>"
+            + _side_rows9w("down", "顶部转弱", "顶部转弱",
+                           "暂无顶拐/退潮信号（门槛:相位切换=向下,该市场无一触发——相位未到不硬报）")
+            + "</div>"
+            "<div style='background:#f0fdf4;border:1px solid #16a34a44;border-left:4px solid #16a34a;"
+            "border-radius:8px;padding:.45rem .7rem;margin:.3rem 0'>"
+            "<b style='font-size:13px'>🌱 即将转强 · 个股低谷→启动＋板块底部拐点</b>"
+            "<span style='font-size:12px;color:#94a3b8'>（与转弱同池同口径·转强≠立刻买,配合龙虎门时机绿灯）</span>"
+            + _side_rows9w("up", "底部转强", "底部转强",
+                           "暂无低谷转强信号（门槛:相位切换=向上,该市场无一触发——底未到不硬报）")
+            + "</div>", unsafe_allow_html=True)
+        if st.button("🔭 全市场大池双向扫描（约676-1300只·首扫5-15分钟·6小时缓存）",
+                     key="btn_phase_turn_full9"):
+            _v88_usage9(_repo, "全池相位扫描")
+            with st.spinner("全池扫描中…8线程并发,首扫慢缓存热则快"):
+                _v88_phase_turn_full9(_repo, force=True)
+            st.rerun()
     except Exception:
         _v88_sentinel9(_repo, "即将调整提醒")
 
