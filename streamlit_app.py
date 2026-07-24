@@ -939,6 +939,96 @@ if _nav == "🧭 导航":
     except Exception:
         pass
 
+    # 【V88·云端同步 2026-07-24 用户点单"云端功能不全"】🔮四档预判+⚠️🌱调整提醒+🧬自省
+    # 与桌面完全同源(pub数据);明日=动量+温度规则估计;±1σ区间需日线序列,云端不重算,见桌面。
+    try:
+        _ma9y = {}
+        try:
+            _ma9y = (json.loads(pub_text("move_attribution.json", _PUB_VERSION) or "{}")
+                     .get("reasons") or {})
+        except Exception:
+            _ma9y = {}
+
+        def _pc9y(_p):
+            return "#dc2626" if _p >= 55 else ("#16a34a" if _p <= 45 else "#64748b")
+        _fc9y = []
+        for _mk9y in ("美股", "A股", "港股"):
+            _blk9y = ((_snap or {}).get("markets") or {}).get(_mk9y) or {}
+            _l39y = dict((x[0], x[1]) for x in ((_blk9y.get("l3") or {}).get("probs") or []))
+            if not _l39y:
+                continue
+            _t9y = float((_blk9y.get("temperature") or {}).get("temp") or 50)
+            _cg9y = float(((_blk9y.get("indices") or [{}])[0] or {}).get("chg1d") or 0)
+            _tm9y = int(round(max(25, min(75, 50 + 2.2 * _cg9y + 0.15 * (_t9y - 50)))))
+            _cells9y = [f"明日<b style='color:{_pc9y(_tm9y)}'>{_tm9y}%</b>"]
+            for _lb9y, _hz9y in (("本周", "2周"), ("本月", "4周"), ("下月", "8周")):
+                _p9y = _l39y.get(_hz9y)
+                if _p9y is not None:
+                    _cells9y.append(f"{_lb9y}<b style='color:{_pc9y(int(_p9y))}'>{int(_p9y)}%</b>")
+            _r9y = _ma9y.get(_mk9y) or {}
+            _s9y = _r9y.get("src") or {}
+            _why9y = ""
+            if _r9y.get("why"):
+                _why9y = ("<br><span style='font-size:12px;color:#64748b'>└ ❓"
+                          + ((f"<a href='{_s9y['u']}' target='_blank' "
+                              f"style='color:inherit;text-decoration:underline'>{_r9y['why']}</a>"
+                              f"（出处:{_s9y.get('s') or '新闻'}·点击看原文）") if _s9y.get("u")
+                             else f"{_r9y['why']}（出处:AI异动归因）") + "</span>")
+            _fc9y.append(f"<div style='font-size:12.5px;margin:1px 0'><b>{_mk9y}</b>："
+                         + " ｜ ".join(_cells9y) + _why9y + "</div>")
+        if _fc9y:
+            st.markdown("**🔮 大盘四档预判**"
+                        "<span style='font-size:12px;color:#94a3b8'>（明日=动量+温度规则估计·低置信；"
+                        "本周/本月/下月=统一引擎2/4/8周分·与桌面同源；±1σ波动区间见桌面版）</span>"
+                        + "".join(_fc9y), unsafe_allow_html=True)
+    except Exception:
+        pass
+    try:
+        _pt9y = json.loads(pub_text("phase_turn_full.json", _PUB_VERSION) or "{}")
+        _st9y = _pt9y.get("stocks") or []
+        _tr9y = ((_snap or {}).get("rotation_forecast") or {}).get("trajectories") or {}
+
+        def _mk9yz(code):
+            _c = str(code or "").upper()
+            if _c.endswith(".HK") or (_c.isdigit() and len(_c) in (4, 5)):
+                return "港股"
+            if _c.endswith((".SS", ".SZ")) or (_c.isdigit() and len(_c) == 6):
+                return "A股"
+            return "美股"
+        if _st9y:
+            for _dir9y, _ttl9y, _kw9y, _col9y in (
+                    ("down", "⚠️ 即将转弱 · 顶拐/退潮", "顶部转弱", "#b45309"),
+                    ("up", "🌱 即将转强 · 低谷→启动", "底部转强", "#16a34a")):
+                _rows9y = []
+                for _m9y in ("美股", "A股", "港股"):
+                    _ds9y = sorted([x for x in _st9y if x.get("direction") == _dir9y
+                                    and _mk9yz(x.get("code")) == _m9y],
+                                   key=lambda s: ({"高": 0, "中": 1, "低": 2}.get(str(s.get("confidence")), 3),
+                                                  -float(s.get("strength") or 0)))
+                    _cells9z = ("、".join(f"{s.get('name')}({s.get('confidence')}置信)" for s in _ds9y[:6])
+                                + (f" <span style='color:#94a3b8'>等{len(_ds9y)}只</span>" if len(_ds9y) > 6 else "")
+                                if _ds9y else "<span style='color:#94a3b8'>无触发（相位未到不硬报）</span>")
+                    _sec9y = [f"{t.get('name')}({(t.get('turning') or {}).get('horizon')})"
+                              for t in (_tr9y.get(_m9y) or [])
+                              if _kw9y in str((t.get("turning") or {}).get("type"))]
+                    _rows9y.append(f"<div style='font-size:12px'><b>{_m9y}</b> {_cells9z}"
+                                   + (f"｜板块拐点:{'、'.join(_sec9y)}" if _sec9y else "") + "</div>")
+                st.markdown(f"<b style='color:{_col9y};font-size:13px'>{_ttl9y}</b>"
+                            f"<span style='font-size:11px;color:#94a3b8'>"
+                            f"（全市场大池{_pt9y.get('scanned', '?')}只·{_pt9y.get('generated_at', '')}·与桌面同源）</span>"
+                            + "".join(_rows9y), unsafe_allow_html=True)
+    except Exception:
+        pass
+    try:
+        _sr9y = json.loads(pub_text("self_review.json", _PUB_VERSION) or "{}")
+        _pp9y = _sr9y.get("proposals") or []
+        if _pp9y:
+            st.caption("🧬 系统自省（战绩到期核算·提案待批,桌面批准后生效）：" + "；".join(
+                f"{_p9y.get('signal')}命中{_p9y.get('rate')}%(n{_p9y.get('n')})→{str(_p9y.get('proposal'))[:32]}"
+                for _p9y in _pp9y[:2]))
+    except Exception:
+        pass
+
     # 【V88·手机研究包·大盘版 2026-07-19 用户点单】Mac/Win关机也能拿系统数据——
     # 把大盘温度+三层链+轮动+龙虎门+实盘对账打包成可复制文本,手机贴给Claude综合研判。
     try:
@@ -1550,8 +1640,19 @@ elif _nav == "🛰️ 雷达族":
     st.markdown("#### 🆕 打新雷达（中美港新股 · Top3优先）")
     _ipo_rows9c = (_ipo9c.get("rows") or [])
     if _ipo_rows9c:
-        st.dataframe([{k: r.get(k) for k in ("市场", "名称", "代码", "申购日", "评级", "要点")
-                       if k in r} or r for r in _ipo_rows9c[:10]],
+        # 【V88·中签率公示 2026-07-24 用户点单】与桌面同口径:A股ballot/港股luckyRatio/美股如实配售制
+        def _lot9c(_r):
+            if _r.get("market") == "A股":
+                return (f"{float(_r['ballot_pct']):g}%" if _r.get("ballot_pct") else "待披露")
+            if _r.get("market") == "港股":
+                _lr = _r.get("lucky_ratio")
+                return (str(_lr) + ("" if "%" in str(_lr) else "%")) if _lr else "待披露"
+            return "配售制·无中签率"
+        st.dataframe([{"市场": _r.get("market"), "新股": f"{_r.get('name')}（{_r.get('code')}）",
+                       "申购/定价日": _r.get("apply_date"), "中签率": _lot9c(_r),
+                       "评级": _r.get("grade", ""),
+                       "点评": str(_r.get("ai") or _r.get("why") or "")[:36]}
+                      for _r in _ipo_rows9c[:10]],
                      hide_index=True, use_container_width=True)
         st.caption(f"🕒 {_ipo9c.get('generated_at', '')} · 出处:Tushare/Nasdaq/富途（A/美/港）")
         _ipor9c = _rate9c("ipo_hk", "港股新股首日上涨率")
