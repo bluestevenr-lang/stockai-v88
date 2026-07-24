@@ -14739,10 +14739,20 @@ def _render_today_nav():
                 st.session_state["_darkhorse9"] = _dh9
             _fn9 = _dh9.get("funnel") or {}
             _horses9 = _dh9.get("horses") or []
+            # 【V88·市场透明 2026-07-24 用户抓"黑马0美股是不是逻辑不一致"】复判按市场轮询计数,
+            # 某市场0达标必须能看到"判了多少只、被谁拦"——不是没判,是判了没过(通常=该市场相位差)。
+            _jbm9 = _fn9.get("judged_by_mkt") or {}
+            _jbm_txt9 = ("（" + "/".join(f"{k[-2:]}{v}" for k, v in _jbm9.items() if v) + "）") if _jbm9 else ""
+            from collections import Counter as _Ct9
+            _mkt_pass9 = _Ct9(h.get("market") for h in _horses9)
+            _zero_mkts9 = [k[-2:] for k in ("🇺🇸美股", "🇭🇰港股", "🇨🇳A股")
+                           if _jbm9.get(k, 0) > 0 and not _mkt_pass9.get(k)]
             _fn_txt9 = (f"发现{_fn9.get('found', 0)} → 除自选持仓{_fn9.get('excluded_watch', 0)} → "
-                        f"复判{_fn9.get('judged', 0)} → 达标{_fn9.get('passed', 0)}"
-                        + ("（拦截：" + "、".join(f"{k}{v}" for k, v in (_fn9.get('blocked') or {}).items() if v)
-                           + "）" if not _horses9 else ""))
+                        f"复判{_fn9.get('judged', 0)}{_jbm_txt9} → 达标{_fn9.get('passed', 0)}"
+                        + ("｜拦截：" + "、".join(f"{k}{v}" for k, v in (_fn9.get('blocked') or {}).items() if v))
+                        + (f"｜<b style='color:#b45309'>{'/'.join(_zero_mkts9)}判而未达标"
+                           f"（多为相位在派发/转弱——该市场弱势期不硬荐,与地狱门口径一致）</b>"
+                           if _zero_mkts9 else ""))
             if _horses9:
                 # 【分级分色】🔴重点=红左边条,🟡待观察=琥珀左边条（用户定纲：不同颜色标出）
                 def _dh_wrap9(_h9x):
@@ -15549,8 +15559,21 @@ with st.expander("🔥 散户情绪三榜 · 东财人气/雪球热股/雅虎热
                 for _x9h in (_i3h9.get("hot_xq_raw") or [])[:10]) + "</div>", unsafe_allow_html=True)
         with _c3h9:
             st.markdown("**🇺🇸 雅虎美股热搜**")
+            # 【V88·美股榜补文字说明 2026-07-24 用户抓"美股压根没有文字说明"】
+            # 涨跌%+判读与东财同口径:🔴热+涨≥3%=过热追高险 🟠热+跌≤-3%=情绪冰点查错杀 其余=拥挤观察
+            def _us_note9(_u):
+                _cg = _u.get("chg")
+                if _cg is None:
+                    return "<span style='font-size:12px;color:#94a3b8'>拥挤观察(涨跌待更新)</span>"
+                _cgc = "#dc2626" if _cg >= 0 else "#16a34a"
+                _tag = ("🔴过热·追高险" if _cg >= 3 else
+                        ("🟠情绪冰点·查错杀" if _cg <= -3 else "拥挤观察"))
+                _tc = "#dc2626" if _cg >= 3 else ("#b45309" if _cg <= -3 else "#94a3b8")
+                return (f"<b style='color:{_cgc}'>{_cg:+.1f}%</b> "
+                        f"<span style='font-size:12px;color:{_tc}'>{_tag}</span>")
             st.markdown("<div style='font-size:13px;line-height:1.7'>" + "".join(
-                f"<div>#{_u9h.get('rank')} {_stk_link(_u9h.get('symbol'), _u9h.get('symbol'))}</div>"
+                f"<div>#{_u9h.get('rank')} {_stk_link(_u9h.get('name') or _u9h.get('symbol'), _u9h.get('symbol'))} "
+                + _us_note9(_u9h) + "</div>"
                 for _u9h in (_i3h9.get("hot_us_raw") or [])[:10]) + "</div>", unsafe_allow_html=True)
         _hd9v = _v88_rate_line9("hot_dual", "双榜热股隔日")
         st.caption(f"🕒 {_i3h9.get('generated_at', '')} · 出处:东财股吧/雪球(匿名token)/雅虎trending · "
@@ -15599,6 +15622,23 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
             _picks9 = sorted(_ipo_rows9, key=lambda r: (_rank9.get(r.get("grade", ""), 9),
                                                         str(r.get("apply_date") or "")))[:3]
             st.markdown("**📌 打新推荐 Top3**")
+            # 【V88·打新必带成功率 2026-07-24 用户点单"打新一定要加上成功率分析"】
+            # 港股=总账近12只首日上涨率(到期核算);A股/美股战绩源接入前如实标积累中,不编数。
+            _ipo_r9p = (_v88_success9().get("types") or {}).get("ipo_hk") or {}
+            if _ipo_r9p.get("rate") is not None:
+                _ipo_c9p = ("#16a34a" if _ipo_r9p["rate"] >= 60 else
+                            ("#dc2626" if _ipo_r9p["rate"] < 45 else "#b45309"))
+                st.markdown(f"<span style='font-size:13px'>📊 <b>同类实盘成功率</b>："
+                            f"港股新股首日上涨率 <b style='color:{_ipo_c9p}'>{_ipo_r9p['rate']}%</b>"
+                            f"（近{_ipo_r9p.get('n', 0)}只"
+                            + (f"·首日均{_ipo_r9p['avg']:+.1f}%" if _ipo_r9p.get("avg") is not None else "")
+                            + "·出处:上市回看到期核算）｜A股/美股首日战绩：样本积累中（不编数，接入后自动显示）"
+                            + ("——<b style='color:#dc2626'>近期首日上涨率偏低，谨慎档一律放弃</b>"
+                               if _ipo_r9p["rate"] < 45 else "")
+                            + "</span>", unsafe_allow_html=True)
+            else:
+                st.caption(f"📊 打新实盘成功率：样本积累中（{_ipo_r9p.get('n', 0)}只·<5不报率）"
+                           "——上市回看自动核算，别只看评级要看历史落地率")
             st.dataframe(_ipo_tb9(_picks9), hide_index=True, use_container_width=True)
             _rest9 = [r for r in _ipo_rows9 if r not in _picks9]
             if _rest9:

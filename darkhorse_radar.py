@@ -158,7 +158,7 @@ def _touch_lines(full: dict) -> str:
 
 
 def build_darkhorse(exclude_codes: set, extra: list | None = None,
-                    max_judge: int = 180) -> dict:
+                    max_judge: int = 240) -> dict:
     """整条漏斗。exclude_codes=自选+持仓的 canonical 集（纯黑马）。"""
     from cloud_engine import fetch, analyze_trend_full
     from v88_decision_core import evaluate_decision, evaluate_forward_outlook, build_trade_plan
@@ -167,7 +167,27 @@ def build_darkhorse(exclude_codes: set, extra: list | None = None,
     found = len(cands)
     fresh = [(c, n, s) for c, n, s in cands if _canon(c) not in exclude_codes]
     excluded = found - len(fresh)
-    fresh = fresh[:max_judge]
+    # 【V88·市场公平复判 2026-07-24 用户抓"黑马0美股=逻辑不一致"】原按候选序截断→
+    # 排前段的市场吃满名额,美股常被截在门外(不是美股不行,是没轮到判)。
+    # 改三市场轮流取(多源候选优先),谁也不许独占复判名额;漏斗按市场透明计数。
+    _mkt_q = {"🇺🇸美股": [], "🇭🇰港股": [], "🇨🇳A股": []}
+    for _it in sorted(fresh, key=lambda x: -len(x[2] or [])):
+        _mkt_q.setdefault(_market_of(_it[0]), []).append(_it)
+    _inter, _ri = [], 0
+    while len(_inter) < len(fresh):
+        _hit = False
+        for _mk in ("🇺🇸美股", "🇭🇰港股", "🇨🇳A股"):
+            _lst = _mkt_q.get(_mk) or []
+            if _ri < len(_lst):
+                _inter.append(_lst[_ri])
+                _hit = True
+        if not _hit:
+            break
+        _ri += 1
+    fresh = _inter[:max_judge]
+    judged_by_mkt = {"🇺🇸美股": 0, "🇭🇰港股": 0, "🇨🇳A股": 0}
+    for _it in fresh:
+        judged_by_mkt[_market_of(_it[0])] = judged_by_mkt.get(_market_of(_it[0]), 0) + 1
     horses, judged, blocked = [], 0, {"相位": 0, "方向分": 0, "赔率": 0, "时机": 0, "数据": 0}
     # 【V88·相对最优候选 2026-07-19 用户点单】未过严门槛者不再只留计数——保留完整
     # 评分明细，落出"相对最优候选榜"：严门槛纪律不变，但0达标时也要有结果可研究。
@@ -263,6 +283,7 @@ def build_darkhorse(exclude_codes: set, extra: list | None = None,
         "ts": time.time(),
         "generated_at": datetime.now(BJT).strftime("%Y-%m-%d %H:%M"),
         "funnel": {"found": found, "excluded_watch": excluded, "judged": judged,
+                   "judged_by_mkt": judged_by_mkt,
                    "passed": len(horses), "blocked": blocked},
         "horses": _keys + _rest,
         "runners": runners,
