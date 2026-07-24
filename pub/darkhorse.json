@@ -1,16 +1,16 @@
 {
- "ts": 1784809723.5129719,
- "generated_at": "2026-07-23 20:28",
+ "ts": 1784851112.1373055,
+ "generated_at": "2026-07-24 07:58",
  "funnel": {
-  "found": 389,
+  "found": 409,
   "excluded_watch": 23,
   "judged": 179,
-  "passed": 24,
+  "passed": 19,
   "blocked": {
-   "相位": 83,
-   "方向分": 25,
-   "赔率": 42,
-   "时机": 5,
+   "相位": 106,
+   "方向分": 15,
+   "赔率": 33,
+   "时机": 6,
    "数据": 1
   }
  },
@@ -26,9 +26,9 @@
    "rr": 1.24,
    "expected_pct": 13.2,
    "action": "观察",
-   "entry_note": "⏳双路径:回踩117.55/突破146.95·07-30前｜周期未充分共振，等待触发",
+   "entry_note": "⏳双路径:回踩117.55/突破146.95·07-31前｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨82%｜4-32周震荡57%",
-   "analysis_time": "2026-07-23 20:27",
+   "analysis_time": "2026-07-24 07:57",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-23 00:00:00",
@@ -136,7 +136,7 @@
    "touch": "触线:MA55+52周低位18%",
    "trade_plan": {
     "short": {
-     "in": "⏳ 双路径（07-30前任一触发即进）：①回踩117.55企稳接",
+     "in": "⏳ 双路径（07-31前任一触发即进）：①回踩117.55企稳接",
      "out": "目标134.817（10个交易日内·上行概率76%）",
      "invalid": "跌破103.64作废",
      "mode": "双路径待触发"
@@ -169,16 +169,16 @@
    "rr": 1.32,
    "expected_pct": 9.4,
    "action": "共振·小仓试错",
-   "entry_note": "⏳双路径:回踩9.64/突破11.86·07-30前｜激进门槛通过；概率优势+30.9点",
+   "entry_note": "⏳双路径:回踩9.64/突破11.86·07-31前｜激进门槛通过；概率优势+30.9点",
    "cycle_note": "2周偏涨74%｜4-32周偏涨58%",
-   "analysis_time": "2026-07-23 20:27",
+   "analysis_time": "2026-07-24 07:57",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-23 00:00:00",
     "last": 10.11,
     "atr14": 0.335,
     "stage": "趋势延续",
-    "data_signature": "062e114c183c",
+    "data_signature": "6b2f25998314",
     "horizons": {
      "2周": {
       "weeks": 2,
@@ -279,7 +279,7 @@
    "touch": "",
    "trade_plan": {
     "short": {
-     "in": "⏳ 双路径（07-30前任一触发即进）：①回踩9.64企稳接",
+     "in": "⏳ 双路径（07-31前任一触发即进）：①回踩9.64企稳接",
      "out": "目标10.783（10个交易日内·上行概率74%）",
      "invalid": "跌破8.32作废",
      "mode": "双路径待触发"
@@ -312,16 +312,16 @@
    "rr": 1.41,
    "expected_pct": 5.5,
    "action": "共振·小仓试错",
-   "entry_note": "✅现价可进·07-28前·破32.38废｜激进门槛通过；概率优势+24.5点",
+   "entry_note": "✅现价可进·07-29前·破32.38废｜激进门槛通过；概率优势+24.5点",
    "cycle_note": "2周偏涨66%｜4-32周偏涨61%",
-   "analysis_time": "2026-07-23 20:27",
+   "analysis_time": "2026-07-24 07:57",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-23 00:00:00",
     "last": 39.7,
     "atr14": 1.7986,
     "stage": "启动确认",
-    "data_signature": "66306e70bf16",
+    "data_signature": "deac2b06aaa6",
     "horizons": {
      "2周": {
       "weeks": 2,
@@ -368,7 +368,7 @@
       "slope_pct": 12.4,
       "ma_bias_pct": 8.7,
       "ret5_pct": -2.9,
-      "volume_ratio": 1.16,
+      "volume_ratio": 1.15,
       "drawdown_pct": -4.5,
       "support": 31.81,
       "resistance": 41.55,
@@ -422,7 +422,7 @@
    "touch": "",
    "trade_plan": {
     "short": {
-     "in": "✅ 现在可进：现价39.7已在买入区38.06~39.7内——今日~07-28（3个交易日）分批有效",
+     "in": "✅ 现在可进：现价39.7已在买入区38.06~39.7内——今日~07-29（3个交易日）分批有效",
      "out": "目标41.675（10个交易日内·上行概率60%）",
      "invalid": "跌破32.38作废",
      "mode": "现价可进"
@@ -445,292 +445,6 @@
    "grade": "重点"
   },
   {
-   "name": "霍尼韦尔",
-   "code": "HON",
-   "last": 232.99,
-   "unified_score": 60,
-   "short_score": 63,
-   "p_up": 63,
-   "p_down": 37,
-   "rr": 1.28,
-   "expected_pct": 2.8,
-   "action": "观察",
-   "entry_note": "✅现价可进·07-28前·破218.1废·仅短线｜周期未充分共振，等待触发",
-   "cycle_note": "2周偏涨63%｜4-32周震荡51%",
-   "analysis_time": "2026-07-23 20:27",
-   "facts": {
-    "schema": "v88.stock-decision/2.0",
-    "asof": "2026-07-22 00:00:00",
-    "last": 232.99,
-    "atr14": 6.8764,
-    "stage": "趋势延续",
-    "data_signature": "b62ea015826a",
-    "horizons": {
-     "2周": {
-      "weeks": 2,
-      "periods": 2,
-      "unit": "week",
-      "sample_days": 10,
-      "return_pct": 5.7,
-      "slope_pct": 4.0,
-      "ma_bias_pct": 3.4,
-      "ret5_pct": 4.6,
-      "volume_ratio": 1.27,
-      "drawdown_pct": -2.2,
-      "support": 218.1,
-      "resistance": 238.11,
-      "rule_score": 63,
-      "rule_view": "偏涨",
-      "phase_note": "",
-      "rule_confidence": 66
-     },
-     "4周": {
-      "weeks": 4,
-      "periods": 4,
-      "unit": "week",
-      "sample_days": 20,
-      "return_pct": -0.1,
-      "slope_pct": -4.2,
-      "ma_bias_pct": 2.0,
-      "ret5_pct": 4.6,
-      "volume_ratio": 0.6,
-      "drawdown_pct": -7.5,
-      "support": 218.1,
-      "resistance": 252.0,
-      "rule_score": 47,
-      "rule_view": "震荡",
-      "phase_note": "",
-      "rule_confidence": 54
-     },
-     "8周": {
-      "weeks": 8,
-      "periods": 8,
-      "unit": "week",
-      "sample_days": 40,
-      "return_pct": -2.5,
-      "slope_pct": -6.7,
-      "ma_bias_pct": 0.3,
-      "ret5_pct": 4.6,
-      "volume_ratio": 0.62,
-      "drawdown_pct": -7.5,
-      "support": 215.543,
-      "resistance": 252.0,
-      "rule_score": 42,
-      "rule_view": "震荡",
-      "phase_note": "",
-      "rule_confidence": 60
-     },
-     "16周": {
-      "weeks": 16,
-      "periods": 16,
-      "unit": "week",
-      "sample_days": 80,
-      "return_pct": -0.8,
-      "slope_pct": -3.0,
-      "ma_bias_pct": 0.6,
-      "ret5_pct": 4.6,
-      "volume_ratio": 0.74,
-      "drawdown_pct": -7.5,
-      "support": 215.543,
-      "resistance": 252.0,
-      "rule_score": 46,
-      "rule_view": "震荡",
-      "phase_note": "",
-      "rule_confidence": 55
-     },
-     "32周": {
-      "weeks": 32,
-      "periods": 32,
-      "unit": "week",
-      "sample_days": 160,
-      "return_pct": 16.8,
-      "slope_pct": 9.5,
-      "ma_bias_pct": 1.4,
-      "ret5_pct": 4.6,
-      "volume_ratio": 0.78,
-      "drawdown_pct": -10.0,
-      "support": 196.71,
-      "resistance": 258.861,
-      "rule_score": 70,
-      "rule_view": "偏涨",
-      "phase_note": "",
-      "rule_confidence": 74
-     }
-    }
-   },
-   "sources": [
-    "引擎榜·美股short",
-    "全选池·美股"
-   ],
-   "touch": "触线:MA55+MA120",
-   "trade_plan": {
-    "short": {
-     "in": "✅ 现在可进：现价232.99已在买入区228.12~232.99内——今日~07-28（3个交易日）分批有效",
-     "out": "目标243.254（10个交易日内·上行概率63%）",
-     "invalid": "跌破218.1作废",
-     "mode": "现价可进"
-    },
-    "mid": {
-     "in": "🚫 中线结构未修复，不建仓",
-     "out": "——（未建仓无出场）",
-     "invalid": "——"
-    },
-    "long": {
-     "in": "🏛 长线（16周+）：方向分未达55，先跟踪不建仓",
-     "out": "——（未建仓无出场）",
-     "invalid": "——"
-    },
-    "probability_kind": "规则情景估计（非回测胜率）"
-   },
-   "scope": "黑马",
-   "level": "B",
-   "market": "🇺🇸美股",
-   "grade": "重点"
-  },
-  {
-   "name": "微软",
-   "code": "MSFT",
-   "last": 390.34,
-   "unified_score": 65,
-   "short_score": 60,
-   "p_up": 60,
-   "p_down": 40,
-   "rr": 4.47,
-   "expected_pct": 9.9,
-   "action": "观察",
-   "entry_note": "✅现价可进·07-28前·破349.2废·仅短线｜周期未充分共振，等待触发",
-   "cycle_note": "2周偏涨60%｜4-32周震荡54%",
-   "analysis_time": "2026-07-23 20:27",
-   "facts": {
-    "schema": "v88.stock-decision/2.0",
-    "asof": "2026-07-22 00:00:00",
-    "last": 390.34,
-    "atr14": 10.7771,
-    "stage": "启动确认",
-    "data_signature": "5f1482781287",
-    "horizons": {
-     "2周": {
-      "weeks": 2,
-      "periods": 2,
-      "unit": "week",
-      "sample_days": 10,
-      "return_pct": 1.8,
-      "slope_pct": 3.8,
-      "ma_bias_pct": -0.4,
-      "ret5_pct": -1.3,
-      "volume_ratio": 1.01,
-      "drawdown_pct": -3.9,
-      "support": 373.35,
-      "resistance": 405.99,
-      "rule_score": 60,
-      "rule_view": "偏涨",
-      "phase_note": "",
-      "rule_confidence": 62
-     },
-     "4周": {
-      "weeks": 4,
-      "periods": 4,
-      "unit": "week",
-      "sample_days": 20,
-      "return_pct": 4.4,
-      "slope_pct": 9.3,
-      "ma_bias_pct": 1.6,
-      "ret5_pct": -1.3,
-      "volume_ratio": 0.62,
-      "drawdown_pct": -3.9,
-      "support": 349.2,
-      "resistance": 405.99,
-      "rule_score": 68,
-      "rule_view": "偏涨",
-      "phase_note": "",
-      "rule_confidence": 72
-     },
-     "8周": {
-      "weeks": 8,
-      "periods": 8,
-      "unit": "week",
-      "sample_days": 40,
-      "return_pct": -6.7,
-      "slope_pct": -10.3,
-      "ma_bias_pct": -1.7,
-      "ret5_pct": -1.3,
-      "volume_ratio": 0.69,
-      "drawdown_pct": -16.3,
-      "support": 349.2,
-      "resistance": 466.32,
-      "rule_score": 45,
-      "rule_view": "震荡",
-      "phase_note": "",
-      "rule_confidence": 56
-     },
-     "16周": {
-      "weeks": 16,
-      "periods": 16,
-      "unit": "week",
-      "sample_days": 80,
-      "return_pct": 6.9,
-      "slope_pct": -1.0,
-      "ma_bias_pct": -2.3,
-      "ret5_pct": -1.3,
-      "volume_ratio": 0.78,
-      "drawdown_pct": -16.3,
-      "support": 349.2,
-      "resistance": 466.32,
-      "rule_score": 59,
-      "rule_view": "偏涨",
-      "phase_note": "",
-      "rule_confidence": 61
-     },
-     "32周": {
-      "weeks": 32,
-      "periods": 32,
-      "unit": "week",
-      "sample_days": 160,
-      "return_pct": -20.3,
-      "slope_pct": -18.8,
-      "ma_bias_pct": -6.8,
-      "ret5_pct": -1.3,
-      "volume_ratio": 0.85,
-      "drawdown_pct": -20.6,
-      "support": 349.2,
-      "resistance": 491.312,
-      "rule_score": 45,
-      "rule_view": "震荡",
-      "phase_note": "启动相位（启动确认）·远期分回归中性",
-      "rule_confidence": 56
-     }
-    }
-   },
-   "sources": [
-    "全选池·美股",
-    "财报07-29"
-   ],
-   "touch": "触线:52周低位20%",
-   "trade_plan": {
-    "short": {
-     "in": "✅ 现在可进：现价390.34已在买入区384.64~390.34内——今日~07-28（3个交易日）分批有效",
-     "out": "目标407.301（10个交易日内·上行概率54%）",
-     "invalid": "跌破349.2作废",
-     "mode": "现价可进"
-    },
-    "mid": {
-     "in": "⏳ 中线（4-8周）：待周线站稳MA55(401.44)再启动区间建仓",
-     "out": "目标466.32（≈1季·60交易日·上行概率37%）",
-     "invalid": "收盘连续2日破MA55失效"
-    },
-    "long": {
-     "in": "🏛 长线（16周+）：方向分未达55，先跟踪不建仓",
-     "out": "——（未建仓无出场）",
-     "invalid": "——"
-    },
-    "probability_kind": "规则情景估计（非回测胜率）"
-   },
-   "scope": "黑马",
-   "level": "B",
-   "market": "🇺🇸美股",
-   "grade": "重点"
-  },
-  {
    "name": "中国电信",
    "code": "601728.SS",
    "last": 6.04,
@@ -741,9 +455,9 @@
    "rr": 2.53,
    "expected_pct": 13.1,
    "action": "多周期共振·试仓复核",
-   "entry_note": "⏳双路径:回踩5.93/突破7.28·07-30前｜标准门槛通过；概率优势+45.7点",
+   "entry_note": "⏳双路径:回踩5.93/突破7.28·07-31前｜标准门槛通过；概率优势+45.7点",
    "cycle_note": "2周偏涨74%｜4-32周偏涨65%",
-   "analysis_time": "2026-07-23 20:28",
+   "analysis_time": "2026-07-24 07:58",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-23 00:00:00",
@@ -850,7 +564,7 @@
    "touch": "",
    "trade_plan": {
     "short": {
-     "in": "⏳ 双路径（07-30前任一触发即进）：①回踩5.93企稳接",
+     "in": "⏳ 双路径（07-31前任一触发即进）：①回踩5.93企稳接",
      "out": "目标6.372（10个交易日内·上行概率68%）",
      "invalid": "跌破5.15作废",
      "mode": "双路径待触发"
@@ -883,9 +597,9 @@
    "rr": 2.08,
    "expected_pct": 11.8,
    "action": "观察",
-   "entry_note": "✅现价可进·07-28前·破49.86废·仅短线｜周期未充分共振，等待触发",
+   "entry_note": "✅现价可进·07-29前·破49.86废·仅短线｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨72%｜4-32周震荡51%",
-   "analysis_time": "2026-07-23 20:28",
+   "analysis_time": "2026-07-24 07:58",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-23 00:00:00",
@@ -992,7 +706,7 @@
    "touch": "触线:MA55+52周低位11%",
    "trade_plan": {
     "short": {
-     "in": "✅ 现在可进：现价55.24已在买入区52.97~55.24内——今日~07-28（3个交易日）分批有效",
+     "in": "✅ 现在可进：现价55.24已在买入区52.97~55.24内——今日~07-29（3个交易日）分批有效",
      "out": "目标58.187（10个交易日内·上行概率66%）",
      "invalid": "跌破49.86作废",
      "mode": "现价可进"
@@ -1025,9 +739,9 @@
    "rr": 1.77,
    "expected_pct": 8.7,
    "action": "观察",
-   "entry_note": "✅现价可进·07-28前·破130.66废｜周期未充分共振，等待触发",
+   "entry_note": "✅现价可进·07-29前·破130.66废｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨71%｜4-32周震荡57%",
-   "analysis_time": "2026-07-23 20:28",
+   "analysis_time": "2026-07-24 07:58",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-23 00:00:00",
@@ -1134,7 +848,7 @@
    "touch": "触线:52周低位17%",
    "trade_plan": {
     "short": {
-     "in": "✅ 现在可进：现价150.8已在买入区143.06~150.8内——今日~07-28（3个交易日）分批有效",
+     "in": "✅ 现在可进：现价150.8已在买入区143.06~150.8内——今日~07-29（3个交易日）分批有效",
      "out": "目标160.006（10个交易日内·上行概率65%）",
      "invalid": "跌破130.66作废",
      "mode": "现价可进"
@@ -1167,16 +881,16 @@
    "rr": 3.41,
    "expected_pct": 18.2,
    "action": "观察",
-   "entry_note": "✅现价可进·07-28前·破68.14废·仅短线｜周期未充分共振，等待触发",
+   "entry_note": "✅现价可进·07-29前·破68.14废·仅短线｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨70%｜4-32周震荡52%",
-   "analysis_time": "2026-07-23 20:28",
+   "analysis_time": "2026-07-24 07:57",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-23 00:00:00",
     "last": 74.84,
     "atr14": 2.1688,
     "stage": "启动确认",
-    "data_signature": "4140f94b912f",
+    "data_signature": "0b1eb97f2a8c",
     "horizons": {
      "2周": {
       "weeks": 2,
@@ -1205,7 +919,7 @@
       "slope_pct": 5.5,
       "ma_bias_pct": 4.0,
       "ret5_pct": 1.3,
-      "volume_ratio": 1.33,
+      "volume_ratio": 1.32,
       "drawdown_pct": -2.5,
       "support": 68.139,
       "resistance": 76.76,
@@ -1259,7 +973,7 @@
       "slope_pct": -36.8,
       "ma_bias_pct": -20.0,
       "ret5_pct": 1.3,
-      "volume_ratio": 2.07,
+      "volume_ratio": 2.06,
       "drawdown_pct": -33.6,
       "support": 68.139,
       "resistance": 112.642,
@@ -1276,7 +990,7 @@
    "touch": "触线:52周低位12%",
    "trade_plan": {
     "short": {
-     "in": "✅ 现在可进：现价74.84已在买入区71.94~74.84内——今日~07-28（3个交易日）分批有效",
+     "in": "✅ 现在可进：现价74.84已在买入区71.94~74.84内——今日~07-29（3个交易日）分批有效",
      "out": "目标78.503（10个交易日内·上行概率64%）",
      "invalid": "跌破68.14作废",
      "mode": "现价可进"
@@ -1309,16 +1023,16 @@
    "rr": 1.52,
    "expected_pct": 6.2,
    "action": "观察",
-   "entry_note": "⏳双路径:回踩54.93/突破64.28·07-30前｜周期未充分共振，等待触发",
+   "entry_note": "⏳双路径:回踩54.93/突破64.28·07-31前｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨69%｜4-32周震荡54%",
-   "analysis_time": "2026-07-23 20:28",
+   "analysis_time": "2026-07-24 07:57",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-23 00:00:00",
     "last": 57.05,
     "atr14": 1.2643,
     "stage": "启动确认",
-    "data_signature": "68c2af30a4ce",
+    "data_signature": "e542013f08f4",
     "horizons": {
      "2周": {
       "weeks": 2,
@@ -1418,7 +1132,7 @@
    "touch": "触线:MA55",
    "trade_plan": {
     "short": {
-     "in": "⏳ 双路径（07-30前任一触发即进）：①回踩54.93企稳接",
+     "in": "⏳ 双路径（07-31前任一触发即进）：①回踩54.93企稳接",
      "out": "目标59.529（10个交易日内·上行概率63%）",
      "invalid": "跌破50作废",
      "mode": "双路径待触发"
@@ -1451,16 +1165,16 @@
    "rr": 3.72,
    "expected_pct": 14.2,
    "action": "观察",
-   "entry_note": "✅现价可进·07-28前·破7.67废·仅短线｜周期未充分共振，等待触发",
+   "entry_note": "✅现价可进·07-29前·破7.67废·仅短线｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨69%｜4-32周震荡50%",
-   "analysis_time": "2026-07-23 20:28",
+   "analysis_time": "2026-07-24 07:57",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-23 00:00:00",
     "last": 8.4,
     "atr14": 0.275,
     "stage": "启动确认",
-    "data_signature": "dfb5b3da1f8a",
+    "data_signature": "ef8bc924e130",
     "horizons": {
      "2周": {
       "weeks": 2,
@@ -1560,7 +1274,7 @@
    "touch": "",
    "trade_plan": {
     "short": {
-     "in": "✅ 现在可进：现价8.4已在买入区8.27~8.4内——今日~07-28（3个交易日）分批有效",
+     "in": "✅ 现在可进：现价8.4已在买入区8.27~8.4内——今日~07-29（3个交易日）分批有效",
      "out": "目标8.736（10个交易日内·上行概率63%）",
      "invalid": "跌破7.67作废",
      "mode": "现价可进"
@@ -1593,16 +1307,16 @@
    "rr": 2.77,
    "expected_pct": 12.4,
    "action": "观察",
-   "entry_note": "✅回踩到位·07-27前·止损71.4｜周期未充分共振，等待触发",
+   "entry_note": "✅回踩到位·07-28前·止损71.4｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨67%｜4-32周震荡57%",
-   "analysis_time": "2026-07-23 20:28",
+   "analysis_time": "2026-07-24 07:57",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-23 00:00:00",
     "last": 88.65,
     "atr14": 3.6464,
     "stage": "启动确认",
-    "data_signature": "8aba8f538d49",
+    "data_signature": "7ab3d9ca41c7",
     "horizons": {
      "2周": {
       "weeks": 2,
@@ -1702,7 +1416,7 @@
    "touch": "触线:MA55",
    "trade_plan": {
     "short": {
-     "in": "✅ 回踩到位：现价88.65贴住回踩位87.8——今日~07-27（2个交易日）企稳即接",
+     "in": "✅ 回踩到位：现价88.65贴住回踩位87.8——今日~07-28（2个交易日）企稳即接",
      "out": "目标93.77（10个交易日内·上行概率61%）",
      "invalid": "跌破71.4作废",
      "mode": "回踩到位"
@@ -1735,16 +1449,16 @@
    "rr": 1.67,
    "expected_pct": 6.4,
    "action": "观察",
-   "entry_note": "✅现价可进·07-28前·破77.6废·仅短线｜周期未充分共振，等待触发",
+   "entry_note": "✅现价可进·07-29前·破77.6废·仅短线｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨66%｜4-32周震荡55%",
-   "analysis_time": "2026-07-23 20:28",
+   "analysis_time": "2026-07-24 07:57",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-23 00:00:00",
     "last": 92.65,
     "atr14": 3.4279,
     "stage": "启动确认",
-    "data_signature": "2004d1763af4",
+    "data_signature": "f47bbfe34133",
     "horizons": {
      "2周": {
       "weeks": 2,
@@ -1809,7 +1523,7 @@
       "slope_pct": -18.7,
       "ma_bias_pct": -2.3,
       "ret5_pct": -1.6,
-      "volume_ratio": 1.15,
+      "volume_ratio": 1.14,
       "drawdown_pct": -14.6,
       "support": 77.6,
       "resistance": 108.49,
@@ -1844,7 +1558,7 @@
    "touch": "触线:MA55",
    "trade_plan": {
     "short": {
-     "in": "✅ 现在可进：现价92.65已在买入区87.88~92.65内——今日~07-28（3个交易日）分批有效",
+     "in": "✅ 现在可进：现价92.65已在买入区87.88~92.65内——今日~07-29（3个交易日）分批有效",
      "out": "目标96.8（10个交易日内·上行概率60%）",
      "invalid": "跌破77.6作废",
      "mode": "现价可进"
@@ -1867,6 +1581,148 @@
    "grade": "重点"
   },
   {
+   "name": "Nucor Corporation",
+   "code": "NUE",
+   "last": 241.15,
+   "unified_score": 70,
+   "short_score": 66,
+   "p_up": 66,
+   "p_down": 34,
+   "rr": 1.59,
+   "expected_pct": 5.4,
+   "action": "多周期共振·试仓复核",
+   "entry_note": "✅现价可进·07-29前·破214.61废｜标准门槛通过；概率优势+27.4点",
+   "cycle_note": "2周偏涨66%｜4-32周偏涨64%",
+   "analysis_time": "2026-07-24 07:58",
+   "facts": {
+    "schema": "v88.stock-decision/2.0",
+    "asof": "2026-07-23 00:00:00",
+    "last": 241.15,
+    "atr14": 6.1057,
+    "stage": "趋势延续",
+    "data_signature": "441d5433ebd1",
+    "horizons": {
+     "2周": {
+      "weeks": 2,
+      "periods": 2,
+      "unit": "week",
+      "sample_days": 10,
+      "return_pct": 8.5,
+      "slope_pct": 4.9,
+      "ma_bias_pct": 3.3,
+      "ret5_pct": 2.3,
+      "volume_ratio": 1.36,
+      "drawdown_pct": -1.0,
+      "support": 222.88,
+      "resistance": 243.7,
+      "rule_score": 66,
+      "rule_view": "偏涨",
+      "phase_note": "",
+      "rule_confidence": 69
+     },
+     "4周": {
+      "weeks": 4,
+      "periods": 4,
+      "unit": "week",
+      "sample_days": 20,
+      "return_pct": 0.5,
+      "slope_pct": 1.7,
+      "ma_bias_pct": 4.1,
+      "ret5_pct": 2.3,
+      "volume_ratio": 0.89,
+      "drawdown_pct": -3.2,
+      "support": 214.61,
+      "resistance": 249.038,
+      "rule_score": 54,
+      "rule_view": "震荡",
+      "phase_note": "",
+      "rule_confidence": 55
+     },
+     "8周": {
+      "weeks": 8,
+      "periods": 8,
+      "unit": "week",
+      "sample_days": 40,
+      "return_pct": 0.6,
+      "slope_pct": -11.3,
+      "ma_bias_pct": -0.2,
+      "ret5_pct": 2.3,
+      "volume_ratio": 0.76,
+      "drawdown_pct": -10.8,
+      "support": 214.61,
+      "resistance": 270.236,
+      "rule_score": 43,
+      "rule_view": "震荡",
+      "phase_note": "",
+      "rule_confidence": 58
+     },
+     "16周": {
+      "weeks": 16,
+      "periods": 16,
+      "unit": "week",
+      "sample_days": 80,
+      "return_pct": 48.5,
+      "slope_pct": 34.7,
+      "ma_bias_pct": 7.5,
+      "ret5_pct": 2.3,
+      "volume_ratio": 0.82,
+      "drawdown_pct": -10.8,
+      "support": 162.664,
+      "resistance": 270.236,
+      "rule_score": 80,
+      "rule_view": "偏涨",
+      "phase_note": "",
+      "rule_confidence": 86
+     },
+     "32周": {
+      "weeks": 32,
+      "periods": 32,
+      "unit": "week",
+      "sample_days": 160,
+      "return_pct": 51.5,
+      "slope_pct": 64.0,
+      "ma_bias_pct": 22.1,
+      "ret5_pct": 2.3,
+      "volume_ratio": 0.78,
+      "drawdown_pct": -10.8,
+      "support": 153.571,
+      "resistance": 270.236,
+      "rule_score": 81,
+      "rule_view": "偏涨",
+      "phase_note": "",
+      "rule_confidence": 87
+     }
+    }
+   },
+   "sources": [
+    "财报07-27"
+   ],
+   "touch": "触线:MA55",
+   "trade_plan": {
+    "short": {
+     "in": "✅ 现在可进：现价241.15已在买入区231.15~241.15内——今日~07-29（3个交易日）分批有效",
+     "out": "目标251.447（10个交易日内·上行概率66%）",
+     "invalid": "跌破214.61作废",
+     "mode": "现价可进"
+    },
+    "mid": {
+     "in": "⏳ 中线（4-8周）：待周线站稳MA55(238.27)再启动区间建仓",
+     "out": "目标270.236（≈1季·60交易日·上行概率62%）",
+     "invalid": "收盘连续2日破MA55失效"
+    },
+    "long": {
+     "in": "🏛 长线（16周+）：方向分未达55，先跟踪不建仓",
+     "out": "——（未建仓无出场）",
+     "invalid": "——"
+    },
+    "probability_kind": "规则情景估计（非回测胜率）"
+   },
+   "scope": "黑马",
+   "level": "B",
+   "market": "🇺🇸美股",
+   "grade": "重点"
+  },
+  {
    "name": "金山办公",
    "code": "688111.SS",
    "last": 238.39,
@@ -1877,9 +1733,9 @@
    "rr": 1.86,
    "expected_pct": 8.2,
    "action": "多周期共振·试仓复核",
-   "entry_note": "✅回踩到位·07-27前·止损198.85｜标准门槛通过；概率优势+30.0点",
+   "entry_note": "✅回踩到位·07-28前·止损198.85｜标准门槛通过；概率优势+30.0点",
    "cycle_note": "2周偏涨65%｜4-32周偏涨61%",
-   "analysis_time": "2026-07-23 20:28",
+   "analysis_time": "2026-07-24 07:58",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-23 00:00:00",
@@ -1986,7 +1842,7 @@
    "touch": "触线:52周低位18%",
    "trade_plan": {
     "short": {
-     "in": "✅ 回踩到位：现价238.39贴住回踩位235.14——今日~07-27（2个交易日）企稳即接",
+     "in": "✅ 回踩到位：现价238.39贴住回踩位235.14——今日~07-28（2个交易日）企稳即接",
      "out": "目标255.102（10个交易日内·上行概率59%）",
      "invalid": "跌破198.85作废",
      "mode": "回踩到位"
@@ -2009,148 +1865,6 @@
    "grade": "重点"
   },
   {
-   "name": "Logitech International S.A.",
-   "code": "LOGI",
-   "last": 104.42,
-   "unified_score": 68,
-   "short_score": 65,
-   "p_up": 65,
-   "p_down": 35,
-   "rr": 3.93,
-   "expected_pct": 13.6,
-   "action": "多周期共振·试仓复核",
-   "entry_note": "✅现价可进·07-28前·破91.32废｜标准门槛通过；概率优势+44.7点",
-   "cycle_note": "2周偏涨65%｜4-32周偏涨58%",
-   "analysis_time": "2026-07-23 20:28",
-   "facts": {
-    "schema": "v88.stock-decision/2.0",
-    "asof": "2026-07-22 00:00:00",
-    "last": 104.42,
-    "atr14": 2.7936,
-    "stage": "启动确认",
-    "data_signature": "b8f0490449bb",
-    "horizons": {
-     "2周": {
-      "weeks": 2,
-      "periods": 2,
-      "unit": "week",
-      "sample_days": 10,
-      "return_pct": 6.7,
-      "slope_pct": 3.5,
-      "ma_bias_pct": 2.9,
-      "ret5_pct": 4.5,
-      "volume_ratio": 1.01,
-      "drawdown_pct": -1.2,
-      "support": 98.0,
-      "resistance": 105.66,
-      "rule_score": 65,
-      "rule_view": "偏涨",
-      "phase_note": "",
-      "rule_confidence": 68
-     },
-     "4周": {
-      "weeks": 4,
-      "periods": 4,
-      "unit": "week",
-      "sample_days": 20,
-      "return_pct": 0.0,
-      "slope_pct": 4.1,
-      "ma_bias_pct": 4.6,
-      "ret5_pct": 4.5,
-      "volume_ratio": 0.93,
-      "drawdown_pct": -1.2,
-      "support": 91.32,
-      "resistance": 105.66,
-      "rule_score": 62,
-      "rule_view": "偏涨",
-      "phase_note": "",
-      "rule_confidence": 64
-     },
-     "8周": {
-      "weeks": 8,
-      "periods": 8,
-      "unit": "week",
-      "sample_days": 40,
-      "return_pct": -7.3,
-      "slope_pct": -17.8,
-      "ma_bias_pct": -1.9,
-      "ret5_pct": 4.5,
-      "volume_ratio": 0.93,
-      "drawdown_pct": -19.5,
-      "support": 91.32,
-      "resistance": 129.66,
-      "rule_score": 40,
-      "rule_view": "偏跌",
-      "phase_note": "",
-      "rule_confidence": 62
-     },
-     "16周": {
-      "weeks": 16,
-      "periods": 16,
-      "unit": "week",
-      "sample_days": 80,
-      "return_pct": 12.8,
-      "slope_pct": 11.1,
-      "ma_bias_pct": 1.9,
-      "ret5_pct": 4.5,
-      "volume_ratio": 0.96,
-      "drawdown_pct": -19.5,
-      "support": 89.29,
-      "resistance": 129.66,
-      "rule_score": 74,
-      "rule_view": "偏涨",
-      "phase_note": "",
-      "rule_confidence": 79
-     },
-     "32周": {
-      "weeks": 32,
-      "periods": 32,
-      "unit": "week",
-      "sample_days": 160,
-      "return_pct": -7.4,
-      "slope_pct": 3.6,
-      "ma_bias_pct": 4.4,
-      "ret5_pct": 4.5,
-      "volume_ratio": 0.94,
-      "drawdown_pct": -19.5,
-      "support": 83.32,
-      "resistance": 129.66,
-      "rule_score": 56,
-      "rule_view": "震荡",
-      "phase_note": "",
-      "rule_confidence": 57
-     }
-    }
-   },
-   "sources": [
-    "财报07-28"
-   ],
-   "touch": "触线:MA55",
-   "trade_plan": {
-    "short": {
-     "in": "✅ 现在可进：现价104.42已在买入区99.64~104.42内——今日~07-28（3个交易日）分批有效",
-     "out": "目标110.176（10个交易日内·上行概率59%）",
-     "invalid": "跌破91.32作废",
-     "mode": "现价可进"
-    },
-    "mid": {
-     "in": "⏳ 中线（4-8周）：待周线站稳MA55(105.92)再启动区间建仓",
-     "out": "目标129.66（≈1季·60交易日·上行概率55%）",
-     "invalid": "收盘连续2日破MA55失效"
-    },
-    "long": {
-     "in": "🏛 长线（16周+）：区间100.62~104.42分批；跌破年线(98.66)且20日收不回才退出",
-     "out": "目标129.66（≈半年·120交易日·上行概率79%）",
-     "invalid": "跌破年线且20日收不回退出"
-    },
-    "probability_kind": "规则情景估计（非回测胜率）"
-   },
-   "scope": "黑马",
-   "level": "B",
-   "market": "🇺🇸美股",
-   "grade": "重点"
-  },
-  {
    "name": "金沙中国",
    "code": "1928.HK",
    "last": 13.86,
@@ -2161,16 +1875,16 @@
    "rr": 2.57,
    "expected_pct": 9.2,
    "action": "观察",
-   "entry_note": "✅现价可进·07-28前·破12.77废·仅短线｜周期未充分共振，等待触发",
+   "entry_note": "✅现价可进·07-29前·破12.77废·仅短线｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨64%｜4-32周震荡49%",
-   "analysis_time": "2026-07-23 20:28",
+   "analysis_time": "2026-07-24 07:57",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-23 00:00:00",
     "last": 13.86,
     "atr14": 0.4407,
     "stage": "启动确认",
-    "data_signature": "eee5b68304b4",
+    "data_signature": "1a46d59425f2",
     "horizons": {
      "2周": {
       "weeks": 2,
@@ -2270,7 +1984,7 @@
    "touch": "触线:52周低位12%",
    "trade_plan": {
     "short": {
-     "in": "✅ 现在可进：现价13.86已在买入区13.27~13.86内——今日~07-28（3个交易日）分批有效",
+     "in": "✅ 现在可进：现价13.86已在买入区13.27~13.86内——今日~07-29（3个交易日）分批有效",
      "out": "目标14.415（10个交易日内·上行概率58%）",
      "invalid": "跌破12.77作废",
      "mode": "现价可进"
@@ -2293,58 +2007,58 @@
    "grade": "待观察"
   },
   {
-   "name": "ENI S.p.A.",
-   "code": "E",
-   "last": 51.08,
-   "unified_score": 61,
-   "short_score": 64,
-   "p_up": 64,
-   "p_down": 36,
-   "rr": 1.36,
-   "expected_pct": 3.9,
+   "name": "Expand Energy Corporation",
+   "code": "EXE",
+   "last": 91.73,
+   "unified_score": 64,
+   "short_score": 63,
+   "p_up": 63,
+   "p_down": 37,
+   "rr": 1.58,
+   "expected_pct": 4.6,
    "action": "观察",
-   "entry_note": "⏳双路径:回踩49.22/突破56.36·07-30前｜周期未充分共振，等待触发",
-   "cycle_note": "2周偏涨64%｜4-32周震荡53%",
-   "analysis_time": "2026-07-23 20:28",
+   "entry_note": "✅现价可进·07-29前·破84.99废·仅短线｜周期未充分共振，等待触发",
+   "cycle_note": "2周偏涨63%｜4-32周震荡51%",
+   "analysis_time": "2026-07-24 07:58",
    "facts": {
     "schema": "v88.stock-decision/2.0",
-    "asof": "2026-07-22 00:00:00",
-    "last": 51.08,
-    "atr14": 1.0493,
-    "stage": "震荡整理",
-    "data_signature": "3174578e8730",
+    "asof": "2026-07-23 00:00:00",
+    "last": 91.73,
+    "atr14": 2.3698,
+    "stage": "启动确认",
+    "data_signature": "f50fea0e71a0",
     "horizons": {
      "2周": {
       "weeks": 2,
       "periods": 2,
       "unit": "week",
       "sample_days": 10,
-      "return_pct": 5.5,
-      "slope_pct": 5.1,
-      "ma_bias_pct": 3.9,
-      "ret5_pct": 4.3,
-      "volume_ratio": 1.18,
-      "drawdown_pct": -0.1,
-      "support": 47.21,
-      "resistance": 51.14,
-      "rule_score": 64,
+      "return_pct": 3.1,
+      "slope_pct": 4.2,
+      "ma_bias_pct": 3.4,
+      "ret5_pct": 4.0,
+      "volume_ratio": 1.04,
+      "drawdown_pct": -2.7,
+      "support": 84.985,
+      "resistance": 94.29,
+      "rule_score": 63,
       "rule_view": "偏涨",
       "phase_note": "",
-      "rule_confidence": 67
+      "rule_confidence": 66
      },
      "4周": {
       "weeks": 4,
       "periods": 4,
       "unit": "week",
       "sample_days": 20,
-      "return_pct": 4.8,
-      "slope_pct": 8.0,
-      "ma_bias_pct": 6.3,
-      "ret5_pct": 4.3,
-      "volume_ratio": 0.59,
-      "drawdown_pct": -0.1,
-      "support": 45.51,
-      "resistance": 51.14,
+      "return_pct": 3.5,
+      "slope_pct": 0.6,
+      "ma_bias_pct": 3.1,
+      "ret5_pct": 4.0,
+      "volume_ratio": 0.99,
+      "drawdown_pct": -2.7,
+      "support": 84.985,
+      "resistance": 94.29,
       "rule_score": 61,
       "rule_view": "偏涨",
       "phase_note": "",
@@ -2355,71 +2069,71 @@
       "periods": 8,
       "unit": "week",
       "sample_days": 40,
-      "return_pct": -6.1,
-      "slope_pct": -12.4,
-      "ma_bias_pct": 1.5,
-      "ret5_pct": 4.3,
-      "volume_ratio": 0.72,
-      "drawdown_pct": -7.6,
-      "support": 45.51,
-      "resistance": 55.3,
-      "rule_score": 37,
-      "rule_view": "偏跌",
+      "return_pct": -3.0,
+      "slope_pct": -3.7,
+      "ma_bias_pct": 2.4,
+      "ret5_pct": 4.0,
+      "volume_ratio": 1.06,
+      "drawdown_pct": -3.0,
+      "support": 84.985,
+      "resistance": 94.6,
+      "rule_score": 53,
+      "rule_view": "震荡",
       "phase_note": "",
-      "rule_confidence": 66
+      "rule_confidence": 54
      },
      "16周": {
       "weeks": 16,
       "periods": 16,
       "unit": "week",
       "sample_days": 80,
-      "return_pct": -4.5,
-      "slope_pct": -14.6,
+      "return_pct": -18.7,
+      "slope_pct": -15.8,
       "ma_bias_pct": -2.6,
-      "ret5_pct": 4.3,
-      "volume_ratio": 0.63,
-      "drawdown_pct": -10.9,
-      "support": 45.51,
-      "resistance": 57.351,
-      "rule_score": 34,
-      "rule_view": "偏跌",
-      "phase_note": "",
-      "rule_confidence": 69
+      "ret5_pct": 4.0,
+      "volume_ratio": 1.21,
+      "drawdown_pct": -19.4,
+      "support": 84.985,
+      "resistance": 113.802,
+      "rule_score": 45,
+      "rule_view": "震荡",
+      "phase_note": "启动相位（启动确认）·远期分回归中性",
+      "rule_confidence": 56
      },
      "32周": {
       "weeks": 32,
       "periods": 32,
       "unit": "week",
       "sample_days": 160,
-      "return_pct": 39.7,
-      "slope_pct": 52.2,
-      "ma_bias_pct": 8.9,
-      "ret5_pct": 4.3,
-      "volume_ratio": 0.72,
-      "drawdown_pct": -10.9,
-      "support": 35.677,
-      "resistance": 57.351,
-      "rule_score": 79,
-      "rule_view": "偏涨",
-      "phase_note": "",
-      "rule_confidence": 85
+      "return_pct": -23.7,
+      "slope_pct": -22.7,
+      "ma_bias_pct": -8.9,
+      "ret5_pct": 4.0,
+      "volume_ratio": 1.16,
+      "drawdown_pct": -26.7,
+      "support": 84.985,
+      "resistance": 125.176,
+      "rule_score": 45,
+      "rule_view": "震荡",
+      "phase_note": "启动相位（启动确认）·远期分回归中性",
+      "rule_confidence": 56
      }
     }
    },
    "sources": [
-    "财报07-24"
+    "财报07-28"
    ],
-   "touch": "触线:MA55+MA120",
+   "touch": "触线:MA55+52周低位17%",
    "trade_plan": {
     "short": {
-     "in": "⏳ 双路径（07-30前任一触发即进）：①回踩49.22企稳接",
-     "out": "目标52.987（10个交易日内·上行概率64%）",
-     "invalid": "跌破45.51作废",
-     "mode": "双路径待触发"
+     "in": "✅ 现在可进：现价91.73已在买入区89~91.73内——今日~07-29（3个交易日）分批有效",
+     "out": "目标94.932（10个交易日内·上行概率57%）",
+     "invalid": "跌破84.99作废",
+     "mode": "现价可进"
     },
     "mid": {
-     "in": "⏳ 中线（4-8周）：待周线站稳MA55(51.44)再启动区间建仓",
-     "out": "目标56.362（≈1季·60交易日·上行概率35%）",
+     "in": "🎯 中线（4-8周）：区间88.11~91.73分批建仓；收盘连续2日破MA55(91.56)失效",
+     "out": "目标102.346（≈1季·60交易日·上行概率42%）",
      "invalid": "收盘连续2日破MA55失效"
     },
     "long": {
@@ -2445,16 +2159,16 @@
    "rr": 4.88,
    "expected_pct": 20.5,
    "action": "观察",
-   "entry_note": "✅现价可进·07-28前·破31.84废｜周期未充分共振，等待触发",
+   "entry_note": "✅现价可进·07-29前·破31.84废｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨62%｜4-32周震荡55%",
-   "analysis_time": "2026-07-23 20:28",
+   "analysis_time": "2026-07-24 07:57",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-23 00:00:00",
     "last": 37.5,
     "atr14": 1.9429,
     "stage": "启动确认",
-    "data_signature": "522e82e8b5b4",
+    "data_signature": "f021934e6fd4",
     "horizons": {
      "2周": {
       "weeks": 2,
@@ -2554,7 +2268,7 @@
    "touch": "触线:52周低位14%",
    "trade_plan": {
     "short": {
-     "in": "✅ 现在可进：现价37.5已在买入区36.35~37.5内——今日~07-28（3个交易日）分批有效",
+     "in": "✅ 现在可进：现价37.5已在买入区36.35~37.5内——今日~07-29（3个交易日）分批有效",
      "out": "目标39.792（10个交易日内·上行概率56%）",
      "invalid": "跌破31.84作废",
      "mode": "现价可进"
@@ -2577,112 +2291,112 @@
    "grade": "待观察"
   },
   {
-   "name": "Ford Motor Company",
-   "code": "F",
-   "last": 14.42,
-   "unified_score": 70,
-   "short_score": 61,
-   "p_up": 61,
-   "p_down": 39,
-   "rr": 3.43,
-   "expected_pct": 11.6,
-   "action": "多周期共振·试仓复核",
-   "entry_note": "✅现价可进·07-28前·破13.22废｜标准门槛通过；概率优势+38.4点",
-   "cycle_note": "2周偏涨61%｜4-32周偏涨61%",
-   "analysis_time": "2026-07-23 20:28",
+   "name": "FirstEnergy Corp.",
+   "code": "FE",
+   "last": 49.49,
+   "unified_score": 66,
+   "short_score": 62,
+   "p_up": 62,
+   "p_down": 38,
+   "rr": 1.22,
+   "expected_pct": 1.4,
+   "action": "趋势偏多·等待回踩",
+   "entry_note": "⏳双路径:回踩48.76/突破51.81·07-31前｜方向偏多但当前赔率不足；需上行>45.0%",
+   "cycle_note": "2周偏涨62%｜4-32周偏涨64%",
+   "analysis_time": "2026-07-24 07:58",
    "facts": {
     "schema": "v88.stock-decision/2.0",
-    "asof": "2026-07-22 00:00:00",
-    "last": 14.42,
-    "atr14": 0.4279,
-    "stage": "趋势延续",
-    "data_signature": "ccfa775d201e",
+    "asof": "2026-07-23 00:00:00",
+    "last": 49.49,
+    "atr14": 0.9171,
+    "stage": "主升阶段",
+    "data_signature": "8bf2fb93212f",
     "horizons": {
      "2周": {
       "weeks": 2,
       "periods": 2,
       "unit": "week",
       "sample_days": 10,
-      "return_pct": 6.8,
-      "slope_pct": 5.5,
-      "ma_bias_pct": 2.9,
-      "ret5_pct": 1.7,
-      "volume_ratio": 0.96,
-      "drawdown_pct": -1.9,
-      "support": 13.44,
-      "resistance": 14.7,
-      "rule_score": 61,
+      "return_pct": 3.9,
+      "slope_pct": 2.5,
+      "ma_bias_pct": 1.7,
+      "ret5_pct": 0.8,
+      "volume_ratio": 0.83,
+      "drawdown_pct": -0.8,
+      "support": 47.59,
+      "resistance": 49.87,
+      "rule_score": 62,
       "rule_view": "偏涨",
       "phase_note": "",
-      "rule_confidence": 63
+      "rule_confidence": 64
      },
      "4周": {
       "weeks": 4,
       "periods": 4,
       "unit": "week",
       "sample_days": 20,
-      "return_pct": 3.0,
-      "slope_pct": 2.5,
-      "ma_bias_pct": 3.5,
-      "ret5_pct": 1.7,
-      "volume_ratio": 0.91,
-      "drawdown_pct": -1.9,
-      "support": 13.22,
-      "resistance": 14.7,
-      "rule_score": 56,
-      "rule_view": "震荡",
+      "return_pct": 3.5,
+      "slope_pct": 2.8,
+      "ma_bias_pct": 2.4,
+      "ret5_pct": 0.8,
+      "volume_ratio": 0.9,
+      "drawdown_pct": -0.8,
+      "support": 46.95,
+      "resistance": 49.87,
+      "rule_score": 62,
+      "rule_view": "偏涨",
       "phase_note": "",
-      "rule_confidence": 57
+      "rule_confidence": 64
      },
      "8周": {
       "weeks": 8,
       "periods": 8,
       "unit": "week",
       "sample_days": 40,
-      "return_pct": -3.4,
-      "slope_pct": -14.4,
-      "ma_bias_pct": -0.9,
-      "ret5_pct": 1.7,
-      "volume_ratio": 0.76,
-      "drawdown_pct": -18.9,
-      "support": 13.22,
-      "resistance": 17.78,
-      "rule_score": 38,
-      "rule_view": "偏跌",
+      "return_pct": 6.1,
+      "slope_pct": 7.6,
+      "ma_bias_pct": 4.4,
+      "ret5_pct": 0.8,
+      "volume_ratio": 0.8,
+      "drawdown_pct": -0.8,
+      "support": 45.09,
+      "resistance": 49.87,
+      "rule_score": 68,
+      "rule_view": "偏涨",
       "phase_note": "",
-      "rule_confidence": 64
+      "rule_confidence": 72
      },
      "16周": {
       "weeks": 16,
       "periods": 16,
       "unit": "week",
       "sample_days": 80,
-      "return_pct": 25.9,
-      "slope_pct": 28.3,
-      "ma_bias_pct": 7.6,
-      "ret5_pct": 1.7,
-      "volume_ratio": 0.81,
-      "drawdown_pct": -18.9,
-      "support": 10.972,
-      "resistance": 17.78,
-      "rule_score": 80,
-      "rule_view": "偏涨",
+      "return_pct": -0.1,
+      "slope_pct": -3.2,
+      "ma_bias_pct": 4.0,
+      "ret5_pct": 0.8,
+      "volume_ratio": 0.75,
+      "drawdown_pct": -4.5,
+      "support": 43.73,
+      "resistance": 51.806,
+      "rule_score": 55,
+      "rule_view": "震荡",
       "phase_note": "",
-      "rule_confidence": 86
+      "rule_confidence": 56
      },
      "32周": {
       "weeks": 32,
       "periods": 32,
       "unit": "week",
       "sample_days": 160,
-      "return_pct": 11.1,
-      "slope_pct": 8.3,
-      "ma_bias_pct": 9.0,
-      "ret5_pct": 1.7,
-      "volume_ratio": 0.78,
-      "drawdown_pct": -18.9,
-      "support": 10.972,
-      "resistance": 17.78,
+      "return_pct": 8.7,
+      "slope_pct": 6.7,
+      "ma_bias_pct": 5.0,
+      "ret5_pct": 0.8,
+      "volume_ratio": 0.76,
+      "drawdown_pct": -4.5,
+      "support": 43.021,
+      "resistance": 51.806,
       "rule_score": 70,
       "rule_view": "偏涨",
       "phase_note": "",
@@ -2696,20 +2410,20 @@
    "touch": "",
    "trade_plan": {
     "short": {
-     "in": "✅ 现在可进：现价14.42已在买入区13.93~14.42内——今日~07-28（3个交易日）分批有效",
-     "out": "目标15.39（10个交易日内·上行概率67%）",
-     "invalid": "跌破13.22作废",
-     "mode": "现价可进"
+     "in": "⏳ 双路径（07-31前任一触发即进）：①回踩48.76企稳接",
+     "out": "目标50.78（10个交易日内·上行概率62%）",
+     "invalid": "跌破46.75作废",
+     "mode": "双路径待触发"
     },
     "mid": {
-     "in": "🚫 中线结构未修复，不建仓",
-     "out": "——（未建仓无出场）",
-     "invalid": "——"
+     "in": "🎯 中线（4-8周）：区间47.88~49.81分批建仓；收盘连续2日破MA55(46.75)失效",
+     "out": "目标52.651（≈1季·60交易日·上行概率64%）",
+     "invalid": "收盘连续2日破MA55失效"
     },
     "long": {
-     "in": "🏛 长线（16周+）：区间13.37~14.42分批；跌破年线(13.23)且20日收不回才退出",
-     "out": "目标17.782（≈半年·120交易日·上行概率77%）",
-     "invalid": "跌破年线且20日收不回退出"
+     "in": "🏛 长线（16周+）：方向分未达55，先跟踪不建仓",
+     "out": "——（未建仓无出场）",
+     "invalid": "——"
     },
     "probability_kind": "规则情景估计（非回测胜率）"
    },
@@ -2729,16 +2443,16 @@
    "rr": 1.3,
    "expected_pct": 1.4,
    "action": "观察",
-   "entry_note": "✅现价可进·07-28前·破75.55废·仅短线｜周期未充分共振，等待触发",
+   "entry_note": "✅现价可进·07-29前·破75.55废·仅短线｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨60%｜4-32周震荡51%",
-   "analysis_time": "2026-07-23 20:28",
+   "analysis_time": "2026-07-24 07:57",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-23 00:00:00",
     "last": 81.4,
     "atr14": 1.0143,
     "stage": "趋势延续",
-    "data_signature": "acadcd21501b",
+    "data_signature": "914cd09fc3e5",
     "horizons": {
      "2周": {
       "weeks": 2,
@@ -2838,7 +2552,7 @@
    "touch": "触线:MA55",
    "trade_plan": {
     "short": {
-     "in": "✅ 现在可进：现价81.4已在买入区78.6~81.4内——今日~07-28（3个交易日）分批有效",
+     "in": "✅ 现在可进：现价81.4已在买入区78.6~81.4内——今日~07-29（3个交易日）分批有效",
      "out": "目标83.012（10个交易日内·上行概率60%）",
      "invalid": "跌破75.55作废",
      "mode": "现价可进"
@@ -2861,40 +2575,40 @@
    "grade": "待观察"
   },
   {
-   "name": "TIM S.A.",
-   "code": "TIMB",
-   "last": 22.02,
-   "unified_score": 63,
+   "name": "Logitech International S.A.",
+   "code": "LOGI",
+   "last": 102.9,
+   "unified_score": 66,
    "short_score": 59,
    "p_up": 59,
    "p_down": 41,
-   "rr": 7.1,
-   "expected_pct": 12.4,
+   "rr": 6.44,
+   "expected_pct": 13.7,
    "action": "观察",
-   "entry_note": "✅现价可进·07-28前·破20.92废·仅短线｜周期未充分共振，等待触发",
-   "cycle_note": "2周偏涨59%｜4-32周震荡54%",
-   "analysis_time": "2026-07-23 20:28",
+   "entry_note": "✅现价可进·07-29前·破91.32废｜周期未充分共振，等待触发",
+   "cycle_note": "2周偏涨59%｜4-32周震荡57%",
+   "analysis_time": "2026-07-24 07:58",
    "facts": {
     "schema": "v88.stock-decision/2.0",
-    "asof": "2026-07-22 00:00:00",
-    "last": 22.02,
-    "atr14": 0.485,
+    "asof": "2026-07-23 00:00:00",
+    "last": 102.9,
+    "atr14": 2.7707,
     "stage": "启动确认",
-    "data_signature": "c45ccded888c",
+    "data_signature": "6501c98e6f7b",
     "horizons": {
      "2周": {
       "weeks": 2,
       "periods": 2,
       "unit": "week",
       "sample_days": 10,
-      "return_pct": 1.3,
-      "slope_pct": 1.3,
-      "ma_bias_pct": -0.5,
-      "ret5_pct": -1.5,
-      "volume_ratio": 0.65,
-      "drawdown_pct": -3.1,
-      "support": 21.33,
-      "resistance": 22.72,
+      "return_pct": 1.2,
+      "slope_pct": 2.1,
+      "ma_bias_pct": 0.9,
+      "ret5_pct": 2.6,
+      "volume_ratio": 1.05,
+      "drawdown_pct": -2.6,
+      "support": 98.78,
+      "resistance": 105.66,
       "rule_score": 59,
       "rule_view": "偏涨",
       "phase_note": "",
@@ -2905,379 +2619,95 @@
       "periods": 4,
       "unit": "week",
       "sample_days": 20,
-      "return_pct": 2.5,
-      "slope_pct": 4.1,
-      "ma_bias_pct": 0.6,
-      "ret5_pct": -1.5,
-      "volume_ratio": 0.93,
-      "drawdown_pct": -3.1,
-      "support": 20.92,
-      "resistance": 22.72,
-      "rule_score": 61,
+      "return_pct": 0.5,
+      "slope_pct": 6.3,
+      "ma_bias_pct": 3.1,
+      "ret5_pct": 2.6,
+      "volume_ratio": 0.88,
+      "drawdown_pct": -2.6,
+      "support": 91.32,
+      "resistance": 105.66,
+      "rule_score": 62,
       "rule_view": "偏涨",
+      "phase_note": "",
+      "rule_confidence": 64
+     },
+     "8周": {
+      "weeks": 8,
+      "periods": 8,
+      "unit": "week",
+      "sample_days": 40,
+      "return_pct": -7.6,
+      "slope_pct": -17.4,
+      "ma_bias_pct": -3.1,
+      "ret5_pct": 2.6,
+      "volume_ratio": 0.9,
+      "drawdown_pct": -20.6,
+      "support": 91.32,
+      "resistance": 129.66,
+      "rule_score": 39,
+      "rule_view": "偏跌",
       "phase_note": "",
       "rule_confidence": 63
      },
-     "8周": {
-      "weeks": 8,
-      "periods": 8,
-      "unit": "week",
-      "sample_days": 40,
-      "return_pct": -0.8,
-      "slope_pct": 1.4,
-      "ma_bias_pct": 1.1,
-      "ret5_pct": -1.5,
-      "volume_ratio": 1.15,
-      "drawdown_pct": -3.1,
-      "support": 20.498,
-      "resistance": 22.72,
-      "rule_score": 57,
-      "rule_view": "震荡",
-      "phase_note": "",
-      "rule_confidence": 58
-     },
      "16周": {
       "weeks": 16,
       "periods": 16,
       "unit": "week",
       "sample_days": 80,
-      "return_pct": -12.8,
-      "slope_pct": -22.3,
-      "ma_bias_pct": -6.1,
-      "ret5_pct": -1.5,
-      "volume_ratio": 1.05,
-      "drawdown_pct": -21.4,
-      "support": 20.498,
-      "resistance": 28.012,
-      "rule_score": 45,
-      "rule_view": "震荡",
-      "phase_note": "启动相位（启动确认）·远期分回归中性",
-      "rule_confidence": 56
+      "return_pct": 14.3,
+      "slope_pct": 10.3,
+      "ma_bias_pct": 0.3,
+      "ret5_pct": 2.6,
+      "volume_ratio": 0.92,
+      "drawdown_pct": -20.6,
+      "support": 89.29,
+      "resistance": 129.66,
+      "rule_score": 74,
+      "rule_view": "偏涨",
+      "phase_note": "",
+      "rule_confidence": 79
      },
      "32周": {
       "weeks": 32,
       "periods": 32,
       "unit": "week",
       "sample_days": 160,
-      "return_pct": -4.9,
-      "slope_pct": 3.1,
-      "ma_bias_pct": -5.5,
-      "ret5_pct": -1.5,
-      "volume_ratio": 1.02,
-      "drawdown_pct": -21.4,
-      "support": 18.992,
-      "resistance": 28.012,
-      "rule_score": 51,
-      "rule_view": "震荡",
-      "phase_note": "",
-      "rule_confidence": 51
-     }
-    }
-   },
-   "sources": [
-    "财报07-27"
-   ],
-   "touch": "触线:MA55",
-   "trade_plan": {
-    "short": {
-     "in": "✅ 现在可进：现价22.02已在买入区21.91~22.02内——今日~07-28（3个交易日）分批有效",
-     "out": "目标22.97（10个交易日内·上行概率53%）",
-     "invalid": "跌破20.92作废",
-     "mode": "现价可进"
-    },
-    "mid": {
-     "in": "⏳ 中线（4-8周）：待周线站稳MA55(22.16)再启动区间建仓",
-     "out": "目标27.129（≈1季·60交易日·上行概率29%）",
-     "invalid": "收盘连续2日破MA55失效"
-    },
-    "long": {
-     "in": "🏛 长线（16周+）：方向分未达55，先跟踪不建仓",
-     "out": "——（未建仓无出场）",
-     "invalid": "——"
-    },
-    "probability_kind": "规则情景估计（非回测胜率）"
-   },
-   "scope": "黑马",
-   "level": "B",
-   "market": "🇺🇸美股",
-   "grade": "待观察"
-  },
-  {
-   "name": "Woori Bank",
-   "code": "WF",
-   "last": 62.21,
-   "unified_score": 68,
-   "short_score": 58,
-   "p_up": 58,
-   "p_down": 42,
-   "rr": 3.42,
-   "expected_pct": 6.7,
-   "action": "多周期共振·试仓复核",
-   "entry_note": "✅现价可进·07-28前·破55.44废｜标准门槛通过；概率优势+35.4点",
-   "cycle_note": "2周偏涨58%｜4-32周偏涨60%",
-   "analysis_time": "2026-07-23 20:28",
-   "facts": {
-    "schema": "v88.stock-decision/2.0",
-    "asof": "2026-07-22 00:00:00",
-    "last": 62.21,
-    "atr14": 1.765,
-    "stage": "启动确认",
-    "data_signature": "952395182fa6",
-    "horizons": {
-     "2周": {
-      "weeks": 2,
-      "periods": 2,
-      "unit": "week",
-      "sample_days": 10,
-      "return_pct": 0.5,
-      "slope_pct": 0.5,
-      "ma_bias_pct": -0.9,
-      "ret5_pct": -1.8,
-      "volume_ratio": 0.62,
-      "drawdown_pct": -3.7,
-      "support": 60.19,
-      "resistance": 64.61,
-      "rule_score": 58,
-      "rule_view": "震荡",
-      "phase_note": "",
-      "rule_confidence": 60
-     },
-     "4周": {
-      "weeks": 4,
-      "periods": 4,
-      "unit": "week",
-      "sample_days": 20,
-      "return_pct": 4.8,
-      "slope_pct": 11.8,
-      "ma_bias_pct": 2.2,
-      "ret5_pct": -1.8,
-      "volume_ratio": 0.59,
-      "drawdown_pct": -3.7,
-      "support": 55.44,
-      "resistance": 64.61,
-      "rule_score": 70,
-      "rule_view": "偏涨",
-      "phase_note": "",
-      "rule_confidence": 74
-     },
-     "8周": {
-      "weeks": 8,
-      "periods": 8,
-      "unit": "week",
-      "sample_days": 40,
-      "return_pct": -0.9,
-      "slope_pct": 1.8,
-      "ma_bias_pct": 1.7,
-      "ret5_pct": -1.8,
-      "volume_ratio": 0.62,
-      "drawdown_pct": -7.2,
-      "support": 55.44,
-      "resistance": 67.04,
-      "rule_score": 59,
-      "rule_view": "偏涨",
-      "phase_note": "",
-      "rule_confidence": 61
-     },
-     "16周": {
-      "weeks": 16,
-      "periods": 16,
-      "unit": "week",
-      "sample_days": 80,
-      "return_pct": -4.7,
-      "slope_pct": -14.9,
-      "ma_bias_pct": -3.4,
-      "ret5_pct": -1.8,
-      "volume_ratio": 0.78,
-      "drawdown_pct": -17.8,
-      "support": 55.44,
-      "resistance": 75.65,
-      "rule_score": 45,
-      "rule_view": "震荡",
-      "phase_note": "启动相位（启动确认）·远期分回归中性",
-      "rule_confidence": 56
-     },
-     "32周": {
-      "weeks": 32,
-      "periods": 32,
-      "unit": "week",
-      "sample_days": 160,
-      "return_pct": 13.2,
-      "slope_pct": 3.4,
-      "ma_bias_pct": -3.6,
-      "ret5_pct": -1.8,
-      "volume_ratio": 1.07,
-      "drawdown_pct": -26.6,
-      "support": 55.44,
-      "resistance": 84.71,
-      "rule_score": 66,
-      "rule_view": "偏涨",
-      "phase_note": "",
-      "rule_confidence": 69
-     }
-    }
-   },
-   "sources": [
-    "财报07-24"
-   ],
-   "touch": "触线:MA55",
-   "trade_plan": {
-    "short": {
-     "in": "✅ 现在可进：现价62.21已在买入区60.92~62.21内——今日~07-28（3个交易日）分批有效",
-     "out": "目标65.154（10个交易日内·上行概率52%）",
-     "invalid": "跌破55.44作废",
-     "mode": "现价可进"
-    },
-    "mid": {
-     "in": "🎯 中线（4-8周）：区间60.31~62.75分批建仓；收盘连续2日破MA55(62.18)失效",
-     "out": "目标71.3（≈1季·60交易日·上行概率39%）",
-     "invalid": "收盘连续2日破MA55失效"
-    },
-    "long": {
-     "in": "🏛 长线（16周+）：方向分未达55，先跟踪不建仓",
-     "out": "——（未建仓无出场）",
-     "invalid": "——"
-    },
-    "probability_kind": "规则情景估计（非回测胜率）"
-   },
-   "scope": "黑马",
-   "level": "B",
-   "market": "🇺🇸美股",
-   "grade": "待观察"
-  },
-  {
-   "name": "Telefonica Brasil S.A.",
-   "code": "VIV",
-   "last": 14.04,
-   "unified_score": 67,
-   "short_score": 58,
-   "p_up": 58,
-   "p_down": 42,
-   "rr": 2.18,
-   "expected_pct": 4.7,
-   "action": "观察",
-   "entry_note": "✅现价可进·07-28前·破12.92废｜周期未充分共振，等待触发",
-   "cycle_note": "2周偏涨58%｜4-32周震荡58%",
-   "analysis_time": "2026-07-23 20:28",
-   "facts": {
-    "schema": "v88.stock-decision/2.0",
-    "asof": "2026-07-22 00:00:00",
-    "last": 14.04,
-    "atr14": 0.3086,
-    "stage": "趋势延续",
-    "data_signature": "0b60d0103c84",
-    "horizons": {
-     "2周": {
-      "weeks": 2,
-      "periods": 2,
-      "unit": "week",
-      "sample_days": 10,
-      "return_pct": 5.6,
-      "slope_pct": 5.0,
-      "ma_bias_pct": 1.5,
-      "ret5_pct": 0.8,
-      "volume_ratio": 0.96,
-      "drawdown_pct": -1.5,
-      "support": 13.25,
-      "resistance": 14.26,
-      "rule_score": 58,
-      "rule_view": "震荡",
-      "phase_note": "",
-      "rule_confidence": 60
-     },
-     "4周": {
-      "weeks": 4,
-      "periods": 4,
-      "unit": "week",
-      "sample_days": 20,
-      "return_pct": 6.4,
-      "slope_pct": 8.0,
-      "ma_bias_pct": 3.6,
-      "ret5_pct": 0.8,
+      "return_pct": -8.9,
+      "slope_pct": 4.2,
+      "ma_bias_pct": 2.9,
+      "ret5_pct": 2.6,
       "volume_ratio": 0.9,
-      "drawdown_pct": -1.5,
-      "support": 12.92,
-      "resistance": 14.26,
-      "rule_score": 62,
-      "rule_view": "偏涨",
+      "drawdown_pct": -20.6,
+      "support": 83.32,
+      "resistance": 129.66,
+      "rule_score": 54,
+      "rule_view": "震荡",
       "phase_note": "",
-      "rule_confidence": 64
-     },
-     "8周": {
-      "weeks": 8,
-      "periods": 8,
-      "unit": "week",
-      "sample_days": 40,
-      "return_pct": 5.7,
-      "slope_pct": 6.6,
-      "ma_bias_pct": 5.3,
-      "ret5_pct": 0.8,
-      "volume_ratio": 0.93,
-      "drawdown_pct": -1.5,
-      "support": 12.554,
-      "resistance": 14.26,
-      "rule_score": 62,
-      "rule_view": "偏涨",
-      "phase_note": "",
-      "rule_confidence": 64
-     },
-     "16周": {
-      "weeks": 16,
-      "periods": 16,
-      "unit": "week",
-      "sample_days": 80,
-      "return_pct": -4.3,
-      "slope_pct": -16.8,
-      "ma_bias_pct": -0.7,
-      "ret5_pct": 0.8,
-      "volume_ratio": 0.98,
-      "drawdown_pct": -14.9,
-      "support": 12.554,
-      "resistance": 16.501,
-      "rule_score": 37,
-      "rule_view": "偏跌",
-      "phase_note": "",
-      "rule_confidence": 66
-     },
-     "32周": {
-      "weeks": 32,
-      "periods": 32,
-      "unit": "week",
-      "sample_days": 160,
-      "return_pct": 11.5,
-      "slope_pct": 14.6,
-      "ma_bias_pct": 2.1,
-      "ret5_pct": 0.8,
-      "volume_ratio": 1.05,
-      "drawdown_pct": -14.9,
-      "support": 10.952,
-      "resistance": 16.501,
-      "rule_score": 69,
-      "rule_view": "偏涨",
-      "phase_note": "",
-      "rule_confidence": 73
+      "rule_confidence": 55
      }
     }
    },
    "sources": [
-    "财报07-27"
+    "财报07-28"
    ],
    "touch": "",
    "trade_plan": {
     "short": {
-     "in": "✅ 现在可进：现价14.04已在买入区13.58~14.04内——今日~07-28（3个交易日）分批有效",
-     "out": "目标14.608（10个交易日内·上行概率58%）",
-     "invalid": "跌破12.92作废",
+     "in": "✅ 现在可进：现价102.9已在买入区99.67~102.9内——今日~07-29（3个交易日）分批有效",
+     "out": "目标108.589（10个交易日内·上行概率53%）",
+     "invalid": "跌破91.32作废",
      "mode": "现价可进"
     },
     "mid": {
-     "in": "🎯 中线（4-8周）：区间13.44~14.04分批建仓；收盘连续2日破MA55(13.54)失效",
-     "out": "目标15.763（≈1季·60交易日·上行概率40%）",
+     "in": "⏳ 中线（4-8周）：待周线站稳MA55(105.94)再启动区间建仓",
+     "out": "目标129.66（≈1季·60交易日·上行概率52%）",
      "invalid": "收盘连续2日破MA55失效"
     },
     "long": {
-     "in": "🏛 长线（16周+）：方向分未达55，先跟踪不建仓",
-     "out": "——（未建仓无出场）",
-     "invalid": "——"
+     "in": "🏛 长线（16周+）：区间100.64~102.9分批；跌破年线(98.78)且20日收不回才退出",
+     "out": "目标129.66（≈半年·120交易日·上行概率75%）",
+     "invalid": "跌破年线且20日收不回退出"
     },
     "probability_kind": "规则情景估计（非回测胜率）"
    },
@@ -3289,19 +2719,19 @@
  ],
  "runners": [
   {
-   "name": "HF Sinclair Corporation",
-   "code": "DINO",
-   "last": 90.86,
-   "unified_score": 73,
-   "short_score": 82,
-   "p_up": 82,
-   "p_down": 18,
-   "rr": 0.19,
-   "expected_pct": -0.4,
+   "name": "PayPal Holdings, Inc.",
+   "code": "PYPL",
+   "last": 56.0,
+   "unified_score": 68,
+   "short_score": 85,
+   "p_up": 85,
+   "p_down": 15,
+   "rr": 0.16,
+   "expected_pct": -0.2,
    "action": "趋势偏多·等待回踩",
-   "stage": "主升阶段",
+   "stage": "启动确认",
    "mode": "双路径待触发",
-   "why_blocked": "赔率0.19<1.2",
+   "why_blocked": "赔率0.16<1.2",
    "sources": [
     "财报07-28"
    ],
@@ -3310,38 +2740,36 @@
    "horizons": [
     {
      "label": "10日",
-     "p_up": 82,
-     "target_price": 101.054
+     "p_up": 85,
+     "target_price": 64.347
     },
     {
      "label": "60日",
-     "p_up": 85,
-     "target_price": 102.354
+     "p_up": 77,
+     "target_price": 64.407
     },
     {
      "label": "120日",
-     "p_up": 85,
-     "target_price": 119.844
+     "p_up": 72,
+     "target_price": 67.89
     }
    ]
   },
   {
-   "name": "联合健康",
-   "code": "UNH",
-   "last": 431.31,
-   "unified_score": 70,
-   "short_score": 56,
-   "p_up": 56,
-   "p_down": 44,
-   "rr": 1.57,
-   "expected_pct": 2.0,
+   "name": "博通",
+   "code": "AVGO",
+   "last": 392.47,
+   "unified_score": 67,
+   "short_score": 54,
+   "p_up": 54,
+   "p_down": 46,
+   "rr": 2.93,
+   "expected_pct": 9.9,
    "action": "观察",
-   "stage": "震荡整理",
-   "mode": "不进",
-   "why_blocked": "2周分56<58",
+   "stage": "启动确认",
+   "mode": "双路径待触发",
+   "why_blocked": "2周分54<58",
    "sources": [
-    "引擎榜·美股mid",
-    "引擎榜·美股long",
     "全选池·美股"
    ],
    "touch": "",
@@ -3349,55 +2777,55 @@
    "horizons": [
     {
      "label": "10日",
-     "p_up": 62,
-     "target_price": 461.62
+     "p_up": 48,
+     "target_price": 420.101
     },
     {
      "label": "60日",
-     "p_up": 85,
-     "target_price": 478.754
+     "p_up": 34,
+     "target_price": 494.218
     },
     {
      "label": "120日",
-     "p_up": 85,
-     "target_price": 603.834
+     "p_up": 76,
+     "target_price": 494.218
     }
    ]
   },
   {
-   "name": "Nucor Corporation",
-   "code": "NUE",
-   "last": 235.9,
-   "unified_score": 69,
-   "short_score": 57,
-   "p_up": 57,
-   "p_down": 43,
-   "rr": 2.41,
-   "expected_pct": 5.7,
+   "name": "Ford Motor Company",
+   "code": "F",
+   "last": 14.15,
+   "unified_score": 66,
+   "short_score": 56,
+   "p_up": 56,
+   "p_down": 44,
+   "rr": 6.05,
+   "expected_pct": 12.5,
    "action": "观察",
-   "stage": "震荡整理",
-   "mode": "双路径待触发",
-   "why_blocked": "2周分57<58",
+   "stage": "趋势延续",
+   "mode": "不进",
+   "why_blocked": "2周分56<58",
    "sources": [
-    "财报07-27"
+    "财报07-28"
    ],
    "touch": "触线:MA55",
    "market": "🇺🇸美股",
    "horizons": [
     {
      "label": "10日",
-     "p_up": 57,
-     "target_price": 245.892
+     "p_up": 62,
+     "target_price": 15.106
     },
     {
      "label": "60日",
-     "p_up": 62,
-     "target_price": 270.236
+     "p_up": 77,
+     "target_price": 17.78
     },
     {
      "label": "120日",
-     "p_up": 83,
-     "target_price": 307.13
+     "p_up": 73,
+     "target_price": 17.78
     }
    ]
   },
