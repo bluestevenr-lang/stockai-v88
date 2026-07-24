@@ -10,18 +10,18 @@
    "px_at_pick": null
   },
   {
-   "token": "US:HON",
-   "horizon": "短线",
-   "market": "🇺🇸美股",
-   "name": "霍尼韦尔",
-   "direction": "趋势偏多·等待回踩",
-   "px_at_pick": null
-  },
-  {
    "token": "US:CVX",
    "horizon": "短线",
    "market": "🇺🇸美股",
    "name": "雪佛龙",
+   "direction": "趋势偏多·等待回踩",
+   "px_at_pick": null
+  },
+  {
+   "token": "US:MRK",
+   "horizon": "短线",
+   "market": "🇺🇸美股",
+   "name": "默沙东",
    "direction": "趋势偏多·等待回踩",
    "px_at_pick": null
   },
@@ -74,8 +74,16 @@
    "px_at_pick": null
   },
   {
-   "token": "US:JPM",
+   "token": "US:AAPL",
    "horizon": "中线",
+   "market": "🇺🇸美股",
+   "name": "苹果",
+   "direction": "趋势偏多·等待回踩",
+   "px_at_pick": null
+  },
+  {
+   "token": "US:JPM",
+   "horizon": "短线",
    "market": "🇺🇸美股",
    "name": "摩根大通",
    "direction": "趋势偏多·等待回踩",
@@ -83,17 +91,9 @@
   },
   {
    "token": "US:BAC",
-   "horizon": "中线",
-   "market": "🇺🇸美股",
-   "name": "美银",
-   "direction": "观察",
-   "px_at_pick": null
-  },
-  {
-   "token": "US:ABBV",
    "horizon": "短线",
    "market": "🇺🇸美股",
-   "name": "艾伯维",
+   "name": "美银",
    "direction": "观察",
    "px_at_pick": null
   },
@@ -147,23 +147,23 @@
   },
   {
    "token": "US:JPM",
-   "horizon": "长线",
+   "horizon": "短线",
    "market": "🇺🇸美股",
    "name": "摩根大通",
    "direction": "趋势偏多·等待回踩",
    "px_at_pick": null
   },
   {
-   "token": "US:AMD",
-   "horizon": "长线",
+   "token": "US:MRK",
+   "horizon": "短线",
    "market": "🇺🇸美股",
-   "name": "AMD",
-   "direction": "观察",
+   "name": "默沙东",
+   "direction": "趋势偏多·等待回踩",
    "px_at_pick": null
   },
   {
    "token": "US:DELL",
-   "horizon": "长线",
+   "horizon": "短线",
    "market": "🇺🇸美股",
    "name": "戴尔",
    "direction": "观察",
@@ -171,7 +171,7 @@
   },
   {
    "token": "SZ:002415",
-   "horizon": "长线",
+   "horizon": "短线",
    "market": "🇨🇳A股",
    "name": "海康威视",
    "direction": "趋势偏多·等待回踩",
@@ -179,7 +179,7 @@
   },
   {
    "token": "SH:603259",
-   "horizon": "长线",
+   "horizon": "短线",
    "market": "🇨🇳A股",
    "name": "药明康德",
    "direction": "观察",
@@ -187,7 +187,7 @@
   },
   {
    "token": "SH:600900",
-   "horizon": "长线",
+   "horizon": "短线",
    "market": "🇨🇳A股",
    "name": "长江电力",
    "direction": "趋势偏多·等待回踩",

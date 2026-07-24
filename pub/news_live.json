@@ -1,779 +1,691 @@
 {
- "generated_at": "2026-07-24 22:47",
- "count": 508,
+ "generated_at": "2026-07-24 23:36",
+ "count": 308,
  "topics": [
   {
    "w": "AI",
-   "n": 91
+   "n": 52
   },
   {
    "w": "原油",
-   "n": 45
-  },
-  {
-   "w": "财报",
-   "n": 24
-  },
-  {
-   "w": "芯片",
-   "n": 16
-  },
-  {
-   "w": "特斯拉",
-   "n": 15
-  },
-  {
-   "w": "关税",
-   "n": 14
-  },
-  {
-   "w": "黄金",
-   "n": 12
+   "n": 23
   },
   {
    "w": "美元",
-   "n": 12
-  }
- ],
- "major_news": [
-  {
-   "t": "A股史上最大规模！宁德时代拟200亿—400亿元回购A股股份，全部注销 - 搜狐网",
-   "dir": 1,
-   "stk": [
-    {
-     "n": "宁德",
-     "c": "300750.SZ"
-    },
-    {
-     "n": "宁德时代",
-     "c": "300750.SZ"
-    }
-   ],
-   "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQM1p6TUZhQXVncXhQX19iek1DUElhZDdZOElsaDdacGRlYzJpSTZxWi1ZcDJ4NTN5LXg5UFJTZzUzRE1kcW04NlF5WTF2MnJoc2llb1dISndnUGlOd0dRRkJQakMyQ01WNmdqQlBkdDBEbm9BVHBORGZwMXlrU3FvYjhQSW83YUNq?oc=5",
-   "s": "Google News - 中文市场聚合",
-   "time": "2026-07-24 22:46"
+   "n": 20
   },
   {
-   "t": "宁德时代上半年净利润同比增超四成！200亿-400亿元创A股史上最大回购 - 东方财富",
-   "dir": 1,
-   "stk": [
-    {
-     "n": "宁德",
-     "c": "300750.SZ"
-    },
-    {
-     "n": "宁德时代",
-     "c": "300750.SZ"
-    },
-    {
-     "n": "东方财富",
-     "c": "300059.SZ"
-    }
-   ],
-   "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9XSlg0X0V4VlVUTktmQXBRRF9Ca0FhdmQ0eHdvYXZ4UTVtSzlYM2RQTDJFSnd3UzM2ay05QlVtSk84RFZrOUVFbWM3amJuRjViRVgxV1lGYThTbWVvZUlHbg?oc=5",
-   "s": "Google News - 中文市场聚合",
-   "time": "2026-07-24 22:36"
+   "w": "财报",
+   "n": 16
   },
   {
-   "t": "Verizon shares rise as earnings beat and guidance boost offset revenue miss",
-   "dir": -1,
-   "stk": [
-    {
-     "n": "Verizon",
-     "c": "VZ"
-    }
-   ],
-   "url": "https://finance.yahoo.com/markets/stocks/articles/verizon-shares-rise-earnings-beat-142700574.html",
-   "s": "Yahoo Finance - Top",
-   "time": "2026-07-24 22:27"
+   "w": "芯片",
+   "n": 15
   },
   {
-   "t": "美股半导体深夜跳水，SK海力士、闪迪重挫超7%，西部数据跌超5%，英特尔跌超4% - 新浪财经",
-   "dir": -1,
-   "stk": [
-    {
-     "n": "英特尔",
-     "c": "INTC"
-    }
-   ],
-   "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE92NkdtQW9DVWszTnB3YXQ2dEFKdERCUnlFUWo0R2tpZWtSRjZKOFhtVnAycUNBcE9Sd0V6ckFwSVZnRVFqNzA4ejZtTHpZdnRrMGwwd2dOUm9abllDVW5MR2VtTVVhOE01X2NzZlVB?oc=5",
-   "s": "Google News - 中文市场聚合",
-   "time": "2026-07-24 22:19"
+   "w": "特斯拉",
+   "n": 8
   },
   {
-   "t": "Nvidia, Microsoft, Meta warn against 'premature restrictions' of open-weight models",
-   "dir": -1,
-   "stk": [
-    {
-     "n": "Meta",
-     "c": "META"
-    }
-   ],
-   "url": "https://www.cnbc.com/2026/07/24/nvidia-microsoft-meta-open-weight-ai-models.html",
-   "s": "CNBC - Top News",
-   "time": "2026-07-24 22:15"
+   "w": "关税",
+   "n": 5
   },
   {
-   "t": "A股史上规模最大！宁德时代最高回购400亿元 - 搜狐网",
-   "dir": 1,
-   "stk": [
-    {
-     "n": "宁德",
-     "c": "300750.SZ"
-    },
-    {
-     "n": "宁德时代",
-     "c": "300750.SZ"
-    }
-   ],
-   "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOUHNYTU13VkZRNi12UmNFcnd0WG1TV0JYZEdQQzZNV21kUWZubVBCMWNfUHJOd25MSnlUTnFUQUVUSnFpWmJnWnUxQXUtVHM0bG1uM2EtaVVuZ2hjZ1BnVXphSU9JeDdleGVFbWRiY1dTYzdqR05sVXJBQ2RhWElXZDh1MllNdTJ3?oc=5",
-   "s": "Google News - 中文市场聚合",
-   "time": "2026-07-24 22:14"
+   "w": "半导体",
+   "n": 5
   }
  ],
  "items": [
   {
-   "t": "A股史上最大规模！宁德时代拟200亿—400亿元回购A股股份，全部注销 - 搜狐网",
+   "t": "美联储越“慌”美债越稳?美银 Hartnett:沃什或被迫加息,以遏制长债收益率飙升",
+   "stk": [],
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3777894",
+   "time": "2026-07-24 23:23",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "伟时电子A股股东户数减少1144户降幅6.28%,流通A股户均持股1.25万股增幅6.70%,户均持股市值15.07万元降幅21.90% - 新浪财经",
    "stk": [
     {
-     "n": "宁德",
-     "c": "300750.SZ"
-    },
-    {
-     "n": "宁德时代",
-     "c": "300750.SZ"
+     "n": "伟时电子",
+     "c": "605218.SS"
     }
    ],
-   "dir": 1,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQM1p6TUZhQXVncXhQX19iek1DUElhZDdZOElsaDdacGRlYzJpSTZxWi1ZcDJ4NTN5LXg5UFJTZzUzRE1kcW04NlF5WTF2MnJoc2llb1dISndnUGlOd0dRRkJQakMyQ01WNmdqQlBkdDBEbm9BVHBORGZwMXlrU3FvYjhQSW83YUNq?oc=5",
-   "time": "2026-07-24 22:46",
-   "cat": "cn_markets",
-   "major": 1
+   "url": "https://news.google.com/rss/articles/CBMiigJBVV95cUxPWjFBUjBiSUpSbVdxVjhKc0NQQmNYN2gwYXlpbWl4bmhEMFRUaGhBYmVFSDViVjFXQ0ZXeEZHUTA3c094VXFuZ2xvdmpZNlpDYXJrSmpnbVJGRXBCWVhfSFVTOFBRVDNFempPYjF6LXBTbng1cUpNQ0l1b0RkNmcybmZwbXpGRmpnUTFjTTZRbFZBR2xtdG9lc09zTWNqSlRKMElzemhfMEhmOHlETlFLTDdQVmVHamtFdlBTZzMxcm1nMUdpRUJadkFJR2ZPLUZjRkx3TTZtTHpVTkJlQ2JCTFBnUkZpS0h3VFBFNDZlVWFRYnFxb1VBRmpma093QjV6N2VhVUQ4RWRkQQ?oc=5",
+   "time": "2026-07-24 23:18",
+   "cat": "cn_markets"
   },
   {
-   "t": "U.S. economy had begun to speed up — until Iran peace talks failed and oil prices surged again",
+   "t": "航天南湖A股股东户数减少867户降幅5.91%,流通A股户均持股2.44万股增幅6.28%,户均持股市值58.22万元降幅10.09% - 新浪财经",
+   "stk": [
+    {
+     "n": "航天南湖",
+     "c": "688552.SS"
+    }
+   ],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiigJBVV95cUxORnFNTXRoVXJBVWRLNHJYRk5rOXFXREM0S3l3YmREWURYWWVqekZlOEpwc2RzUXhHdlItZmpjWDlwMk1TdDR1ZDdOd2VGcVBnOW5ocmhDMUY0NzJ3ZHJmSVZqLS1JcTdUZVVVQTdPdU01NUhBTUNvSDFHTW8xT3RBaXBJdzQ3eGl6UkFmc1duQXRsbFF5ck9wRkFPakRFa0gyVkJJOWdJSTJHa2c4MmJ3dHF3SlhVUU5BcURUZUk2dFg5RUpta1hrMUc2TVViZThueTBtYklWTmZHZjNBYk40RU1iN080dVlzSWx0V1FLWVd5dmx1cXR6U1FkWW8wZXdkUFoxdF9vV2gwQQ?oc=5",
+   "time": "2026-07-24 23:18",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "A股“最便宜”城商行,为什么是贵阳银行? - 新浪网",
+   "stk": [
+    {
+     "n": "贵阳银行",
+     "c": "601997.SS"
+    }
+   ],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMickFVX3lxTFBqVEdUZWVJN3hnbS1SOFI0MG1qUXNKaXppdjJuQ013dEVEdEdOOFlaYTBmTXJ0ak9EaWt5YlJSWjd1YmowWlZuUzNhOXNwZXNURURUUldjVzV3N2RuU2ZnOTNSVlBRRzBrNWJYcEprZXdTZw?oc=5",
+   "time": "2026-07-24 23:15",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "“我们并非恋爱关系”：我将与柏拉图式20年老友结婚。该把房子留给他吗？",
    "stk": [],
-   "dir": 1,
    "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/u-s-economy-began-to-speed-up-until-iran-peace-talks-failed-and-oil-prices-surged-again-3fce66b2?mod=mw_rss_topstories",
-   "time": "2026-07-24 22:43",
-   "cat": "global_markets"
+   "url": "https://www.marketwatch.com/story/we-are-not-romantically-involved-im-marrying-my-platonic-best-friend-of-20-years-should-i-leave-him-my-home-3faa0a77?mod=mw_rss_topstories",
+   "time": "2026-07-24 23:15",
+   "cat": "global_markets",
+   "t_en": "‘We are not romantically involved’: I’m marrying my platonic best friend of 20 years. Should I leave him my home?",
+   "zh": 1
   },
   {
-   "t": "A股缩量普跌，下周怎么走？ - 同花顺",
+   "t": "阿斯利康的“神奇”面临罕见考验：试验失败后股价下滑",
+   "stk": [],
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/analysisastrazeneca-magic-faces-rare-test-after-trial-failure-share-slide-4810529",
+   "time": "2026-07-24 23:14",
+   "cat": "global_markets",
+   "t_en": "AstraZeneca ’magic’ faces rare test after trial failure, share slide",
+   "zh": 1
+  },
+  {
+   "t": "李大霄:要独立思考警惕美股陷阱 市场波动需理性看待 - 中华网",
+   "stk": [],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTFByVzRVak8waHFZdGQ5LTVvOVoxTC1nV0JqbHhtbk9QQ3FySWVzZkRiRGlSMFNhSXBtMEhKOVNTVUtPVjdpM1J0dlBlTXNlbnBTTXJpeTZsR01MRTg5RWFIYXBrSzFJT0U4UWl6ZlNHUF8?oc=5",
+   "time": "2026-07-24 23:13",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "汇丰以21亿美元向安联出售新加坡保险业务",
+   "stk": [],
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/hsbc-sells-singapore-insurance-unit-to-allianz-in-21-billion-deal-4810465",
+   "time": "2026-07-24 23:13",
+   "cat": "global_markets",
+   "t_en": "HSBC sells Singapore insurance unit to Allianz in $2.1 billion deal",
+   "zh": 1
+  },
+  {
+   "t": "定了!A股市值新王,7月27日加冕! - 新浪网",
+   "stk": [],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE52MGlwX29nWGRBRmg4WVc4Nm01VGFyOUlIZjAtWlpRMTI3cjZYVzBwSDVMbkM4UWVEdFBIczdLX1pzLUJhZTJSd1k2dUNUWlZfbkxWOTh2cUlpTWVKcERRQlY5eHVldnR4R2NzUGdmOE15UQ?oc=5",
+   "time": "2026-07-24 23:11",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "NIP集团连续10个交易日达到纳斯达克1美元测试价 - Stock Titan",
+   "stk": [],
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxNT3BhdVJTYnhUd0plcEZvdzhFSWpscTh2Vm1vNzY0aFFNdnFVckRlZVlfSWJkdnVFRjlkZG9jSnlLY1hUNkJoa3E5OWIwbjM1c1kzV3NTd29tZmJLR1BpTFBqU0ktbEFxNXcySm9Ia04wX2U0cElweXNqSGRFeE9PT3JnR2VFOGdWZzlicmNESnhUaHZteDZHNDRZa2RjR1V1amNkMmozNU9NdThSOHNkU2ZicWh4TVBzUWpZ?oc=5",
+   "time": "2026-07-24 23:11",
+   "cat": "global_markets",
+   "t_en": "NIP Group Meets Nasdaq’s $1 Price Test After 10 Business Days - Stock Titan",
+   "zh": 1
+  },
+  {
+   "t": "三元生物A股股东户数增加265户增幅1.82%,流通A股户均持股8801.72股降幅1.79%,户均持股市值20.37万元增幅0.04% - 新浪财经",
+   "stk": [
+    {
+     "n": "三元生物",
+     "c": "301206.SZ"
+    }
+   ],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMirAJBVV95cUxOUFpXSzFlZnFBSmVoMEs1U0FsQXQ3VlU3d0lEWUNSUWtvTGlpWEpyTTF6VDFoMktScW9XRGd4c3V6VnJwR0NjN2FXXzVLS0lrT1p6Y2p0Z1lJdy0wbTFIOFlSU2t4TGJlNGl0UDllWVVuci1QMFNVbS1iNWZTdFZYa1hFMEdPYnc0NnpMVmhqdDJFMzZhUEVrTlRuUjRraVFPcFZkd2VTbThZTmoyRHUyUXd0WG5waWxoaXUtazBuby1jSVRhSDBNUERZZUs0MVV6RGpZV1NxZFktRGlNNExQNVVrRGtaa0U3M3l3SzA2RXJsWlVtRC1valNPdERNNWhOVm1DVV9ZWHNCcnZGb2NIU2JCQXZmdF96em9FWUVMeXlocXpaYWRzOUZqUzU?oc=5",
+   "time": "2026-07-24 23:10",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "摩洛哥股市收盘走高，摩洛哥全股指数上涨0.43%",
+   "stk": [],
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/morocco-stocks-higher-at-close-of-trade-moroccan-all-shares-up-043-4812185",
+   "time": "2026-07-24 23:10",
+   "cat": "global_markets",
+   "t_en": "Morocco stocks higher at close of trade; Moroccan All Shares up 0.43%",
+   "zh": 1
+  },
+  {
+   "t": "市值逾9亿元,A股又现“天价”离婚案 - 同花顺",
    "stk": [
     {
      "n": "同花顺",
      "c": "300033.SZ"
     }
    ],
-   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE5PaXM3emRTeTN5b1ZJSDQ3RGJadVFGeHZmR21pNmxGeVpnTkc2R3p1N050aHEySEo2M3c4Y2hLTVBpTmROMlNHZTl5TGhaQy1uMEZJdWthMVJEeWRMUU9aNURn?oc=5",
-   "time": "2026-07-24 22:40",
+   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE1qWnY1Q0M3TllfdUNyczVMcHBLYkRWLXFhQk1GSDNQWnl4TTZvNnN4akVKZ1lLZXNrU1ZhTUh5MHRHOUs0VFMxVEV5QXdkU1VhcVlZc2wzSnhpTHh6QjRsLUVB?oc=5",
+   "time": "2026-07-24 23:10",
    "cat": "cn_markets"
   },
   {
-   "t": "AMD CEO Lisa Su on AI demand and hyperscaler spending: 'We're seeing the returns'",
+   "t": "HOKA增速降至个位数,新品扩张逻辑仍待兑现",
    "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/technology/article/amd-ceo-lisa-su-on-ai-demand-and-hyperscaler-spending-were-seeing-the-returns-143905473.html",
-   "time": "2026-07-24 22:39",
-   "cat": "global_finance"
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3777895",
+   "time": "2026-07-24 23:08",
+   "cat": "cn_markets"
   },
   {
-   "t": "宁德时代上半年净利润同比增超四成！200亿-400亿元创A股史上最大回购 - 东方财富",
-   "stk": [
-    {
-     "n": "宁德",
-     "c": "300750.SZ"
-    },
-    {
-     "n": "宁德时代",
-     "c": "300750.SZ"
-    },
-    {
-     "n": "东方财富",
-     "c": "300059.SZ"
-    }
-   ],
-   "dir": 1,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9XSlg0X0V4VlVUTktmQXBRRF9Ca0FhdmQ0eHdvYXZ4UTVtSzlYM2RQTDJFSnd3UzM2ay05QlVtSk84RFZrOUVFbWM3amJuRjViRVgxV1lGYThTbWVvZUlHbg?oc=5",
-   "time": "2026-07-24 22:36",
-   "cat": "cn_markets",
-   "major": 1
-  },
-  {
-   "t": "SanDisk, Micron among market cap stock movers on Friday",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/sandisk-micron-among-market-cap-stock-movers-on-friday-93CH-4812111",
-   "time": "2026-07-24 22:35",
-   "cat": "global_markets"
-  },
-  {
-   "t": "This \"Boring\" Dividend King Is Quietly Turning Into a Growth Machine -- and Many Investors Are Missing It",
-   "stk": [],
-   "dir": -1,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/boring-dividend-king-quietly-turning-143500073.html",
-   "time": "2026-07-24 22:35",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Here's Why the Slump in Danaher Stock This Week Looks Like a Buying Opportunity",
-   "stk": [],
-   "dir": -1,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/heres-why-slump-danaher-stock-143338905.html",
-   "time": "2026-07-24 22:33",
-   "cat": "global_finance"
-  },
-  {
-   "t": "I am a 63-year-old semiretired physician. If I saved $2 million for retirement, should my Social Security become optional?",
-   "stk": [],
-   "dir": 0,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/i-am-a-63-year-old-semiretired-physician-if-you-have-saved-2-million-for-retirement-should-social-security-be-optional-0de70d53?mod=mw_rss_topstories",
-   "time": "2026-07-24 22:31",
-   "cat": "global_markets"
-  },
-  {
-   "t": "I am a 63-year-old semiretired physician. If I saved $2 million for retirement, should my Social Security become optional?",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/economy/policy/articles/am-63-old-semiretired-physician-093000773.html",
-   "time": "2026-07-24 22:31",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Oracle stock analysis: CDS blowout, AI debt load, and the junk downgrade risk",
-   "stk": [],
-   "dir": -1,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/oracle-stock-analysis-cds-blowout-ai-debt-load-and-the-junk-downgrade-risk-93CH-4812103",
-   "time": "2026-07-24 22:30",
-   "cat": "global_markets"
-  },
-  {
-   "t": "S&P 500, Nasdaq fall as investors juggle earnings, Mideast risks and tariffs",
-   "stk": [],
-   "dir": -1,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/wall-st-futures-rise-after-tech-rout-mideast-tariffs-in-focus-4810955",
-   "time": "2026-07-24 22:30",
-   "cat": "global_markets"
-  },
-  {
-   "t": "US extends Lukoil transaction deadline to Aug. 22",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/us-extends-lukoil-transaction-deadline-to-aug-22-93CH-4812102",
-   "time": "2026-07-24 22:30",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Price Prediction: Micron, AMD & Marvell- Our Bold Price Predictions for 2028",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/price-prediction-micron-amd-marvell-143013562.html",
-   "time": "2026-07-24 22:30",
-   "cat": "global_finance"
-  },
-  {
-   "t": "HSBC to sell Singapore life insurance arm to Allianz for $2.09bn",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/healthcare/articles/hsbc-sell-singapore-life-insurance-142913248.html",
-   "time": "2026-07-24 22:29",
-   "cat": "global_finance"
-  },
-  {
-   "t": "BlackRock markets $12.3 billion in bonds for Meta data center - Bloomberg",
+   "t": "Meta在最新120亿美元数据中心融资中面临更高借贷成本",
    "stk": [
     {
      "n": "Meta",
      "c": "META"
     }
    ],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/blackrock-markets-123-billion-in-bonds-for-meta-data-center--bloomberg-93CH-4812096",
-   "time": "2026-07-24 22:28",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Hyperliquid RWA Volume Hits $25.1B, Overtakes Crypto Trading",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/crypto/articles/hyperliquid-rwa-volume-hits-25-142800915.html",
-   "time": "2026-07-24 22:28",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Meta faces higher borrowing costs in latest $12bn data centre financing",
-   "stk": [
-    {
-     "n": "Meta",
-     "c": "META"
-    }
-   ],
-   "dir": 0,
    "s": "FT - Markets",
    "url": "https://www.ft.com/content/822628c5-4f9c-47db-bd27-f3ad7f841700?syn-25a6b1a6=1",
-   "time": "2026-07-24 22:27",
-   "cat": "global_markets"
+   "time": "2026-07-24 23:08",
+   "cat": "global_markets",
+   "t_en": "Meta faces higher borrowing costs in latest $12bn data centre financing",
+   "zh": 1
   },
   {
-   "t": "VeriSign (NASDAQ:VRSN) Stock Price Up 6.1% After Strong Earnings - MarketBeat",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQNThlWV9GOEVGRGE4Tlhra3E2dmZPZ1BqYnhfMUVrNDFLWVkzb1k3MDJZSzVzQWQwbDEyTzdONEFlbFlfaXlaWGU0Y2wzT3MzSFQ2bnY5Znk4RUxYZ0tzYnNCbWh2SElxQ3cyUzF5WUc5STZXeXFub2Qzbmx2dk85RHF6LWVOQ1BpdTFnQlZZbU9OVHJ5T05ReUdfdU9PRmZQMTl0N0JwVDdyV3VFM1E1MUlubw?oc=5",
-   "time": "2026-07-24 22:27",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Stock Market Today: Dow Rises As Oil Prices Fall; SpaceX Slides On Launch Delay (Live Coverage)",
-   "stk": [],
-   "dir": -1,
-   "s": "Yahoo Finance - Top",
-   "url": "https://www.investors.com/market-trend/stock-market-today/dow-jones-sp500-nasdaq-oil-prices-intel-stock/?src=A00220&yptr=yahoo",
-   "time": "2026-07-24 22:27",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Verizon shares rise as earnings beat and guidance boost offset revenue miss",
+   "t": "上海合晶A股股东户数减少2123户降幅9.05%,流通A股户均持股1.61万股增幅9.95%,户均持股市值49.25万元降幅22.42% - 新浪财经",
    "stk": [
     {
-     "n": "Verizon",
-     "c": "VZ"
+     "n": "上海合晶",
+     "c": "688584.SS"
     }
    ],
-   "dir": -1,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/verizon-shares-rise-earnings-beat-142700574.html",
-   "time": "2026-07-24 22:27",
-   "cat": "global_finance"
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE1uZ0VPZzVqRDRxc2IwaGs4cmU5aWZuY3Zxdmw0ZWg0ZmloWnZjM2FzekpRdDhWVng4QVlLcnAyWGpVb25uM0dQZDR5OUNHT3Fpek10WnNkOUVDTnhTRWtCRGQ2WlhBWTRaMGVKRWlJZW1FNlYtd3dPMw?oc=5",
+   "time": "2026-07-24 23:06",
+   "cat": "cn_markets"
   },
   {
-   "t": "I lost my job, my emergency fund is running out and now I have to move back in with my parents. What did I do wrong?",
-   "stk": [],
-   "dir": 0,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/i-lost-my-job-my-emergency-fund-is-running-out-and-now-i-have-to-move-back-in-with-my-parents-what-did-i-do-wrong-cf1c0f9f?mod=mw_rss_topstories",
-   "time": "2026-07-24 22:25",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Tesla's Per-Car Profit Fell Another 8% Last Quarter, and I Fear This May Be the New Norm",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/teslas-per-car-profit-fell-142500122.html",
-   "time": "2026-07-24 22:25",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Verizon lifts annual forecasts, signs $1 billion fiber deal with Google",
+   "t": "广电运通A股股东户数减少724户降幅0.72%,流通A股户均持股2.49万股增幅0.73%,户均持股市值25.13万元降幅1.14% - 新浪财经",
    "stk": [
     {
-     "n": "Verizon",
-     "c": "VZ"
+     "n": "广电运通",
+     "c": "002152.SZ"
     }
    ],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/verizon-lifts-annual-forecasts-as-new-mobile-plans-spur-subscriber-gains-4811197",
-   "time": "2026-07-24 22:24",
-   "cat": "global_markets"
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTFBKdVZBU0s0blZXcWdtVEFYZGRxaUM5elJuUzZCZEgwUFdLLVRjdWpBSlNTbUZfYUtWSEhJeWN6eFJhbFhfOUo2VkxlbjdvUjVXSnZ3VjN4LTYtNWlNMnJHa1ZGdjlmRDVxYlZScm85WWxwbnYzTUNTcQ?oc=5",
+   "time": "2026-07-24 23:06",
+   "cat": "cn_markets"
   },
   {
-   "t": "Edwards, The 'Cleanest Large-Cap Medtech Story,' Launches On Second-Quarter Beat",
+   "t": "Marten Transport第二季度：冷藏运输市场正在升温",
    "stk": [],
-   "dir": 0,
    "s": "Yahoo Finance - Top",
-   "url": "https://www.investors.com/news/technology/edwards-lifesciences-stock-edwards-lifesciences-earnings-q2-2026/?src=A00220&yptr=yahoo",
-   "time": "2026-07-24 22:23",
-   "cat": "global_finance"
+   "url": "https://finance.yahoo.com/markets/stocks/articles/marten-transport-q2-reefer-market-150540188.html",
+   "time": "2026-07-24 23:05",
+   "cat": "global_finance",
+   "t_en": "Marten Transport’s Q2: Reefer market on the rise",
+   "zh": 1
   },
   {
-   "t": "Khalid Malik’s Meridiem fund rebounds with Schonfeld backing - Bloomberg",
+   "t": "Hilltop第二季度财报电话会议要点",
    "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/khalid-maliks-meridiem-fund-rebounds-with-schonfeld-backing--bloomberg-93CH-4812092",
-   "time": "2026-07-24 22:23",
-   "cat": "global_markets"
-  },
-  {
-   "t": "ServiceNow stock down 54% from highs as analysts eye 43% recovery upside",
-   "stk": [
-    {
-     "n": "ServiceNow",
-     "c": "NOW"
-    }
-   ],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/servicenow-stock-down-54-from-highs-as-analysts-eye-43-recovery-upside-93CH-4812091",
-   "time": "2026-07-24 22:23",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Zevia (ZVIA) Illustrates the Strategy’s Sell Discipline",
-   "stk": [],
-   "dir": 0,
    "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/zevia-zvia-illustrates-strategy-sell-142331294.html",
-   "time": "2026-07-24 22:23",
-   "cat": "global_finance"
+   "url": "https://finance.yahoo.com/markets/stocks/articles/hilltop-q2-earnings-call-highlights-150358831.html",
+   "time": "2026-07-24 23:03",
+   "cat": "global_finance",
+   "t_en": "Hilltop Q2 Earnings Call Highlights",
+   "zh": 1
+  },
+  {
+   "t": "World Acceptance第一季度财报电话会议要点",
+   "stk": [],
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/markets/stocks/articles/world-acceptance-q1-earnings-call-150356179.html",
+   "time": "2026-07-24 23:03",
+   "cat": "global_finance",
+   "t_en": "World Acceptance Q1 Earnings Call Highlights",
+   "zh": 1
+  },
+  {
+   "t": "Primis Financial第二季度财报电话会议要点",
+   "stk": [],
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/markets/stocks/articles/primis-financial-q2-earnings-call-150353020.html",
+   "time": "2026-07-24 23:03",
+   "cat": "global_finance",
+   "t_en": "Primis Financial Q2 Earnings Call Highlights",
+   "zh": 1
+  },
+  {
+   "t": "First Interstate BancSystem第二季度财报电话会议要点",
+   "stk": [],
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/markets/stocks/articles/first-interstate-bancsystem-q2-earnings-150353505.html",
+   "time": "2026-07-24 23:03",
+   "cat": "global_finance",
+   "t_en": "First Interstate BancSystem Q2 Earnings Call Highlights",
+   "zh": 1
+  },
+  {
+   "t": "Eagle Financial Services第二季度财报电话会议要点",
+   "stk": [],
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/markets/stocks/articles/eagle-financial-services-q2-earnings-150352407.html",
+   "time": "2026-07-24 23:03",
+   "cat": "global_finance",
+   "t_en": "Eagle Financial Services Q2 Earnings Call Highlights",
+   "zh": 1
   },
   {
    "t": "美债收益率回落，10年期收益率徘徊在2025年1月高点附近",
    "stk": [],
-   "dir": 0,
    "s": "CNBC - Top News",
    "url": "https://www.cnbc.com/2026/07/24/treasury-yields-bonds-us-debt.html",
-   "time": "2026-07-24 22:23",
+   "time": "2026-07-24 23:01",
    "cat": "global_markets",
-   "t_en": "Treasury yields retreat, 10-year hovers around January 2025 highs",
+   "t_en": "Treasury yields retreat, 10-year stays near January 2025 highs",
    "zh": 1
   },
   {
-   "t": "High-Frequency Traders Say They Have “No Choice” But to Pay Trump $100,000 a Month for Early Access to His Posts",
+   "t": "信诺称AI工具将在三年内为客户节省2亿美元医疗费用",
    "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/high-frequency-traders-no-choice-142208042.html",
-   "time": "2026-07-24 22:22",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Best railroad stocks to buy as earnings season delivers a clean sweep",
-   "stk": [],
-   "dir": 0,
    "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/best-railroad-stocks-to-buy-as-earnings-season-delivers-a-clean-sweep-93CH-4812085",
-   "time": "2026-07-24 22:21",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Cadillac Mines raises C$385 million in upsized Canada IPO",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/cadillac-mines-raises-c385-million-in-upsized-canada-ipo-93CH-4812084",
-   "time": "2026-07-24 22:21",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Lifeway Foods (LWAY) Gains from Consumer Health Trends",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/lifeway-foods-lway-gains-consumer-142050518.html",
-   "time": "2026-07-24 22:20",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Should You Forget Growth ETFs and Invest in Dividend ETFs Instead?",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/forget-growth-etfs-invest-dividend-142000648.html",
-   "time": "2026-07-24 22:20",
-   "cat": "global_finance"
-  },
-  {
-   "t": "美股半导体深夜跳水，SK海力士、闪迪重挫超7%，西部数据跌超5%，英特尔跌超4% - 新浪财经",
-   "stk": [
-    {
-     "n": "英特尔",
-     "c": "INTC"
-    }
-   ],
-   "dir": -1,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE92NkdtQW9DVWszTnB3YXQ2dEFKdERCUnlFUWo0R2tpZWtSRjZKOFhtVnAycUNBcE9Sd0V6ckFwSVZnRVFqNzA4ejZtTHpZdnRrMGwwd2dOUm9abllDVW5MR2VtTVVhOE01X2NzZlVB?oc=5",
-   "time": "2026-07-24 22:19",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "道指期货反弹200点，因石油涨势缓解，英特尔财报后上涨：实时更新",
-   "stk": [],
-   "dir": -1,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/23/stock-market-today-live-updates.html",
-   "time": "2026-07-24 22:19",
+   "url": "https://www.investing.com/news/stock-market-news/cigna-says-ai-tools-to-save-customers-200-million-in-medical-expenses-over-three-years-4812170",
+   "time": "2026-07-24 23:01",
    "cat": "global_markets",
-   "t_en": "Nasdaq slides, heads for a losing week, as semiconductor stocks struggle: Live updates",
+   "t_en": "Cigna says AI tools to save customers $200 million in medical expenses over three years",
    "zh": 1
   },
   {
-   "t": "Strattec Security (STRT): Insider Buy Signals Undemanding Valuation",
+   "t": "标普500和纳斯达克下跌，投资者权衡财报、中东风险和关税",
    "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/strattec-security-strt-insider-buy-141850927.html",
-   "time": "2026-07-24 22:18",
-   "cat": "global_finance"
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/wall-st-futures-rise-after-tech-rout-mideast-tariffs-in-focus-4810955",
+   "time": "2026-07-24 23:00",
+   "cat": "global_markets",
+   "t_en": "S&P 500, Nasdaq fall as investors juggle earnings, Mideast risks and tariffs",
+   "zh": 1
   },
   {
-   "t": "Here’s What Powered Mayville Engineering Company (MEC) Stock Rally",
-   "stk": [],
-   "dir": 1,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/powered-mayville-engineering-company-mec-141723859.html",
-   "time": "2026-07-24 22:17",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Novo Nordisk pursues preliminary injunction to block Eli Lilly weight-loss drug ads",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/24/novo-nordisk-eli-lilly-lawsuit-weight-loss-drug-ads.html",
-   "time": "2026-07-24 22:17",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Nvidia, Microsoft, Meta warn against 'premature restrictions' of open-weight models",
+   "t": "珍酒李渡荣获新浪财经金曜奖“最佳港股IR”|峰会|公信力|酱香|外资|体系化_手机新浪网 - 新浪新闻_手机新浪网",
    "stk": [
     {
-     "n": "Meta",
-     "c": "META"
+     "n": "珍酒李渡",
+     "c": "06979.HK"
     }
    ],
-   "dir": -1,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/24/nvidia-microsoft-meta-open-weight-ai-models.html",
-   "time": "2026-07-24 22:15",
-   "cat": "global_markets"
-  },
-  {
-   "t": "‘I’m still confused’: I sold $80,000 in shares on June 30, so why didn’t I receive my dividend?",
-   "stk": [],
-   "dir": 0,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/im-still-confused-i-sold-80-000-in-shares-on-june-30-so-why-didnt-i-receive-my-dividend-d066016c?mod=mw_rss_topstories",
-   "time": "2026-07-24 22:15",
-   "cat": "global_markets"
-  },
-  {
-   "t": "A股再现“天价离婚”，女方分走近9.2亿元 - mrjjxw.com",
-   "stk": [],
-   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1Nc1VtVFJFWklLZHpZRzg3SmNieFZ1QU1TZkVtaEM0MTRNbjA2ZlIzc3cxajVSTnFQQ1RZOV9Tb1F5V0tBZnpPNUdJeUhIRE9ialRSTEkwTUlsLUxRQ2ZVRkdrNWE0QQ?oc=5",
-   "time": "2026-07-24 22:15",
+   "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE9rOGtmcWUtYzRJcm9qaWp6NWFsbFNMUXB3X1JhOUxtYkdVZG5xQ0oxTG1uMjFzaVFMNl9mNmFGT0Y4akoyMTM1Q2J0T0EzZDZnM3RVV0MzVzRiQldZaDhXWGpOZXdqMEtCRnhZYmc4Rk9DYUpwUXc?oc=5",
+   "time": "2026-07-24 22:59",
    "cat": "cn_markets"
   },
   {
-   "t": "Market Views AI as Tailwind for Red Violet (RDVT)",
+   "t": "“复仇模式开启”?美军连续第13晚打击伊朗军事设施",
    "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/market-views-ai-tailwind-red-141450987.html",
-   "time": "2026-07-24 22:14",
-   "cat": "global_finance"
-  },
-  {
-   "t": "A股史上规模最大！宁德时代最高回购400亿元 - 搜狐网",
-   "stk": [
-    {
-     "n": "宁德",
-     "c": "300750.SZ"
-    },
-    {
-     "n": "宁德时代",
-     "c": "300750.SZ"
-    }
-   ],
-   "dir": 1,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOUHNYTU13VkZRNi12UmNFcnd0WG1TV0JYZEdQQzZNV21kUWZubVBCMWNfUHJOd25MSnlUTnFUQUVUSnFpWmJnWnUxQXUtVHM0bG1uM2EtaVVuZ2hjZ1BnVXphSU9JeDdleGVFbWRiY1dTYzdqR05sVXJBQ2RhWElXZDh1MllNdTJ3?oc=5",
-   "time": "2026-07-24 22:14",
-   "cat": "cn_markets",
-   "major": 1
-  },
-  {
-   "t": "Oracle signs 10-year software contract with Pentagon worth up to $7 billion",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/23/oracle-wins-10-year-pentagon-software-contract-worth-up-to-7-billion.html",
-   "time": "2026-07-24 22:12",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Dollar Could Stay Strong Until U.S.-Iran Ceasefire Agreed",
-   "stk": [],
-   "dir": 0,
-   "s": "WSJ - Markets",
-   "url": "https://www.wsj.com/finance/currencies/yen-consolidates-near-40-year-low-vs-dollar-may-weaken-further-cc2a60ae?mod=rss_markets_main",
-   "time": "2026-07-24 22:12",
-   "cat": "global_markets"
-  },
-  {
-   "t": "中国国新，重仓哪些A股？ - 同花顺",
-   "stk": [
-    {
-     "n": "同花顺",
-     "c": "300033.SZ"
-    }
-   ],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE53OTVnN1lmWEl5NzhnTUI2ME1EVE5oMFF4ZVItVjMybmxGVXNWSGptTXl4V3BlVExRbXgzMFBSSllIaDVLem1EMHY5dldEeTlzeklhQUc5aU9UU1hKT2NiamZR?oc=5",
-   "time": "2026-07-24 22:10",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Shortsighted stock market can no longer brush off war: 'It's too hard to ignore $100 oil'",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/23/short-sighted-stock-market-can-no-longer-brush-off-war-investors-say.html",
-   "time": "2026-07-24 22:10",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Shortsighted stock market can no longer brush off war: 'It's too hard to ignore $100 oil'",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Finance",
-   "url": "https://www.cnbc.com/2026/07/23/short-sighted-stock-market-can-no-longer-brush-off-war-investors-say.html",
-   "time": "2026-07-24 22:10",
-   "cat": "global_finance"
-  },
-  {
-   "t": "世界杯与独立日提振服务业，美国7月综合PMI升至八个月新高，中东风险或令复苏承压",
-   "stk": [],
-   "dir": 1,
    "s": "华尔街见闻",
-   "url": "https://wallstreetcn.com/articles/3777892",
-   "time": "2026-07-24 22:10",
+   "url": "https://wallstreetcn.com/articles/3777890",
+   "time": "2026-07-24 22:59",
    "cat": "cn_markets"
   },
   {
-   "t": "A股史上规模最大！宁德时代最高回购400亿元 - 京报网",
+   "t": "SK海力士和美光下跌6%，闪迪下跌9%，韩国芯片抛售打击美国存储股",
+   "stk": [],
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/markets/stocks/articles/sk-hynix-micron-sink-6-145855269.html",
+   "time": "2026-07-24 22:58",
+   "cat": "global_finance",
+   "t_en": "SK Hynix and Micron Sink 6%, SanDisk Drops 9% as Korea Chip Selloff Hits U.S. Memory Stocks",
+   "zh": 1
+  },
+  {
+   "t": "美股早盘三大股指涨跌不一 - 搜狐网",
+   "stk": [],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNcG5NWkY4eWxSWm1SMHNicC02RW9qZUlMYjRJMGQ4d2lpcVlJWkNaX24tS0xHLXJMRlQzTHdiajI0T3lsMDU2TEl1MFl1QkVfM1RqdnhRVlNSeHg4Nl9iU3hTNlQ2S0dYUXlfV1o0TXRmM2lPb3l3ODhuMUJSVXB6SHlPSVMxODZRRk5DRw?oc=5",
+   "time": "2026-07-24 22:58",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "三只超越市场的股票前景可期 - Yahoo Finance",
+   "stk": [],
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxOR3lEcnE1ci1KcWZKaExENXRqWm9Kb0xVNHppZ1NHTzMwYW4xdHM2Y0RyS05FS0VFdXhSS0VJYWRkUlNFRmplck5oSjYxLTdVbHZyajM5XzVJQWE0WS1zYWZKVjFVWGZsaDFlS05OZmc3OFVLUFJ1NjBNQUNkSmVvUDMyMFdaLXM3NElIbUZwdHY2czRHc0JuRVQzMC1JT3M?oc=5",
+   "time": "2026-07-24 22:57",
+   "cat": "global_markets",
+   "t_en": "3 Market-Beating Stocks with Promising Prospects - Yahoo Finance",
+   "zh": 1
+  },
+  {
+   "t": "特斯拉回调15%后买入？除非你喜欢烧钱",
+   "stk": [],
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/markets/stocks/articles/buy-tesla-15-correction-only-145609288.html",
+   "time": "2026-07-24 22:56",
+   "cat": "global_finance",
+   "t_en": "Buy Tesla After 15% Correction? Only If You Like Burning Your Money",
+   "zh": 1
+  },
+  {
+   "t": "AI烧钱担忧叠加中东局势,纳斯达克100指数跌幅扩大至1.2%,存储芯片板块重挫逾6%,SK海力士跌7%,油价跌超2%",
+   "stk": [],
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3777833",
+   "time": "2026-07-24 22:53",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "纳指跌超500点,美股半导体拉升翻红,SK海力士大涨6%,美光涨超2.7%,希捷涨超2%,特斯拉重挫13% - 新浪网",
    "stk": [
     {
-     "n": "宁德",
-     "c": "300750.SZ"
+     "n": "特斯拉",
+     "c": "TSLA"
     },
-    {
-     "n": "宁德时代",
-     "c": "300750.SZ"
-    }
-   ],
-   "dir": 1,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTFBjZW1ZMVRweEpBQVIzMldwYVVobW9qSlVLSlA1eGVlU1N6eGthSlY3YTFYY3hBVzdWb093R0dQaXl4QnFLMEZjQWVYNEtNQmNIV3M3NkcycjZ3R2ktYlE?oc=5",
-   "time": "2026-07-24 22:10",
-   "cat": "cn_markets",
-   "major": 1
-  },
-  {
-   "t": "Michael Burry's short bets on Tesla, Caterpillar pay off in big July pullback",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/24/michael-burrys-short-bets-on-tesla-caterpillar-pay-off-in-big-july-pullback.html",
-   "time": "2026-07-24 22:10",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Intel earnings show just how dramatically the company has come back from being ‘near-dead’",
-   "stk": [],
-   "dir": 0,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/intel-earnings-show-just-how-dramatically-the-company-has-come-back-from-being-near-dead-37f81c38?mod=mw_rss_topstories",
-   "time": "2026-07-24 22:10",
-   "cat": "global_markets"
-  },
-  {
-   "t": "引爆A股涨停潮！《可再生能源发展“十五五”规划》发布，5万亿投资将流入这三个方向 - 新浪网",
-   "stk": [],
-   "dir": 1,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMickFVX3lxTFBOLWs3NU8xMTNkZWJlZU9zLTkyTGNxYS16ZWZBUFFMN2Z2MEpydTF6bUxibmNfUW9YVnB5Q245QUstaGZTYi1tZGpYNXlFUnR5X3NDdTl5Mm1iMkZIWERoYUlXeGtYNEFCcEd0SjhKRElzUQ?oc=5",
-   "time": "2026-07-24 22:09",
-   "cat": "cn_markets",
-   "major": 1
-  },
-  {
-   "t": "开盘：美股周五早盘涨跌不一，美光下跌5.7% - 新浪财经",
-   "stk": [
     {
      "n": "美光",
      "c": "MU"
     }
    ],
-   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxQRTZyaFZUMTJjY2YwS1NyTjZiZ3NsWlZrSzhmY3ItWURoLUw4SVR3aHNwanNtM0NCU3hocVFrNk51cVM0cTY2QmhqdWFUUnpkNWFxZVM5SHJFcGpYQVkyUXAzbjNyLXlpNUU2QURtV2liT2I2QXBTMERKUkFWYjJHcUJleWdLODNZLVNyYXNTVWJzcUhSSEZzczI2eWg?oc=5",
-   "time": "2026-07-24 22:09",
+   "url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxNbExXQXFoUnVFS28tZnBuaGJ4ZGNhXzFKS1NPWUY4d0Z4Q3M4M0ZWU01pei1iMkZBQ2Vma3lHMDk5bHdBVWFldDBvamp2UThqeTlFWHJONi1QRUVUdnZZOS1YRTFiaVc4WXhvVzdfNkdTbE8xRS1SUUs5R0N6ZnZWOThB?oc=5",
+   "time": "2026-07-24 22:53",
    "cat": "cn_markets"
   },
   {
-   "t": "7月24日A股策略：证监会再开重要会议！将全力维护市场平稳运行！ - 新浪网",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE5VbWRtV1FhV1BrWDhFdXl0X0dsZHBZd1ZJLWN2akdtajBwWEVjNVZBb2VtLXl5MWxCNXBwSmt1MEJoSUlHYzMwMG9ubExaT24wbnZFeE1qNUQ5Y3NlbkJDbld3S0dOQmpyU09CMHdSdkRXQQ?oc=5",
-   "time": "2026-07-24 22:07",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Axsome Therapeutics (AXSM) Stock is Attractive on the Back of its Key Drug",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/healthcare/articles/axsome-therapeutics-axsm-stock-attractive-140607239.html",
-   "time": "2026-07-24 22:06",
-   "cat": "global_finance"
-  },
-  {
-   "t": "U.S. Natural Gas Futures Stuck In Range",
-   "stk": [],
-   "dir": 0,
-   "s": "WSJ - Markets",
-   "url": "https://www.wsj.com/finance/commodities-futures/u-s-natural-gas-futures-stuck-in-range-3a962fd3?mod=rss_markets_main",
-   "time": "2026-07-24 22:06",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Intel rides AI boom to fastest revenue growth in almost 15 years, but shares sink",
-   "stk": [],
-   "dir": -1,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/23/intel-intc-earnings-report-q2-2026.html",
-   "time": "2026-07-24 22:05",
-   "cat": "global_markets"
-  },
-  {
-   "t": "中瓷电子A股股东户数减少5471户降幅11.50%，流通A股户均持股8080.88股增幅13.00%，户均持股市值80.81万元降幅20.45% - 新浪财经",
+   "t": "上海合晶A股股东户数减少2123户降幅9.05%,流通A股户均持股1.61万股增幅9.95%,户均持股市值49.25万元降幅22.42% - 搜狐网",
    "stk": [
     {
-     "n": "中瓷电子",
-     "c": "003031.SZ"
+     "n": "上海合晶",
+     "c": "688584.SS"
     }
    ],
-   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijgJBVV95cUxOMGVRR3hRUWx5NzBlWG5WLWxCbkQxTDVWb0tDbVNDeEdBVTBjNEhEQlRya1RvV3hsLUgtZThnbWVlV1VGV2RiLWtOZTJxYUdtaWNWLU9VM04tUjJsS2E0bG1qOXQ3YlltYXBDbElETm1hd3VYUm5XbmNzOEI0cVJCRHR3aktqLVZhUlMzVjBoNWtlOXJCSGJUcTdZMFBPZGU1R2I1WnpfdzBGYlFtcTZlSTZobkNVdmhWU2NGTUEyQTdsazU2Nnd3dFNHLTlfQ0lKNmxHVjFYaW5QaGxZXzdWOXZnX3BEN281ZlR4ZDFabkVCbEY0eXNrU0VvQXUxaUJUeWhBOUVwOFlVT2otYXc?oc=5",
-   "time": "2026-07-24 22:00",
+   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQakNoUDJGd0xsejJ1aXFPMjBrLXA0ZzY5MjViUVRXcUdHYVhlbkFRZThGX1NpYjJJMHpkV2tsaFctX04zLW9yTERNaFJwQURCZmRlYTlyb000YjE2RXFtVUl3a0FycDJsVlpIN2swNnNEa05VYkRWcDYydGNrZ1JyUXJ0SkYxdWsxTUhqcQ?oc=5",
+   "time": "2026-07-24 22:50",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "华润材料A股股东户数增加435户增幅1.88%,流通A股户均持股6.24万股降幅1.85%,户均持股市值39.02万元降幅3.70% - 搜狐网",
+   "stk": [
+    {
+     "n": "华润材料",
+     "c": "301090.SZ"
+    }
+   ],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOR1o2M1BWY1J4T3RweTRPTkdrYl8tZzRxMW0tZTc0RF9qai1hZVUwVk1uQ00zRzRfemo0VG9qVFdoR3lCRmJHUXNkZjBMajRtS3BQaVdsMVJaMWNxSzdwTUROVHplNVBHODJYeVVLcXlkTUhHVEtNS2tmc0lZWHJ4MXdESkJ1ZjB4YXVMcg?oc=5",
+   "time": "2026-07-24 22:50",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "值得买A股股东户数增加1434户增幅3.54%,流通A股户均持股3100.32股降幅3.42%,户均持股市值10.56万元降幅10.29% - 搜狐网",
+   "stk": [
+    {
+     "n": "值得买",
+     "c": "300785.SZ"
+    }
+   ],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxObGJpS25vQ1poakE4d1I4aFFTUXdBQXVPTnpOMG9SV01yekFBd2Y0bk1ibS1nZC1RZDY1MTd4aGtGV1BWZ3lVeFl0emJxaEt3MkFHXzQwcExZSEc3VVFjTkhwU2FSZmhVbm9fUFBvaV9VVHBOMG9OQUZneHhFbHRnNFZQZVNYWW94LWR4bQ?oc=5",
+   "time": "2026-07-24 22:50",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "法兰泰克A股股东户数减少84户降幅0.36%,流通A股户均持股2.25万股增幅0.36%,户均持股市值16.46万元降幅11.91% - 搜狐网",
+   "stk": [
+    {
+     "n": "法兰泰克",
+     "c": "603966.SS"
+    }
+   ],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOTmZFM0tZWHZ4cU5BMXo2czZXZDZ6bzR0Q1QxYWRrdEhsUUtKdjNLQ0ZzeTFxNDVPV2pjOGhXWnpObE05VTVfeVk2Uld6QkR5SXRURTFuQ2ZnV0RfSENxQ2dxU2pNOC05UTRIbTMxLWtPQk55TTI0eERkWEVkZjhXM3hObGhXZnBiNXVMOQ?oc=5",
+   "time": "2026-07-24 22:50",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "英伟达在大型科技股财报超预期之际未获喘息；现在该买入还是卖出英伟达？",
+   "stk": [],
+   "s": "Yahoo Finance - Top",
+   "url": "https://www.investors.com/research/nvidia-nvda-stock-tech-google-earnings-alphabet-buy-sell-markets/?src=A00220&yptr=yahoo",
+   "time": "2026-07-24 22:50",
+   "cat": "global_finance",
+   "t_en": "Nvidia Gets No Break Amid Big Tech Earnings Beat; Is Nvidia A Buy Or Sell Now?",
+   "zh": 1
+  },
+  {
+   "t": "ST标准A股股东户数减少400户降幅2.55%,流通A股户均持股2.26万股增幅2.61%,户均持股市值12.82万元降幅28.52% - 新浪财经",
+   "stk": [
+    {
+     "n": "ST标准",
+     "c": "600302.SS"
+    }
+   ],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOdWx3OUxaWktBZmRzWEdndE0ycUxYOXdRcGg2RnRsYzNERm5HanA5R1lUZnNVRV91d3J0M01JMm1tTTZMNExIYkN2SC01b3hIVktnd1NqamlodmZURE9sZ2lTbmU4VGp2SVhCSEh1SFlFRWxBR3lCSHU4UmNOaXdpMjhGajd6Q3pPenZhdQ?oc=5",
+   "time": "2026-07-24 22:50",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "川投能源A股股东户数减少5822户降幅8.53%,流通A股户均持股7.81万股增幅9.32%,户均持股市值126.33万元增幅20.58% - 新浪财经",
+   "stk": [
+    {
+     "n": "川投能源",
+     "c": "600674.SS"
+    }
+   ],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOdGxYT09wUFdTOVhKLWJETVBsYkVkaEQ3M1NqUWsyOHR5UFR4UXRkZEJJbnlPQzNuem56M212X1VmU3Z6dXBxZndfZ00zcmQtanhHcmpqZEZnM1FfNWVTT2N5cmJEelFMd25sbTBPTmNyRkp3U19ZMVRQQ1FGN3hCVGM3QXdCRU42V1h2cw?oc=5",
+   "time": "2026-07-24 22:50",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "富维股份A股股东户数增加999户增幅4.20%,流通A股户均持股3万股降幅4.03%,户均持股市值21.69万元降幅4.17% - 新浪财经",
+   "stk": [
+    {
+     "n": "富维股份",
+     "c": "600742.SS"
+    }
+   ],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPU2ZDalpIY1lIRzYwLVRRdzAxelZCakR6WGFmWWQ1TGlqck85R05KU2FuWkJtemNNWFBBb3JHREw3M29ha2RpV21aTEd3WkowaDVWWFZ6bm1rSGF4OW4tVWh1Smx1OEV3MDI5eWJUMWxPTER4ek5nbGNLRWlSUlhlaGdVY2ZHT1lpanh6aA?oc=5",
+   "time": "2026-07-24 22:50",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "天润乳业A股股东户数增加617户增幅2.72%,流通A股户均持股1.35万股降幅2.64%,户均持股市值10.67万元降幅3.38% - 新浪财经",
+   "stk": [
+    {
+     "n": "天润乳业",
+     "c": "600419.SS"
+    }
+   ],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPaHFKWXVYcVhvVjZfbDdJRWlOeGVCVlloZWtfd1ZBSDFRcU5TS2hnOW1DNDRYUGZnbUNaOUJ3bGJmOTFzWmQ4dXFVdUhWTGFGcVctUXF4LUMtbERCSERwaU0zd1AyU1Axa0hrYlZzdC1iUWdOSGxUd2t6MHNldmg2cDVaNGplNnNtSFk4Ug?oc=5",
+   "time": "2026-07-24 22:50",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Opendoor股价正在测试一个可能决定下一步走势的水平 - Benzinga",
+   "stk": [],
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxNbHZJYUVHWmF2cDBGWW1fZk1BR1o4dFA5dUx3SnM1M3g3Nm43eWJFSmZSd2tJVlFlbVhOWEtvSTVTeWFMak9oVTNoeG5kRzRVQk9IQVRDdkxneWxVM055XzlXeUt4d1hTSDVROUFDU1FiMmlQWTBvUHBpSEo1SDJ5clBseHg0T2N1cHZGdlVydjNMU1NLcXRqc2lrWkthNTEwNzlrMTEwTzBuNm8wR09YZ1dyVzZaenQwNnR1R1hSRDhGY0E3?oc=5",
+   "time": "2026-07-24 22:44",
+   "cat": "global_markets",
+   "t_en": "Opendoor Stock is Testing a Level That Could Define the Next Move - Benzinga",
+   "zh": 1
+  },
+  {
+   "t": "美国经济本已开始加速——直到伊朗和谈破裂，油价再次飙升",
+   "stk": [],
+   "s": "MarketWatch - Top Stories",
+   "url": "https://www.marketwatch.com/story/u-s-economy-began-to-speed-up-until-iran-peace-talks-failed-and-oil-prices-surged-again-3fce66b2?mod=mw_rss_topstories",
+   "time": "2026-07-24 22:43",
+   "cat": "global_markets",
+   "t_en": "U.S. economy had begun to speed up — until Iran peace talks failed and oil prices surged again",
+   "zh": 1
+  },
+  {
+   "t": "热门板块速睇:美股盘中加密储备概念走弱,Bitmine Immersion Technologies领跌 - Moomoo",
+   "stk": [],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxOa0NjRUF1NkZTLVl4c0ZidHVjVTBNUTJnTHVDbG9lZkJ1V0xjS3lfRGo2bEx5SU5DRkxqYnhXWS1kREg2bWd3dE1KUHRydlk5bnlfbnlrVE9DM01iR2dOMUZQV2dPVy1hQURzM3Q4TnRIenQ4N2RoR3Rlci1zXzFsRkJwREtkZTg0N3lyd2dOZjJwcG9wdnpnNjVZLXBIUmJMY2gyQjU1RDhENGozZjVGWUJwbGRzRXUtdDhCdzVGdTRmUQ?oc=5",
+   "time": "2026-07-24 22:40",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "AMD首席执行官苏姿丰谈AI需求和超大规模支出：“我们看到了回报”",
+   "stk": [],
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/technology/article/amd-ceo-lisa-su-on-ai-demand-and-hyperscaler-spending-were-seeing-the-returns-143905473.html",
+   "time": "2026-07-24 22:39",
+   "cat": "global_finance",
+   "t_en": "AMD CEO Lisa Su on AI demand and hyperscaler spending: 'We're seeing the returns'",
+   "zh": 1
+  },
+  {
+   "t": "宁德时代上半年净利润同比增超四成!200亿-400亿元创A股史上最大回购 - 东方财富",
+   "stk": [
+    {
+     "n": "宁德",
+     "c": "300750.SZ"
+    },
+    {
+     "n": "宁德时代",
+     "c": "300750.SZ"
+    },
+    {
+     "n": "东方财富",
+     "c": "300059.SZ"
+    }
+   ],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9XSlg0X0V4VlVUTktmQXBRRF9Ca0FhdmQ0eHdvYXZ4UTVtSzlYM2RQTDJFSnd3UzM2ay05QlVtSk84RFZrOUVFbWM3amJuRjViRVgxV1lGYThTbWVvZUlHbg?oc=5",
+   "time": "2026-07-24 22:36",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "A股缩量普跌,下周怎么走? - 新浪财经",
+   "stk": [],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxNVUxMWElLSzdMcm5XUEktd280THJ2ZnY4a1pEWG12d2RINEZUQ1lpeElEajdiM0RCbURjNFlFVG41dk1GNVhDSndHM2RrV0FOT1hpSUt5a2hwejBiRE9DQkRPcVRRM1RmclhvYnNXS0JyYWIzYjVoVTFaVDRXUVh3dEFDdWNZd1VLVndvZ2lCdWF0TmVLaTUtb1BlLVVMdF9FbnQ4MV9XZGFhYW9TV2lmdm04TnVWcW5waVBVZUVIcGV0ZmtiMlZVN0pwLWY?oc=5",
+   "time": "2026-07-24 22:34",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "我63岁，半退休医生。如果为退休存了200万美元，社保应该变成可选吗？",
+   "stk": [],
+   "s": "MarketWatch - Top Stories",
+   "url": "https://www.marketwatch.com/story/i-am-a-63-year-old-semiretired-physician-if-you-have-saved-2-million-for-retirement-should-social-security-be-optional-0de70d53?mod=mw_rss_topstories",
+   "time": "2026-07-24 22:31",
+   "cat": "global_markets",
+   "t_en": "I am a 63-year-old semiretired physician. If I saved $2 million for retirement, should my Social Security become optional?",
+   "zh": 1
+  },
+  {
+   "t": "Hyperliquid RWA成交量达251亿美元，超越加密货币交易",
+   "stk": [],
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/markets/crypto/articles/hyperliquid-rwa-volume-hits-25-142800915.html",
+   "time": "2026-07-24 22:28",
+   "cat": "global_finance",
+   "t_en": "Hyperliquid RWA Volume Hits $25.1B, Overtakes Crypto Trading",
+   "zh": 1
+  },
+  {
+   "t": "今日股市：道指因油价下跌上涨；SpaceX因发射延迟下滑（实时报道）",
+   "stk": [],
+   "s": "Yahoo Finance - Top",
+   "url": "https://www.investors.com/market-trend/stock-market-today/dow-jones-sp500-nasdaq-oil-prices-intel-stock/?src=A00220&yptr=yahoo",
+   "time": "2026-07-24 22:27",
+   "cat": "global_finance",
+   "t_en": "Stock Market Today: Dow Rises As Oil Prices Fall; SpaceX Slides On Launch Delay (Live Coverage)",
+   "zh": 1
+  },
+  {
+   "t": "中国国新,重仓哪些A股? - 新浪财经",
+   "stk": [],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTFA1Wlp5d2dfQUhldGg0MjRvRGZYN2psbG1xSFNraWVzZk5FeFZ1M0h6TXZLOW15UFk1d3c3QzlheWpyam10X1VPQk1kTzBXcnI0Y2pHd1V2X3QtYzdEQ093Vm5XSFBUNG9LUWoyUVRzX3hLVTRuV1A3Tw?oc=5",
+   "time": "2026-07-24 22:26",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Zevia (ZVIA) 展示了该策略的卖出纪律",
+   "stk": [],
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/markets/stocks/articles/zevia-zvia-illustrates-strategy-sell-142331294.html",
+   "time": "2026-07-24 22:23",
+   "cat": "global_finance",
+   "t_en": "Zevia (ZVIA) Illustrates the Strategy’s Sell Discipline",
+   "zh": 1
+  },
+  {
+   "t": "美股半导体深夜跳水,SK海力士、闪迪重挫超7%,西部数据跌超5%,英特尔跌超4% - 新浪财经",
+   "stk": [
+    {
+     "n": "英特尔",
+     "c": "INTC"
+    }
+   ],
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE92NkdtQW9DVWszTnB3YXQ2dEFKdERCUnlFUWo0R2tpZWtSRjZKOFhtVnAycUNBcE9Sd0V6ckFwSVZnRVFqNzA4ejZtTHpZdnRrMGwwd2dOUm9abllDVW5MR2VtTVVhOE01X2NzZlVB?oc=5",
+   "time": "2026-07-24 22:19",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "“我仍困惑”：6月30日我卖出了8万美元股票，为何没收到股息？",
+   "stk": [],
+   "s": "MarketWatch - Top Stories",
+   "url": "https://www.marketwatch.com/story/im-still-confused-i-sold-80-000-in-shares-on-june-30-so-why-didnt-i-receive-my-dividend-d066016c?mod=mw_rss_topstories",
+   "time": "2026-07-24 22:15",
+   "cat": "global_markets",
+   "t_en": "‘I’m still confused’: I sold $80,000 in shares on June 30, so why didn’t I receive my dividend?",
+   "zh": 1
+  },
+  {
+   "t": "市场视AI为Red Violet (RDVT) 的顺风",
+   "stk": [],
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/markets/stocks/articles/market-views-ai-tailwind-red-141450987.html",
+   "time": "2026-07-24 22:14",
+   "cat": "global_finance",
+   "t_en": "Market Views AI as Tailwind for Red Violet (RDVT)",
+   "zh": 1
+  },
+  {
+   "t": "甲骨文与五角大楼签署价值高达70亿美元的10年软件合同",
+   "stk": [],
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/23/oracle-wins-10-year-pentagon-software-contract-worth-up-to-7-billion.html",
+   "time": "2026-07-24 22:12",
+   "cat": "global_markets",
+   "t_en": "Oracle signs 10-year software contract with Pentagon worth up to $7 billion",
+   "zh": 1
+  },
+  {
+   "t": "美元可能保持强势，直到美伊停火协议达成",
+   "stk": [],
+   "s": "WSJ - Markets",
+   "url": "https://www.wsj.com/finance/currencies/yen-consolidates-near-40-year-low-vs-dollar-may-weaken-further-cc2a60ae?mod=rss_markets_main",
+   "time": "2026-07-24 22:12",
+   "cat": "global_markets",
+   "t_en": "Dollar Could Stay Strong Until U.S.-Iran Ceasefire Agreed",
+   "zh": 1
+  },
+  {
+   "t": "世界杯与独立日提振服务业,美国7月综合PMI升至八个月新高,中东风险或令复苏承压",
+   "stk": [],
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3777892",
+   "time": "2026-07-24 22:10",
    "cat": "cn_markets"
   }
  ]
