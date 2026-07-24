@@ -11682,6 +11682,22 @@ def _v88_decision_card(_d9):
             f"破{_stop9x}全走" if _stop9x else "") if x]
         if _parts9x:
             _entry9 = "<b style='color:#ea580c'>💰卖点</b>:" + "·".join(_parts9x)
+            # 【V88·止盈止损带概率+战绩+why 2026-07-21 用户定纲"持仓操作和止盈止损一定要
+            # 概率和成功率的标注和why"】下行概率+预计跌幅空间(引擎situational)+同类警示实盘
+            # 战绩(到期核算)+一句why(优先消息归因)——卖点不再是裸价位。
+            try:
+                _gg_t9x = (_v88_success9().get("types") or {}).get("gate_guard") or {}
+                _gg_txt9x = (f"同类警示实盘{_gg_t9x['rate']}%(n{_gg_t9x.get('n', 0)})"
+                             if _gg_t9x.get("rate") is not None else "警示战绩积累中")
+                _dnsp9x = abs(float(_d9.get("downside_pct") or 0))
+                _why_sell9x = str(_d9.get("move_reason") or _d9.get("diag_why")
+                                  or _d9.get("stage") or (_d9.get("facts") or {}).get("stage")
+                                  or "趋势与位置实算")[:16]
+                _entry9 += (f"<br><span style='font-size:11px;color:#64748b'>└ 下行概率{_down9}%"
+                            + (f"·预计跌幅约-{_dnsp9x:.0f}%" if _dnsp9x else "")
+                            + f"·{_gg_txt9x}·why:{_why_sell9x}</span>")
+            except Exception:
+                pass
     elif ("不进" in _entry9 or "等" in _entry9) and (float(_d9.get("medium_score") or 0) >= 58
                                                     or float(_d9.get("long_score") or 0) >= 58):
         _mid_in9x = str((_plan9x.get("mid") or {}).get("in") or "")
@@ -12184,6 +12200,9 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
     # ②上行空间≥10%——不足10%或空间不明的不推(小空间不值得动)，剔除数如实计数不静默丢。
     _tiers9 = {_k: {"bull": [], "bear": []} for _k in ("t1", "t2", "t3")}
     _skip_small9 = 0
+    # 【V88·空档给理由 2026-07-21 用户点单"下周本月零推荐总有原因和关注点吧"】
+    # 没达标≠没信息：收集离门槛最近的候选(50-57.9分),空档时亮出来"差几分+关注什么"。
+    _near9 = {"t2": [], "t3": []}
     for _c, _h in _cands.items():
         _ep = _h.get("entry_plan") or {}
         _mode = str(_ep.get("mode") or ((_h.get("trade_plan") or {}).get("short") or {}).get("mode") or "")
@@ -12213,6 +12232,13 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
             _tiers9["t3"]["bull"].append((_h, _s4, "本月·4周周期走强"))
         elif _s8 is not None and _s8 >= 58:
             _tiers9["t3"]["bull"].append((_h, _s8, "下月·8周周期走强"))
+        else:
+            # 近门槛候选(空档时展示"差几分",不入正式推荐)
+            if 50 <= _med < 58:
+                _near9["t2"].append((_h, _med, "中线分"))
+            _sml9 = max((x for x in (_s4, _s8) if x is not None), default=None)
+            if _sml9 is not None and 50 <= _sml9 < 58:
+                _near9["t3"].append((_h, _sml9, "4-8周分"))
         # ── ⚔️ 看跌（鬼门关口径） ──
         _dgk = str(_h.get("diag_kind") or "")
         _stg = str(_h.get("stage") or "")
@@ -12235,6 +12261,20 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
         for _sd in ("bull", "bear"):
             _tiers9[_k][_sd].sort(key=lambda x: -x[1])
 
+    def _rate_badge9(_h, _bear):
+        """【V88·推荐必带实盘成功率 2026-07-21 用户三催"成功率百分比还是没全程加上"】
+        每行推荐末尾挂同类历史到期核算命中率(非情景概率)——沃森生物"没和预期一样"就该
+        在推荐时就看到这类信号历史真实命中几成。样本<5如实标积累中。"""
+        _k9r = ("gate_guard" if _bear else
+                ("darkhorse" if "🐴" in str(_h.get("_tag", "")) else "entry_green"))
+        _t9r = (_v88_success9().get("types") or {}).get(_k9r) or {}
+        if _t9r.get("rate") is not None:
+            _c9r = ("#16a34a" if _t9r["rate"] >= 55 else
+                    ("#dc2626" if _t9r["rate"] < 45 else "#b45309"))
+            return (f"<b style='font-size:11.5px;color:{_c9r}'>"
+                    f"·📊同类实盘{_t9r['rate']}%(n{_t9r.get('n', 0)})</b>")
+        return "<span style='font-size:11.5px;color:#94a3b8'>·📊实盘积累中</span>"
+
     def _item9(_h, _prob, _sub, _bear):
         _pc = "#16a34a" if _bear else "#dc2626"
         _star = "🎯" if _prob >= 65 else ""
@@ -12243,6 +12283,7 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
                 f"<span style='font-size:12px;color:#94a3b8'>[{_sub}]</span>"
                 f"<span style='font-size:12px;color:#64748b'>·{_why9(_h, _bear)}</span>"
                 f"<b style='color:{_pc};font-size:12.5px'>·{_star}{'跌' if _bear else '涨'}概率{_prob}%</b>"
+                + _rate_badge9(_h, _bear)
                 + (f"<span style='font-size:12px;color:#b45309'>{_hn9}</span>" if _hn9 else ""))
 
     # 【V88·计划做T并档 2026-07-20 用户定纲】做T可以：把握分≥90·最多3只·必须明标【计划做T】
@@ -12256,6 +12297,13 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
             for _t9 in _tps9f]
     except Exception:
         pass
+    # 空档原因用:三市场l3方向分(函数外_snap不可见——从快照文件自读一次,10行内零成本)
+    _l3mkts9 = {}
+    try:
+        _l3mkts9 = (_jf.loads((_repo / "data" / "market_snapshot.json")
+                              .read_text(encoding="utf-8")).get("markets") or {})
+    except Exception:
+        _l3mkts9 = {}
     _t1_title = ("🟢 ① 今日关注 及 本周关注" if _is_trading
                  else f"⏸ ① 今日(休市·看{_ntd_label}) 及 本周关注")
     _t1_sub = (("今日=时机绿灯·盘中可执行；本周=双路径5日窗" if _is_trading
@@ -12275,8 +12323,44 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
         _bull_cells9 = ([] if _k != "t1" else list(_t_items9)) \
             + [_item9(_h, _p, _s, False) for _h, _p, _s in _bulls9]
         _html.append("<div style='margin-left:10px'>🐉 <b style='color:#dc2626;font-size:13px'>看涨</b>：")
-        _html.append("　".join(_bull_cells9) if _bull_cells9
-                     else "<span style='color:#94a3b8'>本档暂无达标（宁缺毋滥）</span>")
+        if _bull_cells9:
+            _html.append("　".join(_bull_cells9))
+        else:
+            # 【V88·空档给理由 2026-07-21 用户定纲"没推荐就说明原因,可能大跌要给跌幅量+概率"】
+            # ①大盘该档三市场方向分→偏空时明说"跌概率X%"(=100-方向分,与三层总览同源)
+            # ②近门槛候选差几分。跌幅统计区间在决断卡「🔮大盘四档预判」灰字(±1σ),此处引用不重算。
+            _hz_map9 = {"t1": "2周", "t2": "2周", "t3": "4周"}
+            _mkt_ps9 = []
+            for _mk9z in ("美股", "A股", "港股"):
+                _p9z = dict((x[0], x[1]) for x in
+                            (((_l3mkts9.get(_mk9z) or {})
+                              .get("l3") or {}).get("probs") or [])).get(_hz_map9[_k])
+                if _p9z is not None:
+                    _mkt_ps9.append((_mk9z, int(_p9z)))
+            _mkt_note9 = ""
+            if _mkt_ps9:
+                _avg9z = sum(p for _, p in _mkt_ps9) / len(_mkt_ps9)
+                _ps_txt9 = "·".join(f"{m[0]}{p}%" for m, p in _mkt_ps9)
+                if _avg9z <= 45:
+                    _mkt_note9 = (f"<b style='color:#16a34a'>原因:大盘该档偏空(方向分{_ps_txt9}"
+                                  f"→平均跌概率约{100 - _avg9z:.0f}%)</b>——偏空期引擎收紧买入防的就是大跌，"
+                                  "预计跌幅区间见上方🔮大盘四档预判灰字(±1σ)；")
+                elif _avg9z < 55:
+                    _mkt_note9 = f"原因:大盘该档中性震荡(方向分{_ps_txt9})，个股周期分没走强，不硬凑；"
+                else:
+                    _mkt_note9 = f"大盘该档不弱(方向分{_ps_txt9})但个股未达标——等个股周期分补到58；"
+            _nr9 = sorted(_near9.get(_k) or [], key=lambda x: -x[1])[:3]
+            if _nr9:
+                _nr_cells9 = "、".join(
+                    f"{_stk_link(_h9n.get('name'), _h9n.get('code'))}"
+                    f"<span style='font-size:12px;color:#64748b'>({_lb9n}{int(_sc9n)}·差{58 - int(_sc9n)}分)</span>"
+                    for _h9n, _sc9n, _lb9n in _nr9)
+                _html.append(f"<span style='color:#94a3b8'>本档暂无达标（门槛:对应周期分≥58）。{_mkt_note9}"
+                             "最接近：</span>" + _nr_cells9
+                             + "<span style='font-size:12px;color:#94a3b8'>·分数补到58自动入档，先观察别抢跑</span>")
+            else:
+                _html.append(f"<span style='color:#94a3b8'>本档暂无达标。{_mkt_note9}"
+                             "候选池该周期普遍在58分以下，转红自动入档</span>")
         _html.append("</div>")
         _html.append("<div style='margin-left:10px'>⚔️ <b style='color:#16a34a;font-size:13px'>看跌</b>：")
         _html.append("　".join(_item9(_h, _p, _s, True) for _h, _p, _s in _bears9) if _bears9
@@ -12711,12 +12795,13 @@ def _render_today_verdict(_snap, _repo):
     治大跌日"满屏观察=没推荐"。纯整合层零AI零流量：
     定调(实时涨跌+温度)→仓位纲领→可进(黑马绿灯)→持仓要处理(盘中落盘)→纪律。"""
     import json as _jv
-    _chg = {}
+    _chg, _idx_close9 = {}, {}
     for _mk, (_nm, _sym) in {"美股": ("标普500", "^GSPC"), "A股": ("上证指数", "000001.SS"),
                              "港股": ("恒生指数", "^HSI")}.items():
         try:
             _c = fetch_stock_data(_sym)["Close"]
             _chg[_mk] = (float(_c.iloc[-1]) / float(_c.iloc[-2]) - 1) * 100
+            _idx_close9[_mk] = _c   # 留序列给四档预判算波动区间(±1σ)
         except Exception:
             continue
     if not _chg:
@@ -12949,6 +13034,67 @@ def _render_today_verdict(_snap, _repo):
                      + (" ".join(_medge_txts9[:2]) if _medge_txts9
                         else "🏛️ 近3日无策略研报直接定性——今日定调为量价与温度实算（如实说明）")
                      + "</div>")
+    except Exception:
+        pass
+
+    # 【V88·大盘四档预判 2026-07-21 用户点单"导读要有明日/本周/本月/下月的概率+区间+why"
+    # +"大跌没看到为什么"】明日=当日动量+温度规则估计(低置信如实标)；本周/本月/下月=统一引擎
+    # 2/4/8周方向分(与三层总览完全同源,非另立口径)；区间=近21日波动率×√天数(±1σ统计区间,非承诺)；
+    # why=当日异动AI归因(出处:move_attribution思考模式)>策略研报定性>纯量价如实。
+    try:
+        _ma9v = {}
+        try:
+            _ma9v = (_jv.loads((_repo / "data" / "move_attribution.json")
+                               .read_text(encoding="utf-8")).get("reasons") or {})
+        except Exception:
+            _ma9v = {}
+
+        def _pcol9v(_p):
+            return "#dc2626" if _p >= 55 else ("#16a34a" if _p <= 45 else "#64748b")
+        _fc_rows9 = []
+        for _mk9v in ("美股", "A股", "港股"):
+            _blk9v = ((_snap or {}).get("markets") or {}).get(_mk9v) or {}
+            _l39v = dict((x[0], x[1]) for x in ((_blk9v.get("l3") or {}).get("probs") or []))
+            if not _l39v:
+                continue
+            # ±1σ波动区间:近21日日收益标准差×√档期交易日
+            _sd9v = None
+            try:
+                _ret9v = _idx_close9[_mk9v].pct_change().dropna().tail(21)
+                _sd9v = float(_ret9v.std()) * 100 if len(_ret9v) >= 10 else None
+            except Exception:
+                _sd9v = None
+
+            def _rng9v(_days):
+                return (f"±{_sd9v * (_days ** 0.5):.1f}%" if _sd9v else "")
+            _cells9v = []
+            _cg9v = _chg.get(_mk9v)
+            _t9v = float((_blk9v.get("temperature") or {}).get("temp") or 50)
+            if _cg9v is not None:
+                _tm9v = int(round(max(25, min(75, 50 + 2.2 * _cg9v + 0.15 * (_t9v - 50)))))
+                _cells9v.append(f"明日<b style='color:{_pcol9v(_tm9v)}'>{_tm9v}%</b>"
+                                f"<span style='font-size:11px;color:#94a3b8'>{_rng9v(1)}</span>")
+            for _lb9v, _hz9v, _d9v in (("本周", "2周", 5), ("本月", "4周", 20), ("下月", "8周", 40)):
+                _p9v = _l39v.get(_hz9v)
+                if _p9v is not None:
+                    _cells9v.append(f"{_lb9v}<b style='color:{_pcol9v(int(_p9v))}'>{int(_p9v)}%</b>"
+                                    f"<span style='font-size:11px;color:#94a3b8'>{_rng9v(_d9v)}</span>")
+            if not _cells9v:
+                continue
+            _rs9v = _ma9v.get(_mk9v) or {}
+            _why9v = (f"❓为什么动:[{_rs9v.get('driver', '')}] {_rs9v.get('why', '')}（出处:AI异动归因·思考模式）"
+                      if _rs9v.get("why")
+                      else (_v88_market_edge(_mk9v) or "今日无异动归因/研报定性——纯量价与温度实算（如实）"))
+            _fc_rows9.append(
+                f"<div style='font-size:12.5px;margin:1px 0'><b>{_mk9v}</b>："
+                + " ｜ ".join(_cells9v)
+                + f"<br><span style='font-size:12px;color:#64748b'>└ {str(_why9v)[:90]}</span></div>")
+        if _fc_rows9:
+            _html.append("<div style='margin:3px 0;border-top:1px dashed #e2e8f0;padding-top:3px'>"
+                         "<b style='font-size:13px'>🔮 大盘四档预判</b>"
+                         "<span style='font-size:12px;color:#94a3b8'>（数字=该档上涨概率：明日=动量+温度规则估计·低置信；"
+                         "本周/本月/下月=统一引擎2/4/8周方向分·与三层总览同源；灰字=±1σ统计波动区间非承诺）</span>"
+                         + "".join(_fc_rows9) + "</div>")
     except Exception:
         pass
 
@@ -13537,9 +13683,9 @@ def _render_today_nav():
 
     _is_trading = _v88_is_trading_day()
 
-    # 【V88·30分钟自动刷新】交易日页面挂机时，自选决策数据超30分钟自动整页重跑一次。
-    # fragment 每5分钟只查一次时间戳（无渲染无闪烁），数据过期才触发全页刷新；
-    # 非交易日不自动刷（省流量定则 2026-07-16）。
+    # 【V88·防跳动 2026-07-21 用户点单"页面老跳动"】原30分钟自动整页重跑=阅读中突然跳回顶部。
+    # 改为：数据过期时 fragment 原地亮一个"点此更新"按钮（只动这一小块，不打断阅读），
+    # 用户点了才整页刷新。非交易日不查（省流量定则 2026-07-16）。
     @st.fragment(run_every=300)
     def _auto_refresh_tick9():
         try:
@@ -13547,7 +13693,10 @@ def _render_today_nav():
                 return
             _wa0 = st.session_state.get("watch_alerts_v88") or {}
             if _wa0.get("ts") and time.time() - float(_wa0["ts"]) > 30 * 60:
-                st.rerun(scope="app")
+                _age_m9 = int((time.time() - float(_wa0["ts"])) / 60)
+                if st.button(f"🔄 数据已 {_age_m9} 分钟未更新 · 点此刷新（防跳动：不再自动整页重跑）",
+                             key="btn_stale_refresh9", type="secondary"):
+                    st.rerun(scope="app")
         except Exception:
             pass
     _auto_refresh_tick9()
@@ -14643,19 +14792,34 @@ def _render_today_nav():
                         continue
                     _tbl9 = ["|持仓|级别|层|现价|盈亏|历史水位|基本面|技术面|新闻面|综合建议|",
                              "|---|---|---|---:|---:|---|---|---|---|---|"]
+                    # 【V88·占位根治 2026-07-21】日报持仓段已改叙述式,旧表格解析不到字段→
+                    # 曾经13只×8列全是"待下轮日报"(用户看到104个占位)。缺字段改用session实时
+                    # 决策回填(stage/action/归因,数据比日报还新),实在没有才标"待实时扫描"。
+                    _wa_code9 = {str(d.get("code")): d
+                                 for d in ((_wa or {}).get("decisions") or [])}
                     for _r9 in _mr9:
                         _code9 = str(_r9.get("代码", ""))
                         _base9 = str(_r9.get("级别") or "B").upper()
                         # 【2026-07-18修】_wa可能为None(扫描未跑/被此刻按钮清缓存)——曾炸掉整个今日导航
                         _dyn9 = (((_wa or {}).get("holding_levels") or {}).get(_code9) or {}).get("level", _base9)
                         _lv9 = f"{_base9}级" if _dyn9 == _base9 else f"{_base9}→{_dyn9}"
+                        _d9w = _wa_code9.get(_code9) or {}
+                        _fund_f9 = (str(_r9.get("基本面") or "").strip()
+                                    or _v88_fund_edge_short(_r9.get("名称", ""), max_len=18)
+                                    or "纯技术驱动(如实)")
+                        _tech_f9 = (str(_r9.get("技术面") or "").strip()
+                                    or str(_d9w.get("stage") or (_d9w.get("facts") or {}).get("stage") or "")
+                                    or "待实时扫描")
+                        _news_f9 = (str(_r9.get("新闻面") or "").strip()
+                                    or str(_d9w.get("move_reason") or "")[:22] or "—")
+                        _adv_f9 = (str(_r9.get("综合建议") or "").strip()
+                                   or (f"{_d9w.get('action', '')}·{str(_d9w.get('entry_note') or '')[:22]}"
+                                       .strip("·") if _d9w else "待实时扫描"))
                         _vals9 = [f"{_r9.get('名称','')}（{_code9}）", _lv9, _r9.get("层", _r9.get("类别", "—")) or "—",
                                   _r9.get("现价", "—"), _r9.get("盈亏", "—"), _r9.get("历史水位", "—"),
-                                  _r9.get("基本面", "待下轮日报"), _r9.get("技术面", "待下轮日报"),
-                                  _r9.get("新闻面", "待下轮日报"),
+                                  _fund_f9, _tech_f9, _news_f9,
                                   # 【一票一卡】剥掉与概率卡重复的尾巴(规则概率/盈亏比/期望在卡上)
-                                  re.sub(r"(?:<br>)?规则概率\(非回测\):[^<]*", "",
-                                         str(_r9.get("综合建议", "待下轮日报")))]
+                                  re.sub(r"(?:<br>)?规则概率\(非回测\):[^<]*", "", _adv_f9)]
                         _tbl9.append("|" + "|".join(str(v).replace("|", "／") for v in _vals9) + "|")
                     st.markdown(_linkify_md("\n".join(_tbl9)), unsafe_allow_html=True)
                     # 【V88·持仓信念文字】≤50字/只：动作+依据+情绪镜子（北极星：压住追高/割肉）
