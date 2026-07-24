@@ -2798,6 +2798,88 @@ with _now_c2:
         st.markdown(f"<div style='font-size:12px;color:#94a3b8;text-align:center'>"
                     f"此刻数据·{int((_tnow9b.time()-_fnts9)/60)}分钟前</div>", unsafe_allow_html=True)
 
+# 【V88·今日指令牌 2026-07-24 用户定纲"每天打开=方向+进攻防守+成功率,升级要明显提示"】
+# 开屏第一眼三行:①方向(定调+三市场周概率) ②进攻/防守名单点名 ③实盘战绩背书+✨最新升级。
+# 全读落盘零重计算,秒开;明细仍在下方各模块,此处只做"今天该干什么"的最短路径。
+try:
+    _bn_repo9 = Path.home() / "Desktop" / "ai-daily-report-v2"
+    _bn_snap9 = json.loads((_bn_repo9 / "data" / "market_snapshot.json").read_text(encoding="utf-8"))
+    _bn_cells9, _bn_chgs9 = [], []
+    for _bm9 in ("美股", "A股", "港股"):
+        _bb9 = (_bn_snap9.get("markets") or {}).get(_bm9) or {}
+        _bl39 = dict((x[0], x[1]) for x in ((_bb9.get("l3") or {}).get("probs") or []))
+        _bc9 = float(((_bb9.get("indices") or [{}])[0] or {}).get("chg1d") or 0)
+        _bn_chgs9.append(_bc9)
+        _bp9 = _bl39.get("2周")
+        if _bp9 is not None:
+            _bpc9 = "#dc2626" if int(_bp9) >= 55 else ("#16a34a" if int(_bp9) <= 45 else "#64748b")
+            _bn_cells9.append(f"{_bm9}周概率<b style='color:{_bpc9}'>{int(_bp9)}%</b>")
+    _bn_tone9, _bn_tc9 = (("🛡️ 防守日", "#16a34a") if (_bn_chgs9 and min(_bn_chgs9) <= -1.5) else
+                          (("⚔️ 进攻日", "#dc2626") if (_bn_chgs9 and max(_bn_chgs9) >= 1.5) else
+                           ("⚖️ 中性日", "#2563eb")))
+    _bn_rule9 = {"🛡️ 防守日": "逻辑没破的别慌割·破位的别扛·抄底等企稳",
+                 "⚔️ 进攻日": "拿住在手的·新进等回踩·别FOMO追高",
+                 "⚖️ 中性日": "按既定计划执行·不因单日波动改纪律"}[_bn_tone9]
+    _bn_go9, _bn_cut9 = [], []
+    try:
+        for _bh9 in (json.loads((_bn_repo9 / "data" / "darkhorse.json").read_text(encoding="utf-8"))
+                     .get("horses") or []):
+            if ((_bh9.get("trade_plan") or {}).get("short") or {}).get("mode") in (
+                    "现价可进", "回踩到位", "突破确认"):
+                _bn_go9.append((_bh9.get("name"), int(_bh9.get("p_up") or 0)))
+    except Exception:
+        pass
+    try:
+        for _br9 in (json.loads((_bn_repo9 / "data" / "intraday_decisions.json").read_text(encoding="utf-8"))
+                     .get("rows") or []):
+            if _br9.get("scope") == "持仓" and any(k in str(_br9.get("action", ""))
+                                                  for k in ("减", "退", "清", "止损")):
+                _bn_cut9.append((_br9.get("name"), int(_br9.get("p_down") or 0)))
+    except Exception:
+        pass
+    _bn_go9.sort(key=lambda x: -x[1])
+    _bn_cut9.sort(key=lambda x: -x[1])
+    _bn_go_txt9 = ("、".join(f"{n}{p}%" for n, p in _bn_go9[:2])
+                   + (f" 等{len(_bn_go9)}只" if len(_bn_go9) > 2 else "")) if _bn_go9 else "今日无绿灯(现金也是仓位)"
+    _bn_cut_txt9 = ("、".join(f"{n}" for n, _ in _bn_cut9[:2])
+                    + (f" 等{len(_bn_cut9)}只" if len(_bn_cut9) > 2 else "")) if _bn_cut9 else "无警示"
+    _bn_sr_txt9 = ""
+    try:
+        _bn_sr9 = (json.loads((_bn_repo9 / "data" / "success_rates.json").read_text(encoding="utf-8"))
+                   .get("types") or {})
+        _bn_parts9 = [f"{_l9}{_v9['rate']}%" for _k9, _l9 in
+                      (("entry_green", "绿灯"), ("darkhorse", "黑马"), ("gate_guard", "警示"))
+                      if (_v9 := _bn_sr9.get(_k9) or {}).get("rate") is not None]
+        if _bn_parts9:
+            _bn_sr_txt9 = "📊实盘:" + "·".join(_bn_parts9) + "(到期核算)"
+    except Exception:
+        pass
+    _bn_new_txt9 = ""
+    try:
+        _bn_cl9 = (json.loads((_bn_repo9 / "data" / "v88_changelog.json").read_text(encoding="utf-8"))
+                   .get("rows") or [])
+        if _bn_cl9:
+            _bn_new_txt9 = ("<span style='background:#fef9c3;border-radius:4px;padding:0 4px'>✨新:"
+                            + str(_bn_cl9[0].get("t"))[:38] + "</span>")
+    except Exception:
+        pass
+    st.markdown(
+        f"<div style='background:linear-gradient(90deg,{_bn_tc9}11,transparent);border:1px solid {_bn_tc9}44;"
+        f"border-left:5px solid {_bn_tc9};border-radius:10px;padding:.5rem .8rem;margin-bottom:.4rem'>"
+        f"<div style='font-size:15px;font-weight:800;color:{_bn_tc9}'>📣 今日V88 · {_bn_tone9}"
+        f"<span style='font-size:12.5px;font-weight:400;color:#475569'>　{'｜'.join(_bn_cells9)}"
+        f"　📏{_bn_rule9}</span></div>"
+        f"<div style='font-size:13px;margin-top:2px'>🐉 <b style='color:#dc2626'>进攻</b>:{_bn_go_txt9}"
+        f"　⚔️ <b style='color:#16a34a'>防守</b>:{_bn_cut_txt9}"
+        f"<span style='font-size:12px;color:#64748b'>　{_bn_sr_txt9}</span>　{_bn_new_txt9}</div>"
+        f"<div style='font-size:11px;color:#94a3b8'>周概率=统一引擎2周方向分(规则估计)·名单明细/原因/卡片在下方双门与关注中心·升级历史在🧬系统自省</div>"
+        "</div>", unsafe_allow_html=True)
+except Exception:
+    try:
+        _v88_sentinel9(Path.home() / "Desktop" / "ai-daily-report-v2", "今日指令牌")
+    except Exception:
+        pass
+
 # 【V88·宏观置顶 2026-07-17 用户定纲】大盘宏观区(全球概览/宏观脉搏/三层总览)置于页面最顶,
 # 先看大势定调再看自己的票。由下方全球概览块通过 slot 回填。
 _macro_top_slot = st.empty()

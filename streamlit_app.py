@@ -986,6 +986,12 @@ if _nav == "🧭 导航":
     try:
         _pt9y = json.loads(pub_text("phase_turn_full.json", _PUB_VERSION) or "{}")
         _st9y = _pt9y.get("stocks") or []
+        # 兜底:全池文件未发布时用snapshot周期扫描(持仓自选池),如实标注不空白
+        if not _st9y:
+            _st9y = ((_snap or {}).get("cycle_scan") or {}).get("stocks") or []
+            if _st9y:
+                _pt9y = {"scanned": f"持仓自选池{len(_st9y)}",
+                         "generated_at": ((_snap or {}).get("cycle_scan") or {}).get("analysis_time", "")}
         _tr9y = ((_snap or {}).get("rotation_forecast") or {}).get("trajectories") or {}
 
         def _mk9yz(code):
