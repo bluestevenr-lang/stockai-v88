@@ -1612,6 +1612,12 @@ elif _nav == "🛰️ 雷达族":
                 for _k9c in ("明天", "本周", "下周", "本月及下月"):
                     if _aib9c.get(_k9c):
                         st.markdown(f"- **{_k9c}**：{_aib9c[_k9c]}")
+            # 【V88·外资投行周月提示 2026-07-24】新闻公开转述·AI综合非原话
+            _fb9c = _aib9c.get("外资投行") or {}
+            if isinstance(_fb9c, dict) and (_fb9c.get("本周") or _fb9c.get("本月")):
+                st.markdown("- 🏦 **外资投行周月提示**："
+                            + (f"本周:{_fb9c.get('本周')} " if _fb9c.get("本周") else "")
+                            + (f"｜本月:{_fb9c.get('本月')}" if _fb9c.get("本月") else ""))
         for _c9c in (_inst9c.get("consensus") or [])[:6]:
             st.markdown(f"- 📌 **{_c9c.get('stock')}**（{'、'.join((_c9c.get('orgs') or [])[:2])}）："
                         f"{_c9c.get('gist') or '—'}")

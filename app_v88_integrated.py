@@ -12895,11 +12895,28 @@ def _v88_usage9(_repo, event):
         pass
 
 
+def _v88_phase_slot9():
+    """【V88·三时段换算 2026-07-24 用户点单"一天盘中三次刷新,注意中美港时段不同"】
+    北京时间三槽:09:15后=cn-am(A/港早盘) 14:30后=cn-pm(A/港尾盘·港still盘中)
+    21:45后=us(美股盘,跨午夜00:00-09:15归前一天us槽)。槽变=该刷新。"""
+    from datetime import timedelta as _td9s
+    _now = datetime.now()
+    _hm = _now.hour * 60 + _now.minute
+    if _hm < 9 * 60 + 15:
+        return (_now - _td9s(days=1)).strftime("%Y-%m-%d") + "-us"
+    if _hm < 14 * 60 + 30:
+        return _now.strftime("%Y-%m-%d") + "-cn-am"
+    if _hm < 21 * 60 + 45:
+        return _now.strftime("%Y-%m-%d") + "-cn-pm"
+    return _now.strftime("%Y-%m-%d") + "-us"
+
+
 def _v88_phase_turn_full9(_repo, force=False):
     """【V88·全池双向相位扫描 2026-07-24 用户点单"要在最全股票池960只里筛选+要有低谷转强"】
     扫 RAW_US+RAW_HK+RAW_CN_TOP 全市场大池,找相位切换股:direction=down(顶拐/退潮·转弱)
-    + direction=up(低谷→启动·转强)。8线程并发,6小时缓存落盘 data/phase_turn_full.json。
-    force=False 只读缓存(秒开,无缓存返回None由调用处给按钮);force=True 实扫(首扫5-15分钟)。"""
+    + direction=up(低谷→启动·转强)。8线程并发,落盘 data/phase_turn_full.json。
+    缓存口径=三时段槽(09:15/14:30/21:45北京,中美港各自盘中一刷)——槽没变就用缓存。
+    force=False 只读缓存(秒开,无缓存返回None);force=True 实扫(首扫5-15分钟)。"""
     _fp = _repo / "data" / "phase_turn_full.json"
     _cached = None
     try:
@@ -12907,9 +12924,7 @@ def _v88_phase_turn_full9(_repo, force=False):
     except Exception:
         _cached = None
     if not force:
-        if _cached and time.time() - float(_cached.get("ts") or 0) < 6 * 3600:
-            return _cached
-        return _cached      # 过期缓存也返回(标注时间),无缓存None
+        return _cached      # 槽新旧由调用处判定(旧槽→起后台线程刷,页面先显旧数据不卡)
     import sys as _sy9p
     if str(_repo / "src") not in _sy9p.path:
         _sy9p.path.insert(0, str(_repo / "src"))
@@ -12946,6 +12961,7 @@ def _v88_phase_turn_full9(_repo, force=False):
             if _r9p:
                 _out9p.append(_r9p)
     _d9p = {"ts": time.time(), "scanned": len(_pool9p),
+            "slot": _v88_phase_slot9(),
             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
             "stocks": _out9p}
     try:
@@ -13591,11 +13607,42 @@ def _render_today_verdict(_snap, _repo):
     try:
         _traj_all9w = ((_snap or {}).get("rotation_forecast") or {}).get("trajectories") or {}
         _full9w = _v88_phase_turn_full9(_repo)
+        _slot_now9w = _v88_phase_slot9()
+        _slot_name9w = {"cn-am": "A/港早盘档", "cn-pm": "A/港尾盘档", "us": "美股盘档"}.get(
+            _slot_now9w[11:], _slot_now9w)   # 槽形如"2026-07-24-cn-am",日期固定10字符+1个"-"
         if _full9w and _full9w.get("stocks"):
             _src_st9w = _full9w["stocks"]
+            _stale_slot9w = _full9w.get("slot") != _slot_now9w
             _pool_tag9w = (f"全市场大池{_full9w.get('scanned')}只·扫描于{_full9w.get('generated_at')}"
-                           + ("·<b style='color:#b45309'>已超6小时可重扫</b>"
-                              if time.time() - float(_full9w.get("ts") or 0) > 6 * 3600 else ""))
+                           f"·当前{_slot_name9w}"
+                           + ("·<b style='color:#b45309'>新时段后台刷新中,先显示上一时段</b>"
+                              if _stale_slot9w else "·本时段已最新"))
+            # 【V88·三时段自动刷新 2026-07-24 用户点单"一天盘中三次,中美港时段不同"】
+            # 槽变→daemon线程后台重扫(不卡页面),标记文件防重复起(30分钟内只起一个)。
+            if _stale_slot9w:
+                _flag9w = _repo / "data" / "phase_turn_scanning.flag"
+                _flag_ok9w = True
+                try:
+                    if _flag9w.exists() and time.time() - float(_flag9w.read_text().strip() or 0) < 1800:
+                        _flag_ok9w = False
+                except Exception:
+                    pass
+                if _flag_ok9w:
+                    try:
+                        _flag9w.write_text(str(time.time()))
+                        import threading as _th9w
+
+                        def _bg_scan9w():
+                            try:
+                                _v88_phase_turn_full9(_repo, force=True)
+                            finally:
+                                try:
+                                    _flag9w.unlink()
+                                except Exception:
+                                    pass
+                        _th9w.Thread(target=_bg_scan9w, daemon=True).start()
+                    except Exception:
+                        pass
         else:
             _src_st9w = ((_snap or {}).get("cycle_scan") or {}).get("stocks") or []
             _pool_tag9w = f"当前池=持仓+自选{len(_src_st9w)}只·点下方按钮扫全市场大池"
@@ -15577,9 +15624,30 @@ with st.expander("🏛️ 机构风向标 · 权威研报评级×系统推荐池
                 f"{('等' + str(len(c['orgs'])) + '家') if len(c.get('orgs') or []) > 2 else ''}）："
                 f"<span style='color:#475569'>{c.get('gist') or '—'}</span></div>"
                 for c in _cons9[:8]) + "</div>", unsafe_allow_html=True)
+        # 【V88·外资投行观点层 2026-07-24 用户点单"高级金融机构日报→周/月提示"】
+        # ①AI周月提示行(只依据外资材料) ②观点列表带银行名+原文链接。
+        # 如实边界:投行原始日报为付费品,此处为新闻公开转述(财联社等)。
+        _fb9 = (_aib9 or {}).get("外资投行") or {}
+        if isinstance(_fb9, dict) and (_fb9.get("本周") or _fb9.get("本月")):
+            st.markdown(f"<div style='background:#faf5ff;border-left:3px solid #9333ea;border-radius:6px;"
+                        f"padding:.35rem .6rem;font-size:13px'><b>🏦 外资投行周月提示</b>"
+                        f"（高盛/大摩/汇丰等·出处:新闻公开转述·AI综合非原话）："
+                        + (f"<b>本周</b>:{_fb9.get('本周')} " if _fb9.get("本周") else "")
+                        + (f"｜<b>本月</b>:{_fb9.get('本月')}" if _fb9.get("本月") else "")
+                        + "</div>", unsafe_allow_html=True)
         if _inst9.get("org_news"):
-            st.markdown("**🌐 外资/权威观点**（出处:新闻流标题原文）：" + "<br>".join(
-                f"· {t}" for t in _inst9["org_news"][:5]), unsafe_allow_html=True)
+            def _orgline9(_t):
+                if isinstance(_t, dict):
+                    _ttl9 = str(_t.get("title") or "")
+                    _lk9 = str(_t.get("link") or "")
+                    _bk9 = str(_t.get("bank") or "")
+                    _body9 = (f"<a href='{_lk9}' target='_blank' "
+                              f"style='color:inherit;text-decoration:underline'>{_ttl9}</a>"
+                              if _lk9 else _ttl9)
+                    return f"· <b style='color:#9333ea'>{_bk9}</b> {_body9}"
+                return f"· {_t}"
+            st.markdown("**🌐 外资/权威观点**（出处:新闻流标题原文·下划线可点原文）：" + "<br>".join(
+                _orgline9(_t) for _t in _inst9["org_news"][:6]), unsafe_allow_html=True)
     except Exception:
         st.info("机构风向标数据随日报流水线生成（交易日07/13/19点），稍后刷新。")
 
