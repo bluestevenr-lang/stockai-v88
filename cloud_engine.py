@@ -424,29 +424,66 @@ def analyze_trend_full(df, sector_strength=None):
             invalid = f"重新站上MA20({ma[20]:.2f})并缩量企稳3日才重新评估"
         elif stage == "趋势转弱":
             action, concl = "🛑 跌破止损离场；空仓者回避", "回避"
-            invalid = f"收复MA20({ma[20]:.2f})并放量收阳"
+            invalid = f"收复{ma[20]:.2f}并放量收阳"
         elif stage in ("放量滞涨", "高位震荡"):
             action = "📉 冲高减仓/不追高" + (f"，接近{reduce:.2f}或放量滞涨减仓" if stage == "放量滞涨" else "")
             concl = "减仓"
-            invalid = f"跌破MA20({ma[20]:.2f})即离场；缩量整理后放量破{breakout:.2f}方可回补"
+            invalid = f"跌破{ma[20]:.2f}即离场；缩量整理后放量破{breakout:.2f}方可回补"
         elif stage == "主升阶段":
             if bias20 > 8 or rsi > 75:
-                action, concl = f"✋ 短线过热(乖离{bias20:+.1f}%/RSI{rsi:.0f})·不追，回踩MA10({pullback:.2f})再上", "持有"
+                action, concl = f"✋ 短线过热(乖离{bias20:+.1f}%/RSI{rsi:.0f})·不追，回踩{pullback:.2f}再上", "持有"
             else:
-                action, concl = f"🟢 持有；突破{breakout:.2f}放量可加仓", "进攻"
-            invalid = f"收盘跌破MA20({ma[20]:.2f})且放量，主升结束"
+                action, concl = f"🟢 持有；放量突破 {breakout:.2f} 且站稳3日才加仓（突破前 {breakout:.2f} 视为第一止盈位）", "进攻"
+            invalid = f"收盘跌破{ma[20]:.2f}且放量，主升结束"
         elif stage in ("趋势延续", "启动确认"):
-            action = (f"🟢 可以买：{buy_lo:.2f}~{buy_hi:.2f}分批；突破{breakout:.2f}放量加仓" if vp_lv >= 1
-                      else f"⏳ 等回踩MA20({ma[20]:.2f})企稳再买")
+            action = (f"🟢 可以买：{buy_lo:.2f}~{buy_hi:.2f}分批；放量突破 {breakout:.2f} 且站稳3日才加仓（突破前 {breakout:.2f}=第一止盈位）" if vp_lv >= 1
+                      else f"⏳ 等回踩{ma[20]:.2f}企稳再买")
             concl = "进攻" if vp_lv >= 1 else "等待"
-            invalid = f"收盘跌破MA55({ma[55]:.2f})趋势失效"
+            invalid = f"收盘跌破{ma[55]:.2f}趋势失效"
         elif stage in ("底部启动", "底部试探"):
-            action, concl = f"🧪 只能试仓(≤半仓)，止损{l20:.2f}；站稳MA20放量再加", "试仓"
+            action, concl = f"🧪 只能试仓(≤半仓)，止损{l20:.2f}；站稳 {ma[20]:.2f} 放量再加", "试仓"
             invalid = f"跌回启动前低{l20:.2f}，启动失败"
         else:
-            action, concl = f"⏳ 观望：站稳MA20({ma[20]:.2f})+放量再介入", "等待"
-            invalid = "站上MA20且放量突破前高"
+            action, concl = f"⏳ 观望：站稳{ma[20]:.2f}+放量再介入", "等待"
+            invalid = f"站上 {ma[20]:.2f} 且放量突破前高"
 
+
+        # 【V88·结论三重闸 2026-07-25 GPT-5.6审计案(PYPL:rr0.17仍喊进攻/止损-24.6%/并购跳空)】
+        # 趋势结论不得凌驾赔率与纪律——审计六问题的引擎级根治:
+        # ①赔率闸:到压力空间/到失效风险<1.2 → 进攻/试仓降级"等待",给使赔率≥1.5的回踩买价(纯价格)
+        # ②止损纪律:技术失效位距现价>12% → 附纪律止损-8%(用户定纲止损6-8%)
+        # ③事件跳空:近10日单日涨跌≥8% → 警示"指标或失真,按事件逻辑处理"
+        import re as _re_g
+        try:
+            if concl in ("进攻", "试仓") and breakout and last:
+                _m_g = _re_g.search(r"(\d+\.?\d*)", str(invalid))
+                _stop_ref = float(_m_g.group(1)) if _m_g else None
+                if _stop_ref and 0 < _stop_ref < last:
+                    _dn_g = last - _stop_ref
+                    _rr_g = ((breakout - last) / _dn_g) if _dn_g > 0 else 9.0
+                    if _rr_g < 1.2:
+                        _good_entry = (breakout + 1.5 * _stop_ref) / 2.5
+                        concl = "等待"
+                        action = (f"⚖️ 赔率不足不追：到压力 {breakout:.2f} 空间/到失效 {_stop_ref:.2f} 风险"
+                                  f"≈{max(_rr_g, 0):.2f}<1.2——回踩 {_good_entry:.2f} 附近再买(彼处赔率≥1.5"
+                                  f"·买入后止损 {max(_stop_ref, _good_entry * 0.92):.2f})")
+        except Exception:
+            pass
+        try:
+            _m_s = _re_g.search(r"止损(\d+\.?\d*)", str(action))
+            if _m_s and last:
+                _sv_g = float(_m_s.group(1))
+                if _sv_g and (last - _sv_g) / last > 0.12:
+                    action += f"｜纪律止损 {last * 0.92:.2f}(-8%·技术位太深时以此为准)"
+        except Exception:
+            pass
+        try:
+            _r10_g = c.pct_change().tail(10).abs()
+            if len(_r10_g) and float(_r10_g.max()) >= 0.08:
+                action += ("｜⚡近10日有±8%大跳空：疑事件驱动(并购/财报/政策)，"
+                           "均线与动量指标或失真——先查消息面，按事件逻辑而非趋势逻辑操作")
+        except Exception:
+            pass
 
         # 【V88·时机闸门｜用户定则】分数=现在值得买：时机差（减仓/回避/等待类结论）强制压分，
         # 高分从此代表"可以直接买"；持仓者的减仓提示由 action 单独说明。

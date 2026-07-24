@@ -17268,7 +17268,7 @@ if st.session_state.get('scan_selected_code'):
                             (st.error if _turn99["side"] == "top" else st.success)(
                                 f"**{_turn99['label']}**：" + "；".join(_turn99["signals"])
                                 + f"\n\n👉 {_turn99['prompt']}")
-                        with st.expander(f"🔥 综合量价趋势 · {_F['stage']} · 趋势分{_F['total']} · 结论「{_F['conclusion']}」", expanded=True):
+                        with st.expander(f"🔥 综合量价趋势 · {_F['stage']} · 趋势分{_F['total']}(辅助量纲·非统一分,买卖以统一分为准) · 结论「{_F['conclusion']}」", expanded=True):
                             st.markdown(
                                 f"**一句话结论：{_F['conclusion']}** ｜ 操作建议：{_F['action']}\n\n"
                                 f"- 趋势总分：**{_F['total']}/100**\n"
