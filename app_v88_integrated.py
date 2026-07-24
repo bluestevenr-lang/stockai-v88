@@ -10285,7 +10285,7 @@ def analyze_trend_pulse(df, code=None):
         elif stage == "🟢 趋势确认":
             action = (f"🟢 可以买：{ma[20]:.2f}~{last:.2f}区间分批" if vp_good >= 1
                       else f"⏳ 等待回踩MA20({ma[20]:.2f})企稳再买")
-            invalid = f"收盘跌破MA55({ma[55]:.2f})，趋势失效"
+            invalid = f"收盘跌破 {ma[55]:.2f}，趋势失效"   # 价格化定纲:主文案不提均线名
         elif stage == "🌱 底部启动":
             action = f"🧪 只能试仓(≤半仓位)，止损{l20:.2f}"
             invalid = f"跌回启动前低点{l20:.2f}，启动失败"

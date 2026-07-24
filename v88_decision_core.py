@@ -255,7 +255,7 @@ def entry_timing(full, *, short=50.0, medium=50.0, long_avg=50.0, action="", rr=
 
     if toxic:
         mode, days = "不进", 0
-        s_text = f"🚫 短线不进（{stage or '趋势恶化'}·2周方向分{short:.0f}）；放量收复MA20({ma20:g})再评估"
+        s_text = f"🚫 短线不进（{stage or '趋势恶化'}·2周方向分{short:.0f}）；放量收复 {ma20:g} 再评估"
         note = "🚫短线不进"
     elif action_go and buy_lo > 0 and buy_lo <= last <= buy_hi * 1.005 and benign and chg5 < 8 and bias20 <= 6:
         mode, days = "现价可进", 3
@@ -290,9 +290,9 @@ def entry_timing(full, *, short=50.0, medium=50.0, long_avg=50.0, action="", rr=
     if float(medium) >= 55 and (ma55 > 0 and last > ma55 or "多头排列" in ma_txt):
         _m_lo = round(min(pullback if pullback > 0 else ma20, ma20 * 0.99) or last * 0.97, 2)
         _m_hi = round(max(buy_hi, ma20 * 1.03) or last, 2)
-        m_text = f"🎯 中线（4-8周）：区间{_m_lo:g}~{_m_hi:g}分批建仓；收盘连续2日破MA55({ma55:g})失效"
+        m_text = f"🎯 中线（4-8周）：区间{_m_lo:g}~{_m_hi:g}分批建仓；收盘连续2日破 {ma55:g} 失效"
     elif float(medium) >= 48:
-        m_text = f"⏳ 中线（4-8周）：待周线站稳MA55({ma55:g})再启动区间建仓"
+        m_text = f"⏳ 中线（4-8周）：待周线站稳 {ma55:g} 再启动区间建仓"
     else:
         m_text = "🚫 中线结构未修复，不建仓"
 
@@ -334,7 +334,7 @@ def diagnose_today(*, scope="自选", today_chg=0.0, market_chg=0.0, stage="",
                            f"按纪律减/走，别扛" + (f"（浮亏{pnl_pct:+.0f}%别越亏越拿）" if (pnl_pct or 0) < -3 else "")}
         return {"kind": "破位", "verdict": "回避·不接刀",
                 "why": f"今日{today_chg:+.1f}%且已{'破止损位' if broke_stop else stage}——"
-                       f"现在买就是接下落的刀，等重新放量站上MA20再看，不是等回踩那种低吸"}
+                       f"现在买就是接下落的刀，等重新放量收复短期均价再看，不是等回踩那种低吸"}
 
     # ② 个股利空型：跌幅远超大盘（弱于大盘3个点以上）
     if today_chg < -1 and _rel <= -3:
@@ -401,12 +401,14 @@ def build_trade_plan(full, entry_plan=None, forward=None) -> dict:
         "invalid": ("——" if _no_entry(_s_in) else (f"跌破{stop:g}作废" if stop else "破止损作废")),
         "mode": ep.get("mode", ""),
     }
+    _ma55_p = float((full.get("ma") or {}).get(55) or (full.get("ma") or {}).get("55") or 0)
     _m_in = str(ep.get("mid_text") or "中线条件未确认")
     plan["mid"] = {
         "in": _m_in,
         "out": ("——（未建仓无出场）" if _no_entry(_m_in) else
                 (f"目标{t60:g}（≈1季·60交易日·上行概率{p60}%）" if t60 else "目标待确认")),
-        "invalid": "——" if _no_entry(_m_in) else "收盘连续2日破MA55失效",
+        "invalid": ("——" if _no_entry(_m_in) else
+                    (f"收盘连续2日破 {_ma55_p:g} 失效" if _ma55_p else "收盘连续2日破中线支撑失效")),
     }
     _l_in = str(ep.get("long_text") or "长线条件未确认")
     plan["long"] = {
