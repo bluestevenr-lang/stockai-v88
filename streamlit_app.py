@@ -1008,7 +1008,21 @@ if _nav == "🧭 导航":
             _t9y = float((_blk9y.get("temperature") or {}).get("temp") or 50)
             _cg9y = float(((_blk9y.get("indices") or [{}])[0] or {}).get("chg1d") or 0)
             _tm9y = int(round(max(25, min(75, 50 + 2.2 * _cg9y + 0.15 * (_t9y - 50)))))
-            _cells9y = [f"明日<b style='color:{_pc9y(_tm9y)}'>{_tm9y}%</b>"]
+            # 【V88·三市场综述同步 2026-07-25】云端四档行补今日涨跌+领涨领跌(与桌面同款信息密度)
+            _cgc9y = "#dc2626" if _cg9y > 0.05 else ("#16a34a" if _cg9y < -0.05 else "#64748b")
+            _secs9y = _blk9y.get("sectors") or []
+            _lead9y = ""
+            if _secs9y:
+                _u2y = sorted(_secs9y, key=lambda s: -(s.get("chg1d") or 0))[:2]
+                _d2y = sorted(_secs9y, key=lambda s: (s.get("chg1d") or 0))[:2]
+                _dnw9y = "领跌" if (_d2y and (_d2y[0].get("chg1d") or 0) < 0) else "较弱"
+                _upw9y = "领涨" if (_u2y and (_u2y[0].get("chg1d") or 0) > 0) else "较强"
+                _lead9y = (f"<span style='font-size:11px;color:#475569'>　{_upw9y}:"
+                           + "、".join(f"{s['name']}{(s.get('chg1d') or 0):+.1f}%" for s in _u2y)
+                           + f"｜{_dnw9y}:" + "、".join(f"{s['name']}{(s.get('chg1d') or 0):+.1f}%" for s in _d2y)
+                           + "</span>")
+            _cells9y = [f"今日<b style='color:{_cgc9y}'>{_cg9y:+.2f}%</b>",
+                        f"明日<b style='color:{_pc9y(_tm9y)}'>{_tm9y}%</b>"]
             for _lb9y, _hz9y in (("本周", "2周"), ("本月", "4周"), ("下月", "8周")):
                 _p9y = _l39y.get(_hz9y)
                 if _p9y is not None:
@@ -1023,7 +1037,7 @@ if _nav == "🧭 导航":
                               f"（出处:{_s9y.get('s') or '新闻'}·点击看原文）") if _s9y.get("u")
                              else f"{_r9y['why']}（出处:AI异动归因）") + "</span>")
             _fc9y.append(f"<div style='font-size:12.5px;margin:1px 0'><b>{_mk9y}</b>："
-                         + " ｜ ".join(_cells9y) + _why9y + "</div>")
+                         + " ｜ ".join(_cells9y) + _lead9y + _why9y + "</div>")
         if _fc9y:
             st.markdown("**🔮 大盘四档预判**"
                         "<span style='font-size:12px;color:#94a3b8'>（明日=动量+温度规则估计·低置信；"

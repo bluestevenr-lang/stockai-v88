@@ -13888,66 +13888,57 @@ def _render_l3_cycle_board(_snap, _is_trading):
                 _live_chg9[_mk9x] = (float(_cx9.iloc[-1]) / float(_cx9.iloc[-2]) - 1) * 100
             except Exception:
                 continue
-        _movers9 = {k: v for k, v in _live_chg9.items() if abs(v) >= 1.5}
-        if _movers9:
-            _dirn9 = "大跌" if min(_movers9.values()) < 0 else "大涨"
-            _mv_txt9 = "、".join(f"{k} <b>{v:+.2f}%</b>" for k, v in
-                                 sorted(_movers9.items(), key=lambda x: x[1]))
-            # 为什么：领跌/领涨板块(快照) + 当日最新头条(新闻流)
-            _why9 = []
-            try:
-                for _mk9y in _movers9:
-                    _secs9 = ((_snap or {}).get("markets") or {}).get(_mk9y, {}).get("sectors") or []
-                    if _secs9:
-                        _sorted9 = sorted(_secs9, key=lambda s: s.get("chg1d", 0),
-                                          reverse=(_movers9[_mk9y] > 0))
-                        _why9.append(f"{_mk9y}{'领涨' if _movers9[_mk9y] > 0 else '领跌'}:" + "、".join(
-                            f"{s['name']}{s.get('chg1d', 0):+.1f}%" for s in _sorted9[:2]))
-            except Exception:
-                pass
-            # 【V88·大盘异动分市场归因 2026-07-17 用户点单】中美港每个异动大盘各给一句"为什么"：
-            # 方向匹配(大跌找利空/大涨找利好)+该市场scope+带因果词(因/受/预期/抛售…)+高影响+中文,择优1条。
-            # 【V88·异动归因升级 2026-07-17 用户点单】优先思考模式主动归因(云端产物,带driver),
-            # 无思考结论时退回新闻匹配兜底(即时零成本)。
-            _ma9 = {}
-            try:
-                _maj9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
-                                    "move_attribution.json").read_text(encoding="utf-8"))
-                if _maj9.get("status") == "completed":
-                    _ma9 = _maj9.get("reasons") or {}
-            except Exception:
-                _ma9 = {}
-            _why_news9 = {}                               # {市场: (为什么, 是否思考)}
-            for _mk9y in _movers9:
-                _think9 = _ma9.get(_mk9y) or {}
-                if _think9.get("why"):
-                    _drv9 = _think9.get("driver") or ""
-                    _why_news9[_mk9y] = ((f"[{_drv9}] " if _drv9 else "") + _think9["why"], True)
-                    continue
-                _lead9 = [str(s.get("name", "")) for s in sorted(
-                    (((_snap or {}).get("markets") or {}).get(_mk9y, {}).get("sectors") or []),
-                    key=lambda s: s.get("chg1d", 0), reverse=(_movers9[_mk9y] > 0))[:3]]
-                _r9y = _v88_move_reason(_movers9[_mk9y], names=[_mk9y] + _lead9,
-                                        scope_hint=_mk9y, max_len=36)
-                if _r9y:
-                    _why_news9[_mk9y] = (_r9y, False)
-            _col9x = "#16a34a" if _dirn9 == "大跌" else "#dc2626"
-            _bg9x = "#f0fdf4" if _dirn9 == "大跌" else "#fef2f2"
+        # 【V88·三市场今日综述 2026-07-25 用户点单"只有A股没营养——中美港都要今日+四档+原因写清"】
+        # 常显(不再只异动日才有):每市场=今日涨跌+领涨领跌板块+❓为什么(带原文链接三级兜底永不空)
+        # +明日/本周/本月/下月四档概率(与🔮四档预判同口径)。异动市场行底色高亮。
+        _repo9s = Path.home() / "Desktop" / "ai-daily-report-v2"
+
+        def _pc9s(_p):
+            return "#dc2626" if _p >= 55 else ("#16a34a" if _p <= 45 else "#64748b")
+        _sum_rows9 = []
+        for _mk9y in ("美股", "A股", "港股"):
+            _blk9s = ((_snap or {}).get("markets") or {}).get(_mk9y) or {}
+            _cg9s = _live_chg9.get(_mk9y)
+            if _cg9s is None:
+                continue
+            _cgc9s = "#dc2626" if _cg9s > 0.05 else ("#16a34a" if _cg9s < -0.05 else "#64748b")
+            _secs9s = _blk9s.get("sectors") or []
+            _lead_txt9 = ""
+            if _secs9s:
+                _up2s = sorted(_secs9s, key=lambda s: -(s.get("chg1d") or 0))[:2]
+                _dn2s = sorted(_secs9s, key=lambda s: (s.get("chg1d") or 0))[:2]
+                _dn_word9 = "领跌" if (_dn2s and (_dn2s[0].get("chg1d") or 0) < 0) else "较弱"
+                _up_word9 = "领涨" if (_up2s and (_up2s[0].get("chg1d") or 0) > 0) else "较强"
+                _lead_txt9 = (f"{_up_word9}:" + "、".join(f"{s['name']}{(s.get('chg1d') or 0):+.1f}%" for s in _up2s)
+                              + f"｜{_dn_word9}:" + "、".join(f"{s['name']}{(s.get('chg1d') or 0):+.1f}%" for s in _dn2s))
+            _l39s = dict((x[0], x[1]) for x in ((_blk9s.get("l3") or {}).get("probs") or []))
+            _t9s = float((_blk9s.get("temperature") or {}).get("temp") or 50)
+            _tm9s = int(round(max(25, min(75, 50 + 2.2 * _cg9s + 0.15 * (_t9s - 50)))))
+            _fc_cells9 = [f"明日<b style='color:{_pc9s(_tm9s)}'>{_tm9s}%</b>"]
+            for _lb9s, _hz9s in (("本周", "2周"), ("本月", "4周"), ("下月", "8周")):
+                _p9s = _l39s.get(_hz9s)
+                if _p9s is not None:
+                    _fc_cells9.append(f"{_lb9s}<b style='color:{_pc9s(int(_p9s))}'>{int(_p9s)}%</b>")
+            _hl9s = abs(_cg9s) >= 1.5
+            _rowbg9 = ("background:#f0fdf4;" if (_hl9s and _cg9s < 0) else
+                       ("background:#fef2f2;" if _hl9s else ""))
+            _sum_rows9.append(
+                f"<div style='{_rowbg9}border-radius:6px;padding:2px 6px;margin:1px 0;font-size:13px'>"
+                f"{'🚨' if _hl9s else '📊'} <b>{_mk9y}</b> <b style='color:{_cgc9s}'>{_cg9s:+.2f}%</b>"
+                f"<span style='font-size:12px;color:#475569'>　{_lead_txt9}</span>"
+                f"　{' '.join(_fc_cells9)}"
+                f"<br><span style='font-size:12px;color:#64748b'>└ ❓今日为什么:"
+                + _v88_mkt_why9(_mk9y, _repo9s) + "</span></div>")
+        if _sum_rows9:
             st.markdown(
-                f"<div style='background:{_bg9x};border-left:4px solid {_col9x};border-radius:8px;"
-                f"padding:.55rem .8rem;font-size:13px;margin-bottom:.4rem'>"
-                f"🚨 <b style='color:{_col9x}'>今日{_dirn9}</b>：{_mv_txt9}"
-                + (f"　｜　{'；'.join(_why9)}" if _why9 else "")
-                + ("".join(
-                    f"<br><span style='font-size:12px;color:#475569'>"
-                    f"{'🧠' if _why_z9[1] else '📉'} <b style='color:{_col9x}'>{_mk9z}{_dirn9}原因</b>："
-                    f"{_why_z9[0]}</span>"
-                    for _mk9z, _why_z9 in _why_news9.items())
-                   + ("<br><span style='font-size:12px;color:#94a3b8'>"
-                      "（🧠=AI思考综合归因 · 📉=新闻匹配）</span>" if _why_news9 else ""))
-                + "</div>", unsafe_allow_html=True)
+                "<div style='border:1px solid #dbe4f0;border-left:4px solid #2563eb;border-radius:8px;"
+                "padding:.5rem .7rem;margin-bottom:.4rem'>"
+                "<b style='font-size:13px'>📰 三市场今日综述</b>"
+                "<span style='font-size:11px;color:#94a3b8'>（今日涨跌+领涨领跌+为什么·下划线点击看原文"
+                "+明日/本周/本月/下月概率·与🔮四档预判同口径）</span>"
+                + "".join(_sum_rows9) + "</div>", unsafe_allow_html=True)
     except Exception:
-        pass
+        _v88_sentinel9(Path.home() / "Desktop" / "ai-daily-report-v2", "三市场今日综述")
 
     st.markdown(
         "<span style='font-size:12px;color:#64748b'>"
