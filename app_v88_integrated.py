@@ -3140,16 +3140,10 @@ try:
             from market_snapshot import generate_market_snapshot as _gms9
             _gms9()
 
-        def _rf_rot9():
-            import sys as _sy9f
-            if str(_nw_repo9 / "src") not in _sy9f.path:
-                _sy9f.path.insert(0, str(_nw_repo9 / "src"))
-            from rotation_forecast import build_rotation_forecast as _brf9
-            _sn9f = json.loads((_nw_repo9 / "data" / "market_snapshot.json").read_text(encoding="utf-8"))
-            _fc9f = _brf9(_sn9f.get("markets") or {}, _sn9f.get("snapshot_id", "manual"), force=True)
-            _sn9f["rotation_forecast"] = _fc9f
-            (_nw_repo9 / "data" / "market_snapshot.json").write_text(
-                json.dumps(_sn9f, ensure_ascii=False, indent=2), encoding="utf-8")
+        # 【V88·时点一致性 2026-07-25 用户抓"分批更新会不会数据不一样结果不一样"——成立!】
+        # 原独立"板块轮动"按钮=拿旧快照行情当输入重算→新时间戳+旧数据,时间戳撒谎,已拆除。
+        # 铁律:强刷必须按依赖链闭包——快照→轮动→个股周期一体重算(generate_market_snapshot内嵌),
+        # 黑马/全池相位独立实时fetch链可单刷,机构/公告/打新/三榜独立信息源可单刷。
 
         def _rf_dh9():
             import sys as _sy9f
@@ -3169,9 +3163,9 @@ try:
             _dhm9f.build_darkhorse(_ex9f)
 
         with _rb1:
-            _v88_refresh9("快照+综述", "约1-2分钟", _rf_snap9, "rf_snap9")
+            _v88_refresh9("快照+轮动+周期(全链一致)", "约2-3分钟", _rf_snap9, "rf_snap9")
         with _rb2:
-            _v88_refresh9("板块轮动", "约1分钟", _rf_rot9, "rf_rot9")
+            st.caption("🛡️ 时点一致原则:行情链(快照/轮动/周期)只许整链重算,不给半截更新按钮——防'新时间戳旧数据'")
         with _rb3:
             _v88_refresh9("黑马池", "约8-15分钟", _rf_dh9, "rf_dh9")
         with _rb4:
