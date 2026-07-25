@@ -2977,20 +2977,34 @@ try:
     def _cb_mk9(_cd):
         _c = str(_cd or "").upper()
         return ("A股" if _c.endswith((".SS", ".SZ")) else ("港股" if _c.endswith(".HK") else "美股"))
-    _cb_rows9, _cb_near9, _cb_seen9 = [], [], set()
-    for _r9 in (_cbj9("intraday_decisions.json").get("rows") or []):
+    _MKFLAG9 = {"A股": "🇨🇳", "港股": "🇭🇰", "美股": "🇺🇸"}
+    _cb_rows9, _cb_near9, _cb_sell9, _cb_seen9 = [], [], [], set()
+    # 双源合并(与龙虎门同款):session实时(三市场都算,若已就绪)优先,落盘兜底——
+    # 落盘曾被单市场班冲掉(已改合并式),session保证中港绿灯即时可见。
+    _cb_src9 = list(((st.session_state.get("watch_alerts_v88") or {}).get("decisions") or []))
+    _cb_src9 += list(_cbj9("intraday_decisions.json").get("rows") or [])
+    for _r9 in _cb_src9:
         _ep9 = _r9.get("entry_plan") or {}
         _md9 = str(_ep9.get("mode") or "")
         _k9 = str(_r9.get("code")).upper().split(".")[0].lstrip("0")
-        if _md9 == "现价可进" and _k9 not in _cb_seen9:
-            _cb_rows9.append(("自选/持仓池", _r9.get("name"), _r9.get("code"), _r9.get("last"),
+        # 【2026-07-25 用户抓"只有美股没中港"】绿灯三种模式全收(与龙虎门同口径)——
+        # 之前只收"现价可进"把回踩到位的中海油/山西汾酒漏掉了
+        if _md9 in ("现价可进", "回踩到位", "突破确认") and _k9 not in _cb_seen9:
+            _cb_rows9.append((f"自选/持仓池·{_md9}", _r9.get("name"), _r9.get("code"), _r9.get("last"),
                               int(_r9.get("p_up") or 0), round(float(_r9.get("probability_edge") or _r9.get("expected_pct") or 0), 1),
                               str(_ep9.get("short_text") or "")[2:96]))
             _cb_seen9.add(_k9)
-        elif _md9 in ("回踩到位", "突破确认", "双路径待触发") and _k9 not in _cb_seen9:
+        elif _md9 == "双路径待触发" and _k9 not in _cb_seen9:
             _cb_near9.append((_r9.get("name"), _r9.get("code"), _md9,
                               str(_ep9.get("short_text") or "")[2:80]))
             _cb_seen9.add(_k9)
+        # 【2026-07-25 用户定纲"不要光买不卖,要平衡"】确认卖单:持仓纪律触发全收
+        if (_r9.get("scope") == "持仓" and any(_kw9 in str(_r9.get("action") or "")
+                                              for _kw9 in ("减", "退", "清", "止损"))):
+            _cb_sell9.append((_r9.get("name"), _r9.get("code"), _r9.get("last"),
+                              int(_r9.get("p_down") or 0), str(_r9.get("action") or "")[:12],
+                              str(_r9.get("cycle_note") or _r9.get("entry_note") or "")[:44]))
+    _cb_sell9.sort(key=lambda x: -x[3])
     for _sv9 in (_cbj9("sector_reps.json").get("sectors") or []):
         _pk9 = _sv9.get("pick") or {}
         _k9 = str(_pk9.get("sym") or "").upper()
@@ -3004,7 +3018,19 @@ try:
                               f"回踩带{(_pk9.get('shallow') or ['?', '?'])[0]}~{(_pk9.get('shallow') or ['?', '?'])[1]}"
                               f"·突破{_pk9.get('breakout')}·失效{_pk9.get('invalid')}·{_sv9.get('why', '')[:40]}"))
             _cb_seen9.add(_k9)
-    if _cb_rows9:
+    _cb_sell_html9 = []
+    for _nm9s, _cd9s, _px9s, _pd9s, _act9s, _why9s in _cb_sell9[:5]:
+        _cb_sell_html9.append(
+            f"<div style='font-size:14px;margin:2px 0'>⚔️ <b style='color:#16a34a;font-size:15px'>"
+            f"{'周一' if _cb_nt9 else ''}该卖/减:"
+            f"<a href='?q={_cd9s}&focus=deep#v88-deep-analysis' target='_blank' rel='noopener' "
+            f"style='color:#16a34a;text-decoration:underline'>{_nm9s}</a></b>"
+            f"　{_MKFLAG9.get(_cb_mk9(_cd9s), '')}现{_px9s}·看跌<b style='color:#16a34a'>{_pd9s}%</b>·{_act9s}"
+            f"<span style='font-size:12px;color:#475569'>　{_why9s}</span>"
+            f"<span style='font-size:11px;color:#94a3b8'>　卖点价在持仓卡💰行·💼按纪律执行非翻案</span></div>")
+    if len(_cb_sell9) > 5:
+        _cb_sell_html9.append(f"<div style='font-size:12px;color:#64748b'>…等{len(_cb_sell9)}只,全名单在⚔️地狱门</div>")
+    if _cb_rows9 or _cb_sell_html9:
         _cb_html9 = []
         for _src9, _nm9, _cd9, _px9, _pu9, _rr9, _why9 in _cb_rows9[:5]:
             _g9 = _cb_gate9.get(_cb_mk9(_cd9)) or {}
@@ -3014,17 +3040,23 @@ try:
                 f"<div style='font-size:14px;margin:2px 0'>✅ <b style='color:#dc2626;font-size:15px'>{'周一' if _cb_nt9 else ''}该买:"
                 f"<a href='?q={_cd9}&focus=deep#v88-deep-analysis' target='_blank' rel='noopener' "
                 f"style='color:#dc2626;text-decoration:underline'>{_nm9}</a></b>"
-                f"　现{_px9}·2周涨概率<b style='color:#dc2626'>{_pu9}%</b>·赔率/边际{_rr9}"
+                f"　{_MKFLAG9.get(_cb_mk9(_cd9), '')}现{_px9}·2周涨概率<b style='color:#dc2626'>{_pu9}%</b>·赔率/边际{_rr9}"
                 f"<span style='font-size:12px;color:#475569'>　{_why9}</span>{_pol9}"
                 f"<span style='font-size:11px;color:#94a3b8'>　来源:{_src9}·📊入场绿灯台账积累中</span></div>")
         st.markdown("<div style='background:#fef2f2;border:2px solid #dc2626;border-radius:10px;"
                     "padding:.5rem .8rem;margin:.3rem 0'>"
-                    f"<b style='font-size:14px;color:#dc2626'>🔔 {_cb_day9}确认买单</b>"
-                    "<span style='font-size:11px;color:#94a3b8'>（有发言权源的现价可进信号·明确告知不再藏小字·"
-                    "买区止损见各卡/点名可点）</span>"
+                    f"<b style='font-size:14px;color:#dc2626'>🔔 {_cb_day9}确认买卖单</b>"
+                    "<span style='font-size:11px;color:#94a3b8'>（买=绿灯三模式·卖=持仓纪律触发·买卖对仗不偏科·"
+                    "价格见各卡/点名可点）</span>"
                     + ("<div style='font-size:12px;color:#b45309'>🗓 今天休市——下述为周一开盘的预挂单计划,"
-                       "开盘价若跳出买区先复核再执行,文中'今日/现价'均指周五收盘口径</div>" if _cb_nt9 else "")
-                    + "".join(_cb_html9) + "</div>",
+                       "开盘价若跳出买区/卖点先复核再执行,文中'今日/现价'均指周五收盘口径</div>" if _cb_nt9 else "")
+                    + "".join(_cb_html9)
+                    + ("<div style='font-size:12px;color:#94a3b8'>买侧:无绿灯——现金也是仓位</div>"
+                       if not _cb_html9 else "")
+                    + "".join(_cb_sell_html9)
+                    + ("<div style='font-size:12px;color:#94a3b8'>卖侧:持仓无纪律触发——按各卡止损线机械执行</div>"
+                       if not _cb_sell_html9 else "")
+                    + "</div>",
                     unsafe_allow_html=True)
     else:
         _nr_txt9 = ("；".join(f"{_n9}({_m9}:{_w9[:46]})" for _n9, _c9, _m9, _w9 in _cb_near9[:3])
