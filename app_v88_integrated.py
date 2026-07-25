@@ -3210,11 +3210,22 @@ try:
             # 【V88·准备买 2026-07-25 用户抓"没有推荐"】"现在可买0只"≠没任务——自选池里
             # 挂着触发价的票就是"准备买"名单(到价即动,提前启动)。源=自选决策entry_plan,
             # 挂entry_green台账(积累中=有发言权),不受黑马战绩连坐。
+            # 【V88·准备买分档 2026-07-25 用户抓"下周/本月/下月一模一样"】3天触发单只属于
+            # 今日~下周档;本月档=4周周期分≥58(mid计划),下月档=长线分≥58(long计划)——档位口径贯穿到底。
             _idc9n_pre = (_nwj9("intraday_decisions.json").get("rows") or [])
-            _prep9n = sorted([r for r in _idc9n_pre
-                              if str((r.get("entry_plan") or {}).get("mode") or "")
-                              in ("现价可进", "回踩到位", "突破确认", "双路径待触发")],
-                             key=lambda r: -(r.get("p_up") or 0))
+            if _tb_tier9 in ("本月", "下月"):
+                _sk9p, _tk9p = (("medium_score", "mid_text") if _tb_tier9 == "本月"
+                                else ("long_score", "long_text"))
+                _prep9n = sorted([r for r in _idc9n_pre if (r.get(_sk9p) or 0) >= 58],
+                                 key=lambda r: -(r.get(_sk9p) or 0))
+                _prep_lbl9 = ("4周周期分·中线布局(区间见明细)" if _tb_tier9 == "本月"
+                              else "长线分·左侧分批(区间见明细)")
+            else:
+                _prep9n = sorted([r for r in _idc9n_pre
+                                  if str((r.get("entry_plan") or {}).get("mode") or "")
+                                  in ("现价可进", "回踩到位", "突破确认", "双路径待触发")],
+                                 key=lambda r: -(r.get("p_up") or 0))
+                _sk9p, _tk9p, _prep_lbl9 = "p_up", "short_text", "自选池触发单·到价即动"
             # 每票挂所在市场统一裁决标(⏸️弱市触发单=到价也先不执行,等大盘回中性)
             _mg9p = _v88_mkt_gate9x(_nw_repo9)
 
@@ -3227,9 +3238,10 @@ try:
                         "hot": "<span style='font-size:11px;color:#b45309'>🔶只限回踩·仓位减半</span>"}.get(_st9p, "")
             _prep_rows9 = ["<div style='font-size:12.5px'>"
                            f"{_nw_link9(_r9p.get('name'), _r9p.get('code'))}"
-                           f"<b style='color:#dc2626'>{int(_r9p.get('p_up') or 0)}%</b>"
-                           f"<span style='font-size:11.5px;color:#475569'>·{(_r9p.get('entry_plan') or {}).get('mode')}"
-                           f"·{str((_r9p.get('entry_plan') or {}).get('short_text') or '')[2:60]}</span>"
+                           f"<b style='color:#dc2626'>{int(_r9p.get(_sk9p) or 0)}{'%' if _sk9p == 'p_up' else '分'}</b>"
+                           f"<span style='font-size:11.5px;color:#475569'>"
+                           f"{'·' + str((_r9p.get('entry_plan') or {}).get('mode') or '') if _sk9p == 'p_up' else ''}"
+                           f"·{str((_r9p.get('entry_plan') or {}).get(_tk9p) or '')[2:60]}</span>"
                            f"{_pol9p(_r9p.get('code'))}</div>"
                            for _r9p in _prep9n[:5]]
             st.markdown(f"<b style='font-size:13px'>🐉 ④ {_tb_tier9}买什么</b>"
@@ -3239,8 +3251,8 @@ try:
                            else ("<div style='font-size:12.5px;color:#94a3b8'>🔇黑马池实盘<50%已降级研究参考——"
                                  "点名暂停,完整名单在🐴黑马雷达模块(战绩回升自动恢复)</div>" if _dh_gate9n else
                                  "<div style='font-size:12.5px;color:#94a3b8'>现在可进0只——空仓等待也是决策,下面准备买名单到价即动</div>"))
-                        + (f"<div style='font-size:12px;margin-top:3px'><b style='color:#b45309'>🎯 准备买·到价即动"
-                           f"({len(_prep9n)}只·自选池触发单·实盘台账积累中)</b></div>" + "".join(_prep_rows9)
+                        + (f"<div style='font-size:12px;margin-top:3px'><b style='color:#b45309'>🎯 准备买"
+                           f"({len(_prep9n)}只·{_prep_lbl9}·实盘台账积累中)</b></div>" + "".join(_prep_rows9)
                            if _prep_rows9 else
                            "<div style='font-size:12px;color:#94a3b8;margin-top:3px'>🎯准备买:自选池暂无挂触发价的票——"
                            "原因:多数处'不进'档(周期下行或赔率不足),等③埋伏转强或大盘概率回55%+</div>"),
@@ -3254,13 +3266,25 @@ try:
                           if r.get("scope") == "持仓" and any(k in str(r.get("action", ""))
                                                              for k in ("减", "退", "清", "止损"))]
                 _cut_note9 = "盘中落盘减仓警示·卖点价在持仓卡💰行"
-            else:
+            elif _tb_tier9 == "下周":
                 _cut9n = [(x.get("name"), int(float(x.get("strength") or 0)),
                            f"{x.get('phase')}·{x.get('confidence')}置信", x.get("code"))
                           for x in (_pt9n.get("stocks") or [])
                           if x.get("direction") == "down" and x.get("confidence") in ("高", "中")]
                 _cut_note9 = "全池相位转弱(派发→退潮)·中长线躲避参考"
-            _cut9n.sort(key=lambda x: -x[1])
+            else:
+                # 【V88·卖侧分档 2026-07-25 用户抓"三档一样"】本月=4周周期分≤45,下月=长线分≤45
+                _ck9c = "medium_score" if _tb_tier9 == "本月" else "long_score"
+                _cut9n = [(r.get("name"), int(r.get(_ck9c) or 0),
+                           f"{'4周' if _tb_tier9 == '本月' else '长线'}分{int(r.get(_ck9c) or 0)}·周期走弱"
+                           + ("·💼持仓" if r.get("scope") == "持仓" else ""), r.get("code"))
+                          for r in (_nwj9("intraday_decisions.json").get("rows") or [])
+                          if (r.get(_ck9c) or 100) <= 45]
+                _cut9n.sort(key=lambda x: x[1])
+                _cut_note9 = (f"{'4周' if _tb_tier9 == '本月' else '长线'}周期分≤45·该档周期逻辑走弱"
+                              "(与下周档相位名单口径不同,分数=统一引擎)")
+            # 近档=概率/强度越高越危险(降序);本月/下月=周期分越低越危险(升序)
+            _cut9n.sort(key=lambda x: (x[1] if _tb_tier9 in ("本月", "下月") else -x[1]))
             _rows_d9 = [f"<div style='font-size:12.5px'>{_nw_link9(_n9n, _c9n4) if _c9n4 else _n9n}"
                         f"<b style='color:#16a34a'>{_p9n}{'%' if _tb_tier9 in ('今日', '明日', '本周') else '强度'}</b>"
                         f"<span style='font-size:11.5px;color:#64748b'>·{_w9n2}</span></div>"
