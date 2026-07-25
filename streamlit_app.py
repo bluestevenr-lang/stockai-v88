@@ -426,16 +426,18 @@ if _nav == "🧭 导航":
                 return json.loads(pub_text(_fn, _PUB_VERSION) or "{}")
             except Exception:
                 return {}
+        # 【V88·七档 2026-07-25 用户定纲】与桌面同源:去明日档,加本季度/下季度(16/32周)
         _TBC9 = {
-            "今日": {"mkt_hz": None, "sec_hz": None, "buy": "green", "evt": "明天", "days": (0, 0)},
-            "明日": {"mkt_hz": "明日", "sec_hz": "2周", "buy": "trigger", "evt": "明天", "days": (0, 1)},
-            "本周": {"mkt_hz": "2周", "sec_hz": "2周", "buy": "green+", "evt": "本周", "days": (0, 7)},
-            "下周": {"mkt_hz": "4周", "sec_hz": "5周", "buy": "w4", "evt": "下周", "days": (7, 14)},
-            "本月": {"mkt_hz": "4周", "sec_hz": "8周", "buy": "w4", "evt": "本月及下月", "days": (0, 30)},
-            "下月": {"mkt_hz": "8周", "sec_hz": "16周", "buy": "w8", "evt": "本月及下月", "days": (30, 60)},
+            "今日": {"mkt_hz": None, "sec_hz": None, "buy": "green", "hz": None, "evt": "明天", "days": (0, 1)},
+            "本周": {"mkt_hz": "2周", "sec_hz": "2周", "buy": "green+", "hz": None, "evt": "本周", "days": (0, 7)},
+            "下周": {"mkt_hz": "4周", "sec_hz": "5周", "buy": "w4", "hz": "4周", "evt": "下周", "days": (7, 14)},
+            "本月": {"mkt_hz": "4周", "sec_hz": "8周", "buy": "w4", "hz": "4周", "evt": "本月及下月", "days": (0, 30)},
+            "下月": {"mkt_hz": "8周", "sec_hz": "16周", "buy": "w8", "hz": "8周", "evt": "本月及下月", "days": (30, 60)},
+            "本季度": {"mkt_hz": "16周", "sec_hz": "16周", "buy": "w16", "hz": "16周", "evt": "本月及下月", "days": (0, 90)},
+            "下季度": {"mkt_hz": "32周", "sec_hz": "16周", "buy": "w32", "hz": "32周", "evt": "本月及下月", "days": (90, 180)},
         }
-        with st.expander("⏱ 时间作战板 · 今日→下月六档切换（与桌面同源·一屏六问）", expanded=True):
-            _tt9c = st.radio("时间档", list(_TBC9.keys()), index=(3 if _is_we9c else 0),
+        with st.expander("⏱ 时间作战板 · 今日→下季度七档切换（与桌面同源·一屏六问）", expanded=True):
+            _tt9c = st.radio("时间档", list(_TBC9.keys()), index=(2 if _is_we9c else 0),
                              horizontal=True, key="tb_tier9c", label_visibility="collapsed")
             _cf9c = _TBC9[_tt9c]
             _dh9c2 = _pubj9("darkhorse.json")
@@ -585,8 +587,8 @@ if _nav == "🧭 导航":
                         _by9c.append((_h9c2, int(_h9c2.get("p_up") or 0), f"盯触发·{_md9c}"))
                     elif _cf9c["buy"] == "green+" and _md9c in ("现价可进", "回踩到位", "突破确认", "双路径待触发"):
                         _by9c.append((_h9c2, int(_h9c2.get("p_up") or 0), _md9c))
-                    elif _cf9c["buy"] in ("w4", "w8"):
-                        _s9c2 = _hzs9c(_h9c2, "4周" if _cf9c["buy"] == "w4" else "8周")
+                    elif _cf9c["buy"] in ("w4", "w8", "w16", "w32"):
+                        _s9c2 = _hzs9c(_h9c2, _cf9c.get("hz") or "4周")
                         if _s9c2 is not None and _s9c2 >= 58:
                             _by9c.append((_h9c2, int(_s9c2), "周期走强·分批"))
                 _by9c.sort(key=lambda x: -x[1])

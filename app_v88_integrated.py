@@ -2986,18 +2986,29 @@ try:
         return (f'<a href="?q={_cd9x}&focus=deep#v88-deep-analysis" target="_blank" rel="noopener" '
                 f'style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{_nm9x}</a>')
     # 档位→最优口径: mkt_hz=大盘统一引擎档 / sec_hz=板块轮动点 / buy=买名单口径 / evt=机构简报档
+    # 【V88·七档 2026-07-25 用户定纲"今日/本周/下周/本月/下月/本季度/下季度,稳一些"】
+    # 明日档删除(触发单归今日/本周;且统一引擎无"明日"键,旧明日档大盘行是暗坑);
+    # 季度两档吃16/32周(翻倍律V88-U2.1全五档正好铺满)。hz=买卖名单统一周期分档。
     _TB_CFG9 = {
-        "今日":  {"mkt_hz": None,   "sec_hz": None,  "buy": "green",  "evt": "明天", "days": (0, 0)},
-        "明日":  {"mkt_hz": "明日", "sec_hz": "2周", "buy": "trigger", "evt": "明天", "days": (0, 1)},
-        "本周":  {"mkt_hz": "2周",  "sec_hz": "2周", "buy": "green+",  "evt": "本周", "days": (0, 7)},
-        "下周":  {"mkt_hz": "4周",  "sec_hz": "5周", "buy": "w4",      "evt": "下周", "days": (7, 14)},
-        "本月":  {"mkt_hz": "4周",  "sec_hz": "8周", "buy": "w4",      "evt": "本月及下月", "days": (0, 30)},
-        "下月":  {"mkt_hz": "8周",  "sec_hz": "16周", "buy": "w8",     "evt": "本月及下月", "days": (30, 60)},
+        "今日":  {"mkt_hz": None,   "sec_hz": None,  "buy": "green",  "hz": None,
+                  "evt": "明天", "days": (0, 1)},
+        "本周":  {"mkt_hz": "2周",  "sec_hz": "2周", "buy": "green+", "hz": None,
+                  "evt": "本周", "days": (0, 7)},
+        "下周":  {"mkt_hz": "4周",  "sec_hz": "5周", "buy": "w4",     "hz": None,
+                  "evt": "下周", "days": (7, 14)},
+        "本月":  {"mkt_hz": "4周",  "sec_hz": "8周", "buy": "hz",     "hz": "4周",
+                  "evt": "本月及下月", "days": (0, 30)},
+        "下月":  {"mkt_hz": "8周",  "sec_hz": "16周", "buy": "hz",    "hz": "8周",
+                  "evt": "本月及下月", "days": (30, 60)},
+        "本季度": {"mkt_hz": "16周", "sec_hz": "16周", "buy": "hz",   "hz": "16周",
+                  "evt": "本月及下月", "days": (0, 90)},
+        "下季度": {"mkt_hz": "32周", "sec_hz": "16周", "buy": "hz",   "hz": "32周",
+                  "evt": "本月及下月", "days": (90, 180)},
     }
     with st.expander("⏱ 时间作战板 · 今日→下月六档切换：大盘/轮转/低位埋伏/买/卖/事件（一屏六问）",
                      expanded=True):
         _tb_tier9 = st.radio("时间档", list(_TB_CFG9.keys()),
-                             index=(3 if _is_weekend9 else 0), horizontal=True,
+                             index=(2 if _is_weekend9 else 0), horizontal=True,
                              key="tb_tier9", label_visibility="collapsed")
         _cfg9 = _TB_CFG9[_tb_tier9]
         _nw_snap9 = _nwj9("market_snapshot.json")
@@ -3008,8 +3019,8 @@ try:
         try:
             _tp9 = _nwj9("tomorrow_plan.json")
             _tp_fd9 = str(_tp9.get("for_date") or "")
-            _tp_show9 = (_tp9.get("script") and _tb_tier9 in ("今日", "明日") and _tp_fd9 and
-                         (_tp_fd9 >= _dtnw.now().strftime("%Y-%m-%d") if _tb_tier9 == "明日"
+            _tp_show9 = (_tp9.get("script") and _tb_tier9 == "今日" and _tp_fd9 and
+                         (_tp_fd9 >= _dtnw.now().strftime("%Y-%m-%d") if _is_weekend9
                           else _tp_fd9 == _dtnw.now().strftime("%Y-%m-%d")))
             if _tp_show9:
                 _tp_html9 = str(_tp9["script"])
@@ -3044,14 +3055,14 @@ try:
                        in ("现价可进", "回踩到位", "突破确认", "双路径待触发")]
             _cutn9i = len([r for r in _idc9i if r.get("scope") == "持仓" and any(
                 k in str(r.get("action", "")) for k in ("减", "退", "清", "止损"))]) \
-                if _tb_tier9 in ("今日", "明日", "本周") else \
+                if _tb_tier9 in ("今日", "本周") else \
                 len([x for x in (_pt9n.get("stocks") or [])
                      if x.get("direction") == "down" and x.get("confidence") in ("高", "中")])
             _wk9i, _pos9i = [], []
             for _m9i in ("A股", "港股", "美股"):
                 _b9i = (_nw_snap9.get("markets") or {}).get(_m9i) or {}
                 _p9i = dict((x[0], x[1]) for x in ((_b9i.get("l3") or {}).get("probs") or [])).get(
-                    _cfg9["mkt_hz"] or "明日")
+                    _cfg9["mkt_hz"] or "2周")
                 if _p9i is not None:
                     _wk9i.append((_m9i, int(_p9i)))
                 _t9i = (_b9i.get("temperature") or {})
@@ -3100,15 +3111,10 @@ try:
                     _core9n = (f"今日<b style='color:{_cgc9n}'>{_cgn9:+.2f}%</b>"
                                f"·温度{_t9n.get('temp', '?')}°→仓位{str(_t9n.get('position', '?')).split('（')[0]}")
                 else:
-                    if _cfg9["mkt_hz"] == "明日":     # 动量+温度规则估计
-                        _pv9n = int(round(max(25, min(75, 50 + 2.2 * _cgn9
-                                                      + 0.15 * (float(_t9n.get('temp') or 50) - 50)))))
-                        _tag9n = "(动量+温度估计·低置信)"
-                    else:
-                        _pv9x = _l9n.get(_cfg9["mkt_hz"])
-                        if _pv9x is None:
-                            continue
-                        _pv9n, _tag9n = int(_pv9x), f"(统一引擎{_cfg9['mkt_hz']}档)"
+                    _pv9x = _l9n.get(_cfg9["mkt_hz"])
+                    if _pv9x is None:
+                        continue
+                    _pv9n, _tag9n = int(_pv9x), f"(统一引擎{_cfg9['mkt_hz']}档)"
                     _pc9n = "#dc2626" if _pv9n >= 55 else ("#16a34a" if _pv9n <= 45 else "#64748b")
                     _w9n = ("偏涨·回踩敢接" if _pv9n >= 55 else
                             ("偏弱·反弹先减不追" if _pv9n <= 45 else "震荡·区间对待"))
@@ -3148,7 +3154,7 @@ try:
                         "<span style='font-size:11px;color:#94a3b8'>（热度Top2·红=该档拐点要转向）</span>"
                         + "".join(_rows_b9), unsafe_allow_html=True)
             # ── ③ 低位拐点·可注意埋伏(档感知:近档看日~周,远档看周~月) ──
-            _hz_kw9 = ("日", "周") if _tb_tier9 in ("今日", "明日", "本周", "下周") else ("周", "月")
+            _hz_kw9 = ("日", "周") if _tb_tier9 in ("今日", "本周", "下周") else ("周", "月")
             _ups9n = sorted([x for x in (_pt9n.get("stocks") or [])
                              if x.get("direction") == "up" and x.get("confidence") in ("高", "中")
                              and float(x.get("pos52") or 50) <= 45],
@@ -3193,13 +3199,14 @@ try:
                     _buy9n.append((_h9n, int(_h9n.get("p_up") or 0), f"明日盯触发·{_md9n}"))
                 elif _cfg9["buy"] == "green+" and _md9n in ("现价可进", "回踩到位", "突破确认", "双路径待触发"):
                     _buy9n.append((_h9n, int(_h9n.get("p_up") or 0), _md9n))
-                elif _cfg9["buy"] in ("w4", "w8"):
-                    _s9n = _hz_score9(_h9n, "4周" if _cfg9["buy"] == "w4" else "8周")
+                elif _cfg9["buy"] in ("w4", "hz"):
+                    _hz9b = _cfg9.get("hz") or "4周"
+                    _s9n = _hz_score9(_h9n, _hz9b)
                     if _s9n is not None and _s9n >= 58:
-                        _buy9n.append((_h9n, int(_s9n), f"{'4周' if _cfg9['buy'] == 'w4' else '8周'}分{int(_s9n)}·蓄势"))
+                        _buy9n.append((_h9n, int(_s9n), f"{_hz9b}分{int(_s9n)}·蓄势"))
             _buy_note9 = {"green": "时机绿灯·盘中可执行", "trigger": "触发型·到价即进不猜",
                           "green+": "绿灯+双路径5日窗", "w4": "4周周期走强·分批布局",
-                          "w8": "8周周期走强·左侧分批"}[_cfg9["buy"]]
+                          "hz": f"{_cfg9.get('hz')}周期走强·左侧分批"}[_cfg9["buy"]]
             _buy9n.sort(key=lambda x: -x[1])
             _rows_c9 = ["<div style='font-size:12.5px'>"
                         f"{_nw_link9(_h9x.get('name'), _h9x.get('code'))}"
@@ -3213,13 +3220,18 @@ try:
             # 【V88·准备买分档 2026-07-25 用户抓"下周/本月/下月一模一样"】3天触发单只属于
             # 今日~下周档;本月档=4周周期分≥58(mid计划),下月档=长线分≥58(long计划)——档位口径贯穿到底。
             _idc9n_pre = (_nwj9("intraday_decisions.json").get("rows") or [])
-            if _tb_tier9 in ("本月", "下月"):
-                _sk9p, _tk9p = (("medium_score", "mid_text") if _tb_tier9 == "本月"
-                                else ("long_score", "long_text"))
-                _prep9n = sorted([r for r in _idc9n_pre if (r.get(_sk9p) or 0) >= 58],
-                                 key=lambda r: -(r.get(_sk9p) or 0))
-                _prep_lbl9 = ("4周周期分·中线布局(区间见明细)" if _tb_tier9 == "本月"
-                              else "长线分·左侧分批(区间见明细)")
+            def _rhz9p(_r9z, _hz9z):
+                try:
+                    return float((((_r9z.get("facts") or {}).get("horizons") or {}).get(_hz9z) or {}).get("rule_score"))
+                except (TypeError, ValueError):
+                    return None
+            if _cfg9.get("hz"):
+                _hz9pp = _cfg9["hz"]
+                _tk9p = "mid_text" if _hz9pp in ("4周", "8周") else "long_text"
+                _prep9n = sorted([r for r in _idc9n_pre if (_rhz9p(r, _hz9pp) or 0) >= 58],
+                                 key=lambda r: -(_rhz9p(r, _hz9pp) or 0))
+                _sk9p = "_hz_" + _hz9pp
+                _prep_lbl9 = f"{_hz9pp}周期分≥58·左侧分批(区间见明细)"
             else:
                 _prep9n = sorted([r for r in _idc9n_pre
                                   if str((r.get("entry_plan") or {}).get("mode") or "")
@@ -3238,7 +3250,7 @@ try:
                         "hot": "<span style='font-size:11px;color:#b45309'>🔶只限回踩·仓位减半</span>"}.get(_st9p, "")
             _prep_rows9 = ["<div style='font-size:12.5px'>"
                            f"{_nw_link9(_r9p.get('name'), _r9p.get('code'))}"
-                           f"<b style='color:#dc2626'>{int(_r9p.get(_sk9p) or 0)}{'%' if _sk9p == 'p_up' else '分'}</b>"
+                           f"<b style='color:#dc2626'>{int((_r9p.get(_sk9p) if not _sk9p.startswith('_hz_') else _rhz9p(_r9p, _cfg9.get('hz'))) or 0)}{'%' if _sk9p == 'p_up' else '分'}</b>"
                            f"<span style='font-size:11.5px;color:#475569'>"
                            f"{'·' + str((_r9p.get('entry_plan') or {}).get('mode') or '') if _sk9p == 'p_up' else ''}"
                            f"·{str((_r9p.get('entry_plan') or {}).get(_tk9p) or '')[2:60]}</span>"
@@ -3259,7 +3271,7 @@ try:
                         unsafe_allow_html=True)
             # ── ⑤ {档}卖/持仓处理 ──
             _idc9n = _nwj9("intraday_decisions.json")
-            if _tb_tier9 in ("今日", "明日", "本周"):
+            if _tb_tier9 in ("今日", "本周"):
                 _cut9n = [(r.get("name"), int(r.get("p_down") or 0),
                            str(r.get("reason") or r.get("action") or "")[:14], r.get("code"))
                           for r in (_idc9n.get("rows") or [])
@@ -3273,18 +3285,17 @@ try:
                           if x.get("direction") == "down" and x.get("confidence") in ("高", "中")]
                 _cut_note9 = "全池相位转弱(派发→退潮)·中长线躲避参考"
             else:
-                # 【V88·卖侧分档 2026-07-25 用户抓"三档一样"】本月=4周周期分≤45,下月=长线分≤45
-                _ck9c = "medium_score" if _tb_tier9 == "本月" else "long_score"
-                _cut9n = [(r.get("name"), int(r.get(_ck9c) or 0),
-                           f"{'4周' if _tb_tier9 == '本月' else '长线'}分{int(r.get(_ck9c) or 0)}·周期走弱"
+                # 【V88·卖侧分档 2026-07-25 七档版】本月4周/下月8周/本季度16周/下季度32周分≤45
+                _hz9cc = _cfg9.get("hz") or "4周"
+                _cut9n = [(r.get("name"), int(_rhz9p(r, _hz9cc) or 0),
+                           f"{_hz9cc}分{int(_rhz9p(r, _hz9cc) or 0)}·周期走弱"
                            + ("·💼持仓" if r.get("scope") == "持仓" else ""), r.get("code"))
                           for r in (_nwj9("intraday_decisions.json").get("rows") or [])
-                          if (r.get(_ck9c) or 100) <= 45]
-                _cut9n.sort(key=lambda x: x[1])
-                _cut_note9 = (f"{'4周' if _tb_tier9 == '本月' else '长线'}周期分≤45·该档周期逻辑走弱"
-                              "(与下周档相位名单口径不同,分数=统一引擎)")
+                          if (_rhz9p(r, _hz9cc) or 100) <= 45]
+                _cut_note9 = (f"{_hz9cc}周期分≤45·该档周期逻辑走弱"
+                              "(与下周档相位名单口径不同,分数=统一引擎翻倍律)")
             # 近档=概率/强度越高越危险(降序);本月/下月=周期分越低越危险(升序)
-            _cut9n.sort(key=lambda x: (x[1] if _tb_tier9 in ("本月", "下月") else -x[1]))
+            _cut9n.sort(key=lambda x: (x[1] if _cfg9.get("hz") else -x[1]))
             _rows_d9 = [f"<div style='font-size:12.5px'>{_nw_link9(_n9n, _c9n4) if _c9n4 else _n9n}"
                         f"<b style='color:#16a34a'>{_p9n}{'%' if _tb_tier9 in ('今日', '明日', '本周') else '强度'}</b>"
                         f"<span style='font-size:11.5px;color:#64748b'>·{_w9n2}</span></div>"
@@ -3295,6 +3306,54 @@ try:
                         + ("".join(_rows_d9) if _rows_d9
                            else "<div style='font-size:12.5px;color:#94a3b8'>本档暂无警示——按各卡💰卖点纪律执行</div>"),
                         unsafe_allow_html=True)
+            # 【V88·上下榜对账 2026-07-25 用户点单"新上榜和下榜要有补充说明"】与绿灯留痕
+            # 同款:每档买/卖名单落盘跨日对比——新上榜说"为什么来了",下榜说"为什么走了",
+            # 名单变动不许无声蒸发。同日内多次刷新只更新last,不动prev(对账基准=上一个交易日)。
+            try:
+                _bl_fp9 = _nw_repo9 / "data" / "tb_board_log.json"
+                try:
+                    _bl9 = json.loads(_bl_fp9.read_text(encoding="utf-8"))
+                except Exception:
+                    _bl9 = {}
+                _tdy9bl = _dtnw.now().strftime("%Y-%m-%d")
+                _cur9bl = {"buy": {}, "cut": {}}
+                for _h9bl, _s9bl, _t9bl in _buy9n:
+                    _cur9bl["buy"][str(_h9bl.get("name"))] = int(_s9bl)
+                for _r9bl in _prep9n[:5]:
+                    _sv9bl = (_r9bl.get("p_up") if not _sk9p.startswith("_hz_")
+                              else _rhz9p(_r9bl, _cfg9.get("hz")))
+                    _cur9bl["buy"].setdefault(str(_r9bl.get("name")), int(_sv9bl or 0))
+                for _n9bl, _p9bl, _w9bl, _c9bl in _cut9n:
+                    _cur9bl["cut"][str(_n9bl)] = int(_p9bl)
+                _tier_log9 = _bl9.get(_tb_tier9) or {}
+                _last9bl = _tier_log9.get("last") or {}
+                if _last9bl.get("date") and _last9bl["date"] != _tdy9bl:
+                    _tier_log9["prev"] = _last9bl
+                _tier_log9["last"] = {"date": _tdy9bl, **_cur9bl}
+                _bl9[_tb_tier9] = _tier_log9
+                _bl_fp9.write_text(json.dumps(_bl9, ensure_ascii=False, indent=1), encoding="utf-8")
+                _prev9bl = _tier_log9.get("prev") or {}
+                if _prev9bl:
+                    _chg9bl = []
+                    for _kind9, _lbl9b, _thr9b in (("buy", "买榜", "≥58/绿灯"), ("cut", "卖榜", "≤45/警示")):
+                        _pv9bl = _prev9bl.get(_kind9) or {}
+                        _cv9bl = _cur9bl.get(_kind9) or {}
+                        for _n9b2 in list(_cv9bl):
+                            if _n9b2 not in _pv9bl:
+                                _chg9bl.append(f"🆕{_lbl9b}新上:{_n9b2}(分{_cv9bl[_n9b2]}·新达标{_thr9b})")
+                        for _n9b2 in list(_pv9bl):
+                            if _n9b2 not in _cv9bl:
+                                _chg9bl.append(f"⬇️{_lbl9b}下榜:{_n9b2}(上次分{_pv9bl[_n9b2]}→"
+                                               "已不达门槛/窗口关闭,已进场按原计划非翻案)")
+                    if _chg9bl:
+                        st.markdown("<div style='font-size:12px;color:#475569;background:#f8fafc;"
+                                    "border-radius:6px;padding:.25rem .5rem'>"
+                                    f"📋 <b>{_tb_tier9}榜单变动</b>(对比{_prev9bl.get('date', '上期')}): "
+                                    + "　".join(_chg9bl[:8]) + "</div>", unsafe_allow_html=True)
+                    else:
+                        st.caption(f"📋 {_tb_tier9}榜单与{_prev9bl.get('date', '上期')}一致·无进出")
+            except Exception:
+                pass
             # ── ⑥ {档}事件与消息面(财报按档期过滤+机构对应档观点) ──
             _ev9n = []
             _seen_ev9 = set()
