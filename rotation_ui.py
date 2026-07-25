@@ -36,6 +36,18 @@ _ROTATION_CSS = """
 #__ID__ .rf-warning{font-size:11px;color:var(--destructive,var(--primary-color));margin-top:.3rem}
 #__ID__ .rf-foot{font-size:11px;color:var(--muted-foreground,var(--text-color));margin-top:.35rem;display:flex;gap:1rem;flex-wrap:wrap}
 @media(max-width:640px){#__ID__ svg text{font-size:10.5px}}
+
+#__ID__ .rf-ck{display:flex;gap:.6rem;align-items:flex-start}
+#__ID__ .rf-ckSvg{width:38%;max-width:300px;flex:0 0 auto;height:auto}
+#__ID__ .rf-ckR{flex:1;min-width:0}
+#__ID__ .rf-ckHead{font-size:12px;margin:.1rem 0 .25rem}
+#__ID__ .rf-lg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 12px}
+#__ID__ .rf-li{display:flex;align-items:center;gap:5px;font-size:12px;line-height:1.45;min-width:0;flex-wrap:wrap}
+#__ID__ .rf-dot{width:10px;height:10px;border-radius:3px;flex:0 0 auto}
+#__ID__ .rf-liName{flex:0 0 auto}
+#__ID__ .rf-liChain{color:#475569}
+#__ID__ .rf-mut2{color:#94a3b8;font-size:11px}
+@media(max-width:900px){#__ID__ .rf-lg{grid-template-columns:1fr}}
 """
 
 
@@ -141,11 +153,14 @@ def _swimlane_svg(market: str, trajectory: list) -> str:
 
 
 def _clock_svg(market: str, trajectory: list, heat: dict) -> str:
+    """【V88·阅读友好重排 2026-07-25 用户抓"图例看不懂+右侧大空间浪费"】
+    时钟收窄为左侧小SVG,图例改右侧HTML两列人话卡:每板块一行"名称·相位｜热度链｜拐点",
+    拐点≤2周红字加粗"临近"。返回flex容器HTML(调用处已按普通HTML嵌入)。"""
     if not trajectory:
         return ""
-    W, H = 700, 194
     cx, cy, R = 150, 94, 74
-    p = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="{escape(market)}板块轮动时钟与走向">']
+    p = [f'<svg class="rf-ckSvg" viewBox="0 0 300 194" role="img" '
+         f'aria-label="{escape(market)}板块轮动时钟">']
     p.append('<defs><marker id="rf-arrow" markerWidth="7" markerHeight="7" refX="5" refY="3" '
              'orient="auto"><path d="M0 0 L6 3 L0 6 Z" fill="context-stroke"/></marker></defs>')
     p.append(f'<circle class="grid" cx="{cx}" cy="{cy}" r="{R}" fill="none"/>')
@@ -156,7 +171,7 @@ def _clock_svg(market: str, trajectory: list, heat: dict) -> str:
     p.append(f'<text class="ph" x="{cx}" y="{cy+R+16}" text-anchor="middle">退潮杀跌</text>')
     p.append(f'<text class="ph" x="{cx+R+6}" y="{cy+4}" text-anchor="start">高位派发</text>')
     p.append(f'<text class="ph" x="{cx-R-6}" y="{cy+4}" text-anchor="end">低位蓄势</text>')
-    legend = []
+    items = []
     horizons = _trajectory_horizons(trajectory)
     for i, t in enumerate(trajectory):
         color = SECTOR_COLORS[i % len(SECTOR_COLORS)]
@@ -176,26 +191,38 @@ def _clock_svg(market: str, trajectory: list, heat: dict) -> str:
         p.append(f'<circle cx="{x:.0f}" cy="{y:.0f}" r="5.5" fill="{color}">'
                  f'<title>{escape(t["name"])}</title></circle>')
         phase = _phase(strength, mom)
-        ly = 44 + len(legend) * 27
+        # ── HTML图例(人话):走向词+热度链+拐点临近高亮 ──
+        _dir_w = ("↑升温" if far - near >= 3 else ("↓降温" if near - far >= 3 else "→持平"))
+        _dir_c = ("#dc2626" if far - near >= 3 else ("#16a34a" if near - far >= 3 else "#94a3b8"))
         turn = t.get("turning") or {}
-        turn_text = (f' · 拐点{escape(str(turn.get("horizon")))}' if turn.get("horizon") else '')
-        _now_txt = (f'今天{int(t["now"])} → ' if isinstance(t.get("now"), (int, float)) else '')
-        legend.append(
-            f'<rect x="310" y="{ly-9}" width="12" height="12" rx="3" fill="{color}"/>'
-            f'<text class="lbl" x="330" y="{ly}">{escape(t["name"])} · {phase}</text>'
-            f'<text class="mut" x="330" y="{ly+13}">{_now_txt}{horizons[0]}{int(near)} → {horizons[-1]}{int(far)} 热度{turn_text}</text>'
-        )
+        _th = str(turn.get("horizon") or "")
+        if _th in ("2周", "5周"):
+            _turn_html = (f'<b style="color:#dc2626">⏰拐点临近≈{escape(_th)}</b>' if _th == "2周"
+                          else f'<span style="color:#b45309">⏰拐点≈{escape(_th)}</span>')
+        elif _th:
+            _turn_html = f'<span class="rf-mut2">拐点≈{escape(_th)}</span>'
+        else:
+            _turn_html = '<span class="rf-mut2">暂无拐点</span>'
+        _now_t = (f'今天{int(t["now"])}→' if isinstance(t.get("now"), (int, float)) else '')
+        items.append(
+            f'<div class="rf-li"><span class="rf-dot" style="background:{color}"></span>'
+            f'<span class="rf-liName"><b>{escape(t["name"])}</b>·{escape(phase)}</span>'
+            f'<span class="rf-liChain">{_now_t}{escape(horizons[0])}{int(near)}→'
+            f'{escape(horizons[-1])}{int(far)} <b style="color:{_dir_c}">{_dir_w}</b></span>'
+            f'{_turn_html}</div>')
+    p.append('</svg>')
     heat_txt = ""
     if heat:
         hs = heat.get("score")
-        heat_txt = f' · 当前热度 {hs}/100 {escape(str(heat.get("label","")))}' if hs is not None else ""
-    p.append(f'<text class="lbl" x="310" y="24">{MARKET_ICONS.get(market,"")} {escape(market)}'
-             f'<tspan class="mut">{heat_txt}</tspan></text>')
-    p.append("".join(legend))
-    p.append(f'<text class="mut" x="310" y="{44+len(legend)*27+8:.0f}">'
-             f'外圈=一轮周期 · 虚箭头=热度走向（升温↑ / 退潮↓）</text>')
-    p.append('</svg>')
-    return "".join(p)
+        heat_txt = f'当前热度 {hs}/100 {escape(str(heat.get("label", "")))}' if hs is not None else ""
+    return (
+        '<div class="rf-ck">' + "".join(p)
+        + '<div class="rf-ckR">'
+        + f'<div class="rf-ckHead">{MARKET_ICONS.get(market, "")} <b>{escape(market)}</b>'
+        + f'<span class="rf-mut2">　{heat_txt}　图例:数字=热度(红↑升温/绿↓降温)·拐点=预计转向时间</span></div>'
+        + '<div class="rf-lg">' + "".join(items) + '</div>'
+        + '<div class="rf-mut2">外圈=一轮周期·点=板块当前相位·虚箭头=热度走向(升温↑/退潮↓)</div>'
+        + '</div></div>')
 
 
 def _rich_rotation_html(forecast: dict, element_id: str, focus_market: str,

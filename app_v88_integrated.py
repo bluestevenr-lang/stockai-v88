@@ -13260,56 +13260,11 @@ def _render_today_verdict(_snap, _repo):
              f"🎯 今日核心 · 一屏决断 · {_tone}"
              f"<span style='font-size:12px;font-weight:400;color:#94a3b8'>　只看这一张卡：大盘怎么看→"
              f"持仓怎么办→现在能买什么，每条都带为什么</span></div>"]
-    # ── ① 大盘怎么看（每市场一句人话：技术面+今天为什么涨/跌） ──
-    try:
-        _ma_r9 = {}
-        try:
-            _ma9j = _jv.loads((_repo / "data" / "move_attribution.json").read_text(encoding="utf-8"))
-            if _ma9j.get("status") == "completed":
-                _ma_r9 = _ma9j.get("reasons") or {}
-        except Exception:
-            pass
-        _mkt_rows9 = []
-        for _mk9m in ("美股", "A股", "港股"):
-            _blk9m = ((_snap or {}).get("markets") or {}).get(_mk9m) or {}
-            _l39m = _blk9m.get("l3") or {}
-            _t9m = _blk9m.get("temperature") or {}
-            _tr9m = _blk9m.get("turn_risk") or {}
-            if not _l39m and not _t9m:
-                continue
-            _p29m = None
-            for _lb9m, _pv9m in (_l39m.get("probs") or []):
-                if _lb9m == "2周":
-                    _p29m = int(_pv9m)
-                    break
-            _word9m = ("短期偏涨" if (_p29m or 50) >= 58 else
-                       ("短期偏弱·反弹先看反抽不追" if (_p29m or 50) <= 42 else "短期震荡·区间对待"))
-            _wc9m = ("#dc2626" if (_p29m or 50) >= 58 else
-                     ("#16a34a" if (_p29m or 50) <= 42 else "#64748b"))
-            _cg9m = _chg.get(_mk9m)
-            _cgc9m = "#dc2626" if (_cg9m or 0) > 0.05 else ("#16a34a" if (_cg9m or 0) < -0.05 else "#64748b")
-            _tech9m = (f"技术面:{_l39m.get('name') or '指数'}处「{_l39m.get('stage') or '—'}」"
-                       + (f"、2周上涨概率{_p29m}%" if _p29m is not None else "")
-                       + f"→<b style='color:{_wc9m}'>{_word9m}</b>")
-            # 【V88·三市场都有why+可点击出处 2026-07-21 用户点单】helper三级兜底,
-            # AI归因带新闻下划线链接>新闻直配(明标非AI)>研报/政策>如实无消息——永不空。
-            _news9m = f"；今天为什么:{_v88_mkt_why9(_mk9m, _repo)}"
-            _turn9m = ""
-            if int(_tr9m.get("top_risk") or 0) >= 40:
-                _turn9m = f"；<b style='color:#b45309'>⚠️顶部转向风险{_tr9m['top_risk']}/100·冲高别加仓</b>"
-            elif int(_tr9m.get("bottom_opp") or 0) >= 40:
-                _turn9m = f"；<b style='color:#2563eb'>🔭底部转机信号{_tr9m['bottom_opp']}/100·留意右侧企稳</b>"
-            _mkt_rows9.append(
-                f"<div style='font-size:13px;line-height:1.55;margin:1px 0'>"
-                f"<b>{_mk9m}</b><b style='color:{_cgc9m}'>{(_cg9m if _cg9m is not None else 0):+.1f}%</b>"
-                f"·温度{_t9m.get('temp', '?')}°({str(_t9m.get('label', '')).strip()})→仓位{str(_t9m.get('position', '?')).split('（')[0]}"
-                f"　{_tech9m}{_news9m}{_turn9m}</div>")
-        if _mkt_rows9:
-            _html.append("<div style='margin-bottom:3px'><b style='font-size:13px'>🧭 大盘怎么看</b>"
-                         "<span style='font-size:12px;color:#94a3b8'>（温度=水位+情绪,越热越该轻仓；"
-                         "概率=规则情景估计非胜率）</span>" + "".join(_mkt_rows9) + "</div>")
-    except Exception:
-        pass
+    # 【V88·模块合并 2026-07-25 用户点单"今日核心/今日综述内容重复,综合简化成一个"】
+    # 原「①大盘怎么看」三行(温度仓位/阶段结论/转向风险)已全量并入「📰三市场今日综述」——
+    # 一处看全不重复;此处只留一行指路(合并非删除,守"不做减法"总纲)。
+    _html.append("<div style='font-size:12px;color:#94a3b8;margin-bottom:3px'>"
+                 "🧭 大盘怎么看(涨跌/温度仓位/阶段/为什么/四档概率)→已合并至上方「📰 三市场今日综述」一处看全</div>")
     # 🏛 基本面/策略定性(说人话的why,近3日研报)
     try:
         _medge_seen9, _medge_txts9 = set(), []
@@ -13922,11 +13877,30 @@ def _render_l3_cycle_board(_snap, _is_trading):
             _hl9s = abs(_cg9s) >= 1.5
             _rowbg9 = ("background:#f0fdf4;" if (_hl9s and _cg9s < 0) else
                        ("background:#fef2f2;" if _hl9s else ""))
+            # 【合并2026-07-25】原①大盘怎么看的独有信息并入:温度→仓位/阶段→短期结论/转向风险
+            _tp9s = _blk9s.get("temperature") or {}
+            _pos_txt9 = (f"温度{_tp9s.get('temp', '?')}°({str(_tp9s.get('label', '')).strip()})"
+                         f"→仓位{str(_tp9s.get('position', '?')).split('（')[0]}")
+            _l3n9s = _blk9s.get("l3") or {}
+            _p29w = _l39s.get("2周")
+            _word9w = ("短期偏涨" if (_p29w or 50) >= 58 else
+                       ("短期偏弱·反弹先看反抽不追" if (_p29w or 50) <= 42 else "短期震荡·区间对待"))
+            _wc9w = ("#dc2626" if (_p29w or 50) >= 58 else
+                     ("#16a34a" if (_p29w or 50) <= 42 else "#64748b"))
+            _stage_txt9 = (f"｜{_l3n9s.get('name') or '指数'}「{_l3n9s.get('stage') or '—'}」"
+                           f"→<b style='color:{_wc9w}'>{_word9w}</b>")
+            _tr9w = _blk9s.get("turn_risk") or {}
+            _turn9w = ""
+            if int(_tr9w.get("top_risk") or 0) >= 40:
+                _turn9w = f"　<b style='color:#b45309'>⚠️顶部转向风险{_tr9w['top_risk']}/100·冲高别加仓</b>"
+            elif int(_tr9w.get("bottom_opp") or 0) >= 40:
+                _turn9w = f"　<b style='color:#2563eb'>🔭底部转机{_tr9w['bottom_opp']}/100·留意右侧企稳</b>"
             _sum_rows9.append(
                 f"<div style='{_rowbg9}border-radius:6px;padding:2px 6px;margin:1px 0;font-size:13px'>"
                 f"{'🚨' if _hl9s else '📊'} <b>{_mk9y}</b> <b style='color:{_cgc9s}'>{_cg9s:+.2f}%</b>"
-                f"<span style='font-size:12px;color:#475569'>　{_lead_txt9}</span>"
-                f"　{' '.join(_fc_cells9)}"
+                f"<span style='font-size:12px;color:#475569'>·{_pos_txt9}{_stage_txt9}</span>"
+                f"<br><span style='font-size:12px;color:#475569'>{_lead_txt9}</span>"
+                f"　{' '.join(_fc_cells9)}{_turn9w}"
                 f"<br><span style='font-size:12px;color:#64748b'>└ ❓今日为什么:"
                 + _v88_mkt_why9(_mk9y, _repo9s) + "</span></div>")
         if _sum_rows9:
