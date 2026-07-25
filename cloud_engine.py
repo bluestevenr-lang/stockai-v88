@@ -1168,3 +1168,49 @@ def analyze(code: str) -> dict:
     if not r:
         return {"error": "数据不足，无法计算"}
     return {"symbol": sym, "full": r, "asof": str(df.index[-1])[:10]}
+
+
+# 【V88·末根修补 2026-07-25 LMT案】Yahoo v8日线最后一根close偶发null(数据商延迟结算),
+# yfinance直接丢弃该行→全系统用旧一天行情(7/24整根消失,LMT实际582.6引擎还当568.59)。
+# meta.regularMarketPrice/Time是准的——若meta交易日>df最后日,用meta补一根日线。
+# monkey-patch一处生效全链(所有yf.Ticker().history);哨兵防两仓双import重复包裹。
+# 放模块末尾:cloud_engine被全链路import,首次import即打补丁。
+try:
+    import yfinance as _yf9p
+    if not getattr(_yf9p.Ticker.history, "_v88_lastbar_patched", False):
+        _orig_hist9p = _yf9p.Ticker.history
+
+        def _v88_hist9p(self, *a, **kw):
+            df = _orig_hist9p(self, *a, **kw)
+            try:
+                import pandas as _pd9p
+                if kw.get("interval", "1d") != "1d" or df is None or not len(df):
+                    return df
+                meta = getattr(self, "history_metadata", None) or {}
+                px, mt = meta.get("regularMarketPrice"), meta.get("regularMarketTime")
+                if not px or not mt:
+                    return df
+                mday = _pd9p.Timestamp(int(mt), unit="s", tz="UTC")
+                mday = (mday.tz_convert(df.index.tz) if df.index.tz is not None else
+                        mday.tz_localize(None)).normalize()
+                vals = {"Open": meta.get("regularMarketOpen") or px,
+                        "High": meta.get("regularMarketDayHigh") or px,
+                        "Low": meta.get("regularMarketDayLow") or px,
+                        "Close": px, "Volume": meta.get("regularMarketVolume") or 0}
+                _lastn = df.index[-1].normalize()
+                if mday > _lastn:
+                    # 形态①: 当日整根缺失(yfinance把null行丢了)→append
+                    df.loc[mday] = [float(vals.get(c, 0) or 0) for c in df.columns]
+                elif mday == _lastn and _pd9p.isna(df["Close"].iloc[-1]):
+                    # 形态②: 当日行在但Close=NaN(Yahoo CDN抖动)→用meta实时收盘填
+                    for c, v in vals.items():
+                        if c in df.columns and _pd9p.isna(df[c].iloc[-1]):
+                            df.iloc[-1, df.columns.get_loc(c)] = float(v or 0)
+            except Exception:
+                pass
+            return df
+
+        _v88_hist9p._v88_lastbar_patched = True
+        _yf9p.Ticker.history = _v88_hist9p
+except Exception:
+    pass

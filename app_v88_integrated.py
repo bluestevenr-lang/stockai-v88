@@ -3341,6 +3341,51 @@ try:
                         + ("".join(_rows_d9) if _rows_d9
                            else "<div style='font-size:12.5px;color:#94a3b8'>本档暂无警示——按各卡💰卖点纪律执行</div>"),
                         unsafe_allow_html=True)
+            # 【V88·五行业代表 2026-07-25 用户点单"各行业下周关注代表+价格区间要进界面"】
+            # 医疗/能源/军工/银行/消费,统一引擎实跑择优;浅回踩带~突破~失效全价格口径。
+            try:
+                _sr9v = _nwj9("sector_reps.json")
+                if _sr9v.get("sectors"):
+                    _sr_rows9 = []
+                    for _sv9 in _sr9v["sectors"]:
+                        _pk9 = _sv9.get("pick") or _sv9.get("watch") or {}
+                        _is_pick9 = bool(_sv9.get("pick"))
+                        _dist9 = ((_pk9.get("last", 0) / _pk9.get("shallow", [0, 1])[1] - 1) * 100
+                                  if _pk9.get("shallow", [0, 0])[1] else 0)
+                        _far9 = _dist9 > 5
+                        _pol9v = _pol9p(_pk9.get("sym"))
+                        _sr_rows9.append(
+                            "<div style='font-size:12.5px'>"
+                            f"<b>{_sv9['sector']}</b>·{'代表' if _is_pick9 else '仅观察'} "
+                            f"{_nw_link9(_pk9.get('name'), _pk9.get('sym'))}"
+                            f"<span style='font-size:11px;color:#64748b'>现{_pk9.get('last')}</span>"
+                            + (f"<b style='color:#dc2626'>{_pk9.get('p_up')}%</b>" if _is_pick9 else "")
+                            + f"<span style='font-size:11.5px;color:#475569'>·回踩带{_pk9.get('shallow', ['?', '?'])[0]}"
+                            f"~{_pk9.get('shallow', ['?', '?'])[1]}·突破{_pk9.get('breakout')}"
+                            f"·失效{_pk9.get('invalid')}</span>"
+                            + (f"<span style='font-size:11px;color:#b45309'>·🔶现价高出回踩带{_dist9:.0f}%勿追,只等回踩</span>" if _far9 else "")
+                            + (f"<span style='font-size:11px;color:#b45309'>·📅{_pk9['earn']}财报博弈期</span>" if _pk9.get("earn") else "")
+                            + f"{_pol9v}"
+                            f"<div style='font-size:11px;color:#94a3b8;margin-left:8px'>└{str(_sv9.get('why'))[:70]}</div></div>")
+                    st.markdown("<b style='font-size:13px'>🎖️ 五行业代表·下周关注</b>"
+                                f"<span style='font-size:11px;color:#94a3b8'>（医疗/能源/军工/银行/消费·统一引擎实跑择优"
+                                f"·{str(_sr9v.get('generated_at'))[5:16]}·弱行业不硬凑如实标观察）</span>"
+                                + "".join(_sr_rows9), unsafe_allow_html=True)
+
+                    def _rf_secrep9():
+                        import sys as _sy9v
+                        if str(_nw_repo9 / "src") not in _sy9v.path:
+                            _sy9v.path.insert(0, str(_nw_repo9 / "src"))
+                        import importlib as _il9v
+                        import sector_reps as _srm9
+                        _il9v.reload(_srm9)
+                        _srm9.build(force=True)
+                    _v88_refresh9("五行业代表", "约2-3分钟", _rf_secrep9, "rf_secrep9")
+            except Exception:
+                try:
+                    _v88_sentinel9(_nw_repo9, "五行业代表")
+                except Exception:
+                    pass
             # 【V88·上下榜对账 2026-07-25 用户点单"新上榜和下榜要有补充说明"】与绿灯留痕
             # 同款:每档买/卖名单落盘跨日对比——新上榜说"为什么来了",下榜说"为什么走了",
             # 名单变动不许无声蒸发。同日内多次刷新只更新last,不动prev(对账基准=上一个交易日)。

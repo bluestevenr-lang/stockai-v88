@@ -566,6 +566,53 @@ if _nav == "🧭 导航":
                                 for x in _up9c2) + "</div>" if _up9c2
                                else "<div style='font-size:12.5px;color:#94a3b8'>全池文件待发布或暂无低位转强</div>"),
                             unsafe_allow_html=True)
+                # 【V88·五行业代表·云端 2026-07-25】与桌面同源(pub无隐私,候选皆公开大票)
+                try:
+                    _sruniv9 = _pubj9("sector_reps.json")
+                    if _sruniv9.get("sectors"):
+                        _srv_rows9 = []
+                        for _sv9c in _sruniv9["sectors"]:
+                            _pk9c = _sv9c.get("pick") or _sv9c.get("watch") or {}
+                            _sh9c = _pk9c.get("shallow") or ["?", "?"]
+                            _srv_rows9.append(
+                                "<div style='font-size:12.5px'>"
+                                f"<b>{_sv9c['sector']}</b>·{'代表' if _sv9c.get('pick') else '仅观察'} "
+                                f"{_pk9c.get('name')}({_pk9c.get('sym')})"
+                                + (f"<b style='color:#dc2626'>{_pk9c.get('p_up')}%</b>" if _sv9c.get("pick") else "")
+                                + f"<span style='font-size:11.5px;color:#475569'>·现{_pk9c.get('last')}"
+                                f"·回踩带{_sh9c[0]}~{_sh9c[1]}·突破{_pk9c.get('breakout')}"
+                                f"·失效{_pk9c.get('invalid')}</span>"
+                                + (f"<span style='font-size:11px;color:#b45309'>·📅{_pk9c['earn']}财报</span>"
+                                   if _pk9c.get("earn") else "") + "</div>")
+                        st.markdown("<b style='font-size:13px'>🎖️ 五行业代表·下周关注</b>"
+                                    f"<span style='font-size:11px;color:#94a3b8'>（统一引擎实跑择优·"
+                                    f"{str(_sruniv9.get('generated_at'))[5:16]}）</span>"
+                                    + "".join(_srv_rows9), unsafe_allow_html=True)
+                except Exception:
+                    pass
+                # 【V88·五行业代表·云端 2026-07-25】与桌面同源(pub无隐私,候选皆公开大票)
+                try:
+                    _sruniv9 = _pubj9("sector_reps.json")
+                    if _sruniv9.get("sectors"):
+                        _srv_rows9 = []
+                        for _sv9c in _sruniv9.get("sectors") if False else _sruniv9["sectors"]:
+                            _pk9c = _sv9c.get("pick") or _sv9c.get("watch") or {}
+                            _srv_rows9.append(
+                                "<div style='font-size:12.5px'>"
+                                f"<b>{_sv9c['sector']}</b>·{'代表' if _sv9c.get('pick') else '仅观察'} "
+                                f"{_pk9c.get('name')}({_pk9c.get('sym')})"
+                                + (f"<b style='color:#dc2626'>{_pk9c.get('p_up')}%</b>" if _sv9c.get("pick") else "")
+                                + f"<span style='font-size:11.5px;color:#475569'>·现{_pk9c.get('last')}"
+                                f"·回踩带{(_pk9c.get('shallow') or ['?', '?'])[0]}~{(_pk9c.get('shallow') or ['?', '?'])[1]}"
+                                f"·突破{_pk9c.get('breakout')}·失效{_pk9c.get('invalid')}</span>"
+                                + (f"<span style='font-size:11px;color:#b45309'>·📅{_pk9c['earn']}财报</span>"
+                                   if _pk9c.get("earn") else "") + "</div>")
+                        st.markdown("<b style='font-size:13px'>🎖️ 五行业代表·下周关注</b>"
+                                    f"<span style='font-size:11px;color:#94a3b8'>（统一引擎实跑择优·"
+                                    f"{str(_srun iv9.get('generated_at'))[5:16] if False else str(_sruniv9.get('generated_at'))[5:16]}）</span>"
+                                    + "".join(_srv_rows9), unsafe_allow_html=True)
+                except Exception:
+                    pass
             with _cR9:
                 def _hzs9c(_h, _hz):
                     try:
