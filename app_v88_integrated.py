@@ -3131,9 +3131,23 @@ try:
     }
     with st.expander("⏱ 时间作战板 · 今日→下月六档切换：大盘/轮转/低位埋伏/买/卖/事件（一屏六问）",
                      expanded=True):
-        _tb_tier9 = st.radio("时间档", list(_TB_CFG9.keys()),
-                             index=(2 if _is_weekend9 else 0), horizontal=True,
-                             key="tb_tier9", label_visibility="collapsed")
+        _tbc_t9, _tbc_m9 = st.columns([5.2, 3.8])
+        with _tbc_t9:
+            _tb_tier9 = st.radio("时间档", list(_TB_CFG9.keys()),
+                                 index=(2 if _is_weekend9 else 0), horizontal=True,
+                                 key="tb_tier9", label_visibility="collapsed")
+        with _tbc_m9:
+            # 【V88·市场筛选 2026-07-26 用户抓"都是美股,很少看到中港"】③④⑤名单+五行业代表跟随
+            _tb_mkt9 = st.radio("市场", ["全部", "🇨🇳A股", "🇭🇰港股", "🇺🇸美股"], horizontal=True,
+                                key="tb_mkt9", label_visibility="collapsed")
+
+        def _mkfit9(_cd9m):
+            if _tb_mkt9 == "全部":
+                return True
+            _c9m = str(_cd9m or "").upper()
+            _mk9m = ("🇨🇳A股" if _c9m.endswith((".SS", ".SZ")) else
+                     ("🇭🇰港股" if _c9m.endswith(".HK") else "🇺🇸美股"))
+            return _mk9m == _tb_mkt9
         _cfg9 = _TB_CFG9[_tb_tier9]
         _nw_snap9 = _nwj9("market_snapshot.json")
         _dh9n = _nwj9("darkhorse.json")
@@ -3284,7 +3298,7 @@ try:
             _hz_kw9 = ("日", "周") if _tb_tier9 in ("今日", "本周", "下周") else ("周", "月")
             _ups9n = sorted([x for x in (_pt9n.get("stocks") or [])
                              if x.get("direction") == "up" and x.get("confidence") in ("高", "中")
-                             and float(x.get("pos52") or 50) <= 45],
+                             and float(x.get("pos52") or 50) <= 45 and _mkfit9(x.get("code"))],
                             key=lambda x: ({"高": 0, "中": 1}.get(str(x.get("confidence")), 2),
                                            float(x.get("pos52") or 50)))[:8]
             # 【V88·资金流💰标注 2026-07-25 用户批准接入③】低位+主力已进=埋伏成色更高(仅A股有数据)
@@ -3319,6 +3333,8 @@ try:
             except Exception:
                 _dh_gate9n = False
             for _h9n in ([] if _dh_gate9n else (_dh9n.get("horses") or [])):
+                if not _mkfit9(_h9n.get("code")):
+                    continue
                 _md9n = str(((_h9n.get("trade_plan") or {}).get("short") or {}).get("mode") or "")
                 if _cfg9["buy"] == "green" and _md9n in ("现价可进", "回踩到位", "突破确认"):
                     _buy9n.append((_h9n, int(_h9n.get("p_up") or 0), _md9n))
@@ -3352,6 +3368,7 @@ try:
                     return float((((_r9z.get("facts") or {}).get("horizons") or {}).get(_hz9z) or {}).get("rule_score"))
                 except (TypeError, ValueError):
                     return None
+            _idc9n_pre = [r for r in _idc9n_pre if _mkfit9(r.get("code"))]
             if _cfg9.get("hz"):
                 _hz9pp = _cfg9["hz"]
                 _tk9p = "mid_text" if _hz9pp in ("4周", "8周") else "_hz_detail"
@@ -3434,14 +3451,15 @@ try:
                 _cut9n = [(r.get("name"), int(r.get("p_down") or 0),
                            str(r.get("reason") or r.get("action") or "")[:14], r.get("code"))
                           for r in (_idc9n.get("rows") or [])
-                          if r.get("scope") == "持仓" and any(k in str(r.get("action", ""))
-                                                             for k in ("减", "退", "清", "止损"))]
+                          if r.get("scope") == "持仓" and _mkfit9(r.get("code"))
+                          and any(k in str(r.get("action", "")) for k in ("减", "退", "清", "止损"))]
                 _cut_note9 = "盘中落盘减仓警示·卖点价在持仓卡💰行"
             elif _tb_tier9 == "下周":
                 _cut9n = [(x.get("name"), int(float(x.get("strength") or 0)),
                            f"{x.get('phase')}·{x.get('confidence')}置信", x.get("code"))
                           for x in (_pt9n.get("stocks") or [])
-                          if x.get("direction") == "down" and x.get("confidence") in ("高", "中")]
+                          if x.get("direction") == "down" and x.get("confidence") in ("高", "中")
+                          and _mkfit9(x.get("code"))]
                 _cut_note9 = "全池相位转弱(派发→退潮)·中长线躲避参考"
             else:
                 # 【V88·卖侧分档 2026-07-25 七档版】本月4周/下月8周/本季度16周/下季度32周分≤45
@@ -3450,7 +3468,7 @@ try:
                            f"{_hz9cc}分{int(_rhz9p(r, _hz9cc) or 0)}·周期走弱"
                            + ("·💼持仓" if r.get("scope") == "持仓" else ""), r.get("code"))
                           for r in (_nwj9("intraday_decisions.json").get("rows") or [])
-                          if (_rhz9p(r, _hz9cc) or 100) <= 45]
+                          if (_rhz9p(r, _hz9cc) or 100) <= 45 and _mkfit9(r.get("code"))]
                 _cut_note9 = (f"{_hz9cc}周期分≤45·该档周期逻辑走弱"
                               "(与下周档相位名单口径不同,分数=统一引擎翻倍律)")
             # 近档=概率/强度越高越危险(降序);本月/下月=周期分越低越危险(升序)
@@ -3469,9 +3487,36 @@ try:
             # 医疗/能源/军工/银行/消费,统一引擎实跑择优;浅回踩带~突破~失效全价格口径。
             try:
                 _sr9v = _nwj9("sector_reps.json")
-                if _sr9v.get("sectors"):
+                # 【2026-07-26 三市场版】筛选具体市场=该市场组完整行;全部=每行业三市场并列精简
+                _sr_mkts9 = _sr9v.get("markets") or {}
+                if _sr_mkts9 and _tb_mkt9 == "全部":
+                    _sr_all9 = []
+                    _secs_order9 = [x["sector"] for x in (_sr_mkts9.get("美股") or [])]
+                    for _sec9a in _secs_order9:
+                        _cells9a = []
+                        for _mk9a, _fl9a in (("美股", "🇺🇸"), ("A股", "🇨🇳"), ("港股", "🇭🇰")):
+                            _row9a = next((x for x in (_sr_mkts9.get(_mk9a) or [])
+                                           if x["sector"] == _sec9a), None)
+                            if not _row9a:
+                                continue
+                            _pk9a = _row9a.get("pick") or _row9a.get("watch") or {}
+                            _cells9a.append(f"{_fl9a}{_nw_link9(_pk9a.get('name'), _pk9a.get('sym'))}"
+                                            + (f"<b style='color:#dc2626'>{_pk9a.get('p_up')}%</b>"
+                                               if _row9a.get("pick") else
+                                               "<span style='font-size:11px;color:#94a3b8'>观察</span>"))
+                        _sr_all9.append(f"<div style='font-size:12.5px'><b>{_sec9a}</b>："
+                                        + "　".join(_cells9a) + "</div>")
+                    st.markdown("<b style='font-size:13px'>🎖️ 五行业代表·三市场</b>"
+                                f"<span style='font-size:11px;color:#94a3b8'>（点名可点·区间明细=上方市场筛选"
+                                f"选定单市场后显示·{str(_sr9v.get('generated_at'))[5:16]}）</span>"
+                                + "".join(_sr_all9), unsafe_allow_html=True)
+                    _sr_sel9 = []
+                else:
+                    _sr_sel9 = (_sr_mkts9.get(_tb_mkt9.lstrip("🇨🇳🇭🇰🇺🇸")) or _sr9v.get("sectors")
+                                or []) if _sr_mkts9 else (_sr9v.get("sectors") or [])
+                if _sr_sel9:
                     _sr_rows9 = []
-                    for _sv9 in _sr9v["sectors"]:
+                    for _sv9 in _sr_sel9:
                         _pk9 = _sv9.get("pick") or _sv9.get("watch") or {}
                         _is_pick9 = bool(_sv9.get("pick"))
                         _dist9 = ((_pk9.get("last", 0) / _pk9.get("shallow", [0, 1])[1] - 1) * 100
@@ -3491,7 +3536,7 @@ try:
                             + (f"<span style='font-size:11px;color:#b45309'>·📅{_pk9['earn']}财报博弈期</span>" if _pk9.get("earn") else "")
                             + f"{_pol9v}"
                             f"<div style='font-size:11px;color:#94a3b8;margin-left:8px'>└{str(_sv9.get('why'))[:70]}</div></div>")
-                    st.markdown("<b style='font-size:13px'>🎖️ 五行业代表·下周关注</b>"
+                    st.markdown(f"<b style='font-size:13px'>🎖️ 五行业代表·{_tb_mkt9}·下周关注</b>"
                                 f"<span style='font-size:11px;color:#94a3b8'>（医疗/能源/军工/银行/消费·统一引擎实跑择优"
                                 f"·{str(_sr9v.get('generated_at'))[5:16]}·弱行业不硬凑如实标观察）</span>"
                                 + "".join(_sr_rows9), unsafe_allow_html=True)
