@@ -1840,7 +1840,7 @@ elif _nav == "🔍 个股搜索":
             # 【V88·明白话判读】量价/K线/MACD 事实与要点（不是分数）
             _ro = cloud_engine.plain_readout(f, _turn if _turn.get("side") else None)
             if _ro:
-                exp_md("📖 量价判读（事实+要点，你来拍板）",
+                exp_md("📖 量价判读（事实+要点·佐证上方结论）",
                        "\n".join(f"- {ln}" for ln in _ro), expanded=True)
 
             # ② 六行状态速览

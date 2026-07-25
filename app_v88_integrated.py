@@ -18060,6 +18060,31 @@ if st.session_state.get('scan_selected_code'):
                                 if not _wc_lines9:
                                     _wc_lines9.append("**归因**：未捕捉到个股利空/利好新闻,板块与大盘亦无显著联动——"
                                                       "本次波动判定为技术性(获利了结/止损盘),重点回到价格纪律本身。")
+                                # 【V88·系统裁定 2026-07-25 用户纠偏"不是我来拍板,V88要给判断+证据佐证"】
+                                # 证据链末尾必须收口成系统结论:联动型/自身受损型/技术型三判+对应动作含义。
+                                # 接止损哲学:逻辑破才清仓——联动杀跌≠逻辑破。
+                                try:
+                                    _has_self9 = any("直接原因" in x for x in _wc_lines9)
+                                    _has_ext9 = any(("板块联动" in x or "市场联动" in x or "事件带" in x)
+                                                    for x in _wc_lines9)
+                                    _ls9w = None
+                                    try:
+                                        _ls9w = int(_F.get("total") or 0)
+                                    except Exception:
+                                        pass
+                                    if _has_self9 and _wc_dir9 == "跌":
+                                        _vd9w = ("<b>系统裁定：个股自身逻辑受损为主(置信偏高·有直接新闻证据)"
+                                                 "——止损纪律从严执行,反弹减仓优先,不轻言抄底。</b>")
+                                    elif _has_ext9 and not _has_self9:
+                                        _vd9w = ("<b>系统裁定：外部联动为主(板块/大盘/事件拖累·置信中高)"
+                                                 "——个股自身逻辑未见新破坏证据:短线按价格纪律执行,"
+                                                 "但这不是清长仓的理由;联动源(大盘/事件)转向时该股常率先修复。</b>")
+                                    else:
+                                        _vd9w = ("<b>系统裁定：技术性波动(无消息面证据·置信中)"
+                                                 "——按买卖区间与止损位机械执行,不赋予额外含义。</b>")
+                                    _wc_lines9.append(_vd9w)
+                                except Exception:
+                                    pass
                                 st.markdown(f"##### 🔎 为什么{_wc_dir9}·归因链"
                                             + (f"（当日{_wc_chg9:+.2f}%）" if _wc_chg9 is not None else ""))
                                 st.markdown("<div style='font-size:13.5px;line-height:1.7'>"
@@ -18072,7 +18097,7 @@ if st.session_state.get('scan_selected_code'):
                             # 【V88·明白话判读】量价/K线/MACD 的事实与判断要点（不是分数）
                             _ro99 = _ce.plain_readout(_F, _turn99 if _turn99.get("side") else None)
                             if _ro99:
-                                st.markdown("##### 📖 量价判读（事实+要点，你来拍板）")
+                                st.markdown("##### 📖 量价判读（事实+要点·佐证上方结论）")
                                 st.markdown("\n".join(f"- {ln}" for ln in _ro99))
                             # 【V88·公司档案 2026-07-18 用户点单"像东财一样看到公司介绍/历史价"】
                             # 中文简介(东财F10三市场,7天缓存)+历史/52周高低+股息率+财报日,全带出处。
