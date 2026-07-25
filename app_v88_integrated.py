@@ -3137,6 +3137,13 @@ try:
             import sys as _sy9f
             if str(_nw_repo9 / "src") not in _sy9f.path:
                 _sy9f.path.insert(0, str(_nw_repo9 / "src"))
+            # 全链一致的关键:rotation/cycle各有自己的slot缓存闸,不清掉会在链内被拦
+            # (实测周期停昨天)——删缓存文件=强制子链全部用本次新行情重算,时点才真一致。
+            for _cf9f in ("rotation_forecast.json", "cycle_scan.json"):
+                try:
+                    (_nw_repo9 / "data" / _cf9f).unlink()
+                except Exception:
+                    pass
             from market_snapshot import generate_market_snapshot as _gms9
             _gms9()
 
