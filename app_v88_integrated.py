@@ -17956,6 +17956,119 @@ if st.session_state.get('scan_selected_code'):
                                 f"- 买入区间：{_F['buy_zone']} ｜ 回踩买点：{_F['pullback']} ｜ 突破加仓：{_F['breakout']}\n"
                                 f"- 止损位：{_F['stop']} ｜ 减仓位：{_F['reduce']}\n"
                                 f"- 失效条件：{_F['invalid']}")
+                            # 【V88·涨跌归因链 2026-07-25 用户定纲"不能光说技术面破坏,总有个原因,
+                            # 所有个股都要有简明说明,深度分析要更多字数"】四层证据拼装(全落盘零AI):
+                            # ①个股自身新闻(别名硬命中防中烟香港式错配) ②板块联动(相位+板块当日+主力资金)
+                            # ③市场联动(大盘当日+综述归因) ④事件带(财报临近/FOMC)——都没有就如实说技术性。
+                            try:
+                                _wc_repo9 = Path.home() / "Desktop" / "ai-daily-report-v2"
+                                _wc_lines9 = []
+                                _wc_chg9 = None
+                                try:
+                                    _wc_chg9 = round(float(df_temp["Close"].iloc[-1] /
+                                                           df_temp["Close"].iloc[-2] - 1) * 100, 2)
+                                except Exception:
+                                    pass
+                                _wc_dir9 = "跌" if (_wc_chg9 or 0) < 0 else "涨"
+                                # ①个股新闻(require_name同款硬门槛)
+                                try:
+                                    import sys as _sy9w
+                                    if str(_wc_repo9 / "src") not in _sy9w.path:
+                                        _sy9w.path.insert(0, str(_wc_repo9 / "src"))
+                                    from catalyst_alias import aliases_for as _af9w, title_matches as _tm9w
+                                    _als9w = _af9w(stock_name, target_c)
+                                    _hit9w = None
+                                    for _it9w in (json.loads((_wc_repo9 / "data" / "news_analyzed.json")
+                                                             .read_text(encoding="utf-8")).get("items") or [])[:80]:
+                                        if _tm9w(str(_it9w.get("title") or ""), _als9w):
+                                            _hit9w = _it9w
+                                            break
+                                    if _hit9w:
+                                        _lk9w = str(_hit9w.get("link") or _hit9w.get("url") or "")
+                                        _tt9w = str(_hit9w.get("title"))[:44]
+                                        _wc_lines9.append(
+                                            "**直接原因(个股新闻)**：「"
+                                            + (f'<a href="{_lk9w}" target="_blank">{_tt9w}</a>' if _lk9w else _tt9w)
+                                            + f"」（{_hit9w.get('source', '新闻')}）——个股自身消息在发酵。")
+                                except Exception:
+                                    pass
+                                # ②板块联动:当日板块涨跌+主力资金+相位
+                                try:
+                                    from modules.sector_map import get_sector as _gs9w
+                                    _sn9w = str(_gs9w(target_c, stock_name) or "")
+                                    _mk9w = ("A股" if str(target_c).upper().endswith((".SS", ".SZ"))
+                                             else ("港股" if str(target_c).upper().endswith(".HK") else "美股"))
+                                    _snap9w = json.loads((_wc_repo9 / "data" / "market_snapshot.json")
+                                                         .read_text(encoding="utf-8"))
+                                    _sec9w = next((x for x in ((_snap9w.get("markets") or {}).get(_mk9w) or {})
+                                                   .get("sectors", []) if isinstance(x, dict) and _sn9w
+                                                   and (str(x.get("name")) in _sn9w or _sn9w in str(x.get("name")))), None)
+                                    _ffs9w = None
+                                    try:
+                                        from fund_flow_radar import sector_flow_of as _ffo9w
+                                        _ffs9w = _ffo9w(_sn9w, json.loads(
+                                            (_wc_repo9 / "data" / "fund_flow.json").read_text(encoding="utf-8")))
+                                    except Exception:
+                                        pass
+                                    _sec_bits9 = []
+                                    if _sec9w is not None:
+                                        _sc9w = float(_sec9w.get("chg1d") or _sec9w.get("chg") or 0)
+                                        _sec_bits9.append(f"所属「{_sn9w}」板块当日{_sc9w:+.1f}%"
+                                                          + ("(同板块普跌,联动为主)" if _sc9w < -1 and _wc_dir9 == "跌"
+                                                             else ("(板块共振上行)" if _sc9w > 1 and _wc_dir9 == "涨" else "")))
+                                    if _ffs9w:
+                                        _fn9w = float(_ffs9w.get("today_net") or 0)
+                                        _sec_bits9.append(f"板块主力资金今日{_fn9w:+.1f}亿"
+                                                          + ("·5日" + format(float(_ffs9w.get('net5d') or 0), '+.1f')
+                                                             + "亿" if _ffs9w.get("net5d") is not None else "")
+                                                          + ("——钱在离场,技术破位的背后是资金面" if _fn9w < -3
+                                                             else ("——主力在进,回调更像洗盘" if _fn9w > 3 else "")))
+                                    if _sec_bits9:
+                                        _wc_lines9.append("**板块联动**：" + "；".join(_sec_bits9) + "。")
+                                except Exception:
+                                    pass
+                                # ③市场联动:大盘当日+综述归因(带原文链接,复用综述同款三级兜底)
+                                try:
+                                    _mb9w = ((_snap9w.get("markets") or {}).get(_mk9w) or {})
+                                    _mc9w = float(((_mb9w.get("indices") or [{}])[0] or {}).get("chg1d") or 0)
+                                    _mwhy9w = ""
+                                    try:
+                                        _mwhy9w = str(_v88_mkt_why9(_mk9w, _wc_repo9) or "")
+                                    except Exception:
+                                        pass
+                                    if abs(_mc9w) >= 0.8 and ((_mc9w < 0) == (_wc_dir9 == "跌")):
+                                        _wc_lines9.append(f"**市场联动**：{_mk9w}大盘当日{_mc9w:+.2f}%,"
+                                                          f"个股难独善其身。{_mwhy9w}")
+                                except Exception:
+                                    pass
+                                # ④事件带:自家财报临近/FOMC等宏观事件(博弈期资金先撤是常见连锁)
+                                try:
+                                    for _e9w in (json.loads((_wc_repo9 / "data" / "macro_events.json")
+                                                            .read_text(encoding="utf-8")).get("events") or []):
+                                        _ev9w = str(_e9w.get("event") or "")
+                                        if str(target_c).upper().split(".")[0] in _ev9w or stock_name[:3] in _ev9w:
+                                            _wc_lines9.append(f"**事件带**：{_e9w['date'][5:]}(周{_e9w['dow']})"
+                                                              f"自家财报——博弈期资金先撤、波动放大是常见连锁,"
+                                                              "财报落地前技术信号可信度打折。")
+                                            break
+                                        if "FOMC" in _ev9w and _mk9w == "美股":
+                                            _wc_lines9.append(f"**事件带**：{_e9w['date'][5:]}(周{_e9w['dow']})FOMC,"
+                                                              "决议前机构降杠杆、高估值科技先被卖是惯常连锁。")
+                                            break
+                                except Exception:
+                                    pass
+                                if not _wc_lines9:
+                                    _wc_lines9.append("**归因**：未捕捉到个股利空/利好新闻,板块与大盘亦无显著联动——"
+                                                      "本次波动判定为技术性(获利了结/止损盘),重点回到价格纪律本身。")
+                                st.markdown(f"##### 🔎 为什么{_wc_dir9}·归因链"
+                                            + (f"（当日{_wc_chg9:+.2f}%）" if _wc_chg9 is not None else ""))
+                                st.markdown("<div style='font-size:13.5px;line-height:1.7'>"
+                                            + "<br>".join(_wc_lines9)
+                                            + "<br><span style='font-size:11.5px;color:#94a3b8'>归因链=个股新闻→板块联动→"
+                                            "市场联动→事件带四层证据拼装·全部落盘数据可核验·未命中层不硬编</span></div>",
+                                            unsafe_allow_html=True)
+                            except Exception:
+                                pass
                             # 【V88·明白话判读】量价/K线/MACD 的事实与判断要点（不是分数）
                             _ro99 = _ce.plain_readout(_F, _turn99 if _turn99.get("side") else None)
                             if _ro99:
