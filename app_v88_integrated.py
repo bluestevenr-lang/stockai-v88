@@ -2894,6 +2894,23 @@ try:
         except Exception:
             return {}
 
+    def _v88_refresh9(_label9r, _est9r, _fn9r, _key9r):
+        """【V88·立刻更新按钮 2026-07-25 用户点单"每个用缓存的模块都要能立刻更新"】
+        通用强刷:60秒防重+spinner+完成即重跑页面。fn=无参重算函数(内部import私仓模块force跑)。"""
+        import time as _t9r
+        if st.button(f"🔄 {_label9r}·立刻更新（{_est9r}）", key=_key9r):
+            if _t9r.time() - float(st.session_state.get(_key9r + "_ts") or 0) < 60:
+                st.toast("60秒内刚更新过，当前已是最新", icon="⏳")
+                return
+            st.session_state[_key9r + "_ts"] = _t9r.time()
+            with st.spinner(f"{_label9r} 重算中（{_est9r}）…完成自动刷新"):
+                try:
+                    _fn9r()
+                    st.toast(f"✅ {_label9r}已用最新数据重算", icon="✅")
+                except Exception as _e9r:
+                    st.toast(f"❌ {_label9r}更新失败: {str(_e9r)[:40]}", icon="❌")
+            st.rerun()
+
     def _nw_link9(_nm9x, _cd9x):
         # 【2026-07-25 用户抓"只有A股能点"】与全站 _stk_link 完全同款(新标签+下划线)——
         # 原 target=_self 当前页重载在部分场景吞掉深链参数,美港股点了没反应。
@@ -3113,6 +3130,54 @@ try:
                    + f" ｜ 当前档:{_tb_tier9}(大盘={_cfg9['mkt_hz'] or '当日实况'}·板块={_cfg9['sec_hz'] or '当日涨跌'}·买={_buy_note9})"
                    " ｜ 更新节奏:交易日07/13/19点三班+盘中三时段相位扫描·周末每日09:00一趟"
                    "(下周/本月/下月档同源同步更新·Actions公共仓免费,预算内)")
+        # 【V88·立刻更新 2026-07-25 用户点单】四数据源各配强刷按钮(60s防重),不等班车
+        _rb1, _rb2, _rb3, _rb4 = st.columns(4)
+
+        def _rf_snap9():
+            import sys as _sy9f
+            if str(_nw_repo9 / "src") not in _sy9f.path:
+                _sy9f.path.insert(0, str(_nw_repo9 / "src"))
+            from market_snapshot import generate_market_snapshot as _gms9
+            _gms9()
+
+        def _rf_rot9():
+            import sys as _sy9f
+            if str(_nw_repo9 / "src") not in _sy9f.path:
+                _sy9f.path.insert(0, str(_nw_repo9 / "src"))
+            from rotation_forecast import build_rotation_forecast as _brf9
+            _sn9f = json.loads((_nw_repo9 / "data" / "market_snapshot.json").read_text(encoding="utf-8"))
+            _fc9f = _brf9(_sn9f.get("markets") or {}, _sn9f.get("snapshot_id", "manual"), force=True)
+            _sn9f["rotation_forecast"] = _fc9f
+            (_nw_repo9 / "data" / "market_snapshot.json").write_text(
+                json.dumps(_sn9f, ensure_ascii=False, indent=2), encoding="utf-8")
+
+        def _rf_dh9():
+            import sys as _sy9f
+            if str(_nw_repo9 / "src") not in _sy9f.path:
+                _sy9f.path.insert(0, str(_nw_repo9 / "src"))
+            import darkhorse_radar as _dhm9f
+            _ex9f = set()
+            try:
+                _w9f = json.loads((_nw_repo9 / "watchlist_v88.json").read_text(encoding="utf-8"))
+                for _l9f in (_w9f or {}).values():
+                    for _it9f in _l9f or []:
+                        if isinstance(_it9f, (list, tuple)) and _it9f:
+                            _c9f = str(_it9f[0]).upper().split(".")[0]
+                            _ex9f.add(_c9f.lstrip("0") or _c9f)
+            except Exception:
+                pass
+            _dhm9f.build_darkhorse(_ex9f)
+
+        with _rb1:
+            _v88_refresh9("快照+综述", "约1-2分钟", _rf_snap9, "rf_snap9")
+        with _rb2:
+            _v88_refresh9("板块轮动", "约1分钟", _rf_rot9, "rf_rot9")
+        with _rb3:
+            _v88_refresh9("黑马池", "约8-15分钟", _rf_dh9, "rf_dh9")
+        with _rb4:
+            # 全池相位扫描函数定义在本区之后(模块级顺序),此处按钮会NameError——
+            # 强刷入口在下方⚠️🌱调整提醒模块(已有),这里指路不重复造
+            st.caption("🔄 全池相位·立刻更新→在下方「⚠️🌱调整提醒」模块点扫描按钮(约5-15分钟)")
 except Exception:
     import traceback as _tb9e
     try:
@@ -15864,6 +15929,21 @@ with st.expander("📋 三段作战计划台 · 哪天进/到哪出/何时废（
 # AI按时间档(明天/本周/下周/本月下月)给布局。私仓流水线生成,这里零网络秒开。
 # ═══════════════════════════════════════════════════════════════
 with st.expander("🏛️ 机构风向标 · 权威研报评级×系统推荐池（明天/本周/下周布局）", expanded=False):
+    # 【V88·立刻更新 2026-07-25】缓存模块强刷按钮(60s防重,通用helper)
+    def _rf_inst9():
+        import sys as _s9z
+        _p9z = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
+        if _p9z not in _s9z.path:
+            _s9z.path.insert(0, _p9z)
+        import importlib as _il9z
+        import institutional_signals as _m9z
+        _il9z.reload(_m9z)
+        _m9z.build(force=True)
+    try:
+        _v88_refresh9("机构风向标", "约30-60秒·AI档12h节流仍生效", _rf_inst9, "rf_inst9")
+    except Exception:
+        pass
+
     try:
         _inst9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
                              "institutional_signals.json").read_text(encoding="utf-8"))
@@ -15950,6 +16030,21 @@ with st.expander("🏛️ 机构风向标 · 权威研报评级×系统推荐池
 # 【V88·公告事件雷达常驻板块 2026-07-18 用户点单】"未来可以提醒或主动"——
 # 自选+持仓的公司公告(可转债/回购/减持…)主动摆上台面;盘中新事件另有飞书预警。
 with st.expander("⚡ 公告事件雷达 · 自选+持仓公司公告（可转债/回购/减持·主动提醒）", expanded=False):
+    # 【V88·立刻更新 2026-07-25】缓存模块强刷按钮(60s防重,通用helper)
+    def _rf_ann9():
+        import sys as _s9z
+        _p9z = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
+        if _p9z not in _s9z.path:
+            _s9z.path.insert(0, _p9z)
+        import importlib as _il9z
+        import announcement_radar as _m9z
+        _il9z.reload(_m9z)
+        _m9z.build(force=True)
+    try:
+        _v88_refresh9("公告事件雷达", "约20-40秒", _rf_ann9, "rf_ann9")
+    except Exception:
+        pass
+
     try:
         _annj9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
                              "announcements.json").read_text(encoding="utf-8"))
@@ -16021,6 +16116,21 @@ with st.expander("⚡ 公告事件雷达 · 自选+持仓公司公告（可转�
 # 【V88·散户情绪三榜 2026-07-19 用户问"热榜细节在哪"】此前只做池内命中提示,
 # 这里给完整三榜详情——反指标语义:越热闹越要冷静,不是买入榜。
 with st.expander("🔥 散户情绪三榜 · 东财人气/雪球热股/雅虎热搜（反指标·拥挤观察）", expanded=False):
+    # 【V88·立刻更新 2026-07-25】缓存模块强刷按钮(60s防重,通用helper)
+    def _rf_intel9():
+        import sys as _s9z
+        _p9z = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
+        if _p9z not in _s9z.path:
+            _s9z.path.insert(0, _p9z)
+        import importlib as _il9z
+        import intel_feed as _m9z
+        _il9z.reload(_m9z)
+        _m9z.build(force=True)
+    try:
+        _v88_refresh9("散户情绪三榜", "约20-40秒", _rf_intel9, "rf_intel9")
+    except Exception:
+        pass
+
     try:
         _i3h9 = _v88_intel9()
         _c1h9, _c2h9, _c3h9 = st.columns(3)
@@ -16088,6 +16198,21 @@ with st.expander("🔥 散户情绪三榜 · 东财人气/雪球热股/雅虎热
         st.info("情绪榜数据待流水线生成。")
 
 with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）", expanded=False):
+    # 【V88·立刻更新 2026-07-25】缓存模块强刷按钮(60s防重,通用helper)
+    def _rf_ipo9():
+        import sys as _s9z
+        _p9z = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
+        if _p9z not in _s9z.path:
+            _s9z.path.insert(0, _p9z)
+        import importlib as _il9z
+        import ipo_radar as _m9z
+        _il9z.reload(_m9z)
+        _m9z.build_radar(force=True)
+    try:
+        _v88_refresh9("打新雷达", "约20-40秒", _rf_ipo9, "rf_ipo9")
+    except Exception:
+        pass
+
     _rl_ipo9 = _v88_rate_line9("ipo_hk", "港股新股首日")
     if _rl_ipo9:
         st.caption(_rl_ipo9)
