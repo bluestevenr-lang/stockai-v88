@@ -13596,6 +13596,20 @@ def _render_today_verdict(_snap, _repo):
                 _seen_go.add(str(_d.get("code")).upper().split(".")[0].lstrip("0"))
     except Exception:
         pass
+    # 【V88·落盘兜底 2026-07-25 用户抓"美股0推荐但落盘辉瑞明明现价可进"】session是
+    # 30分钟会话缓存,滞后/未扫时会吞掉最新绿灯(辉瑞案)——流水线落盘是19点班最新产物,
+    # 合并补位(session优先,同码去重),龙虎门不再看会话脸色。
+    try:
+        for _r9g in (_jv.loads((_repo / "data" / "intraday_decisions.json")
+                               .read_text(encoding="utf-8")).get("rows") or []):
+            _rc9g = str(_r9g.get("code")).upper().split(".")[0].lstrip("0")
+            if _rc9g in _seen_go:
+                continue
+            if ((_r9g.get("entry_plan") or {}).get("mode")) in ("现价可进", "回踩到位", "突破确认"):
+                _go.append({**_r9g, "_src": ("💼持仓" if _r9g.get("scope") == "持仓" else "👁自选")})
+                _seen_go.add(_rc9g)
+    except Exception:
+        pass
     try:
         _dh = _jv.loads((_repo / "data" / "darkhorse.json").read_text(encoding="utf-8"))
         for _h in (_dh.get("horses") or []):
@@ -14072,10 +14086,40 @@ def _render_today_verdict(_snap, _repo):
                     _go_mk9.setdefault(_gate_mkey9(_h9c), []).append(
                         f"{_stk_link(_h9c.get('name'), _h9c.get('code'))}"
                         + (f"<span style='font-size:12px;color:{_pc9c}'>{_pu9c}%</span>" if _pu9c else ""))
+                # 【V88·个股-大盘一致性 2026-07-25 用户抓"大盘中性/危险与买卖名单背离没解释"】
+                # 每个市场行挂大盘2周概率;概率≤45%的市场绿灯→⚠️逆风(仓位减半);无绿灯的市场
+                # 必给原因(空档铁律)——大盘中性≠个股有买点,买点是个股技术时机,两层各说各话必须点明。
+                _mk_prob9g = {}
+                try:
+                    for _mk9g, _mm9g in (json.loads((_repo / "data" / "market_snapshot.json")
+                                                    .read_text(encoding="utf-8")).get("markets") or {}).items():
+                        _p2w9g = dict((x[0], x[1]) for x in ((_mm9g.get("l3") or {}).get("probs") or [])).get("2周")
+                        if _p2w9g is not None:
+                            _mk_prob9g[{"美股": "🇺🇸美股", "A股": "🇨🇳A股", "港股": "🇭🇰港股"}.get(_mk9g, _mk9g)] = int(_p2w9g)
+                except Exception:
+                    pass
+
+                def _mk_head9g(_mk9s):
+                    _pb9g = _mk_prob9g.get(_mk9s)
+                    if _pb9g is None:
+                        return f"<b>{_mk9s}</b>"
+                    _wind9g = ("<span style='font-size:11px;color:#b45309'>⚠️大盘逆风·仓位减半</span>"
+                               if _pb9g <= 45 else "")
+                    return (f"<b>{_mk9s}</b><span style='font-size:11px;color:#94a3b8'>"
+                            f"(大盘2周{_pb9g}%)</span>{_wind9g}")
                 _go_rows9 = "".join(
-                    f"<div style='font-size:13px;margin-bottom:2px'><b>{_mk9s}</b>："
+                    f"<div style='font-size:13px;margin-bottom:2px'>{_mk_head9g(_mk9s)}："
                     + " ".join(_go_mk9[_mk9s]) + "</div>"
                     for _mk9s in _MKS9 if _go_mk9.get(_mk9s))
+                # 无绿灯的市场也占一行给原因(美股中性却0推荐案):从地狱门统计该市场票况如实说
+                for _mk9s in _MKS9:
+                    if _go_mk9.get(_mk9s):
+                        continue
+                    _cutn9g = sum(1 for _n9g in _cut if _gate_mkey9(_cut_d.get(_n9g) or {}) == _mk9s)
+                    _go_rows9 += (f"<div style='font-size:12px;color:#94a3b8'>{_mk_head9g(_mk9s)}："
+                                  f"0只绿灯——池内该市场{('多只在地狱门警示中(' + str(_cutn9g) + '只),') if _cutn9g else ''}"
+                                  "无票达技术时机门槛(现价可进/回踩到位/突破确认)。大盘概率是指数层判断,"
+                                  "买点是个股时机——中性大盘照样可以全员无买点</div>")
                 st.markdown(_go_rows9
                             + "<div style='font-size:12px;color:#94a3b8'>数字=1-2周涨概率·触线/热议等细节见下方卡片细看；仓位按纲领别越线</div>",
                             unsafe_allow_html=True)
