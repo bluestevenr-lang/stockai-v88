@@ -3055,13 +3055,22 @@ try:
                              and float(x.get("pos52") or 50) <= 45],
                             key=lambda x: ({"高": 0, "中": 1}.get(str(x.get("confidence")), 2),
                                            float(x.get("pos52") or 50)))[:8]
+            # 【V88·资金流💰标注 2026-07-25 用户批准接入③】低位+主力已进=埋伏成色更高(仅A股有数据)
+            _ffs9 = (_nwj9("fund_flow.json").get("stocks") or {})
+
+            def _ff_tag9(_cd9f):
+                _n9f = (_ffs9.get(str(_cd9f)) or {}).get("net")
+                if _n9f is None:
+                    return ""
+                return (f"<span style='font-size:11px;color:#b45309'>·💰主力+{_n9f:.1f}亿</span>" if _n9f >= 0.1
+                        else (f"<span style='font-size:11px;color:#64748b'>·主力{_n9f:+.1f}亿</span>" if _n9f <= -0.1 else ""))
             _up_txt9 = ("、".join(f"{_nw_link9(x.get('name'), x.get('code'))}"
                                  f"<span style='font-size:11px;color:#64748b'>(52周{int(float(x.get('pos52') or 0))}%"
-                                 f"·{x.get('confidence')}置信)</span>" for x in _ups9n)
+                                 f"·{x.get('confidence')}置信)</span>{_ff_tag9(x.get('code'))}" for x in _ups9n)
                         if _ups9n else "<span style='color:#94a3b8'>全池暂无低位高置信转强(门槛:52周位≤45%+相位向上)</span>")
             st.markdown("<b style='font-size:13px'>🌱 ③ 低位拐点·可注意埋伏</b>"
                         f"<span style='font-size:11px;color:#94a3b8'>（全池{_pt9n.get('scanned', '?')}只·"
-                        "52周低位+转强·转强≠立刻买,等时机绿灯）</span>"
+                        "52周低位+转强·转强≠立刻买,等时机绿灯·💰=东财主力今日净流入）</span>"
                         f"<div style='font-size:12.5px'>{_up_txt9}</div>", unsafe_allow_html=True)
         with _tbR9:
             # ── ④ {档}买什么(每档最优口径) ──

@@ -739,7 +739,7 @@ def news_direction(title: str) -> str:
     return "利空" if neg > pos else ("利好" if pos > neg else "")
 
 
-def smart_watch_signal(f, catalyst=None, earnings_days=None, sector_heat=None):
+def smart_watch_signal(f, catalyst=None, earnings_days=None, sector_heat=None, fund_net=None):
     """【V88·自选股智能预警】多因子共振判买入/减仓（2026-07-11 用户定则）：
     不允许单一指标触发信号——技术面/量价面/基本消息面 三个维度至少两个共振才出信号，防假突破防噪音。
     买入提醒必须说明触发条件（趋势突破/放量/指标共振/催化）；减仓提醒必须说明风险原因。
@@ -812,9 +812,22 @@ def smart_watch_signal(f, catalyst=None, earnings_days=None, sector_heat=None):
             fund_s.append(f"行业:{_sn}退潮")
     earn_note = f"📅{earnings_days}天后财报·博弈期波动放大" if earnings_days is not None and 0 <= earnings_days <= 5 else ""
 
+    # ── 维度④ 主力资金面（东财真实净流入·V88资金流雷达 2026-07-25 用户批准第5维）──
+    # 与维度②的OBV推断资金不同:这是交易所级主力净额。±0.3亿为门槛防单日噪音。
+    flow_b, flow_s = [], []
+    if fund_net is not None:
+        try:
+            _fn = float(fund_net)
+            if _fn >= 0.3:
+                flow_b.append(f"主力:今日净流入{_fn:.1f}亿(东财)")
+            elif _fn <= -0.3:
+                flow_s.append(f"主力:今日净流出{abs(_fn):.1f}亿(东财)")
+        except (TypeError, ValueError):
+            pass
+
     # ── 共振判定：≥2 个维度才触发 ──
-    b_dims = [x for x in (tech_b, vol_b, fund_b) if x]
-    s_dims = [x for x in (tech_s, vol_s, fund_s) if x]
+    b_dims = [x for x in (tech_b, vol_b, fund_b, flow_b) if x]
+    s_dims = [x for x in (tech_s, vol_s, fund_s, flow_s) if x]
     total, concl = f.get("total", 0), f.get("conclusion", "")
 
     if (len(s_dims) >= 2):
@@ -824,7 +837,7 @@ def smart_watch_signal(f, catalyst=None, earnings_days=None, sector_heat=None):
                 "zone": f"减仓参考{f.get('reduce', '—')}·跌破{f.get('stop', '—')}离场",
                 "risk": risk, "earnings_note": earn_note}
     if (len(b_dims) >= 2 and total >= 62 and concl not in ("回避", "减仓", "等待")
-            and not tech_s and not vol_s and not fund_s):  # 任一维度现卖出信号则否决买入，防假突破
+            and not tech_s and not vol_s and not fund_s and not flow_s):  # 任一维度现卖出信号则否决买入，防假突破
         conds = [c for d in b_dims for c in d]
         risk = "低" if len(b_dims) >= 3 else "中"
         return {"side": "buy", "action": f"买入（信号可信度:{'高' if risk == '低' else '中'}·风险等级:{risk}）",

@@ -514,10 +514,16 @@ if _nav == "🧭 导航":
                                  and float(x.get("pos52") or 50) <= 45],
                                 key=lambda x: ({"高": 0, "中": 1}.get(str(x.get("confidence")), 2),
                                                float(x.get("pos52") or 50)))[:8]
+                # 【V88·资金流💰标注·云端 2026-07-25】读脱敏版(个股仅全池转强名单,无自选/持仓码)
+                _ffc9 = (_pubj9("fund_flow_pub.json").get("stocks") or {})
+
+                def _fftag9c(_cd):
+                    _n = (_ffc9.get(str(_cd)) or {}).get("net")
+                    return f"·💰主力+{_n:.1f}亿" if (_n is not None and _n >= 0.1) else ""
                 st.markdown("<b style='font-size:13px'>🌱 ③ 低位拐点·可注意埋伏</b>"
-                            f"<span style='font-size:11px;color:#94a3b8'>（全池{_pt9c2.get('scanned', '?')}只·转强≠立刻买）</span>"
+                            f"<span style='font-size:11px;color:#94a3b8'>（全池{_pt9c2.get('scanned', '?')}只·转强≠立刻买·💰=主力今日净流入）</span>"
                             + ("<div style='font-size:12.5px'>" + "、".join(
-                                f"{x.get('name')}(52周{int(float(x.get('pos52') or 0))}%·{x.get('confidence')})"
+                                f"{x.get('name')}(52周{int(float(x.get('pos52') or 0))}%·{x.get('confidence')}{_fftag9c(x.get('code'))})"
                                 for x in _up9c2) + "</div>" if _up9c2
                                else "<div style='font-size:12.5px;color:#94a3b8'>全池文件待发布或暂无低位转强</div>"),
                             unsafe_allow_html=True)
