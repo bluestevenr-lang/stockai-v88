@@ -8486,9 +8486,9 @@ def run_system_diagnostic():
         test_url = "https://www.google.com"
         if proxy_url:
             proxies = {"http": proxy_url, "https": proxy_url}
-            response = requests.get(test_url, proxies=proxies, timeout=5, verify=False)
+            response = requests.get(test_url, proxies=proxies, timeout=5, verify=True)
         else:
-            response = requests.get(test_url, timeout=5, verify=False)
+            response = requests.get(test_url, timeout=5, verify=True)
         
         latency = (time.time() - start_time) * 1000  # 转换为毫秒
         
@@ -11760,7 +11760,7 @@ with st.sidebar:
         purl = f"http://127.0.0.1:{st.session_state.proxy_port}"
         try:
             with ProxyContext(purl):
-                r = requests.get("https://www.google.com", timeout=5, verify=False)
+                r = requests.get("https://www.google.com", timeout=5, verify=True)
             st.success(f"✅ Google: {r.status_code}")
         except Exception as e:
             st.error(f"❌ 连接失败: {type(e).__name__}")
