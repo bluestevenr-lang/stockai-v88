@@ -456,6 +456,43 @@ if _nav == "🧭 导航":
                     st.markdown(_tph9)
             except Exception:
                 pass
+            # 【V88·行动指令·云端 2026-07-25 用户抓"没说该干什么"】脱敏版:宏观事件(pub)+
+            # 准备买给计数(自选明细=隐私,完整名单在桌面/飞书)
+            try:
+                _snpc9i = _pubj9("market_snapshot.json")
+                _mev9c = (_pubj9("macro_events_pub.json").get("events") or [])
+                from datetime import datetime as _dt9ci
+                _d0c, _d1c = _cf9c["days"]
+                _tdyc9 = _dt9ci.now().date()
+                _evc9 = [e for e in _mev9c if _d0c <= (_dt9ci.strptime(e["date"], "%Y-%m-%d").date()
+                                                       - _tdyc9).days <= max(_d1c, 1)]
+                _wkc9, _posc9 = [], []
+                for _m9ci in ("A股", "港股", "美股"):
+                    _b9ci = (_snpc9i.get("markets") or {}).get(_m9ci) or {}
+                    _p9ci = dict((x[0], x[1]) for x in ((_b9ci.get("l3") or {}).get("probs") or [])).get(
+                        _cf9c.get("mkt_hz") or "明日")
+                    if _p9ci is not None:
+                        _wkc9.append((_m9ci, int(_p9ci)))
+                    _t9ci = (_b9ci.get("temperature") or {})
+                    if _t9ci.get("position"):
+                        _posc9.append(f"{_m9ci}{str(_t9ci['position']).split('（')[0]}")
+                _tk9c = []
+                _st9c = [m for m, p in _wkc9 if p >= 55]
+                _wk9c2 = [m for m, p in _wkc9 if p <= 45]
+                if _st9c:
+                    _tk9c.append(f"<b style='color:#dc2626'>{'/'.join(_st9c)}偏涨·持有敢接</b>")
+                if _wk9c2:
+                    _tk9c.append(f"<b style='color:#16a34a'>{'/'.join(_wk9c2)}偏弱·反弹减仓不追</b>")
+                if _evc9:
+                    _tk9c.append("📅" + "、".join(f"{e['date'][5:]}(周{e['dow']}){e['event']}"
+                                                 for e in _evc9[:3]))
+                _tk9c.append("🎯准备买触发单明细在桌面/飞书(自选隐私)")
+                st.markdown("<div style='background:#fef9c3;border-left:4px solid #ca8a04;border-radius:6px;"
+                            "padding:.35rem .6rem;margin:.2rem 0 .4rem 0;font-size:13px'>"
+                            f"<b>📌 {_tt9c}行动指令</b>　仓位:{('·'.join(_posc9[:3])) or '见四档预判'}"
+                            f"　{'　'.join(_tk9c)}</div>", unsafe_allow_html=True)
+            except Exception:
+                pass
             _cL9, _cR9 = st.columns(2)
             with _cL9:
                 _ra9 = []

@@ -2987,6 +2987,62 @@ try:
                 st.markdown(_tp_html9)
         except Exception:
             pass
+        # 【V88·行动指令 2026-07-25 用户抓"没有推荐也没说该干什么"】每档开头一句话:
+        # 该拿多少仓/主要任务是什么/盯什么事件——防守周也必须有作战任务,拒绝只给数据不给指令。
+        try:
+            _mi9 = _nwj9("macro_events.json")
+            _d0i, _d1i = _cfg9["days"]
+            _tdy9i = _dtnw.now().date()
+            _evs9i = []
+            for _e9i in (_mi9.get("events") or []):
+                try:
+                    _off9i = (_dtnw.strptime(_e9i["date"], "%Y-%m-%d").date() - _tdy9i).days
+                    if _d0i <= _off9i <= max(_d1i, 1):
+                        _evs9i.append(_e9i)
+                except Exception:
+                    continue
+            _idc9i = (_nwj9("intraday_decisions.json").get("rows") or [])
+            _prep9i = [r for r in _idc9i if str((r.get("entry_plan") or {}).get("mode") or "")
+                       in ("现价可进", "回踩到位", "突破确认", "双路径待触发")]
+            _cutn9i = len([r for r in _idc9i if r.get("scope") == "持仓" and any(
+                k in str(r.get("action", "")) for k in ("减", "退", "清", "止损"))]) \
+                if _tb_tier9 in ("今日", "明日", "本周") else \
+                len([x for x in (_pt9n.get("stocks") or [])
+                     if x.get("direction") == "down" and x.get("confidence") in ("高", "中")])
+            _wk9i, _pos9i = [], []
+            for _m9i in ("A股", "港股", "美股"):
+                _b9i = (_nw_snap9.get("markets") or {}).get(_m9i) or {}
+                _p9i = dict((x[0], x[1]) for x in ((_b9i.get("l3") or {}).get("probs") or [])).get(
+                    _cfg9["mkt_hz"] or "明日")
+                if _p9i is not None:
+                    _wk9i.append((_m9i, int(_p9i)))
+                _t9i = (_b9i.get("temperature") or {})
+                if _t9i.get("position"):
+                    _pos9i.append(f"{_m9i}{str(_t9i['position']).split('（')[0]}")
+            _strong9i = [m for m, p in _wk9i if p >= 55]
+            _weak9i = [m for m, p in _wk9i if p <= 45]
+            _task9i = []
+            if _strong9i:
+                _task9i.append(f"<b style='color:#dc2626'>{'/'.join(_strong9i)}偏涨·按仓位口径持有敢接</b>")
+            if _weak9i:
+                _task9i.append(f"<b style='color:#16a34a'>{'/'.join(_weak9i)}偏弱·反弹减仓不追高</b>")
+            _task9i.append(f"🎯盯{len(_prep9i)}只到价触发单(见④准备买)" if _prep9i
+                           else "买侧任务:等③埋伏名单转绿灯")
+            if _cutn9i:
+                _task9i.append(f"⚔️{_cutn9i}只按⑤纪律处理")
+            if _evs9i:
+                _top_ev9i = "、".join(f"{_e9i['date'][5:]}(周{_e9i['dow']}){_e9i['event']}"
+                                     for _e9i in _evs9i[:3])
+                _task9i.append(f"📅事件锚:{_top_ev9i}" + (f"等{len(_evs9i)}件" if len(_evs9i) > 3 else ""))
+            st.markdown("<div style='background:#fef9c3;border-left:4px solid #ca8a04;border-radius:6px;"
+                        "padding:.35rem .6rem;margin:.2rem 0 .4rem 0;font-size:13px'>"
+                        f"<b>📌 {_tb_tier9}行动指令</b>　仓位:{('·'.join(_pos9i[:3])) or '见综述'}"
+                        f"　{'　'.join(_task9i)}</div>", unsafe_allow_html=True)
+        except Exception:
+            try:
+                _v88_sentinel9(_nw_repo9, "作战板行动指令")
+            except Exception:
+                pass
         _tbL9, _tbR9 = st.columns(2)
         with _tbL9:
             # ── ① 大盘{档}会怎样 ──
@@ -3108,13 +3164,31 @@ try:
                         f"<span style='font-size:11.5px;color:#475569'>·{_tag9x}"
                         f"·{str(((_h9x.get('trade_plan') or {}).get('short') or {}).get('in') or '')[:40]}</span></div>"
                         for _h9x, _p9x, _tag9x in _buy9n[:6]]
+            # 【V88·准备买 2026-07-25 用户抓"没有推荐"】"现在可买0只"≠没任务——自选池里
+            # 挂着触发价的票就是"准备买"名单(到价即动,提前启动)。源=自选决策entry_plan,
+            # 挂entry_green台账(积累中=有发言权),不受黑马战绩连坐。
+            _prep9n = sorted([r for r in (_idc9n_pre := (_nwj9("intraday_decisions.json").get("rows") or []))
+                              if str((r.get("entry_plan") or {}).get("mode") or "")
+                              in ("现价可进", "回踩到位", "突破确认", "双路径待触发")],
+                             key=lambda r: -(r.get("p_up") or 0))
+            _prep_rows9 = ["<div style='font-size:12.5px'>"
+                           f"{_nw_link9(_r9p.get('name'), _r9p.get('code'))}"
+                           f"<b style='color:#dc2626'>{int(_r9p.get('p_up') or 0)}%</b>"
+                           f"<span style='font-size:11.5px;color:#475569'>·{(_r9p.get('entry_plan') or {}).get('mode')}"
+                           f"·{str((_r9p.get('entry_plan') or {}).get('short_text') or '')[2:60]}</span></div>"
+                           for _r9p in _prep9n[:5]]
             st.markdown(f"<b style='font-size:13px'>🐉 ④ {_tb_tier9}买什么</b>"
                         f"<span style='font-size:11px;color:#94a3b8'>（{_buy_note9}·"
                         f"{'等' + str(len(_buy9n)) + '只' if len(_buy9n) > 6 else str(len(_buy9n)) + '只'}·带买点价）</span>"
                         + ("".join(_rows_c9) if _rows_c9
                            else ("<div style='font-size:12.5px;color:#94a3b8'>🔇黑马池实盘<50%已降级研究参考——"
                                  "点名暂停,完整名单在🐴黑马雷达模块(战绩回升自动恢复)</div>" if _dh_gate9n else
-                                 "<div style='font-size:12.5px;color:#94a3b8'>本档暂无达标——空仓等待也是决策,盯③埋伏名单转绿灯</div>")),
+                                 "<div style='font-size:12.5px;color:#94a3b8'>现在可进0只——空仓等待也是决策,下面准备买名单到价即动</div>"))
+                        + (f"<div style='font-size:12px;margin-top:3px'><b style='color:#b45309'>🎯 准备买·到价即动"
+                           f"({len(_prep9n)}只·自选池触发单·实盘台账积累中)</b></div>" + "".join(_prep_rows9)
+                           if _prep_rows9 else
+                           "<div style='font-size:12px;color:#94a3b8;margin-top:3px'>🎯准备买:自选池暂无挂触发价的票——"
+                           "原因:多数处'不进'档(周期下行或赔率不足),等③埋伏转强或大盘概率回55%+</div>"),
                         unsafe_allow_html=True)
             # ── ⑤ {档}卖/持仓处理 ──
             _idc9n = _nwj9("intraday_decisions.json")
@@ -3162,6 +3236,14 @@ try:
                         _seen_ev9.add(_h9n.get("name"))
                         _ev9n.append(f"📊{_nw_link9(_h9n.get('name'), _h9n.get('code'))}"
                                      f"财报{_s9s.split('财报')[1][:5]}")
+            # 【V88·宏观日历 2026-07-25】FOMC/非农/巨头+池内财报置顶——"下周市场在干什么"的骨架
+            try:
+                for _e9m in reversed(_evs9i if "_evs9i" in dir() else []):
+                    _ev9n.insert(0, f"<b style='color:#7c2d12'>🏦{_e9m['date'][5:]}(周{_e9m['dow']})"
+                                    f"{_e9m['event']}</b><span style='font-size:11px;color:#64748b'>"
+                                    f"·{_e9m['note'][:22]}</span>")
+            except Exception:
+                pass
             _ann9n = _nwj9("announcements.json")
             for _cb9n in (_ann9n.get("cb_calendar") or [])[:3]:
                 # 转债可点:链到正股深度分析(转债价值锚=正股;stock_code字段来自东财转债日历)
