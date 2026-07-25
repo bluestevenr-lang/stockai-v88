@@ -429,6 +429,10 @@ if _nav == "🧭 导航":
         # 【V88·今日确认买单·云端 2026-07-25 用户定纲"要清晰的告知和确认该买了"】
         # pub源=五行业代表+黑马绿灯(受发言权闸);自选/持仓池确认单在桌面/飞书完整版。
         try:
+            from datetime import datetime as _dtcb9, timedelta as _tdcb9
+            _ntc9 = _dtcb9.now().weekday() >= 5
+            _dayc9 = (f"下一交易日(周一{(_dtcb9.now() + _tdcb9(days=7 - _dtcb9.now().weekday())).strftime('%m-%d')})"
+                      if _ntc9 else "今日")
             _cbc_rows9 = []
             for _sv9b in (_pubj9("sector_reps.json").get("sectors") or []):
                 _pk9b = _sv9b.get("pick") or {}
@@ -442,11 +446,12 @@ if _nav == "🧭 导航":
             if _cbc_rows9:
                 st.markdown("<div style='background:#fef2f2;border:2px solid #dc2626;border-radius:10px;"
                             "padding:.4rem .7rem;margin:.3rem 0;font-size:13.5px'>"
-                            "<b style='color:#dc2626'>🔔 今日确认买单(公开源)</b>"
-                            "<span style='font-size:11px;color:#94a3b8'>·自选/持仓池确认单见桌面/飞书</span><br>"
+                            + f"<b style='color:#dc2626'>🔔 {_dayc9}确认买单(公开源)</b>"
+                            + "<span style='font-size:11px;color:#94a3b8'>·自选/持仓池确认单见桌面/飞书"
+                            + ("·休市:周一开盘复核价后执行" if _ntc9 else "") + "</span><br>"
                             + "<br>".join(_cbc_rows9) + "</div>", unsafe_allow_html=True)
             else:
-                st.caption("🔕 今日无确认买单(公开源)——现金也是仓位;自选池确认单见桌面/飞书")
+                st.caption(f"🔕 {_dayc9}无确认买单(公开源)——现金也是仓位;自选池确认单见桌面/飞书")
         except Exception:
             pass
         # 【V88·七档 2026-07-25 用户定纲】与桌面同源:去明日档,加本季度/下季度(16/32周)
