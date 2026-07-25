@@ -3167,7 +3167,8 @@ try:
             # 【V88·准备买 2026-07-25 用户抓"没有推荐"】"现在可买0只"≠没任务——自选池里
             # 挂着触发价的票就是"准备买"名单(到价即动,提前启动)。源=自选决策entry_plan,
             # 挂entry_green台账(积累中=有发言权),不受黑马战绩连坐。
-            _prep9n = sorted([r for r in (_idc9n_pre := (_nwj9("intraday_decisions.json").get("rows") or []))
+            _idc9n_pre = (_nwj9("intraday_decisions.json").get("rows") or [])
+            _prep9n = sorted([r for r in _idc9n_pre
                               if str((r.get("entry_plan") or {}).get("mode") or "")
                               in ("现价可进", "回踩到位", "突破确认", "双路径待触发")],
                              key=lambda r: -(r.get("p_up") or 0))
