@@ -440,6 +440,22 @@ if _nav == "🧭 导航":
             _cf9c = _TBC9[_tt9c]
             _dh9c2 = _pubj9("darkhorse.json")
             _pt9c2 = _pubj9("phase_turn_full.json")
+            # 【V88·明日作战预案·云端脱敏版 2026-07-25】今日/明日档展示if-then剧本(pub版无持仓行)
+            try:
+                _tpc9 = _pubj9("tomorrow_plan_pub.json")
+                _tpfd9 = str(_tpc9.get("for_date") or "")
+                if (_tpc9.get("script") and _tt9c in ("今日", "明日") and _tpfd9 and
+                        (_tpfd9 >= _dtc9.now().strftime("%Y-%m-%d") if _tt9c == "明日"
+                         else _tpfd9 == _dtc9.now().strftime("%Y-%m-%d"))):
+                    _tph9 = str(_tpc9["script"])
+                    for _sc9, _ic9 in (("## 大盘剧本", "🎬 大盘剧本"), ("## 买", "🐉 买"),
+                                       ("## 卖·防", "⚔️ 卖·防"), ("## 准备", "🕐 准备")):
+                        _tph9 = _tph9.replace(_sc9, f"**{_ic9}**")
+                    st.markdown(f"🎬 **{_tpfd9} 作战预案**（前一晚if-then剧本·持仓行已脱敏,"
+                                f"完整版在桌面/飞书·{_tpc9.get('generated_at', '')}）")
+                    st.markdown(_tph9)
+            except Exception:
+                pass
             _cL9, _cR9 = st.columns(2)
             with _cL9:
                 _ra9 = []
@@ -511,8 +527,14 @@ if _nav == "🧭 导航":
                         return float((((_h.get("facts") or {}).get("horizons") or {}).get(_hz) or {}).get("rule_score"))
                     except (TypeError, ValueError):
                         return None
+                # 【V88·发言权规则 2026-07-25 用户批准】黑马实盘<50%(n≥5)→买名单撤出第一屏
+                try:
+                    _dv9c = ((_pubj9("success_rates.json").get("types") or {}).get("darkhorse") or {})
+                    _dh_gate9c = int(_dv9c.get("n") or 0) >= 5 and (_dv9c.get("rate") or 100) < 50
+                except Exception:
+                    _dh_gate9c = False
                 _by9c = []
-                for _h9c2 in (_dh9c2.get("horses") or []):
+                for _h9c2 in ([] if _dh_gate9c else (_dh9c2.get("horses") or [])):
                     _md9c = str(((_h9c2.get("trade_plan") or {}).get("short") or {}).get("mode") or "")
                     if _cf9c["buy"] == "green" and _md9c in ("现价可进", "回踩到位", "突破确认"):
                         _by9c.append((_h9c2, int(_h9c2.get("p_up") or 0), _md9c))
@@ -532,7 +554,9 @@ if _nav == "🧭 导航":
                                        f"<span style='font-size:11.5px;color:#475569'>·{_t9x}"
                                        f"·{str(((_h9x.get('trade_plan') or {}).get('short') or {}).get('in') or '')[:36]}</span></div>"
                                        for _h9x, _p9x, _t9x in _by9c[:6]) if _by9c
-                               else "<div style='font-size:12.5px;color:#94a3b8'>本档暂无达标——空仓等待也是决策</div>"),
+                               else ("<div style='font-size:12.5px;color:#94a3b8'>🔇黑马池实盘<50%已降级研究参考"
+                                     "——点名暂停,名单仍在下方黑马模块(战绩回升自动恢复)</div>" if _dh_gate9c else
+                                     "<div style='font-size:12.5px;color:#94a3b8'>本档暂无达标——空仓等待也是决策</div>")),
                             unsafe_allow_html=True)
                 if _tt9c in ("今日", "明日", "本周"):
                     st.markdown("<b style='font-size:13px'>⚔️ ⑤ 卖/持仓要处理</b>"

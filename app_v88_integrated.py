@@ -2820,13 +2820,42 @@ try:
     _bn_rule9 = {"🛡️ 防守日": "逻辑没破的别慌割·破位的别扛·抄底等企稳",
                  "⚔️ 进攻日": "拿住在手的·新进等回踩·别FOMO追高",
                  "⚖️ 中性日": "按既定计划执行·不因单日波动改纪律"}[_bn_tone9]
+    # 【V88·发言权规则 2026-07-25 用户批准】实盘战绩n≥5且<50%的信号源→降级"研究参考",
+    # 不得进第一屏点名(引擎短线34%/黑马40%当前被闸)。反指标hot_dual不受此闸。到期核算翻身自动恢复。
+    def _v88_voice9(_rp9v):
+        try:
+            _t9v = (json.loads((_rp9v / "data" / "success_rates.json").read_text(encoding="utf-8"))
+                    .get("types") or {})
+        except Exception:
+            return {}
+        _o9v = {}
+        for _k9v, _v9v in _t9v.items():
+            if _k9v == "hot_dual":
+                _o9v[_k9v] = True
+                continue
+            _r9v = (_v9v.get("short") or {}) if _k9v == "engine" else _v9v
+            _o9v[_k9v] = not (int(_r9v.get("n") or 0) >= 5 and (_r9v.get("rate") or 100) < 50)
+        return _o9v
+    _bn_voice9 = _v88_voice9(_bn_repo9)
     _bn_go9, _bn_cut9 = [], []
+    _bn_gated9 = not _bn_voice9.get("darkhorse", True)
     try:
-        for _bh9 in (json.loads((_bn_repo9 / "data" / "darkhorse.json").read_text(encoding="utf-8"))
-                     .get("horses") or []):
-            if ((_bh9.get("trade_plan") or {}).get("short") or {}).get("mode") in (
-                    "现价可进", "回踩到位", "突破确认"):
-                _bn_go9.append((_bh9.get("name"), int(_bh9.get("p_up") or 0)))
+        if not _bn_gated9:
+            for _bh9 in (json.loads((_bn_repo9 / "data" / "darkhorse.json").read_text(encoding="utf-8"))
+                         .get("horses") or []):
+                if ((_bh9.get("trade_plan") or {}).get("short") or {}).get("mode") in (
+                        "现价可进", "回踩到位", "突破确认"):
+                    _bn_go9.append((_bh9.get("name"), int(_bh9.get("p_up") or 0)))
+    except Exception:
+        pass
+    try:
+        # 发言权补位:黑马被闸时,进攻点名改用入场窗口候选(择时信号·战绩积累中=有发言权)
+        if _bn_gated9 and not _bn_go9:
+            for _br9e in (json.loads((_bn_repo9 / "data" / "intraday_decisions.json")
+                                     .read_text(encoding="utf-8")).get("rows") or []):
+                if (((_br9e.get("entry_plan") or {}).get("mode") in ("现价可进", "回踩到位", "突破确认"))
+                        and _br9e.get("scope") != "持仓"):
+                    _bn_go9.append((_br9e.get("name"), int(_br9e.get("p_up") or 0)))
     except Exception:
         pass
     try:
@@ -2840,7 +2869,9 @@ try:
     _bn_go9.sort(key=lambda x: -x[1])
     _bn_cut9.sort(key=lambda x: -x[1])
     _bn_go_txt9 = ("、".join(f"{n}{p}%" for n, p in _bn_go9[:2])
-                   + (f" 等{len(_bn_go9)}只" if len(_bn_go9) > 2 else "")) if _bn_go9 else "今日无绿灯(现金也是仓位)"
+                   + (f" 等{len(_bn_go9)}只" if len(_bn_go9) > 2 else "")) if _bn_go9 else (
+        "无高胜率买点(黑马池40%<50%已降级研究参考·现金也是仓位)" if _bn_gated9
+        else "今日无绿灯(现金也是仓位)")
     _bn_cut_txt9 = ("、".join(f"{n}" for n, _ in _bn_cut9[:2])
                     + (f" 等{len(_bn_cut9)}只" if len(_bn_cut9) > 2 else "")) if _bn_cut9 else "无警示"
     _bn_sr_txt9 = ""
@@ -2934,6 +2965,28 @@ try:
         _nw_snap9 = _nwj9("market_snapshot.json")
         _dh9n = _nwj9("darkhorse.json")
         _pt9n = _nwj9("phase_turn_full.json")
+        # 【V88·明日作战预案 2026-07-25 用户批准】前一晚写好的if-then剧本:今日/明日两档
+        # 且日期匹配时展示。买/卖节价格=真实entry_plan/stop确定性拼装,AI只写大盘与准备节。
+        try:
+            _tp9 = _nwj9("tomorrow_plan.json")
+            _tp_fd9 = str(_tp9.get("for_date") or "")
+            _tp_show9 = (_tp9.get("script") and _tb_tier9 in ("今日", "明日") and _tp_fd9 and
+                         (_tp_fd9 >= _dtnw.now().strftime("%Y-%m-%d") if _tb_tier9 == "明日"
+                          else _tp_fd9 == _dtnw.now().strftime("%Y-%m-%d")))
+            if _tp_show9:
+                _tp_html9 = str(_tp9["script"])
+                for _sec9t, _ic9t in (("## 大盘剧本", "🎬 大盘剧本"), ("## 买", "🐉 买"),
+                                      ("## 卖·防", "⚔️ 卖·防"), ("## 准备", "🕐 准备")):
+                    _tp_html9 = _tp_html9.replace(_sec9t, f"**{_ic9t}**")
+                st.markdown(f"<div style='background:#fefce8;border:1px solid #eab308;"
+                            f"border-radius:8px;padding:.4rem .7rem;margin:.2rem 0;font-size:12.5px'>"
+                            f"🎬 <b>{_tp_fd9} 作战预案</b>·前一晚写好的if-then剧本"
+                            f"<span style='color:#94a3b8'>（{_tp9.get('generated_at', '')}"
+                            f"·买卖价格=系统真实数据,AI只组织大盘与准备节）</span></div>",
+                            unsafe_allow_html=True)
+                st.markdown(_tp_html9)
+        except Exception:
+            pass
         _tbL9, _tbR9 = st.columns(2)
         with _tbL9:
             # ── ① 大盘{档}会怎样 ──
@@ -3018,7 +3071,13 @@ try:
                 except (TypeError, ValueError):
                     return None
             _buy9n, _buy_note9 = [], ""
-            for _h9n in (_dh9n.get("horses") or []):
+            # 【V88·发言权规则 2026-07-25 用户批准】黑马实盘<50%(n≥5)→作战板买名单撤点名
+            try:
+                _dv9n = ((_nwj9("success_rates.json").get("types") or {}).get("darkhorse") or {})
+                _dh_gate9n = int(_dv9n.get("n") or 0) >= 5 and (_dv9n.get("rate") or 100) < 50
+            except Exception:
+                _dh_gate9n = False
+            for _h9n in ([] if _dh_gate9n else (_dh9n.get("horses") or [])):
                 _md9n = str(((_h9n.get("trade_plan") or {}).get("short") or {}).get("mode") or "")
                 if _cfg9["buy"] == "green" and _md9n in ("现价可进", "回踩到位", "突破确认"):
                     _buy9n.append((_h9n, int(_h9n.get("p_up") or 0), _md9n))
@@ -3044,7 +3103,9 @@ try:
                         f"<span style='font-size:11px;color:#94a3b8'>（{_buy_note9}·"
                         f"{'等' + str(len(_buy9n)) + '只' if len(_buy9n) > 6 else str(len(_buy9n)) + '只'}·带买点价）</span>"
                         + ("".join(_rows_c9) if _rows_c9
-                           else "<div style='font-size:12.5px;color:#94a3b8'>本档暂无达标——空仓等待也是决策,盯③埋伏名单转绿灯</div>"),
+                           else ("<div style='font-size:12.5px;color:#94a3b8'>🔇黑马池实盘<50%已降级研究参考——"
+                                 "点名暂停,完整名单在🐴黑马雷达模块(战绩回升自动恢复)</div>" if _dh_gate9n else
+                                 "<div style='font-size:12.5px;color:#94a3b8'>本档暂无达标——空仓等待也是决策,盯③埋伏名单转绿灯</div>")),
                         unsafe_allow_html=True)
             # ── ⑤ {档}卖/持仓处理 ──
             _idc9n = _nwj9("intraday_decisions.json")
@@ -13146,9 +13207,12 @@ def _v88_rate_line9(key, label):
     _avg9 = _t9.get("avg")
     if _r9 is None:
         return f"📊 {label}实盘成功率：样本积累中（{_n9}次·<5不报率，防小样本噪音）"
+    # 【V88·发言权规则 2026-07-25 用户批准】<50%(n≥5)→模块降级"研究参考"标注,点名撤出第一屏
+    _demote9 = ("　🔇已降级研究参考(战绩<50%·点名撤出第一屏,到期核算回升自动恢复)"
+                if (_n9 >= 5 and int(_r9) < 50 and key != "hot_dual") else "")
     return (f"📊 {label}实盘成功率 {_r9}%（{_n9}次"
             + (f"·均{_avg9:+.1f}%" if _avg9 is not None else "")
-            + f"·{_t9.get('note', '')}·非规则估计）")
+            + f"·{_t9.get('note', '')}·非规则估计）" + _demote9)
 
 
 def _v88_hot_note9(code):
