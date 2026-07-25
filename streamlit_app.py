@@ -564,7 +564,17 @@ if _nav == "🧭 导航":
                                + "｜".join(_iw9c[:3]) + "</div>" if _iw9c
                                else "<div style='font-size:12px;color:#94a3b8'>本档暂无机构观点材料</div>"),
                             unsafe_allow_html=True)
-            st.caption(f"当前档:{_tt9c}·与桌面同源(pub快照)·默认:交易日=今日,周末=下周·持仓明细守隐私铁律")
+            _tsl9c = []
+            for _lb9t, _sc9t in (("快照", (_snap or {}).get("generated_at")),
+                                 ("轮动", ((_snap or {}).get("rotation_forecast") or {}).get("analysis_time")),
+                                 ("黑马", _dh9c2.get("generated_at")),
+                                 ("全池相位", _pt9c2.get("generated_at"))):
+                if _sc9t:
+                    _tsl9c.append(f"{_lb9t}{str(_sc9t)[5:16]}")
+            st.caption("🕒 分析时间: " + " · ".join(_tsl9c)
+                       + f" ｜ 当前档:{_tt9c}·与桌面同源(pub快照)"
+                       " ｜ 更新节奏:交易日07/13/19点三班·周末每日09:00一趟(各档同源同步·预算内)"
+                       " ｜ 持仓明细守隐私铁律")
     except Exception:
         pass
     _rep = _report_text if _report_sync_ok else ""

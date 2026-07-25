@@ -2895,8 +2895,10 @@ try:
             return {}
 
     def _nw_link9(_nm9x, _cd9x):
-        return (f"<a href='?q={_cd9x}&focus=deep#v88-deep-analysis' target='_self' "
-                f"style='color:#173b68;font-weight:700;text-decoration:none'>{_nm9x}</a>")
+        # 【2026-07-25 用户抓"只有A股能点"】与全站 _stk_link 完全同款(新标签+下划线)——
+        # 原 target=_self 当前页重载在部分场景吞掉深链参数,美港股点了没反应。
+        return (f'<a href="?q={_cd9x}&focus=deep#v88-deep-analysis" target="_blank" rel="noopener" '
+                f'style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{_nm9x}</a>')
     # 档位→最优口径: mkt_hz=大盘统一引擎档 / sec_hz=板块轮动点 / buy=买名单口径 / evt=机构简报档
     _TB_CFG9 = {
         "今日":  {"mkt_hz": None,   "sec_hz": None,  "buy": "green",  "evt": "明天", "days": (0, 0)},
@@ -3031,23 +3033,22 @@ try:
             _idc9n = _nwj9("intraday_decisions.json")
             if _tb_tier9 in ("今日", "明日", "本周"):
                 _cut9n = [(r.get("name"), int(r.get("p_down") or 0),
-                           str(r.get("reason") or r.get("action") or "")[:14])
+                           str(r.get("reason") or r.get("action") or "")[:14], r.get("code"))
                           for r in (_idc9n.get("rows") or [])
                           if r.get("scope") == "持仓" and any(k in str(r.get("action", ""))
                                                              for k in ("减", "退", "清", "止损"))]
                 _cut_note9 = "盘中落盘减仓警示·卖点价在持仓卡💰行"
             else:
-                _kw9c = "月" if _tb_tier9 in ("本月", "下月") else "周"
                 _cut9n = [(x.get("name"), int(float(x.get("strength") or 0)),
-                           f"{x.get('phase')}·{x.get('confidence')}置信")
+                           f"{x.get('phase')}·{x.get('confidence')}置信", x.get("code"))
                           for x in (_pt9n.get("stocks") or [])
                           if x.get("direction") == "down" and x.get("confidence") in ("高", "中")]
                 _cut_note9 = "全池相位转弱(派发→退潮)·中长线躲避参考"
             _cut9n.sort(key=lambda x: -x[1])
-            _rows_d9 = [f"<div style='font-size:12.5px'>{_n9n}"
+            _rows_d9 = [f"<div style='font-size:12.5px'>{_nw_link9(_n9n, _c9n4) if _c9n4 else _n9n}"
                         f"<b style='color:#16a34a'>{_p9n}{'%' if _tb_tier9 in ('今日', '明日', '本周') else '强度'}</b>"
                         f"<span style='font-size:11.5px;color:#64748b'>·{_w9n2}</span></div>"
-                        for _n9n, _p9n, _w9n2 in _cut9n[:6]]
+                        for _n9n, _p9n, _w9n2, _c9n4 in _cut9n[:6]]
             st.markdown(f"<b style='font-size:13px'>⚔️ ⑤ {_tb_tier9}卖/持仓要处理</b>"
                         f"<span style='font-size:11px;color:#94a3b8'>（{_cut_note9}·"
                         f"{'等' + str(len(_cut9n)) + '只' if len(_cut9n) > 6 else str(len(_cut9n)) + '只'}）</span>"
@@ -3072,11 +3073,16 @@ try:
                         except Exception:
                             pass
                         _seen_ev9.add(_h9n.get("name"))
-                        _ev9n.append(f"📊{_h9n.get('name')}财报{_s9s.split('财报')[1][:5]}")
+                        _ev9n.append(f"📊{_nw_link9(_h9n.get('name'), _h9n.get('code'))}"
+                                     f"财报{_s9s.split('财报')[1][:5]}")
             _ann9n = _nwj9("announcements.json")
             for _cb9n in (_ann9n.get("cb_calendar") or [])[:3]:
-                _ev9n.append(f"🆕转债{_cb9n.get('bond')}({str(_cb9n.get('apply_date'))[5:]}申购"
-                             + ("⭐池内" if _cb9n.get("in_pool") else "") + ")")
+                # 转债可点:链到正股深度分析(转债价值锚=正股;stock_code字段来自东财转债日历)
+                _bond_nm9 = f"转债{_cb9n.get('bond')}"
+                _bond_html9 = (_nw_link9(_bond_nm9, _cb9n.get("stock_code"))
+                               if _cb9n.get("stock_code") else _bond_nm9)
+                _ev9n.append(f"🆕{_bond_html9}({str(_cb9n.get('apply_date'))[5:]}申购"
+                             + ("⭐池内" if _cb9n.get("in_pool") else "") + "·点看正股)")
             _ai9n = (_nwj9("institutional_signals.json").get("ai_brief") or {})
             _inst_wk9 = []
             for _m9n in ("A股", "港股", "美股"):
@@ -3093,8 +3099,20 @@ try:
                         + (f"<div style='font-size:12px;color:#7c3aed'>🏛️机构{_cfg9['evt']}观点:"
                            + "｜".join(_inst_wk9[:3]) + "</div>" if _inst_wk9 else ""),
                         unsafe_allow_html=True)
-        st.caption(f"当前档:{_tb_tier9} · 每档口径:大盘={_cfg9['mkt_hz'] or '当日实况'}·板块={_cfg9['sec_hz'] or '当日涨跌'}"
-                   f"·买={_buy_note9} · 全为已有引擎聚合零新口径 · 默认档:交易日=今日,周末=下周")
+        # 【V88·分析时间+节奏显性化 2026-07-25 用户点单】各数据源时间必须可见;
+        # 更新节奏=交易日07/13/19三班流水线(盘中三次)+桌面三时段相位扫描,周末每日09:00一趟——
+        # 全跑公共仓Actions(免费)+DeepSeek既有节流,零新增预算。
+        _ts_line9 = []
+        for _lbl9t, _src9t in (("快照", _nw_snap9.get("generated_at")),
+                               ("轮动", (_nw_snap9.get("rotation_forecast") or {}).get("analysis_time")),
+                               ("黑马", _dh9n.get("generated_at")),
+                               ("全池相位", _pt9n.get("generated_at"))):
+            if _src9t:
+                _ts_line9.append(f"{_lbl9t}{str(_src9t)[5:16]}")
+        st.caption("🕒 分析时间: " + " · ".join(_ts_line9)
+                   + f" ｜ 当前档:{_tb_tier9}(大盘={_cfg9['mkt_hz'] or '当日实况'}·板块={_cfg9['sec_hz'] or '当日涨跌'}·买={_buy_note9})"
+                   " ｜ 更新节奏:交易日07/13/19点三班+盘中三时段相位扫描·周末每日09:00一趟"
+                   "(下周/本月/下月档同源同步更新·Actions公共仓免费,预算内)")
 except Exception:
     import traceback as _tb9e
     try:
