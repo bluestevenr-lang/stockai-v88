@@ -300,6 +300,12 @@ def entry_timing(full, *, short=50.0, medium=50.0, long_avg=50.0, action="", rr=
         _l_lo = round((ma55 * 0.95) if ma55 > 0 else last * 0.9, 2)
         _l_hi = round(buy_hi or last, 2)
         l_text = f"🏛 长线（16周+）：区间{_l_lo:g}~{_l_hi:g}分批；跌破年线({ma120:g})且20日收不回才退出"
+    elif float(long_avg) >= 55:
+        # 【2026-07-25 苹果案】分数达标却被水位/年线闸拦——必须如实说拦截原因,
+        # 旧文本谎报"方向分未达55"与作战板85分并排=两张嘴打架。
+        _l_why = (f"52周位{pos52:.0f}%偏高,只等深回踩({ma55 * 0.95:g}下方)" if pos52 > 70
+                  else f"价在年线({ma120:g})下,站回再布局")
+        l_text = f"⏳ 长线（16周+）：方向分{long_avg:g}达标,但{_l_why}"
     elif float(long_avg) >= 50:
         l_text = "🏛 长线（16周+）：方向分未达55，先跟踪不建仓"
     else:

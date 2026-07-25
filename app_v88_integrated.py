@@ -3151,7 +3151,10 @@ try:
                         + (f"　<b style='color:#dc2626'>⏰拐点≈{_hz9b}:{'、'.join(_near9n)}</b>" if _near9n else "")
                         + "</div>")
             st.markdown(f"<b style='font-size:13px'>🔄 ② 板块轮转·{_tb_tier9}</b>"
-                        "<span style='font-size:11px;color:#94a3b8'>（热度Top2·红=该档拐点要转向）</span>"
+                        + ("<span style='font-size:11px;color:#b45309'>（轮动引擎最远16周·下季度沿用16周判断,"
+                           "越远置信越低——两档板块行相同是引擎上限,非bug）</span>"
+                           if _tb_tier9 == "下季度" else "")
+                        + "<span style='font-size:11px;color:#94a3b8'>（热度Top2·红=该档拐点要转向）</span>"
                         + "".join(_rows_b9), unsafe_allow_html=True)
             # ── ③ 低位拐点·可注意埋伏(档感知:近档看日~周,远档看周~月) ──
             _hz_kw9 = ("日", "周") if _tb_tier9 in ("今日", "本周", "下周") else ("周", "月")
@@ -3227,11 +3230,34 @@ try:
                     return None
             if _cfg9.get("hz"):
                 _hz9pp = _cfg9["hz"]
-                _tk9p = "mid_text" if _hz9pp in ("4周", "8周") else "long_text"
+                _tk9p = "mid_text" if _hz9pp in ("4周", "8周") else "_hz_detail"
                 _prep9n = sorted([r for r in _idc9n_pre if (_rhz9p(r, _hz9pp) or 0) >= 58],
                                  key=lambda r: -(_rhz9p(r, _hz9pp) or 0))
                 _sk9p = "_hz_" + _hz9pp
                 _prep_lbl9 = f"{_hz9pp}周期分≥58·左侧分批(区间见明细)"
+                # 【V88·季度档明细 2026-07-25 用户抓"本季度和下季度基本一致"】季度两档弃用
+                # 只有一种口径的long_text(还曾与85分打架的谎报文本),改用该档horizons档内数据
+                # 自拼——支撑/压力/期内涨幅/回撤随档不同,两档文本天然分化;并给双档分对照。
+                if _hz9pp in ("16周", "32周"):
+                    _other9q = "32周" if _hz9pp == "16周" else "16周"
+
+                    def _hz_detail9(_r9q):
+                        _h9q = (((_r9q.get("facts") or {}).get("horizons") or {}).get(_hz9pp) or {})
+                        _o9q = _rhz9p(_r9q, _other9q)
+                        _bits9q = [str(_h9q.get("rule_view") or "")]
+                        if _h9q.get("support") and _h9q.get("resistance"):
+                            _bits9q.append(f"支撑{float(_h9q['support']):g}/压力{float(_h9q['resistance']):g}")
+                        if _h9q.get("return_pct") is not None:
+                            _bits9q.append(f"近{_hz9pp}涨{float(_h9q['return_pct']):+.0f}%")
+                        if _h9q.get("drawdown_pct") is not None:
+                            _bits9q.append(f"回撤{float(_h9q['drawdown_pct']):+.1f}%")
+                        if _h9q.get("rule_confidence"):
+                            _bits9q.append(f"置信{_h9q['rule_confidence']}")
+                        if _o9q is not None:
+                            _bits9q.append(f"(对照{_other9q}分{int(_o9q)})")
+                        if _h9q.get("phase_note"):
+                            _bits9q.append(str(_h9q["phase_note"]))
+                        return "·".join(x for x in _bits9q if x)
             else:
                 _prep9n = sorted([r for r in _idc9n_pre
                                   if str((r.get("entry_plan") or {}).get("mode") or "")
@@ -3253,7 +3279,7 @@ try:
                            f"<b style='color:#dc2626'>{int((_r9p.get(_sk9p) if not _sk9p.startswith('_hz_') else _rhz9p(_r9p, _cfg9.get('hz'))) or 0)}{'%' if _sk9p == 'p_up' else '分'}</b>"
                            f"<span style='font-size:11.5px;color:#475569'>"
                            f"{'·' + str((_r9p.get('entry_plan') or {}).get('mode') or '') if _sk9p == 'p_up' else ''}"
-                           f"·{str((_r9p.get('entry_plan') or {}).get(_tk9p) or '')[2:60]}</span>"
+                           f"·{(_hz_detail9(_r9p)[:76] if _tk9p == '_hz_detail' else str((_r9p.get('entry_plan') or {}).get(_tk9p) or '')[2:60])}</span>"
                            f"{_pol9p(_r9p.get('code'))}</div>"
                            for _r9p in _prep9n[:5]]
             st.markdown(f"<b style='font-size:13px'>🐉 ④ {_tb_tier9}买什么</b>"
@@ -3264,7 +3290,16 @@ try:
                                  "点名暂停,完整名单在🐴黑马雷达模块(战绩回升自动恢复)</div>" if _dh_gate9n else
                                  "<div style='font-size:12.5px;color:#94a3b8'>现在可进0只——空仓等待也是决策,下面准备买名单到价即动</div>"))
                         + (f"<div style='font-size:12px;margin-top:3px'><b style='color:#b45309'>🎯 准备买"
-                           f"({len(_prep9n)}只·{_prep_lbl9}·实盘台账积累中)</b></div>" + "".join(_prep_rows9)
+                           f"({len(_prep9n)}只·{_prep_lbl9}·实盘台账积累中)</b>"
+                           + (lambda _ov9q: (f"<span style='font-size:11px;color:#94a3b8'>"
+                                             f"·与{_ov9q[0]}榜重合{_ov9q[1]}/{len(_prep9n)}只——16与32周趋势"
+                                             "一致属长周期常态,差异看各档分数/支撑压力对照</span>")
+                              if _cfg9.get("hz") in ("16周", "32周") and _ov9q[1] else "")(
+                               (("下季度" if _cfg9.get("hz") == "16周" else "本季度"),
+                                len([r for r in _prep9n if (_rhz9p(r, "32周" if _cfg9.get("hz") == "16周"
+                                                            else "16周") or 0) >= 58])
+                                if _cfg9.get("hz") in ("16周", "32周") else 0))
+                           + "</div>" + "".join(_prep_rows9)
                            if _prep_rows9 else
                            "<div style='font-size:12px;color:#94a3b8;margin-top:3px'>🎯准备买:自选池暂无挂触发价的票——"
                            "原因:多数处'不进'档(周期下行或赔率不足),等③埋伏转强或大盘概率回55%+</div>"),
