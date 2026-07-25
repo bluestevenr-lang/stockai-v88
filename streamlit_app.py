@@ -426,6 +426,29 @@ if _nav == "🧭 导航":
                 return json.loads(pub_text(_fn, _PUB_VERSION) or "{}")
             except Exception:
                 return {}
+        # 【V88·今日确认买单·云端 2026-07-25 用户定纲"要清晰的告知和确认该买了"】
+        # pub源=五行业代表+黑马绿灯(受发言权闸);自选/持仓池确认单在桌面/飞书完整版。
+        try:
+            _cbc_rows9 = []
+            for _sv9b in (_pubj9("sector_reps.json").get("sectors") or []):
+                _pk9b = _sv9b.get("pick") or {}
+                _sh9b = _pk9b.get("shallow") or [0, 0]
+                _dist9b = ((_pk9b.get("last", 0) / _sh9b[1] - 1) * 100 if _sh9b[1] else 99)
+                if str(_pk9b.get("mode")) == "现价可进" and _dist9b <= 5:
+                    _cbc_rows9.append(f"✅ <b style='color:#dc2626'>该买:{_pk9b.get('name')}"
+                                      f"({_pk9b.get('sym')})</b> 现{_pk9b.get('last')}"
+                                      f"·2周涨{_pk9b.get('p_up')}%·回踩带{_sh9b[0]}~{_sh9b[1]}"
+                                      f"·失效{_pk9b.get('invalid')}·{_sv9b['sector']}代表")
+            if _cbc_rows9:
+                st.markdown("<div style='background:#fef2f2;border:2px solid #dc2626;border-radius:10px;"
+                            "padding:.4rem .7rem;margin:.3rem 0;font-size:13.5px'>"
+                            "<b style='color:#dc2626'>🔔 今日确认买单(公开源)</b>"
+                            "<span style='font-size:11px;color:#94a3b8'>·自选/持仓池确认单见桌面/飞书</span><br>"
+                            + "<br>".join(_cbc_rows9) + "</div>", unsafe_allow_html=True)
+            else:
+                st.caption("🔕 今日无确认买单(公开源)——现金也是仓位;自选池确认单见桌面/飞书")
+        except Exception:
+            pass
         # 【V88·七档 2026-07-25 用户定纲】与桌面同源:去明日档,加本季度/下季度(16/32周)
         _TBC9 = {
             "今日": {"mkt_hz": None, "sec_hz": None, "buy": "green", "hz": None, "evt": "明天", "days": (0, 1)},

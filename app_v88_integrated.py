@@ -2949,6 +2949,83 @@ def _v88_mkt_gate9x(_repo9x):
     return out
 
 
+# 【V88·今日确认买单 2026-07-25 用户定纲"最需要清晰的告知和确认该买了,V88不够清晰"】
+# 开屏置顶大字:所有有发言权源的"现价可进"信号汇总成明确告知——该买谁/为什么/买区/止损/
+# 概率/裁决仓位;没有确认单=如实说"最近的差什么"(准确认队列),绝不让该买的时刻淹没在小字里。
+try:
+    _cb_repo9 = Path.home() / "Desktop" / "ai-daily-report-v2"
+
+    def _cbj9(_fn):
+        try:
+            return json.loads((_cb_repo9 / "data" / _fn).read_text(encoding="utf-8"))
+        except Exception:
+            return {}
+    _cb_gate9 = _v88_mkt_gate9x(_cb_repo9)
+
+    def _cb_mk9(_cd):
+        _c = str(_cd or "").upper()
+        return ("A股" if _c.endswith((".SS", ".SZ")) else ("港股" if _c.endswith(".HK") else "美股"))
+    _cb_rows9, _cb_near9, _cb_seen9 = [], [], set()
+    for _r9 in (_cbj9("intraday_decisions.json").get("rows") or []):
+        _ep9 = _r9.get("entry_plan") or {}
+        _md9 = str(_ep9.get("mode") or "")
+        _k9 = str(_r9.get("code")).upper().split(".")[0].lstrip("0")
+        if _md9 == "现价可进" and _k9 not in _cb_seen9:
+            _cb_rows9.append(("自选/持仓池", _r9.get("name"), _r9.get("code"), _r9.get("last"),
+                              int(_r9.get("p_up") or 0), round(float(_r9.get("probability_edge") or _r9.get("expected_pct") or 0), 1),
+                              str(_ep9.get("short_text") or "")[2:96]))
+            _cb_seen9.add(_k9)
+        elif _md9 in ("回踩到位", "突破确认", "双路径待触发") and _k9 not in _cb_seen9:
+            _cb_near9.append((_r9.get("name"), _r9.get("code"), _md9,
+                              str(_ep9.get("short_text") or "")[2:80]))
+            _cb_seen9.add(_k9)
+    for _sv9 in (_cbj9("sector_reps.json").get("sectors") or []):
+        _pk9 = _sv9.get("pick") or {}
+        _k9 = str(_pk9.get("sym") or "").upper()
+        if not _pk9 or _k9 in _cb_seen9:
+            continue
+        _dist9 = ((_pk9.get("last", 0) / (_pk9.get("shallow") or [0, 1])[1] - 1) * 100
+                  if (_pk9.get("shallow") or [0, 0])[1] else 99)
+        if str(_pk9.get("mode")) == "现价可进" and _dist9 <= 5:
+            _cb_rows9.append((f"五行业代表·{_sv9['sector']}", _pk9.get("name"), _pk9.get("sym"),
+                              _pk9.get("last"), int(_pk9.get("p_up") or 0), _pk9.get("rr"),
+                              f"回踩带{(_pk9.get('shallow') or ['?', '?'])[0]}~{(_pk9.get('shallow') or ['?', '?'])[1]}"
+                              f"·突破{_pk9.get('breakout')}·失效{_pk9.get('invalid')}·{_sv9.get('why', '')[:40]}"))
+            _cb_seen9.add(_k9)
+    if _cb_rows9:
+        _cb_html9 = []
+        for _src9, _nm9, _cd9, _px9, _pu9, _rr9, _why9 in _cb_rows9[:5]:
+            _g9 = _cb_gate9.get(_cb_mk9(_cd9)) or {}
+            _pol9 = {"weak": " <b style='color:#16a34a'>⏸️弱市裁决:到价也等大盘回中性·只挂单不追</b>",
+                     "hot": " <b style='color:#b45309'>🔶过热裁决:仓位减半只限回踩</b>"}.get(_g9.get("state"), "")
+            _cb_html9.append(
+                f"<div style='font-size:14px;margin:2px 0'>✅ <b style='color:#dc2626;font-size:15px'>该买:"
+                f"<a href='?q={_cd9}&focus=deep#v88-deep-analysis' target='_blank' rel='noopener' "
+                f"style='color:#dc2626;text-decoration:underline'>{_nm9}</a></b>"
+                f"　现{_px9}·2周涨概率<b style='color:#dc2626'>{_pu9}%</b>·赔率/边际{_rr9}"
+                f"<span style='font-size:12px;color:#475569'>　{_why9}</span>{_pol9}"
+                f"<span style='font-size:11px;color:#94a3b8'>　来源:{_src9}·📊入场绿灯台账积累中</span></div>")
+        st.markdown("<div style='background:#fef2f2;border:2px solid #dc2626;border-radius:10px;"
+                    "padding:.5rem .8rem;margin:.3rem 0'>"
+                    "<b style='font-size:14px;color:#dc2626'>🔔 今日确认买单</b>"
+                    "<span style='font-size:11px;color:#94a3b8'>（有发言权源的现价可进信号·明确告知不再藏小字·"
+                    "买区止损见各卡/点名可点）</span>" + "".join(_cb_html9) + "</div>",
+                    unsafe_allow_html=True)
+    else:
+        _nr_txt9 = ("；".join(f"{_n9}({_m9}:{_w9[:46]})" for _n9, _c9, _m9, _w9 in _cb_near9[:3])
+                    if _cb_near9 else "自选池全员未达入场条件")
+        st.markdown("<div style='background:#f8fafc;border-left:4px solid #94a3b8;border-radius:8px;"
+                    "padding:.4rem .7rem;margin:.3rem 0;font-size:13px'>"
+                    "<b>🔕 今日无确认买单</b>——现金也是仓位。"
+                    f"<span style='font-size:12px;color:#475569'>离确认最近:{_nr_txt9}</span>"
+                    "<span style='font-size:11px;color:#94a3b8'>　到价触发那一刻盘中预警会推飞书,不用盯盘</span></div>",
+                    unsafe_allow_html=True)
+except Exception:
+    try:
+        _v88_sentinel9(Path.home() / "Desktop" / "ai-daily-report-v2", "今日确认买单")
+    except Exception:
+        pass
+
 # 【V88·时间作战板 2026-07-25 用户批准"六档一个模块,时间上方选,省版面+每档最优口径"】
 # 今日/明日/本周/下周/本月/下月 六档切换,六问结构复用:大盘/板块轮转/低位埋伏/买/卖/事件。
 # 每档接自己的最优数据口径(见_TB_CFG9),全落盘聚合零新计算;默认档:交易日=今日,周末=下周。
