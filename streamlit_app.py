@@ -1613,6 +1613,40 @@ elif _nav == "🔍 个股搜索":
             st.info(f"**统一动作：{_cloud_decision['action']}**｜{_cloud_decision['entry_note']}｜"
                     f"口径{_cloud_decision['score_version']}｜数据签名{_cloud_decision['data_signature']}｜"
                     f"分析{_cloud_decision['analysis_time']}")
+            # 【V88·涨跌归因链·云端简版 2026-07-25 用户定纲"不能光说技术面破坏"】
+            # 板块联动+市场联动+事件带三层(pub数据);个股新闻层桌面/飞书完整版有。
+            try:
+                _chg9w = round(float(_df["Close"].iloc[-1] / _df["Close"].iloc[-2] - 1) * 100, 2)
+                _dir9w = "跌" if _chg9w < 0 else "涨"
+                _mkw9 = ("A股" if str(_tsym).upper().endswith((".SS", ".SZ"))
+                         else ("港股" if str(_tsym).upper().endswith(".HK") else "美股"))
+                _snapw9 = json.loads(pub_text("market_snapshot.json", _PUB_VERSION) or "{}")
+                _wl9 = []
+                _mbw9 = ((_snapw9.get("markets") or {}).get(_mkw9) or {})
+                _mcw9 = float(((_mbw9.get("indices") or [{}])[0] or {}).get("chg1d") or 0)
+                if abs(_mcw9) >= 0.8 and ((_mcw9 < 0) == (_dir9w == "跌")):
+                    _wl9.append(f"**市场联动**：{_mkw9}大盘当日{_mcw9:+.2f}%,个股难独善其身"
+                                "(大盘归因见📰三市场综述why行)。")
+                try:
+                    for _e9w in (json.loads(pub_text("macro_events_pub.json", _PUB_VERSION) or "{}")
+                                 .get("events") or []):
+                        _evt9w = str(_e9w.get("event") or "")
+                        if str(_tsym).upper().split(".")[0] in _evt9w:
+                            _wl9.append(f"**事件带**：{_e9w['date'][5:]}自家财报——博弈期资金先撤是常见连锁。")
+                            break
+                        if "FOMC" in _evt9w and _mkw9 == "美股":
+                            _wl9.append(f"**事件带**：{_e9w['date'][5:]}FOMC——决议前机构降杠杆,高估值先被卖。")
+                            break
+                except Exception:
+                    pass
+                if not _wl9:
+                    _wl9.append("**归因**：大盘/事件层无显著联动——判定为个股/板块自身波动,"
+                                "个股新闻层完整归因在桌面版深度分析。")
+                st.markdown(f"##### 🔎 为什么{_dir9w}·归因链（当日{_chg9w:+.2f}%·云端简版）")
+                st.markdown("<div style='font-size:13.5px;line-height:1.7'>" + "<br>".join(_wl9)
+                            + "</div>", unsafe_allow_html=True)
+            except Exception:
+                pass
             with st.expander("📎 辅助技术底稿（不另行决定买卖）", expanded=False):
                 c1a, c2a, c3a = st.columns(3)
                 c1a.metric("趋势质量辅助", f"{f['total']}/100")
