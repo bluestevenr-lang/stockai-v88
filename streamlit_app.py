@@ -1054,6 +1054,28 @@ if _nav == "🧭 导航":
         _gate_go9 = [h for h in (_dh_g9.get("horses") or [])
                      if ((h.get("trade_plan") or {}).get("short") or {}).get("mode")
                      in ("现价可进", "回踩到位", "突破确认")]
+        # 【V88·统一裁决·云端 2026-07-25 用户定纲"逻辑和说明要统一"】与桌面同一把尺:
+        # 弱市绿灯⏸️不执行/过热🔶限回踩/中性报领涨引擎——三市场政策一行看清
+        try:
+            _pol9c = []
+            for _mkp9, _bp9 in (json.loads(pub_text("market_snapshot.json", _PUB_VERSION) or "{}")
+                                .get("markets") or {}).items():
+                _pp9 = dict((x[0], x[1]) for x in ((_bp9.get("l3") or {}).get("probs") or [])).get("2周")
+                _tt9 = float((_bp9.get("temperature") or {}).get("temp") or 50)
+                _vd9 = str((_bp9.get("temperature") or {}).get("verdict") or "")
+                if (_pp9 is not None and int(_pp9) <= 45) or any(
+                        k in _vd9 for k in ("转弱", "杀跌", "派发", "偏冷")):
+                    _pol9c.append(f"{_mkp9}⏸️拐点/偏弱·买单暂停执行")
+                elif _pp9 is not None and int(_pp9) >= 55 and _tt9 >= 75:
+                    _pol9c.append(f"{_mkp9}🔶过热·只限回踩不追高")
+                elif _pp9 is not None and int(_pp9) >= 55:
+                    _pol9c.append(f"{_mkp9}✅良性·按纲领执行")
+                else:
+                    _pol9c.append(f"{_mkp9}⚖️中性·轻仓试")
+            if _pol9c:
+                st.caption("🧭 统一裁决(个股服从大盘态): " + "｜".join(_pol9c))
+        except Exception:
+            pass
         # 【V88·双门卡片化 2026-07-19 用户点单"像自选一样卡片化+16周走势+成功率"】
         # 与桌面同口径mini卡:今天锚点(阶段基准+5日动量)+2/4/8/16/32周逐点箭头链+统一战绩总账。
         try:

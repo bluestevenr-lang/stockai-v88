@@ -2911,6 +2911,44 @@ except Exception:
     except Exception:
         pass
 
+# 【V88·个股-大盘统一裁决 2026-07-25 用户定纲"逻辑和说明要统一"】一把尺三态:
+# 偏弱/拐点(p2w≤45或verdict转弱杀跌派发偏冷)→该市场绿灯⏸️暂不执行留档跟踪;
+# 过热分歧(p2w≥55但温度≥75)→🔶只限回踩位不追高仓位减半; 良性/中性→正常(无绿灯时报领涨引擎)。
+# 覆巢之下无完卵:危险市场不再出现"逆势增长"执行建议——与温度verdict同一张嘴。
+def _v88_mkt_gate9x(_repo9x):
+    out = {}
+    try:
+        _mks9x = json.loads((_repo9x / "data" / "market_snapshot.json")
+                            .read_text(encoding="utf-8")).get("markets") or {}
+    except Exception:
+        return out
+    for _mk9x, _b9x in _mks9x.items():
+        try:
+            _p9x = dict((x[0], x[1]) for x in ((_b9x.get("l3") or {}).get("probs") or [])).get("2周")
+            _t9x = (_b9x.get("temperature") or {})
+            _tv9x, _vd9x = float(_t9x.get("temp") or 50), str(_t9x.get("verdict") or "")
+            _weak9x = (_p9x is not None and int(_p9x) <= 45) or any(
+                k in _vd9x for k in ("转弱", "杀跌", "派发", "偏冷"))
+            _hot9x = (_p9x is not None and int(_p9x) >= 55) and _tv9x >= 75
+            _secs9x = sorted([x for x in (_b9x.get("sectors") or []) if isinstance(x, dict)],
+                             key=lambda x: -(x.get("chg1d") or x.get("chg") or 0))[:2]
+            _lead9x = "、".join(f"{x.get('name')}{(x.get('chg1d') or x.get('chg') or 0):+.1f}%"
+                               for x in _secs9x)
+            if _weak9x:
+                _st9x, _po9x = "weak", "⏸️大盘拐点/偏弱·绿灯暂不执行,留档跟踪(回中性激活)"
+            elif _hot9x:
+                _st9x, _po9x = "hot", "🔶大盘过热·只限回踩位不追高·仓位减半"
+            elif _p9x is not None and int(_p9x) >= 55:
+                _st9x, _po9x = "up", "✅大盘良性·按纲领执行"
+            else:
+                _st9x, _po9x = "mid", "⚖️大盘中性·轻仓试·涨靠个股(见领涨引擎)"
+            out[_mk9x] = {"state": _st9x, "policy": _po9x, "p2w": _p9x,
+                          "temp": int(_tv9x), "leaders": _lead9x}
+        except Exception:
+            continue
+    return out
+
+
 # 【V88·时间作战板 2026-07-25 用户批准"六档一个模块,时间上方选,省版面+每档最优口径"】
 # 今日/明日/本周/下周/本月/下月 六档切换,六问结构复用:大盘/板块轮转/低位埋伏/买/卖/事件。
 # 每档接自己的最优数据口径(见_TB_CFG9),全落盘聚合零新计算;默认档:交易日=今日,周末=下周。
@@ -3019,13 +3057,18 @@ try:
                 _t9i = (_b9i.get("temperature") or {})
                 if _t9i.get("position"):
                     _pos9i.append(f"{_m9i}{str(_t9i['position']).split('（')[0]}")
-            _strong9i = [m for m, p in _wk9i if p >= 55]
-            _weak9i = [m for m, p in _wk9i if p <= 45]
+            # 统一裁决(与双门同一把尺 _v88_mkt_gate9x):弱市⏸️/过热🔶/良性✅/中性⚖️
+            _mg9i = _v88_mkt_gate9x(_nw_repo9)
             _task9i = []
-            if _strong9i:
-                _task9i.append(f"<b style='color:#dc2626'>{'/'.join(_strong9i)}偏涨·按仓位口径持有敢接</b>")
-            if _weak9i:
-                _task9i.append(f"<b style='color:#16a34a'>{'/'.join(_weak9i)}偏弱·反弹减仓不追高</b>")
+            _wkm9i = [m for m, g in _mg9i.items() if g.get("state") == "weak"]
+            _hotm9i = [m for m, g in _mg9i.items() if g.get("state") == "hot"]
+            _upm9i = [m for m, g in _mg9i.items() if g.get("state") == "up"]
+            if _upm9i:
+                _task9i.append(f"<b style='color:#dc2626'>✅{'/'.join(_upm9i)}良性·按纲领执行</b>")
+            if _hotm9i:
+                _task9i.append(f"<b style='color:#b45309'>🔶{'/'.join(_hotm9i)}过热·只限回踩不追高·仓位减半</b>")
+            if _wkm9i:
+                _task9i.append(f"<b style='color:#16a34a'>⏸️{'/'.join(_wkm9i)}拐点/偏弱·买单暂停执行·反弹减仓</b>")
             _task9i.append(f"🎯盯{len(_prep9i)}只到价触发单(见④准备买)" if _prep9i
                            else "买侧任务:等③埋伏名单转绿灯")
             if _cutn9i:
@@ -3172,11 +3215,22 @@ try:
                               if str((r.get("entry_plan") or {}).get("mode") or "")
                               in ("现价可进", "回踩到位", "突破确认", "双路径待触发")],
                              key=lambda r: -(r.get("p_up") or 0))
+            # 每票挂所在市场统一裁决标(⏸️弱市触发单=到价也先不执行,等大盘回中性)
+            _mg9p = _v88_mkt_gate9x(_nw_repo9)
+
+            def _pol9p(_cd9p):
+                _c9p = str(_cd9p or "").upper()
+                _mk9p = "A股" if (_c9p.endswith(".SS") or _c9p.endswith(".SZ")) else (
+                    "港股" if _c9p.endswith(".HK") else "美股")
+                _st9p = (_mg9p.get(_mk9p) or {}).get("state")
+                return {"weak": "<span style='font-size:11px;color:#16a34a'>⏸️弱市·到价也等大盘回中性</span>",
+                        "hot": "<span style='font-size:11px;color:#b45309'>🔶只限回踩·仓位减半</span>"}.get(_st9p, "")
             _prep_rows9 = ["<div style='font-size:12.5px'>"
                            f"{_nw_link9(_r9p.get('name'), _r9p.get('code'))}"
                            f"<b style='color:#dc2626'>{int(_r9p.get('p_up') or 0)}%</b>"
                            f"<span style='font-size:11.5px;color:#475569'>·{(_r9p.get('entry_plan') or {}).get('mode')}"
-                           f"·{str((_r9p.get('entry_plan') or {}).get('short_text') or '')[2:60]}</span></div>"
+                           f"·{str((_r9p.get('entry_plan') or {}).get('short_text') or '')[2:60]}</span>"
+                           f"{_pol9p(_r9p.get('code'))}</div>"
                            for _r9p in _prep9n[:5]]
             st.markdown(f"<b style='font-size:13px'>🐉 ④ {_tb_tier9}买什么</b>"
                         f"<span style='font-size:11px;color:#94a3b8'>（{_buy_note9}·"
@@ -14086,40 +14140,40 @@ def _render_today_verdict(_snap, _repo):
                     _go_mk9.setdefault(_gate_mkey9(_h9c), []).append(
                         f"{_stk_link(_h9c.get('name'), _h9c.get('code'))}"
                         + (f"<span style='font-size:12px;color:{_pc9c}'>{_pu9c}%</span>" if _pu9c else ""))
-                # 【V88·个股-大盘一致性 2026-07-25 用户抓"大盘中性/危险与买卖名单背离没解释"】
-                # 每个市场行挂大盘2周概率;概率≤45%的市场绿灯→⚠️逆风(仓位减半);无绿灯的市场
-                # 必给原因(空档铁律)——大盘中性≠个股有买点,买点是个股技术时机,两层各说各话必须点明。
-                _mk_prob9g = {}
-                try:
-                    for _mk9g, _mm9g in (json.loads((_repo / "data" / "market_snapshot.json")
-                                                    .read_text(encoding="utf-8")).get("markets") or {}).items():
-                        _p2w9g = dict((x[0], x[1]) for x in ((_mm9g.get("l3") or {}).get("probs") or [])).get("2周")
-                        if _p2w9g is not None:
-                            _mk_prob9g[{"美股": "🇺🇸美股", "A股": "🇨🇳A股", "港股": "🇭🇰港股"}.get(_mk9g, _mk9g)] = int(_p2w9g)
-                except Exception:
-                    pass
+                # 【V88·统一裁决 2026-07-25 用户定纲"逻辑和说明要统一"】覆巢之下无完卵:
+                # 偏弱/拐点市场的绿灯=⏸️逆势单,只留档跟踪不作执行建议;过热市场🔶限回踩不追高;
+                # 良性/中性市场无绿灯→报领涨引擎(涨是个股涨出来的,说清谁在撑指数)。一把尺=_v88_mkt_gate9x。
+                _mgate9 = _v88_mkt_gate9x(_repo)
+                _MKMAP9g = {"🇺🇸美股": "美股", "🇨🇳A股": "A股", "🇭🇰港股": "港股"}
 
                 def _mk_head9g(_mk9s):
-                    _pb9g = _mk_prob9g.get(_mk9s)
-                    if _pb9g is None:
+                    _g9g = _mgate9.get(_MKMAP9g.get(_mk9s, _mk9s)) or {}
+                    if not _g9g:
                         return f"<b>{_mk9s}</b>"
-                    _wind9g = ("<span style='font-size:11px;color:#b45309'>⚠️大盘逆风·仓位减半</span>"
-                               if _pb9g <= 45 else "")
+                    _pc9g = {"weak": "#16a34a", "hot": "#b45309", "up": "#dc2626", "mid": "#64748b"}[_g9g["state"]]
                     return (f"<b>{_mk9s}</b><span style='font-size:11px;color:#94a3b8'>"
-                            f"(大盘2周{_pb9g}%)</span>{_wind9g}")
-                _go_rows9 = "".join(
-                    f"<div style='font-size:13px;margin-bottom:2px'>{_mk_head9g(_mk9s)}："
-                    + " ".join(_go_mk9[_mk9s]) + "</div>"
-                    for _mk9s in _MKS9 if _go_mk9.get(_mk9s))
-                # 无绿灯的市场也占一行给原因(美股中性却0推荐案):从地狱门统计该市场票况如实说
+                            f"(2周{_g9g.get('p2w', '?')}%·{_g9g.get('temp', '?')}°)</span>"
+                            f"<span style='font-size:11px;color:{_pc9g}'>{_g9g['policy']}</span>")
+                _go_rows9 = ""
                 for _mk9s in _MKS9:
-                    if _go_mk9.get(_mk9s):
-                        continue
-                    _cutn9g = sum(1 for _n9g in _cut if _gate_mkey9(_cut_d.get(_n9g) or {}) == _mk9s)
-                    _go_rows9 += (f"<div style='font-size:12px;color:#94a3b8'>{_mk_head9g(_mk9s)}："
-                                  f"0只绿灯——池内该市场{('多只在地狱门警示中(' + str(_cutn9g) + '只),') if _cutn9g else ''}"
-                                  "无票达技术时机门槛(现价可进/回踩到位/突破确认)。大盘概率是指数层判断,"
-                                  "买点是个股时机——中性大盘照样可以全员无买点</div>")
+                    _items9g = _go_mk9.get(_mk9s)
+                    _g9g = _mgate9.get(_MKMAP9g.get(_mk9s, _mk9s)) or {}
+                    if _items9g:
+                        # 偏弱市场绿灯整行降灰=留档不执行;其余正常
+                        _dim9g = _g9g.get("state") == "weak"
+                        _go_rows9 += (f"<div style='font-size:13px;margin-bottom:2px;"
+                                      f"{'opacity:.55' if _dim9g else ''}'>{_mk_head9g(_mk9s)}："
+                                      + " ".join(_items9g)
+                                      + ("<span style='font-size:11px;color:#64748b'>（逆势单·不执行,"
+                                         "大盘回中性自动转正式绿灯）</span>" if _dim9g else "") + "</div>")
+                    else:
+                        _cutn9g = sum(1 for _n9g in _cut if _gate_mkey9(_cut_d.get(_n9g) or {}) == _mk9s)
+                        _lead9g = _g9g.get("leaders")
+                        _go_rows9 += (f"<div style='font-size:12px;color:#94a3b8'>{_mk_head9g(_mk9s)}："
+                                      f"0只绿灯" + (f"·{_cutn9g}只在地狱门警示" if _cutn9g else "")
+                                      + (f"——与大盘态一致(弱市无买点=系统统一口径)" if _g9g.get("state") == "weak"
+                                         else (f"——撑指数的领涨引擎:{_lead9g};池内无票达买点,"
+                                               "可在③埋伏/全行业雷达找对应板块低位票" if _lead9g else "")) + "</div>")
                 st.markdown(_go_rows9
                             + "<div style='font-size:12px;color:#94a3b8'>数字=1-2周涨概率·触线/热议等细节见下方卡片细看；仓位按纲领别越线</div>",
                             unsafe_allow_html=True)
