@@ -2897,7 +2897,8 @@ try:
     st.markdown(
         f"<div style='background:linear-gradient(90deg,{_bn_tc9}11,transparent);border:1px solid {_bn_tc9}44;"
         f"border-left:5px solid {_bn_tc9};border-radius:10px;padding:.5rem .8rem;margin-bottom:.4rem'>"
-        f"<div style='font-size:15px;font-weight:800;color:{_bn_tc9}'>📣 今日V88 · {_bn_tone9}"
+        f"<div style='font-size:15px;font-weight:800;color:{_bn_tc9}'>📣 "
+        f"{'周末V88·下一交易日展望(按周五收盘)' if __import__('datetime').datetime.now().weekday() >= 5 else '今日V88'} · {_bn_tone9}"
         f"<span style='font-size:12.5px;font-weight:400;color:#475569'>　{'｜'.join(_bn_cells9)}"
         f"　📏{_bn_rule9}</span></div>"
         f"<div style='font-size:13px;margin-top:2px'>🐉 <b style='color:#dc2626'>进攻</b>:{_bn_go_txt9}"
@@ -2915,6 +2916,16 @@ except Exception:
 # 偏弱/拐点(p2w≤45或verdict转弱杀跌派发偏冷)→该市场绿灯⏸️暂不执行留档跟踪;
 # 过热分歧(p2w≥55但温度≥75)→🔶只限回踩位不追高仓位减半; 良性/中性→正常(无绿灯时报领涨引擎)。
 # 覆巢之下无完卵:危险市场不再出现"逆势增长"执行建议——与温度verdict同一张嘴。
+def _v88_nontrade9x():
+    """非交易日判定(周六日;按日历判——v88-trading-day定纲)。返回 (是否休市, 下一交易日人话)。"""
+    from datetime import datetime as _dt9nt, timedelta as _td9nt
+    _now9nt = _dt9nt.now()
+    if _now9nt.weekday() < 5:
+        return False, "今日"
+    _nx9nt = _now9nt + _td9nt(days=(7 - _now9nt.weekday()))
+    return True, f"下一交易日(周一{_nx9nt.strftime('%m-%d')})"
+
+
 def _v88_mkt_gate9x(_repo9x):
     out = {}
     try:
@@ -2961,6 +2972,7 @@ try:
         except Exception:
             return {}
     _cb_gate9 = _v88_mkt_gate9x(_cb_repo9)
+    _cb_nt9, _cb_day9 = _v88_nontrade9x()
 
     def _cb_mk9(_cd):
         _c = str(_cd or "").upper()
@@ -2999,7 +3011,7 @@ try:
             _pol9 = {"weak": " <b style='color:#16a34a'>⏸️弱市裁决:到价也等大盘回中性·只挂单不追</b>",
                      "hot": " <b style='color:#b45309'>🔶过热裁决:仓位减半只限回踩</b>"}.get(_g9.get("state"), "")
             _cb_html9.append(
-                f"<div style='font-size:14px;margin:2px 0'>✅ <b style='color:#dc2626;font-size:15px'>该买:"
+                f"<div style='font-size:14px;margin:2px 0'>✅ <b style='color:#dc2626;font-size:15px'>{'周一' if _cb_nt9 else ''}该买:"
                 f"<a href='?q={_cd9}&focus=deep#v88-deep-analysis' target='_blank' rel='noopener' "
                 f"style='color:#dc2626;text-decoration:underline'>{_nm9}</a></b>"
                 f"　现{_px9}·2周涨概率<b style='color:#dc2626'>{_pu9}%</b>·赔率/边际{_rr9}"
@@ -3007,16 +3019,19 @@ try:
                 f"<span style='font-size:11px;color:#94a3b8'>　来源:{_src9}·📊入场绿灯台账积累中</span></div>")
         st.markdown("<div style='background:#fef2f2;border:2px solid #dc2626;border-radius:10px;"
                     "padding:.5rem .8rem;margin:.3rem 0'>"
-                    "<b style='font-size:14px;color:#dc2626'>🔔 今日确认买单</b>"
+                    f"<b style='font-size:14px;color:#dc2626'>🔔 {_cb_day9}确认买单</b>"
                     "<span style='font-size:11px;color:#94a3b8'>（有发言权源的现价可进信号·明确告知不再藏小字·"
-                    "买区止损见各卡/点名可点）</span>" + "".join(_cb_html9) + "</div>",
+                    "买区止损见各卡/点名可点）</span>"
+                    + ("<div style='font-size:12px;color:#b45309'>🗓 今天休市——下述为周一开盘的预挂单计划,"
+                       "开盘价若跳出买区先复核再执行,文中'今日/现价'均指周五收盘口径</div>" if _cb_nt9 else "")
+                    + "".join(_cb_html9) + "</div>",
                     unsafe_allow_html=True)
     else:
         _nr_txt9 = ("；".join(f"{_n9}({_m9}:{_w9[:46]})" for _n9, _c9, _m9, _w9 in _cb_near9[:3])
                     if _cb_near9 else "自选池全员未达入场条件")
         st.markdown("<div style='background:#f8fafc;border-left:4px solid #94a3b8;border-radius:8px;"
                     "padding:.4rem .7rem;margin:.3rem 0;font-size:13px'>"
-                    "<b>🔕 今日无确认买单</b>——现金也是仓位。"
+                    f"<b>🔕 {_cb_day9}无确认买单</b>——现金也是仓位。"
                     f"<span style='font-size:12px;color:#475569'>离确认最近:{_nr_txt9}</span>"
                     "<span style='font-size:11px;color:#94a3b8'>　到价触发那一刻盘中预警会推飞书,不用盯盘</span></div>",
                     unsafe_allow_html=True)
@@ -14039,7 +14054,7 @@ def _render_today_verdict(_snap, _repo):
              f"<span style='font-size:12px;font-weight:400;color:#94a3b8'>　只看这一张卡：大盘怎么看→"
              f"持仓怎么办→现在能买什么，每条都带为什么</span></div>"]
     # 【V88·模块合并 2026-07-25 用户点单"今日核心/今日综述内容重复,综合简化成一个"】
-    # 原「①大盘怎么看」三行(温度仓位/阶段结论/转向风险)已全量并入「📰三市场今日综述」——
+    # 原「①大盘怎么看」三行(温度仓位/阶段结论/转向风险)已全量并入「📰三市场综述(交易日=今日;休市=上一交易日收盘+下一交易日展望)」——
     # 一处看全不重复;此处只留一行指路(合并非删除,守"不做减法"总纲)。
     _html.append("<div style='font-size:12px;color:#94a3b8;margin-bottom:3px'>"
                  "🧭 大盘怎么看(涨跌/温度仓位/阶段/为什么/四档概率)→已合并至上方「📰 三市场今日综述」一处看全</div>")
