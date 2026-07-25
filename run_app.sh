@@ -41,6 +41,6 @@ cd "${PROJECT_DIR}" || { echo "❌ 无法进入项目目录"; exit 1; }
 
 "${PYTHON_BIN}" -m streamlit run app_v88_integrated.py \
     --server.port 8501 \
-    --server.address 0.0.0.0 \
+    --server.address 127.0.0.1 \
     --server.headless false \
     --browser.gatherUsageStats false

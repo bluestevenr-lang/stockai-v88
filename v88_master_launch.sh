@@ -38,11 +38,11 @@ ARCH_PREFIX=""
 
 nohup $ARCH_PREFIX "$PYTHON_BIN" \
     -m streamlit run app_v88_integrated.py \
-    --server.address 0.0.0.0 \
+    --server.address 127.0.0.1 \
     --server.headless true \
     --server.port 8501 \
-    --server.enableCORS false \
-    --server.enableXsrfProtection false \
+    --server.enableCORS true \
+    --server.enableXsrfProtection true \
     --browser.gatherUsageStats false \
     > /tmp/v88_streamlit.log 2>&1 &
 
