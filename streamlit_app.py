@@ -415,6 +415,158 @@ if _nav == "🧭 导航":
             "</div>", unsafe_allow_html=True)
     except Exception:
         pass
+    # 【V88·时间作战板·云端版 2026-07-25 用户"全系统更新"】与桌面同款六档六问,全读pub;
+    # ⑤近档持仓警示属私域(无token如实说明),远档=全池相位转弱公开可显。
+    try:
+        from datetime import datetime as _dtc9, timedelta as _tdc9
+        _is_we9c = _dtc9.now().weekday() >= 5
+
+        def _pubj9(_fn):
+            try:
+                return json.loads(pub_text(_fn, _PUB_VERSION) or "{}")
+            except Exception:
+                return {}
+        _TBC9 = {
+            "今日": {"mkt_hz": None, "sec_hz": None, "buy": "green", "evt": "明天", "days": (0, 0)},
+            "明日": {"mkt_hz": "明日", "sec_hz": "2周", "buy": "trigger", "evt": "明天", "days": (0, 1)},
+            "本周": {"mkt_hz": "2周", "sec_hz": "2周", "buy": "green+", "evt": "本周", "days": (0, 7)},
+            "下周": {"mkt_hz": "4周", "sec_hz": "5周", "buy": "w4", "evt": "下周", "days": (7, 14)},
+            "本月": {"mkt_hz": "4周", "sec_hz": "8周", "buy": "w4", "evt": "本月及下月", "days": (0, 30)},
+            "下月": {"mkt_hz": "8周", "sec_hz": "16周", "buy": "w8", "evt": "本月及下月", "days": (30, 60)},
+        }
+        with st.expander("⏱ 时间作战板 · 今日→下月六档切换（与桌面同源·一屏六问）", expanded=True):
+            _tt9c = st.radio("时间档", list(_TBC9.keys()), index=(3 if _is_we9c else 0),
+                             horizontal=True, key="tb_tier9c", label_visibility="collapsed")
+            _cf9c = _TBC9[_tt9c]
+            _dh9c2 = _pubj9("darkhorse.json")
+            _pt9c2 = _pubj9("phase_turn_full.json")
+            _cL9, _cR9 = st.columns(2)
+            with _cL9:
+                _ra9 = []
+                for _m9c in ("美股", "A股", "港股"):
+                    _b9c = ((_snap or {}).get("markets") or {}).get(_m9c) or {}
+                    _l9c2 = dict((x[0], x[1]) for x in ((_b9c.get("l3") or {}).get("probs") or []))
+                    _t9c2 = _b9c.get("temperature") or {}
+                    _cg9c2 = float(((_b9c.get("indices") or [{}])[0] or {}).get("chg1d") or 0)
+                    if _cf9c["mkt_hz"] is None:
+                        _cc9 = "#dc2626" if _cg9c2 > 0.05 else ("#16a34a" if _cg9c2 < -0.05 else "#64748b")
+                        _core9 = (f"今日<b style='color:{_cc9}'>{_cg9c2:+.2f}%</b>·温度{_t9c2.get('temp', '?')}°"
+                                  f"→仓位{str(_t9c2.get('position', '?')).split('（')[0]}")
+                    else:
+                        if _cf9c["mkt_hz"] == "明日":
+                            _pv9c = int(round(max(25, min(75, 50 + 2.2 * _cg9c2
+                                                          + 0.15 * (float(_t9c2.get('temp') or 50) - 50)))))
+                            _tg9c = "(动量+温度估计·低置信)"
+                        else:
+                            _px9c = _l9c2.get(_cf9c["mkt_hz"])
+                            if _px9c is None:
+                                continue
+                            _pv9c, _tg9c = int(_px9c), f"({_cf9c['mkt_hz']}档)"
+                        _pc9c3 = "#dc2626" if _pv9c >= 55 else ("#16a34a" if _pv9c <= 45 else "#64748b")
+                        _w9c = ("偏涨·回踩敢接" if _pv9c >= 55 else
+                                ("偏弱·反弹先减不追" if _pv9c <= 45 else "震荡·区间对待"))
+                        _core9 = (f"{_tt9c}上涨概率<b style='color:{_pc9c3}'>{_pv9c}%</b>→{_w9c}"
+                                  f"<span style='font-size:11px;color:#94a3b8'>{_tg9c}</span>")
+                    _ra9.append(f"<div style='font-size:13px'><b>{_m9c}</b> {_core9}</div>")
+                st.markdown(f"<b style='font-size:13px'>🧭 ① 大盘·{_tt9c}</b>" + "".join(_ra9),
+                            unsafe_allow_html=True)
+                _rb9 = []
+                for _m9c in ("美股", "A股", "港股"):
+                    _tl9c = ((_snap or {}).get("rotation_forecast") or {}).get("trajectories", {}).get(_m9c) or []
+                    if _cf9c["sec_hz"] is None:
+                        _sc9c = ((_snap or {}).get("markets") or {}).get(_m9c, {}).get("sectors") or []
+                        if _sc9c:
+                            _u9c = sorted(_sc9c, key=lambda s: -(s.get("chg1d") or 0))[:2]
+                            _rb9.append(f"<div style='font-size:12.5px'><b>{_m9c}</b> 领涨:"
+                                        + "、".join(f"{s['name']}{(s.get('chg1d') or 0):+.1f}%" for s in _u9c)
+                                        + "</div>")
+                        continue
+                    _hz9c = _cf9c["sec_hz"]
+                    _tp9c = sorted(_tl9c, key=lambda t: -((t.get("points") or {}).get(_hz9c) or {}).get("score", 0))[:2]
+                    _nr9c = [t.get("name") for t in _tl9c
+                             if str((t.get("turning") or {}).get("horizon")) == _hz9c]
+                    if _tp9c:
+                        _rb9.append(f"<div style='font-size:12.5px'><b>{_m9c}</b> {_hz9c}最强:"
+                                    + "、".join(f"{t.get('name')}({int(((t.get('points') or {}).get(_hz9c) or {}).get('score', 0))})"
+                                                for t in _tp9c)
+                                    + (f"　<b style='color:#dc2626'>⏰拐点:{'、'.join(_nr9c)}</b>" if _nr9c else "")
+                                    + "</div>")
+                st.markdown(f"<b style='font-size:13px'>🔄 ② 板块轮转·{_tt9c}</b>" + "".join(_rb9),
+                            unsafe_allow_html=True)
+                _up9c2 = sorted([x for x in (_pt9c2.get("stocks") or [])
+                                 if x.get("direction") == "up" and x.get("confidence") in ("高", "中")
+                                 and float(x.get("pos52") or 50) <= 45],
+                                key=lambda x: ({"高": 0, "中": 1}.get(str(x.get("confidence")), 2),
+                                               float(x.get("pos52") or 50)))[:8]
+                st.markdown("<b style='font-size:13px'>🌱 ③ 低位拐点·可注意埋伏</b>"
+                            f"<span style='font-size:11px;color:#94a3b8'>（全池{_pt9c2.get('scanned', '?')}只·转强≠立刻买）</span>"
+                            + ("<div style='font-size:12.5px'>" + "、".join(
+                                f"{x.get('name')}(52周{int(float(x.get('pos52') or 0))}%·{x.get('confidence')})"
+                                for x in _up9c2) + "</div>" if _up9c2
+                               else "<div style='font-size:12.5px;color:#94a3b8'>全池文件待发布或暂无低位转强</div>"),
+                            unsafe_allow_html=True)
+            with _cR9:
+                def _hzs9c(_h, _hz):
+                    try:
+                        return float((((_h.get("facts") or {}).get("horizons") or {}).get(_hz) or {}).get("rule_score"))
+                    except (TypeError, ValueError):
+                        return None
+                _by9c = []
+                for _h9c2 in (_dh9c2.get("horses") or []):
+                    _md9c = str(((_h9c2.get("trade_plan") or {}).get("short") or {}).get("mode") or "")
+                    if _cf9c["buy"] == "green" and _md9c in ("现价可进", "回踩到位", "突破确认"):
+                        _by9c.append((_h9c2, int(_h9c2.get("p_up") or 0), _md9c))
+                    elif _cf9c["buy"] == "trigger" and _md9c in ("双路径待触发", "回踩到位", "突破确认"):
+                        _by9c.append((_h9c2, int(_h9c2.get("p_up") or 0), f"盯触发·{_md9c}"))
+                    elif _cf9c["buy"] == "green+" and _md9c in ("现价可进", "回踩到位", "突破确认", "双路径待触发"):
+                        _by9c.append((_h9c2, int(_h9c2.get("p_up") or 0), _md9c))
+                    elif _cf9c["buy"] in ("w4", "w8"):
+                        _s9c2 = _hzs9c(_h9c2, "4周" if _cf9c["buy"] == "w4" else "8周")
+                        if _s9c2 is not None and _s9c2 >= 58:
+                            _by9c.append((_h9c2, int(_s9c2), "周期走强·分批"))
+                _by9c.sort(key=lambda x: -x[1])
+                st.markdown(f"<b style='font-size:13px'>🐉 ④ {_tt9c}买什么</b>"
+                            f"<span style='font-size:11px;color:#94a3b8'>（公开黑马池口径·{len(_by9c)}只）</span>"
+                            + ("".join(f"<div style='font-size:12.5px'>{_h9x.get('name')}"
+                                       f"<b style='color:#dc2626'>{_p9x}%</b>"
+                                       f"<span style='font-size:11.5px;color:#475569'>·{_t9x}"
+                                       f"·{str(((_h9x.get('trade_plan') or {}).get('short') or {}).get('in') or '')[:36]}</span></div>"
+                                       for _h9x, _p9x, _t9x in _by9c[:6]) if _by9c
+                               else "<div style='font-size:12.5px;color:#94a3b8'>本档暂无达标——空仓等待也是决策</div>"),
+                            unsafe_allow_html=True)
+                if _tt9c in ("今日", "明日", "本周"):
+                    st.markdown("<b style='font-size:13px'>⚔️ ⑤ 卖/持仓要处理</b>"
+                                "<div style='font-size:12px;color:#94a3b8'>持仓警示属私域——见桌面/飞书,"
+                                "或导航下方地狱门(配PRIVATE_TOKEN显示)</div>", unsafe_allow_html=True)
+                else:
+                    _ct9c = sorted([x for x in (_pt9c2.get("stocks") or [])
+                                    if x.get("direction") == "down" and x.get("confidence") in ("高", "中")],
+                                   key=lambda x: -float(x.get("strength") or 0))[:6]
+                    st.markdown(f"<b style='font-size:13px'>⚔️ ⑤ {_tt9c}躲什么</b>"
+                                "<span style='font-size:11px;color:#94a3b8'>（全池相位转弱·中长线躲避参考）</span>"
+                                + ("".join(f"<div style='font-size:12.5px'>{x.get('name')}"
+                                           f"<span style='font-size:11.5px;color:#16a34a'>·{x.get('phase')}"
+                                           f"·{x.get('confidence')}置信</span></div>" for x in _ct9c) if _ct9c
+                                   else "<div style='font-size:12.5px;color:#94a3b8'>暂无高中置信转弱</div>"),
+                                unsafe_allow_html=True)
+                _ai9c2 = (_pubj9("institutional_signals.json").get("ai_brief") or {})
+                _iw9c = []
+                for _m9c in ("A股", "港股", "美股"):
+                    _sb9c = _ai9c2.get(_m9c) or {}
+                    _v9c2 = _sb9c.get(_cf9c["evt"]) if isinstance(_sb9c, dict) else None
+                    if _v9c2 and "材料不足" not in str(_v9c2):
+                        _iw9c.append(f"{_m9c}:{_v9c2}")
+                _ev9c = [f"🆕转债{_c9c.get('bond')}({str(_c9c.get('apply_date'))[5:]}申购)"
+                         for _c9c in (_pubj9("announcements.json").get("cb_calendar") or [])[:3]]
+                st.markdown(f"<b style='font-size:13px'>📅 ⑥ {_tt9c}事件与消息面</b>"
+                            + ("<div style='font-size:12.5px'>" + "　".join(_ev9c) + "</div>" if _ev9c else "")
+                            + (f"<div style='font-size:12px;color:#7c3aed'>🏛️机构{_cf9c['evt']}观点:"
+                               + "｜".join(_iw9c[:3]) + "</div>" if _iw9c
+                               else "<div style='font-size:12px;color:#94a3b8'>本档暂无机构观点材料</div>"),
+                            unsafe_allow_html=True)
+            st.caption(f"当前档:{_tt9c}·与桌面同源(pub快照)·默认:交易日=今日,周末=下周·持仓明细守隐私铁律")
+    except Exception:
+        pass
     _rep = _report_text if _report_sync_ok else ""
     _meta_nav = pub_meta()
     _nav_analysis_ts = (_report_manifest.get("generated_at")
