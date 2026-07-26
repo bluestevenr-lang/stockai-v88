@@ -2903,10 +2903,8 @@ try:
         f"{'周末V88·下一交易日展望(按周五收盘)' if __import__('datetime').datetime.now().weekday() >= 5 else '今日V88'} · {_bn_tone9}"
         f"<span style='font-size:12.5px;font-weight:400;color:#475569'>　{'｜'.join(_bn_cells9)}"
         f"　📏{_bn_rule9}</span></div>"
-        f"<div style='font-size:13px;margin-top:2px'>🐉 <b style='color:#dc2626'>进攻</b>:{_bn_go_txt9}"
-        f"　⚔️ <b style='color:#16a34a'>防守</b>:{_bn_cut_txt9}"
-        f"<span style='font-size:12px;color:#64748b'>　{_bn_sr_txt9}</span>　{_bn_new_txt9}</div>"
-        f"<div style='font-size:11px;color:#94a3b8'>周概率=统一引擎2周方向分(规则估计)·名单明细/原因/卡片在下方双门与关注中心·升级历史在🧬系统自省</div>"
+        f"<div style='font-size:12px;color:#64748b;margin-top:2px'>{_bn_sr_txt9}　{_bn_new_txt9}"
+        f"<span style='font-size:11px;color:#94a3b8' title='周概率=统一引擎2周方向分(规则估计);买卖点名见下方行动中心表格;名单明细在双门与关注中心;升级历史在🧬系统自省'>　ⓘ</span></div>"
         "</div>", unsafe_allow_html=True)
 except Exception:
     try:
@@ -3357,7 +3355,7 @@ try:
                     _pv9x = _l9n.get(_cfg9["mkt_hz"])
                     if _pv9x is None:
                         continue
-                    _pv9n, _tag9n = int(_pv9x), f"(决策窗={_tb_tier9}·参考{_cfg9['mkt_hz']}趋势因子,非日历直译)"
+                    _pv9n, _tag9n = int(_pv9x), (f"<span title='决策窗={_tb_tier9}(日历口径);数字=统一引擎{_cfg9['mkt_hz']}趋势因子分,非日历直译概率——双时间轴口径'>ⓘ</span>")
                     _pc9n = "#dc2626" if _pv9n >= 55 else ("#16a34a" if _pv9n <= 45 else "#64748b")
                     _w9n = ("偏涨·回踩敢接" if _pv9n >= 55 else
                             ("偏弱·反弹先减不追" if _pv9n <= 45 else "震荡·区间对待"))
@@ -3397,7 +3395,7 @@ try:
                         + ("<span style='font-size:11px;color:#b45309'>（轮动引擎最远16周·下季度沿用16周判断,"
                            "越远置信越低——两档板块行相同是引擎上限,非bug）</span>"
                            if _tb_tier9 == "下季度" else "")
-                        + "<span style='font-size:11px;color:#94a3b8'>（热度Top2·红=该档拐点要转向）</span>"
+                        + "<span style='font-size:11px;color:#94a3b8' title='热度Top2;红字=该档拐点要转向;下季度沿用16周判断(轮动引擎上限)'>ⓘ</span>"
                         + "".join(_rows_b9), unsafe_allow_html=True)
             # ── ③ 低位拐点·可注意埋伏(档感知:近档看日~周,远档看周~月) ──
             _hz_kw9 = ("日", "周") if _tb_tier9 in ("今日", "本周", "下周") else ("周", "月")
@@ -3420,8 +3418,7 @@ try:
                                  f"·{x.get('confidence')}置信)</span>{_ff_tag9(x.get('code'))}" for x in _ups9n)
                         if _ups9n else "<span style='color:#94a3b8'>全池暂无低位高置信转强(门槛:52周位≤45%+相位向上)</span>")
             st.markdown("<b style='font-size:13px'>🌱 ③ 低位拐点·可注意埋伏</b>"
-                        f"<span style='font-size:11px;color:#94a3b8'>（全池{_pt9n.get('scanned', '?')}只·"
-                        "52周低位+转强·转强≠立刻买,等时机绿灯·💰=东财主力今日净流入）</span>"
+                        f"<span style='font-size:11px;color:#94a3b8' title='全池{_pt9n.get('scanned', '?')}只扫描;52周低位+相位转强;转强≠立刻买,等时机绿灯;💰=东财主力今日净流入'>ⓘ</span>"
                         f"<div style='font-size:12.5px'>{_up_txt9}</div>", unsafe_allow_html=True)
             # ── ③b ⏳拐点倒计时(U3·2026-07-26 用户批准"拐点高低前后的预计") ──
             try:
@@ -3575,8 +3572,8 @@ try:
                            f"{_pol9p(_r9p.get('code'))}</div>"
                            for _r9p in _prep9n[:5]]
             st.markdown(f"<b style='font-size:13px'>🐉 ④ {_tb_tier9}买什么</b>"
-                        f"<span style='font-size:11px;color:#94a3b8'>（{_buy_note9}·"
-                        f"{'等' + str(len(_buy9n)) + '只' if len(_buy9n) > 6 else str(len(_buy9n)) + '只'}·带买点价）</span>"
+                        f"<span style='font-size:11px;color:#94a3b8' title='{_buy_note9};带买点价'>"
+                        f"{'等' + str(len(_buy9n)) + '只' if len(_buy9n) > 6 else str(len(_buy9n)) + '只'} ⓘ</span>"
                         + ("".join(_rows_c9) if _rows_c9
                            else ("<div style='font-size:12.5px;color:#94a3b8'>🔇黑马池实盘<50%已降级研究参考——"
                                  "点名暂停,完整名单在🐴黑马雷达模块(战绩回升自动恢复)</div>" if _dh_gate9n else
@@ -3629,8 +3626,8 @@ try:
                         f"<span style='font-size:11.5px;color:#64748b'>·{_w9n2}</span></div>"
                         for _n9n, _p9n, _w9n2, _c9n4 in _cut9n[:6]]
             st.markdown(f"<b style='font-size:13px'>⚔️ ⑤ {_tb_tier9}卖/持仓要处理</b>"
-                        f"<span style='font-size:11px;color:#94a3b8'>（{_cut_note9}·"
-                        f"{'等' + str(len(_cut9n)) + '只' if len(_cut9n) > 6 else str(len(_cut9n)) + '只'}）</span>"
+                        f"<span style='font-size:11px;color:#94a3b8' title='{_cut_note9}'>"
+                        f"{'等' + str(len(_cut9n)) + '只' if len(_cut9n) > 6 else str(len(_cut9n)) + '只'} ⓘ</span>"
                         + ("".join(_rows_d9) if _rows_d9
                            else "<div style='font-size:12.5px;color:#94a3b8'>本档暂无警示——按各卡💰卖点纪律执行</div>"),
                         unsafe_allow_html=True)
@@ -3658,8 +3655,8 @@ try:
                         _sr_all9.append(f"<div style='font-size:12.5px'><b>{_sec9a}</b>："
                                         + "　".join(_cells9a) + "</div>")
                     st.markdown("<b style='font-size:13px'>🎖️ 五行业代表·三市场</b>"
-                                f"<span style='font-size:11px;color:#94a3b8'>（点名可点·区间明细=上方市场筛选"
-                                f"选定单市场后显示·{str(_sr9v.get('generated_at'))[5:16]}）</span>"
+                                f"<span style='font-size:11px;color:#94a3b8' title='点名可点进深度分析;区间明细=上方市场筛选选定单市场后显示'>"
+                                f"{str(_sr9v.get('generated_at'))[5:16]} ⓘ</span>"
                                 + "".join(_sr_all9), unsafe_allow_html=True)
                     _sr_sel9 = []
                 else:
@@ -3799,7 +3796,7 @@ try:
             for _p9n2 in (_nwj9("intel_feed.json").get("policy") or [])[:2]:
                 _ev9n.append(f"📜{str(_p9n2.get('title'))[:22]}({_p9n2.get('src')})")
             st.markdown(f"<b style='font-size:13px'>📅 ⑥ {_tb_tier9}事件与消息面</b>"
-                        "<span style='font-size:11px;color:#94a3b8'>（财报按档期过滤·出处:Nasdaq/东财/发改委/研报库）</span>"
+                        "<span style='font-size:11px;color:#94a3b8' title='财报按档期过滤;出处:Nasdaq/东财/发改委/研报库'>ⓘ</span>"
                         + ("<div style='font-size:12.5px'>" + "　".join(_ev9n[:8]) + "</div>" if _ev9n
                            else "<div style='font-size:12.5px;color:#94a3b8'>本档暂无已捕捉硬事件(财报源覆盖未来7天)</div>")
                         + (f"<div style='font-size:12px;color:#7c3aed'>🏛️机构{_cfg9['evt']}观点:"
