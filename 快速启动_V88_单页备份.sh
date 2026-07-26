@@ -51,8 +51,8 @@ if [ -f "$ENV_FILE" ]; then
 fi
 
 # ── 清理 8501 端口上的旧实例（避免“端口已被占用”启动失败）───────
-pkill -9 -f 'streamlit run app_v88_paged.py' 2>/dev/null
-for p in $(lsof -ti:8501 2>/dev/null); do
+pkill -9 -f 'streamlit run app_v88_integrated.py' 2>/dev/null
+for p in $(lsof -ti:8504 2>/dev/null); do
     # 只清占8501的streamlit自身,不误杀恰好占端口的无关程序(2026-07-25审计修复)
     ps -p "$p" -o command= 2>/dev/null | grep -q "streamlit" && kill "$p" 2>/dev/null
 done
@@ -85,21 +85,21 @@ while true; do
         echo "♻️  [$START_TS] 第 $RESTART_COUNT 次启动（自动重启）..."
     fi
 
-    echo "   访问地址: http://localhost:8501"
+    echo "   访问地址: http://localhost:8504"
     echo "   按 Ctrl+C 停止守护进程"
     echo "----------------------------------------------------------------"
 
     # 启动 Streamlit（headless=false 让系统自动打开浏览器，仅首次）
     if [ $RESTART_COUNT -eq 1 ]; then
-        RUN_STREAMLIT run app_v88_paged.py \
+        RUN_STREAMLIT run app_v88_integrated.py \
             --server.headless false \
-            --server.port 8501 \
+            --server.port 8504 \
             --browser.serverAddress localhost
     else
         # 重启时不再重新打开浏览器
-        RUN_STREAMLIT run app_v88_paged.py \
+        RUN_STREAMLIT run app_v88_integrated.py \
             --server.headless true \
-            --server.port 8501
+            --server.port 8504
     fi
 
     EXIT_CODE=$?
