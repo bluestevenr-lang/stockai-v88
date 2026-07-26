@@ -604,7 +604,8 @@ if _nav == "🧭 导航":
                                     + "".join(f"<div style='font-size:12.5px'>{'🔺' if r.get('side') == 'top' else '🌱'} "
                                               f"{r.get('name')} <b>预计{(r.get('window_days') or ['?', '?'])[0]}～"
                                               f"{(r.get('window_days') or ['?', '?'])[1]}个交易日内"
-                                              f"{'可能见顶' if r.get('side') == 'top' else '可能见底'}·强度{r.get('prob')}/100</b>"
+                                              f"{'可能见顶' if r.get('side') == 'top' else '可能见底'}·强度{r.get('prob')}/100"
+                                              f"<span style='font-weight:400;font-size:11px'>({'强预警' if int(r.get('prob') or 0) >= 70 else ('值得留意' if int(r.get('prob') or 0) >= 55 else '弱信号')})</span></b>"
                                               f"·{'跌破' if r.get('side') == 'top' else '站上'}{r.get('confirm_price')}才算数"
                                               + (f"·⚡{str(r.get('event'))[:26]}" if r.get("event") else "")
                                               + "</div>" for r in _tfr9), unsafe_allow_html=True)

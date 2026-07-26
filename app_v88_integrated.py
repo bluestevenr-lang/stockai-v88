@@ -3435,10 +3435,14 @@ try:
                             f"{_nw_link9(_r9t.get('name'), _r9t.get('code') or '')}"
                             f"<b style='color:{_cl9t}'>预计{_r9t.get('window_days', ['?', '?'])[0]}～"
                             f"{_r9t.get('window_days', ['?', '?'])[1]}个交易日内"
-                            f"{'可能见顶' if _r9t.get('side') == 'top' else '可能见底'}·强度{_r9t.get('prob')}/100</b>"
+                            f"{'可能见顶' if _r9t.get('side') == 'top' else '可能见底'}·强度{_r9t.get('prob')}/100"
+                            f"<span style='font-weight:400;font-size:11px'>({'强预警' if int(_r9t.get('prob') or 0) >= 70 else ('值得留意' if int(_r9t.get('prob') or 0) >= 55 else '弱信号仅记录')})</span></b>"
                             f"<span style='font-size:11.5px;color:#475569'>·{'跌破' if _r9t.get('side') == 'top' else '站上'}{_r9t.get('confirm_price')}才算数"
+                            f"<span style='font-size:11px;color:#94a3b8'>(没{'跌破' if _r9t.get('side') == 'top' else '站上'}=只是提高警惕,不是{'卖' if _r9t.get('side') == 'top' else '买'}信号)</span>"
                             f"{('(' + str(_r9t.get('proxy')) + ')') if _r9t.get('proxy') else ''}"
-                            f"·{str((_r9t.get('drivers') or [''])[0])[:26]}</span>"
+                            f"<span style='font-size:11px;color:#94a3b8'>·{'涨速在衰减=油门在松' if _r9t.get('side') == 'top' else '跌速在收敛=刹车在踩'}"
+                            f"·52周位{int(float(_r9t.get('pos52') or 50))}%"
+                            f"({'高位·下行空间大' if float(_r9t.get('pos52') or 50) > 70 else ('低位·上行空间大' if float(_r9t.get('pos52') or 50) < 30 else '中位')})</span>"
                             + (f"<span style='font-size:11px;color:#b45309'>·⚡{_r9t['event'][:30]}</span>"
                                if _r9t.get("event") else "") + "</div>")
                     st.markdown("<b style='font-size:13px'>⏳ ③b 拐点倒计时</b>"
@@ -3452,7 +3456,8 @@ try:
                 _ps_html9 = []
                 for _f9p in (_psj9.get("fund_lead") or [])[:3]:
                     _ps_html9.append(f"<div style='font-size:12px'>💰蓄势:<b>{_f9p.get('name')}</b>"
-                                     f"<span style='color:#475569'>·{str(_f9p.get('note'))[:40]}</span></div>")
+                                     f"<span style='color:#475569'>·{str(_f9p.get('note'))[:40]}</span>"
+                                     f"<span style='font-size:11px;color:#94a3b8'>(钱先进·价未动=好苗头,等启动别追)</span></div>")
                 for _e9p in (_psj9.get("earn_gap") or [])[:3]:
                     _cl9p = "#16a34a" if _e9p.get("bias") == "risk" else "#dc2626"
                     _ps_html9.append(f"<div style='font-size:12px'>📊<b style='color:{_cl9p}'>"
