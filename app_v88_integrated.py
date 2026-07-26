@@ -3097,8 +3097,20 @@ except Exception:
     except Exception:
         pass
 
-# 【V88·时间作战板 2026-07-25 用户批准"六档一个模块,时间上方选,省版面+每档最优口径"】
-# 今日/明日/本周/下周/本月/下月 六档切换,六问结构复用:大盘/板块轮转/低位埋伏/买/卖/事件。
+# 【V88·U3金字塔导航 2026-07-26】五层阅读顺序显性化:行动→预判→机会→防守→证据
+try:
+    st.markdown("<div style='font-size:11.5px;color:#94a3b8;padding:.15rem 0'>"
+                "📐 阅读顺序: <b style='color:#dc2626'>①行动</b>(上方确认买卖单+指令牌)"
+                " → <b style='color:#2563eb'>②预判</b>(作战板:大盘/轮转/拐点倒计时/前置信号)"
+                " → <b style='color:#b45309'>③机会</b>(埋伏/准备买/五行业代表)"
+                " → <b style='color:#16a34a'>④防守</b>(卖单/地狱门)"
+                " → ⑤证据(综述/归因/雷达族,按需展开)——3秒知道该干什么,证据按需查</div>",
+                unsafe_allow_html=True)
+except Exception:
+    pass
+
+# 【V88·时间作战板 2025-07-25 用户批准"六档一个模块,时间上方选,省版面+每档最优口径"】
+# 今日/本周/下周/本月/下月/本季度/下季度 七档切换,六问结构复用:大盘/板块轮转/低位埋伏/买/卖/事件。
 # 每档接自己的最优数据口径(见_TB_CFG9),全落盘聚合零新计算;默认档:交易日=今日,周末=下周。
 try:
     from datetime import datetime as _dtnw, timedelta as _tdnw
@@ -3342,6 +3354,54 @@ try:
                         f"<span style='font-size:11px;color:#94a3b8'>（全池{_pt9n.get('scanned', '?')}只·"
                         "52周低位+转强·转强≠立刻买,等时机绿灯·💰=东财主力今日净流入）</span>"
                         f"<div style='font-size:12.5px'>{_up_txt9}</div>", unsafe_allow_html=True)
+            # ── ③b ⏳拐点倒计时(U3·2026-07-26 用户批准"拐点高低前后的预计") ──
+            try:
+                _tfj9 = _nwj9("turning_forecast.json")
+                _tf_rows9 = (_tfj9.get("rows") or [])
+                _tf_rows9 = [r for r in _tf_rows9 if _mkfit9(r.get("code") or "")] or _tf_rows9[:0]
+                if _tf_rows9:
+                    _tf_html9 = []
+                    for _r9t in _tf_rows9[:6]:
+                        _ic9t = "🔺" if _r9t.get("side") == "top" else "🌱"
+                        _cl9t = "#16a34a" if _r9t.get("side") == "top" else "#dc2626"
+                        _tf_html9.append(
+                            f"<div style='font-size:12.5px'>{_ic9t} "
+                            f"{_nw_link9(_r9t.get('name'), _r9t.get('code') or '')}"
+                            f"<b style='color:{_cl9t}'>{_r9t.get('window_days', ['?', '?'])[0]}~"
+                            f"{_r9t.get('window_days', ['?', '?'])[1]}日内"
+                            f"{'见顶' if _r9t.get('side') == 'top' else '见底'}·{_r9t.get('prob')}%</b>"
+                            f"<span style='font-size:11.5px;color:#475569'>·确认{_r9t.get('confirm_price')}"
+                            f"{('(' + str(_r9t.get('proxy')) + ')') if _r9t.get('proxy') else ''}"
+                            f"·{str((_r9t.get('drivers') or [''])[0])[:26]}</span>"
+                            + (f"<span style='font-size:11px;color:#b45309'>·⚡{_r9t['event'][:30]}</span>"
+                               if _r9t.get("event") else "") + "</div>")
+                    st.markdown("<b style='font-size:13px'>⏳ ③b 拐点倒计时</b>"
+                                "<span style='font-size:11px;color:#94a3b8'>（技术提前量×信息提前量·窗口=交易日·"
+                                "确认价过线才算数·每条已入预测台账到期核算）</span>"
+                                + "".join(_tf_html9), unsafe_allow_html=True)
+            except Exception:
+                pass
+            # ── ③c 📡前置信号(U3·钱先动价后动) ──
+            try:
+                _psj9 = _nwj9("pre_signals.json")
+                _ps_html9 = []
+                for _f9p in (_psj9.get("fund_lead") or [])[:3]:
+                    _ps_html9.append(f"<div style='font-size:12px'>💰蓄势:<b>{_f9p.get('name')}</b>"
+                                     f"<span style='color:#475569'>·{str(_f9p.get('note'))[:40]}</span></div>")
+                for _e9p in (_psj9.get("earn_gap") or [])[:3]:
+                    _cl9p = "#16a34a" if _e9p.get("bias") == "risk" else "#dc2626"
+                    _ps_html9.append(f"<div style='font-size:12px'>📊<b style='color:{_cl9p}'>"
+                                     f"{str(_e9p.get('name'))[:20]}</b>"
+                                     f"<span style='color:#475569'>·{str(_e9p.get('note'))[:42]}</span></div>")
+                for _p9p in (_psj9.get("policy") or [])[:2]:
+                    _ps_html9.append(f"<div style='font-size:12px'>🏛{_p9p.get('name')}"
+                                     f"<span style='color:#475569;font-size:11px'>·{str(_p9p.get('note'))[:36]}</span></div>")
+                if _ps_html9:
+                    st.markdown("<b style='font-size:13px'>📡 ③c 前置信号</b>"
+                                "<span style='font-size:11px;color:#94a3b8'>（事前预警非事后归因·蓄势=钱进价未动·"
+                                "预期差=财报博弈结构）</span>" + "".join(_ps_html9), unsafe_allow_html=True)
+            except Exception:
+                pass
         with _tbR9:
             # ── ④ {档}买什么(每档最优口径) ──
             def _hz_score9(_h, _hz):
@@ -18229,6 +18289,26 @@ if st.session_state.get('scan_selected_code'):
                                 f"- 买入区间：{_F['buy_zone']} ｜ 回踩买点：{_F['pullback']} ｜ 突破加仓：{_F['breakout']}\n"
                                 f"- 止损位：{_F['stop']} ｜ 减仓位：{_F['reduce']}\n"
                                 f"- 失效条件：{_F['invalid']}")
+                            # 【V88·U3全局时间轴 2026-07-26】深度分析跟随作战板档位:当前档周期分+区间
+                            try:
+                                _gt9 = str(st.session_state.get("tb_tier9") or "今日")
+                                _gh9 = {"本周": "2周", "下周": "4周", "本月": "4周", "下月": "8周",
+                                        "本季度": "16周", "下季度": "32周"}.get(_gt9)
+                                if _gh9:
+                                    from v88_decision_core import build_horizon_facts as _bhf9
+                                    _dhz9 = (_bhf9(df_temp) or {}).get("horizons") or {}
+                                    _gsc9 = (_dhz9.get(_gh9) or {}).get("rule_score")
+                                    if _gsc9 is not None:
+                                        _gsp9 = (_dhz9.get(_gh9) or {})
+                                        st.markdown(f"<div style='background:#eff6ff;border-radius:6px;padding:.3rem .6rem;"
+                                                    f"font-size:13px'>🧭 <b>当前档({_gt9}={_gh9})判断</b>: "
+                                                    f"周期分<b>{int(_gsc9)}</b>·{_gsp9.get('rule_view', '')}"
+                                                    f"·支撑{_gsp9.get('support', '?')}/压力{_gsp9.get('resistance', '?')}"
+                                                    f"·置信{_gsp9.get('rule_confidence', '?')}"
+                                                    "<span style='font-size:11px;color:#94a3b8'>　与作战板时间档联动(U3全局时间轴)</span></div>",
+                                                    unsafe_allow_html=True)
+                            except Exception:
+                                pass
                             # 【V88·涨跌归因链 2026-07-25 用户定纲"不能光说技术面破坏,总有个原因,
                             # 所有个股都要有简明说明,深度分析要更多字数"】四层证据拼装(全落盘零AI):
                             # ①个股自身新闻(别名硬命中防中烟香港式错配) ②板块联动(相位+板块当日+主力资金)
