@@ -3892,6 +3892,24 @@ except Exception:
 # 先看大势定调再看自己的票。由下方全球概览块通过 slot 回填。
 # (U3.2 slot已上移至页首——用户点单'全球概览置顶,看时间方便')
 
+# 【U5·Fable交叉分析呈现 2026-07-27 用户定纲"交叉信息一定要明显标注"】
+try:
+    _fr_fp9 = Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "fable_review.md"
+    if _fr_fp9.exists():
+        _fr_txt9 = _fr_fp9.read_text(encoding="utf-8")[:3000]
+        with st.expander("🎖️ Fable交叉分析 · Claude独立复核（早晚双审·非DeepSeek非规则引擎·零现金）",
+                         expanded=False):
+            st.markdown("<div style='background:#eef2ff;border-left:4px solid #6366f1;border-radius:6px;"
+                        "padding:.3rem .6rem;font-size:12px;color:#4338ca'>"
+                        "🎖️ 本节全部内容=Claude(Fable)独立交叉验证视角——与DeepSeek研判、规则引擎互相制衡,"
+                        "三方一致=高置信,分歧=谨慎。首班开机即跑,二班距首班≥8小时。</div>",
+                        unsafe_allow_html=True)
+            st.markdown(_fr_txt9.replace("~", "～"))
+    else:
+        st.caption("🎖️ Fable交叉分析: 首份日审待生成(定时任务9点/21点或开机即补)")
+except Exception:
+    pass
+
 # ===V88_PAGE_BREAK:LISTS===
 _v88_front_decision_slot = st.empty()
 # 【V88·搜索前置】搜索框占位排在“大盘/持仓/自选/预警”速览带之下、其余重模块之上，
