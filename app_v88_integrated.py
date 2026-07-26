@@ -1036,7 +1036,7 @@ def market_of_code(code: str) -> str:
     c = str(code).strip().upper()
     if c.endswith(".HK") or (c.isdigit() and len(c) <= 5):
         return "🇭🇰港股"
-    if c.endswith((".SS", ".SZ")) or (len(c) >= 6 and c[:6].isdigit()):
+    if c.endswith((".SS", ".SZ", ".SH", ".BJ")) or (len(c) >= 6 and c[:6].isdigit()):
         return "🇨🇳A股"
     return "🇺🇸美股"
 
@@ -2973,10 +2973,30 @@ try:
             return {}
     _cb_gate9 = _v88_mkt_gate9x(_cb_repo9)
     _cb_nt9, _cb_day9 = _v88_nontrade9x()
+    try:
+        # stock_names.json=列表[{n,c,m}] → 归一成 {code: 名};港股键同录去前导零版(2020==02020)
+        _cb_names9 = {}
+        for _e9n in json.loads((_cb_repo9 / "src" / "stock_names.json").read_text(encoding="utf-8")):
+            _c9n = str(_e9n.get("c") or "").upper()
+            if _c9n:
+                _cb_names9[_c9n] = _e9n.get("n")
+                if _c9n.endswith(".HK"):
+                    _cb_names9[_c9n.split(".")[0].lstrip("0") + ".HK"] = _e9n.get("n")
+    except Exception:
+        _cb_names9 = {}
+
+    def _cb_nm9(_nm, _cd):
+        # 池条目没存中文名时(名字==代码,安踏2020.HK案)查名字库兜底
+        _n = str(_nm or "")
+        if _n and _n != str(_cd):
+            return _n
+        _k = str(_cd or "").upper()
+        return (_cb_names9.get(_k) or _cb_names9.get(_k.split(".")[0].lstrip("0") + ".HK")
+                or _n or _k)
 
     def _cb_mk9(_cd):
         _c = str(_cd or "").upper()
-        return ("A股" if _c.endswith((".SS", ".SZ")) else ("港股" if _c.endswith(".HK") else "美股"))
+        return ("A股" if _c.endswith((".SS", ".SZ", ".SH", ".BJ")) else ("港股" if _c.endswith(".HK") else "美股"))
     _MKFLAG9 = {"A股": "🇨🇳", "港股": "🇭🇰", "美股": "🇺🇸"}
     _cb_rows9, _cb_near9, _cb_sell9, _cb_seen9 = [], [], [], set()
     # 双源合并(与龙虎门同款):session实时(三市场都算,若已就绪)优先,落盘兜底——
@@ -3020,6 +3040,7 @@ try:
             _cb_seen9.add(_k9)
     _cb_sell_html9 = []
     for _nm9s, _cd9s, _px9s, _pd9s, _act9s, _why9s in _cb_sell9[:5]:
+        _nm9s = _cb_nm9(_nm9s, _cd9s)
         _cb_sell_html9.append(
             f"<div style='font-size:14px;margin:2px 0'>⚔️ <b style='color:#16a34a;font-size:15px'>"
             f"{'周一' if _cb_nt9 else ''}该卖/减:"
@@ -3028,11 +3049,14 @@ try:
             f"　{_MKFLAG9.get(_cb_mk9(_cd9s), '')}现{_px9s}·看跌<b style='color:#16a34a'>{_pd9s}%</b>·{_act9s}"
             f"<span style='font-size:12px;color:#475569'>　{_why9s}</span>"
             f"<span style='font-size:11px;color:#94a3b8'>　卖点价在持仓卡💰行·💼按纪律执行非翻案</span></div>")
+    if len(_cb_rows9) > 8:
+        _cb_sell_html9.insert(0, f"<div style='font-size:12px;color:#64748b'>买侧还有{len(_cb_rows9) - 8}只,见④/双门</div>")
     if len(_cb_sell9) > 5:
         _cb_sell_html9.append(f"<div style='font-size:12px;color:#64748b'>…等{len(_cb_sell9)}只,全名单在⚔️地狱门</div>")
     if _cb_rows9 or _cb_sell_html9:
         _cb_html9 = []
-        for _src9, _nm9, _cd9, _px9, _pu9, _rr9, _why9 in _cb_rows9[:5]:
+        for _src9, _nm9, _cd9, _px9, _pu9, _rr9, _why9 in _cb_rows9[:8]:
+            _nm9 = _cb_nm9(_nm9, _cd9)
             _g9 = _cb_gate9.get(_cb_mk9(_cd9)) or {}
             _pol9 = {"weak": " <b style='color:#16a34a'>⏸️弱市裁决:到价也等大盘回中性·只挂单不追</b>",
                      "hot": " <b style='color:#b45309'>🔶过热裁决:仓位减半只限回踩</b>"}.get(_g9.get("state"), "")
@@ -3145,7 +3169,7 @@ try:
             if _tb_mkt9 == "全部":
                 return True
             _c9m = str(_cd9m or "").upper()
-            _mk9m = ("🇨🇳A股" if _c9m.endswith((".SS", ".SZ")) else
+            _mk9m = ("🇨🇳A股" if _c9m.endswith((".SS", ".SZ", ".SH", ".BJ")) else
                      ("🇭🇰港股" if _c9m.endswith(".HK") else "🇺🇸美股"))
             return _mk9m == _tb_mkt9
         _cfg9 = _TB_CFG9[_tb_tier9]
@@ -8573,7 +8597,7 @@ def calculate_metrics_all(df, code):
     env_coef, sector_adj = 1.0, 0
     try:
         _cu = str(code).upper()
-        _mk_t = "A股" if _cu.endswith((".SS", ".SZ")) else ("港股" if _cu.endswith(".HK") else "美股")
+        _mk_t = "A股" if _cu.endswith((".SS", ".SZ", ".SH", ".BJ")) else ("港股" if _cu.endswith(".HK") else "美股")
         _mt = _load_market_temp()
         _ti = (_mt or {}).get(_mk_t) or {}
         if _ti.get("temp") is not None:
@@ -14589,7 +14613,7 @@ def _render_today_verdict(_snap, _repo):
             _c = str(code or "").upper()
             if _c.endswith(".HK") or (_c.isdigit() and len(_c) in (4, 5)):
                 return "🇭🇰港股"
-            if _c.endswith((".SS", ".SZ")) or (_c.isdigit() and len(_c) == 6):
+            if _c.endswith((".SS", ".SZ", ".SH", ".BJ")) or (_c.isdigit() and len(_c) == 6):
                 return "🇨🇳A股"
             return "🇺🇸美股"
         _dir_mk9w = {"down": {"🇺🇸美股": [], "🇨🇳A股": [], "🇭🇰港股": []},
@@ -18175,7 +18199,7 @@ if st.session_state.get('scan_selected_code'):
                     _sec_str = None
                     try:
                         _mt99 = _load_market_temp()
-                        _mk99 = "A股" if str(target_c).upper().endswith((".SS", ".SZ")) else ("港股" if str(target_c).upper().endswith(".HK") else "美股")
+                        _mk99 = "A股" if str(target_c).upper().endswith((".SS", ".SZ", ".SH", ".BJ")) else ("港股" if str(target_c).upper().endswith(".HK") else "美股")
                         from modules.sector_map import get_sector as _gs99
                         _sname = str(_gs99(target_c, stock_name) or "")
                         _rot99 = (_mt99.get("_rotation") or {}).get(_mk99) or {}
@@ -18245,7 +18269,7 @@ if st.session_state.get('scan_selected_code'):
                                 try:
                                     from modules.sector_map import get_sector as _gs9w
                                     _sn9w = str(_gs9w(target_c, stock_name) or "")
-                                    _mk9w = ("A股" if str(target_c).upper().endswith((".SS", ".SZ"))
+                                    _mk9w = ("A股" if str(target_c).upper().endswith((".SS", ".SZ", ".SH", ".BJ"))
                                              else ("港股" if str(target_c).upper().endswith(".HK") else "美股"))
                                     _snap9w = json.loads((_wc_repo9 / "data" / "market_snapshot.json")
                                                          .read_text(encoding="utf-8"))

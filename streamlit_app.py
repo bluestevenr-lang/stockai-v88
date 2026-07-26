@@ -1229,7 +1229,7 @@ if _nav == "🧭 导航":
             _c9g = str(_d9g.get("code") or "").upper()
             if _c9g.endswith(".HK") or (_c9g.isdigit() and len(_c9g) in (4, 5)):
                 return "🇭🇰港股"
-            if _c9g.endswith((".SS", ".SZ")) or (_c9g.isdigit() and len(_c9g) == 6):
+            if _c9g.endswith((".SS", ".SZ", ".SH", ".BJ")) or (_c9g.isdigit() and len(_c9g) == 6):
                 return "🇨🇳A股"
             return "🇺🇸美股"
 
@@ -1374,7 +1374,7 @@ if _nav == "🧭 导航":
             _c = str(code or "").upper()
             if _c.endswith(".HK") or (_c.isdigit() and len(_c) in (4, 5)):
                 return "港股"
-            if _c.endswith((".SS", ".SZ")) or (_c.isdigit() and len(_c) == 6):
+            if _c.endswith((".SS", ".SZ", ".SH", ".BJ")) or (_c.isdigit() and len(_c) == 6):
                 return "A股"
             return "美股"
         if _st9y:
@@ -1679,7 +1679,7 @@ elif _nav == "🔍 个股搜索":
             try:
                 _chg9w = round(float(_df["Close"].iloc[-1] / _df["Close"].iloc[-2] - 1) * 100, 2)
                 _dir9w = "跌" if _chg9w < 0 else "涨"
-                _mkw9 = ("A股" if str(_tsym).upper().endswith((".SS", ".SZ"))
+                _mkw9 = ("A股" if str(_tsym).upper().endswith((".SS", ".SZ", ".SH", ".BJ"))
                          else ("港股" if str(_tsym).upper().endswith(".HK") else "美股"))
                 _snapw9 = json.loads(pub_text("market_snapshot.json", _PUB_VERSION) or "{}")
                 _wl9 = []
@@ -2434,7 +2434,7 @@ elif _nav == "💼 持仓终端":
                         except Exception:
                             _wl_obj = {"US": [], "HK": [], "CN": []}
                         _wn, _wc = _wl_choice[0], _wl_choice[1]
-                        _wm = "HK" if _wc.endswith(".HK") else ("CN" if _wc.endswith((".SS", ".SZ")) else "US")
+                        _wm = "HK" if _wc.endswith(".HK") else ("CN" if _wc.endswith((".SS", ".SZ", ".SH", ".BJ")) else "US")
                         _exists = any(str(c).upper() == str(_wc).upper()
                                       for rows in _wl_obj.values() for c, _n in (rows or []))
                         if _exists:
