@@ -1,6 +1,6 @@
 # 🔮 V88 前瞻 — 下一交易日展望（2026-07-27（周一））
 
-> ⏱ 今天 2026-07-26（周日） 为非交易日｜分析生成：2026-07-26 03:55（北京时间）
+> ⏱ 今天 2026-07-26（周日） 为非交易日｜分析生成：2026-07-26 12:31（北京时间）
 > 动量与温度为全实价计算；财报日历来自交易所披露；AI 仅做受约束归纳，不构成投资建议。
 
 ## 🌡 大盘走势预期（下一交易日开盘基调）
@@ -75,26 +75,26 @@
 
 ## 📰 周末要闻 → 持仓/关注影响（休市期间消息，作用于下一交易日）
 
+- **SpaceX**（`[US:SPCX]`）：‘Time will tell whether that was a good bet’: My adviser got me a full SpaceX IPO allocation. Was I lucky?（MarketWatch - Top Stories）
 - **SO**（`[US:SO]`）：‘I’m still confused’: I sold $80,000 in shares on June 30, so why didn’t I receive my dividend?（MarketWatch - Top Stories）
-- **NVDA**（`[US:NVDA]`）：Is NVIDIA Corporation (NVDA) A Good Stock To Buy Now?（Yahoo Finance - Top）
-- **SpaceX**（`[US:SPCX]`）：Micron, Nvidia, or SpaceX: Which Is the Best AI Stock to Put $1,000 in Right Now?（Yahoo Finance - Top）
-- **SpaceX**（`[US:SPCX]`）：Reality Bites Elon Musk and His Tesla, SpaceX Believers（WSJ - Markets）
 - **宁德时代**（`[SZ:300750]`）：半年净利润超430亿元,宁德时代发起A股史上最大规模单次回购 - 观察者（Google News - 中文市场聚合）
-- **标普500**（`[SH:513500]`）：美股周五尾盘涨跌不一,标普500指数转跌,芯片股持续下跌 - 新浪财经（Google News - 中文市场聚合）
-- **苹果**（`[US:AAPL]`）：美股芯片股深夜重挫,闪迪大跌超8%,中概股普跌,苹果反弹涨近3%,金银短线走高 - 新浪网（Google News - 中文市场聚合）
-- **特斯拉**（`[US:TSLA]`）：7月25日美股成交额前20:特斯拉遭遇2022年以来最大单周跌幅 - 新浪财经（Google News - 中文市场聚合）
-- **宁德时代**（`[SZ:300750]`）：【早报】美股芯片股重挫;油价跳水、黄金微涨;视网膜芯片获准在欧上市;宁德时代抛出A股史上最大规模回购方案 - 财联社（Google News - 中文市场聚合）
 - **特斯拉**（`[US:TSLA]`）：全球市场:美股三大指数收跌 纳指跌超2% 特斯拉重挫近15% 国际油价涨逾6% - 东方财富（Google News - 中文市场聚合）
+- **标普500**（`[SH:513500]`）：美股周五尾盘涨跌不一,标普500指数转跌,芯片股持续下跌 - finance.sina.com.cn（Google News - 中文市场聚合）
 - **美光科技**（`[US:MU]`）：美股半导体板块集体下挫SK海力士跌超5% 美光科技、闪迪跌超4% 英特尔跌超2%;黄金上涨原油下跌|美股开盘 - 东方财富（Google News - 中文市场聚合）
-- **MU**（`[US:MU]`）：Short Interest in Direxion Daily MU Bull 2X Shares (NASDAQ:MUU) Increases By 885.5% - MarketBeat（Google News - EN Markets）
+- **特斯拉**（`[US:TSLA]`）：美股暴跌,道指重挫500点,纳指跌2.2%,特斯拉狂泻14.5%,谷歌跌7.1%,油价狂飙,美债收益率攀升 - 新浪财经（Google News - 中文市场聚合）
+- **SO**（`[US:SO]`）：Sony Group Corporation (SONY) Stock Price, News, Quote & History - Yahoo! Finance Canada（Google News - EN Markets）
+- **SpaceX**（`[US:SPCX]`）：SpaceX Stock Halved, Starship Test Success Fuels Rebound Hopes - 조선일보（Google News - EN Markets）
+- **GOOGL**（`[US:GOOGL]`）：Nasdaq, S&P 500, Dow Futures Edge Higher, Brushing Off Fresh US-Iran Clashes As Earnings Take Center Stage: TSLA, NOW, GOOGL, NOK In Focus - Stocktwits（Google News - EN Markets）
+- **英伟达**（`[US:NVDA]`）：“大空头” Burry加码做空英伟达、美光（华尔街见闻）
+- **宁德时代**（`[SZ:300750]`）：宁德时代的增长变得更“重”了（华尔街见闻）
 
 ## 🔭 AI 综合前瞻
 
 **大盘基调**  
-美股整体偏冷，纳指空头压力延续，假期芯片股重挫及特斯拉大跌或拖累科技板块开盘承压；A股上证多头惯性但深证震荡，半导体芯片轮动加速需警惕短期过热回吐。港股恒指过热，若假期无超预期利好，周一大概率高位震荡，注意中线兑现纪律。  
+美股纳指空头压力延续，假期特斯拉重挫近15%、半导体板块集体下跌（美光、闪迪跌超4%），倾向美股短期承压，标普震荡待变。A股上证多头惯性，但深证震荡，外围疲软若传导则可能压制反弹；港股过热防回撤，恒指多头惯性但需留意高位获利了结。
 
 **个股影响**  
-持仓苹果（AAPL）、SO、MO将于4天后财报，假期苹果反弹近3%或提供短期情绪支撑，但SO分红争议及芯片板块弱势需关注财报前资金谨慎。SpaceX和辉瑞等9天后财报，当前无直接催化，倾向跟随大盘波动。关注汇丰控股财报前若港股回调或压制银行股。
+持仓SO、MO、AAPL（7/30财报）临近，SO假期现股息争议，关注财报指引。SpaceX（8/4财报）股价减半后反弹消息或影响短线情绪。辉瑞、默沙东、礼来财报在即，结合美股科技与医药板块轮动，若超预期则有望分散空头压力。宁德
 
 ---
 _本前瞻由 V88 于非交易日自动生成，仅供研究参考，不构成投资建议。_
