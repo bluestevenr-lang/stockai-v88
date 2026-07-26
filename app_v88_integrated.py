@@ -3078,35 +3078,79 @@ try:
                     + ")：<b>暂停发布新买单</b>,持仓卖警照常。数据恢复自动解除(比预测更重要的是别用坏数据预测)</div>",
                     unsafe_allow_html=True)
         _cb_rows9 = []
-    if _cb_rows9 or _cb_sell_html9:
-        _cb_html9 = []
-        for _src9, _nm9, _cd9, _px9, _pu9, _rr9, _why9 in _cb_rows9[:8]:
+    if _cb_rows9 or _cb_sell9:
+        # 【U4·GPT spec采纳 2026-07-26】六要素表格化:名称/动作/触发价/失效价/仓位/状态;
+        # 每类默认5只;原因进ⓘ与深链详情,首层禁长段落。
+        def _row6_9(_nm, _cd, _act, _trig, _inv, _pos, _st, _why=""):
+            _lk = (f"<a href='?q={_cd}&focus=deep#v88-deep-analysis' target='_blank' rel='noopener' "
+                   f"style='text-decoration:underline;color:inherit'>{_nm}</a>")
+            return (f"<tr><td>{_lk}</td><td>{_act}</td><td>{_trig}</td><td>{_inv}</td>"
+                    f"<td>{_pos}</td><td title=\"{_why[:120]}\">{_st} ⓘ</td></tr>")
+
+        def _tbl9(rows_html):
+            return ("<table style='width:100%;font-size:12.5px;border-collapse:collapse'>"
+                    "<tr style='color:#94a3b8;font-size:11px;text-align:left'>"
+                    "<th>名称</th><th>动作</th><th>触发/买区</th><th>失效价</th><th>仓位</th><th>状态</th></tr>"
+                    + "".join(rows_html) + "</table>")
+        import re as _re9t
+        _t_buy9, _t_sell9, _t_hold9 = [], [], []
+        for _src9, _nm9, _cd9, _px9, _pu9, _rr9, _why9 in _cb_rows9[:5]:
             _nm9 = _cb_nm9(_nm9, _cd9)
-            _g9 = _cb_gate9.get(_cb_mk9(_cd9)) or {}
-            _pol9 = {"weak": " <b style='color:#16a34a'>⏸️弱市裁决:到价也等大盘回中性·只挂单不追</b>",
-                     "hot": " <b style='color:#b45309'>🔶过热裁决:仓位减半只限回踩</b>"}.get(_g9.get("state"), "")
-            _cb_html9.append(
-                f"<div style='font-size:14px;margin:2px 0'>✅ <b style='color:#dc2626;font-size:15px'>{'周一' if _cb_nt9 else ''}该买:"
-                f"<a href='?q={_cd9}&focus=deep#v88-deep-analysis' target='_blank' rel='noopener' "
-                f"style='color:#dc2626;text-decoration:underline'>{_nm9}</a></b>"
-                f"　{_MKFLAG9.get(_cb_mk9(_cd9), '')}现{_px9}·2周涨概率<b style='color:#dc2626'>{_pu9}%</b>·赔率/边际{_rr9}"
-                f"<span style='font-size:12px;color:#475569'>　{_why9}</span>{_pol9}"
-                f"<span style='font-size:11px;color:#94a3b8'>　来源:{_src9}·📊入场绿灯台账积累中</span></div>")
+            _g9x = _cb_gate9.get(_cb_mk9(_cd9)) or {}
+            _st9x = {"weak": "⏸弱市挂单", "hot": "🔶减半"}.get(_g9x.get("state"), "✅可执行")
+            _zone9x = (_re9t.search(r"([0-9.]+[~～][0-9.]+)", str(_why9)) or [None])
+            _zone9s = _zone9x.group(1).replace("~", "～") if hasattr(_zone9x, "group") and _zone9x.group(1) else f"现{_px9}"
+            _inv9x = (_re9t.search(r"跌破([0-9.]+)", str(_why9)) or None)
+            _inv9s = _inv9x.group(1) if _inv9x else "见卡"
+            _t_buy9.append(_row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9), '')}{_nm9}",
+                                   _cd9, f"<b style='color:#dc2626'>买·{_pu9}%</b>",
+                                   _zone9s, _inv9s, ("半仓" if _g9x.get("state") == "hot" else "纲领内"), _st9x, str(_why9)))
+        for _nm9s, _cd9s, _px9s, _pd9s, _act9s, _why9s in _cb_sell9[:5]:
+            _nm9s = _cb_nm9(_nm9s, _cd9s)
+            _t_sell9.append(_row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9s), '')}{_nm9s}", _cd9s,
+                                    f"<b style='color:#16a34a'>{_act9s}·{_pd9s}%</b>",
+                                    f"现{_px9s}", "卡💰行", "按纪律", "💼执行", str(_why9s)))
+        try:
+            _hold9 = [r for r in _cb_src9 if r.get("scope") == "持仓"
+                      and not any(k in str(r.get("action", "")) for k in ("减", "退", "清", "止损"))][:5]
+        except Exception:
+            _hold9 = []
+        for _r9h in _hold9:
+            _t_hold9.append(_row6_9(f"{_MKFLAG9.get(_cb_mk9(_r9h.get('code')), '')}{_cb_nm9(_r9h.get('name'), _r9h.get('code'))}",
+                                    _r9h.get("code"), "持有", f"现{_r9h.get('last')}", "卡💰行",
+                                    "维持", f"涨{_r9h.get('p_up')}%", str(_r9h.get("entry_note") or "")))
         st.markdown("<div style='background:#fef2f2;border:2px solid #dc2626;border-radius:10px;"
-                    "padding:.5rem .8rem;margin:.3rem 0'>"
-                    f"<b style='font-size:14px;color:#dc2626'>🔔 {_cb_day9}确认买卖单</b>"
-                    "<span style='font-size:11px;color:#94a3b8'>（买=绿灯三模式·卖=持仓纪律触发·买卖对仗不偏科·"
-                    "价格见各卡/点名可点）</span>"
-                    + ("<div style='font-size:12px;color:#b45309'>🗓 今天休市——下述为周一开盘的预挂单计划,"
-                       "开盘价若跳出买区/卖点先复核再执行,文中'今日/现价'均指周五收盘口径</div>" if _cb_nt9 else "")
-                    + "".join(_cb_html9)
-                    + ("<div style='font-size:12px;color:#94a3b8'>买侧:无绿灯——现金也是仓位</div>"
-                       if not _cb_html9 else "")
-                    + "".join(_cb_sell_html9)
-                    + ("<div style='font-size:12px;color:#94a3b8'>卖侧:持仓无纪律触发——按各卡止损线机械执行</div>"
-                       if not _cb_sell_html9 else "")
-                    + "</div>",
+                    "padding:.4rem .8rem;margin:.3rem 0'>"
+                    f"<b style='font-size:14px;color:#dc2626'>🔔 {_cb_day9}行动中心</b>"
+                    "<span style='font-size:11px;color:#94a3b8' title='买=绿灯三模式;卖=持仓纪律触发;每类默认5只;"
+                    "原因悬停状态列ⓘ或点名进详情;弱市裁决=到价也等大盘回中性'>ⓘ</span>"
+                    + ("<div style='font-size:12px;color:#b45309'>🗓 休市——周一预挂单,开盘跳出买区先复核</div>" if _cb_nt9 else ""),
                     unsafe_allow_html=True)
+        _tab_b9, _tab_s9, _tab_h9 = st.tabs([f"✅确认买({len(_cb_rows9)})",
+                                             f"⚔️卖/减({len(_cb_sell9)})", f"💼持有({len(_hold9)})"])
+        with _tab_b9:
+            st.markdown(_tbl9(_t_buy9) if _t_buy9 else "<span style='font-size:12px;color:#94a3b8'>买侧无绿灯——现金也是仓位</span>",
+                        unsafe_allow_html=True)
+            if len(_cb_rows9) > 5:
+                st.caption(f"还有{len(_cb_rows9) - 5}只·见双门/④")
+        with _tab_s9:
+            st.markdown(_tbl9(_t_sell9) if _t_sell9 else "<span style='font-size:12px;color:#94a3b8'>卖侧无纪律触发——按止损线机械执行</span>",
+                        unsafe_allow_html=True)
+            if len(_cb_sell9) > 5:
+                st.caption(f"还有{len(_cb_sell9) - 5}只·全名单在地狱门")
+        with _tab_h9:
+            st.markdown(_tbl9(_t_hold9) if _t_hold9 else "<span style='font-size:12px;color:#94a3b8'>无持有档记录</span>",
+                        unsafe_allow_html=True)
+        try:
+            if len(_cb_rows9) >= 3:
+                from collections import Counter as _Ct9b
+                _mkc9b = _Ct9b(_cb_mk9(x[2]) for x in _cb_rows9)
+                _tm9b, _tn9b = _mkc9b.most_common(1)[0]
+                if _tn9b >= 3:
+                    st.caption(f"⚠️拥挤:{_tn9b}/{len(_cb_rows9)}只买单集中{_tm9b}=同一宏观因子,总仓按1只控制")
+        except Exception:
+            pass
+        st.markdown("</div>", unsafe_allow_html=True)
     else:
         _nr_txt9 = ("；".join(f"{_n9}({_m9}:{_w9[:46]})" for _n9, _c9, _m9, _w9 in _cb_near9[:3])
                     if _cb_near9 else "自选池全员未达入场条件")
@@ -3232,7 +3276,7 @@ try:
                             f"<span style='color:#94a3b8'>（{_tp9.get('generated_at', '')}"
                             f"·买卖价格=系统真实数据,AI只组织大盘与准备节）</span></div>",
                             unsafe_allow_html=True)
-                st.markdown(_tp_html9)
+                st.markdown(_tp_html9.replace('~', '～'))   # ~→全角:防markdown把价格区间24.45~24.55解析成删除线(GPT抓的真雷)
         except Exception:
             pass
         # 【V88·行动指令 2026-07-25 用户抓"没有推荐也没说该干什么"】每档开头一句话:
@@ -3401,8 +3445,7 @@ try:
                             + (f"<span style='font-size:11px;color:#b45309'>·⚡{_r9t['event'][:30]}</span>"
                                if _r9t.get("event") else "") + "</div>")
                     st.markdown("<b style='font-size:13px'>⏳ ③b 拐点倒计时</b>"
-                                "<span style='font-size:11px;color:#94a3b8'>（🕶影子模式·不参与买卖名单·数字=信号强度/100"
-                                "非概率(样本≥50报命中率≥100升概率口径)·窗口=交易日·台账攒样本晋级）</span>"
+                                "<span style='font-size:11px;color:#94a3b8' title='影子模式:不参与买卖名单;数字=信号强度/100非概率(样本≥50报命中率,≥100升概率口径);窗口=交易日;确认价过线才算数;每条已入预测台账到期核算攒样本晋级'>ⓘ影子·强度制</span>"
                                 + "".join(_tf_html9), unsafe_allow_html=True)
             except Exception:
                 pass
@@ -3423,8 +3466,7 @@ try:
                                      f"<span style='color:#475569;font-size:11px'>·{str(_p9p.get('note'))[:36]}</span></div>")
                 if _ps_html9:
                     st.markdown("<b style='font-size:13px'>📡 ③c 前置信号</b>"
-                                "<span style='font-size:11px;color:#94a3b8'>（🕶影子模式·蓄势=资金流入热度未起(仅A股)·"
-                                "漂移=财报前价格位移·台账攒样本晋级）</span>" + "".join(_ps_html9), unsafe_allow_html=True)
+                                "<span style='font-size:11px;color:#94a3b8' title='影子模式;蓄势=主力资金连续流入但热度未起(仅A股,板块涨幅直读待接);漂移=财报前5日价格位移(真预期差需EPS一致预期/期权隐波,下批);台账攒样本晋级'>ⓘ影子·事前预警</span>" + "".join(_ps_html9), unsafe_allow_html=True)
             except Exception:
                 pass
         with _tbR9:
@@ -3540,7 +3582,7 @@ try:
                                  "点名暂停,完整名单在🐴黑马雷达模块(战绩回升自动恢复)</div>" if _dh_gate9n else
                                  "<div style='font-size:12.5px;color:#94a3b8'>现在可进0只——空仓等待也是决策,下面准备买名单到价即动</div>"))
                         + (f"<div style='font-size:12px;margin-top:3px'><b style='color:#b45309'>🎯 准备买"
-                           f"({len(_prep9n)}只·{_prep_lbl9}·实盘台账积累中)</b>"
+                           f"({len(_prep9n)}只)<span style='font-weight:400;font-size:11px;color:#94a3b8' title='{_prep_lbl9}·实盘台账积累中·到价即动'>ⓘ</span></b>"
                            + (lambda _ov9q: (f"<span style='font-size:11px;color:#94a3b8'>"
                                              f"·与{_ov9q[0]}榜重合{_ov9q[1]}/{len(_prep9n)}只——16与32周趋势"
                                              "一致属长周期常态,差异看各档分数/支撑压力对照</span>")
@@ -3646,8 +3688,7 @@ try:
                             + f"{_pol9v}"
                             f"<div style='font-size:11px;color:#94a3b8;margin-left:8px'>└{str(_sv9.get('why'))[:70]}</div></div>")
                     st.markdown(f"<b style='font-size:13px'>🎖️ 五行业代表·{_tb_mkt9}·下周关注</b>"
-                                f"<span style='font-size:11px;color:#94a3b8'>（医疗/能源/军工/银行/消费·统一引擎实跑择优"
-                                f"·{str(_sr9v.get('generated_at'))[5:16]}·弱行业不硬凑如实标观察）</span>"
+                                f"<span style='font-size:11px;color:#94a3b8' title='医疗/能源/军工/银行/消费·统一引擎实跑择优·弱行业不硬凑如实标观察·{str(_sr9v.get(chr(39) + chr(39)) or chr(32))}'>·{str(_sr9v.get('generated_at'))[5:16]} ⓘ</span>"
                                 + "".join(_sr_rows9), unsafe_allow_html=True)
 
                     def _rf_secrep9():
@@ -12990,7 +13031,7 @@ def _render_my_stocks_today(_wa, _live_chg, *, scopes=("持仓", "自选"), cont
                               _order.get(x[1]["kind"], 9), float(x[0].get("today_chg") or 0)))
     _pool_word9 = "持仓" if tuple(scopes) == ("持仓",) else ("自选" if tuple(scopes) == ("自选",) else "我的票")
     _ctx9r = container if container is not None else st.container()
-    with _ctx9r, st.expander(f"📌 {_pool_word9} · 今日逐只怎么办（能不能动+为什么 · {len(_rows)}只）", expanded=True):
+    with _ctx9r, st.expander(f"📌 {_pool_word9} · 今日逐只怎么办（能不能动+为什么 · {len(_rows)}只）", expanded=False):
         st.caption("区分「破位该躲」和「错杀可低吸」——不是永远等回踩。点名进深度分析。")
         _html = ["<div style='font-size:13px;line-height:1.5'>"]
         for _d, _diag in _rows:
@@ -15556,7 +15597,7 @@ def _render_today_nav():
         # 【V88·三层周期概率总览】北极星定纲：大盘/板块/自选三层同屏看周期+下一周期概率
         # 【模块可折叠】顶部折叠开关，默认展开
         try:
-            with st.expander("🧭 三层周期·概率总览（大盘/板块/自选）", expanded=True):
+            with st.expander("🧭 三层周期·概率总览（大盘/板块/自选）", expanded=False):
                 _render_l3_cycle_board(_snap, _is_trading)
         except Exception:
             logging.debug("三层周期总览渲染失败", exc_info=True)
@@ -16026,7 +16067,7 @@ def _render_today_nav():
                 if _rl_dh9:
                     st.caption(_rl_dh9)
                 with st.expander(f"🐴 黑马雷达 · 全选大池复判达标（🔴重点{_nk9}·🟡待观察{len(_horses9) - _nk9}）",
-                                 expanded=True):
+                                 expanded=False):
                     st.markdown(
                         _V88_CARD_CSS
                         + '<div class="v88-watch-shell" style="border-color:#fbbf24;background:#fffdf5">'
@@ -18569,7 +18610,7 @@ if st.session_state.get('scan_selected_code'):
                 except Exception as _e99:
                     _tp = analyze_trend_pulse(df_temp, target_c)
                     if _tp:
-                        with st.expander(f"🔥 趋势脉搏 · {_tp['stage']} · 趋势分{_tp['score']}", expanded=True):
+                        with st.expander(f"🔥 趋势脉搏 · {_tp['stage']} · 趋势分{_tp['score']}", expanded=False):
                             st.markdown(render_trend_pulse_md(_tp, stock_name))
         else:
             _scan_prog.progress(1.0)
