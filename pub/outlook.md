@@ -1,6 +1,6 @@
 # 🔮 V88 前瞻 — 下一交易日展望（2026-07-27（周一））
 
-> ⏱ 今天 2026-07-26（周日） 为非交易日｜分析生成：2026-07-26 12:31（北京时间）
+> ⏱ 今天 2026-07-26（周日） 为非交易日｜分析生成：2026-07-26 18:46（北京时间）
 > 动量与温度为全实价计算；财报日历来自交易所披露；AI 仅做受约束归纳，不构成投资建议。
 
 ## 🌡 大盘走势预期（下一交易日开盘基调）
@@ -77,24 +77,24 @@
 
 - **SpaceX**（`[US:SPCX]`）：‘Time will tell whether that was a good bet’: My adviser got me a full SpaceX IPO allocation. Was I lucky?（MarketWatch - Top Stories）
 - **SO**（`[US:SO]`）：‘I’m still confused’: I sold $80,000 in shares on June 30, so why didn’t I receive my dividend?（MarketWatch - Top Stories）
-- **宁德时代**（`[SZ:300750]`）：半年净利润超430亿元,宁德时代发起A股史上最大规模单次回购 - 观察者（Google News - 中文市场聚合）
+- **SpaceX**（`[US:SPCX]`）：SpaceX may have missed its window to buy Tesla（Yahoo Finance - Top）
+- **SO**（`[US:SO]`）：Cocoa prices are easing. So why is chocolate still so expensive?（CNBC - Top News）
+- **AAPL**（`[US:AAPL]`）：AAPL Stock Tops Nasdaq’s Modest Gains: Analyst Says Siri Finally Shows ‘AI Chops’ In iOS 27 Beta - Stocktwits（Google News - EN Markets）
+- **港交所**（`[HK:0388]`）：港股IPO周报:港交所最大IPO来了!中际旭创招股中,AI独角兽正在“集体赶考”港股 - 凤凰网财经（Google News - 中文市场聚合）
+- **宁德时代**（`[SZ:300750]`）：上半年净赚超432亿,发起A股史上最大单次回购!宁德时代半年报藏暗局,“以价换量”致净利率下滑,车企“去宁德化”走向主流 - 新浪财经（Google News - 中文市场聚合）
+- **英伟达**（`[US:NVDA]`）：投资英伟达与SK海力士合作的A股有哪些机会? - 手机新浪网（Google News - 中文市场聚合）
+- **宁德时代**（`[SZ:300750]`）：周末要闻汇总:宁德时代启动A股史上最大规模回购,韩国存储双雄拟签下9500亿美元大单 - finance.sina.com.cn（Google News - 中文市场聚合）
 - **特斯拉**（`[US:TSLA]`）：全球市场:美股三大指数收跌 纳指跌超2% 特斯拉重挫近15% 国际油价涨逾6% - 东方财富（Google News - 中文市场聚合）
-- **标普500**（`[SH:513500]`）：美股周五尾盘涨跌不一,标普500指数转跌,芯片股持续下跌 - finance.sina.com.cn（Google News - 中文市场聚合）
-- **美光科技**（`[US:MU]`）：美股半导体板块集体下挫SK海力士跌超5% 美光科技、闪迪跌超4% 英特尔跌超2%;黄金上涨原油下跌|美股开盘 - 东方财富（Google News - 中文市场聚合）
 - **特斯拉**（`[US:TSLA]`）：美股暴跌,道指重挫500点,纳指跌2.2%,特斯拉狂泻14.5%,谷歌跌7.1%,油价狂飙,美债收益率攀升 - 新浪财经（Google News - 中文市场聚合）
-- **SO**（`[US:SO]`）：Sony Group Corporation (SONY) Stock Price, News, Quote & History - Yahoo! Finance Canada（Google News - EN Markets）
-- **SpaceX**（`[US:SPCX]`）：SpaceX Stock Halved, Starship Test Success Fuels Rebound Hopes - 조선일보（Google News - EN Markets）
-- **GOOGL**（`[US:GOOGL]`）：Nasdaq, S&P 500, Dow Futures Edge Higher, Brushing Off Fresh US-Iran Clashes As Earnings Take Center Stage: TSLA, NOW, GOOGL, NOK In Focus - Stocktwits（Google News - EN Markets）
-- **英伟达**（`[US:NVDA]`）：“大空头” Burry加码做空英伟达、美光（华尔街见闻）
-- **宁德时代**（`[SZ:300750]`）：宁德时代的增长变得更“重”了（华尔街见闻）
+- **英伟达**（`[US:NVDA]`）：据报美股“大空头”伯里加码做空美光、英伟达 - finance.sina.com.cn（Google News - 中文市场聚合）
 
 ## 🔭 AI 综合前瞻
 
-**大盘基调**  
-美股纳指空头压力延续，假期特斯拉重挫近15%、半导体板块集体下跌（美光、闪迪跌超4%），倾向美股短期承压，标普震荡待变。A股上证多头惯性，但深证震荡，外围疲软若传导则可能压制反弹；港股过热防回撤，恒指多头惯性但需留意高位获利了结。
+下一交易日前瞻：
 
-**个股影响**  
-持仓SO、MO、AAPL（7/30财报）临近，SO假期现股息争议，关注财报指引。SpaceX（8/4财报）股价减半后反弹消息或影响短线情绪。辉瑞、默沙东、礼来财报在即，结合美股科技与医药板块轮动，若超预期则有望分散空头压力。宁德
+**大盘基调**：美股偏冷震荡，纳指空头压力叠加特斯拉暴跌、英伟达遭做空消息，倾向压制科技情绪，若标普未能守住7400则短期回踩压力加大。A股多头惯性延续，半导体芯片资金轮入，但深证震荡待变，若上证未能站稳3820则警惕获利回吐。港股过热防回撤，恒指若失守24800则触发中线兑现纪律。
+
+**个股影响**：持仓苹果财报在即，假期要闻提及Siri展示AI能力，若iOS 27测试反馈正面则短线支撑，但需防大盘拖累。SO与MO财报同步，可可价格消息对MO无直接关联，关注其股息政策。SpaceX IPO分配引发讨论，但财报尚在9天后，短期波动有限。辉瑞、默沙东财报临近，关注8月4日密集披露。
 
 ---
 _本前瞻由 V88 于非交易日自动生成，仅供研究参考，不构成投资建议。_
