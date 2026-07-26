@@ -594,6 +594,27 @@ if _nav == "🧭 导航":
                                 for x in _up9c2) + "</div>" if _up9c2
                                else "<div style='font-size:12.5px;color:#94a3b8'>全池文件待发布或暂无低位转强</div>"),
                             unsafe_allow_html=True)
+                # 【V88·U3拐点倒计时+前置信号·云端 2026-07-26】pub版(大盘/板块级)
+                try:
+                    _tfc9 = _pubj9("turning_forecast_pub.json")
+                    _tfr9 = (_tfc9.get("rows") or [])[:5]
+                    if _tfr9:
+                        st.markdown("<b style='font-size:13px'>⏳ 拐点倒计时</b>"
+                                    "<span style='font-size:11px;color:#94a3b8'>（个股级在桌面/飞书）</span>"
+                                    + "".join(f"<div style='font-size:12.5px'>{'🔺' if r.get('side') == 'top' else '🌱'} "
+                                              f"{r.get('name')} <b>{(r.get('window_days') or ['?', '?'])[0]}~"
+                                              f"{(r.get('window_days') or ['?', '?'])[1]}日内"
+                                              f"{'见顶' if r.get('side') == 'top' else '见底'}·{r.get('prob')}%</b>"
+                                              f"·确认{r.get('confirm_price')}"
+                                              + (f"·⚡{str(r.get('event'))[:26]}" if r.get("event") else "")
+                                              + "</div>" for r in _tfr9), unsafe_allow_html=True)
+                    _psc9 = _pubj9("pre_signals.json")
+                    _psl9 = [f"💰{f.get('name')}·{str(f.get('note'))[:30]}" for f in (_psc9.get("fund_lead") or [])[:2]] +                             [f"📊{str(e.get('name'))[:16]}·{str(e.get('note'))[:32]}" for e in (_psc9.get("earn_gap") or [])[:2]]
+                    if _psl9:
+                        st.markdown("<b style='font-size:13px'>📡 前置信号</b><div style='font-size:12px'>"
+                                    + "<br>".join(_psl9) + "</div>", unsafe_allow_html=True)
+                except Exception:
+                    pass
                 # 【V88·五行业代表·云端 2026-07-25】与桌面同源(pub无隐私,候选皆公开大票)
                 try:
                     _sruniv9 = _pubj9("sector_reps.json")
