@@ -2768,6 +2768,8 @@ except Exception:
 # 【V88·此刻按钮 2026-07-18 用户点单】全站缓存都是固定节奏，右上角给一个总开关：
 # 点了才强制用此刻最新数据（清会话缓存+st.cache_data+行情pkl文件缓存后整页重算），
 # 不点一律走原缓存零额外流量。AI解读类不受此按钮影响（守预算，仍按各自节流）。
+# 【U3.2 2026-07-26 用户点单】全球市场概览置顶(双时钟+三市场体制一眼可见)
+_macro_top_slot = st.empty()
 _now_c1, _now_c2 = st.columns([8.5, 1.5])
 with _now_c2:
     if st.button("📡 此刻最新", key="btn_force_now", use_container_width=True,
@@ -3842,7 +3844,7 @@ except Exception:
 
 # 【V88·宏观置顶 2026-07-17 用户定纲】大盘宏观区(全球概览/宏观脉搏/三层总览)置于页面最顶,
 # 先看大势定调再看自己的票。由下方全球概览块通过 slot 回填。
-_macro_top_slot = st.empty()
+# (U3.2 slot已上移至页首——用户点单'全球概览置顶,看时间方便')
 
 _v88_front_decision_slot = st.empty()
 # 【V88·搜索前置】搜索框占位排在“大盘/持仓/自选/预警”速览带之下、其余重模块之上，
@@ -5485,7 +5487,8 @@ if Config.ENABLE_EXPECTATION_LAYER:
             st.checkbox(
                 "首屏自动请求AI（人工智能）市场分析",
                 key="v88_auto_ai_market",
-                help="仅美股、港股或A股交易日盘中运行；每3小时一次，每天最多3次；一次请求同时分析三市场。",
+                value=True,   # 【U3.2 用户点单"预算内默认开"】节流内建(3h/次·日3次)≈0.3元/月,网页1元账本内
+                help="已默认开启(用户2026-07-26批准)。仅交易日盘中运行；每3小时一次，每天最多3次；一次请求同时分析三市场；走网页1元预留账本。",
             )
 
             all_markets = None
