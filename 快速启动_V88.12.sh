@@ -52,6 +52,9 @@ fi
 
 # ── 清理 8501 端口上的旧实例（避免“端口已被占用”启动失败）───────
 pkill -9 -f 'streamlit run app_v88_paged.py' 2>/dev/null
+# 【2026-07-26 防双守护】把旧守护循环也清掉(双守护会无限争抢8501=Connection error)
+pgrep -f "快速启动_V88.12.sh" | grep -v $$ | xargs kill 2>/dev/null
+sleep 1
 for p in $(lsof -ti:8501 2>/dev/null); do
     # 只清占8501的streamlit自身,不误杀恰好占端口的无关程序(2026-07-25审计修复)
     ps -p "$p" -o command= 2>/dev/null | grep -q "streamlit" && kill "$p" 2>/dev/null
