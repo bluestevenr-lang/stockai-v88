@@ -3444,7 +3444,10 @@ try:
                             f"·52周位{int(float(_r9t.get('pos52') or 50))}%"
                             f"({'高位·下行空间大' if float(_r9t.get('pos52') or 50) > 70 else ('低位·上行空间大' if float(_r9t.get('pos52') or 50) < 30 else '中位')})</span>"
                             + (f"<span style='font-size:11px;color:#b45309'>·⚡{_r9t['event'][:30]}</span>"
-                               if _r9t.get("event") else "") + "</div>")
+                               if _r9t.get("event") else "")
+                            + ((lambda _ac: f"<span style='font-size:11px;color:{'#b45309' if _ac.startswith('存疑') else '#0891b2'}'>"
+                                            f"·🤖AI复核:{_ac}</span>")(str(_r9t.get("ai_check")))
+                               if _r9t.get("ai_check") else "") + "</div>")
                     st.markdown("<b style='font-size:13px'>⏳ ③b 拐点倒计时</b>"
                                 "<span style='font-size:11px;color:#94a3b8' title='影子模式:不参与买卖名单;数字=信号强度/100非概率(样本≥50报命中率,≥100升概率口径);窗口=交易日;确认价过线才算数;每条已入预测台账到期核算攒样本晋级'>ⓘ影子·强度制</span>"
                                 + "".join(_tf_html9), unsafe_allow_html=True)
