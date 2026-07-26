@@ -11,20 +11,27 @@
 单页版 8501 不受影响(标记是纯注释);本入口跑 8503 供验收。深链(?q=&focus=deep)自动切研究页。
 """
 from pathlib import Path
+import streamlit as _st_boot
 
 _SRC_PATH = Path(__file__).parent / "app_v88_integrated.py"
-_SRC = _SRC_PATH.read_text(encoding="utf-8")
 
-_segs = {}
-_cur, _buf = "A", []
-for _ln in _SRC.splitlines():
-    if _ln.startswith("# ===V88_PAGE_BREAK:"):
-        _segs[_cur] = "\n".join(_buf)
-        _cur, _buf = _ln.split(":", 1)[1].rstrip("=").rstrip("="), []
-        _cur = _cur.replace("=", "")
-        continue
-    _buf.append(_ln)
-_segs[_cur] = "\n".join(_buf)
+
+@_st_boot.cache_resource(show_spinner=False)
+def _load_segments(_mtime: float):
+    """切段+预编译一次缓存(mtime变=源码更新才重做)——省每次rerun的重复读盘/切分/compile。"""
+    src = _SRC_PATH.read_text(encoding="utf-8")
+    segs, cur, buf = {}, "A", []
+    for ln in src.splitlines():
+        if ln.startswith("# ===V88_PAGE_BREAK:"):
+            segs[cur] = "\n".join(buf)
+            cur, buf = ln.split(":", 1)[1].strip("="), []
+            continue
+        buf.append(ln)
+    segs[cur] = "\n".join(buf)
+    return segs
+
+
+_segs = dict(_load_segments(_SRC_PATH.stat().st_mtime))
 
 # B段公共定义抽取(第二阶段提速): 只取top-level函数def+字面量常量赋值——
 # 函数体惰性执行零副作用;雷达页借此跳过B段13k行的渲染与扫描。
@@ -49,7 +56,12 @@ def _extract_defs(seg_src: str) -> str:
     mod = _ast_pg.Module(body=keep, type_ignores=[])
     return _ast_pg.unparse(mod)
 
-_segs["B_DEFS"] = _extract_defs(_segs.get("LISTS", ""))
+@_st_boot.cache_resource(show_spinner=False)
+def _bdefs_cached(_mtime: float):
+    return _extract_defs(_load_segments(_mtime).get("LISTS", ""))
+
+
+_segs["B_DEFS"] = _bdefs_cached(_SRC_PATH.stat().st_mtime)
 # RAW池初始化是调用式赋值(init_stock_pools=本地硬编码池,轻且无网络副作用)——原文切片补进B_DEFS
 _lists_lines = _segs.get("LISTS", "").splitlines()
 for _i, _l in enumerate(_lists_lines):
@@ -85,9 +97,19 @@ _G = {"__name__": "__main__", "__file__": str(_SRC_PATH)}
 # 快链会让点名跳转无声失效——保真优先,深链慢一点也要对。
 _chain = (("A", "LISTS", "RESEARCH") if (_qp.get("q") and str(_qp.get("focus")) == "deep")
           else PAGES[_page])
-for _seg_name in _chain:
-    _code = compile(_segs[_seg_name], f"v88_seg_{_seg_name}", "exec")
-    exec(_code, _G)
+@_st_boot.cache_resource(show_spinner=False)
+def _compiled(_seg_name: str, _mtime: float):
+    return compile(_segs[_seg_name], f"v88_seg_{_seg_name}", "exec")
+
+
+_mt = _SRC_PATH.stat().st_mtime
+for _i_seg, _seg_name in enumerate(_chain):
+    if _i_seg >= 1:
+        # 长段执行给前端反馈(名单页首扫约1分钟)——防"看起来卡死"
+        with _st_boot.spinner(f"加载 {_seg_name} 段…名单页首次含全池扫描约1分钟,之后30分钟内秒开"):
+            exec(_compiled(_seg_name, _mt), _G)
+    else:
+        exec(_compiled(_seg_name, _mt), _G)
 
 # 侧边导航(sidebar位置固定,不受渲染顺序影响;切换→rerun→按新页执行前缀链)
 with _st_nav.sidebar:

@@ -16723,7 +16723,7 @@ with st.expander("🏛️ 机构风向标 · 权威研报评级×系统推荐池
             st.dataframe([{"股票": x["stock"], "在系统": x["source"],
                            "覆盖机构": "、".join(x["orgs"][:3]) + (f" 等{len(x['orgs'])}家" if len(x["orgs"]) > 3 else ""),
                            "看多家数": x["buy_n"],
-                           "最高目标价": (max(x["targets"]) if x.get("targets") else "—"),
+                           "最高目标价": (str(max(x["targets"])) if x.get("targets") else "—"),
                            "研报精华": x.get("gist") or "—"}
                           for x in _res9x], hide_index=True, use_container_width=True)
         _cons9 = _inst9.get("consensus") or []
