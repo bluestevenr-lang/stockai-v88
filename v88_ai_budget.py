@@ -1,4 +1,4 @@
-"""网页版 V88 的独立 1元/月 AI 配额；云端主流水线保留6元，总上限7元。"""
+"""网页版AI配额1元/月——共享5元总预算的网页预留部分(主账本4元在私仓ai_budget)。"""
 from __future__ import annotations
 
 import json

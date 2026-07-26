@@ -2973,6 +2973,9 @@ try:
             return {}
     _cb_gate9 = _v88_mkt_gate9x(_cb_repo9)
     _cb_nt9, _cb_day9 = _v88_nontrade9x()
+    # 【U3⑥数据闸门 2026-07-26 GPT审计采纳】行情异常=degraded→买侧禁发,只留卖警
+    _dg9 = _cbj9("health_gate.json")
+    _cb_degraded9 = bool(_dg9.get("degraded"))
     try:
         # stock_names.json=列表[{n,c,m}] → 归一成 {code: 名};港股键同录去前导零版(2020==02020)
         _cb_names9 = {}
@@ -3049,10 +3052,30 @@ try:
             f"　{_MKFLAG9.get(_cb_mk9(_cd9s), '')}现{_px9s}·看跌<b style='color:#16a34a'>{_pd9s}%</b>·{_act9s}"
             f"<span style='font-size:12px;color:#475569'>　{_why9s}</span>"
             f"<span style='font-size:11px;color:#94a3b8'>　卖点价在持仓卡💰行·💼按纪律执行非翻案</span></div>")
+    # 【U3⑨简版 2026-07-26】同因子拥挤提示:买单集中同一市场/板块=其实押了一个宏观因子
+    try:
+        if len(_cb_rows9) >= 3:
+            from collections import Counter as _Ct9
+            _mkc9 = _Ct9(_cb_mk9(x[2]) for x in _cb_rows9)
+            _top_mk9, _top_n9 = _mkc9.most_common(1)[0]
+            if _top_n9 >= 3:
+                _cb_sell_html9.insert(0, f"<div style='font-size:12px;color:#b45309'>⚠️拥挤提示:"
+                                          f"{_top_n9}/{len(_cb_rows9)}只买单集中在{_top_mk9}——"
+                                          "实际押的是同一宏观因子,总仓位按1只的纪律控制,别当分散</div>")
+    except Exception:
+        pass
     if len(_cb_rows9) > 8:
         _cb_sell_html9.insert(0, f"<div style='font-size:12px;color:#64748b'>买侧还有{len(_cb_rows9) - 8}只,见④/双门</div>")
     if len(_cb_sell9) > 5:
         _cb_sell_html9.append(f"<div style='font-size:12px;color:#64748b'>…等{len(_cb_sell9)}只,全名单在⚔️地狱门</div>")
+    if _cb_degraded9:
+        st.markdown("<div style='background:#fef3c7;border:2px solid #d97706;border-radius:10px;"
+                    "padding:.4rem .7rem;margin:.3rem 0;font-size:13px'>"
+                    "<b>⛔ 数据闸门降级</b>——关键行情异常("
+                    + "；".join(str(x) for x in (_dg9.get('reasons') or [])[:3])
+                    + ")：<b>暂停发布新买单</b>,持仓卖警照常。数据恢复自动解除(比预测更重要的是别用坏数据预测)</div>",
+                    unsafe_allow_html=True)
+        _cb_rows9 = []
     if _cb_rows9 or _cb_sell_html9:
         _cb_html9 = []
         for _src9, _nm9, _cd9, _px9, _pu9, _rr9, _why9 in _cb_rows9[:8]:
@@ -3165,7 +3188,7 @@ try:
         "下季度": {"mkt_hz": "32周", "sec_hz": "16周", "buy": "hz",   "hz": "32周",
                   "evt": "本月及下月", "days": (90, 180)},
     }
-    with st.expander("⏱ 时间作战板 · 今日→下月六档切换：大盘/轮转/低位埋伏/买/卖/事件（一屏六问）",
+    with st.expander("⏱ 时间作战板 · 今日→下季度七档切换：大盘/轮转/低位埋伏/买/卖/事件（一屏六问）",
                      expanded=True):
         _tbc_t9, _tbc_m9 = st.columns([5.2, 3.8])
         with _tbc_t9:
@@ -3288,7 +3311,7 @@ try:
                     _pv9x = _l9n.get(_cfg9["mkt_hz"])
                     if _pv9x is None:
                         continue
-                    _pv9n, _tag9n = int(_pv9x), f"(统一引擎{_cfg9['mkt_hz']}档)"
+                    _pv9n, _tag9n = int(_pv9x), f"(决策窗={_tb_tier9}·参考{_cfg9['mkt_hz']}趋势因子,非日历直译)"
                     _pc9n = "#dc2626" if _pv9n >= 55 else ("#16a34a" if _pv9n <= 45 else "#64748b")
                     _w9n = ("偏涨·回踩敢接" if _pv9n >= 55 else
                             ("偏弱·反弹先减不追" if _pv9n <= 45 else "震荡·区间对待"))
@@ -3369,15 +3392,15 @@ try:
                             f"{_nw_link9(_r9t.get('name'), _r9t.get('code') or '')}"
                             f"<b style='color:{_cl9t}'>{_r9t.get('window_days', ['?', '?'])[0]}~"
                             f"{_r9t.get('window_days', ['?', '?'])[1]}日内"
-                            f"{'见顶' if _r9t.get('side') == 'top' else '见底'}·{_r9t.get('prob')}%</b>"
+                            f"{'见顶' if _r9t.get('side') == 'top' else '见底'}·强度{_r9t.get('prob')}</b>"
                             f"<span style='font-size:11.5px;color:#475569'>·确认{_r9t.get('confirm_price')}"
                             f"{('(' + str(_r9t.get('proxy')) + ')') if _r9t.get('proxy') else ''}"
                             f"·{str((_r9t.get('drivers') or [''])[0])[:26]}</span>"
                             + (f"<span style='font-size:11px;color:#b45309'>·⚡{_r9t['event'][:30]}</span>"
                                if _r9t.get("event") else "") + "</div>")
                     st.markdown("<b style='font-size:13px'>⏳ ③b 拐点倒计时</b>"
-                                "<span style='font-size:11px;color:#94a3b8'>（技术提前量×信息提前量·窗口=交易日·"
-                                "确认价过线才算数·每条已入预测台账到期核算）</span>"
+                                "<span style='font-size:11px;color:#94a3b8'>（🕶影子模式·不参与买卖名单·数字=信号强度/100"
+                                "非概率(样本≥50报命中率≥100升概率口径)·窗口=交易日·台账攒样本晋级）</span>"
                                 + "".join(_tf_html9), unsafe_allow_html=True)
             except Exception:
                 pass
@@ -3398,8 +3421,8 @@ try:
                                      f"<span style='color:#475569;font-size:11px'>·{str(_p9p.get('note'))[:36]}</span></div>")
                 if _ps_html9:
                     st.markdown("<b style='font-size:13px'>📡 ③c 前置信号</b>"
-                                "<span style='font-size:11px;color:#94a3b8'>（事前预警非事后归因·蓄势=钱进价未动·"
-                                "预期差=财报博弈结构）</span>" + "".join(_ps_html9), unsafe_allow_html=True)
+                                "<span style='font-size:11px;color:#94a3b8'>（🕶影子模式·蓄势=资金流入热度未起(仅A股)·"
+                                "漂移=财报前价格位移·台账攒样本晋级）</span>" + "".join(_ps_html9), unsafe_allow_html=True)
             except Exception:
                 pass
         with _tbR9:
@@ -15143,7 +15166,7 @@ def _render_today_nav():
         _bd = _hb.get("budget")
         if _bd is not None:
             _bp = _bd / 9 * 100
-            _parts9.append((f"🧮 预算{_bd}/9元", "#dc2626" if _bp >= 95 else ("#ea580c" if _bp >= 80 else "#64748b")))
+            _parts9.append((f"🧮 预算{_bd}/4元(总5含网页1)", "#dc2626" if _bp >= 95 else ("#ea580c" if _bp >= 80 else "#64748b")))
         _sy = _hb.get("sync_ok")
         if _sy is not None:
             _parts9.append(("🔗 三端同步✓" if _sy else "🔗 三端漂移⚠️", "#16a34a" if _sy else "#dc2626"))
@@ -15485,7 +15508,7 @@ def _render_today_nav():
         st.caption("参数白话：上行概率（越大越有利）｜下行概率（越小越有利）｜盈亏比（越大越好，>1才有正向空间）｜期望值（>0才是正期望）｜ATR（越大波动越大）｜历史水位（越接近0%越靠近历史最高点）")
 
         # 【V88·AI预算统计+超额预警】（2026-07-16 用户点单：即将用超要有预警）
-        # 两本账：云端流水线（私仓 ai_budget.json，上限8元）+ 网页版AI（本地1元），总9元/月
+        # 共享5元总账：主账本4元(私仓ai_budget,云端+桌面流水线同一文件)+网页预留1元(v88_ai_budget)
         try:
             _bj9 = json.loads((_repo / "data" / "ai_budget.json").read_text(encoding="utf-8"))
             _cloud_spent9 = float(_bj9.get("spent_rmb", 0) or 0)
@@ -16546,7 +16569,7 @@ try:
         try:
             from v88_ai_budget import status as _web_budget_status
             _wb = _web_budget_status()
-            st.caption(f"💰 AI预算：云端主流水线6元/月＋网页按需1元/月＝总上限7元｜网页已用¥{_wb['spent']:.3f}")
+            st.caption(f"💰 AI预算：总5元/月=主账本4元(云端+桌面)＋网页预留1元｜网页已用¥{_wb['spent']:.3f}")
         except Exception:
             pass
 except Exception as _nav_e:
@@ -18869,7 +18892,7 @@ if execute_analysis and q_input:
 
         # ═══════════════════════════════════════════════════════════════
         # 【V88·个股五周期】2/4/8/16/32周量化底稿 + DeepSeek thinking-high
-        # 点击任一个股均自动执行；同一行情快照缓存6小时，控制7元/月总预算。
+        # 点击任一个股均自动执行；同一行情快照缓存6小时，守5元/月共享总预算。
         # ═══════════════════════════════════════════════════════════════
         st.markdown("### 🧭 个股周期轮换总览（深度分析第一判断）")
         st.caption("先看周期象限与2/4/8/16/32周走向，再看明细和K线；置信度表示证据一致性，不是回测胜率。")
