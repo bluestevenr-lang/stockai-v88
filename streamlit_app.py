@@ -602,10 +602,10 @@ if _nav == "🧭 导航":
                         st.markdown("<b style='font-size:13px'>⏳ 拐点倒计时</b>"
                                     "<span style='font-size:11px;color:#94a3b8'>（个股级在桌面/飞书）</span>"
                                     + "".join(f"<div style='font-size:12.5px'>{'🔺' if r.get('side') == 'top' else '🌱'} "
-                                              f"{r.get('name')} <b>{(r.get('window_days') or ['?', '?'])[0]}~"
-                                              f"{(r.get('window_days') or ['?', '?'])[1]}日内"
-                                              f"{'见顶' if r.get('side') == 'top' else '见底'}·{r.get('prob')}%</b>"
-                                              f"·确认{r.get('confirm_price')}"
+                                              f"{r.get('name')} <b>预计{(r.get('window_days') or ['?', '?'])[0]}～"
+                                              f"{(r.get('window_days') or ['?', '?'])[1]}个交易日内"
+                                              f"{'可能见顶' if r.get('side') == 'top' else '可能见底'}·强度{r.get('prob')}/100</b>"
+                                              f"·{'跌破' if r.get('side') == 'top' else '站上'}{r.get('confirm_price')}才算数"
                                               + (f"·⚡{str(r.get('event'))[:26]}" if r.get("event") else "")
                                               + "</div>" for r in _tfr9), unsafe_allow_html=True)
                     _psc9 = _pubj9("pre_signals.json")
