@@ -26,10 +26,47 @@ for _ln in _SRC.splitlines():
     _buf.append(_ln)
 _segs[_cur] = "\n".join(_buf)
 
+# B段公共定义抽取(第二阶段提速): 只取top-level函数def+字面量常量赋值——
+# 函数体惰性执行零副作用;雷达页借此跳过B段13k行的渲染与扫描。
+import ast as _ast_pg
+
+def _extract_defs(seg_src: str) -> str:
+    try:
+        tree = _ast_pg.parse(seg_src)
+    except SyntaxError:
+        return ""
+    keep = []
+    for node in tree.body:
+        if isinstance(node, (_ast_pg.FunctionDef, _ast_pg.AsyncFunctionDef, _ast_pg.ClassDef,
+                             _ast_pg.Import, _ast_pg.ImportFrom)):
+            keep.append(node)
+        elif isinstance(node, _ast_pg.Assign) and all(isinstance(t, _ast_pg.Name) for t in node.targets):
+            try:
+                _ast_pg.literal_eval(node.value)   # 只收字面量赋值(常量池RAW_US等),防执行副作用
+                keep.append(node)
+            except Exception:
+                continue
+    mod = _ast_pg.Module(body=keep, type_ignores=[])
+    return _ast_pg.unparse(mod)
+
+_segs["B_DEFS"] = _extract_defs(_segs.get("LISTS", ""))
+# RAW池初始化是调用式赋值(init_stock_pools=本地硬编码池,轻且无网络副作用)——原文切片补进B_DEFS
+_lists_lines = _segs.get("LISTS", "").splitlines()
+for _i, _l in enumerate(_lists_lines):
+    if _l.startswith("RAW_US, RAW_HK, RAW_CN_TOP = init_stock_pools()"):
+        _raw_block = []
+        for _j in range(_i, min(_i + 60, len(_lists_lines))):
+            _lj = _lists_lines[_j]
+            if _j > _i and _lj.startswith(("def ", "class ", "# ═", "with st.", "st.")):
+                break
+            _raw_block.append(_lj)
+        _segs["B_DEFS"] += "\n" + "\n".join(_raw_block)
+        break
+
 PAGES = {"🏠 总览作战台": ("A",),
          "📋 名单·决策": ("A", "LISTS"),
-         "🛰️ 机会雷达": ("A", "LISTS", "RADAR"),
-         "📚 研究·系统": ("A", "LISTS", "RESEARCH")}
+         "🛰️ 机会雷达": ("A", "B_DEFS", "RADAR"),
+         "📚 研究·系统": ("A", "B_DEFS", "RESEARCH")}
 
 import streamlit as _st_nav
 
@@ -44,7 +81,11 @@ if _page not in PAGES:
     _page = _page_default
 
 _G = {"__name__": "__main__", "__file__": str(_SRC_PATH)}
-for _seg_name in PAGES[_page]:
+# 深链(?q=&focus=deep)必须走全链: 深链消费与搜索逻辑在LISTS段(15025/4270区),
+# 快链会让点名跳转无声失效——保真优先,深链慢一点也要对。
+_chain = (("A", "LISTS", "RESEARCH") if (_qp.get("q") and str(_qp.get("focus")) == "deep")
+          else PAGES[_page])
+for _seg_name in _chain:
     _code = compile(_segs[_seg_name], f"v88_seg_{_seg_name}", "exec")
     exec(_code, _G)
 
