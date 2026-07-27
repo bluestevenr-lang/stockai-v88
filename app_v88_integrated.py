@@ -3499,6 +3499,39 @@ try:
             st.markdown("<b style='font-size:13px'>🌱 ③ 低位拐点·可注意埋伏</b>"
                         f"<span style='font-size:11px;color:#94a3b8' title='全池{_pt9n.get('scanned', '?')}只扫描;52周低位+相位转强;转强≠立刻买,等时机绿灯;💰=东财主力今日净流入'>ⓘ</span>"
                         f"<div style='font-size:12.5px'>{_up_txt9}</div>", unsafe_allow_html=True)
+            # ── ③a 🌍全市场机会(2026-07-27 用户定纲"扩大股票池·熊市也有逆势股") ──
+            try:
+                _op9 = _nwj9("opportunity_scan.json")
+                _op_ex9 = [r for r in (_op9.get("exec") or []) if _mkfit9(r.get("code"))]
+                _op_bk9 = [r for r in (_op9.get("blocked") or []) if _mkfit9(r.get("code"))]
+                if _op_ex9 or _op_bk9:
+                    _op_rows9 = []
+                    for _r9o in _op_ex9[:6]:
+                        _exc9 = _r9o.get("exception")
+                        _op_rows9.append(
+                            f"<div style='font-size:12.5px'>✅ {_nw_link9(_r9o.get('name'), _r9o.get('code'))}"
+                            f"<b style='color:#dc2626'>涨{_r9o.get('p_up')}%</b>"
+                            f"<span style='font-size:11.5px;color:#475569'>·赔率{_r9o.get('rr')}"
+                            f"·52周{int(float(_r9o.get('pos52') or 0))}%"
+                            f"({'低位·空间大' if float(_r9o.get('pos52') or 100) <= 30 else '中位'})"
+                            f"·买区{_r9o.get('buy_zone')}·止损{_r9o.get('stop')}</span>"
+                            + (f"<span style='font-size:11px;color:#b45309'>·⚡逆势通道(≤1/3仓)</span>" if _exc9 else "")
+                            + f"<span style='font-size:11px;color:#94a3b8'>·{str(_r9o.get('source'))[:12]}"
+                            f"{'·池内' if _r9o.get('in_pool') else '·池外新'}</span></div>")
+                    st.markdown("<b style='font-size:13px'>🌍 ③a 全市场机会</b>"
+                                f"<span style='font-size:11px;color:#94a3b8' title='四路候选(全池转强低位/涨停接力/行业代表/黑马)"
+                                f"→实跑{_op9.get('studied', '?')}只→严格标准(赔率≥2.0·52周位≤55%·2周概率≥55%·启动型)→过环境闸;"
+                                f"逆势通道=深度低位+超宽赔率在弱市可小仓试;全量入台账攒战绩'>"
+                                f"（实跑{_op9.get('studied', '?')}只·可执行{len(_op_ex9)}·被闸{len(_op_bk9)} ⓘ）</span>"
+                                + ("".join(_op_rows9) if _op_rows9 else
+                                   "<div style='font-size:12px;color:#94a3b8'>本档无可执行机会</div>")
+                                + (f"<div style='font-size:11.5px;color:#94a3b8'>⏸被闸:"
+                                   + "、".join(f"{r.get('name')}(赔率{r.get('rr')}·"
+                                              f"{'/'.join((r.get('block_reasons') or ['环境不合格'])[:1])[:18]})"
+                                              for r in _op_bk9[:4]) + "</div>" if _op_bk9 else ""),
+                                unsafe_allow_html=True)
+            except Exception:
+                pass
             # ── ③b ⏳拐点倒计时(U3·2026-07-26 用户批准"拐点高低前后的预计") ──
             try:
                 _tfj9 = _nwj9("turning_forecast.json")

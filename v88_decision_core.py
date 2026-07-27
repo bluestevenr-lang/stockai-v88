@@ -382,12 +382,25 @@ def env_gate(code: str, mode: str, rr: float, pos52=None) -> dict:
         rr_v = 0.0
     if rr_v < need:
         out["reasons"].append(f"赔率{rr_v:.2f}<环境要求{need}")
-    # 裁定: 弱市/事件带 → 必降级; 过热 → 赔率不足才降级
-    if weak or ev_hit or rr_v < need:
+    # 【例外通道 2026-07-27 用户批准"熊市里也有逆势股,一定要增加量"】
+    # 深度低位(52周≤30%)+超宽赔率(≥3.0)的启动票 → 弱市不全拦,降为"可小仓试(≤1/3仓)":
+    # 弱市杀的是高位股,深水+宽赔率恰是熊市该埋伏的;但**事件带(FOMC/自家财报)仍硬拦**——
+    # 事件不可测,赔率再宽也不该赌开奖。
+    _deep_value = (rr_v >= 3.0 and pos52 is not None and float(pos52) <= 30)
+    if ev_hit:
+        out["exec"] = False
+        out["action"] = f"准备买·暂不执行({'·'.join(out['reasons'][:3])}→事件落地后重评)"
+        return out
+    if weak and _deep_value:
+        out["exec"] = True
+        out["action"] = f"可小仓试(≤1/3仓)·逆势通道:52周{float(pos52):.0f}%深水+赔率{rr_v:.1f}宽"
+        out["exception"] = "deep_value"
+        return out
+    if weak or rr_v < need:
         out["exec"] = False
         _why = "·".join(out["reasons"][:3])
-        _clear = (f"大盘回中性(2周>45%)且赔率≥{need:.1f}" if weak else
-                  ("事件落地后重评" if ev_hit else f"回踩到赔率≥{need:.1f}的位置"))
+        _clear = (f"大盘回中性(2周>45%)且赔率≥{need:.1f}" if weak
+                  else f"回踩到赔率≥{need:.1f}的位置")
         out["action"] = f"准备买·暂不执行({_why}→{_clear})"
     return out
 
@@ -577,7 +590,7 @@ def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
         # 环境闸(2026-07-27):技术绿灯过闸后再过环境闸,不合格降级"准备买"
         if entry_plan:
             _tech_mode = str(entry_plan.get("mode") or "")
-            _eg = env_gate(code, _tech_mode, rr)
+            _eg = env_gate(code, _tech_mode, rr, pos52=full.get("pos52"))
             entry_plan["env_gate"] = _eg
             entry_plan["exec_action"] = _eg["action"]
             entry_plan["tech_mode"] = _tech_mode          # 技术信号留档(呈现"技术绿灯但被闸")
