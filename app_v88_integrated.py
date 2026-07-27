@@ -3018,6 +3018,19 @@ try:
             _cb_sell9.append((_r9.get("name"), _r9.get("code"), _r9.get("last"),
                               int(_r9.get("p_down") or 0), str(_r9.get("action") or "")[:12],
                               str(_r9.get("cycle_note") or _r9.get("entry_note") or "")[:44]))
+    # 【V88·Claude标准闸 2026-07-27 用户定纲"有异议的还摆在推荐位没有参考意义"】
+    # 名单出厂前先过闸:CS1宽基不用个股尺/CS2涨概率过半禁减仓/CS4同族敞口去重/
+    # CS5双事件要宽赔率/CS6非低位且上行薄/CS7过热薄赔率——不达标的转⏸未达标区,
+    # 理由写明白(规则源自Fable历次异议,带rule_id可被台账数据推翻)
+    try:
+        _CS9 = json.loads((_cb_repo9 / "data" / "claude_standard.json").read_text(encoding="utf-8"))
+    except Exception:
+        _CS9 = {}
+    _cs_rej9 = (_CS9.get("reject") or {})
+    _cb_sell_off9 = [x for x in _cb_sell9 if str(x[1]) in _cs_rej9]
+    _cb_buy_off9 = [x for x in _cb_rows9 if str(x[2]) in _cs_rej9]
+    _cb_sell9 = [x for x in _cb_sell9 if str(x[1]) not in _cs_rej9]
+    _cb_rows9 = [x for x in _cb_rows9 if str(x[2]) not in _cs_rej9]
     _cb_sell9.sort(key=lambda x: -x[3])
     for _sv9 in (_cbj9("sector_reps.json").get("sectors") or []):
         _pk9 = _sv9.get("pick") or {}
@@ -3218,6 +3231,27 @@ try:
         with _tab_h9:
             st.markdown(_tbl9(_t_hold9) if _t_hold9 else "<span style='font-size:12px;color:#94a3b8'>无持有档记录</span>",
                         unsafe_allow_html=True)
+        # 【Claude标准闸·未达标区 2026-07-27】被闸拦下的不许凭空消失:折叠列出+写明哪条规则+人话理由
+        # (透明才可证伪;台账到期后深检算"被拦的票后来表现如何"来修订阈值)
+        if _cb_sell_off9 or _cb_buy_off9:
+            _off_n9 = len(_cb_sell_off9) + len(_cb_buy_off9)
+            with st.expander(f"⏸ 未达Claude标准·已移出名单({_off_n9}只)　"
+                             f"——规则源自Fable/Opus历次否决理由,点开看拦下的原因", expanded=False):
+                _off_html9 = []
+                for _x9o, _side9o in ([(x, "卖") for x in _cb_sell_off9]
+                                      + [(x, "买") for x in _cb_buy_off9]):
+                    _cd9o = str(_x9o[1] if _side9o == "卖" else _x9o[2])
+                    _e9o = _cs_rej9.get(_cd9o) or {}
+                    _off_html9.append(
+                        f"<div style='font-size:12px;margin-bottom:2px'>"
+                        f"<b>{_cb_nm9(_e9o.get('name') or '', _cd9o)}</b>"
+                        f"<span style='color:#64748b'>[{_side9o}·原判{_e9o.get('action') or ''}]</span> "
+                        f"<span style='background:#e0e7ff;color:#3730a3;font-size:10.5px;"
+                        f"border-radius:3px;padding:0 3px'>{'/'.join(_e9o.get('rules') or [])}</span> "
+                        f"<span style='color:#475569'>{_e9o.get('why') or ''}</span></div>")
+                st.markdown("".join(_off_html9), unsafe_allow_html=True)
+                st.caption("这些规则不是拍脑袋:每条都来自Claude复核时反复否决的真实案例(带rule_id)。"
+                           "被拦的票会入台账跟踪,若数据证明拦错了,阈值就改——规则必须能被数据推翻。")
         try:
             if len(_cb_rows9) >= 3:
                 from collections import Counter as _Ct9b
