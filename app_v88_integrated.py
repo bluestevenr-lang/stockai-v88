@@ -3088,6 +3088,18 @@ try:
     if _cb_rows9 or _cb_sell9:
         # 【U4·GPT spec采纳 2026-07-26】六要素表格化:名称/动作/触发价/失效价/仓位/状态;
         # 每类默认5只;原因进ⓘ与深链详情,首层禁长段落。
+        def _plab9(_p, _side="up"):
+            """概率判读小字(数值不许裸奔铁律):买侧=上涨概率,卖侧=下跌概率。"""
+            try:
+                _p = int(_p)
+            except (TypeError, ValueError):
+                return ""
+            if _side == "up":
+                _t = ("高把握" if _p >= 70 else "偏多" if _p >= 60 else "略偏多" if _p >= 55 else "中性")
+            else:
+                _t = ("强看跌" if _p >= 80 else "明确看跌" if _p >= 65 else "偏跌" if _p >= 55 else "中性")
+            return f"<span style='font-weight:400;font-size:10.5px;color:#94a3b8'>({_t})</span>"
+
         def _row6_9(_nm, _cd, _act, _trig, _inv, _pos, _st, _why=""):
             _lk = (f"<a href='?q={_cd}&focus=deep#v88-deep-analysis' target='_blank' rel='noopener' "
                    f"style='text-decoration:underline;color:inherit'>{_nm}</a>")
@@ -3097,7 +3109,9 @@ try:
         def _tbl9(rows_html):
             return ("<table style='width:100%;font-size:12.5px;border-collapse:collapse'>"
                     "<tr style='color:#94a3b8;font-size:11px;text-align:left'>"
-                    "<th>名称</th><th>动作</th><th>触发/买区</th><th>失效价</th><th>仓位</th><th>状态</th></tr>"
+                    "<th>名称</th><th title='动作+未来2周方向概率(统一引擎规则估计,非实盘胜率);"
+                    "买侧=上涨概率,卖侧=下跌概率;≥70%高把握·60-70%偏多·55-60%略偏·<55%中性'>"
+                    "动作·2周概率 ⓘ</th><th>触发/买区</th><th>失效价</th><th>仓位</th><th>状态</th></tr>"
                     + "".join(rows_html) + "</table>")
         import re as _re9t
         _t_buy9, _t_sell9, _t_hold9 = [], [], []
@@ -3110,12 +3124,12 @@ try:
             _inv9x = (_re9t.search(r"跌破([0-9.]+)", str(_why9)) or None)
             _inv9s = _inv9x.group(1) if _inv9x else "见卡"
             _t_buy9.append(_row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9), '')}{_nm9}",
-                                   _cd9, f"<b style='color:#dc2626'>买·{_pu9}%</b>",
+                                   _cd9, f"<b style='color:#dc2626'>买 涨{_pu9}%</b>{_plab9(_pu9, 'up')}",
                                    _zone9s, _inv9s, ("半仓" if _g9x.get("state") == "hot" else "纲领内"), _st9x, str(_why9)))
         for _nm9s, _cd9s, _px9s, _pd9s, _act9s, _why9s in _cb_sell9[:5]:
             _nm9s = _cb_nm9(_nm9s, _cd9s)
             _t_sell9.append(_row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9s), '')}{_nm9s}", _cd9s,
-                                    f"<b style='color:#16a34a'>{_act9s}·{_pd9s}%</b>",
+                                    f"<b style='color:#16a34a'>{_act9s} 跌{_pd9s}%</b>{_plab9(_pd9s, 'down')}",
                                     f"现{_px9s}", "卡💰行", "按纪律", "💼执行", str(_why9s)))
         try:
             _hold9 = [r for r in _cb_src9 if r.get("scope") == "持仓"
@@ -3125,7 +3139,7 @@ try:
         for _r9h in _hold9:
             _t_hold9.append(_row6_9(f"{_MKFLAG9.get(_cb_mk9(_r9h.get('code')), '')}{_cb_nm9(_r9h.get('name'), _r9h.get('code'))}",
                                     _r9h.get("code"), "持有", f"现{_r9h.get('last')}", "卡💰行",
-                                    "维持", f"涨{_r9h.get('p_up')}%", str(_r9h.get("entry_note") or "")))
+                                    "维持", f"涨{_r9h.get('p_up')}%{_plab9(_r9h.get('p_up'), 'up')}", str(_r9h.get("entry_note") or "")))
         st.markdown("<div style='background:#fef2f2;border:2px solid #dc2626;border-radius:10px;"
                     "padding:.4rem .8rem;margin:.3rem 0'>"
                     f"<b style='font-size:14px;color:#dc2626'>🔔 {_cb_day9}行动中心</b>"
