@@ -3534,19 +3534,46 @@ try:
             except Exception:
                 pass
             # ── ③b ⏳拐点倒计时(U3·2026-07-26 用户批准"拐点高低前后的预计") ──
+            # 【小米案 2026-07-27】✅预警兑现回响置顶——07-26预警小米见底,07-27+8%兑现,
+            # 但用户全程不知道系统说对过。赢了必须让用户看见=事前提醒的证据链。
+            try:
+                _hitj9 = _nwj9("turning_triggers.json")
+                _hits9 = [h for h in (_hitj9.get("rows") or [])
+                          if str(h.get("date", "")) >= (_dtnw.now() - _tdnw(days=5)).strftime("%Y-%m-%d")]
+                if _hits9:
+                    st.markdown(
+                        "<div style='background:#f0fdf4;border:1px solid #86efac;border-radius:8px;"
+                        "padding:5px 9px;margin:4px 0'><b style='font-size:12.5px;color:#15803d'>✅ 预警兑现"
+                        "</b><span style='font-size:10.5px;color:#94a3b8' title='拐点预警的确认价被价格穿越=预判应验;完整战绩窗口期末在预测台账正式核算(含最大有利/不利幅度)'>ⓘ证据链</span>"
+                        + "".join(
+                            f"<div style='font-size:12px'>{'🌱' if h.get('side') == '见底' else '🔺'}"
+                            f"<b>{h.get('name')}</b> {h.get('warned')}预警{h.get('side')}"
+                            f"(强度{h.get('prob')})→<b style='color:#15803d'>第{h.get('days')}天"
+                            f"{'站上' if h.get('side') == '见底' else '跌破'}{h.get('confirm_price')}兑现</b>"
+                            + (f"<span style='color:#475569'>·距预警{h.get('move_pct'):+.1f}%</span>"
+                               if h.get("move_pct") is not None else "") + "</div>"
+                            for h in _hits9[:4]) + "</div>", unsafe_allow_html=True)
+            except Exception:
+                pass
             try:
                 _tfj9 = _nwj9("turning_forecast.json")
                 _tf_rows9 = (_tfj9.get("rows") or [])
                 _tf_rows9 = [r for r in _tf_rows9 if _mkfit9(r.get("code") or "")] or _tf_rows9[:0]
+                # 🚀启动候选(底拐≥60+52周≤35)排最前——小米画像不再被挤出名单
+                _tf_rows9.sort(key=lambda r: (0 if r.get("launch_candidate") else 1))
                 if _tf_rows9:
                     _tf_html9 = []
                     for _r9t in _tf_rows9[:6]:
-                        _ic9t = "🔺" if _r9t.get("side") == "top" else "🌱"
+                        _ic9t = "🔺" if _r9t.get("side") == "top" else ("🚀" if _r9t.get("launch_candidate") else "🌱")
                         _cl9t = "#16a34a" if _r9t.get("side") == "top" else "#dc2626"
                         _tf_html9.append(
                             f"<div style='font-size:12.5px'>{_ic9t} "
                             f"{_nw_link9(_r9t.get('name'), _r9t.get('code') or '')}"
-                            f"<b style='color:{_cl9t}'>预计{_r9t.get('window_days', ['?', '?'])[0]}～"
+                            + ("<span style='background:#fef3c7;color:#b45309;font-size:10px;"
+                               "border-radius:4px;padding:0 4px;margin-right:3px' "
+                               "title='底部拐点强度≥60+52周低位≤35%=暴涨候选画像(07-26小米即此形态);站上确认价才算数,买入仍过环境闸'>🚀启动候选</span>"
+                               if _r9t.get("launch_candidate") else "")
+                            + f"<b style='color:{_cl9t}'>预计{_r9t.get('window_days', ['?', '?'])[0]}～"
                             f"{_r9t.get('window_days', ['?', '?'])[1]}个交易日内"
                             f"{'可能见顶' if _r9t.get('side') == 'top' else '可能见底'}·强度{_r9t.get('prob')}/100"
                             f"<span style='font-weight:400;font-size:11px'>({'强预警' if int(_r9t.get('prob') or 0) >= 70 else ('值得留意' if int(_r9t.get('prob') or 0) >= 55 else '弱信号仅记录')})</span></b>"
