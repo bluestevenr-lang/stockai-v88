@@ -3689,6 +3689,10 @@ try:
                         "<div style='background:#f0fdf4;border:1px solid #86efac;border-radius:8px;"
                         "padding:5px 9px;margin:4px 0'><b style='font-size:12.5px;color:#15803d'>✅ 预警兑现"
                         "</b><span style='font-size:10.5px;color:#94a3b8' title='拐点预警的确认价被价格穿越=预判应验;完整战绩窗口期末在预测台账正式核算(含最大有利/不利幅度)'>ⓘ证据链</span>"
+                        # 【人话说明 2026-07-27 用户"小米这样标识是什么意思"】一行讲清这卡在说什么
+                        "<div style='font-size:11px;color:#64748b;margin:1px 0 3px'>"
+                        "＝系统事前预判说对了的存证：某天预警它可能见底/见顶并给出确认价，"
+                        "后来价格真的穿过了那个价——第几天兑现、距预警涨跌多少，都记在这里</div>"
                         + "".join(
                             f"<div style='font-size:12px'>{'🌱' if h.get('side') == '见底' else '🔺'}"
                             f"<b>{_nw_link9(h.get('name'), h.get('code') or '')}</b> {h.get('warned')}预警{h.get('side')}"
@@ -3736,6 +3740,10 @@ try:
                                if _r9t.get("ai_check") else "") + "</div>")
                     st.markdown("<b style='font-size:13px'>⏳ ③b 拐点倒计时</b>"
                                 "<span style='font-size:11px;color:#94a3b8' title='影子模式:不参与买卖名单;数字=信号强度/100非概率(样本≥50报命中率,≥100升概率口径);窗口=交易日;确认价过线才算数;每条已入预测台账到期核算攒样本晋级'>ⓘ影子·强度制</span>"
+                                # 【图标说明 2026-07-27 用户"绿叶子图标代表什么也不知道"】图标不配说明=天书
+                                "<div style='font-size:11px;color:#94a3b8;margin:1px 0 2px'>"
+                                "🌱=可能见底(跌势要停了)　🔺=可能见顶(涨势要停了)　"
+                                "🚀=启动候选(底部信号强+位置低,暴涨前兆画像)</div>"
                                 + "".join(_tf_html9), unsafe_allow_html=True)
             except Exception:
                 pass

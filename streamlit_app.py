@@ -678,6 +678,9 @@ if _nav == "🧭 导航":
                     if _tfr9:
                         st.markdown("<b style='font-size:13px'>⏳ 拐点倒计时</b>"
                                     "<span style='font-size:11px;color:#94a3b8'>（个股级在桌面/飞书）</span>"
+                                    "<div style='font-size:11px;color:#94a3b8'>"
+                                    "🌱=可能见底(跌势要停了)　🔺=可能见顶(涨势要停了)　"
+                                    "🚀=启动候选(底部信号强+位置低)</div>"
                                     + "".join(f"<div style='font-size:12.5px'>{'🔺' if r.get('side') == 'top' else '🌱'} "
                                               f"{r.get('name')}{_cert9c(r.get('code'), r.get('name'))} <b>预计{(r.get('window_days') or ['?', '?'])[0]}～"
                                               f"{(r.get('window_days') or ['?', '?'])[1]}个交易日内"
