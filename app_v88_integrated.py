@@ -3353,13 +3353,26 @@ try:
     # 【认证徽章·作战板 2026-07-27 用户抓"图一图二为何没有C验证图标"】
     # 作战板(低位拐点/全市场机会/准备买/卖/五行业代表/拐点倒计时)走的是_nw_link9这条路径,
     # 与行动中心的_cb_nm9不是同一个出口——两条路都必须挂徽章,否则总有半边没有标。
+    # 【市场标识 2026-07-27 用户"你都把所有股写到一块,是不是美股我都不知道"】
+    # 作战板各名单(低位拐点/全市场机会/拐点倒计时/卖名单/预警兑现)原来只有名字,
+    # 中美港混排看不出归属。统一按代码后缀出旗:.SS/.SZ/.SH/.BJ=🇨🇳 .HK=🇭🇰 其余=🇺🇸
+    def _flag9(_cd9f) -> str:
+        _c9f = str(_cd9f or "").upper()
+        if not _c9f:
+            return ""
+        return ("🇨🇳" if _c9f.endswith((".SS", ".SZ", ".SH", ".BJ"))
+                else ("🇭🇰" if _c9f.endswith(".HK") else "🇺🇸"))
+
     def _nw_link9(_nm9x, _cd9x):
         # 【2026-07-25 用户抓"只有A股能点"】与全站 _stk_link 完全同款(新标签+下划线)——
         # 原 target=_self 当前页重载在部分场景吞掉深链参数,美港股点了没反应。
         # 【2026-07-27】无代码的条目(板块名如"半导体")不生成死链,原样返回文字。
         if not str(_cd9x or "").strip():
             return str(_nm9x or "")
-        return (f'<a href="?q={_cd9x}&focus=deep#v88-deep-analysis" target="_blank" rel="noopener" '
+        # 名字前统一挂市场旗(用户"所有股写到一块,是不是美股我都不知道");
+        # 已自带旗的调用点(五行业代表)不重复挂
+        _fg9x = "" if str(_nm9x or "")[:2] in ("🇨🇳", "🇭🇰", "🇺🇸") else _flag9(_cd9x)
+        return (f'{_fg9x}<a href="?q={_cd9x}&focus=deep#v88-deep-analysis" target="_blank" rel="noopener" '
                 f'style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{_nm9x}</a>'
                 + _cert_badge9(_cd9x, _nm9x))
     # 档位→最优口径: mkt_hz=大盘统一引擎档 / sec_hz=板块轮动点 / buy=买名单口径 / evt=机构简报档
@@ -3953,7 +3966,8 @@ try:
                             if not _row9a:
                                 continue
                             _pk9a = _row9a.get("pick") or _row9a.get("watch") or {}
-                            _cells9a.append(f"{_fl9a}{_nw_link9(_pk9a.get('name'), _pk9a.get('sym'))}"
+                            # 旗已由_nw_link9统一挂,此处不再重复(防双旗)
+                            _cells9a.append(f"{_nw_link9(_pk9a.get('name'), _pk9a.get('sym'))}"
                                             + (f"<b style='color:#dc2626'>{_pk9a.get('p_up')}%</b>"
                                                if _row9a.get("pick") else
                                                "<span style='font-size:11px;color:#94a3b8'>观察</span>"))

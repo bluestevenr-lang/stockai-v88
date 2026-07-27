@@ -590,7 +590,7 @@ if _nav == "🧭 导航":
                 st.markdown("<b style='font-size:13px'>🌱 ③ 低位拐点·可注意埋伏</b>"
                             f"<span style='font-size:11px;color:#94a3b8'>（全池{_pt9c2.get('scanned', '?')}只·转强≠立刻买·💰=主力今日净流入）</span>"
                             + ("<div style='font-size:12.5px'>" + "、".join(
-                                f"{x.get('name')}{_cert9c(x.get('code'), x.get('name'))}(52周{int(float(x.get('pos52') or 0))}%·{x.get('confidence')}{_fftag9c(x.get('code'))})"
+                                f"{_flag9c(x.get('code'))}{x.get('name')}{_cert9c(x.get('code'), x.get('name'))}(52周{int(float(x.get('pos52') or 0))}%·{x.get('confidence')}{_fftag9c(x.get('code'))})"
                                 for x in _up9c2) + "</div>" if _up9c2
                                else "<div style='font-size:12.5px;color:#94a3b8'>全池文件待发布或暂无低位转强</div>"),
                             unsafe_allow_html=True)
@@ -645,6 +645,15 @@ if _nav == "🧭 导航":
                 except Exception:
                     _CS9C = {}
 
+                def _flag9c(_cd):
+                    """市场旗(与桌面同口径):.SS/.SZ/.SH/.BJ=🇨🇳 .HK=🇭🇰 其余=🇺🇸——
+                    用户"所有股写到一块,是不是美股我都不知道"。"""
+                    _c = str(_cd or "").upper()
+                    if not _c:
+                        return ""
+                    return ("🇨🇳" if _c.endswith((".SS", ".SZ", ".SH", ".BJ"))
+                            else ("🇭🇰" if _c.endswith(".HK") else "🇺🇸"))
+
                 def _cert9c(_cd, _nm=""):
                     """与桌面同语义:🅒人工复核一致 / ✓机检达标(标准闸) / ⚡人工有异议 / 无结论不打标。
                     (2026-07-27改:取消⊘禁止符——它让"没审过"看起来像"没通过")"""
@@ -682,7 +691,7 @@ if _nav == "🧭 导航":
                                     "🌱=可能见底(跌势要停了)　🔺=可能见顶(涨势要停了)　"
                                     "🚀=启动候选(底部信号强+位置低)</div>"
                                     + "".join(f"<div style='font-size:12.5px'>{'🔺' if r.get('side') == 'top' else '🌱'} "
-                                              f"{r.get('name')}{_cert9c(r.get('code'), r.get('name'))} <b>预计{(r.get('window_days') or ['?', '?'])[0]}～"
+                                              f"{_flag9c(r.get('code'))}{r.get('name')}{_cert9c(r.get('code'), r.get('name'))} <b>预计{(r.get('window_days') or ['?', '?'])[0]}～"
                                               f"{(r.get('window_days') or ['?', '?'])[1]}个交易日内"
                                               f"{'可能见顶' if r.get('side') == 'top' else '可能见底'}·强度{r.get('prob')}/100"
                                               f"<span style='font-weight:400;font-size:11px'>({'强预警' if int(r.get('prob') or 0) >= 70 else ('值得留意' if int(r.get('prob') or 0) >= 55 else '弱信号')})</span></b>"
@@ -757,7 +766,7 @@ if _nav == "🧭 导航":
                 _by9c.sort(key=lambda x: -x[1])
                 st.markdown(f"<b style='font-size:13px'>🐉 ④ {_tt9c}买什么</b>"
                             f"<span style='font-size:11px;color:#94a3b8'>（公开黑马池口径·{len(_by9c)}只）</span>"
-                            + ("".join(f"<div style='font-size:12.5px'>{_h9x.get('name')}{_cert9c(_h9x.get('code'), _h9x.get('name'))}"
+                            + ("".join(f"<div style='font-size:12.5px'>{_flag9c(_h9x.get('code'))}{_h9x.get('name')}{_cert9c(_h9x.get('code'), _h9x.get('name'))}"
                                        f"<b style='color:#dc2626'>{_p9x}%</b>"
                                        f"<span style='font-size:11.5px;color:#475569'>·{_t9x}"
                                        f"·{str(((_h9x.get('trade_plan') or {}).get('short') or {}).get('in') or '')[:36]}</span></div>"
