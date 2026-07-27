@@ -612,8 +612,8 @@ if _nav == "🧭 导航":
                     _vzc9 = _pubj9("value_zone_pub.json")
                     _vzu9 = [r for r in (_vzc9.get("rows") or []) if r.get("verdict") == "进"][:4]
                     if _vzu9:
-                        st.markdown("<b style='font-size:13px'>⚾ 击球区·白马打折</b>"
-                                    "<span style='font-size:11px;color:#94a3b8'>（中长线6月窗·概率=该股10年回撤回测）</span>"
+                        st.markdown("<b style='font-size:13px'>🛒 好公司打折·可分批买</b>"
+                                    "<span style='font-size:11px;color:#94a3b8'>（拿3~6个月·概率来自它自己的历史）</span>"
                                     + "".join(f"<div style='font-size:12.5px'>{r.get('level')}<b>{r.get('name')}</b>"
                                               f" 距高{r.get('dd_pct')}%·{str(r.get('bt_line'))[:50]}</div>"
                                               for r in _vzu9), unsafe_allow_html=True)
@@ -624,7 +624,7 @@ if _nav == "🧭 导航":
                     _tsc9 = _pubj9("trend_shift_pub.json")
                     _tsu9 = [r for r in (_tsc9.get("up") or []) if r.get("phase") in ("早期", "中期")][:5]
                     if _tsu9:
-                        st.markdown("<b style='font-size:13px'>📈 趋势先行</b>"
+                        st.markdown("<b style='font-size:13px'>📈 涨势刚起·可买</b>"
                                     "<span style='font-size:11px;color:#94a3b8'>（翻转已发生·早中期=提前量;池内票在桌面/飞书）</span>"
                                     + "".join(f"<div style='font-size:12.5px'>{'🟢' if r.get('phase') == '早期' else '🟡'}"
                                               f"<b>{r.get('name')}</b> {r.get('phase')}第{r.get('days')}日"

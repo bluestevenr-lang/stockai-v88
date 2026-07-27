@@ -3129,10 +3129,10 @@ try:
                 if _vzr9c or _vzt9c:
                     st.markdown("<div style='background:#fefce8;border:1px solid #fde047;border-radius:8px;"
                                 "padding:5px 9px;margin-top:5px'><b style='font-size:12.5px;color:#a16207'>"
-                                "⚾ 击球区·白马打折</b><span style='font-size:10.5px;color:#94a3b8' "
-                                "title='优质白马(10年年化≥8%)跌进历史便宜区→中长线喊进(6月窗),不等技术右侧;"
+                                "🛒 好公司打折·可分批买</b><span style='font-size:10.5px;color:#94a3b8' "
+                                "title='好公司(10年年化≥8%)股价打了大折→可分批买,拿3~6个月;"
                                 "概率=该股自身10年同级回撤回测(礼来850案:历史80%胜率中位+22%,系统当时没喊,错过+40%);"
-                                "陷阱档=历史同级回撤后多数继续跌,明说不接刀'>ⓘ中长线·6月窗·回测概率</span>"
+                                "陷阱档=历史同级回撤后多数继续跌,明说不接刀'>ⓘ拿3~6个月·概率来自它自己的历史</span>"
                                 + "".join(
                                     f"<div style='font-size:12px'>{r.get('level')}<b>{_cb_nm9(r.get('name'), r.get('code'))}</b>"
                                     f" 距高{r.get('dd_pct')}%·52周{int(float(r.get('pos52') or 0))}%"
@@ -3140,7 +3140,7 @@ try:
                                     for r in _vzr9c)
                                 + "".join(
                                     f"<div style='font-size:11.5px;color:#94a3b8'>⚠️{r.get('name')} 距高{r.get('dd_pct')}%"
-                                    f"但{str(r.get('bt_line'))[:40]}——不接刀</div>" for r in _vzt9c)
+                                    f"但{str(r.get('bt_line'))[:40]}——先别买</div>" for r in _vzt9c)
                                 + "</div>", unsafe_allow_html=True)
             except Exception:
                 pass
@@ -3152,9 +3152,9 @@ try:
                 if _tsu9c:
                     st.markdown("<div style='background:#eff6ff;border:1px solid #93c5fd;border-radius:8px;"
                                 "padding:5px 9px;margin-top:5px'><b style='font-size:12.5px;color:#1d4ed8'>"
-                                "📈 趋势先行</b><span style='font-size:10.5px;color:#94a3b8' "
+                                "📈 涨势刚起·可买</b><span style='font-size:10.5px;color:#94a3b8' "
                                 "title='翻转已发生且在早中期=提前量最足的窗口;无赔率/52周位门槛(创新高强票rr公式失真,LMT案);"
-                                "直接推荐非影子,每条已入台账攒战绩;仓位建议按牛熊态(bear=1/3仓)'>ⓘ提前量·直接推荐</span>"
+                                "直接推荐非影子,每条已入台账攒战绩;仓位建议按牛熊态(bear=1/3仓)'>ⓘ该买该卖直说·每条带止损</span>"
                                 + "".join(
                                     f"<div style='font-size:12px'>{'🟢' if r.get('phase') == '早期' else '🟡'}"
                                     f"<b>{_cb_nm9(r.get('name'), r.get('code'))}</b>"
