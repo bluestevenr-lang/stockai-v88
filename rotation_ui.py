@@ -42,11 +42,17 @@ _ROTATION_CSS = """
 #__ID__ .rf-ckR{flex:1;min-width:0}
 #__ID__ .rf-ckHead{font-size:12px;margin:.1rem 0 .25rem}
 #__ID__ .rf-lg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 12px}
-#__ID__ .rf-li{display:flex;align-items:center;gap:5px;font-size:12px;line-height:1.45;min-width:0;flex-wrap:wrap}
-#__ID__ .rf-dot{width:10px;height:10px;border-radius:3px;flex:0 0 auto}
-#__ID__ .rf-liName{flex:0 0 auto}
-#__ID__ .rf-liChain{color:#475569}
-#__ID__ .rf-mut2{color:#94a3b8;font-size:11px}
+/* 【字号统一 2026-07-27 用户"字体不协调,调成一致"】原来板块名/热度链/方向词/拐点
+   各带各的内联字号(12/11/继承),同一行三种大小=乱。现在收成两级:
+   主信息(名称·相位·热度链·方向)统一12px,辅助信息(拐点/说明)统一11px,粗细分主次而非字号 */
+#__ID__ .rf-li{display:flex;align-items:center;gap:5px;font-size:12px;line-height:1.5;min-width:0;flex-wrap:wrap}
+#__ID__ .rf-li *{font-size:12px}
+#__ID__ .rf-dot{width:9px;height:9px;border-radius:3px;flex:0 0 auto}
+#__ID__ .rf-liName{flex:0 0 auto;font-weight:600}
+#__ID__ .rf-liChain{color:#475569;font-variant-numeric:tabular-nums}
+#__ID__ .rf-turn,#__ID__ .rf-turn *{font-size:11px !important;white-space:nowrap}
+#__ID__ .rf-mut2{color:#94a3b8}
+#__ID__ .rf-cert{font-size:11px !important}
 @media(max-width:900px){#__ID__ .rf-lg{grid-template-columns:1fr}}
 """
 
@@ -197,12 +203,12 @@ def _clock_svg(market: str, trajectory: list, heat: dict) -> str:
         turn = t.get("turning") or {}
         _th = str(turn.get("horizon") or "")
         if _th in ("2周", "5周"):
-            _turn_html = (f'<b style="color:#dc2626">⏰拐点临近≈{escape(_th)}</b>' if _th == "2周"
-                          else f'<span style="color:#b45309">⏰拐点≈{escape(_th)}</span>')
+            _turn_html = (f'<b class="rf-turn" style="color:#dc2626">⏰拐点临近≈{escape(_th)}</b>' if _th == "2周"
+                          else f'<span class="rf-turn" style="color:#b45309">⏰拐点≈{escape(_th)}</span>')
         elif _th:
-            _turn_html = f'<span class="rf-mut2">拐点≈{escape(_th)}</span>'
+            _turn_html = f'<span class="rf-turn rf-mut2">拐点≈{escape(_th)}</span>'
         else:
-            _turn_html = '<span class="rf-mut2">暂无拐点</span>'
+            _turn_html = '<span class="rf-turn rf-mut2">暂无拐点</span>'
         _now_t = (f'今天{int(t["now"])}→' if isinstance(t.get("now"), (int, float)) else '')
         items.append(
             f'<div class="rf-li"><span class="rf-dot" style="background:{color}"></span>'
@@ -305,12 +311,40 @@ _CYCLE_CSS = """
 #__ID__ .axis{stroke:color-mix(in srgb,currentColor 34%,transparent);stroke-width:1}
 #__ID__ .ph{fill:var(--muted-foreground,var(--text-color));opacity:.75}
 #__ID__ .cy-list{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.3rem}
-#__ID__ .cy-col b{font-size:12px}
-#__ID__ .cy-row{font-size:11px;color:var(--muted-foreground,var(--text-color));margin:.15rem 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 【字号统一 2026-07-27】标题12px、行12px(原11px与左侧板块行12px不齐),辅助信息靠颜色分主次 */
+#__ID__ .cy-col b{font-size:12.5px}
+#__ID__ .cy-row{font-size:12px;color:var(--muted-foreground,var(--text-color));margin:.2rem 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.5}
+#__ID__ .cy-row .cy-nm{font-weight:600}
+#__ID__ .cy-cert{display:inline-block;width:14px;height:14px;line-height:14px;text-align:center;border-radius:50%;font-size:9.5px;font-weight:800;margin-left:3px;vertical-align:middle}
+#__ID__ .cy-legend{font-size:11px;color:#94a3b8;margin-top:.35rem;line-height:1.6}
 #__ID__ .cy-nm{color:var(--foreground,var(--text-color))}
 #__ID__ .cy-up{color:var(--cy-up)}#__ID__ .cy-down{color:var(--cy-down)}
 @media(max-width:560px){#__ID__ .cy-list{grid-template-columns:1fr}}
 """
+
+
+def _cert_mark(code: str = "", name: str = "", cert: dict | None = None,
+               std: dict | None = None) -> str:
+    """【Claude认证·轮动页 2026-07-27 用户"也要有Claude体系认证说明和逻辑"】
+    与行动中心/作战板同一套标识:金C=人工复核一致 / 绿✓=已过标准闸 / 无标=引擎自判。
+    轮动页是"看方向"的地方,标出哪些切换判断被Claude背书过,才知道该信几分。"""
+    cert, std = cert or {}, std or {}
+    for k in (str(code or ""), str(code or "").split(".")[0], str(name or "")):
+        if not k:
+            continue
+        e = (cert.get("by_code") or {}).get(k) or (cert.get("by_name") or {}).get(k)
+        if e and e.get("verdict") == "一致":
+            tip = f"Claude人工复核一致·{e.get('shift', '')}".replace('"', "'")
+            return (f'<span class="cy-cert" title="{escape(tip)}" '
+                    'style="background:linear-gradient(145deg,#fde68a,#d97706);color:#4a2c05">C</span>')
+        if e:
+            return ('<span class="cy-cert" title="Claude人工复核有异议" '
+                    'style="background:#dc2626;color:#fff">C̸</span>')
+    for k in (str(code or ""), str(code or "").split(".")[0]):
+        if k and k in (std.get("pass") or {}):
+            return ('<span class="cy-cert" title="已过Claude标准闸(七条机检规则)" '
+                    'style="background:#dcfce7;color:#15803d;border:1px solid #86efac">✓</span>')
+    return ""
 
 
 def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle") -> str:
@@ -319,6 +353,21 @@ def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle") -> str:
     stocks = (cycle or {}).get("stocks") or []
     if not stocks:
         return ""
+    _cert, _std = {}, {}
+    try:                     # 认证数据:桌面读私仓,云端读pub(两处都没有就不打标,不报错)
+        import json as _j_c, pathlib as _p_c
+        _base_c = _p_c.Path.home() / "Desktop" / "ai-daily-report-v2" / "data"
+        for _fn, _tgt in (("ai_cert.json", "cert"), ("claude_standard.json", "std"),
+                          ("ai_cert_pub.json", "cert"), ("claude_standard_pub.json", "std")):
+            _fp = _base_c / _fn
+            if _fp.exists():
+                _d = _j_c.loads(_fp.read_text(encoding="utf-8"))
+                if _tgt == "cert" and not _cert:
+                    _cert = _d
+                elif _tgt == "std" and not _std:
+                    _std = _d
+    except Exception:
+        pass
     safe_id = re.sub(r"[^a-zA-Z0-9_-]", "-", element_id)
     W, H = 700, 196
     cx, cy, R = 350, 96, 78
@@ -358,8 +407,10 @@ def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle") -> str:
         out = []
         # 自选与持仓全部展示，不按8只截断；长清单由页面自然向下延伸。
         for s in items:
-            out.append(f'<div class="cy-row"><span class="cy-nm">{escape(str(s.get("name","")))}</span> '
-                       f'{escape(str(s.get("phase","")))} · {s.get("confidence","")}置信 · {escape(str(s.get("horizon","")))} · 52周{s.get("pos52","")}%</div>')
+            out.append(f'<div class="cy-row"><span class="cy-nm">{escape(str(s.get("name","")))}</span>'
+                       f'{_cert_mark(s.get("code"), s.get("name"), _cert, _std)} '
+                       f'{escape(str(s.get("phase","")))} · {s.get("confidence","")}置信 · '
+                       f'{escape(str(s.get("horizon","")))} · 52周{s.get("pos52","")}%</div>')
         return "".join(out) or '<div class="cy-row">—</div>'
     p.append('</svg>')
     svg = "".join(p)
@@ -373,7 +424,14 @@ def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle") -> str:
         f'<div class="cy-list">'
         f'<div class="cy-col"><b class="cy-up">🟢 即将进入上行周期</b>{_rows(ups, "cy-up")}</div>'
         f'<div class="cy-col"><b class="cy-down">🔴 即将进入下行周期</b>{_rows(downs, "cy-down")}</div>'
-        f'</div></div>'
+        f'</div>'
+        f'<div class="cy-legend">验证标识：'
+        f'<span class="cy-cert" style="background:linear-gradient(145deg,#fde68a,#d97706);color:#4a2c05">C</span>'
+        f' Claude人工复核过·结论与引擎一致　'
+        f'<span class="cy-cert" style="background:#dcfce7;color:#15803d;border:1px solid #86efac">✓</span>'
+        f' 已过Claude标准闸(七条机检规则)　无标=引擎自判(未经复核)。'
+        f'周期切换=方向判断,不是买卖指令——买卖看行动中心。</div>'
+        f'</div>'
     )
 
 
