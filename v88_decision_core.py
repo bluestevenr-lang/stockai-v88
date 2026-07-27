@@ -319,40 +319,48 @@ def entry_timing(full, *, short=50.0, medium=50.0, long_avg=50.0, action="", rr=
             "breakout": breakout, "stop": stop}
 
 
-def env_gate(code: str, mode: str, rr: float, pos52=None, evidence: dict | None = None) -> dict:
-    """【V88·环境闸 2026-07-27 用户定纲"避免系统裁定与Fable打架,提高要求"】
-    技术绿灯 ≠ 可执行。三条环境判据(此前只在Fable口头裁定里,现固化进引擎):
-      ①弱市裁决: 所属市场2周概率≤45% 或 verdict含 转弱/杀跌/派发/下杀/偏冷
-      ②事件带: 未来5个自然日内有自家财报,或FOMC(对美股/全球风险资产)
-      ③环境赔率: 常态要求 rr≥1.2;弱市或事件带内要求 rr≥2.0(赌方向还得赌事件=要更宽赔率)
-    任一触发 → 绿灯降级为「准备买」并给出人话原因与解除条件。
-    返回 {exec:bool, action:str, reasons:[...], need_rr:float}
-    读 data/market_snapshot.json + macro_events.json;读不到=不降级(保持原行为,不误伤)。"""
-    from datetime import datetime as _dt_eg, timedelta as _td_eg
-    out = {"exec": True, "action": mode, "reasons": [], "need_rr": 1.2}
-    if mode not in ("现价可进", "回踩到位", "突破确认"):
-        return out
-    c = str(code or "").upper()
-    mk = ("A股" if c.endswith((".SS", ".SZ", ".SH", ".BJ")) else
-          ("港股" if c.endswith(".HK") else "美股"))
-    weak = hot_warn = False
+def market_regime(mk: str) -> dict:
+    """【V88·牛熊态 2026-07-27 用户大改定纲】"熊市+趋势破坏才要右侧;现在中美港都不是熊市,
+    一味右侧=毛病——小米/LMT/礼来是被右侧思维拦掉的左侧机会,腾讯是右侧追入亏最大的反例。
+    牛市左侧参考更多,这是辩证的。"
+    判定(读冻结快照,三端同源): bear=2周≤42%或verdict含杀跌/派发/下杀/反转;
+    bull=2周≥55%且无弱词; 其余neutral。读不到快照=neutral(不误伤)。"""
     try:
         snap = json.loads((BASE / "data" / "market_snapshot.json").read_text(encoding="utf-8"))
         b = (snap.get("markets") or {}).get(mk) or {}
         p2w = dict((x[0], x[1]) for x in ((b.get("l3") or {}).get("probs") or [])).get("2周")
         vd = str((b.get("temperature") or {}).get("verdict") or "")
-        if (p2w is not None and int(p2w) <= 45):
-            weak = True
-            out["reasons"].append(f"{mk}2周仅{int(p2w)}%(弱市裁决)")
-        if any(k in vd for k in ("转弱", "杀跌", "派发", "下杀", "偏冷", "反转")):
-            weak = True
-            out["reasons"].append(f"{mk}温度裁决:{vd[:16]}")
-        elif "过热" in vd:
-            hot_warn = True
-            out["reasons"].append(f"{mk}过热·只限回踩")
+        hard_bear = any(k in vd for k in ("杀跌", "派发", "下杀", "反转"))
+        soft_weak = any(k in vd for k in ("转弱", "偏冷"))
+        if hard_bear or (p2w is not None and int(p2w) <= 42):
+            return {"regime": "bear", "why": f"{mk}2周{p2w}%·{vd[:12] or '弱'}——右侧纪律:等确认再进"}
+        if (p2w is not None and int(p2w) >= 55) and not soft_weak:
+            return {"regime": "bull", "why": f"{mk}2周{p2w}%偏暖——左侧模式:低位可分批低吸,不等右侧追高"}
+        return {"regime": "neutral", "why": f"{mk}2周{p2w}%中性——左侧小仓+右侧确认加仓两级"}
     except Exception:
-        pass
-    ev_hit = ""
+        return {"regime": "neutral", "why": "快照缺失·默认中性"}
+
+
+def env_gate(code: str, mode: str, rr: float, pos52=None, evidence: dict | None = None) -> dict:
+    """【V88·环境闸v2 2026-07-27 用户大改定纲"安全线太保守,不需要;要提前量"】
+    v1的硬拦(改写mode='准备买·环境不合格')废除——三案取证:LMT p_up80%却被rr1.1拦死
+    (创新高票阻力在头顶,rr公式结构性失真),小米+34.5%全程零推荐,中烟香港19元用户问过被拒后+15%。
+    v2哲学:**裁决与说明保留(逻辑统一),动作用仓位分级表达,不再拦死**:
+      bull→标准仓放行; neutral→半仓; bear→1/3仓+右侧纪律(低位票有异证可半仓);
+      自家财报5日内→仓位减半'过财报再加'(不硬拦); FOMC→仅提示。
+    创新高/主升票(pos52>80)豁免rr要求——rr失真票以趋势质量与p_up为准。
+    返回 {exec:恒True, regime, position, position_note, action, reasons, need_rr}"""
+    from datetime import datetime as _dt_eg
+    out = {"exec": True, "action": mode, "reasons": [], "need_rr": 1.2,
+           "regime": "neutral", "position": "标准仓", "position_note": ""}
+    if mode not in ("现价可进", "回踩到位", "突破确认", "左侧低吸"):
+        return out
+    c = str(code or "").upper()
+    mk = ("A股" if c.endswith((".SS", ".SZ", ".SH", ".BJ")) else
+          ("港股" if c.endswith(".HK") else "美股"))
+    rg = market_regime(mk)
+    out["regime"] = rg["regime"]
+    ev_hit, ev_self = "", False
     try:
         evs = json.loads((BASE / "data" / "macro_events.json").read_text(encoding="utf-8")).get("events") or []
         today = _dt_eg.now().date()
@@ -366,48 +374,49 @@ def env_gate(code: str, mode: str, rr: float, pos52=None, evidence: dict | None 
                 continue
             ev = str(e.get("event") or "")
             if base and base in ev:
-                ev_hit = f"{e['date'][5:]}自家财报"
+                ev_hit, ev_self = f"{e['date'][5:]}自家财报", True
                 break
-            if "FOMC" in ev and mk in ("美股", "港股"):   # 港股跟随美元流动性
+            if "FOMC" in ev and mk in ("美股", "港股"):
                 ev_hit = f"{e['date'][5:]}FOMC"
     except Exception:
         pass
-    if ev_hit:
-        out["reasons"].append(f"事件带内({ev_hit})")
-    need = 2.0 if (weak or ev_hit) else (1.5 if hot_warn else 1.2)
-    out["need_rr"] = need
+    _ev = evidence or {}
+    _has_alt = bool(_ev.get("obv_inflow") or _ev.get("bottom_turn"))
+    try:
+        _p52 = float(pos52) if pos52 is not None else 50.0
+    except (TypeError, ValueError):
+        _p52 = 50.0
+    # 仓位分级(纪律通过仓位表达,不通过拦截表达)
+    if rg["regime"] == "bear":
+        if _p52 <= 35 and _has_alt:
+            out["position"] = "半仓"
+            out["position_note"] = (f"熊市但52周{_p52:.0f}%低位+异证"
+                                    f"({'资金流入' if _ev.get('obv_inflow') else '底部拐点'})→半仓低吸可以")
+        else:
+            out["position"] = "1/3仓"
+            out["position_note"] = f"熊市右侧纪律:小仓1/3+止损收紧({rg['why'][:24]})"
+        out["need_rr"] = 1.5
+    elif rg["regime"] == "neutral":
+        out["position"] = "半仓"
+        out["position_note"] = "中性市:半仓起步,确认后加"
+    else:
+        out["position"] = "标准仓"
+        out["position_note"] = "偏暖市:标准仓,左侧机会优先"
+    if ev_self:
+        out["position"] = "1/3仓"
+        out["position_note"] = f"⚠️{ev_hit}在5日内:先1/3仓,过财报再加(不赌开奖)"
+        out["reasons"].append(ev_hit)
+    elif ev_hit:
+        out["reasons"].append(f"{ev_hit}(提示:临近波动放大)")
+    # rr仅作提示:创新高/主升票(pos52>80)豁免——LMT案:阻力在头顶rr必然失真,
+    # 强趋势票以p_up与趋势质量为准,不再让失真公式一票否决
     try:
         rr_v = float(rr or 0)
     except (TypeError, ValueError):
         rr_v = 0.0
-    if rr_v < need:
-        out["reasons"].append(f"赔率{rr_v:.2f}<环境要求{need}")
-    # 【例外通道 2026-07-27 用户批准"熊市里也有逆势股,一定要增加量"】
-    # 深度低位(52周≤30%)+超宽赔率(≥3.0)的启动票 → 弱市不全拦,降为"可小仓试(≤1/3仓)":
-    # 弱市杀的是高位股,深水+宽赔率恰是熊市该埋伏的;但**事件带(FOMC/自家财报)仍硬拦**——
-    # 事件不可测,赔率再宽也不该赌开奖。
-    # 【Fable核查 2026-07-27】深水票的rr天然虚高(现价贴52周低→downside小,前高远→upside大)——
-    # rr与低位共线,单靠这俩=放行"跌得深"本身。异证要求:OBV资金流入或底部拐点信号(非价格系确认,
-    # 三市场都可算);无异证的深水宽赔率票=可能还在下跌趋势末端,不放行。
-    _ev = evidence or {}
-    _has_alt = bool(_ev.get("obv_inflow") or _ev.get("bottom_turn"))
-    _deep_value = (rr_v >= 3.0 and pos52 is not None and float(pos52) <= 30 and _has_alt)
-    if ev_hit:
-        out["exec"] = False
-        out["action"] = f"准备买·暂不执行({'·'.join(out['reasons'][:3])}→事件落地后重评)"
-        return out
-    if weak and _deep_value:
-        out["exec"] = True
-        out["action"] = (f"可小仓试(≤1/3仓)·逆势通道:52周{float(pos52):.0f}%深水+赔率{rr_v:.1f}宽"
-                         f"+异证({'资金流入' if _ev.get('obv_inflow') else '底部拐点'})")
-        out["exception"] = "deep_value"
-        return out
-    if weak or rr_v < need:
-        out["exec"] = False
-        _why = "·".join(out["reasons"][:3])
-        _clear = (f"大盘回中性(2周>45%)且赔率≥{need:.1f}" if weak
-                  else f"回踩到赔率≥{need:.1f}的位置")
-        out["action"] = f"准备买·暂不执行({_why}→{_clear})"
+    if rr_v < out["need_rr"] and _p52 <= 80:
+        out["reasons"].append(f"赔率{rr_v:.2f}偏窄(创新高票此值失真,参考为主)")
+    out["action"] = f"{mode}·{out['position']}"
     return out
 
 
@@ -454,7 +463,7 @@ def diagnose_today(*, scope="自选", today_chg=0.0, market_chg=0.0, stage="",
                        f"{'今天跌下来反而是低吸机会，分批别一把' if _low else '等缩量企稳信号确认再进，别追跌'}"}
 
     # ④ 绿灯型：入场时机已达标
-    if entry_mode in ("现价可进", "回踩到位", "突破确认"):
+    if entry_mode in ("现价可进", "回踩到位", "突破确认", "左侧低吸"):
         return {"kind": "可进", "verdict": "可进场",
                 "why": f"今日{today_chg:+.1f}%、时机已到（{entry_mode}）——{'持仓可加' if _hold else '空仓可按计划分批进'}，仓位看大盘定调"}
 
@@ -601,18 +610,32 @@ def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
                 _cap_eg = str(full["breakdown"]["资金动向"][2])
             except Exception:
                 pass
+            # 【左侧低吸升级 2026-07-27 用户大改"牛市左侧参考更多,一味右侧=追高(腾讯案)/踏空(小米LMT案)"】
+            # 偏暖/中性市里,技术面在"等待/双路径"的低中位良性票→升级为左侧分批,不再干等右侧确认。
+            # 向宽处改写(给机会),从不向紧处改写(v1硬拦已废)。
+            _rg_ls = market_regime("A股" if str(code).upper().endswith((".SS", ".SZ", ".SH", ".BJ"))
+                                   else ("港股" if str(code).upper().endswith(".HK") else "美股"))
+            if (_rg_ls["regime"] in ("bull", "neutral") and _tech_mode in ("等待", "双路径待触发")
+                    and float(full.get("pos52") or 100) <= 60 and float(short) >= 45
+                    and str(full.get("stage")) not in ("破位下跌", "趋势转弱", "放量滞涨")):
+                _pb_ls = entry_plan.get("pullback") or full.get("pullback")
+                _st_ls = entry_plan.get("stop") or full.get("stop")
+                _sz_ls = "分3批" if _rg_ls["regime"] == "bull" else "先1批小仓"
+                entry_plan["mode"] = _tech_mode = "左侧低吸"
+                entry_plan["short_text"] = (f"🟢 左侧低吸({'牛市' if _rg_ls['regime'] == 'bull' else '中性市'}模式):"
+                                            f"现价{last:g}~回踩{_pb_ls}区间{_sz_ls},不等右侧突破确认"
+                                            f"——跌破{_st_ls}认错止损;若放量突破则剩余仓改追")
+                entry_plan["note"] = f"🟢左侧低吸·{_sz_ls}·破{_st_ls}认错"
             _eg = env_gate(code, _tech_mode, rr, pos52=full.get("pos52"),
                            evidence={"obv_inflow": ("流入" in _cap_eg.split("·")[0]),
                                      "bottom_turn": ((full.get("turning") or {}).get("side") == "bottom")})
             entry_plan["env_gate"] = _eg
             entry_plan["exec_action"] = _eg["action"]
-            entry_plan["tech_mode"] = _tech_mode          # 技术信号留档(呈现"技术绿灯但被闸")
-            if not _eg["exec"]:
-                # 【源头一致 2026-07-27 用户"推荐都一致"】直接改写 mode——
-                # 全系统所有 `mode in ("现价可进"...)` 判断自动失效,无需逐个出口打补丁:
-                # 桌面确认卡/双门/作战板/黑马池/预案/飞书/云端一次性同口径。
-                entry_plan["mode"] = "准备买·环境不合格"
-                entry_plan["short_text"] = f"⏸ {_eg['action']}｜技术面本为{_tech_mode}:" + str(entry_plan.get("short_text") or "")[:60]
+            entry_plan["tech_mode"] = _tech_mode
+            entry_plan["regime"] = _rg_ls["regime"]
+            # v2:环境用仓位说话,附在short_text尾部,mode永不向紧处改写
+            if _eg.get("position_note") and entry_plan.get("mode") in ("现价可进", "回踩到位", "突破确认", "左侧低吸"):
+                entry_plan["short_text"] = str(entry_plan.get("short_text") or "")[:110] + f"｜💼{_eg['position']}:{_eg['position_note']}"
     except Exception:
         entry_plan = {}
     return {

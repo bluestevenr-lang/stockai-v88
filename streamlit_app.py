@@ -594,6 +594,20 @@ if _nav == "🧭 导航":
                                 for x in _up9c2) + "</div>" if _up9c2
                                else "<div style='font-size:12.5px;color:#94a3b8'>全池文件待发布或暂无低位转强</div>"),
                             unsafe_allow_html=True)
+                # 【📈趋势先行·云端 2026-07-27大改】pub版=池外票(自选隐私已剔)
+                try:
+                    _tsc9 = _pubj9("trend_shift_pub.json")
+                    _tsu9 = [r for r in (_tsc9.get("up") or []) if r.get("phase") in ("早期", "中期")][:5]
+                    if _tsu9:
+                        st.markdown("<b style='font-size:13px'>📈 趋势先行</b>"
+                                    "<span style='font-size:11px;color:#94a3b8'>（翻转已发生·早中期=提前量;池内票在桌面/飞书）</span>"
+                                    + "".join(f"<div style='font-size:12.5px'>{'🟢' if r.get('phase') == '早期' else '🟡'}"
+                                              f"<b>{r.get('name')}</b> {r.get('phase')}第{r.get('days')}日"
+                                              f"·已涨{r.get('gain_pct')}%·涨概率{r.get('p_up', '?')}%"
+                                              f"·{str(r.get('action'))[:30]}·止损{r.get('stop')}</div>"
+                                              for r in _tsu9), unsafe_allow_html=True)
+                except Exception:
+                    pass
                 # 【V88·U3拐点倒计时+前置信号·云端 2026-07-26】pub版(大盘/板块级)
                 try:
                     _tfc9 = _pubj9("turning_forecast_pub.json")
@@ -664,7 +678,7 @@ if _nav == "🧭 导航":
                 _by9c = []
                 for _h9c2 in ([] if _dh_gate9c else (_dh9c2.get("horses") or [])):
                     _md9c = str(((_h9c2.get("trade_plan") or {}).get("short") or {}).get("mode") or "")
-                    if _cf9c["buy"] == "green" and _md9c in ("现价可进", "回踩到位", "突破确认"):
+                    if _cf9c["buy"] == "green" and _md9c in ("现价可进", "回踩到位", "突破确认", "左侧低吸"):
                         _by9c.append((_h9c2, int(_h9c2.get("p_up") or 0), _md9c))
                     elif _cf9c["buy"] == "trigger" and _md9c in ("双路径待触发", "回踩到位", "突破确认"):
                         _by9c.append((_h9c2, int(_h9c2.get("p_up") or 0), f"盯触发·{_md9c}"))
@@ -1138,7 +1152,7 @@ if _nav == "🧭 导航":
             _dh_g9 = {}
         _gate_go9 = [h for h in (_dh_g9.get("horses") or [])
                      if ((h.get("trade_plan") or {}).get("short") or {}).get("mode")
-                     in ("现价可进", "回踩到位", "突破确认")]
+                     in ("现价可进", "回踩到位", "突破确认", "左侧低吸")]
         # 【V88·统一裁决·云端 2026-07-25 用户定纲"逻辑和说明要统一"】与桌面同一把尺:
         # 弱市绿灯⏸️不执行/过热🔶限回踩/中性报领涨引擎——三市场政策一行看清
         try:

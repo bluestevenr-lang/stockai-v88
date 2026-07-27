@@ -2872,7 +2872,7 @@ try:
         if _bn_gated9 and not _bn_go9:
             for _br9e in (json.loads((_bn_repo9 / "data" / "intraday_decisions.json")
                                      .read_text(encoding="utf-8")).get("rows") or []):
-                if (((_br9e.get("entry_plan") or {}).get("mode") in ("现价可进", "回踩到位", "突破确认"))
+                if (((_br9e.get("entry_plan") or {}).get("mode") in ("现价可进", "回踩到位", "突破确认", "左侧低吸"))
                         and _br9e.get("scope") != "持仓"):
                     _bn_go9.append((_br9e.get("name"), int(_br9e.get("p_up") or 0)))
     except Exception:
@@ -3041,12 +3041,12 @@ try:
         # 之前只收"现价可进"把回踩到位的中海油/山西汾酒漏掉了
         _eg9 = (_ep9.get("env_gate") or {})
         _tm9 = str(_ep9.get("tech_mode") or "")      # 技术信号(mode被环境闸改写前的值)
-        _blocked9 = (_tm9 in ("现价可进", "回踩到位", "突破确认") and not _eg9.get("exec", True))
+        _blocked9 = (_tm9 in ("现价可进", "回踩到位", "突破确认", "左侧低吸") and not _eg9.get("exec", True))
         if _blocked9 and _k9 not in _cb_seen9:
             _cb_blk9.append((_r9.get("name"), _r9.get("code"), _tm9,
                              str(_ep9.get("exec_action") or "")[6:90]))
             _cb_seen9.add(_k9)
-        elif _md9 in ("现价可进", "回踩到位", "突破确认") and _k9 not in _cb_seen9:
+        elif _md9 in ("现价可进", "回踩到位", "突破确认", "左侧低吸") and _k9 not in _cb_seen9:
             _cb_rows9.append((f"自选/持仓池·{_md9}", _r9.get("name"), _r9.get("code"), _r9.get("last"),
                               int(_r9.get("p_up") or 0), round(float(_r9.get("rr") or 0), 2),
                               str(_ep9.get("short_text") or "")[2:96]))
@@ -3070,9 +3070,10 @@ try:
         _dist9 = ((_pk9.get("last", 0) / (_pk9.get("shallow") or [0, 1])[1] - 1) * 100
                   if (_pk9.get("shallow") or [0, 0])[1] else 99)
         _eg9s = (_pk9.get("env_gate") or {})
-        _blk9s = (str(_pk9.get("mode")) in ("现价可进", "回踩到位", "突破确认")
-                  and (not _eg9s.get("exec", True)
-                       or (_cb_gate9.get(_cb_mk9(_pk9.get("sym"))) or {}).get("state") in ("weak", "hot")))
+        # 【环境闸v2 2026-07-27 大改】weak/hot不再拦入blocked——纪律用仓位分级表达,
+        # exec恒True后此分支自然退役,保留只为兼容旧落盘数据
+        _blk9s = (str(_pk9.get("mode")) in ("现价可进", "回踩到位", "突破确认", "左侧低吸")
+                  and not _eg9s.get("exec", True))
         if _blk9s and _k9 not in _cb_seen9:
             _cb_blk9.append((_pk9.get("name"), _pk9.get("sym"), str(_pk9.get("mode")),
                              str(_eg9s.get("action") or
@@ -3208,6 +3209,31 @@ try:
                                       f"<span style='color:#94a3b8'>·{str(_w9c)[:76]}</span></div>"
                                       for _n9c, _c9c, _m9c, _w9c in _cb_near9[:4]) + "</div>",
                             unsafe_allow_html=True)
+            # ── 📈趋势先行(2026-07-27大改"要提前量":小米/LMT被安全线拦掉的翻转,这里直接说) ──
+            try:
+                _tsj9c = _cbj9("trend_shift.json")
+                _tsu9c = [r for r in (_tsj9c.get("up") or []) if r.get("phase") in ("早期", "中期")][:6]
+                _tsd9c = [r for r in (_tsj9c.get("down") or []) if r.get("in_pool")][:4]
+                if _tsu9c:
+                    st.markdown("<div style='background:#eff6ff;border:1px solid #93c5fd;border-radius:8px;"
+                                "padding:5px 9px;margin-top:5px'><b style='font-size:12.5px;color:#1d4ed8'>"
+                                "📈 趋势先行</b><span style='font-size:10.5px;color:#94a3b8' "
+                                "title='翻转已发生且在早中期=提前量最足的窗口;无赔率/52周位门槛(创新高强票rr公式失真,LMT案);"
+                                "直接推荐非影子,每条已入台账攒战绩;仓位建议按牛熊态(bear=1/3仓)'>ⓘ提前量·直接推荐</span>"
+                                + "".join(
+                                    f"<div style='font-size:12px'>{'🟢' if r.get('phase') == '早期' else '🟡'}"
+                                    f"<b>{_cb_nm9(r.get('name'), r.get('code'))}</b>"
+                                    f" {r.get('phase')}第{r.get('days')}日·已涨{r.get('gain_pct')}%"
+                                    f"·涨概率{r.get('p_up', '?')}%"
+                                    f"<span style='color:#475569'>·{str(r.get('action'))[:34]}·止损{r.get('stop')}</span>"
+                                    + (f"<span style='font-size:11px;color:#b45309'>·💼{str(r.get('env_note'))[:22]}</span>"
+                                       if r.get("env_note") else "") + "</div>" for r in _tsu9c)
+                                + ("".join(
+                                    f"<div style='font-size:12px;color:#dc2626'>📉<b>{_cb_nm9(r.get('name'), r.get('code'))}</b>"
+                                    f" 翻空第{r.get('days')}日·20日{r.get('mom20')}%·{str(r.get('action'))[:30]}</div>"
+                                    for r in _tsd9c)) + "</div>", unsafe_allow_html=True)
+            except Exception:
+                pass
             if len(_cb_rows9) > 5:
                 st.caption(f"还有{len(_cb_rows9) - 5}只·见双门/④")
         with _tab_s9:
@@ -3632,7 +3658,7 @@ try:
                 if not _mkfit9(_h9n.get("code")):
                     continue
                 _md9n = str(((_h9n.get("trade_plan") or {}).get("short") or {}).get("mode") or "")
-                if _cfg9["buy"] == "green" and _md9n in ("现价可进", "回踩到位", "突破确认"):
+                if _cfg9["buy"] == "green" and _md9n in ("现价可进", "回踩到位", "突破确认", "左侧低吸"):
                     _buy9n.append((_h9n, int(_h9n.get("p_up") or 0), _md9n))
                 elif _cfg9["buy"] == "trigger" and _md9n in ("双路径待触发", "回踩到位", "突破确认"):
                     _buy9n.append((_h9n, int(_h9n.get("p_up") or 0), f"明日盯触发·{_md9n}"))
@@ -12900,7 +12926,7 @@ def _v88_decision_card(_d9):
     _action_disp9 = _action9
     if any(k in _action9 for k in ("减仓", "退出", "回避", "清仓")) and float(_d9.get("expected_pct") or 0) > 1:
         _action_disp9 = f"今日风控·{_action9}"
-    elif _ep_mode9 in ("现价可进", "回踩到位", "突破确认") and any(
+    elif _ep_mode9 in ("现价可进", "回踩到位", "突破确认", "左侧低吸") and any(
             k in _action9 for k in ("观察", "等待回踩", "持有观察")):
         _action_disp9 = f"⏱{_ep_mode9}·仅短线"
     _at9 = str(_d9.get("analysis_time") or "时间未知")
@@ -14297,7 +14323,7 @@ def _render_today_verdict(_snap, _repo):
     _go, _seen_go = [], set()
     try:
         for _d in ((st.session_state.get("watch_alerts_v88") or {}).get("decisions") or []):
-            if ((_d.get("entry_plan") or {}).get("mode")) in ("现价可进", "回踩到位", "突破确认"):
+            if ((_d.get("entry_plan") or {}).get("mode")) in ("现价可进", "回踩到位", "突破确认", "左侧低吸"):
                 _go.append({**_d, "_src": ("💼持仓" if _d.get("scope") == "持仓" else "👁自选")})
                 _seen_go.add(str(_d.get("code")).upper().split(".")[0].lstrip("0"))
     except Exception:
@@ -14311,7 +14337,7 @@ def _render_today_verdict(_snap, _repo):
             _rc9g = str(_r9g.get("code")).upper().split(".")[0].lstrip("0")
             if _rc9g in _seen_go:
                 continue
-            if ((_r9g.get("entry_plan") or {}).get("mode")) in ("现价可进", "回踩到位", "突破确认"):
+            if ((_r9g.get("entry_plan") or {}).get("mode")) in ("现价可进", "回踩到位", "突破确认", "左侧低吸"):
                 _go.append({**_r9g, "_src": ("💼持仓" if _r9g.get("scope") == "持仓" else "👁自选")})
                 _seen_go.add(_rc9g)
     except Exception:
@@ -14429,7 +14455,7 @@ def _render_today_verdict(_snap, _repo):
             _mode9 = str((_d9.get("entry_plan") or {}).get("mode") or "")
             if _it9.get("name") in _cut:
                 _why9 = "已转减仓信号"
-            elif _mode9 and _mode9 not in ("现价可进", "回踩到位", "突破确认"):
+            elif _mode9 and _mode9 not in ("现价可进", "回踩到位", "突破确认", "左侧低吸"):
                 _why9 = f"时机灯转「{_mode9}」"
             elif _d9:
                 _why9 = "绿灯条件今日不满足"
