@@ -3157,11 +3157,28 @@ try:
             _t_buy9.append(_row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9), '')}{_nm9}",
                                    _cd9, f"<b style='color:#dc2626'>买 涨{_pu9}%</b>{_plab9(_pu9, 'up')}",
                                    _zone9s, _inv9s, ("半仓" if _g9x.get("state") == "hot" else "纲领内"), _st9x, str(_why9)))
+        # 【冲突消解层 2026-07-27 特斯拉案"卖侧强看跌85% vs 买侧🚀启动候选72"两嘴打架】
+        # 卖警=当下趋势事实,底拐/上行候选=左侧猜测——合成:纪律优先减仓照执行;
+        # 候选在场=减而不清留观察仓,站上确认价才算见底成立,之前的反弹按逃命反弹处理
+        _cf_turn9, _cf_up9 = {}, {}
+        try:
+            _cf_turn9 = {str(r.get("code")): r for r in (_nwj9("turning_forecast.json").get("rows") or [])
+                         if r.get("side") == "bottom" and int(r.get("prob") or 0) >= 60}
+            _cf_up9 = {str(r.get("code")): r for r in (_nwj9("trend_shift.json").get("up") or [])}
+        except Exception:
+            pass
         for _nm9s, _cd9s, _px9s, _pd9s, _act9s, _why9s in _cb_sell9[:5]:
             _nm9s = _cb_nm9(_nm9s, _cd9s)
+            _cf9 = _cf_turn9.get(str(_cd9s)) or _cf_up9.get(str(_cd9s))
+            _cf_txt9 = ""
+            if _cf9:
+                _cfp9 = _cf9.get("confirm_price") or _cf9.get("ma20")
+                _cf_txt9 = (f"｜⚡买侧雷达有{'底拐候选强度' + str(_cf9.get('prob')) if _cf9.get('side') == 'bottom' else '上行翻转'}"
+                            f"→合成:减而不清留观察仓,站上{_cfp9}才算反转成立,之前反弹=逃命反弹")
             _t_sell9.append(_row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9s), '')}{_nm9s}", _cd9s,
                                     f"<b style='color:#16a34a'>{_act9s} 跌{_pd9s}%</b>{_plab9(_pd9s, 'down')}",
-                                    f"现{_px9s}", "卡💰行", "按纪律", "💼执行", str(_why9s)))
+                                    f"现{_px9s}", "卡💰行", ("减留底仓" if _cf9 else "按纪律"), "💼执行",
+                                    str(_why9s) + _cf_txt9))
         try:
             _hold9 = [r for r in _cb_src9 if r.get("scope") == "持仓"
                       and not any(k in str(r.get("action", "")) for k in ("减", "退", "清", "止损"))][:5]
