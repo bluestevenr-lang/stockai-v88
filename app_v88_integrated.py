@@ -2939,28 +2939,34 @@ try:
         _CERT9 = {}
 
     def _cert_badge9(_cd, _nm=""):
+        """三态徽章(2026-07-27 用户定纲"都需要标,无标也要给禁止符"):
+        🅒金C=Claude复核与规则一致 / 红C✕=Claude有异议未通过 / 墨绿⊘=本班未复核(无结论)。
+        任何一只票都必有一个标,不留白——用户要一眼看出"这只有没有过Claude这关"。"""
+        _e9 = None
         try:
-            _e9 = None
             for _k9 in (str(_cd or ""), str(_cd or "").split(".")[0], str(_nm or "")):
                 if not _k9:
                     continue
                 _e9 = (_CERT9.get("by_code") or {}).get(_k9) or (_CERT9.get("by_name") or {}).get(_k9)
                 if _e9:
                     break
-            if not _e9:
-                return ""
-            _tip9 = (f"{_e9.get('model', 'Claude')}独立复核·{_e9.get('shift', '')}"
-                     f"｜{str(_e9.get('note', ''))[:70]}").replace('"', "'")
-            if _e9.get("verdict") == "一致":
-                return (f"<span title=\"✅Claude认证:与规则引擎结论一致。{_tip9}\" "
-                        "style='display:inline-block;width:15px;height:15px;line-height:15px;"
-                        "text-align:center;border-radius:50%;background:linear-gradient(145deg,#fde68a,#d97706);"
-                        "color:#4a2c05;font-size:10px;font-weight:800;margin-left:3px;"
-                        "box-shadow:0 1px 2px rgba(180,120,0,.45);vertical-align:middle'>C</span>")
-            return (f"<span title=\"⚡Claude有异议(未认证):{_tip9}\" "
-                    "style='font-size:10.5px;color:#b45309;margin-left:3px'>⚡未认证</span>")
         except Exception:
-            return ""
+            _e9 = None
+        _base9 = ("display:inline-block;width:15px;height:15px;line-height:15px;text-align:center;"
+                  "border-radius:50%;font-size:10px;font-weight:800;margin-left:3px;"
+                  "vertical-align:middle;letter-spacing:-.3px")
+        if not _e9:
+            return (f"<span title=\"⊘未复核:本班Claude没有审到这只(重点股优先,不装作全审过)——"
+                    f"无结论≠不能买,按规则引擎自己的判断执行\" "
+                    f"style='{_base9};background:#065f46;color:#a7f3d0'>⊘</span>")
+        _tip9 = (f"{_e9.get('model', 'Claude')}独立复核·{_e9.get('shift', '')}"
+                 f"｜{str(_e9.get('note', ''))[:70]}").replace('"', "'")
+        if _e9.get("verdict") == "一致":
+            return (f"<span title=\"✅Claude认证通过:独立复核结论与规则引擎一致。{_tip9}\" "
+                    f"style='{_base9};background:linear-gradient(145deg,#fde68a,#d97706);color:#4a2c05;"
+                    "box-shadow:0 1px 2px rgba(180,120,0,.45)'>C</span>")
+        return (f"<span title=\"✕Claude未通过:有异议,理由——{_tip9}\" "
+                f"style='{_base9};background:#dc2626;color:#fff'>C̸</span>")
 
     def _cb_nm9(_nm, _cd):
         # 【2026-07-27 统一名字真源】优先私仓 watch_alerts.resolve_name
@@ -3350,6 +3356,16 @@ try:
                             f"<span style='color:#94a3b8'>（{_tp9.get('generated_at', '')}"
                             f"·买卖价格=系统真实数据,AI只组织大盘与准备节）</span></div>",
                             unsafe_allow_html=True)
+                # 【三态徽章 2026-07-27】预案是AI生成的纯文本,按名字注入认证标——
+                # 卖·防/准备买各行也要看得见"过没过Claude这关"(长名优先防"中国移动"匹配到"中国")
+                try:
+                    for _nm9tp in sorted(set((_CERT9.get("by_name") or {}).keys()), key=len, reverse=True):
+                        if len(str(_nm9tp)) >= 2 and _nm9tp in _tp_html9:
+                            _e9tp = (_CERT9.get("by_name") or {})[_nm9tp]
+                            _mk9tp = "🅒" if _e9tp.get("verdict") == "一致" else "🚫"
+                            _tp_html9 = _tp_html9.replace(_nm9tp, f"{_nm9tp}{_mk9tp}")
+                except Exception:
+                    pass
                 st.markdown(_tp_html9.replace('~', '～'))   # ~→全角:防markdown把价格区间24.45~24.55解析成删除线(GPT抓的真雷)
         except Exception:
             pass
