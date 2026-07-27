@@ -3134,7 +3134,7 @@ try:
                                 "概率=该股自身10年同级回撤回测(礼来850案:历史80%胜率中位+22%,系统当时没喊,错过+40%);"
                                 "陷阱档=历史同级回撤后多数继续跌,明说不接刀'>ⓘ拿3~6个月·概率来自它自己的历史</span>"
                                 + "".join(
-                                    f"<div style='font-size:12px'>{r.get('level')}<b>{_cb_nm9(r.get('name'), r.get('code'))}</b>"
+                                    f"<div style='font-size:12px'>{r.get('level')}<b>{_nw_link9(_cb_nm9(r.get('name'), r.get('code')), r.get('code') or '')}</b>"
                                     f" 距高{r.get('dd_pct')}%·52周{int(float(r.get('pos52') or 0))}%"
                                     f"<span style='color:#475569'>·{str(r.get('bt_line'))[:52]}</span></div>"
                                     for r in _vzr9c)
@@ -3157,14 +3157,14 @@ try:
                                 "直接推荐非影子,每条已入台账攒战绩;仓位建议按牛熊态(bear=1/3仓)'>ⓘ该买该卖直说·每条带止损</span>"
                                 + "".join(
                                     f"<div style='font-size:12px'>{'🟢' if r.get('phase') == '早期' else '🟡'}"
-                                    f"<b>{_cb_nm9(r.get('name'), r.get('code'))}</b>"
+                                    f"<b>{_nw_link9(_cb_nm9(r.get('name'), r.get('code')), r.get('code') or '')}</b>"
                                     f" {r.get('phase')}第{r.get('days')}日·已涨{r.get('gain_pct')}%"
                                     f"·涨概率{r.get('p_up', '?')}%"
                                     f"<span style='color:#475569'>·{str(r.get('action'))[:34]}·止损{r.get('stop')}</span>"
                                     + (f"<span style='font-size:11px;color:#b45309'>·💼{str(r.get('env_note'))[:22]}</span>"
                                        if r.get("env_note") else "") + "</div>" for r in _tsu9c)
                                 + ("".join(
-                                    f"<div style='font-size:12px;color:#dc2626'>📉<b>{_cb_nm9(r.get('name'), r.get('code'))}</b>"
+                                    f"<div style='font-size:12px;color:#dc2626'>📉<b>{_nw_link9(_cb_nm9(r.get('name'), r.get('code')), r.get('code') or '')}</b>"
                                     f" 翻空第{r.get('days')}日·20日{r.get('mom20')}%·{str(r.get('action'))[:30]}</div>"
                                     for r in _tsd9c)) + "</div>", unsafe_allow_html=True)
             except Exception:
@@ -3250,6 +3250,9 @@ try:
     def _nw_link9(_nm9x, _cd9x):
         # 【2026-07-25 用户抓"只有A股能点"】与全站 _stk_link 完全同款(新标签+下划线)——
         # 原 target=_self 当前页重载在部分场景吞掉深链参数,美港股点了没反应。
+        # 【2026-07-27】无代码的条目(板块名如"半导体")不生成死链,原样返回文字。
+        if not str(_cd9x or "").strip():
+            return str(_nm9x or "")
         return (f'<a href="?q={_cd9x}&focus=deep#v88-deep-analysis" target="_blank" rel="noopener" '
                 f'style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{_nm9x}</a>')
     # 档位→最优口径: mkt_hz=大盘统一引擎档 / sec_hz=板块轮动点 / buy=买名单口径 / evt=机构简报档
@@ -3508,7 +3511,7 @@ try:
                         "</b><span style='font-size:10.5px;color:#94a3b8' title='拐点预警的确认价被价格穿越=预判应验;完整战绩窗口期末在预测台账正式核算(含最大有利/不利幅度)'>ⓘ证据链</span>"
                         + "".join(
                             f"<div style='font-size:12px'>{'🌱' if h.get('side') == '见底' else '🔺'}"
-                            f"<b>{h.get('name')}</b> {h.get('warned')}预警{h.get('side')}"
+                            f"<b>{_nw_link9(h.get('name'), h.get('code') or '')}</b> {h.get('warned')}预警{h.get('side')}"
                             f"(强度{h.get('prob')})→<b style='color:#15803d'>第{h.get('days')}天"
                             f"{'站上' if h.get('side') == '见底' else '跌破'}{h.get('confirm_price')}兑现</b>"
                             + (f"<span style='color:#475569'>·距预警{h.get('move_pct'):+.1f}%</span>"
@@ -3559,7 +3562,7 @@ try:
                 _psj9 = _nwj9("pre_signals.json")
                 _ps_html9 = []
                 for _f9p in (_psj9.get("fund_lead") or [])[:3]:
-                    _ps_html9.append(f"<div style='font-size:12px'>💰蓄势:<b>{_f9p.get('name')}</b>"
+                    _ps_html9.append(f"<div style='font-size:12px'>💰蓄势:<b>{_nw_link9(_f9p.get('name'), _f9p.get('code') or '')}</b>"
                                      f"<span style='color:#475569'>·{str(_f9p.get('note'))[:40]}</span>"
                                      f"<span style='font-size:11px;color:#94a3b8'>(钱先进·价未动=好苗头,等启动别追)</span></div>")
                 for _e9p in (_psj9.get("earn_gap") or [])[:3]:
@@ -16417,7 +16420,7 @@ def _render_today_nav():
                         for _r9 in _mr9:
                             _ci9 = _citems9.get(str(_r9.get("代码", "")))
                             if _ci9 and _ci9.get("text"):
-                                _clines9.append(f"🧠 <b>{_ci9.get('name')}</b>：{_ci9['text']}")
+                                _clines9.append(f"🧠 <b>{_stk_link(_ci9.get('name'), str(_r9.get('代码', '')))}</b>：{_ci9['text']}")
                         if _clines9:
                             st.markdown(
                                 "<div style='background:#f0f9ff;border-left:3px solid #0284c7;"
