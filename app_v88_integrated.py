@@ -2794,11 +2794,28 @@ with _now_c2:
                 pass
             st.toast("📡 已切换到此刻最新数据，全页重算中…", icon="📡")
             st.rerun()
+    # 【2026-07-27 用户点单"增加跳动准确时间"】按钮下常显数据时点(不只点击后):
+    # 优先显示强刷时刻,否则显示当前行情快照的生成时间——随时知道看的是几点的数据。
+    import time as _tnow9b
+    from datetime import datetime as _dtn9b
     _fnts9 = float(st.session_state.get("_force_now_ts") or 0)
     if _fnts9:
-        import time as _tnow9b
-        st.markdown(f"<div style='font-size:12px;color:#94a3b8;text-align:center'>"
-                    f"此刻数据·{int((_tnow9b.time()-_fnts9)/60)}分钟前</div>", unsafe_allow_html=True)
+        _mins9b = int((_tnow9b.time() - _fnts9) / 60)
+        _tip9b = (f"⚡{_dtn9b.fromtimestamp(_fnts9).strftime('%H:%M:%S')} 强刷"
+                  + (f"·{_mins9b}分钟前" if _mins9b else "·刚刚"))
+        _col9b = "#16a34a" if _mins9b < 30 else "#b45309"
+    else:
+        try:
+            _snap_ts9b = str(json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+                                         "market_snapshot.json").read_text(encoding="utf-8")).get("generated_at"))[:16]
+            _age9b = (_dtn9b.now() - _dtn9b.strptime(_snap_ts9b, "%Y-%m-%d %H:%M")).total_seconds() / 3600
+            _tip9b = f"📊数据{_snap_ts9b[5:]}·{_age9b:.1f}h前"
+            _col9b = "#94a3b8" if _age9b < 6 else ("#b45309" if _age9b < 36 else "#dc2626")
+        except Exception:
+            _tip9b = "数据时间未知"
+            _col9b = "#94a3b8"
+    st.markdown(f"<div style='font-size:11.5px;color:{_col9b};text-align:center;line-height:1.2'>"
+                f"{_tip9b}</div>", unsafe_allow_html=True)
 
 # 【V88·今日指令牌 2026-07-24 用户定纲"每天打开=方向+进攻防守+成功率,升级要明显提示"】
 # 开屏第一眼三行:①方向(定调+三市场周概率) ②进攻/防守名单点名 ③实盘战绩背书+✨最新升级。
@@ -3011,6 +3028,7 @@ try:
         return ("A股" if _c.endswith((".SS", ".SZ", ".SH", ".BJ")) else ("港股" if _c.endswith(".HK") else "美股"))
     _MKFLAG9 = {"A股": "🇨🇳", "港股": "🇭🇰", "美股": "🇺🇸"}
     _cb_rows9, _cb_near9, _cb_sell9, _cb_seen9 = [], [], [], set()
+    _cb_blk9 = []   # 技术绿灯但被环境闸拦下(与双路径待触发的"正常准备买"分开呈现)
     # 双源合并(与龙虎门同款):session实时(三市场都算,若已就绪)优先,落盘兜底——
     # 落盘曾被单市场班冲掉(已改合并式),session保证中港绿灯即时可见。
     _cb_src9 = list(((st.session_state.get("watch_alerts_v88") or {}).get("decisions") or []))
@@ -3025,9 +3043,8 @@ try:
         _tm9 = str(_ep9.get("tech_mode") or "")      # 技术信号(mode被环境闸改写前的值)
         _blocked9 = (_tm9 in ("现价可进", "回踩到位", "突破确认") and not _eg9.get("exec", True))
         if _blocked9 and _k9 not in _cb_seen9:
-            # 技术绿灯但环境不合格→不进确认买单,转⏸专区并说原因与解除条件
-            _cb_near9.append((_r9.get("name"), _r9.get("code"), "⏸暂不执行",
-                              str(_ep9.get("exec_action") or "")[6:80]))
+            _cb_blk9.append((_r9.get("name"), _r9.get("code"), _tm9,
+                             str(_ep9.get("exec_action") or "")[6:90]))
             _cb_seen9.add(_k9)
         elif _md9 in ("现价可进", "回踩到位", "突破确认") and _k9 not in _cb_seen9:
             _cb_rows9.append((f"自选/持仓池·{_md9}", _r9.get("name"), _r9.get("code"), _r9.get("last"),
@@ -3052,7 +3069,17 @@ try:
             continue
         _dist9 = ((_pk9.get("last", 0) / (_pk9.get("shallow") or [0, 1])[1] - 1) * 100
                   if (_pk9.get("shallow") or [0, 0])[1] else 99)
-        if str(_pk9.get("mode")) == "现价可进" and _dist9 <= 5:
+        _eg9s = (_pk9.get("env_gate") or {})
+        _blk9s = (str(_pk9.get("mode")) in ("现价可进", "回踩到位", "突破确认")
+                  and (not _eg9s.get("exec", True)
+                       or (_cb_gate9.get(_cb_mk9(_pk9.get("sym"))) or {}).get("state") in ("weak", "hot")))
+        if _blk9s and _k9 not in _cb_seen9:
+            _cb_blk9.append((_pk9.get("name"), _pk9.get("sym"), str(_pk9.get("mode")),
+                             str(_eg9s.get("action") or
+                                 f"{_cb_mk9(_pk9.get('sym'))}"
+                                 f"{(_cb_gate9.get(_cb_mk9(_pk9.get('sym'))) or {}).get('policy', '环境不合格')}")[:90]))
+            _cb_seen9.add(_k9)
+        elif str(_pk9.get("mode")) == "现价可进" and _dist9 <= 5:
             _cb_rows9.append((f"五行业代表·{_sv9['sector']}", _pk9.get("name"), _pk9.get("sym"),
                               _pk9.get("last"), int(_pk9.get("p_up") or 0), _pk9.get("rr"),
                               f"回踩带{(_pk9.get('shallow') or ['?', '?'])[0]}~{(_pk9.get('shallow') or ['?', '?'])[1]}"
@@ -3160,17 +3187,26 @@ try:
         with _tab_b9:
             st.markdown(_tbl9(_t_buy9) if _t_buy9 else
                         ("<span style='font-size:12px;color:#94a3b8'>买侧无可执行买单——"
-                         + (f"有{len(_cb_near9)}只技术绿灯被环境闸拦下(见下)" if _cb_near9 else "现金也是仓位")
+                         + (f"有{len(_cb_blk9)}只技术绿灯被环境闸拦下(见下)" if _cb_blk9 else "现金也是仓位")
                          + "</span>"), unsafe_allow_html=True)
-            if _cb_near9:
+            if _cb_blk9:
                 st.markdown("<div style='font-size:12px;color:#b45309;margin-top:4px'>"
                             "<b>⏸ 技术绿灯·环境不合格(暂不执行)</b>"
                             "<span style='font-size:11px;color:#94a3b8' title='环境闸三判据:①弱市裁决(2周≤45%或温度verdict转弱/下杀)"
                             "②事件带(5日内自家财报或FOMC)③环境赔率(弱市/事件期要求rr≥2.0,常态1.2)——三者任一不合格即降级,"
                             "解除条件写在每行末尾'>ⓘ</span></div>"
-                            + "".join(f"<div style='font-size:12px'>{_cb_nm9(_n9b, _c9b)}"
-                                      f"<span style='color:#64748b'>·{str(_w9b)[:88]}</span></div>"
-                                      for _n9b, _c9b, _m9b, _w9b in _cb_near9[:6]),
+                            + "".join(f"<div style='font-size:12px'><b>{_cb_nm9(_n9b, _c9b)}</b>"
+                                      f"<span style='color:#94a3b8'>(技术{_m9b})</span>"
+                                      f"<span style='color:#64748b'>·{str(_w9b)[:86]}</span></div>"
+                                      for _n9b, _c9b, _m9b, _w9b in _cb_blk9[:6]),
+                            unsafe_allow_html=True)
+            if _cb_near9:
+                st.markdown("<div style='font-size:12px;color:#64748b;margin-top:4px'>"
+                            "<b>🕐 准备买·等触发</b><span style='font-size:11px;color:#94a3b8'>"
+                            "(技术上尚未到位,到价再评环境闸)</span>"
+                            + "".join(f"<div style='font-size:12px'>{_cb_nm9(_n9c, _c9c)}"
+                                      f"<span style='color:#94a3b8'>·{str(_w9c)[:76]}</span></div>"
+                                      for _n9c, _c9c, _m9c, _w9c in _cb_near9[:4]) + "</div>",
                             unsafe_allow_html=True)
             if len(_cb_rows9) > 5:
                 st.caption(f"还有{len(_cb_rows9) - 5}只·见双门/④")
@@ -5739,10 +5775,15 @@ if Config.ENABLE_EXPECTATION_LAYER:
             .v88-macro-dense .v88-macro-kpi small{display:block;font-size:12px;line-height:1.1;white-space:nowrap}
             .v88-macro-dense .v88-cn-note{font-size:.66em!important}
             .v88-macro-dense .v88-macro-reason{font-size:12px;margin-top:.18rem}
-            .v88-macro-ai{font-size:12px;line-height:1.35;color:#3d4f6a;border-top:1px dashed #dce3ed;margin-top:.28rem;padding-top:.25rem;max-height:50px;overflow:hidden}
-            .v88-macro-reason-inline{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-size:12px;color:#5a6378;white-space:normal;overflow:hidden;margin-bottom:2px}
-            .v88-macro-ai-active{height:252px;min-height:252px}
-            .v88-macro-ai-active .v88-macro-ai{max-height:82px;overflow:auto}
+            /* 2026-07-27 用户抓"文字重叠看不清":ai-active死高252px→内容超出后压到下方元素。
+               死高必裁铁律再犯——全部改 min-height 自适应,AI段落块级独立不与reason挤在一行。 */
+            .v88-macro-ai{font-size:12px;line-height:1.45;color:#3d4f6a;border-top:1px dashed #dce3ed;
+                margin-top:.3rem;padding-top:.3rem;display:block;overflow:visible}
+            .v88-macro-reason-inline{display:block;font-size:12px;color:#5a6378;white-space:normal;
+                margin-bottom:4px;line-height:1.45}
+            .v88-macro-ai-active{min-height:252px;height:auto}
+            .v88-macro-ai-active .v88-macro-ai{max-height:none;overflow:visible}
+            .v88-macro-ai b{display:block;margin-top:3px}
             @media(max-width:900px){.v88-macro-card{min-height:auto}.v88-macro-kpi b{font-size:13px}}
             </style>""", unsafe_allow_html=True)
             # AI 日报增强解读并入三市场卡片：一次请求同时生成三市场，继续复用原文件缓存。
