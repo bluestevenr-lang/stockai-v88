@@ -3320,6 +3320,9 @@ try:
                     st.toast(f"❌ {_label9r}更新失败: {str(_e9r)[:40]}", icon="❌")
             st.rerun()
 
+    # 【认证徽章·作战板 2026-07-27 用户抓"图一图二为何没有C验证图标"】
+    # 作战板(低位拐点/全市场机会/准备买/卖/五行业代表/拐点倒计时)走的是_nw_link9这条路径,
+    # 与行动中心的_cb_nm9不是同一个出口——两条路都必须挂徽章,否则总有半边没有标。
     def _nw_link9(_nm9x, _cd9x):
         # 【2026-07-25 用户抓"只有A股能点"】与全站 _stk_link 完全同款(新标签+下划线)——
         # 原 target=_self 当前页重载在部分场景吞掉深链参数,美港股点了没反应。
@@ -3327,7 +3330,8 @@ try:
         if not str(_cd9x or "").strip():
             return str(_nm9x or "")
         return (f'<a href="?q={_cd9x}&focus=deep#v88-deep-analysis" target="_blank" rel="noopener" '
-                f'style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{_nm9x}</a>')
+                f'style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{_nm9x}</a>'
+                + _cert_badge9(_cd9x, _nm9x))
     # 档位→最优口径: mkt_hz=大盘统一引擎档 / sec_hz=板块轮动点 / buy=买名单口径 / evt=机构简报档
     # 【V88·七档 2026-07-25 用户定纲"今日/本周/下周/本月/下月/本季度/下季度,稳一些"】
     # 明日档删除(触发单归今日/本周;且统一引擎无"明日"键,旧明日档大盘行是暗坑);

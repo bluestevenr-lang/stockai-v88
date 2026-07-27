@@ -590,7 +590,7 @@ if _nav == "🧭 导航":
                 st.markdown("<b style='font-size:13px'>🌱 ③ 低位拐点·可注意埋伏</b>"
                             f"<span style='font-size:11px;color:#94a3b8'>（全池{_pt9c2.get('scanned', '?')}只·转强≠立刻买·💰=主力今日净流入）</span>"
                             + ("<div style='font-size:12.5px'>" + "、".join(
-                                f"{x.get('name')}(52周{int(float(x.get('pos52') or 0))}%·{x.get('confidence')}{_fftag9c(x.get('code'))})"
+                                f"{x.get('name')}{_cert9c(x.get('code'), x.get('name'))}(52周{int(float(x.get('pos52') or 0))}%·{x.get('confidence')}{_fftag9c(x.get('code'))})"
                                 for x in _up9c2) + "</div>" if _up9c2
                                else "<div style='font-size:12.5px;color:#94a3b8'>全池文件待发布或暂无低位转强</div>"),
                             unsafe_allow_html=True)
@@ -672,7 +672,7 @@ if _nav == "🧭 导航":
                         st.markdown("<b style='font-size:13px'>⏳ 拐点倒计时</b>"
                                     "<span style='font-size:11px;color:#94a3b8'>（个股级在桌面/飞书）</span>"
                                     + "".join(f"<div style='font-size:12.5px'>{'🔺' if r.get('side') == 'top' else '🌱'} "
-                                              f"{r.get('name')} <b>预计{(r.get('window_days') or ['?', '?'])[0]}～"
+                                              f"{r.get('name')}{_cert9c(r.get('code'), r.get('name'))} <b>预计{(r.get('window_days') or ['?', '?'])[0]}～"
                                               f"{(r.get('window_days') or ['?', '?'])[1]}个交易日内"
                                               f"{'可能见顶' if r.get('side') == 'top' else '可能见底'}·强度{r.get('prob')}/100"
                                               f"<span style='font-weight:400;font-size:11px'>({'强预警' if int(r.get('prob') or 0) >= 70 else ('值得留意' if int(r.get('prob') or 0) >= 55 else '弱信号')})</span></b>"
@@ -706,7 +706,7 @@ if _nav == "🧭 导航":
                                 _srv_rows9.append(
                                     "<div style='font-size:12.5px'>"
                                     f"<b>{_sv9c['sector']}</b>·{'代表' if _sv9c.get('pick') else '仅观察'} "
-                                    f"{_pk9c.get('name')}({_pk9c.get('sym')})"
+                                    f"{_pk9c.get('name')}{_cert9c(_pk9c.get('sym'), _pk9c.get('name'))}({_pk9c.get('sym')})"
                                     + (f"<b style='color:#dc2626'>{_pk9c.get('p_up')}%</b>" if _sv9c.get("pick") else "")
                                     + f"<span style='font-size:11.5px;color:#475569'>·现{_pk9c.get('last')}"
                                     f"·回踩带{_sh9c[0]}~{_sh9c[1]}·突破{_pk9c.get('breakout')}"
