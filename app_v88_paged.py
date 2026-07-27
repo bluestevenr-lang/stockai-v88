@@ -17,7 +17,9 @@ _SRC_PATH = Path(__file__).parent / "app_v88_integrated.py"
 
 
 @_st_boot.cache_resource(show_spinner=False)
-def _load_segments(_mtime: float):
+def _load_segments(mtime: float):
+    # ⚠️参数名不可下划线开头: Streamlit缓存把 _xxx 参数视为"不参与哈希",
+    # 会导致缓存永不失效(源码改了还跑旧代码)/不同参数命中同一份缓存。2026-07-27踩坑修复。
     """切段+预编译一次缓存(mtime变=源码更新才重做)——省每次rerun的重复读盘/切分/compile。"""
     src = _SRC_PATH.read_text(encoding="utf-8")
     segs, cur, buf = {}, "A", []
@@ -57,8 +59,8 @@ def _extract_defs(seg_src: str) -> str:
     return _ast_pg.unparse(mod)
 
 @_st_boot.cache_resource(show_spinner=False)
-def _bdefs_cached(_mtime: float):
-    return _extract_defs(_load_segments(_mtime).get("LISTS", ""))
+def _bdefs_cached(mtime: float):
+    return _extract_defs(_load_segments(mtime).get("LISTS", ""))
 
 
 _segs["B_DEFS"] = _bdefs_cached(_SRC_PATH.stat().st_mtime)
@@ -98,8 +100,10 @@ _G = {"__name__": "__main__", "__file__": str(_SRC_PATH)}
 _chain = (("A", "LISTS", "RESEARCH") if (_qp.get("q") and str(_qp.get("focus")) == "deep")
           else PAGES[_page])
 @_st_boot.cache_resource(show_spinner=False)
-def _compiled(_seg_name: str, _mtime: float):
-    return compile(_segs[_seg_name], f"v88_seg_{_seg_name}", "exec")
+def _compiled(seg_name: str, mtime: float):
+    # ⚠️同上:原写法 _seg_name/_mtime 两个参数都不参与哈希 → 首次编译的A段code被
+    # 后续所有段命中,LISTS/RESEARCH实际重复执行A段 → 重复key崩页(切页Connection error真因)
+    return compile(_segs[seg_name], f"v88_seg_{seg_name}", "exec")
 
 
 _mt = _SRC_PATH.stat().st_mtime
