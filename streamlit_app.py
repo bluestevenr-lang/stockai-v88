@@ -607,6 +607,18 @@ if _nav == "🧭 导航":
                                     unsafe_allow_html=True)
                 except Exception:
                     pass
+                # 【⚾击球区·云端 2026-07-27礼来案】白马打折中长线喊进(pub,大票公开)
+                try:
+                    _vzc9 = _pubj9("value_zone_pub.json")
+                    _vzu9 = [r for r in (_vzc9.get("rows") or []) if r.get("verdict") == "进"][:4]
+                    if _vzu9:
+                        st.markdown("<b style='font-size:13px'>⚾ 击球区·白马打折</b>"
+                                    "<span style='font-size:11px;color:#94a3b8'>（中长线6月窗·概率=该股10年回撤回测）</span>"
+                                    + "".join(f"<div style='font-size:12.5px'>{r.get('level')}<b>{r.get('name')}</b>"
+                                              f" 距高{r.get('dd_pct')}%·{str(r.get('bt_line'))[:50]}</div>"
+                                              for r in _vzu9), unsafe_allow_html=True)
+                except Exception:
+                    pass
                 # 【📈趋势先行·云端 2026-07-27大改】pub版=池外票(自选隐私已剔)
                 try:
                     _tsc9 = _pubj9("trend_shift_pub.json")

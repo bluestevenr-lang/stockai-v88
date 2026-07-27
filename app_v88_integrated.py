@@ -3222,6 +3222,29 @@ try:
                                       f"<span style='color:#94a3b8'>·{str(_w9c)[:76]}</span></div>"
                                       for _n9c, _c9c, _m9c, _w9c in _cb_near9[:4]) + "</div>",
                             unsafe_allow_html=True)
+            # ── ⚾击球区(2026-07-27礼来案"800多你都不告诉我该进了"):白马打折中长线喊进 ──
+            try:
+                _vzj9c = _cbj9("value_zone.json")
+                _vzr9c = [r for r in (_vzj9c.get("rows") or []) if r.get("verdict") == "进"][:5]
+                _vzt9c = [r for r in (_vzj9c.get("rows") or []) if r.get("verdict") == "陷阱"][:3]
+                if _vzr9c or _vzt9c:
+                    st.markdown("<div style='background:#fefce8;border:1px solid #fde047;border-radius:8px;"
+                                "padding:5px 9px;margin-top:5px'><b style='font-size:12.5px;color:#a16207'>"
+                                "⚾ 击球区·白马打折</b><span style='font-size:10.5px;color:#94a3b8' "
+                                "title='优质白马(10年年化≥8%)跌进历史便宜区→中长线喊进(6月窗),不等技术右侧;"
+                                "概率=该股自身10年同级回撤回测(礼来850案:历史80%胜率中位+22%,系统当时没喊,错过+40%);"
+                                "陷阱档=历史同级回撤后多数继续跌,明说不接刀'>ⓘ中长线·6月窗·回测概率</span>"
+                                + "".join(
+                                    f"<div style='font-size:12px'>{r.get('level')}<b>{_cb_nm9(r.get('name'), r.get('code'))}</b>"
+                                    f" 距高{r.get('dd_pct')}%·52周{int(float(r.get('pos52') or 0))}%"
+                                    f"<span style='color:#475569'>·{str(r.get('bt_line'))[:52]}</span></div>"
+                                    for r in _vzr9c)
+                                + "".join(
+                                    f"<div style='font-size:11.5px;color:#94a3b8'>⚠️{r.get('name')} 距高{r.get('dd_pct')}%"
+                                    f"但{str(r.get('bt_line'))[:40]}——不接刀</div>" for r in _vzt9c)
+                                + "</div>", unsafe_allow_html=True)
+            except Exception:
+                pass
             # ── 📈趋势先行(2026-07-27大改"要提前量":小米/LMT被安全线拦掉的翻转,这里直接说) ──
             try:
                 _tsj9c = _cbj9("trend_shift.json")
