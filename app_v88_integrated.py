@@ -3178,6 +3178,17 @@ try:
                     "原因悬停状态列ⓘ或点名进详情;弱市裁决=到价也等大盘回中性'>ⓘ</span>"
                     + ("<div style='font-size:12px;color:#b45309'>🗓 休市——周一预挂单,开盘跳出买区先复核</div>" if _cb_nt9 else ""),
                     unsafe_allow_html=True)
+        # 【图例 2026-07-27 用户"cc我都不知道"】徽章含义就近说明,不用猜
+        st.markdown(
+            "<div style='font-size:11px;color:#64748b;margin:-2px 0 3px'>验证标识："
+            "<span style='display:inline-block;width:14px;height:14px;line-height:14px;text-align:center;"
+            "border-radius:50%;background:linear-gradient(145deg,#fde68a,#d97706);color:#4a2c05;"
+            "font-size:9.5px;font-weight:800'>C</span> Claude人工复核过·结论与引擎一致　"
+            "<span style='display:inline-block;width:14px;height:14px;line-height:14px;text-align:center;"
+            "border-radius:50%;background:#dcfce7;color:#15803d;border:1px solid #86efac;"
+            "font-size:9.5px;font-weight:800'>✓</span> 已过Claude标准闸(七条机检规则)　"
+            "<span style='color:#94a3b8'>无标=引擎自判(未经复核)｜未通过的已移出名单</span></div>",
+            unsafe_allow_html=True)
         _tab_b9, _tab_s9, _tab_h9 = st.tabs([f"✅确认买({len(_cb_rows9)})",
                                              f"⚔️卖/减({len(_cb_sell9)})", f"💼持有({len(_hold9)})"])
         with _tab_b9:
@@ -3413,17 +3424,52 @@ try:
                             f"<span style='color:#94a3b8'>（{_tp9.get('generated_at', '')}"
                             f"·买卖价格=系统真实数据,AI只组织大盘与准备节）</span></div>",
                             unsafe_allow_html=True)
-                # 【三态徽章 2026-07-27】预案是AI生成的纯文本,按名字注入认证标——
-                # 卖·防/准备买各行也要看得见"过没过Claude这关"(长名优先防"中国移动"匹配到"中国")
+                # 【标识统一 2026-07-27 用户"cc我都不知道,统一一下验证标识"】四处病根一次修:
+                # ①预案区原用🅒/🚫两个emoji,与作战板的金C/✓绿勾不是一套→统一走_cert_badge9
+                # ②"谷歌C"这类名字本身以C结尾,紧跟金C标会看成"CC"→插入前加细空格分隔
+                # ③徽章HTML的title里含其它股票名(复核结论原文),按字符串循环替换会命中HTML内部
+                #   造成嵌套span乱码→改为"先一次性定位所有名字、再从右往左插入",绝不二次扫描
+                # ④被闸掉的票整行剔除:预案是前一晚写死的文本,过不了闸的不该还挂在卖名单里
                 try:
-                    for _nm9tp in sorted(set((_CERT9.get("by_name") or {}).keys()), key=len, reverse=True):
-                        if len(str(_nm9tp)) >= 2 and _nm9tp in _tp_html9:
-                            _e9tp = (_CERT9.get("by_name") or {})[_nm9tp]
-                            _mk9tp = "🅒" if _e9tp.get("verdict") == "一致" else "🚫"
-                            _tp_html9 = _tp_html9.replace(_nm9tp, f"{_nm9tp}{_mk9tp}")
+                    _names9tp = sorted({str(k) for k in ((_CERT9.get("by_name") or {}).keys())}
+                                       | {str(v.get("name") or "") for v in (_CS9.get("pass") or {}).values()},
+                                       key=len, reverse=True)
+                    _names9tp = [n for n in _names9tp if len(n) >= 2]
+                    _rej_nm9 = {str(v.get("name") or "") for v in _cs_rej9.values() if v.get("name")}
+                    _code_of9 = {}
+                    for _k9c, _v9c in list((_CS9.get("pass") or {}).items()):
+                        _code_of9.setdefault(str(_v9c.get("name") or ""), _k9c)
+                    for _k9c, _v9c in list((_CERT9.get("by_name") or {}).items()):
+                        _code_of9.setdefault(str(_k9c), str(_v9c.get("code") or ""))
+                    _kept9, _dropped9 = [], 0
+                    for _ln9tp in _tp_html9.splitlines():
+                        if any(_r9 and _r9 in _ln9tp for _r9 in _rej_nm9):
+                            _dropped9 += 1                     # 未达标的整行不展示
+                            continue
+                        _hits9 = []                            # [(起点, 终点, 名字)] 互不重叠
+                        for _nm9tp in _names9tp:
+                            _i9 = _ln9tp.find(_nm9tp)
+                            while _i9 >= 0:
+                                _j9 = _i9 + len(_nm9tp)
+                                if not any(_a9 < _j9 and _i9 < _b9 for _a9, _b9, _ in _hits9):
+                                    _hits9.append((_i9, _j9, _nm9tp))
+                                    break                      # 同名一行只挂一次(治DRAM双标)
+                                _i9 = _ln9tp.find(_nm9tp, _j9)
+                        for _a9, _b9, _nm9tp in sorted(_hits9, reverse=True):   # 从右往左插,位置不失效
+                            _bd9 = _cert_badge9(_code_of9.get(_nm9tp, ""), _nm9tp)
+                            if _bd9:
+                                _sep9 = "&nbsp;" if _nm9tp[-1:].upper() == "C" else ""
+                                _ln9tp = _ln9tp[:_b9] + _sep9 + _bd9 + _ln9tp[_b9:]
+                        _kept9.append(_ln9tp)
+                    _tp_html9 = "\n".join(_kept9)
+                    if _dropped9:
+                        _tp_html9 += (f"\n\n<span style='font-size:11px;color:#94a3b8'>"
+                                      f"（另有{_dropped9}条未达Claude标准已移出,见上方⏸未达标区）</span>")
                 except Exception:
                     pass
-                st.markdown(_tp_html9.replace('~', '～'))   # ~→全角:防markdown把价格区间24.45~24.55解析成删除线(GPT抓的真雷)
+                # unsafe_allow_html:预案文本由本系统生成,注入的是自家徽章HTML
+                st.markdown(_tp_html9.replace('~', '～').replace('\n', '  \n'),
+                            unsafe_allow_html=True)   # ~→全角:防markdown把价格区间解析成删除线
         except Exception:
             pass
         # 【V88·行动指令 2026-07-25 用户抓"没有推荐也没说该干什么"】每档开头一句话:
