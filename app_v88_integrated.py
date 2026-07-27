@@ -3048,7 +3048,7 @@ try:
             _cb_seen9.add(_k9)
         elif _md9 in ("现价可进", "回踩到位", "突破确认") and _k9 not in _cb_seen9:
             _cb_rows9.append((f"自选/持仓池·{_md9}", _r9.get("name"), _r9.get("code"), _r9.get("last"),
-                              int(_r9.get("p_up") or 0), round(float(_r9.get("probability_edge") or _r9.get("expected_pct") or 0), 1),
+                              int(_r9.get("p_up") or 0), round(float(_r9.get("rr") or 0), 2),
                               str(_ep9.get("short_text") or "")[2:96]))
             _cb_seen9.add(_k9)
         elif _md9 == "双路径待触发" and _k9 not in _cb_seen9:
@@ -3516,6 +3516,7 @@ try:
                             f"({'低位·空间大' if float(_r9o.get('pos52') or 100) <= 30 else '中位'})"
                             f"·买区{_r9o.get('buy_zone')}·止损{_r9o.get('stop')}</span>"
                             + (f"<span style='font-size:11px;color:#b45309'>·⚡逆势通道(≤1/3仓)</span>" if _exc9 else "")
+                            + (f"<span style='font-size:11px;color:#b45309'>·{_r9o['crowd']}</span>" if _r9o.get("crowd") else "")
                             + f"<span style='font-size:11px;color:#94a3b8'>·{str(_r9o.get('source'))[:12]}"
                             f"{'·池内' if _r9o.get('in_pool') else '·池外新'}</span></div>")
                     st.markdown("<b style='font-size:13px'>🌍 ③a 全市场机会</b>"

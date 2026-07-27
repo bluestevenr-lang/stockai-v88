@@ -319,7 +319,7 @@ def entry_timing(full, *, short=50.0, medium=50.0, long_avg=50.0, action="", rr=
             "breakout": breakout, "stop": stop}
 
 
-def env_gate(code: str, mode: str, rr: float, pos52=None) -> dict:
+def env_gate(code: str, mode: str, rr: float, pos52=None, evidence: dict | None = None) -> dict:
     """【V88·环境闸 2026-07-27 用户定纲"避免系统裁定与Fable打架,提高要求"】
     技术绿灯 ≠ 可执行。三条环境判据(此前只在Fable口头裁定里,现固化进引擎):
       ①弱市裁决: 所属市场2周概率≤45% 或 verdict含 转弱/杀跌/派发/下杀/偏冷
@@ -386,14 +386,20 @@ def env_gate(code: str, mode: str, rr: float, pos52=None) -> dict:
     # 深度低位(52周≤30%)+超宽赔率(≥3.0)的启动票 → 弱市不全拦,降为"可小仓试(≤1/3仓)":
     # 弱市杀的是高位股,深水+宽赔率恰是熊市该埋伏的;但**事件带(FOMC/自家财报)仍硬拦**——
     # 事件不可测,赔率再宽也不该赌开奖。
-    _deep_value = (rr_v >= 3.0 and pos52 is not None and float(pos52) <= 30)
+    # 【Fable核查 2026-07-27】深水票的rr天然虚高(现价贴52周低→downside小,前高远→upside大)——
+    # rr与低位共线,单靠这俩=放行"跌得深"本身。异证要求:OBV资金流入或底部拐点信号(非价格系确认,
+    # 三市场都可算);无异证的深水宽赔率票=可能还在下跌趋势末端,不放行。
+    _ev = evidence or {}
+    _has_alt = bool(_ev.get("obv_inflow") or _ev.get("bottom_turn"))
+    _deep_value = (rr_v >= 3.0 and pos52 is not None and float(pos52) <= 30 and _has_alt)
     if ev_hit:
         out["exec"] = False
         out["action"] = f"准备买·暂不执行({'·'.join(out['reasons'][:3])}→事件落地后重评)"
         return out
     if weak and _deep_value:
         out["exec"] = True
-        out["action"] = f"可小仓试(≤1/3仓)·逆势通道:52周{float(pos52):.0f}%深水+赔率{rr_v:.1f}宽"
+        out["action"] = (f"可小仓试(≤1/3仓)·逆势通道:52周{float(pos52):.0f}%深水+赔率{rr_v:.1f}宽"
+                         f"+异证({'资金流入' if _ev.get('obv_inflow') else '底部拐点'})")
         out["exception"] = "deep_value"
         return out
     if weak or rr_v < need:
@@ -590,7 +596,14 @@ def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
         # 环境闸(2026-07-27):技术绿灯过闸后再过环境闸,不合格降级"准备买"
         if entry_plan:
             _tech_mode = str(entry_plan.get("mode") or "")
-            _eg = env_gate(code, _tech_mode, rr, pos52=full.get("pos52"))
+            _cap_eg = ""
+            try:
+                _cap_eg = str(full["breakdown"]["资金动向"][2])
+            except Exception:
+                pass
+            _eg = env_gate(code, _tech_mode, rr, pos52=full.get("pos52"),
+                           evidence={"obv_inflow": ("流入" in _cap_eg.split("·")[0]),
+                                     "bottom_turn": ((full.get("turning") or {}).get("side") == "bottom")})
             entry_plan["env_gate"] = _eg
             entry_plan["exec_action"] = _eg["action"]
             entry_plan["tech_mode"] = _tech_mode          # 技术信号留档(呈现"技术绿灯但被闸")
