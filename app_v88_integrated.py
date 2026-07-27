@@ -3041,7 +3041,6 @@ try:
         return ("A股" if _c.endswith((".SS", ".SZ", ".SH", ".BJ")) else ("港股" if _c.endswith(".HK") else "美股"))
     _MKFLAG9 = {"A股": "🇨🇳", "港股": "🇭🇰", "美股": "🇺🇸"}
     _cb_rows9, _cb_near9, _cb_sell9, _cb_seen9 = [], [], [], set()
-    _cb_blk9 = []   # 技术绿灯但被环境闸拦下(与双路径待触发的"正常准备买"分开呈现)
     # 双源合并(与龙虎门同款):session实时(三市场都算,若已就绪)优先,落盘兜底——
     # 落盘曾被单市场班冲掉(已改合并式),session保证中港绿灯即时可见。
     _cb_src9 = list(((st.session_state.get("watch_alerts_v88") or {}).get("decisions") or []))
@@ -3052,14 +3051,8 @@ try:
         _k9 = str(_r9.get("code")).upper().split(".")[0].lstrip("0")
         # 【2026-07-25 用户抓"只有美股没中港"】绿灯三种模式全收(与龙虎门同口径)——
         # 之前只收"现价可进"把回踩到位的中海油/山西汾酒漏掉了
-        _eg9 = (_ep9.get("env_gate") or {})
-        _tm9 = str(_ep9.get("tech_mode") or "")      # 技术信号(mode被环境闸改写前的值)
-        _blocked9 = (_tm9 in ("现价可进", "回踩到位", "突破确认", "左侧低吸") and not _eg9.get("exec", True))
-        if _blocked9 and _k9 not in _cb_seen9:
-            _cb_blk9.append((_r9.get("name"), _r9.get("code"), _tm9,
-                             str(_ep9.get("exec_action") or "")[6:90]))
-            _cb_seen9.add(_k9)
-        elif _md9 in ("现价可进", "回踩到位", "突破确认", "左侧低吸") and _k9 not in _cb_seen9:
+        # 【瘦身2026-07-27用户批准】⏸被闸专区已删:环境闸v2 exec恒True,分支永空(死代码)
+        if _md9 in ("现价可进", "回踩到位", "突破确认", "左侧低吸") and _k9 not in _cb_seen9:
             _cb_rows9.append((f"自选/持仓池·{_md9}", _r9.get("name"), _r9.get("code"), _r9.get("last"),
                               int(_r9.get("p_up") or 0), round(float(_r9.get("rr") or 0), 2),
                               str(_ep9.get("short_text") or "")[2:96]))
@@ -3082,18 +3075,7 @@ try:
             continue
         _dist9 = ((_pk9.get("last", 0) / (_pk9.get("shallow") or [0, 1])[1] - 1) * 100
                   if (_pk9.get("shallow") or [0, 0])[1] else 99)
-        _eg9s = (_pk9.get("env_gate") or {})
-        # 【环境闸v2 2026-07-27 大改】weak/hot不再拦入blocked——纪律用仓位分级表达,
-        # exec恒True后此分支自然退役,保留只为兼容旧落盘数据
-        _blk9s = (str(_pk9.get("mode")) in ("现价可进", "回踩到位", "突破确认", "左侧低吸")
-                  and not _eg9s.get("exec", True))
-        if _blk9s and _k9 not in _cb_seen9:
-            _cb_blk9.append((_pk9.get("name"), _pk9.get("sym"), str(_pk9.get("mode")),
-                             str(_eg9s.get("action") or
-                                 f"{_cb_mk9(_pk9.get('sym'))}"
-                                 f"{(_cb_gate9.get(_cb_mk9(_pk9.get('sym'))) or {}).get('policy', '环境不合格')}")[:90]))
-            _cb_seen9.add(_k9)
-        elif str(_pk9.get("mode")) == "现价可进" and _dist9 <= 5:
+        if str(_pk9.get("mode")) == "现价可进" and _dist9 <= 5:
             _cb_rows9.append((f"五行业代表·{_sv9['sector']}", _pk9.get("name"), _pk9.get("sym"),
                               _pk9.get("last"), int(_pk9.get("p_up") or 0), _pk9.get("rr"),
                               f"回踩带{(_pk9.get('shallow') or ['?', '?'])[0]}~{(_pk9.get('shallow') or ['?', '?'])[1]}"
@@ -3200,20 +3182,8 @@ try:
                                              f"⚔️卖/减({len(_cb_sell9)})", f"💼持有({len(_hold9)})"])
         with _tab_b9:
             st.markdown(_tbl9(_t_buy9) if _t_buy9 else
-                        ("<span style='font-size:12px;color:#94a3b8'>买侧无可执行买单——"
-                         + (f"有{len(_cb_blk9)}只技术绿灯被环境闸拦下(见下)" if _cb_blk9 else "现金也是仓位")
-                         + "</span>"), unsafe_allow_html=True)
-            if _cb_blk9:
-                st.markdown("<div style='font-size:12px;color:#b45309;margin-top:4px'>"
-                            "<b>⏸ 技术绿灯·环境不合格(暂不执行)</b>"
-                            "<span style='font-size:11px;color:#94a3b8' title='环境闸三判据:①弱市裁决(2周≤45%或温度verdict转弱/下杀)"
-                            "②事件带(5日内自家财报或FOMC)③环境赔率(弱市/事件期要求rr≥2.0,常态1.2)——三者任一不合格即降级,"
-                            "解除条件写在每行末尾'>ⓘ</span></div>"
-                            + "".join(f"<div style='font-size:12px'><b>{_cb_nm9(_n9b, _c9b)}</b>"
-                                      f"<span style='color:#94a3b8'>(技术{_m9b})</span>"
-                                      f"<span style='color:#64748b'>·{str(_w9b)[:86]}</span></div>"
-                                      for _n9b, _c9b, _m9b, _w9b in _cb_blk9[:6]),
-                            unsafe_allow_html=True)
+                        ("<span style='font-size:12px;color:#94a3b8'>买侧无可执行买单——现金也是仓位"
+                         "(环境弱时买单自带仓位分级提示,不再硬拦)</span>"), unsafe_allow_html=True)
             if _cb_near9:
                 st.markdown("<div style='font-size:12px;color:#64748b;margin-top:4px'>"
                             "<b>🕐 准备买·等触发</b><span style='font-size:11px;color:#94a3b8'>"
