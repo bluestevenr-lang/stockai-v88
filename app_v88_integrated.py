@@ -2989,7 +2989,16 @@ try:
         _cb_names9 = {}
 
     def _cb_nm9(_nm, _cd):
-        # 池条目没存中文名时(名字==代码,安踏2020.HK案)查名字库兜底
+        # 【2026-07-27 统一名字真源】优先私仓 watch_alerts.resolve_name
+        # (库内中文名>美股补充表>池名;港股前导零双向归一);不可用回退本地简版。
+        try:
+            import sys as _sy9n
+            if str(_cb_repo9 / "src") not in _sy9n.path:
+                _sy9n.path.insert(0, str(_cb_repo9 / "src"))
+            from watch_alerts import resolve_name as _rn9c
+            return _rn9c(_cd, _nm)
+        except Exception:
+            pass
         _n = str(_nm or "")
         if _n and _n != str(_cd):
             return _n
