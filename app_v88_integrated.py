@@ -3022,16 +3022,17 @@ try:
         # 【2026-07-25 用户抓"只有美股没中港"】绿灯三种模式全收(与龙虎门同口径)——
         # 之前只收"现价可进"把回踩到位的中海油/山西汾酒漏掉了
         _eg9 = (_ep9.get("env_gate") or {})
-        _blocked9 = (_ep9.get("exec_action") and not _eg9.get("exec", True))
-        if _md9 in ("现价可进", "回踩到位", "突破确认") and _k9 not in _cb_seen9:
-            if _blocked9:
-                # 【环境闸 2026-07-27】技术绿灯但环境不合格→不进确认买单,转"准备买"并说原因
-                _cb_near9.append((_r9.get("name"), _r9.get("code"), "⏸暂不执行",
-                                  str(_ep9.get("exec_action") or "")[6:80]))
-            else:
-                _cb_rows9.append((f"自选/持仓池·{_md9}", _r9.get("name"), _r9.get("code"), _r9.get("last"),
-                                  int(_r9.get("p_up") or 0), round(float(_r9.get("probability_edge") or _r9.get("expected_pct") or 0), 1),
-                                  str(_ep9.get("short_text") or "")[2:96]))
+        _tm9 = str(_ep9.get("tech_mode") or "")      # 技术信号(mode被环境闸改写前的值)
+        _blocked9 = (_tm9 in ("现价可进", "回踩到位", "突破确认") and not _eg9.get("exec", True))
+        if _blocked9 and _k9 not in _cb_seen9:
+            # 技术绿灯但环境不合格→不进确认买单,转⏸专区并说原因与解除条件
+            _cb_near9.append((_r9.get("name"), _r9.get("code"), "⏸暂不执行",
+                              str(_ep9.get("exec_action") or "")[6:80]))
+            _cb_seen9.add(_k9)
+        elif _md9 in ("现价可进", "回踩到位", "突破确认") and _k9 not in _cb_seen9:
+            _cb_rows9.append((f"自选/持仓池·{_md9}", _r9.get("name"), _r9.get("code"), _r9.get("last"),
+                              int(_r9.get("p_up") or 0), round(float(_r9.get("probability_edge") or _r9.get("expected_pct") or 0), 1),
+                              str(_ep9.get("short_text") or "")[2:96]))
             _cb_seen9.add(_k9)
         elif _md9 == "双路径待触发" and _k9 not in _cb_seen9:
             _cb_near9.append((_r9.get("name"), _r9.get("code"), _md9,

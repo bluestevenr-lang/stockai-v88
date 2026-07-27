@@ -576,11 +576,17 @@ def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
                 entry_note = f"{entry_plan['note']}｜{entry_note}"
         # 环境闸(2026-07-27):技术绿灯过闸后再过环境闸,不合格降级"准备买"
         if entry_plan:
-            _eg = env_gate(code, str(entry_plan.get("mode") or ""), rr)
+            _tech_mode = str(entry_plan.get("mode") or "")
+            _eg = env_gate(code, _tech_mode, rr)
             entry_plan["env_gate"] = _eg
-            entry_plan["exec_action"] = _eg["action"]      # 呈现层统一读这个
+            entry_plan["exec_action"] = _eg["action"]
+            entry_plan["tech_mode"] = _tech_mode          # 技术信号留档(呈现"技术绿灯但被闸")
             if not _eg["exec"]:
-                entry_plan["short_text"] = f"⏸ {_eg['action']}｜原技术信号:" + str(entry_plan.get("short_text") or "")[:70]
+                # 【源头一致 2026-07-27 用户"推荐都一致"】直接改写 mode——
+                # 全系统所有 `mode in ("现价可进"...)` 判断自动失效,无需逐个出口打补丁:
+                # 桌面确认卡/双门/作战板/黑马池/预案/飞书/云端一次性同口径。
+                entry_plan["mode"] = "准备买·环境不合格"
+                entry_plan["short_text"] = f"⏸ {_eg['action']}｜技术面本为{_tech_mode}:" + str(entry_plan.get("short_text") or "")[:60]
     except Exception:
         entry_plan = {}
     return {
