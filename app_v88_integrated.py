@@ -3441,8 +3441,36 @@ try:
                         _code_of9.setdefault(str(_v9c.get("name") or ""), _k9c)
                     for _k9c, _v9c in list((_CERT9.get("by_name") or {}).items()):
                         _code_of9.setdefault(str(_k9c), str(_v9c.get("code") or ""))
+                    # 【大盘级验证 2026-07-27 用户"对大盘的预测也要C检验"】大盘剧本行(A股:/港股:/美股:)
+                    # 挂市场徽章:与个股不同,大盘是**数字对账**——Fable独立读的2周概率 vs 引擎快照,
+                    # 差≤3pp=一致(金C)、3~8pp=分歧(红)、>8pp=打架(不发标)。悬停看双方数字。
+                    _mkt_cert9 = (_CERT9.get("by_market") or {})
+
+                    def _mkt_badge9(_mk9b):
+                        _v9b = _mkt_cert9.get(_mk9b)
+                        if not _v9b:
+                            return ""
+                        _tp9b = str(_v9b.get("note") or "").replace('"', "'")
+                        _st9b = ("display:inline-block;width:15px;height:15px;line-height:15px;"
+                                 "text-align:center;border-radius:50%;font-size:10px;font-weight:800;"
+                                 "margin-left:3px;vertical-align:middle")
+                        if _v9b.get("verdict") == "一致":
+                            return (f"<span title=\"🅒Claude大盘复核通过:{_tp9b}\" style='{_st9b};"
+                                    "background:linear-gradient(145deg,#fde68a,#d97706);color:#4a2c05;"
+                                    "box-shadow:0 1px 2px rgba(180,120,0,.45)'>C</span>")
+                        if _v9b.get("verdict") == "分歧":
+                            return (f"<span title=\"⚡Claude与引擎读数有差异:{_tp9b}\" style='{_st9b};"
+                                    "background:#dc2626;color:#fff'>C̸</span>")
+                        return ""
                     _kept9, _dropped9 = [], 0
                     for _ln9tp in _tp_html9.splitlines():
+                        for _mk9b in ("A股", "港股", "美股"):
+                            if _ln9tp.lstrip("-* ").startswith(_mk9b + "：") or _ln9tp.lstrip("-* ").startswith(_mk9b + ":"):
+                                _bd9b = _mkt_badge9(_mk9b)
+                                if _bd9b:
+                                    _i9b = _ln9tp.find(_mk9b) + len(_mk9b)
+                                    _ln9tp = _ln9tp[:_i9b] + _bd9b + _ln9tp[_i9b:]
+                                break
                         if any(_r9 and _r9 in _ln9tp for _r9 in _rej_nm9):
                             _dropped9 += 1                     # 未达标的整行不展示
                             continue
