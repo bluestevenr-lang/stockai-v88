@@ -1,8 +1,8 @@
 {
- "ts": 1785141590.2227206,
- "generated_at": "2026-07-27 16:39",
+ "ts": 1785159815.593315,
+ "generated_at": "2026-07-27 21:43",
  "funnel": {
-  "found": 413,
+  "found": 411,
   "excluded_watch": 23,
   "judged": 238,
   "judged_by_mkt": {
@@ -12,12 +12,12 @@
   },
   "passed": 5,
   "blocked": {
-   "相位": 128,
-   "方向分": 11,
+   "相位": 109,
+   "方向分": 12,
    "赔率": 11,
    "时机": 0,
    "数据": 2,
-   "单源": 83
+   "单源": 101
   }
  },
  "horses": [
@@ -34,7 +34,7 @@
    "action": "多周期共振·试仓复核",
    "entry_note": "⏳双路径:回踩31.91/突破43.13·08-03前｜标准门槛通过；概率优势+45.8点",
    "cycle_note": "2周偏涨69%｜4-32周偏涨63%",
-   "analysis_time": "2026-07-27 16:38",
+   "analysis_time": "2026-07-27 21:42",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-27 00:00:00",
@@ -178,7 +178,7 @@
    "action": "观察",
    "entry_note": "⏳双路径:回踩13.48/突破16.4·08-03前｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨77%｜4-32周震荡54%",
-   "analysis_time": "2026-07-27 16:38",
+   "analysis_time": "2026-07-27 21:42",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-27 00:00:00",
@@ -321,7 +321,7 @@
    "action": "仅观察·不追涨",
    "entry_note": "⏳共振不足·先盯12.17/17.04｜短中长期未共振，不建立新仓",
    "cycle_note": "2周偏涨75%｜4-32周震荡46%",
-   "analysis_time": "2026-07-27 16:38",
+   "analysis_time": "2026-07-27 21:42",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-27 00:00:00",
@@ -464,7 +464,7 @@
    "action": "观察",
    "entry_note": "⏳双路径:回踩119.93/突破146.95·08-03前｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨75%｜4-32周震荡56%",
-   "analysis_time": "2026-07-27 16:38",
+   "analysis_time": "2026-07-27 21:42",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-27 00:00:00",
@@ -607,7 +607,7 @@
    "action": "多周期共振·试仓复核",
    "entry_note": "⏳双路径:回踩235.88/突破280.55·08-03前｜标准门槛通过；概率优势+26.2点",
    "cycle_note": "2周偏涨65%｜4-32周偏涨59%",
-   "analysis_time": "2026-07-27 16:38",
+   "analysis_time": "2026-07-27 21:42",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-27 00:00:00",
@@ -740,15 +740,52 @@
  ],
  "runners": [
   {
+   "name": "Verisk Analytics, Inc.",
+   "code": "VRSK",
+   "last": 204.9,
+   "unified_score": 75,
+   "short_score": 64,
+   "p_up": 64,
+   "p_down": 36,
+   "rr": 4.75,
+   "expected_pct": 22.6,
+   "action": "多周期共振·试仓复核",
+   "stage": "主升阶段",
+   "mode": "不进",
+   "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
+   "sources": [
+    "财报07-29"
+   ],
+   "touch": "",
+   "market": "🇺🇸美股",
+   "horizons": [
+    {
+     "label": "10日",
+     "p_up": 64,
+     "target_price": 214.578
+    },
+    {
+     "label": "60日",
+     "p_up": 78,
+     "target_price": 228.607
+    },
+    {
+     "label": "120日",
+     "p_up": 55,
+     "target_price": 238.426
+    }
+   ]
+  },
+  {
    "name": "Penske Automotive Group, Inc.",
    "code": "PAG",
-   "last": 217.35,
+   "last": 218.51,
    "unified_score": 71,
-   "short_score": 81,
-   "p_up": 81,
-   "p_down": 19,
-   "rr": 0.06,
-   "expected_pct": -1.7,
+   "short_score": 83,
+   "p_up": 83,
+   "p_down": 17,
+   "rr": 0.04,
+   "expected_pct": -1.8,
    "action": "趋势偏多·等待回踩",
    "stage": "主升阶段",
    "mode": "双路径待触发",
@@ -761,92 +798,55 @@
    "horizons": [
     {
      "label": "10日",
-     "p_up": 81,
-     "target_price": 231.217
+     "p_up": 83,
+     "target_price": 234.254
     },
     {
      "label": "60日",
      "p_up": 85,
-     "target_price": 247.833
+     "target_price": 250.718
     },
     {
      "label": "120日",
      "p_up": 85,
-     "target_price": 254.299
+     "target_price": 253.843
     }
    ]
   },
   {
-   "name": "Cenovus Energy Inc",
-   "code": "CVE",
-   "last": 29.28,
-   "unified_score": 70,
-   "short_score": 68,
-   "p_up": 68,
-   "p_down": 32,
-   "rr": 1.07,
-   "expected_pct": 3.4,
-   "action": "共振·小仓试错",
+   "name": "Ford Motor Company",
+   "code": "F",
+   "last": 14.725,
+   "unified_score": 71,
+   "short_score": 64,
+   "p_up": 64,
+   "p_down": 36,
+   "rr": 3.17,
+   "expected_pct": 10.9,
+   "action": "多周期共振·试仓复核",
    "stage": "趋势延续",
-   "mode": "双路径待触发",
+   "mode": "不进",
    "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
    "sources": [
-    "财报07-29"
+    "财报07-28"
    ],
    "touch": "",
    "market": "🇺🇸美股",
    "horizons": [
     {
      "label": "10日",
-     "p_up": 68,
-     "target_price": 30.987
+     "p_up": 64,
+     "target_price": 15.705
     },
     {
      "label": "60日",
-     "p_up": 50,
-     "target_price": 32.904
+     "p_up": 77,
+     "target_price": 17.78
     },
     {
      "label": "120日",
-     "p_up": 80,
-     "target_price": 34.755
-    }
-   ]
-  },
-  {
-   "name": "Logitech International S.A.",
-   "code": "LOGI",
-   "last": 105.78,
-   "unified_score": 69,
-   "short_score": 63,
-   "p_up": 63,
-   "p_down": 37,
-   "rr": 3.41,
-   "expected_pct": 11.8,
-   "action": "多周期共振·试仓复核",
-   "stage": "启动确认",
-   "mode": "现价可进",
-   "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
-   "sources": [
-    "财报07-28"
-   ],
-   "touch": "触线:MA55",
-   "market": "🇺🇸美股",
-   "horizons": [
-    {
-     "label": "10日",
-     "p_up": 57,
-     "target_price": 111.661
-    },
-    {
-     "label": "60日",
-     "p_up": 54,
-     "target_price": 129.66
-    },
-    {
-     "label": "120日",
-     "p_up": 79,
-     "target_price": 129.66
+     "p_up": 73,
+     "target_price": 18.157
     }
    ]
   },

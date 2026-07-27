@@ -2,14 +2,6 @@
  "date": "2026-07-27",
  "picks": [
   {
-   "token": "US:XOM",
-   "horizon": "短线",
-   "market": "🇺🇸美股",
-   "name": "埃克森",
-   "direction": "趋势偏多·等待回踩",
-   "px_at_pick": null
-  },
-  {
    "token": "US:HON",
    "horizon": "短线",
    "market": "🇺🇸美股",
@@ -18,10 +10,18 @@
    "px_at_pick": null
   },
   {
-   "token": "US:CVX",
+   "token": "US:MRK",
    "horizon": "短线",
    "market": "🇺🇸美股",
-   "name": "雪佛龙",
+   "name": "默沙东",
+   "direction": "趋势偏多·等待回踩",
+   "px_at_pick": null
+  },
+  {
+   "token": "US:JPM",
+   "horizon": "短线",
+   "market": "🇺🇸美股",
+   "name": "摩根大通",
    "direction": "趋势偏多·等待回踩",
    "px_at_pick": null
   },
@@ -74,16 +74,8 @@
    "px_at_pick": null
   },
   {
-   "token": "US:AAPL",
-   "horizon": "中线",
-   "market": "🇺🇸美股",
-   "name": "苹果",
-   "direction": "趋势偏多·等待回踩",
-   "px_at_pick": null
-  },
-  {
    "token": "US:JPM",
-   "horizon": "短线",
+   "horizon": "中线",
    "market": "🇺🇸美股",
    "name": "摩根大通",
    "direction": "趋势偏多·等待回踩",
@@ -94,7 +86,15 @@
    "horizon": "短线",
    "market": "🇺🇸美股",
    "name": "美银",
-   "direction": "观察",
+   "direction": "趋势偏多·等待回踩",
+   "px_at_pick": null
+  },
+  {
+   "token": "US:AAPL",
+   "horizon": "短线",
+   "market": "🇺🇸美股",
+   "name": "苹果",
+   "direction": "趋势偏多·等待回踩",
    "px_at_pick": null
   },
   {
@@ -154,18 +154,18 @@
    "px_at_pick": null
   },
   {
-   "token": "US:JPM",
+   "token": "US:BAC",
    "horizon": "短线",
    "market": "🇺🇸美股",
-   "name": "摩根大通",
+   "name": "美银",
    "direction": "趋势偏多·等待回踩",
    "px_at_pick": null
   },
   {
-   "token": "US:MRK",
+   "token": "US:JPM",
    "horizon": "短线",
    "market": "🇺🇸美股",
-   "name": "默沙东",
+   "name": "摩根大通",
    "direction": "趋势偏多·等待回踩",
    "px_at_pick": null
   },

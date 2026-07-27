@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-07-27 16:38（北京时间）",
+ "generated_at": "2026-07-27 21:41（北京时间）",
  "note": "全市场逆势机会扫描:四路候选(全池转强低位/涨停接力/行业代表/黑马)→实跑29只→严格标准(赔率≥2.0·52周位≤55%·2周概率≥55%·启动型)→过环境闸;exec=可执行或逆势通道小仓试,blocked=技术合格但环境不许;全量入台账攒战绩",
  "studied": 29,
  "exec": [
@@ -16,24 +16,6 @@
    "stop": 1.43,
    "source": "全池转强·52周6%",
    "exec_action": "左侧低吸·标准仓",
-   "exception": null,
-   "block_reasons": [
-    "07-29FOMC(提示:临近波动放大)"
-   ]
-  },
-  {
-   "code": "COST",
-   "name": "好市多",
-   "last": 935.03,
-   "rr": 5.63,
-   "p_up": 61,
-   "pos52": 37.0,
-   "stage": "启动确认",
-   "tech_mode": "现价可进",
-   "buy_zone": "933.38~935.03",
-   "stop": 905.77,
-   "source": "美股消费代表",
-   "exec_action": "现价可进·1/3仓",
    "exception": null,
    "block_reasons": [
     "07-29FOMC(提示:临近波动放大)"
@@ -58,20 +40,22 @@
    ]
   },
   {
-   "code": "LVS",
-   "name": "金沙集团",
-   "last": 46.08,
-   "rr": 4.57,
-   "p_up": 60,
-   "pos52": 7.0,
+   "code": "COST",
+   "name": "好市多",
+   "last": 943.18,
+   "rr": 4.44,
+   "p_up": 58,
+   "pos52": 40.0,
    "stage": "启动确认",
-   "tech_mode": "等待",
-   "buy_zone": "46.00~46.08",
-   "stop": 44.21,
-   "source": "全池转强·52周7%",
-   "exec_action": "等待",
+   "tech_mode": "现价可进",
+   "buy_zone": "932.98~943.18",
+   "stop": 905.77,
+   "source": "美股消费代表",
+   "exec_action": "现价可进·1/3仓",
    "exception": null,
-   "block_reasons": []
+   "block_reasons": [
+    "07-29FOMC(提示:临近波动放大)"
+   ]
   },
   {
    "code": "2357.HK",
@@ -86,24 +70,6 @@
    "stop": 2.81,
    "source": "港股军工代表",
    "exec_action": "现价可进·标准仓",
-   "exception": null,
-   "block_reasons": [
-    "07-29FOMC(提示:临近波动放大)"
-   ]
-  },
-  {
-   "code": "0291.HK",
-   "name": "华润啤酒",
-   "last": 23.06,
-   "rr": 4.03,
-   "p_up": 57,
-   "pos52": 28.0,
-   "stage": "启动确认",
-   "tech_mode": "左侧低吸",
-   "buy_zone": "22.88~23.06",
-   "stop": 21.06,
-   "source": "港股消费代表",
-   "exec_action": "左侧低吸·标准仓",
    "exception": null,
    "block_reasons": [
     "07-29FOMC(提示:临近波动放大)"
@@ -176,6 +142,24 @@
    "exec_action": "现价可进·半仓",
    "exception": null,
    "block_reasons": []
+  },
+  {
+   "code": "LVS",
+   "name": "金沙集团",
+   "last": 47.38,
+   "rr": 2.28,
+   "p_up": 67,
+   "pos52": 12.0,
+   "stage": "启动确认",
+   "tech_mode": "现价可进",
+   "buy_zone": "46.02~47.38",
+   "stop": 44.21,
+   "source": "全池转强·52周7%",
+   "exec_action": "现价可进·半仓",
+   "exception": null,
+   "block_reasons": [
+    "07-29FOMC(提示:临近波动放大)"
+   ]
   }
  ],
  "blocked": []
