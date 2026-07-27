@@ -2930,6 +2930,10 @@ try:
     except Exception:
         _cb_names9 = {}
 
+    try:
+        _CS9 = json.loads((_cb_repo9 / "data" / "claude_standard.json").read_text(encoding="utf-8"))
+    except Exception:
+        _CS9 = {}
     # 【V88·Claude认证徽章 2026-07-27 用户点单"买卖名单要有Fable/Opus认证,含C的小金标"】
     # 🅒=Claude(Fable5/Opus5)独立复核结论与规则引擎一致;⚡=有异议(不发徽章,给反对理由);
     # 无标=本班未复核该只(重点股优先,不装作全审过)。数据来自三方会审,零额外AI花费。
@@ -2939,34 +2943,40 @@ try:
         _CERT9 = {}
 
     def _cert_badge9(_cd, _nm=""):
-        """三态徽章(2026-07-27 用户定纲"都需要标,无标也要给禁止符"):
-        🅒金C=Claude复核与规则一致 / 红C✕=Claude有异议未通过 / 墨绿⊘=本班未复核(无结论)。
-        任何一只票都必有一个标,不留白——用户要一眼看出"这只有没有过Claude这关"。"""
-        _e9 = None
+        """【2026-07-27 用户怒指"这么多没通过的还能展示"】徽章语义重做:
+        原⊘墨绿禁止符=本班Claude没审到,但视觉上像"禁止/没通过"——满屏禁止符=在推荐位
+        摆一堆没过关的票,是我把语义搞拧了。现在改成:
+          🅒金C = Claude人工复核过且与规则一致(最高一档)
+          ✅绿勾 = 已过Claude标准闸(七条规则机检达标——规则本身就是Claude历次否决理由固化的)
+          ⚡红   = 人工复核有异议(这类已被移出名单,若仍出现说明是别处引用,标出来警示)
+        **不再有"没审过"的空档**:名单里每只都至少机检达标,不达标的根本不展示。"""
+        _e9 = _b9 = None
         try:
             for _k9 in (str(_cd or ""), str(_cd or "").split(".")[0], str(_nm or "")):
                 if not _k9:
                     continue
-                _e9 = (_CERT9.get("by_code") or {}).get(_k9) or (_CERT9.get("by_name") or {}).get(_k9)
-                if _e9:
-                    break
+                _e9 = _e9 or (_CERT9.get("by_code") or {}).get(_k9) or (_CERT9.get("by_name") or {}).get(_k9)
+                _b9 = _b9 or (_CS9.get("pass") or {}).get(_k9) or (_CS9.get("reject") or {}).get(_k9)
         except Exception:
-            _e9 = None
+            pass
         _base9 = ("display:inline-block;width:15px;height:15px;line-height:15px;text-align:center;"
                   "border-radius:50%;font-size:10px;font-weight:800;margin-left:3px;"
                   "vertical-align:middle;letter-spacing:-.3px")
-        if not _e9:
-            return (f"<span title=\"⊘未复核:本班Claude没有审到这只(重点股优先,不装作全审过)——"
-                    f"无结论≠不能买,按规则引擎自己的判断执行\" "
-                    f"style='{_base9};background:#065f46;color:#a7f3d0'>⊘</span>")
-        _tip9 = (f"{_e9.get('model', 'Claude')}独立复核·{_e9.get('shift', '')}"
-                 f"｜{str(_e9.get('note', ''))[:70]}").replace('"', "'")
-        if _e9.get("verdict") == "一致":
-            return (f"<span title=\"✅Claude认证通过:独立复核结论与规则引擎一致。{_tip9}\" "
+        if _e9 and _e9.get("verdict") == "一致":
+            _tip9 = (f"{_e9.get('model', 'Claude')}人工复核·{_e9.get('shift', '')}"
+                     f"｜{str(_e9.get('note', ''))[:70]}").replace('"', "'")
+            return (f"<span title=\"🅒Claude人工复核通过:独立结论与规则引擎一致(最高一档)。{_tip9}\" "
                     f"style='{_base9};background:linear-gradient(145deg,#fde68a,#d97706);color:#4a2c05;"
                     "box-shadow:0 1px 2px rgba(180,120,0,.45)'>C</span>")
-        return (f"<span title=\"✕Claude未通过:有异议,理由——{_tip9}\" "
-                f"style='{_base9};background:#dc2626;color:#fff'>C̸</span>")
+        if _e9:      # 人工有异议(理论上已被移出名单)
+            _tip9 = str(_e9.get("note", ""))[:80].replace('"', "'")
+            return (f"<span title=\"⚡Claude人工复核有异议:{_tip9}——本应已移出名单,出现在此说明是其他模块引用\" "
+                    f"style='{_base9};background:#dc2626;color:#fff'>C̸</span>")
+        if _b9 and not (_b9.get("rules") or []):
+            return ("<span title='✅已过Claude标准闸:七条规则机检达标(规则源自Claude历次否决理由)。"
+                    "未经人工复核,但硬伤已排除' "
+                    f"style='{_base9};background:#dcfce7;color:#15803d;border:1px solid #86efac'>✓</span>")
+        return ""      # 无结论=不打标,不再用禁止符污染视觉
 
     def _cb_nm9(_nm, _cd):
         # 【2026-07-27 统一名字真源】优先私仓 watch_alerts.resolve_name
@@ -3022,15 +3032,24 @@ try:
     # 名单出厂前先过闸:CS1宽基不用个股尺/CS2涨概率过半禁减仓/CS4同族敞口去重/
     # CS5双事件要宽赔率/CS6非低位且上行薄/CS7过热薄赔率——不达标的转⏸未达标区,
     # 理由写明白(规则源自Fable历次异议,带rule_id可被台账数据推翻)
+    # 【2026-07-27 用户"这么多没通过的还能展示,是觉得我钱多"】排除集=机检未达标 ∪ 人工有异议
+    # ——两种"没通过"都不许留在推荐位(含准备买),全部转⏸未达标区。
+    _cs_rej9 = dict(_CS9.get("reject") or {})
     try:
-        _CS9 = json.loads((_cb_repo9 / "data" / "claude_standard.json").read_text(encoding="utf-8"))
+        for _c9d, _v9d in (_CERT9.get("by_code") or {}).items():
+            if _v9d.get("verdict") == "分歧" and _c9d not in _cs_rej9:
+                _cs_rej9[_c9d] = {"code": _c9d, "name": _v9d.get("name"), "side": "人工",
+                                  "action": "", "rules": ["Claude人工异议"],
+                                  "why": str(_v9d.get("note") or "")[:90]}
     except Exception:
-        _CS9 = {}
-    _cs_rej9 = (_CS9.get("reject") or {})
+        pass
     _cb_sell_off9 = [x for x in _cb_sell9 if str(x[1]) in _cs_rej9]
-    _cb_buy_off9 = [x for x in _cb_rows9 if str(x[2]) in _cs_rej9]
+    _cb_buy_off9 = ([x for x in _cb_rows9 if str(x[2]) in _cs_rej9]
+                    + [(f"准备买·{x[2]}", x[0], x[1], "", 0, 0, x[3]) for x in _cb_near9
+                       if str(x[1]) in _cs_rej9])
     _cb_sell9 = [x for x in _cb_sell9 if str(x[1]) not in _cs_rej9]
     _cb_rows9 = [x for x in _cb_rows9 if str(x[2]) not in _cs_rej9]
+    _cb_near9 = [x for x in _cb_near9 if str(x[1]) not in _cs_rej9]
     _cb_sell9.sort(key=lambda x: -x[3])
     for _sv9 in (_cbj9("sector_reps.json").get("sectors") or []):
         _pk9 = _sv9.get("pick") or {}
@@ -3610,6 +3629,8 @@ try:
                 _tfj9 = _nwj9("turning_forecast.json")
                 _tf_rows9 = (_tfj9.get("rows") or [])
                 _tf_rows9 = [r for r in _tf_rows9 if _mkfit9(r.get("code") or "")] or _tf_rows9[:0]
+                # 过闸:被机检/人工否掉的标的不进拐点名单(宽基错杀那批就是从这漏出去的)
+                _tf_rows9 = [r for r in _tf_rows9 if str(r.get("code") or "") not in _cs_rej9]
                 # 🚀启动候选(底拐≥60+52周≤35)排最前——小米画像不再被挤出名单
                 _tf_rows9.sort(key=lambda r: (0 if r.get("launch_candidate") else 1))
                 if _tf_rows9:
@@ -3818,6 +3839,9 @@ try:
                           if (_rhz9p(r, _hz9cc) or 100) <= 45 and _mkfit9(r.get("code"))]
                 _cut_note9 = (f"{_hz9cc}周期分≤45·该档周期逻辑走弱"
                               "(与下周档相位名单口径不同,分数=统一引擎翻倍律)")
+            # 【2026-07-27 用户"没通过的还能展示"】作战板卖名单同样过闸:
+            # 机检未达标(CS1宽基错杀/CS2涨率过半等)与人工异议的一律不列
+            _cut9n = [x for x in _cut9n if str(x[3] or "") not in _cs_rej9]
             # 近档=概率/强度越高越危险(降序);本月/下月=周期分越低越危险(升序)
             _cut9n.sort(key=lambda x: (x[1] if _cfg9.get("hz") else -x[1]))
             _rows_d9 = [f"<div style='font-size:12.5px'>{_nw_link9(_n9n, _c9n4) if _c9n4 else _n9n}"
