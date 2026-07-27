@@ -521,121 +521,6 @@
   }
  },
  {
-  "id": "turning:美股·能源板块:2026-07-26",
-  "date": "2026-07-26",
-  "kind": "turning",
-  "subject": "美股·能源板块",
-  "market": "美股",
-  "prediction": "见顶窗口7~15交易日·确认价57.41·概率72%",
-  "horizon_end": "2026-08-16",
-  "confirm_price": 57.41,
-  "direction": "down",
-  "prob": 72,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "XLE",
-   "base_price": 59.62,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    7,
-    15
-   ]
-  }
- },
- {
-  "id": "turning:A股·白酒板块:2026-07-26",
-  "date": "2026-07-26",
-  "kind": "turning",
-  "subject": "A股·白酒板块",
-  "market": "A股",
-  "prediction": "见底窗口2~4交易日·确认价0.44·概率63%",
-  "horizon_end": "2026-07-31",
-  "confirm_price": 0.44,
-  "direction": "up",
-  "prob": 63,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "512690.SS",
-   "base_price": 0.42,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    2,
-    4
-   ]
-  }
- },
- {
-  "id": "turning:Invesco纳指:2026-07-26",
-  "date": "2026-07-26",
-  "kind": "turning",
-  "subject": "Invesco纳指",
-  "market": "美股",
-  "prediction": "见底窗口2~4交易日·确认价292.35·概率63%·07-29(周三)FOMC利率决议=触发器",
-  "horizon_end": "2026-07-31",
-  "confirm_price": 292.35,
-  "direction": "up",
-  "prob": 63,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "QQQM",
-   "base_price": 281.68,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    2,
-    4
-   ]
-  }
- },
- {
-  "id": "turning:A股·银行板块:2026-07-26",
-  "date": "2026-07-26",
-  "kind": "turning",
-  "subject": "A股·银行板块",
-  "market": "A股",
-  "prediction": "见顶窗口6~14交易日·确认价0.78·概率58%",
-  "horizon_end": "2026-08-15",
-  "confirm_price": 0.78,
-  "direction": "down",
-  "prob": 58,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "512800.SS",
-   "base_price": 0.8,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    6,
-    14
-   ]
-  }
- },
- {
-  "id": "turning:亨通光电:2026-07-26",
-  "date": "2026-07-26",
-  "kind": "turning",
-  "subject": "亨通光电",
-  "market": "A股",
-  "prediction": "见底窗口2~5交易日·确认价60.89·概率58%",
-  "horizon_end": "2026-08-02",
-  "confirm_price": 60.89,
-  "direction": "up",
-  "prob": 58,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "600487.SS",
-   "base_price": 52.43,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    2,
-    5
-   ]
-  }
- },
- {
   "id": "turning:美股·能源板块:2026-07-27",
   "date": "2026-07-27",
   "kind": "turning",
@@ -1184,6 +1069,25 @@
   "extra": {
    "code": "^HSI",
    "base_price": 24963.23
+  }
+ },
+ {
+  "id": "fable_pick:金沙中国:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "fable_pick",
+  "subject": "金沙中国",
+  "market": "",
+  "prediction": "Fable提名看多·参考价13.98·窗口10交易日·澳门博彩三标的同步蓄势转领涨(LVS强度78/澳博68/金沙68·均高置信)，52周位13%低位、港股2周60%顺风；黑",
+  "horizon_end": "2026-08-10",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": null,
+  "source": "fable",
+  "status": "待核",
+  "extra": {
+   "code": "1928.HK",
+   "base_price": 13.98,
+   "rule_ver": "fable-1.0"
   }
  }
 ]
