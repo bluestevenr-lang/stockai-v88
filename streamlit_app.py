@@ -594,6 +594,19 @@ if _nav == "🧭 导航":
                                 for x in _up9c2) + "</div>" if _up9c2
                                else "<div style='font-size:12.5px;color:#94a3b8'>全池文件待发布或暂无低位转强</div>"),
                             unsafe_allow_html=True)
+                # 【⏱大盘节奏·云端 2026-07-27】1~3日提前量,概率=10年回测真实频率,无隐私
+                try:
+                    _rjc9 = _pubj9("market_rhythm.json")
+                    _rlc9 = [(mk, str(b.get("line"))) for mk, b in (_rjc9.get("markets") or {}).items()
+                             if "无节奏信号" not in str(b.get("line"))]
+                    if _rlc9:
+                        st.markdown("<b style='font-size:13px'>⏱ 大盘节奏</b>"
+                                    "<span style='font-size:11px;color:#94a3b8'>（1~3日提前量·10年回测频率）</span>"
+                                    + "".join(f"<div style='font-size:12.5px;color:{'#dc2626' if '偏调整' in ln else '#15803d'}'>"
+                                              f"<b>{mk}</b>:{ln[:110]}</div>" for mk, ln in _rlc9),
+                                    unsafe_allow_html=True)
+                except Exception:
+                    pass
                 # 【📈趋势先行·云端 2026-07-27大改】pub版=池外票(自选隐私已剔)
                 try:
                     _tsc9 = _pubj9("trend_shift_pub.json")

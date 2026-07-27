@@ -2913,6 +2913,19 @@ try:
                             + str(_bn_cl9[0].get("t"))[:38] + "</span>")
     except Exception:
         pass
+    # 【⏱大盘节奏 2026-07-27 用户定纲"周五大跌周一大涨这种提前量最关键最核心"】
+    # 1~3日节奏行:概率=10年回测真实频率(急跌反弹55%/暴跌次日74%/连涨调整54%),非拍脑袋;
+    # 有信号才占行;弱优势如实标注(诚实闸:偏离基线<3pp不报)
+    _bn_rhythm9 = ""
+    try:
+        _bn_rj9 = json.loads((_bn_repo9 / "data" / "market_rhythm.json").read_text(encoding="utf-8"))
+        _bn_rhythm9 = "".join(
+            f"<div style='font-size:12px;color:{'#dc2626' if '偏调整' in str(b.get('line')) else '#15803d'}'>"
+            f"⏱<b>{mk}节奏</b>:{str(b.get('line'))[:118]}</div>"
+            for mk, b in (_bn_rj9.get("markets") or {}).items()
+            if "无节奏信号" not in str(b.get("line")))
+    except Exception:
+        pass
     st.markdown(
         f"<div style='background:linear-gradient(90deg,{_bn_tc9}11,transparent);border:1px solid {_bn_tc9}44;"
         f"border-left:5px solid {_bn_tc9};border-radius:10px;padding:.5rem .8rem;margin-bottom:.4rem'>"
@@ -2922,7 +2935,7 @@ try:
         f"　📏{_bn_rule9}</span></div>"
         f"<div style='font-size:12px;color:#64748b;margin-top:2px'>{_bn_sr_txt9}　{_bn_new_txt9}"
         f"<span style='font-size:11px;color:#94a3b8' title='周概率=统一引擎2周方向分(规则估计);买卖点名见下方行动中心表格;名单明细在双门与关注中心;升级历史在🧬系统自省'>　ⓘ</span></div>"
-        "</div>", unsafe_allow_html=True)
+        f"{_bn_rhythm9}</div>", unsafe_allow_html=True)
 except Exception:
     try:
         _v88_sentinel9(Path.home() / "Desktop" / "ai-daily-report-v2", "今日指令牌")
