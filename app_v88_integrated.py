@@ -3021,10 +3021,17 @@ try:
         _k9 = str(_r9.get("code")).upper().split(".")[0].lstrip("0")
         # 【2026-07-25 用户抓"只有美股没中港"】绿灯三种模式全收(与龙虎门同口径)——
         # 之前只收"现价可进"把回踩到位的中海油/山西汾酒漏掉了
+        _eg9 = (_ep9.get("env_gate") or {})
+        _blocked9 = (_ep9.get("exec_action") and not _eg9.get("exec", True))
         if _md9 in ("现价可进", "回踩到位", "突破确认") and _k9 not in _cb_seen9:
-            _cb_rows9.append((f"自选/持仓池·{_md9}", _r9.get("name"), _r9.get("code"), _r9.get("last"),
-                              int(_r9.get("p_up") or 0), round(float(_r9.get("probability_edge") or _r9.get("expected_pct") or 0), 1),
-                              str(_ep9.get("short_text") or "")[2:96]))
+            if _blocked9:
+                # 【环境闸 2026-07-27】技术绿灯但环境不合格→不进确认买单,转"准备买"并说原因
+                _cb_near9.append((_r9.get("name"), _r9.get("code"), "⏸暂不执行",
+                                  str(_ep9.get("exec_action") or "")[6:80]))
+            else:
+                _cb_rows9.append((f"自选/持仓池·{_md9}", _r9.get("name"), _r9.get("code"), _r9.get("last"),
+                                  int(_r9.get("p_up") or 0), round(float(_r9.get("probability_edge") or _r9.get("expected_pct") or 0), 1),
+                                  str(_ep9.get("short_text") or "")[2:96]))
             _cb_seen9.add(_k9)
         elif _md9 == "双路径待触发" and _k9 not in _cb_seen9:
             _cb_near9.append((_r9.get("name"), _r9.get("code"), _md9,
@@ -3150,8 +3157,20 @@ try:
         _tab_b9, _tab_s9, _tab_h9 = st.tabs([f"✅确认买({len(_cb_rows9)})",
                                              f"⚔️卖/减({len(_cb_sell9)})", f"💼持有({len(_hold9)})"])
         with _tab_b9:
-            st.markdown(_tbl9(_t_buy9) if _t_buy9 else "<span style='font-size:12px;color:#94a3b8'>买侧无绿灯——现金也是仓位</span>",
-                        unsafe_allow_html=True)
+            st.markdown(_tbl9(_t_buy9) if _t_buy9 else
+                        ("<span style='font-size:12px;color:#94a3b8'>买侧无可执行买单——"
+                         + (f"有{len(_cb_near9)}只技术绿灯被环境闸拦下(见下)" if _cb_near9 else "现金也是仓位")
+                         + "</span>"), unsafe_allow_html=True)
+            if _cb_near9:
+                st.markdown("<div style='font-size:12px;color:#b45309;margin-top:4px'>"
+                            "<b>⏸ 技术绿灯·环境不合格(暂不执行)</b>"
+                            "<span style='font-size:11px;color:#94a3b8' title='环境闸三判据:①弱市裁决(2周≤45%或温度verdict转弱/下杀)"
+                            "②事件带(5日内自家财报或FOMC)③环境赔率(弱市/事件期要求rr≥2.0,常态1.2)——三者任一不合格即降级,"
+                            "解除条件写在每行末尾'>ⓘ</span></div>"
+                            + "".join(f"<div style='font-size:12px'>{_cb_nm9(_n9b, _c9b)}"
+                                      f"<span style='color:#64748b'>·{str(_w9b)[:88]}</span></div>"
+                                      for _n9b, _c9b, _m9b, _w9b in _cb_near9[:6]),
+                            unsafe_allow_html=True)
             if len(_cb_rows9) > 5:
                 st.caption(f"还有{len(_cb_rows9) - 5}只·见双门/④")
         with _tab_s9:

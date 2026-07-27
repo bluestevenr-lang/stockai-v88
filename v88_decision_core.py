@@ -7,6 +7,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+from pathlib import Path as _P_eg
+BASE = _P_eg(__file__).resolve().parent.parent
 import math
 from datetime import datetime, timedelta, timezone
 
@@ -317,6 +319,79 @@ def entry_timing(full, *, short=50.0, medium=50.0, long_avg=50.0, action="", rr=
             "breakout": breakout, "stop": stop}
 
 
+def env_gate(code: str, mode: str, rr: float, pos52=None) -> dict:
+    """【V88·环境闸 2026-07-27 用户定纲"避免系统裁定与Fable打架,提高要求"】
+    技术绿灯 ≠ 可执行。三条环境判据(此前只在Fable口头裁定里,现固化进引擎):
+      ①弱市裁决: 所属市场2周概率≤45% 或 verdict含 转弱/杀跌/派发/下杀/偏冷
+      ②事件带: 未来5个自然日内有自家财报,或FOMC(对美股/全球风险资产)
+      ③环境赔率: 常态要求 rr≥1.2;弱市或事件带内要求 rr≥2.0(赌方向还得赌事件=要更宽赔率)
+    任一触发 → 绿灯降级为「准备买」并给出人话原因与解除条件。
+    返回 {exec:bool, action:str, reasons:[...], need_rr:float}
+    读 data/market_snapshot.json + macro_events.json;读不到=不降级(保持原行为,不误伤)。"""
+    from datetime import datetime as _dt_eg, timedelta as _td_eg
+    out = {"exec": True, "action": mode, "reasons": [], "need_rr": 1.2}
+    if mode not in ("现价可进", "回踩到位", "突破确认"):
+        return out
+    c = str(code or "").upper()
+    mk = ("A股" if c.endswith((".SS", ".SZ", ".SH", ".BJ")) else
+          ("港股" if c.endswith(".HK") else "美股"))
+    weak = hot_warn = False
+    try:
+        snap = json.loads((BASE / "data" / "market_snapshot.json").read_text(encoding="utf-8"))
+        b = (snap.get("markets") or {}).get(mk) or {}
+        p2w = dict((x[0], x[1]) for x in ((b.get("l3") or {}).get("probs") or [])).get("2周")
+        vd = str((b.get("temperature") or {}).get("verdict") or "")
+        if (p2w is not None and int(p2w) <= 45):
+            weak = True
+            out["reasons"].append(f"{mk}2周仅{int(p2w)}%(弱市裁决)")
+        if any(k in vd for k in ("转弱", "杀跌", "派发", "下杀", "偏冷", "反转")):
+            weak = True
+            out["reasons"].append(f"{mk}温度裁决:{vd[:16]}")
+        elif "过热" in vd:
+            hot_warn = True
+            out["reasons"].append(f"{mk}过热·只限回踩")
+    except Exception:
+        pass
+    ev_hit = ""
+    try:
+        evs = json.loads((BASE / "data" / "macro_events.json").read_text(encoding="utf-8")).get("events") or []
+        today = _dt_eg.now().date()
+        base = c.split(".")[0]
+        for e in evs:
+            try:
+                off = (_dt_eg.strptime(e["date"], "%Y-%m-%d").date() - today).days
+            except Exception:
+                continue
+            if not 0 <= off <= 5:
+                continue
+            ev = str(e.get("event") or "")
+            if base and base in ev:
+                ev_hit = f"{e['date'][5:]}自家财报"
+                break
+            if "FOMC" in ev and mk in ("美股", "港股"):   # 港股跟随美元流动性
+                ev_hit = f"{e['date'][5:]}FOMC"
+    except Exception:
+        pass
+    if ev_hit:
+        out["reasons"].append(f"事件带内({ev_hit})")
+    need = 2.0 if (weak or ev_hit) else (1.5 if hot_warn else 1.2)
+    out["need_rr"] = need
+    try:
+        rr_v = float(rr or 0)
+    except (TypeError, ValueError):
+        rr_v = 0.0
+    if rr_v < need:
+        out["reasons"].append(f"赔率{rr_v:.2f}<环境要求{need}")
+    # 裁定: 弱市/事件带 → 必降级; 过热 → 赔率不足才降级
+    if weak or ev_hit or rr_v < need:
+        out["exec"] = False
+        _why = "·".join(out["reasons"][:3])
+        _clear = (f"大盘回中性(2周>45%)且赔率≥{need:.1f}" if weak else
+                  ("事件落地后重评" if ev_hit else f"回踩到赔率≥{need:.1f}的位置"))
+        out["action"] = f"准备买·暂不执行({_why}→{_clear})"
+    return out
+
+
 def diagnose_today(*, scope="自选", today_chg=0.0, market_chg=0.0, stage="",
                    broke_stop=False, pos52=50, action="", entry_mode="",
                    pnl_pct=None, name="") -> dict:
@@ -499,6 +574,13 @@ def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
                                       long_avg=long_avg, action=action, rr=rr)
             if entry_plan.get("note"):
                 entry_note = f"{entry_plan['note']}｜{entry_note}"
+        # 环境闸(2026-07-27):技术绿灯过闸后再过环境闸,不合格降级"准备买"
+        if entry_plan:
+            _eg = env_gate(code, str(entry_plan.get("mode") or ""), rr)
+            entry_plan["env_gate"] = _eg
+            entry_plan["exec_action"] = _eg["action"]      # 呈现层统一读这个
+            if not _eg["exec"]:
+                entry_plan["short_text"] = f"⏸ {_eg['action']}｜原技术信号:" + str(entry_plan.get("short_text") or "")[:70]
     except Exception:
         entry_plan = {}
     return {
