@@ -633,6 +633,34 @@ if _nav == "🧭 导航":
                                               for r in _tsu9), unsafe_allow_html=True)
                 except Exception:
                     pass
+                # 【V88·Claude认证徽章·云端 2026-07-27】🅒=Claude(Fable/Opus)独立复核与规则一致;
+                # ⚡=有异议不发徽章;无标=本班未复核。读 ai_cert_pub.json,与桌面同源同口径。
+                try:
+                    _CERT9C = _pubj9("ai_cert_pub.json") or {}
+                except Exception:
+                    _CERT9C = {}
+
+                def _cert9c(_cd, _nm=""):
+                    try:
+                        _e = None
+                        for _k in (str(_cd or ""), str(_cd or "").split(".")[0], str(_nm or "")):
+                            if not _k:
+                                continue
+                            _e = (_CERT9C.get("by_code") or {}).get(_k) or (_CERT9C.get("by_name") or {}).get(_k)
+                            if _e:
+                                break
+                        if not _e:
+                            return ""
+                        _tip = f"{_e.get('model','Claude')}独立复核·{_e.get('shift','')}｜{str(_e.get('note',''))[:70]}".replace('"', "'")
+                        if _e.get("verdict") == "一致":
+                            return (f"<span title=\"✅Claude认证:与规则引擎结论一致。{_tip}\" "
+                                    "style='display:inline-block;width:15px;height:15px;line-height:15px;"
+                                    "text-align:center;border-radius:50%;background:linear-gradient(145deg,#fde68a,#d97706);"
+                                    "color:#4a2c05;font-size:10px;font-weight:800;margin-left:3px;"
+                                    "box-shadow:0 1px 2px rgba(180,120,0,.45);vertical-align:middle'>C</span>")
+                        return f"<span title=\"⚡Claude有异议(未认证):{_tip}\" style='font-size:10.5px;color:#b45309;margin-left:3px'>⚡未认证</span>"
+                    except Exception:
+                        return ""
                 # 【V88·U3拐点倒计时+前置信号·云端 2026-07-26】pub版(大盘/板块级)
                 try:
                     _tfc9 = _pubj9("turning_forecast_pub.json")
@@ -716,7 +744,7 @@ if _nav == "🧭 导航":
                 _by9c.sort(key=lambda x: -x[1])
                 st.markdown(f"<b style='font-size:13px'>🐉 ④ {_tt9c}买什么</b>"
                             f"<span style='font-size:11px;color:#94a3b8'>（公开黑马池口径·{len(_by9c)}只）</span>"
-                            + ("".join(f"<div style='font-size:12.5px'>{_h9x.get('name')}"
+                            + ("".join(f"<div style='font-size:12.5px'>{_h9x.get('name')}{_cert9c(_h9x.get('code'), _h9x.get('name'))}"
                                        f"<b style='color:#dc2626'>{_p9x}%</b>"
                                        f"<span style='font-size:11.5px;color:#475569'>·{_t9x}"
                                        f"·{str(((_h9x.get('trade_plan') or {}).get('short') or {}).get('in') or '')[:36]}</span></div>"
@@ -735,7 +763,7 @@ if _nav == "🧭 导航":
                                    key=lambda x: -float(x.get("strength") or 0))[:6]
                     st.markdown(f"<b style='font-size:13px'>⚔️ ⑤ {_tt9c}躲什么</b>"
                                 "<span style='font-size:11px;color:#94a3b8'>（全池相位转弱·中长线躲避参考）</span>"
-                                + ("".join(f"<div style='font-size:12.5px'>{x.get('name')}"
+                                + ("".join(f"<div style='font-size:12.5px'>{x.get('name')}{_cert9c(x.get('code'), x.get('name'))}"
                                            f"<span style='font-size:11.5px;color:#16a34a'>·{x.get('phase')}"
                                            f"·{x.get('confidence')}置信</span></div>" for x in _ct9c) if _ct9c
                                    else "<div style='font-size:12.5px;color:#94a3b8'>暂无高中置信转弱</div>"),

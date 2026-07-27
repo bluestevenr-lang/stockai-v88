@@ -2930,6 +2930,38 @@ try:
     except Exception:
         _cb_names9 = {}
 
+    # 【V88·Claude认证徽章 2026-07-27 用户点单"买卖名单要有Fable/Opus认证,含C的小金标"】
+    # 🅒=Claude(Fable5/Opus5)独立复核结论与规则引擎一致;⚡=有异议(不发徽章,给反对理由);
+    # 无标=本班未复核该只(重点股优先,不装作全审过)。数据来自三方会审,零额外AI花费。
+    try:
+        _CERT9 = json.loads((_cb_repo9 / "data" / "ai_cert.json").read_text(encoding="utf-8"))
+    except Exception:
+        _CERT9 = {}
+
+    def _cert_badge9(_cd, _nm=""):
+        try:
+            _e9 = None
+            for _k9 in (str(_cd or ""), str(_cd or "").split(".")[0], str(_nm or "")):
+                if not _k9:
+                    continue
+                _e9 = (_CERT9.get("by_code") or {}).get(_k9) or (_CERT9.get("by_name") or {}).get(_k9)
+                if _e9:
+                    break
+            if not _e9:
+                return ""
+            _tip9 = (f"{_e9.get('model', 'Claude')}独立复核·{_e9.get('shift', '')}"
+                     f"｜{str(_e9.get('note', ''))[:70]}").replace('"', "'")
+            if _e9.get("verdict") == "一致":
+                return (f"<span title=\"✅Claude认证:与规则引擎结论一致。{_tip9}\" "
+                        "style='display:inline-block;width:15px;height:15px;line-height:15px;"
+                        "text-align:center;border-radius:50%;background:linear-gradient(145deg,#fde68a,#d97706);"
+                        "color:#4a2c05;font-size:10px;font-weight:800;margin-left:3px;"
+                        "box-shadow:0 1px 2px rgba(180,120,0,.45);vertical-align:middle'>C</span>")
+            return (f"<span title=\"⚡Claude有异议(未认证):{_tip9}\" "
+                    "style='font-size:10.5px;color:#b45309;margin-left:3px'>⚡未认证</span>")
+        except Exception:
+            return ""
+
     def _cb_nm9(_nm, _cd):
         # 【2026-07-27 统一名字真源】优先私仓 watch_alerts.resolve_name
         # (库内中文名>美股补充表>池名;港股前导零双向归一);不可用回退本地简版。
@@ -2938,15 +2970,16 @@ try:
             if str(_cb_repo9 / "src") not in _sy9n.path:
                 _sy9n.path.insert(0, str(_cb_repo9 / "src"))
             from watch_alerts import resolve_name as _rn9c
-            return _rn9c(_cd, _nm)
+            return _rn9c(_cd, _nm) + _cert_badge9(_cd, _rn9c(_cd, _nm))
         except Exception:
             pass
         _n = str(_nm or "")
         if _n and _n != str(_cd):
-            return _n
+            return _n + _cert_badge9(_cd, _n)
         _k = str(_cd or "").upper()
-        return (_cb_names9.get(_k) or _cb_names9.get(_k.split(".")[0].lstrip("0") + ".HK")
-                or _n or _k)
+        _out9 = (_cb_names9.get(_k) or _cb_names9.get(_k.split(".")[0].lstrip("0") + ".HK")
+                 or _n or _k)
+        return _out9 + _cert_badge9(_cd, _out9)
 
     def _cb_mk9(_cd):
         _c = str(_cd or "").upper()
