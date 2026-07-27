@@ -3064,6 +3064,23 @@ try:
                               f"回踩带{(_pk9.get('shallow') or ['?', '?'])[0]}~{(_pk9.get('shallow') or ['?', '?'])[1]}"
                               f"·突破{_pk9.get('breakout')}·失效{_pk9.get('invalid')}·{_sv9.get('why', '')[:40]}"))
             _cb_seen9.add(_k9)
+    # 【漏斗断点修复 2026-07-27 用户"今天全美股就辉瑞和好市多可买??"】
+    # 病根:全市场机会扫描每天挖出10+只可执行(池外新发现),却只显示在③a小节,
+    # 从不进"确认买"tab——用户看到的买单永远只有自选池那两三只,以为全市场没货。
+    # 现在池外可执行直接进买单(标源"池外新发现"),仍受Claude标准闸与环境闸约束。
+    try:
+        for _o9x in (_cbj9("opportunity_scan.json").get("exec") or [])[:10]:
+            _k9x = str(_o9x.get("code") or "").upper()
+            if not _k9x or _k9x in _cb_seen9:
+                continue
+            _cb_rows9.append((f"池外新发现·{str(_o9x.get('source') or '')[:16]}",
+                              _o9x.get("name"), _o9x.get("code"), _o9x.get("last"),
+                              int(_o9x.get("p_up") or 0), _o9x.get("rr"),
+                              f"买区{_o9x.get('buy_zone')}·止损{_o9x.get('stop')}"
+                              f"·52周{_o9x.get('pos52')}%·{str(_o9x.get('tech_mode') or '')}"))
+            _cb_seen9.add(_k9x)
+    except Exception:
+        pass
     _cb_sell_html9 = []
     for _nm9s, _cd9s, _px9s, _pd9s, _act9s, _why9s in _cb_sell9[:5]:
         _nm9s = _cb_nm9(_nm9s, _cd9s)
