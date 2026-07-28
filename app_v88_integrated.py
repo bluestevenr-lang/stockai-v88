@@ -3278,6 +3278,47 @@ try:
         with _tab_h9:
             st.markdown(_tbl9(_t_hold9) if _t_hold9 else "<span style='font-size:12px;color:#94a3b8'>无持有档记录</span>",
                         unsafe_allow_html=True)
+        # 【三方会审对照 2026-07-27 用户"我怎么没看到claude/V88/gpt的分析对比分歧的地方"】
+        # 三方结论原本各存各的文件,界面从没摆在一起。分歧排最前——三方都说好的按纲领执行,
+        # 吵起来的才是要自己拿主意的地方。GPT目前影子模式:它反对不拦名单,只入台账攒战绩。
+        try:
+            _tw9 = json.loads((_cb_repo9 / "data" / "three_way.json").read_text(encoding="utf-8"))
+            _twr9 = (_tw9.get("rows") or [])
+            if _twr9:
+                _cnt9 = _tw9.get("counts") or {}
+                _tw_html9 = []
+                for _r9w in _twr9[:12]:
+                    _c9w, _g9w = (_r9w.get("claude") or {}), (_r9w.get("gpt") or {})
+                    _cs9w = str(_r9w.get("consensus") or "")
+                    _col9w = ("#b45309" if "分歧" in _cs9w else
+                              ("#16a34a" if "一致" in _cs9w else "#94a3b8"))
+                    _rl9w = _r9w.get("rule") or {}
+                    _tw_html9.append(
+                        f"<div style='font-size:12px;line-height:1.6;margin-bottom:2px'>"
+                        f"<b style='color:{_col9w}'>{_cs9w}</b> "
+                        f"{_MKFLAG9.get(_r9w.get('market'), '')}"
+                        # _nw_link9 定义在更靠后的作战板段(3366行),此处不可用——
+                        # 2026-07-28踩坑:引用未定义函数被try静默吞掉,整块功能消失且查不出。
+                        # 用行动中心自己的深链写法(与_row6_9同款),名字仍走_cb_nm9带认证徽章。
+                        f"<a href='?q={_r9w.get('code')}&focus=deep#v88-deep-analysis' "
+                        f"target='_blank' rel='noopener' style='text-decoration:underline;"
+                        f"color:#1e3a5f;font-weight:600'>"
+                        f"{_cb_nm9(_r9w.get('name'), _r9w.get('code'))}</a>"
+                        f"<span style='color:#475569'>　V88:{_rl9w.get('dir')}{_rl9w.get('prob')}%"
+                        f"({_rl9w.get('action')})</span>"
+                        f"<span style='color:#7c3aed'>　Claude:{_c9w.get('verdict') or '未复核'}</span>"
+                        f"<span style='color:#0891b2'>　GPT:{_g9w.get('side') or '未复核'}"
+                        + (f"·{_g9w.get('why', '')[:24]}" if _g9w else "") + "</span></div>")
+                with st.expander(f"⚖️ 三方会审对照　⚡分歧{_cnt9.get('⚡有分歧', 0)}只"
+                                 f"·✅一致{_cnt9.get('✅双方一致', 0) + _cnt9.get('✅三方一致', 0)}只"
+                                 f"　——V88引擎 vs Claude复核 vs GPT盲审", expanded=False):
+                    st.markdown("".join(_tw_html9), unsafe_allow_html=True)
+                    st.caption("⚡分歧=两方以上意见不合,最需要你自己拿主意;✅一致=两套以上独立逻辑对上了。"
+                               "GPT目前影子模式(有记录无投票权),它的反对不会拦名单,但会入台账攒战绩——"
+                               "两周后用数据说明谁更准(Codex双周复盘见data/gpt_biweekly.md)。")
+        except Exception as _tw_e9:
+            # 静默吞异常=功能消失还查不出原因(2026-07-27踩过):必须留痕
+            logging.exception(f"[V88] 三方会审对照渲染失败: {_tw_e9}")
         # 【Claude标准闸·未达标区 2026-07-27】被闸拦下的不许凭空消失:折叠列出+写明哪条规则+人话理由
         # (透明才可证伪;台账到期后深检算"被拦的票后来表现如何"来修订阈值)
         if _cb_sell_off9 or _cb_buy_off9:
