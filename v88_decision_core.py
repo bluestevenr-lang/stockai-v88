@@ -651,7 +651,10 @@ def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
         "horizon": "2周",
         "upside_pct": round(upside, 1), "downside_pct": round(downside, 1),
         "rr": rr, "expected_pct": expected, "break_even_p": break_even,
+        # 【2026-07-28 英伟达案】support 引擎一直在算但没进返回体→落盘没有→
+        # 卖出建议只能说"减仓"却说不出"回到哪里可以买回",用户只拿到一半的话。
         "probability_edge": edge, "resistance": round(resistance, 3),
+        "support": round(_num((full or {}).get("support")) or stop or 0.0, 3),
         "stop": round(stop, 3), "short_side": short_side, "long_side": long_side,
         "cycle_conflict": conflict, "cycle_status": cycle_status,
         "action": action, "reason": reason, "entry_note": entry_note,
