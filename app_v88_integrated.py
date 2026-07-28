@@ -3772,6 +3772,37 @@ try:
                                 unsafe_allow_html=True)
                     except Exception as _ht_e9:
                         logging.exception(f"[V88] 题材热点渲染失败: {_ht_e9}")
+                    # 【龙虎榜 2026-07-28】个股层热钱:谁在买·机构还是游资·该类信号历史成功率
+                    try:
+                        _dbj9 = _nwj9("dragon_board.json")
+                        _dbr9 = (_dbj9.get("rows") or [])[:5]
+                        if _dbr9 and _mkfit9("000001.SZ"):     # A股筛选时才显示
+                            _dbs9 = _dbj9.get("stat") or {}
+                            _db_html9 = []
+                            for _r9d in _dbr9:
+                                _pr9 = _r9d.get("prior_rate")
+                                _db_html9.append(
+                                    f"<div style='font-size:12px;line-height:1.6'>"
+                                    f"{_r9d.get('seat')} "
+                                    f"<a href='?q={_r9d.get('code')}&focus=deep#v88-deep-analysis' "
+                                    f"target='_blank' rel='noopener' style='text-decoration:underline;"
+                                    f"color:#1e3a5f;font-weight:600'>{_r9d.get('name')}</a>"
+                                    f"<span style='color:#dc2626'>{(_r9d.get('chg') or 0):+.1f}%</span>"
+                                    f"<span style='color:#b45309'>·净买{_r9d.get('net_yi')}亿</span>"
+                                    f"<span style='font-size:11px;color:#64748b'>·占成交{_r9d.get('deal_ratio')}%"
+                                    f"·{str(_r9d.get('reason'))[:20]}</span>"
+                                    + (f"<span style='font-size:11px;color:{'#16a34a' if _pr9 >= 45 else '#94a3b8'}'>"
+                                       f"(该类信号历史成功率{_pr9}%)</span>" if _pr9 is not None else "")
+                                    + "</div>")
+                            st.markdown(
+                                "<b style='font-size:13px'>🐲 ③a1 龙虎榜·谁在动手</b>"
+                                "<span style='font-size:11px;color:#94a3b8' title='净买入前列+机构/游资席位区分;"
+                                "括号内成功率=东财统计的该类上榜信号历史胜率(现成先验,不是我们猜的);"
+                                "跟风胜率随每日累积由上榜后1/2日涨跌实算'>"
+                                f"（{_dbj9.get('trade_date', '')}收盘·{(_dbs9.get('seat_mix') or {})} ⓘ）</span>"
+                                + "".join(_db_html9), unsafe_allow_html=True)
+                    except Exception as _db_e9:
+                        logging.exception(f"[V88] 龙虎榜渲染失败: {_db_e9}")
                     st.markdown("<b style='font-size:13px'>🌍 ③a 全市场机会</b>"
                                 f"<span style='font-size:11px;color:#94a3b8' title='四路候选(全池转强低位/涨停接力/行业代表/黑马)"
                                 f"→实跑{_op9.get('studied', '?')}只→严格标准(赔率≥2.0·52周位≤55%·2周概率≥55%·启动型)→过环境闸;"
