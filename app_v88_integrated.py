@@ -3739,7 +3739,27 @@ try:
                     # 连续在榜天数分主线与一日游(主线第2天上车还有肉,一日游第2天就是接盘)。
                     try:
                         _htj9 = _nwj9("hot_theme.json")
-                        _hts9 = (_htj9.get("themes") or [])[:6]
+                        # 【提前量优先 2026-07-28 用户"不要后知后觉"】蓄势榜排最前:
+                        # 钱在进但价没动=还能上车;已在涨的降为副榜并标追高风险
+                        _brw9 = (_htj9.get("brewing") or [])[:5]
+                        if _brw9:
+                            _bw_html9 = []
+                            for _b9t in _brw9:
+                                _mem9b = "、".join(f"{m.get('name')}{(m.get('chg') or 0):+.1f}%"
+                                                  for m in (_b9t.get("members") or [])[:3])
+                                _bw_html9.append(
+                                    f"<div style='font-size:12px;line-height:1.6'>"
+                                    f"<b style='color:#16a34a'>{_b9t.get('grade')}</b> "
+                                    f"<b>{_b9t.get('name')}</b>"
+                                    f"<span style='font-size:11.5px;color:#475569'>·{_b9t.get('why')}</span>"
+                                    f"<span style='font-size:11px;color:#64748b'>·梯队:{_mem9b}</span></div>")
+                            st.markdown(
+                                "<b style='font-size:13px'>🌱 ③a0 题材蓄势·钱进价未动(提前量)</b>"
+                                "<span style='font-size:11px;color:#94a3b8' title='主力净流入排名靠前但当日涨幅<1.2%"
+                                "=钱先进场价还没反应,这是还能上车的地方;连续净流入天数越多=潜伏越久。"
+                                "与下方已在涨的副榜相反——那些是追高区'>ⓘ提前量·非追涨</span>"
+                                + "".join(_bw_html9), unsafe_allow_html=True)
+                        _hts9 = (_htj9.get("themes") or [])[:5]
                         if _hts9:
                             _ht_html9 = []
                             for _h9t in _hts9:
@@ -3759,7 +3779,7 @@ try:
                                     + f"<span style='font-size:11px;color:#64748b'>·梯队:{_mem9}</span></div>")
                             _mine9 = _htj9.get("mine_in_hot") or []
                             st.markdown(
-                                "<b style='font-size:13px'>🔥 ③a0 今日题材热点</b>"
+                                "<b style='font-size:13px'>🔥 ③a0b 已在涨的题材(副榜·追高需谨慎)</b>"
                                 "<span style='font-size:11px;color:#94a3b8' title='东财495个概念板块:"
                                 "涨幅榜∩主力净流入榜——只涨不进钱=情绪脉冲,涨且进钱=真金白银;"
                                 "连续在榜天数区分主线与一日游。梯队=板块内涨幅前三,不只看一只领涨股'>"
