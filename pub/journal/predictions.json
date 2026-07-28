@@ -561,6 +561,101 @@
   }
  },
  {
+  "id": "gpt_pick:MSTR:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "gpt_pick",
+  "subject": "MSTR",
+  "market": "",
+  "prediction": "GPT盲审看空·中置信·比特币杠杆属性强，美股胜率偏低",
+  "horizon_end": "2026-08-24",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": null,
+  "source": "gpt",
+  "status": "待核",
+  "extra": {
+   "code": "MSTR",
+   "base_price": 97.18,
+   "rule_ver": "gpt-1.0"
+  }
+ },
+ {
+  "id": "gpt_pick:中海油:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "gpt_pick",
+  "subject": "中海油",
+  "market": "",
+  "prediction": "GPT盲审看多·中置信·油价与高股息支撑，位置尚不拥挤",
+  "horizon_end": "2026-08-24",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": null,
+  "source": "gpt",
+  "status": "待核",
+  "extra": {
+   "code": "0883.HK",
+   "base_price": 23.2,
+   "rule_ver": "gpt-1.0"
+  }
+ },
+ {
+  "id": "gpt_pick:澳博控股:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "gpt_pick",
+  "subject": "澳博控股",
+  "market": "",
+  "prediction": "GPT盲审看多·中置信·低位叠加港股占优，博彩复苏可期",
+  "horizon_end": "2026-08-24",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": null,
+  "source": "gpt",
+  "status": "待核",
+  "extra": {
+   "code": "0880.HK",
+   "base_price": 1.55,
+   "rule_ver": "gpt-1.0"
+  }
+ },
+ {
+  "id": "gpt_pick:特变电工:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "gpt_pick",
+  "subject": "特变电工",
+  "market": "",
+  "prediction": "GPT盲审看多·低置信·位置适中，电网需求支撑但周期性强",
+  "horizon_end": "2026-08-24",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": null,
+  "source": "gpt",
+  "status": "待核",
+  "extra": {
+   "code": "600089.SS",
+   "base_price": 20.65,
+   "rule_ver": "gpt-1.0"
+  }
+ },
+ {
+  "id": "gpt_pick:隆基绿能:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "gpt_pick",
+  "subject": "隆基绿能",
+  "market": "",
+  "prediction": "GPT盲审看空·中置信·光伏产能过剩，低位仍缺反转依据",
+  "horizon_end": "2026-08-24",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": null,
+  "source": "gpt",
+  "status": "待核",
+  "extra": {
+   "code": "601012.SS",
+   "base_price": 12.64,
+   "rule_ver": "gpt-1.0"
+  }
+ },
+ {
   "id": "mkt_prob:A股16周:2026-07-27",
   "date": "2026-07-27",
   "kind": "mkt_prob",
@@ -615,6 +710,24 @@
   }
  },
  {
+  "id": "mkt_prob:A股16周:2026-07-27#v5",
+  "date": "2026-07-27",
+  "kind": "mkt_prob",
+  "subject": "A股16周",
+  "market": "A股",
+  "prediction": "A股16周上涨概率43%",
+  "horizon_end": "2026-11-20",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": 43,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "000001.SS",
+   "base_price": 3858.25
+  }
+ },
+ {
   "id": "mkt_prob:A股2周:2026-07-27",
   "date": "2026-07-27",
   "kind": "mkt_prob",
@@ -652,6 +765,24 @@
  },
  {
   "id": "mkt_prob:A股2周:2026-07-27#v4",
+  "date": "2026-07-27",
+  "kind": "mkt_prob",
+  "subject": "A股2周",
+  "market": "A股",
+  "prediction": "A股2周上涨概率43%",
+  "horizon_end": "2026-08-10",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": 43,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "000001.SS",
+   "base_price": 3858.25
+  }
+ },
+ {
+  "id": "mkt_prob:A股2周:2026-07-27#v5",
   "date": "2026-07-27",
   "kind": "mkt_prob",
   "subject": "A股2周",
@@ -777,6 +908,24 @@
   }
  },
  {
+  "id": "mkt_prob:A股4周:2026-07-27#v5",
+  "date": "2026-07-27",
+  "kind": "mkt_prob",
+  "subject": "A股4周",
+  "market": "A股",
+  "prediction": "A股4周上涨概率39%",
+  "horizon_end": "2026-08-25",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": 39,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "000001.SS",
+   "base_price": 3858.25
+  }
+ },
+ {
   "id": "mkt_prob:A股8周:2026-07-27",
   "date": "2026-07-27",
   "kind": "mkt_prob",
@@ -867,6 +1016,24 @@
   }
  },
  {
+  "id": "mkt_prob:港股16周:2026-07-27#v4",
+  "date": "2026-07-27",
+  "kind": "mkt_prob",
+  "subject": "港股16周",
+  "market": "港股",
+  "prediction": "港股16周上涨概率43%",
+  "horizon_end": "2026-11-20",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": 43,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "^HSI",
+   "base_price": 25207.18
+  }
+ },
+ {
   "id": "mkt_prob:港股2周:2026-07-27",
   "date": "2026-07-27",
   "kind": "mkt_prob",
@@ -900,6 +1067,24 @@
   "extra": {
    "code": "^HSI",
    "base_price": 25148.36
+  }
+ },
+ {
+  "id": "mkt_prob:港股2周:2026-07-27#v4",
+  "date": "2026-07-27",
+  "kind": "mkt_prob",
+  "subject": "港股2周",
+  "market": "港股",
+  "prediction": "港股2周上涨概率56%",
+  "horizon_end": "2026-08-10",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 56,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "^HSI",
+   "base_price": 25207.18
   }
  },
  {
@@ -975,6 +1160,24 @@
   }
  },
  {
+  "id": "mkt_prob:港股4周:2026-07-27#v4",
+  "date": "2026-07-27",
+  "kind": "mkt_prob",
+  "subject": "港股4周",
+  "market": "港股",
+  "prediction": "港股4周上涨概率66%",
+  "horizon_end": "2026-08-25",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 66,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "^HSI",
+   "base_price": 25207.18
+  }
+ },
+ {
   "id": "mkt_prob:港股8周:2026-07-27",
   "date": "2026-07-27",
   "kind": "mkt_prob",
@@ -1008,6 +1211,24 @@
   "extra": {
    "code": "^HSI",
    "base_price": 25148.36
+  }
+ },
+ {
+  "id": "mkt_prob:港股8周:2026-07-27#v4",
+  "date": "2026-07-27",
+  "kind": "mkt_prob",
+  "subject": "港股8周",
+  "market": "港股",
+  "prediction": "港股8周上涨概率49%",
+  "horizon_end": "2026-09-23",
+  "confirm_price": null,
+  "direction": "flat",
+  "prob": 49,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "^HSI",
+   "base_price": 25207.18
   }
  },
  {
@@ -1047,6 +1268,42 @@
   }
  },
  {
+  "id": "mkt_prob:美股2周:2026-07-27#v2",
+  "date": "2026-07-27",
+  "kind": "mkt_prob",
+  "subject": "美股2周",
+  "market": "美股",
+  "prediction": "美股2周上涨概率42%",
+  "horizon_end": "2026-08-10",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": 42,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "^GSPC",
+   "base_price": 7475.1
+  }
+ },
+ {
+  "id": "mkt_prob:美股2周:2026-07-27#v4",
+  "date": "2026-07-27",
+  "kind": "mkt_prob",
+  "subject": "美股2周",
+  "market": "美股",
+  "prediction": "美股2周上涨概率41%",
+  "horizon_end": "2026-08-10",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": 41,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "^GSPC",
+   "base_price": 7416.01
+  }
+ },
+ {
   "id": "mkt_prob:美股32周:2026-07-27",
   "date": "2026-07-27",
   "kind": "mkt_prob",
@@ -1080,6 +1337,42 @@
   "extra": {
    "code": "^GSPC",
    "base_price": 7411.98
+  }
+ },
+ {
+  "id": "mkt_prob:美股4周:2026-07-27#v2",
+  "date": "2026-07-27",
+  "kind": "mkt_prob",
+  "subject": "美股4周",
+  "market": "美股",
+  "prediction": "美股4周上涨概率45%",
+  "horizon_end": "2026-08-25",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": 45,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "^GSPC",
+   "base_price": 7475.1
+  }
+ },
+ {
+  "id": "mkt_prob:美股4周:2026-07-27#v4",
+  "date": "2026-07-27",
+  "kind": "mkt_prob",
+  "subject": "美股4周",
+  "market": "美股",
+  "prediction": "美股4周上涨概率44%",
+  "horizon_end": "2026-08-25",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": 44,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "^GSPC",
+   "base_price": 7416.01
   }
  },
  {
@@ -1321,6 +1614,44 @@
   }
  },
  {
+  "id": "opp_scan:MSTR:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "opp_scan",
+  "subject": "MSTR",
+  "market": "",
+  "prediction": "全市场机会:等待·赔率4.63·52周5.0%·涨概率61%",
+  "horizon_end": "2026-08-17",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 61,
+  "source": "rule",
+  "status": "superseded",
+  "extra": {
+   "code": "MSTR",
+   "base_price": 97.18,
+   "rule_ver": "opp-1.1"
+  }
+ },
+ {
+  "id": "opp_scan:MSTR:2026-07-27#v2",
+  "date": "2026-07-27",
+  "kind": "opp_scan",
+  "subject": "MSTR",
+  "market": "",
+  "prediction": "全市场机会:等待·赔率4.61·52周4.0%·涨概率60%",
+  "horizon_end": "2026-08-17",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 60,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "MSTR",
+   "base_price": 96.76,
+   "rule_ver": "opp-1.1"
+  }
+ },
+ {
   "id": "opp_scan:中国海油:2026-07-27",
   "date": "2026-07-27",
   "kind": "opp_scan",
@@ -1378,6 +1709,25 @@
   }
  },
  {
+  "id": "opp_scan:中油资本:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "opp_scan",
+  "subject": "中油资本",
+  "market": "",
+  "prediction": "全市场机会:现价可进·赔率6.91·52周6.0%·涨概率68%",
+  "horizon_end": "2026-08-17",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 68,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "000617.SZ",
+   "base_price": 6.89,
+   "rule_ver": "opp-1.1"
+  }
+ },
+ {
   "id": "opp_scan:中海油:2026-07-27",
   "date": "2026-07-27",
   "kind": "opp_scan",
@@ -1412,6 +1762,25 @@
   "extra": {
    "code": "2357.HK",
    "base_price": 2.96,
+   "rule_ver": "opp-1.1"
+  }
+ },
+ {
+  "id": "opp_scan:华晨中国:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "opp_scan",
+  "subject": "华晨中国",
+  "market": "",
+  "prediction": "全市场机会:左侧低吸·赔率5.47·52周7.0%·涨概率65%",
+  "horizon_end": "2026-08-17",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 65,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "1114.HK",
+   "base_price": 2.05,
    "rule_ver": "opp-1.1"
   }
  },
@@ -1492,6 +1861,44 @@
   }
  },
  {
+  "id": "opp_scan:好市多:2026-07-27#v2",
+  "date": "2026-07-27",
+  "kind": "opp_scan",
+  "subject": "好市多",
+  "market": "",
+  "prediction": "全市场机会:现价可进·赔率4.44·52周40.0%·涨概率58%",
+  "horizon_end": "2026-08-17",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 58,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "COST",
+   "base_price": 943.18,
+   "rule_ver": "opp-1.1"
+  }
+ },
+ {
+  "id": "opp_scan:岩山科技:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "opp_scan",
+  "subject": "岩山科技",
+  "market": "",
+  "prediction": "全市场机会:左侧低吸·赔率4.69·52周9.0%·涨概率67%",
+  "horizon_end": "2026-08-17",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 67,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "002195.SZ",
+   "base_price": 6.21,
+   "rule_ver": "opp-1.1"
+  }
+ },
+ {
   "id": "opp_scan:携程集团-S:2026-07-27",
   "date": "2026-07-27",
   "kind": "opp_scan",
@@ -1564,6 +1971,44 @@
   "extra": {
    "code": "0880.HK",
    "base_price": 1.55,
+   "rule_ver": "opp-1.1"
+  }
+ },
+ {
+  "id": "opp_scan:特变电工:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "opp_scan",
+  "subject": "特变电工",
+  "market": "",
+  "prediction": "全市场机会:左侧低吸·赔率4.03·52周39.0%·涨概率76%",
+  "horizon_end": "2026-08-17",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 76,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "600089.SS",
+   "base_price": 20.65,
+   "rule_ver": "opp-1.1"
+  }
+ },
+ {
+  "id": "opp_scan:迈瑞医疗:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "opp_scan",
+  "subject": "迈瑞医疗",
+  "market": "",
+  "prediction": "全市场机会:现价可进·赔率2.52·52周15.0%·涨概率66%",
+  "horizon_end": "2026-08-17",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 66,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "300760.SZ",
+   "base_price": 148.56,
    "rule_ver": "opp-1.1"
   }
  },
@@ -2060,6 +2505,25 @@
   }
  },
  {
+  "id": "trend_shift:Roundhill DRAM:2026-07-27#v2",
+  "date": "2026-07-27",
+  "kind": "trend_shift",
+  "subject": "Roundhill DRAM",
+  "market": "",
+  "prediction": "下行翻转(第17日·20日-33.0%)·减仓回避",
+  "horizon_end": "2026-08-26",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "DRAM",
+   "base_price": 51.53,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
   "id": "trend_shift:Snowflake:2026-07-27",
   "date": "2026-07-27",
   "kind": "trend_shift",
@@ -2193,6 +2657,44 @@
   }
  },
  {
+  "id": "trend_shift:商络电子:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "trend_shift",
+  "subject": "商络电子",
+  "market": "",
+  "prediction": "下行翻转(第17日·20日-39.8%)·减仓回避",
+  "horizon_end": "2026-08-26",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "300975.SZ",
+   "base_price": 26.78,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:康宁:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "trend_shift",
+  "subject": "康宁",
+  "market": "",
+  "prediction": "下行翻转(第16日·20日-38.9%)·减仓回避",
+  "horizon_end": "2026-08-26",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "GLW",
+   "base_price": 139.3,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
   "id": "trend_shift:强生:2026-07-27",
   "date": "2026-07-27",
   "kind": "trend_shift",
@@ -2246,6 +2748,44 @@
   "extra": {
    "code": "9901.HK",
    "base_price": 38.98,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:普冉股份:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "trend_shift",
+  "subject": "普冉股份",
+  "market": "",
+  "prediction": "下行翻转(第11日·20日-49.6%)·减仓回避",
+  "horizon_end": "2026-08-26",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "688766.SS",
+   "base_price": 371.78,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:比音勒芬:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "trend_shift",
+  "subject": "比音勒芬",
+  "market": "",
+  "prediction": "上行翻转中期(第20日·已涨15.9%·涨概率84%)·🟡先别追,等跌回21.41附近再买;一直不跌就等",
+  "horizon_end": "2026-08-26",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 84,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "002832.SZ",
+   "base_price": 23.97,
    "rule_ver": "ts-1.0"
   }
  },
@@ -2364,6 +2904,25 @@
   }
  },
  {
+  "id": "trend_shift:海康威视:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "trend_shift",
+  "subject": "海康威视",
+  "market": "",
+  "prediction": "上行翻转中期(第14日·已涨9.2%·涨概率79%)·🟡先别追,等跌回34.46附近再买;一直不跌就等",
+  "horizon_end": "2026-08-26",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 79,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "002415.SZ",
+   "base_price": 36.99,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
   "id": "trend_shift:爱奇艺:2026-07-27",
   "date": "2026-07-27",
   "kind": "trend_shift",
@@ -2417,6 +2976,63 @@
   "extra": {
    "code": "TSLA",
    "base_price": 313.03,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:现代牙科:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "trend_shift",
+  "subject": "现代牙科",
+  "market": "",
+  "prediction": "上行翻转中期(第18日·已涨30.0%·涨概率69%)·🟡先别追,等跌回7.10附近再买;一直不跌就等放",
+  "horizon_end": "2026-08-26",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 69,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "3600.HK",
+   "base_price": 7.75,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:理文造纸:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "trend_shift",
+  "subject": "理文造纸",
+  "market": "",
+  "prediction": "上行翻转早期(第4日·已涨6.6%·涨概率85%)·🟢现在可买(涨势刚起,买得最早)",
+  "horizon_end": "2026-08-26",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 85,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "2314.HK",
+   "base_price": 4.03,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:紫光股份:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "trend_shift",
+  "subject": "紫光股份",
+  "market": "",
+  "prediction": "上行翻转早期(第10日·已涨8.0%·涨概率69%)·🟢现在可买(涨势刚起,买得最早)",
+  "horizon_end": "2026-08-26",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 69,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "000938.SZ",
+   "base_price": 41.47,
    "rule_ver": "ts-1.0"
   }
  },
@@ -2516,6 +3132,44 @@
   }
  },
  {
+  "id": "trend_shift:药康生物:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "trend_shift",
+  "subject": "药康生物",
+  "market": "",
+  "prediction": "上行翻转中期(第18日·已涨6.2%·涨概率67%)·🟡先别追,等跌回25.01附近再买;一直不跌就等",
+  "horizon_end": "2026-08-26",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 67,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "688046.SS",
+   "base_price": 27.36,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:西部矿业:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "trend_shift",
+  "subject": "西部矿业",
+  "market": "",
+  "prediction": "上行翻转早期(第1日·已涨4.1%·涨概率85%)·🟢现在可买(涨势刚起,买得最早)",
+  "horizon_end": "2026-08-26",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 85,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "601168.SS",
+   "base_price": 37.72,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
   "id": "trend_shift:迈威尔:2026-07-27",
   "date": "2026-07-27",
   "kind": "trend_shift",
@@ -2531,6 +3185,82 @@
   "extra": {
    "code": "MRVL",
    "base_price": 194.23,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:金安国纪:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "trend_shift",
+  "subject": "金安国纪",
+  "market": "",
+  "prediction": "下行翻转(第16日·20日-44.6%)·减仓回避",
+  "horizon_end": "2026-08-26",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "002636.SZ",
+   "base_price": 63.69,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:闪迪:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "trend_shift",
+  "subject": "闪迪",
+  "market": "",
+  "prediction": "下行翻转(第16日·20日-45.4%)·减仓回避",
+  "horizon_end": "2026-08-26",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "SNDK",
+   "base_price": 1275.31,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:雷神技术:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "trend_shift",
+  "subject": "雷神技术",
+  "market": "",
+  "prediction": "上行翻转中期(第17日·已涨14.9%·涨概率80%)·🟡先别追,等跌回196.40附近再买;一直不跌就",
+  "horizon_end": "2026-08-26",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 80,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "RTX",
+   "base_price": 217.98,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:顺络电子:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "trend_shift",
+  "subject": "顺络电子",
+  "market": "",
+  "prediction": "下行翻转(第17日·20日-39.5%)·减仓回避",
+  "horizon_end": "2026-08-26",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "002138.SZ",
+   "base_price": 45.19,
    "rule_ver": "ts-1.0"
   }
  },
@@ -2596,6 +3326,29 @@
   "extra": {
    "code": "QQQM",
    "base_price": 281.68,
+   "rule_ver": "tf-1.1",
+   "window_days": [
+    2,
+    4
+   ]
+  }
+ },
+ {
+  "id": "turning:Roundhill DRAM:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "turning",
+  "subject": "Roundhill DRAM",
+  "market": "美股",
+  "prediction": "见底窗口2~4交易日·确认价59.35·概率66%·07-29(周三)FOMC利率决议=触发器",
+  "horizon_end": "2026-08-01",
+  "confirm_price": 59.35,
+  "direction": "up",
+  "prob": 66,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "DRAM",
+   "base_price": 51.57,
    "rule_ver": "tf-1.1",
    "window_days": [
     2,
@@ -2882,6 +3635,29 @@
   }
  },
  {
+  "id": "turning:特斯拉:2026-07-27#v2",
+  "date": "2026-07-27",
+  "kind": "turning",
+  "subject": "特斯拉",
+  "market": "美股",
+  "prediction": "见底窗口5~12交易日·确认价384.07·概率75%",
+  "horizon_end": "2026-08-13",
+  "confirm_price": 384.07,
+  "direction": "up",
+  "prob": 75,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "TSLA",
+   "base_price": 312.51,
+   "rule_ver": "tf-1.1",
+   "window_days": [
+    5,
+    12
+   ]
+  }
+ },
+ {
   "id": "turning:纳指100ETF:2026-07-27",
   "date": "2026-07-27",
   "kind": "turning",
@@ -2905,6 +3681,29 @@
   }
  },
  {
+  "id": "turning:纳指100ETF:2026-07-27#v2",
+  "date": "2026-07-27",
+  "kind": "turning",
+  "subject": "纳指100ETF",
+  "market": "美股",
+  "prediction": "见底窗口3~6交易日·确认价292.35·概率66%·07-29(周三)FOMC利率决议=触发器",
+  "horizon_end": "2026-08-04",
+  "confirm_price": 292.35,
+  "direction": "up",
+  "prob": 66,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "QQQM",
+   "base_price": 280.67,
+   "rule_ver": "tf-1.1",
+   "window_days": [
+    3,
+    6
+   ]
+  }
+ },
+ {
   "id": "turning:美股·能源板块:2026-07-27",
   "date": "2026-07-27",
   "kind": "turning",
@@ -2924,6 +3723,75 @@
    "window_days": [
     7,
     15
+   ]
+  }
+ },
+ {
+  "id": "turning:美股·能源板块:2026-07-27#v2",
+  "date": "2026-07-27",
+  "kind": "turning",
+  "subject": "美股·能源板块",
+  "market": "美股",
+  "prediction": "见顶窗口2~4交易日·确认价57.41·概率72%·07-29(周三)FOMC利率决议=触发器",
+  "horizon_end": "2026-08-01",
+  "confirm_price": 57.41,
+  "direction": "down",
+  "prob": 72,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "XLE",
+   "base_price": 58.66,
+   "rule_ver": "tf-1.1",
+   "window_days": [
+    2,
+    4
+   ]
+  }
+ },
+ {
+  "id": "turning:英伟达:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "turning",
+  "subject": "英伟达",
+  "market": "美股",
+  "prediction": "见底窗口4~9交易日·确认价214.39·概率66%·07-29(周三)FOMC利率决议=触发器",
+  "horizon_end": "2026-08-09",
+  "confirm_price": 214.39,
+  "direction": "up",
+  "prob": 66,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "NVDA",
+   "base_price": 198.49,
+   "rule_ver": "tf-1.1",
+   "window_days": [
+    4,
+    9
+   ]
+  }
+ },
+ {
+  "id": "turning:苹果:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "turning",
+  "subject": "苹果",
+  "market": "美股",
+  "prediction": "见顶窗口2~4交易日·确认价319.35·概率77%·07-29(周三)FOMC利率决议=触发器",
+  "horizon_end": "2026-08-01",
+  "confirm_price": 319.35,
+  "direction": "down",
+  "prob": 77,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "AAPL",
+   "base_price": 338.76,
+   "rule_ver": "tf-1.1",
+   "window_days": [
+    2,
+    4
    ]
   }
  },
@@ -2968,6 +3836,66 @@
   }
  },
  {
+  "id": "value_zone:Adobe:2026-07-27#v4",
+  "date": "2026-07-27",
+  "kind": "value_zone",
+  "subject": "Adobe",
+  "market": "",
+  "prediction": "🟢跌得很深·可分批买:距2年高-59.6%·52周位24%·10年年化9.3%·该股历史6次同级回撤→6月后5涨1跌·中位+37.1%·最差-33.5%",
+  "horizon_end": "2027-01-26",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 83,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "ADBE",
+   "base_price": 237.08,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
+  }
+ },
+ {
+  "id": "value_zone:AutoZone:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "value_zone",
+  "subject": "AutoZone",
+  "market": "",
+  "prediction": "🟢跌得很深·可分批买:距2年高-29.7%·52周位9%·10年年化14.6%·该股历史5次同级回撤→6月后4涨1跌·中位+17.6%·最差-8.9%",
+  "horizon_end": "2027-01-26",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 80,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "AZO",
+   "base_price": 3061.15,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
+  }
+ },
+ {
+  "id": "value_zone:中国中免:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "value_zone",
+  "subject": "中国中免",
+  "market": "",
+  "prediction": "🟢跌得很深·可分批买:距2年高-43.4%·52周位8%·10年年化10.7%·该股历史6次同级回撤→6月后5涨1跌·中位+60.6%·最差-21.9%",
+  "horizon_end": "2027-01-26",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 83,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "601888.SS",
+   "base_price": 54.44,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
+  }
+ },
+ {
   "id": "value_zone:中国人民保险:2026-07-27",
   "date": "2026-07-27",
   "kind": "value_zone",
@@ -3003,6 +3931,26 @@
   "extra": {
    "code": "1339.HK",
    "base_price": 5.17,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
+  }
+ },
+ {
+  "id": "value_zone:久立特材:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "value_zone",
+  "subject": "久立特材",
+  "market": "",
+  "prediction": "🟢跌得很深·可分批买:距2年高-40.2%·52周位15%·10年年化9.8%·该股历史7次同级回撤→6月后6涨1跌·中位+17.3%·最差-8.8%",
+  "horizon_end": "2027-01-26",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 86,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "002318.SZ",
+   "base_price": 20.4,
    "rule_ver": "vz-1.0",
    "fwd": "6月"
   }
@@ -3083,6 +4031,106 @@
   "extra": {
    "code": "600809.SS",
    "base_price": 123.06,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
+  }
+ },
+ {
+  "id": "value_zone:康耐特光学:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "value_zone",
+  "subject": "康耐特光学",
+  "market": "",
+  "prediction": "🟢跌得很深·可分批买:距2年高-54.9%·52周位2%·10年年化54.6%·该股历史3次同级回撤→6月后3涨0跌·中位+12.2%·最差+2.6%",
+  "horizon_end": "2027-01-26",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 100,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "2276.HK",
+   "base_price": 29.08,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
+  }
+ },
+ {
+  "id": "value_zone:心动公司:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "value_zone",
+  "subject": "心动公司",
+  "market": "",
+  "prediction": "🟢跌得很深·可分批买:距2年高-51.0%·52周位6%·10年年化23.2%·该股历史5次同级回撤→6月后4涨1跌·中位+56.3%·最差-48.6%",
+  "horizon_end": "2027-01-26",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 80,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "2400.HK",
+   "base_price": 44.96,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
+  }
+ },
+ {
+  "id": "value_zone:拼多多:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "value_zone",
+  "subject": "拼多多",
+  "market": "",
+  "prediction": "🟢跌得很深·可分批买:距2年高-44.7%·52周位18%·10年年化15.7%·该股历史8次同级回撤→6月后6涨2跌·中位+48.3%·最差-32.6%",
+  "horizon_end": "2027-01-26",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 75,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "PDD",
+   "base_price": 85.29,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
+  }
+ },
+ {
+  "id": "value_zone:新强联:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "value_zone",
+  "subject": "新强联",
+  "market": "",
+  "prediction": "🟢跌得很深·可分批买:距2年高-46.3%·52周位20%·10年年化20.8%·该股历史5次同级回撤→6月后4涨1跌·中位+62.0%·最差-27.6%",
+  "horizon_end": "2027-01-26",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 80,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "300850.SZ",
+   "base_price": 28.74,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
+  }
+ },
+ {
+  "id": "value_zone:永兴材料:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "value_zone",
+  "subject": "永兴材料",
+  "market": "",
+  "prediction": "🟢跌得很深·可分批买:距2年高-47.6%·52周位24%·10年年化14.6%·该股历史8次同级回撤→6月后6涨2跌·中位+20.3%·最差-35.6%",
+  "horizon_end": "2027-01-26",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 75,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "002756.SZ",
+   "base_price": 46.0,
    "rule_ver": "vz-1.0",
    "fwd": "6月"
   }
@@ -3188,6 +4236,26 @@
   }
  },
  {
+  "id": "value_zone:赣锋锂业:2026-07-27",
+  "date": "2026-07-27",
+  "kind": "value_zone",
+  "subject": "赣锋锂业",
+  "market": "",
+  "prediction": "🟢跌得很深·可分批买:距2年高-45.1%·52周位28%·10年年化13.4%·该股历史8次同级回撤→6月后6涨2跌·中位+46.6%·最差-26.8%",
+  "horizon_end": "2027-01-26",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 75,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "002460.SZ",
+   "base_price": 50.08,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
+  }
+ },
+ {
   "id": "value_zone:迈瑞医疗:2026-07-27",
   "date": "2026-07-27",
   "kind": "value_zone",
@@ -3288,1362 +4356,6 @@
   }
  },
  {
-  "id": "opp_scan:澳博控股:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "opp_scan",
-  "subject": "澳博控股",
-  "market": "",
-  "prediction": "全市场机会:左侧低吸·赔率6.11·52周6.0%·涨概率61%",
-  "horizon_end": "2026-08-17",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 61,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "0880.HK",
-   "base_price": 1.55,
-   "rule_ver": "opp-1.1"
-  }
- },
- {
-  "id": "opp_scan:好市多:2026-07-27#v2",
-  "date": "2026-07-27",
-  "kind": "opp_scan",
-  "subject": "好市多",
-  "market": "",
-  "prediction": "全市场机会:现价可进·赔率4.44·52周40.0%·涨概率58%",
-  "horizon_end": "2026-08-17",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 58,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "COST",
-   "base_price": 943.18,
-   "rule_ver": "opp-1.1"
-  }
- },
- {
-  "id": "opp_scan:银河娱乐:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "opp_scan",
-  "subject": "银河娱乐",
-  "market": "",
-  "prediction": "全市场机会:左侧低吸·赔率3.31·52周34.0%·涨概率69%",
-  "horizon_end": "2026-08-17",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 69,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "0027.HK",
-   "base_price": 33.6,
-   "rule_ver": "opp-1.1"
-  }
- },
- {
-  "id": "opp_scan:中国海油:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "opp_scan",
-  "subject": "中国海油",
-  "market": "",
-  "prediction": "全市场机会:左侧低吸·赔率2.91·52周37.0%·涨概率69%",
-  "horizon_end": "2026-08-17",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 69,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "600938.SS",
-   "base_price": 31.55,
-   "rule_ver": "opp-1.1"
-  }
- },
- {
-  "id": "opp_scan:携程集团-S:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "opp_scan",
-  "subject": "携程集团-S",
-  "market": "",
-  "prediction": "全市场机会:左侧低吸·赔率2.51·52周18.0%·涨概率70%",
-  "horizon_end": "2026-08-17",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 70,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "9961.HK",
-   "base_price": 355.6,
-   "rule_ver": "opp-1.1"
-  }
- },
- {
-  "id": "opp_scan:迈瑞医疗:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "opp_scan",
-  "subject": "迈瑞医疗",
-  "market": "",
-  "prediction": "全市场机会:现价可进·赔率2.52·52周15.0%·涨概率66%",
-  "horizon_end": "2026-08-17",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 66,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "300760.SZ",
-   "base_price": 148.56,
-   "rule_ver": "opp-1.1"
-  }
- },
- {
-  "id": "turning:特斯拉:2026-07-27#v2",
-  "date": "2026-07-27",
-  "kind": "turning",
-  "subject": "特斯拉",
-  "market": "美股",
-  "prediction": "见底窗口5~12交易日·确认价384.07·概率75%",
-  "horizon_end": "2026-08-13",
-  "confirm_price": 384.07,
-  "direction": "up",
-  "prob": 75,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "TSLA",
-   "base_price": 312.51,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    5,
-    12
-   ]
-  }
- },
- {
-  "id": "turning:中国平安港:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "turning",
-  "subject": "中国平安港",
-  "market": "港股",
-  "prediction": "见顶窗口2~4交易日·确认价55.6·概率70%",
-  "horizon_end": "2026-08-01",
-  "confirm_price": 55.6,
-  "direction": "down",
-  "prob": 70,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "2318.HK",
-   "base_price": 56.65,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    2,
-    4
-   ]
-  }
- },
- {
-  "id": "turning:小米集团-W:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "turning",
-  "subject": "小米集团-W",
-  "market": "港股",
-  "prediction": "见顶窗口3~6交易日·确认价26.04·概率58%",
-  "horizon_end": "2026-08-04",
-  "confirm_price": 26.04,
-  "direction": "down",
-  "prob": 58,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "1810.HK",
-   "base_price": 28.68,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    3,
-    6
-   ]
-  }
- },
- {
-  "id": "turning:亨通光电:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "turning",
-  "subject": "亨通光电",
-  "market": "A股",
-  "prediction": "见底窗口2~4交易日·确认价60.26·概率58%",
-  "horizon_end": "2026-08-01",
-  "confirm_price": 60.26,
-  "direction": "up",
-  "prob": 58,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "600487.SS",
-   "base_price": 55.55,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    2,
-    4
-   ]
-  }
- },
- {
-  "id": "turning:农业银行:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "turning",
-  "subject": "农业银行",
-  "market": "A股",
-  "prediction": "见顶窗口2~6交易日·确认价6.32·概率55%",
-  "horizon_end": "2026-08-04",
-  "confirm_price": 6.32,
-  "direction": "down",
-  "prob": 55,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "601288.SS",
-   "base_price": 6.72,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    2,
-    6
-   ]
-  }
- },
- {
-  "id": "mkt_prob:美股2周:2026-07-27#v2",
-  "date": "2026-07-27",
-  "kind": "mkt_prob",
-  "subject": "美股2周",
-  "market": "美股",
-  "prediction": "美股2周上涨概率42%",
-  "horizon_end": "2026-08-10",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": 42,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "^GSPC",
-   "base_price": 7475.1
-  }
- },
- {
-  "id": "mkt_prob:美股4周:2026-07-27#v2",
-  "date": "2026-07-27",
-  "kind": "mkt_prob",
-  "subject": "美股4周",
-  "market": "美股",
-  "prediction": "美股4周上涨概率45%",
-  "horizon_end": "2026-08-25",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": 45,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "^GSPC",
-   "base_price": 7475.1
-  }
- },
- {
-  "id": "mkt_prob:A股2周:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "mkt_prob",
-  "subject": "A股2周",
-  "market": "A股",
-  "prediction": "A股2周上涨概率45%",
-  "horizon_end": "2026-08-10",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": 45,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "000001.SS",
-   "base_price": 3858.25
-  }
- },
- {
-  "id": "mkt_prob:A股4周:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "mkt_prob",
-  "subject": "A股4周",
-  "market": "A股",
-  "prediction": "A股4周上涨概率38%",
-  "horizon_end": "2026-08-25",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": 38,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "000001.SS",
-   "base_price": 3858.25
-  }
- },
- {
-  "id": "mkt_prob:A股8周:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "mkt_prob",
-  "subject": "A股8周",
-  "market": "A股",
-  "prediction": "A股8周上涨概率38%",
-  "horizon_end": "2026-09-23",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": 38,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "000001.SS",
-   "base_price": 3858.25
-  }
- },
- {
-  "id": "mkt_prob:A股16周:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "mkt_prob",
-  "subject": "A股16周",
-  "market": "A股",
-  "prediction": "A股16周上涨概率42%",
-  "horizon_end": "2026-11-20",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": 42,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "000001.SS",
-   "base_price": 3858.25
-  }
- },
- {
-  "id": "mkt_prob:A股32周:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "mkt_prob",
-  "subject": "A股32周",
-  "market": "A股",
-  "prediction": "A股32周上涨概率46%",
-  "horizon_end": "2027-03-16",
-  "confirm_price": null,
-  "direction": "flat",
-  "prob": 46,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "000001.SS",
-   "base_price": 3858.25
-  }
- },
- {
-  "id": "mkt_prob:港股2周:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "mkt_prob",
-  "subject": "港股2周",
-  "market": "港股",
-  "prediction": "港股2周上涨概率55%",
-  "horizon_end": "2026-08-10",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 55,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "^HSI",
-   "base_price": 25207.18
-  }
- },
- {
-  "id": "mkt_prob:港股4周:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "mkt_prob",
-  "subject": "港股4周",
-  "market": "港股",
-  "prediction": "港股4周上涨概率67%",
-  "horizon_end": "2026-08-25",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 67,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "^HSI",
-   "base_price": 25207.18
-  }
- },
- {
-  "id": "mkt_prob:港股8周:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "mkt_prob",
-  "subject": "港股8周",
-  "market": "港股",
-  "prediction": "港股8周上涨概率50%",
-  "horizon_end": "2026-09-23",
-  "confirm_price": null,
-  "direction": "flat",
-  "prob": 50,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "^HSI",
-   "base_price": 25207.18
-  }
- },
- {
-  "id": "mkt_prob:港股16周:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "mkt_prob",
-  "subject": "港股16周",
-  "market": "港股",
-  "prediction": "港股16周上涨概率45%",
-  "horizon_end": "2026-11-20",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": 45,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "^HSI",
-   "base_price": 25207.18
-  }
- },
- {
-  "id": "mkt_prob:港股32周:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "mkt_prob",
-  "subject": "港股32周",
-  "market": "港股",
-  "prediction": "港股32周上涨概率40%",
-  "horizon_end": "2027-03-16",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": 40,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "^HSI",
-   "base_price": 25207.18
-  }
- },
- {
-  "id": "value_zone:康耐特光学:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "value_zone",
-  "subject": "康耐特光学",
-  "market": "",
-  "prediction": "🟢跌得很深·可分批买:距2年高-54.9%·52周位2%·10年年化54.6%·该股历史3次同级回撤→6月后3涨0跌·中位+12.2%·最差+2.6%",
-  "horizon_end": "2027-01-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 100,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "2276.HK",
-   "base_price": 29.08,
-   "rule_ver": "vz-1.0",
-   "fwd": "6月"
-  }
- },
- {
-  "id": "value_zone:久立特材:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "value_zone",
-  "subject": "久立特材",
-  "market": "",
-  "prediction": "🟢跌得很深·可分批买:距2年高-40.2%·52周位15%·10年年化9.8%·该股历史7次同级回撤→6月后6涨1跌·中位+17.3%·最差-8.8%",
-  "horizon_end": "2027-01-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 86,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "002318.SZ",
-   "base_price": 20.4,
-   "rule_ver": "vz-1.0",
-   "fwd": "6月"
-  }
- },
- {
-  "id": "value_zone:Adobe:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "value_zone",
-  "subject": "Adobe",
-  "market": "",
-  "prediction": "🟢跌得很深·可分批买:距2年高-59.9%·52周位23%·10年年化9.2%·该股历史6次同级回撤→6月后5涨1跌·中位+37.1%·最差-33.5%",
-  "horizon_end": "2027-01-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 83,
-  "source": "rule",
-  "status": "superseded",
-  "extra": {
-   "code": "ADBE",
-   "base_price": 234.95,
-   "rule_ver": "vz-1.0",
-   "fwd": "6月"
-  }
- },
- {
-  "id": "value_zone:诺斯罗普:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "value_zone",
-  "subject": "诺斯罗普",
-  "market": "",
-  "prediction": "🟢跌得很深·可分批买:距2年高-28.4%·52周位19%·10年年化11.5%·该股历史6次同级回撤→6月后5涨1跌·中位+12.5%·最差-1.0%",
-  "horizon_end": "2027-01-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 83,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "NOC",
-   "base_price": 547.28,
-   "rule_ver": "vz-1.0",
-   "fwd": "6月"
-  }
- },
- {
-  "id": "value_zone:心动公司:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "value_zone",
-  "subject": "心动公司",
-  "market": "",
-  "prediction": "🟢跌得很深·可分批买:距2年高-51.0%·52周位6%·10年年化23.2%·该股历史5次同级回撤→6月后4涨1跌·中位+56.3%·最差-48.6%",
-  "horizon_end": "2027-01-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 80,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "2400.HK",
-   "base_price": 44.96,
-   "rule_ver": "vz-1.0",
-   "fwd": "6月"
-  }
- },
- {
-  "id": "value_zone:新强联:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "value_zone",
-  "subject": "新强联",
-  "market": "",
-  "prediction": "🟢跌得很深·可分批买:距2年高-46.3%·52周位20%·10年年化20.8%·该股历史5次同级回撤→6月后4涨1跌·中位+62.0%·最差-27.6%",
-  "horizon_end": "2027-01-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 80,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "300850.SZ",
-   "base_price": 28.74,
-   "rule_ver": "vz-1.0",
-   "fwd": "6月"
-  }
- },
- {
-  "id": "value_zone:重庆啤酒:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "value_zone",
-  "subject": "重庆啤酒",
-  "market": "",
-  "prediction": "🟢跌得很深·可分批买:距2年高-31.9%·52周位15%·10年年化14.6%·该股历史9次同级回撤→6月后7涨2跌·中位+26.8%·最差-17.3%",
-  "horizon_end": "2027-01-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 78,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "600132.SS",
-   "base_price": 43.68,
-   "rule_ver": "vz-1.0",
-   "fwd": "6月"
-  }
- },
- {
-  "id": "value_zone:爱尔眼科:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "value_zone",
-  "subject": "爱尔眼科",
-  "market": "",
-  "prediction": "🟢跌得很深·可分批买:距2年高-53.4%·52周位12%·10年年化8.3%·该股历史8次同级回撤→6月后6涨2跌·中位+18.6%·最差-43.2%",
-  "horizon_end": "2027-01-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 75,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "300015.SZ",
-   "base_price": 8.62,
-   "rule_ver": "vz-1.0",
-   "fwd": "6月"
-  }
- },
- {
-  "id": "value_zone:永兴材料:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "value_zone",
-  "subject": "永兴材料",
-  "market": "",
-  "prediction": "🟢跌得很深·可分批买:距2年高-47.6%·52周位24%·10年年化14.6%·该股历史8次同级回撤→6月后6涨2跌·中位+20.3%·最差-35.6%",
-  "horizon_end": "2027-01-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 75,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "002756.SZ",
-   "base_price": 46.0,
-   "rule_ver": "vz-1.0",
-   "fwd": "6月"
-  }
- },
- {
-  "id": "value_zone:赣锋锂业:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "value_zone",
-  "subject": "赣锋锂业",
-  "market": "",
-  "prediction": "🟢跌得很深·可分批买:距2年高-45.1%·52周位28%·10年年化13.4%·该股历史8次同级回撤→6月后6涨2跌·中位+46.6%·最差-26.8%",
-  "horizon_end": "2027-01-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 75,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "002460.SZ",
-   "base_price": 50.08,
-   "rule_ver": "vz-1.0",
-   "fwd": "6月"
-  }
- },
- {
-  "id": "opp_scan:中油资本:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "opp_scan",
-  "subject": "中油资本",
-  "market": "",
-  "prediction": "全市场机会:现价可进·赔率6.91·52周6.0%·涨概率68%",
-  "horizon_end": "2026-08-17",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 68,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "000617.SZ",
-   "base_price": 6.89,
-   "rule_ver": "opp-1.1"
-  }
- },
- {
-  "id": "opp_scan:华晨中国:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "opp_scan",
-  "subject": "华晨中国",
-  "market": "",
-  "prediction": "全市场机会:左侧低吸·赔率5.47·52周7.0%·涨概率65%",
-  "horizon_end": "2026-08-17",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 65,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "1114.HK",
-   "base_price": 2.05,
-   "rule_ver": "opp-1.1"
-  }
- },
- {
-  "id": "opp_scan:岩山科技:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "opp_scan",
-  "subject": "岩山科技",
-  "market": "",
-  "prediction": "全市场机会:左侧低吸·赔率4.69·52周9.0%·涨概率67%",
-  "horizon_end": "2026-08-17",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 67,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "002195.SZ",
-   "base_price": 6.21,
-   "rule_ver": "opp-1.1"
-  }
- },
- {
-  "id": "opp_scan:特变电工:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "opp_scan",
-  "subject": "特变电工",
-  "market": "",
-  "prediction": "全市场机会:左侧低吸·赔率4.03·52周39.0%·涨概率76%",
-  "horizon_end": "2026-08-17",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 76,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "600089.SS",
-   "base_price": 20.65,
-   "rule_ver": "opp-1.1"
-  }
- },
- {
-  "id": "opp_scan:MSTR:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "opp_scan",
-  "subject": "MSTR",
-  "market": "",
-  "prediction": "全市场机会:等待·赔率4.63·52周5.0%·涨概率61%",
-  "horizon_end": "2026-08-17",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 61,
-  "source": "rule",
-  "status": "superseded",
-  "extra": {
-   "code": "MSTR",
-   "base_price": 97.18,
-   "rule_ver": "opp-1.1"
-  }
- },
- {
-  "id": "gpt_pick:澳博控股:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "gpt_pick",
-  "subject": "澳博控股",
-  "market": "",
-  "prediction": "GPT盲审看多·中置信·低位叠加港股占优，博彩复苏可期",
-  "horizon_end": "2026-08-24",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": null,
-  "source": "gpt",
-  "status": "待核",
-  "extra": {
-   "code": "0880.HK",
-   "base_price": 1.55,
-   "rule_ver": "gpt-1.0"
-  }
- },
- {
-  "id": "gpt_pick:中海油:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "gpt_pick",
-  "subject": "中海油",
-  "market": "",
-  "prediction": "GPT盲审看多·中置信·油价与高股息支撑，位置尚不拥挤",
-  "horizon_end": "2026-08-24",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": null,
-  "source": "gpt",
-  "status": "待核",
-  "extra": {
-   "code": "0883.HK",
-   "base_price": 23.2,
-   "rule_ver": "gpt-1.0"
-  }
- },
- {
-  "id": "gpt_pick:特变电工:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "gpt_pick",
-  "subject": "特变电工",
-  "market": "",
-  "prediction": "GPT盲审看多·低置信·位置适中，电网需求支撑但周期性强",
-  "horizon_end": "2026-08-24",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": null,
-  "source": "gpt",
-  "status": "待核",
-  "extra": {
-   "code": "600089.SS",
-   "base_price": 20.65,
-   "rule_ver": "gpt-1.0"
-  }
- },
- {
-  "id": "gpt_pick:MSTR:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "gpt_pick",
-  "subject": "MSTR",
-  "market": "",
-  "prediction": "GPT盲审看空·中置信·比特币杠杆属性强，美股胜率偏低",
-  "horizon_end": "2026-08-24",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": null,
-  "source": "gpt",
-  "status": "待核",
-  "extra": {
-   "code": "MSTR",
-   "base_price": 97.18,
-   "rule_ver": "gpt-1.0"
-  }
- },
- {
-  "id": "gpt_pick:隆基绿能:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "gpt_pick",
-  "subject": "隆基绿能",
-  "market": "",
-  "prediction": "GPT盲审看空·中置信·光伏产能过剩，低位仍缺反转依据",
-  "horizon_end": "2026-08-24",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": null,
-  "source": "gpt",
-  "status": "待核",
-  "extra": {
-   "code": "601012.SS",
-   "base_price": 12.64,
-   "rule_ver": "gpt-1.0"
-  }
- },
- {
-  "id": "turning:苹果:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "turning",
-  "subject": "苹果",
-  "market": "美股",
-  "prediction": "见顶窗口2~4交易日·确认价319.35·概率77%·07-29(周三)FOMC利率决议=触发器",
-  "horizon_end": "2026-08-01",
-  "confirm_price": 319.35,
-  "direction": "down",
-  "prob": 77,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "AAPL",
-   "base_price": 338.76,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    2,
-    4
-   ]
-  }
- },
- {
-  "id": "turning:特斯拉:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "turning",
-  "subject": "特斯拉",
-  "market": "美股",
-  "prediction": "见底窗口5~11交易日·确认价386.61·概率75%",
-  "horizon_end": "2026-08-11",
-  "confirm_price": 386.61,
-  "direction": "up",
-  "prob": 75,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "TSLA",
-   "base_price": 309.66,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    5,
-    11
-   ]
-  }
- },
- {
-  "id": "turning:美股·能源板块:2026-07-27#v2",
-  "date": "2026-07-27",
-  "kind": "turning",
-  "subject": "美股·能源板块",
-  "market": "美股",
-  "prediction": "见顶窗口2~4交易日·确认价57.41·概率72%·07-29(周三)FOMC利率决议=触发器",
-  "horizon_end": "2026-08-01",
-  "confirm_price": 57.41,
-  "direction": "down",
-  "prob": 72,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "XLE",
-   "base_price": 58.66,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    2,
-    4
-   ]
-  }
- },
- {
-  "id": "turning:英伟达:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "turning",
-  "subject": "英伟达",
-  "market": "美股",
-  "prediction": "见底窗口4~9交易日·确认价214.39·概率66%·07-29(周三)FOMC利率决议=触发器",
-  "horizon_end": "2026-08-09",
-  "confirm_price": 214.39,
-  "direction": "up",
-  "prob": 66,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "NVDA",
-   "base_price": 198.49,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    4,
-    9
-   ]
-  }
- },
- {
-  "id": "turning:纳指100ETF:2026-07-27#v2",
-  "date": "2026-07-27",
-  "kind": "turning",
-  "subject": "纳指100ETF",
-  "market": "美股",
-  "prediction": "见底窗口3~6交易日·确认价292.35·概率66%·07-29(周三)FOMC利率决议=触发器",
-  "horizon_end": "2026-08-04",
-  "confirm_price": 292.35,
-  "direction": "up",
-  "prob": 66,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "QQQM",
-   "base_price": 280.67,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    3,
-    6
-   ]
-  }
- },
- {
-  "id": "turning:Roundhill DRAM:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "turning",
-  "subject": "Roundhill DRAM",
-  "market": "美股",
-  "prediction": "见底窗口2~4交易日·确认价59.35·概率66%·07-29(周三)FOMC利率决议=触发器",
-  "horizon_end": "2026-08-01",
-  "confirm_price": 59.35,
-  "direction": "up",
-  "prob": 66,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "DRAM",
-   "base_price": 51.57,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    2,
-    4
-   ]
-  }
- },
- {
-  "id": "trend_shift:西部矿业:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "trend_shift",
-  "subject": "西部矿业",
-  "market": "",
-  "prediction": "上行翻转早期(第1日·已涨4.1%·涨概率85%)·🟢现在可买(涨势刚起,买得最早)",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 85,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "601168.SS",
-   "base_price": 37.72,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:理文造纸:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "trend_shift",
-  "subject": "理文造纸",
-  "market": "",
-  "prediction": "上行翻转早期(第4日·已涨6.6%·涨概率85%)·🟢现在可买(涨势刚起,买得最早)",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 85,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "2314.HK",
-   "base_price": 4.03,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:洛克希德马丁:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "trend_shift",
-  "subject": "洛克希德马丁",
-  "market": "",
-  "prediction": "上行翻转早期(第1日·已涨2.3%·涨概率80%)·🟢现在可买(涨势刚起,买得最早)",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 80,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "LMT",
-   "base_price": 581.71,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:紫光股份:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "trend_shift",
-  "subject": "紫光股份",
-  "market": "",
-  "prediction": "上行翻转早期(第10日·已涨8.0%·涨概率69%)·🟢现在可买(涨势刚起,买得最早)",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 69,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "000938.SZ",
-   "base_price": 41.47,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:比音勒芬:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "trend_shift",
-  "subject": "比音勒芬",
-  "market": "",
-  "prediction": "上行翻转中期(第20日·已涨15.9%·涨概率84%)·🟡先别追,等跌回21.41附近再买;一直不跌就等",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 84,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "002832.SZ",
-   "base_price": 23.97,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:雷神技术:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "trend_shift",
-  "subject": "雷神技术",
-  "market": "",
-  "prediction": "上行翻转中期(第17日·已涨14.9%·涨概率80%)·🟡先别追,等跌回196.40附近再买;一直不跌就",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 80,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "RTX",
-   "base_price": 217.98,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:海康威视:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "trend_shift",
-  "subject": "海康威视",
-  "market": "",
-  "prediction": "上行翻转中期(第14日·已涨9.2%·涨概率79%)·🟡先别追,等跌回34.46附近再买;一直不跌就等",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 79,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "002415.SZ",
-   "base_price": 36.99,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:现代牙科:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "trend_shift",
-  "subject": "现代牙科",
-  "market": "",
-  "prediction": "上行翻转中期(第18日·已涨30.0%·涨概率69%)·🟡先别追,等跌回7.10附近再买;一直不跌就等放",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 69,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "3600.HK",
-   "base_price": 7.75,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:药康生物:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "trend_shift",
-  "subject": "药康生物",
-  "market": "",
-  "prediction": "上行翻转中期(第18日·已涨6.2%·涨概率67%)·🟡先别追,等跌回25.01附近再买;一直不跌就等",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 67,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "688046.SS",
-   "base_price": 27.36,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:苹果:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "trend_shift",
-  "subject": "苹果",
-  "market": "",
-  "prediction": "上行翻转中期(第20日·已涨23.1%·涨概率66%)·🟡先别追,等跌回314.67附近再买;一直不跌就",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 66,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "AAPL",
-   "base_price": 338.74,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:普冉股份:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "trend_shift",
-  "subject": "普冉股份",
-  "market": "",
-  "prediction": "下行翻转(第11日·20日-49.6%)·减仓回避",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": null,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "688766.SS",
-   "base_price": 371.78,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:闪迪:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "trend_shift",
-  "subject": "闪迪",
-  "market": "",
-  "prediction": "下行翻转(第16日·20日-45.4%)·减仓回避",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": null,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "SNDK",
-   "base_price": 1275.31,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:金安国纪:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "trend_shift",
-  "subject": "金安国纪",
-  "market": "",
-  "prediction": "下行翻转(第16日·20日-44.6%)·减仓回避",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": null,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "002636.SZ",
-   "base_price": 63.69,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:商络电子:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "trend_shift",
-  "subject": "商络电子",
-  "market": "",
-  "prediction": "下行翻转(第17日·20日-39.8%)·减仓回避",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": null,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "300975.SZ",
-   "base_price": 26.78,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:顺络电子:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "trend_shift",
-  "subject": "顺络电子",
-  "market": "",
-  "prediction": "下行翻转(第17日·20日-39.5%)·减仓回避",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": null,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "002138.SZ",
-   "base_price": 45.19,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:康宁:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "trend_shift",
-  "subject": "康宁",
-  "market": "",
-  "prediction": "下行翻转(第16日·20日-38.9%)·减仓回避",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": null,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "GLW",
-   "base_price": 139.3,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:Roundhill DRAM:2026-07-27#v2",
-  "date": "2026-07-27",
-  "kind": "trend_shift",
-  "subject": "Roundhill DRAM",
-  "market": "",
-  "prediction": "下行翻转(第17日·20日-33.0%)·减仓回避",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": null,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "DRAM",
-   "base_price": 51.53,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "value_zone:Adobe:2026-07-27#v4",
-  "date": "2026-07-27",
-  "kind": "value_zone",
-  "subject": "Adobe",
-  "market": "",
-  "prediction": "🟢跌得很深·可分批买:距2年高-59.6%·52周位24%·10年年化9.3%·该股历史6次同级回撤→6月后5涨1跌·中位+37.1%·最差-33.5%",
-  "horizon_end": "2027-01-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 83,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "ADBE",
-   "base_price": 237.08,
-   "rule_ver": "vz-1.0",
-   "fwd": "6月"
-  }
- },
- {
-  "id": "value_zone:中国中免:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "value_zone",
-  "subject": "中国中免",
-  "market": "",
-  "prediction": "🟢跌得很深·可分批买:距2年高-43.4%·52周位8%·10年年化10.7%·该股历史6次同级回撤→6月后5涨1跌·中位+60.6%·最差-21.9%",
-  "horizon_end": "2027-01-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 83,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "601888.SS",
-   "base_price": 54.44,
-   "rule_ver": "vz-1.0",
-   "fwd": "6月"
-  }
- },
- {
-  "id": "value_zone:AutoZone:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "value_zone",
-  "subject": "AutoZone",
-  "market": "",
-  "prediction": "🟢跌得很深·可分批买:距2年高-29.7%·52周位9%·10年年化14.6%·该股历史5次同级回撤→6月后4涨1跌·中位+17.6%·最差-8.9%",
-  "horizon_end": "2027-01-26",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 80,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "AZO",
-   "base_price": 3061.15,
-   "rule_ver": "vz-1.0",
-   "fwd": "6月"
-  }
- },
- {
   "id": "value_zone:青岛啤酒:2026-07-27",
   "date": "2026-07-27",
   "kind": "value_zone",
@@ -4664,72 +4376,379 @@
   }
  },
  {
-  "id": "value_zone:拼多多:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "value_zone",
-  "subject": "拼多多",
+  "id": "fable_pick:小米:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "fable_pick",
+  "subject": "小米",
   "market": "",
-  "prediction": "🟢跌得很深·可分批买:距2年高-44.7%·52周位18%·10年年化15.7%·该股历史8次同级回撤→6月后6涨2跌·中位+48.3%·最差-32.6%",
-  "horizon_end": "2027-01-26",
+  "prediction": "Fable提名看多·参考价26.72·窗口10交易日·见底63%+52周位14%+rr2.95优于港股买单",
+  "horizon_end": "2026-08-11",
   "confirm_price": null,
   "direction": "up",
-  "prob": 75,
-  "source": "rule",
+  "prob": null,
+  "source": "fable",
   "status": "待核",
   "extra": {
-   "code": "PDD",
-   "base_price": 85.29,
-   "rule_ver": "vz-1.0",
-   "fwd": "6月"
+   "code": "1810.HK",
+   "base_price": 26.72,
+   "rule_ver": "fable-1.0"
   }
  },
  {
-  "id": "value_zone:安踏体育:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "value_zone",
-  "subject": "安踏体育",
+  "id": "fable_pick:金沙中国:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "fable_pick",
+  "subject": "金沙中国",
   "market": "",
-  "prediction": "🟢打折到位·可开始买:距2年高-25.4%·52周位25%·10年年化18.5%·该股历史4次同级回撤→6月后3涨1跌·中位+24.8%·最差-34.3%",
-  "horizon_end": "2027-01-26",
+  "prediction": "Fable提名看多·参考价13.98·窗口10交易日·澳门博彩三标的同步蓄势转领涨(LVS强度78/澳博68/金沙68·均高置信)，52周位13%低位、港股2周60%顺风；黑",
+  "horizon_end": "2026-08-11",
   "confirm_price": null,
   "direction": "up",
-  "prob": 75,
-  "source": "rule",
+  "prob": null,
+  "source": "fable",
   "status": "待核",
   "extra": {
-   "code": "2020.HK",
-   "base_price": 76.1,
-   "rule_ver": "vz-1.0",
-   "fwd": "6月"
+   "code": "1928.HK",
+   "base_price": 13.98,
+   "rule_ver": "fable-1.0"
   }
  },
  {
-  "id": "opp_scan:MSTR:2026-07-27#v2",
-  "date": "2026-07-27",
-  "kind": "opp_scan",
-  "subject": "MSTR",
+  "id": "gpt_pick:中海油:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "gpt_pick",
+  "subject": "中海油",
   "market": "",
-  "prediction": "全市场机会:等待·赔率4.61·52周4.0%·涨概率60%",
-  "horizon_end": "2026-08-17",
+  "prediction": "GPT盲审看多·中置信·位置适中，低估值高股息及油价提供支撑",
+  "horizon_end": "2026-08-25",
   "confirm_price": null,
   "direction": "up",
-  "prob": 60,
-  "source": "rule",
+  "prob": null,
+  "source": "gpt",
   "status": "待核",
   "extra": {
-   "code": "MSTR",
-   "base_price": 96.76,
-   "rule_ver": "opp-1.1"
+   "code": "0883.HK",
+   "base_price": 23.2,
+   "rule_ver": "gpt-1.0"
   }
  },
  {
-  "id": "mkt_prob:美股2周:2026-07-27",
-  "date": "2026-07-27",
+  "id": "gpt_pick:华能蒙电:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "gpt_pick",
+  "subject": "华能蒙电",
+  "market": "",
+  "prediction": "GPT盲审看多·中置信·低位且公用事业防御性强，回撤空间较可控",
+  "horizon_end": "2026-08-25",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": null,
+  "source": "gpt",
+  "status": "待核",
+  "extra": {
+   "code": "600863.SS",
+   "base_price": 4.74,
+   "rule_ver": "gpt-1.0"
+  }
+ },
+ {
+  "id": "gpt_pick:澳博控股:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "gpt_pick",
+  "subject": "澳博控股",
+  "market": "",
+  "prediction": "GPT盲审看空·中置信·低位弱势，博彩竞争与经营杠杆压制反弹",
+  "horizon_end": "2026-08-25",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": null,
+  "source": "gpt",
+  "status": "待核",
+  "extra": {
+   "code": "0880.HK",
+   "base_price": 1.55,
+   "rule_ver": "gpt-1.0"
+  }
+ },
+ {
+  "id": "gpt_pick:隆基绿能:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "gpt_pick",
+  "subject": "隆基绿能",
+  "market": "",
+  "prediction": "GPT盲审看空·中置信·虽近年内低位，光伏过剩与价格战仍压制",
+  "horizon_end": "2026-08-25",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": null,
+  "source": "gpt",
+  "status": "待核",
+  "extra": {
+   "code": "601012.SS",
+   "base_price": 12.64,
+   "rule_ver": "gpt-1.0"
+  }
+ },
+ {
+  "id": "mkt_prob:A股16周:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "mkt_prob",
+  "subject": "A股16周",
+  "market": "A股",
+  "prediction": "A股16周上涨概率42%",
+  "horizon_end": "2026-11-21",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": 42,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "000001.SS",
+   "base_price": 3858.24
+  }
+ },
+ {
+  "id": "mkt_prob:A股2周:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "mkt_prob",
+  "subject": "A股2周",
+  "market": "A股",
+  "prediction": "A股2周上涨概率45%",
+  "horizon_end": "2026-08-11",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": 45,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "000001.SS",
+   "base_price": 3858.24
+  }
+ },
+ {
+  "id": "mkt_prob:A股32周:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "mkt_prob",
+  "subject": "A股32周",
+  "market": "A股",
+  "prediction": "A股32周上涨概率46%",
+  "horizon_end": "2027-03-17",
+  "confirm_price": null,
+  "direction": "flat",
+  "prob": 46,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "000001.SS",
+   "base_price": 3858.24
+  }
+ },
+ {
+  "id": "mkt_prob:A股4周:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "mkt_prob",
+  "subject": "A股4周",
+  "market": "A股",
+  "prediction": "A股4周上涨概率38%",
+  "horizon_end": "2026-08-26",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": 38,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "000001.SS",
+   "base_price": 3858.24
+  }
+ },
+ {
+  "id": "mkt_prob:A股8周:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "mkt_prob",
+  "subject": "A股8周",
+  "market": "A股",
+  "prediction": "A股8周上涨概率38%",
+  "horizon_end": "2026-09-24",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": 38,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "000001.SS",
+   "base_price": 3858.24
+  }
+ },
+ {
+  "id": "mkt_prob:港股16周:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "mkt_prob",
+  "subject": "港股16周",
+  "market": "港股",
+  "prediction": "港股16周上涨概率45%",
+  "horizon_end": "2026-11-21",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": 45,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "^HSI",
+   "base_price": 25207.18
+  }
+ },
+ {
+  "id": "mkt_prob:港股2周:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "mkt_prob",
+  "subject": "港股2周",
+  "market": "港股",
+  "prediction": "港股2周上涨概率55%",
+  "horizon_end": "2026-08-11",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 55,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "^HSI",
+   "base_price": 25207.18
+  }
+ },
+ {
+  "id": "mkt_prob:港股32周:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "mkt_prob",
+  "subject": "港股32周",
+  "market": "港股",
+  "prediction": "港股32周上涨概率40%",
+  "horizon_end": "2027-03-17",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": 40,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "^HSI",
+   "base_price": 25207.18
+  }
+ },
+ {
+  "id": "mkt_prob:港股4周:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "mkt_prob",
+  "subject": "港股4周",
+  "market": "港股",
+  "prediction": "港股4周上涨概率67%",
+  "horizon_end": "2026-08-26",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 67,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "^HSI",
+   "base_price": 25207.18
+  }
+ },
+ {
+  "id": "mkt_prob:港股8周:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "mkt_prob",
+  "subject": "港股8周",
+  "market": "港股",
+  "prediction": "港股8周上涨概率50%",
+  "horizon_end": "2026-09-24",
+  "confirm_price": null,
+  "direction": "flat",
+  "prob": 50,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "^HSI",
+   "base_price": 25207.18
+  }
+ },
+ {
+  "id": "mkt_prob:美股16周:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "mkt_prob",
+  "subject": "美股16周",
+  "market": "美股",
+  "prediction": "美股16周上涨概率52%",
+  "horizon_end": "2026-11-21",
+  "confirm_price": null,
+  "direction": "flat",
+  "prob": 52,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "^GSPC",
+   "base_price": 7413.18
+  }
+ },
+ {
+  "id": "mkt_prob:美股2周:2026-07-28",
+  "date": "2026-07-28",
   "kind": "mkt_prob",
   "subject": "美股2周",
   "market": "美股",
-  "prediction": "美股2周上涨概率42%",
-  "horizon_end": "2026-08-10",
+  "prediction": "美股2周上涨概率41%",
+  "horizon_end": "2026-08-11",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": 41,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "^GSPC",
+   "base_price": 7413.18
+  }
+ },
+ {
+  "id": "mkt_prob:美股32周:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "mkt_prob",
+  "subject": "美股32周",
+  "market": "美股",
+  "prediction": "美股32周上涨概率52%",
+  "horizon_end": "2027-03-17",
+  "confirm_price": null,
+  "direction": "flat",
+  "prob": 52,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "^GSPC",
+   "base_price": 7413.18
+  }
+ },
+ {
+  "id": "mkt_prob:美股4周:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "mkt_prob",
+  "subject": "美股4周",
+  "market": "美股",
+  "prediction": "美股4周上涨概率44%",
+  "horizon_end": "2026-08-26",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": 44,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "^GSPC",
+   "base_price": 7413.18
+  }
+ },
+ {
+  "id": "mkt_prob:美股8周:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "mkt_prob",
+  "subject": "美股8周",
+  "market": "美股",
+  "prediction": "美股8周上涨概率42%",
+  "horizon_end": "2026-09-24",
   "confirm_price": null,
   "direction": "down",
   "prob": 42,
@@ -4737,25 +4756,7 @@
   "status": "待核",
   "extra": {
    "code": "^GSPC",
-   "base_price": 7475.1
-  }
- },
- {
-  "id": "mkt_prob:美股4周:2026-07-27",
-  "date": "2026-07-27",
-  "kind": "mkt_prob",
-  "subject": "美股4周",
-  "market": "美股",
-  "prediction": "美股4周上涨概率45%",
-  "horizon_end": "2026-08-25",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": 45,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "^GSPC",
-   "base_price": 7475.1
+   "base_price": 7413.18
   }
  },
  {
@@ -4774,44 +4775,6 @@
   "extra": {
    "code": "000617.SZ",
    "base_price": 6.89,
-   "rule_ver": "opp-1.1"
-  }
- },
- {
-  "id": "opp_scan:澳博控股:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "opp_scan",
-  "subject": "澳博控股",
-  "market": "",
-  "prediction": "全市场机会:左侧低吸·赔率6.11·52周6.0%·涨概率61%",
-  "horizon_end": "2026-08-18",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 61,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "0880.HK",
-   "base_price": 1.55,
-   "rule_ver": "opp-1.1"
-  }
- },
- {
-  "id": "opp_scan:华晨中国:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "opp_scan",
-  "subject": "华晨中国",
-  "market": "",
-  "prediction": "全市场机会:左侧低吸·赔率5.47·52周7.0%·涨概率65%",
-  "horizon_end": "2026-08-18",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 65,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "1114.HK",
-   "base_price": 2.05,
    "rule_ver": "opp-1.1"
   }
  },
@@ -4835,59 +4798,40 @@
   }
  },
  {
-  "id": "opp_scan:岩山科技:2026-07-28",
+  "id": "opp_scan:中航科工:2026-07-28",
   "date": "2026-07-28",
   "kind": "opp_scan",
-  "subject": "岩山科技",
+  "subject": "中航科工",
   "market": "",
-  "prediction": "全市场机会:左侧低吸·赔率4.69·52周9.0%·涨概率67%",
+  "prediction": "全市场机会:现价可进·赔率4.13·52周8.0%·涨概率61%",
   "horizon_end": "2026-08-18",
   "confirm_price": null,
   "direction": "up",
-  "prob": 67,
+  "prob": 61,
   "source": "rule",
   "status": "待核",
   "extra": {
-   "code": "002195.SZ",
-   "base_price": 6.21,
+   "code": "2357.HK",
+   "base_price": 2.96,
    "rule_ver": "opp-1.1"
   }
  },
  {
-  "id": "opp_scan:特变电工:2026-07-28",
+  "id": "opp_scan:华晨中国:2026-07-28",
   "date": "2026-07-28",
   "kind": "opp_scan",
-  "subject": "特变电工",
+  "subject": "华晨中国",
   "market": "",
-  "prediction": "全市场机会:左侧低吸·赔率4.03·52周39.0%·涨概率76%",
+  "prediction": "全市场机会:左侧低吸·赔率5.47·52周7.0%·涨概率65%",
   "horizon_end": "2026-08-18",
   "confirm_price": null,
   "direction": "up",
-  "prob": 76,
+  "prob": 65,
   "source": "rule",
   "status": "待核",
   "extra": {
-   "code": "600089.SS",
-   "base_price": 20.65,
-   "rule_ver": "opp-1.1"
-  }
- },
- {
-  "id": "opp_scan:欣旺达:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "opp_scan",
-  "subject": "欣旺达",
-  "market": "",
-  "prediction": "全市场机会:左侧低吸·赔率3.49·52周10.0%·涨概率75%",
-  "horizon_end": "2026-08-18",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 75,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "300207.SZ",
-   "base_price": 18.08,
+   "code": "1114.HK",
+   "base_price": 2.05,
    "rule_ver": "opp-1.1"
   }
  },
@@ -4911,78 +4855,331 @@
   }
  },
  {
-  "id": "trend_shift:西部矿业:2026-07-28",
+  "id": "opp_scan:岩山科技:2026-07-28",
   "date": "2026-07-28",
-  "kind": "trend_shift",
-  "subject": "西部矿业",
+  "kind": "opp_scan",
+  "subject": "岩山科技",
   "market": "",
-  "prediction": "上行翻转早期(第1日·已涨4.1%·涨概率85%)·🟢现在可买(涨势刚起,买得最早)",
-  "horizon_end": "2026-08-27",
+  "prediction": "全市场机会:左侧低吸·赔率4.69·52周9.0%·涨概率67%",
+  "horizon_end": "2026-08-18",
   "confirm_price": null,
   "direction": "up",
-  "prob": 85,
+  "prob": 67,
   "source": "rule",
   "status": "待核",
   "extra": {
-   "code": "601168.SS",
-   "base_price": 37.72,
+   "code": "002195.SZ",
+   "base_price": 6.21,
+   "rule_ver": "opp-1.1"
+  }
+ },
+ {
+  "id": "opp_scan:欣旺达:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "opp_scan",
+  "subject": "欣旺达",
+  "market": "",
+  "prediction": "全市场机会:左侧低吸·赔率3.49·52周10.0%·涨概率75%",
+  "horizon_end": "2026-08-18",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 75,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "300207.SZ",
+   "base_price": 18.08,
+   "rule_ver": "opp-1.1"
+  }
+ },
+ {
+  "id": "opp_scan:澳博控股:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "opp_scan",
+  "subject": "澳博控股",
+  "market": "",
+  "prediction": "全市场机会:左侧低吸·赔率6.11·52周6.0%·涨概率61%",
+  "horizon_end": "2026-08-18",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 61,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "0880.HK",
+   "base_price": 1.55,
+   "rule_ver": "opp-1.1"
+  }
+ },
+ {
+  "id": "opp_scan:特变电工:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "opp_scan",
+  "subject": "特变电工",
+  "market": "",
+  "prediction": "全市场机会:左侧低吸·赔率4.03·52周39.0%·涨概率76%",
+  "horizon_end": "2026-08-18",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 76,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "600089.SS",
+   "base_price": 20.65,
+   "rule_ver": "opp-1.1"
+  }
+ },
+ {
+  "id": "opp_scan:隆基绿能:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "opp_scan",
+  "subject": "隆基绿能",
+  "market": "",
+  "prediction": "全市场机会:左侧低吸·赔率3.58·52周10.0%·涨概率75%",
+  "horizon_end": "2026-08-18",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 75,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "601012.SS",
+   "base_price": 12.64,
+   "rule_ver": "opp-1.1"
+  }
+ },
+ {
+  "id": "pre_sig:半导体:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "pre_sig",
+  "subject": "半导体",
+  "market": "",
+  "prediction": "蓄势:主力连续3日净流入·5日+634.4亿·热度未起(近似:不在轮动强榜,板块涨幅源待接)→预计10交易日内板块启动",
+  "horizon_end": "2026-08-11",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "streak": 3,
+   "net5d": 634.42,
+   "rule_ver": "ps-1.1",
+   "settle_by": "轮动now分≥58或板块当日进强榜=启动(板块无yf码,价差核算待接)"
+  }
+ },
+ {
+  "id": "pre_sig:工业金属:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "pre_sig",
+  "subject": "工业金属",
+  "market": "",
+  "prediction": "蓄势:主力连续2日净流入·5日+65.5亿·热度未起(近似:不在轮动强榜,板块涨幅源待接)→预计10交易日内板块启动",
+  "horizon_end": "2026-08-11",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "streak": 2,
+   "net5d": 65.49,
+   "rule_ver": "ps-1.1",
+   "settle_by": "轮动now分≥58或板块当日进强榜=启动(板块无yf码,价差核算待接)"
+  }
+ },
+ {
+  "id": "pre_sig:数字芯片设计:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "pre_sig",
+  "subject": "数字芯片设计",
+  "market": "",
+  "prediction": "蓄势:主力连续2日净流入·5日+597.2亿·热度未起(近似:不在轮动强榜,板块涨幅源待接)→预计10交易日内板块启动",
+  "horizon_end": "2026-08-11",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "streak": 2,
+   "net5d": 597.16,
+   "rule_ver": "ps-1.1",
+   "settle_by": "轮动now分≥58或板块当日进强榜=启动(板块无yf码,价差核算待接)"
+  }
+ },
+ {
+  "id": "pre_sig:电力设备:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "pre_sig",
+  "subject": "电力设备",
+  "market": "",
+  "prediction": "蓄势:主力连续2日净流入·5日+134.0亿·热度未起(近似:不在轮动强榜,板块涨幅源待接)→预计10交易日内板块启动",
+  "horizon_end": "2026-08-11",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "streak": 2,
+   "net5d": 134.01,
+   "rule_ver": "ps-1.1",
+   "settle_by": "轮动now分≥58或板块当日进强榜=启动(板块无yf码,价差核算待接)"
+  }
+ },
+ {
+  "id": "pre_sig:电子:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "pre_sig",
+  "subject": "电子",
+  "market": "",
+  "prediction": "蓄势:主力连续2日净流入·5日+642.6亿·热度未起(近似:不在轮动强榜,板块涨幅源待接)→预计10交易日内板块启动",
+  "horizon_end": "2026-08-11",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "streak": 2,
+   "net5d": 642.63,
+   "rule_ver": "ps-1.1",
+   "settle_by": "轮动now分≥58或板块当日进强榜=启动(板块无yf码,价差核算待接)"
+  }
+ },
+ {
+  "id": "pre_sig:电池:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "pre_sig",
+  "subject": "电池",
+  "market": "",
+  "prediction": "蓄势:主力连续2日净流入·5日+63.5亿·热度未起(近似:不在轮动强榜,板块涨幅源待接)→预计10交易日内板块启动",
+  "horizon_end": "2026-08-11",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "streak": 2,
+   "net5d": 63.52,
+   "rule_ver": "ps-1.1",
+   "settle_by": "轮动now分≥58或板块当日进强榜=启动(板块无yf码,价差核算待接)"
+  }
+ },
+ {
+  "id": "trend_shift:Andersen Group Inc-A:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "trend_shift",
+  "subject": "Andersen Group Inc-A",
+  "market": "",
+  "prediction": "上行翻转中期(第20日·已涨27.2%·涨概率78%)·🟡先别追,等跌回41.37附近再买;一直不跌就等",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 78,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "ANDG",
+   "base_price": 46.94,
    "rule_ver": "ts-1.0"
   }
  },
  {
-  "id": "trend_shift:理文造纸:2026-07-28",
+  "id": "trend_shift:DocuSign:2026-07-28",
   "date": "2026-07-28",
   "kind": "trend_shift",
-  "subject": "理文造纸",
+  "subject": "DocuSign",
   "market": "",
-  "prediction": "上行翻转早期(第4日·已涨6.6%·涨概率85%)·🟢现在可买(涨势刚起,买得最早)",
+  "prediction": "上行翻转早期(第3日·已涨4.3%·涨概率59%)·🟢现在可买(涨势刚起,买得最早)",
   "horizon_end": "2026-08-27",
   "confirm_price": null,
   "direction": "up",
-  "prob": 85,
+  "prob": 59,
   "source": "rule",
   "status": "待核",
   "extra": {
-   "code": "2314.HK",
-   "base_price": 4.03,
+   "code": "DOCU",
+   "base_price": 52.91,
    "rule_ver": "ts-1.0"
   }
  },
  {
-  "id": "trend_shift:洛克希德马丁:2026-07-28",
+  "id": "trend_shift:IonQ Inc:2026-07-28",
   "date": "2026-07-28",
   "kind": "trend_shift",
-  "subject": "洛克希德马丁",
+  "subject": "IonQ Inc",
   "market": "",
-  "prediction": "上行翻转早期(第2日·已涨2.0%·涨概率83%)·🟢现在可买(涨势刚起,买得最早)",
+  "prediction": "下行翻转(第11日·20日-29.0%)·减仓回避",
   "horizon_end": "2026-08-27",
   "confirm_price": null,
-  "direction": "up",
-  "prob": 83,
+  "direction": "down",
+  "prob": null,
   "source": "rule",
   "status": "待核",
   "extra": {
-   "code": "LMT",
-   "base_price": 580.0,
+   "code": "IONQ",
+   "base_price": 35.92,
    "rule_ver": "ts-1.0"
   }
  },
  {
-  "id": "trend_shift:紫光股份:2026-07-28",
+  "id": "trend_shift:Paymentus Holdings Inc-A:2026-07-28",
   "date": "2026-07-28",
   "kind": "trend_shift",
-  "subject": "紫光股份",
+  "subject": "Paymentus Holdings Inc-A",
   "market": "",
-  "prediction": "上行翻转早期(第10日·已涨8.0%·涨概率69%)·🟢现在可买(涨势刚起,买得最早)",
+  "prediction": "上行翻转早期(第7日·已涨8.6%·涨概率67%)·🟢现在可买(涨势刚起,买得最早)",
   "horizon_end": "2026-08-27",
   "confirm_price": null,
   "direction": "up",
-  "prob": 69,
+  "prob": 67,
   "source": "rule",
   "status": "待核",
   "extra": {
-   "code": "000938.SZ",
-   "base_price": 41.47,
+   "code": "PAY",
+   "base_price": 31.48,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:Roundhill DRAM:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "trend_shift",
+  "subject": "Roundhill DRAM",
+  "market": "",
+  "prediction": "下行翻转(第17日·20日-31.8%)·减仓回避",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "DRAM",
+   "base_price": 52.43,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:Spotify:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "trend_shift",
+  "subject": "Spotify",
+  "market": "",
+  "prediction": "上行翻转早期(第5日·已涨3.5%·涨概率59%)·🟢现在可买(涨势刚起,买得最早)",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 59,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "SPOT",
+   "base_price": 494.72,
    "rule_ver": "ts-1.0"
   }
  },
@@ -5006,116 +5203,21 @@
   }
  },
  {
-  "id": "trend_shift:比音勒芬:2026-07-28",
+  "id": "trend_shift:中银香港:2026-07-28",
   "date": "2026-07-28",
   "kind": "trend_shift",
-  "subject": "比音勒芬",
+  "subject": "中银香港",
   "market": "",
-  "prediction": "上行翻转中期(第20日·已涨15.9%·涨概率84%)·🟡先别追,等跌回21.41附近再买;一直不跌就等",
+  "prediction": "上行翻转早期(第1日·已涨0.6%·涨概率80%)·🟢现在可买(涨势刚起,买得最早)",
   "horizon_end": "2026-08-27",
   "confirm_price": null,
   "direction": "up",
-  "prob": 84,
+  "prob": 80,
   "source": "rule",
   "status": "待核",
   "extra": {
-   "code": "002832.SZ",
-   "base_price": 23.97,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:雷神技术:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "trend_shift",
-  "subject": "雷神技术",
-  "market": "",
-  "prediction": "上行翻转中期(第18日·已涨15.1%·涨概率81%)·🟡先别追,等跌回197.66附近再买;一直不跌就",
-  "horizon_end": "2026-08-27",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 81,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "RTX",
-   "base_price": 218.42,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:海康威视:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "trend_shift",
-  "subject": "海康威视",
-  "market": "",
-  "prediction": "上行翻转中期(第14日·已涨9.2%·涨概率79%)·🟡先别追,等跌回34.46附近再买;一直不跌就等",
-  "horizon_end": "2026-08-27",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 79,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "002415.SZ",
-   "base_price": 36.99,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:Andersen Group Inc-A:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "trend_shift",
-  "subject": "Andersen Group Inc-A",
-  "market": "",
-  "prediction": "上行翻转中期(第20日·已涨27.2%·涨概率78%)·🟡先别追,等跌回41.37附近再买;一直不跌就等",
-  "horizon_end": "2026-08-27",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 78,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "ANDG",
-   "base_price": 46.94,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:现代牙科:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "trend_shift",
-  "subject": "现代牙科",
-  "market": "",
-  "prediction": "上行翻转中期(第18日·已涨30.0%·涨概率69%)·🟡先别追,等跌回7.10附近再买;一直不跌就等放",
-  "horizon_end": "2026-08-27",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 69,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "3600.HK",
-   "base_price": 7.75,
-   "rule_ver": "ts-1.0"
-  }
- },
- {
-  "id": "trend_shift:普冉股份:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "trend_shift",
-  "subject": "普冉股份",
-  "market": "",
-  "prediction": "下行翻转(第11日·20日-49.6%)·减仓回避",
-  "horizon_end": "2026-08-27",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": null,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "688766.SS",
-   "base_price": 371.78,
+   "code": "2388.HK",
+   "base_price": 51.55,
    "rule_ver": "ts-1.0"
   }
  },
@@ -5139,12 +5241,12 @@
   }
  },
  {
-  "id": "trend_shift:金安国纪:2026-07-28",
+  "id": "trend_shift:伟创力:2026-07-28",
   "date": "2026-07-28",
   "kind": "trend_shift",
-  "subject": "金安国纪",
+  "subject": "伟创力",
   "market": "",
-  "prediction": "下行翻转(第16日·20日-44.6%)·减仓回避",
+  "prediction": "下行翻转(第1日·20日-28.0%)·减仓回避",
   "horizon_end": "2026-08-27",
   "confirm_price": null,
   "direction": "down",
@@ -5152,8 +5254,27 @@
   "source": "rule",
   "status": "待核",
   "extra": {
-   "code": "002636.SZ",
-   "base_price": 63.69,
+   "code": "FLEX",
+   "base_price": 116.07,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:博雷顿:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "trend_shift",
+  "subject": "博雷顿",
+  "market": "",
+  "prediction": "下行翻转(第19日·20日-30.1%)·减仓回避",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "1333.HK",
+   "base_price": 11.6,
    "rule_ver": "ts-1.0"
   }
  },
@@ -5177,12 +5298,12 @@
   }
  },
  {
-  "id": "trend_shift:顺络电子:2026-07-28",
+  "id": "trend_shift:宏工科技:2026-07-28",
   "date": "2026-07-28",
   "kind": "trend_shift",
-  "subject": "顺络电子",
+  "subject": "宏工科技",
   "market": "",
-  "prediction": "下行翻转(第17日·20日-39.5%)·减仓回避",
+  "prediction": "下行翻转(第32日·20日-29.2%)·减仓回避",
   "horizon_end": "2026-08-27",
   "confirm_price": null,
   "direction": "down",
@@ -5190,8 +5311,27 @@
   "source": "rule",
   "status": "待核",
   "extra": {
-   "code": "002138.SZ",
-   "base_price": 45.19,
+   "code": "301662.SZ",
+   "base_price": 67.81,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:康宁:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "trend_shift",
+  "subject": "康宁",
+  "market": "",
+  "prediction": "下行翻转(第16日·20日-37.1%)·减仓回避",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "GLW",
+   "base_price": 143.36,
    "rule_ver": "ts-1.0"
   }
  },
@@ -5215,12 +5355,12 @@
   }
  },
  {
-  "id": "trend_shift:宏工科技:2026-07-28",
+  "id": "trend_shift:普冉股份:2026-07-28",
   "date": "2026-07-28",
   "kind": "trend_shift",
-  "subject": "宏工科技",
+  "subject": "普冉股份",
   "market": "",
-  "prediction": "下行翻转(第32日·20日-29.2%)·减仓回避",
+  "prediction": "下行翻转(第11日·20日-49.6%)·减仓回避",
   "horizon_end": "2026-08-27",
   "confirm_price": null,
   "direction": "down",
@@ -5228,8 +5368,179 @@
   "source": "rule",
   "status": "待核",
   "extra": {
-   "code": "301662.SZ",
-   "base_price": 67.81,
+   "code": "688766.SS",
+   "base_price": 371.78,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:比音勒芬:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "trend_shift",
+  "subject": "比音勒芬",
+  "market": "",
+  "prediction": "上行翻转中期(第20日·已涨15.9%·涨概率84%)·🟡先别追,等跌回21.41附近再买;一直不跌就等",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 84,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "002832.SZ",
+   "base_price": 23.97,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:汤森路透:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "trend_shift",
+  "subject": "汤森路透",
+  "market": "",
+  "prediction": "上行翻转早期(第5日·已涨1.6%·涨概率57%)·🟢现在可买(涨势刚起,买得最早)",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 57,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "TRI",
+   "base_price": 97.76,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:泛林集团:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "trend_shift",
+  "subject": "泛林集团",
+  "market": "",
+  "prediction": "下行翻转(第16日·20日-27.4%)·减仓回避",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "LRCX",
+   "base_price": 291.61,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:洛克希德马丁:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "trend_shift",
+  "subject": "洛克希德马丁",
+  "market": "",
+  "prediction": "上行翻转早期(第2日·已涨2.0%·涨概率83%)·🟢现在可买(涨势刚起,买得最早)",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 83,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "LMT",
+   "base_price": 580.0,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:海丰国际:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "trend_shift",
+  "subject": "海丰国际",
+  "market": "",
+  "prediction": "上行翻转早期(第2日·已涨-1.0%·涨概率85%)·🟢现在可买(涨势刚起,买得最早)",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 85,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "1308.HK",
+   "base_price": 38.84,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:海康威视:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "trend_shift",
+  "subject": "海康威视",
+  "market": "",
+  "prediction": "上行翻转中期(第14日·已涨9.2%·涨概率79%)·🟡先别追,等跌回34.46附近再买;一直不跌就等",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 79,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "002415.SZ",
+   "base_price": 36.99,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:爱奇艺:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "trend_shift",
+  "subject": "爱奇艺",
+  "market": "",
+  "prediction": "上行翻转早期(第1日·已涨1.7%·涨概率70%)·🟢现在可买(涨势刚起,买得最早)",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 70,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "IQ",
+   "base_price": 1.23,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:现代牙科:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "trend_shift",
+  "subject": "现代牙科",
+  "market": "",
+  "prediction": "上行翻转中期(第18日·已涨30.0%·涨概率69%)·🟡先别追,等跌回7.10附近再买;一直不跌就等放",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 69,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "3600.HK",
+   "base_price": 7.75,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:理文造纸:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "trend_shift",
+  "subject": "理文造纸",
+  "market": "",
+  "prediction": "上行翻转早期(第4日·已涨6.6%·涨概率85%)·🟢现在可买(涨势刚起,买得最早)",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 85,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "2314.HK",
+   "base_price": 4.03,
    "rule_ver": "ts-1.0"
   }
  },
@@ -5253,95 +5564,117 @@
   }
  },
  {
-  "id": "turning:菲利普莫里斯:2026-07-28",
+  "id": "trend_shift:紫光股份:2026-07-28",
   "date": "2026-07-28",
-  "kind": "turning",
-  "subject": "菲利普莫里斯",
-  "market": "美股",
-  "prediction": "见顶窗口2~4交易日·确认价187.31·概率74%·07-29(周三)FOMC利率决议=触发器",
-  "horizon_end": "2026-08-02",
-  "confirm_price": 187.31,
-  "direction": "down",
-  "prob": 74,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "PM",
-   "base_price": 195.66,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    2,
-    4
-   ]
-  }
- },
- {
-  "id": "turning:美股·能源板块:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "turning",
-  "subject": "美股·能源板块",
-  "market": "美股",
-  "prediction": "见顶窗口2~4交易日·确认价57.83·概率72%·07-29(周三)FOMC利率决议=触发器",
-  "horizon_end": "2026-08-02",
-  "confirm_price": 57.83,
-  "direction": "down",
-  "prob": 72,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "XLE",
-   "base_price": 58.36,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    2,
-    4
-   ]
-  }
- },
- {
-  "id": "turning:特斯拉:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "turning",
-  "subject": "特斯拉",
-  "market": "美股",
-  "prediction": "见底窗口5~11交易日·确认价384.07·概率72%",
-  "horizon_end": "2026-08-12",
-  "confirm_price": 384.07,
+  "kind": "trend_shift",
+  "subject": "紫光股份",
+  "market": "",
+  "prediction": "上行翻转早期(第10日·已涨8.0%·涨概率69%)·🟢现在可买(涨势刚起,买得最早)",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
   "direction": "up",
-  "prob": 72,
+  "prob": 69,
   "source": "rule",
   "status": "待核",
   "extra": {
-   "code": "TSLA",
-   "base_price": 309.22,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    5,
-    11
-   ]
+   "code": "000938.SZ",
+   "base_price": 41.47,
+   "rule_ver": "ts-1.0"
   }
  },
  {
-  "id": "turning:迈威尔:2026-07-28",
+  "id": "trend_shift:西部矿业:2026-07-28",
   "date": "2026-07-28",
-  "kind": "turning",
-  "subject": "迈威尔",
-  "market": "美股",
-  "prediction": "见底窗口2~4交易日·确认价214.92·概率72%·07-29(周三)FOMC利率决议=触发器",
-  "horizon_end": "2026-08-02",
-  "confirm_price": 214.92,
+  "kind": "trend_shift",
+  "subject": "西部矿业",
+  "market": "",
+  "prediction": "上行翻转早期(第1日·已涨4.1%·涨概率85%)·🟢现在可买(涨势刚起,买得最早)",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
   "direction": "up",
-  "prob": 72,
+  "prob": 85,
   "source": "rule",
   "status": "待核",
   "extra": {
-   "code": "MRVL",
-   "base_price": 189.17,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    2,
-    4
-   ]
+   "code": "601168.SS",
+   "base_price": 37.72,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:金安国纪:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "trend_shift",
+  "subject": "金安国纪",
+  "market": "",
+  "prediction": "下行翻转(第16日·20日-44.6%)·减仓回避",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "002636.SZ",
+   "base_price": 63.69,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:闪迪:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "trend_shift",
+  "subject": "闪迪",
+  "market": "",
+  "prediction": "下行翻转(第16日·20日-45.3%)·减仓回避",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "SNDK",
+   "base_price": 1278.23,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:雷神技术:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "trend_shift",
+  "subject": "雷神技术",
+  "market": "",
+  "prediction": "上行翻转中期(第18日·已涨15.1%·涨概率81%)·🟡先别追,等跌回197.66附近再买;一直不跌就",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 81,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "RTX",
+   "base_price": 218.42,
+   "rule_ver": "ts-1.0"
+  }
+ },
+ {
+  "id": "trend_shift:顺络电子:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "trend_shift",
+  "subject": "顺络电子",
+  "market": "",
+  "prediction": "下行翻转(第17日·20日-39.5%)·减仓回避",
+  "horizon_end": "2026-08-27",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": null,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "002138.SZ",
+   "base_price": 45.19,
+   "rule_ver": "ts-1.0"
   }
  },
  {
@@ -5391,29 +5724,6 @@
   }
  },
  {
-  "id": "turning:小米集团-W:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "turning",
-  "subject": "小米集团-W",
-  "market": "港股",
-  "prediction": "见顶窗口3~6交易日·确认价26.04·概率58%",
-  "horizon_end": "2026-08-05",
-  "confirm_price": 26.04,
-  "direction": "down",
-  "prob": 58,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "1810.HK",
-   "base_price": 28.68,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    3,
-    6
-   ]
-  }
- },
- {
   "id": "turning:亨通光电:2026-07-28",
   "date": "2026-07-28",
   "kind": "turning",
@@ -5429,29 +5739,6 @@
   "extra": {
    "code": "600487.SS",
    "base_price": 55.55,
-   "rule_ver": "tf-1.1",
-   "window_days": [
-    2,
-    4
-   ]
-  }
- },
- {
-  "id": "turning:港股·恒生科技板块:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "turning",
-  "subject": "港股·恒生科技板块",
-  "market": "港股",
-  "prediction": "见底窗口2~4交易日·确认价4.75·概率55%",
-  "horizon_end": "2026-08-02",
-  "confirm_price": 4.75,
-  "direction": "up",
-  "prob": 55,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "3033.HK",
-   "base_price": 4.62,
    "rule_ver": "tf-1.1",
    "window_days": [
     2,
@@ -5483,431 +5770,364 @@
   }
  },
  {
-  "id": "pre_sig:电子:2026-07-28",
+  "id": "turning:小米集团-W:2026-07-28",
   "date": "2026-07-28",
-  "kind": "pre_sig",
-  "subject": "电子",
-  "market": "",
-  "prediction": "蓄势:主力连续2日净流入·5日+642.6亿·热度未起(近似:不在轮动强榜,板块涨幅源待接)→预计10交易日内板块启动",
-  "horizon_end": "2026-08-11",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": null,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "streak": 2,
-   "net5d": 642.63,
-   "rule_ver": "ps-1.1",
-   "settle_by": "轮动now分≥58或板块当日进强榜=启动(板块无yf码,价差核算待接)"
-  }
- },
- {
-  "id": "pre_sig:半导体:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "pre_sig",
-  "subject": "半导体",
-  "market": "",
-  "prediction": "蓄势:主力连续3日净流入·5日+634.4亿·热度未起(近似:不在轮动强榜,板块涨幅源待接)→预计10交易日内板块启动",
-  "horizon_end": "2026-08-11",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": null,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "streak": 3,
-   "net5d": 634.42,
-   "rule_ver": "ps-1.1",
-   "settle_by": "轮动now分≥58或板块当日进强榜=启动(板块无yf码,价差核算待接)"
-  }
- },
- {
-  "id": "pre_sig:数字芯片设计:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "pre_sig",
-  "subject": "数字芯片设计",
-  "market": "",
-  "prediction": "蓄势:主力连续2日净流入·5日+597.2亿·热度未起(近似:不在轮动强榜,板块涨幅源待接)→预计10交易日内板块启动",
-  "horizon_end": "2026-08-11",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": null,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "streak": 2,
-   "net5d": 597.16,
-   "rule_ver": "ps-1.1",
-   "settle_by": "轮动now分≥58或板块当日进强榜=启动(板块无yf码,价差核算待接)"
-  }
- },
- {
-  "id": "pre_sig:电力设备:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "pre_sig",
-  "subject": "电力设备",
-  "market": "",
-  "prediction": "蓄势:主力连续2日净流入·5日+134.0亿·热度未起(近似:不在轮动强榜,板块涨幅源待接)→预计10交易日内板块启动",
-  "horizon_end": "2026-08-11",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": null,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "streak": 2,
-   "net5d": 134.01,
-   "rule_ver": "ps-1.1",
-   "settle_by": "轮动now分≥58或板块当日进强榜=启动(板块无yf码,价差核算待接)"
-  }
- },
- {
-  "id": "pre_sig:工业金属:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "pre_sig",
-  "subject": "工业金属",
-  "market": "",
-  "prediction": "蓄势:主力连续2日净流入·5日+65.5亿·热度未起(近似:不在轮动强榜,板块涨幅源待接)→预计10交易日内板块启动",
-  "horizon_end": "2026-08-11",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": null,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "streak": 2,
-   "net5d": 65.49,
-   "rule_ver": "ps-1.1",
-   "settle_by": "轮动now分≥58或板块当日进强榜=启动(板块无yf码,价差核算待接)"
-  }
- },
- {
-  "id": "pre_sig:电池:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "pre_sig",
-  "subject": "电池",
-  "market": "",
-  "prediction": "蓄势:主力连续2日净流入·5日+63.5亿·热度未起(近似:不在轮动强榜,板块涨幅源待接)→预计10交易日内板块启动",
-  "horizon_end": "2026-08-11",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": null,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "streak": 2,
-   "net5d": 63.52,
-   "rule_ver": "ps-1.1",
-   "settle_by": "轮动now分≥58或板块当日进强榜=启动(板块无yf码,价差核算待接)"
-  }
- },
- {
-  "id": "mkt_prob:美股2周:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "mkt_prob",
-  "subject": "美股2周",
-  "market": "美股",
-  "prediction": "美股2周上涨概率41%",
-  "horizon_end": "2026-08-11",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": 41,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "^GSPC",
-   "base_price": 7413.18
-  }
- },
- {
-  "id": "mkt_prob:美股4周:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "mkt_prob",
-  "subject": "美股4周",
-  "market": "美股",
-  "prediction": "美股4周上涨概率44%",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": 44,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "^GSPC",
-   "base_price": 7413.18
-  }
- },
- {
-  "id": "mkt_prob:美股8周:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "mkt_prob",
-  "subject": "美股8周",
-  "market": "美股",
-  "prediction": "美股8周上涨概率42%",
-  "horizon_end": "2026-09-24",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": 42,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "^GSPC",
-   "base_price": 7413.18
-  }
- },
- {
-  "id": "mkt_prob:美股16周:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "mkt_prob",
-  "subject": "美股16周",
-  "market": "美股",
-  "prediction": "美股16周上涨概率52%",
-  "horizon_end": "2026-11-21",
-  "confirm_price": null,
-  "direction": "flat",
-  "prob": 52,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "^GSPC",
-   "base_price": 7413.18
-  }
- },
- {
-  "id": "mkt_prob:美股32周:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "mkt_prob",
-  "subject": "美股32周",
-  "market": "美股",
-  "prediction": "美股32周上涨概率52%",
-  "horizon_end": "2027-03-17",
-  "confirm_price": null,
-  "direction": "flat",
-  "prob": 52,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "^GSPC",
-   "base_price": 7413.18
-  }
- },
- {
-  "id": "mkt_prob:A股2周:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "mkt_prob",
-  "subject": "A股2周",
-  "market": "A股",
-  "prediction": "A股2周上涨概率45%",
-  "horizon_end": "2026-08-11",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": 45,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "000001.SS",
-   "base_price": 3858.24
-  }
- },
- {
-  "id": "mkt_prob:A股4周:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "mkt_prob",
-  "subject": "A股4周",
-  "market": "A股",
-  "prediction": "A股4周上涨概率38%",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": 38,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "000001.SS",
-   "base_price": 3858.24
-  }
- },
- {
-  "id": "mkt_prob:A股8周:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "mkt_prob",
-  "subject": "A股8周",
-  "market": "A股",
-  "prediction": "A股8周上涨概率38%",
-  "horizon_end": "2026-09-24",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": 38,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "000001.SS",
-   "base_price": 3858.24
-  }
- },
- {
-  "id": "mkt_prob:A股16周:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "mkt_prob",
-  "subject": "A股16周",
-  "market": "A股",
-  "prediction": "A股16周上涨概率42%",
-  "horizon_end": "2026-11-21",
-  "confirm_price": null,
-  "direction": "down",
-  "prob": 42,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "000001.SS",
-   "base_price": 3858.24
-  }
- },
- {
-  "id": "mkt_prob:A股32周:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "mkt_prob",
-  "subject": "A股32周",
-  "market": "A股",
-  "prediction": "A股32周上涨概率46%",
-  "horizon_end": "2027-03-17",
-  "confirm_price": null,
-  "direction": "flat",
-  "prob": 46,
-  "source": "rule",
-  "status": "待核",
-  "extra": {
-   "code": "000001.SS",
-   "base_price": 3858.24
-  }
- },
- {
-  "id": "mkt_prob:港股2周:2026-07-28",
-  "date": "2026-07-28",
-  "kind": "mkt_prob",
-  "subject": "港股2周",
+  "kind": "turning",
+  "subject": "小米集团-W",
   "market": "港股",
-  "prediction": "港股2周上涨概率55%",
-  "horizon_end": "2026-08-11",
-  "confirm_price": null,
+  "prediction": "见顶窗口3~6交易日·确认价26.04·概率58%",
+  "horizon_end": "2026-08-05",
+  "confirm_price": 26.04,
+  "direction": "down",
+  "prob": 58,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "1810.HK",
+   "base_price": 28.68,
+   "rule_ver": "tf-1.1",
+   "window_days": [
+    3,
+    6
+   ]
+  }
+ },
+ {
+  "id": "turning:港股·恒生科技板块:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "turning",
+  "subject": "港股·恒生科技板块",
+  "market": "港股",
+  "prediction": "见底窗口2~4交易日·确认价4.75·概率55%",
+  "horizon_end": "2026-08-02",
+  "confirm_price": 4.75,
   "direction": "up",
   "prob": 55,
   "source": "rule",
   "status": "待核",
   "extra": {
-   "code": "^HSI",
-   "base_price": 25207.18
+   "code": "3033.HK",
+   "base_price": 4.62,
+   "rule_ver": "tf-1.1",
+   "window_days": [
+    2,
+    4
+   ]
   }
  },
  {
-  "id": "mkt_prob:港股4周:2026-07-28",
+  "id": "turning:特斯拉:2026-07-28",
   "date": "2026-07-28",
-  "kind": "mkt_prob",
-  "subject": "港股4周",
-  "market": "港股",
-  "prediction": "港股4周上涨概率67%",
-  "horizon_end": "2026-08-26",
-  "confirm_price": null,
+  "kind": "turning",
+  "subject": "特斯拉",
+  "market": "美股",
+  "prediction": "见底窗口5~11交易日·确认价384.07·概率72%",
+  "horizon_end": "2026-08-12",
+  "confirm_price": 384.07,
   "direction": "up",
-  "prob": 67,
+  "prob": 72,
   "source": "rule",
   "status": "待核",
   "extra": {
-   "code": "^HSI",
-   "base_price": 25207.18
+   "code": "TSLA",
+   "base_price": 309.22,
+   "rule_ver": "tf-1.1",
+   "window_days": [
+    5,
+    11
+   ]
   }
  },
  {
-  "id": "mkt_prob:港股8周:2026-07-28",
+  "id": "turning:纳指100ETF:2026-07-28",
   "date": "2026-07-28",
-  "kind": "mkt_prob",
-  "subject": "港股8周",
-  "market": "港股",
-  "prediction": "港股8周上涨概率50%",
-  "horizon_end": "2026-09-24",
-  "confirm_price": null,
-  "direction": "flat",
-  "prob": 50,
+  "kind": "turning",
+  "subject": "纳指100ETF",
+  "market": "美股",
+  "prediction": "见底窗口3~6交易日·确认价292.35·概率63%·07-29(周三)FOMC利率决议=触发器",
+  "horizon_end": "2026-08-05",
+  "confirm_price": 292.35,
+  "direction": "up",
+  "prob": 63,
   "source": "rule",
   "status": "待核",
   "extra": {
-   "code": "^HSI",
-   "base_price": 25207.18
+   "code": "QQQM",
+   "base_price": 280.86,
+   "rule_ver": "tf-1.1",
+   "window_days": [
+    3,
+    6
+   ]
   }
  },
  {
-  "id": "mkt_prob:港股16周:2026-07-28",
+  "id": "turning:美股·能源板块:2026-07-28",
   "date": "2026-07-28",
-  "kind": "mkt_prob",
-  "subject": "港股16周",
-  "market": "港股",
-  "prediction": "港股16周上涨概率45%",
-  "horizon_end": "2026-11-21",
-  "confirm_price": null,
+  "kind": "turning",
+  "subject": "美股·能源板块",
+  "market": "美股",
+  "prediction": "见顶窗口2~4交易日·确认价57.83·概率72%·07-29(周三)FOMC利率决议=触发器",
+  "horizon_end": "2026-08-02",
+  "confirm_price": 57.83,
   "direction": "down",
-  "prob": 45,
+  "prob": 72,
   "source": "rule",
   "status": "待核",
   "extra": {
-   "code": "^HSI",
-   "base_price": 25207.18
+   "code": "XLE",
+   "base_price": 58.36,
+   "rule_ver": "tf-1.1",
+   "window_days": [
+    2,
+    4
+   ]
   }
  },
  {
-  "id": "mkt_prob:港股32周:2026-07-28",
+  "id": "turning:菲利普莫里斯:2026-07-28",
   "date": "2026-07-28",
-  "kind": "mkt_prob",
-  "subject": "港股32周",
-  "market": "港股",
-  "prediction": "港股32周上涨概率40%",
-  "horizon_end": "2027-03-17",
-  "confirm_price": null,
+  "kind": "turning",
+  "subject": "菲利普莫里斯",
+  "market": "美股",
+  "prediction": "见顶窗口2~4交易日·确认价187.31·概率74%·07-29(周三)FOMC利率决议=触发器",
+  "horizon_end": "2026-08-02",
+  "confirm_price": 187.31,
   "direction": "down",
-  "prob": 40,
+  "prob": 74,
   "source": "rule",
   "status": "待核",
   "extra": {
-   "code": "^HSI",
-   "base_price": 25207.18
+   "code": "PM",
+   "base_price": 195.66,
+   "rule_ver": "tf-1.1",
+   "window_days": [
+    2,
+    4
+   ]
   }
  },
  {
-  "id": "fable_pick:小米:2026-07-28",
+  "id": "turning:迈威尔:2026-07-28",
   "date": "2026-07-28",
-  "kind": "fable_pick",
-  "subject": "小米",
-  "market": "",
-  "prediction": "Fable提名看多·参考价26.72·窗口10交易日·见底63%+52周位14%+rr2.95优于港股买单",
-  "horizon_end": "2026-08-11",
-  "confirm_price": null,
+  "kind": "turning",
+  "subject": "迈威尔",
+  "market": "美股",
+  "prediction": "见底窗口2~4交易日·确认价214.92·概率72%·07-29(周三)FOMC利率决议=触发器",
+  "horizon_end": "2026-08-02",
+  "confirm_price": 214.92,
   "direction": "up",
-  "prob": null,
-  "source": "fable",
+  "prob": 72,
+  "source": "rule",
   "status": "待核",
   "extra": {
-   "code": "1810.HK",
-   "base_price": 26.72,
-   "rule_ver": "fable-1.0"
+   "code": "MRVL",
+   "base_price": 189.17,
+   "rule_ver": "tf-1.1",
+   "window_days": [
+    2,
+    4
+   ]
   }
  },
  {
-  "id": "fable_pick:金沙中国:2026-07-28",
+  "id": "value_zone:Adobe:2026-07-28",
   "date": "2026-07-28",
-  "kind": "fable_pick",
-  "subject": "金沙中国",
+  "kind": "value_zone",
+  "subject": "Adobe",
   "market": "",
-  "prediction": "Fable提名看多·参考价13.98·窗口10交易日·澳门博彩三标的同步蓄势转领涨(LVS强度78/澳博68/金沙68·均高置信)，52周位13%低位、港股2周60%顺风；黑",
-  "horizon_end": "2026-08-11",
+  "prediction": "🟢跌得很深·可分批买:距2年高-59.5%·52周位24%·10年年化9.3%·该股历史6次同级回撤→6月后5涨1跌·中位+37.1%·最差-33.5%",
+  "horizon_end": "2027-01-27",
   "confirm_price": null,
   "direction": "up",
-  "prob": null,
-  "source": "fable",
+  "prob": 83,
+  "source": "rule",
   "status": "待核",
   "extra": {
-   "code": "1928.HK",
-   "base_price": 13.98,
-   "rule_ver": "fable-1.0"
+   "code": "ADBE",
+   "base_price": 237.75,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
+  }
+ },
+ {
+  "id": "value_zone:AutoZone:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "value_zone",
+  "subject": "AutoZone",
+  "market": "",
+  "prediction": "🟢跌得很深·可分批买:距2年高-29.4%·52周位10%·10年年化14.2%·该股历史5次同级回撤→6月后4涨1跌·中位+17.6%·最差-8.9%",
+  "horizon_end": "2027-01-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 80,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "AZO",
+   "base_price": 3075.26,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
+  }
+ },
+ {
+  "id": "value_zone:中国中免:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "value_zone",
+  "subject": "中国中免",
+  "market": "",
+  "prediction": "🟢跌得很深·可分批买:距2年高-43.4%·52周位8%·10年年化10.7%·该股历史6次同级回撤→6月后5涨1跌·中位+60.6%·最差-21.9%",
+  "horizon_end": "2027-01-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 83,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "601888.SS",
+   "base_price": 54.44,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
+  }
+ },
+ {
+  "id": "value_zone:安踏体育:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "value_zone",
+  "subject": "安踏体育",
+  "market": "",
+  "prediction": "🟢打折到位·可开始买:距2年高-25.4%·52周位25%·10年年化18.5%·该股历史4次同级回撤→6月后3涨1跌·中位+24.8%·最差-34.3%",
+  "horizon_end": "2027-01-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 75,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "2020.HK",
+   "base_price": 76.1,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
+  }
+ },
+ {
+  "id": "value_zone:康耐特光学:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "value_zone",
+  "subject": "康耐特光学",
+  "market": "",
+  "prediction": "🟢跌得很深·可分批买:距2年高-54.9%·52周位2%·10年年化54.6%·该股历史3次同级回撤→6月后3涨0跌·中位+12.2%·最差+2.6%",
+  "horizon_end": "2027-01-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 100,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "2276.HK",
+   "base_price": 29.08,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
+  }
+ },
+ {
+  "id": "value_zone:心动公司:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "value_zone",
+  "subject": "心动公司",
+  "market": "",
+  "prediction": "🟢跌得很深·可分批买:距2年高-51.0%·52周位6%·10年年化23.2%·该股历史5次同级回撤→6月后4涨1跌·中位+56.3%·最差-48.6%",
+  "horizon_end": "2027-01-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 80,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "2400.HK",
+   "base_price": 44.96,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
+  }
+ },
+ {
+  "id": "value_zone:拼多多:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "value_zone",
+  "subject": "拼多多",
+  "market": "",
+  "prediction": "🟢跌得很深·可分批买:距2年高-45.0%·52周位17%·10年年化15.6%·该股历史8次同级回撤→6月后6涨2跌·中位+48.3%·最差-32.6%",
+  "horizon_end": "2027-01-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 75,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "PDD",
+   "base_price": 84.85,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
+  }
+ },
+ {
+  "id": "value_zone:爱尔眼科:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "value_zone",
+  "subject": "爱尔眼科",
+  "market": "",
+  "prediction": "🟢跌得很深·可分批买:距2年高-53.4%·52周位12%·10年年化8.3%·该股历史8次同级回撤→6月后6涨2跌·中位+18.6%·最差-43.2%",
+  "horizon_end": "2027-01-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 75,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "300015.SZ",
+   "base_price": 8.62,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
+  }
+ },
+ {
+  "id": "value_zone:诺斯罗普:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "value_zone",
+  "subject": "诺斯罗普",
+  "market": "",
+  "prediction": "🟢跌得很深·可分批买:距2年高-28.4%·52周位19%·10年年化11.5%·该股历史6次同级回撤→6月后5涨1跌·中位+12.5%·最差-1.0%",
+  "horizon_end": "2027-01-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 83,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "NOC",
+   "base_price": 547.58,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
+  }
+ },
+ {
+  "id": "value_zone:青岛啤酒:2026-07-28",
+  "date": "2026-07-28",
+  "kind": "value_zone",
+  "subject": "青岛啤酒",
+  "market": "",
+  "prediction": "🟢跌得很深·可分批买:距2年高-29.9%·52周位21%·10年年化8.2%·该股历史9次同级回撤→6月后7涨2跌·中位+3.9%·最差-24.2%",
+  "horizon_end": "2027-01-27",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 78,
+  "source": "rule",
+  "status": "待核",
+  "extra": {
+   "code": "600600.SS",
+   "base_price": 53.08,
+   "rule_ver": "vz-1.0",
+   "fwd": "6月"
   }
  }
 ]

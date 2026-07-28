@@ -1,53 +1,37 @@
 {
- "asof": "2026-07-28 08:02（北京时间）",
+ "asof": "2026-07-28 08:50（北京时间）",
  "model": "Opus 5",
  "by_market": {
   "美股": {
    "verdict": "一致",
    "model": "Opus 5",
    "shift": "2026-07-27 晚审 (23:04)",
-   "engine": 41,
+   "engine": 40,
    "fable": 40,
-   "diff": 1,
-   "note": "引擎2周41% vs Opus 5独立读40%·差1pp(两套读数对上)"
+   "diff": 0,
+   "note": "引擎2周40% vs Opus 5独立读40%·差0pp(两套读数对上)"
   },
   "A股": {
    "verdict": "一致",
    "model": "Opus 5",
    "shift": "2026-07-27 晚审 (23:04)",
-   "engine": 45,
+   "engine": 43,
    "fable": 43,
-   "diff": 2,
-   "note": "引擎2周45% vs Opus 5独立读43%·差2pp(两套读数对上)"
+   "diff": 0,
+   "note": "引擎2周43% vs Opus 5独立读43%·差0pp(两套读数对上)"
   },
   "港股": {
    "verdict": "一致",
    "model": "Opus 5",
    "shift": "2026-07-27 晚审 (23:04)",
-   "engine": 55,
+   "engine": 56,
    "fable": 56,
-   "diff": 1,
-   "note": "引擎2周55% vs Opus 5独立读56%·差1pp(两套读数对上)"
+   "diff": 0,
+   "note": "引擎2周56% vs Opus 5独立读56%·差0pp(两套读数对上)"
   }
  },
  "note": "Claude(Fable5/Opus5)独立复核徽章:🅒=复核结论与规则引擎一致;⚡=有异议不发徽章(理由见note);无徽章=本班未复核该标的(重点股优先,不装作全审)。徽章只代表'两套逻辑对上了',不代表保证盈利。",
  "by_code": {
-  "DRAM": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-27 午后审 (16:07)",
-   "note": "A真破✓:TSLA p_up15(2周-23.2%·破位)/MRVL18/GOOG21/DRAM22→规则{减}vs Fable{看空·高}一致",
-   "code": "DRAM",
-   "name": "Roundhill DRAM"
-  },
-  "TSLA": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-27 午后审 (16:07)",
-   "note": "A真破✓:TSLA p_up15(2周-23.2%·破位)/MRVL18/GOOG21/DRAM22→规则{减}vs Fable{看空·高}一致",
-   "code": "TSLA",
-   "name": "特斯拉"
-  },
   "MRVL": {
    "verdict": "一致",
    "model": "Opus 5",
@@ -63,6 +47,22 @@
    "note": "A真破✓:TSLA p_up15(2周-23.2%·破位)/MRVL18/GOOG21/DRAM22→规则{减}vs Fable{看空·高}一致",
    "code": "GOOG",
    "name": "谷歌C"
+  },
+  "TSLA": {
+   "verdict": "一致",
+   "model": "Opus 5",
+   "shift": "2026-07-27 午后审 (16:07)",
+   "note": "A真破✓:TSLA p_up15(2周-23.2%·破位)/MRVL18/GOOG21/DRAM22→规则{减}vs Fable{看空·高}一致",
+   "code": "TSLA",
+   "name": "特斯拉"
+  },
+  "DRAM": {
+   "verdict": "一致",
+   "model": "Opus 5",
+   "shift": "2026-07-27 午后审 (16:07)",
+   "note": "A真破✓:TSLA p_up15(2周-23.2%·破位)/MRVL18/GOOG21/DRAM22→规则{减}vs Fable{看空·高}一致",
+   "code": "DRAM",
+   "name": "Roundhill DRAM"
   },
   "VOO": {
    "verdict": "分歧",
@@ -88,6 +88,14 @@
    "code": "QQQM",
    "name": "纳指100ETF"
   },
+  "SO": {
+   "verdict": "分歧",
+   "model": "Opus 5",
+   "shift": "2026-07-27 午后审 (16:07)",
+   "note": "C防御矛盾⚡:MO53/JNJ55(长线70)/SO57**涨率过半却判评估减仓**,仅因上行封顶2~3%把rr压到0.39~0.73(MO/SO 07-30财报可减,但引擎给的理",
+   "code": "SO",
+   "name": "美国南方公司"
+  },
   "MO": {
    "verdict": "分歧",
    "model": "Opus 5",
@@ -103,49 +111,9 @@
    "note": "C防御矛盾⚡:MO53/JNJ55(长线70)/SO57**涨率过半却判评估减仓**,仅因上行封顶2~3%把rr压到0.39~0.73(MO/SO 07-30财报可减,但引擎给的理",
    "code": "JNJ",
    "name": "强生"
-  },
-  "SO": {
-   "verdict": "分歧",
-   "model": "Opus 5",
-   "shift": "2026-07-27 午后审 (16:07)",
-   "note": "C防御矛盾⚡:MO53/JNJ55(长线70)/SO57**涨率过半却判评估减仓**,仅因上行封顶2~3%把rr压到0.39~0.73(MO/SO 07-30财报可减,但引擎给的理",
-   "code": "SO",
-   "name": "美国南方公司"
   }
  },
  "by_name": {
-  "Roundhill DRAM": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-27 午后审 (16:07)",
-   "note": "A真破✓:TSLA p_up15(2周-23.2%·破位)/MRVL18/GOOG21/DRAM22→规则{减}vs Fable{看空·高}一致",
-   "code": "DRAM",
-   "name": "Roundhill DRAM"
-  },
-  "DRAM": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-27 午后审 (16:07)",
-   "note": "A真破✓:TSLA p_up15(2周-23.2%·破位)/MRVL18/GOOG21/DRAM22→规则{减}vs Fable{看空·高}一致",
-   "code": "DRAM",
-   "name": "Roundhill DRAM"
-  },
-  "特斯拉": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-27 午后审 (16:07)",
-   "note": "A真破✓:TSLA p_up15(2周-23.2%·破位)/MRVL18/GOOG21/DRAM22→规则{减}vs Fable{看空·高}一致",
-   "code": "TSLA",
-   "name": "特斯拉"
-  },
-  "TSLA": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-27 午后审 (16:07)",
-   "note": "A真破✓:TSLA p_up15(2周-23.2%·破位)/MRVL18/GOOG21/DRAM22→规则{减}vs Fable{看空·高}一致",
-   "code": "TSLA",
-   "name": "特斯拉"
-  },
   "迈威尔": {
    "verdict": "一致",
    "model": "Opus 5",
@@ -178,21 +146,37 @@
    "code": "GOOG",
    "name": "谷歌C"
   },
-  "159632": {
-   "verdict": "分歧",
+  "特斯拉": {
+   "verdict": "一致",
    "model": "Opus 5",
    "shift": "2026-07-27 午后审 (16:07)",
-   "note": "B宽基错杀⚡:VOO-2.1%/513500-0.2%/513650-0.2%/QQQM-5.7%/159632-2.0%/MS-3.5%,全因\"周期未共振\"——-0.2%就减=拿",
-   "code": "",
-   "name": "159632"
+   "note": "A真破✓:TSLA p_up15(2周-23.2%·破位)/MRVL18/GOOG21/DRAM22→规则{减}vs Fable{看空·高}一致",
+   "code": "TSLA",
+   "name": "特斯拉"
   },
-  "513500": {
-   "verdict": "分歧",
+  "TSLA": {
+   "verdict": "一致",
    "model": "Opus 5",
    "shift": "2026-07-27 午后审 (16:07)",
-   "note": "B宽基错杀⚡:VOO-2.1%/513500-0.2%/513650-0.2%/QQQM-5.7%/159632-2.0%/MS-3.5%,全因\"周期未共振\"——-0.2%就减=拿",
-   "code": "",
-   "name": "513500"
+   "note": "A真破✓:TSLA p_up15(2周-23.2%·破位)/MRVL18/GOOG21/DRAM22→规则{减}vs Fable{看空·高}一致",
+   "code": "TSLA",
+   "name": "特斯拉"
+  },
+  "Roundhill DRAM": {
+   "verdict": "一致",
+   "model": "Opus 5",
+   "shift": "2026-07-27 午后审 (16:07)",
+   "note": "A真破✓:TSLA p_up15(2周-23.2%·破位)/MRVL18/GOOG21/DRAM22→规则{减}vs Fable{看空·高}一致",
+   "code": "DRAM",
+   "name": "Roundhill DRAM"
+  },
+  "DRAM": {
+   "verdict": "一致",
+   "model": "Opus 5",
+   "shift": "2026-07-27 午后审 (16:07)",
+   "note": "A真破✓:TSLA p_up15(2周-23.2%·破位)/MRVL18/GOOG21/DRAM22→规则{减}vs Fable{看空·高}一致",
+   "code": "DRAM",
+   "name": "Roundhill DRAM"
   },
   "VOO": {
    "verdict": "分歧",
@@ -226,6 +210,22 @@
    "code": "",
    "name": "513650"
   },
+  "159632": {
+   "verdict": "分歧",
+   "model": "Opus 5",
+   "shift": "2026-07-27 午后审 (16:07)",
+   "note": "B宽基错杀⚡:VOO-2.1%/513500-0.2%/513650-0.2%/QQQM-5.7%/159632-2.0%/MS-3.5%,全因\"周期未共振\"——-0.2%就减=拿",
+   "code": "",
+   "name": "159632"
+  },
+  "513500": {
+   "verdict": "分歧",
+   "model": "Opus 5",
+   "shift": "2026-07-27 午后审 (16:07)",
+   "note": "B宽基错杀⚡:VOO-2.1%/513500-0.2%/513650-0.2%/QQQM-5.7%/159632-2.0%/MS-3.5%,全因\"周期未共振\"——-0.2%就减=拿",
+   "code": "",
+   "name": "513500"
+  },
   "纳指100ETF": {
    "verdict": "分歧",
    "model": "Opus 5",
@@ -241,6 +241,22 @@
    "note": "B宽基错杀⚡:VOO-2.1%/513500-0.2%/513650-0.2%/QQQM-5.7%/159632-2.0%/MS-3.5%,全因\"周期未共振\"——-0.2%就减=拿",
    "code": "QQQM",
    "name": "纳指100ETF"
+  },
+  "美国南方公司": {
+   "verdict": "分歧",
+   "model": "Opus 5",
+   "shift": "2026-07-27 午后审 (16:07)",
+   "note": "C防御矛盾⚡:MO53/JNJ55(长线70)/SO57**涨率过半却判评估减仓**,仅因上行封顶2~3%把rr压到0.39~0.73(MO/SO 07-30财报可减,但引擎给的理",
+   "code": "SO",
+   "name": "美国南方公司"
+  },
+  "SO": {
+   "verdict": "分歧",
+   "model": "Opus 5",
+   "shift": "2026-07-27 午后审 (16:07)",
+   "note": "C防御矛盾⚡:MO53/JNJ55(长线70)/SO57**涨率过半却判评估减仓**,仅因上行封顶2~3%把rr压到0.39~0.73(MO/SO 07-30财报可减,但引擎给的理",
+   "code": "SO",
+   "name": "美国南方公司"
   },
   "奥驰亚": {
    "verdict": "分歧",
@@ -274,21 +290,13 @@
    "code": "JNJ",
    "name": "强生"
   },
-  "美国南方公司": {
+  "159995": {
    "verdict": "分歧",
    "model": "Opus 5",
    "shift": "2026-07-27 午后审 (16:07)",
-   "note": "C防御矛盾⚡:MO53/JNJ55(长线70)/SO57**涨率过半却判评估减仓**,仅因上行封顶2~3%把rr压到0.39~0.73(MO/SO 07-30财报可减,但引擎给的理",
-   "code": "SO",
-   "name": "美国南方公司"
-  },
-  "SO": {
-   "verdict": "分歧",
-   "model": "Opus 5",
-   "shift": "2026-07-27 午后审 (16:07)",
-   "note": "C防御矛盾⚡:MO53/JNJ55(长线70)/SO57**涨率过半却判评估减仓**,仅因上行封顶2~3%把rr压到0.39~0.73(MO/SO 07-30财报可减,但引擎给的理",
-   "code": "SO",
-   "name": "美国南方公司"
+   "note": "D芯片⚡:159995退出/512760减仓,而decisions14:31取1.185、收盘1.22(差2.9%),板块5日+7.52%、创业板+2.96%、bottom_opp",
+   "code": "",
+   "name": "159995"
   },
   "512760": {
    "verdict": "分歧",
@@ -297,14 +305,6 @@
    "note": "2.512760盘中vs收盘2.9%缺口须查,它决定\"退出\"这一最重动作",
    "code": "",
    "name": "512760"
-  },
-  "159995": {
-   "verdict": "分歧",
-   "model": "Opus 5",
-   "shift": "2026-07-27 午后审 (16:07)",
-   "note": "D芯片⚡:159995退出/512760减仓,而decisions14:31取1.185、收盘1.22(差2.9%),板块5日+7.52%、创业板+2.96%、bottom_opp",
-   "code": "",
-   "name": "159995"
   }
  },
  "n_cert": 4,

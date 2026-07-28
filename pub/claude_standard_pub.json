@@ -1,5 +1,5 @@
 {
- "asof": "2026-07-28 08:02（北京时间）",
+ "asof": "2026-07-28 08:51（北京时间）",
  "rules": {
   "CS1": "宽基指数类跌幅未达5%且趋势未破,不按个股尺度输出减仓(案:VOO-2.1%/513500-0.2%就减)",
   "CS2": "2周涨概率≥53%不得输出减仓,除非已破止损或5日内自家财报(案:MO53/JNJ55/SO57)",
@@ -52,16 +52,6 @@
    "downgrade": "",
    "auto": true
   },
-  "002195.SZ": {
-   "code": "002195.SZ",
-   "name": "岩山科技",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "600089.SS": {
    "code": "600089.SS",
    "name": "特变电工",
@@ -72,9 +62,9 @@
    "downgrade": "",
    "auto": true
   },
-  "300207.SZ": {
-   "code": "300207.SZ",
-   "name": "欣旺达",
+  "601012.SS": {
+   "code": "601012.SS",
+   "name": "隆基绿能",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -122,21 +112,21 @@
    "downgrade": "",
    "auto": true
   },
-  "001382.SZ": {
-   "code": "001382.SZ",
-   "name": "新亚电缆",
+  "COST": {
+   "code": "COST",
+   "name": "好市多",
    "side": "机会",
-   "action": "左侧低吸",
+   "action": "现价可进",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "601168.SS": {
-   "code": "601168.SS",
-   "name": "西部矿业",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
+  "600938.SS": {
+   "code": "600938.SS",
+   "name": "中国海油",
+   "side": "机会",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -145,6 +135,16 @@
   "2314.HK": {
    "code": "2314.HK",
    "name": "理文造纸",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "1308.HK": {
+   "code": "1308.HK",
+   "name": "海丰国际",
    "side": "趋势",
    "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
@@ -162,9 +162,59 @@
    "downgrade": "",
    "auto": true
   },
-  "000938.SZ": {
-   "code": "000938.SZ",
-   "name": "紫光股份",
+  "2388.HK": {
+   "code": "2388.HK",
+   "name": "中银香港",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "IQ": {
+   "code": "IQ",
+   "name": "爱奇艺",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "PAY": {
+   "code": "PAY",
+   "name": "Paymentus Holdings Inc-A",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "DOCU": {
+   "code": "DOCU",
+   "name": "DocuSign",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "SPOT": {
+   "code": "SPOT",
+   "name": "Spotify",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "TRI": {
+   "code": "TRI",
+   "name": "汤森路透",
    "side": "趋势",
    "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
@@ -182,11 +232,21 @@
    "downgrade": "",
    "auto": true
   },
-  "002832.SZ": {
-   "code": "002832.SZ",
-   "name": "比音勒芬",
+  "0719.HK": {
+   "code": "0719.HK",
+   "name": "山东新华制药股份",
    "side": "趋势",
-   "action": "🟡先别追,等跌回21.41附近再买;一直不跌就等放量创新高再追",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "LW": {
+   "code": "LW",
+   "name": "蓝威斯顿控股",
+   "side": "趋势",
+   "action": "🟡先别追,等跌回46.51附近再买;一直不跌就等放量创新高再追",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -196,17 +256,17 @@
    "code": "RTX",
    "name": "雷神技术",
    "side": "趋势",
-   "action": "🟡先别追,等跌回197.66附近再买;一直不跌就等放量创新高再追",
+   "action": "🟡先别追,等跌回196.42附近再买;一直不跌就等放量创新高再追",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "002415.SZ": {
-   "code": "002415.SZ",
-   "name": "海康威视",
+  "0293.HK": {
+   "code": "0293.HK",
+   "name": "国泰航空",
    "side": "趋势",
-   "action": "🟡先别追,等跌回34.46附近再买;一直不跌就等放量创新高再追",
+   "action": "🟡先别追,等跌回13.32附近再买;一直不跌就等放量创新高再追",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -216,47 +276,7 @@
    "code": "ANDG",
    "name": "Andersen Group Inc-A",
    "side": "趋势",
-   "action": "🟡先别追,等跌回41.37附近再买;一直不跌就等放量创新高再追",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "3600.HK": {
-   "code": "3600.HK",
-   "name": "现代牙科",
-   "side": "趋势",
-   "action": "🟡先别追,等跌回7.10附近再买;一直不跌就等放量创新高再追",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "688046.SS": {
-   "code": "688046.SS",
-   "name": "药康生物",
-   "side": "趋势",
-   "action": "🟡先别追,等跌回25.01附近再买;一直不跌就等放量创新高再追",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "300759.SZ": {
-   "code": "300759.SZ",
-   "name": "康龙化成",
-   "side": "趋势",
-   "action": "🟡先别追,等跌回34.57附近再买;一直不跌就等放量创新高再追",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "MUFG": {
-   "code": "MUFG",
-   "name": "三菱日联金融",
-   "side": "趋势",
-   "action": "🟡先别追,等跌回21.62附近再买;一直不跌就等放量创新高再追",
+   "action": "🟡先别追,等跌回41.07附近再买;一直不跌就等放量创新高再追",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -302,6 +322,16 @@
    "downgrade": "",
    "auto": true
   },
+  "2400.HK": {
+   "code": "2400.HK",
+   "name": "心动公司",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "AZO": {
    "code": "AZO",
    "name": "AutoZone",
@@ -332,16 +362,6 @@
    "downgrade": "",
    "auto": true
   },
-  "002756.SZ": {
-   "code": "002756.SZ",
-   "name": "永兴材料",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "PDD": {
    "code": "PDD",
    "name": "拼多多",
@@ -352,9 +372,29 @@
    "downgrade": "",
    "auto": true
   },
-  "002240.SZ": {
-   "code": "002240.SZ",
-   "name": "盛新锂能",
+  "1378.HK": {
+   "code": "1378.HK",
+   "name": "中国宏桥",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "1898.HK": {
+   "code": "1898.HK",
+   "name": "中煤能源",
+   "side": "打折",
+   "action": "🟢打折到位·可开始买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "ORCL": {
+   "code": "ORCL",
+   "name": "甲骨文",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -372,41 +412,11 @@
    "downgrade": "",
    "auto": true
   },
-  "CRM": {
-   "code": "CRM",
-   "name": "Salesforce",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "300450.SZ": {
-   "code": "300450.SZ",
-   "name": "先导智能",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "1339.HK": {
    "code": "1339.HK",
    "name": "中国人民保险",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "XLE": {
-   "code": "XLE",
-   "name": "美股·能源板块",
-   "side": "拐点",
-   "action": "",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -422,9 +432,9 @@
    "downgrade": "",
    "auto": true
   },
-  "COP": {
-   "code": "COP",
-   "name": "康菲石油",
+  "SLB": {
+   "code": "SLB",
+   "name": "斯伦贝谢",
    "side": "行业代表",
    "action": "",
    "rules": [],
@@ -432,19 +442,9 @@
    "downgrade": "",
    "auto": true
   },
-  "JPM": {
-   "code": "JPM",
-   "name": "摩根大通",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "COST": {
-   "code": "COST",
-   "name": "开市客",
+  "GS": {
+   "code": "GS",
+   "name": "高盛",
    "side": "行业代表",
    "action": "",
    "rules": [],
@@ -455,16 +455,6 @@
   "300760.SZ": {
    "code": "300760.SZ",
    "name": "迈瑞医疗",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "600938.SS": {
-   "code": "600938.SS",
-   "name": "中国海油",
    "side": "行业代表",
    "action": "",
    "rules": [],
@@ -501,40 +491,43 @@
    "why": "",
    "downgrade": "",
    "auto": true
-  },
+  }
+ },
+ "reject": {
   "1801.HK": {
    "code": "1801.HK",
    "name": "信达生物",
    "side": "行业代表",
    "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
+   "rules": [
+    "CS7"
+   ],
+   "why": "港股过热而赔率仅1.55(要≥2.0)",
+   "downgrade": ""
   },
   "0005.HK": {
    "code": "0005.HK",
    "name": "汇丰控股",
    "side": "行业代表",
    "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
+   "rules": [
+    "CS7"
+   ],
+   "why": "港股过热而赔率仅0.07(要≥2.0)",
+   "downgrade": ""
   }
  },
- "reject": {},
  "stats": {
-  "n_pass": 81,
-  "n_reject": 9,
+  "n_pass": 71,
+  "n_reject": 18,
   "by_rule": {
    "CS1": 3,
-   "CS2": 1,
+   "CS2": 3,
    "CS3": 0,
    "CS4": 5,
    "CS5": 0,
    "CS6": 0,
-   "CS7": 0,
+   "CS7": 7,
    "CS8": 0
   }
  }
