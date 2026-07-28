@@ -3734,6 +3734,44 @@ try:
                             + (f"<span style='font-size:11px;color:#b45309'>·{_r9o['crowd']}</span>" if _r9o.get("crowd") else "")
                             + f"<span style='font-size:11px;color:#94a3b8'>·{str(_r9o.get('source'))[:12]}"
                             f"{'·池内' if _r9o.get('in_pool') else '·池外新'}</span></div>")
+                    # 【题材热点雷达 2026-07-28 用户"热点掌握不够"】概念板块层——A股的钱按题材走,
+                    # 只看行业(电力设备涨2%)根本不知道今天在炒什么。涨幅榜∩资金榜分真假,
+                    # 连续在榜天数分主线与一日游(主线第2天上车还有肉,一日游第2天就是接盘)。
+                    try:
+                        _htj9 = _nwj9("hot_theme.json")
+                        _hts9 = (_htj9.get("themes") or [])[:6]
+                        if _hts9:
+                            _ht_html9 = []
+                            for _h9t in _hts9:
+                                _kd9 = str(_h9t.get("kind") or "")
+                                _kc9 = ("#dc2626" if "主线" in _kd9 else
+                                        ("#b45309" if "真金" in _kd9 else "#94a3b8"))
+                                _mem9 = "、".join(
+                                    f"{m.get('name')}{(m.get('chg') or 0):+.1f}%"
+                                    for m in (_h9t.get("members") or [])[:3])
+                                _ht_html9.append(
+                                    f"<div style='font-size:12px;line-height:1.6'>"
+                                    f"<b style='color:{_kc9}'>{_kd9}</b> "
+                                    f"<b>{_h9t.get('name')}</b> "
+                                    f"<span style='color:#dc2626'>{(_h9t.get('chg') or 0):+.2f}%</span>"
+                                    + (f"<span style='color:#b45309'>·主力{_h9t['net_yi']:+.1f}亿</span>"
+                                       if _h9t.get("net_yi") is not None else "")
+                                    + f"<span style='font-size:11px;color:#64748b'>·梯队:{_mem9}</span></div>")
+                            _mine9 = _htj9.get("mine_in_hot") or []
+                            st.markdown(
+                                "<b style='font-size:13px'>🔥 ③a0 今日题材热点</b>"
+                                "<span style='font-size:11px;color:#94a3b8' title='东财495个概念板块:"
+                                "涨幅榜∩主力净流入榜——只涨不进钱=情绪脉冲,涨且进钱=真金白银;"
+                                "连续在榜天数区分主线与一日游。梯队=板块内涨幅前三,不只看一只领涨股'>"
+                                f"（{str(_htj9.get('asof_note') or _htj9.get('generated_at', ''))[:18]} ⓘ）</span>"
+                                + "".join(_ht_html9)
+                                + (f"<div style='font-size:11.5px;color:#7c3aed;margin-top:2px'>"
+                                   f"📌跟我有关:" + "、".join(
+                                       f"{h.get('name')}({h.get('theme')}·{h.get('rel')})"
+                                       for h in _mine9[:4]) + "</div>" if _mine9 else ""),
+                                unsafe_allow_html=True)
+                    except Exception as _ht_e9:
+                        logging.exception(f"[V88] 题材热点渲染失败: {_ht_e9}")
                     st.markdown("<b style='font-size:13px'>🌍 ③a 全市场机会</b>"
                                 f"<span style='font-size:11px;color:#94a3b8' title='四路候选(全池转强低位/涨停接力/行业代表/黑马)"
                                 f"→实跑{_op9.get('studied', '?')}只→严格标准(赔率≥2.0·52周位≤55%·2周概率≥55%·启动型)→过环境闸;"

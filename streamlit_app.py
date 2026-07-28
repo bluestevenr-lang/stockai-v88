@@ -587,6 +587,28 @@ if _nav == "🧭 导航":
                 def _fftag9c(_cd):
                     _n = (_ffc9.get(str(_cd)) or {}).get("net")
                     return f"·💰主力+{_n:.1f}亿" if (_n is not None and _n >= 0.1) else ""
+                # 【题材热点·云端 2026-07-28】与桌面同源(pub版去掉持仓自选交集)
+                try:
+                    _htc9 = _pubj9("hot_theme_pub.json")
+                    _htsc9 = (_htc9.get("themes") or [])[:5]
+                    if _htsc9:
+                        st.markdown(
+                            "<b style='font-size:13px'>🔥 今日题材热点</b>"
+                            "<span style='font-size:11px;color:#94a3b8'>（涨幅榜∩资金榜·"
+                            "连续在榜=主线,只涨没进钱=情绪脉冲）</span>"
+                            + "".join(
+                                f"<div style='font-size:12px;line-height:1.6'>"
+                                f"<b style='color:{'#dc2626' if '主线' in str(x.get('kind')) else '#b45309' if '真金' in str(x.get('kind')) else '#94a3b8'}'>"
+                                f"{x.get('kind')}</b> <b>{x.get('name')}</b> "
+                                f"<span style='color:#dc2626'>{(x.get('chg') or 0):+.2f}%</span>"
+                                + (f"<span style='color:#b45309'>·主力{x['net_yi']:+.1f}亿</span>"
+                                   if x.get("net_yi") is not None else "")
+                                + f"<span style='font-size:11px;color:#64748b'>·梯队:"
+                                + "、".join(f"{m.get('name')}{(m.get('chg') or 0):+.1f}%"
+                                           for m in (x.get("members") or [])[:3]) + "</span></div>"
+                                for x in _htsc9), unsafe_allow_html=True)
+                except Exception:
+                    pass
                 st.markdown("<b style='font-size:13px'>🌱 ③ 低位拐点·可注意埋伏</b>"
                             f"<span style='font-size:11px;color:#94a3b8'>（全池{_pt9c2.get('scanned', '?')}只·转强≠立刻买·💰=主力今日净流入）</span>"
                             + ("<div style='font-size:12.5px'>" + "、".join(
