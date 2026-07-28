@@ -1,17 +1,17 @@
 {
   "schema_version": "v88.snapshot/2.0",
-  "snapshot_id": "snap-772b2fefe094a1ea",
+  "snapshot_id": "snap-9354c12099182622",
   "rotation_forecast": {
     "schema_version": "v88.rotation/1.3",
-    "snapshot_id": "snap-83ccf66895f5d7e7",
-    "slot": "2026-07-27-pm",
-    "analysis_time": "2026-07-27 21:39",
+    "snapshot_id": "snap-2acad92a1b16b112",
+    "slot": "2026-07-27-am",
+    "analysis_time": "2026-07-27 18:44",
     "method": "量化2/5/8/16周热度与拐点＋V4 Flash最强思考联合复核（交易日09:00/21:00更新）",
     "market_heat": {
       "美股": {
-        "score": 54,
-        "label": "🟡 中性",
-        "position": "50-65%"
+        "score": 37,
+        "label": "🟠 偏冷",
+        "position": "30-50%"
       },
       "A股": {
         "score": 48,
@@ -19,69 +19,69 @@
         "position": "50-65%"
       },
       "港股": {
-        "score": 73,
-        "label": "🟢 偏暖",
-        "position": "65-80%"
+        "score": 75,
+        "label": "🔥 过热",
+        "position": "6-7成（过热防回撤，触发中线兑现纪律）"
       }
     },
     "markets": {
       "美股": {
         "2周": [
           {
-            "name": "材料",
-            "symbol": "XLB",
-            "score": 62,
-            "confidence": "中",
-            "now": 55,
-            "reason": "短期排名跃升、短期动量转强、主力今日净流入+37.1亿",
-            "trigger": "周动量与量能同向",
-            "invalid": "跌回MA20且放量",
-            "theme": "能源资源",
-            "facts": {
-              "1d": 0.6,
-              "5d": 3.0,
-              "20d": -0.1,
-              "vs_ma20": 1.4,
-              "vs_ma60": 1.1,
-              "vol_ratio": 0.81
-            }
-          },
-          {
             "name": "能源",
             "symbol": "XLE",
-            "score": 61,
+            "score": 69,
             "confidence": "中",
-            "now": 56,
+            "now": 62,
             "reason": "周月动量同向、站上MA20、主力2日净流入+3.6亿",
             "trigger": "周动量与量能同向",
             "invalid": "跌回MA20且放量",
             "theme": "能源资源",
             "facts": {
-              "1d": -1.0,
-              "5d": 1.9,
-              "20d": 9.7,
-              "vs_ma20": 5.0,
-              "vs_ma60": 4.1,
-              "vol_ratio": 0.85
+              "1d": 0.4,
+              "5d": 3.4,
+              "20d": 10.2,
+              "vs_ma20": 6.5,
+              "vs_ma60": 5.1,
+              "vol_ratio": 0.98
+            }
+          },
+          {
+            "name": "公用事业",
+            "symbol": "XLU",
+            "score": 58,
+            "confidence": "中",
+            "now": 54,
+            "reason": "周月动量同向、站上MA20、主力今日净流入+4.3亿",
+            "trigger": "周动量与量能同向",
+            "invalid": "跌回MA20且放量",
+            "theme": "防御",
+            "facts": {
+              "1d": 0.2,
+              "5d": 2.5,
+              "20d": 1.0,
+              "vs_ma20": 1.7,
+              "vs_ma60": 3.1,
+              "vol_ratio": 0.9
             }
           },
           {
             "name": "工业",
             "symbol": "XLI",
-            "score": 60,
-            "confidence": "中",
-            "now": 56,
-            "reason": "短期排名跃升、周月动量同向、主力今日净流入+8.4亿",
+            "score": 57,
+            "confidence": "低",
+            "now": 53,
+            "reason": "短期排名跃升、短期动量转强、主力今日净流入+8.4亿",
             "trigger": "周动量与量能同向",
             "invalid": "跌回MA20且放量",
             "theme": "工业军工",
             "facts": {
-              "1d": 0.8,
-              "5d": 3.4,
-              "20d": 1.7,
-              "vs_ma20": 1.4,
-              "vs_ma60": 4.1,
-              "vol_ratio": 0.76
+              "1d": 0.4,
+              "5d": 1.8,
+              "20d": -0.8,
+              "vs_ma20": 0.7,
+              "vs_ma60": 3.4,
+              "vol_ratio": 0.88
             }
           }
         ],
@@ -89,58 +89,58 @@
           {
             "name": "能源",
             "symbol": "XLE",
-            "score": 65,
+            "score": 69,
             "confidence": "中",
-            "now": 56,
+            "now": 62,
             "reason": "周月动量同向、站上MA20、主力2日净流入+3.6亿",
             "trigger": "20日动量与排名同升",
             "invalid": "20日动量转负",
             "theme": "能源资源",
             "facts": {
-              "1d": -1.0,
-              "5d": 1.9,
-              "20d": 9.7,
-              "vs_ma20": 5.0,
-              "vs_ma60": 4.1,
-              "vol_ratio": 0.85
+              "1d": 0.4,
+              "5d": 3.4,
+              "20d": 10.2,
+              "vs_ma20": 6.5,
+              "vs_ma60": 5.1,
+              "vol_ratio": 0.98
             }
           },
           {
             "name": "金融",
             "symbol": "XLF",
-            "score": 59,
-            "confidence": "中",
-            "now": 55,
+            "score": 56,
+            "confidence": "低",
+            "now": 52,
             "reason": "周月动量同向、站上MA20、主力今日净流入+0.4亿",
             "trigger": "20日动量与排名同升",
             "invalid": "20日动量转负",
             "theme": "金融",
             "facts": {
-              "1d": 1.2,
-              "5d": 1.7,
-              "20d": 6.4,
-              "vs_ma20": 2.2,
-              "vs_ma60": 7.0,
-              "vol_ratio": 0.68
+              "1d": 0.9,
+              "5d": 0.1,
+              "20d": 5.3,
+              "vs_ma20": 1.3,
+              "vs_ma60": 5.9,
+              "vol_ratio": 0.86
             }
           },
           {
             "name": "工业",
             "symbol": "XLI",
-            "score": 57,
+            "score": 55,
             "confidence": "低",
-            "now": 56,
-            "reason": "短期排名跃升、周月动量同向、主力今日净流入+8.4亿",
+            "now": 53,
+            "reason": "短期排名跃升、短期动量转强、主力今日净流入+8.4亿",
             "trigger": "20日动量与排名同升",
             "invalid": "20日动量转负",
             "theme": "工业军工",
             "facts": {
-              "1d": 0.8,
-              "5d": 3.4,
-              "20d": 1.7,
-              "vs_ma20": 1.4,
-              "vs_ma60": 4.1,
-              "vol_ratio": 0.76
+              "1d": 0.4,
+              "5d": 1.8,
+              "20d": -0.8,
+              "vs_ma20": 0.7,
+              "vs_ma60": 3.4,
+              "vol_ratio": 0.88
             }
           }
         ],
@@ -148,58 +148,58 @@
           {
             "name": "能源",
             "symbol": "XLE",
-            "score": 63,
+            "score": 66,
             "confidence": "中",
-            "now": 56,
+            "now": 62,
             "reason": "周月动量同向、站上MA20、主力2日净流入+3.6亿",
             "trigger": "MA20与MA60方向一致",
             "invalid": "趋势斜率反向",
             "theme": "能源资源",
             "facts": {
-              "1d": -1.0,
-              "5d": 1.9,
-              "20d": 9.7,
-              "vs_ma20": 5.0,
-              "vs_ma60": 4.1,
-              "vol_ratio": 0.85
+              "1d": 0.4,
+              "5d": 3.4,
+              "20d": 10.2,
+              "vs_ma20": 6.5,
+              "vs_ma60": 5.1,
+              "vol_ratio": 0.98
             }
           },
           {
             "name": "金融",
             "symbol": "XLF",
-            "score": 60,
-            "confidence": "中",
-            "now": 55,
+            "score": 57,
+            "confidence": "低",
+            "now": 52,
             "reason": "周月动量同向、站上MA20、主力今日净流入+0.4亿",
             "trigger": "MA20与MA60方向一致",
             "invalid": "趋势斜率反向",
             "theme": "金融",
             "facts": {
-              "1d": 1.2,
-              "5d": 1.7,
-              "20d": 6.4,
-              "vs_ma20": 2.2,
-              "vs_ma60": 7.0,
-              "vol_ratio": 0.68
+              "1d": 0.9,
+              "5d": 0.1,
+              "20d": 5.3,
+              "vs_ma20": 1.3,
+              "vs_ma60": 5.9,
+              "vol_ratio": 0.86
             }
           },
           {
-            "name": "医疗",
-            "symbol": "XLV",
-            "score": 57,
+            "name": "公用事业",
+            "symbol": "XLU",
+            "score": 55,
             "confidence": "低",
-            "now": 53,
-            "reason": "周月动量同向、站上MA20、主力今日净流入+3.2亿",
+            "now": 54,
+            "reason": "周月动量同向、站上MA20、主力今日净流入+4.3亿",
             "trigger": "MA20与MA60方向一致",
             "invalid": "趋势斜率反向",
             "theme": "防御",
             "facts": {
-              "1d": 0.6,
-              "5d": 2.6,
-              "20d": 1.9,
-              "vs_ma20": 1.5,
-              "vs_ma60": 7.0,
-              "vol_ratio": 0.56
+              "1d": 0.2,
+              "5d": 2.5,
+              "20d": 1.0,
+              "vs_ma20": 1.7,
+              "vs_ma60": 3.1,
+              "vol_ratio": 0.9
             }
           }
         ],
@@ -207,58 +207,58 @@
           {
             "name": "能源",
             "symbol": "XLE",
-            "score": 61,
+            "score": 63,
             "confidence": "中",
-            "now": 56,
+            "now": 62,
             "reason": "周月动量同向、站上MA20、主力2日净流入+3.6亿",
             "trigger": "MA60方向延续且基本面未坏",
             "invalid": "跌破MA60或基本面转弱",
             "theme": "能源资源",
             "facts": {
-              "1d": -1.0,
-              "5d": 1.9,
-              "20d": 9.7,
-              "vs_ma20": 5.0,
-              "vs_ma60": 4.1,
-              "vol_ratio": 0.85
+              "1d": 0.4,
+              "5d": 3.4,
+              "20d": 10.2,
+              "vs_ma20": 6.5,
+              "vs_ma60": 5.1,
+              "vol_ratio": 0.98
             }
           },
           {
             "name": "金融",
             "symbol": "XLF",
-            "score": 59,
-            "confidence": "中",
-            "now": 55,
+            "score": 57,
+            "confidence": "低",
+            "now": 52,
             "reason": "周月动量同向、站上MA20、主力今日净流入+0.4亿",
             "trigger": "MA60方向延续且基本面未坏",
             "invalid": "跌破MA60或基本面转弱",
             "theme": "金融",
             "facts": {
-              "1d": 1.2,
-              "5d": 1.7,
-              "20d": 6.4,
-              "vs_ma20": 2.2,
-              "vs_ma60": 7.0,
-              "vol_ratio": 0.68
+              "1d": 0.9,
+              "5d": 0.1,
+              "20d": 5.3,
+              "vs_ma20": 1.3,
+              "vs_ma60": 5.9,
+              "vol_ratio": 0.86
             }
           },
           {
-            "name": "医疗",
-            "symbol": "XLV",
-            "score": 58,
-            "confidence": "中",
-            "now": 53,
-            "reason": "周月动量同向、站上MA20、主力今日净流入+3.2亿",
+            "name": "房地产",
+            "symbol": "XLRE",
+            "score": 55,
+            "confidence": "低",
+            "now": 57,
+            "reason": "周月动量同向、站上MA20、主力今日净流入+1.7亿",
             "trigger": "MA60方向延续且基本面未坏",
             "invalid": "跌破MA60或基本面转弱",
-            "theme": "防御",
+            "theme": "房地产",
             "facts": {
-              "1d": 0.6,
-              "5d": 2.6,
-              "20d": 1.9,
-              "vs_ma20": 1.5,
-              "vs_ma60": 7.0,
-              "vol_ratio": 0.56
+              "1d": 2.2,
+              "5d": 1.2,
+              "20d": 3.0,
+              "vs_ma20": 2.6,
+              "vs_ma60": 3.8,
+              "vol_ratio": 0.83
             }
           }
         ]
@@ -745,83 +745,38 @@
         {
           "name": "能源",
           "theme": "能源资源",
-          "now": 56,
+          "now": 62,
           "reason": "周月动量同向、站上MA20、主力2日净流入+3.6亿",
           "facts": {
-            "1d": -1.0,
-            "5d": 1.9,
-            "20d": 9.7,
-            "vs_ma20": 5.0,
-            "vs_ma60": 4.1,
-            "vol_ratio": 0.85
+            "1d": 0.4,
+            "5d": 3.4,
+            "20d": 10.2,
+            "vs_ma20": 6.5,
+            "vs_ma60": 5.1,
+            "vol_ratio": 0.98
           },
           "points": {
             "2周": {
-              "score": 61,
+              "score": 69,
               "confidence": "中",
               "trigger": "周动量与量能同向",
               "invalid": "跌回MA20且放量"
             },
             "5周": {
-              "score": 65,
+              "score": 69,
               "confidence": "中",
               "trigger": "20日动量与排名同升",
               "invalid": "20日动量转负"
             },
             "8周": {
+              "score": 66,
+              "confidence": "中",
+              "trigger": "MA20与MA60方向一致",
+              "invalid": "趋势斜率反向"
+            },
+            "16周": {
               "score": 63,
               "confidence": "中",
-              "trigger": "MA20与MA60方向一致",
-              "invalid": "趋势斜率反向"
-            },
-            "16周": {
-              "score": 61,
-              "confidence": "中",
-              "trigger": "MA60方向延续且基本面未坏",
-              "invalid": "跌破MA60或基本面转弱"
-            }
-          },
-          "turning": {
-            "horizon": "5周",
-            "type": "顶部转弱",
-            "confidence": "中"
-          }
-        },
-        {
-          "name": "材料",
-          "theme": "能源资源",
-          "now": 55,
-          "reason": "短期排名跃升、短期动量转强、主力今日净流入+37.1亿",
-          "facts": {
-            "1d": 0.6,
-            "5d": 3.0,
-            "20d": -0.1,
-            "vs_ma20": 1.4,
-            "vs_ma60": 1.1,
-            "vol_ratio": 0.81
-          },
-          "points": {
-            "2周": {
-              "score": 62,
-              "confidence": "中",
-              "trigger": "周动量与量能同向",
-              "invalid": "跌回MA20且放量"
-            },
-            "5周": {
-              "score": 56,
-              "confidence": "低",
-              "trigger": "20日动量与排名同升",
-              "invalid": "20日动量转负"
-            },
-            "8周": {
-              "score": 54,
-              "confidence": "低",
-              "trigger": "MA20与MA60方向一致",
-              "invalid": "趋势斜率反向"
-            },
-            "16周": {
-              "score": 53,
-              "confidence": "低",
               "trigger": "MA60方向延续且基本面未坏",
               "invalid": "跌破MA60或基本面转弱"
             }
@@ -833,117 +788,27 @@
           }
         },
         {
-          "name": "工业",
-          "theme": "工业军工",
-          "now": 56,
-          "reason": "短期排名跃升、周月动量同向、主力今日净流入+8.4亿",
-          "facts": {
-            "1d": 0.8,
-            "5d": 3.4,
-            "20d": 1.7,
-            "vs_ma20": 1.4,
-            "vs_ma60": 4.1,
-            "vol_ratio": 0.76
-          },
-          "points": {
-            "2周": {
-              "score": 60,
-              "confidence": "中",
-              "trigger": "周动量与量能同向",
-              "invalid": "跌回MA20且放量"
-            },
-            "5周": {
-              "score": 57,
-              "confidence": "低",
-              "trigger": "20日动量与排名同升",
-              "invalid": "20日动量转负"
-            },
-            "8周": {
-              "score": 56,
-              "confidence": "低",
-              "trigger": "MA20与MA60方向一致",
-              "invalid": "趋势斜率反向"
-            },
-            "16周": {
-              "score": 56,
-              "confidence": "低",
-              "trigger": "MA60方向延续且基本面未坏",
-              "invalid": "跌破MA60或基本面转弱"
-            }
-          },
-          "turning": {
-            "horizon": "8周",
-            "type": "底部转强",
-            "confidence": "中"
-          }
-        },
-        {
-          "name": "金融",
-          "theme": "金融",
-          "now": 55,
-          "reason": "周月动量同向、站上MA20、主力今日净流入+0.4亿",
-          "facts": {
-            "1d": 1.2,
-            "5d": 1.7,
-            "20d": 6.4,
-            "vs_ma20": 2.2,
-            "vs_ma60": 7.0,
-            "vol_ratio": 0.68
-          },
-          "points": {
-            "2周": {
-              "score": 53,
-              "confidence": "低",
-              "trigger": "周动量与量能同向",
-              "invalid": "跌回MA20且放量"
-            },
-            "5周": {
-              "score": 59,
-              "confidence": "中",
-              "trigger": "20日动量与排名同升",
-              "invalid": "20日动量转负"
-            },
-            "8周": {
-              "score": 60,
-              "confidence": "中",
-              "trigger": "MA20与MA60方向一致",
-              "invalid": "趋势斜率反向"
-            },
-            "16周": {
-              "score": 59,
-              "confidence": "中",
-              "trigger": "MA60方向延续且基本面未坏",
-              "invalid": "跌破MA60或基本面转弱"
-            }
-          },
-          "turning": {
-            "horizon": "8周",
-            "type": "顶部转弱",
-            "confidence": "中"
-          }
-        },
-        {
           "name": "公用事业",
           "theme": "防御",
-          "now": 53,
-          "reason": "短期排名跃升、短期动量转强、主力今日净流入+4.3亿",
+          "now": 54,
+          "reason": "周月动量同向、站上MA20、主力今日净流入+4.3亿",
           "facts": {
-            "1d": -0.2,
-            "5d": 2.8,
-            "20d": -0.0,
-            "vs_ma20": 1.4,
-            "vs_ma60": 2.9,
-            "vol_ratio": 0.75
+            "1d": 0.2,
+            "5d": 2.5,
+            "20d": 1.0,
+            "vs_ma20": 1.7,
+            "vs_ma60": 3.1,
+            "vol_ratio": 0.9
           },
           "points": {
             "2周": {
-              "score": 59,
+              "score": 58,
               "confidence": "中",
               "trigger": "周动量与量能同向",
               "invalid": "跌回MA20且放量"
             },
             "5周": {
-              "score": 56,
+              "score": 55,
               "confidence": "低",
               "trigger": "20日动量与排名同升",
               "invalid": "20日动量转负"
@@ -962,78 +827,33 @@
             }
           },
           "turning": {
-            "horizon": "16周后",
-            "type": "暂未确认",
-            "confidence": "低"
+            "horizon": "5周",
+            "type": "底部转强",
+            "confidence": "中"
           }
         },
         {
-          "name": "医疗",
-          "theme": "防御",
+          "name": "工业",
+          "theme": "工业军工",
           "now": 53,
-          "reason": "周月动量同向、站上MA20、主力今日净流入+3.2亿",
+          "reason": "短期排名跃升、短期动量转强、主力今日净流入+8.4亿",
           "facts": {
-            "1d": 0.6,
-            "5d": 2.6,
-            "20d": 1.9,
-            "vs_ma20": 1.5,
-            "vs_ma60": 7.0,
-            "vol_ratio": 0.56
+            "1d": 0.4,
+            "5d": 1.8,
+            "20d": -0.8,
+            "vs_ma20": 0.7,
+            "vs_ma60": 3.4,
+            "vol_ratio": 0.88
           },
           "points": {
             "2周": {
-              "score": 53,
-              "confidence": "低",
-              "trigger": "周动量与量能同向",
-              "invalid": "跌回MA20且放量"
-            },
-            "5周": {
-              "score": 56,
-              "confidence": "低",
-              "trigger": "20日动量与排名同升",
-              "invalid": "20日动量转负"
-            },
-            "8周": {
               "score": 57,
               "confidence": "低",
-              "trigger": "MA20与MA60方向一致",
-              "invalid": "趋势斜率反向"
-            },
-            "16周": {
-              "score": 58,
-              "confidence": "中",
-              "trigger": "MA60方向延续且基本面未坏",
-              "invalid": "跌破MA60或基本面转弱"
-            }
-          },
-          "turning": {
-            "horizon": "16周后",
-            "type": "暂未确认",
-            "confidence": "低"
-          }
-        },
-        {
-          "name": "房地产",
-          "theme": "房地产",
-          "now": 53,
-          "reason": "周月动量同向、站上MA20、主力今日净流入+1.7亿",
-          "facts": {
-            "1d": 0.0,
-            "5d": 1.6,
-            "20d": 1.6,
-            "vs_ma20": 2.5,
-            "vs_ma60": 3.8,
-            "vol_ratio": 0.77
-          },
-          "points": {
-            "2周": {
-              "score": 52,
-              "confidence": "低",
               "trigger": "周动量与量能同向",
               "invalid": "跌回MA20且放量"
             },
             "5周": {
-              "score": 53,
+              "score": 55,
               "confidence": "低",
               "trigger": "20日动量与排名同升",
               "invalid": "20日动量转负"
@@ -1053,6 +873,96 @@
           },
           "turning": {
             "horizon": "8周",
+            "type": "底部转强",
+            "confidence": "中"
+          }
+        },
+        {
+          "name": "金融",
+          "theme": "金融",
+          "now": 52,
+          "reason": "周月动量同向、站上MA20、主力今日净流入+0.4亿",
+          "facts": {
+            "1d": 0.9,
+            "5d": 0.1,
+            "20d": 5.3,
+            "vs_ma20": 1.3,
+            "vs_ma60": 5.9,
+            "vol_ratio": 0.86
+          },
+          "points": {
+            "2周": {
+              "score": 48,
+              "confidence": "低",
+              "trigger": "周动量与量能同向",
+              "invalid": "跌回MA20且放量"
+            },
+            "5周": {
+              "score": 56,
+              "confidence": "低",
+              "trigger": "20日动量与排名同升",
+              "invalid": "20日动量转负"
+            },
+            "8周": {
+              "score": 57,
+              "confidence": "低",
+              "trigger": "MA20与MA60方向一致",
+              "invalid": "趋势斜率反向"
+            },
+            "16周": {
+              "score": 57,
+              "confidence": "低",
+              "trigger": "MA60方向延续且基本面未坏",
+              "invalid": "跌破MA60或基本面转弱"
+            }
+          },
+          "turning": {
+            "horizon": "8周",
+            "type": "顶部转弱",
+            "confidence": "中"
+          }
+        },
+        {
+          "name": "房地产",
+          "theme": "房地产",
+          "now": 57,
+          "reason": "周月动量同向、站上MA20、主力今日净流入+1.7亿",
+          "facts": {
+            "1d": 2.2,
+            "5d": 1.2,
+            "20d": 3.0,
+            "vs_ma20": 2.6,
+            "vs_ma60": 3.8,
+            "vol_ratio": 0.83
+          },
+          "points": {
+            "2周": {
+              "score": 52,
+              "confidence": "低",
+              "trigger": "周动量与量能同向",
+              "invalid": "跌回MA20且放量"
+            },
+            "5周": {
+              "score": 55,
+              "confidence": "低",
+              "trigger": "20日动量与排名同升",
+              "invalid": "20日动量转负"
+            },
+            "8周": {
+              "score": 55,
+              "confidence": "低",
+              "trigger": "MA20与MA60方向一致",
+              "invalid": "趋势斜率反向"
+            },
+            "16周": {
+              "score": 55,
+              "confidence": "低",
+              "trigger": "MA60方向延续且基本面未坏",
+              "invalid": "跌破MA60或基本面转弱"
+            }
+          },
+          "turning": {
+            "horizon": "5周",
             "type": "顶部转弱",
             "confidence": "中"
           }
@@ -1061,18 +971,18 @@
           "name": "必选消费",
           "theme": "消费",
           "now": 50,
-          "reason": "站上MA20",
+          "reason": "相对强度靠前",
           "facts": {
-            "1d": 0.7,
-            "5d": -0.2,
-            "20d": -0.0,
-            "vs_ma20": 0.6,
-            "vs_ma60": 1.1,
-            "vol_ratio": 0.68
+            "1d": 1.1,
+            "5d": -1.2,
+            "20d": 0.2,
+            "vs_ma20": -0.1,
+            "vs_ma60": 0.4,
+            "vol_ratio": 0.79
           },
           "points": {
             "2周": {
-              "score": 46,
+              "score": 44,
               "confidence": "低",
               "trigger": "周动量与量能同向",
               "invalid": "跌回MA20且放量"
@@ -1090,30 +1000,30 @@
               "invalid": "趋势斜率反向"
             },
             "16周": {
-              "score": 51,
+              "score": 50,
               "confidence": "低",
               "trigger": "MA60方向延续且基本面未坏",
               "invalid": "跌破MA60或基本面转弱"
             }
           },
           "turning": {
-            "horizon": "2周",
-            "type": "温度区间切换",
-            "confidence": "低"
+            "horizon": "8周",
+            "type": "顶部转弱",
+            "confidence": "中"
           }
         },
         {
           "name": "科技",
           "theme": "科技链",
-          "now": 46,
-          "reason": "短期动量转强、主力今日-15.5亿5日-142.6亿双流出",
+          "now": 41,
+          "reason": "短期排名跃升、短期动量转强、主力今日-15.5亿5日-142.6亿双流出",
           "facts": {
-            "1d": 0.8,
-            "5d": 0.9,
-            "20d": -2.1,
-            "vs_ma20": -2.2,
-            "vs_ma60": -2.0,
-            "vol_ratio": 0.65
+            "1d": -1.4,
+            "5d": 0.2,
+            "20d": -4.7,
+            "vs_ma20": -3.1,
+            "vs_ma60": -2.6,
+            "vol_ratio": 0.76
           },
           "points": {
             "2周": {
@@ -1123,19 +1033,19 @@
               "invalid": "跌回MA20且放量"
             },
             "5周": {
-              "score": 44,
+              "score": 43,
               "confidence": "低",
               "trigger": "20日动量与排名同升",
               "invalid": "20日动量转负"
             },
             "8周": {
-              "score": 44,
+              "score": 43,
               "confidence": "低",
               "trigger": "MA20与MA60方向一致",
               "invalid": "趋势斜率反向"
             },
             "16周": {
-              "score": 44,
+              "score": 43,
               "confidence": "低",
               "trigger": "MA60方向延续且基本面未坏",
               "invalid": "跌破MA60或基本面转弱"
@@ -1629,16 +1539,62 @@
       "16周：防御获2个市场共振"
     ],
     "strong_review": {
-      "status": "cached",
+      "status": "completed",
       "mode": "thinking-high",
-      "reason": "6小时强思考缓存或月度7元预算闸门"
+      "model": "deepseek-v4-flash",
+      "summary": "美股能源动量最强，A股有色金属短期强势，港股高股息资金流入，但新闻催化不足。",
+      "focus": {
+        "美股": {
+          "2周": "能源",
+          "5周": "能源",
+          "8周": "能源",
+          "16周": "能源"
+        },
+        "A股": {
+          "2周": "有色金属",
+          "5周": "银行",
+          "8周": "医药",
+          "16周": "医药"
+        },
+        "港股": {
+          "2周": "高股息",
+          "5周": "高股息",
+          "8周": "高股息",
+          "16周": "高股息"
+        }
+      },
+      "warnings": [
+        "美股能源无新闻催化，动量高位警惕回调",
+        "A股银行主力双流出，短期承压",
+        "港股高股息与科技分化，风格切换风险"
+      ],
+      "cross_market": "能源与高股息领涨，但缺乏共振，需关注流动性是否持续"
     }
   },
   "cycle_scan": {
     "schema_version": "v88.cycle/1.1",
-    "slot": "2026-07-27-pm",
-    "analysis_time": "2026-07-27 21:40",
+    "slot": null,
+    "analysis_time": "2026-07-28 07:59",
     "stocks": [
+      {
+        "code": "QQQM",
+        "name": "Invesco纳指",
+        "phase": "派发→退潮",
+        "direction": "down",
+        "headline": "↓ 即将进入下行周期（派发转退潮）",
+        "up": 0.0,
+        "down": 66.0,
+        "confidence": "高",
+        "horizon": "日~周",
+        "pos52": 66,
+        "trigger": "放量跌破 292.52 或顶拐/死叉",
+        "invalid": "放量收复 292.52（退潮证伪）",
+        "sector_phase": null,
+        "p_up": 36,
+        "unified_score": 48,
+        "rr": 3.36,
+        "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
+      },
       {
         "code": "601899.SS",
         "name": "紫金矿业",
@@ -1656,102 +1612,7 @@
         "p_up": 85,
         "unified_score": 73,
         "rr": 0.61,
-        "entry_note": "⏳双路径:回踩30.36/突破34.81·08-03前｜方向偏多但当前赔率不足；需上行>62.1%"
-      },
-      {
-        "code": "VOO",
-        "name": "Vanguard标普500",
-        "phase": "派发→退潮",
-        "direction": "down",
-        "headline": "↓ 即将进入下行周期（派发转退潮）",
-        "up": 0.0,
-        "down": 58.0,
-        "confidence": "中",
-        "horizon": "周",
-        "pos52": 90,
-        "trigger": "放量跌破 686.60 或顶拐/死叉",
-        "invalid": "放量收复 686.60（退潮证伪）",
-        "sector_phase": null,
-        "p_up": 42,
-        "unified_score": 45,
-        "rr": 1.2,
-        "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
-      },
-      {
-        "code": "MU",
-        "name": "美光科技",
-        "phase": "派发→退潮",
-        "direction": "down",
-        "headline": "↓ 即将进入下行周期（派发转退潮）",
-        "up": 0.0,
-        "down": 58.0,
-        "confidence": "中",
-        "horizon": "周~月",
-        "pos52": 65,
-        "trigger": "放量跌破 965.58 或顶拐/死叉",
-        "invalid": "放量收复 965.58（退潮证伪）",
-        "sector_phase": "退潮",
-        "p_up": 44,
-        "unified_score": 50,
-        "rr": 2.62,
-        "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
-      },
-      {
-        "code": "QQQM",
-        "name": "Invesco纳指",
-        "phase": "派发→退潮",
-        "direction": "down",
-        "headline": "↓ 即将进入下行周期（派发转退潮）",
-        "up": 0.0,
-        "down": 58.0,
-        "confidence": "中",
-        "horizon": "周~月",
-        "pos52": 70,
-        "trigger": "放量跌破 292.70 或顶拐/死叉",
-        "invalid": "放量收复 292.70（退潮证伪）",
-        "sector_phase": "退潮",
-        "p_up": 38,
-        "unified_score": 50,
-        "rr": 3.05,
-        "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
-      },
-      {
-        "code": "MRVL",
-        "name": "迈威尔科技",
-        "phase": "派发→退潮",
-        "direction": "down",
-        "headline": "↓ 即将进入下行周期（派发转退潮）",
-        "up": 0.0,
-        "down": 58.0,
-        "confidence": "中",
-        "horizon": "周~月",
-        "pos52": 49,
-        "trigger": "放量跌破 226.06 或顶拐/死叉",
-        "invalid": "放量收复 226.06（退潮证伪）",
-        "sector_phase": "退潮",
-        "p_up": 30,
-        "unified_score": 43,
-        "rr": 3.46,
-        "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
-      },
-      {
-        "code": "MO",
-        "name": "奥驰亚",
-        "phase": "派发→退潮",
-        "direction": "down",
-        "headline": "↓ 即将进入下行周期（派发转退潮）",
-        "up": 0.0,
-        "down": 50.0,
-        "confidence": "中",
-        "horizon": "周",
-        "pos52": 82,
-        "trigger": "放量跌破 72.40 或顶拐/死叉",
-        "invalid": "放量收复 72.40（退潮证伪）",
-        "sector_phase": null,
-        "p_up": 47,
-        "unified_score": 48,
-        "rr": 1.25,
-        "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
+        "entry_note": "⏳双路径:回踩30.36/突破34.81·08-04前｜方向偏多但当前赔率不足；需上行>62.1%"
       },
       {
         "code": "002550.SZ",
@@ -1773,8 +1634,46 @@
         "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
       },
       {
+        "code": "VOO",
+        "name": "Vanguard标普500",
+        "phase": "派发→退潮",
+        "direction": "down",
+        "headline": "↓ 即将进入下行周期（派发转退潮）",
+        "up": 0.0,
+        "down": 48.0,
+        "confidence": "中",
+        "horizon": "周",
+        "pos52": 85,
+        "trigger": "放量跌破 686.33 或顶拐/死叉",
+        "invalid": "放量收复 686.33（退潮证伪）",
+        "sector_phase": null,
+        "p_up": 41,
+        "unified_score": 48,
+        "rr": 1.75,
+        "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
+      },
+      {
+        "code": "PFE",
+        "name": "辉瑞",
+        "phase": "蓄势→领涨",
+        "direction": "up",
+        "headline": "↑ 即将进入上行周期（蓄势转领涨）",
+        "up": 42.0,
+        "down": 0.0,
+        "confidence": "低",
+        "horizon": "周",
+        "pos52": 32,
+        "trigger": "放量站稳 24.09 + 底拐确认",
+        "invalid": "失守 24.09 或缩量回落（切换证伪）",
+        "sector_phase": null,
+        "p_up": 58,
+        "unified_score": 59,
+        "rr": 1.49,
+        "entry_note": "✅现价可进·07-31前·破23.21废·仅短线｜周期未充分共振，等待触发"
+      },
+      {
         "code": "9988.HK",
-        "name": "阿里巴巴-SW",
+        "name": "阿里巴巴",
         "phase": "蓄势→领涨",
         "direction": "up",
         "headline": "↑ 即将进入上行周期（蓄势转领涨）",
@@ -1789,26 +1688,7 @@
         "p_up": 56,
         "unified_score": 66,
         "rr": 3.66,
-        "entry_note": "⏳双路径:回踩106.98/突破143.84·08-03前｜周期未充分共振，等待触发"
-      },
-      {
-        "code": "PFE",
-        "name": "辉瑞",
-        "phase": "蓄势→领涨",
-        "direction": "up",
-        "headline": "↑ 即将进入上行周期（蓄势转领涨）",
-        "up": 42.0,
-        "down": 0.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 30,
-        "trigger": "放量站稳 24.09 + 底拐确认",
-        "invalid": "失守 24.09 或缩量回落（切换证伪）",
-        "sector_phase": null,
-        "p_up": 58,
-        "unified_score": 59,
-        "rr": 1.66,
-        "entry_note": "✅现价可进·07-30前·破23.21废·仅短线｜周期未充分共振，等待触发"
+        "entry_note": "⏳双路径:回踩106.98/突破143.84·08-04前｜周期未充分共振，等待触发"
       },
       {
         "code": "300750.SZ",
@@ -1827,7 +1707,7 @@
         "p_up": 69,
         "unified_score": 67,
         "rr": 1.45,
-        "entry_note": "⏳双路径:回踩376.31/突破468.75·08-03前｜周期未充分共振，等待触发"
+        "entry_note": "⏳双路径:回踩376.31/突破468.75·08-04前｜周期未充分共振，等待触发"
       },
       {
         "code": "688012.SS",
@@ -1906,8 +1786,46 @@
         "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
       },
       {
-        "code": "DRAM",
-        "name": "Roundhill DRAM",
+        "code": "MU",
+        "name": "美光科技",
+        "phase": "派发→退潮",
+        "direction": "down",
+        "headline": "↓ 即将进入下行周期（派发转退潮）",
+        "up": 7.0,
+        "down": 40.0,
+        "confidence": "低",
+        "horizon": "周",
+        "pos52": 62,
+        "trigger": "放量跌破 964.16 或顶拐/死叉",
+        "invalid": "放量收复 964.16（退潮证伪）",
+        "sector_phase": null,
+        "p_up": 41,
+        "unified_score": 47,
+        "rr": 3.21,
+        "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
+      },
+      {
+        "code": "MRVL",
+        "name": "迈威尔科技",
+        "phase": "派发→退潮",
+        "direction": "down",
+        "headline": "↓ 即将进入下行周期（派发转退潮）",
+        "up": 7.0,
+        "down": 40.0,
+        "confidence": "低",
+        "horizon": "周",
+        "pos52": 46,
+        "trigger": "放量跌破 225.65 或顶拐/死叉",
+        "invalid": "放量收复 225.65（退潮证伪）",
+        "sector_phase": null,
+        "p_up": 26,
+        "unified_score": 41,
+        "rr": 3.14,
+        "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
+      },
+      {
+        "code": "MS",
+        "name": "摩根士丹利",
         "phase": "派发→退潮",
         "direction": "down",
         "headline": "↓ 即将进入下行周期（派发转退潮）",
@@ -1915,14 +1833,14 @@
         "down": 40.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 52,
-        "trigger": "放量跌破 60.19 或顶拐/死叉",
-        "invalid": "放量收复 60.19（退潮证伪）",
+        "pos52": 78,
+        "trigger": "放量跌破 217.72 或顶拐/死叉",
+        "invalid": "放量收复 217.72（退潮证伪）",
         "sector_phase": null,
-        "p_up": 35,
+        "p_up": 36,
         "unified_score": 45,
-        "rr": 3.3,
-        "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
+        "rr": 1.57,
+        "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
       },
       {
         "code": "GOOG",
@@ -1930,17 +1848,17 @@
         "phase": "退潮中",
         "direction": "hold",
         "headline": "→ 下行周期中，未见企稳",
-        "up": 7.0,
+        "up": 17.0,
         "down": 40.0,
         "confidence": "低",
         "horizon": "周",
         "pos52": 42,
-        "trigger": "放量突破/跌破 349.99 触发方向",
+        "trigger": "放量突破/跌破 349.94 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 25,
-        "unified_score": 43,
-        "rr": 4.41,
+        "p_up": 24,
+        "unified_score": 41,
+        "rr": 4.43,
         "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
       },
       {
@@ -1949,17 +1867,55 @@
         "phase": "退潮中",
         "direction": "hold",
         "headline": "→ 下行周期中，未见企稳",
+        "up": 17.0,
+        "down": 40.0,
+        "confidence": "低",
+        "horizon": "周",
+        "pos52": 40,
+        "trigger": "放量突破/跌破 351.65 触发方向",
+        "invalid": "—",
+        "sector_phase": null,
+        "p_up": 23,
+        "unified_score": 40,
+        "rr": 4.63,
+        "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
+      },
+      {
+        "code": "NVDA",
+        "name": "英伟达",
+        "phase": "退潮中",
+        "direction": "hold",
+        "headline": "→ 下行周期中，未见企稳",
         "up": 7.0,
         "down": 40.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 41,
-        "trigger": "放量突破/跌破 351.72 触发方向",
+        "pos52": 45,
+        "trigger": "放量突破/跌破 203.53 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 24,
-        "unified_score": 42,
-        "rr": 4.6,
+        "p_up": 37,
+        "unified_score": 51,
+        "rr": 3.3,
+        "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
+      },
+      {
+        "code": "DRAM",
+        "name": "Roundhill DRAM",
+        "phase": "退潮中",
+        "direction": "hold",
+        "headline": "→ 下行周期中，未见企稳",
+        "up": 0.0,
+        "down": 40.0,
+        "confidence": "低",
+        "horizon": "周",
+        "pos52": 48,
+        "trigger": "放量突破/跌破 60.08 触发方向",
+        "invalid": "—",
+        "sector_phase": null,
+        "p_up": 31,
+        "unified_score": 41,
+        "rr": 3.02,
         "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
       },
       {
@@ -1968,17 +1924,17 @@
         "phase": "退潮中",
         "direction": "hold",
         "headline": "→ 下行周期中，未见企稳",
-        "up": 8.0,
+        "up": 18.0,
         "down": 36.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 5,
-        "trigger": "放量突破/跌破 385.46 触发方向",
+        "pos52": 3,
+        "trigger": "放量突破/跌破 385.20 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 15,
-        "unified_score": 30,
-        "rr": 5.26,
+        "unified_score": 29,
+        "rr": 5.02,
         "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
       },
       {
@@ -2039,25 +1995,6 @@
         "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
       },
       {
-        "code": "AAPL",
-        "name": "苹果",
-        "phase": "偏空整理",
-        "direction": "hold",
-        "headline": "→ 下行压力积累，待破位确认",
-        "up": 7.0,
-        "down": 36.0,
-        "confidence": "低",
-        "horizon": "周~月",
-        "pos52": 99,
-        "trigger": "放量突破/跌破 316.99 触发方向",
-        "invalid": "—",
-        "sector_phase": "退潮",
-        "p_up": 63,
-        "unified_score": 60,
-        "rr": 0.07,
-        "entry_note": "⏳双路径:回踩328.01/突破337.12·08-03前｜方向偏多但当前赔率不足；需上行>93.5%"
-      },
-      {
         "code": "2318.HK",
         "name": "中国平安港",
         "phase": "偏多整理",
@@ -2074,11 +2011,11 @@
         "p_up": 67,
         "unified_score": 68,
         "rr": 1.75,
-        "entry_note": "✅现价可进·07-30前·破50.35废·仅短线｜周期未充分共振，等待触发"
+        "entry_note": "✅现价可进·07-31前·破50.35废·仅短线｜周期未充分共振，等待触发"
       },
       {
         "code": "2020.HK",
-        "name": "安踏体育",
+        "name": "2020.HK",
         "phase": "偏多整理",
         "direction": "hold",
         "headline": "→ 上行动能积累，待放量确认",
@@ -2093,7 +2030,7 @@
         "p_up": 64,
         "unified_score": 68,
         "rr": 1.64,
-        "entry_note": "✅现价可进·07-30前·破68.75废｜标准门槛通过；概率优势+26.1点"
+        "entry_note": "✅现价可进·07-31前·破68.75废｜标准门槛通过；概率优势+26.1点"
       },
       {
         "code": "LLY",
@@ -2106,13 +2043,13 @@
         "confidence": "低",
         "horizon": "周",
         "pos52": 87,
-        "trigger": "放量突破/跌破 1189.79 触发方向",
+        "trigger": "放量突破/跌破 1189.80 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 52,
         "unified_score": 56,
-        "rr": 0.83,
-        "entry_note": "⏳等回踩1172.2或突破1249.45｜周期未充分共振，等待触发"
+        "rr": 0.82,
+        "entry_note": "⏳等回踩1172.22或突破1249.45｜周期未充分共振，等待触发"
       },
       {
         "code": "MRK",
@@ -2124,37 +2061,18 @@
         "down": 30.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 99,
-        "trigger": "放量突破/跌破 126.89 触发方向",
+        "pos52": 94,
+        "trigger": "放量突破/跌破 126.85 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 66,
-        "unified_score": 56,
-        "rr": 0.06,
-        "entry_note": "🚫短线不进｜方向偏多但当前赔率不足；需上行>94.3%"
-      },
-      {
-        "code": "MS",
-        "name": "摩根士丹利",
-        "phase": "偏空整理",
-        "direction": "hold",
-        "headline": "→ 下行压力积累，待破位确认",
-        "up": 0.0,
-        "down": 30.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 83,
-        "trigger": "放量突破/跌破 217.92 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 45,
+        "p_up": 65,
         "unified_score": 57,
-        "rr": 1.22,
-        "entry_note": "⏳等回踩218.42或突破232.25｜周期未充分共振，等待触发"
+        "rr": 0.17,
+        "entry_note": "🚫短线不进｜方向偏多但当前赔率不足；需上行>85.5%"
       },
       {
         "code": "1810.HK",
-        "name": "小米集团-W",
+        "name": "小米",
         "phase": "偏多整理",
         "direction": "hold",
         "headline": "→ 上行动能积累，待放量确认",
@@ -2188,7 +2106,7 @@
         "p_up": 56,
         "unified_score": 61,
         "rr": 1.56,
-        "entry_note": "⏳双路径:回踩397.28/突破431·08-03前｜周期未充分共振，等待触发"
+        "entry_note": "⏳双路径:回踩397.28/突破431·08-04前｜周期未充分共振，等待触发"
       },
       {
         "code": "601288.SS",
@@ -2207,7 +2125,7 @@
         "p_up": 60,
         "unified_score": 51,
         "rr": 0.29,
-        "entry_note": "⏳双路径:回踩6.5/突破6.87·08-03前｜周期未充分共振，等待触发"
+        "entry_note": "⏳双路径:回踩6.5/突破6.87·08-04前｜周期未充分共振，等待触发"
       },
       {
         "code": "600941.SS",
@@ -2226,26 +2144,64 @@
         "p_up": 55,
         "unified_score": 60,
         "rr": 1.81,
-        "entry_note": "⏳双路径:回踩93.94/突破101.09·08-03前｜周期未充分共振，等待触发"
+        "entry_note": "⏳双路径:回踩93.94/突破101.09·08-04前｜周期未充分共振，等待触发"
       },
       {
-        "code": "NVDA",
-        "name": "英伟达",
-        "phase": "整理",
+        "code": "MO",
+        "name": "奥驰亚",
+        "phase": "偏空整理",
         "direction": "hold",
-        "headline": "→ 周期未明，整理观望",
-        "up": 15.0,
-        "down": 18.0,
+        "headline": "→ 下行压力积累，待破位确认",
+        "up": 0.0,
+        "down": 20.0,
         "confidence": "低",
-        "horizon": "周~月",
-        "pos52": 56,
-        "trigger": "放量突破/跌破 203.94 触发方向",
+        "horizon": "周",
+        "pos52": 87,
+        "trigger": "放量突破/跌破 72.48 触发方向",
         "invalid": "—",
-        "sector_phase": "退潮",
-        "p_up": 49,
-        "unified_score": 63,
-        "rr": 2.85,
-        "entry_note": "⏳等回踩203.94或突破236.26｜周期未充分共振，等待触发"
+        "sector_phase": null,
+        "p_up": 53,
+        "unified_score": 51,
+        "rr": 0.79,
+        "entry_note": "⏳等回踩72.46或突破75.28｜周期未充分共振，等待触发"
+      },
+      {
+        "code": "SO",
+        "name": "美国南方公司",
+        "phase": "领涨中",
+        "direction": "hold",
+        "headline": "→ 上行周期进行中，未见切换",
+        "up": 20.0,
+        "down": 0.0,
+        "confidence": "低",
+        "horizon": "周",
+        "pos52": 78,
+        "trigger": "放量突破/跌破 95.94 触发方向",
+        "invalid": "—",
+        "sector_phase": null,
+        "p_up": 51,
+        "unified_score": 53,
+        "rr": 0.85,
+        "entry_note": "⏳双路径:回踩95.64/突破99.26·08-04前｜周期未充分共振，等待触发"
+      },
+      {
+        "code": "AAPL",
+        "name": "苹果",
+        "phase": "领涨中",
+        "direction": "hold",
+        "headline": "→ 上行周期进行中，未见切换",
+        "up": 19.0,
+        "down": 8.0,
+        "confidence": "低",
+        "horizon": "周",
+        "pos52": 97,
+        "trigger": "放量突破/跌破 317.04 触发方向",
+        "invalid": "—",
+        "sector_phase": null,
+        "p_up": 65,
+        "unified_score": 61,
+        "rr": 0.11,
+        "entry_note": "⏳双路径:回踩328.12/突破339.57·08-04前｜方向偏多但当前赔率不足；需上行>90.1%"
       },
       {
         "code": "PM",
@@ -2257,33 +2213,14 @@
         "down": 16.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 87,
-        "trigger": "放量突破/跌破 185.92 触发方向",
+        "pos52": 92,
+        "trigger": "放量突破/跌破 186.04 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 63,
-        "unified_score": 55,
-        "rr": 0.38,
-        "entry_note": "⏳双路径:回踩189.2/突破199.78·08-03前｜方向偏多但当前赔率不足；需上行>72.5%"
-      },
-      {
-        "code": "SO",
-        "name": "美国南方公司",
-        "phase": "领涨中",
-        "direction": "hold",
-        "headline": "→ 上行周期进行中，未见切换",
-        "up": 12.0,
-        "down": 8.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 84,
-        "trigger": "放量突破/跌破 95.97 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 52,
-        "unified_score": 49,
-        "rr": 0.54,
-        "entry_note": "⏳等回踩95.7或突破99.26｜周期未充分共振，等待触发"
+        "p_up": 65,
+        "unified_score": 53,
+        "rr": 0.21,
+        "entry_note": "⏳双路径:回踩189.45/突破199.78·08-04前｜方向偏多但当前赔率不足；需上行>82.6%"
       },
       {
         "code": "513650.SS",
@@ -2333,18 +2270,18 @@
         "down": 8.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 90,
-        "trigger": "放量突破/跌破 256.96 触发方向",
+        "pos52": 93,
+        "trigger": "放量突破/跌破 257.04 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 55,
-        "unified_score": 54,
-        "rr": 0.28,
-        "entry_note": "⏳双路径:回踩254.58/突破269.43·08-03前｜周期未充分共振，等待触发"
+        "p_up": 64,
+        "unified_score": 59,
+        "rr": 0.17,
+        "entry_note": "⏳双路径:回踩254.76/突破269.43·08-04前｜方向偏多但当前赔率不足；需上行>85.5%"
       }
     ]
   },
-  "generated_at": "2026-07-28 04:49",
+  "generated_at": "2026-07-28 07:58",
   "markets": {
     "美股": {
       "indices": [
@@ -2352,13 +2289,13 @@
           "symbol": "^GSPC",
           "name": "标普500",
           "last": 7413.18,
-          "chg1d": 0.07,
-          "chg5d": -0.6,
-          "chg20d": 0.76,
-          "vs_ma20": -1.02,
-          "vs_ma60": -0.39,
+          "chg1d": 0.02,
+          "chg5d": -0.4,
+          "chg20d": 0.8,
+          "vs_ma20": -1.06,
+          "vs_ma60": -0.46,
           "trend": "🔄 震荡偏弱",
-          "vol_ratio": 0.91,
+          "vol_ratio": 0.93,
           "turning": "",
           "turning_prompt": ""
         },
@@ -2366,27 +2303,27 @@
           "symbol": "^IXIC",
           "name": "纳斯达克",
           "last": 24932.08,
-          "chg1d": -0.82,
-          "chg5d": -2.3,
-          "chg20d": -1.68,
-          "vs_ma20": -3.41,
-          "vs_ma60": -4.06,
+          "chg1d": -0.18,
+          "chg5d": -2.26,
+          "chg20d": -1.44,
+          "vs_ma20": -3.35,
+          "vs_ma60": -4.08,
           "trend": "📉 空头排列",
-          "vol_ratio": 0.88,
-          "turning": "⚠️顶拐:跌破20日低点 24954.77",
-          "turning_prompt": "跌破20日低点 24954.77：短期趋势结构破坏。👉 你来确认三件事：①明日能否收回MA20（25813.04）——收不回=拐点成立；②量能是否持续放大（连续两日≥1.3倍=资金在跑）；③是否跌破今日低点 24774.87——破了立即执行纪律，不要等反弹"
+          "vol_ratio": 0.93,
+          "turning": "",
+          "turning_prompt": ""
         },
         {
           "symbol": "^DJI",
           "name": "道琼斯",
           "last": 52210.08,
-          "chg1d": 0.96,
-          "chg5d": 0.12,
-          "chg20d": 0.56,
+          "chg1d": 0.51,
+          "chg5d": 0.72,
+          "chg20d": 0.64,
           "vs_ma20": -0.33,
-          "vs_ma60": 2.12,
+          "vs_ma60": 2.02,
           "trend": "🔄 震荡偏弱",
-          "vol_ratio": 0.84,
+          "vol_ratio": 0.94,
           "turning": "",
           "turning_prompt": ""
         }
@@ -2396,46 +2333,46 @@
           "symbol": "XLK",
           "name": "科技",
           "last": 174.3,
-          "chg1d": -2.33,
-          "chg5d": -0.73,
-          "chg20d": -5.56,
-          "vs_ma20": -3.9,
-          "vs_ma60": -3.46,
+          "chg1d": -0.9,
+          "chg5d": -0.8,
+          "chg20d": -3.76,
+          "vs_ma20": -3.77,
+          "vs_ma60": -3.61,
           "trend": "🔄 震荡偏弱",
-          "vol_ratio": 0.77,
+          "vol_ratio": 0.8,
           "turning": "",
           "turning_prompt": "",
-          "heat": 35
+          "heat": 37
         },
         {
           "symbol": "XLC",
           "name": "通信",
           "last": 107.66,
-          "chg1d": 2.16,
-          "chg5d": -2.7,
-          "chg20d": 1.97,
+          "chg1d": 1.28,
+          "chg5d": -2.83,
+          "chg20d": 1.39,
           "vs_ma20": -1.96,
-          "vs_ma60": -4.11,
+          "vs_ma60": -3.98,
           "trend": "📉 空头排列",
-          "vol_ratio": 0.89,
+          "vol_ratio": 0.97,
           "turning": "",
           "turning_prompt": "",
-          "heat": 40
+          "heat": 43
         },
         {
           "symbol": "XLY",
           "name": "可选消费",
           "last": 110.84,
-          "chg1d": 1.91,
-          "chg5d": -3.98,
-          "chg20d": -2.21,
-          "vs_ma20": -4.18,
-          "vs_ma60": -5.08,
+          "chg1d": 1.31,
+          "chg5d": -3.29,
+          "chg20d": -3.09,
+          "vs_ma20": -3.98,
+          "vs_ma60": -4.98,
           "trend": "📉 空头排列",
-          "vol_ratio": 0.95,
+          "vol_ratio": 0.97,
           "turning": "",
           "turning_prompt": "",
-          "heat": 38
+          "heat": 40
         },
         {
           "symbol": "XLP",
@@ -2456,43 +2393,43 @@
           "symbol": "XLF",
           "name": "金融",
           "last": 56.88,
-          "chg1d": 1.88,
-          "chg5d": 1.1,
-          "chg20d": 6.42,
-          "vs_ma20": 2.26,
-          "vs_ma60": 6.94,
+          "chg1d": 1.01,
+          "chg5d": 1.5,
+          "chg20d": 6.18,
+          "vs_ma20": 2.01,
+          "vs_ma60": 6.79,
           "trend": "📈 多头排列",
-          "vol_ratio": 0.85,
+          "vol_ratio": 0.81,
           "turning": "⚠️顶拐:MACD顶背离+死叉",
-          "turning_prompt": "MACD顶背离+死叉：价创新高但动能走弱，随后死叉确认。👉 你来确认三件事：①明日能否收回MA20（55.62）——收不回=拐点成立；②量能是否持续放大（连续两日≥1.3倍=资金在跑）；③是否跌破今日低点 56.58——破了立即执行纪律，不要等反弹",
-          "heat": 48
+          "turning_prompt": "MACD顶背离+死叉：价创新高但动能走弱，随后死叉确认。👉 你来确认三件事：①明日能否收回MA20（55.76）——收不回=拐点成立；②量能是否持续放大（连续两日≥1.3倍=资金在跑）；③是否跌破今日低点 56.58——破了立即执行纪律，不要等反弹",
+          "heat": 46
         },
         {
           "symbol": "XLV",
           "name": "医疗",
           "last": 163.4,
-          "chg1d": 1.21,
-          "chg5d": 1.43,
-          "chg20d": 4.99,
-          "vs_ma20": 1.51,
-          "vs_ma60": 7.16,
+          "chg1d": 0.51,
+          "chg5d": 2.61,
+          "chg20d": 1.91,
+          "vs_ma20": 1.44,
+          "vs_ma60": 6.92,
           "trend": "📈 多头排列",
-          "vol_ratio": 0.64,
+          "vol_ratio": 0.69,
           "turning": "",
           "turning_prompt": "",
-          "heat": 38
+          "heat": 42
         },
         {
           "symbol": "XLE",
           "name": "能源",
           "last": 58.36,
-          "chg1d": -1.72,
-          "chg5d": 1.18,
-          "chg20d": 7.89,
-          "vs_ma20": 4.39,
-          "vs_ma60": 2.96,
+          "chg1d": -2.11,
+          "chg5d": 0.72,
+          "chg20d": 8.4,
+          "vs_ma20": 3.85,
+          "vs_ma60": 2.93,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 0.97,
+          "vol_ratio": 1.0,
           "turning": "",
           "turning_prompt": "",
           "heat": 54
@@ -2516,28 +2453,28 @@
           "symbol": "XLB",
           "name": "材料",
           "last": 51.39,
-          "chg1d": 2.19,
-          "chg5d": 1.7,
-          "chg20d": -0.87,
-          "vs_ma20": 1.09,
-          "vs_ma60": 0.82,
+          "chg1d": 0.25,
+          "chg5d": 2.72,
+          "chg20d": -0.41,
+          "vs_ma20": 1.13,
+          "vs_ma60": 0.81,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 0.91,
+          "vol_ratio": 0.93,
           "turning": "",
           "turning_prompt": "",
-          "heat": 49
+          "heat": 52
         },
         {
           "symbol": "XLU",
           "name": "公用事业",
           "last": 45.68,
-          "chg1d": -1.1,
-          "chg5d": 1.13,
-          "chg20d": -0.37,
-          "vs_ma20": 0.4,
-          "vs_ma60": 1.78,
+          "chg1d": -1.32,
+          "chg5d": 1.65,
+          "chg20d": -1.13,
+          "vs_ma20": 0.39,
+          "vs_ma60": 1.75,
           "trend": "📈 多头排列",
-          "vol_ratio": 0.9,
+          "vol_ratio": 0.89,
           "turning": "",
           "turning_prompt": "",
           "heat": 47
@@ -2546,32 +2483,32 @@
           "symbol": "XLRE",
           "name": "房地产",
           "last": 45.76,
-          "chg1d": 1.8,
-          "chg5d": 0.75,
-          "chg20d": 2.62,
-          "vs_ma20": 2.16,
-          "vs_ma60": 3.42,
+          "chg1d": -0.41,
+          "chg5d": 1.17,
+          "chg20d": 1.15,
+          "vs_ma20": 2.08,
+          "vs_ma60": 3.31,
           "trend": "📈 多头排列",
-          "vol_ratio": 0.81,
+          "vol_ratio": 0.88,
           "turning": "",
           "turning_prompt": "",
-          "heat": 43
+          "heat": 47
         }
       ],
       "temperature": {
-        "temp": 42,
+        "temp": 44,
         "trend": 17,
         "breadth": 73,
-        "momentum": 41,
-        "vol_heat": 31,
+        "momentum": 44,
+        "vol_heat": 40,
         "label": "🟠 偏冷",
         "position": "30-50%",
         "verdict": "🟠 偏冷震荡·轻仓等右侧信号"
       },
       "turn_risk": {
-        "top_risk": 23,
+        "top_risk": 0,
         "bottom_opp": 0,
-        "text": "顶部转向风险 低(23/100) ｜ 底部转机信号 低(0/100)"
+        "text": "顶部转向风险 低(0/100) ｜ 底部转机信号 低(0/100)"
       },
       "l3": {
         "name": "标普500",
@@ -2580,7 +2517,7 @@
         "probs": [
           [
             "2周",
-            40
+            41
           ],
           [
             "4周",
@@ -2593,6 +2530,10 @@
           [
             "16周",
             52
+          ],
+          [
+            "32周",
+            52
           ]
         ]
       }
@@ -2603,11 +2544,11 @@
           "symbol": "000001.SS",
           "name": "上证指数",
           "last": 3858.24,
-          "chg1d": -0.48,
-          "chg5d": 2.5,
-          "chg20d": -4.2,
-          "vs_ma20": -2.49,
-          "vs_ma60": -4.88,
+          "chg1d": 1.15,
+          "chg5d": 1.63,
+          "chg20d": -5.29,
+          "vs_ma20": -2.17,
+          "vs_ma60": -4.77,
           "trend": "📉 空头排列",
           "vol_ratio": 3.99,
           "turning": "",
@@ -2617,30 +2558,29 @@
           "symbol": "399001.SZ",
           "name": "深证成指",
           "last": 14148.73,
-          "chg1d": 0.18,
-          "chg5d": 3.22,
-          "chg20d": -10.35,
-          "vs_ma20": -5.01,
-          "vs_ma60": -7.84,
+          "chg1d": 2.72,
+          "chg5d": 3.96,
+          "chg20d": -10.52,
+          "vs_ma20": -4.35,
+          "vs_ma60": -7.74,
           "trend": "📉 空头排列",
           "vol_ratio": 3.95,
           "turning": "",
           "turning_prompt": ""
         },
         {
-          "symbol": "159915.SZ",
-          "name": "创业板ETF代理",
-          "last": 3.61,
-          "chg1d": 2.96,
-          "chg5d": 3.88,
-          "chg20d": -14.73,
+          "symbol": "399006.SZ",
+          "name": "创业板指",
+          "last": 3590.79,
+          "chg1d": 3.16,
+          "chg5d": 4.29,
+          "chg20d": -14.84,
           "vs_ma20": -5.57,
-          "vs_ma60": -8.56,
+          "vs_ma60": -8.7,
           "trend": "📉 空头排列",
-          "vol_ratio": 1.12,
+          "vol_ratio": 1.0,
           "turning": "",
-          "turning_prompt": "",
-          "unit": "元"
+          "turning_prompt": ""
         }
       ],
       "sectors": [
@@ -2799,7 +2739,7 @@
         "temp": 48,
         "trend": 0,
         "breadth": 60,
-        "momentum": 82,
+        "momentum": 83,
         "vol_heat": 100,
         "label": "🟡 中性",
         "position": "50-65%",
@@ -2817,11 +2757,11 @@
         "probs": [
           [
             "2周",
-            43
+            45
           ],
           [
             "4周",
-            39
+            38
           ],
           [
             "8周",
@@ -2829,7 +2769,11 @@
           ],
           [
             "16周",
-            43
+            42
+          ],
+          [
+            "32周",
+            46
           ]
         ]
       }
@@ -2840,13 +2784,13 @@
           "symbol": "^HSI",
           "name": "恒生指数",
           "last": 25207.18,
-          "chg1d": -0.01,
-          "chg5d": 2.63,
-          "chg20d": 9.23,
-          "vs_ma20": 4.4,
-          "vs_ma60": 1.27,
+          "chg1d": 0.98,
+          "chg5d": 0.26,
+          "chg20d": 11.18,
+          "vs_ma20": 3.91,
+          "vs_ma60": 1.32,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 0.71,
+          "vol_ratio": 0.68,
           "turning": "",
           "turning_prompt": ""
         },
@@ -2913,14 +2857,14 @@
         }
       ],
       "temperature": {
-        "temp": 75,
+        "temp": 73,
         "trend": 75,
         "breadth": 100,
-        "momentum": 60,
-        "vol_heat": 33,
-        "label": "🔥 过热",
-        "position": "6-7成（过热防回撤，触发中线兑现纪律）",
-        "verdict": "🔥 过热惯性·可持有但设好回撤线、不新追高"
+        "momentum": 48,
+        "vol_heat": 31,
+        "label": "🟢 偏暖",
+        "position": "65-80%",
+        "verdict": "🟢 趋势偏暖·持有为主（回踩加、不追高）"
       },
       "turn_risk": {
         "top_risk": 25,
@@ -2934,19 +2878,23 @@
         "probs": [
           [
             "2周",
-            56
+            55
           ],
           [
             "4周",
-            66
+            67
           ],
           [
             "8周",
-            49
+            50
           ],
           [
             "16周",
-            43
+            45
+          ],
+          [
+            "32周",
+            40
           ]
         ]
       }

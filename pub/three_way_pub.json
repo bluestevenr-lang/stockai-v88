@@ -1,0 +1,251 @@
+{
+ "generated_at": "2026-07-28 08:02（北京时间）",
+ "note": "三方会审:规则引擎(V88) vs Claude(Fable/Opus独立复核) vs GPT(Codex盲审)。⚡分歧排最前——三方都说好的可以按纲领执行,吵起来的才是要自己拿主意的地方。GPT目前是影子模式(有记录无投票权),它的反对不会拦名单,但会入台账攒战绩。",
+ "counts": {
+  "仅规则(无第二意见)": 15,
+  "⚡有分歧": 7,
+  "✅双方一致": 7
+ },
+ "rows": [
+  {
+   "code": "000617.SZ",
+   "name": "中油资本",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 68,
+    "action": "现价可进",
+    "rr": 6.91,
+    "pos52": 6.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": {
+    "side": "中性",
+    "conf": "低",
+    "why": "低位且止损近，但A股胜率偏弱"
+   },
+   "n_voices": 2,
+   "agree": 1,
+   "consensus": "⚡有分歧"
+  },
+  {
+   "code": "002195.SZ",
+   "name": "岩山科技",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 67,
+    "action": "左侧低吸",
+    "rr": 4.69,
+    "pos52": 9.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": {
+    "side": "中性",
+    "conf": "低",
+    "why": "低位且止损明确，但题材波动较大"
+   },
+   "n_voices": 2,
+   "agree": 1,
+   "consensus": "⚡有分歧"
+  },
+  {
+   "code": "1114.HK",
+   "name": "华晨中国",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 65,
+    "action": "左侧低吸",
+    "rr": 5.47,
+    "pos52": 7.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": {
+    "side": "中性",
+    "conf": "低",
+    "why": "低位有支撑，但汽车业务基本面偏弱"
+   },
+   "n_voices": 2,
+   "agree": 1,
+   "consensus": "⚡有分歧"
+  },
+  {
+   "code": "600089.SS",
+   "name": "特变电工",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 76,
+    "action": "左侧低吸",
+    "rr": 4.03,
+    "pos52": 39.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": {
+    "side": "看多",
+    "conf": "低",
+    "why": "位置适中，电网需求支撑但周期性强"
+   },
+   "n_voices": 2,
+   "agree": 2,
+   "consensus": "✅双方一致"
+  },
+  {
+   "code": "0883.HK",
+   "name": "中海油",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 63,
+    "action": "现价可进",
+    "rr": 5.09,
+    "pos52": 45.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": {
+    "side": "看多",
+    "conf": "中",
+    "why": "油价与高股息支撑，位置尚不拥挤"
+   },
+   "n_voices": 2,
+   "agree": 2,
+   "consensus": "✅双方一致"
+  },
+  {
+   "code": "0880.HK",
+   "name": "澳博控股",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 61,
+    "action": "左侧低吸",
+    "rr": 6.11,
+    "pos52": 6.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": {
+    "side": "看多",
+    "conf": "中",
+    "why": "低位叠加港股占优，博彩复苏可期"
+   },
+   "n_voices": 2,
+   "agree": 2,
+   "consensus": "✅双方一致"
+  },
+  {
+   "code": "001382.SZ",
+   "name": "新亚电缆",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 85,
+    "action": "左侧低吸",
+    "rr": 2.52,
+    "pos52": 23.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "300207.SZ",
+   "name": "欣旺达",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 75,
+    "action": "左侧低吸",
+    "rr": 3.49,
+    "pos52": 10.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "300919.SZ",
+   "name": "中伟新材",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 75,
+    "action": "左侧低吸",
+    "rr": 3.15,
+    "pos52": 24.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "0027.HK",
+   "name": "银河娱乐",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 69,
+    "action": "左侧低吸",
+    "rr": 3.31,
+    "pos52": 34.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "600863.SS",
+   "name": "华能蒙电",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 62,
+    "action": "现价可进",
+    "rr": 4.22,
+    "pos52": 25.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "2357.HK",
+   "name": "中航科工",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 61,
+    "action": "现价可进",
+    "rr": 4.13,
+    "pos52": 8.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  }
+ ]
+}
