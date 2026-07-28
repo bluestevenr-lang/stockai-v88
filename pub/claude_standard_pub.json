@@ -1,5 +1,5 @@
 {
- "asof": "2026-07-28 15:47（北京时间）",
+ "asof": "2026-07-28 20:57（北京时间）",
  "rules": {
   "CS1": "宽基指数类跌幅未达5%且趋势未破,不按个股尺度输出减仓(案:VOO-2.1%/513500-0.2%就减)",
   "CS2": "2周涨概率≥53%不得输出减仓,除非已破止损或5日内自家财报(案:MO53/JNJ55/SO57)",
@@ -76,7 +76,7 @@
    "code": "0883.HK",
    "name": "中海油",
    "side": "机会",
-   "action": "现价可进",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -147,6 +147,16 @@
    "name": "比音勒芬",
    "side": "趋势",
    "action": "🟡先别追,等跌回21.65附近再买;一直不跌就等放量创新高再追",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "0293.HK": {
+   "code": "0293.HK",
+   "name": "国泰航空",
+   "side": "趋势",
+   "action": "🟡先别追,等跌回13.42附近再买;一直不跌就等放量创新高再追",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -262,19 +272,9 @@
    "downgrade": "",
    "auto": true
   },
-  "SMFG": {
-   "code": "SMFG",
-   "name": "三井住友金融",
-   "side": "趋势",
-   "action": "🟡先别追,等跌回25.40附近再买;一直不跌就等放量创新高再追",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "2276.HK": {
-   "code": "2276.HK",
-   "name": "康耐特光学",
+  "688516.SS": {
+   "code": "688516.SS",
+   "name": "奥特维",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -312,16 +312,6 @@
    "downgrade": "",
    "auto": true
   },
-  "2400.HK": {
-   "code": "2400.HK",
-   "name": "心动公司",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "AZO": {
    "code": "AZO",
    "name": "AutoZone",
@@ -352,6 +342,26 @@
    "downgrade": "",
    "auto": true
   },
+  "002756.SZ": {
+   "code": "002756.SZ",
+   "name": "永兴材料",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "002460.SZ": {
+   "code": "002460.SZ",
+   "name": "赣锋锂业",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "PDD": {
    "code": "PDD",
    "name": "拼多多",
@@ -362,29 +372,9 @@
    "downgrade": "",
    "auto": true
   },
-  "1378.HK": {
-   "code": "1378.HK",
-   "name": "中国宏桥",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "1898.HK": {
-   "code": "1898.HK",
-   "name": "中煤能源",
-   "side": "打折",
-   "action": "🟢打折到位·可开始买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "ORCL": {
-   "code": "ORCL",
-   "name": "甲骨文",
+  "002240.SZ": {
+   "code": "002240.SZ",
+   "name": "盛新锂能",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -402,11 +392,21 @@
    "downgrade": "",
    "auto": true
   },
+  "MSFT": {
+   "code": "MSFT",
+   "name": "微软",
+   "side": "打折",
+   "action": "🟢打折到位·可开始买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "1339.HK": {
    "code": "1339.HK",
    "name": "中国人民保险",
    "side": "打折",
-   "action": "🟢跌得很深·可分批买",
+   "action": "🟢打折到位·可开始买",
    "rules": [],
    "why": "",
    "downgrade": "",

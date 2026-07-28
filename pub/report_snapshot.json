@@ -1,6 +1,6 @@
 {
   "schema_version": "v88.snapshot/2.0",
-  "snapshot_id": "snap-2ed7a9bb9ba39389",
+  "snapshot_id": "snap-631679985701089d",
   "rotation_forecast": {
     "schema_version": "v88.rotation/1.3",
     "snapshot_id": "snap-56cdca061c7595a0",
@@ -1574,7 +1574,7 @@
   "cycle_scan": {
     "schema_version": "v88.cycle/1.1",
     "slot": "2026-07-28-am",
-    "analysis_time": "2026-07-28 15:44",
+    "analysis_time": "2026-07-28 20:55",
     "stocks": [
       {
         "code": "QQQM",
@@ -1700,14 +1700,14 @@
         "down": 0.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 28,
-        "trigger": "放量站稳 107.95 + 底拐确认",
-        "invalid": "失守 107.95 或缩量回落（切换证伪）",
+        "pos52": 27,
+        "trigger": "放量站稳 107.93 + 底拐确认",
+        "invalid": "失守 107.93 或缩量回落（切换证伪）",
         "sector_phase": null,
-        "p_up": 57,
-        "unified_score": 67,
-        "rr": 4.0,
-        "entry_note": "⏳双路径:回踩107.95/突破143.84·08-04前｜周期未充分共振，等待触发"
+        "p_up": 56,
+        "unified_score": 66,
+        "rr": 4.04,
+        "entry_note": "⏳双路径:回踩107.93/突破143.84·08-04前｜周期未充分共振，等待触发"
       },
       {
         "code": "601899.SS",
@@ -2071,6 +2071,25 @@
         "entry_note": "✅现价可进·07-31前·破50.75废·仅短线｜周期未充分共振，等待触发"
       },
       {
+        "code": "2020.HK",
+        "name": "2020.HK",
+        "phase": "偏多整理",
+        "direction": "hold",
+        "headline": "→ 上行动能积累，待放量确认",
+        "up": 34.0,
+        "down": 0.0,
+        "confidence": "低",
+        "horizon": "日~周",
+        "pos52": 49,
+        "trigger": "放量突破/跌破 74.32 触发方向",
+        "invalid": "—",
+        "sector_phase": null,
+        "p_up": 56,
+        "unified_score": 60,
+        "rr": 1.3,
+        "entry_note": "⏳双路径:回踩75.71/突破82.24·08-04前｜周期未充分共振，等待触发"
+      },
+      {
         "code": "600941.SS",
         "name": "中国移动",
         "phase": "偏多整理",
@@ -2118,33 +2137,14 @@
         "down": 0.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 55,
-        "trigger": "放量突破/跌破 388.36 触发方向",
+        "pos52": 57,
+        "trigger": "放量突破/跌破 388.42 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 56,
-        "unified_score": 63,
-        "rr": 1.91,
-        "entry_note": "⏳双路径:回踩398.66/突破431·08-04前｜周期未充分共振，等待触发"
-      },
-      {
-        "code": "2020.HK",
-        "name": "2020.HK",
-        "phase": "偏多整理",
-        "direction": "hold",
-        "headline": "→ 上行动能积累，待放量确认",
-        "up": 20.0,
-        "down": 0.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 48,
-        "trigger": "放量突破/跌破 74.30 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 55,
-        "unified_score": 59,
-        "rr": 1.48,
-        "entry_note": "⏳双路径:回踩75.67/突破82.24·08-04前｜周期未充分共振，等待触发"
+        "unified_score": 62,
+        "rr": 1.69,
+        "entry_note": "⏳双路径:回踩398.78/突破431·08-04前｜周期未充分共振，等待触发"
       },
       {
         "code": "MO",
@@ -2223,25 +2223,6 @@
         "entry_note": "⏳双路径:回踩328.12/突破339.57·08-04前｜方向偏多但当前赔率不足；需上行>90.1%"
       },
       {
-        "code": "PM",
-        "name": "菲利普莫里斯",
-        "phase": "整理",
-        "direction": "hold",
-        "headline": "→ 周期未明，整理观望",
-        "up": 5.0,
-        "down": 16.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 92,
-        "trigger": "放量突破/跌破 186.04 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 69,
-        "unified_score": 56,
-        "rr": 0.21,
-        "entry_note": "⏳双路径:回踩189.45/突破199.78·08-04前｜方向偏多但当前赔率不足；需上行>82.6%"
-      },
-      {
         "code": "1810.HK",
         "name": "小米",
         "phase": "整理",
@@ -2255,10 +2236,10 @@
         "trigger": "放量突破/跌破 25.77 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 68,
-        "unified_score": 62,
-        "rr": 0.95,
-        "entry_note": "⏳双路径:回踩27.38/突破32.88·08-04前｜周期未充分共振，等待触发"
+        "p_up": 70,
+        "unified_score": 63,
+        "rr": 0.91,
+        "entry_note": "⏳双路径:回踩27.39/突破32.88·08-04前｜周期未充分共振，等待触发"
       },
       {
         "code": "JNJ",
@@ -2278,10 +2259,29 @@
         "unified_score": 59,
         "rr": 0.17,
         "entry_note": "⏳双路径:回踩254.76/突破269.43·08-04前｜方向偏多但当前赔率不足；需上行>85.5%"
+      },
+      {
+        "code": "PM",
+        "name": "菲利普莫里斯",
+        "phase": "领涨中",
+        "direction": "hold",
+        "headline": "→ 上行周期进行中，未见切换",
+        "up": 12.0,
+        "down": 8.0,
+        "confidence": "低",
+        "horizon": "周",
+        "pos52": 92,
+        "trigger": "放量突破/跌破 186.04 触发方向",
+        "invalid": "—",
+        "sector_phase": null,
+        "p_up": 69,
+        "unified_score": 56,
+        "rr": 0.21,
+        "entry_note": "⏳双路径:回踩189.45/突破199.78·08-04前｜方向偏多但当前赔率不足；需上行>82.6%"
       }
     ]
   },
-  "generated_at": "2026-07-28 15:43",
+  "generated_at": "2026-07-28 20:54",
   "markets": {
     "美股": {
       "indices": [
@@ -2569,18 +2569,19 @@
           "turning_prompt": "放量长阴：单日-4.5%，量19.6倍——主动抛售。👉 你来确认三件事：①明日能否收回MA20（14657.88）——收不回=拐点成立；②量能是否持续放大（连续两日≥1.3倍=资金在跑）；③是否跌破今日低点 13470.11——破了立即执行纪律，不要等反弹"
         },
         {
-          "symbol": "399006.SZ",
-          "name": "创业板指",
-          "last": 3327.03,
-          "chg1d": -7.35,
-          "chg5d": -9.74,
-          "chg20d": -23.39,
-          "vs_ma20": -11.32,
-          "vs_ma60": -15.28,
+          "symbol": "159915.SZ",
+          "name": "创业板ETF代理",
+          "last": 3.36,
+          "chg1d": -7.12,
+          "chg5d": -9.54,
+          "chg20d": -23.12,
+          "vs_ma20": -11.12,
+          "vs_ma60": -14.94,
           "trend": "📉 空头排列",
-          "vol_ratio": 1.0,
-          "turning": "",
-          "turning_prompt": ""
+          "vol_ratio": 1.01,
+          "turning": "⚠️顶拐:放量长阴",
+          "turning_prompt": "放量长阴：单日-7.1%，量1.6倍——主动抛售；跌破20日低点 3.36：短期趋势结构破坏。👉 你来确认三件事：①明日能否收回MA20（3.77）——收不回=拐点成立；②量能是否持续放大（连续两日≥1.3倍=资金在跑）；③是否跌破今日低点 3.34——破了立即执行纪律，不要等反弹",
+          "unit": "元"
         }
       ],
       "sectors": [
@@ -2746,9 +2747,9 @@
         "verdict": "🧊 情绪冰点·恐慌杀跌接近弹药区（属正常调整非见顶，核心层分批备弹、不追杀）"
       },
       "turn_risk": {
-        "top_risk": 53,
+        "top_risk": 65,
         "bottom_opp": 25,
-        "text": "顶部转向风险 中(53/100) ｜ 底部转机信号 低(25/100)"
+        "text": "顶部转向风险 高(65/100) ｜ 底部转机信号 低(25/100)"
       },
       "l3": {
         "name": "上证指数",
@@ -2783,12 +2784,12 @@
         {
           "symbol": "^HSI",
           "name": "恒生指数",
-          "last": 25305.03,
-          "chg1d": 0.39,
-          "chg5d": 0.69,
-          "chg20d": 9.89,
-          "vs_ma20": 3.82,
-          "vs_ma60": 1.77,
+          "last": 25310.85,
+          "chg1d": 0.41,
+          "chg5d": 0.71,
+          "chg20d": 9.92,
+          "vs_ma20": 3.85,
+          "vs_ma60": 1.79,
           "trend": "🔄 震荡偏强",
           "vol_ratio": 0.67,
           "turning": "",
@@ -2798,13 +2799,13 @@
           "symbol": "3033.HK",
           "name": "恒生科技(ETF代理)",
           "last": 4.64,
-          "chg1d": 0.52,
-          "chg5d": -1.74,
-          "chg20d": 7.71,
-          "vs_ma20": 1.49,
-          "vs_ma60": -0.73,
+          "chg1d": 0.61,
+          "chg5d": -1.65,
+          "chg20d": 7.8,
+          "vs_ma20": 1.57,
+          "vs_ma60": -0.64,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 1.0,
+          "vol_ratio": 1.01,
           "turning": "",
           "turning_prompt": ""
         }
@@ -2814,26 +2815,26 @@
           "symbol": "3033.HK",
           "name": "恒生科技",
           "last": 4.64,
-          "chg1d": 0.52,
-          "chg5d": -1.74,
-          "chg20d": 7.71,
-          "vs_ma20": 1.49,
-          "vs_ma60": -0.73,
+          "chg1d": 0.61,
+          "chg5d": -1.65,
+          "chg20d": 7.8,
+          "vs_ma20": 1.57,
+          "vs_ma60": -0.64,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 1.0,
+          "vol_ratio": 1.01,
           "turning": "",
           "turning_prompt": "",
-          "heat": 49
+          "heat": 50
         },
         {
           "symbol": "2828.HK",
           "name": "国企蓝筹",
-          "last": 86.84,
-          "chg1d": 1.02,
-          "chg5d": 0.98,
-          "chg20d": 11.62,
-          "vs_ma20": 4.4,
-          "vs_ma60": 2.2,
+          "last": 86.86,
+          "chg1d": 1.05,
+          "chg5d": 1.0,
+          "chg20d": 11.65,
+          "vs_ma20": 4.42,
+          "vs_ma60": 2.22,
           "trend": "🔄 震荡偏强",
           "vol_ratio": 0.67,
           "turning": "",
@@ -2843,17 +2844,17 @@
         {
           "symbol": "3110.HK",
           "name": "高股息",
-          "last": 31.3,
-          "chg1d": 0.58,
-          "chg5d": 1.36,
-          "chg20d": 7.71,
-          "vs_ma20": 3.97,
-          "vs_ma60": 0.21,
+          "last": 31.36,
+          "chg1d": 0.77,
+          "chg5d": 1.55,
+          "chg20d": 7.91,
+          "vs_ma20": 4.16,
+          "vs_ma60": 0.4,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 1.22,
+          "vol_ratio": 1.23,
           "turning": "",
           "turning_prompt": "",
-          "heat": 65
+          "heat": 66
         }
       ],
       "temperature": {
@@ -2861,7 +2862,7 @@
         "trend": 75,
         "breadth": 100,
         "momentum": 45,
-        "vol_heat": 25,
+        "vol_heat": 26,
         "label": "🟢 偏暖",
         "position": "65-80%",
         "verdict": "🟡 中性震荡·跟随主线轮动"
