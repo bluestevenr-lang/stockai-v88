@@ -2723,7 +2723,14 @@ try:
 except Exception as _clk_e9:
     logging.exception(f"[V88] 置顶全球概览渲染失败: {_clk_e9}")
 _macro_top_slot = st.empty()
-_now_c1, _now_c2 = st.columns([8.5, 1.5])
+# 【2026-07-29 用户"版面设计有点浪费"】按钮字号-30%，数据时点从按钮下方挪到右侧同一行——
+# 省掉一整行垂直空间。只作用于 .st-key-btn_force_now，不动全站其它按钮。
+st.markdown("""<style>
+.st-key-btn_force_now button{font-size:11px!important;padding:.18rem .4rem!important;
+  min-height:0!important;line-height:1.25!important}
+.st-key-btn_force_now button p{font-size:11px!important;margin:0!important}
+</style>""", unsafe_allow_html=True)
+_now_c1, _now_c2, _now_c3 = st.columns([7.35, 1.35, 1.30])
 with _now_c2:
     if st.button("📡 此刻最新", key="btn_force_now", use_container_width=True,
                  help="强制用此刻最新行情重算全页（约30-60秒）；不点则按原缓存节奏。AI解读不重跑、不花预算。"):
@@ -2747,7 +2754,7 @@ with _now_c2:
                 pass
             st.toast("📡 已切换到此刻最新数据，全页重算中…", icon="📡")
             st.rerun()
-    # 【2026-07-27 用户点单"增加跳动准确时间"】按钮下常显数据时点(不只点击后):
+    # 【2026-07-27 用户点单"增加跳动准确时间"】常显数据时点(不只点击后):
     # 优先显示强刷时刻,否则显示当前行情快照的生成时间——随时知道看的是几点的数据。
     import time as _tnow9b
     from datetime import datetime as _dtn9b
@@ -2765,9 +2772,14 @@ with _now_c2:
             _tip9b = f"📊数据{_snap_ts9b[5:]}·{_age9b:.1f}h前"
             _col9b = "#94a3b8" if _age9b < 6 else ("#b45309" if _age9b < 36 else "#dc2626")
         except Exception:
+            logging.exception("[V88] 数据时点渲染失败")
             _tip9b = "数据时间未知"
             _col9b = "#94a3b8"
-    st.markdown(f"<div style='font-size:11.5px;color:{_col9b};text-align:center;line-height:1.2'>"
+# 【2026-07-29 用户"下面的时间放到此刻刷新的右侧"】时点移出按钮列，与按钮同一行左对齐、
+# 垂直居中——原来占一整行，现在并排，置顶区省下一行高度。
+with _now_c3:
+    st.markdown(f"<div style='font-size:11px;color:{_col9b};line-height:1.2;white-space:nowrap;"
+                f"display:flex;align-items:center;height:100%;min-height:26px'>"
                 f"{_tip9b}</div>", unsafe_allow_html=True)
 
 # 【V88·今日指令牌 2026-07-24 用户定纲"每天打开=方向+进攻防守+成功率,升级要明显提示"】
@@ -3233,8 +3245,12 @@ try:
             _wbj9 = json.loads((_cb_repo9 / "data" / "why_buy.json").read_text(encoding="utf-8"))
             _wbrows9 = _wbj9.get("rows") or {}
             _wsell9 = _wbj9.get("sells") or {}      # 卖侧:失效=警报解除可买回
+            # 2026-07-29 用户截图"最后重要的两列怎么是空的":持有页两列全空,
+            # 因为持仓票从没进过 why_buy。"要不要继续拿"正是第①层该答的问题。
+            _whold9 = _wbj9.get("holds") or {}
         except Exception:
-            _wbrows9, _wsell9 = {}, {}
+            logging.exception("[V88] why_buy 读取失败")
+            _wbrows9, _wsell9, _whold9 = {}, {}, {}
         _t_buy9, _t_sell9, _t_hold9 = [], [], []
         for _src9, _nm9, _cd9, _px9, _pu9, _rr9, _why9 in _cb_rows9[:5]:
             _nm9 = _cb_nm9(_nm9, _cd9)
@@ -3278,7 +3294,9 @@ try:
         for _r9h in _hold9:
             _t_hold9.append(_row6_9(f"{_MKFLAG9.get(_cb_mk9(_r9h.get('code')), '')}{_cb_nm9(_r9h.get('name'), _r9h.get('code'))}",
                                     _r9h.get("code"), "持有", f"现{_r9h.get('last')}", "卡💰行",
-                                    "维持", f"涨{_r9h.get('p_up')}%{_plab9(_r9h.get('p_up'), 'up')}", str(_r9h.get("entry_note") or "")))
+                                    "维持", f"涨{_r9h.get('p_up')}%{_plab9(_r9h.get('p_up'), 'up')}",
+                                    str(_r9h.get("entry_note") or ""),
+                                    _whold9.get(str(_r9h.get("code")))))
         st.markdown("<div style='background:#fef2f2;border:2px solid #dc2626;border-radius:10px;"
                     "padding:.4rem .8rem;margin:.3rem 0'>"
                     f"<b style='font-size:14px;color:#dc2626'>🔔 {_cb_day9}行动中心</b>"
