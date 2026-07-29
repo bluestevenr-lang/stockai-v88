@@ -240,6 +240,7 @@ def topbot_checklist(market: str, indices: list, temp: dict,
                 "top_hit": top_hit, "top_na": top_na,
                 "bottom_hit": bot_hit, "bottom_na": bot_na,
                 "px_pct": px_pct, "vol_pct": vol_pct, "diverge": diverge,
+                "breadth_full_days": full_days,   # 供 turn_risk 共用，避免两处判据不一致
                 "note": "样本<5不给概率(铁律2)——只报命中条数,⬜=数据源缺失非未命中"}
     except Exception:
         logger.exception(f"[regime] topbot_checklist 失败 market={market}")
@@ -275,8 +276,15 @@ def compute_turn_risk_v2(indices, temp, checklist: dict | None = None) -> dict |
         elif vs20 >= 4.0 and vr < 0.9:
             risk += 25                                  # 分位取不到时的降级判据
         risk += 25 if t >= 75 else (12 if t >= 60 else 0)
-        if float(temp.get("breadth", 50) or 50) >= BREADTH_FULL:
-            risk += 15                                  # 广度打满＝没有新的上涨来源
+        # 【2026-07-29 GPT盲化历史类比逼出的修正】原判据只要 breadth>=90 就加15分，
+        # 而 checklist 的"广度钝化"要求**连续≥3日满值**——两处判据又不一致。
+        # GPT 对 (广度100+缩量+距均线+5.6%) 做盲化类比，给出标普500·2020-11、
+        # 日经225·2020-11 两个"后续3月继续涨"的先例：**广度刚打满是普涨扩散的开始，
+        # 不是顶部**；只有在满值上横久了（没有新股票能加入上涨）才叫钝化。
+        # 故与 checklist 对齐：必须满值持续够天数才计入顶部风险。
+        _full_days = int((cl or {}).get("breadth_full_days") or 0)
+        if float(temp.get("breadth", 50) or 50) >= BREADTH_FULL and _full_days >= BREADTH_STALL_DAYS:
+            risk += 15                                  # 广度在满值上钝化＝没有新的上涨来源
         if chg20 > 4 and chg5 < chg20 / 4:
             risk += 15                                  # 动量衰竭
         if any(str(ix.get("turning", "")).startswith("⚠️") for ix in indices):
