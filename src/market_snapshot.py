@@ -43,6 +43,33 @@ SECTORS = {
 }
 
 
+def _em_close_cn(symbol: str):
+    """【V88·A股板块东财兜底 2026-07-20 用户抓"看不到军工/银行/芯片板块"】
+    根因=yfinance 拉 A股 ETF 极不稳定,半导体/军工/有色常抓失败被跳过→板块源缺数据。
+    改用东财日线直连(trust_env=False,与其它国内源一致)。symbol如512760.SS/159928.SZ。
+    返回收盘价 pandas.Series 或 None。"""
+    import re
+    m = re.match(r"(\d{6})\.(SS|SZ)", str(symbol))
+    if not m:
+        return None
+    code, mkt = m.group(1), m.group(2)
+    secid = f"{'1' if mkt == 'SS' else '0'}.{code}"
+    try:
+        import requests
+        import pandas as pd
+        s = requests.Session()
+        s.trust_env = False   # 国内接口直连,不走代理(记忆铁律)
+        r = s.get("https://push2his.eastmoney.com/api/qt/stock/kline/get",
+                  params={"secid": secid, "fields1": "f1", "fields2": "f51,f53",
+                          "klt": "101", "fqt": "1", "end": "20500101", "lmt": "70"},
+                  timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+        kl = ((r.json() or {}).get("data") or {}).get("klines") or []
+        closes = [float(x.split(",")[1]) for x in kl if "," in x]
+        return pd.Series(closes) if len(closes) >= 25 else None
+    except Exception:
+        return None
+
+
 def _fetch_metrics(symbol: str, name: str) -> dict | None:
     """抓取单个标的 3 个月日线，计算趋势指标。失败返回 None。"""
     try:
@@ -60,6 +87,12 @@ def _fetch_metrics(symbol: str, name: str) -> dict | None:
             except Exception:
                 close = None
             _t.sleep(1.2 * (_attempt + 1))
+        # A股 ETF yfinance 失败 → 东财直连兜底(半导体/军工/有色/煤炭就是这样被救回)
+        if (close is None or len(close) < 25) and str(symbol).endswith((".SS", ".SZ")):
+            _em = _em_close_cn(symbol)
+            if _em is not None and len(_em) >= 25:
+                close = _em
+                logger.info(f"[{name} {symbol}] yfinance失败,东财兜底成功({len(close)}根)")
         if close is None or len(close) < 25:
             logger.warning(f"[{name} {symbol}] 3次重试后数据仍不足，跳过")
             return None
@@ -102,12 +135,35 @@ def _fetch_metrics(symbol: str, name: str) -> dict | None:
                 turning_prompt = "；".join(_t["signals"]) + "。👉 " + _t["prompt"]
         except Exception:
             pass
+        # 【V88·顶底研判层 2026-07-29】价格/成交量分位——量价背离的原料。
+        # 旧版只有 vol_ratio(5日/20日均量)，判不出"价在高位而量在低位"这种背离，
+        # 港股 trend100/breadth100/vol_heat15 就是被漏掉的教科书级顶背离。
+        _pv = {"px_pct": None, "vol_pct": None, "diverge": None}
+        try:
+            try:
+                from regime_topbot import price_volume_percentiles as _pvp
+            except ImportError:
+                from src.regime_topbot import price_volume_percentiles as _pvp
+            # 只有当 volume 与 close 同源同长时才用它——东财兜底路径只返回 close，
+            # 此时若误用 yfinance 残留的 df["Volume"]，量分位会建立在另一份数据上。
+            _vol_series = None
+            try:
+                _vv2 = df["Volume"].fillna(0)
+                if len(_vv2) == len(close):
+                    _vol_series = _vv2
+            except Exception:
+                _vol_series = None
+            _pv = _pvp(close, _vol_series)
+        except Exception:
+            logger.exception(f"[{name} {symbol}] 价量分位计算失败（不影响其余字段）")
         return {
             "symbol": symbol, "name": name, "last": round(last, 2),
             "chg1d": round(chg1d, 2), "chg5d": round(chg5d, 2), "chg20d": round(chg20d, 2),
             "vs_ma20": round((last / ma20 - 1) * 100, 2),
             "vs_ma60": round((last / ma60 - 1) * 100, 2),
             "trend": trend, "vol_ratio": vol_ratio,
+            "px_pct": _pv.get("px_pct"), "vol_pct": _pv.get("vol_pct"),
+            "diverge": _pv.get("diverge"),
             "turning": turning, "turning_prompt": turning_prompt,
         }
     except Exception as e:
@@ -300,7 +356,23 @@ def generate_market_snapshot() -> str:
     if not any_data:
         return ""
 
-    # 【V88·三层周期概率总览】大盘层：主指数 2/4/6/8/16 周方向分
+    # 【V88·顶底研判层 2026-07-29 用户定纲"在地顶的时候,对于大盘的判断很重要"】
+    # 覆盖 turn_risk 为 v2 版：旧版把35分押在常年为空的 turning 字段、要求"放量"滞涨
+    # (顶部实为缩量新高,方向相反)、且把放量急跌算进顶部风险(那是底部特征)。
+    _regime = {}
+    try:
+        try:
+            from regime_topbot import build as _regime_build
+        except ImportError:
+            from src.regime_topbot import build as _regime_build
+        _regime = _regime_build(payload)     # 原地给 payload 补 topbot + 覆盖 turn_risk
+        (BASE_DIR / "data" / "regime_topbot.json").write_text(
+            json.dumps(_regime, ensure_ascii=False, indent=1), encoding="utf-8")
+        logger.info("[顶底研判层] 已生成 regime_topbot.json")
+    except Exception:
+        logger.exception("[顶底研判层] 生成失败——turn_risk 保持旧版，不影响其余快照")
+
+    # 【V88·三层周期概率总览】大盘层：主指数 2/4/8/16/32 周方向分
     # （与桌面首屏/自选决策台同一套 v88_decision_core 口径，供云端/飞书消费）
     _L3_IDX = {"美股": ("标普500", "^GSPC"), "A股": ("上证指数", "000001.SS"),
                "港股": ("恒生指数", "^HSI")}
@@ -323,7 +395,7 @@ def generate_market_snapshot() -> str:
                 continue
             _hz = ((_dc.get("facts") or {}).get("horizons") or {})
             _probs = [[_lab, int(round(float((_hz.get(_lab) or {}).get("rule_score"))))]
-                      for _lab in ("2周", "4周", "6周", "8周", "16周")
+                      for _lab in ("2周", "4周", "8周", "16周", "32周")
                       if (_hz.get(_lab) or {}).get("rule_score") is not None]
             payload[market]["l3"] = {"name": _nm, "stage": str(_full.get("stage") or "—"),
                                      "action": str(_dc.get("action") or "观察"), "probs": _probs}
@@ -355,13 +427,56 @@ def generate_market_snapshot() -> str:
             _tr = (payload.get(market) or {}).get("turn_risk")
             if _tr:
                 temp_lines.append(f"  - 🔮 {market}转向概率：{_tr['text']}")
+            # 【V88·顶底研判层】逐条列命中特征——不给顶底概率(样本<5·铁律2),
+            # 只给"命中N/7"与逐条依据,⬜=数据源未接(不算未命中)。用户能自己数、能推翻。
+            _cl = (payload.get(market) or {}).get("topbot")
+            if _cl:
+                _side = "顶" if _cl.get("top_hit", 0) >= _cl.get("bottom_hit", 0) else "底"
+                _items = (_cl.get("top") if _side == "顶" else _cl.get("bottom")) or []
+                _hit = _cl.get("top_hit" if _side == "顶" else "bottom_hit", 0)
+                _na = _cl.get("top_na" if _side == "顶" else "bottom_na", 0)
+                _dv = _cl.get("diverge")
+                temp_lines.append(
+                    f"  - 🌡️ {market}**{_side}部特征 {_hit}/7**"
+                    + (f"（{_na}条数据源未接）" if _na else "")
+                    + (f"｜价格分位{_cl.get('px_pct')}·量分位{_cl.get('vol_pct')}·背离{_dv:+.1f}"
+                       if _dv is not None else ""))
+                _on = "；".join(f"{i['key']}({i['text']})" for i in _items if i.get("hit") is True)
+                _off = "、".join(i["key"] for i in _items if i.get("hit") is False)
+                if _on:
+                    temp_lines.append(f"    - ✅ 已命中：{_on}")
+                if _off:
+                    temp_lines.append(f"    - ▫️ 未命中：{_off}")
             _l3 = (payload.get(market) or {}).get("l3")
             if _l3 and _l3.get("probs"):
-                _chain = " ".join(f"{lab}{p}%" for lab, p in _l3["probs"])
+                # 【逐点方向符号+现在锚点 2026-07-19】链首「现在」=阶段基准实算,2周箭头相对现在
+                _sb = str(_l3.get("stage") or "")
+                _base = (45 if any(k in _sb for k in ("蓄势", "底部")) else
+                         62 if any(k in _sb for k in ("领涨", "主升", "启动", "延续", "多头")) else
+                         55 if any(k in _sb for k in ("派发", "滞涨", "高位")) else
+                         38 if any(k in _sb for k in ("退潮", "破位", "转弱", "下跌")) else 50)
+                _ch_parts, _pv = [f"现在{_base}"], _base
+                for lab, p in _l3["probs"]:
+                    _ar = ""
+                    if _pv is not None:
+                        _ar = "↑" if p - _pv >= 1 else ("↓" if p - _pv <= -1 else "≈")
+                    _ch_parts.append(f"{lab}{p}%{_ar}")
+                    _pv = p
+                _chain = " ".join(_ch_parts)
                 temp_lines.append(f"  - 📈 {_l3['name']} {_l3['stage']}·{_l3['action']}｜各周期上行概率：{_chain}（规则情景估计）")
     if _temps:
         _avg = int(round(sum(_temps) / len(_temps)))
         temp_lines.append(f"- **三市场综合 {_avg}/100** ｜ 温度=趋势35%+宽度35%+动量15%+量能15%，全部实价计算")
+    # 【V88·三市场相位差】三个市场温度的分化程度本身就是信号：
+    # 2026-07-29 实测 港股87 vs A股39 极差48点＝极端分化，
+    # 这种时候"大盘"不是一个东西，必须分开说，不能用一句"大盘高位"概括。
+    try:
+        _ps = (_regime or {}).get("phase_spread") or {}
+        if _ps:
+            temp_lines.append(f"- 🌐 **三市场相位**：{_ps.get('text')}"
+                              "（分化越大＝越不能用一句『大盘如何』概括，需逐市场定策略）")
+    except Exception:
+        logger.exception("[顶底研判层] 相位差渲染失败")
     temp_lines.append("")
     _rotation_forecast = {}
     _rotation_md = ""
@@ -372,6 +487,13 @@ def generate_market_snapshot() -> str:
             _snapshot_core, ensure_ascii=False, sort_keys=True, separators=(",", ":")
         )
         _snapshot_id = "snap-" + hashlib.sha256(_canonical.encode("utf-8")).hexdigest()[:16]
+        # 【V88·资金流雷达 2026-07-25 用户批准】主力净流入随行情链一体刷新(时点一致性):
+        # 轮动打分要吃它的板块streak,必须先抓;失败不阻断(轮动降级为无资金确认)。
+        try:
+            from fund_flow_radar import build as _ff_build
+            _ff_build()
+        except Exception as _ff_exc:
+            logger.warning(f"资金流雷达失败,轮动无资金确认: {_ff_exc}")
         # 【V88·下一轮轮转】同一冻结快照先量化筛选，再仅调用一次 thinking-high 联合复核三市场。
         try:
             from rotation_forecast import build_rotation_forecast, render_markdown
