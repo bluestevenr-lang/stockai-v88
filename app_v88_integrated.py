@@ -3223,16 +3223,20 @@ try:
                     if not _e9w:
                         continue
                     _wb_html9.append(
-                        f"<div style='font-size:11.5px;line-height:1.65;margin:1px 0'>"
+                        f"<div style='font-size:11.5px;line-height:1.7;margin:3px 0'>"
                         f"<b>{_cb_nm9(_nm9w, _cd9w)}</b> "
-                        f"<span style='color:#475569'>{_e9w.get('one_line')}</span></div>")
+                        f"<b style='color:#1e3a5f'>{_e9w.get('kind')}</b>"
+                        f"<span style='color:#475569'>｜{_e9w.get('why_now')}</span>"
+                        f"<div style='font-size:11px;color:#64748b;padding-left:10px'>"
+                        f"⏳{_e9w.get('hold')}　🚪失效:{_e9w.get('fail')}"
+                        f"<span style='color:#94a3b8'>　💰背景:{_e9w.get('bg')}</span></div></div>")
                 if _wb_html9:
                     st.markdown("<div style='margin-top:5px;padding:5px 8px;background:#f8fafc;"
                                 "border-left:3px solid #94a3b8;border-radius:5px'>"
-                                "<b style='font-size:11.5px;color:#475569'>为什么是这几家公司</b>"
-                                "<span style='font-size:10.5px;color:#94a3b8' title='技术面回答何时进;"
-                                "这三层回答为什么是它——💰估值/赚钱能力/增长 📰近期催化(无则明说无) "
-                                "🎯距高折价与历史同级回撤胜率。缺数据如实说缺,不编'>ⓘ基本面·信息面·价值面</span>"
+                                "<b style='font-size:11.5px;color:#475569'>为什么是现在买</b>"
+                                "<span style='font-size:10.5px;color:#94a3b8' title='⚡驱动=此刻谁在买/为什么涨(相对强度/资金/量能/催化) "
+                                "⏳持续性=这个驱动能撑多久 🚪失效=什么时候理由不成立(每种驱动各自的信号)。"
+                                "公司基本面只是背景标签,不解释为什么是今天'>ⓘ驱动·持续性·失效条件</span>"
                                 + "".join(_wb_html9) + "</div>", unsafe_allow_html=True)
             except Exception as _wb_e9:
                 logging.exception(f"[V88] 三层理由渲染失败: {_wb_e9}")
