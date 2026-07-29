@@ -1,7 +1,7 @@
 {
  "schema_version": "v88.rank/2.0",
- "snapshot_id": "snap-2ce25ac1fbdef870",
- "generated_at": "2026-07-29 07:48",
+ "snapshot_id": "snap-cda0d78a71663197",
+ "generated_at": "2026-07-29 13:03",
  "thresholds": {
   "minimum": {
    "short": 60,
@@ -493,7 +493,7 @@
      "action": "趋势偏多·等待回踩",
      "last": 31.88,
      "chg20": 47.3,
-     "rs": 33.7
+     "rs": 33.5
     },
     {
      "token": "HK:1928",
@@ -503,27 +503,42 @@
      "score_version": "V88-U2.1",
      "p_up": 85,
      "p_down": 15,
-     "rr": 0.76,
-     "expected_pct": 6.5,
+     "rr": 0.71,
+     "expected_pct": 6.1,
      "action": "观察",
-     "last": 14.91,
-     "chg20": 14.3,
-     "rs": 0.6
+     "last": 14.97,
+     "chg20": 14.7,
+     "rs": 0.9
     },
     {
      "token": "HK:2015",
      "name": "理想汽车-W",
-     "score": 77,
+     "score": 78,
      "unified_score": 72,
+     "score_version": "V88-U2.1",
+     "p_up": 78,
+     "p_down": 22,
+     "rr": 2.95,
+     "expected_pct": 28.2,
+     "action": "观察",
+     "last": 54.6,
+     "chg20": 18.5,
+     "rs": 4.7
+    },
+    {
+     "token": "HK:1398",
+     "name": "工商银行",
+     "score": 77,
+     "unified_score": 66,
      "score_version": "V88-U2.1",
      "p_up": 77,
      "p_down": 23,
-     "rr": 3.1,
-     "expected_pct": 27.8,
-     "action": "观察",
-     "last": 54.2,
-     "chg20": 17.6,
-     "rs": 4.0
+     "rr": 0.06,
+     "expected_pct": -1.7,
+     "action": "趋势偏多·等待回踩",
+     "last": 7.48,
+     "chg20": 16.3,
+     "rs": 2.5
     },
     {
      "token": "HK:3690",
@@ -533,27 +548,12 @@
      "score_version": "V88-U2.1",
      "p_up": 73,
      "p_down": 27,
-     "rr": 0.19,
-     "expected_pct": -1.5,
+     "rr": 0.16,
+     "expected_pct": -1.8,
      "action": "趋势偏多·等待回踩",
-     "last": 92.05,
-     "chg20": 34.4,
-     "rs": 20.7
-    },
-    {
-     "token": "HK:1398",
-     "name": "工商银行",
-     "score": 73,
-     "unified_score": 64,
-     "score_version": "V88-U2.1",
-     "p_up": 73,
-     "p_down": 27,
-     "rr": 0.06,
-     "expected_pct": -2.0,
-     "action": "趋势偏多·等待回踩",
-     "last": 7.47,
-     "chg20": 16.2,
-     "rs": 2.5
+     "last": 92.3,
+     "chg20": 34.7,
+     "rs": 20.9
     }
    ],
    "mid": [
@@ -565,12 +565,12 @@
      "score_version": "V88-U2.1",
      "p_up": 73,
      "p_down": 27,
-     "rr": 0.19,
-     "expected_pct": -1.5,
+     "rr": 0.16,
+     "expected_pct": -1.8,
      "action": "趋势偏多·等待回踩",
-     "last": 92.05,
-     "chg20": 34.4,
-     "rs": 20.7
+     "last": 92.3,
+     "chg20": 34.7,
+     "rs": 20.9
     },
     {
      "token": "HK:1810",
@@ -585,7 +585,7 @@
      "action": "趋势偏多·等待回踩",
      "last": 31.88,
      "chg20": 47.3,
-     "rs": 33.7
+     "rs": 33.5
     },
     {
      "token": "HK:0027",
@@ -593,43 +593,43 @@
      "score": 80,
      "unified_score": 76,
      "score_version": "V88-U2.1",
-     "p_up": 71,
-     "p_down": 29,
-     "rr": 2.68,
-     "expected_pct": 15.7,
+     "p_up": 72,
+     "p_down": 28,
+     "rr": 2.56,
+     "expected_pct": 15.6,
      "action": "多周期共振·试仓复核",
-     "last": 34.22,
-     "chg20": 16.3,
-     "rs": 2.7
+     "last": 34.34,
+     "chg20": 16.7,
+     "rs": 2.9
     },
     {
      "token": "HK:0316",
      "name": "东方海外",
      "score": 79,
-     "unified_score": 63,
+     "unified_score": 64,
      "score_version": "V88-U2.1",
      "p_up": 69,
      "p_down": 31,
      "rr": 0.17,
      "expected_pct": -1.8,
      "action": "趋势偏多·等待回踩",
-     "last": 153.9,
-     "chg20": 26.1,
-     "rs": 12.5
+     "last": 154.0,
+     "chg20": 26.2,
+     "rs": 12.4
     },
     {
      "token": "HK:1398",
      "name": "工商银行",
      "score": 78,
-     "unified_score": 64,
+     "unified_score": 66,
      "score_version": "V88-U2.1",
-     "p_up": 73,
-     "p_down": 27,
+     "p_up": 77,
+     "p_down": 23,
      "rr": 0.06,
-     "expected_pct": -2.0,
+     "expected_pct": -1.7,
      "action": "趋势偏多·等待回踩",
-     "last": 7.47,
-     "chg20": 16.2,
+     "last": 7.48,
+     "chg20": 16.3,
      "rs": 2.5
     }
    ],
@@ -642,72 +642,72 @@
      "score_version": "V88-U2.1",
      "p_up": 71,
      "p_down": 29,
-     "rr": 0.09,
-     "expected_pct": -1.8,
+     "rr": 0.07,
+     "expected_pct": -2.0,
      "action": "趋势偏多·等待回踩",
-     "last": 5.47,
-     "chg20": 12.7,
+     "last": 5.48,
+     "chg20": 12.9,
      "rs": -1.0
     },
     {
      "token": "HK:1398",
      "name": "工商银行",
      "score": 79,
-     "unified_score": 64,
+     "unified_score": 66,
      "score_version": "V88-U2.1",
-     "p_up": 73,
-     "p_down": 27,
+     "p_up": 77,
+     "p_down": 23,
      "rr": 0.06,
-     "expected_pct": -2.0,
+     "expected_pct": -1.7,
      "action": "趋势偏多·等待回踩",
-     "last": 7.47,
-     "chg20": 16.2,
+     "last": 7.48,
+     "chg20": 16.3,
      "rs": 2.5
     },
     {
      "token": "HK:0316",
      "name": "东方海外",
      "score": 76,
-     "unified_score": 63,
+     "unified_score": 64,
      "score_version": "V88-U2.1",
      "p_up": 69,
      "p_down": 31,
      "rr": 0.17,
      "expected_pct": -1.8,
      "action": "趋势偏多·等待回踩",
-     "last": 153.9,
-     "chg20": 26.1,
-     "rs": 12.5
+     "last": 154.0,
+     "chg20": 26.2,
+     "rs": 12.4
     },
     {
      "token": "HK:2269",
      "name": "药明生物",
      "score": 72,
-     "unified_score": 55,
+     "unified_score": 56,
      "score_version": "V88-U2.1",
      "p_up": 50,
      "p_down": 50,
-     "rr": 0.52,
-     "expected_pct": -1.8,
+     "rr": 0.56,
+     "expected_pct": -1.6,
      "action": "观察",
-     "last": 39.46,
-     "chg20": 14.0,
-     "rs": 0.4
+     "last": 39.38,
+     "chg20": 13.8,
+     "rs": -0.0
     },
     {
-     "token": "HK:2628",
-     "name": "中国人寿",
-     "score": 66,
-     "unified_score": 64,
+     "token": "HK:9618",
+     "name": "京东集团-SW",
+     "score": 62,
+     "unified_score": 62,
      "score_version": "V88-U2.1",
-     "p_up": 58,
-     "p_down": 42,
-     "rr": 1.48,
-     "expected_pct": 3.0,
+     "p_up": 65,
+     "p_down": 35,
+     "rr": 0.55,
+     "expected_pct": 0.1,
      "action": "趋势偏多·等待回踩",
-     "last": 28.2,
-     "chg20": 5.8,
-     "rs": -7.9
+     "last": 126.2,
+     "chg20": 27.2,
+     "rs": 13.3
     }
    ]
   }
@@ -776,27 +776,27 @@
     "token": "HK:1024",
     "name": "快手-W",
     "score": 33,
-    "last": 42.7,
-    "chg20": 2.6,
-    "rs": -11.0,
-    "reason": "短线评分尾部，防破位或利润回吐"
-   },
-   {
-    "token": "HK:9868",
-    "name": "小鹏汽车-W",
-    "score": 42,
-    "last": 51.55,
-    "chg20": 1.8,
-    "rs": -11.9,
+    "last": 42.8,
+    "chg20": 2.9,
+    "rs": -10.9,
     "reason": "短线评分尾部，防破位或利润回吐"
    },
    {
     "token": "HK:0700",
     "name": "腾讯控股",
     "score": 44,
-    "last": 466.8,
-    "chg20": 8.6,
-    "rs": -5.0,
+    "last": 466.4,
+    "chg20": 8.5,
+    "rs": -5.3,
+    "reason": "短线评分尾部，防破位或利润回吐"
+   },
+   {
+    "token": "HK:9999",
+    "name": "网易-S",
+    "score": 47,
+    "last": 203.2,
+    "chg20": 0.4,
+    "rs": -13.4,
     "reason": "短线评分尾部，防破位或利润回吐"
    }
   ]
@@ -816,8 +816,8 @@
   },
   "港股": {
    "total": 30,
-   "up_pct": 97,
-   "above20_pct": 93,
+   "up_pct": 100,
+   "above20_pct": 97,
    "newhigh60": 9
   }
  }
