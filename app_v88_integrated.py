@@ -2681,6 +2681,25 @@ except Exception:
 # 点了才强制用此刻最新数据（清会话缓存+st.cache_data+行情pkl文件缓存后整页重算），
 # 不点一律走原缓存零额外流量。AI解读类不受此按钮影响（守预算，仍按各自节流）。
 # 【U3.2 2026-07-26 用户点单】全球市场概览置顶(双时钟+三市场体制一眼可见)
+# 【2026-07-29 用户抓"为什么又把置顶的时间给我删除了"】双时钟原本在6007行的
+# 全球概览块里,而那块被分页切进 LISTS 段——总览页只跑 A 段(到4401行),
+# 于是槽位在A段、回填在LISTS段,**总览页的置顶时钟永远是空的**。
+# 双时钟只读系统时间(零成本),不该跟着重量级宏观面板一起被切走→单独提到A段常驻。
+try:
+    from datetime import datetime as _dtc9
+    from zoneinfo import ZoneInfo as _zi9
+    _wd9 = {"Monday": "周一", "Tuesday": "周二", "Wednesday": "周三", "Thursday": "周四",
+            "Friday": "周五", "Saturday": "周六", "Sunday": "周日"}.get(_dtc9.now().strftime("%A"), "")
+    _bj9 = _dtc9.now(_zi9("Asia/Shanghai")).strftime("%m-%d %H:%M")
+    _ny9 = _dtc9.now(_zi9("America/New_York")).strftime("%m-%d %H:%M")
+    st.markdown(
+        f"<div style='display:flex;justify-content:space-between;align-items:center;"
+        f"padding:.15rem .45rem;margin:0 0 .25rem;border-bottom:1px solid #e2e8f0;font-size:12px'>"
+        f"<b style='color:#334155'>🌍 V88 · {_dtc9.now().strftime('%Y-%m-%d')} {_wd9}</b>"
+        f"<span style='color:#1e3a5f;font-weight:600'>🇺🇸纽约 {_ny9}　🇨🇳北京 {_bj9}</span></div>",
+        unsafe_allow_html=True)
+except Exception as _clk_e9:
+    logging.exception(f"[V88] 置顶双时钟渲染失败: {_clk_e9}")
 _macro_top_slot = st.empty()
 _now_c1, _now_c2 = st.columns([8.5, 1.5])
 with _now_c2:
@@ -3131,20 +3150,36 @@ try:
                 _t = ("强看跌" if _p >= 80 else "明确看跌" if _p >= 65 else "偏跌" if _p >= 55 else "中性")
             return f"<span style='font-weight:400;font-size:10.5px;color:#94a3b8'>({_t})</span>"
 
-        def _row6_9(_nm, _cd, _act, _trig, _inv, _pos, _st, _why=""):
+        def _row6_9(_nm, _cd, _act, _trig, _inv, _pos, _st, _why="", _wnow=None):
+            # 【2026-07-29 用户"不要另起一个板块,直接在表格里增加一列"】
+            # _wnow = why_buy 的那一行:表内只放"⚡驱动"一句小字,持续性/失效条件进 title 悬停
             _lk = (f"<a href='?q={_cd}&focus=deep#v88-deep-analysis' target='_blank' rel='noopener' "
                    f"style='text-decoration:underline;color:inherit'>{_nm}</a>")
+            _wcell = "<td></td>"
+            if _wnow:
+                _tip = (f"{_wnow.get('kind')}｜{_wnow.get('why_now')}　"
+                        f"⏳{_wnow.get('hold')}　🚪失效:{_wnow.get('fail')}").replace('"', "'")
+                _wcell = (f"<td title=\"{_tip[:300]}\" style='font-size:11px;line-height:1.4;"
+                          f"max-width:230px'><b>{_wnow.get('kind')}</b>"
+                          f"<span style='color:#64748b'>·{str(_wnow.get('why_now'))[:46]}</span> ⓘ</td>")
             return (f"<tr><td>{_lk}</td><td>{_act}</td><td>{_trig}</td><td>{_inv}</td>"
-                    f"<td>{_pos}</td><td title=\"{_why[:120]}\">{_st} ⓘ</td></tr>")
+                    f"<td>{_pos}</td><td title=\"{_why[:120]}\">{_st} ⓘ</td>{_wcell}</tr>")
 
         def _tbl9(rows_html):
             return ("<table style='width:100%;font-size:12.5px;border-collapse:collapse'>"
                     "<tr style='color:#94a3b8;font-size:11px;text-align:left'>"
                     "<th>名称</th><th title='动作+未来2周方向概率(统一引擎规则估计,非实盘胜率);"
                     "买侧=上涨概率,卖侧=下跌概率;≥70%高把握·60-70%偏多·55-60%略偏·<55%中性'>"
-                    "动作·2周概率 ⓘ</th><th>触发/买区</th><th>失效价</th><th>仓位</th><th>状态</th></tr>"
+                    "动作·2周概率 ⓘ</th><th>触发/买区</th><th>失效价</th><th>仓位</th><th>状态</th>"
+                    "<th title='此刻为什么买它(不是这家公司常年什么样)——⚡驱动/⏳能撑多久/"
+                    "🚪什么时候失效。鼠标悬停看完整说明'>为什么现在 ⓘ</th></tr>"
                     + "".join(rows_html) + "</table>")
         import re as _re9t
+        try:    # 【2026-07-29】"为什么现在"并进表格列,不再另起板块
+            _wbrows9 = (json.loads((_cb_repo9 / "data" / "why_buy.json")
+                                   .read_text(encoding="utf-8")).get("rows") or {})
+        except Exception:
+            _wbrows9 = {}
         _t_buy9, _t_sell9, _t_hold9 = [], [], []
         for _src9, _nm9, _cd9, _px9, _pu9, _rr9, _why9 in _cb_rows9[:5]:
             _nm9 = _cb_nm9(_nm9, _cd9)
@@ -3156,7 +3191,8 @@ try:
             _inv9s = _inv9x.group(1) if _inv9x else "见卡"
             _t_buy9.append(_row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9), '')}{_nm9}",
                                    _cd9, f"<b style='color:#dc2626'>买 涨{_pu9}%</b>{_plab9(_pu9, 'up')}",
-                                   _zone9s, _inv9s, ("半仓" if _g9x.get("state") == "hot" else "纲领内"), _st9x, str(_why9)))
+                                   _zone9s, _inv9s, ("半仓" if _g9x.get("state") == "hot" else "纲领内"), _st9x,
+                                   str(_why9), _wbrows9.get(str(_cd9))))
         # 【冲突消解层 2026-07-27 特斯拉案"卖侧强看跌85% vs 买侧🚀启动候选72"两嘴打架】
         # 卖警=当下趋势事实,底拐/上行候选=左侧猜测——合成:纪律优先减仓照执行;
         # 候选在场=减而不清留观察仓,站上确认价才算见底成立,之前的反弹按逃命反弹处理
@@ -3212,34 +3248,7 @@ try:
             st.markdown(_tbl9(_t_buy9) if _t_buy9 else
                         ("<span style='font-size:12px;color:#94a3b8'>买侧无可执行买单——现金也是仓位"
                          "(环境弱时买单自带仓位分级提示,不再硬拦)</span>"), unsafe_allow_html=True)
-            # 【买入三层理由 2026-07-29 用户"技术层面能看懂了,但基本面/信息面/价值投资也要说明,
-            # 否则总觉得在做技术投资"】表格回答"什么时候进",这里回答"为什么是这家公司"
-            try:
-                _wb9 = json.loads((_cb_repo9 / "data" / "why_buy.json").read_text(encoding="utf-8"))
-                _wbr9 = _wb9.get("rows") or {}
-                _wb_html9 = []
-                for _src9w, _nm9w, _cd9w, _px9w, _pu9w, _rr9w, _why9w in _cb_rows9[:5]:
-                    _e9w = _wbr9.get(str(_cd9w))
-                    if not _e9w:
-                        continue
-                    _wb_html9.append(
-                        f"<div style='font-size:11.5px;line-height:1.7;margin:3px 0'>"
-                        f"<b>{_cb_nm9(_nm9w, _cd9w)}</b> "
-                        f"<b style='color:#1e3a5f'>{_e9w.get('kind')}</b>"
-                        f"<span style='color:#475569'>｜{_e9w.get('why_now')}</span>"
-                        f"<div style='font-size:11px;color:#64748b;padding-left:10px'>"
-                        f"⏳{_e9w.get('hold')}　🚪失效:{_e9w.get('fail')}"
-                        f"<span style='color:#94a3b8'>　💰背景:{_e9w.get('bg')}</span></div></div>")
-                if _wb_html9:
-                    st.markdown("<div style='margin-top:5px;padding:5px 8px;background:#f8fafc;"
-                                "border-left:3px solid #94a3b8;border-radius:5px'>"
-                                "<b style='font-size:11.5px;color:#475569'>为什么是现在买</b>"
-                                "<span style='font-size:10.5px;color:#94a3b8' title='⚡驱动=此刻谁在买/为什么涨(相对强度/资金/量能/催化) "
-                                "⏳持续性=这个驱动能撑多久 🚪失效=什么时候理由不成立(每种驱动各自的信号)。"
-                                "公司基本面只是背景标签,不解释为什么是今天'>ⓘ驱动·持续性·失效条件</span>"
-                                + "".join(_wb_html9) + "</div>", unsafe_allow_html=True)
-            except Exception as _wb_e9:
-                logging.exception(f"[V88] 三层理由渲染失败: {_wb_e9}")
+            # (为什么现在=表格内一列,见 _row6_9 的 _wnow 参数;不再另起板块)
             if _cb_near9:
                 st.markdown("<div style='font-size:12px;color:#64748b;margin-top:4px'>"
                             "<b>🕐 准备买·等触发</b><span style='font-size:11px;color:#94a3b8'>"
