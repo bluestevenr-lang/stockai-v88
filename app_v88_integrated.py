@@ -3197,11 +3197,12 @@ try:
                     "🚪什么时候失效。鼠标悬停看完整说明'>为什么现在 ⓘ</th></tr>"
                     + "".join(rows_html) + "</table>")
         import re as _re9t
-        try:    # 【2026-07-29】"为什么现在"并进表格列,不再另起板块
-            _wbrows9 = (json.loads((_cb_repo9 / "data" / "why_buy.json")
-                                   .read_text(encoding="utf-8")).get("rows") or {})
+        try:    # 【2026-07-29】"为什么现在"并进表格列,不再另起板块;买卖对称各读一段
+            _wbj9 = json.loads((_cb_repo9 / "data" / "why_buy.json").read_text(encoding="utf-8"))
+            _wbrows9 = _wbj9.get("rows") or {}
+            _wsell9 = _wbj9.get("sells") or {}      # 卖侧:失效=警报解除可买回
         except Exception:
-            _wbrows9 = {}
+            _wbrows9, _wsell9 = {}, {}
         _t_buy9, _t_sell9, _t_hold9 = [], [], []
         for _src9, _nm9, _cd9, _px9, _pu9, _rr9, _why9 in _cb_rows9[:5]:
             _nm9 = _cb_nm9(_nm9, _cd9)
@@ -3236,7 +3237,7 @@ try:
             _t_sell9.append(_row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9s), '')}{_nm9s}", _cd9s,
                                     f"<b style='color:#16a34a'>{_act9s} 跌{_pd9s}%</b>{_plab9(_pd9s, 'down')}",
                                     f"现{_px9s}", "卡💰行", ("减留底仓" if _cf9 else "按纪律"), "💼执行",
-                                    str(_why9s) + _cf_txt9))
+                                    str(_why9s) + _cf_txt9, _wsell9.get(str(_cd9s))))
         try:
             _hold9 = [r for r in _cb_src9 if r.get("scope") == "持仓"
                       and not any(k in str(r.get("action", "")) for k in ("减", "退", "清", "止损"))][:5]
