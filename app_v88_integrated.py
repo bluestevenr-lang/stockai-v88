@@ -6086,20 +6086,11 @@ def get_market_heat(_cache_ver="v98"):
 # ═══════════════════════════════════════════════════════════════
 if Config.ENABLE_EXPECTATION_LAYER:
     with _macro_top_slot.container():
-        from datetime import datetime as _dt_global
-        from zoneinfo import ZoneInfo
-        _global_today = _dt_global.now().strftime("%Y-%m-%d")
-        _global_weekday_cn = {"Monday": "周一", "Tuesday": "周二", "Wednesday": "周三", "Thursday": "周四", "Friday": "周五", "Saturday": "周六", "Sunday": "周日"}
-        _global_weekday = _global_weekday_cn.get(_dt_global.now().strftime("%A"), "")
-        _bj_time = _dt_global.now(ZoneInfo("Asia/Shanghai")).strftime("%H:%M")
-        _nasdaq_time = _dt_global.now(ZoneInfo("America/New_York")).strftime("%m/%d %H:%M")
-        st.markdown(
-            f'<div style="display:flex;justify-content:space-between;align-items:center;padding:.15rem .45rem;'
-            f'margin:0 0 .25rem;border-bottom:1px solid #e2e8f0;font-size:12px">'
-            f'<b style="color:#334155;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">🌍 全球市场概览 · 实时监控三大市场体制 · 把握全球资金流向</b>'
-            f'<span style="color:#1e3a5f;font-weight:600">{_global_today} {_global_weekday} · 纽约{_nasdaq_time} · 北京{_bj_time}</span></div>',
-            unsafe_allow_html=True)
-
+        # 【2026-07-29 用户"全球市场概览上面时间两列重复了"】此处原本再画一条
+        # "🌍全球市场概览·实时监控三大市场体制"标题 + 同一套 日期/纽约/北京 时钟。
+        # 但本块渲染进 _macro_top_slot,位置正好紧贴置顶区(见铁律12,约2716行),
+        # 于是同样的标题和同样的时钟连着出现两行——纯冗余,占掉一行高度。
+        # **置顶那条是唯一真源**(它还带三市场指数+2周概率+体制裁决),这里只留内容不再重画头。
         try:
             # 检查是否请求强制刷新
             force_refresh = st.session_state.get('force_refresh_requested', False)
