@@ -3251,19 +3251,32 @@ try:
         except Exception:
             logging.exception("[V88] why_buy 读取失败")
             _wbrows9, _wsell9, _whold9 = {}, {}, {}
+        def _pos9(_wnow, _fallback):
+            """【仓位唯一真源 2026-07-29 用户"又减半又让你可加,这个你不检查的么"】
+            用户截图抓到同一行自相矛盾:状态列"🔶减半"、仓位列"纲领内"、三层列"②标准仓"
+            ——**三个地方各说各的仓位**。根因:系统本来就有市场级环境闸在分级仓位,
+            我建第②层时没接它,于是两套(实为三处)口径并行输出。
+            现在仓位只认第②层(它已 min(周期档, 波动率, 环境闸上限)),
+            这里只做取值;取不到才退回旧值。状态列同步不再出现任何仓位词。"""
+            _a = ((_wnow or {}).get("layers") or {}).get("L2") or {}
+            return _a.get("a") or _fallback
+
         _t_buy9, _t_sell9, _t_hold9 = [], [], []
         for _src9, _nm9, _cd9, _px9, _pu9, _rr9, _why9 in _cb_rows9[:5]:
             _nm9 = _cb_nm9(_nm9, _cd9)
             _g9x = _cb_gate9.get(_cb_mk9(_cd9)) or {}
-            _st9x = {"weak": "⏸弱市挂单", "hot": "🔶减半"}.get(_g9x.get("state"), "✅可执行")
+            # 状态列=环境判定(能不能执行),**不再兼说仓位**——仓位归第②层
+            _st9x = {"weak": "⏸弱市·只挂单", "hot": "🔶大盘过热"}.get(_g9x.get("state"), "✅可执行")
             _zone9x = (_re9t.search(r"([0-9.]+[~～][0-9.]+)", str(_why9)) or [None])
             _zone9s = _zone9x.group(1).replace("~", "～") if hasattr(_zone9x, "group") and _zone9x.group(1) else f"现{_px9}"
             _inv9x = (_re9t.search(r"跌破([0-9.]+)", str(_why9)) or None)
             _inv9s = _inv9x.group(1) if _inv9x else "见卡"
             _t_buy9.append(_row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9), '')}{_nm9}",
                                    _cd9, f"<b style='color:#dc2626'>买 涨{_pu9}%</b>{_plab9(_pu9, 'up')}",
-                                   _zone9s, _inv9s, ("半仓" if _g9x.get("state") == "hot" else "纲领内"), _st9x,
-                                   str(_why9), _wbrows9.get(str(_cd9))))
+                                   _zone9s, _inv9s,
+                                   _pos9(_wbrows9.get(str(_cd9)),
+                                         "半仓" if _g9x.get("state") == "hot" else "纲领内"),
+                                   _st9x, str(_why9), _wbrows9.get(str(_cd9))))
         # 【冲突消解层 2026-07-27 特斯拉案"卖侧强看跌85% vs 买侧🚀启动候选72"两嘴打架】
         # 卖警=当下趋势事实,底拐/上行候选=左侧猜测——合成:纪律优先减仓照执行;
         # 候选在场=减而不清留观察仓,站上确认价才算见底成立,之前的反弹按逃命反弹处理
