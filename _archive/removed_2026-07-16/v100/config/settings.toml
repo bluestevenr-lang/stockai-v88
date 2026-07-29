@@ -1,0 +1,37 @@
+[report]
+morning_time = "07:00"
+evening_time = "18:00"
+output_dir   = "reports/"
+
+[proxy]
+# 本地代理地址，留空表示不使用代理
+host = "127.0.0.1"
+port = 7897
+enabled = true
+
+[ai]
+# 优先使用的AI提供商：gemini 或 deepseek
+# 实际密钥从 .env 或环境变量读取，不写在这里
+provider = "gemini"
+model = "gemini-2.5-flash"
+
+[cache]
+# 各命名空间的缓存TTL（秒）
+price_ttl        = 900     # 15分钟
+fundamentals_ttl = 3600    # 1小时
+news_ttl         = 900     # 15分钟
+ai_report_ttl    = 43200   # 12小时
+market_heat_ttl  = 300     # 5分钟
+stock_list_ttl   = 900     # 15分钟
+
+[data]
+# 数据源优先级：A/HK股优先用 eastmoney，US股用 yfinance
+default_period = "1y"
+min_rows = 10
+max_daily_move = 0.25      # 单日涨跌超过25%视为异常
+
+[trade]
+# 交易计划默认参数
+default_capital = 100000   # 默认本金（元/美元）
+risk_per_trade  = 0.01     # 单笔风险比例（1%）
+atr_stop_mult   = 1.5      # 止损 = 入场价 - 1.5 × ATR

@@ -8,20 +8,20 @@ enable_perf_layer        = true   # 性能监控开关
 [cache]
 ttl_fast    = 900    # 高频数据缓存（秒）：VIX、实时价格，15分钟
 ttl_daily   = 3600   # 日线数据缓存（秒）：日K线，1小时
-ttl_weekly  = 21600  # 周频数据缓存（秒）：宏观指标，6小时
-ttl_workday = 900    # 交易日宏观分析缓存（秒），15分钟
-ttl_weekend = 86400  # 非交易日缓存（秒），24小时
+ttl_weekly  = 3600   # 周频数据缓存（秒）：宏观指标，1小时（2026-07-09 全模块统一1小时）
+ttl_workday = 3600   # 交易日宏观分析缓存（秒），1小时（全模块统一）
+ttl_weekend = 3600   # 非交易日缓存（秒），1小时（原24小时，用户要求所有模块统一1小时）
 ttl_heat    = 3600   # 行业热力图缓存（秒），1小时
-brief_ttl   = 43200  # AI市场简报缓存（秒），12小时
-scan_ttl    = 900    # 扫描结果缓存（秒），15分钟
+brief_ttl   = 3600   # AI市场简报缓存（秒），1小时（原12小时）
+scan_ttl    = 3600   # 扫描结果缓存（秒），1小时（全模块统一）
 
 [data]
-retry_count     = 3   # 数据获取失败重试次数
-request_timeout = 30  # 单次请求超时（秒）
+retry_count     = 2   # 数据获取失败重试次数（降低以加速启动）
+request_timeout = 10  # 单次请求超时（秒）— 从30降至10，避免启动卡死
 macro_period    = "1y" # 宏观数据拉取周期（需覆盖MA200）
 
 [concurrency]
-max_workers   = 8   # 并发线程池上限
+max_workers   = 12  # 并发线程池上限
 task_timeout  = 15  # 单任务超时（秒）
 
 [technical]

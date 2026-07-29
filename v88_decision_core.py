@@ -16,6 +16,14 @@ from datetime import datetime, timedelta, timezone
 import numpy as np
 import pandas as pd
 
+_LOG = logging.getLogger(__name__)
+
+
+def _log_exc(msg: str) -> None:
+    """【铁律7·不静默吞异常】except 里必须留痕，否则功能消失查不出原因。
+    本文件原先 import 了 logging 却从未建 logger——2026-07-29 补。"""
+    _LOG.exception(msg)
+
 
 SCHEMA = "v88.stock-decision/2.0"
 SCORE_VERSION = "V88-U2.1"   # 2026-07-17 用户定纲:周期体系翻倍律重构(2/4/8/16/32周),战绩按版本分段
@@ -325,7 +333,20 @@ def market_regime(mk: str) -> dict:
     一味右侧=毛病——小米/LMT/礼来是被右侧思维拦掉的左侧机会,腾讯是右侧追入亏最大的反例。
     牛市左侧参考更多,这是辩证的。"
     判定(读冻结快照,三端同源): bear=2周≤42%或verdict含杀跌/派发/下杀/反转;
-    bull=2周≥55%且无弱词; 其余neutral。读不到快照=neutral(不误伤)。"""
+    bull=2周≥55%且无弱词; 其余neutral。读不到快照=neutral(不误伤)。
+
+    【V88·顶底传导 2026-07-29 用户定纲】"整体大盘如果风险较高,个股需谨慎,反之也依然,
+    所有推荐个股的关系,也应该包含这个"。
+
+    实证起因(2026-07-29):港股2周58%≥55、verdict"过热惯性·不新追高"不含弱词
+    → 旧版判 **bull·标准仓·need_rr1.2**;而同一时刻 CS7 闸因"港股过热"把门槛提到2.0
+    驳回6只港股。**两套逻辑对同一批票给相反信号**——大盘风险没有传导进个股决策。
+
+    **非对称原则(重要)**:顶部与底部对个股的影响不是镜像的——
+      下跌时个股相关性趋近1(覆巢之下无完卵)→ 顶部风险**强力收紧**;
+      上涨时个股分化极大(用户自己两个美股账户同期一赚一亏)→ 底部**只放开左侧低吸,
+      不放宽个股自身标准**(need_rr 不下调)。对称处理会在底部放进一堆烂票。
+    """
     try:
         snap = json.loads((BASE / "data" / "market_snapshot.json").read_text(encoding="utf-8"))
         b = (snap.get("markets") or {}).get(mk) or {}
@@ -333,12 +354,51 @@ def market_regime(mk: str) -> dict:
         vd = str((b.get("temperature") or {}).get("verdict") or "")
         hard_bear = any(k in vd for k in ("杀跌", "派发", "下杀", "反转"))
         soft_weak = any(k in vd for k in ("转弱", "偏冷"))
+        # ── 顶底研判层传导(读 regime_topbot.json;缺失则退回旧口径,不误伤) ──
+        top_hit = bot_hit = 0
+        top_risk = bot_opp = 0
+        try:
+            _rg = json.loads((BASE / "data" / "regime_topbot.json").read_text(encoding="utf-8"))
+            _m = ((_rg.get("markets") or {}).get(mk) or {})
+            _cl, _tr = (_m.get("topbot") or {}), (_m.get("turn_risk") or {})
+            top_hit, bot_hit = int(_cl.get("top_hit") or 0), int(_cl.get("bottom_hit") or 0)
+            top_risk, bot_opp = int(_tr.get("top_risk") or 0), int(_tr.get("bottom_opp") or 0)
+        except FileNotFoundError:
+            pass
+        except Exception:
+            _log_exc("[market_regime] 顶底研判层读取失败,退回旧口径")
+        _topish = (top_hit >= 3 or top_risk >= 55)
+        _botish = (bot_hit >= 3 and bot_opp >= 55)
+        base = {"top_hit": top_hit, "bottom_hit": bot_hit,
+                "top_risk": top_risk, "bottom_opp": bot_opp}
         if hard_bear or (p2w is not None and int(p2w) <= 42):
-            return {"regime": "bear", "why": f"{mk}2周{p2w}%·{vd[:12] or '弱'}——右侧纪律:等确认再进"}
+            # 【2026-07-29 自查修正】底部特征强时 botish 分支原本是**死代码**——
+            # 底部特征强⇔市场跌得多⇔2周概率必然低⇔必然先在这里判 bear 返回,永远走不到下面。
+            # 而 bear 的处方是"等右侧确认",与快照自己的裁决"恐慌杀跌接近弹药区·核心层分批备弹"
+            # 直接冲突(A股今日实例)。故:熊市里若底部特征达标,保留 bear 的谨慎仓位,
+            # 但**开放左侧通道**(botish),对应 docstring 那句"一味右侧=毛病"。
+            return {**base, "regime": "bear", "botish": _botish,
+                    "why": (f"{mk}2周{p2w}%·{vd[:12] or '弱'}——右侧纪律:等确认再进"
+                            if not _botish else
+                            f"{mk}2周{p2w}%偏弱但**底部特征{bot_hit}/7·转机{bot_opp}**"
+                            f"——熊市小仓+开放左侧分批(不追杀,赔率门槛不放宽)")}
+        if _topish:
+            # ★ 顶部风险优先于概率:概率再高也不给 bull(bull=标准仓+左侧优先,顶部区最忌这个)
+            return {**base, "regime": "neutral", "topish": True,
+                    "why": (f"{mk}2周{p2w}%本偏暖,但**顶部特征{top_hit}/7·顶部风险{top_risk}**"
+                            f"——降级为中性:不新追高、只做回踩、仓位减半")}
         if (p2w is not None and int(p2w) >= 55) and not soft_weak:
-            return {"regime": "bull", "why": f"{mk}2周{p2w}%偏暖——左侧模式:低位可分批低吸,不等右侧追高"}
-        return {"regime": "neutral", "why": f"{mk}2周{p2w}%中性——左侧小仓+右侧确认加仓两级"}
+            return {**base, "regime": "bull",
+                    "why": f"{mk}2周{p2w}%偏暖——左侧模式:低位可分批低吸,不等右侧追高"}
+        if _botish:
+            # 底部只开左侧通道,**不下调 need_rr**(非对称:底部时个股分化大,标准不能松)
+            return {**base, "regime": "neutral", "botish": True,
+                    "why": (f"{mk}2周{p2w}%偏弱,但**底部特征{bot_hit}/7·底部转机{bot_opp}**"
+                            f"——放开左侧低吸(个股赔率门槛不放宽)")}
+        return {**base, "regime": "neutral",
+                "why": f"{mk}2周{p2w}%中性——左侧小仓+右侧确认加仓两级"}
     except Exception:
+        _log_exc("[market_regime] 快照读取失败")
         return {"regime": "neutral", "why": "快照缺失·默认中性"}
 
 
@@ -536,6 +596,11 @@ def env_gate(code: str, mode: str, rr: float, pos52=None, evidence: dict | None 
             out["position"] = "半仓"
             out["position_note"] = (f"熊市但52周{_p52:.0f}%低位+异证"
                                     f"({'资金流入' if _ev.get('obv_inflow') else '底部拐点'})→半仓低吸可以")
+        elif rg.get("botish") and _p52 <= 40:
+            # 熊市+底部特征达标+个股本身在低位 → 开放左侧分批（仓位仍 1/3，赔率门槛不放宽）
+            out["position"] = "1/3仓"
+            out["position_note"] = (f"熊市但大盘底部特征{rg.get('bottom_hit')}/7且个股52周{_p52:.0f}%低位"
+                                    f"→可左侧分批建仓(1/3仓起,不追杀)")
         else:
             out["position"] = "1/3仓"
             out["position_note"] = f"熊市右侧纪律:小仓1/3+止损收紧({rg['why'][:24]})"
@@ -546,6 +611,30 @@ def env_gate(code: str, mode: str, rr: float, pos52=None, evidence: dict | None 
     else:
         out["position"] = "标准仓"
         out["position_note"] = "偏暖市:标准仓,左侧机会优先"
+    # ── 【V88·大盘顶底→个股 非对称传导 2026-07-29 用户定纲】 ──
+    # "整体大盘如果风险较高,个股需谨慎,反之也依然,所有推荐个股的关系也应该包含这个"。
+    # 非对称:顶部强力收紧(下跌时相关性趋近1,好票也扛不住);
+    #        底部只开左侧、**不下调赔率门槛**(上涨时个股分化大,放宽标准会放进烂票)。
+    # market_adj 字段让用户看得见"这只票被大盘扣了什么"——不透明的调整等于没调整。
+    _top_hit, _top_risk = int(rg.get("top_hit") or 0), int(rg.get("top_risk") or 0)
+    _bot_hit, _bot_opp = int(rg.get("bottom_hit") or 0), int(rg.get("bottom_opp") or 0)
+    out["market_adj"] = ""
+    if rg.get("topish"):
+        _dn = {"标准仓": "半仓", "半仓": "1/3仓", "1/3仓": "1/3仓"}
+        _before = out["position"]
+        out["position"] = _dn.get(_before, "半仓")
+        out["need_rr"] = max(out["need_rr"], 2.0)     # 与 CS7 过热门槛对齐,不再两套标准
+        if mode in ("现价可进", "突破确认"):
+            out["action_downgrade"] = "回踩到位"       # 顶部区不追价,只接回踩
+        out["market_adj"] = (f"⚠️大盘顶部特征{_top_hit}/7(风险{_top_risk})→"
+                             f"仓位{_before}降{out['position']}·赔率门槛升{out['need_rr']:.1f}"
+                             + ("·现价追高降级为等回踩" if out.get("action_downgrade") else ""))
+        out["reasons"].append(out["market_adj"])
+    elif rg.get("botish"):
+        out["market_adj"] = (f"🧊大盘底部特征{_bot_hit}/7(转机{_bot_opp})→"
+                             f"放开左侧低吸;但个股赔率门槛维持{out['need_rr']:.1f}不放宽"
+                             f"(底部个股分化大,松标准会放进烂票)")
+        out["reasons"].append(out["market_adj"])
     if ev_self:
         out["position"] = "1/3仓"
         out["position_note"] = f"⚠️{ev_hit}在5日内:先1/3仓,过财报再加(不赌开奖)"

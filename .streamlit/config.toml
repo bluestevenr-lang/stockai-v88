@@ -1,7 +1,9 @@
 [server]
 headless = true
+# 【安全 2026-07-25 用户批准】只监听本机:局域网设备不可再打开持仓页面
+address = "127.0.0.1"
 enableCORS = true
-enableXsrfProtection = false
+enableXsrfProtection = true
 
 [browser]
 gatherUsageStats = false

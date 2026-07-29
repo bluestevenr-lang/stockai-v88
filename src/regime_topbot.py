@@ -424,3 +424,68 @@ def render_lines(regime: dict) -> list[str]:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     raise SystemExit(0 if selftest() else 1)
+
+
+def transmission_check() -> dict:
+    """【三系统一致性验证】大盘→个股的传导有没有真的落到三套判断上。
+
+    2026-07-29 用户定纲"把这个逻辑三系统推广验证执行"。本函数是那句"验证"的落地：
+    每班跑一次，任何一方没吃到大盘顶底事实就报出来——**沉默的脱节比错误更危险**
+    （港股曾同时被 env_gate 判 bull·标准仓、被 CS7 判过热驳回，两套结论互不知情）。
+    """
+    import subprocess
+    out = {"checked_at": datetime.now(BJT).strftime("%Y-%m-%d %H:%M"), "rows": [], "ok": True}
+    try:
+        reg = json.loads((BASE / "data" / "regime_topbot.json").read_text(encoding="utf-8"))
+        for mk, r in (reg.get("markets") or {}).items():
+            cl, tr = (r.get("topbot") or {}), (r.get("turn_risk") or {})
+            th, bh = cl.get("top_hit", 0), cl.get("bottom_hit", 0)
+            risk, opp = tr.get("top_risk", 0), tr.get("bottom_opp", 0)
+            row = {"market": mk, "top_hit": th, "bottom_hit": bh,
+                   "top_risk": risk, "bottom_opp": opp}
+            # ① 规则引擎：market_regime 是否吃到顶底层
+            try:
+                import sys as _s
+                _s.path.insert(0, str(BASE / "src"))
+                from v88_decision_core import market_regime
+                rg = market_regime(mk)
+                row["engine_regime"] = rg.get("regime")
+                row["engine_saw_topbot"] = (rg.get("top_hit") is not None)
+                row["engine_topish"] = bool(rg.get("topish"))
+                row["engine_botish"] = bool(rg.get("botish"))
+                # 一致性：顶部特征≥3 却仍给 bull＝传导断了
+                if th >= 3 and rg.get("regime") == "bull":
+                    row["ERROR"] = "顶部特征≥3 但引擎仍判 bull——传导断裂"
+                    out["ok"] = False
+            except Exception:
+                logger.exception("[transmission] 规则引擎侧检查失败")
+                row["ERROR"] = "engine check failed"
+                out["ok"] = False
+            # ② GPT：盲审 prompt 是否带上大盘顶底事实
+            try:
+                from gpt_review import build_prompt
+                p = build_prompt([{"name": "X", "code": "TEST", "last": 1, "pos52": 50}])
+                row["gpt_saw_topbot"] = ("大盘顶底特征" in p)
+                if not row["gpt_saw_topbot"]:
+                    row["ERROR"] = "GPT prompt 未含大盘顶底事实"
+                    out["ok"] = False
+            except Exception:
+                logger.exception("[transmission] GPT侧检查失败")
+                row["gpt_saw_topbot"] = None
+            # ③ Claude：本班复核是否提到该市场的顶底结论（fable_review.md 当日段）
+            try:
+                txt = (BASE / "data" / "fable_review.md").read_text(encoding="utf-8")[:6000]
+                today = datetime.now(BJT).strftime("%Y-%m-%d")
+                seg = txt.split(today)[1][:2500] if today in txt else ""
+                row["claude_mentioned"] = bool(seg) and (
+                    "顶部特征" in seg or "底部特征" in seg or "顶底" in seg)
+            except Exception:
+                logger.exception("[transmission] Claude侧检查失败")
+                row["claude_mentioned"] = None
+            out["rows"].append(row)
+        (BASE / "data" / "transmission_check.json").write_text(
+            json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
+    except Exception:
+        logger.exception("[transmission] 验证失败")
+        out["ok"] = False
+    return out
