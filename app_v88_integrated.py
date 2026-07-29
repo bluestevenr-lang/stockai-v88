@@ -3212,6 +3212,30 @@ try:
             st.markdown(_tbl9(_t_buy9) if _t_buy9 else
                         ("<span style='font-size:12px;color:#94a3b8'>买侧无可执行买单——现金也是仓位"
                          "(环境弱时买单自带仓位分级提示,不再硬拦)</span>"), unsafe_allow_html=True)
+            # 【买入三层理由 2026-07-29 用户"技术层面能看懂了,但基本面/信息面/价值投资也要说明,
+            # 否则总觉得在做技术投资"】表格回答"什么时候进",这里回答"为什么是这家公司"
+            try:
+                _wb9 = json.loads((_cb_repo9 / "data" / "why_buy.json").read_text(encoding="utf-8"))
+                _wbr9 = _wb9.get("rows") or {}
+                _wb_html9 = []
+                for _src9w, _nm9w, _cd9w, _px9w, _pu9w, _rr9w, _why9w in _cb_rows9[:5]:
+                    _e9w = _wbr9.get(str(_cd9w))
+                    if not _e9w:
+                        continue
+                    _wb_html9.append(
+                        f"<div style='font-size:11.5px;line-height:1.65;margin:1px 0'>"
+                        f"<b>{_cb_nm9(_nm9w, _cd9w)}</b> "
+                        f"<span style='color:#475569'>{_e9w.get('one_line')}</span></div>")
+                if _wb_html9:
+                    st.markdown("<div style='margin-top:5px;padding:5px 8px;background:#f8fafc;"
+                                "border-left:3px solid #94a3b8;border-radius:5px'>"
+                                "<b style='font-size:11.5px;color:#475569'>为什么是这几家公司</b>"
+                                "<span style='font-size:10.5px;color:#94a3b8' title='技术面回答何时进;"
+                                "这三层回答为什么是它——💰估值/赚钱能力/增长 📰近期催化(无则明说无) "
+                                "🎯距高折价与历史同级回撤胜率。缺数据如实说缺,不编'>ⓘ基本面·信息面·价值面</span>"
+                                + "".join(_wb_html9) + "</div>", unsafe_allow_html=True)
+            except Exception as _wb_e9:
+                logging.exception(f"[V88] 三层理由渲染失败: {_wb_e9}")
             if _cb_near9:
                 st.markdown("<div style='font-size:12px;color:#64748b;margin-top:4px'>"
                             "<b>🕐 准备买·等触发</b><span style='font-size:11px;color:#94a3b8'>"
@@ -13225,6 +13249,28 @@ def _v88_decision_card(_d9):
     _medium9 = int(_d9.get("medium_score") or 0)
     _long_score9 = int(_d9.get("long_score") or 0)
     _entry9 = str(_d9.get("entry_note") or "入场条件待核")
+    # 【V88·决策粒度=日 2026-07-28 用户定纲】"这就跟场外基金操作一样,今天买还是不买,
+    # 而不是今天的某个价格买还是不买"——用户白天在忙,打开V88时"现价可进X.XX"已脱节数小时。
+    # 故大字一律先答「今天是什么日+明确动词(买/卖/不动)」,价格区间降级为副行参考;
+    # 上面那些"⏱现价可进·仅短线""持有观察·不加仓"的点位/和稀泥措辞由 day_call 覆盖。
+    _dc9 = _d9.get("day_call") or (_d9.get("entry_plan") or {}).get("day_call") or {}
+    if _dc9.get("day"):
+        _vb9 = str(_dc9.get("verb") or "")
+        _icon9 = {"买": "🟢", "卖": "🔴"}.get(_vb9, "⏸")
+        _action_disp9 = f"{_icon9}今日{_dc9['day']}·{_vb9}"
+        _bits9 = []
+        # 【双基准 2026-07-28】confirm 已合并"日+区间是否齐备"的裁决,优先显示它;
+        # 没有 confirm(老数据)才退回裸区间。
+        if _dc9.get("confirm") and _dc9["confirm"] != "—":
+            _bits9.append(str(_dc9["confirm"]))
+        elif _dc9.get("zone_text"):
+            _bits9.append(f"{_dc9.get('zone_kind') or '区间'}{_dc9['zone_text']}")
+        if _dc9.get("why"):
+            _bits9.append(str(_dc9["why"]))
+        if _dc9.get("flip"):
+            _bits9.append("翻转:" + "／".join(list(_dc9["flip"])[:2]))
+        if _bits9:
+            _entry9 = "｜".join(_bits9 + [_entry9])
     # 【V88·买卖视角分离 2026-07-17 用户定纲】自选=买入视角(有上升通道必给"何时/何区间进")；
     # 持仓=卖出视角(盈利奔跑的关键是何时下车:冲高减/目标位/破位全走三线)。
     _scope9x = str(_d9.get("scope") or "")

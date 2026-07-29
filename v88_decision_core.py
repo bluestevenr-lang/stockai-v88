@@ -341,6 +341,76 @@ def market_regime(mk: str) -> dict:
         return {"regime": "neutral", "why": "快照缺失·默认中性"}
 
 
+def stop_guard(df, stop, *, atr14=None) -> dict:
+    """【V88·止损防洗机制 2026-07-28 特斯拉案定纲】
+
+    用户原话:"破了 如果我卖了 但是又从300回到307,这个例子需要避免"。
+
+    实盘场景(2026-07-28 TSLA):止损300.69,盘中最低**恰好300.69**触线,
+    收盘却收在307.93=当日振幅97%(几乎全天最高)。若按"触线即卖"执行,
+    就是在全天最低点被洗出局,然后眼睁睁看它涨回去——**这是止损制度最伤人的失败模式**。
+
+    根因有两层:
+      ①**止损线常等于近期最低点**:引擎用 recent_low 算止损,于是止损线正好落在
+        "最容易被回踩测试"的位置——把止损放在靶心上。
+      ②**触及即执行**:盘中一根插针就出局,不给价格证明自己的机会。
+
+    三层防护(逐层放行,任一层判"假破"就不执行清仓):
+      L1 缓冲带:真正的执行线 = 止损 - max(0.8×ATR14, 1%)。
+                盘中噪音不该触发纪律,ATR 是这只票自己的呼吸幅度。
+      L2 收盘确认:**盘中触及不算,收盘价跌破才算**。日内插针一律无效。
+      L3 假破收复豁免:即使收盘跌破,若当日收在振幅上部30% 且 收回关键位上方,
+                判"假跌破收复"(GPT 2026-07-28 提供的 bear-trap 判据),暂缓清仓改观察,
+                次日不收复再执行。
+
+    返回 {level, action, exec_line, why, is_trap}:
+      level=0 未触及 / 1 触及但未确认(减半) / 2 收盘确认破位(清)
+      **分批执行**:L1 触及只减半——这样即使被洗,也只损失一半机会,不是全部。
+    """
+    out = {"level": 0, "action": "持有", "exec_line": None, "why": "", "is_trap": False}
+    try:
+        s = float(stop or 0)
+        if s <= 0 or df is None or len(df) < 15:
+            return out
+        hi = float(df["High"].iloc[-1])
+        lo = float(df["Low"].iloc[-1])
+        close = float(df["Close"].dropna().iloc[-1])
+        # ATR14:这只票自己的日常波动幅度,用它定缓冲比用固定百分比合理
+        if atr14 is None:
+            _h = df["High"].tail(15)
+            _l = df["Low"].tail(15)
+            _c = df["Close"].shift(1).tail(15)
+            _tr = (_h - _l).combine((_h - _c).abs(), max).combine((_l - _c).abs(), max)
+            atr14 = float(_tr.tail(14).mean())
+        buf = max(float(atr14) * 0.8, s * 0.01)
+        exec_line = round(s - buf, 3)
+        out["exec_line"] = exec_line
+        rng = hi - lo
+        pir = ((close - lo) / rng * 100) if rng > 0 else 50.0     # 收盘位于当日振幅几成
+        if close > s:
+            if lo <= s:      # 盘中触及但收盘收回=典型假破
+                out.update({"level": 0, "action": "持有(盘中触线已收回)", "is_trap": True,
+                            "why": f"盘中最低{lo:.2f}触及止损{s}但收盘{close:.2f}收回"
+                                   f"·收在当日振幅{pir:.0f}%处——插针不算破位,不执行"})
+            return out
+        # 收盘已在止损下方
+        if close > exec_line:
+            out.update({"level": 1, "action": "减半",
+                        "why": f"收盘{close:.2f}跌破止损{s}但未穿缓冲线{exec_line}"
+                               f"(缓冲={buf:.2f}≈0.8×ATR)——先减半,不一次清"})
+        else:
+            out.update({"level": 2, "action": "清仓",
+                        "why": f"收盘{close:.2f}跌穿缓冲线{exec_line}——破位确认"})
+        # L3 假破收复豁免:收在振幅上部30%说明尾盘买方夺回,给一天观察
+        if pir >= 70:
+            out["is_trap"] = True
+            out["action"] = "暂缓·观察一日" if out["level"] == 2 else "减半"
+            out["why"] += f"；但收在当日振幅{pir:.0f}%(上部30%内)=尾盘买方夺回,判假跌破收复,次日不收复再执行"
+        return out
+    except Exception:
+        return out
+
+
 def env_gate(code: str, mode: str, rr: float, pos52=None, evidence: dict | None = None) -> dict:
     """【V88·环境闸v2 2026-07-27 用户大改定纲"安全线太保守,不需要;要提前量"】
     v1的硬拦(改写mode='准备买·环境不合格')废除——三案取证:LMT p_up80%却被rr1.1拦死
@@ -655,6 +725,9 @@ def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
         # 卖出建议只能说"减仓"却说不出"回到哪里可以买回",用户只拿到一半的话。
         "probability_edge": edge, "resistance": round(resistance, 3),
         "support": round(_num((full or {}).get("support")) or stop or 0.0, 3),
+        # 【2026-07-29 三层理由案】pos52 引擎一直在算却没进返回体→落盘没有→
+        # "价值面"对大多数票只能说"待补",用户于是觉得系统只会做技术投资。
+        "pos52": round(_num((full or {}).get("pos52"), 50), 1),
         "stop": round(stop, 3), "short_side": short_side, "long_side": long_side,
         "cycle_conflict": conflict, "cycle_status": cycle_status,
         "action": action, "reason": reason, "entry_note": entry_note,
