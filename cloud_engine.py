@@ -4,6 +4,8 @@ cloud_engine.py — 云端版个股搜索引擎（自包含·免重引擎·Strea
 趋势分0-100 / 趋势阶段7档 / 量价关系 / 明确动作 / 支撑压力 / 失效条件 / 原因。
 不依赖 app_v88_integrated（14k行引擎在免费云跑不动），逻辑口径与桌面版一致。
 """
+import logging
+
 import pandas as pd
 
 
@@ -270,6 +272,13 @@ def analyze_trend_full(df, sector_strength=None):
         h60 = float(hi.tail(60).max()); l20 = float(lo.tail(20).min())
         l250 = float(lo.tail(min(250, len(lo))).min()); h250 = float(hi.tail(min(250, len(hi))).max())
         pos52 = (last - l250) / (h250 - l250) * 100 if h250 > l250 else 50.0
+        # 【数据窗诚实标注 2026-07-27 华晨案】tail(min(250,len))在数据不足时静默用现有K线算,
+        # 仍对外叫"52周位"——同一只票取数路径不同(1y直取 vs 降级6mo)就会给出两个位置,
+        # 进而概率/赔率/阶段全线打架(华晨:1y=52周7%·涨65% vs 6mo=52周56%·涨41%;
+        # 也是"小米33vs13.9、辉瑞29vs47"的同一病根)。不改算法,只如实标注窗口,
+        # 由呈现层与标准闸决定要不要采信。
+        _pos52_bars = int(min(250, len(lo)))
+        _pos52_approx = _pos52_bars < 240
         # 【V88·双水位】在 52周分位旁再给"距最高"：按本次数据窗口的真实跨度诚实标注
         _wh = float(c.max())
         _ath_pct_w = (last / _wh - 1) * 100 if _wh else 0.0
@@ -509,6 +518,7 @@ def analyze_trend_full(df, sector_strength=None):
         _res = {
             "last": round(last, 2), "total": total, "stage": stage, "vp": vp, "vp_lv": vp_lv,
             "water": water, "water_adv": water_adv, "pos52": round(pos52),
+            "pos52_bars": _pos52_bars, "pos52_approx": _pos52_approx, "bars": int(len(c)),
             "macd_txt": macd_txt, "ma_txt": ma_txt, "ma_state": ma_state,
             "action": action, "conclusion": concl,
             "buy_zone": f"{buy_lo:.2f}~{buy_hi:.2f}", "pullback": pullback, "breakout": breakout,
@@ -516,7 +526,7 @@ def analyze_trend_full(df, sector_strength=None):
             "support": support, "resistance": resistance,
             "rsi": round(rsi), "bias20": round(bias20, 1), "volr": round(volr, 2),
             "atr": round(atr, 2), "atr_pct": atr_pct,
-            "chg5": round(chg5, 1), "chg20": round(chg20, 1),
+            "chg1": round(chg1, 1), "chg5": round(chg5, 1), "chg20": round(chg20, 1),
             "breakdown": {k: (round(sc), w, d) for k, (sc, w, d) in weights.items()},
             "sector_known": sector_strength is not None,
             "ma": {k: round(x, 2) for k, x in ma.items()},
@@ -1063,16 +1073,93 @@ GLOSSARY_MD = """
 """
 
 
+def rev_trend(symbol, tk=None):
+    """【V88·年报口径营收趋势 2026-07-29 小米案】**不许再用 info['revenueGrowth']**。
+
+    案发经过：V88 给小米的标签是"防御/低估型（PE16·ROE14%·**营收-11%**）"，
+    用户据此困惑"说它不行又让我买"。实测年报：
+
+        2022 2800亿 → 2023 2710亿(-3.2%) → 2024 3659亿(**+35%**) → 2025 4573亿(**+25%**)
+
+    两年从 2710 涨到 4573（+69%），根本不是"营收-11%"。
+    **错因**：`info["revenueGrowth"]` 是**残缺的单季同比**——拉季度表可见
+    2025Q1/2025Q3/2026Q1 全是 NaN，用一个缺三季的表算同比必然失真。
+    结果把「高速增长但利润承压」的成长股，标成了「防御/低估」的衰退股。
+    **这两种的止损逻辑截然相反**：前者该忍，后者该跑。
+
+    本函数改用年报 `financials` 的 Total Revenue 逐年算，并**如实标注口径**：
+    取不到年报时退回季度字段，但 `src` 会写明"季度(残缺·仅参考)"，
+    下游（cycle_layer）看到这个标记一律降级为"数据不足"，不拿它做方向判断。
+
+    返回 {yoy, prev_yoy, trend, years:[(年,营收)], src, line}
+      trend ∈ 加速增长/稳定增长/增长放缓/停滞/衰退/数据不足
+    """
+    import logging
+    out = {"yoy": None, "prev_yoy": None, "trend": "数据不足", "years": [],
+           "src": "无", "line": "营收趋势：数据不足"}
+    try:
+        import yfinance as yf
+        tk = tk or yf.Ticker(_yf_norm(symbol))
+        vals = []
+        try:
+            fin = tk.financials
+            if fin is not None and len(fin) and "Total Revenue" in fin.index:
+                row = fin.loc["Total Revenue"].dropna()
+                # 列是日期，倒序取（最近年在前）
+                vals = [(str(d)[:4], float(v)) for d, v in row.items() if float(v) > 0]
+                vals.sort(key=lambda x: x[0], reverse=True)
+        except Exception:
+            logging.exception("rev_trend annual financials failed: %s", symbol)
+        if len(vals) >= 2:
+            out["years"] = vals[:4]
+            out["src"] = "年报"
+            out["yoy"] = vals[0][1] / vals[1][1] - 1
+            if len(vals) >= 3:
+                out["prev_yoy"] = vals[1][1] / vals[2][1] - 1
+            y, p = out["yoy"], out["prev_yoy"]
+            if y >= 0.10 and p is not None and y > p:
+                out["trend"] = "加速增长"
+            elif y >= 0.10:
+                out["trend"] = "稳定增长"
+            elif y >= 0.03:
+                out["trend"] = "增长放缓"
+            elif y >= -0.03:
+                out["trend"] = "停滞"
+            else:
+                out["trend"] = "衰退"
+            _yr = "→".join(f"{a}年{b / 1e8:.0f}亿" for a, b in reversed(out["years"][:3]))
+            out["line"] = (f"营收趋势：**{out['trend']}**（年报口径 {_yr}"
+                           f"，最近一年 {y * 100:+.1f}%"
+                           + (f"，上一年 {p * 100:+.1f}%" if p is not None else "") + "）")
+            return out
+        # —— 退路：季度字段。**必须标记残缺，下游不得据此判方向** ——
+        try:
+            q = (tk.info or {}).get("revenueGrowth")
+        except Exception:
+            logging.exception("rev_trend info fallback failed: %s", symbol)
+            q = None
+        if q is not None:
+            out.update({"yoy": q, "src": "季度(残缺·仅参考)", "trend": "数据不足",
+                        "line": f"营收趋势：**数据不足**（年报缺失，季度同比 {q * 100:+.1f}% 口径不可靠，不用于方向判断）"})
+    except Exception:
+        logging.exception("rev_trend failed: %s", symbol)
+    return out
+
+
 def fundamentals(symbol):
     """【V88·真实基本面】yfinance info 关键字段：估值/成长/盈利质量。
-    取不到的字段如实标注"—"，绝不编造。返回 {字段dict, "line": 一行展示, "tag": 简评}。"""
+    取不到的字段如实标注"—"，绝不编造。返回 {字段dict, "line": 一行展示, "tag": 简评}。
+
+    2026-07-29：营收增速改走 rev_trend() 年报口径（小米案，见该函数说明）。"""
     import yfinance as yf
     try:
-        info = yf.Ticker(_yf_norm(symbol)).info or {}
+        tk = yf.Ticker(_yf_norm(symbol))
+        info = tk.info or {}
         pe = info.get("trailingPE")
         fpe = info.get("forwardPE")
         pb = info.get("priceToBook")
-        rg = info.get("revenueGrowth")
+        rt = rev_trend(symbol, tk=tk)
+        rg = rt.get("yoy") if rt.get("src") == "年报" else None
         eg = info.get("earningsGrowth")
         gm = info.get("grossMargins")
         roe = info.get("returnOnEquity")
@@ -1085,27 +1172,36 @@ def fundamentals(symbol):
             return f"{v * 100:.0f}%" if pct else (f"{v:.1f}" if d1 else f"{v:,.0f}")
 
         _mc = f"{mcap / 1e9:.0f}B" if mcap else "—"
+        _rev = (f"营收增速 {_f(rg, pct=True)}(年报)" if rg is not None else "营收增速 —(年报缺失)")
         line = (f"PE {_f(pe, d1=True)}(前瞻{_f(fpe, d1=True)}) ｜ PB {_f(pb, d1=True)} ｜ "
-                f"营收增速 {_f(rg, pct=True)} ｜ 盈利增速 {_f(eg, pct=True)} ｜ "
+                f"{_rev} ｜ 盈利增速 {_f(eg, pct=True)} ｜ "
                 f"毛利率 {_f(gm, pct=True)} ｜ ROE {_f(roe, pct=True)} ｜ 市值 {_mc}"
                 + (f" ｜ 股息 {_f(div, d1=True)}%" if div else ""))
         tags = []
         if rg is not None:
             tags.append("成长强" if rg > 0.15 else ("成长平稳" if rg > 0.03 else "营收承压"))
+            # 小米型：营收在涨、利润在塌 = 用利润换规模（扩张期），**不是衰退**。
+            # 这两种以前都落进"营收承压"，导致止损逻辑用反（该忍的当成该跑的）。
+            if rg > 0.10 and eg is not None and eg < -0.20:
+                tags.append("用利润换规模(扩张期·非衰退)")
+        else:
+            tags.append("成长性数据不足")     # 诚实边界：不拿残缺季度数据充数
         if pe is not None:
             if pe < 0:
                 tags.append("亏损中")
             elif pe < 15:
                 tags.append("估值低")
-            elif pe > 40 and (rg or 0) < 0.20:
+            elif pe > 40 and rg is not None and rg < 0.20:
                 tags.append("估值贵(增速不匹配)")
             elif pe > 40:
                 tags.append("高估值高成长")
         if roe is not None and roe > 0.18:
             tags.append("盈利质量优(ROE>18%)")
         return {"pe": pe, "pb": pb, "rev_growth": rg, "roe": roe, "mcap": mcap,
+                "earn_growth": eg, "rev_trend": rt,
                 "line": line, "tag": "·".join(tags) or "数据有限"}
     except Exception:
+        logging.exception("fundamentals failed: %s", symbol)
         return None
 
 

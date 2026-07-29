@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 from pathlib import Path as _P_eg
 BASE = _P_eg(__file__).resolve().parent.parent
 import math
@@ -408,7 +409,80 @@ def stop_guard(df, stop, *, atr14=None) -> dict:
             out["why"] += f"；但收在当日振幅{pir:.0f}%(上部30%内)=尾盘买方夺回,判假跌破收复,次日不收复再执行"
         return out
     except Exception:
+        logging.exception("stop_guard failed: stop=%s", stop)
         return out
+
+
+# —— 周期层 stance → 破位时的最终动作。**这张表是「三层决策」的接缝。** ——
+# grade 来自 cycle_layer._stance()：3逢跌加 / 2持有可加 / 1持有不加 / 0数据不足 / -1减 / -2清
+# 元组 = (L1触及缓冲带时, L2收盘确认破位时)
+_BREAK_POLICY = {
+    3: ("复核·不减", "加仓机会"),
+    2: ("复核·不减", "持有不动"),
+    1: ("减半", "减半"),
+    0: ("减半", "清仓"),          # 无周期层背书：纪律优先，按原技术判定执行
+    -1: ("减半", "清仓"),
+    -2: ("清仓", "清仓"),         # 衰退票不享受任何防洗豁免
+}
+
+
+def stop_decision(guard: dict, cycle: dict | None = None) -> dict:
+    """【V88·止损分层 2026-07-29 小米月K案定纲】
+    把 stop_guard() 的技术判定**从「卖出信号」降级为「复核触发器」**，
+    最终动作交给第①层周期层（`cycle_layer.cycle_verdict`）裁决。
+
+    用户原话（对着 8.31→61.45→31.46 的月线图）："站到支撑线后又大幅下来洗盘…
+    已经跌幅超过正常止损线，所以很难通过技术划线来判断，
+    ai如果这样只从技术角度就会造成这样的问题"。
+
+    **为什么必须这么改**：技术线区分不了「我判断错了」和「主力在洗盘」——
+    两者在图上长得一模一样。小米 2023 年在 10~13 洗了整整一年，
+    纯技术止损让你在 11 块出局，然后看着它涨到 61.45。
+    但同一套止损，在 61.45 之后的 -50% 下跌里又救了你。
+    **同一个工具，在上升趋势里是毒药，在下降趋势里是解药**——
+    所以它不能自己决定去留，必须先问「现在是哪一种趋势」。那是第①层的活。
+
+    映射见 `_BREAK_POLICY`：
+      🟢逢跌加/持有可加   → 破位**不减仓**，只触发复核；营收未变则视为加仓机会
+      🟡持有不加/数据不足 → 破位减半（高位或无背书，不赌洗盘）
+      🔴逢反弹减/清       → 破位**立即执行**，且衰退票不享受 L3 假破收复豁免
+
+    参数：guard = stop_guard() 返回；cycle = cycle_verdict() 返回（可为 None）。
+    返回 {action, tech_action, layer, why, review_only, invalid, stance}
+      **review_only=True 表示「这只是闹钟，别卖」**——UI 必须把它和真卖出信号区分开，
+      否则用户看到"跌破止损"四个字还是会手抖，改了引擎等于没改。
+    """
+    g = guard or {}
+    lvl = int(g.get("level") or 0)
+    tech = str(g.get("action") or "持有")
+    out = {"action": tech, "tech_action": tech, "layer": "③技术层",
+           "why": str(g.get("why") or ""), "review_only": False,
+           "invalid": "", "stance": None}
+    try:
+        if lvl == 0:
+            return out                      # 没破位，无需分层
+        grade = int((cycle or {}).get("grade", 0))
+        stance = (cycle or {}).get("stance") or "数据不足·退回技术层"
+        cwhy = str((cycle or {}).get("why") or "")
+        out["stance"] = stance
+        out["invalid"] = str((cycle or {}).get("invalid") or "")
+        pol = _BREAK_POLICY.get(grade, ("减半", "清仓"))
+        final = pol[0] if lvl == 1 else pol[1]
+        out["layer"] = "①周期层裁决"
+        out["action"] = final
+        if grade >= 2:
+            out["review_only"] = True
+            out["why"] = (f"技术上{tech}（{g.get('why', '')}）——**但周期层判「{stance}」，"
+                          f"不执行卖出**。跌破只是去复核第①层的闹钟：{cwhy}。"
+                          f"营收逻辑未变 → 这是「{final}」，不是离场信号。")
+        elif grade <= -2:
+            out["why"] = (f"技术上{tech}，**周期层判「{stance}」→ 立即{final}**，"
+                          f"且不适用假破收复豁免（衰退票的每次反弹都是减仓机会）。{cwhy}")
+        else:
+            out["why"] = f"技术上{tech}，周期层判「{stance}」→ {final}。{cwhy}"
+    except Exception:
+        logging.exception("stop_decision failed")
+    return out
 
 
 def env_gate(code: str, mode: str, rr: float, pos52=None, evidence: dict | None = None) -> dict:

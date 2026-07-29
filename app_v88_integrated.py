@@ -3172,6 +3172,32 @@ try:
                 _t = ("强看跌" if _p >= 80 else "明确看跌" if _p >= 65 else "偏跌" if _p >= 55 else "中性")
             return f"<span style='font-weight:400;font-size:10.5px;color:#94a3b8'>({_t})</span>"
 
+        def _lay_cell9(_wnow):
+            """【V88·三层决策列 2026-07-29 小米月K案】把"买不买"拆成三个独立问题呈现。
+
+            用户批评:"很难通过技术划线来判断,ai如果这样只从技术角度就会造成这样的问题"
+            (对着小米 8.31→61.45 月线,指 2023 那段洗盘会让技术止损把人洗出局)。
+            根因是 V88 把「该不该有这只票」和「今天动不动手」糊成一个"买/不买",
+            于是"今天别追"读起来像"不看好"。现在三层分开,**允许不同向**:
+            ①🟢逢跌加 ②标准仓 ③今天不动手 = "该有、该重仓、但别在今天追"。
+            """
+            _L = (_wnow or {}).get("layers") or {}
+            if not _L:
+                return "<td></td>"
+            _l1, _l2, _l3 = _L.get("L1") or {}, _L.get("L2") or {}, _L.get("L3") or {}
+            _tip = (f"①要不要有仓位:{_l1.get('a')}——{_l1.get('why')}　"
+                    f"②拿多少:{_l2.get('a')}——{_l2.get('why')}　"
+                    f"③今天动不动手:{_l3.get('a')}——{_l3.get('why')}　"
+                    f"🚪真止损(不是价格线):{_l1.get('invalid')}").replace('"', "'")
+            _c1 = {"逢跌加": "#22c55e", "持有·可加": "#22c55e", "持有·不加": "#eab308",
+                   "观察·底仓": "#eab308", "逢反弹减": "#f97316",
+                   "逢反弹清": "#ef4444", "价值陷阱·不碰": "#ef4444"}.get(_l1.get("a"), "#94a3b8")
+            return (f"<td title=\"{_tip[:420]}\" style='font-size:11px;line-height:1.5;"
+                    f"max-width:190px'>"
+                    f"<span style='color:{_c1};font-weight:600'>①{_l1.get('icon', '')}"
+                    f"{_l1.get('a')}</span><br>"
+                    f"<span style='color:#64748b'>②{_l2.get('a')}　③{_l3.get('a')}</span> ⓘ</td>")
+
         def _row6_9(_nm, _cd, _act, _trig, _inv, _pos, _st, _why="", _wnow=None):
             # 【2026-07-29 用户"不要另起一个板块,直接在表格里增加一列"】
             # _wnow = why_buy 的那一行:表内只放"⚡驱动"一句小字,持续性/失效条件进 title 悬停
@@ -3185,7 +3211,8 @@ try:
                           f"max-width:230px'><b>{_wnow.get('kind')}</b>"
                           f"<span style='color:#64748b'>·{str(_wnow.get('why_now'))[:46]}</span> ⓘ</td>")
             return (f"<tr><td>{_lk}</td><td>{_act}</td><td>{_trig}</td><td>{_inv}</td>"
-                    f"<td>{_pos}</td><td title=\"{_why[:120]}\">{_st} ⓘ</td>{_wcell}</tr>")
+                    f"<td>{_pos}</td><td title=\"{_why[:120]}\">{_st} ⓘ</td>"
+                    f"{_lay_cell9(_wnow)}{_wcell}</tr>")
 
         def _tbl9(rows_html):
             return ("<table style='width:100%;font-size:12.5px;border-collapse:collapse'>"
@@ -3193,6 +3220,11 @@ try:
                     "<th>名称</th><th title='动作+未来2周方向概率(统一引擎规则估计,非实盘胜率);"
                     "买侧=上涨概率,卖侧=下跌概率;≥70%高把握·60-70%偏多·55-60%略偏·<55%中性'>"
                     "动作·2周概率 ⓘ</th><th>触发/买区</th><th>失效价</th><th>仓位</th><th>状态</th>"
+                    "<th title='三层决策:①周期层=该不该有这只票(看年报营收趋势+估值+长周期结构,"
+                    "不看技术线) ②仓位层=拿多少 ③节奏层=今天动不动手。"
+                    "三层可以不同向——①说该有、③说今天别追,意思是「该有,但别在今天追」。"
+                    "技术线只在第③层,不决定去留;跌破止损只是去复核①的闹钟'>"
+                    "①该有吗/②多少/③今天 ⓘ</th>"
                     "<th title='此刻为什么买它(不是这家公司常年什么样)——⚡驱动/⏳能撑多久/"
                     "🚪什么时候失效。鼠标悬停看完整说明'>为什么现在 ⓘ</th></tr>"
                     + "".join(rows_html) + "</table>")
