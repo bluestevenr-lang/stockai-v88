@@ -2692,14 +2692,36 @@ try:
             "Friday": "周五", "Saturday": "周六", "Sunday": "周日"}.get(_dtc9.now().strftime("%A"), "")
     _bj9 = _dtc9.now(_zi9("Asia/Shanghai")).strftime("%m-%d %H:%M")
     _ny9 = _dtc9.now(_zi9("America/New_York")).strftime("%m-%d %H:%M")
+    # 三市场体制条:全部读落盘(零网络),保住总览页秒开;
+    # 带AI解读的完整宏观脉搏面板仍在下方(LISTS段),这里是"永远看得到"的那一层。
+    _mk_cells9 = []
+    try:
+        _snap9c = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+                              "market_snapshot.json").read_text(encoding="utf-8"))
+        for _m9c, _fl9c in (("美股", "🇺🇸"), ("A股", "🇨🇳"), ("港股", "🇭🇰")):
+            _b9c = (_snap9c.get("markets") or {}).get(_m9c) or {}
+            _vd9c = str((_b9c.get("temperature") or {}).get("verdict") or "")
+            _pr9c = dict((x[0], x[1]) for x in ((_b9c.get("l3") or {}).get("probs") or []))
+            _p29c = _pr9c.get("2周")
+            _ix9c = (_b9c.get("indices") or [{}])[0] or {}
+            _col9c = ("#dc2626" if (_p29c or 50) >= 55 else
+                      ("#16a34a" if (_p29c or 50) <= 45 else "#b45309"))
+            _mk_cells9.append(
+                f"<span style='margin-left:10px'>{_fl9c}<b>{_ix9c.get('name') or _m9c}</b> "
+                f"{_ix9c.get('last') or '—'} "
+                f"<b style='color:{_col9c}'>2周{_p29c if _p29c is not None else '—'}%</b>"
+                f"<span style='color:#64748b'>·{_vd9c[:10]}</span></span>")
+    except Exception:
+        pass
     st.markdown(
-        f"<div style='display:flex;justify-content:space-between;align-items:center;"
-        f"padding:.15rem .45rem;margin:0 0 .25rem;border-bottom:1px solid #e2e8f0;font-size:12px'>"
-        f"<b style='color:#334155'>🌍 V88 · {_dtc9.now().strftime('%Y-%m-%d')} {_wd9}</b>"
-        f"<span style='color:#1e3a5f;font-weight:600'>🇺🇸纽约 {_ny9}　🇨🇳北京 {_bj9}</span></div>",
+        f"<div style='padding:.2rem .45rem;margin:0 0 .3rem;border-bottom:1px solid #e2e8f0;"
+        f"font-size:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap'>"
+        f"<span><b style='color:#334155'>🌍 全球市场概览</b>{''.join(_mk_cells9)}</span>"
+        f"<span style='color:#1e3a5f;font-weight:600;white-space:nowrap'>"
+        f"{_dtc9.now().strftime('%Y-%m-%d')} {_wd9}　🇺🇸纽约 {_ny9}　🇨🇳北京 {_bj9}</span></div>",
         unsafe_allow_html=True)
 except Exception as _clk_e9:
-    logging.exception(f"[V88] 置顶双时钟渲染失败: {_clk_e9}")
+    logging.exception(f"[V88] 置顶全球概览渲染失败: {_clk_e9}")
 _macro_top_slot = st.empty()
 _now_c1, _now_c2 = st.columns([8.5, 1.5])
 with _now_c2:
