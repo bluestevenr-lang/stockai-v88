@@ -1,23 +1,23 @@
 {
- "ts": 1785243562.3067753,
- "generated_at": "2026-07-28 20:59",
+ "ts": 1785283208.2128468,
+ "generated_at": "2026-07-29 08:00",
  "funnel": {
-  "found": 433,
-  "excluded_watch": 24,
-  "judged": 240,
+  "found": 444,
+  "excluded_watch": 23,
+  "judged": 239,
   "judged_by_mkt": {
-   "🇺🇸美股": 183,
+   "🇺🇸美股": 178,
    "🇭🇰港股": 25,
-   "🇨🇳A股": 32
+   "🇨🇳A股": 37
   },
   "passed": 3,
   "blocked": {
-   "相位": 115,
-   "方向分": 12,
-   "赔率": 12,
+   "相位": 107,
+   "方向分": 8,
+   "赔率": 17,
    "时机": 1,
-   "数据": 0,
-   "单源": 97
+   "数据": 1,
+   "单源": 103
   }
  },
  "horses": [
@@ -32,9 +32,9 @@
    "rr": 3.38,
    "expected_pct": 16.8,
    "action": "多周期共振·试仓复核",
-   "entry_note": "⏳双路径:回踩32.17/突破43.13·08-04前｜标准门槛通过；概率优势+46.2点",
+   "entry_note": "⏳双路径:回踩32.17/突破43.13·08-05前｜标准门槛通过；概率优势+46.2点",
    "cycle_note": "2周偏涨69%｜4-32周偏涨61%",
-   "analysis_time": "2026-07-28 20:58",
+   "analysis_time": "2026-07-29 07:58",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-28 00:00:00",
@@ -176,9 +176,9 @@
    "rr": 1.33,
    "expected_pct": 3.9,
    "action": "共振·小仓试错",
-   "entry_note": "⏳双路径:回踩38.58/突破43.38·08-04前｜激进门槛通过；概率优势+23.1点",
+   "entry_note": "⏳双路径:回踩38.58/突破43.38·08-05前｜激进门槛通过；概率优势+23.1点",
    "cycle_note": "2周偏涨66%｜4-32周偏涨64%",
-   "analysis_time": "2026-07-28 20:58",
+   "analysis_time": "2026-07-29 07:58",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-28 00:00:00",
@@ -287,7 +287,7 @@
    "touch": "",
    "trade_plan": {
     "short": {
-     "in": "⏳ 双路径（08-04前任一触发即进）：①回踩38.58企稳接",
+     "in": "⏳ 双路径（08-05前任一触发即进）：①回踩38.58企稳接",
      "out": "目标40.809（10个交易日内·上行概率66%）",
      "invalid": "跌破34.34作废",
      "mode": "双路径待触发"
@@ -320,9 +320,9 @@
    "rr": 2.88,
    "expected_pct": 9.6,
    "action": "多周期共振·试仓复核",
-   "entry_note": "✅现价可进·07-31前·破16.38废｜标准门槛通过；概率优势+36.2点",
+   "entry_note": "✅现价可进·08-03前·破16.38废｜标准门槛通过；概率优势+36.2点",
    "cycle_note": "2周偏涨62%｜4-32周偏涨65%",
-   "analysis_time": "2026-07-28 20:58",
+   "analysis_time": "2026-07-29 07:59",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-28 00:00:00",
@@ -430,7 +430,7 @@
    "touch": "触线:MA55+MA120",
    "trade_plan": {
     "short": {
-     "in": "✅ 现在可进：现价19.12已在买入区18.49~19.12内——今日~07-31（3个交易日）分批有效",
+     "in": "✅ 现在可进：现价19.12已在买入区18.49~19.12内——今日~08-03（3个交易日）分批有效",
      "out": "目标20.116（10个交易日内·上行概率56%）",
      "invalid": "跌破16.38作废",
      "mode": "现价可进"
@@ -455,15 +455,15 @@
  ],
  "runners": [
   {
-   "name": "Willis Towers Watson Public Limited Company",
-   "code": "WTW",
-   "last": 302.64,
-   "unified_score": 74,
-   "short_score": 61,
-   "p_up": 61,
-   "p_down": 39,
-   "rr": 2.36,
-   "expected_pct": 6.9,
+   "name": "Ryan Specialty Holdings, Inc.",
+   "code": "RYAN",
+   "last": 46.01,
+   "unified_score": 82,
+   "short_score": 79,
+   "p_up": 79,
+   "p_down": 21,
+   "rr": 2.02,
+   "expected_pct": 22.6,
    "action": "多周期共振·试仓复核",
    "stage": "主升阶段",
    "mode": "不进",
@@ -476,92 +476,92 @@
    "horizons": [
     {
      "label": "10日",
-     "p_up": 61,
-     "target_price": 317.639
+     "p_up": 79,
+     "target_price": 49.371
     },
     {
      "label": "60日",
-     "p_up": 74,
-     "target_price": 339.379
+     "p_up": 85,
+     "target_price": 57.473
     },
     {
      "label": "120日",
-     "p_up": 50,
-     "target_price": 354.596
+     "p_up": 59,
+     "target_price": 57.652
     }
    ]
   },
   {
-   "name": "Penske Automotive Group, Inc.",
-   "code": "PAG",
-   "last": 215.7,
-   "unified_score": 73,
-   "short_score": 80,
-   "p_up": 80,
-   "p_down": 20,
-   "rr": 0.15,
-   "expected_pct": -0.9,
-   "action": "趋势偏多·等待回踩",
+   "name": "GoDaddy Inc.",
+   "code": "GDDY",
+   "last": 102.92,
+   "unified_score": 80,
+   "short_score": 75,
+   "p_up": 75,
+   "p_down": 25,
+   "rr": 2.54,
+   "expected_pct": 26.1,
+   "action": "多周期共振·试仓复核",
    "stage": "主升阶段",
    "mode": "双路径待触发",
    "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
    "sources": [
-    "财报07-29"
+    "财报07-30"
    ],
    "touch": "",
    "market": "🇺🇸美股",
    "horizons": [
     {
      "label": "10日",
-     "p_up": 80,
-     "target_price": 228.987
+     "p_up": 75,
+     "target_price": 109.735
     },
     {
      "label": "60日",
-     "p_up": 85,
-     "target_price": 245.833
+     "p_up": 78,
+     "target_price": 119.614
     },
     {
      "label": "120日",
-     "p_up": 85,
-     "target_price": 252.374
+     "p_up": 67,
+     "target_price": 126.529
     }
    ]
   },
   {
-   "name": "Smurfit WestRock plc",
-   "code": "SW",
-   "last": 50.09,
-   "unified_score": 72,
-   "short_score": 85,
-   "p_up": 85,
-   "p_down": 15,
-   "rr": 0.2,
-   "expected_pct": 0.3,
-   "action": "趋势偏多·等待回踩",
+   "name": "LPL Financial Holdings Inc.",
+   "code": "LPLA",
+   "last": 342.4,
+   "unified_score": 78,
+   "short_score": 66,
+   "p_up": 66,
+   "p_down": 34,
+   "rr": 2.67,
+   "expected_pct": 9.3,
+   "action": "多周期共振·试仓复核",
    "stage": "主升阶段",
-   "mode": "不进",
+   "mode": "双路径待触发",
    "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
    "sources": [
-    "财报07-29"
+    "财报07-30"
    ],
    "touch": "",
    "market": "🇺🇸美股",
    "horizons": [
     {
      "label": "10日",
-     "p_up": 85,
-     "target_price": 53.372
+     "p_up": 66,
+     "target_price": 358.965
     },
     {
      "label": "60日",
-     "p_up": 85,
-     "target_price": 58.129
+     "p_up": 68,
+     "target_price": 382.975
     },
     {
      "label": "120日",
-     "p_up": 78,
-     "target_price": 61.459
+     "p_up": 47,
+     "target_price": 399.782
     }
    ]
   },

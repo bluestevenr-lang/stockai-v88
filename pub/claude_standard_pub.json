@@ -1,5 +1,5 @@
 {
- "asof": "2026-07-28 20:57（北京时间）",
+ "asof": "2026-07-29 07:58（北京时间）",
  "rules": {
   "CS1": "宽基指数类跌幅未达5%且趋势未破,不按个股尺度输出减仓(案:VOO-2.1%/513500-0.2%就减)",
   "CS2": "2周涨概率≥53%不得输出减仓,除非已破止损或5日内自家财报(案:MO53/JNJ55/SO57)",
@@ -142,6 +142,36 @@
    "downgrade": "",
    "auto": true
   },
+  "AWI": {
+   "code": "AWI",
+   "name": "阿姆斯特朗",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "PAYC": {
+   "code": "PAYC",
+   "name": "Paycom Software Inc",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "RITM": {
+   "code": "RITM",
+   "name": "Rithm Capital Corp",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "002832.SZ": {
    "code": "002832.SZ",
    "name": "比音勒芬",
@@ -152,31 +182,51 @@
    "downgrade": "",
    "auto": true
   },
-  "0293.HK": {
-   "code": "0293.HK",
-   "name": "国泰航空",
+  "INCY": {
+   "code": "INCY",
+   "name": "因塞特医疗",
    "side": "趋势",
-   "action": "🟡先别追,等跌回13.42附近再买;一直不跌就等放量创新高再追",
+   "action": "🟡先别追,等跌回117.01附近再买;一直不跌就等放量创新高再追",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "RTX": {
-   "code": "RTX",
-   "name": "雷神技术",
+  "ABG": {
+   "code": "ABG",
+   "name": "阿斯伯里汽车集团",
    "side": "趋势",
-   "action": "🟡先别追,等跌回197.66附近再买;一直不跌就等放量创新高再追",
+   "action": "🟡先别追,等跌回215.16附近再买;一直不跌就等放量创新高再追",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "ANDG": {
-   "code": "ANDG",
-   "name": "Andersen Group Inc-A",
+  "HPQ": {
+   "code": "HPQ",
+   "name": "惠普",
    "side": "趋势",
-   "action": "🟡先别追,等跌回41.37附近再买;一直不跌就等放量创新高再追",
+   "action": "🟡先别追,等跌回24.25附近再买;一直不跌就等放量创新高再追",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "UL": {
+   "code": "UL",
+   "name": "联合利华(英国)",
+   "side": "趋势",
+   "action": "🟡先别追,等跌回61.76附近再买;一直不跌就等放量创新高再追",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "TRU": {
+   "code": "TRU",
+   "name": "TransUnion",
+   "side": "趋势",
+   "action": "🟡先别追,等跌回77.14附近再买;一直不跌就等放量创新高再追",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -192,21 +242,21 @@
    "downgrade": "",
    "auto": true
   },
-  "3600.HK": {
-   "code": "3600.HK",
-   "name": "现代牙科",
+  "ALL": {
+   "code": "ALL",
+   "name": "好事达保险",
    "side": "趋势",
-   "action": "🟡先别追,等跌回7.19附近再买;一直不跌就等放量创新高再追",
+   "action": "🟡先别追,等跌回251.31附近再买;一直不跌就等放量创新高再追",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "MUFG": {
-   "code": "MUFG",
-   "name": "三菱日联金融",
+  "MDT": {
+   "code": "MDT",
+   "name": "美敦力",
    "side": "趋势",
-   "action": "🟡先别追,等跌回21.62附近再买;一直不跌就等放量创新高再追",
+   "action": "🟡先别追,等跌回82.49附近再买;一直不跌就等放量创新高再追",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -216,57 +266,17 @@
    "code": "PRU",
    "name": "保德信金融",
    "side": "趋势",
-   "action": "🟡先别追,等跌回115.62附近再买;一直不跌就等放量创新高再追",
+   "action": "🟡先别追,等跌回116.35附近再买;一直不跌就等放量创新高再追",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "000779.SZ": {
-   "code": "000779.SZ",
-   "name": "甘咨询",
+  "PAYX": {
+   "code": "PAYX",
+   "name": "沛齐",
    "side": "趋势",
-   "action": "🟡先别追,等跌回9.94附近再买;一直不跌就等放量创新高再追",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "6190.HK": {
-   "code": "6190.HK",
-   "name": "九江银行",
-   "side": "趋势",
-   "action": "🟡先别追,等跌回2.62附近再买;一直不跌就等放量创新高再追",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "600428.SS": {
-   "code": "600428.SS",
-   "name": "中远海特",
-   "side": "趋势",
-   "action": "🟡先别追,等跌回9.83附近再买;一直不跌就等放量创新高再追",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "MPC": {
-   "code": "MPC",
-   "name": "马拉松原油",
-   "side": "趋势",
-   "action": "🟡先别追,等跌回291.59附近再买;一直不跌就等放量创新高再追",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "300759.SZ": {
-   "code": "300759.SZ",
-   "name": "康龙化成",
-   "side": "趋势",
-   "action": "🟡先别追,等跌回35.01附近再买;一直不跌就等放量创新高再追",
+   "action": "🟡先别追,等跌回109.86附近再买;一直不跌就等放量创新高再追",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -412,9 +422,19 @@
    "downgrade": "",
    "auto": true
   },
-  "COP": {
-   "code": "COP",
-   "name": "康菲石油",
+  "3110.HK": {
+   "code": "3110.HK",
+   "name": "港股·高股息板块",
+   "side": "拐点",
+   "action": "",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "SLB": {
+   "code": "SLB",
+   "name": "斯伦贝谢",
    "side": "行业代表",
    "action": "",
    "rules": [],
@@ -511,15 +531,25 @@
    "why": "",
    "downgrade": "",
    "auto": true
+  },
+  "0291.HK": {
+   "code": "0291.HK",
+   "name": "华润啤酒",
+   "side": "行业代表",
+   "action": "",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
   }
  },
  "reject": {},
  "stats": {
-  "n_pass": 80,
-  "n_reject": 9,
+  "n_pass": 83,
+  "n_reject": 8,
   "by_rule": {
    "CS1": 3,
-   "CS2": 1,
+   "CS2": 0,
    "CS3": 0,
    "CS4": 5,
    "CS5": 0,

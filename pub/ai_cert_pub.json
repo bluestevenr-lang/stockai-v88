@@ -1,5 +1,5 @@
 {
- "asof": "2026-07-28 20:57（北京时间）",
+ "asof": "2026-07-29 07:58（北京时间）",
  "model": "Opus 5",
  "by_market": {
   "美股": {
@@ -32,30 +32,6 @@
  },
  "note": "Claude(Fable5/Opus5)独立复核徽章:🅒=复核结论与规则引擎一致;⚡=有异议不发徽章(理由见note);无徽章=本班未复核该标的(重点股优先,不装作全审)。徽章只代表'两套逻辑对上了',不代表保证盈利。",
  "by_code": {
-  "PICK": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "🎯FABLE_PICK|00317.HK|中船防务|up|11.49|10|港军工rep中航科工52周位8%·rr4.13+A股沈飞u71/p_up76现价可进,两市军工相位一致;",
-   "code": "PICK",
-   "name": "PICK"
-  },
-  "HK": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "🎯FABLE_PICK|00317.HK|中船防务|up|11.49|10|港军工rep中航科工52周位8%·rr4.13+A股沈飞u71/p_up76现价可进,两市军工相位一致;",
-   "code": "HK",
-   "name": "HK"
-  },
-  "FABLE": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "🎯FABLE_PICK|00317.HK|中船防务|up|11.49|10|港军工rep中航科工52周位8%·rr4.13+A股沈飞u71/p_up76现价可进,两市军工相位一致;",
-   "code": "FABLE",
-   "name": "FABLE"
-  },
   "00317.HK": {
    "verdict": "一致",
    "model": "Opus 5",
@@ -72,32 +48,6 @@
    "code": "00317.HK",
    "name": "中船防务"
   },
-  "PFE": {
-   "verdict": "分歧",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "2.PFE 52周位双口径须定源(建议以统一引擎sector_reps为准),否则\"低位低吸\"无法证伪。",
-   "code": "PFE",
-   "name": "辉瑞"
-  },
-  "PFE辉瑞": {
-   "verdict": "分歧",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "**PFE辉瑞: 规则{p_up59·现价可进·半仓} vs Fable{暂缓·置信中·24.06~24.41浅回踩带才是买点,24.74=贴上沿追} → ⚡分歧**",
-   "code": "PFE辉瑞",
-   "name": "PFE辉瑞"
-  }
- },
- "by_name": {
-  "PICK": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "🎯FABLE_PICK|00317.HK|中船防务|up|11.49|10|港军工rep中航科工52周位8%·rr4.13+A股沈飞u71/p_up76现价可进,两市军工相位一致;",
-   "code": "PICK",
-   "name": "PICK"
-  },
   "HK": {
    "verdict": "一致",
    "model": "Opus 5",
@@ -105,6 +55,14 @@
    "note": "🎯FABLE_PICK|00317.HK|中船防务|up|11.49|10|港军工rep中航科工52周位8%·rr4.13+A股沈飞u71/p_up76现价可进,两市军工相位一致;",
    "code": "HK",
    "name": "HK"
+  },
+  "PICK": {
+   "verdict": "一致",
+   "model": "Opus 5",
+   "shift": "2026-07-28 早审 (09:05)",
+   "note": "🎯FABLE_PICK|00317.HK|中船防务|up|11.49|10|港军工rep中航科工52周位8%·rr4.13+A股沈飞u71/p_up76现价可进,两市军工相位一致;",
+   "code": "PICK",
+   "name": "PICK"
   },
   "FABLE": {
    "verdict": "一致",
@@ -114,6 +72,24 @@
    "code": "FABLE",
    "name": "FABLE"
   },
+  "PFE辉瑞": {
+   "verdict": "分歧",
+   "model": "Opus 5",
+   "shift": "2026-07-28 早审 (09:05)",
+   "note": "**PFE辉瑞: 规则{p_up59·现价可进·半仓} vs Fable{暂缓·置信中·24.06~24.41浅回踩带才是买点,24.74=贴上沿追} → ⚡分歧**",
+   "code": "PFE辉瑞",
+   "name": "PFE辉瑞"
+  },
+  "PFE": {
+   "verdict": "分歧",
+   "model": "Opus 5",
+   "shift": "2026-07-28 早审 (09:05)",
+   "note": "2.PFE 52周位双口径须定源(建议以统一引擎sector_reps为准),否则\"低位低吸\"无法证伪。",
+   "code": "PFE",
+   "name": "辉瑞"
+  }
+ },
+ "by_name": {
   "中船防务": {
    "verdict": "一致",
    "model": "Opus 5",
@@ -130,6 +106,38 @@
    "code": "00317.HK",
    "name": "中船防务"
   },
+  "HK": {
+   "verdict": "一致",
+   "model": "Opus 5",
+   "shift": "2026-07-28 早审 (09:05)",
+   "note": "🎯FABLE_PICK|00317.HK|中船防务|up|11.49|10|港军工rep中航科工52周位8%·rr4.13+A股沈飞u71/p_up76现价可进,两市军工相位一致;",
+   "code": "HK",
+   "name": "HK"
+  },
+  "PICK": {
+   "verdict": "一致",
+   "model": "Opus 5",
+   "shift": "2026-07-28 早审 (09:05)",
+   "note": "🎯FABLE_PICK|00317.HK|中船防务|up|11.49|10|港军工rep中航科工52周位8%·rr4.13+A股沈飞u71/p_up76现价可进,两市军工相位一致;",
+   "code": "PICK",
+   "name": "PICK"
+  },
+  "FABLE": {
+   "verdict": "一致",
+   "model": "Opus 5",
+   "shift": "2026-07-28 早审 (09:05)",
+   "note": "🎯FABLE_PICK|00317.HK|中船防务|up|11.49|10|港军工rep中航科工52周位8%·rr4.13+A股沈飞u71/p_up76现价可进,两市军工相位一致;",
+   "code": "FABLE",
+   "name": "FABLE"
+  },
+  "PFE辉瑞": {
+   "verdict": "分歧",
+   "model": "Opus 5",
+   "shift": "2026-07-28 早审 (09:05)",
+   "note": "**PFE辉瑞: 规则{p_up59·现价可进·半仓} vs Fable{暂缓·置信中·24.06~24.41浅回踩带才是买点,24.74=贴上沿追} → ⚡分歧**",
+   "code": "PFE辉瑞",
+   "name": "PFE辉瑞"
+  },
   "辉瑞": {
    "verdict": "分歧",
    "model": "Opus 5",
@@ -145,14 +153,6 @@
    "note": "2.PFE 52周位双口径须定源(建议以统一引擎sector_reps为准),否则\"低位低吸\"无法证伪。",
    "code": "PFE",
    "name": "辉瑞"
-  },
-  "PFE辉瑞": {
-   "verdict": "分歧",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "**PFE辉瑞: 规则{p_up59·现价可进·半仓} vs Fable{暂缓·置信中·24.06~24.41浅回踩带才是买点,24.74=贴上沿追} → ⚡分歧**",
-   "code": "PFE辉瑞",
-   "name": "PFE辉瑞"
   }
  },
  "n_cert": 5,
