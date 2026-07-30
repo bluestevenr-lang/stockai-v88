@@ -26,6 +26,32 @@
 >
 > 现在成立的只是一条**相关性**（下节），机制仍未查明。
 > **已经连错三次，所以下文严格区分「实测事实」与「未验证假设」，不再给第四个理论。**
+>
+> **补记（2026-07-30 21:0x）**：上述三条勘误**没有再被推翻**。
+> 按「父进程链」方向照抄成功条件（弃用任务计划、改 `HKCU\...\Run` 由 explorer 拉起）
+> 后 **epoch 13 通过**，见「第七阶段」。**注意这仍然只是规避，不是机制解释** ——
+> 我依旧不知道 `svchost(Schedule) -> cmd -> claude` 为什么会让
+> `/v1/code/sessions/*/worker` 返 403。别把「绕过去了」记成「查清楚了」。
+>
+> **勘误 4（2026-07-30 21:49，本次 —— 上面那条补记也被推翻了）**：
+> 曾以 epoch 13 为据说「Run 键/explorer 这条路 5/5 全通、已规避」。
+> **不成立。** 同一个 Run 键、同一条 `explorer -> cmd -> claude` 父进程链，
+> 21:20 那一轮（epoch 15）**死得和任务计划轮一模一样**：`hb=0`、`worker 403 ×19`、
+> `10 consecutive auth failures ... exiting`、寿命 **2m22s**（旧死法的固定寿命）。
+>
+> ```
+> 20:50 轮 (12:50Z-13:03Z)  Run键/explorer   hb=37  w403=0   活    <- epoch 13
+> 21:03 轮 (13:03Z-13:20Z)  Run键/explorer   hb=48  w403=0   活    <- epoch 14
+> 21:20 轮 (13:20Z-13:30Z)  Run键/explorer   hb=0   w403=19  死    <- epoch 15 ★
+> ```
+>
+> 三轮启动方式**完全相同**，结果两活一死 ——
+> **「启动方式」不是充分条件，那条 10/10 的相关性已经断了。**
+> 错误原因：又一次只凭一轮成功就下结论（和勘误 1 同一个错，这是第二次犯）。
+>
+> **现在诚实的状态：机制未明，且没有任何一条已知条件能保证会话活。**
+> 任务计划启动仍是 6/6 全死（那半边没被推翻），但 explorer 启动**不保证通**。
+> 别再宣布「已解决」——今晚第四次了。
 
 ## 结论先行
 
@@ -36,9 +62,9 @@
 | 报文 | `Registration/Poll: Access denied (403): Request not allowed. Check your organization permissions.` | `RemoteIO: transport closed permanently (code 403)` | 夹杂大量 502 |
 | 打在哪 | `work/poll`、`/v1/environments/bridge` | `/v1/code/sessions/*/worker`（+`/events/stream`） | 各端点 |
 | 表现 | bridge 直接致命退出 | bridge 正常，**子会话** ~2m20s 掉 | 自行重试后恢复 |
-| 结论 | **上游抖动，已自愈**（16:47 起 3 分钟） | **未解决**，但已定位到启动方式，见下 | CLI 自己扛 |
+| 结论 | **上游抖动，已自愈**（16:47 起 3 分钟） | **未解决**：任务计划启动必死；explorer/Run 键启动**大多通但会偶发同样的死**（epoch 15） | CLI 自己扛 |
 
-### 目前成立的结论：与令牌无关；「被任务计划启动」必死，交互启动必通（机制未明）
+### 目前成立的结论：与令牌无关；任务计划启动 6/6 必死；explorer 启动 6/7（**不保证**）
 
 **同一份令牌、同一台机器、同一个 `env_01A99j…`、同一个代理、同一份 `.bat`、
 同一个 `USERPROFILE`，唯一差异是「谁启动的」，结果就分成两组 —— 10 轮零例外：**
@@ -54,9 +80,20 @@
 | 10 | 19:25 | 计划任务（**已改 `LogonType=Password`**） | 新 | **403** | **0** | 14 | **死** |
 | 11 | 19:35 | 计划任务（**已改 `InteractiveToken`，`SessionId=1` 已核验**） | 新 | **403** | **0** | 多 | **死** |
 | **12** | **19:37** | **交互 spawn**（决胜局，紧跟 epoch 11 失败之后 1 分钟） | **新** | **ok** | **6** | **0** | **活**（过线）|
+| **13** | **20:50** | **`HKCU\...\Run` 登录时由 explorer 拉起**（断电重启后首次登录） | 新 | **ok** | **37** | **0** | **活**（~12.5min，见第七阶段）|
+| **14** | **21:03** | **同上，Run 键自动重起** | 新 | **ok** | **48** | **0** | **活**（~17min）|
+| 15 | 21:20 | **同上，Run 键自动重起**（**启动方式与 13/14 完全相同**）| 新 | **403** | **0** | **19** | **死（2m22s）★** |
 
-**汇总：任务计划启动全死（`S4U` / `Password` / `InteractiveToken` 三种登录方式都试过），
-交互 shell 启动 4/4 全通。**
+**汇总（已修正）：**
+
+- **任务计划启动 6/6 全死**（`S4U` ×4 / `Password` ×1 / `InteractiveToken` ×1）—— 这半边**没被推翻**。
+- **explorer 系 6/7**：交互 shell 4 轮全通 + Run 键 2 活 1 死。
+  **epoch 15 是第一个 explorer 系的失败样本，它推翻了「explorer 启动必通」。**
+
+**epoch 13/14/15 是最要命的一组：启动方式、令牌、机器、env、session id、
+父进程链全都一样，前两轮活、第三轮死。**
+即**同一条已知「好」路径上，会话健康度是不确定的** —— 说明真正的变量还没找到，
+之前那条 10/10 的启动方式相关性只是**样本恰好排在一边**。
 
 **epoch 11→12 是最干净的一组对照**：相隔 1 分钟、同一台机器、同一 `SessionId=1`、
 同一份令牌、同一 session id —— 计划任务那个死，交互那个活。
@@ -107,27 +144,30 @@ PSMODULEPATH  交互侧多了 用户 Documents\WindowsPowerShell\Modules
 
 两者与鉴权毫无关系。**至此环境这条线彻底排除。**
 
-**剩下唯一还没查的可测差异：父进程链。**
+**曾以为「剩下唯一还没查的可测差异」是父进程链 —— 已被 epoch 15 降级。**
 
 ```
-通 (4/4)：explorer.exe -> powershell -> claude(我的会话) -> powershell -> Start-Process -> claude.exe
-死 (全部)：svchost.exe(Schedule) -> cmd.exe -> claude.exe
+通 (6/7)：explorer.exe -> [powershell|cmd] -> claude.exe        <- 其中 epoch 15 是这条链上的【失败】样本
+死 (6/6)：svchost.exe(Schedule) -> cmd.exe -> claude.exe
 ```
 
-**这是观察，不是结论** —— 我没有验证父进程链为什么会影响 `/v1/code/sessions/*/worker`
-的鉴权结果。但它给出了一个**可以照抄的方向**：让启动者变成 `explorer.exe`
-（登录时由「启动」文件夹 / `HKCU\...\Run` 拉起），而不是任务计划。
+**这是观察，不是结论**，而且现在只剩**半条**：
+「任务计划启动 → 死」目前 6/6 无例外；但反向的「explorer 启动 → 活」**已被证伪**
+（epoch 15 同链路照样死）。所以父进程链**至多是相关因素，不是开关**。
+换 Run 键仍然值得做（它把 6/6 必死那半边去掉了），但**不要指望它能保证会话不掉**。
 
 一条仍然重要的形态证据：失败轮里 **bridge 层 `work/poll` 返回 200，子会话层全线 403**
 （`Bootstrap` / `org fast mode` / `claudeai-mcp` / `worker` / 1P 遥测一起 403）。
 即**同一进程树内两条鉴权路径表现不同** —— 符合「子会话进程取不到可用凭据」，
 **不符合**「账号 / 设备 / 平台被服务端封禁」。
 
-## 下一步（**均未执行**，需要你选）
+## 下一步
 
-**A. 弃用任务计划，改由 explorer 在登录时拉起（唯一还没试过的启动方式）**
+**A. 弃用任务计划，改由 explorer 在登录时拉起 —— ✅ 已执行（2026-07-30 21:4x）**
+**但结果只达成一半**：去掉了任务计划那 6/6 必死的启动方式，
+**没有**让会话变可靠（epoch 15 在这条路上照样死，见勘误 4）。
 把启动器放进「启动」文件夹或写 `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`。
-这两者都由 **`explorer.exe`** 在登录时拉起 —— 正是 4/4 成功轮的那条父进程链。
+这两者都由 **`explorer.exe`** 在登录时拉起。
 配合你要开的 netplwiz 自动登录，闭环是：
 
 ```
@@ -137,6 +177,7 @@ PSMODULEPATH  交互侧多了 用户 Documents\WindowsPowerShell\Modules
 ```
 
 - **这不是新理论**，是照抄已实测可用的条件（换掉唯一还剩的那个差异：启动者）。
+  —— 事后修正：这条**照抄没照全**，epoch 15 说明还有没抄到的变量。
 - 代价：需要保持登录态（自动登录 + 锁屏来兜安全）。
 - **锁屏必须在 bat 之前或与之并列**，不能追加成任务计划的第二个操作 ——
   bat 是死循环永不返回，顺序执行的第二个操作永远等不到。
@@ -285,6 +326,93 @@ PSMODULEPATH  交互侧多了 用户 Documents\WindowsPowerShell\Modules
 19:38     用 InteractiveToken 同主体再 dump 环境做【值级】对比
           => 仅 PATHEXT / PSMODULEPATH 不同，环境这条线彻底排除
 ```
+
+### 第七阶段：弃用任务计划，改 `HKCU\...\Run` 由 explorer 拉起（本次收尾）
+
+```
+20:4x     断电重启 -> 登录；改由 HKCU\...\Run 拉起 遥控常驻V88.bat
+20:50:01  round start；20:50:15 Session started cse_01Go1U1
+20:50-21:02  hb=37、w403=0                                     => 通 (epoch 13)
+21:02:43  remote-control exited (code=1) —— 会话是【健康】的，但 bridge 自己退了
+21:03:13  bat 循环 30s 后自动重起；21:03:26 Session started
+21:03-21:20  hb=48、w403=0，活约 17 分钟                          => 通 (epoch 14)
+21:20:09  bridge 又退（主日志这次没留下 exited 行）
+21:20:39  round start；21:20:43 bridge PID 16228（explorer -> cmd -> claude 已核验）
+21:20:53    Session started cse_01Go1U1，spawn 子进程 pid 17016
+21:20:5x    org fast mode 403 / Bootstrap 403 / SSETransport 403(permanent)
+21:21-21:23 worker GET 403 打满 1/10 ~ 10/10，PUT worker (init) 403 交织，心跳 0
+21:23:16    10 consecutive auth failures ... exiting，duration=2m 22s   => 死 (epoch 15) ★
+21:23:18  bridge 回到 idle（多会话模式，bridge 本身没退）
+21:23-21:49  bridge 持续 work/poll -> 200，100 次空轮询，21:40 一次 502 抖动 3 秒自愈
+21:49     核验：bridge 存活 1699s、SessionId=1、父链 explorer.exe -> cmd.exe -> claude.exe
+```
+
+**这一阶段的三个新事实（都与旧结论冲突，按事实记）：**
+
+1. **epoch 15 推翻了「explorer 必通」**（见勘误 4）。
+2. **bridge 会在会话健康的情况下自己退出**（21:02:43 `code=1`、21:20:09 再一次）。
+   这是**今天之前没注意到的独立症状**：`hb=48 / w403=0` 的健康轮也只活了 17 分钟。
+   bat 的 30s 重试把它拉回来了，所以主日志上看着「一直在」，实际是**每十几分钟换一条命**。
+3. **bridge 层与会话层再次分离**：epoch 15 里子会话全线 403 的同时，
+   bridge 自己的 `work/poll` 一路 200，并在子会话死后正常回到 idle 继续轮询。
+   这条和第一阶段的形态证据一致，**没有被推翻**。
+
+**尚未验证的问题（留给下次，不构成第四个理论）：**
+
+- 每一轮 bridge 重起都会**接管同一个旧 work item `cse_01Go1U1`**。
+  死的轮次（18:12 / 18:22 / 18:58 / 21:20）都是「刚重起就接管」，
+  但活的轮次（19:07 / 19:52 / 20:50 / 21:03）**也是**同样的接管 —— **切不干净，不能当结论**。
+- bridge 为什么每十几分钟 `exit code=1`，没查。
+
+## 弃用任务计划改用 Run 键（本次实际改动）
+
+**为什么**：任务计划启动 6/6 必死（三种 `LogonType` 都试过），Run 键至少去掉了这半边。
+**不是**因为 Run 键能保证会话活 —— epoch 15 已证明它不能。
+
+**写法**（登录时由 `explorer.exe` 拉起，正是 6/7 那条父进程链）：
+
+```powershell
+$k = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'
+$v = '"C:\Users\admin\Desktop\StockAI\win\遥控常驻V88.bat"'   # 路径含中文,必须整体加引号
+New-ItemProperty -Path $k -Name 'V88RemoteControl' -Value $v -PropertyType String -Force
+```
+
+- **值必须带引号**：路径含中文与空格风险；注册表是 Unicode 存储，
+  中文路径在这里**没有**编码问题（与 `.bat` 命令行的 ASCII 铁律是两回事，别混）。
+- 校验用 `reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v V88RemoteControl`，
+  中文若显示成乱码说明写入方式有问题。
+- **`HKCU` 而不是 `HKLM`**：必须跟着「登录的这个用户」跑，才拿得到
+  `C:\Users\admin\.claude` 下的凭据。
+- **同名只能有一个**：本次把早先手工加的 `V88-RemoteHost`（指向同一个 bat）**删掉了**，
+  改名为 `V88RemoteControl`。理由见下。
+
+**互斥铁律：任何时刻只能有一个拉起源。**
+
+`遥控常驻V88.bat` 是 `:loop` 死循环、**没有单实例锁**。两个 Run 键 / Run 键 + 计划任务
+同时存在 = 两个 bat 循环 = 两个 bridge = 抢同一个
+`bridge-pointer.json` 与同一个 `env_01A99j…`。所以：
+
+```powershell
+# 两个计划任务必须 disable（本次已做，含登录触发器）
+schtasks /change /tn "V88-遥控常驻"     /disable
+schtasks /change /tn "V88-夜间重启遥控" /disable
+```
+
+**核验方法**（`State=Disabled` 是任务级开关，压过触发器级的 `Enabled`）：
+
+```powershell
+Get-ScheduledTask | Where-Object { $_.TaskName -like '*V88*' } |
+  ForEach-Object { "$($_.TaskName) State=$($_.State)"; $_.Triggers |
+    ForEach-Object { "   $($_.CimClass.CimClassName) Enabled=$($_.Enabled)" } }
+schtasks /query /tn "V88-遥控常驻" /fo LIST | findstr /C:"Status" /C:"Next Run"
+```
+
+`Next Run Time: N/A` + `Status: Disabled` = 确实不会再被触发。
+
+> 坑：任务管理器「启动」页会往
+> `HKCU\...\Explorer\StartupApproved\Run` 写一个二进制开关，
+> **能在不删 Run 键的情况下让它不生效**。本次已确认该键下**没有** `V88RemoteControl`
+> 条目（无条目 = 默认启用）。以后遥控「Run 键明明在却没起来」，先查这里。
 
 ## 已证伪的假设（别再试）
 
