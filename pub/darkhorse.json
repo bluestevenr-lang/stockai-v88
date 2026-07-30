@@ -1,23 +1,23 @@
 {
- "ts": 1785330439.7137184,
- "generated_at": "2026-07-29 21:07",
+ "ts": 1785369677.9053106,
+ "generated_at": "2026-07-30 08:01",
  "funnel": {
-  "found": 447,
-  "excluded_watch": 23,
+  "found": 431,
+  "excluded_watch": 22,
   "judged": 239,
   "judged_by_mkt": {
    "🇺🇸美股": 176,
    "🇭🇰港股": 25,
    "🇨🇳A股": 39
   },
-  "passed": 5,
+  "passed": 6,
   "blocked": {
-   "相位": 95,
-   "方向分": 5,
-   "赔率": 19,
+   "相位": 103,
+   "方向分": 3,
+   "赔率": 20,
    "时机": 0,
    "数据": 1,
-   "单源": 115
+   "单源": 107
   }
  },
  "horses": [
@@ -32,9 +32,9 @@
    "rr": 1.5,
    "expected_pct": 7.1,
    "action": "多周期共振·试仓复核",
-   "entry_note": "⏳双路径:回踩122.5/突破146.4·08-05前｜标准门槛通过；概率优势+30.0点",
+   "entry_note": "⏳双路径:回踩122.5/突破146.4·08-06前｜标准门槛通过；概率优势+30.0点",
    "cycle_note": "2周偏涨70%｜4-32周偏涨60%",
-   "analysis_time": "2026-07-29 21:06",
+   "analysis_time": "2026-07-30 08:00",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-29 00:00:00",
@@ -143,10 +143,10 @@
    "touch": "触线:52周低位23%",
    "trade_plan": {
     "short": {
-     "in": "🟢 左侧低吸(中性市模式):现价128.21~回踩122.5区间先1批小仓,不等右侧突破确认——跌破103.64认错止损;若放量突破则剩余仓改追｜💼半仓:中性市:半仓起步,确认后加",
+     "in": "⏳ 双路径（08-06前任一触发即进）：①回踩122.5企稳接",
      "out": "目标134.146（10个交易日内·上行概率64%）",
      "invalid": "跌破103.64作废",
-     "mode": "左侧低吸"
+     "mode": "双路径待触发"
     },
     "mid": {
      "in": "🎯 中线（4-8周）：区间115.07~128.21分批建仓；收盘连续2日破 119.45 失效",
@@ -176,16 +176,16 @@
    "rr": 2.95,
    "expected_pct": 28.2,
    "action": "观察",
-   "entry_note": "⏳双路径:回踩49.4/突破78.9·08-05前｜周期未充分共振，等待触发",
+   "entry_note": "⏳双路径:回踩49.4/突破78.9·08-06前｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨78%｜4-32周震荡54%",
-   "analysis_time": "2026-07-29 21:06",
+   "analysis_time": "2026-07-30 08:00",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-29 00:00:00",
     "last": 54.6,
     "atr14": 2.0714,
     "stage": "启动确认",
-    "data_signature": "b01775b01858",
+    "data_signature": "b92969ebf0bd",
     "horizons": {
      "2周": {
       "weeks": 2,
@@ -319,16 +319,16 @@
    "rr": 2.56,
    "expected_pct": 15.6,
    "action": "多周期共振·试仓复核",
-   "entry_note": "⏳双路径:回踩32.47/突破43.13·08-05前｜标准门槛通过；概率优势+43.9点",
+   "entry_note": "⏳双路径:回踩32.47/突破43.13·08-06前｜标准门槛通过；概率优势+43.9点",
    "cycle_note": "2周偏涨72%｜4-32周偏涨65%",
-   "analysis_time": "2026-07-29 21:06",
+   "analysis_time": "2026-07-30 08:00",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-29 00:00:00",
     "last": 34.34,
     "atr14": 0.9657,
     "stage": "主升阶段",
-    "data_signature": "c4d33209859c",
+    "data_signature": "a348edcee14b",
     "horizons": {
      "2周": {
       "weeks": 2,
@@ -462,9 +462,9 @@
    "rr": 3.81,
    "expected_pct": 20.5,
    "action": "观察",
-   "entry_note": "✅现价可进·08-03前·破11.41废·仅短线｜周期未充分共振，等待触发",
+   "entry_note": "✅现价可进·08-04前·破11.41废·仅短线｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨70%｜4-32周震荡48%",
-   "analysis_time": "2026-07-29 21:06",
+   "analysis_time": "2026-07-30 08:00",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-29 00:00:00",
@@ -572,7 +572,7 @@
    "touch": "触线:52周低位12%",
    "trade_plan": {
     "short": {
-     "in": "✅ 现在可进：现价12.81已在买入区12.22~12.81内——今日~08-03（3个交易日）分批有效",
+     "in": "✅ 现在可进：现价12.81已在买入区12.22~12.81内——今日~08-04（3个交易日）分批有效",
      "out": "目标13.466（10个交易日内·上行概率64%）",
      "invalid": "跌破11.41作废",
      "mode": "现价可进"
@@ -605,16 +605,16 @@
    "rr": 1.73,
    "expected_pct": 3.4,
    "action": "多周期共振·试仓复核",
-   "entry_note": "⏳双路径:回踩40.57/突破45.17·08-05前｜标准门槛通过；概率优势+25.4点",
+   "entry_note": "⏳双路径:回踩40.57/突破45.17·08-06前｜标准门槛通过；概率优势+25.4点",
    "cycle_note": "2周偏涨62%｜4-32周偏涨70%",
-   "analysis_time": "2026-07-29 21:06",
+   "analysis_time": "2026-07-30 08:00",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-07-29 00:00:00",
     "last": 41.65,
     "atr14": 0.7057,
     "stage": "主升阶段",
-    "data_signature": "beb3f1846115",
+    "data_signature": "fc560917663e",
     "horizons": {
      "2周": {
       "weeks": 2,
@@ -697,7 +697,7 @@
       "slope_pct": -1.7,
       "ma_bias_pct": 7.5,
       "ret5_pct": 1.9,
-      "volume_ratio": 1.11,
+      "volume_ratio": 1.1,
       "drawdown_pct": -0.6,
       "support": 36.27,
       "resistance": 41.9,
@@ -715,10 +715,10 @@
    "touch": "",
    "trade_plan": {
     "short": {
-     "in": "🟢 左侧低吸(中性市模式):现价41.65~回踩40.57区间先1批小仓,不等右侧突破确认——跌破37.5认错止损;若放量突破则剩余仓改追｜💼半仓:中性市:半仓起步,确认后加",
+     "in": "⏳ 双路径（08-06前任一触发即进）：①回踩40.57企稳接",
      "out": "目标42.579（10个交易日内·上行概率62%）",
      "invalid": "跌破37.5作废",
-     "mode": "左侧低吸"
+     "mode": "双路径待触发"
     },
     "mid": {
      "in": "🎯 中线（4-8周）：区间39.21~41.65分批建仓；收盘连续2日破 38.85 失效",
@@ -736,117 +736,260 @@
    "level": "B",
    "market": "🇨🇳A股",
    "grade": "重点"
+  },
+  {
+   "name": "迪士尼",
+   "code": "DIS",
+   "last": 98.48,
+   "unified_score": 66,
+   "short_score": 62,
+   "p_up": 62,
+   "p_down": 38,
+   "rr": 1.86,
+   "expected_pct": 4.7,
+   "action": "观察",
+   "entry_note": "✅现价可进·08-04前·破92.49废·仅短线｜周期未充分共振，等待触发",
+   "cycle_note": "2周偏涨62%｜4-32周震荡54%",
+   "analysis_time": "2026-07-30 08:00",
+   "facts": {
+    "schema": "v88.stock-decision/2.0",
+    "asof": "2026-07-29 00:00:00",
+    "last": 98.48,
+    "atr14": 2.1963,
+    "stage": "启动确认",
+    "data_signature": "0c2c42cf49cc",
+    "horizons": {
+     "2周": {
+      "weeks": 2,
+      "periods": 2,
+      "unit": "week",
+      "sample_days": 10,
+      "return_pct": 1.4,
+      "slope_pct": -0.6,
+      "ma_bias_pct": 1.7,
+      "ret5_pct": 2.7,
+      "volume_ratio": 1.23,
+      "drawdown_pct": -1.4,
+      "support": 92.49,
+      "resistance": 99.85,
+      "rule_score": 62,
+      "rule_view": "偏涨",
+      "phase_note": "",
+      "rule_confidence": 64
+     },
+     "4周": {
+      "weeks": 4,
+      "periods": 4,
+      "unit": "week",
+      "sample_days": 20,
+      "return_pct": 2.3,
+      "slope_pct": -0.3,
+      "ma_bias_pct": 1.8,
+      "ret5_pct": 2.7,
+      "volume_ratio": 1.16,
+      "drawdown_pct": -1.4,
+      "support": 92.49,
+      "resistance": 99.85,
+      "rule_score": 63,
+      "rule_view": "偏涨",
+      "phase_note": "",
+      "rule_confidence": 66
+     },
+     "8周": {
+      "weeks": 8,
+      "periods": 8,
+      "unit": "week",
+      "sample_days": 40,
+      "return_pct": -3.5,
+      "slope_pct": -4.5,
+      "ma_bias_pct": 0.3,
+      "ret5_pct": 2.7,
+      "volume_ratio": 1.08,
+      "drawdown_pct": -5.1,
+      "support": 92.49,
+      "resistance": 103.735,
+      "rule_score": 51,
+      "rule_view": "震荡",
+      "phase_note": "",
+      "rule_confidence": 51
+     },
+     "16周": {
+      "weeks": 16,
+      "periods": 16,
+      "unit": "week",
+      "sample_days": 80,
+      "return_pct": 2.7,
+      "slope_pct": -5.7,
+      "ma_bias_pct": -1.7,
+      "ret5_pct": 2.7,
+      "volume_ratio": 1.21,
+      "drawdown_pct": -10.2,
+      "support": 92.49,
+      "resistance": 109.64,
+      "rule_score": 57,
+      "rule_view": "震荡",
+      "phase_note": "",
+      "rule_confidence": 58
+     },
+     "32周": {
+      "weeks": 32,
+      "periods": 32,
+      "unit": "week",
+      "sample_days": 160,
+      "return_pct": -5.1,
+      "slope_pct": -12.9,
+      "ma_bias_pct": -4.4,
+      "ret5_pct": 2.7,
+      "volume_ratio": 1.08,
+      "drawdown_pct": -14.5,
+      "support": 91.489,
+      "resistance": 115.148,
+      "rule_score": 45,
+      "rule_view": "震荡",
+      "phase_note": "启动相位（启动确认）·远期分回归中性",
+      "rule_confidence": 56
+     }
+    }
+   },
+   "sources": [
+    "全选池·美股",
+    "财报08-05"
+   ],
+   "touch": "触线:MA55",
+   "trade_plan": {
+    "short": {
+     "in": "✅ 现在可进：现价98.48已在买入区96.76~98.48内——今日~08-04（3个交易日）分批有效",
+     "out": "目标102.184（10个交易日内·上行概率56%）",
+     "invalid": "跌破92.49作废",
+     "mode": "现价可进"
+    },
+    "mid": {
+     "in": "⏳ 中线（4-8周）：待周线站稳 99.44 再启动区间建仓",
+     "out": "目标109.64（≈1季·60交易日·上行概率41%）",
+     "invalid": "收盘连续2日破 99.44 失效"
+    },
+    "long": {
+     "in": "🏛 长线（16周+）：方向分未达55，先跟踪不建仓",
+     "out": "——（未建仓无出场）",
+     "invalid": "——"
+    },
+    "probability_kind": "规则情景估计（非回测胜率）"
+   },
+   "scope": "黑马",
+   "level": "B",
+   "market": "🇺🇸美股",
+   "grade": "重点"
   }
  ],
  "runners": [
   {
-   "name": "Ryan Specialty Holdings, Inc.",
-   "code": "RYAN",
-   "last": 46.01,
-   "unified_score": 82,
-   "short_score": 77,
-   "p_up": 77,
-   "p_down": 23,
-   "rr": 2.46,
-   "expected_pct": 27.1,
+   "name": "Diageo plc",
+   "code": "DEO",
+   "last": 89.16,
+   "unified_score": 80,
+   "short_score": 73,
+   "p_up": 73,
+   "p_down": 27,
+   "rr": 2.99,
+   "expected_pct": 16.6,
+   "action": "多周期共振·试仓复核",
+   "stage": "主升阶段",
+   "mode": "双路径待触发",
+   "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
+   "sources": [
+    "财报08-04"
+   ],
+   "touch": "",
+   "market": "🇺🇸美股",
+   "horizons": [
+    {
+     "label": "10日",
+     "p_up": 73,
+     "target_price": 92.753
+    },
+    {
+     "label": "60日",
+     "p_up": 72,
+     "target_price": 97.96
+    },
+    {
+     "label": "120日",
+     "p_up": 51,
+     "target_price": 101.713
+    }
+   ]
+  },
+  {
+   "name": "Fresenius Medical Care AG",
+   "code": "FMS",
+   "last": 24.86,
+   "unified_score": 76,
+   "short_score": 62,
+   "p_up": 62,
+   "p_down": 38,
+   "rr": 1.92,
+   "expected_pct": 2.9,
    "action": "多周期共振·试仓复核",
    "stage": "主升阶段",
    "mode": "不进",
    "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
    "sources": [
-    "财报07-30"
+    "财报08-04"
    ],
    "touch": "",
    "market": "🇺🇸美股",
    "horizons": [
     {
      "label": "10日",
-     "p_up": 77,
-     "target_price": 49.451
+     "p_up": 62,
+     "target_price": 25.984
     },
     {
      "label": "60日",
-     "p_up": 85,
-     "target_price": 56.917
+     "p_up": 83,
+     "target_price": 27.882
     },
     {
      "label": "120日",
-     "p_up": 57,
-     "target_price": 57.931
+     "p_up": 73,
+     "target_price": 28.752
     }
    ]
   },
   {
-   "name": "GoDaddy Inc.",
-   "code": "GDDY",
-   "last": 102.92,
-   "unified_score": 80,
-   "short_score": 76,
-   "p_up": 76,
-   "p_down": 24,
-   "rr": 2.54,
-   "expected_pct": 26.6,
+   "name": "Cboe Global Markets, Inc.",
+   "code": "CBOE",
+   "last": 307.81,
+   "unified_score": 75,
+   "short_score": 70,
+   "p_up": 70,
+   "p_down": 30,
+   "rr": 1.66,
+   "expected_pct": 10.6,
    "action": "多周期共振·试仓复核",
-   "stage": "主升阶段",
+   "stage": "趋势延续",
    "mode": "双路径待触发",
    "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
    "sources": [
-    "财报07-30"
+    "财报07-31"
    ],
    "touch": "",
    "market": "🇺🇸美股",
    "horizons": [
     {
      "label": "10日",
-     "p_up": 76,
-     "target_price": 110.002
+     "p_up": 70,
+     "target_price": 327.182
     },
     {
      "label": "60日",
-     "p_up": 78,
-     "target_price": 120.268
+     "p_up": 37,
+     "target_price": 370.404
     },
     {
      "label": "120日",
      "p_up": 61,
-     "target_price": 127.454
-    }
-   ]
-  },
-  {
-   "name": "LPL Financial Holdings Inc.",
-   "code": "LPLA",
-   "last": 342.4,
-   "unified_score": 78,
-   "short_score": 66,
-   "p_up": 66,
-   "p_down": 34,
-   "rr": 2.39,
-   "expected_pct": 9.0,
-   "action": "多周期共振·试仓复核",
-   "stage": "主升阶段",
-   "mode": "双路径待触发",
-   "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
-   "sources": [
-    "财报07-30"
-   ],
-   "touch": "",
-   "market": "🇺🇸美股",
-   "horizons": [
-    {
-     "label": "10日",
-     "p_up": 66,
-     "target_price": 359.064
-    },
-    {
-     "label": "60日",
-     "p_up": 68,
-     "target_price": 383.219
-    },
-    {
-     "label": "120日",
-     "p_up": 48,
-     "target_price": 400.127
+     "target_price": 374.918
     }
    ]
   },
@@ -862,7 +1005,7 @@
    "expected_pct": 14.4,
    "action": "共振·小仓试错",
    "stage": "启动确认",
-   "mode": "左侧低吸",
+   "mode": "双路径待触发",
    "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
    "sources": [
     "涨停接力"
@@ -899,7 +1042,7 @@
    "expected_pct": 30.4,
    "action": "多周期共振·试仓复核",
    "stage": "启动确认",
-   "mode": "左侧低吸",
+   "mode": "双路径待触发",
    "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
    "sources": [
     "涨停接力"
@@ -936,7 +1079,7 @@
    "expected_pct": 12.1,
    "action": "共振·小仓试错",
    "stage": "启动确认",
-   "mode": "左侧低吸",
+   "mode": "双路径待触发",
    "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
    "sources": [
     "涨停接力"
