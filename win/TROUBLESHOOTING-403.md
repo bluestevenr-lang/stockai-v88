@@ -1,56 +1,100 @@
-# V88·Win 常驻主机 403 排查记录（2026-07-30 · 已解决）
+# V88·Win 常驻主机 403 排查记录（2026-07-30）
 
-> 现场：`DESKTOP-4H6ES39`，`claude remote-control` 起不来 / 会话连上就掉。
+> 现场：`DESKTOP-4H6ES39`，`claude remote-control` 的子会话连上后 ~2m20s 必掉 403。
 > 本文只记**已用实验证伪的假设**和**证据链**，避免下次重复走同一批弯路。
-> 日志原件：`win\logs\remote_20260730.log`（主）、`rc_debug_20260730.log`（bridge）、
-> `rc_debug_20260730-cse_*.log`（每个子会话一份，**403 的真相在这里**）、
-> `rc_debug_20260730-newtoken.log` + `manual_newtoken_20260730.log`（换令牌后的验证）。
+> 日志原件在 `win\logs\`（该目录已整体 gitignore，见文末「安全副产物」）：
+> `remote_20260730.log`（主）、`rc_debug_20260730.log`（bridge）、
+> `rc_debug_20260730-cse_*.log`（子会话，**403 的真相在这里**）、
+> `rc_debug_20260730-newtoken*.log` / `-retest*.log`（换令牌后的两次交互验证）。
+
+> ## ⚠️ 勘误（本文件的前一版结论是错的）
+>
+> 提交 `330fb3f` 曾断言「会话层 403 根因是令牌实例，换令牌即通，已解决」。
+> **该结论已被 19:00:21 的实验推翻**：用**同一个新令牌**，计划任务拉起的那一轮
+> （epoch=7）照样 403 而死。当时只跑了一次交互测试就下结论，样本不足。
+> 正确结论见下 —— **变量不是令牌，是「谁启动的这个进程」。**
 
 ## 结论先行
 
-**两种 403，完全不同的东西，不要混为一谈：**
+**三种 403，完全不同的东西，不要混为一谈：**
 
-| | 注册层 403 | 会话层 403 |
-|---|---|---|
-| 报文 | `Registration/Poll: Access denied (403): Request not allowed. Check your organization permissions.` | `RemoteIO: transport closed permanently (code 403)` |
-| 打在哪 | `work/poll`、`/v1/environments/bridge` | `/v1/code/sessions/*/worker`（+`/events/stream`） |
-| 表现 | bridge 直接致命退出 | bridge 正常，子会话连上后 **~2m20s** 掉 |
-| 结论 | **上游抖动，已自愈**（持续 3 分钟） | **换令牌解决**（18:48 重新登录后消失） |
+| | 注册层 403 | 会话层 403 | 上游抖动 |
+|---|---|---|---|
+| 报文 | `Registration/Poll: Access denied (403): Request not allowed. Check your organization permissions.` | `RemoteIO: transport closed permanently (code 403)` | 夹杂大量 502 |
+| 打在哪 | `work/poll`、`/v1/environments/bridge` | `/v1/code/sessions/*/worker`（+`/events/stream`） | 各端点 |
+| 表现 | bridge 直接致命退出 | bridge 正常，**子会话** ~2m20s 掉 | 自行重试后恢复 |
+| 结论 | **上游抖动，已自愈**（16:47 起 3 分钟） | **未解决**，但已定位到启动方式，见下 | CLI 自己扛 |
 
-会话层 403 的判词由 CLI 自己给出，在子会话日志最后一行：
+### 根因定位：与令牌无关，取决于进程的登录令牌类型（Logon Type）
+
+**同一份令牌、同一台机器、同一个 `env_01A99j…`、同一个代理、同一份 `.bat`、
+同一个 `USERPROFILE`，唯一差异是「谁启动的」，结果就分成两组：**
+
+| epoch | 时刻 | 启动方式 | 令牌 | Bootstrap / org fast mode | 心跳 | worker 403 | 结局 |
+|---|---|---|---|---|---|---|---|
+| 1,2,3 | 15:45–16:51 | 计划任务（S4U） | 旧 | 403 | **0** | 19~113 | 死 |
+| 4,5 | 18:12,18:22 | 计划任务（S4U） | 旧 | 403 | **0** | 多 | 死（2m18s / 2m19s）|
+| **6** | **18:52** | **交互 spawn** | **新** | — | **16** | **0** | **活 296s**（人为终止）|
+| 7 | 18:58 | 计划任务（S4U） | **新** | **403** | **0** | 多 | **死（138s）** |
+| **8** | **19:04** | **交互 spawn** | **新** | **ok** | **7** | **0** | **活 160s**（人为终止）|
+| **9** | **19:07** | **交互跑同一个 .bat**（`CLAUDE*` 变量已剥净） | **新** | **ok** | **13** | **0** | **活 276s**（仍在跑）|
+
+**判据：`Heartbeat sent` 是会话健康的铁证。**
+死的那几轮 `hb=0`（注册后 1 秒就全线 403，从没活到发心跳）；
+活的那几轮 `w403=0` 且心跳每 20 秒一次不断。**没有任何一轮是中间态。**
+
+**epoch 7 是最关键的一轮**：它用的是新令牌，却和旧令牌时代死得一模一样 ——
+一句话否掉「换令牌即通」。
+**epoch 9 是第二关键的一轮**：它跑的是**同一个 `遥控常驻V88.bat`**，
+且我事先把 `CLAUDECODE` / `CLAUDE_CODE_CHILD_SESSION` / `CLAUDE_CODE_ENTRYPOINT` /
+`CLAUDE_CODE_SESSION_ID` / `CLAUDE_PID` 全部删掉，只是由交互 shell 启动 —— 通了。
+**这同时否掉了「bat 内容有问题」和「我的测试因继承 Claude Code 环境变量而作弊」。**
+
+### 唯一剩下的差异（首要嫌疑，机制未证实）
 
 ```
-CCRClient: 10 consecutive auth failures with a valid-looking token
-        — server-side auth unrecoverable, exiting
+schtasks /query /xml ONE  ->  Principals/Principal/LogonType = S4U
+                                                  RunLevel  = HighestAvailable
 ```
 
-「valid-looking token」= 令牌**格式与有效期都正常**，是服务端拒绝它 —— 事后证明
-这句判词完全准确，**问题就在令牌实例本身**，而不在设备、环境或代理。
-那个 ~2m20s 的固定寿命 = `CCRClient` 的 10 次退避重试跑完。
+**S4U = Service-for-User**，为满足「无人登录也跑」而选的登录方式。它产生的令牌
+**不携带用户的完整凭据材料**。而所有成功轮次都跑在普通交互登录令牌下。
 
-### 根因（2026-07-30 22:52 定案）
+与之吻合的一个细节：失败轮里 **bridge 层 `work/poll` 返回 200，子会话层全线 403**
+（`Bootstrap` / `org fast mode` / `claudeai-mcp` / `worker` / 1P 遥测一起 403）。
+即**同一进程树内两条鉴权路径表现不同**，符合「子会话进程拿不到某项凭据材料」的形态，
+而不符合「账号/设备被服务端封禁」。
 
-**旧令牌实例被服务端在 `/v1/code/sessions/*` 这一层单独拒绝，而同一实例在
-`/v1/messages` 推理上照常放行。** 重新登录换取新令牌后立即恢复。
+> **注意**：S4U 只是与证据吻合的**首要嫌疑**，机制尚未直接证实
+> （没有抓到「读凭据失败」的本地报错，请求确实发出去了并被服务端回了 403）。
+> 已排除的邻近怀疑：`USERPROFILE` 两轮均为 `C:\Users\admin`；
+> 不存在 `C:\Windows\System32\config\systemprofile\.claude`；用户级/机器级
+> 均无 `ANTHROPIC_*` / `CLAUDE_*` 环境变量。
 
-决定性对照 —— 新旧令牌除了令牌值本身，**其余属性完全相同**：
+## 下一步（**未执行**，需要你决定）
 
-| 属性 | 旧令牌（18:48 前） | 新令牌（18:48 后） |
-|---|---|---|
-| `scopes` | `user:file_upload,user:inference,user:mcp_servers,user:profile,user:sessions:claude_code` | **完全相同** |
-| `subscriptionType` | `max` | `max` |
-| 长度 / 前缀 | 108 / `sk-ant-oat01` | 108 / `sk-ant-oat01` |
-| `expiresAt` | 2026-07-31 02:07:55（**未过期**） | 2026-07-31 02:48:03 |
-| worker 层 | **403 ×10 → 自杀** | **attempt=1 一次成功** |
+**候选修法：把任务的登录方式从 S4U 换成「存密码」**，即
+「不管用户是否登录都运行」+ 保存账户口令 —— `LogonType` 会变成 `Password`，
+既保留 7×24 无人值守，又带完整凭据：
 
-**故可同时排除**：授权范围不足（scopes 一字不差，且本就含 `user:sessions:claude_code`）、
-订阅层级、令牌过期、设备被封、环境损坏、代理。
-剩下的唯一解释是**该令牌实例的服务端 session 层授权记录失效**
-（合理推测：同账号在 Mac 端的登录刷新了 OAuth 授权，令 Win 侧这份令牌的
-session 层 grant 作废，而推理端点仍宽容放行 —— **此为推测，未验证**）。
+```powershell
+# 需要交互输入该账户口令，我没有也不该有你的口令，所以这条留给你跑
+schtasks /create /tn "V88-遥控常驻" /xml <导出的xml> /ru "DESKTOP-4H6ES39\admin" /rp *
+# 或在「任务计划程序」GUI 里：勾「不管用户是否登录都要运行」，取消「不存储密码」
+```
 
-**运维含义：** 症状特征是「推理正常 + 遥控会话 ~2m20s 必掉 + 日志出现
-`valid-looking token`」，则**直接 `/login` 换令牌**，不要再去动 pointer、环境或代理。
+验收就用本文的三条判据（见下）。若 `LogonType=Password` 仍 403，
+则本地手段用尽，按文末证据清单发工单。
+
+**当前状态：`V88-遥控常驻` 已被我 `schtasks /end` 停掉，且刻意没有重新 `/run`。**
+理由：它在 S4U 下每 30 秒拉起一个必死的会话，纯粹刷日志、毫无产出。
+需要遥控时，先用交互方式手工起（见「排障动作清单」），那条路径已验证可用。
+
+## 验收判据（缺一不可）
+
+1. 子会话日志里 `Heartbeat sent` **> 0**（死的轮次恒为 0）
+2. `worker.*returned 403` 与 `PUT worker (init) returned 403` **计数 0**
+3. bridge 存活 **> 140s**（旧死法的固定寿命 ~2m20s = 10 次退避重试跑完）
 
 ## 时间线（本地时间 UTC+8）
 
@@ -62,7 +106,7 @@ session 层 grant 作废，而推理端点仍宽容放行 —— **此为推测�
              已治：命令行全 ASCII + claude 绝对路径解析（见 win\遥控常驻V88.bat 注释）
 ```
 
-### 第一阶段：会话层 403 开始
+### 第一阶段：会话层 403 开始（计划任务 / 旧令牌）
 
 ```
 15:36:31  Session failed: RemoteIO 403   cse_01FzZb9jm4f6KdLJxuoVzTRB
@@ -71,7 +115,7 @@ session 层 grant 作废，而推理端点仍宽容放行 —— **此为推测�
 16:41:05  Session failed: RemoteIO 403   cse_01CHMhwfVquweUstEfaY4Q3r
 ```
 
-### 第二阶段：注册层 403（3 分钟，已自愈）
+### 第二阶段：注册层 403（3 分钟，已自愈，与主线无关）
 
 ```
 16:47:15  1P 遥测端点 403          <- 和环境无关的端点也中招,是关键旁证
@@ -85,7 +129,7 @@ session 层 grant 作废，而推理端点仍宽容放行 —— **此为推测�
 ```
 
 **判据：连遥测端点一起 403 + 当天全程夹杂大量 502 + 3 分钟后同 env 复用成功
-=> 上游鉴权抖动，不是指针/环境的问题。bat 的 30s 重试循环扛过去了，不需要人工干预。**
+=> 上游鉴权抖动。bat 的 30s 重试循环扛过去了，不需要人工干预。**
 
 ### 第三阶段：受控复现（证明与环境/指针无关）
 
@@ -98,7 +142,7 @@ session 层 grant 作废，而推理端点仍宽容放行 —— **此为推测�
 18:22:28  又捞回旧会话             -> 18:24:51 RemoteIO 403 (2m19s)
 ```
 
-旧令牌下 worker 层的完整死法（`rc_debug_20260730-cse_01Go1U1*.log`，UTC 时间）：
+旧死法的完整形态（`rc_debug_20260730-cse_01Go1U1*.log`，UTC 时间）：
 
 ```
 10:22:37Z  CCRClient: GET /v1/code/sessions/cse_01Go1U1.../worker returned 403 (attempt 1/10)
@@ -109,44 +153,51 @@ session 层 grant 作废，而推理端点仍宽容放行 —— **此为推测�
                     — server-side auth unrecoverable, exiting
 ```
 
-### 第四阶段：换令牌 + 受控验证（本次，问题消失）
+「valid-looking token」= 令牌**格式与有效期都正常**。事后看这句判词是准确的：
+令牌确实没问题，问题在**这个进程拿不到能用的凭据**。
+
+### 第四阶段：换令牌 + 四轮对照（本次，定位到启动方式）
 
 ```
-18:48:03  /login 换取新令牌（.credentials.json 重写,有效期 -> 07-31 02:48:03）
-18:51:49  schtasks /end 停掉常驻循环 + kill 旧 bridge(PID 4048,18:22 起,握的是旧令牌)
-          -> 确认 0 个 remote-control 进程、0 个 bat 循环，清场
-18:52:06  新进程起（PID 21368，带 Clash 代理 127.0.0.1:7897，独立 debug 通道）
-18:52:06  Found prior environment env_01A99jV95Erc3j67yviLrY72 (ageMs≈29.6min) -> 请求复用
-18:52:11  Registered, server environmentId=env_01A99jV95Erc3j67yviLrY72   <- 注册层 OK
-18:52:15  CCR v2: registered worker epoch=6 attempt=1                     <- ★决定性★
-          Capacity 0/32 -> 1/32（白天一直卡 0/32，预建会话首次成功）
-18:53:17  502 抖动 -> CLI 自行重试
-18:53:22  Reconnected after 4s                                            <- 自愈
-18:54:38  存活 153s（> 2m20s 生死线），worker 403 计数 = 0，auth-failure 退出 = 0
+18:48:03  /login 换新令牌（.credentials.json 重写；旧令牌当时【尚未过期】）
+18:51:49  schtasks /end + kill 旧 bridge(PID 4048，18:22 起，握旧令牌) -> 清场
+18:52:06  【交互】起 PID 21368，带 Clash 代理，独立 debug 通道
+18:52:15    registered worker epoch=6 attempt=1；Capacity 0/32 -> 1/32
+18:53:17    502 抖动 -> 18:53:22 Reconnected after 4s（自愈）
+18:57:38    心跳 16 次、worker 403 = 0、存活 296s  => 通
+18:57:45  kill 21368；18:57:48 schtasks /run 恢复计划任务
+18:57:52  【S4U】bridge PID 2916 起；18:58:03 registered worker epoch=7 attempt=1
+18:58:04    org fast mode 403 / claudeai-mcp 403 / Bootstrap 403 / SSETransport 403(permanent)
+            / worker GET 403 (1/10) —— 注册后 1 秒全线 403，全程 0 心跳
+19:00:21    10 consecutive auth failures -> exiting（138s）  => 新令牌照样死！
+19:03:50  停任务 + 清场
+19:04:01  【交互】起 PID 20912；19:04:11 epoch=8 attempt=1
+19:06:40    心跳 7 次、worker 403 = 0、存活 160s（过 149s 线）  => 通
+19:07:13  【交互跑同一个 .bat】，先删掉全部 CLAUDE* 环境变量；bridge PID 6168
+19:07:27    epoch=9 attempt=1
+19:07:28    Bootstrap Fetch ok / Org fast mode: disabled(extra_usage_disabled)  <- 200!
+19:11:53    心跳 13 次、worker 403 = 0、存活 276s  => 通（同一个 bat，只换启动者）
+            ★ 这一轮【留着继续跑】，是当前唯一可用的遥控通道
 ```
-
-**验证判据（三条同时成立才算通过）：**
-
-1. `worker.*returned 403` 计数 **0**（旧令牌下每会话必有 10 次）
-2. `consecutive auth failures` 计数 **0**
-3. 存活 **> 140s**（旧令牌的固定寿命 ~2m20s）
-
-三条全过。另外 `registered worker … attempt=1` 是最强单点证据：
-整天卡死的正是这一个请求，现在一次成功。
 
 ## 已证伪的假设（别再试）
 
 | 假设 | 证伪方式 | 结果 |
 |---|---|---|
-| 指针指向已删环境，复用被拒 | 同一个 `env_01A99j…` 当天成功注册 **4 次** | 证伪 |
+| **令牌实例被服务端拒**（本文前一版的结论） | **epoch=7 用新令牌，死法与旧令牌一模一样** | **证伪** |
+| 令牌过期 | 旧 `.credentials.json` 有效期到 07-31 02:07，故障时**未过期**，`max` 订阅，推理正常 | 证伪 |
+| 令牌 scope 不含会话权限 | 旧令牌 scopes **已含** `user:sessions:claude_code`，且与新令牌**逐项相同**（含 `subscriptionType=max`、长度 108、前缀 `sk-ant-oat01`） | 证伪 |
+| `.bat` 内容有问题 | **交互跑同一个 .bat（epoch=9）直接通** | 证伪 |
+| 我的测试沾了 Claude Code 注入的凭据 | 进程环境里**只有** `CLAUDECODE=1` 等标记，**无** `ANTHROPIC_API_KEY`/`OAUTH_TOKEN`；且 epoch=9 已把 `CLAUDE*` 全删仍通 | 证伪 |
+| Clash 代理（`127.0.0.1:7897`）搞的鬼 | 直连与走代理打 `/v1/messages` 返回**一模一样**的 401 JSON；且成功轮次**带同一个代理** | 证伪（双向） |
+| 指针指向已删环境，复用被拒 | 同一个 `env_01A99j…` 当天成功注册 **9 次** | 证伪 |
 | 换全新环境就好 | 新 `env_01EUaFsv…` 里的全新会话照样 403 | 证伪 |
-| Clash 代理（`127.0.0.1:7897`）搞的鬼 | 直连与走代理打 `/v1/messages`，返回**一模一样**的 401 JSON；且换令牌后**带同一个代理**跑通 | 证伪（双向） |
-| 令牌过期 | 旧 `.credentials.json` 有效期到 07-31 02:07（故障时**未过期**），`max` 订阅，且本机推理正常 | 证伪 |
-| 令牌 scope 不含会话权限 | 旧令牌 scopes **已含** `user:sessions:claude_code`，且与新令牌**一字不差** | 证伪 |
+| 会话 id 被污染 | 同一个 `cse_01Go1U1…` 在 epoch 6/8/9 健康、在 1-5/7 必死 | 证伪 |
 | 有冲突的凭据源 | 无 `ANTHROPIC_*` 环境变量（进程/用户/机器三级都查了），settings 无 `apiKeyHelper` | 证伪 |
-| CLI 版本被服务端拒 | `2.1.220`（最新），换令牌后**同一版本**跑通 | 证伪（双向） |
+| CLI 版本被服务端拒 | `2.1.220`（最新），成功与失败轮次**同一版本** | 证伪（双向） |
 | 账号级封锁 | 同账号 Mac 端 worker 全天 200，两个会话持续 Connected | 证伪 |
-| 设备/机器被服务端标记 | **同一台机器、同一代理、同一 CLI、同一 env，仅换令牌即通** | 证伪 |
+| 设备/机器/平台被服务端标记 | **同机同令牌同 env，交互启动 3/3 通、S4U 5/5 死** | 证伪 |
+| `USERPROFILE` / 配置目录在后台不同 | bat 每轮 `diag USERPROFILE=C:\Users\admin`，两轮相同；无 systemprofile\.claude | 证伪 |
 
 ## 指针文件的坑（踩过一次）
 
@@ -161,13 +212,13 @@ session 层 grant 作废，而推理端点仍宽容放行 —— **此为推测�
   bridge 就不再打印 `Found prior environment`，直接注册出一个新 env
   —— 等于把手机侧的配对链接换掉。原样复制回去后立刻恢复复用。
 - 那条 `reconnectSession → 400 Session not found` 是已删会话留下的**无害噪音**。
-  注意：换令牌后同一个 `session_01Go1U1` **4 秒就重连上了**，说明白天那 ~2.5 分钟的
-  「捞不动旧会话」其实也是 403 的次生症状，不是指针的问题 —— **更没有理由动它**。
+  注意：健康轮次里同一个 `session_01Go1U1` **4 秒就重连上了**，说明白天那 ~2.5 分钟
+  「捞不动旧会话」也是 403 的次生症状，不是指针的问题 —— **更没有理由动它**。
 - 动它之前先备份到 `win\logs\quarantine\`。
 
 ## 安全副产物（本次顺手堵的口子）
 
-`win\logs\` 原先**未被 .gitignore 排除**：第 53 行的 `*.log` 只挡住日志本身，
+`win\logs\` 原先**未被 .gitignore 排除**：`*.log` 只挡住日志本身，
 挡不住 `quarantine\` 里的备份。实测 `git add -An win/logs/` 会 stage 到
 `quarantine\credentials.*.json.bak` —— 那是一份**含真实 `accessToken` / `refreshToken`
 的凭据文件**，而 StockAI 是**公开仓库**。任何人一次 `git add -A` 就会把令牌推上公网。
@@ -180,43 +231,98 @@ session 层 grant 作废，而推理端点仍宽容放行 —— **此为推测�
 ## 排障动作清单
 
 ```powershell
-# 看 bridge 当前是不是活的、注册在哪个 env
+# 三条验收判据
+$f = "win\logs\rc_debug_<日期>-cse_*.log"
+(Select-String -Path $f -Pattern 'Heartbeat sent').Count                      # 要 > 0
+(Select-String -Path $f -Pattern 'worker.*returned 403|PUT worker').Count     # 要 = 0
 Get-CimInstance Win32_Process -Filter "Name='claude.exe'" |
   Where-Object { $_.CommandLine -match 'remote-control' } |
-  Select-Object ProcessId,CreationDate
-
-# 会话层 403 的真相永远在子会话日志的最后几行
-Get-Content win\logs\rc_debug_<YYYYMMDD>-cse_*.log -Tail 20
-
-# 三条验证判据（换令牌后应全为 0 / 存活 >140s）
-Select-String -Path win\logs\rc_debug_*.log -Pattern 'worker.*returned 403' | Measure-Object
-Select-String -Path win\logs\rc_debug_*.log -Pattern 'consecutive auth failures' | Measure-Object
+  Select-Object ProcessId,CreationDate                                        # 存活要 > 140s
 
 # 受控清场（别只 kill bridge，bat 循环 30s 就把它拉回来）
 schtasks /end /tn "V88-遥控常驻"
 Stop-Process -Id <bridge pid> -Force
 
-# 对比新旧令牌属性（定位「是不是令牌实例的问题」）
-# 见本文「根因」表：比 scopes / subscriptionType / expiresAt，别只看有没有过期
+# 【当前可用的遥控方式】交互起（已验证 3/3 通）
+$env:https_proxy="http://127.0.0.1:7897"; $env:http_proxy=$env:https_proxy
+Start-Process "$env:USERPROFILE\.local\bin\claude.exe" `
+  -ArgumentList 'remote-control','--spawn=same-dir','--name','V88-Win-Host','--verbose' `
+  -WorkingDirectory "$env:USERPROFILE\Desktop\StockAI"
+
+# 看任务的登录方式（本次定位的关键一项）
+([xml](schtasks /query /tn "V88-遥控常驻" /xml ONE)).Task.Principals.Principal
 ```
 
-## 复发时的第一动作
+## 复发 / 新现场的第一动作
 
-1. 抓子会话日志最后 20 行，确认是否 `valid-looking token`。
-2. 若是 → **直接 `/login` 换令牌**，然后按上面「三条验证判据」验收。
+1. 抓子会话日志：有 `Heartbeat sent` 吗？**没有** = 会话层 403，**有** = 别的病。
+2. 确认进程的启动方式。**S4U 计划任务 = 已知必死**，先用交互方式起来救急。
 3. 若注册层 403（`Access denied … organization permissions`）→ **什么都别做**，
-   bat 的 30s 重试循环会扛过去（本次实测 3 分钟自愈）。
-4. 两者都不是，才考虑发工单。
+   bat 的 30s 重试循环会自愈（本次实测 3 分钟恢复）。
+4. **不要**再去换令牌 / 动指针 / 换环境 / 查代理 —— 上表全部证伪过。
+
+## 发工单要用的证据清单（若 `LogonType=Password` 仍 403 再走这条）
+
+**账号 / 环境标识**
+
+| 项 | 值 |
+|---|---|
+| 账号 | `bluestevener@gmail.com`，accountUuid `490d4a6e-57bb-425d-8592-66c58aebe0b4` |
+| 组织 | organizationUuid `20f39d52-2b65-4d81-9d5a-cf66ef77ed75`，`claude_max`，本人 `organizationRole=admin` |
+| 速率层 | `default_claude_max_5x`，`billingType=apple_subscription` |
+| 机器 | `DESKTOP-4H6ES39`，Windows 11 企业版 10.0.26200 |
+| CLI | `2.1.220`（claude.exe，`%USERPROFILE%\.local\bin`） |
+| environmentId | `env_01A99jV95Erc3j67yviLrY72`（全天复用成功 9 次） |
+| sessionId | `session_01Go1U1CpiRpC41G4C4neV1F` / worker 侧 `cse_01Go1U1CpiRpC41G4C4neV1F` |
+| 代理 | Clash 混合端口 `127.0.0.1:7897`（已证明与故障无关） |
+
+**被拒端点**
+
+```
+GET  /v1/code/sessions/{cse}/worker                 -> 403（每会话 10 次退避后放弃）
+PUT  /v1/code/sessions/{cse}/worker  (init)         -> 403
+GET  /v1/code/sessions/{cse}/worker/events/stream   -> 403 (permanent)
+Bootstrap / org fast mode status / claudeai-mcp     -> 403
+1P event logging（遥测）                             -> 403
+——同时——
+GET  /v1/environments/bridge, work/poll             -> 200   ★同一进程树内★
+POST /v1/messages（本机推理）                        -> 200
+```
+
+**失败时刻（UTC，全部 `10 consecutive auth failures … exiting`）**
+
+```
+07:48:14  08:37:55  08:41:05  08:53:21  10:14:55  10:18:44  10:24:51  11:00:21
+```
+
+**关键对照（请对方重点看这两条）**
+
+- `11:00:21Z` 死的那轮（S4U）与 `11:04:11Z`/`11:07:27Z` 活的那两轮
+  **用的是同一份 OAuth 令牌、同一 environmentId、同一 sessionId、同一 CLI、同一台机器**，
+  仅进程登录令牌类型不同（S4U vs 交互）。
+- 同账号 Mac 端全天 worker 200，两个会话持续 Connected。
+
+**日志文件**（本地，未入仓）
+
+```
+win\logs\rc_debug_20260730-cse_01Go1U1CpiRpC41G4C4neV1F.log      失败轮（w403=113, hb=0）
+win\logs\rc_debug_20260730-newtoken-cse_01Go1U1...log            成功轮（w403=0,  hb=16）
+win\logs\rc_debug_20260730-retest-cse_01Go1U1...log              成功轮（w403=0,  hb=7）
+win\logs\rc_debug_20260730.log / remote_20260730.log             bridge 层与主日志
+```
+
+> **注意**：CLI 的 debug 日志**不记录 worker 调用的 `request-id`**（只有遥测那条带
+> `x-client-request-id`）。所以给对方的关联键只能是**上面的 UTC 时间戳 + sessionId**。
 
 ## 遗留（与 403 无关，另开）
 
-换令牌后会话能活了，于是**首次暴露**出下游问题：
+会话能活之后**首次暴露**出下游问题：
 
 ```
 MCP server "github": HTTP Connection failed: Unauthorized
 MCP server "Claude_Code_Remote": HTTP Connection failed: Unauthorized
 ```
 
-这两个 MCP 连接器需要在换令牌后重新授权。白天的日志里查不到这两行，
+这两个 MCP 连接器需要在换令牌后重新授权。白天日志里查不到这两行，
 是因为会话都在 worker 层就死了，从没活到连 MCP 的阶段 —— 属**新暴露的旧问题**，
-不影响遥控主链路，另行处理。
+不影响遥控主链路。
