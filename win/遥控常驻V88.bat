@@ -26,6 +26,9 @@ set "https_proxy=http://127.0.0.1:7897"
 set "HTTP_PROXY=%http_proxy%"
 set "HTTPS_PROXY=%https_proxy%"
 
+REM —— Claude Code 原生安装目录（装完不会自动进 PATH，任务计划下尤其拿不到）——
+set "PATH=%PATH%;%USERPROFILE%\.local\bin"
+
 :loop
 call :stamp
 set "LOG=%LOGDIR%\remote_%YMD%.log"

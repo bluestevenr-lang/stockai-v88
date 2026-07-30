@@ -1,4 +1,4 @@
-# ══════════════════════════════════════════════════════════════
+﻿# ══════════════════════════════════════════════════════════════
 #  V88 Windows 主机化 一键安装（第四终端 → 升级为常驻主机）— 2026-07-30
 #
 #  由来：用户 2026-07-30 决定「把 Win 作为主机，Mac 可开可关，对手机帮助最大化」。
@@ -59,13 +59,32 @@ if (-not (Test-Path $NightBat)) { Die "找不到 $NightBat —— 先双击 同�
 Ok "脚本齐全"
 
 if (-not (Get-Command git -ErrorAction SilentlyContinue))    { Die "缺少 git" }
-if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
+
+# Claude Code 的原生安装装到 %USERPROFILE%\.local\bin，但装完不会自动进 PATH。
+# 这里主动找它并把目录永久写进用户 PATH，省掉手点「系统属性→环境变量」。
+$ClaudeBin = "$env:USERPROFILE\.local\bin"
+$claudeCmd = Get-Command claude -ErrorAction SilentlyContinue
+if (-not $claudeCmd -and (Test-Path "$ClaudeBin\claude.exe")) {
+  $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+  if ($userPath -notlike "*$ClaudeBin*") {
+    [Environment]::SetEnvironmentVariable("Path", "$userPath;$ClaudeBin", "User")
+    Ok "已把 $ClaudeBin 写进用户 PATH（新开的终端才生效）"
+  }
+  $env:Path = "$env:Path;$ClaudeBin"      # 本次会话立即可用
+  $claudeCmd = Get-Command claude -ErrorAction SilentlyContinue
+}
+
+if ($claudeCmd) {
+  Ok "Claude Code 已安装: $($claudeCmd.Source)"
+  # 登录凭据在 %USERPROFILE%\.claude 下；没登录过的话无人登录模式拿不到凭据
+  if (-not (Test-Path "$env:USERPROFILE\.claude")) {
+    Warn "还没登录过 Claude Code。装完任务后请手动跑一次 claude 登录（与手机同账号），否则遥控起不来。"
+  }
+} else {
   Warn "未装 Claude Code。任务照样注册，但遥控起不来。装法："
   Write-Host "         irm https://claude.ai/install.ps1 | iex" -ForegroundColor Gray
   Write-Host "       装完必须先手动跑一次 claude 登录（用与手机相同的账号），" -ForegroundColor Gray
   Write-Host "       否则无人登录模式下拿不到凭据。" -ForegroundColor Gray
-} else {
-  Ok "Claude Code 已安装"
 }
 
 # ── 1. 电源：让这台机器不睡 ─────────────────────────────────────
