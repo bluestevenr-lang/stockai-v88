@@ -100,7 +100,11 @@ REM  这里原先带一长串中文/全角符号的 --system-prompt,导致 exit 
 REM  绝对路径已验证正确、claude.exe 确实存在、且瞬间退出无任何输出 ==> 是 .bat 在
 REM  「UTF-8 无 BOM + chcp 65001」下解析多字节字符时截断了命令行,不是 claude 的问题。
 REM  Win 主机的身份与边界已改由仓库根 CLAUDE.md 承载(Claude 自动读取),这里不再传中文。
-"%CLAUDE%" remote-control --spawn=same-dir >> "%LOG%" 2>&1
+REM  --name: help 明确写「Name for the session (shown in claude.ai/code)」——
+REM         这就是手机 Code 区分辨机器的正解(必须 ASCII,中文会让 cmd 截断命令行)。
+REM  --verbose/--debug-file: 实测 2026-07-30 后台下 Capacity 一直 0/32,
+REM         连 help 说的「启动时预建一个会话」都没成,且主日志零报错 ==> 需要 debug 通道。
+"%CLAUDE%" remote-control --spawn=same-dir --name "V88-Win-Host" --verbose --debug-file "%LOGDIR%\rc_debug_%YMD%.log" >> "%LOG%" 2>&1
 
 set "RC=%errorlevel%"
 call :stamp
