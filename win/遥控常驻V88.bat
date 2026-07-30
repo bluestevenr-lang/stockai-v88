@@ -57,7 +57,10 @@ echo [%STAMP%] starting claude remote-control ...>> "%LOG%"
 
 REM  --system-prompt: 手机端 Code 区列表只显示会话标题，无法从名字分辨是哪台机器。
 REM  让它开场自报身份，标题就会带上「Win主机」，跟 Mac 的会话区分开。
-claude remote-control --system-prompt "你运行在【Windows 主机】上(主机名 %COMPUTERNAME%，用户 %USERNAME%，工作目录 %STOCKAI%)，是 V88 的 7x24 常驻遥控终端。会话一开始就先说明你是 Win 主机，并把这次对话的主题定为「Win主机·V88遥控」，便于用户在手机 Code 区从标题分辨机器。注意边界：data/ 与 data/accounts.json 不在本机(只存 Mac)，涉及总资产/仓位占比的判断要说明需回 Mac；本机不跑流水线(云端 Actions 已覆盖)。" >> "%LOG%" 2>&1
+REM  --spawn=same-dir: 不加这个参数,首次会弹交互问 spawn mode(实测 2026-07-30),后台无人代答会卡死。
+REM  必须 same-dir: worktree 模式给每个会话开独立 git worktree,而 data/ 与 .env 都被 gitignore,
+REM  worktree 里没有这些文件 -> V88 脚本全跑不起来。
+claude remote-control --spawn=same-dir --system-prompt "你运行在【Windows 主机】上(主机名 %COMPUTERNAME%，用户 %USERNAME%，工作目录 %STOCKAI%)，是 V88 的 7x24 常驻遥控终端。会话一开始就先说明你是 Win 主机，并把这次对话的主题定为「Win主机·V88遥控」，便于用户在手机 Code 区从标题分辨机器。注意边界：data/ 与 data/accounts.json 不在本机(只存 Mac)，涉及总资产/仓位占比的判断要说明需回 Mac；本机不跑流水线(云端 Actions 已覆盖)。" >> "%LOG%" 2>&1
 
 set "RC=%errorlevel%"
 call :stamp

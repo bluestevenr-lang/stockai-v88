@@ -23,7 +23,7 @@ Mac 变成可开可关。流水线仍然**不在任何个人电脑上跑**——
    ```
    cd "$env:USERPROFILE\Desktop\StockAI"
    claude                     # 选 1. Yes, I trust this folder  然后 /exit
-   claude remote-control      # 对 Enable Remote Control? (y/n) 答 y  然后 Ctrl+C
+   claude remote-control      # 对 Enable Remote Control? 答 y;spawn mode 选 1(same-dir);然后 Ctrl+C
    ```
    实测教训（2026-07-30）：漏掉这两步时日志一直刷
    `Error: Workspace not trusted...` 和 `Enable Remote Control? (y/n)`，
