@@ -1,7 +1,64 @@
 {
- "ts": 1785369588.8105757,
- "generated_at": "2026-07-30 07:59（北京时间）",
+ "ts": 1785283579.4464571,
+ "generated_at": "2026-07-29 08:06（北京时间）",
  "rows": [
+  {
+   "market": "A股",
+   "name": "珈凯生物",
+   "code": "920165.BJ",
+   "sub_code": "920165",
+   "apply_date": "20260729",
+   "price": 19.26,
+   "pe": 14.98,
+   "limit_wan": 32.58,
+   "amount_wan": 724.0,
+   "funds_yi": 1.395,
+   "ballot_pct": 0,
+   "grade": "✅ 值得打",
+   "why": "发行PE15倍定价克制，A股打新胜率偏高",
+   "ai": "可打，小盘估值合理，但注意流动性风险。",
+   "odds_n": 1,
+   "odds_rate": null,
+   "odds_line": "打新成功率:样本1只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
+  },
+  {
+   "market": "A股",
+   "name": "国仪公司",
+   "code": "688828.SH",
+   "sub_code": "787828",
+   "apply_date": "20260731",
+   "price": 0,
+   "pe": 0,
+   "limit_wan": 0.6,
+   "amount_wan": 4001.0,
+   "funds_yi": 0,
+   "ballot_pct": 0,
+   "grade": "✅ 常规打",
+   "why": "A股打新整体正期望，按顶格常规参与（未披露定价前以公告为准）",
+   "ai": "不打，价格未定，不确定性较大。",
+   "odds_n": 1,
+   "odds_rate": null,
+   "odds_line": "打新成功率:样本1只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
+  },
+  {
+   "market": "A股",
+   "name": "超纯应材",
+   "code": "301717.SZ",
+   "sub_code": "301717",
+   "apply_date": "20260731",
+   "price": 0,
+   "pe": 0,
+   "limit_wan": 0.5,
+   "amount_wan": 2546.0,
+   "funds_yi": 0,
+   "ballot_pct": 0,
+   "grade": "✅ 常规打",
+   "why": "A股打新整体正期望，按顶格常规参与（未披露定价前以公告为准）",
+   "ai": "不打，定价未披露，风险不明。",
+   "odds_n": 1,
+   "odds_rate": null,
+   "odds_line": "打新成功率:样本1只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
+  },
   {
    "market": "美股",
    "name": "Apnimed, Inc.",
@@ -12,6 +69,7 @@
    "exchange": "NASDAQ Global",
    "grade": "🔎 关注",
    "why": "募资1.8亿美元中型IPO",
+   "ai": "不打，生物医药新药研发风险高。",
    "odds_n": 0,
    "odds_rate": null,
    "odds_line": "打新成功率:样本0只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
@@ -26,34 +84,7 @@
    "exchange": "NYSE",
    "grade": "🔎 重点关注",
    "why": "募资12.5亿美元大型IPO，关注定价与首日流动性",
-   "odds_n": 0,
-   "odds_rate": null,
-   "odds_line": "打新成功率:样本0只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
-  },
-  {
-   "market": "美股",
-   "name": "Game Your Game Inc.",
-   "code": "GYGY",
-   "apply_date": "7/30/2026",
-   "price_range": null,
-   "raise_usd": 0.0,
-   "exchange": "NASDAQ Capital",
-   "grade": "⚪ 一般",
-   "why": "小盘IPO波动极大，仅短线博弈者参与",
-   "odds_n": 0,
-   "odds_rate": null,
-   "odds_line": "打新成功率:样本0只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
-  },
-  {
-   "market": "美股",
-   "name": "East West Ave Acquisition Corp.",
-   "code": "EWAVU",
-   "apply_date": "7/30/2026",
-   "price_range": "10.00",
-   "raise_usd": 115000000.0,
-   "exchange": "NASDAQ Global",
-   "grade": "🚫 回避",
-   "why": "SPAC空壳，无基本面可判，散户不碰",
+   "ai": "可打，知名餐饮品牌，募资规模大。",
    "odds_n": 0,
    "odds_rate": null,
    "odds_line": "打新成功率:样本0只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
@@ -68,6 +99,37 @@
    "exchange": "NYSE",
    "grade": "🔎 关注",
    "why": "募资2.7亿美元中型IPO",
+   "ai": "可打，时尚品牌定价合理，但竞争激烈。",
+   "odds_n": 0,
+   "odds_rate": null,
+   "odds_line": "打新成功率:样本0只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
+  },
+  {
+   "market": "美股",
+   "name": "Catalyst Acquisition Corp.",
+   "code": "CATLU",
+   "apply_date": "7/28/2026",
+   "price_range": "10.00",
+   "raise_usd": 200000000.0,
+   "exchange": "NASDAQ Global",
+   "grade": "🚫 回避",
+   "why": "SPAC空壳，无基本面可判，散户不碰",
+   "ai": "不打，SPAC壳公司，投资风险高。",
+   "odds_n": 0,
+   "odds_rate": null,
+   "odds_line": "打新成功率:样本0只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
+  },
+  {
+   "market": "美股",
+   "name": "Ionic Digital Inc.",
+   "code": "IOND",
+   "apply_date": "7/28/2026",
+   "price_range": null,
+   "raise_usd": 0.0,
+   "exchange": "NASDAQ Global Select",
+   "grade": "⚪ 一般",
+   "why": "小盘IPO波动极大，仅短线博弈者参与",
+   "ai": "不打，加密货币相关，行业波动大。",
    "odds_n": 0,
    "odds_rate": null,
    "odds_line": "打新成功率:样本0只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
@@ -83,21 +145,23 @@
    "lucky_ratio": "待公布",
    "grade": "🔎 关注",
    "why": "入场费5,414.05港元门槛低，可小额博暗盘",
+   "ai": "不打，申购期已过，且行业一般。",
    "odds_n": 0,
    "odds_rate": null,
    "odds_line": "打新成功率:样本0只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
   },
   {
    "market": "港股",
-   "name": "拿森科技",
-   "code": "02261.HK",
-   "apply_date": "2026-08-03",
-   "price_range": "10.420~11.180",
-   "lot_size": "100",
-   "entrance_fee": "--",
-   "lucky_ratio": "--",
-   "grade": "⚪ 常规",
-   "why": "港股打新暗盘波动大，按每手最小额参与并盯截止日",
+   "name": "中际旭创",
+   "code": "03308.HK",
+   "apply_date": "2026-07-27",
+   "price_range": "≤1010.000",
+   "lot_size": "50",
+   "entrance_fee": "51,009.29",
+   "lucky_ratio": "待公布",
+   "grade": "⚠️ 谨慎",
+   "why": "入场费51,009.29港元偏高，资金占用大",
+   "ai": "谨慎打，知名公司但定价偏高，需评估。",
    "odds_n": 0,
    "odds_rate": null,
    "odds_line": "打新成功率:样本0只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
@@ -119,88 +183,88 @@
  "archived_new": 0,
  "hk_listed": [
   {
-   "name": "中际旭创",
-   "code": "03308.HK",
-   "dark": "-0.92%",
-   "first_day": "0.00%",
-   "cum": "0.00%"
-  },
-  {
    "name": "滨化股份",
    "code": "06745.HK",
    "dark": "-21.55%",
    "first_day": "-18.68%",
-   "cum": "-5.17%"
+   "cum": "-6.32%"
   },
   {
    "name": "晶合集成",
    "code": "02249.HK",
    "dark": "+9.85%",
    "first_day": "0.00%",
-   "cum": "-8.67%"
+   "cum": "-9.35%"
   },
   {
    "name": "三环集团",
    "code": "06951.HK",
    "dark": "-4.64%",
    "first_day": "+4.69%",
-   "cum": "-8.57%"
+   "cum": "-11.67%"
   },
   {
    "name": "珞石机器人",
    "code": "03752.HK",
    "dark": "-1.84%",
    "first_day": "+15.21%",
-   "cum": "+40.66%"
+   "cum": "+42.11%"
   },
   {
    "name": "齐云山食品",
    "code": "02797.HK",
    "dark": "+93.75%",
    "first_day": "+162.50%",
-   "cum": "+650.00%"
+   "cum": "+690.63%"
   },
   {
    "name": "立讯精密",
    "code": "02475.HK",
    "dark": "-4.95%",
    "first_day": "-1.55%",
-   "cum": "-6.53%"
+   "cum": "-9.61%"
   },
   {
    "name": "鼎泰高科",
    "code": "01377.HK",
    "dark": "-10.53%",
    "first_day": "-1.79%",
-   "cum": "-24.74%"
+   "cum": "-17.84%"
   },
   {
    "name": "普源精电",
    "code": "00537.HK",
    "dark": "-17.36%",
    "first_day": "-37.36%",
-   "cum": "-47.80%"
+   "cum": "-46.41%"
   },
   {
    "name": "东方科脉",
    "code": "01770.HK",
    "dark": "+3.38%",
    "first_day": "+1.73%",
-   "cum": "+22.97%"
+   "cum": "+24.75%"
   },
   {
    "name": "基本半导体",
    "code": "09971.HK",
    "dark": "+9.93%",
    "first_day": "+5.06%",
-   "cum": "+51.17%"
+   "cum": "+56.99%"
   },
   {
    "name": "宝盖新材",
    "code": "08090.HK",
    "dark": "+7.23%",
    "first_day": "+3.38%",
-   "cum": "-20.26%"
+   "cum": "-19.45%"
+  },
+  {
+   "name": "易控智驾",
+   "code": "07687.HK",
+   "dark": "+4.07%",
+   "first_day": "+9.99%",
+   "cum": "-0.02%"
   }
  ],
  "cn_listed": [
@@ -209,72 +273,72 @@
    "code": "688825.SS",
    "list_date": "2026-07-27",
    "age_days": 2,
-   "last": 52.95,
-   "chg_today": 12.66,
+   "last": 47.0,
+   "chg_today": -4.08,
    "first_day": 465.82,
-   "since_list": 8.1,
-   "pe": 35.75,
-   "mcap_yi": 35413
+   "since_list": -4.1,
+   "pe": 31.74,
+   "mcap_yi": 31434
   },
   {
    "name": "泰诺麦博-U",
    "code": "688806.SS",
    "list_date": "2026-07-21",
    "age_days": 8,
-   "last": 27.02,
-   "chg_today": 3.56,
+   "last": 26.09,
+   "chg_today": -8.49,
    "first_day": null,
-   "since_list": -18.3,
-   "pe": -32.28,
-   "mcap_yi": 124
+   "since_list": -21.1,
+   "pe": -31.17,
+   "mcap_yi": 120
   },
   {
    "name": "托伦斯",
    "code": "301583.SZ",
    "list_date": "2026-07-10",
    "age_days": 19,
-   "last": 193.82,
-   "chg_today": 10.69,
+   "last": 175.1,
+   "chg_today": 0.06,
    "first_day": null,
-   "since_list": -10.6,
-   "pe": 613.81,
-   "mcap_yi": 359
+   "since_list": -19.2,
+   "pe": 554.53,
+   "mcap_yi": 325
   },
   {
    "name": "华润新能",
    "code": "001248.SZ",
    "list_date": "2026-07-02",
    "age_days": 27,
-   "last": 13.94,
-   "chg_today": -2.31,
+   "last": 14.27,
+   "chg_today": 2.15,
    "first_day": null,
-   "since_list": -41.8,
-   "pe": 28.03,
-   "mcap_yi": 1813
+   "since_list": -40.4,
+   "pe": 28.7,
+   "mcap_yi": 1856
   },
   {
    "name": "惠科股份",
    "code": "001399.SZ",
    "list_date": "2026-06-26",
    "age_days": 33,
-   "last": 24.22,
-   "chg_today": -2.1,
+   "last": 24.74,
+   "chg_today": -5.61,
    "first_day": null,
-   "since_list": -42.3,
-   "pe": 45.06,
-   "mcap_yi": 1794
+   "since_list": -41.1,
+   "pe": 45.34,
+   "mcap_yi": 1833
   },
   {
    "name": "臻宝科技",
    "code": "688797.SS",
    "list_date": "2026-06-24",
    "age_days": 35,
-   "last": 319.0,
-   "chg_today": -1.04,
+   "last": 322.35,
+   "chg_today": -12.88,
    "first_day": null,
-   "since_list": -45.5,
-   "pe": 242.71,
-   "mcap_yi": 495
+   "since_list": -44.9,
+   "pe": 245.26,
+   "mcap_yi": 501
   }
  ]
 }
