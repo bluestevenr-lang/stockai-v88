@@ -1,52 +1,48 @@
 {
- "asof": "2026-07-29 08:06（北京时间）",
- "model": "Opus 5",
- "by_market": {},
+ "asof": "2026-07-30 15:43（北京时间）",
+ "model": "claude-fable-5",
+ "by_market": {
+  "美股": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-07-30 早审 (02:53北京·☁",
+   "engine": 39,
+   "fable": 40,
+   "diff": 1,
+   "note": "引擎2周39% vs claude-fable-5独立读40%·差1pp(两套读数对上)"
+  },
+  "A股": {
+   "verdict": "分歧",
+   "model": "claude-fable-5",
+   "shift": "2026-07-30 早审 (02:53北京·☁",
+   "engine": 38,
+   "fable": 43,
+   "diff": 5,
+   "note": "引擎2周38% vs claude-fable-5独立读43%·差5pp(有分歧,以引擎执行并留意)"
+  },
+  "港股": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-07-30 早审 (02:53北京·☁",
+   "engine": 56,
+   "fable": 56,
+   "diff": 0,
+   "note": "引擎2周56% vs claude-fable-5独立读56%·差0pp(两套读数对上)"
+  }
+ },
  "note": "Claude(Fable5/Opus5)独立复核徽章:🅒=复核结论与规则引擎一致;⚡=有异议不发徽章(理由见note);无徽章=本班未复核该标的(重点股优先,不装作全审)。徽章只代表'两套逻辑对上了',不代表保证盈利。",
  "by_code": {
-  "HK": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "🎯FABLE_PICK|00317.HK|中船防务|up|11.49|10|港军工rep中航科工52周位8%·rr4.13+A股沈飞u71/p_up76现价可进,两市军工相位一致;",
-   "code": "HK",
-   "name": "HK"
-  },
-  "00317.HK": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "🎯FABLE_PICK|00317.HK|中船防务|up|11.49|10|港军工rep中航科工52周位8%·rr4.13+A股沈飞u71/p_up76现价可进,两市军工相位一致;",
-   "code": "00317.HK",
-   "name": "中船防务"
-  },
-  "00317": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "🎯FABLE_PICK|00317.HK|中船防务|up|11.49|10|港军工rep中航科工52周位8%·rr4.13+A股沈飞u71/p_up76现价可进,两市军工相位一致;",
-   "code": "00317.HK",
-   "name": "中船防务"
-  },
-  "PICK": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "🎯FABLE_PICK|00317.HK|中船防务|up|11.49|10|港军工rep中航科工52周位8%·rr4.13+A股沈飞u71/p_up76现价可进,两市军工相位一致;",
-   "code": "PICK",
-   "name": "PICK"
-  },
-  "FABLE": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "🎯FABLE_PICK|00317.HK|中船防务|up|11.49|10|港军工rep中航科工52周位8%·rr4.13+A股沈飞u71/p_up76现价可进,两市军工相位一致;",
-   "code": "FABLE",
-   "name": "FABLE"
+  "CS": {
+   "verdict": "分歧",
+   "model": "claude-fable-5",
+   "shift": "2026-07-30 早审 (02:53北京·☁",
+   "note": "3.claude_standard 07-29 08:06未随01:48 intraday重跑,CS7对平安港失守;闸必须排在intraday之后",
+   "code": "CS",
+   "name": "CS"
   },
   "CLAUD": {
    "verdict": "分歧",
-   "model": "Opus 5",
+   "model": "claude-fable-5",
    "shift": "2026-07-28 晚审 (23:04)",
    "note": "4.**v88_decision_core:624 左侧低吸改写只改mode不改days_valid**——小米被\"等待\"(days_valid=0)改写成\"左侧低吸\"后仍带0天有",
    "code": "CLAUD",
@@ -54,7 +50,7 @@
   },
   "159995.SZ": {
    "verdict": "分歧",
-   "model": "Opus 5",
+   "model": "claude-fable-5",
    "shift": "2026-07-28 晚审 (23:04)",
    "note": "6.卖节两条同名\"芯片ETF\"仅靠现价区分(512760.SS/159995.SZ),用户分不清是哪只。",
    "code": "159995.SZ",
@@ -62,7 +58,7 @@
   },
   "159995": {
    "verdict": "分歧",
-   "model": "Opus 5",
+   "model": "claude-fable-5",
    "shift": "2026-07-28 晚审 (23:04)",
    "note": "6.卖节两条同名\"芯片ETF\"仅靠现价区分(512760.SS/159995.SZ),用户分不清是哪只。",
    "code": "159995.SZ",
@@ -70,7 +66,7 @@
   },
   "512760.SS": {
    "verdict": "分歧",
-   "model": "Opus 5",
+   "model": "claude-fable-5",
    "shift": "2026-07-28 晚审 (23:04)",
    "note": "6.卖节两条同名\"芯片ETF\"仅靠现价区分(512760.SS/159995.SZ),用户分不清是哪只。",
    "code": "512760.SS",
@@ -78,73 +74,25 @@
   },
   "512760": {
    "verdict": "分歧",
-   "model": "Opus 5",
+   "model": "claude-fable-5",
    "shift": "2026-07-28 晚审 (23:04)",
    "note": "6.卖节两条同名\"芯片ETF\"仅靠现价区分(512760.SS/159995.SZ),用户分不清是哪只。",
    "code": "512760.SS",
    "name": "512760.SS"
-  },
-  "PFE": {
-   "verdict": "分歧",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "2.PFE 52周位双口径须定源(建议以统一引擎sector_reps为准),否则\"低位低吸\"无法证伪。",
-   "code": "PFE",
-   "name": "辉瑞"
-  },
-  "PFE辉瑞": {
-   "verdict": "分歧",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "**PFE辉瑞: 规则{p_up59·现价可进·半仓} vs Fable{暂缓·置信中·24.06~24.41浅回踩带才是买点,24.74=贴上沿追} → ⚡分歧**",
-   "code": "PFE辉瑞",
-   "name": "PFE辉瑞"
   }
  },
  "by_name": {
-  "HK": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "🎯FABLE_PICK|00317.HK|中船防务|up|11.49|10|港军工rep中航科工52周位8%·rr4.13+A股沈飞u71/p_up76现价可进,两市军工相位一致;",
-   "code": "HK",
-   "name": "HK"
-  },
-  "中船防务": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "🎯FABLE_PICK|00317.HK|中船防务|up|11.49|10|港军工rep中航科工52周位8%·rr4.13+A股沈飞u71/p_up76现价可进,两市军工相位一致;",
-   "code": "00317.HK",
-   "name": "中船防务"
-  },
-  "00317.HK": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "🎯FABLE_PICK|00317.HK|中船防务|up|11.49|10|港军工rep中航科工52周位8%·rr4.13+A股沈飞u71/p_up76现价可进,两市军工相位一致;",
-   "code": "00317.HK",
-   "name": "中船防务"
-  },
-  "PICK": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "🎯FABLE_PICK|00317.HK|中船防务|up|11.49|10|港军工rep中航科工52周位8%·rr4.13+A股沈飞u71/p_up76现价可进,两市军工相位一致;",
-   "code": "PICK",
-   "name": "PICK"
-  },
-  "FABLE": {
-   "verdict": "一致",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "🎯FABLE_PICK|00317.HK|中船防务|up|11.49|10|港军工rep中航科工52周位8%·rr4.13+A股沈飞u71/p_up76现价可进,两市军工相位一致;",
-   "code": "FABLE",
-   "name": "FABLE"
+  "CS": {
+   "verdict": "分歧",
+   "model": "claude-fable-5",
+   "shift": "2026-07-30 早审 (02:53北京·☁",
+   "note": "3.claude_standard 07-29 08:06未随01:48 intraday重跑,CS7对平安港失守;闸必须排在intraday之后",
+   "code": "CS",
+   "name": "CS"
   },
   "CLAUD": {
    "verdict": "分歧",
-   "model": "Opus 5",
+   "model": "claude-fable-5",
    "shift": "2026-07-28 晚审 (23:04)",
    "note": "4.**v88_decision_core:624 左侧低吸改写只改mode不改days_valid**——小米被\"等待\"(days_valid=0)改写成\"左侧低吸\"后仍带0天有",
    "code": "CLAUD",
@@ -152,7 +100,7 @@
   },
   "159995.SZ": {
    "verdict": "分歧",
-   "model": "Opus 5",
+   "model": "claude-fable-5",
    "shift": "2026-07-28 晚审 (23:04)",
    "note": "6.卖节两条同名\"芯片ETF\"仅靠现价区分(512760.SS/159995.SZ),用户分不清是哪只。",
    "code": "159995.SZ",
@@ -160,37 +108,13 @@
   },
   "512760.SS": {
    "verdict": "分歧",
-   "model": "Opus 5",
+   "model": "claude-fable-5",
    "shift": "2026-07-28 晚审 (23:04)",
    "note": "6.卖节两条同名\"芯片ETF\"仅靠现价区分(512760.SS/159995.SZ),用户分不清是哪只。",
    "code": "512760.SS",
    "name": "512760.SS"
-  },
-  "辉瑞": {
-   "verdict": "分歧",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "2.PFE 52周位双口径须定源(建议以统一引擎sector_reps为准),否则\"低位低吸\"无法证伪。",
-   "code": "PFE",
-   "name": "辉瑞"
-  },
-  "PFE": {
-   "verdict": "分歧",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "2.PFE 52周位双口径须定源(建议以统一引擎sector_reps为准),否则\"低位低吸\"无法证伪。",
-   "code": "PFE",
-   "name": "辉瑞"
-  },
-  "PFE辉瑞": {
-   "verdict": "分歧",
-   "model": "Opus 5",
-   "shift": "2026-07-28 早审 (09:05)",
-   "note": "**PFE辉瑞: 规则{p_up59·现价可进·半仓} vs Fable{暂缓·置信中·24.06~24.41浅回踩带才是买点,24.74=贴上沿追} → ⚡分歧**",
-   "code": "PFE辉瑞",
-   "name": "PFE辉瑞"
   }
  },
- "n_cert": 5,
- "n_dispute": 7
+ "n_cert": 0,
+ "n_dispute": 6
 }
