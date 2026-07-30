@@ -34,8 +34,21 @@ if (-not $isAdmin) {
 }
 Ok "管理员权限"
 
-$StockAI = "$env:USERPROFILE\Desktop\StockAI"
-$Report  = "$env:USERPROFILE\Desktop\ai-daily-report-v2"
+# 桌面路径：必须用 GetFolderPath，不能拼 $env:USERPROFILE\Desktop
+# —— OneDrive 会把桌面重定向到 %USERPROFILE%\OneDrive\Desktop，硬拼路径会找不到仓库
+$Desk = [Environment]::GetFolderPath('Desktop')
+if (-not $Desk) { $Desk = "$env:USERPROFILE\Desktop" }
+
+$StockAI = "$Desk\StockAI"
+$Report  = "$Desk\ai-daily-report-v2"
+
+# 兜底：真实桌面没有就回退到硬拼路径（老装法的位置）
+if (-not (Test-Path $StockAI) -and (Test-Path "$env:USERPROFILE\Desktop\StockAI")) {
+  $StockAI = "$env:USERPROFILE\Desktop\StockAI"
+  $Report  = "$env:USERPROFILE\Desktop\ai-daily-report-v2"
+}
+Write-Host "  [路径] 桌面 = $Desk"
+Write-Host "  [路径] StockAI = $StockAI"
 $SvcBat  = "$StockAI\win\遥控常驻V88.bat"
 $NightBat= "$StockAI\win\夜间重启遥控.bat"
 
