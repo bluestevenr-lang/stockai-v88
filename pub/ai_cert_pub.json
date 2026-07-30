@@ -1,120 +1,200 @@
 {
- "asof": "2026-07-30 15:43（北京时间）",
- "model": "claude-fable-5",
+ "asof": "2026-07-30 20:34（北京时间）",
+ "model": "Opus 5",
  "by_market": {
   "美股": {
    "verdict": "一致",
-   "model": "claude-fable-5",
-   "shift": "2026-07-30 早审 (02:53北京·☁",
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:04)",
    "engine": 39,
    "fable": 40,
    "diff": 1,
-   "note": "引擎2周39% vs claude-fable-5独立读40%·差1pp(两套读数对上)"
+   "note": "引擎2周39% vs Opus 5独立读40%·差1pp(两套读数对上)"
   },
   "A股": {
    "verdict": "分歧",
-   "model": "claude-fable-5",
-   "shift": "2026-07-30 早审 (02:53北京·☁",
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:04)",
    "engine": 38,
    "fable": 43,
    "diff": 5,
-   "note": "引擎2周38% vs claude-fable-5独立读43%·差5pp(有分歧,以引擎执行并留意)"
+   "note": "引擎2周38% vs Opus 5独立读43%·差5pp(有分歧,以引擎执行并留意)"
   },
   "港股": {
    "verdict": "一致",
-   "model": "claude-fable-5",
-   "shift": "2026-07-30 早审 (02:53北京·☁",
-   "engine": 56,
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:04)",
+   "engine": 57,
    "fable": 56,
-   "diff": 0,
-   "note": "引擎2周56% vs claude-fable-5独立读56%·差0pp(两套读数对上)"
+   "diff": 1,
+   "note": "引擎2周57% vs Opus 5独立读56%·差1pp(两套读数对上)"
   }
  },
  "note": "Claude(Fable5/Opus5)独立复核徽章:🅒=复核结论与规则引擎一致;⚡=有异议不发徽章(理由见note);无徽章=本班未复核该标的(重点股优先,不装作全审)。徽章只代表'两套逻辑对上了',不代表保证盈利。",
  "by_code": {
   "CS": {
    "verdict": "分歧",
-   "model": "claude-fable-5",
-   "shift": "2026-07-30 早审 (02:53北京·☁",
-   "note": "3.claude_standard 07-29 08:06未随01:48 intraday重跑,CS7对平安港失守;闸必须排在intraday之后",
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:04)",
+   "note": "3. claude_standard 必须排在 intraday 之后(早审异议3连续2天未修),否则CS闸等于没开——今日5只宽基漏网就是后果",
    "code": "CS",
    "name": "CS"
   },
-  "CLAUD": {
+  "MRVL": {
    "verdict": "分歧",
-   "model": "claude-fable-5",
-   "shift": "2026-07-28 晚审 (23:04)",
-   "note": "4.**v88_decision_core:624 左侧低吸改写只改mode不改days_valid**——小米被\"等待\"(days_valid=0)改写成\"左侧低吸\"后仍带0天有",
-   "code": "CLAUD",
-   "name": "CLAUD"
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:08北京·",
+   "note": "- 美光777: 规则{24·减仓} vs Fable{中性·减的真实理由=芯片同族敞口去重(与英伟达/MRVL/三只芯片ETF重叠)} vs GPT{中性} → ⚡按组合层减,非",
+   "code": "MRVL",
+   "name": "迈威尔"
   },
-  "159995.SZ": {
+  "中烟香港25.12": {
    "verdict": "分歧",
-   "model": "claude-fable-5",
-   "shift": "2026-07-28 晚审 (23:04)",
-   "note": "6.卖节两条同名\"芯片ETF\"仅靠现价区分(512760.SS/159995.SZ),用户分不清是哪只。",
-   "code": "159995.SZ",
-   "name": "159995.SZ"
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:08北京·",
+   "note": "- 中烟香港25.12: 规则{85·持有小幅加仓复核} vs Fable{看多·但港85🔥触发中线兑现纪律,只持有不加} vs GPT{缺席} → ⚡今日不加仓",
+   "code": "中烟香港25.12",
+   "name": "中烟香港25.12"
   },
-  "159995": {
+  "中烟香港25": {
    "verdict": "分歧",
-   "model": "claude-fable-5",
-   "shift": "2026-07-28 晚审 (23:04)",
-   "note": "6.卖节两条同名\"芯片ETF\"仅靠现价区分(512760.SS/159995.SZ),用户分不清是哪只。",
-   "code": "159995.SZ",
-   "name": "159995.SZ"
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:08北京·",
+   "note": "- 中烟香港25.12: 规则{85·持有小幅加仓复核} vs Fable{看多·但港85🔥触发中线兑现纪律,只持有不加} vs GPT{缺席} → ⚡今日不加仓",
+   "code": "中烟香港25.12",
+   "name": "中烟香港25.12"
   },
-  "512760.SS": {
+  "QQQM": {
    "verdict": "分歧",
-   "model": "claude-fable-5",
-   "shift": "2026-07-28 晚审 (23:04)",
-   "note": "6.卖节两条同名\"芯片ETF\"仅靠现价区分(512760.SS/159995.SZ),用户分不清是哪只。",
-   "code": "512760.SS",
-   "name": "512760.SS"
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:08北京·",
+   "note": "1.美股持仓支撑全线高于现价(特斯拉305/支撑398.69、美光777/942、英伟达195/208、QQQM278/294…)——bug模式4在特斯拉身上**原样复发**(总账",
+   "code": "QQQM",
+   "name": "纳指100ETF"
   },
-  "512760": {
+  "VOO": {
    "verdict": "分歧",
-   "model": "claude-fable-5",
-   "shift": "2026-07-28 晚审 (23:04)",
-   "note": "6.卖节两条同名\"芯片ETF\"仅靠现价区分(512760.SS/159995.SZ),用户分不清是哪只。",
-   "code": "512760.SS",
-   "name": "512760.SS"
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:08北京·",
+   "note": "3.\"评估减仓\"(VOO/GOOG/SO)违反禁和稀泥令,须改明确动词",
+   "code": "VOO",
+   "name": "VOO"
+  },
+  "SO": {
+   "verdict": "分歧",
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:08北京·",
+   "note": "3.\"评估减仓\"(VOO/GOOG/SO)违反禁和稀泥令,须改明确动词",
+   "code": "SO",
+   "name": "美国南方公司"
+  },
+  "GOOG": {
+   "verdict": "分歧",
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:08北京·",
+   "note": "3.\"评估减仓\"(VOO/GOOG/SO)违反禁和稀泥令,须改明确动词",
+   "code": "GOOG",
+   "name": "谷歌C"
   }
  },
  "by_name": {
   "CS": {
    "verdict": "分歧",
-   "model": "claude-fable-5",
-   "shift": "2026-07-30 早审 (02:53北京·☁",
-   "note": "3.claude_standard 07-29 08:06未随01:48 intraday重跑,CS7对平安港失守;闸必须排在intraday之后",
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:04)",
+   "note": "3. claude_standard 必须排在 intraday 之后(早审异议3连续2天未修),否则CS闸等于没开——今日5只宽基漏网就是后果",
    "code": "CS",
    "name": "CS"
   },
-  "CLAUD": {
+  "美光777": {
    "verdict": "分歧",
-   "model": "claude-fable-5",
-   "shift": "2026-07-28 晚审 (23:04)",
-   "note": "4.**v88_decision_core:624 左侧低吸改写只改mode不改days_valid**——小米被\"等待\"(days_valid=0)改写成\"左侧低吸\"后仍带0天有",
-   "code": "CLAUD",
-   "name": "CLAUD"
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:08北京·",
+   "note": "- 美光777: 规则{24·减仓} vs Fable{中性·减的真实理由=芯片同族敞口去重(与英伟达/MRVL/三只芯片ETF重叠)} vs GPT{中性} → ⚡按组合层减,非",
+   "code": "",
+   "name": "美光777"
   },
-  "159995.SZ": {
+  "迈威尔": {
    "verdict": "分歧",
-   "model": "claude-fable-5",
-   "shift": "2026-07-28 晚审 (23:04)",
-   "note": "6.卖节两条同名\"芯片ETF\"仅靠现价区分(512760.SS/159995.SZ),用户分不清是哪只。",
-   "code": "159995.SZ",
-   "name": "159995.SZ"
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:08北京·",
+   "note": "- 美光777: 规则{24·减仓} vs Fable{中性·减的真实理由=芯片同族敞口去重(与英伟达/MRVL/三只芯片ETF重叠)} vs GPT{中性} → ⚡按组合层减,非",
+   "code": "MRVL",
+   "name": "迈威尔"
   },
-  "512760.SS": {
+  "MRVL": {
    "verdict": "分歧",
-   "model": "claude-fable-5",
-   "shift": "2026-07-28 晚审 (23:04)",
-   "note": "6.卖节两条同名\"芯片ETF\"仅靠现价区分(512760.SS/159995.SZ),用户分不清是哪只。",
-   "code": "512760.SS",
-   "name": "512760.SS"
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:08北京·",
+   "note": "- 美光777: 规则{24·减仓} vs Fable{中性·减的真实理由=芯片同族敞口去重(与英伟达/MRVL/三只芯片ETF重叠)} vs GPT{中性} → ⚡按组合层减,非",
+   "code": "MRVL",
+   "name": "迈威尔"
+  },
+  "中烟香港25.12": {
+   "verdict": "分歧",
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:08北京·",
+   "note": "- 中烟香港25.12: 规则{85·持有小幅加仓复核} vs Fable{看多·但港85🔥触发中线兑现纪律,只持有不加} vs GPT{缺席} → ⚡今日不加仓",
+   "code": "中烟香港25.12",
+   "name": "中烟香港25.12"
+  },
+  "纳指100ETF": {
+   "verdict": "分歧",
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:08北京·",
+   "note": "1.美股持仓支撑全线高于现价(特斯拉305/支撑398.69、美光777/942、英伟达195/208、QQQM278/294…)——bug模式4在特斯拉身上**原样复发**(总账",
+   "code": "QQQM",
+   "name": "纳指100ETF"
+  },
+  "QQQM": {
+   "verdict": "分歧",
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:08北京·",
+   "note": "1.美股持仓支撑全线高于现价(特斯拉305/支撑398.69、美光777/942、英伟达195/208、QQQM278/294…)——bug模式4在特斯拉身上**原样复发**(总账",
+   "code": "QQQM",
+   "name": "纳指100ETF"
+  },
+  "VOO": {
+   "verdict": "分歧",
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:08北京·",
+   "note": "3.\"评估减仓\"(VOO/GOOG/SO)违反禁和稀泥令,须改明确动词",
+   "code": "VOO",
+   "name": "VOO"
+  },
+  "美国南方公司": {
+   "verdict": "分歧",
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:08北京·",
+   "note": "3.\"评估减仓\"(VOO/GOOG/SO)违反禁和稀泥令,须改明确动词",
+   "code": "SO",
+   "name": "美国南方公司"
+  },
+  "SO": {
+   "verdict": "分歧",
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:08北京·",
+   "note": "3.\"评估减仓\"(VOO/GOOG/SO)违反禁和稀泥令,须改明确动词",
+   "code": "SO",
+   "name": "美国南方公司"
+  },
+  "谷歌C": {
+   "verdict": "分歧",
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:08北京·",
+   "note": "3.\"评估减仓\"(VOO/GOOG/SO)违反禁和稀泥令,须改明确动词",
+   "code": "GOOG",
+   "name": "谷歌C"
+  },
+  "GOOG": {
+   "verdict": "分歧",
+   "model": "Opus 5",
+   "shift": "2026-07-30 午后审 (16:08北京·",
+   "note": "3.\"评估减仓\"(VOO/GOOG/SO)违反禁和稀泥令,须改明确动词",
+   "code": "GOOG",
+   "name": "谷歌C"
   }
  },
  "n_cert": 0,
- "n_dispute": 6
+ "n_dispute": 8
 }
