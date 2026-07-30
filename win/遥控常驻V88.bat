@@ -52,7 +52,9 @@ cd /d "%STOCKAI%"
 echo [%STAMP%] 启动 claude remote-control（手机 Claude App → Code 区可见本机）>> "%LOG%"
 
 REM  前台阻塞运行；正常在线时不会走到下一行
-claude remote-control >> "%LOG%" 2>&1
+REM  --system-prompt: 手机端 Code 区列表只显示会话标题，无法从名字分辨是哪台机器。
+REM  让它开场自报身份，标题就会带上「Win主机」，跟 Mac 的会话区分开。
+claude remote-control --system-prompt "你运行在【Windows 主机】上(主机名 %COMPUTERNAME%，用户 %USERNAME%，工作目录 %STOCKAI%)，是 V88 的 7x24 常驻遥控终端。会话一开始就先说明你是 Win 主机，并把这次对话的主题定为「Win主机·V88遥控」，便于用户在手机 Code 区从标题分辨机器。注意边界：data/ 与 data/accounts.json 不在本机(只存 Mac)，涉及总资产/仓位占比的判断要说明需回 Mac；本机不跑流水线(云端 Actions 已覆盖)。" >> "%LOG%" 2>&1
 
 call :stamp
 echo [%STAMP%] 遥控进程退出(码=%errorlevel%)，30 秒后重拉代码并重启>> "%LOG%"
