@@ -1,618 +1,763 @@
 {
- "generated_at": "2026-07-30 15:46",
- "count": 318,
+ "generated_at": "2026-07-30 17:11",
+ "count": 494,
  "topics": [
   {
    "w": "AI",
-   "n": 58
+   "n": 108
   },
   {
    "w": "美联储",
-   "n": 40
+   "n": 56
   },
   {
    "w": "芯片",
-   "n": 17
-  },
-  {
-   "w": "原油",
-   "n": 17
+   "n": 32
   },
   {
    "w": "财报",
-   "n": 16
+   "n": 27
+  },
+  {
+   "w": "原油",
+   "n": 22
   },
   {
    "w": "IPO",
-   "n": 12
+   "n": 19
   },
   {
-   "w": "美元",
-   "n": 9
+   "w": "Meta",
+   "n": 18
   },
   {
-   "w": "通胀",
-   "n": 8
+   "w": "黄金",
+   "n": 10
+  }
+ ],
+ "major_news": [
+  {
+   "t": "Meta tanks nearly 9%, Microsoft jumps 8% as the AI trade splits Big Tech",
+   "dir": 1,
+   "stk": [
+    {
+     "n": "Meta",
+     "c": "META"
+    }
+   ],
+   "url": "https://www.cnbc.com/2026/07/30/microsoft-msft-meta-stock-today-earnings.html",
+   "s": "CNBC - Top News",
+   "time": "2026-07-30 17:01"
+  },
+  {
+   "t": "长春高新：子公司GenSci144片境内生产药品注册临床试验申请获批",
+   "dir": 1,
+   "stk": [
+    {
+     "n": "长春高新",
+     "c": "000661.SZ"
+    }
+   ],
+   "url": "https://36kr.com/newsflashes/3917905524682120?f=rss",
+   "s": "36氪 - 快讯",
+   "time": "2026-07-30 16:59"
+  },
+  {
+   "t": "汉邦科技：取得金融机构不超4500万元回购股票专项融资支持",
+   "dir": 1,
+   "stk": [
+    {
+     "n": "汉邦科技",
+     "c": "688755.SS"
+    }
+   ],
+   "url": "https://36kr.com/newsflashes/3917903456218497?f=rss",
+   "s": "36氪 - 快讯",
+   "time": "2026-07-30 16:57"
+  },
+  {
+   "t": "超达装备：拟将回购资金总额上调至5000万元—1亿元",
+   "dir": 1,
+   "stk": [
+    {
+     "n": "超达装备",
+     "c": "301186.SZ"
+    }
+   ],
+   "url": "https://36kr.com/newsflashes/3917893047234182?f=rss",
+   "s": "36氪 - 快讯",
+   "time": "2026-07-30 16:46"
+  },
+  {
+   "t": "美股存储股盘前再度下跌，科技巨头走势互异，微软涨超7%，Meta重挫8% - cj.sina.cn",
+   "dir": -1,
+   "stk": [
+    {
+     "n": "微软",
+     "c": "MSFT"
+    },
+    {
+     "n": "Meta",
+     "c": "META"
+    }
+   ],
+   "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5BeS1CYUNTLU1Zb0pTeDZvb0hvd3NrbkFESjNBOVZLTG1tR2dtMWVVRml3STIxNXRxdllaRnViVU1BMW1sMzdLcVhIRGxiX1lyUVBvME40ZHA0aVNVM1plcXpveVhicHJlVmgxa2xB?oc=5",
+   "s": "Google News - 中文市场聚合",
+   "time": "2026-07-30 16:42"
+  },
+  {
+   "t": "港股光通信、芯片股大跌，长飞光纤光缆跌超10%，新东方狂飙近19% - 新浪财经",
+   "dir": -1,
+   "stk": [
+    {
+     "n": "长飞光纤",
+     "c": "601869.SS"
+    },
+    {
+     "n": "长飞光纤光缆",
+     "c": "06869.HK"
+    }
+   ],
+   "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE5mUjM4ZXhEV1lBTnQ1TXdfUFVPSUlqdXVIQlcwdnhKU3ViWFBaSVlUY0hZM3ZOTVRMdTZ0LUlDQVVUSnJ5RnZpdHZ5bnlxdUdjcFV1TjloQjNIaWplMWVTTzZNTUp4M1Y5bWtJejI5SWxGTTlvaHc?oc=5",
+   "s": "Google News - 中文市场聚合",
+   "time": "2026-07-30 16:40"
   }
  ],
  "items": [
   {
-   "t": "币安美国计划向CFTC申请牌照,进军预测市场",
+   "t": "普联软件等三家A股公司同日宣布控制权拟变更，“准新东家”浮出水面 - finance.sina.cn",
+   "stk": [
+    {
+     "n": "普联软件",
+     "c": "300996.SZ"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMijgJBVV95cUxQbEpUekg5VDVTZ1REWWtPQk45NWQ1YnpHUXUyak1FdUlYdHJvRzg1LWtmblhuY09Xc3FMZXBmeUp5SWVhOE5lSy1VOGZXb2hzb0xCM0lIazZQbWN2aFh1TDZXNWJybGRvdWl1VVNqSjk3Y1NqTVJFcDZmQzVyTUdXTmJ4emhON2RtZGFYMDVvX001UlR1MFF2N0kzR0JORkJJTHZ4TUxsTnoxdHRjYWJoYTNDaEZhYW5DWHVFUVNOM19QbXdRVVNBWXo2SVIwMV92RWNwN2xaZ1Z4RGlnbVVrTGtIRDNQSWx2cUFWYXFIMkU4SmJKd1d3ZF9VWkI5b25ad0FtLXBsTFRaZDFiUlE?oc=5",
+   "time": "2026-07-30 17:10",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "证监会同意沈鼓集团沪市主板IPO注册",
    "stk": [],
+   "dir": 0,
    "s": "36氪 - 快讯",
-   "url": "https://36kr.com/newsflashes/3917821130304904?f=rss",
-   "time": "2026-07-30 15:33",
+   "url": "https://36kr.com/newsflashes/3917916087381638?f=rss",
+   "time": "2026-07-30 17:10",
    "cat": "tech"
   },
   {
-   "t": "港股方圆生活服务尾盘涨超40% - 东方财富",
+   "t": "Samsung says chip crunch will last until 2028 as quarterly profit soars",
+   "stk": [],
+   "dir": 1,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/30/samsung-q2-earnings-ai-chip-.html",
+   "time": "2026-07-30 17:10",
+   "cat": "global_markets"
+  },
+  {
+   "t": "‘My life’s screwed’: Korean investors stress out after AI bubble bursts",
+   "stk": [],
+   "dir": 0,
+   "s": "FT - Markets",
+   "url": "https://www.ft.com/content/23f388eb-e8ab-4fb1-b1ca-8e04eb4561a1?syn-25a6b1a6=1",
+   "time": "2026-07-30 17:08",
+   "cat": "global_markets"
+  },
+  {
+   "t": "星巴克美股盘前涨超5% - 东方财富",
    "stk": [
     {
      "n": "东方财富",
      "c": "300059.SZ"
     },
     {
-     "n": "方圆生活服务",
-     "c": "09978.HK"
+     "n": "星巴克",
+     "c": "SBUX"
     }
    ],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE5ZeFpOWks5NWR4aWxFbllQMHVHb3ZObzVwOGs1b0VxNEg5eHVmWGNLX0tSNHIxNExwZDBoWENYd2Rwc21ELWI0emRCcnRFcDQ1RVNJVG0wTjhjaEhXbWpMY1RZSllPZw?oc=5",
-   "time": "2026-07-30 15:32",
+   "url": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE9qNmpOTjlzcXQ1VFBtVU9TbURIWWJQT2RvekRpNXM2eUM0b2tmUGdKVHUyRllCTmppOGsycTEtZm5KeExPdDJzN2dVMVB4N1lLZG5BcG9FUHdRTThhbWp2a0twcw?oc=5",
+   "time": "2026-07-30 17:07",
    "cat": "cn_markets"
   },
   {
-   "t": "LG新能源上半年营收14.1万亿韩元,同比增长10.5%",
+   "t": "AI stock rout fells Innolight after mega Hong Kong IPO",
    "stk": [],
-   "s": "36氪 - 快讯",
-   "url": "https://36kr.com/newsflashes/3917819373874566?f=rss",
-   "time": "2026-07-30 15:31",
-   "cat": "tech"
+   "dir": 0,
+   "s": "SCMP - Business",
+   "url": "https://www.scmp.com/plus/business/companies/article/3362388/ai-stock-rout-fells-innolight-after-mega-hong-kong-ipo?utm_source=rss_feed",
+   "time": "2026-07-30 17:06",
+   "cat": "hk_markets"
+  },
+  {
+   "t": "BoE expected to ‘talk tough’ but leave rates on hold",
+   "stk": [],
+   "dir": 0,
+   "s": "FT - Markets",
+   "url": "https://www.ft.com/content/9c33426e-d413-4d9b-b429-34dea508195e?syn-25a6b1a6=1",
+   "time": "2026-07-30 17:06",
+   "cat": "global_markets"
+  },
+  {
+   "t": "美联储从来不是裁判！",
+   "stk": [],
+   "dir": 0,
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3778307",
+   "time": "2026-07-30 17:04",
+   "cat": "cn_markets"
   },
   {
    "t": "美国借贷成本升至19年新高，美联储无视通胀担忧",
    "stk": [],
+   "dir": 0,
    "s": "FT - Markets",
    "url": "https://www.ft.com/content/c4eedbe8-6345-48b6-8d44-5cc5b0bea2c7?syn-25a6b1a6=1",
-   "time": "2026-07-30 15:30",
+   "time": "2026-07-30 17:03",
    "cat": "global_markets",
    "t_en": "US borrowing costs hit 19-year high as Fed defies inflation fears",
    "zh": 1
   },
   {
-   "t": "欧元区债券收益率跟随美债收益率在美联储会议后走高",
+   "t": "Nasdaq Futures Tick Higher As Microsoft Lifts AI Trade, PCE, Fed Split, And Iran Strikes Keep Investors Cautious: Why META, AMZN, AAPL, MU, ",
    "stk": [],
-   "s": "WSJ - Markets",
-   "url": "https://www.wsj.com/finance/investing/jgb-futures-fall-before-bojs-two-day-meeting-2ff71c19?mod=rss_markets_main",
-   "time": "2026-07-30 15:29",
-   "cat": "global_markets",
-   "t_en": "Eurozone Bond Yields Track Treasury Yields Higher Post-Fed Meet",
-   "zh": 1
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMi5gFBVV95cUxPOFZ1THpwSUpRMUlTMzNXSFdEclhaamtybVJwWURIUW9uZzMtc3JMNWFEMy1kT1NXcnlMRU1xaktpZmRlSVhuZmpCLXFLektZM0JMTnZ4QkI5VVE2SDlGd25xdHE3RDZCMl91VDNGSFdxVFpmOUUwck43YU13UGZVNUdsc0ZZZ3BfcWJWaFZFRXUtUHgxTnpYTHB1b1c2VWNPTEUwX1hKbXo5R1k5V2lBVlhkUDJLLThiQnRHX3QzMzJ6VHoxRVpvcThiYWFidTljTUItLS1VWTJ5bUpvTFNBRmJRTV84Zw?oc=5",
+   "time": "2026-07-30 17:03",
+   "cat": "global_markets"
   },
   {
-   "t": "英镑在英国央行决议前下跌",
+   "t": "Schroders posts 46% profit jump, beats estimates on higher assets and cost cuts",
    "stk": [],
-   "s": "WSJ - Markets",
-   "url": "https://www.wsj.com/finance/currencies/foreign-exchange-markets-focusing-on-bojs-forward-guidance-7c6179f2?mod=rss_markets_main",
-   "time": "2026-07-30 15:26",
-   "cat": "global_markets",
-   "t_en": "Sterling Falls Ahead of BOE Decision",
-   "zh": 1
+   "dir": 1,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/schroders-posts-46-profit-jump-beats-estimates-on-higher-assets-and-cost-cuts-4822858",
+   "time": "2026-07-30 17:02",
+   "cat": "global_markets"
   },
   {
-   "t": "日本航天企业ispace与三菱重工签约,将使用H3火箭发射登月舱",
+   "t": "‘The View’ Host Joy Behar finally finds a buyer for $7 million Hamptons home after 2 years",
    "stk": [],
+   "dir": 0,
+   "s": "MarketWatch - Top Stories",
+   "url": "https://www.marketwatch.com/story/the-view-host-joy-behar-finally-finds-a-buyer-for-7-million-hamptons-home-after-2-years-17c0652a?mod=mw_rss_topstories",
+   "time": "2026-07-30 17:02",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Meta tanks nearly 9%, Microsoft jumps 8% as the AI trade splits Big Tech",
+   "stk": [
+    {
+     "n": "Meta",
+     "c": "META"
+    }
+   ],
+   "dir": 1,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/30/microsoft-msft-meta-stock-today-earnings.html",
+   "time": "2026-07-30 17:01",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Why is Koninklijke Vopak stock surging today?",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/why-is-koninklijke-vopak-stock-surging-today-93CH-4822838",
+   "time": "2026-07-30 17:01",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Vita Coco (NASDAQ:COCO) Passes All Eight of Navellier's High-Growth Stock Rules - ChartMill",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxQNG1SYXh3WWs1bGp2YVdBbzN0LW1JbDA3VjZPZnJJVTFtd2E3d296MU5qNTBoSFREZmRCT2E1elNJeklFSFNQUms0eDNmcmxRR0xTTzZkdV9NN19GOWUyd2JzN2N4TEd5MkRqT19VbmpZUlNDakNJYzZTbThoSHBCWERSM2FFRHhEMkNjTUhLLW1Cemt0WlBwb0xzRzk0cU9vM1ZJOW9lQjQ1UkVfRjk1U011bVlXRWR5bXVXMDBfQ182WnVaTHc?oc=5",
+   "time": "2026-07-30 17:00",
+   "cat": "global_markets"
+  },
+  {
+   "t": "DR Congo’s cobalt boom carries an unwanted cargo: uranium",
+   "stk": [],
+   "dir": 0,
+   "s": "FT - Markets",
+   "url": "https://www.ft.com/content/77815def-6f50-4adf-8ba3-3643de7bf8ab?syn-25a6b1a6=1",
+   "time": "2026-07-30 17:00",
+   "cat": "global_markets"
+  },
+  {
+   "t": "长春高新：子公司GenSci144片境内生产药品注册临床试验申请获批",
+   "stk": [
+    {
+     "n": "长春高新",
+     "c": "000661.SZ"
+    }
+   ],
+   "dir": 1,
    "s": "36氪 - 快讯",
-   "url": "https://36kr.com/newsflashes/3917811838987913?f=rss",
-   "time": "2026-07-30 15:24",
+   "url": "https://36kr.com/newsflashes/3917905524682120?f=rss",
+   "time": "2026-07-30 16:59",
    "cat": "tech"
   },
   {
-   "t": "A股收评:创业板指跌3.97%,超3600股下跌,AI硬件板块持续深度回调_市场分析 - 中金在线",
+   "t": "A股三大指数集体收跌 白酒与汽车板块逆市走强 - 第一财经",
    "stk": [],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9CQTcwbk5ZUXdPaGZNOUJMQnB6UUlOZGFxYUcyNlppay0zVllQU0ZlWTdva2x0cXhfbXJuOXdNS0lLeVc0RmNQaEs4WUFkT0ZremRlOS1lMGl1LXd2aldXRTNLZWp0Y0xKSWg0VmpLdw?oc=5",
-   "time": "2026-07-30 15:24",
+   "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE9SYlp0S3FBR0VYUlItdmIxTGdOdkpXSVNMWi1jWnlsVTFUR3JUVEpJdmt1ZHl2SGw1bkh6QVYwM1ZiZmhnTmNucnExMmlhR1h2S2hGMA?oc=5",
+   "time": "2026-07-30 16:59",
    "cat": "cn_markets"
   },
   {
-   "t": "欧洲股指涨跌互现，财报推动市场情绪",
+   "t": "Jeronimo Martins stock jumps on Biedronka margin beat",
    "stk": [],
-   "s": "WSJ - Markets",
-   "url": "https://www.wsj.com/finance/stocks/nikkei-rises-0-4-led-by-electronics-stocks-3320ef35?mod=rss_markets_main",
-   "time": "2026-07-30 15:23",
-   "cat": "global_markets",
-   "t_en": "European Indexes Mixed as Earnings Drive Sentiment",
-   "zh": 1
+   "dir": 1,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/jeronimo-martins-stock-jumps-on-biedronka-margin-beat-93CH-4822817",
+   "time": "2026-07-30 16:58",
+   "cat": "global_markets"
   },
   {
-   "t": "A股市值前十全部飘红 - 凤凰网财经",
+   "t": "今天A股，念念不忘，必有回响！ - 新浪网",
    "stk": [],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE9sZ0NtRGlZUVhtMnphT0F0NkxWSVRTQnFCTVNQbmdkMEZ3d1FvcndDRGlUQlo0Ykgzd1NYRDdiME5ydnVJWUtvaVpHaENzUzNv?oc=5",
-   "time": "2026-07-30 15:21",
+   "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE1JNW0wN1E3TlI0OF9LYnFRU1A0bHlybHhYSVZnZEk5VG1zY0ZoNmRBdVV0OVNkeDEyZlQtSzRQME1WVklDUHhIRk1UVmEzamZDV2xIc2R0aWxpUFVSZFhwcHJoV0ZkcjlIUTVlc0VpcnFBQQ?oc=5",
+   "time": "2026-07-30 16:58",
    "cat": "cn_markets"
   },
   {
-   "t": "热门板块速睇:港股芯片股走弱,天数智芯领跌 - Moomoo",
+   "t": "汉邦科技：取得金融机构不超4500万元回购股票专项融资支持",
    "stk": [
     {
-     "n": "天数智芯",
-     "c": "09903.HK"
+     "n": "汉邦科技",
+     "c": "688755.SS"
     }
    ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxPc3FSdlh4MkEtR1RqejlGbExDYnlud0ZOYkxETXJocFg3dk1OZUpTUDVabU5GZjRoby1zaXlyakJkdUpCS004TjRsbWlGZ2stSjkydU5MWFd5ZEZOSXgxcVN3dlBFVS1STXVFcGFKTkZDVWM0bFRYSms4aERBbV9ydXpPZ0hSUE42TklaNkNCdmUwcTJGTVFoZS13QWhzMzFtT3A0MlZrSTlHdHhRYnRDLThXVzBITUVnMDR6OXltUzg?oc=5",
-   "time": "2026-07-30 15:20",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "A股午后回暖跌幅收窄,白酒、银行板块领涨 - Sohu",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQajE5djNEVE40OUNILU5lN1EtOThtZnVhSlVwNWxPYWYzZTA2OElyOE1Xbm9QRURUZUhYZXlyMXlRNGxvZm81UDlUY2NZYXg2am56M3lDckh0YjZkSlpoN0plZ05WYWtQdlpwQmJxUnhjSnNJemJ3elJob0RhcVQ5OHJJZGtpbGFJ?oc=5",
-   "time": "2026-07-30 15:19",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "中微公司在武汉成立新公司,注册资本5000万",
-   "stk": [
-    {
-     "n": "中微公司",
-     "c": "688012.SS"
-    }
-   ],
+   "dir": 1,
    "s": "36氪 - 快讯",
-   "url": "https://36kr.com/newsflashes/3917806821256837?f=rss",
-   "time": "2026-07-30 15:19",
-   "cat": "tech"
+   "url": "https://36kr.com/newsflashes/3917903456218497?f=rss",
+   "time": "2026-07-30 16:57",
+   "cat": "tech",
+   "major": 1
   },
   {
-   "t": "7月30日美股成交额前20:SK海力士利润增长低于预期,将扩大资本开支 - 新浪网",
+   "t": "Stock futures rise as traders digest Big Tech earnings and hope to recover from Fed Day sell-off: Live updates",
    "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/29/stock-market-today-live-updates.html",
+   "time": "2026-07-30 16:56",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Why is Andritz stock surging today?",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/why-is-andritz-stock-surging-today-93CH-4822811",
+   "time": "2026-07-30 16:56",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Why is Amundi stock surging today?",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/why-is-amundi-stock-surging-today-93CH-4822794",
+   "time": "2026-07-30 16:55",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Shell posts second-highest profits ever as traders cash in on Iran disruption",
+   "stk": [],
+   "dir": 0,
+   "s": "FT - Markets",
+   "url": "https://www.ft.com/content/dacf0dba-702a-400f-b534-f73011052b1d?syn-25a6b1a6=1",
+   "time": "2026-07-30 16:55",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Why is Ayvens stock rallying today?",
+   "stk": [],
+   "dir": 1,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/why-is-ayvens-stock-rallying-today-93CH-4822792",
+   "time": "2026-07-30 16:54",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Adidas shares slide record 17% as profit miss taints sales upgrade",
+   "stk": [],
+   "dir": -1,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/adidas-raises-2026-sales-outlook-4822383",
+   "time": "2026-07-30 16:54",
+   "cat": "global_markets"
+  },
+  {
+   "t": "今天，A股再现“跷跷板” - finance.sina.cn",
+   "stk": [],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijwJBVV95cUxOODZweDNNeTZQUTg0djhFZVB5d3FhOXBiWHhPTjVoQW0xU1lKRmtsdF9hNEZETXExNW9NLWJjTWJxNzFkYlNJVDZqMmI0dVZlSzRuSXdvdUFpaGxGMTdaU3NLWjlBeHRRN3ZCdmFYamxqc2g2NkVmaXZUdlZqNEh0cnItRHdLOXc0em1KemlpNkRSeVRmS3ZDSi1rRmhDbmRJTTRLZVNHeTNvc2NBS05MMFdqLWVDNjNZSWx0ZU9QVFR2WTRZazlXallHZjdCbEN2TVM4a2QyYXpfSVdia1l0Q29PVk9GaFVjM1ZQRGdWZy1wV1NpWWRzU05jazdZTGVMbXFsczM4OWJWV1p6LU40?oc=5",
-   "time": "2026-07-30 15:18",
+   "url": "https://news.google.com/rss/articles/CBMinAJBVV95cUxOS1VRTmxYbHhxeXR0ZmNHejhub0VJdElSeGVvaGgwR0xodnVWdTlpaGZwVkNtVWhJYW93S0tHSmhpMGoxeGMxMFdDQlBQczVpTG5qcWtkM1VNMER6RDJHSjF5eVhkamJEaGljRTMtX2pZcWhONzEwNkoxYlBZanVJVXhmcFJBd241TENVdWZQTk11cGZ4eVBHOHBGa3ltcDI0aV8tU3ZMQkZBRWRoSVZkSlcxOGJiZkc4S0ZodUxka3NkTTBhVks1NFZkNmdqbmc3LXdDQm16VTdpVjVWS1JPQTV1dXZkYWg4M2JJelRtLU1HZFdqVmM2eF9qTEdYUDdueElWd3BfRnQwN0IxU0pJRFRmX3ZNNWo0ZG1QRA?oc=5",
+   "time": "2026-07-30 16:54",
    "cat": "cn_markets"
   },
   {
-   "t": "A股午后回暖跌幅收窄,白酒、银行板块领涨 - thepaper.cn",
-   "stk": [],
+   "t": "美股盘前：存储板块集体走低，微软大涨7%，Meta重挫8% - 新浪财经",
+   "stk": [
+    {
+     "n": "微软",
+     "c": "MSFT"
+    },
+    {
+     "n": "Meta",
+     "c": "META"
+    }
+   ],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFAwOXlSRUVBYlJ3X0xHTS1QNGF4b2RncEZsNlI0dkluV2NXU0IzX2RpV2hTQ25UNFdYUHE5a29hTnN6aUFWdnRLcWJwci10akFIRWRNeERWLW5vdFpDdXMzOQ?oc=5",
-   "time": "2026-07-30 15:18",
+   "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9HQ2lZV0N1c3NtSFRNalQzaHNvcXYwdmZEb3hxOGx2VUc4cjZ1ZHhEV2JheUtfRjhfdW9OUlVWMUNMVU0yQjhBeTd3cXg5Z0V5YkdoaElNczY0ejlzekV3R0hlX09iOUZ4X2g0Mno1WEpZeTh2Yl8wUQ?oc=5",
+   "time": "2026-07-30 16:53",
    "cat": "cn_markets"
   },
   {
-   "t": "香港证监会拆解港股上半年跌因:指数缺半导体龙头 成交额创单月新高 - 观点网",
+   "t": "From Hormuz to the Black Sea: Maritime battlefields are shaping ‘a new world order’",
    "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/30/strait-hormuz-drone-shipping-risks.html",
+   "time": "2026-07-30 16:52",
+   "cat": "global_markets"
+  },
+  {
+   "t": "7月31日周五，A股还会大跳水吗？ - video.sina.com.cn",
+   "stk": [],
+   "dir": -1,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE9Sc2JwUnF0R0hnbXBLRmJ6LTBSTFFld2FJMkhsUHgxeFpGRTNDT1hCeWJ0S0JqU2VOeXBlc1lFcmExRlY1ejhPWkhwS2oyU25Hcmkxbk5QSWU5WGxCSl9SNkx3?oc=5",
-   "time": "2026-07-30 15:17",
+   "url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxOLWE4eURfRE1TTXV4ckFOWUdLeHJ3bTFEa2tOVXRCY3pYTjFLMkI0dWdqOFB5UXpKQ3Y1Z1FvX0dFb092WVpiWFlkTWRBbklzSWt4X0tfSmpBa1BSaFdGVmdfenBrMnRydS1wZWtyS1RFQ3ItZnNVWXBUR1Ezc05NbGN3?oc=5",
+   "time": "2026-07-30 16:51",
    "cat": "cn_markets"
   },
   {
-   "t": "港股江南布衣涨超7% - 东方财富",
+   "t": "Apple’s Earnings Will Test Stock’s Status as the AI Safety Play - Bloomberg.com",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxNU25jdVoxOTV1YkhLb09zTkdCd1R1QVQwNXVXeHBNMHZvVUhIVmRVSDBPSUQ4WlFWS09YNlk3ajc2WmhFTjY5MzhMeFhHRWIwMk1kYm5ZTkZhQjlQalVlZkg3VktEdndEMlB4Qm45MS1sRWI0NjBuMzd2VUFhV1d4bXg0T3RHOVRURVMzek9Db1VZLUY4NFc5QzFBa1VWRDBQZ3d3dDdBal9ybjlhbDNoRW5EZ3k?oc=5",
+   "time": "2026-07-30 16:50",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Why is Syensqo stock surging today?",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/why-is-syensqo-stock-surging-today-93CH-4822748",
+   "time": "2026-07-30 16:50",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Why is Knorr-Bremse stock tumbling today?",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/why-is-knorrbremse-stock-tumbling-today-93CH-4822747",
+   "time": "2026-07-30 16:50",
+   "cat": "global_markets"
+  },
+  {
+   "t": "六国化工：终止2025年度向特定对象发行A股股票并撤回申请文件 - 东方财富",
    "stk": [
     {
      "n": "东方财富",
      "c": "300059.SZ"
     },
     {
-     "n": "江南布衣",
-     "c": "03306.HK"
+     "n": "六国化工",
+     "c": "600470.SS"
     }
    ],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE03Z0hvdlVLV0hoaHlVVU5ZeVR2dHZnNjY2bGlveVQxLUZoNklHYldWWU9OZlZQajFsajhxLVpUZGtDZjYyNzl2Y2FCMGNSR25EdXdhZWtPZG1yZkhOTkxuTVRJb091Zw?oc=5",
-   "time": "2026-07-30 15:16",
+   "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE54VmFLS3VTRmNVYmJrWHB6S2dYNmMtRDc4emNfZXdhVHp5TGx5bUk5NTdUNmlNUndDMk8zZ0V0SGQzZHNJVmNxbWZFaWVfR3hvZ05PWDNaWDlOZGJCNEVvU3I5bEIwQQ?oc=5",
+   "time": "2026-07-30 16:50",
    "cat": "cn_markets"
   },
   {
-   "t": "2025年我国“三新”经济增加值占国内生产总值比重为18.39%",
+   "t": "Why is Logitech stock sliding today?",
    "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/why-is-logitech-stock-sliding-today-93CH-4822746",
+   "time": "2026-07-30 16:50",
+   "cat": "global_markets"
+  },
+  {
+   "t": "商务部：将优化国家级经开区考核评价指标体系",
+   "stk": [],
+   "dir": 0,
    "s": "36氪 - 快讯",
-   "url": "https://36kr.com/newsflashes/3917803957726600?f=rss",
-   "time": "2026-07-30 15:16",
+   "url": "https://36kr.com/newsflashes/3917896236789124?f=rss",
+   "time": "2026-07-30 16:50",
    "cat": "tech"
   },
   {
-   "t": "国家电投旗下锦华路港物流公司增资至84.3亿,增幅约51%",
+   "t": "港股通创新药ETF易方达（159316）近一周揽金超2.2亿 - 新浪网",
    "stk": [],
-   "s": "36氪 - 快讯",
-   "url": "https://36kr.com/newsflashes/3917803027689091?f=rss",
-   "time": "2026-07-30 15:15",
-   "cat": "tech"
-  },
-  {
-   "t": "港股震荡整理 短线预计如何演绎?丨港股在线 - 第一财经",
-   "stk": [],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE5WdGIzNzNIZ2Yzekl6cEZnTHdMY2l4SUdMTzg2OXgzRWVBWjZBQ1RIeno5Q0NNX0g0c2FjOUV2RHRtUjNGQTUxYlpqaVBuMjZNV2Fydg?oc=5",
-   "time": "2026-07-30 15:14",
+   "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxPRmZ3Z1Yxb3JVQ1dMOEp5eU5IaFhEMGM3d0cxR1BRNUU0RVBqbkZXY0I0M0Z5Q2FOLXgwa3dXRUxzWEZMQklPa2V5VEhidllfZVB1UkRhZ1lKb0s1UTZFYXp0RHFEMWNLQkp2R3VIT0FFYmJhNU1IMURzVkZlNzhvR0lwUFlFT0FIQVpYWUxHWllGOVdhQWc?oc=5",
+   "time": "2026-07-30 16:50",
    "cat": "cn_markets"
   },
   {
-   "t": "中际旭创港股破发之后:短期阵痛与长期逻辑的辩证 - 电子工程专辑",
+   "t": "美股异动丨亚马逊盘前涨2.5%，Q2财报即将揭晓，AWS增速成财报关注点 - cj.sina.cn",
    "stk": [
     {
-     "n": "中际旭创",
-     "c": "300308.SZ"
+     "n": "亚马逊",
+     "c": "AMZN"
     }
    ],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiXEFVX3lxTFBzTTNFSUZoRkZyU1FjU2xETXFOakgzYnA4XzJ6aUJXSER6N01EN2U2VWVROUd0SE9oMGlzbFVveVVHSkFtdmlvY21vSWcwbUZ2Y2o2ZUdqNlE5dXFj?oc=5",
-   "time": "2026-07-30 15:14",
+   "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1LZnRibFhZZFp2NDltTUFLYUFSOV9hamRMUUhhRGlwU2FKMUhwcTQyWDMxSkVxRjlKTW9PWlJBTXY2dWpXSm95ZkhfZVhLUU0wakdBaEZwZnpzelEtMGdNSTJzV0ZEcjRYMFFiUFdGWQ?oc=5",
+   "time": "2026-07-30 16:49",
    "cat": "cn_markets"
   },
   {
-   "t": "Ayvens第二季度利润不及预期，因二手车市场疲软",
+   "t": "三星电子：已同全球五大数据中心客户签订合同",
    "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/ayvens-reports-q2-profit-miss-on-used-car-weakness-93CH-4822546",
-   "time": "2026-07-30 15:12",
-   "cat": "global_markets",
-   "t_en": "Ayvens reports Q2 profit miss on used car weakness",
-   "zh": 1
-  },
-  {
-   "t": "Drax确认2026年EBITDA展望，设定2029年目标区间",
-   "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/drax-confirms-2026-ebitda-outlook-sets-2029-target-range-93CH-4822545",
-   "time": "2026-07-30 15:12",
-   "cat": "global_markets",
-   "t_en": "Drax confirms 2026 EBITDA outlook, sets 2029 target range",
-   "zh": 1
-  },
-  {
-   "t": "雅高集团上半年业绩喜忧参半，调整指引",
-   "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/accor-reports-mixed-first-half-results-with-guidance-changes-93CH-4822539",
-   "time": "2026-07-30 15:10",
-   "cat": "global_markets",
-   "t_en": "Accor reports mixed first half results with guidance changes",
-   "zh": 1
-  },
-  {
-   "t": "7月30日收盘:美股大幅收跌道指重挫1100点,美联储维持利率不变但通胀引发内部分歧 - 新浪网",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiqAJBVV95cUxNcFc0cnM2NmRRdHMwUTZRZGhDcVBiV3phTEk2Nnd1RWlwODdsbnVfYjFoLU9USy1CNFoyOHVibWJrMUdNcGJJT01mZF9vX3VZSUd6ajFhdXJWR2xzNGY1TEkwT0ctV0VaTXNNS3A1Z1JYT2RibUhwcnlLQkNUc1E3UmY3c09Lcy1FNTlLaTNhcDd6QjN3dVNsRzRubXdzWWFVQVJ2QWJnVk96U0N5em9LRTItTXlyVVBybEpLSU9rYXV6TmtDNjJCck4wLVB1SlVQVjNqVTY3ekIxUFlSc0tkbUN4OWkzdEVleWZBbldkcktTMl9YMTdJS0hiUzY3MXd1QV9WQ1FaRGpwWWlBWVE0V1daQ2hYR3JNZzFhVkZjYUowcE05cWpQVA?oc=5",
-   "time": "2026-07-30 15:09",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "A股市值前10都红了 - Sohu",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxORWpkT3VDY3lFMDNhRUVwVU9HNjAtTGc5Q0V4ZXQ2OWRySFZSRzFGdlBHMUhqU3BpVEtTWTZ5b0p3eEQ3WURCMEhYV0R4U19acjF6T0hERGR4QWFmb3VRendDNC1FbFlCWnhLSGxRbmUxTnM2UGdDWnIzMVYtbTZpbGpUT190cGdNdGlwWg?oc=5",
-   "time": "2026-07-30 15:08",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "商务部介绍近期中欧密集磋商进展",
-   "stk": [],
+   "dir": 0,
    "s": "36氪 - 快讯",
-   "url": "https://36kr.com/newsflashes/3917796274859648?f=rss",
-   "time": "2026-07-30 15:08",
+   "url": "https://36kr.com/newsflashes/3917894414315140?f=rss",
+   "time": "2026-07-30 16:48",
    "cat": "tech"
   },
   {
-   "t": "工农中建交五大行港股齐创历史新高 中金预计二季度营收增6% - 观点网",
+   "t": "聚焦DTC模式的女装品牌Reformation(REF.US)将美股IPO发行价定为15美元，位于价格区间下限 - 中金在线",
    "stk": [],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE55cUk2QXg4QlhyQU1Id21Md0pRclFHeFpFWnF4elptZkNUNk5PZTlwNUFPa1pWa1ZaaGJiVzFtbEhKakVzUnJqMXdoR3ExRVdqUGVMY0VTbl9BNEZyVmx1VEpn?oc=5",
-   "time": "2026-07-30 15:07",
+   "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5VbV8zNDdndlRJSFcyeTJIR2lrZWUzU2doYlNfQS1QdTdJUDZyb3I3RF9mc1BKZ09fRkRlMW1qTGZDRXplQTIxNWpzRG5GRkIwcDZDOE1KcDJmdGZCb2ZnY3JCUlNzOEcyWTFCTg?oc=5",
+   "time": "2026-07-30 16:47",
    "cat": "cn_markets"
   },
   {
-   "t": "A股收评:创业板指午后回暖跌3.97% AI硬件方向持续下挫 - 同花顺财经",
+   "t": "美股异动丨高通盘前跌5.76% 第三财季营收利润双降_股市直播_市场 - 中金在线",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE9lUVVkc2lGTHYtRTM2NkZfNU80cTFaVjBUN0dpNlZmWlMyMzVrU0MxTG5mdFRZQnoyakhsNm1vQm45T3BkaEg0N2pOY2YydmNTUDRBZDVDREgzMzMzZlJlamE4cEJheENKTDBueg?oc=5",
+   "time": "2026-07-30 16:47",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "美股异动丨Arm盘前跌超6%，次季指引不及最乐观预期_股市直播_市场 - 中金在线",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1LdXJuM1FEZmFLcHhMWHczcFZfX1FSRzZfRGZJMlIyRlZaOHJRbDhaM2NQLURZSnduNzJaT25pekljMURFbUNadkVtY1BaTkFfNVEtYklPNFVwcy1SNG5iTU5OVklsWngtQmMxWA?oc=5",
+   "time": "2026-07-30 16:47",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "超达装备：拟将回购资金总额上调至5000万元—1亿元",
    "stk": [
     {
-     "n": "同花顺",
-     "c": "300033.SZ"
+     "n": "超达装备",
+     "c": "301186.SZ"
     }
    ],
+   "dir": 1,
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3917893047234182?f=rss",
+   "time": "2026-07-30 16:46",
+   "cat": "tech",
+   "major": 1
+  },
+  {
+   "t": "凌晨宣布，美联储利率不动！美股尾盘“崩了” - finance.sina.cn",
+   "stk": [],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTFBGU3ltejhoUy1qaUw4Qy16YXJ6ZWNjSnhGYlZIdmE5N21oZGltX0dhRmhkN2FvWGMwa0xLUTd5NkFnZkM1bVFabzlfSjdpZkVmcUNwNkxrNE0ySnppUEE?oc=5",
-   "time": "2026-07-30 15:06",
+   "url": "https://news.google.com/rss/articles/CBMi_gFBVV95cUxQSFRLOHQtMFd1OTFTbDJGamRFVHFnWEhxV2t6Yk94RGlxR09TTXJKWEs2ZFdFVkJDWFFkU2xtSERFZEd0Qkh1SHg2bGpyNHJoYlR5WkpiYzhFZV9ub2Z1MkhSTGFDQnU0cmE1TFJNb01IT0RiZTk5SzVLRVVIeU1VbXNpRWZTYk9wdEttYUh6aGthOFZiaVJIMG1NSnBBM1hheGlyUFRxNlRHUklURlotdlB3Zng4S3pWOEpFeVM3a2hlVFk5TXlHLVF3LU1IOThiWDRhSTJVSEgyTTU5WllIYmFkeGQtTXJmX00zZDM2S2cycHRKb1Y5dnA1NGY4Zw?oc=5",
+   "time": "2026-07-30 16:44",
    "cat": "cn_markets"
   },
   {
-   "t": "Mondi第二季度业绩超预期，下调资本支出指引",
+   "t": "港股收评：恒科指跌1.25%，半导体芯片股下跌，新东方绩后狂飙近19%_市场分析 - 中金在线",
    "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/mondi-posts-q2-results-above-expectations-cuts-capex-guidance-93CH-4822530",
-   "time": "2026-07-30 15:06",
-   "cat": "global_markets",
-   "t_en": "Mondi posts Q2 results above expectations, cuts capex guidance",
-   "zh": 1
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9WSFl4X3FrZ1J2RGxPek5UWmtfa05FaWYzRl8xRURIalhSLVNacVduMGN2bXUySXR0ZUxJczNTV05STHgzNUJhanRac1JCNHA4SHdCS19sN25raUxpWk1LYks0UUh4QUotdE9YN1djYw?oc=5",
+   "time": "2026-07-30 16:44",
+   "cat": "cn_markets"
   },
   {
-   "t": "VF威富集团:2027财年第一季度营收16.69亿美元,同比增长1%",
+   "t": "港股收评：冰火两重天！五大行齐创历史新高，半导体继续惨烈下跌，新东方狂飙19%_市场分析 - 中金在线",
    "stk": [],
+   "dir": 1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE1TYjZ6ZmUxTENVZkl5QXhVYlNwVmJoMUNOYllieVJGZDhjQl9Ub1RSWElMNTV6MGdQVzdnS2V1SG9ZcmdfZmY5cTB1dUlmODdQZmFteXNpbGZNQ3paYnlENjVOZWthU3BqTjRtVVJvYw?oc=5",
+   "time": "2026-07-30 16:44",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "领涨所有行业板块！今天A股白酒板块全线上涨，银行板块继续拉升 - cj.sina.cn",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTFA1YXpjWjFPLXI3RWExUm1YQzNIc2pJX1lqY2ZxZ0dOYmg4NnNNMGlXQThnelF5eTZPaU9PZVJiWmloSnJQQnlGWEE2b2E4UVY3em5vTjQwMVdheUlFaHhMbFZPM2JoNDY3eDNpR0ZB?oc=5",
+   "time": "2026-07-30 16:43",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "天赐材料在山东成立新公司，注册资本1.5亿",
+   "stk": [
+    {
+     "n": "天赐材料",
+     "c": "002709.SZ"
+    }
+   ],
+   "dir": 0,
    "s": "36氪 - 快讯",
-   "url": "https://36kr.com/newsflashes/3917792652193161?f=rss",
-   "time": "2026-07-30 15:04",
+   "url": "https://36kr.com/newsflashes/3917888889515652?f=rss",
+   "time": "2026-07-30 16:42",
    "cat": "tech"
   },
   {
-   "t": "A股收盘,上证指数跌0.62%,深证成指跌2.73%,创业板指跌3.97%。 - 新浪网",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE5KTXNmYlNCZmxOWVZvaWhkSWY3OGxGWTdyQnVtdG5oU1FyZlFvbEhoOWc1ZlBiV2c1V0NrdzJJMlRxRGZXRDVNOTIxSkI2Qk0?oc=5",
-   "time": "2026-07-30 15:03",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Fluidra确认2026年指引，启动4000万欧元回购",
-   "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/fluidra-confirms-2026-guidance-and-launches-40m-buyback-93CH-4822523",
-   "time": "2026-07-30 15:02",
-   "cat": "global_markets",
-   "t_en": "Fluidra confirms 2026 guidance and launches €40m buyback",
-   "zh": 1
-  },
-  {
-   "t": "A股三大指数集体收跌 白酒与汽车板块逆市走强 - 东方财富",
-   "stk": [
-    {
-     "n": "东方财富",
-     "c": "300059.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBManhKSms3cGthN3VmaWVRU0R1LWVySzVJaGtuazZvc3hDMGxpMDdhT2YxNUVDMFBQRF9PXzFUdmo1b2kzbmdTVldnVnVmT2dpcXhlUGg3U0RUVms4YUZqUw?oc=5",
-   "time": "2026-07-30 15:01",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "A股三大指数集体收跌,舍得酒业涨停",
-   "stk": [
-    {
-     "n": "舍得酒业",
-     "c": "600702.SS"
-    }
-   ],
-   "s": "36氪 - 快讯",
-   "url": "https://36kr.com/newsflashes/3917789417942661?f=rss",
-   "time": "2026-07-30 15:01",
-   "cat": "tech"
-  },
-  {
-   "t": "中国低迷冲击宝马盈利，引发重组呼声",
-   "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/bmw-reports-secondquarter-earnings-slump-as-it-cuts-jobs-4822375",
-   "time": "2026-07-30 15:00",
-   "cat": "global_markets",
-   "t_en": "China slump hits BMW’s earnings, prompting restructuring call",
-   "zh": 1
-  },
-  {
-   "t": "三星电话会:存储供不应求“明年比今年更紧张”,60-70%产能分给长期协议,HBM4收入将占六成",
-   "stk": [],
-   "s": "华尔街见闻",
-   "url": "https://wallstreetcn.com/articles/3778300",
-   "time": "2026-07-30 15:00",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "创业板跌4%,工行建行逆势创新高,半导体、算力硬件再跌、光模块掀跌停潮,中际旭创港股IPO首日破发",
-   "stk": [
-    {
-     "n": "中际旭创",
-     "c": "300308.SZ"
-    }
-   ],
-   "s": "华尔街见闻",
-   "url": "https://wallstreetcn.com/articles/3778286",
-   "time": "2026-07-30 15:00",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "日本股市收盘走高；日经225指数上涨0.70%",
-   "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/japan-stocks-higher-at-close-of-trade-nikkei-225-up-070-4822515",
-   "time": "2026-07-30 15:00",
-   "cat": "global_markets",
-   "t_en": "Japan stocks higher at close of trade; Nikkei 225 up 0.70%",
-   "zh": 1
-  },
-  {
-   "t": "超级周进入高潮,A股探底回升释放什么信号? - 新浪网",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxPa1pIRWN5MWxsVGFHQXpDVjBMby1tV0w5MWt2S21jcmVFYlhKWlJtZlpDeE5fd2pqczJwenlxcHpFRXcweTBwRW0wRjlHUkx2RThBTk5XTWtKajN1RVhJQ2c3WlNmNGhCMWw3YnQwWWhyT0lTUnpjV2V4MmNRQWFMTW5n?oc=5",
-   "time": "2026-07-30 15:00",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Cirsa报告2026年第二季度收入增长10%",
-   "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/cirsa-reports-10-revenue-growth-in-second-quarter-2026-93CH-4822514",
-   "time": "2026-07-30 14:59",
-   "cat": "global_markets",
-   "t_en": "Cirsa reports 10% revenue growth in second quarter 2026",
-   "zh": 1
-  },
-  {
-   "t": "韩国限制措施或难拯救遭2万亿美元暴跌屠杀的投资者",
-   "stk": [],
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQaUpSbU1GeEo2SFdxeFo1ZUZZUUhnOTZaa3ozUG5JeXVfbmJXSjdIWUxiYzJ4ak9LTmMtdk4zOGFxbWFRREJXTXB2eERWRDU3MVk4Sl9hUnBUSmpOQk1jQmFfRmJ5bmgtSUxRaENJbVlZT092bTdHS2RmbGtKaWVSMGtnb0lSbzlKS3pYTmVzZXhKcTBVMjE0ak9YRjE4elRQOXc?oc=5",
-   "time": "2026-07-30 14:58",
-   "cat": "global_markets",
-   "t_en": "South Korea curbs may not save investors slaughtered by $2 trillion rout - The Mighty 790 KFGO",
-   "zh": 1
-  },
-  {
-   "t": "连平:中国特色平准制度雏形,建议放开散户T+0对冲量化,对A股长期走势保持信心 - 风闻",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1pLWI3RG5HRFFKbWttSklZS05BVHUzMkthR2xZV1lfbUtUalJhSjdUZUtEY1hxX3N3U003aURVeFFoYkdPQm9QdndDMk84bl9KU1BWUmh2bUpUU3c?oc=5",
-   "time": "2026-07-30 14:58",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "世界黄金协会:央行购金同比增长62%至289吨,创四年高位,金饰持续承压",
-   "stk": [],
-   "s": "华尔街见闻",
-   "url": "https://wallstreetcn.com/articles/3778299",
-   "time": "2026-07-30 14:57",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "美联储内部分歧维持利率不变后，美债抛售持续",
-   "stk": [],
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/07/30/us-treasury-yields-divided-fed-interest-rates-hold-steady-.html",
-   "time": "2026-07-30 14:56",
-   "cat": "global_markets",
-   "t_en": "Treasury sell-off continues after divided Fed holds interest rates steady",
-   "zh": 1
-  },
-  {
-   "t": "食品供应链科技公司GrubMarket秘密递交美股IPO",
-   "stk": [],
-   "s": "36氪 - 快讯",
-   "url": "https://36kr.com/newsflashes/3917778390904452?f=rss",
-   "time": "2026-07-30 14:50",
-   "cat": "tech"
-  },
-  {
-   "t": "当市场在买“AI烧钱结束”,微软在买什么?",
+   "t": "美股存储股盘前再度下跌，科技巨头走势互异，微软涨超7%，Meta重挫8% - cj.sina.cn",
    "stk": [
     {
      "n": "微软",
      "c": "MSFT"
+    },
+    {
+     "n": "Meta",
+     "c": "META"
     }
    ],
-   "s": "华尔街见闻",
-   "url": "https://wallstreetcn.com/articles/3778283",
-   "time": "2026-07-30 14:49",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "中共中央政治局:深化资本市场投融资综合改革,提升资本市场韧性和信心",
-   "stk": [],
-   "s": "36氪 - 快讯",
-   "url": "https://36kr.com/newsflashes/3917776182324615?f=rss",
-   "time": "2026-07-30 14:48",
-   "cat": "tech"
-  },
-  {
-   "t": "AI服务器制造商技嘉据悉寻求15亿美元银团贷款",
-   "stk": [],
-   "s": "36氪 - 快讯",
-   "url": "https://36kr.com/newsflashes/3917775172824455?f=rss",
-   "time": "2026-07-30 14:46",
-   "cat": "tech"
-  },
-  {
-   "t": "中共中央政治局:完善对外投资管理制度和海外综合服务体系,积极吸引和利用外资",
-   "stk": [],
-   "s": "36氪 - 快讯",
-   "url": "https://36kr.com/newsflashes/3917774360014209?f=rss",
-   "time": "2026-07-30 14:46",
-   "cat": "tech"
-  },
-  {
-   "t": "中共中央政治局:继续综合整治“内卷式”竞争,常态化解决企业账款拖欠问题",
-   "stk": [],
-   "s": "36氪 - 快讯",
-   "url": "https://36kr.com/newsflashes/3917773874671237?f=rss",
-   "time": "2026-07-30 14:45",
-   "cat": "tech"
-  },
-  {
-   "t": "日本腾龙证实收到索尼非约束性收购提议",
-   "stk": [],
-   "s": "36氪 - 快讯",
-   "url": "https://36kr.com/newsflashes/3917773203549826?f=rss",
-   "time": "2026-07-30 14:44",
-   "cat": "tech"
-  },
-  {
-   "t": "中共中央政治局:深入实施“人工智能+”行动,发展智能经济新形态,完善人工智能治理体系",
-   "stk": [],
-   "s": "36氪 - 快讯",
-   "url": "https://36kr.com/newsflashes/3917772448099716?f=rss",
-   "time": "2026-07-30 14:44",
-   "cat": "tech"
-  },
-  {
-   "t": "中共中央政治局:加快财政支出和债券资金使用进度,有力推进“两重”建设和“两新”工作",
-   "stk": [],
-   "s": "36氪 - 快讯",
-   "url": "https://36kr.com/newsflashes/3917771760790916?f=rss",
-   "time": "2026-07-30 14:43",
-   "cat": "tech"
-  },
-  {
-   "t": "港股零食龙头又有新动作,上海新公司叫“满气” - 新浪网",
-   "stk": [],
+   "dir": -1,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiigFBVV95cUxOUlpHMEUwaUEyTk5aa05veFNjX0ZFdVZzMnRfSFJsMFVjWW1IOVpGZFlWWk1XY3F4YUlHLUxvZGQ4b1VkazVPR1V1SXlVSEwxSGFQRG5xRTNGdzUySkJoaGNibFRHWXo5bEJZZFdVZDJLQVhySXZzOFplTDlsOC1JQW56SDVGZnFyLUE?oc=5",
-   "time": "2026-07-30 14:42",
+   "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5BeS1CYUNTLU1Zb0pTeDZvb0hvd3NrbkFESjNBOVZLTG1tR2dtMWVVRml3STIxNXRxdllaRnViVU1BMW1sMzdLcVhIRGxiX1lyUVBvME40ZHA0aVNVM1plcXpveVhicHJlVmgxa2xB?oc=5",
+   "time": "2026-07-30 16:42",
    "cat": "cn_markets"
   },
   {
-   "t": "Robinhood股票：仍不宜买入 (NASDAQ:HOOD)",
+   "t": "“Tiiny AI”完成数千万美元天使轮融资",
    "stk": [],
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxOeS1hY1FoUkstem83Mk5PME9pTnNURXN3VFdrS0hjV0R4eHJFR3NadUpXUjM0M1FpYXVDZlZrSWtLb0NPdDZkRjFCejAtam1mT0ZUdU5oR0hsUWh0R1U3SkhiNVhRYW8zbUdHa3ZNMTBMMWgyT3hKeHJfMmt3S2JHZXg4TTB1QQ?oc=5",
-   "time": "2026-07-30 14:41",
-   "cat": "global_markets",
-   "t_en": "Robinhood Stock: Still Not A Buy (NASDAQ:HOOD) - Seeking Alpha",
-   "zh": 1
-  },
-  {
-   "t": "中共中央政治局:及时谋划出台务实管用的增量政策,加大逆周期调节力度",
-   "stk": [],
+   "dir": 0,
    "s": "36氪 - 快讯",
-   "url": "https://36kr.com/newsflashes/3917769759452547?f=rss",
-   "time": "2026-07-30 14:41",
+   "url": "https://36kr.com/newsflashes/3917887919582600?f=rss",
+   "time": "2026-07-30 16:41",
    "cat": "tech"
   },
   {
-   "t": "今日热股播报:港股盘中农业银行现涨2.84% - 富途牛牛",
+   "t": "Shell posts best quarterly profit in four years as Iran war boosts oil and gas prices",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/07/30/shell-2q-earnings-iran-war-oil.html",
+   "time": "2026-07-30 16:40",
+   "cat": "global_markets"
+  },
+  {
+   "t": "智通港股52周新高、新低统计|7月30日 - cj.sina.cn",
+   "stk": [],
+   "dir": 1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9xMU05ODR2MDZTVHBrcENyaXd6Q1g5Q1ItOC1pLThRNDJxQU41U0djb29nUlk1UzhtWGU3TFVlWjBlQmhLQzZlbjZqOVBFU0liTG9Za3RjblBGTEVlYWRSd29Rc1J1eVlKUlc1SXM2WQ?oc=5",
+   "time": "2026-07-30 16:40",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "港股光通信、芯片股大跌，长飞光纤光缆跌超10%，新东方狂飙近19% - 新浪财经",
    "stk": [
     {
-     "n": "农业银行",
-     "c": "601288.SS"
+     "n": "长飞光纤",
+     "c": "601869.SS"
+    },
+    {
+     "n": "长飞光纤光缆",
+     "c": "06869.HK"
     }
    ],
+   "dir": -1,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxQMV9MR0hIcUowTlhZOTlEd1NJVW9DelNlaDBNNUU5aXRSZ3pseHZVQVh3aTVucWZ5Yy1PcjMzQ2YzbVlRNzZzb3lpZTNtdFFQUlVrSFpNQzNRc2RtVi04Rkt0cEwyMU00LUoxTkZUc1RETWIxTVpEQUtidXhKMXhTUA?oc=5",
-   "time": "2026-07-30 14:40",
+   "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE5mUjM4ZXhEV1lBTnQ1TXdfUFVPSUlqdXVIQlcwdnhKU3ViWFBaSVlUY0hZM3ZOTVRMdTZ0LUlDQVVUSnJ5RnZpdHZ5bnlxdUdjcFV1TjloQjNIaWplMWVTTzZNTUp4M1Y5bWtJejI5SWxGTTlvaHc?oc=5",
+   "time": "2026-07-30 16:40",
    "cat": "cn_markets"
   },
   {
-   "t": "热门板块速睇:港股光通信走弱,剑桥科技领跌 - 富途牛牛",
+   "t": "Samsung delivers record-setting profits, but the shares still can’t catch a break from investors.",
+   "stk": [],
+   "dir": 0,
+   "s": "MarketWatch - Top Stories",
+   "url": "https://www.marketwatch.com/story/samsung-delivers-record-setting-profits-but-the-shares-still-cant-catch-a-break-from-investors-daefa19a?mod=mw_rss_topstories",
+   "time": "2026-07-30 16:39",
+   "cat": "global_markets"
+  },
+  {
+   "t": "中研股份：拟5000万元—1亿元回购股份",
    "stk": [
     {
-     "n": "剑桥科技",
-     "c": "603083.SS"
+     "n": "中研股份",
+     "c": "688716.SS"
     }
    ],
+   "dir": 1,
+   "s": "36氪 - 快讯",
+   "url": "https://36kr.com/newsflashes/3917884909464969?f=rss",
+   "time": "2026-07-30 16:38",
+   "cat": "tech",
+   "major": 1
+  },
+  {
+   "t": "云峰莫干山港股IPO折戟，突击分红15亿元惹争议、渠道违规旧疾未愈 - 凤凰网财经",
+   "stk": [],
+   "dir": 1,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxOSTZ0eGdDVDdJQ3hvclY4Qjhya05KbW9EdG1YS1RMTDJ1bFNTbXl1d2VDY2t5UGV0ZUNCRzJJR3czTVpsWjl2dHRsS0hFWjFVOTYzVWpmaDVlQnRrdVltdnNzZkRyVXpVQlJSSDZtUjlFWVZwUHd3NGdSbkxWM3NKNHEyR1B1TTlCRjRwMWhjdTRveV9RQlhGYVk5S1ZBZ0Q3aDRibE1TZ1VnRnZHRlZ2UA?oc=5",
-   "time": "2026-07-30 14:37",
+   "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE1CYy1QTFFzUVcxUVNiMUw1bnpwVG5oUEwyRGxVaUppbDdyT1F0UHA5eTh2dXlfbzFkd0lOTkxEczF0YjJfaFRwb0ktRFRJM1JN?oc=5",
+   "time": "2026-07-30 16:38",
    "cat": "cn_markets"
   },
   {
-   "t": "重庆:培育一批“人工智能+”消费等新型消费企业",
+   "t": "港股收盘 | 三大指数表现不一 中际旭创港股首日破发 - Sohu",
+   "stk": [
+    {
+     "n": "中际旭创",
+     "c": "300308.SZ"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxORW5rQ0FGUjgtNzVNN0FadzFlVEowV2pNZzNKMXU4WmdzcUpEbDZ5U1o0N1NIMTdwOVl6VG1wMzVJYlpNOUxFbW5FMmJjc19oX2E1UUxobTctUDNyOUtEdUxnMlNyMnB6Qk1Xa0dNeEV6UEl0Uk5WNXpaQi1KWHViNzRFbWN1MXJa?oc=5",
+   "time": "2026-07-30 16:38",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "港股年内最大IPO遭遇“开门黑” - Sohu",
    "stk": [],
-   "s": "36氪 - 快讯",
-   "url": "https://36kr.com/newsflashes/3917762919034248?f=rss",
-   "time": "2026-07-30 14:34",
-   "cat": "tech"
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQS2tvWVRrU21GZXp0UTNTUWxUX3NIeEs5enBvdVZ4eGtPWjFPbHR1dW9oS1pxTUdOaGN1TFprNW44TmJUS3dxNFExRzkxbmZOVkQ5enZocWl5TWRWb245ZGNIUFpHQmtpTWNLWVduY0cxcDVRUDBjVTZHWFlKa2VHMFkwRDJkMXVLQnRrQg?oc=5",
+   "time": "2026-07-30 16:37",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Stock Market Today: Bond Selloff Extends; Oil Ticks Higher",
+   "stk": [],
+   "dir": -1,
+   "s": "WSJ - Markets",
+   "url": "https://www.wsj.com/livecoverage/stock-market-today-dow-sp-500-nasdaq-07-30-2026?mod=rss_markets_main",
+   "time": "2026-07-30 16:36",
+   "cat": "global_markets"
   }
  ]
 }
