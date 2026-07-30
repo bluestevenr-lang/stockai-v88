@@ -64,6 +64,17 @@ call :safepull "%STOCKAI%"
 echo [%STAMP%] pull ai-daily-report-v2 (private repo)...>> "%LOG%"
 call :safepull "%REPORT%"
 
+REM ── 物化 CLAUDE.md ────────────────────────────────────────────
+REM  仓库根 CLAUDE.md 在 StockAI 的 .gitignore 第68行被排除,同步不到本机,
+REM  Win 端 Claude 就读不到项目约定与边界。故用入仓的 win\CLAUDE-win.md 作真源,
+REM  每轮启动前复制成根 CLAUDE.md(Claude 会自动读取)。要改内容改 win\CLAUDE-win.md。
+copy /Y "%STOCKAI%\win\CLAUDE-win.md" "%STOCKAI%\CLAUDE.md" >nul 2>&1
+if errorlevel 1 (
+  echo [%STAMP%] WARN: failed to materialize CLAUDE.md from win\CLAUDE-win.md>> "%LOG%"
+) else (
+  echo [%STAMP%] CLAUDE.md materialized from win\CLAUDE-win.md>> "%LOG%"
+)
+
 cd /d "%STOCKAI%"
 echo [%STAMP%] starting claude remote-control ...>> "%LOG%"
 
@@ -72,7 +83,13 @@ REM  让它开场自报身份，标题就会带上「Win主机」，跟 Mac 的�
 REM  --spawn=same-dir: 不加这个参数,首次会弹交互问 spawn mode(实测 2026-07-30),后台无人代答会卡死。
 REM  必须 same-dir: worktree 模式给每个会话开独立 git worktree,而 data/ 与 .env 都被 gitignore,
 REM  worktree 里没有这些文件 -> V88 脚本全跑不起来。
-"%CLAUDE%" remote-control --spawn=same-dir --system-prompt "你运行在【Windows 主机】上(主机名 %COMPUTERNAME%，用户 %USERNAME%，工作目录 %STOCKAI%)，是 V88 的 7x24 常驻遥控终端。会话一开始就先说明你是 Win 主机，并把这次对话的主题定为「Win主机·V88遥控」，便于用户在手机 Code 区从标题分辨机器。注意边界：data/ 与 data/accounts.json 不在本机(只存 Mac)，涉及总资产/仓位占比的判断要说明需回 Mac；本机不跑流水线(云端 Actions 已覆盖)。" >> "%LOG%" 2>&1
+REM
+REM  ⚠️ 命令行一律 ASCII —— 实测 2026-07-30 教训:
+REM  这里原先带一长串中文/全角符号的 --system-prompt,导致 exit 9009(cmd 没把命令拼对);
+REM  绝对路径已验证正确、claude.exe 确实存在、且瞬间退出无任何输出 ==> 是 .bat 在
+REM  「UTF-8 无 BOM + chcp 65001」下解析多字节字符时截断了命令行,不是 claude 的问题。
+REM  Win 主机的身份与边界已改由仓库根 CLAUDE.md 承载(Claude 自动读取),这里不再传中文。
+"%CLAUDE%" remote-control --spawn=same-dir >> "%LOG%" 2>&1
 
 set "RC=%errorlevel%"
 call :stamp
