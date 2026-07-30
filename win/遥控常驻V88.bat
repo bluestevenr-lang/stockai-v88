@@ -10,8 +10,12 @@ REM
 REM  职责：① 拉两仓 ② 设代理 ③ 起 claude remote-control
 REM        ④ 进程若退出，等 30 秒重新拉代码再起（等价 Mac 的 KeepAlive）
 REM
-REM  不要双击本文件。请先用管理员 PowerShell 跑一次 常驻V88.ps1 完成注册。
-REM  日志：win\logs\remote_YYYYMMDD.log
+REM  ⚠️ 首次必须先手动过两个交互闸（本脚本无法代答）：
+REM     1) cd StockAI 后跑一次 claude，选「Yes, I trust this folder」
+REM     2) 跑一次 claude remote-control，对「Enable Remote Control? (y/n)」答 y
+REM     两个都会记住，之后本服务才能无人值守启动。
+REM
+REM  日志：win\logs\remote_YYYYMMDD.log（内容一律 ASCII，避免中文控制台编码乱码）
 REM ══════════════════════════════════════════════════════════════
 
 set "STOCKAI=%USERPROFILE%\Desktop\StockAI"
@@ -33,36 +37,62 @@ set "PATH=%PATH%;%USERPROFILE%\.local\bin"
 call :stamp
 set "LOG=%LOGDIR%\remote_%YMD%.log"
 
-echo [%STAMP%] ── 本轮启动 ─────────────────────────>> "%LOG%"
+echo [%STAMP%] ---- round start ----------------------->> "%LOG%"
 
 REM  claude 缺失就不要死循环刷日志，慢速重试等人来装
 where claude >nul 2>&1
 if errorlevel 1 (
-  echo [%STAMP%] 致命: 未安装 Claude Code。PowerShell 执行 irm https://claude.ai/install.ps1 ^| iex >> "%LOG%"
+  echo [%STAMP%] FATAL: claude not found. Run: irm https://claude.ai/install.ps1 ^| iex >> "%LOG%"
   timeout /t 600 /nobreak >nul
   goto loop
 )
 
-echo [%STAMP%] 同步公开仓 StockAI...>> "%LOG%"
-git -C "%STOCKAI%" pull --rebase --autostash origin main >> "%LOG%" 2>&1
-echo [%STAMP%] 同步私仓 ai-daily-report-v2...>> "%LOG%"
-git -C "%REPORT%" pull --rebase --autostash origin main >> "%LOG%" 2>&1
+echo [%STAMP%] pull StockAI (public repo)...>> "%LOG%"
+call :safepull "%STOCKAI%"
+echo [%STAMP%] pull ai-daily-report-v2 (private repo)...>> "%LOG%"
+call :safepull "%REPORT%"
 
 cd /d "%STOCKAI%"
-echo [%STAMP%] 启动 claude remote-control（手机 Claude App → Code 区可见本机）>> "%LOG%"
+echo [%STAMP%] starting claude remote-control ...>> "%LOG%"
 
-REM  前台阻塞运行；正常在线时不会走到下一行
 REM  --system-prompt: 手机端 Code 区列表只显示会话标题，无法从名字分辨是哪台机器。
 REM  让它开场自报身份，标题就会带上「Win主机」，跟 Mac 的会话区分开。
 claude remote-control --system-prompt "你运行在【Windows 主机】上(主机名 %COMPUTERNAME%，用户 %USERNAME%，工作目录 %STOCKAI%)，是 V88 的 7x24 常驻遥控终端。会话一开始就先说明你是 Win 主机，并把这次对话的主题定为「Win主机·V88遥控」，便于用户在手机 Code 区从标题分辨机器。注意边界：data/ 与 data/accounts.json 不在本机(只存 Mac)，涉及总资产/仓位占比的判断要说明需回 Mac；本机不跑流水线(云端 Actions 已覆盖)。" >> "%LOG%" 2>&1
 
+set "RC=%errorlevel%"
 call :stamp
-echo [%STAMP%] 遥控进程退出(码=%errorlevel%)，30 秒后重拉代码并重启>> "%LOG%"
+echo [%STAMP%] remote-control exited (code=%RC%), retry in 30s>> "%LOG%"
 timeout /t 30 /nobreak >nul
 goto loop
 
+
+REM ══════════════════════════════════════════════════════════════
+REM  安全 pull：镜像端「生成物冲突一律取远端」。
+REM  上游若留下未解决的 rebase/merge 冲突，会让之后每一轮 pull 都 fatal，
+REM  服务就永远起不来 —— 所以先清残局，再硬对齐 origin/main。
+REM ══════════════════════════════════════════════════════════════
+:safepull
+set "R=%~1"
+if not exist "%R%\.git" (
+  echo [%STAMP%]   skip: %R% is not a git repo>> "%LOG%"
+  goto :eof
+)
+git -C "%R%" pull --rebase --autostash origin main >> "%LOG%" 2>&1
+if not errorlevel 1 goto :eof
+
+echo [%STAMP%]   pull failed, clearing conflict state and hard-aligning to origin/main>> "%LOG%"
+git -C "%R%" rebase --abort  >> "%LOG%" 2>&1
+git -C "%R%" merge  --abort  >> "%LOG%" 2>&1
+git -C "%R%" fetch origin main >> "%LOG%" 2>&1
+git -C "%R%" reset --hard origin/main >> "%LOG%" 2>&1
+goto :eof
+
+
+REM ══════════════════════════════════════════════════════════════
+REM  时间戳：中文 Windows 的 %date% 形如「周四 2026/07/30」，
+REM  按 delims 切会把「周四」当成第一段，日期全乱 —— 所以走 PowerShell 取。
+REM ══════════════════════════════════════════════════════════════
 :stamp
-for /f "tokens=1-3 delims=/- " %%a in ("%date%") do set "YMD=%%a%%b%%c"
-set "YMD=%YMD:~0,8%"
-set "STAMP=%date% %time:~0,8%"
+for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd"') do set "YMD=%%i"
+for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-Date -Format \"yyyy-MM-dd HH:mm:ss\""') do set "STAMP=%%i"
 goto :eof

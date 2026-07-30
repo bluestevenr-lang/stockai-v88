@@ -19,8 +19,17 @@ Mac 变成可开可关。流水线仍然**不在任何个人电脑上跑**——
    ```
    powershell -ExecutionPolicy Bypass -File "%USERPROFILE%\Desktop\StockAI\win\常驻V88.ps1"
    ```
-3. 进 BIOS 打开 `Restore on AC Power Loss`（脚本改不了，断电后自动开机靠它）
-4. 手机验收：Claude App → Code 区 → 能看到这台 Win（电脑图标 + 绿点）
+3. **⚠️ 手动过两个交互闸（脚本代答不了，跳过则后台永远起不来）**——普通 PowerShell：
+   ```
+   cd "$env:USERPROFILE\Desktop\StockAI"
+   claude                     # 选 1. Yes, I trust this folder  然后 /exit
+   claude remote-control      # 对 Enable Remote Control? (y/n) 答 y  然后 Ctrl+C
+   ```
+   实测教训（2026-07-30）：漏掉这两步时日志一直刷
+   `Error: Workspace not trusted...` 和 `Enable Remote Control? (y/n)`，
+   任务显示 Running 但其实卡在等输入。
+4. 进 BIOS 打开 `Restore on AC Power Loss`（脚本改不了，断电后自动开机靠它）
+5. 手机验收：Claude App → Code 区 → 能看到这台 Win（电脑图标 + 绿点）
 
 > 若未装 Claude Code：`irm https://claude.ai/install.ps1 | iex`
 > 装完**必须先手动跑一次 `claude` 登录**（与手机同账号），
