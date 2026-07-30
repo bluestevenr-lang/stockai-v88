@@ -33,6 +33,17 @@ set "HTTPS_PROXY=%https_proxy%"
 REM —— Claude Code 原生安装目录（装完不会自动进 PATH，任务计划下尤其拿不到）——
 set "PATH=%PATH%;%USERPROFILE%\.local\bin"
 
+REM ── git 绝不交互（这条是命门）───────────────────────────────────
+REM  实测 2026-07-30: 私仓 pull 会打印 "please complete authentication in your browser"。
+REM  后台任务(S4U,无人登录)弹不出浏览器也没人点 -> git 永远挂着 -> 整个循环卡死,
+REM  日志停在 "pull ai-daily-report-v2 (private repo)..." 之后再无下文。
+REM  故强制关掉一切凭据交互:拿不到就【立刻失败】,让服务跳过 pull 继续起 claude。
+REM  代价只是数据不刷新(用磁盘上的旧快照),远好过整个遥控主机躺死。
+set "GIT_TERMINAL_PROMPT=0"
+set "GCM_INTERACTIVE=never"
+set "GIT_ASKPASS="
+set "SSH_ASKPASS="
+
 :loop
 call :stamp
 set "LOG=%LOGDIR%\remote_%YMD%.log"
@@ -109,13 +120,17 @@ if not exist "%R%\.git" (
   echo [%STAMP%]   skip: %R% is not a git repo>> "%LOG%"
   goto :eof
 )
-git -C "%R%" pull --rebase --autostash origin main >> "%LOG%" 2>&1
+git -C "%R%" -c credential.interactive=false pull --rebase --autostash origin main >> "%LOG%" 2>&1
 if not errorlevel 1 goto :eof
 
-echo [%STAMP%]   pull failed, clearing conflict state and hard-aligning to origin/main>> "%LOG%"
+echo [%STAMP%]   pull failed (auth or conflict), trying to self-heal; will NOT block startup>> "%LOG%"
 git -C "%R%" rebase --abort  >> "%LOG%" 2>&1
 git -C "%R%" merge  --abort  >> "%LOG%" 2>&1
-git -C "%R%" fetch origin main >> "%LOG%" 2>&1
+git -C "%R%" -c credential.interactive=false fetch origin main >> "%LOG%" 2>&1
+if errorlevel 1 (
+  echo [%STAMP%]   fetch failed too -> keeping on-disk snapshot, continuing anyway>> "%LOG%"
+  goto :eof
+)
 git -C "%R%" reset --hard origin/main >> "%LOG%" 2>&1
 goto :eof
 
