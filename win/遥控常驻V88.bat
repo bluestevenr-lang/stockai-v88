@@ -39,10 +39,22 @@ set "LOG=%LOGDIR%\remote_%YMD%.log"
 
 echo [%STAMP%] ---- round start ----------------------->> "%LOG%"
 
-REM  claude 缺失就不要死循环刷日志，慢速重试等人来装
-where claude >nul 2>&1
-if errorlevel 1 (
+REM ── 解析 claude 可执行文件的【绝对路径】────────────────────────
+REM  实测 2026-07-30: 裸写 claude 在任务计划(S4U)环境下返回 9009(命令找不到),
+REM  同一条命令在人工 PowerShell 里却正常 —— 后台环境的 PATH/用户配置不可靠。
+REM  故改为绝对路径优先,并把诊断信息落盘,免得再靠猜。
+set "CLAUDE="
+if exist "%USERPROFILE%\.local\bin\claude.exe"         set "CLAUDE=%USERPROFILE%\.local\bin\claude.exe"
+if not defined CLAUDE if exist "%LOCALAPPDATA%\Programs\claude\claude.exe" set "CLAUDE=%LOCALAPPDATA%\Programs\claude\claude.exe"
+if not defined CLAUDE if exist "%APPDATA%\npm\claude.cmd"  set "CLAUDE=%APPDATA%\npm\claude.cmd"
+if not defined CLAUDE for /f "delims=" %%i in ('where claude 2^>nul') do if not defined CLAUDE set "CLAUDE=%%i"
+
+echo [%STAMP%] diag USERPROFILE=%USERPROFILE%>> "%LOG%"
+echo [%STAMP%] diag resolved CLAUDE=%CLAUDE%>> "%LOG%"
+
+if not defined CLAUDE (
   echo [%STAMP%] FATAL: claude not found. Run: irm https://claude.ai/install.ps1 ^| iex >> "%LOG%"
+  echo [%STAMP%] FATAL: also check that %%USERPROFILE%%\.local\bin\claude.exe exists >> "%LOG%"
   timeout /t 600 /nobreak >nul
   goto loop
 )
@@ -60,7 +72,7 @@ REM  让它开场自报身份，标题就会带上「Win主机」，跟 Mac 的�
 REM  --spawn=same-dir: 不加这个参数,首次会弹交互问 spawn mode(实测 2026-07-30),后台无人代答会卡死。
 REM  必须 same-dir: worktree 模式给每个会话开独立 git worktree,而 data/ 与 .env 都被 gitignore,
 REM  worktree 里没有这些文件 -> V88 脚本全跑不起来。
-claude remote-control --spawn=same-dir --system-prompt "你运行在【Windows 主机】上(主机名 %COMPUTERNAME%，用户 %USERNAME%，工作目录 %STOCKAI%)，是 V88 的 7x24 常驻遥控终端。会话一开始就先说明你是 Win 主机，并把这次对话的主题定为「Win主机·V88遥控」，便于用户在手机 Code 区从标题分辨机器。注意边界：data/ 与 data/accounts.json 不在本机(只存 Mac)，涉及总资产/仓位占比的判断要说明需回 Mac；本机不跑流水线(云端 Actions 已覆盖)。" >> "%LOG%" 2>&1
+"%CLAUDE%" remote-control --spawn=same-dir --system-prompt "你运行在【Windows 主机】上(主机名 %COMPUTERNAME%，用户 %USERNAME%，工作目录 %STOCKAI%)，是 V88 的 7x24 常驻遥控终端。会话一开始就先说明你是 Win 主机，并把这次对话的主题定为「Win主机·V88遥控」，便于用户在手机 Code 区从标题分辨机器。注意边界：data/ 与 data/accounts.json 不在本机(只存 Mac)，涉及总资产/仓位占比的判断要说明需回 Mac；本机不跑流水线(云端 Actions 已覆盖)。" >> "%LOG%" 2>&1
 
 set "RC=%errorlevel%"
 call :stamp
