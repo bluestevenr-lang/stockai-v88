@@ -1,44 +1,53 @@
 @echo off
 chcp 65001 >nul
-REM ══════════════════════════════════════════════════════════════
-REM  V88 遥控常驻服务（Windows 主机版）— 2026-07-30
+REM ==============================================================
+REM  V88 remote-control resident service (Windows host) - 2026-07-30
 REM
-REM  与 手机遥控V88.bat 的区别：
-REM    手机遥控V88.bat = 人手双击、有 pause、关窗即下线（交互版）
-REM    本文件          = 任务计划程序调用、无 pause、崩了自己重起（服务版）
+REM  Difference from the phone-remote bat (win\ + phone-remote name):
+REM    phone-remote bat = manual double-click, has pause, offline when window closes (interactive)
+REM    this file        = launched by Task Scheduler, no pause, self-restart on crash (service)
 REM
-REM  职责：① 拉两仓 ② 设代理 ③ 起 claude remote-control
-REM        ④ 进程若退出，等 30 秒重新拉代码再起（等价 Mac 的 KeepAlive）
+REM  Duties: 1) pull both repos  2) set proxy  3) start claude remote-control
+REM          4) if the process exits, wait 30s, re-pull, restart (same as Mac KeepAlive)
 REM
-REM  ⚠️ 首次必须先手动过两个交互闸（本脚本无法代答）：
-REM     1) cd StockAI 后跑一次 claude，选「Yes, I trust this folder」
-REM     2) 跑一次 claude remote-control，对「Enable Remote Control? (y/n)」答 y
-REM     两个都会记住，之后本服务才能无人值守启动。
+REM  WARNING: two interactive gates must be cleared by hand once (this script cannot answer them):
+REM     1) cd StockAI, run claude once, choose "Yes, I trust this folder"
+REM     2) run claude remote-control once, answer y to "Enable Remote Control? (y/n)"
+REM     Both are remembered; only after that can this service start unattended.
 REM
-REM  日志：win\logs\remote_YYYYMMDD.log（内容一律 ASCII，避免中文控制台编码乱码）
-REM ══════════════════════════════════════════════════════════════
+REM  Log: win\logs\remote_YYYYMMDD.log (ASCII only, avoids console codepage garbage)
+REM
+REM  ENCODING RULE: this file MUST be pure ASCII, comments included.
+REM  Measured 2026-07-30: under "UTF-8 without BOM + chcp 65001", cmd mis-slices lines
+REM  containing Chinese bytes. Via the Run key (auto-logon timing) the Chinese REM lines
+REM  were executed as commands and "claude" was truncated to "aude"; bridge never started.
+REM  Double-click did not reproduce it. Keep every byte in this file ASCII.
+REM ==============================================================
 
 set "STOCKAI=%USERPROFILE%\Desktop\StockAI"
 set "REPORT=%USERPROFILE%\Desktop\ai-daily-report-v2"
 set "LOGDIR=%STOCKAI%\win\logs"
 if not exist "%LOGDIR%" mkdir "%LOGDIR%" >nul 2>&1
 
-REM —— 代理（与 启动V88.bat / 手机遥控V88.bat 保持一致的 Clash 混合端口）——
-REM  Claude Code 需连 api.anthropic.com；国内源代码里已强制直连，不受影响。
+REM -- proxy (same Clash mixed port as the launcher / phone-remote bats) --
+REM  Claude Code needs api.anthropic.com; domestic data sources are forced direct in code.
 set "http_proxy=http://127.0.0.1:7897"
 set "https_proxy=http://127.0.0.1:7897"
 set "HTTP_PROXY=%http_proxy%"
 set "HTTPS_PROXY=%https_proxy%"
 
-REM —— Claude Code 原生安装目录（装完不会自动进 PATH，任务计划下尤其拿不到）——
+REM -- Claude Code native install dir (not added to PATH automatically, especially under Task Scheduler) --
 set "PATH=%PATH%;%USERPROFILE%\.local\bin"
 
-REM ── git 绝不交互（这条是命门）───────────────────────────────────
-REM  实测 2026-07-30: 私仓 pull 会打印 "please complete authentication in your browser"。
-REM  后台任务(S4U,无人登录)弹不出浏览器也没人点 -> git 永远挂着 -> 整个循环卡死,
-REM  日志停在 "pull ai-daily-report-v2 (private repo)..." 之后再无下文。
-REM  故强制关掉一切凭据交互:拿不到就【立刻失败】,让服务跳过 pull 继续起 claude。
-REM  代价只是数据不刷新(用磁盘上的旧快照),远好过整个遥控主机躺死。
+REM -- git must never go interactive (this one is the jugular) ----
+REM  Measured 2026-07-30: pulling the private repo prints
+REM  "please complete authentication in your browser".
+REM  A background task (S4U, nobody logged on) cannot pop a browser and nobody clicks it
+REM  -> git hangs forever -> the whole loop is stuck, log stops right after
+REM  "pull ai-daily-report-v2 (private repo)..." with nothing following.
+REM  So kill every credential prompt: if it cannot get creds, FAIL IMMEDIATELY, let the
+REM  service skip the pull and still start claude.
+REM  The cost is only stale data (on-disk snapshot), far better than a dead remote host.
 set "GIT_TERMINAL_PROMPT=0"
 set "GCM_INTERACTIVE=never"
 set "GIT_ASKPASS="
@@ -50,10 +59,11 @@ set "LOG=%LOGDIR%\remote_%YMD%.log"
 
 echo [%STAMP%] ---- round start ----------------------->> "%LOG%"
 
-REM ── 解析 claude 可执行文件的【绝对路径】────────────────────────
-REM  实测 2026-07-30: 裸写 claude 在任务计划(S4U)环境下返回 9009(命令找不到),
-REM  同一条命令在人工 PowerShell 里却正常 —— 后台环境的 PATH/用户配置不可靠。
-REM  故改为绝对路径优先,并把诊断信息落盘,免得再靠猜。
+REM -- resolve the ABSOLUTE path of the claude executable ---------
+REM  Measured 2026-07-30: bare "claude" returns 9009 (command not found) under
+REM  Task Scheduler (S4U), while the same command works in a manual PowerShell ->
+REM  the background environment's PATH / user config is not reliable.
+REM  So prefer an absolute path and write diagnostics to disk instead of guessing.
 set "CLAUDE="
 if exist "%USERPROFILE%\.local\bin\claude.exe"         set "CLAUDE=%USERPROFILE%\.local\bin\claude.exe"
 if not defined CLAUDE if exist "%LOCALAPPDATA%\Programs\claude\claude.exe" set "CLAUDE=%LOCALAPPDATA%\Programs\claude\claude.exe"
@@ -75,10 +85,12 @@ call :safepull "%STOCKAI%"
 echo [%STAMP%] pull ai-daily-report-v2 (private repo)...>> "%LOG%"
 call :safepull "%REPORT%"
 
-REM ── 物化 CLAUDE.md ────────────────────────────────────────────
-REM  仓库根 CLAUDE.md 在 StockAI 的 .gitignore 第68行被排除,同步不到本机,
-REM  Win 端 Claude 就读不到项目约定与边界。故用入仓的 win\CLAUDE-win.md 作真源,
-REM  每轮启动前复制成根 CLAUDE.md(Claude 会自动读取)。要改内容改 win\CLAUDE-win.md。
+REM -- materialize CLAUDE.md --------------------------------------
+REM  The repo-root CLAUDE.md is excluded by line 68 of StockAI's .gitignore, so it never
+REM  syncs to this host and the Win-side Claude cannot read the project rules/boundaries.
+REM  So the committed win\CLAUDE-win.md is the single source of truth, copied to the root
+REM  CLAUDE.md on every round (Claude reads it automatically).
+REM  To change the content, edit win\CLAUDE-win.md.
 copy /Y "%STOCKAI%\win\CLAUDE-win.md" "%STOCKAI%\CLAUDE.md" >nul 2>&1
 if errorlevel 1 (
   echo [%STAMP%] WARN: failed to materialize CLAUDE.md from win\CLAUDE-win.md>> "%LOG%"
@@ -89,21 +101,24 @@ if errorlevel 1 (
 cd /d "%STOCKAI%"
 echo [%STAMP%] starting claude remote-control ...>> "%LOG%"
 
-REM  --system-prompt: 手机端 Code 区列表只显示会话标题，无法从名字分辨是哪台机器。
-REM  让它开场自报身份，标题就会带上「Win主机」，跟 Mac 的会话区分开。
-REM  --spawn=same-dir: 不加这个参数,首次会弹交互问 spawn mode(实测 2026-07-30),后台无人代答会卡死。
-REM  必须 same-dir: worktree 模式给每个会话开独立 git worktree,而 data/ 与 .env 都被 gitignore,
-REM  worktree 里没有这些文件 -> V88 脚本全跑不起来。
+REM  --spawn=same-dir: without it the first run asks interactively about spawn mode
+REM  (measured 2026-07-30); nobody can answer in the background and it hangs.
+REM  same-dir is mandatory: worktree mode gives each session its own git worktree, but
+REM  data/ and .env are gitignored, so a worktree has neither -> no V88 script can run.
 REM
-REM  ⚠️ 命令行一律 ASCII —— 实测 2026-07-30 教训:
-REM  这里原先带一长串中文/全角符号的 --system-prompt,导致 exit 9009(cmd 没把命令拼对);
-REM  绝对路径已验证正确、claude.exe 确实存在、且瞬间退出无任何输出 ==> 是 .bat 在
-REM  「UTF-8 无 BOM + chcp 65001」下解析多字节字符时截断了命令行,不是 claude 的问题。
-REM  Win 主机的身份与边界已改由仓库根 CLAUDE.md 承载(Claude 自动读取),这里不再传中文。
-REM  --name: help 明确写「Name for the session (shown in claude.ai/code)」——
-REM         这就是手机 Code 区分辨机器的正解(必须 ASCII,中文会让 cmd 截断命令行)。
-REM  --verbose/--debug-file: 实测 2026-07-30 后台下 Capacity 一直 0/32,
-REM         连 help 说的「启动时预建一个会话」都没成,且主日志零报错 ==> 需要 debug 通道。
+REM  COMMAND LINE MUST BE ASCII - lesson measured 2026-07-30:
+REM  this line used to carry a long Chinese/full-width --system-prompt, which caused
+REM  exit 9009 (cmd did not assemble the command correctly); the absolute path was
+REM  verified correct, claude.exe did exist, and it exited instantly with no output
+REM  ==> the .bat parser truncated the command line on multi-byte characters under
+REM  "UTF-8 without BOM + chcp 65001". Not a claude problem.
+REM  The Win host identity/boundaries now live in the repo-root CLAUDE.md (auto-read),
+REM  so no Chinese is passed here anymore.
+REM  --name: help says "Name for the session (shown in claude.ai/code)" - this is the
+REM         right way to tell hosts apart in the phone Code list (ASCII only).
+REM  --verbose/--debug-file: measured 2026-07-30, Capacity stayed 0/32 in the background,
+REM         even the documented "pre-create one session at startup" never happened, and the
+REM         main log had zero errors ==> a debug channel is required.
 "%CLAUDE%" remote-control --spawn=same-dir --name "V88-Win-Host" --verbose --debug-file "%LOGDIR%\rc_debug_%YMD%.log" >> "%LOG%" 2>&1
 
 set "RC=%errorlevel%"
@@ -113,11 +128,11 @@ timeout /t 30 /nobreak >nul
 goto loop
 
 
-REM ══════════════════════════════════════════════════════════════
-REM  安全 pull：镜像端「生成物冲突一律取远端」。
-REM  上游若留下未解决的 rebase/merge 冲突，会让之后每一轮 pull 都 fatal，
-REM  服务就永远起不来 —— 所以先清残局，再硬对齐 origin/main。
-REM ══════════════════════════════════════════════════════════════
+REM ==============================================================
+REM  safe pull: on a mirror host, generated-file conflicts always take the remote side.
+REM  If upstream leaves an unresolved rebase/merge, every later pull goes fatal and the
+REM  service never starts - so clean up the wreckage first, then hard-align to origin/main.
+REM ==============================================================
 :safepull
 set "R=%~1"
 if not exist "%R%\.git" (
@@ -139,10 +154,11 @@ git -C "%R%" reset --hard origin/main >> "%LOG%" 2>&1
 goto :eof
 
 
-REM ══════════════════════════════════════════════════════════════
-REM  时间戳：中文 Windows 的 %date% 形如「周四 2026/07/30」，
-REM  按 delims 切会把「周四」当成第一段，日期全乱 —— 所以走 PowerShell 取。
-REM ══════════════════════════════════════════════════════════════
+REM ==============================================================
+REM  timestamp: on Chinese Windows %date% looks like "Thu 2026/07/30" with a Chinese
+REM  weekday first, so splitting by delims takes the weekday as the first field and the
+REM  date is garbage - use PowerShell instead.
+REM ==============================================================
 :stamp
 for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMdd"') do set "YMD=%%i"
 for /f "delims=" %%i in ('powershell -NoProfile -Command "Get-Date -Format \"yyyy-MM-dd HH:mm:ss\""') do set "STAMP=%%i"
