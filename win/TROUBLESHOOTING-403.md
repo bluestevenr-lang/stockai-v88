@@ -20,7 +20,12 @@
 > `worker 403 ×14`、心跳 0。错误原因：把「唯一还没排除的差异」当成了原因，
 > 而 S4U 只是相关、不是因果。**这一步让你白改了一次任务口令，抱歉。**
 >
+> **勘误 3（本次）**：曾把「任务计划进程没有交互会话 / 桌面」列为待验证假设。
+> **已验证不成立** —— 任务改成 `LogonType=InteractiveToken` + 登录时触发后，
+> bridge 确实跑在 `SessionId=1`（已核验），epoch=11 照样全线 403 而死。
+>
 > 现在成立的只是一条**相关性**（下节），机制仍未查明。
+> **已经连错三次，所以下文严格区分「实测事实」与「未验证假设」，不再给第四个理论。**
 
 ## 结论先行
 
@@ -47,8 +52,15 @@
 | **8** | **19:04** | **交互 spawn** | **新** | **ok** | **7** | **0** | **活 160s**（人为终止）|
 | **9** | **19:07** | **交互跑同一个 .bat**（`CLAUDE*` 变量已剥净） | **新** | **ok** | **13** | **0** | **活 276s** |
 | 10 | 19:25 | 计划任务（**已改 `LogonType=Password`**） | 新 | **403** | **0** | 14 | **死** |
+| 11 | 19:35 | 计划任务（**已改 `InteractiveToken`，`SessionId=1` 已核验**） | 新 | **403** | **0** | 多 | **死** |
+| **12** | **19:37** | **交互 spawn**（决胜局，紧跟 epoch 11 失败之后 1 分钟） | **新** | **ok** | **6** | **0** | **活**（过线）|
 
-**汇总：计划任务启动 6/6 全死（S4U ×5 + Password ×1），交互启动 3/3 全通。**
+**汇总：任务计划启动全死（`S4U` / `Password` / `InteractiveToken` 三种登录方式都试过），
+交互 shell 启动 4/4 全通。**
+
+**epoch 11→12 是最干净的一组对照**：相隔 1 分钟、同一台机器、同一 `SessionId=1`、
+同一份令牌、同一 session id —— 计划任务那个死，交互那个活。
+这同时排掉了「那三次成功只是 18:52–19:12 的上游好窗口」的怀疑。
 
 **判据：`Heartbeat sent` 是会话健康的铁证。**
 死的那几轮 `hb=0`（注册后 1 秒就全线 403，从没活到发心跳）；
@@ -63,12 +75,13 @@
 
 ### 已排除：登录类型不是原因，环境变量也不是
 
-**登录类型不是原因** —— 两种都实测过，都死：
+**登录类型 / 会话号不是原因** —— 三种登录方式都实测过，都死：
 
 ```
-LogonType = S4U       (epoch 1-5, 7)  -> 死
-LogonType = Password  (epoch 10)      -> 死      ★推翻了 S4U 假设★
-RunLevel  = HighestAvailable（两者相同）
+LogonType = S4U              (epoch 1-5, 7)  -> 死
+LogonType = Password         (epoch 10)      -> 死   ★推翻 S4U 假设★
+LogonType = InteractiveToken (epoch 11)      -> 死   ★推翻「无交互会话」假设★
+   ↑ 这一轮 bridge 实测跑在 SessionId=1，与成功轮完全一样，仍然 403
 ```
 
 **环境变量不是原因** —— 用一次性计划任务 dump 了任务计划进程的完整环境
@@ -84,9 +97,26 @@ RunLevel  = HighestAvailable（两者相同）
 - 不存在 `C:\Windows\System32\config\systemprofile\.claude`；
   用户级 / 机器级均无 `ANTHROPIC_*` / `CLAUDE_*`。
 
-**所以剩下的是结构性差异**：任务计划启动的进程**没有交互会话、没有窗口站与桌面**
-（成功轮全部跑在 `SessionId=1`，而任务计划环境里连 `SESSIONNAME` 都不存在）。
-**这条尚未验证，是下一步该测的假设，不是结论。**
+**变量值也不是原因** —— 第二轮 dump 改用 `InteractiveToken` 主体（与真实任务同主体），
+与交互 shell 做**值级**逐项比对，全部 60+ 个变量里只有两个不同：
+
+```
+PATHEXT       交互侧多一个 .CPL
+PSMODULEPATH  交互侧多了 用户 Documents\WindowsPowerShell\Modules
+```
+
+两者与鉴权毫无关系。**至此环境这条线彻底排除。**
+
+**剩下唯一还没查的可测差异：父进程链。**
+
+```
+通 (4/4)：explorer.exe -> powershell -> claude(我的会话) -> powershell -> Start-Process -> claude.exe
+死 (全部)：svchost.exe(Schedule) -> cmd.exe -> claude.exe
+```
+
+**这是观察，不是结论** —— 我没有验证父进程链为什么会影响 `/v1/code/sessions/*/worker`
+的鉴权结果。但它给出了一个**可以照抄的方向**：让启动者变成 `explorer.exe`
+（登录时由「启动」文件夹 / `HKCU\...\Run` 拉起），而不是任务计划。
 
 一条仍然重要的形态证据：失败轮里 **bridge 层 `work/poll` 返回 200，子会话层全线 403**
 （`Bootstrap` / `org fast mode` / `claudeai-mcp` / `worker` / 1P 遥测一起 403）。
@@ -95,25 +125,39 @@ RunLevel  = HighestAvailable（两者相同）
 
 ## 下一步（**均未执行**，需要你选）
 
-**A. 改用交互会话触发（最贴合已知可用条件，且不要口令）**
-把任务改成「**只在用户登录时运行**」+ 触发器「登录时」——
-`LogonType` 会变成 `InteractiveToken`，进程跑在 `SessionId=1`、有真实桌面，
-**与 3/3 通过的那三轮条件一致**。等价做法：把启动器丢进「启动」文件夹或
-`HKCU\...\Run`。
+**A. 弃用任务计划，改由 explorer 在登录时拉起（唯一还没试过的启动方式）**
+把启动器放进「启动」文件夹或写 `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`。
+这两者都由 **`explorer.exe`** 在登录时拉起 —— 正是 4/4 成功轮的那条父进程链。
+配合你要开的 netplwiz 自动登录，闭环是：
 
-- 代价：**失去「无人登录也跑」**。需要这台机器保持登录（可配自动登录 + 锁屏）。
-- 这是目前**唯一有实测依据**的方向 —— 它复制的正是已验证可用的条件。
+```
+断电恢复 / 开机 -> 自动登录(netplwiz) -> explorer 启动
+              -> Run 键拉起 遥控常驻V88.bat -> bridge 跑在会话 1
+              -> 随后锁屏(rundll32 user32.dll,LockWorkStation)
+```
+
+- **这不是新理论**，是照抄已实测可用的条件（换掉唯一还剩的那个差异：启动者）。
+- 代价：需要保持登录态（自动登录 + 锁屏来兜安全）。
+- **锁屏必须在 bat 之前或与之并列**，不能追加成任务计划的第二个操作 ——
+  bat 是死循环永不返回，顺序执行的第二个操作永远等不到。
+- **仍未验证的点**：bridge 在**锁屏状态下**能否持续存活。必须单独测，
+  别和自动登录一起上（今天已经吃过「一次改两个变量」的亏）。
 
 **B. 直接发工单**
-本地能查的都查完了：令牌、scope、环境、指针、代理、CLI 版本、登录类型、
-环境变量、配置路径全部排除。文末证据清单已按端点 / UTC 时刻 / 账号组织标识备好。
+本地能查的都查完了：令牌、scope、指针、环境 id、代理、CLI 版本、
+**登录类型（三种）**、**环境变量（名与值）**、配置路径 —— 全部排除。
+文末证据清单已按端点 / UTC 时刻 / 账号组织标识备好。
 
-> 不建议再继续猜第三个理论 —— 本文件已被推翻两次，代价是你白改了一次任务口令。
-> A 的价值在于它不是新理论，而是「照抄已知能跑的条件」。
+**建议 A 和 B 并行**：A 有实测依据、成本低；B 不依赖 A 的结果。
+无论 A 成不成，`/v1/code/sessions/*/worker` 对同一份令牌因启动方式不同而 403，
+本身就值得让官方看一眼。
 
-**当前状态：`V88-遥控常驻` 已 `schtasks /end` 停掉，`LogonType` 保持在你改好的
-`Password`，触发器仍是开机自起 —— 即下次重启它会自己起来并继续空转刷日志。**
-若不打算马上做 A，建议先 `schtasks /change /tn "V88-遥控常驻" /disable`。
+**当前状态**：`V88-遥控常驻` 已 `schtasks /end` 停掉；`LogonType` 现为
+`InteractiveToken`、触发器为「登录时」（本次为验收所改，**已证明无效**）。
+它下次登录会自己起来并继续空转刷日志 —— 若不马上做 A，建议先
+`schtasks /change /tn "V88-遥控常驻" /disable`。
+
+遥控当前**可用**：交互 shell 起的 bridge（见「排障动作清单」），已 4/4 验证。
 
 **当前状态：`V88-遥控常驻` 已被我 `schtasks /end` 停掉，且刻意没有重新 `/run`。**
 理由：它在 S4U 下每 30 秒拉起一个必死的会话，纯粹刷日志、毫无产出。
@@ -224,6 +268,24 @@ RunLevel  = HighestAvailable（两者相同）
 19:26+    dump 任务计划进程环境与交互 shell 逐项对比 => 凭据路径一致，无变量可解释
 ```
 
+### 第六阶段：改 InteractiveToken + 登录时触发 —— 也失败，随后决胜局
+
+```
+19:34     任务改 LogonType=Interactive、触发器 BootTrigger -> LogonTrigger（备份见 quarantine）
+19:35:04  schtasks /run；19:35:08 bridge PID 20148，实测 SessionId=1
+19:35:17    registered worker epoch=11 attempt=1
+19:35:19    org fast mode 403 / Bootstrap 403 / SSETransport 403(permanent)
+19:35:21    worker 403 (attempt 1/10) … 一路打到 9/10，心跳 0   => 死
+          ==> 「无交互会话」假设被推翻：会话号一样，照样死
+19:37:29  【决胜局】交互 Start-Process 起 PID 18328（SessionId=1，与上一轮同）
+19:37:42    registered worker epoch=12 attempt=1
+19:37:44    Org fast mode: disabled / Bootstrap Fetch ok        <- 200
+19:40:25    心跳 6+ 次不断、worker 403 = 0、已过 140s 线          => 通
+          ==> 相隔 1 分钟、条件全同、仅启动者不同 -> 启动方式差异可复现
+19:38     用 InteractiveToken 同主体再 dump 环境做【值级】对比
+          => 仅 PATHEXT / PSMODULEPATH 不同，环境这条线彻底排除
+```
+
 ## 已证伪的假设（别再试）
 
 | 假设 | 证伪方式 | 结果 |
@@ -242,8 +304,11 @@ RunLevel  = HighestAvailable（两者相同）
 | 账号级封锁 | 同账号 Mac 端 worker 全天 200，两个会话持续 Connected | 证伪 |
 | 设备/机器/平台被服务端标记 | **同机同令牌同 env，交互启动 3/3 通、S4U 5/5 死** | 证伪 |
 | `USERPROFILE` / 配置目录在后台不同 | bat 每轮 `diag USERPROFILE=C:\Users\admin`，两轮相同；无 systemprofile\.claude | 证伪 |
-| **S4U 登录令牌不带凭据材料**（本文前一版的结论） | **改成 `LogonType=Password` 后 epoch=10 死法完全一样** | **证伪** |
-| 任务计划环境缺了某个关键变量 | dump 任务计划进程完整环境逐项对比：凭据路径全同；差异项逐个已证伪或与鉴权无关 | 证伪 |
+| **S4U 登录令牌不带凭据材料**（勘误 1 后的结论） | **改成 `LogonType=Password` 后 epoch=10 死法完全一样** | **证伪** |
+| **任务计划进程没有交互会话 / 桌面**（勘误 2 后的假设） | **改成 `InteractiveToken`、bridge 实测 `SessionId=1`，epoch=11 照样死** | **证伪** |
+| 任务计划环境缺了某个关键变量 | dump 完整环境比**变量名**：凭据路径全同，差异项逐个证伪 | 证伪 |
+| 任务计划环境某个变量**值**不同 | 用同主体（`InteractiveToken`）再 dump 一次比**值**：只有 `PATHEXT`(.CPL) 与 `PSMODULEPATH` 不同，均与鉴权无关 | 证伪 |
+| 那三次成功只是 18:52–19:12 的上游好窗口 | epoch 11（死）与 epoch 12（活）相隔 **1 分钟** | 证伪 |
 
 ## 指针文件的坑（踩过一次）
 
@@ -302,8 +367,9 @@ Start-Process "$env:USERPROFILE\.local\bin\claude.exe" `
 ## 复发 / 新现场的第一动作
 
 1. 抓子会话日志：有 `Heartbeat sent` 吗？**没有** = 会话层 403，**有** = 别的病。
-2. 确认进程的启动方式。**任务计划启动 = 已知必死**（S4U 与 Password 两种登录方式
-   都实测过，6/6 全死），先用交互方式起来救急。
+2. 确认进程的启动方式。**任务计划启动 = 已知必死**（`S4U` / `Password` /
+   `InteractiveToken` 三种登录方式都实测过，全死），先用交互方式起来救急。
+   一键核对三条判据：`powershell -NoProfile -ExecutionPolicy Bypass -File win\verify-remote-403.ps1`
 3. 若注册层 403（`Access denied … organization permissions`）→ **什么都别做**，
    bat 的 30s 重试循环会自愈（本次实测 3 分钟恢复）。
 4. **不要**再去换令牌 / 动指针 / 换环境 / 查代理 —— 上表全部证伪过。
@@ -353,11 +419,13 @@ POST /v1/messages（本机推理）                        -> 200
 
 **关键对照（请对方重点看这三条）**
 
-- `11:00:21Z`（S4U）和 `11:25:15Z`（**Password**）死的两轮，与 `10:52:15Z` /
-  `11:04:11Z` / `11:07:27Z` 活的三轮，**用的是同一份 OAuth 令牌、同一
-  environmentId、同一 sessionId、同一 CLI 2.1.220、同一台机器、同一个代理、
-  同一份启动脚本、同一个 `USERPROFILE`**。唯一差异：进程由**任务计划**启动
-  还是由**交互 shell** 启动。两种登录令牌类型（S4U / Password）都失败。
+- **最干净的一组：`11:35:17Z` 死 vs `11:37:42Z` 活，相隔 1 分钟**，
+  同一台机器、**同一 `SessionId=1`**、同一份 OAuth 令牌、同一 environmentId、
+  同一 sessionId、同一 CLI 2.1.220、同一代理、同一 `USERPROFILE`、
+  环境变量值级比对仅差 `PATHEXT`/`PSMODULEPATH`。
+  唯一差异：前者由**任务计划**启动，后者由**交互 shell** 启动。
+- 三种登录令牌类型（`S4U` / `Password` / `InteractiveToken`）经任务计划启动**全部失败**；
+  经交互 shell 启动 **4/4 全部成功**（`10:52:15Z`、`11:04:11Z`、`11:07:27Z`、`11:37:42Z`）。
 - **同一进程树内两条鉴权路径表现不同**：bridge 层 `work/poll` 与
   `/v1/environments/bridge` 返回 **200**，而它 spawn 出的子会话进程对
   `/v1/code/sessions/*/worker` 全部 **403**。
