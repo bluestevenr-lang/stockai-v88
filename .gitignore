@@ -52,6 +52,13 @@ agent_memory_*.json
 *.png
 *.log
 
+# ── Win 常驻主机运行时产物（整目录排除，安全命门）─────────
+#  *.log 只挡住日志本身，挡不住 quarantine 里的备份：
+#  win\logs\quarantine\credentials.*.json.bak 是【真实 accessToken/refreshToken】，
+#  而本仓库是公开仓 —— 任何人一次 git add -A 就会把令牌推上公网。
+#  故整目录排除（2026-07-30 实测 git add -An 确认会 stage 该 .bak）。
+win/logs/
+
 # ── macOS ────────────────────────────────────────────────
 .DS_Store
 
