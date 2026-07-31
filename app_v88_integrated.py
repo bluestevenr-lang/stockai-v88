@@ -3291,6 +3291,11 @@ try:
     # 【统一印证评级 2026-07-31 用户确认】徽章挂每行名称旁,全表按真实印证分降序
     _gr9map = (_cbj9("trend_quality.json").get("grades") or {})
 
+    def _tier_rank9(_cd):
+        """【07-31用户抓'3A排第三,分数打平但级别该置顶'】评级层级=第一排序键,
+        印证分只做同级内次序——3A(6分)绝不能被2A(同为6分)按插入顺序压到后面。"""
+        return {"3A": 3, "2A": 2, "1A": 1}.get((_gr9map.get(str(_cd)) or {}).get("grade"), 0)
+
     def _gbadge9(_cd, _now_px=None):
         """评级章(07-31终版·瘦身):窄列小字三行制——章/得分项/身份证;漂移>3%红标。"""
         _g9 = _gr9map.get(str(_cd)) or {}
@@ -3555,6 +3560,7 @@ try:
             _inv9x = (_re9t.search(r"跌破([0-9.]+)", str(_why9)) or None)
             _inv9s = _inv9x.group(1) if _inv9x else "见卡"
             _gb9v, _gs9v = _gbadge9(_cd9, _px9)
+            _gt9v = _tier_rank9(_cd9)
             _layfb9 = None
             if not _wbrows9.get(str(_cd9)):
                 _g9i = _gr9map.get(str(_cd9)) or {}
@@ -3564,7 +3570,7 @@ try:
                                + ("<br><span style='color:#dc2626'>🚫双剑否决在案</span>"
                                   if _g9i.get("rejected") else "")
                                + "<br><span style='color:#64748b'>②见仓位列 ③见触发列</span>")
-            _t_buy9.append((_gs9v, _row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9), '')}{_nm9}",
+            _t_buy9.append((_gt9v, _gs9v, _row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9), '')}{_nm9}",
                                    _cd9, f"<b style='color:#dc2626'>买 涨{_pu9}%</b>{_plab9(_pu9, 'up')}",
                                    _zone9s, _inv9s,
                                    _pos9(_wbrows9.get(str(_cd9)),
@@ -3706,7 +3712,7 @@ try:
                     _inv9x2 = round(float((_x9.get("entry_pullback") or [_x9.get("last")])[0]) * 0.92, 2)
                 except (TypeError, ValueError):
                     _inv9x2 = "入场价-8%"
-                _t_buy9.append((_gs9x, _row6_9(
+                _t_buy9.append((_tier_rank9(_x9.get("code")), _gs9x, _row6_9(
                     f"{_MKFLAG9.get(_x9.get('market'), '')}{_x9.get('name')}",
                     _x9.get("code"), _act9m, _trig9m, _inv9x2,
                     "1批", ("⚔️双剑✓" if _x9.get("dual_cert") else "🕐待双剑"),
@@ -3715,7 +3721,8 @@ try:
         except Exception:
             logging.exception("[V88] 3A并板失败")
             _v88_sentinel9(Path.home() / "Desktop" / "ai-daily-report-v2", "3A并板")
-        _t_buy9 = [h for _s9z, h in sorted(_t_buy9, key=lambda z: -z[0])]   # 真实印证分降序,3A首批
+        # 【07-31 用户抓"3A排第三"】评级层级=第一排序键(3A恒置顶),印证分只做同级内次序
+        _t_buy9 = [h for _t9z, _s9z, h in sorted(_t_buy9, key=lambda z: (-z[0], -z[1]))]
         _tab_b9, _tab_s9, _tab_h9 = st.tabs([f"✅确认买({len(_cb_rows9)})+3A榜({len(_tqrows9) if '_tqrows9' in dir() else 0})",
                                              f"⚔️卖/减({len(_cb_sell9)})", f"💼持有({len(_hold9)})"])
         with _tab_b9:
