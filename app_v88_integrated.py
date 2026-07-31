@@ -3870,8 +3870,13 @@ try:
                 # 【两尺分歧调解 2026-07-31 用户抓"汇丰既被移出又置顶"】CS(左侧均值回归尺)
                 # 拦下但已被3A雷达(右侧趋势尺)接管的股,不再谎称"已移出"——单独标⚖️两尺分歧;
                 # 同一code买卖两侧重复行去重(中烟双行案)
-                _board_cd9o = {str(x.get("code")) for x in (_tq3a9 if "_tq3a9" in dir() else [])
-                               if x.get("role") == "board"}
+                try:   # 榜面码集直接读落盘(与并板块同源,不依赖变量作用域)
+                    _board_cd9o = {str(x.get("code"))
+                                   for x in (_cbj9("trend_quality.json").get("rows") or [])
+                                   if x.get("role") == "board"}
+                except Exception:
+                    logging.exception("[V88] 两尺分歧码集读取失败")
+                    _board_cd9o = set()
                 _takeover9o, _seen9o = [], set()
                 for _x9o, _side9o in ([(x, "卖") for x in _cb_sell_off9]
                                       + [(x, "买") for x in _cb_buy_off9]):
