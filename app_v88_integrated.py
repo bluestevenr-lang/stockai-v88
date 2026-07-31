@@ -3092,6 +3092,44 @@ try:
                 f"<b>现{_px9c if _px9c is not None else '?'}</b><br>"
                 f"<span style='color:{'#16a34a' if _fresh9c else '#dc2626'};font-size:10px'>"
                 f"{'🟢' if _fresh9c else '⚠️'}{_lab9c}</span></td>")
+    # 【2026-07-31 用户"要有买入后预计空间:多少日到什么价;千红没告诉我为什么买、能涨多少"】
+    _row_by9 = {}
+    for _r9fb in _cb_src9:
+        _row_by9.setdefault(str(_r9fb.get("code")), _r9fb)
+    try:
+        _sr9x = json.loads((_cb_repo9 / "data" / "success_rates.json").read_text(encoding="utf-8"))
+        _eg9x = ((_sr9x.get("types") or {}).get("entry_green") or {})
+        _eg_txt9 = (f"实盘{_eg9x.get('rate')}%(n={_eg9x.get('n')})"
+                    if _eg9x.get("rate") is not None and int(_eg9x.get("n") or 0) >= 5
+                    else f"实盘积累中(n={_eg9x.get('n') or 0})")
+    except Exception:
+        _eg_txt9 = "实盘积累中"
+
+    def _space9(_cd):
+        """🎯预计空间一行:2周窗口(概率同口径),上看阻力位/下守止损,涨跌幅算给用户。
+        阻力≤现价(已站上,失真)则不给上看只给区间外提示——数值不合常识宁可不显示。"""
+        _r = _row_by9.get(str(_cd)) or {}
+        try:
+            _l = float(_r.get("last")); _res = _r.get("resistance"); _st = _r.get("stop")
+        except (TypeError, ValueError):
+            return ""
+        _parts = []
+        try:
+            if _res and float(_res) > _l * 1.005:
+                _parts.append(f"↑{_res}(+{(float(_res) - _l) / _l * 100:.1f}%)")
+        except (TypeError, ValueError):
+            pass
+        try:
+            if _st and float(_st) < _l * 0.995:
+                _parts.append(f"↓{_st}({(float(_st) - _l) / _l * 100:.1f}%)")
+        except (TypeError, ValueError):
+            pass
+        if not _parts:
+            return ""
+        return ("<br><span style='color:#7c3aed;font-size:10.5px' "
+                "title='预计空间:2周(约10交易日)窗口,与涨概率同口径。上看=引擎技术阻力位,"
+                f"下守=止损;概率为规则估计,入场窗口信号{_eg_txt9}'>🎯2周 "
+                + " ".join(_parts) + " ⓘ</span>")
     for _r9 in _cb_src9:
         _ep9 = _r9.get("entry_plan") or {}
         _md9 = str(_ep9.get("mode") or "")
@@ -3253,6 +3291,15 @@ try:
             _lk = (f"<a href='?q={_cd}&focus=deep#v88-deep-analysis' target='_blank' rel='noopener' "
                    f"style='text-decoration:underline;color:inherit'>{_nm}</a>")
             _wcell = "<td></td>"
+            if not _wnow:   # 【2026-07-31 千红案"没告诉我为什么买"】why_buy没覆盖的行,
+                # 用引擎自己的周期结论/入场note兜底——宁可给"周期未共振,等待触发"也不给空白
+                _rfb9 = _row_by9.get(str(_cd)) or {}
+                _fbtx9 = str(_rfb9.get("cycle_note") or _rfb9.get("entry_note")
+                             or _rfb9.get("diag_why") or "").strip()
+                if _fbtx9:
+                    _wcell = (f"<td title=\"引擎周期结论(why_buy未覆盖此票时的兜底口径)\" "
+                              f"style='font-size:11px;color:#64748b;max-width:230px'>📐"
+                              f"{_fbtx9[:60]} ⓘ</td>")
             if _wnow:
                 _tip = (f"{_wnow.get('kind')}｜{_wnow.get('why_now')}　"
                         f"⏳{_wnow.get('hold')}　🚪失效:{_wnow.get('fail')}").replace('"', "'")
@@ -3308,6 +3355,7 @@ try:
             _st9x = {"weak": "⏸弱市·只挂单", "hot": "🔶大盘过热"}.get(_g9x.get("state"), "✅可执行")
             _zone9x = (_re9t.search(r"([0-9.]+[~～][0-9.]+)", str(_why9)) or [None])
             _zone9s = _zone9x.group(1).replace("~", "～") if hasattr(_zone9x, "group") and _zone9x.group(1) else f"现{_px9}"
+            _zone9s += _space9(_cd9)   # 🎯预计空间:多少日、上看哪、下守哪
             _inv9x = (_re9t.search(r"跌破([0-9.]+)", str(_why9)) or None)
             _inv9s = _inv9x.group(1) if _inv9x else "见卡"
             _t_buy9.append(_row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9), '')}{_nm9}",
