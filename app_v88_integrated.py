@@ -17106,359 +17106,360 @@ def _render_today_nav():
                     _out9.append(dict(zip(_header9, _cells9)))
             return _out9, _time9
 
-        _advice_rows9, _advice_time9 = _holding_advice_rows9(_rep)
-        _advice_by_name9 = {}
-        for _ar9 in _advice_rows9:
-            _advice_by_name9.setdefault(str(_ar9.get("持仓", "")).strip(), []).append(_ar9)
-        _combined_hold9 = []
-        for _hr9 in _rows_pt:
-            _nm9 = str(_hr9.get("名称", "")).strip()
-            _choices9 = _advice_by_name9.get(_nm9) or []
-            _ar9 = _choices9.pop(0) if _choices9 else {}
-            _combined_hold9.append({**_ar9, **_hr9, "市场": market_of_code(str(_hr9.get("代码", "")))})
+        if _V88_WATCHLIST_UI:   # 2026-07-31 用户'这个模块删掉,鸡肋'——持仓框架化建议表撤(数据源=已停用的日报AI正文,全表'—';下方另有持仓模块)
+            _advice_rows9, _advice_time9 = _holding_advice_rows9(_rep)
+            _advice_by_name9 = {}
+            for _ar9 in _advice_rows9:
+                _advice_by_name9.setdefault(str(_ar9.get("持仓", "")).strip(), []).append(_ar9)
+            _combined_hold9 = []
+            for _hr9 in _rows_pt:
+                _nm9 = str(_hr9.get("名称", "")).strip()
+                _choices9 = _advice_by_name9.get(_nm9) or []
+                _ar9 = _choices9.pop(0) if _choices9 else {}
+                _combined_hold9.append({**_ar9, **_hr9, "市场": market_of_code(str(_hr9.get("代码", "")))})
 
-        if _advice_time9:
-            st.caption("🕒 " + _advice_time9)
-        if _combined_hold9:
-            _market_specs9 = (("🇺🇸美股", "🇺🇸 美股"), ("🇭🇰港股", "🇭🇰 港股"), ("🇨🇳A股", "🇨🇳 A股"))
-            _market_tabs9 = st.tabs([
-                f"{_label9}（{sum(1 for r in _combined_hold9 if r['市场'] == _mk9)}）"
-                for _mk9, _label9 in _market_specs9
-            ])
-            for _tab9, (_mk9, _label9) in zip(_market_tabs9, _market_specs9):
-                with _tab9:
-                    _mr9 = [r for r in _combined_hold9 if r["市场"] == _mk9]
-                    if not _mr9:
-                        st.caption("暂无该市场持仓")
-                        continue
-                    _tbl9 = ["|持仓|级别|层|现价|盈亏|历史水位|基本面|技术面|新闻面|综合建议|",
-                             "|---|---|---|---:|---:|---|---|---|---|---|"]
-                    # 【V88·占位根治 2026-07-21】日报持仓段已改叙述式,旧表格解析不到字段→
-                    # 曾经13只×8列全是"待下轮日报"(用户看到104个占位)。缺字段改用session实时
-                    # 决策回填(stage/action/归因,数据比日报还新),实在没有才标"待实时扫描"。
-                    _wa_code9 = {str(d.get("code")): d
-                                 for d in ((_wa or {}).get("decisions") or [])}
-                    for _r9 in _mr9:
-                        _code9 = str(_r9.get("代码", ""))
-                        _base9 = str(_r9.get("级别") or "B").upper()
-                        # 【2026-07-18修】_wa可能为None(扫描未跑/被此刻按钮清缓存)——曾炸掉整个今日导航
-                        _dyn9 = (((_wa or {}).get("holding_levels") or {}).get(_code9) or {}).get("level", _base9)
-                        _lv9 = f"{_base9}级" if _dyn9 == _base9 else f"{_base9}→{_dyn9}"
-                        _d9w = _wa_code9.get(_code9) or {}
-                        _fund_f9 = (str(_r9.get("基本面") or "").strip()
-                                    or _v88_fund_edge_short(_r9.get("名称", ""), max_len=18)
-                                    or "纯技术驱动(如实)")
-                        _tech_f9 = (str(_r9.get("技术面") or "").strip()
-                                    or str(_d9w.get("stage") or (_d9w.get("facts") or {}).get("stage") or "")
-                                    or "待实时扫描")
-                        _news_f9 = (str(_r9.get("新闻面") or "").strip()
-                                    or str(_d9w.get("move_reason") or "")[:22] or "—")
-                        _adv_f9 = (str(_r9.get("综合建议") or "").strip()
-                                   or (f"{_d9w.get('action', '')}·{str(_d9w.get('entry_note') or '')[:22]}"
-                                       .strip("·") if _d9w else "待实时扫描"))
-                        _vals9 = [f"{_r9.get('名称','')}（{_code9}）", _lv9, _r9.get("层", _r9.get("类别", "—")) or "—",
-                                  _r9.get("现价", "—"), _r9.get("盈亏", "—"), _r9.get("历史水位", "—"),
-                                  _fund_f9, _tech_f9, _news_f9,
-                                  # 【一票一卡】剥掉与概率卡重复的尾巴(规则概率/盈亏比/期望在卡上)
-                                  re.sub(r"(?:<br>)?规则概率\(非回测\):[^<]*", "", _adv_f9)]
-                        _tbl9.append("|" + "|".join(str(v).replace("|", "／") for v in _vals9) + "|")
-                    st.markdown(_linkify_md("\n".join(_tbl9)), unsafe_allow_html=True)
-                    # 【V88·持仓信念文字】≤50字/只：动作+依据+情绪镜子（北极星：压住追高/割肉）
-                    try:
-                        _conv9 = json.loads((_repo / "data" / "position_conviction.json")
-                                            .read_text(encoding="utf-8"))
-                        _citems9 = _conv9.get("items") or {}
-                        _clines9 = []
+            if _advice_time9:
+                st.caption("🕒 " + _advice_time9)
+            if _combined_hold9:
+                _market_specs9 = (("🇺🇸美股", "🇺🇸 美股"), ("🇭🇰港股", "🇭🇰 港股"), ("🇨🇳A股", "🇨🇳 A股"))
+                _market_tabs9 = st.tabs([
+                    f"{_label9}（{sum(1 for r in _combined_hold9 if r['市场'] == _mk9)}）"
+                    for _mk9, _label9 in _market_specs9
+                ])
+                for _tab9, (_mk9, _label9) in zip(_market_tabs9, _market_specs9):
+                    with _tab9:
+                        _mr9 = [r for r in _combined_hold9 if r["市场"] == _mk9]
+                        if not _mr9:
+                            st.caption("暂无该市场持仓")
+                            continue
+                        _tbl9 = ["|持仓|级别|层|现价|盈亏|历史水位|基本面|技术面|新闻面|综合建议|",
+                                 "|---|---|---|---:|---:|---|---|---|---|---|"]
+                        # 【V88·占位根治 2026-07-21】日报持仓段已改叙述式,旧表格解析不到字段→
+                        # 曾经13只×8列全是"待下轮日报"(用户看到104个占位)。缺字段改用session实时
+                        # 决策回填(stage/action/归因,数据比日报还新),实在没有才标"待实时扫描"。
+                        _wa_code9 = {str(d.get("code")): d
+                                     for d in ((_wa or {}).get("decisions") or [])}
                         for _r9 in _mr9:
-                            _ci9 = _citems9.get(str(_r9.get("代码", "")))
-                            if _ci9 and _ci9.get("text"):
-                                _clines9.append(f"🧠 <b>{_stk_link(_ci9.get('name'), str(_r9.get('代码', '')))}</b>：{_ci9['text']}")
-                        if _clines9:
-                            st.markdown(
-                                "<div style='background:#f0f9ff;border-left:3px solid #0284c7;"
-                                "border-radius:6px;padding:.5rem .7rem;font-size:12px;line-height:1.9'>"
-                                + "<br>".join(_clines9)
-                                + f"<br><span style='color:#64748b;font-size:12px'>信念速记·"
-                                f"{_conv9.get('generated_at', '')}·跌回成本不是卖出理由，破线才是</span></div>",
-                                unsafe_allow_html=True)
+                            _code9 = str(_r9.get("代码", ""))
+                            _base9 = str(_r9.get("级别") or "B").upper()
+                            # 【2026-07-18修】_wa可能为None(扫描未跑/被此刻按钮清缓存)——曾炸掉整个今日导航
+                            _dyn9 = (((_wa or {}).get("holding_levels") or {}).get(_code9) or {}).get("level", _base9)
+                            _lv9 = f"{_base9}级" if _dyn9 == _base9 else f"{_base9}→{_dyn9}"
+                            _d9w = _wa_code9.get(_code9) or {}
+                            _fund_f9 = (str(_r9.get("基本面") or "").strip()
+                                        or _v88_fund_edge_short(_r9.get("名称", ""), max_len=18)
+                                        or "纯技术驱动(如实)")
+                            _tech_f9 = (str(_r9.get("技术面") or "").strip()
+                                        or str(_d9w.get("stage") or (_d9w.get("facts") or {}).get("stage") or "")
+                                        or "待实时扫描")
+                            _news_f9 = (str(_r9.get("新闻面") or "").strip()
+                                        or str(_d9w.get("move_reason") or "")[:22] or "—")
+                            _adv_f9 = (str(_r9.get("综合建议") or "").strip()
+                                       or (f"{_d9w.get('action', '')}·{str(_d9w.get('entry_note') or '')[:22]}"
+                                           .strip("·") if _d9w else "待实时扫描"))
+                            _vals9 = [f"{_r9.get('名称','')}（{_code9}）", _lv9, _r9.get("层", _r9.get("类别", "—")) or "—",
+                                      _r9.get("现价", "—"), _r9.get("盈亏", "—"), _r9.get("历史水位", "—"),
+                                      _fund_f9, _tech_f9, _news_f9,
+                                      # 【一票一卡】剥掉与概率卡重复的尾巴(规则概率/盈亏比/期望在卡上)
+                                      re.sub(r"(?:<br>)?规则概率\(非回测\):[^<]*", "", _adv_f9)]
+                            _tbl9.append("|" + "|".join(str(v).replace("|", "／") for v in _vals9) + "|")
+                        st.markdown(_linkify_md("\n".join(_tbl9)), unsafe_allow_html=True)
+                        # 【V88·持仓信念文字】≤50字/只：动作+依据+情绪镜子（北极星：压住追高/割肉）
+                        try:
+                            _conv9 = json.loads((_repo / "data" / "position_conviction.json")
+                                                .read_text(encoding="utf-8"))
+                            _citems9 = _conv9.get("items") or {}
+                            _clines9 = []
+                            for _r9 in _mr9:
+                                _ci9 = _citems9.get(str(_r9.get("代码", "")))
+                                if _ci9 and _ci9.get("text"):
+                                    _clines9.append(f"🧠 <b>{_stk_link(_ci9.get('name'), str(_r9.get('代码', '')))}</b>：{_ci9['text']}")
+                            if _clines9:
+                                st.markdown(
+                                    "<div style='background:#f0f9ff;border-left:3px solid #0284c7;"
+                                    "border-radius:6px;padding:.5rem .7rem;font-size:12px;line-height:1.9'>"
+                                    + "<br>".join(_clines9)
+                                    + f"<br><span style='color:#64748b;font-size:12px'>信念速记·"
+                                    f"{_conv9.get('generated_at', '')}·跌回成本不是卖出理由，破线才是</span></div>",
+                                    unsafe_allow_html=True)
+                        except Exception:
+                            pass
+            else:
+                st.caption("持仓分析待本轮日报生成；下方仍可维护持仓资料。")
+
+            st.markdown("##### ✎ 持仓交易与资料维护")
+            st.caption("先明确选择买入或卖出；买入支持中文简称联想，卖出直接从当前持仓选择。账户、股数、成本和基础级别仍可在下表修改。")
+            # ── 结构化录单表单：买卖分流，避免用“卖出价是否为空”猜操作。 ──
+            _pt_action = st.radio("交易类型", ["买入 / 加仓", "卖出 / 减仓"], horizontal=True,
+                                  key="_ptf_action", help="卖出会写入交易日志并计算已实现盈亏；下表×仅用于纠错删除")
+            _pt_accounts = _pmf.account_names()
+            from datetime import date as _date9
+            _pt_buy, _pt_sell, _pt_qty, _pt_chosen = "", "", "", None
+            _pt_date = _date9.today()
+
+            if _pt_action == "买入 / 加仓":
+                _f1, _f2, _f3, _f4, _f5, _f6 = st.columns([2.1, 2.25, 1.0, .85, 1.15, .65])
+                _pt_name = _f1.text_input("名称/简称/代码", placeholder="中微 / 腾讯 / NVDA", key="_ptf_buy_name")
+                _pt_cands = []
+                if _pt_name.strip():
+                    try:
+                        _pt_cands = _pmf.candidates_for(_pt_name.strip(), limit=6) or []
                     except Exception:
-                        pass
-        else:
-            st.caption("持仓分析待本轮日报生成；下方仍可维护持仓资料。")
-
-        st.markdown("##### ✎ 持仓交易与资料维护")
-        st.caption("先明确选择买入或卖出；买入支持中文简称联想，卖出直接从当前持仓选择。账户、股数、成本和基础级别仍可在下表修改。")
-        # ── 结构化录单表单：买卖分流，避免用“卖出价是否为空”猜操作。 ──
-        _pt_action = st.radio("交易类型", ["买入 / 加仓", "卖出 / 减仓"], horizontal=True,
-                              key="_ptf_action", help="卖出会写入交易日志并计算已实现盈亏；下表×仅用于纠错删除")
-        _pt_accounts = _pmf.account_names()
-        from datetime import date as _date9
-        _pt_buy, _pt_sell, _pt_qty, _pt_chosen = "", "", "", None
-        _pt_date = _date9.today()
-
-        if _pt_action == "买入 / 加仓":
-            _f1, _f2, _f3, _f4, _f5, _f6 = st.columns([2.1, 2.25, 1.0, .85, 1.15, .65])
-            _pt_name = _f1.text_input("名称/简称/代码", placeholder="中微 / 腾讯 / NVDA", key="_ptf_buy_name")
-            _pt_cands = []
-            if _pt_name.strip():
-                try:
-                    _pt_cands = _pmf.candidates_for(_pt_name.strip(), limit=6) or []
-                except Exception:
-                    _pt_cands = []
-            if _pt_cands:
-                _pt_opts = [f"{n}（{c}·{m}）" for n, c, m in _pt_cands]
-                _pt_pick = _f2.selectbox("简称匹配（请选择）", _pt_opts, key="_ptf_buy_match")
-                _pt_chosen = _pt_cands[_pt_opts.index(_pt_pick)][1]
+                        _pt_cands = []
+                if _pt_cands:
+                    _pt_opts = [f"{n}（{c}·{m}）" for n, c, m in _pt_cands]
+                    _pt_pick = _f2.selectbox("简称匹配（请选择）", _pt_opts, key="_ptf_buy_match")
+                    _pt_chosen = _pt_cands[_pt_opts.index(_pt_pick)][1]
+                else:
+                    _f2.text_input("简称匹配", value="输入简称后自动显示全称和代码", disabled=True,
+                                   key="_ptf_buy_match_empty")
+                _pt_buy = _f3.text_input("买入价", placeholder="469", key="_ptf_buy_price")
+                _pt_qty = _f4.text_input("买入股数", placeholder="100", key="_ptf_buy_qty")
+                _pt_date = _f5.date_input("成交日期", value=_date9.today(), key="_ptf_buy_date")
+                _pt_account = _f6.selectbox("账户", _pt_accounts, key="_ptf_buy_account")
+                _pt_level = st.selectbox("关注级别", ["A", "B", "C"], index=1, key="_ptf_buy_level",
+                                         help="人工基础级别；急跌、亏损或拐点风险仍会自动升为A级")
+                _pt_token = _pt_name.strip()
+                _pt_button = "✅ 确认买入 / 加仓"
             else:
-                _f2.text_input("简称匹配", value="输入简称后自动显示全称和代码", disabled=True,
-                               key="_ptf_buy_match_empty")
-            _pt_buy = _f3.text_input("买入价", placeholder="469", key="_ptf_buy_price")
-            _pt_qty = _f4.text_input("买入股数", placeholder="100", key="_ptf_buy_qty")
-            _pt_date = _f5.date_input("成交日期", value=_date9.today(), key="_ptf_buy_date")
-            _pt_account = _f6.selectbox("账户", _pt_accounts, key="_ptf_buy_account")
-            _pt_level = st.selectbox("关注级别", ["A", "B", "C"], index=1, key="_ptf_buy_level",
-                                     help="人工基础级别；急跌、亏损或拐点风险仍会自动升为A级")
-            _pt_token = _pt_name.strip()
-            _pt_button = "✅ 确认买入 / 加仓"
-        else:
-            _pt_holds = _pmf.holdings_rows()
-            _pt_sell_map = {
-                f"{r.get('名称')}（{r.get('代码')}｜{r.get('账户')}｜现持{r.get('股数')}股）": r
-                for r in _pt_holds
-            }
-            if not _pt_sell_map:
-                st.warning("当前没有可卖出的正式持仓")
-                _pt_selected = {}
-            else:
-                _s1, _s2, _s3, _s4 = st.columns([3.0, 1.0, 1.05, 1.25])
-                _pt_sell_label = _s1.selectbox("选择要卖出的持仓", list(_pt_sell_map), key="_ptf_sell_holding")
-                _pt_selected = _pt_sell_map[_pt_sell_label]
-                _pt_sell = _s2.text_input("实际卖出价", placeholder="必填", key="_ptf_sell_price")
-                _pt_qty = _s3.text_input("卖出股数", placeholder="留空=全部", key="_ptf_sell_qty")
-                _pt_date = _s4.date_input("成交日期", value=_date9.today(), key="_ptf_sell_date")
-                st.caption(f"将从 {_pt_selected.get('账户')} 卖出 {_pt_selected.get('名称')}；留空股数表示全部清仓。")
-            _pt_name = str(_pt_selected.get("代码") or "")
-            _pt_token = _pt_name
-            _pt_account = str(_pt_selected.get("账户") or (_pt_accounts[0] if _pt_accounts else ""))
-            _pt_level = str(_pt_selected.get("级别") or "B")
-            _pt_button = "🟥 确认卖出 / 减仓"
+                _pt_holds = _pmf.holdings_rows()
+                _pt_sell_map = {
+                    f"{r.get('名称')}（{r.get('代码')}｜{r.get('账户')}｜现持{r.get('股数')}股）": r
+                    for r in _pt_holds
+                }
+                if not _pt_sell_map:
+                    st.warning("当前没有可卖出的正式持仓")
+                    _pt_selected = {}
+                else:
+                    _s1, _s2, _s3, _s4 = st.columns([3.0, 1.0, 1.05, 1.25])
+                    _pt_sell_label = _s1.selectbox("选择要卖出的持仓", list(_pt_sell_map), key="_ptf_sell_holding")
+                    _pt_selected = _pt_sell_map[_pt_sell_label]
+                    _pt_sell = _s2.text_input("实际卖出价", placeholder="必填", key="_ptf_sell_price")
+                    _pt_qty = _s3.text_input("卖出股数", placeholder="留空=全部", key="_ptf_sell_qty")
+                    _pt_date = _s4.date_input("成交日期", value=_date9.today(), key="_ptf_sell_date")
+                    st.caption(f"将从 {_pt_selected.get('账户')} 卖出 {_pt_selected.get('名称')}；留空股数表示全部清仓。")
+                _pt_name = str(_pt_selected.get("代码") or "")
+                _pt_token = _pt_name
+                _pt_account = str(_pt_selected.get("账户") or (_pt_accounts[0] if _pt_accounts else ""))
+                _pt_level = str(_pt_selected.get("级别") or "B")
+                _pt_button = "🟥 确认卖出 / 减仓"
 
-        _pt_reason = st.text_input("原因（选填，随交易日志留档）", placeholder="如：止盈一半 / 逻辑失效 / 情绪操作复盘",
-                                   key="_pt_reason_desk")
+            _pt_reason = st.text_input("原因（选填，随交易日志留档）", placeholder="如：止盈一半 / 逻辑失效 / 情绪操作复盘",
+                                       key="_pt_reason_desk")
 
-        def _pt_git_sync(_label):
-            import subprocess as _sp9
-            _sp9.run(["git", "-C", str(_repo), "add", "-f", "positions.json", "position_claims.json",
-                      "journal/trades.json", "watch_levels.json"], capture_output=True, text=True)
-            _sp9.run(["git", "-C", str(_repo), "commit", "-m", f"持仓终端(桌面): {_label[:40]}"],
-                     capture_output=True, text=True)
-            _p9 = _sp9.run(["git", "-C", str(_repo), "push", "origin", "main"], capture_output=True, text=True)
-            if _p9.returncode != 0:
-                _sp9.run(["git", "-C", str(_repo), "pull", "--rebase", "-X", "theirs", "origin", "main"],
+            def _pt_git_sync(_label):
+                import subprocess as _sp9
+                _sp9.run(["git", "-C", str(_repo), "add", "-f", "positions.json", "position_claims.json",
+                          "journal/trades.json", "watch_levels.json"], capture_output=True, text=True)
+                _sp9.run(["git", "-C", str(_repo), "commit", "-m", f"持仓终端(桌面): {_label[:40]}"],
                          capture_output=True, text=True)
                 _p9 = _sp9.run(["git", "-C", str(_repo), "push", "origin", "main"], capture_output=True, text=True)
-            st.caption("☁️ 已同步私仓（云端/飞书下一轮生效）" if _p9.returncode == 0
-                       else "⚠️ 本地已改，私仓推送失败——网络恢复后自动随下次提交带上")
+                if _p9.returncode != 0:
+                    _sp9.run(["git", "-C", str(_repo), "pull", "--rebase", "-X", "theirs", "origin", "main"],
+                             capture_output=True, text=True)
+                    _p9 = _sp9.run(["git", "-C", str(_repo), "push", "origin", "main"], capture_output=True, text=True)
+                st.caption("☁️ 已同步私仓（云端/飞书下一轮生效）" if _p9.returncode == 0
+                           else "⚠️ 本地已改，私仓推送失败——网络恢复后自动随下次提交带上")
 
-        def _pt_run_form(_kw, _chosen=None):
-            _msg9, _needs9 = _pmf.record_trade(chosen_code=_chosen, **_kw)
-            if _needs9:  # 简称多解（"腾讯"→腾讯/腾讯控股/腾讯音乐…）→ 弹窗确认
-                st.session_state["_pt_pending"] = {"kw": _kw, "cands": _needs9}
-                st.rerun()
-            if _msg9.startswith(("已录入", "已加仓", "已清仓", "已减仓")):
-                _pt_git_sync(f"{_kw.get('token', '')}")
-                st.session_state["_pt_flash"] = _msg9 + "　✅已落盘并同步私仓"
-                st.rerun()  # 立刻刷新下方持仓表——所见即所存
-            else:
-                st.error(_msg9)
-
-        if st.button(_pt_button, type="primary", key="_pt_go_desk") and _pt_token:
-            try:
-                _pt_run_form({"token": _pt_token, "shares": _pt_qty or 0,
-                              "buy_px": float(_pt_buy) if _pt_buy.strip() else None,
-                              "sell_px": float(_pt_sell) if _pt_sell.strip() else None,
-                              "date": str(_pt_date), "reason": _pt_reason.strip(),
-                              "account": _pt_account, "level": _pt_level}, _chosen=_pt_chosen)
-            except ValueError:
-                st.error("价格/股数须为数字")
-            except Exception as _pe9:
-                st.error(f"持仓终端异常: {_pe9}")
-
-        if st.session_state.get("_pt_pending"):
-            @st.dialog("该简称有多个匹配，请确认标的")
-            def _pt_pick_dialog():
-                _pd = st.session_state["_pt_pending"]
-                _opts = [f"{nm}（{cd}·{mk}）" for nm, cd, mk in _pd["cands"]]
-                _sel = st.selectbox("候选", _opts, key="_pt_pick_sel")
-                _c1d, _c2d = st.columns(2)
-                if _c1d.button("✅ 确认", type="primary", key="_pt_pick_ok"):
-                    _code_sel = _pd["cands"][_opts.index(_sel)][1]
-                    st.session_state.pop("_pt_pending")
-                    try:
-                        _pt_run_form(_pd["kw"], _chosen=_code_sel)
-                    except Exception as _pe9:
-                        st.error(f"持仓终端异常: {_pe9}")
-                if _c2d.button("✕ 取消", key="_pt_pick_no"):
-                    st.session_state.pop("_pt_pending")
+            def _pt_run_form(_kw, _chosen=None):
+                _msg9, _needs9 = _pmf.record_trade(chosen_code=_chosen, **_kw)
+                if _needs9:  # 简称多解（"腾讯"→腾讯/腾讯控股/腾讯音乐…）→ 弹窗确认
+                    st.session_state["_pt_pending"] = {"kw": _kw, "cands": _needs9}
                     st.rerun()
-            _pt_pick_dialog()
+                if _msg9.startswith(("已录入", "已加仓", "已清仓", "已减仓")):
+                    _pt_git_sync(f"{_kw.get('token', '')}")
+                    st.session_state["_pt_flash"] = _msg9 + "　✅已落盘并同步私仓"
+                    st.rerun()  # 立刻刷新下方持仓表——所见即所存
+                else:
+                    st.error(_msg9)
 
-        # ── 常驻持仓表+最近交易（读盘实时渲染，刷新页面不丢——这就是"记忆"）──
-        try:
-            _rows_pt = _pmf.holdings_rows()
-            if _rows_pt:
-                _pt_codes = tuple(dict.fromkeys(str(r.get("代码", "")).upper() for r in _rows_pt if r.get("代码")))
-                with _v88_running("计算持仓历史最高水位"):
-                    _pt_water = _ath_many_display(_pt_codes) if _pt_codes else {}
-                    _pt_px = _last_px_many(_pt_codes) if _pt_codes else {}
-                # 【2026-07-12 用户要求】新增现价/盈亏列 + 表尾整体盈亏汇总（红涨绿跌）
-                _pt_ccy = {"🇨🇳A股": "¥", "🇭🇰港股": "HK$", "🇺🇸美股": "$"}
-                _pt_totals = {}  # 市场 → [盈亏额, 成本额]
-                def _pnl_html(_amt, _pct=None):
-                    _c = "#dc2626" if _amt >= 0 else "#16a34a"
-                    _t = f"{_amt:+,.0f}" + (f"（{_pct:+.1f}%）" if _pct is not None else "")
-                    return f'<span style="color:{_c};font-size:13px">{_t}</span>'
-                # 自定义逐行渲染，提供与自选股一致的 × 删除入口。
-                _pt_widths = [1.0, 1.12, .92, .6, .65, .55, .52, .68, 1.0, 1.25, .62]
-                _ph = st.columns(_pt_widths)
-                for _hc, _ht in zip(_ph, ("账户", "名称", "代码", "股数", "成本", "类别", "级别",
-                                                   "现价", "盈亏", "历史水位", "操作")):
-                    _hc.caption(_ht)
-                for _ri9, _row9 in enumerate(_rows_pt):
-                    _edit_id9 = f"{_row9.get('账户')}|{_row9.get('代码')}"
-                    _row_water9 = _pt_water.get(str(_row9.get("代码", "")).upper(), "历史水位待核")
-                    # 逐行盈亏：现价来自 _last_px_many（与水位同一份历史数据，1小时缓存）
-                    _row_px9 = _pt_px.get(str(_row9.get("代码", "")).upper())
-                    _row_mkt9 = market_of_code(str(_row9.get("代码", "")))
-                    _row_ccy9 = _pt_ccy.get(_row_mkt9, "")
-                    _px_txt9, _pnl_txt9 = "—", "—"
-                    try:
-                        _sh9 = float(str(_row9.get("股数", "")).replace(",", ""))
-                        _co9 = float(str(_row9.get("成本", "")).replace(",", ""))
-                        if _row_px9 and _co9 > 0 and _sh9 > 0:
-                            _pnl_amt9 = (_row_px9 - _co9) * _sh9
-                            _pnl_pct9 = (_row_px9 / _co9 - 1) * 100
-                            _px_txt9 = f"{_row_px9:,.3f}" if _row_px9 < 10 else f"{_row_px9:,.2f}"
-                            _pnl_txt9 = _pnl_html(_pnl_amt9, _pnl_pct9)
-                            _tot9 = _pt_totals.setdefault(_row_mkt9, [0.0, 0.0])
-                            _tot9[0] += _pnl_amt9
-                            _tot9[1] += _co9 * _sh9
-                    except (TypeError, ValueError):
-                        pass
-                    if st.session_state.get("_pt_edit_row") == _edit_id9:
-                        _pc = st.columns(_pt_widths)
-                        _acc_opts9 = list(_pt_accounts)
-                        if str(_row9.get("账户", "")) not in _acc_opts9:
-                            _acc_opts9.append(str(_row9.get("账户", "")))
-                        _ev_acc9 = _pc[0].selectbox("账户", _acc_opts9,
-                                                   index=_acc_opts9.index(str(_row9.get("账户", ""))),
-                                                   key=f"_pe_acc_{_ri9}", label_visibility="collapsed")
-                        _ev_nm9 = _pc[1].text_input("名称", value=str(_row9.get("名称", "")), key=f"_pe_nm_{_ri9}", label_visibility="collapsed")
-                        _ev_cd9 = _pc[2].text_input("代码", value=str(_row9.get("代码", "")), key=f"_pe_cd_{_ri9}", label_visibility="collapsed")
-                        _ev_sh9 = _pc[3].text_input("股数", value=str(_row9.get("股数", "")), key=f"_pe_sh_{_ri9}", label_visibility="collapsed")
-                        _ev_co9 = _pc[4].text_input("成本", value=str(_row9.get("成本", "")), key=f"_pe_co_{_ri9}", label_visibility="collapsed")
-                        _ev_cl9 = _pc[5].text_input("类别", value=str(_row9.get("类别", "")), key=f"_pe_cl_{_ri9}", label_visibility="collapsed")
-                        _base_lv9 = str(_row9.get("级别") or "B").upper()
-                        _base_lv9 = _base_lv9 if _base_lv9 in ("A", "B", "C") else "B"
-                        _ev_lv9 = _pc[6].selectbox("级别", ["A", "B", "C"],
-                                                  index=["A", "B", "C"].index(_base_lv9),
-                                                  key=f"_pe_lv_{_ri9}", label_visibility="collapsed")
-                        _pc[7].caption(_px_txt9)
-                        _pc[8].markdown(_pnl_txt9, unsafe_allow_html=True)
-                        _pc[9].caption(_row_water9)
-                        _save_col9, _cancel_col9 = _pc[10].columns(2)
-                        if _save_col9.button("✓", key=f"_pt_save_{_ri9}", help="保存修改"):
-                            _msg_edit9 = _pmf.update_holding(
-                                _row9.get("账户", ""), _row9.get("代码", ""), account=_ev_acc9,
-                                name=_ev_nm9, code=_ev_cd9, shares=_ev_sh9, cost=_ev_co9,
-                                category=_ev_cl9, level=_ev_lv9)
-                            if _msg_edit9.startswith("已修改"):
-                                st.session_state.pop("_pt_edit_row", None)
-                                _pt_git_sync(_msg_edit9)
-                                st.session_state["_pt_flash"] = _msg_edit9 + "　✅已落盘并同步私仓"
-                                st.rerun()
-                            else:
-                                st.error(_msg_edit9)
-                        if _cancel_col9.button("↩", key=f"_pt_cancel_{_ri9}", help="取消修改"):
-                            st.session_state.pop("_pt_edit_row", None)
-                            st.rerun()
-                    else:
-                        _pc = st.columns(_pt_widths)
-                        for _ci9, _key9 in enumerate(("账户", "名称", "代码", "股数", "成本", "类别")):
-                            if _key9 == "名称":
-                                _pc[_ci9].markdown(_stk_link(str(_row9.get("名称", "")),
-                                                             str(_row9.get("代码", ""))),
-                                                    unsafe_allow_html=True)
-                            else:
-                                _pc[_ci9].write(str(_row9.get(_key9, "")))
-                        _base_lv9 = str(_row9.get("级别") or "B").upper()
-                        _dl9 = ((_wa.get("holding_levels") or {}).get(str(_row9.get("代码", ""))) or {})
-                        _effective_lv9 = str(_dl9.get("level") or _base_lv9)
-                        _lv_txt9 = f"{_base_lv9}级" if _effective_lv9 == _base_lv9 else f"{_base_lv9}→{_effective_lv9}"
-                        _pc[6].write(_lv_txt9)
-                        _pc[7].write(_px_txt9)
-                        _pc[8].markdown(_pnl_txt9, unsafe_allow_html=True)
-                        _pc[9].caption(_row_water9)
-                        _edit_col9, _del_col9 = _pc[10].columns(2)
-                        if _edit_col9.button("✎", key=f"_pt_edit_{_ri9}", help=f"修改 {_row9.get('名称')}"):
-                            st.session_state["_pt_edit_row"] = _edit_id9
-                            st.rerun()
-                        if _del_col9.button("×", key=f"_pt_del_{_ri9}_{_row9.get('账户')}_{_row9.get('代码')}",
-                                           help=f"删除 {_row9.get('名称')}（仅从持仓中移除）"):
-                            _msg_del9 = _pmf.remove_holding(_row9.get("账户", ""), _row9.get("代码", ""))
-                            if _msg_del9.startswith("已删除"):
-                                _pt_git_sync(_msg_del9)
-                                st.session_state["_pt_flash"] = _msg_del9 + "　✅已落盘并同步私仓"
-                                st.rerun()
-                            else:
-                                st.error(_msg_del9)
-                # ── 整体盈亏汇总：分市场原币种 + 折合人民币合计（汇率取不到则省略合计）──
-                if _pt_totals:
-                    _sum_parts9 = []
-                    _cny_total9, _cny_ok9 = 0.0, True
-                    _fx_map9 = {"🇺🇸美股": "USDCNY=X", "🇭🇰港股": "HKDCNY=X"}
-                    for _mk9, (_pnl_s9, _cost_s9) in _pt_totals.items():
-                        _pct_s9 = (_pnl_s9 / _cost_s9 * 100) if _cost_s9 > 0 else 0.0
-                        _sum_parts9.append(f"{_mk9} {_pt_ccy.get(_mk9,'')}{_pnl_html(_pnl_s9, _pct_s9)}")
-                        if _mk9 in _fx_map9:
-                            _fx9 = _fx_to_cny(_fx_map9[_mk9])
-                            if _fx9:
-                                _cny_total9 += _pnl_s9 * _fx9
-                            else:
-                                _cny_ok9 = False
-                        else:
-                            _cny_total9 += _pnl_s9
-                    _sum_line9 = "　｜　".join(_sum_parts9)
-                    if _cny_ok9 and len(_pt_totals) > 1:
-                        _sum_line9 += f"　｜　合计折合 ¥{_pnl_html(_cny_total9)}"
-                    st.markdown(
-                        f'<div style="font-size:13px;margin:.3rem .1rem"><b>💰 整体盈亏</b>：{_sum_line9}'
-                        f'<span style="color:#94a3b8;font-size:12px">　（按最新收盘价，未含手续费）</span></div>',
-                        unsafe_allow_html=True)
-            _tr_fp = _repo / "journal" / "trades.json"
-            if _tr_fp.exists():
-                _trs = json.loads(_tr_fp.read_text(encoding="utf-8"))[-5:]
-                if _trs:
-                    st.caption("最近5笔：" + "　".join(
-                        f"{t.get('date','')[:10]} {t.get('action','')}{t.get('name','')}{t.get('shares','')}股"
-                        f"@{t.get('sell_price') or t.get('cost','')}" for t in reversed(_trs)))
-        except Exception:
-            pass
-        # 高级：一行指令（老语法保留）
-        with st.popover("⌨️ 一行指令"):
-            _pt_cmd = st.text_input("指令", placeholder="中国海油 18.5 1000 ｜ 卖 海油 500 #止盈 ｜ 查",
-                                    key="_pt_cmd_desk", label_visibility="collapsed")
-            if st.button("执行", key="_pt_go_line") and _pt_cmd.strip():
+            if st.button(_pt_button, type="primary", key="_pt_go_desk") and _pt_token:
                 try:
-                    _msgL, _needsL = _pmf.handle_ex(_pt_cmd.strip(), reason=_pt_reason.strip())
-                    if _needsL:
-                        st.warning(_msgL + "——请改用上方表单录入以弹窗选择")
-                    else:
-                        st.success(_msgL)
-                        if _pt_cmd.strip() not in ("查", "查询"):
-                            _pt_git_sync(_pt_cmd.strip())
+                    _pt_run_form({"token": _pt_token, "shares": _pt_qty or 0,
+                                  "buy_px": float(_pt_buy) if _pt_buy.strip() else None,
+                                  "sell_px": float(_pt_sell) if _pt_sell.strip() else None,
+                                  "date": str(_pt_date), "reason": _pt_reason.strip(),
+                                  "account": _pt_account, "level": _pt_level}, _chosen=_pt_chosen)
+                except ValueError:
+                    st.error("价格/股数须为数字")
                 except Exception as _pe9:
-                    st.error(f"异常: {_pe9}")
+                    st.error(f"持仓终端异常: {_pe9}")
+
+            if st.session_state.get("_pt_pending"):
+                @st.dialog("该简称有多个匹配，请确认标的")
+                def _pt_pick_dialog():
+                    _pd = st.session_state["_pt_pending"]
+                    _opts = [f"{nm}（{cd}·{mk}）" for nm, cd, mk in _pd["cands"]]
+                    _sel = st.selectbox("候选", _opts, key="_pt_pick_sel")
+                    _c1d, _c2d = st.columns(2)
+                    if _c1d.button("✅ 确认", type="primary", key="_pt_pick_ok"):
+                        _code_sel = _pd["cands"][_opts.index(_sel)][1]
+                        st.session_state.pop("_pt_pending")
+                        try:
+                            _pt_run_form(_pd["kw"], _chosen=_code_sel)
+                        except Exception as _pe9:
+                            st.error(f"持仓终端异常: {_pe9}")
+                    if _c2d.button("✕ 取消", key="_pt_pick_no"):
+                        st.session_state.pop("_pt_pending")
+                        st.rerun()
+                _pt_pick_dialog()
+
+            # ── 常驻持仓表+最近交易（读盘实时渲染，刷新页面不丢——这就是"记忆"）──
+            try:
+                _rows_pt = _pmf.holdings_rows()
+                if _rows_pt:
+                    _pt_codes = tuple(dict.fromkeys(str(r.get("代码", "")).upper() for r in _rows_pt if r.get("代码")))
+                    with _v88_running("计算持仓历史最高水位"):
+                        _pt_water = _ath_many_display(_pt_codes) if _pt_codes else {}
+                        _pt_px = _last_px_many(_pt_codes) if _pt_codes else {}
+                    # 【2026-07-12 用户要求】新增现价/盈亏列 + 表尾整体盈亏汇总（红涨绿跌）
+                    _pt_ccy = {"🇨🇳A股": "¥", "🇭🇰港股": "HK$", "🇺🇸美股": "$"}
+                    _pt_totals = {}  # 市场 → [盈亏额, 成本额]
+                    def _pnl_html(_amt, _pct=None):
+                        _c = "#dc2626" if _amt >= 0 else "#16a34a"
+                        _t = f"{_amt:+,.0f}" + (f"（{_pct:+.1f}%）" if _pct is not None else "")
+                        return f'<span style="color:{_c};font-size:13px">{_t}</span>'
+                    # 自定义逐行渲染，提供与自选股一致的 × 删除入口。
+                    _pt_widths = [1.0, 1.12, .92, .6, .65, .55, .52, .68, 1.0, 1.25, .62]
+                    _ph = st.columns(_pt_widths)
+                    for _hc, _ht in zip(_ph, ("账户", "名称", "代码", "股数", "成本", "类别", "级别",
+                                                       "现价", "盈亏", "历史水位", "操作")):
+                        _hc.caption(_ht)
+                    for _ri9, _row9 in enumerate(_rows_pt):
+                        _edit_id9 = f"{_row9.get('账户')}|{_row9.get('代码')}"
+                        _row_water9 = _pt_water.get(str(_row9.get("代码", "")).upper(), "历史水位待核")
+                        # 逐行盈亏：现价来自 _last_px_many（与水位同一份历史数据，1小时缓存）
+                        _row_px9 = _pt_px.get(str(_row9.get("代码", "")).upper())
+                        _row_mkt9 = market_of_code(str(_row9.get("代码", "")))
+                        _row_ccy9 = _pt_ccy.get(_row_mkt9, "")
+                        _px_txt9, _pnl_txt9 = "—", "—"
+                        try:
+                            _sh9 = float(str(_row9.get("股数", "")).replace(",", ""))
+                            _co9 = float(str(_row9.get("成本", "")).replace(",", ""))
+                            if _row_px9 and _co9 > 0 and _sh9 > 0:
+                                _pnl_amt9 = (_row_px9 - _co9) * _sh9
+                                _pnl_pct9 = (_row_px9 / _co9 - 1) * 100
+                                _px_txt9 = f"{_row_px9:,.3f}" if _row_px9 < 10 else f"{_row_px9:,.2f}"
+                                _pnl_txt9 = _pnl_html(_pnl_amt9, _pnl_pct9)
+                                _tot9 = _pt_totals.setdefault(_row_mkt9, [0.0, 0.0])
+                                _tot9[0] += _pnl_amt9
+                                _tot9[1] += _co9 * _sh9
+                        except (TypeError, ValueError):
+                            pass
+                        if st.session_state.get("_pt_edit_row") == _edit_id9:
+                            _pc = st.columns(_pt_widths)
+                            _acc_opts9 = list(_pt_accounts)
+                            if str(_row9.get("账户", "")) not in _acc_opts9:
+                                _acc_opts9.append(str(_row9.get("账户", "")))
+                            _ev_acc9 = _pc[0].selectbox("账户", _acc_opts9,
+                                                       index=_acc_opts9.index(str(_row9.get("账户", ""))),
+                                                       key=f"_pe_acc_{_ri9}", label_visibility="collapsed")
+                            _ev_nm9 = _pc[1].text_input("名称", value=str(_row9.get("名称", "")), key=f"_pe_nm_{_ri9}", label_visibility="collapsed")
+                            _ev_cd9 = _pc[2].text_input("代码", value=str(_row9.get("代码", "")), key=f"_pe_cd_{_ri9}", label_visibility="collapsed")
+                            _ev_sh9 = _pc[3].text_input("股数", value=str(_row9.get("股数", "")), key=f"_pe_sh_{_ri9}", label_visibility="collapsed")
+                            _ev_co9 = _pc[4].text_input("成本", value=str(_row9.get("成本", "")), key=f"_pe_co_{_ri9}", label_visibility="collapsed")
+                            _ev_cl9 = _pc[5].text_input("类别", value=str(_row9.get("类别", "")), key=f"_pe_cl_{_ri9}", label_visibility="collapsed")
+                            _base_lv9 = str(_row9.get("级别") or "B").upper()
+                            _base_lv9 = _base_lv9 if _base_lv9 in ("A", "B", "C") else "B"
+                            _ev_lv9 = _pc[6].selectbox("级别", ["A", "B", "C"],
+                                                      index=["A", "B", "C"].index(_base_lv9),
+                                                      key=f"_pe_lv_{_ri9}", label_visibility="collapsed")
+                            _pc[7].caption(_px_txt9)
+                            _pc[8].markdown(_pnl_txt9, unsafe_allow_html=True)
+                            _pc[9].caption(_row_water9)
+                            _save_col9, _cancel_col9 = _pc[10].columns(2)
+                            if _save_col9.button("✓", key=f"_pt_save_{_ri9}", help="保存修改"):
+                                _msg_edit9 = _pmf.update_holding(
+                                    _row9.get("账户", ""), _row9.get("代码", ""), account=_ev_acc9,
+                                    name=_ev_nm9, code=_ev_cd9, shares=_ev_sh9, cost=_ev_co9,
+                                    category=_ev_cl9, level=_ev_lv9)
+                                if _msg_edit9.startswith("已修改"):
+                                    st.session_state.pop("_pt_edit_row", None)
+                                    _pt_git_sync(_msg_edit9)
+                                    st.session_state["_pt_flash"] = _msg_edit9 + "　✅已落盘并同步私仓"
+                                    st.rerun()
+                                else:
+                                    st.error(_msg_edit9)
+                            if _cancel_col9.button("↩", key=f"_pt_cancel_{_ri9}", help="取消修改"):
+                                st.session_state.pop("_pt_edit_row", None)
+                                st.rerun()
+                        else:
+                            _pc = st.columns(_pt_widths)
+                            for _ci9, _key9 in enumerate(("账户", "名称", "代码", "股数", "成本", "类别")):
+                                if _key9 == "名称":
+                                    _pc[_ci9].markdown(_stk_link(str(_row9.get("名称", "")),
+                                                                 str(_row9.get("代码", ""))),
+                                                        unsafe_allow_html=True)
+                                else:
+                                    _pc[_ci9].write(str(_row9.get(_key9, "")))
+                            _base_lv9 = str(_row9.get("级别") or "B").upper()
+                            _dl9 = ((_wa.get("holding_levels") or {}).get(str(_row9.get("代码", ""))) or {})
+                            _effective_lv9 = str(_dl9.get("level") or _base_lv9)
+                            _lv_txt9 = f"{_base_lv9}级" if _effective_lv9 == _base_lv9 else f"{_base_lv9}→{_effective_lv9}"
+                            _pc[6].write(_lv_txt9)
+                            _pc[7].write(_px_txt9)
+                            _pc[8].markdown(_pnl_txt9, unsafe_allow_html=True)
+                            _pc[9].caption(_row_water9)
+                            _edit_col9, _del_col9 = _pc[10].columns(2)
+                            if _edit_col9.button("✎", key=f"_pt_edit_{_ri9}", help=f"修改 {_row9.get('名称')}"):
+                                st.session_state["_pt_edit_row"] = _edit_id9
+                                st.rerun()
+                            if _del_col9.button("×", key=f"_pt_del_{_ri9}_{_row9.get('账户')}_{_row9.get('代码')}",
+                                               help=f"删除 {_row9.get('名称')}（仅从持仓中移除）"):
+                                _msg_del9 = _pmf.remove_holding(_row9.get("账户", ""), _row9.get("代码", ""))
+                                if _msg_del9.startswith("已删除"):
+                                    _pt_git_sync(_msg_del9)
+                                    st.session_state["_pt_flash"] = _msg_del9 + "　✅已落盘并同步私仓"
+                                    st.rerun()
+                                else:
+                                    st.error(_msg_del9)
+                    # ── 整体盈亏汇总：分市场原币种 + 折合人民币合计（汇率取不到则省略合计）──
+                    if _pt_totals:
+                        _sum_parts9 = []
+                        _cny_total9, _cny_ok9 = 0.0, True
+                        _fx_map9 = {"🇺🇸美股": "USDCNY=X", "🇭🇰港股": "HKDCNY=X"}
+                        for _mk9, (_pnl_s9, _cost_s9) in _pt_totals.items():
+                            _pct_s9 = (_pnl_s9 / _cost_s9 * 100) if _cost_s9 > 0 else 0.0
+                            _sum_parts9.append(f"{_mk9} {_pt_ccy.get(_mk9,'')}{_pnl_html(_pnl_s9, _pct_s9)}")
+                            if _mk9 in _fx_map9:
+                                _fx9 = _fx_to_cny(_fx_map9[_mk9])
+                                if _fx9:
+                                    _cny_total9 += _pnl_s9 * _fx9
+                                else:
+                                    _cny_ok9 = False
+                            else:
+                                _cny_total9 += _pnl_s9
+                        _sum_line9 = "　｜　".join(_sum_parts9)
+                        if _cny_ok9 and len(_pt_totals) > 1:
+                            _sum_line9 += f"　｜　合计折合 ¥{_pnl_html(_cny_total9)}"
+                        st.markdown(
+                            f'<div style="font-size:13px;margin:.3rem .1rem"><b>💰 整体盈亏</b>：{_sum_line9}'
+                            f'<span style="color:#94a3b8;font-size:12px">　（按最新收盘价，未含手续费）</span></div>',
+                            unsafe_allow_html=True)
+                _tr_fp = _repo / "journal" / "trades.json"
+                if _tr_fp.exists():
+                    _trs = json.loads(_tr_fp.read_text(encoding="utf-8"))[-5:]
+                    if _trs:
+                        st.caption("最近5笔：" + "　".join(
+                            f"{t.get('date','')[:10]} {t.get('action','')}{t.get('name','')}{t.get('shares','')}股"
+                            f"@{t.get('sell_price') or t.get('cost','')}" for t in reversed(_trs)))
+            except Exception:
+                pass
+            # 高级：一行指令（老语法保留）
+            with st.popover("⌨️ 一行指令"):
+                _pt_cmd = st.text_input("指令", placeholder="中国海油 18.5 1000 ｜ 卖 海油 500 #止盈 ｜ 查",
+                                        key="_pt_cmd_desk", label_visibility="collapsed")
+                if st.button("执行", key="_pt_go_line") and _pt_cmd.strip():
+                    try:
+                        _msgL, _needsL = _pmf.handle_ex(_pt_cmd.strip(), reason=_pt_reason.strip())
+                        if _needsL:
+                            st.warning(_msgL + "——请改用上方表单录入以弹窗选择")
+                        else:
+                            st.success(_msgL)
+                            if _pt_cmd.strip() not in ("查", "查询"):
+                                _pt_git_sync(_pt_cmd.strip())
+                    except Exception as _pe9:
+                        st.error(f"异常: {_pe9}")
 
 try:
     with _v88_front_decision_slot.container():
