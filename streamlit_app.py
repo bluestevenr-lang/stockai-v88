@@ -478,11 +478,27 @@ if _nav == "🧭 导航":
                         (_tpfd9 >= _dtc9.now().strftime("%Y-%m-%d") if _tt9c == "明日"
                          else _tpfd9 == _dtc9.now().strftime("%Y-%m-%d"))):
                     _tph9 = str(_tpc9["script"])
-                    for _sc9, _ic9 in (("## 大盘剧本", "🎬 大盘剧本"), ("## 买", "🐉 买"),
+                    for _sc9, _ic9 in (("## 🌙 隔夜复盘", "🌙 隔夜复盘"),
+                                       ("## 大盘剧本", "🎬 大盘剧本"), ("## 买", "🐉 买"),
                                        ("## 卖·防", "⚔️ 卖·防"), ("## 准备", "🕐 准备")):
                         _tph9 = _tph9.replace(_sc9, f"**{_ic9}**")
-                    st.markdown(f"🎬 **{_tpfd9} 作战预案**（前一晚if-then剧本·持仓行已脱敏,"
-                                f"完整版在桌面/飞书·{_tpc9.get('generated_at', '')}）")
+                    # 【三端同步 2026-07-31 用户"不知道分析时间点是否最新"】
+                    # 时点透明:优先显示保鲜/校准时刻(收盘定稿后买卖节已按真值重拼)
+                    _tpts9 = (_tpc9.get("px_refreshed_at") or _tpc9.get("calibrated_at")
+                              or _tpc9.get("generated_at") or "")
+                    _tptag9 = ("数据已保鲜" if _tpc9.get("px_refreshed_at")
+                               else "隔夜已校准" if _tpc9.get("calibrated_at") else "前一晚生成")
+                    st.markdown(f"🎬 **{_tpfd9} 作战预案**（if-then剧本·持仓行已脱敏,"
+                                f"完整版在桌面/飞书·{_tptag9} {_tpts9}）")
+                    try:  # 铁律17:旧价冻结计数(脱敏版,只报数不报名)
+                        _hgp9 = _pubj9("health_gate_pub.json")
+                        _nsc9 = sum((_hgp9.get("stale_counts") or {}).values())
+                        if _nsc9:
+                            st.markdown(f"<span style='color:#dc2626;font-size:12px'>🚫铁律17:"
+                                        f"{_nsc9}行旧价冻结(旧于收盘+4h,自动重更中,冻结期不按旧线操作)</span>",
+                                        unsafe_allow_html=True)
+                    except Exception:
+                        pass
                     st.markdown(_tph9)
             except Exception:
                 pass
