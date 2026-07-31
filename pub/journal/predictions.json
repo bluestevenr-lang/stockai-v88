@@ -15965,5 +15965,59 @@
    "topish": true,
    "botish": false
   }
+ },
+ {
+  "id": "fable_call:美光科技:2026-07-30",
+  "date": "2026-07-30",
+  "kind": "fable_call",
+  "subject": "美光科技",
+  "market": "美股",
+  "prediction": "FOMC夜暴跌后买回条件单:收盘>785买回一半;收复820警报解除全额买回;<738维持减仓",
+  "horizon_end": "2026-07-30",
+  "confirm_price": 820.0,
+  "direction": "up",
+  "prob": null,
+  "source": "fable",
+  "status": "命中",
+  "rules_ver": "v1",
+  "extra": {
+   "code": "MU",
+   "base_price": 738.47,
+   "settle_price": 866.3952,
+   "note": "补录:07-30 16:40已写入fable_review.md但未落台账(铁律3失守);07-31核算:收盘866.40>820警报解除条件兑现"
+  },
+  "env": {
+   "market": "美股",
+   "temp": 41
+  }
+ },
+ {
+  "id": "fable_pick:美光科技:2026-07-31",
+  "date": "2026-07-31",
+  "kind": "fable_pick",
+  "subject": "美光科技",
+  "market": "美股",
+  "prediction": "+17%大涨后不追高;回踩820~850分批买回;失效=收盘跌回785下方",
+  "horizon_end": "2026-08-14",
+  "confirm_price": 850.0,
+  "direction": "up",
+  "prob": null,
+  "source": "fable",
+  "status": "待核",
+  "rules_ver": "v1",
+  "extra": {
+   "code": "MU",
+   "base_price": 866.3952,
+   "zone": [
+    820,
+    850
+   ],
+   "invalid_below": 785,
+   "note": "三方状态:规则=减仓(冲突)·Grok桥接prompt已导出待用户粘贴·codex云端不可用"
+  },
+  "env": {
+   "market": "美股",
+   "temp": 41
+  }
  }
 ]
