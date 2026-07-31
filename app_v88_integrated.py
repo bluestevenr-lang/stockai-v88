@@ -33,6 +33,7 @@ from datetime import datetime
 # 修法:把跨段共用的定义统一前移到这里;后文原位置留注释,不留重复定义。
 _dt_global = datetime   # 全球概览区时间戳用
 _V88_WATCHLIST_UI = False   # 2026-07-31 用户令:自选版面全撤,只留持仓+🏆3A榜(池照扫,3A从池里出)
+_V88_GATES_UI = False   # 2026-07-31 用户裁定:双门决断版面撤;地狱门卖警=3A一票压级证据,龙虎门绿灯已并行动中心
 
 
 def _v88_sentinel9(_repo, module, exc=None):
@@ -15359,178 +15360,179 @@ def _render_today_verdict(_snap, _repo):
                                   f'<span>{len(_its9)}只</span></h4>' + "".join(_its9) + '</section>')
             return ('<div class="v88-watch-grid" style="grid-template-columns:1fr">'
                     + "".join(_secs9) + '</div>')
-        st.markdown("##### 🚪 双门决断 · ⚔️地狱门（先躲） ⟷ 🐉龙虎门（上攻）"
-                    "<span style='font-size:12px;color:#94a3b8'>　预测主力模块·中美港分列·战绩到期对账</span>",
-                    unsafe_allow_html=True)
-        _colGG9, _colLH9 = st.columns(2)
-
-        # ── 左半：⚔️ 地狱门 ─────────────────────────────
-        with _colGG9:
-            st.markdown(f"<div style='background:#f0fdf4;border-left:4px solid #16a34a;border-radius:8px;"
-                        f"padding:.4rem .6rem;margin-bottom:4px'><b style='color:#16a34a'>"
-                        f"⚔️ 地狱门 · 拐点/破位先躲</b>（持仓+自选 {len(_cut)} 只·技术+消息双源）</div>",
+        if _V88_GATES_UI:   # 2026-07-31 用户裁定:双门版面撤(记档/台账反向核算照跑,卖警已入3A否决链)
+            st.markdown("##### 🚪 双门决断 · ⚔️地狱门（先躲） ⟷ 🐉龙虎门（上攻）"
+                        "<span style='font-size:12px;color:#94a3b8'>　预测主力模块·中美港分列·战绩到期对账</span>",
                         unsafe_allow_html=True)
-            st.caption((_v88_rate_line9("gate_guard", "地狱门警示")
-                        or "📊 地狱门警示实盘成功率：样本积累中（警示后≥3天下跌=躲对了，反向口径）")
-                       + _gate_tighten9("gate_guard"))
-            if _cut:
-                # 文字名单·按市场分列（全量不截断）
-                _cut_mk9 = {}
-                for _k9c, _v9c in sorted(_cut.items(), key=lambda x: -x[1][1]):
-                    _cut_mk9.setdefault(_gate_mkey9({"code": _v9c[2],
-                                                     "market": (_cut_d.get(_k9c) or {}).get("market")}),
-                                        []).append(
-                        f"{_stk_link(_k9c, _v9c[2] or _k9c)}<b style='color:#16a34a'>{_v9c[0]}</b>"
-                        + (f"<span style='font-size:12px;color:#94a3b8'>({_v9c[3]})</span>"
-                           if len(_v9c) > 3 and _v9c[3] else ""))
-                _cut_rows9 = "".join(
-                    f"<div style='font-size:13px;margin-bottom:2px'><b>{_mk9s}</b>："
-                    + "、".join(_cut_mk9[_mk9s]) + "</div>"
-                    for _mk9s in _MKS9 if _cut_mk9.get(_mk9s))
-                st.markdown(_cut_rows9
-                            + "<div style='font-size:12px;color:#94a3b8'>💼持仓按纪律减/走，👁自选别接刀；"
-                              "括号=10字原因（优先新闻归因）</div>", unsafe_allow_html=True)
-                _gg_groups9, _gg_miss9 = {}, []
-                for _k9c, _v9c in sorted(_cut.items(), key=lambda x: -x[1][1]):
-                    _dd9c = _cut_d.get(_k9c)
-                    if not _dd9c:
-                        _gg_miss9.append(_k9c)   # 禁静默截断:配不到实时数据的如实列名
-                        continue
-                    _gg_groups9.setdefault(_gate_mkey9(_dd9c), []).append(
-                        f'<div style="border-left:4px solid #16a34a;border-radius:8px;'
-                        f'background:#f0fdf4;padding:2px 0 2px 6px;margin-bottom:6px">'
-                        f'<div style="font-size:12px;font-weight:700;color:#16a34a;'
-                        f'padding:2px 0 0 4px">'
-                        + ("🎯高把握·" if float(_v9c[1] or 0) >= 60 else "")
-                        + f'⚔️ {_v9c[0]}（{_v9c[3]}）</div>'
-                        + _v88_decision_card(_dd9c) + '</div>')
-                if _gg_groups9 or _gg_miss9:
-                    with st.expander(f"⚔️ 卡片细看（{sum(len(v) for v in _gg_groups9.values())} 只·完整证据链）",
-                                     expanded=False):
-                        st.caption("🎯高把握=下行概率≥60，已按严重度排序｜走势条=今天→2/4/8/16/32周")
-                        if _gg_groups9:
-                            st.markdown(_V88_CARD_CSS + _gate_sections9(_gg_groups9),
-                                        unsafe_allow_html=True)
-                        if _gg_miss9:
-                            st.caption("以下 " + str(len(_gg_miss9)) + " 只本轮session未覆盖实时计算，"
-                                       "暂无卡片（下轮刷新自动补齐）：" + "、".join(_gg_miss9))
-            else:
-                # 【V88·空档必给原因 2026-07-24 用户抓"没上榜也没说明"】亮门槛+离警示最近的持仓/自选
-                _gg_near9 = sorted(
-                    [d for d in ((st.session_state.get("watch_alerts_v88") or {}).get("decisions") or [])
-                     if int(d.get("p_down") or 0) >= 40],
-                    key=lambda d: -int(d.get("p_down") or 0))[:3]
-                _gg_near_txt9 = ("；下行概率最高：" + "、".join(
-                    f"{d.get('name')}(下行{int(d.get('p_down') or 0)}%)" for d in _gg_near9)
-                    + "——未达警示条件，先观察" if _gg_near9 else "")
-                st.caption("今日无拐点/破位警示（门槛:破位/顶拐/个股利空/破止损/减仓动作,当前持仓自选无一触发）"
-                           + _gg_near_txt9 + "。大盘偏弱时个股信号可能滞后，防区间看决断卡🔮四档预判。")
+            _colGG9, _colLH9 = st.columns(2)
 
-        # ── 右半：🐉 龙虎门 ─────────────────────────────
-        with _colLH9:
-            st.markdown(f"<div style='background:#fef2f2;border-left:4px solid #dc2626;border-radius:8px;"
-                        f"padding:.4rem .6rem;margin-bottom:4px'><b style='color:#dc2626'>"
-                        f"🐉 龙虎门 · 上攻关注</b>（严门槛绿灯 {len(_go)} 只·技术时机+消息加持）</div>",
-                        unsafe_allow_html=True)
-            # 【V88·胜率闭环 2026-07-18】绿灯旁挂实盘对账(近30日到期核算,1小时session缓存)
-            _esb9 = st.session_state.get("_entry_sb9")
-            import time as _tsb9
-            if not _esb9 or _tsb9.time() - float(_esb9.get("ts") or 0) > 3600:
-                try:
-                    import sys as _sys9b
-                    if str(_repo / "src") not in _sys9b.path:
-                        _sys9b.path.insert(0, str(_repo / "src"))
-                    from entry_scoreboard import score as _esb_score9
-                    _s9 = _esb_score9(30)
-                    _esb9 = {"ts": _tsb9.time(), "n": _s9["n"], "right": _s9["right"],
-                             "avg": (round(sum(_r["chg_pct"] for _r in _s9["rows"]) / _s9["n"], 1)
-                                     if _s9["n"] else 0.0)}
-                except Exception:
-                    _esb9 = {"ts": _tsb9.time(), "n": 0}
-                st.session_state["_entry_sb9"] = _esb9
-            _esb_txt9 = ""
-            if _esb9.get("n"):
-                _rate9 = round(100 * _esb9["right"] / _esb9["n"])
-                _esb_txt9 = (f"｜近30日同类绿灯{_esb9['n']}次·命中{_rate9}%·均{_esb9['avg']:+.1f}%"
-                             "（出处:入场日志到期核算）"
-                             + ("——命中偏低，只挑与板块相位共振的执行" if _rate9 < 45 else ""))
-            st.caption((_v88_rate_line9("entry_green", "入场绿灯")
-                        or "📊 入场绿灯实盘成功率：样本积累中")
-                       + _gate_tighten9("entry_green") + _esb_txt9)
-            if _go:
-                # 【V88·名单清爽化 2026-07-20 用户点单"一定要这么乱的排列么"】名单只留名字+涨概率,
-                # 触线MA55/52周低位等技术细节+热议全部移到下方「卡片细看」——名单一眼扫完不糊成一片。
-                _go_mk9 = {}
-                for _h9c in _go:
-                    _pu9c = int(_h9c.get("p_up") or 0)
-                    _pc9c = "#dc2626" if _pu9c >= 60 else ("#16a34a" if _pu9c <= 45 else "#64748b")
-                    _go_mk9.setdefault(_gate_mkey9(_h9c), []).append(
-                        f"{_stk_link(_h9c.get('name'), _h9c.get('code'))}"
-                        + (f"<span style='font-size:12px;color:{_pc9c}'>{_pu9c}%</span>" if _pu9c else ""))
-                # 【V88·统一裁决 2026-07-25 用户定纲"逻辑和说明要统一"】覆巢之下无完卵:
-                # 偏弱/拐点市场的绿灯=⏸️逆势单,只留档跟踪不作执行建议;过热市场🔶限回踩不追高;
-                # 良性/中性市场无绿灯→报领涨引擎(涨是个股涨出来的,说清谁在撑指数)。一把尺=_v88_mkt_gate9x。
-                _mgate9 = _v88_mkt_gate9x(_repo)
-                _MKMAP9g = {"🇺🇸美股": "美股", "🇨🇳A股": "A股", "🇭🇰港股": "港股"}
+            # ── 左半：⚔️ 地狱门 ─────────────────────────────
+            with _colGG9:
+                st.markdown(f"<div style='background:#f0fdf4;border-left:4px solid #16a34a;border-radius:8px;"
+                            f"padding:.4rem .6rem;margin-bottom:4px'><b style='color:#16a34a'>"
+                            f"⚔️ 地狱门 · 拐点/破位先躲</b>（持仓+自选 {len(_cut)} 只·技术+消息双源）</div>",
+                            unsafe_allow_html=True)
+                st.caption((_v88_rate_line9("gate_guard", "地狱门警示")
+                            or "📊 地狱门警示实盘成功率：样本积累中（警示后≥3天下跌=躲对了，反向口径）")
+                           + _gate_tighten9("gate_guard"))
+                if _cut:
+                    # 文字名单·按市场分列（全量不截断）
+                    _cut_mk9 = {}
+                    for _k9c, _v9c in sorted(_cut.items(), key=lambda x: -x[1][1]):
+                        _cut_mk9.setdefault(_gate_mkey9({"code": _v9c[2],
+                                                         "market": (_cut_d.get(_k9c) or {}).get("market")}),
+                                            []).append(
+                            f"{_stk_link(_k9c, _v9c[2] or _k9c)}<b style='color:#16a34a'>{_v9c[0]}</b>"
+                            + (f"<span style='font-size:12px;color:#94a3b8'>({_v9c[3]})</span>"
+                               if len(_v9c) > 3 and _v9c[3] else ""))
+                    _cut_rows9 = "".join(
+                        f"<div style='font-size:13px;margin-bottom:2px'><b>{_mk9s}</b>："
+                        + "、".join(_cut_mk9[_mk9s]) + "</div>"
+                        for _mk9s in _MKS9 if _cut_mk9.get(_mk9s))
+                    st.markdown(_cut_rows9
+                                + "<div style='font-size:12px;color:#94a3b8'>💼持仓按纪律减/走，👁自选别接刀；"
+                                  "括号=10字原因（优先新闻归因）</div>", unsafe_allow_html=True)
+                    _gg_groups9, _gg_miss9 = {}, []
+                    for _k9c, _v9c in sorted(_cut.items(), key=lambda x: -x[1][1]):
+                        _dd9c = _cut_d.get(_k9c)
+                        if not _dd9c:
+                            _gg_miss9.append(_k9c)   # 禁静默截断:配不到实时数据的如实列名
+                            continue
+                        _gg_groups9.setdefault(_gate_mkey9(_dd9c), []).append(
+                            f'<div style="border-left:4px solid #16a34a;border-radius:8px;'
+                            f'background:#f0fdf4;padding:2px 0 2px 6px;margin-bottom:6px">'
+                            f'<div style="font-size:12px;font-weight:700;color:#16a34a;'
+                            f'padding:2px 0 0 4px">'
+                            + ("🎯高把握·" if float(_v9c[1] or 0) >= 60 else "")
+                            + f'⚔️ {_v9c[0]}（{_v9c[3]}）</div>'
+                            + _v88_decision_card(_dd9c) + '</div>')
+                    if _gg_groups9 or _gg_miss9:
+                        with st.expander(f"⚔️ 卡片细看（{sum(len(v) for v in _gg_groups9.values())} 只·完整证据链）",
+                                         expanded=False):
+                            st.caption("🎯高把握=下行概率≥60，已按严重度排序｜走势条=今天→2/4/8/16/32周")
+                            if _gg_groups9:
+                                st.markdown(_V88_CARD_CSS + _gate_sections9(_gg_groups9),
+                                            unsafe_allow_html=True)
+                            if _gg_miss9:
+                                st.caption("以下 " + str(len(_gg_miss9)) + " 只本轮session未覆盖实时计算，"
+                                           "暂无卡片（下轮刷新自动补齐）：" + "、".join(_gg_miss9))
+                else:
+                    # 【V88·空档必给原因 2026-07-24 用户抓"没上榜也没说明"】亮门槛+离警示最近的持仓/自选
+                    _gg_near9 = sorted(
+                        [d for d in ((st.session_state.get("watch_alerts_v88") or {}).get("decisions") or [])
+                         if int(d.get("p_down") or 0) >= 40],
+                        key=lambda d: -int(d.get("p_down") or 0))[:3]
+                    _gg_near_txt9 = ("；下行概率最高：" + "、".join(
+                        f"{d.get('name')}(下行{int(d.get('p_down') or 0)}%)" for d in _gg_near9)
+                        + "——未达警示条件，先观察" if _gg_near9 else "")
+                    st.caption("今日无拐点/破位警示（门槛:破位/顶拐/个股利空/破止损/减仓动作,当前持仓自选无一触发）"
+                               + _gg_near_txt9 + "。大盘偏弱时个股信号可能滞后，防区间看决断卡🔮四档预判。")
 
-                def _mk_head9g(_mk9s):
-                    _g9g = _mgate9.get(_MKMAP9g.get(_mk9s, _mk9s)) or {}
-                    if not _g9g:
-                        return f"<b>{_mk9s}</b>"
-                    _pc9g = {"weak": "#16a34a", "hot": "#b45309", "up": "#dc2626", "mid": "#64748b"}[_g9g["state"]]
-                    return (f"<b>{_mk9s}</b><span style='font-size:11px;color:#94a3b8'>"
-                            f"(2周{_g9g.get('p2w', '?')}%·{_g9g.get('temp', '?')}°)</span>"
-                            f"<span style='font-size:11px;color:{_pc9g}'>{_g9g['policy']}</span>")
-                _go_rows9 = ""
-                for _mk9s in _MKS9:
-                    _items9g = _go_mk9.get(_mk9s)
-                    _g9g = _mgate9.get(_MKMAP9g.get(_mk9s, _mk9s)) or {}
-                    if _items9g:
-                        # 偏弱市场绿灯整行降灰=留档不执行;其余正常
-                        _dim9g = _g9g.get("state") == "weak"
-                        _go_rows9 += (f"<div style='font-size:13px;margin-bottom:2px;"
-                                      f"{'opacity:.55' if _dim9g else ''}'>{_mk_head9g(_mk9s)}："
-                                      + " ".join(_items9g)
-                                      + ("<span style='font-size:11px;color:#64748b'>（逆势单·不执行,"
-                                         "大盘回中性自动转正式绿灯）</span>" if _dim9g else "") + "</div>")
-                    else:
-                        _cutn9g = sum(1 for _n9g in _cut if _gate_mkey9(_cut_d.get(_n9g) or {}) == _mk9s)
-                        _lead9g = _g9g.get("leaders")
-                        _go_rows9 += (f"<div style='font-size:12px;color:#94a3b8'>{_mk_head9g(_mk9s)}："
-                                      f"0只绿灯" + (f"·{_cutn9g}只在地狱门警示" if _cutn9g else "")
-                                      + (f"——与大盘态一致(弱市无买点=系统统一口径)" if _g9g.get("state") == "weak"
-                                         else (f"——撑指数的领涨引擎:{_lead9g};池内无票达买点,"
-                                               "可在③埋伏/全行业雷达找对应板块低位票" if _lead9g else "")) + "</div>")
-                st.markdown(_go_rows9
-                            + "<div style='font-size:12px;color:#94a3b8'>数字=1-2周涨概率·触线/热议等细节见下方卡片细看；仓位按纲领别越线</div>",
+            # ── 右半：🐉 龙虎门 ─────────────────────────────
+            with _colLH9:
+                st.markdown(f"<div style='background:#fef2f2;border-left:4px solid #dc2626;border-radius:8px;"
+                            f"padding:.4rem .6rem;margin-bottom:4px'><b style='color:#dc2626'>"
+                            f"🐉 龙虎门 · 上攻关注</b>（严门槛绿灯 {len(_go)} 只·技术时机+消息加持）</div>",
                             unsafe_allow_html=True)
-                _go_sorted9 = sorted(_go, key=lambda h: -(int(h.get("p_up") or 0)
-                                                          + (8 if float(h.get("rr") or 0) >= 1.5 else 0)))
-                _lh_groups9 = {}
-                for _h9c in _go_sorted9:
-                    _lh_groups9.setdefault(_gate_mkey9(_h9c), []).append(
-                        f'<div style="border-left:4px solid #dc2626;border-radius:8px;'
-                        f'background:#fef2f2;padding:2px 0 2px 6px;margin-bottom:6px">'
-                        f'<div style="font-size:12px;font-weight:700;color:#dc2626;'
-                        f'padding:2px 0 0 4px">'
-                        + ("🎯高把握·" if (int(_h9c.get("p_up") or 0) >= 60
-                                        and float(_h9c.get("rr") or 0) >= 1.5) else "")
-                        + f'🐉 {_h9c.get("_src", "")} 上攻关注'
-                        f'{_v88_hot_note9(_h9c.get("code"))}</div>'
-                        + _v88_decision_card(_h9c) + '</div>')
-                with st.expander(f"🐉 卡片细看（{len(_go)} 只·与自选台同款走势条）", expanded=False):
-                    st.caption("🎯高把握=2周上涨概率≥60且盈亏比≥1.5，已按把握度排序｜走势条=今天→2/4/8/16/32周")
-                    st.markdown(_V88_CARD_CSS + _gate_sections9(_lh_groups9), unsafe_allow_html=True)
-            else:
-                st.caption("今日无严门槛绿灯——空仓等待也是决策（现金也是仓位）")
-            if _dropped:
-                _dr_txt = "、".join(
-                    f"{_stk_link(_n9, _c9)}<span style='font-size:12px;color:#94a3b8'>（{_dt9}在榜·{_w9}）</span>"
-                    for _n9, _c9, _dt9, _w9 in _dropped[:6])
-                st.markdown("<div style='font-size:12px;margin-top:2px'>⬇️ <b style='color:#64748b'>下榜说明</b>："
-                            + _dr_txt +
-                            "<span style='color:#94a3b8'>——下榜=窗口关闭或条件变化；已进场的按原计划执行，不是翻案</span></div>",
-                            unsafe_allow_html=True)
+                # 【V88·胜率闭环 2026-07-18】绿灯旁挂实盘对账(近30日到期核算,1小时session缓存)
+                _esb9 = st.session_state.get("_entry_sb9")
+                import time as _tsb9
+                if not _esb9 or _tsb9.time() - float(_esb9.get("ts") or 0) > 3600:
+                    try:
+                        import sys as _sys9b
+                        if str(_repo / "src") not in _sys9b.path:
+                            _sys9b.path.insert(0, str(_repo / "src"))
+                        from entry_scoreboard import score as _esb_score9
+                        _s9 = _esb_score9(30)
+                        _esb9 = {"ts": _tsb9.time(), "n": _s9["n"], "right": _s9["right"],
+                                 "avg": (round(sum(_r["chg_pct"] for _r in _s9["rows"]) / _s9["n"], 1)
+                                         if _s9["n"] else 0.0)}
+                    except Exception:
+                        _esb9 = {"ts": _tsb9.time(), "n": 0}
+                    st.session_state["_entry_sb9"] = _esb9
+                _esb_txt9 = ""
+                if _esb9.get("n"):
+                    _rate9 = round(100 * _esb9["right"] / _esb9["n"])
+                    _esb_txt9 = (f"｜近30日同类绿灯{_esb9['n']}次·命中{_rate9}%·均{_esb9['avg']:+.1f}%"
+                                 "（出处:入场日志到期核算）"
+                                 + ("——命中偏低，只挑与板块相位共振的执行" if _rate9 < 45 else ""))
+                st.caption((_v88_rate_line9("entry_green", "入场绿灯")
+                            or "📊 入场绿灯实盘成功率：样本积累中")
+                           + _gate_tighten9("entry_green") + _esb_txt9)
+                if _go:
+                    # 【V88·名单清爽化 2026-07-20 用户点单"一定要这么乱的排列么"】名单只留名字+涨概率,
+                    # 触线MA55/52周低位等技术细节+热议全部移到下方「卡片细看」——名单一眼扫完不糊成一片。
+                    _go_mk9 = {}
+                    for _h9c in _go:
+                        _pu9c = int(_h9c.get("p_up") or 0)
+                        _pc9c = "#dc2626" if _pu9c >= 60 else ("#16a34a" if _pu9c <= 45 else "#64748b")
+                        _go_mk9.setdefault(_gate_mkey9(_h9c), []).append(
+                            f"{_stk_link(_h9c.get('name'), _h9c.get('code'))}"
+                            + (f"<span style='font-size:12px;color:{_pc9c}'>{_pu9c}%</span>" if _pu9c else ""))
+                    # 【V88·统一裁决 2026-07-25 用户定纲"逻辑和说明要统一"】覆巢之下无完卵:
+                    # 偏弱/拐点市场的绿灯=⏸️逆势单,只留档跟踪不作执行建议;过热市场🔶限回踩不追高;
+                    # 良性/中性市场无绿灯→报领涨引擎(涨是个股涨出来的,说清谁在撑指数)。一把尺=_v88_mkt_gate9x。
+                    _mgate9 = _v88_mkt_gate9x(_repo)
+                    _MKMAP9g = {"🇺🇸美股": "美股", "🇨🇳A股": "A股", "🇭🇰港股": "港股"}
+
+                    def _mk_head9g(_mk9s):
+                        _g9g = _mgate9.get(_MKMAP9g.get(_mk9s, _mk9s)) or {}
+                        if not _g9g:
+                            return f"<b>{_mk9s}</b>"
+                        _pc9g = {"weak": "#16a34a", "hot": "#b45309", "up": "#dc2626", "mid": "#64748b"}[_g9g["state"]]
+                        return (f"<b>{_mk9s}</b><span style='font-size:11px;color:#94a3b8'>"
+                                f"(2周{_g9g.get('p2w', '?')}%·{_g9g.get('temp', '?')}°)</span>"
+                                f"<span style='font-size:11px;color:{_pc9g}'>{_g9g['policy']}</span>")
+                    _go_rows9 = ""
+                    for _mk9s in _MKS9:
+                        _items9g = _go_mk9.get(_mk9s)
+                        _g9g = _mgate9.get(_MKMAP9g.get(_mk9s, _mk9s)) or {}
+                        if _items9g:
+                            # 偏弱市场绿灯整行降灰=留档不执行;其余正常
+                            _dim9g = _g9g.get("state") == "weak"
+                            _go_rows9 += (f"<div style='font-size:13px;margin-bottom:2px;"
+                                          f"{'opacity:.55' if _dim9g else ''}'>{_mk_head9g(_mk9s)}："
+                                          + " ".join(_items9g)
+                                          + ("<span style='font-size:11px;color:#64748b'>（逆势单·不执行,"
+                                             "大盘回中性自动转正式绿灯）</span>" if _dim9g else "") + "</div>")
+                        else:
+                            _cutn9g = sum(1 for _n9g in _cut if _gate_mkey9(_cut_d.get(_n9g) or {}) == _mk9s)
+                            _lead9g = _g9g.get("leaders")
+                            _go_rows9 += (f"<div style='font-size:12px;color:#94a3b8'>{_mk_head9g(_mk9s)}："
+                                          f"0只绿灯" + (f"·{_cutn9g}只在地狱门警示" if _cutn9g else "")
+                                          + (f"——与大盘态一致(弱市无买点=系统统一口径)" if _g9g.get("state") == "weak"
+                                             else (f"——撑指数的领涨引擎:{_lead9g};池内无票达买点,"
+                                                   "可在③埋伏/全行业雷达找对应板块低位票" if _lead9g else "")) + "</div>")
+                    st.markdown(_go_rows9
+                                + "<div style='font-size:12px;color:#94a3b8'>数字=1-2周涨概率·触线/热议等细节见下方卡片细看；仓位按纲领别越线</div>",
+                                unsafe_allow_html=True)
+                    _go_sorted9 = sorted(_go, key=lambda h: -(int(h.get("p_up") or 0)
+                                                              + (8 if float(h.get("rr") or 0) >= 1.5 else 0)))
+                    _lh_groups9 = {}
+                    for _h9c in _go_sorted9:
+                        _lh_groups9.setdefault(_gate_mkey9(_h9c), []).append(
+                            f'<div style="border-left:4px solid #dc2626;border-radius:8px;'
+                            f'background:#fef2f2;padding:2px 0 2px 6px;margin-bottom:6px">'
+                            f'<div style="font-size:12px;font-weight:700;color:#dc2626;'
+                            f'padding:2px 0 0 4px">'
+                            + ("🎯高把握·" if (int(_h9c.get("p_up") or 0) >= 60
+                                            and float(_h9c.get("rr") or 0) >= 1.5) else "")
+                            + f'🐉 {_h9c.get("_src", "")} 上攻关注'
+                            f'{_v88_hot_note9(_h9c.get("code"))}</div>'
+                            + _v88_decision_card(_h9c) + '</div>')
+                    with st.expander(f"🐉 卡片细看（{len(_go)} 只·与自选台同款走势条）", expanded=False):
+                        st.caption("🎯高把握=2周上涨概率≥60且盈亏比≥1.5，已按把握度排序｜走势条=今天→2/4/8/16/32周")
+                        st.markdown(_V88_CARD_CSS + _gate_sections9(_lh_groups9), unsafe_allow_html=True)
+                else:
+                    st.caption("今日无严门槛绿灯——空仓等待也是决策（现金也是仓位）")
+                if _dropped:
+                    _dr_txt = "、".join(
+                        f"{_stk_link(_n9, _c9)}<span style='font-size:12px;color:#94a3b8'>（{_dt9}在榜·{_w9}）</span>"
+                        for _n9, _c9, _dt9, _w9 in _dropped[:6])
+                    st.markdown("<div style='font-size:12px;margin-top:2px'>⬇️ <b style='color:#64748b'>下榜说明</b>："
+                                + _dr_txt +
+                                "<span style='color:#94a3b8'>——下榜=窗口关闭或条件变化；已进场的按原计划执行，不是翻案</span></div>",
+                                unsafe_allow_html=True)
     except Exception:
         pass
 
