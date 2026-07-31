@@ -3816,7 +3816,7 @@ try:
                 st.markdown("<span style='font-size:12px;color:#94a3b8'>当前池内无≥A级标的——宁缺毋滥,雷达随保鲜班自动刷新</span>", unsafe_allow_html=True)
             else:
                 _rows3a9 = []
-                for _x9 in [x for x in _tq3a9 if x.get("tier", 0) >= 2][:12]:   # 只上3A/双A(1A不上榜)
+                for _x9 in [x for x in _tq3a9 if x.get("role") == "board"][:12]:   # 榜面=3A/双A
                     _lay9 = "".join(("📈" if _x9.get("L1") else "▫️", "🎯" if _x9.get("L2") else "▫️", "🔊" if _x9.get("L3") else "▫️"))
                     _tcol9 = {"3A": "#dc2626", "双A": "#ea580c"}.get(_x9.get("tier_label"), "#64748b")
                     _sf9 = str(_x9.get("safety") or "")
@@ -3830,12 +3830,26 @@ try:
                         + (f"<span style='color:#94a3b8;font-size:10px'>缺{_x9.get('missing')}</span>" if _x9.get("missing") else "")
                         + f"</td><td>量比{_x9.get('vol_ratio') or '?'}</td>"
                         f"<td>2周{_x9.get('p_2w')}%/长{_x9.get('p_long')}%</td>"
-                        f"<td title=\"{str(_x9.get('play'))[:200]}\" style='font-size:11px;color:#64748b'>"
-                        f"{str(_x9.get('play'))[:46]}… ⓘ</td></tr>")
+                        f"<td style='font-size:11.5px'><b style='color:#16a34a'>"
+                        f"回踩{('~'.join(str(v) for v in _x9.get('entry_pullback') or [])) or '?'}</b>"
+                        f"<br><span style='color:#64748b;font-size:10.5px'>或放量破{_x9.get('entry_break') or '?'}</span></td>"
+                        f"<td title='欧奈尔20-25%分批止盈带;到带分批兑现,剩余移动止损跟趋势;止损=入场价-8%' "
+                        f"style='font-size:11.5px'><b style='color:#dc2626'>"
+                        f"{('~'.join(str(v) for v in _x9.get('profit_zone') or [])) or '?'}</b>"
+                        f"<br><span style='color:#64748b;font-size:10.5px'>分批止盈带·损-8% ⓘ</span></td></tr>")
                 st.markdown("<table style='width:100%;font-size:12.5px;border-collapse:collapse'>"
                             "<tr style='color:#94a3b8;font-size:11px;text-align:left'>"
-                            "<th>级</th><th>名称</th><th>现价</th><th>三层</th><th>量比</th><th>周期</th><th>右侧剧本</th></tr>"
+                            "<th>级</th><th>名称</th><th>现价</th><th>三层</th><th>量比</th><th>周期</th>"
+                            "<th title='二选一:回踩区缩量企稳接,或放量站稳突破位跟'>🎯进入区间</th>"
+                            "<th title='欧奈尔20-25%分批止盈带,剩余移动止损'>💰盈利区间</th></tr>"
                             + "".join(_rows3a9) + "</table>", unsafe_allow_html=True)
+                _bench9 = [x for x in _tq3a9 if x.get("role") == "bench"][:8]
+                if _bench9:   # 1A预备梯队:仅雷达视野(提前量),不给区间不入台账不占推荐位
+                    st.markdown("<div style='font-size:11px;color:#94a3b8;margin-top:3px' "
+                                "title='预备梯队=只满足一层的观察对象,是明日双A/3A的候选池(汇丰案:早一天进视野价值千金);"
+                                "非推荐,无区间,不入台账'>🅰️预备梯队(非推荐·仅雷达视野): "
+                                + "、".join(f"{x.get('name')}(缺{x.get('missing')})" for x in _bench9)
+                                + " ⓘ</div>", unsafe_allow_html=True)
     except Exception:
         logging.exception("[V88] 3A优选榜渲染失败")
         _v88_sentinel9(Path.home() / "Desktop" / "ai-daily-report-v2", "3A优选榜")
