@@ -27,6 +27,114 @@ import time
 import json
 import urllib3
 from datetime import datetime
+
+# ══ 前置定义区(2026-07-31 用户抓'_dt_global未定义'·pyflakes全扫修'使用先于定义'家族) ══
+# 根因:分页切段搬代码后,多个名字的定义落到了调用之后(NameError被except吞=功能静默死)。
+# 修法:把跨段共用的定义统一前移到这里;后文原位置留注释,不留重复定义。
+_dt_global = datetime   # 全球概览区时间戳用
+
+
+def _v88_sentinel9(_repo, module, exc=None):
+    """【V88·异常哨兵 2026-07-24 用户批准三层自愈A层】被吞异常落盘显影——
+    三档段曾静默崩半天没人知道(病根:except pass)。健康条亮当日计数,
+    会话开工必读必修(铁律,已获批:bug发现即修+事后汇报)。保留最近100条。"""
+    try:
+        import traceback as _tb9
+        _fp = _repo / "data" / "render_errors.json"
+        try:
+            _rows = json.loads(_fp.read_text(encoding="utf-8"))
+        except Exception:
+            _rows = []
+        _rows.append({"ts": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                      "module": str(module)[:40],
+                      "err": (str(exc)[:500] if exc is not None else _tb9.format_exc()[-500:])})
+        _fp.write_text(json.dumps(_rows[-100:], ensure_ascii=False, indent=1), encoding="utf-8")
+    except Exception:
+        pass
+
+
+
+def call_gemini_api(prompt, model_name=None):
+    """
+    V88 统一 AI 调用入口（历史函数名保留；实际只调用 DeepSeek）
+    
+    参数:
+        prompt: 提示词
+        model_name: 模型名称（可选，默认使用GEMINI_MODEL_NAME）
+    
+    返回:
+        AI生成的文本响应
+    """
+    from v88_ai_budget import reserve as _web_budget_reserve, settle as _web_budget_settle
+    _budget_ticket = _web_budget_reserve(prompt, output_tokens=2200)
+    if not _budget_ticket:
+        return "⚠️ 网页AI月度1元配额已用完；确定性行情、持仓、自选和预警继续正常运行"
+    _ds_key = os.getenv("DEEPSEEK_API_KEY", "")
+    if _ds_key:
+        try:
+            _r = requests.post(
+                "https://api.deepseek.com/v1/chat/completions",
+                headers={"Authorization": f"Bearer {_ds_key}", "Content-Type": "application/json"},
+                json={"model": "deepseek-v4-flash",
+                      "messages": [{"role": "user", "content": prompt}],
+                      "temperature": 0.3, "max_tokens": 8192},
+                timeout=120
+            )
+            if _r.status_code == 200:
+                _body = _r.json()
+                _web_budget_settle(_budget_ticket, _body.get("usage"), ok=True)
+                return _body["choices"][0]["message"]["content"]
+        except Exception as _de:
+            logging.warning(f"DeepSeek requests failed: {_de}")
+    if not MY_DEEPSEEK_KEY:
+        _web_budget_settle(_budget_ticket, ok=False)
+        return "❌ 请配置 DEEPSEEK_API_KEY"
+    if AI_PROVIDER == "deepseek" and _deepseek_client:
+        try:
+            response = _deepseek_client.chat.completions.create(
+                model="deepseek-v4-flash",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.3, max_tokens=8192, timeout=120,
+            )
+            _web_budget_settle(_budget_ticket, getattr(response, "usage", None) and response.usage.model_dump(), ok=True)
+            return response.choices[0].message.content
+        except Exception as e:
+            _web_budget_settle(_budget_ticket, ok=False)
+            logging.error(f"❌ DeepSeek API异常: {str(e)}")
+            return f"❌ DeepSeek API错误: {str(e)}"
+    return "❌ DeepSeek API调用失败，请检查API Key和网络"
+
+
+def call_gemini_api_stream(prompt, model_name=None, max_output_tokens=8192):
+    """历史流式入口兼容层；实际固定调用 DeepSeek。"""
+    yield call_gemini_api(prompt, model_name=None)
+
+
+# ═══════════════════════════════════════════════════════════════
+# 7. CANSLIM + 专业投机原理（完整双核评级）
+# ═══════════════════════════════════════════════════════════════
+
+def _v88_usage9(_repo, event):
+    """【V88·点击热力 2026-07-24 用户批准三层自愈C层】本地记录使用事件——
+    「🧬系统自省」展示7日热力+主动提减法。只存本机data/(gitignore),不上传。保留30天。"""
+    try:
+        _fp = _repo / "data" / "usage_log.json"
+        try:
+            _d = json.loads(_fp.read_text(encoding="utf-8"))
+        except Exception:
+            _d = {}
+        _day = datetime.now().strftime("%Y-%m-%d")
+        _d.setdefault(_day, {})
+        _d[_day][str(event)] = int(_d[_day].get(str(event), 0)) + 1
+        for _k in sorted(_d)[:-30]:
+            _d.pop(_k, None)
+        _fp.write_text(json.dumps(_d, ensure_ascii=False, indent=1), encoding="utf-8")
+    except Exception:
+        pass
+
+
+
+# ══ 前置定义区结束 ══
 from pathlib import Path
 import pickle
 import hashlib
@@ -2966,6 +3074,27 @@ try:
             return json.loads((_cb_repo9 / "data" / _fn).read_text(encoding="utf-8"))
         except Exception:
             return {}
+    _nwj9 = _cbj9   # 同仓data读取器别名(修使用先于定义:原def在3600行段,调用在3373)
+
+    def _flag9(_cd9f) -> str:
+        _c9f = str(_cd9f or "").upper()
+        if not _c9f:
+            return ""
+        return ("🇨🇳" if _c9f.endswith((".SS", ".SZ", ".SH", ".BJ"))
+                else ("🇭🇰" if _c9f.endswith(".HK") else "🇺🇸"))
+
+    def _nw_link9(_nm9x, _cd9x):
+        # 【2026-07-25 用户抓"只有A股能点"】与全站 _stk_link 完全同款(新标签+下划线)——
+        # 原 target=_self 当前页重载在部分场景吞掉深链参数,美港股点了没反应。
+        # 【2026-07-27】无代码的条目(板块名如"半导体")不生成死链,原样返回文字。
+        if not str(_cd9x or "").strip():
+            return str(_nm9x or "")
+        # 名字前统一挂市场旗(用户"所有股写到一块,是不是美股我都不知道");
+        # 已自带旗的调用点(五行业代表)不重复挂
+        _fg9x = "" if str(_nm9x or "")[:2] in ("🇨🇳", "🇭🇰", "🇺🇸") else _flag9(_cd9x)
+        return (f'{_fg9x}<a href="?q={_cd9x}&focus=deep#v88-deep-analysis" target="_blank" rel="noopener" '
+                f'style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{_nm9x}</a>'
+                + _cert_badge9(_cd9x, _nm9x))
     _cb_gate9 = _v88_mkt_gate9x(_cb_repo9)
     _cb_nt9, _cb_day9 = _v88_nontrade9x()
     # 【U3⑥数据闸门 2026-07-26 GPT审计采纳】行情异常=degraded→买侧禁发,只留卖警
@@ -3630,11 +3759,7 @@ try:
     _is_weekend9 = _dtnw.now().weekday() >= 5
     _nw_repo9 = Path.home() / "Desktop" / "ai-daily-report-v2"
 
-    def _nwj9(_fn):
-        try:
-            return json.loads((_nw_repo9 / "data" / _fn).read_text(encoding="utf-8"))
-        except Exception:
-            return {}
+    # (_nwj9 已改为 _cbj9 别名并前移——2026-07-31)
 
     def _v88_refresh9(_label9r, _est9r, _fn9r, _key9r):
         """【V88·立刻更新按钮 2026-07-25 用户点单"每个用缓存的模块都要能立刻更新"】
@@ -3659,25 +3784,7 @@ try:
     # 【市场标识 2026-07-27 用户"你都把所有股写到一块,是不是美股我都不知道"】
     # 作战板各名单(低位拐点/全市场机会/拐点倒计时/卖名单/预警兑现)原来只有名字,
     # 中美港混排看不出归属。统一按代码后缀出旗:.SS/.SZ/.SH/.BJ=🇨🇳 .HK=🇭🇰 其余=🇺🇸
-    def _flag9(_cd9f) -> str:
-        _c9f = str(_cd9f or "").upper()
-        if not _c9f:
-            return ""
-        return ("🇨🇳" if _c9f.endswith((".SS", ".SZ", ".SH", ".BJ"))
-                else ("🇭🇰" if _c9f.endswith(".HK") else "🇺🇸"))
-
-    def _nw_link9(_nm9x, _cd9x):
-        # 【2026-07-25 用户抓"只有A股能点"】与全站 _stk_link 完全同款(新标签+下划线)——
-        # 原 target=_self 当前页重载在部分场景吞掉深链参数,美港股点了没反应。
-        # 【2026-07-27】无代码的条目(板块名如"半导体")不生成死链,原样返回文字。
-        if not str(_cd9x or "").strip():
-            return str(_nm9x or "")
-        # 名字前统一挂市场旗(用户"所有股写到一块,是不是美股我都不知道");
-        # 已自带旗的调用点(五行业代表)不重复挂
-        _fg9x = "" if str(_nm9x or "")[:2] in ("🇨🇳", "🇭🇰", "🇺🇸") else _flag9(_cd9x)
-        return (f'{_fg9x}<a href="?q={_cd9x}&focus=deep#v88-deep-analysis" target="_blank" rel="noopener" '
-                f'style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{_nm9x}</a>'
-                + _cert_badge9(_cd9x, _nm9x))
+    # (_flag9/_nw_link9 已前移至 _cbj9 之后——2026-07-31修使用先于定义)
     # 档位→最优口径: mkt_hz=大盘统一引擎档 / sec_hz=板块轮动点 / buy=买名单口径 / evt=机构简报档
     # 【V88·七档 2026-07-25 用户定纲"今日/本周/下周/本月/下月/本季度/下季度,稳一些"】
     # 明日档删除(触发单归今日/本周;且统一引擎无"明日"键,旧明日档大盘行是暗坑);
@@ -6233,9 +6340,15 @@ if Config.ENABLE_EXPECTATION_LAYER:
                 st.session_state['force_refresh_requested'] = False
                 st.cache_data.clear()
                 try:
+                    # 【2026-07-31修使用先于init】此处早于7300行的全局init,现场取同一单例
+                    if "local_cache" not in globals() and USE_NEW_MODULES:
+                        local_cache = mod_cache.get_cache(
+                            cache_dir=mod_config.CACHE_DIR,
+                            max_size_mb=getattr(mod_config, "CACHE_MAX_SIZE_MB", 500),
+                            ttl_seconds=getattr(mod_config, "CACHE_TTL", 3600))
                     local_cache.clear_all()   # 穿透文件缓存层，彻底刷新
                 except Exception:
-                    pass
+                    logging.exception("[V88] 强刷穿透文件缓存失败(不阻断)")
 
             # 启动性能监控
             _perf_monitor.start()
@@ -9080,65 +9193,9 @@ rl_agent = AlphaMatrixAgent()
 # ═══════════════════════════════════════════════════════════════
 # 6.5 Gemini AI API 调用函数（提前定义，供后续所有模块使用）
 # ═══════════════════════════════════════════════════════════════
-def call_gemini_api(prompt, model_name=None):
-    """
-    V88 统一 AI 调用入口（历史函数名保留；实际只调用 DeepSeek）
-    
-    参数:
-        prompt: 提示词
-        model_name: 模型名称（可选，默认使用GEMINI_MODEL_NAME）
-    
-    返回:
-        AI生成的文本响应
-    """
-    from v88_ai_budget import reserve as _web_budget_reserve, settle as _web_budget_settle
-    _budget_ticket = _web_budget_reserve(prompt, output_tokens=2200)
-    if not _budget_ticket:
-        return "⚠️ 网页AI月度1元配额已用完；确定性行情、持仓、自选和预警继续正常运行"
-    _ds_key = os.getenv("DEEPSEEK_API_KEY", "")
-    if _ds_key:
-        try:
-            _r = requests.post(
-                "https://api.deepseek.com/v1/chat/completions",
-                headers={"Authorization": f"Bearer {_ds_key}", "Content-Type": "application/json"},
-                json={"model": "deepseek-v4-flash",
-                      "messages": [{"role": "user", "content": prompt}],
-                      "temperature": 0.3, "max_tokens": 8192},
-                timeout=120
-            )
-            if _r.status_code == 200:
-                _body = _r.json()
-                _web_budget_settle(_budget_ticket, _body.get("usage"), ok=True)
-                return _body["choices"][0]["message"]["content"]
-        except Exception as _de:
-            logging.warning(f"DeepSeek requests failed: {_de}")
-    if not MY_DEEPSEEK_KEY:
-        _web_budget_settle(_budget_ticket, ok=False)
-        return "❌ 请配置 DEEPSEEK_API_KEY"
-    if AI_PROVIDER == "deepseek" and _deepseek_client:
-        try:
-            response = _deepseek_client.chat.completions.create(
-                model="deepseek-v4-flash",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.3, max_tokens=8192, timeout=120,
-            )
-            _web_budget_settle(_budget_ticket, getattr(response, "usage", None) and response.usage.model_dump(), ok=True)
-            return response.choices[0].message.content
-        except Exception as e:
-            _web_budget_settle(_budget_ticket, ok=False)
-            logging.error(f"❌ DeepSeek API异常: {str(e)}")
-            return f"❌ DeepSeek API错误: {str(e)}"
-    return "❌ DeepSeek API调用失败，请检查API Key和网络"
+# (call_gemini_api / call_gemini_api_stream 已前移至文件顶部——2026-07-31修使用先于定义)
 
 
-def call_gemini_api_stream(prompt, model_name=None, max_output_tokens=8192):
-    """历史流式入口兼容层；实际固定调用 DeepSeek。"""
-    yield call_gemini_api(prompt, model_name=None)
-
-
-# ═══════════════════════════════════════════════════════════════
-# 7. CANSLIM + 专业投机原理（完整双核评级）
-# ═══════════════════════════════════════════════════════════════
 def calculate_metrics_all(df, code):
     """
     【V87.16】完整的双核评级系统 - 增强防御性检查
@@ -11374,6 +11431,7 @@ def _gen_rationale(df, code: str, name: str, channel: str, result: dict) -> str:
 
 
 def batch_scan_dual(pool, market: str = "US", progress_callback=None) -> dict:
+    from modules.sector_map import get_sector   # 2026-07-31修:本作用域内使用先于导入
     """
     双通道扫描：同时运行拐点通道 + 启动通道，各取Top10。
 
@@ -14691,43 +14749,10 @@ def _v88_mkt_why9(mk, _repo):
     return _out
 
 
-def _v88_sentinel9(_repo, module, exc=None):
-    """【V88·异常哨兵 2026-07-24 用户批准三层自愈A层】被吞异常落盘显影——
-    三档段曾静默崩半天没人知道(病根:except pass)。健康条亮当日计数,
-    会话开工必读必修(铁律,已获批:bug发现即修+事后汇报)。保留最近100条。"""
-    try:
-        import traceback as _tb9
-        _fp = _repo / "data" / "render_errors.json"
-        try:
-            _rows = json.loads(_fp.read_text(encoding="utf-8"))
-        except Exception:
-            _rows = []
-        _rows.append({"ts": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                      "module": str(module)[:40],
-                      "err": (str(exc)[:500] if exc is not None else _tb9.format_exc()[-500:])})
-        _fp.write_text(json.dumps(_rows[-100:], ensure_ascii=False, indent=1), encoding="utf-8")
-    except Exception:
-        pass
+# (_v88_sentinel9 已前移至文件顶部——2026-07-31修:A段调用D段定义,分页版哨兵永久NameError)
 
 
-def _v88_usage9(_repo, event):
-    """【V88·点击热力 2026-07-24 用户批准三层自愈C层】本地记录使用事件——
-    「🧬系统自省」展示7日热力+主动提减法。只存本机data/(gitignore),不上传。保留30天。"""
-    try:
-        _fp = _repo / "data" / "usage_log.json"
-        try:
-            _d = json.loads(_fp.read_text(encoding="utf-8"))
-        except Exception:
-            _d = {}
-        _day = datetime.now().strftime("%Y-%m-%d")
-        _d.setdefault(_day, {})
-        _d[_day][str(event)] = int(_d[_day].get(str(event), 0)) + 1
-        for _k in sorted(_d)[:-30]:
-            _d.pop(_k, None)
-        _fp.write_text(json.dumps(_d, ensure_ascii=False, indent=1), encoding="utf-8")
-    except Exception:
-        pass
-
+# (_v88_usage9 已前移至文件顶部前置定义区——2026-07-31修使用先于定义)
 
 def _v88_phase_slot9():
     """【V88·三时段换算 2026-07-24 用户点单"一天盘中三次刷新,注意中美港时段不同"】
