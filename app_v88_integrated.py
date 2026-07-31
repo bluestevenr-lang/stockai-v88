@@ -2730,6 +2730,16 @@ logging.info("  - 并发线程池: 最大{}线程".format(Config.MAX_WORKERS))
 
 st.set_page_config(layout="wide", page_title="AI 皇冠双核", page_icon="👑", initial_sidebar_state="collapsed")
 
+# 【全站字体层级 2026-07-31 用户定纲"主要内容字体大一点,解释说明≤图标字体,不超过现有最大"】
+# 主内容(表格数据/矩阵)=13.5px;解释说明/悬停提示行=11px封顶;层级恒定:重要>说明
+st.markdown("""<style>
+table td, table th { font-size: 13.5px !important; }
+table td span[style*="font-size:10"], table td span[style*="font-size:11"],
+table th span { font-size: 11px !important; }
+div[data-testid="stMarkdownContainer"] div[style*="font-size:11px"],
+div[data-testid="stMarkdownContainer"] div[style*="font-size:12px"] { font-size: 11px !important; }
+</style>""", unsafe_allow_html=True)
+
 # 【V88·全局字体系统 2026-07-17 用户定纲】版面字体像 Claude：干净无衬线+克制层级；
 # 字号规范：基准=五号(14px)，标题上限≈四号(18px)，全局下限=小五号(12px)——不允许更小的字。
 # 重要字眼（动作/涨跌/名字）已由动作分色与红涨绿跌体系区分，这里统一底层字体。
@@ -3580,7 +3590,41 @@ try:
             "font-size:9.5px;font-weight:800'>✓</span> 已过Claude标准闸(七条机检规则)　"
             "<span style='color:#94a3b8'>无标=引擎自判(未经复核)｜未通过的已移出名单</span></div>",
             unsafe_allow_html=True)
-        _tab_b9, _tab_s9, _tab_h9 = st.tabs([f"✅确认买({len(_cb_rows9)})",
+        # 【3A并板 2026-07-31 用户"图二内容整合到图一"】雷达榜面行进同一张表:
+        # 评级列代替动作概率;🎯进入区间/💰盈利带进触发列;止损-8%进失效列;认证状态进状态列
+        try:
+            _tq9m = _cbj9("trend_quality.json")
+            _tqrows9 = [x for x in (_tq9m.get("rows") or []) if x.get("role") == "board"]
+            _in_tbl9 = {str(x[2]) for x in _cb_rows9}
+            for _x9 in _tqrows9[:14]:
+                if str(_x9.get("code")) in _in_tbl9:
+                    continue
+                _tl9 = _x9.get("tier_label")
+                _tc9 = {"3A": "#dc2626", "2A": "#ea580c"}.get(_tl9, "#64748b")
+                _sf9m = str(_x9.get("safety") or "")
+                _act9m = (f"<b style='color:{_tc9}'>{_tl9}</b>"
+                          + (f"<br><span style='font-size:10px;color:#dc2626'>{_sf9m[:10]}</span>"
+                             if _sf9m.startswith("⚠️") else "")
+                          + (f"<br><span style='font-size:10px;color:#a16207'>待双剑</span>"
+                             if _x9.get("cert_note") else ""))
+                _ep9m = _x9.get("entry_pullback") or []
+                _pz9m = _x9.get("profit_zone") or []
+                _trig9m = (f"回踩{'~'.join(str(v) for v in _ep9m) or '?'}或破{_x9.get('entry_break') or '?'}"
+                           f"<br><span style='color:#dc2626;font-size:11px'>💰盈利带 "
+                           f"{'~'.join(str(v) for v in _pz9m) or '?'}(分批止盈)</span>")
+                _why9m = (f"三层:{'📈' if _x9.get('L1') else '▫️'}{'🎯' if _x9.get('L2') else '▫️'}"
+                          f"{'🔊' if _x9.get('L3') else '▫️'} 量比{_x9.get('vol_ratio') or '?'}"
+                          + (f" 2周{_x9.get('p_2w')}%/长{_x9.get('p_long')}%"
+                             if _x9.get("p_2w") is not None else " 质量=结构proxy"))
+                _t_buy9.append(_row6_9(
+                    f"{_MKFLAG9.get(_x9.get('market'), '')}{_x9.get('name')}",
+                    _x9.get("code"), _act9m, _trig9m, "入场价-8%",
+                    "1批", ("⚔️双剑✓" if _x9.get("dual_cert") else "🕐待双剑"),
+                    _why9m, None, _pxc=_pxcell9(_x9.get("code"), _x9.get("last"))))
+        except Exception:
+            logging.exception("[V88] 3A并板失败")
+            _v88_sentinel9(Path.home() / "Desktop" / "ai-daily-report-v2", "3A并板")
+        _tab_b9, _tab_s9, _tab_h9 = st.tabs([f"✅确认买({len(_cb_rows9)})+3A榜({len(_tqrows9) if '_tqrows9' in dir() else 0})",
                                              f"⚔️卖/减({len(_cb_sell9)})", f"💼持有({len(_hold9)})"])
         with _tab_b9:
             st.markdown(_tbl9(_t_buy9) if _t_buy9 else
@@ -3806,61 +3850,7 @@ try:
         "下季度": {"mkt_hz": "32周", "sec_hz": "16周", "buy": "hz",   "hz": "32周",
                   "evt": "本月及下月", "days": (90, 180)},
     }
-    # 【🏆3A优选榜 2026-07-31 用户定纲"符合三层3A/两层双A/一层A都列出;版面只留持仓+3A"】
-    try:
-        _tq3a9 = (_cbj9("trend_quality.json").get("rows") or [])
-        with st.expander(f"🏆 3A优选榜 · 三层评级(趋势新高/全周期质量/放量确认)——{sum(1 for x in _tq3a9 if x.get('tier')==3)}只3A", expanded=True):
-            st.markdown("<div style='font-size:11px;color:#64748b'>三层:📈趋势=贴/创半年新高(欧奈尔N)｜🎯质量=2周与4-32周双≥60%｜🔊量能=量比≥1.3。"
-                        "影子级攒战绩(n≥5且≥50%转正);⚠️缩量新高只展示不提名;右侧仓止损=入场价-8%机械</div>", unsafe_allow_html=True)
-            # 【三市场强制覆盖 2026-07-31 用户定纲"中美港都必须要有"】每市场一段,空档如实报
-            _tqmk9 = (_cbj9("trend_quality.json").get("markets") or {})
-            for _mkn9, _mkf9 in (("A股", "🇨🇳"), ("港股", "🇭🇰"), ("美股", "🇺🇸")):
-                _mi9 = _tqmk9.get(_mkn9) or {}
-                if not _mi9.get("board"):
-                    st.markdown(f"<div style='font-size:12px;margin:2px 0'><b>{_mkf9}{_mkn9}</b>："
-                                f"<span style='color:#94a3b8'>{_mi9.get('empty_note') or '今日无≥双A'}"
-                                "——空档如实报,宁缺毋滥,保鲜班自动补扫</span></div>", unsafe_allow_html=True)
-            if True:
-                _rows3a9 = []
-                for _x9 in [x for x in _tq3a9 if x.get("role") == "board"][:18]:   # 榜面=3A/双A(带市场旗)
-                    _lay9 = "".join(("📈" if _x9.get("L1") else "▫️", "🎯" if _x9.get("L2") else "▫️", "🔊" if _x9.get("L3") else "▫️"))
-                    _tcol9 = {"3A": "#dc2626", "双A": "#ea580c"}.get(_x9.get("tier_label"), "#64748b")
-                    _sf9 = str(_x9.get("safety") or "")
-                    _rows3a9.append(
-                        f"<tr><td><b style='color:{_tcol9}'>{_x9.get('tier_label')}</b>"
-                        + (f"<br><span title=\"{_sf9}\" style='color:#dc2626;font-size:10px'>{_sf9[:11]}ⓘ</span>"
-                           if _sf9.startswith("⚠️") else
-                           f"<br><span style='color:#a16207;font-size:10px'>{_sf9[:10]}</span>" if _sf9.startswith("🟡") else "")
-                        + f"</td><td>{_nw_link9(_x9.get('name'), _x9.get('code'))}</td>"
-                        f"<td>现{_x9.get('last')}</td><td title='📈趋势/🎯质量/🔊量能'>{_lay9}"
-                        + (f"<span style='color:#94a3b8;font-size:10px'>缺{_x9.get('missing')}</span>" if _x9.get("missing") else "")
-                        + f"</td><td>量比{_x9.get('vol_ratio') or '?'}</td>"
-                        + (f"<td>2周{_x9.get('p_2w')}%/长{_x9.get('p_long')}%</td>" if _x9.get("p_2w") is not None
-                           else "<td title='大库池外标的:质量层为结构proxy(收>MA20>MA60且60日上涨),非引擎全周期概率'>"
-                                "<span style='color:#7c3aed;font-size:11px'>结构proxy ⓘ</span></td>")
-                        + f"<td style='font-size:11.5px'><b style='color:#16a34a'>"
-                        f"回踩{('~'.join(str(v) for v in _x9.get('entry_pullback') or [])) or '?'}</b>"
-                        f"<br><span style='color:#64748b;font-size:10.5px'>或放量破{_x9.get('entry_break') or '?'}</span></td>"
-                        f"<td title='欧奈尔20-25%分批止盈带;到带分批兑现,剩余移动止损跟趋势;止损=入场价-8%' "
-                        f"style='font-size:11.5px'><b style='color:#dc2626'>"
-                        f"{('~'.join(str(v) for v in _x9.get('profit_zone') or [])) or '?'}</b>"
-                        f"<br><span style='color:#64748b;font-size:10.5px'>分批止盈带·损-8% ⓘ</span></td></tr>")
-                st.markdown("<table style='width:100%;font-size:12.5px;border-collapse:collapse'>"
-                            "<tr style='color:#94a3b8;font-size:11px;text-align:left'>"
-                            "<th>级</th><th>名称</th><th>现价</th><th>三层</th><th>量比</th><th>周期</th>"
-                            "<th title='二选一:回踩区缩量企稳接,或放量站稳突破位跟'>🎯进入区间</th>"
-                            "<th title='欧奈尔20-25%分批止盈带,剩余移动止损'>💰盈利区间</th></tr>"
-                            + "".join(_rows3a9) + "</table>", unsafe_allow_html=True)
-                _bench9 = [x for x in _tq3a9 if x.get("role") == "bench"][:8]
-                if _bench9:   # 1A预备梯队:仅雷达视野(提前量),不给区间不入台账不占推荐位
-                    st.markdown("<div style='font-size:11px;color:#94a3b8;margin-top:3px' "
-                                "title='预备梯队=只满足一层的观察对象,是明日双A/3A的候选池(汇丰案:早一天进视野价值千金);"
-                                "非推荐,无区间,不入台账'>🅰️预备梯队(非推荐·仅雷达视野): "
-                                + "、".join(f"{x.get('name')}(缺{x.get('missing')})" for x in _bench9)
-                                + " ⓘ</div>", unsafe_allow_html=True)
-    except Exception:
-        logging.exception("[V88] 3A优选榜渲染失败")
-        _v88_sentinel9(Path.home() / "Desktop" / "ai-daily-report-v2", "3A优选榜")
+    # (3A榜已并入上方行动中心确认买表格——2026-07-31 用户'图二整合到图一')
     with st.expander("⏱ 时间作战板 · 今日→下季度七档切换：大盘/轮转/低位埋伏/买/卖/事件（一屏六问）",
                      expanded=True):
         _tbc_t9, _tbc_m9 = st.columns([5.2, 3.8])
