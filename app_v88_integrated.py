@@ -3596,6 +3596,9 @@ try:
                 f"{len(_stale9f)}行旧数据</b>"
                 + ("（⚠️以现价复核后再动手）" if _stale9f else "·全部今日")
                 + "｜候选池: " + " ".join(_pool9f)
+                + f"｜评级快照 {str((_cbj9('trend_quality.json') or {}).get('generated_at'))[5:16]}"
+                  "<span title='评级=快照非头衔:每保鲜班随价格重算,升降级记grade_changes流水——"
+                  "旧评级不许冒充新评级(与铁律17同理)'> ⓘ</span>"
                 + "<span title='候选池=发现新标的的雷达;停更=名单只能在旧池里打转,"
                   "推荐一周不换多半是这里断了。⚠️池当天产的名单只作参考'> ⓘ</span></div>",
                 unsafe_allow_html=True)
