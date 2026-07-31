@@ -3274,8 +3274,9 @@ try:
     # 【统一印证评级 2026-07-31 用户确认】徽章挂每行名称旁,全表按真实印证分降序
     _gr9map = (_cbj9("trend_quality.json").get("grades") or {})
 
-    def _gbadge9(_cd):
-        """评级章(2026-07-31 用户终版):3A=满配只出章;2A/1A括号标得分项;无排名无分数数字。"""
+    def _gbadge9(_cd, _now_px=None):
+        """评级章(2026-07-31 终版):3A满配只出章;2A/1A括号标得分项;
+        每章挂[评级时点@基价]——现价与基价漂移>3%=红标'待重算',旧考评不许装新(用户定纲)。"""
         _g9 = _gr9map.get(str(_cd)) or {}
         if not _g9:
             return "", 0
@@ -3283,12 +3284,29 @@ try:
         _chip9 = (f"<span style='background:{_gc9};color:#fff;border-radius:3px;"
                   f"padding:0 4px;font-size:10.5px;font-weight:800;margin-left:2px'>"
                   f"{_g9.get('grade')}</span>")
-        if _g9.get("grade") != "3A":   # 2A/1A:括号标具体得分项
+        if _g9.get("grade") != "3A":
             _parts9 = "+".join(x for x in (
                 "⚔️3" if _g9.get("dual") else "", "C2" if _g9.get("c_only") else "",
                 "✓1" if _g9.get("cs") else "", "位置" if _g9.get("L_pos") else "",
                 "质量" if _g9.get("L_qual") else "", "量能" if _g9.get("L_vol") else "") if x)
             _chip9 += f"<span style='color:#94a3b8;font-size:10px'>({_parts9})</span>"
+        # 考评身份证:评于何时@基价;现价漂移>3%红标待重算
+        _gat9, _gpx9 = _g9.get("at"), _g9.get("px")
+        if _gat9:
+            _drift9 = None
+            try:
+                if _now_px and _gpx9:
+                    _drift9 = (float(_now_px) / float(_gpx9) - 1) * 100
+            except (TypeError, ValueError):
+                pass
+            if _drift9 is not None and abs(_drift9) > 3:
+                _chip9 += (f"<span style='color:#dc2626;font-size:10px' title='评级基价{_gpx9},"
+                           f"现价已漂移{_drift9:+.1f}%——该考评待重算,勿按旧级执行'>"
+                           f" ⚠️评{_gat9}@{_gpx9}漂{_drift9:+.1f}%</span>")
+            else:
+                _chip9 += (f"<span style='color:#94a3b8;font-size:10px' "
+                           f"title='考评身份证:评级时点@基价,漂移≤3%内有效'>"
+                           f" 评{_gat9}@{_gpx9}</span>")
         return _chip9, int(_g9.get("score") or 0)
 
     for _r9 in _cb_src9:
@@ -3519,7 +3537,7 @@ try:
             _zone9s += _space9(_cd9)   # 🎯预计空间:多少日、上看哪、下守哪
             _inv9x = (_re9t.search(r"跌破([0-9.]+)", str(_why9)) or None)
             _inv9s = _inv9x.group(1) if _inv9x else "见卡"
-            _gb9v, _gs9v = _gbadge9(_cd9)
+            _gb9v, _gs9v = _gbadge9(_cd9, _px9)
             _t_buy9.append((_gs9v, _row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9), '')}{_nm9}{_gb9v}",
                                    _cd9, f"<b style='color:#dc2626'>买 涨{_pu9}%</b>{_plab9(_pu9, 'up')}",
                                    _zone9s, _inv9s,
@@ -3643,7 +3661,7 @@ try:
                           + f" 量比{_x9.get('vol_ratio') or '?'}"
                           + (f" 2周{_x9.get('p_2w')}%/长{_x9.get('p_long')}%"
                              if _x9.get("p_2w") is not None else " 质量=结构proxy"))
-                _gb9x, _gs9x = _gbadge9(_x9.get("code"))
+                _gb9x, _gs9x = _gbadge9(_x9.get("code"), _x9.get("last"))
                 try:   # 失效价=回踩区下沿×0.92算成具体数字(用户"要素说明要一致")
                     _inv9x2 = round(float((_x9.get("entry_pullback") or [_x9.get("last")])[0]) * 0.92, 2)
                 except (TypeError, ValueError):
