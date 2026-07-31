@@ -3270,6 +3270,23 @@ try:
                 "title='预计空间:2周(约10交易日)窗口,与涨概率同口径。上看=引擎技术阻力位,"
                 f"下守=止损;概率为规则估计,入场窗口信号{_eg_txt9}'>🎯2周 "
                 + " ".join(_parts) + " ⓘ</span>")
+    # 【统一印证评级 2026-07-31 用户确认】徽章挂每行名称旁,全表按真实印证分降序
+    _gr9map = (_cbj9("trend_quality.json").get("grades") or {})
+
+    def _gbadge9(_cd):
+        _g9 = _gr9map.get(str(_cd)) or {}
+        if not _g9:
+            return "", 0
+        _gc9 = {"3A": "#dc2626", "2A": "#ea580c"}.get(_g9.get("grade"), "#94a3b8")
+        _tip9 = ("印证分" + str(_g9.get("score")) + "/7: "
+                 + ("⚔️双剑(C+GPT)+3 " if _g9.get("dual") else "")
+                 + ("C单认证+2 " if _g9.get("c_only") else "")
+                 + ("✓机检+1 " if _g9.get("cs") else "")
+                 + f"技术{_g9.get('tech')}层(位置{'✓' if _g9.get('L_pos') else '✗'}"
+                 + f"质量{'✓' if _g9.get('L_qual') else '✗'}量能{'✓' if _g9.get('L_vol') else '✗'})")
+        return (f"<span title=\"{_tip9}\" style='background:{_gc9};color:#fff;border-radius:3px;"
+                f"padding:0 4px;font-size:10.5px;font-weight:800;margin-left:2px'>"
+                f"{_g9.get('grade')}</span>", int(_g9.get("score") or 0))
     for _r9 in _cb_src9:
         _ep9 = _r9.get("entry_plan") or {}
         _md9 = str(_ep9.get("mode") or "")
@@ -3498,13 +3515,14 @@ try:
             _zone9s += _space9(_cd9)   # 🎯预计空间:多少日、上看哪、下守哪
             _inv9x = (_re9t.search(r"跌破([0-9.]+)", str(_why9)) or None)
             _inv9s = _inv9x.group(1) if _inv9x else "见卡"
-            _t_buy9.append(_row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9), '')}{_nm9}",
+            _gb9v, _gs9v = _gbadge9(_cd9)
+            _t_buy9.append((_gs9v, _row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9), '')}{_nm9}{_gb9v}",
                                    _cd9, f"<b style='color:#dc2626'>买 涨{_pu9}%</b>{_plab9(_pu9, 'up')}",
                                    _zone9s, _inv9s,
                                    _pos9(_wbrows9.get(str(_cd9)),
                                          "半仓" if _g9x.get("state") == "hot" else "纲领内"),
                                    _st9x, str(_why9), _wbrows9.get(str(_cd9)),
-                                   _pxc=_pxcell9(_cd9, _px9)))
+                                   _pxc=_pxcell9(_cd9, _px9))))
         # 【冲突消解层 2026-07-27 特斯拉案"卖侧强看跌85% vs 买侧🚀启动候选72"两嘴打架】
         # 卖警=当下趋势事实,底拐/上行候选=左侧猜测——合成:纪律优先减仓照执行;
         # 候选在场=减而不清留观察仓,站上确认价才算见底成立,之前的反弹按逃命反弹处理
@@ -3616,14 +3634,20 @@ try:
                           f"{'🔊' if _x9.get('L3') else '▫️'} 量比{_x9.get('vol_ratio') or '?'}"
                           + (f" 2周{_x9.get('p_2w')}%/长{_x9.get('p_long')}%"
                              if _x9.get("p_2w") is not None else " 质量=结构proxy"))
-                _t_buy9.append(_row6_9(
-                    f"{_MKFLAG9.get(_x9.get('market'), '')}{_x9.get('name')}",
-                    _x9.get("code"), _act9m, _trig9m, "入场价-8%",
+                _gb9x, _gs9x = _gbadge9(_x9.get("code"))
+                try:   # 失效价=回踩区下沿×0.92算成具体数字(用户"要素说明要一致")
+                    _inv9x2 = round(float((_x9.get("entry_pullback") or [_x9.get("last")])[0]) * 0.92, 2)
+                except (TypeError, ValueError):
+                    _inv9x2 = "入场价-8%"
+                _t_buy9.append((_gs9x, _row6_9(
+                    f"{_MKFLAG9.get(_x9.get('market'), '')}{_x9.get('name')}{_gb9x}",
+                    _x9.get("code"), _act9m, _trig9m, _inv9x2,
                     "1批", ("⚔️双剑✓" if _x9.get("dual_cert") else "🕐待双剑"),
-                    _why9m, None, _pxc=_pxcell9(_x9.get("code"), _x9.get("last"))))
+                    _why9m, None, _pxc=_pxcell9(_x9.get("code"), _x9.get("last")))))
         except Exception:
             logging.exception("[V88] 3A并板失败")
             _v88_sentinel9(Path.home() / "Desktop" / "ai-daily-report-v2", "3A并板")
+        _t_buy9 = [h for _s9z, h in sorted(_t_buy9, key=lambda z: -z[0])]   # 真实印证分降序,3A首批
         _tab_b9, _tab_s9, _tab_h9 = st.tabs([f"✅确认买({len(_cb_rows9)})+3A榜({len(_tqrows9) if '_tqrows9' in dir() else 0})",
                                              f"⚔️卖/减({len(_cb_sell9)})", f"💼持有({len(_hold9)})"])
         with _tab_b9:
