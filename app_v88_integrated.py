@@ -3464,7 +3464,8 @@ try:
                     f"{_l1.get('a')}</span><br>"
                     f"<span style='color:#64748b'>②{_l2.get('a')}　③{_l3.get('a')}</span> ⓘ</td>")
 
-        def _row6_9(_nm, _cd, _act, _trig, _inv, _pos, _st, _why="", _wnow=None, _pxc="<td></td>"):
+        def _row6_9(_nm, _cd, _act, _trig, _inv, _pos, _st, _why="", _wnow=None, _pxc="<td></td>",
+                    _gcell="<td></td>", _laytxt=None):
             # 【2026-07-29 用户"不要另起一个板块,直接在表格里增加一列"】
             # _wnow = why_buy 的那一行:表内只放"⚡驱动"一句小字,持续性/失效条件进 title 悬停
             _lk = (f"<a href='?q={_cd}&focus=deep#v88-deep-analysis' target='_blank' rel='noopener' "
@@ -3485,14 +3486,18 @@ try:
                 _wcell = (f"<td title=\"{_tip[:300]}\" style='font-size:11px;line-height:1.4;"
                           f"max-width:230px'><b>{_wnow.get('kind')}</b>"
                           f"<span style='color:#64748b'>·{str(_wnow.get('why_now'))[:46]}</span> ⓘ</td>")
-            return (f"<tr><td>{_lk}</td>{_pxc}<td>{_act}</td><td>{_trig}</td><td>{_inv}</td>"
+            _lay9td = (f"<td style='font-size:11px;line-height:1.5;max-width:190px'>{_laytxt}</td>"
+                       if (_laytxt and not _wnow) else _lay_cell9(_wnow))
+            return (f"<tr><td>{_lk}</td>{_gcell}{_pxc}<td>{_act}</td><td>{_trig}</td><td>{_inv}</td>"
                     f"<td>{_pos}</td><td title=\"{_why[:120]}\">{_st} ⓘ</td>"
-                    f"{_lay_cell9(_wnow)}{_wcell}</tr>")
+                    f"{_lay9td}{_wcell}</tr>")
 
         def _tbl9(rows_html):
             return ("<table style='width:100%;font-size:12.5px;border-collapse:collapse'>"
                     "<tr style='color:#94a3b8;font-size:11px;text-align:left'>"
-                    "<th>名称</th><th title='分析所依据的行情价与时间点:🟢同日(盘中/收盘定稿)=新鲜;"
+                    "<th>名称</th>"
+                    "<th title='统一印证评级:3A=双剑+技术≥2;2A/1A括号标得分项;评时点@基价,漂移>3%红标待重算'>评级 ⓘ</th>"
+                    "<th title='分析所依据的行情价与时间点:🟢同日(盘中/收盘定稿)=新鲜;"
                     "⚠️红=隔日旧数据,判断可能已被行情推翻,以现价复核后再动手'>现价·时点 ⓘ</th>"
                     "<th title='动作+未来2周方向概率(统一引擎规则估计,非实盘胜率);"
                     "买侧=上涨概率,卖侧=下跌概率;≥70%高把握·60-70%偏多·55-60%略偏·<55%中性'>"
@@ -3538,13 +3543,14 @@ try:
             _inv9x = (_re9t.search(r"跌破([0-9.]+)", str(_why9)) or None)
             _inv9s = _inv9x.group(1) if _inv9x else "见卡"
             _gb9v, _gs9v = _gbadge9(_cd9, _px9)
-            _t_buy9.append((_gs9v, _row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9), '')}{_nm9}{_gb9v}",
+            _t_buy9.append((_gs9v, _row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9), '')}{_nm9}",
                                    _cd9, f"<b style='color:#dc2626'>买 涨{_pu9}%</b>{_plab9(_pu9, 'up')}",
                                    _zone9s, _inv9s,
                                    _pos9(_wbrows9.get(str(_cd9)),
                                          "半仓" if _g9x.get("state") == "hot" else "纲领内"),
                                    _st9x, str(_why9), _wbrows9.get(str(_cd9)),
-                                   _pxc=_pxcell9(_cd9, _px9))))
+                                   _pxc=_pxcell9(_cd9, _px9),
+                                   _gcell=f"<td style='white-space:nowrap'>{_gb9v}</td>")))
         # 【冲突消解层 2026-07-27 特斯拉案"卖侧强看跌85% vs 买侧🚀启动候选72"两嘴打架】
         # 卖警=当下趋势事实,底拐/上行候选=左侧猜测——合成:纪律优先减仓照执行;
         # 候选在场=减而不清留观察仓,站上确认价才算见底成立,之前的反弹按逃命反弹处理
@@ -3567,12 +3573,14 @@ try:
                            if str(_cd9s) not in _px_stale17 else
                            "<b style='color:#dc2626'>🚫旧价冻结</b>"
                            "<span style='color:#94a3b8;font-size:10px'><br>纪律线待重更,勿按旧线执行</span>")
+            _gb9s, _ = _gbadge9(_cd9s, _px9s)
             _t_sell9.append(_row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9s), '')}{_nm9s}", _cd9s,
                                     _act_cell9s,
                                     f"现{_px9s}", "卡💰行", ("减留底仓" if _cf9 else "按纪律"),
                                     ("🚫等重更" if str(_cd9s) in _px_stale17 else "💼执行"),
                                     str(_why9s) + _cf_txt9, _wsell9.get(str(_cd9s)),
-                                    _pxc=_pxcell9(_cd9s, _px9s)))
+                                    _pxc=_pxcell9(_cd9s, _px9s),
+                                    _gcell=f"<td style='white-space:nowrap'>{_gb9s}</td>"))
         try:
             _hold9 = [r for r in _cb_src9 if r.get("scope") == "持仓"
                       and not any(k in str(r.get("action", "")) for k in ("减", "退", "清", "止损"))][:5]
@@ -3584,7 +3592,8 @@ try:
                                     "维持", f"涨{_r9h.get('p_up')}%{_plab9(_r9h.get('p_up'), 'up')}",
                                     str(_r9h.get("entry_note") or ""),
                                     _whold9.get(str(_r9h.get("code"))),
-                                    _pxc=_pxcell9(_r9h.get("code"), _r9h.get("last"))))
+                                    _pxc=_pxcell9(_r9h.get("code"), _r9h.get("last")),
+                                    _gcell=f"<td style='white-space:nowrap'>{_gbadge9(_r9h.get('code'), _r9h.get('last'))[0]}</td>"))
         st.markdown("<div style='background:#fef2f2;border:2px solid #dc2626;border-radius:10px;"
                     "padding:.4rem .8rem;margin:.3rem 0'>"
                     f"<b style='font-size:14px;color:#dc2626'>🔔 {_cb_day9}行动中心</b>"
@@ -3662,15 +3671,21 @@ try:
                           + (f" 2周{_x9.get('p_2w')}%/长{_x9.get('p_long')}%"
                              if _x9.get("p_2w") is not None else " 质量=结构proxy"))
                 _gb9x, _gs9x = _gbadge9(_x9.get("code"), _x9.get("last"))
+                _lay9x = (f"①{_x9.get('tier_label')}·{'📈' if _x9.get('L1') else '▫️'}"
+                          f"{'🎯' if _x9.get('L2') else '▫️'}{'🔊' if _x9.get('L3') else '▫️'}"
+                          + (f"<br><span style='color:#dc2626'>{str(_x9.get('safety',''))[:14]}</span>"
+                             if str(_x9.get('safety','')).startswith('⚠️') else '')
+                          + "<br><span style='color:#64748b'>②1批小仓 ③右侧等触发:回踩缩量接/放量破位跟</span>")
                 try:   # 失效价=回踩区下沿×0.92算成具体数字(用户"要素说明要一致")
                     _inv9x2 = round(float((_x9.get("entry_pullback") or [_x9.get("last")])[0]) * 0.92, 2)
                 except (TypeError, ValueError):
                     _inv9x2 = "入场价-8%"
                 _t_buy9.append((_gs9x, _row6_9(
-                    f"{_MKFLAG9.get(_x9.get('market'), '')}{_x9.get('name')}{_gb9x}",
+                    f"{_MKFLAG9.get(_x9.get('market'), '')}{_x9.get('name')}",
                     _x9.get("code"), _act9m, _trig9m, _inv9x2,
                     "1批", ("⚔️双剑✓" if _x9.get("dual_cert") else "🕐待双剑"),
-                    _why9m, None, _pxc=_pxcell9(_x9.get("code"), _x9.get("last")))))
+                    _why9m, None, _pxc=_pxcell9(_x9.get("code"), _x9.get("last")),
+                    _gcell=f"<td style='white-space:nowrap'>{_gb9x}</td>", _laytxt=_lay9x)))
         except Exception:
             logging.exception("[V88] 3A并板失败")
             _v88_sentinel9(Path.home() / "Desktop" / "ai-daily-report-v2", "3A并板")
