@@ -2735,11 +2735,14 @@ st.set_page_config(layout="wide", page_title="AI 皇冠双核", page_icon="👑"
 # 主内容(表格数据/矩阵)=13.5px;解释说明/悬停提示行=11px封顶;层级恒定:重要>说明
 # 【07-31 用户"字体再缩1/3,阿里那行高度显示两只股"】密度版:主内容10.5>说明8.8,
 # 行距/内边距同步压缩——每行高度≈原一半
+# 层级铁序(07-31用户抓"名称比时间戳还小,顾此失彼"):
+# ①名称(链接)12.5px粗=第一眼 ②关键数字10.5px ③时间戳/说明/身份证8.2px灰=最底层
 st.markdown("""<style>
 table td, table th { font-size: 10.5px !important; padding: 2px 5px !important;
                      line-height: 1.22 !important; }
+table td a { font-size: 12.5px !important; font-weight: 700 !important; }
 table td b { font-size: 10.5px !important; }
-table td span, table th span { font-size: 8.8px !important; }
+table td span, table th span { font-size: 8.2px !important; }
 table td br + span { line-height: 1.1 !important; }
 div[data-testid="stMarkdownContainer"] div[style*="font-size:11px"],
 div[data-testid="stMarkdownContainer"] div[style*="font-size:12px"] { font-size: 9.5px !important; }
@@ -3326,8 +3329,8 @@ try:
                 _chip9 += (f"<br><span style='color:#dc2626;font-size:9px' title='评级基价{_gpx9},"
                            f"现价漂移{_drift9:+.1f}%——待重算勿按旧级执行'>⚠️漂{_drift9:+.1f}%</span>")
             else:
-                _chip9 += (f"<br><span style='color:#94a3b8;font-size:9px' "
-                           f"title='考评身份证:评级时点@基价'>评{str(_gat9)[3:]}@{_gpx9}</span>")
+                _chip9 += (f"<br><span style='color:#94a3b8;font-size:8px;white-space:nowrap' "
+                           f"title='考评身份证:评级时点@基价({_gat9})'>评{str(_gat9)[6:]}@{_gpx9}</span>")
         return _chip9, int(_g9.get("score") or 0)
 
     for _r9 in _cb_src9:
