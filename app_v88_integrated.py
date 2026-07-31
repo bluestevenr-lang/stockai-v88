@@ -3274,19 +3274,22 @@ try:
     _gr9map = (_cbj9("trend_quality.json").get("grades") or {})
 
     def _gbadge9(_cd):
+        """评级章(2026-07-31 用户终版):3A=满配只出章;2A/1A括号标得分项;无排名无分数数字。"""
         _g9 = _gr9map.get(str(_cd)) or {}
         if not _g9:
             return "", 0
         _gc9 = {"3A": "#dc2626", "2A": "#ea580c"}.get(_g9.get("grade"), "#94a3b8")
-        _tip9 = ("印证分" + str(_g9.get("score")) + "/7: "
-                 + ("⚔️双剑(C+GPT)+3 " if _g9.get("dual") else "")
-                 + ("C单认证+2 " if _g9.get("c_only") else "")
-                 + ("✓机检+1 " if _g9.get("cs") else "")
-                 + f"技术{_g9.get('tech')}层(位置{'✓' if _g9.get('L_pos') else '✗'}"
-                 + f"质量{'✓' if _g9.get('L_qual') else '✗'}量能{'✓' if _g9.get('L_vol') else '✗'})")
-        return (f"<span title=\"{_tip9}\" style='background:{_gc9};color:#fff;border-radius:3px;"
-                f"padding:0 4px;font-size:10.5px;font-weight:800;margin-left:2px'>"
-                f"{_g9.get('grade')}</span>", int(_g9.get("score") or 0))
+        _chip9 = (f"<span style='background:{_gc9};color:#fff;border-radius:3px;"
+                  f"padding:0 4px;font-size:10.5px;font-weight:800;margin-left:2px'>"
+                  f"{_g9.get('grade')}</span>")
+        if _g9.get("grade") != "3A":   # 2A/1A:括号标具体得分项
+            _parts9 = "+".join(x for x in (
+                "⚔️3" if _g9.get("dual") else "", "C2" if _g9.get("c_only") else "",
+                "✓1" if _g9.get("cs") else "", "位置" if _g9.get("L_pos") else "",
+                "质量" if _g9.get("L_qual") else "", "量能" if _g9.get("L_vol") else "") if x)
+            _chip9 += f"<span style='color:#94a3b8;font-size:10px'>({_parts9})</span>"
+        return _chip9, int(_g9.get("score") or 0)
+
     for _r9 in _cb_src9:
         _ep9 = _r9.get("entry_plan") or {}
         _md9 = str(_ep9.get("mode") or "")
