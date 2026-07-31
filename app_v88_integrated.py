@@ -3812,11 +3812,17 @@ try:
         with st.expander(f"🏆 3A优选榜 · 三层评级(趋势新高/全周期质量/放量确认)——{sum(1 for x in _tq3a9 if x.get('tier')==3)}只3A", expanded=True):
             st.markdown("<div style='font-size:11px;color:#64748b'>三层:📈趋势=贴/创半年新高(欧奈尔N)｜🎯质量=2周与4-32周双≥60%｜🔊量能=量比≥1.3。"
                         "影子级攒战绩(n≥5且≥50%转正);⚠️缩量新高只展示不提名;右侧仓止损=入场价-8%机械</div>", unsafe_allow_html=True)
-            if not _tq3a9:
-                st.markdown("<span style='font-size:12px;color:#94a3b8'>当前池内无≥A级标的——宁缺毋滥,雷达随保鲜班自动刷新</span>", unsafe_allow_html=True)
-            else:
+            # 【三市场强制覆盖 2026-07-31 用户定纲"中美港都必须要有"】每市场一段,空档如实报
+            _tqmk9 = (_cbj9("trend_quality.json").get("markets") or {})
+            for _mkn9, _mkf9 in (("A股", "🇨🇳"), ("港股", "🇭🇰"), ("美股", "🇺🇸")):
+                _mi9 = _tqmk9.get(_mkn9) or {}
+                if not _mi9.get("board"):
+                    st.markdown(f"<div style='font-size:12px;margin:2px 0'><b>{_mkf9}{_mkn9}</b>："
+                                f"<span style='color:#94a3b8'>{_mi9.get('empty_note') or '今日无≥双A'}"
+                                "——空档如实报,宁缺毋滥,保鲜班自动补扫</span></div>", unsafe_allow_html=True)
+            if True:
                 _rows3a9 = []
-                for _x9 in [x for x in _tq3a9 if x.get("role") == "board"][:12]:   # 榜面=3A/双A
+                for _x9 in [x for x in _tq3a9 if x.get("role") == "board"][:12]:   # 榜面=3A/双A(带市场旗)
                     _lay9 = "".join(("📈" if _x9.get("L1") else "▫️", "🎯" if _x9.get("L2") else "▫️", "🔊" if _x9.get("L3") else "▫️"))
                     _tcol9 = {"3A": "#dc2626", "双A": "#ea580c"}.get(_x9.get("tier_label"), "#64748b")
                     _sf9 = str(_x9.get("safety") or "")
