@@ -500,6 +500,25 @@ if _nav == "🧭 导航":
                     except Exception:
                         pass
                     st.markdown(_tph9)
+                    # 【3A榜·云端脱敏版 2026-07-31 三端同步】大库(全市场)标的可公开;私仓相关只显计数
+                    try:
+                        _tqp9 = _pubj9("trend_quality_pub.json")
+                        _tqr9 = (_tqp9.get("rows") or [])[:8]
+                        if _tqr9 or _tqp9.get("private_board_n"):
+                            st.markdown("🏆 **3A优选榜**（三层评级+双剑认证·全市场大库段·"
+                                        f"{_tqp9.get('generated_at', '')}）"
+                                        + (f"　另有{_tqp9.get('private_board_n')}只涉私仓标的,完整版在桌面/飞书"
+                                           if _tqp9.get("private_board_n") else ""))
+                            for _r9q in _tqr9:
+                                st.markdown(
+                                    f"- **{_r9q.get('tier_label')}** {_r9q.get('name')}({_r9q.get('code')}) "
+                                    f"现{_r9q.get('last')}·量比{_r9q.get('vol_ratio')}｜"
+                                    f"进:回踩{'~'.join(str(v) for v in _r9q.get('entry_pullback') or []) or '?'}"
+                                    f"或破{_r9q.get('entry_break') or '?'}｜"
+                                    f"盈利带{'~'.join(str(v) for v in _r9q.get('profit_zone') or []) or '?'}"
+                                    + (f"｜{str(_r9q.get('safety'))[:14]}" if str(_r9q.get('safety') or '').startswith('⚠️') else ''))
+                    except Exception:
+                        pass
             except Exception:
                 pass
             # 【V88·行动指令·云端 2026-07-25 用户抓"没说该干什么"】脱敏版:宏观事件(pub)+
