@@ -1,5 +1,5 @@
 {
- "asof": "2026-07-31 16:11（北京时间）",
+ "asof": "2026-07-31 21:09（北京时间）",
  "rules": {
   "CS1": "宽基指数类跌幅未达5%且趋势未破,不按个股尺度输出减仓(案:VOO-2.1%/513500-0.2%就减)",
   "CS2": "2周涨概率≥53%不得输出减仓,除非已破止损或5日内自家财报(案:MO53/JNJ55/SO57)",
@@ -32,9 +32,9 @@
    "downgrade": "",
    "auto": true
   },
-  "1860.HK": {
-   "code": "1860.HK",
-   "name": "汇量科技",
+  "9866.HK": {
+   "code": "9866.HK",
+   "name": "蔚来汽车-SW",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -47,16 +47,6 @@
    "name": "中航科工",
    "side": "机会",
    "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "9866.HK": {
-   "code": "9866.HK",
-   "name": "蔚来汽车-SW",
-   "side": "机会",
-   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -92,29 +82,9 @@
    "downgrade": "",
    "auto": true
   },
-  "603376.SS": {
-   "code": "603376.SS",
-   "name": "大明电子",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "COST": {
    "code": "COST",
    "name": "好市多",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "0883.HK": {
-   "code": "0883.HK",
-   "name": "中海油",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -132,11 +102,31 @@
    "downgrade": "",
    "auto": true
   },
-  "300996.SZ": {
-   "code": "300996.SZ",
-   "name": "普联软件",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
+  "3738.HK": {
+   "code": "3738.HK",
+   "name": "阜博集团",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "0883.HK": {
+   "code": "0883.HK",
+   "name": "中海油",
+   "side": "机会",
+   "action": "现价可进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "9678.HK": {
+   "code": "9678.HK",
+   "name": "云知声",
+   "side": "机会",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -152,9 +142,9 @@
    "downgrade": "",
    "auto": true
   },
-  "GRMN": {
-   "code": "GRMN",
-   "name": "佳明",
+  "300996.SZ": {
+   "code": "300996.SZ",
+   "name": "普联软件",
    "side": "趋势",
    "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
@@ -162,9 +152,9 @@
    "downgrade": "",
    "auto": true
   },
-  "2356.HK": {
-   "code": "2356.HK",
-   "name": "大新银行",
+  "GRMN": {
+   "code": "GRMN",
+   "name": "佳明",
    "side": "趋势",
    "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
@@ -202,9 +192,9 @@
    "downgrade": "",
    "auto": true
   },
-  "2698.HK": {
-   "code": "2698.HK",
-   "name": "乐舒适",
+  "0552.HK": {
+   "code": "0552.HK",
+   "name": "中国通信服务",
    "side": "趋势",
    "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
@@ -222,21 +212,21 @@
    "downgrade": "",
    "auto": true
   },
-  "002258.SZ": {
-   "code": "002258.SZ",
-   "name": "利尔化学",
-   "side": "趋势",
-   "action": "🟡先别追,等跌回13.90附近再买;一直不跌就等放量创新高再追",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "ARXS": {
    "code": "ARXS",
    "name": "Arxis Inc-A",
    "side": "趋势",
    "action": "🟡先别追,等跌回43.14附近再买;一直不跌就等放量创新高再追",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "002258.SZ": {
+   "code": "002258.SZ",
+   "name": "利尔化学",
+   "side": "趋势",
+   "action": "🟡先别追,等跌回13.90附近再买;一直不跌就等放量创新高再追",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -474,15 +464,15 @@
   }
  },
  "reject": {
-  "1093.HK": {
-   "code": "1093.HK",
-   "name": "石药集团",
+  "2269.HK": {
+   "code": "2269.HK",
+   "name": "药明生物",
    "side": "行业代表",
    "action": "",
    "rules": [
     "CS7"
    ],
-   "why": "港股过热而赔率仅0.53(要≥2.0)",
+   "why": "港股过热而赔率仅0.80(要≥2.0)",
    "downgrade": ""
   },
   "0939.HK": {
@@ -499,7 +489,7 @@
  },
  "stats": {
   "n_pass": 68,
-  "n_reject": 18,
+  "n_reject": 19,
   "by_rule": {
    "CS1": 3,
    "CS2": 1,
@@ -507,7 +497,7 @@
    "CS4": 4,
    "CS5": 0,
    "CS6": 6,
-   "CS7": 7,
+   "CS7": 8,
    "CS8": 0
   }
  }
