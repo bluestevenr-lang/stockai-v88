@@ -3570,6 +3570,16 @@ try:
             _gb9v, _gs9v = _gbadge9(_cd9, _px9)
             _gt9v = _tier_rank9(_cd9)
             _shown_codes9.append(str(_cd9))
+            # 【终裁动词 2026-07-31 辉瑞案"2A还不让建仓,买还是不买"】周期层与技术窗口
+            # 打架时必须一个声音:①层判减/不碰/不建→动作列直接终裁⏸,窗口概率降小字
+            _l1a9 = str((((_wbrows9.get(str(_cd9)) or {}).get("layers") or {}).get("L1") or {}).get("a") or "")
+            _act_cell9v = f"<b style='color:#dc2626'>买 涨{_pu9}%</b>{_plab9(_pu9, 'up')}"
+            if any(k in _l1a9 for k in ("减", "不碰", "陷阱")):
+                _act_cell9v = (f"<b style='color:#b45309'>⏸终裁:不建仓</b>"
+                               f"<br><span style='font-size:8px;color:#94a3b8' "
+                               f"title='周期层判[{_l1a9}]与技术窗口(涨{_pu9}%)冲突→层级优先:"
+                               f"该不该拿 压过 价格到没到;已持有者持有照旧,不加不减'>"
+                               f"层否决·窗口涨{_pu9}%仅存档</span>")
             _layfb9 = None
             if not _wbrows9.get(str(_cd9)):
                 _g9i = _gr9map.get(str(_cd9)) or {}
@@ -3580,7 +3590,7 @@ try:
                                   if _g9i.get("rejected") else "")
                                + "<br><span style='color:#64748b'>②见仓位列 ③见触发列</span>")
             _t_buy9.append((_gt9v, _gs9v, _row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9), '')}{_nm9}",
-                                   _cd9, f"<b style='color:#dc2626'>买 涨{_pu9}%</b>{_plab9(_pu9, 'up')}",
+                                   _cd9, _act_cell9v,
                                    _zone9s, _inv9s,
                                    _pos9(_wbrows9.get(str(_cd9)),
                                          "半仓" if _g9x.get("state") == "hot" else "纲领内"),
