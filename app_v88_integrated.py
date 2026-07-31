@@ -18188,6 +18188,38 @@ if _deep_scroll_code:
 
 if _deep_code_now:
     st.markdown("### ⚔️ 个股深度分析")
+    # 【板块轮转定位 2026-07-31 用户抓"云端有网页版没有"(ARXS案)】深度页开门先答:
+    # 这票所属板块在2/5/8/16周轮转里处于什么位置——三端同源rotation_forecast
+    try:
+        _dp_code9 = (st.session_state.get("scan_selected_code")
+                     or (dict(st.query_params).get("q") if hasattr(st, "query_params") else None))
+        if _dp_code9:
+            _dp_code9 = str(_dp_code9)
+            try:
+                from modules.sector_map import get_sector as _gs9dp
+                _dp_sec9 = _gs9dp(_dp_code9, str(st.session_state.get("scan_selected_name") or ""))
+            except Exception:
+                _dp_sec9 = ""
+            _mk9dp = ("A股" if _dp_code9.endswith((".SS", ".SZ", ".SH", ".BJ"))
+                      else "港股" if _dp_code9.endswith(".HK") else "美股")
+            _blk9dp = ((_nwj9("rotation_forecast.json").get("markets") or {}).get(_mk9dp) or {})
+            _hits9dp = []
+            for _hz9dp in ("2周", "5周", "8周", "16周"):
+                for _s9dp in (_blk9dp.get(_hz9dp) or []):
+                    if _dp_sec9 and (_dp_sec9 in str(_s9dp.get("name", ""))
+                                     or str(_s9dp.get("name", "")) in _dp_sec9):
+                        _hits9dp.append(f"<b>{_hz9dp}</b> {_s9dp.get('name')} 分{_s9dp.get('score')}"
+                                        f"<span style='font-size:8px;color:#94a3b8'>·{str(_s9dp.get('reason'))[:26]}"
+                                        f"·失效:{str(_s9dp.get('invalid'))[:16]}</span>")
+            st.markdown("<div style='font-size:13px;background:#f0f9ff;border-left:3px solid #0369a1;"
+                        "padding:.35rem .6rem;border-radius:6px'>🧭 <b>板块轮转定位</b>"
+                        + (f"　所属[{_dp_sec9 or '未识别'}]｜" if _dp_sec9 else "　板块映射未识别｜")
+                        + ("；".join(_hits9dp) if _hits9dp else
+                           f"未进{_mk9dp}各周期强板块榜(2/5/8/16周)——个股强于板块或板块未启动,"
+                           "谨慎给板块顺风加分")
+                        + "</div>", unsafe_allow_html=True)
+    except Exception:
+        logging.exception("[V88] 深度页板块轮转段失败")
 
 # 【V92→V88】全量云端搜索已前置到页顶槽位（_v88_search_slot），此处不再重复渲染，
 # 避免 stock_search_input 组件键重复。深度分析仍从 session_state 读取选中股票。
