@@ -3602,13 +3602,32 @@ try:
                            "<b style='color:#dc2626'>🚫旧价冻结</b>"
                            "<span style='color:#94a3b8;font-size:10px'><br>纪律线待重更,勿按旧线执行</span>")
             _gb9s, _ = _gbadge9(_cd9s, _px9s)
+            # 【卖侧精准三件套 2026-07-31 用户"卖出要更精准说明"】执行区/重买条件/三问
+            _se9 = {}
+            try:
+                import sys as _sys9se
+                _sys9se.path.insert(0, str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src"))
+                from sell_ledger import enrich as _se_enrich9
+                _row9se = _newest9.get(str(_cd9s)) or {}
+                _se9 = _se_enrich9(_row9se) if _row9se else {}
+            except Exception:
+                logging.exception("[V88] 卖侧enrich失败")
+            _trig9se = (f"<b>{_se9.get('exec_zone', f'现{_px9s}')}</b>"
+                        if _se9 else f"现{_px9s}")
+            _inv9se = (f"<span style='font-size:11px;color:#16a34a'>♻️{_se9.get('rebuy', '卡💰行')}</span>"
+                       if _se9.get("rebuy") else "卡💰行")
+            _lay9se = None
+            if _se9.get("three_q"):
+                _q9 = _se9["three_q"]
+                _lay9se = (_q9.replace("①", "①").replace(" ②", "<br>②").replace(" ③", "<br>③"))
             _t_sell9.append(_row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9s), '')}{_nm9s}", _cd9s,
                                     _act_cell9s,
-                                    f"现{_px9s}", "卡💰行", ("减留底仓" if _cf9 else "按纪律"),
+                                    _trig9se, _inv9se, ("减留底仓" if _cf9 else "按纪律"),
                                     ("🚫等重更" if str(_cd9s) in _px_stale17 else "💼执行"),
                                     str(_why9s) + _cf_txt9, _wsell9.get(str(_cd9s)),
                                     _pxc=_pxcell9(_cd9s, _px9s),
-                                    _gcell=f"<td style='max-width:92px;line-height:1.35'>{_gb9s}</td>"))
+                                    _gcell=f"<td style='max-width:92px;line-height:1.35'>{_gb9s}</td>",
+                                    _laytxt=_lay9se))
         try:
             _hold9 = [r for r in _cb_src9 if r.get("scope") == "持仓"
                       and not any(k in str(r.get("action", "")) for k in ("减", "退", "清", "止损"))][:5]
