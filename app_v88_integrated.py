@@ -2971,6 +2971,10 @@ try:
     # 【U3⑥数据闸门 2026-07-26 GPT审计采纳】行情异常=degraded→买侧禁发,只留卖警
     _dg9 = _cbj9("health_gate.json")
     _cb_degraded9 = bool(_dg9.get("degraded"))
+    # 【铁律17升级 2026-07-31 用户"升级"】按行冻结集:data_gate 判定"价旧于收盘+4h"的代码——
+    # 买侧移出确认买(转⏸未达标区)、卖侧动作改🚫冻结,不再只靠整闸degraded一把抓
+    _px_stale17 = {str(i.get("code")) for lst in (_dg9.get("px_stale") or {}).values()
+                   for i in (lst or [])}
     try:
         # stock_names.json=列表[{n,c,m}] → 归一成 {code: 名};港股键同录去前导零版(2020==02020)
         _cb_names9 = {}
@@ -3117,6 +3121,10 @@ try:
     # 【2026-07-27 用户"这么多没通过的还能展示,是觉得我钱多"】排除集=机检未达标 ∪ 人工有异议
     # ——两种"没通过"都不许留在推荐位(含准备买),全部转⏸未达标区。
     _cs_rej9 = dict(_CS9.get("reject") or {})
+    for _c17 in _px_stale17:   # 铁律17:旧价不开单,自动重更后自然回归
+        _cs_rej9.setdefault(_c17, {"code": _c17, "side": "机检", "action": "",
+                                   "rules": ["铁律17旧价冻结"],
+                                   "why": "行情旧于收盘+4h,已触发自动重更;数据新鲜后自动回归名单"})
     try:
         for _c9d, _v9d in (_CERT9.get("by_code") or {}).items():
             if _v9d.get("verdict") == "分歧" and _c9d not in _cs_rej9:
@@ -3327,9 +3335,14 @@ try:
                 _cfp9 = _cf9.get("confirm_price") or _cf9.get("ma20")
                 _cf_txt9 = (f"｜⚡买侧雷达有{'底拐候选强度' + str(_cf9.get('prob')) if _cf9.get('side') == 'bottom' else '上行翻转'}"
                             f"→合成:减而不清留观察仓,站上{_cfp9}才算反转成立,之前反弹=逃命反弹")
+            _act_cell9s = (f"<b style='color:#16a34a'>{_act9s} 跌{_pd9s}%</b>{_plab9(_pd9s, 'down')}"
+                           if str(_cd9s) not in _px_stale17 else
+                           "<b style='color:#dc2626'>🚫旧价冻结</b>"
+                           "<span style='color:#94a3b8;font-size:10px'><br>纪律线待重更,勿按旧线执行</span>")
             _t_sell9.append(_row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9s), '')}{_nm9s}", _cd9s,
-                                    f"<b style='color:#16a34a'>{_act9s} 跌{_pd9s}%</b>{_plab9(_pd9s, 'down')}",
-                                    f"现{_px9s}", "卡💰行", ("减留底仓" if _cf9 else "按纪律"), "💼执行",
+                                    _act_cell9s,
+                                    f"现{_px9s}", "卡💰行", ("减留底仓" if _cf9 else "按纪律"),
+                                    ("🚫等重更" if str(_cd9s) in _px_stale17 else "💼执行"),
                                     str(_why9s) + _cf_txt9, _wsell9.get(str(_cd9s)),
                                     _pxc=_pxcell9(_cd9s, _px9s)))
         try:
