@@ -3432,9 +3432,9 @@ try:
     except Exception:
         pass
     if len(_cb_rows9) > 8:
-        _cb_sell_html9.insert(0, f"<div style='font-size:12px;color:#64748b'>买侧还有{len(_cb_rows9) - 8}只,见④/双门</div>")
+        _cb_sell_html9.insert(0, f"<div style='font-size:12px;color:#64748b'>买侧共{len(_cb_rows9)}只,全量见下方行动中心表格</div>")
     if len(_cb_sell9) > 5:
-        _cb_sell_html9.append(f"<div style='font-size:12px;color:#64748b'>…等{len(_cb_sell9)}只,全名单在⚔️地狱门</div>")
+        _cb_sell_html9.append(f"<div style='font-size:12px;color:#64748b'>…等{len(_cb_sell9)}只,全量见行动中心卖/减页</div>")
     if _cb_degraded9:
         st.markdown("<div style='background:#fef3c7;border:2px solid #d97706;border-radius:10px;"
                     "padding:.4rem .7rem;margin:.3rem 0;font-size:13px'>"
@@ -3556,7 +3556,8 @@ try:
             return _a.get("a") or _fallback
 
         _t_buy9, _t_sell9, _t_hold9 = [], [], []
-        for _src9, _nm9, _cd9, _px9, _pu9, _rr9, _why9 in _cb_rows9[:5]:
+        _shown_codes9 = []   # 07-31 标签计数=显示行统一口径(章按行数,不按来源)
+        for _src9, _nm9, _cd9, _px9, _pu9, _rr9, _why9 in _cb_rows9:   # 07-31撤[:5]截断:标签16实显5=说谎;双门已撤无处看全名单
             _nm9 = _cb_nm9(_nm9, _cd9)
             _g9x = _cb_gate9.get(_cb_mk9(_cd9)) or {}
             # 状态列=环境判定(能不能执行),**不再兼说仓位**——仓位归第②层
@@ -3568,6 +3569,7 @@ try:
             _inv9s = _inv9x.group(1) if _inv9x else "见卡"
             _gb9v, _gs9v = _gbadge9(_cd9, _px9)
             _gt9v = _tier_rank9(_cd9)
+            _shown_codes9.append(str(_cd9))
             _layfb9 = None
             if not _wbrows9.get(str(_cd9)):
                 _g9i = _gr9map.get(str(_cd9)) or {}
@@ -3660,7 +3662,7 @@ try:
         # 候选池停更=名单只能在旧池里打转,推荐自然一周不换(07-29~31实案:本机launchd掉载2天)。
         try:
             _tdy9f = __import__("datetime").datetime.now().strftime("%Y-%m-%d")
-            _shown9f = ([str(x[2]) for x in _cb_rows9[:5]] + [str(x[1]) for x in _cb_sell9[:5]]
+            _shown9f = ([str(x[2]) for x in _cb_rows9] + [str(x[1]) for x in _cb_sell9[:5]]
                         + [str(r.get("code")) for r in _hold9])
             _stale9f = [c for c in _shown9f
                         if (_px_asof9.get(c) or ("", "", ""))[1][:10] not in ("", _tdy9f)]
@@ -3725,6 +3727,7 @@ try:
                           + (f" 2周{_x9.get('p_2w')}%/长{_x9.get('p_long')}%"
                              if _x9.get("p_2w") is not None else " 质量=结构proxy"))
                 _gb9x, _gs9x = _gbadge9(_x9.get("code"), _x9.get("last"))
+                _shown_codes9.append(str(_x9.get("code")))
                 _row_by9.setdefault(str(_x9.get("code")), {"cycle_note":
                     (f"右侧优质雷达:贴新高{_x9.get('near_high_pct')}%·量比{_x9.get('vol_ratio')}"
                      + (f"·{_x9.get('inst_evidence')}" if _x9.get("inst_evidence") else "")
@@ -3749,7 +3752,9 @@ try:
             _v88_sentinel9(Path.home() / "Desktop" / "ai-daily-report-v2", "3A并板")
         # 【07-31 用户抓"3A排第三"】评级层级=第一排序键(3A恒置顶),印证分只做同级内次序
         _t_buy9 = [h for _t9z, _s9z, h in sorted(_t_buy9, key=lambda z: (-z[0], -z[1]))]
-        _tab_b9, _tab_s9, _tab_h9 = st.tabs([f"✅确认买({len(_cb_rows9)})+3A榜({len(_tqrows9) if '_tqrows9' in dir() else 0})",
+        _n3a9 = sum(1 for c in _shown_codes9 if (_gr9map.get(c) or {}).get("grade") == "3A")
+        _n2a9 = sum(1 for c in _shown_codes9 if (_gr9map.get(c) or {}).get("grade") == "2A")
+        _tab_b9, _tab_s9, _tab_h9 = st.tabs([f"✅买表{len(_t_buy9)}行(3A×{_n3a9}·2A×{_n2a9}·买窗×{len(_cb_rows9)})",
                                              f"⚔️卖/减({len(_cb_sell9)})", f"💼持有({len(_hold9)})"])
         with _tab_b9:
             st.markdown(_tbl9(_t_buy9) if _t_buy9 else
