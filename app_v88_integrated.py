@@ -17015,10 +17015,11 @@ def _render_today_nav():
                             if a not in _critical9 and "[持仓" not in a
                             and not any(f"({_hc})" in a for _hc in _hold_codes9x)]
             if _watch_only9:
-                with _v88_watch_mod9, st.expander(f"⚡ 预警触发（自选/常搜 · 多因子共振 · {len(_watch_only9)}条） · {_alert_analysis_note9}", expanded=False):
-                    st.markdown("\n".join(f"- {_linkify_md(a)}" for a in _watch_only9), unsafe_allow_html=True)
-                    with st.popover("📋 复制预警"):
-                        st.code(_alert_analysis_note9 + "\n" + "\n".join(a.replace("**", "") for a in _watch_only9), language=None)
+                if _V88_WATCHLIST_UI:   # 2026-07-31 用户'这个模块也可以删了':预警文字墙撤——买入类归行动中心/3A表,减仓类归卖减tab+地狱门否决链,推送走飞书,引擎照跑
+                    with _v88_watch_mod9, st.expander(f"⚡ 预警触发（自选/常搜 · 多因子共振 · {len(_watch_only9)}条） · {_alert_analysis_note9}", expanded=False):
+                        st.markdown("\n".join(f"- {_linkify_md(a)}" for a in _watch_only9), unsafe_allow_html=True)
+                        with st.popover("📋 复制预警"):
+                            st.code(_alert_analysis_note9 + "\n" + "\n".join(a.replace("**", "") for a in _watch_only9), language=None)
             elif not _critical9:
                 with _v88_watch_mod9:
                     st.caption(f"⚡ 预警：{_wa.get('n', 0)}只关注股暂无触发（持仓15分钟｜A盘中3小时｜B每天｜C每周）")
