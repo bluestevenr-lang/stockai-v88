@@ -3816,12 +3816,15 @@ try:
                 st.markdown("<span style='font-size:12px;color:#94a3b8'>当前池内无≥A级标的——宁缺毋滥,雷达随保鲜班自动刷新</span>", unsafe_allow_html=True)
             else:
                 _rows3a9 = []
-                for _x9 in _tq3a9[:12]:
+                for _x9 in [x for x in _tq3a9 if x.get("tier", 0) >= 2][:12]:   # 只上3A/双A(1A不上榜)
                     _lay9 = "".join(("📈" if _x9.get("L1") else "▫️", "🎯" if _x9.get("L2") else "▫️", "🔊" if _x9.get("L3") else "▫️"))
                     _tcol9 = {"3A": "#dc2626", "双A": "#ea580c"}.get(_x9.get("tier_label"), "#64748b")
+                    _sf9 = str(_x9.get("safety") or "")
                     _rows3a9.append(
                         f"<tr><td><b style='color:{_tcol9}'>{_x9.get('tier_label')}</b>"
-                        + ("<span title='缩量新高:高位缩量3月易回撤(GPT历史类比),不提名'>⚠️</span>" if _x9.get("shrink_warn") else "")
+                        + (f"<br><span title=\"{_sf9}\" style='color:#dc2626;font-size:10px'>{_sf9[:11]}ⓘ</span>"
+                           if _sf9.startswith("⚠️") else
+                           f"<br><span style='color:#a16207;font-size:10px'>{_sf9[:10]}</span>" if _sf9.startswith("🟡") else "")
                         + f"</td><td>{_nw_link9(_x9.get('name'), _x9.get('code'))}</td>"
                         f"<td>现{_x9.get('last')}</td><td title='📈趋势/🎯质量/🔊量能'>{_lay9}"
                         + (f"<span style='color:#94a3b8;font-size:10px'>缺{_x9.get('missing')}</span>" if _x9.get("missing") else "")
