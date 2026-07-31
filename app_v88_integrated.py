@@ -3634,7 +3634,9 @@ try:
                            f"<br><span style='color:#dc2626;font-size:11px'>💰盈利带 "
                            f"{'~'.join(str(v) for v in _pz9m) or '?'}(分批止盈)</span>")
                 _why9m = (f"三层:{'📈' if _x9.get('L1') else '▫️'}{'🎯' if _x9.get('L2') else '▫️'}"
-                          f"{'🔊' if _x9.get('L3') else '▫️'} 量比{_x9.get('vol_ratio') or '?'}"
+                          f"{'🔊' if _x9.get('L3') else '▫️'}"
+                          + (f" {_x9.get('inst_evidence')}" if _x9.get("inst_evidence") else "")
+                          + f" 量比{_x9.get('vol_ratio') or '?'}"
                           + (f" 2周{_x9.get('p_2w')}%/长{_x9.get('p_long')}%"
                              if _x9.get("p_2w") is not None else " 质量=结构proxy"))
                 _gb9x, _gs9x = _gbadge9(_x9.get("code"))
