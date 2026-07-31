@@ -32,6 +32,7 @@ from datetime import datetime
 # 根因:分页切段搬代码后,多个名字的定义落到了调用之后(NameError被except吞=功能静默死)。
 # 修法:把跨段共用的定义统一前移到这里;后文原位置留注释,不留重复定义。
 _dt_global = datetime   # 全球概览区时间戳用
+_V88_WATCHLIST_UI = False   # 2026-07-31 用户令:自选版面全撤,只留持仓+🏆3A榜(池照扫,3A从池里出)
 
 
 def _v88_sentinel9(_repo, module, exc=None):
@@ -3805,6 +3806,36 @@ try:
         "下季度": {"mkt_hz": "32周", "sec_hz": "16周", "buy": "hz",   "hz": "32周",
                   "evt": "本月及下月", "days": (90, 180)},
     }
+    # 【🏆3A优选榜 2026-07-31 用户定纲"符合三层3A/两层双A/一层A都列出;版面只留持仓+3A"】
+    try:
+        _tq3a9 = (_cbj9("trend_quality.json").get("rows") or [])
+        with st.expander(f"🏆 3A优选榜 · 三层评级(趋势新高/全周期质量/放量确认)——{sum(1 for x in _tq3a9 if x.get('tier')==3)}只3A", expanded=True):
+            st.markdown("<div style='font-size:11px;color:#64748b'>三层:📈趋势=贴/创半年新高(欧奈尔N)｜🎯质量=2周与4-32周双≥60%｜🔊量能=量比≥1.3。"
+                        "影子级攒战绩(n≥5且≥50%转正);⚠️缩量新高只展示不提名;右侧仓止损=入场价-8%机械</div>", unsafe_allow_html=True)
+            if not _tq3a9:
+                st.markdown("<span style='font-size:12px;color:#94a3b8'>当前池内无≥A级标的——宁缺毋滥,雷达随保鲜班自动刷新</span>", unsafe_allow_html=True)
+            else:
+                _rows3a9 = []
+                for _x9 in _tq3a9[:12]:
+                    _lay9 = "".join(("📈" if _x9.get("L1") else "▫️", "🎯" if _x9.get("L2") else "▫️", "🔊" if _x9.get("L3") else "▫️"))
+                    _tcol9 = {"3A": "#dc2626", "双A": "#ea580c"}.get(_x9.get("tier_label"), "#64748b")
+                    _rows3a9.append(
+                        f"<tr><td><b style='color:{_tcol9}'>{_x9.get('tier_label')}</b>"
+                        + ("<span title='缩量新高:高位缩量3月易回撤(GPT历史类比),不提名'>⚠️</span>" if _x9.get("shrink_warn") else "")
+                        + f"</td><td>{_nw_link9(_x9.get('name'), _x9.get('code'))}</td>"
+                        f"<td>现{_x9.get('last')}</td><td title='📈趋势/🎯质量/🔊量能'>{_lay9}"
+                        + (f"<span style='color:#94a3b8;font-size:10px'>缺{_x9.get('missing')}</span>" if _x9.get("missing") else "")
+                        + f"</td><td>量比{_x9.get('vol_ratio') or '?'}</td>"
+                        f"<td>2周{_x9.get('p_2w')}%/长{_x9.get('p_long')}%</td>"
+                        f"<td title=\"{str(_x9.get('play'))[:200]}\" style='font-size:11px;color:#64748b'>"
+                        f"{str(_x9.get('play'))[:46]}… ⓘ</td></tr>")
+                st.markdown("<table style='width:100%;font-size:12.5px;border-collapse:collapse'>"
+                            "<tr style='color:#94a3b8;font-size:11px;text-align:left'>"
+                            "<th>级</th><th>名称</th><th>现价</th><th>三层</th><th>量比</th><th>周期</th><th>右侧剧本</th></tr>"
+                            + "".join(_rows3a9) + "</table>", unsafe_allow_html=True)
+    except Exception:
+        logging.exception("[V88] 3A优选榜渲染失败")
+        _v88_sentinel9(Path.home() / "Desktop" / "ai-daily-report-v2", "3A优选榜")
     with st.expander("⏱ 时间作战板 · 今日→下季度七档切换：大盘/轮转/低位埋伏/买/卖/事件（一屏六问）",
                      expanded=True):
         _tbc_t9, _tbc_m9 = st.columns([5.2, 3.8])
@@ -16203,11 +16234,12 @@ def _render_today_nav():
               <div class="v88-watch-grid">__COLUMNS__</div>
             </div>
             """).replace("__TIME__", _time_note9).replace("__COLUMNS__", "".join(_cols_html9))
-            with st.expander(f"⭐ 我的自选股 · V88唯一评分决策台（{len(_watch9)}只）", expanded=True):
-                st.markdown(_V88_CARD_CSS + _board_tpl9, unsafe_allow_html=True)
-                _render_front_watch_add9()
+            if _V88_WATCHLIST_UI:   # 2026-07-31 用户令:删自选版面(数据池保留,仅撤显示)
+                with st.expander(f"⭐ 我的自选股 · V88唯一评分决策台（{len(_watch9)}只）", expanded=True):
+                    st.markdown(_V88_CARD_CSS + _board_tpl9, unsafe_allow_html=True)
+                    _render_front_watch_add9()
 
-    # 【V88·Plan A/B统一标注】与下方AI简报模块共用同一状态，避免"这里显示分数、简报说数据不可信"的割裂
+        # 【V88·Plan A/B统一标注】与下方AI简报模块共用同一状态，避免"这里显示分数、简报说数据不可信"的割裂
     _pab_status = _rep_planab_meta.get("status")
     if _pab_status == "plan_b":
         _pab_ts = _rep_planab_meta.get("ts")
@@ -16235,55 +16267,56 @@ def _render_today_nav():
         st.caption("下方为最近交易日的行情快照与温度定位（供延续参考）：")
     # 【V88·今日焦点】醒目置顶：重点推荐（引擎买入档）+ 重点观察（搜索过的个股）
     # 【模块可折叠】今日焦点整块折叠（默认展开）
-    with st.expander("⭐ 关注中心 · ①今日及本周 ②下周 ③本月及下月 三档双向(看涨/看跌+概率) + 高分榜 + 重点观察", expanded=True):
-        # 【V88·三档双向关注 2026-07-20 用户定纲】置于关注中心最顶：三档常在,每档看涨(龙虎门)+
-        # 看跌(鬼门关)双向,每只带导致涨/跌的事+成功概率标注;按交易日滚动,休市不喊今日。
-        try:
-            _render_four_tier_recos9(st.session_state.get('watch_alerts_v88') or {}, _repo, _is_trading)
-            st.markdown("<hr style='margin:4px 0;border:none;border-top:1px dashed #e2e8f0'>", unsafe_allow_html=True)
-        except Exception:
-            logging.debug("三档双向关注渲染失败", exc_info=True)
-            _v88_sentinel9(_repo, "三档双向关注")   # 【哨兵】曾静默崩半天,现在落盘显影
-        def _tok2code(tok):
-            tok = str(tok).strip("`[] ")
-            return tok.split(":", 1)[1] if ":" in tok else tok
+    if _V88_WATCHLIST_UI:   # 2026-07-31 用户令:删自选版面(数据池保留,仅撤显示)
+        with st.expander("⭐ 关注中心 · ①今日及本周 ②下周 ③本月及下月 三档双向(看涨/看跌+概率) + 高分榜 + 重点观察", expanded=True):
+            # 【V88·三档双向关注 2026-07-20 用户定纲】置于关注中心最顶：三档常在,每档看涨(龙虎门)+
+            # 看跌(鬼门关)双向,每只带导致涨/跌的事+成功概率标注;按交易日滚动,休市不喊今日。
+            try:
+                _render_four_tier_recos9(st.session_state.get('watch_alerts_v88') or {}, _repo, _is_trading)
+                st.markdown("<hr style='margin:4px 0;border:none;border-top:1px dashed #e2e8f0'>", unsafe_allow_html=True)
+            except Exception:
+                logging.debug("三档双向关注渲染失败", exc_info=True)
+                _v88_sentinel9(_repo, "三档双向关注")   # 【哨兵】曾静默崩半天,现在落盘显影
+            def _tok2code(tok):
+                tok = str(tok).strip("`[] ")
+                return tok.split(":", 1)[1] if ":" in tok else tok
 
-        try:
-            # 【V88·去重统一口径 2026-07-18 用户点单】原"⭐引擎买入档Top3"与今日总决断
-            # 「🟢可进场」是两套"今天买"(操作榜=75分+催化 vs 总决断=时机绿灯),口径不同造成
-            # 图一图二推荐打架——整块删除,全页"今天买"只留总决断绿灯一个口径(省渲染省流量)。
-            _pb_focus_lines = []
-            _iop = _rep.find("## 🎯 今日操作榜")
-            if _pab_status == "plan_b":
-                _pb_sec = _rep[_rep.find("## 六、🔭 明日与本周参考"):]
-                _pb_market = ""
-                for _pbl in _pb_sec.splitlines():
-                    if _pbl.startswith("### "):
-                        _pb_market = _pbl.replace("### ", "").strip()
-                    elif "**观察个股**：" in _pbl:
-                        _pb_focus_lines.append(f"<b>{_pb_market}·机会观察</b>：{_pbl.split('**：', 1)[-1] if '**：' in _pbl else _pbl.split('：', 1)[-1]}")
-                    elif "**风险保护**：" in _pbl:
-                        _pb_focus_lines.append(f"<b>{_pb_market}·风险保护</b>：{_pbl.split('**：', 1)[-1] if '**：' in _pbl else _pbl.split('：', 1)[-1]}")
-                st.info(f"⭐ **今日策略：不强制给买入指令，转为机会观察＋风险保护** · {_report_analysis_note9}")
-                if _pb_focus_lines:
-                    st.markdown("<div style='line-height:1.75;font-size:12px'>" + "<br>".join(_pb_focus_lines) + "</div>", unsafe_allow_html=True)
-            # 【瘦身2026-07-27用户批准】高分榜已删(=操作榜Top3同数据第四次呈现:日报操作榜/行动中心/龙虎门已覆盖)
-            _wl9 = _watchlist_load() or {}
-            _obs = []
-            for _mk9, _lst9 in _wl9.items():
-                for _c9, _n9 in list(_lst9)[-4:]:
-                    _obs.append((_n9, _c9))
-            if _obs:
-                _wa9 = st.session_state.get('watch_alerts_v88') or {}
-                _obs_html = "、".join(_stk_link(_n9, _c9) for _n9, _c9 in _obs[:12])
-                st.markdown(
-                    f"👁 <b>重点观察个股</b>（搜索/点击即自动加入，移除在「自选股」Tab）：{_obs_html}"
-                    + (f" ｜ ⚡{len(_wa9.get('alerts') or [])} 条触发（见下方预警）" if _wa9.get('alerts') else ""),
-                    unsafe_allow_html=True)
-                st.caption(_analysis_label9((_wa9 or {}).get("ts") or _report_analysis_ts9, "重点观察分析"))
-        except Exception:
-            pass
-    # 【模块可折叠】使用指引与AI预算收进折叠区（默认收起）
+            try:
+                # 【V88·去重统一口径 2026-07-18 用户点单】原"⭐引擎买入档Top3"与今日总决断
+                # 「🟢可进场」是两套"今天买"(操作榜=75分+催化 vs 总决断=时机绿灯),口径不同造成
+                # 图一图二推荐打架——整块删除,全页"今天买"只留总决断绿灯一个口径(省渲染省流量)。
+                _pb_focus_lines = []
+                _iop = _rep.find("## 🎯 今日操作榜")
+                if _pab_status == "plan_b":
+                    _pb_sec = _rep[_rep.find("## 六、🔭 明日与本周参考"):]
+                    _pb_market = ""
+                    for _pbl in _pb_sec.splitlines():
+                        if _pbl.startswith("### "):
+                            _pb_market = _pbl.replace("### ", "").strip()
+                        elif "**观察个股**：" in _pbl:
+                            _pb_focus_lines.append(f"<b>{_pb_market}·机会观察</b>：{_pbl.split('**：', 1)[-1] if '**：' in _pbl else _pbl.split('：', 1)[-1]}")
+                        elif "**风险保护**：" in _pbl:
+                            _pb_focus_lines.append(f"<b>{_pb_market}·风险保护</b>：{_pbl.split('**：', 1)[-1] if '**：' in _pbl else _pbl.split('：', 1)[-1]}")
+                    st.info(f"⭐ **今日策略：不强制给买入指令，转为机会观察＋风险保护** · {_report_analysis_note9}")
+                    if _pb_focus_lines:
+                        st.markdown("<div style='line-height:1.75;font-size:12px'>" + "<br>".join(_pb_focus_lines) + "</div>", unsafe_allow_html=True)
+                # 【瘦身2026-07-27用户批准】高分榜已删(=操作榜Top3同数据第四次呈现:日报操作榜/行动中心/龙虎门已覆盖)
+                _wl9 = _watchlist_load() or {}
+                _obs = []
+                for _mk9, _lst9 in _wl9.items():
+                    for _c9, _n9 in list(_lst9)[-4:]:
+                        _obs.append((_n9, _c9))
+                if _obs:
+                    _wa9 = st.session_state.get('watch_alerts_v88') or {}
+                    _obs_html = "、".join(_stk_link(_n9, _c9) for _n9, _c9 in _obs[:12])
+                    st.markdown(
+                        f"👁 <b>重点观察个股</b>（搜索/点击即自动加入，移除在「自选股」Tab）：{_obs_html}"
+                        + (f" ｜ ⚡{len(_wa9.get('alerts') or [])} 条触发（见下方预警）" if _wa9.get('alerts') else ""),
+                        unsafe_allow_html=True)
+                    st.caption(_analysis_label9((_wa9 or {}).get("ts") or _report_analysis_ts9, "重点观察分析"))
+            except Exception:
+                pass
+        # 【模块可折叠】使用指引与AI预算收进折叠区（默认收起）
     with st.expander("📖 使用指引 · 参数白话 / AI预算", expanded=False):
         _gen = (_snap or {}).get("generated_at", "")
         st.caption(f"💡 不知道买什么先看这里：温度定仓位 → 水位定方向 → 轮动定板块 → 操作榜定标的 → 持仓提醒定纪律 ｜ 数据时间 {_gen}{_stale_note}")
@@ -20864,130 +20897,131 @@ def _dingtalk_push_top30(res: dict | None) -> tuple[bool, str]:
     ]
     return _dingtalk_send("\n".join(lines))
 
-with tab_watchlist:
-    st.markdown("#### 📋 自选股分析")
-    st.caption("💡 按中美港划分，对每只自选股逐只分析：近期催化、技术面、风险点、操作建议（持有/加仓/减仓/观望）")
+if _V88_WATCHLIST_UI:   # 2026-07-31 用户令:删自选版面(数据池保留,仅撤显示)
+    with tab_watchlist:
+        st.markdown("#### 📋 自选股分析")
+        st.caption("💡 按中美港划分，对每只自选股逐只分析：近期催化、技术面、风险点、操作建议（持有/加仓/减仓/观望）")
     
-    # 【V96.1】动态自选股：搜索过的个股自动加入，上限20只，可单只移除
-    _wl_total = sum(len(v) for v in WATCHLIST.values())
-    st.markdown(f"**当前自选股 {_wl_total}/{_WATCHLIST_MAX}**　"
-                f"<span style='font-size:12px;color:#6b7280'>🔍 搜索过的个股自动加入 · 满{_WATCHLIST_MAX}只时淘汰最早的 · 点 ✕ 移除</span>",
-                unsafe_allow_html=True)
-    # 【V88·自选分级】A=交易日盘中每3小时 B=每天 C=每周低频；单一权威=私仓 watch_levels.json
-    try:
-        import sys as _syswl
-        _repo_wl = Path.home() / "Desktop" / "ai-daily-report-v2"
-        if str(_repo_wl / "src") not in _syswl.path:
-            _syswl.path.insert(0, str(_repo_wl / "src"))
-        from watch_alerts import watch_levels as _wl_levels_load, save_watch_levels as _wl_levels_save
-        _wl_lv = _wl_levels_load()
-    except Exception:
-        _wl_lv, _wl_levels_save = {}, None
-    st.caption("级别：**A**=对应市场交易日盘中每3小时（休市不扫）｜**B**=每天1次｜**C**=每周低频。持仓仍按原风险频率检查。")
-    _wl_codes_all = tuple(str(c).upper() for _lst in WATCHLIST.values() for c, _n in _lst)
-    with _v88_running("计算自选股历史最高水位"):
-        _wl_water = _ath_many_display(_wl_codes_all) if _wl_codes_all else {}
-    col1, col2, col3 = st.columns(3)
-    _wl_changed = False
-    for _col, _mk, _flag in ((col1, "US", "🇺🇸 美股"), (col2, "HK", "🇭🇰 港股"), (col3, "CN", "🇨🇳 A股")):
-        with _col:
-            _market_rows_wl = list(WATCHLIST.get(_mk, []))
-            _lv_counts_wl = {lv: sum(1 for code, _ in _market_rows_wl
-                                     if str(_wl_lv.get(str(code), "B")).upper() == lv)
-                             for lv in ("A", "B", "C")}
-            st.markdown(
-                f"**{_flag}**（{len(_market_rows_wl)}）　"
-                f"<span style='font-size:12px;color:#dc2626'>A {_lv_counts_wl['A']}</span> · "
-                f"<span style='font-size:12px;color:#2563eb'>B {_lv_counts_wl['B']}</span> · "
-                f"<span style='font-size:12px;color:#64748b'>C {_lv_counts_wl['C']}</span>",
-                unsafe_allow_html=True)
-            for _group_lv, _group_name, _group_color in (
-                    ("A", "A级重点", "#dc2626"), ("B", "B级观察", "#2563eb"), ("C", "C级低频", "#64748b")):
-                _group_rows = [(code, name) for code, name in _market_rows_wl
-                               if str(_wl_lv.get(str(code), "B")).upper() == _group_lv]
-                if not _group_rows:
-                    continue
-                st.markdown(
-                    f"<div style='font-size:12px;font-weight:700;color:{_group_color};margin:.35rem 0 .1rem 0;"
-                    f"border-bottom:1px solid #e5e7eb'>{_group_name}（{len(_group_rows)}）</div>",
+        # 【V96.1】动态自选股：搜索过的个股自动加入，上限20只，可单只移除
+        _wl_total = sum(len(v) for v in WATCHLIST.values())
+        st.markdown(f"**当前自选股 {_wl_total}/{_WATCHLIST_MAX}**　"
+                    f"<span style='font-size:12px;color:#6b7280'>🔍 搜索过的个股自动加入 · 满{_WATCHLIST_MAX}只时淘汰最早的 · 点 ✕ 移除</span>",
                     unsafe_allow_html=True)
-                for code, name in _group_rows:
-                    _c1, _clv, _c2 = st.columns([4, 1.6, .7])
-                    _water_line = _wl_water.get(str(code).upper(), "历史水位待核")
-                    _c1.markdown(
-                        f"<div style='font-size:12px;padding:3px 0 0 0'>• {_stk_link(name, code)} "
-                        f"<span style='color:#9ca3af;font-size:12px'>({code})</span>"
-                        f"<div style='font-size:12px;color:#64748b;margin-left:10px'>{_water_line}</div></div>",
-                        unsafe_allow_html=True)
-                    _cur_lv = str(_wl_lv.get(str(code), "B")).upper()
-                    _cur_lv = _cur_lv if _cur_lv in ("A", "B", "C") else "B"
-                    _new_lv = _clv.selectbox("级别", ["A", "B", "C"], index=["A", "B", "C"].index(_cur_lv),
-                                             key=f"wl_lv_{code}", label_visibility="collapsed")
-                    if _new_lv != _cur_lv and _wl_levels_save:
-                        _wl_lv[str(code)] = _new_lv
-                        _wl_levels_save(_wl_lv)
-                        _wl_changed = True
-                    if _c2.button("✕", key=f"wl_rm_{code}", help=f"从自选股移除 {name}"):
-                        _watchlist_remove(code)
-                        st.toast(f"已移除 {name}", icon="🗑️")
-                        st.rerun()
-    if _wl_changed:
+        # 【V88·自选分级】A=交易日盘中每3小时 B=每天 C=每周低频；单一权威=私仓 watch_levels.json
         try:
-            import subprocess as _spwl
-            _spwl.run(["git", "-C", str(_repo_wl), "add", "-f", "watch_levels.json"], capture_output=True)
-            _spwl.run(["git", "-C", str(_repo_wl), "commit", "-m", "自选分级调整(桌面)"], capture_output=True)
-            _spwl.Popen(["git", "-C", str(_repo_wl), "push", "origin", "main"],
-                        stdout=_spwl.DEVNULL, stderr=_spwl.DEVNULL)
-            st.toast("✅ 级别已保存并后台同步私仓", icon="🏷️")
+            import sys as _syswl
+            _repo_wl = Path.home() / "Desktop" / "ai-daily-report-v2"
+            if str(_repo_wl / "src") not in _syswl.path:
+                _syswl.path.insert(0, str(_repo_wl / "src"))
+            from watch_alerts import watch_levels as _wl_levels_load, save_watch_levels as _wl_levels_save
+            _wl_lv = _wl_levels_load()
         except Exception:
-            st.toast("级别已本地保存，私仓同步失败", icon="⚠️")
+            _wl_lv, _wl_levels_save = {}, None
+        st.caption("级别：**A**=对应市场交易日盘中每3小时（休市不扫）｜**B**=每天1次｜**C**=每周低频。持仓仍按原风险频率检查。")
+        _wl_codes_all = tuple(str(c).upper() for _lst in WATCHLIST.values() for c, _n in _lst)
+        with _v88_running("计算自选股历史最高水位"):
+            _wl_water = _ath_many_display(_wl_codes_all) if _wl_codes_all else {}
+        col1, col2, col3 = st.columns(3)
+        _wl_changed = False
+        for _col, _mk, _flag in ((col1, "US", "🇺🇸 美股"), (col2, "HK", "🇭🇰 港股"), (col3, "CN", "🇨🇳 A股")):
+            with _col:
+                _market_rows_wl = list(WATCHLIST.get(_mk, []))
+                _lv_counts_wl = {lv: sum(1 for code, _ in _market_rows_wl
+                                         if str(_wl_lv.get(str(code), "B")).upper() == lv)
+                                 for lv in ("A", "B", "C")}
+                st.markdown(
+                    f"**{_flag}**（{len(_market_rows_wl)}）　"
+                    f"<span style='font-size:12px;color:#dc2626'>A {_lv_counts_wl['A']}</span> · "
+                    f"<span style='font-size:12px;color:#2563eb'>B {_lv_counts_wl['B']}</span> · "
+                    f"<span style='font-size:12px;color:#64748b'>C {_lv_counts_wl['C']}</span>",
+                    unsafe_allow_html=True)
+                for _group_lv, _group_name, _group_color in (
+                        ("A", "A级重点", "#dc2626"), ("B", "B级观察", "#2563eb"), ("C", "C级低频", "#64748b")):
+                    _group_rows = [(code, name) for code, name in _market_rows_wl
+                                   if str(_wl_lv.get(str(code), "B")).upper() == _group_lv]
+                    if not _group_rows:
+                        continue
+                    st.markdown(
+                        f"<div style='font-size:12px;font-weight:700;color:{_group_color};margin:.35rem 0 .1rem 0;"
+                        f"border-bottom:1px solid #e5e7eb'>{_group_name}（{len(_group_rows)}）</div>",
+                        unsafe_allow_html=True)
+                    for code, name in _group_rows:
+                        _c1, _clv, _c2 = st.columns([4, 1.6, .7])
+                        _water_line = _wl_water.get(str(code).upper(), "历史水位待核")
+                        _c1.markdown(
+                            f"<div style='font-size:12px;padding:3px 0 0 0'>• {_stk_link(name, code)} "
+                            f"<span style='color:#9ca3af;font-size:12px'>({code})</span>"
+                            f"<div style='font-size:12px;color:#64748b;margin-left:10px'>{_water_line}</div></div>",
+                            unsafe_allow_html=True)
+                        _cur_lv = str(_wl_lv.get(str(code), "B")).upper()
+                        _cur_lv = _cur_lv if _cur_lv in ("A", "B", "C") else "B"
+                        _new_lv = _clv.selectbox("级别", ["A", "B", "C"], index=["A", "B", "C"].index(_cur_lv),
+                                                 key=f"wl_lv_{code}", label_visibility="collapsed")
+                        if _new_lv != _cur_lv and _wl_levels_save:
+                            _wl_lv[str(code)] = _new_lv
+                            _wl_levels_save(_wl_lv)
+                            _wl_changed = True
+                        if _c2.button("✕", key=f"wl_rm_{code}", help=f"从自选股移除 {name}"):
+                            _watchlist_remove(code)
+                            st.toast(f"已移除 {name}", icon="🗑️")
+                            st.rerun()
+        if _wl_changed:
+            try:
+                import subprocess as _spwl
+                _spwl.run(["git", "-C", str(_repo_wl), "add", "-f", "watch_levels.json"], capture_output=True)
+                _spwl.run(["git", "-C", str(_repo_wl), "commit", "-m", "自选分级调整(桌面)"], capture_output=True)
+                _spwl.Popen(["git", "-C", str(_repo_wl), "push", "origin", "main"],
+                            stdout=_spwl.DEVNULL, stderr=_spwl.DEVNULL)
+                st.toast("✅ 级别已保存并后台同步私仓", icon="🏷️")
+            except Exception:
+                st.toast("级别已本地保存，私仓同步失败", icon="⚠️")
     
-    if 'watchlist_analysis' not in st.session_state:
-        st.session_state.watchlist_analysis = None
+        if 'watchlist_analysis' not in st.session_state:
+            st.session_state.watchlist_analysis = None
     
-    ttl = get_smart_cache_ttl('daily')
-    cached = False
-    if st.session_state.watchlist_analysis:
-        ts = st.session_state.watchlist_analysis.get('timestamp', 0)
-        if (time.time() - ts) < ttl:
-            cached = True
-            remaining = (ttl - (time.time() - ts)) / 60
-            st.info(f"📦 使用缓存 | 剩余 {remaining:.1f} 分钟有效")
+        ttl = get_smart_cache_ttl('daily')
+        cached = False
+        if st.session_state.watchlist_analysis:
+            ts = st.session_state.watchlist_analysis.get('timestamp', 0)
+            if (time.time() - ts) < ttl:
+                cached = True
+                remaining = (ttl - (time.time() - ts)) / 60
+                st.info(f"📦 使用缓存 | 剩余 {remaining:.1f} 分钟有效")
     
-    if st.button("🚀 一键自选股分析（中美港逐只）", type="primary", width='stretch', key="btn_watchlist"):
-        if cached:
-            st.toast("📦 使用缓存，无需重新分析", icon="📦")
-        else:
-            progress_bar = st.progress(0)
-            status_text = st.empty()
-            report, err = run_watchlist_analysis(progress_callback=lambda m: status_text.text(m))
-            progress_bar.progress(1.0)
-            progress_bar.empty()
-            status_text.empty()
-            if err:
-                st.error(err)
+        if st.button("🚀 一键自选股分析（中美港逐只）", type="primary", width='stretch', key="btn_watchlist"):
+            if cached:
+                st.toast("📦 使用缓存，无需重新分析", icon="📦")
             else:
-                st.session_state.watchlist_analysis = {'report': report, 'timestamp': time.time()}
-                st.toast("✅ 自选股分析完成", icon="📋")
-                st.rerun()
+                progress_bar = st.progress(0)
+                status_text = st.empty()
+                report, err = run_watchlist_analysis(progress_callback=lambda m: status_text.text(m))
+                progress_bar.progress(1.0)
+                progress_bar.empty()
+                status_text.empty()
+                if err:
+                    st.error(err)
+                else:
+                    st.session_state.watchlist_analysis = {'report': report, 'timestamp': time.time()}
+                    st.toast("✅ 自选股分析完成", icon="📋")
+                    st.rerun()
     
-    if st.button("🗑️ 清除自选股分析缓存", help="清除自选股分析结果", width='stretch', key="btn_watchlist_clear"):
-        st.session_state.watchlist_analysis = None
-        st.toast("✅ 已清除", icon="🗑️")
-        st.rerun()
+        if st.button("🗑️ 清除自选股分析缓存", help="清除自选股分析结果", width='stretch', key="btn_watchlist_clear"):
+            st.session_state.watchlist_analysis = None
+            st.toast("✅ 已清除", icon="🗑️")
+            st.rerun()
     
-    if st.session_state.watchlist_analysis:
-        report = st.session_state.watchlist_analysis.get('report', '')
-        if report:
-            st.markdown("---")
-            st.markdown("### 📋 自选股分析报告")
-            st.markdown(report)
-            st.caption(f"📌 本报告由 AI 生成 · 模型: {_ai_model_label()}")
+        if st.session_state.watchlist_analysis:
+            report = st.session_state.watchlist_analysis.get('report', '')
+            if report:
+                st.markdown("---")
+                st.markdown("### 📋 自选股分析报告")
+                st.markdown(report)
+                st.caption(f"📌 本报告由 AI 生成 · 模型: {_ai_model_label()}")
 
 
-# ═══════════════════════════════════════════════════════════════
-# 【模块 ④】股票PK对决（仅在有对比股票时显示）
-# ═══════════════════════════════════════════════════════════════
+    # ═══════════════════════════════════════════════════════════════
+    # 【模块 ④】股票PK对决（仅在有对比股票时显示）
+    # ═══════════════════════════════════════════════════════════════
 if st.session_state.get('pk_codes') and len(st.session_state.pk_codes) >= 2:
     _module_header("⚔️", "股票PK对决", "勾选2-4只股票对比分析", "#f093fb", "#f5576c")
     
