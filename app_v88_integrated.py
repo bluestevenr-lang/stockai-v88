@@ -3275,22 +3275,19 @@ try:
     _gr9map = (_cbj9("trend_quality.json").get("grades") or {})
 
     def _gbadge9(_cd, _now_px=None):
-        """评级章(2026-07-31 终版):3A满配只出章;2A/1A括号标得分项;
-        每章挂[评级时点@基价]——现价与基价漂移>3%=红标'待重算',旧考评不许装新(用户定纲)。"""
+        """评级章(07-31终版·瘦身):窄列小字三行制——章/得分项/身份证;漂移>3%红标。"""
         _g9 = _gr9map.get(str(_cd)) or {}
         if not _g9:
             return "", 0
         _gc9 = {"3A": "#dc2626", "2A": "#ea580c"}.get(_g9.get("grade"), "#94a3b8")
         _chip9 = (f"<span style='background:{_gc9};color:#fff;border-radius:3px;"
-                  f"padding:0 4px;font-size:10.5px;font-weight:800;margin-left:2px'>"
-                  f"{_g9.get('grade')}</span>")
+                  f"padding:0 3px;font-size:10px;font-weight:800'>{_g9.get('grade')}</span>")
         if _g9.get("grade") != "3A":
             _parts9 = "+".join(x for x in (
                 "⚔️3" if _g9.get("dual") else "", "C2" if _g9.get("c_only") else "",
-                "✓1" if _g9.get("cs") else "", "位置" if _g9.get("L_pos") else "",
-                "质量" if _g9.get("L_qual") else "", "量能" if _g9.get("L_vol") else "") if x)
-            _chip9 += f"<span style='color:#94a3b8;font-size:10px'>({_parts9})</span>"
-        # 考评身份证:评于何时@基价;现价漂移>3%红标待重算
+                "✓1" if _g9.get("cs") else "", "位" if _g9.get("L_pos") else "",
+                "质" if _g9.get("L_qual") else "", "量" if _g9.get("L_vol") else "") if x)
+            _chip9 += f"<br><span style='color:#94a3b8;font-size:9px'>({_parts9})</span>"
         _gat9, _gpx9 = _g9.get("at"), _g9.get("px")
         if _gat9:
             _drift9 = None
@@ -3300,13 +3297,11 @@ try:
             except (TypeError, ValueError):
                 pass
             if _drift9 is not None and abs(_drift9) > 3:
-                _chip9 += (f"<span style='color:#dc2626;font-size:10px' title='评级基价{_gpx9},"
-                           f"现价已漂移{_drift9:+.1f}%——该考评待重算,勿按旧级执行'>"
-                           f" ⚠️评{_gat9}@{_gpx9}漂{_drift9:+.1f}%</span>")
+                _chip9 += (f"<br><span style='color:#dc2626;font-size:9px' title='评级基价{_gpx9},"
+                           f"现价漂移{_drift9:+.1f}%——待重算勿按旧级执行'>⚠️漂{_drift9:+.1f}%</span>")
             else:
-                _chip9 += (f"<span style='color:#94a3b8;font-size:10px' "
-                           f"title='考评身份证:评级时点@基价,漂移≤3%内有效'>"
-                           f" 评{_gat9}@{_gpx9}</span>")
+                _chip9 += (f"<br><span style='color:#94a3b8;font-size:9px' "
+                           f"title='考评身份证:评级时点@基价'>评{str(_gat9)[3:]}@{_gpx9}</span>")
         return _chip9, int(_g9.get("score") or 0)
 
     for _r9 in _cb_src9:
@@ -3550,7 +3545,7 @@ try:
                                          "半仓" if _g9x.get("state") == "hot" else "纲领内"),
                                    _st9x, str(_why9), _wbrows9.get(str(_cd9)),
                                    _pxc=_pxcell9(_cd9, _px9),
-                                   _gcell=f"<td style='white-space:nowrap'>{_gb9v}</td>")))
+                                   _gcell=f"<td style='max-width:92px;line-height:1.35'>{_gb9v}</td>")))
         # 【冲突消解层 2026-07-27 特斯拉案"卖侧强看跌85% vs 买侧🚀启动候选72"两嘴打架】
         # 卖警=当下趋势事实,底拐/上行候选=左侧猜测——合成:纪律优先减仓照执行;
         # 候选在场=减而不清留观察仓,站上确认价才算见底成立,之前的反弹按逃命反弹处理
@@ -3580,7 +3575,7 @@ try:
                                     ("🚫等重更" if str(_cd9s) in _px_stale17 else "💼执行"),
                                     str(_why9s) + _cf_txt9, _wsell9.get(str(_cd9s)),
                                     _pxc=_pxcell9(_cd9s, _px9s),
-                                    _gcell=f"<td style='white-space:nowrap'>{_gb9s}</td>"))
+                                    _gcell=f"<td style='max-width:92px;line-height:1.35'>{_gb9s}</td>"))
         try:
             _hold9 = [r for r in _cb_src9 if r.get("scope") == "持仓"
                       and not any(k in str(r.get("action", "")) for k in ("减", "退", "清", "止损"))][:5]
@@ -3593,7 +3588,7 @@ try:
                                     str(_r9h.get("entry_note") or ""),
                                     _whold9.get(str(_r9h.get("code"))),
                                     _pxc=_pxcell9(_r9h.get("code"), _r9h.get("last")),
-                                    _gcell=f"<td style='white-space:nowrap'>{_gbadge9(_r9h.get('code'), _r9h.get('last'))[0]}</td>"))
+                                    _gcell=f"<td style='max-width:92px;line-height:1.35'>{_gbadge9(_r9h.get('code'), _r9h.get('last'))[0]}</td>"))
         st.markdown("<div style='background:#fef2f2;border:2px solid #dc2626;border-radius:10px;"
                     "padding:.4rem .8rem;margin:.3rem 0'>"
                     f"<b style='font-size:14px;color:#dc2626'>🔔 {_cb_day9}行动中心</b>"
@@ -3654,11 +3649,11 @@ try:
                 _tl9 = _x9.get("tier_label")
                 _tc9 = {"3A": "#dc2626", "2A": "#ea580c"}.get(_tl9, "#64748b")
                 _sf9m = str(_x9.get("safety") or "")
-                _act9m = (f"<b style='color:{_tc9}'>{_tl9}</b>"
-                          + (f"<br><span style='font-size:10px;color:#dc2626'>{_sf9m[:10]}</span>"
-                             if _sf9m.startswith("⚠️") else "")
-                          + (f"<br><span style='font-size:10px;color:#a16207'>待双剑</span>"
-                             if _x9.get("cert_note") else ""))
+                # 【07-31 用户"动作列按标题2周概率说明"】评级独立成列后,此列回归本职
+                _act9m = (f"<b style='color:#dc2626'>右侧 涨{_x9.get('p_2w')}%</b>"
+                          if _x9.get("p_2w") is not None else
+                          "<b style='color:#7c3aed'>右侧·结构proxy</b>"
+                          "<br><span style='font-size:10px;color:#94a3b8'>入池后给引擎概率</span>")
                 _ep9m = _x9.get("entry_pullback") or []
                 _pz9m = _x9.get("profit_zone") or []
                 _trig9m = (f"回踩{'~'.join(str(v) for v in _ep9m) or '?'}或破{_x9.get('entry_break') or '?'}"
@@ -3685,7 +3680,7 @@ try:
                     _x9.get("code"), _act9m, _trig9m, _inv9x2,
                     "1批", ("⚔️双剑✓" if _x9.get("dual_cert") else "🕐待双剑"),
                     _why9m, None, _pxc=_pxcell9(_x9.get("code"), _x9.get("last")),
-                    _gcell=f"<td style='white-space:nowrap'>{_gb9x}</td>", _laytxt=_lay9x)))
+                    _gcell=f"<td style='max-width:92px;line-height:1.35'>{_gb9x}</td>", _laytxt=_lay9x)))
         except Exception:
             logging.exception("[V88] 3A并板失败")
             _v88_sentinel9(Path.home() / "Desktop" / "ai-daily-report-v2", "3A并板")
