@@ -1,10 +1,10 @@
 {
- "generated_at": "2026-07-30 20:34（北京时间）",
+ "generated_at": "2026-07-31 07:59（北京时间）",
  "note": "三方会审:规则引擎(V88) vs Claude(Fable/Opus独立复核) vs GPT(Codex盲审)。⚡分歧排最前——三方都说好的可以按纲领执行,吵起来的才是要自己拿主意的地方。GPT目前是影子模式(有记录无投票权),它的反对不会拦名单,但会入台账攒战绩。",
  "counts": {
   "⚡有分歧": 4,
-  "仅规则(无第二意见)": 27,
-  "✅双方一致": 3
+  "✅双方一致": 3,
+  "仅规则(无第二意见)": 30
  },
  "rows": [
   {
@@ -62,6 +62,24 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
+   "code": "LI",
+   "name": "理想汽车",
+   "market": "美股",
+   "rule": {
+    "dir": "看多",
+    "prob": 70,
+    "action": "双路径待触发",
+    "rr": 3.77,
+    "pos52": 12.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
    "code": "1114.HK",
    "name": "华晨中国",
    "market": "港股",
@@ -98,24 +116,6 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "603202.SS",
-   "name": "天有为",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 64,
-    "action": "双路径待触发",
-    "rr": 4.69,
-    "pos52": 12.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
    "code": "600016.SS",
    "name": "民生银行",
    "market": "A股",
@@ -134,24 +134,6 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "STLA",
-   "name": "Stellantis",
-   "market": "美股",
-   "rule": {
-    "dir": "看多",
-    "prob": 63,
-    "action": "等待",
-    "rr": 5.4,
-    "pos52": 11.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
    "code": "603392.SS",
    "name": "万泰生物",
    "market": "A股",
@@ -161,6 +143,24 @@
     "action": "双路径待触发",
     "rr": 4.98,
     "pos52": 14.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "603806.SS",
+   "name": "福斯特",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 61,
+    "action": "等待",
+    "rr": 3.88,
+    "pos52": 23.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -206,15 +206,15 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "601512.SS",
-   "name": "中新集团",
-   "market": "A股",
+   "code": "STLA",
+   "name": "Stellantis",
+   "market": "美股",
    "rule": {
     "dir": "看多",
     "prob": 59,
-    "action": "现价可进",
-    "rr": 4.94,
-    "pos52": 17.0,
+    "action": "等待",
+    "rr": 7.44,
+    "pos52": 9.0,
     "src": "池外机会"
    },
    "claude": null,

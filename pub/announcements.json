@@ -1,24 +1,81 @@
 {
- "ts": 1785397497.3765452,
- "generated_at": "2026-07-30 15:44（北京时间）",
+ "ts": 1785456126.1900084,
+ "generated_at": "2026-07-31 08:02（北京时间）",
  "pool_n": 21,
- "events_n": 1,
+ "events_n": 2,
  "events": {
   "300750": {
    "name": "宁德时代",
    "code": "300750.SZ",
    "items": [
     {
-     "date": "2026-07-25",
-     "title": "宁德时代:关于回购公司股份方案的公告暨回购股份报告书",
+     "date": "2026-07-30",
+     "title": "宁德时代:关于回购股份事项前十名股东和前十名无限售条件股东持股情况的公告",
      "dir": "bull",
      "note": "回购托底",
      "icon": "🔴"
     }
    ]
+  },
+  "300631": {
+   "name": "久吾高科",
+   "code": "300631.SZ",
+   "items": [
+    {
+     "date": "2026-07-31",
+     "title": "久吾高科:向不特定对象发行可转换公司债券上市公告书",
+     "dir": "event",
+     "note": "可转债：抢权效应vs摊薄",
+     "icon": "⚡"
+    }
+   ]
   }
  },
  "cb_calendar": [
+  {
+   "bond": "天脉转债",
+   "stock": "苏州天脉",
+   "stock_code": "301626",
+   "apply_date": "2026-08-03",
+   "list_date": "",
+   "rating": "AA",
+   "scale": 7.86,
+   "note": "评级稳·打新可参与",
+   "in_pool": false
+  },
+  {
+   "bond": "三鑫转债",
+   "stock": "三鑫医疗",
+   "stock_code": "300453",
+   "apply_date": "2026-08-04",
+   "list_date": "",
+   "rating": "AA-",
+   "scale": 5.3,
+   "note": "评级稳·打新可参与",
+   "in_pool": false
+  },
+  {
+   "bond": "科博转债",
+   "stock": "科博达",
+   "stock_code": "603786",
+   "apply_date": "2026-07-03",
+   "list_date": "2026-07-31",
+   "rating": "AA+",
+   "scale": 14.9074,
+   "note": "评级稳·打新可参与",
+   "in_pool": false
+  },
+  {
+   "bond": "久吾转02",
+   "stock": "久吾高科",
+   "stock_code": "300631",
+   "apply_date": "2026-07-20",
+   "list_date": "2026-08-04",
+   "rating": "A+",
+   "scale": 3,
+   "note": "评级偏低·上市溢价波动大",
+   "in_pool": true
+  },
   {
    "bond": "振26转债",
    "stock": "振华股份",
@@ -40,50 +97,6 @@
    "scale": 5.45,
    "note": "评级稳·打新可参与",
    "in_pool": false
-  },
-  {
-   "bond": "天脉转债",
-   "stock": "苏州天脉",
-   "stock_code": "301626",
-   "apply_date": "2026-08-03",
-   "list_date": "",
-   "rating": "AA",
-   "scale": 7.86,
-   "note": "评级稳·打新可参与",
-   "in_pool": false
-  },
-  {
-   "bond": "科博转债",
-   "stock": "科博达",
-   "stock_code": "603786",
-   "apply_date": "2026-07-03",
-   "list_date": "2026-07-31",
-   "rating": "AA+",
-   "scale": 14.9074,
-   "note": "评级稳·打新可参与",
-   "in_pool": false
-  },
-  {
-   "bond": "奥普转债",
-   "stock": "奥普特",
-   "stock_code": "688686",
-   "apply_date": "2026-07-29",
-   "list_date": "",
-   "rating": "AA",
-   "scale": 12.7,
-   "note": "评级稳·打新可参与",
-   "in_pool": false
-  },
-  {
-   "bond": "玉禾转债",
-   "stock": "玉禾田",
-   "stock_code": "300815",
-   "apply_date": "2026-07-29",
-   "list_date": "",
-   "rating": "AA",
-   "scale": 15,
-   "note": "评级稳·打新可参与",
-   "in_pool": false
   }
  ],
  "cb_pipeline": [
@@ -102,26 +115,12 @@
    "why": "转股价值99弱·10亿中盘·PB3.0可下修"
   },
   {
-   "stock": "三鑫医疗",
-   "stock_code": "300453",
-   "stage": "同意注册",
-   "stage_date": "2026-06-05",
-   "scale": "5.300",
-   "pma_rt": "103.17",
-   "pb": "3.330",
-   "price": "9.75",
-   "in_pool": false,
-   "score": 64,
-   "tag": "🟡关注",
-   "why": "转股价值103足·5.3亿中盘·PB3.3可下修"
-  },
-  {
    "stock": "丰茂股份",
    "stock_code": "301459",
    "stage": "同意注册",
    "stage_date": "2026-07-28",
    "scale": "6.080",
-   "pma_rt": "91.75",
+   "pma_rt": "92.39",
    "pb": "2.501",
    "price": "30.60",
    "in_pool": false,
@@ -135,13 +134,13 @@
    "stage": "同意注册",
    "stage_date": "2026-07-16",
    "scale": "10.680",
-   "pma_rt": "96.53",
+   "pma_rt": "98.23",
    "pb": "3.191",
    "price": "19.48",
    "in_pool": false,
    "score": 59,
    "tag": "🟡关注",
-   "why": "转股价值97弱·10.68亿中盘·PB3.2可下修"
+   "why": "转股价值98弱·10.68亿中盘·PB3.2可下修"
   },
   {
    "stock": "中鼎股份",
@@ -149,7 +148,7 @@
    "stage": "同意注册",
    "stage_date": "2026-07-28",
    "scale": "19.200",
-   "pma_rt": "90.81",
+   "pma_rt": "90.91",
    "pb": "1.509",
    "price": "16.80",
    "in_pool": false,
@@ -158,18 +157,32 @@
    "why": "转股价值91弱·19.2亿大盘·PB1.5可下修"
   },
   {
+   "stock": "四方科技",
+   "stock_code": "603339",
+   "stage": "同意注册",
+   "stage_date": "2026-05-21",
+   "scale": "10.230",
+   "pma_rt": "90.21",
+   "pb": "1.370",
+   "price": "12.35",
+   "in_pool": false,
+   "score": 49,
+   "tag": "⚪一般",
+   "why": "转股价值90弱·10.23亿中盘·PB1.4可下修"
+  },
+  {
    "stock": "满坤科技",
    "stock_code": "301132",
    "stage": "同意注册",
    "stage_date": "2026-07-27",
    "scale": "7.600",
-   "pma_rt": "71.88",
+   "pma_rt": "74.02",
    "pb": "2.125",
    "price": "26.35",
    "in_pool": false,
    "score": 47,
    "tag": "⚪一般",
-   "why": "转股价值72弱·7.6亿中盘·PB2.1可下修"
+   "why": "转股价值74弱·7.6亿中盘·PB2.1可下修"
   },
   {
    "stock": "强达电路",
@@ -177,13 +190,13 @@
    "stage": "同意注册",
    "stage_date": "2026-07-27",
    "scale": "5.500",
-   "pma_rt": "86.24",
+   "pma_rt": "87.93",
    "pb": "4.481",
    "price": "71.04",
    "in_pool": false,
    "score": 47,
    "tag": "⚪一般",
-   "why": "转股价值86弱·5.5亿中盘·PB4.5可下修"
+   "why": "转股价值88弱·5.5亿中盘·PB4.5可下修"
   },
   {
    "stock": "奥士康",
@@ -191,17 +204,17 @@
    "stage": "同意注册",
    "stage_date": "2026-04-02",
    "scale": "10.000",
-   "pma_rt": "78.58",
+   "pma_rt": "80.60",
    "pb": "2.730",
    "price": "38.11",
    "in_pool": false,
    "score": 42,
    "tag": "⚪一般",
-   "why": "转股价值79弱·10亿中盘·PB2.7可下修"
+   "why": "转股价值81弱·10亿中盘·PB2.7可下修"
   }
  ],
  "cb_pipe_counts": {
-  "reg": 10,
+  "reg": 9,
   "passed": 13,
   "early": 62
  },
