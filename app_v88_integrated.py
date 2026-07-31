@@ -2737,15 +2737,11 @@ st.set_page_config(layout="wide", page_title="AI 皇冠双核", page_icon="👑"
 # 行距/内边距同步压缩——每行高度≈原一半
 # 层级铁序(07-31用户抓"名称比时间戳还小,顾此失彼"):
 # ①名称(链接)12.5px粗=第一眼 ②关键数字10.5px ③时间戳/说明/身份证8.2px灰=最底层
+# 【07-31终局】只留td基线与密度;不再用!important钝器盖子元素——
+# 每个元素的字号由生成源头的行内样式精确指定(名称13粗/现价12.5/章12/说明8),行内=唯一裁决
 st.markdown("""<style>
 table td, table th { font-size: 10.5px !important; padding: 2px 5px !important;
-                     line-height: 1.22 !important; }
-table td a { font-size: 12.5px !important; font-weight: 700 !important; }
-table td b { font-size: 10.5px !important; }
-table td span, table th span { font-size: 8.2px !important; }
-table td br + span { line-height: 1.1 !important; }
-div[data-testid="stMarkdownContainer"] div[style*="font-size:11px"],
-div[data-testid="stMarkdownContainer"] div[style*="font-size:12px"] { font-size: 9.5px !important; }
+                     line-height: 1.25 !important; }
 </style>""", unsafe_allow_html=True)
 
 # 【V88·全局字体系统 2026-07-17 用户定纲】版面字体像 Claude：干净无衬线+克制层级；
@@ -4963,10 +4959,15 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"],
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Noto Sans SC", sans-serif !important;
     letter-spacing: -0.01em;
 }
+/* 【07-31 全天字号大战真凶】原规则把所有span强制14px!important,
+   特异性压过一切行内样式与表格规则——span从选择器移除+表格元素豁免,
+   行内font-size从此重新成为最终裁决(层级铁序:名称>数字>说明) */
 [data-testid="stMarkdownContainer"] p,
 [data-testid="stMarkdownContainer"] li,
-[data-testid="stMarkdownContainer"] span,
 [data-testid="stText"] { font-size: 14px !important; line-height: 1.6 !important; color: #1a1a2e; }
+[data-testid="stMarkdownContainer"] span:not(table span) { font-size: 14px; line-height: 1.6; }
+[data-testid="stMarkdownContainer"] table p,
+[data-testid="stMarkdownContainer"] table li { font-size: inherit !important; line-height: inherit !important; }
 [data-testid="stCaptionContainer"] { font-size: 12px !important; color: #5a6378 !important; }
 h1, [data-testid="stHeading"] h1 { font-size: 22px !important; font-weight: 700 !important; color: #1a1a2e !important; }
 h2, [data-testid="stHeading"] h2 { font-size: 18px !important; font-weight: 700 !important; color: #1e3a5f !important; }
@@ -6935,7 +6936,7 @@ st.markdown("""
         --v88-line-height: 1.6;
     }
     html, body, [class*="css"],
-    [data-testid="stMarkdown"] div, [data-testid="stMarkdown"] p, [data-testid="stMarkdown"] span,
+    [data-testid="stMarkdown"] div:not(table div), [data-testid="stMarkdown"] p, [data-testid="stMarkdown"] span:not(table *),
     [data-testid="stMarkdown"] h1, [data-testid="stMarkdown"] h2, [data-testid="stMarkdown"] h3,
     [data-testid="stMarkdown"] h4, [data-testid="stMarkdown"] h5, [data-testid="stMarkdown"] h6,
     [data-testid="stMarkdown"] b, [data-testid="stMarkdown"] strong {
@@ -6999,7 +7000,7 @@ st.markdown("""
     div[data-testid="stDataFrame"] tbody tr:hover { background-color: #f0f4f8 !important; cursor: pointer !important; }
     div[data-testid="stDataFrame"] tbody tr.row-selected { background-color: #dce3ed !important; font-weight: 600; }
 
-    [data-testid="stMarkdown"] p, [data-testid="stMarkdown"] li, [data-testid="stMarkdown"] span {
+    [data-testid="stMarkdown"] p, [data-testid="stMarkdown"] li, [data-testid="stMarkdown"] span:not(table *) {
         font-family: var(--v88-sans) !important; font-size: var(--v88-body-size) !important; color: #1a1a2e;
     }
     div[data-testid="stDataFrame"] { font-family: var(--v88-sans) !important; font-size: 13px !important; }
