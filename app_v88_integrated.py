@@ -3241,11 +3241,11 @@ try:
                 _tdy9c2 = __import__("datetime").datetime.now().strftime("%m-%d")
                 _fresh9c2 = _tqts9.startswith(_tdy9c2)
                 return (f"<td style='font-size:11.5px;white-space:nowrap'>"
-                        f"<b>现{_px9c if _px9c is not None else '?'}</b><br>"
+                        f"<b style='font-size:12.5px'>现{_px9c if _px9c is not None else '?'}</b><br>"
                         f"<span style='color:{'#16a34a' if _fresh9c2 else '#dc2626'};font-size:8px'>"
                         f"{'🟢' if _fresh9c2 else '⚠️'}雷达 {_tqts9[6:]}</span></td>")
             return (f"<td style='font-size:11.5px;white-space:nowrap'>"
-                    f"<b>现{_px9c if _px9c is not None else '?'}</b><br>"
+                    f"<b style='font-size:12.5px'>现{_px9c if _px9c is not None else '?'}</b><br>"
                     "<span style='color:#f97316;font-size:8px'>⚠️时点未知</span></td>")
         _tdy9c = __import__("datetime").datetime.now().strftime("%Y-%m-%d")
         _d9c, _t9c = _as9c[:10], _as9c[11:16]
@@ -3254,7 +3254,7 @@ try:
                   if _fresh9c else f"旧·{_d9c[5:]} {_t9c}")
         return (f"<td title='数据时点 {_as9c}{('·' + _pb9c) if _pb9c else ''}——分析所依据的行情时间' "
                 f"style='font-size:11.5px;white-space:nowrap'>"
-                f"<b>现{_px9c if _px9c is not None else '?'}</b><br>"
+                f"<b style='font-size:12.5px'>现{_px9c if _px9c is not None else '?'}</b><br>"
                 f"<span style='color:{'#16a34a' if _fresh9c else '#dc2626'};font-size:8px'>"
                 f"{'🟢' if _fresh9c else '⚠️'}{_lab9c}</span></td>")
     # 【2026-07-31 用户"要有买入后预计空间:多少日到什么价;千红没告诉我为什么买、能涨多少"】
@@ -3310,7 +3310,7 @@ try:
             return "", 0
         _gc9 = {"3A": "#dc2626", "2A": "#ea580c"}.get(_g9.get("grade"), "#94a3b8")
         _chip9 = (f"<span style='background:{_gc9};color:#fff;border-radius:3px;"
-                  f"padding:0 3px;font-size:9.5px;font-weight:800'>{_g9.get('grade')}</span>")
+                  f"padding:0 4px;font-size:12px;font-weight:800'>{_g9.get('grade')}</span>")
         if _g9.get("grade") != "3A":
             _parts9 = "+".join(x for x in (
                 "⚔️3" if _g9.get("dual") else "", "C2" if _g9.get("c_only") else "",
@@ -3482,9 +3482,9 @@ try:
             _c1 = {"逢跌加": "#22c55e", "持有·可加": "#22c55e", "持有·不加": "#eab308",
                    "观察·底仓": "#eab308", "逢反弹减": "#f97316",
                    "逢反弹清": "#ef4444", "价值陷阱·不碰": "#ef4444"}.get(_l1.get("a"), "#94a3b8")
-            return (f"<td title=\"{_tip[:420]}\" style='font-size:11px;line-height:1.5;"
-                    f"max-width:190px'>"
-                    f"<span style='color:{_c1};font-weight:600'>①{_l1.get('icon', '')}"
+            return (f"<td title=\"{_tip[:420]}\" style='font-size:13px;line-height:1.45;"
+                    f"max-width:210px'>"
+                    f"<span style='color:{_c1};font-weight:400'>①{_l1.get('icon', '')}"
                     f"{_l1.get('a')}</span><br>"
                     f"<span style='color:#64748b'>②{_l2.get('a')}　③{_l3.get('a')}</span> ⓘ</td>")
 
@@ -3502,18 +3502,22 @@ try:
                              or _rfb9.get("diag_why") or "").strip()
                 if _fbtx9:
                     _wcell = (f"<td title=\"引擎周期结论(why_buy未覆盖此票时的兜底口径)\" "
-                              f"style='font-size:11px;color:#64748b;max-width:230px'>📐"
+                              f"style='font-size:13px;color:#475569;max-width:250px'>📐"
                               f"{_fbtx9[:60]} ⓘ</td>")
             if _wnow:
                 _tip = (f"{_wnow.get('kind')}｜{_wnow.get('why_now')}　"
                         f"⏳{_wnow.get('hold')}　🚪失效:{_wnow.get('fail')}").replace('"', "'")
-                _wcell = (f"<td title=\"{_tip[:300]}\" style='font-size:11px;line-height:1.4;"
-                          f"max-width:230px'><b>{_wnow.get('kind')}</b>"
+                _wcell = (f"<td title=\"{_tip[:300]}\" style='font-size:13px;line-height:1.4;"
+                          f"max-width:250px'>{_wnow.get('kind')}"
                           f"<span style='color:#64748b'>·{str(_wnow.get('why_now'))[:46]}</span> ⓘ</td>")
-            _lay9td = (f"<td style='font-size:11px;line-height:1.5;max-width:190px'>{_laytxt}</td>"
+            _lay9td = (f"<td style='font-size:13px;line-height:1.45;max-width:210px'>{_laytxt}</td>"
                        if (_laytxt and not _wnow) else _lay_cell9(_wnow))
-            return (f"<tr><td>{_lk}</td>{_gcell}{_pxc}<td>{_act}</td><td>{_trig}</td><td>{_inv}</td>"
-                    f"<td>{_pos}</td><td title=\"{_why[:120]}\">{_st} ⓘ</td>"
+            return (f"<tr><td>{_lk}</td>{_gcell}{_pxc}"
+                    f"<td style='font-size:12px'>{_act}</td>"
+                    f"<td style='font-size:12px'>{_trig}</td>"
+                    f"<td style='font-size:12px'>{_inv}</td>"
+                    f"<td style='font-size:12px'>{_pos}</td>"
+                    f"<td style='font-size:11px' title=\"{_why[:120]}\">{_st} ⓘ</td>"
                     f"{_lay9td}{_wcell}</tr>")
 
         def _tbl9(rows_html):
