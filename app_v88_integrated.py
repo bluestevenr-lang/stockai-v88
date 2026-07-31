@@ -3204,6 +3204,14 @@ try:
     # 落盘曾被单市场班冲掉(已改合并式),session保证中港绿灯即时可见。
     _cb_src9 = list(((st.session_state.get("watch_alerts_v88") or {}).get("decisions") or []))
     _cb_src9 += list(_cbj9("intraday_decisions.json").get("rows") or [])
+    # 【千红残影案 2026-07-31】双源合并改"谁新用谁":盘中session更新快,收盘定稿后文件更新——
+    # 旧写法session恒优先,定稿后的新卡被盘中残影压住(买涨52%残影 vs 定稿已判'不进')
+    _newest9 = {}
+    for _r9m in _cb_src9:
+        _c9m = str(_r9m.get("code"))
+        if _c9m not in _newest9 or str(_r9m.get("asof") or "") > str(_newest9[_c9m].get("asof") or ""):
+            _newest9[_c9m] = _r9m
+    _cb_src9 = list(_newest9.values())
     # 【2026-07-31 用户"截图一周都是这些推荐,也没有现价,不知道分析时间点是否最新"】
     # 现价+数据时点透明化:每行必须能看见"这判断基于几点的价"。session实时优先(先出现先记)。
     _px_asof9 = {}
@@ -3220,6 +3228,15 @@ try:
         _px9c = _pa9[0] if _pa9[0] is not None else _fb
         _as9c, _pb9c = _pa9[1], _pa9[2]
         if not _as9c:
+            # 大库雷达股:用评级快照时点兜底(时点未知不该出现——总有一个时间是真的)
+            _tqts9 = str((_gr9map.get(str(_cd)) or {}).get("at") or "")
+            if _tqts9:
+                _tdy9c2 = __import__("datetime").datetime.now().strftime("%m-%d")
+                _fresh9c2 = _tqts9.startswith(_tdy9c2)
+                return (f"<td style='font-size:11.5px;white-space:nowrap'>"
+                        f"<b>现{_px9c if _px9c is not None else '?'}</b><br>"
+                        f"<span style='color:{'#16a34a' if _fresh9c2 else '#dc2626'};font-size:10px'>"
+                        f"{'🟢' if _fresh9c2 else '⚠️'}雷达 {_tqts9[6:]}</span></td>")
             return (f"<td style='font-size:11.5px;white-space:nowrap'>"
                     f"<b>现{_px9c if _px9c is not None else '?'}</b><br>"
                     "<span style='color:#f97316;font-size:10px'>⚠️时点未知</span></td>")
@@ -3538,6 +3555,15 @@ try:
             _inv9x = (_re9t.search(r"跌破([0-9.]+)", str(_why9)) or None)
             _inv9s = _inv9x.group(1) if _inv9x else "见卡"
             _gb9v, _gs9v = _gbadge9(_cd9, _px9)
+            _layfb9 = None
+            if not _wbrows9.get(str(_cd9)):
+                _g9i = _gr9map.get(str(_cd9)) or {}
+                if _g9i:
+                    _layfb9 = (f"①{_g9i.get('grade')}·{'📈' if _g9i.get('L_pos') else '▫️'}"
+                               f"{'🎯' if _g9i.get('L_qual') else '▫️'}{'🔊' if _g9i.get('L_vol') else '▫️'}"
+                               + ("<br><span style='color:#dc2626'>🚫双剑否决在案</span>"
+                                  if _g9i.get("rejected") else "")
+                               + "<br><span style='color:#64748b'>②见仓位列 ③见触发列</span>")
             _t_buy9.append((_gs9v, _row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9), '')}{_nm9}",
                                    _cd9, f"<b style='color:#dc2626'>买 涨{_pu9}%</b>{_plab9(_pu9, 'up')}",
                                    _zone9s, _inv9s,
@@ -3545,7 +3571,8 @@ try:
                                          "半仓" if _g9x.get("state") == "hot" else "纲领内"),
                                    _st9x, str(_why9), _wbrows9.get(str(_cd9)),
                                    _pxc=_pxcell9(_cd9, _px9),
-                                   _gcell=f"<td style='max-width:92px;line-height:1.35'>{_gb9v}</td>")))
+                                   _gcell=f"<td style='max-width:92px;line-height:1.35'>{_gb9v}</td>",
+                                   _laytxt=_layfb9)))
         # 【冲突消解层 2026-07-27 特斯拉案"卖侧强看跌85% vs 买侧🚀启动候选72"两嘴打架】
         # 卖警=当下趋势事实,底拐/上行候选=左侧猜测——合成:纪律优先减仓照执行;
         # 候选在场=减而不清留观察仓,站上确认价才算见底成立,之前的反弹按逃命反弹处理
@@ -3666,6 +3693,10 @@ try:
                           + (f" 2周{_x9.get('p_2w')}%/长{_x9.get('p_long')}%"
                              if _x9.get("p_2w") is not None else " 质量=结构proxy"))
                 _gb9x, _gs9x = _gbadge9(_x9.get("code"), _x9.get("last"))
+                _row_by9.setdefault(str(_x9.get("code")), {"cycle_note":
+                    (f"右侧优质雷达:贴新高{_x9.get('near_high_pct')}%·量比{_x9.get('vol_ratio')}"
+                     + (f"·{_x9.get('inst_evidence')}" if _x9.get("inst_evidence") else "")
+                     + ("·质量=结构proxy" if _x9.get("p_2w") is None else ""))})
                 _lay9x = (f"①{_x9.get('tier_label')}·{'📈' if _x9.get('L1') else '▫️'}"
                           f"{'🎯' if _x9.get('L2') else '▫️'}{'🔊' if _x9.get('L3') else '▫️'}"
                           + (f"<br><span style='color:#dc2626'>{str(_x9.get('safety',''))[:14]}</span>"
