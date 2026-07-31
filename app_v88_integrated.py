@@ -3059,6 +3059,35 @@ try:
     # 落盘曾被单市场班冲掉(已改合并式),session保证中港绿灯即时可见。
     _cb_src9 = list(((st.session_state.get("watch_alerts_v88") or {}).get("decisions") or []))
     _cb_src9 += list(_cbj9("intraday_decisions.json").get("rows") or [])
+    # 【2026-07-31 用户"截图一周都是这些推荐,也没有现价,不知道分析时间点是否最新"】
+    # 现价+数据时点透明化:每行必须能看见"这判断基于几点的价"。session实时优先(先出现先记)。
+    _px_asof9 = {}
+    for _r9pa in _cb_src9:
+        _c9pa = str(_r9pa.get("code"))
+        if _c9pa not in _px_asof9:
+            _px_asof9[_c9pa] = (_r9pa.get("last"), str(_r9pa.get("asof") or ""),
+                                str(_r9pa.get("px_basis") or ""))
+
+    def _pxcell9(_cd, _fb=None):
+        """现价·数据时点单元格:同日=🟢新鲜(盘中/收盘定稿),隔日=⚠️红标旧数据——
+        旧数据不许伪装成今天的判断(2026-07-31 定纲:交易日当天优先更新原则)。"""
+        _pa9 = _px_asof9.get(str(_cd)) or (None, "", "")
+        _px9c = _pa9[0] if _pa9[0] is not None else _fb
+        _as9c, _pb9c = _pa9[1], _pa9[2]
+        if not _as9c:
+            return (f"<td style='font-size:11.5px;white-space:nowrap'>"
+                    f"<b>现{_px9c if _px9c is not None else '?'}</b><br>"
+                    "<span style='color:#f97316;font-size:10px'>⚠️时点未知</span></td>")
+        _tdy9c = __import__("datetime").datetime.now().strftime("%Y-%m-%d")
+        _d9c, _t9c = _as9c[:10], _as9c[11:16]
+        _fresh9c = _d9c == _tdy9c
+        _lab9c = ((("收盘定稿" if _pb9c == "收盘定稿" else "盘中") + f" {_t9c}")
+                  if _fresh9c else f"旧·{_d9c[5:]} {_t9c}")
+        return (f"<td title='数据时点 {_as9c}{('·' + _pb9c) if _pb9c else ''}——分析所依据的行情时间' "
+                f"style='font-size:11.5px;white-space:nowrap'>"
+                f"<b>现{_px9c if _px9c is not None else '?'}</b><br>"
+                f"<span style='color:{'#16a34a' if _fresh9c else '#dc2626'};font-size:10px'>"
+                f"{'🟢' if _fresh9c else '⚠️'}{_lab9c}</span></td>")
     for _r9 in _cb_src9:
         _ep9 = _r9.get("entry_plan") or {}
         _md9 = str(_ep9.get("mode") or "")
@@ -3210,7 +3239,7 @@ try:
                     f"{_l1.get('a')}</span><br>"
                     f"<span style='color:#64748b'>②{_l2.get('a')}　③{_l3.get('a')}</span> ⓘ</td>")
 
-        def _row6_9(_nm, _cd, _act, _trig, _inv, _pos, _st, _why="", _wnow=None):
+        def _row6_9(_nm, _cd, _act, _trig, _inv, _pos, _st, _why="", _wnow=None, _pxc="<td></td>"):
             # 【2026-07-29 用户"不要另起一个板块,直接在表格里增加一列"】
             # _wnow = why_buy 的那一行:表内只放"⚡驱动"一句小字,持续性/失效条件进 title 悬停
             _lk = (f"<a href='?q={_cd}&focus=deep#v88-deep-analysis' target='_blank' rel='noopener' "
@@ -3222,14 +3251,16 @@ try:
                 _wcell = (f"<td title=\"{_tip[:300]}\" style='font-size:11px;line-height:1.4;"
                           f"max-width:230px'><b>{_wnow.get('kind')}</b>"
                           f"<span style='color:#64748b'>·{str(_wnow.get('why_now'))[:46]}</span> ⓘ</td>")
-            return (f"<tr><td>{_lk}</td><td>{_act}</td><td>{_trig}</td><td>{_inv}</td>"
+            return (f"<tr><td>{_lk}</td>{_pxc}<td>{_act}</td><td>{_trig}</td><td>{_inv}</td>"
                     f"<td>{_pos}</td><td title=\"{_why[:120]}\">{_st} ⓘ</td>"
                     f"{_lay_cell9(_wnow)}{_wcell}</tr>")
 
         def _tbl9(rows_html):
             return ("<table style='width:100%;font-size:12.5px;border-collapse:collapse'>"
                     "<tr style='color:#94a3b8;font-size:11px;text-align:left'>"
-                    "<th>名称</th><th title='动作+未来2周方向概率(统一引擎规则估计,非实盘胜率);"
+                    "<th>名称</th><th title='分析所依据的行情价与时间点:🟢同日(盘中/收盘定稿)=新鲜;"
+                    "⚠️红=隔日旧数据,判断可能已被行情推翻,以现价复核后再动手'>现价·时点 ⓘ</th>"
+                    "<th title='动作+未来2周方向概率(统一引擎规则估计,非实盘胜率);"
                     "买侧=上涨概率,卖侧=下跌概率;≥70%高把握·60-70%偏多·55-60%略偏·<55%中性'>"
                     "动作·2周概率 ⓘ</th><th>触发/买区</th><th>失效价</th><th>仓位</th><th>状态</th>"
                     "<th title='三层决策:①周期层=该不该有这只票(看年报营收趋势+估值+长周期结构,"
@@ -3276,7 +3307,8 @@ try:
                                    _zone9s, _inv9s,
                                    _pos9(_wbrows9.get(str(_cd9)),
                                          "半仓" if _g9x.get("state") == "hot" else "纲领内"),
-                                   _st9x, str(_why9), _wbrows9.get(str(_cd9))))
+                                   _st9x, str(_why9), _wbrows9.get(str(_cd9)),
+                                   _pxc=_pxcell9(_cd9, _px9)))
         # 【冲突消解层 2026-07-27 特斯拉案"卖侧强看跌85% vs 买侧🚀启动候选72"两嘴打架】
         # 卖警=当下趋势事实,底拐/上行候选=左侧猜测——合成:纪律优先减仓照执行;
         # 候选在场=减而不清留观察仓,站上确认价才算见底成立,之前的反弹按逃命反弹处理
@@ -3298,7 +3330,8 @@ try:
             _t_sell9.append(_row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9s), '')}{_nm9s}", _cd9s,
                                     f"<b style='color:#16a34a'>{_act9s} 跌{_pd9s}%</b>{_plab9(_pd9s, 'down')}",
                                     f"现{_px9s}", "卡💰行", ("减留底仓" if _cf9 else "按纪律"), "💼执行",
-                                    str(_why9s) + _cf_txt9, _wsell9.get(str(_cd9s))))
+                                    str(_why9s) + _cf_txt9, _wsell9.get(str(_cd9s)),
+                                    _pxc=_pxcell9(_cd9s, _px9s)))
         try:
             _hold9 = [r for r in _cb_src9 if r.get("scope") == "持仓"
                       and not any(k in str(r.get("action", "")) for k in ("减", "退", "清", "止损"))][:5]
@@ -3309,7 +3342,8 @@ try:
                                     _r9h.get("code"), "持有", f"现{_r9h.get('last')}", "卡💰行",
                                     "维持", f"涨{_r9h.get('p_up')}%{_plab9(_r9h.get('p_up'), 'up')}",
                                     str(_r9h.get("entry_note") or ""),
-                                    _whold9.get(str(_r9h.get("code")))))
+                                    _whold9.get(str(_r9h.get("code"))),
+                                    _pxc=_pxcell9(_r9h.get("code"), _r9h.get("last"))))
         st.markdown("<div style='background:#fef2f2;border:2px solid #dc2626;border-radius:10px;"
                     "padding:.4rem .8rem;margin:.3rem 0'>"
                     f"<b style='font-size:14px;color:#dc2626'>🔔 {_cb_day9}行动中心</b>"
@@ -3317,6 +3351,33 @@ try:
                     "原因悬停状态列ⓘ或点名进详情;弱市裁决=到价也等大盘回中性'>ⓘ</span>"
                     + ("<div style='font-size:12px;color:#b45309'>🗓 休市——周一预挂单,开盘跳出买区先复核</div>" if _cb_nt9 else ""),
                     unsafe_allow_html=True)
+        # 【2026-07-31 用户"一周都是这些推荐,不知道分析时间点是否最新"】新鲜度守卫行:
+        # 名单里几行是旧数据、候选发现池各自停在哪天——筛选新不新一行看穿,旧了就红给你看。
+        # 候选池停更=名单只能在旧池里打转,推荐自然一周不换(07-29~31实案:本机launchd掉载2天)。
+        try:
+            _tdy9f = __import__("datetime").datetime.now().strftime("%Y-%m-%d")
+            _shown9f = ([str(x[2]) for x in _cb_rows9[:5]] + [str(x[1]) for x in _cb_sell9[:5]]
+                        + [str(r.get("code")) for r in _hold9])
+            _stale9f = [c for c in _shown9f
+                        if (_px_asof9.get(c) or ("", "", ""))[1][:10] not in ("", _tdy9f)]
+            _pool9f = []
+            for _fn9f, _lb9f in (("universe_scan.json", "全市场池"), ("hot_theme.json", "题材"),
+                                 ("opportunity_scan.json", "池外机会"), ("sector_reps.json", "行业代表")):
+                _g9f = str(_cbj9(_fn9f).get("generated_at") or "")[:10]
+                _old9f = _g9f != _tdy9f
+                _pool9f.append(f"<span style='color:{'#dc2626' if _old9f else '#16a34a'}'>"
+                               f"{_lb9f}{_g9f[5:] or '?'}{'⚠️' if _old9f else ''}</span>")
+            st.markdown(
+                "<div style='font-size:11px;color:#64748b;margin:-2px 0 2px'>🕐 筛选新鲜度："
+                f"名单{len(_shown9f)}行中<b style='color:{'#dc2626' if _stale9f else '#16a34a'}'>"
+                f"{len(_stale9f)}行旧数据</b>"
+                + ("（⚠️以现价复核后再动手）" if _stale9f else "·全部今日")
+                + "｜候选池: " + " ".join(_pool9f)
+                + "<span title='候选池=发现新标的的雷达;停更=名单只能在旧池里打转,"
+                  "推荐一周不换多半是这里断了。⚠️池当天产的名单只作参考'> ⓘ</span></div>",
+                unsafe_allow_html=True)
+        except Exception:
+            logging.exception("[V88] 新鲜度守卫行失败")
         # 【图例 2026-07-27 用户"cc我都不知道"】徽章含义就近说明,不用猜
         st.markdown(
             "<div style='font-size:11px;color:#64748b;margin:-2px 0 3px'>验证标识："
