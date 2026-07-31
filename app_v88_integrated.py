@@ -2733,12 +2733,16 @@ st.set_page_config(layout="wide", page_title="AI 皇冠双核", page_icon="👑"
 
 # 【全站字体层级 2026-07-31 用户定纲"主要内容字体大一点,解释说明≤图标字体,不超过现有最大"】
 # 主内容(表格数据/矩阵)=13.5px;解释说明/悬停提示行=11px封顶;层级恒定:重要>说明
+# 【07-31 用户"字体再缩1/3,阿里那行高度显示两只股"】密度版:主内容10.5>说明8.8,
+# 行距/内边距同步压缩——每行高度≈原一半
 st.markdown("""<style>
-table td, table th { font-size: 13.5px !important; }
-table td span[style*="font-size:10"], table td span[style*="font-size:11"],
-table th span { font-size: 11px !important; }
+table td, table th { font-size: 10.5px !important; padding: 2px 5px !important;
+                     line-height: 1.22 !important; }
+table td b { font-size: 10.5px !important; }
+table td span, table th span { font-size: 8.8px !important; }
+table td br + span { line-height: 1.1 !important; }
 div[data-testid="stMarkdownContainer"] div[style*="font-size:11px"],
-div[data-testid="stMarkdownContainer"] div[style*="font-size:12px"] { font-size: 11px !important; }
+div[data-testid="stMarkdownContainer"] div[style*="font-size:12px"] { font-size: 9.5px !important; }
 </style>""", unsafe_allow_html=True)
 
 # 【V88·全局字体系统 2026-07-17 用户定纲】版面字体像 Claude：干净无衬线+克制层级；
