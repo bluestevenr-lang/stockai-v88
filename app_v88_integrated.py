@@ -3720,11 +3720,18 @@ try:
                 _tl9 = _x9.get("tier_label")
                 _tc9 = {"3A": "#dc2626", "2A": "#ea580c"}.get(_tl9, "#64748b")
                 _sf9m = str(_x9.get("safety") or "")
-                # 【07-31 用户"动作列按标题2周概率说明"】评级独立成列后,此列回归本职
-                _act9m = (f"<b style='color:#dc2626'>右侧 涨{_x9.get('p_2w')}%</b>"
-                          if _x9.get("p_2w") is not None else
-                          "<b style='color:#7c3aed'>右侧·结构proxy</b>"
-                          "<br><span style='font-size:10px;color:#94a3b8'>入池后给引擎概率</span>")
+                # 【评级=行动指令 2026-07-31 用户定纲"3A=现在买就是最好的时候"】
+                _ts9x = str(_x9.get("trigger_state") or "")
+                if _x9.get("tier_label") == "3A":
+                    _act9m = ("<b style='color:#dc2626;font-size:12px'>🟢现在买·最佳窗口</b>"
+                              + (f"<br><span style='font-size:8px;color:#64748b'>涨{_x9.get('p_2w')}%</span>"
+                                 if _x9.get("p_2w") is not None else ""))
+                elif _ts9x.startswith("🟢"):
+                    _act9m = (f"<b style='color:#ea580c;font-size:12px'>{_ts9x[:13]}</b>"
+                              "<br><span style='font-size:8px;color:#a16207'>就位·待双剑核后升3A</span>")
+                else:
+                    _act9m = (f"<b style='color:#0369a1;font-size:12px'>🕐提前量</b>"
+                              f"<br><span style='font-size:8px;color:#64748b'>{_ts9x[1:40]}</span>")
                 _ep9m = _x9.get("entry_pullback") or []
                 _pz9m = _x9.get("profit_zone") or []
                 _trig9m = (f"回踩{'~'.join(str(v) for v in _ep9m) or '?'}或破{_x9.get('entry_break') or '?'}"
