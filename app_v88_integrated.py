@@ -3822,7 +3822,7 @@ try:
                                 "——空档如实报,宁缺毋滥,保鲜班自动补扫</span></div>", unsafe_allow_html=True)
             if True:
                 _rows3a9 = []
-                for _x9 in [x for x in _tq3a9 if x.get("role") == "board"][:12]:   # 榜面=3A/双A(带市场旗)
+                for _x9 in [x for x in _tq3a9 if x.get("role") == "board"][:18]:   # 榜面=3A/双A(带市场旗)
                     _lay9 = "".join(("📈" if _x9.get("L1") else "▫️", "🎯" if _x9.get("L2") else "▫️", "🔊" if _x9.get("L3") else "▫️"))
                     _tcol9 = {"3A": "#dc2626", "双A": "#ea580c"}.get(_x9.get("tier_label"), "#64748b")
                     _sf9 = str(_x9.get("safety") or "")
@@ -3835,8 +3835,10 @@ try:
                         f"<td>现{_x9.get('last')}</td><td title='📈趋势/🎯质量/🔊量能'>{_lay9}"
                         + (f"<span style='color:#94a3b8;font-size:10px'>缺{_x9.get('missing')}</span>" if _x9.get("missing") else "")
                         + f"</td><td>量比{_x9.get('vol_ratio') or '?'}</td>"
-                        f"<td>2周{_x9.get('p_2w')}%/长{_x9.get('p_long')}%</td>"
-                        f"<td style='font-size:11.5px'><b style='color:#16a34a'>"
+                        + (f"<td>2周{_x9.get('p_2w')}%/长{_x9.get('p_long')}%</td>" if _x9.get("p_2w") is not None
+                           else "<td title='大库池外标的:质量层为结构proxy(收>MA20>MA60且60日上涨),非引擎全周期概率'>"
+                                "<span style='color:#7c3aed;font-size:11px'>结构proxy ⓘ</span></td>")
+                        + f"<td style='font-size:11.5px'><b style='color:#16a34a'>"
                         f"回踩{('~'.join(str(v) for v in _x9.get('entry_pullback') or [])) or '?'}</b>"
                         f"<br><span style='color:#64748b;font-size:10.5px'>或放量破{_x9.get('entry_break') or '?'}</span></td>"
                         f"<td title='欧奈尔20-25%分批止盈带;到带分批兑现,剩余移动止损跟趋势;止损=入场价-8%' "
