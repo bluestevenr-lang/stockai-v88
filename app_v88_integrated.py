@@ -3242,11 +3242,11 @@ try:
                 _fresh9c2 = _tqts9.startswith(_tdy9c2)
                 return (f"<td style='font-size:11.5px;white-space:nowrap'>"
                         f"<b>现{_px9c if _px9c is not None else '?'}</b><br>"
-                        f"<span style='color:{'#16a34a' if _fresh9c2 else '#dc2626'};font-size:10px'>"
+                        f"<span style='color:{'#16a34a' if _fresh9c2 else '#dc2626'};font-size:8px'>"
                         f"{'🟢' if _fresh9c2 else '⚠️'}雷达 {_tqts9[6:]}</span></td>")
             return (f"<td style='font-size:11.5px;white-space:nowrap'>"
                     f"<b>现{_px9c if _px9c is not None else '?'}</b><br>"
-                    "<span style='color:#f97316;font-size:10px'>⚠️时点未知</span></td>")
+                    "<span style='color:#f97316;font-size:8px'>⚠️时点未知</span></td>")
         _tdy9c = __import__("datetime").datetime.now().strftime("%Y-%m-%d")
         _d9c, _t9c = _as9c[:10], _as9c[11:16]
         _fresh9c = _d9c == _tdy9c
@@ -3255,7 +3255,7 @@ try:
         return (f"<td title='数据时点 {_as9c}{('·' + _pb9c) if _pb9c else ''}——分析所依据的行情时间' "
                 f"style='font-size:11.5px;white-space:nowrap'>"
                 f"<b>现{_px9c if _px9c is not None else '?'}</b><br>"
-                f"<span style='color:{'#16a34a' if _fresh9c else '#dc2626'};font-size:10px'>"
+                f"<span style='color:{'#16a34a' if _fresh9c else '#dc2626'};font-size:8px'>"
                 f"{'🟢' if _fresh9c else '⚠️'}{_lab9c}</span></td>")
     # 【2026-07-31 用户"要有买入后预计空间:多少日到什么价;千红没告诉我为什么买、能涨多少"】
     _row_by9 = {}
@@ -3291,7 +3291,7 @@ try:
             pass
         if not _parts:
             return ""
-        return ("<br><span style='color:#7c3aed;font-size:10.5px' "
+        return ("<br><span style='color:#7c3aed;font-size:9px' "
                 "title='预计空间:2周(约10交易日)窗口,与涨概率同口径。上看=引擎技术阻力位,"
                 f"下守=止损;概率为规则估计,入场窗口信号{_eg_txt9}'>🎯2周 "
                 + " ".join(_parts) + " ⓘ</span>")
@@ -3310,13 +3310,13 @@ try:
             return "", 0
         _gc9 = {"3A": "#dc2626", "2A": "#ea580c"}.get(_g9.get("grade"), "#94a3b8")
         _chip9 = (f"<span style='background:{_gc9};color:#fff;border-radius:3px;"
-                  f"padding:0 3px;font-size:10px;font-weight:800'>{_g9.get('grade')}</span>")
+                  f"padding:0 3px;font-size:9.5px;font-weight:800'>{_g9.get('grade')}</span>")
         if _g9.get("grade") != "3A":
             _parts9 = "+".join(x for x in (
                 "⚔️3" if _g9.get("dual") else "", "C2" if _g9.get("c_only") else "",
                 "✓1" if _g9.get("cs") else "", "位" if _g9.get("L_pos") else "",
                 "质" if _g9.get("L_qual") else "", "量" if _g9.get("L_vol") else "") if x)
-            _chip9 += f"<br><span style='color:#94a3b8;font-size:9px'>({_parts9})</span>"
+            _chip9 += f"<br><span style='color:#94a3b8;font-size:8px'>({_parts9})</span>"
         _gat9, _gpx9 = _g9.get("at"), _g9.get("px")
         if _gat9:
             _drift9 = None
@@ -3493,7 +3493,7 @@ try:
             # 【2026-07-29 用户"不要另起一个板块,直接在表格里增加一列"】
             # _wnow = why_buy 的那一行:表内只放"⚡驱动"一句小字,持续性/失效条件进 title 悬停
             _lk = (f"<a href='?q={_cd}&focus=deep#v88-deep-analysis' target='_blank' rel='noopener' "
-                   f"style='text-decoration:underline;color:inherit'>{_nm}</a>")
+                   f"style='text-decoration:underline;color:inherit;font-size:13px;font-weight:700'>{_nm}</a>")
             _wcell = "<td></td>"
             if not _wnow:   # 【2026-07-31 千红案"没告诉我为什么买"】why_buy没覆盖的行,
                 # 用引擎自己的周期结论/入场note兜底——宁可给"周期未共振,等待触发"也不给空白
@@ -3716,7 +3716,7 @@ try:
                 _ep9m = _x9.get("entry_pullback") or []
                 _pz9m = _x9.get("profit_zone") or []
                 _trig9m = (f"回踩{'~'.join(str(v) for v in _ep9m) or '?'}或破{_x9.get('entry_break') or '?'}"
-                           f"<br><span style='color:#dc2626;font-size:11px'>💰盈利带 "
+                           f"<br><span style='color:#dc2626;font-size:9.5px'>💰盈利带 "
                            f"{'~'.join(str(v) for v in _pz9m) or '?'}(分批止盈)</span>")
                 _why9m = (f"三层:{'📈' if _x9.get('L1') else '▫️'}{'🎯' if _x9.get('L2') else '▫️'}"
                           f"{'🔊' if _x9.get('L3') else '▫️'}"
