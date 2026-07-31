@@ -3867,10 +3867,27 @@ try:
             with st.expander(f"⏸ 未达Claude标准·已移出名单({_off_n9}只)　"
                              f"——规则源自Fable/Opus历次否决理由,点开看拦下的原因", expanded=False):
                 _off_html9 = []
+                # 【两尺分歧调解 2026-07-31 用户抓"汇丰既被移出又置顶"】CS(左侧均值回归尺)
+                # 拦下但已被3A雷达(右侧趋势尺)接管的股,不再谎称"已移出"——单独标⚖️两尺分歧;
+                # 同一code买卖两侧重复行去重(中烟双行案)
+                _board_cd9o = {str(x.get("code")) for x in (_tq3a9 if "_tq3a9" in dir() else [])
+                               if x.get("role") == "board"}
+                _takeover9o, _seen9o = [], set()
                 for _x9o, _side9o in ([(x, "卖") for x in _cb_sell_off9]
                                       + [(x, "买") for x in _cb_buy_off9]):
                     _cd9o = str(_x9o[1] if _side9o == "卖" else _x9o[2])
+                    if _cd9o in _seen9o:
+                        continue
+                    _seen9o.add(_cd9o)
                     _e9o = _cs_rej9.get(_cd9o) or {}
+                    if _cd9o in _board_cd9o:
+                        _takeover9o.append(
+                            f"<div style='font-size:12px;margin-bottom:2px'>⚖️ "
+                            f"<b>{_cb_nm9(_e9o.get('name') or '', _cd9o)}</b>"
+                            f"<span style='color:#7c3aed'>两尺分歧:左侧尺(CS)拦"
+                            f"[{'/'.join(_e9o.get('rules') or [])}],右侧尺(3A榜)接管上榜"
+                            f"——趋势股不适用均值回归口径,以3A榜为准,分歧入台账对赌</span></div>")
+                        continue
                     _off_html9.append(
                         f"<div style='font-size:12px;margin-bottom:2px'>"
                         f"<b>{_cb_nm9(_e9o.get('name') or '', _cd9o)}</b>"
@@ -3878,6 +3895,10 @@ try:
                         f"<span style='background:#e0e7ff;color:#3730a3;font-size:10.5px;"
                         f"border-radius:3px;padding:0 3px'>{'/'.join(_e9o.get('rules') or [])}</span> "
                         f"<span style='color:#475569'>{_e9o.get('why') or ''}</span></div>")
+                if _takeover9o:
+                    st.markdown("<div style='font-size:11px;color:#7c3aed;font-weight:600'>"
+                                "⚖️ 两尺分歧(非移出——右侧尺已接管):</div>"
+                                + "".join(_takeover9o), unsafe_allow_html=True)
                 st.markdown("".join(_off_html9), unsafe_allow_html=True)
                 st.caption("这些规则不是拍脑袋:每条都来自Claude复核时反复否决的真实案例(带rule_id)。"
                            "被拦的票会入台账跟踪,若数据证明拦错了,阈值就改——规则必须能被数据推翻。")
