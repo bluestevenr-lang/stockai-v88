@@ -20,7 +20,13 @@ _BAND_COLOR = {
     "5~7": "#dc2626", "≥7": "#b91c1c",
 }
 _AXIS = ["-7", "-5", "-3", "-1", "0", "1", "3", "5", "7"]
-_LINE_COLOR = {"中国": "#dc2626", "港股": "#2563eb", "美股": "#7c3aed"}
+# 2026-08-01 用户指定配色：中国红不变、香港黄、美股亮蓝。
+# 黄色在白底上最弱，故三条线统一加粗到 1.9，保证黄线不糊。
+_LINE_COLOR = {"中国": "#dc2626", "港股": "#eab308", "美股": "#0ea5e9"}
+# 显示窗口：60日太宽线挤成一团(用户2026-08-01)。收到25个交易日(约5周)——
+# 30日会把 06-23 美股那根 +106% 尖峰刚好圈进来，一根就把纵轴撑到±106%、另两条压成直线；
+# 25日纵轴回到±50%，三条都读得出形状。数据仍存60日，改这个数就能拉回去。
+SHOW_DAYS = 25
 
 
 def breadth_html(bm: dict, markets=("A股", "港股", "美股")) -> str:
@@ -69,7 +75,7 @@ def breadth_html(bm: dict, markets=("A股", "港股", "美股")) -> str:
             "横轴=当日涨跌幅(%)分档，纵轴=家数；全市场逐只统计非抽样</div>" + "".join(blocks))
 
 
-def amount_daily_html(ad: dict, height: int = 150) -> str:
+def amount_daily_html(ad: dict, height: int = 150, days: int = SHOW_DAYS) -> str:
     """三市场每日量能走势（相对各自20日均量的偏离%）。ad = market_amount_daily.json。
 
     为什么画相对值而不是绝对值：三市场单位不同（亿元/亿港元/亿股），
@@ -77,7 +83,8 @@ def amount_daily_html(ad: dict, height: int = 150) -> str:
     这也和截图那条 −35%~35% 的曲线口径一致。
     """
     mks = ad.get("markets") or {}
-    usable = {k: v for k, v in mks.items() if v.get("series") and not v.get("error")}
+    usable = {k: {**v, "series": (v["series"] or [])[-days:]}
+              for k, v in mks.items() if v.get("series") and not v.get("error")}
     if not usable:
         errs = "；".join(f"{k}:{v.get('error')}" for k, v in mks.items() if v.get("error"))
         return f"<div style='font-size:12px;color:#b45309'>量能日线不可用（{errs or '无数据'}）</div>"
@@ -85,7 +92,7 @@ def amount_daily_html(ad: dict, height: int = 150) -> str:
     W, H, PAD = 620, height, 26
     span = max(abs(p.get("rel_pct") or 0)
                for v in usable.values() for p in v["series"]) or 10
-    span = min(max(span, 10), 120)                    # 极端值不让 y 轴被拉爆
+    span = min(max(span, 10), 120)                    # 只按显示区间算,窗外的极端值不再撑爆纵轴
     n_max = max(len(v["series"]) for v in usable.values())
 
     def xy(i, n, rel):
@@ -98,11 +105,11 @@ def amount_daily_html(ad: dict, height: int = 150) -> str:
         s = v["series"]
         pts = " ".join(xy(i, len(s), p.get("rel_pct") or 0) for i, p in enumerate(s))
         c = _LINE_COLOR.get(mk, "#64748b")
-        paths.append(f"<polyline points='{pts}' fill='none' stroke='{c}' stroke-width='1.6' "
+        paths.append(f"<polyline points='{pts}' fill='none' stroke='{c}' stroke-width='1.9' "
                      f"stroke-linejoin='round'/>")
         vs = v.get("vs_ma20_pct")
         legend.append(
-            f"<span style='margin-right:12px;white-space:nowrap'>"
+            f"<span style='white-space:nowrap'>"
             f"<span style='display:inline-block;width:9px;height:9px;background:{c};"
             f"border-radius:2px;margin-right:3px'></span>"
             f"<b>{mk}</b> {v.get('latest')}{v.get('unit')} "
@@ -118,5 +125,6 @@ def amount_daily_html(ad: dict, height: int = 150) -> str:
             f"纵轴=当日量能相对自身20日均量的偏离(%)，横轴=最近{n_max}个交易日；"
             f"单位各市场不同故只比形状不比绝对值</div>"
             f"<svg viewBox='0 0 {W} {H}' style='width:100%;height:auto'>{grid}{''.join(paths)}</svg>"
-            f"<div style='font-size:11px;margin-top:2px'>{''.join(legend)}</div>"
+            f"<div style='font-size:11px;margin-top:2px;display:flex;flex-wrap:wrap;"
+            f"gap:4px 14px'>{''.join(legend)}</div>"
             f"<div style='font-size:10px;color:#94a3b8;margin-top:1px'>口径：{caps}</div>")
