@@ -2758,6 +2758,23 @@ st.set_page_config(layout="wide", page_title="AI 皇冠双核", page_icon="👑"
 st.markdown("""<style>
 table td, table th { font-size: 10.5px !important; padding: 2px 5px !important;
                      line-height: 1.25 !important; }
+/* 【2026-08-01 用户"这个不断重复划桨看不出来"】Streamlit 自带的跑步小人是纯循环动画,
+   既不表示进度、还很吵。换成 GitHub 式顶部细进度条:一次横扫=一个刷新周期,
+   视觉上读作"在推进"而不是"在原地跑"。真正算得出百分比的重活(个股对比/搜索/热力图扫描)
+   仍各自用 st.progress 给确定性进度——那才是真进度,这条只是状态指示。 */
+[data-testid="stStatusWidget"]{
+  position:fixed!important; top:0!important; left:0!important; right:0!important;
+  width:100vw!important; height:3px!important; padding:0!important; margin:0!important;
+  background:#e5e7eb!important; border-radius:0!important; box-shadow:none!important;
+  overflow:hidden!important; z-index:99999!important;
+}
+[data-testid="stStatusWidget"] > *{ display:none!important; }
+[data-testid="stStatusWidget"]::after{
+  content:""; position:absolute; top:0; left:-35%; height:100%; width:35%;
+  background:linear-gradient(90deg,rgba(37,99,235,0),#2563eb,rgba(37,99,235,0));
+  animation:v88bar 1.05s linear infinite;
+}
+@keyframes v88bar{ from{left:-35%} to{left:100%} }
 </style>""", unsafe_allow_html=True)
 
 # 【V88·全局字体系统 2026-07-17 用户定纲】版面字体像 Claude：干净无衬线+克制层级；
@@ -5595,34 +5612,24 @@ def render_cloud_search():
             st.session_state.scan_selected_name = None
             st.rerun()
         
-        for i, (code, name) in enumerate(st.session_state.search_history):
-            col1, col2, col3 = st.columns([2, 1, 1])
-            
-            with col1:
-                st.markdown(f"**{name}**")
-                st.caption(code)
-            
-            with col2:
-                if st.button("🔍", key=f"hist_analyze_{i}", help="分析", width='stretch'):
-                    st.session_state.scan_selected_code = code
-                    st.session_state.scan_selected_name = name
-                    st.session_state.pk_codes = []
-                    st.session_state.pk_names = []
-                    st.rerun()
-            
-            with col3:
-                is_in_basket = (code, name) in st.session_state.compare_basket
-                if is_in_basket:
-                    st.button("✅", key=f"hist_compare_{i}", disabled=True, width='stretch')
-                else:
-                    if st.button("➕", key=f"hist_compare_{i}", help="加入对比", width='stretch'):
-                        (st.session_state.compare_basket.append((code, name)) if len(st.session_state.compare_basket) < _MAXCMP else st.toast(f'⚠️ 对比篮最多{_MAXCMP}只(先移出再加)', icon='⚠️'))
-                        st.toast(f"✅ 已加入对比篮: {name}", icon="➕")
-                        st.rerun()
-        
-        if st.button("🗑️ 清空历史", key="search_clear_history", width='stretch'):
-            st.session_state.search_history = []
-            st.rerun()
+        # 【2026-08-01 用户"字体好大排版好丑还占版面,10厘米以内"】
+        # 原写法:每只票 3列×2行 + 两个满宽按钮 → 10只吃掉20行、约25cm,信息密度极低。
+        # 改成一行多只的紧凑 chip:名称+代码同行,点名直达深度分析(?q= 复用表内同一通道);
+        # "加入对比"走上方那个多选(已有),不再每只配一个满宽按钮。10只约2~3行≈4cm。
+        _hchips9 = "".join(
+            f"<a href='?q={_c}&focus=deep' target='_self' style='display:inline-flex;"
+            f"align-items:baseline;gap:4px;padding:2px 8px;margin:2px 3px 2px 0;"
+            f"border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;"
+            f"text-decoration:none;font-size:12px;color:#1e293b;white-space:nowrap'>"
+            f"<b>{_n}</b><span style='font-size:10px;color:#94a3b8'>{_c}</span></a>"
+            for _c, _n in st.session_state.search_history)
+        st.markdown(f"<div style='line-height:1.9;margin:2px 0 4px'>{_hchips9}</div>",
+                    unsafe_allow_html=True)
+        _hc1, _hc2 = st.columns([3, 1])
+        with _hc2:
+            if st.button("🗑️ 清空", key="search_clear_history"):
+                st.session_state.search_history = []
+                st.rerun()
 
     # 【V88·评级榜多选对比 2026-08-01 用户点单"3A/2A/1A多只多选对比,最多5只,简单化"】
     # 直接从评级快照取榜面股,多选≤5一键进PK视图(与对比篮同一通道,零新链路)
