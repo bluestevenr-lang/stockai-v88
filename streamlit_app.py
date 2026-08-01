@@ -1042,6 +1042,32 @@ if _nav == "🧭 导航":
                            f"量能 {str(_ad_c_data.get('generated_at'))[:16]} · 与桌面同源")
     except Exception:
         pass
+    # 【V88·排名分上云 2026-08-01 用户"全系统更新此逻辑"】桌面已按排名分排序,
+    # 云端此前完全没有——三端不同源就等于没统一。级别只表示买入时机不表示质量高低。
+    try:
+        _rk_c = _json_text("rank_score.json")
+        _rr_c = [r for r in (_rk_c.get("rows") or []) if r.get("when")][:8]
+        if _rr_c:
+            with st.expander(f"🏆 排名分榜（{_rk_c.get('version', 'R1')}·赢面45/催化25/量能15/位置15）",
+                             expanded=False):
+                st.caption("级别=买入时机（3A现在买/2A等触发/1A周期不同），不表示质量高低；"
+                           "排序只看排名分——重要因素主导，低权重的扣分压不倒它（瑕不掩瑜）。")
+                for _r in _rr_c:
+                    _e = (f"赢面{_r['edge_pp']:+.1f}pp · " if _r.get("edge_pp") is not None else "")
+                    st.markdown(
+                        f"<div style='font-size:12.5px;margin:2px 0'>#{_r.get('rank')} "
+                        f"<b>{_r.get('name')}</b> <span style='color:#2563eb'>{_r.get('tier')}</span> "
+                        f"<b>分{_r.get('rank_score'):.1f}</b> "
+                        f"<span style='color:#64748b'>{_e}{_r.get('when')}</span></div>",
+                        unsafe_allow_html=True)
+                _ar_c = [a for a in (_rk_c.get("archived") or []) if a.get("review_needed")]
+                for _a in _ar_c:
+                    st.markdown(
+                        f"<div style='font-size:12px;color:#b91c1c'>⚠️ {_a.get('name')} "
+                        f"分{_a.get('rank_score'):.1f} 高于中位却被一票否决 → "
+                        f"{_a.get('out_reason')}（请人工复核）</div>", unsafe_allow_html=True)
+    except Exception:
+        pass
     st.caption("温度定仓位 → 轮动定板块 → 操作榜定标的")
     st.caption(_fresh_caption((_snap or {}).get("generated_at"), "行情快照") + " · 持仓盘中每15分钟快扫；强思考最多每6小时")
     _meta0 = pub_meta()

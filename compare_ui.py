@@ -174,11 +174,17 @@ def verdict_html(rows: list) -> str:
             f"<div style='padding:5px 8px;margin:3px 0;border-left:3px solid {col};"
             f"background:{'#fef2f2' if top else '#f8fafc'};border-radius:0 4px 4px 0'>"
             f"<span style='font-size:13px'>{'🥇' if top else f'{i+1}.'} <b>{r.get('name')}</b> "
-            f"<span style='color:#94a3b8;font-size:11px'>{r.get('code')}</span>　"
+            f"<span style='color:#94a3b8;font-size:11px'>{r.get('code')}</span>"
+            + (f"　<span style='font-size:10.5px;color:#2563eb'>{r['tier']}</span>"
+               if r.get('tier') else "")
+            + (f"<span style='font-size:10.5px;color:#64748b'>·{r['when']}</span>"
+               if r.get('when') else "") + "　"
             f"<b style='color:{col};font-size:14px'>{verb}</b>"
             f"　<span style='color:#64748b;font-size:11.5px'>统一分{r.get('score')}</span></span>"
             f"<div style='font-size:11.5px;color:#475569;margin-top:1px'>"
             + " · ".join(bits) + fail + "</div></div>")
-    return ("<div style='font-size:11px;color:#94a3b8;margin-bottom:2px'>"
-            "按统一分排序（引擎口径 V88-U2.1，非本页另算）；动词已归一，"
-            "不出现\"观察/评估\"这类无法执行的措辞</div>" + "".join(out))
+    _kind = (rk[0].get("score_kind") or "排名分R1") if rk else "排名分R1"
+    return (f"<div style='font-size:11px;color:#94a3b8;margin-bottom:2px'>"
+            f"按<b>{_kind}</b>排序（赢面45%+催化25%+量能15%+位置15%，全系统同一把尺）；"
+            f"级别只表示<b>买入时机</b>不表示质量高低，故1A·中长线可以排在2A前面；"
+            f"动词已归一，不出现\"观察/评估\"这类无法执行的措辞</div>" + "".join(out))

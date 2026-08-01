@@ -5633,7 +5633,12 @@ def render_cloud_search():
         for _r9k in sorted((_tqc9.get("rows") or []),
                            key=lambda r: -({"3A": 3, "2A": 2}.get(r.get("tier_label"), 1))):
             if _r9k.get("tier_label"):
-                _pko9[f"{_r9k.get('tier_label')}｜{_r9k.get('name')}（{_r9k.get('code')}）"] = (
+                # 全系统统一:榜单选项也带排名分与何时买,与买表同一口径
+                _rk9k = (_rank9map.get(str(_r9k.get("code"))) or {})
+                _sc9k = _rk9k.get("rank_score")
+                _pko9[f"{_r9k.get('tier_label')}｜{_r9k.get('name')}（{_r9k.get('code')}）"
+                      + (f" 分{_sc9k:.0f}" if _sc9k is not None else "")
+                      + (f"·{str(_rk9k.get('when'))[:10]}" if _rk9k.get("when") else "")] = (
                     str(_r9k.get("code")), _r9k.get("name") or str(_r9k.get("code")))
         if _pko9:
             st.markdown('<p style="font-size:12px;font-weight:600;margin:0.6rem 0 0.2rem">'
@@ -21657,8 +21662,23 @@ if st.session_state.get('pk_codes') and len(st.session_state.pk_codes) >= 2:
                 # 与排序卡字段。不额外拉数据、不调AI,零成本。
                 try:
                     _pk_hist[name] = [float(x) for x in df_pk['Close'].tolist()]
+                    # 【2026-08-01 全系统统一口径】排序分改用 rank_score(赢面45/催化25/量能15/位置15),
+                    # 不再用 unified_score——两把尺同屏会让"谁更值得买"出现两种答案。
+                    try:
+                        _rkj9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" /
+                                            "data" / "rank_score.json").read_text(encoding="utf-8"))
+                        _rkmap9 = {str(x.get("code")): x for x in (_rkj9.get("rows") or [])}
+                        _rkmap9.update({str(x.get("code")): x
+                                        for x in (_rkj9.get("archived") or [])})
+                    except Exception:
+                        _rkmap9 = {}
+                    _rs_pk9 = (_rkmap9.get(str(code)) or {}).get("rank_score")
                     _pk_rank.append({
-                        "name": name, "code": code, "score": _pk_dc.get('unified_score', 0),
+                        "name": name, "code": code,
+                        "score": _rs_pk9 if _rs_pk9 is not None else _pk_dc.get('unified_score', 0),
+                        "score_kind": "排名分R1" if _rs_pk9 is not None else "统一分(无排名分兜底)",
+                        "tier": (_rkmap9.get(str(code)) or {}).get("tier"),
+                        "when": (_rkmap9.get(str(code)) or {}).get("when"),
                         "action": _pk_dc.get('action'), "p_up": _pk_dc.get('p_up'),
                         "rr": _pk_dc.get('rr'), "expected": _pk_dc.get('expected_pct'),
                         "pos52": _pk_dc.get('pos52'), "stop": _pk_dc.get('stop'),
