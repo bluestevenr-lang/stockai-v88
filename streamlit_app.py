@@ -1025,11 +1025,19 @@ if _nav == "🧭 导航":
                     st.markdown(_bh_c(_bm_c), unsafe_allow_html=True)
                 if _ad_c_data.get("markets"):
                     st.markdown("**💰 三市场量能走势**（替代当日分时）")
-                    from barometer_ui import UNITS as _AU_c, DEFAULT_UNIT as _ADU_c
-                    _au_c = st.radio("量能单位", list(_AU_c), horizontal=True,
-                                     index=list(_AU_c).index(_ADU_c), key="_amt_unit_c",
-                                     label_visibility="collapsed")
-                    st.markdown(_ad_c(_ad_c_data, unit=_au_c), unsafe_allow_html=True)
+                    from barometer_ui import (UNITS as _AU_c, SPANS as _AS_c,
+                                              DEFAULT_UNIT as _ADU_c, DEFAULT_SPAN as _ADS_c)
+                    _c1_c, _c2_c = st.columns(2)
+                    with _c1_c:
+                        _asp_c = st.radio("区间", list(_AS_c), horizontal=True,
+                                          index=list(_AS_c).index(_ADS_c), key="_amt_span_c",
+                                          label_visibility="collapsed")
+                    with _c2_c:
+                        _au_c = st.radio("单位", list(_AU_c), horizontal=True,
+                                         index=list(_AU_c).index(_ADU_c), key="_amt_unit_c",
+                                         label_visibility="collapsed")
+                    st.markdown(_ad_c(_ad_c_data, unit=_au_c, span=_asp_c),
+                                unsafe_allow_html=True)
                 st.caption(f"宽度 {str(_bm_c.get('generated_at'))[:16]} · "
                            f"量能 {str(_ad_c_data.get('generated_at'))[:16]} · 与桌面同源")
     except Exception:

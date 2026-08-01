@@ -35,8 +35,15 @@ SHOW_DAYS = 500
 #   日线 0.03~0.06 = 净移动1格线要走30格,基本是噪音；周线 0.12~0.16 好3~5倍；
 #   月线 0.38~0.60 最干净但一年12点、转折要1~2月才确认,对1~2周决策节奏太钝。
 # 故默认周。(另:实测周内星期几效应只有±3%,可忽略——周聚合的价值在信噪比不在日历效应)
-UNITS = {"日": ("D", 120), "周": ("W", 52), "月": ("M", 24)}
+# 【2026-08-01 用户"日期要一致:月线到去年8月,周线日线也要在这个区间内"】
+# 原设计每档各带各的窗口(日120交易日/周52周/月24月),结果切换单位连时间段一起变,
+# 三张图跨的根本不是同一段行情,没法对照——这是设计错误不是取舍。
+# 改成**区间与单位彻底解耦**(专业看盘软件的做法):先选看多长,再选什么颗粒度。
+# 区间用交易日计,三市场同一把尺;单位只决定桶宽,不再影响起止日期。
+UNITS = {"日": "D", "周": "W", "月": "M"}
+SPANS = {"3月": 63, "6月": 126, "1年": 250, "2年": 500}
 DEFAULT_UNIT = "周"
+DEFAULT_SPAN = "1年"
 
 
 def breadth_html(bm: dict, markets=("A股", "港股", "美股")) -> str:
@@ -127,19 +134,22 @@ def _aggregate(series: list, mode: str) -> list:
     return out
 
 
-def amount_daily_html(ad: dict, height: int = 170, unit: str = DEFAULT_UNIT) -> str:
+def amount_daily_html(ad: dict, height: int = 170, unit: str = DEFAULT_UNIT,
+                      span: str = DEFAULT_SPAN) -> str:
     """三市场量能走势（日/周/月三档，相对最近20日均量的偏离%）。
 
     为什么画相对值而不是绝对值：三市场单位不同（亿元/亿港元/亿股），绝对值同图＝没法比；
     相对基准的偏离才是"钱在进还是在退"的可比刻度。
     """
-    mode, win = UNITS.get(unit, UNITS[DEFAULT_UNIT])
+    mode = UNITS.get(unit, UNITS[DEFAULT_UNIT])
+    days = SPANS.get(span, SPANS[DEFAULT_SPAN])
     mks = ad.get("markets") or {}
     usable = {}
     for k, v in mks.items():
         if not v.get("series") or v.get("error"):
             continue
-        agg = _aggregate(v["series"] or [], mode)[-win:]
+        # 先按**区间**切日线，再按单位聚合——顺序反过来就会出现"周档和日档跨不同时间段"
+        agg = _aggregate((v["series"] or [])[-days:], mode)
         if agg:
             usable[k] = {**v, "series": agg, "_raw": v["series"]}
     if not usable:
@@ -206,13 +216,17 @@ def amount_daily_html(ad: dict, height: int = 170, unit: str = DEFAULT_UNIT) -> 
     for i in range(0, n, max(1, (n - 1) // 5)):
         x, _ = xy(i, n, 0)
         d = str(ref[i]["date"])
-        lab = f"{d[2:4]}/{d[5:7]}" if mode == "M" else f"{d[5:7]}/{d[8:10]}"
+        # 刻度格式跟**区间**走不跟单位走:跨年的区间标 年/月,一年内标 月/日
+        lab = f"{d[2:4]}/{d[5:7]}" if days > 250 else f"{d[5:7]}/{d[8:10]}"
         ticks += (f"<line x1='{x:.1f}' y1='0' x2='{x:.1f}' y2='{PH}' stroke='#f1f5f9'/>"
                   f"<text x='{x:.1f}' y='{H-3}' font-size='9' fill='#94a3b8' "
                   f"text-anchor='middle'>{lab}</text>")
 
-    _span_txt = {"D": f"最近{n_max}个交易日", "W": f"最近{n_max}周",
-                 "M": f"最近{n_max}个月"}[mode]
+    _first = min(str(v["series"][0]["date"]) for v in usable.values())
+    _last = max(str(v["series"][-1]["date"]) for v in usable.values())
+    _unit_txt = {"D": "个交易日", "W": "周", "M": "个月"}[mode]
+    # 起止日期写进标题:三档切换时你能一眼确认看的是同一段行情
+    _span_txt = f"{span}（{_first} ~ {_last}）· {n_max}{_unit_txt}"
     caps = " · ".join(f"{k}={v.get('label')}" for k, v in usable.items())
     return (f"<div style='font-size:11px;color:#94a3b8;margin-bottom:2px'>"
             f"纵轴=每{unit}平均量能相对<b>最近20日均量</b>(固定基准,非滚动)的偏离(%)，"
