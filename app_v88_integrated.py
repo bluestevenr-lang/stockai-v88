@@ -16826,10 +16826,16 @@ def _render_today_nav():
                                "此处仅语境展示,不进评级权重")
                 # 【2026-08-01 用户"资金走势图从每天的小时走势变成每日走势,中美港"】
                 # 东财那条是当日分时,看不出趋势;换成每日线才答得了"钱在持续进场还是退潮"。
-                st.markdown("**💰 三市场每日量能走势**（替代当日分时）")
+                st.markdown("**💰 三市场量能走势**（替代当日分时）")
                 try:
-                    from barometer_ui import amount_daily_html as _adhtml9
-                    st.markdown(_adhtml9(_rlj9("market_amount_daily.json")), unsafe_allow_html=True)
+                    from barometer_ui import amount_daily_html as _adhtml9, UNITS as _AU9, DEFAULT_UNIT as _AD9
+                    # 单位可切(仿板块轮动档位)。默认周:实测Kaufman效率比日线0.03~0.06≈噪音、
+                    # 周线0.12~0.16、月线0.38~0.60但转折要1~2月才确认,对1~2周决策太钝。
+                    _au9 = st.radio("量能单位", list(_AU9), horizontal=True,
+                                    index=list(_AU9).index(_AD9), key="_amt_unit9",
+                                    label_visibility="collapsed")
+                    st.markdown(_adhtml9(_rlj9("market_amount_daily.json"), unit=_au9),
+                                unsafe_allow_html=True)
                 except Exception:
                     logging.exception("[V88] 量能日线渲染失败")
                     st.markdown("<div style='font-size:12px;color:#b45309'>量能日线渲染失败(见日志)</div>",

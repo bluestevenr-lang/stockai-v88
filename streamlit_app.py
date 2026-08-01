@@ -1024,8 +1024,12 @@ if _nav == "🧭 导航":
                     st.markdown("**🌡️ 市场宽度**（全市场逐只，非抽样）")
                     st.markdown(_bh_c(_bm_c), unsafe_allow_html=True)
                 if _ad_c_data.get("markets"):
-                    st.markdown("**💰 三市场每日量能走势**（替代当日分时）")
-                    st.markdown(_ad_c(_ad_c_data), unsafe_allow_html=True)
+                    st.markdown("**💰 三市场量能走势**（替代当日分时）")
+                    from barometer_ui import UNITS as _AU_c, DEFAULT_UNIT as _ADU_c
+                    _au_c = st.radio("量能单位", list(_AU_c), horizontal=True,
+                                     index=list(_AU_c).index(_ADU_c), key="_amt_unit_c",
+                                     label_visibility="collapsed")
+                    st.markdown(_ad_c(_ad_c_data, unit=_au_c), unsafe_allow_html=True)
                 st.caption(f"宽度 {str(_bm_c.get('generated_at'))[:16]} · "
                            f"量能 {str(_ad_c_data.get('generated_at'))[:16]} · 与桌面同源")
     except Exception:

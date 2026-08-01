@@ -28,7 +28,15 @@ _LINE_COLOR = {"中国": "#dc2626", "港股": "#eab308", "美股": "#0ea5e9"}
 # 手机上每点仍有~7px——"日期尽可能多"和"看得清"这次同时满足。
 # 周内取日偏离的均值：因 rel 对量能是线性的，mean(v_i/ma20−1) == mean(v_i)/ma20−1，
 # 即"该周平均量能 vs 最近20日常态"，与日线口径完全一致，不是另一把尺子。
-SHOW_DAYS = 250
+SHOW_DAYS = 500
+# 三档单位与各自窗口(2026-08-01 用户"可选日和周,像下面的周轮转一样")。
+# 窗口按分辨率配:日档看半年、周档看一年、月档看两年——每档都落在"点数够多又看得清"的区间。
+# 实测 Kaufman 效率比(净变化/路径总长,越高趋势越干净,季度跨度):
+#   日线 0.03~0.06 = 净移动1格线要走30格,基本是噪音；周线 0.12~0.16 好3~5倍；
+#   月线 0.38~0.60 最干净但一年12点、转折要1~2月才确认,对1~2周决策节奏太钝。
+# 故默认周。(另:实测周内星期几效应只有±3%,可忽略——周聚合的价值在信噪比不在日历效应)
+UNITS = {"日": ("D", 120), "周": ("W", 52), "月": ("M", 24)}
+DEFAULT_UNIT = "周"
 
 
 def breadth_html(bm: dict, markets=("A股", "港股", "美股")) -> str:
@@ -77,22 +85,31 @@ def breadth_html(bm: dict, markets=("A股", "港股", "美股")) -> str:
             "横轴=当日涨跌幅(%)分档，纵轴=家数；全市场逐只统计非抽样</div>" + "".join(blocks))
 
 
-def _to_weekly(series: list) -> list:
-    """日序列 → 周序列。周内取 rel_pct 均值（等价于该周平均量能 vs 同一基准），
-    date 记为该周最后一个交易日——横轴刻度按它标。"""
+def _aggregate(series: list, mode: str) -> list:
+    """日序列 → 日/周/月序列。桶内取 rel_pct 均值。
+    因 rel 对量能是线性的，mean(v_i/base−1) == mean(v_i)/base−1，
+    即"该周(月)平均量能 vs 同一基准"——三档共用一把尺子，不是三套口径。
+    date 记为桶内最后一个交易日，横轴刻度按它标。"""
+    if mode == "D":
+        return [{"date": str(p.get("date"))[:10], "rel_pct": p.get("rel_pct") or 0,
+                 "value": p.get("value"), "days": 1} for p in series
+                if p.get("rel_pct") is not None]
     from datetime import date as _d
     buckets: dict = {}
     for p in series:
+        raw = str(p.get("date"))[:10]
         try:
-            y, m, dd = (int(x) for x in str(p.get("date"))[:10].split("-"))
+            y, m, dd = (int(x) for x in raw.split("-"))
             iso = _d(y, m, dd).isocalendar()
-            key = (iso[0], iso[1])
+            key = (iso[0], iso[1]) if mode == "W" else (y, m)
         except (ValueError, TypeError):
             continue
-        b = buckets.setdefault(key, {"vals": [], "last": "", "n": 0})
+        b = buckets.setdefault(key, {"vals": [], "raw": [], "last": "", "n": 0})
         if p.get("rel_pct") is not None:
             b["vals"].append(float(p["rel_pct"]))
-        b["last"] = max(b["last"], str(p.get("date"))[:10])
+        if p.get("value") is not None:
+            b["raw"].append(float(p["value"]))
+        b["last"] = max(b["last"], raw)
         b["n"] += 1
     out = []
     for key in sorted(buckets):
@@ -100,38 +117,39 @@ def _to_weekly(series: list) -> list:
         if not b["vals"]:
             continue
         out.append({"date": b["last"], "rel_pct": round(sum(b["vals"]) / len(b["vals"]), 1),
+                    "value": (sum(b["raw"]) / len(b["raw"])) if b["raw"] else None,
                     "days": b["n"]})
-    # 丢掉不足3天的**首**周：250日窗口切下来的第一周常只剩1~2天(港股实测只有1天)，
-    # 一天的均值当成一周画在最左端是纯噪音。末周不丢——它是"本周至今"，天数少也是真实进度。
-    while out and out[0]["days"] < 3:
+    # 丢掉不完整的**首**桶：窗口切下来的第一周/月常只剩一两天(港股实测1天)，
+    # 一天的均值当一整周画在最左端是纯噪音。末桶不丢——它是"至今"，是真实进度。
+    _min = 3 if mode == "W" else (10 if mode == "M" else 1)
+    while out and out[0]["days"] < _min:
         out.pop(0)
     return out
 
 
-def amount_daily_html(ad: dict, height: int = 170, days: int = SHOW_DAYS) -> str:
-    """三市场量能走势（按周聚合，相对最近20日均量的偏离%）。ad = market_amount_daily.json。
+def amount_daily_html(ad: dict, height: int = 170, unit: str = DEFAULT_UNIT) -> str:
+    """三市场量能走势（日/周/月三档，相对最近20日均量的偏离%）。
 
     为什么画相对值而不是绝对值：三市场单位不同（亿元/亿港元/亿股），绝对值同图＝没法比；
-    相对最近20日均量的偏离才是"钱在进还是在退"的可比刻度。
+    相对基准的偏离才是"钱在进还是在退"的可比刻度。
     """
+    mode, win = UNITS.get(unit, UNITS[DEFAULT_UNIT])
     mks = ad.get("markets") or {}
     usable = {}
     for k, v in mks.items():
         if not v.get("series") or v.get("error"):
             continue
-        wk = _to_weekly((v["series"] or [])[-days:])
-        if wk:
-            usable[k] = {**v, "series": wk}
+        agg = _aggregate(v["series"] or [], mode)[-win:]
+        if agg:
+            usable[k] = {**v, "series": agg, "_raw": v["series"]}
     if not usable:
         errs = "；".join(f"{k}:{v.get('error')}" for k, v in mks.items() if v.get("error"))
         return f"<div style='font-size:12px;color:#b45309'>量能走势不可用（{errs or '无数据'}）</div>"
 
-    W, PAD, LAB = 620, 30, 15          # LAB=底部留给横轴日期刻度的高度
-    H = height
-    PH = H - LAB                       # 绘图区高度
-    # 纵轴取 |偏离| 的95分位而非最大值：单根尖峰会把整轴撑满、其余压成直线。
-    # 周聚合后极值已被自然平滑，通常不再需要截顶；仍有则在标题报数并打点自证。
+    W, PAD, LAB = 620, 30, 15
+    H, PH = height, height - LAB
     _abs = sorted(abs(p["rel_pct"]) for v in usable.values() for p in v["series"])
+    # 纵轴取95分位而非最大值：单根尖峰会把整轴撑满、其余压成直线。超出者截到边界并报数。
     span = max(10, round((_abs[int(len(_abs) * 0.95)] if _abs else 10) / 5) * 5)
     _peak = _abs[-1] if _abs else 0
     _clipped = sum(1 for x in _abs if x > span)
@@ -140,9 +158,9 @@ def amount_daily_html(ad: dict, height: int = 170, days: int = SHOW_DAYS) -> str
     def xy(i, n, rel):
         x = PAD + (W - PAD - 8) * (i / max(1, n - 1))
         rel = max(-span, min(span, rel))
-        y = PH / 2 - (rel / span) * (PH / 2 - 10)
-        return x, y
+        return x, PH / 2 - (rel / span) * (PH / 2 - 10)
 
+    import statistics as _st
     paths, legend = [], []
     for mk, v in usable.items():
         s = v["series"]
@@ -151,20 +169,30 @@ def amount_daily_html(ad: dict, height: int = 170, days: int = SHOW_DAYS) -> str
                        (xy(i, len(s), p["rel_pct"]) for i, p in enumerate(s)))
         paths.append(f"<polyline points='{pts}' fill='none' stroke='{c}' stroke-width='1.2' "
                      f"stroke-linejoin='round'/>")
-        for i, p in enumerate(s):      # 截顶点打点自证：贴轴顶的直线会被误读成真值=轴上限
+        for i, p in enumerate(s):
             if abs(p["rel_pct"]) > span:
                 x, y = xy(i, len(s), p["rel_pct"])
                 paths.append(f"<circle cx='{x:.1f}' cy='{y:.1f}' r='2.2' fill='{c}' "
                              f"stroke='#fff' stroke-width='0.8'><title>{p['date']} "
                              f"{p['rel_pct']:+.1f}%（超出纵轴{span:.0f}%已截顶）</title></circle>")
         vs = v.get("vs_ma20_pct")
+        # 【2026-08-01 实测发现】只报 vs20日均会把"最后一天的跳动"读成趋势：
+        # 美股 vs20日均+50%看着是大放量，但近4周均量其实比全年中位低11.8%。
+        # 故同时给"近4周 vs 全年中位"——一个答当下、一个答水位，缺一会误判。
+        _raw = [p["value"] for p in v.get("_raw") or [] if p.get("value")]
+        pos = ""
+        if len(_raw) >= 60:
+            _med = _st.median(_raw[-250:])
+            _r4 = sum(_raw[-20:]) / 20
+            pos = (f" <span style='color:#64748b'>·近4周vs全年中位"
+                   f"{(_r4 / _med - 1) * 100:+.0f}%</span>") if _med else ""
         legend.append(
             f"<span style='white-space:nowrap'>"
             f"<span style='display:inline-block;width:9px;height:9px;background:{c};"
             f"border-radius:2px;margin-right:3px'></span>"
             f"<b>{mk}</b> {v.get('latest')}{v.get('unit')} "
             f"<span style='color:{'#dc2626' if (vs or 0) > 0 else '#16a34a'}'>{vs:+.1f}%</span>"
-            f" <span style='color:#64748b'>{v.get('verdict')}</span></span>")
+            f"{pos}</span>")
 
     grid = "".join(
         f"<line x1='{PAD}' y1='{PH/2 - k*(PH/2-10):.1f}' x2='{W-8}' y2='{PH/2 - k*(PH/2-10):.1f}' "
@@ -172,25 +200,24 @@ def amount_daily_html(ad: dict, height: int = 170, days: int = SHOW_DAYS) -> str
         f"<text x='0' y='{PH/2 - k*(PH/2-10) + 3:.1f}' font-size='9' fill='#94a3b8'>{k*span:+.0f}%</text>"
         for k in (1, 0.5, 0, -0.5, -1))
 
-    # 横轴时间刻度：取点数最多那条的周末日期，等距抽 6 个标 MM/DD，并画竖向浅参考线。
     ticks = ""
     ref = max(usable.values(), key=lambda v: len(v["series"]))["series"]
     n = len(ref)
-    step = max(1, (n - 1) // 5)
-    for i in range(0, n, step):
+    for i in range(0, n, max(1, (n - 1) // 5)):
         x, _ = xy(i, n, 0)
         d = str(ref[i]["date"])
-        ticks += (f"<line x1='{x:.1f}' y1='0' x2='{x:.1f}' y2='{PH}' stroke='#f1f5f9' "
-                  f"stroke-width='1'/>"
+        lab = f"{d[2:4]}/{d[5:7]}" if mode == "M" else f"{d[5:7]}/{d[8:10]}"
+        ticks += (f"<line x1='{x:.1f}' y1='0' x2='{x:.1f}' y2='{PH}' stroke='#f1f5f9'/>"
                   f"<text x='{x:.1f}' y='{H-3}' font-size='9' fill='#94a3b8' "
-                  f"text-anchor='middle'>{d[5:7]}/{d[8:10]}</text>")
+                  f"text-anchor='middle'>{lab}</text>")
 
+    _span_txt = {"D": f"最近{n_max}个交易日", "W": f"最近{n_max}周",
+                 "M": f"最近{n_max}个月"}[mode]
     caps = " · ".join(f"{k}={v.get('label')}" for k, v in usable.items())
     return (f"<div style='font-size:11px;color:#94a3b8;margin-bottom:2px'>"
-            f"纵轴=<b>每周</b>平均量能相对<b>最近20日均量</b>(固定基准,非滚动)的偏离(%)，"
-            f"横轴=最近{n_max}周（约{round(n_max / 4.35)}个月）；"
-            f"单位各市场不同故只比形状不比绝对值"
-            + (f"；<b>{_clipped}个点超出纵轴已截顶</b>(最大{_peak:.0f}%)" if _clipped else "")
+            f"纵轴=每{unit}平均量能相对<b>最近20日均量</b>(固定基准,非滚动)的偏离(%)，"
+            f"横轴={_span_txt}；单位各市场不同故只比形状不比绝对值"
+            + (f"；<b>{_clipped}点超出纵轴已截顶</b>(最大{_peak:.0f}%)" if _clipped else "")
             + "</div>"
             f"<svg viewBox='0 0 {W} {H}' style='width:100%;height:auto'>{ticks}{grid}{''.join(paths)}</svg>"
             f"<div style='font-size:11px;margin-top:2px;display:flex;flex-wrap:wrap;"
