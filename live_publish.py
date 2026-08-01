@@ -331,6 +331,10 @@ def publish(files: dict) -> bool:
                         meta["live_snapshot_id"] = json.loads(content).get("snapshot_id", "")
                     except Exception:
                         pass
+            # 【V88·云端时间跟桌面】live 每趟也盖 published_at + 推进 publish_version：
+            # 日报冻结期间这是云端唯一还在前进的时间源，否则页面时间与缓存键双双卡在旧日报上（2026-08-01 用户案）。
+            meta["published_at"] = now
+            meta["publish_version"] = now
             mf.write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
             env = {**os.environ, "GIT_AUTHOR_NAME": "v88live", "GIT_AUTHOR_EMAIL": "v88@live",
                    "GIT_COMMITTER_NAME": "v88live", "GIT_COMMITTER_EMAIL": "v88@live"}

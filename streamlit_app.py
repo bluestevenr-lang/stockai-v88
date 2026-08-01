@@ -240,7 +240,29 @@ with c_nav:
                     horizontal=True, label_visibility="collapsed", key="_nav")
 
 _pub_state = pub_meta()
+
+
+def _latest_pub_ts(meta: dict) -> str:
+    """【V88·云端时间跟桌面】取已发布数据里最新的那个时间戳。
+    2026-08-01 用户案：云端全站时间原先只认日报 manifest，日报被硬质检拦下时（周末前瞻版/生成失败），
+    页面时间就冻在两天前的旧日报上，看着像整站停更；实际 pub 快照/前瞻/榜单仍在跟桌面同步刷新。"""
+    if str((meta or {}).get("published_at") or "").strip():
+        return str(meta["published_at"]).strip()
+    best = ""
+    for _k, _v in (meta or {}).items():
+        if _k.endswith("_ts") and isinstance(_v, str):
+            _s = _v.strip()
+            if len(_s) >= 16 and _s[:4].isdigit() and _s > best:
+                best = _s
+    return best
+
+
+_LATEST_PUB_TS = _latest_pub_ts(_pub_state)
 _PUB_VERSION = str(_pub_state.get("publish_version") or _pub_state.get("daily_report_ts") or "legacy")
+# 缓存键必须跟着最新发布时间走：日报冻结期间 publish_version 长期不变，旧写法会让 ?v= 一直是同一个值，
+# 新数据可能被 Streamlit 缓存/CDN 按同一 URL 命中旧副本——这是"云端追不上桌面"的第二层放大器。
+if _LATEST_PUB_TS:
+    _PUB_VERSION = f"{_PUB_VERSION}|{_LATEST_PUB_TS}"
 _snap_raw = pub_text("market_snapshot.json", _PUB_VERSION)
 _snap = None
 if _snap_raw:
@@ -295,6 +317,9 @@ else:
 # 【V88·Plan A/B】Plan B必须是当天新闻+快照+榜单生成的纯观察版，禁止沿用历史日报。
 _report_gen_date = str(_report_manifest.get("generated_at") or "")[:10]
 _global_analysis_note = _analysis_label(_report_manifest.get("generated_at"), "报告分析")
+# 日报时间照实保留（它确实旧），但必须同时给出全站数据的真实更新时刻，否则用户看到的是"云端整站停在旧日期"。
+if _LATEST_PUB_TS:
+    _global_analysis_note += " · " + _analysis_label(_LATEST_PUB_TS, "数据更新")
 _today_bj = (__import__("datetime").datetime.now(__import__("zoneinfo").ZoneInfo("Asia/Shanghai"))
             .strftime("%Y-%m-%d"))
 if not _contract_available:
