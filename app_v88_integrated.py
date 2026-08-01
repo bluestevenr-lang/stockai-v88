@@ -3306,6 +3306,20 @@ try:
     # 【2026-08-01 云端空白案】云端无私仓版trend_quality→退读pub版(大库股评级,08-01起随publish上云)
     _gr9map = (_cbj9("trend_quality.json").get("grades")
                or _cbj9("trend_quality_pub.json").get("grades") or {})
+    # 【V88·档内赢面细分 2026-08-01 用户"同为多个2A,分数可细分谁的赢面更大"】
+    # 原档内次序键 grade score 只有 2/3/6 三个取值——48只2A里34只并列,等于没排序。
+    # 换成 probability_edge = p_up − break_even_p(打平所需胜率),它已在引擎里算好:
+    #   >0 = 概率盖得住赔率(正期望)｜<0 = 看着胜率高但赔率太薄,长期做这种交易是亏的
+    # 实测能把2A分成18个不同取值(−21.5~+26.1pp),且排序与原分显著不同(见异议)。
+    _edge9map = {}
+    for _er9 in (_cbj9("intraday_decisions.json").get("rows") or []):
+        _ev9 = _er9.get("probability_edge")
+        if _ev9 is not None:
+            _edge9map[str(_er9.get("code"))] = float(_ev9)
+
+    def _edge9(_cd):
+        """档内赢面(pp)。无数据返回None——不拿0冒充,缺数据要看得见。"""
+        return _edge9map.get(str(_cd))
 
     def _tier_rank9(_cd):
         """【07-31用户抓'3A排第三,分数打平但级别该置顶'】评级层级=第一排序键,
@@ -3326,6 +3340,19 @@ try:
                 "✓1" if _g9.get("cs") else "", "位" if _g9.get("L_pos") else "",
                 "质" if _g9.get("L_qual") else "", "量" if _g9.get("L_vol") else "") if x)
             _chip9 += f"<br><span style='color:#94a3b8;font-size:8px'>({_parts9})</span>"
+        # 【V88·档内赢面 2026-08-01 用户"同为多个2A,分数可细分谁的赢面更大"】
+        # 赢面 = 2周上涨概率 − 打平所需胜率(由赔率决定)。同档排序就按它。
+        # 正=概率盖得住赔率；负=胜率看着高但赔率太薄,长期做这种交易是亏的(ARXS/BBVA实案)。
+        _eg9 = _edge9map.get(str(_cd))
+        if _eg9 is not None:
+            _ec9 = "#dc2626" if _eg9 > 0 else "#16a34a"
+            _chip9 += (f"<br><span style='color:{_ec9};font-size:9px;font-weight:700' "
+                       f"title='赢面=2周上涨概率−打平所需胜率;正=正期望,负=赔率太薄不够本'>"
+                       f"赢面{_eg9:+.1f}</span>")
+        else:
+            _chip9 += ("<br><span style='color:#cbd5e1;font-size:8px' "
+                       "title='该股不在 intraday_decisions 里,拿不到赔率与打平线,故无赢面'>"
+                       "赢面—</span>")
         _gat9, _gpx9 = _g9.get("at"), _g9.get("px")
         if _gat9:
             _drift9 = None
@@ -3602,7 +3629,7 @@ try:
                                + ("<br><span style='color:#dc2626'>🚫双剑否决在案</span>"
                                   if _g9i.get("rejected") else "")
                                + "<br><span style='color:#64748b'>②见仓位列 ③见触发列</span>")
-            _t_buy9.append((_gt9v, _gs9v, _row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9), '')}{_nm9}",
+            _t_buy9.append((_gt9v, _gs9v, _cd9, _row6_9(f"{_MKFLAG9.get(_cb_mk9(_cd9), '')}{_nm9}",
                                    _cd9, _act_cell9v,
                                    _zone9s, _inv9s,
                                    _pos9(_wbrows9.get(str(_cd9)),
@@ -3798,7 +3825,7 @@ try:
                     _inv9x2 = round(float((_x9.get("entry_pullback") or [_x9.get("last")])[0]) * 0.92, 2)
                 except (TypeError, ValueError):
                     _inv9x2 = "入场价-8%"
-                _t_buy9.append((_tier_rank9(_x9.get("code")), _gs9x, _row6_9(
+                _t_buy9.append((_tier_rank9(_x9.get("code")), _gs9x, str(_x9.get("code")), _row6_9(
                     f"{_MKFLAG9.get(_x9.get('market'), '')}{_x9.get('name')}",
                     _x9.get("code"), _act9m, _trig9m, _inv9x2,
                     "1批", ("⚔️双剑✓" if _x9.get("dual_cert") else "🕐待双剑"),
@@ -3808,12 +3835,47 @@ try:
             logging.exception("[V88] 3A并板失败")
             _v88_sentinel9(Path.home() / "Desktop" / "ai-daily-report-v2", "3A并板")
         # 【07-31 用户抓"3A排第三"】评级层级=第一排序键(3A恒置顶),印证分只做同级内次序
-        _t_buy9 = [h for _t9z, _s9z, h in sorted(_t_buy9, key=lambda z: (-z[0], -z[1]))]
+        # 档内次序:先按赢面(有数据的在前),无赢面数据的退回原印证分并排在其后——
+        # 缺数据不该冒充"赢面0",否则负赢面的票会被无数据的票挤下去。
+        def _bsort9(z):
+            _e9 = _edge9(z[2])
+            return (-z[0], 0 if _e9 is not None else 1,
+                    -(_e9 if _e9 is not None else 0), -z[1])
+        _buy_order9 = sorted(_t_buy9, key=_bsort9)
+        _t_buy9 = [h for _t9z, _s9z, _c9z, h in _buy_order9]
         _n3a9 = sum(1 for c in _shown_codes9 if (_gr9map.get(c) or {}).get("grade") == "3A")
         _n2a9 = sum(1 for c in _shown_codes9 if (_gr9map.get(c) or {}).get("grade") == "2A")
         _tab_b9, _tab_s9, _tab_h9 = st.tabs([f"✅买表{len(_t_buy9)}行(3A×{_n3a9}·2A×{_n2a9}·买窗×{len(_cb_rows9)})",
                                              f"⚔️卖/减({len(_cb_sell9)})", f"💼持有({len(_hold9)})"])
         with _tab_b9:
+            # 【V88·买表直接勾选对比 2026-08-01 用户"希望直接可以有对话框勾选这里面的个股对比"】
+            # 买表是HTML自绘表(彩色徽章/多行单元格),塞不进交互复选框;
+            # 故在表上方给同一批股的多选(顺序=表内顺序,含赢面标注),勾≤4只直达深度对比。
+            try:
+                from compare_ui import MAX_COMPARE as _MXC9
+                _bopt9 = {}
+                for _t9o, _s9o, _c9o, _h9o in _buy_order9:
+                    _nm9o = (_gr9map.get(str(_c9o)) or {}).get("name") or str(_c9o)
+                    _e9o = _edge9(_c9o)
+                    _g9o = (_gr9map.get(str(_c9o)) or {}).get("grade") or ""
+                    _lab9 = (f"{_g9o}｜{_nm9o}（{_c9o}）"
+                             + (f" 赢面{_e9o:+.1f}pp" if _e9o is not None else " 赢面—"))
+                    _bopt9[_lab9] = (str(_c9o), _nm9o)
+                if len(_bopt9) >= 2:
+                    _bsel9 = st.multiselect("从买表勾选对比", list(_bopt9),
+                                            max_selections=_MXC9, key="buy_pk_sel",
+                                            label_visibility="collapsed",
+                                            placeholder=f"⚔️ 勾选2~{_MXC9}只做深度对比"
+                                                        "（谁值得买/是不是同一个赌注/同期谁跑赢）…")
+                    if len(_bsel9) >= 2 and st.button(f"⚔️ 深度对比这{len(_bsel9)}只",
+                                                      key="buy_pk_go", type="primary"):
+                        st.session_state.pk_codes = [_bopt9[s][0] for s in _bsel9]
+                        st.session_state.pk_names = [_bopt9[s][1] for s in _bsel9]
+                        st.session_state.scan_selected_code = None
+                        st.session_state.scan_selected_name = None
+                        st.rerun()
+            except Exception:
+                logging.exception("[V88] 买表勾选对比渲染失败")
             st.markdown(_tbl9(_t_buy9) if _t_buy9 else
                         ("<span style='font-size:12px;color:#94a3b8'>买侧无可执行买单——现金也是仓位"
                          "(环境弱时买单自带仓位分级提示,不再硬拦)</span>"), unsafe_allow_html=True)
