@@ -16718,16 +16718,38 @@ def _render_today_nav():
                            " · 这四层是引擎的证据来源,此处只做可见化")
                 _c9a, _c9b = st.columns(2)
                 with _c9a:
-                    st.markdown("**🌡️ 市场宽度**（全市场逐只统计,比指数更真）")
+                    st.markdown("**🌡️ 市场宽度**（万得式涨跌分布 + 指数对照）")
+                    # 七档分布条:红涨绿跌(A股习惯),宽度=家数占比;下方一行做"指数 vs 中位"对照
+                    _SEG9 = (("涨停", "#b91c1c"), ("大涨≥5%", "#ef4444"), ("涨0~5%", "#fca5a5"),
+                             ("平", "#cbd5e1"), ("跌0~5%", "#86efac"), ("大跌≥5%", "#22c55e"),
+                             ("跌停", "#15803d"))
                     for _mk9, _d9 in (_bm9.get("markets") or {}).items():
-                        if _d9.get("adv") is None:
+                        _dist9 = _d9.get("dist") or {}
+                        if not _dist9:
                             continue
+                        _tot9 = max(1, sum(_dist9.values()))
+                        _bars9 = "".join(
+                            f"<div title='{_lb9} {_dist9.get(_lb9,0)}只' style='flex:{_dist9.get(_lb9,0)};"
+                            f"background:{_cl9};min-width:{'2px' if _dist9.get(_lb9,0) else '0'}'></div>"
+                            for _lb9, _cl9 in _SEG9)
+                        _ix9 = _d9.get("index_chg"); _md9 = _d9.get("median_chg")
+                        _dv9 = _d9.get("divergence")
+                        _cmp9 = ""
+                        if _ix9 is not None and _md9 is not None:
+                            _win9 = ("个股跑赢指数" if _dv9 is not None and _dv9 < -0.3 else
+                                     ("指数靠权重扛" if _dv9 is not None and _dv9 > 0.3 else "指数与个股同步"))
+                            _cmp9 = (f"　指数<b>{_ix9:+.2f}%</b> vs 中位<b>{_md9:+.2f}%</b>"
+                                     f" <span style='color:{'#16a34a' if (_dv9 or 0) < -0.3 else ('#b45309' if (_dv9 or 0) > 0.3 else '#64748b')}'>"
+                                     f"({_win9})</span>")
                         st.markdown(
-                            f"<div style='font-size:12px;margin:1px 0'>{_mk9}: "
-                            f"<b>{_d9['adv']}涨/{_d9['dec']}跌</b>"
-                            f"（涨跌比{_d9.get('ad_ratio')}）中位{_d9.get('median_chg')}% "
-                            + (f"涨停{_d9['limit_up']}/跌停{_d9['limit_down']} " if _d9.get('limit_up') is not None and _mk9 == 'A股' else "")
-                            + f"<br><span style='color:#64748b'>→ {_d9.get('verdict') or ''}</span></div>",
+                            f"<div style='font-size:12px;margin:4px 0 1px'><b>{_mk9}</b> "
+                            f"{_d9['adv']}涨/{_d9['dec']}跌 (比{_d9.get('ad_ratio')}){_cmp9}</div>"
+                            f"<div style='display:flex;height:13px;border-radius:3px;overflow:hidden;"
+                            f"border:1px solid #e2e8f0'>{_bars9}</div>"
+                            f"<div style='font-size:10.5px;color:#94a3b8;margin:1px 0 3px'>"
+                            + " · ".join(f"{_lb9}{_dist9.get(_lb9,0)}" for _lb9, _c in _SEG9
+                                         if _dist9.get(_lb9, 0))
+                            + f"　→ {_d9.get('verdict') or ''}</div>",
                             unsafe_allow_html=True)
                     st.markdown("**📅 美股财报窗**（持仓7日内=降险）")
                     if _n_urg9:
