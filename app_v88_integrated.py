@@ -16778,38 +16778,15 @@ def _render_today_nav():
                 _c9a, _c9b = st.columns(2)
                 with _c9a:
                     st.markdown("**🌡️ 市场宽度**（万得式涨跌分布 + 指数对照）")
-                    # 七档分布条:红涨绿跌(A股习惯),宽度=家数占比;下方一行做"指数 vs 中位"对照
-                    _SEG9 = (("涨停", "#b91c1c"), ("大涨≥5%", "#ef4444"), ("涨0~5%", "#fca5a5"),
-                             ("平", "#cbd5e1"), ("跌0~5%", "#86efac"), ("大跌≥5%", "#22c55e"),
-                             ("跌停", "#15803d"))
-                    for _mk9, _d9 in (_bm9.get("markets") or {}).items():
-                        _dist9 = _d9.get("dist") or {}
-                        if not _dist9:
-                            continue
-                        _tot9 = max(1, sum(_dist9.values()))
-                        _bars9 = "".join(
-                            f"<div title='{_lb9} {_dist9.get(_lb9,0)}只' style='flex:{_dist9.get(_lb9,0)};"
-                            f"background:{_cl9};min-width:{'2px' if _dist9.get(_lb9,0) else '0'}'></div>"
-                            for _lb9, _cl9 in _SEG9)
-                        _ix9 = _d9.get("index_chg"); _md9 = _d9.get("median_chg")
-                        _dv9 = _d9.get("divergence")
-                        _cmp9 = ""
-                        if _ix9 is not None and _md9 is not None:
-                            _win9 = ("个股跑赢指数" if _dv9 is not None and _dv9 < -0.3 else
-                                     ("指数靠权重扛" if _dv9 is not None and _dv9 > 0.3 else "指数与个股同步"))
-                            _cmp9 = (f"　指数<b>{_ix9:+.2f}%</b> vs 中位<b>{_md9:+.2f}%</b>"
-                                     f" <span style='color:{'#16a34a' if (_dv9 or 0) < -0.3 else ('#b45309' if (_dv9 or 0) > 0.3 else '#64748b')}'>"
-                                     f"({_win9})</span>")
-                        st.markdown(
-                            f"<div style='font-size:12px;margin:4px 0 1px'><b>{_mk9}</b> "
-                            f"{_d9['adv']}涨/{_d9['dec']}跌 (比{_d9.get('ad_ratio')}){_cmp9}</div>"
-                            f"<div style='display:flex;height:13px;border-radius:3px;overflow:hidden;"
-                            f"border:1px solid #e2e8f0'>{_bars9}</div>"
-                            f"<div style='font-size:10.5px;color:#94a3b8;margin:1px 0 3px'>"
-                            + " · ".join(f"{_lb9}{_dist9.get(_lb9,0)}" for _lb9, _c in _SEG9
-                                         if _dist9.get(_lb9, 0))
-                            + f"　→ {_d9.get('verdict') or ''}</div>",
-                            unsafe_allow_html=True)
+                    # 【2026-08-01 用户截图案】七档堆叠条→万得式十档柱状图(横轴-7~7,每档标家数);
+                    # 渲染逻辑搬进 barometer_ui.py 由桌面/云端共用,不再两端各写一份。
+                    try:
+                        from barometer_ui import breadth_html as _bhtml9
+                        st.markdown(_bhtml9(_bm9), unsafe_allow_html=True)
+                    except Exception:
+                        logging.exception("[V88] 宽度柱状图渲染失败")
+                        st.markdown("<div style='font-size:12px;color:#b45309'>宽度图渲染失败(见日志)</div>",
+                                    unsafe_allow_html=True)
                     st.markdown("**📅 美股财报窗**（持仓7日内=降险）")
                     if _n_urg9:
                         for _u9 in (_ec9.get("urgent_holdings") or [])[:5]:
@@ -16847,6 +16824,16 @@ def _render_today_nav():
                                     unsafe_allow_html=True)
                     st.caption("⚠️ 预期差原始分经RankIC回测判否决(高增幅预告后反跑输),"
                                "此处仅语境展示,不进评级权重")
+                # 【2026-08-01 用户"资金走势图从每天的小时走势变成每日走势,中美港"】
+                # 东财那条是当日分时,看不出趋势;换成每日线才答得了"钱在持续进场还是退潮"。
+                st.markdown("**💰 三市场每日量能走势**（替代当日分时）")
+                try:
+                    from barometer_ui import amount_daily_html as _adhtml9
+                    st.markdown(_adhtml9(_rlj9("market_amount_daily.json")), unsafe_allow_html=True)
+                except Exception:
+                    logging.exception("[V88] 量能日线渲染失败")
+                    st.markdown("<div style='font-size:12px;color:#b45309'>量能日线渲染失败(见日志)</div>",
+                                unsafe_allow_html=True)
         except Exception:
             logging.exception("[V88] 研究数据层区块渲染失败")
 

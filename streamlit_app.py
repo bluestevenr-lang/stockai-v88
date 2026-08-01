@@ -1012,6 +1012,24 @@ if _nav == "🧭 导航":
             st.markdown("<div style='line-height:1.9'>" + "<br>".join(_obl) + "</div>", unsafe_allow_html=True)
     except Exception:
         pass
+    # 【V88·市场晴雨表上云 2026-08-01 用户截图案】桌面已有,云端此前完全缺失=三端不同源。
+    # 渲染走 barometer_ui(与桌面同一份代码),数据走 pub,手机端也能看到宽度与量能趋势。
+    try:
+        from barometer_ui import breadth_html as _bh_c, amount_daily_html as _ad_c
+        _bm_c = _json_text("barometer.json")
+        _ad_c_data = _json_text("market_amount_daily.json")
+        if (_bm_c.get("markets") or _ad_c_data.get("markets")):
+            with st.expander("🌡️ 市场晴雨表 · 万得式宽度 + 三市场每日量能走势", expanded=False):
+                if _bm_c.get("markets"):
+                    st.markdown("**🌡️ 市场宽度**（全市场逐只，非抽样）")
+                    st.markdown(_bh_c(_bm_c), unsafe_allow_html=True)
+                if _ad_c_data.get("markets"):
+                    st.markdown("**💰 三市场每日量能走势**（替代当日分时）")
+                    st.markdown(_ad_c(_ad_c_data), unsafe_allow_html=True)
+                st.caption(f"宽度 {str(_bm_c.get('generated_at'))[:16]} · "
+                           f"量能 {str(_ad_c_data.get('generated_at'))[:16]} · 与桌面同源")
+    except Exception:
+        pass
     st.caption("温度定仓位 → 轮动定板块 → 操作榜定标的")
     st.caption(_fresh_caption((_snap or {}).get("generated_at"), "行情快照") + " · 持仓盘中每15分钟快扫；强思考最多每6小时")
     _meta0 = pub_meta()
