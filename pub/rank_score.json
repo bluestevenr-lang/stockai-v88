@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-01 23:32（北京时间）",
+ "generated_at": "2026-08-01 23:40（北京时间）",
  "version": "V88-R1",
  "weights": {
   "edge": 45,
@@ -40,7 +40,16 @@
    "coverage_n": "4/5",
    "rank": 1,
    "rank_in_tier": 1,
-   "timing": "⚡现在买"
+   "timing": "⚡现在买",
+   "dims": {
+    "时机": true,
+    "获利空间": true,
+    "价格位置": true,
+    "量能": true,
+    "机遇": true
+   },
+   "missing": [],
+   "use": ""
   },
   {
    "code": "300750.SZ",
@@ -73,13 +82,22 @@
    "coverage_n": "4/5",
    "rank": 2,
    "rank_in_tier": 2,
-   "timing": "⚡现在买·短线"
+   "timing": "⚡现在买·短线",
+   "dims": {
+    "时机": true,
+    "获利空间": true,
+    "价格位置": true,
+    "量能": true,
+    "机遇": true
+   },
+   "missing": [],
+   "use": ""
   },
   {
    "code": "06055.HK",
    "name": "中烟香港",
    "market": null,
-   "tier": "3A",
+   "tier": "2A",
    "rank_score": 87.9,
    "inner": 0.879,
    "score_raw": 87.928,
@@ -105,14 +123,25 @@
    ],
    "coverage_n": "4/5",
    "rank": 3,
-   "rank_in_tier": 3,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 1,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": true,
+    "价格位置": true,
+    "量能": true,
+    "机遇": true
+   },
+   "missing": [
+    "时机"
+   ],
+   "use": ""
   },
   {
    "code": "1114.HK",
    "name": "华晨中国",
    "market": null,
-   "tier": "3A",
+   "tier": "2A",
    "rank_score": 84.6,
    "inner": 0.846,
    "score_raw": 84.624,
@@ -138,14 +167,25 @@
    ],
    "coverage_n": "4/5",
    "rank": 4,
-   "rank_in_tier": 4,
-   "timing": "🕐等触发·回踩·中长线"
+   "rank_in_tier": 2,
+   "timing": "🕐等触发·回踩·中长线",
+   "dims": {
+    "时机": false,
+    "获利空间": true,
+    "价格位置": true,
+    "量能": true,
+    "机遇": true
+   },
+   "missing": [
+    "时机"
+   ],
+   "use": ""
   },
   {
    "code": "600885.SS",
    "name": "宏发股份",
    "market": "A股",
-   "tier": "2A",
+   "tier": "3A",
    "rank_score": 73.7,
    "inner": 0.737,
    "score_raw": 73.74,
@@ -170,14 +210,25 @@
    ],
    "coverage_n": "3/5",
    "rank": 5,
-   "rank_in_tier": 1,
-   "timing": "⚡现在买"
+   "rank_in_tier": 3,
+   "timing": "⚡现在买",
+   "dims": {
+    "时机": true,
+    "获利空间": true,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "机遇"
+   ],
+   "use": ""
   },
   {
    "code": "2556.HK",
    "name": "迈富时",
    "market": "港股",
-   "tier": "1A",
+   "tier": "2A",
    "rank_score": 63.6,
    "inner": 0.636,
    "score_raw": 63.615,
@@ -202,14 +253,26 @@
    ],
    "coverage_n": "3/5",
    "rank": 6,
-   "rank_in_tier": 1,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 3,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": true,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "机遇"
+   ],
+   "use": ""
   },
   {
    "code": "0883.HK",
    "name": "中海油",
    "market": null,
-   "tier": "1A",
+   "tier": "2A",
    "rank_score": 59.5,
    "inner": 0.595,
    "score_raw": 59.55,
@@ -233,8 +296,20 @@
    ],
    "coverage_n": "2/5",
    "rank": 7,
-   "rank_in_tier": 2,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 4,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": true,
+    "价格位置": true,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "量能",
+    "机遇"
+   ],
+   "use": ""
   },
   {
    "code": "002568.SZ",
@@ -265,8 +340,21 @@
    ],
    "coverage_n": "3/5",
    "rank": 8,
-   "rank_in_tier": 3,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 1,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "9901.HK",
@@ -297,8 +385,21 @@
    ],
    "coverage_n": "3/5",
    "rank": 9,
-   "rank_in_tier": 4,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 2,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "0552.HK",
@@ -329,14 +430,27 @@
    ],
    "coverage_n": "3/5",
    "rank": 10,
-   "rank_in_tier": 5,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 3,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "002303.SZ",
    "name": "美盈森",
    "market": "A股",
-   "tier": "1A",
+   "tier": "2A",
    "rank_score": 48.9,
    "inner": 0.489,
    "score_raw": 48.876,
@@ -361,8 +475,20 @@
    ],
    "coverage_n": "3/5",
    "rank": 11,
-   "rank_in_tier": 6,
-   "timing": "⚡现在买"
+   "rank_in_tier": 5,
+   "timing": "⚡现在买",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "机遇"
+   ],
+   "use": ""
   },
   {
    "code": "3888.HK",
@@ -393,8 +519,21 @@
    ],
    "coverage_n": "3/5",
    "rank": 12,
-   "rank_in_tier": 7,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 4,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "002258.SZ",
@@ -425,8 +564,21 @@
    ],
    "coverage_n": "3/5",
    "rank": 13,
-   "rank_in_tier": 8,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 5,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "601288.SS",
@@ -457,8 +609,21 @@
    ],
    "coverage_n": "3/5",
    "rank": 14,
-   "rank_in_tier": 9,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 6,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "MMSI",
@@ -489,8 +654,21 @@
    ],
    "coverage_n": "3/5",
    "rank": 15,
-   "rank_in_tier": 10,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 7,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "MSA",
@@ -523,8 +701,21 @@
    ],
    "coverage_n": "3/5",
    "rank": 16,
-   "rank_in_tier": 11,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 8,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "3110.HK",
@@ -554,8 +745,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 17,
-   "rank_in_tier": 12,
-   "timing": "🕐等触发·回踩·中长线"
+   "rank_in_tier": 9,
+   "timing": "🕐等触发·回踩·中长线",
+   "dims": {
+    "时机": false,
+    "获利空间": true,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "ITGR",
@@ -588,8 +793,21 @@
    ],
    "coverage_n": "3/5",
    "rank": 18,
-   "rank_in_tier": 13,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 10,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "2020.HK",
@@ -623,8 +841,21 @@
    ],
    "coverage_n": "4/5",
    "rank": 19,
-   "rank_in_tier": 14,
-   "timing": "🕐等触发·回踩·中长线"
+   "rank_in_tier": 11,
+   "timing": "🕐等触发·回踩·中长线",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": true
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "ARXS",
@@ -657,8 +888,21 @@
    ],
    "coverage_n": "3/5",
    "rank": 20,
-   "rank_in_tier": 15,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 12,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "AMRX",
@@ -689,8 +933,21 @@
    ],
    "coverage_n": "3/5",
    "rank": 21,
-   "rank_in_tier": 16,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 13,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "⚡短线突击(有量能有触发,只做短波段)"
   },
   {
    "code": "300996.SZ",
@@ -723,8 +980,21 @@
    ],
    "coverage_n": "3/5",
    "rank": 22,
-   "rank_in_tier": 17,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 14,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "0005.HK",
@@ -756,8 +1026,21 @@
    ],
    "coverage_n": "2/5",
    "rank": 23,
-   "rank_in_tier": 18,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 15,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "PSX",
@@ -789,8 +1072,21 @@
    ],
    "coverage_n": "2/5",
    "rank": 24,
-   "rank_in_tier": 19,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 16,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "GTES",
@@ -823,14 +1119,27 @@
    ],
    "coverage_n": "3/5",
    "rank": 25,
-   "rank_in_tier": 20,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 17,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "MUFG",
    "name": "三菱日联金融",
    "market": "美股",
-   "tier": "1A",
+   "tier": "2A",
    "rank_score": 33.8,
    "inner": 0.338,
    "score_raw": 33.786,
@@ -856,8 +1165,20 @@
    ],
    "coverage_n": "2/5",
    "rank": 26,
-   "rank_in_tier": 21,
-   "timing": "⚡现在买"
+   "rank_in_tier": 6,
+   "timing": "⚡现在买",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "机遇"
+   ],
+   "use": ""
   },
   {
    "code": "DXCM",
@@ -890,8 +1211,21 @@
    ],
    "coverage_n": "3/5",
    "rank": 27,
-   "rank_in_tier": 22,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 18,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "BBVA",
@@ -924,8 +1258,21 @@
    ],
    "coverage_n": "3/5",
    "rank": 28,
-   "rank_in_tier": 23,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 19,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "AMZN",
@@ -958,8 +1305,21 @@
    ],
    "coverage_n": "3/5",
    "rank": 29,
-   "rank_in_tier": 24,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 20,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "002832.SZ",
@@ -992,8 +1352,23 @@
    ],
    "coverage_n": "3/5",
    "rank": 30,
-   "rank_in_tier": 25,
-   "timing": "🕐等触发·回踩·中长线"
+   "rank_in_tier": 21,
+   "timing": "🕐等触发·回踩·中长线",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "DULL",
@@ -1026,8 +1401,22 @@
    ],
    "coverage_n": "3/5",
    "rank": 31,
-   "rank_in_tier": 26,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 22,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "HSBC",
@@ -1059,8 +1448,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 32,
-   "rank_in_tier": 27,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 23,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "SAN",
@@ -1092,8 +1495,21 @@
    ],
    "coverage_n": "2/5",
    "rank": 33,
-   "rank_in_tier": 28,
-   "timing": "⚡现在买"
+   "rank_in_tier": 24,
+   "timing": "⚡现在买",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "⚡短线突击(有量能有触发,只做短波段)"
   },
   {
    "code": "GWW",
@@ -1125,8 +1541,21 @@
    ],
    "coverage_n": "2/5",
    "rank": 34,
-   "rank_in_tier": 29,
-   "timing": "⚡现在买"
+   "rank_in_tier": 25,
+   "timing": "⚡现在买",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "⚡短线突击(有量能有触发,只做短波段)"
   },
   {
    "code": "2328.HK",
@@ -1158,8 +1587,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 35,
-   "rank_in_tier": 30,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 26,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "0669.HK",
@@ -1191,8 +1634,21 @@
    ],
    "coverage_n": "2/5",
    "rank": 36,
-   "rank_in_tier": 31,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 27,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "⚡短线突击(有量能有触发,只做短波段)"
   },
   {
    "code": "603259.SS",
@@ -1224,8 +1680,21 @@
    ],
    "coverage_n": "2/5",
    "rank": 37,
-   "rank_in_tier": 32,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 28,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "⚡短线突击(有量能有触发,只做短波段)"
   },
   {
    "code": "NWG",
@@ -1257,8 +1726,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 38,
-   "rank_in_tier": 33,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 29,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "MET",
@@ -1290,8 +1773,21 @@
    ],
    "coverage_n": "2/5",
    "rank": 39,
-   "rank_in_tier": 34,
-   "timing": "⚡现在买"
+   "rank_in_tier": 30,
+   "timing": "⚡现在买",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "⚡短线突击(有量能有触发,只做短波段)"
   },
   {
    "code": "PRU",
@@ -1323,8 +1819,21 @@
    ],
    "coverage_n": "2/5",
    "rank": 40,
-   "rank_in_tier": 35,
-   "timing": "⚡现在买"
+   "rank_in_tier": 31,
+   "timing": "⚡现在买",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "⚡短线突击(有量能有触发,只做短波段)"
   },
   {
    "code": "CCEP",
@@ -1356,8 +1865,21 @@
    ],
    "coverage_n": "2/5",
    "rank": 41,
-   "rank_in_tier": 36,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 32,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "⚡短线突击(有量能有触发,只做短波段)"
   },
   {
    "code": "RACE",
@@ -1389,8 +1911,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 42,
-   "rank_in_tier": 37,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 33,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "0300.HK",
@@ -1422,8 +1958,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 43,
-   "rank_in_tier": 38,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 34,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "2359.HK",
@@ -1455,8 +2005,21 @@
    ],
    "coverage_n": "2/5",
    "rank": 44,
-   "rank_in_tier": 39,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 35,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "⚡短线突击(有量能有触发,只做短波段)"
   },
   {
    "code": "ING",
@@ -1488,8 +2051,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 45,
-   "rank_in_tier": 40,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 36,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "APH",
@@ -1521,8 +2098,21 @@
    ],
    "coverage_n": "2/5",
    "rank": 46,
-   "rank_in_tier": 41,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 37,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "⚡短线突击(有量能有触发,只做短波段)"
   },
   {
    "code": "VLO",
@@ -1554,8 +2144,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 47,
-   "rank_in_tier": 42,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 38,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "002440.SZ",
@@ -1587,8 +2191,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 48,
-   "rank_in_tier": 43,
-   "timing": "🕐等触发·回踩·中长线"
+   "rank_in_tier": 39,
+   "timing": "🕐等触发·回踩·中长线",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "VIK",
@@ -1620,8 +2238,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 49,
-   "rank_in_tier": 44,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 40,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "601168.SS",
@@ -1653,8 +2285,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 50,
-   "rank_in_tier": 45,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 41,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "2689.HK",
@@ -1686,8 +2333,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 51,
-   "rank_in_tier": 46,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 42,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "1308.HK",
@@ -1719,8 +2380,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 52,
-   "rank_in_tier": 47,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 43,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "LYG",
@@ -1752,8 +2428,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 53,
-   "rank_in_tier": 48,
-   "timing": "⚡现在买"
+   "rank_in_tier": 44,
+   "timing": "⚡现在买",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "STT",
@@ -1785,8 +2475,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 54,
-   "rank_in_tier": 49,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 45,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "003013.SZ",
@@ -1818,8 +2522,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 55,
-   "rank_in_tier": 50,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 46,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "GE",
@@ -1851,8 +2570,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 56,
-   "rank_in_tier": 51,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 47,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "MT",
@@ -1885,8 +2618,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 57,
-   "rank_in_tier": 52,
-   "timing": "🕐等触发·回踩·中长线"
+   "rank_in_tier": 48,
+   "timing": "🕐等触发·回踩·中长线",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "BAC",
@@ -1918,8 +2666,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 58,
-   "rank_in_tier": 53,
-   "timing": "⚡现在买"
+   "rank_in_tier": 49,
+   "timing": "⚡现在买",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "UBS",
@@ -1951,8 +2713,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 59,
-   "rank_in_tier": 54,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 50,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "2698.HK",
@@ -1985,8 +2761,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 60,
-   "rank_in_tier": 55,
-   "timing": "🕐等触发·回踩·中长线"
+   "rank_in_tier": 51,
+   "timing": "🕐等触发·回踩·中长线",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "DAL",
@@ -2019,8 +2810,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 61,
-   "rank_in_tier": 56,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 52,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "MPC",
@@ -2052,8 +2857,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 62,
-   "rank_in_tier": 57,
-   "timing": "🕐等触发·回踩·中长线"
+   "rank_in_tier": 53,
+   "timing": "🕐等触发·回踩·中长线",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "TRV",
@@ -2086,8 +2906,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 63,
-   "rank_in_tier": 58,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 54,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "2888.HK",
@@ -2120,8 +2954,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 64,
-   "rank_in_tier": 59,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 55,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "2314.HK",
@@ -2154,8 +3003,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 65,
-   "rank_in_tier": 60,
-   "timing": "🕐等触发·回踩·中长线"
+   "rank_in_tier": 56,
+   "timing": "🕐等触发·回踩·中长线",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "0023.HK",
@@ -2187,8 +3051,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 66,
-   "rank_in_tier": 61,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 57,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "ADP",
@@ -2220,8 +3099,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 67,
-   "rank_in_tier": 62,
-   "timing": "🕐等触发·回踩·中长线"
+   "rank_in_tier": 58,
+   "timing": "🕐等触发·回踩·中长线",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "PCAR",
@@ -2254,8 +3148,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 68,
-   "rank_in_tier": 63,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 59,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "300759.SZ",
@@ -2288,8 +3196,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 69,
-   "rank_in_tier": 64,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 60,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "GRMN",
@@ -2322,8 +3244,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 70,
-   "rank_in_tier": 65,
-   "timing": "🕐等触发·回踩·中长线"
+   "rank_in_tier": 61,
+   "timing": "🕐等触发·回踩·中长线",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "SMFG",
@@ -2355,8 +3292,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 71,
-   "rank_in_tier": 66,
-   "timing": "⚡现在买"
+   "rank_in_tier": 62,
+   "timing": "⚡现在买",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "ALL",
@@ -2388,8 +3339,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 72,
-   "rank_in_tier": 67,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 63,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "IX",
@@ -2421,8 +3386,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 73,
-   "rank_in_tier": 68,
-   "timing": "⚡现在买"
+   "rank_in_tier": 64,
+   "timing": "⚡现在买",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "MFG",
@@ -2455,8 +3434,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 74,
-   "rank_in_tier": 69,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 65,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "AMGN",
@@ -2489,8 +3482,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 75,
-   "rank_in_tier": 70,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 66,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "2388.HK",
@@ -2523,8 +3530,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 76,
-   "rank_in_tier": 71,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 67,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "RCL",
@@ -2557,8 +3579,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 77,
-   "rank_in_tier": 72,
-   "timing": "🕐等触发·回踩·中长线"
+   "rank_in_tier": 68,
+   "timing": "🕐等触发·回踩·中长线",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "CTAS",
@@ -2590,8 +3627,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 78,
-   "rank_in_tier": 73,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 69,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "0293.HK",
@@ -2624,8 +3675,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 79,
-   "rank_in_tier": 74,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 70,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "BMO",
@@ -2658,8 +3724,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 80,
-   "rank_in_tier": 75,
-   "timing": "⚡现在买"
+   "rank_in_tier": 71,
+   "timing": "⚡现在买",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "MMM",
@@ -2692,8 +3772,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 81,
-   "rank_in_tier": 76,
-   "timing": "🕐等触发·回踩·中长线"
+   "rank_in_tier": 72,
+   "timing": "🕐等触发·回踩·中长线",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "2510.HK",
@@ -2726,8 +3821,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 82,
-   "rank_in_tier": 77,
-   "timing": "🕐等触发·回踩·中长线"
+   "rank_in_tier": 73,
+   "timing": "🕐等触发·回踩·中长线",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "3600.HK",
@@ -2760,8 +3870,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 83,
-   "rank_in_tier": 78,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 74,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "6190.HK",
@@ -2794,8 +3918,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 84,
-   "rank_in_tier": 79,
-   "timing": "⚡现在买·中长线"
+   "rank_in_tier": 75,
+   "timing": "⚡现在买·中长线",
+   "dims": {
+    "时机": true,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "RTX",
@@ -2828,8 +3966,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 85,
-   "rank_in_tier": 80,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 76,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "2356.HK",
@@ -2862,8 +4015,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 86,
-   "rank_in_tier": 81,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 77,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "0440.HK",
@@ -2896,8 +4064,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 87,
-   "rank_in_tier": 82,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 78,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "600428.SS",
@@ -2930,8 +4113,22 @@
    ],
    "coverage_n": "3/5",
    "rank": 88,
-   "rank_in_tier": 83,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 79,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": true,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "2518.HK",
@@ -2964,8 +4161,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 89,
-   "rank_in_tier": 84,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 80,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "SN",
@@ -2998,8 +4210,23 @@
    ],
    "coverage_n": "3/5",
    "rank": 90,
-   "rank_in_tier": 85,
-   "timing": "🕐等触发·回踩"
+   "rank_in_tier": 81,
+   "timing": "🕐等触发·回踩",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   }
  ],
  "watch": [
@@ -3031,9 +4258,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 10,
-   "rank_in_tier": 3,
+   "rank_in_tier": 1,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": true,
+    "价格位置": true,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "量能",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "510300.SS",
@@ -3063,9 +4303,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 14,
-   "rank_in_tier": 6,
+   "rank_in_tier": 4,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": true,
+    "价格位置": true,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "量能",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "513500.SS",
@@ -3095,9 +4348,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 16,
-   "rank_in_tier": 8,
+   "rank_in_tier": 6,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": true,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "159632.SZ",
@@ -3127,9 +4394,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 17,
-   "rank_in_tier": 9,
+   "rank_in_tier": 7,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": true,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "300631.SZ",
@@ -3159,9 +4440,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 18,
-   "rank_in_tier": 10,
+   "rank_in_tier": 8,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": true,
+    "价格位置": true,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "量能",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "513310.SS",
@@ -3191,9 +4485,22 @@
    ],
    "coverage_n": "2/5",
    "rank": 25,
-   "rank_in_tier": 17,
+   "rank_in_tier": 14,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": true,
+    "价格位置": true,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "量能",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "300142.SZ",
@@ -3223,9 +4530,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 27,
-   "rank_in_tier": 19,
+   "rank_in_tier": 16,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "量能",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "GOOG",
@@ -3255,9 +4576,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 28,
-   "rank_in_tier": 20,
+   "rank_in_tier": 17,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": true,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "QQQM",
@@ -3287,9 +4622,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 30,
-   "rank_in_tier": 22,
+   "rank_in_tier": 19,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": true,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "NVDA",
@@ -3319,9 +4668,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 31,
-   "rank_in_tier": 23,
+   "rank_in_tier": 20,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": true,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "PM",
@@ -3351,9 +4714,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 33,
-   "rank_in_tier": 25,
+   "rank_in_tier": 22,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": true,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "GOOGL",
@@ -3383,9 +4760,24 @@
    ],
    "coverage_n": "2/5",
    "rank": 34,
-   "rank_in_tier": 26,
+   "rank_in_tier": 23,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "688012.SS",
@@ -3415,9 +4807,24 @@
    ],
    "coverage_n": "2/5",
    "rank": 36,
-   "rank_in_tier": 28,
+   "rank_in_tier": 25,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "JNJ",
@@ -3447,9 +4854,24 @@
    ],
    "coverage_n": "2/5",
    "rank": 37,
-   "rank_in_tier": 29,
+   "rank_in_tier": 26,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "0388.HK",
@@ -3479,9 +4901,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 39,
-   "rank_in_tier": 31,
+   "rank_in_tier": 28,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": true,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "TSLA",
@@ -3511,9 +4947,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 40,
-   "rank_in_tier": 32,
+   "rank_in_tier": 29,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "量能",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "MRVL",
@@ -3543,9 +4993,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 41,
-   "rank_in_tier": 33,
+   "rank_in_tier": 30,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "量能",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "159995.SZ",
@@ -3577,9 +5041,23 @@
    ],
    "coverage_n": "2/5",
    "rank": 47,
-   "rank_in_tier": 39,
+   "rank_in_tier": 35,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": true,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "量能",
+    "机遇"
+   ],
+   "use": "🕰低吸埋伏(位置好,等触发做中长线)"
   },
   {
    "code": "002550.SZ",
@@ -3609,9 +5087,24 @@
    ],
    "coverage_n": "2/5",
    "rank": 48,
-   "rank_in_tier": 40,
+   "rank_in_tier": 36,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "513650.SS",
@@ -3641,9 +5134,24 @@
    ],
    "coverage_n": "2/5",
    "rank": 50,
-   "rank_in_tier": 42,
+   "rank_in_tier": 38,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "600941.SH",
@@ -3673,9 +5181,24 @@
    ],
    "coverage_n": "2/5",
    "rank": 51,
-   "rank_in_tier": 43,
+   "rank_in_tier": 39,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "MS",
@@ -3705,9 +5228,24 @@
    ],
    "coverage_n": "2/5",
    "rank": 54,
-   "rank_in_tier": 46,
+   "rank_in_tier": 42,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "MO",
@@ -3739,9 +5277,24 @@
    ],
    "coverage_n": "2/5",
    "rank": 55,
-   "rank_in_tier": 47,
+   "rank_in_tier": 43,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "LLY",
@@ -3771,9 +5324,24 @@
    ],
    "coverage_n": "2/5",
    "rank": 57,
-   "rank_in_tier": 49,
+   "rank_in_tier": 45,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "SO",
@@ -3805,9 +5373,24 @@
    ],
    "coverage_n": "2/5",
    "rank": 58,
-   "rank_in_tier": 50,
+   "rank_in_tier": 46,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "VOO",
@@ -3837,9 +5420,24 @@
    ],
    "coverage_n": "2/5",
    "rank": 59,
-   "rank_in_tier": 51,
+   "rank_in_tier": 47,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   },
   {
    "code": "MRK",
@@ -3871,9 +5469,24 @@
    ],
    "coverage_n": "2/5",
    "rank": 61,
-   "rank_in_tier": 53,
+   "rank_in_tier": 49,
    "scope": "持仓/自选（不占推荐位）",
-   "timing": ""
+   "timing": "",
+   "dims": {
+    "时机": false,
+    "获利空间": false,
+    "价格位置": false,
+    "量能": false,
+    "机遇": false
+   },
+   "missing": [
+    "时机",
+    "获利空间",
+    "价格位置",
+    "量能",
+    "机遇"
+   ],
+   "use": "👁观察名单(桶板缺口多,等补齐)"
   }
  ],
  "archived": [
