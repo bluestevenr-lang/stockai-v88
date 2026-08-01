@@ -3381,13 +3381,19 @@ try:
         _rk9x = _rank9map.get(str(_cd)) or {}
         _gd9 = str(_rk9x.get("tier") or _g9.get("grade") or "")
         _gc9 = ("#dc2626" if _gd9 == "3A" else "#ea580c" if _gd9 == "2A"
-                else "#94a3b8" if _gd9 == "存档" else "#2563eb")
+                else "#64748b" if _gd9 in ("存档", "0A") else "#2563eb")
         _tm9x = str(_rk9x.get("timing") or "")
         if _tm9x:
             _g9 = {**_g9, "when": _tm9x + ("｜" + str(_rk9x.get("when"))
                                            if _rk9x.get("when") else "")}
         # 【木桶定级 2026-08-01 用户定纲】级别=五块桶板完整度(时机/获利空间/价格位置/量能/机遇),
         # 缺什么必须写出来——高分2A(如中烟87.9缺"时机")不写缺口,又会被读成"排分乱"。
+        _st9x = str(_rk9x.get("subtype") or "")
+        _as9x = str(_rk9x.get("action_state") or "")
+        if _st9x and "-" in _st9x:
+            _chip9 += (f"<br><span style='color:#475569;font-size:8.5px' "
+                       f"title='{str(_rk9x.get('why_not_higher') or '')[:80]}'>"
+                       f"{_st9x.split('-', 1)[1]}·{_as9x}</span>")
         _ms9x = _rk9x.get("missing") or []
         if _ms9x and _gd9 in ("2A", "1A"):
             _chip9 += (f"<br><span style='color:#b45309;font-size:8.5px' "
@@ -3927,8 +3933,11 @@ try:
         _buy_order9 = sorted(_t_buy9, key=_bsort9)
         # 【2026-08-01 用户"没有买入的意义就不具备被推荐的意义,浪费空间干什么"】
         # 存档行(已否决/说不出何时买)移出买表,收进下方折叠区——仍可查,但不占推荐位。
+        # 【R2 2026-08-01】0A=无行动价值,与存档一起移出行动清单(用户第十节:
+        # 0A可保留观察库,但不能进入行动清单和重点推荐)
         _arch9 = [(c, h) for _t, _s, c, h in _buy_order9
-                  if str((_gr9map.get(str(c)) or {}).get("grade")) == "存档"]
+                  if str((_gr9map.get(str(c)) or {}).get("grade")) == "存档"
+                  or str((_rank9map.get(str(c)) or {}).get("tier")) == "0A"]
         _arch_set9 = {c for c, _ in _arch9}
         _t_buy9 = [h for _t9z, _s9z, _c9z, h in _buy_order9 if _c9z not in _arch_set9]
         _n3a9 = sum(1 for c in _shown_codes9 if (_gr9map.get(c) or {}).get("grade") == "3A")
