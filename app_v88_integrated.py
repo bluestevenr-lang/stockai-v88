@@ -16696,6 +16696,79 @@ def _render_today_nav():
             st.caption("大盘与板块同一套前瞻引擎、同一缓存时间——左右口径天然一致 · 30分钟刷新 · "
                        "概率=规则情景估计 · 数字后↑↓≈=较前一档升/降/平（每段涨落，非对当天涨跌的预测）")
 
+        # 【V88·研究数据层可见化 2026-08-01 用户三问"升级的我都没看到"】
+        # 后台四层(宽度/预期差/财务体检/财报日历)原本只喂引擎,用户无法验收→合成一个展开块,
+        # 放在大盘环境正上方(视线第一落点)。只读data下的json,不新增计算、不花token。
+        try:
+            _rl9 = Path.home() / "Desktop" / "ai-daily-report-v2" / "data"
+            def _rlj9(_f):
+                try:
+                    return json.loads((_rl9 / _f).read_text(encoding="utf-8"))
+                except Exception:
+                    return {}
+            _bm9 = _rlj9("barometer.json"); _fq9 = _rlj9("fin_quality.json")
+            _ex9 = _rlj9("expectation_proxy.json"); _ec9 = _rlj9("earnings_calendar.json")
+            _n_risk9 = len([r for r in (_fq9.get("rows") or []) if (r.get("risk") or 0) >= 25])
+            _n_urg9 = len(_ec9.get("urgent_holdings") or [])
+            _ttl9 = (f"🔬 研究数据层 · 市场宽度/财务体检/预期差/财报日历"
+                     f"（{('⚠️%d只财务风险 · ' % _n_risk9) if _n_risk9 else ''}"
+                     f"{('📅%d只持仓临近财报' % _n_urg9) if _n_urg9 else '无临近财报'}）")
+            with st.expander(_ttl9, expanded=bool(_n_urg9 or _n_risk9)):
+                st.caption(f"2026-08-01上线 · 全免费源零成本 · 更新 {str(_bm9.get('generated_at'))[:16]}"
+                           " · 这四层是引擎的证据来源,此处只做可见化")
+                _c9a, _c9b = st.columns(2)
+                with _c9a:
+                    st.markdown("**🌡️ 市场宽度**（全市场逐只统计,比指数更真）")
+                    for _mk9, _d9 in (_bm9.get("markets") or {}).items():
+                        if _d9.get("adv") is None:
+                            continue
+                        st.markdown(
+                            f"<div style='font-size:12px;margin:1px 0'>{_mk9}: "
+                            f"<b>{_d9['adv']}涨/{_d9['dec']}跌</b>"
+                            f"（涨跌比{_d9.get('ad_ratio')}）中位{_d9.get('median_chg')}% "
+                            + (f"涨停{_d9['limit_up']}/跌停{_d9['limit_down']} " if _d9.get('limit_up') is not None and _mk9 == 'A股' else "")
+                            + f"<br><span style='color:#64748b'>→ {_d9.get('verdict') or ''}</span></div>",
+                            unsafe_allow_html=True)
+                    st.markdown("**📅 美股财报窗**（持仓7日内=降险）")
+                    if _n_urg9:
+                        for _u9 in (_ec9.get("urgent_holdings") or [])[:5]:
+                            st.markdown(f"<div style='font-size:12px;color:#dc2626'>🔴 {_u9}"
+                                        "→财报前不加仓</div>", unsafe_allow_html=True)
+                    else:
+                        st.markdown("<div style='font-size:12px;color:#64748b'>持仓7日内无财报</div>",
+                                    unsafe_allow_html=True)
+                with _c9b:
+                    st.markdown("**🧪 财务体检**（A股池·质量分/暴雷风险分,可解释）")
+                    _fr9 = [r for r in (_fq9.get("rows") or []) if (r.get("risk") or 0) > 0][:6]
+                    if _fr9:
+                        for _r9 in _fr9:
+                            _cl9 = "#dc2626" if _r9["risk"] >= 25 else "#b45309"
+                            st.markdown(
+                                f"<div style='font-size:12px;margin:1px 0'>{_r9.get('name')} "
+                                f"质量<b>{_r9['quality']}</b>/风险<b style='color:{_cl9}'>{_r9['risk']}</b> "
+                                f"<span style='color:#64748b'>{'；'.join((_r9.get('risk_reasons') or [])[:2])}</span></div>",
+                                unsafe_allow_html=True)
+                    else:
+                        st.markdown("<div style='font-size:12px;color:#64748b'>池内暂无显性财务风险</div>",
+                                    unsafe_allow_html=True)
+                    st.markdown("**📈 预期差**（免费代理分,非万得一致预期）")
+                    _er9 = (_ex9.get("rows") or [])[:4]
+                    if _er9:
+                        for _r9 in _er9:
+                            st.markdown(
+                                f"<div style='font-size:12px;margin:1px 0'>{_r9.get('name')} "
+                                f"<b>{_r9.get('expectation_proxy_score'):+d}</b> "
+                                f"<span style='color:#64748b'>{'；'.join((_r9.get('components') or [])[:2])}</span></div>",
+                                unsafe_allow_html=True)
+                    else:
+                        st.markdown("<div style='font-size:12px;color:#64748b'>"
+                                    "池内暂无预告/快报材料(A股7月为披露空窗,8月底半年报密集)</div>",
+                                    unsafe_allow_html=True)
+                    st.caption("⚠️ 预期差原始分经RankIC回测判否决(高增幅预告后反跑输),"
+                               "此处仅语境展示,不进评级权重")
+        except Exception:
+            logging.exception("[V88] 研究数据层区块渲染失败")
+
         # 【V88·版面梳理 2026-07-17】水位/轮动提醒/周期导图/复制摘要合并收进「大盘环境」
         # （三层总览已给概览,这里是细节层,默认收起减乱）
         with st.expander("🌍 大盘环境 · 指数水位/板块轮动/周期导图", expanded=False):
