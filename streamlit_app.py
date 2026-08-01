@@ -1046,20 +1046,33 @@ if _nav == "🧭 导航":
     # 云端此前完全没有——三端不同源就等于没统一。级别只表示买入时机不表示质量高低。
     try:
         _rk_c = _json_text("rank_score.json")
-        _rr_c = [r for r in (_rk_c.get("rows") or []) if r.get("when")][:8]
+        # 【R2 2026-08-02】0A不进行动清单(定纲第十节);每条给子类型/动作/短板/为什么不是更高级
+        _rr_c = [r for r in (_rk_c.get("rows") or []) if str(r.get("tier")) != "0A"][:10]
+        _n0a_c = sum(1 for r in (_rk_c.get("rows") or []) if str(r.get("tier")) == "0A")
         if _rr_c:
-            with st.expander(f"🏆 排名分榜（{_rk_c.get('version', 'R1')}·赢面45/催化25/量能15/位置15）",
-                             expanded=False):
-                st.caption("级别=买入时机（3A现在买/2A等触发/1A周期不同），不表示质量高低；"
-                           "排序只看排名分——重要因素主导，低权重的扣分压不倒它（瑕不掩瑜）。")
+            with st.expander(
+                    f"🏆 行动清单（{_rk_c.get('version', 'R2')}木桶评级·"
+                    f"长期25/时机20/催化15/估值15/空间25）", expanded=False):
+                st.caption("木桶决定等级、分数决定同级排序：3A关键桶板零缺失，2A必须说清短板，"
+                           "1A必须标战术用途，0A无行动价值已过滤（本次过滤 "
+                           f"{_n0a_c} 只）。风险否决不可被总分补偿。")
                 for _r in _rr_c:
-                    _e = (f"赢面{_r['edge_pp']:+.1f}pp · " if _r.get("edge_pp") is not None else "")
+                    _ms = "、".join(_r.get("missing") or []) or "板全"
+                    _col = ("#dc2626" if _r.get("tier") == "3A" else
+                            "#ea580c" if _r.get("tier") == "2A" else "#2563eb")
                     st.markdown(
-                        f"<div style='font-size:12.5px;margin:2px 0'>#{_r.get('rank')} "
-                        f"<b>{_r.get('name')}</b> <span style='color:#2563eb'>{_r.get('tier')}</span> "
+                        f"<div style='font-size:12.5px;margin:3px 0'>#{_r.get('rank')} "
+                        f"<b>{_r.get('name')}</b> "
+                        f"<span style='color:{_col};font-weight:700'>{_r.get('subtype') or _r.get('tier')}</span> "
                         f"<b>分{_r.get('rank_score'):.1f}</b> "
-                        f"<span style='color:#64748b'>{_e}{_r.get('when')}</span></div>",
+                        f"<span style='color:#64748b'>{_r.get('action_state') or ''} · 缺:{_ms}</span>"
+                        f"<br><span style='font-size:11px;color:#94a3b8'>"
+                        f"{_r.get('why_not_higher') or _r.get('why_grade') or ''}"
+                        f" ｜ 风险{_r.get('risk_score')} 完备{_r.get('data_completeness')} "
+                        f"置信{_r.get('model_confidence')}</span></div>",
                         unsafe_allow_html=True)
+                st.caption("⏱ 收盘后生成，最早 T+1 执行（实测隔夜缺口平均绝对偏差0.86%，"
+                           "按T日收盘价假设成交会系统性高估回测收益）。")
                 _ar_c = [a for a in (_rk_c.get("archived") or []) if a.get("review_needed")]
                 for _a in _ar_c:
                     st.markdown(
