@@ -1056,6 +1056,15 @@ if _nav == "🧭 导航":
                 st.caption("木桶决定等级、分数决定同级排序：3A关键桶板零缺失，2A必须说清短板，"
                            "1A必须标战术用途，0A无行动价值已过滤（本次过滤 "
                            f"{_n0a_c} 只）。风险否决不可被总分补偿。")
+                try:
+                    from grade_card import board_html as _bh_c, veto_review_html as _vr_c
+                    _v_c = _vr_c(_rk_c)
+                    if _v_c:
+                        st.markdown(_v_c, unsafe_allow_html=True)
+                    st.markdown(_bh_c(_rk_c, limit=8, show_detail=3), unsafe_allow_html=True)
+                    _rr_c = []      # 完整卡已覆盖,不再重复渲染精简行
+                except Exception:
+                    pass
                 for _r in _rr_c:
                     _ms = "、".join(_r.get("missing") or []) or "板全"
                     _col = ("#dc2626" if _r.get("tier") == "3A" else

@@ -3993,6 +3993,22 @@ try:
                                and (_gr9map.get(str(c)) or {}).get("when_kind") == "now"]
             except Exception:
                 logging.exception("[V88] 今天可买筛选失败")
+            # 【R2完整输出 2026-08-02 用户第十五节】行动清单完整卡:等级/子类型/五桶板/
+            # 风险·完备·置信/为什么是这个等级/为什么不是更高/触发·升级·降级·失效条件。
+            try:
+                from grade_card import board_html as _bh_r2, veto_review_html as _vr_r2
+                _rkall9 = _cbj9("rank_score.json")
+                if _rkall9.get("rows"):
+                    with st.expander(
+                            f"🎯 行动清单·完整评级卡（{_rkall9.get('version', 'R2')}木桶定级）",
+                            expanded=False):
+                        _vh9 = _vr_r2(_rkall9)
+                        if _vh9:
+                            st.markdown(_vh9, unsafe_allow_html=True)
+                        st.markdown(_bh_r2(_rkall9, limit=8, show_detail=3),
+                                    unsafe_allow_html=True)
+            except Exception:
+                logging.exception("[V88] R2完整评级卡渲染失败")
             if _arch9:
                 with st.expander(f"🗄 存档 {len(_arch9)} 只（已否决/说不出何时买 → 不占推荐位）",
                                  expanded=False):
