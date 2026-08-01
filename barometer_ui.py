@@ -112,6 +112,15 @@ def amount_daily_html(ad: dict, height: int = 150, days: int = SHOW_DAYS) -> str
         c = _LINE_COLOR.get(mk, "#64748b")
         paths.append(f"<polyline points='{pts}' fill='none' stroke='{c}' stroke-width='1.9' "
                      f"stroke-linejoin='round'/>")
+        # 被截顶的点单独打圆点：否则贴着轴顶的那段直线会被读成"真值刚好=轴上限",
+        # 而它实际可能是 +106%。截断这件事必须在图上自证,不能只躺在标题文字里。
+        for i, pt in enumerate(s):
+            r = pt.get("rel_pct") or 0
+            if abs(r) > span:
+                x, y = xy(i, len(s), r).split(",")
+                paths.append(f"<circle cx='{x}' cy='{y}' r='2.4' fill='{c}' "
+                             f"stroke='#fff' stroke-width='0.8'><title>{pt.get('date')} "
+                             f"{r:+.1f}%（超出纵轴{span:.0f}%已截顶）</title></circle>")
         vs = v.get("vs_ma20_pct")
         legend.append(
             f"<span style='white-space:nowrap'>"
@@ -127,7 +136,7 @@ def amount_daily_html(ad: dict, height: int = 150, days: int = SHOW_DAYS) -> str
         for k in (1, 0.5, 0, -0.5, -1))
     caps = " · ".join(f"{k}={v.get('label')}" for k, v in usable.items())
     return (f"<div style='font-size:11px;color:#94a3b8;margin-bottom:2px'>"
-            f"纵轴=当日量能相对自身20日均量的偏离(%)，横轴=最近{n_max}个交易日（约"
+            f"纵轴=当日量能相对<b>最近20日均量</b>(固定基准,非滚动)的偏离(%)，横轴=最近{n_max}个交易日（约"
             f"{n_max // 21}个月）；单位各市场不同故只比形状不比绝对值"
             + (f"；<b>{_clipped}个点超出纵轴已截顶</b>(区间最大{_peak:.0f}%)" if _clipped else "")
             + "</div>"
