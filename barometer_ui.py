@@ -23,10 +23,12 @@ _AXIS = ["-7", "-5", "-3", "-1", "0", "1", "3", "5", "7"]
 # 2026-08-01 用户指定配色：中国红不变、香港黄、美股亮蓝。
 # 黄色在白底上最弱，故三条线统一加粗到 1.9，保证黄线不糊。
 _LINE_COLOR = {"中国": "#dc2626", "港股": "#eab308", "美股": "#0ea5e9"}
-# 显示窗口：用户2026-08-01"日期尽可能多"——120个交易日(约半年)，
-# 覆盖一个完整的季度级放量/缩量周期；600px画布放120个点每点仍有5px，线不糊。
-# 尖峰压平其它线的问题不靠砍数据解决，改用下面的分位截顶(见 _axis_span)。
-SHOW_DAYS = 120
+# 显示窗口：按**周**聚合(用户2026-08-01"横轴变为周为单位")。
+# 日线受屏幕限制只能放~120天，改周单位后同样宽度能放下整整一年(~52个点)，
+# 手机上每点仍有~7px——"日期尽可能多"和"看得清"这次同时满足。
+# 周内取日偏离的均值：因 rel 对量能是线性的，mean(v_i/ma20−1) == mean(v_i)/ma20−1，
+# 即"该周平均量能 vs 最近20日常态"，与日线口径完全一致，不是另一把尺子。
+SHOW_DAYS = 250
 
 
 def breadth_html(bm: dict, markets=("A股", "港股", "美股")) -> str:
@@ -75,52 +77,86 @@ def breadth_html(bm: dict, markets=("A股", "港股", "美股")) -> str:
             "横轴=当日涨跌幅(%)分档，纵轴=家数；全市场逐只统计非抽样</div>" + "".join(blocks))
 
 
-def amount_daily_html(ad: dict, height: int = 150, days: int = SHOW_DAYS) -> str:
-    """三市场每日量能走势（相对各自20日均量的偏离%）。ad = market_amount_daily.json。
+def _to_weekly(series: list) -> list:
+    """日序列 → 周序列。周内取 rel_pct 均值（等价于该周平均量能 vs 同一基准），
+    date 记为该周最后一个交易日——横轴刻度按它标。"""
+    from datetime import date as _d
+    buckets: dict = {}
+    for p in series:
+        try:
+            y, m, dd = (int(x) for x in str(p.get("date"))[:10].split("-"))
+            iso = _d(y, m, dd).isocalendar()
+            key = (iso[0], iso[1])
+        except (ValueError, TypeError):
+            continue
+        b = buckets.setdefault(key, {"vals": [], "last": "", "n": 0})
+        if p.get("rel_pct") is not None:
+            b["vals"].append(float(p["rel_pct"]))
+        b["last"] = max(b["last"], str(p.get("date"))[:10])
+        b["n"] += 1
+    out = []
+    for key in sorted(buckets):
+        b = buckets[key]
+        if not b["vals"]:
+            continue
+        out.append({"date": b["last"], "rel_pct": round(sum(b["vals"]) / len(b["vals"]), 1),
+                    "days": b["n"]})
+    # 丢掉不足3天的**首**周：250日窗口切下来的第一周常只剩1~2天(港股实测只有1天)，
+    # 一天的均值当成一周画在最左端是纯噪音。末周不丢——它是"本周至今"，天数少也是真实进度。
+    while out and out[0]["days"] < 3:
+        out.pop(0)
+    return out
 
-    为什么画相对值而不是绝对值：三市场单位不同（亿元/亿港元/亿股），
-    绝对值同图＝没法比；相对20日均量的偏离才是"钱在进还是在退"的可比刻度。
-    这也和截图那条 −35%~35% 的曲线口径一致。
+
+def amount_daily_html(ad: dict, height: int = 170, days: int = SHOW_DAYS) -> str:
+    """三市场量能走势（按周聚合，相对最近20日均量的偏离%）。ad = market_amount_daily.json。
+
+    为什么画相对值而不是绝对值：三市场单位不同（亿元/亿港元/亿股），绝对值同图＝没法比；
+    相对最近20日均量的偏离才是"钱在进还是在退"的可比刻度。
     """
     mks = ad.get("markets") or {}
-    usable = {k: {**v, "series": (v["series"] or [])[-days:]}
-              for k, v in mks.items() if v.get("series") and not v.get("error")}
+    usable = {}
+    for k, v in mks.items():
+        if not v.get("series") or v.get("error"):
+            continue
+        wk = _to_weekly((v["series"] or [])[-days:])
+        if wk:
+            usable[k] = {**v, "series": wk}
     if not usable:
         errs = "；".join(f"{k}:{v.get('error')}" for k, v in mks.items() if v.get("error"))
-        return f"<div style='font-size:12px;color:#b45309'>量能日线不可用（{errs or '无数据'}）</div>"
+        return f"<div style='font-size:12px;color:#b45309'>量能走势不可用（{errs or '无数据'}）</div>"
 
-    W, H, PAD = 620, height, 26
-    # 纵轴按 |偏离| 的95分位取，不按最大值取：单根尖峰(如美股06-23的+106%)会把整根轴撑满、
-    # 另两条压成直线。超出的点截到边界并在标题里报数——截了多少必须说，不许悄悄削平。
-    _abs = sorted(abs(p.get("rel_pct") or 0)
-                  for v in usable.values() for p in v["series"])
-    span = max(20, round((_abs[int(len(_abs) * 0.95)] if _abs else 10) / 5) * 5)
+    W, PAD, LAB = 620, 30, 15          # LAB=底部留给横轴日期刻度的高度
+    H = height
+    PH = H - LAB                       # 绘图区高度
+    # 纵轴取 |偏离| 的95分位而非最大值：单根尖峰会把整轴撑满、其余压成直线。
+    # 周聚合后极值已被自然平滑，通常不再需要截顶；仍有则在标题报数并打点自证。
+    _abs = sorted(abs(p["rel_pct"]) for v in usable.values() for p in v["series"])
+    span = max(10, round((_abs[int(len(_abs) * 0.95)] if _abs else 10) / 5) * 5)
     _peak = _abs[-1] if _abs else 0
     _clipped = sum(1 for x in _abs if x > span)
     n_max = max(len(v["series"]) for v in usable.values())
 
     def xy(i, n, rel):
         x = PAD + (W - PAD - 8) * (i / max(1, n - 1))
-        rel = max(-span, min(span, rel))               # 截到边界,不画到画布外
-        y = H / 2 - (rel / span) * (H / 2 - 12)
-        return f"{x:.1f},{y:.1f}"
+        rel = max(-span, min(span, rel))
+        y = PH / 2 - (rel / span) * (PH / 2 - 10)
+        return x, y
 
     paths, legend = [], []
     for mk, v in usable.items():
         s = v["series"]
-        pts = " ".join(xy(i, len(s), p.get("rel_pct") or 0) for i, p in enumerate(s))
         c = _LINE_COLOR.get(mk, "#64748b")
-        paths.append(f"<polyline points='{pts}' fill='none' stroke='{c}' stroke-width='1.9' "
+        pts = " ".join(f"{x:.1f},{y:.1f}" for x, y in
+                       (xy(i, len(s), p["rel_pct"]) for i, p in enumerate(s)))
+        paths.append(f"<polyline points='{pts}' fill='none' stroke='{c}' stroke-width='1.2' "
                      f"stroke-linejoin='round'/>")
-        # 被截顶的点单独打圆点：否则贴着轴顶的那段直线会被读成"真值刚好=轴上限",
-        # 而它实际可能是 +106%。截断这件事必须在图上自证,不能只躺在标题文字里。
-        for i, pt in enumerate(s):
-            r = pt.get("rel_pct") or 0
-            if abs(r) > span:
-                x, y = xy(i, len(s), r).split(",")
-                paths.append(f"<circle cx='{x}' cy='{y}' r='2.4' fill='{c}' "
-                             f"stroke='#fff' stroke-width='0.8'><title>{pt.get('date')} "
-                             f"{r:+.1f}%（超出纵轴{span:.0f}%已截顶）</title></circle>")
+        for i, p in enumerate(s):      # 截顶点打点自证：贴轴顶的直线会被误读成真值=轴上限
+            if abs(p["rel_pct"]) > span:
+                x, y = xy(i, len(s), p["rel_pct"])
+                paths.append(f"<circle cx='{x:.1f}' cy='{y:.1f}' r='2.2' fill='{c}' "
+                             f"stroke='#fff' stroke-width='0.8'><title>{p['date']} "
+                             f"{p['rel_pct']:+.1f}%（超出纵轴{span:.0f}%已截顶）</title></circle>")
         vs = v.get("vs_ma20_pct")
         legend.append(
             f"<span style='white-space:nowrap'>"
@@ -129,18 +165,34 @@ def amount_daily_html(ad: dict, height: int = 150, days: int = SHOW_DAYS) -> str
             f"<b>{mk}</b> {v.get('latest')}{v.get('unit')} "
             f"<span style='color:{'#dc2626' if (vs or 0) > 0 else '#16a34a'}'>{vs:+.1f}%</span>"
             f" <span style='color:#64748b'>{v.get('verdict')}</span></span>")
+
     grid = "".join(
-        f"<line x1='{PAD}' y1='{H/2 - k*(H/2-12)}' x2='{W-8}' y2='{H/2 - k*(H/2-12)}' "
+        f"<line x1='{PAD}' y1='{PH/2 - k*(PH/2-10):.1f}' x2='{W-8}' y2='{PH/2 - k*(PH/2-10):.1f}' "
         f"stroke='#e2e8f0' stroke-width='1' stroke-dasharray='{'0' if k == 0 else '3,3'}'/>"
-        f"<text x='0' y='{H/2 - k*(H/2-12) + 3}' font-size='9' fill='#94a3b8'>{k*span:+.0f}%</text>"
+        f"<text x='0' y='{PH/2 - k*(PH/2-10) + 3:.1f}' font-size='9' fill='#94a3b8'>{k*span:+.0f}%</text>"
         for k in (1, 0.5, 0, -0.5, -1))
+
+    # 横轴时间刻度：取点数最多那条的周末日期，等距抽 6 个标 MM/DD，并画竖向浅参考线。
+    ticks = ""
+    ref = max(usable.values(), key=lambda v: len(v["series"]))["series"]
+    n = len(ref)
+    step = max(1, (n - 1) // 5)
+    for i in range(0, n, step):
+        x, _ = xy(i, n, 0)
+        d = str(ref[i]["date"])
+        ticks += (f"<line x1='{x:.1f}' y1='0' x2='{x:.1f}' y2='{PH}' stroke='#f1f5f9' "
+                  f"stroke-width='1'/>"
+                  f"<text x='{x:.1f}' y='{H-3}' font-size='9' fill='#94a3b8' "
+                  f"text-anchor='middle'>{d[5:7]}/{d[8:10]}</text>")
+
     caps = " · ".join(f"{k}={v.get('label')}" for k, v in usable.items())
     return (f"<div style='font-size:11px;color:#94a3b8;margin-bottom:2px'>"
-            f"纵轴=当日量能相对<b>最近20日均量</b>(固定基准,非滚动)的偏离(%)，横轴=最近{n_max}个交易日（约"
-            f"{n_max // 21}个月）；单位各市场不同故只比形状不比绝对值"
-            + (f"；<b>{_clipped}个点超出纵轴已截顶</b>(区间最大{_peak:.0f}%)" if _clipped else "")
+            f"纵轴=<b>每周</b>平均量能相对<b>最近20日均量</b>(固定基准,非滚动)的偏离(%)，"
+            f"横轴=最近{n_max}周（约{round(n_max / 4.35)}个月）；"
+            f"单位各市场不同故只比形状不比绝对值"
+            + (f"；<b>{_clipped}个点超出纵轴已截顶</b>(最大{_peak:.0f}%)" if _clipped else "")
             + "</div>"
-            f"<svg viewBox='0 0 {W} {H}' style='width:100%;height:auto'>{grid}{''.join(paths)}</svg>"
+            f"<svg viewBox='0 0 {W} {H}' style='width:100%;height:auto'>{ticks}{grid}{''.join(paths)}</svg>"
             f"<div style='font-size:11px;margin-top:2px;display:flex;flex-wrap:wrap;"
             f"gap:4px 14px'>{''.join(legend)}</div>"
             f"<div style='font-size:10px;color:#94a3b8;margin-top:1px'>口径：{caps}</div>")
