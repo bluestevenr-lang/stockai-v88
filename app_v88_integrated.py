@@ -5230,6 +5230,7 @@ def render_cloud_search():
     # 历史一恢复就崩'no attribute compare_basket'(以前历史恒空侥幸不触发)。就地init。
     if 'compare_basket' not in st.session_state:
         st.session_state.compare_basket = []
+    from compare_ui import MAX_COMPARE as _MAXCMP   # 用户2026-08-01定:最多四只
     if 'search_history' not in st.session_state:
         # 【2026-08-01 用户"搜索历史丢了"】根因:persist落盘了但重启从不回读——
         # 冷启动从 search_history.json 按最近搜索时间取前10只回填
@@ -5400,7 +5401,7 @@ def render_cloud_search():
                             st.button("✅ 已在对比篮", key="search_compare", disabled=True, width='stretch')
                         else:
                             if st.button("➕ 加入对比篮", key="search_compare", width='stretch'):
-                                (st.session_state.compare_basket.append((code, name)) if len(st.session_state.compare_basket) < 5 else st.toast('⚠️ 对比篮最多5只(先移出再加)', icon='⚠️'))
+                                (st.session_state.compare_basket.append((code, name)) if len(st.session_state.compare_basket) < _MAXCMP else st.toast(f'⚠️ 对比篮最多{_MAXCMP}只(先移出再加)', icon='⚠️'))
                                 st.toast(f"✅ 已加入对比篮: {name}", icon="➕")
                                 st.rerun()
             else:
@@ -5412,6 +5413,19 @@ def render_cloud_search():
     if len(st.session_state.search_history) > 0:
         st.markdown('<p style="font-size: 12px; font-weight: 600; margin-top: 1rem; margin-bottom: 0.3rem;">📜 搜索历史</p>', unsafe_allow_html=True)
         st.caption(f"最近搜索 {len(st.session_state.search_history)} 只")
+        # 【2026-08-01 用户"从历史里挑选历史个股进行深度对比,最多四只"】
+        # 原来只能一只一只点➕,挑四只要点四次还看不到全貌;这里一次多选直接进对比。
+        _hopt9 = {f"{_n9}（{_c9}）": (_c9, _n9) for _c9, _n9 in st.session_state.search_history}
+        _hsel9 = st.multiselect("从搜索历史挑", list(_hopt9), max_selections=_MAXCMP,
+                                key="hist_pk_sel", label_visibility="collapsed",
+                                placeholder=f"从历史挑2~{_MAXCMP}只做深度对比…")
+        if len(_hsel9) >= 2 and st.button(f"⚔️ 深度对比这{len(_hsel9)}只",
+                                          key="hist_pk_go", type="primary", width='stretch'):
+            st.session_state.pk_codes = [_hopt9[s][0] for s in _hsel9]
+            st.session_state.pk_names = [_hopt9[s][1] for s in _hsel9]
+            st.session_state.scan_selected_code = None
+            st.session_state.scan_selected_name = None
+            st.rerun()
         
         for i, (code, name) in enumerate(st.session_state.search_history):
             col1, col2, col3 = st.columns([2, 1, 1])
@@ -5434,7 +5448,7 @@ def render_cloud_search():
                     st.button("✅", key=f"hist_compare_{i}", disabled=True, width='stretch')
                 else:
                     if st.button("➕", key=f"hist_compare_{i}", help="加入对比", width='stretch'):
-                        (st.session_state.compare_basket.append((code, name)) if len(st.session_state.compare_basket) < 5 else st.toast('⚠️ 对比篮最多5只(先移出再加)', icon='⚠️'))
+                        (st.session_state.compare_basket.append((code, name)) if len(st.session_state.compare_basket) < _MAXCMP else st.toast(f'⚠️ 对比篮最多{_MAXCMP}只(先移出再加)', icon='⚠️'))
                         st.toast(f"✅ 已加入对比篮: {name}", icon="➕")
                         st.rerun()
         
@@ -5455,10 +5469,10 @@ def render_cloud_search():
                     str(_r9k.get("code")), _r9k.get("name") or str(_r9k.get("code")))
         if _pko9:
             st.markdown('<p style="font-size:12px;font-weight:600;margin:0.6rem 0 0.2rem">'
-                        '⚔️ 评级榜多选对比（3A/2A/1A·最多5只）</p>', unsafe_allow_html=True)
-            _sel9k = st.multiselect("从评级榜选择", list(_pko9), max_selections=5,
+                        f'⚔️ 评级榜多选对比（3A/2A/1A·最多{_MAXCMP}只）</p>', unsafe_allow_html=True)
+            _sel9k = st.multiselect("从评级榜选择", list(_pko9), max_selections=_MAXCMP,
                                     key="grade_pk_sel", label_visibility="collapsed",
-                                    placeholder="选2~5只评级股…")
+                                    placeholder=f"选2~{_MAXCMP}只评级股…")
             if len(_sel9k) >= 2:
                 if st.button(f"⚔️ 对比这{len(_sel9k)}只", key="grade_pk_go", type="primary"):
                     st.session_state.pk_codes = [_pko9[s][0] for s in _sel9k]
@@ -5601,7 +5615,7 @@ def render_clickable_table(df_results, table_key):
                 added_count = 0
                 for code, name in selected_stocks:
                     if (code, name) not in st.session_state.compare_basket:
-                        (st.session_state.compare_basket.append((code, name)) if len(st.session_state.compare_basket) < 5 else st.toast('⚠️ 对比篮最多5只(先移出再加)', icon='⚠️'))
+                        (st.session_state.compare_basket.append((code, name)) if len(st.session_state.compare_basket) < _MAXCMP else st.toast(f'⚠️ 对比篮最多{_MAXCMP}只(先移出再加)', icon='⚠️'))
                         added_count += 1
                 if added_count > 0:
                     st.toast(f"✅ 已加入 {added_count} 只股票到对比篮", icon="➕")
@@ -13333,6 +13347,7 @@ if 'scan_selected_name' not in st.session_state: st.session_state.scan_selected_
 if 'trigger_analysis' not in st.session_state: st.session_state.trigger_analysis = False
 # 【V87.7】全局对比篮
 if 'compare_basket' not in st.session_state: st.session_state.compare_basket = []  # [(code, name), ...]
+from compare_ui import MAX_COMPARE as _MAXCMP   # 用户2026-08-01定:最多四只(原为5,与模块标题"2-4只"自相矛盾)
 if 'search_history' not in st.session_state: st.session_state.search_history = []  # [(code, name), ...]
 # 【V87.11】行业分析
 if 'sector_analysis_name' not in st.session_state: st.session_state.sector_analysis_name = None
@@ -21426,7 +21441,7 @@ if _V88_WATCHLIST_UI:   # 2026-07-31 用户令:删自选版面(数据池保留,�
     # 【模块 ④】股票PK对决（仅在有对比股票时显示）
     # ═══════════════════════════════════════════════════════════════
 if st.session_state.get('pk_codes') and len(st.session_state.pk_codes) >= 2:
-    _module_header("⚔️", "股票PK对决", "勾选2-4只股票对比分析", "#f093fb", "#f5576c")
+    _module_header("⚔️", "股票深度对比", "2~4只:谁值得买/是不是同一个赌注/同期谁跑赢", "#f093fb", "#f5576c")
     
     pk_codes = st.session_state.pk_codes
     pk_names = st.session_state.get('pk_names', pk_codes)
@@ -21438,6 +21453,7 @@ if st.session_state.get('pk_codes') and len(st.session_state.pk_codes) >= 2:
     status_text = st.empty()
     
     pk_results = []
+    _pk_hist, _pk_rank = {}, []      # 深度对比用:{名称:收盘序列} / 排序卡行
     total_stocks = len(pk_codes)
     
     for idx, code in enumerate(pk_codes):
@@ -21460,6 +21476,18 @@ if st.session_state.get('pk_codes') and len(st.session_state.pk_codes) >= 2:
                 from v88_decision_core import evaluate_decision as _evaluate_pk_decision
                 _pk_dc = _evaluate_pk_decision(
                     df_pk, metrics.get('trend_full') or {}, name=name, code=code)
+                # 【2026-08-01 深度对比】同一份已拉到的K线顺手带出:收盘序列(走势图+相关性)
+                # 与排序卡字段。不额外拉数据、不调AI,零成本。
+                try:
+                    _pk_hist[name] = [float(x) for x in df_pk['Close'].tolist()]
+                    _pk_rank.append({
+                        "name": name, "code": code, "score": _pk_dc.get('unified_score', 0),
+                        "action": _pk_dc.get('action'), "p_up": _pk_dc.get('p_up'),
+                        "rr": _pk_dc.get('rr'), "expected": _pk_dc.get('expected_pct'),
+                        "pos52": _pk_dc.get('pos52'), "stop": _pk_dc.get('stop'),
+                        "vold": (metrics.get('trend_full') or {}).get('vold')})
+                except Exception:
+                    logging.exception("[V88] 深度对比字段收集失败 %s", code)
                 pk_results.append({
                     "股票": name,
                     "代码": code,
@@ -21482,6 +21510,24 @@ if st.session_state.get('pk_codes') and len(st.session_state.pk_codes) >= 2:
     status_text.empty()
     
     if pk_results:
+        # 【V88·深度对比 2026-08-01 用户"最多四只·帮我设计"】
+        # 原来只有一张12列指标表=参数并列,看完还得自己心算"那我买哪只"。
+        # 补三块回答真正的问题:谁值得买 / 是不是同一个赌注 / 同期谁跑赢。原表格保留在下方。
+        try:
+            from compare_ui import verdict_html as _vh9, family_html as _fh9, trend_svg as _ts9
+            if _pk_rank:
+                st.markdown("#### ① 谁值得买")
+                st.markdown(_vh9(_pk_rank), unsafe_allow_html=True)
+            if len(_pk_hist) >= 2:
+                st.markdown("#### ② 是不是同一个赌注")
+                st.markdown(_fh9(_pk_hist), unsafe_allow_html=True)
+                st.markdown("#### ③ 同期谁跑赢")
+                _cw9 = st.radio("走势窗口", ["20日", "60日", "120日"], horizontal=True,
+                                index=1, key="_pk_win9", label_visibility="collapsed")
+                st.markdown(_ts9(_pk_hist, days=int(_cw9[:-1])), unsafe_allow_html=True)
+            st.markdown("#### ④ 全指标横排")
+        except Exception:
+            logging.exception("[V88] 深度对比区块渲染失败")
         # 显示对比表格
         df_pk_display = pd.DataFrame(pk_results)
         st.dataframe(df_pk_display, width='stretch', hide_index=True)
