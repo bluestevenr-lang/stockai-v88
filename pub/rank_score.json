@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-01 23:16（北京时间）",
+ "generated_at": "2026-08-01 23:23（北京时间）",
  "version": "V88-R1",
  "weights": {
   "edge": 45,
@@ -9,6 +9,134 @@
  },
  "note": "排名分=赢面40+催化20+量能15+位置15+认证10;认证是资格不是赢面故降权(ARXS/BBVA印证分满分却负期望案);位置分左右侧两套口径,右侧贴新高放量不扣分(汇丰案);闸门只标记不加分,降权必说原因。只读,不改任何既有判据。",
  "rows": [
+  {
+   "code": "9988.HK",
+   "name": "阿里巴巴-SW",
+   "market": null,
+   "tier": "2A",
+   "rank_score": 95.3,
+   "inner": 0.953,
+   "score_raw": 95.35,
+   "parts": {
+    "edge": 1.0,
+    "catalyst": 1.0,
+    "volume": 0.85,
+    "position": 0.84
+   },
+   "edge_pp": 35.3,
+   "catalyst_kind": "📣催化驱动",
+   "vold": 1.3,
+   "pos52": 36.0,
+   "pos_note": "左侧·偏低",
+   "when_kind": "now",
+   "when": "现在买（今日窗口内）",
+   "flags": [],
+   "coverage": [
+    "edge",
+    "volume",
+    "position",
+    "catalyst"
+   ],
+   "coverage_n": "4/5",
+   "rank": 1,
+   "rank_in_tier": 1
+  },
+  {
+   "code": "300750.SZ",
+   "name": "宁德时代",
+   "market": null,
+   "tier": "1A·短线",
+   "rank_score": 90.5,
+   "inner": 0.905,
+   "score_raw": 90.5005,
+   "parts": {
+    "edge": 1.0,
+    "catalyst": 1.0,
+    "volume": 0.65,
+    "position": 0.7167
+   },
+   "edge_pp": 28.2,
+   "catalyst_kind": "📣催化驱动",
+   "vold": 1.06,
+   "pos52": 47.0,
+   "pos_note": "中位",
+   "when_kind": "now",
+   "when": "现在买（今日窗口内）",
+   "flags": [],
+   "coverage": [
+    "edge",
+    "volume",
+    "position",
+    "catalyst"
+   ],
+   "coverage_n": "4/5",
+   "rank": 2,
+   "rank_in_tier": 1
+  },
+  {
+   "code": "06055.HK",
+   "name": "中烟香港",
+   "market": null,
+   "tier": "2A",
+   "rank_score": 87.9,
+   "inner": 0.879,
+   "score_raw": 87.928,
+   "parts": {
+    "edge": 1.0,
+    "catalyst": 0.55,
+    "volume": 0.9904,
+    "position": 0.9548
+   },
+   "edge_pp": 47.7,
+   "catalyst_kind": "📈趋势跟随",
+   "vold": 2.77,
+   "pos52": 21.0,
+   "pos_note": "左侧·历史低位",
+   "when_kind": "pullback",
+   "when": "回踩 22.47 买 · 5个交易日内有效",
+   "flags": [],
+   "coverage": [
+    "edge",
+    "volume",
+    "position",
+    "catalyst"
+   ],
+   "coverage_n": "4/5",
+   "rank": 3,
+   "rank_in_tier": 2
+  },
+  {
+   "code": "1114.HK",
+   "name": "华晨中国",
+   "market": null,
+   "tier": "1A·中长线",
+   "rank_score": 84.6,
+   "inner": 0.846,
+   "score_raw": 84.624,
+   "parts": {
+    "edge": 1.0,
+    "catalyst": 0.45,
+    "volume": 0.92,
+    "position": 0.9716
+   },
+   "edge_pp": 49.6,
+   "catalyst_kind": "💎超跌回归",
+   "vold": 1.65,
+   "pos52": 7.0,
+   "pos_note": "左侧·历史低位",
+   "when_kind": "pullback",
+   "when": "回踩 2.03 买 · 5个交易日内有效",
+   "flags": [],
+   "coverage": [
+    "edge",
+    "volume",
+    "position",
+    "catalyst"
+   ],
+   "coverage_n": "4/5",
+   "rank": 4,
+   "rank_in_tier": 1
+  },
   {
    "code": "600885.SS",
    "name": "宏发股份",
@@ -37,8 +165,8 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 1,
-   "rank_in_tier": 1
+   "rank": 5,
+   "rank_in_tier": 3
   },
   {
    "code": "2556.HK",
@@ -68,7 +196,37 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 2,
+   "rank": 6,
+   "rank_in_tier": 4
+  },
+  {
+   "code": "0883.HK",
+   "name": "中海油",
+   "market": null,
+   "tier": "1A·中长线",
+   "rank_score": 59.5,
+   "inner": 0.595,
+   "score_raw": 59.55,
+   "parts": {
+    "edge": 1.0,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.82
+   },
+   "edge_pp": 37.1,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 38.0,
+   "pos_note": "左侧·偏低",
+   "when_kind": "now",
+   "when": "现在买（今日窗口内）",
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 7,
    "rank_in_tier": 2
   },
   {
@@ -99,8 +257,8 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 3,
-   "rank_in_tier": 3
+   "rank": 8,
+   "rank_in_tier": 5
   },
   {
    "code": "9901.HK",
@@ -130,8 +288,8 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 4,
-   "rank_in_tier": 4
+   "rank": 9,
+   "rank_in_tier": 6
   },
   {
    "code": "0552.HK",
@@ -161,8 +319,8 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 5,
-   "rank_in_tier": 5
+   "rank": 10,
+   "rank_in_tier": 7
   },
   {
    "code": "002303.SZ",
@@ -192,7 +350,7 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 6,
+   "rank": 11,
    "rank_in_tier": 1
   },
   {
@@ -223,8 +381,8 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 7,
-   "rank_in_tier": 6
+   "rank": 12,
+   "rank_in_tier": 8
   },
   {
    "code": "002258.SZ",
@@ -254,8 +412,8 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 8,
-   "rank_in_tier": 7
+   "rank": 13,
+   "rank_in_tier": 9
   },
   {
    "code": "601288.SS",
@@ -285,8 +443,8 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 9,
-   "rank_in_tier": 8
+   "rank": 14,
+   "rank_in_tier": 10
   },
   {
    "code": "MMSI",
@@ -316,8 +474,8 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 10,
-   "rank_in_tier": 9
+   "rank": 15,
+   "rank_in_tier": 11
   },
   {
    "code": "MSA",
@@ -349,8 +507,38 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 11,
-   "rank_in_tier": 10
+   "rank": 16,
+   "rank_in_tier": 12
+  },
+  {
+   "code": "3110.HK",
+   "name": "港股高股息ETF",
+   "market": null,
+   "tier": "1A·中长线",
+   "rank_score": 43.9,
+   "inner": 0.439,
+   "score_raw": 43.8645,
+   "parts": {
+    "edge": 0.747,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.5333
+   },
+   "edge_pp": 15.3,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 58.0,
+   "pos_note": "中位",
+   "when_kind": "pullback",
+   "when": "回踩 31.26 买 · 5个交易日内有效",
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 17,
+   "rank_in_tier": 3
   },
   {
    "code": "ITGR",
@@ -382,8 +570,8 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 12,
-   "rank_in_tier": 11
+   "rank": 18,
+   "rank_in_tier": 13
   },
   {
    "code": "2020.HK",
@@ -416,8 +604,8 @@
     "catalyst"
    ],
    "coverage_n": "4/5",
-   "rank": 13,
-   "rank_in_tier": 1
+   "rank": 19,
+   "rank_in_tier": 4
   },
   {
    "code": "ARXS",
@@ -449,8 +637,8 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 14,
-   "rank_in_tier": 12
+   "rank": 20,
+   "rank_in_tier": 14
   },
   {
    "code": "AMRX",
@@ -480,8 +668,8 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 15,
-   "rank_in_tier": 2
+   "rank": 21,
+   "rank_in_tier": 5
   },
   {
    "code": "300996.SZ",
@@ -513,8 +701,8 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 16,
-   "rank_in_tier": 13
+   "rank": 22,
+   "rank_in_tier": 15
   },
   {
    "code": "0005.HK",
@@ -545,8 +733,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 17,
-   "rank_in_tier": 14
+   "rank": 23,
+   "rank_in_tier": 16
   },
   {
    "code": "PSX",
@@ -577,8 +765,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 18,
-   "rank_in_tier": 15
+   "rank": 24,
+   "rank_in_tier": 17
   },
   {
    "code": "GTES",
@@ -610,8 +798,8 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 19,
-   "rank_in_tier": 16
+   "rank": 25,
+   "rank_in_tier": 18
   },
   {
    "code": "MUFG",
@@ -642,7 +830,7 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 20,
+   "rank": 26,
    "rank_in_tier": 2
   },
   {
@@ -675,8 +863,8 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 21,
-   "rank_in_tier": 17
+   "rank": 27,
+   "rank_in_tier": 19
   },
   {
    "code": "BBVA",
@@ -708,8 +896,8 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 22,
-   "rank_in_tier": 18
+   "rank": 28,
+   "rank_in_tier": 20
   },
   {
    "code": "AMZN",
@@ -741,8 +929,8 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 23,
-   "rank_in_tier": 19
+   "rank": 29,
+   "rank_in_tier": 21
   },
   {
    "code": "002832.SZ",
@@ -774,8 +962,8 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 24,
-   "rank_in_tier": 3
+   "rank": 30,
+   "rank_in_tier": 6
   },
   {
    "code": "DULL",
@@ -807,8 +995,8 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 25,
-   "rank_in_tier": 4
+   "rank": 31,
+   "rank_in_tier": 7
   },
   {
    "code": "HSBC",
@@ -839,8 +1027,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 26,
-   "rank_in_tier": 20
+   "rank": 32,
+   "rank_in_tier": 22
   },
   {
    "code": "SAN",
@@ -871,8 +1059,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 27,
-   "rank_in_tier": 21
+   "rank": 33,
+   "rank_in_tier": 23
   },
   {
    "code": "GWW",
@@ -903,8 +1091,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 28,
-   "rank_in_tier": 22
+   "rank": 34,
+   "rank_in_tier": 24
   },
   {
    "code": "2328.HK",
@@ -935,8 +1123,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 29,
-   "rank_in_tier": 23
+   "rank": 35,
+   "rank_in_tier": 25
   },
   {
    "code": "0669.HK",
@@ -967,8 +1155,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 30,
-   "rank_in_tier": 5
+   "rank": 36,
+   "rank_in_tier": 8
   },
   {
    "code": "603259.SS",
@@ -999,8 +1187,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 31,
-   "rank_in_tier": 6
+   "rank": 37,
+   "rank_in_tier": 9
   },
   {
    "code": "NWG",
@@ -1031,8 +1219,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 32,
-   "rank_in_tier": 24
+   "rank": 38,
+   "rank_in_tier": 26
   },
   {
    "code": "MET",
@@ -1063,8 +1251,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 33,
-   "rank_in_tier": 25
+   "rank": 39,
+   "rank_in_tier": 27
   },
   {
    "code": "PRU",
@@ -1095,8 +1283,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 34,
-   "rank_in_tier": 26
+   "rank": 40,
+   "rank_in_tier": 28
   },
   {
    "code": "CCEP",
@@ -1127,8 +1315,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 35,
-   "rank_in_tier": 7
+   "rank": 41,
+   "rank_in_tier": 10
   },
   {
    "code": "RACE",
@@ -1159,8 +1347,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 36,
-   "rank_in_tier": 27
+   "rank": 42,
+   "rank_in_tier": 29
   },
   {
    "code": "0300.HK",
@@ -1191,8 +1379,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 37,
-   "rank_in_tier": 28
+   "rank": 43,
+   "rank_in_tier": 30
   },
   {
    "code": "2359.HK",
@@ -1223,8 +1411,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 38,
-   "rank_in_tier": 8
+   "rank": 44,
+   "rank_in_tier": 11
   },
   {
    "code": "ING",
@@ -1255,8 +1443,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 39,
-   "rank_in_tier": 29
+   "rank": 45,
+   "rank_in_tier": 31
   },
   {
    "code": "APH",
@@ -1287,8 +1475,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 40,
-   "rank_in_tier": 9
+   "rank": 46,
+   "rank_in_tier": 12
   },
   {
    "code": "VLO",
@@ -1319,8 +1507,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 41,
-   "rank_in_tier": 30
+   "rank": 47,
+   "rank_in_tier": 32
   },
   {
    "code": "002440.SZ",
@@ -1351,8 +1539,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 42,
-   "rank_in_tier": 10
+   "rank": 48,
+   "rank_in_tier": 13
   },
   {
    "code": "VIK",
@@ -1383,8 +1571,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 43,
-   "rank_in_tier": 31
+   "rank": 49,
+   "rank_in_tier": 33
   },
   {
    "code": "601168.SS",
@@ -1415,8 +1603,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 44,
-   "rank_in_tier": 32
+   "rank": 50,
+   "rank_in_tier": 34
   },
   {
    "code": "2689.HK",
@@ -1447,8 +1635,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 45,
-   "rank_in_tier": 11
+   "rank": 51,
+   "rank_in_tier": 14
   },
   {
    "code": "1308.HK",
@@ -1479,8 +1667,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 46,
-   "rank_in_tier": 33
+   "rank": 52,
+   "rank_in_tier": 35
   },
   {
    "code": "LYG",
@@ -1511,8 +1699,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 47,
-   "rank_in_tier": 34
+   "rank": 53,
+   "rank_in_tier": 36
   },
   {
    "code": "STT",
@@ -1543,8 +1731,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 48,
-   "rank_in_tier": 12
+   "rank": 54,
+   "rank_in_tier": 15
   },
   {
    "code": "003013.SZ",
@@ -1575,8 +1763,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 49,
-   "rank_in_tier": 35
+   "rank": 55,
+   "rank_in_tier": 37
   },
   {
    "code": "GE",
@@ -1607,8 +1795,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 50,
-   "rank_in_tier": 13
+   "rank": 56,
+   "rank_in_tier": 16
   },
   {
    "code": "MT",
@@ -1640,8 +1828,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 51,
-   "rank_in_tier": 14
+   "rank": 57,
+   "rank_in_tier": 17
   },
   {
    "code": "BAC",
@@ -1672,8 +1860,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 52,
-   "rank_in_tier": 36
+   "rank": 58,
+   "rank_in_tier": 38
   },
   {
    "code": "UBS",
@@ -1704,8 +1892,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 53,
-   "rank_in_tier": 15
+   "rank": 59,
+   "rank_in_tier": 18
   },
   {
    "code": "2698.HK",
@@ -1737,8 +1925,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 54,
-   "rank_in_tier": 16
+   "rank": 60,
+   "rank_in_tier": 19
   },
   {
    "code": "DAL",
@@ -1770,8 +1958,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 55,
-   "rank_in_tier": 17
+   "rank": 61,
+   "rank_in_tier": 20
   },
   {
    "code": "MPC",
@@ -1802,8 +1990,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 56,
-   "rank_in_tier": 18
+   "rank": 62,
+   "rank_in_tier": 21
   },
   {
    "code": "TRV",
@@ -1835,8 +2023,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 57,
-   "rank_in_tier": 19
+   "rank": 63,
+   "rank_in_tier": 22
   },
   {
    "code": "2888.HK",
@@ -1868,8 +2056,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 58,
-   "rank_in_tier": 37
+   "rank": 64,
+   "rank_in_tier": 39
   },
   {
    "code": "2314.HK",
@@ -1901,8 +2089,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 59,
-   "rank_in_tier": 20
+   "rank": 65,
+   "rank_in_tier": 23
   },
   {
    "code": "0023.HK",
@@ -1933,8 +2121,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 60,
-   "rank_in_tier": 38
+   "rank": 66,
+   "rank_in_tier": 40
   },
   {
    "code": "ADP",
@@ -1965,8 +2153,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 61,
-   "rank_in_tier": 21
+   "rank": 67,
+   "rank_in_tier": 24
   },
   {
    "code": "PCAR",
@@ -1998,8 +2186,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 62,
-   "rank_in_tier": 22
+   "rank": 68,
+   "rank_in_tier": 25
   },
   {
    "code": "300759.SZ",
@@ -2031,8 +2219,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 63,
-   "rank_in_tier": 23
+   "rank": 69,
+   "rank_in_tier": 26
   },
   {
    "code": "GRMN",
@@ -2064,8 +2252,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 64,
-   "rank_in_tier": 24
+   "rank": 70,
+   "rank_in_tier": 27
   },
   {
    "code": "SMFG",
@@ -2096,8 +2284,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 65,
-   "rank_in_tier": 39
+   "rank": 71,
+   "rank_in_tier": 41
   },
   {
    "code": "ALL",
@@ -2128,8 +2316,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 66,
-   "rank_in_tier": 25
+   "rank": 72,
+   "rank_in_tier": 28
   },
   {
    "code": "IX",
@@ -2160,7 +2348,7 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 67,
+   "rank": 73,
    "rank_in_tier": 3
   },
   {
@@ -2193,8 +2381,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 68,
-   "rank_in_tier": 26
+   "rank": 74,
+   "rank_in_tier": 29
   },
   {
    "code": "AMGN",
@@ -2226,8 +2414,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 69,
-   "rank_in_tier": 27
+   "rank": 75,
+   "rank_in_tier": 30
   },
   {
    "code": "2388.HK",
@@ -2259,8 +2447,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 70,
-   "rank_in_tier": 40
+   "rank": 76,
+   "rank_in_tier": 42
   },
   {
    "code": "RCL",
@@ -2292,8 +2480,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 71,
-   "rank_in_tier": 28
+   "rank": 77,
+   "rank_in_tier": 31
   },
   {
    "code": "CTAS",
@@ -2324,8 +2512,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 72,
-   "rank_in_tier": 29
+   "rank": 78,
+   "rank_in_tier": 32
   },
   {
    "code": "0293.HK",
@@ -2357,8 +2545,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 73,
-   "rank_in_tier": 41
+   "rank": 79,
+   "rank_in_tier": 43
   },
   {
    "code": "BMO",
@@ -2390,8 +2578,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 74,
-   "rank_in_tier": 42
+   "rank": 80,
+   "rank_in_tier": 44
   },
   {
    "code": "MMM",
@@ -2423,8 +2611,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 75,
-   "rank_in_tier": 30
+   "rank": 81,
+   "rank_in_tier": 33
   },
   {
    "code": "2510.HK",
@@ -2456,8 +2644,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 76,
-   "rank_in_tier": 31
+   "rank": 82,
+   "rank_in_tier": 34
   },
   {
    "code": "3600.HK",
@@ -2489,8 +2677,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 77,
-   "rank_in_tier": 32
+   "rank": 83,
+   "rank_in_tier": 35
   },
   {
    "code": "6190.HK",
@@ -2522,8 +2710,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 78,
-   "rank_in_tier": 33
+   "rank": 84,
+   "rank_in_tier": 36
   },
   {
    "code": "RTX",
@@ -2555,8 +2743,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 79,
-   "rank_in_tier": 43
+   "rank": 85,
+   "rank_in_tier": 45
   },
   {
    "code": "2356.HK",
@@ -2588,8 +2776,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 80,
-   "rank_in_tier": 44
+   "rank": 86,
+   "rank_in_tier": 46
   },
   {
    "code": "0440.HK",
@@ -2621,8 +2809,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 81,
-   "rank_in_tier": 45
+   "rank": 87,
+   "rank_in_tier": 47
   },
   {
    "code": "600428.SS",
@@ -2654,8 +2842,8 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 82,
-   "rank_in_tier": 46
+   "rank": 88,
+   "rank_in_tier": 48
   },
   {
    "code": "2518.HK",
@@ -2687,8 +2875,8 @@
     "position"
    ],
    "coverage_n": "2/5",
-   "rank": 83,
-   "rank_in_tier": 47
+   "rank": 89,
+   "rank_in_tier": 49
   },
   {
    "code": "SN",
@@ -2720,16 +2908,866 @@
     "position"
    ],
    "coverage_n": "3/5",
-   "rank": 84,
-   "rank_in_tier": 48
+   "rank": 90,
+   "rank_in_tier": 50
+  }
+ ],
+ "watch": [
+  {
+   "code": "510500.SS",
+   "name": "中证500ETF",
+   "market": null,
+   "tier": null,
+   "rank_score": 56.2,
+   "inner": 0.562,
+   "score_raw": 56.235,
+   "parts": {
+    "edge": 0.879,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.962
+   },
+   "edge_pp": 20.4,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 15.0,
+   "pos_note": "左侧·历史低位",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 10,
+   "rank_in_tier": 1,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "510300.SS",
+   "name": "沪深300ETF",
+   "market": null,
+   "tier": null,
+   "rank_score": 51.1,
+   "inner": 0.511,
+   "score_raw": 51.12,
+   "parts": {
+    "edge": 0.806,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.84
+   },
+   "edge_pp": 17.6,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 36.0,
+   "pos_note": "左侧·偏低",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 14,
+   "rank_in_tier": 2,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "513500.SS",
+   "name": "标普500",
+   "market": null,
+   "tier": null,
+   "rank_score": 49.9,
+   "inner": 0.499,
+   "score_raw": 49.92,
+   "parts": {
+    "edge": 0.926,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.4
+   },
+   "edge_pp": 22.2,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 70.0,
+   "pos_note": "偏高",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 16,
+   "rank_in_tier": 3,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "159632.SZ",
+   "name": "纳斯达克",
+   "market": null,
+   "tier": null,
+   "rank_score": 49.6,
+   "inner": 0.496,
+   "score_raw": 49.65,
+   "parts": {
+    "edge": 0.9,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.46
+   },
+   "edge_pp": 21.2,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 64.0,
+   "pos_note": "偏高",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 17,
+   "rank_in_tier": 4,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "300631.SZ",
+   "name": "久吾高科",
+   "market": null,
+   "tier": null,
+   "rank_score": 49.6,
+   "inner": 0.496,
+   "score_raw": 49.584,
+   "parts": {
+    "edge": 0.732,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.9596
+   },
+   "edge_pp": 14.7,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 17.0,
+   "pos_note": "左侧·历史低位",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 18,
+   "rank_in_tier": 5,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "513310.SS",
+   "name": "中韩芯片",
+   "market": null,
+   "tier": null,
+   "rank_score": 45.3,
+   "inner": 0.453,
+   "score_raw": 45.33,
+   "parts": {
+    "edge": 0.674,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.85
+   },
+   "edge_pp": 12.4,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 35.0,
+   "pos_note": "左侧·偏低",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 25,
+   "rank_in_tier": 6,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "300142.SZ",
+   "name": "沃森生物",
+   "market": null,
+   "tier": null,
+   "rank_score": 42.0,
+   "inner": 0.42,
+   "score_raw": 41.97,
+   "parts": {
+    "edge": 0.576,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.92
+   },
+   "edge_pp": 8.4,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 28.0,
+   "pos_note": "左侧·偏低",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 27,
+   "rank_in_tier": 7,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "GOOG",
+   "name": "谷歌C",
+   "market": null,
+   "tier": null,
+   "rank_score": 41.3,
+   "inner": 0.413,
+   "score_raw": 41.28,
+   "parts": {
+    "edge": 0.714,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.46
+   },
+   "edge_pp": 14.0,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 64.0,
+   "pos_note": "偏高",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 28,
+   "rank_in_tier": 8,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "QQQM",
+   "name": "纳指100ETF",
+   "market": null,
+   "tier": null,
+   "rank_score": 40.4,
+   "inner": 0.404,
+   "score_raw": 40.44,
+   "parts": {
+    "edge": 0.712,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.41
+   },
+   "edge_pp": 13.9,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 69.0,
+   "pos_note": "偏高",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 30,
+   "rank_in_tier": 9,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "NVDA",
+   "name": "英伟达",
+   "market": null,
+   "tier": null,
+   "rank_score": 40.4,
+   "inner": 0.404,
+   "score_raw": 40.35,
+   "parts": {
+    "edge": 0.63,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.65
+   },
+   "edge_pp": 10.6,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 51.0,
+   "pos_note": "中位",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 31,
+   "rank_in_tier": 10,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "PM",
+   "name": "菲利普莫里斯",
+   "market": null,
+   "tier": null,
+   "rank_score": 39.3,
+   "inner": 0.393,
+   "score_raw": 39.255,
+   "parts": {
+    "edge": 0.689,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.4
+   },
+   "edge_pp": 13.0,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 70.0,
+   "pos_note": "偏高",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 33,
+   "rank_in_tier": 11,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "GOOGL",
+   "name": "谷歌A",
+   "market": null,
+   "tier": null,
+   "rank_score": 37.0,
+   "inner": 0.37,
+   "score_raw": 36.99,
+   "parts": {
+    "edge": 0.612,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.48
+   },
+   "edge_pp": 9.9,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 62.0,
+   "pos_note": "偏高",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 34,
+   "rank_in_tier": 12,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "688012.SS",
+   "name": "中微公司",
+   "market": null,
+   "tier": null,
+   "rank_score": 36.9,
+   "inner": 0.369,
+   "score_raw": 36.8895,
+   "parts": {
+    "edge": 0.542,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.6833
+   },
+   "edge_pp": 7.0,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 49.0,
+   "pos_note": "中位",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 36,
+   "rank_in_tier": 13,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "JNJ",
+   "name": "强生",
+   "market": null,
+   "tier": null,
+   "rank_score": 36.5,
+   "inner": 0.365,
+   "score_raw": 36.465,
+   "parts": {
+    "edge": 0.617,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.43
+   },
+   "edge_pp": 10.1,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 67.0,
+   "pos_note": "偏高",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 37,
+   "rank_in_tier": 14,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "0388.HK",
+   "name": "港交所",
+   "market": null,
+   "tier": null,
+   "rank_score": 36.4,
+   "inner": 0.364,
+   "score_raw": 36.45,
+   "parts": {
+    "edge": 0.62,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.42
+   },
+   "edge_pp": 10.2,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 68.0,
+   "pos_note": "偏高",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 39,
+   "rank_in_tier": 15,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "TSLA",
+   "name": "特斯拉",
+   "market": null,
+   "tier": null,
+   "rank_score": 35.9,
+   "inner": 0.359,
+   "score_raw": 35.868,
+   "parts": {
+    "edge": 0.424,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.9692
+   },
+   "edge_pp": 2.0,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 9.0,
+   "pos_note": "左侧·历史低位",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 40,
+   "rank_in_tier": 16,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "MRVL",
+   "name": "迈威尔",
+   "market": null,
+   "tier": null,
+   "rank_score": 35.4,
+   "inner": 0.354,
+   "score_raw": 35.415,
+   "parts": {
+    "edge": 0.487,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.75
+   },
+   "edge_pp": 4.7,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 45.0,
+   "pos_note": "左侧·偏低",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 41,
+   "rank_in_tier": 17,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "159995.SZ",
+   "name": "芯片ETF",
+   "market": null,
+   "tier": null,
+   "rank_score": 32.8,
+   "inner": 0.328,
+   "score_raw": 32.799,
+   "parts": {
+    "edge": 0.353,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.9776
+   },
+   "edge_pp": -1.1,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 2.0,
+   "pos_note": "左侧·历史低位",
+   "when_kind": null,
+   "when": null,
+   "flags": [
+    "负赢面-1.1pp(赔率不够本)"
+   ],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 47,
+   "rank_in_tier": 18,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "002550.SZ",
+   "name": "千红制药",
+   "market": null,
+   "tier": null,
+   "rank_score": 32.7,
+   "inner": 0.327,
+   "score_raw": 32.6805,
+   "parts": {
+    "edge": 0.454,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.6667
+   },
+   "edge_pp": 3.3,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 50.0,
+   "pos_note": "中位",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 48,
+   "rank_in_tier": 19,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "513650.SS",
+   "name": "标普ETF(南方标普500)",
+   "market": null,
+   "tier": null,
+   "rank_score": 32.3,
+   "inner": 0.323,
+   "score_raw": 32.295,
+   "parts": {
+    "edge": 0.561,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.32
+   },
+   "edge_pp": 7.8,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 78.0,
+   "pos_note": "偏高",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 50,
+   "rank_in_tier": 20,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "600941.SH",
+   "name": "中国移动",
+   "market": null,
+   "tier": null,
+   "rank_score": 30.2,
+   "inner": 0.302,
+   "score_raw": 30.195,
+   "parts": {
+    "edge": 0.511,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.33
+   },
+   "edge_pp": 5.7,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 77.0,
+   "pos_note": "偏高",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 51,
+   "rank_in_tier": 21,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "MS",
+   "name": "摩根士丹利",
+   "market": null,
+   "tier": null,
+   "rank_score": 27.8,
+   "inner": 0.278,
+   "score_raw": 27.765,
+   "parts": {
+    "edge": 0.447,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.36
+   },
+   "edge_pp": 3.0,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 74.0,
+   "pos_note": "偏高",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 54,
+   "rank_in_tier": 22,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "MO",
+   "name": "奥驰亚",
+   "market": null,
+   "tier": null,
+   "rank_score": 27.4,
+   "inner": 0.274,
+   "score_raw": 27.4155,
+   "parts": {
+    "edge": 0.337,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.6667
+   },
+   "edge_pp": -1.8,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 50.0,
+   "pos_note": "中位",
+   "when_kind": null,
+   "when": null,
+   "flags": [
+    "负赢面-1.8pp(赔率不够本)"
+   ],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 55,
+   "rank_in_tier": 23,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "LLY",
+   "name": "礼来",
+   "market": null,
+   "tier": null,
+   "rank_score": 27.0,
+   "inner": 0.27,
+   "score_raw": 26.985,
+   "parts": {
+    "edge": 0.433,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.35
+   },
+   "edge_pp": 2.4,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 75.0,
+   "pos_note": "偏高",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 57,
+   "rank_in_tier": 24,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "SO",
+   "name": "美国南方公司",
+   "market": null,
+   "tier": null,
+   "rank_score": 26.2,
+   "inner": 0.262,
+   "score_raw": 26.22,
+   "parts": {
+    "edge": 0.376,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.47
+   },
+   "edge_pp": -0.1,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 63.0,
+   "pos_note": "偏高",
+   "when_kind": null,
+   "when": null,
+   "flags": [
+    "负赢面-0.1pp(赔率不够本)"
+   ],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 58,
+   "rank_in_tier": 25,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "VOO",
+   "name": "Vanguard标普500",
+   "market": null,
+   "tier": null,
+   "rank_score": 23.9,
+   "inner": 0.239,
+   "score_raw": 23.895,
+   "parts": {
+    "edge": 0.414,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.201
+   },
+   "edge_pp": 1.6,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 91.0,
+   "pos_note": "高位",
+   "when_kind": null,
+   "when": null,
+   "flags": [],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 59,
+   "rank_in_tier": 26,
+   "scope": "持仓/自选（不占推荐位）"
+  },
+  {
+   "code": "MRK",
+   "name": "默沙东",
+   "market": null,
+   "tier": null,
+   "rank_score": 22.7,
+   "inner": 0.227,
+   "score_raw": 22.725,
+   "parts": {
+    "edge": 0.364,
+    "catalyst": 0.0,
+    "volume": 0.15,
+    "position": 0.273
+   },
+   "edge_pp": -0.6,
+   "catalyst_kind": null,
+   "vold": null,
+   "pos52": 83.0,
+   "pos_note": "高位",
+   "when_kind": null,
+   "when": null,
+   "flags": [
+    "负赢面-0.6pp(赔率不够本)"
+   ],
+   "coverage": [
+    "edge",
+    "position"
+   ],
+   "coverage_n": "2/5",
+   "rank": 61,
+   "rank_in_tier": 27,
+   "scope": "持仓/自选（不占推荐位）"
   }
  ],
  "archived": [
   {
    "code": "2318.HK",
    "name": "中国平安港",
+   "market": null,
    "tier": "存档",
    "rank_score": 67.9,
+   "inner": 0.679,
+   "score_raw": 67.875,
    "parts": {
     "edge": 1.0,
     "catalyst": 0.15,
@@ -2737,18 +3775,36 @@
     "position": 0.8
    },
    "edge_pp": 25.6,
+   "catalyst_kind": "📊仅规则达标",
+   "vold": 0.9,
+   "pos52": 40.0,
+   "pos_note": "左侧·偏低",
+   "when_kind": "out",
+   "when": "",
+   "flags": [
+    "高分被否决(分68≥留榜中位20)·请人工复核"
+   ],
+   "coverage": [
+    "edge",
+    "volume",
+    "position",
+    "catalyst"
+   ],
+   "coverage_n": "4/5",
+   "rank": 6,
+   "rank_in_tier": 1,
    "archived": true,
    "out_reason": "已否决·不占推荐位：逢反弹减",
-   "review_needed": true,
-   "flags": [
-    "高分被否决(分68≥中位19)·请人工复核"
-   ]
+   "review_needed": true
   },
   {
    "code": "PFE",
    "name": "辉瑞",
+   "market": null,
    "tier": "存档",
    "rank_score": 57.6,
+   "inner": 0.576,
+   "score_raw": 57.6375,
    "parts": {
     "edge": 0.91,
     "catalyst": 0.15,
@@ -2756,18 +3812,36 @@
     "position": 0.81
    },
    "edge_pp": 21.6,
+   "catalyst_kind": "📊仅规则达标",
+   "vold": 0.12,
+   "pos52": 39.0,
+   "pos_note": "左侧·偏低",
+   "when_kind": "out",
+   "when": "",
+   "flags": [
+    "高分被否决(分58≥留榜中位20)·请人工复核"
+   ],
+   "coverage": [
+    "edge",
+    "volume",
+    "position",
+    "catalyst"
+   ],
+   "coverage_n": "4/5",
+   "rank": 9,
+   "rank_in_tier": 2,
    "archived": true,
    "out_reason": "已否决·不占推荐位：逢反弹减",
-   "review_needed": true,
-   "flags": [
-    "高分被否决(分58≥中位19)·请人工复核"
-   ]
+   "review_needed": true
   },
   {
    "code": "300760.SZ",
    "name": "迈瑞医疗",
+   "market": null,
    "tier": "存档",
    "rank_score": 54.7,
+   "inner": 0.547,
+   "score_raw": 54.732,
    "parts": {
     "edge": 0.551,
     "catalyst": 0.45,
@@ -2775,13 +3849,28 @@
     "position": 0.7333
    },
    "edge_pp": 7.4,
+   "catalyst_kind": "💎超跌回归",
+   "vold": 0.93,
+   "pos52": 46.0,
+   "pos_note": "中位",
+   "when_kind": "out",
+   "when": "",
+   "flags": [
+    "高分被否决(分55≥留榜中位20)·请人工复核"
+   ],
+   "coverage": [
+    "edge",
+    "volume",
+    "position",
+    "catalyst"
+   ],
+   "coverage_n": "4/5",
+   "rank": 11,
+   "rank_in_tier": 3,
    "archived": true,
    "out_reason": "已否决·不占推荐位：价值陷阱·不碰",
-   "review_needed": true,
-   "flags": [
-    "高分被否决(分55≥中位19)·请人工复核"
-   ]
+   "review_needed": true
   }
  ],
- "archived_median_ref": 19.1
+ "archived_median_ref": 19.5
 }
