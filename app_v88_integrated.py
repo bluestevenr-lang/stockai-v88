@@ -3311,15 +3311,26 @@ try:
     # 换成 probability_edge = p_up − break_even_p(打平所需胜率),它已在引擎里算好:
     #   >0 = 概率盖得住赔率(正期望)｜<0 = 看着胜率高但赔率太薄,长期做这种交易是亏的
     # 实测能把2A分成18个不同取值(−21.5~+26.1pp),且排序与原分显著不同(见异议)。
-    _edge9map = {}
+    _edge9map, _rank9map = {}, {}
     for _er9 in (_cbj9("intraday_decisions.json").get("rows") or []):
         _ev9 = _er9.get("probability_edge")
         if _ev9 is not None:
             _edge9map[str(_er9.get("code"))] = float(_ev9)
+    # 【V88·排名分R1 2026-08-01 用户"把重要的项目的分数排名更高,你来判断和设定"】
+    # 档内次序改由 rank_score.json 决定:赢面40+催化20+量能15+位置15+认证10。
+    # 认证降到10%是关键——它是"资格"不是"赢面",当赢面用就是ARXS/BBVA(印证分满分却负期望)那个病根。
+    for _rr9 in (_cbj9("rank_score.json").get("rows") or []):
+        _rank9map[str(_rr9.get("code"))] = _rr9
 
     def _edge9(_cd):
         """档内赢面(pp)。无数据返回None——不拿0冒充,缺数据要看得见。"""
         return _edge9map.get(str(_cd))
+
+    def _rscore9(_cd):
+        """档内排名分(0~100)。缺赢面项时返回None:赢面占40%且是唯一直接答"赚不赚"的项,
+        缺了就没有可比总分,宁可显示—也不给一个会让人下单的假分。"""
+        _r9 = _rank9map.get(str(_cd)) or {}
+        return _r9.get("rank_score")
 
     def _tier_rank9(_cd):
         """【07-31用户抓'3A排第三,分数打平但级别该置顶'】评级层级=第一排序键,
@@ -3343,6 +3354,11 @@ try:
         # 【V88·档内赢面 2026-08-01 用户"同为多个2A,分数可细分谁的赢面更大"】
         # 赢面 = 2周上涨概率 − 打平所需胜率(由赔率决定)。同档排序就按它。
         # 正=概率盖得住赔率；负=胜率看着高但赔率太薄,长期做这种交易是亏的(ARXS/BBVA实案)。
+        _rs9 = ((_rank9map.get(str(_cd)) or {}).get("rank_score"))
+        if _rs9 is not None:
+            _chip9 += (f"<br><span style='color:#1d4ed8;font-size:9px;font-weight:700' "
+                       f"title='档内排名分R1=赢面40%+催化20%+量能15%+位置15%+认证10%;"
+                       f"认证只占10%因为它是资格不是赢面'>分{_rs9:.0f}</span>")
         _eg9 = _edge9map.get(str(_cd))
         if _eg9 is not None:
             _ec9 = "#dc2626" if _eg9 > 0 else "#16a34a"
@@ -3838,9 +3854,11 @@ try:
         # 档内次序:先按赢面(有数据的在前),无赢面数据的退回原印证分并排在其后——
         # 缺数据不该冒充"赢面0",否则负赢面的票会被无数据的票挤下去。
         def _bsort9(z):
+            # 档内:先排名分(有分在前) → 再赢面 → 最后才退回原印证分
+            _s9 = _rscore9(z[2])
             _e9 = _edge9(z[2])
-            return (-z[0], 0 if _e9 is not None else 1,
-                    -(_e9 if _e9 is not None else 0), -z[1])
+            return (-z[0], 0 if _s9 is not None else 1, -(_s9 or 0),
+                    0 if _e9 is not None else 1, -(_e9 or 0), -z[1])
         _buy_order9 = sorted(_t_buy9, key=_bsort9)
         _t_buy9 = [h for _t9z, _s9z, _c9z, h in _buy_order9]
         _n3a9 = sum(1 for c in _shown_codes9 if (_gr9map.get(c) or {}).get("grade") == "3A")
@@ -3858,8 +3876,10 @@ try:
                     _nm9o = (_gr9map.get(str(_c9o)) or {}).get("name") or str(_c9o)
                     _e9o = _edge9(_c9o)
                     _g9o = (_gr9map.get(str(_c9o)) or {}).get("grade") or ""
+                    _rs9o = _rscore9(_c9o)
                     _lab9 = (f"{_g9o}｜{_nm9o}（{_c9o}）"
-                             + (f" 赢面{_e9o:+.1f}pp" if _e9o is not None else " 赢面—"))
+                             + (f" 分{_rs9o:.0f}" if _rs9o is not None else " 分—")
+                             + (f"·赢面{_e9o:+.1f}pp" if _e9o is not None else "·赢面—"))
                     _bopt9[_lab9] = (str(_c9o), _nm9o)
                 if len(_bopt9) >= 2:
                     _bsel9 = st.multiselect("从买表勾选对比", list(_bopt9),
