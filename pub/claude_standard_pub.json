@@ -1,5 +1,5 @@
 {
- "asof": "2026-08-01 10:45（北京时间）",
+ "asof": "2026-08-01 13:15（北京时间）",
  "rules": {
   "CS1": "宽基指数类跌幅未达5%且趋势未破,不按个股尺度输出减仓(案:VOO-2.1%/513500-0.2%就减)",
   "CS2": "2周涨概率≥53%不得输出减仓,除非已破止损或5日内自家财报(案:MO53/JNJ55/SO57)",
@@ -16,7 +16,7 @@
    "code": "STLA",
    "name": "Stellantis",
    "side": "机会",
-   "action": "等待",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -62,6 +62,26 @@
    "downgrade": "",
    "auto": true
   },
+  "002488.SZ": {
+   "code": "002488.SZ",
+   "name": "金固股份",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "2498.HK": {
+   "code": "2498.HK",
+   "name": "速腾聚创",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "2015.HK": {
    "code": "2015.HK",
    "name": "理想汽车-W",
@@ -102,39 +122,9 @@
    "downgrade": "",
    "auto": true
   },
-  "601012.SS": {
-   "code": "601012.SS",
-   "name": "隆基绿能",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "603806.SS": {
-   "code": "603806.SS",
-   "name": "福斯特",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "688111.SS": {
    "code": "688111.SS",
    "name": "金山办公",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "300996.SZ": {
-   "code": "300996.SZ",
-   "name": "普联软件",
    "side": "趋势",
    "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
@@ -155,16 +145,6 @@
   "0440.HK": {
    "code": "0440.HK",
    "name": "大新金融",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "3888.HK": {
-   "code": "3888.HK",
-   "name": "金山软件",
    "side": "趋势",
    "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
@@ -202,31 +182,11 @@
    "downgrade": "",
    "auto": true
   },
-  "0552.HK": {
-   "code": "0552.HK",
-   "name": "中国通信服务",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "MT": {
    "code": "MT",
    "name": "安赛乐米塔尔",
    "side": "趋势",
    "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "002258.SZ": {
-   "code": "002258.SZ",
-   "name": "利尔化学",
-   "side": "趋势",
-   "action": "🟡先别追,等跌回13.90附近再买;一直不跌就等放量创新高再追",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -518,16 +478,16 @@
   }
  },
  "stats": {
-  "n_pass": 71,
-  "n_reject": 18,
+  "n_pass": 67,
+  "n_reject": 28,
   "by_rule": {
    "CS1": 3,
    "CS2": 1,
    "CS3": 0,
    "CS4": 4,
    "CS5": 0,
-   "CS6": 7,
-   "CS7": 6,
+   "CS6": 16,
+   "CS7": 9,
    "CS8": 0
   }
  }
