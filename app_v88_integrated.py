@@ -3240,6 +3240,17 @@ try:
                         f"<b style='font-size:12.5px'>现{_px9c if _px9c is not None else '?'}</b><br>"
                         f"<span style='color:{'#16a34a' if _fresh9c2 else '#dc2626'};font-size:8px'>"
                         f"{'🟢' if _fresh9c2 else '⚠️'}雷达 {_tqts9[6:]}</span></td>")
+            # 第三级兜底(2026-08-01 云端'时点未知'案):池扫时间——这些价来自全市场扫描,
+            # 扫描时间就是价的时间,不是未知
+            _uts9 = str((_cbj9("universe_scan.json") or _cbj9("universe_scan_pub.json")
+                         or {}).get("generated_at") or "")[:16]
+            if _uts9:
+                _tdy9c3 = __import__("datetime").datetime.now().strftime("%Y-%m-%d")
+                _fr9c3 = _uts9.startswith(_tdy9c3)
+                return (f"<td style='font-size:11.5px;white-space:nowrap'>"
+                        f"<b style='font-size:12.5px'>现{_px9c if _px9c is not None else '?'}</b><br>"
+                        f"<span style='color:{'#16a34a' if _fr9c3 else '#dc2626'};font-size:8px'>"
+                        f"{'🟢' if _fr9c3 else '⚠️'}池扫 {_uts9[5:]}</span></td>")
             return (f"<td style='font-size:11.5px;white-space:nowrap'>"
                     f"<b style='font-size:12.5px'>现{_px9c if _px9c is not None else '?'}</b><br>"
                     "<span style='color:#f97316;font-size:8px'>⚠️时点未知</span></td>")
@@ -3292,7 +3303,9 @@ try:
                 f"下守=止损;概率为规则估计,入场窗口信号{_eg_txt9}'>🎯2周 "
                 + " ".join(_parts) + " ⓘ</span>")
     # 【统一印证评级 2026-07-31 用户确认】徽章挂每行名称旁,全表按真实印证分降序
-    _gr9map = (_cbj9("trend_quality.json").get("grades") or {})
+    # 【2026-08-01 云端空白案】云端无私仓版trend_quality→退读pub版(大库股评级,08-01起随publish上云)
+    _gr9map = (_cbj9("trend_quality.json").get("grades")
+               or _cbj9("trend_quality_pub.json").get("grades") or {})
 
     def _tier_rank9(_cd):
         """【07-31用户抓'3A排第三,分数打平但级别该置顶'】评级层级=第一排序键,
