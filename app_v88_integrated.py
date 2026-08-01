@@ -1726,14 +1726,30 @@ class DataProvider:
         start_time = time.time()
         
         # 1. 检查分层缓存
+        # 【2026-08-01 港股"恒生指数数据不足,无法分析"案·通用缺陷】
+        # cache_key 只由 symbol+period 组成,**不含 min_rows**;而命中分支原本直接 return,
+        # 不校验行数。后果:补充指标那几路用 min_rows=2 取 ^HSI 把一个很短的表存进 ^HSI_2y,
+        # 体制分析用 min_rows=50 取同一个键时命中缓存拿到短表 → 误报"数据不足"。
+        # 雅虎侧实测 ^HSI 周线105行完全正常,是缓存把宽松调用的结果喂给了严格调用。
+        # 修法:命中也要过 min_rows;不够就当未命中重新拉。任何标的都可能中招,不止港股。
+        def _cache_ok(_v):
+            try:
+                return _v is not None and len(_v) >= min_rows
+            except TypeError:
+                return _v is not None
+
         cached_value, is_stale = self.cache_mgr.get(cache_key, data_type, force_refresh)
-        if cached_value is not None and not is_stale:
+        if cached_value is not None and not is_stale and _cache_ok(cached_value):
             elapsed = (time.time() - start_time) * 1000
             self.perf.record('fetch', elapsed)
             return cached_value
-        
-        # 1b. Rate limit 冷却期：直接返回过期缓存（有总比没有好）
-        if cached_value is not None and is_stale and _yf_is_rate_limited():
+        if cached_value is not None and not _cache_ok(cached_value):
+            self.logger.info(f"♻️ {symbol} 缓存仅 {len(cached_value)} 行 < min_rows={min_rows}，"
+                             f"按未命中重新拉取（缓存键不含min_rows,宽松调用会污染严格调用）")
+
+        # 1b. Rate limit 冷却期：直接返回过期缓存（有总比没有好）——但同样要够行数,
+        # 否则冷却期内会持续误报"数据不足"而不是老实说"取不到"。
+        if cached_value is not None and is_stale and _yf_is_rate_limited() and _cache_ok(cached_value):
             self.logger.info(f"⏭️ {symbol} rate limit 期间使用过期缓存")
             elapsed = (time.time() - start_time) * 1000
             self.perf.record('fetch', elapsed)
@@ -3876,7 +3892,11 @@ try:
                 from compare_ui import MAX_COMPARE as _MXC9
                 _bopt9 = {}
                 for _t9o, _s9o, _c9o, _h9o in _buy_order9:
-                    _nm9o = (_gr9map.get(str(_c9o)) or {}).get("name") or str(_c9o)
+                    # 【2026-08-01 用户"只有数字我都不知道谁是谁"】_gr9map 是 grades 映射,
+                    # 字段只有 grade/score/dual/... **没有 name**,故原写法全退化成代码。
+                    # rank_score.json 每行都带 name,优先用它。
+                    _nm9o = ((_rank9map.get(str(_c9o)) or {}).get("name")
+                             or (_gr9map.get(str(_c9o)) or {}).get("name") or str(_c9o))
                     _e9o = _edge9(_c9o)
                     _g9o = (_gr9map.get(str(_c9o)) or {}).get("grade") or ""
                     _rs9o = _rscore9(_c9o)
