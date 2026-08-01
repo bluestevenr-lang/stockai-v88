@@ -23,10 +23,10 @@ _AXIS = ["-7", "-5", "-3", "-1", "0", "1", "3", "5", "7"]
 # 2026-08-01 用户指定配色：中国红不变、香港黄、美股亮蓝。
 # 黄色在白底上最弱，故三条线统一加粗到 1.9，保证黄线不糊。
 _LINE_COLOR = {"中国": "#dc2626", "港股": "#eab308", "美股": "#0ea5e9"}
-# 显示窗口：60日太宽线挤成一团(用户2026-08-01)。收到25个交易日(约5周)——
-# 30日会把 06-23 美股那根 +106% 尖峰刚好圈进来，一根就把纵轴撑到±106%、另两条压成直线；
-# 25日纵轴回到±50%，三条都读得出形状。数据仍存60日，改这个数就能拉回去。
-SHOW_DAYS = 25
+# 显示窗口：用户2026-08-01"日期尽可能多"——120个交易日(约半年)，
+# 覆盖一个完整的季度级放量/缩量周期；600px画布放120个点每点仍有5px，线不糊。
+# 尖峰压平其它线的问题不靠砍数据解决，改用下面的分位截顶(见 _axis_span)。
+SHOW_DAYS = 120
 
 
 def breadth_html(bm: dict, markets=("A股", "港股", "美股")) -> str:
@@ -90,13 +90,18 @@ def amount_daily_html(ad: dict, height: int = 150, days: int = SHOW_DAYS) -> str
         return f"<div style='font-size:12px;color:#b45309'>量能日线不可用（{errs or '无数据'}）</div>"
 
     W, H, PAD = 620, height, 26
-    span = max(abs(p.get("rel_pct") or 0)
-               for v in usable.values() for p in v["series"]) or 10
-    span = min(max(span, 10), 120)                    # 只按显示区间算,窗外的极端值不再撑爆纵轴
+    # 纵轴按 |偏离| 的95分位取，不按最大值取：单根尖峰(如美股06-23的+106%)会把整根轴撑满、
+    # 另两条压成直线。超出的点截到边界并在标题里报数——截了多少必须说，不许悄悄削平。
+    _abs = sorted(abs(p.get("rel_pct") or 0)
+                  for v in usable.values() for p in v["series"])
+    span = max(20, round((_abs[int(len(_abs) * 0.95)] if _abs else 10) / 5) * 5)
+    _peak = _abs[-1] if _abs else 0
+    _clipped = sum(1 for x in _abs if x > span)
     n_max = max(len(v["series"]) for v in usable.values())
 
     def xy(i, n, rel):
         x = PAD + (W - PAD - 8) * (i / max(1, n - 1))
+        rel = max(-span, min(span, rel))               # 截到边界,不画到画布外
         y = H / 2 - (rel / span) * (H / 2 - 12)
         return f"{x:.1f},{y:.1f}"
 
@@ -122,8 +127,10 @@ def amount_daily_html(ad: dict, height: int = 150, days: int = SHOW_DAYS) -> str
         for k in (1, 0.5, 0, -0.5, -1))
     caps = " · ".join(f"{k}={v.get('label')}" for k, v in usable.items())
     return (f"<div style='font-size:11px;color:#94a3b8;margin-bottom:2px'>"
-            f"纵轴=当日量能相对自身20日均量的偏离(%)，横轴=最近{n_max}个交易日；"
-            f"单位各市场不同故只比形状不比绝对值</div>"
+            f"纵轴=当日量能相对自身20日均量的偏离(%)，横轴=最近{n_max}个交易日（约"
+            f"{n_max // 21}个月）；单位各市场不同故只比形状不比绝对值"
+            + (f"；<b>{_clipped}个点超出纵轴已截顶</b>(区间最大{_peak:.0f}%)" if _clipped else "")
+            + "</div>"
             f"<svg viewBox='0 0 {W} {H}' style='width:100%;height:auto'>{grid}{''.join(paths)}</svg>"
             f"<div style='font-size:11px;margin-top:2px;display:flex;flex-wrap:wrap;"
             f"gap:4px 14px'>{''.join(legend)}</div>"
