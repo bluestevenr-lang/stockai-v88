@@ -3356,9 +3356,11 @@ try:
         # 正=概率盖得住赔率；负=胜率看着高但赔率太薄,长期做这种交易是亏的(ARXS/BBVA实案)。
         _rs9 = ((_rank9map.get(str(_cd)) or {}).get("rank_score"))
         if _rs9 is not None:
+            _rk9 = (_rank9map.get(str(_cd)) or {}).get("rank")
             _chip9 += (f"<br><span style='color:#1d4ed8;font-size:9px;font-weight:700' "
-                       f"title='档内排名分R1=赢面40%+催化20%+量能15%+位置15%+认证10%;"
-                       f"认证只占10%因为它是资格不是赢面'>分{_rs9:.0f}</span>")
+                       f"title='排名分R1(全表通用·越高越值得买)=赢面40%+催化20%+量能15%"
+                       f"+位置15%+认证10%;层级写在分段里:3A 82~100/2A 55~82/1A 15~55'>"
+                       f"分{_rs9:.1f}" + (f"·#{_rk9}" if _rk9 else "") + "</span>")
         _eg9 = _edge9map.get(str(_cd))
         if _eg9 is not None:
             _ec9 = "#dc2626" if _eg9 > 0 else "#16a34a"
@@ -3854,11 +3856,12 @@ try:
         # 档内次序:先按赢面(有数据的在前),无赢面数据的退回原印证分并排在其后——
         # 缺数据不该冒充"赢面0",否则负赢面的票会被无数据的票挤下去。
         def _bsort9(z):
-            # 档内:先排名分(有分在前) → 再赢面 → 最后才退回原印证分
-            _s9 = _rscore9(z[2])
-            _e9 = _edge9(z[2])
-            return (-z[0], 0 if _s9 is not None else 1, -(_s9 or 0),
-                    0 if _e9 is not None else 1, -(_e9 or 0), -z[1])
+            # 【2026-08-01 用户定纲"98分的一定比97的值得买,所有通用"】
+            # 排序只认一个数:rank_score 的严格名次。层级已写进分数分段
+            # (3A 82~100 / 2A 55~82 / 1A 15~55),所以"3A闭眼入恒前"与"分高恒前"
+            # 是同一条规则的两个面,不会打架,也不再需要多级排序键。
+            _r9 = (_rank9map.get(str(z[2])) or {}).get("rank")
+            return (_r9 if _r9 is not None else 9999, -z[0], -z[1])
         _buy_order9 = sorted(_t_buy9, key=_bsort9)
         _t_buy9 = [h for _t9z, _s9z, _c9z, h in _buy_order9]
         _n3a9 = sum(1 for c in _shown_codes9 if (_gr9map.get(c) or {}).get("grade") == "3A")
