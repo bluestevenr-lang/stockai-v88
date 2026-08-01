@@ -3957,11 +3957,31 @@ try:
                                  expanded=False):
                     st.caption("留证不留位：按时机裁定T1，说不出明确可预期买点的不进推荐位。"
                                "它们仍在库里、仍参与复盘与台账，只是不再占你的视线。")
+                    # 【2026-08-01 用户"瑕不掩瑜"配套】硬否决是一票制,不是扣分制——
+                    # 所以必须把"踢掉的是什么货色"摆出来:质量分高于榜面中位的,红字提示人工复核。
+                    # 否则好东西被一句"逢反弹减"悄悄扔掉,我们连知道都不知道。
+                    _arcdat9 = {str(a.get("code")): a for a in
+                                (_cbj9("rank_score.json").get("archived") or [])}
                     for _c9a, _h9a in _arch9:
                         _g9a = _gr9map.get(str(_c9a)) or {}
-                        st.markdown(f"<div style='font-size:12px;color:#64748b'>"
-                                    f"<b>{_c9a}</b> · {str(_g9a.get('out_reason') or '—')}</div>",
-                                    unsafe_allow_html=True)
+                        _a9 = _arcdat9.get(str(_c9a)) or {}
+                        _sc9a = _a9.get("rank_score")
+                        _nm9a = _a9.get("name") or _c9a
+                        if _a9.get("review_needed"):
+                            st.markdown(
+                                f"<div style='font-size:12px;color:#b91c1c;font-weight:600'>"
+                                f"⚠️ <b>{_nm9a}</b>（{_c9a}）质量分 <b>{_sc9a:.1f}</b>"
+                                f" 高于榜面中位——被一票否决扔掉的是好票，请人工复核<br>"
+                                f"<span style='font-weight:400;color:#64748b'>否决理由："
+                                f"{str(_g9a.get('out_reason') or '—')}"
+                                f"（卖警在身与买入是致命矛盾，故硬闸门保留；但代价要看得见）</span></div>",
+                                unsafe_allow_html=True)
+                        else:
+                            st.markdown(f"<div style='font-size:12px;color:#64748b'>"
+                                        f"<b>{_nm9a}</b>（{_c9a}）"
+                                        + (f" 质量分{_sc9a:.1f} · " if _sc9a is not None else " · ")
+                                        + f"{str(_g9a.get('out_reason') or '—')}</div>",
+                                        unsafe_allow_html=True)
             st.markdown(_tbl9(_t_buy9) if _t_buy9 else
                         ("<span style='font-size:12px;color:#94a3b8'>买侧无可执行买单——现金也是仓位"
                          "(环境弱时买单自带仓位分级提示,不再硬拦)</span>"), unsafe_allow_html=True)
