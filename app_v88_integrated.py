@@ -3358,10 +3358,15 @@ try:
         _g9 = _gr9map.get(str(_cd)) or {}
         if not _g9:
             return "", 0
-        _gc9 = {"3A": "#dc2626", "2A": "#ea580c"}.get(_g9.get("grade"), "#94a3b8")
+        # 【2026-08-01 时机裁定T1】级别=买入时机类型:3A现在买/2A已武装等触发/
+        # 1A·中长线|短线=周期不同(不是更差)/存档=说不出何时买或已否决,不占推荐位。
+        _gd9 = str(_g9.get("grade") or "")
+        _gc9 = ("#dc2626" if _gd9 == "3A" else "#ea580c" if _gd9 == "2A"
+                else "#94a3b8" if _gd9 == "存档"
+                else "#0891b2" if "短线" in _gd9 else "#2563eb" if "1A" in _gd9 else "#94a3b8")
         _chip9 = (f"<span style='background:{_gc9};color:#fff;border-radius:3px;"
                   f"padding:0 4px;font-size:12px;font-weight:800'>{_g9.get('grade')}</span>")
-        if _g9.get("grade") != "3A":
+        if _gd9 != "3A":
             _parts9 = "+".join(x for x in (
                 "⚔️3" if _g9.get("dual") else "", "C2" if _g9.get("c_only") else "",
                 "✓1" if _g9.get("cs") else "", "位" if _g9.get("L_pos") else "",
@@ -3387,6 +3392,15 @@ try:
             _chip9 += ("<br><span style='color:#cbd5e1;font-size:8px' "
                        "title='该股不在 intraday_decisions 里,拿不到赔率与打平线,故无赢面'>"
                        "赢面—</span>")
+        _wh9 = str(_g9.get("when") or "")
+        if _wh9:
+            _wc9 = "#dc2626" if _g9.get("when_kind") == "now" else "#2563eb"
+            _chip9 += (f"<br><span style='color:{_wc9};font-size:8.5px' "
+                       f"title='何时买(时机裁定T1):榜上每只都必须给得出明确可预期的买入时机,"
+                       f"给不出的移出推荐位'>{_wh9[:16]}</span>")
+        elif _g9.get("out_reason"):
+            _chip9 += (f"<br><span style='color:#94a3b8;font-size:8.5px'>"
+                       f"{str(_g9['out_reason'])[:16]}</span>")
         _gat9, _gpx9 = _g9.get("at"), _g9.get("px")
         if _gat9:
             _drift9 = None
@@ -3879,7 +3893,12 @@ try:
             _r9 = (_rank9map.get(str(z[2])) or {}).get("rank")
             return (_r9 if _r9 is not None else 9999, -z[0], -z[1])
         _buy_order9 = sorted(_t_buy9, key=_bsort9)
-        _t_buy9 = [h for _t9z, _s9z, _c9z, h in _buy_order9]
+        # 【2026-08-01 用户"没有买入的意义就不具备被推荐的意义,浪费空间干什么"】
+        # 存档行(已否决/说不出何时买)移出买表,收进下方折叠区——仍可查,但不占推荐位。
+        _arch9 = [(c, h) for _t, _s, c, h in _buy_order9
+                  if str((_gr9map.get(str(c)) or {}).get("grade")) == "存档"]
+        _arch_set9 = {c for c, _ in _arch9}
+        _t_buy9 = [h for _t9z, _s9z, _c9z, h in _buy_order9 if _c9z not in _arch_set9]
         _n3a9 = sum(1 for c in _shown_codes9 if (_gr9map.get(c) or {}).get("grade") == "3A")
         _n2a9 = sum(1 for c in _shown_codes9 if (_gr9map.get(c) or {}).get("grade") == "2A")
         _tab_b9, _tab_s9, _tab_h9 = st.tabs([f"✅买表{len(_t_buy9)}行(3A×{_n3a9}·2A×{_n2a9}·买窗×{len(_cb_rows9)})",
@@ -3919,6 +3938,16 @@ try:
                         st.rerun()
             except Exception:
                 logging.exception("[V88] 买表勾选对比渲染失败")
+            if _arch9:
+                with st.expander(f"🗄 存档 {len(_arch9)} 只（已否决/说不出何时买 → 不占推荐位）",
+                                 expanded=False):
+                    st.caption("留证不留位：按时机裁定T1，说不出明确可预期买点的不进推荐位。"
+                               "它们仍在库里、仍参与复盘与台账，只是不再占你的视线。")
+                    for _c9a, _h9a in _arch9:
+                        _g9a = _gr9map.get(str(_c9a)) or {}
+                        st.markdown(f"<div style='font-size:12px;color:#64748b'>"
+                                    f"<b>{_c9a}</b> · {str(_g9a.get('out_reason') or '—')}</div>",
+                                    unsafe_allow_html=True)
             st.markdown(_tbl9(_t_buy9) if _t_buy9 else
                         ("<span style='font-size:12px;color:#94a3b8'>买侧无可执行买单——现金也是仓位"
                          "(环境弱时买单自带仓位分级提示,不再硬拦)</span>"), unsafe_allow_html=True)
