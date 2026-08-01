@@ -5226,8 +5226,21 @@ def _local_name_search9(search_key):
 def render_cloud_search():
     """东方财富API全量搜索 - 渲染在主内容区（深度作战室顶部）"""
     # 【2026-07-18修】本函数经slot提前执行,早于11083行的初始化——先补位防AttributeError
+    # 【2026-08-01 连环案②】compare_basket原init在1.3万行处,本函数7495行先用→
+    # 历史一恢复就崩'no attribute compare_basket'(以前历史恒空侥幸不触发)。就地init。
+    if 'compare_basket' not in st.session_state:
+        st.session_state.compare_basket = []
     if 'search_history' not in st.session_state:
+        # 【2026-08-01 用户"搜索历史丢了"】根因:persist落盘了但重启从不回读——
+        # 冷启动从 search_history.json 按最近搜索时间取前10只回填
         st.session_state.search_history = []
+        try:
+            _sh9 = json.loads(_SEARCH_HIST_FILE.read_text(encoding="utf-8"))
+            st.session_state.search_history = [
+                (c, (v or {}).get("name") or c)
+                for c, v in sorted(_sh9.items(), key=lambda kv: -(kv[1] or {}).get("ts", 0))[:10]]
+        except Exception:
+            pass
     st.markdown("""
     <div style="padding: 0.4rem 0 0.2rem 0; margin-bottom: 0.5rem; border-left: 3px solid #00d4aa; padding-left: 0.8rem;">
         <span style="font-size: 13px; font-weight: 700; color: #00d4aa;">🔍 个股搜索</span>
@@ -5387,7 +5400,7 @@ def render_cloud_search():
                             st.button("✅ 已在对比篮", key="search_compare", disabled=True, width='stretch')
                         else:
                             if st.button("➕ 加入对比篮", key="search_compare", width='stretch'):
-                                st.session_state.compare_basket.append((code, name))
+                                (st.session_state.compare_basket.append((code, name)) if len(st.session_state.compare_basket) < 5 else st.toast('⚠️ 对比篮最多5只(先移出再加)', icon='⚠️'))
                                 st.toast(f"✅ 已加入对比篮: {name}", icon="➕")
                                 st.rerun()
             else:
@@ -5421,13 +5434,42 @@ def render_cloud_search():
                     st.button("✅", key=f"hist_compare_{i}", disabled=True, width='stretch')
                 else:
                     if st.button("➕", key=f"hist_compare_{i}", help="加入对比", width='stretch'):
-                        st.session_state.compare_basket.append((code, name))
+                        (st.session_state.compare_basket.append((code, name)) if len(st.session_state.compare_basket) < 5 else st.toast('⚠️ 对比篮最多5只(先移出再加)', icon='⚠️'))
                         st.toast(f"✅ 已加入对比篮: {name}", icon="➕")
                         st.rerun()
         
         if st.button("🗑️ 清空历史", key="search_clear_history", width='stretch'):
             st.session_state.search_history = []
             st.rerun()
+
+    # 【V88·评级榜多选对比 2026-08-01 用户点单"3A/2A/1A多只多选对比,最多5只,简单化"】
+    # 直接从评级快照取榜面股,多选≤5一键进PK视图(与对比篮同一通道,零新链路)
+    try:
+        _tqc9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+                            "trend_quality.json").read_text(encoding="utf-8"))
+        _pko9 = {}
+        for _r9k in sorted((_tqc9.get("rows") or []),
+                           key=lambda r: -({"3A": 3, "2A": 2}.get(r.get("tier_label"), 1))):
+            if _r9k.get("tier_label"):
+                _pko9[f"{_r9k.get('tier_label')}｜{_r9k.get('name')}（{_r9k.get('code')}）"] = (
+                    str(_r9k.get("code")), _r9k.get("name") or str(_r9k.get("code")))
+        if _pko9:
+            st.markdown('<p style="font-size:12px;font-weight:600;margin:0.6rem 0 0.2rem">'
+                        '⚔️ 评级榜多选对比（3A/2A/1A·最多5只）</p>', unsafe_allow_html=True)
+            _sel9k = st.multiselect("从评级榜选择", list(_pko9), max_selections=5,
+                                    key="grade_pk_sel", label_visibility="collapsed",
+                                    placeholder="选2~5只评级股…")
+            if len(_sel9k) >= 2:
+                if st.button(f"⚔️ 对比这{len(_sel9k)}只", key="grade_pk_go", type="primary"):
+                    st.session_state.pk_codes = [_pko9[s][0] for s in _sel9k]
+                    st.session_state.pk_names = [_pko9[s][1] for s in _sel9k]
+                    st.session_state.scan_selected_code = None
+                    st.session_state.scan_selected_name = None
+                    st.rerun()
+            elif _sel9k:
+                st.caption("再选至少1只(≥2只才能对比)")
+    except Exception:
+        pass
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -5559,7 +5601,7 @@ def render_clickable_table(df_results, table_key):
                 added_count = 0
                 for code, name in selected_stocks:
                     if (code, name) not in st.session_state.compare_basket:
-                        st.session_state.compare_basket.append((code, name))
+                        (st.session_state.compare_basket.append((code, name)) if len(st.session_state.compare_basket) < 5 else st.toast('⚠️ 对比篮最多5只(先移出再加)', icon='⚠️'))
                         added_count += 1
                 if added_count > 0:
                     st.toast(f"✅ 已加入 {added_count} 只股票到对比篮", icon="➕")
