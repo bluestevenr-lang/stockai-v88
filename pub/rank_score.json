@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-01 22:46（北京时间）",
+ "generated_at": "2026-08-01 22:51（北京时间）",
  "version": "V88-R1",
  "weights": {
   "edge": 40,
@@ -15,13 +15,14 @@
    "name": "美盈森",
    "market": "A股",
    "tier": "3A",
-   "rank_score": 69.5,
-   "partial_score": 69.5,
+   "rank_score": 92.2,
+   "inner": 0.565,
+   "score_raw": 92.17828,
    "parts": {
     "edge": 0.466,
     "catalyst": 0.0,
-    "volume": 0.85,
-    "position": 0.95,
+    "volume": 0.9,
+    "position": 0.9604,
     "cert": 1.0
    },
    "edge_pp": 3.8,
@@ -36,11 +37,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 80,
-   "sort_key": [
-    0,
-    -69.5
-   ],
+   "coverage_n": "4/5",
    "rank": 1,
    "rank_in_tier": 1
   },
@@ -49,13 +46,14 @@
    "name": "三菱日联金融",
    "market": "美股",
    "tier": "3A",
-   "rank_score": null,
-   "partial_score": 92.5,
+   "rank_score": 89.7,
+   "inner": 0.43,
+   "score_raw": 89.74648,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.85,
-    "position": 0.95,
+    "volume": 0.852,
+    "position": 0.9504,
     "cert": 1.0
    },
    "edge_pp": null,
@@ -71,11 +69,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -92.5
-   ],
+   "coverage_n": "3/5",
    "rank": 2,
    "rank_in_tier": 2
   },
@@ -84,20 +78,21 @@
    "name": "欧力士",
    "market": "美股",
    "tier": "3A",
-   "rank_score": null,
-   "partial_score": 53.1,
+   "rank_score": 86.4,
+   "inner": 0.246,
+   "score_raw": 86.4325,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.35,
-    "position": 0.4,
+    "volume": 0.375,
+    "position": 0.2,
     "cert": 1.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 0.82,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -106,11 +101,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -53.1
-   ],
+   "coverage_n": "3/5",
    "rank": 3,
    "rank_in_tier": 3
   },
@@ -119,13 +110,14 @@
    "name": "宏发股份",
    "market": "A股",
    "tier": "2A",
-   "rank_score": 87.5,
-   "partial_score": 87.5,
+   "rank_score": 74.4,
+   "inner": 0.717,
+   "score_raw": 74.3698,
    "parts": {
     "edge": 1.0,
     "catalyst": 0.0,
-    "volume": 0.85,
-    "position": 0.95,
+    "volume": 0.946,
+    "position": 0.97,
     "cert": 0.3
    },
    "edge_pp": 26.1,
@@ -140,11 +132,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 80,
-   "sort_key": [
-    0,
-    -87.5
-   ],
+   "coverage_n": "4/5",
    "rank": 4,
    "rank_in_tier": 1
   },
@@ -153,13 +141,14 @@
    "name": "迈富时",
    "market": "港股",
    "tier": "2A",
-   "rank_score": 73.9,
-   "partial_score": 73.9,
+   "rank_score": 71.2,
+   "inner": 0.599,
+   "score_raw": 71.1676,
    "parts": {
     "edge": 0.747,
     "catalyst": 0.0,
     "volume": 1.0,
-    "position": 0.95,
+    "position": 1.0,
     "cert": 0.0
    },
    "edge_pp": 15.3,
@@ -174,11 +163,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 80,
-   "sort_key": [
-    0,
-    -73.9
-   ],
+   "coverage_n": "4/5",
    "rank": 5,
    "rank_in_tier": 2
   },
@@ -187,13 +172,14 @@
    "name": "农业银行",
    "market": "A股",
    "tier": "2A",
-   "rank_score": 69.2,
-   "partial_score": 69.2,
+   "rank_score": 70.2,
+   "inner": 0.563,
+   "score_raw": 70.19182,
    "parts": {
     "edge": 0.459,
     "catalyst": 0.0,
-    "volume": 0.85,
-    "position": 0.95,
+    "volume": 0.9,
+    "position": 0.9604,
     "cert": 1.0
    },
    "edge_pp": 3.5,
@@ -208,11 +194,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 80,
-   "sort_key": [
-    0,
-    -69.2
-   ],
+   "coverage_n": "4/5",
    "rank": 6,
    "rank_in_tier": 3
   },
@@ -221,13 +203,14 @@
    "name": "百润股份",
    "market": "A股",
    "tier": "2A",
-   "rank_score": 62.7,
-   "partial_score": 62.7,
+   "rank_score": 68.5,
+   "inner": 0.499,
+   "score_raw": 68.46814,
    "parts": {
     "edge": 0.523,
     "catalyst": 0.0,
-    "volume": 1.0,
-    "position": 0.95,
+    "volume": 0.955,
+    "position": 0.9758,
     "cert": 0.0
    },
    "edge_pp": 6.2,
@@ -242,11 +225,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 80,
-   "sort_key": [
-    0,
-    -62.7
-   ],
+   "coverage_n": "4/5",
    "rank": 7,
    "rank_in_tier": 4
   },
@@ -255,13 +234,14 @@
    "name": "新东方-S",
    "market": "港股",
    "tier": "2A",
-   "rank_score": 59.9,
-   "partial_score": 59.9,
+   "rank_score": 68.4,
+   "inner": 0.496,
+   "score_raw": 68.38876,
    "parts": {
     "edge": 0.523,
     "catalyst": 0.0,
-    "volume": 0.85,
-    "position": 0.95,
+    "volume": 0.942,
+    "position": 0.9692,
     "cert": 0.0
    },
    "edge_pp": 6.2,
@@ -276,11 +256,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 80,
-   "sort_key": [
-    0,
-    -59.9
-   ],
+   "coverage_n": "4/5",
    "rank": 8,
    "rank_in_tier": 5
   },
@@ -289,13 +265,14 @@
    "name": "中国通信服务",
    "market": "港股",
    "tier": "2A",
-   "rank_score": 58.8,
-   "partial_score": 58.8,
+   "rank_score": 67.9,
+   "inner": 0.478,
+   "score_raw": 67.906,
    "parts": {
     "edge": 0.445,
     "catalyst": 0.0,
     "volume": 1.0,
-    "position": 0.95,
+    "position": 1.0,
     "cert": 0.0
    },
    "edge_pp": 2.9,
@@ -310,60 +287,23 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 80,
-   "sort_key": [
-    0,
-    -58.8
-   ],
+   "coverage_n": "4/5",
    "rank": 9,
    "rank_in_tier": 6
-  },
-  {
-   "code": "MMSI",
-   "name": "Merit Medical Systems Inc",
-   "market": "美股",
-   "tier": "2A",
-   "rank_score": 58.2,
-   "partial_score": 58.2,
-   "parts": {
-    "edge": 0.433,
-    "catalyst": 0.0,
-    "volume": 1.0,
-    "position": 0.95,
-    "cert": 0.0
-   },
-   "edge_pp": 2.4,
-   "catalyst_kind": null,
-   "vold": 1.87,
-   "pos52": 90.0,
-   "pos_note": "右侧·贴新高放量",
-   "flags": [],
-   "coverage": [
-    "edge",
-    "volume",
-    "position",
-    "cert"
-   ],
-   "coverage_pct": 80,
-   "sort_key": [
-    0,
-    -58.2
-   ],
-   "rank": 10,
-   "rank_in_tier": 7
   },
   {
    "code": "3888.HK",
    "name": "金山软件",
    "market": "港股",
    "tier": "2A",
-   "rank_score": 57.6,
-   "partial_score": 57.6,
+   "rank_score": 67.6,
+   "inner": 0.467,
+   "score_raw": 67.619665,
    "parts": {
     "edge": 0.421,
     "catalyst": 0.0,
-    "volume": 1.0,
-    "position": 0.95,
+    "volume": 0.9933,
+    "position": 1.0,
     "cert": 0.0
    },
    "edge_pp": 1.9,
@@ -378,26 +318,23 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 80,
-   "sort_key": [
-    0,
-    -57.6
-   ],
-   "rank": 11,
-   "rank_in_tier": 8
+   "coverage_n": "4/5",
+   "rank": 10,
+   "rank_in_tier": 7
   },
   {
    "code": "002258.SZ",
    "name": "利尔化学",
    "market": "A股",
    "tier": "2A",
-   "rank_score": 57.4,
-   "partial_score": 57.4,
+   "rank_score": 67.6,
+   "inner": 0.467,
+   "score_raw": 67.6036,
    "parts": {
     "edge": 0.417,
     "catalyst": 0.0,
     "volume": 1.0,
-    "position": 0.95,
+    "position": 1.0,
     "cert": 0.0
    },
    "edge_pp": 1.7,
@@ -412,11 +349,38 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 80,
-   "sort_key": [
-    0,
-    -57.4
+   "coverage_n": "4/5",
+   "rank": 11,
+   "rank_in_tier": 8
+  },
+  {
+   "code": "MMSI",
+   "name": "Merit Medical Systems Inc",
+   "market": "美股",
+   "tier": "2A",
+   "rank_score": 67.5,
+   "inner": 0.462,
+   "score_raw": 67.479535,
+   "parts": {
+    "edge": 0.433,
+    "catalyst": 0.0,
+    "volume": 0.9529,
+    "position": 0.9738,
+    "cert": 0.0
+   },
+   "edge_pp": 2.4,
+   "catalyst_kind": null,
+   "vold": 1.87,
+   "pos52": 90.0,
+   "pos_note": "右侧·贴新高放量",
+   "flags": [],
+   "coverage": [
+    "edge",
+    "volume",
+    "position",
+    "cert"
    ],
+   "coverage_n": "4/5",
    "rank": 12,
    "rank_in_tier": 9
   },
@@ -425,13 +389,14 @@
    "name": "ARXS",
    "market": "美股",
    "tier": "2A",
-   "rank_score": 56.0,
-   "partial_score": 56.0,
+   "rank_score": 67.4,
+   "inner": 0.459,
+   "score_raw": 67.399345,
    "parts": {
     "edge": 0.195,
     "catalyst": 0.0,
-    "volume": 0.85,
-    "position": 0.95,
+    "volume": 0.912,
+    "position": 0.9629,
     "cert": 1.0
    },
    "edge_pp": -8.5,
@@ -448,11 +413,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 80,
-   "sort_key": [
-    1,
-    -56.0
-   ],
+   "coverage_n": "4/5",
    "rank": 13,
    "rank_in_tier": 10
   },
@@ -461,13 +422,14 @@
    "name": "MSA Safety Inc",
    "market": "美股",
    "tier": "2A",
-   "rank_score": 55.0,
-   "partial_score": 55.0,
+   "rank_score": 67.1,
+   "inner": 0.448,
+   "score_raw": 67.0852,
    "parts": {
     "edge": 0.369,
     "catalyst": 0.0,
     "volume": 1.0,
-    "position": 0.95,
+    "position": 1.0,
     "cert": 0.0
    },
    "edge_pp": -0.4,
@@ -484,11 +446,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 80,
-   "sort_key": [
-    1,
-    -55.0
-   ],
+   "coverage_n": "4/5",
    "rank": 14,
    "rank_in_tier": 11
   },
@@ -497,13 +455,14 @@
    "name": "普联软件",
    "market": "A股",
    "tier": "2A",
-   "rank_score": 54.4,
-   "partial_score": 54.4,
+   "rank_score": 66.9,
+   "inner": 0.44,
+   "score_raw": 66.887965,
    "parts": {
     "edge": 0.107,
     "catalyst": 0.0,
-    "volume": 1.0,
-    "position": 0.95,
+    "volume": 0.9833,
+    "position": 1.0,
     "cert": 1.0
    },
    "edge_pp": -13.0,
@@ -520,11 +479,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 80,
-   "sort_key": [
-    1,
-    -54.4
-   ],
+   "coverage_n": "4/5",
    "rank": 15,
    "rank_in_tier": 12
   },
@@ -533,13 +488,14 @@
    "name": "BBVA",
    "market": "美股",
    "tier": "2A",
-   "rank_score": 48.9,
-   "partial_score": 48.9,
+   "rank_score": 65.7,
+   "inner": 0.396,
+   "score_raw": 65.69821,
    "parts": {
     "edge": 0.052,
     "catalyst": 0.0,
-    "volume": 0.85,
-    "position": 0.95,
+    "volume": 0.88,
+    "position": 0.9562,
     "cert": 1.0
    },
    "edge_pp": -16.2,
@@ -556,11 +512,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 80,
-   "sort_key": [
-    1,
-    -48.9
-   ],
+   "coverage_n": "4/5",
    "rank": 16,
    "rank_in_tier": 13
   },
@@ -569,13 +521,14 @@
    "name": "Integer Holdings Corp",
    "market": "美股",
    "tier": "2A",
-   "rank_score": 48.2,
-   "partial_score": 48.2,
+   "rank_score": 65.6,
+   "inner": 0.393,
+   "score_raw": 65.6056,
    "parts": {
     "edge": 0.232,
     "catalyst": 0.0,
     "volume": 1.0,
-    "position": 0.95,
+    "position": 1.0,
     "cert": 0.0
    },
    "edge_pp": -6.7,
@@ -592,11 +545,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 80,
-   "sort_key": [
-    1,
-    -48.2
-   ],
+   "coverage_n": "4/5",
    "rank": 17,
    "rank_in_tier": 14
   },
@@ -605,13 +554,14 @@
    "name": "Gates Industrial Corp Ltd",
    "market": "美股",
    "tier": "2A",
-   "rank_score": 42.4,
-   "partial_score": 42.4,
+   "rank_score": 64.1,
+   "inner": 0.337,
+   "score_raw": 64.09279,
    "parts": {
     "edge": 0.116,
     "catalyst": 0.0,
-    "volume": 1.0,
-    "position": 0.95,
+    "volume": 0.9575,
+    "position": 0.9783,
     "cert": 0.0
    },
    "edge_pp": -12.5,
@@ -628,26 +578,87 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 80,
-   "sort_key": [
-    1,
-    -42.4
-   ],
+   "coverage_n": "4/5",
    "rank": 18,
    "rank_in_tier": 15
+  },
+  {
+   "code": "0005.HK",
+   "name": "汇丰控股",
+   "market": "港股",
+   "tier": "2A",
+   "rank_score": 64.1,
+   "inner": 0.336,
+   "score_raw": 64.066735,
+   "parts": {
+    "edge": 0.15,
+    "catalyst": 0.0,
+    "volume": 0.882,
+    "position": 0.9567,
+    "cert": 0.0
+   },
+   "edge_pp": null,
+   "catalyst_kind": null,
+   "vold": 1.46,
+   "pos52": null,
+   "pos_note": "右侧·贴新高放量",
+   "flags": [
+    "无赢面数据(不在intraday_decisions)"
+   ],
+   "coverage": [
+    "volume",
+    "position",
+    "cert"
+   ],
+   "coverage_n": "3/5",
+   "rank": 19,
+   "rank_in_tier": 16
+  },
+  {
+   "code": "PSX",
+   "name": "Phillips 66",
+   "market": "美股",
+   "tier": "2A",
+   "rank_score": 64.1,
+   "inner": 0.336,
+   "score_raw": 64.066735,
+   "parts": {
+    "edge": 0.15,
+    "catalyst": 0.0,
+    "volume": 0.882,
+    "position": 0.9567,
+    "cert": 0.0
+   },
+   "edge_pp": null,
+   "catalyst_kind": null,
+   "vold": 1.46,
+   "pos52": null,
+   "pos_note": "右侧·贴新高放量",
+   "flags": [
+    "无赢面数据(不在intraday_decisions)"
+   ],
+   "coverage": [
+    "volume",
+    "position",
+    "cert"
+   ],
+   "coverage_n": "3/5",
+   "rank": 20,
+   "rank_in_tier": 17
   },
   {
    "code": "DXCM",
    "name": "德康医疗",
    "market": "美股",
    "tier": "2A",
-   "rank_score": 39.6,
-   "partial_score": 39.6,
+   "rank_score": 63.7,
+   "inner": 0.321,
+   "score_raw": 63.66538,
    "parts": {
     "edge": 0.06,
     "catalyst": 0.0,
-    "volume": 1.0,
-    "position": 0.95,
+    "volume": 0.9796,
+    "position": 1.0,
     "cert": 0.0
    },
    "edge_pp": -15.7,
@@ -664,26 +675,55 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 80,
-   "sort_key": [
-    1,
-    -39.6
+   "coverage_n": "4/5",
+   "rank": 21,
+   "rank_in_tier": 18
+  },
+  {
+   "code": "NWG",
+   "name": "NatWest Group plc ADR",
+   "market": "美股",
+   "tier": "2A",
+   "rank_score": 63.1,
+   "inner": 0.301,
+   "score_raw": 63.133885,
+   "parts": {
+    "edge": 0.15,
+    "catalyst": 0.0,
+    "volume": 0.7417,
+    "position": 0.2,
+    "cert": 1.0
+   },
+   "edge_pp": null,
+   "catalyst_kind": null,
+   "vold": 1.17,
+   "pos52": null,
+   "pos_note": "位置未知",
+   "flags": [
+    "无赢面数据(不在intraday_decisions)"
    ],
-   "rank": 19,
-   "rank_in_tier": 16
+   "coverage": [
+    "volume",
+    "position",
+    "cert"
+   ],
+   "coverage_n": "3/5",
+   "rank": 22,
+   "rank_in_tier": 19
   },
   {
    "code": "AMZN",
    "name": "亚马逊",
    "market": "美股",
    "tier": "2A",
-   "rank_score": 36.6,
-   "partial_score": 36.6,
+   "rank_score": 63.0,
+   "inner": 0.297,
+   "score_raw": 63.005635,
    "parts": {
     "edge": 0.0,
     "catalyst": 0.0,
-    "volume": 1.0,
-    "position": 0.95,
+    "volume": 0.9779,
+    "position": 0.9988,
     "cert": 0.0
    },
    "edge_pp": -20.7,
@@ -700,210 +740,30 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 80,
-   "sort_key": [
-    1,
-    -36.6
-   ],
-   "rank": 20,
-   "rank_in_tier": 17
-  },
-  {
-   "code": "600428.SS",
-   "name": "中远海特",
-   "market": "A股",
-   "tier": "2A",
-   "rank_score": 13.8,
-   "partial_score": 13.8,
-   "parts": {
-    "edge": 0.005,
-    "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.12,
-    "cert": 0.0
-   },
-   "edge_pp": -19.5,
-   "catalyst_kind": null,
-   "vold": 1.07,
-   "pos52": 96.0,
-   "pos_note": "高位",
-   "flags": [
-    "负赢面-19.5pp(赔率不够本)"
-   ],
-   "coverage": [
-    "edge",
-    "volume",
-    "position",
-    "cert"
-   ],
-   "coverage_pct": 80,
-   "sort_key": [
-    1,
-    -13.8
-   ],
-   "rank": 21,
-   "rank_in_tier": 18
-  },
-  {
-   "code": "SN",
-   "name": "SharkNinja Inc",
-   "market": "美股",
-   "tier": "2A",
-   "rank_score": 8.8,
-   "partial_score": 8.8,
-   "parts": {
-    "edge": 0.0,
-    "catalyst": 0.0,
-    "volume": 0.35,
-    "position": 0.12,
-    "cert": 0.0
-   },
-   "edge_pp": -21.5,
-   "catalyst_kind": null,
-   "vold": 0.97,
-   "pos52": 96.0,
-   "pos_note": "高位",
-   "flags": [
-    "负赢面-21.5pp(赔率不够本)"
-   ],
-   "coverage": [
-    "edge",
-    "volume",
-    "position",
-    "cert"
-   ],
-   "coverage_pct": 80,
-   "sort_key": [
-    1,
-    -8.8
-   ],
-   "rank": 22,
-   "rank_in_tier": 19
-  },
-  {
-   "code": "0005.HK",
-   "name": "汇丰控股",
-   "market": "港股",
-   "tier": "2A",
-   "rank_score": null,
-   "partial_score": 67.5,
-   "parts": {
-    "edge": 0.3,
-    "catalyst": 0.0,
-    "volume": 0.85,
-    "position": 0.95,
-    "cert": 0.0
-   },
-   "edge_pp": null,
-   "catalyst_kind": null,
-   "vold": 1.46,
-   "pos52": null,
-   "pos_note": "右侧·贴新高放量",
-   "flags": [
-    "无赢面数据(不在intraday_decisions)"
-   ],
-   "coverage": [
-    "volume",
-    "position",
-    "cert"
-   ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -67.5
-   ],
+   "coverage_n": "4/5",
    "rank": 23,
    "rank_in_tier": 20
-  },
-  {
-   "code": "PSX",
-   "name": "Phillips 66",
-   "market": "美股",
-   "tier": "2A",
-   "rank_score": null,
-   "partial_score": 67.5,
-   "parts": {
-    "edge": 0.3,
-    "catalyst": 0.0,
-    "volume": 0.85,
-    "position": 0.95,
-    "cert": 0.0
-   },
-   "edge_pp": null,
-   "catalyst_kind": null,
-   "vold": 1.46,
-   "pos52": null,
-   "pos_note": "右侧·贴新高放量",
-   "flags": [
-    "无赢面数据(不在intraday_decisions)"
-   ],
-   "coverage": [
-    "volume",
-    "position",
-    "cert"
-   ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -67.5
-   ],
-   "rank": 24,
-   "rank_in_tier": 21
-  },
-  {
-   "code": "NWG",
-   "name": "NatWest Group plc ADR",
-   "market": "美股",
-   "tier": "2A",
-   "rank_score": null,
-   "partial_score": 62.5,
-   "parts": {
-    "edge": 0.3,
-    "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.4,
-    "cert": 1.0
-   },
-   "edge_pp": null,
-   "catalyst_kind": null,
-   "vold": 1.17,
-   "pos52": null,
-   "pos_note": "",
-   "flags": [
-    "无赢面数据(不在intraday_decisions)"
-   ],
-   "coverage": [
-    "volume",
-    "position",
-    "cert"
-   ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -62.5
-   ],
-   "rank": 25,
-   "rank_in_tier": 22
   },
   {
    "code": "HSBC",
    "name": "汇丰控股",
    "market": "美股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 37.5,
+   "rank_score": 60.7,
+   "inner": 0.21,
+   "score_raw": 60.67,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.4,
+    "volume": 0.8,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 1.24,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -912,33 +772,30 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -37.5
-   ],
-   "rank": 26,
-   "rank_in_tier": 23
+   "coverage_n": "3/5",
+   "rank": 24,
+   "rank_in_tier": 21
   },
   {
    "code": "SAN",
    "name": "桑坦德银行",
    "market": "美股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 37.5,
+   "rank_score": 60.7,
+   "inner": 0.21,
+   "score_raw": 60.67,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.4,
+    "volume": 0.8,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 1.24,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -947,33 +804,30 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -37.5
-   ],
-   "rank": 27,
-   "rank_in_tier": 24
+   "coverage_n": "3/5",
+   "rank": 25,
+   "rank_in_tier": 22
   },
   {
    "code": "GWW",
    "name": "固安捷",
    "market": "美股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 37.5,
+   "rank_score": 60.6,
+   "inner": 0.207,
+   "score_raw": 60.602365,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.4,
+    "volume": 0.7833,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 1.22,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -982,33 +836,30 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -37.5
-   ],
-   "rank": 28,
-   "rank_in_tier": 25
+   "coverage_n": "3/5",
+   "rank": 26,
+   "rank_in_tier": 23
   },
   {
    "code": "2328.HK",
    "name": "中国财险",
    "market": "港股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 37.5,
+   "rank_score": 60.6,
+   "inner": 0.207,
+   "score_raw": 60.602365,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.4,
+    "volume": 0.7833,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 1.22,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -1017,33 +868,30 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -37.5
-   ],
-   "rank": 29,
-   "rank_in_tier": 26
+   "coverage_n": "3/5",
+   "rank": 27,
+   "rank_in_tier": 24
   },
   {
    "code": "MET",
    "name": "大都会人寿",
    "market": "美股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 37.5,
+   "rank_score": 60.4,
+   "inner": 0.199,
+   "score_raw": 60.36625,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.4,
+    "volume": 0.725,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 1.15,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -1052,33 +900,30 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -37.5
-   ],
-   "rank": 30,
-   "rank_in_tier": 27
+   "coverage_n": "3/5",
+   "rank": 28,
+   "rank_in_tier": 25
   },
   {
    "code": "PRU",
    "name": "保德信金融",
    "market": "美股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 37.5,
+   "rank_score": 60.3,
+   "inner": 0.198,
+   "score_raw": 60.332635,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.4,
+    "volume": 0.7167,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 1.14,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -1087,33 +932,30 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -37.5
-   ],
-   "rank": 31,
-   "rank_in_tier": 28
+   "coverage_n": "3/5",
+   "rank": 29,
+   "rank_in_tier": 26
   },
   {
    "code": "RACE",
    "name": "法拉利",
    "market": "美股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 37.5,
+   "rank_score": 60.3,
+   "inner": 0.196,
+   "score_raw": 60.298615,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.4,
+    "volume": 0.7083,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 1.13,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -1122,33 +964,30 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -37.5
-   ],
-   "rank": 32,
-   "rank_in_tier": 29
+   "coverage_n": "3/5",
+   "rank": 30,
+   "rank_in_tier": 27
   },
   {
    "code": "0300.HK",
    "name": "美的集团",
    "market": "港股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 37.5,
+   "rank_score": 60.3,
+   "inner": 0.195,
+   "score_raw": 60.265,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.4,
+    "volume": 0.7,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 1.12,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -1157,33 +996,30 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -37.5
-   ],
-   "rank": 33,
-   "rank_in_tier": 30
+   "coverage_n": "3/5",
+   "rank": 31,
+   "rank_in_tier": 28
   },
   {
    "code": "ING",
    "name": "荷兰国际",
    "market": "美股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 37.5,
+   "rank_score": 60.1,
+   "inner": 0.188,
+   "score_raw": 60.0625,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.4,
+    "volume": 0.65,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 1.06,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -1192,33 +1028,30 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -37.5
-   ],
-   "rank": 34,
-   "rank_in_tier": 31
+   "coverage_n": "3/5",
+   "rank": 32,
+   "rank_in_tier": 29
   },
   {
    "code": "VLO",
    "name": "瓦莱罗能源",
    "market": "美股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 37.5,
+   "rank_score": 60.0,
+   "inner": 0.184,
+   "score_raw": 59.96125,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.4,
+    "volume": 0.625,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 1.03,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -1227,33 +1060,30 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -37.5
-   ],
-   "rank": 35,
-   "rank_in_tier": 32
+   "coverage_n": "3/5",
+   "rank": 33,
+   "rank_in_tier": 30
   },
   {
    "code": "VIK",
    "name": "维京游轮",
    "market": "美股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 37.5,
+   "rank_score": 59.9,
+   "inner": 0.183,
+   "score_raw": 59.927635,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.4,
+    "volume": 0.6167,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 1.02,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -1262,33 +1092,30 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -37.5
-   ],
-   "rank": 36,
-   "rank_in_tier": 33
+   "coverage_n": "3/5",
+   "rank": 34,
+   "rank_in_tier": 31
   },
   {
    "code": "601168.SS",
    "name": "西部矿业",
    "market": "A股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 28.1,
+   "rank_score": 59.8,
+   "inner": 0.178,
+   "score_raw": 59.809375,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.35,
-    "position": 0.4,
+    "volume": 0.5875,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 0.99,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -1297,33 +1124,30 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -28.1
-   ],
-   "rank": 37,
-   "rank_in_tier": 34
+   "coverage_n": "3/5",
+   "rank": 35,
+   "rank_in_tier": 32
   },
   {
    "code": "1308.HK",
    "name": "海丰国际",
    "market": "港股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 28.1,
+   "rank_score": 59.7,
+   "inner": 0.174,
+   "score_raw": 59.708125,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.35,
-    "position": 0.4,
+    "volume": 0.5625,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 0.97,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -1332,33 +1156,30 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -28.1
-   ],
-   "rank": 38,
-   "rank_in_tier": 35
+   "coverage_n": "3/5",
+   "rank": 36,
+   "rank_in_tier": 33
   },
   {
    "code": "LYG",
    "name": "劳埃德银行(ADR)",
    "market": "美股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 28.1,
+   "rank_score": 59.7,
+   "inner": 0.172,
+   "score_raw": 59.6575,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.35,
-    "position": 0.4,
+    "volume": 0.55,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 0.96,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -1367,33 +1188,30 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -28.1
-   ],
-   "rank": 39,
-   "rank_in_tier": 36
+   "coverage_n": "3/5",
+   "rank": 37,
+   "rank_in_tier": 34
   },
   {
    "code": "003013.SZ",
    "name": "地铁设计",
    "market": "A股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 28.1,
+   "rank_score": 59.4,
+   "inner": 0.163,
+   "score_raw": 59.404375,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.35,
-    "position": 0.4,
+    "volume": 0.4875,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 0.91,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -1402,131 +1220,23 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -28.1
-   ],
-   "rank": 40,
-   "rank_in_tier": 37
-  },
-  {
-   "code": "BAC",
-   "name": "美国银行",
-   "market": "美股",
-   "tier": "2A",
-   "rank_score": null,
-   "partial_score": 28.1,
-   "parts": {
-    "edge": 0.3,
-    "catalyst": 0.0,
-    "volume": 0.35,
-    "position": 0.4,
-    "cert": 0.0
-   },
-   "edge_pp": null,
-   "catalyst_kind": null,
-   "vold": 0.87,
-   "pos52": null,
-   "pos_note": "",
-   "flags": [
-    "无赢面数据(不在intraday_decisions)"
-   ],
-   "coverage": [
-    "volume",
-    "position",
-    "cert"
-   ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -28.1
-   ],
-   "rank": 41,
-   "rank_in_tier": 38
-  },
-  {
-   "code": "0023.HK",
-   "name": "东亚银行",
-   "market": "港股",
-   "tier": "2A",
-   "rank_score": null,
-   "partial_score": 28.1,
-   "parts": {
-    "edge": 0.3,
-    "catalyst": 0.0,
-    "volume": 0.35,
-    "position": 0.4,
-    "cert": 0.0
-   },
-   "edge_pp": null,
-   "catalyst_kind": null,
-   "vold": 0.85,
-   "pos52": null,
-   "pos_note": "",
-   "flags": [
-    "无赢面数据(不在intraday_decisions)"
-   ],
-   "coverage": [
-    "volume",
-    "position",
-    "cert"
-   ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -28.1
-   ],
-   "rank": 42,
-   "rank_in_tier": 39
-  },
-  {
-   "code": "SMFG",
-   "name": "三井住友金融",
-   "market": "美股",
-   "tier": "2A",
-   "rank_score": null,
-   "partial_score": 28.1,
-   "parts": {
-    "edge": 0.3,
-    "catalyst": 0.0,
-    "volume": 0.35,
-    "position": 0.4,
-    "cert": 0.0
-   },
-   "edge_pp": null,
-   "catalyst_kind": null,
-   "vold": 0.83,
-   "pos52": null,
-   "pos_note": "",
-   "flags": [
-    "无赢面数据(不在intraday_decisions)"
-   ],
-   "coverage": [
-    "volume",
-    "position",
-    "cert"
-   ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -28.1
-   ],
-   "rank": 43,
-   "rank_in_tier": 40
+   "coverage_n": "3/5",
+   "rank": 38,
+   "rank_in_tier": 35
   },
   {
    "code": "RTX",
    "name": "雷神技术",
    "market": "美股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 20.6,
+   "rank_score": 59.3,
+   "inner": 0.161,
+   "score_raw": 59.3335,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.21,
+    "position": 0.26,
     "cert": 0.3
    },
    "edge_pp": null,
@@ -1543,26 +1253,55 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -20.6
+   "coverage_n": "3/5",
+   "rank": 39,
+   "rank_in_tier": 36
+  },
+  {
+   "code": "BAC",
+   "name": "美国银行",
+   "market": "美股",
+   "tier": "2A",
+   "rank_score": 59.2,
+   "inner": 0.156,
+   "score_raw": 59.201875,
+   "parts": {
+    "edge": 0.15,
+    "catalyst": 0.0,
+    "volume": 0.4375,
+    "position": 0.2,
+    "cert": 0.0
+   },
+   "edge_pp": null,
+   "catalyst_kind": null,
+   "vold": 0.87,
+   "pos52": null,
+   "pos_note": "位置未知",
+   "flags": [
+    "无赢面数据(不在intraday_decisions)"
    ],
-   "rank": 44,
-   "rank_in_tier": 41
+   "coverage": [
+    "volume",
+    "position",
+    "cert"
+   ],
+   "coverage_n": "3/5",
+   "rank": 40,
+   "rank_in_tier": 37
   },
   {
    "code": "0440.HK",
    "name": "大新金融",
    "market": "港股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 20.6,
+   "rank_score": 59.2,
+   "inner": 0.155,
+   "score_raw": 59.174335,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.1794,
+    "position": 0.2513,
     "cert": 0.3
    },
    "edge_pp": null,
@@ -1579,26 +1318,23 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -20.6
-   ],
-   "rank": 45,
-   "rank_in_tier": 42
+   "coverage_n": "3/5",
+   "rank": 41,
+   "rank_in_tier": 38
   },
   {
    "code": "2888.HK",
    "name": "渣打集团",
    "market": "港股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 13.1,
+   "rank_score": 59.1,
+   "inner": 0.152,
+   "score_raw": 59.11561,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.3237,
+    "position": 0.2925,
     "cert": 0.0
    },
    "edge_pp": null,
@@ -1615,26 +1351,87 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -13.1
+   "coverage_n": "3/5",
+   "rank": 42,
+   "rank_in_tier": 39
+  },
+  {
+   "code": "0023.HK",
+   "name": "东亚银行",
+   "market": "港股",
+   "tier": "2A",
+   "rank_score": 59.1,
+   "inner": 0.152,
+   "score_raw": 59.100625,
+   "parts": {
+    "edge": 0.15,
+    "catalyst": 0.0,
+    "volume": 0.4125,
+    "position": 0.2,
+    "cert": 0.0
+   },
+   "edge_pp": null,
+   "catalyst_kind": null,
+   "vold": 0.85,
+   "pos52": null,
+   "pos_note": "位置未知",
+   "flags": [
+    "无赢面数据(不在intraday_decisions)"
    ],
-   "rank": 46,
-   "rank_in_tier": 43
+   "coverage": [
+    "volume",
+    "position",
+    "cert"
+   ],
+   "coverage_n": "3/5",
+   "rank": 43,
+   "rank_in_tier": 40
+  },
+  {
+   "code": "SMFG",
+   "name": "三井住友金融",
+   "market": "美股",
+   "tier": "2A",
+   "rank_score": 59.0,
+   "inner": 0.148,
+   "score_raw": 58.999375,
+   "parts": {
+    "edge": 0.15,
+    "catalyst": 0.0,
+    "volume": 0.3875,
+    "position": 0.2,
+    "cert": 0.0
+   },
+   "edge_pp": null,
+   "catalyst_kind": null,
+   "vold": 0.83,
+   "pos52": null,
+   "pos_note": "位置未知",
+   "flags": [
+    "无赢面数据(不在intraday_decisions)"
+   ],
+   "coverage": [
+    "volume",
+    "position",
+    "cert"
+   ],
+   "coverage_n": "3/5",
+   "rank": 44,
+   "rank_in_tier": 41
   },
   {
    "code": "2388.HK",
    "name": "中银香港",
    "market": "港股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 13.1,
+   "rank_score": 58.9,
+   "inner": 0.143,
+   "score_raw": 58.864915,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.2756,
+    "position": 0.2787,
     "cert": 0.0
    },
    "edge_pp": null,
@@ -1651,26 +1448,23 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -13.1
-   ],
-   "rank": 47,
-   "rank_in_tier": 44
+   "coverage_n": "3/5",
+   "rank": 45,
+   "rank_in_tier": 42
   },
   {
    "code": "0293.HK",
    "name": "国泰航空",
    "market": "港股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 13.1,
+   "rank_score": 58.8,
+   "inner": 0.141,
+   "score_raw": 58.819555,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.2669,
+    "position": 0.2762,
     "cert": 0.0
    },
    "edge_pp": null,
@@ -1687,26 +1481,23 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -13.1
-   ],
-   "rank": 48,
-   "rank_in_tier": 45
+   "coverage_n": "3/5",
+   "rank": 46,
+   "rank_in_tier": 43
   },
   {
    "code": "BMO",
    "name": "蒙特利尔银行",
    "market": "美股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 13.1,
+   "rank_score": 58.8,
+   "inner": 0.141,
+   "score_raw": 58.819555,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.2669,
+    "position": 0.2762,
     "cert": 0.0
    },
    "edge_pp": null,
@@ -1723,26 +1514,23 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -13.1
-   ],
-   "rank": 49,
-   "rank_in_tier": 46
+   "coverage_n": "3/5",
+   "rank": 47,
+   "rank_in_tier": 44
   },
   {
    "code": "2356.HK",
    "name": "大新银行集团",
    "market": "港股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 13.1,
+   "rank_score": 58.5,
+   "inner": 0.129,
+   "score_raw": 58.477735,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.2012,
+    "position": 0.2575,
     "cert": 0.0
    },
    "edge_pp": null,
@@ -1759,11 +1547,73 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -13.1
+   "coverage_n": "3/5",
+   "rank": 48,
+   "rank_in_tier": 45
+  },
+  {
+   "code": "600428.SS",
+   "name": "中远海特",
+   "market": "A股",
+   "tier": "2A",
+   "rank_score": 58.4,
+   "inner": 0.124,
+   "score_raw": 58.351915,
+   "parts": {
+    "edge": 0.005,
+    "catalyst": 0.0,
+    "volume": 0.6583,
+    "position": 0.156,
+    "cert": 0.0
+   },
+   "edge_pp": -19.5,
+   "catalyst_kind": null,
+   "vold": 1.07,
+   "pos52": 96.0,
+   "pos_note": "高位",
+   "flags": [
+    "负赢面-19.5pp(赔率不够本)"
    ],
+   "coverage": [
+    "edge",
+    "volume",
+    "position",
+    "cert"
+   ],
+   "coverage_n": "4/5",
+   "rank": 49,
+   "rank_in_tier": 46
+  },
+  {
+   "code": "SN",
+   "name": "SharkNinja Inc",
+   "market": "美股",
+   "tier": "2A",
+   "rank_score": 57.9,
+   "inner": 0.108,
+   "score_raw": 57.909925,
+   "parts": {
+    "edge": 0.0,
+    "catalyst": 0.0,
+    "volume": 0.5625,
+    "position": 0.156,
+    "cert": 0.0
+   },
+   "edge_pp": -21.5,
+   "catalyst_kind": null,
+   "vold": 0.97,
+   "pos52": 96.0,
+   "pos_note": "高位",
+   "flags": [
+    "负赢面-21.5pp(赔率不够本)"
+   ],
+   "coverage": [
+    "edge",
+    "volume",
+    "position",
+    "cert"
+   ],
+   "coverage_n": "4/5",
    "rank": 50,
    "rank_in_tier": 47
   },
@@ -1772,13 +1622,14 @@
    "name": "汽车之家-S",
    "market": "港股",
    "tier": "2A",
-   "rank_score": null,
-   "partial_score": 13.1,
+   "rank_score": 57.8,
+   "inner": 0.103,
+   "score_raw": 57.7945,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.07,
+    "position": 0.22,
     "cert": 0.0
    },
    "edge_pp": null,
@@ -1795,60 +1646,23 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -13.1
-   ],
+   "coverage_n": "3/5",
    "rank": 51,
    "rank_in_tier": 48
-  },
-  {
-   "code": "AMRX",
-   "name": "Amneal Pharmaceuticals Inc-A",
-   "market": "美股",
-   "tier": "1A",
-   "rank_score": 37.9,
-   "partial_score": 37.9,
-   "parts": {
-    "edge": 0.487,
-    "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.12,
-    "cert": 0.0
-   },
-   "edge_pp": 4.7,
-   "catalyst_kind": null,
-   "vold": 1.17,
-   "pos52": 88.0,
-   "pos_note": "高位",
-   "flags": [],
-   "coverage": [
-    "edge",
-    "volume",
-    "position",
-    "cert"
-   ],
-   "coverage_pct": 80,
-   "sort_key": [
-    0,
-    -37.9
-   ],
-   "rank": 52,
-   "rank_in_tier": 1
   },
   {
    "code": "2020.HK",
    "name": "安踏体育",
    "market": "港股",
    "tier": "1A",
-   "rank_score": 32.9,
-   "partial_score": 32.9,
+   "rank_score": 29.7,
+   "inner": 0.367,
+   "score_raw": 29.6938,
    "parts": {
     "edge": 0.184,
     "catalyst": 0.45,
-    "volume": 0.6,
-    "position": 0.5,
+    "volume": 0.825,
+    "position": 0.5333,
     "cert": 0.0
    },
    "edge_pp": -9.0,
@@ -1866,62 +1680,54 @@
     "cert",
     "catalyst"
    ],
-   "coverage_pct": 100,
-   "sort_key": [
-    1,
-    -32.9
-   ],
-   "rank": 53,
-   "rank_in_tier": 2
+   "coverage_n": "5/5",
+   "rank": 52,
+   "rank_in_tier": 1
   },
   {
-   "code": "DULL",
-   "name": "MicroSectors Gold -3X Inverse L",
+   "code": "AMRX",
+   "name": "Amneal Pharmaceuticals Inc-A",
    "market": "美股",
    "tier": "1A",
-   "rank_score": 29.3,
-   "partial_score": 29.3,
+   "rank_score": 28.6,
+   "inner": 0.34,
+   "score_raw": 28.6102,
    "parts": {
-    "edge": 0.38,
+    "edge": 0.487,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
-    "cert": 0.3
+    "volume": 0.7417,
+    "position": 0.228,
+    "cert": 0.0
    },
-   "edge_pp": 0.1,
+   "edge_pp": 4.7,
    "catalyst_kind": null,
-   "vold": 0.38,
-   "pos52": 85.0,
-   "pos_note": "缩量新高(不提名)",
-   "flags": [
-    "缩量新高"
-   ],
+   "vold": 1.17,
+   "pos52": 88.0,
+   "pos_note": "高位",
+   "flags": [],
    "coverage": [
     "edge",
     "volume",
     "position",
     "cert"
    ],
-   "coverage_pct": 80,
-   "sort_key": [
-    1,
-    -29.3
-   ],
-   "rank": 54,
-   "rank_in_tier": 3
+   "coverage_n": "4/5",
+   "rank": 53,
+   "rank_in_tier": 2
   },
   {
    "code": "002832.SZ",
    "name": "比音勒芬",
    "market": "A股",
    "tier": "1A",
-   "rank_score": 27.2,
-   "partial_score": 27.2,
+   "rank_score": 25.2,
+   "inner": 0.255,
+   "score_raw": 25.195,
    "parts": {
     "edge": 0.367,
     "catalyst": 0.0,
-    "volume": 0.35,
-    "position": 0.12,
+    "volume": 0.5375,
+    "position": 0.183,
     "cert": 0.0
    },
    "edge_pp": -0.5,
@@ -1938,11 +1744,40 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 80,
-   "sort_key": [
-    1,
-    -27.2
+   "coverage_n": "4/5",
+   "rank": 54,
+   "rank_in_tier": 3
+  },
+  {
+   "code": "DULL",
+   "name": "MicroSectors Gold -3X Inverse L",
+   "market": "美股",
+   "tier": "1A",
+   "rank_score": 24.8,
+   "inner": 0.244,
+   "score_raw": 24.7622,
+   "parts": {
+    "edge": 0.38,
+    "catalyst": 0.0,
+    "volume": 0.1662,
+    "position": 0.2475,
+    "cert": 0.3
+   },
+   "edge_pp": 0.1,
+   "catalyst_kind": null,
+   "vold": 0.38,
+   "pos52": 85.0,
+   "pos_note": "缩量新高(不提名)",
+   "flags": [
+    "缩量新高"
    ],
+   "coverage": [
+    "edge",
+    "volume",
+    "position",
+    "cert"
+   ],
+   "coverage_n": "4/5",
    "rank": 55,
    "rank_in_tier": 4
   },
@@ -1951,20 +1786,21 @@
    "name": "创科实业",
    "market": "港股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 37.5,
+   "rank_score": 23.3,
+   "inner": 0.207,
+   "score_raw": 23.2998,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.4,
+    "volume": 0.7833,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 1.22,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -1973,11 +1809,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -37.5
-   ],
+   "coverage_n": "3/5",
    "rank": 56,
    "rank_in_tier": 5
   },
@@ -1986,20 +1818,21 @@
    "name": "药明康德",
    "market": "A股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 37.5,
+   "rank_score": 23.3,
+   "inner": 0.207,
+   "score_raw": 23.2998,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.4,
+    "volume": 0.7833,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 1.22,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -2008,11 +1841,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -37.5
-   ],
+   "coverage_n": "3/5",
    "rank": 57,
    "rank_in_tier": 6
   },
@@ -2021,20 +1850,21 @@
    "name": "可口可乐欧洲太平洋合伙",
    "market": "美股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 37.5,
+   "rank_score": 22.9,
+   "inner": 0.198,
+   "score_raw": 22.9002,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.4,
+    "volume": 0.7167,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 1.14,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -2043,11 +1873,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -37.5
-   ],
+   "coverage_n": "3/5",
    "rank": 58,
    "rank_in_tier": 7
   },
@@ -2056,20 +1882,21 @@
    "name": "药明康德",
    "market": "港股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 37.5,
+   "rank_score": 22.8,
+   "inner": 0.194,
+   "score_raw": 22.7502,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.4,
+    "volume": 0.6917,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 1.11,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -2078,11 +1905,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -37.5
-   ],
+   "coverage_n": "3/5",
    "rank": 59,
    "rank_in_tier": 8
   },
@@ -2091,20 +1914,21 @@
    "name": "安费诺",
    "market": "美股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 37.5,
+   "rank_score": 22.5,
+   "inner": 0.186,
+   "score_raw": 22.4502,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.4,
+    "volume": 0.6417,
+    "position": 0.2,
     "cert": 0.0
    },
    "edge_pp": null,
    "catalyst_kind": null,
    "vold": 1.05,
    "pos52": null,
-   "pos_note": "",
+   "pos_note": "位置未知",
    "flags": [
     "无赢面数据(不在intraday_decisions)"
    ],
@@ -2113,341 +1937,23 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -37.5
-   ],
+   "coverage_n": "3/5",
    "rank": 60,
    "rank_in_tier": 9
-  },
-  {
-   "code": "002440.SZ",
-   "name": "闰土股份",
-   "market": "A股",
-   "tier": "1A",
-   "rank_score": null,
-   "partial_score": 37.5,
-   "parts": {
-    "edge": 0.3,
-    "catalyst": 0.0,
-    "volume": 0.6,
-    "position": 0.4,
-    "cert": 0.0
-   },
-   "edge_pp": null,
-   "catalyst_kind": null,
-   "vold": 1.03,
-   "pos52": null,
-   "pos_note": "",
-   "flags": [
-    "无赢面数据(不在intraday_decisions)"
-   ],
-   "coverage": [
-    "volume",
-    "position",
-    "cert"
-   ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -37.5
-   ],
-   "rank": 61,
-   "rank_in_tier": 10
-  },
-  {
-   "code": "2689.HK",
-   "name": "玖龙纸业",
-   "market": "港股",
-   "tier": "1A",
-   "rank_score": null,
-   "partial_score": 28.1,
-   "parts": {
-    "edge": 0.3,
-    "catalyst": 0.0,
-    "volume": 0.35,
-    "position": 0.4,
-    "cert": 0.0
-   },
-   "edge_pp": null,
-   "catalyst_kind": null,
-   "vold": 0.98,
-   "pos52": null,
-   "pos_note": "",
-   "flags": [
-    "无赢面数据(不在intraday_decisions)"
-   ],
-   "coverage": [
-    "volume",
-    "position",
-    "cert"
-   ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -28.1
-   ],
-   "rank": 62,
-   "rank_in_tier": 11
-  },
-  {
-   "code": "STT",
-   "name": "道富",
-   "market": "美股",
-   "tier": "1A",
-   "rank_score": null,
-   "partial_score": 28.1,
-   "parts": {
-    "edge": 0.3,
-    "catalyst": 0.0,
-    "volume": 0.35,
-    "position": 0.4,
-    "cert": 0.0
-   },
-   "edge_pp": null,
-   "catalyst_kind": null,
-   "vold": 0.96,
-   "pos52": null,
-   "pos_note": "",
-   "flags": [
-    "无赢面数据(不在intraday_decisions)"
-   ],
-   "coverage": [
-    "volume",
-    "position",
-    "cert"
-   ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -28.1
-   ],
-   "rank": 63,
-   "rank_in_tier": 12
-  },
-  {
-   "code": "GE",
-   "name": "GE航空航天",
-   "market": "美股",
-   "tier": "1A",
-   "rank_score": null,
-   "partial_score": 28.1,
-   "parts": {
-    "edge": 0.3,
-    "catalyst": 0.0,
-    "volume": 0.35,
-    "position": 0.4,
-    "cert": 0.0
-   },
-   "edge_pp": null,
-   "catalyst_kind": null,
-   "vold": 0.91,
-   "pos52": null,
-   "pos_note": "",
-   "flags": [
-    "无赢面数据(不在intraday_decisions)"
-   ],
-   "coverage": [
-    "volume",
-    "position",
-    "cert"
-   ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -28.1
-   ],
-   "rank": 64,
-   "rank_in_tier": 13
-  },
-  {
-   "code": "UBS",
-   "name": "瑞银集团",
-   "market": "美股",
-   "tier": "1A",
-   "rank_score": null,
-   "partial_score": 28.1,
-   "parts": {
-    "edge": 0.3,
-    "catalyst": 0.0,
-    "volume": 0.35,
-    "position": 0.4,
-    "cert": 0.0
-   },
-   "edge_pp": null,
-   "catalyst_kind": null,
-   "vold": 0.87,
-   "pos52": null,
-   "pos_note": "",
-   "flags": [
-    "无赢面数据(不在intraday_decisions)"
-   ],
-   "coverage": [
-    "volume",
-    "position",
-    "cert"
-   ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -28.1
-   ],
-   "rank": 65,
-   "rank_in_tier": 14
-  },
-  {
-   "code": "MPC",
-   "name": "马拉松原油",
-   "market": "美股",
-   "tier": "1A",
-   "rank_score": null,
-   "partial_score": 28.1,
-   "parts": {
-    "edge": 0.3,
-    "catalyst": 0.0,
-    "volume": 0.35,
-    "position": 0.4,
-    "cert": 0.0
-   },
-   "edge_pp": null,
-   "catalyst_kind": null,
-   "vold": 0.86,
-   "pos52": null,
-   "pos_note": "",
-   "flags": [
-    "无赢面数据(不在intraday_decisions)"
-   ],
-   "coverage": [
-    "volume",
-    "position",
-    "cert"
-   ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -28.1
-   ],
-   "rank": 66,
-   "rank_in_tier": 15
-  },
-  {
-   "code": "ADP",
-   "name": "自动数据处理",
-   "market": "美股",
-   "tier": "1A",
-   "rank_score": null,
-   "partial_score": 28.1,
-   "parts": {
-    "edge": 0.3,
-    "catalyst": 0.0,
-    "volume": 0.35,
-    "position": 0.4,
-    "cert": 0.0
-   },
-   "edge_pp": null,
-   "catalyst_kind": null,
-   "vold": 0.85,
-   "pos52": null,
-   "pos_note": "",
-   "flags": [
-    "无赢面数据(不在intraday_decisions)"
-   ],
-   "coverage": [
-    "volume",
-    "position",
-    "cert"
-   ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -28.1
-   ],
-   "rank": 67,
-   "rank_in_tier": 16
-  },
-  {
-   "code": "ALL",
-   "name": "好事达保险",
-   "market": "美股",
-   "tier": "1A",
-   "rank_score": null,
-   "partial_score": 28.1,
-   "parts": {
-    "edge": 0.3,
-    "catalyst": 0.0,
-    "volume": 0.35,
-    "position": 0.4,
-    "cert": 0.0
-   },
-   "edge_pp": null,
-   "catalyst_kind": null,
-   "vold": 0.83,
-   "pos52": null,
-   "pos_note": "",
-   "flags": [
-    "无赢面数据(不在intraday_decisions)"
-   ],
-   "coverage": [
-    "volume",
-    "position",
-    "cert"
-   ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -28.1
-   ],
-   "rank": 68,
-   "rank_in_tier": 17
-  },
-  {
-   "code": "CTAS",
-   "name": "信达思",
-   "market": "美股",
-   "tier": "1A",
-   "rank_score": null,
-   "partial_score": 28.1,
-   "parts": {
-    "edge": 0.3,
-    "catalyst": 0.0,
-    "volume": 0.35,
-    "position": 0.4,
-    "cert": 0.0
-   },
-   "edge_pp": null,
-   "catalyst_kind": null,
-   "vold": 0.8,
-   "pos52": null,
-   "pos_note": "",
-   "flags": [
-    "无赢面数据(不在intraday_decisions)"
-   ],
-   "coverage": [
-    "volume",
-    "position",
-    "cert"
-   ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -28.1
-   ],
-   "rank": 69,
-   "rank_in_tier": 18
   },
   {
    "code": "MT",
    "name": "安赛乐米塔尔",
    "market": "美股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 20.6,
+   "rank_score": 22.4,
+   "inner": 0.186,
+   "score_raw": 22.4322,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.3412,
+    "position": 0.2975,
     "cert": 0.3
    },
    "edge_pp": null,
@@ -2464,26 +1970,55 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -20.6
+   "coverage_n": "3/5",
+   "rank": 61,
+   "rank_in_tier": 10
+  },
+  {
+   "code": "002440.SZ",
+   "name": "闰土股份",
+   "market": "A股",
+   "tier": "1A",
+   "rank_score": 22.4,
+   "inner": 0.184,
+   "score_raw": 22.35,
+   "parts": {
+    "edge": 0.15,
+    "catalyst": 0.0,
+    "volume": 0.625,
+    "position": 0.2,
+    "cert": 0.0
+   },
+   "edge_pp": null,
+   "catalyst_kind": null,
+   "vold": 1.03,
+   "pos52": null,
+   "pos_note": "位置未知",
+   "flags": [
+    "无赢面数据(不在intraday_decisions)"
    ],
-   "rank": 70,
-   "rank_in_tier": 19
+   "coverage": [
+    "volume",
+    "position",
+    "cert"
+   ],
+   "coverage_n": "3/5",
+   "rank": 62,
+   "rank_in_tier": 11
   },
   {
    "code": "GRMN",
    "name": "佳明",
    "market": "美股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 20.6,
+   "rank_score": 22.2,
+   "inner": 0.179,
+   "score_raw": 22.1622,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.3062,
+    "position": 0.2875,
     "cert": 0.3
    },
    "edge_pp": null,
@@ -2500,26 +2035,151 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -20.6
+   "coverage_n": "3/5",
+   "rank": 63,
+   "rank_in_tier": 12
+  },
+  {
+   "code": "2689.HK",
+   "name": "玖龙纸业",
+   "market": "港股",
+   "tier": "1A",
+   "rank_score": 22.1,
+   "inner": 0.176,
+   "score_raw": 22.05,
+   "parts": {
+    "edge": 0.15,
+    "catalyst": 0.0,
+    "volume": 0.575,
+    "position": 0.2,
+    "cert": 0.0
+   },
+   "edge_pp": null,
+   "catalyst_kind": null,
+   "vold": 0.98,
+   "pos52": null,
+   "pos_note": "位置未知",
+   "flags": [
+    "无赢面数据(不在intraday_decisions)"
    ],
-   "rank": 71,
-   "rank_in_tier": 20
+   "coverage": [
+    "volume",
+    "position",
+    "cert"
+   ],
+   "coverage_n": "3/5",
+   "rank": 64,
+   "rank_in_tier": 13
+  },
+  {
+   "code": "STT",
+   "name": "道富",
+   "market": "美股",
+   "tier": "1A",
+   "rank_score": 21.9,
+   "inner": 0.172,
+   "score_raw": 21.9,
+   "parts": {
+    "edge": 0.15,
+    "catalyst": 0.0,
+    "volume": 0.55,
+    "position": 0.2,
+    "cert": 0.0
+   },
+   "edge_pp": null,
+   "catalyst_kind": null,
+   "vold": 0.96,
+   "pos52": null,
+   "pos_note": "位置未知",
+   "flags": [
+    "无赢面数据(不在intraday_decisions)"
+   ],
+   "coverage": [
+    "volume",
+    "position",
+    "cert"
+   ],
+   "coverage_n": "3/5",
+   "rank": 65,
+   "rank_in_tier": 14
+  },
+  {
+   "code": "GE",
+   "name": "GE航空航天",
+   "market": "美股",
+   "tier": "1A",
+   "rank_score": 21.5,
+   "inner": 0.163,
+   "score_raw": 21.525,
+   "parts": {
+    "edge": 0.15,
+    "catalyst": 0.0,
+    "volume": 0.4875,
+    "position": 0.2,
+    "cert": 0.0
+   },
+   "edge_pp": null,
+   "catalyst_kind": null,
+   "vold": 0.91,
+   "pos52": null,
+   "pos_note": "位置未知",
+   "flags": [
+    "无赢面数据(不在intraday_decisions)"
+   ],
+   "coverage": [
+    "volume",
+    "position",
+    "cert"
+   ],
+   "coverage_n": "3/5",
+   "rank": 66,
+   "rank_in_tier": 15
+  },
+  {
+   "code": "UBS",
+   "name": "瑞银集团",
+   "market": "美股",
+   "tier": "1A",
+   "rank_score": 21.2,
+   "inner": 0.156,
+   "score_raw": 21.225,
+   "parts": {
+    "edge": 0.15,
+    "catalyst": 0.0,
+    "volume": 0.4375,
+    "position": 0.2,
+    "cert": 0.0
+   },
+   "edge_pp": null,
+   "catalyst_kind": null,
+   "vold": 0.87,
+   "pos52": null,
+   "pos_note": "位置未知",
+   "flags": [
+    "无赢面数据(不在intraday_decisions)"
+   ],
+   "coverage": [
+    "volume",
+    "position",
+    "cert"
+   ],
+   "coverage_n": "3/5",
+   "rank": 67,
+   "rank_in_tier": 16
   },
   {
    "code": "2698.HK",
    "name": "乐舒适",
    "market": "港股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 13.1,
+   "rank_score": 21.2,
+   "inner": 0.154,
+   "score_raw": 21.165,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.3325,
+    "position": 0.295,
     "cert": 0.0
    },
    "edge_pp": null,
@@ -2536,26 +2196,23 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -13.1
-   ],
-   "rank": 72,
-   "rank_in_tier": 21
+   "coverage_n": "3/5",
+   "rank": 68,
+   "rank_in_tier": 17
   },
   {
    "code": "DAL",
    "name": "达美航空",
    "market": "美股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 13.1,
+   "rank_score": 21.2,
+   "inner": 0.154,
+   "score_raw": 21.165,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.3325,
+    "position": 0.295,
     "cert": 0.0
    },
    "edge_pp": null,
@@ -2572,26 +2229,55 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -13.1
+   "coverage_n": "3/5",
+   "rank": 69,
+   "rank_in_tier": 18
+  },
+  {
+   "code": "MPC",
+   "name": "马拉松原油",
+   "market": "美股",
+   "tier": "1A",
+   "rank_score": 21.1,
+   "inner": 0.154,
+   "score_raw": 21.15,
+   "parts": {
+    "edge": 0.15,
+    "catalyst": 0.0,
+    "volume": 0.425,
+    "position": 0.2,
+    "cert": 0.0
+   },
+   "edge_pp": null,
+   "catalyst_kind": null,
+   "vold": 0.86,
+   "pos52": null,
+   "pos_note": "位置未知",
+   "flags": [
+    "无赢面数据(不在intraday_decisions)"
    ],
-   "rank": 73,
-   "rank_in_tier": 22
+   "coverage": [
+    "volume",
+    "position",
+    "cert"
+   ],
+   "coverage_n": "3/5",
+   "rank": 70,
+   "rank_in_tier": 19
   },
   {
    "code": "TRV",
    "name": "旅行者保险",
    "market": "美股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 13.1,
+   "rank_score": 21.1,
+   "inner": 0.153,
+   "score_raw": 21.1314,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.3281,
+    "position": 0.2938,
     "cert": 0.0
    },
    "edge_pp": null,
@@ -2608,26 +2294,23 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -13.1
-   ],
-   "rank": 74,
-   "rank_in_tier": 23
+   "coverage_n": "3/5",
+   "rank": 71,
+   "rank_in_tier": 20
   },
   {
    "code": "2314.HK",
    "name": "理文造纸",
    "market": "港股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 13.1,
+   "rank_score": 21.1,
+   "inner": 0.152,
+   "score_raw": 21.0972,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.3237,
+    "position": 0.2925,
     "cert": 0.0
    },
    "edge_pp": null,
@@ -2644,26 +2327,55 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -13.1
+   "coverage_n": "3/5",
+   "rank": 72,
+   "rank_in_tier": 21
+  },
+  {
+   "code": "ADP",
+   "name": "自动数据处理",
+   "market": "美股",
+   "tier": "1A",
+   "rank_score": 21.1,
+   "inner": 0.152,
+   "score_raw": 21.075,
+   "parts": {
+    "edge": 0.15,
+    "catalyst": 0.0,
+    "volume": 0.4125,
+    "position": 0.2,
+    "cert": 0.0
+   },
+   "edge_pp": null,
+   "catalyst_kind": null,
+   "vold": 0.85,
+   "pos52": null,
+   "pos_note": "位置未知",
+   "flags": [
+    "无赢面数据(不在intraday_decisions)"
    ],
-   "rank": 75,
-   "rank_in_tier": 24
+   "coverage": [
+    "volume",
+    "position",
+    "cert"
+   ],
+   "coverage_n": "3/5",
+   "rank": 73,
+   "rank_in_tier": 22
   },
   {
    "code": "PCAR",
    "name": "帕卡",
    "market": "美股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 13.1,
+   "rank_score": 21.0,
+   "inner": 0.151,
+   "score_raw": 21.03,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.315,
+    "position": 0.29,
     "cert": 0.0
    },
    "edge_pp": null,
@@ -2680,26 +2392,23 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -13.1
-   ],
-   "rank": 76,
-   "rank_in_tier": 25
+   "coverage_n": "3/5",
+   "rank": 74,
+   "rank_in_tier": 23
   },
   {
    "code": "300759.SZ",
    "name": "康龙化成",
    "market": "A股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 13.1,
+   "rank_score": 21.0,
+   "inner": 0.149,
+   "score_raw": 20.9622,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.3062,
+    "position": 0.2875,
     "cert": 0.0
    },
    "edge_pp": null,
@@ -2716,26 +2425,55 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -13.1
+   "coverage_n": "3/5",
+   "rank": 75,
+   "rank_in_tier": 24
+  },
+  {
+   "code": "ALL",
+   "name": "好事达保险",
+   "market": "美股",
+   "tier": "1A",
+   "rank_score": 20.9,
+   "inner": 0.148,
+   "score_raw": 20.925,
+   "parts": {
+    "edge": 0.15,
+    "catalyst": 0.0,
+    "volume": 0.3875,
+    "position": 0.2,
+    "cert": 0.0
+   },
+   "edge_pp": null,
+   "catalyst_kind": null,
+   "vold": 0.83,
+   "pos52": null,
+   "pos_note": "位置未知",
+   "flags": [
+    "无赢面数据(不在intraday_decisions)"
    ],
-   "rank": 77,
-   "rank_in_tier": 26
+   "coverage": [
+    "volume",
+    "position",
+    "cert"
+   ],
+   "coverage_n": "3/5",
+   "rank": 76,
+   "rank_in_tier": 25
   },
   {
    "code": "MFG",
    "name": "瑞穗金融",
    "market": "美股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 13.1,
+   "rank_score": 20.8,
+   "inner": 0.146,
+   "score_raw": 20.8272,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.2887,
+    "position": 0.2825,
     "cert": 0.0
    },
    "edge_pp": null,
@@ -2752,26 +2490,23 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -13.1
-   ],
-   "rank": 78,
-   "rank_in_tier": 27
+   "coverage_n": "3/5",
+   "rank": 77,
+   "rank_in_tier": 26
   },
   {
    "code": "AMGN",
    "name": "安进",
    "market": "美股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 13.1,
+   "rank_score": 20.8,
+   "inner": 0.146,
+   "score_raw": 20.8272,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.2887,
+    "position": 0.2825,
     "cert": 0.0
    },
    "edge_pp": null,
@@ -2788,26 +2523,23 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -13.1
-   ],
-   "rank": 79,
-   "rank_in_tier": 28
+   "coverage_n": "3/5",
+   "rank": 78,
+   "rank_in_tier": 27
   },
   {
    "code": "RCL",
    "name": "皇家加勒比邮轮",
    "market": "美股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 13.1,
+   "rank_score": 20.7,
+   "inner": 0.143,
+   "score_raw": 20.7258,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.2756,
+    "position": 0.2787,
     "cert": 0.0
    },
    "edge_pp": null,
@@ -2824,11 +2556,39 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -13.1
+   "coverage_n": "3/5",
+   "rank": 79,
+   "rank_in_tier": 28
+  },
+  {
+   "code": "CTAS",
+   "name": "信达思",
+   "market": "美股",
+   "tier": "1A",
+   "rank_score": 20.7,
+   "inner": 0.142,
+   "score_raw": 20.7,
+   "parts": {
+    "edge": 0.15,
+    "catalyst": 0.0,
+    "volume": 0.35,
+    "position": 0.2,
+    "cert": 0.0
+   },
+   "edge_pp": null,
+   "catalyst_kind": null,
+   "vold": 0.8,
+   "pos52": null,
+   "pos_note": "位置未知",
+   "flags": [
+    "无赢面数据(不在intraday_decisions)"
    ],
+   "coverage": [
+    "volume",
+    "position",
+    "cert"
+   ],
+   "coverage_n": "3/5",
    "rank": 80,
    "rank_in_tier": 29
   },
@@ -2837,13 +2597,14 @@
    "name": "3M公司",
    "market": "美股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 13.1,
+   "rank_score": 20.7,
+   "inner": 0.141,
+   "score_raw": 20.6586,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.2669,
+    "position": 0.2762,
     "cert": 0.0
    },
    "edge_pp": null,
@@ -2860,11 +2621,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -13.1
-   ],
+   "coverage_n": "3/5",
    "rank": 81,
    "rank_in_tier": 30
   },
@@ -2873,13 +2630,14 @@
    "name": "德翔海运",
    "market": "港股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 13.1,
+   "rank_score": 20.7,
+   "inner": 0.141,
+   "score_raw": 20.6586,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.2669,
+    "position": 0.2762,
     "cert": 0.0
    },
    "edge_pp": null,
@@ -2896,11 +2654,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -13.1
-   ],
+   "coverage_n": "3/5",
    "rank": 82,
    "rank_in_tier": 31
   },
@@ -2909,13 +2663,14 @@
    "name": "现代牙科",
    "market": "港股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 13.1,
+   "rank_score": 20.6,
+   "inner": 0.139,
+   "score_raw": 20.5572,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.2537,
+    "position": 0.2725,
     "cert": 0.0
    },
    "edge_pp": null,
@@ -2932,11 +2687,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -13.1
-   ],
+   "coverage_n": "3/5",
    "rank": 83,
    "rank_in_tier": 32
   },
@@ -2945,13 +2696,14 @@
    "name": "九江银行",
    "market": "港股",
    "tier": "1A",
-   "rank_score": null,
-   "partial_score": 13.1,
+   "rank_score": 20.5,
+   "inner": 0.138,
+   "score_raw": 20.5236,
    "parts": {
-    "edge": 0.3,
+    "edge": 0.15,
     "catalyst": 0.0,
-    "volume": 0.1,
-    "position": 0.25,
+    "volume": 0.2494,
+    "position": 0.2712,
     "cert": 0.0
    },
    "edge_pp": null,
@@ -2968,11 +2720,7 @@
     "position",
     "cert"
    ],
-   "coverage_pct": 40,
-   "sort_key": [
-    2,
-    -13.1
-   ],
+   "coverage_n": "3/5",
    "rank": 84,
    "rank_in_tier": 33
   }
