@@ -3667,6 +3667,33 @@ try:
                     "原因悬停状态列ⓘ或点名进详情;弱市裁决=到价也等大盘回中性'>ⓘ</span>"
                     + ("<div style='font-size:12px;color:#b45309'>🗓 休市——周一预挂单,开盘跳出买区先复核</div>" if _cb_nt9 else ""),
                     unsafe_allow_html=True)
+        # 【2026-08-01 研究数据层上桌(用户"没发现有什么变化"案)】晴雨表+财报警报一行横幅:
+        # 后台新证据层(宽度/财报日历)若只喂引擎不上脸,用户无法验收——只加一行,不加新模块。
+        try:
+            _bm9r = _cbj9("barometer.json").get("markets") or {}
+            _ec9r = _cbj9("earnings_calendar.json")
+            _bm_parts9 = []
+            for _mk9r in ("A股", "港股", "美股"):
+                _d9r = _bm9r.get(_mk9r) or {}
+                if _d9r.get("adv") is None:
+                    continue
+                _vd9r = str(_d9r.get("verdict") or "").split("；")[0]
+                _cl9r = ("#dc2626" if "普跌" in _vd9r else ("#16a34a" if "普涨" in _vd9r else "#64748b"))
+                _bm_parts9.append(
+                    f"{_mk9r}<b style='color:{_cl9r}'>{_d9r['adv']}↑/{_d9r['dec']}↓·{_vd9r}</b>")
+            _urg9r = list(_ec9r.get("urgent_holdings") or [])
+            _ec_txt9 = (f"｜📅持仓财报窗:<b style='color:#dc2626'>{'、'.join(_urg9r[:3])}"
+                        f"</b>→财报前不加仓" if _urg9r else "")
+            if _bm_parts9:
+                st.markdown(
+                    "<div style='font-size:11.5px;color:#475569;margin:2px 0'>🌡️ 市场宽度(全市场逐只): "
+                    + " ｜ ".join(_bm_parts9) + _ec_txt9
+                    + "<span title='研究数据层(2026-08-01上线):宽度=涨跌家数/中位涨幅,比指数更真;"
+                      "财报窗=美股持仓7日内出财报,降险纪律。数据文件barometer.json/"
+                      "earnings_calendar.json,收盘班+云端05:40自动更新'> ⓘ</span></div>",
+                    unsafe_allow_html=True)
+        except Exception:
+            pass
         # 【2026-07-31 用户"一周都是这些推荐,不知道分析时间点是否最新"】新鲜度守卫行:
         # 名单里几行是旧数据、候选发现池各自停在哪天——筛选新不新一行看穿,旧了就红给你看。
         # 候选池停更=名单只能在旧池里打转,推荐自然一周不换(07-29~31实案:本机launchd掉载2天)。
