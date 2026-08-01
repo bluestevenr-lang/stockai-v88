@@ -3375,14 +3375,19 @@ try:
         _g9 = _gr9map.get(str(_cd)) or {}
         if not _g9:
             return "", 0
-        # 【2026-08-01 时机裁定T1】级别=买入时机类型:3A现在买/2A已武装等触发/
-        # 1A·中长线|短线=周期不同(不是更差)/存档=说不出何时买或已否决,不占推荐位。
-        _gd9 = str(_g9.get("grade") or "")
+        # 【2026-08-01 用户"90分既有1a,2a反倒60多分?"最终版】三维度分离,谁也不冒充谁:
+        #   字母级=质量,由排名分直接分档(≥80→3A/65~80→2A/<65→1A),永远与分数同向;
+        #   时机(现在买/等触发/中长线/短线)=独立标签在下一行; 认证⚔✓=资格徽章。
+        _rk9x = _rank9map.get(str(_cd)) or {}
+        _gd9 = str(_rk9x.get("tier") or _g9.get("grade") or "")
         _gc9 = ("#dc2626" if _gd9 == "3A" else "#ea580c" if _gd9 == "2A"
-                else "#94a3b8" if _gd9 == "存档"
-                else "#0891b2" if "短线" in _gd9 else "#2563eb" if "1A" in _gd9 else "#94a3b8")
+                else "#94a3b8" if _gd9 == "存档" else "#2563eb")
+        _tm9x = str(_rk9x.get("timing") or "")
+        if _tm9x:
+            _g9 = {**_g9, "when": _tm9x + ("｜" + str(_rk9x.get("when"))
+                                           if _rk9x.get("when") else "")}
         _chip9 = (f"<span style='background:{_gc9};color:#fff;border-radius:3px;"
-                  f"padding:0 4px;font-size:12px;font-weight:800'>{_g9.get('grade')}</span>")
+                  f"padding:0 4px;font-size:12px;font-weight:800'>{_gd9 or _g9.get('grade')}</span>")
         if _gd9 != "3A":
             _parts9 = "+".join(x for x in (
                 "⚔️3" if _g9.get("dual") else "", "C2" if _g9.get("c_only") else "",
