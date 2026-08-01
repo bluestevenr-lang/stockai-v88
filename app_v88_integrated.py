@@ -3386,6 +3386,16 @@ try:
         if _tm9x:
             _g9 = {**_g9, "when": _tm9x + ("｜" + str(_rk9x.get("when"))
                                            if _rk9x.get("when") else "")}
+        # 【木桶定级 2026-08-01 用户定纲】级别=五块桶板完整度(时机/获利空间/价格位置/量能/机遇),
+        # 缺什么必须写出来——高分2A(如中烟87.9缺"时机")不写缺口,又会被读成"排分乱"。
+        _ms9x = _rk9x.get("missing") or []
+        if _ms9x and _gd9 in ("2A", "1A"):
+            _chip9 += (f"<br><span style='color:#b45309;font-size:8.5px' "
+                       f"title='木桶定级:3A=即可进+板全;2A=其他都好缺一两样;1A=缺得多但标用途'>"
+                       f"缺:{','.join(_ms9x[:3])}</span>")
+        if _rk9x.get("use"):
+            _chip9 += (f"<br><span style='color:#0891b2;font-size:8.5px'>"
+                       f"{str(_rk9x['use'])[:18]}</span>")
         _chip9 = (f"<span style='background:{_gc9};color:#fff;border-radius:3px;"
                   f"padding:0 4px;font-size:12px;font-weight:800'>{_gd9 or _g9.get('grade')}</span>")
         if _gd9 != "3A":
