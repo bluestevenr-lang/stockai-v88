@@ -3938,6 +3938,20 @@ try:
                         st.rerun()
             except Exception:
                 logging.exception("[V88] 买表勾选对比渲染失败")
+            # 【2026-08-01 悖论修正配套】分数不再被层级分段挪位后,3A(今天可买)会按质量分
+            # 散落在名单各处。"今天能买什么"是**筛选**问题不是**排序**问题,故给一个筛选开关,
+            # 而不是把时机塞回分数里去压制赢面。
+            try:
+                _only_now9 = st.checkbox(
+                    "⚡ 只看今天可买（3A·现在买）", value=False, key="_only_now9",
+                    help="时机不再影响排名分——排名只由赢面/催化/量能/位置决定。"
+                         "想知道今天能动手的是哪几只,用这个筛,不用改排序。")
+                if _only_now9:
+                    _t_buy9 = [h for _t, _s, c, h in _buy_order9
+                               if c not in _arch_set9
+                               and (_gr9map.get(str(c)) or {}).get("when_kind") == "now"]
+            except Exception:
+                logging.exception("[V88] 今天可买筛选失败")
             if _arch9:
                 with st.expander(f"🗄 存档 {len(_arch9)} 只（已否决/说不出何时买 → 不占推荐位）",
                                  expanded=False):
