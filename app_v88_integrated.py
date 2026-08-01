@@ -15514,7 +15514,11 @@ def _render_today_verdict(_snap, _repo):
                  f"（⚔️先躲{len(_cut)}只｜🐉绿灯{len(_go)}只·含卡片证据链）、三档关注、持仓/自选决策台</div>")
     # 【瘦身2026-07-27】纪律行已去重——顶部📣指令牌📏一处呈现
     _html.append("</div>")
-    st.markdown("".join(_html), unsafe_allow_html=True)
+    # 【2026-08-01 用户裁撤】一屏决断卡与行动中心表/三层总览/卖减表全量重复(四档预判同源、
+    # 卖警同源、可买同源)——零token模块,按用户"没什么用就删除"gate渲染;构建保留(改回一行即恢复)。
+    _V88_ONE_SCREEN_UI = False
+    if _V88_ONE_SCREEN_UI:
+        st.markdown("".join(_html), unsafe_allow_html=True)
 
     # 【V88·双门决断独立模块 2026-07-19 用户定纲】左半=⚔️地狱门(先躲)、右半=🐉龙虎门(上攻)，
     # 两门内部都按中美港三部分分列(与自选台/黑马台同构)；文字名单+卡片细看(自选台同款决策卡,
