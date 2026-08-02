@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-02 06:38（北京时间）",
+ "generated_at": "2026-08-02 08:17（北京时间）",
  "version": "V88-R2",
  "weights": {
   "long_value": 25,
@@ -101,7 +101,7 @@
    "catalyst_kind": "📣催化驱动",
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "rank": 1,
    "rank_in_tier": 1
@@ -188,7 +188,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "rank": 2,
    "rank_in_tier": 2
@@ -274,7 +274,7 @@
    "catalyst_kind": "📈趋势跟随",
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "rank": 3,
    "rank_in_tier": 3
@@ -292,7 +292,7 @@
     "long_value": {
      "score": 73.0,
      "pass": false,
-     "basis": "长期偏涨概率65%；财务质量分66"
+     "basis": "长期偏涨概率65%；财务质量分66.0"
     },
     "timing": {
      "score": 93.8,
@@ -332,7 +332,7 @@
    },
    "risk_score": 35.0,
    "risk_flags": [
-    "财务风险25"
+    "财务风险25.0"
    ],
    "risk_veto": [],
    "data_completeness": 100,
@@ -362,10 +362,10 @@
    "pos52": 69.0,
    "catalyst_kind": null,
    "flags": [
-    "财务风险25"
+    "财务风险25.0"
    ],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "rank": 4,
    "rank_in_tier": 1
@@ -453,10 +453,98 @@
    "catalyst_kind": "💎超跌回归",
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "rank": 5,
    "rank_in_tier": 2
+  },
+  {
+   "code": "TRV",
+   "name": "旅行者保险",
+   "market": "美股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 69.0,
+   "score_raw": 69.0,
+   "buckets": {
+    "long_value": {
+     "score": 86.7,
+     "pass": true,
+     "basis": "长期偏涨概率76%"
+    },
+    "timing": {
+     "score": 68.3,
+     "pass": false,
+     "basis": "窗口:现在买（今日窗口内）；突破型量比0.75(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 50.0,
+     "pass": false,
+     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
+    },
+    "valuation": {
+     "score": 73.0,
+     "pass": true,
+     "basis": "右侧·贴新高·距止损4.5%(刚突破,入场成本低)"
+    },
+    "payoff": {
+     "score": 60.8,
+     "pass": false,
+     "basis": "赔率1.45；期望+1.3%；赢面+12.2pp(临时参数·待验证)"
+    }
+   },
+   "payoff_detail": {
+    "up_probability": 53,
+    "expected_upside": 6.5,
+    "expected_downside": 4.5,
+    "reward_risk_ratio": 1.45,
+    "expected_return": 1.3,
+    "horizons_available": [
+     "2周",
+     "长期"
+    ],
+    "horizons_missing": [
+     "5日",
+     "60日"
+    ]
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 75,
+   "model_confidence": 45.0,
+   "opportunity_type": "突破趋势",
+   "horizon": "5-20日",
+   "missing": [
+    "当前时机",
+    "获利空间",
+    "机会催化"
+   ],
+   "main_shortboard": "当前时机",
+   "why_focus": "",
+   "why_grade": "1A-短线突击：长期价值87✓、当前时机68✗、机会催化50✗、价格估值73✓、获利空间61✗",
+   "why_not_higher": "关键短板≥2项(当前时机、获利空间、机会催化),只按战术用途参与",
+   "triggers": {
+    "enter": "现在买（今日窗口内）",
+    "upgrade": "补齐:当前时机、获利空间、机会催化",
+    "downgrade": "任一关键桶板跌破线/风险否决触发",
+    "invalid": "跌破止损362.33"
+   },
+   "when": "现在买（今日窗口内）",
+   "when_kind": "now",
+   "timing": "⚡现在买",
+   "use": "1A-短线突击·短线进攻",
+   "edge_pp": 12.2,
+   "vold": 0.75,
+   "pos52": 79.0,
+   "catalyst_kind": null,
+   "flags": [],
+   "data_available_at": "2026-07-31 00:00",
+   "signal_generated_at": "2026-08-02 08:17",
+   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
+   "rank": 6,
+   "rank_in_tier": 3
   },
   {
    "code": "2556.HK",
@@ -540,10 +628,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 6,
-   "rank_in_tier": 3
+   "rank": 7,
+   "rank_in_tier": 4
   },
   {
    "code": "002303.SZ",
@@ -628,10 +716,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 7,
-   "rank_in_tier": 4
+   "rank": 8,
+   "rank_in_tier": 5
   },
   {
    "code": "AMRX",
@@ -716,10 +804,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 8,
-   "rank_in_tier": 5
+   "rank": 9,
+   "rank_in_tier": 6
   },
   {
    "code": "002568.SZ",
@@ -734,7 +822,7 @@
     "long_value": {
      "score": 83.8,
      "pass": true,
-     "basis": "长期偏涨概率77%；财务质量分75"
+     "basis": "长期偏涨概率77%；财务质量分75.0"
     },
     "timing": {
      "score": 67.3,
@@ -804,10 +892,98 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 9,
-   "rank_in_tier": 6
+   "rank": 10,
+   "rank_in_tier": 7
+  },
+  {
+   "code": "GE",
+   "name": "GE航空航天",
+   "market": "美股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 61.8,
+   "score_raw": 61.8,
+   "buckets": {
+    "long_value": {
+     "score": 62.0,
+     "pass": false,
+     "basis": "长期偏涨概率55%"
+    },
+    "timing": {
+     "score": 74.0,
+     "pass": true,
+     "basis": "窗口:现在买（今日窗口内）；突破型量比0.91(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 50.0,
+     "pass": false,
+     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
+    },
+    "valuation": {
+     "score": 69.1,
+     "pass": true,
+     "basis": "右侧·贴新高·距止损6.0%(刚突破,入场成本低)"
+    },
+    "payoff": {
+     "score": 54.5,
+     "pass": false,
+     "basis": "赔率1.04；期望+1.0%；赢面+8.0pp(临时参数·待验证)"
+    }
+   },
+   "payoff_detail": {
+    "up_probability": 57,
+    "expected_upside": 6.2,
+    "expected_downside": 6.0,
+    "reward_risk_ratio": 1.04,
+    "expected_return": 1.0,
+    "horizons_available": [
+     "2周",
+     "长期"
+    ],
+    "horizons_missing": [
+     "5日",
+     "60日"
+    ]
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 75,
+   "model_confidence": 45.0,
+   "opportunity_type": "突破趋势",
+   "horizon": "5-20日",
+   "missing": [
+    "长期价值",
+    "获利空间",
+    "机会催化"
+   ],
+   "main_shortboard": "长期价值",
+   "why_focus": "",
+   "why_grade": "1A-短线突击：长期价值62✗、当前时机74✓、机会催化50✗、价格估值69✓、获利空间55✗",
+   "why_not_higher": "关键短板≥2项(长期价值、获利空间、机会催化),只按战术用途参与",
+   "triggers": {
+    "enter": "现在买（今日窗口内）",
+    "upgrade": "补齐:长期价值、获利空间、机会催化",
+    "downgrade": "任一关键桶板跌破线/风险否决触发",
+    "invalid": "跌破止损338.6"
+   },
+   "when": "现在买（今日窗口内）",
+   "when_kind": "now",
+   "timing": "⚡现在买",
+   "use": "1A-短线突击·短线进攻",
+   "edge_pp": 8.0,
+   "vold": 0.91,
+   "pos52": 80.0,
+   "catalyst_kind": null,
+   "flags": [],
+   "data_available_at": "2026-07-31 00:00",
+   "signal_generated_at": "2026-08-02 08:17",
+   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
+   "rank": 11,
+   "rank_in_tier": 8
   },
   {
    "code": "9901.HK",
@@ -892,10 +1068,99 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 10,
-   "rank_in_tier": 7
+   "rank": 12,
+   "rank_in_tier": 9
+  },
+  {
+   "code": "MUFG",
+   "name": "三菱日联金融",
+   "market": "美股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 61.3,
+   "score_raw": 61.3,
+   "buckets": {
+    "long_value": {
+     "score": 69.1,
+     "pass": false,
+     "basis": "长期偏涨概率60%"
+    },
+    "timing": {
+     "score": 88.1,
+     "pass": true,
+     "basis": "窗口:现在买（今日窗口内）；突破型量比1.31(放量确认)"
+    },
+    "catalyst": {
+     "score": 50.0,
+     "pass": false,
+     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
+    },
+    "valuation": {
+     "score": 60.4,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损4.8%(刚突破,入场成本低)；⚠️贴新高且上行<5%=涨幅或已透支"
+    },
+    "payoff": {
+     "score": 39.2,
+     "pass": false,
+     "basis": "赔率0.75；期望-0.4%；赢面-4.1pp(临时参数·待验证)"
+    }
+   },
+   "payoff_detail": {
+    "up_probability": 53,
+    "expected_upside": 3.6,
+    "expected_downside": 4.8,
+    "reward_risk_ratio": 0.75,
+    "expected_return": -0.4,
+    "horizons_available": [
+     "2周",
+     "长期"
+    ],
+    "horizons_missing": [
+     "5日",
+     "60日"
+    ]
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 75,
+   "model_confidence": 70.0,
+   "opportunity_type": "突破趋势",
+   "horizon": "5-20日",
+   "missing": [
+    "长期价值",
+    "价格估值",
+    "获利空间",
+    "机会催化"
+   ],
+   "main_shortboard": "长期价值",
+   "why_focus": "",
+   "why_grade": "1A-短线突击：长期价值69✗、当前时机88✓、机会催化50✗、价格估值60✗、获利空间39✗",
+   "why_not_higher": "关键短板≥2项(长期价值、价格估值、获利空间、机会催化),只按战术用途参与",
+   "triggers": {
+    "enter": "现在买（今日窗口内）",
+    "upgrade": "补齐:长期价值、价格估值、获利空间、机会催化",
+    "downgrade": "任一关键桶板跌破线/风险否决触发",
+    "invalid": "跌破止损21.38"
+   },
+   "when": "现在买（今日窗口内）",
+   "when_kind": "now",
+   "timing": "⚡现在买",
+   "use": "1A-短线突击·短线进攻",
+   "edge_pp": -4.1,
+   "vold": 1.31,
+   "pos52": 89.0,
+   "catalyst_kind": null,
+   "flags": [],
+   "data_available_at": "2026-07-31 00:00",
+   "signal_generated_at": "2026-08-02 08:17",
+   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
+   "rank": 13,
+   "rank_in_tier": 10
   },
   {
    "code": "601288.SS",
@@ -980,10 +1245,99 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 11,
-   "rank_in_tier": 8
+   "rank": 14,
+   "rank_in_tier": 11
+  },
+  {
+   "code": "STT",
+   "name": "道富",
+   "market": "美股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 60.6,
+   "score_raw": 60.6,
+   "buckets": {
+    "long_value": {
+     "score": 72.0,
+     "pass": false,
+     "basis": "长期偏涨概率62%"
+    },
+    "timing": {
+     "score": 75.8,
+     "pass": true,
+     "basis": "窗口:现在买（今日窗口内）；突破型量比0.96(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 50.0,
+     "pass": false,
+     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
+    },
+    "valuation": {
+     "score": 60.6,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损4.7%(刚突破,入场成本低)；⚠️贴新高且上行<5%=涨幅或已透支"
+    },
+    "payoff": {
+     "score": 43.3,
+     "pass": false,
+     "basis": "赔率0.96；期望+0.0%；赢面+0.0pp(临时参数·待验证)"
+    }
+   },
+   "payoff_detail": {
+    "up_probability": 51,
+    "expected_upside": 4.5,
+    "expected_downside": 4.7,
+    "reward_risk_ratio": 0.96,
+    "expected_return": 0.0,
+    "horizons_available": [
+     "2周",
+     "长期"
+    ],
+    "horizons_missing": [
+     "5日",
+     "60日"
+    ]
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 75,
+   "model_confidence": 45.0,
+   "opportunity_type": "突破趋势",
+   "horizon": "5-20日",
+   "missing": [
+    "长期价值",
+    "价格估值",
+    "获利空间",
+    "机会催化"
+   ],
+   "main_shortboard": "长期价值",
+   "why_focus": "",
+   "why_grade": "1A-短线突击：长期价值72✗、当前时机76✓、机会催化50✗、价格估值61✗、获利空间43✗",
+   "why_not_higher": "关键短板≥2项(长期价值、价格估值、获利空间、机会催化),只按战术用途参与",
+   "triggers": {
+    "enter": "现在买（今日窗口内）",
+    "upgrade": "补齐:长期价值、价格估值、获利空间、机会催化",
+    "downgrade": "任一关键桶板跌破线/风险否决触发",
+    "invalid": "跌破止损175.5"
+   },
+   "when": "现在买（今日窗口内）",
+   "when_kind": "now",
+   "timing": "⚡现在买",
+   "use": "1A-短线突击·短线进攻",
+   "edge_pp": 0.0,
+   "vold": 0.96,
+   "pos52": 89.0,
+   "catalyst_kind": null,
+   "flags": [],
+   "data_available_at": "2026-07-31 00:00",
+   "signal_generated_at": "2026-08-02 08:17",
+   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
+   "rank": 15,
+   "rank_in_tier": 12
   },
   {
    "code": "3888.HK",
@@ -1068,10 +1422,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 12,
-   "rank_in_tier": 9
+   "rank": 16,
+   "rank_in_tier": 13
   },
   {
    "code": "0552.HK",
@@ -1156,10 +1510,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 13,
-   "rank_in_tier": 10
+   "rank": 17,
+   "rank_in_tier": 14
   },
   {
    "code": "MMSI",
@@ -1244,10 +1598,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 14,
-   "rank_in_tier": 11
+   "rank": 18,
+   "rank_in_tier": 15
   },
   {
    "code": "MSA",
@@ -1331,10 +1685,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 15,
-   "rank_in_tier": 12
+   "rank": 19,
+   "rank_in_tier": 16
   },
   {
    "code": "DULL",
@@ -1421,10 +1775,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 16,
-   "rank_in_tier": 13
+   "rank": 20,
+   "rank_in_tier": 17
   },
   {
    "code": "603259.SS",
@@ -1439,7 +1793,7 @@
     "long_value": {
      "score": 57.2,
      "pass": false,
-     "basis": "财务质量分74"
+     "basis": "财务质量分74.0"
     },
     "timing": {
      "score": 85.1,
@@ -1510,10 +1864,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 17,
-   "rank_in_tier": 14
+   "rank": 21,
+   "rank_in_tier": 18
   },
   {
    "code": "3110.HK",
@@ -1600,10 +1954,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 18,
-   "rank_in_tier": 15
+   "rank": 22,
+   "rank_in_tier": 19
   },
   {
    "code": "2359.HK",
@@ -1618,7 +1972,7 @@
     "long_value": {
      "score": 57.2,
      "pass": false,
-     "basis": "财务质量分74"
+     "basis": "财务质量分74.0"
     },
     "timing": {
      "score": 81.2,
@@ -1689,10 +2043,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 19,
-   "rank_in_tier": 16
+   "rank": 23,
+   "rank_in_tier": 20
   },
   {
    "code": "002258.SZ",
@@ -1781,99 +2135,10 @@
     "财务风险35.0"
    ],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 20,
-   "rank_in_tier": 17
-  },
-  {
-   "code": "MUFG",
-   "name": "三菱日联金融",
-   "market": "美股",
-   "tier": "1A",
-   "subtype": "1A-短线突击",
-   "action_state": "短线进攻",
-   "rank_score": 55.7,
-   "score_raw": 55.7,
-   "buckets": {
-    "long_value": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "仅结构推断(缺基本面)"
-    },
-    "timing": {
-     "score": 88.1,
-     "pass": true,
-     "basis": "窗口:现在买（今日窗口内）；突破型量比1.31(放量确认)"
-    },
-    "catalyst": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
-    },
-    "valuation": {
-     "score": 62.0,
-     "pass": false,
-     "basis": "右侧·贴新高(缺止损距离,按中性计)"
-    },
-    "payoff": {
-     "score": 35.0,
-     "pass": false,
-     "basis": "缺赔率/概率数据(不在intraday_decisions)"
-    }
-   },
-   "payoff_detail": {
-    "up_probability": null,
-    "expected_upside": null,
-    "expected_downside": null,
-    "reward_risk_ratio": null,
-    "expected_return": null,
-    "horizons_available": [
-     "2周",
-     "长期"
-    ],
-    "horizons_missing": [
-     "5日",
-     "60日"
-    ]
-   },
-   "risk_score": 10.0,
-   "risk_flags": [],
-   "risk_veto": [],
-   "data_completeness": 30,
-   "model_confidence": 43.0,
-   "opportunity_type": "突破趋势",
-   "horizon": "5-20日",
-   "missing": [
-    "长期价值",
-    "价格估值",
-    "获利空间",
-    "机会催化"
-   ],
-   "main_shortboard": "长期价值",
-   "why_focus": "",
-   "why_grade": "1A-短线突击：长期价值50✗、当前时机88✓、机会催化50✗、价格估值62✗、获利空间35✗",
-   "why_not_higher": "关键短板≥2项(长期价值、价格估值、获利空间、机会催化),只按战术用途参与",
-   "triggers": {
-    "enter": "现在买（今日窗口内）",
-    "upgrade": "补齐:长期价值、价格估值、获利空间、机会催化",
-    "downgrade": "任一关键桶板跌破线/风险否决触发",
-    "invalid": "触发窗口过期"
-   },
-   "when": "现在买（今日窗口内）",
-   "when_kind": "now",
-   "timing": "⚡现在买",
-   "use": "1A-短线突击·短线进攻",
-   "edge_pp": null,
-   "vold": 1.31,
-   "pos52": null,
-   "catalyst_kind": null,
-   "flags": [],
-   "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
-   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 21,
-   "rank_in_tier": 18
+   "rank": 24,
+   "rank_in_tier": 21
   },
   {
    "code": "SAN",
@@ -1959,10 +2224,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 22,
-   "rank_in_tier": 19
+   "rank": 25,
+   "rank_in_tier": 22
   },
   {
    "code": "GWW",
@@ -2048,10 +2313,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 23,
-   "rank_in_tier": 20
+   "rank": 26,
+   "rank_in_tier": 23
   },
   {
    "code": "0669.HK",
@@ -2137,10 +2402,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 24,
-   "rank_in_tier": 21
+   "rank": 27,
+   "rank_in_tier": 24
   },
   {
    "code": "MET",
@@ -2226,10 +2491,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 25,
-   "rank_in_tier": 22
+   "rank": 28,
+   "rank_in_tier": 25
   },
   {
    "code": "PRU",
@@ -2315,10 +2580,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 26,
-   "rank_in_tier": 23
+   "rank": 29,
+   "rank_in_tier": 26
   },
   {
    "code": "CCEP",
@@ -2404,10 +2669,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 27,
-   "rank_in_tier": 24
+   "rank": 30,
+   "rank_in_tier": 27
   },
   {
    "code": "300759.SZ",
@@ -2494,10 +2759,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 28,
-   "rank_in_tier": 25
+   "rank": 31,
+   "rank_in_tier": 28
   },
   {
    "code": "APH",
@@ -2583,10 +2848,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 29,
-   "rank_in_tier": 26
+   "rank": 32,
+   "rank_in_tier": 29
   },
   {
    "code": "2689.HK",
@@ -2672,10 +2937,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 30,
-   "rank_in_tier": 27
+   "rank": 33,
+   "rank_in_tier": 30
   },
   {
    "code": "LYG",
@@ -2761,188 +3026,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 31,
-   "rank_in_tier": 28
-  },
-  {
-   "code": "STT",
-   "name": "道富",
-   "market": "美股",
-   "tier": "1A",
-   "subtype": "1A-短线突击",
-   "action_state": "短线进攻",
-   "rank_score": 53.2,
-   "score_raw": 53.2,
-   "buckets": {
-    "long_value": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "仅结构推断(缺基本面)"
-    },
-    "timing": {
-     "score": 75.8,
-     "pass": true,
-     "basis": "窗口:现在买（今日窗口内）；突破型量比0.96(缩量·突破可信度低)"
-    },
-    "catalyst": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
-    },
-    "valuation": {
-     "score": 62.0,
-     "pass": false,
-     "basis": "右侧·贴新高(缺止损距离,按中性计)"
-    },
-    "payoff": {
-     "score": 35.0,
-     "pass": false,
-     "basis": "缺赔率/概率数据(不在intraday_decisions)"
-    }
-   },
-   "payoff_detail": {
-    "up_probability": null,
-    "expected_upside": null,
-    "expected_downside": null,
-    "reward_risk_ratio": null,
-    "expected_return": null,
-    "horizons_available": [
-     "2周",
-     "长期"
-    ],
-    "horizons_missing": [
-     "5日",
-     "60日"
-    ]
-   },
-   "risk_score": 10.0,
-   "risk_flags": [],
-   "risk_veto": [],
-   "data_completeness": 30,
-   "model_confidence": 18.0,
-   "opportunity_type": "突破趋势",
-   "horizon": "5-20日",
-   "missing": [
-    "长期价值",
-    "价格估值",
-    "获利空间",
-    "机会催化"
-   ],
-   "main_shortboard": "长期价值",
-   "why_focus": "",
-   "why_grade": "1A-短线突击：长期价值50✗、当前时机76✓、机会催化50✗、价格估值62✗、获利空间35✗",
-   "why_not_higher": "关键短板≥2项(长期价值、价格估值、获利空间、机会催化),只按战术用途参与",
-   "triggers": {
-    "enter": "现在买（今日窗口内）",
-    "upgrade": "补齐:长期价值、价格估值、获利空间、机会催化",
-    "downgrade": "任一关键桶板跌破线/风险否决触发",
-    "invalid": "触发窗口过期"
-   },
-   "when": "现在买（今日窗口内）",
-   "when_kind": "now",
-   "timing": "⚡现在买",
-   "use": "1A-短线突击·短线进攻",
-   "edge_pp": null,
-   "vold": 0.96,
-   "pos52": null,
-   "catalyst_kind": null,
-   "flags": [],
-   "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
-   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 32,
-   "rank_in_tier": 29
-  },
-  {
-   "code": "GE",
-   "name": "GE航空航天",
-   "market": "美股",
-   "tier": "1A",
-   "subtype": "1A-短线突击",
-   "action_state": "短线进攻",
-   "rank_score": 52.8,
-   "score_raw": 52.8,
-   "buckets": {
-    "long_value": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "仅结构推断(缺基本面)"
-    },
-    "timing": {
-     "score": 74.0,
-     "pass": true,
-     "basis": "窗口:现在买（今日窗口内）；突破型量比0.91(缩量·突破可信度低)"
-    },
-    "catalyst": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
-    },
-    "valuation": {
-     "score": 62.0,
-     "pass": false,
-     "basis": "右侧·贴新高(缺止损距离,按中性计)"
-    },
-    "payoff": {
-     "score": 35.0,
-     "pass": false,
-     "basis": "缺赔率/概率数据(不在intraday_decisions)"
-    }
-   },
-   "payoff_detail": {
-    "up_probability": null,
-    "expected_upside": null,
-    "expected_downside": null,
-    "reward_risk_ratio": null,
-    "expected_return": null,
-    "horizons_available": [
-     "2周",
-     "长期"
-    ],
-    "horizons_missing": [
-     "5日",
-     "60日"
-    ]
-   },
-   "risk_score": 10.0,
-   "risk_flags": [],
-   "risk_veto": [],
-   "data_completeness": 30,
-   "model_confidence": 18.0,
-   "opportunity_type": "突破趋势",
-   "horizon": "5-20日",
-   "missing": [
-    "长期价值",
-    "价格估值",
-    "获利空间",
-    "机会催化"
-   ],
-   "main_shortboard": "长期价值",
-   "why_focus": "",
-   "why_grade": "1A-短线突击：长期价值50✗、当前时机74✓、机会催化50✗、价格估值62✗、获利空间35✗",
-   "why_not_higher": "关键短板≥2项(长期价值、价格估值、获利空间、机会催化),只按战术用途参与",
-   "triggers": {
-    "enter": "现在买（今日窗口内）",
-    "upgrade": "补齐:长期价值、价格估值、获利空间、机会催化",
-    "downgrade": "任一关键桶板跌破线/风险否决触发",
-    "invalid": "触发窗口过期"
-   },
-   "when": "现在买（今日窗口内）",
-   "when_kind": "now",
-   "timing": "⚡现在买",
-   "use": "1A-短线突击·短线进攻",
-   "edge_pp": null,
-   "vold": 0.91,
-   "pos52": null,
-   "catalyst_kind": null,
-   "flags": [],
-   "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
-   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 33,
-   "rank_in_tier": 30
+   "rank": 34,
+   "rank_in_tier": 31
   },
   {
    "code": "BAC",
@@ -3028,10 +3115,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 34,
-   "rank_in_tier": 31
+   "rank": 35,
+   "rank_in_tier": 32
   },
   {
    "code": "UBS",
@@ -3117,10 +3204,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 35,
-   "rank_in_tier": 32
+   "rank": 36,
+   "rank_in_tier": 33
   },
   {
    "code": "SMFG",
@@ -3206,10 +3293,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 36,
-   "rank_in_tier": 33
+   "rank": 37,
+   "rank_in_tier": 34
   },
   {
    "code": "ALL",
@@ -3295,10 +3382,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 37,
-   "rank_in_tier": 34
+   "rank": 38,
+   "rank_in_tier": 35
   },
   {
    "code": "IX",
@@ -3384,10 +3471,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 38,
-   "rank_in_tier": 35
+   "rank": 39,
+   "rank_in_tier": 36
   },
   {
    "code": "CTAS",
@@ -3473,10 +3560,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 39,
-   "rank_in_tier": 36
+   "rank": 40,
+   "rank_in_tier": 37
   },
   {
    "code": "601168.SS",
@@ -3491,7 +3578,7 @@
     "long_value": {
      "score": 65.0,
      "pass": false,
-     "basis": "财务质量分100"
+     "basis": "财务质量分100.0"
     },
     "timing": {
      "score": 49.8,
@@ -3563,10 +3650,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 40,
-   "rank_in_tier": 37
+   "rank": 41,
+   "rank_in_tier": 38
   },
   {
    "code": "DAL",
@@ -3653,97 +3740,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
-   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 41,
-   "rank_in_tier": 38
-  },
-  {
-   "code": "TRV",
-   "name": "旅行者保险",
-   "market": "美股",
-   "tier": "1A",
-   "subtype": "1A-短线突击",
-   "action_state": "短线进攻",
-   "rank_score": 51.7,
-   "score_raw": 51.7,
-   "buckets": {
-    "long_value": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "仅结构推断(缺基本面)"
-    },
-    "timing": {
-     "score": 68.3,
-     "pass": false,
-     "basis": "窗口:现在买（今日窗口内）；突破型量比0.75(缩量·突破可信度低)"
-    },
-    "catalyst": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
-    },
-    "valuation": {
-     "score": 62.0,
-     "pass": false,
-     "basis": "右侧·贴新高(缺止损距离,按中性计)"
-    },
-    "payoff": {
-     "score": 35.0,
-     "pass": false,
-     "basis": "缺赔率/概率数据(不在intraday_decisions)"
-    }
-   },
-   "payoff_detail": {
-    "up_probability": null,
-    "expected_upside": null,
-    "expected_downside": null,
-    "reward_risk_ratio": null,
-    "expected_return": null,
-    "horizons_available": [
-     "2周",
-     "长期"
-    ],
-    "horizons_missing": [
-     "5日",
-     "60日"
-    ]
-   },
-   "risk_score": 10.0,
-   "risk_flags": [],
-   "risk_veto": [],
-   "data_completeness": 30,
-   "model_confidence": 18.0,
-   "opportunity_type": "突破趋势",
-   "horizon": "5-20日",
-   "missing": [
-    "长期价值",
-    "当前时机",
-    "价格估值",
-    "获利空间",
-    "机会催化"
-   ],
-   "main_shortboard": "长期价值",
-   "why_focus": "",
-   "why_grade": "1A-短线突击：长期价值50✗、当前时机68✗、机会催化50✗、价格估值62✗、获利空间35✗",
-   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值、获利空间、机会催化),只按战术用途参与",
-   "triggers": {
-    "enter": "现在买（今日窗口内）",
-    "upgrade": "补齐:长期价值、当前时机、价格估值、获利空间、机会催化",
-    "downgrade": "任一关键桶板跌破线/风险否决触发",
-    "invalid": "触发窗口过期"
-   },
-   "when": "现在买（今日窗口内）",
-   "when_kind": "now",
-   "timing": "⚡现在买",
-   "use": "1A-短线突击·短线进攻",
-   "edge_pp": null,
-   "vold": 0.75,
-   "pos52": null,
-   "catalyst_kind": null,
-   "flags": [],
-   "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "rank": 42,
    "rank_in_tier": 39
@@ -3833,7 +3830,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "rank": 43,
    "rank_in_tier": 40
@@ -3923,7 +3920,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "rank": 44,
    "rank_in_tier": 41
@@ -4013,7 +4010,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "rank": 45,
    "rank_in_tier": 42
@@ -4103,190 +4100,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "rank": 46,
    "rank_in_tier": 43
-  },
-  {
-   "code": "BBVA",
-   "name": "西班牙毕尔巴鄂比斯开银行(ADR)",
-   "market": "美股",
-   "tier": "1A",
-   "subtype": "1A-短线突击",
-   "action_state": "短线进攻",
-   "rank_score": 50.6,
-   "score_raw": 50.6,
-   "buckets": {
-    "long_value": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "仅结构推断(缺基本面)"
-    },
-    "timing": {
-     "score": 62.8,
-     "pass": false,
-     "basis": "窗口:回踩 25.93~26.97 买 · 5个交易日内有效；突破型量比1.45(放量确认)"
-    },
-    "catalyst": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
-    },
-    "valuation": {
-     "score": 62.0,
-     "pass": false,
-     "basis": "右侧·贴新高(缺止损距离,按中性计)"
-    },
-    "payoff": {
-     "score": 35.0,
-     "pass": false,
-     "basis": "缺赔率/概率数据(不在intraday_decisions)"
-    }
-   },
-   "payoff_detail": {
-    "up_probability": null,
-    "expected_upside": null,
-    "expected_downside": null,
-    "reward_risk_ratio": null,
-    "expected_return": null,
-    "horizons_available": [
-     "2周",
-     "长期"
-    ],
-    "horizons_missing": [
-     "5日",
-     "60日"
-    ]
-   },
-   "risk_score": 10.0,
-   "risk_flags": [],
-   "risk_veto": [],
-   "data_completeness": 30,
-   "model_confidence": 43.0,
-   "opportunity_type": "突破趋势",
-   "horizon": "5-20日",
-   "missing": [
-    "长期价值",
-    "当前时机",
-    "价格估值",
-    "获利空间",
-    "机会催化"
-   ],
-   "main_shortboard": "长期价值",
-   "why_focus": "",
-   "why_grade": "1A-短线突击：长期价值50✗、当前时机63✗、机会催化50✗、价格估值62✗、获利空间35✗",
-   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值、获利空间、机会催化),只按战术用途参与",
-   "triggers": {
-    "enter": "回踩 25.93~26.97 买 · 5个交易日内有效",
-    "upgrade": "补齐:长期价值、当前时机、价格估值、获利空间、机会催化",
-    "downgrade": "任一关键桶板跌破线/风险否决触发",
-    "invalid": "触发窗口过期"
-   },
-   "when": "回踩 25.93~26.97 买 · 5个交易日内有效",
-   "when_kind": "pullback",
-   "timing": "🕐等触发·回踩",
-   "use": "1A-短线突击·短线进攻",
-   "edge_pp": null,
-   "vold": 1.45,
-   "pos52": null,
-   "catalyst_kind": null,
-   "flags": [],
-   "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
-   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 47,
-   "rank_in_tier": 44
-  },
-  {
-   "code": "0005.HK",
-   "name": "汇丰控股",
-   "market": "港股",
-   "tier": "1A",
-   "subtype": "1A-短线突击",
-   "action_state": "短线进攻",
-   "rank_score": 50.6,
-   "score_raw": 50.6,
-   "buckets": {
-    "long_value": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "仅结构推断(缺基本面)"
-    },
-    "timing": {
-     "score": 62.9,
-     "pass": false,
-     "basis": "窗口:回踩 157.84~164.15 买 · 5个交易日内有效；突破型量比1.46(放量确认)"
-    },
-    "catalyst": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
-    },
-    "valuation": {
-     "score": 62.0,
-     "pass": false,
-     "basis": "右侧·贴新高(缺止损距离,按中性计)"
-    },
-    "payoff": {
-     "score": 35.0,
-     "pass": false,
-     "basis": "缺赔率/概率数据(不在intraday_decisions)"
-    }
-   },
-   "payoff_detail": {
-    "up_probability": null,
-    "expected_upside": null,
-    "expected_downside": null,
-    "reward_risk_ratio": null,
-    "expected_return": null,
-    "horizons_available": [
-     "2周",
-     "长期"
-    ],
-    "horizons_missing": [
-     "5日",
-     "60日"
-    ]
-   },
-   "risk_score": 10.0,
-   "risk_flags": [],
-   "risk_veto": [],
-   "data_completeness": 30,
-   "model_confidence": 18.0,
-   "opportunity_type": "突破趋势",
-   "horizon": "5-20日",
-   "missing": [
-    "长期价值",
-    "当前时机",
-    "价格估值",
-    "获利空间",
-    "机会催化"
-   ],
-   "main_shortboard": "长期价值",
-   "why_focus": "",
-   "why_grade": "1A-短线突击：长期价值50✗、当前时机63✗、机会催化50✗、价格估值62✗、获利空间35✗",
-   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值、获利空间、机会催化),只按战术用途参与",
-   "triggers": {
-    "enter": "回踩 157.84~164.15 买 · 5个交易日内有效",
-    "upgrade": "补齐:长期价值、当前时机、价格估值、获利空间、机会催化",
-    "downgrade": "任一关键桶板跌破线/风险否决触发",
-    "invalid": "触发窗口过期"
-   },
-   "when": "回踩 157.84~164.15 买 · 5个交易日内有效",
-   "when_kind": "pullback",
-   "timing": "🕐等触发·回踩",
-   "use": "1A-短线突击·短线进攻",
-   "edge_pp": null,
-   "vold": 1.46,
-   "pos52": null,
-   "catalyst_kind": null,
-   "flags": [],
-   "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
-   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 48,
-   "rank_in_tier": 45
   },
   {
    "code": "PSX",
@@ -4373,100 +4190,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 49,
-   "rank_in_tier": 46
-  },
-  {
-   "code": "3600.HK",
-   "name": "现代牙科",
-   "market": "港股",
-   "tier": "1A",
-   "subtype": "1A-短线突击",
-   "action_state": "短线进攻",
-   "rank_score": 50.6,
-   "score_raw": 50.6,
-   "buckets": {
-    "long_value": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "仅结构推断(缺基本面)"
-    },
-    "timing": {
-     "score": 62.7,
-     "pass": false,
-     "basis": "窗口:现在买（今日窗口内）；突破型量比0.58(缩量·突破可信度低)"
-    },
-    "catalyst": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
-    },
-    "valuation": {
-     "score": 62.0,
-     "pass": false,
-     "basis": "右侧·贴新高(缺止损距离,按中性计)"
-    },
-    "payoff": {
-     "score": 35.0,
-     "pass": false,
-     "basis": "缺赔率/概率数据(不在intraday_decisions)"
-    }
-   },
-   "payoff_detail": {
-    "up_probability": null,
-    "expected_upside": null,
-    "expected_downside": null,
-    "reward_risk_ratio": null,
-    "expected_return": null,
-    "horizons_available": [
-     "2周",
-     "长期"
-    ],
-    "horizons_missing": [
-     "5日",
-     "60日"
-    ]
-   },
-   "risk_score": 10.0,
-   "risk_flags": [],
-   "risk_veto": [],
-   "data_completeness": 30,
-   "model_confidence": 18.0,
-   "opportunity_type": "突破趋势",
-   "horizon": "5-20日",
-   "missing": [
-    "长期价值",
-    "当前时机",
-    "价格估值",
-    "获利空间",
-    "机会催化"
-   ],
-   "main_shortboard": "长期价值",
-   "why_focus": "",
-   "why_grade": "1A-短线突击：长期价值50✗、当前时机63✗、机会催化50✗、价格估值62✗、获利空间35✗",
-   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值、获利空间、机会催化),只按战术用途参与",
-   "triggers": {
-    "enter": "现在买（今日窗口内）",
-    "upgrade": "补齐:长期价值、当前时机、价格估值、获利空间、机会催化",
-    "downgrade": "任一关键桶板跌破线/风险否决触发",
-    "invalid": "触发窗口过期"
-   },
-   "when": "现在买（今日窗口内）",
-   "when_kind": "now",
-   "timing": "⚡现在买",
-   "use": "1A-短线突击·短线进攻",
-   "edge_pp": null,
-   "vold": 0.58,
-   "pos52": null,
-   "catalyst_kind": null,
-   "flags": [],
-   "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
-   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 50,
-   "rank_in_tier": 47
+   "rank": 47,
+   "rank_in_tier": 44
   },
   {
    "code": "6190.HK",
@@ -4553,10 +4280,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 51,
-   "rank_in_tier": 48
+   "rank": 48,
+   "rank_in_tier": 45
   },
   {
    "code": "002440.SZ",
@@ -4643,10 +4370,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 52,
-   "rank_in_tier": 49
+   "rank": 49,
+   "rank_in_tier": 46
   },
   {
    "code": "HSBC",
@@ -4733,10 +4460,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 53,
-   "rank_in_tier": 50
+   "rank": 50,
+   "rank_in_tier": 47
   },
   {
    "code": "2328.HK",
@@ -4823,100 +4550,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 54,
-   "rank_in_tier": 51
-  },
-  {
-   "code": "NWG",
-   "name": "NatWest Group plc ADR",
-   "market": "美股",
-   "tier": "1A",
-   "subtype": "1A-短线突击",
-   "action_state": "短线进攻",
-   "rank_score": 49.3,
-   "score_raw": 49.3,
-   "buckets": {
-    "long_value": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "仅结构推断(缺基本面)"
-    },
-    "timing": {
-     "score": 56.3,
-     "pass": false,
-     "basis": "窗口:回踩 17.94~18.66 买 · 5个交易日内有效；突破型量比1.17(缩量·突破可信度低)"
-    },
-    "catalyst": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
-    },
-    "valuation": {
-     "score": 62.0,
-     "pass": false,
-     "basis": "右侧·贴新高(缺止损距离,按中性计)"
-    },
-    "payoff": {
-     "score": 35.0,
-     "pass": false,
-     "basis": "缺赔率/概率数据(不在intraday_decisions)"
-    }
-   },
-   "payoff_detail": {
-    "up_probability": null,
-    "expected_upside": null,
-    "expected_downside": null,
-    "reward_risk_ratio": null,
-    "expected_return": null,
-    "horizons_available": [
-     "2周",
-     "长期"
-    ],
-    "horizons_missing": [
-     "5日",
-     "60日"
-    ]
-   },
-   "risk_score": 10.0,
-   "risk_flags": [],
-   "risk_veto": [],
-   "data_completeness": 30,
-   "model_confidence": 43.0,
-   "opportunity_type": "突破趋势",
-   "horizon": "5-20日",
-   "missing": [
-    "长期价值",
-    "当前时机",
-    "价格估值",
-    "获利空间",
-    "机会催化"
-   ],
-   "main_shortboard": "长期价值",
-   "why_focus": "",
-   "why_grade": "1A-短线突击：长期价值50✗、当前时机56✗、机会催化50✗、价格估值62✗、获利空间35✗",
-   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值、获利空间、机会催化),只按战术用途参与",
-   "triggers": {
-    "enter": "回踩 17.94~18.66 买 · 5个交易日内有效",
-    "upgrade": "补齐:长期价值、当前时机、价格估值、获利空间、机会催化",
-    "downgrade": "任一关键桶板跌破线/风险否决触发",
-    "invalid": "触发窗口过期"
-   },
-   "when": "回踩 17.94~18.66 买 · 5个交易日内有效",
-   "when_kind": "pullback",
-   "timing": "🕐等触发·回踩",
-   "use": "1A-短线突击·短线进攻",
-   "edge_pp": null,
-   "vold": 1.17,
-   "pos52": null,
-   "catalyst_kind": null,
-   "flags": [],
-   "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
-   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 55,
-   "rank_in_tier": 52
+   "rank": 51,
+   "rank_in_tier": 48
   },
   {
    "code": "RACE",
@@ -5003,10 +4640,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 56,
-   "rank_in_tier": 53
+   "rank": 52,
+   "rank_in_tier": 49
   },
   {
    "code": "0300.HK",
@@ -5093,10 +4730,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 57,
-   "rank_in_tier": 54
+   "rank": 53,
+   "rank_in_tier": 50
   },
   {
    "code": "003013.SZ",
@@ -5187,10 +4824,10 @@
     "财务风险25.0"
    ],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 58,
-   "rank_in_tier": 55
+   "rank": 54,
+   "rank_in_tier": 51
   },
   {
    "code": "ING",
@@ -5277,190 +4914,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 59,
-   "rank_in_tier": 56
-  },
-  {
-   "code": "VLO",
-   "name": "瓦莱罗能源",
-   "market": "美股",
-   "tier": "1A",
-   "subtype": "1A-左侧低吸",
-   "action_state": "低吸埋伏",
-   "rank_score": 48.3,
-   "score_raw": 48.3,
-   "buckets": {
-    "long_value": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "仅结构推断(缺基本面)"
-    },
-    "timing": {
-     "score": 51.3,
-     "pass": false,
-     "basis": "窗口:回踩 296.8~308.67 买 · 5个交易日内有效；突破型量比1.03(缩量·突破可信度低)"
-    },
-    "catalyst": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
-    },
-    "valuation": {
-     "score": 62.0,
-     "pass": false,
-     "basis": "右侧·贴新高(缺止损距离,按中性计)"
-    },
-    "payoff": {
-     "score": 35.0,
-     "pass": false,
-     "basis": "缺赔率/概率数据(不在intraday_decisions)"
-    }
-   },
-   "payoff_detail": {
-    "up_probability": null,
-    "expected_upside": null,
-    "expected_downside": null,
-    "reward_risk_ratio": null,
-    "expected_return": null,
-    "horizons_available": [
-     "2周",
-     "长期"
-    ],
-    "horizons_missing": [
-     "5日",
-     "60日"
-    ]
-   },
-   "risk_score": 10.0,
-   "risk_flags": [],
-   "risk_veto": [],
-   "data_completeness": 30,
-   "model_confidence": 18.0,
-   "opportunity_type": "突破趋势",
-   "horizon": "5-20日",
-   "missing": [
-    "长期价值",
-    "当前时机",
-    "价格估值",
-    "获利空间",
-    "机会催化"
-   ],
-   "main_shortboard": "长期价值",
-   "why_focus": "",
-   "why_grade": "1A-左侧低吸：长期价值50✗、当前时机51✗、机会催化50✗、价格估值62✗、获利空间35✗",
-   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值、获利空间、机会催化),只按战术用途参与",
-   "triggers": {
-    "enter": "回踩 296.8~308.67 买 · 5个交易日内有效",
-    "upgrade": "补齐:长期价值、当前时机、价格估值、获利空间、机会催化",
-    "downgrade": "任一关键桶板跌破线/风险否决触发",
-    "invalid": "触发窗口过期"
-   },
-   "when": "回踩 296.8~308.67 买 · 5个交易日内有效",
-   "when_kind": "pullback",
-   "timing": "🕐等触发·回踩",
-   "use": "1A-左侧低吸·低吸埋伏",
-   "edge_pp": null,
-   "vold": 1.03,
-   "pos52": null,
-   "catalyst_kind": null,
-   "flags": [],
-   "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
-   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 60,
-   "rank_in_tier": 57
-  },
-  {
-   "code": "VIK",
-   "name": "维京游轮",
-   "market": "美股",
-   "tier": "1A",
-   "subtype": "1A-左侧低吸",
-   "action_state": "低吸埋伏",
-   "rank_score": 48.2,
-   "score_raw": 48.2,
-   "buckets": {
-    "long_value": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "仅结构推断(缺基本面)"
-    },
-    "timing": {
-     "score": 50.9,
-     "pass": false,
-     "basis": "窗口:回踩 100.21~104.22 买 · 5个交易日内有效；突破型量比1.02(缩量·突破可信度低)"
-    },
-    "catalyst": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
-    },
-    "valuation": {
-     "score": 62.0,
-     "pass": false,
-     "basis": "右侧·贴新高(缺止损距离,按中性计)"
-    },
-    "payoff": {
-     "score": 35.0,
-     "pass": false,
-     "basis": "缺赔率/概率数据(不在intraday_decisions)"
-    }
-   },
-   "payoff_detail": {
-    "up_probability": null,
-    "expected_upside": null,
-    "expected_downside": null,
-    "reward_risk_ratio": null,
-    "expected_return": null,
-    "horizons_available": [
-     "2周",
-     "长期"
-    ],
-    "horizons_missing": [
-     "5日",
-     "60日"
-    ]
-   },
-   "risk_score": 10.0,
-   "risk_flags": [],
-   "risk_veto": [],
-   "data_completeness": 30,
-   "model_confidence": 18.0,
-   "opportunity_type": "突破趋势",
-   "horizon": "5-20日",
-   "missing": [
-    "长期价值",
-    "当前时机",
-    "价格估值",
-    "获利空间",
-    "机会催化"
-   ],
-   "main_shortboard": "长期价值",
-   "why_focus": "",
-   "why_grade": "1A-左侧低吸：长期价值50✗、当前时机51✗、机会催化50✗、价格估值62✗、获利空间35✗",
-   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值、获利空间、机会催化),只按战术用途参与",
-   "triggers": {
-    "enter": "回踩 100.21~104.22 买 · 5个交易日内有效",
-    "upgrade": "补齐:长期价值、当前时机、价格估值、获利空间、机会催化",
-    "downgrade": "任一关键桶板跌破线/风险否决触发",
-    "invalid": "触发窗口过期"
-   },
-   "when": "回踩 100.21~104.22 买 · 5个交易日内有效",
-   "when_kind": "pullback",
-   "timing": "🕐等触发·回踩",
-   "use": "1A-左侧低吸·低吸埋伏",
-   "edge_pp": null,
-   "vold": 1.02,
-   "pos52": null,
-   "catalyst_kind": null,
-   "flags": [],
-   "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
-   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 61,
-   "rank_in_tier": 58
+   "rank": 55,
+   "rank_in_tier": 52
   },
   {
    "code": "1308.HK",
@@ -5547,10 +5004,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 62,
-   "rank_in_tier": 59
+   "rank": 56,
+   "rank_in_tier": 53
   },
   {
    "code": "MPC",
@@ -5637,10 +5094,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 63,
-   "rank_in_tier": 60
+   "rank": 57,
+   "rank_in_tier": 54
   },
   {
    "code": "0023.HK",
@@ -5727,100 +5184,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 64,
-   "rank_in_tier": 61
-  },
-  {
-   "code": "ADP",
-   "name": "自动数据处理",
-   "market": "美股",
-   "tier": "1A",
-   "subtype": "1A-左侧低吸",
-   "action_state": "低吸埋伏",
-   "rank_score": 47.0,
-   "score_raw": 47.0,
-   "buckets": {
-    "long_value": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "仅结构推断(缺基本面)"
-    },
-    "timing": {
-     "score": 44.8,
-     "pass": false,
-     "basis": "窗口:回踩 251.34~261.39 买 · 5个交易日内有效；突破型量比0.85(缩量·突破可信度低)"
-    },
-    "catalyst": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
-    },
-    "valuation": {
-     "score": 62.0,
-     "pass": false,
-     "basis": "右侧·贴新高(缺止损距离,按中性计)"
-    },
-    "payoff": {
-     "score": 35.0,
-     "pass": false,
-     "basis": "缺赔率/概率数据(不在intraday_decisions)"
-    }
-   },
-   "payoff_detail": {
-    "up_probability": null,
-    "expected_upside": null,
-    "expected_downside": null,
-    "reward_risk_ratio": null,
-    "expected_return": null,
-    "horizons_available": [
-     "2周",
-     "长期"
-    ],
-    "horizons_missing": [
-     "5日",
-     "60日"
-    ]
-   },
-   "risk_score": 10.0,
-   "risk_flags": [],
-   "risk_veto": [],
-   "data_completeness": 30,
-   "model_confidence": 18.0,
-   "opportunity_type": "突破趋势",
-   "horizon": "5-20日",
-   "missing": [
-    "长期价值",
-    "当前时机",
-    "价格估值",
-    "获利空间",
-    "机会催化"
-   ],
-   "main_shortboard": "长期价值",
-   "why_focus": "",
-   "why_grade": "1A-左侧低吸：长期价值50✗、当前时机45✗、机会催化50✗、价格估值62✗、获利空间35✗",
-   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值、获利空间、机会催化),只按战术用途参与",
-   "triggers": {
-    "enter": "回踩 251.34~261.39 买 · 5个交易日内有效",
-    "upgrade": "补齐:长期价值、当前时机、价格估值、获利空间、机会催化",
-    "downgrade": "任一关键桶板跌破线/风险否决触发",
-    "invalid": "触发窗口过期"
-   },
-   "when": "回踩 251.34~261.39 买 · 5个交易日内有效",
-   "when_kind": "pullback",
-   "timing": "🕐等触发·回踩",
-   "use": "1A-左侧低吸·低吸埋伏",
-   "edge_pp": null,
-   "vold": 0.85,
-   "pos52": null,
-   "catalyst_kind": null,
-   "flags": [],
-   "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
-   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 65,
-   "rank_in_tier": 62
+   "rank": 58,
+   "rank_in_tier": 55
   },
   {
    "code": "MT",
@@ -5907,100 +5274,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 66,
-   "rank_in_tier": 63
-  },
-  {
-   "code": "2698.HK",
-   "name": "乐舒适",
-   "market": "港股",
-   "tier": "1A",
-   "subtype": "1A-左侧低吸",
-   "action_state": "低吸埋伏",
-   "rank_score": 46.4,
-   "score_raw": 46.4,
-   "buckets": {
-    "long_value": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "仅结构推断(缺基本面)"
-    },
-    "timing": {
-     "score": 41.7,
-     "pass": false,
-     "basis": "窗口:回踩 29.63~30.82 买 · 5个交易日内有效；突破型量比0.76(缩量·突破可信度低)"
-    },
-    "catalyst": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
-    },
-    "valuation": {
-     "score": 62.0,
-     "pass": false,
-     "basis": "右侧·贴新高(缺止损距离,按中性计)"
-    },
-    "payoff": {
-     "score": 35.0,
-     "pass": false,
-     "basis": "缺赔率/概率数据(不在intraday_decisions)"
-    }
-   },
-   "payoff_detail": {
-    "up_probability": null,
-    "expected_upside": null,
-    "expected_downside": null,
-    "reward_risk_ratio": null,
-    "expected_return": null,
-    "horizons_available": [
-     "2周",
-     "长期"
-    ],
-    "horizons_missing": [
-     "5日",
-     "60日"
-    ]
-   },
-   "risk_score": 10.0,
-   "risk_flags": [],
-   "risk_veto": [],
-   "data_completeness": 30,
-   "model_confidence": 18.0,
-   "opportunity_type": "突破趋势",
-   "horizon": "5-20日",
-   "missing": [
-    "长期价值",
-    "当前时机",
-    "价格估值",
-    "获利空间",
-    "机会催化"
-   ],
-   "main_shortboard": "长期价值",
-   "why_focus": "",
-   "why_grade": "1A-左侧低吸：长期价值50✗、当前时机42✗、机会催化50✗、价格估值62✗、获利空间35✗",
-   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值、获利空间、机会催化),只按战术用途参与",
-   "triggers": {
-    "enter": "回踩 29.63~30.82 买 · 5个交易日内有效",
-    "upgrade": "补齐:长期价值、当前时机、价格估值、获利空间、机会催化",
-    "downgrade": "任一关键桶板跌破线/风险否决触发",
-    "invalid": "触发窗口过期"
-   },
-   "when": "回踩 29.63~30.82 买 · 5个交易日内有效",
-   "when_kind": "pullback",
-   "timing": "🕐等触发·回踩",
-   "use": "1A-左侧低吸·低吸埋伏",
-   "edge_pp": null,
-   "vold": 0.76,
-   "pos52": null,
-   "catalyst_kind": null,
-   "flags": [],
-   "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
-   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 67,
-   "rank_in_tier": 64
+   "rank": 59,
+   "rank_in_tier": 56
   },
   {
    "code": "2888.HK",
@@ -6087,10 +5364,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 68,
-   "rank_in_tier": 65
+   "rank": 60,
+   "rank_in_tier": 57
   },
   {
    "code": "2314.HK",
@@ -6177,100 +5454,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 69,
-   "rank_in_tier": 66
-  },
-  {
-   "code": "GRMN",
-   "name": "佳明",
-   "market": "美股",
-   "tier": "1A",
-   "subtype": "1A-左侧低吸",
-   "action_state": "低吸埋伏",
-   "rank_score": 46.0,
-   "score_raw": 46.0,
-   "buckets": {
-    "long_value": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "仅结构推断(缺基本面)"
-    },
-    "timing": {
-     "score": 39.7,
-     "pass": false,
-     "basis": "窗口:回踩 251.99~262.07 买 · 5个交易日内有效；突破型量比0.70(缩量·突破可信度低)"
-    },
-    "catalyst": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
-    },
-    "valuation": {
-     "score": 62.0,
-     "pass": false,
-     "basis": "右侧·贴新高(缺止损距离,按中性计)"
-    },
-    "payoff": {
-     "score": 35.0,
-     "pass": false,
-     "basis": "缺赔率/概率数据(不在intraday_decisions)"
-    }
-   },
-   "payoff_detail": {
-    "up_probability": null,
-    "expected_upside": null,
-    "expected_downside": null,
-    "reward_risk_ratio": null,
-    "expected_return": null,
-    "horizons_available": [
-     "2周",
-     "长期"
-    ],
-    "horizons_missing": [
-     "5日",
-     "60日"
-    ]
-   },
-   "risk_score": 10.0,
-   "risk_flags": [],
-   "risk_veto": [],
-   "data_completeness": 30,
-   "model_confidence": 28.0,
-   "opportunity_type": "突破趋势",
-   "horizon": "5-20日",
-   "missing": [
-    "长期价值",
-    "当前时机",
-    "价格估值",
-    "获利空间",
-    "机会催化"
-   ],
-   "main_shortboard": "长期价值",
-   "why_focus": "",
-   "why_grade": "1A-左侧低吸：长期价值50✗、当前时机40✗、机会催化50✗、价格估值62✗、获利空间35✗",
-   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值、获利空间、机会催化),只按战术用途参与",
-   "triggers": {
-    "enter": "回踩 251.99~262.07 买 · 5个交易日内有效",
-    "upgrade": "补齐:长期价值、当前时机、价格估值、获利空间、机会催化",
-    "downgrade": "任一关键桶板跌破线/风险否决触发",
-    "invalid": "触发窗口过期"
-   },
-   "when": "回踩 251.99~262.07 买 · 5个交易日内有效",
-   "when_kind": "pullback",
-   "timing": "🕐等触发·回踩",
-   "use": "1A-左侧低吸·低吸埋伏",
-   "edge_pp": null,
-   "vold": 0.7,
-   "pos52": null,
-   "catalyst_kind": null,
-   "flags": [],
-   "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
-   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 70,
-   "rank_in_tier": 67
+   "rank": 61,
+   "rank_in_tier": 58
   },
   {
    "code": "2388.HK",
@@ -6357,10 +5544,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 71,
-   "rank_in_tier": 68
+   "rank": 62,
+   "rank_in_tier": 59
   },
   {
    "code": "RCL",
@@ -6447,100 +5634,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 72,
-   "rank_in_tier": 69
-  },
-  {
-   "code": "0293.HK",
-   "name": "国泰航空",
-   "market": "港股",
-   "tier": "1A",
-   "subtype": "1A-左侧低吸",
-   "action_state": "低吸埋伏",
-   "rank_score": 45.4,
-   "score_raw": 45.4,
-   "buckets": {
-    "long_value": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "仅结构推断(缺基本面)"
-    },
-    "timing": {
-     "score": 36.7,
-     "pass": false,
-     "basis": "窗口:回踩 13.66~14.21 买 · 5个交易日内有效；突破型量比0.61(缩量·突破可信度低)"
-    },
-    "catalyst": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
-    },
-    "valuation": {
-     "score": 62.0,
-     "pass": false,
-     "basis": "右侧·贴新高(缺止损距离,按中性计)"
-    },
-    "payoff": {
-     "score": 35.0,
-     "pass": false,
-     "basis": "缺赔率/概率数据(不在intraday_decisions)"
-    }
-   },
-   "payoff_detail": {
-    "up_probability": null,
-    "expected_upside": null,
-    "expected_downside": null,
-    "reward_risk_ratio": null,
-    "expected_return": null,
-    "horizons_available": [
-     "2周",
-     "长期"
-    ],
-    "horizons_missing": [
-     "5日",
-     "60日"
-    ]
-   },
-   "risk_score": 10.0,
-   "risk_flags": [],
-   "risk_veto": [],
-   "data_completeness": 30,
-   "model_confidence": 18.0,
-   "opportunity_type": "突破趋势",
-   "horizon": "5-20日",
-   "missing": [
-    "长期价值",
-    "当前时机",
-    "价格估值",
-    "获利空间",
-    "机会催化"
-   ],
-   "main_shortboard": "长期价值",
-   "why_focus": "",
-   "why_grade": "1A-左侧低吸：长期价值50✗、当前时机37✗、机会催化50✗、价格估值62✗、获利空间35✗",
-   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值、获利空间、机会催化),只按战术用途参与",
-   "triggers": {
-    "enter": "回踩 13.66~14.21 买 · 5个交易日内有效",
-    "upgrade": "补齐:长期价值、当前时机、价格估值、获利空间、机会催化",
-    "downgrade": "任一关键桶板跌破线/风险否决触发",
-    "invalid": "触发窗口过期"
-   },
-   "when": "回踩 13.66~14.21 买 · 5个交易日内有效",
-   "when_kind": "pullback",
-   "timing": "🕐等触发·回踩",
-   "use": "1A-左侧低吸·低吸埋伏",
-   "edge_pp": null,
-   "vold": 0.61,
-   "pos52": null,
-   "catalyst_kind": null,
-   "flags": [],
-   "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
-   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 73,
-   "rank_in_tier": 70
+   "rank": 63,
+   "rank_in_tier": 60
   },
   {
    "code": "MMM",
@@ -6627,10 +5724,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 74,
-   "rank_in_tier": 71
+   "rank": 64,
+   "rank_in_tier": 61
   },
   {
    "code": "2510.HK",
@@ -6717,370 +5814,10 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 75,
-   "rank_in_tier": 72
-  },
-  {
-   "code": "RTX",
-   "name": "雷神技术",
-   "market": "美股",
-   "tier": "1A",
-   "subtype": "1A-左侧低吸",
-   "action_state": "低吸埋伏",
-   "rank_score": 44.6,
-   "score_raw": 44.6,
-   "buckets": {
-    "long_value": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "仅结构推断(缺基本面)"
-    },
-    "timing": {
-     "score": 33.0,
-     "pass": false,
-     "basis": "窗口:回踩 202.43~210.53 买 · 5个交易日内有效；突破型量比0.48(缩量·突破可信度低)"
-    },
-    "catalyst": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
-    },
-    "valuation": {
-     "score": 62.0,
-     "pass": false,
-     "basis": "右侧·贴新高(缺止损距离,按中性计)"
-    },
-    "payoff": {
-     "score": 35.0,
-     "pass": false,
-     "basis": "缺赔率/概率数据(不在intraday_decisions)"
-    }
-   },
-   "payoff_detail": {
-    "up_probability": null,
-    "expected_upside": null,
-    "expected_downside": null,
-    "reward_risk_ratio": null,
-    "expected_return": null,
-    "horizons_available": [
-     "2周",
-     "长期"
-    ],
-    "horizons_missing": [
-     "5日",
-     "60日"
-    ]
-   },
-   "risk_score": 10.0,
-   "risk_flags": [],
-   "risk_veto": [],
-   "data_completeness": 30,
-   "model_confidence": 28.0,
-   "opportunity_type": "突破趋势",
-   "horizon": "5-20日",
-   "missing": [
-    "长期价值",
-    "当前时机",
-    "价格估值",
-    "获利空间",
-    "机会催化"
-   ],
-   "main_shortboard": "长期价值",
-   "why_focus": "",
-   "why_grade": "1A-左侧低吸：长期价值50✗、当前时机33✗、机会催化50✗、价格估值62✗、获利空间35✗",
-   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值、获利空间、机会催化),只按战术用途参与",
-   "triggers": {
-    "enter": "回踩 202.43~210.53 买 · 5个交易日内有效",
-    "upgrade": "补齐:长期价值、当前时机、价格估值、获利空间、机会催化",
-    "downgrade": "任一关键桶板跌破线/风险否决触发",
-    "invalid": "触发窗口过期"
-   },
-   "when": "回踩 202.43~210.53 买 · 5个交易日内有效",
-   "when_kind": "pullback",
-   "timing": "🕐等触发·回踩",
-   "use": "1A-左侧低吸·低吸埋伏",
-   "edge_pp": null,
-   "vold": 0.48,
-   "pos52": null,
-   "catalyst_kind": null,
-   "flags": [],
-   "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
-   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 76,
-   "rank_in_tier": 73
-  },
-  {
-   "code": "2356.HK",
-   "name": "大新银行集团",
-   "market": "港股",
-   "tier": "1A",
-   "subtype": "1A-左侧低吸",
-   "action_state": "低吸埋伏",
-   "rank_score": 44.6,
-   "score_raw": 44.6,
-   "buckets": {
-    "long_value": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "仅结构推断(缺基本面)"
-    },
-    "timing": {
-     "score": 33.0,
-     "pass": false,
-     "basis": "窗口:回踩 13.08~13.6 买 · 5个交易日内有效；突破型量比0.46(缩量·突破可信度低)"
-    },
-    "catalyst": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
-    },
-    "valuation": {
-     "score": 62.0,
-     "pass": false,
-     "basis": "右侧·贴新高(缺止损距离,按中性计)"
-    },
-    "payoff": {
-     "score": 35.0,
-     "pass": false,
-     "basis": "缺赔率/概率数据(不在intraday_decisions)"
-    }
-   },
-   "payoff_detail": {
-    "up_probability": null,
-    "expected_upside": null,
-    "expected_downside": null,
-    "reward_risk_ratio": null,
-    "expected_return": null,
-    "horizons_available": [
-     "2周",
-     "长期"
-    ],
-    "horizons_missing": [
-     "5日",
-     "60日"
-    ]
-   },
-   "risk_score": 10.0,
-   "risk_flags": [],
-   "risk_veto": [],
-   "data_completeness": 30,
-   "model_confidence": 18.0,
-   "opportunity_type": "突破趋势",
-   "horizon": "5-20日",
-   "missing": [
-    "长期价值",
-    "当前时机",
-    "价格估值",
-    "获利空间",
-    "机会催化"
-   ],
-   "main_shortboard": "长期价值",
-   "why_focus": "",
-   "why_grade": "1A-左侧低吸：长期价值50✗、当前时机33✗、机会催化50✗、价格估值62✗、获利空间35✗",
-   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值、获利空间、机会催化),只按战术用途参与",
-   "triggers": {
-    "enter": "回踩 13.08~13.6 买 · 5个交易日内有效",
-    "upgrade": "补齐:长期价值、当前时机、价格估值、获利空间、机会催化",
-    "downgrade": "任一关键桶板跌破线/风险否决触发",
-    "invalid": "触发窗口过期"
-   },
-   "when": "回踩 13.08~13.6 买 · 5个交易日内有效",
-   "when_kind": "pullback",
-   "timing": "🕐等触发·回踩",
-   "use": "1A-左侧低吸·低吸埋伏",
-   "edge_pp": null,
-   "vold": 0.46,
-   "pos52": null,
-   "catalyst_kind": null,
-   "flags": [],
-   "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
-   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 77,
-   "rank_in_tier": 74
-  },
-  {
-   "code": "0440.HK",
-   "name": "大新金融",
-   "market": "港股",
-   "tier": "1A",
-   "subtype": "1A-左侧低吸",
-   "action_state": "低吸埋伏",
-   "rank_score": 44.6,
-   "score_raw": 44.6,
-   "buckets": {
-    "long_value": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "仅结构推断(缺基本面)"
-    },
-    "timing": {
-     "score": 33.0,
-     "pass": false,
-     "basis": "窗口:回踩 43.47~45.21 买 · 5个交易日内有效；突破型量比0.41(缩量·突破可信度低)"
-    },
-    "catalyst": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
-    },
-    "valuation": {
-     "score": 62.0,
-     "pass": false,
-     "basis": "右侧·贴新高(缺止损距离,按中性计)"
-    },
-    "payoff": {
-     "score": 35.0,
-     "pass": false,
-     "basis": "缺赔率/概率数据(不在intraday_decisions)"
-    }
-   },
-   "payoff_detail": {
-    "up_probability": null,
-    "expected_upside": null,
-    "expected_downside": null,
-    "reward_risk_ratio": null,
-    "expected_return": null,
-    "horizons_available": [
-     "2周",
-     "长期"
-    ],
-    "horizons_missing": [
-     "5日",
-     "60日"
-    ]
-   },
-   "risk_score": 10.0,
-   "risk_flags": [],
-   "risk_veto": [],
-   "data_completeness": 30,
-   "model_confidence": 28.0,
-   "opportunity_type": "突破趋势",
-   "horizon": "5-20日",
-   "missing": [
-    "长期价值",
-    "当前时机",
-    "价格估值",
-    "获利空间",
-    "机会催化"
-   ],
-   "main_shortboard": "长期价值",
-   "why_focus": "",
-   "why_grade": "1A-左侧低吸：长期价值50✗、当前时机33✗、机会催化50✗、价格估值62✗、获利空间35✗",
-   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值、获利空间、机会催化),只按战术用途参与",
-   "triggers": {
-    "enter": "回踩 43.47~45.21 买 · 5个交易日内有效",
-    "upgrade": "补齐:长期价值、当前时机、价格估值、获利空间、机会催化",
-    "downgrade": "任一关键桶板跌破线/风险否决触发",
-    "invalid": "触发窗口过期"
-   },
-   "when": "回踩 43.47~45.21 买 · 5个交易日内有效",
-   "when_kind": "pullback",
-   "timing": "🕐等触发·回踩",
-   "use": "1A-左侧低吸·低吸埋伏",
-   "edge_pp": null,
-   "vold": 0.41,
-   "pos52": null,
-   "catalyst_kind": null,
-   "flags": [],
-   "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
-   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 78,
-   "rank_in_tier": 75
-  },
-  {
-   "code": "2518.HK",
-   "name": "汽车之家-S",
-   "market": "港股",
-   "tier": "1A",
-   "subtype": "1A-左侧低吸",
-   "action_state": "低吸埋伏",
-   "rank_score": 44.6,
-   "score_raw": 44.6,
-   "buckets": {
-    "long_value": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "仅结构推断(缺基本面)"
-    },
-    "timing": {
-     "score": 33.0,
-     "pass": false,
-     "basis": "窗口:回踩 40.42~42.04 买 · 5个交易日内有效；突破型量比0.16(缩量·突破可信度低)"
-    },
-    "catalyst": {
-     "score": 50.0,
-     "pass": false,
-     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
-    },
-    "valuation": {
-     "score": 62.0,
-     "pass": false,
-     "basis": "右侧·贴新高(缺止损距离,按中性计)"
-    },
-    "payoff": {
-     "score": 35.0,
-     "pass": false,
-     "basis": "缺赔率/概率数据(不在intraday_decisions)"
-    }
-   },
-   "payoff_detail": {
-    "up_probability": null,
-    "expected_upside": null,
-    "expected_downside": null,
-    "reward_risk_ratio": null,
-    "expected_return": null,
-    "horizons_available": [
-     "2周",
-     "长期"
-    ],
-    "horizons_missing": [
-     "5日",
-     "60日"
-    ]
-   },
-   "risk_score": 10.0,
-   "risk_flags": [],
-   "risk_veto": [],
-   "data_completeness": 30,
-   "model_confidence": 18.0,
-   "opportunity_type": "突破趋势",
-   "horizon": "5-20日",
-   "missing": [
-    "长期价值",
-    "当前时机",
-    "价格估值",
-    "获利空间",
-    "机会催化"
-   ],
-   "main_shortboard": "长期价值",
-   "why_focus": "",
-   "why_grade": "1A-左侧低吸：长期价值50✗、当前时机33✗、机会催化50✗、价格估值62✗、获利空间35✗",
-   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值、获利空间、机会催化),只按战术用途参与",
-   "triggers": {
-    "enter": "回踩 40.42~42.04 买 · 5个交易日内有效",
-    "upgrade": "补齐:长期价值、当前时机、价格估值、获利空间、机会催化",
-    "downgrade": "任一关键桶板跌破线/风险否决触发",
-    "invalid": "触发窗口过期"
-   },
-   "when": "回踩 40.42~42.04 买 · 5个交易日内有效",
-   "when_kind": "pullback",
-   "timing": "🕐等触发·回踩",
-   "use": "1A-左侧低吸·低吸埋伏",
-   "edge_pp": null,
-   "vold": 0.16,
-   "pos52": null,
-   "catalyst_kind": null,
-   "flags": [],
-   "data_available_at": "2026-08-02 06:36",
-   "signal_generated_at": "2026-08-02 06:38",
-   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 79,
-   "rank_in_tier": 76
+   "rank": 65,
+   "rank_in_tier": 62
   },
   {
    "code": "300750.SZ",
@@ -7089,8 +5826,8 @@
    "tier": "0A",
    "subtype": "0A-风险",
    "action_state": "风险回避",
-   "rank_score": 79.2,
-   "score_raw": 79.2,
+   "rank_score": 71.1,
+   "score_raw": 71.1,
    "buckets": {
     "long_value": {
      "score": 81.0,
@@ -7103,9 +5840,9 @@
      "basis": "窗口:现在买（今日窗口内）；事件型量比1.06(事件未获量价响应)"
     },
     "catalyst": {
-     "score": 88.0,
-     "pass": true,
-     "basis": "📣催化驱动"
+     "score": 34.0,
+     "pass": false,
+     "basis": "📣催化驱动；⚠️程序性披露(非新增金额/价格/进度)·且无量价响应→按弱催化计"
     },
     "valuation": {
      "score": 70.3,
@@ -7144,14 +5881,16 @@
    "model_confidence": 40.0,
    "opportunity_type": "事件驱动",
    "horizon": "2-8周",
-   "missing": [],
-   "main_shortboard": "",
+   "missing": [
+    "机会催化"
+   ],
+   "main_shortboard": "机会催化",
    "why_focus": "催化:宁德时代:关于回购股份事项前十名股东和前十名无限售条件股东持股情况的｜⚠️但主力净流出12.41亿=涨势缺主力背书",
-   "why_grade": "0A-风险：长期价值81✓、当前时机81✓、机会催化88✓、价格估值70✓、获利空间76✓",
+   "why_grade": "0A-风险：长期价值81✓、当前时机81✓、机会催化34✗、价格估值70✓、获利空间76✓",
    "why_not_higher": "触发风险否决项：双剑否决在案(2026-07-31·2天前)⚠️前提可能已变:当时无催化→现有📣催化驱动；否决已2天未复核",
    "triggers": {
     "enter": "现在买（今日窗口内）",
-    "upgrade": "",
+    "upgrade": "补齐:机会催化",
     "downgrade": "任一关键桶板跌破线/风险否决触发",
     "invalid": "跌破止损353.8"
    },
@@ -7168,10 +5907,190 @@
     "⚠️双剑否决在案(2026-07-31·2天前)⚠️前提可能已变:当时无催化→现有📣催化驱动；否决已2天未复核"
    ],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 80,
+   "rank": 66,
    "rank_in_tier": 1
+  },
+  {
+   "code": "ADP",
+   "name": "自动数据处理",
+   "market": "美股",
+   "tier": "0A",
+   "subtype": "0A-观察",
+   "action_state": "继续观察",
+   "rank_score": 59.2,
+   "score_raw": 59.2,
+   "buckets": {
+    "long_value": {
+     "score": 88.3,
+     "pass": true,
+     "basis": "长期偏涨概率78%"
+    },
+    "timing": {
+     "score": 44.8,
+     "pass": false,
+     "basis": "窗口:回踩 251.34~261.39 买 · 5个交易日内有效；突破型量比0.85(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 59.8,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损9.8%(中性)"
+    },
+    "payoff": {
+     "score": 39.7,
+     "pass": false,
+     "basis": "赔率0.54；期望+0.0%；赢面+0.1pp(临时参数·待验证)"
+    }
+   },
+   "payoff_detail": {
+    "up_probability": 65,
+    "expected_upside": 5.3,
+    "expected_downside": 9.8,
+    "reward_risk_ratio": 0.54,
+    "expected_return": 0.0,
+    "horizons_available": [
+     "2周",
+     "长期"
+    ],
+    "horizons_missing": [
+     "5日",
+     "60日"
+    ]
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 90,
+   "model_confidence": 54.0,
+   "opportunity_type": "突破趋势",
+   "horizon": "2-8周",
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "main_shortboard": "当前时机",
+   "why_focus": "",
+   "why_grade": "0A-观察：长期价值88✓、当前时机45✗、机会催化62✓、价格估值60✗、获利空间40✗",
+   "why_not_higher": "短板3项(当前时机、价格估值、获利空间)且无明确战术用途",
+   "triggers": {
+    "enter": "回踩 251.34~261.39 买 · 5个交易日内有效",
+    "upgrade": "补齐:当前时机、价格估值、获利空间",
+    "downgrade": "任一关键桶板跌破线/风险否决触发",
+    "invalid": "跌破止损240.4"
+   },
+   "when": "回踩 251.34~261.39 买 · 5个交易日内有效",
+   "when_kind": "pullback",
+   "timing": "🕐等触发·回踩",
+   "use": "",
+   "edge_pp": 0.1,
+   "vold": 0.85,
+   "pos52": 85.0,
+   "catalyst_kind": null,
+   "flags": [],
+   "data_available_at": "2026-07-31 00:00",
+   "signal_generated_at": "2026-08-02 08:17",
+   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
+   "rank": 67,
+   "rank_in_tier": 2
+  },
+  {
+   "code": "NWG",
+   "name": "NatWest Group plc ADR",
+   "market": "美股",
+   "tier": "0A",
+   "subtype": "0A-风险",
+   "action_state": "风险回避",
+   "rank_score": 58.3,
+   "score_raw": 58.3,
+   "buckets": {
+    "long_value": {
+     "score": 90.0,
+     "pass": true,
+     "basis": "长期偏涨概率80%"
+    },
+    "timing": {
+     "score": 56.3,
+     "pass": false,
+     "basis": "窗口:回踩 17.94~18.66 买 · 5个交易日内有效；突破型量比1.17(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 53.2,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损7.3%(中性)；⚠️贴新高且上行<5%=涨幅或已透支"
+    },
+    "payoff": {
+     "score": 29.1,
+     "pass": false,
+     "basis": "赔率0.27；期望-0.9%；赢面-9.7pp(临时参数·待验证)"
+    }
+   },
+   "payoff_detail": {
+    "up_probability": 69,
+    "expected_upside": 2.0,
+    "expected_downside": 7.3,
+    "reward_risk_ratio": 0.27,
+    "expected_return": -0.9,
+    "horizons_available": [
+     "2周",
+     "长期"
+    ],
+    "horizons_missing": [
+     "5日",
+     "60日"
+    ]
+   },
+   "risk_score": 25.0,
+   "risk_flags": [],
+   "risk_veto": [
+    "预期下跌(7.3%)明显大于潜在收益(2.0%)"
+   ],
+   "data_completeness": 90,
+   "model_confidence": 79.0,
+   "opportunity_type": "突破趋势",
+   "horizon": "2-8周",
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "main_shortboard": "当前时机",
+   "why_focus": "",
+   "why_grade": "0A-风险：长期价值90✓、当前时机56✗、机会催化62✓、价格估值53✗、获利空间29✗",
+   "why_not_higher": "触发风险否决项：预期下跌(7.3%)明显大于潜在收益(2.0%)",
+   "triggers": {
+    "enter": "回踩 17.94~18.66 买 · 5个交易日内有效",
+    "upgrade": "补齐:当前时机、价格估值、获利空间",
+    "downgrade": "任一关键桶板跌破线/风险否决触发",
+    "invalid": "跌破止损17.55"
+   },
+   "when": "回踩 17.94~18.66 买 · 5个交易日内有效",
+   "when_kind": "pullback",
+   "timing": "🕐等触发·回踩",
+   "use": "",
+   "edge_pp": -9.7,
+   "vold": 1.17,
+   "pos52": 93.0,
+   "catalyst_kind": null,
+   "flags": [
+    "⚠️预期下跌(7.3%)明显大于潜在收益(2.0%)"
+   ],
+   "data_available_at": "2026-07-31 00:00",
+   "signal_generated_at": "2026-08-02 08:17",
+   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
+   "rank": 68,
+   "rank_in_tier": 3
   },
   {
    "code": "GTES",
@@ -7260,10 +6179,10 @@
     "⚠️预期下跌(11.7%)明显大于潜在收益(4.3%)"
    ],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 81,
-   "rank_in_tier": 2
+   "rank": 69,
+   "rank_in_tier": 4
   },
   {
    "code": "ITGR",
@@ -7351,10 +6270,287 @@
     "⚠️预期下跌(21.7%)明显大于潜在收益(1.9%)"
    ],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 82,
-   "rank_in_tier": 3
+   "rank": 70,
+   "rank_in_tier": 5
+  },
+  {
+   "code": "3600.HK",
+   "name": "现代牙科",
+   "market": "港股",
+   "tier": "0A",
+   "subtype": "0A-风险",
+   "action_state": "风险回避",
+   "rank_score": 57.2,
+   "score_raw": 57.2,
+   "buckets": {
+    "long_value": {
+     "score": 77.3,
+     "pass": true,
+     "basis": "长期偏涨概率66%"
+    },
+    "timing": {
+     "score": 62.7,
+     "pass": false,
+     "basis": "窗口:现在买（今日窗口内）；突破型量比0.58(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 50.0,
+     "pass": false,
+     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
+    },
+    "valuation": {
+     "score": 56.5,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损6.2%(中性)；⚠️贴新高且上行<5%=涨幅或已透支"
+    },
+    "payoff": {
+     "score": 37.5,
+     "pass": false,
+     "basis": "赔率0.65；期望-0.6%；赢面-5.6pp(临时参数·待验证)"
+    }
+   },
+   "payoff_detail": {
+    "up_probability": 55,
+    "expected_upside": 4.0,
+    "expected_downside": 6.2,
+    "reward_risk_ratio": 0.65,
+    "expected_return": -0.6,
+    "horizons_available": [
+     "2周",
+     "长期"
+    ],
+    "horizons_missing": [
+     "5日",
+     "60日"
+    ]
+   },
+   "risk_score": 25.0,
+   "risk_flags": [],
+   "risk_veto": [
+    "预期下跌(6.2%)明显大于潜在收益(4.0%)"
+   ],
+   "data_completeness": 75,
+   "model_confidence": 45.0,
+   "opportunity_type": "突破趋势",
+   "horizon": "2-8周",
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间",
+    "机会催化"
+   ],
+   "main_shortboard": "当前时机",
+   "why_focus": "",
+   "why_grade": "0A-风险：长期价值77✓、当前时机63✗、机会催化50✗、价格估值56✗、获利空间37✗",
+   "why_not_higher": "触发风险否决项：预期下跌(6.2%)明显大于潜在收益(4.0%)",
+   "triggers": {
+    "enter": "现在买（今日窗口内）",
+    "upgrade": "补齐:当前时机、价格估值、获利空间、机会催化",
+    "downgrade": "任一关键桶板跌破线/风险否决触发",
+    "invalid": "跌破止损7.32"
+   },
+   "when": "现在买（今日窗口内）",
+   "when_kind": "now",
+   "timing": "⚡现在买",
+   "use": "",
+   "edge_pp": -5.6,
+   "vold": 0.58,
+   "pos52": 89.0,
+   "catalyst_kind": null,
+   "flags": [
+    "⚠️预期下跌(6.2%)明显大于潜在收益(4.0%)"
+   ],
+   "data_available_at": "2026-07-31 00:00",
+   "signal_generated_at": "2026-08-02 08:17",
+   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
+   "rank": 71,
+   "rank_in_tier": 6
+  },
+  {
+   "code": "0005.HK",
+   "name": "汇丰控股",
+   "market": "港股",
+   "tier": "0A",
+   "subtype": "0A-风险",
+   "action_state": "风险回避",
+   "rank_score": 56.9,
+   "score_raw": 56.9,
+   "buckets": {
+    "long_value": {
+     "score": 91.8,
+     "pass": true,
+     "basis": "长期偏涨概率83%"
+    },
+    "timing": {
+     "score": 62.9,
+     "pass": false,
+     "basis": "窗口:回踩 157.84~164.15 买 · 5个交易日内有效；突破型量比1.46(放量确认)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 52.4,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损7.6%(中性)；⚠️贴新高且上行<5%=涨幅或已透支"
+    },
+    "payoff": {
+     "score": 16.8,
+     "pass": false,
+     "basis": "赔率0.07；期望-1.7%；赢面-20.5pp(临时参数·待验证)"
+    }
+   },
+   "payoff_detail": {
+    "up_probability": 73,
+    "expected_upside": 0.5,
+    "expected_downside": 7.6,
+    "reward_risk_ratio": 0.07,
+    "expected_return": -1.7,
+    "horizons_available": [
+     "2周",
+     "长期"
+    ],
+    "horizons_missing": [
+     "5日",
+     "60日"
+    ]
+   },
+   "risk_score": 25.0,
+   "risk_flags": [],
+   "risk_veto": [
+    "预期下跌(7.6%)明显大于潜在收益(0.5%)"
+   ],
+   "data_completeness": 90,
+   "model_confidence": 54.0,
+   "opportunity_type": "突破趋势",
+   "horizon": "2-8周",
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "main_shortboard": "当前时机",
+   "why_focus": "",
+   "why_grade": "0A-风险：长期价值92✓、当前时机63✗、机会催化62✓、价格估值52✗、获利空间17✗",
+   "why_not_higher": "触发风险否决项：预期下跌(7.6%)明显大于潜在收益(0.5%)",
+   "triggers": {
+    "enter": "回踩 157.84~164.15 买 · 5个交易日内有效",
+    "upgrade": "补齐:当前时机、价格估值、获利空间",
+    "downgrade": "任一关键桶板跌破线/风险否决触发",
+    "invalid": "跌破止损155.5"
+   },
+   "when": "回踩 157.84~164.15 买 · 5个交易日内有效",
+   "when_kind": "pullback",
+   "timing": "🕐等触发·回踩",
+   "use": "",
+   "edge_pp": -20.5,
+   "vold": 1.46,
+   "pos52": 99.0,
+   "catalyst_kind": null,
+   "flags": [
+    "⚠️预期下跌(7.6%)明显大于潜在收益(0.5%)"
+   ],
+   "data_available_at": "2026-07-31 00:00",
+   "signal_generated_at": "2026-08-02 08:17",
+   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
+   "rank": 72,
+   "rank_in_tier": 7
+  },
+  {
+   "code": "BBVA",
+   "name": "西班牙毕尔巴鄂比斯开银行(ADR)",
+   "market": "美股",
+   "tier": "0A",
+   "subtype": "0A-风险",
+   "action_state": "风险回避",
+   "rank_score": 56.3,
+   "score_raw": 56.3,
+   "buckets": {
+    "long_value": {
+     "score": 91.2,
+     "pass": true,
+     "basis": "长期偏涨概率82%"
+    },
+    "timing": {
+     "score": 62.8,
+     "pass": false,
+     "basis": "窗口:回踩 25.93~26.97 买 · 5个交易日内有效；突破型量比1.45(放量确认)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 47.1,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损10.2%(中性)；⚠️贴新高且上行<5%=涨幅或已透支"
+    },
+    "payoff": {
+     "score": 18.2,
+     "pass": false,
+     "basis": "赔率0.05；期望-1.8%；赢面-16.2pp(临时参数·待验证)"
+    }
+   },
+   "payoff_detail": {
+    "up_probability": 79,
+    "expected_upside": 0.5,
+    "expected_downside": 10.2,
+    "reward_risk_ratio": 0.05,
+    "expected_return": -1.8,
+    "horizons_available": [
+     "2周",
+     "长期"
+    ],
+    "horizons_missing": [
+     "5日",
+     "60日"
+    ]
+   },
+   "risk_score": 25.0,
+   "risk_flags": [],
+   "risk_veto": [
+    "预期下跌(10.2%)明显大于潜在收益(0.5%)"
+   ],
+   "data_completeness": 90,
+   "model_confidence": 79.0,
+   "opportunity_type": "突破趋势",
+   "horizon": "2-8周",
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "main_shortboard": "当前时机",
+   "why_focus": "",
+   "why_grade": "0A-风险：长期价值91✓、当前时机63✗、机会催化62✓、价格估值47✗、获利空间18✗",
+   "why_not_higher": "触发风险否决项：预期下跌(10.2%)明显大于潜在收益(0.5%)",
+   "triggers": {
+    "enter": "回踩 25.93~26.97 买 · 5个交易日内有效",
+    "upgrade": "补齐:当前时机、价格估值、获利空间",
+    "downgrade": "任一关键桶板跌破线/风险否决触发",
+    "invalid": "跌破止损25.09"
+   },
+   "when": "回踩 25.93~26.97 买 · 5个交易日内有效",
+   "when_kind": "pullback",
+   "timing": "🕐等触发·回踩",
+   "use": "",
+   "edge_pp": -16.2,
+   "vold": 1.45,
+   "pos52": 99.0,
+   "catalyst_kind": null,
+   "flags": [
+    "⚠️预期下跌(10.2%)明显大于潜在收益(0.5%)"
+   ],
+   "data_available_at": "2026-07-31 00:00",
+   "signal_generated_at": "2026-08-02 08:17",
+   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
+   "rank": 73,
+   "rank_in_tier": 8
   },
   {
    "code": "DXCM",
@@ -7443,10 +6639,10 @@
     "⚠️预期下跌(16.4%)明显大于潜在收益(1.5%)"
    ],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 83,
-   "rank_in_tier": 4
+   "rank": 74,
+   "rank_in_tier": 9
   },
   {
    "code": "ARXS",
@@ -7535,10 +6731,102 @@
     "⚠️预期下跌(24.6%)明显大于潜在收益(1.7%)"
    ],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 84,
-   "rank_in_tier": 5
+   "rank": 75,
+   "rank_in_tier": 10
+  },
+  {
+   "code": "VIK",
+   "name": "维京游轮",
+   "market": "美股",
+   "tier": "0A",
+   "subtype": "0A-风险",
+   "action_state": "风险回避",
+   "rank_score": 55.4,
+   "score_raw": 55.4,
+   "buckets": {
+    "long_value": {
+     "score": 89.2,
+     "pass": true,
+     "basis": "长期偏涨概率79%"
+    },
+    "timing": {
+     "score": 50.9,
+     "pass": false,
+     "basis": "窗口:回踩 100.21~104.22 买 · 5个交易日内有效；突破型量比1.02(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 52.4,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损7.6%(中性)；⚠️贴新高且上行<5%=涨幅或已透支"
+    },
+    "payoff": {
+     "score": 23.0,
+     "pass": false,
+     "basis": "赔率0.19；期望-1.4%；赢面-15.0pp(临时参数·待验证)"
+    }
+   },
+   "payoff_detail": {
+    "up_probability": 69,
+    "expected_upside": 1.4,
+    "expected_downside": 7.6,
+    "reward_risk_ratio": 0.19,
+    "expected_return": -1.4,
+    "horizons_available": [
+     "2周",
+     "长期"
+    ],
+    "horizons_missing": [
+     "5日",
+     "60日"
+    ]
+   },
+   "risk_score": 25.0,
+   "risk_flags": [],
+   "risk_veto": [
+    "预期下跌(7.6%)明显大于潜在收益(1.4%)"
+   ],
+   "data_completeness": 90,
+   "model_confidence": 54.0,
+   "opportunity_type": "突破趋势",
+   "horizon": "2-8周",
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "main_shortboard": "当前时机",
+   "why_focus": "",
+   "why_grade": "0A-风险：长期价值89✓、当前时机51✗、机会催化62✓、价格估值52✗、获利空间23✗",
+   "why_not_higher": "触发风险否决项：预期下跌(7.6%)明显大于潜在收益(1.4%)",
+   "triggers": {
+    "enter": "回踩 100.21~104.22 买 · 5个交易日内有效",
+    "upgrade": "补齐:当前时机、价格估值、获利空间",
+    "downgrade": "任一关键桶板跌破线/风险否决触发",
+    "invalid": "跌破止损96.44"
+   },
+   "when": "回踩 100.21~104.22 买 · 5个交易日内有效",
+   "when_kind": "pullback",
+   "timing": "🕐等触发·回踩",
+   "use": "",
+   "edge_pp": -15.0,
+   "vold": 1.02,
+   "pos52": 96.0,
+   "catalyst_kind": null,
+   "flags": [
+    "⚠️预期下跌(7.6%)明显大于潜在收益(1.4%)"
+   ],
+   "data_available_at": "2026-07-31 00:00",
+   "signal_generated_at": "2026-08-02 08:17",
+   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
+   "rank": 76,
+   "rank_in_tier": 11
   },
   {
    "code": "2020.HK",
@@ -7629,10 +6917,103 @@
     "⚠️预期下跌(6.7%)明显大于潜在收益(2.5%)"
    ],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 85,
-   "rank_in_tier": 6
+   "rank": 77,
+   "rank_in_tier": 12
+  },
+  {
+   "code": "VLO",
+   "name": "瓦莱罗能源",
+   "market": "美股",
+   "tier": "0A",
+   "subtype": "0A-风险",
+   "action_state": "风险回避",
+   "rank_score": 54.9,
+   "score_raw": 54.9,
+   "buckets": {
+    "long_value": {
+     "score": 90.0,
+     "pass": true,
+     "basis": "长期偏涨概率80%"
+    },
+    "timing": {
+     "score": 51.3,
+     "pass": false,
+     "basis": "窗口:回踩 296.8~308.67 买 · 5个交易日内有效；突破型量比1.03(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 50.0,
+     "pass": false,
+     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
+    },
+    "valuation": {
+     "score": 56.2,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损6.3%(中性)；⚠️贴新高且上行<5%=涨幅或已透支"
+    },
+    "payoff": {
+     "score": 25.0,
+     "pass": false,
+     "basis": "赔率0.31；期望-2.1%；赢面-25.3pp(临时参数·待验证)"
+    }
+   },
+   "payoff_detail": {
+    "up_probability": 51,
+    "expected_upside": 2.0,
+    "expected_downside": 6.3,
+    "reward_risk_ratio": 0.31,
+    "expected_return": -2.1,
+    "horizons_available": [
+     "2周",
+     "长期"
+    ],
+    "horizons_missing": [
+     "5日",
+     "60日"
+    ]
+   },
+   "risk_score": 25.0,
+   "risk_flags": [],
+   "risk_veto": [
+    "预期下跌(6.3%)明显大于潜在收益(2.0%)"
+   ],
+   "data_completeness": 75,
+   "model_confidence": 45.0,
+   "opportunity_type": "突破趋势",
+   "horizon": "2-8周",
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间",
+    "机会催化"
+   ],
+   "main_shortboard": "当前时机",
+   "why_focus": "",
+   "why_grade": "0A-风险：长期价值90✓、当前时机51✗、机会催化50✗、价格估值56✗、获利空间25✗",
+   "why_not_higher": "触发风险否决项：预期下跌(6.3%)明显大于潜在收益(2.0%)",
+   "triggers": {
+    "enter": "回踩 296.8~308.67 买 · 5个交易日内有效",
+    "upgrade": "补齐:当前时机、价格估值、获利空间、机会催化",
+    "downgrade": "任一关键桶板跌破线/风险否决触发",
+    "invalid": "跌破止损293.077"
+   },
+   "when": "回踩 296.8~308.67 买 · 5个交易日内有效",
+   "when_kind": "pullback",
+   "timing": "🕐等触发·回踩",
+   "use": "",
+   "edge_pp": -25.3,
+   "vold": 1.03,
+   "pos52": 96.0,
+   "catalyst_kind": null,
+   "flags": [
+    "⚠️预期下跌(6.3%)明显大于潜在收益(2.0%)"
+   ],
+   "data_available_at": "2026-07-31 00:00",
+   "signal_generated_at": "2026-08-02 08:17",
+   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
+   "rank": 78,
+   "rank_in_tier": 13
   },
   {
    "code": "AMZN",
@@ -7721,10 +7102,10 @@
     "⚠️预期下跌(16.7%)明显大于潜在收益(2.3%)"
    ],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 86,
-   "rank_in_tier": 7
+   "rank": 79,
+   "rank_in_tier": 14
   },
   {
    "code": "300996.SZ",
@@ -7813,10 +7194,10 @@
     "⚠️预期下跌(30%)明显大于潜在收益(0.5%)"
    ],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 87,
-   "rank_in_tier": 8
+   "rank": 80,
+   "rank_in_tier": 15
   },
   {
    "code": "600428.SS",
@@ -7905,10 +7286,10 @@
     "⚠️预期下跌(13.0%)明显大于潜在收益(1.7%)"
    ],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 88,
-   "rank_in_tier": 9
+   "rank": 81,
+   "rank_in_tier": 16
   },
   {
    "code": "002832.SZ",
@@ -7993,10 +7374,194 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
-   "rank": 89,
-   "rank_in_tier": 10
+   "rank": 82,
+   "rank_in_tier": 17
+  },
+  {
+   "code": "GRMN",
+   "name": "佳明",
+   "market": "美股",
+   "tier": "0A",
+   "subtype": "0A-风险",
+   "action_state": "风险回避",
+   "rank_score": 52.9,
+   "score_raw": 52.9,
+   "buckets": {
+    "long_value": {
+     "score": 91.2,
+     "pass": true,
+     "basis": "长期偏涨概率82%"
+    },
+    "timing": {
+     "score": 39.7,
+     "pass": false,
+     "basis": "窗口:回踩 251.99~262.07 买 · 5个交易日内有效；突破型量比0.70(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 36.0,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损19.7%(已拉升,追高成本高)；⚠️贴新高且上行<5%=涨幅或已透支"
+    },
+    "payoff": {
+     "score": 30.0,
+     "pass": false,
+     "basis": "赔率0.18；期望-0.2%；赢面-0.7pp(临时参数·待验证)"
+    }
+   },
+   "payoff_detail": {
+    "up_probability": 84,
+    "expected_upside": 3.5,
+    "expected_downside": 19.7,
+    "reward_risk_ratio": 0.18,
+    "expected_return": -0.2,
+    "horizons_available": [
+     "2周",
+     "长期"
+    ],
+    "horizons_missing": [
+     "5日",
+     "60日"
+    ]
+   },
+   "risk_score": 25.0,
+   "risk_flags": [],
+   "risk_veto": [
+    "预期下跌(19.7%)明显大于潜在收益(3.5%)"
+   ],
+   "data_completeness": 90,
+   "model_confidence": 64.0,
+   "opportunity_type": "突破趋势",
+   "horizon": "2-8周",
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "main_shortboard": "当前时机",
+   "why_focus": "",
+   "why_grade": "0A-风险：长期价值91✓、当前时机40✗、机会催化62✓、价格估值36✗、获利空间30✗",
+   "why_not_higher": "触发风险否决项：预期下跌(19.7%)明显大于潜在收益(3.5%)",
+   "triggers": {
+    "enter": "回踩 251.99~262.07 买 · 5个交易日内有效",
+    "upgrade": "补齐:当前时机、价格估值、获利空间",
+    "downgrade": "任一关键桶板跌破线/风险否决触发",
+    "invalid": "跌破止损235.76"
+   },
+   "when": "回踩 251.99~262.07 买 · 5个交易日内有效",
+   "when_kind": "pullback",
+   "timing": "🕐等触发·回踩",
+   "use": "",
+   "edge_pp": -0.7,
+   "vold": 0.7,
+   "pos52": 91.0,
+   "catalyst_kind": null,
+   "flags": [
+    "⚠️预期下跌(19.7%)明显大于潜在收益(3.5%)"
+   ],
+   "data_available_at": "2026-07-31 00:00",
+   "signal_generated_at": "2026-08-02 08:17",
+   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
+   "rank": 83,
+   "rank_in_tier": 18
+  },
+  {
+   "code": "2518.HK",
+   "name": "汽车之家-S",
+   "market": "港股",
+   "tier": "0A",
+   "subtype": "0A-风险",
+   "action_state": "风险回避",
+   "rank_score": 52.5,
+   "score_raw": 52.5,
+   "buckets": {
+    "long_value": {
+     "score": 89.2,
+     "pass": true,
+     "basis": "长期偏涨概率79%"
+    },
+    "timing": {
+     "score": 33.0,
+     "pass": false,
+     "basis": "窗口:回踩 40.42~42.04 买 · 5个交易日内有效；突破型量比0.16(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 48.6,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损9.3%(中性)；⚠️贴新高且上行<5%=涨幅或已透支"
+    },
+    "payoff": {
+     "score": 28.2,
+     "pass": false,
+     "basis": "赔率0.24；期望-1.0%；赢面-8.6pp(临时参数·待验证)"
+    }
+   },
+   "payoff_detail": {
+    "up_probability": 72,
+    "expected_upside": 2.3,
+    "expected_downside": 9.3,
+    "reward_risk_ratio": 0.24,
+    "expected_return": -1.0,
+    "horizons_available": [
+     "2周",
+     "长期"
+    ],
+    "horizons_missing": [
+     "5日",
+     "60日"
+    ]
+   },
+   "risk_score": 25.0,
+   "risk_flags": [],
+   "risk_veto": [
+    "预期下跌(9.3%)明显大于潜在收益(2.3%)"
+   ],
+   "data_completeness": 90,
+   "model_confidence": 54.0,
+   "opportunity_type": "突破趋势",
+   "horizon": "2-8周",
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "main_shortboard": "当前时机",
+   "why_focus": "",
+   "why_grade": "0A-风险：长期价值89✓、当前时机33✗、机会催化62✓、价格估值49✗、获利空间28✗",
+   "why_not_higher": "触发风险否决项：预期下跌(9.3%)明显大于潜在收益(2.3%)",
+   "triggers": {
+    "enter": "回踩 40.42~42.04 买 · 5个交易日内有效",
+    "upgrade": "补齐:当前时机、价格估值、获利空间",
+    "downgrade": "任一关键桶板跌破线/风险否决触发",
+    "invalid": "跌破止损40.04"
+   },
+   "when": "回踩 40.42~42.04 买 · 5个交易日内有效",
+   "when_kind": "pullback",
+   "timing": "🕐等触发·回踩",
+   "use": "",
+   "edge_pp": -8.6,
+   "vold": 0.16,
+   "pos52": 93.0,
+   "catalyst_kind": null,
+   "flags": [
+    "⚠️预期下跌(9.3%)明显大于潜在收益(2.3%)"
+   ],
+   "data_available_at": "2026-07-31 00:00",
+   "signal_generated_at": "2026-08-02 08:17",
+   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
+   "rank": 84,
+   "rank_in_tier": 19
   },
   {
    "code": "SN",
@@ -8085,10 +7650,470 @@
     "⚠️预期下跌(12.3%)明显大于潜在收益(1.6%)"
    ],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
+   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
+   "rank": 85,
+   "rank_in_tier": 20
+  },
+  {
+   "code": "2356.HK",
+   "name": "大新银行集团",
+   "market": "港股",
+   "tier": "0A",
+   "subtype": "0A-风险",
+   "action_state": "风险回避",
+   "rank_score": 51.0,
+   "score_raw": 51.0,
+   "buckets": {
+    "long_value": {
+     "score": 91.2,
+     "pass": true,
+     "basis": "长期偏涨概率82%"
+    },
+    "timing": {
+     "score": 33.0,
+     "pass": false,
+     "basis": "窗口:回踩 13.08~13.6 买 · 5个交易日内有效；突破型量比0.46(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 37.2,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损18.3%(已拉升,追高成本高)；⚠️贴新高且上行<5%=涨幅或已透支"
+    },
+    "payoff": {
+     "score": 26.9,
+     "pass": false,
+     "basis": "赔率0.14；期望-0.6%；赢面-2.7pp(临时参数·待验证)"
+    }
+   },
+   "payoff_detail": {
+    "up_probability": 85,
+    "expected_upside": 2.5,
+    "expected_downside": 18.3,
+    "reward_risk_ratio": 0.14,
+    "expected_return": -0.6,
+    "horizons_available": [
+     "2周",
+     "长期"
+    ],
+    "horizons_missing": [
+     "5日",
+     "60日"
+    ]
+   },
+   "risk_score": 25.0,
+   "risk_flags": [],
+   "risk_veto": [
+    "预期下跌(18.3%)明显大于潜在收益(2.5%)"
+   ],
+   "data_completeness": 90,
+   "model_confidence": 54.0,
+   "opportunity_type": "突破趋势",
+   "horizon": "2-8周",
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "main_shortboard": "当前时机",
+   "why_focus": "",
+   "why_grade": "0A-风险：长期价值91✓、当前时机33✗、机会催化62✓、价格估值37✗、获利空间27✗",
+   "why_not_higher": "触发风险否决项：预期下跌(18.3%)明显大于潜在收益(2.5%)",
+   "triggers": {
+    "enter": "回踩 13.08~13.6 买 · 5个交易日内有效",
+    "upgrade": "补齐:当前时机、价格估值、获利空间",
+    "downgrade": "任一关键桶板跌破线/风险否决触发",
+    "invalid": "跌破止损12.31"
+   },
+   "when": "回踩 13.08~13.6 买 · 5个交易日内有效",
+   "when_kind": "pullback",
+   "timing": "🕐等触发·回踩",
+   "use": "",
+   "edge_pp": -2.7,
+   "vold": 0.46,
+   "pos52": 93.0,
+   "catalyst_kind": null,
+   "flags": [
+    "⚠️预期下跌(18.3%)明显大于潜在收益(2.5%)"
+   ],
+   "data_available_at": "2026-07-31 00:00",
+   "signal_generated_at": "2026-08-02 08:17",
+   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
+   "rank": 86,
+   "rank_in_tier": 21
+  },
+  {
+   "code": "2698.HK",
+   "name": "乐舒适",
+   "market": "港股",
+   "tier": "0A",
+   "subtype": "0A-风险",
+   "action_state": "风险回避",
+   "rank_score": 50.8,
+   "score_raw": 50.8,
+   "buckets": {
+    "long_value": {
+     "score": 85.0,
+     "pass": true,
+     "basis": "长期偏涨概率74%"
+    },
+    "timing": {
+     "score": 41.7,
+     "pass": false,
+     "basis": "窗口:回踩 29.63~30.82 买 · 5个交易日内有效；突破型量比0.76(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 36.4,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损19.3%(已拉升,追高成本高)；⚠️贴新高且上行<5%=涨幅或已透支"
+    },
+    "payoff": {
+     "score": 25.7,
+     "pass": false,
+     "basis": "赔率0.18；期望-1.5%；赢面-6.7pp(临时参数·待验证)"
+    }
+   },
+   "payoff_detail": {
+    "up_probability": 78,
+    "expected_upside": 3.5,
+    "expected_downside": 19.3,
+    "reward_risk_ratio": 0.18,
+    "expected_return": -1.5,
+    "horizons_available": [
+     "2周",
+     "长期"
+    ],
+    "horizons_missing": [
+     "5日",
+     "60日"
+    ]
+   },
+   "risk_score": 25.0,
+   "risk_flags": [],
+   "risk_veto": [
+    "预期下跌(19.3%)明显大于潜在收益(3.5%)"
+   ],
+   "data_completeness": 90,
+   "model_confidence": 54.0,
+   "opportunity_type": "突破趋势",
+   "horizon": "2-8周",
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "main_shortboard": "当前时机",
+   "why_focus": "",
+   "why_grade": "0A-风险：长期价值85✓、当前时机42✗、机会催化62✓、价格估值36✗、获利空间26✗",
+   "why_not_higher": "触发风险否决项：预期下跌(19.3%)明显大于潜在收益(3.5%)",
+   "triggers": {
+    "enter": "回踩 29.63~30.82 买 · 5个交易日内有效",
+    "upgrade": "补齐:当前时机、价格估值、获利空间",
+    "downgrade": "任一关键桶板跌破线/风险否决触发",
+    "invalid": "跌破止损27.46"
+   },
+   "when": "回踩 29.63~30.82 买 · 5个交易日内有效",
+   "when_kind": "pullback",
+   "timing": "🕐等触发·回踩",
+   "use": "",
+   "edge_pp": -6.7,
+   "vold": 0.76,
+   "pos52": 90.0,
+   "catalyst_kind": null,
+   "flags": [
+    "⚠️预期下跌(19.3%)明显大于潜在收益(3.5%)"
+   ],
+   "data_available_at": "2026-07-31 00:00",
+   "signal_generated_at": "2026-08-02 08:17",
+   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
+   "rank": 87,
+   "rank_in_tier": 22
+  },
+  {
+   "code": "0440.HK",
+   "name": "大新金融",
+   "market": "港股",
+   "tier": "0A",
+   "subtype": "0A-风险",
+   "action_state": "风险回避",
+   "rank_score": 50.0,
+   "score_raw": 50.0,
+   "buckets": {
+    "long_value": {
+     "score": 92.4,
+     "pass": true,
+     "basis": "长期偏涨概率84%"
+    },
+    "timing": {
+     "score": 33.0,
+     "pass": false,
+     "basis": "窗口:回踩 43.47~45.21 买 · 5个交易日内有效；突破型量比0.41(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 39.2,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损16.0%(已拉升,追高成本高)；⚠️贴新高且上行<5%=涨幅或已透支"
+    },
+    "payoff": {
+     "score": 20.5,
+     "pass": false,
+     "basis": "赔率0.07；期望-1.8%；赢面-10.5pp(临时参数·待验证)"
+    }
+   },
+   "payoff_detail": {
+    "up_probability": 83,
+    "expected_upside": 1.1,
+    "expected_downside": 16.0,
+    "reward_risk_ratio": 0.07,
+    "expected_return": -1.8,
+    "horizons_available": [
+     "2周",
+     "长期"
+    ],
+    "horizons_missing": [
+     "5日",
+     "60日"
+    ]
+   },
+   "risk_score": 25.0,
+   "risk_flags": [],
+   "risk_veto": [
+    "预期下跌(16.0%)明显大于潜在收益(1.1%)"
+   ],
+   "data_completeness": 90,
+   "model_confidence": 64.0,
+   "opportunity_type": "突破趋势",
+   "horizon": "2-8周",
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "main_shortboard": "当前时机",
+   "why_focus": "",
+   "why_grade": "0A-风险：长期价值92✓、当前时机33✗、机会催化62✓、价格估值39✗、获利空间20✗",
+   "why_not_higher": "触发风险否决项：预期下跌(16.0%)明显大于潜在收益(1.1%)",
+   "triggers": {
+    "enter": "回踩 43.47~45.21 买 · 5个交易日内有效",
+    "upgrade": "补齐:当前时机、价格估值、获利空间",
+    "downgrade": "任一关键桶板跌破线/风险否决触发",
+    "invalid": "跌破止损41.86"
+   },
+   "when": "回踩 43.47~45.21 买 · 5个交易日内有效",
+   "when_kind": "pullback",
+   "timing": "🕐等触发·回踩",
+   "use": "",
+   "edge_pp": -10.5,
+   "vold": 0.41,
+   "pos52": 97.0,
+   "catalyst_kind": null,
+   "flags": [
+    "⚠️预期下跌(16.0%)明显大于潜在收益(1.1%)"
+   ],
+   "data_available_at": "2026-07-31 00:00",
+   "signal_generated_at": "2026-08-02 08:17",
+   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
+   "rank": 88,
+   "rank_in_tier": 23
+  },
+  {
+   "code": "0293.HK",
+   "name": "国泰航空",
+   "market": "港股",
+   "tier": "0A",
+   "subtype": "0A-风险",
+   "action_state": "风险回避",
+   "rank_score": 49.9,
+   "score_raw": 49.9,
+   "buckets": {
+    "long_value": {
+     "score": 87.5,
+     "pass": true,
+     "basis": "长期偏涨概率77%"
+    },
+    "timing": {
+     "score": 36.7,
+     "pass": false,
+     "basis": "窗口:回踩 13.66~14.21 买 · 5个交易日内有效；突破型量比0.61(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 43.9,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损12.2%(已拉升,追高成本高)；⚠️贴新高且上行<5%=涨幅或已透支"
+    },
+    "payoff": {
+     "score": 19.1,
+     "pass": false,
+     "basis": "赔率0.15；期望-2.4%；赢面-17.0pp(临时参数·待验证)"
+    }
+   },
+   "payoff_detail": {
+    "up_probability": 70,
+    "expected_upside": 1.8,
+    "expected_downside": 12.2,
+    "reward_risk_ratio": 0.15,
+    "expected_return": -2.4,
+    "horizons_available": [
+     "2周",
+     "长期"
+    ],
+    "horizons_missing": [
+     "5日",
+     "60日"
+    ]
+   },
+   "risk_score": 25.0,
+   "risk_flags": [],
+   "risk_veto": [
+    "预期下跌(12.2%)明显大于潜在收益(1.8%)"
+   ],
+   "data_completeness": 90,
+   "model_confidence": 54.0,
+   "opportunity_type": "突破趋势",
+   "horizon": "2-8周",
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "main_shortboard": "当前时机",
+   "why_focus": "",
+   "why_grade": "0A-风险：长期价值88✓、当前时机37✗、机会催化62✓、价格估值44✗、获利空间19✗",
+   "why_not_higher": "触发风险否决项：预期下跌(12.2%)明显大于潜在收益(1.8%)",
+   "triggers": {
+    "enter": "回踩 13.66~14.21 买 · 5个交易日内有效",
+    "upgrade": "补齐:当前时机、价格估值、获利空间",
+    "downgrade": "任一关键桶板跌破线/风险否决触发",
+    "invalid": "跌破止损12.82"
+   },
+   "when": "回踩 13.66~14.21 买 · 5个交易日内有效",
+   "when_kind": "pullback",
+   "timing": "🕐等触发·回踩",
+   "use": "",
+   "edge_pp": -17.0,
+   "vold": 0.61,
+   "pos52": 93.0,
+   "catalyst_kind": null,
+   "flags": [
+    "⚠️预期下跌(12.2%)明显大于潜在收益(1.8%)"
+   ],
+   "data_available_at": "2026-07-31 00:00",
+   "signal_generated_at": "2026-08-02 08:17",
+   "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
+   "rank": 89,
+   "rank_in_tier": 24
+  },
+  {
+   "code": "RTX",
+   "name": "雷神技术",
+   "market": "美股",
+   "tier": "0A",
+   "subtype": "0A-风险",
+   "action_state": "风险回避",
+   "rank_score": 48.6,
+   "score_raw": 48.6,
+   "buckets": {
+    "long_value": {
+     "score": 77.3,
+     "pass": true,
+     "basis": "长期偏涨概率66%"
+    },
+    "timing": {
+     "score": 33.0,
+     "pass": false,
+     "basis": "窗口:回踩 202.43~210.53 买 · 5个交易日内有效；突破型量比0.48(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 44.7,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损11.7%(中性)；⚠️贴新高且上行<5%=涨幅或已透支"
+    },
+    "payoff": {
+     "score": 26.7,
+     "pass": false,
+     "basis": "赔率0.24；期望-1.5%；赢面-10.6pp(临时参数·待验证)"
+    }
+   },
+   "payoff_detail": {
+    "up_probability": 70,
+    "expected_upside": 2.8,
+    "expected_downside": 11.7,
+    "reward_risk_ratio": 0.24,
+    "expected_return": -1.5,
+    "horizons_available": [
+     "2周",
+     "长期"
+    ],
+    "horizons_missing": [
+     "5日",
+     "60日"
+    ]
+   },
+   "risk_score": 25.0,
+   "risk_flags": [],
+   "risk_veto": [
+    "预期下跌(11.7%)明显大于潜在收益(2.8%)"
+   ],
+   "data_completeness": 90,
+   "model_confidence": 64.0,
+   "opportunity_type": "突破趋势",
+   "horizon": "2-8周",
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "main_shortboard": "当前时机",
+   "why_focus": "",
+   "why_grade": "0A-风险：长期价值77✓、当前时机33✗、机会催化62✓、价格估值45✗、获利空间27✗",
+   "why_not_higher": "触发风险否决项：预期下跌(11.7%)明显大于潜在收益(2.8%)",
+   "triggers": {
+    "enter": "回踩 202.43~210.53 买 · 5个交易日内有效",
+    "upgrade": "补齐:当前时机、价格估值、获利空间",
+    "downgrade": "任一关键桶板跌破线/风险否决触发",
+    "invalid": "跌破止损190.02"
+   },
+   "when": "回踩 202.43~210.53 买 · 5个交易日内有效",
+   "when_kind": "pullback",
+   "timing": "🕐等触发·回踩",
+   "use": "",
+   "edge_pp": -10.6,
+   "vold": 0.48,
+   "pos52": 88.0,
+   "catalyst_kind": null,
+   "flags": [
+    "⚠️预期下跌(11.7%)明显大于潜在收益(2.8%)"
+   ],
+   "data_available_at": "2026-07-31 00:00",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "rank": 90,
-   "rank_in_tier": 11
+   "rank_in_tier": 25
   }
  ],
  "watch": [
@@ -8176,7 +8201,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -8265,7 +8290,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -8352,7 +8377,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -8440,7 +8465,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -8528,7 +8553,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -8617,7 +8642,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -8705,7 +8730,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -8792,7 +8817,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -8879,7 +8904,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -8966,7 +8991,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -9055,7 +9080,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -9144,7 +9169,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -9233,7 +9258,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -9322,7 +9347,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -9410,7 +9435,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -9498,7 +9523,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -9586,7 +9611,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -9675,7 +9700,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -9764,7 +9789,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -9853,7 +9878,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -9941,7 +9966,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -10030,7 +10055,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -10119,7 +10144,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -10207,7 +10232,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -10296,7 +10321,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -10385,7 +10410,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   },
@@ -10474,7 +10499,7 @@
    "catalyst_kind": null,
    "flags": [],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "scope": "持仓/自选（不占推荐位）"
   }
@@ -10565,10 +10590,10 @@
    "catalyst_kind": "📊仅规则达标",
    "flags": [
     "⚠️卖出信号在身(已否决·不占推荐位：逢反弹减)",
-    "高分被否决(分56≥中位53)·请人工复核"
+    "高分被否决(分56≥中位54)·请人工复核"
    ],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "out_reason": "已否决·不占推荐位：逢反弹减",
    "review_needed": true
@@ -10661,7 +10686,7 @@
     "⚠️卖出信号在身(已否决·不占推荐位：价值陷阱·不碰)"
    ],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "out_reason": "已否决·不占推荐位：价值陷阱·不碰",
    "review_needed": false
@@ -10754,12 +10779,12 @@
     "⚠️卖出信号在身(已否决·不占推荐位：逢反弹减)"
    ],
    "data_available_at": "2026-07-31 00:00",
-   "signal_generated_at": "2026-08-02 06:38",
+   "signal_generated_at": "2026-08-02 08:17",
    "earliest_execution_at": "2026-08-03 开盘后(T+1纪律)",
    "out_reason": "已否决·不占推荐位：逢反弹减",
    "review_needed": false
   }
  ],
- "archived_median_ref": 52.6,
- "grade_changes_today": 1
+ "archived_median_ref": 53.9,
+ "grade_changes_today": 14
 }
