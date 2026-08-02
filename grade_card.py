@@ -759,7 +759,8 @@ def cert_map(rank_score: dict | None = None) -> dict:
     """{code: '双'|'C'|''} —— 作战板用的极简双剑口径。
     用户定纲 2026-08-02:"这里面不用去除,这里面只能有两者认证和c认证的两种即可"。
     即:作战板**不做删减**(与推荐位不同),只给每条挂一个认证标记,让人自己掂量。"""
-    rows = (rank_score or {}).get("rows") or []
+    # 徽章覆盖面必须与验证面一致:黑马票在 watch 段
+    rows = ((rank_score or {}).get("rows") or []) + ((rank_score or {}).get("watch") or [])
     m = {}
     for r in rows:
         v = r.get("verification") or {}
