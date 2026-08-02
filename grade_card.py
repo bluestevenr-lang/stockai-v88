@@ -271,8 +271,16 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             f"</div>")
 
     # ── IN 表 ──
+    # 【铁律19·分级验证准入闸】用户:"没有claude验证不能上榜,这是关键,gpt为辅它通过也不行"。
+    # 生产端已算好 listable;此处**只放行 listable=True**,被拦的单独点名不隐藏。
+    _vf = rk.get("verification") or {}
+    _blk = [(str(r.get("name")), str(r.get("tier")),
+             str((r.get("verification") or {}).get("why") or ""))
+            for r in rows if r.get("tier") in ("3A", "2A", "1A")
+            and r.get("verification") and not r.get("listable")]
     in_rows = ""
-    for r in [x for x in rows if x.get("tier") in ("3A", "2A")][:limit_in]:
+    for r in [x for x in rows if x.get("tier") in ("3A", "2A")
+              and x.get("listable", True)][:limit_in]:
         c = str(r.get("code"))
         d = dec.get(c) or {}
         ep = d.get("entry_plan") or {}
@@ -449,6 +457,20 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + (f"<div style='font-size:11.5px;background:#eff6ff;border-radius:5px;"
                f"padding:4px 8px;margin-bottom:3px'>今日无 3A（现在可进+长期获益的完整机会），"
                f"不硬凑。{near}</div>" if n3 == 0 else "")
+            # 铁律19 验证漏斗:被拦的必须点名,否则"我们还欠多少验证"看不见
+            + (f"<div style='font-size:11px;background:#f8fafc;border-left:3px solid "
+               f"{PALETTE['hold']};border-radius:4px;padding:4px 8px;margin:3px 0'>"
+               f"🔐 <b>验证准入闸</b>（3A=Claude+GPT双验证／2A·1A=Claude必须；"
+               f"<b>GPT为辅，单独通过不充分</b>）：上榜 "
+               f"<b style='color:{PALETTE['buy']}'>{(_vf.get('stats') or {}).get('上榜', 0)}</b>"
+               + "".join(f"　<span style='color:{PALETTE['warn']}'>{k} {v}</span>"
+                         for k, v in (_vf.get("stats") or {}).items()
+                         if k != "上榜" and v)
+               + ((f"<br><span style='color:{PALETTE['hold']}'>被拦：</span>"
+                   + "、".join(f"{n}<span style='color:{PALETTE['mute']}'>({t}·{w})</span>"
+                               for n, t, w in _blk[:8])
+                   + (f" 等{len(_blk)}只" if len(_blk) > 8 else "")) if _blk else "")
+               + "</div>" if _vf else "")
             + (_tbl(in_rows, _TH_IN) or "<div style='font-size:12px;color:#94a3b8'>今日无 3A/2A —— "
                                 "现金也是仓位；战术级1A见买表折叠区</div>")
             # 【三方定纲·可见性】被 OUT 证据撤销买点的票若不在上表(如1A),必须单独点名——
