@@ -180,7 +180,7 @@ SELL_COLOR = {"-3A": PALETTE["sell"], "-2A": PALETTE["sell2"],
 _TH_IN = ("名称", "评级·分", "现价·数据日", "动作·2周概率", "买入区间·进入时机",
           "失效价", "机会类型·周期", "五桶板·风险完备置信", "双验证·GPT异议", "为什么现在")
 _TH_OUT = ("名称", "级别·卖出分", "现价·MA20", "动作·紧迫度", "卖出/回避区间·重买条件",
-           "止损价", "距止损·量比", "1-2-3·旁路·门派", "冲突·仲裁", "持有状态·引擎")
+           "止损价", "距止损·量比", "1-2-3·旁路·门派", "冲突·仲裁", "双验证·GPT异议", "持有状态·引擎")
 # 【自检修②】市场从**代码形态**推断,不依赖上游 market 字段——
 # 实测11处国旗缺失:rank_score.market 仅 trend_quality 来源的行才有,
 # intraday_decisions 压根没有该字段。代码后缀是100%可得的事实。
@@ -426,6 +426,21 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                    if g.get("school_notes") else
                    f"<span style='font-size:9px;color:{PALETTE['hold']}'>无IN/OUT冲突·"
                    f"门派({g.get('opp_type') or '未定'})内判定一致</span>"), "max-width:150px")
+            # 卖侧双验证徽章(铁律19v3对称:错误卖出信号直接损失真金)
+            + _td((lambda _v: (
+                f"<span style='background:{PALETTE['buy'] if _v.get('claude') == 'pass' else PALETTE['mute']};"
+                f"color:#fff;border-radius:3px;padding:0 3px;font-size:9px'>C"
+                f"{'✅' if _v.get('claude') == 'pass' else '—'}</span>"
+                f"<span style='background:{PALETTE['buy2'] if _v.get('gpt') == 'pass' else PALETTE['warn'] if _v.get('gpt') == 'reject' else PALETTE['mute']};"
+                f"color:#fff;border-radius:3px;padding:0 3px;font-size:9px;margin-left:2px'>G"
+                f"{'✅' if _v.get('gpt') == 'pass' else '⚠️' if _v.get('gpt') == 'reject' else '—'}</span>"
+                + (f"<br><span style='font-size:8.5px;color:{PALETTE['warn']}'>"
+                   f"{str(_v.get('gpt_note'))[:24]}</span>"
+                   if _v.get("gpt") == "reject" and _v.get("gpt_note") else "")
+                + (f"<br><span style='font-size:8.5px;color:{PALETTE['mute']}'>"
+                   f"{_v.get('level_before_verify')}→{g.get('level')} 已降档</span>"
+                   if _v.get("level_before_verify") and _v.get("level_before_verify") != g.get("level") else "")
+            ))(g.get("verification") or {}), "max-width:150px")
             + _td((f"<span style='font-size:9.5px;color:{PALETTE['hold']};font-weight:700'>💼持仓</span>"
                    if g.get("held") else
                    f"<span style='font-size:9.5px;color:{PALETTE['wait']}'>👁"
