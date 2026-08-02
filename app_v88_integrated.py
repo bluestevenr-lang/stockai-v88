@@ -17167,17 +17167,37 @@ def _render_today_nav():
                 st.caption("当前=引擎卖警(每条带重买条件); -3A分级(斯波朗迪1-2-3)编码中,"
                            "先攒sell_call战绩(08-14起核算)再定阈值")
                 _g3rb = (_g3j("why_buy.json").get("sells") or {})
+                # 【-3A影子分级 2026-08-02 兑现】斯波朗迪1-2-3已编码(sell_grade.json):
+                # ①MA20破②未创新高/2B③破10日低;级别=触发严重度,旁路(破止损/高潮放量)直达-3A
+                _g3sg = {r.get("code"): r for r in (_g3j("sell_grade.json").get("rows") or [])}
                 if not _g3sell and not _g3arch:
                     st.success("持仓无卖出警报 —— 无OUT信号也是信号")
-                for _s3 in _g3sell[:6]:
+                _LV3 = {"-3A": ("#b91c1c", "#fee2e2"), "-2A": ("#dc2626", "#fef2f2"),
+                        "-1A": ("#ea580c", "#fff7ed")}
+                for _s3 in sorted(_g3sell, key=lambda x: {"-3A": 0, "-2A": 1, "-1A": 2}.get(
+                        str((_g3sg.get(str(x.get("code"))) or {}).get("level")), 9))[:6]:
+                    _sg3 = _g3sg.get(str(_s3.get("code"))) or {}
+                    _lv3 = str(_sg3.get("level") or "?")
+                    _c3c, _c3bg = _LV3.get(_lv3, ("#64748b", "#f8fafc"))
+                    _cs3 = "".join(s for s, ok in (("①", _sg3.get("c1_trend_break")),
+                                                   ("②", _sg3.get("c2_no_new_high")),
+                                                   ("③", _sg3.get("c3_low_break"))) if ok)
+                    _bp3 = "；".join(_sg3.get("bypass") or [])
                     _rb3 = str((_g3rb.get(str(_s3.get("code"))) or {}).get("fail") or "")[:46]
                     st.markdown(
                         f"<div style='font-size:12px;margin:2px 0;padding:3px 7px;"
-                        f"border-left:3px solid #dc2626;background:#fef2f2'>"
-                        f"<b>{_s3.get('name')}</b> {_s3.get('action')}"
-                        f" <span style='color:#64748b'>止损{_s3.get('stop')}</span>"
+                        f"border-left:3px solid {_c3c};background:{_c3bg}'>"
+                        f"<b style='color:{_c3c}'>{_lv3}</b> <b>{_s3.get('name')}</b>"
+                        f" <span style='font-size:11px;color:#64748b'>1-2-3:{_cs3 or '无'}"
+                        + (f"·{_bp3}" if _bp3 else "")
+                        + f"｜引擎:{_s3.get('action')}·止损{_s3.get('stop')}</span>"
                         + (f"<br><span style='font-size:11px;color:#0891b2'>{_rb3}</span>"
                            if _rb3 else "") + "</div>", unsafe_allow_html=True)
+                _cons3 = (_g3j("sell_grade.json").get("consistency") or {})
+                if _cons3.get("rate") is not None:
+                    st.caption(f"影子1-2-3 vs 引擎卖警一致率 {_cons3['rate']:.0f}%"
+                               f"({_cons3['shadow_agrees']}/{_cons3['engine_sell_calls']})"
+                               " · 影子攒战绩,08-14起与sell_call核算对照后转正")
                 for _a3 in _g3arch[:3]:
                     st.markdown(f"<div style='font-size:11.5px;color:#64748b;margin:2px 0'>"
                                 f"🗄 {_a3.get('name')} 已否决({str(_a3.get('out_reason'))[:24]})"
