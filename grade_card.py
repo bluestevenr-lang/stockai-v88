@@ -209,6 +209,16 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
         _board = _sig[:limit_out]
     out_src = _board
     _bd = sg.get("board") or {}
+    # 【P1·2026-08-02 三方裁决】用户"out首先关注的是我的持仓,其次是其他"。
+    # GPT B2:"选**改分区**,不改门槛,也不把所有股票混在一个统一榜单中。
+    # 门槛梯度解决的是'谁更早获得信号',分区解决的是'用户先看到什么',两者并不冲突。
+    # 不建议强行把持仓加排序权重——那会**污染'触发强度'的含义**;
+    # 持仓应在展示层优先,而不是通过修改风险分数伪造优先级。"
+    # 故:榜内排序(urgency)一个字不改,只在展示层切成 持仓区 / 非持仓区。
+    _own = [g for g in _board if g.get("held")]
+    _oth = [g for g in _board if not g.get("held")]
+    _quiet = sg.get("holdings_quiet") or {}
+    _cov = rk.get("coverage") or {}
     # 被 OUT 证据撤销买点的 IN 候选(含未进上表的1A):行不删,但必须点名
     _revoked = [(str(r.get("name")), str(r.get("tier")))
                 for r in rows if _gate(sgm.get(str(r.get("code"))), "开仓") == "BLOCK"
@@ -220,7 +230,13 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + (f"全市场→通道自然产出{len(pool.get('rows') or [])}只→评级{len(rows)}只 ｜ "
                if pool else "")
             + f"IN: 3A×{n3} 2A×{n2} 战术1A×{n1} ｜ OUT: 卖警×{len(out_src)} 否决×{len(arch)}"
-            f"</div></div>")
+            f"</div>"
+            # 【2026-08-02 用户"3A大系统一定要有标注更新的时间"】买/卖两侧各自落盘,
+            # 时间可能不同步——分别标,不合并成一个"最后更新",否则会掩盖某一侧卡住。
+            + f"<div style='font-size:10.5px;opacity:.9;margin-top:2px'>"
+              f"🕐 IN {str(rk.get('generated_at') or '—')} ｜ OUT {str(sg.get('generated_at') or '—')}"
+              f"　<span style='opacity:.8'>每交易日 3 次(05:40/13:00/16:30 北京)</span></div>"
+            f"</div>")
 
     # ── IN 表 ──
     in_rows = ""
@@ -378,6 +394,20 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
     return (head
             + f"<div style='font-size:12.5px;font-weight:700;color:#16a34a;margin:6px 0 2px'>"
               f"🟢 IN · 买入侧（3A/2A 核心推荐）</div>"
+            # 【P1·覆盖率门禁上屏】GPT:"关键桶覆盖低于阈值时禁止发布确定性的IN榜,
+            # 改报'评估不完整'"。不清空表(那等于另一种隐瞒),而是把"这份名单还不能当结论"
+            # 明写在最前面——同类故障曾静默存在整天,就因为界面上没有覆盖率这个数。
+            + (f"<div style='font-size:11.5px;background:#7f1d1d;color:#fff;border-radius:5px;"
+               f"padding:5px 9px;margin-bottom:4px'>"
+               f"⚠️ <b>评估不完整 — 本 IN 榜暂不得当作确定性结论</b><br>"
+               f"<span style='font-size:10.5px;opacity:.95'>"
+               f"关键桶最低覆盖率 <b>{_cov.get('key_min_coverage')}%</b> &lt; 红线 "
+               f"{_cov.get('threshold')}%　｜　"
+               + "　".join(f"{BUCKET_CN.get(k, k)[:2]}<b>{v}%</b>"
+                           for k, v in (_cov.get("bucket_coverage") or {}).items())
+               + "<br>覆盖不足可能是<b>数据管道故障</b>，而非市场真的没机会——"
+                 "已知同族病：某桶大量取同一默认值＝该桶对这批票零区分度。</span></div>"
+               if _cov and not _cov.get("publishable") else "")
             + (f"<div style='font-size:11.5px;background:#eff6ff;border-radius:5px;"
                f"padding:4px 8px;margin-bottom:3px'>今日无 3A（现在可进+长期获益的完整机会），"
                f"不硬凑。{near}</div>" if n3 == 0 else "")
@@ -393,19 +423,40 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                  "（解除需:缩量止跌／收复MA20／结构重新确认）。"
                  "两侧计算互盲、都不删——删一侧就成了用结果消音证据。</span></div>"
                if _revoked else "")
-            + f"<div style='font-size:12.5px;font-weight:700;color:#b91c1c;margin:10px 0 2px'>"
-              f"🔴 OUT · 卖出/回避榜（{len(_board)}只 · 按离触发多近排序）</div>"
+            # ══ 第一区：我的持仓（用户定纲"out首先关注的是我的持仓,其次是其他"）══
+            + f"<div style='font-size:13px;font-weight:800;color:#b91c1c;margin:12px 0 2px;"
+              f"border-left:4px solid #b91c1c;padding-left:6px'>"
+              f"💼 第一区 · 我的持仓处置"
+              f"（{_quiet.get('held_total', len(_own))}只全覆盖：{len(_own)}只有卖出信号 ／ "
+              f"{_quiet.get('count', 0)}只无信号）</div>"
+            + (_tbl("".join(_out_row(g) for g in _own), _TH_OUT)
+               or "<div style='font-size:12px;color:#16a34a'>持仓本轮无卖出信号</div>")
+            # 无信号的持仓：必须交代状态，但绝不说"安全"或"建议继续持有"（GPT B3）
+            + (f"<div style='font-size:11.5px;background:#f0fdf4;border-left:3px solid #16a34a;"
+               f"border-radius:4px;padding:5px 8px;margin:4px 0'>"
+               f"✅ <b>{_quiet.get('headline')}</b>"
+               f"<span style='color:#64748b'>　（{_quiet.get('wording_rule')}）</span><br>"
+               + "　".join(
+                   f"<span style='display:inline-block;margin:1px 0'>{r.get('name')}"
+                   f"<span style='color:#94a3b8;font-size:10px'>"
+                   f"[{r.get('nearest_risk')}]</span></span>"
+                   for r in (_quiet.get("rows") or []))
+               + "</div>" if _quiet.get("rows") else "")
+            # ══ 第二区：非持仓 ══
+            + f"<div style='font-size:13px;font-weight:800;color:#b45309;margin:12px 0 2px;"
+              f"border-left:4px solid #b45309;padding-left:6px'>"
+              f"👁 第二区 · 非持仓（{len(_oth)}只 · 自选/池内候选，"
+              f"<span style='font-weight:400'>不需要你动作，只是别买</span>）</div>"
             + (f"<div style='font-size:11px;color:#64748b;margin-bottom:3px'>"
                f"漏斗 信号{_bd.get('signals')} → 入榜<b>{_bd.get('on_board')}</b>："
                f"{_funnel}　<span style='color:#94a3b8'>入榜闸=接近度×持有档"
                f"（💼持仓{_bd.get('gates', {}).get('持仓', '')}最松／👁自选"
                f"{_bd.get('gates', {}).get('自选', '')}／🔍候选"
                f"{_bd.get('gates', {}).get('池内候选', '')}最严）。"
-               f"未入榜=<b>还没到</b>，不等于安全。</span></div>" if _bd else
-               f"<div style='font-size:11px;color:#64748b;margin-bottom:3px'>"
-               f"同一套斯波朗迪1-2-3,语义不同:💼持仓=收回利润;"
-               f"👁非持仓=避免买在下跌途中(想买但现在别买)。</div>")
-            + (_tbl(out_rows, _TH_OUT) or "<div style='font-size:12px;color:#16a34a'>无标的进入卖出/回避榜 —— "
+               f"排序口径未改（仍按接近触发度）——分区只决定<b>你先看到什么</b>，"
+               f"不给持仓伪造风险分。未入榜=<b>还没到</b>，不等于安全。</span></div>" if _bd else "")
+            + (_tbl("".join(_out_row(g) for g in _oth), _TH_OUT)
+               or "<div style='font-size:12px;color:#16a34a'>非持仓标的无回避信号 —— "
                                  "无 OUT 信号也是信号</div>")
             + f"<div style='font-size:10.5px;color:#94a3b8;margin-top:4px'>"
               f"OUT为影子级(攒战绩不触发交易)·与引擎卖警一致率{cons.get('rate', '—')}%"
