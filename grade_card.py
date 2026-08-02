@@ -190,14 +190,19 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
     n1 = sum(1 for r in rows if r.get("tier") == "1A")
     arch = rk.get("archived") or []
     sgm = {str(x.get("code")): x for x in (sg.get("rows") or [])}
+    # 【2026-08-02 用户定纲】"哪个更接近当前就进入排名,还没到就不进名单"→
+    # 持仓/自选/候选**同榜竞争**,不再按持有与否切两段(切两段=让一只离触发12%的持仓
+    # 压在离触发1%的自选前面)。优先度已在生产端落成"门槛梯度",此处只按紧迫度排。
     _sig = sorted([x for x in (sg.get("rows") or [])
                    if x.get("level") in ("-3A", "-2A", "-1A")],
                   key=lambda x: ({"-3A": 0, "-2A": 1, "-1A": 2}[x["level"]],
                                  -(x.get("sell_score") or 0)))
-    # 【2026-08-02 用户"OUT不一定是持仓"】两段:持仓=收回利润;非持仓=回避别接
-    _held_sig = [x for x in _sig if x.get("held")][:limit_out]
-    _free_sig = [x for x in _sig if not x.get("held")][:limit_out]
-    out_src = _held_sig
+    _board = sorted([x for x in _sig if x.get("on_board")],
+                    key=lambda x: x.get("board_rank") or 999)
+    if not _board:      # 生产端尚未产出榜单字段时退回旧口径,不让模块空白
+        _board = _sig[:limit_out]
+    out_src = _board
+    _bd = sg.get("board") or {}
     head = (f"<div style='background:linear-gradient(90deg,#0ea5e9,#dc2626);color:#fff;"
             f"border-radius:8px;padding:8px 14px;margin:4px 0 6px;text-align:center'>"
             f"<div style='font-size:16px;font-weight:800'>🎯 3A大系统 · IN / OUT</div>"
@@ -281,21 +286,29 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             "<tr>"
             + _td(f"{_flag(c, d.get('market'))}<b>{g.get('name')}</b>"
                   f"<br><span style='color:#94a3b8;font-size:9px'>{c}</span>")
-            + _td(f"<span style='background:{col};color:#fff;border-radius:3px;padding:1px 5px;"
-                  f"font-weight:800;font-size:12px'>{lv}</span>"
-                  f"<br><span style='color:#b91c1c;font-weight:700;font-size:11px'>卖出分"
-                  f"{g.get('sell_score', '—')}</span>", "white-space:nowrap")
+            + _td((f"<span style='color:#94a3b8;font-size:10px;font-weight:700'>"
+                   f"#{g.get('board_rank')}</span> " if g.get("board_rank") else "")
+                  + f"<span style='background:{col};color:#fff;border-radius:3px;padding:1px 5px;"
+                    f"font-weight:800;font-size:12px'>{lv}</span>"
+                    f"<br><span style='color:#b91c1c;font-weight:700;font-size:11px'>卖出分"
+                    f"{g.get('sell_score', '—')}</span>", "white-space:nowrap")
             + _td(f"<b>现{g.get('px', '—')}</b><br>"
                   f"<span style='font-size:9px;color:#64748b'>MA20 {g.get('ma20', '—')}</span>")
             + _td(f"<b style='color:{col}'>{g.get('action')}</b>"
-                  + f"<br><span style='font-size:9px;color:#64748b'>紧迫度"
+                  + f"<br><span style='font-size:9px;color:#64748b'>紧迫度 <b>"
+                    f"{g.get('urgency', '—')}</b>"
                     f"{'高' if lv == '-3A' else '中' if lv == '-2A' else '低'}</span>")
             + _td(f"<b style='color:#b91c1c'>{g.get('sell_zone', '—')}</b>"
                   + (f"<br><span style='font-size:9px;color:#0891b2'>🔁重买: {rb[:44]}</span>"
                      if rb else "<br><span style='font-size:9px;color:#b45309'>"
                                 "⚠️缺重买条件(只说一半)</span>"), "max-width:180px")
             + _td(g.get("stop") or "—")
-            + _td(f"{g.get('dist_stop_pct')}%" if g.get("dist_stop_pct") is not None else "—")
+            # 非持仓的"止损价"是按假设持有反推的,距离只作参考——不加这行标注,
+            # 会让人以为非持仓票也有真实止损位(-3A新东方距19.9%曾误导排序)
+            + _td((f"{g.get('dist_stop_pct')}%"
+                   + ("" if g.get("held") else
+                      "<br><span style='font-size:8.5px;color:#94a3b8'>参考·未持有</span>"))
+                  if g.get("dist_stop_pct") is not None else "—")
             + _td(f"1-2-3: <b>{c123 or '无'}</b>"
                   + (f"<br><span style='font-size:9px;color:#b91c1c'>{bp}</span>" if bp else "")
                   + f"<br><span style='font-size:9px;color:#94a3b8'>"
@@ -316,8 +329,10 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                     f"引擎:{d.get('action') or '—'}</span>", "max-width:120px")
             + "</tr>")
 
-    out_rows = "".join(_out_row(g) for g in _held_sig)
-    free_rows = "".join(_out_row(g) for g in _free_sig)
+    out_rows = "".join(_out_row(g) for g in _board)
+    _bs = _bd.get("by_scope") or {}
+    _funnel = ("　".join(f"{k} {v[0]}→<b>{v[1]}</b>" for k, v in _bs.items())
+               if _bs else "")
 
     near = ""
     if n3 == 0:
@@ -336,16 +351,19 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + (_tbl(in_rows, _TH_IN) or "<div style='font-size:12px;color:#94a3b8'>今日无 3A/2A —— "
                                 "现金也是仓位；战术级1A见买表折叠区</div>")
             + f"<div style='font-size:12.5px;font-weight:700;color:#b91c1c;margin:10px 0 2px'>"
-              f"🔴 OUT-A · 持仓卖出（{len(_held_sig)}只 · 利润收回,期待下次进驻）</div>"
-            + (_tbl(out_rows, _TH_OUT) or "<div style='font-size:12px;color:#16a34a'>持仓无卖出警报 —— "
+              f"🔴 OUT · 卖出/回避榜（{len(_board)}只 · 按离触发多近排序）</div>"
+            + (f"<div style='font-size:11px;color:#64748b;margin-bottom:3px'>"
+               f"漏斗 信号{_bd.get('signals')} → 入榜<b>{_bd.get('on_board')}</b>："
+               f"{_funnel}　<span style='color:#94a3b8'>入榜闸=接近度×持有档"
+               f"（💼持仓{_bd.get('gates', {}).get('持仓', '')}最松／👁自选"
+               f"{_bd.get('gates', {}).get('自选', '')}／🔍候选"
+               f"{_bd.get('gates', {}).get('池内候选', '')}最严）。"
+               f"未入榜=<b>还没到</b>，不等于安全。</span></div>" if _bd else
+               f"<div style='font-size:11px;color:#64748b;margin-bottom:3px'>"
+               f"同一套斯波朗迪1-2-3,语义不同:💼持仓=收回利润;"
+               f"👁非持仓=避免买在下跌途中(想买但现在别买)。</div>")
+            + (_tbl(out_rows, _TH_OUT) or "<div style='font-size:12px;color:#16a34a'>无标的进入卖出/回避榜 —— "
                                  "无 OUT 信号也是信号</div>")
-            + f"<div style='font-size:12.5px;font-weight:700;color:#b45309;margin:10px 0 2px'>"
-              f"🟠 OUT-B · 非持仓回避（{len(_free_sig)}只 · 自选/池内候选,现在别接）</div>"
-            + f"<div style='font-size:11px;color:#64748b;margin-bottom:2px'>"
-              f"同一套斯波朗迪1-2-3,语义不同:持仓=收回利润;非持仓=避免买在下跌途中。"
-              f"这批是<b>想买但现在别买</b>的票——等企稳信号解除后才进买入侧。</div>"
-            + (_tbl(free_rows, _TH_OUT) or
-               "<div style='font-size:12px;color:#16a34a'>非持仓标的无回避信号</div>")
             + f"<div style='font-size:10.5px;color:#94a3b8;margin-top:4px'>"
               f"OUT为影子级(攒战绩不触发交易)·与引擎卖警一致率{cons.get('rate', '—')}%"
               f"({cons.get('shadow_agrees', '—')}/{cons.get('engine_sell_calls', '—')})"
