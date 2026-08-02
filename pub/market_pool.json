@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-02 23:18（北京时间）",
+ "generated_at": "2026-08-03 05:20（北京时间）",
  "version": "pool-L1.3-natural",
  "note": "全市场L1双通道粗筛(强势=涨≥2%+量比≥1.5;蓄势=平量平价+额≥1亿防漏突破前缩量);quote级零AI;容量帽A300/港100/美100待P1限流实测后调;3A门槛不因扩池而动",
  "markets": {
@@ -11286,8 +11286,21 @@
    "market": "A股"
   },
   {
-   "code": "159632.SZ",
-   "name": "纳斯达克",
+   "code": "300760.SZ",
+   "name": "迈瑞医疗",
+   "chg": -1.7,
+   "amt": 1784601638.66,
+   "vr": 1.01,
+   "chg60": -5.95,
+   "turn": 0.93,
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "A股"
+  },
+  {
+   "code": "600941.SH",
+   "name": "中国移动",
    "chg": null,
    "vr": null,
    "amt": null,
@@ -11298,13 +11311,25 @@
    "market": "A股"
   },
   {
-   "code": "300760.SZ",
-   "name": "迈瑞医疗",
-   "chg": -1.7,
-   "amt": 1784601638.66,
-   "vr": 1.01,
-   "chg60": -5.95,
-   "turn": 0.93,
+   "code": "601288.SS",
+   "name": "农业银行",
+   "chg": -2.95,
+   "amt": 5205900672.0,
+   "vr": 1.55,
+   "chg60": 2.37,
+   "turn": 0.24,
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "A股"
+  },
+  {
+   "code": "513650.SS",
+   "name": "标普ETF(南方标普500)",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
    "channel": "强制入池(持仓/自选)",
    "score": 0.5,
    "forced": true,
@@ -11335,31 +11360,6 @@
    "market": "A股"
   },
   {
-   "code": "601288.SS",
-   "name": "农业银行",
-   "chg": -2.95,
-   "amt": 5205900672.0,
-   "vr": 1.55,
-   "chg60": 2.37,
-   "turn": 0.24,
-   "channel": "强制入池(持仓/自选)",
-   "score": 0.5,
-   "forced": true,
-   "market": "A股"
-  },
-  {
-   "code": "600941.SH",
-   "name": "中国移动",
-   "chg": null,
-   "vr": null,
-   "amt": null,
-   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
-   "channel": "强制入池(持仓/自选)",
-   "score": 0.5,
-   "forced": true,
-   "market": "A股"
-  },
-  {
    "code": "159995.SZ",
    "name": "芯片ETF",
    "chg": null,
@@ -11372,8 +11372,8 @@
    "market": "A股"
   },
   {
-   "code": "513650.SS",
-   "name": "标普ETF(南方标普500)",
+   "code": "159632.SZ",
+   "name": "纳斯达克",
    "chg": null,
    "vr": null,
    "amt": null,
@@ -22892,6 +22892,18 @@
    "market": "美股"
   },
   {
+   "code": "JNJ",
+   "name": "强生",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "美股"
+  },
+  {
    "code": "SPCX",
    "name": "SpaceX",
    "chg": -3.41,
@@ -22905,8 +22917,8 @@
    "market": "美股"
   },
   {
-   "code": "SO",
-   "name": "美国南方公司",
+   "code": "MRK",
+   "name": "默沙东",
    "chg": null,
    "vr": null,
    "amt": null,
@@ -22930,6 +22942,18 @@
    "market": "美股"
   },
   {
+   "code": "SO",
+   "name": "美国南方公司",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "美股"
+  },
+  {
    "code": "NVDA",
    "name": "英伟达",
    "chg": 2.93,
@@ -22937,30 +22961,6 @@
    "vr": 1.03,
    "chg60": 2.29,
    "turn": 0.58,
-   "channel": "强制入池(持仓/自选)",
-   "score": 0.5,
-   "forced": true,
-   "market": "美股"
-  },
-  {
-   "code": "MRK",
-   "name": "默沙东",
-   "chg": null,
-   "vr": null,
-   "amt": null,
-   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
-   "channel": "强制入池(持仓/自选)",
-   "score": 0.5,
-   "forced": true,
-   "market": "美股"
-  },
-  {
-   "code": "JNJ",
-   "name": "强生",
-   "chg": null,
-   "vr": null,
-   "amt": null,
-   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
    "channel": "强制入池(持仓/自选)",
    "score": 0.5,
    "forced": true,
