@@ -178,7 +178,7 @@ SELL_COLOR = {"-3A": PALETTE["sell"], "-2A": PALETTE["sell2"],
 # 自检发现9列里8列两侧装的东西不同(如"状态"IN=风险/完备/置信,OUT=1-2-3+量比),
 # 共用列名会让人以为是同一个量。改为两套列头,同位次语义对齐。
 _TH_IN = ("名称", "评级·分", "现价·数据日", "动作·2周概率", "买入区间·进入时机",
-          "失效价", "机会类型·周期", "五桶板·风险完备置信", "缺什么·为什么不更高", "为什么现在")
+          "失效价", "机会类型·周期", "五桶板·风险完备置信", "双验证·GPT异议", "为什么现在")
 _TH_OUT = ("名称", "级别·卖出分", "现价·MA20", "动作·紧迫度", "卖出/回避区间·重买条件",
            "止损价", "距止损·量比", "1-2-3·旁路·门派", "冲突·仲裁", "持有状态·引擎")
 # 【自检修②】市场从**代码形态**推断,不依赖上游 market 字段——
@@ -220,7 +220,7 @@ def _gate(g: dict | None, key: str) -> str:
 
 
 def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
-                      pool: dict = None, limit_in: int = 6, limit_out: int = 8) -> str:
+                      pool: dict = None, limit_in: int = 12, limit_out: int = 8) -> str:
     """3A大系统完整模块(标题+IN表+OUT表+尾注),一次返回全部HTML。"""
     rows = rk.get("rows") or []
     n3 = sum(1 for r in rows if r.get("tier") == "3A")
@@ -279,7 +279,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             for r in rows if r.get("tier") in ("3A", "2A", "1A")
             and r.get("verification") and not r.get("listable")]
     in_rows = ""
-    for r in [x for x in rows if x.get("tier") in ("3A", "2A")
+    for r in [x for x in rows if x.get("tier") in ("3A", "2A", "1A")
               and x.get("listable", True)][:limit_in]:
         c = str(r.get("code"))
         d = dec.get(c) or {}
@@ -331,11 +331,27 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                   + f"<br><span style='color:#64748b'>风险{r.get('risk_score')}·"
                     f"完备{r.get('data_completeness')}·置信{r.get('model_confidence')}</span>"
                   + "</span>", "max-width:190px;line-height:1.5")
-            + _td(f"缺: <b style='color:#b45309'>"
-                  f"{'、'.join(r.get('missing') or []) or '无'}</b>"
-                  f"<br><span style='font-size:9px'>{r.get('why_not_higher', '')[:34]}</span>"
+            # 【用户定纲 2026-08-02】"gpt不达标的可以列出,但也要在表格中显示"——
+            # GPT 的异议不能只在漏斗里一句带过,必须**逐行摆在表上**让人自己判断。
+            # 同时保留"缺什么/为什么不更高"(信息不做减法,只是压缩排版)。
+            + _td((lambda _v: (
+                f"<span style='background:{PALETTE['buy'] if _v.get('claude') == 'pass' else PALETTE['mute']};"
+                f"color:#fff;border-radius:3px;padding:0 4px;font-size:9px'>C "
+                f"{'✅' if _v.get('claude') == 'pass' else '—'}</span> "
+                f"<span style='background:{PALETTE['buy2'] if _v.get('gpt') == 'pass' else PALETTE['warn'] if _v.get('gpt') == 'reject' else PALETTE['mute']};"
+                f"color:#fff;border-radius:3px;padding:0 4px;font-size:9px'>G "
+                f"{'✅' if _v.get('gpt') == 'pass' else '⚠️' if _v.get('gpt') == 'reject' else '—'}</span>"
+                + (f"<br><span style='font-size:9px;color:{PALETTE['warn']}'>"
+                   f"GPT异议: {str(_v.get('gpt_note'))[:30]}</span>"
+                   if _v.get("gpt") == "reject" and _v.get("gpt_note") else "")
+                + (f"<br><span style='font-size:8.5px;color:{PALETTE['mute']}'>"
+                   f"桶{_v.get('bucket_tier')}→{r.get('tier')} 已降档</span>"
+                   if _v.get("bucket_tier") and _v.get("bucket_tier") != r.get("tier") else "")
+            ))(r.get("verification") or {})
+                  + f"<br><span style='font-size:9px;color:{PALETTE['hold']}'>缺: "
+                    f"{'、'.join(r.get('missing') or []) or '无'}</span>"
                   + (f"<br><span style='font-size:9px;color:{PALETTE['sell']}'>⚠️IN/OUT冲突"
-                     f"({cf.get('severity')})</span>" if cf else ""), "max-width:150px")
+                     f"({cf.get('severity')})</span>" if cf else ""), "max-width:170px")
             + _td("<span style='font-size:9px'>"
                   + (str(r.get("why_focus"))[:46] if r.get("why_focus") else
                      (str(d.get("reason") or "")[:40] or
