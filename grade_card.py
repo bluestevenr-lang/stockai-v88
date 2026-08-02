@@ -283,8 +283,16 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
     # 【用户定纲 2026-08-02】"被拦的也专门是一个被拦的组,就像-3a里的非持仓组别一样"
     # 原先只在漏斗行拖一句"被拦:A、B、C…等N只"——名字挤成一行,看不到为什么被拦、
     # 原判什么档、缺哪一方。改为**独立成组成表**,与 OUT 第二区同规格。
+    # 【用户定纲 2026-08-02】"被拦阻里如果有你不同意的、否定的,不能出现"
+    # 即:**Claude 已判否的票不进被拦组**。理由成立——被拦组读起来像"差一点就上榜",
+    # 把主脑已经判死的票摆在那里,既是噪音又可能诱导操作;它们的正确位置是漏斗计数与尾注。
+    # 留在组里的只有**还可能翻身的**:流程没跑到(两方未表态)或仅GPT侧受阻。
+    # 与既有铁律一致(claude-standard-gate:"红标不进推荐位")。
     _blocked_rows = [x for x in rows if x.get("tier") in ("3A", "2A", "1A")
-                     and x.get("verification") and not x.get("listable")]
+                     and x.get("verification") and not x.get("listable")
+                     and (x.get("verification") or {}).get("claude") != "reject"]
+    _n_cl_rej = sum(1 for x in rows if x.get("tier") in ("3A", "2A", "1A")
+                    and (x.get("verification") or {}).get("claude") == "reject")
     in_rows = ""
     blocked_html = ""
 
@@ -515,13 +523,18 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             # ══ 被拦组:独立成组成表(用户"就像-3a里的非持仓组别一样") ══
             + (f"<div style='font-size:13px;font-weight:800;color:{PALETTE['warn']};"
                f"margin:12px 0 2px;border-left:4px solid {PALETTE['warn']};padding-left:6px'>"
-               f"⛔ 被拦组（{len(_blk)}只 · 桶评级够了但没过验证，"
-               f"<span style='font-weight:400'>不占推荐位，但列出来让你自己看</span>）</div>"
+               f"⏸ 待验组（{len(_blocked_rows)}只 · 桶评级够了、验证还没跑完，"
+               f"<span style='font-weight:400'>跑一次就可能上榜</span>）</div>"
                f"<div style='font-size:11px;color:{PALETTE['hold']};margin-bottom:3px'>"
-               f"与上表同列同口径，可直接对照：差别只在「双验证」那一列。"
-               f"<b>Claude否决</b>＝主脑判过不行（要改逻辑）；"
-               f"<b>两方未表态</b>＝流程没跑到（跑一次即可）——两者补救方式完全不同。</div>"
-               + _tbl(blocked_html, _TH_IN) if _blk and blocked_html else "")
+               f"与上表同列同口径，可直接对照，差别只在「双验证」那一列。"
+               + (f"　另有 <b>{_n_cl_rej}</b> 只被 Claude 判否，"
+                  f"<b>按定纲不在此呈现</b>——主脑判死的票不该再占你的视线，"
+                  f"只留计数备查。" if _n_cl_rej else "")
+               + "</div>"
+               + (_tbl(blocked_html, _TH_IN) if blocked_html else
+                  f"<div style='font-size:12px;color:{PALETTE['hold']}'>"
+                  f"今日无待验标的——验证已跑完</div>")
+               if (_blocked_rows or _n_cl_rej) else "")
             + (_tbl(in_rows, _TH_IN) or "<div style='font-size:12px;color:#94a3b8'>今日无 3A/2A —— "
                                 "现金也是仓位；战术级1A见买表折叠区</div>")
             # 【三方定纲·可见性】被 OUT 证据撤销买点的票若不在上表(如1A),必须单独点名——
