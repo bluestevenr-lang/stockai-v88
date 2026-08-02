@@ -225,6 +225,20 @@ def _gate(g: dict | None, key: str) -> str:
     return str(((g or {}).get("gates") or {}).get(key) or "PASS")
 
 
+def pipeline_status() -> dict:
+    """读 3A 链路运行状态(在 ai-daily-report-v2/src/memory_audit.py 里),失败返回空。"""
+    try:
+        import sys as _s
+        from pathlib import Path as _P
+        _d = str(_P.home() / "Desktop" / "ai-daily-report-v2" / "src")
+        if _d not in _s.path:
+            _s.path.insert(0, _d)
+        from memory_audit import pipeline_status as _ps
+        return _ps()
+    except Exception:
+        return {}
+
+
 def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                       pool: dict = None, limit_in: int = 12, limit_out: int = 8) -> str:
     """3A大系统完整模块(标题+IN表+OUT表+尾注),一次返回全部HTML。"""
@@ -273,6 +287,14 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             # 时间可能不同步——分别标,不合并成一个"最后更新",否则会掩盖某一侧卡住。
             + f"<div style='font-size:10.5px;opacity:.9;margin-top:2px'>"
               f"🕐 IN {str(rk.get('generated_at') or '—')} ｜ OUT {str(sg.get('generated_at') or '—')}"
+            + (lambda _p: ("" if not _p else
+                           (f"<br>🟢 <b>正在跑</b>（{_p.get('started_at')} 开始，整链约9分钟）"
+                            if _p.get("running") else
+                            f"<br>⏸ 上次跑完 {_p.get('last_run')}"
+                            + (f"（{_p['since_min']}分钟前）" if _p.get("since_min") is not None else "")
+                            + (f"　下一班 {_p.get('next_slot')}"
+                               f"（{_p['until_min'] // 60}小时{_p['until_min'] % 60}分后）"
+                               if _p.get("next_slot") else ""))))(pipeline_status())
               f"　<span style='opacity:.8'>每交易日 3 次·按收盘定锚(05:10美股收盘后/15:10A股收盘后/16:20港股收盘后 北京)</span></div>"
             f"</div>")
 
@@ -540,8 +562,11 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             # ══ 被拦组:独立成组成表(用户"就像-3a里的非持仓组别一样") ══
             + (f"<div style='font-size:13px;font-weight:800;color:{PALETTE['warn']};"
                f"margin:12px 0 2px;border-left:4px solid {PALETTE['warn']};padding-left:6px'>"
-               f"⏸ 待验组（{len(_blocked_rows)}只 · 桶评级够了、验证还没跑完，"
-               f"<span style='font-weight:400'>跑一次就可能上榜</span>）</div>"
+               f"⏸ 待验组（{len(_blocked_rows)}只"
+               + ("　<span style='font-weight:400'>桶评级够了、验证还没跑完，"
+                  "跑一次就可能上榜</span>" if _blocked_rows else
+                  "　<span style='font-weight:400'>验证已全部跑完，没有待验标的</span>")
+               + "）</div>"
                f"<div style='font-size:11px;color:{PALETTE['hold']};margin-bottom:3px'>"
                f"与上表同列同口径，可直接对照，差别只在「双验证」那一列。"
                + (f"　另有 <b>{_n_cl_rej}</b> 只被 Claude 判否，"
