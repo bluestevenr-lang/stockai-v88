@@ -389,7 +389,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                f"border-radius:4px;padding:4px 8px;margin:4px 0'>"
                f"⛔ <b>本次买点被 OUT 证据撤销 {len(_revoked)} 只</b>："
                + "、".join(f"{n}<span style='color:#94a3b8'>({t})</span>" for n, t in _revoked)
-               + "　<span style='color:#64748b'>买入结构可继续观察，但**现在不能买**"
+               + "　<span style='color:#64748b'>买入结构可继续观察，但<b>现在不能买</b>"
                  "（解除需:缩量止跌／收复MA20／结构重新确认）。"
                  "两侧计算互盲、都不删——删一侧就成了用结果消音证据。</span></div>"
                if _revoked else "")
