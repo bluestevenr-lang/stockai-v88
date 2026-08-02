@@ -17158,8 +17158,21 @@ def _render_today_nav():
                                    if _near else ""))
                     _g3dec = {str(x.get("code")): x for x in
                               (_g3j("intraday_decisions.json").get("rows") or [])}
+                    _g3sgm = {r.get("code"): r for r in (_g3j("sell_grade.json").get("rows") or [])}
                     for _r3 in _g3top[:5]:
                         st.markdown(_g3card(_r3, compact=True), unsafe_allow_html=True)
+                        # 【2026-08-02 用户"又在IN又在OUT"】同票两侧同现必须两边都标,
+                        # 不许一侧沉默(中烟案:IN说等回踩买,OUT说马上卖,用户先发现)
+                        _cf3 = (_g3sgm.get(str(_r3.get("code"))) or {}).get("in_out_conflict")
+                        if _cf3:
+                            _sev3 = _cf3.get("severity")
+                            st.markdown(
+                                f"<div style='font-size:11.5px;margin:-4px 0 4px 12px;padding:2px 6px;"
+                                f"background:{'#fef2f2' if _sev3 == '高' else '#fffbeb'};"
+                                f"border-left:3px solid {'#b91c1c' if _sev3 == '高' else '#f59e0b'}'>"
+                                f"⚠️ <b>IN/OUT冲突({_sev3})</b>: 本票同时在卖出侧 "
+                                f"{(_g3sgm.get(str(_r3.get('code'))) or {}).get('level')}"
+                                f" · {_cf3.get('verdict')}</div>", unsafe_allow_html=True)
                         # 【2026-08-02 用户"少了得分和买入区间"·违反'只增不删'纲领的修复】
                         # compact卡只有分没有区间;买入区间/失效价是执行必需,补回不折叠。
                         _ep3 = (_g3dec.get(str(_r3.get("code"))) or {}).get("entry_plan") or {}
@@ -17220,6 +17233,15 @@ def _render_today_nav():
                         + (f"<br><span style='font-size:11.5px;color:#b91c1c'>"
                            f"📉<b>卖出区间 {_sg3.get('sell_zone')}</b></span>"
                            if _sg3.get("sell_zone") else "")
+                        + (f"<br><span style='font-size:11px;color:#b45309'>⚠️IN/OUT冲突"
+                           f"({_sg3['in_out_conflict'].get('severity')}): 买入侧同时列为"
+                           f"{_sg3['in_out_conflict'].get('in_tier')}·"
+                           f"{_sg3['in_out_conflict'].get('in_action')} → "
+                           f"{_sg3['in_out_conflict'].get('verdict')}</span>"
+                           if _sg3.get("in_out_conflict") else "")
+                        + (f"<br><span style='font-size:11px;color:#64748b'>"
+                           f"{_sg3['school_notes'][0]}</span>"
+                           if _sg3.get("school_notes") else "")
                         + (f"<br><span style='font-size:11px;color:#0891b2'>{_rb3}</span>"
                            if _rb3 else "") + "</div>", unsafe_allow_html=True)
                 _cons3 = (_g3j("sell_grade.json").get("consistency") or {})
