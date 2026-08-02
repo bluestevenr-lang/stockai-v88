@@ -278,9 +278,18 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
              str((r.get("verification") or {}).get("why") or ""))
             for r in rows if r.get("tier") in ("3A", "2A", "1A")
             and r.get("verification") and not r.get("listable")]
+    _n_listable = sum(1 for x in rows if x.get("tier") in ("3A", "2A", "1A")
+                      and x.get("listable", True))
+    # 【用户定纲 2026-08-02】"被拦的也专门是一个被拦的组,就像-3a里的非持仓组别一样"
+    # 原先只在漏斗行拖一句"被拦:A、B、C…等N只"——名字挤成一行,看不到为什么被拦、
+    # 原判什么档、缺哪一方。改为**独立成组成表**,与 OUT 第二区同规格。
+    _blocked_rows = [x for x in rows if x.get("tier") in ("3A", "2A", "1A")
+                     and x.get("verification") and not x.get("listable")]
     in_rows = ""
-    for r in [x for x in rows if x.get("tier") in ("3A", "2A", "1A")
-              and x.get("listable", True)][:limit_in]:
+    blocked_html = ""
+
+    def _in_row(r):
+        """IN 行构造(上榜组与被拦组共用同一套列,保证两组可直接对照)。"""
         c = str(r.get("code"))
         d = dec.get(c) or {}
         ep = d.get("entry_plan") or {}
@@ -290,7 +299,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
         col = TIER_COLOR.get(str(r.get("tier")), "#64748b")
         cf = (sgm.get(c) or {}).get("in_out_conflict")
         bk = r.get("buckets") or {}
-        in_rows += (
+        return (
             "<tr>"
             + _td(f"{_flag(c, r.get('market'))}<b>{r.get('name')}</b>"
                   f"<br><span style='color:#94a3b8;font-size:9px'>{c}</span>")
@@ -360,6 +369,11 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                      + "<span style='color:#b45309'>(池外新入,why_buy未覆盖)</span>")
                   + "</span>", "max-width:170px")
             + "</tr>")
+
+    in_rows = "".join(_in_row(r) for r in
+                      [x for x in rows if x.get("tier") in ("3A", "2A", "1A")
+                       and x.get("listable", True)][:limit_in])
+    blocked_html = "".join(_in_row(r) for r in _blocked_rows[:10])
 
     # ── OUT 表(两段共用同一行构造) ──
     def _out_row(g):
@@ -493,15 +507,21 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                f"{PALETTE['hold']};border-radius:4px;padding:4px 8px;margin:3px 0'>"
                f"🔐 <b>验证准入闸</b>（3A=Claude+GPT双验证／2A·1A=Claude必须；"
                f"<b>GPT为辅，单独通过不充分</b>）：上榜 "
-               f"<b style='color:{PALETTE['buy']}'>{(_vf.get('stats') or {}).get('上榜', 0)}</b>"
-               + "".join(f"　<span style='color:{PALETTE['warn']}'>{k} {v}</span>"
-                         for k, v in (_vf.get("stats") or {}).items()
-                         if k != "上榜" and v)
-               + ((f"<br><span style='color:{PALETTE['hold']}'>被拦：</span>"
-                   + "、".join(f"{n}<span style='color:{PALETTE['mute']}'>({t}·{w})</span>"
-                               for n, t, w in _blk[:8])
-                   + (f" 等{len(_blk)}只" if len(_blk) > 8 else "")) if _blk else "")
+               f"<b style='color:{PALETTE['buy']}'>{_n_listable}</b>"
+               + "".join(f"　<span style='color:{PALETTE['warn'] if '否决' in k else PALETTE['hold']}'>"
+                         f"{k} {v}</span>"
+                         for k, v in (_vf.get("stats") or {}).items() if v)
                + "</div>" if _vf else "")
+            # ══ 被拦组:独立成组成表(用户"就像-3a里的非持仓组别一样") ══
+            + (f"<div style='font-size:13px;font-weight:800;color:{PALETTE['warn']};"
+               f"margin:12px 0 2px;border-left:4px solid {PALETTE['warn']};padding-left:6px'>"
+               f"⛔ 被拦组（{len(_blk)}只 · 桶评级够了但没过验证，"
+               f"<span style='font-weight:400'>不占推荐位，但列出来让你自己看</span>）</div>"
+               f"<div style='font-size:11px;color:{PALETTE['hold']};margin-bottom:3px'>"
+               f"与上表同列同口径，可直接对照：差别只在「双验证」那一列。"
+               f"<b>Claude否决</b>＝主脑判过不行（要改逻辑）；"
+               f"<b>两方未表态</b>＝流程没跑到（跑一次即可）——两者补救方式完全不同。</div>"
+               + _tbl(blocked_html, _TH_IN) if _blk and blocked_html else "")
             + (_tbl(in_rows, _TH_IN) or "<div style='font-size:12px;color:#94a3b8'>今日无 3A/2A —— "
                                 "现金也是仓位；战术级1A见买表折叠区</div>")
             # 【三方定纲·可见性】被 OUT 证据撤销买点的票若不在上表(如1A),必须单独点名——
