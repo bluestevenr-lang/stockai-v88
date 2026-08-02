@@ -134,3 +134,173 @@ def veto_review_html(data: dict) -> str:
             f"<div style='font-size:11px;color:#64748b;margin-bottom:3px'>"
             f"硬闸门保留（不由系统单方面推翻三方否决），但代价必须看得见——"
             f"否决前提已变或质量分高于中位的，在此列出由你裁定。</div>{body}</div>")
+
+# ═══════════════════════════════════════════════════════════════════
+# 【3A大系统·自包含表格渲染】2026-08-02 用户"放在大盘和今日之间"
+# 前一版把模块塞进买表所在的嵌套作用域,导致它渲染在页面别处、用户看不到。
+# 这里做成**模块级自包含函数**:自己产出11列表格HTML(与买表同款列),
+# 不依赖 _tbl9/_row6_9 等嵌套闭包,因此可放页面任意位置。
+# ═══════════════════════════════════════════════════════════════════
+SELL_COLOR = {"-3A": "#b91c1c", "-2A": "#dc2626", "-1A": "#ea580c", "0": "#16a34a"}
+_TH = ("名称", "评级", "现价·时点", "动作", "触发/区间", "失效价",
+       "仓位/距损", "状态", "①该有吗②多少③今天", "为什么现在")
+_MKF = {"A股": "🇨🇳", "港股": "🇭🇰", "美股": "🇺🇸"}
+
+
+def _tbl(rows_html: str) -> str:
+    if not rows_html:
+        return ""
+    th = "".join(f"<th style='padding:3px 5px;text-align:left;font-weight:600;"
+                 f"border-bottom:2px solid #cbd5e1;white-space:nowrap'>{h}</th>" for h in _TH)
+    return (f"<div style='overflow-x:auto'><table style='width:100%;border-collapse:collapse;"
+            f"font-size:10.5px;line-height:1.3'><thead style='background:#f8fafc;color:#475569'>"
+            f"<tr>{th}</tr></thead><tbody>{rows_html}</tbody></table></div>")
+
+
+def _td(v, style="") -> str:
+    return f"<td style='padding:3px 5px;border-bottom:1px solid #f1f5f9;{style}'>{v}</td>"
+
+
+def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
+                      pool: dict = None, limit_in: int = 6, limit_out: int = 8) -> str:
+    """3A大系统完整模块(标题+IN表+OUT表+尾注),一次返回全部HTML。"""
+    rows = rk.get("rows") or []
+    n3 = sum(1 for r in rows if r.get("tier") == "3A")
+    n2 = sum(1 for r in rows if r.get("tier") == "2A")
+    n1 = sum(1 for r in rows if r.get("tier") == "1A")
+    arch = rk.get("archived") or []
+    sgm = {str(x.get("code")): x for x in (sg.get("rows") or [])}
+    out_src = sorted([x for x in (sg.get("rows") or [])
+                      if x.get("level") in ("-3A", "-2A", "-1A")],
+                     key=lambda x: ({"-3A": 0, "-2A": 1, "-1A": 2}[x["level"]],
+                                    -(x.get("sell_score") or 0)))[:limit_out]
+    head = (f"<div style='background:linear-gradient(90deg,#0ea5e9,#dc2626);color:#fff;"
+            f"border-radius:8px;padding:8px 14px;margin:4px 0 6px;text-align:center'>"
+            f"<div style='font-size:16px;font-weight:800'>🎯 3A大系统 · IN / OUT</div>"
+            f"<div style='font-size:12px;opacity:.95'>"
+            + (f"全市场→通道自然产出{len(pool.get('rows') or [])}只→评级{len(rows)}只 ｜ "
+               if pool else "")
+            + f"IN: 3A×{n3} 2A×{n2} 战术1A×{n1} ｜ OUT: 卖警×{len(out_src)} 否决×{len(arch)}"
+            f"</div></div>")
+
+    # ── IN 表 ──
+    in_rows = ""
+    for r in [x for x in rows if x.get("tier") in ("3A", "2A")][:limit_in]:
+        c = str(r.get("code"))
+        d = dec.get(c) or {}
+        ep = d.get("entry_plan") or {}
+        z = ep.get("zone") or []
+        zone = (f"{z[0]}~{z[1]}" if len(z) >= 2 else
+                (f"回踩{ep.get('pullback')}" if ep.get("pullback") else "—"))
+        col = TIER_COLOR.get(str(r.get("tier")), "#64748b")
+        cf = (sgm.get(c) or {}).get("in_out_conflict")
+        bk = r.get("buckets") or {}
+        in_rows += (
+            "<tr>"
+            + _td(f"{_MKF.get(r.get('market'), '')}<b>{r.get('name')}</b>"
+                  f"<br><span style='color:#94a3b8;font-size:9px'>{c}</span>")
+            + _td(f"<span style='background:{col};color:#fff;border-radius:3px;padding:0 4px;"
+                  f"font-weight:800'>{r.get('tier')}</span>"
+                  f"<br><span style='color:#1d4ed8;font-weight:700'>分{r.get('rank_score')}"
+                  f"·#{r.get('rank')}</span>"
+                  f"<br><span style='color:#94a3b8;font-size:9px'>"
+                  + " ".join(f"{BUCKET_CN[k][:2]}{v.get('score'):.0f}"
+                             f"{'✓' if v.get('pass') else '✗'}" for k, v in bk.items())
+                  + "</span>", "max-width:110px")
+            + _td(f"<b>现{d.get('last', '—')}</b>"
+                  f"<br><span style='color:#16a34a;font-size:9px'>"
+                  f"{str(r.get('data_available_at') or '')[:10]}</span>")
+            + _td(f"<b style='color:{col}'>{r.get('subtype')}</b>"
+                  f"<br><span style='color:#dc2626'>{r.get('action_state')}</span>"
+                  + (f"<br><span style='font-size:9px;color:#64748b'>2周涨"
+                     f"{d.get('p_up')}%</span>" if d.get("p_up") else ""))
+            + _td(f"<b style='color:#b91c1c'>{zone}</b>"
+                  + (f"<br><span style='font-size:9px'>破{ep.get('breakout')}</span>"
+                     if ep.get("breakout") else "")
+                  + f"<br><span style='font-size:9px;color:#0891b2'>"
+                    f"{(r.get('triggers') or {}).get('enter', '—')}</span>")
+            + _td(str((r.get("triggers") or {}).get("invalid", "—")).replace("跌破止损", ""))
+            + _td(f"{r.get('opportunity_type', '—')}<br>"
+                  f"<span style='font-size:9px'>{r.get('horizon', '')}</span>")
+            + _td(f"风险{r.get('risk_score')}<br>完备{r.get('data_completeness')}"
+                  f"<br>置信{r.get('model_confidence')}", "font-size:9px")
+            + _td(f"缺: <b style='color:#b45309'>"
+                  f"{'、'.join(r.get('missing') or []) or '无'}</b>"
+                  f"<br><span style='font-size:9px'>{r.get('why_not_higher', '')[:34]}</span>"
+                  + (f"<br><span style='font-size:9px;color:#b91c1c'>⚠️IN/OUT冲突"
+                     f"({cf.get('severity')})</span>" if cf else ""), "max-width:150px")
+            + _td(f"<span style='font-size:9px'>{str(r.get('why_focus') or '—')[:46]}</span>",
+                  "max-width:170px")
+            + "</tr>")
+
+    # ── OUT 表 ──
+    out_rows = ""
+    for g in out_src:
+        c = str(g.get("code"))
+        d = dec.get(c) or {}
+        lv = str(g.get("level"))
+        col = SELL_COLOR.get(lv, "#64748b")
+        c123 = "".join(s for s, ok in (("①", g.get("c1_trend_break")),
+                                       ("②", g.get("c2_no_new_high")),
+                                       ("③", g.get("c3_low_break"))) if ok)
+        bp = "；".join(g.get("bypass") or [])
+        rb = str((why_sells.get(c) or {}).get("fail") or "")
+        cf = g.get("in_out_conflict") or {}
+        out_rows += (
+            "<tr>"
+            + _td(f"{_MKF.get(d.get('market'), '')}<b>{g.get('name')}</b>"
+                  f"<br><span style='color:#94a3b8;font-size:9px'>{c}</span>")
+            + _td(f"<span style='background:{col};color:#fff;border-radius:3px;padding:0 4px;"
+                  f"font-weight:800'>{lv}</span>"
+                  f"<br><span style='color:#b91c1c;font-weight:700'>卖出分"
+                  f"{g.get('sell_score', '—')}</span>"
+                  f"<br><span style='color:#94a3b8;font-size:9px'>"
+                  f"{g.get('opp_type') or '门派未知'}</span>", "max-width:110px")
+            + _td(f"<b>现{g.get('px', '—')}</b><br>"
+                  f"<span style='font-size:9px;color:#64748b'>MA20 {g.get('ma20', '—')}</span>")
+            + _td(f"<b style='color:{col}'>{g.get('action')}</b>")
+            + _td(f"<b style='color:#b91c1c'>{g.get('sell_zone', '—')}</b>"
+                  + (f"<br><span style='font-size:9px;color:#0891b2'>🔁重买: {rb[:44]}</span>"
+                     if rb else "<br><span style='font-size:9px;color:#b45309'>"
+                                "⚠️缺重买条件(只说一半)</span>"), "max-width:180px")
+            + _td(g.get("stop") or "—")
+            + _td(f"{g.get('dist_stop_pct')}%" if g.get("dist_stop_pct") is not None else "—")
+            + _td(f"1-2-3: <b>{c123 or '无'}</b>"
+                  + (f"<br><span style='font-size:9px;color:#b91c1c'>{bp}</span>" if bp else "")
+                  + (f"<br><span style='font-size:9px'>量比{g.get('vr')}</span>"
+                     if g.get("vr") else ""), "max-width:130px")
+            + _td((f"<span style='font-size:9px;color:#b91c1c'>⚠️IN/OUT冲突"
+                   f"({cf.get('severity')}): 买入侧{cf.get('in_tier')}·{cf.get('in_action')}"
+                   f"<br>{cf.get('verdict', '')[:40]}</span>" if cf else
+                   "<span style='font-size:9px;color:#b45309'>"
+                   + "；".join(g.get("school_notes") or []) + "</span>"
+                   if g.get("school_notes") else "—"), "max-width:150px")
+            + _td(f"<span style='font-size:9px'>引擎:{d.get('action', '—')}</span>",
+                  "max-width:120px")
+            + "</tr>")
+
+    near = ""
+    if n3 == 0:
+        cand = [r for r in rows if r.get("tier") == "2A"]
+        if cand:
+            b = min(cand, key=lambda r: len(r.get("missing") or []))
+            near = (f"　离3A最近: <b>{b.get('name')}</b> 差「"
+                    f"{'、'.join(b.get('missing') or [])}」")
+    cons = sg.get("consistency") or {}
+    return (head
+            + f"<div style='font-size:12.5px;font-weight:700;color:#16a34a;margin:6px 0 2px'>"
+              f"🟢 IN · 买入侧（3A/2A 核心推荐）</div>"
+            + (f"<div style='font-size:11.5px;background:#eff6ff;border-radius:5px;"
+               f"padding:4px 8px;margin-bottom:3px'>今日无 3A（现在可进+长期获益的完整机会），"
+               f"不硬凑。{near}</div>" if n3 == 0 else "")
+            + (_tbl(in_rows) or "<div style='font-size:12px;color:#94a3b8'>今日无 3A/2A —— "
+                                "现金也是仓位；战术级1A见买表折叠区</div>")
+            + f"<div style='font-size:12.5px;font-weight:700;color:#b91c1c;margin:10px 0 2px'>"
+              f"🔴 OUT · 卖出侧（-3A 影子分级 · 斯波朗迪1-2-3）</div>"
+            + (_tbl(out_rows) or "<div style='font-size:12px;color:#16a34a'>持仓无卖出警报 —— "
+                                 "无 OUT 信号也是信号</div>")
+            + f"<div style='font-size:10.5px;color:#94a3b8;margin-top:4px'>"
+              f"OUT为影子级(攒战绩不触发交易)·与引擎卖警一致率{cons.get('rate', '—')}%"
+              f"({cons.get('shadow_agrees', '—')}/{cons.get('engine_sell_calls', '—')})"
+              f"·08-14起与sell_call核算对照后转正"
+            + (f"　🗄已否决{len(arch)}只(不占推荐位)" if arch else "") + "</div>")

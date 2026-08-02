@@ -3957,98 +3957,6 @@ try:
         # 计数改用R2口径(与顶部行动清单同源),不再用trend_quality旧尺
         _n3a9 = sum(1 for _r9c in (_rank9map.values()) if str(_r9c.get("tier")) == "3A")
         _n2a9 = sum(1 for _r9c in (_rank9map.values()) if str(_r9c.get("tier")) == "2A")
-        # ═══════════════════════════════════════════════════════════════
-        # 【🎯 3A大系统·常驻模块 2026-08-02 用户"以图二为固定格式"】
-        # 用户否掉卡片版,指定沿用买表的11列表格格式(名称/评级/现价·时点/动作·2周概率/
-        # 触发·买区/失效价/仓位/状态/①②③/为什么现在)。故本模块搬到买表同一作用域,
-        # **直接复用 _tbl9/_row6_9**,IN与OUT同一张表长相,格式零分叉。
-        # 常驻:无3A也在,空态明说并指出离3A最近者(用户"有没有数据都要有这个模块")。
-        # ═══════════════════════════════════════════════════════════════
-        try:
-            _sg9 = {str(x.get("code")): x for x in
-                    (_cbj9("sell_grade.json").get("rows") or [])}
-            _wb9 = (_cbj9("why_buy.json").get("sells") or {})
-            _in_rows9 = [h for _t, _s, _c, h in _buy_order9
-                         if _c not in _arch_set9 and _c not in _tac_set9]
-            _out_src9 = sorted(
-                [x for x in _cb_sell9 if str(x[1]) in _sg9],
-                key=lambda x: ({"-3A": 0, "-2A": 1, "-1A": 2}.get(
-                    str(_sg9[str(x[1])].get("level")), 9),
-                    -(_sg9[str(x[1])].get("sell_score") or 0)))
-            _out_rows9 = []
-            for _s9x in _out_src9[:8]:
-                _nm9x, _cd9x, _px9x = _s9x[0], _s9x[1], _s9x[2]
-                _g9x = _sg9.get(str(_cd9x)) or {}
-                _lv9x = str(_g9x.get("level") or "?")
-                _c123 = "".join(s for s, ok in (("①", _g9x.get("c1_trend_break")),
-                                                ("②", _g9x.get("c2_no_new_high")),
-                                                ("③", _g9x.get("c3_low_break"))) if ok)
-                _bp9x = "；".join(_g9x.get("bypass") or [])
-                _rb9x = str((_wb9.get(str(_cd9x)) or {}).get("fail") or "")[:60]
-                _cf9x = _g9x.get("in_out_conflict") or {}
-                _lvc9 = {"-3A": "#b91c1c", "-2A": "#dc2626", "-1A": "#ea580c"}.get(_lv9x, "#64748b")
-                _out_rows9.append(_row6_9(
-                    f"{_MKFLAG9.get(_cb_mk9(_cd9x), '')}{_nm9x}", _cd9x,
-                    f"<b style='color:{_lvc9}'>{_lv9x}</b> {_g9x.get('action', '')}",
-                    f"<b style='color:#b91c1c'>{_g9x.get('sell_zone', '—')}</b>"
-                    + (f"<br><span style='font-size:11px;color:#0891b2'>🔁重买: {_rb9x}</span>"
-                       if _rb9x else "<br><span style='font-size:11px;color:#b45309'>"
-                                     "⚠️缺重买条件(卖出只说一半)</span>"),
-                    _g9x.get("stop") or "—",
-                    f"距止损{_g9x.get('dist_stop_pct')}%" if _g9x.get("dist_stop_pct") is not None else "—",
-                    f"1-2-3:{_c123 or '无'}" + (f"·{_bp9x}" if _bp9x else ""),
-                    (f"⚠️IN/OUT冲突({_cf9x.get('severity')}):买入侧{_cf9x.get('in_tier')}"
-                     f"·{_cf9x.get('in_action')}→{_cf9x.get('verdict')}" if _cf9x else
-                     "；".join(_g9x.get("school_notes") or []) or "—"),
-                    None,
-                    _pxc=_pxcell9(_cd9x, _px9x),
-                    _gcell=f"<td style='max-width:92px;line-height:1.35'>"
-                           f"<span style='background:{_lvc9};color:#fff;border-radius:3px;"
-                           f"padding:0 4px;font-size:12px;font-weight:800'>{_lv9x}</span>"
-                           f"<br><span style='font-size:9px;color:#b91c1c;font-weight:700'>"
-                           f"卖出分{_g9x.get('sell_score', '—')}</span>"
-                           f"<br><span style='font-size:8.5px;color:#94a3b8'>"
-                           f"{_g9x.get('opp_type') or '门派未知'}</span></td>",
-                    _laytxt=None))
-            # 标题内联渲染:_module_header 定义在 13954 行、晚于本处,依赖它会 NameError
-            # 被 try 吞成"渲染失败"(整块模块消失)——这正是用户反复遇到的"模块没了"病根。
-            st.markdown(
-                "<div style='background:linear-gradient(90deg,#0ea5e9,#dc2626);color:#fff;"
-                "border-radius:8px;padding:8px 14px;margin:10px 0 4px;text-align:center'>"
-                "<div style='font-size:16px;font-weight:800'>🎯 3A大系统 · IN / OUT</div>"
-                f"<div style='font-size:12px;opacity:.95'>全市场每日重选·木桶定级 ｜ "
-                f"IN: 3A×{_n3a9} 2A×{_n2a9} 战术1A×{len(_tac9)} ｜ "
-                f"OUT: 卖警×{len(_out_rows9)} 否决×{len(_arch9)}</div></div>",
-                unsafe_allow_html=True)
-            st.markdown("<div style='font-size:12.5px;font-weight:700;color:#16a34a;"
-                        "margin:4px 0 2px'>🟢 IN · 买入侧（3A/2A 核心推荐）</div>",
-                        unsafe_allow_html=True)
-            if _n3a9 == 0:
-                _near9 = min([r for r in (_rank9map.values())
-                              if str(r.get("tier")) == "2A"],
-                             key=lambda r: len(r.get("missing") or []), default=None)
-                st.info("今日无 3A（现在可进+长期获益的完整机会），不硬凑。"
-                        + (f"离 3A 最近: **{_near9.get('name')}** 差「"
-                           f"{'、'.join(_near9.get('missing') or [])}」" if _near9 else ""))
-            st.markdown(_tbl9(_in_rows9) if _in_rows9 else
-                        "<span style='font-size:12px;color:#94a3b8'>今日无 3A/2A —— "
-                        "现金也是仓位；战术级 1A 见买表折叠区</span>", unsafe_allow_html=True)
-            st.markdown("<div style='font-size:12.5px;font-weight:700;color:#b91c1c;"
-                        "margin:10px 0 2px'>🔴 OUT · 卖出侧（-3A 影子分级·斯波朗迪1-2-3）</div>",
-                        unsafe_allow_html=True)
-            st.markdown(_tbl9(_out_rows9) if _out_rows9 else
-                        "<span style='font-size:12px;color:#16a34a'>持仓无卖出警报 —— "
-                        "无 OUT 信号也是信号</span>", unsafe_allow_html=True)
-            _cons9 = (_cbj9("sell_grade.json").get("consistency") or {})
-            st.caption(
-                f"OUT为影子级(攒战绩不触发交易)·与引擎卖警一致率"
-                f"{_cons9.get('rate', '—')}%({_cons9.get('shadow_agrees', '—')}/"
-                f"{_cons9.get('engine_sell_calls', '—')})·08-14起与sell_call核算对照后转正"
-                + (f"　🗄已否决{len(_arch9)}只(不占推荐位)" if _arch9 else ""))
-        except Exception:
-            logging.exception("[V88] 3A大系统模块渲染失败")
-            st.warning("🎯 3A大系统: 渲染失败(模块常驻,数据恢复后自动填充)")
-
         _tab_b9, _tab_s9, _tab_h9 = st.tabs([f"✅买表{len(_t_buy9)}行(3A×{_n3a9}·2A×{_n2a9}·战术1A×{len(_tac9)})",
                                              f"⚔️卖/减({len(_cb_sell9)})", f"💼持有({len(_hold9)})"])
         with _tab_b9:
@@ -17279,6 +17187,36 @@ def _render_today_nav():
 
     # 【V88·关注股预警】底层仍统一扫描自选+常搜+持仓；页面展示分流：
     # 持仓风险只进入下方“持仓决策中心”，自选预警不再重复罗列正式持仓。
+    # ═══════════════════════════════════════════════════════════════
+    # 【🎯 3A大系统·常驻模块 2026-08-02 用户"放在大盘和今日之间"】
+    # 前两版分别错在:①做成卡片(用户要图二的11列表格) ②塞进买表嵌套作用域→
+    # 渲染在页面别处、用户根本看不到。现改用 grade_card.system_table_html
+    # (模块级自包含,自产表格HTML,不依赖任何嵌套闭包),故可挂页面任意位置。
+    # 常驻:无3A也在,空态明说并指出离3A最近者。
+    # ═══════════════════════════════════════════════════════════════
+    try:
+        from grade_card import system_table_html as _sys3a
+        _d3a = Path.home() / "Desktop" / "ai-daily-report-v2" / "data"
+
+        def _j3a(_f):
+            try:
+                return json.loads((_d3a / _f).read_text(encoding="utf-8"))
+            except Exception:
+                return {}
+        _rk3a = _j3a("rank_score.json")
+        if _rk3a.get("rows"):
+            st.markdown(_sys3a(
+                _rk3a, _j3a("sell_grade.json"),
+                {str(x.get("code")): x for x in
+                 (_j3a("intraday_decisions.json").get("rows") or [])},
+                (_j3a("why_buy.json").get("sells") or {}),
+                _j3a("market_pool.json")), unsafe_allow_html=True)
+        else:
+            st.warning("🎯 3A大系统: 评级数据未就绪(模块常驻,数据恢复后自动填充)")
+    except Exception:
+        logging.exception("[V88] 3A大系统模块渲染失败")
+        st.warning("🎯 3A大系统: 渲染异常(见日志);模块常驻不消失")
+
     _critical9, _wa = [], {}
     try:
         _wa = st.session_state.get('watch_alerts_v88')
