@@ -267,7 +267,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             # 时间可能不同步——分别标,不合并成一个"最后更新",否则会掩盖某一侧卡住。
             + f"<div style='font-size:10.5px;opacity:.9;margin-top:2px'>"
               f"🕐 IN {str(rk.get('generated_at') or '—')} ｜ OUT {str(sg.get('generated_at') or '—')}"
-              f"　<span style='opacity:.8'>每交易日 3 次(05:40/13:00/16:30 北京)</span></div>"
+              f"　<span style='opacity:.8'>每交易日 3 次·按收盘定锚(05:10美股收盘后/15:10A股收盘后/16:20港股收盘后 北京)</span></div>"
             f"</div>")
 
     # ── IN 表 ──
