@@ -4010,10 +4010,16 @@ try:
                            f"<br><span style='font-size:8.5px;color:#94a3b8'>"
                            f"{_g9x.get('opp_type') or '门派未知'}</span></td>",
                     _laytxt=None))
-            _module_header("🎯", "3A大系统 · IN / OUT",
-                           f"全市场每日重选·木桶定级 | IN: 3A×{_n3a9} 2A×{_n2a9} 战术1A×{len(_tac9)}"
-                           f" | OUT: 卖警×{len(_out_rows9)} 否决×{len(_arch9)}",
-                           "#0ea5e9", "#dc2626")
+            # 标题内联渲染:_module_header 定义在 13954 行、晚于本处,依赖它会 NameError
+            # 被 try 吞成"渲染失败"(整块模块消失)——这正是用户反复遇到的"模块没了"病根。
+            st.markdown(
+                "<div style='background:linear-gradient(90deg,#0ea5e9,#dc2626);color:#fff;"
+                "border-radius:8px;padding:8px 14px;margin:10px 0 4px;text-align:center'>"
+                "<div style='font-size:16px;font-weight:800'>🎯 3A大系统 · IN / OUT</div>"
+                f"<div style='font-size:12px;opacity:.95'>全市场每日重选·木桶定级 ｜ "
+                f"IN: 3A×{_n3a9} 2A×{_n2a9} 战术1A×{len(_tac9)} ｜ "
+                f"OUT: 卖警×{len(_out_rows9)} 否决×{len(_arch9)}</div></div>",
+                unsafe_allow_html=True)
             st.markdown("<div style='font-size:12.5px;font-weight:700;color:#16a34a;"
                         "margin:4px 0 2px'>🟢 IN · 买入侧（3A/2A 核心推荐）</div>",
                         unsafe_allow_html=True)
