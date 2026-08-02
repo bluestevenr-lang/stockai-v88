@@ -1049,10 +1049,26 @@ if _nav == "🧭 导航":
         # 【R2 2026-08-02】0A不进行动清单(定纲第十节);每条给子类型/动作/短板/为什么不是更高级
         _rr_c = [r for r in (_rk_c.get("rows") or []) if str(r.get("tier")) != "0A"][:10]
         _n0a_c = sum(1 for r in (_rk_c.get("rows") or []) if str(r.get("tier")) == "0A")
-        if _rr_c:
+        # 【2026-08-02 用户"有没有数据都要有大3A模块"】常驻+默认展开+IN/OUT;
+        # OUT侧持仓卖警属隐私(💼铁律),云端只示公开的存档否决+指路桌面/飞书
+        _n3_c = sum(1 for r in (_rk_c.get("rows") or []) if str(r.get("tier")) == "3A")
+        _n2_c = sum(1 for r in (_rk_c.get("rows") or []) if str(r.get("tier")) == "2A")
+        if True:
             with st.expander(
-                    f"🏆 行动清单（{_rk_c.get('version', 'R2')}木桶评级·"
-                    f"长期25/时机20/催化15/估值15/空间25）", expanded=False):
+                    f"🎯 3A大系统 · IN(3A×{_n3_c}·2A×{_n2_c}) / OUT"
+                    f"（木桶评级·长期25/时机20/催化15/估值15/空间25）", expanded=True):
+                if _n3_c == 0:
+                    _near_c = min([r for r in (_rk_c.get("rows") or [])
+                                   if str(r.get("tier")) == "2A"],
+                                  key=lambda r: len(r.get("missing") or []), default=None)
+                    st.info("今日无 3A(完整机会),不硬凑。"
+                            + (f"离3A最近: **{_near_c.get('name')}** 差「"
+                               f"{'、'.join(_near_c.get('missing') or [])}」" if _near_c else ""))
+                _arc_c = _rk_c.get("archived") or []
+                if _arc_c:
+                    st.markdown("**🔴 OUT(公开部分)** · " + "；".join(
+                        f"{a.get('name')}已否决({str(a.get('out_reason'))[:16]})"
+                        for a in _arc_c[:3]) + "　*持仓卖警属隐私,见桌面/飞书*")
                 st.caption("木桶决定等级、分数决定同级排序：3A关键桶板零缺失，2A必须说清短板，"
                            "1A必须标战术用途，0A无行动价值已过滤（本次过滤 "
                            f"{_n0a_c} 只）。风险否决不可被总分补偿。")
