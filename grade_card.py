@@ -145,10 +145,10 @@ SELL_COLOR = {"-3A": "#b91c1c", "-2A": "#dc2626", "-1A": "#ea580c", "0": "#16a34
 # 【2026-08-02 自检修①】列头按 IN/OUT 各自语义命名,不再共用一套含糊标签——
 # 自检发现9列里8列两侧装的东西不同(如"状态"IN=风险/完备/置信,OUT=1-2-3+量比),
 # 共用列名会让人以为是同一个量。改为两套列头,同位次语义对齐。
-_TH_IN = ("名称", "评级·分·五桶板", "现价·数据日", "动作·2周概率", "买入区间·进入时机",
-          "失效价", "机会类型·周期", "风险·完备·置信", "缺什么·为什么不更高", "为什么现在")
-_TH_OUT = ("名称", "级别·卖出分·门派", "现价·MA20", "动作·紧迫度", "卖出区间·重买条件",
-           "止损价", "距止损·量比", "1-2-3·旁路", "冲突·门派仲裁", "引擎对照")
+_TH_IN = ("名称", "评级·分", "现价·数据日", "动作·2周概率", "买入区间·进入时机",
+          "失效价", "机会类型·周期", "五桶板·风险完备置信", "缺什么·为什么不更高", "为什么现在")
+_TH_OUT = ("名称", "级别·卖出分", "现价·MA20", "动作·紧迫度", "卖出/回避区间·重买条件",
+           "止损价", "距止损·量比", "1-2-3·旁路·门派", "冲突·仲裁", "持有状态·引擎")
 # 【自检修②】市场从**代码形态**推断,不依赖上游 market 字段——
 # 实测11处国旗缺失:rank_score.market 仅 trend_quality 来源的行才有,
 # intraday_decisions 压根没有该字段。代码后缀是100%可得的事实。
@@ -190,10 +190,14 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
     n1 = sum(1 for r in rows if r.get("tier") == "1A")
     arch = rk.get("archived") or []
     sgm = {str(x.get("code")): x for x in (sg.get("rows") or [])}
-    out_src = sorted([x for x in (sg.get("rows") or [])
-                      if x.get("level") in ("-3A", "-2A", "-1A")],
-                     key=lambda x: ({"-3A": 0, "-2A": 1, "-1A": 2}[x["level"]],
-                                    -(x.get("sell_score") or 0)))[:limit_out]
+    _sig = sorted([x for x in (sg.get("rows") or [])
+                   if x.get("level") in ("-3A", "-2A", "-1A")],
+                  key=lambda x: ({"-3A": 0, "-2A": 1, "-1A": 2}[x["level"]],
+                                 -(x.get("sell_score") or 0)))
+    # 【2026-08-02 用户"OUT不一定是持仓"】两段:持仓=收回利润;非持仓=回避别接
+    _held_sig = [x for x in _sig if x.get("held")][:limit_out]
+    _free_sig = [x for x in _sig if not x.get("held")][:limit_out]
+    out_src = _held_sig
     head = (f"<div style='background:linear-gradient(90deg,#0ea5e9,#dc2626);color:#fff;"
             f"border-radius:8px;padding:8px 14px;margin:4px 0 6px;text-align:center'>"
             f"<div style='font-size:16px;font-weight:800'>🎯 3A大系统 · IN / OUT</div>"
@@ -219,14 +223,12 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             "<tr>"
             + _td(f"{_flag(c, r.get('market'))}<b>{r.get('name')}</b>"
                   f"<br><span style='color:#94a3b8;font-size:9px'>{c}</span>")
-            + _td(f"<span style='background:{col};color:#fff;border-radius:3px;padding:0 4px;"
-                  f"font-weight:800'>{r.get('tier')}</span>"
-                  f"<br><span style='color:#1d4ed8;font-weight:700'>分{r.get('rank_score')}"
-                  f"·#{r.get('rank')}</span>"
-                  f"<br><span style='color:#94a3b8;font-size:9px'>"
-                  + " ".join(f"{BUCKET_CN[k][:2]}{v.get('score'):.0f}"
-                             f"{'✓' if v.get('pass') else '✗'}" for k, v in bk.items())
-                  + "</span>", "max-width:110px")
+            # 【2026-08-02 用户"有点堆叠,可以调整"】五桶板缩写原挤在评级列(徽章+分+5项一坨,
+            # 窄屏竖排)。移到下方"风险·完备·置信"列——那列只有3个数,有横向空间。
+            + _td(f"<span style='background:{col};color:#fff;border-radius:3px;padding:1px 5px;"
+                  f"font-weight:800;font-size:12px'>{r.get('tier')}</span>"
+                  f"<br><span style='color:#1d4ed8;font-weight:700;font-size:11px'>"
+                  f"分{r.get('rank_score')} · #{r.get('rank')}</span>", "white-space:nowrap")
             + _td(f"<b>现{d.get('last', '—')}</b>"
                   f"<br><span style='color:#16a34a;font-size:9px'>"
                   f"{str(r.get('data_available_at') or '')[:10]}</span>")
@@ -242,8 +244,13 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + _td(str((r.get("triggers") or {}).get("invalid", "—")).replace("跌破止损", ""))
             + _td(f"{r.get('opportunity_type', '—')}<br>"
                   f"<span style='font-size:9px'>{r.get('horizon', '')}</span>")
-            + _td(f"风险{r.get('risk_score')}<br>完备{r.get('data_completeness')}"
-                  f"<br>置信{r.get('model_confidence')}", "font-size:9px")
+            + _td("<span style='font-size:9.5px'>"
+                  + " ".join(f"<span style='color:{'#16a34a' if v.get('pass') else '#ea580c'}'>"
+                             f"{BUCKET_CN[k][:2]}{v.get('score'):.0f}</span>"
+                             for k, v in bk.items())
+                  + f"<br><span style='color:#64748b'>风险{r.get('risk_score')}·"
+                    f"完备{r.get('data_completeness')}·置信{r.get('model_confidence')}</span>"
+                  + "</span>", "max-width:190px;line-height:1.5")
             + _td(f"缺: <b style='color:#b45309'>"
                   f"{'、'.join(r.get('missing') or []) or '无'}</b>"
                   f"<br><span style='font-size:9px'>{r.get('why_not_higher', '')[:34]}</span>"
@@ -258,9 +265,8 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                   + "</span>", "max-width:170px")
             + "</tr>")
 
-    # ── OUT 表 ──
-    out_rows = ""
-    for g in out_src:
+    # ── OUT 表(两段共用同一行构造) ──
+    def _out_row(g):
         c = str(g.get("code"))
         d = dec.get(c) or {}
         lv = str(g.get("level"))
@@ -271,16 +277,14 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
         bp = "；".join(g.get("bypass") or [])
         rb = str((why_sells.get(c) or {}).get("fail") or "")
         cf = g.get("in_out_conflict") or {}
-        out_rows += (
+        return (
             "<tr>"
             + _td(f"{_flag(c, d.get('market'))}<b>{g.get('name')}</b>"
                   f"<br><span style='color:#94a3b8;font-size:9px'>{c}</span>")
-            + _td(f"<span style='background:{col};color:#fff;border-radius:3px;padding:0 4px;"
-                  f"font-weight:800'>{lv}</span>"
-                  f"<br><span style='color:#b91c1c;font-weight:700'>卖出分"
-                  f"{g.get('sell_score', '—')}</span>"
-                  f"<br><span style='color:#94a3b8;font-size:9px'>"
-                  f"{g.get('opp_type') or '门派未知'}</span>", "max-width:110px")
+            + _td(f"<span style='background:{col};color:#fff;border-radius:3px;padding:1px 5px;"
+                  f"font-weight:800;font-size:12px'>{lv}</span>"
+                  f"<br><span style='color:#b91c1c;font-weight:700;font-size:11px'>卖出分"
+                  f"{g.get('sell_score', '—')}</span>", "white-space:nowrap")
             + _td(f"<b>现{g.get('px', '—')}</b><br>"
                   f"<span style='font-size:9px;color:#64748b'>MA20 {g.get('ma20', '—')}</span>")
             + _td(f"<b style='color:{col}'>{g.get('action')}</b>"
@@ -294,8 +298,8 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + _td(f"{g.get('dist_stop_pct')}%" if g.get("dist_stop_pct") is not None else "—")
             + _td(f"1-2-3: <b>{c123 or '无'}</b>"
                   + (f"<br><span style='font-size:9px;color:#b91c1c'>{bp}</span>" if bp else "")
-                  + (f"<br><span style='font-size:9px'>量比{g.get('vr')}</span>"
-                     if g.get("vr") else ""), "max-width:130px")
+                  + f"<br><span style='font-size:9px;color:#94a3b8'>"
+                    f"{g.get('opp_type') or '门派未定'}</span>", "max-width:150px")
             + _td((f"<span style='font-size:9px;color:#b91c1c'>⚠️IN/OUT冲突"
                    f"({cf.get('severity')}): 买入侧{cf.get('in_tier')}·{cf.get('in_action')}"
                    f"<br>{cf.get('verdict', '')[:40]}</span>" if cf else
@@ -304,9 +308,16 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                    if g.get("school_notes") else
                    "<span style='font-size:9px;color:#16a34a'>无IN/OUT冲突·"
                    f"门派({g.get('opp_type') or '未定'})内判定一致</span>"), "max-width:150px")
-            + _td(f"<span style='font-size:9px'>引擎:{d.get('action', '—')}</span>",
-                  "max-width:120px")
+            + _td((f"<span style='font-size:9.5px;color:#b91c1c;font-weight:700'>💼持仓</span>"
+                   if g.get("held") else
+                   f"<span style='font-size:9.5px;color:#0891b2'>👁"
+                   f"{g.get('scope') or '非持仓'}</span>")
+                  + f"<br><span style='font-size:9px;color:#64748b'>"
+                    f"引擎:{d.get('action') or '—'}</span>", "max-width:120px")
             + "</tr>")
+
+    out_rows = "".join(_out_row(g) for g in _held_sig)
+    free_rows = "".join(_out_row(g) for g in _free_sig)
 
     near = ""
     if n3 == 0:
@@ -325,9 +336,16 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + (_tbl(in_rows, _TH_IN) or "<div style='font-size:12px;color:#94a3b8'>今日无 3A/2A —— "
                                 "现金也是仓位；战术级1A见买表折叠区</div>")
             + f"<div style='font-size:12.5px;font-weight:700;color:#b91c1c;margin:10px 0 2px'>"
-              f"🔴 OUT · 卖出侧（-3A 影子分级 · 斯波朗迪1-2-3）</div>"
+              f"🔴 OUT-A · 持仓卖出（{len(_held_sig)}只 · 利润收回,期待下次进驻）</div>"
             + (_tbl(out_rows, _TH_OUT) or "<div style='font-size:12px;color:#16a34a'>持仓无卖出警报 —— "
                                  "无 OUT 信号也是信号</div>")
+            + f"<div style='font-size:12.5px;font-weight:700;color:#b45309;margin:10px 0 2px'>"
+              f"🟠 OUT-B · 非持仓回避（{len(_free_sig)}只 · 自选/池内候选,现在别接）</div>"
+            + f"<div style='font-size:11px;color:#64748b;margin-bottom:2px'>"
+              f"同一套斯波朗迪1-2-3,语义不同:持仓=收回利润;非持仓=避免买在下跌途中。"
+              f"这批是<b>想买但现在别买</b>的票——等企稳信号解除后才进买入侧。</div>"
+            + (_tbl(free_rows, _TH_OUT) or
+               "<div style='font-size:12px;color:#16a34a'>非持仓标的无回避信号</div>")
             + f"<div style='font-size:10.5px;color:#94a3b8;margin-top:4px'>"
               f"OUT为影子级(攒战绩不触发交易)·与引擎卖警一致率{cons.get('rate', '—')}%"
               f"({cons.get('shadow_agrees', '—')}/{cons.get('engine_sell_calls', '—')})"
