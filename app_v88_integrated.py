@@ -17156,8 +17156,29 @@ def _render_today_nav():
                                 + (f"离 3A 最近: **{_near['name']}** 差「"
                                    f"{'、'.join(_near.get('missing') or [])}」"
                                    if _near else ""))
+                    _g3dec = {str(x.get("code")): x for x in
+                              (_g3j("intraday_decisions.json").get("rows") or [])}
                     for _r3 in _g3top[:5]:
                         st.markdown(_g3card(_r3, compact=True), unsafe_allow_html=True)
+                        # 【2026-08-02 用户"少了得分和买入区间"·违反'只增不删'纲领的修复】
+                        # compact卡只有分没有区间;买入区间/失效价是执行必需,补回不折叠。
+                        _ep3 = (_g3dec.get(str(_r3.get("code"))) or {}).get("entry_plan") or {}
+                        _z3 = _ep3.get("zone") or []
+                        _zone3 = (f"{_z3[0]}~{_z3[1]}" if len(_z3) >= 2 else
+                                  (f"回踩{_ep3.get('pullback')}" if _ep3.get("pullback") else "—"))
+                        _tg3 = _r3.get("triggers") or {}
+                        st.markdown(
+                            f"<div style='font-size:11.5px;margin:-2px 0 6px 12px;color:#334155'>"
+                            f"💰<b>买入区间 {_zone3}</b>"
+                            + (f"　突破{_ep3.get('breakout')}" if _ep3.get("breakout") else "")
+                            + f"　⏱{_tg3.get('enter', '—')}"
+                            + f"　<span style='color:#b91c1c'>失效 {_tg3.get('invalid', '—')}</span>"
+                            + f"<br><span style='color:#64748b'>桶板: "
+                            + " ".join(f"{k}{v.get('score'):.0f}{'✓' if v.get('pass') else '✗'}"
+                                       for k, v in (_r3.get("buckets") or {}).items())
+                            + f"｜风险{_r3.get('risk_score')} 完备{_r3.get('data_completeness')}"
+                            f" 置信{_r3.get('model_confidence')}</span></div>",
+                            unsafe_allow_html=True)
                     if not _g3top:
                         st.warning("今日无 3A/2A —— 现金也是仓位；战术级 1A 见买表折叠区")
                 except Exception:
@@ -17174,8 +17195,10 @@ def _render_today_nav():
                     st.success("持仓无卖出警报 —— 无OUT信号也是信号")
                 _LV3 = {"-3A": ("#b91c1c", "#fee2e2"), "-2A": ("#dc2626", "#fef2f2"),
                         "-1A": ("#ea580c", "#fff7ed")}
-                for _s3 in sorted(_g3sell, key=lambda x: {"-3A": 0, "-2A": 1, "-1A": 2}.get(
-                        str((_g3sg.get(str(x.get("code"))) or {}).get("level")), 9))[:6]:
+                for _s3 in sorted(_g3sell, key=lambda x: (
+                        {"-3A": 0, "-2A": 1, "-1A": 2}.get(
+                            str((_g3sg.get(str(x.get("code"))) or {}).get("level")), 9),
+                        -((_g3sg.get(str(x.get("code"))) or {}).get("sell_score") or 0)))[:8]:
                     _sg3 = _g3sg.get(str(_s3.get("code"))) or {}
                     _lv3 = str(_sg3.get("level") or "?")
                     _c3c, _c3bg = _LV3.get(_lv3, ("#64748b", "#f8fafc"))
@@ -17188,9 +17211,15 @@ def _render_today_nav():
                         f"<div style='font-size:12px;margin:2px 0;padding:3px 7px;"
                         f"border-left:3px solid {_c3c};background:{_c3bg}'>"
                         f"<b style='color:{_c3c}'>{_lv3}</b> <b>{_s3.get('name')}</b>"
-                        f" <span style='font-size:11px;color:#64748b'>1-2-3:{_cs3 or '无'}"
+                        + (f" <b style='color:{_c3c};font-size:12px'>卖出分"
+                           f"{_sg3.get('sell_score'):.0f}</b>"
+                           if _sg3.get("sell_score") is not None else "")
+                        + f" <span style='font-size:11px;color:#64748b'>1-2-3:{_cs3 or '无'}"
                         + (f"·{_bp3}" if _bp3 else "")
                         + f"｜引擎:{_s3.get('action')}·止损{_s3.get('stop')}</span>"
+                        + (f"<br><span style='font-size:11.5px;color:#b91c1c'>"
+                           f"📉<b>卖出区间 {_sg3.get('sell_zone')}</b></span>"
+                           if _sg3.get("sell_zone") else "")
                         + (f"<br><span style='font-size:11px;color:#0891b2'>{_rb3}</span>"
                            if _rb3 else "") + "</div>", unsafe_allow_html=True)
                 _cons3 = (_g3j("sell_grade.json").get("consistency") or {})
