@@ -3394,6 +3394,11 @@ try:
             _chip9 += (f"<br><span style='color:#475569;font-size:8.5px' "
                        f"title='{str(_rk9x.get('why_not_higher') or '')[:80]}'>"
                        f"{_st9x.split('-', 1)[1]}·{_as9x}</span>")
+        _fc9x = str(_rk9x.get("field_conflict") or "")
+        if _fc9x:
+            _chip9 += (f"<br><span style='color:#b91c1c;font-size:8.5px;font-weight:700' "
+                       f"title='同一行数据两个字段方向相反(阿里案),按GPT裁定不自动覆盖,标出让人裁'>"
+                       f"🔎冲突待复核</span>")
         _ms9x = _rk9x.get("missing") or []
         if _ms9x and _gd9 in ("2A", "1A"):
             _chip9 += (f"<br><span style='color:#b45309;font-size:8.5px' "
@@ -3939,10 +3944,20 @@ try:
                   if str((_gr9map.get(str(c)) or {}).get("grade")) == "存档"
                   or str((_rank9map.get(str(c)) or {}).get("tier")) == "0A"]
         _arch_set9 = {c for c, _ in _arch9}
-        _t_buy9 = [h for _t9z, _s9z, _c9z, h in _buy_order9 if _c9z not in _arch_set9]
-        _n3a9 = sum(1 for c in _shown_codes9 if (_gr9map.get(c) or {}).get("grade") == "3A")
-        _n2a9 = sum(1 for c in _shown_codes9 if (_gr9map.get(c) or {}).get("grade") == "2A")
-        _tab_b9, _tab_s9, _tab_h9 = st.tabs([f"✅买表{len(_t_buy9)}行(3A×{_n3a9}·2A×{_n2a9}·买窗×{len(_cb_rows9)})",
+        # 【三方印证·第一步 2026-08-02 用户"3A模块没有,下面又一堆要关注,自相矛盾"】
+        # 实测重叠:trend_quality榜面×R2=67%(同一批票计两遍);矛盾根源=1A×62只全躺主表,
+        # 顶部却说3A=0/2A=3。收敛:**主表只留3A/2A,1A收进战术级折叠区**——
+        # 不删信号(GPT裁定:R2零战绩不得否决独立信号),只分层呈现,主表与顶部说同一句话。
+        _tac9 = [(c, h) for _t, _s, c, h in _buy_order9
+                 if c not in _arch_set9
+                 and str((_rank9map.get(str(c)) or {}).get("tier")) == "1A"]
+        _tac_set9 = {c for c, _ in _tac9}
+        _t_buy9 = [h for _t9z, _s9z, _c9z, h in _buy_order9
+                   if _c9z not in _arch_set9 and _c9z not in _tac_set9]
+        # 计数改用R2口径(与顶部行动清单同源),不再用trend_quality旧尺
+        _n3a9 = sum(1 for _r9c in (_rank9map.values()) if str(_r9c.get("tier")) == "3A")
+        _n2a9 = sum(1 for _r9c in (_rank9map.values()) if str(_r9c.get("tier")) == "2A")
+        _tab_b9, _tab_s9, _tab_h9 = st.tabs([f"✅买表{len(_t_buy9)}行(3A×{_n3a9}·2A×{_n2a9}·战术1A×{len(_tac9)})",
                                              f"⚔️卖/减({len(_cb_sell9)})", f"💼持有({len(_hold9)})"])
         with _tab_b9:
             # 【V88·买表直接勾选对比 2026-08-01 用户"希望直接可以有对话框勾选这里面的个股对比"】
@@ -4009,6 +4024,12 @@ try:
                                     unsafe_allow_html=True)
             except Exception:
                 logging.exception("[V88] R2完整评级卡渲染失败")
+            if _tac9:
+                with st.expander(f"⚡ 战术级 1A · {len(_tac9)} 只（短线/波段/低吸·缺≥2块桶板·"
+                                 f"非核心推荐,自选参与）", expanded=False):
+                    st.caption("三方印证收敛:主表只留3A/2A,与顶部行动清单同一口径;"
+                               "1A是独立战术信号,保留但降层——每只带用途/触发/失效(见评级章)。")
+                    st.markdown(_tbl9([h for _, h in _tac9]), unsafe_allow_html=True)
             if _arch9:
                 with st.expander(f"🗄 存档 {len(_arch9)} 只（已否决/说不出何时买 → 不占推荐位）",
                                  expanded=False):
@@ -4039,6 +4060,9 @@ try:
                                         + (f" 质量分{_sc9a:.1f} · " if _sc9a is not None else " · ")
                                         + f"{str(_g9a.get('out_reason') or '—')}</div>",
                                         unsafe_allow_html=True)
+            if not _t_buy9:
+                st.info(f"🎯 今日无 3A/2A 核心买单（木桶门槛严,不硬凑）。"
+                        f"战术级1A {len(_tac9)}只在下方折叠区;0A/存档 {len(_arch9)}只已过滤。")
             st.markdown(_tbl9(_t_buy9) if _t_buy9 else
                         ("<span style='font-size:12px;color:#94a3b8'>买侧无可执行买单——现金也是仓位"
                          "(环境弱时买单自带仓位分级提示,不再硬拦)</span>"), unsafe_allow_html=True)
