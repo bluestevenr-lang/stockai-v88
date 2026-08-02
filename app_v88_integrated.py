@@ -17113,6 +17113,79 @@ def _render_today_nav():
 
         # 【V88·版面梳理 2026-07-17】水位/轮动提醒/周期导图/复制摘要合并收进「大盘环境」
         # （三层总览已给概览,这里是细节层,默认收起减乱）
+        # ═══════════════════════════════════════════════════════════════
+        # 【🎯 3A大系统·常驻模块 2026-08-02 用户"有没有数据都要有大3A这个模块"】
+        # IN(+3A/2A/1A) + OUT(卖出侧) 一屏定妆;空态不留白,明说"今日无3A"+离3A最近的是谁。
+        # 数据:rank_score.json(R2木桶评级) + intraday卖警 + why_buy重买条件。
+        # ═══════════════════════════════════════════════════════════════
+        try:
+            _g3_dir = Path.home() / "Desktop" / "ai-daily-report-v2" / "data"
+            def _g3j(_f):
+                try:
+                    return json.loads((_g3_dir / _f).read_text(encoding="utf-8"))
+                except Exception:
+                    return {}
+            _g3rk = _g3j("rank_score.json")
+            _g3rows = _g3rk.get("rows") or []
+            _g3pool = _g3j("market_pool.json")
+            _n3 = sum(1 for r in _g3rows if r.get("tier") == "3A")
+            _n2 = sum(1 for r in _g3rows if r.get("tier") == "2A")
+            _n1 = sum(1 for r in _g3rows if r.get("tier") == "1A")
+            _n0 = sum(1 for r in _g3rows if r.get("tier") == "0A")
+            _g3sell = [r for r in (_g3j("intraday_decisions.json").get("rows") or [])
+                       if r.get("scope") == "持仓" and any(
+                           k in str(r.get("action") or "") for k in ("减", "清", "退", "止损"))]
+            _g3arch = _g3rk.get("archived") or []
+            _module_header("🎯", "3A大系统 · IN / OUT",
+                           f"全市场每日重选·木桶定级 | IN: 3A×{_n3} 2A×{_n2} 1A×{_n1}"
+                           f" | OUT: 卖警×{len(_g3sell)} 否决×{len(_g3arch)}",
+                           "#0ea5e9", "#dc2626")
+            _c3in, _c3out = st.columns([3, 2])
+            with _c3in:
+                st.markdown("**🟢 IN · 买入侧**")
+                _np3 = len((_g3pool.get("rows") or []))
+                st.caption(f"漏斗: 全市场→通道自然产出{_np3}只→精算→评级{len(_g3rows)}只"
+                           f" · 3A门槛=五桶零缺失,不硬凑")
+                try:
+                    from grade_card import card_html as _g3card
+                    _g3top = [r for r in _g3rows if r.get("tier") in ("3A", "2A")]
+                    if _n3 == 0:
+                        _near = min([r for r in _g3rows if r.get("tier") == "2A"],
+                                    key=lambda r: len(r.get("missing") or []), default=None)
+                        st.info("今日无 3A（现在可进+长期获益的完整机会）。"
+                                + (f"离 3A 最近: **{_near['name']}** 差「"
+                                   f"{'、'.join(_near.get('missing') or [])}」"
+                                   if _near else ""))
+                    for _r3 in _g3top[:5]:
+                        st.markdown(_g3card(_r3, compact=True), unsafe_allow_html=True)
+                    if not _g3top:
+                        st.warning("今日无 3A/2A —— 现金也是仓位；战术级 1A 见买表折叠区")
+                except Exception:
+                    logging.exception("[3A大系统] IN侧渲染失败")
+            with _c3out:
+                st.markdown("**🔴 OUT · 卖出侧**")
+                st.caption("当前=引擎卖警(每条带重买条件); -3A分级(斯波朗迪1-2-3)编码中,"
+                           "先攒sell_call战绩(08-14起核算)再定阈值")
+                _g3rb = (_g3j("why_buy.json").get("sells") or {})
+                if not _g3sell and not _g3arch:
+                    st.success("持仓无卖出警报 —— 无OUT信号也是信号")
+                for _s3 in _g3sell[:6]:
+                    _rb3 = str((_g3rb.get(str(_s3.get("code"))) or {}).get("fail") or "")[:46]
+                    st.markdown(
+                        f"<div style='font-size:12px;margin:2px 0;padding:3px 7px;"
+                        f"border-left:3px solid #dc2626;background:#fef2f2'>"
+                        f"<b>{_s3.get('name')}</b> {_s3.get('action')}"
+                        f" <span style='color:#64748b'>止损{_s3.get('stop')}</span>"
+                        + (f"<br><span style='font-size:11px;color:#0891b2'>{_rb3}</span>"
+                           if _rb3 else "") + "</div>", unsafe_allow_html=True)
+                for _a3 in _g3arch[:3]:
+                    st.markdown(f"<div style='font-size:11.5px;color:#64748b;margin:2px 0'>"
+                                f"🗄 {_a3.get('name')} 已否决({str(_a3.get('out_reason'))[:24]})"
+                                f"</div>", unsafe_allow_html=True)
+        except Exception:
+            logging.exception("[V88] 3A大系统模块渲染失败")
+            st.warning("🎯 3A大系统: 数据读取失败(模块常驻,数据恢复后自动填充)")
+
         with st.expander("🌍 大盘环境 · 指数水位/板块轮动/周期导图", expanded=False):
             # ① 三大市场指数水位
             if _snap and _snap.get("markets"):
