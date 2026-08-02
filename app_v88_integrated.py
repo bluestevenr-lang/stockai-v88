@@ -4821,8 +4821,18 @@ try:
                           "green+": "绿灯+双路径5日窗", "w4": "4周周期走强·分批布局",
                           "hz": f"{_cfg9.get('hz')}周期走强·左侧分批"}[_cfg9["buy"]]
             _buy9n.sort(key=lambda x: -x[1])
+            # 【双剑认证徽章 2026-08-02 用户定纲】作战板与3A大系统此前是两条独立管道:
+            # 它只有一道"黑马实盘胜率<50%整体撤名单"的发言权闸,**没有任何双剑验证**。
+            # 用户:"也要进行双c认证,只不过这里面不用去除,这里面只能有两者认证和c认证的两种即可"
+            # → 不做删减(与推荐位不同),只给每条挂标记:⚔️双认证 / 🅒C认证 / ·待验。
+            try:
+                from grade_card import cert_map as _cmap_f, cert_badge as _cbadge
+                _CM9 = _cmap_f(_nwj9("rank_score.json"))
+            except Exception:
+                _CM9, _cbadge = {}, (lambda c, m: "")
             _rows_c9 = ["<div style='font-size:12.5px'>"
                         f"{_nw_link9(_h9x.get('name'), _h9x.get('code'))}"
+                        f"{_cbadge(_h9x.get('code'), _CM9)}"
                         f"<b style='color:#dc2626'>{_p9x}%</b>"
                         f"<span style='font-size:11.5px;color:#475569'>·{_tag9x}"
                         f"·{str(((_h9x.get('trade_plan') or {}).get('short') or {}).get('in') or '')[:40]}</span></div>"
@@ -4887,6 +4897,7 @@ try:
                         "hot": "<span style='font-size:11px;color:#b45309'>🔶只限回踩·仓位减半</span>"}.get(_st9p, "")
             _prep_rows9 = ["<div style='font-size:12.5px'>"
                            f"{_nw_link9(_r9p.get('name'), _r9p.get('code'))}"
+                           f"{_cbadge(_r9p.get('code'), _CM9)}"
                            f"<b style='color:#dc2626'>{int((_r9p.get(_sk9p) if not _sk9p.startswith('_hz_') else _rhz9p(_r9p, _cfg9.get('hz'))) or 0)}{'%' if _sk9p == 'p_up' else '分'}</b>"
                            f"<span style='font-size:11.5px;color:#475569'>"
                            f"{'·' + str((_r9p.get('entry_plan') or {}).get('mode') or '') if _sk9p == 'p_up' else ''}"

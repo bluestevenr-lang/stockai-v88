@@ -638,3 +638,42 @@ def verdict_html(v: dict) -> str:
             + f"<div style='font-size:10px;color:{PALETTE['mute']};margin-top:3px'>"
               f"{v.get('rule')}　｜　+3A 与 -3A 均需双剑认证（Claude✅且GPT✅），"
               f"缺一方自动降档，不靠单方判断让人买入或清仓。</div></div>")
+
+
+_CERT_CACHE = {"ts": 0, "map": {}}
+
+
+def cert_map(rank_score: dict | None = None) -> dict:
+    """{code: '双'|'C'|''} —— 作战板用的极简双剑口径。
+    用户定纲 2026-08-02:"这里面不用去除,这里面只能有两者认证和c认证的两种即可"。
+    即:作战板**不做删减**(与推荐位不同),只给每条挂一个认证标记,让人自己掂量。"""
+    rows = (rank_score or {}).get("rows") or []
+    m = {}
+    for r in rows:
+        v = r.get("verification") or {}
+        c, g = v.get("claude"), v.get("gpt")
+        if c == "pass" and g == "pass":
+            m[str(r.get("code"))] = "双"
+        elif c == "pass":
+            m[str(r.get("code"))] = "C"
+    return m
+
+
+def cert_badge(code: str, cmap: dict) -> str:
+    """两种徽章:⚔️双=Claude+GPT均通过;🅒C=仅Claude通过。其余留白(不占视觉)。"""
+    k = cert_map_key(code)
+    t = cmap.get(str(code)) or cmap.get(k) or ""
+    if t == "双":
+        return (f"<span style='background:{PALETTE['buy']};color:#fff;border-radius:3px;"
+                f"padding:0 4px;font-size:9.5px;font-weight:700;margin-left:3px'>⚔️双认证</span>")
+    if t == "C":
+        return (f"<span style='background:{PALETTE['buy3']};color:#fff;border-radius:3px;"
+                f"padding:0 4px;font-size:9.5px;margin-left:3px'>🅒C认证</span>")
+    return (f"<span style='color:{PALETTE['mute']};font-size:9.5px;margin-left:3px'>·待验</span>")
+
+
+def cert_map_key(code: str) -> str:
+    c = str(code or "").upper()
+    if c.endswith(".HK"):
+        return (c.split(".")[0].lstrip("0") or "0").zfill(5) + ".HK"
+    return c
