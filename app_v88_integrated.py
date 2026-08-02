@@ -3142,7 +3142,7 @@ try:
         _fg9x = "" if str(_nm9x or "")[:2] in ("🇨🇳", "🇭🇰", "🇺🇸") else _flag9(_cd9x)
         return (f'{_fg9x}<a href="?q={_cd9x}&focus=deep#v88-deep-analysis" target="_blank" rel="noopener" '
                 f'style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{_nm9x}</a>'
-                + _cert_badge9(_cd9x, _nm9x))
+                + _cert_badge9(_cd9x, _nm9x) + _gpt_badge9(_cd9x, _nm9x))
     _cb_gate9 = _v88_mkt_gate9x(_cb_repo9)
     _cb_nt9, _cb_day9 = _v88_nontrade9x()
     # 【U3⑥数据闸门 2026-07-26 GPT审计采纳】行情异常=degraded→买侧禁发,只留卖警
@@ -3211,6 +3211,31 @@ try:
                     "未经人工复核,但硬伤已排除' "
                     f"style='{_base9};background:#dcfce7;color:#15803d;border:1px solid #86efac'>✓</span>")
         return ""      # 无结论=不打标,不再用禁止符污染视觉
+
+    def _gpt_badge9(_cd, _nm=""):
+        """【2026-08-02 用户"gpt的验证一定要有大写字母G,就像claude的C一样,不同颜色标注"】
+        与 _cert_badge9 同规格(圆形单字符),但**身份色不同**:C 系金/绿,G 系青(#0d9488)。
+        身份色恒定、裁决用符号与深浅表达——一眼分清"谁说的"与"说了什么"。
+        不推翻既有 C 徽章语义,只是把 GPT 这一方补齐(此前它在站内根本没有可视标识)。"""
+        try:
+            _g9 = (_GV9 or {}).get(str(_cd or "")) or {}
+        except Exception:
+            _g9 = {}
+        _v9 = str(_g9.get("verdict") or "")
+        if not _v9:
+            return ""
+        _st9 = ("#0d9488", "#fff", "G") if _v9 == "通过" else \
+               ("#134e4a", "#fff", "G̸") if _v9 == "否决" else \
+               ("#ccfbf1", "#0f766e", "G")
+        _tip9 = f"GPT独立验证:{_v9}｜{str(_g9.get('why', ''))[:60]}".replace('"', "'")
+        _op9 = "1" if _v9 in ("通过", "否决") else ".8"
+        return (f"<span title=\"{_tip9}\" style='{_base9};background:{_st9[0]};"
+                f"color:{_st9[1]};opacity:{_op9}'>{_st9[2]}</span>")
+
+    try:
+        _GV9 = (_nwj9("gpt_verify.json").get("rows") or {})
+    except Exception:
+        _GV9 = {}
 
     def _cb_nm9(_nm, _cd):
         # 【2026-07-27 统一名字真源】优先私仓 watch_alerts.resolve_name
@@ -4613,10 +4638,13 @@ try:
                             _d = _v.get("verdict")
                             if not _d:
                                 return ""
-                            _c = ("#15803d" if _d == "主线" else
-                                  "#b45309" if _d == "一日游" else "#94a3b8")
-                            return (f"<span style='background:{_c};color:#fff;border-radius:3px;"
-                                    f"padding:0 4px;font-size:9.5px;margin-left:3px' "
+                            # 身份色恒定(G=青#0d9488,与3A模块同一套),裁决用文字区分——
+                            # 用户定纲:"gpt的验证一定要有大写字母G,就像claude的C一样"
+                            _op = "1" if _d in ("主线", "一日游") else ".45"
+                            return (f"<span style='background:#0d9488;color:#fff;"
+                                    f"border-radius:3px;padding:0 5px;font-size:9.5px;"
+                                    f"font-weight:800;opacity:{_op};margin-left:3px;"
+                                    f"letter-spacing:.3px' "
                                     f"title='GPT主验:{_v.get(chr(39)+chr(119)+chr(104)+chr(121)+chr(39), '')}'>"
                                     f"G·{_d}</span>")
 

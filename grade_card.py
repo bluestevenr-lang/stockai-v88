@@ -38,6 +38,13 @@ PALETTE = {
     "warn":     "#b45309",   # 数据/质量警告(非卖出)
     "warn_bg":  "#fffbeb",   # 警告底色:浅琥珀+深字,保证可读
     "mute":     "#94a3b8",   # 未评估/无数据
+    # 【2026-08-02 用户"gpt的验证一定要有大写字母G,就像claude的C一样,不同颜色标注"】
+    # C/G 是**身份标识**不是动作,所以不进买绿卖红那套语义色,自带固定专色:
+    #   C=靛蓝(主脑,不可替代)  G=青(副脑,独立第二意见)
+    # 裁决状态由后缀符号表达(✅通过/⚠️否决/—未表态),身份色恒定——
+    # 这样一眼能分清"谁说的"与"说了什么"。
+    "claude":   "#4338ca",   # Ⓒ Claude 主脑
+    "gpt":      "#0d9488",   # Ⓖ GPT 副脑
 }
 TIER_COLOR = {"3A": PALETTE["buy"], "2A": PALETTE["buy2"], "1A": PALETTE["buy3"],
               "0A": PALETTE["mute"], "待评估": PALETTE["mute"],
@@ -211,6 +218,19 @@ def stock_link(name, code, flag: str = "") -> str:
     return (f'{flag}<a href="?q={c}&focus=deep#v88-deep-analysis" target="_blank" '
             f'rel="noopener" style="color:inherit;text-decoration:underline;'
             f'text-underline-offset:2px;cursor:pointer">{n}</a>')
+
+
+def cg_badge(who: str, state: str, note: str = "") -> str:
+    """双剑身份徽章。who='C'|'G'；state='pass'|'reject'|''(未表态)。
+    身份色恒定(C靛蓝/G青),状态用符号与透明度表达——用户定纲:
+    "gpt的验证一定要有大写字母G,就像claude的C一样,不同颜色标注"。"""
+    base = PALETTE["claude"] if who == "C" else PALETTE["gpt"]
+    mark, op = ("✅", "1") if state == "pass" else \
+               ("⚠️", "1") if state == "reject" else ("—", ".45")
+    t = f" title=\"{note}\"" if note else ""
+    return (f"<span style='background:{base};color:#fff;border-radius:3px;"
+            f"padding:0 5px;font-size:9.5px;font-weight:800;opacity:{op};"
+            f"margin-left:2px;letter-spacing:.3px'{t}>{who}{mark}</span>")
 
 
 def _nomd(v) -> str:
@@ -407,12 +427,8 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             # GPT 的异议不能只在漏斗里一句带过,必须**逐行摆在表上**让人自己判断。
             # 同时保留"缺什么/为什么不更高"(信息不做减法,只是压缩排版)。
             + _td((lambda _v: (
-                f"<span style='background:{PALETTE['buy'] if _v.get('claude') == 'pass' else PALETTE['mute']};"
-                f"color:#fff;border-radius:3px;padding:0 4px;font-size:9px'>C "
-                f"{'✅' if _v.get('claude') == 'pass' else '—'}</span> "
-                f"<span style='background:{PALETTE['buy2'] if _v.get('gpt') == 'pass' else PALETTE['warn'] if _v.get('gpt') == 'reject' else PALETTE['mute']};"
-                f"color:#fff;border-radius:3px;padding:0 4px;font-size:9px'>G "
-                f"{'✅' if _v.get('gpt') == 'pass' else '⚠️' if _v.get('gpt') == 'reject' else '—'}</span>"
+                cg_badge("C", str(_v.get("claude") or ""))
+                + cg_badge("G", str(_v.get("gpt") or ""), str(_v.get("gpt_note") or ""))
                 + (f"<br><span style='font-size:9px;color:{PALETTE['warn']}'>"
                    f"GPT异议: {str(_v.get('gpt_note'))[:30]}</span>"
                    if _v.get("gpt") == "reject" and _v.get("gpt_note") else "")
@@ -505,12 +521,8 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                    f"门派({g.get('opp_type') or '未定'})内判定一致</span>"), "max-width:150px")
             # 卖侧双验证徽章(铁律19v3对称:错误卖出信号直接损失真金)
             + _td((lambda _v: (
-                f"<span style='background:{PALETTE['buy'] if _v.get('claude') == 'pass' else PALETTE['mute']};"
-                f"color:#fff;border-radius:3px;padding:0 3px;font-size:9px'>C"
-                f"{'✅' if _v.get('claude') == 'pass' else '—'}</span>"
-                f"<span style='background:{PALETTE['buy2'] if _v.get('gpt') == 'pass' else PALETTE['warn'] if _v.get('gpt') == 'reject' else PALETTE['mute']};"
-                f"color:#fff;border-radius:3px;padding:0 3px;font-size:9px;margin-left:2px'>G"
-                f"{'✅' if _v.get('gpt') == 'pass' else '⚠️' if _v.get('gpt') == 'reject' else '—'}</span>"
+                cg_badge("C", str(_v.get("claude") or ""))
+                + cg_badge("G", str(_v.get("gpt") or ""), str(_v.get("gpt_note") or ""))
                 + (f"<br><span style='font-size:8.5px;color:{PALETTE['warn']}'>"
                    f"{str(_v.get('gpt_note'))[:24]}</span>"
                    if _v.get("gpt") == "reject" and _v.get("gpt_note") else "")
@@ -777,11 +789,9 @@ def cert_badge(code: str, cmap: dict) -> str:
     k = cert_map_key(code)
     t = cmap.get(str(code)) or cmap.get(k) or ""
     if t == "双":
-        return (f"<span style='background:{PALETTE['buy']};color:#fff;border-radius:3px;"
-                f"padding:0 4px;font-size:9.5px;font-weight:700;margin-left:3px'>⚔️双认证</span>")
+        return cg_badge("C", "pass") + cg_badge("G", "pass")
     if t == "C":
-        return (f"<span style='background:{PALETTE['buy3']};color:#fff;border-radius:3px;"
-                f"padding:0 4px;font-size:9.5px;margin-left:3px'>🅒C认证</span>")
+        return cg_badge("C", "pass") + cg_badge("G", "")
     return (f"<span style='color:{PALETTE['mute']};font-size:9.5px;margin-left:3px'>·待验</span>")
 
 
