@@ -4601,16 +4601,43 @@ try:
                         _htj9 = _nwj9("hot_theme.json")
                         # 【提前量优先 2026-07-28 用户"不要后知后觉"】蓄势榜排最前:
                         # 钱在进但价没动=还能上车;已在涨的降为副榜并标追高风险
+                        # 【2026-08-02 用户"延伸的个股也要实现鼠标点击分析"】
+                        # 题材梯队里的个股此前是纯文本,点不动——而它们恰恰是"该看哪只"的落点。
+                        # 【2026-08-02 用户"这个深一些claude流量,用gpt为主验证"】
+                        # 题材榜的裁决交 GPT 主验(theme_verify.py,一次调用验全部,12秒),
+                        # Claude 上下文零消耗。裁决:主线/一日游/不否定。
+                        _tv9 = (_nwj9("theme_verify.json").get("rows") or {})
+
+                        def _tv_badge9(_nm):
+                            _v = (_tv9.get(str(_nm)) or {})
+                            _d = _v.get("verdict")
+                            if not _d:
+                                return ""
+                            _c = ("#15803d" if _d == "主线" else
+                                  "#b45309" if _d == "一日游" else "#94a3b8")
+                            return (f"<span style='background:{_c};color:#fff;border-radius:3px;"
+                                    f"padding:0 4px;font-size:9.5px;margin-left:3px' "
+                                    f"title='GPT主验:{_v.get(chr(39)+chr(119)+chr(104)+chr(121)+chr(39), '')}'>"
+                                    f"G·{_d}</span>")
+
+                        def _mem_link9(_m):
+                            _c = str(_m.get("code") or "")
+                            _t = f'{_m.get("name")}{(_m.get("chg") or 0):+.1f}%'
+                            if not _c:
+                                return _t
+                            return (f'<a href="?q={_c}&focus=deep#v88-deep-analysis" '
+                                    f'target="_blank" rel="noopener" style="color:inherit;'
+                                    f'text-decoration:underline;text-underline-offset:2px">{_t}</a>')
                         _brw9 = (_htj9.get("brewing") or [])[:5]
                         if _brw9:
                             _bw_html9 = []
                             for _b9t in _brw9:
-                                _mem9b = "、".join(f"{m.get('name')}{(m.get('chg') or 0):+.1f}%"
+                                _mem9b = "、".join(_mem_link9(m)
                                                   for m in (_b9t.get("members") or [])[:3])
                                 _bw_html9.append(
                                     f"<div style='font-size:12px;line-height:1.6'>"
                                     f"<b style='color:#16a34a'>{_b9t.get('grade')}</b> "
-                                    f"<b>{_b9t.get('name')}</b>"
+                                    f"<b>{_b9t.get('name')}</b>{_tv_badge9(_b9t.get('name'))}"
                                     f"<span style='font-size:11.5px;color:#475569'>·{_b9t.get('why')}</span>"
                                     f"<span style='font-size:11px;color:#64748b'>·梯队:{_mem9b}</span></div>")
                             st.markdown(
@@ -4627,12 +4654,11 @@ try:
                                 _kc9 = ("#dc2626" if "主线" in _kd9 else
                                         ("#b45309" if "真金" in _kd9 else "#94a3b8"))
                                 _mem9 = "、".join(
-                                    f"{m.get('name')}{(m.get('chg') or 0):+.1f}%"
-                                    for m in (_h9t.get("members") or [])[:3])
+                                    _mem_link9(m) for m in (_h9t.get("members") or [])[:3])
                                 _ht_html9.append(
                                     f"<div style='font-size:12px;line-height:1.6'>"
                                     f"<b style='color:{_kc9}'>{_kd9}</b> "
-                                    f"<b>{_h9t.get('name')}</b> "
+                                    f"<b>{_h9t.get('name')}</b>{_tv_badge9(_h9t.get('name'))} "
                                     f"<span style='color:#dc2626'>{(_h9t.get('chg') or 0):+.2f}%</span>"
                                     + (f"<span style='color:#b45309'>·主力{_h9t['net_yi']:+.1f}亿</span>"
                                        if _h9t.get("net_yi") is not None else "")
