@@ -515,6 +515,22 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                  "两侧计算互盲、都不删——删一侧就成了用结果消音证据。</span></div>"
                if _revoked else "")
             # ══ 第一区：我的持仓（用户定纲"out首先关注的是我的持仓,其次是其他"）══
+            # 【用户定纲】"-3A系统也要有双剑认证系统,没有双剑认证怎么可以获得-3A立即卖出"
+            # 声明必须常驻(不只在有降档时出现)——它是这条榜的准入契约,读者要能随时看到。
+            + (lambda _dc: (
+                f"<div style='font-size:11.5px;background:#f8fafc;border-left:3px solid "
+                f"{PALETTE['sell']};border-radius:4px;padding:5px 9px;margin:8px 0 2px'>"
+                f"⚔️ <b>-3A（立即卖出）需双剑认证</b>"
+                f"<span style='color:{PALETTE['hold']}'>：Claude✅ 且 GPT✅ 才可发。"
+                f"缺任一方最多 -2A（等第三条确认），先复核再动手——"
+                f"不能靠单方判断就让人清仓。</span>"
+                f"　今日候选 <b>{_dc.get('candidates', 0)}</b> 只 → 双剑通过 "
+                f"<b style='color:{PALETTE['sell'] if _dc.get('passed') else PALETTE['hold']}'>"
+                f"{_dc.get('passed', 0)}</b> 只"
+                + "".join(f"<br><span style='font-size:10.5px;color:{PALETTE['warn']}'>"
+                          f"· {x.get('name')}：{str(x.get('note')).replace('**', '')}</span>"
+                          for x in (_dc.get("detail") or [])[:4])
+                + "</div>") if _dc else "")((sg.get("sell_verification") or {}).get("dual_cert"))
             + f"<div style='font-size:13px;font-weight:800;color:{PALETTE['sell']};margin:12px 0 2px;"
               f"border-left:4px solid {PALETTE['sell']};padding-left:6px'>"
               f"💼 第一区 · 我的持仓处置"
