@@ -407,7 +407,13 @@ def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle") -> str:
         out = []
         # 自选与持仓全部展示，不按8只截断；长清单由页面自然向下延伸。
         for s in items:
-            out.append(f'<div class="cy-row"><span class="cy-nm">{escape(str(s.get("name","")))}</span>'
+            # 【2026-08-02 用户"全系统出现的个股都可以点名称做深度分析"】
+            _c = str(s.get("code") or "")
+            _nm = escape(str(s.get("name", "")))
+            _lk = (f'<a href="?q={_c}&focus=deep#v88-deep-analysis" target="_blank" '
+                   f'rel="noopener" style="color:inherit;text-decoration:underline;'
+                   f'text-underline-offset:2px">{_nm}</a>') if _c else _nm
+            out.append(f'<div class="cy-row"><span class="cy-nm">{_lk}</span>'
                        f'{_cert_mark(s.get("code"), s.get("name"), _cert, _std)} '
                        f'{escape(str(s.get("phase","")))} · {s.get("confidence","")}置信 · '
                        f'{escape(str(s.get("horizon","")))} · 52周{s.get("pos52","")}%</div>')

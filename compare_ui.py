@@ -173,7 +173,12 @@ def verdict_html(rows: list) -> str:
         out.append(
             f"<div style='padding:5px 8px;margin:3px 0;border-left:3px solid {col};"
             f"background:{'#fef2f2' if top else '#f8fafc'};border-radius:0 4px 4px 0'>"
-            f"<span style='font-size:13px'>{'🥇' if top else f'{i+1}.'} <b>{r.get('name')}</b> "
+            f"<span style='font-size:13px'>{'🥇' if top else f'{i+1}.'} <b>"
+            + (f'<a href="?q={r.get("code")}&focus=deep#v88-deep-analysis" target="_blank" '
+               f'rel="noopener" style="color:inherit;text-decoration:underline;'
+               f'text-underline-offset:2px">{r.get("name")}</a>' if r.get("code")
+               else str(r.get("name") or ""))
+            + f"</b> "
             f"<span style='color:#94a3b8;font-size:11px'>{r.get('code')}</span>"
             + (f"　<span style='font-size:10.5px;color:#2563eb'>{r['tier']}</span>"
                if r.get('tier') else "")

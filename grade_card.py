@@ -198,6 +198,21 @@ def _flag(code: str, market: str = "") -> str:
     return "🇺🇸" if c else ""
 
 
+def stock_link(name, code, flag: str = "") -> str:
+    """【2026-08-02 用户定纲】"大3A系统里筛选出的个股,都可以鼠标点名称进行深度分析,
+    全系统出现的个股都可以实现"。
+    与站内既有 _nw_link9/_stk_link 同款深链:?q=代码&focus=deep#v88-deep-analysis,
+    新标签打开(target=_self 在部分场景会吞掉深链参数,美港股点了没反应——已踩过)。
+    无代码的条目(板块名等)原样返回文字,不生成死链。"""
+    c = str(code or "").strip()
+    n = str(name or "")
+    if not c:
+        return flag + n
+    return (f'{flag}<a href="?q={c}&focus=deep#v88-deep-analysis" target="_blank" '
+            f'rel="noopener" style="color:inherit;text-decoration:underline;'
+            f'text-underline-offset:2px;cursor:pointer">{n}</a>')
+
+
 def _nomd(v) -> str:
     """HTML 出口统一清 markdown 星号——落盘文案用 ** 强调是给人读的,
     直接塞进 HTML 会原样显示成星号(用户已抓过两次)。"""
@@ -349,7 +364,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
         bk = r.get("buckets") or {}
         return (
             "<tr>"
-            + _td(f"{_flag(c, r.get('market'))}<b>{r.get('name')}</b>"
+            + _td(f"<b>{stock_link(r.get('name'), c, _flag(c, r.get('market')))}</b>"
                   f"<br><span style='color:#94a3b8;font-size:9px'>{c}</span>")
             # 【2026-08-02 用户"有点堆叠,可以调整"】五桶板缩写原挤在评级列(徽章+分+5项一坨,
             # 窄屏竖排)。移到下方"风险·完备·置信"列——那列只有3个数,有横向空间。
@@ -437,7 +452,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
         cf = g.get("in_out_conflict") or {}
         return (
             "<tr>"
-            + _td(f"{_flag(c, d.get('market'))}<b>{g.get('name')}</b>"
+            + _td(f"<b>{stock_link(g.get('name'), c, _flag(c, d.get('market')))}</b>"
                   f"<br><span style='color:#94a3b8;font-size:9px'>{c}</span>")
             + _td((f"<span style='color:#94a3b8;font-size:10px;font-weight:700'>"
                    f"#{g.get('board_rank')}</span> " if g.get("board_rank") else "")
@@ -596,7 +611,8 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + (f"<div style='font-size:11px;background:#fef2f2;border-left:3px solid {PALETTE['sell']};"
                f"border-radius:4px;padding:4px 8px;margin:4px 0'>"
                f"⛔ <b>本次买点被 OUT 证据撤销 {len(_revoked)} 只</b>："
-               + "、".join(f"{n}<span style='color:#94a3b8'>({t})</span>" for n, t in _revoked)
+               + "、".join(f"{_nm}<span style='color:#94a3b8'>({_t})</span>"
+                           for _nm, _t in _revoked)
                + "　<span style='color:#64748b'>买入结构可继续观察，但<b>现在不能买</b>"
                  "（解除需:缩量止跌／收复MA20／结构重新确认）。"
                  "两侧计算互盲、都不删——删一侧就成了用结果消音证据。</span></div>"
@@ -633,7 +649,8 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                + str(_quiet.get('wording_rule') or '').replace('**', '')
                + "）</span><br>"
                + "　".join(
-                   f"<span style='display:inline-block;margin:1px 0'>{r.get('name')}"
+                   f"<span style='display:inline-block;margin:1px 0'>"
+                   f"{stock_link(r.get('name'), r.get('code'))}"
                    f"<span style='color:#94a3b8;font-size:10px'>"
                    f"[{r.get('nearest_risk')}]</span></span>"
                    for r in (_quiet.get("rows") or []) if not r.get("vetoed"))
@@ -641,7 +658,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                # 它们触发了,只是裁决没放行。同"无信号≠安全"的措辞铁律。
                + "".join(
                    f"<div style='font-size:10.5px;color:{PALETTE['warn']};margin-top:2px'>"
-                   f"⏸ <b>{r.get('name')}</b>：{r.get('status')}</div>"
+                   f"⏸ <b>{stock_link(r.get('name'), r.get('code'))}</b>：{r.get('status')}</div>"
                    for r in (_quiet.get("rows") or []) if r.get("vetoed"))
                + "</div>" if _quiet.get("rows") else "")
             # ══ 第二区：非持仓 ══
