@@ -17185,38 +17185,38 @@ def _render_today_nav():
             else:
                 st.info("📭 大盘快照尚未生成（每日07:00/14:00/21:00自动更新）")
 
+        # ═══════════════════════════════════════════════════════════════
+        # 【🎯 3A大系统·常驻模块 2026-08-02 用户"放在大盘和今日之间"·第4版】
+        # 前两版分别错在:①做成卡片(用户要图二的11列表格) ②塞进买表嵌套作用域→
+        # 渲染在页面别处、用户根本看不到。现改用 grade_card.system_table_html
+        # (模块级自包含,自产表格HTML,不依赖任何嵌套闭包),故可挂页面任意位置。
+        # 常驻:无3A也在,空态明说并指出离3A最近者。
+        # ═══════════════════════════════════════════════════════════════
+        try:
+            from grade_card import system_table_html as _sys3a
+            _d3a = Path.home() / "Desktop" / "ai-daily-report-v2" / "data"
+
+            def _j3a(_f):
+                try:
+                    return json.loads((_d3a / _f).read_text(encoding="utf-8"))
+                except Exception:
+                    return {}
+            _rk3a = _j3a("rank_score.json")
+            if _rk3a.get("rows"):
+                st.markdown(_sys3a(
+                    _rk3a, _j3a("sell_grade.json"),
+                    {str(x.get("code")): x for x in
+                     (_j3a("intraday_decisions.json").get("rows") or [])},
+                    (_j3a("why_buy.json").get("sells") or {}),
+                    _j3a("market_pool.json")), unsafe_allow_html=True)
+            else:
+                st.warning("🎯 3A大系统: 评级数据未就绪(模块常驻,数据恢复后自动填充)")
+        except Exception:
+            logging.exception("[V88] 3A大系统模块渲染失败")
+            st.warning("🎯 3A大系统: 渲染异常(见日志);模块常驻不消失")
+
     # 【V88·关注股预警】底层仍统一扫描自选+常搜+持仓；页面展示分流：
     # 持仓风险只进入下方“持仓决策中心”，自选预警不再重复罗列正式持仓。
-    # ═══════════════════════════════════════════════════════════════
-    # 【🎯 3A大系统·常驻模块 2026-08-02 用户"放在大盘和今日之间"】
-    # 前两版分别错在:①做成卡片(用户要图二的11列表格) ②塞进买表嵌套作用域→
-    # 渲染在页面别处、用户根本看不到。现改用 grade_card.system_table_html
-    # (模块级自包含,自产表格HTML,不依赖任何嵌套闭包),故可挂页面任意位置。
-    # 常驻:无3A也在,空态明说并指出离3A最近者。
-    # ═══════════════════════════════════════════════════════════════
-    try:
-        from grade_card import system_table_html as _sys3a
-        _d3a = Path.home() / "Desktop" / "ai-daily-report-v2" / "data"
-
-        def _j3a(_f):
-            try:
-                return json.loads((_d3a / _f).read_text(encoding="utf-8"))
-            except Exception:
-                return {}
-        _rk3a = _j3a("rank_score.json")
-        if _rk3a.get("rows"):
-            st.markdown(_sys3a(
-                _rk3a, _j3a("sell_grade.json"),
-                {str(x.get("code")): x for x in
-                 (_j3a("intraday_decisions.json").get("rows") or [])},
-                (_j3a("why_buy.json").get("sells") or {}),
-                _j3a("market_pool.json")), unsafe_allow_html=True)
-        else:
-            st.warning("🎯 3A大系统: 评级数据未就绪(模块常驻,数据恢复后自动填充)")
-    except Exception:
-        logging.exception("[V88] 3A大系统模块渲染失败")
-        st.warning("🎯 3A大系统: 渲染异常(见日志);模块常驻不消失")
-
     _critical9, _wa = [], {}
     try:
         _wa = st.session_state.get('watch_alerts_v88')

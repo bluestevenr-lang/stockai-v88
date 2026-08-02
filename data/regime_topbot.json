@@ -1,0 +1,315 @@
+{
+ "generated_at": "2026-08-01 15:18（北京时间）",
+ "note": "V88·顶底研判层：命中条数制,不给顶底概率(样本<5·铁律2)",
+ "markets": {
+  "美股": {
+   "topbot": {
+    "market": "美股",
+    "top": [
+     {
+      "key": "价格高位",
+      "hit": false,
+      "text": "价格分位53.9"
+     },
+     {
+      "key": "量价背离",
+      "hit": false,
+      "text": "价格分位53.9／量分位53.7＝背离+0.2"
+     },
+     {
+      "key": "广度钝化",
+      "hit": false,
+      "text": "广度55·满值连续0日（历史仅1天，需攒够3天）"
+     },
+     {
+      "key": "动量衰竭",
+      "hit": false,
+      "text": "20日-0.82%但5日仅+1.23%"
+     },
+     {
+      "key": "估值高位",
+      "hit": null,
+      "text": "⬜估值数据源未接"
+     },
+     {
+      "key": "温度过热",
+      "hit": false,
+      "text": "温度62"
+     },
+     {
+      "key": "指数拐点",
+      "hit": false,
+      "text": "引擎拐点信号"
+     }
+    ],
+    "bottom": [
+     {
+      "key": "价格低位",
+      "hit": false,
+      "text": "价格分位53.9"
+     },
+     {
+      "key": "放量杀跌",
+      "hit": false,
+      "text": "价格分位53.9／量分位53.7＝背离+0.2"
+     },
+     {
+      "key": "广度极低",
+      "hit": false,
+      "text": "广度55"
+     },
+     {
+      "key": "深度超跌",
+      "hit": false,
+      "text": "20日-0.82%"
+     },
+     {
+      "key": "估值低位",
+      "hit": null,
+      "text": "⬜估值数据源未接"
+     },
+     {
+      "key": "温度冰点",
+      "hit": false,
+      "text": "温度62"
+     },
+     {
+      "key": "指数底拐",
+      "hit": true,
+      "text": "引擎底拐信号"
+     }
+    ],
+    "top_hit": 0,
+    "top_na": 1,
+    "bottom_hit": 1,
+    "bottom_na": 1,
+    "px_pct": 53.9,
+    "vol_pct": 53.7,
+    "diverge": 0.2,
+    "breadth_full_days": 0,
+    "note": "样本<5不给概率(铁律2)——只报命中条数,⬜=数据源缺失非未命中"
+   },
+   "turn_risk": {
+    "top_risk": 12,
+    "bottom_opp": 10,
+    "text": "顶部转向风险 低(12/100) ｜ 底部转机信号 低(10/100)｜顶部特征0/7·底部特征1/7",
+    "ver": "v2"
+   },
+   "breadth_stat": {
+    "full_days": 0,
+    "breadth_delta5": null,
+    "days_recorded": 1
+   }
+  },
+  "A股": {
+   "topbot": {
+    "market": "A股",
+    "top": [
+     {
+      "key": "价格高位",
+      "hit": false,
+      "text": "价格分位7.2"
+     },
+     {
+      "key": "量价背离",
+      "hit": false,
+      "text": "价格分位7.2／量分位37.9＝背离-30.7"
+     },
+     {
+      "key": "广度钝化",
+      "hit": false,
+      "text": "广度60·满值连续0日（历史仅1天，需攒够3天）"
+     },
+     {
+      "key": "动量衰竭",
+      "hit": false,
+      "text": "20日-11.58%但5日仅-1.65%"
+     },
+     {
+      "key": "估值高位",
+      "hit": null,
+      "text": "⬜估值数据源未接"
+     },
+     {
+      "key": "温度过热",
+      "hit": false,
+      "text": "温度35"
+     },
+     {
+      "key": "指数拐点",
+      "hit": false,
+      "text": "无拐点信号"
+     }
+    ],
+    "bottom": [
+     {
+      "key": "价格低位",
+      "hit": true,
+      "text": "价格分位7.2"
+     },
+     {
+      "key": "放量杀跌",
+      "hit": true,
+      "text": "价格分位7.2／量分位37.9＝背离-30.7"
+     },
+     {
+      "key": "广度极低",
+      "hit": false,
+      "text": "广度60"
+     },
+     {
+      "key": "深度超跌",
+      "hit": true,
+      "text": "20日-11.58%"
+     },
+     {
+      "key": "估值低位",
+      "hit": null,
+      "text": "⬜估值数据源未接"
+     },
+     {
+      "key": "温度冰点",
+      "hit": false,
+      "text": "温度35"
+     },
+     {
+      "key": "指数底拐",
+      "hit": false,
+      "text": "无拐点信号"
+     }
+    ],
+    "top_hit": 0,
+    "top_na": 1,
+    "bottom_hit": 3,
+    "bottom_na": 1,
+    "px_pct": 7.2,
+    "vol_pct": 37.9,
+    "diverge": -30.7,
+    "breadth_full_days": 0,
+    "note": "样本<5不给概率(铁律2)——只报命中条数,⬜=数据源缺失非未命中"
+   },
+   "turn_risk": {
+    "top_risk": 0,
+    "bottom_opp": 62,
+    "text": "顶部转向风险 低(0/100) ｜ 底部转机信号 高(62/100)｜顶部特征0/7·底部特征3/7",
+    "ver": "v2"
+   },
+   "breadth_stat": {
+    "full_days": 0,
+    "breadth_delta5": null,
+    "days_recorded": 1
+   }
+  },
+  "港股": {
+   "topbot": {
+    "market": "港股",
+    "top": [
+     {
+      "key": "价格高位",
+      "hit": true,
+      "text": "价格分位73.3"
+     },
+     {
+      "key": "量价背离",
+      "hit": false,
+      "text": "价格分位73.3／量分位61.0＝背离+12.3"
+     },
+     {
+      "key": "广度钝化",
+      "hit": false,
+      "text": "广度100·满值连续1日（历史仅1天，需攒够3天）"
+     },
+     {
+      "key": "动量衰竭",
+      "hit": false,
+      "text": "20日+8.98%但5日仅+3.92%"
+     },
+     {
+      "key": "估值高位",
+      "hit": null,
+      "text": "⬜估值数据源未接"
+     },
+     {
+      "key": "温度过热",
+      "hit": true,
+      "text": "温度91"
+     },
+     {
+      "key": "指数拐点",
+      "hit": false,
+      "text": "无拐点信号"
+     }
+    ],
+    "bottom": [
+     {
+      "key": "价格低位",
+      "hit": false,
+      "text": "价格分位73.3"
+     },
+     {
+      "key": "放量杀跌",
+      "hit": false,
+      "text": "价格分位73.3／量分位61.0＝背离+12.3"
+     },
+     {
+      "key": "广度极低",
+      "hit": false,
+      "text": "广度100"
+     },
+     {
+      "key": "深度超跌",
+      "hit": false,
+      "text": "20日+8.98%"
+     },
+     {
+      "key": "估值低位",
+      "hit": null,
+      "text": "⬜估值数据源未接"
+     },
+     {
+      "key": "温度冰点",
+      "hit": false,
+      "text": "温度91"
+     },
+     {
+      "key": "指数底拐",
+      "hit": false,
+      "text": "无拐点信号"
+     }
+    ],
+    "top_hit": 2,
+    "top_na": 1,
+    "bottom_hit": 0,
+    "bottom_na": 1,
+    "px_pct": 73.3,
+    "vol_pct": 61.0,
+    "diverge": 12.3,
+    "breadth_full_days": 1,
+    "note": "样本<5不给概率(铁律2)——只报命中条数,⬜=数据源缺失非未命中"
+   },
+   "turn_risk": {
+    "top_risk": 25,
+    "bottom_opp": 0,
+    "text": "顶部转向风险 低(25/100) ｜ 底部转机信号 低(0/100)｜顶部特征2/7·底部特征0/7",
+    "ver": "v2"
+   },
+   "breadth_stat": {
+    "full_days": 1,
+    "breadth_delta5": null,
+    "days_recorded": 1
+   }
+  }
+ },
+ "phase_spread": {
+  "temps": {
+   "美股": 62,
+   "A股": 35,
+   "港股": 91
+  },
+  "hot": "港股",
+  "cold": "A股",
+  "spread": 56,
+  "level": "极端分化",
+  "text": "极端分化：港股91 vs A股35，极差56点"
+ }
+}

@@ -181,6 +181,12 @@ def _td(v, style="") -> str:
     return f"<td style='padding:3px 5px;border-bottom:1px solid #f1f5f9;{style}'>{v}</td>"
 
 
+def _gate(g: dict | None, key: str) -> str:
+    """取某只票某个动作的门票。IN 侧读它**不构成"互为准入"**——门控发生在输出层，
+    两个引擎的计算仍互盲(见 sell_grade.py 顶部三方定纲)。"""
+    return str(((g or {}).get("gates") or {}).get(key) or "PASS")
+
+
 def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                       pool: dict = None, limit_in: int = 6, limit_out: int = 8) -> str:
     """3A大系统完整模块(标题+IN表+OUT表+尾注),一次返回全部HTML。"""
@@ -203,6 +209,10 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
         _board = _sig[:limit_out]
     out_src = _board
     _bd = sg.get("board") or {}
+    # 被 OUT 证据撤销买点的 IN 候选(含未进上表的1A):行不删,但必须点名
+    _revoked = [(str(r.get("name")), str(r.get("tier")))
+                for r in rows if _gate(sgm.get(str(r.get("code"))), "开仓") == "BLOCK"
+                and str(r.get("tier")) in ("3A", "2A", "1A")]
     head = (f"<div style='background:linear-gradient(90deg,#0ea5e9,#dc2626);color:#fff;"
             f"border-radius:8px;padding:8px 14px;margin:4px 0 6px;text-align:center'>"
             f"<div style='font-size:16px;font-weight:800'>🎯 3A大系统 · IN / OUT</div>"
@@ -237,8 +247,17 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + _td(f"<b>现{d.get('last', '—')}</b>"
                   f"<br><span style='color:#16a34a;font-size:9px'>"
                   f"{str(r.get('data_available_at') or '')[:10]}</span>")
-            + _td(f"<b style='color:{col}'>{r.get('subtype')}</b>"
-                  f"<br><span style='color:#dc2626'>{r.get('action_state')}</span>"
+            # 【2026-08-02 三方定纲】IN 侧有 OUT 风险证据时**不删行**(GPT:原IN结构尚可观察),
+            # 而是把"本次入场触发已失效"的门票摆在动作位——机会结构仍在 ≠ 现在能买,
+            # 这两件事必须能同时表达。删行=监守自盗的镜像(用一侧结果消音另一侧证据)。
+            + _td((f"<div style='background:#7f1d1d;color:#fff;border-radius:3px;"
+                   f"padding:1px 4px;font-size:9.5px;font-weight:700;margin-bottom:2px'>"
+                   f"⛔本次买点已撤销</div>" if _gate(sgm.get(c), "开仓") == "BLOCK" else
+                   f"<div style='background:#fef3c7;color:#92400e;border-radius:3px;"
+                   f"padding:1px 4px;font-size:9.5px;margin-bottom:2px'>⚠️开仓需谨慎</div>"
+                   if _gate(sgm.get(c), "开仓") == "CAUTION" else "")
+                  + f"<b style='color:{col}'>{r.get('subtype')}</b>"
+                    f"<br><span style='color:#dc2626'>{r.get('action_state')}</span>"
                   + (f"<br><span style='font-size:9px;color:#64748b'>2周涨"
                      f"{d.get('p_up')}%</span>" if d.get("p_up") else ""))
             + _td(f"<b style='color:#b91c1c'>{zone}</b>"
@@ -294,14 +313,28 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                     f"{g.get('sell_score', '—')}</span>", "white-space:nowrap")
             + _td(f"<b>现{g.get('px', '—')}</b><br>"
                   f"<span style='font-size:9px;color:#64748b'>MA20 {g.get('ma20', '—')}</span>")
-            + _td(f"<b style='color:{col}'>{g.get('action')}</b>"
+            # 【三方定纲·第三层】身份决定**措辞**不决定风险等级:同一个-3A,
+            # 持仓说"减仓/退出",自选说"回避·禁止开仓",候选说"取消推荐资格"——
+            # 这是动作语义转换,不是风险降级(GPT纠正Claude原方案"身份定主答方"之误)。
+            + _td((f"<b style='color:{col}'>{g.get('say')}</b><br>" if g.get("say") else "")
+                  + f"<span style='font-size:9.5px;color:{col}'>{g.get('action')}</span>"
+                  + "<br><span style='font-size:8.5px;color:#475569'>"
+                  + " ".join(f"{k}<b style='color:"
+                             f"{'#b91c1c' if v in ('BLOCK', 'TRIGGERED') else '#b45309' if v in ('CAUTION', 'WATCH', 'DEMOTE') else '#16a34a'}'>"
+                             f"{v}</b>" for k, v in (g.get("gates") or {}).items())
+                  + "</span>"
                   + f"<br><span style='font-size:9px;color:#64748b'>紧迫度 <b>"
                     f"{g.get('urgency', '—')}</b>"
-                    f"{'高' if lv == '-3A' else '中' if lv == '-2A' else '低'}</span>")
+                    f"{'高' if lv == '-3A' else '中' if lv == '-2A' else '低'}</span>", "max-width:170px")
             + _td(f"<b style='color:#b91c1c'>{g.get('sell_zone', '—')}</b>"
                   + (f"<br><span style='font-size:9px;color:#0891b2'>🔁重买: {rb[:44]}</span>"
                      if rb else "<br><span style='font-size:9px;color:#b45309'>"
-                                "⚠️缺重买条件(只说一半)</span>"), "max-width:180px")
+                                "⚠️缺重买条件(只说一半)</span>")
+                  # GPT失效模式⑥:-3A否决的是**当前入场窗口**,不是永久看空。必须绑解除条件,
+                  # 否则"暂时否决"会被读成"这票废了"。
+                  + (f"<br><span style='font-size:8.5px;color:#64748b'>"
+                     f"{g.get('window_note')}</span>" if g.get("window_note") else ""),
+                  "max-width:190px")
             + _td(g.get("stop") or "—")
             # 非持仓的"止损价"是按假设持有反推的,距离只作参考——不加这行标注,
             # 会让人以为非持仓票也有真实止损位(-3A新东方距19.9%曾误导排序)
@@ -350,6 +383,16 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                f"不硬凑。{near}</div>" if n3 == 0 else "")
             + (_tbl(in_rows, _TH_IN) or "<div style='font-size:12px;color:#94a3b8'>今日无 3A/2A —— "
                                 "现金也是仓位；战术级1A见买表折叠区</div>")
+            # 【三方定纲·可见性】被 OUT 证据撤销买点的票若不在上表(如1A),必须单独点名——
+            # 仲裁若不可见,等于没发生。GPT:"IN候选结构保留,当前买点撤销"要两句都说出来。
+            + (f"<div style='font-size:11px;background:#fef2f2;border-left:3px solid #b91c1c;"
+               f"border-radius:4px;padding:4px 8px;margin:4px 0'>"
+               f"⛔ <b>本次买点被 OUT 证据撤销 {len(_revoked)} 只</b>："
+               + "、".join(f"{n}<span style='color:#94a3b8'>({t})</span>" for n, t in _revoked)
+               + "　<span style='color:#64748b'>买入结构可继续观察，但**现在不能买**"
+                 "（解除需:缩量止跌／收复MA20／结构重新确认）。"
+                 "两侧计算互盲、都不删——删一侧就成了用结果消音证据。</span></div>"
+               if _revoked else "")
             + f"<div style='font-size:12.5px;font-weight:700;color:#b91c1c;margin:10px 0 2px'>"
               f"🔴 OUT · 卖出/回避榜（{len(_board)}只 · 按离触发多近排序）</div>"
             + (f"<div style='font-size:11px;color:#64748b;margin-bottom:3px'>"
