@@ -225,7 +225,9 @@ def cg_badge(who: str, state: str, note: str = "") -> str:
     身份色恒定(C靛蓝/G青),状态用符号与透明度表达——用户定纲:
     "gpt的验证一定要有大写字母G,就像claude的C一样,不同颜色标注"。"""
     base = PALETTE["claude"] if who == "C" else PALETTE["gpt"]
+    # 三级:pass=主动背书(实心✅) / gate_pass=机检达标(空心✓,半亮) / reject=否决 / 未表态=—
     mark, op = ("✅", "1") if state == "pass" else \
+               ("✓", ".72") if state == "gate_pass" else \
                ("⚠️", "1") if state == "reject" else ("—", ".45")
     t = f" title=\"{note}\"" if note else ""
     return (f"<span style='background:{base};color:#fff;border-radius:3px;"
@@ -580,7 +582,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             # 铁律19 验证漏斗:被拦的必须点名,否则"我们还欠多少验证"看不见
             + (f"<div style='font-size:11px;background:#f8fafc;border-left:3px solid "
                f"{PALETTE['hold']};border-radius:4px;padding:4px 8px;margin:3px 0'>"
-               f"🔐 <b>验证准入闸</b>（3A=Claude+GPT双验证／2A·1A=Claude必须；"
+               f"🔐 <b>验证准入闸</b>（<b>3A=Claude主动复核+GPT通过</b>／2A=已过Claude标准闸+GPT不否定／1A=任一方背书且另一方不否决；Claude否决=不上榜）"
                + (lambda _h: (
                    f"<div style='font-size:10.5px;margin-bottom:2px;color:"
                    f"{PALETTE['warn'] if (_h.get('last_error') or (_h.get('max_age_days') or 0) > 1) else PALETTE['hold']}'>"
