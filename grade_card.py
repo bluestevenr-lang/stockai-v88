@@ -198,6 +198,12 @@ def _flag(code: str, market: str = "") -> str:
     return "🇺🇸" if c else ""
 
 
+def _nomd(v) -> str:
+    """HTML 出口统一清 markdown 星号——落盘文案用 ** 强调是给人读的,
+    直接塞进 HTML 会原样显示成星号(用户已抓过两次)。"""
+    return str(v or "").replace("**", "")
+
+
 def _tbl(rows_html: str, heads=None) -> str:
     if not rows_html:
         return ""
@@ -210,7 +216,7 @@ def _tbl(rows_html: str, heads=None) -> str:
 
 
 def _td(v, style="") -> str:
-    return f"<td style='padding:3px 5px;border-bottom:1px solid #f1f5f9;{style}'>{v}</td>"
+    return f"<td style='padding:3px 5px;border-bottom:1px solid #f1f5f9;{style}'>{_nomd(v)}</td>"
 
 
 def _gate(g: dict | None, key: str) -> str:
@@ -575,7 +581,9 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + (f"<div style='font-size:11.5px;background:#f8fafc;border-left:3px solid {PALETTE['hold']};"
                f"border-radius:4px;padding:5px 8px;margin:4px 0'>"
                f"✅ <b>{str(_quiet.get('headline')).replace('**', '')}</b>"
-               f"<span style='color:#64748b'>　（{_quiet.get('wording_rule')}）</span><br>"
+               f"<span style='color:#64748b'>　（"
+               + str(_quiet.get('wording_rule') or '').replace('**', '')
+               + "）</span><br>"
                + "　".join(
                    f"<span style='display:inline-block;margin:1px 0'>{r.get('name')}"
                    f"<span style='color:#94a3b8;font-size:10px'>"
