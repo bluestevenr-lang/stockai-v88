@@ -239,6 +239,24 @@ def pipeline_status() -> dict:
         return {}
 
 
+def _run_strip() -> str:
+    """3A链路运行状态条。**独立成函数**——上一版直接把 lambda 塞进 head 的
+    括号表达式里,把 f-string 隐式拼接切断,整个模块 SyntaxError。
+    渲染层的长表达式不要再往里插逻辑,插函数调用。"""
+    p = pipeline_status()
+    if not p:
+        return ""
+    if p.get("running"):
+        return (f"<br>🟢 <b>正在跑</b>（{p.get('started_at')} 开始，整链约9分钟）")
+    out = f"<br>⏸ 上次跑完 {p.get('last_run') or '—'}"
+    if p.get("since_min") is not None:
+        out += f"（{p['since_min']}分钟前）"
+    if p.get("next_slot"):
+        out += (f"　下一班 {p['next_slot']}"
+                f"（{p['until_min'] // 60}小时{p['until_min'] % 60}分后）")
+    return out
+
+
 def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                       pool: dict = None, limit_in: int = 12, limit_out: int = 8) -> str:
     """3A大系统完整模块(标题+IN表+OUT表+尾注),一次返回全部HTML。"""
@@ -287,16 +305,10 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             # 时间可能不同步——分别标,不合并成一个"最后更新",否则会掩盖某一侧卡住。
             + f"<div style='font-size:10.5px;opacity:.9;margin-top:2px'>"
               f"🕐 IN {str(rk.get('generated_at') or '—')} ｜ OUT {str(sg.get('generated_at') or '—')}"
-            + (lambda _p: ("" if not _p else
-                           (f"<br>🟢 <b>正在跑</b>（{_p.get('started_at')} 开始，整链约9分钟）"
-                            if _p.get("running") else
-                            f"<br>⏸ 上次跑完 {_p.get('last_run')}"
-                            + (f"（{_p['since_min']}分钟前）" if _p.get("since_min") is not None else "")
-                            + (f"　下一班 {_p.get('next_slot')}"
-                               f"（{_p['until_min'] // 60}小时{_p['until_min'] % 60}分后）"
-                               if _p.get("next_slot") else ""))))(pipeline_status())
-              f"　<span style='opacity:.8'>每交易日 3 次·按收盘定锚(05:10美股收盘后/15:10A股收盘后/16:20港股收盘后 北京)</span></div>"
-            f"</div>")
+            + _run_strip()
+            + f"　<span style='opacity:.8'>每交易日 3 次·按收盘定锚"
+              f"(05:30美股收盘后/14:20A股尾盘/21:30美股开盘 北京;睡过头开机即补)</span></div>"
+            + f"</div>")
 
     # ── IN 表 ──
     # 【铁律19·分级验证准入闸】用户:"没有claude验证不能上榜,这是关键,gpt为辅它通过也不行"。
