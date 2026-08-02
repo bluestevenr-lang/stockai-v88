@@ -574,13 +574,19 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             # 无信号的持仓：必须交代状态，但绝不说"安全"或"建议继续持有"（GPT B3）
             + (f"<div style='font-size:11.5px;background:#f8fafc;border-left:3px solid {PALETTE['hold']};"
                f"border-radius:4px;padding:5px 8px;margin:4px 0'>"
-               f"✅ <b>{_quiet.get('headline')}</b>"
+               f"✅ <b>{str(_quiet.get('headline')).replace('**', '')}</b>"
                f"<span style='color:#64748b'>　（{_quiet.get('wording_rule')}）</span><br>"
                + "　".join(
                    f"<span style='display:inline-block;margin:1px 0'>{r.get('name')}"
                    f"<span style='color:#94a3b8;font-size:10px'>"
                    f"[{r.get('nearest_risk')}]</span></span>"
-                   for r in (_quiet.get("rows") or []))
+                   for r in (_quiet.get("rows") or []) if not r.get("vetoed"))
+               # 被验证压掉的必须与"真没信号"分开列——混在一起就是撒谎:
+               # 它们触发了,只是裁决没放行。同"无信号≠安全"的措辞铁律。
+               + "".join(
+                   f"<div style='font-size:10.5px;color:{PALETTE['warn']};margin-top:2px'>"
+                   f"⏸ <b>{r.get('name')}</b>：{r.get('status')}</div>"
+                   for r in (_quiet.get("rows") or []) if r.get("vetoed"))
                + "</div>" if _quiet.get("rows") else "")
             # ══ 第二区：非持仓 ══
             + f"<div style='font-size:13px;font-weight:800;color:#b45309;margin:12px 0 2px;"
