@@ -3259,6 +3259,12 @@ try:
         _v9 = str(_g9.get("verdict") or "")
         if not _v9:
             return ""
+        # 【2026-08-03 修 NameError】_base9 是 _cert_badge9 的**局部变量**,
+        # 我加 G 徽章时抄了样式却没带定义 → NameError 把整个作战板中段(题材榜/龙虎榜)打掉。
+        # 圆形单字符样式在此自带一份,不再跨函数借用。
+        _base9 = ("display:inline-block;width:15px;height:15px;line-height:15px;"
+                  "text-align:center;border-radius:50%;font-size:10px;font-weight:800;"
+                  "margin-left:3px;vertical-align:middle;letter-spacing:-.3px")
         _st9 = ("#0d9488", "#fff", "G") if _v9 == "通过" else \
                ("#134e4a", "#fff", "G̸") if _v9 == "否决" else \
                ("#ccfbf1", "#0f766e", "G")
@@ -4657,135 +4663,165 @@ try:
                     # 【题材热点雷达 2026-07-28 用户"热点掌握不够"】概念板块层——A股的钱按题材走,
                     # 只看行业(电力设备涨2%)根本不知道今天在炒什么。涨幅榜∩资金榜分真假,
                     # 连续在榜天数分主线与一日游(主线第2天上车还有肉,一日游第2天就是接盘)。
-                    try:
-                        _htj9 = _nwj9("hot_theme.json")
-                        # 【提前量优先 2026-07-28 用户"不要后知后觉"】蓄势榜排最前:
-                        # 钱在进但价没动=还能上车;已在涨的降为副榜并标追高风险
-                        # 【2026-08-02 用户"延伸的个股也要实现鼠标点击分析"】
-                        # 题材梯队里的个股此前是纯文本,点不动——而它们恰恰是"该看哪只"的落点。
-                        # 【2026-08-02 用户"这个深一些claude流量,用gpt为主验证"】
-                        # 题材榜的裁决交 GPT 主验(theme_verify.py,一次调用验全部,12秒),
-                        # Claude 上下文零消耗。裁决:主线/一日游/不否定。
-                        _tv9 = (_nwj9("theme_verify.json").get("rows") or {})
+                # 【2026-08-02 用户「我让你修改认证的,结果什么都没有了」追出的结构错】
+                # 题材榜原先**嵌在 `if _op_ex9 or _op_bk9:` 分支里**——
+                # 即机会扫描没结果时,整个题材榜(含蓄势榜/已在涨/GPT主验徽章)一起消失。
+                # 而题材榜数据源是 hot_theme,与机会扫描毫无关系,不该受它约束。
+                # 用户以为是我把功能删了,我也查了很久——**嵌套错位比逻辑错更难查**,
+                # 因为代码本身没毛病,只是长在了错误的分支下。整体外移一级。
+                try:
+                    _htj9 = _nwj9("hot_theme.json")
+                    # 【提前量优先 2026-07-28 用户"不要后知后觉"】蓄势榜排最前:
+                    # 钱在进但价没动=还能上车;已在涨的降为副榜并标追高风险
+                    # 【2026-08-02 用户"延伸的个股也要实现鼠标点击分析"】
+                    # 题材梯队里的个股此前是纯文本,点不动——而它们恰恰是"该看哪只"的落点。
+                    # 【2026-08-02 用户"这个深一些claude流量,用gpt为主验证"】
+                    # 题材榜的裁决交 GPT 主验(theme_verify.py,一次调用验全部,12秒),
+                    # Claude 上下文零消耗。裁决:主线/一日游/不否定。
+                    _tv9 = (_nwj9("theme_verify.json").get("rows") or {})
 
-                        def _tv_badge9(_nm):
-                            _v = (_tv9.get(str(_nm)) or {})
-                            _d = _v.get("verdict")
-                            if not _d:
-                                return ""
-                            # 身份色恒定(G=青#0d9488,与3A模块同一套),裁决用文字区分——
-                            # 用户定纲:"gpt的验证一定要有大写字母G,就像claude的C一样"
-                            _op = "1" if _d in ("主线", "一日游") else ".45"
-                            return (f"<span style='background:#0d9488;color:#fff;"
-                                    f"border-radius:3px;padding:0 5px;font-size:9.5px;"
-                                    f"font-weight:800;opacity:{_op};margin-left:3px;"
-                                    f"letter-spacing:.3px' "
-                                    f"title='GPT主验:{_v.get(chr(39)+chr(119)+chr(104)+chr(121)+chr(39), '')}'>"
-                                    f"G·{_d}</span>")
+                    def _tv_badge9(_nm):
+                        _v = (_tv9.get(str(_nm)) or {})
+                        _d = _v.get("verdict")
+                        if not _d:
+                            return ""
+                        # 身份色恒定(G=青#0d9488,与3A模块同一套),裁决用文字区分——
+                        # 用户定纲:"gpt的验证一定要有大写字母G,就像claude的C一样"
+                        _op = "1" if _d in ("主线", "一日游") else ".45"
+                        return (f"<span style='background:#0d9488;color:#fff;"
+                                f"border-radius:3px;padding:0 5px;font-size:9.5px;"
+                                f"font-weight:800;opacity:{_op};margin-left:3px;"
+                                f"letter-spacing:.3px' "
+                                f"title='GPT主验:{_v.get(chr(39)+chr(119)+chr(104)+chr(121)+chr(39), '')}'>"
+                                f"G·{_d}</span>")
 
-                        def _mem_link9(_m):
-                            _c = str(_m.get("code") or "")
-                            _t = f'{_m.get("name")}{(_m.get("chg") or 0):+.1f}%'
-                            if not _c:
-                                return _t
-                            return (f'<a href="?q={_c}&focus=deep#v88-deep-analysis" '
-                                    f'target="_blank" rel="noopener" style="color:inherit;'
-                                    f'text-decoration:underline;text-underline-offset:2px">{_t}</a>')
-                        _brw9 = (_htj9.get("brewing") or [])[:5]
-                        if _brw9:
-                            _bw_html9 = []
-                            for _b9t in _brw9:
-                                _mem9b = "、".join(_mem_link9(m)
-                                                  for m in (_b9t.get("members") or [])[:3])
-                                _bw_html9.append(
-                                    f"<div style='font-size:12px;line-height:1.6'>"
-                                    f"<b style='color:#16a34a'>{_b9t.get('grade')}</b> "
-                                    f"<b>{_b9t.get('name')}</b>{_tv_badge9(_b9t.get('name'))}"
-                                    f"<span style='font-size:11.5px;color:#475569'>·{_b9t.get('why')}</span>"
-                                    f"<span style='font-size:11px;color:#64748b'>·梯队:{_mem9b}</span></div>")
-                            st.markdown(
-                                "<b style='font-size:13px'>🌱 ③a0 题材蓄势·钱进价未动(提前量)</b>"
-                                "<span style='font-size:11px;color:#94a3b8' title='主力净流入排名靠前但当日涨幅<1.2%"
-                                "=钱先进场价还没反应,这是还能上车的地方;连续净流入天数越多=潜伏越久。"
-                                "与下方已在涨的副榜相反——那些是追高区'>ⓘ提前量·非追涨</span>"
-                                + "".join(_bw_html9), unsafe_allow_html=True)
-                        _hts9 = (_htj9.get("themes") or [])[:5]
-                        if _hts9:
-                            _ht_html9 = []
-                            for _h9t in _hts9:
-                                _kd9 = str(_h9t.get("kind") or "")
-                                _kc9 = ("#dc2626" if "主线" in _kd9 else
-                                        ("#b45309" if "真金" in _kd9 else "#94a3b8"))
-                                _mem9 = "、".join(
-                                    _mem_link9(m) for m in (_h9t.get("members") or [])[:3])
-                                _ht_html9.append(
-                                    f"<div style='font-size:12px;line-height:1.6'>"
-                                    f"<b style='color:{_kc9}'>{_kd9}</b> "
-                                    f"<b>{_h9t.get('name')}</b>{_tv_badge9(_h9t.get('name'))} "
-                                    f"<span style='color:#dc2626'>{(_h9t.get('chg') or 0):+.2f}%</span>"
-                                    + (f"<span style='color:#b45309'>·主力{_h9t['net_yi']:+.1f}亿</span>"
-                                       if _h9t.get("net_yi") is not None else "")
-                                    + f"<span style='font-size:11px;color:#64748b'>·梯队:{_mem9}</span></div>")
-                            _mine9 = _htj9.get("mine_in_hot") or []
-                            st.markdown(
-                                "<b style='font-size:13px'>🔥 ③a0b 已在涨的题材(副榜·追高需谨慎)</b>"
-                                "<span style='font-size:11px;color:#94a3b8' title='东财495个概念板块:"
-                                "涨幅榜∩主力净流入榜——只涨不进钱=情绪脉冲,涨且进钱=真金白银;"
-                                "连续在榜天数区分主线与一日游。梯队=板块内涨幅前三,不只看一只领涨股'>"
-                                f"（{str(_htj9.get('asof_note') or _htj9.get('generated_at', ''))[:18]} ⓘ）</span>"
-                                + "".join(_ht_html9)
-                                + (f"<div style='font-size:11.5px;color:#7c3aed;margin-top:2px'>"
-                                   f"📌跟我有关:" + "、".join(
-                                       f"{h.get('name')}({h.get('theme')}·{h.get('rel')})"
-                                       for h in _mine9[:4]) + "</div>" if _mine9 else ""),
-                                unsafe_allow_html=True)
-                    except Exception as _ht_e9:
-                        logging.exception(f"[V88] 题材热点渲染失败: {_ht_e9}")
-                    # 【龙虎榜 2026-07-28】个股层热钱:谁在买·机构还是游资·该类信号历史成功率
-                    try:
-                        _dbj9 = _nwj9("dragon_board.json")
-                        _dbr9 = (_dbj9.get("rows") or [])[:5]
-                        if _dbr9 and _mkfit9("000001.SZ"):     # A股筛选时才显示
-                            _dbs9 = _dbj9.get("stat") or {}
-                            _db_html9 = []
-                            for _r9d in _dbr9:
-                                _pr9 = _r9d.get("prior_rate")
-                                _db_html9.append(
-                                    f"<div style='font-size:12px;line-height:1.6'>"
-                                    f"{_r9d.get('seat')} "
-                                    f"<a href='?q={_r9d.get('code')}&focus=deep#v88-deep-analysis' "
-                                    f"target='_blank' rel='noopener' style='text-decoration:underline;"
-                                    f"color:#1e3a5f;font-weight:600'>{_r9d.get('name')}</a>"
-                                    f"<span style='color:#dc2626'>{(_r9d.get('chg') or 0):+.1f}%</span>"
-                                    f"<span style='color:#b45309'>·净买{_r9d.get('net_yi')}亿</span>"
-                                    f"<span style='font-size:11px;color:#64748b'>·占成交{_r9d.get('deal_ratio')}%"
-                                    f"·{str(_r9d.get('reason'))[:20]}</span>"
-                                    + (f"<span style='font-size:11px;color:{'#16a34a' if _pr9 >= 45 else '#94a3b8'}'>"
-                                       f"(该类信号历史成功率{_pr9}%)</span>" if _pr9 is not None else "")
-                                    + "</div>")
-                            st.markdown(
-                                "<b style='font-size:13px'>🐲 ③a1 龙虎榜·谁在动手</b>"
-                                "<span style='font-size:11px;color:#94a3b8' title='净买入前列+机构/游资席位区分;"
-                                "括号内成功率=东财统计的该类上榜信号历史胜率(现成先验,不是我们猜的);"
-                                "跟风胜率随每日累积由上榜后1/2日涨跌实算'>"
-                                f"（{_dbj9.get('trade_date', '')}收盘·{(_dbs9.get('seat_mix') or {})} ⓘ）</span>"
-                                + "".join(_db_html9), unsafe_allow_html=True)
-                    except Exception as _db_e9:
-                        logging.exception(f"[V88] 龙虎榜渲染失败: {_db_e9}")
-                    st.markdown("<b style='font-size:13px'>🌍 ③a 全市场机会</b>"
-                                f"<span style='font-size:11px;color:#94a3b8' title='四路候选(全池转强低位/涨停接力/行业代表/黑马)"
-                                f"→实跑{_op9.get('studied', '?')}只→严格标准(赔率≥2.0·52周位≤55%·2周概率≥55%·启动型)→过环境闸;"
-                                f"逆势通道=深度低位+超宽赔率在弱市可小仓试;全量入台账攒战绩'>"
-                                f"（实跑{_op9.get('studied', '?')}只·可执行{len(_op_ex9)}·被闸{len(_op_bk9)} ⓘ）</span>"
-                                + ("".join(_op_rows9) if _op_rows9 else
-                                   "<div style='font-size:12px;color:#94a3b8'>本档无可执行机会</div>")
-                                + (f"<div style='font-size:11.5px;color:#94a3b8'>⏸被闸:"
-                                   + "、".join(f"{r.get('name')}(赔率{r.get('rr')}·"
-                                              f"{'/'.join((r.get('block_reasons') or ['环境不合格'])[:1])[:18]})"
-                                              for r in _op_bk9[:4]) + "</div>" if _op_bk9 else ""),
-                                unsafe_allow_html=True)
+                    def _mem_link9(_m):
+                        _c = str(_m.get("code") or "")
+                        _t = f'{_m.get("name")}{(_m.get("chg") or 0):+.1f}%'
+                        if not _c:
+                            return _t
+                        return (f'<a href="?q={_c}&focus=deep#v88-deep-analysis" '
+                                f'target="_blank" rel="noopener" style="color:inherit;'
+                                f'text-decoration:underline;text-underline-offset:2px">{_t}</a>')
+                    _brw9 = (_htj9.get("brewing") or [])[:5]
+                    if _brw9:
+                        _bw_html9 = []
+                        for _b9t in _brw9:
+                            _mem9b = "、".join(_mem_link9(m)
+                                              for m in (_b9t.get("members") or [])[:3])
+                            _bw_html9.append(
+                                f"<div style='font-size:12px;line-height:1.6'>"
+                                f"<b style='color:#16a34a'>{_b9t.get('grade')}</b> "
+                                f"<b>{_b9t.get('name')}</b>{_tv_badge9(_b9t.get('name'))}"
+                                f"<span style='font-size:11.5px;color:#475569'>·{_b9t.get('why')}</span>"
+                                f"<span style='font-size:11px;color:#64748b'>·梯队:{_mem9b}</span></div>")
+                        st.markdown(
+                            "<b style='font-size:13px'>🌱 ③a0 题材蓄势·钱进价未动(提前量)</b>"
+                            "<span style='font-size:11px;color:#94a3b8' title='主力净流入排名靠前但当日涨幅<1.2%"
+                            "=钱先进场价还没反应,这是还能上车的地方;连续净流入天数越多=潜伏越久。"
+                            "与下方已在涨的副榜相反——那些是追高区'>ⓘ提前量·非追涨</span>"
+                            + "".join(_bw_html9), unsafe_allow_html=True)
+                    _hts9 = (_htj9.get("themes") or [])[:5]
+                    if _hts9:
+                        _ht_html9 = []
+                        for _h9t in _hts9:
+                            _kd9 = str(_h9t.get("kind") or "")
+                            _kc9 = ("#dc2626" if "主线" in _kd9 else
+                                    ("#b45309" if "真金" in _kd9 else "#94a3b8"))
+                            _mem9 = "、".join(
+                                _mem_link9(m) for m in (_h9t.get("members") or [])[:3])
+                            _ht_html9.append(
+                                f"<div style='font-size:12px;line-height:1.6'>"
+                                f"<b style='color:{_kc9}'>{_kd9}</b> "
+                                f"<b>{_h9t.get('name')}</b>{_tv_badge9(_h9t.get('name'))} "
+                                f"<span style='color:#dc2626'>{(_h9t.get('chg') or 0):+.2f}%</span>"
+                                + (f"<span style='color:#b45309'>·主力{_h9t['net_yi']:+.1f}亿</span>"
+                                   if _h9t.get("net_yi") is not None else "")
+                                + f"<span style='font-size:11px;color:#64748b'>·梯队:{_mem9}</span></div>")
+                        _mine9 = _htj9.get("mine_in_hot") or []
+                        st.markdown(
+                            "<b style='font-size:13px'>🔥 ③a0b 已在涨的题材(副榜·追高需谨慎)</b>"
+                            "<span style='font-size:11px;color:#94a3b8' title='东财495个概念板块:"
+                            "涨幅榜∩主力净流入榜——只涨不进钱=情绪脉冲,涨且进钱=真金白银;"
+                            "连续在榜天数区分主线与一日游。梯队=板块内涨幅前三,不只看一只领涨股'>"
+                            f"（{str(_htj9.get('asof_note') or _htj9.get('generated_at', ''))[:18]} ⓘ）</span>"
+                            + "".join(_ht_html9)
+                            + (f"<div style='font-size:11.5px;color:#7c3aed;margin-top:2px'>"
+                               f"📌跟我有关:" + "、".join(
+                                   f"{h.get('name')}({h.get('theme')}·{h.get('rel')})"
+                                   for h in _mine9[:4]) + "</div>" if _mine9 else ""),
+                            unsafe_allow_html=True)
+                except Exception as _ht_e9:
+                    logging.exception(f"[V88] 题材热点渲染失败: {_ht_e9}")
+                    # 【2026-08-02 用户"我让你修改认证的,结果什么都没有了"】
+                    # 原先只写 logging,页面上一片空白且毫无提示——用户以为功能被删了。
+                    # 同"不静默吞错"铁律:渲染失败必须在**页面上**说出来。
+                    import traceback as _tb9
+                    st.caption(f"⚠️ 题材榜渲染失败：{type(_ht_e9).__name__}: {str(_ht_e9)[:120]}")
+                    with st.expander("异常详情（供排查）", expanded=False):
+                        st.code(_tb9.format_exc()[-1500:])
+                # 【2026-08-03 修·龙虎榜永不显示】本段原被写在题材榜的 except 体内,
+                # 只有题材榜**报错**时才轮到它跑。题材榜一修好,龙虎榜就彻底消失。
+                # 与 08-02 那个裸 except 是同一类病:**控制流把功能藏进了错误分支**。
+                # 数据一直是好的(实测15条·昆仑万维+20%·主力+9.44亿),从来不是"今天没数据"。
+                # 【龙虎榜 2026-07-28】个股层热钱:谁在买·机构还是游资·该类信号历史成功率
+                try:
+                    _dbj9 = _nwj9("dragon_board.json")
+                    _dbr9 = (_dbj9.get("rows") or [])[:5]
+                    if _dbr9 and _mkfit9("000001.SZ"):     # A股筛选时才显示
+                        _dbs9 = _dbj9.get("stat") or {}
+                        _db_html9 = []
+                        for _r9d in _dbr9:
+                            _pr9 = _r9d.get("prior_rate")
+                            _db_html9.append(
+                                f"<div style='font-size:12px;line-height:1.6'>"
+                                f"{_r9d.get('seat')} "
+                                f"<a href='?q={_r9d.get('code')}&focus=deep#v88-deep-analysis' "
+                                f"target='_blank' rel='noopener' style='text-decoration:underline;"
+                                f"color:#1e3a5f;font-weight:600'>{_r9d.get('name')}</a>"
+                                f"<span style='color:#dc2626'>{(_r9d.get('chg') or 0):+.1f}%</span>"
+                                f"<span style='color:#b45309'>·净买{_r9d.get('net_yi')}亿</span>"
+                                f"<span style='font-size:11px;color:#64748b'>·占成交{_r9d.get('deal_ratio')}%"
+                                f"·{str(_r9d.get('reason'))[:20]}</span>"
+                                + (f"<span style='font-size:11px;color:{'#16a34a' if _pr9 >= 45 else '#94a3b8'}'>"
+                                   f"(该类信号历史成功率{_pr9}%)</span>" if _pr9 is not None else "")
+                                + "</div>")
+                        st.markdown(
+                            "<b style='font-size:13px'>🐲 ③a1 龙虎榜·谁在动手</b>"
+                            "<span style='font-size:11px;color:#94a3b8' title='净买入前列+机构/游资席位区分;"
+                            "括号内成功率=东财统计的该类上榜信号历史胜率(现成先验,不是我们猜的);"
+                            "跟风胜率随每日累积由上榜后1/2日涨跌实算'>"
+                            f"（{_dbj9.get('trade_date', '')}收盘·{(_dbs9.get('seat_mix') or {})} ⓘ）</span>"
+                            + "".join(_db_html9), unsafe_allow_html=True)
+                except Exception as _db_e9:
+                    logging.exception(f"[V88] 龙虎榜渲染失败: {_db_e9}")
+                    st.caption(f"⚠️ 龙虎榜渲染失败：{type(_db_e9).__name__}: {str(_db_e9)[:100]}")
+                # 【2026-08-03 修·同一条链的第二环】🌍全市场机会原写在龙虎榜的 except 体内,
+                # 即"龙虎榜挂了才显示全市场机会"。整条链是:题材榜except→龙虎榜→龙虎榜except→全市场机会,
+                # 每一段都藏在上一段的错误分支里,谁都不知道自己是靠前一个失败才活着的。
+                # 铁律:**except 只放降级/报错,正常内容一律回主干**。
+                st.markdown("<b style='font-size:13px'>🌍 ③a 全市场机会</b>"
+                            f"<span style='font-size:11px;color:#94a3b8' title='四路候选(全池转强低位/涨停接力/行业代表/黑马)"
+                            f"→实跑{_op9.get('studied', '?')}只→严格标准(赔率≥2.0·52周位≤55%·2周概率≥55%·启动型)→过环境闸;"
+                            f"逆势通道=深度低位+超宽赔率在弱市可小仓试;全量入台账攒战绩'>"
+                            f"（实跑{_op9.get('studied', '?')}只·可执行{len(_op_ex9)}·被闸{len(_op_bk9)} ⓘ）</span>"
+                            + ("".join(_op_rows9) if _op_rows9 else
+                               "<div style='font-size:12px;color:#94a3b8'>本档无可执行机会</div>")
+                            + (f"<div style='font-size:11.5px;color:#94a3b8'>⏸被闸:"
+                               + "、".join(f"{r.get('name')}(赔率{r.get('rr')}·"
+                                          f"{'/'.join((r.get('block_reasons') or ['环境不合格'])[:1])[:18]})"
+                                          for r in _op_bk9[:4]) + "</div>" if _op_bk9 else ""),
+                            unsafe_allow_html=True)
             except Exception:
-                pass
+                # 【2026-08-02 用户"我让你修改认证的,结果什么都没有了"】
+                # 原为裸 `pass`——机会扫描段一旦抛错,**它后面的题材榜/龙虎榜全部静默消失**,
+                # 页面上没有任何痕迹。我为此查了一小时,用户以为功能被删了。
+                # 这是全系统"静默吞错"里最贵的一处:它吞掉的不是一个值,是整整三段内容。
+                import traceback as _tb8
+                logging.exception("[V88] 作战板中段渲染失败")
+                st.caption("⚠️ 作战板中段渲染失败（题材榜/龙虎榜受影响）")
+                with st.expander("异常详情（供排查）", expanded=True):
+                    st.code(_tb8.format_exc()[-2000:])
             # ── ③b ⏳拐点倒计时(U3·2026-07-26 用户批准"拐点高低前后的预计") ──
             # 【小米案 2026-07-27】✅预警兑现回响置顶——07-26预警小米见底,07-27+8%兑现,
             # 但用户全程不知道系统说对过。赢了必须让用户看见=事前提醒的证据链。
@@ -19276,6 +19312,11 @@ if st.session_state.get('scan_selected_code'):
                                           for k, (sc, w, d) in _bd99.items()],
                                          hide_index=True, width='stretch')
                 except Exception as _e99:
+                    # 【2026-08-03】这一处与龙虎榜那条链**不同**:完整评分挂了退回趋势脉搏简版,
+                    # 是正当的降级兜底。但降级必须**说出来**——否则用户看到简版,
+                    # 会以为这就是全部,不知道完整分析其实失败了。
+                    logging.exception(f"[V88] 完整评分失败,降级趋势脉搏: {_e99}")
+                    st.caption(f"⚠️ 完整评分失败，已降级简版：{type(_e99).__name__}: {str(_e99)[:100]}")
                     _tp = analyze_trend_pulse(df_temp, target_c)
                     if _tp:
                         with st.expander(f"🔥 趋势脉搏 · {_tp['stage']} · 趋势分{_tp['score']}", expanded=False):
