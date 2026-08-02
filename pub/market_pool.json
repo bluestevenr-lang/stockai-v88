@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-02 11:18（北京时间）",
+ "generated_at": "2026-08-02 23:18（北京时间）",
  "version": "pool-L1.3-natural",
  "note": "全市场L1双通道粗筛(强势=涨≥2%+量比≥1.5;蓄势=平量平价+额≥1亿防漏突破前缩量);quote级零AI;容量帽A300/港100/美100待P1限流实测后调;3A门槛不因扩池而动",
  "markets": {
@@ -8,18 +8,22 @@
    "floor_rejected": 1176,
    "strong_all": 550,
    "brew_all": 776,
-   "trend_all": 82,
-   "picked": 1408,
+   "trend_all": 86,
+   "plunge_all": 28,
+   "forced_in": 8,
+   "picked": 1448,
    "guard": 2000,
    "guard_truncated": 0
   },
   "港股": {
    "universe": 4692,
    "floor_rejected": 2116,
-   "strong_all": 59,
+   "strong_all": 58,
    "brew_all": 60,
-   "trend_all": 6,
-   "picked": 125,
+   "trend_all": 7,
+   "plunge_all": 11,
+   "forced_in": 1,
+   "picked": 137,
    "guard": 800,
    "guard_truncated": 0
   },
@@ -28,8 +32,10 @@
    "floor_rejected": 6531,
    "strong_all": 65,
    "brew_all": 317,
-   "trend_all": 99,
-   "picked": 481,
+   "trend_all": 94,
+   "plunge_all": 120,
+   "forced_in": 6,
+   "picked": 602,
    "guard": 1200,
    "guard_truncated": 0
   }
@@ -396,6 +402,18 @@
    "market": "A股"
   },
   {
+   "code": "688797.SS",
+   "name": "臻宝科技",
+   "chg": 3.69,
+   "amt": 2219558405.0,
+   "vr": 1.16,
+   "chg60": 600.4,
+   "turn": 22.51,
+   "channel": "趋势",
+   "score": 0.9014,
+   "market": "A股"
+  },
+  {
    "code": "688213.SS",
    "name": "思特威-W",
    "chg": -0.03,
@@ -477,6 +495,18 @@
    "turn": 20.73,
    "channel": "蓄势",
    "score": 0.8919,
+   "market": "A股"
+  },
+  {
+   "code": "603407.SS",
+   "name": "长裕集团",
+   "chg": 0.7,
+   "amt": 648859229.0,
+   "vr": 1.49,
+   "chg60": 322.66,
+   "turn": 30.17,
+   "channel": "趋势",
+   "score": 0.8889,
    "market": "A股"
   },
   {
@@ -816,6 +846,18 @@
    "market": "A股"
   },
   {
+   "code": "688825.SS",
+   "name": "C长鑫",
+   "chg": 2.08,
+   "amt": 50337164971.0,
+   "vr": 0.62,
+   "chg60": 523.21,
+   "turn": 19.49,
+   "channel": "趋势",
+   "score": 0.8619,
+   "market": "A股"
+  },
+  {
    "code": "600367.SS",
    "name": "红星发展",
    "chg": 0.15,
@@ -885,6 +927,18 @@
    "turn": 3.15,
    "channel": "蓄势",
    "score": 0.8517,
+   "market": "A股"
+  },
+  {
+   "code": "688635.SS",
+   "name": "长进光子",
+   "chg": 5.0,
+   "amt": 388288839.0,
+   "vr": 1.45,
+   "chg60": 412.45,
+   "turn": 10.06,
+   "channel": "趋势",
+   "score": 0.8514,
    "market": "A股"
   },
   {
@@ -11232,6 +11286,104 @@
    "market": "A股"
   },
   {
+   "code": "159632.SZ",
+   "name": "纳斯达克",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "A股"
+  },
+  {
+   "code": "300760.SZ",
+   "name": "迈瑞医疗",
+   "chg": -1.7,
+   "amt": 1784601638.66,
+   "vr": 1.01,
+   "chg60": -5.95,
+   "turn": 0.93,
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "A股"
+  },
+  {
+   "code": "513310.SS",
+   "name": "中韩芯片",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "A股"
+  },
+  {
+   "code": "513500.SS",
+   "name": "标普500",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "A股"
+  },
+  {
+   "code": "601288.SS",
+   "name": "农业银行",
+   "chg": -2.95,
+   "amt": 5205900672.0,
+   "vr": 1.55,
+   "chg60": 2.37,
+   "turn": 0.24,
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "A股"
+  },
+  {
+   "code": "600941.SH",
+   "name": "中国移动",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "A股"
+  },
+  {
+   "code": "159995.SZ",
+   "name": "芯片ETF",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "A股"
+  },
+  {
+   "code": "513650.SS",
+   "name": "标普ETF(南方标普500)",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "A股"
+  },
+  {
    "code": "601595.SS",
    "name": "上海电影",
    "chg": 5.12,
@@ -12768,6 +12920,30 @@
    "market": "A股"
   },
   {
+   "code": "688146.SS",
+   "name": "中船特气",
+   "chg": -6.55,
+   "amt": 8576792012.0,
+   "vr": 1.14,
+   "chg60": 241.9,
+   "turn": 19.81,
+   "channel": "急跌",
+   "score": 0.4618,
+   "market": "A股"
+  },
+  {
+   "code": "300407.SZ",
+   "name": "凯发电气",
+   "chg": -11.71,
+   "amt": 543696275.0,
+   "vr": 1.64,
+   "chg60": -14.87,
+   "turn": 17.73,
+   "channel": "急跌",
+   "score": 0.4614,
+   "market": "A股"
+  },
+  {
    "code": "688811.SS",
    "name": "有研复材",
    "chg": 5.4,
@@ -13260,6 +13436,18 @@
    "market": "A股"
   },
   {
+   "code": "002536.SZ",
+   "name": "飞龙股份",
+   "chg": -6.05,
+   "amt": 2402335418.74,
+   "vr": 1.75,
+   "chg60": -11.51,
+   "turn": 11.97,
+   "channel": "急跌",
+   "score": 0.4417,
+   "market": "A股"
+  },
+  {
    "code": "600429.SS",
    "name": "三元股份",
    "chg": 0.44,
@@ -13428,6 +13616,18 @@
    "market": "A股"
   },
   {
+   "code": "301583.SZ",
+   "name": "托伦斯",
+   "chg": -5.36,
+   "amt": 2826999993.03,
+   "vr": 1.09,
+   "chg60": 561.95,
+   "turn": 56.26,
+   "channel": "急跌",
+   "score": 0.4334,
+   "market": "A股"
+  },
+  {
    "code": "600266.SS",
    "name": "城建发展",
    "chg": 0.73,
@@ -13449,6 +13649,18 @@
    "turn": 2.84,
    "channel": "蓄势",
    "score": 0.4326,
+   "market": "A股"
+  },
+  {
+   "code": "603823.SS",
+   "name": "百合花",
+   "chg": -6.04,
+   "amt": 1617089857.0,
+   "vr": 3.44,
+   "chg60": 166.21,
+   "turn": 8.09,
+   "channel": "急跌",
+   "score": 0.4309,
    "market": "A股"
   },
   {
@@ -13608,6 +13820,18 @@
    "market": "A股"
   },
   {
+   "code": "688120.SS",
+   "name": "华海清科",
+   "chg": -4.21,
+   "amt": 6447605637.0,
+   "vr": 1.35,
+   "chg60": 79.54,
+   "turn": 4.59,
+   "channel": "急跌",
+   "score": 0.4229,
+   "market": "A股"
+  },
+  {
    "code": "600661.SS",
    "name": "昂立教育",
    "chg": 4.62,
@@ -13689,6 +13913,18 @@
    "turn": 2.96,
    "channel": "蓄势",
    "score": 0.4198,
+   "market": "A股"
+  },
+  {
+   "code": "601606.SS",
+   "name": "长城军工",
+   "chg": -4.8,
+   "amt": 2175805570.0,
+   "vr": 0.93,
+   "chg60": -12.5,
+   "turn": 8.86,
+   "channel": "急跌",
+   "score": 0.4186,
    "market": "A股"
   },
   {
@@ -14028,6 +14264,18 @@
    "market": "A股"
   },
   {
+   "code": "000533.SZ",
+   "name": "顺钠股份",
+   "chg": -4.67,
+   "amt": 1423291432.66,
+   "vr": 1.08,
+   "chg60": -25.27,
+   "turn": 19.88,
+   "channel": "急跌",
+   "score": 0.4042,
+   "market": "A股"
+  },
+  {
    "code": "603219.SS",
    "name": "富佳股份",
    "chg": 6.5,
@@ -14124,6 +14372,18 @@
    "market": "A股"
   },
   {
+   "code": "603137.SS",
+   "name": "恒尚节能",
+   "chg": -4.62,
+   "amt": 1308790211.0,
+   "vr": 1.58,
+   "chg60": 79.21,
+   "turn": 25.84,
+   "channel": "急跌",
+   "score": 0.4008,
+   "market": "A股"
+  },
+  {
    "code": "300556.SZ",
    "name": "丝路视觉",
    "chg": 5.47,
@@ -14208,6 +14468,18 @@
    "market": "A股"
   },
   {
+   "code": "000683.SZ",
+   "name": "博源化工",
+   "chg": -5.23,
+   "amt": 1015747633.89,
+   "vr": 2.07,
+   "chg60": -29.4,
+   "turn": 5.03,
+   "channel": "急跌",
+   "score": 0.3986,
+   "market": "A股"
+  },
+  {
    "code": "002372.SZ",
    "name": "伟星新材",
    "chg": -0.9,
@@ -14241,6 +14513,18 @@
    "turn": 5.8,
    "channel": "趋势",
    "score": 0.3978,
+   "market": "A股"
+  },
+  {
+   "code": "603580.SS",
+   "name": "艾艾精工",
+   "chg": -5.87,
+   "amt": 812267708.0,
+   "vr": 0.92,
+   "chg60": 126.26,
+   "turn": 11.49,
+   "channel": "急跌",
+   "score": 0.3977,
    "market": "A股"
   },
   {
@@ -14436,6 +14720,18 @@
    "market": "A股"
   },
   {
+   "code": "600066.SS",
+   "name": "宇通客车",
+   "chg": -4.73,
+   "amt": 973359250.0,
+   "vr": 1.63,
+   "chg60": -2.72,
+   "turn": 1.37,
+   "channel": "急跌",
+   "score": 0.3882,
+   "market": "A股"
+  },
+  {
    "code": "301041.SZ",
    "name": "金百泽",
    "chg": 5.46,
@@ -14517,6 +14813,18 @@
    "turn": 4.45,
    "channel": "强势",
    "score": 0.3847,
+   "market": "A股"
+  },
+  {
+   "code": "000786.SZ",
+   "name": "北新建材",
+   "chg": -5.54,
+   "amt": 717110207.18,
+   "vr": 1.8,
+   "chg60": -25.5,
+   "turn": 2.18,
+   "channel": "急跌",
+   "score": 0.3841,
    "market": "A股"
   },
   {
@@ -15228,6 +15536,18 @@
    "market": "A股"
   },
   {
+   "code": "688382.SS",
+   "name": "益方生物-U",
+   "chg": -5.13,
+   "amt": 520530313.0,
+   "vr": 1.47,
+   "chg60": -8.36,
+   "turn": 4.33,
+   "channel": "急跌",
+   "score": 0.3535,
+   "market": "A股"
+  },
+  {
    "code": "605133.SS",
    "name": "嵘泰股份",
    "chg": 1.71,
@@ -15288,6 +15608,18 @@
    "market": "A股"
   },
   {
+   "code": "002860.SZ",
+   "name": "星帅尔",
+   "chg": -4.14,
+   "amt": 602573532.21,
+   "vr": 1.06,
+   "chg60": 25.32,
+   "turn": 10.46,
+   "channel": "急跌",
+   "score": 0.3489,
+   "market": "A股"
+  },
+  {
    "code": "003040.SZ",
    "name": "楚天龙",
    "chg": 1.74,
@@ -15336,6 +15668,18 @@
    "market": "A股"
   },
   {
+   "code": "002612.SZ",
+   "name": "朗姿股份",
+   "chg": -5.19,
+   "amt": 457219137.45,
+   "vr": 1.51,
+   "chg60": -0.87,
+   "turn": 12.1,
+   "channel": "急跌",
+   "score": 0.3451,
+   "market": "A股"
+  },
+  {
    "code": "002033.SZ",
    "name": "丽江股份",
    "chg": 1.05,
@@ -15357,6 +15701,18 @@
    "turn": 2.16,
    "channel": "蓄势",
    "score": 0.3443,
+   "market": "A股"
+  },
+  {
+   "code": "002667.SZ",
+   "name": "*ST威领",
+   "chg": -4.69,
+   "amt": 492768216.14,
+   "vr": 1.77,
+   "chg60": -63.6,
+   "turn": 17.15,
+   "channel": "急跌",
+   "score": 0.343,
    "market": "A股"
   },
   {
@@ -15696,6 +16052,18 @@
    "market": "A股"
   },
   {
+   "code": "301234.SZ",
+   "name": "五洲医疗",
+   "chg": -4.78,
+   "amt": 405493930.25,
+   "vr": 0.9,
+   "chg60": 63.3,
+   "turn": 15.5,
+   "channel": "急跌",
+   "score": 0.328,
+   "market": "A股"
+  },
+  {
    "code": "002522.SZ",
    "name": "浙江众成",
    "chg": 1.86,
@@ -15717,6 +16085,18 @@
    "turn": 3.01,
    "channel": "强势",
    "score": 0.3266,
+   "market": "A股"
+  },
+  {
+   "code": "603737.SS",
+   "name": "三棵树",
+   "chg": -4.41,
+   "amt": 412987127.0,
+   "vr": 1.68,
+   "chg60": -38.11,
+   "turn": 1.99,
+   "channel": "急跌",
+   "score": 0.3238,
    "market": "A股"
   },
   {
@@ -15792,6 +16172,18 @@
    "market": "A股"
   },
   {
+   "code": "002199.SZ",
+   "name": "东晶电子",
+   "chg": -4.0,
+   "amt": 423612848.36,
+   "vr": 1.72,
+   "chg60": 19.39,
+   "turn": 13.15,
+   "channel": "急跌",
+   "score": 0.3198,
+   "market": "A股"
+  },
+  {
    "code": "688393.SS",
    "name": "安必平",
    "chg": 6.1,
@@ -15825,6 +16217,18 @@
    "turn": 2.31,
    "channel": "蓄势",
    "score": 0.3193,
+   "market": "A股"
+  },
+  {
+   "code": "603400.SS",
+   "name": "华之杰",
+   "chg": -5.19,
+   "amt": 340725522.0,
+   "vr": 0.94,
+   "chg60": -25.79,
+   "turn": 21.79,
+   "channel": "急跌",
+   "score": 0.3191,
    "market": "A股"
   },
   {
@@ -16053,6 +16457,30 @@
    "turn": 1.4,
    "channel": "蓄势",
    "score": 0.2986,
+   "market": "A股"
+  },
+  {
+   "code": "688237.SS",
+   "name": "超卓航科",
+   "chg": -4.82,
+   "amt": 294660611.0,
+   "vr": 0.91,
+   "chg60": -6.24,
+   "turn": 6.05,
+   "channel": "急跌",
+   "score": 0.2983,
+   "market": "A股"
+  },
+  {
+   "code": "300359.SZ",
+   "name": "全通教育",
+   "chg": -4.13,
+   "amt": 328386394.28,
+   "vr": 2.23,
+   "chg60": -11.27,
+   "turn": 11.83,
+   "channel": "急跌",
+   "score": 0.298,
    "market": "A股"
   },
   {
@@ -16548,6 +16976,18 @@
    "market": "A股"
   },
   {
+   "code": "300955.SZ",
+   "name": "嘉亨家化",
+   "chg": -6.67,
+   "amt": 157657117.77,
+   "vr": 1.48,
+   "chg60": -25.59,
+   "turn": 5.04,
+   "channel": "急跌",
+   "score": 0.2569,
+   "market": "A股"
+  },
+  {
    "code": "301033.SZ",
    "name": "迈普医学",
    "chg": 1.8,
@@ -16776,6 +17216,18 @@
    "market": "A股"
   },
   {
+   "code": "001221.SZ",
+   "name": "悍高集团",
+   "chg": -4.2,
+   "amt": 181701933.05,
+   "vr": 1.71,
+   "chg60": -29.59,
+   "turn": 5.89,
+   "channel": "急跌",
+   "score": 0.2352,
+   "market": "A股"
+  },
+  {
    "code": "002918.SZ",
    "name": "蒙娜丽莎",
    "chg": 1.89,
@@ -16884,6 +17336,18 @@
    "market": "A股"
   },
   {
+   "code": "002233.SZ",
+   "name": "塔牌集团",
+   "chg": -4.09,
+   "amt": 152150434.77,
+   "vr": 1.72,
+   "chg60": -15.45,
+   "turn": 1.71,
+   "channel": "急跌",
+   "score": 0.211,
+   "market": "A股"
+  },
+  {
    "code": "300376.SZ",
    "name": "易事特",
    "chg": 1.96,
@@ -16929,6 +17393,30 @@
    "turn": 3.28,
    "channel": "蓄势",
    "score": 0.1893,
+   "market": "A股"
+  },
+  {
+   "code": "002749.SZ",
+   "name": "国光股份",
+   "chg": -4.91,
+   "amt": 101953767.08,
+   "vr": 2.05,
+   "chg60": -14.82,
+   "turn": 2.11,
+   "channel": "急跌",
+   "score": 0.1708,
+   "market": "A股"
+  },
+  {
+   "code": "002731.SZ",
+   "name": "*ST萃华",
+   "chg": -4.37,
+   "amt": 108060678.8,
+   "vr": 1.02,
+   "chg60": -54.71,
+   "turn": 23.16,
+   "channel": "急跌",
+   "score": 0.1683,
    "market": "A股"
   },
   {
@@ -17241,6 +17729,18 @@
    "turn": 1.43,
    "channel": "蓄势",
    "score": 0.7592,
+   "market": "港股"
+  },
+  {
+   "code": "2723.HK",
+   "name": "深演智能",
+   "chg": 8.41,
+   "amt": 99467746.0,
+   "vr": 1.71,
+   "chg60": 991.89,
+   "turn": 0.18,
+   "channel": "趋势",
+   "score": 0.7556,
    "market": "港股"
   },
   {
@@ -18024,6 +18524,18 @@
    "market": "港股"
   },
   {
+   "code": "06055.HK",
+   "name": "中烟香港",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "港股"
+  },
+  {
    "code": "0917.HK",
    "name": "趣致集团",
    "chg": 8.27,
@@ -18096,15 +18608,15 @@
    "market": "港股"
   },
   {
-   "code": "2723.HK",
-   "name": "深演智能",
-   "chg": 8.41,
-   "amt": 99467746.0,
-   "vr": 1.71,
-   "chg60": 991.89,
-   "turn": 0.18,
-   "channel": "强势",
-   "score": 0.4726,
+   "code": "1810.HK",
+   "name": "小米集团-W",
+   "chg": -7.28,
+   "amt": 11875296512.0,
+   "vr": 1.56,
+   "chg60": -5.52,
+   "turn": 1.94,
+   "channel": "急跌",
+   "score": 0.4717,
    "market": "港股"
   },
   {
@@ -18288,6 +18800,18 @@
    "market": "港股"
   },
   {
+   "code": "1876.HK",
+   "name": "百威亚太",
+   "chg": -6.67,
+   "amt": 389942096.0,
+   "vr": 1.8,
+   "chg60": -14.41,
+   "turn": 0.44,
+   "channel": "急跌",
+   "score": 0.3624,
+   "market": "港股"
+  },
+  {
    "code": "0008.HK",
    "name": "电讯盈科",
    "chg": 2.44,
@@ -18312,6 +18836,18 @@
    "market": "港股"
   },
   {
+   "code": "9901.HK",
+   "name": "新东方-S",
+   "chg": -4.55,
+   "amt": 427310512.0,
+   "vr": 1.76,
+   "chg60": 7.81,
+   "turn": 8.56,
+   "channel": "急跌",
+   "score": 0.338,
+   "market": "港股"
+  },
+  {
    "code": "0697.HK",
    "name": "首程控股",
    "chg": 3.53,
@@ -18321,6 +18857,18 @@
    "turn": 0.52,
    "channel": "强势",
    "score": 0.335,
+   "market": "港股"
+  },
+  {
+   "code": "9606.HK",
+   "name": "映恩生物-B",
+   "chg": -4.77,
+   "amt": 355963616.0,
+   "vr": 2.12,
+   "chg60": -32.47,
+   "turn": 2.11,
+   "channel": "急跌",
+   "score": 0.3243,
    "market": "港股"
   },
   {
@@ -18396,6 +18944,18 @@
    "market": "港股"
   },
   {
+   "code": "0168.HK",
+   "name": "青岛啤酒股份",
+   "chg": -4.04,
+   "amt": 306373728.0,
+   "vr": 1.9,
+   "chg60": -8.98,
+   "turn": 1.0,
+   "channel": "急跌",
+   "score": 0.2896,
+   "market": "港股"
+  },
+  {
    "code": "1258.HK",
    "name": "中国有色矿业",
    "chg": 1.86,
@@ -18420,6 +18980,42 @@
    "market": "港股"
   },
   {
+   "code": "1044.HK",
+   "name": "恒安国际",
+   "chg": -4.33,
+   "amt": 236139534.0,
+   "vr": 2.11,
+   "chg60": -5.74,
+   "turn": 0.82,
+   "channel": "急跌",
+   "score": 0.2742,
+   "market": "港股"
+  },
+  {
+   "code": "1318.HK",
+   "name": "毛戈平",
+   "chg": -4.16,
+   "amt": 212964175.0,
+   "vr": 1.19,
+   "chg60": -17.02,
+   "turn": 0.74,
+   "channel": "急跌",
+   "score": 0.2542,
+   "market": "港股"
+  },
+  {
+   "code": "6880.HK",
+   "name": "MOMENTA-W",
+   "chg": -9.31,
+   "amt": 93987472.0,
+   "vr": 2.64,
+   "chg60": -11.03,
+   "turn": 0.16,
+   "channel": "急跌",
+   "score": 0.2399,
+   "market": "港股"
+  },
+  {
    "code": "2701.HK",
    "name": "国民技术",
    "chg": 2.67,
@@ -18429,6 +19025,42 @@
    "turn": 7.56,
    "channel": "强势",
    "score": 0.2237,
+   "market": "港股"
+  },
+  {
+   "code": "0668.HK",
+   "name": "安克创新",
+   "chg": -7.19,
+   "amt": 83945572.0,
+   "vr": 1.04,
+   "chg60": 10.55,
+   "turn": 1.52,
+   "channel": "急跌",
+   "score": 0.1888,
+   "market": "港股"
+  },
+  {
+   "code": "1672.HK",
+   "name": "歌礼制药-B",
+   "chg": -4.24,
+   "amt": 77656301.0,
+   "vr": 4.36,
+   "chg60": -50.06,
+   "turn": 0.87,
+   "channel": "急跌",
+   "score": 0.1291,
+   "market": "港股"
+  },
+  {
+   "code": "1114.HK",
+   "name": "华晨中国",
+   "chg": -4.21,
+   "amt": 55802998.0,
+   "vr": 1.15,
+   "chg60": -25.45,
+   "turn": 0.54,
+   "channel": "急跌",
+   "score": 0.076,
    "market": "港股"
   },
   {
@@ -18477,18 +19109,6 @@
    "turn": 45.28,
    "channel": "强势",
    "score": 0.9107,
-   "market": "美股"
-  },
-  {
-   "code": "SNDQ",
-   "name": "二倍做空SNDK ETF-Tradr",
-   "chg": 11.34,
-   "amt": 1020854048.0,
-   "vr": 1.33,
-   "chg60": 206.47,
-   "turn": "-",
-   "channel": "趋势",
-   "score": 0.9088,
    "market": "美股"
   },
   {
@@ -19584,18 +20204,6 @@
    "market": "美股"
   },
   {
-   "code": "MSTZ",
-   "name": "二倍做空MSTR ETF-T-Rex",
-   "chg": 8.95,
-   "amt": 126109623.0,
-   "vr": 1.17,
-   "chg60": 151.69,
-   "turn": "-",
-   "channel": "趋势",
-   "score": 0.7363,
-   "market": "美股"
-  },
-  {
    "code": "VNQ",
    "name": "不动产信托指数ETF-Vanguard",
    "chg": -0.54,
@@ -20664,18 +21272,6 @@
    "market": "美股"
   },
   {
-   "code": "SSPC",
-   "name": "二倍做空SpaceX ETF-Leverage",
-   "chg": 7.02,
-   "amt": 192616110.0,
-   "vr": 0.7,
-   "chg60": 77.55,
-   "turn": "-",
-   "channel": "趋势",
-   "score": 0.6241,
-   "market": "美股"
-  },
-  {
    "code": "D",
    "name": "道明尼能源",
    "chg": -0.8,
@@ -21084,6 +21680,18 @@
    "market": "美股"
   },
   {
+   "code": "RDDT",
+   "name": "Reddit Inc-A",
+   "chg": -20.99,
+   "amt": 4221415808.0,
+   "vr": 5.58,
+   "chg60": -18.04,
+   "turn": 20.48,
+   "channel": "急跌",
+   "score": 0.593,
+   "market": "美股"
+  },
+  {
    "code": "FND",
    "name": "Floor & Decor Holdings Inc-A",
    "chg": 4.1,
@@ -21165,6 +21773,18 @@
    "turn": "-",
    "channel": "蓄势",
    "score": 0.5886,
+   "market": "美股"
+  },
+  {
+   "code": "RBLX",
+   "name": "Roblox Corp-A",
+   "chg": -26.85,
+   "amt": 2226198496.0,
+   "vr": 5.94,
+   "chg60": -19.16,
+   "turn": 9.42,
+   "channel": "急跌",
+   "score": 0.5873,
    "market": "美股"
   },
   {
@@ -21357,6 +21977,18 @@
    "turn": "-",
    "channel": "蓄势",
    "score": 0.5763,
+   "market": "美股"
+  },
+  {
+   "code": "MTZ",
+   "name": "MasTec Inc",
+   "chg": -18.91,
+   "amt": 1055260000.0,
+   "vr": 2.73,
+   "chg60": -39.86,
+   "turn": 4.92,
+   "channel": "急跌",
+   "score": 0.5724,
    "market": "美股"
   },
   {
@@ -21612,6 +22244,18 @@
    "market": "美股"
   },
   {
+   "code": "MUU",
+   "name": "二倍做多美光科技ETF-Direxion",
+   "chg": -12.24,
+   "amt": 2173976672.0,
+   "vr": 1.33,
+   "chg60": -94.2,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.5424,
+   "market": "美股"
+  },
+  {
    "code": "GWRE",
    "name": "Guidewire Software Inc",
    "chg": -0.83,
@@ -21645,6 +22289,18 @@
    "turn": 1.78,
    "channel": "蓄势",
    "score": 0.5401,
+   "market": "美股"
+  },
+  {
+   "code": "GDDY",
+   "name": "GoDaddy Inc-A",
+   "chg": -16.7,
+   "amt": 533504800.0,
+   "vr": 3.59,
+   "chg60": -5.43,
+   "turn": 5.27,
+   "channel": "急跌",
+   "score": 0.5398,
    "market": "美股"
   },
   {
@@ -21717,6 +22373,18 @@
    "turn": 0.48,
    "channel": "强势",
    "score": 0.5335,
+   "market": "美股"
+  },
+  {
+   "code": "BTSG",
+   "name": "BrightSpring Health Services In",
+   "chg": -18.07,
+   "amt": 474252960.0,
+   "vr": 3.32,
+   "chg60": 16.08,
+   "turn": 3.91,
+   "channel": "急跌",
+   "score": 0.5321,
    "market": "美股"
   },
   {
@@ -21888,6 +22556,18 @@
    "market": "美股"
   },
   {
+   "code": "COIN",
+   "name": "Coinbase Global Inc-A",
+   "chg": -10.59,
+   "amt": 3035718528.0,
+   "vr": 3.26,
+   "chg60": -26.04,
+   "turn": 9.37,
+   "channel": "急跌",
+   "score": 0.5205,
+   "market": "美股"
+  },
+  {
    "code": "MOH",
    "name": "Molina Healthcare Inc",
    "chg": 0.47,
@@ -21924,6 +22604,18 @@
    "market": "美股"
   },
   {
+   "code": "CTVA",
+   "name": "Corteva Inc",
+   "chg": -11.9,
+   "amt": 922872960.0,
+   "vr": 2.7,
+   "chg60": -5.98,
+   "turn": 1.73,
+   "channel": "急跌",
+   "score": 0.5173,
+   "market": "美股"
+  },
+  {
    "code": "CVS",
    "name": "西维斯健康",
    "chg": -0.75,
@@ -21933,6 +22625,18 @@
    "turn": 0.55,
    "channel": "趋势",
    "score": 0.5171,
+   "market": "美股"
+  },
+  {
+   "code": "SNXX",
+   "name": "二倍做多SNDK ETF-Tradr",
+   "chg": -10.88,
+   "amt": 1790875200.0,
+   "vr": 1.03,
+   "chg60": -94.22,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.5169,
    "market": "美股"
   },
   {
@@ -22041,6 +22745,18 @@
    "turn": "-",
    "channel": "蓄势",
    "score": 0.5103,
+   "market": "美股"
+  },
+  {
+   "code": "WU",
+   "name": "西联汇款",
+   "chg": -17.3,
+   "amt": 367152528.0,
+   "vr": 5.49,
+   "chg60": -28.42,
+   "turn": 17.85,
+   "channel": "急跌",
+   "score": 0.51,
    "market": "美股"
   },
   {
@@ -22173,6 +22889,81 @@
    "turn": 0.47,
    "channel": "蓄势",
    "score": 0.5002,
+   "market": "美股"
+  },
+  {
+   "code": "SPCX",
+   "name": "SpaceX",
+   "chg": -3.41,
+   "amt": 6422872832.0,
+   "vr": 0.94,
+   "chg60": -19.73,
+   "turn": 0.79,
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "美股"
+  },
+  {
+   "code": "SO",
+   "name": "美国南方公司",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "美股"
+  },
+  {
+   "code": "VOO",
+   "name": "标普500ETF-Vanguard",
+   "chg": 0.71,
+   "amt": 5285301248.0,
+   "vr": 1.26,
+   "chg60": 3.21,
+   "turn": "-",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "美股"
+  },
+  {
+   "code": "NVDA",
+   "name": "英伟达",
+   "chg": 2.93,
+   "amt": 27860693760.0,
+   "vr": 1.03,
+   "chg60": 2.29,
+   "turn": 0.58,
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "美股"
+  },
+  {
+   "code": "MRK",
+   "name": "默沙东",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "美股"
+  },
+  {
+   "code": "JNJ",
+   "name": "强生",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
    "market": "美股"
   },
   {
@@ -22392,6 +23183,18 @@
    "market": "美股"
   },
   {
+   "code": "NBIX",
+   "name": "神经分泌生物科学",
+   "chg": -10.08,
+   "amt": 769510816.0,
+   "vr": 3.39,
+   "chg60": 23.5,
+   "turn": 4.51,
+   "channel": "急跌",
+   "score": 0.4815,
+   "market": "美股"
+  },
+  {
    "code": "ERIE",
    "name": "伊瑞保险",
    "chg": 3.58,
@@ -22428,6 +23231,18 @@
    "market": "美股"
   },
   {
+   "code": "VCYT",
+   "name": "Veracyte Inc",
+   "chg": -22.52,
+   "amt": 277552912.0,
+   "vr": 6.57,
+   "chg60": 40.49,
+   "turn": 7.46,
+   "channel": "急跌",
+   "score": 0.4777,
+   "market": "美股"
+  },
+  {
    "code": "ARXS",
    "name": "Arxis Inc-A",
    "chg": 10.86,
@@ -22440,6 +23255,42 @@
    "market": "美股"
   },
   {
+   "code": "AAPL",
+   "name": "苹果",
+   "chg": -7.35,
+   "amt": 40348574976.0,
+   "vr": 2.37,
+   "chg60": 8.81,
+   "turn": 0.91,
+   "channel": "急跌",
+   "score": 0.4771,
+   "market": "美股"
+  },
+  {
+   "code": "RIVN",
+   "name": "Rivian Automotive Inc-A",
+   "chg": -9.57,
+   "amt": 854051648.0,
+   "vr": 2.2,
+   "chg60": 4.25,
+   "turn": 3.78,
+   "channel": "急跌",
+   "score": 0.4766,
+   "market": "美股"
+  },
+  {
+   "code": "NVO",
+   "name": "诺和诺德",
+   "chg": -8.78,
+   "amt": 1259131824.0,
+   "vr": 2.89,
+   "chg60": 4.93,
+   "turn": 0.8,
+   "channel": "急跌",
+   "score": 0.4754,
+   "market": "美股"
+  },
+  {
    "code": "SUNB",
    "name": "Sunbelt Rentals Holdings Inc",
    "chg": -0.84,
@@ -22449,6 +23300,18 @@
    "turn": 0.47,
    "channel": "蓄势",
    "score": 0.4752,
+   "market": "美股"
+  },
+  {
+   "code": "ALHC",
+   "name": "Alignment Healthcare Inc",
+   "chg": -20.2,
+   "amt": 269770800.0,
+   "vr": 4.29,
+   "chg60": -18.85,
+   "turn": 8.42,
+   "channel": "急跌",
+   "score": 0.4742,
    "market": "美股"
   },
   {
@@ -22572,6 +23435,18 @@
    "market": "美股"
   },
   {
+   "code": "KORU",
+   "name": "三倍做多韩国ETF-Direxion",
+   "chg": -7.92,
+   "amt": 1150054736.0,
+   "vr": 1.24,
+   "chg60": -97.95,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.4601,
+   "market": "美股"
+  },
+  {
    "code": "BEX",
    "name": "二倍做多BE ETF-Tradr",
    "chg": -0.74,
@@ -22620,6 +23495,30 @@
    "market": "美股"
   },
   {
+   "code": "MU",
+   "name": "美光科技",
+   "chg": -5.9,
+   "amt": 46517546752.0,
+   "vr": 0.97,
+   "chg60": 28.59,
+   "turn": 4.83,
+   "channel": "急跌",
+   "score": 0.4544,
+   "market": "美股"
+  },
+  {
+   "code": "SNDU",
+   "name": "二倍做多SNDK ETF-T-REX",
+   "chg": -10.85,
+   "amt": 406255824.0,
+   "vr": 1.04,
+   "chg60": -85.01,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.4543,
+   "market": "美股"
+  },
+  {
    "code": "SN",
    "name": "SharkNinja Inc",
    "chg": -0.96,
@@ -22653,6 +23552,18 @@
    "turn": 1.2,
    "channel": "趋势",
    "score": 0.4539,
+   "market": "美股"
+  },
+  {
+   "code": "AAPU",
+   "name": "二倍做多苹果ETF-Direxion",
+   "chg": -14.86,
+   "amt": 220969355.0,
+   "vr": 3.12,
+   "chg60": 12.51,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.4536,
    "market": "美股"
   },
   {
@@ -22764,6 +23675,18 @@
    "market": "美股"
   },
   {
+   "code": "AMZD",
+   "name": "做空亚马逊ETF-Direxion",
+   "chg": -15.2,
+   "amt": 206298726.0,
+   "vr": 1.95,
+   "chg60": -3.0,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.4476,
+   "market": "美股"
+  },
+  {
    "code": "AXON",
    "name": "Axon Enterprise Inc",
    "chg": 0.47,
@@ -22824,6 +23747,18 @@
    "market": "美股"
   },
   {
+   "code": "LIN",
+   "name": "Linde plc",
+   "chg": -5.95,
+   "amt": 2496095840.0,
+   "vr": 2.69,
+   "chg60": -4.07,
+   "turn": 1.13,
+   "channel": "急跌",
+   "score": 0.4445,
+   "market": "美股"
+  },
+  {
    "code": "IVW",
    "name": "标普500成长股指数ETF-iShares",
    "chg": 1.44,
@@ -22845,6 +23780,54 @@
    "turn": 2.85,
    "channel": "蓄势",
    "score": 0.4439,
+   "market": "美股"
+  },
+  {
+   "code": "PRM",
+   "name": "Perimeter Solutions Inc",
+   "chg": -17.78,
+   "amt": 198629066.0,
+   "vr": 4.25,
+   "chg60": 1.42,
+   "turn": 3.92,
+   "channel": "急跌",
+   "score": 0.4436,
+   "market": "美股"
+  },
+  {
+   "code": "NXPI",
+   "name": "恩智浦半导体",
+   "chg": -6.53,
+   "amt": 1480876128.0,
+   "vr": 1.05,
+   "chg60": -21.34,
+   "turn": 2.5,
+   "channel": "急跌",
+   "score": 0.4433,
+   "market": "美股"
+  },
+  {
+   "code": "SYK",
+   "name": "史赛克",
+   "chg": -6.42,
+   "amt": 1470375984.0,
+   "vr": 1.92,
+   "chg60": 10.64,
+   "turn": 1.18,
+   "channel": "急跌",
+   "score": 0.4413,
+   "market": "美股"
+  },
+  {
+   "code": "SNDK",
+   "name": "闪迪",
+   "chg": -5.09,
+   "amt": 26713707008.0,
+   "vr": 0.95,
+   "chg60": -13.62,
+   "turn": 14.3,
+   "channel": "急跌",
+   "score": 0.4397,
    "market": "美股"
   },
   {
@@ -22908,6 +23891,18 @@
    "market": "美股"
   },
   {
+   "code": "OLN",
+   "name": "欧林",
+   "chg": -16.51,
+   "amt": 186014388.0,
+   "vr": 3.52,
+   "chg60": -35.08,
+   "turn": 8.87,
+   "channel": "急跌",
+   "score": 0.4357,
+   "market": "美股"
+  },
+  {
    "code": "LMND",
    "name": "Lemonade Inc",
    "chg": -0.54,
@@ -22917,6 +23912,18 @@
    "turn": 2.67,
    "channel": "蓄势",
    "score": 0.4351,
+   "market": "美股"
+  },
+  {
+   "code": "CONL",
+   "name": "二倍做多Coinbase ETF-GraniteSha",
+   "chg": -21.1,
+   "amt": 184339572.0,
+   "vr": 3.36,
+   "chg60": -53.22,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.4344,
    "market": "美股"
   },
   {
@@ -22977,6 +23984,18 @@
    "turn": 0.4,
    "channel": "趋势",
    "score": 0.4324,
+   "market": "美股"
+  },
+  {
+   "code": "TU",
+   "name": "泰勒斯",
+   "chg": -11.23,
+   "amt": 309899216.0,
+   "vr": 3.86,
+   "chg60": -22.14,
+   "turn": 2.08,
+   "channel": "急跌",
+   "score": 0.432,
    "market": "美股"
   },
   {
@@ -23064,6 +24083,18 @@
    "market": "美股"
   },
   {
+   "code": "RIOT",
+   "name": "Riot Platforms Inc",
+   "chg": -8.82,
+   "amt": 433751040.0,
+   "vr": 1.12,
+   "chg60": -0.88,
+   "turn": 5.55,
+   "channel": "急跌",
+   "score": 0.4255,
+   "market": "美股"
+  },
+  {
    "code": "SPSC",
    "name": "SPS Commerce Inc",
    "chg": 11.48,
@@ -23133,6 +24164,30 @@
    "turn": 0.89,
    "channel": "强势",
    "score": 0.4209,
+   "market": "美股"
+  },
+  {
+   "code": "NXT",
+   "name": "Nextpower Inc-A",
+   "chg": -7.25,
+   "amt": 570956864.0,
+   "vr": 1.88,
+   "chg60": -27.14,
+   "turn": 4.08,
+   "channel": "急跌",
+   "score": 0.4208,
+   "market": "美股"
+  },
+  {
+   "code": "MULL",
+   "name": "二倍做多美光科技ETF-GraniteShar",
+   "chg": -11.97,
+   "amt": 250473962.0,
+   "vr": 1.25,
+   "chg60": -95.4,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.4198,
    "market": "美股"
   },
   {
@@ -23208,6 +24263,18 @@
    "market": "美股"
   },
   {
+   "code": "MSTR",
+   "name": "Strategy Inc-A",
+   "chg": -4.56,
+   "amt": 1916173712.0,
+   "vr": 1.44,
+   "chg60": -50.09,
+   "turn": 5.88,
+   "channel": "急跌",
+   "score": 0.4168,
+   "market": "美股"
+  },
+  {
    "code": "PR",
    "name": "Permian Resources Corp-A",
    "chg": 1.48,
@@ -23228,6 +24295,18 @@
    "chg60": 26.35,
    "turn": 0.54,
    "channel": "趋势",
+   "score": 0.412,
+   "market": "美股"
+  },
+  {
+   "code": "FRMI",
+   "name": "Fermi Inc",
+   "chg": -15.45,
+   "amt": 153316817.0,
+   "vr": 1.18,
+   "chg60": 15.18,
+   "turn": 4.05,
+   "channel": "急跌",
    "score": 0.412,
    "market": "美股"
   },
@@ -23268,6 +24347,42 @@
    "market": "美股"
   },
   {
+   "code": "LEA",
+   "name": "李尔",
+   "chg": -10.72,
+   "amt": 275200352.0,
+   "vr": 2.74,
+   "chg60": -0.18,
+   "turn": 4.2,
+   "channel": "急跌",
+   "score": 0.408,
+   "market": "美股"
+  },
+  {
+   "code": "SHOP",
+   "name": "Shopify Inc-A",
+   "chg": -4.29,
+   "amt": 1486520464.0,
+   "vr": 1.33,
+   "chg60": 8.85,
+   "turn": 1.03,
+   "channel": "急跌",
+   "score": 0.4078,
+   "market": "美股"
+  },
+  {
+   "code": "LYV",
+   "name": "Live Nation Entertainment Inc",
+   "chg": -5.14,
+   "amt": 877142432.0,
+   "vr": 2.25,
+   "chg60": 10.73,
+   "turn": 2.13,
+   "channel": "急跌",
+   "score": 0.4077,
+   "market": "美股"
+  },
+  {
    "code": "ELF",
    "name": "elf Beauty Inc",
    "chg": 0.77,
@@ -23304,6 +24419,18 @@
    "market": "美股"
   },
   {
+   "code": "TROW",
+   "name": "普信集团",
+   "chg": -6.31,
+   "amt": 581846944.0,
+   "vr": 2.59,
+   "chg60": 8.7,
+   "turn": 2.43,
+   "channel": "急跌",
+   "score": 0.4065,
+   "market": "美股"
+  },
+  {
    "code": "DAVE",
    "name": "Dave Inc-A",
    "chg": -1.31,
@@ -23312,6 +24439,18 @@
    "chg60": 41.27,
    "turn": 2.94,
    "channel": "趋势",
+   "score": 0.4054,
+   "market": "美股"
+  },
+  {
+   "code": "PTCT",
+   "name": "PTC Therapeutics Inc",
+   "chg": -9.94,
+   "amt": 297515056.0,
+   "vr": 3.22,
+   "chg60": 4.57,
+   "turn": 5.19,
+   "channel": "急跌",
    "score": 0.4054,
    "market": "美股"
   },
@@ -23364,6 +24503,18 @@
    "market": "美股"
   },
   {
+   "code": "SPOT",
+   "name": "Spotify Technology SA",
+   "chg": -4.34,
+   "amt": 1160799520.0,
+   "vr": 1.25,
+   "chg60": 19.17,
+   "turn": 1.12,
+   "channel": "急跌",
+   "score": 0.4033,
+   "market": "美股"
+  },
+  {
    "code": "OLLI",
    "name": "Ollie's Bargain Outlet Holdings",
    "chg": 1.0,
@@ -23397,6 +24548,18 @@
    "turn": 2.11,
    "channel": "蓄势",
    "score": 0.3996,
+   "market": "美股"
+  },
+  {
+   "code": "EIX",
+   "name": "爱迪生国际",
+   "chg": -6.81,
+   "amt": 458016112.0,
+   "vr": 2.75,
+   "chg60": 7.91,
+   "turn": 1.61,
+   "channel": "急跌",
+   "score": 0.3981,
    "market": "美股"
   },
   {
@@ -23532,6 +24695,18 @@
    "market": "美股"
   },
   {
+   "code": "SKUU",
+   "name": "二倍做多海力士ETF-GraniteShares",
+   "chg": -7.23,
+   "amt": 354793152.0,
+   "vr": 0.88,
+   "chg60": -37.31,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.3827,
+   "market": "美股"
+  },
+  {
    "code": "TPL",
    "name": "Texas Pacific Land Corp",
    "chg": 2.11,
@@ -23553,6 +24728,18 @@
    "turn": 2.06,
    "channel": "趋势",
    "score": 0.3795,
+   "market": "美股"
+  },
+  {
+   "code": "BMNR",
+   "name": "BitMine Immersion Technologies ",
+   "chg": -4.42,
+   "amt": 609717296.0,
+   "vr": 0.91,
+   "chg60": -25.19,
+   "turn": 5.93,
+   "channel": "急跌",
+   "score": 0.3788,
    "market": "美股"
   },
   {
@@ -23580,6 +24767,18 @@
    "market": "美股"
   },
   {
+   "code": "GLUE",
+   "name": "Monte Rosa Therapeutics Inc",
+   "chg": -27.16,
+   "amt": 118713635.0,
+   "vr": 6.0,
+   "chg60": -14.63,
+   "turn": 8.84,
+   "channel": "急跌",
+   "score": 0.3757,
+   "market": "美股"
+  },
+  {
    "code": "ZETA",
    "name": "Zeta Global Holdings Corp-A",
    "chg": 1.08,
@@ -23604,6 +24803,18 @@
    "market": "美股"
   },
   {
+   "code": "NVD",
+   "name": "二倍做空英伟达ETF-GraniteShares",
+   "chg": -5.85,
+   "amt": 407457520.0,
+   "vr": 0.86,
+   "chg60": -14.11,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.3745,
+   "market": "美股"
+  },
+  {
    "code": "ICLR",
    "name": "ICON plc",
    "chg": -1.19,
@@ -23625,6 +24836,18 @@
    "turn": 0.57,
    "channel": "蓄势",
    "score": 0.372,
+   "market": "美股"
+  },
+  {
+   "code": "MRNA",
+   "name": "Moderna Inc",
+   "chg": -5.35,
+   "amt": 439642544.0,
+   "vr": 1.63,
+   "chg60": 17.36,
+   "turn": 1.94,
+   "channel": "急跌",
+   "score": 0.3715,
    "market": "美股"
   },
   {
@@ -23760,6 +24983,30 @@
    "market": "美股"
   },
   {
+   "code": "MDGL",
+   "name": "Madrigal Pharmaceuticals Inc",
+   "chg": -5.23,
+   "amt": 372234384.0,
+   "vr": 1.6,
+   "chg60": -7.0,
+   "turn": 3.44,
+   "channel": "急跌",
+   "score": 0.3549,
+   "market": "美股"
+  },
+  {
+   "code": "OKLO",
+   "name": "Oklo Inc-A",
+   "chg": -5.5,
+   "amt": 348683392.0,
+   "vr": 0.97,
+   "chg60": -43.21,
+   "turn": 5.07,
+   "channel": "急跌",
+   "score": 0.3533,
+   "market": "美股"
+  },
+  {
    "code": "THG",
    "name": "汉诺威保险",
    "chg": 1.1,
@@ -23772,6 +25019,30 @@
    "market": "美股"
   },
   {
+   "code": "MSTU",
+   "name": "二倍做多MSTR ETF-T-Rex",
+   "chg": -8.33,
+   "amt": 218589152.0,
+   "vr": 1.26,
+   "chg60": -80.09,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.3481,
+   "market": "美股"
+  },
+  {
+   "code": "U",
+   "name": "Unity Software Inc",
+   "chg": -4.89,
+   "amt": 364949744.0,
+   "vr": 1.61,
+   "chg60": 15.98,
+   "turn": 2.65,
+   "channel": "急跌",
+   "score": 0.348,
+   "market": "美股"
+  },
+  {
    "code": "BWXT",
    "name": "BWX Technologies Inc",
    "chg": 1.88,
@@ -23781,6 +25052,30 @@
    "turn": 0.97,
    "channel": "蓄势",
    "score": 0.3462,
+   "market": "美股"
+  },
+  {
+   "code": "MOG_A",
+   "name": "穆格-A",
+   "chg": -7.01,
+   "amt": 258980827.0,
+   "vr": 1.76,
+   "chg60": 25.6,
+   "turn": 2.36,
+   "channel": "急跌",
+   "score": 0.3434,
+   "market": "美股"
+  },
+  {
+   "code": "TYL",
+   "name": "泰勒科技",
+   "chg": -4.24,
+   "amt": 386959824.0,
+   "vr": 1.05,
+   "chg60": -5.56,
+   "turn": 3.04,
+   "channel": "急跌",
+   "score": 0.3433,
    "market": "美股"
   },
   {
@@ -23832,6 +25127,30 @@
    "market": "美股"
   },
   {
+   "code": "IP",
+   "name": "国际纸业",
+   "chg": -5.38,
+   "amt": 304962496.0,
+   "vr": 0.94,
+   "chg60": 30.04,
+   "turn": 1.4,
+   "channel": "急跌",
+   "score": 0.3367,
+   "market": "美股"
+  },
+  {
+   "code": "RAM",
+   "name": "二倍做多DRAM ETF-T-REX",
+   "chg": -6.2,
+   "amt": 265512212.0,
+   "vr": 1.41,
+   "chg60": -61.91,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.3324,
+   "market": "美股"
+  },
+  {
    "code": "GRID",
    "name": "First Trust NASDAQ Clean Edge S",
    "chg": 1.53,
@@ -23868,6 +25187,30 @@
    "market": "美股"
   },
   {
+   "code": "HUN",
+   "name": "亨斯曼材料",
+   "chg": -19.14,
+   "amt": 86374266.0,
+   "vr": 2.38,
+   "chg60": -34.51,
+   "turn": 4.96,
+   "channel": "急跌",
+   "score": 0.3302,
+   "market": "美股"
+  },
+  {
+   "code": "FCEL",
+   "name": "燃料电池能源",
+   "chg": -8.51,
+   "amt": 183297686.0,
+   "vr": 0.86,
+   "chg60": 59.48,
+   "turn": 10.19,
+   "channel": "急跌",
+   "score": 0.3298,
+   "market": "美股"
+  },
+  {
    "code": "AAON",
    "name": "艾伦建材",
    "chg": 1.68,
@@ -23877,6 +25220,30 @@
    "turn": 1.72,
    "channel": "蓄势",
    "score": 0.3294,
+   "market": "美股"
+  },
+  {
+   "code": "W",
+   "name": "Wayfair Inc-A",
+   "chg": -5.44,
+   "amt": 279829248.0,
+   "vr": 0.85,
+   "chg60": 34.34,
+   "turn": 2.93,
+   "channel": "急跌",
+   "score": 0.3255,
+   "market": "美股"
+  },
+  {
+   "code": "TSN",
+   "name": "泰森食品",
+   "chg": -4.44,
+   "amt": 309055936.0,
+   "vr": 1.51,
+   "chg60": -14.68,
+   "turn": 1.86,
+   "channel": "急跌",
+   "score": 0.3231,
    "market": "美股"
   },
   {
@@ -23892,6 +25259,18 @@
    "market": "美股"
   },
   {
+   "code": "CLSK",
+   "name": "CleanSpark Inc",
+   "chg": -5.36,
+   "amt": 272207776.0,
+   "vr": 0.88,
+   "chg60": 2.61,
+   "turn": 7.59,
+   "channel": "急跌",
+   "score": 0.3212,
+   "market": "美股"
+  },
+  {
    "code": "FUTU",
    "name": "富途控股",
    "chg": 1.64,
@@ -23901,6 +25280,30 @@
    "turn": 1.19,
    "channel": "蓄势",
    "score": 0.3204,
+   "market": "美股"
+  },
+  {
+   "code": "XE",
+   "name": "X-Energy Inc-A",
+   "chg": -4.34,
+   "amt": 304175488.0,
+   "vr": 3.34,
+   "chg60": -42.69,
+   "turn": 6.38,
+   "channel": "急跌",
+   "score": 0.3198,
+   "market": "美股"
+  },
+  {
+   "code": "EGO",
+   "name": "埃尔拉多黄金",
+   "chg": -7.79,
+   "amt": 179852185.0,
+   "vr": 2.56,
+   "chg60": 3.2,
+   "turn": 2.26,
+   "channel": "急跌",
+   "score": 0.3168,
    "market": "美股"
   },
   {
@@ -23976,6 +25379,30 @@
    "market": "美股"
   },
   {
+   "code": "AXSM",
+   "name": "Axsome Therapeutics Inc",
+   "chg": -7.1,
+   "amt": 172563400.0,
+   "vr": 1.36,
+   "chg60": -2.27,
+   "turn": 1.52,
+   "channel": "急跌",
+   "score": 0.3011,
+   "market": "美股"
+  },
+  {
+   "code": "IRE",
+   "name": "二倍做多IREN ETF-Defiance",
+   "chg": -7.43,
+   "amt": 164321825.0,
+   "vr": 1.76,
+   "chg60": -71.19,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.3006,
+   "market": "美股"
+  },
+  {
    "code": "CHDN",
    "name": "Churchill Downs Inc",
    "chg": 1.95,
@@ -24000,18 +25427,6 @@
    "market": "美股"
   },
   {
-   "code": "TSLQ",
-   "name": "二倍做空特斯拉ETF-Tradr",
-   "chg": -1.53,
-   "amt": 111799697.0,
-   "vr": 0.64,
-   "chg60": 26.16,
-   "turn": "-",
-   "channel": "趋势",
-   "score": 0.2996,
-   "market": "美股"
-  },
-  {
    "code": "CRL",
    "name": "查尔斯河",
    "chg": -0.9,
@@ -24021,6 +25436,30 @@
    "turn": 1.06,
    "channel": "趋势",
    "score": 0.2968,
+   "market": "美股"
+  },
+  {
+   "code": "KRYS",
+   "name": "Krystal Biotech Inc",
+   "chg": -7.01,
+   "amt": 169034914.0,
+   "vr": 1.14,
+   "chg60": 19.87,
+   "turn": 1.66,
+   "channel": "急跌",
+   "score": 0.2964,
+   "market": "美股"
+  },
+  {
+   "code": "IOVA",
+   "name": "Iovance Biotherapeutics Inc",
+   "chg": -13.22,
+   "amt": 83428478.0,
+   "vr": 1.64,
+   "chg60": 2.26,
+   "turn": 4.47,
+   "channel": "急跌",
+   "score": 0.2961,
    "market": "美股"
   },
   {
@@ -24048,6 +25487,66 @@
    "market": "美股"
   },
   {
+   "code": "GDXU",
+   "name": "三倍做多黄金矿业ETN-MicroSector",
+   "chg": -10.43,
+   "amt": 109963551.0,
+   "vr": 1.33,
+   "chg60": -51.51,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.2919,
+   "market": "美股"
+  },
+  {
+   "code": "SKHX",
+   "name": "二倍做多海力士ETF-Leverage",
+   "chg": -6.88,
+   "amt": 157596832.0,
+   "vr": 0.9,
+   "chg60": -37.42,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.2866,
+   "market": "美股"
+  },
+  {
+   "code": "LAD",
+   "name": "利西亚车行",
+   "chg": -4.84,
+   "amt": 209508507.0,
+   "vr": 0.8,
+   "chg60": 34.79,
+   "turn": 2.46,
+   "channel": "急跌",
+   "score": 0.2865,
+   "market": "美股"
+  },
+  {
+   "code": "BFLY",
+   "name": "Butterfly Network Inc-A",
+   "chg": -12.97,
+   "amt": 79649396.0,
+   "vr": 1.71,
+   "chg60": 47.51,
+   "turn": 4.45,
+   "channel": "急跌",
+   "score": 0.2861,
+   "market": "美股"
+  },
+  {
+   "code": "EQX",
+   "name": "Equinox Gold Corp",
+   "chg": -4.89,
+   "amt": 199982873.0,
+   "vr": 1.52,
+   "chg60": -34.12,
+   "turn": 2.82,
+   "channel": "急跌",
+   "score": 0.2831,
+   "market": "美股"
+  },
+  {
    "code": "PSKY",
    "name": "Paramount Skydance Corp-B",
    "chg": 1.92,
@@ -24057,6 +25556,18 @@
    "turn": 1.39,
    "channel": "蓄势",
    "score": 0.2769,
+   "market": "美股"
+  },
+  {
+   "code": "UVXY",
+   "name": "1.5倍做多恐慌指数短期期货ETF",
+   "chg": -4.24,
+   "amt": 209134026.0,
+   "vr": 1.13,
+   "chg60": -37.88,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.2767,
    "market": "美股"
   },
   {
@@ -24096,6 +25607,18 @@
    "market": "美股"
   },
   {
+   "code": "AG",
+   "name": "First Majestic Silver Corp",
+   "chg": -4.21,
+   "amt": 193949808.0,
+   "vr": 1.02,
+   "chg60": -21.24,
+   "turn": 2.61,
+   "channel": "急跌",
+   "score": 0.268,
+   "market": "美股"
+  },
+  {
    "code": "NEBX",
    "name": "二倍做多NBIS ETF-Tradr",
    "chg": 1.88,
@@ -24108,15 +25631,39 @@
    "market": "美股"
   },
   {
-   "code": "NOWL",
-   "name": "二倍做多NOW ETF-GraniteShares",
-   "chg": 2.14,
-   "amt": 85173244.0,
-   "vr": 0.63,
-   "chg60": 25.06,
+   "code": "HURN",
+   "name": "休伦咨询",
+   "chg": -7.32,
+   "amt": 133936252.0,
+   "vr": 1.37,
+   "chg60": 14.79,
+   "turn": 5.48,
+   "channel": "急跌",
+   "score": 0.2668,
+   "market": "美股"
+  },
+  {
+   "code": "SPCH",
+   "name": "二倍做多SpaceX ETF-Leverage",
+   "chg": -6.85,
+   "amt": 137447825.0,
+   "vr": 0.92,
+   "chg60": -67.91,
    "turn": "-",
-   "channel": "趋势",
-   "score": 0.2621,
+   "channel": "急跌",
+   "score": 0.2642,
+   "market": "美股"
+  },
+  {
+   "code": "EXEL",
+   "name": "伊克力西斯",
+   "chg": -5.25,
+   "amt": 161391468.0,
+   "vr": 1.37,
+   "chg60": 19.38,
+   "turn": 1.2,
+   "channel": "急跌",
+   "score": 0.2633,
    "market": "美股"
   },
   {
@@ -24168,6 +25715,30 @@
    "market": "美股"
   },
   {
+   "code": "LABU",
+   "name": "三倍做多生物技术ETF-Direxion",
+   "chg": -8.6,
+   "amt": 100462060.0,
+   "vr": 1.34,
+   "chg60": 21.51,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.248,
+   "market": "美股"
+  },
+  {
+   "code": "BITX",
+   "name": "二倍比特币期货ETF-Volatility Sh",
+   "chg": -5.89,
+   "amt": 136857971.0,
+   "vr": 1.68,
+   "chg60": -44.37,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.2479,
+   "market": "美股"
+  },
+  {
    "code": "BCPC",
    "name": "拜切",
    "chg": 2.97,
@@ -24177,6 +25748,54 @@
    "turn": 1.09,
    "channel": "强势",
    "score": 0.2459,
+   "market": "美股"
+  },
+  {
+   "code": "SIRI",
+   "name": "天狼星XM",
+   "chg": -4.36,
+   "amt": 155754747.0,
+   "vr": 0.99,
+   "chg60": 13.36,
+   "turn": 1.55,
+   "channel": "急跌",
+   "score": 0.2443,
+   "market": "美股"
+  },
+  {
+   "code": "CAR",
+   "name": "安飞士",
+   "chg": -9.58,
+   "amt": 86251457.0,
+   "vr": 0.85,
+   "chg60": -14.15,
+   "turn": 1.76,
+   "channel": "急跌",
+   "score": 0.2433,
+   "market": "美股"
+  },
+  {
+   "code": "SNDG",
+   "name": "二倍做多SNDK ETF-Leverage",
+   "chg": -9.8,
+   "amt": 84500613.0,
+   "vr": 1.61,
+   "chg60": -57.16,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.2431,
+   "market": "美股"
+  },
+  {
+   "code": "UVIX",
+   "name": "二倍做多恐慌指数期货ETF",
+   "chg": -5.7,
+   "amt": 129373212.0,
+   "vr": 1.31,
+   "chg60": 918.65,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.2376,
    "market": "美股"
   },
   {
@@ -24192,6 +25811,42 @@
    "market": "美股"
   },
   {
+   "code": "AGQ",
+   "name": "二倍做多白银ETF-ProShares",
+   "chg": -4.43,
+   "amt": 141716047.0,
+   "vr": 1.2,
+   "chg60": -41.44,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.2317,
+   "market": "美股"
+  },
+  {
+   "code": "BTDR",
+   "name": "Bitdeer Technologies Group-A",
+   "chg": -5.23,
+   "amt": 129842399.0,
+   "vr": 0.97,
+   "chg60": -15.71,
+   "turn": 6.11,
+   "channel": "急跌",
+   "score": 0.2306,
+   "market": "美股"
+  },
+  {
+   "code": "ALM",
+   "name": "Almonty Industries Inc",
+   "chg": -5.23,
+   "amt": 128979555.0,
+   "vr": 1.65,
+   "chg60": -44.78,
+   "turn": 4.03,
+   "channel": "急跌",
+   "score": 0.2294,
+   "market": "美股"
+  },
+  {
    "code": "CALX",
    "name": "Calix Inc",
    "chg": 2.05,
@@ -24201,6 +25856,438 @@
    "turn": 2.79,
    "channel": "强势",
    "score": 0.2285,
+   "market": "美股"
+  },
+  {
+   "code": "TXG",
+   "name": "10x Genomics Inc-A",
+   "chg": -4.37,
+   "amt": 136502718.0,
+   "vr": 1.2,
+   "chg60": 114.77,
+   "turn": 2.45,
+   "channel": "急跌",
+   "score": 0.2233,
+   "market": "美股"
+  },
+  {
+   "code": "UPC",
+   "name": "大自然药业",
+   "chg": -9.2,
+   "amt": 77825335.0,
+   "vr": 292.91,
+   "chg60": 2.93,
+   "turn": 1872.89,
+   "channel": "急跌",
+   "score": 0.221,
+   "market": "美股"
+  },
+  {
+   "code": "DNTH",
+   "name": "Dianthus Therapeutics Inc",
+   "chg": -5.08,
+   "amt": 115192334.0,
+   "vr": 1.31,
+   "chg60": 18.48,
+   "turn": 1.97,
+   "channel": "急跌",
+   "score": 0.2116,
+   "market": "美股"
+  },
+  {
+   "code": "MSTX",
+   "name": "二倍做多MSTR ETF-Defiance",
+   "chg": -8.53,
+   "amt": 75223008.0,
+   "vr": 1.52,
+   "chg60": -80.23,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.2066,
+   "market": "美股"
+  },
+  {
+   "code": "AGCO",
+   "name": "爱科集团",
+   "chg": -4.64,
+   "amt": 116965038.0,
+   "vr": 1.05,
+   "chg60": -10.58,
+   "turn": 1.63,
+   "channel": "急跌",
+   "score": 0.2063,
+   "market": "美股"
+  },
+  {
+   "code": "CYTK",
+   "name": "Cytokinetics Inc",
+   "chg": -4.09,
+   "amt": 122994935.0,
+   "vr": 0.88,
+   "chg60": 0.05,
+   "turn": 1.18,
+   "channel": "急跌",
+   "score": 0.2054,
+   "market": "美股"
+  },
+  {
+   "code": "EEFT",
+   "name": "嘉银通",
+   "chg": -6.96,
+   "amt": 83197120.0,
+   "vr": 1.23,
+   "chg60": 1.31,
+   "turn": 3.02,
+   "channel": "急跌",
+   "score": 0.1956,
+   "market": "美股"
+  },
+  {
+   "code": "BJRI",
+   "name": "BJ’s Restaurants Inc",
+   "chg": -8.96,
+   "amt": 65971614.0,
+   "vr": 1.63,
+   "chg60": 76.62,
+   "turn": 4.54,
+   "channel": "急跌",
+   "score": 0.1928,
+   "market": "美股"
+  },
+  {
+   "code": "EOSE",
+   "name": "Eos Energy Enterprises Inc-A",
+   "chg": -6.37,
+   "amt": 85103802.0,
+   "vr": 0.85,
+   "chg60": -45.75,
+   "turn": 7.09,
+   "channel": "急跌",
+   "score": 0.1899,
+   "market": "美股"
+  },
+  {
+   "code": "ETHU",
+   "name": "二倍以太币期货ETF-Volatility Sh",
+   "chg": -5.8,
+   "amt": 87644135.0,
+   "vr": 0.96,
+   "chg60": -44.12,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.185,
+   "market": "美股"
+  },
+  {
+   "code": "WMG",
+   "name": "华纳音乐",
+   "chg": -5.81,
+   "amt": 86029401.0,
+   "vr": 1.5,
+   "chg60": -8.3,
+   "turn": 2.26,
+   "channel": "急跌",
+   "score": 0.1825,
+   "market": "美股"
+  },
+  {
+   "code": "AGIO",
+   "name": "Agios Pharmaceuticals Inc",
+   "chg": -8.34,
+   "amt": 65005679.0,
+   "vr": 1.5,
+   "chg60": 10.33,
+   "turn": 3.52,
+   "channel": "急跌",
+   "score": 0.1797,
+   "market": "美股"
+  },
+  {
+   "code": "BIRK",
+   "name": "Birkenstock Holding plc",
+   "chg": -4.37,
+   "amt": 98582895.0,
+   "vr": 2.28,
+   "chg60": 3.47,
+   "turn": 1.37,
+   "channel": "急跌",
+   "score": 0.1766,
+   "market": "美股"
+  },
+  {
+   "code": "FMC",
+   "name": "FMC Corp",
+   "chg": -9.47,
+   "amt": 58154452.0,
+   "vr": 1.08,
+   "chg60": -27.59,
+   "turn": 4.26,
+   "channel": "急跌",
+   "score": 0.1761,
+   "market": "美股"
+  },
+  {
+   "code": "TRN",
+   "name": "Trinity Industries Inc",
+   "chg": -8.97,
+   "amt": 60485006.0,
+   "vr": 2.19,
+   "chg60": -12.12,
+   "turn": 2.4,
+   "channel": "急跌",
+   "score": 0.1751,
+   "market": "美股"
+  },
+  {
+   "code": "NUGT",
+   "name": "二倍做多金矿指数ETF-Direxion",
+   "chg": -6.72,
+   "amt": 73532799.0,
+   "vr": 1.2,
+   "chg60": -31.14,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.1729,
+   "market": "美股"
+  },
+  {
+   "code": "LLYVK",
+   "name": "Liberty Live Holdings Inc Liber",
+   "chg": -6.67,
+   "amt": 70979520.0,
+   "vr": 2.48,
+   "chg60": 5.64,
+   "turn": 1.12,
+   "channel": "急跌",
+   "score": 0.1671,
+   "market": "美股"
+  },
+  {
+   "code": "COLM",
+   "name": "哥伦比亚户外",
+   "chg": -5.43,
+   "amt": 78867021.0,
+   "vr": 2.26,
+   "chg60": -1.36,
+   "turn": 2.58,
+   "channel": "急跌",
+   "score": 0.163,
+   "market": "美股"
+  },
+  {
+   "code": "ADPT",
+   "name": "Adaptive Biotechnologies Corp",
+   "chg": -6.66,
+   "amt": 68483170.0,
+   "vr": 0.97,
+   "chg60": 63.79,
+   "turn": 1.88,
+   "channel": "急跌",
+   "score": 0.1608,
+   "market": "美股"
+  },
+  {
+   "code": "BFAM",
+   "name": "Bright Horizons Family Solution",
+   "chg": -4.37,
+   "amt": 82642346.0,
+   "vr": 1.27,
+   "chg60": -8.62,
+   "turn": 2.07,
+   "channel": "急跌",
+   "score": 0.153,
+   "market": "美股"
+  },
+  {
+   "code": "TGB",
+   "name": "Trekor Metals Ltd",
+   "chg": -4.38,
+   "amt": 80378550.0,
+   "vr": 1.97,
+   "chg60": -1.02,
+   "turn": 3.26,
+   "channel": "急跌",
+   "score": 0.1514,
+   "market": "美股"
+  },
+  {
+   "code": "SKHL",
+   "name": "二倍做多海力士ETF-Direxion",
+   "chg": -6.98,
+   "amt": 62197425.0,
+   "vr": 1.43,
+   "chg60": -44.09,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.1485,
+   "market": "美股"
+  },
+  {
+   "code": "SAH",
+   "name": "索尼克汽车",
+   "chg": -8.73,
+   "amt": 51620674.0,
+   "vr": 1.81,
+   "chg60": 16.84,
+   "turn": 2.87,
+   "channel": "急跌",
+   "score": 0.1464,
+   "market": "美股"
+  },
+  {
+   "code": "SKHU",
+   "name": "二倍做多海力士ETF-ProShares",
+   "chg": -7.13,
+   "amt": 58519216.0,
+   "vr": 0.98,
+   "chg60": -38.18,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.1399,
+   "market": "美股"
+  },
+  {
+   "code": "HIVE",
+   "name": "HIVE Digital Technologies Ltd",
+   "chg": -5.67,
+   "amt": 65850755.0,
+   "vr": 1.41,
+   "chg60": -0.35,
+   "turn": 8.37,
+   "channel": "急跌",
+   "score": 0.1394,
+   "market": "美股"
+  },
+  {
+   "code": "MIRM",
+   "name": "Mirum Pharmaceuticals Inc",
+   "chg": -5.9,
+   "amt": 62232494.0,
+   "vr": 1.09,
+   "chg60": 0.13,
+   "turn": 0.95,
+   "channel": "急跌",
+   "score": 0.1314,
+   "market": "美股"
+  },
+  {
+   "code": "COGT",
+   "name": "Cogent Biosciences Inc",
+   "chg": -5.88,
+   "amt": 60842339.0,
+   "vr": 1.08,
+   "chg60": 5.27,
+   "turn": 0.91,
+   "channel": "急跌",
+   "score": 0.1266,
+   "market": "美股"
+  },
+  {
+   "code": "CMCO",
+   "name": "哥伦布-麦金农",
+   "chg": -7.3,
+   "amt": 52562297.0,
+   "vr": 2.64,
+   "chg60": 25.13,
+   "turn": 9.48,
+   "channel": "急跌",
+   "score": 0.126,
+   "market": "美股"
+  },
+  {
+   "code": "PPC",
+   "name": "Pilgrim's Pride Corp",
+   "chg": -6.75,
+   "amt": 54264795.0,
+   "vr": 1.17,
+   "chg60": -12.64,
+   "turn": 0.83,
+   "channel": "急跌",
+   "score": 0.1217,
+   "market": "美股"
+  },
+  {
+   "code": "WGS",
+   "name": "GeneDx Holdings Corp-A",
+   "chg": -5.58,
+   "amt": 58482416.0,
+   "vr": 1.22,
+   "chg60": 88.67,
+   "turn": 2.98,
+   "channel": "急跌",
+   "score": 0.1149,
+   "market": "美股"
+  },
+  {
+   "code": "BITU",
+   "name": "二倍做多比特币期货ETF-ProShares",
+   "chg": -5.81,
+   "amt": 55739080.0,
+   "vr": 1.65,
+   "chg60": -44.9,
+   "turn": "-",
+   "channel": "急跌",
+   "score": 0.1111,
+   "market": "美股"
+  },
+  {
+   "code": "CVI",
+   "name": "CVR能源",
+   "chg": -6.46,
+   "amt": 51513517.0,
+   "vr": 1.15,
+   "chg60": 1.37,
+   "turn": 1.42,
+   "channel": "急跌",
+   "score": 0.1096,
+   "market": "美股"
+  },
+  {
+   "code": "DJT",
+   "name": "特朗普媒体科技集团",
+   "chg": -5.01,
+   "amt": 56604448.0,
+   "vr": 1.06,
+   "chg60": 7.17,
+   "turn": 2.03,
+   "channel": "急跌",
+   "score": 0.1003,
+   "market": "美股"
+  },
+  {
+   "code": "SBET",
+   "name": "SharpLink Inc",
+   "chg": -4.52,
+   "amt": 56026079.0,
+   "vr": 1.03,
+   "chg60": -19.47,
+   "turn": 4.36,
+   "channel": "急跌",
+   "score": 0.0912,
+   "market": "美股"
+  },
+  {
+   "code": "AMR",
+   "name": "Alpha Metallurgical Resources I",
+   "chg": -4.62,
+   "amt": 53747962.0,
+   "vr": 1.11,
+   "chg60": -27.24,
+   "turn": 3.07,
+   "channel": "急跌",
+   "score": 0.0861,
+   "market": "美股"
+  },
+  {
+   "code": "SRPT",
+   "name": "Sarepta Therapeutics Inc",
+   "chg": -4.5,
+   "amt": 54124484.0,
+   "vr": 1.18,
+   "chg60": -31.8,
+   "turn": 3.41,
+   "channel": "急跌",
+   "score": 0.0852,
    "market": "美股"
   }
  ]
