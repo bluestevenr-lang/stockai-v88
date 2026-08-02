@@ -520,7 +520,18 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + (f"<div style='font-size:11px;background:#f8fafc;border-left:3px solid "
                f"{PALETTE['hold']};border-radius:4px;padding:4px 8px;margin:3px 0'>"
                f"🔐 <b>验证准入闸</b>（3A=Claude+GPT双验证／2A·1A=Claude必须；"
-               f"<b>GPT为辅，单独通过不充分</b>）：上榜 "
+               + (lambda _h: (
+                   f"<div style='font-size:10.5px;margin-bottom:2px;color:"
+                   f"{PALETTE['warn'] if (_h.get('last_error') or (_h.get('max_age_days') or 0) > 1) else PALETTE['hold']}'>"
+                   f"⚙️ GPT状态：裁决{_h.get('verdicts', 0)}条"
+                   f"（今日新鲜{_h.get('fresh_today', 0)}／最旧{_h.get('max_age_days')}天）"
+                   + (f"　⚠️上轮报错：{_h.get('last_error')}" if _h.get("last_error") else "　上轮正常")
+                   + (f"　不可用{_h.get('unavailable')}条" if _h.get("unavailable") else "")
+                   + "　<span style='opacity:.85'>裁决比进程活得久：GPT 下班后结论仍生效，"
+                     "3天TTL＋判据变化即重判；跑不完时按「这一票能改变什么」排队"
+                     "（3A候选＞持仓＞2A＞1A）。</span></div>") if _h else "")(
+                   (_vf.get("gpt_health") or {}))
+               + f"<b>GPT为辅，单独通过不充分</b>）：上榜 "
                f"<b style='color:{PALETTE['buy']}'>{_n_listable}</b>"
                + "".join(f"　<span style='color:{PALETTE['warn'] if '否决' in k else PALETTE['hold']}'>"
                          f"{k} {v}</span>"
