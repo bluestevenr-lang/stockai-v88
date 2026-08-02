@@ -570,3 +570,71 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
               f"({cons.get('shadow_agrees', '—')}/{cons.get('engine_sell_calls', '—')})"
               f"·08-14起与sell_call核算对照后转正"
             + (f"　🗄已否决{len(arch)}只(不占推荐位)" if arch else "") + "</div>")
+
+
+def verdict_html(v: dict) -> str:
+    """【单票 ±3A 裁决卡】2026-08-02 用户:"个股搜索的深度分析也要和3a系统一样进行买卖分析,
+    出来的结果看符合-3a还是+3a,都要有双剑合璧系统的验证"。
+    数据来自 ai-daily-report-v2/src/stock_verdict.verdict()——**与 3A 大系统同源**。"""
+    if not v:
+        return ""
+    cl, gp = v.get("claude"), v.get("gpt")
+
+    def _badge(who, st):
+        c = (PALETTE["buy"] if st == "pass" else
+             PALETTE["warn"] if st == "reject" else PALETTE["mute"])
+        m = "✅通过" if st == "pass" else "⚠️否决" if st == "reject" else "—未表态"
+        return (f"<span style='background:{c};color:#fff;border-radius:4px;"
+                f"padding:1px 7px;font-size:11px;font-weight:700'>{who} {m}</span>")
+
+    def _side(d, is_buy):
+        if not d:
+            return ""
+        fin = d.get("final")
+        col = (PALETTE["buy"] if is_buy else PALETTE["sell"]) if fin else PALETTE["mute"]
+        raw = d.get("bucket_tier") if is_buy else d.get("raw_level")
+        trail = (f"<span style='color:{PALETTE['mute']};font-size:10.5px'>"
+                 f"　原判 {raw} → 验证上限 {d.get('cap') or '—'} → "
+                 f"<b style='color:{col}'>最终 {fin or '不成立'}</b></span>")
+        body = []
+        if is_buy:
+            if d.get("zone") or d.get("when"):
+                body.append(f"买入区间/时机：<b>{d.get('zone') or d.get('when')}</b>")
+            if d.get("buckets"):
+                body.append("五桶板：" + " ".join(
+                    f"{BUCKET_CN.get(k, k)[:2]}{round(x or 0)}" for k, x in d["buckets"].items()))
+            if d.get("missing"):
+                body.append(f"短板：{'、'.join(d['missing'])}")
+        else:
+            if d.get("zone"):
+                body.append(f"卖出区间：<b>{d.get('zone')}</b>")
+            body.append(f"1-2-3：<b>{d.get('c123')}</b>"
+                        + (f"　旁路：{'；'.join(d.get('bypass') or [])}" if d.get("bypass") else "")
+                        + (f"　止损 {d.get('stop')}（距 {d.get('dist_stop_pct')}%）"
+                           if d.get("stop") else ""))
+        return (f"<div style='border-left:3px solid {col};padding:4px 9px;margin:4px 0;"
+                f"background:#f8fafc;border-radius:0 5px 5px 0'>"
+                f"<b style='color:{col};font-size:12.5px'>"
+                f"{'🟢 买侧' if is_buy else '🔴 卖侧'} {fin or '不成立'}</b>{trail}"
+                + "".join(f"<div style='font-size:11px;color:#334155;margin-top:2px'>{x}</div>"
+                          for x in body)
+                + (f"<div style='font-size:10.5px;color:{PALETTE['warn']};margin-top:2px'>"
+                   f"⚔️ {d.get('note')}</div>" if d.get("note") else "")
+                + "</div>")
+
+    return (f"<div style='border:1px solid #e2e8f0;border-radius:7px;padding:8px 11px;"
+            f"margin:6px 0;background:#fff'>"
+            f"<div style='display:flex;align-items:baseline;gap:8px;flex-wrap:wrap'>"
+            f"<b style='font-size:14px'>{v.get('name')}</b>"
+            f"<span style='font-size:11px;color:{PALETTE['mute']}'>{v.get('code')}</span>"
+            f"{_badge('Claude', cl)}{_badge('GPT', gp)}"
+            f"<span style='font-size:10.5px;color:{PALETTE['mute']}'>{v.get('source')}</span></div>"
+            f"<div style='font-size:12.5px;font-weight:700;margin:4px 0;color:#1e293b'>"
+            f"{str(v.get('headline')).replace('**', '')}</div>"
+            + (f"<div style='font-size:10.5px;color:{PALETTE['warn']};margin-bottom:2px'>"
+               f"GPT 异议：{v.get('gpt_note')}</div>"
+               if gp == "reject" and v.get("gpt_note") else "")
+            + _side(v.get("buy"), True) + _side(v.get("sell"), False)
+            + f"<div style='font-size:10px;color:{PALETTE['mute']};margin-top:3px'>"
+              f"{v.get('rule')}　｜　+3A 与 -3A 均需双剑认证（Claude✅且GPT✅），"
+              f"缺一方自动降档，不靠单方判断让人买入或清仓。</div></div>")

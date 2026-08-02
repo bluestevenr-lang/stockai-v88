@@ -18870,6 +18870,23 @@ if st.session_state.get('scan_selected_code'):
                     }
                 )
 
+                # ══ 【单票 ±3A 裁决 2026-08-02 用户定纲】 ══
+                # "个股搜索的深度分析也要和3a系统一样进行买卖分析,出来的结果看符合-3a
+                #  还是+3a,都要有双剑合璧系统的验证,和3a一样"。
+                # 与 3A 大系统**同源**:同一套木桶五桶板 + 同一套斯波朗迪1-2-3 + 同一套铁律19v3。
+                # 摆在量价趋势之前——先给结论,再给过程。
+                try:
+                    import sys as _sv_sys
+                    _sv_p = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
+                    if _sv_p not in _sv_sys.path:
+                        _sv_sys.path.insert(0, _sv_p)
+                    from stock_verdict import verdict as _sv_verdict
+                    from grade_card import verdict_html as _sv_html
+                    _sv = _sv_verdict(str(target_c))   # 名称由 stock_verdict 自行回填,不依赖此处变量
+                    st.markdown(_sv_html(_sv), unsafe_allow_html=True)
+                except Exception as _e_sv:
+                    st.caption(f"±3A 裁决暂不可用：{type(_e_sv).__name__}")
+
                 # 【V99】综合量价趋势判断（8分拆解/9态量价/9段趋势/6级水位/全价位）
                 # 复用 cloud_engine（三端同一套引擎），桌面版注入真实板块强度
                 try:
