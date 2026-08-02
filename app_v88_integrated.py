@@ -3116,12 +3116,31 @@ def _v88_mkt_gate9x(_repo9x):
 # 概率/裁决仓位;没有确认单=如实说"最近的差什么"(准确认队列),绝不让该买的时刻淹没在小字里。
 try:
     _cb_repo9 = Path.home() / "Desktop" / "ai-daily-report-v2"
+    # ══ 【2026-08-02 用户"右边全空了""云端能不能和V88页面一样"】 ══
+    # 根因:上面是**本机绝对路径**,云端容器里没有 ~/Desktop/ai-daily-report-v2,
+    # 于是 _cbj9 对每个文件都返回 {} —— 而且 `except: return {}` **把错误全吞了**,
+    # 页面照画空壳:多选对比下拉空、右栏空、组合体检只剩两个空图标。
+    # 修:本机读不到 → **兜底读公开仓 pub/**(与 streamlit_app.py 同源),
+    # 并且**不再静默吞错**——失败留痕到 _CB_ERR9,页面可显示"数据源不可用"。
+    _CB_ERR9 = {}
+    _PUB_BASE9 = "https://raw.githubusercontent.com/bluestevenr-lang/stockai-v88/data/pub"
+
+    @st.cache_data(ttl=600, show_spinner=False)
+    def _cb_remote9(_fn: str):
+        import requests as _rq
+        r = _rq.get(f"{_PUB_BASE9}/{_fn}", timeout=12)
+        r.raise_for_status()
+        return r.json()
 
     def _cbj9(_fn):
         try:
             return json.loads((_cb_repo9 / "data" / _fn).read_text(encoding="utf-8"))
-        except Exception:
-            return {}
+        except Exception as _e_local:
+            try:
+                return _cb_remote9(_fn)
+            except Exception as _e_pub:
+                _CB_ERR9[_fn] = f"本机:{type(_e_local).__name__} 远端:{type(_e_pub).__name__}"
+                return {}
     _nwj9 = _cbj9   # 同仓data读取器别名(修使用先于定义:原def在3600行段,调用在3373)
 
     def _flag9(_cd9f) -> str:
@@ -3172,7 +3191,23 @@ try:
     # 🅒=Claude(Fable5/Opus5)独立复核结论与规则引擎一致;⚡=有异议(不发徽章,给反对理由);
     # 无标=本班未复核该只(重点股优先,不装作全审过)。数据来自三方会审,零额外AI花费。
     try:
+        # 【P1·2026-08-02 GPT审计】ai_cert 退出"认证"语义:
+        # ①它是**自然语言解析**出来的(把系统异议里的"CS"当成了股票代码,8条里污染1条)
+        # ②数据停在07-31,已陈旧 ③它从来不在准入链里(准入走 claude_standard/dual_cert/three_way)
+        # 故:保留展示价值(它确实记录了Fable对个股的上下文异议),但**不叫认证、不影响档位**,
+        # 且过期3天即不再显示——避免一个陈年结论在界面上冒充"已复核"。
         _CERT9 = json.loads((_cb_repo9 / "data" / "ai_cert.json").read_text(encoding="utf-8"))
+        try:
+            from datetime import date as _d9c
+            _age9c = (_d9c.today() - _d9c.fromisoformat(str(_CERT9.get("asof"))[:10])).days
+            if _age9c > 3:
+                _CERT9 = {"by_code": {}, "by_name": {}, "_stale": _age9c}
+        except Exception:
+            pass
+        # 过滤非股票键(CS规则名等解析噪音)
+        for _seg9c in ("by_code", "by_name"):
+            _CERT9[_seg9c] = {k: v for k, v in (_CERT9.get(_seg9c) or {}).items()
+                              if not str(k).startswith("CS")}
     except Exception:
         _CERT9 = {}
 
@@ -3199,7 +3234,7 @@ try:
         if _e9 and _e9.get("verdict") == "一致":
             _tip9 = (f"{_e9.get('model', 'Claude')}人工复核·{_e9.get('shift', '')}"
                      f"｜{str(_e9.get('note', ''))[:70]}").replace('"', "'")
-            return (f"<span title=\"🅒Claude人工复核通过:独立结论与规则引擎一致(最高一档)。{_tip9}\" "
+            return (f"<span title=\"🅒Fable上下文复核:独立结论与规则引擎一致(**展示用,不影响档位**;准入以双剑为准)。{_tip9}\" "
                     f"style='{_base9};background:linear-gradient(145deg,#fde68a,#d97706);color:#4a2c05;"
                     "box-shadow:0 1px 2px rgba(180,120,0,.45)'>C</span>")
         if _e9:      # 人工有异议(理论上已被移出名单)
