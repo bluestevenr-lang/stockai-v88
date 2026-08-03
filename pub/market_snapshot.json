@@ -1,6 +1,6 @@
 {
   "schema_version": "v88.snapshot/2.0",
-  "snapshot_id": "snap-6dd3098c6c0ad2de",
+  "snapshot_id": "snap-b74b116473920960",
   "rotation_forecast": {
     "schema_version": "v88.rotation/1.3",
     "snapshot_id": "snap-1084f57de7ab2689",
@@ -3503,7 +3503,7 @@
       }
     ]
   },
-  "generated_at": "2026-08-03 15:55",
+  "generated_at": "2026-08-03 19:14",
   "markets": {
     "美股": {
       "indices": [
@@ -3926,22 +3926,21 @@
           "turning_prompt": ""
         },
         {
-          "symbol": "159915.SZ",
-          "name": "创业板ETF代理",
-          "last": 3.33,
-          "chg1d": -1.28,
-          "chg5d": -7.95,
-          "chg20d": -16.25,
-          "vs_ma20": -8.33,
-          "vs_ma60": -15.07,
+          "symbol": "399006.SZ",
+          "name": "创业板指",
+          "last": 3302.55,
+          "chg1d": -1.24,
+          "chg5d": -8.03,
+          "chg20d": -16.37,
+          "vs_ma20": -8.34,
+          "vs_ma60": -15.25,
           "trend": "📉 空头排列",
-          "vol_ratio": 1.35,
+          "vol_ratio": 1.0,
           "px_pct": 3.3,
-          "vol_pct": 98.3,
-          "diverge": -95.0,
+          "vol_pct": null,
+          "diverge": null,
           "turning": "",
-          "turning_prompt": "",
-          "unit": "元"
+          "turning_prompt": ""
         }
       ],
       "sectors": [
@@ -4153,7 +4152,7 @@
           {
             "key": "量价背离",
             "hit": false,
-            "text": "价格分位4.4／量分位99.4＝背离-95.0"
+            "text": "价格分位4.4／量分位100.0＝背离-95.6"
           },
           {
             "key": "广度钝化",
@@ -4163,7 +4162,7 @@
           {
             "key": "动量衰竭",
             "hit": false,
-            "text": "20日-11.58%但5日仅-4.72%"
+            "text": "20日-11.62%但5日仅-4.75%"
           },
           {
             "key": "估值高位",
@@ -4190,7 +4189,7 @@
           {
             "key": "放量杀跌",
             "hit": true,
-            "text": "价格分位4.4／量分位99.4＝背离-95.0"
+            "text": "价格分位4.4／量分位100.0＝背离-95.6"
           },
           {
             "key": "广度极低",
@@ -4200,7 +4199,7 @@
           {
             "key": "深度超跌",
             "hit": true,
-            "text": "20日-11.58%"
+            "text": "20日-11.62%"
           },
           {
             "key": "估值低位",
@@ -4223,8 +4222,8 @@
         "bottom_hit": 3,
         "bottom_na": 1,
         "px_pct": 4.4,
-        "vol_pct": 99.4,
-        "diverge": -95.0,
+        "vol_pct": 100.0,
+        "diverge": -95.6,
         "breadth_full_days": 0,
         "note": "样本<5不给概率(铁律2)——只报命中条数,⬜=数据源缺失非未命中"
       },
@@ -4261,12 +4260,12 @@
         {
           "symbol": "^HSI",
           "name": "恒生指数",
-          "last": 25981.52,
-          "chg1d": 0.38,
-          "chg5d": 3.07,
-          "chg20d": 10.02,
-          "vs_ma20": 4.32,
-          "vs_ma60": 4.52,
+          "last": 26009.4,
+          "chg1d": 0.48,
+          "chg5d": 3.18,
+          "chg20d": 10.13,
+          "vs_ma20": 4.43,
+          "vs_ma60": 4.63,
           "trend": "📈 多头排列",
           "vol_ratio": 0.9,
           "px_pct": 88.3,
@@ -4279,16 +4278,16 @@
           "symbol": "3033.HK",
           "name": "恒生科技(ETF代理)",
           "last": 4.78,
-          "chg1d": 1.01,
-          "chg5d": 3.51,
-          "chg20d": 7.23,
-          "vs_ma20": 2.96,
-          "vs_ma60": 2.35,
+          "chg1d": 1.06,
+          "chg5d": 3.55,
+          "chg20d": 7.27,
+          "vs_ma20": 3.0,
+          "vs_ma60": 2.39,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 1.0,
+          "vol_ratio": 1.01,
           "px_pct": 73.3,
-          "vol_pct": 78.0,
-          "diverge": -4.7,
+          "vol_pct": 79.7,
+          "diverge": -6.4,
           "turning": "",
           "turning_prompt": ""
         }
@@ -4298,34 +4297,34 @@
           "symbol": "3033.HK",
           "name": "恒生科技",
           "last": 4.78,
-          "chg1d": 1.01,
-          "chg5d": 3.51,
-          "chg20d": 7.23,
-          "vs_ma20": 2.96,
-          "vs_ma60": 2.35,
+          "chg1d": 1.06,
+          "chg5d": 3.55,
+          "chg20d": 7.27,
+          "vs_ma20": 3.0,
+          "vs_ma60": 2.39,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 1.0,
+          "vol_ratio": 1.01,
           "px_pct": 73.3,
-          "vol_pct": 78.0,
-          "diverge": -4.7,
+          "vol_pct": 79.7,
+          "diverge": -6.4,
           "turning": "",
           "turning_prompt": "",
-          "heat": 59
+          "heat": 60
         },
         {
           "symbol": "2828.HK",
           "name": "国企蓝筹",
-          "last": 88.96,
-          "chg1d": 0.38,
-          "chg5d": 3.49,
-          "chg20d": 10.81,
-          "vs_ma20": 4.36,
-          "vs_ma60": 4.68,
+          "last": 88.8,
+          "chg1d": 0.2,
+          "chg5d": 3.3,
+          "chg20d": 10.61,
+          "vs_ma20": 4.18,
+          "vs_ma60": 4.49,
           "trend": "📈 多头排列",
-          "vol_ratio": 0.72,
+          "vol_ratio": 0.73,
           "px_pct": 86.7,
-          "vol_pct": 15.3,
-          "diverge": 71.4,
+          "vol_pct": 16.9,
+          "diverge": 69.8,
           "turning": "",
           "turning_prompt": "",
           "heat": 48
@@ -4333,28 +4332,28 @@
         {
           "symbol": "3110.HK",
           "name": "高股息",
-          "last": 31.54,
-          "chg1d": -0.63,
-          "chg5d": 1.35,
-          "chg20d": 6.55,
-          "vs_ma20": 2.94,
-          "vs_ma60": 1.24,
+          "last": 31.6,
+          "chg1d": -0.44,
+          "chg5d": 1.54,
+          "chg20d": 6.76,
+          "vs_ma20": 3.13,
+          "vs_ma60": 1.43,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 0.52,
-          "px_pct": 58.3,
+          "vol_ratio": 0.53,
+          "px_pct": 60.0,
           "vol_pct": 5.1,
-          "diverge": 53.2,
+          "diverge": 54.9,
           "turning": "",
           "turning_prompt": "",
-          "heat": 33
+          "heat": 34
         }
       ],
       "temperature": {
         "temp": 89,
         "trend": 100,
         "breadth": 100,
-        "momentum": 83,
-        "vol_heat": 42,
+        "momentum": 84,
+        "vol_heat": 43,
         "label": "🔥 过热",
         "position": "6-7成（过热防回撤，触发中线兑现纪律）",
         "verdict": "🔥 过热惯性·可持有但设好回撤线、不新追高"
@@ -4376,7 +4375,7 @@
           {
             "key": "量价背离",
             "hit": true,
-            "text": "价格分位80.8／量分位42.4＝背离+38.4"
+            "text": "价格分位80.8／量分位43.2＝背离+37.6"
           },
           {
             "key": "广度钝化",
@@ -4386,7 +4385,7 @@
           {
             "key": "动量衰竭",
             "hit": false,
-            "text": "20日+8.62%但5日仅+3.29%"
+            "text": "20日+8.70%但5日仅+3.37%"
           },
           {
             "key": "估值高位",
@@ -4413,7 +4412,7 @@
           {
             "key": "放量杀跌",
             "hit": false,
-            "text": "价格分位80.8／量分位42.4＝背离+38.4"
+            "text": "价格分位80.8／量分位43.2＝背离+37.6"
           },
           {
             "key": "广度极低",
@@ -4423,7 +4422,7 @@
           {
             "key": "深度超跌",
             "hit": false,
-            "text": "20日+8.62%"
+            "text": "20日+8.70%"
           },
           {
             "key": "估值低位",
@@ -4446,8 +4445,8 @@
         "bottom_hit": 0,
         "bottom_na": 1,
         "px_pct": 80.8,
-        "vol_pct": 42.4,
-        "diverge": 38.4,
+        "vol_pct": 43.2,
+        "diverge": 37.6,
         "breadth_full_days": 2,
         "note": "样本<5不给概率(铁律2)——只报命中条数,⬜=数据源缺失非未命中"
       },
