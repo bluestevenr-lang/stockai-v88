@@ -1,5 +1,5 @@
 {
- "asof": "2026-08-03 20:32（北京时间）",
+ "asof": "2026-08-04 06:46（北京时间）",
  "rules": {
   "CS9": "杠杆/反向/日重置产品不进推荐位——持有期收益路径依赖,长期价值/获利空间两桶口径不适用(案:二倍做空MSTR ETF被评1A)",
   "CS1": "宽基指数类跌幅未达5%且趋势未破,不按个股尺度输出减仓(案:VOO-2.1%/513500-0.2%就减)",
@@ -13,16 +13,6 @@
  },
  "note": "Claude标准闸:把Fable/Opus历次否决理由固化成机检规则,名单出厂前先过这道闸——不达标的不进推荐位,转⏸未达标区并写明理由(用户定纲:'有异议的还摆在推荐位没有参考意义')。规则来自4个班次真实异议的归纳,非回测胜率;每条带rule_id,台账到期后双周深检算'被拦下的票后来表现如何'来修订阈值——规则错了要能被数据推翻。",
  "pass": {
-  "STLA": {
-   "code": "STLA",
-   "name": "Stellantis",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "0762.HK": {
    "code": "0762.HK",
    "name": "中国联通",
@@ -33,9 +23,9 @@
    "downgrade": "",
    "auto": true
   },
-  "1053.HK": {
-   "code": "1053.HK",
-   "name": "重庆长安汽车",
+  "0728.HK": {
+   "code": "0728.HK",
+   "name": "中国电信",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -63,9 +53,9 @@
    "downgrade": "",
    "auto": true
   },
-  "BIDU": {
-   "code": "BIDU",
-   "name": "百度",
+  "1799.HK": {
+   "code": "1799.HK",
+   "name": "新特能源",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -73,11 +63,11 @@
    "downgrade": "",
    "auto": true
   },
-  "1799.HK": {
-   "code": "1799.HK",
-   "name": "新特能源",
+  "601877.SS": {
+   "code": "601877.SS",
+   "name": "正泰电器",
    "side": "机会",
-   "action": "左侧低吸",
+   "action": "现价可进",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -113,9 +103,69 @@
    "downgrade": "",
    "auto": true
   },
+  "601727.SS": {
+   "code": "601727.SS",
+   "name": "上海电气",
+   "side": "机会",
+   "action": "现价可进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "3968.HK": {
+   "code": "3968.HK",
+   "name": "招商银行",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "9618.HK": {
+   "code": "9618.HK",
+   "name": "京东集团-SW",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "1398.HK": {
+   "code": "1398.HK",
+   "name": "工商银行",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "0001.HK": {
+   "code": "0001.HK",
+   "name": "长和",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "2276.HK": {
    "code": "2276.HK",
    "name": "康耐特光学",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "001309.SZ": {
+   "code": "001309.SZ",
+   "name": "德明利",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -213,9 +263,9 @@
    "downgrade": "",
    "auto": true
   },
-  "1286.HK": {
-   "code": "1286.HK",
-   "name": "鹰普精密",
+  "PDD": {
+   "code": "PDD",
+   "name": "拼多多",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -223,31 +273,11 @@
    "downgrade": "",
    "auto": true
   },
-  "SLB": {
-   "code": "SLB",
-   "name": "斯伦贝谢",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "RTX": {
-   "code": "RTX",
-   "name": "雷神",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "JPM": {
-   "code": "JPM",
-   "name": "摩根大通",
-   "side": "行业代表",
-   "action": "",
+  "1286.HK": {
+   "code": "1286.HK",
+   "name": "鹰普精密",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -305,6 +335,28 @@
   }
  },
  "reject": {
+  "LMT": {
+   "code": "LMT",
+   "name": "洛克希德马丁",
+   "side": "行业代表",
+   "action": "",
+   "rules": [
+    "CS7"
+   ],
+   "why": "美股过热而赔率仅0.08(要≥2.0)",
+   "downgrade": ""
+  },
+  "JPM": {
+   "code": "JPM",
+   "name": "摩根大通",
+   "side": "行业代表",
+   "action": "",
+   "rules": [
+    "CS7"
+   ],
+   "why": "美股过热而赔率仅0.43(要≥2.0)",
+   "downgrade": ""
+  },
   "2269.HK": {
    "code": "2269.HK",
    "name": "药明生物",
@@ -329,17 +381,17 @@
   }
  },
  "stats": {
-  "n_pass": 489,
-  "n_reject": 58,
+  "n_pass": 282,
+  "n_reject": 75,
   "by_rule": {
-   "CS9": 1,
-   "CS1": 3,
+   "CS9": 3,
+   "CS1": 2,
    "CS2": 0,
    "CS3": 0,
-   "CS4": 4,
+   "CS4": 2,
    "CS5": 0,
-   "CS6": 39,
-   "CS7": 24,
+   "CS6": 46,
+   "CS7": 63,
    "CS8": 0
   }
  }
