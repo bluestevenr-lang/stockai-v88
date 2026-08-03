@@ -18666,6 +18666,7 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
                 "ts": 0, "gen": _btp_off9.get("generated_at", ""),
                 "truncated": _btp_off9.get("truncated") or {},
                 "elapsed": _s9o.get("elapsed_sec")}
+            _btp_state9["stats9"] = _s9o
             _btp_state9["top52"] = [_btp_adapt9(r) for r in (_btp_off9.get("top") or [])]
             _btp_state9["tophist"] = [_btp_adapt9(r) for r in (_btp_off9.get("top_hist") or [])]
             _btp_src9 = "管线离线预算"
@@ -18770,6 +18771,17 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
         _btp_top9(_btp_state9.get("tophist") or [], "to_lowall_pct",
                   "🕳 距历史最低点最近 · Top30",
                   "（真·长历史股优先，次新股排后并标注）")
+        # ═══ 【2026-08-03 用户点单】"中美港各top10的底点和拐点反馈模块" ═══
+        # 两件事各自说清楚,不混成一句:
+        #   底点 = 52周低价/历史低价的**绝对价位**+当前距离(能直接拿去挂单)
+        #   拐点 = 证据强度分档 —— 🔔信号档(底背离/放量收复MA20/放量长阳,强)
+        #          vs ○阶段档(仅stage含"启动确认",**什么信号都没有**,弱)
+        # 首版两者都写成"启动确认",阶段档看着像信号其实是空的 —— 用措辞冒充证据。
+        _sg9b = _btp_state9.get("stats9") or {}
+        if _sg9b.get("turn_signal") is not None:
+            st.caption(f"🔔 拐点证据分档：真实信号 {_sg9b.get('turn_signal')} 只 ｜ "
+                       f"○ 仅阶段判定 {_sg9b.get('turn_stage_only')} 只"
+                       "（阶段档=未出现任何底部拐点信号，只是趋势阶段被判为启动，证据弱一档）")
         _any_btp9 = False
         for _mk_btp9 in ("美股", "A股", "港股"):
             _rows_btp9 = (_btp_state9.get("markets") or {}).get(_mk_btp9) or []
@@ -18777,23 +18789,34 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
                 continue
             _any_btp9 = True
             _tr9 = (_btp_state9.get("truncated") or {}).get(_mk_btp9) or 0
+            _nsig9 = sum(1 for _r in _rows_btp9 if _r.get("turn_kind") == "信号")
             st.markdown(f"**{'🇺🇸' if _mk_btp9 == '美股' else ('🇨🇳' if _mk_btp9 == 'A股' else '🇭🇰')} "
-                        f"{_mk_btp9}（{len(_rows_btp9)}只"
-                        + (f"·另有{_tr9}只达标未展示" if _tr9 else "") + ")**")
-            st.markdown("<div style='font-size:13px;line-height:1.75'>" + "".join(
-                f"<div style='border-bottom:1px solid #eef2f7;padding:3px 0'>"
-                f"<b>机会分{_r9b['score']}</b> {_stk_link(_r9b['name'], _r9b['code'])} "
-                f"<span style='color:#64748b'>现价{_r9b['last']} · 距52周高{_r9b['dd52']}%"
-                f" · 52周{_r9b['p52']}%位{('·' + _r9b['hist']) if _r9b.get('hist') else ''}</span><br>"
-                f"<span style='font-size:12px;color:#16a34a'>🔄 {_r9b['turn_label']}：{_r9b['turn_sigs']}</span>"
-                f"<span style='font-size:12px;color:#475569'>｜上涨{_r9b['p_up']}%·盈亏比{_r9b['rr']}"
-                f"·期望{_r9b['ev']:+.1f}%｜支撑{_r9b.get('support', '—')}·破{_r9b.get('stop', '—')}废</span>"
-                + ((lambda _e: f"<br><span style='font-size:12px;color:#475569'>💡{_e}</span>" if _e else "")(
-                    _v88_fund_edge_short(_r9b['name'])))
-                + ((lambda _hn: f"<span style='font-size:12px;color:#b45309'>{_hn}</span>" if _hn else "")(
-                    _v88_hot_note9(_r9b.get('code'))))
+                        f"{_mk_btp9} · 底点+拐点 Top{len(_rows_btp9)}**"
+                        f"<span style='font-size:11px;color:#94a3b8'>（🔔真信号{_nsig9}只·"
+                        f"○阶段档{len(_rows_btp9) - _nsig9}只"
+                        + (f"·另有{_tr9}只达标未展示" if _tr9 else "") + "）</span>",
+                        unsafe_allow_html=True)
+            st.markdown("<div style='font-size:12.5px;line-height:1.75'>" + "".join(
+                f"<div style='border-bottom:1px solid #f1f5f9;padding:3px 0'>"
+                f"{'🔔' if _r.get('turn_kind') == '信号' else '○'} "
+                f"{_stk_link(_r['name'], _r['code'])}{_cbadge_b9(_r.get('code'), _CMB9)}"
+                # ── 底点：绝对价位 + 距离(绿色=买入侧语义) ──
+                f"<span style='font-size:11.5px;color:#475569'> 现{_r['last']}</span>"
+                f"<b style='color:#16a34a;font-size:11.5px'> ⤓52周低{_r.get('low52_px', '—')}"
+                f"(距{_r.get('to_low52_pct')}%)</b>"
+                + (f"<b style='color:#0d9488;font-size:11.5px'> ⤓史低{_r.get('low_all_px', '—')}"
+                   f"(距{_r.get('to_lowall_pct')}%)</b>" if _r.get('low_all_px') else "")
+                + ("<span style='font-size:11px;color:#b45309'>·次新</span>"
+                   if _r.get("newly_listed") else "")
+                # ── 拐点：信号档给内容，阶段档明说"无信号" ──
+                + (f"<br><span style='font-size:11.5px;color:"
+                   f"{'#16a34a' if _r.get('turn_kind') == '信号' else '#94a3b8'}'>"
+                   f"{'拐点信号' if _r.get('turn_kind') == '信号' else '证据弱'}："
+                   f"{str(_r.get('turning_note') or '')[:52]}</span>")
+                + f"<span style='font-size:11px;color:#64748b'>｜机会分{_r['score']}"
+                f"·上涨{_r.get('p_up')}%·赔率{_r.get('rr')}</span>"
                 + "</div>"
-                for _r9b in _rows_btp9) + "</div>", unsafe_allow_html=True)
+                for _r in _rows_btp9) + "</div>", unsafe_allow_html=True)
         if not _any_btp9:
             st.info("本轮无'深水位+拐点已现'双闸达标的优质股——宁缺毋滥，仍在寻底的不硬凑。")
     elif not _btp_go9:
