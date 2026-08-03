@@ -18669,6 +18669,12 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
             _btp_state9["stats9"] = _s9o
             _btp_state9["top52"] = [_btp_adapt9(r) for r in (_btp_off9.get("top") or [])]
             _btp_state9["tophist"] = [_btp_adapt9(r) for r in (_btp_off9.get("top_hist") or [])]
+            # 只看🔔:读**另一份**预算好的信号档榜,不是现场过滤上面那份
+            _btp_state9["top52_sig"] = [_btp_adapt9(r) for r in (_btp_off9.get("top_sig") or [])]
+            _btp_state9["tophist_sig"] = [_btp_adapt9(r) for r in (_btp_off9.get("top_hist_sig") or [])]
+            _btp_state9["markets_sig"] = {m: [_btp_adapt9(r) for r in v]
+                                          for m, v in (_btp_off9.get("markets_sig") or {}).items()}
+            _btp_state9["truncated_sig"] = _btp_off9.get("truncated_sig") or {}
             _btp_src9 = "管线离线预算"
         except Exception as _bo_e9:
             # 不静默:读不到就说读不到(铁律21)
@@ -18765,10 +18771,10 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
                 f"·机会分{_r['score']}·{str(_r.get('turn_sigs') or '')[:26]}</span></div>"
                 for _i, _r in enumerate(_rows[:30], 1)) + "</div>", unsafe_allow_html=True)
 
-        _btp_top9(_btp_state9.get("top52") or [], "to_low52_pct",
+        _btp_top9(_btp_state9.get("top52" + _kk9) or [], "to_low52_pct",
                   "📉 距 52 周最低点最近 · Top30",
                   "（近者在前·已过深水位+拐点已现+机会分≥55三闸）")
-        _btp_top9(_btp_state9.get("tophist") or [], "to_lowall_pct",
+        _btp_top9(_btp_state9.get("tophist" + _kk9) or [], "to_lowall_pct",
                   "🕳 距历史最低点最近 · Top30",
                   "（真·长历史股优先，次新股排后并标注）")
         # ═══ 【2026-08-03 用户点单】"中美港各top10的底点和拐点反馈模块" ═══
@@ -18782,13 +18788,28 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
             st.caption(f"🔔 拐点证据分档：真实信号 {_sg9b.get('turn_signal')} 只 ｜ "
                        f"○ 仅阶段判定 {_sg9b.get('turn_stage_only')} 只"
                        "（阶段档=未出现任何底部拐点信号，只是趋势阶段被判为启动，证据弱一档）")
+        # 【2026-08-03 用户批准】"只看🔔"开关。为什么是开关而不是直接收紧闸②:
+        # 闸②写的是"有底部信号 **或** stage含启动确认",实测82%走后半句进来 ——
+        # 在2100只的池子上这个闸几乎等于没有。但**收紧是改阈值**,得用户点头,
+        # 且收紧后美股会常态空榜(今日Top10全是○)。开关最轻:什么都不改,由你切。
+        _sig_only9 = st.checkbox(
+            "🔔 只看有真实拐点信号的（底背离金叉／放量收复MA20／放量长阳）",
+            value=False, key="btp_sig_only9",
+            help="不勾=全部(含仅阶段判定的弱证据档)。勾上后读的是**另一份**按同口径"
+                 "重排的信号档榜——不是把上面的Top10现场过滤掉，"
+                 "否则美股会显示0只，而实际上美股有真信号股只是不在按距底排的前10里。")
+        _kk9 = "_sig" if _sig_only9 else ""
         _any_btp9 = False
         for _mk_btp9 in ("美股", "A股", "港股"):
-            _rows_btp9 = (_btp_state9.get("markets") or {}).get(_mk_btp9) or []
+            _rows_btp9 = (_btp_state9.get("markets" + _kk9) or {}).get(_mk_btp9) or []
             if not _rows_btp9:
+                if _sig_only9:      # 空榜必须明说,否则"筛没了"与"渲染挂了"长得一样
+                    st.caption(f"{'🇺🇸' if _mk_btp9 == '美股' else ('🇨🇳' if _mk_btp9 == 'A股' else '🇭🇰')}"
+                               f" {_mk_btp9}：本轮**无**既在底部又出现真实拐点信号的标的"
+                               "（不是数据缺失，是确实没有——宁缺毋滥）")
                 continue
             _any_btp9 = True
-            _tr9 = (_btp_state9.get("truncated") or {}).get(_mk_btp9) or 0
+            _tr9 = (_btp_state9.get("truncated" + _kk9) or {}).get(_mk_btp9) or 0
             _nsig9 = sum(1 for _r in _rows_btp9 if _r.get("turn_kind") == "信号")
             st.markdown(f"**{'🇺🇸' if _mk_btp9 == '美股' else ('🇨🇳' if _mk_btp9 == 'A股' else '🇭🇰')} "
                         f"{_mk_btp9} · 底点+拐点 Top{len(_rows_btp9)}**"
