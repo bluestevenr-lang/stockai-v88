@@ -1,5 +1,5 @@
 {
- "asof": "2026-08-03 08:09（北京时间）",
+ "asof": "2026-08-03 20:32（北京时间）",
  "rules": {
   "CS9": "杠杆/反向/日重置产品不进推荐位——持有期收益路径依赖,长期价值/获利空间两桶口径不适用(案:二倍做空MSTR ETF被评1A)",
   "CS1": "宽基指数类跌幅未达5%且趋势未破,不按个股尺度输出减仓(案:VOO-2.1%/513500-0.2%就减)",
@@ -23,36 +23,6 @@
    "downgrade": "",
    "auto": true
   },
-  "1053.HK": {
-   "code": "1053.HK",
-   "name": "重庆长安汽车",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "2013.HK": {
-   "code": "2013.HK",
-   "name": "微盟集团",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "601727.SS": {
-   "code": "601727.SS",
-   "name": "上海电气",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "0762.HK": {
    "code": "0762.HK",
    "name": "中国联通",
@@ -63,9 +33,29 @@
    "downgrade": "",
    "auto": true
   },
-  "002488.SZ": {
-   "code": "002488.SZ",
-   "name": "金固股份",
+  "1053.HK": {
+   "code": "1053.HK",
+   "name": "重庆长安汽车",
+   "side": "机会",
+   "action": "现价可进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "600000.SS": {
+   "code": "600000.SS",
+   "name": "浦发银行",
+   "side": "机会",
+   "action": "双路径待触发",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "1478.HK": {
+   "code": "1478.HK",
+   "name": "丘钛科技",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -73,11 +63,31 @@
    "downgrade": "",
    "auto": true
   },
-  "2498.HK": {
-   "code": "2498.HK",
-   "name": "速腾聚创",
+  "BIDU": {
+   "code": "BIDU",
+   "name": "百度",
    "side": "机会",
    "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "1799.HK": {
+   "code": "1799.HK",
+   "name": "新特能源",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "600875.SS": {
+   "code": "600875.SS",
+   "name": "东方电气",
+   "side": "机会",
+   "action": "现价可进",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -87,15 +97,15 @@
    "code": "601127.SS",
    "name": "赛力斯",
    "side": "机会",
-   "action": "左侧低吸",
+   "action": "等待",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "9866.HK": {
-   "code": "9866.HK",
-   "name": "蔚来汽车-SW",
+  "1428.HK": {
+   "code": "1428.HK",
+   "name": "耀才证券金融",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -103,31 +113,11 @@
    "downgrade": "",
    "auto": true
   },
-  "2357.HK": {
-   "code": "2357.HK",
-   "name": "中航科工",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "688111.SS": {
-   "code": "688111.SS",
-   "name": "金山办公",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "LMT": {
-   "code": "LMT",
-   "name": "洛克希德马丁",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
+  "2276.HK": {
+   "code": "2276.HK",
+   "name": "康耐特光学",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -168,16 +158,6 @@
    "name": "宝洁",
    "side": "打折",
    "action": "🕐还不够便宜·先看着",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "600346.SS": {
-   "code": "600346.SS",
-   "name": "恒力石化",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -243,29 +223,19 @@
    "downgrade": "",
    "auto": true
   },
-  "605117.SS": {
-   "code": "605117.SS",
-   "name": "德业股份",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "1138.HK": {
-   "code": "1138.HK",
-   "name": "中远海能",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "SLB": {
    "code": "SLB",
    "name": "斯伦贝谢",
+   "side": "行业代表",
+   "action": "",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "RTX": {
+   "code": "RTX",
+   "name": "雷神",
    "side": "行业代表",
    "action": "",
    "rules": [],
@@ -313,9 +283,9 @@
    "downgrade": "",
    "auto": true
   },
-  "601398.SS": {
-   "code": "601398.SS",
-   "name": "工商银行",
+  "600036.SS": {
+   "code": "600036.SS",
+   "name": "招商银行",
    "side": "行业代表",
    "action": "",
    "rules": [],
@@ -323,9 +293,9 @@
    "downgrade": "",
    "auto": true
   },
-  "0291.HK": {
-   "code": "0291.HK",
-   "name": "华润啤酒",
+  "2357.HK": {
+   "code": "2357.HK",
+   "name": "中航科工",
    "side": "行业代表",
    "action": "",
    "rules": [],
@@ -343,33 +313,33 @@
    "rules": [
     "CS7"
    ],
-   "why": "港股过热而赔率仅0.80(要≥2.0)",
+   "why": "港股过热而赔率仅0.82(要≥2.0)",
    "downgrade": ""
   },
-  "0939.HK": {
-   "code": "0939.HK",
-   "name": "建设银行",
+  "0005.HK": {
+   "code": "0005.HK",
+   "name": "汇丰控股",
    "side": "行业代表",
    "action": "",
    "rules": [
     "CS7"
    ],
-   "why": "港股过热而赔率仅0.15(要≥2.0)",
+   "why": "港股过热而赔率仅0.07(要≥2.0)",
    "downgrade": ""
   }
  },
  "stats": {
-  "n_pass": 271,
-  "n_reject": 87,
+  "n_pass": 489,
+  "n_reject": 58,
   "by_rule": {
-   "CS9": 2,
+   "CS9": 1,
    "CS1": 3,
-   "CS2": 1,
+   "CS2": 0,
    "CS3": 0,
    "CS4": 4,
    "CS5": 0,
-   "CS6": 66,
-   "CS7": 36,
+   "CS6": 39,
+   "CS7": 24,
    "CS8": 0
   }
  }
