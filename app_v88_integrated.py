@@ -18624,17 +18624,56 @@ if _V88_WATCHLIST_UI:   # 2026-08-01 用户裁定:接力雷达版面撤;零token
     # 【V88·触底拐点机会池 2026-07-19 用户点单恢复+现代化】前身"深度回调机会池"。
     # 优质池116只里"跌得深(52周双口径)且拐点已现"的中美港各Top10——仍在寻底的不收。
 with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现（中美港各Top10）", expanded=False):
-    st.caption("三闸门：①全市场大池 ②深水位(距52周高≤-25%或52周分位≤20%) "
+    st.caption("三闸门：①全市场大池(2187只·含持仓自选) ②深水位(距52周高≤-25%或52周分位≤20%) "
                "③拐点已现(放量收复MA20/放量长阳/底背离金叉/底部启动确认)——仍在寻底的不收，宁缺毋滥。"
+               "🔻标近52周最低区(≤3%)，历史最低区(≤10%)单独标注。"
                "概率=规则情景估计(非回测胜率)；观察清单非买入指令，进场仍走时机灯纪律。")
     _rl_bt9 = _v88_rate_line9("bottom_turn", "触底拐点池")
     if _rl_bt9:
         st.caption(_rl_bt9)
+    # ═══ 【2026-08-03 用户"每次点击都不出来,优化一下"】离线化改造 ═══
+    # 原实现把 565 只全量扫描挂在按钮上:前台跑 6-12 分钟,Streamlit 任何一次
+    # rerun 就全丢 —— 用户体感是"点了没反应",其实它一直在跑,只是从没跑到能显示。
+    # 与今天修的作战板同一类病:**算力放错了执行位置**。
+    # 改法:管线离线预算(src/bottom_turn.py,全池2187只·两阶段省90%请求)→页面秒读。
+    # 按钮保留为**可选重扫**,不再是唯一入口。
+    def _btp_adapt9(_r):
+        """离线 json 行 → 渲染字段(离线口径字段名与前台版不同,在此归一)。"""
+        _hist = ""
+        if _r.get("at_all_low"):
+            _hist = f"历史最低区(距历史低{_r.get('to_lowall_pct')}%)"
+        elif _r.get("to_lowall_pct") is not None:
+            _hist = f"距历史低{_r.get('to_lowall_pct')}%"
+        if _r.get("at_52low"):
+            _hist = "🔻52周新低区·" + _hist
+        return {**_r, "hist": _hist, "ev": _r.get("expected_pct") or 0,
+                "turn_label": str(_r.get("stage") or "拐点已现"),
+                "turn_sigs": _r.get("turning_note") or "—"}
+
     _btp_state9 = st.session_state.get("_bottom_turn_pool9")
-    # 【2026-07-19 用户点单二期】大样本:全市场股票池(与一键全选同池,676-1300只),
-    # 并发8线程闸门筛选;闸③机会分≥55才上榜(精准高分,宁缺毋滥)。
-    _btp_go9 = st.button(f"💎 扫描触底拐点（全市场大池{len(RAW_US)+len(RAW_HK)+len(RAW_CN_TOP)}只"
-                         "·首扫约6-12分钟,缓存命中更快）", key="btn_bottom_turn9")
+    _btp_src9 = "本次重扫"
+    if not _btp_state9:
+        try:
+            _btp_off9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2"
+                                    / "data" / "bottom_turn_pool.json").read_text(encoding="utf-8"))
+            _s9o = _btp_off9.get("stats") or {}
+            _btp_state9 = {
+                "markets": {m: [_btp_adapt9(r) for r in v]
+                            for m, v in (_btp_off9.get("markets") or {}).items()},
+                "pool_size": _s9o.get("universe", 0), "scanned": _s9o.get("fetched", 0),
+                "deep": _s9o.get("deep_survivors", 0), "turned": _s9o.get("listed", 0),
+                "cut_low": max(0, _s9o.get("deep_survivors", 0) - _s9o.get("listed", 0)),
+                "ts": 0, "gen": _btp_off9.get("generated_at", ""),
+                "truncated": _btp_off9.get("truncated") or {},
+                "elapsed": _s9o.get("elapsed_sec")}
+            _btp_state9["top52"] = [_btp_adapt9(r) for r in (_btp_off9.get("top") or [])]
+            _btp_state9["tophist"] = [_btp_adapt9(r) for r in (_btp_off9.get("top_hist") or [])]
+            _btp_src9 = "管线离线预算"
+        except Exception as _bo_e9:
+            # 不静默:读不到就说读不到(铁律21)
+            st.caption(f"⚠️ 离线触底拐点池读取失败（{type(_bo_e9).__name__}），可点下方按钮当场重扫")
+            _btp_state9 = None
+    _btp_go9 = st.button("🔄 重新扫描（可选·全池当场重算，约6-12分钟）", key="btn_bottom_turn9")
     if _btp_go9:
         try:
             from bottom_turn_pool import scan_bottom_turns as _sbt9
@@ -18657,6 +18696,7 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
             _prog_btp9.empty()
             _stat_btp9.empty()
             _btp_state9["ts"] = time.time()
+            _btp_src9 = "本次重扫"
             st.session_state["_bottom_turn_pool9"] = _btp_state9
             # 【战绩总账】上榜即记档(去重按 code:date)——3天后由 success_ledger 到期核算
             try:
@@ -18682,18 +18722,64 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
         except Exception as _btp_e9:
             st.error(f"⚠️ 扫描异常: {str(_btp_e9)[:80]}")
     if _btp_state9:
-        st.caption(f"🕒 扫描于 {datetime.fromtimestamp(_btp_state9.get('ts', 0)).strftime('%m-%d %H:%M')}"
-                   f" · 大池{_btp_state9.get('pool_size', 0)}只 → 有效{_btp_state9.get('scanned', 0)}"
+        _when9 = (_btp_state9.get("gen") or
+                  (datetime.fromtimestamp(_btp_state9.get("ts") or 0).strftime("%m-%d %H:%M")))
+        st.caption(f"🕒 {_btp_src9} · 算于 {_when9}"
+                   + (f"（耗时{_btp_state9.get('elapsed')}秒·后台跑,你0等待）"
+                      if _btp_state9.get("elapsed") else "")
+                   + f" · 大池{_btp_state9.get('pool_size', 0)}只 → 有效{_btp_state9.get('scanned', 0)}"
                    f" → 深水位{_btp_state9.get('deep', 0)} → 拐点已现{_btp_state9.get('turned', 0)}"
                    f" → 低分淘汰{_btp_state9.get('cut_low', 0)}（机会分≥55才上榜·漏斗透明）")
+        # 【2026-08-03 用户点单】"可以搜索到历史最低位的TOP30只个股,处在拐点位置的...
+        # 每次都会提示近52周最低点 还有历史最低点的个股 都搜索出来"
+        # → 两个口径各一张 Top30。排序按**距最低点百分比升序**(近者在前),
+        #   机会分只做闸③过滤,不做排序键(首版按机会分排 → Top30里没一只真在低点)。
+        # 【2026-08-03 不再跨作用域借变量】_CM9/_cbadge 定义在作战板的嵌套块里(L4923),
+        # 本段在模块级 —— 直接引用就是今天那个 `_base9` NameError 的翻版。
+        # 本地自带一份,借不到就退化成"不显徽章",绝不因徽章打掉整张榜。
+        try:
+            from grade_card import cert_map as _cmap_b9, cert_badge as _cbadge_b9
+            _CMB9 = _cmap_b9(json.loads((Path.home() / "Desktop" / "ai-daily-report-v2"
+                                         / "data" / "rank_score.json").read_text(encoding="utf-8")))
+        except Exception:
+            _CMB9, _cbadge_b9 = {}, (lambda c, m: "")
+
+        def _btp_top9(_rows, _key, _title, _tip):
+            if not _rows:
+                return
+            st.markdown(f"**{_title}** <span style='font-size:11px;color:#94a3b8'>{_tip}</span>",
+                        unsafe_allow_html=True)
+            st.markdown("<div style='font-size:12.5px;line-height:1.7'>" + "".join(
+                f"<div style='border-bottom:1px solid #f1f5f9;padding:2px 0'>"
+                f"<span style='color:#94a3b8'>{_i:2}.</span> "
+                f"{'🇺🇸' if _r['market'] == '美股' else ('🇨🇳' if _r['market'] == 'A股' else '🇭🇰')}"
+                f"{_stk_link(_r['name'], _r['code'])}"
+                f"{_cbadge_b9(_r.get('code'), _CMB9)}"
+                # 距最低点是本榜主角 —— 用绿色(买入侧语义)且加粗,别的都退成灰
+                f" <b style='color:#16a34a'>距{'52周低' if _key == 'to_low52_pct' else '历史低'}"
+                f"{_r.get(_key)}%</b>"
+                + ("<span style='font-size:11px;color:#b45309'>·次新(上市不足2年·"
+                   "'历史低'实为上市以来低)</span>" if _r.get("newly_listed") else "")
+                + f"<span style='font-size:11.5px;color:#64748b'>·现价{_r['last']}"
+                f"·机会分{_r['score']}·{str(_r.get('turn_sigs') or '')[:26]}</span></div>"
+                for _i, _r in enumerate(_rows[:30], 1)) + "</div>", unsafe_allow_html=True)
+
+        _btp_top9(_btp_state9.get("top52") or [], "to_low52_pct",
+                  "📉 距 52 周最低点最近 · Top30",
+                  "（近者在前·已过深水位+拐点已现+机会分≥55三闸）")
+        _btp_top9(_btp_state9.get("tophist") or [], "to_lowall_pct",
+                  "🕳 距历史最低点最近 · Top30",
+                  "（真·长历史股优先，次新股排后并标注）")
         _any_btp9 = False
         for _mk_btp9 in ("美股", "A股", "港股"):
             _rows_btp9 = (_btp_state9.get("markets") or {}).get(_mk_btp9) or []
             if not _rows_btp9:
                 continue
             _any_btp9 = True
+            _tr9 = (_btp_state9.get("truncated") or {}).get(_mk_btp9) or 0
             st.markdown(f"**{'🇺🇸' if _mk_btp9 == '美股' else ('🇨🇳' if _mk_btp9 == 'A股' else '🇭🇰')} "
-                        f"{_mk_btp9}（{len(_rows_btp9)}只）**")
+                        f"{_mk_btp9}（{len(_rows_btp9)}只"
+                        + (f"·另有{_tr9}只达标未展示" if _tr9 else "") + ")**")
             st.markdown("<div style='font-size:13px;line-height:1.75'>" + "".join(
                 f"<div style='border-bottom:1px solid #eef2f7;padding:3px 0'>"
                 f"<b>机会分{_r9b['score']}</b> {_stk_link(_r9b['name'], _r9b['code'])} "
@@ -18711,7 +18797,7 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
         if not _any_btp9:
             st.info("本轮无'深水位+拐点已现'双闸达标的优质股——宁缺毋滥，仍在寻底的不硬凑。")
     elif not _btp_go9:
-        st.info("点上方按钮扫描。专抓'优质股跌深了且拐点信号已出现'的时刻——比等回踩更早半步。")
+        st.info("离线池尚未生成（管线跑过一趟后即秒开）。可点上方按钮当场重扫。")
 
 # 用户明确要求删除重复持仓展示：旧 Excel“我的持仓/AI组合分析”不再渲染；
 # 数据与函数保留兼容，唯一入口为上方“持仓决策中心”。
