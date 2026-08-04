@@ -1,8 +1,8 @@
 {
- "ts": 1785760596.5104005,
- "generated_at": "2026-08-03 20:36（北京时间）",
- "pool_n": 81,
- "events_n": 8,
+ "ts": 1785802767.674502,
+ "generated_at": "2026-08-04 08:19（北京时间）",
+ "pool_n": 89,
+ "events_n": 7,
  "events": {
   "300631": {
    "name": "久吾高科",
@@ -76,19 +76,6 @@
     }
    ]
   },
-  "603337": {
-   "name": "杰克科技",
-   "code": "603337.SS",
-   "items": [
-    {
-     "date": "2026-07-29",
-     "title": "杰克科技:关于股权激励限制性股票回购注销实施公告",
-     "dir": "bull",
-     "note": "回购托底",
-     "icon": "🔴"
-    }
-   ]
-  },
   "300142": {
    "name": "沃森生物",
    "code": "300142.SZ",
@@ -105,17 +92,6 @@
  },
  "cb_calendar": [
   {
-   "bond": "天脉转债",
-   "stock": "苏州天脉",
-   "stock_code": "301626",
-   "apply_date": "2026-08-03",
-   "list_date": "",
-   "rating": "AA",
-   "scale": 7.86,
-   "note": "评级稳·打新可参与",
-   "in_pool": false
-  },
-  {
    "bond": "三鑫转债",
    "stock": "三鑫医疗",
    "stock_code": "300453",
@@ -127,6 +103,17 @@
    "in_pool": false
   },
   {
+   "bond": "中仑转债",
+   "stock": "中仑新材",
+   "stock_code": "301565",
+   "apply_date": "2026-08-06",
+   "list_date": "",
+   "rating": "AA-",
+   "scale": 10.68,
+   "note": "评级稳·打新可参与",
+   "in_pool": false
+  },
+  {
    "bond": "派克转债",
    "stock": "派克新材",
    "stock_code": "605123",
@@ -134,6 +121,17 @@
    "list_date": "",
    "rating": "AA",
    "scale": 15.8,
+   "note": "评级稳·打新可参与",
+   "in_pool": false
+  },
+  {
+   "bond": "先锋转债",
+   "stock": "先锋精科",
+   "stock_code": "688605",
+   "apply_date": "2026-08-06",
+   "list_date": "",
+   "rating": "AA",
+   "scale": 7.5,
    "note": "评级稳·打新可参与",
    "in_pool": false
   },
@@ -169,6 +167,17 @@
    "scale": 3,
    "note": "评级偏低·上市溢价波动大",
    "in_pool": true
+  },
+  {
+   "bond": "天脉转债",
+   "stock": "苏州天脉",
+   "stock_code": "301626",
+   "apply_date": "2026-08-03",
+   "list_date": "",
+   "rating": "AA",
+   "scale": 7.86,
+   "note": "评级稳·打新可参与",
+   "in_pool": false
   }
  ],
  "cb_pipeline": [
@@ -229,20 +238,6 @@
    "why": "转股价值93弱·5.5亿中盘·PB4.6可下修"
   },
   {
-   "stock": "派克新材",
-   "stock_code": "605123",
-   "stage": "同意注册",
-   "stage_date": "2026-07-29",
-   "scale": "15.800",
-   "pma_rt": "97.02",
-   "pb": "2.059",
-   "price": "79.17",
-   "in_pool": false,
-   "score": 51,
-   "tag": "⚪一般",
-   "why": "转股价值97弱·15.8亿大盘·PB2.1可下修"
-  },
-  {
    "stock": "中鼎股份",
    "stock_code": "000887",
    "stage": "同意注册",
@@ -283,10 +278,24 @@
    "score": 47,
    "tag": "⚪一般",
    "why": "转股价值84弱·7.6亿中盘·PB2.3可下修"
+  },
+  {
+   "stock": "奥士康",
+   "stock_code": "002913",
+   "stage": "同意注册",
+   "stage_date": "2026-04-02",
+   "scale": "10.000",
+   "pma_rt": "88.76",
+   "pb": "2.918",
+   "price": "40.73",
+   "in_pool": false,
+   "score": 42,
+   "tag": "⚪一般",
+   "why": "转股价值89弱·10亿中盘·PB2.9可下修"
   }
  ],
  "cb_pipe_counts": {
-  "reg": 10,
+  "reg": 8,
   "passed": 12,
   "early": 62
  },

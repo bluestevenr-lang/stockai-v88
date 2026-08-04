@@ -1,10 +1,10 @@
 {
- "generated_at": "2026-08-03 20:32（北京时间）",
+ "generated_at": "2026-08-04 08:15（北京时间）",
  "note": "三方会审:规则引擎(V88) vs Claude(Fable/Opus独立复核) vs GPT(Codex盲审)。⚡分歧排最前——三方都说好的可以按纲领执行,吵起来的才是要自己拿主意的地方。GPT目前是影子模式(有记录无投票权),它的反对不会拦名单,但会入台账攒战绩。",
  "counts": {
-  "⚡有分歧": 2,
-  "✅双方一致": 3,
-  "仅规则(无第二意见)": 36
+  "仅规则(无第二意见)": 39,
+  "✅双方一致": 2,
+  "⚡有分歧": 3
  },
  "rows": [
   {
@@ -17,6 +17,24 @@
     "action": "等待",
     "rr": 3.68,
     "pos52": 7.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "601727.SS",
+   "name": "上海电气",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 76,
+    "action": "现价可进",
+    "rr": 3.68,
+    "pos52": 14.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -98,6 +116,24 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
+   "code": "601877.SS",
+   "name": "正泰电器",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 68,
+    "action": "现价可进",
+    "rr": 4.48,
+    "pos52": 20.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
    "code": "600875.SS",
    "name": "东方电气",
    "market": "A股",
@@ -152,51 +188,15 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "BIDU",
-   "name": "百度",
-   "market": "美股",
-   "rule": {
-    "dir": "看多",
-    "prob": 65,
-    "action": "左侧低吸",
-    "rr": 4.86,
-    "pos52": 33.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "1053.HK",
-   "name": "重庆长安汽车",
+   "code": "0728.HK",
+   "name": "中国电信",
    "market": "港股",
    "rule": {
     "dir": "看多",
     "prob": 62,
     "action": "现价可进",
-    "rr": 6.0,
-    "pos52": 10.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "STLA",
-   "name": "Stellantis",
-   "market": "美股",
-   "rule": {
-    "dir": "看多",
-    "prob": 60,
-    "action": "左侧低吸",
-    "rr": 7.68,
-    "pos52": 7.0,
+    "rr": 5.41,
+    "pos52": 25.0,
     "src": "池外机会"
    },
    "claude": null,

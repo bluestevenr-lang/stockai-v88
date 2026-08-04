@@ -1,6 +1,6 @@
 {
   "schema_version": "v88.snapshot/2.0",
-  "snapshot_id": "snap-014748ad4c818ff0",
+  "snapshot_id": "snap-546f8979c7cc77b5",
   "rotation_forecast": {
     "schema_version": "v88.rotation/1.3",
     "snapshot_id": "snap-1084f57de7ab2689",
@@ -1656,7 +1656,7 @@
   "cycle_scan": {
     "schema_version": "v88.cycle/1.1",
     "slot": null,
-    "analysis_time": "2026-08-04 06:39",
+    "analysis_time": "2026-08-04 08:10",
     "stocks": [
       {
         "code": "SO",
@@ -2790,7 +2790,7 @@
         "confidence": "低",
         "horizon": "日~周",
         "pos52": 94,
-        "trigger": "放量突破/跌破 47.84 触发方向",
+        "trigger": "放量突破/跌破 47.85 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 70,
@@ -3883,7 +3883,7 @@
       }
     ]
   },
-  "generated_at": "2026-08-04 06:38",
+  "generated_at": "2026-08-04 08:08",
   "markets": {
     "美股": {
       "indices": [
@@ -4306,22 +4306,21 @@
           "turning_prompt": ""
         },
         {
-          "symbol": "159915.SZ",
-          "name": "创业板ETF代理",
-          "last": 3.33,
-          "chg1d": -1.28,
-          "chg5d": -7.95,
-          "chg20d": -16.25,
-          "vs_ma20": -8.33,
-          "vs_ma60": -15.07,
+          "symbol": "399006.SZ",
+          "name": "创业板指",
+          "last": 3302.55,
+          "chg1d": -1.24,
+          "chg5d": -8.03,
+          "chg20d": -16.37,
+          "vs_ma20": -8.34,
+          "vs_ma60": -15.25,
           "trend": "📉 空头排列",
-          "vol_ratio": 1.35,
+          "vol_ratio": 1.0,
           "px_pct": 3.3,
-          "vol_pct": 98.3,
-          "diverge": -95.0,
+          "vol_pct": null,
+          "diverge": null,
           "turning": "",
-          "turning_prompt": "",
-          "unit": "元"
+          "turning_prompt": ""
         }
       ],
       "sectors": [
@@ -4533,7 +4532,7 @@
           {
             "key": "量价背离",
             "hit": false,
-            "text": "价格分位4.4／量分位99.4＝背离-95.0"
+            "text": "价格分位4.4／量分位100.0＝背离-95.6"
           },
           {
             "key": "广度钝化",
@@ -4543,7 +4542,7 @@
           {
             "key": "动量衰竭",
             "hit": false,
-            "text": "20日-11.58%但5日仅-4.72%"
+            "text": "20日-11.62%但5日仅-4.75%"
           },
           {
             "key": "估值高位",
@@ -4570,7 +4569,7 @@
           {
             "key": "放量杀跌",
             "hit": true,
-            "text": "价格分位4.4／量分位99.4＝背离-95.0"
+            "text": "价格分位4.4／量分位100.0＝背离-95.6"
           },
           {
             "key": "广度极低",
@@ -4580,7 +4579,7 @@
           {
             "key": "深度超跌",
             "hit": true,
-            "text": "20日-11.58%"
+            "text": "20日-11.62%"
           },
           {
             "key": "估值低位",
@@ -4603,8 +4602,8 @@
         "bottom_hit": 3,
         "bottom_na": 1,
         "px_pct": 4.4,
-        "vol_pct": 99.4,
-        "diverge": -95.0,
+        "vol_pct": 100.0,
+        "diverge": -95.6,
         "breadth_full_days": 0,
         "note": "样本<5不给概率(铁律2)——只报命中条数,⬜=数据源缺失非未命中"
       },
