@@ -1,23 +1,23 @@
 {
- "ts": 1785802647.6528242,
- "generated_at": "2026-08-04 08:17",
+ "ts": 1785804420.722594,
+ "generated_at": "2026-08-04 08:47",
  "funnel": {
   "found": 322,
-  "excluded_watch": 41,
+  "excluded_watch": 23,
   "judged": 239,
   "judged_by_mkt": {
-   "🇺🇸美股": 193,
-   "🇭🇰港股": 16,
-   "🇨🇳A股": 31
+   "🇺🇸美股": 176,
+   "🇭🇰港股": 25,
+   "🇨🇳A股": 39
   },
-  "passed": 6,
+  "passed": 7,
   "blocked": {
-   "相位": 112,
-   "方向分": 4,
-   "赔率": 9,
+   "相位": 104,
+   "方向分": 7,
+   "赔率": 14,
    "时机": 0,
    "数据": 1,
-   "单源": 108
+   "单源": 107
   }
  },
  "horses": [
@@ -34,7 +34,7 @@
    "action": "仅观察·不追涨",
    "entry_note": "⏳共振不足·先盯124.48/249.38｜短中长期未共振，不建立新仓",
    "cycle_note": "2周偏涨81%｜4-32周震荡42%",
-   "analysis_time": "2026-08-04 08:16",
+   "analysis_time": "2026-08-04 08:43",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-08-03 00:00:00",
@@ -177,7 +177,7 @@
    "action": "观察",
    "entry_note": "✅现价可进·08-07前·破46.02废·仅短线｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨74%｜4-32周震荡55%",
-   "analysis_time": "2026-08-04 08:16",
+   "analysis_time": "2026-08-04 08:42",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-08-03 00:00:00",
@@ -320,7 +320,7 @@
    "action": "观察",
    "entry_note": "⏳双路径:回踩12.71/突破17.04·08-11前｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨73%｜4-32周震荡55%",
-   "analysis_time": "2026-08-04 08:16",
+   "analysis_time": "2026-08-04 08:42",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-08-03 00:00:00",
@@ -463,7 +463,7 @@
    "action": "观察",
    "entry_note": "✅现价可进·08-07前·破12.87废·仅短线｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨71%｜4-32周震荡54%",
-   "analysis_time": "2026-08-04 08:16",
+   "analysis_time": "2026-08-04 08:43",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-08-03 00:00:00",
@@ -606,7 +606,7 @@
    "action": "多周期共振·试仓复核",
    "entry_note": "⏳双路径:回踩18.52/突破22·08-11前｜标准门槛通过；概率优势+32.9点",
    "cycle_note": "2周偏涨65%｜4-32周偏涨70%",
-   "analysis_time": "2026-08-04 08:16",
+   "analysis_time": "2026-08-04 08:43",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-08-03 00:00:00",
@@ -749,7 +749,7 @@
    "action": "观察",
    "entry_note": "✅现价可进·08-07前·破92.49废·仅短线｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨64%｜4-32周震荡54%",
-   "analysis_time": "2026-08-04 08:16",
+   "analysis_time": "2026-08-04 08:43",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-08-03 00:00:00",
@@ -878,6 +878,149 @@
    "level": "B",
    "market": "🇺🇸美股",
    "grade": "重点"
+  },
+  {
+   "name": "贵州茅台",
+   "code": "600519.SS",
+   "last": 1358.98,
+   "unified_score": 74,
+   "short_score": 62,
+   "p_up": 62,
+   "p_down": 38,
+   "rr": 2.18,
+   "expected_pct": 5.7,
+   "action": "多周期共振·试仓复核",
+   "entry_note": "⏳双路径:回踩1320.43/突破1531.75·08-11前｜标准门槛通过；概率优势+30.6点",
+   "cycle_note": "2周偏涨62%｜4-32周偏涨66%",
+   "analysis_time": "2026-08-04 08:43",
+   "facts": {
+    "schema": "v88.stock-decision/2.0",
+    "asof": "2026-08-03 00:00:00",
+    "last": 1358.98,
+    "atr14": 34.79,
+    "stage": "主升阶段",
+    "data_signature": "bac92afcb34b",
+    "horizons": {
+     "2周": {
+      "weeks": 2,
+      "periods": 2,
+      "unit": "week",
+      "sample_days": 10,
+      "return_pct": 2.4,
+      "slope_pct": 4.0,
+      "ma_bias_pct": 2.9,
+      "ret5_pct": 5.4,
+      "volume_ratio": 1.14,
+      "drawdown_pct": -0.3,
+      "support": 1279.58,
+      "resistance": 1363.35,
+      "rule_score": 62,
+      "rule_view": "偏涨",
+      "phase_note": "",
+      "rule_confidence": 64
+     },
+     "4周": {
+      "weeks": 4,
+      "periods": 4,
+      "unit": "week",
+      "sample_days": 20,
+      "return_pct": 12.6,
+      "slope_pct": 15.2,
+      "ma_bias_pct": 6.9,
+      "ret5_pct": 5.4,
+      "volume_ratio": 1.11,
+      "drawdown_pct": -0.3,
+      "support": 1170.28,
+      "resistance": 1363.35,
+      "rule_score": 80,
+      "rule_view": "偏涨",
+      "phase_note": "",
+      "rule_confidence": 86
+     },
+     "8周": {
+      "weeks": 8,
+      "periods": 8,
+      "unit": "week",
+      "sample_days": 40,
+      "return_pct": 9.3,
+      "slope_pct": 9.8,
+      "ma_bias_pct": 9.4,
+      "ret5_pct": 5.4,
+      "volume_ratio": 1.19,
+      "drawdown_pct": -0.3,
+      "support": 1151.01,
+      "resistance": 1363.35,
+      "rule_score": 79,
+      "rule_view": "偏涨",
+      "phase_note": "",
+      "rule_confidence": 85
+     },
+     "16周": {
+      "weeks": 16,
+      "periods": 16,
+      "unit": "week",
+      "sample_days": 80,
+      "return_pct": -3.4,
+      "slope_pct": -11.5,
+      "ma_bias_pct": 5.4,
+      "ret5_pct": 5.4,
+      "volume_ratio": 1.22,
+      "drawdown_pct": -5.8,
+      "support": 1151.01,
+      "resistance": 1443.252,
+      "rule_score": 53,
+      "rule_view": "震荡",
+      "phase_note": "",
+      "rule_confidence": 54
+     },
+     "32周": {
+      "weeks": 32,
+      "periods": 32,
+      "unit": "week",
+      "sample_days": 160,
+      "return_pct": -1.0,
+      "slope_pct": -12.4,
+      "ma_bias_pct": 1.5,
+      "ret5_pct": 5.4,
+      "volume_ratio": 1.26,
+      "drawdown_pct": -11.3,
+      "support": 1151.01,
+      "resistance": 1531.747,
+      "rule_score": 52,
+      "rule_view": "震荡",
+      "phase_note": "",
+      "rule_confidence": 52
+     }
+    }
+   },
+   "sources": [
+    "引擎榜·A股mid",
+    "全选池·A股"
+   ],
+   "touch": "",
+   "trade_plan": {
+    "short": {
+     "in": "⏳ 双路径（08-11前任一触发即进）：①回踩1320.43企稳接",
+     "out": "目标1402.81（10个交易日内·上行概率62%）",
+     "invalid": "跌破1170.28作废",
+     "mode": "双路径待触发"
+    },
+    "mid": {
+     "in": "🎯 中线（4-8周）：区间1262.05~1358.98分批建仓；收盘连续2日破 1249.37 失效",
+     "out": "目标1466.35（≈1季·60交易日·上行概率66%）",
+     "invalid": "收盘连续2日破 1249.37 失效"
+    },
+    "long": {
+     "in": "🏛 长线（16周+）：区间1186.9~1358.98分批；跌破年线(1331.06)且20日收不回才退出",
+     "out": "目标1531.75（≈半年·120交易日·上行概率51%）",
+     "invalid": "跌破年线且20日收不回退出"
+    },
+    "probability_kind": "规则情景估计（非回测胜率）"
+   },
+   "scope": "黑马",
+   "level": "B",
+   "market": "🇨🇳A股",
+   "grade": "重点"
   }
  ],
  "runners": [
@@ -958,39 +1101,39 @@
    ]
   },
   {
-   "name": "James Hardie Industries plc.",
-   "code": "JHX",
-   "last": 27.67,
+   "name": "Brookfield Asset Management",
+   "code": "BAM",
+   "last": 50.69,
    "unified_score": 74,
-   "short_score": 74,
-   "p_up": 74,
-   "p_down": 26,
-   "rr": 0.67,
-   "expected_pct": 2.7,
-   "action": "趋势偏多·等待回踩",
+   "short_score": 70,
+   "p_up": 70,
+   "p_down": 30,
+   "rr": 2.09,
+   "expected_pct": 12.2,
+   "action": "多周期共振·试仓复核",
    "stage": "主升阶段",
-   "mode": "不进",
+   "mode": "左侧低吸",
    "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
    "sources": [
-    "财报08-06"
+    "财报08-05"
    ],
    "touch": "",
    "market": "🇺🇸美股",
    "horizons": [
     {
      "label": "10日",
-     "p_up": 74,
-     "target_price": 29.512
+     "p_up": 70,
+     "target_price": 52.792
     },
     {
      "label": "60日",
-     "p_up": 85,
-     "target_price": 33.073
+     "p_up": 62,
+     "target_price": 55.839
     },
     {
      "label": "120日",
-     "p_up": 85,
-     "target_price": 34.051
+     "p_up": 61,
+     "target_price": 57.971
     }
    ]
   },

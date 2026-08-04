@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-03 22:16（北京时间）",
+ "generated_at": "2026-08-04 09:00（北京时间）",
  "version": "classicslens-v1",
  "rule": "门派仲裁:先判归派,**只用该派判据**打分;跨门派不比大小(CLASSICS:这些书彼此打架,没有仲裁规则第三把剑会砍自己人)。",
  "closed_gap": "CLASSICS.md:27 记着'仍缺…欧奈尔盈利加速(基本面数据)'——2026-08-03 补 holdings_fundamentals 后本模块才具备条件。",
@@ -104,11 +104,11 @@
    },
    "pos52": 38.0
   },
-  "CSX": {
-   "code": "CSX",
-   "name": "CSX运输",
+  "TRV": {
+   "code": "TRV",
+   "name": "旅行者保险",
    "tier": "2A",
-   "listable": false,
+   "listable": true,
    "when": "现在买（今日窗口内）",
    "school": "成长派",
    "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
@@ -116,40 +116,118 @@
     {
      "ok": true,
      "label": "利润率扩张(盈利增速>营收增速)",
-     "detail": "盈利+23% vs 营收+10%"
+     "detail": "盈利+57% vs 营收+0%"
     },
     {
      "ok": true,
      "label": "成长强度(盈利增速≥20%)",
-     "detail": "+22.7%"
+     "detail": "+57.1%"
     },
     {
      "ok": true,
      "label": "林奇PEG≤1.5",
-     "detail": "1.29"
+     "detail": "0.18"
     }
    ],
    "pass_n": 3,
    "miss_n": 0,
    "fail_n": 0,
    "verdict": "书理支持",
-   "claude": "reject",
-   "gpt": "pass",
+   "claude": "gate_pass",
+   "gpt": "未验证",
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
-    "pe_ttm": 29.2,
-    "roe": 24.36,
-    "net_margin": 22.21,
-    "rev_growth": 10.1,
-    "eps_growth": 22.7,
-    "target_mean": 52.85,
-    "to_target_pct": 5.2,
-    "rating": "buy",
-    "analysts": 23.0,
-    "next_earnings": "2026-10-23"
+    "pe_ttm": 10.05,
+    "roe": 26.51,
+    "net_margin": 16.95,
+    "rev_growth": 0.3,
+    "eps_growth": 57.1,
+    "target_mean": 357.83,
+    "to_target_pct": -4.3,
+    "rating": "hold",
+    "analysts": 24.0,
+    "next_earnings": "2026-10-15"
    },
-   "pos52": 81.0
+   "pos52": null
+  },
+  "KDP": {
+   "code": "KDP",
+   "name": "Keurig Dr Pepper Inc",
+   "tier": "2A",
+   "listable": true,
+   "when": "现在买（今日窗口内）",
+   "school": "未定",
+   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
+   "checks": [],
+   "pass_n": 0,
+   "miss_n": 0,
+   "fail_n": 0,
+   "verdict": "证据不足",
+   "claude": "gate_pass",
+   "gpt": "未验证",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": 22.9,
+    "roe": 6.31,
+    "net_margin": 10.81,
+    "rev_growth": 9.4,
+    "eps_growth": -47.7,
+    "target_mean": 35.24,
+    "to_target_pct": 14.0,
+    "rating": "buy",
+    "analysts": 17.0,
+    "next_earnings": "2026-08-06"
+   },
+   "pos52": null
+  },
+  "ALL": {
+   "code": "ALL",
+   "name": "好事达保险",
+   "tier": "2A",
+   "listable": true,
+   "when": "现在买（今日窗口内）",
+   "school": "成长派",
+   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
+   "checks": [
+    {
+     "ok": true,
+     "label": "利润率扩张(盈利增速>营收增速)",
+     "detail": "盈利+338% vs 营收+3%"
+    },
+    {
+     "ok": true,
+     "label": "成长强度(盈利增速≥20%)",
+     "detail": "+338.4%"
+    },
+    {
+     "ok": true,
+     "label": "林奇PEG≤1.5",
+     "detail": "0.02"
+    }
+   ],
+   "pass_n": 3,
+   "miss_n": 0,
+   "fail_n": 0,
+   "verdict": "书理支持",
+   "claude": "gate_pass",
+   "gpt": "未验证",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": 5.81,
+    "roe": 45.22,
+    "net_margin": 17.81,
+    "rev_growth": 3.0,
+    "eps_growth": 338.4,
+    "target_mean": 254.68,
+    "to_target_pct": -3.0,
+    "rating": "buy",
+    "analysts": 22.0,
+    "next_earnings": "2026-08-06"
+   },
+   "pos52": null
   },
   "3888.HK": {
    "code": "3888.HK",
@@ -281,52 +359,67 @@
    },
    "pos52": 8.0
   },
-  "9988.HK": {
-   "code": "9988.HK",
-   "name": "阿里巴巴-SW",
+  "KO": {
+   "code": "KO",
+   "name": "可口可乐",
    "tier": "1A",
-   "listable": false,
-   "when": "回踩 114.61 买 · 5个交易日内有效",
-   "school": "成长派",
-   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
-   "checks": [
-    {
-     "ok": true,
-     "label": "利润率扩张(盈利增速>营收增速)",
-     "detail": "盈利+104% vs 营收+3%"
-    },
-    {
-     "ok": true,
-     "label": "成长强度(盈利增速≥20%)",
-     "detail": "+104.1%"
-    },
-    {
-     "ok": true,
-     "label": "林奇PEG≤1.5",
-     "detail": "0.19"
-    }
-   ],
-   "pass_n": 3,
+   "listable": true,
+   "when": "现在买（今日窗口内）",
+   "school": "未定",
+   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
+   "checks": [],
+   "pass_n": 0,
    "miss_n": 0,
    "fail_n": 0,
-   "verdict": "书理支持",
+   "verdict": "证据不足",
+   "claude": "gate_pass",
+   "gpt": "未验证",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": 26.08,
+    "roe": 42.05,
+    "net_margin": 28.56,
+    "rev_growth": 6.7,
+    "eps_growth": 16.9,
+    "target_mean": 94.7,
+    "to_target_pct": 9.0,
+    "rating": "buy",
+    "analysts": 23.0,
+    "next_earnings": "2026-10-20"
+   },
+   "pos52": null
+  },
+  "GH": {
+   "code": "GH",
+   "name": "Guardant Health Inc",
+   "tier": "1A",
+   "listable": false,
+   "when": "现在买（今日窗口内）",
+   "school": "未定",
+   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
+   "checks": [],
+   "pass_n": 0,
+   "miss_n": 0,
+   "fail_n": 0,
+   "verdict": "证据不足",
    "claude": "reject",
    "gpt": "未验证",
-   "anomaly_frozen": true,
-   "anomaly_note": "2026-08-03 单日+7.01%，同期基准+0.48%，相对超额+6.53个百分点，量比1.67。**四大情报源(财报窗/公告/情报流/异动归因)均无记录 → 跌涨因未知**，冻结重动作(清仓/",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
    "fund": {
-    "pe_ttm": 19.62,
-    "roe": 9.22,
-    "net_margin": 10.12,
-    "rev_growth": 2.9,
-    "eps_growth": 104.1,
-    "target_mean": 180.73,
-    "to_target_pct": 44.4,
+    "pe_ttm": null,
+    "roe": null,
+    "net_margin": -38.33,
+    "rev_growth": 44.3,
+    "eps_growth": null,
+    "target_mean": 187.5,
+    "to_target_pct": 18.1,
     "rating": "strong_buy",
     "analysts": 24.0,
-    "next_earnings": "2026-08-28"
+    "next_earnings": "2026-10-29"
    },
-   "pos52": 47.0
+   "pos52": 83.0
   },
   "2618.HK": {
    "code": "2618.HK",
@@ -380,57 +473,36 @@
    },
    "pos52": 77.0
   },
-  "APH": {
-   "code": "APH",
-   "name": "安费诺",
+  "CORT": {
+   "code": "CORT",
+   "name": "Corcept Therapeutics Inc",
    "tier": "1A",
    "listable": true,
-   "when": "现在买（今日窗口内）",
-   "school": "趋势派",
-   "school_why": "高位+盈利营收双加速 → 欧奈尔式突破仓",
-   "checks": [
-    {
-     "ok": true,
-     "label": "C 当季盈利加速≥25%",
-     "detail": "+59.3%"
-    },
-    {
-     "ok": true,
-     "label": "A 年度营收增长≥25%",
-     "detail": "+55.0%"
-    },
-    {
-     "ok": true,
-     "label": "N 新高特征(52周位≥70)",
-     "detail": "71%"
-    },
-    {
-     "ok": true,
-     "label": "I 机构认可(≥10分析师且buy)",
-     "detail": "17人·strong_buy"
-    }
-   ],
-   "pass_n": 4,
+   "when": "回踩 95.61~99.43 买 · 5个交易日内有效",
+   "school": "未定",
+   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
+   "checks": [],
+   "pass_n": 0,
    "miss_n": 0,
    "fail_n": 0,
-   "verdict": "书理支持",
+   "verdict": "证据不足",
    "claude": "gate_pass",
-   "gpt": "reject",
+   "gpt": "未验证",
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
-    "pe_ttm": 39.74,
-    "roe": 38.12,
-    "net_margin": 17.73,
-    "rev_growth": 55.0,
-    "eps_growth": 59.3,
-    "target_mean": 198.06,
-    "to_target_pct": 24.6,
-    "rating": "strong_buy",
-    "analysts": 17.0,
-    "next_earnings": "2026-10-28"
+    "pe_ttm": 250.67,
+    "roe": 8.23,
+    "net_margin": 6.64,
+    "rev_growth": 31.7,
+    "eps_growth": 24.1,
+    "target_mean": 135.25,
+    "to_target_pct": 19.9,
+    "rating": "buy",
+    "analysts": 4.0,
+    "next_earnings": "2026-07-30"
    },
-   "pos52": 71.0
+   "pos52": null
   },
   "2556.HK": {
    "code": "2556.HK",
@@ -515,6 +587,37 @@
    },
    "pos52": 81.0
   },
+  "ARXS": {
+   "code": "ARXS",
+   "name": "ARXS",
+   "tier": "1A",
+   "listable": false,
+   "when": "回踩 43.96~45.72 买 · 5个交易日内有效",
+   "school": "未定",
+   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
+   "checks": [],
+   "pass_n": 0,
+   "miss_n": 0,
+   "fail_n": 0,
+   "verdict": "证据不足",
+   "claude": "reject",
+   "gpt": "reject",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": 671.62,
+    "roe": null,
+    "net_margin": 7.23,
+    "rev_growth": 25.0,
+    "eps_growth": null,
+    "target_mean": 57.1,
+    "to_target_pct": 6.3,
+    "rating": "strong_buy",
+    "analysts": 10.0,
+    "next_earnings": "2026-07-30"
+   },
+   "pos52": 82.0
+  },
   "0883.HK": {
    "code": "0883.HK",
    "name": "中海油",
@@ -567,12 +670,90 @@
    },
    "pos52": 37.0
   },
+  "9988.HK": {
+   "code": "9988.HK",
+   "name": "阿里巴巴-SW",
+   "tier": "1A",
+   "listable": false,
+   "when": "回踩 114.61 买 · 5个交易日内有效",
+   "school": "成长派",
+   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
+   "checks": [
+    {
+     "ok": true,
+     "label": "利润率扩张(盈利增速>营收增速)",
+     "detail": "盈利+104% vs 营收+3%"
+    },
+    {
+     "ok": true,
+     "label": "成长强度(盈利增速≥20%)",
+     "detail": "+104.1%"
+    },
+    {
+     "ok": true,
+     "label": "林奇PEG≤1.5",
+     "detail": "0.19"
+    }
+   ],
+   "pass_n": 3,
+   "miss_n": 0,
+   "fail_n": 0,
+   "verdict": "书理支持",
+   "claude": "reject",
+   "gpt": "未验证",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": 19.62,
+    "roe": 9.22,
+    "net_margin": 10.12,
+    "rev_growth": 2.9,
+    "eps_growth": 104.1,
+    "target_mean": 180.73,
+    "to_target_pct": 44.4,
+    "rating": "strong_buy",
+    "analysts": 24.0,
+    "next_earnings": "2026-08-28"
+   },
+   "pos52": 47.0
+  },
+  "FCUV": {
+   "code": "FCUV",
+   "name": "Focus Universal Inc",
+   "tier": "1A",
+   "listable": true,
+   "when": "回踩 3.45~3.59 买 · 5个交易日内有效",
+   "school": "未定",
+   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
+   "checks": [],
+   "pass_n": 0,
+   "miss_n": 0,
+   "fail_n": 0,
+   "verdict": "证据不足",
+   "claude": "gate_pass",
+   "gpt": "reject",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": null,
+    "roe": -104.78,
+    "net_margin": 0.0,
+    "rev_growth": -74.8,
+    "eps_growth": null,
+    "target_mean": null,
+    "to_target_pct": null,
+    "rating": "none",
+    "analysts": null,
+    "next_earnings": null
+   },
+   "pos52": null
+  },
   "NOW": {
    "code": "NOW",
    "name": "现在服务公司",
    "tier": "1A",
-   "listable": true,
-   "when": "回踩 105.86~110.09 买 · 5个交易日内有效",
+   "listable": false,
+   "when": "回踩 106.18~110.43 买 · 5个交易日内有效",
    "school": "价值派",
    "school_why": "深度折价或低估值 → 格雷厄姆/卡拉曼式左侧仓",
    "checks": [
@@ -601,8 +782,8 @@
    "miss_n": 0,
    "fail_n": 2,
    "verdict": "证据不足",
-   "claude": "gate_pass",
-   "gpt": "pass",
+   "claude": "reject",
+   "gpt": "未验证",
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
@@ -617,11 +798,11 @@
     "analysts": 46.0,
     "next_earnings": "2026-10-29"
    },
-   "pos52": 52.0
+   "pos52": 57.0
   },
-  "EWJ": {
-   "code": "EWJ",
-   "name": "日本ETF-iShares",
+  "CTAS": {
+   "code": "CTAS",
+   "name": "信达思",
    "tier": "1A",
    "listable": true,
    "when": "现在买（今日窗口内）",
@@ -637,65 +818,18 @@
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
-    "pe_ttm": 18.45,
-    "roe": null,
-    "net_margin": null,
-    "rev_growth": null,
-    "eps_growth": null,
-    "target_mean": null,
-    "to_target_pct": null,
-    "rating": null,
-    "analysts": null,
-    "next_earnings": null
+    "pe_ttm": 41.55,
+    "roe": 40.71,
+    "net_margin": 17.75,
+    "rev_growth": 8.9,
+    "eps_growth": 15.6,
+    "target_mean": 215.38,
+    "to_target_pct": 5.6,
+    "rating": "buy",
+    "analysts": 16.0,
+    "next_earnings": "2026-09-23"
    },
    "pos52": null
-  },
-  "XOM": {
-   "code": "XOM",
-   "name": "埃克森美孚",
-   "tier": "1A",
-   "listable": true,
-   "when": "回踩 148.42~154.36 买 · 5个交易日内有效",
-   "school": "成长派",
-   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
-   "checks": [
-    {
-     "ok": true,
-     "label": "利润率扩张(盈利增速>营收增速)",
-     "detail": "盈利+113% vs 营收+44%"
-    },
-    {
-     "ok": true,
-     "label": "成长强度(盈利增速≥20%)",
-     "detail": "+112.8%"
-    },
-    {
-     "ok": true,
-     "label": "林奇PEG≤1.5",
-     "detail": "0.23"
-    }
-   ],
-   "pass_n": 3,
-   "miss_n": 0,
-   "fail_n": 0,
-   "verdict": "书理支持",
-   "claude": "gate_pass",
-   "gpt": "未验证",
-   "anomaly_frozen": false,
-   "anomaly_note": "",
-   "fund": {
-    "pe_ttm": 25.93,
-    "roe": 12.58,
-    "net_margin": 9.07,
-    "rev_growth": 44.1,
-    "eps_growth": 112.8,
-    "target_mean": 167.09,
-    "to_target_pct": 8.5,
-    "rating": "buy",
-    "analysts": 22.0,
-    "next_earnings": "2026-10-30"
-   },
-   "pos52": 47.0
   },
   "300760.SZ": {
    "code": "300760.SZ",
@@ -749,6 +883,89 @@
    },
    "pos52": 43.0
   },
+  "HPE": {
+   "code": "HPE",
+   "name": "慧与",
+   "tier": "1A",
+   "listable": true,
+   "when": "回踩 46.96~48.84 买 · 5个交易日内有效",
+   "school": "价值派",
+   "school_why": "深度折价或低估值 → 格雷厄姆/卡拉曼式左侧仓",
+   "checks": [
+    {
+     "ok": true,
+     "label": "安全边际(距目标价≥20%)",
+     "detail": "+30.5%"
+    },
+    {
+     "ok": false,
+     "label": "盈利质量(ROE≥15%且净利率≥10%)",
+     "detail": "ROE6%·净利4%"
+    },
+    {
+     "ok": false,
+     "label": "估值(PE≤20)",
+     "detail": "47.0"
+    },
+    {
+     "ok": true,
+     "label": "自由现金流为正",
+     "detail": "3.8B"
+    }
+   ],
+   "pass_n": 2,
+   "miss_n": 0,
+   "fail_n": 2,
+   "verdict": "证据不足",
+   "claude": "gate_pass",
+   "gpt": "未验证",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": 46.95,
+    "roe": 6.31,
+    "net_margin": 4.01,
+    "rev_growth": 40.0,
+    "eps_growth": null,
+    "target_mean": 65.56,
+    "to_target_pct": 30.5,
+    "rating": "buy",
+    "analysts": 19.0,
+    "next_earnings": "2026-09-04"
+   },
+   "pos52": null
+  },
+  "SPG": {
+   "code": "SPG",
+   "name": "西蒙地产",
+   "tier": "1A",
+   "listable": true,
+   "when": "现在买（今日窗口内）",
+   "school": "未定",
+   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
+   "checks": [],
+   "pass_n": 0,
+   "miss_n": 0,
+   "fail_n": 0,
+   "verdict": "证据不足",
+   "claude": "gate_pass",
+   "gpt": "未验证",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": 15.94,
+    "roe": 113.59,
+    "net_margin": 70.59,
+    "rev_growth": 19.3,
+    "eps_growth": 16.4,
+    "target_mean": 227.95,
+    "to_target_pct": -0.5,
+    "rating": "buy",
+    "analysts": 19.0,
+    "next_earnings": "2026-08-11"
+   },
+   "pos52": null
+  },
   "2020.HK": {
    "code": "2020.HK",
    "name": "安踏体育",
@@ -801,56 +1018,61 @@
    },
    "pos52": 49.0
   },
-  "EMR": {
-   "code": "EMR",
-   "name": "艾默生电气",
+  "APH": {
+   "code": "APH",
+   "name": "安费诺",
    "tier": "1A",
-   "listable": true,
-   "when": "回踩 141.63~147.3 买 · 5个交易日内有效",
-   "school": "成长派",
-   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
+   "listable": false,
+   "when": "回踩 155.85~162.08 买 · 5个交易日内有效",
+   "school": "趋势派",
+   "school_why": "高位+盈利营收双加速 → 欧奈尔式突破仓",
    "checks": [
     {
      "ok": true,
-     "label": "利润率扩张(盈利增速>营收增速)",
-     "detail": "盈利+28% vs 营收+3%"
+     "label": "C 当季盈利加速≥25%",
+     "detail": "+59.3%"
     },
     {
      "ok": true,
-     "label": "成长强度(盈利增速≥20%)",
-     "detail": "+27.9%"
+     "label": "A 年度营收增长≥25%",
+     "detail": "+55.0%"
     },
     {
      "ok": true,
-     "label": "林奇PEG≤1.5",
-     "detail": "1.26"
+     "label": "N 新高特征(52周位≥70)",
+     "detail": "75%"
+    },
+    {
+     "ok": true,
+     "label": "I 机构认可(≥10分析师且buy)",
+     "detail": "17人·strong_buy"
     }
    ],
-   "pass_n": 3,
+   "pass_n": 4,
    "miss_n": 0,
    "fail_n": 0,
    "verdict": "书理支持",
-   "claude": "gate_pass",
-   "gpt": "reject",
+   "claude": "reject",
+   "gpt": "未验证",
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
-    "pe_ttm": 35.23,
-    "roe": 12.33,
-    "net_margin": 13.35,
-    "rev_growth": 2.9,
-    "eps_growth": 27.9,
-    "target_mean": 163.48,
-    "to_target_pct": 7.7,
-    "rating": "buy",
-    "analysts": 27.0,
-    "next_earnings": "2026-08-05"
+    "pe_ttm": 39.74,
+    "roe": 38.12,
+    "net_margin": 17.73,
+    "rev_growth": 55.0,
+    "eps_growth": 59.3,
+    "target_mean": 198.06,
+    "to_target_pct": 24.6,
+    "rating": "strong_buy",
+    "analysts": 17.0,
+    "next_earnings": "2026-10-28"
    },
-   "pos52": null
+   "pos52": 75.0
   },
-  "2269.HK": {
-   "code": "2269.HK",
-   "name": "药明生物",
+  "XOM": {
+   "code": "XOM",
+   "name": "埃克森美孚",
    "tier": "1A",
    "listable": false,
    "when": "现在买（今日窗口内）",
@@ -860,17 +1082,17 @@
     {
      "ok": true,
      "label": "利润率扩张(盈利增速>营收增速)",
-     "detail": "盈利+39% vs 营收+17%"
+     "detail": "盈利+113% vs 营收+44%"
     },
     {
      "ok": true,
      "label": "成长强度(盈利增速≥20%)",
-     "detail": "+39.4%"
+     "detail": "+112.8%"
     },
     {
      "ok": true,
      "label": "林奇PEG≤1.5",
-     "detail": "0.74"
+     "detail": "0.23"
     }
    ],
    "pass_n": 3,
@@ -878,22 +1100,22 @@
    "fail_n": 0,
    "verdict": "书理支持",
    "claude": "reject",
-   "gpt": "reject",
+   "gpt": "未验证",
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
-    "pe_ttm": 28.96,
-    "roe": 11.64,
-    "net_margin": 22.53,
-    "rev_growth": 17.2,
-    "eps_growth": 39.4,
-    "target_mean": 47.16,
-    "to_target_pct": 21.5,
+    "pe_ttm": 25.93,
+    "roe": 12.58,
+    "net_margin": 9.07,
+    "rev_growth": 44.1,
+    "eps_growth": 112.8,
+    "target_mean": 167.09,
+    "to_target_pct": 8.5,
     "rating": "buy",
-    "analysts": 23.0,
-    "next_earnings": "2026-08-18"
+    "analysts": 22.0,
+    "next_earnings": "2026-10-30"
    },
-   "pos52": null
+   "pos52": 50.0
   },
   "601919.SS": {
    "code": "601919.SS",
@@ -994,6 +1216,53 @@
    },
    "pos52": 17.0
   },
+  "NVDA": {
+   "code": "NVDA",
+   "name": "英伟达",
+   "tier": "1A",
+   "listable": true,
+   "when": "回踩 202.09 买 · 5个交易日内有效",
+   "school": "成长派",
+   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
+   "checks": [
+    {
+     "ok": true,
+     "label": "利润率扩张(盈利增速>营收增速)",
+     "detail": "盈利+214% vs 营收+85%"
+    },
+    {
+     "ok": true,
+     "label": "成长强度(盈利增速≥20%)",
+     "detail": "+214.5%"
+    },
+    {
+     "ok": true,
+     "label": "林奇PEG≤1.5",
+     "detail": "0.14"
+    }
+   ],
+   "pass_n": 3,
+   "miss_n": 0,
+   "fail_n": 0,
+   "verdict": "书理支持",
+   "claude": "gate_pass",
+   "gpt": "未验证",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": 30.63,
+    "roe": 114.29,
+    "net_margin": 62.97,
+    "rev_growth": 85.2,
+    "eps_growth": 214.5,
+    "target_mean": 302.83,
+    "to_target_pct": 51.7,
+    "rating": "strong_buy",
+    "analysts": 58.0,
+    "next_earnings": "2026-08-27"
+   },
+   "pos52": 59.0
+  },
   "3808.HK": {
    "code": "3808.HK",
    "name": "中国重汽",
@@ -1040,6 +1309,199 @@
     "next_earnings": "2026-08-26"
    },
    "pos52": 52.0
+  },
+  "BKNG": {
+   "code": "BKNG",
+   "name": "Booking Holdings",
+   "tier": "1A",
+   "listable": true,
+   "when": "回踩 183.16~190.49 买 · 5个交易日内有效",
+   "school": "成长派",
+   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
+   "checks": [
+    {
+     "ok": true,
+     "label": "利润率扩张(盈利增速>营收增速)",
+     "detail": "盈利+240% vs 营收+16%"
+    },
+    {
+     "ok": true,
+     "label": "成长强度(盈利增速≥20%)",
+     "detail": "+240.0%"
+    },
+    {
+     "ok": true,
+     "label": "林奇PEG≤1.5",
+     "detail": "0.11"
+    }
+   ],
+   "pass_n": 3,
+   "miss_n": 0,
+   "fail_n": 0,
+   "verdict": "书理支持",
+   "claude": "gate_pass",
+   "gpt": "未验证",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": 25.42,
+    "roe": null,
+    "net_margin": 22.23,
+    "rev_growth": 16.2,
+    "eps_growth": 240.0,
+    "target_mean": 224.42,
+    "to_target_pct": 16.5,
+    "rating": "buy",
+    "analysts": 36.0,
+    "next_earnings": "2026-08-05"
+   },
+   "pos52": null
+  },
+  "WGS": {
+   "code": "WGS",
+   "name": "GeneDx Holdings Corp-A",
+   "tier": "1A",
+   "listable": true,
+   "when": "回踩 63.95~66.51 买 · 5个交易日内有效",
+   "school": "价值派",
+   "school_why": "深度折价或低估值 → 格雷厄姆/卡拉曼式左侧仓",
+   "checks": [
+    {
+     "ok": true,
+     "label": "安全边际(距目标价≥20%)",
+     "detail": "+20.5%"
+    },
+    {
+     "ok": false,
+     "label": "盈利质量(ROE≥15%且净利率≥10%)",
+     "detail": "ROE-30%·净利-18%"
+    },
+    {
+     "ok": null,
+     "label": "估值(PE≤20)",
+     "detail": "数据缺"
+    },
+    {
+     "ok": true,
+     "label": "自由现金流为正",
+     "detail": "0.0B"
+    }
+   ],
+   "pass_n": 2,
+   "miss_n": 1,
+   "fail_n": 1,
+   "verdict": "证据不足",
+   "claude": "gate_pass",
+   "gpt": "未验证",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": null,
+    "roe": -30.42,
+    "net_margin": -17.58,
+    "rev_growth": 17.4,
+    "eps_growth": null,
+    "target_mean": 81.78,
+    "to_target_pct": 20.5,
+    "rating": "strong_buy",
+    "analysts": 9.0,
+    "next_earnings": "2026-08-04"
+   },
+   "pos52": null
+  },
+  "NSIT": {
+   "code": "NSIT",
+   "name": "Insight Enterprises Inc",
+   "tier": "1A",
+   "listable": true,
+   "when": "回踩 119.72~124.51 买 · 5个交易日内有效",
+   "school": "成长派",
+   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
+   "checks": [
+    {
+     "ok": true,
+     "label": "利润率扩张(盈利增速>营收增速)",
+     "detail": "盈利+341% vs 营收+1%"
+    },
+    {
+     "ok": true,
+     "label": "成长强度(盈利增速≥20%)",
+     "detail": "+340.9%"
+    },
+    {
+     "ok": true,
+     "label": "林奇PEG≤1.5",
+     "detail": "0.07"
+    }
+   ],
+   "pass_n": 3,
+   "miss_n": 0,
+   "fail_n": 0,
+   "verdict": "书理支持",
+   "claude": "gate_pass",
+   "gpt": "reject",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": 23.47,
+    "roe": 11.26,
+    "net_margin": 2.17,
+    "rev_growth": 1.2,
+    "eps_growth": 340.9,
+    "target_mean": 107.5,
+    "to_target_pct": -18.4,
+    "rating": "none",
+    "analysts": 4.0,
+    "next_earnings": "2026-08-06"
+   },
+   "pos52": null
+  },
+  "BNY": {
+   "code": "BNY",
+   "name": "纽约梅隆银行",
+   "tier": "1A",
+   "listable": true,
+   "when": "现在买（今日窗口内）",
+   "school": "成长派",
+   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
+   "checks": [
+    {
+     "ok": true,
+     "label": "利润率扩张(盈利增速>营收增速)",
+     "detail": "盈利+27% vs 营收+13%"
+    },
+    {
+     "ok": true,
+     "label": "成长强度(盈利增速≥20%)",
+     "detail": "+26.9%"
+    },
+    {
+     "ok": true,
+     "label": "林奇PEG≤1.5",
+     "detail": "0.68"
+    }
+   ],
+   "pass_n": 3,
+   "miss_n": 0,
+   "fail_n": 0,
+   "verdict": "书理支持",
+   "claude": "gate_pass",
+   "gpt": "未验证",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": 18.23,
+    "roe": 14.12,
+    "net_margin": 29.41,
+    "rev_growth": 13.1,
+    "eps_growth": 26.9,
+    "target_mean": 166.67,
+    "to_target_pct": 6.7,
+    "rating": "buy",
+    "analysts": 15.0,
+    "next_earnings": "2026-10-15"
+   },
+   "pos52": null
   },
   "601288.SS": {
    "code": "601288.SS",
@@ -1093,68 +1555,6 @@
    },
    "pos52": 81.0
   },
-  "XLP": {
-   "code": "XLP",
-   "name": "日常消费ETF-SPDR",
-   "tier": "1A",
-   "listable": false,
-   "when": "现在买（今日窗口内）",
-   "school": "未定",
-   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
-   "checks": [],
-   "pass_n": 0,
-   "miss_n": 0,
-   "fail_n": 0,
-   "verdict": "证据不足",
-   "claude": "reject",
-   "gpt": "未验证",
-   "anomaly_frozen": false,
-   "anomaly_note": "",
-   "fund": {
-    "pe_ttm": 26.06,
-    "roe": null,
-    "net_margin": null,
-    "rev_growth": null,
-    "eps_growth": null,
-    "target_mean": null,
-    "to_target_pct": null,
-    "rating": null,
-    "analysts": null,
-    "next_earnings": null
-   },
-   "pos52": 56.0
-  },
-  "IYR": {
-   "code": "IYR",
-   "name": "美国房地产指数ETF-iShares",
-   "tier": "1A",
-   "listable": false,
-   "when": "现在买（今日窗口内）",
-   "school": "未定",
-   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
-   "checks": [],
-   "pass_n": 0,
-   "miss_n": 0,
-   "fail_n": 0,
-   "verdict": "证据不足",
-   "claude": "reject",
-   "gpt": "reject",
-   "anomaly_frozen": false,
-   "anomaly_note": "",
-   "fund": {
-    "pe_ttm": 29.11,
-    "roe": null,
-    "net_margin": null,
-    "rev_growth": null,
-    "eps_growth": null,
-    "target_mean": null,
-    "to_target_pct": null,
-    "rating": null,
-    "analysts": null,
-    "next_earnings": null
-   },
-   "pos52": 81.0
-  },
   "XLV": {
    "code": "XLV",
    "name": "医疗ETF-SPDR",
@@ -1184,38 +1584,54 @@
     "analysts": null,
     "next_earnings": null
    },
-   "pos52": 78.0
+   "pos52": 77.0
   },
-  "DIA": {
-   "code": "DIA",
-   "name": "道琼斯指数ETF-SPDR",
+  "2269.HK": {
+   "code": "2269.HK",
+   "name": "药明生物",
    "tier": "1A",
    "listable": false,
    "when": "现在买（今日窗口内）",
-   "school": "未定",
-   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
-   "checks": [],
-   "pass_n": 0,
+   "school": "成长派",
+   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
+   "checks": [
+    {
+     "ok": true,
+     "label": "利润率扩张(盈利增速>营收增速)",
+     "detail": "盈利+39% vs 营收+17%"
+    },
+    {
+     "ok": true,
+     "label": "成长强度(盈利增速≥20%)",
+     "detail": "+39.4%"
+    },
+    {
+     "ok": true,
+     "label": "林奇PEG≤1.5",
+     "detail": "0.74"
+    }
+   ],
+   "pass_n": 3,
    "miss_n": 0,
    "fail_n": 0,
-   "verdict": "证据不足",
+   "verdict": "书理支持",
    "claude": "reject",
    "gpt": "reject",
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
-    "pe_ttm": 25.11,
-    "roe": null,
-    "net_margin": null,
-    "rev_growth": null,
-    "eps_growth": null,
-    "target_mean": null,
-    "to_target_pct": null,
-    "rating": null,
-    "analysts": null,
-    "next_earnings": null
+    "pe_ttm": 28.96,
+    "roe": 11.64,
+    "net_margin": 22.53,
+    "rev_growth": 17.2,
+    "eps_growth": 39.4,
+    "target_mean": 47.16,
+    "to_target_pct": 21.5,
+    "rating": "buy",
+    "analysts": 23.0,
+    "next_earnings": "2026-08-18"
    },
-   "pos52": 90.0
+   "pos52": null
   },
   "0992.HK": {
    "code": "0992.HK",
@@ -1269,67 +1685,57 @@
    },
    "pos52": 86.0
   },
-  "IVV": {
-   "code": "IVV",
-   "name": "标普500ETF-iShares",
-   "tier": "1A",
-   "listable": false,
-   "when": "现在买（今日窗口内）",
-   "school": "未定",
-   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
-   "checks": [],
-   "pass_n": 0,
-   "miss_n": 0,
-   "fail_n": 0,
-   "verdict": "证据不足",
-   "claude": "reject",
-   "gpt": "reject",
-   "anomaly_frozen": false,
-   "anomaly_note": "",
-   "fund": {
-    "pe_ttm": 27.12,
-    "roe": null,
-    "net_margin": null,
-    "rev_growth": null,
-    "eps_growth": null,
-    "target_mean": null,
-    "to_target_pct": null,
-    "rating": null,
-    "analysts": null,
-    "next_earnings": null
-   },
-   "pos52": 91.0
-  },
-  "VNQ": {
-   "code": "VNQ",
-   "name": "不动产信托指数ETF-Vanguard",
+  "600809.SS": {
+   "code": "600809.SS",
+   "name": "山西汾酒",
    "tier": "1A",
    "listable": true,
-   "when": "现在买（今日窗口内）",
-   "school": "未定",
-   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
-   "checks": [],
-   "pass_n": 0,
-   "miss_n": 0,
+   "when": "回踩 120.57 买 · 5个交易日内有效",
+   "school": "价值派",
+   "school_why": "深度折价或低估值 → 格雷厄姆/卡拉曼式左侧仓",
+   "checks": [
+    {
+     "ok": null,
+     "label": "安全边际(距目标价≥20%)",
+     "detail": "数据缺"
+    },
+    {
+     "ok": true,
+     "label": "盈利质量(ROE≥15%且净利率≥10%)",
+     "detail": "ROE26%·净利30%"
+    },
+    {
+     "ok": true,
+     "label": "估值(PE≤20)",
+     "detail": "13.8"
+    },
+    {
+     "ok": true,
+     "label": "自由现金流为正",
+     "detail": "9.1B"
+    }
+   ],
+   "pass_n": 3,
+   "miss_n": 1,
    "fail_n": 0,
-   "verdict": "证据不足",
+   "verdict": "书理支持",
    "claude": "gate_pass",
    "gpt": "reject",
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
-    "pe_ttm": 31.65,
-    "roe": null,
-    "net_margin": null,
-    "rev_growth": null,
-    "eps_growth": null,
+    "pe_ttm": 13.75,
+    "roe": 26.17,
+    "net_margin": 29.58,
+    "rev_growth": -9.7,
+    "eps_growth": -19.1,
     "target_mean": null,
     "to_target_pct": null,
-    "rating": null,
+    "rating": "none",
     "analysts": null,
     "next_earnings": null
    },
-   "pos52": null
+   "pos52": 33.0
   },
   "3110.HK": {
    "code": "3110.HK",
@@ -1383,92 +1789,9 @@
    },
    "pos52": 55.0
   },
-  "600809.SS": {
-   "code": "600809.SS",
-   "name": "山西汾酒",
-   "tier": "1A",
-   "listable": true,
-   "when": "回踩 120.57 买 · 5个交易日内有效",
-   "school": "价值派",
-   "school_why": "深度折价或低估值 → 格雷厄姆/卡拉曼式左侧仓",
-   "checks": [
-    {
-     "ok": null,
-     "label": "安全边际(距目标价≥20%)",
-     "detail": "数据缺"
-    },
-    {
-     "ok": true,
-     "label": "盈利质量(ROE≥15%且净利率≥10%)",
-     "detail": "ROE26%·净利30%"
-    },
-    {
-     "ok": true,
-     "label": "估值(PE≤20)",
-     "detail": "13.8"
-    },
-    {
-     "ok": true,
-     "label": "自由现金流为正",
-     "detail": "9.1B"
-    }
-   ],
-   "pass_n": 3,
-   "miss_n": 1,
-   "fail_n": 0,
-   "verdict": "书理支持",
-   "claude": "gate_pass",
-   "gpt": "reject",
-   "anomaly_frozen": false,
-   "anomaly_note": "",
-   "fund": {
-    "pe_ttm": 13.75,
-    "roe": 26.17,
-    "net_margin": 29.58,
-    "rev_growth": -9.7,
-    "eps_growth": -19.1,
-    "target_mean": null,
-    "to_target_pct": null,
-    "rating": "none",
-    "analysts": null,
-    "next_earnings": null
-   },
-   "pos52": 33.0
-  },
-  "MPC": {
-   "code": "MPC",
-   "name": "马拉松原油",
-   "tier": "1A",
-   "listable": true,
-   "when": "回踩 301.55~313.61 买 · 5个交易日内有效",
-   "school": "未定",
-   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
-   "checks": [],
-   "pass_n": 0,
-   "miss_n": 0,
-   "fail_n": 0,
-   "verdict": "证据不足",
-   "claude": "gate_pass",
-   "gpt": "reject",
-   "anomaly_frozen": false,
-   "anomaly_note": "",
-   "fund": {
-    "pe_ttm": 20.73,
-    "roe": 27.46,
-    "net_margin": 3.41,
-    "rev_growth": 8.8,
-    "eps_growth": null,
-    "target_mean": 303.89,
-    "to_target_pct": -3.5,
-    "rating": "buy",
-    "analysts": 18.0,
-    "next_earnings": "2026-08-04"
-   },
-   "pos52": null
-  },
-  "XLE": {
-   "code": "XLE",
-   "name": "能源指数ETF-SPDR",
+  "IYR": {
+   "code": "IYR",
+   "name": "美国房地产指数ETF-iShares",
    "tier": "1A",
    "listable": false,
    "when": "现在买（今日窗口内）",
@@ -1480,11 +1803,11 @@
    "fail_n": 0,
    "verdict": "证据不足",
    "claude": "reject",
-   "gpt": "reject",
+   "gpt": "未验证",
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
-    "pe_ttm": 21.92,
+    "pe_ttm": 29.11,
     "roe": null,
     "net_margin": null,
     "rev_growth": null,
@@ -1495,7 +1818,85 @@
     "analysts": null,
     "next_earnings": null
    },
-   "pos52": 75.0
+   "pos52": 82.0
+  },
+  "GOOG": {
+   "code": "GOOG",
+   "name": "谷歌C",
+   "tier": "1A",
+   "listable": false,
+   "when": "回踩 338.33 买 · 0个交易日内有效",
+   "school": "成长派",
+   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
+   "checks": [
+    {
+     "ok": true,
+     "label": "利润率扩张(盈利增速>营收增速)",
+     "detail": "盈利+294% vs 营收+24%"
+    },
+    {
+     "ok": true,
+     "label": "成长强度(盈利增速≥20%)",
+     "detail": "+294.0%"
+    },
+    {
+     "ok": true,
+     "label": "林奇PEG≤1.5",
+     "detail": "0.06"
+    }
+   ],
+   "pass_n": 3,
+   "miss_n": 0,
+   "fail_n": 0,
+   "verdict": "书理支持",
+   "claude": "reject",
+   "gpt": "reject",
+   "anomaly_frozen": true,
+   "anomaly_note": "2026-07-31 单日+6.88%，同期基准+0.70%，相对超额+6.18个百分点，量比1.51。**四大情报源(财报窗/公告/情报流/异动归因)均无记录 → 跌涨因未知**，冻结重动作(清仓/",
+   "fund": {
+    "pe_ttm": 18.68,
+    "roe": 48.68,
+    "net_margin": 54.77,
+    "rev_growth": 24.2,
+    "eps_growth": 294.0,
+    "target_mean": 421.79,
+    "to_target_pct": 13.2,
+    "rating": "strong_buy",
+    "analysts": 14.0,
+    "next_earnings": "2026-10-29"
+   },
+   "pos52": 76.0
+  },
+  "XLP": {
+   "code": "XLP",
+   "name": "日常消费ETF-SPDR",
+   "tier": "1A",
+   "listable": false,
+   "when": "现在买（今日窗口内）",
+   "school": "未定",
+   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
+   "checks": [],
+   "pass_n": 0,
+   "miss_n": 0,
+   "fail_n": 0,
+   "verdict": "证据不足",
+   "claude": "reject",
+   "gpt": "未验证",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": 26.06,
+    "roe": null,
+    "net_margin": null,
+    "rev_growth": null,
+    "eps_growth": null,
+    "target_mean": null,
+    "to_target_pct": null,
+    "rating": null,
+    "analysts": null,
+    "next_earnings": null
+   },
+   "pos52": 54.0
   },
   "9858.HK": {
    "code": "9858.HK",
@@ -1549,11 +1950,11 @@
    },
    "pos52": 61.0
   },
-  "SPYM": {
-   "code": "SPYM",
-   "name": "投资组合标普500指数ETF-SPDR",
+  "GD": {
+   "code": "GD",
+   "name": "通用动力",
    "tier": "1A",
-   "listable": false,
+   "listable": true,
    "when": "现在买（今日窗口内）",
    "school": "未定",
    "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
@@ -1562,43 +1963,43 @@
    "miss_n": 0,
    "fail_n": 0,
    "verdict": "证据不足",
-   "claude": "reject",
-   "gpt": "未验证",
-   "anomaly_frozen": false,
-   "anomaly_note": "",
-   "fund": {
-    "pe_ttm": 27.12,
-    "roe": null,
-    "net_margin": null,
-    "rev_growth": null,
-    "eps_growth": null,
-    "target_mean": null,
-    "to_target_pct": null,
-    "rating": null,
-    "analysts": null,
-    "next_earnings": null
-   },
-   "pos52": 91.0
-  },
-  "VTI": {
-   "code": "VTI",
-   "name": "全市场指数ETF-Vanguard",
-   "tier": "1A",
-   "listable": false,
-   "when": "现在买（今日窗口内）",
-   "school": "未定",
-   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
-   "checks": [],
-   "pass_n": 0,
-   "miss_n": 0,
-   "fail_n": 0,
-   "verdict": "证据不足",
-   "claude": "reject",
+   "claude": "gate_pass",
    "gpt": "reject",
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
-    "pe_ttm": 26.5,
+    "pe_ttm": 23.3,
+    "roe": 17.8,
+    "net_margin": 8.18,
+    "rev_growth": 8.1,
+    "eps_growth": 13.4,
+    "target_mean": 414.17,
+    "to_target_pct": 8.3,
+    "rating": "buy",
+    "analysts": 21.0,
+    "next_earnings": "2026-10-28"
+   },
+   "pos52": null
+  },
+  "IWM": {
+   "code": "IWM",
+   "name": "罗素2000ETF-iShares",
+   "tier": "1A",
+   "listable": true,
+   "when": "现在买（今日窗口内）",
+   "school": "未定",
+   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
+   "checks": [],
+   "pass_n": 0,
+   "miss_n": 0,
+   "fail_n": 0,
+   "verdict": "证据不足",
+   "claude": "gate_pass",
+   "gpt": "未验证",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": 18.35,
     "roe": null,
     "net_margin": null,
     "rev_growth": null,
@@ -1609,20 +2010,20 @@
     "analysts": null,
     "next_earnings": null
    },
-   "pos52": 92.0
+   "pos52": null
   }
  },
  "stats": {
-  "candidates": 37,
+  "candidates": 46,
   "by_school": {
-   "价值派": 13,
-   "成长派": 9,
-   "未定": 13,
+   "价值派": 15,
+   "成长派": 14,
+   "未定": 15,
    "趋势派": 2
   },
   "by_verdict": {
-   "证据不足": 19,
-   "书理支持": 15,
+   "证据不足": 23,
+   "书理支持": 20,
    "书理不支持": 3
   }
  }

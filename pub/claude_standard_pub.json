@@ -1,5 +1,5 @@
 {
- "asof": "2026-08-04 08:15（北京时间）",
+ "asof": "2026-08-04 10:45（北京时间）",
  "rules": {
   "CS9": "杠杆/反向/日重置产品不进推荐位——持有期收益路径依赖,长期价值/获利空间两桶口径不适用(案:二倍做空MSTR ETF被评1A)",
   "CS1": "宽基指数类跌幅未达5%且趋势未破,不按个股尺度输出减仓(案:VOO-2.1%/513500-0.2%就减)",
@@ -83,16 +83,6 @@
    "downgrade": "",
    "auto": true
   },
-  "601127.SS": {
-   "code": "601127.SS",
-   "name": "赛力斯",
-   "side": "机会",
-   "action": "等待",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "1428.HK": {
    "code": "1428.HK",
    "name": "耀才证券金融",
@@ -103,9 +93,19 @@
    "downgrade": "",
    "auto": true
   },
-  "601727.SS": {
-   "code": "601727.SS",
-   "name": "上海电气",
+  "9866.HK": {
+   "code": "9866.HK",
+   "name": "蔚来汽车-SW",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "2013.HK": {
+   "code": "2013.HK",
+   "name": "微盟集团",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -116,16 +116,6 @@
   "605179.SS": {
    "code": "605179.SS",
    "name": "一鸣食品",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "2099.HK": {
-   "code": "2099.HK",
-   "name": "中国黄金国际",
    "side": "趋势",
    "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
@@ -153,29 +143,9 @@
    "downgrade": "",
    "auto": true
   },
-  "000001.SZ": {
-   "code": "000001.SZ",
-   "name": "平安银行",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "3968.HK": {
    "code": "3968.HK",
    "name": "招商银行",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "9618.HK": {
-   "code": "9618.HK",
-   "name": "京东集团-SW",
    "side": "趋势",
    "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
@@ -193,11 +163,11 @@
    "downgrade": "",
    "auto": true
   },
-  "001309.SZ": {
-   "code": "001309.SZ",
-   "name": "德明利",
+  "BNTX": {
+   "code": "BNTX",
+   "name": "BioNTech",
    "side": "打折",
-   "action": "🟢跌得很深·可分批买",
+   "action": "🟢打折到位·可开始买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -238,6 +208,16 @@
    "name": "宝洁",
    "side": "打折",
    "action": "🕐还不够便宜·先看着",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "600132.SS": {
+   "code": "600132.SS",
+   "name": "重庆啤酒",
+   "side": "打折",
+   "action": "🟢打折到位·可开始买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -296,16 +276,6 @@
   "PDD": {
    "code": "PDD",
    "name": "拼多多",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "1286.HK": {
-   "code": "1286.HK",
-   "name": "鹰普精密",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -411,17 +381,17 @@
   }
  },
  "stats": {
-  "n_pass": 289,
-  "n_reject": 65,
+  "n_pass": 396,
+  "n_reject": 64,
   "by_rule": {
-   "CS9": 3,
-   "CS1": 2,
+   "CS9": 2,
+   "CS1": 1,
    "CS2": 0,
    "CS3": 0,
-   "CS4": 2,
+   "CS4": 1,
    "CS5": 0,
-   "CS6": 37,
-   "CS7": 53,
+   "CS6": 39,
+   "CS7": 54,
    "CS8": 0
   }
  }
