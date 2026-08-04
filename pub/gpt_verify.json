@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-04 21:42（北京时间）",
+ "generated_at": "2026-08-05 05:35（北京时间）",
  "version": "gptverify-v1",
  "model": "gpt-5.6-sol",
  "rule": "三态:通过/不否定/否决。**超时或不可用记'不可用',绝不记'否决'**——铁律19v2下 2A 只需GPT不否定,混淆会让GPT一挂2A全线归零",
@@ -156,11 +156,11 @@
    "name": "现在服务公司",
    "tier_at_verify": "1A",
    "verdict": "不否定",
-   "why": "未发现足以否证该档位的具体证据",
-   "ts": "2026-08-04",
-   "batch_seconds": 87.0,
+   "why": "业绩增长明确，但估值证据不足",
+   "ts": "2026-08-05",
+   "batch_seconds": 104.2,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 106.18~110.43 买 · 5个交|65"
+   "sig": "1A|回踩 106.55~110.81 买 · 5个交|65"
   },
   "1703.HK": {
    "name": "谊和股份",
@@ -447,9 +447,10 @@
    "name": "优然牧业",
    "tier_at_verify": "1A",
    "verdict": "否决",
-   "why": "赔率不足：估值34、获利空间33",
-   "ts": "2026-08-02",
-   "batch_seconds": 92.7,
+   "why": "赔率不足：获利空间33且风险25",
+   "ts": "2026-08-05",
+   "batch_seconds": 104.2,
+   "fresh_for_strong_days": 1,
    "sig": "1A|回踩 3.54~3.68 买 · 5个交易日内有|55"
   },
   "XLE": {
@@ -636,21 +637,21 @@
    "name": "谷歌C",
    "tier_at_verify": "1A",
    "verdict": "否决",
-   "why": "数据时点：有效期为0且时机仅22",
-   "ts": "2026-08-04",
-   "batch_seconds": 49.0,
+   "why": "逻辑自相矛盾：时机仅8仍评突破1A",
+   "ts": "2026-08-05",
+   "batch_seconds": 104.2,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 340.45 买 · 0个交易日内有效|60"
+   "sig": "1A|回踩 341.24 买 · 5个交易日内有效|55"
   },
   "KO": {
    "name": "可口可乐",
-   "tier_at_verify": "2A",
-   "verdict": "通过",
-   "why": "四桶达标，趋势与估值相互印证",
-   "ts": "2026-08-04",
-   "batch_seconds": 49.0,
+   "tier_at_verify": "1A",
+   "verdict": "否决",
+   "why": "赔率不足：获利空间仅48",
+   "ts": "2026-08-05",
+   "batch_seconds": 104.2,
    "fresh_for_strong_days": 1,
-   "sig": "2A|现在买（今日窗口内）|70"
+   "sig": "1A|现在买（今日窗口内）|65"
   },
   "GH": {
    "name": "Guardant Health Inc",
@@ -666,11 +667,11 @@
    "name": "Corcept Therapeutics Inc",
    "tier_at_verify": "1A",
    "verdict": "不否定",
-   "why": "未发现足以否证该档位的具体证据",
-   "ts": "2026-08-04",
-   "batch_seconds": 87.0,
+   "why": "获批利好与另一适应症CRL相抵",
+   "ts": "2026-08-05",
+   "batch_seconds": 104.2,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 95.61~99.43 买 · 5个交易日|65"
+   "sig": "1A|回踩 96.4~100.26 买 · 5个交易日|70"
   },
   "ARXS": {
    "name": "ARXS",
@@ -686,11 +687,11 @@
    "name": "Focus Universal Inc",
    "tier_at_verify": "1A",
    "verdict": "否决",
-   "why": "基本面恶化：反拆后又注册售股",
-   "ts": "2026-08-04",
-   "batch_seconds": 49.0,
+   "why": "追高：新闻刺激后短期急涨",
+   "ts": "2026-08-05",
+   "batch_seconds": 104.2,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 3.45~3.59 买 · 5个交易日内有|70"
+   "sig": "1A|回踩 3.83~3.98 买 · 5个交易日内有|70"
   },
   "CTAS": {
    "name": "信达思",
@@ -706,11 +707,11 @@
    "name": "慧与",
    "tier_at_verify": "1A",
    "verdict": "通过",
-   "why": "业绩指引上调，长期价值与赔率俱佳",
-   "ts": "2026-08-04",
-   "batch_seconds": 49.0,
+   "why": "二季报超预期并上调全年增长指引",
+   "ts": "2026-08-05",
+   "batch_seconds": 104.2,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 46.96~48.84 买 · 5个交易日|70"
+   "sig": "1A|回踩 47.4~49.3 买 · 5个交易日内有|70"
   },
   "SPG": {
    "name": "西蒙地产",
@@ -735,12 +736,12 @@
   "WGS": {
    "name": "GeneDx Holdings Corp-A",
    "tier_at_verify": "1A",
-   "verdict": "否决",
-   "why": "基本面恶化：业绩不及预期并下调指引",
-   "ts": "2026-08-04",
-   "batch_seconds": 49.0,
+   "verdict": "不否定",
+   "why": "新财报影响尚难定性，暂无强反证",
+   "ts": "2026-08-05",
+   "batch_seconds": 104.2,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 63.95~66.51 买 · 5个交易日|65"
+   "sig": "1A|回踩 64.23~66.8 买 · 5个交易日内|65"
   },
   "NSIT": {
    "name": "Insight Enterprises Inc",
@@ -775,12 +776,12 @@
   "GD": {
    "name": "通用动力",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "长期价值较强，催化与赔率偏弱",
-   "ts": "2026-08-04",
-   "batch_seconds": 49.0,
+   "verdict": "否决",
+   "why": "赔率不足：获利空间仅47",
+   "ts": "2026-08-05",
+   "batch_seconds": 104.2,
    "fresh_for_strong_days": 1,
-   "sig": "1A|现在买（今日窗口内）|65"
+   "sig": "1A|现在买（今日窗口内）|55"
   },
   "IWM": {
    "name": "罗素2000ETF-iShares",
@@ -1031,29 +1032,113 @@
    "batch_seconds": 55.1,
    "fresh_for_strong_days": 1,
    "sig": "1A|回踩 44.87~46.66 买 · 5个交易日|55"
+  },
+  "OWL": {
+   "name": "Blue Owl Capital Inc-A",
+   "tier_at_verify": "1A",
+   "verdict": "否决",
+   "why": "基本面恶化：主力零售信贷基金限赎",
+   "ts": "2026-08-05",
+   "batch_seconds": 104.2,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 9.72~10.11 买 · 5个交易日内|70"
+  },
+  "MKTX": {
+   "name": "MarketAxess Holdings Inc",
+   "tier_at_verify": "1A",
+   "verdict": "否决",
+   "why": "事件窗风险：两日后发布财报",
+   "ts": "2026-08-05",
+   "batch_seconds": 104.2,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 125.34~130.35 买 · 5个交|65"
+  },
+  "UNP": {
+   "name": "联合太平洋",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "二季报稳健，合并风险尚非证伪",
+   "ts": "2026-08-05",
+   "batch_seconds": 104.2,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|现在买（今日窗口内）|60"
+  },
+  "CDNA": {
+   "name": "CareDx Inc",
+   "tier_at_verify": "1A",
+   "verdict": "否决",
+   "why": "事件窗风险：今日发布二季报",
+   "ts": "2026-08-05",
+   "batch_seconds": 104.2,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 36.32~37.77 买 · 5个交易日|60"
+  },
+  "NDAQ": {
+   "name": "纳斯达克",
+   "tier_at_verify": "1A",
+   "verdict": "否决",
+   "why": "赔率不足：获利空间仅45",
+   "ts": "2026-08-05",
+   "batch_seconds": 104.2,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|现在买（今日窗口内）|60"
+  },
+  "SHOP": {
+   "name": "Shopify Inc-A",
+   "tier_at_verify": "1A",
+   "verdict": "否决",
+   "why": "事件窗风险：今日发布二季报",
+   "ts": "2026-08-05",
+   "batch_seconds": 104.2,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|现在买（今日窗口内）|60"
+  },
+  "IBB": {
+   "name": "生物科技指数ETF-iShares",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "分散化降低单一事件风险，暂无反证",
+   "ts": "2026-08-05",
+   "batch_seconds": 104.2,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|现在买（今日窗口内）|60"
+  },
+  "ET": {
+   "name": "能源转换",
+   "tier_at_verify": "1A",
+   "verdict": "否决",
+   "why": "赔率不足：获利空间仅39",
+   "ts": "2026-08-05",
+   "batch_seconds": 104.2,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|现在买（今日窗口内）|55"
+  },
+  "AMD": {
+   "name": "超威半导体",
+   "tier_at_verify": "1A",
+   "verdict": "否决",
+   "why": "赔率不足：获利空间仅26",
+   "ts": "2026-08-05",
+   "batch_seconds": 104.2,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|现在买（今日窗口内）|50"
   }
  },
  "batches": [
   {
-   "n": 20,
-   "got": 20,
-   "seconds": 49.0,
-   "error": ""
-  },
-  {
-   "n": 5,
-   "got": 5,
-   "seconds": 55.1,
+   "n": 18,
+   "got": 18,
+   "seconds": 104.2,
    "error": ""
   }
  ],
  "stats": {
-  "待验证": 25,
-  "本轮已验": 25,
+  "待验证": 18,
+  "本轮已验": 18,
   "分布": {
-   "不否定": 43,
-   "否决": 56,
-   "通过": 5
+   "不否定": 45,
+   "否决": 64,
+   "通过": 4
   }
  }
 }
