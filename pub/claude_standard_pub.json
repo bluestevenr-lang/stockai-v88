@@ -1,5 +1,5 @@
 {
- "asof": "2026-08-04 08:15（北京时间）",
+ "asof": "2026-08-04 12:47（北京时间）",
  "rules": {
   "CS9": "杠杆/反向/日重置产品不进推荐位——持有期收益路径依赖,长期价值/获利空间两桶口径不适用(案:二倍做空MSTR ETF被评1A)",
   "CS1": "宽基指数类跌幅未达5%且趋势未破,不按个股尺度输出减仓(案:VOO-2.1%/513500-0.2%就减)",
@@ -123,9 +123,9 @@
    "downgrade": "",
    "auto": true
   },
-  "2099.HK": {
-   "code": "2099.HK",
-   "name": "中国黄金国际",
+  "LMT": {
+   "code": "LMT",
+   "name": "洛克希德马丁",
    "side": "趋势",
    "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
@@ -153,16 +153,6 @@
    "downgrade": "",
    "auto": true
   },
-  "000001.SZ": {
-   "code": "000001.SZ",
-   "name": "平安银行",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "3968.HK": {
    "code": "3968.HK",
    "name": "招商银行",
@@ -173,29 +163,9 @@
    "downgrade": "",
    "auto": true
   },
-  "9618.HK": {
-   "code": "9618.HK",
-   "name": "京东集团-SW",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "2276.HK": {
    "code": "2276.HK",
    "name": "康耐特光学",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "001309.SZ": {
-   "code": "001309.SZ",
-   "name": "德明利",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -313,6 +283,16 @@
    "downgrade": "",
    "auto": true
   },
+  "JPM": {
+   "code": "JPM",
+   "name": "摩根大通",
+   "side": "行业代表",
+   "action": "",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "COST": {
    "code": "COST",
    "name": "开市客",
@@ -365,28 +345,6 @@
   }
  },
  "reject": {
-  "LMT": {
-   "code": "LMT",
-   "name": "洛克希德马丁",
-   "side": "行业代表",
-   "action": "",
-   "rules": [
-    "CS7"
-   ],
-   "why": "美股过热而赔率仅0.08(要≥2.0)",
-   "downgrade": ""
-  },
-  "JPM": {
-   "code": "JPM",
-   "name": "摩根大通",
-   "side": "行业代表",
-   "action": "",
-   "rules": [
-    "CS7"
-   ],
-   "why": "美股过热而赔率仅0.43(要≥2.0)",
-   "downgrade": ""
-  },
   "2269.HK": {
    "code": "2269.HK",
    "name": "药明生物",
@@ -411,17 +369,17 @@
   }
  },
  "stats": {
-  "n_pass": 289,
-  "n_reject": 65,
+  "n_pass": 404,
+  "n_reject": 55,
   "by_rule": {
-   "CS9": 3,
+   "CS9": 2,
    "CS1": 2,
    "CS2": 0,
    "CS3": 0,
    "CS4": 2,
    "CS5": 0,
-   "CS6": 37,
-   "CS7": 53,
+   "CS6": 38,
+   "CS7": 24,
    "CS8": 0
   }
  }
