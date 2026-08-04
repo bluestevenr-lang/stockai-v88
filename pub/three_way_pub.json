@@ -1,22 +1,22 @@
 {
- "generated_at": "2026-08-04 08:15（北京时间）",
+ "generated_at": "2026-08-04 19:37（北京时间）",
  "note": "三方会审:规则引擎(V88) vs Claude(Fable/Opus独立复核) vs GPT(Codex盲审)。⚡分歧排最前——三方都说好的可以按纲领执行,吵起来的才是要自己拿主意的地方。GPT目前是影子模式(有记录无投票权),它的反对不会拦名单,但会入台账攒战绩。",
  "counts": {
-  "仅规则(无第二意见)": 39,
-  "✅双方一致": 2,
-  "⚡有分歧": 3
+  "仅规则(无第二意见)": 40,
+  "⚡有分歧": 3,
+  "✅双方一致": 2
  },
  "rows": [
   {
-   "code": "601127.SS",
-   "name": "赛力斯",
+   "code": "000559.SZ",
+   "name": "万向钱潮",
    "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 78,
+    "prob": 79,
     "action": "等待",
-    "rr": 3.68,
-    "pos52": 7.0,
+    "rr": 3.3,
+    "pos52": 31.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -26,15 +26,87 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "601727.SS",
-   "name": "上海电气",
+   "code": "605123.SS",
+   "name": "派克新材",
    "market": "A股",
    "rule": {
     "dir": "看多",
+    "prob": 79,
+    "action": "等待",
+    "rr": 3.25,
+    "pos52": 24.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "688223.SS",
+   "name": "晶科能源",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 77,
+    "action": "双路径待触发",
+    "rr": 3.64,
+    "pos52": 11.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "2609.HK",
+   "name": "佰泽医疗",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
     "prob": 76,
-    "action": "现价可进",
-    "rr": 3.68,
-    "pos52": 14.0,
+    "action": "左侧低吸",
+    "rr": 3.96,
+    "pos52": 3.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "002202.SZ",
+   "name": "金风科技",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 75,
+    "action": "等待",
+    "rr": 3.66,
+    "pos52": 36.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "601127.SS",
+   "name": "赛力斯",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 73,
+    "action": "等待",
+    "rr": 5.13,
+    "pos52": 5.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -49,10 +121,10 @@
    "market": "港股",
    "rule": {
     "dir": "看多",
-    "prob": 74,
+    "prob": 70,
     "action": "现价可进",
-    "rr": 4.46,
-    "pos52": 11.0,
+    "rr": 5.8,
+    "pos52": 8.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -62,51 +134,15 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "1799.HK",
-   "name": "新特能源",
-   "market": "港股",
-   "rule": {
-    "dir": "看多",
-    "prob": 73,
-    "action": "左侧低吸",
-    "rr": 4.2,
-    "pos52": 10.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "600000.SS",
-   "name": "浦发银行",
+   "code": "601727.SS",
+   "name": "上海电气",
    "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 72,
-    "action": "双路径待触发",
-    "rr": 4.53,
-    "pos52": 27.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "1428.HK",
-   "name": "耀才证券金融",
-   "market": "港股",
-   "rule": {
-    "dir": "看多",
-    "prob": 72,
-    "action": "左侧低吸",
-    "rr": 3.89,
-    "pos52": 7.0,
+    "prob": 67,
+    "action": "现价可进",
+    "rr": 4.65,
+    "pos52": 13.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -121,82 +157,10 @@
    "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 68,
-    "action": "现价可进",
-    "rr": 4.48,
-    "pos52": 20.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "600875.SS",
-   "name": "东方电气",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
     "prob": 66,
     "action": "现价可进",
-    "rr": 4.51,
-    "pos52": 33.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "1114.HK",
-   "name": "华晨中国",
-   "market": "港股",
-   "rule": {
-    "dir": "看多",
-    "prob": 65,
-    "action": "左侧低吸",
-    "rr": 7.89,
-    "pos52": 7.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "0762.HK",
-   "name": "中国联通",
-   "market": "港股",
-   "rule": {
-    "dir": "看多",
-    "prob": 65,
-    "action": "现价可进",
-    "rr": 6.35,
-    "pos52": 16.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "0728.HK",
-   "name": "中国电信",
-   "market": "港股",
-   "rule": {
-    "dir": "看多",
-    "prob": 62,
-    "action": "现价可进",
-    "rr": 5.41,
-    "pos52": 25.0,
+    "rr": 4.53,
+    "pos52": 20.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -211,10 +175,46 @@
    "market": "港股",
    "rule": {
     "dir": "看多",
-    "prob": 56,
+    "prob": 65,
     "action": "左侧低吸",
-    "rr": 5.67,
-    "pos52": 7.0,
+    "rr": 4.55,
+    "pos52": 9.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "600050.SS",
+   "name": "中国联通",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 63,
+    "action": "现价可进",
+    "rr": 4.14,
+    "pos52": 30.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "600760.SS",
+   "name": "中航沈飞",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 59,
+    "action": "现价可进",
+    "rr": 4.92,
+    "pos52": 14.0,
     "src": "池外机会"
    },
    "claude": null,
