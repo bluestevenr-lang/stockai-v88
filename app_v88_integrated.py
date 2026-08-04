@@ -18166,6 +18166,52 @@ except Exception as _nav_e:
 st.markdown("---")
 
 # ═══════════════════════════════════════════════════════════════
+# 【V88·本场操作·唯一结论源】2026-08-04 接入
+# 用户 08-03 定纲："保证这个 V88 最终得出的结论一致。"
+# 我当时建了 src/session_ops.py 并说"对话与页面读同一个函数"——
+# **但页面从来没接**（grep session_ops = 0）。又是「写了不等于生效」。
+# 现在真接上：本段直接渲染 session_ops.json，与对话回答**同一份数据、同一套措辞**。
+# 规则版本号显式展示：答案与上次不同时，先比版本号——同版本不同答案才是 bug。
+# ═══════════════════════════════════════════════════════════════
+with st.expander("📋 本场操作 · 唯一结论源（对话与本页逐字一致）", expanded=True):
+    try:
+        _so9 = _cbj9("session_ops.json") or {}
+        if not _so9:
+            st.caption("⚠️ session_ops.json 未读到 —— 这是**读取失败**，不是「今天没操作」。")
+        else:
+            _rv9 = _so9.get("ruleset_version", "?")
+            _st9 = _so9.get("stats") or {}
+            st.markdown(
+                f"<div style='font-size:12px;color:#64748b'>规则版本 <b>{_rv9}</b>"
+                f"　生效闸 {len(_so9.get('gates_in_force') or [])} 道"
+                f"　算于 {_so9.get('generated_at','?')}"
+                f"　—— 答案与上次不同时先比版本号：<b>同版本不同答案才是 bug</b></div>",
+                unsafe_allow_html=True)
+            _c1, _c2, _c3, _c4 = st.columns(4)
+            _c1.metric("🔴 立即卖出", _st9.get("sell", 0))
+            _c2.metric("⚪ 守线待触发", _st9.get("watch", 0))
+            _c3.metric("🔵 买入", _st9.get("buy", 0))
+            _c4.metric("⛔ 赔率闸挡下", _st9.get("blocked_by_rr", 0))
+            _tabs9 = st.tabs(["🇨🇳 A股", "🇭🇰 港股", "🇺🇸 美股"])
+            for _tb9, _mk9x in zip(_tabs9, ("A股", "港股", "美股")):
+                with _tb9:
+                    try:
+                        import importlib, sys as _sy9
+                        _rp9 = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
+                        if _rp9 not in _sy9.path:
+                            _sy9.path.insert(0, _rp9)
+                        _sop9 = importlib.import_module("session_ops")
+                        # 同一个 render_md —— 这就是"逐字一致"的实现方式，不是靠我抄一遍
+                        st.markdown(_sop9.render_md(_sop9.build(_mk9x)), unsafe_allow_html=False)
+                    except Exception as _e9so:
+                        st.caption(f"⚠️ {_mk9x} 渲染失败：{type(_e9so).__name__}: {str(_e9so)[:110]}")
+    except Exception as _e9s2:
+        import traceback as _tb9s
+        st.caption(f"⚠️ 本场操作段渲染失败：{type(_e9s2).__name__}: {str(_e9s2)[:110]}")
+        with st.expander("异常详情", expanded=False):
+            st.code(_tb9s.format_exc()[-1200:])
+
+# ═══════════════════════════════════════════════════════════════
 # 【V88·打新雷达】中美港新股申购日历+评级（2026-07-16 用户点单：热门打新从来没提示过）。
 # 数据由私仓日报流水线生成（A股=Tushare/美股=Nasdaq/港股源接入中），这里零网络秒开。
 # ═══════════════════════════════════════════════════════════════
