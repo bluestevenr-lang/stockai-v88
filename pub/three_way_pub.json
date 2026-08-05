@@ -1,22 +1,22 @@
 {
- "generated_at": "2026-08-04 19:37（北京时间）",
+ "generated_at": "2026-08-05 08:15（北京时间）",
  "note": "三方会审:规则引擎(V88) vs Claude(Fable/Opus独立复核) vs GPT(Codex盲审)。⚡分歧排最前——三方都说好的可以按纲领执行,吵起来的才是要自己拿主意的地方。GPT目前是影子模式(有记录无投票权),它的反对不会拦名单,但会入台账攒战绩。",
  "counts": {
-  "仅规则(无第二意见)": 40,
-  "⚡有分歧": 3,
-  "✅双方一致": 2
+  "仅规则(无第二意见)": 39,
+  "✅双方一致": 1,
+  "⚡有分歧": 2
  },
  "rows": [
   {
-   "code": "000559.SZ",
-   "name": "万向钱潮",
+   "code": "002639.SZ",
+   "name": "雪人集团",
    "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 79,
-    "action": "等待",
-    "rr": 3.3,
-    "pos52": 31.0,
+    "prob": 85,
+    "action": "左侧低吸",
+    "rr": 2.82,
+    "pos52": 14.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -32,27 +32,9 @@
    "rule": {
     "dir": "看多",
     "prob": 79,
-    "action": "等待",
+    "action": "左侧低吸",
     "rr": 3.25,
     "pos52": 24.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "688223.SS",
-   "name": "晶科能源",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 77,
-    "action": "双路径待触发",
-    "rr": 3.64,
-    "pos52": 11.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -80,15 +62,15 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "002202.SZ",
-   "name": "金风科技",
-   "market": "A股",
+   "code": "1164.HK",
+   "name": "中广核矿业",
+   "market": "港股",
    "rule": {
     "dir": "看多",
-    "prob": 75,
-    "action": "等待",
-    "rr": 3.66,
-    "pos52": 36.0,
+    "prob": 76,
+    "action": "左侧低吸",
+    "rr": 2.97,
+    "pos52": 17.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -98,15 +80,15 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "601127.SS",
-   "name": "赛力斯",
+   "code": "600875.SS",
+   "name": "东方电气",
    "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 73,
-    "action": "等待",
-    "rr": 5.13,
-    "pos52": 5.0,
+    "prob": 71,
+    "action": "左侧低吸",
+    "rr": 3.61,
+    "pos52": 36.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -134,15 +116,15 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "601727.SS",
-   "name": "上海电气",
-   "market": "A股",
+   "code": "BIDU",
+   "name": "百度",
+   "market": "美股",
    "rule": {
     "dir": "看多",
-    "prob": 67,
-    "action": "现价可进",
-    "rr": 4.65,
-    "pos52": 13.0,
+    "prob": 69,
+    "action": "左侧低吸",
+    "rr": 3.99,
+    "pos52": 35.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -152,14 +134,14 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "601877.SS",
-   "name": "正泰电器",
+   "code": "300124.SZ",
+   "name": "汇川技术",
    "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 66,
-    "action": "现价可进",
-    "rr": 4.53,
+    "prob": 69,
+    "action": "左侧低吸",
+    "rr": 3.29,
     "pos52": 20.0,
     "src": "池外机会"
    },
@@ -188,15 +170,33 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "600050.SS",
-   "name": "中国联通",
-   "market": "A股",
+   "code": "COST",
+   "name": "好市多",
+   "market": "美股",
    "rule": {
     "dir": "看多",
-    "prob": 63,
+    "prob": 60,
     "action": "现价可进",
-    "rr": 4.14,
-    "pos52": 30.0,
+    "rr": 4.51,
+    "pos52": 42.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "2357.HK",
+   "name": "中航科工",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 60,
+    "action": "现价可进",
+    "rr": 3.9,
+    "pos52": 11.0,
     "src": "池外机会"
    },
    "claude": null,
