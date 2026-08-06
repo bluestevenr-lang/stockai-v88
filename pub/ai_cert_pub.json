@@ -1,38 +1,168 @@
 {
- "asof": "2026-08-06 10:34（北京时间）",
- "model": "claude-opus-5[1m]",
+ "asof": "2026-08-06 08:05（北京时间）",
+ "model": "claude-fable-5",
  "by_market": {
   "美股": {
    "verdict": "打架",
-   "model": "claude-opus-5[1m]",
-   "shift": "2026-08-06 早审 (09:13)",
+   "model": "claude-fable-5",
+   "shift": "2026-08-05 晚审 (02:35北京·☁",
    "engine": 63,
    "fable": 40,
    "diff": 23,
-   "note": "引擎2周63% vs claude-opus-5[1m]独立读40%·差23pp(明显打架,等下一班复核)"
+   "note": "引擎2周63% vs claude-fable-5独立读40%·差23pp(明显打架,等下一班复核)"
   },
   "A股": {
    "verdict": "打架",
-   "model": "claude-opus-5[1m]",
-   "shift": "2026-08-06 早审 (09:13)",
+   "model": "claude-fable-5",
+   "shift": "2026-08-05 晚审 (02:35北京·☁",
    "engine": 61,
    "fable": 43,
    "diff": 18,
-   "note": "引擎2周61% vs claude-opus-5[1m]独立读43%·差18pp(明显打架,等下一班复核)"
+   "note": "引擎2周61% vs claude-fable-5独立读43%·差18pp(明显打架,等下一班复核)"
   },
   "港股": {
-   "verdict": "分歧",
-   "model": "claude-opus-5[1m]",
-   "shift": "2026-08-06 早审 (09:13)",
-   "engine": 52,
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-05 晚审 (02:35北京·☁",
+   "engine": 57,
    "fable": 56,
-   "diff": 4,
-   "note": "引擎2周52% vs claude-opus-5[1m]独立读56%·差4pp(有分歧,以引擎执行并留意)"
+   "diff": 1,
+   "note": "引擎2周57% vs claude-fable-5独立读56%·差1pp(两套读数对上)"
   }
  },
  "note": "Claude(Fable5/Opus5)独立复核徽章:🅒=复核结论与规则引擎一致;⚡=有异议不发徽章(理由见note);无徽章=本班未复核该标的(重点股优先,不装作全审)。徽章只代表'两套逻辑对上了',不代表保证盈利。",
- "by_code": {},
- "by_name": {},
- "n_cert": 0,
+ "by_code": {
+  "MU": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-05 午后审 (16:20)",
+   "note": "②**★持仓卖警11只（本职）——两套相反结论并存**：`session_ops`（唯一结论源）**无一\"立即卖\"**，8只-2A 一律\"**不主动卖，跌破X执行**\"，MO/AA",
+   "code": "MU",
+   "name": "美光科技"
+  },
+  "CLASS": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-05 午后审 (16:20)",
+   "note": "②**★持仓卖警11只（本职）——两套相反结论并存**：`session_ops`（唯一结论源）**无一\"立即卖\"**，8只-2A 一律\"**不主动卖，跌破X执行**\"，MO/AA",
+   "code": "CLASS",
+   "name": "CLASS"
+  },
+  "AAPL": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-05 午后审 (16:20)",
+   "note": "②**★持仓卖警11只（本职）——两套相反结论并存**：`session_ops`（唯一结论源）**无一\"立即卖\"**，8只-2A 一律\"**不主动卖，跌破X执行**\"，MO/AA",
+   "code": "AAPL",
+   "name": "苹果"
+  },
+  "ICS": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-05 午后审 (16:20)",
+   "note": "②**★持仓卖警11只（本职）——两套相反结论并存**：`session_ops`（唯一结论源）**无一\"立即卖\"**，8只-2A 一律\"**不主动卖，跌破X执行**\"，MO/AA",
+   "code": "ICS",
+   "name": "ICS"
+  },
+  "MO": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-05 午后审 (16:20)",
+   "note": "②**★持仓卖警11只（本职）——两套相反结论并存**：`session_ops`（唯一结论源）**无一\"立即卖\"**，8只-2A 一律\"**不主动卖，跌破X执行**\"，MO/AA",
+   "code": "MO",
+   "name": "奥驰亚"
+  },
+  "TSLA": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-05 午后审 (16:20)",
+   "note": "②**★持仓卖警11只（本职）——两套相反结论并存**：`session_ops`（唯一结论源）**无一\"立即卖\"**，8只-2A 一律\"**不主动卖，跌破X执行**\"，MO/AA",
+   "code": "TSLA",
+   "name": "特斯拉"
+  }
+ },
+ "by_name": {
+  "美光科技": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-05 午后审 (16:20)",
+   "note": "②**★持仓卖警11只（本职）——两套相反结论并存**：`session_ops`（唯一结论源）**无一\"立即卖\"**，8只-2A 一律\"**不主动卖，跌破X执行**\"，MO/AA",
+   "code": "MU",
+   "name": "美光科技"
+  },
+  "MU": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-05 午后审 (16:20)",
+   "note": "②**★持仓卖警11只（本职）——两套相反结论并存**：`session_ops`（唯一结论源）**无一\"立即卖\"**，8只-2A 一律\"**不主动卖，跌破X执行**\"，MO/AA",
+   "code": "MU",
+   "name": "美光科技"
+  },
+  "CLASS": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-05 午后审 (16:20)",
+   "note": "②**★持仓卖警11只（本职）——两套相反结论并存**：`session_ops`（唯一结论源）**无一\"立即卖\"**，8只-2A 一律\"**不主动卖，跌破X执行**\"，MO/AA",
+   "code": "CLASS",
+   "name": "CLASS"
+  },
+  "苹果": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-05 午后审 (16:20)",
+   "note": "②**★持仓卖警11只（本职）——两套相反结论并存**：`session_ops`（唯一结论源）**无一\"立即卖\"**，8只-2A 一律\"**不主动卖，跌破X执行**\"，MO/AA",
+   "code": "AAPL",
+   "name": "苹果"
+  },
+  "AAPL": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-05 午后审 (16:20)",
+   "note": "②**★持仓卖警11只（本职）——两套相反结论并存**：`session_ops`（唯一结论源）**无一\"立即卖\"**，8只-2A 一律\"**不主动卖，跌破X执行**\"，MO/AA",
+   "code": "AAPL",
+   "name": "苹果"
+  },
+  "ICS": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-05 午后审 (16:20)",
+   "note": "②**★持仓卖警11只（本职）——两套相反结论并存**：`session_ops`（唯一结论源）**无一\"立即卖\"**，8只-2A 一律\"**不主动卖，跌破X执行**\"，MO/AA",
+   "code": "ICS",
+   "name": "ICS"
+  },
+  "奥驰亚": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-05 午后审 (16:20)",
+   "note": "②**★持仓卖警11只（本职）——两套相反结论并存**：`session_ops`（唯一结论源）**无一\"立即卖\"**，8只-2A 一律\"**不主动卖，跌破X执行**\"，MO/AA",
+   "code": "MO",
+   "name": "奥驰亚"
+  },
+  "MO": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-05 午后审 (16:20)",
+   "note": "②**★持仓卖警11只（本职）——两套相反结论并存**：`session_ops`（唯一结论源）**无一\"立即卖\"**，8只-2A 一律\"**不主动卖，跌破X执行**\"，MO/AA",
+   "code": "MO",
+   "name": "奥驰亚"
+  },
+  "特斯拉": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-05 午后审 (16:20)",
+   "note": "②**★持仓卖警11只（本职）——两套相反结论并存**：`session_ops`（唯一结论源）**无一\"立即卖\"**，8只-2A 一律\"**不主动卖，跌破X执行**\"，MO/AA",
+   "code": "TSLA",
+   "name": "特斯拉"
+  },
+  "TSLA": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-05 午后审 (16:20)",
+   "note": "②**★持仓卖警11只（本职）——两套相反结论并存**：`session_ops`（唯一结论源）**无一\"立即卖\"**，8只-2A 一律\"**不主动卖，跌破X执行**\"，MO/AA",
+   "code": "TSLA",
+   "name": "特斯拉"
+  }
+ },
+ "n_cert": 6,
  "n_dispute": 0
 }
