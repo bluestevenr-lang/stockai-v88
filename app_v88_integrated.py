@@ -4022,8 +4022,22 @@ try:
                  if c not in _arch_set9
                  and str((_rank9map.get(str(c)) or {}).get("tier")) == "1A"]
         _tac_set9 = {c for c, _ in _tac9}
+        # 【2026-08-06 用户抓"买表11行全是待评估"】上面的存档过滤只挡 tier=='0A',
+        # **『待评估』与『查无评级』(discovery票不在rank_score)整段漏进主买表** ——
+        # 主表标题写"3A×0·2A×1"却显示11行,自相矛盾。
+        # 这违反"发现vs验证"铁律:凡是会被呈现的都必须过闸;待评估=没被算过≠合格
+        # (与腾讯案同一条原则:「未评估」不能冒充任何结论,连"可买"都不行)。
+        # 修:主买表**只留 tier∈{3A,2A} 且未被验证闸否决**;
+        # 待评估/查无评级 → 收进"🔭发现候选·未过闸"折叠区——发现保留,呈现降级。
+        def _gate_ok9(_c):
+            _r = _rank9map.get(str(_c)) or {}
+            return str(_r.get("tier")) in ("3A", "2A") and _r.get("listable") is not False
+        _disc9 = [(c, h) for _t, _s, c, h in _buy_order9
+                  if c not in _arch_set9 and c not in _tac_set9 and not _gate_ok9(c)]
+        _disc_set9 = {c for c, _ in _disc9}
         _t_buy9 = [h for _t9z, _s9z, _c9z, h in _buy_order9
-                   if _c9z not in _arch_set9 and _c9z not in _tac_set9]
+                   if _c9z not in _arch_set9 and _c9z not in _tac_set9
+                   and _c9z not in _disc_set9]
         # 计数改用R2口径(与顶部行动清单同源),不再用trend_quality旧尺
         _n3a9 = sum(1 for _r9c in (_rank9map.values()) if str(_r9c.get("tier")) == "3A")
         _n2a9 = sum(1 for _r9c in (_rank9map.values()) if str(_r9c.get("tier")) == "2A")
@@ -4100,6 +4114,16 @@ try:
                     st.caption("三方印证收敛:主表只留3A/2A,与顶部行动清单同一口径;"
                                "1A是独立战术信号,保留但降层——每只带用途/触发/失效(见评级章)。")
                     st.markdown(_tbl9([h for _, h in _tac9]), unsafe_allow_html=True)
+            # 【2026-08-06 用户抓获·发现候选降级呈现】原漏进主买表的 待评估/查无评级 票收进这里。
+            # 发现层的价值保留(右侧雷达=欧奈尔-lite发现通道),但**它们不是"可买",是"待验"**——
+            # 与主买表的区别一目了然:这里没有触发价/买区,只有"为什么被发现"。
+            if _disc9:
+                with st.expander(f"🔭 发现候选 {len(_disc9)} 只（未过闸·**不可执行**——待评估≠合格,只是还没被算过）",
+                                 expanded=False):
+                    st.caption("发现可多通道,验证必须单一入口(用户铁律)。这些票由右侧雷达/池外机会等"
+                               "发现通道选出,但尚未通过评级+双剑+书理+赔率全闸——"
+                               "**进不了买表,也不该照着操作**。过闸后会自动升入主表。")
+                    st.markdown(_tbl9([h for _, h in _disc9]), unsafe_allow_html=True)
             if _arch9:
                 with st.expander(f"🗄 存档 {len(_arch9)} 只（已否决/说不出何时买 → 不占推荐位）",
                                  expanded=False):
@@ -18177,6 +18201,43 @@ st.markdown("---")
 # 现在真接上：本段直接渲染 session_ops.json，与对话回答**同一份数据、同一套措辞**。
 # 规则版本号显式展示：答案与上次不同时，先比版本号——同版本不同答案才是 bug。
 # ═══════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════
+# 【V88·Fable月计划】2026-08-06 用户定纲:"每月计划一只或几只,我严格按照你的操作,
+# 目标每月$125"。治理=三方会审出证据,Fable定稿署名。用户会**严格照做**,
+# 故必须置顶且全价格无歧义;参数冻结,改动=出新计划,不许悄悄改。
+# ═══════════════════════════════════════════════════════════════
+with st.expander("🎖️ Fable月计划 · 每月$125（三方会审·Fable定稿·参数冻结）", expanded=True):
+    try:
+        _fp9 = _cbj9("fable_plan.json") or {}
+        _fpm9 = (_fp9.get("months") or {}).get(datetime.now().strftime("%Y-%m")) or {}
+        _fpp9 = _fpm9.get("plan") or {}
+        if not _fpp9:
+            st.caption(_fpm9.get("why") or "本月计划未出——空仓待机是合格结果,不是失败。")
+        else:
+            st.caption(f"发布 {_fpp9.get('issued_at')}｜规则 {_fpp9.get('ruleset')}｜"
+                       f"目标 ${_fpp9.get('target_usd')}｜{_fpp9.get('governance')}")
+            for _t9f in (_fpp9.get("trades") or []):
+                st.markdown(
+                    f"**{_t9f.get('name')}** `{_t9f.get('code')}`　【{_t9f.get('school')}】"
+                    f"　计划赔率 {_t9f.get('plan_rr')}　最大亏损 ${_t9f.get('max_loss_usd')}\n"
+                    f"- ① 买入：**限价 {_t9f.get('entry_limit')} × {_t9f.get('shares')}股**"
+                    f"　{_t9f.get('entry_rule')}\n"
+                    f"- ② 止盈：**{_t9f.get('take_profit')}**　{_t9f.get('tp_rule')}\n"
+                    f"- ③ 止损：**收盘 < {_t9f.get('stop_close')}**　{_t9f.get('sl_rule')}\n"
+                    f"- ④ 时间闸：**{_t9f.get('time_gate')}**　{_t9f.get('tg_rule')}\n"
+                    f"- 诚实赔率：{_t9f.get('honest_odds')}")
+            for _r9f in (_fpm9.get("status_rows") or []):
+                for _a9f in (_r9f.get("alerts") or []):
+                    st.warning(f"{_r9f.get('name')}：{_a9f}")
+            _wc9f = _fpp9.get("watch_conditional") or []
+            if _wc9f:
+                st.caption("条件单（触发才动）：" + "；".join(
+                    f"{w.get('name')}·{w.get('trigger')}" for w in _wc9f))
+            st.caption("硬约束：单月风险敞口≤$125｜无合格候选=空仓待机（合格结果）｜"
+                       "**禁止为凑目标下调门槛或放大仓位**｜miss不加倍追｜财报窗强平")
+    except Exception as _e9fp:
+        st.caption(f"⚠️ Fable计划渲染失败：{type(_e9fp).__name__}: {str(_e9fp)[:110]}")
+
 with st.expander("📋 本场操作 · 唯一结论源（对话与本页逐字一致）", expanded=True):
     try:
         _so9 = _cbj9("session_ops.json") or {}
