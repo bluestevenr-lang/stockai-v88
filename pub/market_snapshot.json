@@ -1,6 +1,6 @@
 {
   "schema_version": "v88.snapshot/2.0",
-  "snapshot_id": "snap-b5e3c8a110b9a264",
+  "snapshot_id": "snap-7c9095946ae33a2e",
   "rotation_forecast": {
     "schema_version": "v88.rotation/1.3",
     "snapshot_id": "snap-b5e3c8a110b9a264",
@@ -4965,7 +4965,7 @@
       }
     ]
   },
-  "generated_at": "2026-08-06 10:08",
+  "generated_at": "2026-08-06 11:59",
   "markets": {
     "美股": {
       "indices": [
@@ -5253,7 +5253,7 @@
           {
             "key": "广度钝化",
             "hit": false,
-            "text": "广度82·满值连续0日·5日变动+27.0"
+            "text": "广度82·满值连续0日（历史仅2天，需攒够3天）"
           },
           {
             "key": "动量衰竭",
@@ -5356,110 +5356,109 @@
         {
           "symbol": "000001.SS",
           "name": "上证指数",
-          "last": 3875.52,
-          "chg1d": -0.08,
-          "chg5d": 1.86,
-          "chg20d": -3.99,
-          "vs_ma20": 0.38,
-          "vs_ma60": -3.25,
+          "last": 3878.92,
+          "chg1d": 0.01,
+          "chg5d": 1.95,
+          "chg20d": -3.91,
+          "vs_ma20": 0.46,
+          "vs_ma60": -3.16,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 3.99,
-          "px_pct": 21.7,
+          "vol_ratio": 3.73,
+          "px_pct": 25.0,
           "vol_pct": 100.0,
-          "diverge": -78.3,
+          "diverge": -75.0,
           "turning": "",
           "turning_prompt": ""
         },
         {
           "symbol": "399001.SZ",
           "name": "深证成指",
-          "last": 14025.7,
-          "chg1d": -0.84,
-          "chg5d": 5.57,
-          "chg20d": -8.92,
-          "vs_ma20": -0.17,
-          "vs_ma60": -7.0,
-          "trend": "📉 空头排列",
-          "vol_ratio": 3.95,
-          "px_pct": 16.7,
+          "last": 14070.78,
+          "chg1d": -0.52,
+          "chg5d": 5.91,
+          "chg20d": -8.62,
+          "vs_ma20": 0.14,
+          "vs_ma60": -6.71,
+          "trend": "🔄 震荡偏强",
+          "vol_ratio": 3.88,
+          "px_pct": 18.3,
           "vol_pct": 100.0,
-          "diverge": -83.3,
-          "turning": "⚠️顶拐:放量跌破MA20（今日）",
-          "turning_prompt": "放量跌破MA20（今日）：收 14025.70 破位（MA20≈14049.44），当日量为20日均量19.7倍，至今未收回。👉 你来确认三件事：①明日能否收回MA20（14049.44）——收不回=拐点成立；②量能是否持续放大（连续两日≥1.3倍=资金在跑）；③是否跌破今日低点 13922.41——破了立即执行纪律，不要等反弹"
+          "diverge": -81.7,
+          "turning": "",
+          "turning_prompt": ""
         },
         {
-          "symbol": "159915.SZ",
-          "name": "创业板ETF代理",
-          "last": 3.5,
-          "chg1d": -0.4,
-          "chg5d": 2.88,
-          "chg20d": -9.49,
-          "vs_ma20": -2.45,
-          "vs_ma60": -10.27,
+          "symbol": "399006.SZ",
+          "name": "创业板指",
+          "last": 3511.47,
+          "chg1d": -0.67,
+          "chg5d": 8.22,
+          "chg20d": -12.61,
+          "vs_ma20": -0.83,
+          "vs_ma60": -9.36,
           "trend": "📉 空头排列",
-          "vol_ratio": 1.05,
-          "px_pct": 13.3,
-          "vol_pct": 85.0,
-          "diverge": -71.7,
+          "vol_ratio": 1.0,
+          "px_pct": 16.7,
+          "vol_pct": null,
+          "diverge": null,
           "turning": "",
-          "turning_prompt": "",
-          "unit": "元"
+          "turning_prompt": ""
         }
       ],
       "sectors": [
         {
           "symbol": "512760.SS",
           "name": "半导体芯片",
-          "last": 1.1,
-          "chg1d": 5.26,
-          "chg5d": -0.72,
-          "chg20d": -22.03,
-          "vs_ma20": -9.14,
-          "vs_ma60": -11.25,
+          "last": 1.12,
+          "chg1d": 6.88,
+          "chg5d": 0.81,
+          "chg20d": -20.82,
+          "vs_ma20": -7.8,
+          "vs_ma60": -9.9,
           "trend": "📉 空头排列",
-          "vol_ratio": 0.97,
-          "px_pct": 13.3,
-          "vol_pct": 53.3,
-          "diverge": -40.0,
+          "vol_ratio": 1.02,
+          "px_pct": 21.7,
+          "vol_pct": 83.3,
+          "diverge": -61.6,
           "turning": "",
           "turning_prompt": "",
-          "heat": 38
+          "heat": 44
         },
         {
           "symbol": "515030.SS",
           "name": "新能源车",
-          "last": 1.64,
-          "chg1d": 0.98,
-          "chg5d": 2.43,
-          "chg20d": -4.42,
-          "vs_ma20": 2.41,
-          "vs_ma60": -9.52,
+          "last": 1.63,
+          "chg1d": 0.25,
+          "chg5d": 1.68,
+          "chg20d": -5.12,
+          "vs_ma20": 1.7,
+          "vs_ma60": -10.17,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 0.79,
+          "vol_ratio": 0.86,
           "px_pct": 30.0,
           "vol_pct": 1.7,
           "diverge": 28.3,
           "turning": "",
           "turning_prompt": "",
-          "heat": 43
+          "heat": 45
         },
         {
           "symbol": "512690.SS",
           "name": "白酒",
           "last": 0.43,
-          "chg1d": -1.59,
-          "chg5d": -0.46,
-          "chg20d": 11.28,
-          "vs_ma20": 2.6,
-          "vs_ma60": 2.18,
+          "chg1d": -1.81,
+          "chg5d": -0.69,
+          "chg20d": 11.03,
+          "vs_ma20": 2.38,
+          "vs_ma60": 1.95,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 0.78,
+          "vol_ratio": 0.85,
           "px_pct": 65.0,
-          "vol_pct": 16.7,
-          "diverge": 48.3,
+          "vol_pct": 33.3,
+          "diverge": 31.7,
           "turning": "",
           "turning_prompt": "",
-          "heat": 43
+          "heat": 46
         },
         {
           "symbol": "512010.SS",
@@ -5471,31 +5470,31 @@
           "vs_ma20": 2.98,
           "vs_ma60": 8.98,
           "trend": "📈 多头排列",
-          "vol_ratio": 0.72,
+          "vol_ratio": 0.77,
           "px_pct": 100.0,
-          "vol_pct": 1.7,
-          "diverge": 98.3,
+          "vol_pct": 10.0,
+          "diverge": 90.0,
           "turning": "",
           "turning_prompt": "",
-          "heat": 46
+          "heat": 48
         },
         {
           "symbol": "512880.SS",
           "name": "证券",
-          "last": 1.1,
-          "chg1d": -0.36,
-          "chg5d": -0.54,
-          "chg20d": -0.99,
-          "vs_ma20": -0.82,
-          "vs_ma60": 1.39,
+          "last": 1.09,
+          "chg1d": -1.0,
+          "chg5d": -1.18,
+          "chg20d": -1.62,
+          "vs_ma20": -1.42,
+          "vs_ma60": 0.75,
           "trend": "🔄 震荡偏弱",
-          "vol_ratio": 0.61,
-          "px_pct": 53.3,
+          "vol_ratio": 0.68,
+          "px_pct": 46.7,
           "vol_pct": 1.7,
-          "diverge": 51.6,
+          "diverge": 45.0,
           "turning": "",
           "turning_prompt": "",
-          "heat": 30
+          "heat": 32
         },
         {
           "symbol": "512800.SS",
@@ -5507,101 +5506,101 @@
           "vs_ma20": -0.32,
           "vs_ma60": 2.03,
           "trend": "🔄 震荡偏弱",
-          "vol_ratio": 0.87,
+          "vol_ratio": 0.93,
           "px_pct": 75.0,
-          "vol_pct": 43.3,
-          "diverge": 31.7,
-          "turning": "",
-          "turning_prompt": "",
-          "heat": 40
-        },
-        {
-          "symbol": "512400.SS",
-          "name": "有色金属",
-          "last": 1.94,
-          "chg1d": 7.02,
-          "chg5d": 9.5,
-          "chg20d": 10.63,
-          "vs_ma20": 10.45,
-          "vs_ma60": 2.27,
-          "trend": "🔄 震荡偏强",
-          "vol_ratio": 0.8,
-          "px_pct": 58.3,
-          "vol_pct": 1.7,
-          "diverge": 56.6,
-          "turning": "",
-          "turning_prompt": "",
-          "heat": 64
-        },
-        {
-          "symbol": "512660.SS",
-          "name": "军工",
-          "last": 1.13,
-          "chg1d": 1.52,
-          "chg5d": 3.56,
-          "chg20d": -7.05,
-          "vs_ma20": 1.18,
-          "vs_ma60": -8.4,
-          "trend": "🔄 震荡偏强",
-          "vol_ratio": 0.76,
-          "px_pct": 25.0,
-          "vol_pct": 11.7,
-          "diverge": 13.3,
+          "vol_pct": 51.7,
+          "diverge": 23.3,
           "turning": "",
           "turning_prompt": "",
           "heat": 43
         },
         {
+          "symbol": "512400.SS",
+          "name": "有色金属",
+          "last": 1.91,
+          "chg1d": 5.86,
+          "chg5d": 8.31,
+          "chg20d": 9.43,
+          "vs_ma20": 9.32,
+          "vs_ma60": 1.18,
+          "trend": "🔄 震荡偏强",
+          "vol_ratio": 0.9,
+          "px_pct": 55.0,
+          "vol_pct": 10.0,
+          "diverge": 45.0,
+          "turning": "",
+          "turning_prompt": "",
+          "heat": 65
+        },
+        {
+          "symbol": "512660.SS",
+          "name": "军工",
+          "last": 1.13,
+          "chg1d": 0.99,
+          "chg5d": 3.02,
+          "chg20d": -7.55,
+          "vs_ma20": 0.67,
+          "vs_ma60": -8.88,
+          "trend": "🔄 震荡偏强",
+          "vol_ratio": 0.82,
+          "px_pct": 25.0,
+          "vol_pct": 33.3,
+          "diverge": -8.3,
+          "turning": "",
+          "turning_prompt": "",
+          "heat": 44
+        },
+        {
           "symbol": "159928.SZ",
           "name": "消费",
           "last": 0.67,
-          "chg1d": -1.03,
-          "chg5d": -1.03,
-          "chg20d": 7.52,
-          "vs_ma20": 1.18,
-          "vs_ma60": 1.96,
+          "chg1d": -1.33,
+          "chg5d": -1.33,
+          "chg20d": 7.2,
+          "vs_ma20": 0.9,
+          "vs_ma60": 1.66,
           "trend": "📈 多头排列",
-          "vol_ratio": 0.99,
+          "vol_ratio": 1.09,
           "px_pct": 63.3,
-          "vol_pct": 75.0,
-          "diverge": -11.7,
+          "vol_pct": 86.7,
+          "diverge": -23.4,
           "turning": "",
           "turning_prompt": "",
-          "heat": 50
+          "heat": 54
         },
         {
           "symbol": "515220.SS",
           "name": "煤炭",
-          "last": 1.19,
-          "chg1d": 1.79,
-          "chg5d": -0.58,
-          "chg20d": 4.56,
-          "vs_ma20": 1.28,
-          "vs_ma60": -1.34,
+          "last": 1.21,
+          "chg1d": 3.5,
+          "chg5d": 1.08,
+          "chg20d": 6.31,
+          "vs_ma20": 2.89,
+          "vs_ma60": 0.29,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 0.67,
-          "px_pct": 50.0,
-          "vol_pct": 1.7,
-          "diverge": 48.3,
+          "vol_ratio": 0.74,
+          "px_pct": 61.7,
+          "vol_pct": 15.0,
+          "diverge": 46.7,
           "turning": "",
           "turning_prompt": "",
-          "heat": 35
+          "heat": 42
         }
       ],
       "temperature": {
-        "temp": 58,
-        "trend": 17,
+        "temp": 66,
+        "trend": 33,
         "breadth": 70,
-        "momentum": 84,
+        "momentum": 100,
         "vol_heat": 100,
-        "label": "🟡 中性",
-        "position": "50-65%",
+        "label": "🟢 偏暖",
+        "position": "65-80%",
         "verdict": "🟡 中性震荡·跟随主线轮动"
       },
       "turn_risk": {
-        "top_risk": 10,
+        "top_risk": 12,
         "bottom_opp": 35,
-        "text": "顶部转向风险 低(10/100) ｜ 底部转机信号 中(35/100)｜顶部特征1/7·底部特征2/7",
+        "text": "顶部转向风险 低(12/100) ｜ 底部转机信号 中(35/100)｜顶部特征0/7·底部特征2/7",
         "ver": "v2"
       },
       "topbot": {
@@ -5610,22 +5609,22 @@
           {
             "key": "价格高位",
             "hit": false,
-            "text": "价格分位17.2"
+            "text": "价格分位20.0"
           },
           {
             "key": "量价背离",
             "hit": false,
-            "text": "价格分位17.2／量分位95.0＝背离-77.8"
+            "text": "价格分位20.0／量分位100.0＝背离-80.0"
           },
           {
             "key": "广度钝化",
             "hit": false,
-            "text": "广度70·满值连续0日·5日变动+10.0"
+            "text": "广度70·满值连续0日（历史仅2天，需攒够3天）"
           },
           {
             "key": "动量衰竭",
             "hit": false,
-            "text": "20日-7.47%但5日仅+3.44%"
+            "text": "20日-8.38%但5日仅+5.36%"
           },
           {
             "key": "估值高位",
@@ -5635,24 +5634,24 @@
           {
             "key": "温度过热",
             "hit": false,
-            "text": "温度58"
+            "text": "温度66"
           },
           {
             "key": "指数拐点",
-            "hit": true,
-            "text": "引擎拐点信号"
+            "hit": false,
+            "text": "无拐点信号"
           }
         ],
         "bottom": [
           {
             "key": "价格低位",
             "hit": true,
-            "text": "价格分位17.2"
+            "text": "价格分位20.0"
           },
           {
             "key": "放量杀跌",
             "hit": true,
-            "text": "价格分位17.2／量分位95.0＝背离-77.8"
+            "text": "价格分位20.0／量分位100.0＝背离-80.0"
           },
           {
             "key": "广度极低",
@@ -5662,7 +5661,7 @@
           {
             "key": "深度超跌",
             "hit": false,
-            "text": "20日-7.47%"
+            "text": "20日-8.38%"
           },
           {
             "key": "估值低位",
@@ -5672,21 +5671,21 @@
           {
             "key": "温度冰点",
             "hit": false,
-            "text": "温度58"
+            "text": "温度66"
           },
           {
             "key": "指数底拐",
             "hit": false,
-            "text": "引擎底拐信号"
+            "text": "无拐点信号"
           }
         ],
-        "top_hit": 1,
+        "top_hit": 0,
         "top_na": 1,
         "bottom_hit": 2,
         "bottom_na": 1,
-        "px_pct": 17.2,
-        "vol_pct": 95.0,
-        "diverge": -77.8,
+        "px_pct": 20.0,
+        "vol_pct": 100.0,
+        "diverge": -80.0,
         "breadth_full_days": 0,
         "note": "样本<5不给概率(铁律2)——只报命中条数,⬜=数据源缺失非未命中"
       },
@@ -5723,12 +5722,12 @@
         {
           "symbol": "^HSI",
           "name": "恒生指数",
-          "last": 25450.75,
-          "chg1d": -1.79,
-          "chg5d": -1.58,
-          "chg20d": 5.91,
-          "vs_ma20": 1.07,
-          "vs_ma60": 2.53,
+          "last": 25472.29,
+          "chg1d": -1.71,
+          "chg5d": -1.5,
+          "chg20d": 6.0,
+          "vs_ma20": 1.15,
+          "vs_ma60": 2.62,
           "trend": "📈 多头排列",
           "vol_ratio": 0.82,
           "px_pct": 71.7,
@@ -5740,17 +5739,17 @@
         {
           "symbol": "3033.HK",
           "name": "恒生科技(ETF代理)",
-          "last": 4.76,
-          "chg1d": -0.54,
-          "chg5d": -0.08,
-          "chg20d": 2.67,
-          "vs_ma20": 2.11,
-          "vs_ma60": 2.21,
+          "last": 4.75,
+          "chg1d": -0.84,
+          "chg5d": -0.38,
+          "chg20d": 2.37,
+          "vs_ma20": 1.83,
+          "vs_ma60": 1.92,
           "trend": "📈 多头排列",
-          "vol_ratio": 0.8,
-          "px_pct": 70.0,
-          "vol_pct": 39.0,
-          "diverge": 31.0,
+          "vol_ratio": 0.83,
+          "px_pct": 66.7,
+          "vol_pct": 42.4,
+          "diverge": 24.3,
           "turning": "",
           "turning_prompt": ""
         }
@@ -5759,72 +5758,72 @@
         {
           "symbol": "3033.HK",
           "name": "恒生科技",
-          "last": 4.76,
-          "chg1d": -0.58,
-          "chg5d": -0.13,
-          "chg20d": 2.63,
-          "vs_ma20": 2.07,
-          "vs_ma60": 2.17,
+          "last": 4.75,
+          "chg1d": -0.84,
+          "chg5d": -0.38,
+          "chg20d": 2.37,
+          "vs_ma20": 1.83,
+          "vs_ma60": 1.92,
           "trend": "📈 多头排列",
-          "vol_ratio": 0.8,
-          "px_pct": 70.0,
-          "vol_pct": 39.0,
-          "diverge": 31.0,
+          "vol_ratio": 0.83,
+          "px_pct": 66.7,
+          "vol_pct": 42.4,
+          "diverge": 24.3,
           "turning": "",
           "turning_prompt": "",
-          "heat": 41
+          "heat": 42
         },
         {
           "symbol": "2828.HK",
           "name": "国企蓝筹",
-          "last": 87.46,
-          "chg1d": -0.7,
-          "chg5d": -1.51,
-          "chg20d": 5.4,
-          "vs_ma20": 1.86,
-          "vs_ma60": 3.02,
+          "last": 87.52,
+          "chg1d": -0.64,
+          "chg5d": -1.44,
+          "chg20d": 5.47,
+          "vs_ma20": 1.93,
+          "vs_ma60": 3.09,
           "trend": "📈 多头排列",
-          "vol_ratio": 0.63,
-          "px_pct": 75.0,
-          "vol_pct": 1.7,
+          "vol_ratio": 0.67,
+          "px_pct": 76.7,
+          "vol_pct": 3.4,
           "diverge": 73.3,
           "turning": "",
           "turning_prompt": "",
-          "heat": 32
+          "heat": 34
         },
         {
           "symbol": "3110.HK",
           "name": "高股息",
-          "last": 31.02,
-          "chg1d": -0.89,
-          "chg5d": -2.64,
-          "chg20d": 4.44,
-          "vs_ma20": 0.68,
-          "vs_ma60": -0.21,
+          "last": 30.88,
+          "chg1d": -1.34,
+          "chg5d": -3.08,
+          "chg20d": 3.97,
+          "vs_ma20": 0.25,
+          "vs_ma60": -0.65,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 0.57,
+          "vol_ratio": 0.62,
           "px_pct": 43.3,
-          "vol_pct": 16.9,
-          "diverge": 26.4,
+          "vol_pct": 25.4,
+          "diverge": 17.9,
           "turning": "",
           "turning_prompt": "",
-          "heat": 27
+          "heat": 28
         }
       ],
       "temperature": {
-        "temp": 79,
+        "temp": 80,
         "trend": 100,
         "breadth": 100,
-        "momentum": 42,
-        "vol_heat": 22,
+        "momentum": 41,
+        "vol_heat": 24,
         "label": "🔥 过热",
         "position": "6-7成（过热防回撤，触发中线兑现纪律）",
-        "verdict": "🔥 过热惯性·可持有但设好回撤线、不新追高"
+        "verdict": "⚠️ 高位过热放量下杀·防趋势反转，触发中线兑现纪律"
       },
       "turn_risk": {
-        "top_risk": 90,
+        "top_risk": 75,
         "bottom_opp": 0,
-        "text": "顶部转向风险 高(90/100) ｜ 底部转机信号 低(0/100)｜顶部特征5/7·底部特征0/7",
+        "text": "顶部转向风险 高(75/100) ｜ 底部转机信号 低(0/100)｜顶部特征3/7·底部特征0/7",
         "ver": "v2"
       },
       "topbot": {
@@ -5832,23 +5831,23 @@
         "top": [
           {
             "key": "价格高位",
-            "hit": true,
-            "text": "价格分位70.8"
+            "hit": false,
+            "text": "价格分位69.2"
           },
           {
             "key": "量价背离",
             "hit": true,
-            "text": "价格分位70.8／量分位20.4＝背离+50.4"
+            "text": "价格分位69.2／量分位22.1＝背离+47.1"
           },
           {
             "key": "广度钝化",
-            "hit": true,
-            "text": "广度100·满值连续8日·5日变动+0.0"
+            "hit": false,
+            "text": "广度100·满值连续2日（历史仅2天，需攒够3天）"
           },
           {
             "key": "动量衰竭",
             "hit": true,
-            "text": "20日+4.29%但5日仅-0.83%"
+            "text": "20日+4.19%但5日仅-0.94%"
           },
           {
             "key": "估值高位",
@@ -5858,7 +5857,7 @@
           {
             "key": "温度过热",
             "hit": true,
-            "text": "温度79"
+            "text": "温度80"
           },
           {
             "key": "指数拐点",
@@ -5870,12 +5869,12 @@
           {
             "key": "价格低位",
             "hit": false,
-            "text": "价格分位70.8"
+            "text": "价格分位69.2"
           },
           {
             "key": "放量杀跌",
             "hit": false,
-            "text": "价格分位70.8／量分位20.4＝背离+50.4"
+            "text": "价格分位69.2／量分位22.1＝背离+47.1"
           },
           {
             "key": "广度极低",
@@ -5885,7 +5884,7 @@
           {
             "key": "深度超跌",
             "hit": false,
-            "text": "20日+4.29%"
+            "text": "20日+4.19%"
           },
           {
             "key": "估值低位",
@@ -5895,7 +5894,7 @@
           {
             "key": "温度冰点",
             "hit": false,
-            "text": "温度79"
+            "text": "温度80"
           },
           {
             "key": "指数底拐",
@@ -5903,14 +5902,14 @@
             "text": "无拐点信号"
           }
         ],
-        "top_hit": 5,
+        "top_hit": 3,
         "top_na": 1,
         "bottom_hit": 0,
         "bottom_na": 1,
-        "px_pct": 70.8,
-        "vol_pct": 20.4,
-        "diverge": 50.4,
-        "breadth_full_days": 8,
+        "px_pct": 69.2,
+        "vol_pct": 22.1,
+        "diverge": 47.1,
+        "breadth_full_days": 2,
         "note": "样本<5不给概率(铁律2)——只报命中条数,⬜=数据源缺失非未命中"
       },
       "l3": {
