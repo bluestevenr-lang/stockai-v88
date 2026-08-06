@@ -3452,6 +3452,12 @@ try:
         if _tm9x:
             _g9 = {**_g9, "when": _tm9x + ("｜" + str(_rk9x.get("when"))
                                            if _rk9x.get("when") else "")}
+        # 【基章先立 2026-08-06 进化班修】_chip9 必须在任何 += 之前完成初始化——
+        # 08-01 木桶定级块插到了基章赋值之上,导致 subtype/冲突/缺板任一命中即
+        # UnboundLocalError,整块"今日确认买单"静默死(render_errors 39条,08-03~08-05)。
+        # 这是"使用先于定义"家族第九例;铁律6 的 pyflakes undefined name 清零由此恢复。
+        _chip9 = (f"<span style='background:{_gc9};color:#fff;border-radius:3px;"
+                  f"padding:0 4px;font-size:12px;font-weight:800'>{_gd9 or _g9.get('grade')}</span>")
         # 【木桶定级 2026-08-01 用户定纲】级别=五块桶板完整度(时机/获利空间/价格位置/量能/机遇),
         # 缺什么必须写出来——高分2A(如中烟87.9缺"时机")不写缺口,又会被读成"排分乱"。
         _st9x = str(_rk9x.get("subtype") or "")
@@ -3473,8 +3479,6 @@ try:
         if _rk9x.get("use"):
             _chip9 += (f"<br><span style='color:#0891b2;font-size:8.5px'>"
                        f"{str(_rk9x['use'])[:18]}</span>")
-        _chip9 = (f"<span style='background:{_gc9};color:#fff;border-radius:3px;"
-                  f"padding:0 4px;font-size:12px;font-weight:800'>{_gd9 or _g9.get('grade')}</span>")
         if _gd9 != "3A":
             _parts9 = "+".join(x for x in (
                 "⚔️3" if _g9.get("dual") else "", "C2" if _g9.get("c_only") else "",
