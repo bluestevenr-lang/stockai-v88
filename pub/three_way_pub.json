@@ -1,10 +1,10 @@
 {
- "generated_at": "2026-08-05 19:41（北京时间）",
+ "generated_at": "2026-08-06 08:05（北京时间）",
  "note": "三方会审:规则引擎(V88) vs Claude(Fable/Opus独立复核) vs GPT(Codex盲审)。⚡分歧排最前——三方都说好的可以按纲领执行,吵起来的才是要自己拿主意的地方。GPT目前是影子模式(有记录无投票权),它的反对不会拦名单,但会入台账攒战绩。",
  "counts": {
-  "⚡有分歧": 1,
-  "✅双方一致": 3,
-  "仅规则(无第二意见)": 37
+  "✅双方一致": 4,
+  "仅规则(无第二意见)": 38,
+  "⚡有分歧": 1
  },
  "rows": [
   {
@@ -17,6 +17,24 @@
     "action": "左侧低吸",
     "rr": 2.84,
     "pos52": 27.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "PRCT",
+   "name": "PRCT",
+   "market": "美股",
+   "rule": {
+    "dir": "看多",
+    "prob": 78,
+    "action": "左侧低吸",
+    "rr": 2.9,
+    "pos52": 10.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -80,60 +98,6 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "000060.SZ",
-   "name": "中金岭南",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 72,
-    "action": "左侧低吸",
-    "rr": 3.55,
-    "pos52": 45.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "3788.HK",
-   "name": "罕王黄金",
-   "market": "港股",
-   "rule": {
-    "dir": "看多",
-    "prob": 71,
-    "action": "左侧低吸",
-    "rr": 3.11,
-    "pos52": 21.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "BIDU",
-   "name": "百度",
-   "market": "美股",
-   "rule": {
-    "dir": "看多",
-    "prob": 69,
-    "action": "左侧低吸",
-    "rr": 3.99,
-    "pos52": 35.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
    "code": "1478.HK",
    "name": "丘钛科技",
    "market": "港股",
@@ -161,6 +125,42 @@
     "action": "左侧低吸",
     "rr": 3.36,
     "pos52": 44.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "BIDU",
+   "name": "百度",
+   "market": "美股",
+   "rule": {
+    "dir": "看多",
+    "prob": 68,
+    "action": "左侧低吸",
+    "rr": 4.86,
+    "pos52": 33.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "BTG",
+   "name": "BTG",
+   "market": "美股",
+   "rule": {
+    "dir": "看多",
+    "prob": 68,
+    "action": "左侧低吸",
+    "rr": 3.48,
+    "pos52": 24.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -211,10 +211,10 @@
    "market": "美股",
    "rule": {
     "dir": "看多",
-    "prob": 60,
+    "prob": 58,
     "action": "现价可进",
-    "rr": 4.51,
-    "pos52": 42.0,
+    "rr": 5.3,
+    "pos52": 40.0,
     "src": "池外机会"
    },
    "claude": null,

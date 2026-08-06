@@ -1,5 +1,5 @@
 {
- "asof": "2026-08-06 06:40（北京时间）",
+ "asof": "2026-08-06 08:05（北京时间）",
  "rules": {
   "CS9": "杠杆/反向/日重置产品不进推荐位——持有期收益路径依赖,长期价值/获利空间两桶口径不适用(案:二倍做空MSTR ETF被评1A)",
   "CS1": "宽基指数类跌幅未达5%且趋势未破,不按个股尺度输出减仓(案:VOO-2.1%/513500-0.2%就减)",
@@ -63,16 +63,6 @@
    "downgrade": "",
    "auto": true
   },
-  "000060.SZ": {
-   "code": "000060.SZ",
-   "name": "中金岭南",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "605123.SS": {
    "code": "605123.SS",
    "name": "派克新材",
@@ -86,6 +76,16 @@
   "1787.HK": {
    "code": "1787.HK",
    "name": "山东黄金",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "BTG": {
+   "code": "BTG",
+   "name": "BTG",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -113,6 +113,16 @@
    "downgrade": "",
    "auto": true
   },
+  "PRCT": {
+   "code": "PRCT",
+   "name": "PRCT",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "300127.SZ": {
    "code": "300127.SZ",
    "name": "银河磁体",
@@ -123,19 +133,29 @@
    "downgrade": "",
    "auto": true
   },
-  "3788.HK": {
-   "code": "3788.HK",
-   "name": "罕王黄金",
-   "side": "机会",
-   "action": "左侧低吸",
+  "2099.HK": {
+   "code": "2099.HK",
+   "name": "中国黄金国际",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "2099.HK": {
-   "code": "2099.HK",
-   "name": "中国黄金国际",
+  "002827.SZ": {
+   "code": "002827.SZ",
+   "name": "高争民爆",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "605179.SS": {
+   "code": "605179.SS",
+   "name": "一鸣食品",
    "side": "趋势",
    "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
@@ -197,7 +217,7 @@
    "code": "BNTX",
    "name": "BioNTech",
    "side": "打折",
-   "action": "🟢跌得很深·可分批买",
+   "action": "🟢打折到位·可开始买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -247,7 +267,7 @@
    "code": "600600.SS",
    "name": "青岛啤酒",
    "side": "打折",
-   "action": "🟢打折到位·可开始买",
+   "action": "🟢跌得很深·可分批买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -273,9 +293,9 @@
    "downgrade": "",
    "auto": true
   },
-  "300953.SZ": {
-   "code": "300953.SZ",
-   "name": "震裕科技",
+  "002756.SZ": {
+   "code": "002756.SZ",
+   "name": "永兴材料",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -283,9 +303,9 @@
    "downgrade": "",
    "auto": true
   },
-  "002756.SZ": {
-   "code": "002756.SZ",
-   "name": "永兴材料",
+  "300953.SZ": {
+   "code": "300953.SZ",
+   "name": "震裕科技",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -313,20 +333,10 @@
    "downgrade": "",
    "auto": true
   },
-  "605117.SS": {
-   "code": "605117.SS",
-   "name": "德业股份",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "SLB": {
-   "code": "SLB",
-   "name": "斯伦贝谢",
-   "side": "行业代表",
+  "3033.HK": {
+   "code": "3033.HK",
+   "name": "港股·恒生科技板块",
+   "side": "拐点",
    "action": "",
    "rules": [],
    "why": "",
@@ -365,26 +375,37 @@
   }
  },
  "reject": {
-  "LMT": {
-   "code": "LMT",
-   "name": "洛克希德马丁",
+  "JNJ": {
+   "code": "JNJ",
+   "name": "强生",
    "side": "行业代表",
    "action": "",
    "rules": [
     "CS7"
    ],
-   "why": "美股过热而赔率仅1.27(要≥2.0)",
+   "why": "美股过热而赔率仅1.86(要≥2.0)",
    "downgrade": ""
   },
-  "MS": {
-   "code": "MS",
-   "name": "摩根士丹利",
+  "RTX": {
+   "code": "RTX",
+   "name": "雷神",
    "side": "行业代表",
    "action": "",
    "rules": [
     "CS7"
    ],
-   "why": "美股过热而赔率仅0.92(要≥2.0)",
+   "why": "美股过热而赔率仅0.06(要≥2.0)",
+   "downgrade": ""
+  },
+  "JPM": {
+   "code": "JPM",
+   "name": "摩根大通",
+   "side": "行业代表",
+   "action": "",
+   "rules": [
+    "CS7"
+   ],
+   "why": "美股过热而赔率仅0.24(要≥2.0)",
    "downgrade": ""
   },
   "1801.HK": {
@@ -422,17 +443,17 @@
   }
  },
  "stats": {
-  "n_pass": 207,
-  "n_reject": 76,
+  "n_pass": 250,
+  "n_reject": 75,
   "by_rule": {
-   "CS9": 4,
+   "CS9": 2,
    "CS1": 0,
    "CS2": 0,
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
    "CS6": 54,
-   "CS7": 65,
+   "CS7": 66,
    "CS8": 0
   }
  }
