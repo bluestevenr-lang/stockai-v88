@@ -18216,6 +18216,74 @@ with st.expander("📋 本场操作 · 唯一结论源（对话与本页逐字�
             st.code(_tb9s.format_exc()[-1200:])
 
 # ═══════════════════════════════════════════════════════════════
+# 【V88·出口清单 + 三方台账 + 规则版本】2026-08-06 用户批准接入
+# 三个模块建好后页面一个都没接（grep=0）—— 又是「写了不等于生效」。
+# 出口清单=以始为终（每只票同时带进场与出场，出口是价格不是文字）；
+# 三方台账=默默统计四方胜率（只记录不参与决策）；规则版本=答案变时先比版本号。
+# ═══════════════════════════════════════════════════════════════
+with st.expander("🎯 出口清单 · 以始为终（持仓+评级榜，每只都带止盈/止损/清仓条件）", expanded=False):
+    try:
+        import importlib, sys as _sy8
+        _rp8 = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
+        if _rp8 not in _sy8.path:
+            _sy8.path.insert(0, _rp8)
+        _ep8 = importlib.import_module("exit_plan")
+        _eo8 = _ep8.build()
+        _es8 = _eo8.get("stats") or {}
+        st.caption(f"覆盖 {_es8.get('total')} 只｜门派 {_es8.get('by_school')}｜"
+                   f"有止盈线 {_es8.get('has_take_profit')}｜有止损线 {_es8.get('has_stop')}"
+                   f"｜规则 {_eo8.get('ruleset_version')}")
+        _t8 = st.tabs(["💼 持仓", "📊 评级榜", "⛔ 赔率挡下"])
+        for _tb8, _sc8 in zip(_t8, ("持仓", "评级榜", "赔率挡下")):
+            with _tb8:
+                st.markdown(_ep8.render_md(_eo8, _sc8))
+    except Exception as _e8x:
+        st.caption(f"⚠️ 出口清单渲染失败：{type(_e8x).__name__}: {str(_e8x)[:120]}")
+
+with st.expander("⚖️ 三方胜率总账 · 默默统计（样本<20不报胜率）", expanded=False):
+    try:
+        _lg8 = _cbj9("three_way_ledger.json") or {}
+        _sm8 = _lg8.get("summary") or {}
+        if not _sm8:
+            st.caption("尚未核算（T+1 才有结果）。已留档日期："
+                       + "、".join(sorted(_lg8.get("days") or {})))
+        else:
+            st.markdown("**累计**（弃权不计入分母，但单独统计表态率——"
+                        "一个从不表态的一方，胜率再高也没有价值）")
+            st.dataframe([{"方": k, **v} for k, v in (_sm8.get("cumulative") or {}).items()],
+                         hide_index=True, width='stretch')
+            _rk8 = _sm8.get("rescue_kill") or {}
+            if _rk8:
+                st.caption(f"🛟救援 {_rk8.get('救援')}｜🔪误杀 {_rk8.get('误杀')}"
+                           f"｜净值 {_rk8.get('净值')} —— {_rk8.get('结论')}"
+                           "　（救援/误杀比才是「合议值不值」的真指标，胜率不是）")
+    except Exception as _e8y:
+        st.caption(f"⚠️ 三方台账渲染失败：{type(_e8y).__name__}: {str(_e8y)[:120]}")
+
+with st.expander("📐 规则版本与生效闸（答案变了先比版本号）", expanded=False):
+    try:
+        _rs8 = _cbj9("ruleset.json") or {}
+        st.caption(f"**{_rs8.get('version')}**　冻结={_rs8.get('frozen')}　"
+                   f"自检={'✅' if (_rs8.get('self_check') or {}).get('ok') else '❌'}　"
+                   f"{_rs8.get('declaration','')}")
+        st.dataframe([{"闸": g.get("id"), "名称": g.get("name"),
+                       "上线": str(g.get("since"))[:16], "影响": g.get("affects")}
+                      for g in (_rs8.get("gates") or [])], hide_index=True, width='stretch')
+        _cl8 = (_rs8.get("changelog") or [{}])[0]
+        st.markdown(f"**最近变更 {_cl8.get('version')}** @ {_cl8.get('at')}")
+        for _c8 in (_cl8.get("changes") or []):
+            st.markdown(f"- {_c8}")
+        st.caption(f"翻转：{_cl8.get('flip')}")
+        _ds8 = _cbj9("dropout_sentry.json") or {}
+        if _ds8:
+            _dst8 = _ds8.get("stats") or {}
+            st.caption(f"🕳 静默掉队哨兵：🔴{_dst8.get('silent_dropout')} "
+                       f"🟠未进评级段{_dst8.get('missing_from_grade')} —— "
+                       "区分『评估后不合格』(正常)与『从未被评估』(bug)")
+    except Exception as _e8z:
+        st.caption(f"⚠️ 规则版本渲染失败：{type(_e8z).__name__}: {str(_e8z)[:120]}")
+
+# ═══════════════════════════════════════════════════════════════
 # 【V88·打新雷达】中美港新股申购日历+评级（2026-07-16 用户点单：热门打新从来没提示过）。
 # 数据由私仓日报流水线生成（A股=Tushare/美股=Nasdaq/港股源接入中），这里零网络秒开。
 # ═══════════════════════════════════════════════════════════════
