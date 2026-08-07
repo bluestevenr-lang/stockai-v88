@@ -1,22 +1,22 @@
 {
- "generated_at": "2026-08-07 09:57（北京时间）",
+ "generated_at": "2026-08-07 18:16（北京时间）",
  "note": "三方会审:规则引擎(V88) vs Claude(Fable/Opus独立复核) vs GPT(Codex盲审)。⚡分歧排最前——三方都说好的可以按纲领执行,吵起来的才是要自己拿主意的地方。GPT目前是影子模式(有记录无投票权),它的反对不会拦名单,但会入台账攒战绩。",
  "counts": {
-  "⚡有分歧": 2,
   "✅双方一致": 3,
-  "仅规则(无第二意见)": 38
+  "仅规则(无第二意见)": 38,
+  "⚡有分歧": 2
  },
  "rows": [
   {
-   "code": "1787.HK",
-   "name": "山东黄金",
-   "market": "港股",
+   "code": "002664.SZ",
+   "name": "信质集团",
+   "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 81,
-    "action": "双路径待触发",
-    "rr": 2.67,
-    "pos52": 16.0,
+    "prob": 85,
+    "action": "左侧低吸",
+    "rr": 2.93,
+    "pos52": 11.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -26,15 +26,15 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "FSK",
-   "name": "FSK",
-   "market": "美股",
+   "code": "603799.SS",
+   "name": "华友钴业",
+   "market": "A股",
    "rule": {
     "dir": "看多",
     "prob": 80,
     "action": "左侧低吸",
-    "rr": 2.66,
-    "pos52": 41.0,
+    "rr": 2.86,
+    "pos52": 18.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -44,33 +44,15 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "2013.HK",
-   "name": "微盟集团",
-   "market": "港股",
+   "code": "600208.SS",
+   "name": "衢州发展",
+   "market": "A股",
    "rule": {
     "dir": "看多",
     "prob": 76,
-    "action": "现价可进",
-    "rr": 3.69,
-    "pos52": 7.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "0772.HK",
-   "name": "阅文集团",
-   "market": "港股",
-   "rule": {
-    "dir": "看多",
-    "prob": 75,
-    "action": "等待",
-    "rr": 3.59,
-    "pos52": 7.0,
+    "action": "左侧低吸",
+    "rr": 3.53,
+    "pos52": 11.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -98,33 +80,15 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "0004.HK",
-   "name": "九龙仓集团",
-   "market": "港股",
-   "rule": {
-    "dir": "看多",
-    "prob": 69,
-    "action": "现价可进",
-    "rr": 4.55,
-    "pos52": 21.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "300124.SZ",
-   "name": "汇川技术",
+   "code": "601515.SS",
+   "name": "衢州东峰",
    "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 64,
-    "action": "左侧低吸",
-    "rr": 3.87,
-    "pos52": 18.0,
+    "prob": 73,
+    "action": "现价可进",
+    "rr": 4.72,
+    "pos52": 20.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -134,15 +98,33 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "1478.HK",
-   "name": "丘钛科技",
+   "code": "2013.HK",
+   "name": "微盟集团",
    "market": "港股",
    "rule": {
     "dir": "看多",
-    "prob": 63,
-    "action": "等待",
-    "rr": 5.04,
-    "pos52": 9.0,
+    "prob": 73,
+    "action": "现价可进",
+    "rr": 3.52,
+    "pos52": 7.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "1877.HK",
+   "name": "君实生物",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 68,
+    "action": "现价可进",
+    "rr": 3.83,
+    "pos52": 18.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -157,9 +139,45 @@
    "market": "港股",
    "rule": {
     "dir": "看多",
-    "prob": 62,
-    "action": "等待",
-    "rr": 6.8,
+    "prob": 66,
+    "action": "左侧低吸",
+    "rr": 4.67,
+    "pos52": 12.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "NOC",
+   "name": "诺斯罗普",
+   "market": "美股",
+   "rule": {
+    "dir": "看多",
+    "prob": 66,
+    "action": "左侧低吸",
+    "rr": 4.23,
+    "pos52": 30.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "1478.HK",
+   "name": "丘钛科技",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 66,
+    "action": "现价可进",
+    "rr": 4.22,
     "pos52": 10.0,
     "src": "池外机会"
    },
@@ -170,14 +188,14 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "1907.HK",
-   "name": "中国旭阳集团",
+   "code": "2015.HK",
+   "name": "理想汽车-W",
    "market": "港股",
    "rule": {
     "dir": "看多",
     "prob": 60,
-    "action": "等待",
-    "rr": 4.05,
+    "action": "现价可进",
+    "rr": 6.13,
     "pos52": 8.0,
     "src": "池外机会"
    },
@@ -197,24 +215,6 @@
     "action": "现价可进",
     "rr": 5.17,
     "pos52": 43.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "2357.HK",
-   "name": "中航科工",
-   "market": "港股",
-   "rule": {
-    "dir": "看多",
-    "prob": 57,
-    "action": "双路径待触发",
-    "rr": 4.44,
-    "pos52": 10.0,
     "src": "池外机会"
    },
    "claude": null,

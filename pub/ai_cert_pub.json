@@ -1,5 +1,5 @@
 {
- "asof": "2026-08-07 09:57（北京时间）",
+ "asof": "2026-08-07 18:16（北京时间）",
  "model": "claude-fable-5",
  "by_market": {
   "美股": {
@@ -15,19 +15,19 @@
    "verdict": "打架",
    "model": "claude-fable-5",
    "shift": "2026-08-06 午后审 (16:20北京·",
-   "engine": 64,
+   "engine": 66,
    "fable": 43,
-   "diff": 21,
-   "note": "引擎2周64% vs claude-fable-5独立读43%·差21pp(明显打架,等下一班复核)"
+   "diff": 23,
+   "note": "引擎2周66% vs claude-fable-5独立读43%·差23pp(明显打架,等下一班复核)"
   },
   "港股": {
    "verdict": "一致",
    "model": "claude-fable-5",
    "shift": "2026-08-06 午后审 (16:20北京·",
-   "engine": 54,
+   "engine": 55,
    "fable": 56,
-   "diff": 2,
-   "note": "引擎2周54% vs claude-fable-5独立读56%·差2pp(两套读数对上)"
+   "diff": 1,
+   "note": "引擎2周55% vs claude-fable-5独立读56%·差1pp(两套读数对上)"
   }
  },
  "note": "Claude(Fable5/Opus5)独立复核徽章:🅒=复核结论与规则引擎一致;⚡=有异议不发徽章(理由见note);无徽章=本班未复核该标的(重点股优先,不装作全审)。徽章只代表'两套逻辑对上了',不代表保证盈利。",
@@ -178,14 +178,6 @@
    "code": "TSLA",
    "name": "特斯拉"
   },
-  "🔺农业银行601288": {
-   "verdict": "分歧",
-   "model": "claude-fable-5",
-   "shift": "2026-08-06 午后审 (16:20北京·",
-   "note": "- 🔺农业银行601288: 规则{减仓} vs Fable{中性·px6.48为08-06新价·距止损0.6%·A股66偏暖} vs GPT{**reject**} → **⚡分",
-   "code": "",
-   "name": "🔺农业银行601288"
-  },
   "601288": {
    "verdict": "分歧",
    "model": "claude-fable-5",
@@ -193,6 +185,14 @@
    "note": "- 🔺农业银行601288: 规则{减仓} vs Fable{中性·px6.48为08-06新价·距止损0.6%·A股66偏暖} vs GPT{**reject**} → **⚡分",
    "code": "",
    "name": "601288"
+  },
+  "🔺农业银行601288": {
+   "verdict": "分歧",
+   "model": "claude-fable-5",
+   "shift": "2026-08-06 午后审 (16:20北京·",
+   "note": "- 🔺农业银行601288: 规则{减仓} vs Fable{中性·px6.48为08-06新价·距止损0.6%·A股66偏暖} vs GPT{**reject**} → **⚡分",
+   "code": "",
+   "name": "🔺农业银行601288"
   },
   "25482": {
    "verdict": "分歧",
