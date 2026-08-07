@@ -1,58 +1,40 @@
 {
- "generated_at": "2026-08-06 19:43（北京时间）",
+ "generated_at": "2026-08-07 09:57（北京时间）",
  "note": "三方会审:规则引擎(V88) vs Claude(Fable/Opus独立复核) vs GPT(Codex盲审)。⚡分歧排最前——三方都说好的可以按纲领执行,吵起来的才是要自己拿主意的地方。GPT目前是影子模式(有记录无投票权),它的反对不会拦名单,但会入台账攒战绩。",
  "counts": {
-  "仅规则(无第二意见)": 38,
-  "✅双方一致": 4,
-  "⚡有分歧": 1
+  "⚡有分歧": 2,
+  "✅双方一致": 3,
+  "仅规则(无第二意见)": 38
  },
  "rows": [
   {
-   "code": "002935.SZ",
-   "name": "天奥电子",
-   "market": "A股",
+   "code": "1787.HK",
+   "name": "山东黄金",
+   "market": "港股",
    "rule": {
     "dir": "看多",
-    "prob": 83,
-    "action": "左侧低吸",
-    "rr": 2.94,
-    "pos52": 23.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "002413.SZ",
-   "name": "雷科防务",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 82,
-    "action": "左侧低吸",
-    "rr": 2.92,
-    "pos52": 23.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "002328.SZ",
-   "name": "新朋股份",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 78,
-    "action": "左侧低吸",
-    "rr": 3.44,
+    "prob": 81,
+    "action": "双路径待触发",
+    "rr": 2.67,
     "pos52": 16.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "FSK",
+   "name": "FSK",
+   "market": "美股",
+   "rule": {
+    "dir": "看多",
+    "prob": 80,
+    "action": "左侧低吸",
+    "rr": 2.66,
+    "pos52": 41.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -67,9 +49,9 @@
    "market": "港股",
    "rule": {
     "dir": "看多",
-    "prob": 77,
-    "action": "双路径待触发",
-    "rr": 3.52,
+    "prob": 76,
+    "action": "现价可进",
+    "rr": 3.69,
     "pos52": 7.0,
     "src": "池外机会"
    },
@@ -98,15 +80,15 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "BIDU",
-   "name": "百度",
+   "code": "ALB",
+   "name": "ALB",
    "market": "美股",
    "rule": {
     "dir": "看多",
-    "prob": 68,
+    "prob": 74,
     "action": "左侧低吸",
-    "rr": 4.86,
-    "pos52": 33.0,
+    "rr": 3.62,
+    "pos52": 37.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -121,10 +103,10 @@
    "market": "港股",
    "rule": {
     "dir": "看多",
-    "prob": 67,
+    "prob": 69,
     "action": "现价可进",
-    "rr": 5.07,
-    "pos52": 19.0,
+    "rr": 4.55,
+    "pos52": 21.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -177,8 +159,8 @@
     "dir": "看多",
     "prob": 62,
     "action": "等待",
-    "rr": 7.07,
-    "pos52": 9.0,
+    "rr": 6.8,
+    "pos52": 10.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -195,7 +177,7 @@
     "dir": "看多",
     "prob": 60,
     "action": "等待",
-    "rr": 4.15,
+    "rr": 4.05,
     "pos52": 8.0,
     "src": "池外机会"
    },
@@ -211,10 +193,28 @@
    "market": "美股",
    "rule": {
     "dir": "看多",
-    "prob": 58,
+    "prob": 59,
     "action": "现价可进",
-    "rr": 5.3,
-    "pos52": 40.0,
+    "rr": 5.17,
+    "pos52": 43.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "2357.HK",
+   "name": "中航科工",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 57,
+    "action": "双路径待触发",
+    "rr": 4.44,
+    "pos52": 10.0,
     "src": "池外机会"
    },
    "claude": null,
