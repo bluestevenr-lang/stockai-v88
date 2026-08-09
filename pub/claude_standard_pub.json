@@ -1,5 +1,8 @@
 {
- "asof": "2026-08-07 18:16（北京时间）",
+ "asof": "2026-08-09 11:20（北京时间）",
+ "generated_at": "2026-08-09 11:20（北京时间）",
+ "display_name": "V88标准规则闸",
+ "runtime": "local_deterministic_no_claude_login",
  "rules": {
   "CS9": "杠杆/反向/日重置产品不进推荐位——持有期收益路径依赖,长期价值/获利空间两桶口径不适用(案:二倍做空MSTR ETF被评1A)",
   "CS1": "宽基指数类跌幅未达5%且趋势未破,不按个股尺度输出减仓(案:VOO-2.1%/513500-0.2%就减)",
@@ -11,8 +14,28 @@
   "CS7": "市场过热时买入要求赔率≥2.0(案:平安港rr1.60在过热港股偏薄)",
   "CS8": "K线不足240根(≈1年)时不出买卖结论——位置/概率/赔率全建立在'52周'口径上,数据窗不够就是把7个月当一年用(案:华晨中国 1y=52周7%·涨65% vs 降级6mo=52周56%·涨41%)"
  },
- "note": "Claude标准闸:把Fable/Opus历次否决理由固化成机检规则,名单出厂前先过这道闸——不达标的不进推荐位,转⏸未达标区并写明理由(用户定纲:'有异议的还摆在推荐位没有参考意义')。规则来自4个班次真实异议的归纳,非回测胜率;每条带rule_id,台账到期后双周深检算'被拦下的票后来表现如何'来修订阈值——规则错了要能被数据推翻。",
+ "note": "V88标准规则闸:把历史会审异议固化成机检规则,名单出厂前先过这道闸——不达标的不进推荐位,转⏸未达标区并写明理由(用户定纲:'有异议的还摆在推荐位没有参考意义')。规则来自4个班次真实异议的归纳,非回测胜率;每条带rule_id,台账到期后双周深检算'被拦下的票后来表现如何'来修订阈值——规则错了要能被数据推翻。",
  "pass": {
+  "BIDU": {
+   "code": "BIDU",
+   "name": "百度",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "2015.HK": {
+   "code": "2015.HK",
+   "name": "理想汽车-W",
+   "side": "机会",
+   "action": "现价可进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "601515.SS": {
    "code": "601515.SS",
    "name": "衢州东峰",
@@ -26,16 +49,6 @@
   "COST": {
    "code": "COST",
    "name": "好市多",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "NOC": {
-   "code": "NOC",
-   "name": "诺斯罗普",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -63,16 +76,6 @@
    "downgrade": "",
    "auto": true
   },
-  "ALB": {
-   "code": "ALB",
-   "name": "ALB",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "1877.HK": {
    "code": "1877.HK",
    "name": "君实生物",
@@ -88,6 +91,16 @@
    "name": "微盟集团",
    "side": "机会",
    "action": "现价可进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "NOC": {
+   "code": "NOC",
+   "name": "诺斯罗普",
+   "side": "机会",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -153,6 +166,16 @@
    "downgrade": "",
    "auto": true
   },
+  "FERG": {
+   "code": "FERG",
+   "name": "Ferguson Enterprises Inc",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "2225.HK": {
    "code": "2225.HK",
    "name": "今海医疗科技",
@@ -183,29 +206,19 @@
    "downgrade": "",
    "auto": true
   },
-  "BNTX": {
-   "code": "BNTX",
-   "name": "BioNTech",
+  "MCD": {
+   "code": "MCD",
+   "name": "麦当劳",
    "side": "打折",
-   "action": "🟢跌得很深·可分批买",
+   "action": "🕐还不够便宜·先看着",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "CEG": {
-   "code": "CEG",
-   "name": "Constellation Energy Corp",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "ADBE": {
-   "code": "ADBE",
-   "name": "Adobe",
+  "001309.SZ": {
+   "code": "001309.SZ",
+   "name": "德明利",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -223,9 +236,9 @@
    "downgrade": "",
    "auto": true
   },
-  "600132.SS": {
-   "code": "600132.SS",
-   "name": "重庆啤酒",
+  "MELI": {
+   "code": "MELI",
+   "name": "MercadoLibre",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -233,9 +246,9 @@
    "downgrade": "",
    "auto": true
   },
-  "600600.SS": {
-   "code": "600600.SS",
-   "name": "青岛啤酒",
+  "AZO": {
+   "code": "AZO",
+   "name": "汽车地带",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -243,9 +256,19 @@
    "downgrade": "",
    "auto": true
   },
-  "603392.SS": {
-   "code": "603392.SS",
-   "name": "万泰生物",
+  "300953.SZ": {
+   "code": "300953.SZ",
+   "name": "震裕科技",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "002460.SZ": {
+   "code": "002460.SZ",
+   "name": "赣锋锂业",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -263,6 +286,16 @@
    "downgrade": "",
    "auto": true
   },
+  "605117.SS": {
+   "code": "605117.SS",
+   "name": "德业股份",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "1138.HK": {
    "code": "1138.HK",
    "name": "中远海能",
@@ -273,9 +306,9 @@
    "downgrade": "",
    "auto": true
   },
-  "CRH": {
-   "code": "CRH",
-   "name": "CRH水泥",
+  "IBM": {
+   "code": "IBM",
+   "name": "IBM国际商业机器",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
    "rules": [],
@@ -293,11 +326,11 @@
    "downgrade": "",
    "auto": true
   },
-  "300595.SZ": {
-   "code": "300595.SZ",
-   "name": "欧普康视",
+  "DDOG": {
+   "code": "DDOG",
+   "name": "Datadog",
    "side": "打折",
-   "action": "🟢跌得很深·可分批买",
+   "action": "🕐还不够便宜·先看着",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -353,16 +386,6 @@
    "downgrade": "",
    "auto": true
   },
-  "2269.HK": {
-   "code": "2269.HK",
-   "name": "药明生物",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "0386.HK": {
    "code": "0386.HK",
    "name": "中国石化股份",
@@ -405,30 +428,30 @@
   }
  },
  "reject": {
-  "BAC": {
-   "code": "BAC",
-   "name": "美国银行",
+  "GS": {
+   "code": "GS",
+   "name": "高盛",
    "side": "行业代表",
    "action": "",
    "rules": [
     "CS7"
    ],
-   "why": "美股过热而赔率仅0.46(要≥2.0)",
+   "why": "美股过热而赔率仅1.85(要≥2.0)",
    "downgrade": ""
   }
  },
  "stats": {
-  "n_pass": 199,
-  "n_reject": 63,
+  "n_pass": 315,
+  "n_reject": 62,
   "by_rule": {
-   "CS9": 3,
+   "CS9": 0,
    "CS1": 0,
-   "CS2": 2,
+   "CS2": 3,
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
-   "CS6": 54,
-   "CS7": 39,
+   "CS6": 56,
+   "CS7": 40,
    "CS8": 0
   }
  }

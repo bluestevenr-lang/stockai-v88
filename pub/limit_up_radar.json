@@ -1,8 +1,8 @@
 {
- "generated_at": "2026-08-07 18:16",
+ "generated_at": "2026-08-07 10:30",
  "date": "20260807",
- "total": 74,
- "first_boards": 61,
+ "total": 41,
+ "first_boards": 30,
  "mainlines": [
   {
    "industry": "元件",
@@ -16,19 +16,8 @@
    ]
   },
   {
-   "industry": "医疗服务",
-   "count": 8,
-   "max_boards": 4,
-   "leaders": [
-    "百花医药(4板)",
-    "药康生物(1板)",
-    "凯莱英(1板)",
-    "毕得医药(1板)"
-   ]
-  },
-  {
    "industry": "化学制药",
-   "count": 6,
+   "count": 5,
    "max_boards": 1,
    "leaders": [
     "哈药股份(1板)",
@@ -38,11 +27,20 @@
    ]
   },
   {
-   "industry": "通信设备",
-   "count": 4,
+   "industry": "医疗服务",
+   "count": 3,
    "max_boards": 4,
    "leaders": [
-    "汇绿生态(4板)",
+    "百花医药(4板)",
+    "药康生物(1板)",
+    "凯莱英(1板)"
+   ]
+  },
+  {
+   "industry": "通信设备",
+   "count": 3,
+   "max_boards": 2,
+   "leaders": [
     "通宇通讯(2板)",
     "武汉凡谷(2板)",
     "光迅科技(1板)"
@@ -50,13 +48,11 @@
   },
   {
    "industry": "半导体",
-   "count": 4,
+   "count": 2,
    "max_boards": 3,
    "leaders": [
     "有研新材(3板)",
-    "锴威特(2板)",
-    "先导基电(1板)",
-    "耐科装备(1板)"
+    "锴威特(2板)"
    ]
   }
  ],
@@ -66,9 +62,7 @@
    "names": [
     "宝鼎科技",
     "百花医药",
-    "沃格光电",
-    "云南锗业",
-    "汇绿生态"
+    "沃格光电"
    ]
   },
   {
@@ -92,34 +86,71 @@
  ],
  "relay": [
   {
+   "name": "光迅科技",
+   "code": "002281",
+   "industry": "通信设备",
+   "seal_yi": 23.97,
+   "turnover": 5.1
+  },
+  {
    "name": "哈药股份",
    "code": "600664",
    "industry": "化学制药",
-   "seal_yi": 3.57,
-   "turnover": 10.7
-  },
-  {
-   "name": "中国稀土",
-   "code": "000831",
-   "industry": "小金属",
-   "seal_yi": 2.33,
-   "turnover": 5.7
-  },
-  {
-   "name": "依顿电子",
-   "code": "603328",
-   "industry": "元件",
-   "seal_yi": 1.27,
-   "turnover": 1.4
+   "seal_yi": 11.1,
+   "turnover": 10.0
   },
   {
    "name": "凯莱英",
    "code": "002821",
    "industry": "医疗服务",
-   "seal_yi": 1.21,
-   "turnover": 3.4
+   "seal_yi": 6.59,
+   "turnover": 3.0
+  },
+  {
+   "name": "一博科技",
+   "code": "301366",
+   "industry": "元件",
+   "seal_yi": 4.85,
+   "turnover": 15.3
+  },
+  {
+   "name": "方邦股份",
+   "code": "688020",
+   "industry": "元件",
+   "seal_yi": 3.07,
+   "turnover": 6.5
+  },
+  {
+   "name": "依顿电子",
+   "code": "603328",
+   "industry": "元件",
+   "seal_yi": 2.23,
+   "turnover": 1.3
+  },
+  {
+   "name": "哈三联",
+   "code": "002900",
+   "industry": "化学制药",
+   "seal_yi": 1.84,
+   "turnover": 18.2
+  },
+  {
+   "name": "誉衡药业",
+   "code": "002437",
+   "industry": "化学制药",
+   "seal_yi": 1.61,
+   "turnover": 7.0
   }
  ],
- "watch_hits": [],
- "ts": 1786097860.807731
+ "watch_hits": [
+  {
+   "name": "药石科技",
+   "code": "300725.SZ",
+   "source": "自选",
+   "industry": "医疗服务",
+   "count": 3,
+   "max_boards": 4
+  }
+ ],
+ "ts": 1786069816.2853389
 }
