@@ -1,6 +1,6 @@
 # 🔮 V88 前瞻 — 下一交易日展望（2026-08-10（周一））
 
-> ⏱ 今天 2026-08-08（周六） 为非交易日｜分析生成：2026-08-08 10:58（北京时间）
+> ⏱ 今天 2026-08-09（周日） 为非交易日｜分析生成：2026-08-09 11:05（北京时间）
 > 动量与温度为全实价计算；财报日历来自交易所披露；AI 仅做受约束归纳，不构成投资建议。
 
 ## 🌡 大盘走势预期（下一交易日开盘基调）
@@ -66,30 +66,30 @@
 
 ## 📅 财报日历（持仓+重点观察 · 未来14天）
 
-- 📅 👁关注 **阿里巴巴-SW**（`[HK:9988]`）：08/20（12天后）财报
+- 📅 👁关注 **阿里巴巴-SW**（`[HK:9988]`）：08/20（11天后）财报
 
 ## 📰 周末要闻 → 持仓/关注影响（休市期间消息，作用于下一交易日）
 
 - **Palantir**（`[US:PLTR]`）：Palantir CEO drops 11-word bombshell for stock market investors（Yahoo Finance - Top）
-- **NVDA**（`[US:NVDA]`）：Nvidia (NVDA) Bets on Design Tools While AMD (AMD) Scales the Hardware Stack（Yahoo Finance - Top）
-- **Booking**（`[US:BKNG]`）：Why D-Wave Quantum Stock Fell After Earnings Revealed a 1,120% Surge in Bookings（Yahoo Finance - Top）
-- **TSLA**（`[US:TSLA]`）：The Debates That Matter For TSLA Stock（Yahoo Finance - Top）
-- **NOW**（`[US:NOW]`）：The smart way to invest in gold right now as the dollar slips（MarketWatch - Top Stories）
-- **Palantir**（`[US:PLTR]`）：Palantir’s stock stages best week since 2024 — showing it’s no longer an ‘AI loser’（MarketWatch - Top Stories）
-- **NOW**（`[US:NOW]`）：SpaceX’s stock just had one of its best days ever — with the first lockup expiration now behind it（MarketWatch - Top Stories）
-- **百济神州**（`[HK:6160]`）：港股评级汇总:国金证券维持百济神州买入评级 - 财联社（Google News - 中文市场聚合）
-- **药明生物**（`[HK:2269]`）：8月7日港股收盘:恒指涨0.54% 药明生物领涨成分股 - 东方财富（Google News - 中文市场聚合）
-- **特斯拉**（`[US:TSLA]`）：美股又涨了!SpaceX涨超4%,特斯拉涨超2%;存储股大跌,美光、闪迪、SK海力士齐跌!非农数据爆“大冷门”,美元指数直线跳水|美股开盘 - 每日经济新闻（Google News - 中文市场聚合）
-- **标普500**（`[SH:513500]`）：美股收涨,标普500指数再创新高!存储板块再跳水,黄金白银石油走强 - 大河财立方（Google News - 中文市场聚合）
-- **标普500**（`[SH:513500]`）：美股收盘| 疲软非农打击加息预期,标普500再创新高;软件股大涨,Atlassian绩后飙升35% - 富途牛牛（Google News - 中文市场聚合）
+- **NVDA**（`[US:NVDA]`）：Nvidia’s (NVDA) Alpamayo Launch and the Robotaxi Bet（Yahoo Finance - Top）
+- **SO**（`[US:SO]`）：She Couldn't Afford A House With Her Parents' $20,000 Gift — So They Encouraged Her To Keep Investing Instead（Yahoo Finance - Top）
+- **NOW**（`[US:NOW]`）：Traders on Kalshi now think it's likely that the S&P 500 will hit 8,000 in 2026（CNBC - Finance）
+- **英伟达**（`[US:NVDA]`）：清仓英伟达、Meta!千亿私募巨头美股持仓曝光 - 东方财富（Google News - 中文市场聚合）
+- **标普500**（`[SH:513500]`）：美股收涨,标普500指数再创新高!存储板块再跳水,黄金白银石油走强 - 东方财富（Google News - 中文市场聚合）
+- **纳斯达克**（`[SZ:159632]`）：反超纳斯达克!2025年港股IPO募资2863亿港元登顶全球!“A+H”潮起:中国投行的新战场| 2026新财富杂志最佳投行 - finance.sina.com.cn（Google News - 中文市场聚合）
+- **药明康德**（`[HK:2359]`）：港股周报| 黄金股狂飙!灵宝黄金周升24%;段永平“被动减持”泡泡玛特;药明康德升近20%创新高港美股资讯 - hstong.com（Google News - 中文市场聚合）
+- **标普500**（`[SH:513500]`）：美股三大指数齐涨,标普500指数再创新高;存储下跌,光通信上涨;SpaceX大涨近16%,解禁两日累升23% 中国基金报 - chnfund.com（Google News - 中文市场聚合）
+- **中海油**（`[HK:0883]`）：中海油服秩鼎ESG评级维持AA,位居A股同行业32家公司第5名,与石化油服等同级、高于洪田股份等、低于中油工程等 - finance.sina.cn（Google News - 中文市场聚合）
+- **苹果**（`[US:AAPL]`）：苹果终于把千问接进Siri:中国版Apple Intelligence来了（华尔街见闻）
+- **亚马逊**（`[US:AMZN]`）：Agentic AI新趋势:亚马逊AWS出现“CPU短缺”（华尔街见闻）
 
 ## 🔭 AI 综合前瞻
 
 **大盘基调**  
-美股过热但惯性未破，叠加标普500新高与非农疲软压制加息预期，或支撑全球风险偏好延续；A股半导体近5日资金跃升、科技热度外溢，倾向高开震荡，但需防美股过热后的兑现情绪传导。港股成交缩量、恒指5日微跌，若外围科技续强则有望修复，否则维持震荡待变。  
+美股温度过热且动能仍强，但仓位已建议防守，倾向高开或冲高后波动加大，关注标普8000点预期对情绪端支撑。A股偏暖、半导体资金轮入明显，港股震荡待变，若外围美股维持强势，则恒指有望向20日线修复；但需防过热回撤传导至开盘节奏。
 
 **个股影响**  
-关注阿里巴巴（08/20财报）临近，假期科技权重如NVDA软件端扩张、Palantir周度强势或提振港股科技映射，但存储股集体下跌可能拖累半导体链情绪；百济神州获维持买入、药明生物领涨，医药板块或有局部支撑。若港股权重科技与医药合力，则恒指短线企稳概率上升。
+阿里巴巴临近8/20财报，关注港股持仓中概情绪能否借假期科技热度企稳；英伟达Alpamayo发布及机器人出租概念或带动A/H算力链，但注意“清仓英伟达”消息扰动。药明康德近20%升幅后存在兑现压力，苹果接入千问或刺激AI应用端，关注存储板块跳水对半导体的拖累是否延续。
 
 ---
 _本前瞻由 V88 于非交易日自动生成，仅供研究参考，不构成投资建议。_
