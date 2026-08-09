@@ -225,7 +225,8 @@ def forward_reasons(name, symbol, fwd, context="", api_key="", kind="个股", al
     )
     try:
         from v88_ai_budget import reserve, settle
-        ticket = reserve(prompt, output_tokens=1400)
+        ticket = reserve(prompt, output_tokens=1400,
+                         priority=True, scope="stock-horizon-reasons")
     except Exception:
         ticket = {"id": "untracked", "rmb": 0}
         settle = lambda *a, **k: None
@@ -295,7 +296,8 @@ def thinking_review(name, symbol, facts, context="", api_key="") -> dict:
     )
     try:
         from v88_ai_budget import reserve, settle
-        ticket = reserve(prompt, output_tokens=2200)
+        ticket = reserve(prompt, output_tokens=2200,
+                         priority=True, scope="stock-cycle-thinking")
     except Exception:
         ticket = {"id": "untracked", "rmb": 0}
         settle = lambda *a, **k: None

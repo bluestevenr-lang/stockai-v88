@@ -56,7 +56,7 @@ def _v88_sentinel9(_repo, module, exc=None):
 
 
 
-def call_gemini_api(prompt, model_name=None):
+def call_gemini_api(prompt, model_name=None, *, priority=False, scope="web-general"):
     """
     V88 统一 AI 调用入口（历史函数名保留；实际只调用 DeepSeek）
     
@@ -68,9 +68,11 @@ def call_gemini_api(prompt, model_name=None):
         AI生成的文本响应
     """
     from v88_ai_budget import reserve as _web_budget_reserve, settle as _web_budget_settle
-    _budget_ticket = _web_budget_reserve(prompt, output_tokens=2200)
+    _budget_ticket = _web_budget_reserve(prompt, output_tokens=2200,
+                                         priority=priority, scope=scope)
     if not _budget_ticket:
-        return "⚠️ 网页AI月度1元配额已用完；确定性行情、持仓、自选和预警继续正常运行"
+        _limit_text = "10元重点复核硬额度" if priority else "7元普通分析额度"
+        return f"⚠️ V88本月{_limit_text}已用完；确定性行情、持仓、自选和预警继续正常运行"
     _ds_key = os.getenv("DEEPSEEK_API_KEY", "")
     if _ds_key:
         try:
@@ -7085,8 +7087,8 @@ if Config.ENABLE_EXPECTATION_LAYER:
             st.checkbox(
                 "首屏自动请求AI（人工智能）市场分析",
                 key="v88_auto_ai_market",
-                value=True,   # 【U3.2 用户点单"预算内默认开"】节流内建(3h/次·日3次)≈0.3元/月,网页1元账本内
-                help="已默认开启(用户2026-07-26批准)。仅交易日盘中运行；每3小时一次，每天最多3次；一次请求同时分析三市场；走网页1元预留账本。",
+                value=True,   # 节流内建(3h/次·日3次)≈0.3元/月，普通分析计入7元基础额度
+                help="已默认开启。仅交易日盘中运行；每3小时一次，每天最多3次；一次请求同时分析三市场；计入7元基础额度。",
             )
 
             all_markets = None
@@ -11705,7 +11707,8 @@ def _render_portfolio_section():
 请提供专业、具体、可操作的分析建议，字数600-800字。"""
                                     
                                     # 调用Gemini API
-                                    ai_response = call_gemini_api(prompt)
+                                    ai_response = call_gemini_api(
+                                        prompt, priority=True, scope="holding-portfolio-analysis")
                                     
                                     # 显示分析结果
                                     st.success(f"✅ {selected_market}持仓组合分析完成")
@@ -16682,14 +16685,8 @@ def _render_today_nav():
                 _hb["sync_ok"] = None
             # AI预算
             try:
-                _bj = json.loads((_repo / "data" / "ai_budget.json").read_text(encoding="utf-8"))
-                _wb = 0.0
-                try:
-                    import v88_ai_budget as _wbm
-                    _wb = float(_wbm.status().get("spent", 0))
-                except Exception:
-                    _wb = 0.0
-                _hb["budget"] = round(float(_bj.get("spent_rmb", 0)) + _wb, 2)
+                import v88_ai_budget as _wbm
+                _hb["budget"] = round(float(_wbm.status().get("spent", 0)), 2)
             except Exception:
                 _hb["budget"] = None
             # 云端在线：/_stcore/health 返回200=在线，303=被登录墙挡(保活失效)，超时=挂了
@@ -16710,8 +16707,8 @@ def _render_today_nav():
                             "#16a34a" if _dm < 90 else "#ea580c"))
         _bd = _hb.get("budget")
         if _bd is not None:
-            _bp = _bd / 9 * 100
-            _parts9.append((f"🧮 预算{_bd}/4元(总5含网页1)", "#dc2626" if _bp >= 95 else ("#ea580c" if _bp >= 80 else "#64748b")))
+            _bp = _bd / 10 * 100
+            _parts9.append((f"🧮 AI实付{_bd}/10元（基础7＋重点3）", "#dc2626" if _bp >= 95 else ("#ea580c" if _bp >= 80 else "#64748b")))
         _sy = _hb.get("sync_ok")
         if _sy is not None:
             _parts9.append(("🔗 三端同步✓" if _sy else "🔗 三端漂移⚠️", "#16a34a" if _sy else "#dc2626"))
@@ -17024,23 +17021,19 @@ def _render_today_nav():
         st.caption("参数白话：上行概率（越大越有利）｜下行概率（越小越有利）｜盈亏比（越大越好，>1才有正向空间）｜期望值（>0才是正期望）｜ATR（越大波动越大）｜历史水位（越接近0%越靠近历史最高点）")
 
         # 【V88·AI预算统计+超额预警】（2026-07-16 用户点单：即将用超要有预警）
-        # 共享5元总账：主账本4元(私仓ai_budget,云端+桌面流水线同一文件)+网页预留1元(v88_ai_budget)
+        # 统一总账：普通分析7元软上限；持仓风险/周期拐点/结论冲突/深度复核可用至10元。
         try:
-            _bj9 = json.loads((_repo / "data" / "ai_budget.json").read_text(encoding="utf-8"))
-            _cloud_spent9 = float(_bj9.get("spent_rmb", 0) or 0)
-            _cloud_cap9 = 8.0
-            try:
-                import v88_ai_budget as _wb9
-                _web9 = _wb9.status()
-                _web_spent9, _web_cap9 = float(_web9.get("spent", 0)), float(_web9.get("cap", 1))
-            except Exception:
-                _web_spent9, _web_cap9 = 0.0, 1.0
-            _tot_spent9 = _cloud_spent9 + _web_spent9
-            _tot_cap9 = _cloud_cap9 + _web_cap9
+            import v88_ai_budget as _wb9
+            _web9 = _wb9.status()
+            _tot_spent9 = float(_web9.get("spent", 0))
+            _tot_cap9 = float(_web9.get("cap", 10))
+            _base_cap9 = float(_web9.get("base_cap", 7))
+            _web_ledger9 = float(_web9.get("ledger_spent", 0))
             _pct9 = _tot_spent9 / _tot_cap9 * 100 if _tot_cap9 else 0
             _bar9 = "▓" * int(round(_pct9 / 10)) + "░" * (10 - int(round(_pct9 / 10)))
-            _line9 = (f"🧮 AI预算（{_bj9.get('month', '')}）：**{_tot_spent9:.2f} / {_tot_cap9:g}元**"
-                      f"（{_pct9:.0f}%）{_bar9}　云端{_cloud_spent9:.2f}/{_cloud_cap9:g}｜网页{_web_spent9:.2f}/{_web_cap9:g}")
+            _line9 = (f"🧮 AI预算（{datetime.now().strftime('%Y-%m')}）：**{_tot_spent9:.2f} / {_tot_cap9:g}元**"
+                      f"（{_pct9:.0f}%）{_bar9}　基础{_base_cap9:g}元＋重点复核{_tot_cap9 - _base_cap9:g}元"
+                      f"｜网页本地记账{_web_ledger9:.3f}元｜总实付以DeepSeek余额为准")
             if _pct9 >= 95:
                 st.error(_line9 + "　🚨 本月预算即将用尽——AI点评/翻译将自动降级为规则模板，核心引擎不受影响")
             elif _pct9 >= 80:
@@ -18215,7 +18208,7 @@ try:
         try:
             from v88_ai_budget import status as _web_budget_status
             _wb = _web_budget_status()
-            st.caption(f"💰 AI预算：总5元/月=主账本4元(云端+桌面)＋网页预留1元｜网页已用¥{_wb['spent']:.3f}")
+            st.caption(f"💰 AI预算：基础7元＋重点复核3元＝硬上限10元｜本月总实付约¥{_wb['spent']:.3f}")
         except Exception:
             pass
 except Exception as _nav_e:
