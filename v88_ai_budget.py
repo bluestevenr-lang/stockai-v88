@@ -9,9 +9,10 @@ import json
 import os
 import time
 import uuid
-import urllib.request
 from datetime import datetime
 from pathlib import Path
+
+import requests
 
 LEDGER = Path(__file__).resolve().parent / "data" / "web_ai_budget.json"
 BASE_CAP = float(os.getenv("V88_AI_BASE_BUDGET_RMB", "7") or 7)
@@ -38,8 +39,9 @@ def _read_truth() -> dict:
         return _TRUTH_CACHE.get("data") or {}
     truth = {}
     try:
-        with urllib.request.urlopen(_TRUTH_URL, timeout=5) as response:
-            truth = json.loads(response.read().decode("utf-8"))
+        response = requests.get(_TRUTH_URL, timeout=5)
+        if response.status_code == 200:
+            truth = response.json()
     except Exception:
         try:
             truth = json.loads((LEDGER.parent / "budget_truth_pub.json").read_text(encoding="utf-8"))
