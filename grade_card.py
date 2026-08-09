@@ -43,8 +43,8 @@ PALETTE = {
     #   C=靛蓝(主脑,不可替代)  G=青(副脑,独立第二意见)
     # 裁决状态由后缀符号表达(✅通过/⚠️否决/—未表态),身份色恒定——
     # 这样一眼能分清"谁说的"与"说了什么"。
-    "claude":   "#4338ca",   # Ⓒ Claude 主脑
-    "gpt":      "#0d9488",   # Ⓖ GPT 副脑
+    "claude":   "#4338ca",   # legacy key: Ⓡ V88规则闸
+    "gpt":      "#0d9488",   # legacy key: Ⓒ Codex独立复核
 }
 TIER_COLOR = {"3A": PALETTE["buy"], "2A": PALETTE["buy2"], "1A": PALETTE["buy3"],
               "0A": PALETTE["mute"], "待评估": PALETTE["mute"],
@@ -185,9 +185,9 @@ SELL_COLOR = {"-3A": PALETTE["sell"], "-2A": PALETTE["sell2"],
 # 自检发现9列里8列两侧装的东西不同(如"状态"IN=风险/完备/置信,OUT=1-2-3+量比),
 # 共用列名会让人以为是同一个量。改为两套列头,同位次语义对齐。
 _TH_IN = ("名称", "评级·分", "现价·数据日", "动作·2周概率", "买入区间·进入时机",
-          "失效价", "机会类型·周期", "五桶板·风险完备置信", "双验证·GPT异议", "为什么现在")
+          "失效价", "机会类型·周期", "五桶板·风险完备置信", "双验证·Codex异议", "为什么现在")
 _TH_OUT = ("名称", "级别·卖出分", "现价·MA20", "动作·紧迫度", "卖出/回避区间·重买条件",
-           "止损价", "距止损·量比", "1-2-3·旁路·门派", "冲突·仲裁", "双验证·GPT异议", "持有状态·引擎")
+           "止损价", "距止损·量比", "1-2-3·旁路·门派", "冲突·仲裁", "双验证·Codex异议", "持有状态·引擎")
 # 【自检修②】市场从**代码形态**推断,不依赖上游 market 字段——
 # 实测11处国旗缺失:rank_score.market 仅 trend_quality 来源的行才有,
 # intraday_decisions 压根没有该字段。代码后缀是100%可得的事实。
@@ -221,10 +221,8 @@ def stock_link(name, code, flag: str = "") -> str:
 
 
 def cg_badge(who: str, state: str, note: str = "") -> str:
-    """双剑身份徽章。who='C'|'G'；state='pass'|'reject'|''(未表态)。
-    身份色恒定(C靛蓝/G青),状态用符号与透明度表达——用户定纲:
-    "gpt的验证一定要有大写字母G,就像claude的C一样,不同颜色标注"。"""
-    base = PALETTE["claude"] if who == "C" else PALETTE["gpt"]
+    """双检徽章。R=V88规则闸，C=Codex独立复核。"""
+    base = PALETTE["claude"] if who == "R" else PALETTE["gpt"]
     # 三级:pass=主动背书(实心✅) / gate_pass=机检达标(空心✓,半亮) / reject=否决 / 未表态=—
     mark, op = ("✅", "1") if state == "pass" else \
                ("✓", ".72") if state == "gate_pass" else \
@@ -367,9 +365,11 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
     # 与既有铁律一致(claude-standard-gate:"红标不进推荐位")。
     _blocked_rows = [x for x in rows if x.get("tier") in ("3A", "2A", "1A")
                      and x.get("verification") and not x.get("listable")
-                     and (x.get("verification") or {}).get("claude") != "reject"]
+                     and ((x.get("verification") or {}).get("rules_gate")
+                          or (x.get("verification") or {}).get("claude")) != "reject"]
     _n_cl_rej = sum(1 for x in rows if x.get("tier") in ("3A", "2A", "1A")
-                    and (x.get("verification") or {}).get("claude") == "reject")
+                    and ((x.get("verification") or {}).get("rules_gate")
+                         or (x.get("verification") or {}).get("claude")) == "reject")
     in_rows = ""
     blocked_html = ""
 
@@ -429,11 +429,11 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             # GPT 的异议不能只在漏斗里一句带过,必须**逐行摆在表上**让人自己判断。
             # 同时保留"缺什么/为什么不更高"(信息不做减法,只是压缩排版)。
             + _td((lambda _v: (
-                cg_badge("C", str(_v.get("claude") or ""))
-                + cg_badge("G", str(_v.get("gpt") or ""), str(_v.get("gpt_note") or ""))
+                cg_badge("R", str(_v.get("rules_gate") or _v.get("claude") or ""))
+                + cg_badge("C", str(_v.get("codex") or _v.get("gpt") or ""), str(_v.get("gpt_note") or ""))
                 + (f"<br><span style='font-size:9px;color:{PALETTE['warn']}'>"
-                   f"GPT异议: {str(_v.get('gpt_note'))[:30]}</span>"
-                   if _v.get("gpt") == "reject" and _v.get("gpt_note") else "")
+                   f"Codex异议: {str(_v.get('gpt_note'))[:30]}</span>"
+                   if (_v.get("codex") or _v.get("gpt")) == "reject" and _v.get("gpt_note") else "")
                 + (f"<br><span style='font-size:8.5px;color:{PALETTE['mute']}'>"
                    f"桶{_v.get('bucket_tier')}→{r.get('tier')} 已降档</span>"
                    if _v.get("bucket_tier") and _v.get("bucket_tier") != r.get("tier") else "")
@@ -523,8 +523,8 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                    f"门派({g.get('opp_type') or '未定'})内判定一致</span>"), "max-width:150px")
             # 卖侧双验证徽章(铁律19v3对称:错误卖出信号直接损失真金)
             + _td((lambda _v: (
-                cg_badge("C", str(_v.get("claude") or ""))
-                + cg_badge("G", str(_v.get("gpt") or ""), str(_v.get("gpt_note") or ""))
+                cg_badge("R", str(_v.get("rules_gate") or _v.get("claude") or ""))
+                + cg_badge("C", str(_v.get("codex") or _v.get("gpt") or ""), str(_v.get("gpt_note") or ""))
                 + (f"<br><span style='font-size:8.5px;color:{PALETTE['warn']}'>"
                    f"{str(_v.get('gpt_note'))[:24]}</span>"
                    if _v.get("gpt") == "reject" and _v.get("gpt_note") else "")
@@ -582,19 +582,19 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             # 铁律19 验证漏斗:被拦的必须点名,否则"我们还欠多少验证"看不见
             + (f"<div style='font-size:11px;background:#f8fafc;border-left:3px solid "
                f"{PALETTE['hold']};border-radius:4px;padding:4px 8px;margin:3px 0'>"
-               f"🔐 <b>验证准入闸</b>（<b>3A=Claude主动复核+GPT通过</b>／2A=已过Claude标准闸+GPT不否定／1A=任一方背书且另一方不否决；Claude否决=不上榜）"
+               f"🔐 <b>验证准入闸</b>（<b>3A=V88规则闸+Codex均通过</b>／2A=规则闸通过+Codex不否定／1A=Codex单方通过；规则闸否决=不上榜）"
                + (lambda _h: (
                    f"<div style='font-size:10.5px;margin-bottom:2px;color:"
                    f"{PALETTE['warn'] if (_h.get('last_error') or (_h.get('max_age_days') or 0) > 1) else PALETTE['hold']}'>"
-                   f"⚙️ GPT状态：裁决{_h.get('verdicts', 0)}条"
+                   f"⚙️ Codex状态：裁决{_h.get('verdicts', 0)}条"
                    f"（今日新鲜{_h.get('fresh_today', 0)}／最旧{_h.get('max_age_days')}天）"
                    + (f"　⚠️上轮报错：{_h.get('last_error')}" if _h.get("last_error") else "　上轮正常")
                    + (f"　不可用{_h.get('unavailable')}条" if _h.get("unavailable") else "")
-                   + "　<span style='opacity:.85'>裁决比进程活得久：GPT 下班后结论仍生效，"
+                   + "　<span style='opacity:.85'>裁决比进程活得久：Codex 复核结束后结论仍生效，"
                      "3天TTL＋判据变化即重判；跑不完时按「这一票能改变什么」排队"
                      "（3A候选＞持仓＞2A＞1A）。</span></div>") if _h else "")(
                    (_vf.get("gpt_health") or {}))
-               + f"<b>GPT为辅，单独通过不充分</b>）：上榜 "
+               + f"<b>Codex负责独立证伪，不能绕过规则闸</b>）：上榜 "
                f"<b style='color:{PALETTE['buy']}'>{_n_listable}</b>"
                + "".join(f"　<span style='color:{PALETTE['warn'] if '否决' in k else PALETTE['hold']}'>"
                          f"{k} {v}</span>"
@@ -610,8 +610,8 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                + "）</div>"
                f"<div style='font-size:11px;color:{PALETTE['hold']};margin-bottom:3px'>"
                f"与上表同列同口径，可直接对照，差别只在「双验证」那一列。"
-               + (f"　另有 <b>{_n_cl_rej}</b> 只被 Claude 判否，"
-                  f"<b>按定纲不在此呈现</b>——主脑判死的票不该再占你的视线，"
+               + (f"　另有 <b>{_n_cl_rej}</b> 只被 V88规则闸判否，"
+                  f"<b>按定纲不在此呈现</b>——硬伤票不再占你的视线，"
                   f"只留计数备查。" if _n_cl_rej else "")
                + "</div>"
                + (_tbl(blocked_html, _TH_IN) if blocked_html else
@@ -638,7 +638,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                 f"<div style='font-size:11.5px;background:#f8fafc;border-left:3px solid "
                 f"{PALETTE['sell']};border-radius:4px;padding:5px 9px;margin:8px 0 2px'>"
                 f"⚔️ <b>-3A（立即卖出）需双剑认证</b>"
-                f"<span style='color:{PALETTE['hold']}'>：Claude✅ 且 GPT✅ 才可发。"
+                f"<span style='color:{PALETTE['hold']}'>：V88规则闸✅ 且 Codex✅ 才可发。"
                 f"缺任一方最多 -2A（等第三条确认），先复核再动手——"
                 f"不能靠单方判断就让人清仓。</span>"
                 f"　今日候选 <b>{_dc.get('candidates', 0)}</b> 只 → 双剑通过 "
@@ -704,7 +704,8 @@ def verdict_html(v: dict) -> str:
     数据来自 ai-daily-report-v2/src/stock_verdict.verdict()——**与 3A 大系统同源**。"""
     if not v:
         return ""
-    cl, gp = v.get("claude"), v.get("gpt")
+    cl = v.get("rules_gate") or v.get("claude")
+    gp = v.get("codex") or v.get("gpt")
 
     def _badge(who, st):
         c = (PALETTE["buy"] if st == "pass" else
@@ -753,16 +754,16 @@ def verdict_html(v: dict) -> str:
             f"<div style='display:flex;align-items:baseline;gap:8px;flex-wrap:wrap'>"
             f"<b style='font-size:14px'>{v.get('name')}</b>"
             f"<span style='font-size:11px;color:{PALETTE['mute']}'>{v.get('code')}</span>"
-            f"{_badge('Claude', cl)}{_badge('GPT', gp)}"
+            f"{_badge('V88规则闸', cl)}{_badge('Codex', gp)}"
             f"<span style='font-size:10.5px;color:{PALETTE['mute']}'>{v.get('source')}</span></div>"
             f"<div style='font-size:12.5px;font-weight:700;margin:4px 0;color:#1e293b'>"
             f"{str(v.get('headline')).replace('**', '')}</div>"
             + (f"<div style='font-size:10.5px;color:{PALETTE['warn']};margin-bottom:2px'>"
-               f"GPT 异议：{v.get('gpt_note')}</div>"
+               f"Codex 异议：{v.get('gpt_note')}</div>"
                if gp == "reject" and v.get("gpt_note") else "")
             + _side(v.get("buy"), True) + _side(v.get("sell"), False)
             + f"<div style='font-size:10px;color:{PALETTE['mute']};margin-top:3px'>"
-              f"{v.get('rule')}　｜　+3A 与 -3A 均需双剑认证（Claude✅且GPT✅），"
+              f"{v.get('rule')}　｜　+3A 与 -3A 均需双检（V88规则闸✅且Codex✅），"
               f"缺一方自动降档，不靠单方判断让人买入或清仓。</div></div>")
 
 
@@ -770,7 +771,7 @@ _CERT_CACHE = {"ts": 0, "map": {}}
 
 
 def cert_map(rank_score: dict | None = None) -> dict:
-    """{code: '双'|'C'|''} —— 作战板用的极简双剑口径。
+    """{code: '双'|'R'|''} —— 作战板用的极简双检口径。
     用户定纲 2026-08-02:"这里面不用去除,这里面只能有两者认证和c认证的两种即可"。
     即:作战板**不做删减**(与推荐位不同),只给每条挂一个认证标记,让人自己掂量。"""
     # 徽章覆盖面必须与验证面一致:黑马票在 watch 段
@@ -778,22 +779,23 @@ def cert_map(rank_score: dict | None = None) -> dict:
     m = {}
     for r in rows:
         v = r.get("verification") or {}
-        c, g = v.get("claude"), v.get("gpt")
+        c = v.get("rules_gate") or v.get("claude")
+        g = v.get("codex") or v.get("gpt")
         if c == "pass" and g == "pass":
             m[str(r.get("code"))] = "双"
-        elif c == "pass":
-            m[str(r.get("code"))] = "C"
+        elif c in ("pass", "gate_pass"):
+            m[str(r.get("code"))] = "R"
     return m
 
 
 def cert_badge(code: str, cmap: dict) -> str:
-    """两种徽章:⚔️双=Claude+GPT均通过;🅒C=仅Claude通过。其余留白(不占视觉)。"""
+    """两种徽章:双=规则闸+Codex均通过；R=仅规则闸通过。"""
     k = cert_map_key(code)
     t = cmap.get(str(code)) or cmap.get(k) or ""
     if t == "双":
-        return cg_badge("C", "pass") + cg_badge("G", "pass")
-    if t == "C":
-        return cg_badge("C", "pass") + cg_badge("G", "")
+        return cg_badge("R", "pass") + cg_badge("C", "pass")
+    if t == "R":
+        return cg_badge("R", "pass") + cg_badge("C", "")
     return (f"<span style='color:{PALETTE['mute']};font-size:9.5px;margin-left:3px'>·待验</span>")
 
 
