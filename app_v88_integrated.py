@@ -18203,16 +18203,19 @@ st.markdown("---")
 # ═══════════════════════════════════════════════════════════════
 # ═══════════════════════════════════════════════════════════════
 # 【V88·Fable月计划】2026-08-06 用户定纲:"每月计划一只或几只,我严格按照你的操作,
-# 目标每月$125"。治理=三方会审出证据,Fable定稿署名。用户会**严格照做**,
+# 目标每月$125"。治理=Codex+经典书理+Grok三方会审。用户会**严格照做**,
 # 故必须置顶且全价格无歧义;参数冻结,改动=出新计划,不许悄悄改。
 # ═══════════════════════════════════════════════════════════════
-with st.expander("🎖️ Fable月计划 · 每月$125（三方会审·Fable定稿·参数冻结）", expanded=True):
+with st.expander("🎖️ Fable月计划 · 每月$125（Codex＋经典书理＋Grok·参数冻结）", expanded=True):
     try:
-        _fp9 = _cbj9("fable_plan.json") or {}
+        _fp9 = _cbj9("fable_plan.json") or _cbj9("fable_plan_pub.json") or {}
         _fpm9 = (_fp9.get("months") or {}).get(datetime.now().strftime("%Y-%m")) or {}
         _fpp9 = _fpm9.get("plan") or {}
         if not _fpp9:
-            st.caption(_fpm9.get("why") or "本月计划未出——空仓待机是合格结果,不是失败。")
+            if _fp9.get("private_redacted"):
+                st.caption("云端公开版不展示具体仓位与交易参数；完整 Fable 计划仅在桌面/飞书私域显示。")
+            else:
+                st.caption(_fpm9.get("why") or "本月计划未出——空仓待机是合格结果,不是失败。")
         else:
             st.caption(f"发布 {_fpp9.get('issued_at')}｜规则 {_fpp9.get('ruleset')}｜"
                        f"目标 ${_fpp9.get('target_usd')}｜{_fpp9.get('governance')}")
@@ -18235,6 +18238,21 @@ with st.expander("🎖️ Fable月计划 · 每月$125（三方会审·Fable定�
                     f"{w.get('name')}·{w.get('trigger')}" for w in _wc9f))
             st.caption("硬约束：单月风险敞口≤$125｜无合格候选=空仓待机（合格结果）｜"
                        "**禁止为凑目标下调门槛或放大仓位**｜miss不加倍追｜财报窗强平")
+        _ftr9 = _fpm9.get("triad_review") or _fp9.get("triad_review") or {}
+        if _ftr9:
+            _fcs9 = _ftr9.get("consensus") or {}
+            _fst9 = str(_fcs9.get("state") or "未完成")
+            if "三方通过" in _fst9:
+                st.success(f"三方会审：{_fst9}｜分析 {_ftr9.get('reviewed_at') or _ftr9.get('checked_at') or '?'}")
+            elif "分歧" in _fst9:
+                st.error(f"三方会审：{_fst9}｜{_fcs9.get('action','')}")
+            else:
+                st.warning(f"三方会审：{_fst9}｜{_fcs9.get('action','')}")
+            _fcols9 = st.columns(3)
+            for _fc9, _frv9 in zip(_fcols9, _ftr9.get("reviews") or []):
+                _fc9.caption(
+                    f"**{_frv9.get('party')}** · {_frv9.get('verdict')}\n\n"
+                    f"{_frv9.get('reason')}\n\n分析 {_frv9.get('analysis_at','?')}")
     except Exception as _e9fp:
         st.caption(f"⚠️ Fable计划渲染失败：{type(_e9fp).__name__}: {str(_e9fp)[:110]}")
 
