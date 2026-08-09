@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-09 11:21（北京时间）",
+ "generated_at": "2026-08-09 11:31（北京时间）",
  "version": "gptverify-v1",
  "model": "gpt-5.6-sol",
  "display_name": "Codex独立复核",
@@ -78,23 +78,23 @@
   },
   "0027.HK": {
    "name": "银河娱乐",
-   "tier_at_verify": "2A",
+   "tier_at_verify": "1A",
    "verdict": "不否定",
-   "why": "赔率尚可，但时机与催化仅中性",
+   "why": "估值较强，其余证据不足",
    "ts": "2026-08-09",
-   "batch_seconds": 130.1,
+   "batch_seconds": 18.4,
    "fresh_for_strong_days": 1,
-   "sig": "2A|回踩 32.06~33.34 买 · 5个交易日|70"
+   "sig": "1A|回踩 32.06~33.34 买 · 5个交易日|60"
   },
   "600519.SS": {
    "name": "贵州茅台",
    "tier_at_verify": "1A",
-   "verdict": "否决",
-   "why": "逻辑自相矛盾：五桶全列短板仍评1A",
-   "ts": "2026-08-07",
-   "batch_seconds": 138.2,
+   "verdict": "不否定",
+   "why": "各项平淡，暂无具体否决依据",
+   "ts": "2026-08-09",
+   "batch_seconds": 18.4,
    "fresh_for_strong_days": 1,
-   "sig": "1A|现在买（今日窗口内）|55"
+   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|60"
   },
   "MSTZ": {
    "name": "二倍做空MSTR ETF-T-Rex",
@@ -107,23 +107,23 @@
   },
   "2618.HK": {
    "name": "京东物流",
-   "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "长期价值尚可，获利空间一般",
+   "tier_at_verify": "2A",
+   "verdict": "通过",
+   "why": "长线80、赔率88，支撑2A",
    "ts": "2026-08-09",
-   "batch_seconds": 130.1,
+   "batch_seconds": 18.4,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 13.67~14.22 买 · 5个交易日|70"
+   "sig": "2A|回踩 13.67~14.22 买 · 5个交易日|75"
   },
   "1114.HK": {
    "name": "华晨中国",
    "tier_at_verify": "1A",
    "verdict": "不否定",
-   "why": "长期价值弱，但赔率桶突出",
-   "ts": "2026-08-07",
-   "batch_seconds": 106.7,
+   "why": "估值赔率突出，三项短板待验证",
+   "ts": "2026-08-09",
+   "batch_seconds": 18.4,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 2.03 买 · 5个交易日内有效|65"
+   "sig": "1A|回踩 2.03 买 · 5个交易日内有效|70"
   },
   "0992.HK": {
    "name": "联想集团",
@@ -167,12 +167,12 @@
   "1703.HK": {
    "name": "谊和股份",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "长期价值高，但估值仅46",
+   "verdict": "否决",
+   "why": "赔率不足：长期价值22、获利空间27",
    "ts": "2026-08-09",
-   "batch_seconds": 130.1,
+   "batch_seconds": 10.3,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 0.94~0.98 买 · 5个交易日内有|65"
+   "sig": "1A|回踩 0.94~0.98 买 · 5个交易日内有|40"
   },
   "002303.SZ": {
    "name": "美盈森",
@@ -196,12 +196,12 @@
   "2556.HK": {
    "name": "迈富时",
    "tier_at_verify": "1A",
-   "verdict": "否决",
-   "why": "赔率不足：估值36、获利39",
-   "ts": "2026-08-04",
-   "batch_seconds": 78.9,
+   "verdict": "不否定",
+   "why": "长线较强，估值及赔率缺乏优势",
+   "ts": "2026-08-09",
+   "batch_seconds": 18.4,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 38.4~39.94 买 · 5个交易日内|60"
+   "sig": "1A|回踩 39.99~41.59 买 · 5个交易日|65"
   },
   "3808.HK": {
    "name": "中国重汽",
@@ -226,11 +226,11 @@
    "name": "中远海控",
    "tier_at_verify": "1A",
    "verdict": "否决",
-   "why": "赔率不足：获利40而风险38",
-   "ts": "2026-08-07",
-   "batch_seconds": 106.7,
+   "why": "赔率不足：获利空间40且风险30",
+   "ts": "2026-08-09",
+   "batch_seconds": 18.4,
    "fresh_for_strong_days": 1,
-   "sig": "1A|现在买（今日窗口内）|65"
+   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|60"
   },
   "XOM": {
    "name": "埃克森美孚",
@@ -428,12 +428,12 @@
   "3110.HK": {
    "name": "港股高股息ETF",
    "tier_at_verify": "1A",
-   "verdict": "否决",
-   "why": "数据时点缺失，五日窗口不可验证",
+   "verdict": "不否定",
+   "why": "赔率较高，长线与催化证据不足",
    "ts": "2026-08-09",
-   "batch_seconds": 16.0,
+   "batch_seconds": 18.4,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 31.33 买 · 5个交易日内有效|55"
+   "sig": "1A|回踩 31.33 买 · 5个交易日内有效|60"
   },
   "SMFG": {
    "name": "三井住友金融",
@@ -448,12 +448,12 @@
   "9858.HK": {
    "name": "优然牧业",
    "tier_at_verify": "1A",
-   "verdict": "否决",
-   "why": "赔率不足：获利空间33且风险25",
-   "ts": "2026-08-05",
-   "batch_seconds": 104.2,
+   "verdict": "不否定",
+   "why": "赔率尚可，时机催化偏弱",
+   "ts": "2026-08-09",
+   "batch_seconds": 18.4,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 3.54~3.68 买 · 5个交易日内有|55"
+   "sig": "1A|回踩 3.54~3.68 买 · 5个交易日内有|60"
   },
   "XLE": {
    "name": "能源指数ETF-SPDR",
@@ -559,11 +559,11 @@
    "name": "金山软件",
    "tier_at_verify": "1A",
    "verdict": "不否定",
-   "why": "估值与赔率偏弱但未达否决",
-   "ts": "2026-08-06",
-   "batch_seconds": 60.7,
+   "why": "长线尚可，时机与赔率一般",
+   "ts": "2026-08-09",
+   "batch_seconds": 18.4,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 25.32~26.33 买 · 5个交易日|65"
+   "sig": "1A|回踩 25.49~26.51 买 · 5个交易日|60"
   },
   "2020.HK": {
    "name": "安踏体育",
@@ -989,11 +989,11 @@
    "name": "金山办公",
    "tier_at_verify": "1A",
    "verdict": "不否定",
-   "why": "业绩强，但估值与赔率不突出",
+   "why": "催化尚可，估值赔率偏弱",
    "ts": "2026-08-09",
-   "batch_seconds": 130.1,
+   "batch_seconds": 18.4,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 247.72~257.63 买 · 5个交|65"
+   "sig": "1A|回踩 247.72~257.63 买 · 5个交|60"
   },
   "HST": {
    "name": "HOST酒店及度假村",
@@ -1828,12 +1828,12 @@
   "300059.SZ": {
    "name": "东方财富",
    "tier_at_verify": "2A",
-   "verdict": "通过",
-   "why": "价值84且赔率81，支撑2A",
+   "verdict": "不否定",
+   "why": "整体均衡，催化偏弱但不足否决",
    "ts": "2026-08-09",
-   "batch_seconds": 50.3,
+   "batch_seconds": 18.4,
    "fresh_for_strong_days": 1,
-   "sig": "2A|下一交易日 08-10 开盘可进（今日休市）|75"
+   "sig": "2A|下一交易日 08-10 开盘可进（今日休市）|70"
   },
   "RACE": {
    "name": "法拉利",
@@ -1891,9 +1891,9 @@
    "verdict": "否决",
    "why": "赔率不足：获利空间仅38",
    "ts": "2026-08-09",
-   "batch_seconds": 50.3,
+   "batch_seconds": 18.4,
    "fresh_for_strong_days": 1,
-   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|70"
+   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|65"
   },
   "GEHC": {
    "name": "GE HealthCare Technologies Inc",
@@ -2058,34 +2058,144 @@
   "2268.HK": {
    "name": "药明合联",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "赔率与估值偏弱，尚不足否决",
+   "verdict": "否决",
+   "why": "赔率不足：获利空间仅38",
    "ts": "2026-08-09",
-   "batch_seconds": 26.2,
+   "batch_seconds": 18.4,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 55.63~57.86 买 · 5个交易日|60"
+   "sig": "1A|回踩 55.63~57.86 买 · 5个交易日|55"
+  },
+  "0005.HK": {
+   "name": "汇丰控股",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "长线与估值尚可，完备度偏低",
+   "ts": "2026-08-09",
+   "batch_seconds": 18.4,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|65"
+  },
+  "0300.HK": {
+   "name": "美的集团",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "长线尚可，其余偏弱但无硬伤",
+   "ts": "2026-08-09",
+   "batch_seconds": 18.4,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 92.93~96.65 买 · 5个交易日|60"
+  },
+  "2388.HK": {
+   "name": "中银香港",
+   "tier_at_verify": "1A",
+   "verdict": "否决",
+   "why": "赔率不足：获利空间仅46",
+   "ts": "2026-08-09",
+   "batch_seconds": 18.4,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 47.8~49.71 买 · 5个交易日内|60"
+  },
+  "9999.HK": {
+   "name": "网易",
+   "tier_at_verify": "1A",
+   "verdict": "否决",
+   "why": "赔率不足：获利空间44、催化26",
+   "ts": "2026-08-09",
+   "batch_seconds": 18.4,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|60"
+  },
+  "300996.SZ": {
+   "name": "普联软件",
+   "tier_at_verify": "1A",
+   "verdict": "否决",
+   "why": "赔率不足：获利空间仅32",
+   "ts": "2026-08-09",
+   "batch_seconds": 18.4,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 12.2~12.69 买 · 5个交易日内|55"
+  },
+  "REGN": {
+   "name": "再生元制药",
+   "tier_at_verify": "1A",
+   "verdict": "否决",
+   "why": "赔率不足：获利空间37、估值39",
+   "ts": "2026-08-09",
+   "batch_seconds": 18.4,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 702.47~730.57 买 · 5个交|55"
+  },
+  "0700.HK": {
+   "name": "腾讯控股",
+   "tier_at_verify": "1A",
+   "verdict": "否决",
+   "why": "赔率不足：获利空间仅42",
+   "ts": "2026-08-09",
+   "batch_seconds": 18.4,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|55"
+  },
+  "1919.HK": {
+   "name": "中远海控",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "档位证据偏弱，暂无具体反证",
+   "ts": "2026-08-09",
+   "batch_seconds": 10.3,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 14.92~15.52 买 · 5个交易日|55"
+  },
+  "2367.HK": {
+   "name": "巨子生物",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "完备度仅75，仍无明确反对理由",
+   "ts": "2026-08-09",
+   "batch_seconds": 10.3,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 28.29~29.42 买 · 5个交易日|55"
+  },
+  "2800.HK": {
+   "name": "盈富基金",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "催化与获利空间弱，暂不足否决",
+   "ts": "2026-08-09",
+   "batch_seconds": 10.3,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 25.37~26.38 买 · 5个交易日|55"
+  },
+  "601985.SS": {
+   "name": "中国核电",
+   "tier_at_verify": "1A",
+   "verdict": "否决",
+   "why": "数据时点不明却给出开盘即进",
+   "ts": "2026-08-09",
+   "batch_seconds": 10.3,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|50"
   }
  },
  "batches": [
   {
    "n": 20,
    "got": 20,
-   "seconds": 50.3,
+   "seconds": 18.4,
    "error": ""
   },
   {
-   "n": 8,
-   "got": 8,
-   "seconds": 26.2,
+   "n": 5,
+   "got": 5,
+   "seconds": 10.3,
    "error": ""
   }
  ],
  "stats": {
-  "待验证": 28,
-  "本轮已验": 28,
+  "待验证": 25,
+  "本轮已验": 25,
   "分布": {
-   "不否定": 84,
-   "否决": 121,
+   "不否定": 91,
+   "否决": 125,
    "通过": 2
   }
  }
