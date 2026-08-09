@@ -1,33 +1,33 @@
 {
- "asof": "2026-08-07 18:16（北京时间）",
+ "asof": "2026-08-10 07:34（北京时间）",
  "model": "claude-fable-5",
  "by_market": {
   "美股": {
    "verdict": "打架",
    "model": "claude-fable-5",
    "shift": "2026-08-06 午后审 (16:20北京·",
-   "engine": 58,
+   "engine": 65,
    "fable": 40,
-   "diff": 18,
-   "note": "引擎2周58% vs claude-fable-5独立读40%·差18pp(明显打架,等下一班复核)"
+   "diff": 25,
+   "note": "引擎2周65% vs claude-fable-5独立读40%·差25pp(明显打架,等下一班复核)"
   },
   "A股": {
    "verdict": "打架",
    "model": "claude-fable-5",
    "shift": "2026-08-06 午后审 (16:20北京·",
-   "engine": 66,
+   "engine": 62,
    "fable": 43,
-   "diff": 23,
-   "note": "引擎2周66% vs claude-fable-5独立读43%·差23pp(明显打架,等下一班复核)"
+   "diff": 19,
+   "note": "引擎2周62% vs claude-fable-5独立读43%·差19pp(明显打架,等下一班复核)"
   },
   "港股": {
    "verdict": "一致",
    "model": "claude-fable-5",
    "shift": "2026-08-06 午后审 (16:20北京·",
-   "engine": 55,
+   "engine": 54,
    "fable": 56,
-   "diff": 1,
-   "note": "引擎2周55% vs claude-fable-5独立读56%·差1pp(两套读数对上)"
+   "diff": 2,
+   "note": "引擎2周54% vs claude-fable-5独立读56%·差2pp(两套读数对上)"
   }
  },
  "note": "Claude(Fable5/Opus5)独立复核徽章:🅒=复核结论与规则引擎一致;⚡=有异议不发徽章(理由见note);无徽章=本班未复核该标的(重点股优先,不装作全审)。徽章只代表'两套逻辑对上了',不代表保证盈利。",

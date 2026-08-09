@@ -1,10 +1,11 @@
 {
- "generated_at": "2026-08-07 18:16（北京时间）",
+ "generated_at": "2026-08-10 07:34（北京时间）",
  "note": "三方会审:规则引擎(V88) vs Claude(Fable/Opus独立复核) vs GPT(Codex盲审)。⚡分歧排最前——三方都说好的可以按纲领执行,吵起来的才是要自己拿主意的地方。GPT目前是影子模式(有记录无投票权),它的反对不会拦名单,但会入台账攒战绩。",
  "counts": {
   "✅双方一致": 3,
-  "仅规则(无第二意见)": 38,
-  "⚡有分歧": 2
+  "🟡多数通过(1票反对)": 1,
+  "仅规则(无第二意见)": 59,
+  "⚡有分歧": 1
  },
  "rows": [
   {
@@ -17,24 +18,6 @@
     "action": "左侧低吸",
     "rr": 2.93,
     "pos52": 11.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "603799.SS",
-   "name": "华友钴业",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 80,
-    "action": "左侧低吸",
-    "rr": 2.86,
-    "pos52": 18.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -62,24 +45,6 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "ALB",
-   "name": "ALB",
-   "market": "美股",
-   "rule": {
-    "dir": "看多",
-    "prob": 74,
-    "action": "左侧低吸",
-    "rr": 3.62,
-    "pos52": 37.0,
-    "src": "池外机会"
-   },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
    "code": "601515.SS",
    "name": "衢州东峰",
    "market": "A股",
@@ -98,15 +63,15 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "2013.HK",
-   "name": "微盟集团",
-   "market": "港股",
+   "code": "600010.SS",
+   "name": "包钢股份",
+   "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 73,
+    "prob": 69,
     "action": "现价可进",
-    "rr": 3.52,
-    "pos52": 7.0,
+    "rr": 3.62,
+    "pos52": 18.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -134,15 +99,15 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "1114.HK",
-   "name": "华晨中国",
-   "market": "港股",
+   "code": "MSTR",
+   "name": "MSTR",
+   "market": "美股",
    "rule": {
     "dir": "看多",
-    "prob": 66,
+    "prob": 68,
     "action": "左侧低吸",
-    "rr": 4.67,
-    "pos52": 12.0,
+    "rr": 3.7,
+    "pos52": 5.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -159,8 +124,8 @@
     "dir": "看多",
     "prob": 66,
     "action": "左侧低吸",
-    "rr": 4.23,
-    "pos52": 30.0,
+    "rr": 3.84,
+    "pos52": 32.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -170,15 +135,15 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "1478.HK",
-   "name": "丘钛科技",
-   "market": "港股",
+   "code": "601898.SS",
+   "name": "中煤能源",
+   "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 66,
+    "prob": 64,
     "action": "现价可进",
-    "rr": 4.22,
-    "pos52": 10.0,
+    "rr": 3.58,
+    "pos52": 37.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -188,15 +153,51 @@
    "consensus": "仅规则(无第二意见)"
   },
   {
-   "code": "2015.HK",
-   "name": "理想汽车-W",
+   "code": "601012.SS",
+   "name": "隆基绿能",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 62,
+    "action": "现价可进",
+    "rr": 5.58,
+    "pos52": 13.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "1276.HK",
+   "name": "恒瑞医药",
    "market": "港股",
    "rule": {
     "dir": "看多",
     "prob": 60,
     "action": "现价可进",
-    "rr": 6.13,
-    "pos52": 8.0,
+    "rr": 3.84,
+    "pos52": 17.0,
+    "src": "池外机会"
+   },
+   "claude": null,
+   "gpt": null,
+   "n_voices": 1,
+   "agree": 1,
+   "consensus": "仅规则(无第二意见)"
+  },
+  {
+   "code": "000958.SZ",
+   "name": "电投产融",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 57,
+    "action": "左侧低吸",
+    "rr": 5.32,
+    "pos52": 12.0,
     "src": "池外机会"
    },
    "claude": null,
@@ -211,10 +212,10 @@
    "market": "美股",
    "rule": {
     "dir": "看多",
-    "prob": 59,
-    "action": "现价可进",
-    "rr": 5.17,
-    "pos52": 43.0,
+    "prob": 56,
+    "action": "左侧低吸",
+    "rr": 5.27,
+    "pos52": 42.0,
     "src": "池外机会"
    },
    "claude": null,
