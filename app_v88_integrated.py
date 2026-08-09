@@ -3161,7 +3161,8 @@ try:
         _fg9x = "" if str(_nm9x or "")[:2] in ("🇨🇳", "🇭🇰", "🇺🇸") else _flag9(_cd9x)
         return (f'{_fg9x}<a href="?q={_cd9x}&focus=deep#v88-deep-analysis" target="_blank" rel="noopener" '
                 f'style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{_nm9x}</a>'
-                + _cert_badge9(_cd9x, _nm9x) + _gpt_badge9(_cd9x, _nm9x))
+                + _cert_badge9(_cd9x, _nm9x) + _gpt_badge9(_cd9x, _nm9x)
+                + _grok_badge9(_cd9x, _nm9x))
     _cb_gate9 = _v88_mkt_gate9x(_cb_repo9)
     _cb_nt9, _cb_day9 = _v88_nontrade9x()
     # 【U3⑥数据闸门 2026-07-26 GPT审计采纳】行情异常=degraded→买侧禁发,只留卖警
@@ -3273,10 +3274,34 @@ try:
         return (f"<span title=\"{_tip9}\" style='{_base9};background:{_st9[0]};"
                 f"color:{_st9[1]};opacity:{_op9}'>{_st9[2]}</span>")
 
+    def _grok_badge9(_cd, _nm=""):
+        """X=Grok(xAI)独立复核。与G(GPT/Codex)并列，绝不拿规则闸代签。"""
+        try:
+            _x9 = (_XV9 or {}).get(str(_cd or "")) or {}
+        except Exception:
+            _x9 = {}
+        _v9 = str(_x9.get("verdict") or "")
+        if not _v9:
+            return ""
+        _base9 = ("display:inline-block;width:15px;height:15px;line-height:15px;"
+                  "text-align:center;border-radius:50%;font-size:10px;font-weight:800;"
+                  "margin-left:3px;vertical-align:middle;letter-spacing:-.3px")
+        _st9 = ("#7c3aed", "#fff", "X") if _v9 == "通过" else \
+               ("#4c1d95", "#fff", "X̸") if _v9 == "否决" else \
+               ("#ede9fe", "#6d28d9", "X")
+        _tip9 = f"Grok(xAI)独立验证:{_v9}｜{str(_x9.get('why', ''))[:60]}".replace('"', "'")
+        _op9 = "1" if _v9 in ("通过", "否决") else ".8"
+        return (f"<span title=\"{_tip9}\" style='{_base9};background:{_st9[0]};"
+                f"color:{_st9[1]};opacity:{_op9}'>{_st9[2]}</span>")
+
     try:
         _GV9 = (_nwj9("gpt_verify.json").get("rows") or {})
     except Exception:
         _GV9 = {}
+    try:
+        _XV9 = (_nwj9("grok_verify.json").get("rows") or {})
+    except Exception:
+        _XV9 = {}
 
     def _cb_nm9(_nm, _cd):
         # 【2026-07-27 统一名字真源】优先私仓 watch_alerts.resolve_name
@@ -3286,16 +3311,20 @@ try:
             if str(_cb_repo9 / "src") not in _sy9n.path:
                 _sy9n.path.insert(0, str(_cb_repo9 / "src"))
             from watch_alerts import resolve_name as _rn9c
-            return _rn9c(_cd, _nm) + _cert_badge9(_cd, _rn9c(_cd, _nm))
+            _n9 = _rn9c(_cd, _nm)
+            return (_n9 + _cert_badge9(_cd, _n9) + _gpt_badge9(_cd, _n9)
+                    + _grok_badge9(_cd, _n9))
         except Exception:
             pass
         _n = str(_nm or "")
         if _n and _n != str(_cd):
-            return _n + _cert_badge9(_cd, _n)
+            return (_n + _cert_badge9(_cd, _n) + _gpt_badge9(_cd, _n)
+                    + _grok_badge9(_cd, _n))
         _k = str(_cd or "").upper()
         _out9 = (_cb_names9.get(_k) or _cb_names9.get(_k.split(".")[0].lstrip("0") + ".HK")
                  or _n or _k)
-        return _out9 + _cert_badge9(_cd, _out9)
+        return (_out9 + _cert_badge9(_cd, _out9) + _gpt_badge9(_cd, _out9)
+                + _grok_badge9(_cd, _out9))
 
     def _cb_mk9(_cd):
         _c = str(_cd or "").upper()
