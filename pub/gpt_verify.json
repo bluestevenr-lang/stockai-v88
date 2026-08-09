@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-09 11:41（北京时间）",
+ "generated_at": "2026-08-09 12:16（北京时间）",
  "version": "gptverify-v1",
  "model": "gpt-5.6-sol",
  "display_name": "Codex独立复核",
@@ -107,13 +107,13 @@
   },
   "2618.HK": {
    "name": "京东物流",
-   "tier_at_verify": "2A",
-   "verdict": "否决",
-   "why": "数据时点：未提供分析时间",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "催化偏弱，尚无具体反对证据",
    "ts": "2026-08-09",
-   "batch_seconds": 18.7,
+   "batch_seconds": 11.7,
    "fresh_for_strong_days": 1,
-   "sig": "2A|回踩 13.67~14.22 买 · 5个交易日|70"
+   "sig": "1A|回踩 13.67~14.22 买 · 5个交易日|70"
   },
   "1114.HK": {
    "name": "华晨中国",
@@ -2177,13 +2177,13 @@
   },
   "PGR": {
    "name": "前进保险",
-   "tier_at_verify": "2A",
-   "verdict": "否决",
-   "why": "数据时点：未提供分析时间",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "催化偏弱，开盘入场赔率待验证",
    "ts": "2026-08-09",
-   "batch_seconds": 18.7,
+   "batch_seconds": 11.7,
    "fresh_for_strong_days": 1,
-   "sig": "2A|下一交易日 08-10 开盘可进（今日休市）|65"
+   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|65"
   },
   "NET": {
    "name": "Cloudflare Inc-A",
@@ -2258,18 +2258,18 @@
  },
  "batches": [
   {
-   "n": 19,
-   "got": 19,
-   "seconds": 18.7,
+   "n": 2,
+   "got": 2,
+   "seconds": 11.7,
    "error": ""
   }
  ],
  "stats": {
-  "待验证": 19,
-  "本轮已验": 19,
+  "待验证": 2,
+  "本轮已验": 2,
   "分布": {
-   "不否定": 90,
-   "否决": 136
+   "不否定": 92,
+   "否决": 134
   }
  }
 }
