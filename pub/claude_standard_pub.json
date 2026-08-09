@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-09 11:41（北京时间）",
- "generated_at": "2026-08-09 11:41（北京时间）",
+ "asof": "2026-08-09 16:20（北京时间）",
+ "generated_at": "2026-08-09 16:20（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_claude_login",
  "rules": {
@@ -16,19 +16,9 @@
  },
  "note": "V88标准规则闸:把历史会审异议固化成机检规则,名单出厂前先过这道闸——不达标的不进推荐位,转⏸未达标区并写明理由(用户定纲:'有异议的还摆在推荐位没有参考意义')。规则来自4个班次真实异议的归纳,非回测胜率;每条带rule_id,台账到期后双周深检算'被拦下的票后来表现如何'来修订阈值——规则错了要能被数据推翻。",
  "pass": {
-  "BIDU": {
-   "code": "BIDU",
-   "name": "百度",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "2015.HK": {
-   "code": "2015.HK",
-   "name": "理想汽车-W",
+  "601012.SS": {
+   "code": "601012.SS",
+   "name": "隆基绿能",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -46,9 +36,9 @@
    "downgrade": "",
    "auto": true
   },
-  "COST": {
-   "code": "COST",
-   "name": "好市多",
+  "000958.SZ": {
+   "code": "000958.SZ",
+   "name": "电投产融",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -56,11 +46,11 @@
    "downgrade": "",
    "auto": true
   },
-  "1478.HK": {
-   "code": "1478.HK",
-   "name": "丘钛科技",
+  "COST": {
+   "code": "COST",
+   "name": "好市多",
    "side": "机会",
-   "action": "现价可进",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -86,21 +76,31 @@
    "downgrade": "",
    "auto": true
   },
-  "2013.HK": {
-   "code": "2013.HK",
-   "name": "微盟集团",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "NOC": {
    "code": "NOC",
    "name": "诺斯罗普",
    "side": "机会",
    "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "MSTR": {
+   "code": "MSTR",
+   "name": "MSTR",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "600010.SS": {
+   "code": "600010.SS",
+   "name": "包钢股份",
+   "side": "机会",
+   "action": "现价可进",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -116,11 +116,21 @@
    "downgrade": "",
    "auto": true
   },
-  "603799.SS": {
-   "code": "603799.SS",
-   "name": "华友钴业",
+  "1276.HK": {
+   "code": "1276.HK",
+   "name": "恒瑞医药",
    "side": "机会",
-   "action": "左侧低吸",
+   "action": "现价可进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "601898.SS": {
+   "code": "601898.SS",
+   "name": "中煤能源",
+   "side": "机会",
+   "action": "现价可进",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -351,17 +361,17 @@
   }
  },
  "stats": {
-  "n_pass": 310,
-  "n_reject": 154,
+  "n_pass": 308,
+  "n_reject": 159,
   "by_rule": {
-   "CS9": 1,
+   "CS9": 0,
    "CS1": 0,
    "CS2": 3,
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
-   "CS6": 144,
-   "CS7": 68,
+   "CS6": 150,
+   "CS7": 73,
    "CS8": 0
   }
  }
