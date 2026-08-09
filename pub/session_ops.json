@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-09 11:47（北京时间）",
+ "generated_at": "2026-08-09 18:24（北京时间）",
  "version": "sessionops-v1",
  "ruleset_version": "v4.2",
  "gates_in_force": [
@@ -26,7 +26,7 @@
   {
    "code": "SO",
    "name": "美国南方公司",
-   "level": "-2A",
+   "level": "-1A",
    "last": 92.69,
    "stop": 91.25,
    "dist_stop_pct": 1.6,
@@ -35,12 +35,12 @@
    "frozen": false,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 91.25 执行"
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 91.25 执行"
   },
   {
    "code": "MO",
    "name": "奥驰亚",
-   "level": "-2A",
+   "level": "-1A",
    "last": 68.35,
    "stop": 66.83,
    "dist_stop_pct": 2.3,
@@ -49,7 +49,7 @@
    "frozen": false,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 66.83 执行"
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 66.83 执行"
   },
   {
    "code": "PM",
@@ -68,7 +68,7 @@
   {
    "code": "APP",
    "name": "Applovin",
-   "level": "-2A",
+   "level": "-1A",
    "last": 346.8,
    "stop": 332.192,
    "dist_stop_pct": 4.4,
@@ -77,12 +77,12 @@
    "frozen": true,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-2A·1-2-3 停在 ①②；且有未解释异动，重动作已冻结（止损不受影响） → 不主动卖，跌破 332.192 执行"
+   "why": "-1A·1-2-3 停在 ①②；且有未解释异动，重动作已冻结（止损不受影响） → 不主动卖，跌破 332.192 执行"
   },
   {
    "code": "AAPL",
    "name": "苹果",
-   "level": "-2A",
+   "level": "-1A",
    "last": 313.33,
    "stop": 300.0,
    "dist_stop_pct": 4.4,
@@ -91,12 +91,12 @@
    "frozen": false,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 300.0 执行"
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 300.0 执行"
   },
   {
    "code": "MU",
    "name": "美光科技",
-   "level": "-2A",
+   "level": "-1A",
    "last": 877.57,
    "stop": 737.88,
    "dist_stop_pct": 18.9,
@@ -105,7 +105,7 @@
    "frozen": true,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-2A·1-2-3 停在 ①②；且有未解释异动，重动作已冻结（止损不受影响） → 不主动卖，跌破 737.88 执行"
+   "why": "-1A·1-2-3 停在 ①②；且有未解释异动，重动作已冻结（止损不受影响） → 不主动卖，跌破 737.88 执行"
   }
  ],
  "buy": [],
@@ -131,8 +131,8 @@
   "blocked_by_rr": 2
  },
  "src_asof": {
-  "sell_grade": "2026-08-09 11:41（北京时间）",
-  "rank_score": "2026-08-09 11:41（北京时间）",
+  "sell_grade": "2026-08-09 18:01（北京时间）",
+  "rank_score": "2026-08-09 18:01（北京时间）",
   "classics_lens": "2026-08-09 11:11（北京时间）",
   "anomaly_gate": "2026-08-09 11:10（北京时间）"
  }

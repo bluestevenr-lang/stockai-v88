@@ -1,10 +1,10 @@
 {
- "ts": 1786244210.675106,
- "generated_at": "2026-08-09 10:56",
+ "ts": 1786271059.262802,
+ "generated_at": "2026-08-09 18:24",
  "funnel": {
   "found": 170,
   "excluded_watch": 22,
-  "judged": 49,
+  "judged": 148,
   "judged_by_mkt": {
    "🇺🇸美股": 83,
    "🇭🇰港股": 25,
@@ -12,12 +12,12 @@
   },
   "passed": 4,
   "blocked": {
-   "相位": 14,
+   "相位": 55,
    "方向分": 4,
    "赔率": 10,
    "时机": 0,
-   "数据": 99,
-   "单源": 17
+   "数据": 0,
+   "单源": 75
   }
  },
  "horses": [
@@ -34,7 +34,7 @@
    "action": "观察",
    "entry_note": "⏳双路径:回踩133.75/突破249.38·08-14前｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨85%｜4-32周震荡48%",
-   "analysis_time": "2026-08-09 10:55",
+   "analysis_time": "2026-08-09 18:22",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-08-07 00:00:00",
@@ -142,7 +142,7 @@
    "touch": "触线:52周低位14%",
    "trade_plan": {
     "short": {
-     "in": "🟢 左侧低吸(牛市模式):现价147.02~回踩133.75区间分3批,不等右侧突破确认——跌破114.5认错止损;若放量突破则剩余仓改追｜💼标准仓:偏暖市:标准仓,左侧机会优先",
+     "in": "🟢 左侧低吸(中性市模式):现价147.02~回踩133.75区间先1批小仓,不等右侧突破确认——跌破114.5认错止损;若放量突破则剩余仓改追｜💼1/3仓:中性市:半仓起步,确认后加",
      "out": "目标172.734（10个交易日内·上行概率81%）",
      "invalid": "跌破114.5作废",
      "mode": "左侧低吸"
@@ -177,7 +177,7 @@
    "action": "观察",
    "entry_note": "✅现价可进·08-12前·破38.55废｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨81%｜4-32周震荡56%",
-   "analysis_time": "2026-08-09 10:55",
+   "analysis_time": "2026-08-09 18:22",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-08-07 00:00:00",
@@ -320,7 +320,7 @@
    "action": "观察",
    "entry_note": "⏳双路径:回踩195.05/突破329.8·08-14前｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨76%｜4-32周震荡56%",
-   "analysis_time": "2026-08-09 10:56",
+   "analysis_time": "2026-08-09 18:22",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-08-07 00:00:00",
@@ -428,7 +428,7 @@
    "touch": "",
    "trade_plan": {
     "short": {
-     "in": "🟢 左侧低吸(牛市模式):现价218.72~回踩195.05区间分3批,不等右侧突破确认——跌破162.9认错止损;若放量突破则剩余仓改追｜💼标准仓:偏暖市:标准仓,左侧机会优先",
+     "in": "🟢 左侧低吸(中性市模式):现价218.72~回踩195.05区间先1批小仓,不等右侧突破确认——跌破162.9认错止损;若放量突破则剩余仓改追｜💼1/3仓:中性市:半仓起步,确认后加",
      "out": "目标252.978（10个交易日内·上行概率76%）",
      "invalid": "跌破162.9作废",
      "mode": "左侧低吸"
@@ -463,7 +463,7 @@
    "action": "观察",
    "entry_note": "✅现价可进·08-12前·破57.32废·仅短线｜周期未充分共振，等待触发",
    "cycle_note": "2周偏涨71%｜4-32周震荡49%",
-   "analysis_time": "2026-08-09 10:55",
+   "analysis_time": "2026-08-09 18:22",
    "facts": {
     "schema": "v88.stock-decision/2.0",
     "asof": "2026-08-07 00:00:00",
@@ -596,67 +596,115 @@
  ],
  "runners": [
   {
-   "name": "阿里美股",
-   "code": "BABA",
-   "last": 128.41,
-   "unified_score": 75,
-   "short_score": 80,
-   "p_up": 80,
-   "p_down": 20,
-   "rr": 1.08,
-   "expected_pct": 8.2,
+   "name": "Embraer S.A.",
+   "code": "EMBJ",
+   "last": 73.01,
+   "unified_score": 78,
+   "short_score": 75,
+   "p_up": 75,
+   "p_down": 25,
+   "rr": 1.15,
+   "expected_pct": 5.4,
    "action": "共振·小仓试错",
-   "stage": "启动确认",
-   "mode": "左侧低吸",
-   "why_blocked": "赔率1.08<1.2",
+   "stage": "主升阶段",
+   "mode": "双路径待触发",
+   "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
    "sources": [
-    "引擎榜·美股short",
-    "引擎榜·美股mid",
-    "全选池·美股"
+    "财报08-11"
    ],
    "touch": "",
-   "market": "🇺🇸美股"
+   "market": "🇺🇸美股",
+   "horizons": [
+    {
+     "label": "10日",
+     "p_up": 75,
+     "target_price": 77.186
+    },
+    {
+     "label": "60日",
+     "p_up": 85,
+     "target_price": 84.615
+    },
+    {
+     "label": "120日",
+     "p_up": 64,
+     "target_price": 85.482
+    }
+   ]
   },
   {
-   "name": "Salesforce",
-   "code": "CRM",
-   "last": 192.74,
-   "unified_score": 74,
-   "short_score": 81,
-   "p_up": 81,
-   "p_down": 19,
-   "rr": 0.71,
-   "expected_pct": 5.1,
+   "name": "Coherent Corp.",
+   "code": "COHR",
+   "last": 379.13,
+   "unified_score": 77,
+   "short_score": 85,
+   "p_up": 85,
+   "p_down": 15,
+   "rr": 0.54,
+   "expected_pct": 9.1,
    "action": "趋势偏多·等待回踩",
-   "stage": "启动确认",
-   "mode": "左侧低吸",
-   "why_blocked": "赔率0.71<1.2",
-   "sources": [
-    "引擎榜·美股mid",
-    "全选池·美股"
-   ],
-   "touch": "",
-   "market": "🇺🇸美股"
-  },
-  {
-   "name": "博通",
-   "code": "AVGO",
-   "last": 427.76,
-   "unified_score": 74,
-   "short_score": 73,
-   "p_up": 73,
-   "p_down": 27,
-   "rr": 1.14,
-   "expected_pct": 7.7,
-   "action": "共振·小仓试错",
    "stage": "趋势延续",
    "mode": "双路径待触发",
    "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
    "sources": [
-    "全选池·美股"
+    "财报08-12"
    ],
    "touch": "",
-   "market": "🇺🇸美股"
+   "market": "🇺🇸美股",
+   "horizons": [
+    {
+     "label": "10日",
+     "p_up": 85,
+     "target_price": 473.382
+    },
+    {
+     "label": "60日",
+     "p_up": 51,
+     "target_price": 504.25
+    },
+    {
+     "label": "120日",
+     "p_up": 81,
+     "target_price": 530.782
+    }
+   ]
+  },
+  {
+   "name": "JBS N.V.",
+   "code": "JBS",
+   "last": 14.23,
+   "unified_score": 76,
+   "short_score": 72,
+   "p_up": 72,
+   "p_down": 28,
+   "rr": 1.92,
+   "expected_pct": 12.3,
+   "action": "多周期共振·试仓复核",
+   "stage": "主升阶段",
+   "mode": "左侧低吸",
+   "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
+   "sources": [
+    "财报08-10"
+   ],
+   "touch": "",
+   "market": "🇺🇸美股",
+   "horizons": [
+    {
+     "label": "10日",
+     "p_up": 72,
+     "target_price": 14.985
+    },
+    {
+     "label": "60日",
+     "p_up": 64,
+     "target_price": 16.08
+    },
+    {
+     "label": "120日",
+     "p_up": 45,
+     "target_price": 17.266
+    }
+   ]
   },
   {
    "name": "一博科技",
@@ -676,7 +724,24 @@
     "涨停接力"
    ],
    "touch": "",
-   "market": "🇨🇳A股"
+   "market": "🇨🇳A股",
+   "horizons": [
+    {
+     "label": "10日",
+     "p_up": 85,
+     "target_price": 63.273
+    },
+    {
+     "label": "60日",
+     "p_up": 73,
+     "target_price": 72.557
+    },
+    {
+     "label": "120日",
+     "p_up": 85,
+     "target_price": 74.662
+    }
+   ]
   },
   {
    "name": "哈三联",
@@ -696,7 +761,24 @@
     "涨停接力"
    ],
    "touch": "",
-   "market": "🇨🇳A股"
+   "market": "🇨🇳A股",
+   "horizons": [
+    {
+     "label": "10日",
+     "p_up": 81,
+     "target_price": 14.745
+    },
+    {
+     "label": "60日",
+     "p_up": 85,
+     "target_price": 16.58
+    },
+    {
+     "label": "120日",
+     "p_up": 66,
+     "target_price": 17.864
+    }
+   ]
   },
   {
    "name": "药明康德",
@@ -719,7 +801,24 @@
     "全选池·A股"
    ],
    "touch": "",
-   "market": "🇨🇳A股"
+   "market": "🇨🇳A股",
+   "horizons": [
+    {
+     "label": "10日",
+     "p_up": 85,
+     "target_price": 175.597
+    },
+    {
+     "label": "60日",
+     "p_up": 85,
+     "target_price": 194.586
+    },
+    {
+     "label": "120日",
+     "p_up": 85,
+     "target_price": 190.543
+    }
+   ]
   },
   {
    "name": "药明生物",
@@ -742,18 +841,35 @@
     "全选池·港股"
    ],
    "touch": "",
-   "market": "🇭🇰港股"
+   "market": "🇭🇰港股",
+   "horizons": [
+    {
+     "label": "10日",
+     "p_up": 85,
+     "target_price": 49.038
+    },
+    {
+     "label": "60日",
+     "p_up": 85,
+     "target_price": 53.477
+    },
+    {
+     "label": "120日",
+     "p_up": 81,
+     "target_price": 56.329
+    }
+   ]
   },
   {
-   "name": "快手-W",
-   "code": "1024.HK",
-   "last": 44.18,
-   "unified_score": 65,
-   "short_score": 65,
-   "p_up": 65,
-   "p_down": 35,
-   "rr": 3.47,
-   "expected_pct": 11.6,
+   "name": "京东健康",
+   "code": "6618.HK",
+   "last": 38.94,
+   "unified_score": 68,
+   "short_score": 63,
+   "p_up": 63,
+   "p_down": 37,
+   "rr": 6.08,
+   "expected_pct": 18.6,
    "action": "观察",
    "stage": "启动确认",
    "mode": "现价可进",
@@ -761,28 +877,62 @@
    "sources": [
     "全选池·港股"
    ],
-   "touch": "触线:MA55+52周低位9%",
-   "market": "🇭🇰港股"
+   "touch": "触线:52周低位18%",
+   "market": "🇭🇰港股",
+   "horizons": [
+    {
+     "label": "10日",
+     "p_up": 63,
+     "target_price": 41.326
+    },
+    {
+     "label": "60日",
+     "p_up": 42,
+     "target_price": 51.7
+    },
+    {
+     "label": "120日",
+     "p_up": 26,
+     "target_price": 54.516
+    }
+   ]
   },
   {
-   "name": "理想汽车-W",
-   "code": "2015.HK",
-   "last": 49.92,
-   "unified_score": 64,
-   "short_score": 60,
-   "p_up": 60,
-   "p_down": 40,
-   "rr": 6.13,
-   "expected_pct": 21.4,
+   "name": "金沙中国",
+   "code": "1928.HK",
+   "last": 14.2,
+   "unified_score": 66,
+   "short_score": 57,
+   "p_up": 57,
+   "p_down": 43,
+   "rr": 3.06,
+   "expected_pct": 6.7,
    "action": "观察",
    "stage": "启动确认",
-   "mode": "现价可进",
+   "mode": "左侧低吸",
    "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
    "sources": [
     "全选池·港股"
    ],
-   "touch": "触线:52周低位8%",
-   "market": "🇭🇰港股"
+   "touch": "触线:MA55+52周低位16%",
+   "market": "🇭🇰港股",
+   "horizons": [
+    {
+     "label": "10日",
+     "p_up": 51,
+     "target_price": 15.24
+    },
+    {
+     "label": "60日",
+     "p_up": 35,
+     "target_price": 16.4
+    },
+    {
+     "label": "120日",
+     "p_up": 21,
+     "target_price": 18.58
+    }
+   ]
   }
  ]
 }
