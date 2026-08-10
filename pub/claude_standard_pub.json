@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-10 12:29（北京时间）",
- "generated_at": "2026-08-10 12:29（北京时间）",
+ "asof": "2026-08-10 14:31（北京时间）",
+ "generated_at": "2026-08-10 14:31（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -121,6 +121,36 @@
    "name": "衢州东峰",
    "side": "机会",
    "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "9901.HK": {
+   "code": "9901.HK",
+   "name": "新东方-S",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "9987.HK": {
+   "code": "9987.HK",
+   "name": "百胜中国",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "9858.HK": {
+   "code": "9858.HK",
+   "name": "优然牧业",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -351,17 +381,17 @@
   }
  },
  "stats": {
-  "n_pass": 300,
-  "n_reject": 179,
+  "n_pass": 451,
+  "n_reject": 17,
   "by_rule": {
-   "CS9": 0,
+   "CS9": 1,
    "CS1": 0,
    "CS2": 4,
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
-   "CS6": 166,
-   "CS7": 92,
+   "CS6": 11,
+   "CS7": 9,
    "CS8": 0
   }
  }

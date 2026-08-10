@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-10 09:45（北京时间）",
+ "generated_at": "2026-08-10 14:32（北京时间）",
  "version": "dropout-v1",
  "rule": "区分『评估后不合格』(正常) 与 『从未被评估』(bug)。用户定纲：评分不够是正常；**压根不在池里就是问题**。",
  "boundary": "只对关键桶缺输入告警，不对分数低告警——噪音大的哨兵=死哨兵（fact_gate 290条误报的教训）。",
@@ -15,36 +15,6 @@
     "timing"
    ],
    "why": "标为 not_evaluated —— **不是不够好，是没被算过**"
-  },
-  {
-   "code": "3110.HK",
-   "name": "港股高股息ETF",
-   "tier": "1A",
-   "not_evaluated": false,
-   "missing_buckets": [
-    "timing"
-   ],
-   "why": "关键桶缺输入：timing → 该桶落回默认值，而默认值恰好在门槛不利的一侧"
-  },
-  {
-   "code": "1825.HK",
-   "name": "STERLING GP",
-   "tier": "1A",
-   "not_evaluated": false,
-   "missing_buckets": [
-    "timing"
-   ],
-   "why": "关键桶缺输入：timing → 该桶落回默认值，而默认值恰好在门槛不利的一侧"
-  },
-  {
-   "code": "601985.SS",
-   "name": "中国核电",
-   "tier": "1A",
-   "not_evaluated": false,
-   "missing_buckets": [
-    "timing"
-   ],
-   "why": "关键桶缺输入：timing → 该桶落回默认值，而默认值恰好在门槛不利的一侧"
   }
  ],
  "missing_from_grade": [
@@ -63,244 +33,40 @@
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   },
   {
-   "code": "BNY",
-   "name": "纽约梅隆银行",
-   "src": "自选",
+   "code": "513650.SS",
+   "name": "标普ETF(南方标普500)",
+   "src": "持仓",
    "in_pool": true,
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   },
   {
-   "code": "SYY",
-   "name": "西斯科",
-   "src": "自选",
+   "code": "513500.SS",
+   "name": "标普500",
+   "src": "持仓",
    "in_pool": true,
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   },
   {
-   "code": "2318.HK",
-   "name": "中国平安港",
-   "src": "自选",
+   "code": "159632.SZ",
+   "name": "纳斯达克",
+   "src": "持仓",
    "in_pool": true,
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   },
   {
-   "code": "9999.HK",
-   "name": "网易",
-   "src": "自选",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
-  },
-  {
-   "code": "9858.HK",
-   "name": "优然牧业",
-   "src": "自选",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
-  },
-  {
-   "code": "5.HK",
-   "name": "汇丰控股",
-   "src": "自选",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
-  },
-  {
-   "code": "3968.HK",
-   "name": "招商银行",
-   "src": "自选",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
-  },
-  {
-   "code": "1.HK",
-   "name": "长和",
-   "src": "自选",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
-  },
-  {
-   "code": "9987.HK",
-   "name": "百胜中国",
-   "src": "自选",
-   "in_pool": false,
-   "why": "**既不在池也不在评级段** → 强制入池未生效"
-  },
-  {
-   "code": "939.HK",
-   "name": "建设银行",
-   "src": "自选",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
-  },
-  {
-   "code": "600519.SS",
-   "name": "贵州茅台",
-   "src": "自选",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
-  },
-  {
-   "code": "601857.SS",
-   "name": "中国石油",
-   "src": "自选",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
-  },
-  {
-   "code": "300663.SZ",
-   "name": "科蓝软件",
-   "src": "自选",
-   "in_pool": false,
-   "why": "**既不在池也不在评级段** → 强制入池未生效"
-  },
-  {
-   "code": "002292.SZ",
-   "name": "奥飞娱乐",
-   "src": "自选",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
-  },
-  {
-   "code": "002589.SZ",
-   "name": "瑞康医药",
-   "src": "自选",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
-  },
-  {
-   "code": "688669.SS",
-   "name": "聚石化学",
-   "src": "自选",
+   "code": "MS",
+   "name": "摩根士丹利",
+   "src": "持仓",
    "in_pool": true,
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   }
  ],
  "quiet_long": [
   {
-   "code": "KO",
-   "name": "可口可乐",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "603129.SS",
-   "name": "春风动力",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "2328.HK",
-   "name": "中国财险",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
    "code": "MRK",
    "name": "默沙东",
    "tier": "0A",
    "src": "持仓"
-  },
-  {
-   "code": "GM",
-   "name": "通用汽车",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "MA",
-   "name": "万事达",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "0622.HK",
-   "name": "威华达控股",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "TRV",
-   "name": "旅行者保险",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "V",
-   "name": "维萨",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "601009.SS",
-   "name": "南京银行",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "002142.SZ",
-   "name": "宁波银行",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "601628.SS",
-   "name": "中国人寿",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "2800.HK",
-   "name": "盈富基金",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "600036.SS",
-   "name": "招商银行",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "2888.HK",
-   "name": "渣打集团",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "1919.HK",
-   "name": "中远海控",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "6886.HK",
-   "name": "华泰证券",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "CB",
-   "name": "安达保险",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "IYR",
-   "name": "美国房地产指数ETF-iShares",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "600028.SS",
-   "name": "中国石化",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "VLO",
-   "name": "瓦莱罗能源",
-   "tier": "0A",
-   "src": "自选"
   },
   {
    "code": "688825.SS",
@@ -309,60 +75,78 @@
    "src": "自选"
   },
   {
-   "code": "1703.HK",
-   "name": "谊和股份",
+   "code": "300631.SZ",
+   "name": "久吾高科",
    "tier": "0A",
    "src": "自选"
   },
   {
-   "code": "000820.SZ",
-   "name": "*ST节能",
+   "code": "300996.SZ",
+   "name": "普联软件",
    "tier": "0A",
    "src": "自选"
   },
   {
-   "code": "603444.SS",
-   "name": "吉比特",
+   "code": "PFE",
+   "name": "辉瑞",
+   "tier": "0A",
+   "src": "持仓"
+  },
+  {
+   "code": "NVDA",
+   "name": "英伟达",
+   "tier": "0A",
+   "src": "持仓"
+  },
+  {
+   "code": "QQQM",
+   "name": "纳指100ETF",
+   "tier": "0A",
+   "src": "持仓"
+  },
+  {
+   "code": "002550.SZ",
+   "name": "千红制药",
    "tier": "0A",
    "src": "自选"
   },
   {
-   "code": "0293.HK",
-   "name": "国泰航空",
+   "code": "VOO",
+   "name": "Vanguard标普500",
+   "tier": "0A",
+   "src": "持仓"
+  },
+  {
+   "code": "LLY",
+   "name": "礼来",
    "tier": "0A",
    "src": "自选"
   },
   {
-   "code": "603580.SS",
-   "name": "艾艾精工",
+   "code": "0700.HK",
+   "name": "腾讯控股",
    "tier": "0A",
    "src": "自选"
   },
   {
-   "code": "2580.HK",
-   "name": "奥克斯电气",
+   "code": "BBVA",
+   "name": "BBVA",
    "tier": "0A",
    "src": "自选"
   },
   {
-   "code": "600351.SS",
-   "name": "亚宝药业",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "300311.SZ",
-   "name": "ST任子行",
+   "code": "ARXS",
+   "name": "ARXS",
    "tier": "0A",
    "src": "自选"
   }
  ],
  "stats": {
-  "graded": 413,
-  "pool": 2523,
-  "must": 252,
-  "silent_dropout": 4,
-  "missing_from_grade": 18,
-  "quiet_long": 117
+  "graded": 425,
+  "pool": 2327,
+  "must": 42,
+  "silent_dropout": 1,
+  "missing_from_grade": 6,
+  "quiet_long": 13
  }
 }
