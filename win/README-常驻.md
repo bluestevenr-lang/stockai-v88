@@ -1,4 +1,6 @@
-# V88 · Windows 主机化（第四终端 → 常驻主机）
+# V88 · Windows 镜像常驻（历史任务名保留）
+
+> 2026-08-10：GPT/Codex接管V88核心。Win不再启动Claude遥控，只保留双仓同步与前端备用职责。
 
 **2026-07-30 定则变更**：Win 从「只跑前端的第四终端」升级为 **常驻遥控主机**。
 Mac 变成可开可关。流水线仍然**不在任何个人电脑上跑**——那是云端 GitHub Actions 的活。
@@ -19,21 +21,8 @@ Mac 变成可开可关。流水线仍然**不在任何个人电脑上跑**——
    ```
    powershell -ExecutionPolicy Bypass -File "%USERPROFILE%\Desktop\StockAI\win\常驻V88.ps1"
    ```
-3. **⚠️ 手动过两个交互闸（脚本代答不了，跳过则后台永远起不来）**——普通 PowerShell：
-   ```
-   cd "$env:USERPROFILE\Desktop\StockAI"
-   claude                     # 选 1. Yes, I trust this folder  然后 /exit
-   claude remote-control      # 对 Enable Remote Control? 答 y;spawn mode 选 1(same-dir);然后 Ctrl+C
-   ```
-   实测教训（2026-07-30）：漏掉这两步时日志一直刷
-   `Error: Workspace not trusted...` 和 `Enable Remote Control? (y/n)`，
-   任务显示 Running 但其实卡在等输入。
-4. 进 BIOS 打开 `Restore on AC Power Loss`（脚本改不了，断电后自动开机靠它）
-5. 手机验收：Claude App → Code 区 → 能看到这台 Win（电脑图标 + 绿点）
-
-> 若未装 Claude Code：`irm https://claude.ai/install.ps1 | iex`
-> 装完**必须先手动跑一次 `claude` 登录**（与手机同账号），
-> 否则无人登录模式下拿不到凭据，任务会起不来。
+3. 进 BIOS 打开 `Restore on AC Power Loss`（脚本改不了，断电后自动开机靠它）
+4. 验收 `win\logs\remote_*.log`：应每10分钟出现 `mirror sync complete`。
 
 ## 文件职责
 
@@ -41,9 +30,9 @@ Mac 变成可开可关。流水线仍然**不在任何个人电脑上跑**——
 |---|---|---|
 | `初始化V88.ps1` | 人，一次性 | 克隆两仓 + 装依赖 |
 | `常驻V88.ps1` | 人，一次性（管理员） | 关睡眠 + 注册两个计划任务 |
-| `遥控常驻V88.bat` | **任务计划程序** | 拉两仓 → 起 `claude remote-control` → 挂了自己重起 |
+| `遥控常驻V88.bat` | **任务计划程序** | 历史文件名保留；每10分钟拉两仓 |
 | `夜间重启遥控.bat` | **任务计划程序 03:30** | 踢一次遥控，强制拿最新代码 |
-| `手机遥控V88.bat` | 人，手动调试用 | 交互版，有 pause，关窗即下线 |
+| `手机遥控V88.bat` | 历史文件 | 不再用于现役V88 |
 | `启动V88.bat` | 人 | 看板，绑 `127.0.0.1`，仅本机 |
 | `启动V88-手机可见.bat` | 人 | 看板，绑 `0.0.0.0`，内网手机可看 |
 | `同步V88.bat` | 人 | 把 Win 的改动 commit+push 回 GitHub |
@@ -58,7 +47,8 @@ Mac 变成可开可关。流水线仍然**不在任何个人电脑上跑**——
 | 角色 | 谁干 | 需要开机吗 |
 |---|---|---|
 | 流水线 / 飞书推送 | **云端 GitHub Actions** | 都不用 |
-| 手机遥控主机 | **Win，7×24** | Win |
+| 仓库镜像 / 前端备用 | **Win，7×24** | Win |
+| 核心实现 / 复核 / 发布 | **GPT/Codex（Mac+云端）** | 按需 |
 | 看板 | **Win :8501 内网** | Win |
 | 私密资产层（`data/accounts.json`） | **Mac，按需** | Mac |
 

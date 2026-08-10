@@ -1,4 +1,7 @@
-# StockAI / V88 项目约定（CLAUDE.md）
+# StockAI / V88 项目约定（历史文件名保留；GPT/Codex现役接管）
+
+> 2026-08-10用户授权：GPT/Codex全权负责V88核心业务、维护、恢复和跨端一致性。
+> 大结构不变；旧Claude职责迁入现有GPT/Codex路径。旧文件名仅为兼容，不表示Claude仍在运行。
 
 真实主程序：`app_v88_integrated.py`（Streamlit）。桌面「V88」快捷方式启动
 `v88_master_launch.sh` → 该文件。所有研发都是 **V88 迭代**。
@@ -39,15 +42,16 @@
 **如果你正运行在 Windows 上**（路径形如 `C:\Users\...`，主机名 `DESKTOP-*`），你就是那台常驻主机：
 
 - 你由任务计划程序 `V88-遥控常驻` 拉起（`win/遥控常驻V88.bat`：崩了自愈、开机自起、
-  无人登录也跑）。用户从手机 Claude App → Code 区指挥你，会话名形如 `desktop-4h6es39-*`。
+  无人登录也跑）。旧Claude手机遥控入口已停用；Win当前只作为代码镜像与前端备用机，
+  核心维护由Mac上的GPT/Codex执行。
 - **本机没有 `data/`**：整目录被 `.gitignore` 排除。`data/accounts.json`
   更是明文标注「永不进任何仓库」——**总资产 / 现金 / 八账户数据只存 Mac**。
   一切涉及仓位占比、斯波朗迪资金管理的判断，**必须说明「需回 Mac 计算」，绝不编数字**。
 - **`positions.json` 在仓库根、未被忽略** → 持仓底稿会同步到本机，个股研究可以做。
 - **本机不跑流水线**：云端 Actions 已全覆盖（日报 3 趟 + 盘中快扫每 15 分钟 + 轮动盘前）。
   双端同跑 = 重复推飞书 + 双写 `data/` 必冲突。
-- 记忆不在本机 `~/.claude/` 里 —— 开场先读**私仓** `ai-daily-report-v2/claude-memory/MEMORY.md`
-  （Mac 侧记忆的脱敏副本，含密钥的行已替换为占位符）。
+- 开工先读私仓 `AGENTS.md`、`docs/CODEX_TAKEOVER.md` 和升级记录；
+  `claude-memory/` 仅作历史审计，不是现役运行依赖。
 - 装机与排障见 `win/README-常驻.md`。**`.bat` 命令行一律 ASCII**：UTF-8 无 BOM +
   `chcp 65001` 下中文会让 cmd 截断命令行，实测致 `exit 9009`；`.ps1` 反过来**必须带 UTF-8 BOM**，
   否则 PowerShell 5.1 按 GBK 解码中文直接 ParserError。

@@ -3189,9 +3189,7 @@ try:
         _CS9 = json.loads((_cb_repo9 / "data" / "claude_standard.json").read_text(encoding="utf-8"))
     except Exception:
         _CS9 = {}
-    # 【V88·Claude认证徽章 2026-07-27 用户点单"买卖名单要有Fable/Opus认证,含C的小金标"】
-    # 🅒=Claude(Fable5/Opus5)独立复核结论与规则引擎一致;⚡=有异议(不发徽章,给反对理由);
-    # 无标=本班未复核该只(重点股优先,不装作全审过)。数据来自三方会审,零额外AI花费。
+    # ai_cert 为历史兼容镜像；现役页面只展示 V88规则闸(R/✓) 与 GPT复核(G)。
     try:
         # 【P1·2026-08-02 GPT审计】ai_cert 退出"认证"语义:
         # ①它是**自然语言解析**出来的(把系统异议里的"CS"当成了股票代码,8条里污染1条)
@@ -3214,39 +3212,27 @@ try:
         _CERT9 = {}
 
     def _cert_badge9(_cd, _nm=""):
-        """【2026-07-27 用户怒指"这么多没通过的还能展示"】徽章语义重做:
-        原⊘墨绿禁止符=本班Claude没审到,但视觉上像"禁止/没通过"——满屏禁止符=在推荐位
-        摆一堆没过关的票,是我把语义搞拧了。现在改成:
-          🅒金C = Claude人工复核过且与规则一致(最高一档)
-          ✅绿勾 = 已过Claude标准闸(七条规则机检达标——规则本身就是Claude历次否决理由固化的)
-          ⚡红   = 人工复核有异议(这类已被移出名单,若仍出现说明是别处引用,标出来警示)
-        **不再有"没审过"的空档**:名单里每只都至少机检达标,不达标的根本不展示。"""
-        _e9 = _b9 = None
+        """历史函数名保留；现只显示本地 V88 规则闸，不冒充任何AI认证。"""
+        _b9 = None
         try:
             for _k9 in (str(_cd or ""), str(_cd or "").split(".")[0], str(_nm or "")):
                 if not _k9:
                     continue
-                _e9 = _e9 or (_CERT9.get("by_code") or {}).get(_k9) or (_CERT9.get("by_name") or {}).get(_k9)
-                _b9 = _b9 or (_CS9.get("pass") or {}).get(_k9) or (_CS9.get("reject") or {}).get(_k9)
+                if _k9 in (_CS9.get("pass") or {}):
+                    _b9 = {"verdict": "达标", **((_CS9.get("pass") or {}).get(_k9) or {})}
+                elif _k9 in (_CS9.get("reject") or {}):
+                    _b9 = {"verdict": "否决", **((_CS9.get("reject") or {}).get(_k9) or {})}
         except Exception:
             pass
         _base9 = ("display:inline-block;width:15px;height:15px;line-height:15px;text-align:center;"
                   "border-radius:50%;font-size:10px;font-weight:800;margin-left:3px;"
                   "vertical-align:middle;letter-spacing:-.3px")
-        if _e9 and _e9.get("verdict") == "一致":
-            _tip9 = (f"{_e9.get('model', 'Claude')}人工复核·{_e9.get('shift', '')}"
-                     f"｜{str(_e9.get('note', ''))[:70]}").replace('"', "'")
-            return (f"<span title=\"🅒Fable上下文复核:独立结论与规则引擎一致(**展示用,不影响档位**;准入以双剑为准)。{_tip9}\" "
-                    f"style='{_base9};background:linear-gradient(145deg,#fde68a,#d97706);color:#4a2c05;"
-                    "box-shadow:0 1px 2px rgba(180,120,0,.45)'>C</span>")
-        if _e9:      # 人工有异议(理论上已被移出名单)
-            _tip9 = str(_e9.get("note", ""))[:80].replace('"', "'")
-            return (f"<span title=\"⚡Claude人工复核有异议:{_tip9}——本应已移出名单,出现在此说明是其他模块引用\" "
-                    f"style='{_base9};background:#dc2626;color:#fff'>C̸</span>")
-        if _b9 and not (_b9.get("rules") or []):
-            return ("<span title='✅已过Claude标准闸:七条规则机检达标(规则源自Claude历次否决理由)。"
-                    "未经人工复核,但硬伤已排除' "
-                    f"style='{_base9};background:#dcfce7;color:#15803d;border:1px solid #86efac'>✓</span>")
+        if _b9 and _b9.get("verdict") == "否决":
+            return (f"<span title='V88规则闸否决:{'/'.join(_b9.get('rules') or [])}' "
+                    f"style='{_base9};background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5'>R̸</span>")
+        if _b9:
+            return ("<span title='V88本地规则闸达标；这是确定性机检，不是AI背书' "
+                    f"style='{_base9};background:#dcfce7;color:#15803d;border:1px solid #86efac'>R</span>")
         return ""      # 无结论=不打标,不再用禁止符污染视觉
 
     def _gpt_badge9(_cd, _nm=""):
@@ -3559,7 +3545,7 @@ try:
             _cb_sell9.append((_r9.get("name"), _r9.get("code"), _r9.get("last"),
                               int(_r9.get("p_down") or 0), str(_r9.get("action") or "")[:12],
                               str(_r9.get("cycle_note") or _r9.get("entry_note") or "")[:44]))
-    # 【V88·Claude标准闸 2026-07-27 用户定纲"有异议的还摆在推荐位没有参考意义"】
+    # 【V88·标准规则闸】有明硬伤的标的不进推荐位。
     # 名单出厂前先过闸:CS1宽基不用个股尺/CS2涨概率过半禁减仓/CS4同族敞口去重/
     # CS5双事件要宽赔率/CS6非低位且上行薄/CS7过热薄赔率——不达标的转⏸未达标区,
     # 理由写明白(规则源自Fable历次异议,带rule_id可被台账数据推翻)
@@ -3574,7 +3560,7 @@ try:
         for _c9d, _v9d in (_CERT9.get("by_code") or {}).items():
             if _v9d.get("verdict") == "分歧" and _c9d not in _cs_rej9:
                 _cs_rej9[_c9d] = {"code": _c9d, "name": _v9d.get("name"), "side": "人工",
-                                  "action": "", "rules": ["Claude人工异议"],
+                                  "action": "", "rules": ["历史复核异议"],
                                   "why": str(_v9d.get("note") or "")[:90]}
     except Exception:
         pass
@@ -3602,7 +3588,7 @@ try:
     # 【漏斗断点修复 2026-07-27 用户"今天全美股就辉瑞和好市多可买??"】
     # 病根:全市场机会扫描每天挖出10+只可执行(池外新发现),却只显示在③a小节,
     # 从不进"确认买"tab——用户看到的买单永远只有自选池那两三只,以为全市场没货。
-    # 现在池外可执行直接进买单(标源"池外新发现"),仍受Claude标准闸与环境闸约束。
+    # 现在池外可执行直接进买单(标源"池外新发现"),仍受V88规则闸与环境闸约束。
     try:
         for _o9x in (_cbj9("opportunity_scan.json").get("exec") or [])[:10]:
             _k9x = str(_o9x.get("code") or "").upper()
@@ -3937,10 +3923,10 @@ try:
             "<div style='font-size:11px;color:#64748b;margin:-2px 0 3px'>验证标识："
             "<span style='display:inline-block;width:14px;height:14px;line-height:14px;text-align:center;"
             "border-radius:50%;background:linear-gradient(145deg,#fde68a,#d97706);color:#4a2c05;"
-            "font-size:9.5px;font-weight:800'>C</span> Claude人工复核过·结论与引擎一致　"
+            "font-size:9.5px;font-weight:800'>R</span> V88本地规则闸达标　"
             "<span style='display:inline-block;width:14px;height:14px;line-height:14px;text-align:center;"
             "border-radius:50%;background:#dcfce7;color:#15803d;border:1px solid #86efac;"
-            "font-size:9.5px;font-weight:800'>✓</span> 已过Claude标准闸(七条机检规则)　"
+            "font-size:9.5px;font-weight:800'>G</span> GPT/Codex独立复核　"
             "<span style='color:#94a3b8'>无标=引擎自判(未经复核)｜未通过的已移出名单</span></div>",
             unsafe_allow_html=True)
         # 【3A并板 2026-07-31 用户"图二内容整合到图一"】雷达榜面行进同一张表:
@@ -4234,9 +4220,7 @@ try:
         with _tab_h9:
             st.markdown(_tbl9(_t_hold9) if _t_hold9 else "<span style='font-size:12px;color:#94a3b8'>无持有档记录</span>",
                         unsafe_allow_html=True)
-        # 【三方会审对照 2026-07-27 用户"我怎么没看到claude/V88/gpt的分析对比分歧的地方"】
-        # 三方结论原本各存各的文件,界面从没摆在一起。分歧排最前——三方都说好的按纲领执行,
-        # 吵起来的才是要自己拿主意的地方。GPT目前影子模式:它反对不拦名单,只入台账攒战绩。
+        # 三层审核对照：V88行动引擎 + V88规则闸 + GPT/Codex复核。
         try:
             _tw9 = json.loads((_cb_repo9 / "data" / "three_way.json").read_text(encoding="utf-8"))
             _twr9 = (_tw9.get("rows") or [])
@@ -4244,7 +4228,7 @@ try:
                 _cnt9 = _tw9.get("counts") or {}
                 _tw_html9 = []
                 for _r9w in _twr9[:12]:
-                    _c9w, _g9w = (_r9w.get("claude") or {}), (_r9w.get("gpt") or {})
+                    _c9w, _g9w = (_r9w.get("rules_gate") or {}), (_r9w.get("gpt") or {})
                     _cs9w = str(_r9w.get("consensus") or "")
                     _col9w = ("#b45309" if "分歧" in _cs9w else
                               ("#16a34a" if "一致" in _cs9w else "#94a3b8"))
@@ -4262,25 +4246,24 @@ try:
                         f"{_cb_nm9(_r9w.get('name'), _r9w.get('code'))}</a>"
                         f"<span style='color:#475569'>　V88:{_rl9w.get('dir')}{_rl9w.get('prob')}%"
                         f"({_rl9w.get('action')})</span>"
-                        f"<span style='color:#7c3aed'>　Claude:{_c9w.get('verdict') or '未复核'}</span>"
-                        f"<span style='color:#0891b2'>　GPT:{_g9w.get('side') or '未复核'}"
+                        f"<span style='color:#7c3aed'>　规则闸:{_c9w.get('verdict') or '未覆盖'}</span>"
+                        f"<span style='color:#0891b2'>　GPT:{_g9w.get('verdict') or '未复核'}"
                         + (f"·{_g9w.get('why', '')[:24]}" if _g9w else "") + "</span></div>")
-                with st.expander(f"⚖️ 三方会审对照　⚡分歧{_cnt9.get('⚡有分歧', 0)}只"
-                                 f"·✅一致{_cnt9.get('✅双方一致', 0) + _cnt9.get('✅三方一致', 0)}只"
-                                 f"　——V88引擎 vs Claude复核 vs GPT盲审", expanded=False):
+                with st.expander(f"⚖️ 三层审核对照　⚡分歧{_cnt9.get('⚡有分歧/否决', 0)}只"
+                                 f"·✅一致{_cnt9.get('✅三层一致', 0)}只"
+                                 f"　——V88引擎 vs 规则闸 vs GPT/Codex", expanded=False):
                     st.markdown("".join(_tw_html9), unsafe_allow_html=True)
-                    st.caption("⚡分歧=两方以上意见不合,最需要你自己拿主意;✅一致=两套以上独立逻辑对上了。"
-                               "GPT目前影子模式(有记录无投票权),它的反对不会拦名单,但会入台账攒战绩——"
-                               "两周后用数据说明谁更准(Codex双周复盘见data/gpt_biweekly.md)。")
+                    st.caption("⚡分歧=规则或GPT明确反对；✅一致=行动、硬规则、GPT复核均一致。"
+                               "GPT结论、理由和分析时间必须同屏；缺失时显示待复核。")
         except Exception as _tw_e9:
             # 静默吞异常=功能消失还查不出原因(2026-07-27踩过):必须留痕
             logging.exception(f"[V88] 三方会审对照渲染失败: {_tw_e9}")
-        # 【Claude标准闸·未达标区 2026-07-27】被闸拦下的不许凭空消失:折叠列出+写明哪条规则+人话理由
+        # 【V88标准规则闸·未达标区】被闸拦下的不许凭空消失。
         # (透明才可证伪;台账到期后深检算"被拦的票后来表现如何"来修订阈值)
         if _cb_sell_off9 or _cb_buy_off9:
             _off_n9 = len(_cb_sell_off9) + len(_cb_buy_off9)
-            with st.expander(f"⏸ 未达Claude标准·已移出名单({_off_n9}只)　"
-                             f"——规则源自Fable/Opus历次否决理由,点开看拦下的原因", expanded=False):
+            with st.expander(f"⏸ 未达V88规则闸·已移出名单({_off_n9}只)　"
+                             f"——点开查看确定性规则原因", expanded=False):
                 _off_html9 = []
                 # 【两尺分歧调解 2026-07-31 用户抓"汇丰既被移出又置顶"】CS(左侧均值回归尺)
                 # 拦下但已被3A雷达(右侧趋势尺)接管的股,不再谎称"已移出"——单独标⚖️两尺分歧;
@@ -4320,7 +4303,7 @@ try:
                                 "⚖️ 两尺分歧(非移出——右侧尺已接管):</div>"
                                 + "".join(_takeover9o), unsafe_allow_html=True)
                 st.markdown("".join(_off_html9), unsafe_allow_html=True)
-                st.caption("这些规则不是拍脑袋:每条都来自Claude复核时反复否决的真实案例(带rule_id)。"
+                st.caption("这些规则来自历史复盘案例并带rule_id；规则必须接受后续数据检验。"
                            "被拦的票会入台账跟踪,若数据证明拦错了,阈值就改——规则必须能被数据推翻。")
         try:
             if len(_cb_rows9) >= 3:
@@ -4473,9 +4456,7 @@ try:
                         _code_of9.setdefault(str(_v9c.get("name") or ""), _k9c)
                     for _k9c, _v9c in list((_CERT9.get("by_name") or {}).items()):
                         _code_of9.setdefault(str(_k9c), str(_v9c.get("code") or ""))
-                    # 【大盘级验证 2026-07-27 用户"对大盘的预测也要C检验"】大盘剧本行(A股:/港股:/美股:)
-                    # 挂市场徽章:与个股不同,大盘是**数字对账**——Fable独立读的2周概率 vs 引擎快照,
-                    # 差≤3pp=一致(金C)、3~8pp=分歧(红)、>8pp=打架(不发标)。悬停看双方数字。
+                    # 大盘剧本行(A股:/港股:/美股:)沿用同一GPT/Codex复核徽章。
                     _mkt_cert9 = (_CERT9.get("by_market") or {})
 
                     def _mkt_badge9(_mk9b):
@@ -4487,12 +4468,12 @@ try:
                                  "text-align:center;border-radius:50%;font-size:10px;font-weight:800;"
                                  "margin-left:3px;vertical-align:middle")
                         if _v9b.get("verdict") == "一致":
-                            return (f"<span title=\"🅒Claude大盘复核通过:{_tp9b}\" style='{_st9b};"
+                            return (f"<span title=\"GPT/Codex大盘复核通过:{_tp9b}\" style='{_st9b};"
                                     "background:linear-gradient(145deg,#fde68a,#d97706);color:#4a2c05;"
-                                    "box-shadow:0 1px 2px rgba(180,120,0,.45)'>C</span>")
+                                    "box-shadow:0 1px 2px rgba(180,120,0,.45)'>G</span>")
                         if _v9b.get("verdict") == "分歧":
-                            return (f"<span title=\"⚡Claude与引擎读数有差异:{_tp9b}\" style='{_st9b};"
-                                    "background:#dc2626;color:#fff'>C̸</span>")
+                            return (f"<span title=\"⚡GPT/Codex与引擎读数有差异:{_tp9b}\" style='{_st9b};"
+                                    "background:#dc2626;color:#fff'>G̸</span>")
                         return ""
                     _kept9, _dropped9 = [], 0
                     for _ln9tp in _tp_html9.splitlines():
@@ -4524,7 +4505,7 @@ try:
                     _tp_html9 = "\n".join(_kept9)
                     if _dropped9:
                         _tp_html9 += (f"\n\n<span style='font-size:11px;color:#94a3b8'>"
-                                      f"（另有{_dropped9}条未达Claude标准已移出,见上方⏸未达标区）</span>")
+                                      f"（另有{_dropped9}条未达V88规则闸已移出,见上方⏸未达标区）</span>")
                 except Exception:
                     pass
                 # unsafe_allow_html:预案文本由本系统生成,注入的是自家徽章HTML
@@ -5350,21 +5331,28 @@ except Exception:
 # 先看大势定调再看自己的票。由下方全球概览块通过 slot 回填。
 # (U3.2 slot已上移至页首——用户点单'全球概览置顶,看时间方便')
 
-# 【U5·Fable交叉分析呈现 2026-07-27 用户定纲"交叉信息一定要明显标注"】
+# Fable复核呈现：现役只读 GPT/Codex + 经典书理结果，不展示旧Claude日报。
 try:
-    _fr_fp9 = Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "fable_review.md"
+    _fr_fp9 = Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "fable_plan.json"
     if _fr_fp9.exists():
-        _fr_txt9 = _fr_fp9.read_text(encoding="utf-8")[:3000]
-        with st.expander("🎖️ Fable交叉分析 · Claude独立复核（早晚双审·非DeepSeek非规则引擎·零现金）",
-                         expanded=False):
+        _fr_obj9 = json.loads(_fr_fp9.read_text(encoding="utf-8"))
+        _fr_months9 = _fr_obj9.get("months") or {}
+        _fr_key9 = sorted(_fr_months9)[-1] if _fr_months9 else ""
+        _fr_tri9 = ((_fr_months9.get(_fr_key9) or {}).get("triad_review") or {})
+        _fr_con9 = _fr_tri9.get("consensus") or {}
+        with st.expander("🎖️ Fable复核 · GPT/Codex＋经典书理（不自动交易）", expanded=False):
             st.markdown("<div style='background:#eef2ff;border-left:4px solid #6366f1;border-radius:6px;"
                         "padding:.3rem .6rem;font-size:12px;color:#4338ca'>"
-                        "🎖️ 本节全部内容=Claude(Fable)独立交叉验证视角——与DeepSeek研判、规则引擎互相制衡,"
-                        "三方一致=高置信,分歧=谨慎。首班开机即跑,二班距首班≥8小时。</div>",
+                        "🎖️ 现役复核=GPT/Codex独立判断＋经典书理校验；V88规则闸单独显示。"
+                        "复核只提供证据和异议，不自动下单。</div>",
                         unsafe_allow_html=True)
-            st.markdown(_fr_txt9.replace("~", "～"))
+            st.markdown(f"**月份**：{_fr_key9 or '待生成'}　**状态**：{_fr_con9.get('state','待复核')}　"
+                        f"**分析时间**：{_fr_tri9.get('reviewed_at') or _fr_tri9.get('checked_at') or '—'}")
+            for _fr_r9 in (_fr_tri9.get("reviews") or []):
+                st.markdown(f"- **{_fr_r9.get('party')}**：{_fr_r9.get('verdict')}　"
+                            f"{str(_fr_r9.get('reason') or _fr_r9.get('why') or '')[:100]}")
     else:
-        st.caption("🎖️ Fable交叉分析: 首份日审待生成(定时任务9点/21点或开机即补)")
+        st.caption("🎖️ Fable复核：待GPT/Codex＋经典书理生成")
 except Exception:
     pass
 

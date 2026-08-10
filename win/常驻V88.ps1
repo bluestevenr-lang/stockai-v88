@@ -11,8 +11,8 @@
 #
 #  本脚本做三件事：
 #    ① 电源：交流电下永不睡眠 / 关休眠 / 屏幕 15 分钟黑
-#    ② 注册「V88-遥控常驻」：开机自起 + 崩溃自愈 + 无人登录也跑
-#    ③ 注册「V88-夜间重启遥控」：每天 03:30 踢一次，强制拿最新代码
+#    ② 注册「V88-遥控常驻」（历史任务名保留）：开机后定时同步两仓
+#    ③ 注册「V88-夜间重启遥控」（历史任务名保留）：每天 03:30 强制换新
 #
 #  卸载：见文件末尾注释。
 # ══════════════════════════════════════════════════════════════
@@ -59,33 +59,7 @@ if (-not (Test-Path $NightBat)) { Die "找不到 $NightBat —— 先双击 同�
 Ok "脚本齐全"
 
 if (-not (Get-Command git -ErrorAction SilentlyContinue))    { Die "缺少 git" }
-
-# Claude Code 的原生安装装到 %USERPROFILE%\.local\bin，但装完不会自动进 PATH。
-# 这里主动找它并把目录永久写进用户 PATH，省掉手点「系统属性→环境变量」。
-$ClaudeBin = "$env:USERPROFILE\.local\bin"
-$claudeCmd = Get-Command claude -ErrorAction SilentlyContinue
-if (-not $claudeCmd -and (Test-Path "$ClaudeBin\claude.exe")) {
-  $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
-  if ($userPath -notlike "*$ClaudeBin*") {
-    [Environment]::SetEnvironmentVariable("Path", "$userPath;$ClaudeBin", "User")
-    Ok "已把 $ClaudeBin 写进用户 PATH（新开的终端才生效）"
-  }
-  $env:Path = "$env:Path;$ClaudeBin"      # 本次会话立即可用
-  $claudeCmd = Get-Command claude -ErrorAction SilentlyContinue
-}
-
-if ($claudeCmd) {
-  Ok "Claude Code 已安装: $($claudeCmd.Source)"
-  # 登录凭据在 %USERPROFILE%\.claude 下；没登录过的话无人登录模式拿不到凭据
-  if (-not (Test-Path "$env:USERPROFILE\.claude")) {
-    Warn "还没登录过 Claude Code。装完任务后请手动跑一次 claude 登录（与手机同账号），否则遥控起不来。"
-  }
-} else {
-  Warn "未装 Claude Code。任务照样注册，但遥控起不来。装法："
-  Write-Host "         irm https://claude.ai/install.ps1 | iex" -ForegroundColor Gray
-  Write-Host "       装完必须先手动跑一次 claude 登录（用与手机相同的账号），" -ForegroundColor Gray
-  Write-Host "       否则无人登录模式下拿不到凭据。" -ForegroundColor Gray
-}
+Ok "GPT/Codex接管模式：Win只做仓库镜像，不再要求Claude客户端或登录凭据"
 
 # ── 1. 电源：让这台机器不睡 ─────────────────────────────────────
 Write-Host ""
@@ -138,7 +112,7 @@ $settings = New-ScheduledTaskSettingsSet `
 
 Register-ScheduledTask -TaskName $TaskMain -Action $action -Trigger $trig `
   -Principal $principal -Settings $settings `
-  -Description "V88 手机遥控常驻：开机自起、崩溃自愈、无人登录也跑。日志 win\logs\remote_*.log" | Out-Null
+  -Description "V88 Win镜像常驻：开机自起、定时同步两仓。GPT/Codex在Mac/云端负责核心。" | Out-Null
 Ok "$TaskMain 已注册（开机+1min / 失败每5分钟重试3次 / 运行时长不限）"
 
 # ── 3. 注册夜间重启任务（撞维护窗 03:00-04:30）──────────────────
@@ -177,8 +151,8 @@ if ($log) {
 
 Write-Host ""
 Write-Host "════ 完成 ════" -ForegroundColor Cyan
-Write-Host "手机验收：Claude App → Code 区 → 应能看到这台 Win（电脑图标 + 绿点）。" -ForegroundColor White
-Write-Host "开场对 Win 端 Claude 说：按 win/README_WIN.md 与私仓 claude-memory/ 接管 V88。" -ForegroundColor White
+Write-Host "验收：win\logs\remote_*.log 应持续出现 mirror sync complete。" -ForegroundColor White
+Write-Host "V88核心、云端、网页与飞书的现役负责方为 GPT/Codex。" -ForegroundColor White
 Write-Host ""
 Write-Host "查看状态: Get-ScheduledTask V88-*" -ForegroundColor Gray
 Write-Host "手动重启: schtasks /end /tn `"V88-遥控常驻`"; schtasks /run /tn `"V88-遥控常驻`"" -ForegroundColor Gray

@@ -325,25 +325,24 @@ _CYCLE_CSS = """
 
 def _cert_mark(code: str = "", name: str = "", cert: dict | None = None,
                std: dict | None = None) -> str:
-    """【Claude认证·轮动页 2026-07-27 用户"也要有Claude体系认证说明和逻辑"】
-    与行动中心/作战板同一套标识:金C=人工复核一致 / 绿✓=已过标准闸 / 无标=引擎自判。
-    轮动页是"看方向"的地方,标出哪些切换判断被Claude背书过,才知道该信几分。"""
+    """轮动页统一标识：G=GPT/Codex复核，R=V88本地规则闸。"""
     cert, std = cert or {}, std or {}
     for k in (str(code or ""), str(code or "").split(".")[0], str(name or "")):
         if not k:
             continue
         e = (cert.get("by_code") or {}).get(k) or (cert.get("by_name") or {}).get(k)
         if e and e.get("verdict") == "一致":
-            tip = f"Claude人工复核一致·{e.get('shift', '')}".replace('"', "'")
+            tip = f"GPT/Codex复核通过·{e.get('shift', '')}·{e.get('note','')}".replace('"', "'")
             return (f'<span class="cy-cert" title="{escape(tip)}" '
-                    'style="background:linear-gradient(145deg,#fde68a,#d97706);color:#4a2c05">C</span>')
+                    'style="background:#0d9488;color:#fff">G</span>')
         if e:
-            return ('<span class="cy-cert" title="Claude人工复核有异议" '
-                    'style="background:#dc2626;color:#fff">C̸</span>')
+            mark = "G̸" if e.get("verdict") == "分歧" else "G"
+            return (f'<span class="cy-cert" title="GPT/Codex:{escape(str(e.get("gpt_verdict") or e.get("verdict")))}" '
+                    f'style="background:#ccfbf1;color:#0f766e">{mark}</span>')
     for k in (str(code or ""), str(code or "").split(".")[0]):
         if k and k in (std.get("pass") or {}):
-            return ('<span class="cy-cert" title="已过Claude标准闸(七条机检规则)" '
-                    'style="background:#dcfce7;color:#15803d;border:1px solid #86efac">✓</span>')
+            return ('<span class="cy-cert" title="V88本地规则闸达标；非AI背书" '
+                    'style="background:#dcfce7;color:#15803d;border:1px solid #86efac">R</span>')
     return ""
 
 
@@ -432,10 +431,10 @@ def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle") -> str:
         f'<div class="cy-col"><b class="cy-down">🔴 即将进入下行周期</b>{_rows(downs, "cy-down")}</div>'
         f'</div>'
         f'<div class="cy-legend">验证标识：'
-        f'<span class="cy-cert" style="background:linear-gradient(145deg,#fde68a,#d97706);color:#4a2c05">C</span>'
-        f' Claude人工复核过·结论与引擎一致　'
-        f'<span class="cy-cert" style="background:#dcfce7;color:#15803d;border:1px solid #86efac">✓</span>'
-        f' 已过Claude标准闸(七条机检规则)　无标=引擎自判(未经复核)。'
+        f'<span class="cy-cert" style="background:#0d9488;color:#fff">G</span>'
+        f' GPT/Codex独立复核通过　'
+        f'<span class="cy-cert" style="background:#dcfce7;color:#15803d;border:1px solid #86efac">R</span>'
+        f' V88本地规则闸达标　无标=尚未覆盖。'
         f'周期切换=方向判断,不是买卖指令——买卖看行动中心。</div>'
         f'</div>'
     )

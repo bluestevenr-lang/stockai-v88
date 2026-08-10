@@ -715,17 +715,14 @@ if _nav == "🧭 导航":
                                               for r in _tsu9), unsafe_allow_html=True)
                 except Exception:
                     pass
-                # 【V88·Claude认证徽章·云端 2026-07-27】🅒=Claude(Fable/Opus)独立复核与规则一致;
-                # ⚡=有异议不发徽章;无标=本班未复核。读 ai_cert_pub.json,与桌面同源同口径。
-                try:
-                    _CERT9C = _pubj9("ai_cert_pub.json") or {}
-                except Exception:
-                    _CERT9C = {}
-
                 try:
                     _CS9C = _pubj9("claude_standard_pub.json") or {}
                 except Exception:
                     _CS9C = {}
+                try:
+                    _GV9C = (_pubj9("gpt_verify.json") or {}).get("rows") or {}
+                except Exception:
+                    _GV9C = {}
 
                 def _flag9c(_cd):
                     """市场旗(与桌面同口径):.SS/.SZ/.SH/.BJ=🇨🇳 .HK=🇭🇰 其余=🇺🇸——
@@ -737,31 +734,34 @@ if _nav == "🧭 导航":
                             else ("🇭🇰" if _c.endswith(".HK") else "🇺🇸"))
 
                 def _cert9c(_cd, _nm=""):
-                    """与桌面同语义:🅒人工复核一致 / ✓机检达标(标准闸) / ⚡人工有异议 / 无结论不打标。
-                    (2026-07-27改:取消⊘禁止符——它让"没审过"看起来像"没通过")"""
-                    _e = _b = None
+                    """云端统一标识：R=V88规则闸，G=GPT/Codex；不再显示Claude占位。"""
+                    _b = None
                     try:
                         for _k in (str(_cd or ""), str(_cd or "").split(".")[0], str(_nm or "")):
                             if not _k:
                                 continue
-                            _e = _e or (_CERT9C.get("by_code") or {}).get(_k) or (_CERT9C.get("by_name") or {}).get(_k)
                             _b = _b or (_CS9C.get("pass") or {}).get(_k)
                     except Exception:
                         pass
                     _bs = ("display:inline-block;width:15px;height:15px;line-height:15px;text-align:center;"
                            "border-radius:50%;font-size:10px;font-weight:800;margin-left:3px;vertical-align:middle")
-                    if _e and _e.get("verdict") == "一致":
-                        _tip = f"{_e.get('model','Claude')}人工复核·{_e.get('shift','')}｜{str(_e.get('note',''))[:70]}".replace('"', "'")
-                        return (f"<span title=\"🅒Claude人工复核通过:与规则引擎结论一致。{_tip}\" "
-                                f"style='{_bs};background:linear-gradient(145deg,#fde68a,#d97706);color:#4a2c05;"
-                                "box-shadow:0 1px 2px rgba(180,120,0,.45)'>C</span>")
-                    if _e:
-                        return (f"<span title=\"⚡Claude人工复核有异议:{str(_e.get('note',''))[:70]}\" "
-                                f"style='{_bs};background:#dc2626;color:#fff'>C̸</span>")
-                    if _b and not (_b.get("rules") or []):
-                        return ("<span title='✅已过Claude标准闸(七条规则机检达标,规则源自Claude历次否决理由)' "
-                                f"style='{_bs};background:#dcfce7;color:#15803d;border:1px solid #86efac'>✓</span>")
-                    return ""
+                    out = ("<span title='V88本地规则闸达标；非AI背书' "
+                           f"style='{_bs};background:#dcfce7;color:#15803d;border:1px solid #86efac'>R</span>"
+                           if _b else "")
+                    raw = str(_cd or "").upper()
+                    keys = [raw]
+                    if raw.endswith(".HK"):
+                        bare = raw[:-3].lstrip("0") or "0"
+                        keys += [bare + ".HK", bare.zfill(5) + ".HK"]
+                    g = next(((_GV9C or {}).get(k) for k in keys if (_GV9C or {}).get(k)), {})
+                    verdict = str(g.get("verdict") or "")
+                    if verdict:
+                        bg, fg, mark = (("#0d9488", "#fff", "G") if verdict == "通过" else
+                                        ("#991b1b", "#fff", "G̸") if verdict == "否决" else
+                                        ("#ccfbf1", "#0f766e", "G"))
+                        tip = f"GPT/Codex:{verdict}｜{str(g.get('why') or '')[:60]}".replace('"', "'")
+                        out += f"<span title=\"{tip}\" style='{_bs};background:{bg};color:{fg}'> {mark}</span>"
+                    return out
                 # 【V88·U3拐点倒计时+前置信号·云端 2026-07-26】pub版(大盘/板块级)
                 try:
                     _tfc9 = _pubj9("turning_forecast_pub.json")
@@ -1739,8 +1739,8 @@ if _nav == "🧭 导航":
             + "→ 请结合你能获取的最新宏观/政策/资金面信息，与以上V88数据交叉验证，回答：\n"
               "①明天/下周大盘方向判断与理由；②当前最值得关注的板块与个股逻辑；"
               "③仓位建议；④V88数据与你认知冲突的点。注意生成时间，行情有时效。")
-        with st.expander("📱 手机研究包 · 大盘版（复制给任何Claude对话综合研判）", expanded=False):
-            st.caption("用法：手机浏览器打开本页→复制下面整段→粘贴到手机Claude对话。"
+        with st.expander("📱 手机研究包 · 大盘版（复制给GPT/Codex综合研判）", expanded=False):
+            st.caption("用法：手机浏览器打开本页→复制下面整段→粘贴到GPT/Codex对话。"
                        "个股版在「🔍 个股搜索」页搜完自动生成。Mac/Win关机也能用。")
             st.code(_mb_txt9, language=None)
     except Exception:
@@ -2102,8 +2102,8 @@ elif _nav == "🔍 个股搜索":
                       "①同意/不同意系统动作，理由；②该股当前的催化与风险事由（要具体事件，不要泛泛）；"
                       "③给出何时买/何时卖的具体条件（价位或信号）；④指出系统数据与你认知冲突的点。"
                       "注意上面的生成时间，行情有时效。")
-                with st.expander("📱 手机研究包 · 复制给任何Claude对话综合分析", expanded=False):
-                    st.caption("用法：手机浏览器打开本云端页→搜这只股→复制下面整段→粘贴到手机Claude对话。"
+                with st.expander("📱 手机研究包 · 复制给GPT/Codex综合分析", expanded=False):
+                    st.caption("用法：手机浏览器打开本云端页→搜这只股→复制下面整段→粘贴到GPT/Codex对话。"
                                "Mac/Win关机也能用（本页数据=云端实时计算+pub快照）。")
                     st.code(_mp_txt9, language=None)
             except Exception:
