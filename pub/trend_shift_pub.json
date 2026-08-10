@@ -91,13 +91,14 @@
    "push_eligible": false,
    "quality_status": "观察/拦截",
    "quality_reasons": [
+    "GPT复核否决",
     "盈亏比0.30<0.80（越大越好）",
     "期望优势-0.12<0.25（越大越好）"
    ],
    "canonical_name": "滨化股份",
    "expected_edge": -0.12,
    "rules_gate": "gate_pass",
-   "gpt_verdict": "不可用",
+   "gpt_verdict": "否决",
    "probability_label": "规则上行估计（待台账校准，非胜率）"
   }
  ],
@@ -239,7 +240,7 @@
  ],
  "quality_gate": {
   "version": "rqg-1.0",
-  "refreshed_at": "2026-08-10 21:12（北京时间）",
+  "refreshed_at": "2026-08-10 22:37（北京时间）",
   "rule": "展示与主动推送分离；不删原内容，未过闸降为研究/观察"
  }
 }

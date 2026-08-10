@@ -1,11 +1,12 @@
 {
- "generated_at": "2026-08-10 20:55（北京时间）",
+ "generated_at": "2026-08-10 22:37（北京时间）",
  "version": "three-way-gpt-v2",
  "note": "三层审核：V88行动引擎 vs V88标准规则闸 vs GPT/Codex独立复核。",
  "counts": {
-  "⚡有分歧/否决": 13,
-  "⏳审核未完整": 27,
-  "🟡规则达标·GPT不否定": 3
+  "⚡有分歧/否决": 24,
+  "✅三层一致": 3,
+  "🟡规则达标·GPT不否定": 11,
+  "⏳审核未完整": 6
  },
  "rows": [
   {
@@ -25,12 +26,12 @@
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-10 14:31（北京时间）",
+    "verdict": "否决",
+    "why": "逻辑自相矛盾：止损异常且期望缺失",
+    "at": "2026-08-10",
     "model": "gpt-5.6-sol"
    },
-   "consensus": "⏳审核未完整"
+   "consensus": "⚡有分歧/否决"
   },
   {
    "code": "000537.SZ",
@@ -45,16 +46,16 @@
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "未覆盖",
+    "verdict": "达标",
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-10 14:31（北京时间）",
+    "verdict": "否决",
+    "why": "追高：单日涨10.1%却称左侧低吸",
+    "at": "2026-08-10",
     "model": "gpt-5.6-sol"
    },
-   "consensus": "⏳审核未完整"
+   "consensus": "⚡有分歧/否决"
   },
   {
    "code": "002256.SZ",
@@ -73,60 +74,12 @@
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-10 14:31（北京时间）",
+    "verdict": "否决",
+    "why": "追高：放量涨6.8%后标准仓",
+    "at": "2026-08-10",
     "model": "gpt-5.6-sol"
    },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "0017.HK",
-   "name": "新世界发展",
-   "market": "港股",
-   "rule": {
-    "dir": "看多",
-    "prob": 69,
-    "action": "现价可进",
-    "rr": 4.29,
-    "pos52": 16.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-10 14:31（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "001979.SZ",
-   "name": "招商蛇口",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 67,
-    "action": "现价可进",
-    "rr": 3.82,
-    "pos52": 21.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-10 14:31（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "consensus": "⏳审核未完整"
+   "consensus": "⚡有分歧/否决"
   },
   {
    "code": "NOC",
@@ -145,84 +98,12 @@
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-10 14:31（北京时间）",
+    "verdict": "否决",
+    "why": "逻辑自相矛盾：左侧却称主升",
+    "at": "2026-08-10",
     "model": "gpt-5.6-sol"
    },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "6618.HK",
-   "name": "京东健康",
-   "market": "港股",
-   "rule": {
-    "dir": "看多",
-    "prob": 64,
-    "action": "现价可进",
-    "rr": 4.72,
-    "pos52": 21.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-10 14:31（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "002190.SZ",
-   "name": "成飞集成",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 64,
-    "action": "左侧低吸",
-    "rr": 4.17,
-    "pos52": 10.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-10 14:31（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "2465.HK",
-   "name": "龙蟠科技",
-   "market": "港股",
-   "rule": {
-    "dir": "看多",
-    "prob": 62,
-    "action": "左侧低吸",
-    "rr": 4.31,
-    "pos52": 19.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-10 14:31（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "consensus": "⏳审核未完整"
+   "consensus": "⚡有分歧/否决"
   },
   {
    "code": "3366.HK",
@@ -241,12 +122,84 @@
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-10 14:31（北京时间）",
+    "verdict": "否决",
+    "why": "数据时点：止损0.19明显异常",
+    "at": "2026-08-10",
     "model": "gpt-5.6-sol"
    },
-   "consensus": "⏳审核未完整"
+   "consensus": "⚡有分歧/否决"
+  },
+  {
+   "code": "0017.HK",
+   "name": "新世界发展",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 69,
+    "action": "现价可进",
+    "rr": 4.29,
+    "pos52": 16.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "不否定",
+    "why": "赔率较高，但缺少基本面核验",
+    "at": "2026-08-10",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "🟡规则达标·GPT不否定"
+  },
+  {
+   "code": "002190.SZ",
+   "name": "成飞集成",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 64,
+    "action": "左侧低吸",
+    "rr": 4.17,
+    "pos52": 10.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "不否定",
+    "why": "单日放量反弹，尚缺持续验证",
+    "at": "2026-08-10",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "🟡规则达标·GPT不否定"
+  },
+  {
+   "code": "2465.HK",
+   "name": "龙蟠科技",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 62,
+    "action": "左侧低吸",
+    "rr": 4.31,
+    "pos52": 19.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "不否定",
+    "why": "单日放量反弹，尚缺持续验证",
+    "at": "2026-08-10",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "🟡规则达标·GPT不否定"
   },
   {
    "code": "2233.HK",
@@ -265,12 +218,60 @@
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-10 14:31（北京时间）",
+    "verdict": "不否定",
+    "why": "单日放量反弹，尚缺持续验证",
+    "at": "2026-08-10",
     "model": "gpt-5.6-sol"
    },
-   "consensus": "⏳审核未完整"
+   "consensus": "🟡规则达标·GPT不否定"
+  },
+  {
+   "code": "001979.SZ",
+   "name": "招商蛇口",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 67,
+    "action": "现价可进",
+    "rr": 3.82,
+    "pos52": 21.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "通过",
+    "why": "低位启动，盈亏比3.82",
+    "at": "2026-08-10",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "✅三层一致"
+  },
+  {
+   "code": "6618.HK",
+   "name": "京东健康",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 64,
+    "action": "现价可进",
+    "rr": 4.72,
+    "pos52": 21.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "通过",
+    "why": "低位启动，盈亏比4.72",
+    "at": "2026-08-10",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "✅三层一致"
   },
   {
    "code": "COST",
@@ -289,12 +290,12 @@
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-10 14:31（北京时间）",
+    "verdict": "通过",
+    "why": "启动确认，盈亏比5.27",
+    "at": "2026-08-10",
     "model": "gpt-5.6-sol"
    },
-   "consensus": "⏳审核未完整"
+   "consensus": "✅三层一致"
   }
  ]
 }

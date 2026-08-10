@@ -288,7 +288,7 @@
    "bt_line": "该股历史6次同级回撤→6月后5涨1跌·中位+11.9%·最差-2.2%",
    "verdict": "进",
    "turning_bottom": false,
-   "rules_gate": "未覆盖",
+   "rules_gate": "gate_pass",
    "gpt": "未验证",
    "track": false,
    "display_eligible": false,
@@ -650,5 +650,10 @@
    "gpt_verdict": "否决",
    "probability_label": "该股历史条件频率（非保证）"
   }
- ]
+ ],
+ "quality_gate": {
+  "version": "rqg-1.0",
+  "refreshed_at": "2026-08-10 22:37（北京时间）",
+  "rule": "展示与主动推送分离；不删原内容，未过闸降为研究/观察"
+ }
 }

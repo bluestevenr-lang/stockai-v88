@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-10 21:42（北京时间）",
- "generated_at": "2026-08-10 21:42（北京时间）",
+ "asof": "2026-08-10 22:37（北京时间）",
+ "generated_at": "2026-08-10 22:37（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -216,6 +216,16 @@
    "downgrade": "",
    "auto": true
   },
+  "PG": {
+   "code": "PG",
+   "name": "宝洁",
+   "side": "打折",
+   "action": "🕐还不够便宜·先看着",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "MELI": {
    "code": "MELI",
    "name": "MercadoLibre",
@@ -296,16 +306,6 @@
    "downgrade": "",
    "auto": true
   },
-  "1138.HK": {
-   "code": "1138.HK",
-   "name": "中远海能",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "SLB": {
    "code": "SLB",
    "name": "斯伦贝谢",
@@ -368,9 +368,9 @@
   }
  },
  "reject": {
-  "GS": {
-   "code": "GS",
-   "name": "高盛",
+  "LMT": {
+   "code": "LMT",
+   "name": "洛克希德马丁",
    "side": "行业代表",
    "action": "",
    "rules": [
