@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-10 20:55（北京时间）",
- "generated_at": "2026-08-10 20:55（北京时间）",
+ "asof": "2026-08-10 21:30（北京时间）",
+ "generated_at": "2026-08-10 21:30（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -136,16 +136,6 @@
    "downgrade": "",
    "auto": true
   },
-  "603882.SS": {
-   "code": "603882.SS",
-   "name": "金域医学",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "1873.HK": {
    "code": "1873.HK",
    "name": "维亚生物",
@@ -206,6 +196,36 @@
    "downgrade": "",
    "auto": true
   },
+  "1415.HK": {
+   "code": "1415.HK",
+   "name": "高伟电子",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "300782.SZ": {
+   "code": "300782.SZ",
+   "name": "卓胜微",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "601888.SS": {
+   "code": "601888.SS",
+   "name": "中国中免",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "MELI": {
    "code": "MELI",
    "name": "MercadoLibre",
@@ -216,9 +236,29 @@
    "downgrade": "",
    "auto": true
   },
+  "605099.SS": {
+   "code": "605099.SS",
+   "name": "共创草坪",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "AZO": {
    "code": "AZO",
    "name": "AutoZone",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "300015.SZ": {
+   "code": "300015.SZ",
+   "name": "爱尔眼科",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -269,46 +309,6 @@
   "1138.HK": {
    "code": "1138.HK",
    "name": "中远海能",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "IBM": {
-   "code": "IBM",
-   "name": "IBM",
-   "side": "打折",
-   "action": "🟢打折到位·可开始买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "LOW": {
-   "code": "LOW",
-   "name": "劳氏",
-   "side": "打折",
-   "action": "🟢打折到位·可开始买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "002240.SZ": {
-   "code": "002240.SZ",
-   "name": "盛新锂能",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "NFLX": {
-   "code": "NFLX",
-   "name": "奈飞",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -381,8 +381,8 @@
   }
  },
  "stats": {
-  "n_pass": 450,
-  "n_reject": 27,
+  "n_pass": 451,
+  "n_reject": 32,
   "by_rule": {
    "CS9": 1,
    "CS1": 0,
@@ -390,7 +390,7 @@
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
-   "CS6": 21,
+   "CS6": 26,
    "CS7": 9,
    "CS8": 0
   }
