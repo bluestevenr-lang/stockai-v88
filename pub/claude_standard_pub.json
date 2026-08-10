@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-10 18:33（北京时间）",
- "generated_at": "2026-08-10 18:33（北京时间）",
+ "asof": "2026-08-10 20:55（北京时间）",
+ "generated_at": "2026-08-10 20:55（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -16,11 +16,21 @@
  },
  "note": "V88标准规则闸:把历史会审异议固化成机检规则,名单出厂前先过这道闸——不达标的不进推荐位,转⏸未达标区并写明理由(用户定纲:'有异议的还摆在推荐位没有参考意义')。规则来自4个班次真实异议的归纳,非回测胜率;每条带rule_id,台账到期后双周深检算'被拦下的票后来表现如何'来修订阈值——规则错了要能被数据推翻。",
  "pass": {
-  "000958.SZ": {
-   "code": "000958.SZ",
-   "name": "电投产融",
+  "3366.HK": {
+   "code": "3366.HK",
+   "name": "中兴通讯",
    "side": "机会",
    "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "6618.HK": {
+   "code": "6618.HK",
+   "name": "京东健康",
+   "side": "机会",
+   "action": "现价可进",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -66,9 +76,9 @@
    "downgrade": "",
    "auto": true
   },
-  "601012.SS": {
-   "code": "601012.SS",
-   "name": "隆基绿能",
+  "2233.HK": {
+   "code": "2233.HK",
+   "name": "西部水泥",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -76,9 +86,9 @@
    "downgrade": "",
    "auto": true
   },
-  "2233.HK": {
-   "code": "2233.HK",
-   "name": "西部水泥",
+  "001979.SZ": {
+   "code": "001979.SZ",
+   "name": "招商蛇口",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -96,9 +106,9 @@
    "downgrade": "",
    "auto": true
   },
-  "MSTR": {
-   "code": "MSTR",
-   "name": "MSTR",
+  "2007.HK": {
+   "code": "2007.HK",
+   "name": "康龙化成",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -116,21 +126,51 @@
    "downgrade": "",
    "auto": true
   },
-  "1276.HK": {
-   "code": "1276.HK",
-   "name": "恒瑞医药",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "000537.SZ": {
    "code": "000537.SZ",
    "name": "绿发电力",
    "side": "机会",
    "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "603882.SS": {
+   "code": "603882.SS",
+   "name": "金域医学",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "1873.HK": {
+   "code": "1873.HK",
+   "name": "维亚生物",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "000506.SZ": {
+   "code": "000506.SZ",
+   "name": "招金黄金",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "601678.SS": {
+   "code": "601678.SS",
+   "name": "滨化股份",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -156,11 +196,11 @@
    "downgrade": "",
    "auto": true
   },
-  "601888.SS": {
-   "code": "601888.SS",
-   "name": "中国中免",
+  "BNTX": {
+   "code": "BNTX",
+   "name": "BioNTech",
    "side": "打折",
-   "action": "🟢跌得很深·可分批买",
+   "action": "🟢打折到位·可开始买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -178,7 +218,7 @@
   },
   "AZO": {
    "code": "AZO",
-   "name": "汽车地带",
+   "name": "AutoZone",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -238,7 +278,7 @@
   },
   "IBM": {
    "code": "IBM",
-   "name": "IBM国际商业机器",
+   "name": "IBM",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
    "rules": [],
@@ -251,6 +291,26 @@
    "name": "劳氏",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "002240.SZ": {
+   "code": "002240.SZ",
+   "name": "盛新锂能",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "NFLX": {
+   "code": "NFLX",
+   "name": "奈飞",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -305,16 +365,6 @@
    "why": "",
    "downgrade": "",
    "auto": true
-  },
-  "9633.HK": {
-   "code": "9633.HK",
-   "name": "农夫山泉",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
   }
  },
  "reject": {
@@ -331,8 +381,8 @@
   }
  },
  "stats": {
-  "n_pass": 291,
-  "n_reject": 167,
+  "n_pass": 450,
+  "n_reject": 27,
   "by_rule": {
    "CS9": 1,
    "CS1": 0,
@@ -340,8 +390,8 @@
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
-   "CS6": 156,
-   "CS7": 68,
+   "CS6": 21,
+   "CS7": 9,
    "CS8": 0
   }
  }
