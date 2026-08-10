@@ -1,11 +1,12 @@
 {
- "generated_at": "2026-08-10 10:55（北京时间）",
- "note": "三方会审:规则引擎(V88) vs Claude(Fable/Opus独立复核) vs GPT(Codex盲审)。⚡分歧排最前——三方都说好的可以按纲领执行,吵起来的才是要自己拿主意的地方。GPT目前是影子模式(有记录无投票权),它的反对不会拦名单,但会入台账攒战绩。",
+ "generated_at": "2026-08-10 12:30（北京时间）",
+ "version": "three-way-gpt-v2",
+ "note": "三层审核：V88行动引擎 vs V88标准规则闸 vs GPT/Codex独立复核。",
  "counts": {
-  "⚡有分歧": 1,
-  "🟡多数通过(1票反对)": 1,
-  "✅双方一致": 3,
-  "仅规则(无第二意见)": 62
+  "✅三层一致": 1,
+  "⏳审核未完整": 23,
+  "🟡规则达标·GPT不否定": 20,
+  "⚡有分歧/否决": 23
  },
  "rows": [
   {
@@ -20,11 +21,17 @@
     "pos52": 15.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-10 09:41（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   },
   {
    "code": "002413.SZ",
@@ -38,11 +45,17 @@
     "pos52": 25.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-10 09:41（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   },
   {
    "code": "688658.SS",
@@ -56,11 +69,17 @@
     "pos52": 9.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-10 09:41（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   },
   {
    "code": "002664.SZ",
@@ -74,11 +93,17 @@
     "pos52": 10.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-10 09:41（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   },
   {
    "code": "600208.SS",
@@ -92,11 +117,17 @@
     "pos52": 12.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-10 09:41（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   },
   {
    "code": "601515.SS",
@@ -110,11 +141,17 @@
     "pos52": 25.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-10 09:41（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   },
   {
    "code": "2007.HK",
@@ -128,11 +165,17 @@
     "pos52": 6.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-10 09:41（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   },
   {
    "code": "300905.SZ",
@@ -146,29 +189,17 @@
     "pos52": 19.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "1114.HK",
-   "name": "华晨中国",
-   "market": "港股",
-   "rule": {
-    "dir": "看多",
-    "prob": 68,
-    "action": "左侧低吸",
-    "rr": 3.51,
-    "pos52": 14.0,
-    "src": "池外机会"
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-10 09:41（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   },
   {
    "code": "NOC",
@@ -182,11 +213,17 @@
     "pos52": 32.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-10 09:41（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   },
   {
    "code": "3366.HK",
@@ -200,11 +237,17 @@
     "pos52": 7.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-10 09:41（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   },
   {
    "code": "COST",
@@ -218,11 +261,41 @@
     "pos52": 42.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-10 09:41（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "1114.HK",
+   "name": "华晨中国",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 68,
+    "action": "左侧低吸",
+    "rr": 3.51,
+    "pos52": 14.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "不否定",
+    "why": "价值与时机偏弱，但赔率较高",
+    "at": "2026-08-10",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "🟡规则达标·GPT不否定"
   }
  ]
 }

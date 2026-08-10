@@ -1,8 +1,8 @@
 {
- "asof": "2026-08-10 10:55（北京时间）",
- "generated_at": "2026-08-10 10:55（北京时间）",
+ "asof": "2026-08-10 12:29（北京时间）",
+ "generated_at": "2026-08-10 12:29（北京时间）",
  "display_name": "V88标准规则闸",
- "runtime": "local_deterministic_no_claude_login",
+ "runtime": "local_deterministic_no_external_ai",
  "rules": {
   "CS9": "杠杆/反向/日重置产品不进推荐位——持有期收益路径依赖,长期价值/获利空间两桶口径不适用(案:二倍做空MSTR ETF被评1A)",
   "CS1": "宽基指数类跌幅未达5%且趋势未破,不按个股尺度输出减仓(案:VOO-2.1%/513500-0.2%就减)",
@@ -335,16 +335,6 @@
    "why": "",
    "downgrade": "",
    "auto": true
-  },
-  "9633.HK": {
-   "code": "9633.HK",
-   "name": "农夫山泉",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
   }
  },
  "reject": {
@@ -361,7 +351,7 @@
   }
  },
  "stats": {
-  "n_pass": 290,
+  "n_pass": 300,
   "n_reject": 179,
   "by_rule": {
    "CS9": 0,
