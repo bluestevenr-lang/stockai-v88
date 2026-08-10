@@ -1,102 +1,84 @@
 {
- "generated_at": "2026-08-10 07:34（北京时间）",
- "note": "三方会审:规则引擎(V88) vs Claude(Fable/Opus独立复核) vs GPT(Codex盲审)。⚡分歧排最前——三方都说好的可以按纲领执行,吵起来的才是要自己拿主意的地方。GPT目前是影子模式(有记录无投票权),它的反对不会拦名单,但会入台账攒战绩。",
+ "generated_at": "2026-08-10 18:33（北京时间）",
+ "version": "three-way-gpt-v2",
+ "note": "三层审核：V88行动引擎 vs V88标准规则闸 vs GPT/Codex独立复核。",
  "counts": {
-  "✅双方一致": 3,
-  "🟡多数通过(1票反对)": 1,
-  "仅规则(无第二意见)": 59,
-  "⚡有分歧": 1
+  "⚡有分歧/否决": 17,
+  "🟡规则达标·GPT不否定": 14,
+  "⏳审核未完整": 28
  },
  "rows": [
   {
-   "code": "002664.SZ",
-   "name": "信质集团",
+   "code": "000537.SZ",
+   "name": "绿发电力",
    "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 85,
+    "prob": 75,
     "action": "左侧低吸",
-    "rr": 2.93,
-    "pos52": 11.0,
+    "rr": 3.31,
+    "pos52": 24.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-09 12:16（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   },
   {
-   "code": "600208.SS",
-   "name": "衢州发展",
+   "code": "002256.SZ",
+   "name": "兆新股份",
    "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 76,
+    "prob": 74,
     "action": "左侧低吸",
-    "rr": 3.53,
-    "pos52": 11.0,
+    "rr": 3.39,
+    "pos52": 38.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "601515.SS",
-   "name": "衢州东峰",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 73,
-    "action": "现价可进",
-    "rr": 4.72,
-    "pos52": 20.0,
-    "src": "池外机会"
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-09 12:16（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   },
   {
-   "code": "600010.SS",
-   "name": "包钢股份",
-   "market": "A股",
+   "code": "0017.HK",
+   "name": "新世界发展",
+   "market": "港股",
    "rule": {
     "dir": "看多",
     "prob": 69,
     "action": "现价可进",
-    "rr": 3.62,
-    "pos52": 18.0,
+    "rr": 4.29,
+    "pos52": 16.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
-  },
-  {
-   "code": "1877.HK",
-   "name": "君实生物",
-   "market": "港股",
-   "rule": {
-    "dir": "看多",
-    "prob": 68,
-    "action": "现价可进",
-    "rr": 3.83,
-    "pos52": 18.0,
-    "src": "池外机会"
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-09 12:16（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   },
   {
    "code": "MSTR",
@@ -110,11 +92,17 @@
     "pos52": 5.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-09 12:16（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   },
   {
    "code": "NOC",
@@ -128,47 +116,65 @@
     "pos52": 32.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-09 12:16（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   },
   {
-   "code": "601898.SS",
-   "name": "中煤能源",
+   "code": "002190.SZ",
+   "name": "成飞集成",
    "market": "A股",
    "rule": {
     "dir": "看多",
     "prob": 64,
-    "action": "现价可进",
-    "rr": 3.58,
-    "pos52": 37.0,
+    "action": "左侧低吸",
+    "rr": 4.17,
+    "pos52": 10.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-09 12:16（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   },
   {
-   "code": "601012.SS",
-   "name": "隆基绿能",
-   "market": "A股",
+   "code": "2465.HK",
+   "name": "龙蟠科技",
+   "market": "港股",
    "rule": {
     "dir": "看多",
     "prob": 62,
-    "action": "现价可进",
-    "rr": 5.58,
-    "pos52": 13.0,
+    "action": "左侧低吸",
+    "rr": 4.31,
+    "pos52": 19.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-09 12:16（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   },
   {
    "code": "1276.HK",
@@ -176,17 +182,47 @@
    "market": "港股",
    "rule": {
     "dir": "看多",
-    "prob": 60,
+    "prob": 62,
     "action": "现价可进",
-    "rr": 3.84,
-    "pos52": 17.0,
+    "rr": 4.01,
+    "pos52": 15.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-09 12:16（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "2233.HK",
+   "name": "西部水泥",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 60,
+    "action": "现价可进",
+    "rr": 4.28,
+    "pos52": 20.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-09 12:16（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   },
   {
    "code": "000958.SZ",
@@ -194,17 +230,47 @@
    "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 57,
+    "prob": 59,
     "action": "左侧低吸",
-    "rr": 5.32,
+    "rr": 6.44,
     "pos52": 12.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-09 12:16（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "601012.SS",
+   "name": "隆基绿能",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 59,
+    "action": "现价可进",
+    "rr": 4.52,
+    "pos52": 13.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-09 12:16（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   },
   {
    "code": "COST",
@@ -218,11 +284,17 @@
     "pos52": 42.0,
     "src": "池外机会"
    },
-   "claude": null,
-   "gpt": null,
-   "n_voices": 1,
-   "agree": 1,
-   "consensus": "仅规则(无第二意见)"
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-09 12:16（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
   }
  ]
 }
