@@ -45,7 +45,6 @@ PALETTE = {
     # 这样一眼能分清"谁说的"与"说了什么"。
     "claude":   "#4338ca",   # legacy key: Ⓡ V88规则闸
     "gpt":      "#0d9488",   # legacy key: Ⓒ Codex独立复核
-    "grok":     "#7c3aed",   # Ⓧ Grok/xAI独立复核
 }
 TIER_COLOR = {"3A": PALETTE["buy"], "2A": PALETTE["buy2"], "1A": PALETTE["buy3"],
               "0A": PALETTE["mute"], "待评估": PALETTE["mute"],
@@ -186,9 +185,9 @@ SELL_COLOR = {"-3A": PALETTE["sell"], "-2A": PALETTE["sell2"],
 # 自检发现9列里8列两侧装的东西不同(如"状态"IN=风险/完备/置信,OUT=1-2-3+量比),
 # 共用列名会让人以为是同一个量。改为两套列头,同位次语义对齐。
 _TH_IN = ("名称", "评级·分", "现价·数据日", "动作·2周概率", "买入区间·进入时机",
-          "失效价", "机会类型·周期", "五桶板·风险完备置信", "规则闸·GPT/Grok双剑", "为什么现在")
+          "失效价", "机会类型·周期", "五桶板·风险完备置信", "规则闸·GPT审核", "为什么现在")
 _TH_OUT = ("名称", "级别·卖出分", "现价·MA20", "动作·紧迫度", "卖出/回避区间·重买条件",
-           "止损价", "距止损·量比", "1-2-3·旁路·门派", "冲突·仲裁", "规则闸·GPT/Grok双剑", "持有状态·引擎")
+           "止损价", "距止损·量比", "1-2-3·旁路·门派", "冲突·仲裁", "规则闸·GPT审核", "持有状态·引擎")
 # 【自检修②】市场从**代码形态**推断,不依赖上游 market 字段——
 # 实测11处国旗缺失:rank_score.market 仅 trend_quality 来源的行才有,
 # intraday_decisions 压根没有该字段。代码后缀是100%可得的事实。
@@ -222,8 +221,8 @@ def stock_link(name, code, flag: str = "") -> str:
 
 
 def cg_badge(who: str, state: str, note: str = "") -> str:
-    """会审徽章。R=规则闸，G=GPT/Codex，X=Grok/xAI。"""
-    base = PALETTE["claude"] if who == "R" else PALETTE["grok"] if who == "X" else PALETTE["gpt"]
+    """审核徽章。R=规则闸，G=GPT/Codex。"""
+    base = PALETTE["claude"] if who == "R" else PALETTE["gpt"]
     # 三级:pass=主动背书(实心✅) / gate_pass=机检达标(空心✓,半亮) / reject=否决 / 未表态=—
     mark, op = ("✅", "1") if state == "pass" else \
                ("✓", ".72") if state == "gate_pass" else \
@@ -433,7 +432,6 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + _td((lambda _v: (
                 cg_badge("R", str(_v.get("rules_gate") or _v.get("claude") or ""))
                 + cg_badge("G", str(_v.get("codex") or _v.get("gpt") or ""), str(_v.get("gpt_note") or ""))
-                + cg_badge("X", str(_v.get("grok") or ""), str(_v.get("grok_note") or ""))
                 + (f"<br><span style='font-size:9px;color:{PALETTE['warn']}'>"
                    f"Codex异议: {str(_v.get('gpt_note'))[:30]}</span>"
                    if (_v.get("codex") or _v.get("gpt")) == "reject" and _v.get("gpt_note") else "")
@@ -528,7 +526,6 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + _td((lambda _v: (
                 cg_badge("R", str(_v.get("rules_gate") or _v.get("claude") or ""))
                 + cg_badge("G", str(_v.get("codex") or _v.get("gpt") or ""), str(_v.get("gpt_note") or ""))
-                + cg_badge("X", str(_v.get("grok") or ""), str(_v.get("grok_note") or ""))
                 + (f"<br><span style='font-size:8.5px;color:{PALETTE['warn']}'>"
                    f"{str(_v.get('gpt_note'))[:24]}</span>"
                    if _v.get("gpt") == "reject" and _v.get("gpt_note") else "")
@@ -586,7 +583,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             # 铁律19 验证漏斗:被拦的必须点名,否则"我们还欠多少验证"看不见
             + (f"<div style='font-size:11px;background:#f8fafc;border-left:3px solid "
                f"{PALETTE['hold']};border-radius:4px;padding:4px 8px;margin:3px 0'>"
-               f"🔐 <b>验证准入闸</b>（<b>3A=规则闸+GPT/Grok双剑明确通过</b>／单剑通过或不否定最多2A／仅规则闸最多1A）"
+               f"🔐 <b>验证准入闸</b>（<b>3A=规则闸+GPT/Codex明确通过</b>／GPT不否定最多2A／仅规则闸最多1A）"
                + (lambda _h: (
                    f"<div style='font-size:10.5px;margin-bottom:2px;color:"
                    f"{PALETTE['warn'] if (_h.get('last_error') or (_h.get('max_age_days') or 0) > 1) else PALETTE['hold']}'>"
@@ -598,12 +595,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                      "3天TTL＋判据变化即重判；跑不完时按「这一票能改变什么」排队"
                      "（3A候选＞持仓＞2A＞1A）。</span></div>") if _h else "")(
                    (_vf.get("gpt_health") or {}))
-               + (lambda _h: (
-                   f"<div style='font-size:10.5px;color:{PALETTE['hold']}'>"
-                   f"🟣 Grok状态：模式{_h.get('mode') or '未配置'}·裁决{_h.get('verdicts', 0)}条"
-                   f"·不可用{_h.get('unavailable', 0)}条·预算¥{(_h.get('budget') or {}).get('spent_rmb', 0)}"
-                   f"</div>") if _h else "")((_vf.get("grok_health") or {}))
-               + f"<b>两剑互盲证伪，均不能绕过规则闸</b>）：上榜 "
+               + f"<b>规则闸与GPT/Codex分别审核，均不能互相代签</b>）：上榜 "
                f"<b style='color:{PALETTE['buy']}'>{_n_listable}</b>"
                + "".join(f"　<span style='color:{PALETTE['warn'] if '否决' in k else PALETTE['hold']}'>"
                          f"{k} {v}</span>"
@@ -618,7 +610,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                   "　<span style='font-weight:400'>验证已全部跑完，没有待验标的</span>")
                + "）</div>"
                f"<div style='font-size:11px;color:{PALETTE['hold']};margin-bottom:3px'>"
-               f"与上表同列同口径，可直接对照，差别只在「规则闸·GPT/Grok双剑」列。"
+               f"与上表同列同口径，可直接对照，差别只在「规则闸·GPT审核」列。"
                + (f"　另有 <b>{_n_cl_rej}</b> 只被 V88规则闸判否，"
                   f"<b>按定纲不在此呈现</b>——硬伤票不再占你的视线，"
                   f"只留计数备查。" if _n_cl_rej else "")
@@ -646,10 +638,10 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + (lambda _dc: (
                 f"<div style='font-size:11.5px;background:#f8fafc;border-left:3px solid "
                 f"{PALETTE['sell']};border-radius:4px;padding:5px 9px;margin:8px 0 2px'>"
-                f"⚔️ <b>模型判断型-3A需双剑认证</b>"
-                f"<span style='color:{PALETTE['hold']}'>：规则闸✅且GPT/Grok双剑✅才可发；"
-                f"缺任一剑最多-2A。预承诺硬止损是纪律，不等待模型投票。</span>"
-                f"　今日候选 <b>{_dc.get('candidates', 0)}</b> 只 → 双剑通过 "
+                f"⚔️ <b>模型判断型-3A需GPT/Codex复核</b>"
+                f"<span style='color:{PALETTE['hold']}'>：规则闸✅且GPT/Codex✅才可发；"
+                f"GPT未明确通过最多-2A。预承诺硬止损是纪律，不等待模型投票。</span>"
+                f"　今日候选 <b>{_dc.get('candidates', 0)}</b> 只 → 审核通过 "
                 f"<b style='color:{PALETTE['sell'] if _dc.get('passed') else PALETTE['hold']}'>"
                 f"{_dc.get('passed', 0)}</b> 只"
                 + "".join(f"<br><span style='font-size:10.5px;color:{PALETTE['warn']}'>"
@@ -714,7 +706,6 @@ def verdict_html(v: dict) -> str:
         return ""
     cl = v.get("rules_gate") or v.get("claude")
     gp = v.get("codex") or v.get("gpt")
-    xg = v.get("grok")
 
     def _badge(who, st):
         c = (PALETTE["buy"] if st in ("pass", "gate_pass") else
@@ -763,20 +754,21 @@ def verdict_html(v: dict) -> str:
             f"<div style='display:flex;align-items:baseline;gap:8px;flex-wrap:wrap'>"
             f"<b style='font-size:14px'>{v.get('name')}</b>"
             f"<span style='font-size:11px;color:{PALETTE['mute']}'>{v.get('code')}</span>"
-            f"{_badge('V88规则闸', cl)}{_badge('GPT/Codex', gp)}{_badge('Grok', xg)}"
+            f"{_badge('V88规则闸', cl)}{_badge('GPT/Codex', gp)}"
             f"<span style='font-size:10.5px;color:{PALETTE['mute']}'>{v.get('source')}</span></div>"
             f"<div style='font-size:12.5px;font-weight:700;margin:4px 0;color:#1e293b'>"
             f"{str(v.get('headline')).replace('**', '')}</div>"
-            + (f"<div style='font-size:10.5px;color:{PALETTE['warn']};margin-bottom:2px'>"
-               f"Codex 异议：{v.get('gpt_note')}</div>"
-               if gp == "reject" and v.get("gpt_note") else "")
-            + (f"<div style='font-size:10.5px;color:{PALETTE['warn']};margin-bottom:2px'>"
-               f"Grok 异议：{v.get('grok_note')}</div>"
-               if xg == "reject" and v.get("grok_note") else "")
+            + (f"<div style='font-size:10.5px;color:"
+               f"{PALETTE['warn'] if gp == 'reject' else '#0f766e'};margin-bottom:2px'>"
+               f"GPT/Codex复核：<b>{'通过' if gp == 'pass' else '不否定' if gp == '不否定' else '否决' if gp == 'reject' else '待复核'}</b>"
+               + (f"｜{v.get('gpt_note')}" if v.get('gpt_note') else "")
+               + (f"｜分析于 {v.get('gpt_at')}" if v.get('gpt_at') else "")
+               + (f"｜{v.get('gpt_model')}" if v.get('gpt_model') else "")
+               + "</div>")
             + _side(v.get("buy"), True) + _side(v.get("sell"), False)
             + f"<div style='font-size:10px;color:{PALETTE['mute']};margin-top:3px'>"
-              f"{v.get('rule')}　｜　最高级模型动作须规则闸✅且GPT/Grok双剑✅，"
-              f"缺一方自动降档，不靠单方判断让人买入或清仓。</div></div>")
+              f"{v.get('rule')}　｜　最高级模型动作须规则闸✅且GPT/Codex明确通过；"
+              f"GPT未复核或仅不否定时自动降档。</div></div>")
 
 
 _CERT_CACHE = {"ts": 0, "map": {}}
@@ -793,26 +785,25 @@ def cert_map(rank_score: dict | None = None) -> dict:
         v = r.get("verification") or {}
         c = v.get("rules_gate") or v.get("claude")
         g = v.get("codex") or v.get("gpt")
-        x = v.get("grok")
-        if c in ("pass", "gate_pass") and g == "pass" and x == "pass":
-            m[str(r.get("code"))] = "双"
-        elif c in ("pass", "gate_pass") and (g in ("pass", "不否定") or x in ("pass", "不否定")):
-            m[str(r.get("code"))] = "单"
+        if c in ("pass", "gate_pass") and g == "pass":
+            m[str(r.get("code"))] = "审"
+        elif c in ("pass", "gate_pass") and g == "不否定":
+            m[str(r.get("code"))] = "缓"
         elif c in ("pass", "gate_pass"):
             m[str(r.get("code"))] = "R"
     return m
 
 
 def cert_badge(code: str, cmap: dict) -> str:
-    """双=GPT/Grok一致；单=单剑；R=仅规则闸。"""
+    """审=规则闸+GPT通过；缓=GPT不否定；R=仅规则闸。"""
     k = cert_map_key(code)
     t = cmap.get(str(code)) or cmap.get(k) or ""
-    if t == "双":
-        return cg_badge("R", "gate_pass") + cg_badge("G", "pass") + cg_badge("X", "pass")
-    if t == "单":
-        return cg_badge("R", "gate_pass") + cg_badge("G", "不否定") + cg_badge("X", "")
+    if t == "审":
+        return cg_badge("R", "gate_pass") + cg_badge("G", "pass")
+    if t == "缓":
+        return cg_badge("R", "gate_pass") + cg_badge("G", "不否定")
     if t == "R":
-        return cg_badge("R", "gate_pass") + cg_badge("G", "") + cg_badge("X", "")
+        return cg_badge("R", "gate_pass") + cg_badge("G", "")
     return (f"<span style='color:{PALETTE['mute']};font-size:9.5px;margin-left:3px'>·待验</span>")
 
 

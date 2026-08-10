@@ -3163,8 +3163,7 @@ try:
         _fg9x = "" if str(_nm9x or "")[:2] in ("🇨🇳", "🇭🇰", "🇺🇸") else _flag9(_cd9x)
         return (f'{_fg9x}<a href="?q={_cd9x}&focus=deep#v88-deep-analysis" target="_blank" rel="noopener" '
                 f'style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{_nm9x}</a>'
-                + _cert_badge9(_cd9x, _nm9x) + _gpt_badge9(_cd9x, _nm9x)
-                + _grok_badge9(_cd9x, _nm9x))
+                + _cert_badge9(_cd9x, _nm9x) + _gpt_badge9(_cd9x, _nm9x))
     _cb_gate9 = _v88_mkt_gate9x(_cb_repo9)
     _cb_nt9, _cb_day9 = _v88_nontrade9x()
     # 【U3⑥数据闸门 2026-07-26 GPT审计采纳】行情异常=degraded→买侧禁发,只留卖警
@@ -3256,7 +3255,12 @@ try:
         身份色恒定、裁决用符号与深浅表达——一眼分清"谁说的"与"说了什么"。
         不推翻既有 C 徽章语义,只是把 GPT 这一方补齐(此前它在站内根本没有可视标识)。"""
         try:
-            _g9 = (_GV9 or {}).get(str(_cd or "")) or {}
+            _raw9 = str(_cd or "").upper()
+            _keys9 = [_raw9]
+            if _raw9.endswith(".HK"):
+                _bare9 = _raw9[:-3].lstrip("0") or "0"
+                _keys9 += [_bare9 + ".HK", _bare9.zfill(5) + ".HK"]
+            _g9 = next(((_GV9 or {}).get(k) for k in _keys9 if (_GV9 or {}).get(k)), {})
         except Exception:
             _g9 = {}
         _v9 = str(_g9.get("verdict") or "")
@@ -3276,35 +3280,10 @@ try:
         return (f"<span title=\"{_tip9}\" style='{_base9};background:{_st9[0]};"
                 f"color:{_st9[1]};opacity:{_op9}'>{_st9[2]}</span>")
 
-    def _grok_badge9(_cd, _nm=""):
-        """X=Grok(xAI)独立复核。与G(GPT/Codex)并列，绝不拿规则闸代签。"""
-        try:
-            _x9 = (_XV9 or {}).get(str(_cd or "")) or {}
-        except Exception:
-            _x9 = {}
-        _v9 = str(_x9.get("verdict") or "")
-        if not _v9:
-            return ""
-        _base9 = ("display:inline-block;width:15px;height:15px;line-height:15px;"
-                  "text-align:center;border-radius:50%;font-size:10px;font-weight:800;"
-                  "margin-left:3px;vertical-align:middle;letter-spacing:-.3px")
-        _st9 = ("#7c3aed", "#fff", "X") if _v9 == "通过" else \
-               ("#4c1d95", "#fff", "X̸") if _v9 == "否决" else \
-               ("#ede9fe", "#6d28d9", "X")
-        _tip9 = f"Grok(xAI)独立验证:{_v9}｜{str(_x9.get('why', ''))[:60]}".replace('"', "'")
-        _op9 = "1" if _v9 in ("通过", "否决") else ".8"
-        return (f"<span title=\"{_tip9}\" style='{_base9};background:{_st9[0]};"
-                f"color:{_st9[1]};opacity:{_op9}'>{_st9[2]}</span>")
-
     try:
         _GV9 = (_nwj9("gpt_verify.json").get("rows") or {})
     except Exception:
         _GV9 = {}
-    try:
-        _XV9 = (_nwj9("grok_verify.json").get("rows") or {})
-    except Exception:
-        _XV9 = {}
-
     def _cb_nm9(_nm, _cd):
         # 【2026-07-27 统一名字真源】优先私仓 watch_alerts.resolve_name
         # (库内中文名>美股补充表>池名;港股前导零双向归一);不可用回退本地简版。
@@ -3314,19 +3293,16 @@ try:
                 _sy9n.path.insert(0, str(_cb_repo9 / "src"))
             from watch_alerts import resolve_name as _rn9c
             _n9 = _rn9c(_cd, _nm)
-            return (_n9 + _cert_badge9(_cd, _n9) + _gpt_badge9(_cd, _n9)
-                    + _grok_badge9(_cd, _n9))
+            return (_n9 + _cert_badge9(_cd, _n9) + _gpt_badge9(_cd, _n9))
         except Exception:
             pass
         _n = str(_nm or "")
         if _n and _n != str(_cd):
-            return (_n + _cert_badge9(_cd, _n) + _gpt_badge9(_cd, _n)
-                    + _grok_badge9(_cd, _n))
+            return (_n + _cert_badge9(_cd, _n) + _gpt_badge9(_cd, _n))
         _k = str(_cd or "").upper()
         _out9 = (_cb_names9.get(_k) or _cb_names9.get(_k.split(".")[0].lstrip("0") + ".HK")
                  or _n or _k)
-        return (_out9 + _cert_badge9(_cd, _out9) + _gpt_badge9(_cd, _out9)
-                + _grok_badge9(_cd, _out9))
+        return (_out9 + _cert_badge9(_cd, _out9) + _gpt_badge9(_cd, _out9))
 
     def _cb_mk9(_cd):
         _c = str(_cd or "").upper()
@@ -18225,10 +18201,10 @@ st.markdown("---")
 # ═══════════════════════════════════════════════════════════════
 # ═══════════════════════════════════════════════════════════════
 # 【V88·Fable月计划】2026-08-06 用户定纲:"每月计划一只或几只,我严格按照你的操作,
-# 目标每月$125"。治理=Codex+经典书理+Grok三方会审。用户会**严格照做**,
+# 目标每月$125"。治理=GPT/Codex+经典书理双层复核。用户会**严格照做**,
 # 故必须置顶且全价格无歧义;参数冻结,改动=出新计划,不许悄悄改。
 # ═══════════════════════════════════════════════════════════════
-with st.expander("🎖️ Fable月计划 · 每月$125（Codex＋经典书理＋Grok·参数冻结）", expanded=True):
+with st.expander("🎖️ Fable月计划 · 每月$125（GPT/Codex＋经典书理·参数冻结）", expanded=True):
     try:
         _fp9 = _cbj9("fable_plan.json") or _cbj9("fable_plan_pub.json") or {}
         _fpm9 = (_fp9.get("months") or {}).get(datetime.now().strftime("%Y-%m")) or {}
@@ -19164,6 +19140,18 @@ if st.session_state.get('scan_selected_code'):
     # 从 session_state 读取选中的股票
     q_input = st.session_state.scan_selected_code
     stock_name = st.session_state.scan_selected_name
+    # 统一名称真源：港股搜索/深链常把 6699.HK 补成 06699.HK，旧代码又把
+    # 数字代码当作名称写进 session。先从3A底稿/GPT审核/名录纠正，再渲染表格。
+    try:
+        import sys as _name_sys9
+        _name_src9 = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
+        if _name_src9 not in _name_sys9.path:
+            _name_sys9.path.insert(0, _name_src9)
+        from stock_verdict import resolve_name as _resolve_sv_name9
+        stock_name = _resolve_sv_name9(str(q_input), str(stock_name or ""))
+        st.session_state.scan_selected_name = stock_name
+    except Exception:
+        stock_name = stock_name or q_input
     execute_analysis = True
     
     _safe_print(f"[深度作战室] ✅ 检测到选中股票: {stock_name} ({q_input}), execute_analysis = {execute_analysis}")
@@ -19337,7 +19325,7 @@ if st.session_state.get('scan_selected_code'):
                         _sv_sys.path.insert(0, _sv_p)
                     from stock_verdict import verdict as _sv_verdict
                     from grade_card import verdict_html as _sv_html
-                    _sv = _sv_verdict(str(target_c))   # 名称由 stock_verdict 自行回填,不依赖此处变量
+                    _sv = _sv_verdict(str(target_c), stock_name)
                     st.markdown(_sv_html(_sv), unsafe_allow_html=True)
                 except Exception as _e_sv:
                     st.caption(f"±3A 裁决暂不可用：{type(_e_sv).__name__}")
