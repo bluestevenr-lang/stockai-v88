@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-10 11:29（北京时间）",
- "generated_at": "2026-08-10 11:29（北京时间）",
+ "asof": "2026-08-10 10:55（北京时间）",
+ "generated_at": "2026-08-10 10:55（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_claude_login",
  "rules": {
@@ -16,29 +16,9 @@
  },
  "note": "V88标准规则闸:把历史会审异议固化成机检规则,名单出厂前先过这道闸——不达标的不进推荐位,转⏸未达标区并写明理由(用户定纲:'有异议的还摆在推荐位没有参考意义')。规则来自4个班次真实异议的归纳,非回测胜率;每条带rule_id,台账到期后双周深检算'被拦下的票后来表现如何'来修订阈值——规则错了要能被数据推翻。",
  "pass": {
-  "601012.SS": {
-   "code": "601012.SS",
-   "name": "隆基绿能",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "601515.SS": {
-   "code": "601515.SS",
-   "name": "衢州东峰",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "000958.SZ": {
-   "code": "000958.SZ",
-   "name": "电投产融",
+  "3366.HK": {
+   "code": "3366.HK",
+   "name": "中兴通讯",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -56,6 +36,26 @@
    "downgrade": "",
    "auto": true
   },
+  "002664.SZ": {
+   "code": "002664.SZ",
+   "name": "信质集团",
+   "side": "机会",
+   "action": "现价可进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "688658.SS": {
+   "code": "688658.SS",
+   "name": "悦康药业",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "600208.SS": {
    "code": "600208.SS",
    "name": "衢州发展",
@@ -66,11 +66,21 @@
    "downgrade": "",
    "auto": true
   },
-  "1877.HK": {
-   "code": "1877.HK",
-   "name": "君实生物",
+  "2007.HK": {
+   "code": "2007.HK",
+   "name": "康龙化成",
    "side": "机会",
-   "action": "现价可进",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "300905.SZ": {
+   "code": "300905.SZ",
+   "name": "宝丽迪",
+   "side": "机会",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -86,9 +96,9 @@
    "downgrade": "",
    "auto": true
   },
-  "MSTR": {
-   "code": "MSTR",
-   "name": "MSTR",
+  "002413.SZ": {
+   "code": "002413.SZ",
+   "name": "雷科防务",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -96,19 +106,9 @@
    "downgrade": "",
    "auto": true
   },
-  "600010.SS": {
-   "code": "600010.SS",
-   "name": "包钢股份",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "002664.SZ": {
-   "code": "002664.SZ",
-   "name": "信质集团",
+  "1799.HK": {
+   "code": "1799.HK",
+   "name": "新特能源",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -116,21 +116,11 @@
    "downgrade": "",
    "auto": true
   },
-  "1276.HK": {
-   "code": "1276.HK",
-   "name": "恒瑞医药",
+  "601515.SS": {
+   "code": "601515.SS",
+   "name": "衢州东峰",
    "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "601898.SS": {
-   "code": "601898.SS",
-   "name": "中煤能源",
-   "side": "机会",
-   "action": "现价可进",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -149,6 +139,26 @@
   "001309.SZ": {
    "code": "001309.SZ",
    "name": "德明利",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "BNTX": {
+   "code": "BNTX",
+   "name": "BioNTech",
+   "side": "打折",
+   "action": "🟢打折到位·可开始买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "300782.SZ": {
+   "code": "300782.SZ",
+   "name": "卓胜微",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -178,7 +188,17 @@
   },
   "AZO": {
    "code": "AZO",
-   "name": "汽车地带",
+   "name": "AutoZone",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "300015.SZ": {
+   "code": "300015.SZ",
+   "name": "爱尔眼科",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -238,17 +258,7 @@
   },
   "IBM": {
    "code": "IBM",
-   "name": "IBM国际商业机器",
-   "side": "打折",
-   "action": "🟢打折到位·可开始买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "LOW": {
-   "code": "LOW",
-   "name": "劳氏",
+   "name": "IBM",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
    "rules": [],
@@ -351,17 +361,17 @@
   }
  },
  "stats": {
-  "n_pass": 305,
-  "n_reject": 155,
+  "n_pass": 290,
+  "n_reject": 179,
   "by_rule": {
-   "CS9": 1,
+   "CS9": 0,
    "CS1": 0,
    "CS2": 4,
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
-   "CS6": 144,
-   "CS7": 68,
+   "CS6": 166,
+   "CS7": 92,
    "CS8": 0
   }
  }

@@ -1,5 +1,5 @@
 {
- "asof": "2026-08-10 07:34（北京时间）",
+ "asof": "2026-08-10 10:55（北京时间）",
  "model": "claude-fable-5",
  "by_market": {
   "美股": {
@@ -15,31 +15,23 @@
    "verdict": "打架",
    "model": "claude-fable-5",
    "shift": "2026-08-06 午后审 (16:20北京·",
-   "engine": 62,
+   "engine": 65,
    "fable": 43,
-   "diff": 19,
-   "note": "引擎2周62% vs claude-fable-5独立读43%·差19pp(明显打架,等下一班复核)"
+   "diff": 22,
+   "note": "引擎2周65% vs claude-fable-5独立读43%·差22pp(明显打架,等下一班复核)"
   },
   "港股": {
    "verdict": "一致",
    "model": "claude-fable-5",
    "shift": "2026-08-06 午后审 (16:20北京·",
-   "engine": 54,
+   "engine": 55,
    "fable": 56,
-   "diff": 2,
-   "note": "引擎2周54% vs claude-fable-5独立读56%·差2pp(两套读数对上)"
+   "diff": 1,
+   "note": "引擎2周55% vs claude-fable-5独立读56%·差1pp(两套读数对上)"
   }
  },
  "note": "Claude(Fable5/Opus5)独立复核徽章:🅒=复核结论与规则引擎一致;⚡=有异议不发徽章(理由见note);无徽章=本班未复核该标的(重点股优先,不装作全审)。徽章只代表'两套逻辑对上了',不代表保证盈利。",
  "by_code": {
-  "MO": {
-   "verdict": "一致",
-   "model": "claude-fable-5",
-   "shift": "2026-08-06 午后审 (16:20北京·",
-   "note": "- 奥驰亚MO/美国南方SO: 规则{退出/评估减仓} vs Fable{看空偏防·距止损仅2.4%/2.0%} vs GPT{无} → **一致：破66.83/91.25分批卖，",
-   "code": "MO",
-   "name": "奥驰亚"
-  },
   "SO": {
    "verdict": "一致",
    "model": "claude-fable-5",
@@ -47,6 +39,14 @@
    "note": "- 奥驰亚MO/美国南方SO: 规则{退出/评估减仓} vs Fable{看空偏防·距止损仅2.4%/2.0%} vs GPT{无} → **一致：破66.83/91.25分批卖，",
    "code": "SO",
    "name": "美国南方公司"
+  },
+  "MO": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-06 午后审 (16:20北京·",
+   "note": "- 奥驰亚MO/美国南方SO: 规则{退出/评估减仓} vs Fable{看空偏防·距止损仅2.4%/2.0%} vs GPT{无} → **一致：破66.83/91.25分批卖，",
+   "code": "MO",
+   "name": "奥驰亚"
   },
   "APP": {
    "verdict": "一致",
@@ -56,14 +56,6 @@
    "code": "APP",
    "name": "APP"
   },
-  "MU": {
-   "verdict": "分歧",
-   "model": "claude-fable-5",
-   "shift": "2026-08-06 午后审 (16:20北京·",
-   "note": "- 🔺美光MU: 规则{评估减仓} vs Fable{**看多**·中置信·px893距止损738尚有21%，铁律18以趋势论——趋势未破，-2A是MA20口径过敏} vs GPT",
-   "code": "MU",
-   "name": "美光科技"
-  },
   "🔺美光MU": {
    "verdict": "分歧",
    "model": "claude-fable-5",
@@ -71,6 +63,14 @@
    "note": "- 🔺美光MU: 规则{评估减仓} vs Fable{**看多**·中置信·px893距止损738尚有21%，铁律18以趋势论——趋势未破，-2A是MA20口径过敏} vs GPT",
    "code": "🔺美光MU",
    "name": "🔺美光MU"
+  },
+  "MU": {
+   "verdict": "分歧",
+   "model": "claude-fable-5",
+   "shift": "2026-08-06 午后审 (16:20北京·",
+   "note": "- 🔺美光MU: 规则{评估减仓} vs Fable{**看多**·中置信·px893距止损738尚有21%，铁律18以趋势论——趋势未破，-2A是MA20口径过敏} vs GPT",
+   "code": "MU",
+   "name": "美光科技"
   },
   "🔺特斯拉TSLA": {
    "verdict": "分歧",
@@ -90,22 +90,6 @@
   }
  },
  "by_name": {
-  "奥驰亚": {
-   "verdict": "一致",
-   "model": "claude-fable-5",
-   "shift": "2026-08-06 午后审 (16:20北京·",
-   "note": "- 奥驰亚MO/美国南方SO: 规则{退出/评估减仓} vs Fable{看空偏防·距止损仅2.4%/2.0%} vs GPT{无} → **一致：破66.83/91.25分批卖，",
-   "code": "MO",
-   "name": "奥驰亚"
-  },
-  "MO": {
-   "verdict": "一致",
-   "model": "claude-fable-5",
-   "shift": "2026-08-06 午后审 (16:20北京·",
-   "note": "- 奥驰亚MO/美国南方SO: 规则{退出/评估减仓} vs Fable{看空偏防·距止损仅2.4%/2.0%} vs GPT{无} → **一致：破66.83/91.25分批卖，",
-   "code": "MO",
-   "name": "奥驰亚"
-  },
   "美国南方公司": {
    "verdict": "一致",
    "model": "claude-fable-5",
@@ -122,6 +106,22 @@
    "code": "SO",
    "name": "美国南方公司"
   },
+  "奥驰亚": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-06 午后审 (16:20北京·",
+   "note": "- 奥驰亚MO/美国南方SO: 规则{退出/评估减仓} vs Fable{看空偏防·距止损仅2.4%/2.0%} vs GPT{无} → **一致：破66.83/91.25分批卖，",
+   "code": "MO",
+   "name": "奥驰亚"
+  },
+  "MO": {
+   "verdict": "一致",
+   "model": "claude-fable-5",
+   "shift": "2026-08-06 午后审 (16:20北京·",
+   "note": "- 奥驰亚MO/美国南方SO: 规则{退出/评估减仓} vs Fable{看空偏防·距止损仅2.4%/2.0%} vs GPT{无} → **一致：破66.83/91.25分批卖，",
+   "code": "MO",
+   "name": "奥驰亚"
+  },
   "APP": {
    "verdict": "一致",
    "model": "claude-fable-5",
@@ -129,6 +129,14 @@
    "note": "- 沃森生物/APP: 规则{退出/评估减仓} vs Fable{看空·沃森缩量阴跌、APP vr1.55放量} vs GPT{无} → **一致：反弹减，破11.61/383.1",
    "code": "APP",
    "name": "APP"
+  },
+  "🔺美光MU": {
+   "verdict": "分歧",
+   "model": "claude-fable-5",
+   "shift": "2026-08-06 午后审 (16:20北京·",
+   "note": "- 🔺美光MU: 规则{评估减仓} vs Fable{**看多**·中置信·px893距止损738尚有21%，铁律18以趋势论——趋势未破，-2A是MA20口径过敏} vs GPT",
+   "code": "🔺美光MU",
+   "name": "🔺美光MU"
   },
   "美光科技": {
    "verdict": "分歧",
@@ -145,14 +153,6 @@
    "note": "- 🔺美光MU: 规则{评估减仓} vs Fable{**看多**·中置信·px893距止损738尚有21%，铁律18以趋势论——趋势未破，-2A是MA20口径过敏} vs GPT",
    "code": "MU",
    "name": "美光科技"
-  },
-  "🔺美光MU": {
-   "verdict": "分歧",
-   "model": "claude-fable-5",
-   "shift": "2026-08-06 午后审 (16:20北京·",
-   "note": "- 🔺美光MU: 规则{评估减仓} vs Fable{**看多**·中置信·px893距止损738尚有21%，铁律18以趋势论——趋势未破，-2A是MA20口径过敏} vs GPT",
-   "code": "🔺美光MU",
-   "name": "🔺美光MU"
   },
   "🔺特斯拉TSLA": {
    "verdict": "分歧",
