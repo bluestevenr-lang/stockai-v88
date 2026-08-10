@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-10 14:32（北京时间）",
+ "generated_at": "2026-08-10 21:45（北京时间）",
  "version": "dropout-v1",
  "rule": "区分『评估后不合格』(正常) 与 『从未被评估』(bug)。用户定纲：评分不够是正常；**压根不在池里就是问题**。",
  "boundary": "只对关键桶缺输入告警，不对分数低告警——噪音大的哨兵=死哨兵（fact_gate 290条误报的教训）。",
@@ -59,15 +59,23 @@
    "src": "持仓",
    "in_pool": true,
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
+  },
+  {
+   "code": "600036.SS",
+   "name": "招商银行",
+   "src": "自选",
+   "in_pool": true,
+   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
+  },
+  {
+   "code": "002415.SZ",
+   "name": "海康威视",
+   "src": "自选",
+   "in_pool": true,
+   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   }
  ],
  "quiet_long": [
-  {
-   "code": "MRK",
-   "name": "默沙东",
-   "tier": "0A",
-   "src": "持仓"
-  },
   {
    "code": "688825.SS",
    "name": "688825.SS",
@@ -81,22 +89,28 @@
    "src": "自选"
   },
   {
+   "code": "NVDA",
+   "name": "英伟达",
+   "tier": "0A",
+   "src": "持仓"
+  },
+  {
+   "code": "688432.SS",
+   "name": "有研硅",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
    "code": "300996.SZ",
    "name": "普联软件",
    "tier": "0A",
    "src": "自选"
   },
   {
-   "code": "PFE",
-   "name": "辉瑞",
+   "code": "688046.SS",
+   "name": "药康生物",
    "tier": "0A",
-   "src": "持仓"
-  },
-  {
-   "code": "NVDA",
-   "name": "英伟达",
-   "tier": "0A",
-   "src": "持仓"
+   "src": "自选"
   },
   {
    "code": "QQQM",
@@ -105,16 +119,16 @@
    "src": "持仓"
   },
   {
-   "code": "002550.SZ",
-   "name": "千红制药",
+   "code": "002739.SZ",
+   "name": "儒意电影",
    "tier": "0A",
    "src": "自选"
   },
   {
-   "code": "VOO",
-   "name": "Vanguard标普500",
+   "code": "601166.SS",
+   "name": "兴业银行",
    "tier": "0A",
-   "src": "持仓"
+   "src": "自选"
   },
   {
    "code": "LLY",
@@ -123,8 +137,20 @@
    "src": "自选"
   },
   {
-   "code": "0700.HK",
+   "code": "301234.SZ",
+   "name": "五洲医疗",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "00700.HK",
    "name": "腾讯控股",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "300759.SZ",
+   "name": "康龙化成",
    "tier": "0A",
    "src": "自选"
   },
@@ -135,18 +161,90 @@
    "src": "自选"
   },
   {
+   "code": "603882.SS",
+   "name": "金域医学",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "603580.SS",
+   "name": "艾艾精工",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "PFE",
+   "name": "辉瑞",
+   "tier": "0A",
+   "src": "持仓"
+  },
+  {
+   "code": "0992.HK",
+   "name": "联想集团",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "603993.SS",
+   "name": "洛阳钼业",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
    "code": "ARXS",
    "name": "ARXS",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "603823.SS",
+   "name": "百合花",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "301080.SZ",
+   "name": "百普赛斯",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "VOO",
+   "name": "Vanguard标普500",
+   "tier": "0A",
+   "src": "持仓"
+  },
+  {
+   "code": "002141.SZ",
+   "name": "贤丰控股",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "688137.SS",
+   "name": "近岸蛋白",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "603221.SS",
+   "name": "爱丽家居",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "301520.SZ",
+   "name": "万邦医药",
    "tier": "0A",
    "src": "自选"
   }
  ],
  "stats": {
-  "graded": 425,
-  "pool": 2327,
-  "must": 42,
+  "graded": 321,
+  "pool": 2600,
+  "must": 72,
   "silent_dropout": 1,
-  "missing_from_grade": 6,
-  "quiet_long": 13
+  "missing_from_grade": 8,
+  "quiet_long": 27
  }
 }

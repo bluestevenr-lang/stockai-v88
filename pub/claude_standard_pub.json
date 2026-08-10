@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-10 21:30（北京时间）",
- "generated_at": "2026-08-10 21:30（北京时间）",
+ "asof": "2026-08-10 21:42（北京时间）",
+ "generated_at": "2026-08-10 21:42（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -21,16 +21,6 @@
    "name": "中兴通讯",
    "side": "机会",
    "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "6618.HK": {
-   "code": "6618.HK",
-   "name": "京东健康",
-   "side": "机会",
-   "action": "现价可进",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -365,6 +355,16 @@
    "why": "",
    "downgrade": "",
    "auto": true
+  },
+  "0005.HK": {
+   "code": "0005.HK",
+   "name": "汇丰控股",
+   "side": "行业代表",
+   "action": "",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
   }
  },
  "reject": {
@@ -381,7 +381,7 @@
   }
  },
  "stats": {
-  "n_pass": 451,
+  "n_pass": 333,
   "n_reject": 32,
   "by_rule": {
    "CS9": 1,

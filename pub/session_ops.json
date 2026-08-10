@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-10 21:40（北京时间）",
+ "generated_at": "2026-08-10 21:45（北京时间）",
  "version": "sessionops-v1",
  "ruleset_version": "v4.2",
  "gates_in_force": [
@@ -12,7 +12,7 @@
   "铁律21·不许静默吞错",
   "铁律18·成本标注"
  ],
- "market": "美股",
+ "market": "全部",
  "declaration": "**本场唯一结论源**：对话回答与 V88 页面渲染均引用本文件，逐字一致。全部字段取自落盘（sell_grade/rank_score/classics_lens/anomaly_gate/holdings_fundamentals），零现场推理。",
  "rules": [
   "-3A 才是立即卖；-2A 一律守线待触发并写明触发价",
@@ -24,27 +24,13 @@
  "sell": [],
  "watch": [
   {
-   "code": "SO",
-   "name": "美国南方公司",
-   "level": "-1A",
-   "last": 92.69,
-   "stop": 91.25,
-   "dist_stop_pct": 1.6,
-   "sell_zone": "跌破91.25执行(距+1.6%)",
-   "c123": "①②",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 91.25 执行"
-  },
-  {
    "code": "MO",
    "name": "奥驰亚",
    "level": "-1A",
-   "last": 68.35,
+   "last": 67.07,
    "stop": 66.83,
-   "dist_stop_pct": 2.3,
-   "sell_zone": "跌破66.83执行(距+2.3%)",
+   "dist_stop_pct": 0.4,
+   "sell_zone": "跌破66.83执行(距+0.4%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
@@ -52,13 +38,41 @@
    "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 66.83 执行"
   },
   {
+   "code": "SO",
+   "name": "美国南方公司",
+   "level": "-1A",
+   "last": 91.695,
+   "stop": 91.25,
+   "dist_stop_pct": 0.5,
+   "sell_zone": "跌破91.25执行(距+0.5%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 91.25 执行"
+  },
+  {
+   "code": "601288.SS",
+   "name": "农业银行",
+   "level": "-1A",
+   "last": 6.46,
+   "stop": 6.41,
+   "dist_stop_pct": 0.8,
+   "sell_zone": "跌破6.41执行(距+0.8%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 6.41 执行"
+  },
+  {
    "code": "PM",
    "name": "菲利普莫里斯",
    "level": "-1A",
-   "last": 189.57,
+   "last": 186.945,
    "stop": 184.36,
-   "dist_stop_pct": 2.8,
-   "sell_zone": "跌破184.36执行(距+2.8%)",
+   "dist_stop_pct": 1.4,
+   "sell_zone": "跌破184.36执行(距+1.4%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
@@ -66,27 +80,13 @@
    "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 184.36 执行"
   },
   {
-   "code": "APP",
-   "name": "Applovin",
-   "level": "-1A",
-   "last": 346.8,
-   "stop": 332.192,
-   "dist_stop_pct": 4.4,
-   "sell_zone": "跌破332.19执行(距+4.4%)",
-   "c123": "①②",
-   "frozen": true,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①②；且有未解释异动，重动作已冻结（止损不受影响） → 不主动卖，跌破 332.192 执行"
-  },
-  {
    "code": "AAPL",
    "name": "苹果",
    "level": "-1A",
-   "last": 313.33,
+   "last": 306.01,
    "stop": 300.0,
-   "dist_stop_pct": 4.4,
-   "sell_zone": "跌破300.00执行(距+4.4%)",
+   "dist_stop_pct": 2.0,
+   "sell_zone": "跌破300.00执行(距+2.0%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
@@ -94,13 +94,27 @@
    "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 300.0 执行"
   },
   {
+   "code": "APP",
+   "name": "Applovin",
+   "level": "-1A",
+   "last": 349.07,
+   "stop": 332.192,
+   "dist_stop_pct": 5.1,
+   "sell_zone": "跌破332.19执行(距+5.1%)",
+   "c123": "①②",
+   "frozen": true,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①②；且有未解释异动，重动作已冻结（止损不受影响） → 不主动卖，跌破 332.192 执行"
+  },
+  {
    "code": "MU",
    "name": "美光科技",
    "level": "-1A",
-   "last": 877.57,
+   "last": 871.1,
    "stop": 737.88,
-   "dist_stop_pct": 18.9,
-   "sell_zone": "跌破737.88执行(距+18.9%)",
+   "dist_stop_pct": 18.1,
+   "sell_zone": "跌破737.88执行(距+18.1%)",
    "c123": "①②",
    "frozen": true,
    "listable": true,
@@ -111,6 +125,30 @@
  "buy": [],
  "blocked_by_rr": [
   {
+   "code": "601899.SS",
+   "name": "紫金矿业",
+   "rr": 0.59,
+   "why": "加权赔率 0.59 < 1.5：**亏的空间比赚的大**。书理透镜只看质地(成长/估值/机构)，看不见赔率——斯波朗迪『风险先于收益』在此否决。"
+  },
+  {
+   "code": "06055.HK",
+   "name": "中烟香港",
+   "rr": 0.77,
+   "why": "加权赔率 0.77 < 1.5：**亏的空间比赚的大**。书理透镜只看质地(成长/估值/机构)，看不见赔率——斯波朗迪『风险先于收益』在此否决。"
+  },
+  {
+   "code": "600809.SS",
+   "name": "山西汾酒",
+   "rr": 0.85,
+   "why": "加权赔率 0.85 < 1.5：**亏的空间比赚的大**。书理透镜只看质地(成长/估值/机构)，看不见赔率——斯波朗迪『风险先于收益』在此否决。"
+  },
+  {
+   "code": "0883.HK",
+   "name": "中海油",
+   "rr": 1.18,
+   "why": "加权赔率 1.18 < 1.5：**亏的空间比赚的大**。书理透镜只看质地(成长/估值/机构)，看不见赔率——斯波朗迪『风险先于收益』在此否决。"
+  },
+  {
    "code": "XOM",
    "name": "埃克森美孚",
    "rr": 0.64,
@@ -119,15 +157,15 @@
  ],
  "stats": {
   "sell": 0,
-  "watch": 6,
+  "watch": 7,
   "buy": 0,
   "buy_dual": 0,
-  "blocked_by_rr": 1
+  "blocked_by_rr": 5
  },
  "src_asof": {
-  "sell_grade": "2026-08-10 14:31（北京时间）",
-  "rank_score": "2026-08-10 21:38（北京时间）",
-  "classics_lens": "2026-08-10 14:32（北京时间）",
-  "anomaly_gate": "2026-08-10 14:31（北京时间）"
+  "sell_grade": "2026-08-10 21:44（北京时间）",
+  "rank_score": "2026-08-10 21:43（北京时间）",
+  "classics_lens": "2026-08-10 21:45（北京时间）",
+  "anomaly_gate": "2026-08-10 21:44（北京时间）"
  }
 }
