@@ -35825,7 +35825,7 @@
   "direction": "down",
   "prob": 54,
   "source": "rule",
-  "status": "待核",
+  "status": "superseded",
   "rules_ver": "v1",
   "extra": {
    "code": "000001.SS",
@@ -38063,6 +38063,35 @@
    "diverge": 51.7,
    "regime": "neutral",
    "topish": true,
+   "botish": false
+  }
+ },
+ {
+  "id": "mkt_rhythm:A股节奏:2026-08-10#v2",
+  "date": "2026-08-10",
+  "kind": "mkt_rhythm",
+  "subject": "A股节奏",
+  "market": "A股",
+  "prediction": "调整倾向54%·B_连涨调整·5日累计+3.7%·连阳5日——涨多了短线兑现压力",
+  "horizon_end": "2026-08-15",
+  "confirm_price": null,
+  "direction": "down",
+  "prob": 54,
+  "source": "rule",
+  "status": "待核",
+  "rules_ver": "v1",
+  "extra": {
+   "code": "000001.SS",
+   "base_price": 3950.06,
+   "rule_ver": "rhythm-1.0",
+   "fwd_days": 3
+  },
+  "env": {
+   "market": "A股",
+   "temp": 70,
+   "p2w": 65,
+   "regime": "bull",
+   "topish": false,
    "botish": false
   }
  }
