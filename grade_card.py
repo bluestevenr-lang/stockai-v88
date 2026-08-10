@@ -43,7 +43,7 @@ PALETTE = {
     #   C=靛蓝(主脑,不可替代)  G=青(副脑,独立第二意见)
     # 裁决状态由后缀符号表达(✅通过/⚠️否决/—未表态),身份色恒定——
     # 这样一眼能分清"谁说的"与"说了什么"。
-    "claude":   "#4338ca",   # legacy key: Ⓡ V88规则闸
+    "rules_gate": "#4338ca", # Ⓡ V88规则闸
     "gpt":      "#0d9488",   # legacy key: Ⓒ Codex独立复核
 }
 TIER_COLOR = {"3A": PALETTE["buy"], "2A": PALETTE["buy2"], "1A": PALETTE["buy3"],
@@ -222,7 +222,7 @@ def stock_link(name, code, flag: str = "") -> str:
 
 def cg_badge(who: str, state: str, note: str = "") -> str:
     """审核徽章。R=规则闸，G=GPT/Codex。"""
-    base = PALETTE["claude"] if who == "R" else PALETTE["gpt"]
+    base = PALETTE["rules_gate"] if who == "R" else PALETTE["gpt"]
     # 三级:pass=主动背书(实心✅) / gate_pass=机检达标(空心✓,半亮) / reject=否决 / 未表态=—
     mark, op = ("✅", "1") if state == "pass" else \
                ("✓", ".72") if state == "gate_pass" else \
@@ -366,11 +366,9 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
     # 与既有铁律一致(claude-standard-gate:"红标不进推荐位")。
     _blocked_rows = [x for x in rows if x.get("tier") in ("3A", "2A", "1A")
                      and x.get("verification") and not x.get("listable")
-                     and ((x.get("verification") or {}).get("rules_gate")
-                          or (x.get("verification") or {}).get("claude")) != "reject"]
+                     and (x.get("verification") or {}).get("rules_gate") != "reject"]
     _n_cl_rej = sum(1 for x in rows if x.get("tier") in ("3A", "2A", "1A")
-                    and ((x.get("verification") or {}).get("rules_gate")
-                         or (x.get("verification") or {}).get("claude")) == "reject")
+                    and (x.get("verification") or {}).get("rules_gate") == "reject")
     in_rows = ""
     blocked_html = ""
 
@@ -430,7 +428,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             # GPT 的异议不能只在漏斗里一句带过,必须**逐行摆在表上**让人自己判断。
             # 同时保留"缺什么/为什么不更高"(信息不做减法,只是压缩排版)。
             + _td((lambda _v: (
-                cg_badge("R", str(_v.get("rules_gate") or _v.get("claude") or ""))
+                cg_badge("R", str(_v.get("rules_gate") or ""))
                 + cg_badge("G", str(_v.get("codex") or _v.get("gpt") or ""), str(_v.get("gpt_note") or ""))
                 + (f"<br><span style='font-size:9px;color:{PALETTE['warn']}'>"
                    f"Codex异议: {str(_v.get('gpt_note'))[:30]}</span>"
@@ -524,7 +522,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                    f"门派({g.get('opp_type') or '未定'})内判定一致</span>"), "max-width:150px")
             # 卖侧双验证徽章(铁律19v3对称:错误卖出信号直接损失真金)
             + _td((lambda _v: (
-                cg_badge("R", str(_v.get("rules_gate") or _v.get("claude") or ""))
+                cg_badge("R", str(_v.get("rules_gate") or ""))
                 + cg_badge("G", str(_v.get("codex") or _v.get("gpt") or ""), str(_v.get("gpt_note") or ""))
                 + (f"<br><span style='font-size:8.5px;color:{PALETTE['warn']}'>"
                    f"{str(_v.get('gpt_note'))[:24]}</span>"
@@ -704,7 +702,7 @@ def verdict_html(v: dict) -> str:
     数据来自 ai-daily-report-v2/src/stock_verdict.verdict()——**与 3A 大系统同源**。"""
     if not v:
         return ""
-    cl = v.get("rules_gate") or v.get("claude")
+    cl = v.get("rules_gate")
     gp = v.get("codex") or v.get("gpt")
 
     def _badge(who, st):
@@ -783,7 +781,7 @@ def cert_map(rank_score: dict | None = None) -> dict:
     m = {}
     for r in rows:
         v = r.get("verification") or {}
-        c = v.get("rules_gate") or v.get("claude")
+        c = v.get("rules_gate")
         g = v.get("codex") or v.get("gpt")
         if c in ("pass", "gate_pass") and g == "pass":
             m[str(r.get("code"))] = "审"

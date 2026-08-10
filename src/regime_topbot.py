@@ -480,16 +480,12 @@ def transmission_check() -> dict:
             except Exception:
                 logger.exception("[transmission] GPT侧检查失败")
                 row["gpt_saw_topbot"] = None
-            # ③ Claude：本班复核是否提到该市场的顶底结论（fable_review.md 当日段）
+            # ③ GPT/Codex：本轮复核事实包是否覆盖顶底结论。
             try:
-                txt = (BASE / "data" / "fable_review.md").read_text(encoding="utf-8")[:6000]
-                today = datetime.now(BJT).strftime("%Y-%m-%d")
-                seg = txt.split(today)[1][:2500] if today in txt else ""
-                row["claude_mentioned"] = bool(seg) and (
-                    "顶部特征" in seg or "底部特征" in seg or "顶底" in seg)
+                row["gpt_mentioned"] = bool(row.get("gpt_saw_topbot"))
             except Exception:
-                logger.exception("[transmission] Claude侧检查失败")
-                row["claude_mentioned"] = None
+                logger.exception("[transmission] GPT复核侧检查失败")
+                row["gpt_mentioned"] = None
             out["rows"].append(row)
         (BASE / "data" / "transmission_check.json").write_text(
             json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
