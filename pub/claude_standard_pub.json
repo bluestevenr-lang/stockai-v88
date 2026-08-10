@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-10 07:34（北京时间）",
- "generated_at": "2026-08-10 07:34（北京时间）",
+ "asof": "2026-08-10 09:41（北京时间）",
+ "generated_at": "2026-08-10 09:41（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_claude_login",
  "rules": {
@@ -136,6 +136,26 @@
    "downgrade": "",
    "auto": true
   },
+  "0340.HK": {
+   "code": "0340.HK",
+   "name": "潼关黄金",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "3939.HK": {
+   "code": "3939.HK",
+   "name": "万国黄金集团",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "MCD": {
    "code": "MCD",
    "name": "麦当劳",
@@ -256,16 +276,6 @@
    "downgrade": "",
    "auto": true
   },
-  "XLY": {
-   "code": "XLY",
-   "name": "美股·可选消费板块",
-   "side": "拐点",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "SLB": {
    "code": "SLB",
    "name": "斯伦贝谢",
@@ -351,17 +361,17 @@
   }
  },
  "stats": {
-  "n_pass": 306,
-  "n_reject": 154,
+  "n_pass": 299,
+  "n_reject": 168,
   "by_rule": {
-   "CS9": 1,
+   "CS9": 0,
    "CS1": 0,
    "CS2": 3,
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
-   "CS6": 144,
-   "CS7": 68,
+   "CS6": 158,
+   "CS7": 82,
    "CS8": 0
   }
  }

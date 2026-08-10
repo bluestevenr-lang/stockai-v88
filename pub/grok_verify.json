@@ -1,10 +1,10 @@
 {
- "generated_at": "2026-08-09 18:00（北京时间）",
+ "generated_at": "2026-08-10 09:43（北京时间）",
  "version": "grokverify-v1",
  "model": "grok-4.5",
  "display_name": "Grok独立复核",
  "reviewer": "grok_pro_bridge",
- "mode": "manual_grok_pro",
+ "mode": "manual_bridge",
  "rule": "与Codex互盲；通过/不否定/否决三态。不可用不冒充通过。",
  "budget": {
   "monthly_cap_rmb": 1.5,
@@ -24,11 +24,11 @@
   "159632.SZ": {
    "name": "纳斯达克",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "提供事实无明确反证当前档位",
-   "ts": "2026-08-09",
-   "sig": "1A|回踩 2.37~2.46 买 · 5个交易日内有|70",
-   "source": "manual_grok_pro",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 2.37 买 · 0个交易日内有效|60",
+   "source": "manual_bridge_pending",
    "fresh_for_strong_days": 1
   },
   "06055.HK": {
@@ -63,42 +63,42 @@
   },
   "NVDA": {
    "name": "英伟达",
-   "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "提供事实无明确反证当前档位",
-   "ts": "2026-08-09",
-   "sig": "1A|回踩 206.82~215.09 买 · 5个交|65",
-   "source": "manual_grok_pro",
+   "tier_at_verify": "0A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "0A|回踩 206.01 买 · 5个交易日内有效|55",
+   "source": "manual_bridge_pending",
    "fresh_for_strong_days": 1
   },
   "9988.HK": {
    "name": "阿里巴巴-SW",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "提供事实无明确反证当前档位",
-   "ts": "2026-08-09",
-   "sig": "1A|回踩 119.27 买 · 5个交易日内有效|65",
-   "source": "manual_grok_pro",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 119.26 买 · 5个交易日内有效|60",
+   "source": "manual_bridge_pending",
    "fresh_for_strong_days": 1
   },
   "MS": {
    "name": "摩根士丹利",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "提供事实无明确反证当前档位",
-   "ts": "2026-08-09",
-   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|60",
-   "source": "manual_grok_pro",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 212.18 买 · 0个交易日内有效|45",
+   "source": "manual_bridge_pending",
    "fresh_for_strong_days": 1
   },
   "QQQM": {
    "name": "纳指100ETF",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "提供事实无明确反证当前档位",
-   "ts": "2026-08-09",
-   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|60",
-   "source": "manual_grok_pro",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 286.98 买 · 0个交易日内有效|45",
+   "source": "manual_bridge_pending",
    "fresh_for_strong_days": 1
   },
   "0883.HK": {
@@ -143,12 +143,12 @@
   },
   "2618.HK": {
    "name": "京东物流",
-   "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "提供事实无明确反证当前档位",
-   "ts": "2026-08-09",
-   "sig": "1A|回踩 13.67~14.22 买 · 5个交易日|70",
-   "source": "manual_grok_pro",
+   "tier_at_verify": "2A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "2A|下一交易日 08-10 开盘可进（今日休市）|70",
+   "source": "manual_bridge_pending",
    "fresh_for_strong_days": 1
   },
   "3347.HK": {
@@ -164,11 +164,11 @@
   "1114.HK": {
    "name": "华晨中国",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "提供事实无明确反证当前档位",
-   "ts": "2026-08-09",
-   "sig": "1A|回踩 2.03 买 · 5个交易日内有效|70",
-   "source": "manual_grok_pro",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 2.08 买 · 5个交易日内有效|70",
+   "source": "manual_bridge_pending",
    "fresh_for_strong_days": 1
   },
   "HPE": {
@@ -204,21 +204,21 @@
   "NOW": {
    "name": "现在服务公司",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "提供事实无明确反证当前档位",
-   "ts": "2026-08-09",
-   "sig": "1A|回踩 108.3~112.63 买 · 5个交易|70",
-   "source": "manual_grok_pro",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 108.3~112.63 买 · 5个交易|65",
+   "source": "manual_bridge_pending",
    "fresh_for_strong_days": 1
   },
   "603296.SS": {
    "name": "华勤技术",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "提供事实无明确反证当前档位",
-   "ts": "2026-08-09",
-   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|65",
-   "source": "manual_grok_pro",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|60",
+   "source": "manual_bridge_pending",
    "fresh_for_strong_days": 1
   },
   "688432.SS": {
@@ -243,12 +243,12 @@
   },
   "PGR": {
    "name": "前进保险",
-   "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "提供事实无明确反证当前档位",
-   "ts": "2026-08-09",
-   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|65",
-   "source": "manual_grok_pro",
+   "tier_at_verify": "2A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "2A|下一交易日 08-10 开盘可进（今日休市）|65",
+   "source": "manual_bridge_pending",
    "fresh_for_strong_days": 1
   },
   "002674.SZ": {
@@ -364,11 +364,11 @@
   "002415.SZ": {
    "name": "海康威视",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "提供事实无明确反证当前档位",
-   "ts": "2026-08-09",
-   "sig": "1A|回踩 35.81~37.24 买 · 5个交易日|60",
-   "source": "manual_grok_pro",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|65",
+   "source": "manual_bridge_pending",
    "fresh_for_strong_days": 1
   },
   "002517.SZ": {
@@ -414,11 +414,11 @@
   "0027.HK": {
    "name": "银河娱乐",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "提供事实无明确反证当前档位",
-   "ts": "2026-08-09",
-   "sig": "1A|回踩 32.06~33.34 买 · 5个交易日|60",
-   "source": "manual_grok_pro",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 32.68 买 · 5个交易日内有效|60",
+   "source": "manual_bridge_pending",
    "fresh_for_strong_days": 1
   },
   "603823.SS": {
@@ -454,11 +454,11 @@
   "2388.HK": {
    "name": "中银香港",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "提供事实无明确反证当前档位",
-   "ts": "2026-08-09",
-   "sig": "1A|回踩 47.8~49.71 买 · 5个交易日内|60",
-   "source": "manual_grok_pro",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|60",
+   "source": "manual_bridge_pending",
    "fresh_for_strong_days": 1
   },
   "9999.HK": {
@@ -484,11 +484,11 @@
   "3808.HK": {
    "name": "中国重汽",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "提供事实无明确反证当前档位",
-   "ts": "2026-08-09",
-   "sig": "1A|回踩 40.26 买 · 5个交易日内有效|60",
-   "source": "manual_grok_pro",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 41.32 买 · 5个交易日内有效|60",
+   "source": "manual_bridge_pending",
    "fresh_for_strong_days": 1
   },
   "TFC": {
@@ -534,11 +534,11 @@
   "300996.SZ": {
    "name": "普联软件",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "提供事实无明确反证当前档位",
-   "ts": "2026-08-09",
-   "sig": "1A|回踩 12.2~12.69 买 · 5个交易日内|55",
-   "source": "manual_grok_pro",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 14.16~14.73 买 · 5个交易日|55",
+   "source": "manual_bridge_pending",
    "fresh_for_strong_days": 1
   },
   "REGN": {
@@ -664,11 +664,11 @@
   "KRE": {
    "name": "区域银行指数ETF-SPDR KBW",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "提供事实无明确反证当前档位",
-   "ts": "2026-08-09",
-   "sig": "1A|回踩 76.21~79.26 买 · 5个交易日|50",
-   "source": "manual_grok_pro",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|55",
+   "source": "manual_bridge_pending",
    "fresh_for_strong_days": 1
   },
   "601985.SS": {
@@ -694,31 +694,281 @@
   "513650.SS": {
    "name": "标普ETF(南方标普500)",
    "tier_at_verify": "0A",
-   "verdict": "不否定",
-   "why": "提供事实无明确反证当前档位",
-   "ts": "2026-08-09",
-   "sig": "0A|回踩 1.92~2.0 买 · 5个交易日内有效|60",
-   "source": "manual_grok_pro",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "0A|回踩 1.94 买 · 5个交易日内有效|50",
+   "source": "manual_bridge_pending",
    "fresh_for_strong_days": 1
   },
   "VOO": {
    "name": "Vanguard标普500",
    "tier_at_verify": "0A",
-   "verdict": "不否定",
-   "why": "提供事实无明确反证当前档位",
-   "ts": "2026-08-09",
-   "sig": "0A|下一交易日 08-10 开盘可进（今日休市）|60",
-   "source": "manual_grok_pro",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "0A|回踩 692.94 买 · 5个交易日内有效|45",
+   "source": "manual_bridge_pending",
    "fresh_for_strong_days": 1
   },
   "513500.SS": {
    "name": "标普500",
    "tier_at_verify": "0A",
-   "verdict": "不否定",
-   "why": "提供事实无明确反证当前档位",
-   "ts": "2026-08-09",
-   "sig": "0A|回踩 2.55~2.65 买 · 5个交易日内有|60",
-   "source": "manual_grok_pro",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "0A|回踩 2.57 买 · 5个交易日内有效|50",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "PFE": {
+   "name": "辉瑞",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 24.91~25.91 买 · 5个交易日|65",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "301526.SZ": {
+   "name": "国际复材",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 31.65~32.92 买 · 5个交易日|70",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "1783.HK": {
+   "name": "晋景新能",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 4.47~4.65 买 · 5个交易日内有|70",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "9969.HK": {
+   "name": "诺诚健华",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|70",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "002979.SZ": {
+   "name": "雷赛智能",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 58.19~60.52 买 · 5个交易日|70",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "600885.SS": {
+   "name": "宏发股份",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|70",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "0354.HK": {
+   "name": "中国软件国际",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 3.47~3.61 买 · 5个交易日内有|70",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "300631.SZ": {
+   "name": "久吾高科",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 20.49 买 · 5个交易日内有效|65",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "CHYM": {
+   "name": "Chime Financial Inc-A",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 23.2~24.13 买 · 5个交易日内|65",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "CORT": {
+   "name": "Corcept Therapeutics Inc",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 98.97~102.93 买 · 5个交易|65",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "6699.HK": {
+   "name": "时代天使",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 81.77~85.04 买 · 5个交易日|65",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "601700.SS": {
+   "name": "风范股份",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 5.09~5.29 买 · 5个交易日内有|65",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "6690.HK": {
+   "name": "海尔智家",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|65",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "300420.SZ": {
+   "name": "五洋自控",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 6.85~7.12 买 · 5个交易日内有|65",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "HD": {
+   "name": "家得宝",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 339.38~352.96 买 · 5个交|65",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "MKTX": {
+   "name": "MarketAxess Holdings Inc",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 132.47~137.77 买 · 5个交|65",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "510500.SS": {
+   "name": "中证500ETF",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|65",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "603337.SS": {
+   "name": "杰克科技",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 40.33~41.94 买 · 5个交易日|60",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "PRAX": {
+   "name": "Praxis Precision Medicines Inc",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 317.47~330.17 买 · 5个交|60",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "510300.SS": {
+   "name": "沪深300ETF",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 4.67 买 · 5个交易日内有效|60",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "MDLZ": {
+   "name": "亿滋国际",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|下一交易日 08-10 开盘可进（今日休市）|60",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "0326.HK": {
+   "name": "中国星集团",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 7.05~7.33 买 · 5个交易日内有|60",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "000676.SZ": {
+   "name": "智度股份",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 6.84~7.11 买 · 5个交易日内有|60",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "600352.SS": {
+   "name": "浙江龙盛",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 13.13 买 · 5个交易日内有效|55",
+   "source": "manual_bridge_pending",
+   "fresh_for_strong_days": 1
+  },
+  "000948.SZ": {
+   "name": "南天信息",
+   "tier_at_verify": "1A",
+   "verdict": "不可用",
+   "why": "待Grok Pro手动复核或配置XAI_API_KEY",
+   "ts": "2026-08-10",
+   "sig": "1A|回踩 14.35 买 · 5个交易日内有效|55",
+   "source": "manual_bridge_pending",
    "fresh_for_strong_days": 1
   }
  },
@@ -726,10 +976,11 @@
  "manual_prompt": "/Users/bluesteven/Desktop/ai-daily-report-v2/data/grok_bridge/latest_verify_prompt.txt",
  "manual_instruction": "用Grok Pro粘贴prompt后，将回复导入；未导入前为单剑降级",
  "stats": {
-  "待验证": 71,
+  "待验证": 44,
   "本轮已验": 0,
   "分布": {
-   "不可用": 71
+   "不否定": 52,
+   "不可用": 44
   }
  }
 }
