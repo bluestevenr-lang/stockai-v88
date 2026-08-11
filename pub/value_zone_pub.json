@@ -114,14 +114,13 @@
    "bt_line": "该股历史10次同级回撤→6月后9涨1跌·中位+24.8%·最差-27.3%",
    "verdict": "进",
    "turning_bottom": false,
-   "rules_gate": "未覆盖",
+   "rules_gate": "gate_pass",
    "gpt": "未验证",
    "track": false,
    "display_eligible": true,
    "push_eligible": false,
    "quality_status": "研究候选",
    "quality_reasons": [
-    "规则闸未通过",
     "GPT未完成当日正向复核"
    ],
    "canonical_name": "安森美",
@@ -543,7 +542,7 @@
    "bt_line": "该股历史16次同级回撤→6月后12涨4跌·中位+21.4%·最差-33.3%",
    "verdict": "进",
    "turning_bottom": false,
-   "rules_gate": "未覆盖",
+   "rules_gate": "gate_pass",
    "gpt": "reject",
    "track": false,
    "display_eligible": false,
@@ -585,7 +584,7 @@
    "bt_line": "该股历史4次同级回撤→6月后3涨1跌·中位+10.5%·最差-15.3%",
    "verdict": "进",
    "turning_bottom": false,
-   "rules_gate": "未覆盖",
+   "rules_gate": "gate_pass",
    "gpt": "未验证",
    "track": false,
    "display_eligible": false,
@@ -645,5 +644,10 @@
    "gpt_verdict": "否决",
    "probability_label": "该股历史条件频率（非保证）"
   }
- ]
+ ],
+ "quality_gate": {
+  "version": "rqg-1.0",
+  "refreshed_at": "2026-08-11 10:22（北京时间）",
+  "rule": "展示与主动推送分离；不删原内容，未过闸降为研究/观察"
+ }
 }
