@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-11 10:22（北京时间）",
- "generated_at": "2026-08-11 10:22（北京时间）",
+ "asof": "2026-08-11 07:42（北京时间）",
+ "generated_at": "2026-08-11 07:42（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -16,9 +16,9 @@
  },
  "note": "V88标准规则闸:把历史会审异议固化成机检规则,名单出厂前先过这道闸——不达标的不进推荐位,转⏸未达标区并写明理由(用户定纲:'有异议的还摆在推荐位没有参考意义')。规则来自4个班次真实异议的归纳,非回测胜率;每条带rule_id,台账到期后双周深检算'被拦下的票后来表现如何'来修订阈值——规则错了要能被数据推翻。",
  "pass": {
-  "002334.SZ": {
-   "code": "002334.SZ",
-   "name": "英威腾",
+  "000958.SZ": {
+   "code": "000958.SZ",
+   "name": "电投产融",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -26,49 +26,9 @@
    "downgrade": "",
    "auto": true
   },
-  "300763.SZ": {
-   "code": "300763.SZ",
-   "name": "锦浪科技",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "2007.HK": {
-   "code": "2007.HK",
-   "name": "康龙化成",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "2600.HK": {
-   "code": "2600.HK",
-   "name": "中国铝业",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "2675.HK": {
-   "code": "2675.HK",
-   "name": "精锋医疗-B",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "600748.SS": {
-   "code": "600748.SS",
-   "name": "上实发展",
+  "0017.HK": {
+   "code": "0017.HK",
+   "name": "新世界发展",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -78,7 +38,7 @@
   },
   "BORR": {
    "code": "BORR",
-   "name": "Borr Drilling Ltd",
+   "name": "BORR",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -86,9 +46,9 @@
    "downgrade": "",
    "auto": true
   },
-  "603887.SS": {
-   "code": "603887.SS",
-   "name": "城地香江",
+  "COST": {
+   "code": "COST",
+   "name": "好市多",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -96,9 +56,9 @@
    "downgrade": "",
    "auto": true
   },
-  "002506.SZ": {
-   "code": "002506.SZ",
-   "name": "协鑫集成",
+  "2465.HK": {
+   "code": "2465.HK",
+   "name": "龙蟠科技",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -106,9 +66,9 @@
    "downgrade": "",
    "auto": true
   },
-  "600510.SS": {
-   "code": "600510.SS",
-   "name": "黑牡丹",
+  "002190.SZ": {
+   "code": "002190.SZ",
+   "name": "成飞集成",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -116,9 +76,19 @@
    "downgrade": "",
    "auto": true
   },
-  "600150.SS": {
-   "code": "600150.SS",
-   "name": "中国船舶",
+  "MSTR": {
+   "code": "MSTR",
+   "name": "MSTR",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "601012.SS": {
+   "code": "601012.SS",
+   "name": "隆基绿能",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -126,9 +96,19 @@
    "downgrade": "",
    "auto": true
   },
-  "600863.SS": {
-   "code": "600863.SS",
-   "name": "华能蒙电",
+  "2233.HK": {
+   "code": "2233.HK",
+   "name": "西部水泥",
+   "side": "机会",
+   "action": "现价可进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "002256.SZ": {
+   "code": "002256.SZ",
+   "name": "兆新股份",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -136,71 +116,21 @@
    "downgrade": "",
    "auto": true
   },
-  "002626.SZ": {
-   "code": "002626.SZ",
-   "name": "金达威",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
+  "1276.HK": {
+   "code": "1276.HK",
+   "name": "恒瑞医药",
+   "side": "机会",
+   "action": "现价可进",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "301230.SZ": {
-   "code": "301230.SZ",
-   "name": "泓博医药",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "603883.SS": {
-   "code": "603883.SS",
-   "name": "老百姓",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "002727.SZ": {
-   "code": "002727.SZ",
-   "name": "一心堂",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "301357.SZ": {
-   "code": "301357.SZ",
-   "name": "北方长龙",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "002153.SZ": {
-   "code": "002153.SZ",
-   "name": "石基信息",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "003010.SZ": {
-   "code": "003010.SZ",
-   "name": "若羽臣",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
+  "000537.SZ": {
+   "code": "000537.SZ",
+   "name": "绿发电力",
+   "side": "机会",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -219,36 +149,6 @@
   "001309.SZ": {
    "code": "001309.SZ",
    "name": "德明利",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "ON": {
-   "code": "ON",
-   "name": "安森美",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "BNTX": {
-   "code": "BNTX",
-   "name": "BioNTech",
-   "side": "打折",
-   "action": "🟢打折到位·可开始买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "1415.HK": {
-   "code": "1415.HK",
-   "name": "高伟电子",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -276,19 +176,9 @@
    "downgrade": "",
    "auto": true
   },
-  "605099.SS": {
-   "code": "605099.SS",
-   "name": "共创草坪",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "AZO": {
    "code": "AZO",
-   "name": "AutoZone",
+   "name": "汽车地带",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -326,6 +216,16 @@
    "downgrade": "",
    "auto": true
   },
+  "605117.SS": {
+   "code": "605117.SS",
+   "name": "德业股份",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "1138.HK": {
    "code": "1138.HK",
    "name": "中远海能",
@@ -338,7 +238,7 @@
   },
   "IBM": {
    "code": "IBM",
-   "name": "IBM",
+   "name": "IBM国际商业机器",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
    "rules": [],
@@ -346,9 +246,9 @@
    "downgrade": "",
    "auto": true
   },
-  "605117.SS": {
-   "code": "605117.SS",
-   "name": "德业股份",
+  "LOW": {
+   "code": "LOW",
+   "name": "劳氏",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
    "rules": [],
@@ -359,16 +259,6 @@
   "GS": {
    "code": "GS",
    "name": "高盛",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "COST": {
-   "code": "COST",
-   "name": "开市客",
    "side": "行业代表",
    "action": "",
    "rules": [],
@@ -396,9 +286,9 @@
    "downgrade": "",
    "auto": true
   },
-  "2357.HK": {
-   "code": "2357.HK",
-   "name": "中航科工",
+  "600150.SS": {
+   "code": "600150.SS",
+   "name": "中国船舶",
    "side": "行业代表",
    "action": "",
    "rules": [],
@@ -406,9 +296,9 @@
    "downgrade": "",
    "auto": true
   },
-  "0005.HK": {
-   "code": "0005.HK",
-   "name": "汇丰控股",
+  "2357.HK": {
+   "code": "2357.HK",
+   "name": "中航科工",
    "side": "行业代表",
    "action": "",
    "rules": [],
@@ -442,17 +332,17 @@
   }
  },
  "stats": {
-  "n_pass": 378,
-  "n_reject": 40,
+  "n_pass": 369,
+  "n_reject": 168,
   "by_rule": {
    "CS9": 1,
    "CS1": 0,
-   "CS2": 2,
+   "CS2": 4,
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
-   "CS6": 34,
-   "CS7": 11,
+   "CS6": 156,
+   "CS7": 69,
    "CS8": 0
   }
  }
