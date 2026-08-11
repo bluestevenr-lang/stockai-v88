@@ -2,25 +2,32 @@
  "schema_version": "v88.fable.public/1.0",
  "private_redacted": true,
  "month": "2026-08",
- "checked_at": "2026-08-09 12:19（北京时间）",
+ "checked_at": "2026-08-11 10:13（北京时间）",
+ "plan_summary": {
+  "has_plan": true,
+  "trade_count": 1,
+  "state": "已有计划·出口触发",
+  "current_action": "完整动作仅在桌面/飞书私域显示",
+  "meaning": "本轮不新增≠本月无推荐；已发布计划继续按实际持仓分支管理"
+ },
  "triad_review": {
   "schema_version": "v88.fable.triad/1.0",
-  "plan_signature": "448d0502b098b0f8",
-  "reviewed_at": "2026-08-09 11:52（北京时间）",
-  "checked_at": "2026-08-09 12:19（北京时间）",
+  "plan_signature": "5f072cd4721d9f10",
+  "reviewed_at": "2026-08-10 21:40（北京时间）",
+  "checked_at": "2026-08-11 10:13（北京时间）",
   "cache_hit": true,
-  "reviewers": "Codex + 经典书理 + Grok",
+  "reviewers": "GPT/Codex + 经典书理",
   "reviews": [
    {
     "party": "Codex",
     "status": "available",
     "model": "gpt-5.6-sol",
     "verdict": "反对",
-    "confidence": 94,
-    "reason": "盈亏比账面自洽，但收盘触发次日卖出无法锁定最坏损失",
-    "risk": "跳空、滑点及费用可令亏损超过92美元",
-    "invalidation": "补充概率样本依据，并将92美元改为估算或设置硬风险上限",
-    "analysis_at": "2026-08-09 11:52（北京时间）"
+    "confidence": 96,
+    "reason": "盈亏比自洽，但次日开盘卖出存在跳空，-$92并非最坏损失",
+    "risk": "时间闸平仓同样未设总损失硬上限",
+    "invalidation": "补充跳空压力测试与总损失硬上限后可重审",
+    "analysis_at": "2026-08-10 21:40（北京时间）"
    },
    {
     "party": "经典书理",
@@ -36,31 +43,18 @@
      "斯波朗迪：风险先于收益",
      "Edwards & Magee：不猜顶"
     ],
-    "analysis_at": "2026-08-09 11:52（北京时间）",
+    "analysis_at": "2026-08-10 21:40（北京时间）",
     "scope": "只审计划结构与已编码书理，不冒充实时行情/财报研究"
-   },
-   {
-    "party": "Grok",
-    "status": "unavailable",
-    "model": "grok-4.5",
-    "verdict": "待复核",
-    "confidence": 0,
-    "reason": "未配置XAI_API_KEY；已导出Grok Pro手动盲审材料，不伪造意见",
-    "risk": "当前只完成Codex与经典书理两方",
-    "invalidation": "配置API或导入 latest_fable_prompt.txt 的真实回复后补审",
-    "analysis_at": "2026-08-09 12:19（北京时间）",
-    "estimated_cost_usd": 0,
-    "manual_prompt": "/Users/bluesteven/Desktop/ai-daily-report-v2/data/grok_bridge/latest_fable_prompt.txt"
    }
   ],
   "consensus": {
    "state": "分歧·不新增动作",
-   "action": "保留原风险铁线，人工解决反对理由后再出新版计划",
+   "action": "已有计划的止盈/止损/时间闸继续有效；只禁止新增仓位，解决反对理由后再出新版计划",
    "available_parties": 2,
-   "analysis_at": "2026-08-09 12:19（北京时间）",
-   "note": "三方一致是三种检查视角一致，不等于三份独立概率或盈利保证"
+   "analysis_at": "2026-08-11 10:13（北京时间）",
+   "note": "GPT独立复核与经典书理一致，不等于两份独立概率或盈利保证"
   },
-  "governance": "三方只提供证据与反证；不得静默改计划参数，也不得自动交易"
+  "governance": "GPT复核与经典书理只提供证据/反证；不得静默改参数或自动交易"
  },
  "note": "公开云端仅展示会审状态；完整计划与持仓参数留在桌面/飞书私域"
 }
