@@ -1,6 +1,6 @@
 {
   "schema_version": "v88.snapshot/2.0",
-  "snapshot_id": "snap-abe4cfdf39a10f88",
+  "snapshot_id": "snap-08a5f98899a6aecb",
   "rotation_forecast": {
     "schema_version": "v88.rotation/1.3",
     "snapshot_id": "snap-e068db40dcdacffb",
@@ -5979,7 +5979,7 @@
       }
     ]
   },
-  "generated_at": "2026-08-12 16:46",
+  "generated_at": "2026-08-12 17:37",
   "markets": {
     "美股": {
       "indices": [
@@ -6006,14 +6006,14 @@
           "last": 26445.45,
           "chg1d": -0.6,
           "chg5d": -0.52,
-          "chg20d": 0.91,
-          "vs_ma20": 2.53,
-          "vs_ma60": 1.53,
+          "chg20d": 1.3,
+          "vs_ma20": 2.8,
+          "vs_ma60": 1.68,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 1.02,
-          "px_pct": 76.7,
-          "vol_pct": 26.8,
-          "diverge": 49.9,
+          "vol_ratio": 0.98,
+          "px_pct": 78.3,
+          "vol_pct": 28.8,
+          "diverge": 49.5,
           "turning": "",
           "turning_prompt": ""
         },
@@ -6236,11 +6236,11 @@
         }
       ],
       "temperature": {
-        "temp": 74,
+        "temp": 73,
         "trend": 100,
         "breadth": 73,
         "momentum": 46,
-        "vol_heat": 42,
+        "vol_heat": 40,
         "label": "🟢 偏暖",
         "position": "65-80%",
         "verdict": "🟡 中性震荡·跟随主线轮动"
@@ -6257,22 +6257,22 @@
           {
             "key": "价格高位",
             "hit": true,
-            "text": "价格分位87.8"
+            "text": "价格分位88.3"
           },
           {
             "key": "量价背离",
             "hit": true,
-            "text": "价格分位87.8／量分位15.1＝背离+72.7"
+            "text": "价格分位88.3／量分位15.8＝背离+72.5"
           },
           {
             "key": "广度钝化",
             "hit": false,
-            "text": "广度73·满值连续0日（历史仅1天，需攒够3天）"
+            "text": "广度73·满值连续0日（历史仅2天，需攒够3天）"
           },
           {
             "key": "动量衰竭",
             "hit": false,
-            "text": "20日+1.93%但5日仅-0.39%"
+            "text": "20日+2.06%但5日仅-0.39%"
           },
           {
             "key": "估值高位",
@@ -6282,7 +6282,7 @@
           {
             "key": "温度过热",
             "hit": false,
-            "text": "温度74"
+            "text": "温度73"
           },
           {
             "key": "指数拐点",
@@ -6294,12 +6294,12 @@
           {
             "key": "价格低位",
             "hit": false,
-            "text": "价格分位87.8"
+            "text": "价格分位88.3"
           },
           {
             "key": "放量杀跌",
             "hit": false,
-            "text": "价格分位87.8／量分位15.1＝背离+72.7"
+            "text": "价格分位88.3／量分位15.8＝背离+72.5"
           },
           {
             "key": "广度极低",
@@ -6309,7 +6309,7 @@
           {
             "key": "深度超跌",
             "hit": false,
-            "text": "20日+1.93%"
+            "text": "20日+2.06%"
           },
           {
             "key": "估值低位",
@@ -6319,7 +6319,7 @@
           {
             "key": "温度冰点",
             "hit": false,
-            "text": "温度74"
+            "text": "温度73"
           },
           {
             "key": "指数底拐",
@@ -6331,9 +6331,9 @@
         "top_na": 1,
         "bottom_hit": 0,
         "bottom_na": 1,
-        "px_pct": 87.8,
-        "vol_pct": 15.1,
-        "diverge": 72.7,
+        "px_pct": 88.3,
+        "vol_pct": 15.8,
+        "diverge": 72.5,
         "breadth_full_days": 0,
         "note": "样本<5不给概率(铁律2)——只报命中条数,⬜=数据源缺失非未命中"
       },
@@ -6373,14 +6373,14 @@
           "last": 3946.68,
           "chg1d": 0.32,
           "chg5d": 1.76,
-          "chg20d": -0.23,
-          "vs_ma20": 2.25,
-          "vs_ma60": -1.14,
+          "chg20d": -1.24,
+          "vs_ma20": 1.88,
+          "vs_ma60": -1.5,
           "trend": "🔄 震荡偏强",
           "vol_ratio": 3.99,
-          "px_pct": 33.3,
+          "px_pct": 28.3,
           "vol_pct": 100.0,
-          "diverge": -66.7,
+          "diverge": -71.7,
           "turning": "",
           "turning_prompt": ""
         },
@@ -6402,22 +6402,21 @@
           "turning_prompt": ""
         },
         {
-          "symbol": "159915.SZ",
-          "name": "创业板ETF代理",
-          "last": 3.62,
-          "chg1d": 1.74,
-          "chg5d": 3.04,
-          "chg20d": -6.36,
-          "vs_ma20": 2.57,
-          "vs_ma60": -6.55,
+          "symbol": "399006.SZ",
+          "name": "创业板指",
+          "last": 3602.08,
+          "chg1d": 1.49,
+          "chg5d": 1.89,
+          "chg20d": -5.33,
+          "vs_ma20": 3.13,
+          "vs_ma60": -6.44,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 0.7,
-          "px_pct": 28.3,
-          "vol_pct": 71.7,
-          "diverge": -43.4,
+          "vol_ratio": 1.0,
+          "px_pct": 30.0,
+          "vol_pct": null,
+          "diverge": null,
           "turning": "",
-          "turning_prompt": "",
-          "unit": "元"
+          "turning_prompt": ""
         }
       ],
       "sectors": [
@@ -6606,7 +6605,7 @@
         "temp": 71,
         "trend": 50,
         "breadth": 80,
-        "momentum": 72,
+        "momentum": 69,
         "vol_heat": 100,
         "label": "🟢 偏暖",
         "position": "65-80%",
@@ -6624,22 +6623,22 @@
           {
             "key": "价格高位",
             "hit": false,
-            "text": "价格分位31.1"
+            "text": "价格分位30.0"
           },
           {
             "key": "量价背离",
             "hit": false,
-            "text": "价格分位31.1／量分位90.6＝背离-59.5"
+            "text": "价格分位30.0／量分位100.0＝背离-70.0"
           },
           {
             "key": "广度钝化",
             "hit": false,
-            "text": "广度80·满值连续0日（历史仅1天，需攒够3天）"
+            "text": "广度80·满值连续0日（历史仅2天，需攒够3天）"
           },
           {
             "key": "动量衰竭",
             "hit": false,
-            "text": "20日-3.02%但5日仅+2.24%"
+            "text": "20日-3.01%但5日仅+1.85%"
           },
           {
             "key": "估值高位",
@@ -6661,12 +6660,12 @@
           {
             "key": "价格低位",
             "hit": false,
-            "text": "价格分位31.1"
+            "text": "价格分位30.0"
           },
           {
             "key": "放量杀跌",
             "hit": true,
-            "text": "价格分位31.1／量分位90.6＝背离-59.5"
+            "text": "价格分位30.0／量分位100.0＝背离-70.0"
           },
           {
             "key": "广度极低",
@@ -6676,7 +6675,7 @@
           {
             "key": "深度超跌",
             "hit": false,
-            "text": "20日-3.02%"
+            "text": "20日-3.01%"
           },
           {
             "key": "估值低位",
@@ -6698,9 +6697,9 @@
         "top_na": 1,
         "bottom_hit": 1,
         "bottom_na": 1,
-        "px_pct": 31.1,
-        "vol_pct": 90.6,
-        "diverge": -59.5,
+        "px_pct": 30.0,
+        "vol_pct": 100.0,
+        "diverge": -70.0,
         "breadth_full_days": 0,
         "note": "样本<5不给概率(铁律2)——只报命中条数,⬜=数据源缺失非未命中"
       },
@@ -6857,7 +6856,7 @@
           {
             "key": "广度钝化",
             "hit": false,
-            "text": "广度50·满值连续0日（历史仅1天，需攒够3天）"
+            "text": "广度50·满值连续0日（历史仅2天，需攒够3天）"
           },
           {
             "key": "动量衰竭",
