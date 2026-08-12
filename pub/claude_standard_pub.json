@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-12 10:26（北京时间）",
- "generated_at": "2026-08-12 10:26（北京时间）",
+ "asof": "2026-08-12 07:49（北京时间）",
+ "generated_at": "2026-08-12 07:49（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -16,9 +16,9 @@
  },
  "note": "V88标准规则闸:把历史会审异议固化成机检规则,名单出厂前先过这道闸——不达标的不进推荐位,转⏸未达标区并写明理由(用户定纲:'有异议的还摆在推荐位没有参考意义')。规则来自4个班次真实异议的归纳,非回测胜率;每条带rule_id,台账到期后双周深检算'被拦下的票后来表现如何'来修订阈值——规则错了要能被数据推翻。",
  "pass": {
-  "600284.SS": {
-   "code": "600284.SS",
-   "name": "浦东建设",
+  "601016.SS": {
+   "code": "601016.SS",
+   "name": "节能风电",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -36,9 +36,9 @@
    "downgrade": "",
    "auto": true
   },
-  "002683.SZ": {
-   "code": "002683.SZ",
-   "name": "广东宏大",
+  "601789.SS": {
+   "code": "601789.SS",
+   "name": "宁波建工",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -46,9 +46,9 @@
    "downgrade": "",
    "auto": true
   },
-  "300351.SZ": {
-   "code": "300351.SZ",
-   "name": "永贵电器",
+  "0317.HK": {
+   "code": "0317.HK",
+   "name": "中船防务",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -56,9 +56,9 @@
    "downgrade": "",
    "auto": true
   },
-  "000006.SZ": {
-   "code": "000006.SZ",
-   "name": "深振业A",
+  "601012.SS": {
+   "code": "601012.SS",
+   "name": "隆基绿能",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -66,9 +66,9 @@
    "downgrade": "",
    "auto": true
   },
-  "002129.SZ": {
-   "code": "002129.SZ",
-   "name": "TCL中环",
+  "000958.SZ": {
+   "code": "000958.SZ",
+   "name": "电投产融",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -76,19 +76,9 @@
    "downgrade": "",
    "auto": true
   },
-  "600340.SS": {
-   "code": "600340.SS",
-   "name": "*ST华幸",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "1686.HK": {
-   "code": "1686.HK",
-   "name": "新意网集团",
+  "600010.SS": {
+   "code": "600010.SS",
+   "name": "包钢股份",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -96,19 +86,9 @@
    "downgrade": "",
    "auto": true
   },
-  "600845.SS": {
-   "code": "600845.SS",
-   "name": "宝信软件",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "002487.SZ": {
-   "code": "002487.SZ",
-   "name": "大金重工",
+  "002251.SZ": {
+   "code": "002251.SZ",
+   "name": "步步高",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -116,9 +96,9 @@
    "downgrade": "",
    "auto": true
   },
-  "001203.SZ": {
-   "code": "001203.SZ",
-   "name": "大中矿业",
+  "002150.SZ": {
+   "code": "002150.SZ",
+   "name": "正泰电源",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -126,51 +106,21 @@
    "downgrade": "",
    "auto": true
   },
-  "300119.SZ": {
-   "code": "300119.SZ",
-   "name": "瑞普生物",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
+  "002050.SZ": {
+   "code": "002050.SZ",
+   "name": "三花智控",
+   "side": "机会",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "600604.SS": {
-   "code": "600604.SS",
-   "name": "市北高新",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "MSFT": {
-   "code": "MSFT",
-   "name": "微软",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "603099.SS": {
-   "code": "603099.SS",
-   "name": "长白山",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "002727.SZ": {
-   "code": "002727.SZ",
-   "name": "一心堂",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
+  "603103.SS": {
+   "code": "603103.SS",
+   "name": "横店影视",
+   "side": "机会",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -196,29 +146,9 @@
    "downgrade": "",
    "auto": true
   },
-  "ON": {
-   "code": "ON",
-   "name": "安森美",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "BNTX": {
-   "code": "BNTX",
-   "name": "BioNTech",
-   "side": "打折",
-   "action": "🟢打折到位·可开始买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "300782.SZ": {
-   "code": "300782.SZ",
-   "name": "卓胜微",
+  "601888.SS": {
+   "code": "601888.SS",
+   "name": "中国中免",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -248,17 +178,7 @@
   },
   "AZO": {
    "code": "AZO",
-   "name": "AutoZone",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "300015.SZ": {
-   "code": "300015.SZ",
-   "name": "爱尔眼科",
+   "name": "汽车地带",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -286,6 +206,16 @@
    "downgrade": "",
    "auto": true
   },
+  "002460.SZ": {
+   "code": "002460.SZ",
+   "name": "赣锋锂业",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "PDD": {
    "code": "PDD",
    "name": "拼多多",
@@ -296,11 +226,21 @@
    "downgrade": "",
    "auto": true
   },
-  "002460.SZ": {
-   "code": "002460.SZ",
-   "name": "赣锋锂业",
+  "IBM": {
+   "code": "IBM",
+   "name": "IBM国际商业机器",
    "side": "打折",
-   "action": "🟢跌得很深·可分批买",
+   "action": "🟢打折到位·可开始买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "605117.SS": {
+   "code": "605117.SS",
+   "name": "德业股份",
+   "side": "打折",
+   "action": "🟢打折到位·可开始买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -356,29 +296,9 @@
    "downgrade": "",
    "auto": true
   },
-  "2269.HK": {
-   "code": "2269.HK",
-   "name": "药明生物",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "0317.HK": {
-   "code": "0317.HK",
-   "name": "中船防务",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "9633.HK": {
-   "code": "9633.HK",
-   "name": "农夫山泉",
+  "600919.SS": {
+   "code": "600919.SS",
+   "name": "江苏银行",
    "side": "行业代表",
    "action": "",
    "rules": [],
@@ -389,8 +309,8 @@
  },
  "reject": {},
  "stats": {
-  "n_pass": 364,
-  "n_reject": 60,
+  "n_pass": 427,
+  "n_reject": 156,
   "by_rule": {
    "CS9": 0,
    "CS1": 1,
@@ -398,7 +318,7 @@
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
-   "CS6": 56,
+   "CS6": 152,
    "CS7": 0,
    "CS8": 0
   }
