@@ -1,6 +1,6 @@
 {
   "schema_version": "v88.snapshot/2.0",
-  "snapshot_id": "snap-08a5f98899a6aecb",
+  "snapshot_id": "snap-0f171a746a0f41d8",
   "rotation_forecast": {
     "schema_version": "v88.rotation/1.3",
     "snapshot_id": "snap-e068db40dcdacffb",
@@ -1605,7 +1605,7 @@
   "cycle_scan": {
     "schema_version": "v88.cycle/1.1",
     "slot": "2026-08-12-am",
-    "analysis_time": "2026-08-12 16:49",
+    "analysis_time": "2026-08-12 18:07",
     "stocks": [
       {
         "code": "603129.SS",
@@ -2397,8 +2397,8 @@
         "confidence": "低",
         "horizon": "周",
         "pos52": 73,
-        "trigger": "放量跌破 295.13 或顶拐/死叉",
-        "invalid": "放量收复 295.13（退潮证伪）",
+        "trigger": "放量跌破 295.37 或顶拐/死叉",
+        "invalid": "放量收复 295.37（退潮证伪）",
         "sector_phase": null,
         "p_up": 45,
         "unified_score": 54,
@@ -3204,25 +3204,6 @@
         "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
       },
       {
-        "code": "TWST",
-        "name": "Twist Bioscience Corp",
-        "phase": "领涨中",
-        "direction": "hold",
-        "headline": "→ 上行周期进行中，未见切换",
-        "up": 39.0,
-        "down": 16.0,
-        "confidence": "低",
-        "horizon": "日~周",
-        "pos52": 97,
-        "trigger": "放量突破/跌破 98.48 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 85,
-        "unified_score": 72,
-        "rr": 0.07,
-        "entry_note": "⏳双路径:回踩105.66/突破125.66·08-19前｜方向偏多但当前赔率不足；需上行>93.5%"
-      },
-      {
         "code": "0656.HK",
         "name": "复星国际",
         "phase": "领涨中",
@@ -3461,7 +3442,7 @@
         "confidence": "低",
         "horizon": "周",
         "pos52": 91,
-        "trigger": "放量突破/跌破 93.30 触发方向",
+        "trigger": "放量突破/跌破 93.49 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 48,
@@ -3480,11 +3461,11 @@
         "confidence": "低",
         "horizon": "周",
         "pos52": 92,
-        "trigger": "放量突破/跌破 182.10 触发方向",
+        "trigger": "放量突破/跌破 181.83 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 61,
-        "unified_score": 56,
+        "p_up": 62,
+        "unified_score": 57,
         "rr": 0.26,
         "entry_note": "🚫短线不进｜方向偏多但当前赔率不足；需上行>79.4%"
       },
@@ -3636,7 +3617,7 @@
         "invalid": "—",
         "sector_phase": null,
         "p_up": 85,
-        "unified_score": 67,
+        "unified_score": 68,
         "rr": 0.05,
         "entry_note": "🚫短线不进｜方向偏多但当前赔率不足；需上行>95.2%"
       },
@@ -4012,13 +3993,13 @@
         "confidence": "低",
         "horizon": "周",
         "pos52": 80,
-        "trigger": "放量突破/跌破 372.82 触发方向",
+        "trigger": "放量突破/跌破 374.59 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 45,
         "unified_score": 66,
         "rr": 1.78,
-        "entry_note": "⏳等回踩372.82或突破398.7｜周期未充分共振，等待触发"
+        "entry_note": "⏳等回踩374.59或突破398.7｜周期未充分共振，等待触发"
       },
       {
         "code": "CTAS",
@@ -4031,11 +4012,11 @@
         "confidence": "低",
         "horizon": "周",
         "pos52": 76,
-        "trigger": "放量突破/跌破 202.91 触发方向",
+        "trigger": "放量突破/跌破 204.59 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 42,
-        "unified_score": 63,
+        "unified_score": 62,
         "rr": 1.76,
         "entry_note": "🚫短线不进｜短中长期未共振，不建立新仓"
       },
@@ -4354,11 +4335,11 @@
         "confidence": "低",
         "horizon": "周",
         "pos52": 63,
-        "trigger": "放量突破/跌破 333.62 触发方向",
+        "trigger": "放量突破/跌破 332.68 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 50,
-        "unified_score": 47,
+        "unified_score": 48,
         "rr": 0.14,
         "entry_note": "⏳双路径:回踩341.06/突破352.49·08-19前｜周期未充分共振，等待触发"
       },
@@ -5009,6 +4990,25 @@
         "entry_note": "⏳双路径:回踩87.11/突破93.96·08-19前｜方向偏多但当前赔率不足；需上行>98.0%"
       },
       {
+        "code": "TWST",
+        "name": "Twist Bioscience Corp",
+        "phase": "整理",
+        "direction": "hold",
+        "headline": "→ 周期未明，整理观望",
+        "up": 15.0,
+        "down": 16.0,
+        "confidence": "低",
+        "horizon": "周",
+        "pos52": 97,
+        "trigger": "放量突破/跌破 98.48 触发方向",
+        "invalid": "—",
+        "sector_phase": null,
+        "p_up": 85,
+        "unified_score": 70,
+        "rr": 0.07,
+        "entry_note": "⏳双路径:回踩105.66/突破125.66·08-19前｜方向偏多但当前赔率不足；需上行>93.5%"
+      },
+      {
         "code": "PRAX",
         "name": "Praxis Precision Medicines Inc",
         "phase": "整理",
@@ -5456,7 +5456,7 @@
         "confidence": "低",
         "horizon": "周",
         "pos52": 88,
-        "trigger": "放量突破/跌破 48.67 触发方向",
+        "trigger": "放量突破/跌破 48.74 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 78,
@@ -5589,7 +5589,7 @@
         "confidence": "低",
         "horizon": "周",
         "pos52": 96,
-        "trigger": "放量突破/跌破 192.33 触发方向",
+        "trigger": "放量突破/跌破 192.56 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 65,
@@ -5979,7 +5979,7 @@
       }
     ]
   },
-  "generated_at": "2026-08-12 17:37",
+  "generated_at": "2026-08-12 18:05",
   "markets": {
     "美股": {
       "indices": [
@@ -6267,7 +6267,7 @@
           {
             "key": "广度钝化",
             "hit": false,
-            "text": "广度73·满值连续0日（历史仅2天，需攒够3天）"
+            "text": "广度73·满值连续0日（历史仅1天，需攒够3天）"
           },
           {
             "key": "动量衰竭",
@@ -6373,14 +6373,14 @@
           "last": 3946.68,
           "chg1d": 0.32,
           "chg5d": 1.76,
-          "chg20d": -1.24,
-          "vs_ma20": 1.88,
-          "vs_ma60": -1.5,
+          "chg20d": -0.23,
+          "vs_ma20": 2.25,
+          "vs_ma60": -1.14,
           "trend": "🔄 震荡偏强",
           "vol_ratio": 3.99,
-          "px_pct": 28.3,
+          "px_pct": 33.3,
           "vol_pct": 100.0,
-          "diverge": -71.7,
+          "diverge": -66.7,
           "turning": "",
           "turning_prompt": ""
         },
@@ -6402,21 +6402,22 @@
           "turning_prompt": ""
         },
         {
-          "symbol": "399006.SZ",
-          "name": "创业板指",
-          "last": 3602.08,
-          "chg1d": 1.49,
-          "chg5d": 1.89,
-          "chg20d": -5.33,
-          "vs_ma20": 3.13,
-          "vs_ma60": -6.44,
+          "symbol": "159915.SZ",
+          "name": "创业板ETF代理",
+          "last": 3.62,
+          "chg1d": 1.74,
+          "chg5d": 3.04,
+          "chg20d": -6.36,
+          "vs_ma20": 2.57,
+          "vs_ma60": -6.55,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 1.0,
-          "px_pct": 30.0,
-          "vol_pct": null,
-          "diverge": null,
+          "vol_ratio": 0.7,
+          "px_pct": 28.3,
+          "vol_pct": 71.7,
+          "diverge": -43.4,
           "turning": "",
-          "turning_prompt": ""
+          "turning_prompt": "",
+          "unit": "元"
         }
       ],
       "sectors": [
@@ -6605,7 +6606,7 @@
         "temp": 71,
         "trend": 50,
         "breadth": 80,
-        "momentum": 69,
+        "momentum": 72,
         "vol_heat": 100,
         "label": "🟢 偏暖",
         "position": "65-80%",
@@ -6623,22 +6624,22 @@
           {
             "key": "价格高位",
             "hit": false,
-            "text": "价格分位30.0"
+            "text": "价格分位31.1"
           },
           {
             "key": "量价背离",
             "hit": false,
-            "text": "价格分位30.0／量分位100.0＝背离-70.0"
+            "text": "价格分位31.1／量分位90.6＝背离-59.5"
           },
           {
             "key": "广度钝化",
             "hit": false,
-            "text": "广度80·满值连续0日（历史仅2天，需攒够3天）"
+            "text": "广度80·满值连续0日（历史仅1天，需攒够3天）"
           },
           {
             "key": "动量衰竭",
             "hit": false,
-            "text": "20日-3.01%但5日仅+1.85%"
+            "text": "20日-3.02%但5日仅+2.24%"
           },
           {
             "key": "估值高位",
@@ -6660,12 +6661,12 @@
           {
             "key": "价格低位",
             "hit": false,
-            "text": "价格分位30.0"
+            "text": "价格分位31.1"
           },
           {
             "key": "放量杀跌",
             "hit": true,
-            "text": "价格分位30.0／量分位100.0＝背离-70.0"
+            "text": "价格分位31.1／量分位90.6＝背离-59.5"
           },
           {
             "key": "广度极低",
@@ -6675,7 +6676,7 @@
           {
             "key": "深度超跌",
             "hit": false,
-            "text": "20日-3.01%"
+            "text": "20日-3.02%"
           },
           {
             "key": "估值低位",
@@ -6697,9 +6698,9 @@
         "top_na": 1,
         "bottom_hit": 1,
         "bottom_na": 1,
-        "px_pct": 30.0,
-        "vol_pct": 100.0,
-        "diverge": -70.0,
+        "px_pct": 31.1,
+        "vol_pct": 90.6,
+        "diverge": -59.5,
         "breadth_full_days": 0,
         "note": "样本<5不给概率(铁律2)——只报命中条数,⬜=数据源缺失非未命中"
       },
@@ -6856,7 +6857,7 @@
           {
             "key": "广度钝化",
             "hit": false,
-            "text": "广度50·满值连续0日（历史仅2天，需攒够3天）"
+            "text": "广度50·满值连续0日（历史仅1天，需攒够3天）"
           },
           {
             "key": "动量衰竭",

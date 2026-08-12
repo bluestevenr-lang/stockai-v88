@@ -1,99 +1,27 @@
 {
- "generated_at": "2026-08-12 07:49（北京时间）",
+ "generated_at": "2026-08-12 18:15（北京时间）",
  "version": "three-way-gpt-v2",
  "note": "三层审核：V88行动引擎 vs V88标准规则闸 vs GPT/Codex独立复核。",
  "counts": {
   "⏳审核未完整": 26,
-  "⚡有分歧/否决": 20,
-  "🟡规则达标·GPT不否定": 10
+  "⚡有分歧/否决": 12,
+  "🟡规则达标·GPT不否定": 6
  },
  "rows": [
   {
-   "code": "603103.SS",
-   "name": "横店影视",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 85,
-    "action": "左侧低吸",
-    "rr": 2.97,
-    "pos52": 10.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-09 12:16（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "002050.SZ",
-   "name": "三花智控",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 75,
-    "action": "左侧低吸",
-    "rr": 3.41,
-    "pos52": 39.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-09 12:16（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "600111.SS",
-   "name": "北方稀土",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 75,
-    "action": "现价可进",
-    "rr": 3.29,
-    "pos52": 19.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-09 12:16（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "002150.SZ",
-   "name": "正泰电源",
+   "code": "301658.SZ",
+   "name": "首航新能",
    "market": "A股",
    "rule": {
     "dir": "看多",
     "prob": 70,
     "action": "左侧低吸",
-    "rr": 3.74,
-    "pos52": 36.0,
+    "rr": 4.26,
+    "pos52": 8.0,
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "达标",
+    "verdict": "未覆盖",
     "source": "V88本地规则闸"
    },
    "gpt": {
@@ -105,43 +33,19 @@
    "consensus": "⏳审核未完整"
   },
   {
-   "code": "601016.SS",
-   "name": "节能风电",
+   "code": "300457.SZ",
+   "name": "赢合科技",
    "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 67,
-    "action": "现价可进",
-    "rr": 6.68,
-    "pos52": 25.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-09 12:16（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "002251.SZ",
-   "name": "步步高",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 67,
+    "prob": 68,
     "action": "左侧低吸",
-    "rr": 3.97,
-    "pos52": 15.0,
+    "rr": 4.39,
+    "pos52": 19.0,
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "达标",
+    "verdict": "未覆盖",
     "source": "V88本地规则闸"
    },
    "gpt": {
@@ -153,19 +57,19 @@
    "consensus": "⏳审核未完整"
   },
   {
-   "code": "601789.SS",
-   "name": "宁波建工",
+   "code": "601908.SS",
+   "name": "京运通",
    "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 65,
+    "prob": 68,
     "action": "左侧低吸",
-    "rr": 5.29,
+    "rr": 4.14,
     "pos52": 18.0,
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "达标",
+    "verdict": "未覆盖",
     "source": "V88本地规则闸"
    },
    "gpt": {
@@ -177,19 +81,67 @@
    "consensus": "⏳审核未完整"
   },
   {
-   "code": "600010.SS",
-   "name": "包钢股份",
-   "market": "A股",
+   "code": "1030.HK",
+   "name": "新城发展",
+   "market": "港股",
    "rule": {
     "dir": "看多",
-    "prob": 65,
+    "prob": 64,
     "action": "现价可进",
-    "rr": 4.44,
-    "pos52": 15.0,
+    "rr": 4.75,
+    "pos52": 12.0,
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "达标",
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-09 12:16（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "600284.SS",
+   "name": "浦东建设",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 63,
+    "action": "现价可进",
+    "rr": 7.57,
+    "pos52": 11.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-09 12:16（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "002819.SZ",
+   "name": "东方中科",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 63,
+    "action": "现价可进",
+    "rr": 5.13,
+    "pos52": 16.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
     "source": "V88本地规则闸"
    },
    "gpt": {
@@ -206,14 +158,14 @@
    "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 63,
+    "prob": 62,
     "action": "现价可进",
-    "rr": 6.96,
-    "pos52": 14.0,
+    "rr": 5.34,
+    "pos52": 15.0,
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "达标",
+    "verdict": "未覆盖",
     "source": "V88本地规则闸"
    },
    "gpt": {
@@ -225,19 +177,19 @@
    "consensus": "⏳审核未完整"
   },
   {
-   "code": "000958.SZ",
-   "name": "电投产融",
+   "code": "603300.SS",
+   "name": "海南华铁",
    "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 61,
+    "prob": 62,
     "action": "现价可进",
-    "rr": 5.0,
-    "pos52": 17.0,
+    "rr": 4.42,
+    "pos52": 12.0,
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "达标",
+    "verdict": "未覆盖",
     "source": "V88本地规则闸"
    },
    "gpt": {
@@ -249,19 +201,19 @@
    "consensus": "⏳审核未完整"
   },
   {
-   "code": "0317.HK",
-   "name": "中船防务",
+   "code": "0119.HK",
+   "name": "保利置业集团",
    "market": "港股",
    "rule": {
     "dir": "看多",
-    "prob": 56,
-    "action": "左侧低吸",
-    "rr": 5.89,
-    "pos52": 13.0,
+    "prob": 61,
+    "action": "等待",
+    "rr": 6.55,
+    "pos52": 12.0,
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "达标",
+    "verdict": "未覆盖",
     "source": "V88本地规则闸"
    },
    "gpt": {
@@ -278,14 +230,62 @@
    "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 56,
-    "action": "左侧低吸",
-    "rr": 5.45,
-    "pos52": 11.0,
+    "prob": 59,
+    "action": "现价可进",
+    "rr": 4.78,
+    "pos52": 14.0,
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "达标",
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-09 12:16（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "000958.SZ",
+   "name": "电投产融",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 56,
+    "action": "左侧低吸",
+    "rr": 5.79,
+    "pos52": 13.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-09 12:16（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "600010.SS",
+   "name": "包钢股份",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 55,
+    "action": "左侧低吸",
+    "rr": 5.33,
+    "pos52": 15.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
     "source": "V88本地规则闸"
    },
    "gpt": {
