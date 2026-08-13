@@ -25,6 +25,9 @@ def _parse_ts(s):
     s = str(s or "").strip()
     if not s:
         return None
+    # 三端历史文件会附中文时区后缀；先剥离再解析，否则明明有时间却显示“未知”。
+    for suffix in ("（北京时间）", "(北京时间)"):
+        s = s.replace(suffix, "").strip()
     for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M"):
         try:
             return datetime.strptime(s, fmt).replace(tzinfo=BJT)
@@ -35,6 +38,28 @@ def _parse_ts(s):
         return d.astimezone(BJT) if d.tzinfo else d.replace(tzinfo=BJT)
     except Exception:
         return None
+
+def _next_3a_slot(now=None):
+    """返回下一次大3A计划重算时间（北京时间）。"""
+    now = now or _now_bjt()
+    slots = [(5, 30), (14, 20), (21, 30)]
+    for hour, minute in slots:
+        candidate = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+        if candidate > now:
+            return candidate
+    tomorrow = now + timedelta(days=1)
+    return tomorrow.replace(hour=5, minute=30, second=0, microsecond=0)
+
+def _three_a_cloud_caption(rank: dict, snapshot: dict, meta: dict) -> str:
+    """云端大3A时效：三种时间各司其职，发布时刻绝不冒充分析时刻。"""
+    conclusion = _parse_ts((rank or {}).get("generated_at"))
+    market_at = _parse_ts((snapshot or {}).get("generated_at"))
+    publish_at = _parse_ts((meta or {}).get("rank_score_ts") or (meta or {}).get("published_at"))
+    next_slot = _next_3a_slot()
+    status = "✅ 本班已重算（名单可能保持不变）" if conclusion else "⚠️ 结论时间未落盘"
+    fmt = lambda dt: dt.strftime("%m-%d %H:%M") if dt else "未知"
+    return (f"{status} ｜ 结论生成 {fmt(conclusion)} ｜ 行情快照 {fmt(market_at)} ｜ "
+            f"云端发布 {fmt(publish_at)} ｜ 下一班 {next_slot.strftime('%m-%d %H:%M')}（北京时间）")
 
 def _period_of(dt):
     return ("🌙 时段一 00-08", "☀️ 时段二 08-16", "🌆 时段三 16-24")[dt.hour // 8]
@@ -1057,6 +1082,7 @@ if _nav == "🧭 导航":
             with st.expander(
                     f"🎯 3A大系统 · IN(3A×{_n3_c}·2A×{_n2_c}) / OUT"
                     f"（木桶评级·长期25/时机20/催化15/估值15/空间25）", expanded=True):
+                st.caption(_three_a_cloud_caption(_rk_c, _snap or {}, _pub_state or {}))
                 if _n3_c == 0:
                     _near_c = min([r for r in (_rk_c.get("rows") or [])
                                    if str(r.get("tier")) == "2A"],

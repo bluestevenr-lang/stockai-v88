@@ -293,6 +293,32 @@ def _run_strip() -> str:
     return out
 
 
+def _short_ts(value) -> str:
+    """把三端常见时间格式压成分钟；仅作展示，不把发布时间冒充分析时间。"""
+    text = str(value or "").strip()
+    for suffix in ("（北京时间）", "(北京时间)"):
+        text = text.replace(suffix, "").strip()
+    return text[:16] if text else "—"
+
+
+def _three_a_time_strip(rk: dict, sg: dict) -> str:
+    """大3A独立时效条：结论时间与证据时间分开，名单不变也能确认已重算。"""
+    in_at = _short_ts(rk.get("generated_at"))
+    out_at = _short_ts(sg.get("generated_at"))
+    evidence_times = [str(row.get("data_available_at") or "").strip()
+                      for row in (rk.get("rows") or [])
+                      if row.get("data_available_at")]
+    in_data_at = _short_ts(max(evidence_times)) if evidence_times else "—"
+    recalculated = in_at != "—" and out_at != "—"
+    state = "✅ 本班已重算（名单可能保持不变）" if recalculated else "⚠️ 本班时间未完整落盘"
+    return (
+        "<div style='font-size:10.5px;opacity:.92;margin-top:2px'>"
+        f"🕐 结论生成：IN {in_at} ｜ OUT {out_at}"
+        f"<br>📊 证据可得：IN {in_data_at} ｜ OUT行情截止未单独落盘"
+        f"　{state}</div>"
+    )
+
+
 def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                       pool: dict = None, limit_in: int = 12, limit_out: int = 8) -> str:
     """3A大系统完整模块(标题+IN表+OUT表+尾注),一次返回全部HTML。"""
@@ -337,13 +363,12 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                if pool else "")
             + f"IN: 3A×{n3} 2A×{n2} 战术1A×{n1} ｜ OUT: 卖警×{len(out_src)} 否决×{len(arch)}"
             f"</div>"
-            # 【2026-08-02 用户"3A大系统一定要有标注更新的时间"】买/卖两侧各自落盘,
-            # 时间可能不同步——分别标,不合并成一个"最后更新",否则会掩盖某一侧卡住。
-            + f"<div style='font-size:10.5px;opacity:.9;margin-top:2px'>"
-              f"🕐 IN {str(rk.get('generated_at') or '—')} ｜ OUT {str(sg.get('generated_at') or '—')}"
+            # 【2026-08-13 用户定纲】结论生成、证据可得、流水线状态必须分开显示；
+            # 名单没变化时也明确标注“本班已重算”，避免误判系统停更。
+            + _three_a_time_strip(rk, sg)
             + _run_strip()
-            + f"　<span style='opacity:.8'>每交易日 3 次·按收盘定锚"
-              f"(05:30美股收盘后/14:20A股尾盘/21:30美股开盘 北京;睡过头开机即补)</span></div>"
+            + f"<div style='font-size:10.5px;opacity:.8'>每交易日 3 次·按收盘定锚"
+              f"(05:30美股收盘后/14:20A股尾盘/21:30美股开盘 北京;睡过头开机即补)</div>"
             + f"</div>")
 
     # ── IN 表 ──
