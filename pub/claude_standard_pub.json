@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-13 22:57（北京时间）",
- "generated_at": "2026-08-13 22:57（北京时间）",
+ "asof": "2026-08-14 06:23（北京时间）",
+ "generated_at": "2026-08-14 06:23（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -246,16 +246,6 @@
    "downgrade": "",
    "auto": true
   },
-  "SLB": {
-   "code": "SLB",
-   "name": "斯伦贝谢",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "COST": {
    "code": "COST",
    "name": "开市客",
@@ -297,10 +287,33 @@
    "auto": true
   }
  },
- "reject": {},
+ "reject": {
+  "SLB": {
+   "code": "SLB",
+   "name": "斯伦贝谢",
+   "side": "行业代表",
+   "action": "",
+   "rules": [
+    "CS7"
+   ],
+   "why": "美股过热而赔率仅1.37(要≥2.0)",
+   "downgrade": ""
+  },
+  "LMT": {
+   "code": "LMT",
+   "name": "洛克希德马丁",
+   "side": "行业代表",
+   "action": "",
+   "rules": [
+    "CS7"
+   ],
+   "why": "美股过热而赔率仅1.61(要≥2.0)",
+   "downgrade": ""
+  }
+ },
  "stats": {
-  "n_pass": 275,
-  "n_reject": 148,
+  "n_pass": 268,
+  "n_reject": 155,
   "by_rule": {
    "CS9": 2,
    "CS1": 0,
@@ -308,8 +321,8 @@
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
-   "CS6": 143,
-   "CS7": 0,
+   "CS6": 141,
+   "CS7": 69,
    "CS8": 0
   }
  }
