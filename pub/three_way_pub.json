@@ -1,190 +1,22 @@
 {
- "generated_at": "2026-08-12 10:26（北京时间）",
+ "generated_at": "2026-08-13 09:00（北京时间）",
  "version": "three-way-gpt-v2",
  "note": "三层审核：V88行动引擎 vs V88标准规则闸 vs GPT/Codex独立复核。",
  "counts": {
-  "⏳审核未完整": 19,
-  "⚡有分歧/否决": 30,
-  "🟡规则达标·GPT不否定": 4
+  "🟡规则达标·GPT不否定": 7,
+  "⏳审核未完整": 17,
+  "⚡有分歧/否决": 21
  },
  "rows": [
   {
-   "code": "600893.SS",
-   "name": "航发动力",
-   "market": "A股",
+   "code": "PLUG",
+   "name": "Plug Power",
+   "market": "美股",
    "rule": {
     "dir": "看多",
-    "prob": 60,
-    "action": "现价可进",
-    "rr": 6.59,
-    "pos52": 14.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "否决",
-    "why": "数据时点：未提供分析时间",
-    "at": "2026-08-12",
-    "model": "gpt-5.6-sol"
-   },
-   "consensus": "⚡有分歧/否决"
-  },
-  {
-   "code": "001203.SZ",
-   "name": "大中矿业",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 76,
+    "prob": 85,
     "action": "左侧低吸",
-    "rr": 3.32,
-    "pos52": 41.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-12 09:41（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "002683.SZ",
-   "name": "广东宏大",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 70,
-    "action": "左侧低吸",
-    "rr": 5.05,
-    "pos52": 16.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-12 09:41（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "300351.SZ",
-   "name": "永贵电器",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 68,
-    "action": "左侧低吸",
-    "rr": 4.82,
-    "pos52": 20.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-12 09:41（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "000006.SZ",
-   "name": "深振业A",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 68,
-    "action": "左侧低吸",
-    "rr": 4.63,
-    "pos52": 14.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-12 09:41（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "002129.SZ",
-   "name": "TCL中环",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 67,
-    "action": "现价可进",
-    "rr": 4.37,
-    "pos52": 33.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-12 09:41（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "1686.HK",
-   "name": "新意网集团",
-   "market": "港股",
-   "rule": {
-    "dir": "看多",
-    "prob": 65,
-    "action": "现价可进",
-    "rr": 4.21,
-    "pos52": 18.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-12 09:41（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "600845.SS",
-   "name": "宝信软件",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 65,
-    "action": "现价可进",
-    "rr": 4.19,
+    "rr": 2.69,
     "pos52": 28.0,
     "src": "池外机会"
    },
@@ -195,21 +27,21 @@
    "gpt": {
     "verdict": "未覆盖",
     "why": "",
-    "at": "2026-08-12 09:41（北京时间）",
+    "at": "2026-08-13 08:43（北京时间）",
     "model": "gpt-5.6-sol"
    },
    "consensus": "⏳审核未完整"
   },
   {
-   "code": "002487.SZ",
-   "name": "大金重工",
-   "market": "A股",
+   "code": "0866.HK",
+   "name": "中国秦发",
+   "market": "港股",
    "rule": {
     "dir": "看多",
-    "prob": 65,
+    "prob": 85,
     "action": "左侧低吸",
-    "rr": 4.16,
-    "pos52": 18.0,
+    "rr": 2.66,
+    "pos52": 19.0,
     "src": "池外机会"
    },
    "rules_gate": {
@@ -219,20 +51,188 @@
    "gpt": {
     "verdict": "未覆盖",
     "why": "",
-    "at": "2026-08-12 09:41（北京时间）",
+    "at": "2026-08-13 08:43（北京时间）",
     "model": "gpt-5.6-sol"
    },
    "consensus": "⏳审核未完整"
   },
   {
-   "code": "000725.SZ",
-   "name": "京东方",
+   "code": "0189.HK",
+   "name": "东岳集团",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 85,
+    "action": "左侧低吸",
+    "rr": 2.34,
+    "pos52": 31.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-13 08:43（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "NOK",
+   "name": "诺基亚",
+   "market": "美股",
+   "rule": {
+    "dir": "看多",
+    "prob": 83,
+    "action": "左侧低吸",
+    "rr": 2.66,
+    "pos52": 47.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-13 08:43（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "603799.SS",
+   "name": "华友钴业",
    "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 65,
+    "prob": 77,
+    "action": "左侧低吸",
+    "rr": 3.56,
+    "pos52": 17.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-13 08:43（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "600111.SS",
+   "name": "北方稀土",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 73,
     "action": "现价可进",
-    "rr": 4.11,
+    "rr": 3.53,
+    "pos52": 20.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "通过",
+    "why": "低位启动且盈亏比3.29",
+    "at": "2026-08-12",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "6185.HK",
+   "name": "康希诺生物",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 70,
+    "action": "现价可进",
+    "rr": 3.03,
+    "pos52": 15.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-13 08:43（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "1030.HK",
+   "name": "新城发展",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 64,
+    "action": "现价可进",
+    "rr": 4.75,
+    "pos52": 12.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-13 08:43（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "0119.HK",
+   "name": "保利置业集团",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 61,
+    "action": "左侧低吸",
+    "rr": 6.55,
+    "pos52": 12.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-13 08:43（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "002129.SZ",
+   "name": "TCL中环",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 70,
+    "action": "现价可进",
+    "rr": 3.36,
     "pos52": 37.0,
     "src": "池外机会"
    },
@@ -241,60 +241,60 @@
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-12 09:41（北京时间）",
+    "verdict": "不否定",
+    "why": "赔率较高，但转强证据不足",
+    "at": "2026-08-12",
     "model": "gpt-5.6-sol"
    },
-   "consensus": "⏳审核未完整"
+   "consensus": "🟡规则达标·GPT不否定"
   },
   {
-   "code": "600340.SS",
-   "name": "*ST华幸",
+   "code": "000725.SZ",
+   "name": "京东方",
    "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 64,
-    "action": "左侧低吸",
-    "rr": 4.57,
-    "pos52": 3.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-12 09:41（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "600284.SS",
-   "name": "浦东建设",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 63,
+    "prob": 67,
     "action": "现价可进",
-    "rr": 7.28,
-    "pos52": 11.0,
+    "rr": 3.71,
+    "pos52": 38.0,
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "未覆盖",
+    "verdict": "达标",
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-12 09:41（北京时间）",
+    "verdict": "不否定",
+    "why": "仅有阶段启动，证据不足背书",
+    "at": "2026-08-12",
     "model": "gpt-5.6-sol"
    },
-   "consensus": "⏳审核未完整"
+   "consensus": "🟡规则达标·GPT不否定"
+  },
+  {
+   "code": "600893.SS",
+   "name": "航发动力",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 62,
+    "action": "现价可进",
+    "rr": 5.34,
+    "pos52": 15.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "不否定",
+    "why": "赔率支持，但启动事实过于笼统",
+    "at": "2026-08-12",
+    "model": "gpt-5.6-sol"
+   },
+   "consensus": "🟡规则达标·GPT不否定"
   }
  ]
 }

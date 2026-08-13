@@ -1,5 +1,5 @@
 {
- "asof": "2026-08-12 09:41（北京时间）",
+ "asof": "2026-08-13 08:43（北京时间）",
  "model": "gpt-5.6-sol",
  "source": "gpt_verify.json",
  "by_market": {},
@@ -10,7 +10,7 @@
    "gpt_verdict": "否决",
    "model": "gpt-5.6-sol",
    "shift": "2026-08-12",
-   "note": "数据时点缺失，无法核验五日窗口",
+   "note": "数据时点缺失，无法核验回踩价",
    "code": "9988.HK",
    "name": "阿里巴巴-SW"
   },
@@ -19,7 +19,7 @@
    "gpt_verdict": "否决",
    "model": "gpt-5.6-sol",
    "shift": "2026-08-12",
-   "note": "数据时点缺失，无法核验五日窗口",
+   "note": "数据时点缺失，无法核验回踩价",
    "code": "9988.HK",
    "name": "阿里巴巴-SW"
   },
@@ -28,7 +28,7 @@
    "gpt_verdict": "否决",
    "model": "gpt-5.6-sol",
    "shift": "2026-08-12",
-   "note": "数据时点：未提供分析时间",
+   "note": "数据时点缺失，无法核验回踩价",
    "code": "06055.HK",
    "name": "中烟香港"
   },
@@ -37,7 +37,7 @@
    "gpt_verdict": "否决",
    "model": "gpt-5.6-sol",
    "shift": "2026-08-12",
-   "note": "数据时点：未提供分析时间",
+   "note": "数据时点缺失，无法核验回踩价",
    "code": "06055.HK",
    "name": "中烟香港"
   },
@@ -694,7 +694,7 @@
    "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
    "shift": "2026-08-12",
-   "note": "仅4个历史样本，证据不足",
+   "note": "样本仅4次，不足以背书或否决",
    "code": "2020.HK",
    "name": "安踏体育"
   },
@@ -703,7 +703,7 @@
    "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
    "shift": "2026-08-12",
-   "note": "仅4个历史样本，证据不足",
+   "note": "样本仅4次，不足以背书或否决",
    "code": "2020.HK",
    "name": "安踏体育"
   },
@@ -756,8 +756,8 @@
    "verdict": "分歧",
    "gpt_verdict": "否决",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-11",
-   "note": "数据时点：事件窗及分析时间均缺失",
+   "shift": "2026-08-12",
+   "note": "数据时点缺失，无法核验入场窗口",
    "code": "NVDA",
    "name": "英伟达"
   },
@@ -1562,6 +1562,24 @@
    "code": "603444.SS",
    "name": "吉比特"
   },
+  "6690.HK": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "核验事实缺失，无法为当日买入背书",
+   "code": "6690.HK",
+   "name": "海尔智家"
+  },
+  "06690.HK": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "核验事实缺失，无法为当日买入背书",
+   "code": "6690.HK",
+   "name": "海尔智家"
+  },
   "MDLZ": {
    "verdict": "分歧",
    "gpt_verdict": "否决",
@@ -1692,8 +1710,8 @@
    "verdict": "分歧",
    "gpt_verdict": "否决",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-11",
-   "note": "数据时点：无分析时间且核验事实为空",
+   "shift": "2026-08-12",
+   "note": "数据时点缺失，无法核验今日窗口",
    "code": "VOO",
    "name": "Vanguard标普500"
   },
@@ -2107,7 +2125,7 @@
    "gpt_verdict": "否决",
    "model": "gpt-5.6-sol",
    "shift": "2026-08-12",
-   "note": "赔率不足：盈亏比0.06且期望为负",
+   "note": "赔率不足：盈亏比0.13且期望为负",
    "code": "513500.SS",
    "name": "标普500"
   },
@@ -2250,8 +2268,8 @@
    "verdict": "分歧",
    "gpt_verdict": "否决",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-11",
-   "note": "赔率不足：盈亏比0.1且期望为负",
+   "shift": "2026-08-12",
+   "note": "赔率不足：盈亏比0.18且无期望优势",
    "code": "002589.SZ",
    "name": "瑞康医药"
   },
@@ -2638,7 +2656,7 @@
    "gpt_verdict": "否决",
    "model": "gpt-5.6-sol",
    "shift": "2026-08-12",
-   "note": "赔率不足：盈亏比0.3且期望为零",
+   "note": "赔率不足：盈亏比0.28且期望为负",
    "code": "PFE",
    "name": "辉瑞"
   },
@@ -2691,8 +2709,8 @@
    "verdict": "不否定",
    "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-10",
-   "note": "赔率较好，但催化证据不足",
+   "shift": "2026-08-12",
+   "note": "核验事实缺失，无法为当日买入背书",
    "code": "HD",
    "name": "家得宝"
   },
@@ -2796,20 +2814,20 @@
    "name": "民生银行"
   },
   "001309.SZ": {
-   "verdict": "一致",
-   "gpt_verdict": "通过",
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-12",
-   "note": "样本胜率90%，中位收益远高于回撤",
+   "shift": "2026-08-13",
+   "note": "历史胜率较高，但缺少估值与基本面证据",
    "code": "001309.SZ",
    "name": "德明利"
   },
   "BNTX": {
-   "verdict": "一致",
-   "gpt_verdict": "通过",
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-11",
-   "note": "样本胜率90%，中位收益覆盖尾部风险",
+   "shift": "2026-08-13",
+   "note": "潜在回撤55%，不足以背书买入档位",
    "code": "BNTX",
    "name": "BioNTech"
   },
@@ -2850,11 +2868,11 @@
    "name": "招金黄金"
   },
   "MELI": {
-   "verdict": "不否定",
-   "gpt_verdict": "不否定",
+   "verdict": "一致",
+   "gpt_verdict": "通过",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-11",
-   "note": "胜率尚可但收益与尾部风险相当",
+   "shift": "2026-08-12",
+   "note": "17次样本胜率82%，回撤收益匹配",
    "code": "MELI",
    "name": "MercadoLibre"
   },
@@ -2862,8 +2880,8 @@
    "verdict": "不否定",
    "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-11",
-   "note": "赔率尚可但历史同级样本仅5次",
+   "shift": "2026-08-13",
+   "note": "赔率尚可，但样本仅5次",
    "code": "AZO",
    "name": "AutoZone"
   },
@@ -2895,20 +2913,20 @@
    "name": "康龙化成"
   },
   "300953.SZ": {
-   "verdict": "一致",
-   "gpt_verdict": "通过",
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-12",
-   "note": "6/8胜且中位收益24.1%",
+   "shift": "2026-08-13",
+   "note": "收益中位数低于潜在回撤",
    "code": "300953.SZ",
    "name": "震裕科技"
   },
   "002460.SZ": {
-   "verdict": "一致",
-   "gpt_verdict": "通过",
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-12",
-   "note": "6/8胜且中位收益覆盖最差回撤",
+   "shift": "2026-08-13",
+   "note": "赔率尚可，但缺少锂价周期核验",
    "code": "002460.SZ",
    "name": "赣锋锂业"
   },
@@ -2916,8 +2934,8 @@
    "verdict": "不否定",
    "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-11",
-   "note": "样本仅8次，尚不足背书1A",
+   "shift": "2026-08-13",
+   "note": "赔率尚可，但缺少基本面核验",
    "code": "PDD",
    "name": "拼多多"
   },
@@ -2931,20 +2949,20 @@
    "name": "德业股份"
   },
   "1138.HK": {
-   "verdict": "一致",
-   "gpt_verdict": "通过",
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-12",
-   "note": "12/16胜，样本量与收益均支持",
+   "shift": "2026-08-13",
+   "note": "处于52周中位，深跌定义存疑",
    "code": "1138.HK",
    "name": "中远海能"
   },
   "01138.HK": {
-   "verdict": "一致",
-   "gpt_verdict": "通过",
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-12",
-   "note": "12/16胜，样本量与收益均支持",
+   "shift": "2026-08-13",
+   "note": "处于52周中位，深跌定义存疑",
    "code": "1138.HK",
    "name": "中远海能"
   },
@@ -2952,8 +2970,8 @@
    "verdict": "不否定",
    "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-11",
-   "note": "样本仅4次，统计证据不足",
+   "shift": "2026-08-13",
+   "note": "收益中位数低于潜在回撤",
    "code": "IBM",
    "name": "IBM"
   },
@@ -2979,8 +2997,8 @@
    "verdict": "不否定",
    "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-10",
-   "note": "仅6个样本，证据强度有限",
+   "shift": "2026-08-13",
+   "note": "样本仅6次，尚不足以确认高胜率",
    "code": "300782.SZ",
    "name": "卓胜微"
   },
@@ -3006,8 +3024,8 @@
    "verdict": "不否定",
    "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-10",
-   "note": "历史胜率尚可，但尾部风险高",
+   "shift": "2026-08-13",
+   "note": "收益中位数低于潜在回撤",
    "code": "300015.SZ",
    "name": "爱尔眼科"
   },
@@ -3390,11 +3408,11 @@
    "name": "长和"
   },
   "ON": {
-   "verdict": "分歧",
-   "gpt_verdict": "否决",
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-11",
-   "note": "赔率不足：中位收益低于最差回撤",
+   "shift": "2026-08-13",
+   "note": "历史胜率较高，但最差回撤达27.3%",
    "code": "ON",
    "name": "安森美"
   },
@@ -3430,7 +3448,7 @@
    "gpt_verdict": "否决",
    "model": "gpt-5.6-sol",
    "shift": "2026-08-12",
-   "note": "赔率不足：已涨9.9%且期望为负",
+   "note": "赔率不足：盈亏比仅0.66",
    "code": "002727.SZ",
    "name": "一心堂"
   },
@@ -3795,11 +3813,11 @@
    "name": "宁波建工"
   },
   "600893.SS": {
-   "verdict": "分歧",
-   "gpt_verdict": "否决",
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
    "shift": "2026-08-12",
-   "note": "数据时点：未提供分析时间",
+   "note": "赔率支持，但启动事实过于笼统",
    "code": "600893.SS",
    "name": "航发动力"
   },
@@ -4009,6 +4027,303 @@
    "note": "数据时点缺失且完备度仅90",
    "code": "BFLY",
    "name": "Butterfly Network Inc-A"
+  },
+  "300119.SZ": {
+   "verdict": "分歧",
+   "gpt_verdict": "否决",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "追高：已涨12.7%且赔率极低",
+   "code": "300119.SZ",
+   "name": "瑞普生物"
+  },
+  "600604.SS": {
+   "verdict": "一致",
+   "gpt_verdict": "通过",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "启动首日且盈亏比与期望优势明确",
+   "code": "600604.SS",
+   "name": "市北高新"
+  },
+  "001203.SZ": {
+   "verdict": "一致",
+   "gpt_verdict": "通过",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "盈亏比3.32且期望优势2.28",
+   "code": "001203.SZ",
+   "name": "大中矿业"
+  },
+  "002756.SZ": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-13",
+   "note": "收益中位数低于潜在回撤",
+   "code": "002756.SZ",
+   "name": "永兴材料"
+  },
+  "603099.SS": {
+   "verdict": "分歧",
+   "gpt_verdict": "否决",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "赔率不足：期望为负且盈亏比仅0.39",
+   "code": "603099.SS",
+   "name": "长白山"
+  },
+  "002683.SZ": {
+   "verdict": "一致",
+   "gpt_verdict": "通过",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "低位放量启动，盈亏比与期望突出",
+   "code": "002683.SZ",
+   "name": "广东宏大"
+  },
+  "300351.SZ": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "量价与赔率支持，但缺独立时点核验",
+   "code": "300351.SZ",
+   "name": "永贵电器"
+  },
+  "000006.SZ": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "量价与赔率支持，但缺独立时点核验",
+   "code": "000006.SZ",
+   "name": "深振业A"
+  },
+  "002129.SZ": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "赔率较高，但转强证据不足",
+   "code": "002129.SZ",
+   "name": "TCL中环"
+  },
+  "1686.HK": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "放量与低位支持，仍缺时点核验",
+   "code": "1686.HK",
+   "name": "新意网集团"
+  },
+  "01686.HK": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "放量与低位支持，仍缺时点核验",
+   "code": "1686.HK",
+   "name": "新意网集团"
+  },
+  "600845.SS": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "放量明显，但单日异动不足背书",
+   "code": "600845.SS",
+   "name": "宝信软件"
+  },
+  "002487.SZ": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "深跌后初动，尚无反对证据",
+   "code": "002487.SZ",
+   "name": "大金重工"
+  },
+  "000725.SZ": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "仅有阶段启动，证据不足背书",
+   "code": "000725.SZ",
+   "name": "京东方"
+  },
+  "600340.SS": {
+   "verdict": "分歧",
+   "gpt_verdict": "否决",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "基本面恶化：ST风险与1A档矛盾",
+   "code": "600340.SS",
+   "name": "*ST华幸"
+  },
+  "600284.SS": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "赔率突出，但异常量比需持续确认",
+   "code": "600284.SS",
+   "name": "浦东建设"
+  },
+  "MSFT": {
+   "verdict": "分歧",
+   "gpt_verdict": "否决",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-13",
+   "note": "赔率不足：盈亏比0.09且期望为负",
+   "code": "MSFT",
+   "name": "微软"
+  },
+  "600588.SS": {
+   "verdict": "分歧",
+   "gpt_verdict": "否决",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "赔率不足：盈亏比0.21且负期望",
+   "code": "600588.SS",
+   "name": "用友网络"
+  },
+  "RNW": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "核验事实缺失，无法为档位背书",
+   "code": "RNW",
+   "name": "ReNew Energy Global plc-A"
+  },
+  "ACN": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-13",
+   "note": "核验事实缺失且四桶存在短板",
+   "code": "ACN",
+   "name": "埃森哲"
+  },
+  "RPD": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "核验事实缺失，无法为档位背书",
+   "code": "RPD",
+   "name": "Rapid7 Inc"
+  },
+  "1818.HK": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "核验事实缺失，无法为档位背书",
+   "code": "1818.HK",
+   "name": "招金矿业"
+  },
+  "01818.HK": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "核验事实缺失，无法为档位背书",
+   "code": "1818.HK",
+   "name": "招金矿业"
+  },
+  "6693.HK": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "核验事实缺失，无法为档位背书",
+   "code": "6693.HK",
+   "name": "赤峰黄金"
+  },
+  "06693.HK": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "核验事实缺失，无法为档位背书",
+   "code": "6693.HK",
+   "name": "赤峰黄金"
+  },
+  "ABCL": {
+   "verdict": "分歧",
+   "gpt_verdict": "否决",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "数据时点缺失，无法核验入场窗口",
+   "code": "ABCL",
+   "name": "AbCellera Biologics Inc"
+  },
+  "300426.SZ": {
+   "verdict": "分歧",
+   "gpt_verdict": "否决",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "数据时点缺失，无法核验入场窗口",
+   "code": "300426.SZ",
+   "name": "华智数媒"
+  },
+  "VZ": {
+   "verdict": "分歧",
+   "gpt_verdict": "否决",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "数据时点缺失，无法核验今日窗口",
+   "code": "VZ",
+   "name": "威瑞森通讯(Verizon)"
+  },
+  "DLR": {
+   "verdict": "分歧",
+   "gpt_verdict": "否决",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "数据时点缺失，无法核验今日窗口",
+   "code": "DLR",
+   "name": "数字房地产信托"
+  },
+  "603392.SS": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-13",
+   "note": "样本仅4次，统计证据不足",
+   "code": "603392.SS",
+   "name": "万泰生物"
+  },
+  "TEAM": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-13",
+   "note": "核验事实缺失，暂不足背书",
+   "code": "TEAM",
+   "name": "Atlassian Corp-A"
+  },
+  "URI": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-13",
+   "note": "核验事实缺失且获利空间偏弱",
+   "code": "URI",
+   "name": "联合租赁"
+  },
+  "UBER": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-13",
+   "note": "核验事实缺失且估值获利空间偏弱",
+   "code": "UBER",
+   "name": "优步"
   }
  },
  "by_name": {
@@ -4017,7 +4332,7 @@
    "gpt_verdict": "否决",
    "model": "gpt-5.6-sol",
    "shift": "2026-08-12",
-   "note": "数据时点缺失，无法核验五日窗口",
+   "note": "数据时点缺失，无法核验回踩价",
    "code": "9988.HK",
    "name": "阿里巴巴-SW"
   },
@@ -4026,7 +4341,7 @@
    "gpt_verdict": "否决",
    "model": "gpt-5.6-sol",
    "shift": "2026-08-12",
-   "note": "数据时点：未提供分析时间",
+   "note": "数据时点缺失，无法核验回踩价",
    "code": "06055.HK",
    "name": "中烟香港"
   },
@@ -4512,7 +4827,7 @@
    "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
    "shift": "2026-08-12",
-   "note": "仅4个历史样本，证据不足",
+   "note": "样本仅4次，不足以背书或否决",
    "code": "2020.HK",
    "name": "安踏体育"
   },
@@ -4565,8 +4880,8 @@
    "verdict": "分歧",
    "gpt_verdict": "否决",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-11",
-   "note": "数据时点：事件窗及分析时间均缺失",
+   "shift": "2026-08-12",
+   "note": "数据时点缺失，无法核验入场窗口",
    "code": "NVDA",
    "name": "英伟达"
   },
@@ -5164,6 +5479,15 @@
    "code": "603444.SS",
    "name": "吉比特"
   },
+  "海尔智家": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "核验事实缺失，无法为当日买入背书",
+   "code": "6690.HK",
+   "name": "海尔智家"
+  },
   "亿滋国际": {
    "verdict": "分歧",
    "gpt_verdict": "否决",
@@ -5267,8 +5591,8 @@
    "verdict": "分歧",
    "gpt_verdict": "否决",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-11",
-   "note": "数据时点：无分析时间且核验事实为空",
+   "shift": "2026-08-12",
+   "note": "数据时点缺失，无法核验今日窗口",
    "code": "VOO",
    "name": "Vanguard标普500"
   },
@@ -5592,7 +5916,7 @@
    "gpt_verdict": "否决",
    "model": "gpt-5.6-sol",
    "shift": "2026-08-12",
-   "note": "赔率不足：盈亏比0.06且期望为负",
+   "note": "赔率不足：盈亏比0.13且期望为负",
    "code": "513500.SS",
    "name": "标普500"
   },
@@ -5690,8 +6014,8 @@
    "verdict": "分歧",
    "gpt_verdict": "否决",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-11",
-   "note": "赔率不足：盈亏比0.1且期望为负",
+   "shift": "2026-08-12",
+   "note": "赔率不足：盈亏比0.18且无期望优势",
    "code": "002589.SZ",
    "name": "瑞康医药"
   },
@@ -5943,7 +6267,7 @@
    "gpt_verdict": "否决",
    "model": "gpt-5.6-sol",
    "shift": "2026-08-12",
-   "note": "赔率不足：盈亏比0.3且期望为零",
+   "note": "赔率不足：盈亏比0.28且期望为负",
    "code": "PFE",
    "name": "辉瑞"
   },
@@ -5978,8 +6302,8 @@
    "verdict": "不否定",
    "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-10",
-   "note": "赔率较好，但催化证据不足",
+   "shift": "2026-08-12",
+   "note": "核验事实缺失，无法为当日买入背书",
    "code": "HD",
    "name": "家得宝"
   },
@@ -6065,20 +6389,20 @@
    "name": "民生银行"
   },
   "德明利": {
-   "verdict": "一致",
-   "gpt_verdict": "通过",
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-12",
-   "note": "样本胜率90%，中位收益远高于回撤",
+   "shift": "2026-08-13",
+   "note": "历史胜率较高，但缺少估值与基本面证据",
    "code": "001309.SZ",
    "name": "德明利"
   },
   "BioNTech": {
-   "verdict": "一致",
-   "gpt_verdict": "通过",
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-11",
-   "note": "样本胜率90%，中位收益覆盖尾部风险",
+   "shift": "2026-08-13",
+   "note": "潜在回撤55%，不足以背书买入档位",
    "code": "BNTX",
    "name": "BioNTech"
   },
@@ -6110,11 +6434,11 @@
    "name": "招金黄金"
   },
   "MercadoLibre": {
-   "verdict": "不否定",
-   "gpt_verdict": "不否定",
+   "verdict": "一致",
+   "gpt_verdict": "通过",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-11",
-   "note": "胜率尚可但收益与尾部风险相当",
+   "shift": "2026-08-12",
+   "note": "17次样本胜率82%，回撤收益匹配",
    "code": "MELI",
    "name": "MercadoLibre"
   },
@@ -6122,8 +6446,8 @@
    "verdict": "不否定",
    "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-11",
-   "note": "赔率尚可但历史同级样本仅5次",
+   "shift": "2026-08-13",
+   "note": "赔率尚可，但样本仅5次",
    "code": "AZO",
    "name": "AutoZone"
   },
@@ -6137,20 +6461,20 @@
    "name": "深信服"
   },
   "震裕科技": {
-   "verdict": "一致",
-   "gpt_verdict": "通过",
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-12",
-   "note": "6/8胜且中位收益24.1%",
+   "shift": "2026-08-13",
+   "note": "收益中位数低于潜在回撤",
    "code": "300953.SZ",
    "name": "震裕科技"
   },
   "赣锋锂业": {
-   "verdict": "一致",
-   "gpt_verdict": "通过",
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-12",
-   "note": "6/8胜且中位收益覆盖最差回撤",
+   "shift": "2026-08-13",
+   "note": "赔率尚可，但缺少锂价周期核验",
    "code": "002460.SZ",
    "name": "赣锋锂业"
   },
@@ -6158,8 +6482,8 @@
    "verdict": "不否定",
    "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-11",
-   "note": "样本仅8次，尚不足背书1A",
+   "shift": "2026-08-13",
+   "note": "赔率尚可，但缺少基本面核验",
    "code": "PDD",
    "name": "拼多多"
   },
@@ -6173,11 +6497,11 @@
    "name": "德业股份"
   },
   "中远海能": {
-   "verdict": "一致",
-   "gpt_verdict": "通过",
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-12",
-   "note": "12/16胜，样本量与收益均支持",
+   "shift": "2026-08-13",
+   "note": "处于52周中位，深跌定义存疑",
    "code": "1138.HK",
    "name": "中远海能"
   },
@@ -6185,8 +6509,8 @@
    "verdict": "不否定",
    "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-11",
-   "note": "样本仅4次，统计证据不足",
+   "shift": "2026-08-13",
+   "note": "收益中位数低于潜在回撤",
    "code": "IBM",
    "name": "IBM"
   },
@@ -6203,8 +6527,8 @@
    "verdict": "不否定",
    "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-10",
-   "note": "仅6个样本，证据强度有限",
+   "shift": "2026-08-13",
+   "note": "样本仅6次，尚不足以确认高胜率",
    "code": "300782.SZ",
    "name": "卓胜微"
   },
@@ -6230,8 +6554,8 @@
    "verdict": "不否定",
    "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-10",
-   "note": "历史胜率尚可，但尾部风险高",
+   "shift": "2026-08-13",
+   "note": "收益中位数低于潜在回撤",
    "code": "300015.SZ",
    "name": "爱尔眼科"
   },
@@ -6497,11 +6821,11 @@
    "name": "长和"
   },
   "安森美": {
-   "verdict": "分歧",
-   "gpt_verdict": "否决",
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
-   "shift": "2026-08-11",
-   "note": "赔率不足：中位收益低于最差回撤",
+   "shift": "2026-08-13",
+   "note": "历史胜率较高，但最差回撤达27.3%",
    "code": "ON",
    "name": "安森美"
   },
@@ -6537,7 +6861,7 @@
    "gpt_verdict": "否决",
    "model": "gpt-5.6-sol",
    "shift": "2026-08-12",
-   "note": "赔率不足：已涨9.9%且期望为负",
+   "note": "赔率不足：盈亏比仅0.66",
    "code": "002727.SZ",
    "name": "一心堂"
   },
@@ -6839,11 +7163,11 @@
    "name": "宁波建工"
   },
   "航发动力": {
-   "verdict": "分歧",
-   "gpt_verdict": "否决",
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
    "model": "gpt-5.6-sol",
    "shift": "2026-08-12",
-   "note": "数据时点：未提供分析时间",
+   "note": "赔率支持，但启动事实过于笼统",
    "code": "600893.SS",
    "name": "航发动力"
   },
@@ -6972,8 +7296,278 @@
    "note": "数据时点缺失且完备度仅90",
    "code": "BFLY",
    "name": "Butterfly Network Inc-A"
+  },
+  "瑞普生物": {
+   "verdict": "分歧",
+   "gpt_verdict": "否决",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "追高：已涨12.7%且赔率极低",
+   "code": "300119.SZ",
+   "name": "瑞普生物"
+  },
+  "市北高新": {
+   "verdict": "一致",
+   "gpt_verdict": "通过",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "启动首日且盈亏比与期望优势明确",
+   "code": "600604.SS",
+   "name": "市北高新"
+  },
+  "大中矿业": {
+   "verdict": "一致",
+   "gpt_verdict": "通过",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "盈亏比3.32且期望优势2.28",
+   "code": "001203.SZ",
+   "name": "大中矿业"
+  },
+  "永兴材料": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-13",
+   "note": "收益中位数低于潜在回撤",
+   "code": "002756.SZ",
+   "name": "永兴材料"
+  },
+  "长白山": {
+   "verdict": "分歧",
+   "gpt_verdict": "否决",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "赔率不足：期望为负且盈亏比仅0.39",
+   "code": "603099.SS",
+   "name": "长白山"
+  },
+  "广东宏大": {
+   "verdict": "一致",
+   "gpt_verdict": "通过",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "低位放量启动，盈亏比与期望突出",
+   "code": "002683.SZ",
+   "name": "广东宏大"
+  },
+  "永贵电器": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "量价与赔率支持，但缺独立时点核验",
+   "code": "300351.SZ",
+   "name": "永贵电器"
+  },
+  "深振业A": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "量价与赔率支持，但缺独立时点核验",
+   "code": "000006.SZ",
+   "name": "深振业A"
+  },
+  "TCL中环": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "赔率较高，但转强证据不足",
+   "code": "002129.SZ",
+   "name": "TCL中环"
+  },
+  "新意网集团": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "放量与低位支持，仍缺时点核验",
+   "code": "1686.HK",
+   "name": "新意网集团"
+  },
+  "宝信软件": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "放量明显，但单日异动不足背书",
+   "code": "600845.SS",
+   "name": "宝信软件"
+  },
+  "大金重工": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "深跌后初动，尚无反对证据",
+   "code": "002487.SZ",
+   "name": "大金重工"
+  },
+  "京东方": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "仅有阶段启动，证据不足背书",
+   "code": "000725.SZ",
+   "name": "京东方"
+  },
+  "*ST华幸": {
+   "verdict": "分歧",
+   "gpt_verdict": "否决",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "基本面恶化：ST风险与1A档矛盾",
+   "code": "600340.SS",
+   "name": "*ST华幸"
+  },
+  "浦东建设": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "赔率突出，但异常量比需持续确认",
+   "code": "600284.SS",
+   "name": "浦东建设"
+  },
+  "微软": {
+   "verdict": "分歧",
+   "gpt_verdict": "否决",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-13",
+   "note": "赔率不足：盈亏比0.09且期望为负",
+   "code": "MSFT",
+   "name": "微软"
+  },
+  "用友网络": {
+   "verdict": "分歧",
+   "gpt_verdict": "否决",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "赔率不足：盈亏比0.21且负期望",
+   "code": "600588.SS",
+   "name": "用友网络"
+  },
+  "ReNew Energy Global plc-A": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "核验事实缺失，无法为档位背书",
+   "code": "RNW",
+   "name": "ReNew Energy Global plc-A"
+  },
+  "埃森哲": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-13",
+   "note": "核验事实缺失且四桶存在短板",
+   "code": "ACN",
+   "name": "埃森哲"
+  },
+  "Rapid7 Inc": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "核验事实缺失，无法为档位背书",
+   "code": "RPD",
+   "name": "Rapid7 Inc"
+  },
+  "招金矿业": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "核验事实缺失，无法为档位背书",
+   "code": "1818.HK",
+   "name": "招金矿业"
+  },
+  "赤峰黄金": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "核验事实缺失，无法为档位背书",
+   "code": "6693.HK",
+   "name": "赤峰黄金"
+  },
+  "AbCellera Biologics Inc": {
+   "verdict": "分歧",
+   "gpt_verdict": "否决",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "数据时点缺失，无法核验入场窗口",
+   "code": "ABCL",
+   "name": "AbCellera Biologics Inc"
+  },
+  "华智数媒": {
+   "verdict": "分歧",
+   "gpt_verdict": "否决",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "数据时点缺失，无法核验入场窗口",
+   "code": "300426.SZ",
+   "name": "华智数媒"
+  },
+  "威瑞森通讯(Verizon)": {
+   "verdict": "分歧",
+   "gpt_verdict": "否决",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "数据时点缺失，无法核验今日窗口",
+   "code": "VZ",
+   "name": "威瑞森通讯(Verizon)"
+  },
+  "数字房地产信托": {
+   "verdict": "分歧",
+   "gpt_verdict": "否决",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-12",
+   "note": "数据时点缺失，无法核验今日窗口",
+   "code": "DLR",
+   "name": "数字房地产信托"
+  },
+  "万泰生物": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-13",
+   "note": "样本仅4次，统计证据不足",
+   "code": "603392.SS",
+   "name": "万泰生物"
+  },
+  "Atlassian Corp-A": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-13",
+   "note": "核验事实缺失，暂不足背书",
+   "code": "TEAM",
+   "name": "Atlassian Corp-A"
+  },
+  "联合租赁": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-13",
+   "note": "核验事实缺失且获利空间偏弱",
+   "code": "URI",
+   "name": "联合租赁"
+  },
+  "优步": {
+   "verdict": "不否定",
+   "gpt_verdict": "不否定",
+   "model": "gpt-5.6-sol",
+   "shift": "2026-08-13",
+   "note": "核验事实缺失且估值获利空间偏弱",
+   "code": "UBER",
+   "name": "优步"
   }
  },
- "n_cert": 18,
- "n_dispute": 228
+ "n_cert": 17,
+ "n_dispute": 235
 }
