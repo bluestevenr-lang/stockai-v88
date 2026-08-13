@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-13 11:53（北京时间）",
- "generated_at": "2026-08-13 11:53（北京时间）",
+ "asof": "2026-08-13 16:51（北京时间）",
+ "generated_at": "2026-08-13 16:51（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -309,22 +309,11 @@
    ],
    "why": "A股过热而赔率仅1.86(要≥2.0)",
    "downgrade": ""
-  },
-  "600809.SS": {
-   "code": "600809.SS",
-   "name": "山西汾酒",
-   "side": "行业代表",
-   "action": "",
-   "rules": [
-    "CS7"
-   ],
-   "why": "A股过热而赔率仅1.16(要≥2.0)",
-   "downgrade": ""
   }
  },
  "stats": {
-  "n_pass": 247,
-  "n_reject": 177,
+  "n_pass": 250,
+  "n_reject": 174,
   "by_rule": {
    "CS9": 2,
    "CS1": 0,
@@ -332,8 +321,8 @@
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
-   "CS6": 143,
-   "CS7": 62,
+   "CS6": 142,
+   "CS7": 59,
    "CS8": 0
   }
  }
