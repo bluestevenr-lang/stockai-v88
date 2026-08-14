@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-14 16:44（北京时间）",
- "generated_at": "2026-08-14 16:44（北京时间）",
+ "asof": "2026-08-14 18:18（北京时间）",
+ "generated_at": "2026-08-14 18:18（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -16,29 +16,9 @@
  },
  "note": "V88标准规则闸:把历史会审异议固化成机检规则,名单出厂前先过这道闸——不达标的不进推荐位,转⏸未达标区并写明理由(用户定纲:'有异议的还摆在推荐位没有参考意义')。规则来自4个班次真实异议的归纳,非回测胜率;每条带rule_id,台账到期后双周深检算'被拦下的票后来表现如何'来修订阈值——规则错了要能被数据推翻。",
  "pass": {
-  "600516.SS": {
-   "code": "600516.SS",
-   "name": "方大炭素",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "000958.SZ": {
-   "code": "000958.SZ",
-   "name": "电投产融",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "301291.SZ": {
-   "code": "301291.SZ",
-   "name": "明阳电气",
+  "600868.SS": {
+   "code": "600868.SS",
+   "name": "梅雁吉祥",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -46,19 +26,9 @@
    "downgrade": "",
    "auto": true
   },
-  "601026.SS": {
-   "code": "601026.SS",
-   "name": "道生天合",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "600010.SS": {
-   "code": "600010.SS",
-   "name": "包钢股份",
+  "603867.SS": {
+   "code": "603867.SS",
+   "name": "新化股份",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -66,9 +36,49 @@
    "downgrade": "",
    "auto": true
   },
-  "600979.SS": {
-   "code": "600979.SS",
-   "name": "广安爱众",
+  "0317.HK": {
+   "code": "0317.HK",
+   "name": "中船防务",
+   "side": "机会",
+   "action": "现价可进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "300113.SZ": {
+   "code": "300113.SZ",
+   "name": "顺网科技",
+   "side": "机会",
+   "action": "现价可进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "MSTR": {
+   "code": "MSTR",
+   "name": "MSTR",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "000403.SZ": {
+   "code": "000403.SZ",
+   "name": "派林生物",
+   "side": "机会",
+   "action": "现价可进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "2145.HK": {
+   "code": "2145.HK",
+   "name": "上美股份",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -86,9 +96,19 @@
    "downgrade": "",
    "auto": true
   },
-  "601615.SS": {
-   "code": "601615.SS",
-   "name": "明阳智能",
+  "2655.HK": {
+   "code": "2655.HK",
+   "name": "果下科技",
+   "side": "机会",
+   "action": "双路径待触发",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "300846.SZ": {
+   "code": "300846.SZ",
+   "name": "首都在线",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -96,39 +116,19 @@
    "downgrade": "",
    "auto": true
   },
-  "301609.SZ": {
-   "code": "301609.SZ",
-   "name": "山大电力",
+  "688083.SS": {
+   "code": "688083.SS",
+   "name": "中望软件",
    "side": "机会",
-   "action": "现价可进",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "601890.SS": {
-   "code": "601890.SS",
-   "name": "亚星锚链",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "300442.SZ": {
-   "code": "300442.SZ",
-   "name": "润泽科技",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "002426.SZ": {
-   "code": "002426.SZ",
-   "name": "胜利精密",
+  "600010.SS": {
+   "code": "600010.SS",
+   "name": "包钢股份",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -256,6 +256,16 @@
    "downgrade": "",
    "auto": true
   },
+  "XLK": {
+   "code": "XLK",
+   "name": "美股·科技板块",
+   "side": "拐点",
+   "action": "",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "COST": {
    "code": "COST",
    "name": "开市客",
@@ -279,26 +289,6 @@
   "600938.SS": {
    "code": "600938.SS",
    "name": "中国海油",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "2357.HK": {
-   "code": "2357.HK",
-   "name": "中航科工",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "9633.HK": {
-   "code": "9633.HK",
-   "name": "农夫山泉",
    "side": "行业代表",
    "action": "",
    "rules": [],
@@ -332,7 +322,7 @@
   }
  },
  "stats": {
-  "n_pass": 477,
+  "n_pass": 476,
   "n_reject": 147,
   "by_rule": {
    "CS9": 0,
