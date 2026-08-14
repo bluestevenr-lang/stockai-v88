@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-14 06:30（北京时间）",
+ "generated_at": "2026-08-13 16:37（北京时间）",
  "note": "市场宽度晴雨表:全市场逐只统计(非抽样);单日读数看分位才有意义;分化度=指数涨跌−中位涨跌,正=权重扛指数",
  "markets": {
   "A股": {
@@ -80,9 +80,9 @@
    ],
    "divergence": 0.95,
    "pctile": {
-    "pct_up": null,
-    "amount_yi": null,
-    "median_chg": null
+    "pct_up": 0,
+    "amount_yi": 73,
+    "median_chg": 0
    },
    "verdict": "普跌(躲为上)；⚠️权重扛指数(多数股票跑输指数)"
   },
@@ -164,93 +164,93 @@
    ],
    "divergence": -0.17,
    "pctile": {
-    "pct_up": null,
-    "amount_yi": null,
-    "median_chg": null
+    "pct_up": 18,
+    "amount_yi": 64,
+    "median_chg": 9
    },
    "verdict": "分化"
   },
   "美股": {
-   "n": 7891,
-   "adv": 3965,
-   "dec": 3883,
-   "flat": 43,
-   "ad_ratio": 1.02,
-   "pct_up": 50.2,
+   "n": 7941,
+   "adv": 3964,
+   "dec": 3977,
+   "flat": 0,
+   "ad_ratio": 1.0,
+   "pct_up": 49.9,
    "limit_up": 0,
    "limit_down": 0,
-   "amount_yi": 7504.5,
-   "strong_pct": 8.6,
-   "weak_pct": 6.2,
-   "median_chg": 0.68,
-   "index_chg": 0.81,
+   "amount_yi": 7481.3,
+   "strong_pct": 7.9,
+   "weak_pct": 6.1,
+   "median_chg": -0.07,
+   "index_chg": 0.54,
    "coverage_note": "全量",
    "dist": {
-    "涨停": 229,
-    "大涨≥5%": 448,
-    "涨0~5%": 3288,
-    "平": 43,
-    "跌0~5%": 3393,
-    "大跌≥5%": 317,
-    "跌停": 173
+    "涨停": 231,
+    "大涨≥5%": 402,
+    "涨0~5%": 3331,
+    "平": 0,
+    "跌0~5%": 3494,
+    "大跌≥5%": 332,
+    "跌停": 151
    },
    "dist_bands": [
     {
      "band": "≤-7",
-     "n": 294,
+     "n": 298,
      "side": "跌"
     },
     {
      "band": "-7~-5",
-     "n": 192,
+     "n": 184,
      "side": "跌"
     },
     {
      "band": "-5~-3",
-     "n": 422,
+     "n": 437,
      "side": "跌"
     },
     {
      "band": "-3~-1",
-     "n": 1158,
+     "n": 1183,
      "side": "跌"
     },
     {
      "band": "-1~0",
-     "n": 1817,
+     "n": 1875,
      "side": "跌"
     },
     {
      "band": "0~1",
-     "n": 988,
+     "n": 1277,
      "side": "涨"
     },
     {
      "band": "1~3",
-     "n": 1734,
+     "n": 1565,
      "side": "涨"
     },
     {
      "band": "3~5",
-     "n": 567,
+     "n": 493,
      "side": "涨"
     },
     {
      "band": "5~7",
-     "n": 252,
+     "n": 247,
      "side": "涨"
     },
     {
      "band": "≥7",
-     "n": 424,
+     "n": 382,
      "side": "涨"
     }
    ],
-   "divergence": 0.13,
+   "divergence": 0.61,
    "pctile": {
-    "pct_up": null,
-    "amount_yi": null,
-    "median_chg": null
+    "pct_up": 0,
+    "amount_yi": 45,
+    "median_chg": 18
    },
    "verdict": "分化"
   }
