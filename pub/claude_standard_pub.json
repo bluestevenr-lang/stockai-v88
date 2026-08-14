@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-14 22:51（北京时间）",
- "generated_at": "2026-08-14 22:51（北京时间）",
+ "asof": "2026-08-15 05:56（北京时间）",
+ "generated_at": "2026-08-15 05:56（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -266,6 +266,26 @@
    "downgrade": "",
    "auto": true
   },
+  "SLB": {
+   "code": "SLB",
+   "name": "斯伦贝谢",
+   "side": "行业代表",
+   "action": "",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "RTX": {
+   "code": "RTX",
+   "name": "雷神",
+   "side": "行业代表",
+   "action": "",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "COST": {
    "code": "COST",
    "name": "开市客",
@@ -297,53 +317,19 @@
    "auto": true
   }
  },
- "reject": {
-  "JNJ": {
-   "code": "JNJ",
-   "name": "强生",
-   "side": "行业代表",
-   "action": "",
-   "rules": [
-    "CS7"
-   ],
-   "why": "美股过热而赔率仅1.10(要≥2.0)",
-   "downgrade": ""
-  },
-  "SLB": {
-   "code": "SLB",
-   "name": "斯伦贝谢",
-   "side": "行业代表",
-   "action": "",
-   "rules": [
-    "CS7"
-   ],
-   "why": "美股过热而赔率仅1.72(要≥2.0)",
-   "downgrade": ""
-  },
-  "RTX": {
-   "code": "RTX",
-   "name": "雷神",
-   "side": "行业代表",
-   "action": "",
-   "rules": [
-    "CS7"
-   ],
-   "why": "美股过热而赔率仅0.76(要≥2.0)",
-   "downgrade": ""
-  }
- },
+ "reject": {},
  "stats": {
-  "n_pass": 476,
-  "n_reject": 147,
+  "n_pass": 487,
+  "n_reject": 136,
   "by_rule": {
    "CS9": 0,
    "CS1": 0,
-   "CS2": 2,
+   "CS2": 3,
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
-   "CS6": 135,
-   "CS7": 70,
+   "CS6": 133,
+   "CS7": 0,
    "CS8": 0
   }
  }
