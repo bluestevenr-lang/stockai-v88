@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-14 18:18（北京时间）",
- "generated_at": "2026-08-14 18:18（北京时间）",
+ "asof": "2026-08-14 22:51（北京时间）",
+ "generated_at": "2026-08-14 22:51（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -298,6 +298,17 @@
   }
  },
  "reject": {
+  "JNJ": {
+   "code": "JNJ",
+   "name": "强生",
+   "side": "行业代表",
+   "action": "",
+   "rules": [
+    "CS7"
+   ],
+   "why": "美股过热而赔率仅1.10(要≥2.0)",
+   "downgrade": ""
+  },
   "SLB": {
    "code": "SLB",
    "name": "斯伦贝谢",
@@ -327,12 +338,12 @@
   "by_rule": {
    "CS9": 0,
    "CS1": 0,
-   "CS2": 3,
+   "CS2": 2,
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
    "CS6": 135,
-   "CS7": 69,
+   "CS7": 70,
    "CS8": 0
   }
  }
