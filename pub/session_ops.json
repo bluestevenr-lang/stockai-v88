@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-15 12:01（北京时间）",
+ "generated_at": "2026-08-15 18:47（北京时间）",
  "version": "sessionops-v1",
  "ruleset_version": "v4.2",
  "gates_in_force": [
@@ -12,7 +12,7 @@
   "铁律21·不许静默吞错",
   "铁律18·成本标注"
  ],
- "market": "全部",
+ "market": "美股",
  "declaration": "**本场唯一结论源**：对话回答与 V88 页面渲染均引用本文件，逐字一致。全部字段取自落盘（sell_grade/rank_score/classics_lens/anomaly_gate/holdings_fundamentals），零现场推理。",
  "rules": [
   "-3A 才是立即卖；-2A 一律守线待触发并写明触发价",
@@ -23,20 +23,6 @@
  ],
  "sell": [],
  "watch": [
-  {
-   "code": "300760.SZ",
-   "name": "迈瑞医疗",
-   "level": "-2A",
-   "last": 150.47,
-   "stop": 149.764,
-   "dist_stop_pct": 0.5,
-   "sell_zone": "跌破149.76执行(距+0.5%)",
-   "c123": "①②",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 149.764 执行"
-  },
   {
    "code": "GOOG",
    "name": "谷歌C",
@@ -50,34 +36,6 @@
    "listable": true,
    "action": "⚪守线待触发",
    "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 339.82 执行"
-  },
-  {
-   "code": "06055.HK",
-   "name": "中烟香港",
-   "level": "-1A",
-   "last": 22.14,
-   "stop": 21.78,
-   "dist_stop_pct": 1.7,
-   "sell_zone": "跌破21.78执行(距+1.7%)",
-   "c123": "①②",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 21.78 执行"
-  },
-  {
-   "code": "601288.SS",
-   "name": "农业银行",
-   "level": "-1A",
-   "last": 6.47,
-   "stop": 6.36,
-   "dist_stop_pct": 1.7,
-   "sell_zone": "跌破6.36执行(距+1.7%)",
-   "c123": "①②",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 6.36 执行"
   },
   {
    "code": "AAPL",
@@ -154,7 +112,7 @@
  "blocked_by_rr": [],
  "stats": {
   "sell": 0,
-  "watch": 9,
+  "watch": 6,
   "buy": 0,
   "buy_dual": 0,
   "blocked_by_rr": 0
