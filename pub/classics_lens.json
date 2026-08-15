@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-15 23:00（北京时间）",
+ "generated_at": "2026-08-16 05:39（北京时间）",
  "version": "classicslens-v1",
  "rule": "门派仲裁:先判归派,**只用该派判据**打分;跨门派不比大小(CLASSICS:这些书彼此打架,没有仲裁规则第三把剑会砍自己人)。",
  "closed_gap": "CLASSICS.md:27 记着'仍缺…欧奈尔盈利加速(基本面数据)'——2026-08-03 补 holdings_fundamentals 后本模块才具备条件。",
@@ -8,7 +8,7 @@
   "000783.SZ": {
    "code": "000783.SZ",
    "name": "长江证券",
-   "tier": "2A",
+   "tier": "1A",
    "listable": true,
    "when": "下一交易日 08-17 开盘可进（今日休市）",
    "school": "价值派",
@@ -57,10 +57,62 @@
    },
    "pos52": 60.0
   },
+  "1114.HK": {
+   "code": "1114.HK",
+   "name": "华晨中国",
+   "tier": "1A",
+   "listable": true,
+   "when": "下一交易日 08-17 开盘可进（今日休市）",
+   "school": "价值派",
+   "school_why": "深度折价或低估值 → 格雷厄姆/卡拉曼式左侧仓",
+   "checks": [
+    {
+     "ok": true,
+     "label": "安全边际(距目标价≥20%)",
+     "detail": "+49.7%"
+    },
+    {
+     "ok": false,
+     "label": "盈利质量(ROE≥15%且净利率≥10%)",
+     "detail": "ROE8%·净利168%"
+    },
+    {
+     "ok": true,
+     "label": "估值(PE≤20)",
+     "detail": "4.8"
+    },
+    {
+     "ok": false,
+     "label": "自由现金流为正",
+     "detail": "-0.6B"
+    }
+   ],
+   "pass_n": 2,
+   "miss_n": 0,
+   "fail_n": 2,
+   "verdict": "证据不足",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": 4.75,
+    "roe": 7.6,
+    "net_margin": 168.0,
+    "rev_growth": 7.3,
+    "eps_growth": -82.5,
+    "target_mean": 3.27,
+    "to_target_pct": 49.7,
+    "rating": "buy",
+    "analysts": 5.0,
+    "next_earnings": null
+   },
+   "pos52": 13.0
+  },
   "603893.SS": {
    "code": "603893.SS",
    "name": "瑞芯微",
-   "tier": "2A",
+   "tier": "1A",
    "listable": true,
    "when": "下一交易日 08-17 开盘可进（今日休市）",
    "school": "成长派",
@@ -107,7 +159,7 @@
   "510300.SS": {
    "code": "510300.SS",
    "name": "沪深300ETF",
-   "tier": "2A",
+   "tier": "1A",
    "listable": true,
    "when": "下一交易日 08-17 开盘可进（今日休市）",
    "school": "未定",
@@ -134,6 +186,105 @@
     "next_earnings": null
    },
    "pos52": 47.0
+  },
+  "002739.SZ": {
+   "code": "002739.SZ",
+   "name": "儒意电影",
+   "tier": "1A",
+   "listable": true,
+   "when": "下一交易日 08-17 开盘可进（今日休市）",
+   "school": "价值派",
+   "school_why": "深度折价或低估值 → 格雷厄姆/卡拉曼式左侧仓",
+   "checks": [
+    {
+     "ok": true,
+     "label": "安全边际(距目标价≥20%)",
+     "detail": "+53.4%"
+    },
+    {
+     "ok": false,
+     "label": "盈利质量(ROE≥15%且净利率≥10%)",
+     "detail": "ROE-3%·净利-2%"
+    },
+    {
+     "ok": null,
+     "label": "估值(PE≤20)",
+     "detail": "数据缺"
+    },
+    {
+     "ok": true,
+     "label": "自由现金流为正",
+     "detail": "0.9B"
+    }
+   ],
+   "pass_n": 2,
+   "miss_n": 1,
+   "fail_n": 1,
+   "verdict": "证据不足",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": null,
+    "roe": -3.05,
+    "net_margin": -2.1,
+    "rev_growth": -36.3,
+    "eps_growth": -89.2,
+    "target_mean": 14.71,
+    "to_target_pct": 53.4,
+    "rating": "strong_buy",
+    "analysts": 3.0,
+    "next_earnings": null
+   },
+   "pos52": 49.0
+  },
+  "300033.SZ": {
+   "code": "300033.SZ",
+   "name": "同花顺",
+   "tier": "1A",
+   "listable": true,
+   "when": "下一交易日 08-17 开盘可进（今日休市）",
+   "school": "成长派",
+   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
+   "checks": [
+    {
+     "ok": true,
+     "label": "利润率扩张(盈利增速>营收增速)",
+     "detail": "盈利+112% vs 营收+41%"
+    },
+    {
+     "ok": true,
+     "label": "成长强度(盈利增速≥20%)",
+     "detail": "+112.5%"
+    },
+    {
+     "ok": true,
+     "label": "林奇PEG≤1.5",
+     "detail": "0.46"
+    }
+   ],
+   "pass_n": 3,
+   "miss_n": 0,
+   "fail_n": 0,
+   "verdict": "书理支持",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": 51.28,
+    "roe": 49.6,
+    "net_margin": 52.74,
+    "rev_growth": 40.8,
+    "eps_growth": 112.5,
+    "target_mean": 265.37,
+    "to_target_pct": 15.2,
+    "rating": "buy",
+    "analysts": 5.0,
+    "next_earnings": null
+   },
+   "pos52": null
   },
   "CVX": {
    "code": "CVX",
@@ -185,7 +336,7 @@
   "510500.SS": {
    "code": "510500.SS",
    "name": "中证500ETF",
-   "tier": "2A",
+   "tier": "1A",
    "listable": true,
    "when": "下一交易日 08-17 开盘可进（今日休市）",
    "school": "未定",
@@ -216,7 +367,7 @@
   "6690.HK": {
    "code": "6690.HK",
    "name": "海尔智家",
-   "tier": "2A",
+   "tier": "1A",
    "listable": true,
    "when": "下一交易日 08-17 开盘可进（今日休市）",
    "school": "价值派",
@@ -268,7 +419,7 @@
   "002371.SZ": {
    "code": "002371.SZ",
    "name": "北方华创",
-   "tier": "2A",
+   "tier": "1A",
    "listable": true,
    "when": "下一交易日 08-17 开盘可进（今日休市）",
    "school": "价值派",
@@ -317,105 +468,6 @@
    },
    "pos52": 58.0
   },
-  "300033.SZ": {
-   "code": "300033.SZ",
-   "name": "同花顺",
-   "tier": "2A",
-   "listable": true,
-   "when": "下一交易日 08-17 开盘可进（今日休市）",
-   "school": "成长派",
-   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
-   "checks": [
-    {
-     "ok": true,
-     "label": "利润率扩张(盈利增速>营收增速)",
-     "detail": "盈利+112% vs 营收+41%"
-    },
-    {
-     "ok": true,
-     "label": "成长强度(盈利增速≥20%)",
-     "detail": "+112.5%"
-    },
-    {
-     "ok": true,
-     "label": "林奇PEG≤1.5",
-     "detail": "0.46"
-    }
-   ],
-   "pass_n": 3,
-   "miss_n": 0,
-   "fail_n": 0,
-   "verdict": "书理支持",
-   "rules_gate": "gate_pass",
-   "gpt": "未验证",
-   "anomaly_frozen": false,
-   "anomaly_note": "",
-   "fund": {
-    "pe_ttm": 51.28,
-    "roe": 49.6,
-    "net_margin": 52.74,
-    "rev_growth": 40.8,
-    "eps_growth": 112.5,
-    "target_mean": 265.37,
-    "to_target_pct": 15.2,
-    "rating": "buy",
-    "analysts": 5.0,
-    "next_earnings": null
-   },
-   "pos52": null
-  },
-  "1109.HK": {
-   "code": "1109.HK",
-   "name": "华润置地",
-   "tier": "2A",
-   "listable": true,
-   "when": "下一交易日 08-17 开盘可进（今日休市）",
-   "school": "价值派",
-   "school_why": "深度折价或低估值 → 格雷厄姆/卡拉曼式左侧仓",
-   "checks": [
-    {
-     "ok": true,
-     "label": "安全边际(距目标价≥20%)",
-     "detail": "+21.4%"
-    },
-    {
-     "ok": false,
-     "label": "盈利质量(ROE≥15%且净利率≥10%)",
-     "detail": "ROE8%·净利9%"
-    },
-    {
-     "ok": true,
-     "label": "估值(PE≤20)",
-     "detail": "8.3"
-    },
-    {
-     "ok": false,
-     "label": "自由现金流为正",
-     "detail": "-15.1B"
-    }
-   ],
-   "pass_n": 2,
-   "miss_n": 0,
-   "fail_n": 2,
-   "verdict": "证据不足",
-   "rules_gate": "gate_pass",
-   "gpt": "未验证",
-   "anomaly_frozen": false,
-   "anomaly_note": "",
-   "fund": {
-    "pe_ttm": 8.26,
-    "roe": 8.04,
-    "net_margin": 9.03,
-    "rev_growth": -6.6,
-    "eps_growth": -11.6,
-    "target_mean": 41.51,
-    "to_target_pct": 21.4,
-    "rating": "strong_buy",
-    "analysts": 16.0,
-    "next_earnings": "2026-08-28"
-   },
-   "pos52": null
-  },
   "002458.SZ": {
    "code": "002458.SZ",
    "name": "益生股份",
@@ -455,13 +507,13 @@
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
-    "pe_ttm": 30.36,
+    "pe_ttm": 29.52,
     "roe": 10.37,
     "net_margin": 14.03,
     "rev_growth": 30.8,
     "eps_growth": 728.4,
     "target_mean": 10.62,
-    "to_target_pct": 6.0,
+    "to_target_pct": 9.0,
     "rating": "strong_buy",
     "analysts": 2.0,
     "next_earnings": null
@@ -512,105 +564,6 @@
     "rating": "none",
     "analysts": 1.0,
     "next_earnings": null
-   },
-   "pos52": null
-  },
-  "SLN": {
-   "code": "SLN",
-   "name": "Silence Therapeutics plc ADR",
-   "tier": "1A",
-   "listable": false,
-   "when": "回踩 12.06~12.54 买 · 5个交易日内有效",
-   "school": "价值派",
-   "school_why": "深度折价或低估值 → 格雷厄姆/卡拉曼式左侧仓",
-   "checks": [
-    {
-     "ok": true,
-     "label": "安全边际(距目标价≥20%)",
-     "detail": "+159.5%"
-    },
-    {
-     "ok": false,
-     "label": "盈利质量(ROE≥15%且净利率≥10%)",
-     "detail": "ROE-90%·净利0%"
-    },
-    {
-     "ok": null,
-     "label": "估值(PE≤20)",
-     "detail": "数据缺"
-    },
-    {
-     "ok": false,
-     "label": "自由现金流为正",
-     "detail": "-0.0B"
-    }
-   ],
-   "pass_n": 1,
-   "miss_n": 1,
-   "fail_n": 2,
-   "verdict": "书理不支持",
-   "rules_gate": "reject",
-   "gpt": "未验证",
-   "anomaly_frozen": false,
-   "anomaly_note": "",
-   "fund": {
-    "pe_ttm": null,
-    "roe": -90.41,
-    "net_margin": 0.0,
-    "rev_growth": null,
-    "eps_growth": null,
-    "target_mean": 35.6,
-    "to_target_pct": 159.5,
-    "rating": "buy",
-    "analysts": 5.0,
-    "next_earnings": "2026-11-05"
-   },
-   "pos52": 71.0
-  },
-  "2899.HK": {
-   "code": "2899.HK",
-   "name": "紫金矿业",
-   "tier": "1A",
-   "listable": true,
-   "when": "下一交易日 08-17 开盘可进（今日休市）",
-   "school": "成长派",
-   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
-   "checks": [
-    {
-     "ok": true,
-     "label": "利润率扩张(盈利增速>营收增速)",
-     "detail": "盈利+96% vs 营收+25%"
-    },
-    {
-     "ok": true,
-     "label": "成长强度(盈利增速≥20%)",
-     "detail": "+95.7%"
-    },
-    {
-     "ok": true,
-     "label": "林奇PEG≤1.5",
-     "detail": "0.14"
-    }
-   ],
-   "pass_n": 3,
-   "miss_n": 0,
-   "fail_n": 0,
-   "verdict": "书理支持",
-   "rules_gate": "gate_pass",
-   "gpt": "未验证",
-   "anomaly_frozen": false,
-   "anomaly_note": "",
-   "fund": {
-    "pe_ttm": 13.18,
-    "roe": 33.78,
-    "net_margin": 16.73,
-    "rev_growth": 24.8,
-    "eps_growth": 95.7,
-    "target_mean": 51.84,
-    "to_target_pct": 49.0,
-    "rating": "strong_buy",
-    "analysts": 15.0,
-    "next_earnings": "2026-08-21"
    },
    "pos52": null
   },
@@ -775,6 +728,58 @@
    },
    "pos52": null
   },
+  "000963.SZ": {
+   "code": "000963.SZ",
+   "name": "华东医药",
+   "tier": "1A",
+   "listable": true,
+   "when": "下一交易日 08-17 开盘可进（今日休市）",
+   "school": "价值派",
+   "school_why": "深度折价或低估值 → 格雷厄姆/卡拉曼式左侧仓",
+   "checks": [
+    {
+     "ok": true,
+     "label": "安全边际(距目标价≥20%)",
+     "detail": "+55.6%"
+    },
+    {
+     "ok": false,
+     "label": "盈利质量(ROE≥15%且净利率≥10%)",
+     "detail": "ROE14%·净利8%"
+    },
+    {
+     "ok": true,
+     "label": "估值(PE≤20)",
+     "detail": "14.9"
+    },
+    {
+     "ok": true,
+     "label": "自由现金流为正",
+     "detail": "2.4B"
+    }
+   ],
+   "pass_n": 3,
+   "miss_n": 0,
+   "fail_n": 1,
+   "verdict": "证据不足",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": 14.86,
+    "roe": 13.8,
+    "net_margin": 7.95,
+    "rev_growth": 4.2,
+    "eps_growth": 9.6,
+    "target_mean": 46.23,
+    "to_target_pct": 55.6,
+    "rating": "buy",
+    "analysts": 9.0,
+    "next_earnings": null
+   },
+   "pos52": null
+  },
   "FCX": {
    "code": "FCX",
    "name": "自由港麦克莫兰",
@@ -869,9 +874,9 @@
    },
    "pos52": 49.0
   },
-  "688111.SS": {
-   "code": "688111.SS",
-   "name": "金山办公",
+  "2899.HK": {
+   "code": "2899.HK",
+   "name": "紫金矿业",
    "tier": "1A",
    "listable": true,
    "when": "下一交易日 08-17 开盘可进（今日休市）",
@@ -881,17 +886,17 @@
     {
      "ok": true,
      "label": "利润率扩张(盈利增速>营收增速)",
-     "detail": "盈利+442% vs 营收+24%"
+     "detail": "盈利+96% vs 营收+25%"
     },
     {
      "ok": true,
      "label": "成长强度(盈利增速≥20%)",
-     "detail": "+442.5%"
+     "detail": "+95.7%"
     },
     {
      "ok": true,
      "label": "林奇PEG≤1.5",
-     "detail": "0.07"
+     "detail": "0.14"
     }
    ],
    "pass_n": 3,
@@ -899,22 +904,22 @@
    "fail_n": 0,
    "verdict": "书理支持",
    "rules_gate": "gate_pass",
-   "gpt": "reject",
+   "gpt": "未验证",
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
-    "pe_ttm": 32.79,
-    "roe": 26.88,
-    "net_margin": 58.15,
-    "rev_growth": 24.0,
-    "eps_growth": 442.5,
-    "target_mean": 337.64,
-    "to_target_pct": 31.7,
-    "rating": "buy",
-    "analysts": 13.0,
-    "next_earnings": null
+    "pe_ttm": 13.18,
+    "roe": 33.78,
+    "net_margin": 16.73,
+    "rev_growth": 24.8,
+    "eps_growth": 95.7,
+    "target_mean": 51.84,
+    "to_target_pct": 49.0,
+    "rating": "strong_buy",
+    "analysts": 15.0,
+    "next_earnings": "2026-08-21"
    },
-   "pos52": 54.0
+   "pos52": null
   },
   "1788.HK": {
    "code": "1788.HK",
@@ -950,7 +955,7 @@
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
-    "pe_ttm": 20.39,
+    "pe_ttm": 20.46,
     "roe": 8.69,
     "net_margin": 33.96,
     "rev_growth": 111.7,
@@ -962,105 +967,6 @@
     "next_earnings": null
    },
    "pos52": 58.0
-  },
-  "002558.SZ": {
-   "code": "002558.SZ",
-   "name": "巨人网络",
-   "tier": "1A",
-   "listable": true,
-   "when": "回踩 28.14 买 · 5个交易日内有效",
-   "school": "价值派",
-   "school_why": "深度折价或低估值 → 格雷厄姆/卡拉曼式左侧仓",
-   "checks": [
-    {
-     "ok": true,
-     "label": "安全边际(距目标价≥20%)",
-     "detail": "+60.7%"
-    },
-    {
-     "ok": true,
-     "label": "盈利质量(ROE≥15%且净利率≥10%)",
-     "detail": "ROE18%·净利37%"
-    },
-    {
-     "ok": false,
-     "label": "估值(PE≤20)",
-     "detail": "21.9"
-    },
-    {
-     "ok": true,
-     "label": "自由现金流为正",
-     "detail": "3.7B"
-    }
-   ],
-   "pass_n": 3,
-   "miss_n": 0,
-   "fail_n": 1,
-   "verdict": "证据不足",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "anomaly_frozen": false,
-   "anomaly_note": "",
-   "fund": {
-    "pe_ttm": 21.85,
-    "roe": 17.57,
-    "net_margin": 37.39,
-    "rev_growth": 221.7,
-    "eps_growth": 200.0,
-    "target_mean": 46.35,
-    "to_target_pct": 60.7,
-    "rating": "none",
-    "analysts": 5.0,
-    "next_earnings": null
-   },
-   "pos52": 31.0
-  },
-  "1818.HK": {
-   "code": "1818.HK",
-   "name": "招金矿业",
-   "tier": "1A",
-   "listable": true,
-   "when": "回踩 21.76~22.63 买 · 5个交易日内有效",
-   "school": "成长派",
-   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
-   "checks": [
-    {
-     "ok": true,
-     "label": "利润率扩张(盈利增速>营收增速)",
-     "detail": "盈利+88% vs 营收+47%"
-    },
-    {
-     "ok": true,
-     "label": "成长强度(盈利增速≥20%)",
-     "detail": "+88.2%"
-    },
-    {
-     "ok": true,
-     "label": "林奇PEG≤1.5",
-     "detail": "0.23"
-    }
-   ],
-   "pass_n": 3,
-   "miss_n": 0,
-   "fail_n": 0,
-   "verdict": "书理支持",
-   "rules_gate": "gate_pass",
-   "gpt": "未验证",
-   "anomaly_frozen": false,
-   "anomaly_note": "",
-   "fund": {
-    "pe_ttm": 20.25,
-    "roe": 18.24,
-    "net_margin": 21.28,
-    "rev_growth": 46.7,
-    "eps_growth": 88.2,
-    "target_mean": 34.45,
-    "to_target_pct": 51.9,
-    "rating": "none",
-    "analysts": 9.0,
-    "next_earnings": "2026-08-24"
-   },
-   "pos52": null
   },
   "300604.SZ": {
    "code": "300604.SZ",
@@ -1109,12 +1015,59 @@
    },
    "pos52": 60.0
   },
-  "002322.SZ": {
-   "code": "002322.SZ",
-   "name": "理工能科",
+  "1818.HK": {
+   "code": "1818.HK",
+   "name": "招金矿业",
    "tier": "1A",
    "listable": true,
-   "when": "回踩 10.63~11.06 买 · 5个交易日内有效",
+   "when": "回踩 21.76~22.63 买 · 5个交易日内有效",
+   "school": "成长派",
+   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
+   "checks": [
+    {
+     "ok": true,
+     "label": "利润率扩张(盈利增速>营收增速)",
+     "detail": "盈利+88% vs 营收+47%"
+    },
+    {
+     "ok": true,
+     "label": "成长强度(盈利增速≥20%)",
+     "detail": "+88.2%"
+    },
+    {
+     "ok": true,
+     "label": "林奇PEG≤1.5",
+     "detail": "0.23"
+    }
+   ],
+   "pass_n": 3,
+   "miss_n": 0,
+   "fail_n": 0,
+   "verdict": "书理支持",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": 20.25,
+    "roe": 18.24,
+    "net_margin": 21.28,
+    "rev_growth": 46.7,
+    "eps_growth": 88.2,
+    "target_mean": 34.45,
+    "to_target_pct": 51.9,
+    "rating": "none",
+    "analysts": 9.0,
+    "next_earnings": "2026-08-24"
+   },
+   "pos52": null
+  },
+  "300311.SZ": {
+   "code": "300311.SZ",
+   "name": "ST任子行",
+   "tier": "1A",
+   "listable": true,
+   "when": "回踩 5.69~5.92 买 · 5个交易日内有效",
    "school": "未定",
    "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
    "checks": [],
@@ -1127,18 +1080,18 @@
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
-    "pe_ttm": 20.39,
-    "roe": 7.11,
-    "net_margin": 19.14,
-    "rev_growth": -9.0,
-    "eps_growth": -22.2,
+    "pe_ttm": 125.2,
+    "roe": 3.79,
+    "net_margin": 7.14,
+    "rev_growth": 2.0,
+    "eps_growth": null,
     "target_mean": null,
     "to_target_pct": null,
     "rating": "none",
     "analysts": null,
     "next_earnings": null
    },
-   "pos52": null
+   "pos52": 65.0
   },
   "1357.HK": {
    "code": "1357.HK",
@@ -1223,53 +1176,6 @@
    },
    "pos52": 81.0
   },
-  "6693.HK": {
-   "code": "6693.HK",
-   "name": "赤峰黄金",
-   "tier": "1A",
-   "listable": true,
-   "when": "回踩 33.84~35.19 买 · 5个交易日内有效",
-   "school": "成长派",
-   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
-   "checks": [
-    {
-     "ok": true,
-     "label": "利润率扩张(盈利增速>营收增速)",
-     "detail": "盈利+79% vs 营收+48%"
-    },
-    {
-     "ok": true,
-     "label": "成长强度(盈利增速≥20%)",
-     "detail": "+79.3%"
-    },
-    {
-     "ok": true,
-     "label": "林奇PEG≤1.5",
-     "detail": "0.21"
-    }
-   ],
-   "pass_n": 3,
-   "miss_n": 0,
-   "fail_n": 0,
-   "verdict": "书理支持",
-   "rules_gate": "gate_pass",
-   "gpt": "未验证",
-   "anomaly_frozen": false,
-   "anomaly_note": "",
-   "fund": {
-    "pe_ttm": 16.59,
-    "roe": 25.75,
-    "net_margin": 26.02,
-    "rev_growth": 47.7,
-    "eps_growth": 79.3,
-    "target_mean": 49.24,
-    "to_target_pct": 33.1,
-    "rating": "none",
-    "analysts": 1.0,
-    "next_earnings": null
-   },
-   "pos52": null
-  },
   "000100.SZ": {
    "code": "000100.SZ",
    "name": "TCL科技",
@@ -1317,36 +1223,52 @@
    },
    "pos52": 50.0
   },
-  "600162.SS": {
-   "code": "600162.SS",
-   "name": "香江控股",
+  "6693.HK": {
+   "code": "6693.HK",
+   "name": "赤峰黄金",
    "tier": "1A",
    "listable": true,
-   "when": "回踩 3.33~3.46 买 · 5个交易日内有效",
-   "school": "未定",
-   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
-   "checks": [],
-   "pass_n": 0,
+   "when": "回踩 33.84~35.19 买 · 5个交易日内有效",
+   "school": "成长派",
+   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
+   "checks": [
+    {
+     "ok": true,
+     "label": "利润率扩张(盈利增速>营收增速)",
+     "detail": "盈利+79% vs 营收+48%"
+    },
+    {
+     "ok": true,
+     "label": "成长强度(盈利增速≥20%)",
+     "detail": "+79.3%"
+    },
+    {
+     "ok": true,
+     "label": "林奇PEG≤1.5",
+     "detail": "0.21"
+    }
+   ],
+   "pass_n": 3,
    "miss_n": 0,
    "fail_n": 0,
-   "verdict": "证据不足",
+   "verdict": "书理支持",
    "rules_gate": "gate_pass",
    "gpt": "未验证",
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
-    "pe_ttm": null,
-    "roe": -4.12,
-    "net_margin": -6.58,
-    "rev_growth": -31.7,
-    "eps_growth": null,
-    "target_mean": null,
-    "to_target_pct": null,
+    "pe_ttm": 16.59,
+    "roe": 25.75,
+    "net_margin": 26.02,
+    "rev_growth": 47.7,
+    "eps_growth": 79.3,
+    "target_mean": 49.24,
+    "to_target_pct": 33.1,
     "rating": "none",
-    "analysts": null,
+    "analysts": 1.0,
     "next_earnings": null
    },
-   "pos52": 86.0
+   "pos52": null
   },
   "MSI": {
    "code": "MSI",
@@ -1379,84 +1301,6 @@
    },
    "pos52": null
   },
-  "000608.SZ": {
-   "code": "000608.SZ",
-   "name": "阳光股份",
-   "tier": "1A",
-   "listable": true,
-   "when": "回踩 6.71~6.98 买 · 5个交易日内有效",
-   "school": "未定",
-   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
-   "checks": [],
-   "pass_n": 0,
-   "miss_n": 0,
-   "fail_n": 0,
-   "verdict": "证据不足",
-   "rules_gate": "gate_pass",
-   "gpt": "未验证",
-   "anomaly_frozen": false,
-   "anomaly_note": "",
-   "fund": {
-    "pe_ttm": null,
-    "roe": -8.43,
-    "net_margin": -68.18,
-    "rev_growth": -14.9,
-    "eps_growth": null,
-    "target_mean": null,
-    "to_target_pct": null,
-    "rating": "none",
-    "analysts": null,
-    "next_earnings": null
-   },
-   "pos52": null
-  },
-  "600188.SS": {
-   "code": "600188.SS",
-   "name": "兖矿能源",
-   "tier": "1A",
-   "listable": true,
-   "when": "回踩 20.72~21.55 买 · 5个交易日内有效",
-   "school": "成长派",
-   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
-   "checks": [
-    {
-     "ok": true,
-     "label": "利润率扩张(盈利增速>营收增速)",
-     "detail": "盈利+43% vs 营收+2%"
-    },
-    {
-     "ok": true,
-     "label": "成长强度(盈利增速≥20%)",
-     "detail": "+43.2%"
-    },
-    {
-     "ok": true,
-     "label": "林奇PEG≤1.5",
-     "detail": "0.52"
-    }
-   ],
-   "pass_n": 3,
-   "miss_n": 0,
-   "fail_n": 0,
-   "verdict": "书理支持",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "anomaly_frozen": false,
-   "anomaly_note": "",
-   "fund": {
-    "pe_ttm": 22.4,
-    "roe": 9.4,
-    "net_margin": 6.56,
-    "rev_growth": 1.8,
-    "eps_growth": 43.2,
-    "target_mean": 23.94,
-    "to_target_pct": 11.3,
-    "rating": "buy",
-    "analysts": 8.0,
-    "next_earnings": null
-   },
-   "pos52": 52.0
-  },
   "002141.SZ": {
    "code": "002141.SZ",
    "name": "贤丰控股",
@@ -1475,7 +1319,7 @@
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
-    "pe_ttm": 665.0,
+    "pe_ttm": 648.0,
     "roe": 0.0,
     "net_margin": 1.07,
     "rev_growth": -31.3,
@@ -1488,9 +1332,40 @@
    },
    "pos52": 79.0
   },
-  "SHW": {
-   "code": "SHW",
-   "name": "宣伟",
+  "600162.SS": {
+   "code": "600162.SS",
+   "name": "香江控股",
+   "tier": "1A",
+   "listable": true,
+   "when": "回踩 3.33~3.46 买 · 5个交易日内有效",
+   "school": "未定",
+   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
+   "checks": [],
+   "pass_n": 0,
+   "miss_n": 0,
+   "fail_n": 0,
+   "verdict": "证据不足",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": null,
+    "roe": -4.12,
+    "net_margin": -6.58,
+    "rev_growth": -31.7,
+    "eps_growth": null,
+    "target_mean": null,
+    "to_target_pct": null,
+    "rating": "none",
+    "analysts": null,
+    "next_earnings": null
+   },
+   "pos52": 86.0
+  },
+  "AXP": {
+   "code": "AXP",
+   "name": "美国运通",
    "tier": "1A",
    "listable": true,
    "when": "下一交易日 08-17 开盘可进（今日休市）",
@@ -1506,62 +1381,62 @@
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
-    "pe_ttm": 33.13,
-    "roe": 65.12,
-    "net_margin": 11.01,
-    "rev_growth": 7.5,
-    "eps_growth": 14.3,
-    "target_mean": 390.1,
-    "to_target_pct": 8.6,
+    "pe_ttm": 20.79,
+    "roe": 34.38,
+    "net_margin": 16.14,
+    "rev_growth": 12.8,
+    "eps_growth": 11.0,
+    "target_mean": 375.86,
+    "to_target_pct": 9.7,
     "rating": "buy",
-    "analysts": 21.0,
-    "next_earnings": "2026-10-27"
+    "analysts": 25.0,
+    "next_earnings": "2026-10-23"
    },
    "pos52": null
   },
-  "600744.SS": {
-   "code": "600744.SS",
-   "name": "华银电力",
+  "600489.SS": {
+   "code": "600489.SS",
+   "name": "中金黄金",
    "tier": "1A",
    "listable": true,
-   "when": "回踩 7.37 买 · 5个交易日内有效",
+   "when": "回踩 22.72~23.63 买 · 5个交易日内有效",
    "school": "成长派",
    "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
    "checks": [
     {
      "ok": true,
      "label": "利润率扩张(盈利增速>营收增速)",
-     "detail": "盈利+70% vs 营收-0%"
+     "detail": "盈利+133% vs 营收+52%"
     },
     {
      "ok": true,
      "label": "成长强度(盈利增速≥20%)",
-     "detail": "+70.0%"
+     "detail": "+133.3%"
     },
     {
-     "ok": false,
+     "ok": true,
      "label": "林奇PEG≤1.5",
-     "detail": "1.86"
+     "detail": "0.14"
     }
    ],
-   "pass_n": 2,
+   "pass_n": 3,
    "miss_n": 0,
-   "fail_n": 1,
-   "verdict": "证据不足",
+   "fail_n": 0,
+   "verdict": "书理支持",
    "rules_gate": "gate_pass",
    "gpt": "未验证",
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
-    "pe_ttm": 130.0,
-    "roe": 8.43,
-    "net_margin": 1.79,
-    "rev_growth": -0.1,
-    "eps_growth": 70.0,
-    "target_mean": null,
-    "to_target_pct": null,
-    "rating": "none",
-    "analysts": null,
+    "pe_ttm": 18.67,
+    "roe": 20.85,
+    "net_margin": 7.23,
+    "rev_growth": 52.0,
+    "eps_growth": 133.3,
+    "target_mean": 29.89,
+    "to_target_pct": 23.2,
+    "rating": "strong_buy",
+    "analysts": 2.0,
     "next_earnings": null
    },
    "pos52": 40.0
@@ -1722,119 +1597,52 @@
    },
    "pos52": null
   },
-  "GM": {
-   "code": "GM",
-   "name": "通用汽车",
+  "600744.SS": {
+   "code": "600744.SS",
+   "name": "华银电力",
    "tier": "1A",
    "listable": true,
-   "when": "下一交易日 08-17 开盘可进（今日休市）",
-   "school": "未定",
-   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
-   "checks": [],
-   "pass_n": 0,
-   "miss_n": 0,
-   "fail_n": 0,
-   "verdict": "证据不足",
-   "rules_gate": "gate_pass",
-   "gpt": "未验证",
-   "anomaly_frozen": false,
-   "anomaly_note": "",
-   "fund": {
-    "pe_ttm": 38.74,
-    "roe": 3.16,
-    "net_margin": 1.05,
-    "rev_growth": 1.9,
-    "eps_growth": -26.2,
-    "target_mean": 100.04,
-    "to_target_pct": 15.3,
-    "rating": "buy",
-    "analysts": 27.0,
-    "next_earnings": "2026-10-20"
-   },
-   "pos52": null
-  },
-  "600809.SS": {
-   "code": "600809.SS",
-   "name": "山西汾酒",
-   "tier": "1A",
-   "listable": true,
-   "when": "回踩 122.26 买 · 5个交易日内有效",
-   "school": "价值派",
-   "school_why": "深度折价或低估值 → 格雷厄姆/卡拉曼式左侧仓",
+   "when": "回踩 7.37 买 · 5个交易日内有效",
+   "school": "成长派",
+   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
    "checks": [
     {
      "ok": true,
-     "label": "安全边际(距目标价≥20%)",
-     "detail": "+44.8%"
+     "label": "利润率扩张(盈利增速>营收增速)",
+     "detail": "盈利+70% vs 营收-0%"
     },
     {
      "ok": true,
-     "label": "盈利质量(ROE≥15%且净利率≥10%)",
-     "detail": "ROE26%·净利30%"
+     "label": "成长强度(盈利增速≥20%)",
+     "detail": "+70.0%"
     },
     {
-     "ok": true,
-     "label": "估值(PE≤20)",
-     "detail": "13.7"
-    },
-    {
-     "ok": true,
-     "label": "自由现金流为正",
-     "detail": "9.1B"
+     "ok": false,
+     "label": "林奇PEG≤1.5",
+     "detail": "1.67"
     }
    ],
-   "pass_n": 4,
+   "pass_n": 2,
    "miss_n": 0,
-   "fail_n": 0,
-   "verdict": "书理支持",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "anomaly_frozen": false,
-   "anomaly_note": "",
-   "fund": {
-    "pe_ttm": 13.74,
-    "roe": 26.17,
-    "net_margin": 29.58,
-    "rev_growth": -9.7,
-    "eps_growth": -19.1,
-    "target_mean": 178.87,
-    "to_target_pct": 44.8,
-    "rating": "buy",
-    "analysts": 14.0,
-    "next_earnings": null
-   },
-   "pos52": 41.0
-  },
-  "WAB": {
-   "code": "WAB",
-   "name": "美国西屋制动",
-   "tier": "1A",
-   "listable": true,
-   "when": "下一交易日 08-17 开盘可进（今日休市）",
-   "school": "未定",
-   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
-   "checks": [],
-   "pass_n": 0,
-   "miss_n": 0,
-   "fail_n": 0,
+   "fail_n": 1,
    "verdict": "证据不足",
    "rules_gate": "gate_pass",
    "gpt": "未验证",
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
-    "pe_ttm": 40.3,
-    "roe": 11.55,
-    "net_margin": 10.59,
-    "rev_growth": 17.5,
-    "eps_growth": 18.9,
-    "target_mean": 326.67,
-    "to_target_pct": 9.2,
-    "rating": "strong_buy",
-    "analysts": 12.0,
-    "next_earnings": "2026-10-21"
+    "pe_ttm": 117.17,
+    "roe": 8.43,
+    "net_margin": 1.79,
+    "rev_growth": -0.1,
+    "eps_growth": 70.0,
+    "target_mean": null,
+    "to_target_pct": null,
+    "rating": "none",
+    "analysts": null,
+    "next_earnings": null
    },
-   "pos52": null
+   "pos52": 40.0
   },
   "PH": {
    "code": "PH",
@@ -2043,58 +1851,6 @@
    },
    "pos52": null
   },
-  "600216.SS": {
-   "code": "600216.SS",
-   "name": "浙江医药",
-   "tier": "1A",
-   "listable": true,
-   "when": "回踩 12.34~12.83 买 · 5个交易日内有效",
-   "school": "价值派",
-   "school_why": "深度折价或低估值 → 格雷厄姆/卡拉曼式左侧仓",
-   "checks": [
-    {
-     "ok": true,
-     "label": "安全边际(距目标价≥20%)",
-     "detail": "+27.5%"
-    },
-    {
-     "ok": false,
-     "label": "盈利质量(ROE≥15%且净利率≥10%)",
-     "detail": "ROE6%·净利9%"
-    },
-    {
-     "ok": true,
-     "label": "估值(PE≤20)",
-     "detail": "17.1"
-    },
-    {
-     "ok": true,
-     "label": "自由现金流为正",
-     "detail": "1.1B"
-    }
-   ],
-   "pass_n": 3,
-   "miss_n": 0,
-   "fail_n": 1,
-   "verdict": "证据不足",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "anomaly_frozen": false,
-   "anomaly_note": "",
-   "fund": {
-    "pe_ttm": 17.09,
-    "roe": 5.6,
-    "net_margin": 8.52,
-    "rev_growth": -2.9,
-    "eps_growth": -30.2,
-    "target_mean": 17.0,
-    "to_target_pct": 27.5,
-    "rating": "none",
-    "analysts": 2.0,
-    "next_earnings": null
-   },
-   "pos52": 35.0
-  },
   "513650.SS": {
    "code": "513650.SS",
    "name": "标普ETF(南方标普500)",
@@ -2192,7 +1948,7 @@
    "fail_n": 0,
    "verdict": "书理支持",
    "rules_gate": "reject",
-   "gpt": "reject",
+   "gpt": "未验证",
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
@@ -2240,6 +1996,58 @@
    },
    "pos52": 100.0
   },
+  "600809.SS": {
+   "code": "600809.SS",
+   "name": "山西汾酒",
+   "tier": "0A",
+   "listable": null,
+   "when": "回踩 122.26 买 · 5个交易日内有效",
+   "school": "价值派",
+   "school_why": "深度折价或低估值 → 格雷厄姆/卡拉曼式左侧仓",
+   "checks": [
+    {
+     "ok": true,
+     "label": "安全边际(距目标价≥20%)",
+     "detail": "+44.8%"
+    },
+    {
+     "ok": true,
+     "label": "盈利质量(ROE≥15%且净利率≥10%)",
+     "detail": "ROE26%·净利30%"
+    },
+    {
+     "ok": true,
+     "label": "估值(PE≤20)",
+     "detail": "13.7"
+    },
+    {
+     "ok": true,
+     "label": "自由现金流为正",
+     "detail": "9.1B"
+    }
+   ],
+   "pass_n": 4,
+   "miss_n": 0,
+   "fail_n": 0,
+   "verdict": "书理支持",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "anomaly_frozen": false,
+   "anomaly_note": "",
+   "fund": {
+    "pe_ttm": 13.74,
+    "roe": 26.17,
+    "net_margin": 29.58,
+    "rev_growth": -9.7,
+    "eps_growth": -19.1,
+    "target_mean": 178.87,
+    "to_target_pct": 44.8,
+    "rating": "buy",
+    "analysts": 14.0,
+    "next_earnings": null
+   },
+   "pos52": 41.0
+  },
   "PFE": {
    "code": "PFE",
    "name": "辉瑞",
@@ -2254,7 +2062,7 @@
    "fail_n": 0,
    "verdict": "证据不足",
    "rules_gate": "reject",
-   "gpt": "reject",
+   "gpt": "未验证",
    "anomaly_frozen": false,
    "anomaly_note": "",
    "fund": {
@@ -2335,17 +2143,17 @@
   }
  },
  "stats": {
-  "candidates": 57,
+  "candidates": 52,
   "by_school": {
-   "价值派": 11,
-   "成长派": 18,
-   "未定": 26,
+   "价值派": 10,
+   "成长派": 17,
+   "未定": 23,
    "趋势派": 2
   },
   "by_verdict": {
-   "书理不支持": 5,
-   "书理支持": 18,
-   "证据不足": 34
+   "书理不支持": 4,
+   "证据不足": 31,
+   "书理支持": 17
   }
  }
 }

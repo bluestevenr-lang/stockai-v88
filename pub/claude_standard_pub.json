@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-15 22:49（北京时间）",
- "generated_at": "2026-08-15 22:49（北京时间）",
+ "asof": "2026-08-16 05:38（北京时间）",
+ "generated_at": "2026-08-16 05:38（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -39,16 +39,6 @@
   "300113.SZ": {
    "code": "300113.SZ",
    "name": "顺网科技",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "000039.SZ": {
-   "code": "000039.SZ",
-   "name": "中集集团",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -126,6 +116,16 @@
    "downgrade": "",
    "auto": true
   },
+  "688083.SS": {
+   "code": "688083.SS",
+   "name": "中望软件",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "MCD": {
    "code": "MCD",
    "name": "麦当劳",
@@ -156,9 +156,9 @@
    "downgrade": "",
    "auto": true
   },
-  "300782.SZ": {
-   "code": "300782.SZ",
-   "name": "卓胜微",
+  "603179.SS": {
+   "code": "603179.SS",
+   "name": "新泉股份",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -166,11 +166,11 @@
    "downgrade": "",
    "auto": true
   },
-  "PG": {
-   "code": "PG",
-   "name": "宝洁",
+  "300782.SZ": {
+   "code": "300782.SZ",
+   "name": "卓胜微",
    "side": "打折",
-   "action": "🕐还不够便宜·先看着",
+   "action": "🟢跌得很深·可分批买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -186,9 +186,9 @@
    "downgrade": "",
    "auto": true
   },
-  "AZO": {
-   "code": "AZO",
-   "name": "AutoZone",
+  "603392.SS": {
+   "code": "603392.SS",
+   "name": "万泰生物",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -196,9 +196,9 @@
    "downgrade": "",
    "auto": true
   },
-  "PDD": {
-   "code": "PDD",
-   "name": "拼多多",
+  "002756.SZ": {
+   "code": "002756.SZ",
+   "name": "永兴材料",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -259,6 +259,16 @@
   "LOW": {
    "code": "LOW",
    "name": "劳氏",
+   "side": "打折",
+   "action": "🟢打折到位·可开始买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "3692.HK": {
+   "code": "3692.HK",
+   "name": "翰森制药",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
    "rules": [],
@@ -331,7 +341,7 @@
   }
  },
  "stats": {
-  "n_pass": 356,
+  "n_pass": 352,
   "n_reject": 83,
   "by_rule": {
    "CS9": 0,
