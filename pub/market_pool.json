@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-15 11:49（北京时间）",
+ "generated_at": "2026-08-15 21:30（北京时间）",
  "version": "pool-L1.3-natural",
  "note": "全市场L1双通道粗筛(强势=涨≥2%+量比≥1.5;蓄势=平量平价+额≥1亿防漏突破前缩量);quote级零AI;容量帽A300/港100/美100待P1限流实测后调;3A门槛不因扩池而动",
  "markets": {
@@ -12162,6 +12162,18 @@
    "market": "A股"
   },
   {
+   "code": "513650.SS",
+   "name": "标普ETF(南方标普500)",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "A股"
+  },
+  {
    "code": "300760.SZ",
    "name": "迈瑞医疗",
    "chg": -1.9,
@@ -12187,12 +12199,13 @@
    "market": "A股"
   },
   {
-   "code": "513650.SS",
-   "name": "标普ETF(南方标普500)",
-   "chg": null,
-   "vr": null,
-   "amt": null,
-   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "code": "600809.SS",
+   "name": "山西汾酒",
+   "chg": -2.39,
+   "amt": 859157981.0,
+   "vr": 0.67,
+   "chg60": -1.03,
+   "turn": 0.57,
    "channel": "强制入池(持仓/自选)",
    "score": 0.5,
    "forced": true,
@@ -12201,18 +12214,6 @@
   {
    "code": "513500.SS",
    "name": "标普500",
-   "chg": null,
-   "vr": null,
-   "amt": null,
-   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
-   "channel": "强制入池(持仓/自选)",
-   "score": 0.5,
-   "forced": true,
-   "market": "A股"
-  },
-  {
-   "code": "159632.SZ",
-   "name": "纳斯达克",
    "chg": null,
    "vr": null,
    "amt": null,
@@ -12236,13 +12237,12 @@
    "market": "A股"
   },
   {
-   "code": "600809.SS",
-   "name": "山西汾酒",
-   "chg": -2.39,
-   "amt": 859157981.0,
-   "vr": 0.67,
-   "chg60": -1.03,
-   "turn": 0.57,
+   "code": "159632.SZ",
+   "name": "纳斯达克",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
    "channel": "强制入池(持仓/自选)",
    "score": 0.5,
    "forced": true,
@@ -24418,30 +24418,6 @@
    "market": "美股"
   },
   {
-   "code": "GOOG",
-   "name": "谷歌-C",
-   "chg": null,
-   "vr": null,
-   "amt": null,
-   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
-   "channel": "强制入池(持仓/自选)",
-   "score": 0.5,
-   "forced": true,
-   "market": "美股"
-  },
-  {
-   "code": "PFE",
-   "name": "辉瑞",
-   "chg": null,
-   "vr": null,
-   "amt": null,
-   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
-   "channel": "强制入池(持仓/自选)",
-   "score": 0.5,
-   "forced": true,
-   "market": "美股"
-  },
-  {
    "code": "PM",
    "name": "菲利普莫里斯国际",
    "chg": 0.78,
@@ -24455,44 +24431,20 @@
    "market": "美股"
   },
   {
+   "code": "GOOG",
+   "name": "谷歌-C",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "美股"
+  },
+  {
    "code": "MRK",
    "name": "默沙东",
-   "chg": null,
-   "vr": null,
-   "amt": null,
-   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
-   "channel": "强制入池(持仓/自选)",
-   "score": 0.5,
-   "forced": true,
-   "market": "美股"
-  },
-  {
-   "code": "SO",
-   "name": "美国南方公司",
-   "chg": null,
-   "vr": null,
-   "amt": null,
-   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
-   "channel": "强制入池(持仓/自选)",
-   "score": 0.5,
-   "forced": true,
-   "market": "美股"
-  },
-  {
-   "code": "AAPL",
-   "name": "苹果",
-   "chg": null,
-   "vr": null,
-   "amt": null,
-   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
-   "channel": "强制入池(持仓/自选)",
-   "score": 0.5,
-   "forced": true,
-   "market": "美股"
-  },
-  {
-   "code": "NVDA",
-   "name": "英伟达",
    "chg": null,
    "vr": null,
    "amt": null,
@@ -24516,8 +24468,8 @@
    "market": "美股"
   },
   {
-   "code": "QQQM",
-   "name": "Invesco纳指",
+   "code": "AAPL",
+   "name": "苹果",
    "chg": null,
    "vr": null,
    "amt": null,
@@ -24530,6 +24482,54 @@
   {
    "code": "VOO",
    "name": "Vanguard标普500",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "美股"
+  },
+  {
+   "code": "QQQM",
+   "name": "Invesco纳指",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "美股"
+  },
+  {
+   "code": "PFE",
+   "name": "辉瑞",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "美股"
+  },
+  {
+   "code": "SO",
+   "name": "美国南方公司",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "美股"
+  },
+  {
+   "code": "NVDA",
+   "name": "英伟达",
    "chg": null,
    "vr": null,
    "amt": null,
@@ -25434,7 +25434,7 @@
    "amt": 174795664.0,
    "vr": 0.68,
    "chg60": 40.45,
-   "turn": 2.56,
+   "turn": 2.64,
    "channel": "趋势",
    "score": 0.4461,
    "market": "美股"

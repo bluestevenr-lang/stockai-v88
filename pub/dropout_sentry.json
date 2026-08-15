@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-15 12:01（北京时间）",
+ "generated_at": "2026-08-15 23:00（北京时间）",
  "version": "dropout-v1",
  "rule": "区分『评估后不合格』(正常) 与 『从未被评估』(bug)。用户定纲：评分不够是正常；**压根不在池里就是问题**。",
  "boundary": "只对关键桶缺输入告警，不对分数低告警——噪音大的哨兵=死哨兵（fact_gate 290条误报的教训）。",
@@ -15,6 +15,16 @@
     "timing"
    ],
    "why": "标为 not_evaluated —— **不是不够好，是没被算过**"
+  },
+  {
+   "code": "ARXS",
+   "name": "ARXS",
+   "tier": "0A",
+   "not_evaluated": false,
+   "missing_buckets": [
+    "timing"
+   ],
+   "why": "关键桶缺输入：timing → 该桶落回默认值，而默认值恰好在门槛不利的一侧"
   }
  ],
  "missing_from_grade": [
@@ -26,15 +36,29 @@
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   },
   {
-   "code": "600809.SS",
-   "name": "山西汾酒",
+   "code": "JNJ",
+   "name": "强生",
    "src": "持仓",
    "in_pool": true,
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   },
   {
-   "code": "MS",
-   "name": "摩根士丹利",
+   "code": "MRK",
+   "name": "默沙东",
+   "src": "持仓",
+   "in_pool": true,
+   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
+  },
+  {
+   "code": "MU",
+   "name": "美光科技",
+   "src": "持仓",
+   "in_pool": true,
+   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
+  },
+  {
+   "code": "NVDA",
+   "name": "英伟达",
    "src": "持仓",
    "in_pool": true,
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
@@ -45,99 +69,23 @@
    "src": "持仓",
    "in_pool": true,
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
-  },
-  {
-   "code": "WFC",
-   "name": "富国银行",
-   "src": "自选",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
-  },
-  {
-   "code": "9987.HK",
-   "name": "百胜中国",
-   "src": "自选",
-   "in_pool": false,
-   "why": "**既不在池也不在评级段** → 强制入池未生效"
-  },
-  {
-   "code": "688432.SS",
-   "name": "有研硅",
-   "src": "自选",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
-  },
-  {
-   "code": "600519.SS",
-   "name": "贵州茅台",
-   "src": "自选",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   }
  ],
  "quiet_long": [
   {
-   "code": "603580.SS",
-   "name": "艾艾精工",
+   "code": "300996.SZ",
+   "name": "普联软件",
    "tier": "0A",
    "src": "自选"
   },
   {
-   "code": "KO",
-   "name": "可口可乐",
+   "code": "ARXS",
+   "name": "ARXS",
    "tier": "0A",
    "src": "自选"
   },
   {
-   "code": "601225.SS",
-   "name": "陕西煤业",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "002550.SZ",
-   "name": "千红制药",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "3690.HK",
-   "name": "美团-W",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "PFE",
-   "name": "辉瑞",
-   "tier": "0A",
-   "src": "持仓"
-  },
-  {
-   "code": "QQQM",
-   "name": "纳指100ETF",
-   "tier": "0A",
-   "src": "持仓"
-  },
-  {
-   "code": "MRK",
-   "name": "默沙东",
-   "tier": "0A",
-   "src": "持仓"
-  },
-  {
-   "code": "2388.HK",
-   "name": "中银香港",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "V",
-   "name": "维萨",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "600941.SS",
+   "code": "600941.SH",
    "name": "中国移动",
    "tier": "0A",
    "src": "持仓"
@@ -149,120 +97,102 @@
    "src": "自选"
   },
   {
-   "code": "1114.HK",
-   "name": "华晨中国",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "603893.SS",
-   "name": "瑞芯微",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "510300.SS",
-   "name": "沪深300ETF",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "SLN",
-   "name": "Silence Therapeutics plc ADR",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "688548.SS",
-   "name": "广钢气体",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "603065.SS",
-   "name": "宿迁联盛",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "9988.HK",
-   "name": "阿里巴巴-SW",
+   "code": "513650.SS",
+   "name": "标普ETF(南方标普500)",
    "tier": "0A",
    "src": "持仓"
-  },
-  {
-   "code": "002739.SZ",
-   "name": "儒意电影",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "688180.SS",
-   "name": "君实生物",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "603882.SS",
-   "name": "金域医学",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "002432.SZ",
-   "name": "九安医疗",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "002674.SZ",
-   "name": "兴业科技",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "300311.SZ",
-   "name": "ST任子行",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "TXG",
-   "name": "10x Genomics Inc-A",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "002558.SZ",
-   "name": "巨人网络",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "688111.SS",
-   "name": "金山办公",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "510500.SS",
-   "name": "中证500ETF",
-   "tier": "0A",
-   "src": "自选"
   },
   {
    "code": "300631.SZ",
    "name": "久吾高科",
    "tier": "0A",
    "src": "自选"
+  },
+  {
+   "code": "6699.HK",
+   "name": "时代天使",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "TSLA",
+   "name": "特斯拉",
+   "tier": "0A",
+   "src": "持仓"
+  },
+  {
+   "code": "BBVA",
+   "name": "BBVA",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "MS",
+   "name": "摩根士丹利",
+   "tier": "0A",
+   "src": "持仓"
+  },
+  {
+   "code": "513500.SS",
+   "name": "标普500",
+   "tier": "0A",
+   "src": "持仓"
+  },
+  {
+   "code": "600588.SS",
+   "name": "用友网络",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "PFE",
+   "name": "辉瑞",
+   "tier": "0A",
+   "src": "持仓"
+  },
+  {
+   "code": "300951.SZ",
+   "name": "博硕科技",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "VOO",
+   "name": "Vanguard标普500",
+   "tier": "0A",
+   "src": "持仓"
+  },
+  {
+   "code": "300534.SZ",
+   "name": "陇神戎发",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "QQQM",
+   "name": "纳指100ETF",
+   "tier": "0A",
+   "src": "持仓"
+  },
+  {
+   "code": "002550.SZ",
+   "name": "千红制药",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "300862.SZ",
+   "name": "蓝盾光电",
+   "tier": "0A",
+   "src": "自选"
   }
  ],
  "stats": {
-  "graded": 372,
+  "graded": 394,
   "pool": 2241,
-  "must": 139,
-  "silent_dropout": 1,
-  "missing_from_grade": 8,
-  "quiet_long": 89
+  "must": 52,
+  "silent_dropout": 2,
+  "missing_from_grade": 6,
+  "quiet_long": 19
  }
 }
