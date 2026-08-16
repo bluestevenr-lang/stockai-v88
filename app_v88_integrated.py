@@ -1304,8 +1304,8 @@ def _v88_buy_gate9(_d, _repo):
             return False, f"Kimi复核{_kimi9 or '缺失'}·双剑缺一剑"
         if not _review_fresh9(_kimi_ts9):
             return False, "Kimi复核已超过24小时或时间缺失"
-        _tier9 = str(_d.get("tier") or _d.get("tier_label") or "")
-        if _tier9 == "3A" and _book9 != "通过":
+        _tier9 = str(_d.get("tier") or _d.get("tier_label") or _d.get("grade") or "")
+        if _tier9.startswith("3A") and _book9 != "通过":
             return False, "3A须三方会谈·经典书理未通过"
     except Exception:
         return False, "统一复核闸不可用"
