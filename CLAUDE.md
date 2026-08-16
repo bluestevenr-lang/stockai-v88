@@ -90,7 +90,11 @@
 
 ## 三方会谈（2026-08-16 恢复·Kimi 接替 Claude 席位）
 - **3A 必须三方会谈**：GPT + Kimi + 经典书理 全通过才可执行/推送。
-- **其余关键推荐必须双剑合璧**：GPT + Kimi 双通过；任一方否决即拦截。
+- **2A 及以上必须共同认可（22:32 用户定纲）**：GPT 和 Kimi 双双明确「通过」
+  才算数——「不否定」「不可用」一律不算认可。
+- **其他层级主动精选**：允许「不否定」，但 Kimi/GPT 每方主动「通过」的精选票
+  最多 2 只（Kimi 优先从 GPT 未否决的票里挑），宁缺毋滥；禁止一排不否定或
+  各推一堆各自为战；分歧以 ⚔️ 逐只显式点名。
 - Kimi 裁决落盘 `data/kimi_verify.json`（verdict + book_verdict + ts），
   由 Mac 上 Kimi 定时任务产出：交易日 19:52 评审、周日 20:47 周报。
 - 读取端：`recommendation_gate.kimi_review_for()`；推送闸 `assess_value/assess_trend`
