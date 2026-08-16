@@ -1,7 +1,7 @@
 {
- "generated_at": "2026-08-16 21:47（北京时间）",
+ "generated_at": "2026-08-17 05:38（北京时间）",
  "note": "⚾击球区雷达(2026-07-27礼来案定纲):优质白马(可得历史年化≥8%质量闸)跌进历史便宜区→主动喊进,不等技术右侧;概率=该股自身10年回撤回测(n次同级→6月胜率/中位),非拍脑袋;分级:👀-15%关注/⚾-20%击球分批/🔨-28%重锤;台账kind=value_zone六月窗核算;主动推送另要求至少5年历史,不足者保留研究而不冒充长期统计",
- "studied": 177,
+ "studied": 185,
  "rows": [
   {
    "code": "MCD",
@@ -44,6 +44,7 @@
    "win_rate_lower95": 61.0,
    "gpt_verdict": "不可用",
    "kimi_verdict": "不可用",
+   "book_verdict": "不可用",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -87,7 +88,8 @@
    "win_rate": 90.0,
    "win_rate_lower95": 59.6,
    "gpt_verdict": "通过",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "不否定",
+   "book_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -132,7 +134,8 @@
    "win_rate": 90.0,
    "win_rate_lower95": 59.6,
    "gpt_verdict": "不否定",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "不否定",
+   "book_verdict": "否决",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -174,6 +177,7 @@
    "win_rate_lower95": 60.8,
    "gpt_verdict": "通过",
    "kimi_verdict": "通过",
+   "book_verdict": "通过",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -219,7 +223,8 @@
    "win_rate": 83.0,
    "win_rate_lower95": 43.6,
    "gpt_verdict": "不否定",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "不否定",
+   "book_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -249,18 +254,114 @@
    "verdict": "进",
    "turning_bottom": false,
    "rules_gate": "gate_pass",
-   "gpt": "pass",
+   "gpt": "未验证",
    "track": false,
    "display_eligible": true,
-   "push_eligible": true,
-   "quality_status": "可推送",
-   "quality_reasons": [],
+   "push_eligible": false,
+   "quality_status": "研究候选",
+   "quality_reasons": [
+    "GPT未完成当日正向复核",
+    "Kimi未完成当日正向复核（双剑合璧缺一剑）"
+   ],
    "canonical_name": "MercadoLibre",
    "sample_n": 17,
    "win_rate": 82.0,
    "win_rate_lower95": 59.0,
-   "gpt_verdict": "通过",
-   "kimi_verdict": "通过",
+   "gpt_verdict": "不否定",
+   "kimi_verdict": "不否定",
+   "book_verdict": "通过",
+   "probability_label": "该股历史条件频率（非保证）"
+  },
+  {
+   "code": "603392.SS",
+   "name": "万泰生物",
+   "last": 30.1,
+   "dd_pct": -64.1,
+   "pos52": 10.6,
+   "cagr10y": 37.7,
+   "history_years": 6.1,
+   "low52": 26.27,
+   "low_all": 4.34,
+   "to_low52_pct": 14.6,
+   "to_lowall_pct": 593.7,
+   "at_52low": false,
+   "at_all_low": false,
+   "level": "🟢跌得很深·可分批买",
+   "level_note": "历史级打折——分批买,越跌越买(公司质量已过关)",
+   "backtest": {
+    "n": 4,
+    "wins": 3,
+    "win_pct": 75,
+    "median": 19.6,
+    "worst": -19.1
+   },
+   "bt_line": "该股历史4次同级回撤→6月后3涨1跌·中位+19.6%·最差-19.1%",
+   "verdict": "进",
+   "turning_bottom": false,
+   "rules_gate": "未覆盖",
+   "gpt": "未验证",
+   "track": false,
+   "display_eligible": false,
+   "push_eligible": false,
+   "quality_status": "观察/拦截",
+   "quality_reasons": [
+    "历史样本仅4次<5"
+   ],
+   "canonical_name": "万泰生物",
+   "sample_n": 4,
+   "win_rate": 75.0,
+   "win_rate_lower95": 30.1,
+   "gpt_verdict": "不可用",
+   "kimi_verdict": "不否定",
+   "book_verdict": "不否定",
+   "probability_label": "该股历史条件频率（非保证）"
+  },
+  {
+   "code": "002756.SZ",
+   "name": "永兴材料",
+   "last": 48.33,
+   "dd_pct": -45.0,
+   "pos52": 27.9,
+   "cagr10y": 14.9,
+   "history_years": 9.6,
+   "low52": 33.07,
+   "low_all": 6.67,
+   "to_low52_pct": 46.1,
+   "to_lowall_pct": 624.3,
+   "at_52low": false,
+   "at_all_low": false,
+   "level": "🟢跌得很深·可分批买",
+   "level_note": "历史级打折——分批买,越跌越买(公司质量已过关)",
+   "backtest": {
+    "n": 8,
+    "wins": 6,
+    "win_pct": 75,
+    "median": 20.3,
+    "worst": -35.6
+   },
+   "bt_line": "该股历史8次同级回撤→6月后6涨2跌·中位+20.3%·最差-35.6%",
+   "verdict": "进",
+   "turning_bottom": false,
+   "rules_gate": "未覆盖",
+   "gpt": "未验证",
+   "track": false,
+   "display_eligible": true,
+   "push_eligible": false,
+   "quality_status": "研究候选",
+   "quality_reasons": [
+    "胜率95%下限仅41%<50%",
+    "历史最差-35.6%",
+    "规则闸未通过",
+    "GPT未完成当日正向复核",
+    "Kimi未完成当日正向复核（双剑合璧缺一剑）"
+   ],
+   "canonical_name": "永兴材料",
+   "sample_n": 8,
+   "win_rate": 75.0,
+   "win_rate_lower95": 40.9,
+   "gpt_verdict": "不可用",
+   "kimi_verdict": "不否定",
+   "book_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -305,7 +406,8 @@
    "win_rate": 75.0,
    "win_rate_lower95": 40.9,
    "gpt_verdict": "不否定",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "不否定",
+   "book_verdict": "通过",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -350,7 +452,8 @@
    "win_rate": 75.0,
    "win_rate_lower95": 40.9,
    "gpt_verdict": "不否定",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "不否定",
+   "book_verdict": "通过",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -380,21 +483,21 @@
    "verdict": "进",
    "turning_bottom": false,
    "rules_gate": "gate_pass",
-   "gpt": "未验证",
+   "gpt": "reject",
    "track": false,
-   "display_eligible": true,
+   "display_eligible": false,
    "push_eligible": false,
-   "quality_status": "研究候选",
+   "quality_status": "观察/拦截",
    "quality_reasons": [
-    "GPT未完成当日正向复核",
-    "Kimi未完成当日正向复核（双剑合璧缺一剑）"
+    "GPT复核否决"
    ],
    "canonical_name": "中远海能",
    "sample_n": 16,
    "win_rate": 75.0,
    "win_rate_lower95": 50.5,
-   "gpt_verdict": "不否定",
-   "kimi_verdict": "不可用",
+   "gpt_verdict": "否决",
+   "kimi_verdict": "不否定",
+   "book_verdict": "通过",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -438,7 +541,8 @@
    "win_rate": 75.0,
    "win_rate_lower95": 30.1,
    "gpt_verdict": "不否定",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "不否定",
+   "book_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -481,7 +585,8 @@
    "win_rate": 75.0,
    "win_rate_lower95": 30.1,
    "gpt_verdict": "不否定",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "不否定",
+   "book_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -525,7 +630,8 @@
    "win_rate": 75.0,
    "win_rate_lower95": 40.9,
    "gpt_verdict": "通过",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "不否定",
+   "book_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -555,109 +661,22 @@
    "verdict": "进",
    "turning_bottom": false,
    "rules_gate": "gate_pass",
-   "gpt": "未验证",
+   "gpt": "reject",
    "track": false,
    "display_eligible": false,
    "push_eligible": false,
    "quality_status": "观察/拦截",
    "quality_reasons": [
+    "GPT复核否决",
     "历史样本仅4次<5"
    ],
    "canonical_name": "翰森制药",
    "sample_n": 4,
    "win_rate": 75.0,
    "win_rate_lower95": 30.1,
-   "gpt_verdict": "不否定",
-   "kimi_verdict": "不可用",
-   "probability_label": "该股历史条件频率（非保证）"
-  },
-  {
-   "code": "600031.SS",
-   "name": "三一重工",
-   "last": 18.75,
-   "dd_pct": -21.1,
-   "pos52": 24.6,
-   "cagr10y": 15.8,
-   "history_years": 9.6,
-   "low52": 17.12,
-   "low_all": 4.39,
-   "to_low52_pct": 9.5,
-   "to_lowall_pct": 327.2,
-   "at_52low": false,
-   "at_all_low": false,
-   "level": "🟢打折到位·可开始买",
-   "level_note": "好公司明显打折——开始分批买",
-   "backtest": {
-    "n": 4,
-    "wins": 3,
-    "win_pct": 75,
-    "median": 60.1,
-    "worst": -21.6
-   },
-   "bt_line": "该股历史4次同级回撤→6月后3涨1跌·中位+60.1%·最差-21.6%",
-   "verdict": "进",
-   "turning_bottom": false,
-   "rules_gate": "gate_pass",
-   "gpt": "未验证",
-   "track": false,
-   "display_eligible": false,
-   "push_eligible": false,
-   "quality_status": "观察/拦截",
-   "quality_reasons": [
-    "历史样本仅4次<5"
-   ],
-   "canonical_name": "三一重工",
-   "sample_n": 4,
-   "win_rate": 75.0,
-   "win_rate_lower95": 30.1,
-   "gpt_verdict": "不否定",
-   "kimi_verdict": "不可用",
-   "probability_label": "该股历史条件频率（非保证）"
-  },
-  {
-   "code": "603799.SS",
-   "name": "华友钴业",
-   "last": 42.35,
-   "dd_pct": -47.1,
-   "pos52": 14.0,
-   "cagr10y": 11.4,
-   "history_years": 9.6,
-   "low52": 36.21,
-   "low_all": 10.67,
-   "to_low52_pct": 17.0,
-   "to_lowall_pct": 296.9,
-   "at_52low": false,
-   "at_all_low": false,
-   "level": "🟢跌得很深·可分批买",
-   "level_note": "历史级打折——分批买,越跌越买(公司质量已过关)",
-   "backtest": {
-    "n": 7,
-    "wins": 5,
-    "win_pct": 71,
-    "median": 45.1,
-    "worst": -51.6
-   },
-   "bt_line": "该股历史7次同级回撤→6月后5涨2跌·中位+45.1%·最差-51.6%",
-   "verdict": "进",
-   "turning_bottom": false,
-   "rules_gate": "gate_pass",
-   "gpt": "pass",
-   "track": false,
-   "display_eligible": true,
-   "push_eligible": false,
-   "quality_status": "研究候选",
-   "quality_reasons": [
-    "历史样本仅7次<8",
-    "胜率95%下限仅36%<50%",
-    "历史最差-51.6%",
-    "Kimi未完成当日正向复核（双剑合璧缺一剑）"
-   ],
-   "canonical_name": "华友钴业",
-   "sample_n": 7,
-   "win_rate": 71.0,
-   "win_rate_lower95": 35.9,
-   "gpt_verdict": "通过",
-   "kimi_verdict": "不可用",
+   "gpt_verdict": "否决",
+   "kimi_verdict": "不否定",
+   "book_verdict": "否决",
    "probability_label": "该股历史条件频率（非保证）"
   }
  ]

@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-16 21:47（北京时间）",
+ "generated_at": "2026-08-17 05:41（北京时间）",
  "version": "sessionops-v1",
  "ruleset_version": "v4.2",
  "gates_in_force": [
@@ -18,7 +18,8 @@
   "-3A 才是立即卖；-2A 一律守线待触发并写明触发价",
   "未解释异动冻结重动作，但**不冻结止损**",
   "书理未支持不进买入位（CLASSICS 门派仲裁）",
-  "V88规则闸或GPT明确否决→不进；GPT未覆盖必须标待复核",
+  "V88规则闸+GPT+Kimi须同一事实包明确通过；未覆盖/不否定/过期均不进",
+  "最终精选最多2只；超编候选进入候补，不硬塞",
   "数据缺≠达标，缺就写缺"
  ],
  "sell": [],
@@ -151,78 +152,188 @@
   }
  ],
  "buy": [],
- "blocked_by_rr": [
+ "blocked": [
   {
    "code": "603893.SS",
    "name": "瑞芯微",
-   "rr": 0.97,
-   "why": "加权赔率 0.97 < 1.5：**亏的空间比赚的大**。书理透镜只看质地(成长/估值/机构)，看不见赔率——斯波朗迪『风险先于收益』在此否决。"
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "不否定",
+   "factpack_match": false
   },
   {
    "code": "600362.SS",
    "name": "江西铜业",
-   "rr": 1.13,
-   "why": "加权赔率 1.13 < 1.5：**亏的空间比赚的大**。书理透镜只看质地(成长/估值/机构)，看不见赔率——斯波朗迪『风险先于收益』在此否决。"
-  },
-  {
-   "code": "CVX",
-   "name": "雪佛龙",
-   "rr": 0.58,
-   "why": "加权赔率 0.58 < 1.5：**亏的空间比赚的大**。书理透镜只看质地(成长/估值/机构)，看不见赔率——斯波朗迪『风险先于收益』在此否决。"
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
+   "kimi": "不否定",
+   "factpack_match": false
   },
   {
    "code": "300033.SZ",
    "name": "同花顺",
-   "rr": 1.0,
-   "why": "加权赔率 1.0 < 1.5：**亏的空间比赚的大**。书理透镜只看质地(成长/估值/机构)，看不见赔率——斯波朗迪『风险先于收益』在此否决。"
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
+   "kimi": "不否定",
+   "factpack_match": false
   },
   {
-   "code": "FCX",
-   "name": "自由港麦克莫兰",
-   "rr": 0.99,
-   "why": "加权赔率 0.99 < 1.5：**亏的空间比赚的大**。书理透镜只看质地(成长/估值/机构)，看不见赔率——斯波朗迪『风险先于收益』在此否决。"
+   "code": "0358.HK",
+   "name": "江西铜业",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "不否定",
+   "factpack_match": false
   },
   {
    "code": "1818.HK",
    "name": "招金矿业",
-   "rr": 1.16,
-   "why": "加权赔率 1.16 < 1.5：**亏的空间比赚的大**。书理透镜只看质地(成长/估值/机构)，看不见赔率——斯波朗迪『风险先于收益』在此否决。"
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "不否定",
+   "factpack_match": false
   },
   {
    "code": "1788.HK",
    "name": "国泰君安国际",
-   "rr": 1.09,
-   "why": "加权赔率 1.09 < 1.5：**亏的空间比赚的大**。书理透镜只看质地(成长/估值/机构)，看不见赔率——斯波朗迪『风险先于收益』在此否决。"
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "不否定",
+   "factpack_match": false
   },
   {
-   "code": "300604.SZ",
-   "name": "长川科技",
-   "rr": 1.02,
-   "why": "加权赔率 1.02 < 1.5：**亏的空间比赚的大**。书理透镜只看质地(成长/估值/机构)，看不见赔率——斯波朗迪『风险先于收益』在此否决。"
+   "code": "3888.HK",
+   "name": "金山软件",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "不否定",
+   "factpack_match": false
   },
   {
    "code": "000100.SZ",
    "name": "TCL科技",
-   "rr": 0.95,
-   "why": "加权赔率 0.95 < 1.5：**亏的空间比赚的大**。书理透镜只看质地(成长/估值/机构)，看不见赔率——斯波朗迪『风险先于收益』在此否决。"
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "不否定",
+   "factpack_match": false
   },
   {
    "code": "600188.SS",
    "name": "兖矿能源",
-   "rr": 0.85,
-   "why": "加权赔率 0.85 < 1.5：**亏的空间比赚的大**。书理透镜只看质地(成长/估值/机构)，看不见赔率——斯波朗迪『风险先于收益』在此否决。"
-  },
-  {
-   "code": "6693.HK",
-   "name": "赤峰黄金",
-   "rr": 0.98,
-   "why": "加权赔率 0.98 < 1.5：**亏的空间比赚的大**。书理透镜只看质地(成长/估值/机构)，看不见赔率——斯波朗迪『风险先于收益』在此否决。"
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "不否定",
+   "factpack_match": false
   },
   {
    "code": "9633.HK",
    "name": "农夫山泉",
-   "rr": 1.02,
-   "why": "加权赔率 1.02 < 1.5：**亏的空间比赚的大**。书理透镜只看质地(成长/估值/机构)，看不见赔率——斯波朗迪『风险先于收益』在此否决。"
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "不否定",
+   "factpack_match": false
+  }
+ ],
+ "blocked_by_rr": [
+  {
+   "code": "603893.SS",
+   "name": "瑞芯微",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "不否定",
+   "factpack_match": false
+  },
+  {
+   "code": "600362.SS",
+   "name": "江西铜业",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
+   "kimi": "不否定",
+   "factpack_match": false
+  },
+  {
+   "code": "300033.SZ",
+   "name": "同花顺",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
+   "kimi": "不否定",
+   "factpack_match": false
+  },
+  {
+   "code": "0358.HK",
+   "name": "江西铜业",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "不否定",
+   "factpack_match": false
+  },
+  {
+   "code": "1818.HK",
+   "name": "招金矿业",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "不否定",
+   "factpack_match": false
+  },
+  {
+   "code": "1788.HK",
+   "name": "国泰君安国际",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "不否定",
+   "factpack_match": false
+  },
+  {
+   "code": "3888.HK",
+   "name": "金山软件",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "不否定",
+   "factpack_match": false
+  },
+  {
+   "code": "000100.SZ",
+   "name": "TCL科技",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "不否定",
+   "factpack_match": false
+  },
+  {
+   "code": "600188.SS",
+   "name": "兖矿能源",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "不否定",
+   "factpack_match": false
+  },
+  {
+   "code": "9633.HK",
+   "name": "农夫山泉",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "不否定",
+   "factpack_match": false
   }
  ],
  "stats": {
@@ -230,12 +341,13 @@
   "watch": 9,
   "buy": 0,
   "buy_dual": 0,
-  "blocked_by_rr": 12
+  "blocked": 10,
+  "blocked_by_rr": 0
  },
  "src_asof": {
-  "sell_grade": "2026-08-16 21:46（北京时间）",
-  "rank_score": "2026-08-16 21:45（北京时间）",
-  "classics_lens": "2026-08-16 21:47（北京时间）",
-  "anomaly_gate": "2026-08-16 21:46（北京时间）"
+  "sell_grade": "2026-08-17 05:40（北京时间）",
+  "rank_score": "2026-08-17 05:40（北京时间）",
+  "classics_lens": "2026-08-17 05:38（北京时间）",
+  "anomaly_gate": "2026-08-17 05:38（北京时间）"
  }
 }

@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-16 21:47（北京时间）",
+ "generated_at": "2026-08-17 05:41（北京时间）",
  "version": "dropout-v1",
  "rule": "区分『评估后不合格』(正常) 与 『从未被评估』(bug)。用户定纲：评分不够是正常；**压根不在池里就是问题**。",
  "boundary": "只对关键桶缺输入告警，不对分数低告警——噪音大的哨兵=死哨兵（fact_gate 290条误报的教训）。",
@@ -54,22 +54,15 @@
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   },
   {
-   "code": "XOM",
-   "name": "埃克森美孚",
-   "src": "持仓",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
-  },
-  {
-   "code": "1109.HK",
-   "name": "华润置地",
+   "code": "AXP",
+   "name": "美国运通",
    "src": "自选",
    "in_pool": true,
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   },
   {
-   "code": "3888.HK",
-   "name": "金山软件",
+   "code": "1997.HK",
+   "name": "九龙仓置业",
    "src": "自选",
    "in_pool": true,
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
@@ -96,7 +89,7 @@
    "src": "自选"
   },
   {
-   "code": "600941.SS",
+   "code": "600941.SH",
    "name": "中国移动",
    "tier": "0A",
    "src": "持仓"
@@ -108,14 +101,38 @@
    "src": "自选"
   },
   {
+   "code": "ONFO",
+   "name": "Onfolio Holdings Inc",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
    "code": "6690.HK",
    "name": "海尔智家",
    "tier": "0A",
    "src": "自选"
   },
   {
+   "code": "FCX",
+   "name": "自由港麦克莫兰",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
    "code": "688111.SS",
    "name": "金山办公",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "300604.SZ",
+   "name": "长川科技",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "002371.SZ",
+   "name": "北方华创",
    "tier": "0A",
    "src": "自选"
   },
@@ -128,6 +145,12 @@
   {
    "code": "1929.HK",
    "name": "周大福",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "6693.HK",
+   "name": "赤峰黄金",
    "tier": "0A",
    "src": "自选"
   },
@@ -158,6 +181,12 @@
   {
    "code": "600489.SS",
    "name": "中金黄金",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "6127.HK",
+   "name": "昭衍新药",
    "tier": "0A",
    "src": "自选"
   },
@@ -210,66 +239,30 @@
    "src": "自选"
   },
   {
-   "code": "600809.SS",
-   "name": "山西汾酒",
-   "tier": "0A",
-   "src": "持仓"
-  },
-  {
-   "code": "600588.SS",
-   "name": "用友网络",
+   "code": "ETN",
+   "name": "伊顿",
    "tier": "0A",
    "src": "自选"
   },
   {
-   "code": "PFE",
-   "name": "辉瑞",
-   "tier": "0A",
-   "src": "持仓"
-  },
-  {
-   "code": "VOO",
-   "name": "Vanguard标普500",
-   "tier": "0A",
-   "src": "持仓"
-  },
-  {
-   "code": "2510.HK",
-   "name": "德翔海运",
+   "code": "KO",
+   "name": "可口可乐",
    "tier": "0A",
    "src": "自选"
   },
   {
-   "code": "1364.HK",
-   "name": "古茗",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "301047.SZ",
-   "name": "义翘神州",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "QQQM",
-   "name": "纳指100ETF",
-   "tier": "0A",
-   "src": "持仓"
-  },
-  {
-   "code": "002550.SZ",
-   "name": "千红制药",
+   "code": "IWM",
+   "name": "罗素2000ETF-iShares",
    "tier": "0A",
    "src": "自选"
   }
  ],
  "stats": {
-  "graded": 388,
+  "graded": 398,
   "pool": 2241,
-  "must": 82,
+  "must": 100,
   "silent_dropout": 1,
-  "missing_from_grade": 9,
-  "quiet_long": 38
+  "missing_from_grade": 8,
+  "quiet_long": 58
  }
 }
