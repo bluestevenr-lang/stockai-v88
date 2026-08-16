@@ -6,7 +6,7 @@ v88_lite.py — V88 轻量版（手机 / 云端 24 小时可访问）
 评分引擎：headless 复用桌面版 app_v88_integrated 的真引擎（streamlit 桩 + 引擎守卫），
          保证与桌面版评分/操作指引【完全一致】，不重复实现、不产生分叉。
 
-启动：streamlit run v88_lite.py --server.address 0.0.0.0 --server.port 8600
+启动：streamlit run v88_lite.py --server.address 127.0.0.1 --server.port 8600
 """
 
 import os

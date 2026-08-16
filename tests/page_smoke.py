@@ -6,9 +6,14 @@
 故加内容级断言清单：关键模块必须真的在页面上、坏味道字样不许出现。
 新增模块时把它的标志文案加进 MUST_HAVE。"""
 import sys
+from pathlib import Path
 from streamlit.testing.v1 import AppTest
 
-at = AppTest.from_file("app_v88_integrated.py", default_timeout=600)
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+at = AppTest.from_file(str(REPO_ROOT / "app_v88_integrated.py"), default_timeout=600)
 at.run()
 
 errs = [str(e.value)[:200] for e in at.exception] if at.exception else []
@@ -50,6 +55,38 @@ for _w in WARN_ONLY:
     if _w not in _page:
         print(f"内容自检: ⚠️ 槽内项未采集到(AppTest盲区,请以浏览器实测为准): {_w}")
 bad = [m for m in MUST_NOT if m in _page]
+# 源码级锁定准备买/研究/观察等自定义HTML出口，防止降级时链接被改回纯文字。
+_source = (REPO_ROOT / "app_v88_integrated.py").read_text(encoding="utf-8")
+_link_contract = (
+    "def _cb_link9(_nm, _cd):",
+    "{_cb_link9(_n9c, _c9c)}",
+    "⚠️{_cb_link9(r.get('name'), r.get('code'))}",
+    "{_cb_link9(_e9o.get('name') or '', _cd9o)}",
+)
+if any(_frag not in _source for _frag in _link_contract):
+    bad.append("行动中心个股深链出口不完整")
+if any(_frag in _source for _frag in (
+        "⏸️<b>{r.get('name')}</b>保留研究",
+        "⚠️{r.get('name')} 距高",
+        "<div style='font-size:12px'>{_cb_nm9(_n9c, _c9c)}")):
+    bad.append("行动中心出现纯文字个股名回归")
+# 页面只展示交易判断，不得重新接入本机私密资产账本或渲染账户汇总。
+if any(_frag in _source for _frag in (
+        '_cb_repo9 / "data" / "accounts.json"',
+        "import accounts as _acc_mod9",
+        '_asum9.get("totals")')):
+    bad.append("页面重新接入私密资产账本")
+# 【V88·全局点击铁律】个股即使降级为研究/观察，也必须保留深度分析链接。
+# 这里检查行动中心的高风险回归点；准备买的生成式入口另由 test_stock_deep_links.py 静态锁定。
+_plain_stock_rows = []
+import re as _re_link
+for _marker in ("保留研究", "早期风险观察", "翻空第"):
+    for _row in _re_link.findall(r"<div[^>]*>.*?</div>", _page):
+        if _marker in _row and "focus=deep#v88-deep-analysis" not in _row:
+            _plain_stock_rows.append(_marker)
+            break
+if _plain_stock_rows:
+    bad.append(f"个股名称丢失深度分析链接:{'、'.join(_plain_stock_rows)}")
 # 【V88·呈现层巡检 2026-07-24 用户抓"Neutral没中文,这该自愈系统发现"】
 # 裸英文状态词后面必须跟中文括注——出现即坏味道,不等用户抓。
 import re as _re_ui

@@ -97,14 +97,18 @@ while true; do
     echo "----------------------------------------------------------------"
 
     # 启动 Streamlit（headless=false 让系统自动打开浏览器，仅首次）
+    # 【2026-08-16 Kimi修·入口打架】本脚本原跑分页版 app_v88_paged.py @8501,
+    # 而桌面 V88.app(v88_master_launch.sh)跑单页版 app_v88_integrated.py @8501——
+    # 两个入口同抢8501,谁先谁赢,用户偶发看到旧UI。统一为单页版,与 V88.app 一致;
+    # 分页版 8503 验收入口(app_v88_paged.py 自带端口说明)保留,文件不删。
     if [ $RESTART_COUNT -eq 1 ]; then
-        RUN_STREAMLIT run app_v88_paged.py \
+        RUN_STREAMLIT run app_v88_integrated.py \
             --server.headless false \
             --server.port 8501 \
             --browser.serverAddress localhost
     else
         # 重启时不再重新打开浏览器
-        RUN_STREAMLIT run app_v88_paged.py \
+        RUN_STREAMLIT run app_v88_integrated.py \
             --server.headless true \
             --server.port 8501
     fi

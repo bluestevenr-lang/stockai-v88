@@ -1173,6 +1173,170 @@ def _scan_cache_key(scan_type: str, scan_market: str, risk_pref: str = None) -> 
         key += f"_{risk_pref}"
     return key.replace(" ", "_")
 
+
+# ══════════════════════════════════════════════════════════════════════
+# 【V88·使用先于定义 第十例修复 2026-08-15】
+# 症状:作战板"④买什么"整块崩溃,render_errors 31条(08-10~08-15,每次开页必崩)。
+# 根因:_v88_buy_gate9 在 4957 行被调用,却到 14688 行才 def —— Streamlit 模块级
+#      自上而下执行,调用时名字尚未绑定 → NameError,整个 with _tbR9: 块炸掉。
+# 同族第九例是 3460 行 _chip9 的 UnboundLocalError(08-06 已修),病根一样:
+#      "共享工具函数散落在使用点之后",靠源码顺序碰运气。
+# 修法:把作战板买入闸所依赖的**全部**符号(含其运行时才解析的 _canonical_code /
+#      _v88_intel9,它们原在 try/except 里 —— 若只搬一半,NameError 会被 except
+#      吞掉变成"拥挤闸静默失效",那是铁律21 明令禁止的静默吞错)整体前置到此处。
+# 位置约束:必须晚于 market_of_code(1057)、re(147)、json(27)、Path(142),早于 4957。
+# 校验:pyflakes undefined-name 归零 + py_compile 通过(铁律6)。
+# ══════════════════════════════════════════════════════════════════════
+
+def _canonical_code(code):
+    """把同一只票的不同写法归一，只用于去重比较（不改展示代码）。
+    港股按数字补零到5位：00700.HK == 0700.HK；A股裸6位补市场后缀；.SH→.SS。"""
+    c = str(code).strip().upper()
+    if c.endswith(".HK"):
+        digits = re.sub(r"\D", "", c[:-3])
+        return (digits.lstrip("0").zfill(5) + ".HK") if digits else c
+    if c.endswith(".SH"):
+        c = c[:-3] + ".SS"
+    if c.isdigit() and len(c) == 6:
+        c += ".SS" if c[0] in "569" else ".SZ"
+    return c
+
+
+_V88_NEWS_CACHE = {"ts": 0, "news": []}
+
+
+def _v88_intel9():
+    """【V88·情报二期 2026-07-18】政策直采+人气榜(私仓落盘,10分钟缓存)。
+    返回 {policy:[...], hot_map:{canon:rank}}"""
+    import time as _t
+    _c = _V88_NEWS_CACHE.setdefault("_intel", {"ts": 0, "d": {}})
+    if _t.time() - _c["ts"] < 600 and _c["d"]:
+        return _c["d"]
+    try:
+        _raw = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+                           "intel_feed.json").read_text(encoding="utf-8"))
+        _c["d"] = {"policy": _raw.get("policy") or [],
+                   "hot_map": {str(h.get("canon")): {"rank": int(h.get("rank") or 0),
+                                                     "xq": h.get("xq_rank")}
+                               for h in (_raw.get("hot") or [])},
+                   "xq_map": {str(x.get("canon")): int(x.get("rank") or 0)
+                              for x in (_raw.get("hot_xq") or [])},
+                   "us_map": {str(u.get("symbol", "")).upper(): int(u.get("rank") or 0)
+                              for u in (_raw.get("hot_us") or [])},
+                   "hot_raw": _raw.get("hot") or [],
+                   "hot_xq_raw": _raw.get("hot_xq") or [],
+                   "hot_us_raw": _raw.get("hot_us") or [],
+                   "generated_at": _raw.get("generated_at", "")}
+    except Exception:
+        _c["d"] = {"policy": [], "hot_map": {}}
+    _c["ts"] = _t.time()
+    return _c["d"]
+
+
+_V88_MKT_SCORES_CACHE9 = {"ts": 0.0, "scores": {}}
+
+
+def _v88_market_scores9(_repo):
+    """各大盘2周方向分（顺风闸用），10分钟缓存。"""
+    import time as _tm
+    if _tm.time() - _V88_MKT_SCORES_CACHE9["ts"] < 600 and _V88_MKT_SCORES_CACHE9["scores"]:
+        return _V88_MKT_SCORES_CACHE9["scores"]
+    _out = {}
+    try:
+        _s = json.loads((_repo / "data" / "market_snapshot.json").read_text(encoding="utf-8"))
+        for _mk, _blk in (_s.get("markets") or {}).items():
+            for _lb, _pv in ((_blk.get("l3") or {}).get("probs") or []):
+                if _lb == "2周":
+                    _out[_mk] = int(_pv)
+                    break
+    except Exception:
+        pass
+    _V88_MKT_SCORES_CACHE9.update({"ts": _tm.time(), "scores": _out})
+    return _out
+
+
+def _v88_buy_gate9(_d, _repo):
+    """【V88·推送严选五闸 2026-07-20 用户定纲"推送成功率一定要高"】买入推送只留多信号共振：
+    ①概率闸 2周上涨概率≥65 ②赔率闸 盈亏比≥1.5 ③周期冲突否决
+    ④顺风闸 所属大盘2周分≥45（逆势买入=历史主要亏损源，大盘弱势整市场停推买入）
+    ⑤拥挤闸 东财+雪球双榜热股=散户扎堆反指标，硬否决。
+    宁可少推不可错推——严选提高的是"推给你的"命中率，完整候选仍在双门/黑马模块可看。
+    返回 (通过?, 未过原因)。战绩熔断（类型命中<40%整类停推）由调用方执行。"""
+    _pu = int(_d.get("p_up") or 0)
+    if _pu < 65:
+        return False, ("概率数据缺失" if not _pu else f"概率{_pu}%<65")
+    try:
+        _rr = float(_d.get("rr") or 0)
+    except (TypeError, ValueError):
+        _rr = 0.0
+    if _rr < 1.5:
+        return False, ("赔率数据缺失" if not _rr else f"盈亏比{_rr:.1f}<1.5")
+    # 概率与赔率必须共同形成正期望，不能各自过线后仍输出负期望买单。
+    _edge9 = (_pu / 100.0) * _rr - (1.0 - _pu / 100.0)
+    if _edge9 < 0.35:
+        return False, f"期望优势{_edge9:.2f}<0.35"
+    if _d.get("px_usable_as_current") is False:
+        return False, "行情时点已过期"
+    # 名称—代码错配一票否决（03366.HK 被误标中兴通讯事故的永久防线）。
+    try:
+        import sys as _sys_rg9
+        _rgp9 = str(_repo / "src")
+        if _rgp9 not in _sys_rg9.path:
+            _sys_rg9.path.insert(0, _rgp9)
+        from recommendation_gate import identifier_check as _id_check9
+        from recommendation_gate import review_for as _review_for9
+        _id_ok9, _id_why9, _ = _id_check9(_d.get("code"), _d.get("name"))
+        if not _id_ok9:
+            return False, _id_why9
+        _rule9, _gpt9, _gpt_ts9 = _review_for9(_d.get("code"))
+        if _rule9 != "gate_pass":
+            return False, "V88规则闸未通过"
+        if _gpt9 != "通过":
+            return False, f"GPT复核{_gpt9 or '缺失'}"
+        try:
+            from datetime import datetime as _dt_rg9
+            if (_dt_rg9.now().date() - _dt_rg9.strptime(str(_gpt_ts9)[:10], "%Y-%m-%d").date()).days > 1:
+                return False, "GPT复核已过期"
+        except Exception:
+            return False, "GPT复核时间缺失"
+        # 【2026-08-16 三方会谈恢复·Kimi接替Claude席位】用户定纲：
+        # 双剑合璧=所有关键推荐必须 GPT+Kimi 双通过；3A 另加经典书理=三方会谈。
+        from recommendation_gate import kimi_review_for as _kimi_for9
+        _kimi9, _book9, _kimi_ts9 = _kimi_for9(_d.get("code"))
+        if _kimi9 != "通过":
+            return False, f"Kimi复核{_kimi9 or '缺失'}·双剑缺一剑"
+        try:
+            from datetime import datetime as _dt_km9
+            if (_dt_km9.now().date() - _dt_km9.strptime(str(_kimi_ts9)[:10], "%Y-%m-%d").date()).days > 1:
+                return False, "Kimi复核已过期"
+        except Exception:
+            return False, "Kimi复核时间缺失"
+        _tier9 = str(_d.get("tier") or _d.get("tier_label") or "")
+        if _tier9 == "3A" and _book9 != "通过":
+            return False, "3A须三方会谈·经典书理未通过"
+    except Exception:
+        return False, "统一复核闸不可用"
+    if _d.get("cycle_conflict"):
+        return False, "周期冲突"
+    _mk = str(_d.get("market") or "")
+    if not any(_k in _mk for _k in ("美股", "港股", "A股")):
+        try:
+            _mk = market_of_code(str(_d.get("code") or "")) or ""
+        except Exception:
+            _mk = ""
+    for _k, _v in _v88_market_scores9(_repo).items():
+        if _k in _mk and _v is not None and _v < 45:
+            return False, f"{_k}大盘2周分{_v}·逆风停推"
+    try:
+        _cn = _canonical_code(str(_d.get("code") or ""))
+        _hot = (_v88_intel9().get("hot_map") or {}).get(_cn)
+        if _hot and _hot.get("xq"):
+            return False, "双榜拥挤·反指标"
+    except Exception:
+        pass
+    return True, ""
+
+
 def _load_scan_cache_from_file(scan_type: str, scan_market: str, risk_pref: str = None):
     """从文件加载扫描缓存，命中则返回结果 dict，否则返回 None"""
     try:
@@ -3161,9 +3325,15 @@ try:
         # 名字前统一挂市场旗(用户"所有股写到一块,是不是美股我都不知道");
         # 已自带旗的调用点(五行业代表)不重复挂
         _fg9x = "" if str(_nm9x or "")[:2] in ("🇨🇳", "🇭🇰", "🇺🇸") else _flag9(_cd9x)
+        _nm_html9x = str(_nm9x or "")
+        # _cb_nm9 已附带规则/GPT徽章时不要再次追加，避免 R/G/R/G 重复；
+        # 名称与徽章一起处于深链内，任何显示档位都能直接进入个股深度分析。
+        _cert9x = "" if "title='V88" in _nm_html9x or 'title="V88' in _nm_html9x else _cert_badge9(_cd9x, _nm9x)
+        _gpt9x = "" if "title='GPT" in _nm_html9x or 'title="GPT' in _nm_html9x else _gpt_badge9(_cd9x, _nm9x)
+        _kimi9x = "" if "title='Kimi" in _nm_html9x or 'title="Kimi' in _nm_html9x else _kimi_badge9(_cd9x, _nm9x)
         return (f'{_fg9x}<a href="?q={_cd9x}&focus=deep#v88-deep-analysis" target="_blank" rel="noopener" '
                 f'style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{_nm9x}</a>'
-                + _cert_badge9(_cd9x, _nm9x) + _gpt_badge9(_cd9x, _nm9x))
+                + _cert9x + _gpt9x + _kimi9x)
     _cb_gate9 = _v88_mkt_gate9x(_cb_repo9)
     _cb_nt9, _cb_day9 = _v88_nontrade9x()
     # 【U3⑥数据闸门 2026-07-26 GPT审计采纳】行情异常=degraded→买侧禁发,只留卖警
@@ -3250,6 +3420,8 @@ try:
         except Exception:
             _g9 = {}
         _v9 = str(_g9.get("verdict") or "")
+        # 【2026-08-16 Kimi修·视觉噪音】无复核记录的票不再挂灰色"G—"徽章——
+        # 一屏几十个灰点会淹没真正的红徽章；只保留有记录时的警示/通过标识。
         if not _v9:
             return ""
         # 【2026-08-03 修 NameError】_base9 是 _cert_badge9 的**局部变量**,
@@ -3258,9 +3430,9 @@ try:
         _base9 = ("display:inline-block;width:15px;height:15px;line-height:15px;"
                   "text-align:center;border-radius:50%;font-size:10px;font-weight:800;"
                   "margin-left:3px;vertical-align:middle;letter-spacing:-.3px")
-        _st9 = ("#0d9488", "#fff", "G") if _v9 == "通过" else \
-               ("#134e4a", "#fff", "G̸") if _v9 == "否决" else \
-               ("#ccfbf1", "#0f766e", "G")
+        _st9 = ("#0d9488", "#fff", "G✓") if _v9 == "通过" else \
+               ("#991b1b", "#fff", "G×") if _v9 == "否决" else \
+               ("#ccfbf1", "#0f766e", "G?")
         _tip9 = f"GPT独立验证:{_v9}｜{str(_g9.get('why', ''))[:60]}".replace('"', "'")
         _op9 = "1" if _v9 in ("通过", "否决") else ".8"
         return (f"<span title=\"{_tip9}\" style='{_base9};background:{_st9[0]};"
@@ -3270,6 +3442,40 @@ try:
         _GV9 = (_nwj9("gpt_verify.json").get("rows") or {})
     except Exception:
         _GV9 = {}
+    try:
+        _KV9 = (_nwj9("kimi_verify.json").get("rows") or {})
+    except Exception:
+        _KV9 = {}
+
+    def _kimi_badge9(_cd, _nm=""):
+        """【2026-08-16 三方会谈恢复·Kimi接替Claude席位】K 徽章=Kimi 复核可视标识。
+        身份色紫(#7c3aed),与 C(金/绿)/G(青) 三色分立;裁决符号同规格:✓/×/?。
+        与 G 徽章同规则:无复核记录不显示(降噪,2026-08-16 同批定)。"""
+        try:
+            _rawk9 = str(_cd or "").upper()
+            _keysk9 = [_rawk9]
+            if _rawk9.endswith(".HK"):
+                _barek9 = _rawk9[:-3].lstrip("0") or "0"
+                _keysk9 += [_barek9 + ".HK", _barek9.zfill(5) + ".HK"]
+            _k9 = next(((_KV9 or {}).get(k) for k in _keysk9 if (_KV9 or {}).get(k)), {})
+        except Exception:
+            _k9 = {}
+        _vk9 = str(_k9.get("verdict") or "")
+        if not _vk9:
+            return ""
+        _basek9 = ("display:inline-block;width:15px;height:15px;line-height:15px;"
+                   "text-align:center;border-radius:50%;font-size:10px;font-weight:800;"
+                   "margin-left:3px;vertical-align:middle;letter-spacing:-.3px")
+        _stk9 = ("#7c3aed", "#fff", "K✓") if _vk9 == "通过" else \
+                ("#991b1b", "#fff", "K×") if _vk9 == "否决" else \
+                ("#ede9fe", "#6d28d9", "K?")
+        _bk9 = str(_k9.get("book_verdict") or "")
+        _tipk9 = (f"Kimi独立复核:{_vk9}"
+                  + (f"｜经典书理:{_bk9}" if _bk9 else "")
+                  + f"｜{str(_k9.get('why', ''))[:56]}").replace('"', "'")
+        _opk9 = "1" if _vk9 in ("通过", "否决") else ".8"
+        return (f"<span title=\"{_tipk9}\" style='{_basek9};background:{_stk9[0]};"
+                f"color:{_stk9[1]};opacity:{_opk9}'>{_stk9[2]}</span>")
     def _cb_nm9(_nm, _cd):
         # 【2026-07-27 统一名字真源】优先私仓 watch_alerts.resolve_name
         # (库内中文名>美股补充表>池名;港股前导零双向归一);不可用回退本地简版。
@@ -3288,7 +3494,15 @@ try:
         _k = str(_cd or "").upper()
         _out9 = (_cb_names9.get(_k) or _cb_names9.get(_k.split(".")[0].lstrip("0") + ".HK")
                  or _n or _k)
-        return (_out9 + _cert_badge9(_cd, _out9) + _gpt_badge9(_cd, _out9))
+        return (_out9 + _cert_badge9(_cd, _out9) + _gpt_badge9(_cd, _out9) + _kimi_badge9(_cd, _out9))
+
+    def _cb_link9(_nm, _cd):
+        """V88行动中心唯一股票名出口：先解析正式名称，再生成深度分析链接。
+
+        永久硬规则：推荐、准备买、研究、陷阱、风险、未达标等所有档位只要出现
+        个股名称，就必须由此处或同等深链输出；档位改变不得取消可点击能力。
+        """
+        return _nw_link9(_cb_nm9(_nm, _cd), _cd)
 
     def _cb_mk9(_cd):
         _c = str(_cd or "").upper()
@@ -4028,13 +4242,13 @@ try:
         _disc9 = [(c, h) for _t, _s, c, h in _buy_order9
                   if c not in _arch_set9 and c not in _tac_set9 and not _gate_ok9(c)]
         _disc_set9 = {c for c, _ in _disc9}
-        _t_buy9 = [h for _t9z, _s9z, _c9z, h in _buy_order9
-                   if _c9z not in _arch_set9 and _c9z not in _tac_set9
-                   and _c9z not in _disc_set9]
-        # 计数改用R2口径(与顶部行动清单同源),不再用trend_quality旧尺
-        _n3a9 = sum(1 for _r9c in (_rank9map.values()) if str(_r9c.get("tier")) == "3A")
-        _n2a9 = sum(1 for _r9c in (_rank9map.values()) if str(_r9c.get("tier")) == "2A")
-        _tab_b9, _tab_s9, _tab_h9 = st.tabs([f"✅买表{len(_t_buy9)}行(3A×{_n3a9}·2A×{_n2a9}·战术1A×{len(_tac9)})",
+        _exec_buy9 = [(c, h) for _t9z, _s9z, c, h in _buy_order9
+                      if c not in _arch_set9 and c not in _tac_set9 and c not in _disc_set9]
+        _t_buy9 = [h for _, h in _exec_buy9]
+        # 标题只统计屏幕上真正出现的确认买，不能拿全库评级数冒充买表行数。
+        _n3a9 = sum(1 for c, _ in _exec_buy9 if str((_rank9map.get(str(c)) or {}).get("tier")) == "3A")
+        _n2a9 = sum(1 for c, _ in _exec_buy9 if str((_rank9map.get(str(c)) or {}).get("tier")) == "2A")
+        _tab_b9, _tab_s9, _tab_h9 = st.tabs([f"✅确认买{len(_t_buy9)}行(3A×{_n3a9}·2A×{_n2a9})",
                                              f"⚔️卖/减({len(_cb_sell9)})", f"💼持有({len(_hold9)})"])
         with _tab_b9:
             # 【V88·买表直接勾选对比 2026-08-01 用户"希望直接可以有对话框勾选这里面的个股对比"】
@@ -4158,56 +4372,80 @@ try:
                 st.markdown("<div style='font-size:12px;color:#64748b;margin-top:4px'>"
                             "<b>🕐 准备买·等触发</b><span style='font-size:11px;color:#94a3b8'>"
                             "(技术上尚未到位,到价再评环境闸)</span>"
-                            + "".join(f"<div style='font-size:12px'>{_cb_nm9(_n9c, _c9c)}"
+                            + "".join(f"<div style='font-size:12px'>{_cb_link9(_n9c, _c9c)}"
                                       f"<span style='color:#94a3b8'>·{str(_w9c)[:76]}</span></div>"
                                       for _n9c, _c9c, _m9c, _w9c in _cb_near9[:4]) + "</div>",
                             unsafe_allow_html=True)
             # ── ⚾击球区(2026-07-27礼来案"800多你都不告诉我该进了"):白马打折中长线喊进 ──
             try:
                 _vzj9c = _cbj9("value_zone.json")
-                _vzr9c = [r for r in (_vzj9c.get("rows") or []) if r.get("verdict") == "进"][:5]
+                # “可分批买”与飞书主动推送共用同一把严格闸；未过推送闸只保留研究。
+                _vzr9c = [r for r in (_vzj9c.get("rows") or []) if r.get("push_eligible")][:5]
+                _vzh9c = [r for r in (_vzj9c.get("rows") or [])
+                           if r.get("verdict") == "进" and not r.get("push_eligible")][:5]
                 _vzt9c = [r for r in (_vzj9c.get("rows") or []) if r.get("verdict") == "陷阱"][:3]
-                if _vzr9c or _vzt9c:
+                if _vzr9c or _vzh9c or _vzt9c:
                     st.markdown("<div style='background:#fefce8;border:1px solid #fde047;border-radius:8px;"
                                 "padding:5px 9px;margin-top:5px'><b style='font-size:12.5px;color:#a16207'>"
                                 "🛒 好公司打折·可分批买</b><span style='font-size:10.5px;color:#94a3b8' "
                                 "title='好公司(10年年化≥8%)股价打了大折→可分批买,拿3~6个月;"
                                 "概率=该股自身10年同级回撤回测(礼来850案:历史80%胜率中位+22%,系统当时没喊,错过+40%);"
-                                "陷阱档=历史同级回撤后多数继续跌,明说不接刀'>ⓘ拿3~6个月·概率来自它自己的历史</span>"
+                                "陷阱档=历史同级回撤后多数继续跌,明说不接刀'>ⓘ推送同闸·分析"
+                                + str(_vzj9c.get("generated_at") or "时间缺失") + "</span>"
                                 + "".join(
-                                    f"<div style='font-size:12px'>{r.get('level')}<b>{_nw_link9(_cb_nm9(r.get('name'), r.get('code')), r.get('code') or '')}</b>"
+                                    f"<div style='font-size:12px'>{r.get('level')}<b>{_cb_link9(r.get('name'), r.get('code'))}</b>"
                                     f" 距高{r.get('dd_pct')}%·52周{int(float(r.get('pos52') or 0))}%"
                                     f"<span style='color:#475569'>·{str(r.get('bt_line'))[:52]}</span></div>"
                                     for r in _vzr9c)
                                 + "".join(
-                                    f"<div style='font-size:11.5px;color:#94a3b8'>⚠️{r.get('name')} 距高{r.get('dd_pct')}%"
+                                    f"<div style='font-size:11.5px;color:#94a3b8'>⚠️{_cb_link9(r.get('name'), r.get('code'))} 距高{r.get('dd_pct')}%"
                                     f"但{str(r.get('bt_line'))[:40]}——先别买</div>" for r in _vzt9c)
+                                + "".join(
+                                    f"<div style='font-size:11.5px;color:#64748b'>⏸️<b>{_cb_link9(r.get('name'), r.get('code'))}</b>保留研究·"
+                                    f"{'/'.join((r.get('quality_reasons') or ['未过统一质量闸'])[:2])}</div>"
+                                    for r in _vzh9c)
                                 + "</div>", unsafe_allow_html=True)
             except Exception:
                 pass
             # ── 📈趋势先行(2026-07-27大改"要提前量":小米/LMT被安全线拦掉的翻转,这里直接说) ──
             try:
                 _tsj9c = _cbj9("trend_shift.json")
-                _tsu9c = [r for r in (_tsj9c.get("up") or []) if r.get("phase") in ("早期", "中期")][:6]
-                _tsd9c = [r for r in (_tsj9c.get("down") or []) if r.get("in_pool")][:4]
-                if _tsu9c:
+                # 只有规则闸+当日GPT复核都通过，页面才写“可买”；其余不删除，降级研究。
+                _tsu9c = [r for r in (_tsj9c.get("up") or []) if r.get("push_eligible")][:6]
+                _tsr9c = [r for r in (_tsj9c.get("up") or [])
+                           if r.get("phase") in ("早期", "中期") and not r.get("push_eligible")][:5]
+                _tsd9c = [r for r in (_tsj9c.get("down") or []) if r.get("push_eligible")][:4]
+                _tsw9c = [r for r in (_tsj9c.get("down") or [])
+                           if r.get("in_pool") and not r.get("push_eligible")][:3]
+                if _tsu9c or _tsr9c or _tsd9c or _tsw9c:
                     st.markdown("<div style='background:#eff6ff;border:1px solid #93c5fd;border-radius:8px;"
                                 "padding:5px 9px;margin-top:5px'><b style='font-size:12.5px;color:#1d4ed8'>"
                                 "📈 涨势刚起·可买</b><span style='font-size:10.5px;color:#94a3b8' "
-                                "title='翻转已发生且在早中期=提前量最足的窗口;无赔率/52周位门槛(创新高强票rr公式失真,LMT案);"
-                                "直接推荐非影子,每条已入台账攒战绩;仓位建议按牛熊态(bear=1/3仓)'>ⓘ该买该卖直说·每条带止损</span>"
+                                "title='翻转已发生且在早中期=提前量窗口;主动推荐仍须统一概率/盈亏比/期望优势/复核闸;"
+                                "直接推荐非影子,每条已入台账攒战绩;仓位建议按牛熊态(bear=1/3仓)'>ⓘ推送同闸·分析"
+                                + str(_tsj9c.get("generated_at") or "时间缺失") + "</span>"
                                 + "".join(
                                     f"<div style='font-size:12px'>{'🟢' if r.get('phase') == '早期' else '🟡'}"
-                                    f"<b>{_nw_link9(_cb_nm9(r.get('name'), r.get('code')), r.get('code') or '')}</b>"
+                                    f"<b>{_cb_link9(r.get('name'), r.get('code'))}</b>"
                                     f" {r.get('phase')}第{r.get('days')}日·已涨{r.get('gain_pct')}%"
-                                    f"·涨概率{r.get('p_up', '?')}%"
+                                    f"·规则上行估计{r.get('p_up', '?')}%·盈亏比{r.get('rr', '?')}"
+                                    f"·期望优势{r.get('expected_edge', '?')}"
                                     f"<span style='color:#475569'>·{str(r.get('action'))[:34]}·止损{r.get('stop')}</span>"
                                     + (f"<span style='font-size:11px;color:#b45309'>·💼{str(r.get('env_note'))[:22]}</span>"
                                        if r.get("env_note") else "") + "</div>" for r in _tsu9c)
+                                + "".join(
+                                    f"<div style='font-size:11.5px;color:#64748b'>⏸️<b>{_cb_link9(r.get('name'), r.get('code'))}</b>保留研究·"
+                                    f"{'/'.join((r.get('quality_reasons') or ['未过统一质量闸'])[:2])}</div>"
+                                    for r in _tsr9c)
                                 + ("".join(
-                                    f"<div style='font-size:12px;color:#dc2626'>📉<b>{_nw_link9(_cb_nm9(r.get('name'), r.get('code')), r.get('code') or '')}</b>"
-                                    f" 翻空第{r.get('days')}日·20日{r.get('mom20')}%·{str(r.get('action'))[:30]}</div>"
-                                    for r in _tsd9c)) + "</div>", unsafe_allow_html=True)
+                                    f"<div style='font-size:12px;color:#dc2626'>📉<b>{_cb_link9(r.get('name'), r.get('code'))}</b>"
+                                    f" 翻空第{r.get('days')}日·{r.get('risk_evidence') or ('20日' + str(r.get('mom20')) + '%')}"
+                                    f"·{str(r.get('action'))[:30]}</div>" for r in _tsd9c))
+                                + "".join(
+                                    f"<div style='font-size:11.5px;color:#64748b'>⚠️<b>{_cb_link9(r.get('name'), r.get('code'))}</b>"
+                                    f" 早期风险观察·{r.get('risk_evidence') or ('20日' + str(r.get('mom20')) + '%')}"
+                                    f"·{'/'.join((r.get('quality_reasons') or ['尚未形成跌幅与价量共振'])[:1])}</div>"
+                                    for r in _tsw9c) + "</div>", unsafe_allow_html=True)
             except Exception:
                 pass
             if len(_cb_rows9) > 5:
@@ -4286,14 +4524,14 @@ try:
                     if _cd9o in _board_cd9o:
                         _takeover9o.append(
                             f"<div style='font-size:12px;margin-bottom:2px'>⚖️ "
-                            f"<b>{_cb_nm9(_e9o.get('name') or '', _cd9o)}</b>"
+                            f"<b>{_cb_link9(_e9o.get('name') or '', _cd9o)}</b>"
                             f"<span style='color:#7c3aed'>两尺分歧:左侧尺(CS)拦"
                             f"[{'/'.join(_e9o.get('rules') or [])}],右侧尺(3A榜)接管上榜"
                             f"——趋势股不适用均值回归口径,以3A榜为准,分歧入台账对赌</span></div>")
                         continue
                     _off_html9.append(
                         f"<div style='font-size:12px;margin-bottom:2px'>"
-                        f"<b>{_cb_nm9(_e9o.get('name') or '', _cd9o)}</b>"
+                        f"<b>{_cb_link9(_e9o.get('name') or '', _cd9o)}</b>"
                         f"<span style='color:#64748b'>[{_side9o}·原判{_e9o.get('action') or ''}]</span> "
                         f"<span style='background:#e0e7ff;color:#3730a3;font-size:10.5px;"
                         f"border-radius:3px;padding:0 3px'>{'/'.join(_e9o.get('rules') or [])}</span> "
@@ -4763,8 +5001,8 @@ try:
                             f"（{str(_htj9.get('asof_note') or _htj9.get('generated_at', ''))[:18]} ⓘ）</span>"
                             + "".join(_ht_html9)
                             + (f"<div style='font-size:11.5px;color:#7c3aed;margin-top:2px'>"
-                               f"📌跟我有关:" + "、".join(
-                                   f"{h.get('name')}({h.get('theme')}·{h.get('rel')})"
+                                   f"📌跟我有关:" + "、".join(
+                                   f"{_nw_link9(h.get('name'), h.get('code') or '')}({h.get('theme')}·{h.get('rel')})"
                                    for h in _mine9[:4]) + "</div>" if _mine9 else ""),
                             unsafe_allow_html=True)
                 except Exception as _ht_e9:
@@ -4793,7 +5031,7 @@ try:
                             + ("".join(_op_rows9) if _op_rows9 else
                                "<div style='font-size:12px;color:#94a3b8'>本档无可执行机会</div>")
                             + (f"<div style='font-size:11.5px;color:#94a3b8'>⏸被闸:"
-                               + "、".join(f"{r.get('name')}(赔率{r.get('rr')}·"
+                               + "、".join(f"{_nw_link9(r.get('name'), r.get('code') or '')}(赔率{r.get('rr')}·"
                                           f"{'/'.join((r.get('block_reasons') or ['环境不合格'])[:1])[:18]})"
                                           for r in _op_bk9[:4]) + "</div>" if _op_bk9 else ""),
                             unsafe_allow_html=True)
@@ -4916,13 +5154,15 @@ try:
                 if not _mkfit9(_h9n.get("code")):
                     continue
                 _md9n = str(((_h9n.get("trade_plan") or {}).get("short") or {}).get("mode") or "")
-                if _cfg9["buy"] == "green" and _md9n in ("现价可进", "回踩到位", "突破确认", "左侧低吸"):
+                # 作战板“买什么”与首页/飞书共用可执行闸，认证徽章只展示、不能替代过滤。
+                _qok9n, _qwhy9n = _v88_buy_gate9(_h9n, _nw_repo9)
+                if _cfg9["buy"] == "green" and _qok9n and _md9n in ("现价可进", "回踩到位", "突破确认", "左侧低吸"):
                     _buy9n.append((_h9n, int(_h9n.get("p_up") or 0), _md9n))
-                elif _cfg9["buy"] == "trigger" and _md9n in ("双路径待触发", "回踩到位", "突破确认"):
+                elif _cfg9["buy"] == "trigger" and _qok9n and _md9n in ("双路径待触发", "回踩到位", "突破确认"):
                     _buy9n.append((_h9n, int(_h9n.get("p_up") or 0), f"明日盯触发·{_md9n}"))
-                elif _cfg9["buy"] == "green+" and _md9n in ("现价可进", "回踩到位", "突破确认", "双路径待触发"):
+                elif _cfg9["buy"] == "green+" and _qok9n and _md9n in ("现价可进", "回踩到位", "突破确认", "双路径待触发"):
                     _buy9n.append((_h9n, int(_h9n.get("p_up") or 0), _md9n))
-                elif _cfg9["buy"] in ("w4", "hz"):
+                elif _cfg9["buy"] in ("w4", "hz") and _qok9n:
                     _hz9b = _cfg9.get("hz") or "4周"
                     _s9n = _hz_score9(_h9n, _hz9b)
                     if _s9n is not None and _s9n >= 58:
@@ -4995,6 +5235,11 @@ try:
                                   in ("现价可进", "回踩到位", "突破确认", "双路径待触发")],
                                  key=lambda r: -(r.get("p_up") or 0))
                 _sk9p, _tk9p, _prep_lbl9 = "p_up", "short_text", "自选池触发单·到价即动"
+            # “准备买”仍须通过同一可执行闸。未过闸只进入条件观察，不得用准备买措辞。
+            _prep_ready9, _prep_pending9 = [], []
+            for _r9p in _prep9n:
+                _ok9p, _why9p = _v88_buy_gate9(_r9p, _nw_repo9)
+                (_prep_ready9 if _ok9p else _prep_pending9).append((_r9p, _why9p))
             # 每票挂所在市场统一裁决标(⏸️弱市触发单=到价也先不执行,等大盘回中性)
             _mg9p = _v88_mkt_gate9x(_nw_repo9)
 
@@ -5013,28 +5258,52 @@ try:
                            f"{'·' + str((_r9p.get('entry_plan') or {}).get('mode') or '') if _sk9p == 'p_up' else ''}"
                            f"·{(_hz_detail9(_r9p)[:76] if _tk9p == '_hz_detail' else str((_r9p.get('entry_plan') or {}).get(_tk9p) or '')[2:60])}</span>"
                            f"{_pol9p(_r9p.get('code'))}</div>"
-                           for _r9p in _prep9n[:5]]
-            st.markdown(f"<b style='font-size:13px'>🐉 ④ {_tb_tier9}买什么</b>"
+                           for _r9p, _why9p in _prep_ready9[:5]]
+            _pending_rows9 = ["<div style='font-size:12px;color:#64748b'>"
+                              f"{_nw_link9(_r9p.get('name'), _r9p.get('code'))}"
+                              f"<span>·待验证：{str(_why9p)[:48]}</span></div>"
+                              for _r9p, _why9p in _prep_pending9[:5]]
+            # 【2026-08-16 Kimi改·空栏给证据】前置读取,带独立保护——失败只丢数字,
+            # 绝不让空栏文案把④区块炸掉。此处早于 _v88_success9 的 def,只能就地读文件。
+            try:
+                _eg_succ9 = ((json.loads((_cb_repo9 / "data" / "success_rates.json")
+                                         .read_text(encoding="utf-8")).get("types") or {})
+                             .get("entry_green") or {})
+            except Exception:
+                _eg_succ9 = {}
+            st.markdown(f"<b style='font-size:13px'>🐉 ④ {_tb_tier9}确认买 / 条件观察</b>"
                         f"<span style='font-size:11px;color:#94a3b8' title='{_buy_note9};带买点价'>"
                         f"{'等' + str(len(_buy9n)) + '只' if len(_buy9n) > 6 else str(len(_buy9n)) + '只'} ⓘ</span>"
                         + ("".join(_rows_c9) if _rows_c9
                            else ("<div style='font-size:12.5px;color:#94a3b8'>🔇黑马池实盘<50%已降级研究参考——"
                                  "点名暂停,完整名单在🐴黑马雷达模块(战绩回升自动恢复)</div>" if _dh_gate9n else
-                                 "<div style='font-size:12.5px;color:#94a3b8'>现在可进0只——空仓等待也是决策,下面准备买名单到价即动</div>"))
+                                 # 【2026-08-16 Kimi改·空栏给证据】"0只"不是程序坏了:把从严原因和实盘战绩
+                                 # 直接写出来,让空仓成为看得见的决策而不是疑心病。数据来自 success_rates.json。
+                                 # 注意:此处(约5270行)早于 _v88_success9 的 def(15435行),不能调它——
+                                 # 就地读文件(pyflakes undefined-name 会抓,铁律6),读不到就不带数字。
+                                 (lambda _eg9: "<div style='font-size:12.5px;color:#94a3b8'>现在可进0只——"
+                                    "严选闸正常工作中"
+                                    + (f"：近30天绿灯命中率仅{_eg9.get('rate')}%"
+                                       f"·平均{_eg9.get('avg')}%" if _eg9.get("n") else "")
+                                    + "，故从严。空仓等待也是决策,下面准备买名单到价即动</div>")(_eg_succ9)))
                         + (f"<div style='font-size:12px;margin-top:3px'><b style='color:#b45309'>🎯 准备买"
-                           f"({len(_prep9n)}只)<span style='font-weight:400;font-size:11px;color:#94a3b8' title='{_prep_lbl9}·实盘台账积累中·到价即动'>ⓘ</span></b>"
+                           f"({len(_prep_ready9)}只)<span style='font-weight:400;font-size:11px;color:#94a3b8' title='{_prep_lbl9}·已过统一复核闸·到价再确认'>ⓘ</span></b>"
                            + (lambda _ov9q: (f"<span style='font-size:11px;color:#94a3b8'>"
-                                             f"·与{_ov9q[0]}榜重合{_ov9q[1]}/{len(_prep9n)}只——16与32周趋势"
+                                             # 【2026-08-16 Kimi修·口径一致】分子只数过闸票,分母同步改为过闸数,
+                                             # 不再出现"屏上5只却写/12只"的对不上。
+                                             f"·与{_ov9q[0]}榜重合{_ov9q[1]}/{len(_prep_ready9)}只——16与32周趋势"
                                              "一致属长周期常态,差异看各档分数/支撑压力对照</span>")
                               if _cfg9.get("hz") in ("16周", "32周") and _ov9q[1] else "")(
                                (("下季度" if _cfg9.get("hz") == "16周" else "本季度"),
-                                len([r for r in _prep9n if (_rhz9p(r, "32周" if _cfg9.get("hz") == "16周"
+                                len([r for r, _ in _prep_ready9 if (_rhz9p(r, "32周" if _cfg9.get("hz") == "16周"
                                                             else "16周") or 0) >= 58])
                                 if _cfg9.get("hz") in ("16周", "32周") else 0))
                            + "</div>" + "".join(_prep_rows9)
                            if _prep_rows9 else
-                           "<div style='font-size:12px;color:#94a3b8;margin-top:3px'>🎯准备买:自选池暂无挂触发价的票——"
-                           "原因:多数处'不进'档(周期下行或赔率不足),等③埋伏转强或大盘概率回55%+</div>"),
+                           "<div style='font-size:12px;color:#94a3b8;margin-top:3px'>🎯准备买:当前没有通过统一复核闸的触发单。</div>")
+                        + (f"<div style='font-size:12px;margin-top:4px'><b style='color:#64748b'>🔭 条件观察"
+                           f"({len(_prep_pending9)}只·不可执行)</b></div>" + "".join(_pending_rows9)
+                           if _pending_rows9 else ""),
                         unsafe_allow_html=True)
             # ── ⑤ {档}卖/持仓处理 ──
             _idc9n = _nwj9("intraday_decisions.json")
@@ -5263,6 +5532,26 @@ try:
                    + f" ｜ 当前档:{_tb_tier9}(大盘={_cfg9['mkt_hz'] or '当日实况'}·板块={_cfg9['sec_hz'] or '当日涨跌'}·买={_buy_note9})"
                    " ｜ 更新节奏:交易日07/13/19点三班+盘中三时段相位扫描·周末每日09:00一趟"
                    "(下周/本月/下月档同源同步更新·Actions公共仓免费,预算内)")
+        # 【2026-08-16 Kimi加·轮动过期警示】轮动是快变量,过期3天的预测约等于作废;
+        # 时间戳虽已展示但混在一行里不显眼。落后最近交易日→单独红条点名。
+        try:
+            import datetime as _dt_rf9
+            _rf_at9 = str((_nw_snap9.get("rotation_forecast") or {}).get("analysis_time") or "")[:16]
+            if _rf_at9:
+                _rf_ts9 = _dt_rf9.datetime.strptime(_rf_at9, "%Y-%m-%d %H:%M")
+                _nowr9 = _dt_rf9.datetime.now()
+                _ltd9 = _nowr9.replace(hour=0, minute=0, second=0, microsecond=0)
+                if _nowr9.weekday() < 5 and _nowr9.hour < 10:
+                    _ltd9 -= _dt_rf9.timedelta(days=1)  # 盘前基准上一交易日
+                while _ltd9.weekday() >= 5:
+                    _ltd9 -= _dt_rf9.timedelta(days=1)
+                if _rf_ts9.date() < _ltd9.date():
+                    st.markdown(f"<div style='background:#fff7ed;border:1px solid #fdba74;border-radius:6px;"
+                                f"padding:5px 10px;font-size:12.5px;color:#9a3412'>⚠️ 板块轮动预测为 "
+                                f"<b>{_rf_at9}</b> 版，已落后最近交易日——方向判断仅供参考，"
+                                f"等下一个交易日 09:00 盘前刷新。</div>", unsafe_allow_html=True)
+        except Exception:
+            pass
         # 【V88·立刻更新 2026-07-25 用户点单】四数据源各配强刷按钮(60s防重),不等班车
         _rb1, _rb2, _rb3, _rb4 = st.columns(4)
 
@@ -5338,15 +5627,41 @@ try:
         _fr_obj9 = json.loads(_fr_fp9.read_text(encoding="utf-8"))
         _fr_months9 = _fr_obj9.get("months") or {}
         _fr_key9 = sorted(_fr_months9)[-1] if _fr_months9 else ""
-        _fr_tri9 = ((_fr_months9.get(_fr_key9) or {}).get("triad_review") or {})
+        _fr_month9 = _fr_months9.get(_fr_key9) or {}
+        _fr_plan9 = _fr_month9.get("plan") or {}
+        _fr_exec9 = _fr_month9.get("execution_summary") or {}
+        _fr_tri9 = (_fr_month9.get("triad_review") or {})
         _fr_con9 = _fr_tri9.get("consensus") or {}
-        with st.expander("🎖️ Fable复核 · GPT/Codex＋经典书理（不自动交易）", expanded=False):
+        with st.expander("🎖️ Fable月计划状态 · GPT/Codex＋经典书理（不自动交易）", expanded=False):
             st.markdown("<div style='background:#eef2ff;border-left:4px solid #6366f1;border-radius:6px;"
                         "padding:.3rem .6rem;font-size:12px;color:#4338ca'>"
                         "🎖️ 现役复核=GPT/Codex独立判断＋经典书理校验；V88规则闸单独显示。"
                         "复核只提供证据和异议，不自动下单。</div>",
                         unsafe_allow_html=True)
-            st.markdown(f"**月份**：{_fr_key9 or '待生成'}　**状态**：{_fr_con9.get('state','待复核')}　"
+            _fr_has9 = bool(_fr_plan9.get("trades"))
+            st.markdown(
+                f"**月份**：{_fr_key9 or '待生成'}　**计划**："
+                f"{'已有' + str(len(_fr_plan9.get('trades') or [])) + '笔' if _fr_has9 else '空仓待机'}　"
+                f"**执行状态**：{_fr_exec9.get('state') or '待体检'}　"
+                f"**体检时间**：{_fr_month9.get('checked_at') or '—'}")
+            if _fr_has9:
+                _fr_names9 = []
+                for _fr_t9 in (_fr_plan9.get("trades") or []):
+                    _fr_cd9 = str(_fr_t9.get("code") or "")
+                    _fr_nm9 = str(_fr_t9.get("name") or _fr_cd9)
+                    _fr_names9.append(
+                        f'<a href="?q={_fr_cd9}&focus=deep#v88-deep-analysis" target="_blank" '
+                        f'rel="noopener" style="color:#1d4ed8;font-weight:700">{_fr_nm9}</a>')
+                st.markdown(
+                    "<div style='background:#f0fdf4;border-left:4px solid #22c55e;border-radius:6px;"
+                    "padding:.35rem .6rem;font-size:12px;color:#166534'>"
+                    "✅ 本月正式计划：" + "、".join(_fr_names9) + "<br>"
+                    "当前动作：" + str(_fr_exec9.get("current_action") or "维持冻结参数，不追价") + "<br>"
+                    "<b>本轮不新增 ≠ 本月没有推荐</b>；先处理已发布计划的成交/出口/结算。"
+                    "</div>", unsafe_allow_html=True)
+            else:
+                st.caption("本月没有通过硬闸的标的时，空仓待机是元文件规定的合格结果，不会为了凑数硬推。")
+            st.markdown(f"**双层复核**：{_fr_con9.get('state','待复核')}　"
                         f"**分析时间**：{_fr_tri9.get('reviewed_at') or _fr_tri9.get('checked_at') or '—'}")
             for _fr_r9 in (_fr_tri9.get("reviews") or []):
                 st.markdown(f"- **{_fr_r9.get('party')}**：{_fr_r9.get('verdict')}　"
@@ -7825,20 +8140,6 @@ def _search_history_persist(code, name):
 
 _WATCHLIST_MAX = 20
 
-def _canonical_code(code):
-    """把同一只票的不同写法归一，只用于去重比较（不改展示代码）。
-    港股按数字补零到5位：00700.HK == 0700.HK；A股裸6位补市场后缀；.SH→.SS。"""
-    c = str(code).strip().upper()
-    if c.endswith(".HK"):
-        digits = re.sub(r"\D", "", c[:-3])
-        return (digits.lstrip("0").zfill(5) + ".HK") if digits else c
-    if c.endswith(".SH"):
-        c = c[:-3] + ".SS"
-    if c.isdigit() and len(c) == 6:
-        c += ".SS" if c[0] in "569" else ".SZ"
-    return c
-
-
 def _watchlist_save(d):
     # 【V88·重点观察同步】搜索过的个股自动入观察池，镜像到私仓目录随日报提交上云
     try:
@@ -9399,7 +9700,7 @@ def init_stock_pools():
             ("01171", "兖煤澳大利亚", "1171.HK"), ("01772", "赣锋锂业", "1772.HK"), ("02601", "中国铝业", "2601.HK"),
             ("01919", "中远海控", "1919.HK"), ("00358", "江西铜业", "0358.HK"), ("02020", "青岛港", "2020.HK"),
             ("01199", "中远海运港口", "1199.HK"), ("01308", "海丰国际", "1308.HK"), ("00144", "招商局港口", "0144.HK"),
-            ("03366", "中兴通讯", "3366.HK"), ("00941", "中国移动", "0941.HK"), ("00728", "中国电信", "0728.HK"),
+            ("00763", "中兴通讯", "0763.HK"), ("00941", "中国移动", "0941.HK"), ("00728", "中国电信", "0728.HK"),
             ("00762", "中国联通", "0762.HK"), ("06993", "蓝月亮集团", "6993.HK"), ("00688", "中国海外发展", "0688.HK"),
             ("02007", "碧桂园", "2007.HK"), ("01668", "中国建筑国际", "1668.HK"), ("03311", "中国建筑", "3311.HK"),
             ("01800", "中国交建", "1800.HK"), ("01766", "中国中车", "1766.HK"),
@@ -14598,65 +14899,6 @@ def _v88_upside_pct9(_d):
     return max(_cands) if _cands else None
 
 
-_V88_MKT_SCORES_CACHE9 = {"ts": 0.0, "scores": {}}
-
-
-def _v88_market_scores9(_repo):
-    """各大盘2周方向分（顺风闸用），10分钟缓存。"""
-    import time as _tm
-    if _tm.time() - _V88_MKT_SCORES_CACHE9["ts"] < 600 and _V88_MKT_SCORES_CACHE9["scores"]:
-        return _V88_MKT_SCORES_CACHE9["scores"]
-    _out = {}
-    try:
-        _s = json.loads((_repo / "data" / "market_snapshot.json").read_text(encoding="utf-8"))
-        for _mk, _blk in (_s.get("markets") or {}).items():
-            for _lb, _pv in ((_blk.get("l3") or {}).get("probs") or []):
-                if _lb == "2周":
-                    _out[_mk] = int(_pv)
-                    break
-    except Exception:
-        pass
-    _V88_MKT_SCORES_CACHE9.update({"ts": _tm.time(), "scores": _out})
-    return _out
-
-
-def _v88_buy_gate9(_d, _repo):
-    """【V88·推送严选五闸 2026-07-20 用户定纲"推送成功率一定要高"】买入推送只留多信号共振：
-    ①概率闸 2周上涨概率≥65 ②赔率闸 盈亏比≥1.5 ③周期冲突否决
-    ④顺风闸 所属大盘2周分≥45（逆势买入=历史主要亏损源，大盘弱势整市场停推买入）
-    ⑤拥挤闸 东财+雪球双榜热股=散户扎堆反指标，硬否决。
-    宁可少推不可错推——严选提高的是"推给你的"命中率，完整候选仍在双门/黑马模块可看。
-    返回 (通过?, 未过原因)。战绩熔断（类型命中<40%整类停推）由调用方执行。"""
-    _pu = int(_d.get("p_up") or 0)
-    if _pu < 65:
-        return False, ("概率数据缺失" if not _pu else f"概率{_pu}%<65")
-    try:
-        _rr = float(_d.get("rr") or 0)
-    except (TypeError, ValueError):
-        _rr = 0.0
-    if _rr < 1.5:
-        return False, ("赔率数据缺失" if not _rr else f"盈亏比{_rr:.1f}<1.5")
-    if _d.get("cycle_conflict"):
-        return False, "周期冲突"
-    _mk = str(_d.get("market") or "")
-    if not any(_k in _mk for _k in ("美股", "港股", "A股")):
-        try:
-            _mk = market_of_code(str(_d.get("code") or "")) or ""
-        except Exception:
-            _mk = ""
-    for _k, _v in _v88_market_scores9(_repo).items():
-        if _k in _mk and _v is not None and _v < 45:
-            return False, f"{_k}大盘2周分{_v}·逆风停推"
-    try:
-        _cn = _canonical_code(str(_d.get("code") or ""))
-        _hot = (_v88_intel9().get("hot_map") or {}).get(_cn)
-        if _hot and _hot.get("xq"):
-            return False, "双榜拥挤·反指标"
-    except Exception:
-        pass
-    return True, ""
-
-
 def _v88_gate_breaker9(_type_key="entry_green"):
     """战绩熔断：该信号类型近30日实盘命中<40% → 整类停推（返回熔断说明，None=不熔断）。"""
     try:
@@ -15019,7 +15261,6 @@ def _render_four_tier_recos9(_wa, _repo, _is_trading):
 _V88_CAUSE_WORDS = ("因", "由于", "受", "预期", "担忧", "导致", "引发", "拖累", "冲击",
                     "下调", "上调", "抛售", "避险", "回吐", "获利", "政策", "加息", "降息",
                     "利空", "利好", "财报", "业绩", "订单", "涨价", "减产", "制裁", "合作")
-_V88_NEWS_CACHE = {"ts": 0, "news": []}
 
 
 def _v88_fast_news9():
@@ -15277,34 +15518,6 @@ def _v88_fund_edge_short(name, max_len=22):
     except Exception:
         pass
     return ""
-
-
-def _v88_intel9():
-    """【V88·情报二期 2026-07-18】政策直采+人气榜(私仓落盘,10分钟缓存)。
-    返回 {policy:[...], hot_map:{canon:rank}}"""
-    import time as _t
-    _c = _V88_NEWS_CACHE.setdefault("_intel", {"ts": 0, "d": {}})
-    if _t.time() - _c["ts"] < 600 and _c["d"]:
-        return _c["d"]
-    try:
-        _raw = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
-                           "intel_feed.json").read_text(encoding="utf-8"))
-        _c["d"] = {"policy": _raw.get("policy") or [],
-                   "hot_map": {str(h.get("canon")): {"rank": int(h.get("rank") or 0),
-                                                     "xq": h.get("xq_rank")}
-                               for h in (_raw.get("hot") or [])},
-                   "xq_map": {str(x.get("canon")): int(x.get("rank") or 0)
-                              for x in (_raw.get("hot_xq") or [])},
-                   "us_map": {str(u.get("symbol", "")).upper(): int(u.get("rank") or 0)
-                              for u in (_raw.get("hot_us") or [])},
-                   "hot_raw": _raw.get("hot") or [],
-                   "hot_xq_raw": _raw.get("hot_xq") or [],
-                   "hot_us_raw": _raw.get("hot_us") or [],
-                   "generated_at": _raw.get("generated_at", "")}
-    except Exception:
-        _c["d"] = {"policy": [], "hot_map": {}}
-    _c["ts"] = _t.time()
-    return _c["d"]
 
 
 def _v88_success9():
@@ -16045,10 +16258,12 @@ def _render_today_verdict(_snap, _repo):
                          if int(d.get("p_down") or 0) >= 40],
                         key=lambda d: -int(d.get("p_down") or 0))[:3]
                     _gg_near_txt9 = ("；下行概率最高：" + "、".join(
-                        f"{d.get('name')}(下行{int(d.get('p_down') or 0)}%)" for d in _gg_near9)
+                        f"{_stk_link(d.get('name'), d.get('code'))}(下行{int(d.get('p_down') or 0)}%)" for d in _gg_near9)
                         + "——未达警示条件，先观察" if _gg_near9 else "")
-                    st.caption("今日无拐点/破位警示（门槛:破位/顶拐/个股利空/破止损/减仓动作,当前持仓自选无一触发）"
-                               + _gg_near_txt9 + "。大盘偏弱时个股信号可能滞后，防区间看决断卡🔮四档预判。")
+                    st.markdown("<span style='font-size:12px;color:#64748b'>今日无拐点/破位警示"
+                                "（门槛:破位/顶拐/个股利空/破止损/减仓动作,当前持仓自选无一触发）"
+                                + _gg_near_txt9 + "。大盘偏弱时个股信号可能滞后，防区间看决断卡🔮四档预判。</span>",
+                                unsafe_allow_html=True)
 
             # ── 右半：🐉 龙虎门 ─────────────────────────────
             with _colLH9:
@@ -16644,13 +16859,30 @@ def _render_today_nav():
                 import hashlib as _hl9
                 _a = _hl9.sha256((Path.cwd() / "v88_decision_core.py").read_bytes()).hexdigest()
                 _b = _hl9.sha256((_repo / "src" / "v88_decision_core.py").read_bytes()).hexdigest()
-                _hb["sync_ok"] = (_a == _b)
+                _hb["core_sync_ok"] = (_a == _b)
             except Exception:
-                _hb["sync_ok"] = None
-            # AI预算
+                _hb["core_sync_ok"] = None
+            # 控制面真相：版本、冲突、周报与事实闸。文件哈希相同不代表仓库同步。
             try:
-                import v88_ai_budget as _wbm
-                _hb["budget"] = round(float(_wbm.status().get("spent", 0)), 2)
+                _hg9 = json.loads((_repo / "data" / "health_gate.json").read_text(encoding="utf-8"))
+                _cp9 = _hg9.get("control_plane") or {}
+                _hb["control"] = _cp9
+                _hb["sync_ok"] = (bool(_cp9.get("in_sync"))
+                                  and not int(_cp9.get("unresolved_count") or 0)
+                                  and _hb.get("core_sync_ok") is not False)
+                _hb["degraded"] = bool(_hg9.get("degraded"))
+                _hb["degraded_reasons"] = list(_hg9.get("reasons") or [])
+            except Exception:
+                _hb["control"] = {}
+                _hb["sync_ok"] = False
+                _hb["degraded"] = True
+                _hb["degraded_reasons"] = ["健康闸不可读"]
+            # AI预算只读预算真相账，禁止再用桌面进程自己的局部计数冒充实付。
+            try:
+                _bt9 = json.loads((_repo / "data" / "budget_truth.json").read_text(encoding="utf-8"))
+                _hb["budget"] = round(float(_bt9.get("real_month_spent") or 0), 2)
+                _hb["budget_cap"] = float(_bt9.get("budget_cap") or 10)
+                _hb["budget_projection"] = float(_bt9.get("month_projection") or 0)
             except Exception:
                 _hb["budget"] = None
             # 云端在线：/_stcore/health 返回200=在线，303=被登录墙挡(保活失效)，超时=挂了
@@ -16671,8 +16903,9 @@ def _render_today_nav():
                             "#16a34a" if _dm < 90 else "#ea580c"))
         _bd = _hb.get("budget")
         if _bd is not None:
-            _bp = _bd / 10 * 100
-            _parts9.append((f"🧮 AI实付{_bd}/10元（基础7＋重点3）", "#dc2626" if _bp >= 95 else ("#ea580c" if _bp >= 80 else "#64748b")))
+            _bc = float(_hb.get("budget_cap") or 10)
+            _bp = _bd / _bc * 100 if _bc else 100
+            _parts9.append((f"🧮 AI实付{_bd}/{_bc:g}元", "#dc2626" if _bp >= 95 else ("#ea580c" if _bp >= 80 else "#64748b")))
         _sy = _hb.get("sync_ok")
         if _sy is not None:
             _parts9.append(("🔗 三端同步✓" if _sy else "🔗 三端漂移⚠️", "#16a34a" if _sy else "#dc2626"))
@@ -16682,6 +16915,9 @@ def _render_today_nav():
                    "down": ("☁️ 云端离线·需重启", "#dc2626")}.get(_cl)
         if _cl_txt:
             _parts9.append(_cl_txt)
+        if _hb.get("degraded"):
+            _whyh9 = "；".join(str(x) for x in (_hb.get("degraded_reasons") or [])[:2])
+            _parts9.append((f"⛔ 决策降级：{_whyh9}", "#dc2626"))
         # 【V88·异常哨兵 2026-07-24】今日被吞渲染异常计数——不再让模块静默消失
         try:
             _re9h = json.loads((_repo / "data" / "render_errors.json").read_text(encoding="utf-8"))
@@ -17168,7 +17404,7 @@ def _render_today_nav():
                     st.markdown("**📅 美股财报窗**（持仓7日内=降险）")
                     if _n_urg9:
                         for _u9 in (_ec9.get("urgent_holdings") or [])[:5]:
-                            st.markdown(f"<div style='font-size:12px;color:#dc2626'>🔴 {_u9}"
+                            st.markdown(f"<div style='font-size:12px;color:#dc2626'>🔴 {_linkify_md(str(_u9))}"
                                         "→财报前不加仓</div>", unsafe_allow_html=True)
                     else:
                         st.markdown("<div style='font-size:12px;color:#64748b'>持仓7日内无财报</div>",
@@ -17180,7 +17416,7 @@ def _render_today_nav():
                         for _r9 in _fr9:
                             _cl9 = "#dc2626" if _r9["risk"] >= 25 else "#b45309"
                             st.markdown(
-                                f"<div style='font-size:12px;margin:1px 0'>{_r9.get('name')} "
+                                f"<div style='font-size:12px;margin:1px 0'>{_stk_link(_r9.get('name'), _r9.get('code'))} "
                                 f"质量<b>{_r9['quality']}</b>/风险<b style='color:{_cl9}'>{_r9['risk']}</b> "
                                 f"<span style='color:#64748b'>{'；'.join((_r9.get('risk_reasons') or [])[:2])}</span></div>",
                                 unsafe_allow_html=True)
@@ -17192,7 +17428,7 @@ def _render_today_nav():
                     if _er9:
                         for _r9 in _er9:
                             st.markdown(
-                                f"<div style='font-size:12px;margin:1px 0'>{_r9.get('name')} "
+                                f"<div style='font-size:12px;margin:1px 0'>{_stk_link(_r9.get('name'), _r9.get('code'))} "
                                 f"<b>{_r9.get('expectation_proxy_score'):+d}</b> "
                                 f"<span style='color:#64748b'>{'；'.join((_r9.get('components') or [])[:2])}</span></div>",
                                 unsafe_allow_html=True)
@@ -17643,9 +17879,11 @@ def _render_today_nav():
                         _src9 = "＋".join(_h9.get("sources") or [])
                         _tc9 = _h9.get("touch") or ""
                         _pl9 = (_h9.get("trade_plan") or {}).get("short") or {}
-                        st.caption(f"{'🔴' if _h9.get('grade') == '重点' else '🟡'} {_h9.get('name')}："
-                                   f"来源[{_src9[:40]}]{('·' + _tc9) if _tc9 else ''} ｜ "
-                                   f"{str(_pl9.get('in', ''))[:60]} → {str(_pl9.get('out', ''))[:40]}")
+                        st.markdown(
+                            f"<span style='font-size:12px;color:#64748b'>{'🔴' if _h9.get('grade') == '重点' else '🟡'} "
+                            f"{_stk_link(_h9.get('name'), _h9.get('code'))}：来源[{_src9[:40]}]"
+                            f"{('·' + _tc9) if _tc9 else ''} ｜ {str(_pl9.get('in', ''))[:60]} → "
+                            f"{str(_pl9.get('out', ''))[:40]}</span>", unsafe_allow_html=True)
             else:
                 st.caption(f"🐴 黑马雷达：今日无达标黑马（{_fn_txt9}）——严门槛宁缺毋滥，拦截原因如上。")
             # 【V88·相对最优候选榜 2026-07-19 用户点单】0达标也要有结果：被拦截者中
@@ -18199,7 +18437,12 @@ with st.expander("🎖️ Fable月计划 · 每月$125（GPT/Codex＋经典书�
         _fpp9 = _fpm9.get("plan") or {}
         if not _fpp9:
             if _fp9.get("private_redacted"):
-                st.caption("云端公开版不展示具体仓位与交易参数；完整 Fable 计划仅在桌面/飞书私域显示。")
+                _fps9 = _fp9.get("plan_summary") or {}
+                st.info(f"{_fps9.get('state') or 'Fable计划状态已隐私保护'}｜"
+                        f"本月计划{_fps9.get('trade_count', 0)}笔｜"
+                        f"{_fps9.get('current_action') or '完整计划仅在桌面/飞书私域显示'}")
+                st.caption(_fps9.get("meaning") or
+                           "云端公开版不展示具体仓位与交易参数；完整 Fable 计划仅在桌面/飞书私域显示。")
             else:
                 st.caption(_fpm9.get("why") or "本月计划未出——空仓待机是合格结果,不是失败。")
         else:
@@ -18207,34 +18450,38 @@ with st.expander("🎖️ Fable月计划 · 每月$125（GPT/Codex＋经典书�
                        f"目标 ${_fpp9.get('target_usd')}｜{_fpp9.get('governance')}")
             for _t9f in (_fpp9.get("trades") or []):
                 st.markdown(
-                    f"**{_t9f.get('name')}** `{_t9f.get('code')}`　【{_t9f.get('school')}】"
+                    f"**{_stk_link(_t9f.get('name'), _t9f.get('code'))}** `{_t9f.get('code')}`　【{_t9f.get('school')}】"
                     f"　计划赔率 {_t9f.get('plan_rr')}　最大亏损 ${_t9f.get('max_loss_usd')}\n"
                     f"- ① 买入：**限价 {_t9f.get('entry_limit')} × {_t9f.get('shares')}股**"
                     f"　{_t9f.get('entry_rule')}\n"
                     f"- ② 止盈：**{_t9f.get('take_profit')}**　{_t9f.get('tp_rule')}\n"
                     f"- ③ 止损：**收盘 < {_t9f.get('stop_close')}**　{_t9f.get('sl_rule')}\n"
                     f"- ④ 时间闸：**{_t9f.get('time_gate')}**　{_t9f.get('tg_rule')}\n"
-                    f"- 诚实赔率：{_t9f.get('honest_odds')}")
+                    f"- 诚实赔率：{_t9f.get('honest_odds')}", unsafe_allow_html=True)
             for _r9f in (_fpm9.get("status_rows") or []):
                 for _a9f in (_r9f.get("alerts") or []):
-                    st.warning(f"{_r9f.get('name')}：{_a9f}")
+                    st.markdown(
+                        f"<div style='background:#fff7ed;color:#9a3412;border-radius:6px;padding:7px 10px'>"
+                        f"{_stk_link(_r9f.get('name'), _r9f.get('code'))}：{_a9f}</div>",
+                        unsafe_allow_html=True)
             _wc9f = _fpp9.get("watch_conditional") or []
             if _wc9f:
-                st.caption("条件单（触发才动）：" + "；".join(
-                    f"{w.get('name')}·{w.get('trigger')}" for w in _wc9f))
+                st.markdown("<span style='font-size:12px;color:#64748b'>条件单（触发才动）：" + "；".join(
+                    f"{_stk_link(w.get('name'), w.get('code'))}·{w.get('trigger')}" for w in _wc9f)
+                    + "</span>", unsafe_allow_html=True)
             st.caption("硬约束：单月风险敞口≤$125｜无合格候选=空仓待机（合格结果）｜"
                        "**禁止为凑目标下调门槛或放大仓位**｜miss不加倍追｜财报窗强平")
         _ftr9 = _fpm9.get("triad_review") or _fp9.get("triad_review") or {}
         if _ftr9:
             _fcs9 = _ftr9.get("consensus") or {}
             _fst9 = str(_fcs9.get("state") or "未完成")
-            if "三方通过" in _fst9:
-                st.success(f"三方会审：{_fst9}｜分析 {_ftr9.get('reviewed_at') or _ftr9.get('checked_at') or '?'}")
+            if "通过" in _fst9:
+                st.success(f"双层复核：{_fst9}｜分析 {_ftr9.get('reviewed_at') or _ftr9.get('checked_at') or '?'}")
             elif "分歧" in _fst9:
-                st.error(f"三方会审：{_fst9}｜{_fcs9.get('action','')}")
+                st.error(f"双层复核：{_fst9}｜{_fcs9.get('action','')}｜不取消已发布计划的止损/止盈/时间闸")
             else:
-                st.warning(f"三方会审：{_fst9}｜{_fcs9.get('action','')}")
-            _fcols9 = st.columns(3)
+                st.warning(f"双层复核：{_fst9}｜{_fcs9.get('action','')}")
+            _fcols9 = st.columns(2)
             for _fc9, _frv9 in zip(_fcols9, _ftr9.get("reviews") or []):
                 _fc9.caption(
                     f"**{_frv9.get('party')}** · {_frv9.get('verdict')}\n\n"
@@ -18814,6 +19061,30 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
     _rl_bt9 = _v88_rate_line9("bottom_turn", "触底拐点池")
     if _rl_bt9:
         st.caption(_rl_bt9)
+    # 【2026-08-16 Kimi加·过期警示】离线管线曾因本地脏文件顶住 safe_pull 的 autostash
+    # 而停滞(08-07旧版盖掉08-14新版,已修)。数据若落后于最近一个交易日→红条警示不可执行。
+    # 周末/周一盘前不算过期:以最近一个工作日为基准,避免周五数据在周日误报。
+    try:
+        import datetime as _dt_bt9
+        _btp_gen9 = str(json.loads((Path.home() / "Desktop" / "ai-daily-report-v2"
+                                   / "data" / "bottom_turn_pool.json").read_text(encoding="utf-8")
+                                   ).get("generated_at") or "")[:16]
+        _btp_ts9 = _dt_bt9.datetime.strptime(_btp_gen9, "%Y-%m-%d %H:%M")
+        _now9 = _dt_bt9.datetime.now()
+        _last_td9 = _now9.replace(hour=0, minute=0, second=0, microsecond=0)
+        if _now9.weekday() < 5 and _now9.hour < 18:
+            _last_td9 -= _dt_bt9.timedelta(days=1)  # 交易日下午5点前,基准是上一交易日
+        while _last_td9.weekday() >= 5:  # 周末不算交易日,回退到周五
+            _last_td9 -= _dt_bt9.timedelta(days=1)
+        if _btp_ts9.date() < _last_td9.date():
+            _btp_age9 = (_now9 - _btp_ts9).days
+            st.markdown(f"<div style='background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;"
+                        f"padding:6px 10px;font-size:12.5px;color:#b91c1c'>⚠️ 本池数据为 "
+                        f"<b>{_btp_gen9}</b> 生成，落后最近交易日 <b>{_btp_age9} 天</b>——"
+                        f"名单只作研究参考，<b>不可直接执行</b>；管线恢复后本警示自动消失。</div>",
+                        unsafe_allow_html=True)
+    except Exception:
+        pass
     # ═══ 【2026-08-03 用户"每次点击都不出来,优化一下"】离线化改造 ═══
     # 原实现把 565 只全量扫描挂在按钮上:前台跑 6-12 分钟,Streamlit 任何一次
     # rerun 就全丢 —— 用户体感是"点了没反应",其实它一直在跑,只是从没跑到能显示。
