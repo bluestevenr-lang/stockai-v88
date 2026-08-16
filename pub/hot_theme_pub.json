@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-14 18:10（北京时间）",
+ "generated_at": "2026-08-16 05:14（北京时间）",
  "note": "题材雷达(提前量优先):**主榜=蓄势**——主力净流入靠前但涨幅还没起来,钱先动价后动,这是还能上车的地方;连续净流入天数越多=潜伏越久。副榜=已在涨的,给你看清楚但标明追高风险(涨且进钱=真金,只涨不进钱=情绪脉冲)。已剔除东财的行为统计分类(昨日涨停/连板/次新等,那不是产业题材)。",
  "brewing": [
   {
@@ -8,11 +8,11 @@
    "net_yi": 93.8,
    "chg": 1.06,
    "flow_rank": 5,
-   "inflow_streak": 7,
+   "inflow_streak": 10,
    "leader": "康盛股份",
    "leader_chg": 10.0,
-   "why": "主力净流入93.80亿(第5名)但只涨+1.06%·已连续7日净流入",
-   "grade": "🌱潜伏中(连续7日进钱·价未动)",
+   "why": "主力净流入93.80亿(第5名)但只涨+1.06%·已连续10日净流入",
+   "grade": "🌱潜伏中(连续10日进钱·价未动)",
    "members": [
     {
      "code": "300017.SZ",
@@ -50,11 +50,11 @@
    "net_yi": 33.67,
    "chg": 0.88,
    "flow_rank": 20,
-   "inflow_streak": 2,
+   "inflow_streak": 6,
    "leader": "华正新材",
    "leader_chg": 10.0,
-   "why": "主力净流入33.67亿(第20名)但只涨+0.88%·已连续2日净流入",
-   "grade": "🌱蓄势(钱进价未动)",
+   "why": "主力净流入33.67亿(第20名)但只涨+0.88%·已连续6日净流入",
+   "grade": "🌱潜伏中(连续6日进钱·价未动)",
    "members": [
     {
      "code": "300985.SZ",
@@ -87,58 +87,16 @@
    ]
   },
   {
-   "bk": "BK0710",
-   "name": "量子科技",
-   "net_yi": 48.69,
-   "chg": 1.02,
-   "flow_rank": 13,
-   "inflow_streak": 1,
-   "leader": "大豪科技",
-   "leader_chg": 10.0,
-   "why": "主力净流入48.69亿(第13名)但只涨+1.02%",
-   "grade": "👀今日首次进钱",
-   "members": [
-    {
-     "code": "600487.SS",
-     "name": "亨通光电",
-     "last": 62.98,
-     "chg": 10.01,
-     "turnover": 12.97
-    },
-    {
-     "code": "603025.SS",
-     "name": "大豪科技",
-     "last": 15.18,
-     "chg": 10.0,
-     "turnover": 1.88
-    },
-    {
-     "code": "600522.SS",
-     "name": "中天科技",
-     "last": 35.55,
-     "chg": 8.05,
-     "turnover": 11.31
-    },
-    {
-     "code": "688828.SS",
-     "name": "C国仪-U",
-     "last": 103.11,
-     "chg": 4.67,
-     "turnover": 34.6
-    }
-   ]
-  },
-  {
    "bk": "BK0579",
    "name": "云计算",
    "net_yi": 32.04,
    "chg": 0.98,
    "flow_rank": 21,
-   "inflow_streak": 1,
+   "inflow_streak": 3,
    "leader": "数据港",
    "leader_chg": 10.0,
-   "why": "主力净流入32.04亿(第21名)但只涨+0.98%",
-   "grade": "👀今日首次进钱",
+   "why": "主力净流入32.04亿(第21名)但只涨+0.98%·已连续3日净流入",
+   "grade": "🌱潜伏中(连续3日进钱·价未动)",
    "members": [
     {
      "code": "300017.SZ",
@@ -169,6 +127,48 @@
      "turnover": 10.1
     }
    ]
+  },
+  {
+   "bk": "BK0710",
+   "name": "量子科技",
+   "net_yi": 48.69,
+   "chg": 1.02,
+   "flow_rank": 13,
+   "inflow_streak": 2,
+   "leader": "大豪科技",
+   "leader_chg": 10.0,
+   "why": "主力净流入48.69亿(第13名)但只涨+1.02%·已连续2日净流入",
+   "grade": "🌱蓄势(钱进价未动)",
+   "members": [
+    {
+     "code": "600487.SS",
+     "name": "亨通光电",
+     "last": 62.98,
+     "chg": 10.01,
+     "turnover": 12.97
+    },
+    {
+     "code": "603025.SS",
+     "name": "大豪科技",
+     "last": 15.18,
+     "chg": 10.0,
+     "turnover": 1.88
+    },
+    {
+     "code": "600522.SS",
+     "name": "中天科技",
+     "last": 35.55,
+     "chg": 8.05,
+     "turnover": 11.31
+    },
+    {
+     "code": "688828.SS",
+     "name": "C国仪-U",
+     "last": 103.11,
+     "chg": 4.67,
+     "turnover": 34.6
+    }
+   ]
   }
  ],
  "themes": [
@@ -182,8 +182,8 @@
    "leader": "天洋新材",
    "leader_chg": 9.99,
    "both_lists": true,
-   "streak_days": 1,
-   "kind": "💰真金(涨且进钱·第1天)",
+   "streak_days": 4,
+   "kind": "🔥主线(涨且进钱)",
    "members": [
     {
      "code": "300814.SZ",
@@ -225,8 +225,8 @@
    "leader": "共进股份",
    "leader_chg": 10.03,
    "both_lists": true,
-   "streak_days": 1,
-   "kind": "💰真金(涨且进钱·第1天)",
+   "streak_days": 2,
+   "kind": "💰真金(涨且进钱·第2天)",
    "members": [
     {
      "code": "603118.SS",
@@ -268,8 +268,8 @@
    "leader": "富信科技",
    "leader_chg": 20.0,
    "both_lists": true,
-   "streak_days": 1,
-   "kind": "💰真金(涨且进钱·第1天)",
+   "streak_days": 4,
+   "kind": "🔥主线(涨且进钱)",
    "members": [
     {
      "code": "688662.SS",
@@ -311,8 +311,8 @@
    "leader": "大唐电信",
    "leader_chg": 9.96,
    "both_lists": false,
-   "streak_days": 1,
-   "kind": "⚡情绪脉冲(只涨没进钱)",
+   "streak_days": 2,
+   "kind": "📈连涨2天(资金未跟)",
    "members": [
     {
      "code": "300017.SZ",
@@ -354,8 +354,8 @@
    "leader": "行云科技",
    "leader_chg": 10.13,
    "both_lists": false,
-   "streak_days": 1,
-   "kind": "⚡情绪脉冲(只涨没进钱)",
+   "streak_days": 3,
+   "kind": "📈连涨3天(资金未跟)",
    "members": [
     {
      "code": "300209.SZ",
@@ -397,8 +397,8 @@
    "leader": "杭电股份",
    "leader_chg": 10.02,
    "both_lists": true,
-   "streak_days": 1,
-   "kind": "💰真金(涨且进钱·第1天)",
+   "streak_days": 4,
+   "kind": "🔥主线(涨且进钱)",
    "members": [
     {
      "code": "688143.SS",
@@ -440,8 +440,8 @@
    "leader": "九州一轨",
    "leader_chg": 20.01,
    "both_lists": false,
-   "streak_days": 1,
-   "kind": "⚡情绪脉冲(只涨没进钱)",
+   "streak_days": 2,
+   "kind": "📈连涨2天(资金未跟)",
    "members": [
     {
      "code": "688485.SS",
@@ -483,8 +483,8 @@
    "leader": "中石科技",
    "leader_chg": 20.01,
    "both_lists": false,
-   "streak_days": 1,
-   "kind": "⚡情绪脉冲(只涨没进钱)",
+   "streak_days": 2,
+   "kind": "📈连涨2天(资金未跟)",
    "members": [
     {
      "code": "300684.SZ",
@@ -526,8 +526,8 @@
    "leader": "中巨芯-U",
    "leader_chg": 7.66,
    "both_lists": false,
-   "streak_days": 1,
-   "kind": "⚡情绪脉冲(只涨没进钱)",
+   "streak_days": 4,
+   "kind": "📈连涨4天(资金未跟)",
    "members": [
     {
      "code": "688549.SS",
@@ -569,8 +569,8 @@
    "leader": "金田股份",
    "leader_chg": 10.05,
    "both_lists": false,
-   "streak_days": 1,
-   "kind": "⚡情绪脉冲(只涨没进钱)",
+   "streak_days": 2,
+   "kind": "📈连涨2天(资金未跟)",
    "members": [
     {
      "code": "601609.SS",
