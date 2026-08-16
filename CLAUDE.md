@@ -54,6 +54,30 @@
 - 中文 Windows 的 `%date%` 形如「周四 2026/07/30」，按 delims 切会把星期当年份 ——
   取日期走 `powershell -NoProfile -Command "Get-Date -Format yyyyMMdd"`。
 
+## 三方会谈（2026-08-16 恢复·Kimi 接替 Claude 席位）
+- **3A 必须三方会谈**：GPT + Kimi + 经典书理 全通过才可执行/推送。
+- **2A 及以上必须共同认可（22:32 用户定纲）**：GPT 和 Kimi 双双明确「通过」
+  才算数——「不否定」「不可用」一律不算认可。
+- **其他层级主动精选**：允许「不否定」，但 Kimi/GPT 每方主动「通过」的精选票
+  最多 2 只（Kimi 优先从 GPT 未否决的票里挑），宁缺毋滥；禁止一排不否定或
+  各推一堆各自为战；分歧以 ⚔️ 逐只显式点名。
+- Kimi 裁决落盘 `data/kimi_verify.json`（verdict + book_verdict + ts），
+  由 Mac 上 Kimi 定时任务产出：交易日 19:52 评审、周日 20:47 周报。
+- 读取端：`recommendation_gate.kimi_review_for()`；推送闸 `assess_value/assess_trend`
+  已接入（Kimi 当日正向复核是 push_eligible 的必要条件），飞书推送经 value_zone/
+  trend_shift 的 push_eligible 自动遵守；桌面 `_v88_buy_gate9` 同款双剑+3A三方。
+- 徽章三色：C=V88规则(金/绿)、G=GPT(青)、K=Kimi(紫)；无记录不显示。
+- **核实通道（2026-08-17 00:49 用户定纲，取代此前插件授权）**：评审核实只用
+  ①GPT 实时会审（codex CLI）②Kimi 独立判断（V88 冻结数据+书理）。
+  **禁用 iFinD/Yahoo Finance 等第三方数据源作为裁决依据**。拿不到证据就给
+  「不否定」并写明缺什么，不许编。
+- **全池同步鉴定（00:49 用户定纲）**：每班对 market_pool 全池（2241只）逐只过规则，
+  覆盖数不得低于 GPT 复核数；不能只看 V88 推送的候选。
+- **GPT 实时会审通道（2026-08-16 深夜上线）**：本机 codex CLI（复用 ~/.codex 登录态）。
+  Kimi 评审 3A 候选时现场 `codex exec` 问 GPT，裁决原样中转写 gpt_verify.json
+  （via=kimi-codex-relay 标记，ts 带时分秒）；超时/失败自动降级回异步文件裁决。
+  时效语义：ts 必须带时分秒走严格 24h 窗口；仅日期一律失效（23:07 用户裁定）。
+
 ## 装机与排障
 
 见 `win/README-常驻.md`。日志在 `win\logs\remote_YYYYMMDD.log`。
