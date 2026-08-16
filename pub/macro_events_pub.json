@@ -1,5 +1,58 @@
 {
- "generated_at": "2026-08-15 20:22（北京时间）",
- "note": "宏观硬表(FOMC官网/非农=首周五)+Nasdaq财报日历;政治局会议等无固定日事件由新闻/预案覆盖(公开版:个股仅七巨头)",
- "events": []
+ "generated_at": "2026-08-16 19:03（北京时间）",
+ "note": "宏观硬表(Fed/BLS/Census官方日历)+Nasdaq财报日历;接口降级会显式标注，不再把失败伪装成无事件(公开版:个股仅七巨头)",
+ "source_status": {
+  "official_hard_calendar": "ok",
+  "nasdaq_earnings": "ok",
+  "detail": {
+   "nasdaq_success": 8,
+   "nasdaq_fail": 0,
+   "nonus_success": 11,
+   "nonus_fail": 0
+  }
+ },
+ "events": [
+  {
+   "date": "2026-08-18",
+   "dow": "二",
+   "event": "美国工业产出",
+   "kind": "宏观",
+   "note": "美东9:15·制造业景气"
+  },
+  {
+   "date": "2026-08-18",
+   "dow": "二",
+   "event": "美国新屋开工/营建许可",
+   "kind": "宏观",
+   "note": "美东8:30·地产与利率敏感"
+  },
+  {
+   "date": "2026-08-19",
+   "dow": "三",
+   "event": "FOMC7月会议纪要",
+   "kind": "宏观",
+   "note": "美东14:00·关注措辞与降息路径分歧"
+  },
+  {
+   "date": "2026-08-25",
+   "dow": "二",
+   "event": "美国新屋销售",
+   "kind": "宏观",
+   "note": "美东10:00·地产需求"
+  },
+  {
+   "date": "2026-08-26",
+   "dow": "三",
+   "event": "美国耐用品订单",
+   "kind": "宏观",
+   "note": "美东8:30·企业投资线索"
+  },
+  {
+   "date": "2026-08-26",
+   "dow": "三",
+   "event": "英伟达(NVDA)财报",
+   "kind": "财报",
+   "note": "盘后"
+  }
+ ]
 }

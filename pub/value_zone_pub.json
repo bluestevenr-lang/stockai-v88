@@ -1,7 +1,7 @@
 {
- "generated_at": "2026-08-16 14:39（北京时间）",
+ "generated_at": "2026-08-16 21:47（北京时间）",
  "note": "⚾击球区雷达(2026-07-27礼来案定纲):优质白马(可得历史年化≥8%质量闸)跌进历史便宜区→主动喊进,不等技术右侧;概率=该股自身10年回撤回测(n次同级→6月胜率/中位),非拍脑袋;分级:👀-15%关注/⚾-20%击球分批/🔨-28%重锤;台账kind=value_zone六月窗核算;主动推送另要求至少5年历史,不足者保留研究而不冒充长期统计",
- "studied": 171,
+ "studied": 177,
  "rows": [
   {
    "code": "MCD",
@@ -43,6 +43,7 @@
    "win_rate": 100.0,
    "win_rate_lower95": 61.0,
    "gpt_verdict": "不可用",
+   "kimi_verdict": "不可用",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -78,13 +79,15 @@
    "push_eligible": false,
    "quality_status": "研究候选",
    "quality_reasons": [
-    "可得历史仅4.0年<5年"
+    "可得历史仅4.0年<5年",
+    "Kimi未完成当日正向复核（双剑合璧缺一剑）"
    ],
    "canonical_name": "德明利",
    "sample_n": 10,
    "win_rate": 90.0,
    "win_rate_lower95": 59.6,
    "gpt_verdict": "通过",
+   "kimi_verdict": "不可用",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -121,13 +124,15 @@
    "quality_status": "研究候选",
    "quality_reasons": [
     "历史最差-55.0%",
-    "GPT未完成当日正向复核"
+    "GPT未完成当日正向复核",
+    "Kimi未完成当日正向复核（双剑合璧缺一剑）"
    ],
    "canonical_name": "BioNTech",
    "sample_n": 10,
    "win_rate": 90.0,
    "win_rate_lower95": 59.6,
    "gpt_verdict": "不否定",
+   "kimi_verdict": "不可用",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -168,6 +173,7 @@
    "win_rate": 83.0,
    "win_rate_lower95": 60.8,
    "gpt_verdict": "通过",
+   "kimi_verdict": "通过",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -205,13 +211,15 @@
    "quality_reasons": [
     "历史样本仅6次<8",
     "胜率95%下限仅44%<50%",
-    "GPT未完成当日正向复核"
+    "GPT未完成当日正向复核",
+    "Kimi未完成当日正向复核（双剑合璧缺一剑）"
    ],
    "canonical_name": "卓胜微",
    "sample_n": 6,
    "win_rate": 83.0,
    "win_rate_lower95": 43.6,
    "gpt_verdict": "不否定",
+   "kimi_verdict": "不可用",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -252,51 +260,7 @@
    "win_rate": 82.0,
    "win_rate_lower95": 59.0,
    "gpt_verdict": "通过",
-   "probability_label": "该股历史条件频率（非保证）"
-  },
-  {
-   "code": "3692.HK",
-   "name": "翰森制药",
-   "last": 33.3,
-   "dd_pct": -22.7,
-   "pos52": 33.5,
-   "cagr10y": 8.9,
-   "history_years": 7.0,
-   "low52": 28.38,
-   "low_all": 9.15,
-   "to_low52_pct": 17.3,
-   "to_lowall_pct": 264.0,
-   "at_52low": false,
-   "at_all_low": false,
-   "level": "🟢打折到位·可开始买",
-   "level_note": "好公司明显打折——开始分批买",
-   "backtest": {
-    "n": 5,
-    "wins": 4,
-    "win_pct": 80,
-    "median": 14.8,
-    "worst": -39.2
-   },
-   "bt_line": "该股历史5次同级回撤→6月后4涨1跌·中位+14.8%·最差-39.2%",
-   "verdict": "进",
-   "turning_bottom": false,
-   "rules_gate": "gate_pass",
-   "gpt": "未验证",
-   "track": false,
-   "display_eligible": true,
-   "push_eligible": false,
-   "quality_status": "研究候选",
-   "quality_reasons": [
-    "历史样本仅5次<8",
-    "胜率95%下限仅38%<50%",
-    "历史最差-39.2%",
-    "GPT未完成当日正向复核"
-   ],
-   "canonical_name": "翰森制药",
-   "sample_n": 5,
-   "win_rate": 80.0,
-   "win_rate_lower95": 37.6,
-   "gpt_verdict": "不否定",
+   "kimi_verdict": "通过",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -333,13 +297,15 @@
    "quality_status": "研究候选",
    "quality_reasons": [
     "胜率95%下限仅41%<50%",
-    "GPT未完成当日正向复核"
+    "GPT未完成当日正向复核",
+    "Kimi未完成当日正向复核（双剑合璧缺一剑）"
    ],
    "canonical_name": "震裕科技",
    "sample_n": 8,
    "win_rate": 75.0,
    "win_rate_lower95": 40.9,
    "gpt_verdict": "不否定",
+   "kimi_verdict": "不可用",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -376,13 +342,15 @@
    "quality_status": "研究候选",
    "quality_reasons": [
     "胜率95%下限仅41%<50%",
-    "GPT未完成当日正向复核"
+    "GPT未完成当日正向复核",
+    "Kimi未完成当日正向复核（双剑合璧缺一剑）"
    ],
    "canonical_name": "赣锋锂业",
    "sample_n": 8,
    "win_rate": 75.0,
    "win_rate_lower95": 40.9,
    "gpt_verdict": "不否定",
+   "kimi_verdict": "不可用",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -418,13 +386,15 @@
    "push_eligible": false,
    "quality_status": "研究候选",
    "quality_reasons": [
-    "GPT未完成当日正向复核"
+    "GPT未完成当日正向复核",
+    "Kimi未完成当日正向复核（双剑合璧缺一剑）"
    ],
    "canonical_name": "中远海能",
    "sample_n": 16,
    "win_rate": 75.0,
    "win_rate_lower95": 50.5,
    "gpt_verdict": "不否定",
+   "kimi_verdict": "不可用",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -468,6 +438,7 @@
    "win_rate": 75.0,
    "win_rate_lower95": 30.1,
    "gpt_verdict": "不否定",
+   "kimi_verdict": "不可用",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -510,6 +481,7 @@
    "win_rate": 75.0,
    "win_rate_lower95": 30.1,
    "gpt_verdict": "不否定",
+   "kimi_verdict": "不可用",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -545,13 +517,58 @@
    "push_eligible": false,
    "quality_status": "研究候选",
    "quality_reasons": [
-    "胜率95%下限仅41%<50%"
+    "胜率95%下限仅41%<50%",
+    "Kimi未完成当日正向复核（双剑合璧缺一剑）"
    ],
    "canonical_name": "劳氏",
    "sample_n": 8,
    "win_rate": 75.0,
    "win_rate_lower95": 40.9,
    "gpt_verdict": "通过",
+   "kimi_verdict": "不可用",
+   "probability_label": "该股历史条件频率（非保证）"
+  },
+  {
+   "code": "3692.HK",
+   "name": "翰森制药",
+   "last": 33.3,
+   "dd_pct": -22.7,
+   "pos52": 33.5,
+   "cagr10y": 8.9,
+   "history_years": 7.0,
+   "low52": 28.38,
+   "low_all": 9.15,
+   "to_low52_pct": 17.3,
+   "to_lowall_pct": 264.0,
+   "at_52low": false,
+   "at_all_low": false,
+   "level": "🟢打折到位·可开始买",
+   "level_note": "好公司明显打折——开始分批买",
+   "backtest": {
+    "n": 4,
+    "wins": 3,
+    "win_pct": 75,
+    "median": 14.8,
+    "worst": -39.2
+   },
+   "bt_line": "该股历史4次同级回撤→6月后3涨1跌·中位+14.8%·最差-39.2%",
+   "verdict": "进",
+   "turning_bottom": false,
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "track": false,
+   "display_eligible": false,
+   "push_eligible": false,
+   "quality_status": "观察/拦截",
+   "quality_reasons": [
+    "历史样本仅4次<5"
+   ],
+   "canonical_name": "翰森制药",
+   "sample_n": 4,
+   "win_rate": 75.0,
+   "win_rate_lower95": 30.1,
+   "gpt_verdict": "不否定",
+   "kimi_verdict": "不可用",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -580,7 +597,7 @@
    "bt_line": "该股历史4次同级回撤→6月后3涨1跌·中位+60.1%·最差-21.6%",
    "verdict": "进",
    "turning_bottom": false,
-   "rules_gate": "未覆盖",
+   "rules_gate": "gate_pass",
    "gpt": "未验证",
    "track": false,
    "display_eligible": false,
@@ -593,7 +610,8 @@
    "sample_n": 4,
    "win_rate": 75.0,
    "win_rate_lower95": 30.1,
-   "gpt_verdict": "不可用",
+   "gpt_verdict": "不否定",
+   "kimi_verdict": "不可用",
    "probability_label": "该股历史条件频率（非保证）"
   },
   {
@@ -622,8 +640,8 @@
    "bt_line": "该股历史7次同级回撤→6月后5涨2跌·中位+45.1%·最差-51.6%",
    "verdict": "进",
    "turning_bottom": false,
-   "rules_gate": "未覆盖",
-   "gpt": "未验证",
+   "rules_gate": "gate_pass",
+   "gpt": "pass",
    "track": false,
    "display_eligible": true,
    "push_eligible": false,
@@ -632,14 +650,14 @@
     "历史样本仅7次<8",
     "胜率95%下限仅36%<50%",
     "历史最差-51.6%",
-    "规则闸未通过",
-    "GPT未完成当日正向复核"
+    "Kimi未完成当日正向复核（双剑合璧缺一剑）"
    ],
    "canonical_name": "华友钴业",
    "sample_n": 7,
    "win_rate": 71.0,
    "win_rate_lower95": 35.9,
-   "gpt_verdict": "不可用",
+   "gpt_verdict": "通过",
+   "kimi_verdict": "不可用",
    "probability_label": "该股历史条件频率（非保证）"
   }
  ]
