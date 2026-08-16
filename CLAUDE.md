@@ -103,6 +103,10 @@
   get_historical_stock_prices）。用于评审与周报的交叉验证：与管线数据偏差>2% 必须
   注明；插件失败不阻塞，注明「插件未取数」。Yahoo 提示文本公司名可能串扰，一切以
   保存 CSV 的 symbol 字段为准；iFinD 美股后缀是 .US 与 V88 代码不同，美股统一走 Yahoo。
+- **GPT 实时会审通道（2026-08-16 深夜上线）**：本机 codex CLI（复用 ~/.codex 登录态）。
+  Kimi 评审 3A 候选时现场 `codex exec` 问 GPT，裁决原样中转写 gpt_verify.json
+  （via=kimi-codex-relay 标记，ts 带时分秒）；超时/失败自动降级回异步文件裁决。
+  时效语义：带时分秒 ts 走 24h 窗口，仅日期 ts 当日（BJT）有效。
 
 ## Kimi 学习笔记：前任（Claude）逻辑思路提炼（2026-08-16 通读 claude-memory 54 卷后归档）
 > 真源在私仓 `claude-memory/`（MEMORY.md 为索引）与 `docs/CLASSICS.md`（书理映射）。
