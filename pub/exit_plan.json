@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-17 05:41（北京时间）",
+ "generated_at": "2026-08-17 00:27（北京时间）",
  "version": "exitplan-v1",
  "ruleset_version": "v4.2",
  "declaration": "**以始为终**：任何一只出现在系统里的票，都同时带着进场与出场。出口必须是**价格**不是文字——「获利20-25%止盈」不可执行，「涨到7.73减一半」可执行。",
@@ -688,7 +688,7 @@
    "last": 160.1,
    "pnl_pct": 7.93,
    "school": "成长派",
-   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
+   "school_why": "盈利增速高于营收增速=利润率扩张",
    "hold_period": "数个季度",
    "take_profit": null,
    "take_note": "不设固定止盈——**成长放缓即卖，不看估值便宜**",
@@ -728,7 +728,7 @@
    "sell_zone": "无卖出区间(持有)",
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
    "level": "0",
-   "when": "现在买（今日窗口内）"
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
   },
   "1114.HK": {
    "code": "1114.HK",
@@ -755,7 +755,7 @@
    "sell_zone": "无卖出区间(持有)",
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
    "level": "0",
-   "when": "现在买（今日窗口内）"
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
   },
   "603893.SS": {
    "code": "603893.SS",
@@ -780,7 +780,7 @@
    "sell_zone": "无卖出区间(持有)",
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
    "level": "0",
-   "when": "现在买（今日窗口内）"
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
   },
   "600362.SS": {
    "code": "600362.SS",
@@ -805,7 +805,7 @@
    "sell_zone": "无卖出区间(持有)",
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
    "level": "0",
-   "when": "现在买（今日窗口内）"
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
   },
   "510300.SS": {
    "code": "510300.SS",
@@ -830,7 +830,7 @@
    "sell_zone": "无卖出区间(持有)",
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
    "level": "0",
-   "when": "现在买（今日窗口内）"
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
   },
   "002739.SZ": {
    "code": "002739.SZ",
@@ -857,7 +857,32 @@
    "sell_zone": "无卖出区间(持有)",
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
    "level": "0",
-   "when": "现在买（今日窗口内）"
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
+  },
+  "CVX": {
+   "code": "CVX",
+   "name": "雪佛龙",
+   "scope": "评级榜2A",
+   "acct": null,
+   "shares": null,
+   "cost": null,
+   "last": 200.0,
+   "pnl_pct": null,
+   "school": "成长派",
+   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
+   "hold_period": "数个季度",
+   "take_profit": null,
+   "take_note": "不设固定止盈——**成长放缓即卖，不看估值便宜**",
+   "stop": null,
+   "stop_src": "引擎技术止损",
+   "dist_stop_pct": 8.1,
+   "kill_rule": "连续两季盈利增速下滑 → 逻辑破",
+   "doctrine": "费雪《怎样选择成长股》／林奇《成功投资》",
+   "to_breakeven_pct": null,
+   "sell_zone": "无卖出区间(持有)",
+   "stale_note": "",
+   "level": "0",
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
   },
   "510500.SS": {
    "code": "510500.SS",
@@ -882,7 +907,7 @@
    "sell_zone": "无卖出区间(持有)",
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
    "level": "0",
-   "when": "现在买（今日窗口内）"
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
   },
   "300033.SZ": {
    "code": "300033.SZ",
@@ -907,7 +932,7 @@
    "sell_zone": "无卖出区间(持有)",
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
    "level": "0",
-   "when": "现在买（今日窗口内）"
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
   },
   "000703.SZ": {
    "code": "000703.SZ",
@@ -932,7 +957,34 @@
    "sell_zone": "无卖出区间(持有)",
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
    "level": "0",
-   "when": "现在买（今日窗口内）"
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
+  },
+  "002371.SZ": {
+   "code": "002371.SZ",
+   "name": "北方华创",
+   "scope": "评级榜2A",
+   "acct": null,
+   "shares": null,
+   "cost": null,
+   "last": 738.66,
+   "pnl_pct": null,
+   "school": "价值派",
+   "school_why": "高股息+稳健ROE=长期复利（CLASSICS价值派的另一半）",
+   "hold_period": "数年（Siegel：回撤是成本不是错误）",
+   "take_profit": [
+    734.07
+   ],
+   "take_note": "分析师目标价734.07（折价收敛到<10%再评估）",
+   "stop": 632.01,
+   "stop_src": "引擎技术止损｜⚠️价值派**不因技术破位卖**，此线仅作最后防线",
+   "dist_stop_pct": 16.9,
+   "kill_rule": "护城河或安全边际消失（ROE/现金流持续恶化）",
+   "doctrine": "格雷厄姆《聪明的投资者》／卡拉曼《安全边际》",
+   "to_breakeven_pct": null,
+   "sell_zone": "无卖出区间(持有)",
+   "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
+   "level": "0",
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
   },
   "0358.HK": {
    "code": "0358.HK",
@@ -957,7 +1009,7 @@
    "sell_zone": "无卖出区间(持有)",
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
    "level": "0",
-   "when": "现在买（今日窗口内）"
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
   },
   "002458.SZ": {
    "code": "002458.SZ",
@@ -983,6 +1035,56 @@
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
    "level": "0",
    "when": "回踩 9.03~9.39 买 · 5个交易日内有效"
+  },
+  "ONFO": {
+   "code": "ONFO",
+   "name": "Onfolio Holdings Inc",
+   "scope": "评级榜1A",
+   "acct": null,
+   "shares": null,
+   "cost": null,
+   "last": 2.59,
+   "pnl_pct": null,
+   "school": "未定",
+   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
+   "hold_period": null,
+   "take_profit": null,
+   "take_note": "",
+   "stop": null,
+   "stop_src": "引擎技术止损",
+   "dist_stop_pct": 298.5,
+   "kill_rule": null,
+   "doctrine": null,
+   "to_breakeven_pct": null,
+   "sell_zone": "无卖出区间(持有)",
+   "stale_note": "",
+   "level": "0",
+   "when": "回踩 0.67~0.7 买 · 5个交易日内有效"
+  },
+  "FCX": {
+   "code": "FCX",
+   "name": "自由港麦克莫兰",
+   "scope": "评级榜1A",
+   "acct": null,
+   "shares": null,
+   "cost": null,
+   "last": 66.49,
+   "pnl_pct": null,
+   "school": "成长派",
+   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
+   "hold_period": "数个季度",
+   "take_profit": null,
+   "take_note": "不设固定止盈——**成长放缓即卖，不看估值便宜**",
+   "stop": null,
+   "stop_src": "引擎技术止损",
+   "dist_stop_pct": 6.3,
+   "kill_rule": "连续两季盈利增速下滑 → 逻辑破",
+   "doctrine": "费雪《怎样选择成长股》／林奇《成功投资》",
+   "to_breakeven_pct": null,
+   "sell_zone": "无卖出区间(持有)",
+   "stale_note": "",
+   "level": "0",
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
   },
   "9887.HK": {
    "code": "9887.HK",
@@ -1036,7 +1138,7 @@
    "sell_zone": "无卖出区间(持有)",
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
    "level": "0",
-   "when": "现在买（今日窗口内）"
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
   },
   "688548.SS": {
    "code": "688548.SS",
@@ -1138,32 +1240,32 @@
    "sell_zone": "无卖出区间(持有)",
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
    "level": "0",
-   "when": "现在买（今日窗口内）"
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
   },
-  "3888.HK": {
-   "code": "3888.HK",
-   "name": "金山软件",
+  "300604.SZ": {
+   "code": "300604.SZ",
+   "name": "长川科技",
    "scope": "评级榜1A",
    "acct": null,
    "shares": null,
    "cost": null,
-   "last": 26.44,
+   "last": 283.05,
    "pnl_pct": null,
    "school": "成长派",
    "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
    "hold_period": "数个季度",
    "take_profit": null,
    "take_note": "不设固定止盈——**成长放缓即卖，不看估值便宜**",
-   "stop": 26.24,
+   "stop": 224.25,
    "stop_src": "引擎技术止损",
-   "dist_stop_pct": 0.8,
+   "dist_stop_pct": 26.2,
    "kill_rule": "连续两季盈利增速下滑 → 逻辑破",
    "doctrine": "费雪《怎样选择成长股》／林奇《成功投资》",
    "to_breakeven_pct": null,
    "sell_zone": "无卖出区间(持有)",
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
    "level": "0",
-   "when": "现在买（今日窗口内）"
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
   },
   "002674.SZ": {
    "code": "002674.SZ",
@@ -1213,7 +1315,7 @@
    "sell_zone": "无卖出区间(持有)",
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
    "level": "0",
-   "when": "现在买（今日窗口内）"
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
   },
   "MSI": {
    "code": "MSI",
@@ -1262,7 +1364,7 @@
    "to_breakeven_pct": null,
    "sell_zone": "13.35~19.00 全部离场",
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
-   "level": "-2A",
+   "level": "0",
    "when": "回踩 14.82~15.41 买 · 5个交易日内有效"
   },
   "600188.SS": {
@@ -1315,32 +1417,30 @@
    "level": "0",
    "when": "回踩 5.85~6.08 买 · 5个交易日内有效"
   },
-  "1109.HK": {
-   "code": "1109.HK",
-   "name": "华润置地",
+  "6693.HK": {
+   "code": "6693.HK",
+   "name": "赤峰黄金",
    "scope": "评级榜1A",
    "acct": null,
    "shares": null,
    "cost": null,
-   "last": 34.2,
+   "last": 37.0,
    "pnl_pct": null,
-   "school": "价值派",
-   "school_why": "深度折价或低估值 → 格雷厄姆/卡拉曼式左侧仓",
-   "hold_period": "数年（Siegel：回撤是成本不是错误）",
-   "take_profit": [
-    41.51
-   ],
-   "take_note": "分析师目标价41.51（折价收敛到<10%再评估）",
-   "stop": 32.04,
-   "stop_src": "引擎技术止损｜⚠️价值派**不因技术破位卖**，此线仅作最后防线",
-   "dist_stop_pct": 6.7,
-   "kill_rule": "护城河或安全边际消失（ROE/现金流持续恶化）",
-   "doctrine": "格雷厄姆《聪明的投资者》／卡拉曼《安全边际》",
+   "school": "成长派",
+   "school_why": "盈利增速高于营收增速=利润率扩张 → 费雪/林奇式成长仓",
+   "hold_period": "数个季度",
+   "take_profit": null,
+   "take_note": "不设固定止盈——**成长放缓即卖，不看估值便宜**",
+   "stop": 32.4,
+   "stop_src": "引擎技术止损",
+   "dist_stop_pct": 14.2,
+   "kill_rule": "连续两季盈利增速下滑 → 逻辑破",
+   "doctrine": "费雪《怎样选择成长股》／林奇《成功投资》",
    "to_breakeven_pct": null,
    "sell_zone": "无卖出区间(持有)",
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
    "level": "0",
-   "when": "现在买（今日窗口内）"
+   "when": "回踩 33.84~35.19 买 · 5个交易日内有效"
   },
   "600162.SS": {
    "code": "600162.SS",
@@ -1366,6 +1466,31 @@
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
    "level": "0",
    "when": "回踩 3.33~3.46 买 · 5个交易日内有效"
+  },
+  "AXP": {
+   "code": "AXP",
+   "name": "美国运通",
+   "scope": "评级榜1A",
+   "acct": null,
+   "shares": null,
+   "cost": null,
+   "last": 342.48,
+   "pnl_pct": null,
+   "school": "未定",
+   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
+   "hold_period": null,
+   "take_profit": null,
+   "take_note": "",
+   "stop": null,
+   "stop_src": "引擎技术止损",
+   "dist_stop_pct": 4.5,
+   "kill_rule": null,
+   "doctrine": null,
+   "to_breakeven_pct": null,
+   "sell_zone": "无卖出区间(持有)",
+   "stale_note": "",
+   "level": "0",
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
   },
   "SOFI": {
    "code": "SOFI",
@@ -1414,7 +1539,7 @@
    "to_breakeven_pct": null,
    "sell_zone": "7.02~13.81 全部离场",
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
-   "level": "-2A",
+   "level": "0",
    "when": "回踩 9.01~9.37 买 · 5个交易日内有效"
   },
   "9633.HK": {
@@ -1440,32 +1565,7 @@
    "sell_zone": "无卖出区间(持有)",
    "stale_note": "⚠️intraday价已陈旧3天，已改用其他源",
    "level": "0",
-   "when": "现在买（今日窗口内）"
-  },
-  "GM": {
-   "code": "GM",
-   "name": "通用汽车",
-   "scope": "评级榜1A",
-   "acct": null,
-   "shares": null,
-   "cost": null,
-   "last": 86.77,
-   "pnl_pct": null,
-   "school": "未定",
-   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
-   "hold_period": null,
-   "take_profit": null,
-   "take_note": "",
-   "stop": null,
-   "stop_src": "引擎技术止损",
-   "dist_stop_pct": 5.0,
-   "kill_rule": null,
-   "doctrine": null,
-   "to_breakeven_pct": null,
-   "sell_zone": "无卖出区间(持有)",
-   "stale_note": "",
-   "level": "0",
-   "when": "现在买（今日窗口内）"
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
   },
   "600744.SS": {
    "code": "600744.SS",
@@ -1492,14 +1592,14 @@
    "level": "-2A",
    "when": "回踩 7.37 买 · 5个交易日内有效"
   },
-  "WAB": {
-   "code": "WAB",
-   "name": "美国西屋制动",
+  "PH": {
+   "code": "PH",
+   "name": "派克汉尼汾",
    "scope": "评级榜1A",
    "acct": null,
    "shares": null,
    "cost": null,
-   "last": 299.02,
+   "last": 1055.85,
    "pnl_pct": null,
    "school": "未定",
    "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
@@ -1508,14 +1608,114 @@
    "take_note": "",
    "stop": null,
    "stop_src": "引擎技术止损",
-   "dist_stop_pct": 6.4,
+   "dist_stop_pct": 9.1,
    "kill_rule": null,
    "doctrine": null,
    "to_breakeven_pct": null,
    "sell_zone": "无卖出区间(持有)",
    "stale_note": "",
    "level": "0",
-   "when": "现在买（今日窗口内）"
+   "when": "回踩 1007.98~1048.3 买 · 5个交易日内有效"
+  },
+  "BA": {
+   "code": "BA",
+   "name": "波音",
+   "scope": "评级榜1A",
+   "acct": null,
+   "shares": null,
+   "cost": null,
+   "last": 231.67,
+   "pnl_pct": null,
+   "school": "未定",
+   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
+   "hold_period": null,
+   "take_profit": null,
+   "take_note": "",
+   "stop": null,
+   "stop_src": "引擎技术止损",
+   "dist_stop_pct": 8.2,
+   "kill_rule": null,
+   "doctrine": null,
+   "to_breakeven_pct": null,
+   "sell_zone": "无卖出区间(持有)",
+   "stale_note": "",
+   "level": "0",
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
+  },
+  "EMB": {
+   "code": "EMB",
+   "name": "新兴市场美元债ETF-iShares",
+   "scope": "评级榜1A",
+   "acct": null,
+   "shares": null,
+   "cost": null,
+   "last": 95.05,
+   "pnl_pct": null,
+   "school": "未定",
+   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
+   "hold_period": null,
+   "take_profit": null,
+   "take_note": "",
+   "stop": null,
+   "stop_src": "引擎技术止损",
+   "dist_stop_pct": 4.5,
+   "kill_rule": null,
+   "doctrine": null,
+   "to_breakeven_pct": null,
+   "sell_zone": "无卖出区间(持有)",
+   "stale_note": "",
+   "level": "0",
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
+  },
+  "MUB": {
+   "code": "MUB",
+   "name": "美国市政债ETF-iShares",
+   "scope": "评级榜1A",
+   "acct": null,
+   "shares": null,
+   "cost": null,
+   "last": 105.86,
+   "pnl_pct": null,
+   "school": "未定",
+   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
+   "hold_period": null,
+   "take_profit": null,
+   "take_note": "",
+   "stop": null,
+   "stop_src": "引擎技术止损",
+   "dist_stop_pct": 4.3,
+   "kill_rule": null,
+   "doctrine": null,
+   "to_breakeven_pct": null,
+   "sell_zone": "无卖出区间(持有)",
+   "stale_note": "",
+   "level": "0",
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
+  },
+  "VCIT": {
+   "code": "VCIT",
+   "name": "中期公司债券ETF-Vanguard",
+   "scope": "评级榜1A",
+   "acct": null,
+   "shares": null,
+   "cost": null,
+   "last": 81.23,
+   "pnl_pct": null,
+   "school": "未定",
+   "school_why": "特征不足以归派——**门派未定时不出买入结论**（CLASSICS：无仲裁规则=砍自己人）",
+   "hold_period": null,
+   "take_profit": null,
+   "take_note": "",
+   "stop": null,
+   "stop_src": "引擎技术止损",
+   "dist_stop_pct": 4.3,
+   "kill_rule": null,
+   "doctrine": null,
+   "to_breakeven_pct": null,
+   "sell_zone": "无卖出区间(持有)",
+   "stale_note": "",
+   "level": "0",
+   "when": "下一交易日 08-17 开盘可进（今日休市）"
   },
   "600216.SS": {
    "code": "600216.SS",
@@ -1546,22 +1746,22 @@
   }
  },
  "stats": {
-  "total": 60,
+  "total": 68,
   "by_scope": {
    "持仓": 27,
    "评级榜3A": 1,
-   "评级榜2A": 8,
-   "评级榜1A": 24
+   "评级榜2A": 10,
+   "评级榜1A": 30
   },
   "by_school": {
-   "成长派": 20,
+   "成长派": 23,
    "价值派": 15,
-   "未定": 19,
+   "未定": 24,
    "指数派": 1,
    "趋势派": 5
   },
-  "school_undecided": 19,
+  "school_undecided": 24,
   "has_take_profit": 18,
-  "has_stop": 56
+  "has_stop": 57
  }
 }
