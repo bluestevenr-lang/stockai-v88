@@ -16,8 +16,9 @@ set "REPORT=%USERPROFILE%\Desktop\ai-daily-report-v2"
 
 echo [V88-Win] 同步公开仓(代码)...
 git -C "%STOCKAI%" pull --rebase --autostash origin main
-echo [V88-Win] 同步私仓(数据:日报/持仓/雷达族落盘)...
-git -C "%REPORT%" pull --rebase --autostash origin main
+echo [V88-Win] 同步私仓(数据:日报/持仓/雷达族落盘，走 safe_pull 自愈)...
+set PYTHONUTF8=1
+"C:\Program Files\Git\bin\bash.exe" "%REPORT%\scripts\safe_pull.sh"
 
 REM —— 代理（与 启动V88.bat 一致的 Clash 混合端口）——
 set "http_proxy=http://127.0.0.1:7897"
