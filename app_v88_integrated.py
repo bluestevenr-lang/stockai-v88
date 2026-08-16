@@ -4143,7 +4143,13 @@ try:
             "<span style='display:inline-block;width:14px;height:14px;line-height:14px;text-align:center;"
             "border-radius:50%;background:#dcfce7;color:#15803d;border:1px solid #86efac;"
             "font-size:9.5px;font-weight:800'>G</span> GPT/Codex独立复核　"
-            "<span style='color:#94a3b8'>无标=引擎自判(未经复核)｜未通过的已移出名单</span></div>",
+            "<span style='display:inline-block;width:14px;height:14px;line-height:14px;text-align:center;"
+            "border-radius:50%;background:#ede9fe;color:#7c3aed;border:1px solid #c4b5fd;"
+            "font-size:9.5px;font-weight:800'>K</span> Kimi三方会谈复核　"
+            "<span style='display:inline-block;width:14px;height:14px;line-height:14px;text-align:center;"
+            "border-radius:50%;background:#fef3c7;color:#b45309;border:1px solid #fcd34d;"
+            "font-size:9.5px;font-weight:800'>书</span> 经典书理校验　"
+            "<span style='color:#94a3b8'>3A=四方全通过｜2A=G+K双双通过｜无标=引擎自判(未经复核)｜未通过的已移出名单</span></div>",
             unsafe_allow_html=True)
         # 【3A并板 2026-07-31 用户"图二内容整合到图一"】雷达榜面行进同一张表:
         # 评级列代替动作概率;🎯进入区间/💰盈利带进触发列;止损-8%进失效列;认证状态进状态列

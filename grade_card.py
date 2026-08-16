@@ -185,7 +185,7 @@ SELL_COLOR = {"-3A": PALETTE["sell"], "-2A": PALETTE["sell2"],
 # 自检发现9列里8列两侧装的东西不同(如"状态"IN=风险/完备/置信,OUT=1-2-3+量比),
 # 共用列名会让人以为是同一个量。改为两套列头,同位次语义对齐。
 _TH_IN = ("名称", "评级·分", "现价·数据日", "动作·2周概率", "买入区间·进入时机",
-          "失效价", "机会类型·周期", "五桶板·风险完备置信", "规则闸·GPT审核", "为什么现在")
+          "失效价", "机会类型·周期", "五桶板·风险完备置信", "规则·GPT·Kimi·书", "为什么现在")
 _TH_OUT = ("名称", "级别·卖出分", "现价·MA20", "动作·紧迫度", "卖出/回避区间·重买条件",
            "止损价", "距止损·量比", "1-2-3·旁路·门派", "冲突·仲裁", "规则闸·GPT审核", "持有状态·引擎")
 # 【自检修②】市场从**代码形态**推断,不依赖上游 market 字段——
@@ -221,8 +221,10 @@ def stock_link(name, code, flag: str = "") -> str:
 
 
 def cg_badge(who: str, state: str, note: str = "") -> str:
-    """审核徽章。R=规则闸，G=GPT/Codex。"""
-    base = PALETTE["rules_gate"] if who == "R" else PALETTE["gpt"]
+    """审核徽章。R=规则闸，G=GPT/Codex，K=Kimi(三方会谈)，书=经典书理。"""
+    base = {"R": PALETTE["rules_gate"], "G": PALETTE["gpt"],
+            "K": "#7c3aed", "书": "#b45309"}.get(who, PALETTE["gpt"])
+    state = {"通过": "pass", "否决": "reject"}.get(state, state)
     # 三级:pass=主动背书(实心✅) / gate_pass=机检达标(空心✓,半亮) / reject=否决 / 未表态=—
     mark, op = ("✅", "1") if state == "pass" else \
                ("✓", ".72") if state == "gate_pass" else \
@@ -232,6 +234,38 @@ def cg_badge(who: str, state: str, note: str = "") -> str:
     return (f"<span style='background:{base};color:#fff;border-radius:3px;"
             f"padding:0 5px;font-size:9.5px;font-weight:800;opacity:{op};"
             f"margin-left:2px;letter-spacing:.3px'{t}>{who}{mark}</span>")
+
+
+def _kimi_review(code: str):
+    """读 Kimi 三方会谈裁决（ai-daily-report-v2/src/recommendation_gate.kimi_review_for），
+    失败返回不可用——失败关闭，绝不把'读不到'显示成'通过'。"""
+    try:
+        import sys as _s
+        from pathlib import Path as _P
+        _d = str(_P.home() / "Desktop" / "ai-daily-report-v2" / "src")
+        if _d not in _s.path:
+            _s.path.insert(0, _d)
+        import recommendation_gate as _rg
+        return _rg.kimi_review_for(str(code))
+    except Exception:
+        return ("不可用", "不可用", "")
+
+
+def _kimi_health() -> dict:
+    """Kimi 席位运行状态：裁决总数/今日新鲜/书理通过数。读不到返回空。"""
+    try:
+        import json as _j, datetime as _dt
+        from pathlib import Path as _P
+        _p = _P.home() / "Desktop" / "ai-daily-report-v2" / "data" / "kimi_verify.json"
+        _d2 = _j.loads(_p.read_text(encoding="utf-8"))
+        _rows = _d2.get("rows") or {}
+        _today = _dt.datetime.now().strftime("%Y-%m-%d")
+        return {"verdicts": len(_rows),
+                "fresh_today": sum(1 for _r in _rows.values() if str(_r.get("ts", "")).startswith(_today)),
+                "book_pass": sum(1 for _r in _rows.values() if _r.get("book_verdict") == "通过"),
+                "generated_at": _d2.get("generated_at")}
+    except Exception:
+        return {}
 
 
 def _nomd(v) -> str:
@@ -455,6 +489,8 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + _td((lambda _v: (
                 cg_badge("R", str(_v.get("rules_gate") or ""))
                 + cg_badge("G", str(_v.get("codex") or _v.get("gpt") or ""), str(_v.get("gpt_note") or ""))
+                + (lambda _kr: cg_badge("K", _kr[0], f"Kimi独立复核:{_kr[0]}｜{_kr[2] or '无记录'}")
+                   + cg_badge("书", _kr[1], f"经典书理:{_kr[1]}"))(_kimi_review(c))
                 + (f"<br><span style='font-size:9px;color:{PALETTE['warn']}'>"
                    f"Codex异议: {str(_v.get('gpt_note'))[:30]}</span>"
                    if (_v.get("codex") or _v.get("gpt")) == "reject" and _v.get("gpt_note") else "")
@@ -606,7 +642,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             # 铁律19 验证漏斗:被拦的必须点名,否则"我们还欠多少验证"看不见
             + (f"<div style='font-size:11px;background:#f8fafc;border-left:3px solid "
                f"{PALETTE['hold']};border-radius:4px;padding:4px 8px;margin:3px 0'>"
-               f"🔐 <b>验证准入闸</b>（<b>3A=规则闸+GPT/Codex明确通过</b>／GPT不否定最多2A／仅规则闸最多1A）"
+               f"🔐 <b>三方会谈准入闸</b>（<b>3A=规则闸+GPT+Kimi+经典书理·全通过</b>／2A=GPT+Kimi双双明确通过／仅规则闸最多1A）"
                + (lambda _h: (
                    f"<div style='font-size:10.5px;margin-bottom:2px;color:"
                    f"{PALETTE['warn'] if (_h.get('last_error') or (_h.get('max_age_days') or 0) > 1) else PALETTE['hold']}'>"
@@ -618,7 +654,13 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                      "3天TTL＋判据变化即重判；跑不完时按「这一票能改变什么」排队"
                      "（3A候选＞持仓＞2A＞1A）。</span></div>") if _h else "")(
                    (_vf.get("gpt_health") or {}))
-               + f"<b>规则闸与GPT/Codex分别审核，均不能互相代签</b>）：上榜 "
+               + (lambda _kh: (
+                   f"<div style='font-size:10.5px;margin-bottom:2px;color:#7c3aed'>"
+                   f"🟣 Kimi状态：裁决{_kh.get('verdicts', 0)}条"
+                   f"（今日新鲜{_kh.get('fresh_today', 0)}｜书理通过{_kh.get('book_pass', 0)}）"
+                   f"｜复核于 {_kh.get('generated_at') or '—'}"
+                   f"｜失败关闭：无记录=不可用≠通过</div>") if _kh else "")(_kimi_health())
+               + f"<b>规则闸·GPT·Kimi·书理 各自独立审核，互不代签，分歧显式呈现</b>）：上榜 "
                f"<b style='color:{PALETTE['buy']}'>{_n_listable}</b>"
                + "".join(f"　<span style='color:{PALETTE['warn'] if '否决' in k else PALETTE['hold']}'>"
                          f"{k} {v}</span>"
@@ -633,7 +675,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                   "　<span style='font-weight:400'>验证已全部跑完，没有待验标的</span>")
                + "）</div>"
                f"<div style='font-size:11px;color:{PALETTE['hold']};margin-bottom:3px'>"
-               f"与上表同列同口径，可直接对照，差别只在「规则闸·GPT审核」列。"
+               f"与上表同列同口径，可直接对照，差别只在「规则·GPT·Kimi·书」列。"
                + (f"　另有 <b>{_n_cl_rej}</b> 只被 V88规则闸判否，"
                   f"<b>按定纲不在此呈现</b>——硬伤票不再占你的视线，"
                   f"只留计数备查。" if _n_cl_rej else "")
@@ -790,8 +832,8 @@ def verdict_html(v: dict) -> str:
                + "</div>")
             + _side(v.get("buy"), True) + _side(v.get("sell"), False)
             + f"<div style='font-size:10px;color:{PALETTE['mute']};margin-top:3px'>"
-              f"{v.get('rule')}　｜　最高级模型动作须规则闸✅且GPT/Codex明确通过；"
-              f"GPT未复核或仅不否定时自动降档。</div></div>")
+              f"{v.get('rule')}　｜　最高级模型动作须规则闸✅且GPT✅且Kimi✅（三方会谈）；"
+              f"GPT/Kimi未复核或仅不否定时自动降档。</div></div>")
 
 
 _CERT_CACHE = {"ts": 0, "map": {}}
