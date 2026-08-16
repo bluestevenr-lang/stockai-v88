@@ -97,6 +97,12 @@
   已接入（Kimi 当日正向复核是 push_eligible 的必要条件），飞书推送经 value_zone/
   trend_shift 的 push_eligible 自动遵守；桌面 `_v88_buy_gate9` 同款双剑+3A三方。
 - 徽章三色：C=V88规则(金/绿)、G=GPT(青)、K=Kimi(紫)；无记录不显示。
+- **评审数据源路由（2026-08-16 用户授权插件接入）**：A股/港股实时价与财务
+  走本机 iFinD 插件（plugins/managed/ifind，ifind_get_stock_realtime_price /
+  ifind_get_stock_financial_index）；美股走 Yahoo Finance 插件（get_stock_info /
+  get_historical_stock_prices）。用于评审与周报的交叉验证：与管线数据偏差>2% 必须
+  注明；插件失败不阻塞，注明「插件未取数」。Yahoo 提示文本公司名可能串扰，一切以
+  保存 CSV 的 symbol 字段为准；iFinD 美股后缀是 .US 与 V88 代码不同，美股统一走 Yahoo。
 
 ## Kimi 学习笔记：前任（Claude）逻辑思路提炼（2026-08-16 通读 claude-memory 54 卷后归档）
 > 真源在私仓 `claude-memory/`（MEMORY.md 为索引）与 `docs/CLASSICS.md`（书理映射）。
