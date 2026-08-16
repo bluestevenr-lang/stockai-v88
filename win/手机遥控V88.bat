@@ -10,7 +10,8 @@ set "REPORT=%USERPROFILE%\Desktop\ai-daily-report-v2"
 
 echo [V88-sync] pulling both repositories...
 git -C "%STOCKAI%" pull --rebase --autostash origin main
-git -C "%REPORT%" pull --rebase --autostash origin main
+set PYTHONUTF8=1
+"C:\Program Files\Git\bin\bash.exe" "%REPORT%\scripts\safe_pull.sh"
 echo.
 echo [V88-sync] complete. GPT/Codex remains the active V88 owner.
 echo.
