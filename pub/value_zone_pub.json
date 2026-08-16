@@ -88,9 +88,9 @@
    "win_rate": 90.0,
    "win_rate_lower95": 59.6,
    "gpt_verdict": "通过",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）",
-   "book_verdict": "不可用"
+   "book_verdict": "不否定"
   },
   {
    "code": "BNTX",
@@ -134,9 +134,9 @@
    "win_rate": 90.0,
    "win_rate_lower95": 59.6,
    "gpt_verdict": "不否定",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）",
-   "book_verdict": "不可用"
+   "book_verdict": "否决"
   },
   {
    "code": "603179.SS",
@@ -168,19 +168,17 @@
    "gpt": "pass",
    "track": false,
    "display_eligible": true,
-   "push_eligible": false,
-   "quality_status": "研究候选",
-   "quality_reasons": [
-    "Kimi未完成当日正向复核（双剑合璧缺一剑）"
-   ],
+   "push_eligible": true,
+   "quality_status": "可推送",
+   "quality_reasons": [],
    "canonical_name": "新泉股份",
    "sample_n": 18,
    "win_rate": 83.0,
    "win_rate_lower95": 60.8,
    "gpt_verdict": "通过",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "通过",
    "probability_label": "该股历史条件频率（非保证）",
-   "book_verdict": "不可用"
+   "book_verdict": "通过"
   },
   {
    "code": "300782.SZ",
@@ -225,9 +223,9 @@
    "win_rate": 83.0,
    "win_rate_lower95": 43.6,
    "gpt_verdict": "不否定",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）",
-   "book_verdict": "不可用"
+   "book_verdict": "不否定"
   },
   {
    "code": "MELI",
@@ -270,9 +268,9 @@
    "win_rate": 82.0,
    "win_rate_lower95": 59.0,
    "gpt_verdict": "不否定",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）",
-   "book_verdict": "不可用"
+   "book_verdict": "通过"
   },
   {
    "code": "300953.SZ",
@@ -316,9 +314,9 @@
    "win_rate": 75.0,
    "win_rate_lower95": 40.9,
    "gpt_verdict": "不否定",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）",
-   "book_verdict": "不可用"
+   "book_verdict": "通过"
   },
   {
    "code": "002460.SZ",
@@ -362,9 +360,9 @@
    "win_rate": 75.0,
    "win_rate_lower95": 40.9,
    "gpt_verdict": "不否定",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）",
-   "book_verdict": "不可用"
+   "book_verdict": "通过"
   },
   {
    "code": "1138.HK",
@@ -406,9 +404,9 @@
    "win_rate": 75.0,
    "win_rate_lower95": 50.5,
    "gpt_verdict": "否决",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）",
-   "book_verdict": "不可用"
+   "book_verdict": "通过"
   },
   {
    "code": "IBM",
@@ -451,9 +449,9 @@
    "win_rate": 75.0,
    "win_rate_lower95": 30.1,
    "gpt_verdict": "不否定",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）",
-   "book_verdict": "不可用"
+   "book_verdict": "不否定"
   },
   {
    "code": "605117.SS",
@@ -495,9 +493,9 @@
    "win_rate": 75.0,
    "win_rate_lower95": 30.1,
    "gpt_verdict": "不否定",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）",
-   "book_verdict": "不可用"
+   "book_verdict": "不否定"
   },
   {
    "code": "LOW",
@@ -540,9 +538,9 @@
    "win_rate": 75.0,
    "win_rate_lower95": 40.9,
    "gpt_verdict": "通过",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）",
-   "book_verdict": "不可用"
+   "book_verdict": "不否定"
   },
   {
    "code": "3692.HK",
@@ -585,9 +583,9 @@
    "win_rate": 75.0,
    "win_rate_lower95": 30.1,
    "gpt_verdict": "否决",
-   "kimi_verdict": "不可用",
+   "kimi_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）",
-   "book_verdict": "不可用"
+   "book_verdict": "否决"
   },
   {
    "code": "600031.SS",
@@ -628,10 +626,10 @@
    "sample_n": 4,
    "win_rate": 75.0,
    "win_rate_lower95": 30.1,
-   "gpt_verdict": "通过",
-   "kimi_verdict": "不可用",
+   "gpt_verdict": "不可用",
+   "kimi_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）",
-   "book_verdict": "不可用"
+   "book_verdict": "不否定"
   },
   {
    "code": "603799.SS",
@@ -676,15 +674,15 @@
    "sample_n": 7,
    "win_rate": 71.0,
    "win_rate_lower95": 35.9,
-   "gpt_verdict": "不否定",
-   "kimi_verdict": "不可用",
+   "gpt_verdict": "不可用",
+   "kimi_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）",
-   "book_verdict": "不可用"
+   "book_verdict": "不否定"
   }
  ],
  "quality_gate": {
   "version": "rqg-1.0",
-  "refreshed_at": "2026-08-16 23:41（北京时间）",
+  "refreshed_at": "2026-08-17 07:25（北京时间）",
   "rule": "展示与主动推送分离；不删原内容，未过闸降为研究/观察"
  }
 }

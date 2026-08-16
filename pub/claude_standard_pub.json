@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-16 21:43（北京时间）",
- "generated_at": "2026-08-16 21:43（北京时间）",
+ "asof": "2026-08-17 07:25（北京时间）",
+ "generated_at": "2026-08-17 07:25（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -39,16 +39,6 @@
   "300113.SZ": {
    "code": "300113.SZ",
    "name": "顺网科技",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "000039.SZ": {
-   "code": "000039.SZ",
-   "name": "中集集团",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -156,16 +146,6 @@
    "downgrade": "",
    "auto": true
   },
-  "601666.SS": {
-   "code": "601666.SS",
-   "name": "平煤股份",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "603995.SS": {
    "code": "603995.SS",
    "name": "甬金股份",
@@ -246,16 +226,6 @@
    "downgrade": "",
    "auto": true
   },
-  "3692.HK": {
-   "code": "3692.HK",
-   "name": "翰森制药",
-   "side": "打折",
-   "action": "🟢打折到位·可开始买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "300953.SZ": {
    "code": "300953.SZ",
    "name": "震裕科技",
@@ -316,6 +286,16 @@
    "downgrade": "",
    "auto": true
   },
+  "3692.HK": {
+   "code": "3692.HK",
+   "name": "翰森制药",
+   "side": "打折",
+   "action": "🟢打折到位·可开始买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "600031.SS": {
    "code": "600031.SS",
    "name": "三一重工",
@@ -331,6 +311,16 @@
    "name": "华友钴业",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "XLC": {
+   "code": "XLC",
+   "name": "美股·通信板块",
+   "side": "拐点",
+   "action": "",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -398,6 +388,17 @@
   }
  },
  "reject": {
+  "ETN": {
+   "code": "ETN",
+   "name": "伊顿",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [
+    "CS7"
+   ],
+   "why": "美股过热而赔率仅0.63(要≥2.0)",
+   "downgrade": ""
+  },
   "COP": {
    "code": "COP",
    "name": "康菲石油",
@@ -412,7 +413,7 @@
  },
  "stats": {
   "n_pass": 351,
-  "n_reject": 93,
+  "n_reject": 99,
   "by_rule": {
    "CS9": 0,
    "CS1": 0,
@@ -420,8 +421,8 @@
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
-   "CS6": 86,
-   "CS7": 31,
+   "CS6": 90,
+   "CS7": 37,
    "CS8": 0
   }
  }
