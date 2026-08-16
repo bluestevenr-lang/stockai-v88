@@ -1285,6 +1285,7 @@ def _v88_buy_gate9(_d, _repo):
             _sys_rg9.path.insert(0, _rgp9)
         from recommendation_gate import identifier_check as _id_check9
         from recommendation_gate import review_for as _review_for9
+        from recommendation_gate import review_is_fresh as _review_fresh9
         _id_ok9, _id_why9, _ = _id_check9(_d.get("code"), _d.get("name"))
         if not _id_ok9:
             return False, _id_why9
@@ -1293,24 +1294,16 @@ def _v88_buy_gate9(_d, _repo):
             return False, "V88规则闸未通过"
         if _gpt9 != "通过":
             return False, f"GPT复核{_gpt9 or '缺失'}"
-        try:
-            from datetime import datetime as _dt_rg9
-            if (_dt_rg9.now().date() - _dt_rg9.strptime(str(_gpt_ts9)[:10], "%Y-%m-%d").date()).days > 1:
-                return False, "GPT复核已过期"
-        except Exception:
-            return False, "GPT复核时间缺失"
+        if not _review_fresh9(_gpt_ts9):
+            return False, "GPT复核已过期或时间缺失"
         # 【2026-08-16 三方会谈恢复·Kimi接替Claude席位】用户定纲：
         # 双剑合璧=所有关键推荐必须 GPT+Kimi 双通过；3A 另加经典书理=三方会谈。
         from recommendation_gate import kimi_review_for as _kimi_for9
         _kimi9, _book9, _kimi_ts9 = _kimi_for9(_d.get("code"))
         if _kimi9 != "通过":
             return False, f"Kimi复核{_kimi9 or '缺失'}·双剑缺一剑"
-        try:
-            from datetime import datetime as _dt_km9
-            if (_dt_km9.now().date() - _dt_km9.strptime(str(_kimi_ts9)[:10], "%Y-%m-%d").date()).days > 1:
-                return False, "Kimi复核已过期"
-        except Exception:
-            return False, "Kimi复核时间缺失"
+        if not _review_fresh9(_kimi_ts9):
+            return False, "Kimi复核已超过24小时或时间缺失"
         _tier9 = str(_d.get("tier") or _d.get("tier_label") or "")
         if _tier9 == "3A" and _book9 != "通过":
             return False, "3A须三方会谈·经典书理未通过"
@@ -3461,21 +3454,28 @@ try:
         except Exception:
             _k9 = {}
         _vk9 = str(_k9.get("verdict") or "")
-        if not _vk9:
-            return ""
-        _basek9 = ("display:inline-block;width:15px;height:15px;line-height:15px;"
-                   "text-align:center;border-radius:50%;font-size:10px;font-weight:800;"
-                   "margin-left:3px;vertical-align:middle;letter-spacing:-.3px")
-        _stk9 = ("#7c3aed", "#fff", "K✓") if _vk9 == "通过" else \
-                ("#991b1b", "#fff", "K×") if _vk9 == "否决" else \
-                ("#ede9fe", "#6d28d9", "K?")
         _bk9 = str(_k9.get("book_verdict") or "")
-        _tipk9 = (f"Kimi独立复核:{_vk9}"
-                  + (f"｜经典书理:{_bk9}" if _bk9 else "")
+        _km9 = "✓" if _vk9 == "通过" else ("×" if _vk9 == "否决" else ("?" if _vk9 else "—"))
+        _bm9 = "✓" if _bk9 == "通过" else ("×" if _bk9 == "否决" else ("?" if _bk9 else "—"))
+        _basek9 = ("display:inline-block;line-height:15px;padding:0 4px;"
+                   "text-align:center;border-radius:8px;font-size:10px;font-weight:800;"
+                   "margin-left:3px;vertical-align:middle;letter-spacing:-.2px")
+        _stk9 = (("#7c3aed", "#fff") if _vk9 == "通过" and _bk9 == "通过" else
+                 ("#991b1b", "#fff") if "否决" in (_vk9, _bk9) else
+                 ("#ede9fe", "#6d28d9") if _vk9 or _bk9 else
+                 ("#e5e7eb", "#64748b"))
+        _tipk9 = (f"Kimi独立复核:{_vk9 or '不可用'}"
+                  + f"｜经典书理:{_bk9 or '不可用'}"
                   + f"｜{str(_k9.get('why', ''))[:56]}").replace('"', "'")
         _opk9 = "1" if _vk9 in ("通过", "否决") else ".8"
+        _gvk9 = next(((_GV9 or {}).get(k) for k in _keysk9 if (_GV9 or {}).get(k)), {}) or {}
+        _vg9 = str(_gvk9.get("verdict") or "")
+        _votes9 = [v for v in (_vg9, _vk9, _bk9) if v]
+        _div9 = len(_votes9) >= 2 and len(set(_votes9)) > 1
+        _div_html9 = ("<span style='font-size:10px;color:#b45309;margin-left:3px'>⚖️三方分歧</span>"
+                      if _div9 else "")
         return (f"<span title=\"{_tipk9}\" style='{_basek9};background:{_stk9[0]};"
-                f"color:{_stk9[1]};opacity:{_opk9}'>{_stk9[2]}</span>")
+                f"color:{_stk9[1]};opacity:{_opk9}'>K{_km9}·书{_bm9}</span>{_div_html9}")
     def _cb_nm9(_nm, _cd):
         # 【2026-07-27 统一名字真源】优先私仓 watch_alerts.resolve_name
         # (库内中文名>美股补充表>池名;港股前导零双向归一);不可用回退本地简版。
@@ -3485,12 +3485,14 @@ try:
                 _sy9n.path.insert(0, str(_cb_repo9 / "src"))
             from watch_alerts import resolve_name as _rn9c
             _n9 = _rn9c(_cd, _nm)
-            return (_n9 + _cert_badge9(_cd, _n9) + _gpt_badge9(_cd, _n9))
+            return (_n9 + _cert_badge9(_cd, _n9) + _gpt_badge9(_cd, _n9)
+                    + _kimi_badge9(_cd, _n9))
         except Exception:
             pass
         _n = str(_nm or "")
         if _n and _n != str(_cd):
-            return (_n + _cert_badge9(_cd, _n) + _gpt_badge9(_cd, _n))
+            return (_n + _cert_badge9(_cd, _n) + _gpt_badge9(_cd, _n)
+                    + _kimi_badge9(_cd, _n))
         _k = str(_cd or "").upper()
         _out9 = (_cb_names9.get(_k) or _cb_names9.get(_k.split(".")[0].lstrip("0") + ".HK")
                  or _n or _k)
