@@ -1,21 +1,30 @@
 @echo off
-chcp 65001 >nul
-REM â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-REM  V88 åŒå‘åŒæ­¥ï¼ˆWin â‡„ GitHub â‡„ Macï¼‰â€” 2026-07-19
-REM  èŒè´£ï¼šæŠŠæœ¬æœº(Win)å¯¹ä¸¤ä»“çš„ä¿®æ”¹ commit+push å› GitHubï¼Œ
-REM        Mac ä¸‹æ¬¡å¯åŠ¨ pull å³å¾—ï¼›åŒæ—¶æ‹‰å–è¿œç«¯æœ€æ–°ã€‚
-REM  ç”¨æ³•ï¼šåœ¨ Win ä¸Šæ‰‹åŠ¨æ”¹è¿‡æ–‡ä»¶åï¼ˆæˆ–è®© Claude æ”¹å®Œä»£ç åï¼‰åŒå‡»ä¸€æ¬¡ã€‚
-REM  æ³¨æ„ï¼š.env / secrets.toml å·²è¢« .gitignore æ’é™¤ï¼Œå¯†é’¥æ°¸ä¸å…¥åº“ã€‚
-REM â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+REM ============================================================
+REM  V88 Ë«ÏòÍ¬²½£¨Win <-> GitHub <-> Mac£©¡ª 2026-08-16 ¸üĞÂ
+REM  StockAI(¹«¿ª²Ö)£ºÕÕ¾É add+commit+pull+push¡£
+REM  ai-daily-report-v2(Ë½²Ö)£ºÀ­È¡×ß scripts/safe_pull.sh
+REM    £¨Mac ÌúÂÉ£ºË½²Ö½ûÂã pull£¬safe_pull ´ø JSON ×ÔÓúĞ£Ñé£©¡£
+REM  PYTHONUTF8=1£ºĞŞ¸´ Win ÏÂÖĞÎÄ stash/Ìá½»µ¼ÖÂ×ÔÓú½Å±¾±ÀÀ£¡£
+REM  ×¢Òâ£º.env / secrets.toml ÒÑ±» .gitignore ÅÅ³ı£¬ÃÜÔ¿ÓÀ²»Èë¿â¡£
+REM ============================================================
+set PYTHONUTF8=1
 
-for %%R in ("%USERPROFILE%\Desktop\StockAI" "%USERPROFILE%\Desktop\ai-daily-report-v2") do (
-  echo.
-  echo [åŒæ­¥] %%R
-  git -C %%R add -A
-  git -C %%R diff --cached --quiet || git -C %%R commit -m "win: æœ¬æœºä¿®æ”¹åŒæ­¥ %date% %time:~0,5%"
-  git -C %%R pull --rebase --autostash origin main || echo [è­¦å‘Š] pull é‡åˆ°å†²çªï¼Œè¯·æ‰¾ Claude å¤„ç†ï¼ˆç”Ÿæˆç‰©æ–‡ä»¶ä¸€å¾‹å–è¿œç«¯ï¼‰
-  git -C %%R push origin main
-)
+set R1=%USERPROFILE%\Desktop\StockAI
 echo.
-echo [åŒæ­¥] å®Œæˆã€‚Mac ç«¯ä¸‹æ¬¡å¯åŠ¨ï¼ˆå†…å« pullï¼‰å³å¯çœ‹åˆ°æœ¬æœºä¿®æ”¹ã€‚
+echo [Í¬²½] %R1%
+git -C %R1% add -A
+git -C %R1% diff --cached --quiet || git -C %R1% commit -m "win: sync local changes %date% %time:~0,5%"
+git -C %R1% pull --rebase --autostash origin main || echo [¾¯¸æ] pull Óöµ½³åÍ»£¬Çë°ÑÈÕÖ¾·¢¸ø Kimi ´¦Àí
+git -C %R1% push origin main
+
+set R2=%USERPROFILE%\Desktop\ai-daily-report-v2
+echo.
+echo [Í¬²½] %R2%
+git -C %R2% add -A
+git -C %R2% diff --cached --quiet || git -C %R2% commit -m "win: sync local changes %date% %time:~0,5%"
+"C:\Program Files\Git\bin\bash.exe" "%R2%\scripts\safe_pull.sh" || echo [¾¯¸æ] safe_pull Î´Í¨¹ı£¬Çë°ÑÉÏ·½ÈÕÖ¾·¢¸ø Kimi ´¦Àí
+git -C %R2% push origin main
+
+echo.
+echo [Í¬²½] Íê³É¡£Mac ¶ËÏÂ´ÎÆô¶¯£¨ÄÚº¬ pull£©¼´¿É¿´µ½±¾»úĞŞ¸Ä¡£
 pause
