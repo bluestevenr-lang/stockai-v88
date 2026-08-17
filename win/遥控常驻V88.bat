@@ -58,6 +58,20 @@ call :safepull "%STOCKAI%"
 echo [%STAMP%] pull ai-daily-report-v2 (private repo, safe_pull)...>> "%LOG%"
 call :safepull_private "%REPORT%"
 
+REM -- refresh the privacy-minimized OpenClaw workspace ----------------
+set "OCWORK=%USERPROFILE%\.openclaw\workspaces\v88-mobile"
+set "OCPKG=%STOCKAI%\win\openclaw-v88"
+if exist "%OCPKG%\sync_v88_projection_win.py" if exist "%REPORT%\data\gpt_verify.json" (
+  if not exist "%OCWORK%" mkdir "%OCWORK%" >nul 2>&1
+  copy /Y "%OCPKG%\AGENTS.md" "%OCWORK%\AGENTS.md" >nul 2>&1
+  python "%OCPKG%\sync_v88_projection_win.py" --source "%REPORT%\data" --dest "%OCWORK%\context" >> "%LOG%" 2>&1
+  if errorlevel 1 (
+    echo [%STAMP%] WARN: OpenClaw projection refresh failed; keeping last good snapshot>> "%LOG%"
+  ) else (
+    echo [%STAMP%] OpenClaw privacy projection refreshed>> "%LOG%"
+  )
+)
+
 REM -- materialize the legacy project instruction filename -------
 copy /Y "%STOCKAI%\win\CLAUDE-win.md" "%STOCKAI%\CLAUDE.md" >nul 2>&1
 if errorlevel 1 (
