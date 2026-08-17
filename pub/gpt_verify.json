@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-17 05:38（北京时间）",
+ "generated_at": "2026-08-17 08:21（北京时间）",
  "version": "gptverify-v2",
  "model": "gpt-5.6-sol",
  "display_name": "Codex独立复核",
@@ -134,13 +134,14 @@
   "1114.HK": {
    "name": "华晨中国",
    "tier_at_verify": "2A",
-   "verdict": "否决",
-   "why": "观察与现价可进冲突，逻辑自相矛盾",
-   "ts": "2026-08-17 05:38（北京时间）",
+   "verdict": "不可用",
+   "why": "量化门槛虽达标，但观察与现价可进指令冲突未消，止损有效性亦未确认",
+   "ts": "2026-08-17 08:21（北京时间）",
    "batch_seconds": 20.5,
    "fresh_for_strong_days": 1,
    "sig": "2A|现在买（今日窗口内）|80|来源🚀启动候选·强度69·确认2.41;阶段启动确认;规则上行估计74%;盈亏比3.64;期望优势2.43;52周位12.0%;止损1.98|action=观察 vs mode=现价可进",
-   "factpack_id": "401aa6fb2387d6446b76f64ea710003e9ceb337accf343c9c95d06c99d4feef8"
+   "factpack_id": "401aa6fb2387d6446b76f64ea710003e9ceb337accf343c9c95d06c99d4feef8",
+   "via": "kimi-codex-relay"
   },
   "0992.HK": {
    "name": "联想集团",
@@ -2466,12 +2467,13 @@
    "name": "沪深300ETF",
    "tier_at_verify": "2A",
    "verdict": "否决",
-   "why": "观察与现价可进冲突，逻辑自相矛盾",
-   "ts": "2026-08-17 05:38（北京时间）",
+   "why": "p_up仅61，低于硬性门槛65；且系统观察与现价可进冲突",
+   "ts": "2026-08-17 08:21（北京时间）",
    "batch_seconds": 20.5,
    "fresh_for_strong_days": 1,
    "sig": "2A|现在买（今日窗口内）|70||action=观察 vs mode=现价可进",
-   "factpack_id": "401aa6fb2387d6446b76f64ea710003e9ceb337accf343c9c95d06c99d4feef8"
+   "factpack_id": "401aa6fb2387d6446b76f64ea710003e9ceb337accf343c9c95d06c99d4feef8",
+   "via": "kimi-codex-relay"
   },
   "0326.HK": {
    "name": "中国星集团",
@@ -3045,13 +3047,14 @@
   "000783.SZ": {
    "name": "长江证券",
    "tier_at_verify": "3A",
-   "verdict": "不否定",
-   "why": "核验事实为空，无法支持3A档位",
-   "ts": "2026-08-17 05:38（北京时间）",
+   "verdict": "否决",
+   "why": "p_up仅62，低于硬性门槛65；其余指标达标亦不豁免",
+   "ts": "2026-08-17 08:21（北京时间）",
    "batch_seconds": 20.5,
    "fresh_for_strong_days": 1,
    "sig": "3A|现在买（今日窗口内）|80||",
-   "factpack_id": "401aa6fb2387d6446b76f64ea710003e9ceb337accf343c9c95d06c99d4feef8"
+   "factpack_id": "401aa6fb2387d6446b76f64ea710003e9ceb337accf343c9c95d06c99d4feef8",
+   "via": "kimi-codex-relay"
   },
   "3690.HK": {
    "name": "美团-W",
@@ -4076,12 +4079,13 @@
    "name": "江西铜业",
    "tier_at_verify": "2A",
    "verdict": "否决",
-   "why": "观察与现价可进冲突，逻辑自相矛盾",
-   "ts": "2026-08-17 05:38（北京时间）",
+   "why": "p_up仅60，未达65硬门槛；系统观察与现价可进信号冲突",
+   "ts": "2026-08-17 08:21（北京时间）",
    "batch_seconds": 20.5,
    "fresh_for_strong_days": 1,
    "sig": "2A|现在买（今日窗口内）|70||action=观察 vs mode=现价可进",
-   "factpack_id": "401aa6fb2387d6446b76f64ea710003e9ceb337accf343c9c95d06c99d4feef8"
+   "factpack_id": "401aa6fb2387d6446b76f64ea710003e9ceb337accf343c9c95d06c99d4feef8",
+   "via": "kimi-codex-relay"
   },
   "600979.SS": {
    "name": "广安爱众",
@@ -4635,13 +4639,14 @@
    "name": "北方华创",
    "tier_at_verify": "2A",
    "verdict": "否决",
-   "why": "突破开盘进且估值45，追高",
-   "ts": "2026-08-16 23:37（北京时间）",
+   "why": "期望优势及赢面优势均未达0.35硬标准，且止损距现价14.4%偏宽",
+   "ts": "2026-08-17 08:21（北京时间）",
    "batch_seconds": 19.3,
    "fresh_for_strong_days": 1,
    "sig": "2A|下一交易日 08-17 开盘可进（今日休市）|65||",
    "factpack_id": "71f134be71b667c37230d3e81044f366ba29dae801aba4d1b6e4022dbc0954d4",
-   "carried_from_factpack_id": "fbacfae19683be375662de80645ab1106e159fb5ea563cb59d6105f7153d2d24"
+   "carried_from_factpack_id": "fbacfae19683be375662de80645ab1106e159fb5ea563cb59d6105f7153d2d24",
+   "via": "kimi-codex-relay"
   },
   "300604.SZ": {
    "name": "长川科技",
@@ -4679,14 +4684,15 @@
   "603179.SS": {
    "name": "新泉股份",
    "tier_at_verify": "1A",
-   "verdict": "通过",
-   "why": "胜率83%，中位收益高于最差亏损",
-   "ts": "2026-08-16 23:37（北京时间）",
+   "verdict": "否决",
+   "why": "rr仅1.34低于1.5，且无固定止损价，未满足硬性标准",
+   "ts": "2026-08-17 08:21（北京时间）",
    "batch_seconds": 23.6,
    "fresh_for_strong_days": 1,
    "sig": "1A|🟢跌得很深·可分批买|85|距历史高点-45.2%;52周位25.5%;可得历史9.1年;历史同级样本n=18,胜15,条件频率83%,6月中位22.8%,最差-17.0%|",
    "factpack_id": "401aa6fb2387d6446b76f64ea710003e9ceb337accf343c9c95d06c99d4feef8",
-   "carried_from_factpack_id": "71f134be71b667c37230d3e81044f366ba29dae801aba4d1b6e4022dbc0954d4"
+   "carried_from_factpack_id": "71f134be71b667c37230d3e81044f366ba29dae801aba4d1b6e4022dbc0954d4",
+   "via": "kimi-codex-relay"
   },
   "3692.HK": {
    "name": "翰森制药",
