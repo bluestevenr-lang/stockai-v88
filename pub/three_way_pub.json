@@ -1,46 +1,12 @@
 {
- "generated_at": "2026-08-17 07:25（北京时间）",
+ "generated_at": "2026-08-17 14:34（北京时间）",
  "version": "three-way-dual-cli-v3",
  "note": "V88规则闸 + GPT/Codex终审 + Kimi K3证据/反对票 + 经典书理。DeepSeek无席位。",
  "counts": {
-  "⚡有分歧/否决": 28,
-  "⏳审核未完整": 1,
+  "⚡有分歧/否决": 20,
   "🟡存在不否定·只观察": 27
  },
  "rows": [
-  {
-   "code": "1114.HK",
-   "name": "华晨中国",
-   "market": "港股",
-   "rule": {
-    "dir": "看多",
-    "prob": 74,
-    "action": "现价可进",
-    "rr": 3.64,
-    "pos52": 12.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "否决",
-    "why": "观察与现价可进冲突，逻辑自相矛盾",
-    "at": "2026-08-17 05:38（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "不否定",
-    "why": "待复判·冲突未消:action=观察 vs mode=现价可进的系统冲突仍在,长期价值65/催化52未过;且2025归母-36%、EPS0.",
-    "at": "2026-08-16 23:09",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "证据不足"
-   },
-   "consensus": "⚡有分歧/否决"
-  },
   {
    "code": "2655.HK",
    "name": "果下科技",
@@ -71,6 +37,39 @@
    },
    "book": {
     "verdict": "未覆盖"
+   },
+   "consensus": "🟡存在不否定·只观察"
+  },
+  {
+   "code": "1114.HK",
+   "name": "华晨中国",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 74,
+    "action": "现价可进",
+    "rr": 3.64,
+    "pos52": 12.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "通过",
+    "why": "上行74%，盈亏比3.64，止损明确",
+    "at": "2026-08-17 14:32（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "不否定",
+    "why": "p_up74/rr3.64达标但action=观察vs现价可进冲突未消,GPT=不可用;待复判,不进精选。",
+    "at": "2026-08-17 08:21（北京时间）",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "证据不足"
    },
    "consensus": "🟡存在不否定·只观察"
   },
