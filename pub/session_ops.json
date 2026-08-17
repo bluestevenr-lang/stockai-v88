@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-17 10:18（北京时间）",
+ "generated_at": "2026-08-17 00:27（北京时间）",
  "version": "sessionops-v1",
  "ruleset_version": "v4.2",
  "gates_in_force": [
@@ -110,20 +110,58 @@
   }
  ],
  "buy": [],
- "blocked": [],
- "blocked_by_rr": [],
+ "blocked": [
+  {
+   "code": "CVX",
+   "name": "雪佛龙",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
+   "kimi": "未验证",
+   "factpack_match": true
+  },
+  {
+   "code": "FCX",
+   "name": "自由港麦克莫兰",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
+   "kimi": "未验证",
+   "factpack_match": true
+  }
+ ],
+ "blocked_by_rr": [
+  {
+   "code": "CVX",
+   "name": "雪佛龙",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
+   "kimi": "未验证",
+   "factpack_match": true
+  },
+  {
+   "code": "FCX",
+   "name": "自由港麦克莫兰",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
+   "kimi": "未验证",
+   "factpack_match": true
+  }
+ ],
  "stats": {
   "sell": 0,
   "watch": 6,
   "buy": 0,
   "buy_dual": 0,
-  "blocked": 0,
+  "blocked": 2,
   "blocked_by_rr": 0
  },
  "src_asof": {
-  "sell_grade": "2026-08-17 05:40（北京时间）",
-  "rank_score": "2026-08-17 05:40（北京时间）",
-  "classics_lens": "2026-08-17 05:38（北京时间）",
-  "anomaly_gate": "2026-08-17 05:38（北京时间）"
+  "sell_grade": "2026-08-16 23:53（北京时间）",
+  "rank_score": "2026-08-16 23:53（北京时间）",
+  "classics_lens": "2026-08-16 21:47（北京时间）",
+  "anomaly_gate": "2026-08-16 21:46（北京时间）"
  }
 }

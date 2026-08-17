@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-17 10:36（北京时间）",
- "generated_at": "2026-08-17 10:36（北京时间）",
+ "asof": "2026-08-17 10:45（北京时间）",
+ "generated_at": "2026-08-17 10:45（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -388,6 +388,17 @@
   }
  },
  "reject": {
+  "ETN": {
+   "code": "ETN",
+   "name": "伊顿",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [
+    "CS7"
+   ],
+   "why": "美股过热而赔率仅0.63(要≥2.0)",
+   "downgrade": ""
+  },
   "COP": {
    "code": "COP",
    "name": "康菲石油",
@@ -401,8 +412,8 @@
   }
  },
  "stats": {
-  "n_pass": 394,
-  "n_reject": 50,
+  "n_pass": 400,
+  "n_reject": 42,
   "by_rule": {
    "CS9": 0,
    "CS1": 0,
@@ -410,8 +421,8 @@
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
-   "CS6": 42,
-   "CS7": 27,
+   "CS6": 35,
+   "CS7": 20,
    "CS8": 0
   }
  }
