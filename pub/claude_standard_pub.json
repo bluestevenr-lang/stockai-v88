@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-17 22:26（北京时间）",
- "generated_at": "2026-08-17 22:26（北京时间）",
+ "asof": "2026-08-17 23:28（北京时间）",
+ "generated_at": "2026-08-17 23:28（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -29,16 +29,6 @@
   "603360.SS": {
    "code": "603360.SS",
    "name": "百傲化学",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "603659.SS": {
-   "code": "603659.SS",
-   "name": "璞泰来",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -76,36 +66,6 @@
    "downgrade": "",
    "auto": true
   },
-  "601789.SS": {
-   "code": "601789.SS",
-   "name": "宁波建工",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "3900.HK": {
-   "code": "3900.HK",
-   "name": "绿城中国",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "0017.HK": {
-   "code": "0017.HK",
-   "name": "新世界发展",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "1050.HK": {
    "code": "1050.HK",
    "name": "嘉利国际",
@@ -116,11 +76,11 @@
    "downgrade": "",
    "auto": true
   },
-  "600111.SS": {
-   "code": "600111.SS",
-   "name": "北方稀土",
+  "RKLB": {
+   "code": "RKLB",
+   "name": "Rocket Lab Corp",
    "side": "机会",
-   "action": "现价可进",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -130,47 +90,37 @@
    "code": "PLUG",
    "name": "Plug Power",
    "side": "机会",
-   "action": "左侧低吸",
+   "action": "现价可进",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "603758.SS": {
-   "code": "603758.SS",
-   "name": "秦安股份",
+  "002838.SZ": {
+   "code": "002838.SZ",
+   "name": "道恩股份",
+   "side": "机会",
+   "action": "现价可进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "600893.SS": {
+   "code": "600893.SS",
+   "name": "航发动力",
+   "side": "机会",
+   "action": "现价可进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "600188.SS": {
+   "code": "600188.SS",
+   "name": "兖矿能源",
    "side": "趋势",
    "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "002907.SZ": {
-   "code": "002907.SZ",
-   "name": "华森制药",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "000735.SZ": {
-   "code": "000735.SZ",
-   "name": "罗牛山",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "MCD": {
-   "code": "MCD",
-   "name": "麦当劳",
-   "side": "打折",
-   "action": "🕐还不够便宜·先看着",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -236,16 +186,6 @@
    "downgrade": "",
    "auto": true
   },
-  "603392.SS": {
-   "code": "603392.SS",
-   "name": "万泰生物",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "002756.SZ": {
    "code": "002756.SZ",
    "name": "永兴材料",
@@ -306,6 +246,26 @@
    "downgrade": "",
    "auto": true
   },
+  "605117.SS": {
+   "code": "605117.SS",
+   "name": "德业股份",
+   "side": "打折",
+   "action": "🟢打折到位·可开始买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "300595.SZ": {
+   "code": "300595.SZ",
+   "name": "欧普康视",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "XLC": {
    "code": "XLC",
    "name": "美股·通信板块",
@@ -320,6 +280,16 @@
    "code": "512760.SS",
    "name": "A股·半导体芯片板块",
    "side": "拐点",
+   "action": "",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "COP": {
+   "code": "COP",
+   "name": "康菲石油",
+   "side": "行业代表",
    "action": "",
    "rules": [],
    "why": "",
@@ -366,16 +336,6 @@
    "downgrade": "",
    "auto": true
   },
-  "600893.SS": {
-   "code": "600893.SS",
-   "name": "航发动力",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "0317.HK": {
    "code": "0317.HK",
    "name": "中船防务",
@@ -387,22 +347,10 @@
    "auto": true
   }
  },
- "reject": {
-  "COP": {
-   "code": "COP",
-   "name": "康菲石油",
-   "side": "行业代表",
-   "action": "",
-   "rules": [
-    "CS7"
-   ],
-   "why": "美股过热而赔率仅0.67(要≥2.0)",
-   "downgrade": ""
-  }
- },
+ "reject": {},
  "stats": {
-  "n_pass": 265,
-  "n_reject": 63,
+  "n_pass": 251,
+  "n_reject": 72,
   "by_rule": {
    "CS9": 0,
    "CS1": 0,
@@ -410,8 +358,8 @@
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
-   "CS6": 54,
-   "CS7": 32,
+   "CS6": 69,
+   "CS7": 0,
    "CS8": 0
   }
  }

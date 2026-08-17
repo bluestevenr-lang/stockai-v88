@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-17 00:27（北京时间）",
+ "generated_at": "2026-08-17 23:09（北京时间）",
  "version": "sessionops-v1",
  "ruleset_version": "v4.2",
  "gates_in_force": [
@@ -25,55 +25,13 @@
  "sell": [],
  "watch": [
   {
-   "code": "GOOG",
-   "name": "谷歌C",
-   "level": "-2A",
-   "last": 343.54,
-   "stop": 339.82,
-   "dist_stop_pct": 1.1,
-   "sell_zone": "跌破339.82执行(距+1.1%)",
-   "c123": "①②",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 339.82 执行"
-  },
-  {
-   "code": "AAPL",
-   "name": "苹果",
-   "level": "-1A",
-   "last": 305.93,
-   "stop": 300.57,
-   "dist_stop_pct": 1.8,
-   "sell_zone": "跌破300.57执行(距+1.8%)",
-   "c123": "①②",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 300.57 执行"
-  },
-  {
-   "code": "SO",
-   "name": "美国南方公司",
-   "level": "-1A",
-   "last": 92.8,
-   "stop": 91.03,
-   "dist_stop_pct": 1.9,
-   "sell_zone": "跌破91.03执行(距+1.9%)",
-   "c123": "①②",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 91.03 执行"
-  },
-  {
    "code": "MO",
    "name": "奥驰亚",
    "level": "-1A",
-   "last": 65.7,
+   "last": 64.62,
    "stop": 64.34,
-   "dist_stop_pct": 2.1,
-   "sell_zone": "跌破64.34执行(距+2.1%)",
+   "dist_stop_pct": 0.4,
+   "sell_zone": "跌破64.34执行(距+0.4%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
@@ -81,13 +39,41 @@
    "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 64.34 执行"
   },
   {
+   "code": "SO",
+   "name": "美国南方公司",
+   "level": "-1A",
+   "last": 91.77,
+   "stop": 91.03,
+   "dist_stop_pct": 0.8,
+   "sell_zone": "跌破91.03执行(距+0.8%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 91.03 执行"
+  },
+  {
+   "code": "GOOG",
+   "name": "谷歌C",
+   "level": "-2A",
+   "last": 342.85,
+   "stop": 339.82,
+   "dist_stop_pct": 0.9,
+   "sell_zone": "跌破339.82执行(距+0.9%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 339.82 执行"
+  },
+  {
    "code": "PM",
    "name": "菲利普莫里斯",
    "level": "-1A",
-   "last": 190.39,
+   "last": 187.11,
    "stop": 184.02,
-   "dist_stop_pct": 3.5,
-   "sell_zone": "跌破184.02执行(距+3.5%)",
+   "dist_stop_pct": 1.7,
+   "sell_zone": "跌破184.02执行(距+1.7%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
@@ -95,10 +81,24 @@
    "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 184.02 执行"
   },
   {
+   "code": "AAPL",
+   "name": "苹果",
+   "level": "-1A",
+   "last": 305.615,
+   "stop": 300.57,
+   "dist_stop_pct": 1.7,
+   "sell_zone": "跌破300.57执行(距+1.7%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 300.57 执行"
+  },
+  {
    "code": "APP",
    "name": "Applovin",
    "level": "-1A",
-   "last": 315.44,
+   "last": 315.316,
    "stop": 303.17,
    "dist_stop_pct": 4.0,
    "sell_zone": "跌破303.17执行(距+4.0%)",
@@ -112,42 +112,24 @@
  "buy": [],
  "blocked": [
   {
-   "code": "CVX",
-   "name": "雪佛龙",
+   "code": "WFC",
+   "name": "富国银行",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": true
-  },
-  {
-   "code": "FCX",
-   "name": "自由港麦克莫兰",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": true
+   "kimi": "不否定",
+   "factpack_match": false
   }
  ],
  "blocked_by_rr": [
   {
-   "code": "CVX",
-   "name": "雪佛龙",
+   "code": "WFC",
+   "name": "富国银行",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": true
-  },
-  {
-   "code": "FCX",
-   "name": "自由港麦克莫兰",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": true
+   "kimi": "不否定",
+   "factpack_match": false
   }
  ],
  "stats": {
@@ -155,13 +137,13 @@
   "watch": 6,
   "buy": 0,
   "buy_dual": 0,
-  "blocked": 2,
+  "blocked": 1,
   "blocked_by_rr": 0
  },
  "src_asof": {
-  "sell_grade": "2026-08-16 23:53（北京时间）",
-  "rank_score": "2026-08-16 23:53（北京时间）",
-  "classics_lens": "2026-08-16 21:47（北京时间）",
-  "anomaly_gate": "2026-08-16 21:46（北京时间）"
+  "sell_grade": "2026-08-17 21:48（北京时间）",
+  "rank_score": "2026-08-17 21:48（北京时间）",
+  "classics_lens": "2026-08-17 21:45（北京时间）",
+  "anomaly_gate": "2026-08-17 21:44（北京时间）"
  }
 }
