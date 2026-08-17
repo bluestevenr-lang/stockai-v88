@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-17 07:25（北京时间）",
- "generated_at": "2026-08-17 07:25（北京时间）",
+ "asof": "2026-08-17 10:36（北京时间）",
+ "generated_at": "2026-08-17 10:36（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -226,6 +226,26 @@
    "downgrade": "",
    "auto": true
   },
+  "603392.SS": {
+   "code": "603392.SS",
+   "name": "万泰生物",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "002756.SZ": {
+   "code": "002756.SZ",
+   "name": "永兴材料",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "300953.SZ": {
    "code": "300953.SZ",
    "name": "震裕科技",
@@ -291,26 +311,6 @@
    "name": "翰森制药",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "600031.SS": {
-   "code": "600031.SS",
-   "name": "三一重工",
-   "side": "打折",
-   "action": "🟢打折到位·可开始买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "603799.SS": {
-   "code": "603799.SS",
-   "name": "华友钴业",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -388,17 +388,6 @@
   }
  },
  "reject": {
-  "ETN": {
-   "code": "ETN",
-   "name": "伊顿",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [
-    "CS7"
-   ],
-   "why": "美股过热而赔率仅0.63(要≥2.0)",
-   "downgrade": ""
-  },
   "COP": {
    "code": "COP",
    "name": "康菲石油",
@@ -412,8 +401,8 @@
   }
  },
  "stats": {
-  "n_pass": 351,
-  "n_reject": 99,
+  "n_pass": 394,
+  "n_reject": 50,
   "by_rule": {
    "CS9": 0,
    "CS1": 0,
@@ -421,8 +410,8 @@
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
-   "CS6": 90,
-   "CS7": 37,
+   "CS6": 42,
+   "CS7": 27,
    "CS8": 0
   }
  }
