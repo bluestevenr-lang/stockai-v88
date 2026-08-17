@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-17 14:34（北京时间）",
+ "generated_at": "2026-08-17 21:49（北京时间）",
  "version": "dropout-v1",
  "rule": "区分『评估后不合格』(正常) 与 『从未被评估』(bug)。用户定纲：评分不够是正常；**压根不在池里就是问题**。",
  "boundary": "只对关键桶缺输入告警，不对分数低告警——噪音大的哨兵=死哨兵（fact_gate 290条误报的教训）。",
@@ -15,46 +15,6 @@
     "timing"
    ],
    "why": "标为 not_evaluated —— **不是不够好，是没被算过**"
-  },
-  {
-   "code": "3888.HK",
-   "name": "金山软件",
-   "tier": "1A",
-   "not_evaluated": false,
-   "missing_buckets": [
-    "timing"
-   ],
-   "why": "关键桶缺输入：timing → 该桶落回默认值，而默认值恰好在门槛不利的一侧"
-  },
-  {
-   "code": "688111.SS",
-   "name": "金山办公",
-   "tier": "1A",
-   "not_evaluated": false,
-   "missing_buckets": [
-    "timing"
-   ],
-   "why": "关键桶缺输入：timing → 该桶落回默认值，而默认值恰好在门槛不利的一侧"
-  },
-  {
-   "code": "1109.HK",
-   "name": "华润置地",
-   "tier": "1A",
-   "not_evaluated": false,
-   "missing_buckets": [
-    "timing"
-   ],
-   "why": "关键桶缺输入：timing → 该桶落回默认值，而默认值恰好在门槛不利的一侧"
-  },
-  {
-   "code": "600809.SS",
-   "name": "山西汾酒",
-   "tier": "0A",
-   "not_evaluated": false,
-   "missing_buckets": [
-    "timing"
-   ],
-   "why": "关键桶缺输入：timing → 该桶落回默认值，而默认值恰好在门槛不利的一侧"
   }
  ],
  "missing_from_grade": [
@@ -94,18 +54,18 @@
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   },
   {
-   "code": "KO",
-   "name": "可口可乐",
+   "code": "AXP",
+   "name": "美国运通",
    "src": "自选",
    "in_pool": true,
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   },
   {
-   "code": "VZ",
-   "name": "威瑞森通讯(Verizon)",
+   "code": "358.HK",
+   "name": "江西铜业股份",
    "src": "自选",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
+   "in_pool": false,
+   "why": "**既不在池也不在评级段** → 强制入池未生效"
   },
   {
    "code": "600645.SS",
@@ -113,29 +73,9 @@
    "src": "自选",
    "in_pool": true,
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
-  },
-  {
-   "code": "688432.SS",
-   "name": "有研硅",
-   "src": "自选",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
-  },
-  {
-   "code": "002083.SZ",
-   "name": "孚日股份",
-   "src": "自选",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   }
  ],
  "quiet_long": [
-  {
-   "code": "ARXS",
-   "name": "ARXS",
-   "tier": "0A",
-   "src": "自选"
-  },
   {
    "code": "300996.SZ",
    "name": "普联软件",
@@ -149,14 +89,32 @@
    "src": "自选"
   },
   {
+   "code": "002550.SZ",
+   "name": "千红制药",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "3888.HK",
+   "name": "金山软件",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "ARXS",
+   "name": "ARXS",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
    "code": "600809.SS",
    "name": "山西汾酒",
    "tier": "0A",
    "src": "持仓"
   },
   {
-   "code": "0005.HK",
-   "name": "汇丰控股",
+   "code": "6690.HK",
+   "name": "海尔智家",
    "tier": "0A",
    "src": "自选"
   },
@@ -167,110 +125,38 @@
    "src": "持仓"
   },
   {
+   "code": "LLY",
+   "name": "礼来",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "00700.HK",
+   "name": "腾讯控股",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
    "code": "688825.SS",
    "name": "688825.SS",
    "tier": "待评估",
    "src": "自选"
   },
   {
-   "code": "300604.SZ",
-   "name": "长川科技",
+   "code": "000783.SZ",
+   "name": "000783.SZ",
    "tier": "0A",
-   "src": "自选"
+   "src": "持仓"
   },
   {
-   "code": "002371.SZ",
-   "name": "北方华创",
+   "code": "0883.HK",
+   "name": "中海油",
    "tier": "0A",
-   "src": "自选"
+   "src": "持仓"
   },
   {
-   "code": "ONFO",
-   "name": "Onfolio Holdings Inc",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "600489.SS",
-   "name": "中金黄金",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "510500.SS",
-   "name": "中证500ETF",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "000703.SZ",
-   "name": "恒逸石化",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "FCX",
-   "name": "自由港麦克莫兰",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "6127.HK",
-   "name": "昭衍新药",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "MSI",
-   "name": "摩托罗拉解决方案",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "1919.HK",
-   "name": "中远海控",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "1929.HK",
-   "name": "周大福",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "AXP",
-   "name": "美国运通",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "6693.HK",
-   "name": "赤峰黄金",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "600362.SS",
-   "name": "江西铜业",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "002322.SZ",
-   "name": "理工能科",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "8279.HK",
-   "name": "亚博科技控股",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "510300.SS",
-   "name": "沪深300ETF",
+   "code": "688432.SS",
+   "name": "有研硅",
    "tier": "0A",
    "src": "自选"
   },
@@ -281,10 +167,28 @@
    "src": "自选"
   },
   {
-   "code": "513500.SS",
-   "name": "标普500",
+   "code": "002371.SZ",
+   "name": "北方华创",
    "tier": "0A",
-   "src": "持仓"
+   "src": "自选"
+  },
+  {
+   "code": "600162.SS",
+   "name": "香江控股",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "600362.SS",
+   "name": "江西铜业",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "FCX",
+   "name": "自由港麦克莫兰",
+   "tier": "0A",
+   "src": "自选"
   },
   {
    "code": "300631.SZ",
@@ -293,14 +197,14 @@
    "src": "自选"
   },
   {
-   "code": "TSLA",
-   "name": "特斯拉",
+   "code": "KO",
+   "name": "可口可乐",
    "tier": "0A",
-   "src": "持仓"
+   "src": "自选"
   },
   {
-   "code": "2269.HK",
-   "name": "药明生物",
+   "code": "MSI",
+   "name": "摩托罗拉解决方案",
    "tier": "0A",
    "src": "自选"
   },
@@ -309,14 +213,56 @@
    "name": "华东医药",
    "tier": "0A",
    "src": "自选"
+  },
+  {
+   "code": "9988.HK",
+   "name": "阿里巴巴-SW",
+   "tier": "0A",
+   "src": "持仓"
+  },
+  {
+   "code": "300604.SZ",
+   "name": "长川科技",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "ONFO",
+   "name": "Onfolio Holdings Inc",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "513500.SS",
+   "name": "标普500",
+   "tier": "0A",
+   "src": "持仓"
+  },
+  {
+   "code": "MS",
+   "name": "摩根士丹利",
+   "tier": "0A",
+   "src": "持仓"
+  },
+  {
+   "code": "3396.HK",
+   "name": "联想控股",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "002083.SZ",
+   "name": "孚日股份",
+   "tier": "0A",
+   "src": "自选"
   }
  ],
  "stats": {
-  "graded": 264,
-  "pool": 2102,
-  "must": 110,
-  "silent_dropout": 5,
-  "missing_from_grade": 10,
-  "quiet_long": 68
+  "graded": 282,
+  "pool": 2314,
+  "must": 141,
+  "silent_dropout": 1,
+  "missing_from_grade": 8,
+  "quiet_long": 101
  }
 }

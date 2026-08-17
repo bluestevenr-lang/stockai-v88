@@ -1,11 +1,11 @@
 {
   "schema_version": "v88.snapshot/2.0",
-  "snapshot_id": "snap-c4f243c0c589c626",
+  "snapshot_id": "snap-7eae94d045c0424f",
   "rotation_forecast": {
     "schema_version": "v88.rotation/1.4",
-    "snapshot_id": "snap-c9732d13435f6ed5",
+    "snapshot_id": "snap-3965e5493c3b4d43",
     "slot": "2026-08-17-am",
-    "analysis_time": "2026-08-17 10:21",
+    "analysis_time": "2026-08-17 10:22",
     "method": "量化2/5/8/16周热度与拐点（DeepSeek无裁决权；交易日09:00/21:00更新）",
     "market_heat": {
       "美股": {
@@ -19,9 +19,9 @@
         "position": "65-80%"
       },
       "港股": {
-        "score": 31,
-        "label": "🟠 偏冷",
-        "position": "30-50%"
+        "score": 23,
+        "label": "🔵 冰点",
+        "position": "≤30%（仅留核心层大跌加仓弹药）"
       }
     },
     "markets": {
@@ -52,36 +52,36 @@
             "score": 59,
             "confidence": "中",
             "now": 53,
-            "reason": "短期排名跃升、短期动量转强",
+            "reason": "短期排名跃升、周月动量同向",
             "trigger": "周动量与量能同向",
             "invalid": "跌回MA20且放量",
             "theme": "科技链",
             "facts": {
               "1d": 0.4,
               "5d": 1.5,
-              "20d": -0.4,
-              "vs_ma20": 2.5,
-              "vs_ma60": 1.7,
-              "vol_ratio": 0.74
+              "20d": 2.1,
+              "vs_ma20": 2.7,
+              "vs_ma60": 1.9,
+              "vol_ratio": 0.77
             }
           },
           {
-            "name": "公用事业",
-            "symbol": "XLU",
+            "name": "必选消费",
+            "symbol": "XLP",
             "score": 57,
             "confidence": "低",
-            "now": 49,
-            "reason": "短期排名跃升、短期动量转强、主力今日-4.0亿5日-28.9亿双流出",
+            "now": 51,
+            "reason": "短期排名跃升、周月动量同向",
             "trigger": "周动量与量能同向",
             "invalid": "跌回MA20且放量",
-            "theme": "防御",
+            "theme": "消费",
             "facts": {
-              "1d": 0.6,
-              "5d": 1.6,
-              "20d": -1.9,
-              "vs_ma20": -0.6,
-              "vs_ma60": -0.8,
-              "vol_ratio": 0.95
+              "1d": 0.1,
+              "5d": 1.1,
+              "20d": 1.1,
+              "vs_ma20": 1.1,
+              "vs_ma60": 2.2,
+              "vol_ratio": 0.74
             }
           }
         ],
@@ -106,29 +106,29 @@
             }
           },
           {
-            "name": "科技",
-            "symbol": "XLK",
-            "score": 57,
-            "confidence": "低",
-            "now": 49,
-            "reason": "周月动量同向、站上MA20、主力今日-31.1亿5日-68.5亿双流出",
+            "name": "通信",
+            "symbol": "XLC",
+            "score": 58,
+            "confidence": "中",
+            "now": 53,
+            "reason": "短期排名跃升、周月动量同向",
             "trigger": "20日动量与排名同升",
             "invalid": "20日动量转负",
             "theme": "科技链",
             "facts": {
-              "1d": -0.4,
-              "5d": 1.1,
-              "20d": 8.2,
-              "vs_ma20": 5.0,
-              "vs_ma60": 3.5,
-              "vol_ratio": 0.66
+              "1d": 0.4,
+              "5d": 1.5,
+              "20d": 2.1,
+              "vs_ma20": 2.7,
+              "vs_ma60": 1.9,
+              "vol_ratio": 0.77
             }
           },
           {
             "name": "医疗",
             "symbol": "XLV",
-            "score": 57,
-            "confidence": "低",
+            "score": 58,
+            "confidence": "中",
             "now": 50,
             "reason": "周月动量同向、站上MA20、主力今日净流入+2.8亿",
             "trigger": "20日动量与排名同升",
@@ -184,22 +184,22 @@
             }
           },
           {
-            "name": "工业",
-            "symbol": "XLI",
+            "name": "通信",
+            "symbol": "XLC",
             "score": 56,
             "confidence": "低",
-            "now": 51,
-            "reason": "周月动量同向、站上MA20、主力今日净流入+8.8亿",
+            "now": 53,
+            "reason": "短期排名跃升、周月动量同向",
             "trigger": "MA20与MA60方向一致",
             "invalid": "趋势斜率反向",
-            "theme": "工业军工",
+            "theme": "科技链",
             "facts": {
               "1d": 0.4,
-              "5d": 0.7,
-              "20d": 3.4,
-              "vs_ma20": 2.0,
-              "vs_ma60": 4.2,
-              "vol_ratio": 0.65
+              "5d": 1.5,
+              "20d": 2.1,
+              "vs_ma20": 2.7,
+              "vs_ma60": 1.9,
+              "vol_ratio": 0.77
             }
           }
         ],
@@ -248,7 +248,7 @@
             "score": 55,
             "confidence": "低",
             "now": 48,
-            "reason": "周月动量同向、站上MA20、主力今日-0.1亿5日-2.4亿双流出",
+            "reason": "周月动量同向、站上MA20、主力今日-0.1亿5日-2.6亿双流出",
             "trigger": "MA60方向延续且基本面未坏",
             "invalid": "跌破MA60或基本面转弱",
             "theme": "金融",
@@ -268,19 +268,19 @@
           {
             "name": "半导体芯片",
             "symbol": "512760.SS",
-            "score": 57,
-            "confidence": "低",
-            "now": 53,
-            "reason": "短期排名跃升、周月动量同向、主力今日净流入+79.0亿",
+            "score": 58,
+            "confidence": "中",
+            "now": 55,
+            "reason": "短期排名跃升、周月动量同向、主力今日净流入+80.7亿",
             "trigger": "周动量与量能同向",
             "invalid": "跌回MA20且放量",
             "theme": "科技链",
             "facts": {
-              "1d": 1.5,
-              "5d": 0.7,
-              "20d": 2.9,
-              "vs_ma20": 2.0,
-              "vs_ma60": -6.3,
+              "1d": 1.8,
+              "5d": 1.0,
+              "20d": 3.3,
+              "vs_ma20": 2.3,
+              "vs_ma60": -6.0,
               "vol_ratio": 0.66
             }
           },
@@ -373,11 +373,11 @@
             "invalid": "20日动量转负",
             "theme": "能源资源",
             "facts": {
-              "1d": 1.8,
-              "5d": -4.7,
-              "20d": 18.3,
-              "vs_ma20": 4.5,
-              "vs_ma60": 2.4,
+              "1d": 1.6,
+              "5d": -4.8,
+              "20d": 18.2,
+              "vs_ma20": 4.4,
+              "vs_ma60": 2.3,
               "vol_ratio": 1.03
             }
           }
@@ -432,11 +432,11 @@
             "invalid": "趋势斜率反向",
             "theme": "能源资源",
             "facts": {
-              "1d": 1.8,
-              "5d": -4.7,
-              "20d": 18.3,
-              "vs_ma20": 4.5,
-              "vs_ma60": 2.4,
+              "1d": 1.6,
+              "5d": -4.8,
+              "20d": 18.2,
+              "vs_ma20": 4.4,
+              "vs_ma60": 2.3,
               "vol_ratio": 1.03
             }
           }
@@ -491,11 +491,11 @@
             "invalid": "跌破MA60或基本面转弱",
             "theme": "能源资源",
             "facts": {
-              "1d": 1.8,
-              "5d": -4.7,
-              "20d": 18.3,
-              "vs_ma20": 4.5,
-              "vs_ma60": 2.4,
+              "1d": 1.6,
+              "5d": -4.8,
+              "20d": 18.2,
+              "vs_ma20": 4.4,
+              "vs_ma60": 2.3,
               "vol_ratio": 1.03
             }
           }
@@ -508,15 +508,15 @@
             "symbol": "3110.HK",
             "score": 58,
             "confidence": "中",
-            "now": 50,
+            "now": 49,
             "reason": "短期排名跃升、周月动量同向、主力今日净流入+8.4亿",
             "trigger": "周动量与量能同向",
             "invalid": "跌回MA20且放量",
             "theme": "防御",
             "facts": {
               "1d": 0.8,
-              "5d": 0.4,
-              "20d": 1.0,
+              "5d": 0.3,
+              "20d": 0.9,
               "vs_ma20": -0.1,
               "vs_ma60": 1.1,
               "vol_ratio": 0.5
@@ -552,10 +552,10 @@
             "invalid": "跌回MA20且放量",
             "theme": "国企蓝筹",
             "facts": {
-              "1d": 1.7,
-              "5d": -1.8,
+              "1d": 1.6,
+              "5d": -1.9,
               "20d": 1.2,
-              "vs_ma20": -0.2,
+              "vs_ma20": -0.3,
               "vs_ma60": 2.8,
               "vol_ratio": 0.6
             }
@@ -567,15 +567,15 @@
             "symbol": "3110.HK",
             "score": 59,
             "confidence": "中",
-            "now": 50,
+            "now": 49,
             "reason": "短期排名跃升、周月动量同向、主力今日净流入+8.4亿",
             "trigger": "20日动量与排名同升",
             "invalid": "20日动量转负",
             "theme": "防御",
             "facts": {
               "1d": 0.8,
-              "5d": 0.4,
-              "20d": 1.0,
+              "5d": 0.3,
+              "20d": 0.9,
               "vs_ma20": -0.1,
               "vs_ma60": 1.1,
               "vol_ratio": 0.5
@@ -603,7 +603,7 @@
           {
             "name": "国企蓝筹",
             "symbol": "2828.HK",
-            "score": 47,
+            "score": 46,
             "confidence": "低",
             "now": 46,
             "reason": "相对强度靠前、主力今日-1.7亿5日-0.7亿双流出",
@@ -611,10 +611,10 @@
             "invalid": "20日动量转负",
             "theme": "国企蓝筹",
             "facts": {
-              "1d": 1.7,
-              "5d": -1.8,
+              "1d": 1.6,
+              "5d": -1.9,
               "20d": 1.2,
-              "vs_ma20": -0.2,
+              "vs_ma20": -0.3,
               "vs_ma60": 2.8,
               "vol_ratio": 0.6
             }
@@ -626,15 +626,15 @@
             "symbol": "3110.HK",
             "score": 56,
             "confidence": "低",
-            "now": 50,
+            "now": 49,
             "reason": "短期排名跃升、周月动量同向、主力今日净流入+8.4亿",
             "trigger": "MA20与MA60方向一致",
             "invalid": "趋势斜率反向",
             "theme": "防御",
             "facts": {
               "1d": 0.8,
-              "5d": 0.4,
-              "20d": 1.0,
+              "5d": 0.3,
+              "20d": 0.9,
               "vs_ma20": -0.1,
               "vs_ma60": 1.1,
               "vol_ratio": 0.5
@@ -670,10 +670,10 @@
             "invalid": "趋势斜率反向",
             "theme": "国企蓝筹",
             "facts": {
-              "1d": 1.7,
-              "5d": -1.8,
+              "1d": 1.6,
+              "5d": -1.9,
               "20d": 1.2,
-              "vs_ma20": -0.2,
+              "vs_ma20": -0.3,
               "vs_ma60": 2.8,
               "vol_ratio": 0.6
             }
@@ -685,15 +685,15 @@
             "symbol": "3110.HK",
             "score": 54,
             "confidence": "低",
-            "now": 50,
+            "now": 49,
             "reason": "短期排名跃升、周月动量同向、主力今日净流入+8.4亿",
             "trigger": "MA60方向延续且基本面未坏",
             "invalid": "跌破MA60或基本面转弱",
             "theme": "防御",
             "facts": {
               "1d": 0.8,
-              "5d": 0.4,
-              "20d": 1.0,
+              "5d": 0.3,
+              "20d": 0.9,
               "vs_ma20": -0.1,
               "vs_ma60": 1.1,
               "vol_ratio": 0.5
@@ -729,10 +729,10 @@
             "invalid": "跌破MA60或基本面转弱",
             "theme": "国企蓝筹",
             "facts": {
-              "1d": 1.7,
-              "5d": -1.8,
+              "1d": 1.6,
+              "5d": -1.9,
               "20d": 1.2,
-              "vs_ma20": -0.2,
+              "vs_ma20": -0.3,
               "vs_ma60": 2.8,
               "vol_ratio": 0.6
             }
@@ -791,14 +791,14 @@
           "name": "通信",
           "theme": "科技链",
           "now": 53,
-          "reason": "短期排名跃升、短期动量转强",
+          "reason": "短期排名跃升、周月动量同向",
           "facts": {
             "1d": 0.4,
             "5d": 1.5,
-            "20d": -0.4,
-            "vs_ma20": 2.5,
-            "vs_ma60": 1.7,
-            "vol_ratio": 0.74
+            "20d": 2.1,
+            "vs_ma20": 2.7,
+            "vs_ma60": 1.9,
+            "vol_ratio": 0.77
           },
           "points": {
             "2周": {
@@ -808,19 +808,19 @@
               "invalid": "跌回MA20且放量"
             },
             "5周": {
-              "score": 56,
-              "confidence": "低",
+              "score": 58,
+              "confidence": "中",
               "trigger": "20日动量与排名同升",
               "invalid": "20日动量转负"
             },
             "8周": {
-              "score": 54,
+              "score": 56,
               "confidence": "低",
               "trigger": "MA20与MA60方向一致",
               "invalid": "趋势斜率反向"
             },
             "16周": {
-              "score": 53,
+              "score": 54,
               "confidence": "低",
               "trigger": "MA60方向延续且基本面未坏",
               "invalid": "跌破MA60或基本面转弱"
@@ -847,14 +847,14 @@
           },
           "points": {
             "2周": {
-              "score": 52,
+              "score": 53,
               "confidence": "低",
               "trigger": "周动量与量能同向",
               "invalid": "跌回MA20且放量"
             },
             "5周": {
-              "score": 57,
-              "confidence": "低",
+              "score": 58,
+              "confidence": "中",
               "trigger": "20日动量与排名同升",
               "invalid": "20日动量转负"
             },
@@ -872,16 +872,61 @@
             }
           },
           "turning": {
-            "horizon": "8周",
+            "horizon": "5周",
             "type": "顶部转弱",
             "confidence": "中"
+          }
+        },
+        {
+          "name": "必选消费",
+          "theme": "消费",
+          "now": 51,
+          "reason": "短期排名跃升、周月动量同向",
+          "facts": {
+            "1d": 0.1,
+            "5d": 1.1,
+            "20d": 1.1,
+            "vs_ma20": 1.1,
+            "vs_ma60": 2.2,
+            "vol_ratio": 0.74
+          },
+          "points": {
+            "2周": {
+              "score": 57,
+              "confidence": "低",
+              "trigger": "周动量与量能同向",
+              "invalid": "跌回MA20且放量"
+            },
+            "5周": {
+              "score": 56,
+              "confidence": "低",
+              "trigger": "20日动量与排名同升",
+              "invalid": "20日动量转负"
+            },
+            "8周": {
+              "score": 55,
+              "confidence": "低",
+              "trigger": "MA20与MA60方向一致",
+              "invalid": "趋势斜率反向"
+            },
+            "16周": {
+              "score": 54,
+              "confidence": "低",
+              "trigger": "MA60方向延续且基本面未坏",
+              "invalid": "跌破MA60或基本面转弱"
+            }
+          },
+          "turning": {
+            "horizon": "16周后",
+            "type": "暂未确认",
+            "confidence": "低"
           }
         },
         {
           "name": "公用事业",
           "theme": "防御",
           "now": 49,
-          "reason": "短期排名跃升、短期动量转强、主力今日-4.0亿5日-28.9亿双流出",
+          "reason": "短期排名跃升、短期动量转强、主力今日-4.2亿5日-29.0亿双流出",
           "facts": {
             "1d": 0.6,
             "5d": 1.6,
@@ -923,27 +968,27 @@
           }
         },
         {
-          "name": "科技",
-          "theme": "科技链",
-          "now": 49,
-          "reason": "周月动量同向、站上MA20、主力今日-31.1亿5日-68.5亿双流出",
+          "name": "金融",
+          "theme": "金融",
+          "now": 48,
+          "reason": "周月动量同向、站上MA20、主力今日-0.1亿5日-2.6亿双流出",
           "facts": {
-            "1d": -0.4,
-            "5d": 1.1,
-            "20d": 8.2,
-            "vs_ma20": 5.0,
-            "vs_ma60": 3.5,
-            "vol_ratio": 0.66
+            "1d": -0.2,
+            "5d": 1.0,
+            "20d": 3.4,
+            "vs_ma20": 1.7,
+            "vs_ma60": 6.2,
+            "vol_ratio": 0.79
           },
           "points": {
             "2周": {
-              "score": 51,
+              "score": 50,
               "confidence": "低",
               "trigger": "周动量与量能同向",
               "invalid": "跌回MA20且放量"
             },
             "5周": {
-              "score": 57,
+              "score": 54,
               "confidence": "低",
               "trigger": "20日动量与排名同升",
               "invalid": "20日动量转负"
@@ -955,14 +1000,14 @@
               "invalid": "趋势斜率反向"
             },
             "16周": {
-              "score": 53,
+              "score": 55,
               "confidence": "低",
               "trigger": "MA60方向延续且基本面未坏",
               "invalid": "跌破MA60或基本面转弱"
             }
           },
           "turning": {
-            "horizon": "5周",
+            "horizon": "8周",
             "type": "顶部转弱",
             "confidence": "中"
           }
@@ -975,100 +1020,10 @@
           "facts": {
             "1d": 0.4,
             "5d": 0.7,
-            "20d": 3.4,
+            "20d": 4.0,
             "vs_ma20": 2.0,
-            "vs_ma60": 4.2,
-            "vol_ratio": 0.65
-          },
-          "points": {
-            "2周": {
-              "score": 50,
-              "confidence": "低",
-              "trigger": "周动量与量能同向",
-              "invalid": "跌回MA20且放量"
-            },
-            "5周": {
-              "score": 55,
-              "confidence": "低",
-              "trigger": "20日动量与排名同升",
-              "invalid": "20日动量转负"
-            },
-            "8周": {
-              "score": 56,
-              "confidence": "低",
-              "trigger": "MA20与MA60方向一致",
-              "invalid": "趋势斜率反向"
-            },
-            "16周": {
-              "score": 55,
-              "confidence": "低",
-              "trigger": "MA60方向延续且基本面未坏",
-              "invalid": "跌破MA60或基本面转弱"
-            }
-          },
-          "turning": {
-            "horizon": "8周",
-            "type": "顶部转弱",
-            "confidence": "中"
-          }
-        },
-        {
-          "name": "必选消费",
-          "theme": "消费",
-          "now": 51,
-          "reason": "短期排名跃升、周月动量同向",
-          "facts": {
-            "1d": 0.1,
-            "5d": 1.1,
-            "20d": 1.1,
-            "vs_ma20": 1.1,
-            "vs_ma60": 2.2,
-            "vol_ratio": 0.74
-          },
-          "points": {
-            "2周": {
-              "score": 56,
-              "confidence": "低",
-              "trigger": "周动量与量能同向",
-              "invalid": "跌回MA20且放量"
-            },
-            "5周": {
-              "score": 56,
-              "confidence": "低",
-              "trigger": "20日动量与排名同升",
-              "invalid": "20日动量转负"
-            },
-            "8周": {
-              "score": 54,
-              "confidence": "低",
-              "trigger": "MA20与MA60方向一致",
-              "invalid": "趋势斜率反向"
-            },
-            "16周": {
-              "score": 54,
-              "confidence": "低",
-              "trigger": "MA60方向延续且基本面未坏",
-              "invalid": "跌破MA60或基本面转弱"
-            }
-          },
-          "turning": {
-            "horizon": "8周",
-            "type": "底部转强",
-            "confidence": "中"
-          }
-        },
-        {
-          "name": "金融",
-          "theme": "金融",
-          "now": 48,
-          "reason": "周月动量同向、站上MA20、主力今日-0.1亿5日-2.4亿双流出",
-          "facts": {
-            "1d": -0.2,
-            "5d": 1.0,
-            "20d": 3.4,
-            "vs_ma20": 1.7,
-            "vs_ma60": 6.2,
-            "vol_ratio": 0.79
+            "vs_ma60": 3.9,
+            "vol_ratio": 0.68
           },
           "points": {
             "2周": {
@@ -1078,13 +1033,13 @@
               "invalid": "跌回MA20且放量"
             },
             "5周": {
-              "score": 54,
+              "score": 55,
               "confidence": "低",
               "trigger": "20日动量与排名同升",
               "invalid": "20日动量转负"
             },
             "8周": {
-              "score": 54,
+              "score": 55,
               "confidence": "低",
               "trigger": "MA20与MA60方向一致",
               "invalid": "趋势斜率反向"
@@ -1106,18 +1061,18 @@
           "name": "房地产",
           "theme": "房地产",
           "now": 52,
-          "reason": "周月动量同向、站上MA20",
+          "reason": "短期动量转强、站上MA20",
           "facts": {
             "1d": 0.3,
             "5d": 0.6,
-            "20d": 1.6,
+            "20d": -0.3,
             "vs_ma20": 0.2,
-            "vs_ma60": 1.6,
-            "vol_ratio": 0.99
+            "vs_ma60": 1.5,
+            "vol_ratio": 1.0
           },
           "points": {
             "2周": {
-              "score": 50,
+              "score": 52,
               "confidence": "低",
               "trigger": "周动量与量能同向",
               "invalid": "跌回MA20且放量"
@@ -1142,8 +1097,8 @@
             }
           },
           "turning": {
-            "horizon": "8周",
-            "type": "顶部转弱",
+            "horizon": "5周",
+            "type": "底部转强",
             "confidence": "中"
           }
         }
@@ -1242,20 +1197,20 @@
         {
           "name": "半导体芯片",
           "theme": "科技链",
-          "now": 53,
-          "reason": "短期排名跃升、周月动量同向、主力今日净流入+79.0亿",
+          "now": 55,
+          "reason": "短期排名跃升、周月动量同向、主力今日净流入+80.7亿",
           "facts": {
-            "1d": 1.5,
-            "5d": 0.7,
-            "20d": 2.9,
-            "vs_ma20": 2.0,
-            "vs_ma60": -6.3,
+            "1d": 1.8,
+            "5d": 1.0,
+            "20d": 3.3,
+            "vs_ma20": 2.3,
+            "vs_ma60": -6.0,
             "vol_ratio": 0.66
           },
           "points": {
             "2周": {
-              "score": 57,
-              "confidence": "低",
+              "score": 58,
+              "confidence": "中",
               "trigger": "周动量与量能同向",
               "invalid": "跌回MA20且放量"
             },
@@ -1272,7 +1227,7 @@
               "invalid": "趋势斜率反向"
             },
             "16周": {
-              "score": 45,
+              "score": 46,
               "confidence": "低",
               "trigger": "MA60方向延续且基本面未坏",
               "invalid": "跌破MA60或基本面转弱"
@@ -1290,11 +1245,11 @@
           "now": 54,
           "reason": "站上MA20、主力3日净流入+11.9亿",
           "facts": {
-            "1d": 1.8,
-            "5d": -4.7,
-            "20d": 18.3,
-            "vs_ma20": 4.5,
-            "vs_ma60": 2.4,
+            "1d": 1.6,
+            "5d": -4.8,
+            "20d": 18.2,
+            "vs_ma20": 4.4,
+            "vs_ma60": 2.3,
             "vol_ratio": 1.03
           },
           "points": {
@@ -1332,14 +1287,14 @@
         {
           "name": "银行",
           "theme": "金融",
-          "now": 47,
+          "now": 46,
           "reason": "短期排名跃升",
           "facts": {
-            "1d": 0.0,
-            "5d": -0.8,
-            "20d": -1.4,
-            "vs_ma20": -1.4,
-            "vs_ma60": 1.4,
+            "1d": -0.1,
+            "5d": -0.9,
+            "20d": -1.5,
+            "vs_ma20": -1.5,
+            "vs_ma60": 1.3,
             "vol_ratio": 0.68
           },
           "points": {
@@ -1350,7 +1305,7 @@
               "invalid": "跌回MA20且放量"
             },
             "5周": {
-              "score": 52,
+              "score": 53,
               "confidence": "低",
               "trigger": "20日动量与排名同升",
               "invalid": "20日动量转负"
@@ -1375,17 +1330,17 @@
           }
         },
         {
-          "name": "白酒",
+          "name": "消费",
           "theme": "消费",
-          "now": 36,
+          "now": 38,
           "reason": "相对强度靠前、主力今日-12.4亿5日-9.5亿双流出",
           "facts": {
-            "1d": -2.5,
-            "5d": -3.4,
-            "20d": -0.5,
-            "vs_ma20": -1.5,
-            "vs_ma60": 1.7,
-            "vol_ratio": 0.82
+            "1d": -1.0,
+            "5d": -3.5,
+            "20d": -1.5,
+            "vs_ma20": -1.6,
+            "vs_ma60": 1.6,
+            "vol_ratio": 0.77
           },
           "points": {
             "2周": {
@@ -1422,14 +1377,14 @@
         {
           "name": "军工",
           "theme": "工业军工",
-          "now": 46,
-          "reason": "站上MA20、主力今日-1.6亿5日-57.3亿双流出",
+          "now": 47,
+          "reason": "站上MA20、主力今日-1.8亿5日-57.4亿双流出",
           "facts": {
-            "1d": 0.3,
-            "5d": -1.4,
-            "20d": 9.6,
-            "vs_ma20": 3.4,
-            "vs_ma60": -4.1,
+            "1d": 0.4,
+            "5d": -1.3,
+            "20d": 9.7,
+            "vs_ma20": 3.5,
+            "vs_ma60": -4.0,
             "vol_ratio": 0.6
           },
           "points": {
@@ -1469,12 +1424,12 @@
         {
           "name": "高股息",
           "theme": "防御",
-          "now": 50,
+          "now": 49,
           "reason": "短期排名跃升、周月动量同向、主力今日净流入+8.4亿",
           "facts": {
             "1d": 0.8,
-            "5d": 0.4,
-            "20d": 1.0,
+            "5d": 0.3,
+            "20d": 0.9,
             "vs_ma20": -0.1,
             "vs_ma60": 1.1,
             "vol_ratio": 0.5
@@ -1562,10 +1517,10 @@
           "now": 46,
           "reason": "相对强度靠前、主力今日-1.7亿5日-0.7亿双流出",
           "facts": {
-            "1d": 1.7,
-            "5d": -1.8,
+            "1d": 1.6,
+            "5d": -1.9,
             "20d": 1.2,
-            "vs_ma20": -0.2,
+            "vs_ma20": -0.3,
             "vs_ma60": 2.8,
             "vol_ratio": 0.6
           },
@@ -1577,7 +1532,7 @@
               "invalid": "跌回MA20且放量"
             },
             "5周": {
-              "score": 47,
+              "score": 46,
               "confidence": "低",
               "trigger": "20日动量与排名同升",
               "invalid": "20日动量转负"
@@ -1638,45 +1593,64 @@
   "cycle_scan": {
     "schema_version": "v88.cycle/1.1",
     "slot": "2026-08-17-am",
-    "analysis_time": "2026-08-17 16:07",
+    "analysis_time": "2026-08-17 10:26",
     "stocks": [
       {
-        "code": "2618.HK",
-        "name": "2618.HK",
+        "code": "1919.HK",
+        "name": "中远海控",
         "phase": "派发→退潮",
         "direction": "down",
         "headline": "↓ 即将进入下行周期（派发转退潮）",
-        "up": 18.0,
-        "down": 74.0,
+        "up": 0.0,
+        "down": 66.0,
         "confidence": "高",
         "horizon": "日~周",
-        "pos52": 29,
-        "trigger": "放量跌破 14.27 或顶拐/死叉",
-        "invalid": "放量收复 14.27（退潮证伪）",
+        "pos52": 99,
+        "trigger": "放量跌破 15.50 或顶拐/死叉",
+        "invalid": "放量收复 15.50（退潮证伪）",
         "sector_phase": null,
-        "p_up": 15,
-        "unified_score": 34,
-        "rr": 4.17,
-        "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
+        "p_up": 57,
+        "unified_score": 51,
+        "rr": 0.07,
+        "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
       },
       {
-        "code": "0066.HK",
-        "name": "港铁公司",
+        "code": "601288.SS",
+        "name": "农业银行",
         "phase": "派发→退潮",
         "direction": "down",
         "headline": "↓ 即将进入下行周期（派发转退潮）",
-        "up": 31.0,
+        "up": 0.0,
         "down": 58.0,
         "confidence": "中",
-        "horizon": "日~周",
-        "pos52": 39,
-        "trigger": "放量跌破 32.68 或顶拐/死叉",
-        "invalid": "放量收复 32.68（退潮证伪）",
-        "sector_phase": null,
-        "p_up": 54,
-        "unified_score": 53,
-        "rr": 0.92,
+        "horizon": "周~月",
+        "pos52": 49,
+        "trigger": "放量跌破 6.63 或顶拐/死叉",
+        "invalid": "放量收复 6.63（退潮证伪）",
+        "sector_phase": "退潮",
+        "p_up": 38,
+        "unified_score": 50,
+        "rr": 2.75,
         "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
+      },
+      {
+        "code": "600809.SS",
+        "name": "山西汾酒",
+        "phase": "派发→退潮",
+        "direction": "down",
+        "headline": "↓ 即将进入下行周期（派发转退潮）",
+        "up": 0.0,
+        "down": 58.0,
+        "confidence": "中",
+        "horizon": "周~月",
+        "pos52": 33,
+        "trigger": "放量跌破 121.17 或顶拐/死叉",
+        "invalid": "放量收复 121.17（退潮证伪）",
+        "sector_phase": "退潮",
+        "p_up": 40,
+        "unified_score": 44,
+        "rr": 1.59,
+        "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
       },
       {
         "code": "NU",
@@ -1696,6 +1670,25 @@
         "unified_score": 58,
         "rr": 0.53,
         "entry_note": "🚫短线不进｜方向偏多但当前赔率不足；需上行>65.4%"
+      },
+      {
+        "code": "2618.HK",
+        "name": "2618.HK",
+        "phase": "派发→退潮",
+        "direction": "down",
+        "headline": "↓ 即将进入下行周期（派发转退潮）",
+        "up": 18.0,
+        "down": 52.0,
+        "confidence": "中",
+        "horizon": "周",
+        "pos52": 31,
+        "trigger": "放量跌破 14.28 或顶拐/死叉",
+        "invalid": "放量收复 14.28（退潮证伪）",
+        "sector_phase": null,
+        "p_up": 15,
+        "unified_score": 34,
+        "rr": 4.01,
+        "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
       },
       {
         "code": "3888.HK",
@@ -1727,12 +1720,12 @@
         "confidence": "中",
         "horizon": "周",
         "pos52": 33,
-        "trigger": "放量跌破 152.95 或顶拐/死叉",
-        "invalid": "放量收复 152.95（退潮证伪）",
+        "trigger": "放量跌破 152.94 或顶拐/死叉",
+        "invalid": "放量收复 152.94（退潮证伪）",
         "sector_phase": null,
         "p_up": 39,
-        "unified_score": 45,
-        "rr": 2.01,
+        "unified_score": 46,
+        "rr": 2.06,
         "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
       },
       {
@@ -1745,14 +1738,14 @@
         "down": 46.0,
         "confidence": "中",
         "horizon": "周~月",
-        "pos52": 92,
-        "trigger": "放量跌破 77.67 或顶拐/死叉",
-        "invalid": "放量收复 77.67（退潮证伪）",
+        "pos52": 95,
+        "trigger": "放量跌破 77.69 或顶拐/死叉",
+        "invalid": "放量收复 77.69（退潮证伪）",
         "sector_phase": "退潮",
-        "p_up": 53,
-        "unified_score": 48,
-        "rr": 0.23,
-        "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
+        "p_up": 60,
+        "unified_score": 53,
+        "rr": 0.12,
+        "entry_note": "🚫短线不进｜方向偏多但当前赔率不足；需上行>89.3%"
       },
       {
         "code": "1114.HK",
@@ -1764,14 +1757,14 @@
         "down": 0.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 17,
+        "pos52": 15,
         "trigger": "放量站稳 2.13 + 底拐确认",
         "invalid": "失守 2.13 或缩量回落（切换证伪）",
         "sector_phase": null,
-        "p_up": 80,
-        "unified_score": 77,
-        "rr": 1.89,
-        "entry_note": "⏳双路径:回踩2.2/突破2.83·08-24前｜标准门槛通过；概率优势+45.4点"
+        "p_up": 71,
+        "unified_score": 72,
+        "rr": 2.59,
+        "entry_note": "✅现价可进·08-20前·破1.98废｜标准门槛通过；概率优势+43.1点"
       },
       {
         "code": "300631.SZ",
@@ -1789,65 +1782,8 @@
         "sector_phase": null,
         "p_up": 68,
         "unified_score": 68,
-        "rr": 3.32,
-        "entry_note": "⏳双路径:回踩21.95/突破27.1·08-24前｜周期未充分共振，等待触发"
-      },
-      {
-        "code": "601579.SS",
-        "name": "会稽山",
-        "phase": "派发→退潮",
-        "direction": "down",
-        "headline": "↓ 即将进入下行周期（派发转退潮）",
-        "up": 30.0,
-        "down": 42.0,
-        "confidence": "低",
-        "horizon": "日~周",
-        "pos52": 81,
-        "trigger": "放量跌破 15.44 或顶拐/死叉",
-        "invalid": "放量收复 15.44（退潮证伪）",
-        "sector_phase": null,
-        "p_up": 85,
-        "unified_score": 64,
-        "rr": 0.17,
-        "entry_note": "🚫短线不进｜方向偏多但当前赔率不足；需上行>85.5%"
-      },
-      {
-        "code": "600547.SS",
-        "name": "山东黄金",
-        "phase": "蓄势→领涨",
-        "direction": "up",
-        "headline": "↑ 即将进入上行周期（蓄势转领涨）",
-        "up": 42.0,
-        "down": 0.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 25,
-        "trigger": "放量站稳 28.43 + 底拐确认",
-        "invalid": "失守 28.43 或缩量回落（切换证伪）",
-        "sector_phase": null,
-        "p_up": 69,
-        "unified_score": 66,
-        "rr": 0.78,
-        "entry_note": "⏳双路径:回踩29.79/突破32.55·08-24前｜方向偏多但当前赔率不足；需上行>56.2%"
-      },
-      {
-        "code": "600760.SS",
-        "name": "中航沈飞",
-        "phase": "蓄势→领涨",
-        "direction": "up",
-        "headline": "↑ 即将进入上行周期（蓄势转领涨）",
-        "up": 42.0,
-        "down": 0.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 33,
-        "trigger": "放量站稳 43.54 + 底拐确认",
-        "invalid": "失守 43.54 或缩量回落（切换证伪）",
-        "sector_phase": null,
-        "p_up": 62,
-        "unified_score": 55,
-        "rr": 0.41,
-        "entry_note": "⏳双路径:回踩43.79/突破45.53·08-24前｜周期未充分共振，等待触发"
+        "rr": 3.42,
+        "entry_note": "✅回踩到位·08-19前·止损17.31·仅短线｜周期未充分共振，等待触发"
       },
       {
         "code": "1818.HK",
@@ -1859,14 +1795,33 @@
         "down": 0.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 37,
-        "trigger": "放量站稳 22.01 + 底拐确认",
-        "invalid": "失守 22.01 或缩量回落（切换证伪）",
+        "pos52": 36,
+        "trigger": "放量站稳 22.00 + 底拐确认",
+        "invalid": "失守 22.00 或缩量回落（切换证伪）",
         "sector_phase": null,
-        "p_up": 71,
-        "unified_score": 67,
-        "rr": 0.78,
-        "entry_note": "⏳双路径:回踩23.23/突破25.8·08-24前｜方向偏多但当前赔率不足；需上行>56.2%"
+        "p_up": 69,
+        "unified_score": 69,
+        "rr": 0.98,
+        "entry_note": "⏳双路径:回踩23.21/突破25.8·08-24前｜激进门槛通过；概率优势+18.5点"
+      },
+      {
+        "code": "3110.HK",
+        "name": "港股高股息ETF",
+        "phase": "派发→退潮",
+        "direction": "down",
+        "headline": "↓ 即将进入下行周期（派发转退潮）",
+        "up": 0.0,
+        "down": 40.0,
+        "confidence": "低",
+        "horizon": "周",
+        "pos52": 47,
+        "trigger": "放量跌破 31.18 或顶拐/死叉",
+        "invalid": "放量收复 31.18（退潮证伪）",
+        "sector_phase": null,
+        "p_up": 40,
+        "unified_score": 51,
+        "rr": 2.93,
+        "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
       },
       {
         "code": "6690.HK",
@@ -1878,18 +1833,18 @@
         "down": 40.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 31,
+        "pos52": 32,
         "trigger": "放量跌破 21.01 或顶拐/死叉",
         "invalid": "放量收复 21.01（退潮证伪）",
         "sector_phase": null,
         "p_up": 38,
         "unified_score": 43,
-        "rr": 1.31,
+        "rr": 1.2,
         "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
       },
       {
-        "code": "9633.HK",
-        "name": "农夫山泉",
+        "code": "300033.SZ",
+        "name": "同花顺",
         "phase": "派发→退潮",
         "direction": "down",
         "headline": "↓ 即将进入下行周期（派发转退潮）",
@@ -1897,33 +1852,14 @@
         "down": 40.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 36,
-        "trigger": "放量跌破 42.65 或顶拐/死叉",
-        "invalid": "放量收复 42.65（退潮证伪）",
+        "pos52": 51,
+        "trigger": "放量跌破 230.17 或顶拐/死叉",
+        "invalid": "放量收复 230.17（退潮证伪）",
         "sector_phase": null,
-        "p_up": 43,
-        "unified_score": 48,
-        "rr": 1.71,
+        "p_up": 42,
+        "unified_score": 54,
+        "rr": 2.84,
         "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
-      },
-      {
-        "code": "601288.SS",
-        "name": "农业银行",
-        "phase": "派发→退潮",
-        "direction": "down",
-        "headline": "↓ 即将进入下行周期（派发转退潮）",
-        "up": 0.0,
-        "down": 40.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 49,
-        "trigger": "放量跌破 6.63 或顶拐/死叉",
-        "invalid": "放量收复 6.63（退潮证伪）",
-        "sector_phase": null,
-        "p_up": 36,
-        "unified_score": 49,
-        "rr": 2.71,
-        "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
       },
       {
         "code": "688111.SS",
@@ -1935,52 +1871,14 @@
         "down": 40.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 53,
-        "trigger": "放量跌破 255.67 或顶拐/死叉",
-        "invalid": "放量收复 255.67（退潮证伪）",
+        "pos52": 49,
+        "trigger": "放量跌破 255.48 或顶拐/死叉",
+        "invalid": "放量收复 255.48（退潮证伪）",
         "sector_phase": null,
-        "p_up": 33,
-        "unified_score": 44,
-        "rr": 1.54,
+        "p_up": 30,
+        "unified_score": 43,
+        "rr": 1.71,
         "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
-      },
-      {
-        "code": "600941.SS",
-        "name": "中国移动",
-        "phase": "派发→退潮",
-        "direction": "down",
-        "headline": "↓ 即将进入下行周期（派发转退潮）",
-        "up": 0.0,
-        "down": 40.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 68,
-        "trigger": "放量跌破 96.24 或顶拐/死叉",
-        "invalid": "放量收复 96.24（退潮证伪）",
-        "sector_phase": null,
-        "p_up": 41,
-        "unified_score": 46,
-        "rr": 1.12,
-        "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
-      },
-      {
-        "code": "600809.SS",
-        "name": "山西汾酒",
-        "phase": "派发→退潮",
-        "direction": "down",
-        "headline": "↓ 即将进入下行周期（派发转退潮）",
-        "up": 8.0,
-        "down": 40.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 33,
-        "trigger": "放量跌破 121.18 或顶拐/死叉",
-        "invalid": "放量收复 121.18（退潮证伪）",
-        "sector_phase": null,
-        "p_up": 40,
-        "unified_score": 42,
-        "rr": 1.57,
-        "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
       },
       {
         "code": "PM",
@@ -2068,14 +1966,14 @@
         "down": 0.0,
         "confidence": "高",
         "horizon": "日~周",
-        "pos52": 29,
-        "trigger": "放量突破/跌破 8.07 触发方向",
+        "pos52": 32,
+        "trigger": "放量突破/跌破 8.08 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 70,
-        "unified_score": 59,
-        "rr": 0.35,
-        "entry_note": "⏳双路径:回踩8.09/突破8.87·08-24前｜方向偏多但当前赔率不足；需上行>74.1%"
+        "p_up": 73,
+        "unified_score": 58,
+        "rr": 0.15,
+        "entry_note": "⏳双路径:回踩8.11/突破8.87·08-24前｜方向偏多但当前赔率不足；需上行>87.0%"
       },
       {
         "code": "002322.SZ",
@@ -2087,14 +1985,14 @@
         "down": 0.0,
         "confidence": "高",
         "horizon": "日~周",
-        "pos52": 62,
-        "trigger": "放量突破/跌破 10.77 触发方向",
+        "pos52": 69,
+        "trigger": "放量突破/跌破 10.79 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 85,
-        "unified_score": 74,
-        "rr": 0.45,
-        "entry_note": "⏳双路径:回踩11.31/突破14.11·08-24前｜方向偏多但当前赔率不足；需上行>69.0%"
+        "unified_score": 72,
+        "rr": 0.26,
+        "entry_note": "⏳双路径:回踩11.34/突破14.11·08-24前｜方向偏多但当前赔率不足；需上行>79.4%"
       },
       {
         "code": "0325.HK",
@@ -2106,52 +2004,14 @@
         "down": 8.0,
         "confidence": "高",
         "horizon": "日~周",
-        "pos52": 100,
-        "trigger": "放量突破/跌破 55.93 触发方向",
+        "pos52": 97,
+        "trigger": "放量突破/跌破 55.85 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 85,
-        "unified_score": 67,
-        "rr": 0.02,
-        "entry_note": "⏳双路径:回踩61.87/突破79.75·08-24前｜方向偏多但当前赔率不足；需上行>98.0%"
-      },
-      {
-        "code": "301080.SZ",
-        "name": "百普赛斯",
-        "phase": "领涨中",
-        "direction": "hold",
-        "headline": "→ 上行周期进行中，未见切换",
-        "up": 72.0,
-        "down": 8.0,
-        "confidence": "高",
-        "horizon": "日~周",
-        "pos52": 101,
-        "trigger": "放量突破/跌破 62.43 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 85,
-        "unified_score": 71,
-        "rr": 0.02,
-        "entry_note": "⏳双路径:回踩74.15/突破95.5·08-24前｜方向偏多但当前赔率不足；需上行>98.0%"
-      },
-      {
-        "code": "1364.HK",
-        "name": "古茗",
-        "phase": "领涨中",
-        "direction": "hold",
-        "headline": "→ 上行周期进行中，未见切换",
-        "up": 67.0,
-        "down": 0.0,
-        "confidence": "高",
-        "horizon": "日~周",
-        "pos52": 45,
-        "trigger": "放量突破/跌破 22.56 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 66,
-        "unified_score": 55,
-        "rr": 0.25,
-        "entry_note": "⏳双路径:回踩23.13/突破24.32·08-24前｜方向偏多但当前赔率不足；需上行>80.0%"
+        "unified_score": 68,
+        "rr": 0.05,
+        "entry_note": "⏳双路径:回踩61.7/突破79·08-24前｜方向偏多但当前赔率不足；需上行>95.2%"
       },
       {
         "code": "UMAC",
@@ -2173,44 +2033,6 @@
         "entry_note": "⏳双路径:回踩26.73/突破34.93·08-24前｜方向偏多但当前赔率不足；需上行>91.7%"
       },
       {
-        "code": "8279.HK",
-        "name": "亚博科技控股",
-        "phase": "领涨中",
-        "direction": "hold",
-        "headline": "→ 上行周期进行中，未见切换",
-        "up": 65.0,
-        "down": 16.0,
-        "confidence": "高",
-        "horizon": "日~周",
-        "pos52": 86,
-        "trigger": "放量突破/跌破 0.87 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 85,
-        "unified_score": 83,
-        "rr": 0.47,
-        "entry_note": "⏳双路径:回踩1.02/突破1.66·08-24前｜方向偏多但当前赔率不足；需上行>68.0%"
-      },
-      {
-        "code": "2510.HK",
-        "name": "德翔海运",
-        "phase": "领涨中",
-        "direction": "hold",
-        "headline": "→ 上行周期进行中，未见切换",
-        "up": 65.0,
-        "down": 16.0,
-        "confidence": "高",
-        "horizon": "日~周",
-        "pos52": 96,
-        "trigger": "放量突破/跌破 8.95 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 85,
-        "unified_score": 73,
-        "rr": 0.08,
-        "entry_note": "⏳双路径:回踩9.17/突破10.58·08-24前｜方向偏多但当前赔率不足；需上行>92.6%"
-      },
-      {
         "code": "300862.SZ",
         "name": "蓝盾光电",
         "phase": "领涨中",
@@ -2220,52 +2042,33 @@
         "down": 16.0,
         "confidence": "高",
         "horizon": "日~周",
-        "pos52": 97,
-        "trigger": "放量突破/跌破 24.15 触发方向",
+        "pos52": 95,
+        "trigger": "放量突破/跌破 23.92 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 85,
-        "unified_score": 70,
-        "rr": 0.07,
-        "entry_note": "⏳双路径:回踩30.05/突破55.88·08-24前｜方向偏多但当前赔率不足；需上行>93.5%"
+        "unified_score": 72,
+        "rr": 0.12,
+        "entry_note": "⏳双路径:回踩29.6/突破51.99·08-24前｜方向偏多但当前赔率不足；需上行>89.3%"
       },
       {
-        "code": "301047.SZ",
-        "name": "义翘神州",
+        "code": "513500.SS",
+        "name": "标普500",
         "phase": "领涨中",
         "direction": "hold",
         "headline": "→ 上行周期进行中，未见切换",
-        "up": 65.0,
-        "down": 16.0,
+        "up": 62.0,
+        "down": 8.0,
         "confidence": "高",
         "horizon": "日~周",
         "pos52": 100,
-        "trigger": "放量突破/跌破 90.09 触发方向",
+        "trigger": "放量突破/跌破 2.59 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 85,
-        "unified_score": 71,
-        "rr": 0.02,
-        "entry_note": "⏳双路径:回踩111.05/突破139.49·08-24前｜方向偏多但当前赔率不足；需上行>98.0%"
-      },
-      {
-        "code": "1919.HK",
-        "name": "中远海控",
-        "phase": "领涨中",
-        "direction": "hold",
-        "headline": "→ 上行周期进行中，未见切换",
-        "up": 55.0,
-        "down": 28.0,
-        "confidence": "中",
-        "horizon": "日~周",
-        "pos52": 99,
-        "trigger": "放量突破/跌破 15.52 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 71,
-        "unified_score": 61,
-        "rr": 0.06,
-        "entry_note": "🚫短线不进｜方向偏多但当前赔率不足；需上行>94.3%"
+        "p_up": 73,
+        "unified_score": 65,
+        "rr": 0.05,
+        "entry_note": "⏳双路径:回踩2.68/突破2.78·08-24前｜方向偏多但当前赔率不足；需上行>95.2%"
       },
       {
         "code": "600645.SS",
@@ -2281,10 +2084,10 @@
         "trigger": "放量突破/跌破 19.27 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 84,
+        "p_up": 85,
         "unified_score": 70,
-        "rr": 0.37,
-        "entry_note": "⏳双路径:回踩20.04/突破22.4·08-24前｜方向偏多但当前赔率不足；需上行>73.0%"
+        "rr": 0.34,
+        "entry_note": "⏳双路径:回踩20.05/突破22.4·08-24前｜方向偏多但当前赔率不足；需上行>74.6%"
       },
       {
         "code": "ONFO",
@@ -2306,6 +2109,25 @@
         "entry_note": "⏳双路径:回踩1.25/突破6.08·08-24前｜激进门槛通过；概率优势+42.1点"
       },
       {
+        "code": "8279.HK",
+        "name": "亚博科技控股",
+        "phase": "领涨中",
+        "direction": "hold",
+        "headline": "→ 上行周期进行中，未见切换",
+        "up": 53.0,
+        "down": 34.0,
+        "confidence": "中",
+        "horizon": "日~周",
+        "pos52": 100,
+        "trigger": "放量突破/跌破 0.88 触发方向",
+        "invalid": "—",
+        "sector_phase": "退潮",
+        "p_up": 85,
+        "unified_score": 71,
+        "rr": 0.02,
+        "entry_note": "⏳双路径:回踩1.04/突破1.66·08-24前｜方向偏多但当前赔率不足；需上行>98.0%"
+      },
+      {
         "code": "MO",
         "name": "奥驰亚",
         "phase": "退潮中",
@@ -2325,42 +2147,23 @@
         "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
       },
       {
-        "code": "513500.SS",
-        "name": "标普500",
-        "phase": "领涨中",
+        "code": "0066.HK",
+        "name": "港铁公司",
+        "phase": "偏多整理",
         "direction": "hold",
-        "headline": "→ 上行周期进行中，未见切换",
-        "up": 38.0,
-        "down": 8.0,
+        "headline": "→ 上行动能积累，待放量确认",
+        "up": 39.0,
+        "down": 20.0,
         "confidence": "低",
         "horizon": "日~周",
-        "pos52": 95,
-        "trigger": "放量突破/跌破 2.60 触发方向",
+        "pos52": 45,
+        "trigger": "放量突破/跌破 32.71 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 69,
-        "unified_score": 64,
-        "rr": 0.17,
-        "entry_note": "⏳双路径:回踩2.7/突破2.78·08-24前｜方向偏多但当前赔率不足；需上行>85.5%"
-      },
-      {
-        "code": "3396.HK",
-        "name": "联想控股",
-        "phase": "领涨中",
-        "direction": "hold",
-        "headline": "→ 上行周期进行中，未见切换",
-        "up": 36.0,
-        "down": 8.0,
-        "confidence": "低",
-        "horizon": "日~周",
-        "pos52": 91,
-        "trigger": "放量突破/跌破 15.18 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 85,
-        "unified_score": 73,
-        "rr": 0.21,
-        "entry_note": "⏳双路径:回踩17.01/突破20.6·08-24前｜方向偏多但当前赔率不足；需上行>82.6%"
+        "p_up": 58,
+        "unified_score": 51,
+        "rr": 0.36,
+        "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
       },
       {
         "code": "APP",
@@ -2382,6 +2185,63 @@
         "entry_note": "🚫短线不进｜方向和赔率均不支持新仓"
       },
       {
+        "code": "VCIT",
+        "name": "中期公司债券ETF-Vanguard",
+        "phase": "偏多整理",
+        "direction": "hold",
+        "headline": "→ 上行动能积累，待放量确认",
+        "up": 34.0,
+        "down": 0.0,
+        "confidence": "低",
+        "horizon": "周",
+        "pos52": 42,
+        "trigger": "放量突破/跌破 81.16 触发方向",
+        "invalid": "—",
+        "sector_phase": null,
+        "p_up": 56,
+        "unified_score": 56,
+        "rr": 0.98,
+        "entry_note": "⏳双路径:回踩81.16/突破82.43·08-24前｜周期未充分共振，等待触发"
+      },
+      {
+        "code": "510300.SS",
+        "name": "沪深300ETF",
+        "phase": "偏多整理",
+        "direction": "hold",
+        "headline": "→ 上行动能积累，待放量确认",
+        "up": 34.0,
+        "down": 0.0,
+        "confidence": "低",
+        "horizon": "周",
+        "pos52": 48,
+        "trigger": "放量突破/跌破 4.71 触发方向",
+        "invalid": "—",
+        "sector_phase": null,
+        "p_up": 61,
+        "unified_score": 66,
+        "rr": 2.88,
+        "entry_note": "✅现价可进·08-20前·破4.54废｜周期未充分共振，等待触发"
+      },
+      {
+        "code": "510500.SS",
+        "name": "中证500ETF",
+        "phase": "偏多整理",
+        "direction": "hold",
+        "headline": "→ 上行动能积累，待放量确认",
+        "up": 34.0,
+        "down": 0.0,
+        "confidence": "低",
+        "horizon": "周",
+        "pos52": 44,
+        "trigger": "放量突破/跌破 7.76 触发方向",
+        "invalid": "—",
+        "sector_phase": null,
+        "p_up": 67,
+        "unified_score": 64,
+        "rr": 1.82,
+        "entry_note": "✅现价可进·08-20前·破7.22废·仅短线｜周期未充分共振，等待触发"
+      },
+      {
         "code": "000963.SZ",
         "name": "华东医药",
         "phase": "偏多整理",
@@ -2391,14 +2251,14 @@
         "down": 0.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 35,
-        "trigger": "放量突破/跌破 29.29 触发方向",
+        "pos52": 37,
+        "trigger": "放量突破/跌破 29.30 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 63,
-        "unified_score": 62,
-        "rr": 1.69,
-        "entry_note": "⏳共振不足·先盯29.09/32.5｜短中长期未共振，不建立新仓"
+        "p_up": 64,
+        "unified_score": 64,
+        "rr": 1.41,
+        "entry_note": "✅现价可进·08-20前·破27.63废·仅短线｜周期未充分共振，等待触发"
       },
       {
         "code": "0005.HK",
@@ -2415,28 +2275,85 @@
         "invalid": "—",
         "sector_phase": null,
         "p_up": 45,
-        "unified_score": 52,
-        "rr": 1.07,
-        "entry_note": "⏳等回踩162.19或突破169.59｜周期未充分共振，等待触发"
+        "unified_score": 51,
+        "rr": 1.03,
+        "entry_note": "⏳等回踩162.2或突破169.59｜周期未充分共振，等待触发"
+      },
+      {
+        "code": "6127.HK",
+        "name": "昭衍新药",
+        "phase": "偏空整理",
+        "direction": "hold",
+        "headline": "→ 下行压力积累，待破位确认",
+        "up": 1.0,
+        "down": 30.0,
+        "confidence": "低",
+        "horizon": "周",
+        "pos52": 78,
+        "trigger": "放量突破/跌破 24.71 触发方向",
+        "invalid": "—",
+        "sector_phase": null,
+        "p_up": 75,
+        "unified_score": 76,
+        "rr": 0.87,
+        "entry_note": "⏳双路径:回踩25.52/突破29.98·08-24前｜激进门槛通过；概率优势+21.5点"
       },
       {
         "code": "002550.SZ",
         "name": "千红制药",
-        "phase": "整理",
+        "phase": "偏多整理",
         "direction": "hold",
-        "headline": "→ 周期未明，整理观望",
+        "headline": "→ 上行动能积累，待放量确认",
         "up": 30.0,
-        "down": 16.0,
+        "down": 0.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 65,
+        "pos52": 67,
         "trigger": "放量突破/跌破 6.86 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 59,
+        "p_up": 61,
+        "unified_score": 56,
+        "rr": 0.36,
+        "entry_note": "⏳双路径:回踩6.97/突破7.4·08-24前｜方向偏多但当前赔率不足；需上行>73.5%"
+      },
+      {
+        "code": "9988.HK",
+        "name": "阿里巴巴-SW",
+        "phase": "偏空整理",
+        "direction": "hold",
+        "headline": "→ 下行压力积累，待破位确认",
+        "up": 0.0,
+        "down": 30.0,
+        "confidence": "低",
+        "horizon": "周~月",
+        "pos52": 52,
+        "trigger": "放量突破/跌破 119.40 触发方向",
+        "invalid": "—",
+        "sector_phase": "退潮",
+        "p_up": 46,
         "unified_score": 55,
-        "rr": 0.5,
-        "entry_note": "🚫短线不进｜方向偏多但当前赔率不足；需上行>66.7%"
+        "rr": 1.49,
+        "entry_note": "⏳等回踩119.4或突破132.45｜周期未充分共振，等待触发"
+      },
+      {
+        "code": "2510.HK",
+        "name": "德翔海运",
+        "phase": "领涨中",
+        "direction": "hold",
+        "headline": "→ 上行周期进行中，未见切换",
+        "up": 29.0,
+        "down": 16.0,
+        "confidence": "低",
+        "horizon": "日~周",
+        "pos52": 99,
+        "trigger": "放量突破/跌破 8.94 触发方向",
+        "invalid": "—",
+        "sector_phase": null,
+        "p_up": 85,
+        "unified_score": 71,
+        "rr": 0.03,
+        "entry_note": "⏳双路径:回踩9.14/突破10.18·08-24前｜方向偏多但当前赔率不足；需上行>97.1%"
       },
       {
         "code": "LLY",
@@ -2509,10 +2426,29 @@
         "trigger": "放量突破/跌破 34.41 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 70,
-        "unified_score": 63,
-        "rr": 0.56,
-        "entry_note": "⏳双路径:回踩36.93/突破41·08-24前｜方向偏多但当前赔率不足；需上行>64.1%"
+        "p_up": 71,
+        "unified_score": 64,
+        "rr": 0.58,
+        "entry_note": "⏳双路径:回踩36.92/突破41·08-24前｜方向偏多但当前赔率不足；需上行>63.3%"
+      },
+      {
+        "code": "1364.HK",
+        "name": "古茗",
+        "phase": "领涨中",
+        "direction": "hold",
+        "headline": "→ 上行周期进行中，未见切换",
+        "up": 27.0,
+        "down": 12.0,
+        "confidence": "低",
+        "horizon": "周",
+        "pos52": 42,
+        "trigger": "放量突破/跌破 22.54 触发方向",
+        "invalid": "—",
+        "sector_phase": null,
+        "p_up": 60,
+        "unified_score": 57,
+        "rr": 0.63,
+        "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
       },
       {
         "code": "600489.SS",
@@ -2524,14 +2460,14 @@
         "down": 0.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 47,
-        "trigger": "放量突破/跌破 23.03 触发方向",
+        "pos52": 45,
+        "trigger": "放量突破/跌破 23.02 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 72,
-        "unified_score": 58,
-        "rr": 0.33,
-        "entry_note": "⏳双路径:回踩24.58/突破26.7·08-24前｜周期未充分共振，等待触发"
+        "p_up": 70,
+        "unified_score": 59,
+        "rr": 0.44,
+        "entry_note": "⏳双路径:回踩24.55/突破26.7·08-24前｜方向偏多但当前赔率不足；需上行>69.4%"
       },
       {
         "code": "300604.SZ",
@@ -2543,33 +2479,14 @@
         "down": 0.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 67,
-        "trigger": "放量突破/跌破 280.48 触发方向",
+        "pos52": 64,
+        "trigger": "放量突破/跌破 280.03 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 80,
-        "unified_score": 76,
-        "rr": 1.18,
-        "entry_note": "⏳双路径:回踩280.31/突破395·08-24前｜激进门槛通过；概率优势+34.1点"
-      },
-      {
-        "code": "300033.SZ",
-        "name": "同花顺",
-        "phase": "偏多整理",
-        "direction": "hold",
-        "headline": "→ 上行动能积累，待放量确认",
-        "up": 27.0,
-        "down": 0.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 58,
-        "trigger": "放量突破/跌破 230.46 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 51,
-        "unified_score": 63,
-        "rr": 2.33,
-        "entry_note": "⏳双路径:回踩230.46/突破269.14·08-24前｜周期未充分共振，等待触发"
+        "p_up": 78,
+        "unified_score": 74,
+        "rr": 1.46,
+        "entry_note": "✅现价可进·08-20前·破224.25废｜激进门槛通过；概率优势+37.3点"
       },
       {
         "code": "MU",
@@ -2600,52 +2517,14 @@
         "down": 26.0,
         "confidence": "低",
         "horizon": "周~月",
-        "pos52": 39,
+        "pos52": 40,
         "trigger": "放量突破/跌破 23.63 触发方向",
         "invalid": "—",
         "sector_phase": "退潮",
-        "p_up": 58,
-        "unified_score": 65,
-        "rr": 2.22,
-        "entry_note": "✅现价可进·08-20前·破22.52废·仅短线｜周期未充分共振，等待触发"
-      },
-      {
-        "code": "1997.HK",
-        "name": "九龙仓置业",
-        "phase": "偏空整理",
-        "direction": "hold",
-        "headline": "→ 下行压力积累，待破位确认",
-        "up": 5.0,
-        "down": 26.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 84,
-        "trigger": "放量突破/跌破 28.34 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 81,
+        "p_up": 59,
         "unified_score": 66,
-        "rr": 0.3,
-        "entry_note": "⏳双路径:回踩30.89/突破34.82·08-24前｜方向偏多但当前赔率不足；需上行>76.9%"
-      },
-      {
-        "code": "VCIT",
-        "name": "中期公司债券ETF-Vanguard",
-        "phase": "退潮中",
-        "direction": "hold",
-        "headline": "→ 下行周期中，未见企稳",
-        "up": 20.0,
-        "down": 24.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 29,
-        "trigger": "放量突破/跌破 81.36 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 44,
-        "unified_score": 45,
-        "rr": 1.27,
-        "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
+        "rr": 1.9,
+        "entry_note": "✅现价可进·08-20前·破22.52废｜周期未充分共振，等待触发"
       },
       {
         "code": "TSLA",
@@ -2684,6 +2563,25 @@
         "unified_score": 57,
         "rr": 1.2,
         "entry_note": "⏳等回踩86.93或突破90.92｜周期未充分共振，等待触发"
+      },
+      {
+        "code": "3396.HK",
+        "name": "联想控股",
+        "phase": "领涨中",
+        "direction": "hold",
+        "headline": "→ 上行周期进行中，未见切换",
+        "up": 22.0,
+        "down": 8.0,
+        "confidence": "低",
+        "horizon": "周",
+        "pos52": 93,
+        "trigger": "放量突破/跌破 15.19 触发方向",
+        "invalid": "—",
+        "sector_phase": null,
+        "p_up": 85,
+        "unified_score": 72,
+        "rr": 0.16,
+        "entry_note": "⏳双路径:回踩17.04/突破20.6·08-24前｜方向偏多但当前赔率不足；需上行>86.2%"
       },
       {
         "code": "XBI",
@@ -2768,15 +2666,15 @@
         "direction": "hold",
         "headline": "→ 上行周期进行中，未见切换",
         "up": 20.0,
-        "down": 10.0,
+        "down": 0.0,
         "confidence": "低",
         "horizon": "周",
         "pos52": 76,
-        "trigger": "放量突破/跌破 439.45 触发方向",
+        "trigger": "放量突破/跌破 440.03 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 65,
-        "unified_score": 66,
+        "p_up": 63,
+        "unified_score": 65,
         "rr": 0.83,
         "entry_note": "⏳双路径:回踩458.99/突破493.57·08-24前｜方向偏多但当前赔率不足；需上行>54.6%"
       },
@@ -2790,14 +2688,14 @@
         "down": 12.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 51,
-        "trigger": "放量突破/跌破 34.02 触发方向",
+        "pos52": 50,
+        "trigger": "放量突破/跌破 34.01 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 63,
+        "p_up": 62,
         "unified_score": 60,
-        "rr": 0.64,
-        "entry_note": "🚫短线不进｜方向偏多但当前赔率不足；需上行>61.0%"
+        "rr": 0.81,
+        "entry_note": "🚫短线不进｜方向偏多但当前赔率不足；需上行>55.2%"
       },
       {
         "code": "1109.HK",
@@ -2809,13 +2707,13 @@
         "down": 12.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 60,
-        "trigger": "放量突破/跌破 33.47 触发方向",
+        "pos52": 61,
+        "trigger": "放量突破/跌破 33.48 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 56,
         "unified_score": 63,
-        "rr": 1.57,
+        "rr": 1.45,
         "entry_note": "🚫短线不进｜周期未充分共振，等待触发"
       },
       {
@@ -2828,13 +2726,13 @@
         "down": 0.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 51,
-        "trigger": "放量突破/跌破 36.17 触发方向",
+        "pos52": 49,
+        "trigger": "放量突破/跌破 36.15 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 59,
-        "unified_score": 64,
-        "rr": 1.29,
+        "p_up": 58,
+        "unified_score": 65,
+        "rr": 1.5,
         "entry_note": "✅现价可进·08-20前·破31.2废｜周期未充分共振，等待触发"
       },
       {
@@ -2847,71 +2745,14 @@
         "down": 0.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 65,
+        "pos52": 63,
         "trigger": "放量突破/跌破 12.10 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 61,
-        "unified_score": 59,
-        "rr": 0.48,
-        "entry_note": "⏳双路径:回踩12.35/突破13.14·08-24前｜方向偏多但当前赔率不足；需上行>67.6%"
-      },
-      {
-        "code": "6127.HK",
-        "name": "昭衍新药",
-        "phase": "偏空整理",
-        "direction": "hold",
-        "headline": "→ 下行压力积累，待破位确认",
-        "up": 1.0,
-        "down": 20.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 77,
-        "trigger": "放量突破/跌破 24.71 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 75,
-        "unified_score": 76,
-        "rr": 0.88,
-        "entry_note": "⏳双路径:回踩25.52/突破29.98·08-24前｜激进门槛通过；概率优势+21.8点"
-      },
-      {
-        "code": "510300.SS",
-        "name": "沪深300ETF",
-        "phase": "偏多整理",
-        "direction": "hold",
-        "headline": "→ 上行动能积累，待放量确认",
-        "up": 20.0,
-        "down": 0.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 57,
-        "trigger": "放量突破/跌破 4.71 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 56,
-        "unified_score": 57,
-        "rr": 1.54,
-        "entry_note": "⏳双路径:回踩4.73/突破5.09·08-24前｜周期未充分共振，等待触发"
-      },
-      {
-        "code": "510500.SS",
-        "name": "中证500ETF",
-        "phase": "偏多整理",
-        "direction": "hold",
-        "headline": "→ 上行动能积累，待放量确认",
-        "up": 20.0,
-        "down": 0.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 51,
-        "trigger": "放量突破/跌破 7.76 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 64,
+        "p_up": 60,
         "unified_score": 60,
-        "rr": 1.29,
-        "entry_note": "⏳共振不足·先盯7.95/9.14｜短中长期未共振，不建立新仓"
+        "rr": 0.62,
+        "entry_note": "⏳双路径:回踩12.34/突破13.14·08-24前｜方向偏多但当前赔率不足；需上行>61.7%"
       },
       {
         "code": "300996.SZ",
@@ -2923,13 +2764,13 @@
         "down": 20.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 64,
-        "trigger": "放量突破/跌破 16.34 触发方向",
+        "pos52": 62,
+        "trigger": "放量突破/跌破 16.33 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 42,
+        "p_up": 40,
         "unified_score": 59,
-        "rr": 1.23,
+        "rr": 1.31,
         "entry_note": "🚫短线不进｜短中长期未共振，不建立新仓"
       },
       {
@@ -2942,14 +2783,14 @@
         "down": 0.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 63,
-        "trigger": "放量突破/跌破 730.92 触发方向",
+        "pos52": 60,
+        "trigger": "放量突破/跌破 730.03 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 74,
-        "unified_score": 74,
-        "rr": 1.5,
-        "entry_note": "✅现价可进·08-20前·破632.01废｜标准门槛通过；概率优势+34.0点"
+        "p_up": 72,
+        "unified_score": 76,
+        "rr": 1.89,
+        "entry_note": "✅现价可进·08-20前·破632.01废｜标准门槛通过；概率优势+37.4点"
       },
       {
         "code": "000100.SZ",
@@ -2961,14 +2802,14 @@
         "down": 0.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 52,
+        "pos52": 50,
         "trigger": "放量突破/跌破 4.98 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 72,
-        "unified_score": 73,
-        "rr": 2.23,
-        "entry_note": "✅现价可进·08-20前·破4.65废｜标准门槛通过；概率优势+41.0点"
+        "p_up": 66,
+        "unified_score": 71,
+        "rr": 2.52,
+        "entry_note": "✅现价可进·08-20前·破4.65废｜标准门槛通过；概率优势+37.6点"
       },
       {
         "code": "000703.SZ",
@@ -2980,71 +2821,14 @@
         "down": 20.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 73,
-        "trigger": "放量突破/跌破 16.30 触发方向",
+        "pos52": 69,
+        "trigger": "放量突破/跌破 16.29 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 56,
+        "p_up": 54,
         "unified_score": 70,
-        "rr": 1.52,
-        "entry_note": "⏳双路径:回踩16.3/突破19.3·08-24前｜周期未充分共振，等待触发"
-      },
-      {
-        "code": "301165.SZ",
-        "name": "锐捷网络",
-        "phase": "整理",
-        "direction": "hold",
-        "headline": "→ 周期未明，整理观望",
-        "up": 19.0,
-        "down": 20.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 99,
-        "trigger": "放量突破/跌破 122.23 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 81,
-        "unified_score": 65,
-        "rr": 0.02,
-        "entry_note": "🚫短线不进｜方向偏多但当前赔率不足；需上行>98.0%"
-      },
-      {
-        "code": "600362.SS",
-        "name": "江西铜业",
-        "phase": "偏多整理",
-        "direction": "hold",
-        "headline": "→ 上行动能积累，待放量确认",
-        "up": 20.0,
-        "down": 0.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 47,
-        "trigger": "放量突破/跌破 44.65 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 63,
-        "unified_score": 65,
-        "rr": 1.28,
-        "entry_note": "⏳双路径:回踩46.46/突破54.38·08-24前｜周期未充分共振，等待触发"
-      },
-      {
-        "code": "000783.SZ",
-        "name": "长江证券",
-        "phase": "整理",
-        "direction": "hold",
-        "headline": "→ 周期未明，整理观望",
-        "up": 20.0,
-        "down": 12.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 63,
-        "trigger": "放量突破/跌破 8.80 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 63,
-        "unified_score": 73,
-        "rr": 3.24,
-        "entry_note": "🚫短线不进｜标准门槛通过；概率优势+39.4点"
+        "rr": 1.81,
+        "entry_note": "⏳等回踩16.29或突破19.3｜周期未充分共振，等待触发"
       },
       {
         "code": "XOM",
@@ -3094,33 +2878,14 @@
         "down": 8.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 96,
-        "trigger": "放量突破/跌破 176.04 触发方向",
+        "pos52": 99,
+        "trigger": "放量突破/跌破 176.18 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 83,
-        "unified_score": 72,
-        "rr": 0.16,
-        "entry_note": "⏳双路径:回踩193.64/突破207.2·08-24前｜方向偏多但当前赔率不足；需上行>86.2%"
-      },
-      {
-        "code": "002674.SZ",
-        "name": "兴业科技",
-        "phase": "领涨中",
-        "direction": "hold",
-        "headline": "→ 上行周期进行中，未见切换",
-        "up": 19.0,
-        "down": 16.0,
-        "confidence": "低",
-        "horizon": "日~周",
-        "pos52": 83,
-        "trigger": "放量突破/跌破 25.24 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 80,
-        "unified_score": 68,
-        "rr": 0.47,
-        "entry_note": "⏳双路径:回踩28.29/突破33.88·08-24前｜方向偏多但当前赔率不足；需上行>68.0%"
+        "p_up": 84,
+        "unified_score": 70,
+        "rr": 0.04,
+        "entry_note": "⏳双路径:回踩193.92/突破207·08-24前｜方向偏多但当前赔率不足；需上行>96.2%"
       },
       {
         "code": "IWM",
@@ -3171,11 +2936,11 @@
         "confidence": "低",
         "horizon": "周",
         "pos52": 83,
-        "trigger": "放量突破/跌破 213.71 触发方向",
+        "trigger": "放量突破/跌破 213.76 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 53,
-        "unified_score": 56,
+        "unified_score": 57,
         "rr": 1.46,
         "entry_note": "⏳等回踩216.04或突破230.98｜周期未充分共振，等待触发"
       },
@@ -3213,9 +2978,28 @@
         "invalid": "—",
         "sector_phase": null,
         "p_up": 50,
-        "unified_score": 62,
-        "rr": 0.68,
-        "entry_note": "⏳双路径:回踩93.91/突破99.75·08-24前｜周期未充分共振，等待触发"
+        "unified_score": 61,
+        "rr": 0.69,
+        "entry_note": "⏳双路径:回踩93.9/突破99.75·08-24前｜周期未充分共振，等待触发"
+      },
+      {
+        "code": "1997.HK",
+        "name": "九龙仓置业",
+        "phase": "整理",
+        "direction": "hold",
+        "headline": "→ 周期未明，整理观望",
+        "up": 13.0,
+        "down": 18.0,
+        "confidence": "低",
+        "horizon": "周",
+        "pos52": 82,
+        "trigger": "放量突破/跌破 28.32 触发方向",
+        "invalid": "—",
+        "sector_phase": null,
+        "p_up": 80,
+        "unified_score": 67,
+        "rr": 0.36,
+        "entry_note": "⏳双路径:回踩30.86/突破34.82·08-24前｜方向偏多但当前赔率不足；需上行>73.5%"
       },
       {
         "code": "159632.SZ",
@@ -3227,13 +3011,13 @@
         "down": 18.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 88,
-        "trigger": "放量突破/跌破 2.41 触发方向",
+        "pos52": 87,
+        "trigger": "放量突破/跌破 2.40 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 58,
-        "unified_score": 54,
-        "rr": 0.63,
+        "p_up": 57,
+        "unified_score": 55,
+        "rr": 0.77,
         "entry_note": "⏳双路径:回踩2.48/突破2.61·08-24前｜周期未充分共振，等待触发"
       },
       {
@@ -3265,14 +3049,14 @@
         "down": 16.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 98,
-        "trigger": "放量突破/跌破 14.76 触发方向",
+        "pos52": 95,
+        "trigger": "放量突破/跌破 14.74 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 85,
-        "unified_score": 70,
-        "rr": 0.05,
-        "entry_note": "⏳双路径:回踩16.35/突破20.53·08-24前｜方向偏多但当前赔率不足；需上行>95.2%"
+        "unified_score": 72,
+        "rr": 0.11,
+        "entry_note": "⏳双路径:回踩16.3/突破20.4·08-24前｜方向偏多但当前赔率不足；需上行>90.1%"
       },
       {
         "code": "300951.SZ",
@@ -3284,14 +3068,14 @@
         "down": 16.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 91,
-        "trigger": "放量突破/跌破 59.64 触发方向",
+        "pos52": 93,
+        "trigger": "放量突破/跌破 59.71 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 85,
-        "unified_score": 74,
-        "rr": 0.2,
-        "entry_note": "⏳双路径:回踩68.94/突破79.57·08-24前｜方向偏多但当前赔率不足；需上行>83.3%"
+        "unified_score": 72,
+        "rr": 0.14,
+        "entry_note": "⏳双路径:回踩69.07/突破79.57·08-24前｜方向偏多但当前赔率不足；需上行>87.7%"
       },
       {
         "code": "000608.SZ",
@@ -3303,33 +3087,33 @@
         "down": 16.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 86,
-        "trigger": "放量突破/跌破 6.79 触发方向",
+        "pos52": 88,
+        "trigger": "放量突破/跌破 6.80 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 72,
+        "p_up": 73,
         "unified_score": 62,
-        "rr": 0.5,
-        "entry_note": "⏳双路径:回踩7.4/突破8.27·08-24前｜方向偏多但当前赔率不足；需上行>66.7%"
+        "rr": 0.42,
+        "entry_note": "⏳双路径:回踩7.41/突破8.27·08-24前｜方向偏多但当前赔率不足；需上行>70.4%"
       },
       {
-        "code": "600664.SS",
-        "name": "哈药股份",
+        "code": "301047.SZ",
+        "name": "义翘神州",
         "phase": "整理",
         "direction": "hold",
         "headline": "→ 周期未明，整理观望",
-        "up": 5.0,
+        "up": 15.0,
         "down": 16.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 98,
-        "trigger": "放量突破/跌破 6.75 触发方向",
+        "pos52": 95,
+        "trigger": "放量突破/跌破 89.59 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 85,
-        "unified_score": 69,
-        "rr": 0.05,
-        "entry_note": "⏳双路径:回踩7.77/突破9.14·08-24前｜方向偏多但当前赔率不足；需上行>95.2%"
+        "p_up": 81,
+        "unified_score": 68,
+        "rr": 0.09,
+        "entry_note": "⏳双路径:回踩110.05/突破132.88·08-24前｜方向偏多但当前赔率不足；需上行>91.7%"
       },
       {
         "code": "PFE",
@@ -3360,14 +3144,14 @@
         "down": 8.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 56,
-        "trigger": "放量突破/跌破 61.98 触发方向",
+        "pos52": 61,
+        "trigger": "放量突破/跌破 62.13 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 85,
-        "unified_score": 68,
-        "rr": 0.19,
-        "entry_note": "⏳双路径:回踩65.91/突破78.4·08-24前｜方向偏多但当前赔率不足；需上行>84.0%"
+        "unified_score": 79,
+        "rr": 0.92,
+        "entry_note": "⏳双路径:回踩66.21/突破97.5·08-24前｜激进门槛通过；概率优势+32.9点"
       },
       {
         "code": "600162.SS",
@@ -3384,9 +3168,9 @@
         "invalid": "—",
         "sector_phase": null,
         "p_up": 81,
-        "unified_score": 79,
-        "rr": 0.6,
-        "entry_note": "⏳双路径:回踩4.04/突破5.19·08-24前｜方向偏多但当前赔率不足；需上行>62.5%"
+        "unified_score": 77,
+        "rr": 0.58,
+        "entry_note": "⏳双路径:回踩4.05/突破5.19·08-24前｜方向偏多但当前赔率不足；需上行>63.3%"
       },
       {
         "code": "600588.SS",
@@ -3398,52 +3182,14 @@
         "down": 8.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 49,
-        "trigger": "放量突破/跌破 10.78 触发方向",
+        "pos52": 46,
+        "trigger": "放量突破/跌破 10.77 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 55,
-        "unified_score": 57,
-        "rr": 0.86,
-        "entry_note": "⏳双路径:回踩10.78/突破12.45·08-24前｜周期未充分共振，等待触发"
-      },
-      {
-        "code": "688432.SS",
-        "name": "有研硅",
-        "phase": "整理",
-        "direction": "hold",
-        "headline": "→ 周期未明，整理观望",
-        "up": 13.0,
-        "down": 8.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 64,
-        "trigger": "放量突破/跌破 37.63 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 81,
-        "unified_score": 80,
-        "rr": 1.31,
-        "entry_note": "⏳双路径:回踩38.44/突破60.78·08-24前｜激进门槛通过；概率优势+37.7点"
-      },
-      {
-        "code": "002083.SZ",
-        "name": "孚日股份",
-        "phase": "整理",
-        "direction": "hold",
-        "headline": "→ 周期未明，整理观望",
-        "up": 13.0,
-        "down": 8.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 62,
-        "trigger": "放量突破/跌破 11.34 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 63,
-        "unified_score": 62,
-        "rr": 0.59,
-        "entry_note": "⏳双路径:回踩11.76/突破12.71·08-24前｜方向偏多但当前赔率不足；需上行>62.9%"
+        "p_up": 53,
+        "unified_score": 58,
+        "rr": 1.05,
+        "entry_note": "⏳双路径:回踩10.77/突破12.45·08-24前｜周期未充分共振，等待触发"
       },
       {
         "code": "300142.SZ",
@@ -3455,14 +3201,14 @@
         "down": 8.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 47,
+        "pos52": 48,
         "trigger": "放量突破/跌破 12.77 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 64,
-        "unified_score": 64,
-        "rr": 0.94,
-        "entry_note": "⏳双路径:回踩12.96/突破14.49·08-24前｜方向偏多但当前赔率不足；需上行>51.5%"
+        "p_up": 65,
+        "unified_score": 63,
+        "rr": 0.84,
+        "entry_note": "⏳双路径:回踩12.97/突破14.49·08-24前｜激进门槛通过；概率优势+10.7点"
       },
       {
         "code": "ARXS",
@@ -3475,13 +3221,13 @@
         "confidence": "低",
         "horizon": "周",
         "pos52": 85,
-        "trigger": "放量突破/跌破 51.09 触发方向",
+        "trigger": "放量突破/跌破 51.21 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 57,
         "unified_score": 67,
         "rr": 0.76,
-        "entry_note": "⏳双路径:回踩51.09/突破61.5·08-24前｜周期未充分共振，等待触发"
+        "entry_note": "⏳双路径:回踩51.21/突破61.5·08-24前｜周期未充分共振，等待触发"
       },
       {
         "code": "BBVA",
@@ -3494,13 +3240,13 @@
         "confidence": "低",
         "horizon": "周",
         "pos52": 97,
-        "trigger": "放量突破/跌破 27.14 触发方向",
+        "trigger": "放量突破/跌破 27.32 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 62,
+        "p_up": 60,
         "unified_score": 64,
-        "rr": 0.28,
-        "entry_note": "⏳双路径:回踩28.37/突破28.94·08-24前｜方向偏多但当前赔率不足；需上行>78.1%"
+        "rr": 0.3,
+        "entry_note": "⏳双路径:回踩28.37/突破28.94·08-24前｜方向偏多但当前赔率不足；需上行>76.9%"
       },
       {
         "code": "JNJ",
@@ -3532,13 +3278,13 @@
         "confidence": "低",
         "horizon": "周",
         "pos52": 72,
-        "trigger": "放量突破/跌破 341.71 触发方向",
+        "trigger": "放量突破/跌破 341.48 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 51,
-        "unified_score": 59,
+        "unified_score": 60,
         "rr": 2.25,
-        "entry_note": "⏳等回踩341.71或突破363.14｜周期未充分共振，等待触发"
+        "entry_note": "⏳等回踩341.48或突破363.14｜周期未充分共振，等待触发"
       },
       {
         "code": "VUG",
@@ -3560,25 +3306,6 @@
         "entry_note": "⏳双路径:回踩88.87/突破90.5·08-24前｜周期未充分共振，等待触发"
       },
       {
-        "code": "3110.HK",
-        "name": "港股高股息ETF",
-        "phase": "整理",
-        "direction": "hold",
-        "headline": "→ 周期未明，整理观望",
-        "up": 8.0,
-        "down": 12.0,
-        "confidence": "低",
-        "horizon": "周",
-        "pos52": 49,
-        "trigger": "放量突破/跌破 31.19 触发方向",
-        "invalid": "—",
-        "sector_phase": null,
-        "p_up": 47,
-        "unified_score": 56,
-        "rr": 2.33,
-        "entry_note": "⏳等回踩31.04或突破32.78｜周期未充分共振，等待触发"
-      },
-      {
         "code": "1357.HK",
         "name": "美图公司",
         "phase": "整理",
@@ -3588,13 +3315,13 @@
         "down": 12.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 37,
+        "pos52": 36,
         "trigger": "放量突破/跌破 4.47 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 41,
-        "unified_score": 62,
-        "rr": 2.87,
+        "p_up": 40,
+        "unified_score": 61,
+        "rr": 2.92,
         "entry_note": "🚫短线不进｜短中长期未共振，不建立新仓"
       },
       {
@@ -3607,14 +3334,33 @@
         "down": 8.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 94,
-        "trigger": "放量突破/跌破 44.53 触发方向",
+        "pos52": 88,
+        "trigger": "放量突破/跌破 44.44 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 85,
-        "unified_score": 73,
-        "rr": 0.14,
-        "entry_note": "⏳双路径:回踩48.3/突破57.8·08-24前｜方向偏多但当前赔率不足；需上行>87.7%"
+        "unified_score": 77,
+        "rr": 0.31,
+        "entry_note": "⏳双路径:回踩48.13/突破57.8·08-24前｜方向偏多但当前赔率不足；需上行>76.3%"
+      },
+      {
+        "code": "9633.HK",
+        "name": "农夫山泉",
+        "phase": "整理",
+        "direction": "hold",
+        "headline": "→ 周期未明，整理观望",
+        "up": 7.0,
+        "down": 12.0,
+        "confidence": "低",
+        "horizon": "周",
+        "pos52": 37,
+        "trigger": "放量突破/跌破 42.66 触发方向",
+        "invalid": "—",
+        "sector_phase": null,
+        "p_up": 49,
+        "unified_score": 55,
+        "rr": 1.66,
+        "entry_note": "⏳等回踩42.66或突破45.98｜周期未充分共振，等待触发"
       },
       {
         "code": "2269.HK",
@@ -3626,14 +3372,14 @@
         "down": 8.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 87,
-        "trigger": "放量突破/跌破 41.55 触发方向",
+        "pos52": 92,
+        "trigger": "放量突破/跌破 41.61 触发方向",
         "invalid": "—",
         "sector_phase": null,
-        "p_up": 76,
-        "unified_score": 65,
-        "rr": 0.39,
-        "entry_note": "⏳双路径:回踩44.31/突破48.78·08-24前｜方向偏多但当前赔率不足；需上行>71.9%"
+        "p_up": 78,
+        "unified_score": 62,
+        "rr": 0.21,
+        "entry_note": "⏳双路径:回踩44.42/突破48.78·08-24前｜方向偏多但当前赔率不足；需上行>82.6%"
       },
       {
         "code": "513650.SS",
@@ -3645,18 +3391,18 @@
         "down": 8.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 98,
+        "pos52": 97,
         "trigger": "放量突破/跌破 1.96 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 65,
-        "unified_score": 59,
-        "rr": 0.13,
-        "entry_note": "⏳双路径:回踩2.02/突破2.07·08-24前｜方向偏多但当前赔率不足；需上行>88.5%"
+        "unified_score": 60,
+        "rr": 0.16,
+        "entry_note": "⏳双路径:回踩2.02/突破2.07·08-24前｜方向偏多但当前赔率不足；需上行>86.2%"
       },
       {
-        "code": "9988.HK",
-        "name": "阿里巴巴-SW",
+        "code": "600941.SS",
+        "name": "中国移动",
         "phase": "整理",
         "direction": "hold",
         "headline": "→ 周期未明，整理观望",
@@ -3664,14 +3410,14 @@
         "down": 12.0,
         "confidence": "低",
         "horizon": "周",
-        "pos52": 53,
-        "trigger": "放量突破/跌破 119.43 触发方向",
+        "pos52": 74,
+        "trigger": "放量突破/跌破 96.29 触发方向",
         "invalid": "—",
         "sector_phase": null,
         "p_up": 47,
-        "unified_score": 56,
-        "rr": 1.38,
-        "entry_note": "⏳等回踩119.43或突破132.45｜周期未充分共振，等待触发"
+        "unified_score": 50,
+        "rr": 0.82,
+        "entry_note": "⏳等回踩96.46或突破99.41｜周期未充分共振，等待触发"
       },
       {
         "code": "VOO",
@@ -3694,7 +3440,7 @@
       }
     ]
   },
-  "generated_at": "2026-08-17 16:06",
+  "generated_at": "2026-08-17 20:07",
   "markets": {
     "美股": {
       "indices": [
@@ -3901,17 +3647,17 @@
           "last": 52.54,
           "chg1d": 0.44,
           "chg5d": -0.61,
-          "chg20d": 4.04,
-          "vs_ma20": 1.48,
-          "vs_ma60": 2.61,
+          "chg20d": 3.98,
+          "vs_ma20": 1.57,
+          "vs_ma60": 2.55,
           "trend": "📈 多头排列",
-          "vol_ratio": 0.93,
+          "vol_ratio": 0.89,
           "px_pct": 91.7,
-          "vol_pct": 19.3,
-          "diverge": 72.4,
+          "vol_pct": 22.0,
+          "diverge": 69.7,
           "turning": "",
           "turning_prompt": "",
-          "heat": 47
+          "heat": 45
         },
         {
           "symbol": "XLU",
@@ -3937,14 +3683,14 @@
           "last": 45.27,
           "chg1d": 0.33,
           "chg5d": 0.64,
-          "chg20d": 1.59,
-          "vs_ma20": 0.18,
-          "vs_ma60": 1.65,
+          "chg20d": -0.33,
+          "vs_ma20": 0.25,
+          "vs_ma60": 1.53,
           "trend": "📈 多头排列",
-          "vol_ratio": 0.99,
+          "vol_ratio": 1.0,
           "px_pct": 88.3,
-          "vol_pct": 54.4,
-          "diverge": 33.9,
+          "vol_pct": 55.9,
+          "diverge": 32.4,
           "turning": "",
           "turning_prompt": "",
           "heat": 51
@@ -3961,9 +3707,9 @@
         "verdict": "🔥 过热惯性·可持有但设好回撤线、不新追高"
       },
       "turn_risk": {
-        "top_risk": 75,
+        "top_risk": 90,
         "bottom_opp": 0,
-        "text": "顶部转向风险 高(75/100) ｜ 底部转机信号 低(0/100)｜顶部特征4/7·底部特征0/7",
+        "text": "顶部转向风险 高(90/100) ｜ 底部转机信号 低(0/100)｜顶部特征5/7·底部特征0/7",
         "ver": "v2"
       },
       "topbot": {
@@ -3981,8 +3727,8 @@
           },
           {
             "key": "广度钝化",
-            "hit": false,
-            "text": "广度91·满值连续1日（历史仅1天，需攒够3天）"
+            "hit": true,
+            "text": "广度91·满值连续3日·5日变动+18.0"
           },
           {
             "key": "动量衰竭",
@@ -4042,14 +3788,14 @@
             "text": "无拐点信号"
           }
         ],
-        "top_hit": 4,
+        "top_hit": 5,
         "top_na": 1,
         "bottom_hit": 0,
         "bottom_na": 1,
         "px_pct": 91.1,
         "vol_pct": 9.6,
         "diverge": 81.5,
-        "breadth_full_days": 1,
+        "breadth_full_days": 3,
         "note": "样本<5不给概率(铁律2)——只报命中条数,⬜=数据源缺失非未命中"
       },
       "l3": {
@@ -4105,33 +3851,34 @@
           "last": 14704.27,
           "chg1d": 2.44,
           "chg5d": 2.71,
-          "chg20d": -0.51,
-          "vs_ma20": 4.83,
-          "vs_ma60": -2.12,
+          "chg20d": 8.04,
+          "vs_ma20": 4.79,
+          "vs_ma60": -1.63,
           "trend": "🔄 震荡偏强",
           "vol_ratio": 3.72,
-          "px_pct": 35.0,
+          "px_pct": 40.0,
           "vol_pct": 100.0,
-          "diverge": -65.0,
+          "diverge": -60.0,
           "turning": "",
           "turning_prompt": ""
         },
         {
-          "symbol": "399006.SZ",
-          "name": "创业板指",
-          "last": 3740.16,
-          "chg1d": 3.14,
-          "chg5d": 5.74,
-          "chg20d": 8.63,
-          "vs_ma20": 6.5,
-          "vs_ma60": -2.54,
+          "symbol": "159915.SZ",
+          "name": "创业板ETF代理",
+          "last": 3.76,
+          "chg1d": 3.05,
+          "chg5d": 5.54,
+          "chg20d": 8.02,
+          "vs_ma20": 6.28,
+          "vs_ma60": -2.62,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 1.0,
+          "vol_ratio": 0.57,
           "px_pct": 40.0,
-          "vol_pct": null,
-          "diverge": null,
+          "vol_pct": 18.3,
+          "diverge": 21.7,
           "turning": "",
-          "turning_prompt": ""
+          "turning_prompt": "",
+          "unit": "元"
         }
       ],
       "sectors": [
@@ -4320,7 +4067,7 @@
         "temp": 65,
         "trend": 50,
         "breadth": 60,
-        "momentum": 80,
+        "momentum": 79,
         "vol_heat": 100,
         "label": "🟢 偏暖",
         "position": "65-80%",
@@ -4338,22 +4085,22 @@
           {
             "key": "价格高位",
             "hit": false,
-            "text": "价格分位40.6"
+            "text": "价格分位42.2"
           },
           {
             "key": "量价背离",
             "hit": false,
-            "text": "价格分位40.6／量分位100.0＝背离-59.4"
+            "text": "价格分位42.2／量分位72.8＝背离-30.6"
           },
           {
             "key": "广度钝化",
             "hit": false,
-            "text": "广度60·满值连续0日（历史仅1天，需攒够3天）"
+            "text": "广度60·满值连续0日·5日变动-10.0"
           },
           {
             "key": "动量衰竭",
             "hit": false,
-            "text": "20日+4.34%但5日仅+2.95%"
+            "text": "20日+6.99%但5日仅+2.88%"
           },
           {
             "key": "估值高位",
@@ -4375,12 +4122,12 @@
           {
             "key": "价格低位",
             "hit": false,
-            "text": "价格分位40.6"
+            "text": "价格分位42.2"
           },
           {
             "key": "放量杀跌",
             "hit": false,
-            "text": "价格分位40.6／量分位100.0＝背离-59.4"
+            "text": "价格分位42.2／量分位72.8＝背离-30.6"
           },
           {
             "key": "广度极低",
@@ -4390,7 +4137,7 @@
           {
             "key": "深度超跌",
             "hit": false,
-            "text": "20日+4.34%"
+            "text": "20日+6.99%"
           },
           {
             "key": "估值低位",
@@ -4412,9 +4159,9 @@
         "top_na": 1,
         "bottom_hit": 0,
         "bottom_na": 1,
-        "px_pct": 40.6,
-        "vol_pct": 100.0,
-        "diverge": -59.4,
+        "px_pct": 42.2,
+        "vol_pct": 72.8,
+        "diverge": -30.6,
         "breadth_full_days": 0,
         "note": "样本<5不给概率(铁律2)——只报命中条数,⬜=数据源缺失非未命中"
       },
@@ -4451,12 +4198,12 @@
         {
           "symbol": "^HSI",
           "name": "恒生指数",
-          "last": 25495.9,
-          "chg1d": 1.51,
-          "chg5d": -1.7,
-          "chg20d": 1.4,
-          "vs_ma20": -0.07,
-          "vs_ma60": 2.95,
+          "last": 25453.23,
+          "chg1d": 1.34,
+          "chg5d": -1.87,
+          "chg20d": 1.23,
+          "vs_ma20": -0.23,
+          "vs_ma60": 2.78,
           "trend": "🔄 震荡偏弱",
           "vol_ratio": 0.74,
           "px_pct": 76.7,
@@ -4469,16 +4216,16 @@
           "symbol": "3033.HK",
           "name": "恒生科技(ETF代理)",
           "last": 4.7,
-          "chg1d": 1.91,
-          "chg5d": -2.41,
-          "chg20d": 1.16,
-          "vs_ma20": -0.02,
-          "vs_ma60": 1.35,
+          "chg1d": 1.82,
+          "chg5d": -2.49,
+          "chg20d": 1.08,
+          "vs_ma20": -0.1,
+          "vs_ma60": 1.27,
           "trend": "🔄 震荡偏弱",
           "vol_ratio": 0.79,
-          "px_pct": 63.3,
+          "px_pct": 61.7,
           "vol_pct": 18.6,
-          "diverge": 44.7,
+          "diverge": 43.1,
           "turning": "",
           "turning_prompt": ""
         }
@@ -4488,16 +4235,16 @@
           "symbol": "3033.HK",
           "name": "恒生科技",
           "last": 4.7,
-          "chg1d": 1.91,
-          "chg5d": -2.41,
-          "chg20d": 1.16,
-          "vs_ma20": -0.02,
-          "vs_ma60": 1.35,
+          "chg1d": 1.82,
+          "chg5d": -2.49,
+          "chg20d": 1.08,
+          "vs_ma20": -0.1,
+          "vs_ma60": 1.27,
           "trend": "🔄 震荡偏弱",
           "vol_ratio": 0.79,
-          "px_pct": 63.3,
+          "px_pct": 61.7,
           "vol_pct": 18.6,
-          "diverge": 44.7,
+          "diverge": 43.1,
           "turning": "",
           "turning_prompt": "",
           "heat": 36
@@ -4505,17 +4252,17 @@
         {
           "symbol": "2828.HK",
           "name": "国企蓝筹",
-          "last": 87.02,
-          "chg1d": 1.59,
-          "chg5d": -1.89,
-          "chg20d": 1.16,
-          "vs_ma20": -0.3,
-          "vs_ma60": 2.77,
+          "last": 86.9,
+          "chg1d": 1.45,
+          "chg5d": -2.03,
+          "chg20d": 1.02,
+          "vs_ma20": -0.44,
+          "vs_ma60": 2.63,
           "trend": "🔄 震荡偏弱",
           "vol_ratio": 0.66,
-          "px_pct": 78.3,
+          "px_pct": 76.7,
           "vol_pct": 1.7,
-          "diverge": 76.6,
+          "diverge": 75.0,
           "turning": "",
           "turning_prompt": "",
           "heat": 31
@@ -4543,7 +4290,7 @@
         "temp": 36,
         "trend": 50,
         "breadth": 33,
-        "momentum": 29,
+        "momentum": 28,
         "vol_heat": 15,
         "label": "🟠 偏冷",
         "position": "30-50%",
@@ -4552,7 +4299,7 @@
       "turn_risk": {
         "top_risk": 35,
         "bottom_opp": 12,
-        "text": "顶部转向风险 中(35/100) ｜ 底部转机信号 低(12/100)｜顶部特征2/7·底部特征0/7",
+        "text": "顶部转向风险 中(35/100) ｜ 底部转机信号 低(12/100)｜顶部特征1/7·底部特征0/7",
         "ver": "v2"
       },
       "topbot": {
@@ -4560,23 +4307,23 @@
         "top": [
           {
             "key": "价格高位",
-            "hit": true,
-            "text": "价格分位70.0"
+            "hit": false,
+            "text": "价格分位69.2"
           },
           {
             "key": "量价背离",
             "hit": true,
-            "text": "价格分位70.0／量分位10.2＝背离+59.8"
+            "text": "价格分位69.2／量分位10.2＝背离+59.0"
           },
           {
             "key": "广度钝化",
             "hit": false,
-            "text": "广度33·满值连续0日（历史仅1天，需攒够3天）"
+            "text": "广度33·满值连续0日·5日变动-34.0"
           },
           {
             "key": "动量衰竭",
             "hit": false,
-            "text": "20日+1.28%但5日仅-2.06%"
+            "text": "20日+1.16%但5日仅-2.18%"
           },
           {
             "key": "估值高位",
@@ -4598,12 +4345,12 @@
           {
             "key": "价格低位",
             "hit": false,
-            "text": "价格分位70.0"
+            "text": "价格分位69.2"
           },
           {
             "key": "放量杀跌",
             "hit": false,
-            "text": "价格分位70.0／量分位10.2＝背离+59.8"
+            "text": "价格分位69.2／量分位10.2＝背离+59.0"
           },
           {
             "key": "广度极低",
@@ -4613,7 +4360,7 @@
           {
             "key": "深度超跌",
             "hit": false,
-            "text": "20日+1.28%"
+            "text": "20日+1.16%"
           },
           {
             "key": "估值低位",
@@ -4631,40 +4378,40 @@
             "text": "无拐点信号"
           }
         ],
-        "top_hit": 2,
+        "top_hit": 1,
         "top_na": 1,
         "bottom_hit": 0,
         "bottom_na": 1,
-        "px_pct": 70.0,
+        "px_pct": 69.2,
         "vol_pct": 10.2,
-        "diverge": 59.8,
+        "diverge": 59.0,
         "breadth_full_days": 0,
         "note": "样本<5不给概率(铁律2)——只报命中条数,⬜=数据源缺失非未命中"
       },
       "l3": {
         "name": "恒生指数",
-        "stage": "震荡整理",
+        "stage": "趋势转弱",
         "action": "观察",
         "probs": [
           [
             "2周",
-            48
+            42
           ],
           [
             "4周",
-            56
+            47
           ],
           [
             "8周",
-            63
+            52
           ],
           [
             "16周",
-            46
+            41
           ],
           [
             "32周",
-            45
+            40
           ]
         ]
       }
