@@ -4265,7 +4265,7 @@ try:
             try:
                 from compare_ui import MAX_COMPARE as _MXC9
                 _bopt9 = {}
-                for _t9o, _s9o, _c9o, _h9o in _buy_order9:
+                for _c9o, _h9o in _exec_buy9:
                     # 【2026-08-01 用户"只有数字我都不知道谁是谁"】_gr9map 是 grades 映射,
                     # 字段只有 grade/score/dual/... **没有 name**,故原写法全退化成代码。
                     # rank_score.json 每行都带 name,优先用它。
@@ -4304,6 +4304,7 @@ try:
                 if _only_now9:
                     _t_buy9 = [h for _t, _s, c, h in _buy_order9
                                if c not in _arch_set9
+                               and _gate_ok9(c)
                                and (_gr9map.get(str(c)) or {}).get("when_kind") == "now"]
             except Exception:
                 logging.exception("[V88] 今天可买筛选失败")

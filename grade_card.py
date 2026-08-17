@@ -67,8 +67,9 @@ def _bar(score: float, ok: bool, w: int) -> str:
 
 def card_html(r: dict, compact: bool = False) -> str:
     """单只股票的完整评级卡。r = rank_score.json 里的一行。"""
-    tier = str(r.get("tier") or "")
+    tier = str(r.get("display_tier") or r.get("tier") or "")
     col = TIER_COLOR.get(tier, "#64748b")
+    action = str(r.get("display_action") or r.get("action_state") or "")
     head = (
         f"<div style='display:flex;align-items:baseline;gap:8px;flex-wrap:wrap'>"
         f"<span style='background:{col};color:#fff;border-radius:4px;padding:1px 7px;"
@@ -76,7 +77,8 @@ def card_html(r: dict, compact: bool = False) -> str:
         f"<b style='font-size:14px'>{r.get('name')}</b>"
         f"<span style='font-size:11px;color:#94a3b8'>{r.get('code')}</span>"
         f"<span style='font-size:12px;color:{col};font-weight:700'>{r.get('subtype')}</span>"
-        f"<span style='font-size:12px;color:{PALETTE['buy']};font-weight:700'>{r.get('action_state')}</span>"
+        f"<span style='font-size:12px;color:{PALETTE['buy'] if r.get('listable', True) else PALETTE['warn']};"
+        f"font-weight:700'>{action}</span>"
         f"<span style='font-size:11px;color:#64748b'>同级#{r.get('rank_in_tier', '-')}"
         f"·排序分{r.get('rank_score')}·总#{r.get('rank', '-')}</span>"
         f"<span style='font-size:11px;color:#64748b'>{r.get('opportunity_type')}·"
@@ -132,7 +134,8 @@ def card_html(r: dict, compact: bool = False) -> str:
 
 def board_html(data: dict, limit: int = 8, show_detail: int = 3) -> str:
     """行动清单：3A/2A 出完整卡，其余出紧凑行；0A 不进（用户第十节）。"""
-    rows = [r for r in (data.get("rows") or []) if str(r.get("tier")) != "0A"][:limit]
+    rows = [r for r in (data.get("rows") or [])
+            if str(r.get("tier")) != "0A" and r.get("listable") is True][:limit]
     if not rows:
         return (f"<div style='font-size:12px;color:{PALETTE['hold']}'>今日无 3A/2A/1A 行动标的"
                 "（木桶门槛严，不硬凑）</div>")
@@ -377,9 +380,13 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                       pool: dict = None, limit_in: int = 12, limit_out: int = 8) -> str:
     """3A大系统完整模块(标题+IN表+OUT表+尾注),一次返回全部HTML。"""
     rows = rk.get("rows") or []
-    n3 = sum(1 for r in rows if r.get("tier") == "3A")
-    n2 = sum(1 for r in rows if r.get("tier") == "2A")
-    n1 = sum(1 for r in rows if r.get("tier") == "1A")
+    # 页头只统计真正获得执行许可的等级。未通过的桶3A属于候选，不能再显示
+    # “IN:3A×1”；这是 2026-08-17 长江证券真实成交事故的直接视觉诱因。
+    n3 = sum(1 for r in rows if r.get("tier") == "3A" and r.get("listable") is True)
+    n2 = sum(1 for r in rows if r.get("tier") == "2A" and r.get("listable") is True)
+    n1 = sum(1 for r in rows if r.get("tier") == "1A" and r.get("listable") is True)
+    nc = sum(1 for r in rows if r.get("tier") in ("3A", "2A", "1A")
+             and r.get("listable") is not True)
     arch = rk.get("archived") or []
     sgm = {str(x.get("code")): x for x in (sg.get("rows") or [])}
     # 【2026-08-02 用户定纲】"哪个更接近当前就进入排名,还没到就不进名单"→
@@ -415,7 +422,8 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             f"<div style='font-size:12px;opacity:.95'>"
             + (f"全市场→通道自然产出{len(pool.get('rows') or [])}只→评级{len(rows)}只 ｜ "
                if pool else "")
-            + f"IN: 3A×{n3} 2A×{n2} 战术1A×{n1} ｜ OUT: 卖警×{len(out_src)} 否决×{len(arch)}"
+            + f"IN可执行: 3A×{n3} 2A×{n2} 战术1A×{n1} ｜ 待复核候选×{nc}"
+              f" ｜ OUT: 卖警×{len(out_src)} 否决×{len(arch)}"
             f"</div>"
             # 【2026-08-13 用户定纲】结论生成、证据可得、流水线状态必须分开显示；
             # 名单没变化时也明确标注“本班已重算”，避免误判系统停更。
@@ -451,15 +459,21 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
     in_rows = ""
     blocked_html = ""
 
-    def _in_row(r):
+    def _in_row(r, blocked: bool = False):
         """IN 行构造(上榜组与被拦组共用同一套列,保证两组可直接对照)。"""
         c = str(r.get("code"))
         d = dec.get(c) or {}
-        ep = d.get("entry_plan") or {}
+        snap = ((r.get("execution_contract") or {}).get("snapshot") or {})
+        # rank 随行快照优先：候选不在 intraday_decisions 覆盖面时，买区也不能消失。
+        ep = snap or d.get("entry_plan") or {}
         z = ep.get("zone") or []
         zone = (f"{z[0]}~{z[1]}" if len(z) >= 2 else
                 (f"回踩{ep.get('pullback')}" if ep.get("pullback") else "—"))
-        col = TIER_COLOR.get(str(r.get("tier")), "#64748b")
+        shown_tier = (str(r.get("display_tier") or f"{r.get('tier')}候选")
+                      if blocked else str(r.get("tier")))
+        shown_action = ("⛔待复核·不可执行" if blocked else
+                        str(r.get("display_action") or r.get("action_state") or ""))
+        col = PALETTE["warn"] if blocked else TIER_COLOR.get(str(r.get("tier")), "#64748b")
         cf = (sgm.get(c) or {}).get("in_out_conflict")
         bk = r.get("buckets") or {}
         return (
@@ -469,14 +483,14 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             # 【2026-08-02 用户"有点堆叠,可以调整"】五桶板缩写原挤在评级列(徽章+分+5项一坨,
             # 窄屏竖排)。移到下方"风险·完备·置信"列——那列只有3个数,有横向空间。
             + _td(f"<span style='background:{col};color:#fff;border-radius:3px;padding:1px 5px;"
-                  f"font-weight:800;font-size:12px'>{r.get('tier')}</span>"
+                  f"font-weight:800;font-size:12px'>{shown_tier}</span>"
                   f"<br><span style='color:#1d4ed8;font-weight:700;font-size:11px'>"
                   f"分{r.get('rank_score')} · #{r.get('rank')}</span>", "white-space:nowrap")
             # 【2026-08-17 用户抓"3A页价格不刷新"】现价列接入新鲜度守卫:
             # 有盘中价→🟢今日/收盘定稿;旧价→⚠️红;无价→明说基期,不再恒绿伪装。
-            + _td(_px_fresh_cell(d.get("last"), d.get("asof"), d.get("px_basis"),
+            + _td(_px_fresh_cell(snap.get("last") or d.get("last"), d.get("asof"), d.get("px_basis"),
                                  d.get("px_usable_as_current"),
-                                 f"无盘中价·评级基期{str(r.get('data_available_at') or '')[:10][5:]}"))
+                                 f"无盘中价·评级基期{str(snap.get('data_asof') or r.get('data_available_at') or '')[:10][5:]}"))
             # 【2026-08-02 三方定纲】IN 侧有 OUT 风险证据时**不删行**(GPT:原IN结构尚可观察),
             # 而是把"本次入场触发已失效"的门票摆在动作位——机会结构仍在 ≠ 现在能买,
             # 这两件事必须能同时表达。删行=监守自盗的镜像(用一侧结果消音另一侧证据)。
@@ -487,14 +501,17 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                    f"padding:1px 4px;font-size:9.5px;margin-bottom:2px'>⚠️开仓需谨慎</div>"
                    if _gate(sgm.get(c), "开仓") == "CAUTION" else "")
                   + f"<b style='color:{col}'>{r.get('subtype')}</b>"
-                    f"<br><span style='color:{PALETTE['buy']};font-weight:600'>{r.get('action_state')}</span>"
+                    f"<br><span style='color:{PALETTE['warn'] if blocked else PALETTE['buy']};"
+                    f"font-weight:700'>{shown_action}</span>"
                   + (f"<br><span style='font-size:9px;color:#64748b'>2周涨"
                      f"{d.get('p_up')}%</span>" if d.get("p_up") else ""))
-            + _td(f"<b style='color:{PALETTE['buy']}'>{zone}</b>"
+            + _td((f"<span style='color:{PALETTE['warn']};font-weight:700'>研究参考·非买单</span><br>"
+                   if blocked else "")
+                  + f"<b style='color:{PALETTE['warn'] if blocked else PALETTE['buy']}'>{zone}</b>"
                   + (f"<br><span style='font-size:9px'>破{ep.get('breakout')}</span>"
                      if ep.get("breakout") else "")
-                  + f"<br><span style='font-size:9px;color:{PALETTE['buy']}'>"
-                    f"{(r.get('triggers') or {}).get('enter', '—')}</span>")
+                  + f"<br><span style='font-size:9px;color:{PALETTE['warn'] if blocked else PALETTE['buy']}'>"
+                    f"{'禁止执行·等待全部闸门重算' if blocked else (r.get('triggers') or {}).get('enter', '—')}</span>")
             + _td(str((r.get("triggers") or {}).get("invalid", "—")).replace("跌破止损", ""))
             + _td(f"{r.get('opportunity_type', '—')}<br>"
                   f"<span style='font-size:9px'>{r.get('horizon', '')}</span>")
@@ -535,8 +552,8 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
 
     in_rows = "".join(_in_row(r) for r in
                       [x for x in rows if x.get("tier") in ("3A", "2A", "1A")
-                       and x.get("listable", True)][:limit_in])
-    blocked_html = "".join(_in_row(r) for r in _blocked_rows[:10])
+                       and x.get("listable") is True][:limit_in])
+    blocked_html = "".join(_in_row(r, blocked=True) for r in _blocked_rows[:10])
 
     # ── OUT 表(两段共用同一行构造) ──
     _sg_asof = str(sg.get("generated_at") or "")  # sell_grade 批量价的时点(行内无asof)
