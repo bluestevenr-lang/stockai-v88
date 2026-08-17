@@ -36,6 +36,8 @@ Mac 变成可开可关。流水线仍然**不在任何个人电脑上跑**——
 | `启动V88.bat` | 人 | 看板，绑 `127.0.0.1`，仅本机 |
 | `启动V88-手机可见.bat` | 人 | 看板，绑 `0.0.0.0`，内网手机可看 |
 | `同步V88.bat` | 人 | 把 Win 的改动 commit+push 回 GitHub |
+| `安装OpenClaw-双击我.bat` | 人，一次性 | OpenClaw 一键安装启动器（全ASCII铁律），调用下面的 ps1 |
+| `install_openclaw_win.ps1` | 上面的 bat | 装 Node(缺才装)→OpenClaw→Moonshot插件→预写 kimi-k3→注册 OpenClaw-Gateway 登录自启；不配密钥（GPT OAuth / Kimi key 由人手跑，脚本末尾会提示） |
 
 ## 注册了哪两个任务
 
