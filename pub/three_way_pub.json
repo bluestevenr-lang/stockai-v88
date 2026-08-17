@@ -1,23 +1,23 @@
 {
- "generated_at": "2026-08-17 23:28（北京时间）",
+ "generated_at": "2026-08-17 17:49（北京时间）",
  "version": "three-way-dual-cli-v3",
  "note": "V88规则闸 + GPT/Codex终审 + Kimi K3证据/反对票 + 经典书理。DeepSeek无席位。",
  "counts": {
-  "⏳审核未完整": 7,
-  "⚡有分歧/否决": 21,
-  "🟡存在不否定·只观察": 21
+  "🟡存在不否定·只观察": 14,
+  "⏳审核未完整": 10,
+  "⚡有分歧/否决": 20
  },
  "rows": [
   {
-   "code": "RKLB",
-   "name": "Rocket Lab Corp",
+   "code": "PLUG",
+   "name": "Plug Power",
    "market": "美股",
    "rule": {
     "dir": "看多",
     "prob": 82,
     "action": "左侧低吸",
-    "rr": 3.16,
-    "pos52": 40.0,
+    "rr": 2.9,
+    "pos52": 29.0,
     "src": "池外机会"
    },
    "rules_gate": {
@@ -27,13 +27,13 @@
    "gpt": {
     "verdict": "未覆盖",
     "why": "",
-    "at": "2026-08-17 21:45（北京时间）",
+    "at": "2026-08-17 14:32（北京时间）",
     "model": "gpt-5.6-sol"
    },
    "kimi": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-17 08:21（北京时间）",
+    "verdict": "不否定",
+    "why": "池内登记·蓄势·60日-29.91%,无评级数据不推荐",
+    "at": "2026-08-17 00:55",
     "model": "Kimi K3"
    },
    "book": {
@@ -54,13 +54,79 @@
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "达标",
+    "verdict": "未覆盖",
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "通过",
-    "why": "盈亏比3.44且期望优势2.37",
-    "at": "2026-08-17 21:45（北京时间）",
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 14:32（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 08:21（北京时间）",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "未覆盖"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "600590.SS",
+   "name": "泰豪科技",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 73,
+    "action": "左侧低吸",
+    "rr": 4.44,
+    "pos52": 19.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 14:32（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "不否定",
+    "why": "池内登记·蓄势·60日-37.86%,无评级数据不推荐",
+    "at": "2026-08-17 00:55",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "未覆盖"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "3900.HK",
+   "name": "绿城中国",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 73,
+    "action": "现价可进",
+    "rr": 3.64,
+    "pos52": 21.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 14:32（北京时间）",
     "model": "gpt-5.6-sol"
    },
    "kimi": {
@@ -87,52 +153,19 @@
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "达标",
+    "verdict": "未覆盖",
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "通过",
-    "why": "启动确认且盈亏比4.03",
-    "at": "2026-08-17 21:45（北京时间）",
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 14:32（北京时间）",
     "model": "gpt-5.6-sol"
    },
    "kimi": {
     "verdict": "未覆盖",
     "why": "",
     "at": "2026-08-17 08:21（北京时间）",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "002838.SZ",
-   "name": "道恩股份",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 68,
-    "action": "现价可进",
-    "rr": 3.32,
-    "pos52": 38.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-17 21:45（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "不否定",
-    "why": "池内登记·蓄势·60日-30.44%,无评级数据不推荐",
-    "at": "2026-08-17 00:55",
     "model": "Kimi K3"
    },
    "book": {
@@ -153,19 +186,118 @@
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "达标",
+    "verdict": "未覆盖",
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "通过",
-    "why": "放量启动且盈亏比5.60",
-    "at": "2026-08-17 21:45（北京时间）",
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 14:32（北京时间）",
     "model": "gpt-5.6-sol"
    },
    "kimi": {
     "verdict": "未覆盖",
     "why": "",
     "at": "2026-08-17 08:21（北京时间）",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "未覆盖"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "601789.SS",
+   "name": "宁波建工",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 66,
+    "action": "现价可进",
+    "rr": 4.14,
+    "pos52": 17.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "不可用",
+    "why": "数据时点：未提供分析时间",
+    "at": "2026-08-12",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "不否定",
+    "why": "池内登记,无评级数据,不进入推荐",
+    "at": "2026-08-17 00:55",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "未覆盖"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "1428.HK",
+   "name": "耀才证券金融",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 65,
+    "action": "双路径待触发",
+    "rr": 4.94,
+    "pos52": 12.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 14:32（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 08:21（北京时间）",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "未覆盖"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "600111.SS",
+   "name": "北方稀土",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 65,
+    "action": "现价可进",
+    "rr": 3.95,
+    "pos52": 23.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "不可用",
+    "why": "数据时点缺失，无法验证入场结论",
+    "at": "2026-08-13",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "不否定",
+    "why": "池内登记,无评级数据,不进入推荐",
+    "at": "2026-08-17 00:55",
     "model": "Kimi K3"
    },
    "book": {
@@ -186,13 +318,13 @@
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "达标",
+    "verdict": "未覆盖",
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "通过",
-    "why": "低位放量且盈亏比5.79",
-    "at": "2026-08-17 21:45（北京时间）",
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 14:32（北京时间）",
     "model": "gpt-5.6-sol"
    },
    "kimi": {
@@ -207,48 +339,15 @@
    "consensus": "⏳审核未完整"
   },
   {
-   "code": "ORCL",
-   "name": "甲骨文",
-   "market": "美股",
+   "code": "603659.SS",
+   "name": "璞泰来",
+   "market": "A股",
    "rule": {
     "dir": "看多",
     "prob": 63,
-    "action": "左侧低吸",
-    "rr": 5.34,
-    "pos52": 14.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-17 21:45（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-17 08:21（北京时间）",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "PLUG",
-   "name": "Plug Power",
-   "market": "美股",
-   "rule": {
-    "dir": "看多",
-    "prob": 74,
     "action": "现价可进",
-    "rr": 3.5,
-    "pos52": 26.0,
+    "rr": 5.72,
+    "pos52": 35.0,
     "src": "池外机会"
    },
    "rules_gate": {
@@ -257,13 +356,13 @@
    },
    "gpt": {
     "verdict": "通过",
-    "why": "上行82%，盈亏比2.9，优势2.2",
-    "at": "2026-08-17 21:45（北京时间）",
+    "why": "启动确认且盈亏比6.28",
+    "at": "2026-08-16 23:37（北京时间）",
     "model": "gpt-5.6-sol"
    },
    "kimi": {
     "verdict": "不否定",
-    "why": "池内登记·蓄势·60日-29.91%,无评级数据不推荐",
+    "why": "池内登记,无评级数据,不进入推荐",
     "at": "2026-08-17 00:55",
     "model": "Kimi K3"
    },
@@ -273,114 +372,15 @@
    "consensus": "🟡存在不否定·只观察"
   },
   {
-   "code": "600590.SS",
-   "name": "泰豪科技",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 73,
-    "action": "左侧低吸",
-    "rr": 4.44,
-    "pos52": 19.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "通过",
-    "why": "启动确认且盈亏比4.44",
-    "at": "2026-08-17 21:45（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "不否定",
-    "why": "池内登记·蓄势·60日-37.86%,无评级数据不推荐",
-    "at": "2026-08-17 00:55",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "🟡存在不否定·只观察"
-  },
-  {
-   "code": "1428.HK",
-   "name": "耀才证券金融",
+   "code": "0017.HK",
+   "name": "新世界发展",
    "market": "港股",
    "rule": {
     "dir": "看多",
-    "prob": 65,
-    "action": "双路径待触发",
-    "rr": 4.94,
-    "pos52": 12.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "不否定",
-    "why": "买点尚待触发",
-    "at": "2026-08-17 21:45（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-17 08:21（北京时间）",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "🟡存在不否定·只观察"
-  },
-  {
-   "code": "QCOM",
-   "name": "高通",
-   "market": "美股",
-   "rule": {
-    "dir": "看多",
-    "prob": 64,
-    "action": "左侧低吸",
-    "rr": 6.33,
-    "pos52": 30.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-17 21:45（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "不否定",
-    "why": "池内登记·蓄势·60日-14.84%,无评级数据不推荐",
-    "at": "2026-08-17 00:55",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "🟡存在不否定·只观察"
-  },
-  {
-   "code": "600893.SS",
-   "name": "航发动力",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 64,
+    "prob": 60,
     "action": "现价可进",
-    "rr": 3.26,
-    "pos52": 18.0,
+    "rr": 4.37,
+    "pos52": 13.0,
     "src": "池外机会"
    },
    "rules_gate": {
@@ -389,7 +389,7 @@
    },
    "gpt": {
     "verdict": "不否定",
-    "why": "缺少量价与催化的具体核验事实",
+    "why": "低位转强，但基本面依据不足",
     "at": "2026-08-16 23:37（北京时间）",
     "model": "gpt-5.6-sol"
    },
