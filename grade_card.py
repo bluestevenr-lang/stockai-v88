@@ -289,6 +289,26 @@ def _td(v, style="") -> str:
     return f"<td style='padding:3px 5px;border-bottom:1px solid #f1f5f9;{style}'>{_nomd(v)}</td>"
 
 
+def _px_fresh_cell(px, asof, basis="", usable=None, fallback_note="") -> str:
+    """现价·时点单元格(2026-07-31 定纲:🟢同日=新鲜/⚠️红=隔日旧数据——
+    旧价不许伪装成今天的判断;2026-08-17 用户抓'3A页价格不刷新'补,与行动中心同口径)。
+    usable 来自 decisions 行的 px_usable_as_current:False 时强制按旧价标红,
+    不信 asof(中海油 08-06 案:文件新、内容旧)。"""
+    import datetime as _dt
+    _today = _dt.datetime.now().strftime("%Y-%m-%d")
+    _d, _t = str(asof or "")[:10], str(asof or "")[11:16]
+    if px is None:
+        return (f"<b>现—</b><br><span style='color:#dc2626;font-size:9px'>"
+                f"⚠️{fallback_note or '无盘中价'}</span>")
+    _fresh = (_d == _today) if usable is None else bool(usable)
+    if _fresh:
+        _lab = "收盘定稿" if basis == "收盘定稿" else "今日"
+        return (f"<b>现{px}</b><br><span style='color:#16a34a;font-size:9px'>"
+                f"🟢{_lab}{(' ' + _t) if _t else ''}</span>")
+    return (f"<b>现{px}</b><br><span style='color:#dc2626;font-size:9px'>"
+            f"⚠️旧·{_d[5:] if _d and _d != '' else '时点未知'}{(' ' + _t) if _t else ''}</span>")
+
+
 def _gate(g: dict | None, key: str) -> str:
     """取某只票某个动作的门票。IN 侧读它**不构成"互为准入"**——门控发生在输出层，
     两个引擎的计算仍互盲(见 sell_grade.py 顶部三方定纲)。"""
@@ -452,9 +472,11 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                   f"font-weight:800;font-size:12px'>{r.get('tier')}</span>"
                   f"<br><span style='color:#1d4ed8;font-weight:700;font-size:11px'>"
                   f"分{r.get('rank_score')} · #{r.get('rank')}</span>", "white-space:nowrap")
-            + _td(f"<b>现{d.get('last', '—')}</b>"
-                  f"<br><span style='color:#16a34a;font-size:9px'>"
-                  f"{str(r.get('data_available_at') or '')[:10]}</span>")
+            # 【2026-08-17 用户抓"3A页价格不刷新"】现价列接入新鲜度守卫:
+            # 有盘中价→🟢今日/收盘定稿;旧价→⚠️红;无价→明说基期,不再恒绿伪装。
+            + _td(_px_fresh_cell(d.get("last"), d.get("asof"), d.get("px_basis"),
+                                 d.get("px_usable_as_current"),
+                                 f"无盘中价·评级基期{str(r.get('data_available_at') or '')[:10][5:]}"))
             # 【2026-08-02 三方定纲】IN 侧有 OUT 风险证据时**不删行**(GPT:原IN结构尚可观察),
             # 而是把"本次入场触发已失效"的门票摆在动作位——机会结构仍在 ≠ 现在能买,
             # 这两件事必须能同时表达。删行=监守自盗的镜像(用一侧结果消音另一侧证据)。
@@ -517,6 +539,8 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
     blocked_html = "".join(_in_row(r) for r in _blocked_rows[:10])
 
     # ── OUT 表(两段共用同一行构造) ──
+    _sg_asof = str(sg.get("generated_at") or "")  # sell_grade 批量价的时点(行内无asof)
+
     def _out_row(g):
         c = str(g.get("code"))
         d = dec.get(c) or {}
@@ -538,8 +562,14 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                     f"font-weight:800;font-size:12px'>{lv}</span>"
                     f"<br><span style='color:{PALETTE['sell']};font-weight:700;font-size:11px'>卖出分"
                     f"{g.get('sell_score', '—')}</span>", "white-space:nowrap")
-            + _td(f"<b>现{g.get('px', '—')}</b><br>"
-                  f"<span style='font-size:9px;color:#64748b'>MA20 {g.get('ma20', '—')}</span>")
+            # 【2026-08-17 用户抓"3A页价格不刷新"】OUT 现价同款守卫:
+            # 优先 decisions 盘中行(带asof/usable),兜底 sell_grade 批量价(带文件时点)。
+            + _td(_px_fresh_cell(d.get("last") if d.get("last") is not None else g.get("px"),
+                                 d.get("asof") if d.get("last") is not None else _sg_asof,
+                                 d.get("px_basis") if d.get("last") is not None else "",
+                                 d.get("px_usable_as_current") if d.get("last") is not None else None,
+                                 "无盘中价")
+                  + f"<br><span style='font-size:9px;color:#64748b'>MA20 {g.get('ma20', '—')}</span>")
             # 【三方定纲·第三层】身份决定**措辞**不决定风险等级:同一个-3A,
             # 持仓说"减仓/退出",自选说"回避·禁止开仓",候选说"取消推荐资格"——
             # 这是动作语义转换,不是风险降级(GPT纠正Claude原方案"身份定主答方"之误)。
