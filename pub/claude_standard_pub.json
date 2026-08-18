@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-18 07:36（北京时间）",
- "generated_at": "2026-08-18 07:36（北京时间）",
+ "asof": "2026-08-18 10:40（北京时间）",
+ "generated_at": "2026-08-18 10:40（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -136,6 +136,26 @@
    "downgrade": "",
    "auto": true
   },
+  "002651.SZ": {
+   "code": "002651.SZ",
+   "name": "利君股份",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "0013.HK": {
+   "code": "0013.HK",
+   "name": "和黄医药",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "AZN": {
    "code": "AZN",
    "name": "阿斯利康",
@@ -189,6 +209,16 @@
   "MELI": {
    "code": "MELI",
    "name": "MercadoLibre",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "9896.HK": {
+   "code": "9896.HK",
+   "name": "名创优品",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -359,16 +389,16 @@
  },
  "reject": {},
  "stats": {
-  "n_pass": 293,
-  "n_reject": 75,
+  "n_pass": 395,
+  "n_reject": 49,
   "by_rule": {
-   "CS9": 1,
+   "CS9": 0,
    "CS1": 0,
    "CS2": 3,
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
-   "CS6": 71,
+   "CS6": 46,
    "CS7": 0,
    "CS8": 0
   }
