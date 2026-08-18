@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-08-18 17:45（北京时间）",
+ "generated_at": "2026-08-19 07:31（北京时间）",
  "version": "three-way-dual-cli-v3",
  "note": "V88规则闸 + GPT/Codex终审 + Kimi K3证据/反对票 + 经典书理。DeepSeek无席位。",
  "counts": {
-  "🟡存在不否定·只观察": 24,
-  "⏳审核未完整": 12,
-  "⚡有分歧/否决": 27
+  "⏳审核未完整": 7,
+  "⚡有分歧/否决": 25,
+  "🟡存在不否定·只观察": 30
  },
  "rows": [
   {
@@ -14,14 +14,14 @@
    "market": "美股",
    "rule": {
     "dir": "看多",
-    "prob": 69,
+    "prob": 66,
     "action": "左侧低吸",
-    "rr": 4.13,
-    "pos52": 37.0,
+    "rr": 4.61,
+    "pos52": 38.0,
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "否决",
+    "verdict": "达标",
     "source": "V88本地规则闸"
    },
    "gpt": {
@@ -54,7 +54,7 @@
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "未覆盖",
+    "verdict": "达标",
     "source": "V88本地规则闸"
    },
    "gpt": {
@@ -87,139 +87,7 @@
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-17 21:45（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-17 08:21（北京时间）",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "300724.SZ",
-   "name": "捷佳伟创",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 76,
-    "action": "左侧低吸",
-    "rr": 3.59,
-    "pos52": 14.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-17 21:45（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "不否定",
-    "why": "池内登记·蓄势·60日-31.5%,无评级数据不推荐",
-    "at": "2026-08-17 00:55",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "603290.SS",
-   "name": "斯达半导",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 70,
-    "action": "左侧低吸",
-    "rr": 4.0,
-    "pos52": 17.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-17 21:45（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "不否定",
-    "why": "池内登记·蓄势·60日-28.43%,无评级数据不推荐",
-    "at": "2026-08-17 00:55",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "600577.SS",
-   "name": "精达股份",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 69,
-    "action": "左侧低吸",
-    "rr": 5.23,
-    "pos52": 20.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-17 21:45（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "不否定",
-    "why": "池内登记·蓄势·60日-42.85%,无评级数据不推荐",
-    "at": "2026-08-17 00:55",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "300435.SZ",
-   "name": "中泰股份",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 69,
-    "action": "左侧低吸",
-    "rr": 4.17,
-    "pos52": 14.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
+    "verdict": "达标",
     "source": "V88本地规则闸"
    },
    "gpt": {
@@ -252,7 +120,7 @@
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "未覆盖",
+    "verdict": "达标",
     "source": "V88本地规则闸"
    },
    "gpt": {
@@ -285,7 +153,7 @@
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "未覆盖",
+    "verdict": "达标",
     "source": "V88本地规则闸"
    },
    "gpt": {
@@ -306,52 +174,19 @@
    "consensus": "⏳审核未完整"
   },
   {
-   "code": "000063.SZ",
-   "name": "中兴通讯",
-   "market": "A股",
+   "code": "PSNY",
+   "name": "极星汽车",
+   "market": "美股",
    "rule": {
     "dir": "看多",
-    "prob": 64,
-    "action": "现价可进",
-    "rr": 4.91,
-    "pos52": 16.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "通过",
-    "why": "低位启动且盈亏比4.45",
-    "at": "2026-08-16 23:37（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "不否定",
-    "why": "池内登记·蓄势·60日1.83%,无评级数据不推荐",
-    "at": "2026-08-17 00:55",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "2382.HK",
-   "name": "舜宇光学科技",
-   "market": "港股",
-   "rule": {
-    "dir": "看多",
-    "prob": 63,
+    "prob": 61,
     "action": "左侧低吸",
-    "rr": 7.11,
-    "pos52": 25.0,
+    "rr": 5.31,
+    "pos52": 9.0,
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "未覆盖",
+    "verdict": "达标",
     "source": "V88本地规则闸"
    },
    "gpt": {
@@ -361,9 +196,9 @@
     "model": "gpt-5.6-sol"
    },
    "kimi": {
-    "verdict": "不否定",
-    "why": "池内登记·蓄势·60日-4.38%,无评级数据不推荐",
-    "at": "2026-08-17 00:55",
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 08:21（北京时间）",
     "model": "Kimi K3"
    },
    "book": {
@@ -384,7 +219,7 @@
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "未覆盖",
+    "verdict": "达标",
     "source": "V88本地规则闸"
    },
    "gpt": {
@@ -403,6 +238,171 @@
     "verdict": "未覆盖"
    },
    "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "300724.SZ",
+   "name": "捷佳伟创",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 76,
+    "action": "左侧低吸",
+    "rr": 3.59,
+    "pos52": 14.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 21:45（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "不否定",
+    "why": "池内登记·蓄势·60日-31.5%,无评级数据不推荐",
+    "at": "2026-08-17 00:55",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "未覆盖"
+   },
+   "consensus": "🟡存在不否定·只观察"
+  },
+  {
+   "code": "603290.SS",
+   "name": "斯达半导",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 70,
+    "action": "左侧低吸",
+    "rr": 4.0,
+    "pos52": 17.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 21:45（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "不否定",
+    "why": "池内登记·蓄势·60日-28.43%,无评级数据不推荐",
+    "at": "2026-08-17 00:55",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "未覆盖"
+   },
+   "consensus": "🟡存在不否定·只观察"
+  },
+  {
+   "code": "600577.SS",
+   "name": "精达股份",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 69,
+    "action": "左侧低吸",
+    "rr": 5.23,
+    "pos52": 20.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 21:45（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "不否定",
+    "why": "池内登记·蓄势·60日-42.85%,无评级数据不推荐",
+    "at": "2026-08-17 00:55",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "未覆盖"
+   },
+   "consensus": "🟡存在不否定·只观察"
+  },
+  {
+   "code": "000063.SZ",
+   "name": "中兴通讯",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 64,
+    "action": "现价可进",
+    "rr": 4.91,
+    "pos52": 16.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "通过",
+    "why": "低位启动且盈亏比4.45",
+    "at": "2026-08-16 23:37（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "不否定",
+    "why": "池内登记·蓄势·60日1.83%,无评级数据不推荐",
+    "at": "2026-08-17 00:55",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "未覆盖"
+   },
+   "consensus": "🟡存在不否定·只观察"
+  },
+  {
+   "code": "2382.HK",
+   "name": "舜宇光学科技",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 63,
+    "action": "等待",
+    "rr": 7.11,
+    "pos52": 25.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 21:45（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "不否定",
+    "why": "池内登记·蓄势·60日-4.38%,无评级数据不推荐",
+    "at": "2026-08-17 00:55",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "未覆盖"
+   },
+   "consensus": "🟡存在不否定·只观察"
   }
  ]
 }

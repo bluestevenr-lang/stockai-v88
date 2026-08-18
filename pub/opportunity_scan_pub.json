@@ -1,7 +1,7 @@
 {
- "generated_at": "2026-08-19 06:00（北京时间）",
- "note": "全市场逆势机会扫描:四路候选(全池转强低位/涨停接力/行业代表/黑马)→实跑122只→严格标准(赔率≥2.0·52周位≤55%·规则上行估计≥60%·期望优势≥0.35·启动型)→过环境闸;exec=可执行或逆势通道小仓试,blocked=技术合格但环境不许;全量入台账攒战绩",
- "studied": 122,
+ "generated_at": "2026-08-18 17:43（北京时间）",
+ "note": "全市场逆势机会扫描:四路候选(全池转强低位/涨停接力/行业代表/黑马)→实跑121只→严格标准(赔率≥2.0·52周位≤55%·规则上行估计≥60%·期望优势≥0.35·启动型)→过环境闸;exec=可执行或逆势通道小仓试,blocked=技术合格但环境不许;全量入台账攒战绩",
+ "studied": 121,
  "exec": [
   {
    "code": "600903.SS",
@@ -30,15 +30,17 @@
    "p_up": 63,
    "pos52": 25.0,
    "stage": "启动确认",
-   "tech_mode": "等待",
+   "tech_mode": "左侧低吸",
    "expected_edge": 4.11,
    "probability_label": "规则上行估计（非胜率）",
    "buy_zone": "58.58~60.40",
    "stop": 54.55,
    "source": "全市场·短线异动·量比3.45·换手1.86%·60日-10%",
-   "exec_action": "等待",
+   "exec_action": "左侧低吸·半仓",
    "exception": null,
-   "block_reasons": [],
+   "block_reasons": [
+    "08-19FOMC(提示:临近波动放大)"
+   ],
    "push_eligible": false
   },
   {
@@ -99,27 +101,6 @@
    "push_eligible": true
   },
   {
-   "code": "PSNY",
-   "name": "极星汽车",
-   "last": 14.59,
-   "rr": 5.31,
-   "p_up": 61,
-   "pos52": 9.0,
-   "stage": "启动确认",
-   "tech_mode": "左侧低吸",
-   "expected_edge": 2.85,
-   "probability_label": "规则上行估计（非胜率）",
-   "buy_zone": "14.16~14.59",
-   "stop": 12.87,
-   "source": "全市场·拐点抢筹·60日-32%但今日+4.7%·量比1.98",
-   "exec_action": "左侧低吸·半仓",
-   "exception": null,
-   "block_reasons": [
-    "08-19FOMC(提示:临近波动放大)"
-   ],
-   "push_eligible": false
-  },
-  {
    "code": "000063.SZ",
    "name": "中兴通讯",
    "last": 35.11,
@@ -139,20 +120,39 @@
    "push_eligible": false
   },
   {
+   "code": "300435.SZ",
+   "name": "中泰股份",
+   "last": 18.15,
+   "rr": 4.17,
+   "p_up": 69,
+   "pos52": 14.0,
+   "stage": "启动确认",
+   "tech_mode": "左侧低吸",
+   "expected_edge": 2.57,
+   "probability_label": "规则上行估计（非胜率）",
+   "buy_zone": "16.85~18.15",
+   "stop": 15.71,
+   "source": "全市场·短线异动·量比3.06·换手7.24%·60日-10%",
+   "exec_action": "左侧低吸·标准仓",
+   "exception": null,
+   "block_reasons": [],
+   "push_eligible": true
+  },
+  {
    "code": "NOC",
    "name": "诺斯罗普",
-   "last": 589.14,
-   "rr": 4.61,
-   "p_up": 66,
-   "pos52": 38.0,
-   "stage": "主升阶段",
+   "last": 585.87,
+   "rr": 4.13,
+   "p_up": 69,
+   "pos52": 37.0,
+   "stage": "启动确认",
    "tech_mode": "左侧低吸",
-   "expected_edge": 2.7,
+   "expected_edge": 2.54,
    "probability_label": "规则上行估计（非胜率）",
-   "buy_zone": "557.89~589.14",
-   "stop": 518.47,
+   "buy_zone": "551.74~585.87",
+   "stop": 479.02,
    "source": "美股军工代表",
-   "exec_action": "左侧低吸·半仓",
+   "exec_action": "左侧低吸·标准仓",
    "exception": null,
    "block_reasons": [
     "08-19FOMC(提示:临近波动放大)"

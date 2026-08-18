@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-19 05:55（北京时间）",
- "generated_at": "2026-08-19 05:55（北京时间）",
+ "asof": "2026-08-19 07:31（北京时间）",
+ "generated_at": "2026-08-19 07:31（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -30,7 +30,7 @@
    "code": "2382.HK",
    "name": "舜宇光学科技",
    "side": "机会",
-   "action": "左侧低吸",
+   "action": "等待",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -66,21 +66,21 @@
    "downgrade": "",
    "auto": true
   },
-  "000063.SZ": {
-   "code": "000063.SZ",
-   "name": "中兴通讯",
+  "PSNY": {
+   "code": "PSNY",
+   "name": "极星汽车",
    "side": "机会",
-   "action": "现价可进",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "300435.SZ": {
-   "code": "300435.SZ",
-   "name": "中泰股份",
+  "000063.SZ": {
+   "code": "000063.SZ",
+   "name": "中兴通讯",
    "side": "机会",
-   "action": "左侧低吸",
+   "action": "现价可进",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -136,6 +136,16 @@
    "downgrade": "",
    "auto": true
   },
+  "300841.SZ": {
+   "code": "300841.SZ",
+   "name": "康华生物",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "300189.SZ": {
    "code": "300189.SZ",
    "name": "神农种业",
@@ -146,9 +156,9 @@
    "downgrade": "",
    "auto": true
   },
-  "000735.SZ": {
-   "code": "000735.SZ",
-   "name": "罗牛山",
+  "600206.SS": {
+   "code": "600206.SS",
+   "name": "有研新材",
    "side": "趋势",
    "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
@@ -156,11 +166,21 @@
    "downgrade": "",
    "auto": true
   },
-  "AZN": {
-   "code": "AZN",
-   "name": "阿斯利康",
-   "side": "打折",
-   "action": "🟢打折到位·可开始买",
+  "601952.SS": {
+   "code": "601952.SS",
+   "name": "苏垦农发",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "000998.SZ": {
+   "code": "000998.SZ",
+   "name": "隆平高科",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -179,6 +199,16 @@
   "BNTX": {
    "code": "BNTX",
    "name": "BioNTech",
+   "side": "打折",
+   "action": "🟢打折到位·可开始买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "RBA": {
+   "code": "RBA",
+   "name": "RB Global Inc",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
    "rules": [],
@@ -216,26 +246,6 @@
    "downgrade": "",
    "auto": true
   },
-  "9896.HK": {
-   "code": "9896.HK",
-   "name": "名创优品",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "3692.HK": {
-   "code": "3692.HK",
-   "name": "翰森制药",
-   "side": "打折",
-   "action": "🟢打折到位·可开始买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "603392.SS": {
    "code": "603392.SS",
    "name": "万泰生物",
@@ -256,9 +266,9 @@
    "downgrade": "",
    "auto": true
   },
-  "300953.SZ": {
-   "code": "300953.SZ",
-   "name": "震裕科技",
+  "002460.SZ": {
+   "code": "002460.SZ",
+   "name": "赣锋锂业",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -266,9 +276,9 @@
    "downgrade": "",
    "auto": true
   },
-  "002460.SZ": {
-   "code": "002460.SZ",
-   "name": "赣锋锂业",
+  "300953.SZ": {
+   "code": "300953.SZ",
+   "name": "震裕科技",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -286,9 +296,9 @@
    "downgrade": "",
    "auto": true
   },
-  "1138.HK": {
-   "code": "1138.HK",
-   "name": "中远海能",
+  "LOW": {
+   "code": "LOW",
+   "name": "劳氏",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
    "rules": [],
@@ -296,9 +306,19 @@
    "downgrade": "",
    "auto": true
   },
-  "LOW": {
-   "code": "LOW",
-   "name": "劳氏",
+  "3692.HK": {
+   "code": "3692.HK",
+   "name": "翰森制药",
+   "side": "打折",
+   "action": "🟢打折到位·可开始买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "600031.SS": {
+   "code": "600031.SS",
+   "name": "三一重工",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
    "rules": [],
@@ -310,6 +330,16 @@
    "code": "512760.SS",
    "name": "A股·半导体芯片板块",
    "side": "拐点",
+   "action": "",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "SLB": {
+   "code": "SLB",
+   "name": "斯伦贝谢",
+   "side": "行业代表",
    "action": "",
    "rules": [],
    "why": "",
@@ -356,16 +386,6 @@
    "downgrade": "",
    "auto": true
   },
-  "0857.HK": {
-   "code": "0857.HK",
-   "name": "中国石油股份",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "0317.HK": {
    "code": "0317.HK",
    "name": "中船防务",
@@ -379,7 +399,7 @@
  },
  "reject": {},
  "stats": {
-  "n_pass": 401,
+  "n_pass": 403,
   "n_reject": 65,
   "by_rule": {
    "CS9": 0,
