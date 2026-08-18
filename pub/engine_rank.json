@@ -1,7 +1,7 @@
 {
  "schema_version": "v88.rank/2.0",
- "snapshot_id": "snap-b131fe0d3b1e8229",
- "generated_at": "2026-08-17 09:43",
+ "snapshot_id": "snap-9716700cb7b1d610",
+ "generated_at": "2026-08-17 23:25",
  "thresholds": {
   "minimum": {
    "short": 60,
@@ -15,156 +15,156 @@
   "美股": {
    "short": [
     {
-     "token": "US:DELL",
-     "name": "戴尔",
-     "score": 80,
-     "unified_score": 69,
-     "score_version": "V88-U2.1",
-     "p_up": 80,
-     "p_down": 20,
-     "rr": 0.23,
-     "expected_pct": -0.3,
-     "action": "趋势偏多·等待回踩",
-     "last": 490.81,
-     "chg20": 24.0,
-     "rs": 20.8
-    },
-    {
      "token": "US:MU",
      "name": "美光",
+     "score": 81,
+     "unified_score": 74,
+     "score_version": "V88-U2.1",
+     "p_up": 81,
+     "p_down": 19,
+     "rr": 1.32,
+     "expected_pct": 16.0,
+     "action": "共振·小仓试错",
+     "last": 1011.75,
+     "chg20": 16.9,
+     "rs": 12.8
+    },
+    {
+     "token": "US:MRVL",
+     "name": "迈威尔",
      "score": 78,
      "unified_score": 74,
      "score_version": "V88-U2.1",
      "p_up": 78,
      "p_down": 22,
-     "rr": 1.4,
-     "expected_pct": 18.2,
-     "action": "共振·小仓试错",
-     "last": 971.66,
-     "chg20": 14.5,
-     "rs": 11.2
+     "rr": 2.88,
+     "expected_pct": 28.1,
+     "action": "多周期共振·试仓复核",
+     "last": 234.33,
+     "chg20": 20.2,
+     "rs": 16.2
     },
     {
-     "token": "US:ORCL",
-     "name": "甲骨文",
-     "score": 78,
-     "unified_score": 70,
-     "score_version": "V88-U2.1",
-     "p_up": 78,
-     "p_down": 22,
-     "rr": 2.96,
-     "expected_pct": 28.2,
-     "action": "观察",
-     "last": 150.52,
-     "chg20": 19.1,
-     "rs": 15.9
-    },
-    {
-     "token": "US:MRVL",
-     "name": "迈威尔",
+     "token": "US:LRCX",
+     "name": "泛林",
      "score": 76,
-     "unified_score": 73,
+     "unified_score": 74,
      "score_version": "V88-U2.1",
      "p_up": 76,
      "p_down": 24,
-     "rr": 2.0,
-     "expected_pct": 25.6,
+     "rr": 1.89,
+     "expected_pct": 17.4,
      "action": "多周期共振·试仓复核",
-     "last": 222.02,
-     "chg20": 17.7,
-     "rs": 14.5
+     "last": 343.84,
+     "chg20": 12.1,
+     "rs": 8.0
     },
     {
-     "token": "US:QCOM",
-     "name": "高通",
-     "score": 75,
-     "unified_score": 67,
+     "token": "US:INTC",
+     "name": "英特尔",
+     "score": 71,
+     "unified_score": 68,
      "score_version": "V88-U2.1",
-     "p_up": 75,
-     "p_down": 25,
-     "rr": 2.9,
-     "expected_pct": 26.5,
+     "p_up": 71,
+     "p_down": 29,
+     "rr": 3.96,
+     "expected_pct": 23.9,
      "action": "观察",
-     "last": 165.79,
-     "chg20": -3.5,
-     "rs": -6.7
-    }
-   ],
-   "mid": [
-    {
-     "token": "US:CRM",
-     "name": "Salesforce",
-     "score": 84,
-     "unified_score": 70,
-     "score_version": "V88-U2.1",
-     "p_up": 67,
-     "p_down": 33,
-     "rr": 1.1,
-     "expected_pct": 2.8,
-     "action": "共振·小仓试错",
-     "last": 196.21,
-     "chg20": 14.9,
-     "rs": 11.7
-    },
-    {
-     "token": "US:MSFT",
-     "name": "微软",
-     "score": 83,
-     "unified_score": 65,
-     "score_version": "V88-U2.1",
-     "p_up": 60,
-     "p_down": 40,
-     "rr": 0.72,
-     "expected_pct": 0.2,
-     "action": "趋势偏多·等待回踩",
-     "last": 495.4,
-     "chg20": 25.8,
-     "rs": 22.6
-    },
-    {
-     "token": "US:ADBE",
-     "name": "Adobe",
-     "score": 82,
-     "unified_score": 64,
-     "score_version": "V88-U2.1",
-     "p_up": 65,
-     "p_down": 35,
-     "rr": 0.62,
-     "expected_pct": 0.4,
-     "action": "趋势偏多·等待回踩",
-     "last": 264.02,
-     "chg20": 11.3,
-     "rs": 8.1
-    },
-    {
-     "token": "US:DELL",
-     "name": "戴尔",
-     "score": 78,
-     "unified_score": 69,
-     "score_version": "V88-U2.1",
-     "p_up": 80,
-     "p_down": 20,
-     "rr": 0.23,
-     "expected_pct": -0.3,
-     "action": "趋势偏多·等待回踩",
-     "last": 490.81,
-     "chg20": 24.0,
-     "rs": 20.8
+     "last": 103.49,
+     "chg20": 6.6,
+     "rs": 2.6
     },
     {
      "token": "US:MRK",
      "name": "默沙东",
-     "score": 74,
-     "unified_score": 60,
+     "score": 68,
+     "unified_score": 62,
      "score_version": "V88-U2.1",
-     "p_up": 66,
-     "p_down": 34,
-     "rr": 0.07,
-     "expected_pct": -2.1,
+     "p_up": 68,
+     "p_down": 32,
+     "rr": 0.12,
+     "expected_pct": -1.7,
      "action": "趋势偏多·等待回踩",
-     "last": 135.84,
-     "chg20": 6.5,
-     "rs": 3.3
+     "last": 135.97,
+     "chg20": 9.3,
+     "rs": 5.2
+    }
+   ],
+   "mid": [
+    {
+     "token": "US:MSFT",
+     "name": "微软",
+     "score": 82,
+     "unified_score": 64,
+     "score_version": "V88-U2.1",
+     "p_up": 48,
+     "p_down": 52,
+     "rr": 1.28,
+     "expected_pct": 0.5,
+     "action": "观察",
+     "last": 480.35,
+     "chg20": 19.4,
+     "rs": 15.3
+    },
+    {
+     "token": "US:CRM",
+     "name": "Salesforce",
+     "score": 80,
+     "unified_score": 67,
+     "score_version": "V88-U2.1",
+     "p_up": 56,
+     "p_down": 44,
+     "rr": 1.63,
+     "expected_pct": 3.0,
+     "action": "观察",
+     "last": 190.97,
+     "chg20": 9.9,
+     "rs": 5.8
+    },
+    {
+     "token": "US:DELL",
+     "name": "戴尔",
+     "score": 79,
+     "unified_score": 69,
+     "score_version": "V88-U2.1",
+     "p_up": 68,
+     "p_down": 32,
+     "rr": 0.54,
+     "expected_pct": 0.6,
+     "action": "趋势偏多·等待回踩",
+     "last": 479.81,
+     "chg20": 25.9,
+     "rs": 21.8
+    },
+    {
+     "token": "US:XOM",
+     "name": "埃克森",
+     "score": 76,
+     "unified_score": 72,
+     "score_version": "V88-U2.1",
+     "p_up": 65,
+     "p_down": 35,
+     "rr": 1.11,
+     "expected_pct": 2.9,
+     "action": "共振·小仓试错",
+     "last": 161.46,
+     "chg20": 8.8,
+     "rs": 4.8
+    },
+    {
+     "token": "US:CVX",
+     "name": "雪佛龙",
+     "score": 76,
+     "unified_score": 67,
+     "score_version": "V88-U2.1",
+     "p_up": 67,
+     "p_down": 33,
+     "rr": 0.6,
+     "expected_pct": 0.6,
+     "action": "趋势偏多·等待回踩",
+     "last": 202.7,
+     "chg20": 6.8,
+     "rs": 2.8
     }
    ],
    "long": [
@@ -172,31 +172,31 @@
      "token": "US:MRK",
      "name": "默沙东",
      "score": 85,
-     "unified_score": 60,
+     "unified_score": 62,
      "score_version": "V88-U2.1",
-     "p_up": 66,
-     "p_down": 34,
-     "rr": 0.07,
-     "expected_pct": -2.1,
+     "p_up": 68,
+     "p_down": 32,
+     "rr": 0.12,
+     "expected_pct": -1.7,
      "action": "趋势偏多·等待回踩",
-     "last": 135.84,
-     "chg20": 6.5,
-     "rs": 3.3
+     "last": 135.97,
+     "chg20": 9.3,
+     "rs": 5.2
     },
     {
-     "token": "US:AMD",
-     "name": "AMD",
-     "score": 80,
-     "unified_score": 63,
+     "token": "US:AMAT",
+     "name": "应用材料",
+     "score": 82,
+     "unified_score": 67,
      "score_version": "V88-U2.1",
-     "p_up": 59,
-     "p_down": 41,
-     "rr": 1.19,
-     "expected_pct": 3.4,
-     "action": "趋势偏多·等待回踩",
-     "last": 514.39,
-     "chg20": 3.8,
-     "rs": 0.5
+     "p_up": 57,
+     "p_down": 43,
+     "rr": 4.16,
+     "expected_pct": 17.8,
+     "action": "观察",
+     "last": 535.31,
+     "chg20": 1.8,
+     "rs": -2.2
     },
     {
      "token": "US:MU",
@@ -204,14 +204,14 @@
      "score": 80,
      "unified_score": 74,
      "score_version": "V88-U2.1",
-     "p_up": 78,
-     "p_down": 22,
-     "rr": 1.4,
-     "expected_pct": 18.2,
+     "p_up": 81,
+     "p_down": 19,
+     "rr": 1.32,
+     "expected_pct": 16.0,
      "action": "共振·小仓试错",
-     "last": 971.66,
-     "chg20": 14.5,
-     "rs": 11.2
+     "last": 1011.75,
+     "chg20": 16.9,
+     "rs": 12.8
     },
     {
      "token": "US:DELL",
@@ -219,29 +219,29 @@
      "score": 80,
      "unified_score": 69,
      "score_version": "V88-U2.1",
-     "p_up": 80,
-     "p_down": 20,
-     "rr": 0.23,
-     "expected_pct": -0.3,
+     "p_up": 68,
+     "p_down": 32,
+     "rr": 0.54,
+     "expected_pct": 0.6,
      "action": "趋势偏多·等待回踩",
-     "last": 490.81,
-     "chg20": 24.0,
-     "rs": 20.8
+     "last": 479.81,
+     "chg20": 25.9,
+     "rs": 21.8
     },
     {
      "token": "US:LRCX",
      "name": "泛林",
-     "score": 78,
-     "unified_score": 70,
+     "score": 79,
+     "unified_score": 74,
      "score_version": "V88-U2.1",
-     "p_up": 72,
-     "p_down": 28,
-     "rr": 1.91,
-     "expected_pct": 18.3,
+     "p_up": 76,
+     "p_down": 24,
+     "rr": 1.89,
+     "expected_pct": 17.4,
      "action": "多周期共振·试仓复核",
-     "last": 332.36,
-     "chg20": 6.1,
-     "rs": 2.9
+     "last": 343.84,
+     "chg20": 12.1,
+     "rs": 8.0
     }
    ]
   },
@@ -260,7 +260,7 @@
      "action": "趋势偏多·等待回踩",
      "last": 166.89,
      "chg20": 34.4,
-     "rs": 33.7
+     "rs": 30.0
     },
     {
      "token": "SH:688981",
@@ -275,7 +275,7 @@
      "action": "观察",
      "last": 136.76,
      "chg20": -5.0,
-     "rs": -5.7
+     "rs": -9.4
     },
     {
      "token": "SZ:000725",
@@ -290,7 +290,7 @@
      "action": "多周期共振·试仓复核",
      "last": 6.08,
      "chg20": 5.0,
-     "rs": 4.3
+     "rs": 0.7
     },
     {
      "token": "SZ:002475",
@@ -305,7 +305,7 @@
      "action": "观察",
      "last": 58.84,
      "chg20": 3.6,
-     "rs": 2.9
+     "rs": -0.7
     },
     {
      "token": "SH:601728",
@@ -320,7 +320,7 @@
      "action": "多周期共振·试仓复核",
      "last": 6.61,
      "chg20": 5.9,
-     "rs": 5.2
+     "rs": 1.6
     }
    ],
    "mid": [
@@ -337,7 +337,7 @@
      "action": "趋势偏多·等待回踩",
      "last": 166.89,
      "chg20": 34.4,
-     "rs": 33.7
+     "rs": 30.0
     },
     {
      "token": "SH:601728",
@@ -352,7 +352,7 @@
      "action": "多周期共振·试仓复核",
      "last": 6.61,
      "chg20": 5.9,
-     "rs": 5.2
+     "rs": 1.6
     },
     {
      "token": "SH:601899",
@@ -367,7 +367,7 @@
      "action": "观察",
      "last": 33.36,
      "chg20": 13.7,
-     "rs": 13.0
+     "rs": 9.3
     },
     {
      "token": "SZ:002714",
@@ -382,7 +382,7 @@
      "action": "观察",
      "last": 39.29,
      "chg20": -3.3,
-     "rs": -3.9
+     "rs": -7.6
     },
     {
      "token": "SH:601012",
@@ -397,7 +397,7 @@
      "action": "观察",
      "last": 12.83,
      "chg20": 6.9,
-     "rs": 6.2
+     "rs": 2.6
     }
    ],
    "long": [
@@ -414,7 +414,7 @@
      "action": "趋势偏多·等待回踩",
      "last": 166.89,
      "chg20": 34.4,
-     "rs": 33.7
+     "rs": 30.0
     },
     {
      "token": "SZ:000725",
@@ -429,7 +429,7 @@
      "action": "多周期共振·试仓复核",
      "last": 6.08,
      "chg20": 5.0,
-     "rs": 4.3
+     "rs": 0.7
     },
     {
      "token": "SH:688981",
@@ -444,7 +444,7 @@
      "action": "观察",
      "last": 136.76,
      "chg20": -5.0,
-     "rs": -5.7
+     "rs": -9.4
     },
     {
      "token": "SH:601728",
@@ -459,7 +459,7 @@
      "action": "多周期共振·试仓复核",
      "last": 6.61,
      "chg20": 5.9,
-     "rs": 5.2
+     "rs": 1.6
     },
     {
      "token": "SZ:002475",
@@ -474,7 +474,7 @@
      "action": "观察",
      "last": 58.84,
      "chg20": 3.6,
-     "rs": 2.9
+     "rs": -0.7
     }
    ]
   },
@@ -493,7 +493,7 @@
      "action": "趋势偏多·等待回踩",
      "last": 46.16,
      "chg20": 20.6,
-     "rs": 17.5
+     "rs": 18.4
     },
     {
      "token": "HK:0027",
@@ -508,7 +508,7 @@
      "action": "趋势偏多·等待回踩",
      "last": 34.54,
      "chg20": 7.5,
-     "rs": 4.3
+     "rs": 5.2
     },
     {
      "token": "HK:0316",
@@ -523,7 +523,7 @@
      "action": "趋势偏多·等待回踩",
      "last": 158.9,
      "chg20": 8.2,
-     "rs": 5.1
+     "rs": 6.0
     },
     {
      "token": "HK:1088",
@@ -538,7 +538,7 @@
      "action": "观察",
      "last": 43.26,
      "chg20": -0.8,
-     "rs": -3.9
+     "rs": -3.0
     },
     {
      "token": "HK:0883",
@@ -553,7 +553,7 @@
      "action": "观察",
      "last": 23.92,
      "chg20": 0.1,
-     "rs": -3.0
+     "rs": -2.2
     }
    ],
    "mid": [
@@ -570,7 +570,7 @@
      "action": "趋势偏多·等待回踩",
      "last": 46.16,
      "chg20": 20.6,
-     "rs": 17.5
+     "rs": 18.4
     },
     {
      "token": "HK:0027",
@@ -585,7 +585,7 @@
      "action": "趋势偏多·等待回踩",
      "last": 34.54,
      "chg20": 7.5,
-     "rs": 4.3
+     "rs": 5.2
     },
     {
      "token": "HK:9988",
@@ -600,7 +600,7 @@
      "action": "观察",
      "last": 122.2,
      "chg20": 4.6,
-     "rs": 1.5
+     "rs": 2.4
     },
     {
      "token": "HK:0316",
@@ -615,7 +615,7 @@
      "action": "趋势偏多·等待回踩",
      "last": 158.9,
      "chg20": 8.2,
-     "rs": 5.1
+     "rs": 6.0
     },
     {
      "token": "HK:6618",
@@ -630,7 +630,7 @@
      "action": "观察",
      "last": 39.12,
      "chg20": 2.2,
-     "rs": -0.9
+     "rs": -0.1
     }
    ],
    "long": [
@@ -647,7 +647,7 @@
      "action": "趋势偏多·等待回踩",
      "last": 158.9,
      "chg20": 8.2,
-     "rs": 5.1
+     "rs": 6.0
     },
     {
      "token": "HK:1088",
@@ -662,7 +662,7 @@
      "action": "观察",
      "last": 43.26,
      "chg20": -0.8,
-     "rs": -3.9
+     "rs": -3.0
     },
     {
      "token": "HK:2269",
@@ -677,7 +677,7 @@
      "action": "趋势偏多·等待回踩",
      "last": 46.16,
      "chg20": 20.6,
-     "rs": 17.5
+     "rs": 18.4
     },
     {
      "token": "HK:0027",
@@ -692,7 +692,7 @@
      "action": "趋势偏多·等待回踩",
      "last": 34.54,
      "chg20": 7.5,
-     "rs": 4.3
+     "rs": 5.2
     },
     {
      "token": "HK:0941",
@@ -707,7 +707,7 @@
      "action": "观察",
      "last": 82.4,
      "chg20": 2.0,
-     "rs": -1.1
+     "rs": -0.3
     }
    ]
   }
@@ -715,30 +715,30 @@
  "risk": {
   "美股": [
    {
+    "token": "US:GOOG",
+    "name": "谷歌",
+    "score": 30,
+    "last": 341.45,
+    "chg20": -2.8,
+    "rs": -6.9,
+    "reason": "短线评分尾部，防破位或利润回吐"
+   },
+   {
     "token": "US:NTES",
     "name": "网易",
     "score": 30,
-    "last": 125.12,
-    "chg20": -3.6,
-    "rs": -6.8,
+    "last": 124.4,
+    "chg20": -7.3,
+    "rs": -11.4,
     "reason": "短线评分尾部，防破位或利润回吐"
    },
    {
-    "token": "US:PDD",
-    "name": "拼多多",
-    "score": 30,
-    "last": 84.79,
-    "chg20": 0.8,
-    "rs": -2.4,
-    "reason": "短线评分尾部，防破位或利润回吐"
-   },
-   {
-    "token": "US:GOOG",
-    "name": "谷歌",
-    "score": 36,
-    "last": 343.54,
-    "chg20": -0.7,
-    "rs": -4.0,
+    "token": "US:HON",
+    "name": "霍尼韦尔",
+    "score": 31,
+    "last": 229.45,
+    "chg20": 1.8,
+    "rs": -2.3,
     "reason": "短线评分尾部，防破位或利润回吐"
    }
   ],
@@ -749,7 +749,7 @@
     "score": 29,
     "last": 35.09,
     "chg20": 2.4,
-    "rs": 1.7,
+    "rs": -2.0,
     "reason": "短线评分尾部，防破位或利润回吐"
    },
    {
@@ -758,7 +758,7 @@
     "score": 31,
     "last": 4.36,
     "chg20": -6.2,
-    "rs": -6.9,
+    "rs": -10.6,
     "reason": "短线评分尾部，防破位或利润回吐"
    },
    {
@@ -767,7 +767,7 @@
     "score": 33,
     "last": 72.55,
     "chg20": -4.8,
-    "rs": -5.5,
+    "rs": -9.2,
     "reason": "短线评分尾部，防破位或利润回吐"
    }
   ],
@@ -778,7 +778,7 @@
     "score": 16,
     "last": 113.0,
     "chg20": -5.8,
-    "rs": -9.0,
+    "rs": -8.1,
     "reason": "短线评分尾部，防破位或利润回吐"
    },
    {
@@ -787,7 +787,7 @@
     "score": 19,
     "last": 40.08,
     "chg20": -11.4,
-    "rs": -14.6,
+    "rs": -13.7,
     "reason": "短线评分尾部，防破位或利润回吐"
    },
    {
@@ -796,7 +796,7 @@
     "score": 23,
     "last": 446.4,
     "chg20": -6.6,
-    "rs": -9.7,
+    "rs": -8.8,
     "reason": "短线评分尾部，防破位或利润回吐"
    }
   ]
@@ -804,9 +804,9 @@
  "breadth": {
   "美股": {
    "total": 50,
-   "up_pct": 48,
-   "above20_pct": 70,
-   "newhigh60": 6
+   "up_pct": 40,
+   "above20_pct": 72,
+   "newhigh60": 4
   },
   "A股": {
    "total": 36,

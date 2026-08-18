@@ -1,7 +1,7 @@
 {
- "generated_at": "2026-08-18 06:02（北京时间）",
- "note": "全市场逆势机会扫描:四路候选(全池转强低位/涨停接力/行业代表/黑马)→实跑117只→严格标准(赔率≥2.0·52周位≤55%·规则上行估计≥60%·期望优势≥0.35·启动型)→过环境闸;exec=可执行或逆势通道小仓试,blocked=技术合格但环境不许;全量入台账攒战绩",
- "studied": 117,
+ "generated_at": "2026-08-17 17:48（北京时间）",
+ "note": "全市场逆势机会扫描:四路候选(全池转强低位/涨停接力/行业代表/黑马)→实跑119只→严格标准(赔率≥2.0·52周位≤55%·规则上行估计≥60%·期望优势≥0.35·启动型)→过环境闸;exec=可执行或逆势通道小仓试,blocked=技术合格但环境不许;全量入台账攒战绩",
+ "studied": 119,
  "exec": [
   {
    "code": "688006.SS",
@@ -61,25 +61,6 @@
    "push_eligible": false
   },
   {
-   "code": "300505.SZ",
-   "name": "川金诺",
-   "last": 19.96,
-   "rr": 5.27,
-   "p_up": 64,
-   "pos52": 17.0,
-   "stage": "启动确认",
-   "tech_mode": "左侧低吸",
-   "expected_edge": 3.01,
-   "probability_label": "规则上行估计（非胜率）",
-   "buy_zone": "18.45~19.96",
-   "stop": 15.71,
-   "source": "全市场·短线异动·量比2.5·换手14.56%·60日-11%",
-   "exec_action": "左侧低吸·标准仓",
-   "exception": null,
-   "block_reasons": [],
-   "push_eligible": false
-  },
-  {
    "code": "600590.SS",
    "name": "泰豪科技",
    "last": 9.11,
@@ -134,27 +115,6 @@
    "exec_action": "现价可进·标准仓",
    "exception": null,
    "block_reasons": [],
-   "push_eligible": true
-  },
-  {
-   "code": "PLUG",
-   "name": "Plug Power",
-   "last": 2.28,
-   "rr": 3.51,
-   "p_up": 78,
-   "pos52": 27.0,
-   "stage": "启动确认",
-   "tech_mode": "左侧低吸",
-   "expected_edge": 2.52,
-   "probability_label": "规则上行估计（非胜率）",
-   "buy_zone": "2.15~2.28",
-   "stop": 1.86,
-   "source": "全池转强·52周29%",
-   "exec_action": "左侧低吸·半仓",
-   "exception": null,
-   "block_reasons": [
-    "08-19FOMC(提示:临近波动放大)"
-   ],
    "push_eligible": true
   },
   {
@@ -235,6 +195,47 @@
    "exec_action": "等待",
    "exception": null,
    "block_reasons": [],
+   "push_eligible": true
+  },
+  {
+   "code": "600111.SS",
+   "name": "北方稀土",
+   "last": 42.78,
+   "rr": 3.95,
+   "p_up": 65,
+   "pos52": 23.0,
+   "stage": "启动确认",
+   "tech_mode": "现价可进",
+   "expected_edge": 2.22,
+   "probability_label": "规则上行估计（非胜率）",
+   "buy_zone": "40.83~42.78",
+   "stop": 37.65,
+   "source": "全池转强·52周22%",
+   "exec_action": "现价可进·标准仓",
+   "exception": null,
+   "block_reasons": [],
+   "push_eligible": true
+  },
+  {
+   "code": "PLUG",
+   "name": "Plug Power",
+   "last": 2.32,
+   "rr": 2.9,
+   "p_up": 82,
+   "pos52": 29.0,
+   "stage": "启动确认",
+   "tech_mode": "左侧低吸",
+   "expected_edge": 2.2,
+   "probability_label": "规则上行估计（非胜率）",
+   "buy_zone": "2.14~2.32",
+   "stop": 1.86,
+   "source": "全池转强·52周29%",
+   "exec_action": "左侧低吸·1/3仓",
+   "exception": null,
+   "block_reasons": [
+    "⚠️大盘顶部特征3/7(风险60)→仓位半仓降1/3仓·赔率门槛升2.0",
+    "08-19FOMC(提示:临近波动放大)"
+   ],
    "push_eligible": true
   }
  ],

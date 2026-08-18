@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-18 05:57（北京时间）",
- "generated_at": "2026-08-18 05:57（北京时间）",
+ "asof": "2026-08-18 07:36（北京时间）",
+ "generated_at": "2026-08-18 07:36（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -46,6 +46,16 @@
    "downgrade": "",
    "auto": true
   },
+  "300505.SZ": {
+   "code": "300505.SZ",
+   "name": "川金诺",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "600590.SS": {
    "code": "600590.SS",
    "name": "泰豪科技",
@@ -71,6 +81,16 @@
    "name": "瑞鹄模具",
    "side": "机会",
    "action": "现价可进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "PLUG": {
+   "code": "PLUG",
+   "name": "Plug Power",
+   "side": "机会",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -116,61 +136,11 @@
    "downgrade": "",
    "auto": true
   },
-  "600111.SS": {
-   "code": "600111.SS",
-   "name": "北方稀土",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "PLUG": {
-   "code": "PLUG",
-   "name": "Plug Power",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "603758.SS": {
-   "code": "603758.SS",
-   "name": "秦安股份",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "002907.SZ": {
-   "code": "002907.SZ",
-   "name": "华森制药",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "000735.SZ": {
-   "code": "000735.SZ",
-   "name": "罗牛山",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "MCD": {
-   "code": "MCD",
-   "name": "麦当劳",
+  "AZN": {
+   "code": "AZN",
+   "name": "阿斯利康",
    "side": "打折",
-   "action": "🕐还不够便宜·先看着",
+   "action": "🟢打折到位·可开始买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -306,26 +276,6 @@
    "downgrade": "",
    "auto": true
   },
-  "XLC": {
-   "code": "XLC",
-   "name": "美股·通信板块",
-   "side": "拐点",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "512760.SS": {
-   "code": "512760.SS",
-   "name": "A股·半导体芯片板块",
-   "side": "拐点",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "COP": {
    "code": "COP",
    "name": "康菲石油",
@@ -336,9 +286,19 @@
    "downgrade": "",
    "auto": true
   },
-  "LMT": {
-   "code": "LMT",
-   "name": "洛克希德马丁",
+  "NOC": {
+   "code": "NOC",
+   "name": "诺斯罗普",
+   "side": "行业代表",
+   "action": "",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "GS": {
+   "code": "GS",
+   "name": "高盛",
    "side": "行业代表",
    "action": "",
    "rules": [],
@@ -399,10 +359,10 @@
  },
  "reject": {},
  "stats": {
-  "n_pass": 263,
-  "n_reject": 74,
+  "n_pass": 293,
+  "n_reject": 75,
   "by_rule": {
-   "CS9": 0,
+   "CS9": 1,
    "CS1": 0,
    "CS2": 3,
    "CS3": 0,
