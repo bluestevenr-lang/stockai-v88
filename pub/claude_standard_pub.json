@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-18 16:00（北京时间）",
- "generated_at": "2026-08-18 16:00（北京时间）",
+ "asof": "2026-08-18 17:45（北京时间）",
+ "generated_at": "2026-08-18 17:45（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -16,9 +16,19 @@
  },
  "note": "V88标准规则闸:把历史会审异议固化成机检规则,名单出厂前先过这道闸——不达标的不进推荐位,转⏸未达标区并写明理由(用户定纲:'有异议的还摆在推荐位没有参考意义')。规则来自4个班次真实异议的归纳,非回测胜率;每条带rule_id,台账到期后双周深检算'被拦下的票后来表现如何'来修订阈值——规则错了要能被数据推翻。",
  "pass": {
-  "688006.SS": {
-   "code": "688006.SS",
-   "name": "杭可科技",
+  "600903.SS": {
+   "code": "600903.SS",
+   "name": "贵州燃气",
+   "side": "机会",
+   "action": "现价可进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "2382.HK": {
+   "code": "2382.HK",
+   "name": "舜宇光学科技",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -26,29 +36,9 @@
    "downgrade": "",
    "auto": true
   },
-  "603360.SS": {
-   "code": "603360.SS",
-   "name": "百傲化学",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "603659.SS": {
-   "code": "603659.SS",
-   "name": "璞泰来",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "300505.SZ": {
-   "code": "300505.SZ",
-   "name": "川金诺",
+  "600577.SS": {
+   "code": "600577.SS",
+   "name": "精达股份",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -56,9 +46,9 @@
    "downgrade": "",
    "auto": true
   },
-  "600590.SS": {
-   "code": "600590.SS",
-   "name": "泰豪科技",
+  "000592.SZ": {
+   "code": "000592.SZ",
+   "name": "平潭发展",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -66,19 +56,9 @@
    "downgrade": "",
    "auto": true
   },
-  "1428.HK": {
-   "code": "1428.HK",
-   "name": "耀才证券金融",
-   "side": "机会",
-   "action": "双路径待触发",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "002997.SZ": {
-   "code": "002997.SZ",
-   "name": "瑞鹄模具",
+  "605255.SS": {
+   "code": "605255.SS",
+   "name": "天普股份",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -86,9 +66,19 @@
    "downgrade": "",
    "auto": true
   },
-  "PLUG": {
-   "code": "PLUG",
-   "name": "Plug Power",
+  "000063.SZ": {
+   "code": "000063.SZ",
+   "name": "中兴通讯",
+   "side": "机会",
+   "action": "现价可进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "300435.SZ": {
+   "code": "300435.SZ",
+   "name": "中泰股份",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -96,49 +86,69 @@
    "downgrade": "",
    "auto": true
   },
-  "601789.SS": {
-   "code": "601789.SS",
-   "name": "宁波建工",
+  "NOC": {
+   "code": "NOC",
+   "name": "诺斯罗普",
    "side": "机会",
-   "action": "现价可进",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "3900.HK": {
-   "code": "3900.HK",
-   "name": "绿城中国",
+  "688582.SS": {
+   "code": "688582.SS",
+   "name": "芯动联科",
    "side": "机会",
-   "action": "现价可进",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "0017.HK": {
-   "code": "0017.HK",
-   "name": "新世界发展",
+  "603290.SS": {
+   "code": "603290.SS",
+   "name": "斯达半导",
    "side": "机会",
-   "action": "现价可进",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "1050.HK": {
-   "code": "1050.HK",
-   "name": "嘉利国际",
+  "300724.SZ": {
+   "code": "300724.SZ",
+   "name": "捷佳伟创",
    "side": "机会",
-   "action": "等待",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "0013.HK": {
-   "code": "0013.HK",
-   "name": "和黄医药",
+  "603112.SS": {
+   "code": "603112.SS",
+   "name": "华翔股份",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "300189.SZ": {
+   "code": "300189.SZ",
+   "name": "神农种业",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "000735.SZ": {
+   "code": "000735.SZ",
+   "name": "罗牛山",
    "side": "趋势",
    "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
@@ -296,30 +306,10 @@
    "downgrade": "",
    "auto": true
   },
-  "COP": {
-   "code": "COP",
-   "name": "康菲石油",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "NOC": {
-   "code": "NOC",
-   "name": "诺斯罗普",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "GS": {
-   "code": "GS",
-   "name": "高盛",
-   "side": "行业代表",
+  "512760.SS": {
+   "code": "512760.SS",
+   "name": "A股·半导体芯片板块",
+   "side": "拐点",
    "action": "",
    "rules": [],
    "why": "",
@@ -366,6 +356,16 @@
    "downgrade": "",
    "auto": true
   },
+  "0857.HK": {
+   "code": "0857.HK",
+   "name": "中国石油股份",
+   "side": "行业代表",
+   "action": "",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "0317.HK": {
    "code": "0317.HK",
    "name": "中船防务",
@@ -379,8 +379,8 @@
  },
  "reject": {},
  "stats": {
-  "n_pass": 402,
-  "n_reject": 60,
+  "n_pass": 395,
+  "n_reject": 71,
   "by_rule": {
    "CS9": 0,
    "CS1": 1,
@@ -388,8 +388,8 @@
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
-   "CS6": 56,
-   "CS7": 0,
+   "CS6": 60,
+   "CS7": 27,
    "CS8": 0
   }
  }
