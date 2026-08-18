@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-17 00:27（北京时间）",
+ "generated_at": "2026-08-18 12:14（北京时间）",
  "version": "sessionops-v1",
  "ruleset_version": "v4.2",
  "gates_in_force": [
@@ -12,7 +12,7 @@
   "铁律21·不许静默吞错",
   "铁律18·成本标注"
  ],
- "market": "美股",
+ "market": "全部",
  "declaration": "**本场唯一结论源**：对话回答与 V88 页面渲染均引用本文件，逐字一致。全部字段取自落盘（sell_grade/rank_score/classics_lens/anomaly_gate/holdings_fundamentals），零现场推理。",
  "rules": [
   "-3A 才是立即卖；-2A 一律守线待触发并写明触发价",
@@ -25,143 +25,247 @@
  "sell": [],
  "watch": [
   {
-   "code": "GOOG",
-   "name": "谷歌C",
+   "code": "513500.SS",
+   "name": "标普500",
    "level": "-2A",
-   "last": 343.54,
-   "stop": 339.82,
-   "dist_stop_pct": 1.1,
-   "sell_zone": "跌破339.82执行(距+1.1%)",
+   "last": 2.69,
+   "stop": 2.7,
+   "dist_stop_pct": -0.4,
+   "sell_zone": "2.69~2.69 全部离场",
+   "c123": "②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-2A·1-2-3 停在 ② → 不主动卖，跌破 2.7 执行"
+  },
+  {
+   "code": "300760.SZ",
+   "name": "迈瑞医疗",
+   "level": "-2A",
+   "last": 149.59,
+   "stop": 149.264,
+   "dist_stop_pct": 0.2,
+   "sell_zone": "跌破149.26执行(距+0.2%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 339.82 执行"
+   "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 149.264 执行"
   },
   {
-   "code": "AAPL",
-   "name": "苹果",
+   "code": "600941.SH",
+   "name": "中国移动",
    "level": "-1A",
-   "last": 305.93,
-   "stop": 300.57,
+   "last": 95.58,
+   "stop": 95.117,
+   "dist_stop_pct": 0.5,
+   "sell_zone": "跌破95.12执行(距+0.5%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 95.117 执行"
+  },
+  {
+   "code": "06055.HK",
+   "name": "中烟香港",
+   "level": "-1A",
+   "last": 22.26,
+   "stop": 21.972,
+   "dist_stop_pct": 1.3,
+   "sell_zone": "跌破21.97执行(距+1.3%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 21.972 执行"
+  },
+  {
+   "code": "600809.SS",
+   "name": "山西汾酒",
+   "level": "-1A",
+   "last": 119.26,
+   "stop": 117.7,
+   "dist_stop_pct": 1.3,
+   "sell_zone": "跌破117.70执行(距+1.3%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 117.7 执行"
+  },
+  {
+   "code": "000783.SZ",
+   "name": "000783.SZ",
+   "level": "-1A",
+   "last": 8.81,
+   "stop": 8.65,
    "dist_stop_pct": 1.8,
-   "sell_zone": "跌破300.57执行(距+1.8%)",
+   "sell_zone": "跌破8.65执行(距+1.8%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 300.57 执行"
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 8.65 执行"
   },
   {
-   "code": "SO",
-   "name": "美国南方公司",
+   "code": "601288.SS",
+   "name": "农业银行",
    "level": "-1A",
-   "last": 92.8,
-   "stop": 91.03,
-   "dist_stop_pct": 1.9,
-   "sell_zone": "跌破91.03执行(距+1.9%)",
+   "last": 6.53,
+   "stop": 6.36,
+   "dist_stop_pct": 2.7,
+   "sell_zone": "跌破6.36执行(距+2.7%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 91.03 执行"
-  },
-  {
-   "code": "MO",
-   "name": "奥驰亚",
-   "level": "-1A",
-   "last": 65.7,
-   "stop": 64.34,
-   "dist_stop_pct": 2.1,
-   "sell_zone": "跌破64.34执行(距+2.1%)",
-   "c123": "①②",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 64.34 执行"
-  },
-  {
-   "code": "PM",
-   "name": "菲利普莫里斯",
-   "level": "-1A",
-   "last": 190.39,
-   "stop": 184.02,
-   "dist_stop_pct": 3.5,
-   "sell_zone": "跌破184.02执行(距+3.5%)",
-   "c123": "①②",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 184.02 执行"
-  },
-  {
-   "code": "APP",
-   "name": "Applovin",
-   "level": "-1A",
-   "last": 315.44,
-   "stop": 303.17,
-   "dist_stop_pct": 4.0,
-   "sell_zone": "跌破303.17执行(距+4.0%)",
-   "c123": "①②",
-   "frozen": true,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①②；且有未解释异动，重动作已冻结（止损不受影响） → 不主动卖，跌破 303.17 执行"
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 6.36 执行"
   }
  ],
  "buy": [],
  "blocked": [
   {
-   "code": "CVX",
-   "name": "雪佛龙",
+   "code": "002458.SZ",
+   "name": "益生股份",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
-   "gpt": "reject",
+   "gpt": "不否定",
    "kimi": "未验证",
-   "factpack_match": true
+   "factpack_match": false
   },
   {
-   "code": "FCX",
-   "name": "自由港麦克莫兰",
+   "code": "MU",
+   "name": "美光科技",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "600188.SS",
+   "name": "兖矿能源",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "reject",
    "kimi": "未验证",
-   "factpack_match": true
+   "factpack_match": false
+  },
+  {
+   "code": "1788.HK",
+   "name": "国泰君安国际",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "600222.SS",
+   "name": "太龙药业",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "600547.SS",
+   "name": "山东黄金",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "000100.SZ",
+   "name": "TCL科技",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "未验证",
+   "factpack_match": false
   }
  ],
  "blocked_by_rr": [
   {
-   "code": "CVX",
-   "name": "雪佛龙",
+   "code": "002458.SZ",
+   "name": "益生股份",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
-   "gpt": "reject",
+   "gpt": "不否定",
    "kimi": "未验证",
-   "factpack_match": true
+   "factpack_match": false
   },
   {
-   "code": "FCX",
-   "name": "自由港麦克莫兰",
+   "code": "MU",
+   "name": "美光科技",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "600188.SS",
+   "name": "兖矿能源",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "reject",
    "kimi": "未验证",
-   "factpack_match": true
+   "factpack_match": false
+  },
+  {
+   "code": "1788.HK",
+   "name": "国泰君安国际",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "600222.SS",
+   "name": "太龙药业",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "600547.SS",
+   "name": "山东黄金",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "000100.SZ",
+   "name": "TCL科技",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "未验证",
+   "factpack_match": false
   }
  ],
  "stats": {
   "sell": 0,
-  "watch": 6,
+  "watch": 7,
   "buy": 0,
   "buy_dual": 0,
-  "blocked": 2,
+  "blocked": 7,
   "blocked_by_rr": 0
  },
  "src_asof": {
-  "sell_grade": "2026-08-16 23:53（北京时间）",
-  "rank_score": "2026-08-16 23:53（北京时间）",
-  "classics_lens": "2026-08-16 21:47（北京时间）",
-  "anomaly_gate": "2026-08-16 21:46（北京时间）"
+  "sell_grade": "2026-08-18 12:13（北京时间）",
+  "rank_score": "2026-08-18 12:13（北京时间）",
+  "classics_lens": "2026-08-18 12:11（北京时间）",
+  "anomaly_gate": "2026-08-18 12:10（北京时间）"
  }
 }
