@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-19 21:28（北京时间）",
- "generated_at": "2026-08-19 21:28（北京时间）",
+ "asof": "2026-08-19 22:33（北京时间）",
+ "generated_at": "2026-08-19 22:33（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -16,9 +16,49 @@
  },
  "note": "V88标准规则闸:把历史会审异议固化成机检规则,名单出厂前先过这道闸——不达标的不进推荐位,转⏸未达标区并写明理由(用户定纲:'有异议的还摆在推荐位没有参考意义')。规则来自4个班次真实异议的归纳,非回测胜率;每条带rule_id,台账到期后双周深检算'被拦下的票后来表现如何'来修订阈值——规则错了要能被数据推翻。",
  "pass": {
-  "600903.SS": {
-   "code": "600903.SS",
-   "name": "贵州燃气",
+  "300046.SZ": {
+   "code": "300046.SZ",
+   "name": "台基股份",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "PSNY": {
+   "code": "PSNY",
+   "name": "极星汽车",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "600121.SS": {
+   "code": "600121.SS",
+   "name": "郑州煤电",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "NOC": {
+   "code": "NOC",
+   "name": "诺斯罗普",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "603071.SS": {
+   "code": "603071.SS",
+   "name": "物产环能",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -26,9 +66,49 @@
    "downgrade": "",
    "auto": true
   },
-  "2382.HK": {
-   "code": "2382.HK",
-   "name": "舜宇光学科技",
+  "300373.SZ": {
+   "code": "300373.SZ",
+   "name": "扬杰科技",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "600460.SS": {
+   "code": "600460.SS",
+   "name": "士兰微",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "001400.SZ": {
+   "code": "001400.SZ",
+   "name": "江顺科技",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "603290.SS": {
+   "code": "603290.SS",
+   "name": "斯达半导",
+   "side": "机会",
+   "action": "左侧低吸",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "0330.HK": {
+   "code": "0330.HK",
+   "name": "思捷环球",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -36,9 +116,9 @@
    "downgrade": "",
    "auto": true
   },
-  "300258.SZ": {
-   "code": "300258.SZ",
-   "name": "精锻科技",
+  "600707.SS": {
+   "code": "600707.SS",
+   "name": "彩虹股份",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -46,91 +126,51 @@
    "downgrade": "",
    "auto": true
   },
-  "600577.SS": {
-   "code": "600577.SS",
-   "name": "精达股份",
-   "side": "机会",
-   "action": "左侧低吸",
+  "300189.SZ": {
+   "code": "300189.SZ",
+   "name": "神农种业",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "000592.SZ": {
-   "code": "000592.SZ",
-   "name": "平潭发展",
-   "side": "机会",
-   "action": "左侧低吸",
+  "600206.SS": {
+   "code": "600206.SS",
+   "name": "有研新材",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "300724.SZ": {
-   "code": "300724.SZ",
-   "name": "捷佳伟创",
-   "side": "机会",
-   "action": "左侧低吸",
+  "000998.SZ": {
+   "code": "000998.SZ",
+   "name": "隆平高科",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "605255.SS": {
-   "code": "605255.SS",
-   "name": "天普股份",
-   "side": "机会",
-   "action": "现价可进",
+  "601952.SS": {
+   "code": "601952.SS",
+   "name": "苏垦农发",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "603112.SS": {
-   "code": "603112.SS",
-   "name": "华翔股份",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "300435.SZ": {
-   "code": "300435.SZ",
-   "name": "中泰股份",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "0728.HK": {
-   "code": "0728.HK",
-   "name": "中国电信",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "PLUG": {
-   "code": "PLUG",
-   "name": "Plug Power",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "301667.SZ": {
-   "code": "301667.SZ",
-   "name": "纳百川",
-   "side": "机会",
-   "action": "左侧低吸",
+  "000831.SZ": {
+   "code": "000831.SZ",
+   "name": "中国稀土",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -146,21 +186,21 @@
    "downgrade": "",
    "auto": true
   },
-  "1415.HK": {
-   "code": "1415.HK",
-   "name": "高伟电子",
+  "BNTX": {
+   "code": "BNTX",
+   "name": "BioNTech",
    "side": "打折",
-   "action": "🟢跌得很深·可分批买",
+   "action": "🟢打折到位·可开始买",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "ADBE": {
-   "code": "ADBE",
-   "name": "Adobe",
+  "RBA": {
+   "code": "RBA",
+   "name": "RB Global Inc",
    "side": "打折",
-   "action": "🟢跌得很深·可分批买",
+   "action": "🟢打折到位·可开始买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -186,11 +226,21 @@
    "downgrade": "",
    "auto": true
   },
-  "NOC": {
-   "code": "NOC",
-   "name": "诺斯罗普",
+  "MELI": {
+   "code": "MELI",
+   "name": "MercadoLibre",
    "side": "打折",
-   "action": "🟢打折到位·可开始买",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "603392.SS": {
+   "code": "603392.SS",
+   "name": "万泰生物",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -199,16 +249,6 @@
   "002756.SZ": {
    "code": "002756.SZ",
    "name": "永兴材料",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "300953.SZ": {
-   "code": "300953.SZ",
-   "name": "震裕科技",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -226,9 +266,9 @@
    "downgrade": "",
    "auto": true
   },
-  "IBM": {
-   "code": "IBM",
-   "name": "IBM",
+  "300953.SZ": {
+   "code": "300953.SZ",
+   "name": "震裕科技",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -236,11 +276,11 @@
    "downgrade": "",
    "auto": true
   },
-  "1138.HK": {
-   "code": "1138.HK",
-   "name": "中远海能",
+  "IBM": {
+   "code": "IBM",
+   "name": "IBM",
    "side": "打折",
-   "action": "🟢打折到位·可开始买",
+   "action": "🟢跌得很深·可分批买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -266,9 +306,9 @@
    "downgrade": "",
    "auto": true
   },
-  "605117.SS": {
-   "code": "605117.SS",
-   "name": "德业股份",
+  "600031.SS": {
+   "code": "600031.SS",
+   "name": "三一重工",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
    "rules": [],
@@ -276,9 +316,19 @@
    "downgrade": "",
    "auto": true
   },
-  "GS": {
-   "code": "GS",
-   "name": "高盛",
+  "300724.SZ": {
+   "code": "300724.SZ",
+   "name": "捷佳伟创",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "SLB": {
+   "code": "SLB",
+   "name": "斯伦贝谢",
    "side": "行业代表",
    "action": "",
    "rules": [],
@@ -306,9 +356,9 @@
    "downgrade": "",
    "auto": true
   },
-  "600938.SS": {
-   "code": "600938.SS",
-   "name": "中国海油",
+  "601857.SS": {
+   "code": "601857.SS",
+   "name": "中国石油",
    "side": "行业代表",
    "action": "",
    "rules": [],
@@ -316,9 +366,19 @@
    "downgrade": "",
    "auto": true
   },
-  "600893.SS": {
-   "code": "600893.SS",
-   "name": "航发动力",
+  "601398.SS": {
+   "code": "601398.SS",
+   "name": "工商银行",
+   "side": "行业代表",
+   "action": "",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "0857.HK": {
+   "code": "0857.HK",
+   "name": "中国石油股份",
    "side": "行业代表",
    "action": "",
    "rules": [],
@@ -339,12 +399,12 @@
  },
  "reject": {},
  "stats": {
-  "n_pass": 524,
+  "n_pass": 411,
   "n_reject": 57,
   "by_rule": {
-   "CS9": 1,
+   "CS9": 0,
    "CS1": 2,
-   "CS2": 3,
+   "CS2": 4,
    "CS3": 0,
    "CS4": 1,
    "CS5": 0,
