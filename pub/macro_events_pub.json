@@ -1,17 +1,31 @@
 {
- "generated_at": "2026-08-19 17:39（北京时间）",
+ "generated_at": "2026-08-18 07:26（北京时间）",
  "note": "宏观硬表(Fed/BLS/Census官方日历)+Nasdaq财报日历;接口降级会显式标注，不再把失败伪装成无事件(公开版:个股仅七巨头)",
  "source_status": {
   "official_hard_calendar": "ok",
   "nasdaq_earnings": "ok",
   "detail": {
-   "nasdaq_success": 7,
+   "nasdaq_success": 8,
    "nasdaq_fail": 0,
    "nonus_success": 12,
    "nonus_fail": 0
   }
  },
  "events": [
+  {
+   "date": "2026-08-18",
+   "dow": "二",
+   "event": "美国工业产出",
+   "kind": "宏观",
+   "note": "美东9:15·制造业景气"
+  },
+  {
+   "date": "2026-08-18",
+   "dow": "二",
+   "event": "美国新屋开工/营建许可",
+   "kind": "宏观",
+   "note": "美东8:30·地产与利率敏感"
+  },
   {
    "date": "2026-08-19",
    "dow": "三",
