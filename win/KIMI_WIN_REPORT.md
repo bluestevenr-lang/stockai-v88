@@ -167,7 +167,10 @@ TaskName         State
 --------           -----
 OpenClaw Gateway Ready
 === Gateway process ===
-     1388       1    1388      10204  ?         197609 00:04:18 /c/Users/admin/.openclaw/gateway.cmd
+（后台 `Bash` 任务运行超时后，已改用 `Start-Process -WindowStyle Hidden` 以脱离当前 shell 的方式重新拉起）
+cmd       17496  C:\WINDOWS\system32\cmd.exe  （gateway.cmd 包装进程）
+node      15568  C:\Program Files\nodejs\node.exe  （OpenClaw Gateway 主进程）
+日志确认：`agent model: moonshot/kimi-k3`、`gateway ready`、Moonshot API 请求 `status=200`。
 === Config validate ===
 Config valid: ~\.openclaw\openclaw.json
 === Agents ===
@@ -197,8 +200,8 @@ __OPENCLAW_REDACTED__
 | Moonshot `apiKey` | ✅ 已设置 | 由 OpenClaw 自动脱敏显示 |
 | `exec.mode` | ✅ `full` | 因 `allow` 不是有效枚举值，改用 `full` |
 | `openclaw config validate` | ✅ 通过 | - |
-| Gateway 进程 | ✅ 运行中 | PID 10204 |
-| 计划任务状态 | ⚠️ `Ready` | 未提升权限导致无法重注册为 S4U/开机延迟；任务未显示 Running，但 Gateway 进程已手动拉起并运行 |
+| Gateway 进程 | ✅ 运行中 | cmd PID 17496 + node PID 15568；日志显示 `gateway ready`、Moonshot `status=200` |
+| 计划任务状态 | ⚠️ `Ready` | 未提升权限导致无法重注册为 S4U/开机延迟；任务未显示 Running，但 Gateway 进程已通过 `Start-Process -WindowStyle Hidden` 脱离当前 shell 运行 |
 
 ---
 
