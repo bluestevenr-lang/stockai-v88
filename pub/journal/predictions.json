@@ -1,39 +1,5 @@
 [
  {
-  "id": "value_zone:先导智能:2026-08-05",
-  "date": "2026-08-05",
-  "kind": "value_zone",
-  "subject": "先导智能",
-  "market": "",
-  "prediction": "🟢跌得很深·可分批买:距2年高-49.1%·52周位21%·10年年化13.2%·该股历史9次同级回撤→6月后6涨3跌·中位+11.2%·最差-21.8%",
-  "horizon_end": "2027-02-04",
-  "confirm_price": null,
-  "direction": "up",
-  "prob": 67,
-  "source": "rule",
-  "status": "待核",
-  "rules_ver": "v1",
-  "extra": {
-   "code": "300450.SZ",
-   "base_price": 34.33,
-   "rule_ver": "vz-1.0",
-   "fwd": "6月"
-  },
-  "env": {
-   "market": "A股",
-   "temp": 47,
-   "p2w": 46,
-   "top_hit": 0,
-   "bottom_hit": 3,
-   "top_risk": 0,
-   "bottom_opp": 45,
-   "diverge": -83.3,
-   "regime": "neutral",
-   "topish": false,
-   "botish": false
-  }
- },
- {
   "id": "value_zone:Salesforce:2026-08-05",
   "date": "2026-08-05",
   "kind": "value_zone",
@@ -23074,7 +23040,9 @@
    "regime": "bull",
    "topish": false,
    "botish": false
-  }
+  },
+  "triggered": "2026-08-19",
+  "triggered_note": "第9天跌破116.71,现116.41"
  },
  {
   "id": "pre_sig:通用设备:2026-08-10",
@@ -34735,7 +34703,9 @@
    "regime": "bull",
    "topish": false,
    "botish": false
-  }
+  },
+  "triggered": "2026-08-19",
+  "triggered_note": "第7天跌破1.98,现1.97"
  },
  {
   "id": "turning:联想集团:2026-08-12",
@@ -51209,7 +51179,9 @@
    "regime": "bull",
    "topish": false,
    "botish": false
-  }
+  },
+  "triggered": "2026-08-19",
+  "triggered_note": "第3天跌破2.01,现1.97"
  },
  {
   "id": "turning:华晨中国:2026-08-16",
@@ -51440,7 +51412,9 @@
    "regime": "bull",
    "topish": false,
    "botish": false
-  }
+  },
+  "triggered": "2026-08-19",
+  "triggered_note": "第3天跌破2.68,现2.64"
  },
  {
   "id": "turning:Applovin:2026-08-16",
@@ -54399,7 +54373,9 @@
    "regime": "bull",
    "topish": false,
    "botish": false
-  }
+  },
+  "triggered": "2026-08-19",
+  "triggered_note": "第3天跌破2.01,现1.97"
  },
  {
   "id": "turning:华晨中国:2026-08-17",
@@ -57320,7 +57296,9 @@
    "regime": "bull",
    "topish": false,
    "botish": false
-  }
+  },
+  "triggered": "2026-08-19",
+  "triggered_note": "第3天跌破2.68,现2.64"
  },
  {
   "id": "turning:A股·半导体芯片板块:2026-08-17",
@@ -60204,7 +60182,9 @@
    "regime": "bull",
    "topish": false,
    "botish": false
-  }
+  },
+  "triggered": "2026-08-19",
+  "triggered_note": "第3天跌破2.01,现1.97"
  },
  {
   "id": "turning:标普500:2026-08-18",
@@ -60241,7 +60221,9 @@
    "regime": "bull",
    "topish": false,
    "botish": false
-  }
+  },
+  "triggered": "2026-08-19",
+  "triggered_note": "第3天跌破2.68,现2.64"
  },
  {
   "id": "turning:Unusual Machines Inc:2026-08-18",
@@ -62290,7 +62272,9 @@
    "regime": "neutral",
    "topish": false,
    "botish": false
-  }
+  },
+  "triggered": "2026-08-19",
+  "triggered_note": "第1天跌破92.65,现90.45"
  },
  {
   "id": "turning:特斯拉:2026-08-18",
@@ -65018,7 +65002,9 @@
    "regime": "neutral",
    "topish": false,
    "botish": false
-  }
+  },
+  "triggered": "2026-08-19",
+  "triggered_note": "第1天跌破92.65,现90.45"
  },
  {
   "id": "turning:Applovin:2026-08-19",
@@ -65203,7 +65189,9 @@
    "regime": "bull",
    "topish": false,
    "botish": false
-  }
+  },
+  "triggered": "2026-08-19",
+  "triggered_note": "第3天跌破2.68,现2.64"
  },
  {
   "id": "turning:山西汾酒:2026-08-19",
@@ -65843,6 +65831,35 @@
    "top_risk": 35,
    "bottom_opp": 12,
    "diverge": 65.7,
+   "regime": "neutral",
+   "topish": false,
+   "botish": false
+  }
+ },
+ {
+  "id": "mkt_rhythm:A股节奏:2026-08-19",
+  "date": "2026-08-19",
+  "kind": "mkt_rhythm",
+  "subject": "A股节奏",
+  "market": "A股",
+  "prediction": "反弹倾向55%·A_急跌反弹·今日-1.7%急跌——历史上跌出来的反弹窗",
+  "horizon_end": "2026-08-24",
+  "confirm_price": null,
+  "direction": "up",
+  "prob": 55,
+  "source": "rule",
+  "status": "待核",
+  "rules_ver": "v1",
+  "extra": {
+   "code": "000001.SS",
+   "base_price": 3939.67,
+   "rule_ver": "rhythm-1.0",
+   "fwd_days": 3
+  },
+  "env": {
+   "market": "A股",
+   "temp": 63,
+   "p2w": 54,
    "regime": "neutral",
    "topish": false,
    "botish": false
