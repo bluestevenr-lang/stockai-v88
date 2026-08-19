@@ -1,3 +1,3 @@
 @echo off
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0配置K3遥控.ps1"
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0setup_k3_remote.ps1"
 pause

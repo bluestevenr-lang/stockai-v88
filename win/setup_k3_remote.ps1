@@ -1,4 +1,4 @@
-# 配置K3遥控.ps1 —— 把 Win 的 v88-mobile 升级为: K3大脑 + V88遥控能力
+﻿# 配置K3遥控.ps1 —— 把 Win 的 v88-mobile 升级为: K3大脑 + V88遥控能力
 # 用法: 双击 "升级K3遥控-双击我.bat"，按提示粘贴 Moonshot API Key
 $ErrorActionPreference = 'Stop'
 function Log($m) { Write-Host "[K3升级] $m" -ForegroundColor Cyan }
