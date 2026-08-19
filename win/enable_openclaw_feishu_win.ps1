@@ -10,9 +10,16 @@ if ($confirm -ne 'CUTOVER') {
     exit 0
 }
 
-if (-not (Get-Command openclaw -ErrorAction SilentlyContinue)) {
-    throw '找不到 openclaw。请先运行安装OpenClaw-双击我.bat。'
+$Openclaw = (Get-Command openclaw -ErrorAction SilentlyContinue).Source
+if (-not $Openclaw) {
+    $cand = @(
+        (Join-Path $env:APPDATA 'npm\openclaw.cmd'),
+        (Join-Path $env:ProgramFiles 'nodejs\openclaw.cmd'),
+        (Join-Path ${env:ProgramFiles(x86)} 'nodejs\openclaw.cmd')
+    )
+    foreach ($c in $cand) { if (Test-Path $c) { $Openclaw = $c; break } }
 }
+if (-not $Openclaw) { throw '找不到 openclaw。请先运行安装OpenClaw-双击我.bat。' }
 
 $appId = (Read-Host '请输入飞书应用 App ID').Trim()
 if (-not $appId) { throw 'App ID 不能为空。' }
@@ -42,7 +49,7 @@ try {
         }
     }
     $json = $patch | ConvertTo-Json -Depth 12 -Compress
-    $json | & openclaw config patch --stdin
+    $json | & $Openclaw config patch --stdin
     if ($LASTEXITCODE -ne 0) { throw '写入飞书本机配置失败。' }
 } finally {
     $plainSecret = $null
@@ -51,15 +58,15 @@ try {
     }
 }
 
-& openclaw plugins enable feishu
+& $Openclaw plugins enable feishu
 if ($LASTEXITCODE -ne 0) { throw '启用飞书插件失败。' }
-& openclaw agents bind --agent v88-mobile --bind feishu:default
+& $Openclaw agents bind --agent v88-mobile --bind feishu:default
 if ($LASTEXITCODE -ne 0) { throw '绑定 v88-mobile 到飞书失败。' }
-& openclaw config validate
+& $Openclaw config validate
 if ($LASTEXITCODE -ne 0) { throw 'OpenClaw 配置校验失败。' }
-& openclaw gateway restart
+& $Openclaw gateway restart
 if ($LASTEXITCODE -ne 0) { throw 'Gateway 重启失败。' }
-& openclaw channels status --probe
+& $Openclaw channels status --probe
 
 Write-Host ''
 Write-Host 'Win 飞书网关已启用。现在从手机给机器人发一句“状态”。' -ForegroundColor Green

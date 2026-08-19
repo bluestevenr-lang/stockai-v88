@@ -1,13 +1,37 @@
-﻿# 配置K3遥控.ps1 —— 把 Win 的 v88-mobile 升级为: K3大脑 + V88遥控能力
-# 用法: 双击 "升级K3遥控-双击我.bat"，按提示粘贴 Moonshot API Key
+﻿# setup_k3_remote.ps1 —— 把 Win 的 v88-mobile 升级为: K3大脑 + V88遥控能力
+# 用法: 双击 "升级K3遥控-双击我.bat"，首次粘贴 Moonshot API Key；重复运行自动跳过已有配置
 $ErrorActionPreference = 'Stop'
 function Log($m) { Write-Host "[K3升级] $m" -ForegroundColor Cyan }
 
-# --- 1. 读取 Moonshot API Key（只写本机配置，永不入 git） ---
-$sec = Read-Host '请输入 Moonshot API Key（platform.moonshot.cn 的 API Key 管理页生成）' -AsSecureString
-$apiKey = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
-    [Runtime.InteropServices.Marshal]::SecureStringToBSTR($sec))
-if (-not $apiKey) { throw 'API Key 不能为空。' }
+# --- 0. 定位 openclaw CLI（新开的 cmd 窗口 PATH 里常常没有 npm 全局目录） ---
+$Openclaw = (Get-Command openclaw -ErrorAction SilentlyContinue).Source
+if (-not $Openclaw) {
+    $cand = @(
+        (Join-Path $env:APPDATA 'npm\openclaw.cmd'),
+        (Join-Path $env:ProgramFiles 'nodejs\openclaw.cmd'),
+        (Join-Path ${env:ProgramFiles(x86)} 'nodejs\openclaw.cmd')
+    )
+    $npm = (Get-Command npm -ErrorAction SilentlyContinue).Source
+    if ($npm) {
+        $prefix = (& npm prefix -g 2>$null)
+        if ($prefix) { $cand += (Join-Path $prefix 'openclaw.cmd') }
+    }
+    foreach ($c in $cand) { if ($c -and (Test-Path $c)) { $Openclaw = $c; break } }
+}
+if (-not $Openclaw) { throw '找不到 openclaw CLI。请先运行 安装OpenClaw-双击我.bat。' }
+Log "openclaw: $Openclaw"
+
+# --- 1. 读取/复用 Moonshot API Key（只写本机配置，永不入 git） ---
+$existing = & $Openclaw config get --json 2>$null | Out-String | ConvertFrom-Json
+$apiKey = $existing.models.providers.moonshot.apiKey
+if ($apiKey) {
+    Log '检测到已有 Moonshot Key，跳过输入。'
+} else {
+    $sec = Read-Host '请输入 Moonshot API Key（platform.moonshot.cn 的 API Key 管理页生成）' -AsSecureString
+    $apiKey = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
+        [Runtime.InteropServices.Marshal]::SecureStringToBSTR($sec))
+    if (-not $apiKey) { throw 'API Key 不能为空。' }
+}
 
 # --- 2. 下载 cloudflared（手机访问隧道的载体） ---
 $ToolsDir = Join-Path $env:USERPROFILE '.openclaw\tools'
@@ -27,12 +51,11 @@ $src = Join-Path $RepoRoot 'win\openclaw-v88\AGENTS.md'
 if (Test-Path $src) { Copy-Item $src (Join-Path $Workspace 'AGENTS.md') -Force; Log 'AGENTS.md 已更新。' }
 
 # --- 4. 定位 v88-mobile 代理索引 ---
-$agentsJson = (& openclaw agents list --json 2>$null) -join "`n"
+$agentsJson = (& $Openclaw agents list --json 2>$null) -join "`n"
 $agents = @($agentsJson | ConvertFrom-Json)
 if (-not ($agents | Where-Object { $_.id -eq 'v88-mobile' })) { throw '找不到 v88-mobile 代理，请先运行安装脚本。' }
-$cfg = & openclaw config get --json 2>$null | Out-String | ConvertFrom-Json
 $idx = -1
-for ($i=0; $i -lt $cfg.agents.list.Count; $i++) { if ($cfg.agents.list[$i].id -eq 'v88-mobile') { $idx = $i; break } }
+for ($i=0; $i -lt $existing.agents.list.Count; $i++) { if ($existing.agents.list[$i].id -eq 'v88-mobile') { $idx = $i; break } }
 if ($idx -lt 0) { throw '配置里找不到 v88-mobile 代理。' }
 
 # --- 5. 写入: K3模型 + moonshot密钥 + exec放行(仅限v88ctl) ---
@@ -72,10 +95,10 @@ $Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 [System.IO.File]::WriteAllText($BatchPath, ($Batch | ConvertTo-Json -Depth 20), $Utf8NoBom)
 try {
     Log '写入 K3 模型与遥控权限 ...'
-    & openclaw config set --batch-file $BatchPath | Out-Host
+    & $Openclaw config set --batch-file $BatchPath | Out-Host
     if ($LASTEXITCODE -ne 0) { throw "config set 失败 ($LASTEXITCODE)" }
 } finally { Remove-Item -Force $BatchPath -ErrorAction SilentlyContinue }
-& openclaw config validate | Out-Host
+& $Openclaw config validate | Out-Host
 
 # --- 6. 重启网关生效 ---
 Log '重启 OpenClaw 网关 ...'
