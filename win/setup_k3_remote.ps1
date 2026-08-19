@@ -3,22 +3,50 @@
 $ErrorActionPreference = 'Stop'
 function Log($m) { Write-Host "[K3升级] $m" -ForegroundColor Cyan }
 
-# --- 0. 定位 openclaw CLI（新开的 cmd 窗口 PATH 里常常没有 npm 全局目录） ---
+# --- 0. 定位 openclaw CLI ---
+# 0.1 新开窗口可能继承残缺 PATH：用注册表 Machine+User PATH 重建（与安装脚本同一招）
+$env:Path = "{0};{1}" -f [Environment]::GetEnvironmentVariable('Path','Machine'),
+                          [Environment]::GetEnvironmentVariable('Path','User')
 $Openclaw = (Get-Command openclaw -ErrorAction SilentlyContinue).Source
+
+# 0.2 常规与包管理器候选
+$cand = @(
+    "$env:APPDATA\npm\openclaw.cmd",
+    "$env:LOCALAPPDATA\npm\openclaw.cmd",
+    "$env:ProgramFiles\nodejs\openclaw.cmd",
+    "${env:ProgramFiles(x86)}\nodejs\openclaw.cmd",
+    "$env:LOCALAPPDATA\Volta\bin\openclaw.cmd"
+)
 if (-not $Openclaw) {
-    $cand = @(
-        (Join-Path $env:APPDATA 'npm\openclaw.cmd'),
-        (Join-Path $env:ProgramFiles 'nodejs\openclaw.cmd'),
-        (Join-Path ${env:ProgramFiles(x86)} 'nodejs\openclaw.cmd')
-    )
-    $npm = (Get-Command npm -ErrorAction SilentlyContinue).Source
-    if ($npm) {
-        $prefix = (& npm prefix -g 2>$null)
-        if ($prefix) { $cand += (Join-Path $prefix 'openclaw.cmd') }
-    }
-    foreach ($c in $cand) { if ($c -and (Test-Path $c)) { $Openclaw = $c; break } }
+    foreach ($c in $cand) { if (Test-Path $c) { $Openclaw = $c; break } }
 }
-if (-not $Openclaw) { throw '找不到 openclaw CLI。请先运行 安装OpenClaw-双击我.bat。' }
+
+# 0.3 从正在运行的网关反解：gateway.cmd 里写着 node/openclaw 的真实路径
+if (-not $Openclaw) {
+    $gw = Join-Path $env:USERPROFILE '.openclaw\gateway.cmd'
+    if (Test-Path $gw) {
+        $txt = Get-Content $gw -Raw
+        $mc = [regex]::Match($txt, '"([^"]+openclaw[^"]*?\.cmd)"')
+        if ($mc.Success -and (Test-Path $mc.Groups[1].Value)) {
+            $Openclaw = $mc.Groups[1].Value
+        } else {
+            $mm = [regex]::Matches($txt, '"([^"]+)"') | ForEach-Object { $_.Groups[1].Value }
+            $nodeExe = $mm | Where-Object { $_ -match 'node\.exe$' } | Select-Object -First 1
+            $cliJs   = $mm | Where-Object { $_ -match '\.js$' } | Select-Object -First 1
+            if ($nodeExe -and $cliJs -and (Test-Path $nodeExe) -and (Test-Path $cliJs)) {
+                $shim = Join-Path $env:TEMP 'openclaw-shim.cmd'
+                Set-Content -Path $shim -Value "@echo off`r`n`"$nodeExe`" `"$cliJs`" %*" -Encoding ascii
+                $Openclaw = $shim
+            }
+        }
+    }
+}
+if (-not $Openclaw) {
+    Write-Host '已搜索位置（请拍照发给 Kimi）：' -ForegroundColor Yellow
+    $cand | ForEach-Object { Write-Host "  $_" }
+    Write-Host "  $env:USERPROFILE\.openclaw\gateway.cmd（反解）"
+    throw '找不到 openclaw CLI。'
+}
 Log "openclaw: $Openclaw"
 
 # --- 1. 读取/复用 Moonshot API Key（只写本机配置，永不入 git） ---

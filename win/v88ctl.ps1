@@ -1,4 +1,4 @@
-# V88 遥控 wrapper —— OpenClaw 代理唯一允许执行的脚本
+﻿# V88 遥控 wrapper —— OpenClaw 代理唯一允许执行的脚本
 # 子命令: start(启动V88) / url(生成手机临时访问链接) / sync(git同步) / status(状态)
 param(
     [Parameter(Mandatory=$true)]

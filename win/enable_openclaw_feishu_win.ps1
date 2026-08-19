@@ -10,14 +10,37 @@ if ($confirm -ne 'CUTOVER') {
     exit 0
 }
 
+$env:Path = "{0};{1}" -f [Environment]::GetEnvironmentVariable('Path','Machine'),
+                          [Environment]::GetEnvironmentVariable('Path','User')
 $Openclaw = (Get-Command openclaw -ErrorAction SilentlyContinue).Source
 if (-not $Openclaw) {
     $cand = @(
-        (Join-Path $env:APPDATA 'npm\openclaw.cmd'),
-        (Join-Path $env:ProgramFiles 'nodejs\openclaw.cmd'),
-        (Join-Path ${env:ProgramFiles(x86)} 'nodejs\openclaw.cmd')
+        "$env:APPDATA\npm\openclaw.cmd",
+        "$env:LOCALAPPDATA\npm\openclaw.cmd",
+        "$env:ProgramFiles\nodejs\openclaw.cmd",
+        "${env:ProgramFiles(x86)}\nodejs\openclaw.cmd",
+        "$env:LOCALAPPDATA\Volta\bin\openclaw.cmd"
     )
     foreach ($c in $cand) { if (Test-Path $c) { $Openclaw = $c; break } }
+}
+if (-not $Openclaw) {
+    $gw = Join-Path $env:USERPROFILE '.openclaw\gateway.cmd'
+    if (Test-Path $gw) {
+        $txt = Get-Content $gw -Raw
+        $mc = [regex]::Match($txt, '"([^"]+openclaw[^"]*?\.cmd)"')
+        if ($mc.Success -and (Test-Path $mc.Groups[1].Value)) {
+            $Openclaw = $mc.Groups[1].Value
+        } else {
+            $mm = [regex]::Matches($txt, '"([^"]+)"') | ForEach-Object { $_.Groups[1].Value }
+            $nodeExe = $mm | Where-Object { $_ -match 'node\.exe$' } | Select-Object -First 1
+            $cliJs   = $mm | Where-Object { $_ -match '\.js$' } | Select-Object -First 1
+            if ($nodeExe -and $cliJs -and (Test-Path $nodeExe) -and (Test-Path $cliJs)) {
+                $shim = Join-Path $env:TEMP 'openclaw-shim.cmd'
+                Set-Content -Path $shim -Value "@echo off`r`n`"$nodeExe`" `"$cliJs`" %*" -Encoding ascii
+                $Openclaw = $shim
+            }
+        }
+    }
 }
 if (-not $Openclaw) { throw '找不到 openclaw。请先运行安装OpenClaw-双击我.bat。' }
 
