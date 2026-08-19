@@ -30,7 +30,15 @@ if (-not $Openclaw) {
         if ($mc.Success -and (Test-Path $mc.Groups[1].Value)) {
             $Openclaw = $mc.Groups[1].Value
         } else {
+            # 无引号路径兜底（C:\Users\admin 无空格时 gateway.cmd 可能不加引号）
+            $mc2 = [regex]::Match($txt, '([A-Za-z]:\\[^\s"]+openclaw[^\s"]*?\.cmd)')
+            if ($mc2.Success -and (Test-Path $mc2.Groups[1].Value)) {
+                $Openclaw = $mc2.Groups[1].Value
+            }
+        }
+        if (-not $Openclaw) {
             $mm = [regex]::Matches($txt, '"([^"]+)"') | ForEach-Object { $_.Groups[1].Value }
+            $mm += [regex]::Matches($txt, '([A-Za-z]:\\[^\s"]+\.(?:exe|js))') | ForEach-Object { $_.Groups[1].Value }
             $nodeExe = $mm | Where-Object { $_ -match 'node\.exe$' } | Select-Object -First 1
             $cliJs   = $mm | Where-Object { $_ -match '\.js$' } | Select-Object -First 1
             if ($nodeExe -and $cliJs -and (Test-Path $nodeExe) -and (Test-Path $cliJs)) {
