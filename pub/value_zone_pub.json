@@ -37,7 +37,6 @@
    "quality_status": "研究候选",
    "quality_reasons": [
     "可得历史仅4.0年<5年",
-    "GPT未完成当日正向复核",
     "Kimi未完成当日正向复核（双剑合璧缺一剑）"
    ],
    "canonical_name": "德明利",
@@ -82,14 +81,13 @@
    "push_eligible": false,
    "quality_status": "研究候选",
    "quality_reasons": [
-    "GPT未完成当日正向复核",
     "Kimi未完成当日正向复核（双剑合璧缺一剑）"
    ],
    "canonical_name": "新泉股份",
    "sample_n": 18,
    "win_rate": 83.0,
    "win_rate_lower95": 60.8,
-   "gpt_verdict": "不否定",
+   "gpt_verdict": "通过",
    "kimi_verdict": "不否定",
    "book_verdict": "通过",
    "probability_label": "该股历史条件频率（非保证）"
@@ -167,22 +165,20 @@
    "bt_line": "该股历史17次同级回撤→6月后14涨3跌·中位+22.2%·最差-23.2%",
    "verdict": "进",
    "turning_bottom": false,
-   "rules_gate": "未覆盖",
+   "rules_gate": "gate_pass",
    "gpt": "pass",
    "track": false,
    "display_eligible": true,
    "push_eligible": false,
    "quality_status": "研究候选",
    "quality_reasons": [
-    "规则闸未通过",
-    "GPT未完成当日正向复核",
     "Kimi未完成当日正向复核（双剑合璧缺一剑）"
    ],
    "canonical_name": "MercadoLibre",
    "sample_n": 17,
    "win_rate": 82.0,
    "win_rate_lower95": 59.0,
-   "gpt_verdict": "不可用",
+   "gpt_verdict": "通过",
    "kimi_verdict": "不否定",
    "book_verdict": "通过",
    "probability_label": "该股历史条件频率（非保证）"
@@ -257,7 +253,7 @@
    "bt_line": "该股历史5次同级回撤→6月后4涨1跌·中位+18.4%·最差-8.9%",
    "verdict": "进",
    "turning_bottom": false,
-   "rules_gate": "未覆盖",
+   "rules_gate": "gate_pass",
    "gpt": "未验证",
    "track": false,
    "display_eligible": true,
@@ -266,7 +262,6 @@
    "quality_reasons": [
     "历史样本仅5次<8",
     "胜率95%下限仅38%<50%",
-    "规则闸未通过",
     "GPT未完成当日正向复核",
     "Kimi未完成当日正向复核（双剑合璧缺一剑）"
    ],
@@ -274,7 +269,7 @@
    "sample_n": 5,
    "win_rate": 80.0,
    "win_rate_lower95": 37.6,
-   "gpt_verdict": "不可用",
+   "gpt_verdict": "不否定",
    "kimi_verdict": "不否定",
    "book_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）"
@@ -305,7 +300,7 @@
    "bt_line": "该股历史10次同级回撤→6月后8涨2跌·中位+39.6%·最差-2.3%",
    "verdict": "进",
    "turning_bottom": false,
-   "rules_gate": "未覆盖",
+   "rules_gate": "gate_pass",
    "gpt": "未验证",
    "track": false,
    "display_eligible": true,
@@ -313,15 +308,13 @@
    "quality_status": "研究候选",
    "quality_reasons": [
     "胜率95%下限仅49%<50%",
-    "规则闸未通过",
-    "GPT未完成当日正向复核",
     "Kimi未完成当日正向复核（双剑合璧缺一剑）"
    ],
    "canonical_name": "博通",
    "sample_n": 10,
    "win_rate": 80.0,
    "win_rate_lower95": 49.0,
-   "gpt_verdict": "不可用",
+   "gpt_verdict": "通过",
    "kimi_verdict": "不否定",
    "book_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）"
@@ -496,14 +489,13 @@
    "push_eligible": false,
    "quality_status": "观察/拦截",
    "quality_reasons": [
-    "GPT复核否决",
     "历史样本仅4次<5"
    ],
    "canonical_name": "德业股份",
    "sample_n": 4,
    "win_rate": 75.0,
    "win_rate_lower95": 30.1,
-   "gpt_verdict": "否决",
+   "gpt_verdict": "不否定",
    "kimi_verdict": "不否定",
    "book_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）"
@@ -580,7 +572,7 @@
    "bt_line": "该股历史4次同级回撤→6月后3涨1跌·中位+60.1%·最差-21.6%",
    "verdict": "进",
    "turning_bottom": false,
-   "rules_gate": "未覆盖",
+   "rules_gate": "gate_pass",
    "gpt": "pass",
    "track": false,
    "display_eligible": false,
@@ -593,7 +585,7 @@
    "sample_n": 4,
    "win_rate": 75.0,
    "win_rate_lower95": 30.1,
-   "gpt_verdict": "不可用",
+   "gpt_verdict": "不否定",
    "kimi_verdict": "不否定",
    "book_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）"
@@ -640,7 +632,7 @@
    "sample_n": 11,
    "win_rate": 73.0,
    "win_rate_lower95": 43.4,
-   "gpt_verdict": "不可用",
+   "gpt_verdict": "不否定",
    "kimi_verdict": "不可用",
    "book_verdict": "不可用",
    "probability_label": "该股历史条件频率（非保证）"
@@ -680,17 +672,21 @@
    "quality_reasons": [
     "历史样本仅7次<8",
     "胜率95%下限仅36%<50%",
-    "GPT未完成当日正向复核",
     "Kimi未完成当日正向复核（双剑合璧缺一剑）"
    ],
    "canonical_name": "星宇股份",
    "sample_n": 7,
    "win_rate": 71.0,
    "win_rate_lower95": 35.9,
-   "gpt_verdict": "不可用",
+   "gpt_verdict": "通过",
    "kimi_verdict": "不可用",
    "book_verdict": "不可用",
    "probability_label": "该股历史条件频率（非保证）"
   }
- ]
+ ],
+ "quality_gate": {
+  "version": "rqg-1.0",
+  "refreshed_at": "2026-08-19 23:31（北京时间）",
+  "rule": "展示与主动推送分离；不删原内容，未过闸降为研究/观察"
+ }
 }

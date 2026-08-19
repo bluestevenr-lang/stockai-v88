@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-19 23:00（北京时间）",
- "generated_at": "2026-08-19 23:00（北京时间）",
+ "asof": "2026-08-19 23:31（北京时间）",
+ "generated_at": "2026-08-19 23:31（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -116,9 +116,9 @@
    "downgrade": "",
    "auto": true
   },
-  "ADBE": {
-   "code": "ADBE",
-   "name": "Adobe",
+  "MELI": {
+   "code": "MELI",
+   "name": "MercadoLibre",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -126,9 +126,9 @@
    "downgrade": "",
    "auto": true
   },
-  "NOC": {
-   "code": "NOC",
-   "name": "诺斯罗普",
+  "AZO": {
+   "code": "AZO",
+   "name": "AutoZone",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
    "rules": [],
@@ -136,11 +136,11 @@
    "downgrade": "",
    "auto": true
   },
-  "002756.SZ": {
-   "code": "002756.SZ",
-   "name": "永兴材料",
+  "AVGO": {
+   "code": "AVGO",
+   "name": "博通",
    "side": "打折",
-   "action": "🟢跌得很深·可分批买",
+   "action": "🟢打折到位·可开始买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -160,15 +160,15 @@
    "code": "IBM",
    "name": "IBM",
    "side": "打折",
-   "action": "🟢跌得很深·可分批买",
+   "action": "🟢打折到位·可开始买",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "1138.HK": {
-   "code": "1138.HK",
-   "name": "中远海能",
+  "605117.SS": {
+   "code": "605117.SS",
+   "name": "德业股份",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
    "rules": [],
@@ -186,9 +186,9 @@
    "downgrade": "",
    "auto": true
   },
-  "3692.HK": {
-   "code": "3692.HK",
-   "name": "翰森制药",
+  "600031.SS": {
+   "code": "600031.SS",
+   "name": "三一重工",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
    "rules": [],
@@ -196,11 +196,11 @@
    "downgrade": "",
    "auto": true
   },
-  "605117.SS": {
-   "code": "605117.SS",
-   "name": "德业股份",
-   "side": "打折",
-   "action": "🟢打折到位·可开始买",
+  "NOC": {
+   "code": "NOC",
+   "name": "诺斯罗普",
+   "side": "行业代表",
+   "action": "",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -259,8 +259,8 @@
  },
  "reject": {},
  "stats": {
-  "n_pass": 1972,
-  "n_reject": 57,
+  "n_pass": 1969,
+  "n_reject": 60,
   "by_rule": {
    "CS9": 1,
    "CS1": 2,
@@ -268,7 +268,7 @@
    "CS3": 0,
    "CS4": 1,
    "CS5": 0,
-   "CS6": 50,
+   "CS6": 53,
    "CS7": 0,
    "CS8": 0
   }
