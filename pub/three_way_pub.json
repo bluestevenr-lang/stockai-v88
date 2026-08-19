@@ -1,13 +1,46 @@
 {
- "generated_at": "2026-08-19 23:31（北京时间）",
+ "generated_at": "2026-08-19 17:45（北京时间）",
  "version": "three-way-dual-cli-v3",
  "note": "V88规则闸 + GPT/Codex终审 + Kimi K3证据/反对票 + 经典书理。DeepSeek无席位。",
  "counts": {
-  "🟡存在不否定·只观察": 26,
-  "⚡有分歧/否决": 29,
-  "⏳审核未完整": 5
+  "⚡有分歧/否决": 20,
+  "🟡存在不否定·只观察": 21,
+  "⏳审核未完整": 9
  },
  "rows": [
+  {
+   "code": "NOC",
+   "name": "诺斯罗普",
+   "market": "美股",
+   "rule": {
+    "dir": "看多",
+    "prob": 66,
+    "action": "左侧低吸",
+    "rr": 4.61,
+    "pos52": 38.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "否决",
+    "why": "逻辑自相矛盾：左侧却称主升",
+    "at": "2026-08-10",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "不否定",
+    "why": "池内登记·蓄势·60日5.78%,无评级数据不推荐",
+    "at": "2026-08-17 00:55",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "未覆盖"
+   },
+   "consensus": "⚡有分歧/否决"
+  },
   {
    "code": "001400.SZ",
    "name": "江顺科技",
@@ -21,13 +54,13 @@
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "达标",
+    "verdict": "未覆盖",
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "否决",
-    "why": "今日涨停却称左侧低吸，存在追高",
-    "at": "2026-08-19 23:02（北京时间）",
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 21:45（北京时间）",
     "model": "gpt-5.6-sol"
    },
    "kimi": {
@@ -39,67 +72,133 @@
    "book": {
     "verdict": "未覆盖"
    },
-   "consensus": "⚡有分歧/否决"
+   "consensus": "⏳审核未完整"
   },
   {
-   "code": "603290.SS",
-   "name": "斯达半导",
+   "code": "600707.SS",
+   "name": "彩虹股份",
    "market": "A股",
    "rule": {
     "dir": "看多",
     "prob": 85,
     "action": "左侧低吸",
-    "rr": 2.57,
-    "pos52": 28.0,
+    "rr": 2.51,
+    "pos52": 38.0,
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "达标",
+    "verdict": "未覆盖",
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "否决",
-    "why": "今日涨停却称左侧低吸，存在追高",
-    "at": "2026-08-19 23:02（北京时间）",
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 21:45（北京时间）",
     "model": "gpt-5.6-sol"
    },
    "kimi": {
     "verdict": "不否定",
-    "why": "池内登记·蓄势·60日-28.43%,无评级数据不推荐",
+    "why": "池内登记·蓄势·60日-17.97%,无评级数据不推荐",
     "at": "2026-08-17 00:55",
     "model": "Kimi K3"
    },
    "book": {
     "verdict": "未覆盖"
    },
-   "consensus": "⚡有分歧/否决"
+   "consensus": "⏳审核未完整"
   },
   {
-   "code": "XXI",
-   "name": "Twenty One Capital Inc-A",
-   "market": "美股",
+   "code": "600460.SS",
+   "name": "士兰微",
+   "market": "A股",
    "rule": {
     "dir": "看多",
-    "prob": 76,
+    "prob": 81,
     "action": "左侧低吸",
-    "rr": 2.72,
-    "pos52": 4.0,
+    "rr": 2.94,
+    "pos52": 30.0,
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "达标",
+    "verdict": "未覆盖",
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "通过",
-    "why": "上行76%，盈亏比2.72，位置低",
-    "at": "2026-08-19 23:02（北京时间）",
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 21:45（北京时间）",
     "model": "gpt-5.6-sol"
    },
    "kimi": {
+    "verdict": "不否定",
+    "why": "池内登记·蓄势·60日6.12%,无评级数据不推荐",
+    "at": "2026-08-17 00:55",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "未覆盖"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "300373.SZ",
+   "name": "扬杰科技",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 74,
+    "action": "左侧低吸",
+    "rr": 3.33,
+    "pos52": 43.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
     "verdict": "未覆盖",
     "why": "",
-    "at": "2026-08-17 08:21（北京时间）",
+    "at": "2026-08-17 21:45（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "不否定",
+    "why": "池内登记·蓄势·60日24.19%,无评级数据不推荐",
+    "at": "2026-08-17 00:55",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "未覆盖"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "300046.SZ",
+   "name": "台基股份",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 71,
+    "action": "左侧低吸",
+    "rr": 5.03,
+    "pos52": 17.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 21:45（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "不否定",
+    "why": "池内登记·蓄势·60日-24.76%,无评级数据不推荐",
+    "at": "2026-08-17 00:55",
     "model": "Kimi K3"
    },
    "book": {
@@ -120,13 +219,13 @@
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "达标",
+    "verdict": "未覆盖",
     "source": "V88本地规则闸"
    },
    "gpt": {
     "verdict": "未覆盖",
     "why": "",
-    "at": "2026-08-19 23:02（北京时间）",
+    "at": "2026-08-17 21:45（北京时间）",
     "model": "gpt-5.6-sol"
    },
    "kimi": {
@@ -141,25 +240,25 @@
    "consensus": "⏳审核未完整"
   },
   {
-   "code": "000852.SZ",
-   "name": "石化机械",
-   "market": "A股",
+   "code": "0330.HK",
+   "name": "思捷环球",
+   "market": "港股",
    "rule": {
     "dir": "看多",
-    "prob": 62,
+    "prob": 65,
     "action": "现价可进",
-    "rr": 2.93,
-    "pos52": 12.0,
+    "rr": 3.33,
+    "pos52": 5.0,
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "达标",
+    "verdict": "未覆盖",
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "通过",
-    "why": "低位启动且盈亏比2.93",
-    "at": "2026-08-19 23:02（北京时间）",
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 21:45（北京时间）",
     "model": "gpt-5.6-sol"
    },
    "kimi": {
@@ -172,6 +271,105 @@
     "verdict": "未覆盖"
    },
    "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "PSNY",
+   "name": "极星汽车",
+   "market": "美股",
+   "rule": {
+    "dir": "看多",
+    "prob": 61,
+    "action": "左侧低吸",
+    "rr": 5.31,
+    "pos52": 9.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 21:45（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 08:21（北京时间）",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "未覆盖"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "600121.SS",
+   "name": "郑州煤电",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 61,
+    "action": "左侧低吸",
+    "rr": 5.05,
+    "pos52": 29.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "未覆盖",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 21:45（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "不否定",
+    "why": "池内登记·蓄势·60日-2.49%,无评级数据不推荐",
+    "at": "2026-08-17 00:55",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "未覆盖"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "603290.SS",
+   "name": "斯达半导",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 85,
+    "action": "左侧低吸",
+    "rr": 2.57,
+    "pos52": 28.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 21:45（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "不否定",
+    "why": "池内登记·蓄势·60日-28.43%,无评级数据不推荐",
+    "at": "2026-08-17 00:55",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "未覆盖"
+   },
+   "consensus": "🟡存在不否定·只观察"
   },
   {
    "code": "002543.SZ",
@@ -190,212 +388,14 @@
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "通过",
-    "why": "上行84%，盈亏比2.75，优势明确",
-    "at": "2026-08-19 23:02（北京时间）",
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 21:45（北京时间）",
     "model": "gpt-5.6-sol"
    },
    "kimi": {
     "verdict": "不否定",
     "why": "池内登记·急跌·60日-7.78%,无评级数据不推荐",
-    "at": "2026-08-17 00:55",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "🟡存在不否定·只观察"
-  },
-  {
-   "code": "300373.SZ",
-   "name": "扬杰科技",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 74,
-    "action": "左侧低吸",
-    "rr": 3.33,
-    "pos52": 43.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "通过",
-    "why": "盈亏比3.33，期望优势2.2",
-    "at": "2026-08-19 23:02（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "不否定",
-    "why": "池内登记·蓄势·60日24.19%,无评级数据不推荐",
-    "at": "2026-08-17 00:55",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "🟡存在不否定·只观察"
-  },
-  {
-   "code": "300046.SZ",
-   "name": "台基股份",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 71,
-    "action": "左侧低吸",
-    "rr": 5.03,
-    "pos52": 17.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "通过",
-    "why": "盈亏比5.03，期望优势3.28",
-    "at": "2026-08-19 23:02（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "不否定",
-    "why": "池内登记·蓄势·60日-24.76%,无评级数据不推荐",
-    "at": "2026-08-17 00:55",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "🟡存在不否定·只观察"
-  },
-  {
-   "code": "1691.HK",
-   "name": "JS环球生活",
-   "market": "港股",
-   "rule": {
-    "dir": "看多",
-    "prob": 62,
-    "action": "不进",
-    "rr": 3.13,
-    "pos52": 19.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "不否定",
-    "why": "入场明确不进，未见标的反证",
-    "at": "2026-08-19 23:02（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-17 08:21（北京时间）",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "🟡存在不否定·只观察"
-  },
-  {
-   "code": "600121.SS",
-   "name": "郑州煤电",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 61,
-    "action": "左侧低吸",
-    "rr": 5.05,
-    "pos52": 29.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "通过",
-    "why": "低位启动且盈亏比5.05",
-    "at": "2026-08-19 23:02（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "不否定",
-    "why": "池内登记·蓄势·60日-2.49%,无评级数据不推荐",
-    "at": "2026-08-17 00:55",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "🟡存在不否定·只观察"
-  },
-  {
-   "code": "CRWV",
-   "name": "CoreWeave Inc-A",
-   "market": "美股",
-   "rule": {
-    "dir": "看多",
-    "prob": 61,
-    "action": "现价可进",
-    "rr": 2.66,
-    "pos52": 32.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "通过",
-    "why": "放量启动且盈亏比2.66",
-    "at": "2026-08-19 23:02（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "不否定",
-    "why": "池内登记·蓄势·60日5.46%,无评级数据不推荐",
-    "at": "2026-08-17 00:55",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "🟡存在不否定·只观察"
-  },
-  {
-   "code": "QCOM",
-   "name": "高通",
-   "market": "美股",
-   "rule": {
-    "dir": "看多",
-    "prob": 60,
-    "action": "左侧低吸",
-    "rr": 6.81,
-    "pos52": 30.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "达标",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "通过",
-    "why": "低位放量且盈亏比6.81",
-    "at": "2026-08-19 23:02（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "不否定",
-    "why": "池内登记·蓄势·60日-14.84%,无评级数据不推荐",
     "at": "2026-08-17 00:55",
     "model": "Kimi K3"
    },

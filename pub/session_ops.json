@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-19 23:12（北京时间）",
+ "generated_at": "2026-08-17 00:27（北京时间）",
  "version": "sessionops-v1",
  "ruleset_version": "v4.2",
  "gates_in_force": [
@@ -28,162 +28,140 @@
    "code": "GOOG",
    "name": "谷歌C",
    "level": "-2A",
-   "last": 342.64,
-   "stop": 337.52,
-   "dist_stop_pct": 1.5,
-   "sell_zone": "跌破337.52执行(距+1.5%)",
+   "last": 343.54,
+   "stop": 339.82,
+   "dist_stop_pct": 1.1,
+   "sell_zone": "跌破339.82执行(距+1.1%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 337.52 执行"
+   "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 339.82 执行"
   },
   {
-   "code": "MO",
-   "name": "奥驰亚",
+   "code": "AAPL",
+   "name": "苹果",
    "level": "-1A",
-   "last": 65.415,
-   "stop": 63.92,
-   "dist_stop_pct": 2.3,
-   "sell_zone": "跌破63.92执行(距+2.3%)",
+   "last": 305.93,
+   "stop": 300.57,
+   "dist_stop_pct": 1.8,
+   "sell_zone": "跌破300.57执行(距+1.8%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 63.92 执行"
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 300.57 执行"
   },
   {
    "code": "SO",
    "name": "美国南方公司",
    "level": "-1A",
-   "last": 92.33,
-   "stop": 90.284,
-   "dist_stop_pct": 2.3,
-   "sell_zone": "跌破90.28执行(距+2.3%)",
+   "last": 92.8,
+   "stop": 91.03,
+   "dist_stop_pct": 1.9,
+   "sell_zone": "跌破91.03执行(距+1.9%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 90.284 执行"
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 91.03 执行"
   },
   {
-   "code": "APP",
-   "name": "Applovin",
+   "code": "MO",
+   "name": "奥驰亚",
    "level": "-1A",
-   "last": 311.663,
-   "stop": 303.17,
-   "dist_stop_pct": 2.8,
-   "sell_zone": "跌破303.17执行(距+2.8%)",
+   "last": 65.7,
+   "stop": 64.34,
+   "dist_stop_pct": 2.1,
+   "sell_zone": "跌破64.34执行(距+2.1%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 303.17 执行"
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 64.34 执行"
   },
   {
    "code": "PM",
    "name": "菲利普莫里斯",
    "level": "-1A",
-   "last": 189.1,
+   "last": 190.39,
    "stop": 184.02,
-   "dist_stop_pct": 2.8,
-   "sell_zone": "跌破184.02执行(距+2.8%)",
+   "dist_stop_pct": 3.5,
+   "sell_zone": "跌破184.02执行(距+3.5%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
    "action": "⚪守线待触发",
    "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 184.02 执行"
+  },
+  {
+   "code": "APP",
+   "name": "Applovin",
+   "level": "-1A",
+   "last": 315.44,
+   "stop": 303.17,
+   "dist_stop_pct": 4.0,
+   "sell_zone": "跌破303.17执行(距+4.0%)",
+   "c123": "①②",
+   "frozen": true,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①②；且有未解释异动，重动作已冻结（止损不受影响） → 不主动卖，跌破 303.17 执行"
   }
  ],
  "buy": [],
  "blocked": [
   {
-   "code": "CAH",
-   "name": "卡地纳健康",
+   "code": "CVX",
+   "name": "雪佛龙",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "reject",
    "kimi": "未验证",
-   "factpack_match": false
+   "factpack_match": true
   },
   {
-   "code": "DELL",
-   "name": "戴尔科技",
+   "code": "FCX",
+   "name": "自由港麦克莫兰",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "reject",
    "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "BABA",
-   "name": "阿里巴巴",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "CSX",
-   "name": "CSX运输",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": false
+   "factpack_match": true
   }
  ],
  "blocked_by_rr": [
   {
-   "code": "CAH",
-   "name": "卡地纳健康",
+   "code": "CVX",
+   "name": "雪佛龙",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "reject",
    "kimi": "未验证",
-   "factpack_match": false
+   "factpack_match": true
   },
   {
-   "code": "DELL",
-   "name": "戴尔科技",
+   "code": "FCX",
+   "name": "自由港麦克莫兰",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "reject",
    "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "BABA",
-   "name": "阿里巴巴",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "CSX",
-   "name": "CSX运输",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": false
+   "factpack_match": true
   }
  ],
  "stats": {
   "sell": 0,
-  "watch": 5,
+  "watch": 6,
   "buy": 0,
   "buy_dual": 0,
-  "blocked": 4,
+  "blocked": 2,
   "blocked_by_rr": 0
  },
  "src_asof": {
-  "sell_grade": "2026-08-19 23:06（北京时间）",
-  "rank_score": "2026-08-19 23:06（北京时间）",
-  "classics_lens": "2026-08-19 23:02（北京时间）",
-  "anomaly_gate": "2026-08-19 23:01（北京时间）"
+  "sell_grade": "2026-08-16 23:53（北京时间）",
+  "rank_score": "2026-08-16 23:53（北京时间）",
+  "classics_lens": "2026-08-16 21:47（北京时间）",
+  "anomaly_gate": "2026-08-16 21:46（北京时间）"
  }
 }

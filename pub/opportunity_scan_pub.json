@@ -1,31 +1,8 @@
 {
- "generated_at": "2026-08-19 21:38（北京时间）",
- "note": "全市场逆势机会扫描:四路候选(全池转强低位/涨停接力/行业代表/黑马)→实跑112只→严格标准(赔率≥2.0·52周位≤55%·规则上行估计≥60%·期望优势≥0.35·启动型)→过环境闸;exec=可执行或逆势通道小仓试,blocked=技术合格但环境不许;全量入台账攒战绩",
- "studied": 112,
+ "generated_at": "2026-08-20 06:02（北京时间）",
+ "note": "全市场逆势机会扫描:四路候选(全池转强低位/涨停接力/行业代表/黑马)→实跑122只→严格标准(赔率≥2.0·52周位≤55%·规则上行估计≥60%·期望优势≥0.35·启动型)→过环境闸;exec=可执行或逆势通道小仓试,blocked=技术合格但环境不许;全量入台账攒战绩",
+ "studied": 122,
  "exec": [
-  {
-   "code": "QCOM",
-   "name": "高通",
-   "last": 163.2,
-   "rr": 6.81,
-   "p_up": 60,
-   "pos52": 30.0,
-   "stage": "启动确认",
-   "tech_mode": "左侧低吸",
-   "expected_edge": 3.69,
-   "probability_label": "规则上行估计（非胜率）",
-   "buy_zone": "161.50~163.20",
-   "stop": 142.89,
-   "source": "全市场·拐点抢筹·60日-30%但今日+3.2%·量比5.25",
-   "exec_action": "左侧低吸·半仓",
-   "exception": null,
-   "block_reasons": [
-    "08-19FOMC(提示:临近波动放大)"
-   ],
-   "push_eligible": false,
-   "sector": "💻 科技",
-   "crowd": "⚠️与另4只同属💻 科技=一个因子"
-  },
   {
    "code": "300046.SZ",
    "name": "台基股份",
@@ -40,12 +17,10 @@
    "buy_zone": "23.93~26.14",
    "stop": 21.95,
    "source": "全市场·拐点抢筹·60日-21%但今日+3.2%·量比3.35",
-   "exec_action": "左侧低吸·半仓",
+   "exec_action": "左侧低吸·标准仓",
    "exception": null,
    "block_reasons": [],
-   "push_eligible": true,
-   "sector": "🛒 消费",
-   "crowd": "⚠️与另7只同属🛒 消费=一个因子"
+   "push_eligible": true
   },
   {
    "code": "600121.SS",
@@ -61,12 +36,31 @@
    "buy_zone": "3.90~4.17",
    "stop": 3.47,
    "source": "全市场·短线异动·量比3.28·换手13.66%·60日+2%",
-   "exec_action": "左侧低吸·半仓",
+   "exec_action": "左侧低吸·标准仓",
    "exception": null,
    "block_reasons": [],
-   "push_eligible": false,
-   "sector": "🛒 消费",
-   "crowd": "⚠️与另7只同属🛒 消费=一个因子"
+   "push_eligible": false
+  },
+  {
+   "code": "PLUG",
+   "name": "Plug Power",
+   "last": 2.25,
+   "rr": 3.75,
+   "p_up": 69,
+   "pos52": 26.0,
+   "stage": "启动确认",
+   "tech_mode": "现价可进",
+   "expected_edge": 2.28,
+   "probability_label": "规则上行估计（非胜率）",
+   "buy_zone": "2.14~2.25",
+   "stop": 1.86,
+   "source": "全池转强·52周29%",
+   "exec_action": "现价可进·半仓",
+   "exception": null,
+   "block_reasons": [
+    "08-19FOMC(提示:临近波动放大)"
+   ],
+   "push_eligible": true
   },
   {
    "code": "603071.SS",
@@ -82,33 +76,10 @@
    "buy_zone": "12.07~12.44",
    "stop": 11.53,
    "source": "全市场·短线异动·量比4.04·换手2.77%·60日-4%",
-   "exec_action": "现价可进·半仓",
+   "exec_action": "现价可进·标准仓",
    "exception": null,
    "block_reasons": [],
-   "push_eligible": true,
-   "sector": "🛒 消费",
-   "crowd": "⚠️与另7只同属🛒 消费=一个因子"
-  },
-  {
-   "code": "300373.SZ",
-   "name": "扬杰科技",
-   "last": 101.49,
-   "rr": 3.33,
-   "p_up": 74,
-   "pos52": 43.0,
-   "stage": "启动确认",
-   "tech_mode": "左侧低吸",
-   "expected_edge": 2.2,
-   "probability_label": "规则上行估计（非胜率）",
-   "buy_zone": "92.32~101.49",
-   "stop": 79.63,
-   "source": "全市场·短线异动·量比2.52·换手6.05%·60日+4%",
-   "exec_action": "左侧低吸·半仓",
-   "exception": null,
-   "block_reasons": [],
-   "push_eligible": true,
-   "sector": "💻 科技",
-   "crowd": "⚠️与另4只同属💻 科技=一个因子"
+   "push_eligible": true
   },
   {
    "code": "002543.SZ",
@@ -124,12 +95,31 @@
    "buy_zone": "6.74~7.57",
    "stop": 6.24,
    "source": "全市场·短线异动·量比2.53·换手5.29%·60日+0%",
-   "exec_action": "左侧低吸·半仓",
+   "exec_action": "左侧低吸·标准仓",
    "exception": null,
    "block_reasons": [],
-   "push_eligible": true,
-   "sector": "🛒 消费",
-   "crowd": "⚠️与另7只同属🛒 消费=一个因子"
+   "push_eligible": true
+  },
+  {
+   "code": "MSTR",
+   "name": "Strategy Inc-A",
+   "last": 104.25,
+   "rr": 3.31,
+   "p_up": 69,
+   "pos52": 8.0,
+   "stage": "启动确认",
+   "tech_mode": "左侧低吸",
+   "expected_edge": 1.97,
+   "probability_label": "规则上行估计（非胜率）",
+   "buy_zone": "96.25~104.25",
+   "stop": 89.21,
+   "source": "全市场·拐点抢筹·60日-35%但今日+12.7%·量比2.7",
+   "exec_action": "左侧低吸·半仓",
+   "exception": null,
+   "block_reasons": [
+    "08-19FOMC(提示:临近波动放大)"
+   ],
+   "push_eligible": true
   },
   {
    "code": "001400.SZ",
@@ -145,12 +135,10 @@
    "buy_zone": "72.84~85.94",
    "stop": 61.05,
    "source": "全市场·拐点抢筹·60日-25%但今日+10.0%·量比4.6",
-   "exec_action": "左侧低吸·半仓",
+   "exec_action": "左侧低吸·标准仓",
    "exception": null,
    "block_reasons": [],
-   "push_eligible": true,
-   "sector": "💻 科技",
-   "crowd": "⚠️与另4只同属💻 科技=一个因子"
+   "push_eligible": true
   },
   {
    "code": "603290.SS",
@@ -166,34 +154,31 @@
    "buy_zone": "85.95~100.31",
    "stop": 77.21,
    "source": "全市场·拐点抢筹·60日-24%但今日+10.0%·量比3.4",
-   "exec_action": "左侧低吸·半仓",
+   "exec_action": "左侧低吸·标准仓",
    "exception": null,
    "block_reasons": [],
-   "push_eligible": true,
-   "sector": "🛒 消费",
-   "crowd": "⚠️与另7只同属🛒 消费=一个因子"
+   "push_eligible": true
   },
   {
-   "code": "XXI",
-   "name": "Twenty One Capital Inc-A",
-   "last": 5.04,
-   "rr": 2.72,
-   "p_up": 76,
-   "pos52": 4.0,
+   "code": "0330.HK",
+   "name": "思捷环球",
+   "last": 0.5,
+   "rr": 3.33,
+   "p_up": 65,
+   "pos52": 5.0,
    "stage": "启动确认",
-   "tech_mode": "左侧低吸",
-   "expected_edge": 1.83,
+   "tech_mode": "现价可进",
+   "expected_edge": 1.81,
    "probability_label": "规则上行估计（非胜率）",
-   "buy_zone": "4.59~5.04",
-   "stop": 4.15,
-   "source": "全市场·拐点抢筹·60日-31%但今日+4.1%·量比3.98",
-   "exec_action": "左侧低吸·半仓",
+   "buy_zone": "0.50~0.50",
+   "stop": 0.44,
+   "source": "全池转强·52周7%",
+   "exec_action": "现价可进·1/3仓",
    "exception": null,
    "block_reasons": [
     "08-19FOMC(提示:临近波动放大)"
    ],
-   "push_eligible": true,
-   "sector": "💰 金融"
+   "push_eligible": true
   },
   {
    "code": "1691.HK",
@@ -212,9 +197,7 @@
    "exec_action": "不进",
    "exception": null,
    "block_reasons": [],
-   "push_eligible": false,
-   "sector": "🛒 消费",
-   "crowd": "⚠️与另7只同属🛒 消费=一个因子"
+   "push_eligible": false
   },
   {
    "code": "000852.SZ",
@@ -230,34 +213,31 @@
    "buy_zone": "5.29~5.38",
    "stop": 4.95,
    "source": "全市场·短线异动·量比4.05·换手5.53%·60日-12%",
-   "exec_action": "现价可进·半仓",
+   "exec_action": "现价可进·标准仓",
    "exception": null,
    "block_reasons": [],
-   "push_eligible": false,
-   "sector": "🏭 工业"
+   "push_eligible": false
   },
   {
-   "code": "CRWV",
-   "name": "CoreWeave Inc-A",
-   "last": 90.4,
-   "rr": 2.66,
-   "p_up": 61,
-   "pos52": 32.0,
+   "code": "3900.HK",
+   "name": "绿城中国",
+   "last": 7.64,
+   "rr": 2.72,
+   "p_up": 66,
+   "pos52": 24.0,
    "stage": "启动确认",
    "tech_mode": "现价可进",
-   "expected_edge": 1.23,
+   "expected_edge": 1.46,
    "probability_label": "规则上行估计（非胜率）",
-   "buy_zone": "86.42~90.40",
-   "stop": 60.55,
-   "source": "全市场·短线异动·量比4.67·换手0.88%·60日-13%",
-   "exec_action": "现价可进·半仓",
+   "buy_zone": "7.35~7.64",
+   "stop": 6.84,
+   "source": "全池转强·52周22%",
+   "exec_action": "现价可进·1/3仓",
    "exception": null,
    "block_reasons": [
     "08-19FOMC(提示:临近波动放大)"
    ],
-   "push_eligible": false,
-   "sector": "🛒 消费",
-   "crowd": "⚠️与另7只同属🛒 消费=一个因子"
+   "push_eligible": true
   }
  ],
  "blocked": []
