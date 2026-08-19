@@ -26,7 +26,7 @@ taskkill /f /fi "WINDOWTITLE eq V88-Streamlit*" >nul 2>&1
 
 cd /d "%STOCKAI%"
 echo [V88-Win] 启动 V88（端口8501，首次加载约1-2分钟）...
-start "V88-Streamlit" /min python -m streamlit run app_v88_integrated.py ^
+start "V88-Streamlit" /min py -3 -m streamlit run app_v88_integrated.py ^
   --server.address 127.0.0.1 --server.headless true --server.port 8501 ^
   --server.enableCORS false --server.enableXsrfProtection false ^
   --browser.gatherUsageStats false

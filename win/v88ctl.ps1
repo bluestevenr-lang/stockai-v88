@@ -1,4 +1,4 @@
-﻿# V88 遥控 wrapper —— OpenClaw 代理唯一允许执行的脚本
+# V88 遥控 wrapper —— OpenClaw 代理唯一允许执行的脚本
 # 子命令: start(启动V88) / url(生成手机临时访问链接) / sync(git同步) / status(状态)
 param(
     [Parameter(Mandatory=$true)]
@@ -22,8 +22,8 @@ function Start-V88 {
     if (Test-V88Up) { Write-Output 'V88 已在运行 (http://127.0.0.1:8501)'; return }
     $app = Join-Path $RepoRoot 'app_v88_integrated.py'
     if (-not (Test-Path $app)) { throw "找不到 $app" }
-    Start-Process python -WindowStyle Minimized -WorkingDirectory $RepoRoot -ArgumentList @(
-        '-m','streamlit','run','app_v88_integrated.py',
+    Start-Process py -WindowStyle Minimized -WorkingDirectory $RepoRoot -ArgumentList @(
+        '-3','-m','streamlit','run','app_v88_integrated.py',
         '--server.address','127.0.0.1','--server.headless','true','--server.port','8501'
     )
     Write-Output 'V88 启动中（首次加载约1-2分钟）...'
