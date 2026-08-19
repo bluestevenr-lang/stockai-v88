@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-20 05:57（北京时间）",
- "generated_at": "2026-08-20 05:57（北京时间）",
+ "asof": "2026-08-20 07:32（北京时间）",
+ "generated_at": "2026-08-20 07:32（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -26,16 +26,6 @@
    "downgrade": "",
    "auto": true
   },
-  "PSNY": {
-   "code": "PSNY",
-   "name": "极星汽车",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "600121.SS": {
    "code": "600121.SS",
    "name": "郑州煤电",
@@ -46,11 +36,11 @@
    "downgrade": "",
    "auto": true
   },
-  "NOC": {
-   "code": "NOC",
-   "name": "诺斯罗普",
+  "PLUG": {
+   "code": "PLUG",
+   "name": "Plug Power",
    "side": "机会",
-   "action": "左侧低吸",
+   "action": "现价可进",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -61,26 +51,6 @@
    "name": "物产环能",
    "side": "机会",
    "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "300373.SZ": {
-   "code": "300373.SZ",
-   "name": "扬杰科技",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "600460.SS": {
-   "code": "600460.SS",
-   "name": "士兰微",
-   "side": "机会",
-   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -116,19 +86,49 @@
    "downgrade": "",
    "auto": true
   },
-  "600707.SS": {
-   "code": "600707.SS",
-   "name": "彩虹股份",
+  "1691.HK": {
+   "code": "1691.HK",
+   "name": "JS环球生活",
    "side": "机会",
-   "action": "左侧低吸",
+   "action": "不进",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "300189.SZ": {
-   "code": "300189.SZ",
-   "name": "神农种业",
+  "000852.SZ": {
+   "code": "000852.SZ",
+   "name": "石化机械",
+   "side": "机会",
+   "action": "现价可进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "3900.HK": {
+   "code": "3900.HK",
+   "name": "绿城中国",
+   "side": "机会",
+   "action": "现价可进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "600371.SS": {
+   "code": "600371.SS",
+   "name": "万向德农",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "600313.SS": {
+   "code": "600313.SS",
+   "name": "农发种业",
    "side": "趋势",
    "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
@@ -146,9 +146,9 @@
    "downgrade": "",
    "auto": true
   },
-  "000998.SZ": {
-   "code": "000998.SZ",
-   "name": "隆平高科",
+  "002040.SZ": {
+   "code": "002040.SZ",
+   "name": "南京港",
    "side": "趋势",
    "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
@@ -156,19 +156,9 @@
    "downgrade": "",
    "auto": true
   },
-  "601952.SS": {
-   "code": "601952.SS",
-   "name": "苏垦农发",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "000831.SZ": {
-   "code": "000831.SZ",
-   "name": "中国稀土",
+  "601015.SS": {
+   "code": "601015.SS",
+   "name": "陕西黑猫",
    "side": "趋势",
    "action": "🟢现在可买(涨势刚起,买得最早)",
    "rules": [],
@@ -181,26 +171,6 @@
    "name": "德明利",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "BNTX": {
-   "code": "BNTX",
-   "name": "BioNTech",
-   "side": "打折",
-   "action": "🟢打折到位·可开始买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "RBA": {
-   "code": "RBA",
-   "name": "RB Global Inc",
-   "side": "打折",
-   "action": "🟢打折到位·可开始买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -230,7 +200,17 @@
    "code": "MELI",
    "name": "MercadoLibre",
    "side": "打折",
-   "action": "🟢跌得很深·可分批买",
+   "action": "🟢打折到位·可开始买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "000338.SZ": {
+   "code": "000338.SZ",
+   "name": "潍柴动力",
+   "side": "打折",
+   "action": "🕐还不够便宜·先看着",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -256,16 +236,6 @@
    "downgrade": "",
    "auto": true
   },
-  "002460.SZ": {
-   "code": "002460.SZ",
-   "name": "赣锋锂业",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "300953.SZ": {
    "code": "300953.SZ",
    "name": "震裕科技",
@@ -276,9 +246,9 @@
    "downgrade": "",
    "auto": true
   },
-  "IBM": {
-   "code": "IBM",
-   "name": "IBM",
+  "002460.SZ": {
+   "code": "002460.SZ",
+   "name": "赣锋锂业",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -286,9 +256,9 @@
    "downgrade": "",
    "auto": true
   },
-  "LOW": {
-   "code": "LOW",
-   "name": "劳氏",
+  "IBM": {
+   "code": "IBM",
+   "name": "IBM",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
    "rules": [],
@@ -306,6 +276,26 @@
    "downgrade": "",
    "auto": true
   },
+  "LOW": {
+   "code": "LOW",
+   "name": "劳氏",
+   "side": "打折",
+   "action": "🟢打折到位·可开始买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "605117.SS": {
+   "code": "605117.SS",
+   "name": "德业股份",
+   "side": "打折",
+   "action": "🟢打折到位·可开始买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "600031.SS": {
    "code": "600031.SS",
    "name": "三一重工",
@@ -316,9 +306,9 @@
    "downgrade": "",
    "auto": true
   },
-  "300724.SZ": {
-   "code": "300724.SZ",
-   "name": "捷佳伟创",
+  "002240.SZ": {
+   "code": "002240.SZ",
+   "name": "盛新锂能",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -336,9 +326,19 @@
    "downgrade": "",
    "auto": true
   },
-  "COST": {
-   "code": "COST",
-   "name": "开市客",
+  "NOC": {
+   "code": "NOC",
+   "name": "诺斯罗普",
+   "side": "行业代表",
+   "action": "",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "WMT": {
+   "code": "WMT",
+   "name": "沃尔玛",
    "side": "行业代表",
    "action": "",
    "rules": [],
