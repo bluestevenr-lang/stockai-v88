@@ -1,0 +1,59 @@
+{
+  "agents": {
+    "list": [
+      {
+        "id": "main"
+      },
+      {
+        "id": "v88-mobile",
+        "name": "v88-mobile",
+        "workspace": "C:\\Users\\admin\\.openclaw\\workspaces\\v88-mobile",
+        "agentDir": "C:\\Users\\admin\\.openclaw\\agents\\v88-mobile\\agent",
+        "model": "moonshot/kimi-k3",
+        "tools": {
+          "profile": "coding",
+          "allow": [
+            "read",
+            "exec",
+            "process",
+            "message"
+          ],
+          "deny": [
+            "write",
+            "edit",
+            "apply_patch",
+            "browser",
+            "web_search",
+            "web_fetch",
+            "sessions_spawn",
+            "sessions_send",
+            "cron",
+            "gateway",
+            "nodes",
+            "computer"
+          ],
+          "codeMode": false,
+          "elevated": {
+            "enabled": false
+          },
+          "exec": {
+            "mode": "full"
+          },
+          "fs": {
+            "workspaceOnly": false
+          },
+          "message": {
+            "allowCrossContextSend": false,
+            "crossContext": {
+              "allowWithinProvider": false,
+              "allowAcrossProviders": false
+            },
+            "broadcast": {
+              "enabled": false
+            }
+          }
+        }
+      }
+    ]
+  }
+}
