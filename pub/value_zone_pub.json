@@ -165,7 +165,7 @@
    "bt_line": "该股历史6次同级回撤→6月后5涨1跌·中位+11.9%·最差-2.2%",
    "verdict": "进",
    "turning_bottom": false,
-   "rules_gate": "未覆盖",
+   "rules_gate": "gate_pass",
    "gpt": "未验证",
    "track": false,
    "display_eligible": false,
@@ -216,13 +216,14 @@
    "push_eligible": false,
    "quality_status": "研究候选",
    "quality_reasons": [
+    "GPT未完成当日正向复核",
     "Kimi未完成当日正向复核（双剑合璧缺一剑）"
    ],
    "canonical_name": "MercadoLibre",
    "sample_n": 17,
    "win_rate": 82.0,
    "win_rate_lower95": 59.0,
-   "gpt_verdict": "通过",
+   "gpt_verdict": "不否定",
    "kimi_verdict": "不否定",
    "book_verdict": "通过",
    "probability_label": "该股历史条件频率（非保证）"
@@ -306,14 +307,13 @@
    "quality_reasons": [
     "历史样本仅5次<8",
     "胜率95%下限仅38%<50%",
-    "GPT未完成当日正向复核",
     "Kimi未完成当日正向复核（双剑合璧缺一剑）"
    ],
    "canonical_name": "AutoZone",
    "sample_n": 5,
    "win_rate": 80.0,
    "win_rate_lower95": 37.6,
-   "gpt_verdict": "不否定",
+   "gpt_verdict": "通过",
    "kimi_verdict": "不否定",
    "book_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）"
@@ -443,14 +443,13 @@
    "quality_status": "研究候选",
    "quality_reasons": [
     "胜率95%下限仅41%<50%",
-    "GPT未完成当日正向复核",
     "Kimi未完成当日正向复核（双剑合璧缺一剑）"
    ],
    "canonical_name": "赣锋锂业",
    "sample_n": 8,
    "win_rate": 75.0,
    "win_rate_lower95": 40.9,
-   "gpt_verdict": "不否定",
+   "gpt_verdict": "通过",
    "kimi_verdict": "不否定",
    "book_verdict": "通过",
    "probability_label": "该股历史条件频率（非保证）"
@@ -489,13 +488,14 @@
    "quality_status": "观察/拦截",
    "quality_reasons": [
     "代码或名称缺失",
+    "GPT复核否决",
     "历史样本仅4次<5"
    ],
    "canonical_name": "",
    "sample_n": 4,
    "win_rate": 75.0,
    "win_rate_lower95": 30.1,
-   "gpt_verdict": "不否定",
+   "gpt_verdict": "否决",
    "kimi_verdict": "不否定",
    "book_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）"
@@ -534,14 +534,13 @@
    "quality_status": "研究候选",
    "quality_reasons": [
     "胜率95%下限仅41%<50%",
-    "GPT未完成当日正向复核",
     "Kimi未完成当日正向复核（双剑合璧缺一剑）"
    ],
    "canonical_name": "劳氏",
    "sample_n": 8,
    "win_rate": 75.0,
    "win_rate_lower95": 40.9,
-   "gpt_verdict": "不否定",
+   "gpt_verdict": "通过",
    "kimi_verdict": "不否定",
    "book_verdict": "不否定",
    "probability_label": "该股历史条件频率（非保证）"
@@ -663,23 +662,25 @@
    "rules_gate": "gate_pass",
    "gpt": "未验证",
    "track": false,
-   "display_eligible": true,
+   "display_eligible": false,
    "push_eligible": false,
-   "quality_status": "研究候选",
+   "quality_status": "观察/拦截",
    "quality_reasons": [
-    "胜率95%下限仅43%<50%",
-    "历史最差-41.5%",
-    "GPT未完成当日正向复核",
-    "Kimi未完成当日正向复核（双剑合璧缺一剑）"
+    "GPT复核否决"
    ],
    "canonical_name": "盛新锂能",
    "sample_n": 11,
    "win_rate": 73.0,
    "win_rate_lower95": 43.4,
-   "gpt_verdict": "不否定",
+   "gpt_verdict": "否决",
    "kimi_verdict": "不可用",
    "book_verdict": "不可用",
    "probability_label": "该股历史条件频率（非保证）"
   }
- ]
+ ],
+ "quality_gate": {
+  "version": "rqg-1.0",
+  "refreshed_at": "2026-08-20 13:58（北京时间）",
+  "rule": "展示与主动推送分离；不删原内容，未过闸降为研究/观察"
+ }
 }

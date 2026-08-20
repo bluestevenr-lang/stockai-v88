@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-20 09:41（北京时间）",
- "generated_at": "2026-08-20 09:41（北京时间）",
+ "asof": "2026-08-20 13:58（北京时间）",
+ "generated_at": "2026-08-20 13:58（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -20,25 +20,15 @@
    "code": "300046.SZ",
    "name": "台基股份",
    "side": "机会",
-   "action": "左侧低吸",
+   "action": "现价可进",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "600121.SS": {
-   "code": "600121.SS",
-   "name": "郑州煤电",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "MSTR": {
-   "code": "MSTR",
-   "name": "Strategy Inc-A",
+  "603290.SS": {
+   "code": "603290.SS",
+   "name": "斯达半导",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -56,9 +46,19 @@
    "downgrade": "",
    "auto": true
   },
-  "603290.SS": {
-   "code": "603290.SS",
-   "name": "斯达半导",
+  "000723.SZ": {
+   "code": "000723.SZ",
+   "name": "美锦能源",
+   "side": "机会",
+   "action": "现价可进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "MSTR": {
+   "code": "MSTR",
+   "name": "Strategy Inc-A",
    "side": "机会",
    "action": "左侧低吸",
    "rules": [],
@@ -66,9 +66,9 @@
    "downgrade": "",
    "auto": true
   },
-  "0728.HK": {
-   "code": "0728.HK",
-   "name": "中国电信",
+  "600108.SS": {
+   "code": "600108.SS",
+   "name": "亚盛集团",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -86,6 +86,16 @@
    "downgrade": "",
    "auto": true
   },
+  "601008.SS": {
+   "code": "601008.SS",
+   "name": "连云港",
+   "side": "机会",
+   "action": "不进",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "COIN": {
    "code": "COIN",
    "name": "Coinbase",
@@ -96,11 +106,31 @@
    "downgrade": "",
    "auto": true
   },
+  "1787.HK": {
+   "code": "1787.HK",
+   "name": "山东黄金",
+   "side": "趋势",
+   "action": "🟢现在可买(涨势刚起,买得最早)",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "PG": {
+   "code": "PG",
+   "name": "宝洁",
+   "side": "打折",
+   "action": "🕐还不够便宜·先看着",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "MELI": {
    "code": "MELI",
    "name": "MercadoLibre",
    "side": "打折",
-   "action": "🟢跌得很深·可分批买",
+   "action": "🟢打折到位·可开始买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -110,7 +140,7 @@
    "code": "AZO",
    "name": "AutoZone",
    "side": "打折",
-   "action": "🟢打折到位·可开始买",
+   "action": "🟢跌得很深·可分批买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -136,9 +166,9 @@
    "downgrade": "",
    "auto": true
   },
-  "605117.SS": {
-   "code": "605117.SS",
-   "name": "德业股份",
+  "LOW": {
+   "code": "LOW",
+   "name": "劳氏",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
    "rules": [],
@@ -146,9 +176,9 @@
    "downgrade": "",
    "auto": true
   },
-  "LOW": {
-   "code": "LOW",
-   "name": "劳氏",
+  "605117.SS": {
+   "code": "605117.SS",
+   "name": "德业股份",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
    "rules": [],
@@ -249,16 +279,16 @@
  },
  "reject": {},
  "stats": {
-  "n_pass": 2051,
-  "n_reject": 63,
+  "n_pass": 2043,
+  "n_reject": 74,
   "by_rule": {
    "CS9": 2,
    "CS1": 2,
-   "CS2": 4,
+   "CS2": 7,
    "CS3": 0,
-   "CS4": 1,
+   "CS4": 0,
    "CS5": 0,
-   "CS6": 54,
+   "CS6": 63,
    "CS7": 0,
    "CS8": 0
   }
