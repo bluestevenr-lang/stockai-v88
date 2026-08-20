@@ -61,3 +61,10 @@ Agent: v88-mobile   Model: moonshot/kimi-k3
 - 修复：规则改为**不区分大小写**；exec 命令改为短包装 `k3ask`（`C:\Users\admin\bin\k3ask.bat`，已入库 win/k3ask.bat），杜绝长路径被 agent 缩写成 `~` 导致 exec 失败；规则同时写入**包模板**与工作区，还原也不再丢。
 - 自测：`openclaw agent --agent v88-mobile -m "特斯拉现在能买吗 k3回答"` → 正确返回【K3 首席分析师】+ K3 原生答复；会话结束后规则仍存活（grep=1）。
 - 待用户在飞书复测确认。
+
+## 追记（2026-08-20 17:0x）：k3_ask v2——注入 V88 快照数据 + 名称别名修复
+- 用户批评：K3 答复满是"无法获取实时数据"，且页脚 Model 仍 kimi-k2.7-code 与【K3 首席分析师】矛盾。
+- k3_ask.py v2：答题前自动注入脱敏快照——overview.json（投影/各源时间戳、decision_semantics）+ 问题命中个股 ≤4 只全文（find_stocks：显式代码>名称索引>二字滑窗>扫文件兜底，含停用词表防"港股"误命中 3110.HK）+ 关键词触发模块（默认 tomorrow_plan_pub/three_way_pub，单文件截 8KB）。提示词要求只用快照数字、缺字段明说"快照无此数据"；答复尾部自带签名行"答复模型: kimi-k3｜数据快照: <时间>｜命中个股: …"并注明页脚是接待员签名。
+- 根因修复（小米搜不到）：投影脚本名称回退到代码本身（`or code`），1810.HK 快照 name 即 "1810.HK"。修复：sync_v88_projection_win.py 加载仓库根 stock_names.json（8208 条 {n,c,m}），归一港股前导零（01810.HK→1810.HK），主名取最长、别名全量进 name_index（"小米"→1810.HK）；顺手去掉 zoneinfo 依赖（托管 Python 缺 tzdata，改固定 UTC+8）。
+- 验证：投影重跑 2465 只 ok；`k3ask 港股小米能买么` 命中 1810.HK，答复引用真实 Kimi verdict「不否定·蓄势·60日-16.38%」并 fail-closed 落闸；openclaw 端到端「苹果现在能买吗 k3回答」返回【K3 首席分析师】+ AAPL 快照数据 + 签名行齐全。
+- AGENTS.md（包模板+工作区）新增直达规则第 4 条：页脚 Model 是接待员固定签名改不了，K3 答复以正文签名行为准。

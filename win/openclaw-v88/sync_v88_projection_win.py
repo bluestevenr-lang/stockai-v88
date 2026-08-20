@@ -8,9 +8,11 @@ import json
 import os
 import re
 import tempfile
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from zoneinfo import ZoneInfo
+
+# 北京时间固定 UTC+8；不用 zoneinfo，避免部分 Python 环境缺 tzdata 直接崩
+CST = timezone(timedelta(hours=8))
 
 
 PUBLIC_MODULES = (
@@ -144,6 +146,35 @@ def atomic_json(path: Path, value) -> None:
             os.unlink(temp_name)
 
 
+def norm_code(code: str) -> str:
+    """归一代码：港股去前导零（01810.HK→1810.HK），其余原样大写。"""
+    c = str(code).strip().upper()
+    m = re.match(r"^(\d+)\.(HK|SS|SZ)$", c)
+    if m and m.group(2) == "HK":
+        return f"{int(m.group(1))}.HK"
+    return c
+
+
+def load_stock_names():
+    """从仓库根 stock_names.json 加载 主名/别名 映射（归一代码为键）。"""
+    names_path = Path(__file__).resolve().parents[2] / "stock_names.json"
+    primary, aliases = {}, {}
+    for entry in read_json(names_path, []):
+        if not isinstance(entry, dict):
+            continue
+        n, c = str(entry.get("n", "")).strip(), entry.get("c", "")
+        if not n or not c:
+            continue
+        key = norm_code(c)
+        aliases.setdefault(key, [])
+        if n not in aliases[key]:
+            aliases[key].append(n)
+    for key, names in aliases.items():
+        # 主名取最长（"小米集团-W" 优于 "小米"），其余全留作别名
+        primary[key] = max(names, key=len)
+    return primary, aliases
+
+
 def build(source: Path, destination: Path) -> int:
     required = ("gpt_verify.json", "kimi_verify.json", "three_way_pub.json")
     missing = [name for name in required if not (source / name).is_file()]
@@ -162,7 +193,7 @@ def build(source: Path, destination: Path) -> int:
     triad_rows = rows_map(triad)
     classics_rows = rows_map(classics)
     codes = sorted(set(gpt_rows) | set(kimi_rows) | set(triad_rows) | set(classics_rows))
-    generated = datetime.now(ZoneInfo("Asia/Shanghai")).strftime(
+    generated = datetime.now(CST).strftime(
         "%Y-%m-%d %H:%M:%S（北京时间）"
     )
 
@@ -206,6 +237,7 @@ def build(source: Path, destination: Path) -> int:
 
     name_index = {}
     stock_documents = {}
+    names_primary, names_aliases = load_stock_names()
     for code in codes:
         gpt_row = pick(gpt_rows.get(code), GPT_FIELDS)
         kimi_row = pick(kimi_rows.get(code), KIMI_FIELDS)
@@ -215,9 +247,16 @@ def build(source: Path, destination: Path) -> int:
             triad_row.get("name")
             or gpt_row.get("name")
             or classics_row.get("name")
+            or names_primary.get(norm_code(code))
             or code
         )
         name_index.setdefault(str(name), []).append(code)
+        # 别名也进索引（如 "小米"→1810.HK），避免快照缺名时搜不到
+        for alias in names_aliases.get(norm_code(code), []):
+            if alias != name:
+                name_index.setdefault(alias, [])
+                if code not in name_index[alias]:
+                    name_index[alias].append(code)
         stock_documents[code] = {
             "code": code,
             "name": name,
