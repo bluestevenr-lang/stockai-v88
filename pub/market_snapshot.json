@@ -1,6 +1,6 @@
 {
   "schema_version": "v88.snapshot/2.0",
-  "snapshot_id": "snap-644c3b0c048dca0f",
+  "snapshot_id": "snap-c3f93a808bb8b17b",
   "rotation_forecast": {
     "schema_version": "v88.rotation/1.4",
     "snapshot_id": "snap-d2f1f6e79f057bfe",
@@ -4890,7 +4890,7 @@
       }
     ]
   },
-  "generated_at": "2026-08-20 16:28",
+  "generated_at": "2026-08-20 17:05",
   "markets": {
     "美股": {
       "indices": [
@@ -4934,14 +4934,14 @@
           "last": 53463.05,
           "chg1d": 0.22,
           "chg5d": -0.57,
-          "chg20d": 2.52,
-          "vs_ma20": 0.57,
-          "vs_ma60": 2.57,
+          "chg20d": 2.38,
+          "vs_ma20": 0.51,
+          "vs_ma60": 2.38,
           "trend": "📈 多头排列",
-          "vol_ratio": 0.89,
+          "vol_ratio": 0.86,
           "px_pct": 85.0,
-          "vol_pct": 10.7,
-          "diverge": 74.3,
+          "vol_pct": 10.2,
+          "diverge": 74.8,
           "turning": "",
           "turning_prompt": ""
         }
@@ -4971,14 +4971,14 @@
           "last": 111.32,
           "chg1d": 0.76,
           "chg5d": 0.95,
-          "chg20d": 0.47,
-          "vs_ma20": 1.09,
-          "vs_ma60": 0.45,
+          "chg20d": 1.94,
+          "vs_ma20": 1.13,
+          "vs_ma60": 0.65,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 0.71,
-          "px_pct": 58.3,
-          "vol_pct": 1.8,
-          "diverge": 56.5,
+          "vol_ratio": 0.7,
+          "px_pct": 61.7,
+          "vol_pct": 1.7,
+          "diverge": 60.0,
           "turning": "",
           "turning_prompt": "",
           "heat": 39
@@ -5151,7 +5151,7 @@
         "trend": 100,
         "breadth": 73,
         "momentum": 43,
-        "vol_heat": 37,
+        "vol_heat": 36,
         "label": "🟢 偏暖",
         "position": "65-80%",
         "verdict": "🟡 中性震荡·跟随主线轮动"
@@ -5173,7 +5173,7 @@
           {
             "key": "量价背离",
             "hit": true,
-            "text": "价格分位77.2／量分位14.3＝背离+62.9"
+            "text": "价格分位77.2／量分位14.1＝背离+63.1"
           },
           {
             "key": "广度钝化",
@@ -5183,7 +5183,7 @@
           {
             "key": "动量衰竭",
             "hit": false,
-            "text": "20日+3.02%但5日仅-0.69%"
+            "text": "20日+2.97%但5日仅-0.69%"
           },
           {
             "key": "估值高位",
@@ -5210,7 +5210,7 @@
           {
             "key": "放量杀跌",
             "hit": false,
-            "text": "价格分位77.2／量分位14.3＝背离+62.9"
+            "text": "价格分位77.2／量分位14.1＝背离+63.1"
           },
           {
             "key": "广度极低",
@@ -5220,7 +5220,7 @@
           {
             "key": "深度超跌",
             "hit": false,
-            "text": "20日+3.02%"
+            "text": "20日+2.97%"
           },
           {
             "key": "估值低位",
@@ -5243,8 +5243,8 @@
         "bottom_hit": 0,
         "bottom_na": 1,
         "px_pct": 77.2,
-        "vol_pct": 14.3,
-        "diverge": 62.9,
+        "vol_pct": 14.1,
+        "diverge": 63.1,
         "breadth_full_days": 0,
         "note": "样本<5不给概率(铁律2)——只报命中条数,⬜=数据源缺失非未命中"
       },
@@ -5263,7 +5263,7 @@
           ],
           [
             "8周",
-            58
+            57
           ],
           [
             "16周",
@@ -5849,19 +5849,19 @@
           ],
           [
             "4周",
-            51
+            53
           ],
           [
             "8周",
-            67
+            65
           ],
           [
             "16周",
-            47
+            45
           ],
           [
             "32周",
-            43
+            44
           ]
         ]
       }
