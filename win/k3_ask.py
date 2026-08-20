@@ -67,7 +67,7 @@ def main():
             {"role": "system", "content": SYSTEM},
             {"role": "user", "content": q},
         ],
-        "temperature": 0.3,
+        "temperature": 1,
     }).encode("utf-8")
 
     req = urllib.request.Request(
