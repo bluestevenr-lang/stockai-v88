@@ -7,6 +7,19 @@
 
 纪律沿用任务书#1（密钥永不入 git；bat 纯 ASCII；ps1 带 BOM；不动 data/）。
 
+## 0. 死机恢复自查（本任务书整体幂等，可重复执行；2026-08-20 13:00 机器已死机重启过一次，上次中断，从本步重跑）
+
+```bash
+OC="/c/Users/admin/AppData/Roaming/npm/openclaw.cmd"
+"$OC" gateway status || "$OC" gateway start
+# 确认配置在不在（密钥应该已注入过，死机不丢配置）
+grep -c "moonshot\|cli_a9256edcc93b9bd2" ~/.openclaw/openclaw.json
+```
+
+- grep 计数 ≥2：配置完好，直接进第 1 步。
+- 计数不足：说明上次连密钥都没写完，先按任务书#1 的密钥注入段补齐（Moonshot key 问用户要一次）再继续。
+- 网关若没在跑，start 之后等 5 秒再继续。
+
 ## 1. 启用飞书通道（非交互，别跑那个带 Read-Host 的 ps1，会卡死）
 
 参考 `win/enable_openclaw_feishu_win.ps1` 的配置结构，直接执行：
