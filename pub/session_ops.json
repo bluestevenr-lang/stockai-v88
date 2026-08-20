@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-20 13:52（北京时间）",
+ "generated_at": "2026-08-20 15:09（北京时间）",
  "version": "sessionops-v1",
  "ruleset_version": "v4.2",
  "gates_in_force": [
@@ -12,7 +12,7 @@
   "铁律21·不许静默吞错",
   "铁律18·成本标注"
  ],
- "market": "美股",
+ "market": "全部",
  "declaration": "**本场唯一结论源**：对话回答与 V88 页面渲染均引用本文件，逐字一致。全部字段取自落盘（sell_grade/rank_score/classics_lens/anomaly_gate/holdings_fundamentals），零现场推理。",
  "rules": [
   "-3A 才是立即卖；-2A 一律守线待触发并写明触发价",
@@ -24,6 +24,34 @@
  ],
  "sell": [],
  "watch": [
+  {
+   "code": "600809.SS",
+   "name": "山西汾酒",
+   "level": "-1A",
+   "last": 118.45,
+   "stop": 117.7,
+   "dist_stop_pct": 0.6,
+   "sell_zone": "跌破117.70执行(距+0.6%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 117.7 执行"
+  },
+  {
+   "code": "000783.SZ",
+   "name": "长江证券",
+   "level": "-1A",
+   "last": 8.57,
+   "stop": 8.465,
+   "dist_stop_pct": 1.2,
+   "sell_zone": "跌破8.46执行(距+1.2%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 8.465 执行"
+  },
   {
    "code": "GOOG",
    "name": "谷歌C",
@@ -98,56 +126,272 @@
  "buy": [],
  "blocked": [
   {
-   "code": "NTAP",
-   "name": "美国网存",
+   "code": "000100.SZ",
+   "name": "TCL科技",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
-   "gpt": "reject",
+   "gpt": "未验证",
    "kimi": "未验证",
    "factpack_match": false
   },
   {
-   "code": "FXI",
-   "name": "中国大型股ETF-iShares",
+   "code": "300832.SZ",
+   "name": "新产业",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
-   "gpt": "reject",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "AEM",
+   "name": "伊格尔矿业",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "AU",
+   "name": "AngloGold Ashanti plc",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "3606.HK",
+   "name": "福耀玻璃",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "WPM",
+   "name": "惠顿贵金属",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "600222.SS",
+   "name": "太龙药业",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "601579.SS",
+   "name": "会稽山",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "300841.SZ",
+   "name": "康华生物",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "EMR",
+   "name": "艾默生电气",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "600660.SS",
+   "name": "福耀玻璃",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "002040.SZ",
+   "name": "南 京 港",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "3692.HK",
+   "name": "翰森制药",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "MMM",
+   "name": "3M公司",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
    "kimi": "未验证",
    "factpack_match": false
   }
  ],
  "blocked_by_rr": [
   {
-   "code": "NTAP",
-   "name": "美国网存",
+   "code": "000100.SZ",
+   "name": "TCL科技",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
-   "gpt": "reject",
+   "gpt": "未验证",
    "kimi": "未验证",
    "factpack_match": false
   },
   {
-   "code": "FXI",
-   "name": "中国大型股ETF-iShares",
+   "code": "300832.SZ",
+   "name": "新产业",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
-   "gpt": "reject",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "AEM",
+   "name": "伊格尔矿业",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "AU",
+   "name": "AngloGold Ashanti plc",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "3606.HK",
+   "name": "福耀玻璃",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "WPM",
+   "name": "惠顿贵金属",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "600222.SS",
+   "name": "太龙药业",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "601579.SS",
+   "name": "会稽山",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "300841.SZ",
+   "name": "康华生物",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "EMR",
+   "name": "艾默生电气",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "600660.SS",
+   "name": "福耀玻璃",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "002040.SZ",
+   "name": "南 京 港",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "3692.HK",
+   "name": "翰森制药",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "MMM",
+   "name": "3M公司",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "未验证",
    "kimi": "未验证",
    "factpack_match": false
   }
  ],
  "stats": {
   "sell": 0,
-  "watch": 5,
+  "watch": 7,
   "buy": 0,
   "buy_dual": 0,
-  "blocked": 2,
+  "blocked": 14,
   "blocked_by_rr": 0
  },
  "src_asof": {
-  "sell_grade": "2026-08-20 09:44（北京时间）",
-  "rank_score": "2026-08-20 09:44（北京时间）",
-  "classics_lens": "2026-08-20 09:42（北京时间）",
-  "anomaly_gate": "2026-08-20 09:42（北京时间）"
+  "sell_grade": "2026-08-20 15:08（北京时间）",
+  "rank_score": "2026-08-20 15:08（北京时间）",
+  "classics_lens": "2026-08-20 14:40（北京时间）",
+  "anomaly_gate": "2026-08-20 14:40（北京时间）"
  }
 }

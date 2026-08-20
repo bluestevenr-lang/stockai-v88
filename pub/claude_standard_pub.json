@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-20 13:58（北京时间）",
- "generated_at": "2026-08-20 13:58（北京时间）",
+ "asof": "2026-08-20 14:39（北京时间）",
+ "generated_at": "2026-08-20 14:39（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -16,39 +16,9 @@
  },
  "note": "V88标准规则闸:把历史会审异议固化成机检规则,名单出厂前先过这道闸——不达标的不进推荐位,转⏸未达标区并写明理由(用户定纲:'有异议的还摆在推荐位没有参考意义')。规则来自4个班次真实异议的归纳,非回测胜率;每条带rule_id,台账到期后双周深检算'被拦下的票后来表现如何'来修订阈值——规则错了要能被数据推翻。",
  "pass": {
-  "300046.SZ": {
-   "code": "300046.SZ",
-   "name": "台基股份",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "603290.SS": {
-   "code": "603290.SS",
-   "name": "斯达半导",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "001400.SZ": {
-   "code": "001400.SZ",
-   "name": "江顺科技",
-   "side": "机会",
-   "action": "左侧低吸",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "000723.SZ": {
-   "code": "000723.SZ",
-   "name": "美锦能源",
+  "603071.SS": {
+   "code": "603071.SS",
+   "name": "物产环能",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -86,16 +56,6 @@
    "downgrade": "",
    "auto": true
   },
-  "601008.SS": {
-   "code": "601008.SS",
-   "name": "连云港",
-   "side": "机会",
-   "action": "不进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "COIN": {
    "code": "COIN",
    "name": "Coinbase",
@@ -106,11 +66,31 @@
    "downgrade": "",
    "auto": true
   },
-  "1787.HK": {
-   "code": "1787.HK",
-   "name": "山东黄金",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
+  "001309.SZ": {
+   "code": "001309.SZ",
+   "name": "德明利",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "603179.SS": {
+   "code": "603179.SS",
+   "name": "新泉股份",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "300782.SZ": {
+   "code": "300782.SZ",
+   "name": "卓胜微",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -136,9 +116,29 @@
    "downgrade": "",
    "auto": true
   },
+  "000338.SZ": {
+   "code": "000338.SZ",
+   "name": "潍柴动力",
+   "side": "打折",
+   "action": "🕐还不够便宜·先看着",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "AZO": {
    "code": "AZO",
    "name": "AutoZone",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "300953.SZ": {
+   "code": "300953.SZ",
+   "name": "震裕科技",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
    "rules": [],
@@ -196,6 +196,16 @@
    "downgrade": "",
    "auto": true
   },
+  "002240.SZ": {
+   "code": "002240.SZ",
+   "name": "盛新锂能",
+   "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "SLB": {
    "code": "SLB",
    "name": "斯伦贝谢",
@@ -219,16 +229,6 @@
   "WMT": {
    "code": "WMT",
    "name": "沃尔玛",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "603259.SS": {
-   "code": "603259.SS",
-   "name": "药明康德",
    "side": "行业代表",
    "action": "",
    "rules": [],
@@ -279,12 +279,12 @@
  },
  "reject": {},
  "stats": {
-  "n_pass": 2043,
-  "n_reject": 74,
+  "n_pass": 525,
+  "n_reject": 78,
   "by_rule": {
-   "CS9": 2,
+   "CS9": 5,
    "CS1": 2,
-   "CS2": 7,
+   "CS2": 8,
    "CS3": 0,
    "CS4": 0,
    "CS5": 0,
