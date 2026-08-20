@@ -55,3 +55,9 @@ Agent: v88-mobile   Model: moonshot/kimi-k3
 ## 遗留问题
 1. 三条 Kimi 评审 Automation（交易日 19:52 / 周日 20:47）仍未在 Win 端重建：红线要求先在 Mac 端停用；提示词原文不在仓库里，需从 Mac 的 Kimi 设置中拷贝。
 2. 飞书验收待用户实测两条消息：普通消息（应 K2.7 应答）与「K3回复 …」（应【K3 首席分析师】开头）。
+
+## 追记（2026-08-20 16:20）：K3 关键词路由修复
+- 用户 16:01 实测「苹果现在能买吗 k3回答」未触发 K3 路由，K2.7 代答。两根因：①规则字面只认大写 "K3"，手机输入多为小写；②工作区 AGENTS.md 被还原——它由包模板 `win/openclaw-v88/AGENTS.md` 复制生成（install_openclaw_win.ps1:141），直接改工作区不持久。
+- 修复：规则改为**不区分大小写**；exec 命令改为短包装 `k3ask`（`C:\Users\admin\bin\k3ask.bat`，已入库 win/k3ask.bat），杜绝长路径被 agent 缩写成 `~` 导致 exec 失败；规则同时写入**包模板**与工作区，还原也不再丢。
+- 自测：`openclaw agent --agent v88-mobile -m "特斯拉现在能买吗 k3回答"` → 正确返回【K3 首席分析师】+ K3 原生答复；会话结束后规则仍存活（grep=1）。
+- 待用户在飞书复测确认。
