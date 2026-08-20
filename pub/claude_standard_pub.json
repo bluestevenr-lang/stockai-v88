@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-20 07:32（北京时间）",
- "generated_at": "2026-08-20 07:32（北京时间）",
+ "asof": "2026-08-20 09:41（北京时间）",
+ "generated_at": "2026-08-20 09:41（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -36,21 +36,11 @@
    "downgrade": "",
    "auto": true
   },
-  "PLUG": {
-   "code": "PLUG",
-   "name": "Plug Power",
+  "MSTR": {
+   "code": "MSTR",
+   "name": "Strategy Inc-A",
    "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "603071.SS": {
-   "code": "603071.SS",
-   "name": "物产环能",
-   "side": "机会",
-   "action": "现价可进",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -76,9 +66,9 @@
    "downgrade": "",
    "auto": true
   },
-  "0330.HK": {
-   "code": "0330.HK",
-   "name": "思捷环球",
+  "0728.HK": {
+   "code": "0728.HK",
+   "name": "中国电信",
    "side": "机会",
    "action": "现价可进",
    "rules": [],
@@ -86,111 +76,21 @@
    "downgrade": "",
    "auto": true
   },
-  "1691.HK": {
-   "code": "1691.HK",
-   "name": "JS环球生活",
+  "RGC": {
+   "code": "RGC",
+   "name": "脑再生科技",
    "side": "机会",
-   "action": "不进",
+   "action": "左侧低吸",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "000852.SZ": {
-   "code": "000852.SZ",
-   "name": "石化机械",
-   "side": "机会",
-   "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "3900.HK": {
-   "code": "3900.HK",
-   "name": "绿城中国",
+  "COIN": {
+   "code": "COIN",
+   "name": "Coinbase",
    "side": "机会",
    "action": "现价可进",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "600371.SS": {
-   "code": "600371.SS",
-   "name": "万向德农",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "600313.SS": {
-   "code": "600313.SS",
-   "name": "农发种业",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "600206.SS": {
-   "code": "600206.SS",
-   "name": "有研新材",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "002040.SZ": {
-   "code": "002040.SZ",
-   "name": "南京港",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "601015.SS": {
-   "code": "601015.SS",
-   "name": "陕西黑猫",
-   "side": "趋势",
-   "action": "🟢现在可买(涨势刚起,买得最早)",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "001309.SZ": {
-   "code": "001309.SZ",
-   "name": "德明利",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "603179.SS": {
-   "code": "603179.SS",
-   "name": "新泉股份",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "300782.SZ": {
-   "code": "300782.SZ",
-   "name": "卓胜微",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -200,47 +100,17 @@
    "code": "MELI",
    "name": "MercadoLibre",
    "side": "打折",
+   "action": "🟢跌得很深·可分批买",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
+  "AZO": {
+   "code": "AZO",
+   "name": "AutoZone",
+   "side": "打折",
    "action": "🟢打折到位·可开始买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "000338.SZ": {
-   "code": "000338.SZ",
-   "name": "潍柴动力",
-   "side": "打折",
-   "action": "🕐还不够便宜·先看着",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "603392.SS": {
-   "code": "603392.SS",
-   "name": "万泰生物",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "002756.SZ": {
-   "code": "002756.SZ",
-   "name": "永兴材料",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "300953.SZ": {
-   "code": "300953.SZ",
-   "name": "震裕科技",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -266,9 +136,9 @@
    "downgrade": "",
    "auto": true
   },
-  "3692.HK": {
-   "code": "3692.HK",
-   "name": "翰森制药",
+  "605117.SS": {
+   "code": "605117.SS",
+   "name": "德业股份",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
    "rules": [],
@@ -286,31 +156,11 @@
    "downgrade": "",
    "auto": true
   },
-  "605117.SS": {
-   "code": "605117.SS",
-   "name": "德业股份",
-   "side": "打折",
-   "action": "🟢打折到位·可开始买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "600031.SS": {
    "code": "600031.SS",
    "name": "三一重工",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "002240.SZ": {
-   "code": "002240.SZ",
-   "name": "盛新锂能",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -366,16 +216,6 @@
    "downgrade": "",
    "auto": true
   },
-  "601398.SS": {
-   "code": "601398.SS",
-   "name": "工商银行",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
   "0857.HK": {
    "code": "0857.HK",
    "name": "中国石油股份",
@@ -395,20 +235,30 @@
    "why": "",
    "downgrade": "",
    "auto": true
+  },
+  "0939.HK": {
+   "code": "0939.HK",
+   "name": "建设银行",
+   "side": "行业代表",
+   "action": "",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
   }
  },
  "reject": {},
  "stats": {
-  "n_pass": 411,
-  "n_reject": 57,
+  "n_pass": 2051,
+  "n_reject": 63,
   "by_rule": {
-   "CS9": 0,
+   "CS9": 2,
    "CS1": 2,
    "CS2": 4,
    "CS3": 0,
    "CS4": 1,
    "CS5": 0,
-   "CS6": 50,
+   "CS6": 54,
    "CS7": 0,
    "CS8": 0
   }
