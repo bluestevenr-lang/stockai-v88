@@ -109,7 +109,36 @@ feishu[default]: streaming start failed; using non-streaming card fallback for 6
 feishu[default]: dispatch complete (queuedFinal=true, replies=1)
 ```
 
-说明：两次问答最终都标记为 `dispatch complete (queuedFinal=true, replies=1)`，即 OpenClaw 已成功将回复投递到飞书。但网关日志未打印最终回复文本，**手机端实际显示内容请用户确认**。
+实际手机截图（飞书单聊）确认：
+
+- 用户问题：`苹果现在能买吗`
+- 蓝一回复：
+
+  ```text
+  结论：不可执行。
+
+  数据时间：投影生成于 2026-08-20 13:03（北京时间）
+
+  三方会审结果：
+  - GPT（终审）：无记录（generated_at: 2026-08-17 21:45）
+  - Kimi（独立评审）：不否定（快照时间 2026-08-17 08:21）——仅"池内登记-强制入池"，明确标注"无评级数据不推荐"
+  - 经典书理：无记录
+  - Triad 三方汇总：无记录
+
+  关键缺失：
+  - 无 GPT 终审结论
+  - 无三方一致通过记录
+  - Kimi 仅为"不否定"（≠通过），且明确提示无评级数据
+  - 无入场区间、止损/失效条件
+
+  Kimi 现场掌舵：当前数据下苹果（AAPL）未进入 V88 的规范三方会审流程，无任何席位给出"通过"结论。Kimi 快照仅为强制入池的登记状态，不构成买入依据。
+
+  建议等待。如需最新状态，可执行"同步V88"更新数据后再查。
+  ```
+
+- 消息底部显示：`Agent: v88-mobile | Model: kimi-k3 | Provider: moonshot`
+
+结论：问答链路完全打通，蓝一已按 AGENTS.md 口径（数据时间 + 三席结论）回复。
 
 ---
 
