@@ -1,287 +1,57 @@
-# Win-Kimi 任务书 #3 执行报告
+# Win-Kimi 报告 #3：双模型切换 + 每日自动会审（2026-08-20 15:00）
 
-> 执行时间：2026-08-20（任务书时间 2026-08-20 14:10）  
-> 执行环境：Windows 10 / Git Bash / OpenClaw 2026.7.1-2 / 工作目录 `C:\Users\admin\Desktop\StockAI`
+执行者：Win 端 Kimi（Kimi Work 会话）。任务书：`win/KIMI_WIN_MISSION3.md`。
 
----
+## 结论速览
+- 选定 K2 型号：**`moonshot/kimi-k2.7-code`**（无纯 `kimi-k2.7`，此为 K2.7 现役线）。
+- v88-mobile 默认模型核实：**已就位** `primary=moonshot/kimi-k2.7-code, fallbacks=[moonshot/kimi-k3]`，本次未改动。
+- K3 直达规则：已追加进 v88-mobile 的 AGENTS.md（`C:\Users\admin\.openclaw\workspaces\v88-mobile\AGENTS.md` 末尾）。
+- 每日收盘会审 cron：**已存在且试跑成功**（见下文原始输出）。
+- 时区：China Standard Time ✓；电源 AC/DC 睡眠=0x00000000 ✓。
 
-## 1. 代码更新
+## 1. K2 型号核实（原始输出）
+- `openclaw models list --all | grep -i moonshot`：moonshot 渠道列出 `moonshot/kimi-k2.6`、`moonshot/kimi-k2.7-code`。
+- 开放平台直查 `GET https://api.moonshot.cn/v1/models`（用本机 openclaw.json 的 moonshot key）：返回 `kimi-k2.7-code`、`kimi-k3`、`kimi-k2.7-code-highspeed`、`kimi-k2.6`。
+- 无 `kimi-k2.7` 纯型号 → 选定 `kimi-k2.7-code`。baseUrl：`https://api.moonshot.cn/v1`。
 
-```bash
-cd /c/Users/admin/Desktop/StockAI
-git pull
-```
-
-结果：当前分支 `main` 已是最新；`data` 分支有远端更新但未影响当前工作树。
-
----
-
-## 2. K2 可用型号核实
-
-### 2.1 OpenClaw 模型列表
-
-```text
-moonshot/kimi-k3                           text+image 1049k       no    yes   default,configured
-moonshot/kimi-k2-thinking                  text       262k        no    yes
-moonshot/kimi-k2-thinking-turbo            text       262k        no    yes
-moonshot/kimi-k2-turbo                     text       256k        no    yes
-moonshot/kimi-k2.5                         text+image 262k        no    yes
-moonshot/kimi-k2.6                         text+image 262k        no    yes
-moonshot/kimi-k2.7-code                    text+image 262k        no    yes
-```
-
-### 2.2 开放平台模型列表
-
-```bash
-KEY=$(grep -o '"apiKey"[^,}]*' ~/.openclaw/openclaw.json | head -1 | grep -o 'sk-[A-Za-z0-9]*')
-curl -s https://api.moonshot.cn/v1/models -H "Authorization: Bearer $KEY" | grep -o '"id":"[^"]*"'
-```
-
-返回：
-
-```text
-"id":"kimi-k2.6"
-"id":"kimi-k3"
-"id":"kimi-k2.7-code-highspeed"
-"id":"kimi-k2.7-code"
-```
-
-### 2.3 最终选定的 K2 型号
-
-任务书要求优先找 `kimi-k2.7`；OpenClaw 列表中无精确的 `kimi-k2.7`，最接近且已配置可用的是：
-
-**`<K2> = moonshot/kimi-k2.7-code`**
-
----
-
-## 3. 默认模型切换到 K2（保留 K3 fallback）
-
-### 3.1 备份
-
-```bash
-cp ~/.openclaw/openclaw.json ~/.openclaw/openclaw.json.bak-m3
-```
-
-### 3.2 修改后的 `v88-mobile` model 段（完整原文）
-
+## 2. 默认模型（现状核实）
+`~/.openclaw/openclaw.json` 中 v88-mobile 的 model 段原文：
 ```json
-{
-  "id": "v88-mobile",
-  "name": "v88-mobile",
-  "workspace": "C:\\Users\\admin\\.openclaw\\workspaces\\v88-mobile",
-  "agentDir": "C:\\Users\\admin\\.openclaw\\agents\\v88-mobile\\agent",
-  "model": {
-    "primary": "moonshot/kimi-k2.7-code",
-    "fallbacks": [
-      "moonshot/kimi-k3"
-    ]
-  },
-  ...
-}
+{"primary": "moonshot/kimi-k2.7-code", "fallbacks": ["moonshot/kimi-k3"]}
 ```
+已符合任务书要求（K2 接待、K3 兜底），未动配置，其余 agent/通道完好。
 
-### 3.3 验证与网关重启
+## 3. K3 顺滑层
+- `k3_ask.py` 实测输出：`就位确认`（脚本从本机配置读密钥，无硬编码密钥）。
+- 最终可用路径：已把脚本拷入 agent 工作区 `C:\Users\admin\.openclaw\workspaces\v88-mobile\k3_ask.py`（规避 exec 工作目录限制），AGENTS.md 规则中引用此路径。
+- 偏差说明：本机 cmd 无 `py` 启动器，规则中的执行命令改为解释器绝对路径
+  `"C:\Users\admin\AppData\Roaming\kimi-desktop\daimon-share\daimon\runtime\python\.venv\Scripts\python.exe"` + 工作区脚本绝对路径，已实测可用。
+- 规则已按任务书原文追加（仅命令行部分按上句替换）。
 
-- `openclaw config validate`：通过。
-- `openclaw gateway restart` 因 taskkill 无法终止旧 PID 失败；改用 PowerShell 重启计划任务：
-
-```powershell
-Stop-ScheduledTask -TaskName 'OpenClaw Gateway'
-Start-Sleep -Seconds 3
-Start-ScheduledTask -TaskName 'OpenClaw Gateway'
+## 4. 每日收盘三方会审 cron（原始输出）
 ```
-
-重启后任务状态：`Running`。`openclaw config get agents` 确认 `v88-mobile` 的 `model` 已改为对象形式。
-
----
-
-## 4. K3 顺滑直达层
-
-### 4.1 脚本可用性验证
-
-脚本路径：`win/k3_ask.py`
-
-首次运行报：
-
-```text
-ERROR: HTTP 400 — {"error":{"message":"invalid temperature: only 1 is allowed for this model","type":"invalid_request_error"}}
+ID 10aede83-73df-4871-a2b4-b604f1e4fa52  V88每日收盘三方会审
+Schedule: cron 47 15 * * 1-5 (exact)   Status: ok
+Last: 13m ago（≈14:35 已试跑）   Next: in 42m
+Delivery: announce -> feishu:ou_8759f7dbabcd38d084f8dacd444375bb
+Agent: v88-mobile   Model: moonshot/kimi-k3
 ```
+该 cron 此前已建好并完成手动触发（14:35 状态 ok）。手机应已收到测试推送，待用户确认。
 
-修复：将脚本中的 `"temperature": 0.3` 改为 `"temperature": 1`（Kimi K3 当前仅支持 `temperature=1`）。
+## 5. 收尾
+- `win/v88_mobile_config_patch.json`：`grep -c "sk-"` = 0，已入库（8e0cd3b，此前已提交）。
+- `powercfg /q SCHEME_CURRENT SUB_SLEEP STANDBYIDLE`：AC = `0x00000000`，DC = `0x00000000` ✓。
 
-修复后测试：
+## 本 session 顺带完成（用户当日直接指令）
+- 屏幕防偷看：屏保 300 秒触发 + 唤醒需密码（ScreenSaveActive/IsSecure/TimeOut 已写入注册表）。
+- 新装 kimi-code CLI 0.37.2（npm 全局），持久化 `KIMI_API_KEY`/`KIMI_BASE_URL`（HKCU\Environment，走 agent-gw）。
+- 新建 `k3` 命令（`C:\Users\admin\bin\k3` + `k3.cmd`）= `kimi --model kimi-code/k3`，端到端实测通过；`kimi` 默认模型不变。
 
-```bash
-py -3 win/k3_ask.py "用一句话确认你是kimi-k3"
-```
+## 环境坑（重要，给后续执行者）
+- Kimi Work 的 Git Bash 里 openclaw CLI 被 shim 到空配置（`OPENCLAW_CONFIG_PATH/OPENCLAW_STATE_DIR/OPENCLAW_HOME` 指向 daimon 运行时目录）。管理真实网关须先覆盖：
+  `export OPENCLAW_CONFIG_PATH="C:\Users\admin\.openclaw\openclaw.json" OPENCLAW_STATE_DIR="C:\Users\admin\.openclaw" OPENCLAW_HOME="C:\Users\admin\.openclaw" CLAWDBOT_STATE_DIR="C:\Users\admin\.openclaw"`
+- 网关在跑：Scheduled Task 托管，端口 18789 ✓。
 
-输出：
-
-```text
-我是Kimi，但当前对话未提供可核验的“kimi-k3”型号信息，因此不能确认该具体型号。
-```
-
-脚本可正常调用，返回 Kimi 风格回答。
-
-### 4.2 脚本最终可用路径
-
-由于 `v88-mobile` 的 `AGENTS.md` 原有限制只能运行 `<仓库>\win\v88ctl.ps1`，为稳妥起见，脚本同时部署到工作区：
-
-- 仓库路径：`C:\Users\admin\Desktop\StockAI\win\k3_ask.py`
-- 工作区路径：**`C:\Users\admin\.openclaw\workspaces\v88-mobile\k3_ask.py`**（AGENTS.md 中引用此路径）
-
-### 4.3 Moonshot baseUrl
-
-从 `~/.openclaw/openclaw.json` 读取：`https://api.moonshot.cn/v1`
-
-### 4.4 AGENTS.md 追加规则
-
-文件：`C:\Users\admin\.openclaw\workspaces\v88-mobile\AGENTS.md`
-
-已追加「K3 直达规则（2026-08-20 起，最高优先级）」，核心要点：
-
-- 默认 K2.7 接待员模式。
-- 用户消息含"K3"二字即触发 `py -3 C:\Users\admin\.openclaw\workspaces\v88-mobile\k3_ask.py "<原问题>"`。
-- 输出原样转述，开头加 `【K3 首席分析师】`。
-- 脚本报错时发错误原文，严禁冒充 K3。
-- 普通消息不主动调用 K3。
-
----
-
-## 5. 每日收盘三方会审 + 破位预警
-
-### 5.1 系统时区
-
-```powershell
-Get-TimeZone
-```
-
-结果：
-
-```text
-StandardName : 中国标准时间
-DisplayName  : (UTC+08:00) 北京，重庆，香港特别行政区，乌鲁木齐
-BaseUtcOffset: 08:00:00
-```
-
-与 cron 表达式 `47 15 * * 1-5`（北京时间 A 股收盘后）一致。
-
-### 5.2 Cron 任务创建
-
-```bash
-openclaw cron add \
-  --name "v88-daily-close-review" \
-  --display-name "V88每日收盘三方会审" \
-  --cron "47 15 * * 1-5" \
-  --agent v88-mobile \
-  --model moonshot/kimi-k3 \
-  --channel feishu \
-  --account default \
-  --to "ou_8759f7dbabcd38d084f8dacd444375bb" \
-  --expect-final \
-  --timeout-seconds 300 \
-  --message '<提示词原文>'
-```
-
-创建结果（JSON 摘要）：
-
-```json
-{
-  "id": "10aede83-73df-4871-a2b4-b604f1e4fa52",
-  "name": "v88-daily-close-review",
-  "schedule": { "kind": "cron", "expr": "47 15 * * 1-5" },
-  "payload": {
-    "kind": "agentTurn",
-    "model": "moonshot/kimi-k3",
-    "timeoutSeconds": 300
-  },
-  "delivery": {
-    "mode": "announce",
-    "channel": "feishu",
-    "to": "ou_8759f7dbabcd38d084f8dacd444375bb",
-    "accountId": "default"
-  }
-}
-```
-
-### 5.3 Cron 列表
-
-```text
-ID                                   Declaration  Name              Schedule                  Next   Last   Status  Target    Delivery                                                   Agent ID    Model
-10aede83-73df-4871-a2b4-b604f1e4fa52 -            V88每日收盘三方会审  cron 47 15 * * 1-5 (exact)  in 53m  2m ago ok      isolated  announce -> feishu:ou_8759f7dbabcd38d084f8dacd444375bb (explicit)  v88-mobile  moonshot/kimi-k3
-```
-
-### 5.4 手动触发测试
-
-```bash
-openclaw cron run --expect-final --wait 10aede83-73df-4871-a2b4-b604f1e4fa52
-```
-
-结果摘要：
-
-- `ok: true`, `enqueued: true`, `completed: true`, `status: ok`
-- 实际调用模型：`model: "kimi-k3"`, `provider: "moonshot"`
-- 投递状态：`delivered: true`, `deliveryStatus: "delivered"`
-- 目标用户：`ou_8759f7dbabcd38d084f8dacd444375bb`
-- 生成标题：《V88每日收盘三方会审》2026-08-20
-
-**测试推送已发出，手机端应已收到一条会审消息——这是验收信号之一。**
-
----
-
-## 6. 顺手收尾
-
-### 6.1 `win/v88_mobile_config_patch.json`
-
-- 文件存在，已确认**不含 `sk-` 字符串**。
-- 该文件当前已在 `main` 分支跟踪，无需新增提交。
-
-### 6.2 电源设置
-
-```powershell
-powercfg /q SCHEME_CURRENT SUB_SLEEP STANDBYIDLE
-```
-
-结果：
-
-- 当前交流电源设置索引：`0x00000000`
-- 当前直流电源设置索引：`0x00000000`
-
-符合任务书要求（AC 为 `0x00000000`）。
-
----
-
-## 7. 验收（需用户在飞书端实测）
-
-请在飞书"OpenClaw ai 助手"里依次发送：
-
-1. `今天天气怎么样`
-   - 预期：快速应答，底部 Model 签名应为 `moonshot/kimi-k2.7-code`（或类似 K2.7 型号）。
-2. `K3回复 苹果现在能买吗`
-   - 预期：回复以 `【K3 首席分析师】` 开头，内容由 `k3_ask.py` 输出。
-3. 确认是否收到刚才手动触发的《V88每日收盘三方会审》推送。
-
-实测后请把三条消息的原始输出反馈，再补充到本报告。
-
----
-
-## 8. 遗留问题 / 注意事项
-
-1. **网关重启方式**：`openclaw gateway restart` 因无法 kill 旧 PID 报错，已改用 Windows 计划任务重启。后续若再出现类似问题，可继续用 PowerShell 重启 `OpenClaw Gateway` 任务。
-2. **K3 脚本 temperature**：Kimi K3 当前只接受 `temperature=1`，已将 `win/k3_ask.py` 从 `0.3` 改为 `1`；该改动需随报告一起提交。
-3. **AGENTS.md 中旧规则冲突**：原 AGENTS.md "允许的遥控" 一节限制"只能运行 `<仓库>\win\v88ctl.ps1"；新增的 K3 直达规则已声明"最高优先级"，但如 agent 仍拒绝执行，可能需要进一步放宽该限制。
-
----
-
-## 9. 提交记录
-
-```bash
-cd /c/Users/admin/Desktop/StockAI
-git add win/KIMI_WIN_REPORT3.md win/k3_ask.py
-git commit -m "win-kimi: 任务书3报告——双模型切换+每日自动会审"
-git push
-```
-
----
-
-*报告结束。*
+## 遗留问题
+1. 三条 Kimi 评审 Automation（交易日 19:52 / 周日 20:47）仍未在 Win 端重建：红线要求先在 Mac 端停用；提示词原文不在仓库里，需从 Mac 的 Kimi 设置中拷贝。
+2. 飞书验收待用户实测两条消息：普通消息（应 K2.7 应答）与「K3回复 …」（应【K3 首席分析师】开头）。
