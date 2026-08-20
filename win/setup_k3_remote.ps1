@@ -58,7 +58,9 @@ if (-not $Openclaw) {
 Log "openclaw: $Openclaw"
 
 # --- 1. 读取/复用 Moonshot API Key（只写本机配置，永不入 git） ---
-$existing = & $Openclaw config get --json 2>$null | Out-String | ConvertFrom-Json
+# 直接读配置文件找索引（新版 CLI 的 config get 需要 <path> 参数，读文件最稳）
+$cfgPath = Join-Path $env:USERPROFILE '.openclaw\openclaw.json'
+$existing = Get-Content $cfgPath -Raw -Encoding UTF8 | ConvertFrom-Json
 $apiKey = $existing.models.providers.moonshot.apiKey
 if ($apiKey) {
     Log '检测到已有 Moonshot Key，跳过输入。'
@@ -107,7 +109,7 @@ $ToolPolicy = @{
                 'sessions_spawn','sessions_send','cron','gateway','nodes','computer')
     codeMode = $false
     elevated = @{ enabled = $false }
-    exec     = @{ mode = 'allow' }
+    exec     = @{ mode = 'full' }   # OpenClaw 2026.7.1-2 有效枚举: deny/allowlist/ask/auto/full；无 'allow'
     fs       = @{ workspaceOnly = $false }
     message  = @{
         allowCrossContextSend = $false
