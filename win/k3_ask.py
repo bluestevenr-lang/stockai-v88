@@ -1,17 +1,21 @@
 # -*- coding: utf-8 -*-
 # k3_ask.py — 调用 Moonshot K3 回答一个问题（顺滑层"K3回复"关键词的核心脚本）
 # 密钥运行时从本机 ~/.openclaw/openclaw.json 读取，本文件不含任何密钥，可安全入库。
+import csv
 import json
 import re
 import sys
 import urllib.request
 import urllib.error
+from datetime import datetime
 from pathlib import Path
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
     pass
+
+LEDGER = Path.home() / ".openclaw" / "k3_usage.csv"
 
 SYSTEM = (
     "你是V88三方会审体系的首席分析师Kimi（角色：证据官/反对票/漏审检查）。"
@@ -75,6 +79,21 @@ def main():
         with urllib.request.urlopen(req, timeout=120) as r:
             data = json.load(r)
         print(data["choices"][0]["message"]["content"])
+        # 记账：把本次调用的 token 用量写入本地账本（供 k3_quota.py 统计）
+        try:
+            usage = data.get("usage", {}) or {}
+            new_file = not LEDGER.exists()
+            with open(LEDGER, "a", newline="", encoding="utf-8") as f:
+                w = csv.writer(f)
+                if new_file:
+                    w.writerow(["ts", "model", "prompt_tokens", "completion_tokens", "question"])
+                w.writerow([datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            data.get("model", "kimi-k3"),
+                            usage.get("prompt_tokens", 0),
+                            usage.get("completion_tokens", 0),
+                            q[:80]])
+        except Exception:
+            pass  # 记账失败不影响回答
     except urllib.error.HTTPError as e:
         print("ERROR: HTTP %s — %s" % (e.code, e.read().decode("utf-8", "replace")[:500]))
         sys.exit(1)
