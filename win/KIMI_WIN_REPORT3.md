@@ -68,3 +68,12 @@ Agent: v88-mobile   Model: moonshot/kimi-k3
 - 根因修复（小米搜不到）：投影脚本名称回退到代码本身（`or code`），1810.HK 快照 name 即 "1810.HK"。修复：sync_v88_projection_win.py 加载仓库根 stock_names.json（8208 条 {n,c,m}），归一港股前导零（01810.HK→1810.HK），主名取最长、别名全量进 name_index（"小米"→1810.HK）；顺手去掉 zoneinfo 依赖（托管 Python 缺 tzdata，改固定 UTC+8）。
 - 验证：投影重跑 2465 只 ok；`k3ask 港股小米能买么` 命中 1810.HK，答复引用真实 Kimi verdict「不否定·蓄势·60日-16.38%」并 fail-closed 落闸；openclaw 端到端「苹果现在能买吗 k3回答」返回【K3 首席分析师】+ AAPL 快照数据 + 签名行齐全。
 - AGENTS.md（包模板+工作区）新增直达规则第 4 条：页脚 Model 是接待员固定签名改不了，K3 答复以正文签名行为准。
+
+## 追记（2026-08-20 17:0x）：持仓/自选接入快照（隐私红线版）
+- 用户需求：远程 K3 要能回答"新买了啥/卖了啥/重点关注啥"。
+- 投影新增两个派生模块：
+  - `portfolio_pub.json`：positions.json 持仓名单——只放行 名称+代码+盈亏%（books/items 结构绕开 FORBIDDEN_KEYS）；附 exit_ledger 最新一天止盈止损线（57 条，公开市价字段），"last 贴近 stop 的=重点关注"。**股数/成本/市值/账户金额按隐私红线一律不落盘**（快照会随提问发给模型 API）。
+  - `watchlist.json`：仓库根自选清单（US 12 / HK 4 / CN 3）。
+- k3_ask 关键词触发：持仓/买卖/加减仓/盈亏 → portfolio_pub；自选/关注/重点 → watchlist。
+- 验证：`k3ask 我现在持仓里哪些个股需要重点关注` → K3 按距止损线分三档列出（迈瑞 0.47% 最贴线、159632 深亏+贴线双信号），对截断的 TSLA/NVDA 诚实标注"快照无此数据"。泄漏检查通过（无 shares/cost/qty 字段）。
+- 用户决定：两条评审定时任务（19:52/20:47）取消不建，需要时在飞书直接问。

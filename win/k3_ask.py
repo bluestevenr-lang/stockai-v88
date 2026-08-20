@@ -45,6 +45,8 @@ MODULE_BY_KEYWORD = {
     "fund_flow_pub.json": ["资金", "流向", "主力", "北向", "南向"],
     "trend_quality_pub.json": ["趋势", "质量"],
     "ai_cert_pub.json": ["AI", "认证"],
+    "portfolio_pub.json": ["持仓", "买了", "买入", "卖了", "卖出", "加仓", "减仓", "仓位", "成本", "盈亏", "我的股"],
+    "watchlist.json": ["自选", "关注", "重点", "盯着", "观察名单"],
 }
 MODULE_MAX_BYTES = 8192
 STOCK_MAX = 4

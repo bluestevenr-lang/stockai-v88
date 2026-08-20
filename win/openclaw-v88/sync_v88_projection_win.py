@@ -303,6 +303,65 @@ def build(source: Path, destination: Path) -> int:
         assert_private_keys_absent(value, f"module.{filename}")
         expected_modules.add(filename)
         atomic_json(modules_dir / filename, value)
+
+    # 派生模块①：持仓名单 portfolio_pub.json
+    # 隐私红线：快照会随提问发给模型 API，股数/成本/市值/账户金额一律不进投影；
+    # 只放行 名称+代码+盈亏% 与最新止盈止损线（公开市价字段），够回答"买了啥/卖了啥/重点盯啥"。
+    positions = read_json(source.parent / "positions.json", None)
+    if isinstance(positions, dict):
+        books = {}
+        for acc, info in (positions.get("accounts") or {}).items():
+            if not isinstance(info, dict):
+                continue
+            items = [
+                {
+                    "name": h.get("name"),
+                    "code": h.get("code"),
+                    "pnl_pct": h.get("pnl_pct"),
+                }
+                for h in (info.get("holdings") or [])
+                if isinstance(h, dict)
+            ]
+            books[acc] = {"type": info.get("type"), "items": items}
+        portfolio_pub = {
+            "updated_at": positions.get("updated_at"),
+            "note": "V88 持仓名单（数量/成本按隐私红线不落盘）。买卖变动以本名单为准；盈亏%来自底稿。",
+            "books": books,
+        }
+        # 最新一天的止盈止损线（exit_ledger.json 在 data 内，字段均为公开市价）
+        ledger = read_json(source / "exit_ledger.json", {})
+        days = ledger.get("days") if isinstance(ledger, dict) else None
+        if isinstance(days, dict) and days:
+            latest = days[sorted(days)[-1]]
+            lines = latest.get("lines") if isinstance(latest, dict) else None
+            if isinstance(lines, dict):
+                portfolio_pub["exit_lines"] = {
+                    "date": sorted(days)[-1],
+                    "ruleset": latest.get("ruleset"),
+                    "note": "止盈/止损线；last 接近 stop 的即为需要重点关注对象。",
+                    "lines": [
+                        {
+                            "code": code,
+                            "name": (row or {}).get("name"),
+                            "scope": (row or {}).get("scope"),
+                            "last": (row or {}).get("last"),
+                            "take": (row or {}).get("take"),
+                            "stop": (row or {}).get("stop"),
+                        }
+                        for code, row in lines.items()
+                    ],
+                }
+        assert_private_keys_absent(portfolio_pub, "module.portfolio_pub.json")
+        expected_modules.add("portfolio_pub.json")
+        atomic_json(modules_dir / "portfolio_pub.json", portfolio_pub)
+
+    # 派生模块②：自选/重点关注清单（仓库根 watchlist.json，按市场分组 [代码, 名称]）
+    watchlist = read_json(Path(__file__).resolve().parents[2] / "watchlist.json", None)
+    if isinstance(watchlist, dict):
+        assert_private_keys_absent(watchlist, "module.watchlist.json")
+        expected_modules.add("watchlist.json")
+        atomic_json(modules_dir / "watchlist.json", watchlist)
+
     for path in modules_dir.glob("*.json"):
         if path.name not in expected_modules:
             path.unlink()
