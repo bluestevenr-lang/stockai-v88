@@ -1,6 +1,6 @@
 {
   "schema_version": "v88.snapshot/2.0",
-  "snapshot_id": "snap-1ad6e675ff6bc50c",
+  "snapshot_id": "snap-820dd5ade4312b0d",
   "rotation_forecast": {
     "schema_version": "v88.rotation/1.4",
     "snapshot_id": "snap-c4198ce1209dd5e8",
@@ -1954,7 +1954,7 @@
       }
     ]
   },
-  "generated_at": "2026-08-21 16:30",
+  "generated_at": "2026-08-21 17:09",
   "markets": {
     "美股": {
       "indices": [
@@ -2377,21 +2377,22 @@
           "turning_prompt": "放量收复MA20（今日）：收 14094.17 站回MA20（≈14049.97）上方，当日量为20日均量19.2倍——资金回场，至今站稳。👉 你来确认三件事：①明日能否守住MA20（14049.97）——缩量不破=拐点成立；②突破后量能是否延续（缩量新高是假突破）；③回踩不破今日低点 13866.39 即是买点，破了信号作废"
         },
         {
-          "symbol": "399006.SZ",
-          "name": "创业板指",
-          "last": 3545.58,
-          "chg1d": 1.43,
-          "chg5d": -2.23,
-          "chg20d": 1.86,
-          "vs_ma20": 1.08,
-          "vs_ma60": -6.79,
+          "symbol": "159915.SZ",
+          "name": "创业板ETF代理",
+          "last": 3.56,
+          "chg1d": 1.77,
+          "chg5d": -1.22,
+          "chg20d": -1.03,
+          "vs_ma20": 0.89,
+          "vs_ma60": -7.15,
           "trend": "🔄 震荡偏强",
-          "vol_ratio": 1.0,
-          "px_pct": 25.0,
-          "vol_pct": null,
-          "diverge": null,
+          "vol_ratio": 0.72,
+          "px_pct": 23.3,
+          "vol_pct": 61.7,
+          "diverge": -38.4,
           "turning": "",
-          "turning_prompt": ""
+          "turning_prompt": "",
+          "unit": "元"
         }
       ],
       "sectors": [
@@ -2577,10 +2578,10 @@
         }
       ],
       "temperature": {
-        "temp": 55,
+        "temp": 56,
         "trend": 50,
         "breadth": 50,
-        "momentum": 35,
+        "momentum": 38,
         "vol_heat": 100,
         "label": "🟡 中性",
         "position": "50-65%",
@@ -2598,12 +2599,12 @@
           {
             "key": "价格高位",
             "hit": false,
-            "text": "价格分位26.1"
+            "text": "价格分位25.6"
           },
           {
             "key": "量价背离",
             "hit": false,
-            "text": "价格分位26.1／量分位100.0＝背离-73.9"
+            "text": "价格分位25.6／量分位87.2＝背离-61.6"
           },
           {
             "key": "广度钝化",
@@ -2613,7 +2614,7 @@
           {
             "key": "动量衰竭",
             "hit": false,
-            "text": "20日+2.19%但5日仅-1.53%"
+            "text": "20日+1.23%但5日仅-1.20%"
           },
           {
             "key": "估值高位",
@@ -2623,7 +2624,7 @@
           {
             "key": "温度过热",
             "hit": false,
-            "text": "温度55"
+            "text": "温度56"
           },
           {
             "key": "指数拐点",
@@ -2635,12 +2636,12 @@
           {
             "key": "价格低位",
             "hit": false,
-            "text": "价格分位26.1"
+            "text": "价格分位25.6"
           },
           {
             "key": "放量杀跌",
             "hit": true,
-            "text": "价格分位26.1／量分位100.0＝背离-73.9"
+            "text": "价格分位25.6／量分位87.2＝背离-61.6"
           },
           {
             "key": "广度极低",
@@ -2650,7 +2651,7 @@
           {
             "key": "深度超跌",
             "hit": false,
-            "text": "20日+2.19%"
+            "text": "20日+1.23%"
           },
           {
             "key": "估值低位",
@@ -2660,7 +2661,7 @@
           {
             "key": "温度冰点",
             "hit": false,
-            "text": "温度55"
+            "text": "温度56"
           },
           {
             "key": "指数底拐",
@@ -2672,9 +2673,9 @@
         "top_na": 1,
         "bottom_hit": 2,
         "bottom_na": 1,
-        "px_pct": 26.1,
-        "vol_pct": 100.0,
-        "diverge": -73.9,
+        "px_pct": 25.6,
+        "vol_pct": 87.2,
+        "diverge": -61.6,
         "breadth_full_days": 0,
         "note": "样本<5不给概率(铁律2)——只报命中条数,⬜=数据源缺失非未命中"
       },
