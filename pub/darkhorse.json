@@ -1,131 +1,276 @@
 {
- "ts": 1787186390.751837,
- "generated_at": "2026-08-20 08:39",
+ "ts": 1787276024.6451359,
+ "generated_at": "2026-08-21 09:33",
  "funnel": {
-  "found": 159,
-  "excluded_watch": 20,
-  "judged": 139,
+  "found": 163,
+  "excluded_watch": 21,
+  "judged": 142,
   "judged_by_mkt": {
-   "🇺🇸美股": 77,
+   "🇺🇸美股": 76,
    "🇭🇰港股": 27,
-   "🇨🇳A股": 35
+   "🇨🇳A股": 39
   },
-  "passed": 1,
+  "passed": 2,
   "blocked": {
-   "相位": 82,
-   "方向分": 5,
-   "赔率": 5,
+   "相位": 81,
+   "方向分": 7,
+   "赔率": 10,
    "时机": 0,
    "数据": 0,
-   "单源": 46
+   "单源": 42
   }
  },
  "horses": [
   {
-   "name": "迈威尔",
-   "code": "MRVL",
-   "last": 237.27,
-   "unified_score": 74,
-   "short_score": 75,
-   "p_up": 75,
-   "p_down": 25,
-   "rr": 2.6,
-   "expected_pct": 25.5,
+   "name": "银河娱乐",
+   "code": "0027.HK",
+   "last": 35.9,
+   "unified_score": 77,
+   "short_score": 71,
+   "p_up": 71,
+   "p_down": 29,
+   "rr": 2.02,
+   "expected_pct": 11.4,
    "action": "多周期共振·试仓复核",
-   "entry_note": "⏳双路径:回踩219.9/突破329.8·08-27前｜标准门槛通过；概率优势+47.2点",
-   "cycle_note": "2周偏涨75%｜4-32周偏涨67%",
-   "analysis_time": "2026-08-20 08:38",
+   "entry_note": "⏳双路径:回踩34.58/突破43.13·08-28前｜标准门槛通过；概率优势+37.9点",
+   "cycle_note": "2周偏涨71%｜4-32周偏涨69%",
+   "analysis_time": "2026-08-21 09:32",
    "facts": {
     "schema": "v88.stock-decision/2.0",
-    "asof": "2026-08-19 00:00:00",
-    "last": 237.27,
-    "atr14": 17.4264,
-    "stage": "震荡整理",
-    "data_signature": "412988f189a5",
+    "asof": "2026-08-21 00:00:00",
+    "last": 35.9,
+    "atr14": 0.7829,
+    "stage": "主升阶段",
+    "data_signature": "54a774a84189",
     "horizons": {
      "2周": {
       "weeks": 2,
       "periods": 2,
       "unit": "week",
       "sample_days": 10,
-      "return_pct": 12.4,
-      "slope_pct": 10.2,
-      "ma_bias_pct": 8.3,
-      "ret5_pct": 9.3,
-      "volume_ratio": 1.27,
-      "drawdown_pct": -3.3,
-      "support": 201.74,
-      "resistance": 245.489,
-      "rule_score": 75,
+      "return_pct": 9.2,
+      "slope_pct": 8.7,
+      "ma_bias_pct": 4.3,
+      "ret5_pct": 3.3,
+      "volume_ratio": 0.87,
+      "drawdown_pct": 0.8,
+      "support": 32.32,
+      "resistance": 35.6,
+      "rule_score": 71,
       "rule_view": "偏涨",
       "phase_note": "",
-      "rule_confidence": 80
+      "rule_confidence": 75
      },
      "4周": {
       "weeks": 4,
       "periods": 4,
       "unit": "week",
       "sample_days": 20,
-      "return_pct": 12.5,
-      "slope_pct": 23.3,
-      "ma_bias_pct": 14.9,
-      "ret5_pct": 9.3,
-      "volume_ratio": 1.1,
-      "drawdown_pct": -3.3,
-      "support": 162.9,
-      "resistance": 245.489,
-      "rule_score": 76,
+      "return_pct": 13.5,
+      "slope_pct": 6.6,
+      "ma_bias_pct": 5.5,
+      "ret5_pct": 3.3,
+      "volume_ratio": 0.78,
+      "drawdown_pct": 0.8,
+      "support": 31.66,
+      "resistance": 35.6,
+      "rule_score": 74,
       "rule_view": "偏涨",
       "phase_note": "",
-      "rule_confidence": 81
+      "rule_confidence": 79
      },
      "8周": {
       "weeks": 8,
       "periods": 8,
       "unit": "week",
       "sample_days": 40,
-      "return_pct": -14.9,
-      "slope_pct": -23.2,
-      "ma_bias_pct": 6.3,
-      "ret5_pct": 9.3,
-      "volume_ratio": 0.94,
-      "drawdown_pct": -20.9,
-      "support": 162.9,
-      "resistance": 299.926,
-      "rule_score": 33,
-      "rule_view": "偏跌",
+      "return_pct": 20.6,
+      "slope_pct": 20.0,
+      "ma_bias_pct": 10.5,
+      "ret5_pct": 3.3,
+      "volume_ratio": 0.71,
+      "drawdown_pct": 0.8,
+      "support": 28.68,
+      "resistance": 35.6,
+      "rule_score": 85,
+      "rule_view": "偏涨",
       "phase_note": "",
-      "rule_confidence": 70
+      "rule_confidence": 88
      },
      "16周": {
       "weeks": 16,
       "periods": 16,
       "unit": "week",
       "sample_days": 80,
-      "return_pct": 44.4,
-      "slope_pct": 22.2,
-      "ma_bias_pct": 7.9,
-      "ret5_pct": 9.3,
-      "volume_ratio": 0.65,
-      "drawdown_pct": -28.1,
-      "support": 146.814,
-      "resistance": 329.799,
-      "rule_score": 78,
+      "return_pct": 9.7,
+      "slope_pct": 7.4,
+      "ma_bias_pct": 12.1,
+      "ret5_pct": 3.3,
+      "volume_ratio": 0.71,
+      "drawdown_pct": 0.8,
+      "support": 28.68,
+      "resistance": 35.6,
+      "rule_score": 73,
       "rule_view": "偏涨",
       "phase_note": "",
-      "rule_confidence": 84
+      "rule_confidence": 78
      },
      "32周": {
       "weeks": 32,
       "periods": 32,
       "unit": "week",
       "sample_days": 160,
-      "return_pct": 177.1,
-      "slope_pct": 326.8,
-      "ma_bias_pct": 51.2,
-      "ret5_pct": 9.3,
-      "volume_ratio": 0.86,
-      "drawdown_pct": -28.1,
+      "return_pct": -6.1,
+      "slope_pct": -23.1,
+      "ma_bias_pct": 3.1,
+      "ret5_pct": 3.3,
+      "volume_ratio": 0.83,
+      "drawdown_pct": -16.8,
+      "support": 28.68,
+      "resistance": 43.132,
+      "rule_score": 44,
+      "rule_view": "震荡",
+      "phase_note": "",
+      "rule_confidence": 57
+     }
+    }
+   },
+   "sources": [
+    "引擎榜·港股short",
+    "引擎榜·港股mid",
+    "引擎榜·港股long",
+    "全选池·港股"
+   ],
+   "touch": "",
+   "trade_plan": {
+    "short": {
+     "in": "🟢 左侧低吸(中性市模式):现价35.9~回踩34.58区间先1批小仓,不等右侧突破确认——跌破31.66认错止损;若放量突破则剩余仓改追｜💼半仓:中性市:半仓起步,确认后加",
+     "out": "目标37.618（10个交易日内·上行概率71%）",
+     "invalid": "跌破31.66作废",
+     "mode": "左侧低吸"
+    },
+    "mid": {
+     "in": "🎯 中线（4-8周）：区间33.8~35.9分批建仓；收盘连续2日破 32.03 失效",
+     "out": "目标39.115（≈1季·60交易日·上行概率81%）",
+     "invalid": "收盘连续2日破 32.03 失效"
+    },
+    "long": {
+     "in": "🏛 长线（16周+）：区间30.43~35.9分批；跌破年线(33.1)且20日收不回才退出",
+     "out": "目标42.546（≈半年·120交易日·上行概率43%）",
+     "invalid": "跌破年线且20日收不回退出"
+    },
+    "probability_kind": "规则情景估计（非回测胜率）"
+   },
+   "scope": "黑马",
+   "level": "B",
+   "market": "🇭🇰港股",
+   "grade": "重点"
+  },
+  {
+   "name": "迈威尔",
+   "code": "MRVL",
+   "last": 251.01,
+   "unified_score": 81,
+   "short_score": 85,
+   "p_up": 85,
+   "p_down": 15,
+   "rr": 1.73,
+   "expected_pct": 24.0,
+   "action": "多周期共振·试仓复核",
+   "entry_note": "⏳双路径:回踩223.95/突破329.8·08-28前｜标准门槛通过；概率优势+48.4点",
+   "cycle_note": "2周偏涨85%｜4-32周偏涨72%",
+   "analysis_time": "2026-08-21 09:32",
+   "facts": {
+    "schema": "v88.stock-decision/2.0",
+    "asof": "2026-08-20 00:00:00",
+    "last": 251.01,
+    "atr14": 17.3459,
+    "stage": "趋势延续",
+    "data_signature": "885b9e888e66",
+    "horizons": {
+     "2周": {
+      "weeks": 2,
+      "periods": 2,
+      "unit": "week",
+      "sample_days": 10,
+      "return_pct": 19.2,
+      "slope_pct": 14.9,
+      "ma_bias_pct": 12.7,
+      "ret5_pct": 13.0,
+      "volume_ratio": 1.34,
+      "drawdown_pct": -0.2,
+      "support": 205.52,
+      "resistance": 251.45,
+      "rule_score": 85,
+      "rule_view": "偏涨",
+      "phase_note": "",
+      "rule_confidence": 88
+     },
+     "4周": {
+      "weeks": 4,
+      "periods": 4,
+      "unit": "week",
+      "sample_days": 20,
+      "return_pct": 19.9,
+      "slope_pct": 30.8,
+      "ma_bias_pct": 20.5,
+      "ret5_pct": 13.0,
+      "volume_ratio": 1.18,
+      "drawdown_pct": -0.2,
+      "support": 162.9,
+      "resistance": 251.45,
+      "rule_score": 85,
+      "rule_view": "偏涨",
+      "phase_note": "",
+      "rule_confidence": 88
+     },
+     "8周": {
+      "weeks": 8,
+      "periods": 8,
+      "unit": "week",
+      "sample_days": 40,
+      "return_pct": -9.3,
+      "slope_pct": -19.1,
+      "ma_bias_pct": 12.8,
+      "ret5_pct": 13.0,
+      "volume_ratio": 1.04,
+      "drawdown_pct": -16.3,
+      "support": 162.9,
+      "resistance": 299.926,
+      "rule_score": 40,
+      "rule_view": "偏跌",
+      "phase_note": "",
+      "rule_confidence": 62
+     },
+     "16周": {
+      "weeks": 16,
+      "periods": 16,
+      "unit": "week",
+      "sample_days": 80,
+      "return_pct": 58.7,
+      "slope_pct": 21.1,
+      "ma_bias_pct": 13.6,
+      "ret5_pct": 13.0,
+      "volume_ratio": 0.71,
+      "drawdown_pct": -23.9,
+      "support": 146.814,
+      "resistance": 329.799,
+      "rule_score": 80,
+      "rule_view": "偏涨",
+      "phase_note": "",
+      "rule_confidence": 86
+     },
+     "32周": {
+      "weeks": 32,
+      "periods": 32,
+      "unit": "week",
+      "sample_days": 160,
+      "return_pct": 189.7,
+      "slope_pct": 328.0,
+      "ma_bias_pct": 58.9,
+      "ret5_pct": 13.0,
+      "volume_ratio": 0.93,
+      "drawdown_pct": -23.9,
       "support": 70.637,
       "resistance": 329.799,
       "rule_score": 81,
@@ -136,25 +281,26 @@
     }
    },
    "sources": [
+    "引擎榜·美股short",
     "全选池·美股",
     "财报08-27"
    ],
-   "touch": "触线:MA55",
+   "touch": "",
    "trade_plan": {
     "short": {
-     "in": "⏳ 双路径（08-27前任一触发即进）：①回踩219.9企稳接",
-     "out": "目标274.788（10个交易日内·上行概率75%）",
+     "in": "⏳ 双路径（08-28前任一触发即进）：①回踩223.95企稳接",
+     "out": "目标290.683（10个交易日内·上行概率85%）",
      "invalid": "跌破162.9作废",
      "mode": "双路径待触发"
     },
     "mid": {
-     "in": "⏳ 中线（4-8周）：待周线站稳 239.7 再启动区间建仓",
-     "out": "目标329.799（≈1季·60交易日·上行概率54%）",
-     "invalid": "收盘连续2日破 239.7 失效"
+     "in": "🎯 中线（4-8周）：区间206.2~251.01分批建仓；收盘连续2日破 238.97 失效",
+     "out": "目标348.188（≈1季·60交易日·上行概率58%）",
+     "invalid": "收盘连续2日破 238.97 失效"
     },
     "long": {
-     "in": "🏛 长线（16周+）：区间227.71~237.27分批；跌破年线(182.82)且20日收不回才退出",
-     "out": "目标332.178（≈半年·120交易日·上行概率80%）",
+     "in": "⏳ 长线（16周+）：方向分71.5达标,但52周位71%偏高,只等深回踩(227.021下方)",
+     "out": "目标351.414（≈半年·120交易日·上行概率81%）",
      "invalid": "跌破年线且20日收不回退出"
     },
     "probability_kind": "规则情景估计（非回测胜率）"
@@ -167,52 +313,15 @@
  ],
  "runners": [
   {
-   "name": "Veeva Systems Inc.",
-   "code": "VEEV",
-   "last": 251.0,
-   "unified_score": 83,
-   "short_score": 83,
-   "p_up": 83,
-   "p_down": 17,
-   "rr": 1.39,
-   "expected_pct": 16.8,
-   "action": "共振·小仓试错",
-   "stage": "主升阶段",
-   "mode": "双路径待触发",
-   "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
-   "sources": [
-    "财报08-26"
-   ],
-   "touch": "",
-   "market": "🇺🇸美股",
-   "horizons": [
-    {
-     "label": "10日",
-     "p_up": 83,
-     "target_price": 271.017
-    },
-    {
-     "label": "60日",
-     "p_up": 85,
-     "target_price": 320.439
-    },
-    {
-     "label": "120日",
-     "p_up": 85,
-     "target_price": 304.533
-    }
-   ]
-  },
-  {
    "name": "Harmony Gold Mining Company Limited",
    "code": "HMY",
-   "last": 21.09,
-   "unified_score": 82,
-   "short_score": 80,
-   "p_up": 80,
-   "p_down": 20,
-   "rr": 1.33,
-   "expected_pct": 13.8,
+   "last": 22.02,
+   "unified_score": 84,
+   "short_score": 85,
+   "p_up": 85,
+   "p_down": 15,
+   "rr": 1.22,
+   "expected_pct": 11.7,
    "action": "共振·小仓试错",
    "stage": "主升阶段",
    "mode": "双路径待触发",
@@ -225,31 +334,31 @@
    "horizons": [
     {
      "label": "10日",
-     "p_up": 80,
-     "target_price": 22.882
+     "p_up": 85,
+     "target_price": 23.858
     },
     {
      "label": "60日",
-     "p_up": 83,
-     "target_price": 25.48
+     "p_up": 85,
+     "target_price": 26.523
     },
     {
      "label": "120日",
-     "p_up": 59,
-     "target_price": 27.298
+     "p_up": 63,
+     "target_price": 28.388
     }
    ]
   },
   {
    "name": "Workday, Inc.",
    "code": "WDAY",
-   "last": 198.42,
-   "unified_score": 77,
-   "short_score": 80,
-   "p_up": 80,
-   "p_down": 20,
-   "rr": 0.82,
-   "expected_pct": 8.2,
+   "last": 197.32,
+   "unified_score": 75,
+   "short_score": 74,
+   "p_up": 74,
+   "p_down": 26,
+   "rr": 1.25,
+   "expected_pct": 8.1,
    "action": "共振·小仓试错",
    "stage": "趋势延续",
    "mode": "双路径待触发",
@@ -262,31 +371,68 @@
    "horizons": [
     {
      "label": "10日",
-     "p_up": 85,
+     "p_up": 80,
      "target_price": 227.49
     },
     {
      "label": "60日",
      "p_up": 85,
-     "target_price": 247.202
+     "target_price": 248.544
     },
     {
      "label": "120日",
      "p_up": 85,
-     "target_price": 265.069
+     "target_price": 263.23
     }
    ]
   },
   {
-   "name": "万和电气",
-   "code": "002543.SZ",
-   "last": 7.57,
-   "unified_score": 80,
-   "short_score": 84,
-   "p_up": 84,
-   "p_down": 16,
-   "rr": 2.75,
-   "expected_pct": 31.3,
+   "name": "Rubrik, Inc.",
+   "code": "RBRK",
+   "last": 97.52,
+   "unified_score": 74,
+   "short_score": 71,
+   "p_up": 71,
+   "p_down": 29,
+   "rr": 0.85,
+   "expected_pct": 3.4,
+   "action": "共振·小仓试错",
+   "stage": "趋势延续",
+   "mode": "双路径待触发",
+   "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
+   "sources": [
+    "财报08-27"
+   ],
+   "touch": "",
+   "market": "🇺🇸美股",
+   "horizons": [
+    {
+     "label": "10日",
+     "p_up": 77,
+     "target_price": 106.5
+    },
+    {
+     "label": "60日",
+     "p_up": 85,
+     "target_price": 117.63
+    },
+    {
+     "label": "120日",
+     "p_up": 85,
+     "target_price": 136.528
+    }
+   ]
+  },
+  {
+   "name": "康希诺",
+   "code": "688185.SS",
+   "last": 64.43,
+   "unified_score": 81,
+   "short_score": 85,
+   "p_up": 85,
+   "p_down": 15,
+   "rr": 1.8,
+   "expected_pct": 30.7,
    "action": "多周期共振·试仓复核",
    "stage": "主升阶段",
    "mode": "左侧低吸",
@@ -294,148 +440,151 @@
    "sources": [
     "涨停接力"
    ],
-   "touch": "触线:MA120+52周低位24%",
-   "market": "🇨🇳A股",
-   "horizons": [
-    {
-     "label": "10日",
-     "p_up": 84,
-     "target_price": 8.032
-    },
-    {
-     "label": "60日",
-     "p_up": 65,
-     "target_price": 8.546
-    },
-    {
-     "label": "120日",
-     "p_up": 39,
-     "target_price": 9.523
-    }
-   ]
-  },
-  {
-   "name": "中国电信",
-   "code": "601728.SS",
-   "last": 6.65,
-   "unified_score": 77,
-   "short_score": 73,
-   "p_up": 73,
-   "p_down": 27,
-   "rr": 1.45,
-   "expected_pct": 6.1,
-   "action": "共振·小仓试错",
-   "stage": "主升阶段",
-   "mode": "不进",
-   "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
-   "sources": [
-    "全选池·A股"
-   ],
    "touch": "",
    "market": "🇨🇳A股",
    "horizons": [
     {
      "label": "10日",
+     "p_up": 85,
+     "target_price": 69.467
+    },
+    {
+     "label": "60日",
      "p_up": 73,
-     "target_price": 6.928
-    },
-    {
-     "label": "60日",
-     "p_up": 78,
-     "target_price": 7.257
+     "target_price": 76.769
     },
     {
      "label": "120日",
-     "p_up": 80,
-     "target_price": 7.508
+     "p_up": 48,
+     "target_price": 81.88
     }
    ]
   },
   {
-   "name": "宝泰隆",
-   "code": "601011.SS",
-   "last": 3.04,
-   "unified_score": 73,
-   "short_score": 85,
-   "p_up": 85,
-   "p_down": 15,
-   "rr": 0.79,
-   "expected_pct": 8.3,
-   "action": "趋势偏多·等待回踩",
-   "stage": "启动确认",
-   "mode": "左侧低吸",
-   "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
-   "sources": [
-    "涨停接力"
-   ],
-   "touch": "触线:MA120",
-   "market": "🇨🇳A股",
-   "horizons": [
-    {
-     "label": "10日",
-     "p_up": 79,
-     "target_price": 3.256
-    },
-    {
-     "label": "60日",
-     "p_up": 54,
-     "target_price": 3.57
-    },
-    {
-     "label": "120日",
-     "p_up": 27,
-     "target_price": 4.11
-    }
-   ]
-  },
-  {
-   "name": "药明生物",
-   "code": "2269.HK",
-   "last": 47.9,
-   "unified_score": 73,
+   "name": "莱美药业",
+   "code": "300006.SZ",
+   "last": 5.94,
+   "unified_score": 79,
    "short_score": 81,
    "p_up": 81,
    "p_down": 19,
-   "rr": 0.25,
-   "expected_pct": 0.2,
-   "action": "趋势偏多·等待回踩",
+   "rr": 0.89,
+   "expected_pct": 9.3,
+   "action": "共振·小仓试错",
    "stage": "主升阶段",
    "mode": "双路径待触发",
    "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
    "sources": [
-    "全选池·港股"
+    "涨停接力"
    ],
    "touch": "",
-   "market": "🇭🇰港股",
+   "market": "🇨🇳A股",
    "horizons": [
     {
      "label": "10日",
      "p_up": 81,
-     "target_price": 51.588
+     "target_price": 6.52
     },
     {
      "label": "60日",
-     "p_up": 85,
-     "target_price": 61.178
+     "p_up": 65,
+     "target_price": 7.36
     },
     {
      "label": "120日",
-     "p_up": 83,
-     "target_price": 58.821
+     "p_up": 68,
+     "target_price": 7.948
+    }
+   ]
+  },
+  {
+   "name": "智飞生物",
+   "code": "300122.SZ",
+   "last": 14.48,
+   "unified_score": 76,
+   "short_score": 72,
+   "p_up": 72,
+   "p_down": 28,
+   "rr": 2.36,
+   "expected_pct": 24.1,
+   "action": "多周期共振·试仓复核",
+   "stage": "主升阶段",
+   "mode": "不进",
+   "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
+   "sources": [
+    "涨停接力"
+   ],
+   "touch": "",
+   "market": "🇨🇳A股",
+   "horizons": [
+    {
+     "label": "10日",
+     "p_up": 72,
+     "target_price": 15.614
+    },
+    {
+     "label": "60日",
+     "p_up": 73,
+     "target_price": 17.257
+    },
+    {
+     "label": "120日",
+     "p_up": 40,
+     "target_price": 18.407
     }
    ]
   },
   {
    "name": "东方海外",
    "code": "0316.HK",
-   "last": 166.9,
-   "unified_score": 71,
+   "last": 170.0,
+   "unified_score": 72,
    "short_score": 85,
    "p_up": 85,
    "p_down": 15,
    "rr": 0.03,
-   "expected_pct": -1.8,
+   "expected_pct": -1.7,
    "action": "趋势偏多·等待回踩",
+   "stage": "主升阶段",
+   "mode": "双路径待触发",
+   "why_blocked": "赔率0.03<1.2",
+   "sources": [
+    "引擎榜·港股short",
+    "引擎榜·港股mid",
+    "引擎榜·港股long",
+    "全选池·港股"
+   ],
+   "touch": "",
+   "market": "🇭🇰港股",
+   "horizons": [
+    {
+     "label": "10日",
+     "p_up": 85,
+     "target_price": 186.362
+    },
+    {
+     "label": "60日",
+     "p_up": 85,
+     "target_price": 192.253
+    },
+    {
+     "label": "120日",
+     "p_up": 82,
+     "target_price": 198.67
+    }
+   ]
+  },
+  {
+   "name": "港交所",
+   "code": "0388.HK",
+   "last": 419.0,
+   "unified_score": 71,
+   "short_score": 64,
+   "p_up": 64,
+   "p_down": 36,
+   "rr": 1.85,
+   "expected_pct": 3.6,
+   "action": "多周期共振·试仓复核",
    "stage": "主升阶段",
    "mode": "不进",
    "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
@@ -447,55 +596,56 @@
    "horizons": [
     {
      "label": "10日",
-     "p_up": 85,
-     "target_price": 179.384
+     "p_up": 64,
+     "target_price": 429.692
     },
     {
      "label": "60日",
-     "p_up": 85,
-     "target_price": 186.911
+     "p_up": 68,
+     "target_price": 445.19
     },
     {
      "label": "120日",
-     "p_up": 77,
-     "target_price": 195.199
+     "p_up": 60,
+     "target_price": 456.038
     }
    ]
   },
   {
-   "name": "港交所",
-   "code": "0388.HK",
-   "last": 414.6,
-   "unified_score": 65,
-   "short_score": 50,
-   "p_up": 50,
-   "p_down": 50,
-   "rr": 2.74,
-   "expected_pct": 2.9,
-   "action": "观察",
-   "stage": "震荡整理",
-   "mode": "等待",
-   "why_blocked": "仅1个发现源<2(自省提案:须多源共振)",
+   "name": "小米集团-W",
+   "code": "1810.HK",
+   "last": 28.7,
+   "unified_score": 68,
+   "short_score": 71,
+   "p_up": 71,
+   "p_down": 29,
+   "rr": 1.06,
+   "expected_pct": 5.6,
+   "action": "共振·小仓试错",
+   "stage": "启动确认",
+   "mode": "左侧低吸",
+   "why_blocked": "赔率1.06<1.2",
    "sources": [
+    "引擎榜·港股short",
     "全选池·港股"
    ],
-   "touch": "",
+   "touch": "触线:MA120+52周低位19%",
    "market": "🇭🇰港股",
    "horizons": [
     {
      "label": "10日",
-     "p_up": 56,
-     "target_price": 425.243
+     "p_up": 71,
+     "target_price": 30.577
     },
     {
      "label": "60日",
-     "p_up": 63,
-     "target_price": 440.67
+     "p_up": 66,
+     "target_price": 33.328
     },
     {
      "label": "120日",
-     "p_up": 56,
-     "target_price": 451.469
+     "p_up": 30,
+     "target_price": 37.18
     }
    ]
   }
