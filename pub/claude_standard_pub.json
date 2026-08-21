@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-21 09:48（北京时间）",
- "generated_at": "2026-08-21 09:48（北京时间）",
+ "asof": "2026-08-21 10:17（北京时间）",
+ "generated_at": "2026-08-21 10:17（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -16,6 +16,16 @@
  },
  "note": "V88标准规则闸:把历史会审异议固化成机检规则,名单出厂前先过这道闸——不达标的不进推荐位,转⏸未达标区并写明理由(用户定纲:'有异议的还摆在推荐位没有参考意义')。规则来自4个班次真实异议的归纳,非回测胜率;每条带rule_id,台账到期后双周深检算'被拦下的票后来表现如何'来修订阈值——规则错了要能被数据推翻。",
  "pass": {
+  "XLE": {
+   "code": "XLE",
+   "name": "美股·能源板块",
+   "side": "拐点",
+   "action": "",
+   "rules": [],
+   "why": "",
+   "downgrade": "",
+   "auto": true
+  },
   "SLB": {
    "code": "SLB",
    "name": "斯伦贝谢",
@@ -29,16 +39,6 @@
   "NOC": {
    "code": "NOC",
    "name": "诺斯罗普",
-   "side": "行业代表",
-   "action": "",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "WMT": {
-   "code": "WMT",
-   "name": "沃尔玛",
    "side": "行业代表",
    "action": "",
    "rules": [],
@@ -99,10 +99,10 @@
  },
  "reject": {},
  "stats": {
-  "n_pass": 505,
-  "n_reject": 91,
+  "n_pass": 435,
+  "n_reject": 86,
   "by_rule": {
-   "CS9": 5,
+   "CS9": 0,
    "CS1": 2,
    "CS2": 6,
    "CS3": 0,
