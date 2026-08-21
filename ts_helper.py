@@ -24,7 +24,7 @@ from datetime import datetime, timedelta
 log = logging.getLogger(__name__)
 
 # ── 直连 HTTP 客户端（关键：Tushare 是国内接口，必须绕开 Clash 代理直连）──────
-# 全局代理(HTTP_PROXY/HTTPS_PROXY)是给 yfinance/DeepSeek 用的，Tushare 走代理会
+# 全局代理(HTTP_PROXY/HTTPS_PROXY)是给 yfinance/Kimi订阅接口用的，Tushare走代理会
 # ProxyError 或超时。这里用 trust_env=False + proxies={} 强制直连，且并发安全
 # （不改全局 os.environ）。
 import requests as _rq

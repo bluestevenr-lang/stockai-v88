@@ -2029,7 +2029,7 @@ elif _nav == "🔍 个股搜索":
                 st.markdown(f"{_concl_color.get(f['conclusion'],'')} 技术阶段：**{f['conclusion']}**｜{f['action']}")
 
             # 【V88·云端个股五周期】点击直达后自动显示2/4/8/16/32周，
-            # 行情规则先算、DeepSeek thinking-high再复核，失败也不伪装AI结果。
+            # 行情规则先算、订阅K3-256K reasoning-high再复核，失败也不伪装AI结果。
             st.markdown("##### 🧭 个股周期轮换总览（深度分析第一判断）")
             st.caption("先看周期象限与2/4/8/16/32周走向；同一行情快照复用6小时思考缓存。")
             _fu = None
@@ -2041,10 +2041,10 @@ elif _nav == "🔍 个股搜索":
                 _hz_context = ((f"基本面:{(_fu or {}).get('line', '暂无')}；")
                                + f"日报相关:{'；'.join(_rel_lines)[:700]}")
                 _hz_bar = st.progress(0, text="正在计算五周期量价底稿…")
-                _hz_bar.progress(35, text="DeepSeek思考模式复核中…")
+                _hz_bar.progress(35, text="K3-256K思考模式复核中…")
                 _hz_result = _stock_horizon_cloud.analyze(
                     _tname, _tsym, _df, full=f, context=_hz_context,
-                    api_key=str(st.secrets.get("DEEPSEEK_API_KEY", "") or ""),
+                    api_key=str(st.secrets.get("KIMI_CODE_API_KEY", "") or ""),
                 )
                 _hz_bar.progress(100, text="五周期走势分析完成")
                 _hz_bar.empty()
@@ -2068,13 +2068,13 @@ elif _nav == "🔍 个股搜索":
                         f"失效：{_hz_review.get('invalid_summary', '破位后重评')}"
                     )
                     st.caption(
-                        f"模型：{_hz_review.get('model', 'deepseek-v4-flash')} · thinking-high ｜ "
+                        f"模型：{_hz_review.get('model', 'k3-256k')} · reasoning-high ｜ "
                         f"分析于 {_hz_review.get('analysis_time', '缓存时间待核')}"
                     )
                 else:
                     st.caption(
                         "ℹ️ 云端为轻量只读版，个股分析用**确定性规则底稿**（各周期概率/动量/量比/支撑压力"
-                        "+规则人话理由，上表已完整）；AI思考复核仅在桌面版按需运行，不在公开云端调用（省钱+防滥用）。"
+                        "+规则人话理由，上表已完整）；K3订阅复核不可用时自动失败关闭，不冒充AI结论。"
                     )
             except Exception as _hz_cloud_exc:
                 st.warning(f"五周期走势暂不可用：{type(_hz_cloud_exc).__name__}")

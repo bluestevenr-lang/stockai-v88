@@ -67,29 +67,14 @@ def test_yfinance_direct():
         except Exception as e:
             print(f"   {sym:12s} ERROR {type(e).__name__}: {str(e)[:70]}")
 
-# ── 4. DeepSeek API 连通性（日报引擎）──────────────────────────────────
-def test_deepseek():
-    print("\n[DeepSeek API]")
-    key = os.getenv("DEEPSEEK_API_KEY", "")
-    if not key:
-        # 从 .env 读
-        try:
-            for ln in open(".env", encoding="utf-8"):
-                if ln.strip().startswith("DEEPSEEK_API_KEY"):
-                    key = ln.split("=", 1)[1].strip().strip('"').strip("'")
-        except Exception:
-            pass
-    if not key:
-        print("   ❌ 未找到 DEEPSEEK_API_KEY"); return
-    os.environ.setdefault("http_proxy", "http://127.0.0.1:7897")
-    os.environ.setdefault("https_proxy", "http://127.0.0.1:7897")
+# ── 4. Kimi Code订阅连通性（日报引擎）─────────────────────────────────
+def test_kimi_subscription():
+    print("\n[Kimi Code订阅 / K3-256K]")
     try:
-        from openai import OpenAI
-        c = OpenAI(api_key=key, base_url="https://api.deepseek.com/v1")
+        from kimi_subscription import complete
         t0 = time.time()
-        r = c.chat.completions.create(model="deepseek-chat",
-                messages=[{"role": "user", "content": "只回复两个字：正常"}], max_tokens=10, timeout=20)
-        print(f"   ✅ 返回: {r.choices[0].message.content!r}  ({(time.time()-t0):.1f}s)  模型={r.model}")
+        text, body = complete("只回复两个字：正常", max_tokens=32, reasoning_effort="low", timeout=30)
+        print(f"   ✅ 返回: {text!r}  ({(time.time()-t0):.1f}s)  模型={body.get('model')}")
     except Exception as e:
         print(f"   ❌ ERROR {type(e).__name__}: {str(e)[:120]}")
 
@@ -116,10 +101,10 @@ def test_tushare():
 
 if __name__ == "__main__":
     print("=" * 70); print("V88 数据源全链路诊断"); print("=" * 70)
-    tests = sys.argv[1:] or ["em", "yf", "yfd", "ds", "ts"]
+    tests = sys.argv[1:] or ["em", "yf", "yfd", "kimi", "ts"]
     if "em" in tests: line(); test_eastmoney()
     if "yf" in tests: line(); test_yfinance()
     if "yfd" in tests: line(); test_yfinance_direct()
-    if "ds" in tests: line(); test_deepseek()
+    if "kimi" in tests: line(); test_kimi_subscription()
     if "ts" in tests: line(); test_tushare()
     print("\n" + "=" * 70 + "\n诊断完成")

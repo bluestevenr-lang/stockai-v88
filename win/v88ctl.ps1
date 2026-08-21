@@ -10,6 +10,7 @@ $RepoRoot = Split-Path -Parent $PSScriptRoot
 $ToolsDir = Join-Path $env:USERPROFILE '.openclaw\tools'
 $CfExe    = Join-Path $ToolsDir 'cloudflared.exe'
 $CfLog    = Join-Path $ToolsDir 'cloudflared.log'
+$PyLauncher = 'C:\Users\admin\AppData\Local\Programs\Python\Launcher\py.exe'
 
 function Test-V88Up {
     try {
@@ -22,7 +23,8 @@ function Start-V88 {
     if (Test-V88Up) { Write-Output 'V88 已在运行 (http://127.0.0.1:8501)'; return }
     $app = Join-Path $RepoRoot 'app_v88_integrated.py'
     if (-not (Test-Path $app)) { throw "找不到 $app" }
-    Start-Process py -WindowStyle Minimized -WorkingDirectory $RepoRoot -ArgumentList @(
+    if (-not (Test-Path -LiteralPath $PyLauncher)) { throw "找不到Python启动器 $PyLauncher" }
+    Start-Process $PyLauncher -WindowStyle Hidden -WorkingDirectory $RepoRoot -ArgumentList @(
         '-3','-m','streamlit','run','app_v88_integrated.py',
         '--server.address','127.0.0.1','--server.headless','true','--server.port','8501'
     )
@@ -35,6 +37,7 @@ function Start-V88 {
 }
 
 function Get-TunnelUrl {
+    if (-not (Get-Process cloudflared -ErrorAction SilentlyContinue)) { return $null }
     if (Test-Path $CfLog) {
         $m = Select-String -Path $CfLog -Pattern 'https://[a-z0-9-]+\.trycloudflare\.com' -AllMatches |
              Select-Object -Last 1

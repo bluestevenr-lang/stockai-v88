@@ -15,7 +15,7 @@
    powershell -ExecutionPolicy Bypass -File .\初始化V88.ps1
    ```
    - 私仓 v88-daily-report 首次克隆会弹 GitHub 登录 → 用 bluestevenr-lang 账号授权
-3. **密钥**：把 Mac `~/Desktop/StockAI/.env` 的内容粘进 Win `Desktop\StockAI\.env`（DEEPSEEK_API_KEY / TUSHARE_TOKEN）。密钥永不入 git。
+3. **密钥**：把 Mac `~/Desktop/StockAI/.env` 的内容粘进 Win `Desktop\StockAI\.env`（`KIMI_CODE_API_KEY` / `TUSHARE_TOKEN`）。Kimi密钥必须以`sk-kimi-`开头；密钥永不入 git。
 4. **代理端口**：若 Clash 端口不是 7890，改 `win/启动V88.bat` 里两行 proxy。
 5. **启动**：双击桌面「V88」快捷方式。首次页面加载约 1-2 分钟（行情缓存冷）。
 
@@ -23,7 +23,7 @@
 
 - **只跑前端，不跑流水线**：日报/推送/雷达族落盘全部由 GitHub Actions 云端产出，Win 通过 `git pull` 消费即可。**不要**在 Win 配置任何定时任务（会与 Actions 重复推送、双花流量）。
 - **并行编辑先 pull**：Mac 与 Win 都可能改 watchlist/持仓录单（会 git push 私仓）。铁律：**操作录单前先点一次启动脚本（内含 pull）**；冲突时生成物文件（data/*.json、journal/）一律取远端。
-- 深链/公告/热榜等国内接口代码里已强制直连（trust_env=False），Clash 只服务 Yahoo/DeepSeek。
+- 深链/公告/热榜等国内接口代码里已强制直连（trust_env=False），Clash只服务Yahoo及其他境外数据源；Kimi走Code订阅接口。
 - Mac 独有不迁移：launchd 定时（Actions 已覆盖）、AppleScript 快捷方式（Win 用 .bat 等价实现，已含标签复用逻辑的简化版：固定 8501 端口+浏览器自动打开）。
 
 ## 故障速查

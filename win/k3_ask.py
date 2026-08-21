@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-# k3_ask.py — 调用 Moonshot K3 回答一个问题（顺滑层"K3回复"关键词的核心脚本）
+# k3_ask.py — 历史兼容入口；仅调用 Kimi Code 订阅 K3-256K
 # v2（2026-08-20）：自动注入 V88 工作区脱敏快照（overview + 提到的个股 + 相关小模块），
 #   K3 不再裸答；答复尾部自带模型/数据签名，避免与接待员页脚混淆。
-# 密钥运行时从本机 ~/.openclaw/openclaw.json 读取，本文件不含任何密钥，可安全入库。
+# 飞书主会话已直接使用 K3-256K，不应再由 AGENTS.md 调用本脚本。
 import csv
 import json
 import re
 import sys
-import urllib.request
-import urllib.error
 from datetime import datetime
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from kimi_subscription import chat_completion, message_text
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -50,25 +51,6 @@ MODULE_BY_KEYWORD = {
 }
 MODULE_MAX_BYTES = 8192
 STOCK_MAX = 4
-
-
-def find_key(cfg: dict):
-    mp = cfg.get("models", {}).get("providers", {}).get("moonshot", {})
-    if isinstance(mp, dict):
-        for cand in (mp.get("apiKey"), (mp.get("auth") or {}).get("apiKey") if isinstance(mp.get("auth"), dict) else None):
-            if isinstance(cand, str) and cand.strip().startswith("sk-"):
-                return cand.strip()
-    m = re.search(r"sk-[A-Za-z0-9]{16,}", json.dumps(cfg, ensure_ascii=False))
-    return m.group(0) if m else None
-
-
-def find_base(cfg: dict):
-    mp = cfg.get("models", {}).get("providers", {}).get("moonshot", {})
-    if isinstance(mp, dict):
-        base = mp.get("baseUrl") or mp.get("baseURL")
-        if isinstance(base, str) and base.startswith("http"):
-            return base.rstrip("/")
-    return "https://api.moonshot.cn/v1"
 
 
 def load_json(p: Path):
@@ -189,14 +171,6 @@ def main():
         print("用法: k3ask <问题>")
         sys.exit(2)
 
-    cfg_path = Path.home() / ".openclaw" / "openclaw.json"
-    cfg = json.load(open(cfg_path, encoding="utf-8"))
-    key = find_key(cfg)
-    if not key:
-        print("ERROR: 未在 openclaw.json 中找到 moonshot 密钥")
-        sys.exit(1)
-    base = find_base(cfg)
-
     ctx_block, freshness, codes = build_context_block(q)
     user = q
     if ctx_block:
@@ -206,27 +180,20 @@ def main():
             + "\n\n请只基于以上快照与你的书理分析作答；快照没有的数据明说「快照无此数据」。"
         )
 
-    body = json.dumps({
-        "model": "kimi-k3",
-        "messages": [
+    try:
+        data = chat_completion(
+            messages=[
             {"role": "system", "content": SYSTEM},
             {"role": "user", "content": user},
-        ],
-        "temperature": 1,
-    }).encode("utf-8")
-
-    req = urllib.request.Request(
-        base + "/chat/completions",
-        data=body,
-        headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"},
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=180) as r:
-            data = json.load(r)
-        answer = data["choices"][0]["message"]["content"]
-        sig = ("\n\n—\n答复模型: kimi-k3（k3ask 直调 Moonshot，非接待员）｜数据快照: "
+            ],
+            model="k3-256k",
+            temperature=1,
+            timeout=180,
+        )
+        answer = message_text(data)
+        sig = ("\n\n—\n答复模型: k3-256k（Kimi Code订阅兼容入口）｜数据快照: "
                + (freshness or "无") + "｜命中个股: " + ("、".join(codes) if codes else "无")
-               + "\n注：消息页脚的 Model 是接待员 K2.7 的签名，本答复以本行为准。")
+               + "\n注：飞书主会话已经直接使用该模型，通常无需调用本脚本。")
         print(answer + sig)
         # 记账：把本次调用的 token 用量写入本地账本（供 k3_quota.py 统计）
         try:
@@ -237,15 +204,12 @@ def main():
                 if new_file:
                     w.writerow(["ts", "model", "prompt_tokens", "completion_tokens", "question"])
                 w.writerow([datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                            data.get("model", "kimi-k3"),
+                            data.get("model", "k3-256k"),
                             usage.get("prompt_tokens", 0),
                             usage.get("completion_tokens", 0),
                             q[:80]])
         except Exception:
             pass  # 记账失败不影响回答
-    except urllib.error.HTTPError as e:
-        print("ERROR: HTTP %s — %s" % (e.code, e.read().decode("utf-8", "replace")[:500]))
-        sys.exit(1)
     except Exception as e:
         print("ERROR: %s" % e)
         sys.exit(1)

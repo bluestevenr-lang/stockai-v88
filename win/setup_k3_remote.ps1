@@ -1,5 +1,6 @@
 ﻿# setup_k3_remote.ps1 —— 把 Win 的 v88-mobile 升级为: K3大脑 + V88遥控能力
 # 用法: 双击 "升级K3遥控-双击我.bat"，首次粘贴 Moonshot API Key；重复运行自动跳过已有配置
+# 现行口径（2026-08-20）：仅接入 Kimi Code 订阅 k3-256k，不再写入 Moonshot 按量 API。
 $ErrorActionPreference = 'Stop'
 function Log($m) { Write-Host "[K3升级] $m" -ForegroundColor Cyan }
 
@@ -57,18 +58,35 @@ if (-not $Openclaw) {
 }
 Log "openclaw: $Openclaw"
 
-# --- 1. 读取/复用 Moonshot API Key（只写本机配置，永不入 git） ---
-# 直接读配置文件找索引（新版 CLI 的 config get 需要 <path> 参数，读文件最稳）
+# --- 1. 读取/复用 Kimi Code 订阅密钥（只进入 OpenClaw 认证库，永不入 git/config） ---
 $cfgPath = Join-Path $env:USERPROFILE '.openclaw\openclaw.json'
 $existing = Get-Content $cfgPath -Raw -Encoding UTF8 | ConvertFrom-Json
-$apiKey = $existing.models.providers.moonshot.apiKey
-if ($apiKey) {
-    Log '检测到已有 Moonshot Key，跳过输入。'
+function Find-KimiSubscriptionKey {
+    if ($env:KIMI_CODE_API_KEY -and $env:KIMI_CODE_API_KEY.StartsWith('sk-kimi-')) {
+        return $env:KIMI_CODE_API_KEY
+    }
+    $known = @(
+        (Join-Path $env:USERPROFILE '.kimi\kimi-claw\openclaw.json'),
+        (Join-Path $env:USERPROFILE '.openclaw\openclaw.json')
+    )
+    foreach ($p in $known) {
+        if (-not (Test-Path $p)) { continue }
+        $raw = Get-Content $p -Raw -Encoding UTF8
+        $m = [regex]::Match($raw, 'sk-kimi-[A-Za-z0-9_-]{16,}')
+        if ($m.Success) { return $m.Value }
+    }
+    return $null
+}
+$KimiSubscriptionKey = Find-KimiSubscriptionKey
+if ($KimiSubscriptionKey) {
+    Log '检测到 Kimi Code 订阅认证，跳过输入。'
 } else {
-    $sec = Read-Host '请输入 Moonshot API Key（platform.moonshot.cn 的 API Key 管理页生成）' -AsSecureString
-    $apiKey = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
+    $sec = Read-Host '请输入 Kimi Code 订阅密钥（必须以 sk-kimi- 开头）' -AsSecureString
+    $KimiSubscriptionKey = [Runtime.InteropServices.Marshal]::PtrToStringAuto(
         [Runtime.InteropServices.Marshal]::SecureStringToBSTR($sec))
-    if (-not $apiKey) { throw 'API Key 不能为空。' }
+}
+if (-not $KimiSubscriptionKey.StartsWith('sk-kimi-')) {
+    throw '这不是 Kimi Code 订阅密钥；已拒绝写入，避免误走 Moonshot 按量 API。'
 }
 
 # --- 2. 下载 cloudflared（手机访问隧道的载体） ---
@@ -96,11 +114,11 @@ $idx = -1
 for ($i=0; $i -lt $existing.agents.list.Count; $i++) { if ($existing.agents.list[$i].id -eq 'v88-mobile') { $idx = $i; break } }
 if ($idx -lt 0) { throw '配置里找不到 v88-mobile 代理。' }
 
-# --- 5. 写入: K3模型 + moonshot密钥 + exec放行(仅限v88ctl) ---
+# --- 5. 写入: K3-256K模型 + 订阅认证 + exec放行(仅限v88ctl) ---
 $K3Model = @(@{
-    id = 'kimi-k3'; name = 'Kimi K3'; reasoning = $true
+    id = 'k3-256k'; name = 'Kimi K3-256K (subscription)'; reasoning = $true
     input = @('text','image')
-    contextWindow = 1048576; maxTokens = 32768
+    contextWindow = 262144; maxTokens = 32768
 })
 $ToolPolicy = @{
     profile = 'coding'
@@ -118,37 +136,33 @@ $ToolPolicy = @{
     }
 }
 $Batch = @(
-    @{ path = 'models.providers.moonshot'; value = @{
-        baseUrl = 'https://api.moonshot.cn/v1'
+    @{ path = 'models.providers.kimi-coding'; value = @{
+        baseUrl = 'https://api.kimi.com/coding/v1'
         api     = 'openai-completions'
-        apiKey  = $apiKey
         models  = $K3Model
     } },
-    @{ path = "agents.list[$idx].model"; value = 'moonshot/kimi-k3' },
+    @{ path = "agents.list[$idx].model"; value = @{ primary = 'kimi-coding/k3-256k'; fallbacks = @() } },
     @{ path = "agents.list[$idx].tools"; value = $ToolPolicy },
-    @{ path = 'agents.defaults.models["moonshot/kimi-k3"].agentRuntime'; value = @{ id = 'openclaw' } }
+    @{ path = 'agents.defaults.models["kimi-coding/k3-256k"].agentRuntime'; value = @{ id = 'openclaw' } }
 )
 $BatchPath = Join-Path $env:TEMP 'openclaw_k3_batch.json'
 $Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 [System.IO.File]::WriteAllText($BatchPath, ($Batch | ConvertTo-Json -Depth 20), $Utf8NoBom)
 try {
-    Log '写入 K3 模型与遥控权限 ...'
-    & $Openclaw config set --batch-file $BatchPath | Out-Host
+    Log '写入 K3-256K 模型与遥控权限 ...'
+    $KimiSubscriptionKey | & $Openclaw models auth --agent v88-mobile paste-api-key `
+        --provider kimi-coding --profile-id kimi-coding:v88-subscription | Out-Host
+    if ($LASTEXITCODE -ne 0) { throw "订阅认证写入失败 ($LASTEXITCODE)" }
+    & $Openclaw config set --batch-file $BatchPath --merge | Out-Host
     if ($LASTEXITCODE -ne 0) { throw "config set 失败 ($LASTEXITCODE)" }
 } finally { Remove-Item -Force $BatchPath -ErrorAction SilentlyContinue }
 & $Openclaw config validate | Out-Host
 
-# --- 6. 重启网关生效 ---
-Log '重启 OpenClaw 网关 ...'
-Stop-ScheduledTask -TaskName 'OpenClaw Gateway' -ErrorAction SilentlyContinue
-Start-Sleep -Seconds 3
-Start-ScheduledTask -TaskName 'OpenClaw Gateway'
-Start-Sleep -Seconds 8
-$st = (Get-ScheduledTask -TaskName 'OpenClaw Gateway').State
-Log "网关状态: $st"
+# --- 6. 验证当前代理（新版 OpenClaw 热加载，无需重启网关） ---
+& $Openclaw models status --agent v88-mobile --json | Out-Host
 
 Write-Host ''
 Write-Host '===== 完成 =====' -ForegroundColor Green
-Write-Host '蓝一已切换为 Kimi K3 大脑，并获准运行 win\v88ctl.ps1（启动/链接/同步/状态）。'
+Write-Host '蓝一已切换为 Kimi Code 订阅 K3-256K，并获准运行 win\v88ctl.ps1（启动/链接/同步/状态）。'
 Write-Host '若飞书还没启用: 再双击 "启用OpenClaw飞书-双击我.bat" 填 App ID/Secret。'
 Write-Host '测试: 飞书里对蓝一说 "打开V88" —— 它应回一个 trycloudflare 链接。'

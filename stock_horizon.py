@@ -1,6 +1,6 @@
 """V88 个股 2/4/6/8/16 周周期判断。
 
-确定性部分只根据行情计算多周期底稿；DeepSeek V4 Flash 的 thinking-high
+确定性部分只根据行情计算多周期底稿；Kimi Code订阅K3-256K的reasoning-high
 只做证据复核和情景归纳，不得编造价格、新闻或把置信度冒充回测胜率。
 """
 from __future__ import annotations
@@ -17,7 +17,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import requests
+from kimi_subscription import api_key as kimi_api_key, chat_completion, message_text, model_name
 
 
 HORIZONS = (2, 4, 6, 8, 16)
@@ -186,7 +186,7 @@ _REASON_KINDS = {
 
 def forward_reasons(name, symbol, fwd, context="", api_key="", kind="个股", allow_ai=True) -> dict:
     """给「当下前瞻」的每个周期配一句中文人话理由（按 kind 融合基本面/宏观/行业 + 新闻 + 技术面，
-    不出现术语），供阅读者看懂。DeepSeek 思考模式生成，超预算/无Key/失败时回退到确定性大白话。
+    不出现术语），供阅读者看懂。K3-256K思考生成，订阅不可用/失败时回退到确定性大白话。
     概率仍由确定性引擎给出，这里只负责把理由讲人话，不改概率。个股/大盘/板块共用此函数。
 
     allow_ai=False 时强制走确定性大白话，即使环境里有 Key 也不调用 AI、不花预算——
@@ -199,7 +199,7 @@ def forward_reasons(name, symbol, fwd, context="", api_key="", kind="个股", al
         "overall": f"{stage}，综合上涨概率{fwd.get('weighted_p_up')}%，{fwd.get('overall_action', '')}",
         "reasons": {r.get("label"): _fallback_reason(r.get("label"), r.get("view"), stage) for r in rows},
     }
-    key = str(api_key or os.getenv("DEEPSEEK_API_KEY", "")).strip()
+    key = kimi_api_key(api_key)
     if not allow_ai or not key or not rows:
         return fallback
     _facts = {r.get("label"): {"方向": r.get("view"), "上涨概率": r.get("p_up"),
@@ -233,28 +233,20 @@ def forward_reasons(name, symbol, fwd, context="", api_key="", kind="个股", al
     if not ticket:
         return dict(fallback, status="budget")
     try:
-        response = requests.post(
-            "https://api.deepseek.com/v1/chat/completions",
-            headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-            json={"model": os.getenv("DEEPSEEK_REVIEW_MODEL", "deepseek-v4-flash"),
-                  "messages": [{"role": "user", "content": prompt}],
-                  "thinking": {"type": "enabled"}, "reasoning_effort": "high",
-                  "temperature": 0.3, "max_tokens": 3000},
-            timeout=150,
+        body = chat_completion(
+            [{"role": "user", "content": prompt}], key=key, model=model_name(),
+            reasoning_effort="high", temperature=0.3, max_tokens=3000,
+            response_format={"type": "json_object"}, timeout=150,
         )
-        if response.status_code != 200:
-            settle(ticket, ok=False)
-            return dict(fallback, status="failed")
-        body = response.json()
         settle(ticket, body.get("usage"), ok=True)
-        parsed = _parse_json(body["choices"][0]["message"].get("content", "")) or {}
+        parsed = _parse_json(message_text(body)) or {}
         ai_reasons = parsed.get("reasons") or {}
         reasons = {}
         for r in rows:
             lab = r.get("label")
             reasons[lab] = _brief(ai_reasons.get(lab) or fallback["reasons"][lab], 44)
         result = {"status": "completed", "mode": "thinking-high",
-                  "model": os.getenv("DEEPSEEK_REVIEW_MODEL", "deepseek-v4-flash"),
+                  "model": model_name(),
                   "analysis_time": datetime.now(BJT).strftime("%Y-%m-%d %H:%M（北京时间）"),
                   "overall": _brief(parsed.get("overall") or fallback["overall"], 30),
                   "reasons": reasons}
@@ -269,10 +261,10 @@ def forward_reasons(name, symbol, fwd, context="", api_key="", kind="个股", al
 
 
 def thinking_review(name, symbol, facts, context="", api_key="") -> dict:
-    """DeepSeek thinking-high 复核；失败时返回状态，由页面继续展示规则底稿。"""
-    key = str(api_key or os.getenv("DEEPSEEK_API_KEY", "")).strip()
+    """K3-256K reasoning-high复核；失败时由页面继续展示规则底稿。"""
+    key = kimi_api_key(api_key)
     if not key:
-        return {"status": "no_key", "reason": "未配置DeepSeek API Key", "horizons": {}}
+        return {"status": "no_key", "reason": "Kimi Code订阅未配置", "horizons": {}}
     ckey = _cache_key(symbol, facts, context)
     cached = _cache_read(ckey)
     if cached:
@@ -305,25 +297,13 @@ def thinking_review(name, symbol, facts, context="", api_key="") -> dict:
         return {"status": "budget", "reason": "网页AI预算闸门或6小时缓存", "horizons": {}}
 
     try:
-        response = requests.post(
-            "https://api.deepseek.com/v1/chat/completions",
-            headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-            json={
-                "model": os.getenv("DEEPSEEK_REVIEW_MODEL", "deepseek-v4-flash"),
-                "messages": [{"role": "user", "content": prompt}],
-                "thinking": {"type": "enabled"},
-                "reasoning_effort": "high",
-                "temperature": 0.2,
-                "max_tokens": 4000,
-            },
-            timeout=150,
+        body = chat_completion(
+            [{"role": "user", "content": prompt}], key=key, model=model_name(),
+            reasoning_effort="high", temperature=0.2, max_tokens=4000,
+            response_format={"type": "json_object"}, timeout=150,
         )
-        if response.status_code != 200:
-            settle(ticket, ok=False)
-            return {"status": "failed", "reason": f"HTTP {response.status_code}", "horizons": {}}
-        body = response.json()
         settle(ticket, body.get("usage"), ok=True)
-        parsed = _parse_json(body["choices"][0]["message"].get("content", ""))
+        parsed = _parse_json(message_text(body))
         allowed_views = {"偏涨", "震荡", "偏跌"}
         clean = {}
         for label in (f"{w}周" for w in HORIZONS):
@@ -352,7 +332,7 @@ def thinking_review(name, symbol, facts, context="", api_key="") -> dict:
         result = {
             "status": "completed",
             "mode": "thinking-high",
-            "model": os.getenv("DEEPSEEK_REVIEW_MODEL", "deepseek-v4-flash"),
+            "model": model_name(),
             "analysis_time": datetime.now(BJT).strftime("%Y-%m-%d %H:%M（北京时间）"),
             "summary": _brief(parsed.get("summary") or "五周期复核完成", 35),
             "cycle_phase": _brief(parsed.get("cycle_phase") or "震荡", 8),

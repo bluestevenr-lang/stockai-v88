@@ -37,7 +37,7 @@ $envFile = "$Desktop\StockAI\.env"
 if (-not (Test-Path $envFile)) {
   @"
 # 从 Mac 的 ~/Desktop/StockAI/.env 复制真实值过来（微信传自己即可）
-DEEPSEEK_API_KEY=在这里粘贴
+KIMI_CODE_API_KEY=在这里粘贴sk-kimi开头的订阅密钥
 TUSHARE_TOKEN=在这里粘贴
 "@ | Out-File -Encoding utf8 $envFile
   Write-Host "⚠️ 已生成 .env 模板：$envFile —— 请粘贴真实密钥后再启动" -ForegroundColor Yellow

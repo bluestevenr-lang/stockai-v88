@@ -9,7 +9,10 @@
         "name": "v88-mobile",
         "workspace": "C:\\Users\\admin\\.openclaw\\workspaces\\v88-mobile",
         "agentDir": "C:\\Users\\admin\\.openclaw\\agents\\v88-mobile\\agent",
-        "model": "moonshot/kimi-k3",
+        "model": {
+          "primary": "kimi-coding/k3-256k",
+          "fallbacks": []
+        },
         "tools": {
           "profile": "coding",
           "allow": [

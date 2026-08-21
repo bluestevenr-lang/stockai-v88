@@ -31,14 +31,14 @@ def test_direction_responds_to_trend():
 
 
 def test_without_key_keeps_deterministic_fallback(monkeypatch):
-    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    monkeypatch.setenv("V88_DISABLE_LLM", "1")
     result = stock_horizon.analyze("测试", "TEST", _frame(1))
     assert result["review"]["status"] == "no_key"
     assert len(stock_horizon.table_rows(result)) == 5
 
 
 def test_cycle_visual_contains_full_first_screen_content(monkeypatch):
-    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    monkeypatch.setenv("V88_DISABLE_LLM", "1")
     result = stock_horizon.analyze("测试公司", "TEST", _frame(1))
     html = stock_horizon.cycle_visual_html(result, "测试公司", "TEST")
     for text in ("领涨启动", "高位派发", "退潮杀跌", "低位蓄势",

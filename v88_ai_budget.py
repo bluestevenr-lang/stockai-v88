@@ -1,7 +1,6 @@
-"""V88 网页 AI 预算闸门：全系统基础 7 元，重点思考可用至 10 元。
+"""V88网页端Kimi Code订阅用量账本。
 
-网页 AI 均由用户主动触发，属于深度复核；实际总消费以云端发布的 DeepSeek
-官方余额对账为下限，避免网页/桌面/云端三套本地账本各算各的。
+会员共享额度由Kimi服务端执行；本地仅记录调用与token，不再按人民币余额拦截。
 """
 from __future__ import annotations
 
@@ -15,8 +14,8 @@ from pathlib import Path
 import requests
 
 LEDGER = Path(__file__).resolve().parent / "data" / "web_ai_budget.json"
-BASE_CAP = float(os.getenv("V88_AI_BASE_BUDGET_RMB", "7") or 7)
-CAP = float(os.getenv("V88_AI_MONTHLY_BUDGET_RMB", "10") or 10)
+BASE_CAP = 0.0
+CAP = 0.0
 _TRUTH_URL = "https://raw.githubusercontent.com/bluestevenr-lang/stockai-v88/data/pub/budget_truth_pub.json"
 _TRUTH_CACHE = {"ts": 0.0, "data": {}}
 
@@ -27,8 +26,9 @@ def _load():
         data = json.loads(LEDGER.read_text(encoding="utf-8"))
     except Exception:
         data = {}
-    if data.get("month") != month:
-        data = {"month": month, "spent_rmb": 0.0, "calls": []}
+    if data.get("month") != month or data.get("billing_mode") != "kimi-code-subscription":
+        data = {"month": month, "billing_mode": "kimi-code-subscription",
+                "model": "k3-256k", "spent_rmb": 0.0, "calls": []}
     return data
 
 
@@ -72,13 +72,10 @@ def _effective_spent(data: dict, *, sync_truth: bool = False) -> float:
 
 def reserve(prompt: str, output_tokens=1600, *, scope="web-general", priority=False):
     data = _load()
-    est = round((len(str(prompt)) / 1.5 + output_tokens * 2) / 1_000_000, 6)
-    limit = CAP if priority else BASE_CAP
-    if _effective_spent(data, sync_truth=True) + est > min(CAP, limit):
-        return None
-    ticket = {"id": uuid.uuid4().hex[:10], "rmb": est, "ts": time.time(),
-              "scope": str(scope), "priority": bool(priority)}
-    data["spent_rmb"] = round(float(data.get("spent_rmb", 0)) + est, 6)
+    ticket = {"id": uuid.uuid4().hex[:10], "rmb": 0.0, "ts": time.time(),
+              "scope": str(scope), "priority": bool(priority), "model": "k3-256k",
+              "estimated_input_tokens": max(1, int(len(str(prompt)) / 1.5)),
+              "estimated_output_tokens": max(1, int(output_tokens))}
     data.setdefault("pending", {})[ticket["id"]] = ticket
     LEDGER.parent.mkdir(exist_ok=True)
     LEDGER.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -95,10 +92,9 @@ def settle(ticket, usage=None, ok=True):
     usage = usage or {}
     inp = int(usage.get("prompt_tokens", 0) or 0)
     out = int(usage.get("completion_tokens", 0) or 0)
-    actual = ((inp + out * 2) / 1_000_000) if (inp or out) else float(ticket["rmb"])
-    data["spent_rmb"] = round(max(0.0, float(data.get("spent_rmb", 0))
-                                  - float(ticket["rmb"]) + (actual if ok else 0.0)), 6)
-    data["calls"] = (data.get("calls") or [])[-99:] + [{"ts": time.time(), "rmb": actual if ok else 0}]
+    data["calls"] = (data.get("calls") or [])[-999:] + [{
+        "ts": time.time(), "ok": bool(ok), "scope": ticket.get("scope"),
+        "prompt_tokens": inp, "completion_tokens": out, "model": "k3-256k"}]
     data["cap_rmb"] = CAP
     LEDGER.parent.mkdir(exist_ok=True)
     LEDGER.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -106,8 +102,11 @@ def settle(ticket, usage=None, ok=True):
 
 def status():
     data = _load()
-    ledger = float(data.get("spent_rmb", 0))
-    spent = _effective_spent(data)
-    return {"spent": spent, "ledger_spent": ledger, "base_cap": BASE_CAP, "cap": CAP,
-            "base_remaining": max(0.0, BASE_CAP - spent),
-            "remaining": max(0.0, CAP - spent)}
+    calls = data.get("calls") or []
+    good = [x for x in calls if x.get("ok")]
+    return {"billing_mode": "kimi-code-subscription", "model": "k3-256k",
+            "calls": len(good), "failed_calls": len(calls) - len(good),
+            "prompt_tokens": sum(int(x.get("prompt_tokens", 0) or 0) for x in good),
+            "completion_tokens": sum(int(x.get("completion_tokens", 0) or 0) for x in good),
+            "cash_rmb": 0.0, "spent": 0.0, "ledger_spent": 0.0,
+            "base_cap": 0.0, "cap": 0.0, "base_remaining": 0.0, "remaining": 0.0}

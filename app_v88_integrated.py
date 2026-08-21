@@ -58,7 +58,7 @@ def _v88_sentinel9(_repo, module, exc=None):
 
 def call_gemini_api(prompt, model_name=None, *, priority=False, scope="web-general"):
     """
-    V88 统一 AI 调用入口（历史函数名保留；实际只调用 DeepSeek）
+    V88统一AI调用入口（历史函数名保留；实际使用Kimi Code订阅K3-256K）
     
     参数:
         prompt: 提示词
@@ -67,51 +67,30 @@ def call_gemini_api(prompt, model_name=None, *, priority=False, scope="web-gener
     返回:
         AI生成的文本响应
     """
-    from v88_ai_budget import reserve as _web_budget_reserve, settle as _web_budget_settle
-    _budget_ticket = _web_budget_reserve(prompt, output_tokens=2200,
-                                         priority=priority, scope=scope)
-    if not _budget_ticket:
-        _limit_text = "10元重点复核硬额度" if priority else "7元普通分析额度"
-        return f"⚠️ V88本月{_limit_text}已用完；确定性行情、持仓、自选和预警继续正常运行"
-    _ds_key = os.getenv("DEEPSEEK_API_KEY", "")
-    if _ds_key:
-        try:
-            _r = requests.post(
-                "https://api.deepseek.com/v1/chat/completions",
-                headers={"Authorization": f"Bearer {_ds_key}", "Content-Type": "application/json"},
-                json={"model": "deepseek-v4-flash",
-                      "messages": [{"role": "user", "content": prompt}],
-                      "temperature": 0.3, "max_tokens": 8192},
-                timeout=120
-            )
-            if _r.status_code == 200:
-                _body = _r.json()
-                _web_budget_settle(_budget_ticket, _body.get("usage"), ok=True)
-                return _body["choices"][0]["message"]["content"]
-        except Exception as _de:
-            logging.warning(f"DeepSeek requests failed: {_de}")
-    if not MY_DEEPSEEK_KEY:
-        _web_budget_settle(_budget_ticket, ok=False)
-        return "❌ 请配置 DEEPSEEK_API_KEY"
-    if AI_PROVIDER == "deepseek" and _deepseek_client:
-        try:
-            response = _deepseek_client.chat.completions.create(
-                model="deepseek-v4-flash",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.3, max_tokens=8192, timeout=120,
-            )
-            _web_budget_settle(_budget_ticket, getattr(response, "usage", None) and response.usage.model_dump(), ok=True)
-            return response.choices[0].message.content
-        except Exception as e:
-            _web_budget_settle(_budget_ticket, ok=False)
-            logging.error(f"❌ DeepSeek API异常: {str(e)}")
-            return f"❌ DeepSeek API错误: {str(e)}"
-    return "❌ DeepSeek API调用失败，请检查API Key和网络"
+    ticket = None
+    try:
+        from kimi_subscription import complete
+        from v88_ai_budget import reserve, settle
+        ticket = reserve(prompt, output_tokens=8192, priority=priority, scope=scope)
+        if not ticket:
+            return "❌ Kimi Code订阅调用正在冷却，请稍后重试"
+        text, body = complete(prompt, model=model_name or "k3-256k", temperature=0.3,
+                              reasoning_effort="high", max_tokens=8192, timeout=150)
+        settle(ticket, body.get("usage"), ok=True)
+        return text
+    except Exception as e:
+        if ticket:
+            try:
+                settle(ticket, ok=False)
+            except Exception:
+                pass
+        logging.error(f"❌ Kimi Code订阅调用异常: {str(e)}")
+        return f"❌ Kimi Code订阅调用失败: {str(e)}"
 
 
 def call_gemini_api_stream(prompt, model_name=None, max_output_tokens=8192):
-    """历史流式入口兼容层；实际固定调用 DeepSeek。"""
-    yield call_gemini_api(prompt, model_name=None)
+    """历史流式入口兼容层；实际固定调用订阅K3-256K。"""
+    yield call_gemini_api(prompt, model_name=model_name)
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -401,7 +380,7 @@ if os.environ.get("AI_DAILY_REPORT_PATH"):
 
 # 日报最大可用天数：超过该天数视为过期。
 # 与 Action Gate「触发时效 ≤ 72h」对齐，过期新闻无法支撑任何「触发」字段，
-# 注入只会与【校验时间=今日】产生硬矛盾，导致 DeepSeek 拒绝出报。
+# 注入只会与【校验时间=今日】产生硬矛盾，导致模型拒绝出报。
 _AI_DAILY_REPORT_MAX_AGE_DAYS = int(os.environ.get("AI_DAILY_REPORT_MAX_AGE_DAYS", "3"))
 
 
@@ -926,14 +905,13 @@ def _normalize_hk_for_yahoo(symbol: str) -> str:
         return f"{int(digits):04d}.HK"
     return symbol
 
-# 【DeepSeek迁移】
+# 【Kimi Code订阅迁移】
 try:
-    from openai import OpenAI as _OpenAI
-    HAS_GEMINI = True                 # 历史变量名，实为"LLM(DeepSeek)可用"
-    genai = None                      # 【V88·清Gemini残留 2026-07-17】已全面迁移DeepSeek，不再import Gemini
+    import kimi_subscription as _kimi_subscription
+    HAS_GEMINI = True                 # 历史变量名，实为“Kimi订阅调用模块可用”
+    genai = None
 except ImportError:
     HAS_GEMINI = False
-    _OpenAI = None
     genai = None
     
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -5529,7 +5507,7 @@ try:
                         unsafe_allow_html=True)
         # 【V88·分析时间+节奏显性化 2026-07-25 用户点单】各数据源时间必须可见;
         # 更新节奏=交易日07/13/19三班流水线(盘中三次)+桌面三时段相位扫描,周末每日09:00一趟——
-        # 全跑公共仓Actions(免费)+DeepSeek既有节流,零新增预算。
+        # 全跑公共仓Actions+Kimi订阅既有缓存，不新增按量API费用。
         _ts_line9 = []
         for _lbl9t, _src9t in (("快照", _nw_snap9.get("generated_at")),
                                ("轮动", (_nw_snap9.get("rotation_forecast") or {}).get("analysis_time")),
@@ -5844,44 +5822,30 @@ _check_daily_cache_clear()
 # 【V89.5 修复】提前定义MY_GEMINI_KEY - 避免在全球市场概览中未定义错误
 # ═══════════════════════════════════════════════════════════════
 try:
-    MY_DEEPSEEK_KEY = (st.secrets.get("DEEPSEEK_API_KEY","") if hasattr(st,"secrets") else "") or os.getenv("DEEPSEEK_API_KEY","")
-    # V88 默认且唯一的 AI 服务为 DeepSeek；Gemini 仅保留旧变量兼容，不参与调用。
+    from kimi_subscription import api_key as _kimi_api_key, model_name as _kimi_model_name
+    _secret_kimi = (st.secrets.get("KIMI_CODE_API_KEY", "") if hasattr(st, "secrets") else "")
+    MY_KIMI_KEY = _kimi_api_key(_secret_kimi)
+    # 历史Gemini变量只作调用链兼容；生产模型固定为订阅K3-256K。
     MY_GEMINI_KEY_RAW = ""
-    if MY_DEEPSEEK_KEY:
-        MY_GEMINI_KEY = MY_DEEPSEEK_KEY
-        AI_PROVIDER = "deepseek"
+    if MY_KIMI_KEY:
+        MY_GEMINI_KEY = MY_KIMI_KEY
+        AI_PROVIDER = "kimi-subscription"
     else:
         MY_GEMINI_KEY = ""
         AI_PROVIDER = "none"
     GEMINI_MODEL_NAME = "gemini-2.5-flash"
-    DEEPSEEK_MODEL_NAME = "deepseek-v4-flash"
-    if MY_DEEPSEEK_KEY and _OpenAI:
-        try:
-            import httpx as _httpx
-            _ds_http_client = _httpx.Client(
-                proxy="http://127.0.0.1:7897",
-                timeout=120.0
-            )
-            _deepseek_client = _OpenAI(
-                api_key=MY_DEEPSEEK_KEY,
-                base_url="https://api.deepseek.com/v1",
-                http_client=_ds_http_client
-            )
-        except Exception:
-            _deepseek_client = _OpenAI(api_key=MY_DEEPSEEK_KEY, base_url="https://api.deepseek.com/v1")
-        logging.info("✅ DeepSeek API配置完成: deepseek-v4-flash")
-    else:
-        _deepseek_client = None
+    KIMI_MODEL_NAME = _kimi_model_name()
+    logging.info("✅ Kimi Code订阅配置完成: %s", KIMI_MODEL_NAME)
 except Exception as e:
-    MY_GEMINI_KEY = ""; MY_DEEPSEEK_KEY = ""; GEMINI_MODEL_NAME = "gemini-2.5-flash"; DEEPSEEK_MODEL_NAME = "deepseek-v4-flash"
-    AI_PROVIDER = "none"; _deepseek_client = None
+    MY_GEMINI_KEY = ""; MY_KIMI_KEY = ""; GEMINI_MODEL_NAME = "gemini-2.5-flash"; KIMI_MODEL_NAME = "k3-256k"
+    AI_PROVIDER = "none"
     logging.error(f"⚠️ AI API配置失败: {e}")
 
 # 【V91.9】AI分析统一模型说明：所有spinner和报告统一使用
 def _ai_model_label(model=None):
     """返回模型显示名称，用于 spinner 和报告底部"""
-    if AI_PROVIDER == "deepseek":
-        return "DeepSeek V4 Flash"
+    if AI_PROVIDER == "kimi-subscription":
+        return "Kimi K3-256K（订阅）"
     m = model or GEMINI_MODEL_NAME
     if USE_NEW_MODULES and hasattr(mod_config, 'GEMINI_MODELS') and m in mod_config.GEMINI_MODELS:
         return mod_config.GEMINI_MODELS[m]
@@ -6413,7 +6377,7 @@ def _build_market_ai_context():
 def _run_all_markets_ai():
     """【V99.8】一键分析重构：单次 LLM 调用产出三市场精简分析。
     旧版=逐市场串行调 Gemini(直连SDK,key已失效)且只喂5根K线无新闻；
-    新版=本地快照+真实新闻拼上下文 → 一次 DeepSeek 调用（速度≈提升3倍+，热点有真实依据）。
+    新版=本地快照+真实新闻拼上下文 → 一次订阅K3-256K调用（热点有真实依据）。
     返回 {mk: {'pred':…, 'tech':…}}；按【市场】标记切分，解析失败时共享全文兜底。"""
     ctx, tech = _build_market_ai_context()
     prompt = f"""你是买方投资总监。以下材料是唯一事实来源（真实行情快照+当日真实新闻日报），禁止使用材料之外的新闻、数据或价格。
@@ -6434,16 +6398,6 @@ def _run_all_markets_ai():
     try:
         if callable(_llm):
             text = _llm(prompt) or ""
-        elif MY_DEEPSEEK_KEY:
-            import requests as _rq99
-            _resp99 = _rq99.post(
-                "https://api.deepseek.com/v1/chat/completions",
-                headers={"Authorization": f"Bearer {MY_DEEPSEEK_KEY}"},
-                json={"model": DEEPSEEK_MODEL_NAME,
-                      "messages": [{"role": "user", "content": prompt}],
-                      "max_tokens": 1200, "temperature": 0.4},
-                timeout=90)
-            text = _resp99.json()["choices"][0]["message"]["content"]
     except Exception as _e:
         _safe_print(f"[AI市场分析] LLM 调用失败: {type(_e).__name__}: {str(_e)[:100]}")
 
@@ -6500,7 +6454,7 @@ def _auto_generate_market_ai():
         ('hk', '港股', '^HSI', 'market_ai_hk', '_hk_tech_data', 'market_sentiment_hk'),
         ('cn', 'A股', '000001.SS', 'market_ai_cn', '_cn_tech_data', 'market_sentiment_cn'),
     ]
-    if not (MY_GEMINI_KEY or MY_DEEPSEEK_KEY) or not _market_ai_auto_due():
+    if not MY_KIMI_KEY or not _market_ai_auto_due():
         return
 
     _safe_print("[AI市场分析] 盘中3小时缓存到期，单次调用生成三市场...")
@@ -6527,7 +6481,7 @@ def _render_ai_market_analysis():
     hk_result = _all.get('hk_market', {'data_ok': False, 'verdict': 'Unknown', 'reason': ''})
     cn_result = _all.get('cn_market', {'data_ok': False, 'verdict': 'Unknown', 'reason': ''})
 
-    _has_any_ai = bool(MY_GEMINI_KEY or MY_DEEPSEEK_KEY)
+    _has_any_ai = bool(MY_KIMI_KEY)
     if not _has_any_ai:
         return
 
@@ -7689,8 +7643,8 @@ if Config.ENABLE_EXPECTATION_LAYER:
                     st.session_state.pop("sector_analysis_heat", None)
                     st.rerun()
 
-                if not MY_DEEPSEEK_KEY:
-                    st.error("❌ 未配置 DeepSeek API Key")
+                if not MY_KIMI_KEY:
+                    st.error("❌ Kimi Code订阅未登录或KIMI_CODE_API_KEY未配置")
                 else:
                     from datetime import datetime as _dt_sector
                     today_s = _dt_sector.now().strftime("%Y年%m月%d日")
@@ -11120,33 +11074,28 @@ def render_readable_reasons(fwd, *, kind, symbol, name, context="", key_prefix="
     except Exception as _e:
         st.caption(f"判断理由暂不可用：{type(_e).__name__}")
         return
-    try:
-        from v88_ai_budget import status as _wbs
-        _remaining = float((_wbs() or {}).get("remaining", 0))
-    except Exception:
-        _remaining = 1.0
-    _exhausted = _remaining <= 0.0008
+    _exhausted = not bool(MY_KIMI_KEY)
     _sk = f"_reason_think_{key_prefix}_{symbol}"
     _think_on = bool(st.session_state.get(_sk, False))
 
     st.markdown(f"#### 🗣️ 各周期判断理由（人话版：{_REASON_FUSE_LABEL.get(kind, '')}）")
     if _exhausted:
         st.button("🧠 开启思考模式精讲", key=f"btn{_sk}", disabled=True,
-                  help="AI预算已用满，思考模式已自动关闭")
-        st.caption(f"💤 AI预算已用满（剩¥{_remaining:.3f}），思考模式自动关闭，当前为规则版。补预算后可再开。")
+                  help="Kimi Code订阅不可用，思考模式已自动关闭")
+        st.caption("💤 Kimi Code订阅不可用，当前为规则版；登录订阅或配置KIMI_CODE_API_KEY后可开启。")
         _think_on = False
         st.session_state[_sk] = False
     else:
-        _lab = "🔄 重新用思考模式精讲" if _think_on else "🧠 开启思考模式精讲（消耗预算，点了立刻生成）"
+        _lab = "🔄 重新用思考模式精讲" if _think_on else "🧠 开启K3-256K思考精讲（使用订阅额度）"
         if st.button(_lab, key=f"btn{_sk}"):
             _think_on = True
             st.session_state[_sk] = True
 
     if _think_on and not _exhausted:
-        with st.spinner("🧠 DeepSeek 思考模式：把每档判断讲成人话…"):
+        with st.spinner("🧠 Kimi K3-256K思考：把每档判断讲成人话…"):
             _out = _forward_reasons(
                 name, symbol, fwd, context=context, kind=kind, allow_ai=True,
-                api_key=st.session_state.get("MY_DEEPSEEK_KEY", "") or os.getenv("DEEPSEEK_API_KEY", ""))
+                api_key=MY_KIMI_KEY)
     else:
         # 默认规则版：allow_ai=False 强制不调用 AI、不花预算（即使环境有 Key）。
         _out = _forward_reasons(name, symbol, fwd, context=context, kind=kind, allow_ai=False)
@@ -11207,9 +11156,9 @@ def render_readable_reasons(fwd, *, kind, symbol, name, context="", key_prefix="
         st.markdown(f"- **{_lb}**（上涨概率 {_r.get('p_up')}%）：{_m.get(_lb) or '—'}")
     _stt = _out.get("status")
     if _stt in ("completed", "cached"):
-        st.caption(f"🧠 {_out.get('model', 'deepseek-v4-flash')} · 思考模式 ｜ 生成于 {_out.get('analysis_time', '—')}")
+        st.caption(f"🧠 {_out.get('model', 'k3-256k')} · 思考模式 ｜ 生成于 {_out.get('analysis_time', '—')}")
     elif _stt == "budget":
-        st.caption("ℹ️ 预算闸门触发，已回退规则版。概率与盈亏比不受影响。")
+        st.caption("ℹ️ Kimi订阅额度/限流触发，已回退规则版。概率与盈亏比不受影响。")
     else:
         st.caption("ℹ️ 当前为规则版大白话理由（点上方按钮用思考模式精讲）。概率与盈亏比不受影响。")
 
@@ -12009,7 +11958,7 @@ def _render_portfolio_section():
                                     st.error(f"❌ AI分析失败: {str(e)[:100]}")
                                     logging.error(f"持仓组合AI分析异常: {e}")
                         else:
-                            st.warning("⚠️ 请配置DeepSeek API Key以使用AI分析功能")
+                            st.warning("⚠️ 请登录Kimi Code订阅或配置KIMI_CODE_API_KEY以使用AI分析功能")
                 
                 else:  # 单只股票深度分析
                     # 原有的单只股票分析
@@ -13855,7 +13804,7 @@ def run_ai_stock_selector(progress_callback=None):
             logging.error(err)
             return result, err
     else:
-        return result, "❌ 未配置 DeepSeek API Key"
+        return result, "❌ Kimi Code订阅未登录或KIMI_CODE_API_KEY未配置"
     
     result['ai_report'] = ai_report or "无输出"
     
@@ -13999,7 +13948,7 @@ def run_watchlist_analysis(progress_callback=None):
 要求：每只 2-4 句，简洁可执行，避免空泛套话；操作建议必须差异化。"""
     
     if not MY_GEMINI_KEY:
-        return "", "❌ 未配置 DeepSeek API Key"
+        return "", "❌ Kimi Code订阅未登录或KIMI_CODE_API_KEY未配置"
     
     try:
         ai_report = call_gemini_api(prompt)
@@ -17229,26 +17178,13 @@ def _render_today_nav():
         st.caption(f"💡 不知道买什么先看这里：温度定仓位 → 水位定方向 → 轮动定板块 → 操作榜定标的 → 持仓提醒定纪律 ｜ 数据时间 {_gen}{_stale_note}")
         st.caption("参数白话：上行概率（越大越有利）｜下行概率（越小越有利）｜盈亏比（越大越好，>1才有正向空间）｜期望值（>0才是正期望）｜ATR（越大波动越大）｜历史水位（越接近0%越靠近历史最高点）")
 
-        # 【V88·AI预算统计+超额预警】（2026-07-16 用户点单：即将用超要有预警）
-        # 统一总账：普通分析7元软上限；持仓风险/周期拐点/结论冲突/深度复核可用至10元。
+        # Kimi会员共享额度以会员中心为准；页面仅展示本机调用统计，不臆测剩余额度。
         try:
             import v88_ai_budget as _wb9
             _web9 = _wb9.status()
-            _tot_spent9 = float(_web9.get("spent", 0))
-            _tot_cap9 = float(_web9.get("cap", 10))
-            _base_cap9 = float(_web9.get("base_cap", 7))
-            _web_ledger9 = float(_web9.get("ledger_spent", 0))
-            _pct9 = _tot_spent9 / _tot_cap9 * 100 if _tot_cap9 else 0
-            _bar9 = "▓" * int(round(_pct9 / 10)) + "░" * (10 - int(round(_pct9 / 10)))
-            _line9 = (f"🧮 AI预算（{datetime.now().strftime('%Y-%m')}）：**{_tot_spent9:.2f} / {_tot_cap9:g}元**"
-                      f"（{_pct9:.0f}%）{_bar9}　基础{_base_cap9:g}元＋重点复核{_tot_cap9 - _base_cap9:g}元"
-                      f"｜网页本地记账{_web_ledger9:.3f}元｜总实付以DeepSeek余额为准")
-            if _pct9 >= 95:
-                st.error(_line9 + "　🚨 本月预算即将用尽——AI点评/翻译将自动降级为规则模板，核心引擎不受影响")
-            elif _pct9 >= 80:
-                st.warning(_line9 + "　⚠️ 已用超八成，注意月底前的思考模式调用")
-            else:
-                st.caption(_line9)
+            st.caption(f"🧮 AI：Kimi Code订阅 / {_web9.get('model', 'k3-256k')}｜"
+                       f"本月本机记录{int(_web9.get('calls', 0))}次｜"
+                       "共享额度与限流以Kimi会员中心为准")
         except Exception:
             pass
 
@@ -18419,7 +18355,8 @@ try:
         try:
             from v88_ai_budget import status as _web_budget_status
             _wb = _web_budget_status()
-            st.caption(f"💰 AI预算：基础7元＋重点复核3元＝硬上限10元｜本月总实付约¥{_wb['spent']:.3f}")
+            st.caption(f"🧠 AI：Kimi Code订阅 / {_wb.get('model', 'k3-256k')}｜"
+                       f"本月本机记录{int(_wb.get('calls', 0))}次｜GPT-5.6终审保持独立")
         except Exception:
             pass
 except Exception as _nav_e:
@@ -20219,8 +20156,8 @@ if execute_analysis and q_input:
             st.warning(f"个股前瞻暂不可用：{type(_fwd_exc).__name__}")
 
         # ═══════════════════════════════════════════════════════════════
-        # 【V88·个股五周期】2/4/8/16/32周量化底稿 + DeepSeek thinking-high
-        # 点击任一个股均自动执行；同一行情快照缓存6小时，守5元/月共享总预算。
+        # 【V88·个股五周期】2/4/8/16/32周量化底稿 + K3-256K high复核
+        # 点击任一个股均自动执行；同一行情快照缓存6小时，节省会员共享额度。
         # ═══════════════════════════════════════════════════════════════
         st.markdown("### 🧭 个股周期轮换总览（深度分析第一判断）")
         st.caption("先看周期象限与2/4/8/16/32周走向，再看明细和K线；置信度表示证据一致性，不是回测胜率。")
@@ -20246,7 +20183,7 @@ if execute_analysis and q_input:
             _hz_cache_key = f"_stock_horizon_{target_c}_{_hz_last}"
             if _hz_cache_key not in st.session_state:
                 _hz_bar = st.progress(0, text="正在计算五周期量价底稿…")
-                _hz_bar.progress(35, text="量化底稿完成，DeepSeek思考模式复核中…")
+                _hz_bar.progress(35, text="量化底稿完成，K3-256K思考复核中…")
                 _hz_news_parts = []
                 for _hz_news in (news_headlines or [])[:8]:
                     if isinstance(_hz_news, dict):
@@ -20313,12 +20250,12 @@ if execute_analysis and q_input:
                     f"失效条件：{_hz_review.get('invalid_summary', '破位后重评')}"
                 )
                 st.caption(
-                    f"模型：{_hz_review.get('model', 'deepseek-v4-flash')} · thinking-high ｜ "
+                    f"模型：{_hz_review.get('model', 'k3-256k')} · reasoning-high ｜ "
                     f"分析于 {_hz_review.get('analysis_time', '缓存时间待核')}"
                 )
             else:
                 st.warning(
-                    f"DeepSeek思考复核未完成（{_hz_review.get('reason', _hz_review.get('status', '未知'))}）；"
+                    f"K3-256K思考复核未完成（{_hz_review.get('reason', _hz_review.get('status', '未知'))}）；"
                     "当前仅展示量化底稿，不冒充AI结论。"
                 )
         except Exception as _hz_exc:
@@ -22141,8 +22078,8 @@ def _fetch_macro_risk(force_refresh: bool = False) -> dict:
         if _cached_ss and not _cached_ss.get("_error"):
             return _cached_ss
 
-    if not MY_DEEPSEEK_KEY:
-        fb = _macro_risk_fallback("DeepSeek API Key 未配置")
+    if not MY_KIMI_KEY:
+        fb = _macro_risk_fallback("Kimi Code订阅未登录或KIMI_CODE_API_KEY未配置")
         st.session_state["_macro_risk_result"] = fb
         return fb
 

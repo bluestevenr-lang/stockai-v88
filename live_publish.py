@@ -108,8 +108,7 @@ def _hot_topics(items, top=8):
 
 def _translate_titles(items):
     """【V88·新闻中文化】英文标题→中文：复用上一版已译结果(按url)，只译新增；
-    DeepSeek 单次批量调用，失败保留原文。译文放 t，原文存 t_en。"""
-    import os
+    Kimi Code订阅K3-256K单次批量调用，失败保留原文。译文放 t，原文存 t_en。"""
     import requests as _rq
     prev = {}
     try:
@@ -130,28 +129,37 @@ def _translate_titles(items):
             it["t_en"], it["t"], it["zh"] = t, prev[it["url"]], 1
         else:
             todo.append(it)
-    key = os.getenv("DEEPSEEK_API_KEY", "").strip()
+    from kimi_subscription import api_key as _kimi_api_key, chat_completion, message_text, model_name
+    key = _kimi_api_key()
     if not key or not todo:
         return
-    # 【成本铁律·新闻token≤¥3/月】只在6个整点档调用翻译（07/09/12/15/18/21 BJT），
+    # 只在6个整点档调用翻译（07/09/12/15/18/21 BJT），
     # 其余小时靠上一版缓存复用（老标题仍是中文，新标题最多延迟2-3小时汉化）。
-    # 实际月耗估算 ~16万token ≈ ¥0.3，留足余量。
+    # 订阅共享额度仍需节流；整点档之外复用缓存。
     from datetime import datetime as _dt9, timezone as _tz9, timedelta as _td9
     if _dt9.now(_tz9(_td9(hours=8))).hour not in (7, 9, 12, 15, 18, 21):
         print(f"[translate] 非翻译档，跳过LLM（{len(todo)}条新标题待下一档，缓存已复用）")
         return
     todo = todo[:35]
     numbered = "\n".join(f"{i + 1}. {it['t']}" for i, it in enumerate(todo))
+    prompt = ("把下面每条财经新闻标题翻译成简洁中文，公司名/指数名保留惯用译名，"
+              "逐行输出「序号. 译文」，不要任何多余内容：\n" + numbered)
     try:
-        resp = _rq.post("https://api.deepseek.com/v1/chat/completions",
-                        headers={"Authorization": f"Bearer {key}"},
-                        json={"model": "deepseek-v4-flash", "temperature": 0.1, "max_tokens": 3000,
-                              "messages": [{"role": "user", "content":
-                                  "把下面每条财经新闻标题翻译成简洁中文，公司名/指数名保留惯用译名，"
-                                  "逐行输出「序号. 译文」，不要任何多余内容：\n" + numbered}]},
-                        timeout=75)
+        from v88_ai_budget import reserve, settle
+        ticket = reserve(prompt, output_tokens=1600, scope="headline-translation")
+    except Exception:
+        ticket = None
+    if not ticket:
+        return
+    try:
+        body = chat_completion(
+            [{"role": "user", "content": prompt}],
+            key=key, model=model_name(), temperature=0.1, reasoning_effort="low",
+            max_tokens=3000, timeout=90,
+        )
+        settle(ticket, body.get("usage"), ok=True)
         out_map = {}
-        for ln in resp.json()["choices"][0]["message"]["content"].strip().splitlines():
+        for ln in message_text(body).splitlines():
             ln = ln.strip()
             if "." in ln[:4]:
                 try:
@@ -163,6 +171,10 @@ def _translate_titles(items):
             if out_map.get(i + 1):
                 it["t_en"], it["t"], it["zh"] = it["t"], out_map[i + 1][:140], 1
     except Exception as e:
+        try:
+            settle(ticket, ok=False)
+        except Exception:
+            pass
         print(f"[translate] 翻译失败(保留原文): {str(e)[:80]}")
 
 
