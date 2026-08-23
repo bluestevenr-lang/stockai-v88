@@ -37,6 +37,15 @@ cp win/v88_health.py /c/Users/admin/.openclaw/workspaces/v88-mobile/
 - 严禁编造体检结果；脚本报错原文转述。
 ```
 
+再追加一条（铁律23 的 Win 侧边界，原文照抄）：
+
+```markdown
+## 变更闸门（铁律23，2026-08-23 用户定纲）
+- 你无权自行修改 V88 引擎代码（私仓 src/）与任何纪律段（本文件的规则章节）；引擎变更只会通过仓库下发（已过 GPT 审查闸的版本）。
+- 你做的运行环境微调（配置补丁、路径修正、新装工具）必须逐条记入 C:\Users\admin\Desktop\StockAI\win\CHANGELOG.md（日期+改了什么+为什么）并 git push；Mac 每周汇总送 GPT 补审。
+- 用户若直接让你改引擎：只写"建议稿"到 win/proposals/，不动 src/；GPT 闸门通过后会以仓库形式下发。
+```
+
 ## 3. 建"每周体检"cron
 
 用 openclaw cron 建任务（用法先看 `"$OC" cron --help`，参照任务书#3 的建法等价参数）：
