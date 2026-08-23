@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-23 22:15（北京时间）",
+ "generated_at": "2026-08-24 05:54（北京时间）",
  "version": "sessionops-v1",
  "ruleset_version": "v4.2",
  "gates_in_force": [
@@ -154,8 +154,17 @@
  "buy": [],
  "blocked": [
   {
-   "code": "0883.HK",
-   "name": "中海油",
+   "code": "1530.HK",
+   "name": "三生制药",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "688469.SS",
+   "name": "芯联集成-U",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "reject",
@@ -181,53 +190,17 @@
    "factpack_match": false
   },
   {
-   "code": "600547.SS",
-   "name": "山东黄金",
+   "code": "0340.HK",
+   "name": "潼关黄金",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "NU",
-   "name": "Nu Holdings Ltd-A",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "000737.SZ",
-   "name": "北方铜业",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "3692.HK",
-   "name": "翰森制药",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "600222.SS",
-   "name": "太龙药业",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
+   "gpt": "不否定",
    "kimi": "未验证",
    "factpack_match": false
   },
   {
    "code": "002040.SZ",
-   "name": "南 京 港",
+   "name": "南京港",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "不否定",
@@ -235,19 +208,46 @@
    "factpack_match": false
   },
   {
-   "code": "300841.SZ",
-   "name": "康华生物",
+   "code": "688002.SS",
+   "name": "睿创微纳",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
-   "gpt": "不否定",
+   "gpt": "reject",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "HL",
+   "name": "赫克拉矿业",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "600346.SS",
+   "name": "恒力石化",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
    "kimi": "未验证",
    "factpack_match": false
   }
  ],
  "blocked_by_rr": [
   {
-   "code": "0883.HK",
-   "name": "中海油",
+   "code": "1530.HK",
+   "name": "三生制药",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "688469.SS",
+   "name": "芯联集成-U",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "reject",
@@ -273,53 +273,17 @@
    "factpack_match": false
   },
   {
-   "code": "600547.SS",
-   "name": "山东黄金",
+   "code": "0340.HK",
+   "name": "潼关黄金",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "NU",
-   "name": "Nu Holdings Ltd-A",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "000737.SZ",
-   "name": "北方铜业",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "3692.HK",
-   "name": "翰森制药",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "600222.SS",
-   "name": "太龙药业",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
+   "gpt": "不否定",
    "kimi": "未验证",
    "factpack_match": false
   },
   {
    "code": "002040.SZ",
-   "name": "南 京 港",
+   "name": "南京港",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "不否定",
@@ -327,11 +291,29 @@
    "factpack_match": false
   },
   {
-   "code": "300841.SZ",
-   "name": "康华生物",
+   "code": "688002.SS",
+   "name": "睿创微纳",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
-   "gpt": "不否定",
+   "gpt": "reject",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "HL",
+   "name": "赫克拉矿业",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "600346.SS",
+   "name": "恒力石化",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
    "kimi": "未验证",
    "factpack_match": false
   }
@@ -341,13 +323,13 @@
   "watch": 9,
   "buy": 0,
   "buy_dual": 0,
-  "blocked": 10,
+  "blocked": 9,
   "blocked_by_rr": 0
  },
  "src_asof": {
-  "sell_grade": "2026-08-23 22:14（北京时间）",
-  "rank_score": "2026-08-23 22:14（北京时间）",
-  "classics_lens": "2026-08-23 22:12（北京时间）",
-  "anomaly_gate": "2026-08-23 22:11（北京时间）"
+  "sell_grade": "2026-08-24 05:52（北京时间）",
+  "rank_score": "2026-08-24 05:52（北京时间）",
+  "classics_lens": "2026-08-24 05:51（北京时间）",
+  "anomaly_gate": "2026-08-24 05:50（北京时间）"
  }
 }

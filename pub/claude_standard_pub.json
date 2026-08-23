@@ -1,6 +1,6 @@
 {
- "asof": "2026-08-23 22:10（北京时间）",
- "generated_at": "2026-08-23 22:10（北京时间）",
+ "asof": "2026-08-24 05:49（北京时间）",
+ "generated_at": "2026-08-24 05:49（北京时间）",
  "display_name": "V88标准规则闸",
  "runtime": "local_deterministic_no_external_ai",
  "rules": {
@@ -146,21 +146,11 @@
    "downgrade": "",
    "auto": true
   },
-  "300782.SZ": {
-   "code": "300782.SZ",
-   "name": "卓胜微",
+  "PG": {
+   "code": "PG",
+   "name": "宝洁",
    "side": "打折",
-   "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "NOC": {
-   "code": "NOC",
-   "name": "诺斯罗普",
-   "side": "打折",
-   "action": "🟢打折到位·可开始买",
+   "action": "🕐还不够便宜·先看着",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -208,17 +198,17 @@
   },
   "IBM": {
    "code": "IBM",
-   "name": "IBM",
+   "name": "IBM国际商业机器",
    "side": "打折",
-   "action": "🟢跌得很深·可分批买",
+   "action": "🟢打折到位·可开始买",
    "rules": [],
    "why": "",
    "downgrade": "",
    "auto": true
   },
-  "LOW": {
-   "code": "LOW",
-   "name": "劳氏",
+  "605117.SS": {
+   "code": "605117.SS",
+   "name": "德业股份",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
    "rules": [],
@@ -231,16 +221,6 @@
    "name": "三一重工",
    "side": "打折",
    "action": "🟢打折到位·可开始买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "300595.SZ": {
-   "code": "300595.SZ",
-   "name": "欧普康视",
-   "side": "打折",
-   "action": "🟢跌得很深·可分批买",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -261,16 +241,6 @@
    "name": "中国宏桥",
    "side": "打折",
    "action": "🟢跌得很深·可分批买",
-   "rules": [],
-   "why": "",
-   "downgrade": "",
-   "auto": true
-  },
-  "XLE": {
-   "code": "XLE",
-   "name": "美股·能源板块",
-   "side": "拐点",
-   "action": "",
    "rules": [],
    "why": "",
    "downgrade": "",
@@ -339,16 +309,16 @@
  },
  "reject": {},
  "stats": {
-  "n_pass": 453,
-  "n_reject": 73,
+  "n_pass": 532,
+  "n_reject": 72,
   "by_rule": {
-   "CS9": 0,
+   "CS9": 1,
    "CS1": 2,
    "CS2": 3,
    "CS3": 0,
    "CS4": 3,
    "CS5": 0,
-   "CS6": 65,
+   "CS6": 63,
    "CS7": 0,
    "CS8": 0
   }

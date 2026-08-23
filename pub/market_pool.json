@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-23 21:56（北京时间）",
+ "generated_at": "2026-08-24 05:29（北京时间）",
  "version": "pool-L1.3-natural",
  "note": "全市场L1双通道粗筛(强势=涨≥2%+量比≥1.5;蓄势=平量平价+额≥1亿防漏突破前缩量);quote级零AI;容量帽A300/港100/美100待P1限流实测后调;3A门槛不因扩池而动",
  "markets": {
@@ -1368,7 +1368,7 @@
    "amt": 1574686196.0,
    "vr": 0.57,
    "chg60": -19.54,
-   "turn": 2.25,
+   "turn": 2.24,
    "channel": "蓄势",
    "score": 0.8452,
    "market": "A股"
@@ -11466,19 +11466,6 @@
    "market": "A股"
   },
   {
-   "code": "600809.SS",
-   "name": "山西汾酒",
-   "chg": -1.65,
-   "amt": 527450148.0,
-   "vr": 0.67,
-   "chg60": -2.56,
-   "turn": 0.37,
-   "channel": "强制入池(持仓/自选)",
-   "score": 0.5,
-   "forced": true,
-   "market": "A股"
-  },
-  {
    "code": "300760.SZ",
    "name": "迈瑞医疗",
    "chg": -2.29,
@@ -11486,18 +11473,6 @@
    "vr": 0.94,
    "chg60": 2.43,
    "turn": 0.66,
-   "channel": "强制入池(持仓/自选)",
-   "score": 0.5,
-   "forced": true,
-   "market": "A股"
-  },
-  {
-   "code": "159632.SZ",
-   "name": "纳斯达克",
-   "chg": null,
-   "vr": null,
-   "amt": null,
-   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
    "channel": "强制入池(持仓/自选)",
    "score": 0.5,
    "forced": true,
@@ -11516,8 +11491,8 @@
    "market": "A股"
   },
   {
-   "code": "600941.SH",
-   "name": "中国移动",
+   "code": "513500.SS",
+   "name": "标普500",
    "chg": null,
    "vr": null,
    "amt": null,
@@ -11528,8 +11503,33 @@
    "market": "A股"
   },
   {
-   "code": "513500.SS",
-   "name": "标普500",
+   "code": "600809.SS",
+   "name": "山西汾酒",
+   "chg": -1.65,
+   "amt": 527450148.0,
+   "vr": 0.67,
+   "chg60": -2.56,
+   "turn": 0.37,
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "A股"
+  },
+  {
+   "code": "159632.SZ",
+   "name": "纳斯达克",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "A股"
+  },
+  {
+   "code": "600941.SH",
+   "name": "中国移动",
    "chg": null,
    "vr": null,
    "amt": null,
@@ -19281,18 +19281,6 @@
    "market": "港股"
   },
   {
-   "code": "06055.HK",
-   "name": "中烟香港",
-   "chg": null,
-   "vr": null,
-   "amt": null,
-   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
-   "channel": "强制入池(持仓/自选)",
-   "score": 0.5,
-   "forced": true,
-   "market": "港股"
-  },
-  {
    "code": "0883.HK",
    "name": "中国海洋石油",
    "chg": 2.11,
@@ -19300,6 +19288,18 @@
    "vr": 1.46,
    "chg60": -2.29,
    "turn": 0.16,
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "港股"
+  },
+  {
+   "code": "06055.HK",
+   "name": "中烟香港",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
    "channel": "强制入池(持仓/自选)",
    "score": 0.5,
    "forced": true,
@@ -24658,30 +24658,6 @@
    "market": "美股"
   },
   {
-   "code": "VOO",
-   "name": "Vanguard标普500",
-   "chg": null,
-   "vr": null,
-   "amt": null,
-   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
-   "channel": "强制入池(持仓/自选)",
-   "score": 0.5,
-   "forced": true,
-   "market": "美股"
-  },
-  {
-   "code": "QQQM",
-   "name": "Invesco纳指",
-   "chg": null,
-   "vr": null,
-   "amt": null,
-   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
-   "channel": "强制入池(持仓/自选)",
-   "score": 0.5,
-   "forced": true,
-   "market": "美股"
-  },
-  {
    "code": "PM",
    "name": "菲利普莫里斯国际",
    "chg": -1.72,
@@ -24715,6 +24691,30 @@
    "vr": 1.18,
    "chg60": 6.85,
    "turn": 0.29,
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "美股"
+  },
+  {
+   "code": "VOO",
+   "name": "Vanguard标普500",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
+   "channel": "强制入池(持仓/自选)",
+   "score": 0.5,
+   "forced": true,
+   "market": "美股"
+  },
+  {
+   "code": "QQQM",
+   "name": "Invesco纳指",
+   "chg": null,
+   "vr": null,
+   "amt": null,
+   "note": "扫描未覆盖·按持仓/自选强制纳入,数值待 pool_metrics 补",
    "channel": "强制入池(持仓/自选)",
    "score": 0.5,
    "forced": true,
