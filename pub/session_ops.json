@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-21 10:23（北京时间）",
+ "generated_at": "2026-08-23 22:15（北京时间）",
  "version": "sessionops-v1",
  "ruleset_version": "v4.2",
  "gates_in_force": [
@@ -22,101 +22,58 @@
   "最终精选最多2只；超编候选进入候补，不硬塞",
   "数据缺≠达标，缺就写缺"
  ],
- "sell": [
+ "sell": [],
+ "watch": [
+  {
+   "code": "SO",
+   "name": "美国南方公司",
+   "level": "-2A",
+   "last": 88.94,
+   "stop": 88.91,
+   "dist_stop_pct": 0.0,
+   "sell_zone": "88.91~88.94 全部离场",
+   "c123": "①②③",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-2A·1-2-3 停在 ①②③ → 不主动卖，跌破 88.91 执行"
+  },
   {
    "code": "600809.SS",
    "name": "山西汾酒",
-   "level": "-3A",
+   "level": "-2A",
    "last": 116.55,
-   "stop": 117.7,
-   "dist_stop_pct": -1.0,
-   "sell_zone": "116.55~116.55 全部离场",
-   "c123": "①②③",
-   "frozen": false,
-   "listable": true,
-   "action": "🔴卖出",
-   "why": "1-2-3 三条齐全(①②③)且过V88规则闸+GPT+Kimi复核 → 立即执行"
-  }
- ],
- "watch": [
-  {
-   "code": "513650.SS",
-   "name": "标普ETF(南方标普500)",
-   "level": "-2A",
-   "last": 1.99,
-   "stop": 2.0,
-   "dist_stop_pct": -0.5,
-   "sell_zone": "1.99~1.99 全部离场",
-   "c123": "②",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-2A·1-2-3 停在 ② → 不主动卖，跌破 2.0 执行"
-  },
-  {
-   "code": "159632.SZ",
-   "name": "纳斯达克",
-   "level": "-2A",
-   "last": 2.419,
-   "stop": 2.423,
-   "dist_stop_pct": -0.2,
-   "sell_zone": "2.42~2.42 全部离场",
-   "c123": "②③",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-2A·1-2-3 停在 ②③ → 不主动卖，跌破 2.423 执行"
-  },
-  {
-   "code": "MS",
-   "name": "摩根士丹利",
-   "level": "-2A",
-   "last": 207.45,
-   "stop": 207.32,
-   "dist_stop_pct": 0.1,
-   "sell_zone": "207.32~207.45 全部离场",
+   "stop": 116.01,
+   "dist_stop_pct": 0.5,
+   "sell_zone": "116.01~116.55 全部离场",
    "c123": "①②③",
    "frozen": false,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-2A·1-2-3 停在 ①②③ → 不主动卖，跌破 207.32 执行"
+   "why": "-2A·1-2-3 停在 ①②③ → 不主动卖，跌破 116.01 执行"
   },
   {
-   "code": "MO",
-   "name": "奥驰亚",
+   "code": "600941.SH",
+   "name": "中国移动",
    "level": "-1A",
-   "last": 66.94,
-   "stop": 66.83,
-   "dist_stop_pct": 0.2,
-   "sell_zone": "跌破66.83执行(距+0.2%)",
-   "c123": "①②",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 66.83 执行"
-  },
-  {
-   "code": "GOOG",
-   "name": "谷歌C",
-   "level": "-2A",
-   "last": 338.2,
-   "stop": 336.17,
+   "last": 96.25,
+   "stop": 95.717,
    "dist_stop_pct": 0.6,
-   "sell_zone": "跌破336.17执行(距+0.6%)",
+   "sell_zone": "跌破95.72执行(距+0.6%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 336.17 执行"
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 95.717 执行"
   },
   {
    "code": "000783.SZ",
    "name": "长江证券",
    "level": "-1A",
-   "last": 8.57,
+   "last": 8.6,
    "stop": 8.465,
-   "dist_stop_pct": 1.2,
-   "sell_zone": "跌破8.46执行(距+1.2%)",
+   "dist_stop_pct": 1.6,
+   "sell_zone": "跌破8.46执行(距+1.6%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
@@ -124,50 +81,87 @@
    "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 8.465 执行"
   },
   {
-   "code": "SO",
-   "name": "美国南方公司",
-   "level": "-1A",
-   "last": 91.43,
-   "stop": 90.284,
-   "dist_stop_pct": 1.3,
-   "sell_zone": "跌破90.28执行(距+1.3%)",
+   "code": "GOOG",
+   "name": "谷歌C",
+   "level": "-2A",
+   "last": 341.75,
+   "stop": 336.17,
+   "dist_stop_pct": 1.7,
+   "sell_zone": "跌破336.17执行(距+1.7%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 90.284 执行"
+   "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 336.17 执行"
+  },
+  {
+   "code": "PM",
+   "name": "菲利普莫里斯",
+   "level": "-1A",
+   "last": 188.23,
+   "stop": 184.02,
+   "dist_stop_pct": 2.3,
+   "sell_zone": "跌破184.02执行(距+2.3%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 184.02 执行"
   },
   {
    "code": "APP",
    "name": "Applovin",
    "level": "-1A",
-   "last": 308.77,
-   "stop": 303.17,
-   "dist_stop_pct": 1.8,
-   "sell_zone": "跌破303.17执行(距+1.8%)",
+   "last": 305.77,
+   "stop": 298.0,
+   "dist_stop_pct": 2.6,
+   "sell_zone": "跌破298.00执行(距+2.6%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 303.17 执行"
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 298.0 执行"
   },
   {
    "code": "AAPL",
    "name": "苹果",
    "level": "-1A",
-   "last": 311.3,
-   "stop": 300.981,
-   "dist_stop_pct": 3.4,
-   "sell_zone": "跌破300.98执行(距+3.4%)",
+   "last": 309.35,
+   "stop": 301.656,
+   "dist_stop_pct": 2.6,
+   "sell_zone": "跌破301.66执行(距+2.6%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 300.981 执行"
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 301.656 执行"
+  },
+  {
+   "code": "MO",
+   "name": "奥驰亚",
+   "level": "-1A",
+   "last": 66.09,
+   "stop": 63.92,
+   "dist_stop_pct": 3.4,
+   "sell_zone": "跌破63.92执行(距+3.4%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 63.92 执行"
   }
  ],
  "buy": [],
  "blocked": [
+  {
+   "code": "0883.HK",
+   "name": "中海油",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
   {
    "code": "000100.SZ",
    "name": "TCL科技",
@@ -178,8 +172,8 @@
    "factpack_match": false
   },
   {
-   "code": "600222.SS",
-   "name": "太龙药业",
+   "code": "1787.HK",
+   "name": "山东黄金",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "不否定",
@@ -187,11 +181,29 @@
    "factpack_match": false
   },
   {
-   "code": "601579.SS",
-   "name": "会稽山",
+   "code": "600547.SS",
+   "name": "山东黄金",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
-   "gpt": "不否定",
+   "gpt": "reject",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "NU",
+   "name": "Nu Holdings Ltd-A",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "000737.SZ",
+   "name": "北方铜业",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
    "kimi": "未验证",
    "factpack_match": false
   },
@@ -200,7 +212,16 @@
    "name": "翰森制药",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
-   "gpt": "不否定",
+   "gpt": "reject",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "600222.SS",
+   "name": "太龙药业",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
    "kimi": "未验证",
    "factpack_match": false
   },
@@ -214,17 +235,26 @@
    "factpack_match": false
   },
   {
-   "code": "1364.HK",
-   "name": "古茗",
+   "code": "300841.SZ",
+   "name": "康华生物",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
-   "gpt": "reject",
+   "gpt": "不否定",
    "kimi": "未验证",
    "factpack_match": false
   }
  ],
  "blocked_by_rr": [
   {
+   "code": "0883.HK",
+   "name": "中海油",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
    "code": "000100.SZ",
    "name": "TCL科技",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
@@ -234,8 +264,8 @@
    "factpack_match": false
   },
   {
-   "code": "600222.SS",
-   "name": "太龙药业",
+   "code": "1787.HK",
+   "name": "山东黄金",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "不否定",
@@ -243,11 +273,29 @@
    "factpack_match": false
   },
   {
-   "code": "601579.SS",
-   "name": "会稽山",
+   "code": "600547.SS",
+   "name": "山东黄金",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
-   "gpt": "不否定",
+   "gpt": "reject",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "NU",
+   "name": "Nu Holdings Ltd-A",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "000737.SZ",
+   "name": "北方铜业",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
    "kimi": "未验证",
    "factpack_match": false
   },
@@ -256,7 +304,16 @@
    "name": "翰森制药",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
-   "gpt": "不否定",
+   "gpt": "reject",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "600222.SS",
+   "name": "太龙药业",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "reject",
    "kimi": "未验证",
    "factpack_match": false
   },
@@ -270,27 +327,27 @@
    "factpack_match": false
   },
   {
-   "code": "1364.HK",
-   "name": "古茗",
+   "code": "300841.SZ",
+   "name": "康华生物",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
-   "gpt": "reject",
+   "gpt": "不否定",
    "kimi": "未验证",
    "factpack_match": false
   }
  ],
  "stats": {
-  "sell": 1,
+  "sell": 0,
   "watch": 9,
   "buy": 0,
   "buy_dual": 0,
-  "blocked": 6,
+  "blocked": 10,
   "blocked_by_rr": 0
  },
  "src_asof": {
-  "sell_grade": "2026-08-21 10:22（北京时间）",
-  "rank_score": "2026-08-21 10:22（北京时间）",
-  "classics_lens": "2026-08-21 10:19（北京时间）",
-  "anomaly_gate": "2026-08-21 10:18（北京时间）"
+  "sell_grade": "2026-08-23 22:14（北京时间）",
+  "rank_score": "2026-08-23 22:14（北京时间）",
+  "classics_lens": "2026-08-23 22:12（北京时间）",
+  "anomaly_gate": "2026-08-23 22:11（北京时间）"
  }
 }
