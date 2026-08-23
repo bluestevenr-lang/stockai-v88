@@ -19046,9 +19046,12 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
             _hist = f"距历史低{_r.get('to_lowall_pct')}%"
         if _r.get("at_52low"):
             _hist = "🔻52周新低区·" + _hist
+        # 【台账#1·08-23】回测验证色:已验证绿/验证失败红/样本不足灰(前台重扫无此字段→灰)
+        _hvc9 = {"已验证": "#16a34a", "验证失败": "#b91c1c"}.get(_r.get("hist_verdict"), "#94a3b8")
         return {**_r, "hist": _hist, "ev": _r.get("expected_pct") or 0,
                 "turn_label": str(_r.get("stage") or "拐点已现"),
-                "turn_sigs": _r.get("turning_note") or "—"}
+                "turn_sigs": _r.get("turning_note") or "—",
+                "hist_color": _hvc9}
 
     _btp_state9 = st.session_state.get("_bottom_turn_pool9")
     _btp_src9 = "本次重扫"
@@ -19146,6 +19149,11 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
             st.caption(f"🔔 拐点证据分档：真实信号 {_sg9b.get('turn_signal')} 只 ｜ "
                        f"○ 仅阶段判定 {_sg9b.get('turn_stage_only')} 只"
                        "（阶段档=未出现任何底部拐点信号，只是趋势阶段被判为启动，证据弱一档）")
+        # 【台账#1·08-23】回测验证分布上屏——"多少只是历史验证过的底"必须一眼可见
+        if _sg9b.get("hist_verified") is not None:
+            st.caption(f"📜 历史回测验证（贴近52周低≤3%后6个月·硬线 n≥8/胜率≥60%/中位>0/最差>-35%/历史≥5年）："
+                       f"已验证 {_sg9b.get('hist_verified')} 只 ｜ 验证失败 {_sg9b.get('hist_failed')} 只 ｜ "
+                       f"样本不足 {_sg9b.get('hist_insufficient')} 只")
         # 【2026-08-03 用户批准】"只看🔔"开关。为什么是开关而不是直接收紧闸②:
         # 闸②写的是"有底部信号 **或** stage含启动确认",实测82%走后半句进来 ——
         # 在2100只的池子上这个闸几乎等于没有。但**收紧是改阈值**,得用户点头,
@@ -19185,7 +19193,11 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
                 + ("<span style='font-size:11px;color:#b45309'>·次新(上市不足2年·"
                    "'历史低'实为上市以来低)</span>" if _r.get("newly_listed") else "")
                 + f"<span style='font-size:11.5px;color:#64748b'>·现价{_r['last']}"
-                f"·机会分{_r['score']}·{str(_r.get('turn_sigs') or '')[:26]}</span></div>"
+                f"·机会分{_r['score']}·{str(_r.get('turn_sigs') or '')[:26]}</span>"
+                # 【台账#1·08-23】📜历史回测标注:该股自身"贴52周低后6个月"统计,只加证据不改排序
+                + (f"<span style='font-size:11px;color:{_r.get('hist_color') or '#94a3b8'}'>"
+                   f"·📜{str(_r.get('hist_note'))[:38]}</span>" if _r.get("hist_note") else "")
+                + "</div>"
                 for _i, _r in enumerate(_rows[:30], 1)) + "</div>", unsafe_allow_html=True)
 
         _btp_top9(_btp_state9.get("top52" + _kk9) or [], "to_low52_pct",
