@@ -1,13 +1,57 @@
 {
- "generated_at": "2026-08-24 14:36（北京时间）",
+ "generated_at": "2026-08-24 22:31（北京时间）",
  "version": "dropout-v1",
  "rule": "区分『评估后不合格』(正常) 与 『从未被评估』(bug)。用户定纲：评分不够是正常；**压根不在池里就是问题**。",
  "boundary": "只对关键桶缺输入告警，不对分数低告警——噪音大的哨兵=死哨兵（fact_gate 290条误报的教训）。",
  "origin": "2026-08-06 腾讯案：0700.HK vs 00700.HK 代码写法差异导致 join 失败，payoff 落回默认35 → tier=待评估 → 从未进过任何榜。而它6月低点赔率2.11是过闸的。**系统里没有一个哨兵会响。**",
  "silent_dropout": [
   {
-   "code": "000100.SZ",
-   "name": "TCL科技",
+   "code": "688825.SS",
+   "name": "688825.SS",
+   "tier": "待评估",
+   "not_evaluated": true,
+   "missing_buckets": [
+    "payoff",
+    "timing"
+   ],
+   "why": "标为 not_evaluated —— **不是不够好，是没被算过**"
+  },
+  {
+   "code": "002490.SZ",
+   "name": "山东墨龙",
+   "tier": "待评估",
+   "not_evaluated": true,
+   "missing_buckets": [
+    "payoff",
+    "long_value"
+   ],
+   "why": "标为 not_evaluated —— **不是不够好，是没被算过**"
+  },
+  {
+   "code": "688333.SS",
+   "name": "铂力特",
+   "tier": "待评估",
+   "not_evaluated": true,
+   "missing_buckets": [
+    "payoff",
+    "long_value"
+   ],
+   "why": "标为 not_evaluated —— **不是不够好，是没被算过**"
+  },
+  {
+   "code": "001337.SZ",
+   "name": "四川黄金",
+   "tier": "待评估",
+   "not_evaluated": true,
+   "missing_buckets": [
+    "payoff",
+    "long_value"
+   ],
+   "why": "标为 not_evaluated —— **不是不够好，是没被算过**"
+  },
+  {
+   "code": "MU",
+   "name": "美光科技",
    "tier": "1A",
    "not_evaluated": false,
    "missing_buckets": [
@@ -16,14 +60,24 @@
    "why": "关键桶缺输入：timing → 该桶落回默认值，而默认值恰好在门槛不利的一侧"
   },
   {
-   "code": "000059.SZ",
-   "name": "华锦股份",
-   "tier": "1A",
+   "code": "NVDA",
+   "name": "英伟达",
+   "tier": "0A",
    "not_evaluated": false,
    "missing_buckets": [
     "timing"
    ],
    "why": "关键桶缺输入：timing → 该桶落回默认值，而默认值恰好在门槛不利的一侧"
+  },
+  {
+   "code": "1398.HK",
+   "name": "工商银行",
+   "tier": "待评估",
+   "not_evaluated": true,
+   "missing_buckets": [
+    "payoff"
+   ],
+   "why": "标为 not_evaluated —— **不是不够好，是没被算过**"
   }
  ],
  "missing_from_grade": [
@@ -56,15 +110,22 @@
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   },
   {
-   "code": "MU",
-   "name": "美光科技",
+   "code": "MO",
+   "name": "奥驰亚",
    "src": "持仓",
    "in_pool": true,
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   },
   {
-   "code": "NVDA",
-   "name": "英伟达",
+   "code": "MRK",
+   "name": "默沙东",
+   "src": "持仓",
+   "in_pool": true,
+   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
+  },
+  {
+   "code": "PFE",
+   "name": "辉瑞",
    "src": "持仓",
    "in_pool": true,
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
@@ -77,15 +138,8 @@
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   },
   {
-   "code": "1997.HK",
-   "name": "九龙仓置业",
-   "src": "自选",
-   "in_pool": false,
-   "why": "**既不在池也不在评级段** → 强制入池未生效"
-  },
-  {
-   "code": "669.HK",
-   "name": "创科实业",
+   "code": "1109.HK",
+   "name": "华润置地",
    "src": "自选",
    "in_pool": false,
    "why": "**既不在池也不在评级段** → 强制入池未生效"
@@ -98,85 +152,22 @@
    "why": "**既不在池也不在评级段** → 强制入池未生效"
   },
   {
-   "code": "6990.HK",
-   "name": "科伦博泰生物",
+   "code": "3968.HK",
+   "name": "招商银行",
    "src": "自选",
-   "in_pool": false,
-   "why": "**既不在池也不在评级段** → 强制入池未生效"
-  },
-  {
-   "code": "688825.SS",
-   "name": "688825.SS",
-   "src": "自选",
-   "in_pool": false,
-   "why": "**既不在池也不在评级段** → 强制入池未生效"
-  },
-  {
-   "code": "600645.SS",
-   "name": "中源协和",
-   "src": "自选",
-   "in_pool": false,
-   "why": "**既不在池也不在评级段** → 强制入池未生效"
+   "in_pool": true,
+   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   },
   {
    "code": "002322.SZ",
    "name": "理工能科",
    "src": "自选",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
-  },
-  {
-   "code": "002589.SZ",
-   "name": "瑞康医药",
-   "src": "自选",
    "in_pool": false,
    "why": "**既不在池也不在评级段** → 强制入池未生效"
   },
   {
-   "code": "600206.SS",
-   "name": "有研新材",
-   "src": "自选",
-   "in_pool": false,
-   "why": "**既不在池也不在评级段** → 强制入池未生效"
-  },
-  {
-   "code": "000716.SZ",
-   "name": "黑芝麻",
-   "src": "自选",
-   "in_pool": false,
-   "why": "**既不在池也不在评级段** → 强制入池未生效"
-  },
-  {
-   "code": "300841.SZ",
-   "name": "康华生物",
-   "src": "自选",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
-  },
-  {
-   "code": "002041.SZ",
-   "name": "登海种业",
-   "src": "自选",
-   "in_pool": false,
-   "why": "**既不在池也不在评级段** → 强制入池未生效"
-  },
-  {
-   "code": "000019.SZ",
-   "name": "深粮控股",
-   "src": "自选",
-   "in_pool": true,
-   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
-  },
-  {
-   "code": "600371.SS",
-   "name": "万向德农",
-   "src": "自选",
-   "in_pool": false,
-   "why": "**既不在池也不在评级段** → 强制入池未生效"
-  },
-  {
-   "code": "601015.SS",
-   "name": "陕西黑猫",
+   "code": "600664.SS",
+   "name": "哈药股份",
    "src": "自选",
    "in_pool": true,
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
@@ -185,191 +176,47 @@
    "code": "600408.SS",
    "name": "安泰集团",
    "src": "自选",
-   "in_pool": false,
-   "why": "**既不在池也不在评级段** → 强制入池未生效"
+   "in_pool": true,
+   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   },
   {
-   "code": "601939.SS",
-   "name": "建设银行",
+   "code": "601857.SS",
+   "name": "中国石油",
    "src": "自选",
    "in_pool": true,
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   },
   {
-   "code": "601988.SS",
-   "name": "中国银行",
+   "code": "300012.SZ",
+   "name": "华测检测",
    "src": "自选",
    "in_pool": true,
    "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   },
   {
-   "code": "600250.SS",
-   "name": "南京商旅",
+   "code": "002827.SZ",
+   "name": "高争民爆",
    "src": "自选",
-   "in_pool": false,
-   "why": "**既不在池也不在评级段** → 强制入池未生效"
+   "in_pool": true,
+   "why": "在池内但**未进评级段** → 呈现面比扫描面窄"
   }
  ],
  "quiet_long": [
   {
-   "code": "301047.SZ",
-   "name": "义翘神州",
+   "code": "002346.SZ",
+   "name": "柘中股份",
    "tier": "0A",
    "src": "自选"
   },
   {
-   "code": "603221.SS",
-   "name": "爱丽家居",
+   "code": "300534.SZ",
+   "name": "陇神戎发",
    "tier": "0A",
    "src": "自选"
   },
   {
-   "code": "601162.SS",
-   "name": "天风证券",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "688235.SS",
-   "name": "百济神州",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "603039.SS",
-   "name": "泛微网络",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "603228.SS",
-   "name": "景旺电子",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "300951.SZ",
-   "name": "博硕科技",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "688002.SS",
-   "name": "睿创微纳",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "000608.SZ",
-   "name": "阳光股份",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "3888.HK",
-   "name": "金山软件",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "000710.SZ",
-   "name": "贝瑞基因",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "513650.SS",
-   "name": "标普ETF(南方标普500)",
-   "tier": "0A",
-   "src": "持仓"
-  },
-  {
-   "code": "002603.SZ",
-   "name": "以岭药业",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "002714.SZ",
-   "name": "牧原股份",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "ARXS",
-   "name": "ARXS",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "DELL",
-   "name": "戴尔",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "0268.HK",
-   "name": "金蝶国际",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "VOO",
-   "name": "Vanguard标普500",
-   "tier": "0A",
-   "src": "持仓"
-  },
-  {
-   "code": "VCIT",
-   "name": "中期公司债券ETF-Vanguard",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "688702.SS",
-   "name": "盛科通信",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "002668.SZ",
-   "name": "TCL智家",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "9988.HK",
-   "name": "阿里巴巴-SW",
-   "tier": "0A",
-   "src": "持仓"
-  },
-  {
-   "code": "600188.SS",
-   "name": "兖矿能源",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "688432.SS",
-   "name": "有研硅",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "600489.SS",
-   "name": "中金黄金",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "000651.SZ",
-   "name": "格力电器",
-   "tier": "0A",
-   "src": "自选"
-  },
-  {
-   "code": "688469.SS",
-   "name": "芯联集成-U",
+   "code": "2556.HK",
+   "name": "迈富时",
    "tier": "0A",
    "src": "自选"
   },
@@ -380,24 +227,168 @@
    "src": "自选"
   },
   {
-   "code": "0883.HK",
-   "name": "中海油",
+   "code": "3396.HK",
+   "name": "联想控股",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "300759.SZ",
+   "name": "康龙化成",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "002674.SZ",
+   "name": "兴业科技",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "002458.SZ",
+   "name": "益生股份",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "300676.SZ",
+   "name": "华大基因",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "301047.SZ",
+   "name": "义翘神州",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "688002.SS",
+   "name": "睿创微纳",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "601162.SS",
+   "name": "天风证券",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "601101.SS",
+   "name": "昊华能源",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "600222.SS",
+   "name": "太龙药业",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "2359.HK",
+   "name": "药明康德",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "300951.SZ",
+   "name": "博硕科技",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "ETN",
+   "name": "伊顿",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "603296.SS",
+   "name": "华勤技术",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "002648.SZ",
+   "name": "卫星化学",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "688111.SS",
+   "name": "金山办公",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "300026.SZ",
+   "name": "红日药业",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "603228.SS",
+   "name": "景旺电子",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "003033.SZ",
+   "name": "征和工业",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "600521.SS",
+   "name": "华海药业",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "601658.SS",
+   "name": "邮储银行",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "NVDA",
+   "name": "英伟达",
    "tier": "0A",
    "src": "持仓"
   },
   {
-   "code": "300601.SZ",
-   "name": "康泰生物",
+   "code": "000333.SZ",
+   "name": "美的集团",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "513500.SS",
+   "name": "标普500",
+   "tier": "0A",
+   "src": "持仓"
+  },
+  {
+   "code": "000608.SZ",
+   "name": "阳光股份",
+   "tier": "0A",
+   "src": "自选"
+  },
+  {
+   "code": "000710.SZ",
+   "name": "贝瑞基因",
    "tier": "0A",
    "src": "自选"
   }
  ],
  "stats": {
-  "graded": 1047,
-  "pool": 1903,
+  "graded": 768,
+  "pool": 2024,
   "must": 229,
-  "silent_dropout": 2,
-  "missing_from_grade": 26,
-  "quiet_long": 124
+  "silent_dropout": 7,
+  "missing_from_grade": 17,
+  "quiet_long": 178
  }
 }

@@ -1,47 +1,45 @@
 {
- "generated_at": "2026-08-24 14:34（北京时间）",
+ "generated_at": "2026-08-24 22:22（北京时间）",
  "version": "gptverify-v2",
  "model": "gpt-5.6-sol",
  "display_name": "Codex独立复核",
  "reviewer": "codex_cli",
  "role": "综合终审；Kimi未明确通过或确定性硬闸未消时不得下行动令",
- "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
+ "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607",
  "rule": "三态:通过/不否定/否决。超时或不可用记'不可用'；任何非明确通过均不能与Kimi组成行动共识",
  "rows": {
   "9988.HK": {
    "name": "阿里巴巴-SW",
    "tier_at_verify": "0A",
-   "verdict": "不否定",
-   "why": "多项短板，缺乏明确通过证据",
-   "ts": "2026-08-23 22:12（北京时间）",
-   "batch_seconds": 9.1,
+   "verdict": "否决",
+   "why": "长期价值25、获利空间48，赔率不足",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 17.3,
    "fresh_for_strong_days": 1,
-   "sig": "0A|回踩 121.62 买 · 5个交易日内有效|55||",
-   "factpack_id": "54746ac692f73543687c44bad4fbcb352bcf5dfa18099d695b18ba2657283cca"
+   "sig": "0A|回踩 121.67 买 · 0个交易日内有效|45||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "06055.HK": {
    "name": "中烟香港",
-   "tier_at_verify": "1A",
+   "tier_at_verify": "0A",
    "verdict": "否决",
-   "why": "盈亏比0.17且期望优势为负，赔率不足",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.9,
+   "why": "盈亏比0.22且期望优势为负，赔率不足",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 38.9,
    "fresh_for_strong_days": 1,
-   "sig": "1A|🟢现在可买(涨势刚起,买得最早)|75|早期第10日;已涨6.8%;20日动量17.2%;规则上行估计75%;盈亏比0.17;期望优势-0.12;止损21.81|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "0A|经济性不达标·研究候选|75|早期第10日;已涨6.2%;20日动量16.6%;规则上行估计74%;盈亏比0.22;期望优势-0.1;止损21.81|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "0883.HK": {
    "name": "中海油",
    "tier_at_verify": "0A",
    "verdict": "否决",
-   "why": "持有观察与现价可进冲突，逻辑自相矛盾",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.9,
+   "why": "盈亏比仅0.82，赔率不足",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 38.9,
    "fresh_for_strong_days": 1,
-   "sig": "0A|现在买（今日窗口内）|70|早期第4日;已涨2.9%;20日动量8.4%;规则上行估计66%;盈亏比1.1;期望优势0.39;止损23.46|action=持有观察 vs mode=现价可进",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "0A|回踩 24.39 买 · 5个交易日内有效|65|早期第4日;已涨4.0%;20日动量9.5%;规则上行估计68%;盈亏比0.82;期望优势0.24;止损23.46|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "NSC": {
    "name": "诺福克南方",
@@ -68,13 +66,13 @@
    "name": "中国石化",
    "tier_at_verify": "1A",
    "verdict": "不否定",
-   "why": "时机仅59，尚无明确反对证据",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.1,
+   "why": "无核验事实，暂不足以背书",
+   "ts": "2026-08-24 15:39（北京时间）",
+   "batch_seconds": 39.5,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 5.12~5.32 买 · 5个交易日内有|75||",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "1A|回踩 5.12~5.32 买 · 5个交易日内有|70||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607",
+   "carried_from_factpack_id": "2306b12cc4bced5c2cb95c157174c8d807b62ec31fb4d9580e6b177d3dedc8b8"
   },
   "600885.SS": {
    "name": "宏发股份",
@@ -90,13 +88,12 @@
    "name": "银河娱乐",
    "tier_at_verify": "2A",
    "verdict": "不否定",
-   "why": "桶面较均衡，但尚无核验事实支持通过",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.9,
+   "why": "入场有效期措辞残缺，执行证据不足",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 318.5,
    "fresh_for_strong_days": 1,
-   "sig": "2A|回踩 34.25~35.62 买 · 5个交易日|70||",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "2A|回踩 34.26~35.63 买 · 5个交易日|75||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "600519.SS": {
    "name": "贵州茅台",
@@ -145,13 +142,13 @@
    "name": "联想集团",
    "tier_at_verify": "1A",
    "verdict": "不否定",
-   "why": "估值与催化偏弱，证据链不足",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.1,
+   "why": "催化仅26且无核验事实",
+   "ts": "2026-08-24 15:39（北京时间）",
+   "batch_seconds": 39.5,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 27.94~29.06 买 · 5个交易日|70||",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "1A|回踩 27.95~29.07 买 · 5个交易日|70||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607",
+   "carried_from_factpack_id": "2306b12cc4bced5c2cb95c157174c8d807b62ec31fb4d9580e6b177d3dedc8b8"
   },
   "600660.SS": {
    "name": "福耀玻璃",
@@ -259,13 +256,12 @@
    "name": "埃克森美孚",
    "tier_at_verify": "0A",
    "verdict": "否决",
-   "why": "0A却给买入窗口，逻辑矛盾",
-   "ts": "2026-08-23 22:12（北京时间）",
-   "batch_seconds": 16.4,
+   "why": "获利空间41、催化26，赔率不足",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 17.3,
    "fresh_for_strong_days": 1,
-   "sig": "0A|回踩 157.58~163.88 买 · 5个交|60||",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "0A|回踩 158.12~164.44 买 · 5个交|55||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "EBAY": {
    "name": "易趣",
@@ -496,14 +492,15 @@
    "normalized_at": "2026-08-15"
   },
   "PM": {
-   "name": "菲利普莫里斯国际",
+   "name": "菲利普莫里斯",
    "tier_at_verify": "1A",
-   "verdict": "否决",
-   "why": "逻辑自相矛盾：时机14却称突破",
-   "ts": "2026-08-03",
-   "batch_seconds": 72.7,
+   "verdict": "不否定",
+   "why": "核验事实为空，多桶支撑偏弱",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 21.5,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 188.93 买 · 5个交易日内有效|55"
+   "sig": "1A|回踩 188.46 买 · 5个交易日内有效|65||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "SPYM": {
    "name": "投资组合标普500指数ETF-SPDR",
@@ -580,14 +577,14 @@
   "600809.SS": {
    "name": "山西汾酒",
    "tier_at_verify": "0A",
-   "verdict": "否决",
-   "why": "获利空间40，风险35，赔率不足",
-   "ts": "2026-08-16 23:37（北京时间）",
-   "batch_seconds": 13.7,
+   "verdict": "不否定",
+   "why": "长期价值弱，赔率尚未失衡",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 329.9,
    "fresh_for_strong_days": 1,
-   "sig": "0A|回踩 122.26 买 · 5个交易日内有效|55||",
-   "factpack_id": "401aa6fb2387d6446b76f64ea710003e9ceb337accf343c9c95d06c99d4feef8",
-   "carried_from_factpack_id": "71f134be71b667c37230d3e81044f366ba29dae801aba4d1b6e4022dbc0954d4"
+   "sig": "0A|回踩 121.61 买 · 0个交易日内有效|50||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607",
+   "carried_from_factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
   },
   "3888.HK": {
    "name": "金山软件",
@@ -662,25 +659,25 @@
   },
   "NVDA": {
    "name": "英伟达",
-   "tier_at_verify": "1A",
-   "verdict": "否决",
-   "why": "盈亏比0.24且期望优势为负，赔率不足",
-   "ts": "2026-08-17 05:38（北京时间）",
-   "batch_seconds": 20.5,
+   "tier_at_verify": "0A",
+   "verdict": "不否定",
+   "why": "0A且获利空间偏弱，证据不足",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 21.5,
    "fresh_for_strong_days": 1,
-   "sig": "1A|🟢现在可买(涨势刚起,买得最早)|70|早期第2日;已涨0.5%;20日动量11.0%;规则上行估计68%;盈亏比0.24;期望优势-0.16;止损203.54|",
-   "factpack_id": "4e0a671b304c72474b6198f79f1710fe6e7ee0c9d16433a5156dae76d806c8a6",
-   "carried_from_factpack_id": "16c23d40542c5f72418ccc6f6a96ec09c7c99aa0c313788759480afaee3fb41c"
+   "sig": "0A|回踩 213.83 买 · 0个交易日内有效|55||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "GOOG": {
    "name": "谷歌C",
    "tier_at_verify": "1A",
    "verdict": "不否定",
-   "why": "回踩条件可缓解时机偏弱",
-   "ts": "2026-08-06",
-   "batch_seconds": 60.7,
+   "why": "长期价值偏弱，且缺少核验事实",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 21.5,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 343.06 买 · 3个交易日内有效|65"
+   "sig": "1A|回踩 342.17 买 · 0个交易日内有效|60||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "KO": {
    "name": "可口可乐",
@@ -1179,11 +1176,13 @@
    "name": "纳斯达克",
    "tier_at_verify": "1A",
    "verdict": "否决",
-   "why": "逻辑自相矛盾：入场有效期为零",
-   "ts": "2026-08-10",
-   "batch_seconds": 57.1,
+   "why": "逻辑自相矛盾：收盘后窗口已失效",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 20.1,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 2.37 买 · 0个交易日内有效|60"
+   "sig": "1A|回踩 2.43 买 · 0个交易日内有效|60||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607",
+   "carried_from_factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
   },
   "XBI": {
    "name": "标普生物科技ETF-SPDR",
@@ -1216,19 +1215,19 @@
    "batch_seconds": 21.9,
    "fresh_for_strong_days": 1,
    "sig": "0A|回踩 134.23~139.6 买 · 5个交易|60|中期第20日;已涨16.4%;20日动量16.4%;规则上行估计85%;盈亏比0.08;期望优势-0.08;止损128.46|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6",
+   "carried_from_factpack_id": "2306b12cc4bced5c2cb95c157174c8d807b62ec31fb4d9580e6b177d3dedc8b8"
   },
   "MS": {
    "name": "摩根士丹利",
-   "tier_at_verify": "0A",
-   "verdict": "否决",
-   "why": "现在买与执行“等待”自相矛盾",
-   "ts": "2026-08-18 12:11（北京时间）",
-   "batch_seconds": 24.1,
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "估值与催化偏弱，证据不足",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 21.5,
    "fresh_for_strong_days": 1,
-   "sig": "0A|现在买（今日窗口内）|65||入场底稿模式=等待，不是可执行买点；执行动作=等待",
-   "factpack_id": "117aca950734df3c6e8d76aa670c06836910e65799d12a64dc117a5177d4611f"
+   "sig": "1A|回踩 213.96 买 · 0个交易日内有效|60||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "1997.HK": {
    "name": "九龙仓置业",
@@ -1338,16 +1337,15 @@
    "sig": "1A|回踩 6.96~7.24 买 · 5个交易日内有|70|"
   },
   "CRM": {
-   "name": "Salesforce",
-   "tier_at_verify": "1A",
-   "verdict": "否决",
-   "why": "主升阶段却称左侧低吸，逻辑自相矛盾",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.9,
+   "name": "CRM",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "当前时机偏弱，尚无具体否决证据",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 318.5,
    "fresh_for_strong_days": 1,
-   "sig": "1A|左侧低吸·半仓|75|来源黑马池;阶段主升阶段;规则上行估计74%;盈亏比3.04;期望优势1.99;52周位52.0%;止损167.14|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "2A|回踩 200.77 买 · 5个交易日内有效|75||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "AAL": {
    "name": "美国航空",
@@ -1520,24 +1518,23 @@
    "name": "Vanguard标普500",
    "tier_at_verify": "0A",
    "verdict": "否决",
-   "why": "现买与等待动作自相矛盾",
-   "ts": "2026-08-19 23:02（北京时间）",
-   "batch_seconds": 17.8,
+   "why": "估值38、获利空间45，赔率不足",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 17.3,
    "fresh_for_strong_days": 1,
-   "sig": "0A|现在买（今日窗口内）|60||入场底稿模式=等待，不是可执行买点；执行动作=等待",
-   "factpack_id": "e8d9ae9b756edbf5e3fd870c86163d83072ef452dbfeac6daa3967170310f741",
-   "carried_from_factpack_id": "f82bd1e99cde0458b46269335cacb76e1055926bae66561cf9d6f2f6309479fb"
+   "sig": "0A|回踩 701.85 买 · 0个交易日内有效|50||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "QQQM": {
    "name": "纳指100ETF",
-   "tier_at_verify": "0A",
-   "verdict": "否决",
-   "why": "现在买与执行“等待”自相矛盾",
-   "ts": "2026-08-18 12:11（北京时间）",
-   "batch_seconds": 24.1,
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "各桶表现平淡，缺少明确支持",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 21.5,
    "fresh_for_strong_days": 1,
-   "sig": "0A|现在买（今日窗口内）|55||入场底稿模式=等待，不是可执行买点；执行动作=等待",
-   "factpack_id": "117aca950734df3c6e8d76aa670c06836910e65799d12a64dc117a5177d4611f"
+   "sig": "1A|回踩 292.47 买 · 0个交易日内有效|60||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "0939.HK": {
    "name": "建设银行",
@@ -1664,8 +1661,8 @@
    "batch_seconds": 21.1,
    "fresh_for_strong_days": 1,
    "sig": "1A|回踩 260.47~270.89 买 · 5个交|75||",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6",
+   "carried_from_factpack_id": "2306b12cc4bced5c2cb95c157174c8d807b62ec31fb4d9580e6b177d3dedc8b8"
   },
   "TWST": {
    "name": "Twist Bioscience Corp",
@@ -1754,13 +1751,13 @@
    "name": "标普ETF(南方标普500)",
    "tier_at_verify": "0A",
    "verdict": "否决",
-   "why": "获利空间27且风险50，赔率不足",
-   "ts": "2026-08-17 14:32（北京时间）",
-   "batch_seconds": 14.3,
+   "why": "赔率不足：获利空间仅44分",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 329.9,
    "fresh_for_strong_days": 1,
-   "sig": "0A|回踩 1.96~2.04 买 · 5个交易日内有|60||",
-   "factpack_id": "117aca950734df3c6e8d76aa670c06836910e65799d12a64dc117a5177d4611f",
-   "carried_from_factpack_id": "4e0a671b304c72474b6198f79f1710fe6e7ee0c9d16433a5156dae76d806c8a6"
+   "sig": "0A|回踩 1.99 买 · 0个交易日内有效|50||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607",
+   "carried_from_factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
   },
   "SAP": {
    "name": "思爱普",
@@ -1915,13 +1912,14 @@
   "513500.SS": {
    "name": "标普500",
    "tier_at_verify": "0A",
-   "verdict": "否决",
-   "why": "获利空间仅38，赔率不足",
-   "ts": "2026-08-18 12:11（北京时间）",
-   "batch_seconds": 24.1,
+   "verdict": "不否定",
+   "why": "估值偏弱，赔率证据不充分",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 329.9,
    "fresh_for_strong_days": 1,
-   "sig": "0A|回踩 2.6~2.7 买 · 5个交易日内有效|65||",
-   "factpack_id": "117aca950734df3c6e8d76aa670c06836910e65799d12a64dc117a5177d4611f"
+   "sig": "0A|回踩 2.64 买 · 0个交易日内有效|55||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607",
+   "carried_from_factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
   },
   "300059.SZ": {
    "name": "东方财富",
@@ -2125,14 +2123,14 @@
   "300142.SZ": {
    "name": "沃森生物",
    "tier_at_verify": "1A",
-   "verdict": "否决",
-   "why": "盈亏比0.98，赔率不足",
-   "ts": "2026-08-16 23:37（北京时间）",
-   "batch_seconds": 23.6,
+   "verdict": "不否定",
+   "why": "时机估值偏弱，未见硬伤",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 20.1,
    "fresh_for_strong_days": 1,
-   "sig": "1A|🟢现在可买(涨势刚起,买得最早)|70|早期第8日;已涨7.6%;20日动量3.7%;规则上行估计69%;盈亏比0.98;期望优势0.37;止损12.0|",
-   "factpack_id": "16c23d40542c5f72418ccc6f6a96ec09c7c99aa0c313788759480afaee3fb41c",
-   "carried_from_factpack_id": "401aa6fb2387d6446b76f64ea710003e9ceb337accf343c9c95d06c99d4feef8"
+   "sig": "1A|回踩 13.81 买 · 5个交易日内有效|70||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607",
+   "carried_from_factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
   },
   "600162.SS": {
    "name": "香江控股",
@@ -2394,8 +2392,8 @@
    "batch_seconds": 21.9,
    "fresh_for_strong_days": 1,
    "sig": "0A|回踩 26.3~27.35 买 · 5个交易日内|60|早期第10日;已涨4.9%;20日动量14.4%;规则上行估计66%;盈亏比0.2;期望优势-0.21;止损25.92|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6",
+   "carried_from_factpack_id": "2306b12cc4bced5c2cb95c157174c8d807b62ec31fb4d9580e6b177d3dedc8b8"
   },
   "9969.HK": {
    "name": "诺诚健华",
@@ -2623,13 +2621,13 @@
   "001309.SZ": {
    "name": "德明利",
    "tier_at_verify": "1A",
-   "verdict": "通过",
-   "why": "胜率91%，中位收益38.7%，最差仅-6.8%",
-   "ts": "2026-08-24 14:34（北京时间）",
-   "batch_seconds": 26.9,
+   "verdict": "不否定",
+   "why": "完备度75%，不足以为1A档背书",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 38.9,
    "fresh_for_strong_days": 1,
-   "sig": "1A|🟢跌得很深·可分批买|90|距历史高点-59.0%;52周位35.2%;可得历史4.0年;历史同级样本n=11,胜10,条件频率91%,6月中位38.7%,最差-6.8%|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d"
+   "sig": "1A|回踩 393.8 买 · 5个交易日内有效|70|距历史高点-58.7%;52周位35.5%;可得历史4.0年;历史同级样本n=11,胜10,条件频率91%,6月中位38.7%,最差-6.8%|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "BNTX": {
    "name": "BioNTech",
@@ -2720,24 +2718,23 @@
    "name": "震裕科技",
    "tier_at_verify": "1A",
    "verdict": "否决",
-   "why": "赔率不足：最差-29.9%大于中位收益24.1%",
-   "ts": "2026-08-24 14:34（北京时间）",
-   "batch_seconds": 26.9,
+   "why": "逻辑自相矛盾：A股收盘后零日窗失效",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 60.2,
    "fresh_for_strong_days": 1,
-   "sig": "1A|🟢跌得很深·可分批买|75|距历史高点-47.1%;52周位20.0%;可得历史5.2年;历史同级样本n=8,胜6,条件频率75%,6月中位24.1%,最差-29.9%|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d"
+   "sig": "1A|回踩 98.91 买 · 0个交易日内有效|55|距历史高点-46.5%;52周位20.9%;可得历史5.2年;历史同级样本n=8,胜6,条件频率75%,6月中位24.1%,最差-29.9%|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "002460.SZ": {
    "name": "赣锋锂业",
    "tier_at_verify": "1A",
    "verdict": "通过",
-   "why": "上行61%，盈亏比3.47，期望优势为正",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.9,
+   "why": "盈亏比3.66、期望优势1.98且风险低",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 38.9,
    "fresh_for_strong_days": 1,
-   "sig": "1A|🟢跌得很深·可分批买|75|来源全池转强·52周35%;阶段启动确认;规则上行估计61%;盈亏比3.47;期望优势1.73;52周位34.0%;止损47.47|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "1A|回踩 53.49 买 · 5个交易日内有效|65|来源全池转强·52周34%;阶段启动确认;规则上行估计64%;盈亏比3.66;期望优势1.98;52周位34.0%;止损47.47|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "PDD": {
    "name": "拼多多",
@@ -2773,16 +2770,15 @@
    "factpack_id": "117aca950734df3c6e8d76aa670c06836910e65799d12a64dc117a5177d4611f"
   },
   "IBM": {
-   "name": "IBM国际商业机器",
+   "name": "IBM",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "历史同级样本仅4次",
-   "ts": "2026-08-23 22:12（北京时间）",
-   "batch_seconds": 51.4,
+   "verdict": "否决",
+   "why": "赔率不足：中位收益6.6%而最差亏15.3%",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 60.2,
    "fresh_for_strong_days": 1,
-   "sig": "1A|🟢打折到位·可开始买|75|距历史高点-27.9%;52周位25.6%;可得历史10.0年;历史同级样本n=4,胜3,条件频率75%,6月中位10.5%,最差-15.3%|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "1A|回踩 231.72 买 · 5个交易日内有效|60|距历史高点-29.2%;52周位22.0%;可得历史10.0年;历史同级样本n=5,胜4,条件频率80%,6月中位6.6%,最差-15.3%|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "1415.HK": {
    "name": "高伟电子",
@@ -3052,15 +3048,16 @@
    "normalized_at": "2026-08-15"
   },
   "000783.SZ": {
-   "name": "000783.SZ",
-   "tier_at_verify": "0A",
+   "name": "长江证券",
+   "tier_at_verify": "1A",
    "verdict": "否决",
-   "why": "现在买与底稿“不进”自相矛盾",
-   "ts": "2026-08-18 12:11（北京时间）",
-   "batch_seconds": 24.1,
+   "why": "逻辑自相矛盾：收盘后窗口已失效",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 20.1,
    "fresh_for_strong_days": 1,
-   "sig": "0A|现在买（今日窗口内）|80||入场底稿模式=不进，不是可执行买点；执行动作=不进",
-   "factpack_id": "117aca950734df3c6e8d76aa670c06836910e65799d12a64dc117a5177d4611f"
+   "sig": "1A|回踩 8.78 买 · 0个交易日内有效|65||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607",
+   "carried_from_factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
   },
   "3690.HK": {
    "name": "美团-W",
@@ -3765,13 +3762,13 @@
   "002756.SZ": {
    "name": "永兴材料",
    "tier_at_verify": "1A",
-   "verdict": "否决",
-   "why": "赔率不足：最差-35.6%大于中位收益20.3%",
-   "ts": "2026-08-24 14:34（北京时间）",
-   "batch_seconds": 26.9,
+   "verdict": "不否定",
+   "why": "长期价值仅48且完备度75%",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 38.9,
    "fresh_for_strong_days": 1,
-   "sig": "1A|🟢跌得很深·可分批买|75|距历史高点-45.2%;52周位27.6%;可得历史9.6年;历史同级样本n=8,胜6,条件频率75%,6月中位20.3%,最差-35.6%|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d"
+   "sig": "1A|回踩 47.39 买 · 5个交易日内有效|65|距历史高点-45.6%;52周位26.8%;可得历史9.6年;历史同级样本n=8,胜6,条件频率75%,6月中位20.3%,最差-35.6%|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "603099.SS": {
    "name": "长白山",
@@ -4123,14 +4120,15 @@
   },
   "600188.SS": {
    "name": "兖矿能源",
-   "tier_at_verify": "1A",
+   "tier_at_verify": "2A",
    "verdict": "否决",
-   "why": "盈亏比仅1.37，赔率不足",
-   "ts": "2026-08-18 12:11（北京时间）",
-   "batch_seconds": 16.2,
+   "why": "逻辑自相矛盾：收盘后窗口已失效",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 20.1,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 20.88~21.72 买 · 5个交易日|70|早期第4日;已涨0.8%;20日动量7.9%;规则上行估计74%;盈亏比1.37;期望优势0.75;止损19.05|",
-   "factpack_id": "117aca950734df3c6e8d76aa670c06836910e65799d12a64dc117a5177d4611f"
+   "sig": "2A|回踩 21.03 买 · 0个交易日内有效|70||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607",
+   "carried_from_factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
   },
   "301609.SZ": {
    "name": "山大电力",
@@ -4584,12 +4582,12 @@
    "name": "华润置地",
    "tier_at_verify": "1A",
    "verdict": "否决",
-   "why": "入场与底稿“不进”自相矛盾",
-   "ts": "2026-08-18 12:11（北京时间）",
-   "batch_seconds": 24.1,
+   "why": "逻辑自相矛盾：港股收盘却称现在可买",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 60.2,
    "fresh_for_strong_days": 1,
-   "sig": "1A|现在买（今日窗口内）|65||入场底稿模式=不进，不是可执行买点；执行动作=不进",
-   "factpack_id": "117aca950734df3c6e8d76aa670c06836910e65799d12a64dc117a5177d4611f"
+   "sig": "1A|🟢现在可买(涨势刚起,买得最早)|60|早期第10日;已涨4.0%;20日动量4.4%;规则上行估计60%;盈亏比1.53;期望优势0.52;止损32.23|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "ONFO": {
    "name": "Onfolio Holdings Inc",
@@ -4676,12 +4674,12 @@
    "name": "新泉股份",
    "tier_at_verify": "1A",
    "verdict": "否决",
-   "why": "赔率不足：最差-37.6%大于中位收益22.6%",
-   "ts": "2026-08-24 14:34（北京时间）",
-   "batch_seconds": 26.9,
+   "why": "逻辑自相矛盾：A股收盘后零日窗失效",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 60.2,
    "fresh_for_strong_days": 1,
-   "sig": "1A|🟢跌得很深·可分批买|80|距历史高点-49.5%;52周位10.8%;可得历史9.1年;历史同级样本n=19,胜15,条件频率79%,6月中位22.6%,最差-37.6%|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d"
+   "sig": "1A|回踩 38.72 买 · 0个交易日内有效|55|距历史高点-48.3%;52周位12.9%;可得历史9.1年;历史同级样本n=19,胜15,条件频率79%,6月中位22.6%,最差-37.6%|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "3692.HK": {
    "name": "翰森制药",
@@ -4774,15 +4772,14 @@
   },
   "TSLA": {
    "name": "特斯拉",
-   "tier_at_verify": "0A",
-   "verdict": "不否定",
-   "why": "风险35且催化弱，未达通过",
-   "ts": "2026-08-20 09:42（北京时间）",
-   "batch_seconds": 15.1,
+   "tier_at_verify": "1A",
+   "verdict": "通过",
+   "why": "盈亏比2.87、期望优势1.67且风险闸清晰",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 38.9,
    "fresh_for_strong_days": 1,
-   "sig": "0A|回踩 334.88 买 · 5个交易日内有效|60||",
-   "factpack_id": "e8d9ae9b756edbf5e3fd870c86163d83072ef452dbfeac6daa3967170310f741",
-   "carried_from_factpack_id": "f82bd1e99cde0458b46269335cacb76e1055926bae66561cf9d6f2f6309479fb"
+   "sig": "1A|双路径待触发|70|来源全池转强·52周33%;阶段启动确认;规则上行估计69%;盈亏比2.87;期望优势1.67;52周位28.0%;止损297.38|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "603369.SS": {
    "name": "今世缘",
@@ -4837,14 +4834,15 @@
    "factpack_id": "e8d9ae9b756edbf5e3fd870c86163d83072ef452dbfeac6daa3967170310f741"
   },
   "688669.SS": {
-   "name": "聚石化学",
+   "name": "688669.SS",
    "tier_at_verify": "1A",
    "verdict": "不否定",
-   "why": "估值偏弱，回踩后赔率仍可",
-   "ts": "2026-08-16",
-   "batch_seconds": 32.5,
+   "why": "核验事实为空，证据链不足以通过",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 17.3,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 65.19~67.8 买 · 5个交易日内|70|"
+   "sig": "1A|回踩 74.6 买 · 0个交易日内有效|70||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "605179.SS": {
    "name": "一鸣食品",
@@ -4960,24 +4958,24 @@
   "600031.SS": {
    "name": "三一重工",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "同级样本仅4次，尚不足以背书",
-   "ts": "2026-08-24 14:34（北京时间）",
-   "batch_seconds": 26.9,
+   "verdict": "否决",
+   "why": "价值回撤但估值仅53，逻辑矛盾",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 37.4,
    "fresh_for_strong_days": 1,
-   "sig": "1A|🟢打折到位·可开始买|75|距历史高点-21.3%;52周位23.9%;可得历史9.6年;历史同级样本n=4,胜3,条件频率75%,6月中位60.1%,最差-21.6%|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d"
+   "sig": "1A|回踩 19.42 买 · 0个交易日内有效|55|距历史高点-21.3%;52周位23.9%;可得历史9.6年;历史同级样本n=4,胜3,条件频率75%,6月中位60.1%,最差-21.6%|",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
   },
   "MU": {
    "name": "美光科技",
    "tier_at_verify": "1A",
    "verdict": "不否定",
-   "why": "核验事实为空，证据链不足",
-   "ts": "2026-08-18 12:11（北京时间）",
-   "batch_seconds": 16.2,
+   "why": "核验事实为空，证据链不足以通过",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 21.5,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 897.37~933.26 买 · 5个交|70||",
-   "factpack_id": "117aca950734df3c6e8d76aa670c06836910e65799d12a64dc117a5177d4611f"
+   "sig": "1A|回踩 896.16 买 · 5个交易日内有效|70||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "WAB": {
    "name": "美国西屋制动",
@@ -5156,15 +5154,15 @@
    "factpack_id": "4e0a671b304c72474b6198f79f1710fe6e7ee0c9d16433a5156dae76d806c8a6"
   },
   "1428.HK": {
-   "name": "耀才证券金融",
+   "name": "1428.HK",
    "tier_at_verify": "1A",
    "verdict": "不否定",
-   "why": "买点尚待触发",
-   "ts": "2026-08-17 21:45（北京时间）",
-   "batch_seconds": 20.5,
+   "why": "催化与时机偏弱，但无明确反对理由",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 17.3,
    "fresh_for_strong_days": 1,
-   "sig": "1A|双路径待触发|65|来源全市场·拐点抢筹·60日-31%但今日+5.3%·量比1.54;阶段启动确认;规则上行估计65%;盈亏比4.94;期望优势2.86;52周位12.0%;止损|",
-   "factpack_id": "4e0a671b304c72474b6198f79f1710fe6e7ee0c9d16433a5156dae76d806c8a6"
+   "sig": "1A|回踩 7.17 买 · 5个交易日内有效|70||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "603360.SS": {
    "name": "百傲化学",
@@ -5314,14 +5312,13 @@
   "UMAC": {
    "name": "Unusual Machines Inc",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "上行仅56%，高动量下胜率优势偏弱",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.9,
+   "verdict": "否决",
+   "why": "止损高于入场价，逻辑自相矛盾",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 37.4,
    "fresh_for_strong_days": 1,
-   "sig": "1A|🟢现在可买(涨势刚起,买得最早)|55|早期第6日;已涨0.7%;20日动量41.7%;规则上行估计56%;盈亏比1.51;期望优势0.41;止损25.58|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "1A|回踩 25.46 买 · 5个交易日内有效|70|早期第6日;已涨0.7%;20日动量41.7%;规则上行估计56%;盈亏比1.51;期望优势0.41;止损25.58|",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
   },
   "603112.SS": {
    "name": "华翔股份",
@@ -5493,13 +5490,12 @@
    "name": "博通",
    "tier_at_verify": "1A",
    "verdict": "不否定",
-   "why": "五桶板为空，证据链不足",
-   "ts": "2026-08-23 22:12（北京时间）",
-   "batch_seconds": 51.4,
+   "why": "完备仅75%，证据链不足以支持通过",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 60.2,
    "fresh_for_strong_days": 1,
-   "sig": "1A|🟢打折到位·可开始买|80|距历史高点-23.4%;52周位41.9%;可得历史10.0年;历史同级样本n=10,胜8,条件频率80%,6月中位39.6%,最差-2.3%|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "1A|回踩 395.01 买 · 0个交易日内有效|55|距历史高点-24.7%;52周位37.2%;可得历史10.0年;历史同级样本n=10,胜8,条件频率80%,6月中位39.6%,最差-2.3%|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "XXI": {
    "name": "Twenty One Capital Inc-A",
@@ -5513,15 +5509,15 @@
    "factpack_id": "43cd62e79b46a42d2e90492a18ab4ee8bc7193cc63a017326f672d858f90010d"
   },
   "300373.SZ": {
-   "name": "扬杰科技",
-   "tier_at_verify": "1A",
-   "verdict": "通过",
-   "why": "盈亏比3.33，期望优势2.2",
-   "ts": "2026-08-19 23:02（北京时间）",
-   "batch_seconds": 25.2,
+   "name": "300373.SZ",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "核验事实为空，证据链缺口未消",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 60.2,
    "fresh_for_strong_days": 1,
-   "sig": "1A|左侧低吸·半仓|75|来源全市场·短线异动·量比2.52·换手6.05%·60日+4%;阶段启动确认;规则上行估计74%;盈亏比3.33;期望优势2.2;52周位43.0%;止损79|",
-   "factpack_id": "43cd62e79b46a42d2e90492a18ab4ee8bc7193cc63a017326f672d858f90010d"
+   "sig": "2A|回踩 93.32 买 · 3个交易日内有效|80||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "002240.SZ": {
    "name": "盛新锂能",
@@ -5546,26 +5542,26 @@
    "factpack_id": "e8d9ae9b756edbf5e3fd870c86163d83072ef452dbfeac6daa3967170310f741"
   },
   "601799.SS": {
-   "name": "星宇股份",
+   "name": "601799.SS",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "胜率71%且样本仅7次，证据不够强",
-   "ts": "2026-08-24 14:34（北京时间）",
-   "batch_seconds": 26.9,
+   "verdict": "否决",
+   "why": "逻辑自相矛盾：A股收盘后零日窗失效",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 60.2,
    "fresh_for_strong_days": 1,
-   "sig": "1A|🟢跌得很深·可分批买|70|距历史高点-45.7%;52周位0.0%;可得历史9.6年;历史同级样本n=7,胜5,条件频率71%,6月中位17.3%,最差-16.7%|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d"
+   "sig": "1A|回踩 93.24 买 · 0个交易日内有效|50|距历史高点-45.3%;52周位0.0%;可得历史9.6年;历史同级样本n=7,胜5,条件频率71%,6月中位17.3%,最差-16.7%|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "600206.SS": {
    "name": "有研新材",
    "tier_at_verify": "1A",
    "verdict": "否决",
-   "why": "赔率不足：盈亏比仅0.71",
-   "ts": "2026-08-19 23:02（北京时间）",
-   "batch_seconds": 24.6,
+   "why": "止损高于买入价，执行逻辑自相矛盾",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 38.9,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 45.97~47.81 买 · 5个交易日|65|早期第2日;已涨12.6%;20日动量44.9%;规则上行估计81%;盈亏比0.71;期望优势0.39;止损39.21|",
-   "factpack_id": "43cd62e79b46a42d2e90492a18ab4ee8bc7193cc63a017326f672d858f90010d"
+   "sig": "1A|回踩 47.48 买 · 5个交易日内有效|70|早期第6日;已涨3.5%;20日动量11.7%;规则上行估计50%;盈亏比2.6;期望优势0.8;止损49.42|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "000716.SZ": {
    "name": "黑芝麻",
@@ -6495,13 +6491,13 @@
    "name": "云顶新耀",
    "tier_at_verify": "1A",
    "verdict": "不否定",
-   "why": "估值仅46，但未形成明确否决证据",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.1,
+   "why": "无核验事实，暂不足以背书",
+   "ts": "2026-08-24 15:39（北京时间）",
+   "batch_seconds": 39.5,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 27.59~28.69 买 · 5个交易日|70||",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "1A|回踩 27.51~28.61 买 · 5个交易日|70||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6",
+   "carried_from_factpack_id": "2306b12cc4bced5c2cb95c157174c8d807b62ec31fb4d9580e6b177d3dedc8b8"
   },
   "688152.SS": {
    "name": "麒麟信安",
@@ -6670,8 +6666,8 @@
    "batch_seconds": 51.4,
    "fresh_for_strong_days": 1,
    "sig": "1A|🟢跌得很深·可分批买|70|距历史高点-40.6%;52周位20.4%;可得历史10.0年;历史同级样本n=7,胜5,条件频率71%,6月中位4.1%,最差-67.9%|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "factpack_id": "2306b12cc4bced5c2cb95c157174c8d807b62ec31fb4d9580e6b177d3dedc8b8",
+   "carried_from_factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d"
   },
   "003033.SZ": {
    "name": "征和工业",
@@ -6697,15 +6693,14 @@
   },
   "600649.SS": {
    "name": "城投控股",
-   "tier_at_verify": "2A",
+   "tier_at_verify": "1A",
    "verdict": "不否定",
-   "why": "长期价值与催化偏弱，证据不足",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.1,
+   "why": "长期价值55且无核验事实",
+   "ts": "2026-08-24 15:39（北京时间）",
+   "batch_seconds": 39.5,
    "fresh_for_strong_days": 1,
-   "sig": "2A|现在买（今日窗口内）|65||",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "1A|现在买（今日窗口内）|65||",
+   "factpack_id": "2306b12cc4bced5c2cb95c157174c8d807b62ec31fb4d9580e6b177d3dedc8b8"
   },
   "300601.SZ": {
    "name": "康泰生物",
@@ -6766,14 +6761,14 @@
   "688275.SS": {
    "name": "万润新能",
    "tier_at_verify": "1A",
-   "verdict": "通过",
-   "why": "盈亏比3.36且期望优势2.1，等待触发",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.9,
+   "verdict": "不否定",
+   "why": "赔率较好但长期价值仅60",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 37.4,
    "fresh_for_strong_days": 1,
-   "sig": "1A|双路径待触发|70|来源全市场·拐点抢筹·60日-35%但今日+1.2%·量比2.28;阶段启动确认;规则上行估计71%;盈亏比3.36;期望优势2.1;52周位31.0%;止损7|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "1A|回踩 82.98 买 · 5个交易日内有效|70|来源全市场·拐点抢筹·60日-35%但今日+1.6%·量比1.52;阶段启动确认;规则上行估计72%;盈亏比3.27;期望优势2.07;52周位31.0%;止损|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607",
+   "carried_from_factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
   },
   "002272.SZ": {
    "name": "川润股份",
@@ -6943,15 +6938,15 @@
    "factpack_id": "888bbac3d094a439549b40bb20a3017816e6aecf6e1a88b4e5b235c23934ab5c"
   },
   "688469.SS": {
-   "name": "芯联集成-U",
-   "tier_at_verify": "1A",
-   "verdict": "否决",
-   "why": "财务风险未消且动作逻辑冲突",
-   "ts": "2026-08-24 05:51（北京时间）",
-   "batch_seconds": 21.1,
+   "name": "芯联集成",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "财务风险闸未消，但未证实基本面恶化",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 318.5,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 8.5~8.84 买 · 5个交易日内有效|75||action=观察 vs mode=左侧低吸",
-   "factpack_id": "888bbac3d094a439549b40bb20a3017816e6aecf6e1a88b4e5b235c23934ab5c"
+   "sig": "2A|回踩 8.55 买 · 5个交易日内有效|75||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "JUNS": {
    "name": "Jupiter Neurosciences Inc",
@@ -7014,14 +7009,13 @@
   "6185.HK": {
    "name": "康希诺生物",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "估值仅30且时机偏弱，尚不足以通过",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.9,
+   "verdict": "通过",
+   "why": "上行估计80%、盈亏比2.73且低风险",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 38.9,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 24.93~25.93 买 · 5个交易日|65|来源全池转强·52周26%;阶段启动确认;规则上行估计85%;盈亏比2.21;期望优势1.73;52周位24.0%;止损22.72|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "1A|回踩 24.84~25.83 买 · 5个交易日|70|来源全池转强·52周22%;阶段启动确认;规则上行估计80%;盈亏比2.73;期望优势1.98;52周位21.0%;止损22.72|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "6886.HK": {
    "name": "华泰证券",
@@ -7229,97 +7223,93 @@
    "name": "思泉新材",
    "tier_at_verify": "1A",
    "verdict": "不否定",
-   "why": "单日大涨后尚待触发，证据不足以通过",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.9,
+   "why": "长期价值43，证据不足以通过",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 37.4,
    "fresh_for_strong_days": 1,
-   "sig": "1A|等待|75|来源全市场·拐点抢筹·60日-27%但今日+9.1%·量比2.59;阶段启动确认;规则上行估计77%;盈亏比2.55;期望优势1.73;52周位25.0%;止损|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "1A|回踩 108.78 买 · 0个交易日内有效|60|来源全市场·拐点抢筹·60日-28%但今日+8.3%·量比1.65;阶段启动确认;规则上行估计75%;盈亏比2.65;期望优势1.74;52周位25.0%;止损|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607",
+   "carried_from_factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
   },
   "1772.HK": {
    "name": "赣锋锂业",
    "tier_at_verify": "1A",
-   "verdict": "通过",
-   "why": "上行69%，盈亏比2.79，期望优势为正",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.9,
+   "verdict": "不否定",
+   "why": "长期价值54、时机55，支持仍不充分",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 38.9,
    "fresh_for_strong_days": 1,
-   "sig": "1A|双路径待触发|70|来源全池转强·52周23%;阶段启动确认;规则上行估计69%;盈亏比2.79;期望优势1.62;52周位23.0%;止损35.84|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "1A|回踩 39.64 买 · 5个交易日内有效|70|来源全池转强·52周22%;阶段启动确认;规则上行估计67%;盈亏比3.04;期望优势1.71;52周位22.0%;止损35.84|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "002125.SZ": {
    "name": "湘潭电化",
    "tier_at_verify": "1A",
    "verdict": "通过",
-   "why": "盈亏比6.32且放量启动，赔率明确",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.9,
+   "why": "胜率67%，盈亏比6.19",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 37.4,
    "fresh_for_strong_days": 1,
-   "sig": "1A|现价可进·半仓|65|来源全市场·短线异动·量比3.65·换手5.48%·60日-10%;阶段启动确认;规则上行估计67%;盈亏比6.32;期望优势3.9;52周位23.0%;止损1|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "1A|回踩 12.8 买 · 3个交易日内有效|75|来源全市场·短线异动·量比2.58·换手7.73%·60日-10%;阶段启动确认;规则上行估计67%;盈亏比6.19;期望优势3.82;52周位23.0%;止损|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607",
+   "carried_from_factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
   },
   "300457.SZ": {
    "name": "赢合科技",
    "tier_at_verify": "1A",
-   "verdict": "通过",
-   "why": "放量抢筹且盈亏比4.07，期望优势为正",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.9,
+   "verdict": "不否定",
+   "why": "上涨较急，等待回踩确认",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 37.4,
    "fresh_for_strong_days": 1,
-   "sig": "1A|现价可进·半仓|60|来源全市场·拐点抢筹·60日-21%但今日+6.5%·量比5.52;阶段启动确认;规则上行估计62%;盈亏比4.07;期望优势2.14;52周位19.0%;止损|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "1A|回踩 20.4 买 · 3个交易日内有效|75|来源全市场·拐点抢筹·60日-21%但今日+6.6%·量比3.84;阶段启动确认;规则上行估计62%;盈亏比4.04;期望优势2.12;52周位19.0%;止损|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607",
+   "carried_from_factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
   },
   "300731.SZ": {
    "name": "科创新源",
    "tier_at_verify": "1A",
    "verdict": "不否定",
-   "why": "上行仅62%，等待触发更合适",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.9,
+   "why": "止损距离过宽，风险收益待核",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 37.4,
    "fresh_for_strong_days": 1,
-   "sig": "1A|双路径待触发|60|来源全市场·拐点抢筹·60日-35%但今日+4.1%·量比2.51;阶段启动确认;规则上行估计62%;盈亏比3.54;期望优势1.81;52周位29.0%;止损|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "1A|回踩 38.99 买 · 5个交易日内有效|70|来源全市场·拐点抢筹·60日-33%但今日+7.2%·量比1.69;阶段启动确认;规则上行估计76%;盈亏比2.88;期望优势1.95;52周位32.0%;止损|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607",
+   "carried_from_factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
   },
   "XPEV": {
    "name": "小鹏汽车",
    "tier_at_verify": "1A",
-   "verdict": "通过",
-   "why": "低位转强且盈亏比6.97，赔率明确",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.9,
+   "verdict": "不否定",
+   "why": "窗口极短但赔率数据较强",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 37.4,
    "fresh_for_strong_days": 1,
-   "sig": "1A|左侧低吸·半仓|60|来源全池转强·52周4%;阶段启动确认;规则上行估计62%;盈亏比6.97;期望优势3.94;52周位4.0%;止损11.49|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "1A|回踩 11.92 买 · 0个交易日内有效|70|来源全池转强·52周4%;阶段启动确认;规则上行估计62%;盈亏比6.97;期望优势3.94;52周位4.0%;止损11.49|",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
   },
   "1333.HK": {
    "name": "博雷顿",
    "tier_at_verify": "1A",
-   "verdict": "不否定",
-   "why": "上行仅61%，等待状态尚未形成入场",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.9,
+   "verdict": "否决",
+   "why": "逻辑自相矛盾：港股收盘后零日窗失效",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 60.2,
    "fresh_for_strong_days": 1,
-   "sig": "1A|等待|60|来源全市场·拐点抢筹·60日-33%但今日+2.9%·量比3.25;阶段启动确认;规则上行估计61%;盈亏比6.5;期望优势3.57;52周位2.0%;止损10|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "1A|回踩 10.98 买 · 0个交易日内有效|60|来源全市场·拐点抢筹·60日-29%但今日+10.4%·量比6.2;阶段启动确认;规则上行估计76%;盈亏比3.32;期望优势2.28;52周位3.0%;止损1|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   },
   "601212.SS": {
    "name": "白银有色",
    "tier_at_verify": "1A",
    "verdict": "不否定",
-   "why": "时机与估值偏弱，尚不足以否决",
-   "ts": "2026-08-24 14:32（北京时间）",
-   "batch_seconds": 21.1,
+   "why": "无核验事实，暂不足以背书",
+   "ts": "2026-08-24 15:39（北京时间）",
+   "batch_seconds": 39.5,
    "fresh_for_strong_days": 1,
-   "sig": "1A|回踩 5.48~5.7 买 · 5个交易日内有效|70||",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
-   "carried_from_factpack_id": "02f67db476709bceaf4624f74c50bbca45d67f5f5c926d72ffb37217129ad259"
+   "sig": "1A|回踩 5.48~5.7 买 · 5个交易日内有效|65||",
+   "factpack_id": "2306b12cc4bced5c2cb95c157174c8d807b62ec31fb4d9580e6b177d3dedc8b8"
   },
   "002667.SZ": {
    "name": "*ST威领",
@@ -7400,37 +7390,649 @@
    "batch_seconds": 26.9,
    "fresh_for_strong_days": 1,
    "sig": "1A|🟢打折到位·可开始买|85|距历史高点-23.0%;52周位62.9%;可得历史9.6年;历史同级样本n=6,胜5,条件频率83%,6月中位30.3%,最差-0.6%|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d"
+   "factpack_id": "2306b12cc4bced5c2cb95c157174c8d807b62ec31fb4d9580e6b177d3dedc8b8",
+   "carried_from_factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d"
   },
   "ORCL": {
    "name": "甲骨文",
    "tier_at_verify": "1A",
-   "verdict": "否决",
-   "why": "赔率不足：最差-29.4%大于中位收益21.6%",
-   "ts": "2026-08-24 14:34（北京时间）",
-   "batch_seconds": 26.9,
+   "verdict": "不否定",
+   "why": "完备度仅75%，证据链不足以通过",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 38.9,
    "fresh_for_strong_days": 1,
-   "sig": "1A|🟢跌得很深·可分批买|65|距历史高点-54.9%;52周位15.0%;可得历史10.0年;历史同级样本n=6,胜4,条件频率67%,6月中位21.6%,最差-29.4%|",
-   "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d"
+   "sig": "1A|回踩 141.91 买 · 5个交易日内有效|70|距历史高点-56.2%;52周位12.9%;可得历史10.0年;历史同级样本n=6,胜4,条件频率67%,6月中位21.6%,最差-29.4%|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
+  },
+  "003035.SZ": {
+   "name": "南网能源",
+   "tier_at_verify": "1A",
+   "verdict": "通过",
+   "why": "胜率61%、盈亏比2.98且条件入场",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 60.2,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 5.43 买 · 3个交易日内有效|65|来源全市场·拐点抢筹·60日-23%但今日+10.0%·量比4.3;阶段启动确认;规则上行估计61%;盈亏比2.98;期望优势1.43;52周位19.0%;止损|",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
+  },
+  "002716.SZ": {
+   "name": "湖南白银",
+   "tier_at_verify": "1A",
+   "verdict": "否决",
+   "why": "基本面恶化：财务风险25未消",
+   "ts": "2026-08-24 15:39（北京时间）",
+   "batch_seconds": 39.5,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 8.99~9.35 买 · 5个交易日内有|65||",
+   "factpack_id": "2306b12cc4bced5c2cb95c157174c8d807b62ec31fb4d9580e6b177d3dedc8b8"
+  },
+  "605111.SS": {
+   "name": "605111.SS",
+   "tier_at_verify": "3A",
+   "verdict": "不否定",
+   "why": "3A缺少可核验事实，证据链不足",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 36.0,
+   "fresh_for_strong_days": 1,
+   "sig": "3A|回踩 55.58 买 · 3个交易日内有效|80||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "300171.SZ": {
+   "name": "300171.SZ",
+   "tier_at_verify": "3A",
+   "verdict": "不否定",
+   "why": "3A缺少可核验事实，证据链不足",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 36.0,
+   "fresh_for_strong_days": 1,
+   "sig": "3A|回踩 13.22 买 · 3个交易日内有效|75||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "300811.SZ": {
+   "name": "300811.SZ",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "长期价值偏弱，尚不足以支持2A",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 36.0,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 69.79 买 · 3个交易日内有效|80||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "600857.SS": {
+   "name": "600857.SS",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "估值桶偏弱，尚不足以支持2A",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 36.0,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 18.21 买 · 3个交易日内有效|80||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607",
+   "carried_from_factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "603800.SS": {
+   "name": "603800.SS",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "长期价值偏弱，尚不足以支持2A",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 36.0,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 61.85 买 · 3个交易日内有效|80||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "300970.SZ": {
+   "name": "300970.SZ",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "长期价值偏弱，尚不足以支持2A",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 36.0,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 17.86 买 · 3个交易日内有效|80||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "688766.SS": {
+   "name": "688766.SS",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "核验事实为空，证据链不足以通过",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 318.5,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 391.52 买 · 3个交易日内有效|80||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
+  },
+  "300394.SZ": {
+   "name": "300394.SZ",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "长期价值偏弱，尚不足以支持2A",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 36.0,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 230.92 买 · 3个交易日内有效|80||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "603113.SS": {
+   "name": "603113.SS",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "长期价值短板，缺少事实支撑",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 36.0,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 4.84 买 · 3个交易日内有效|80||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "688276.SS": {
+   "name": "688276.SS",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "核验事实为空，证据链不足以通过",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 318.5,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 15.66 买 · 3个交易日内有效|75||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
+  },
+  "002802.SZ": {
+   "name": "002802.SZ",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "长期价值短板，缺少事实支撑",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 36.0,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 11.7 买 · 3个交易日内有效|75||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "603079.SS": {
+   "name": "603079.SS",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "长期价值偏弱，尚不足以支持2A",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 36.0,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 12.25 买 · 3个交易日内有效|75||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607",
+   "carried_from_factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "688583.SS": {
+   "name": "688583.SS",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "长期价值偏弱，尚无具体否决证据",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 318.5,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 79.5 买 · 3个交易日内有效|75||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
+  },
+  "300985.SZ": {
+   "name": "300985.SZ",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "时机仅60，入场条件仍待确认",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 36.0,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 34.45 买 · 5个交易日内有效|75||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "001333.SZ": {
+   "name": "001333.SZ",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "长期价值短板，缺少事实支撑",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 36.0,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 20.29 买 · 3个交易日内有效|75||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "688052.SS": {
+   "name": "688052.SS",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "时机仅61，入场条件仍待确认",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 36.0,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 213.97 买 · 5个交易日内有效|75||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "603186.SS": {
+   "name": "603186.SS",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "时机仅60，入场条件仍待确认",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 36.0,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 143.01 买 · 5个交易日内有效|75||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "688598.SS": {
+   "name": "688598.SS",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "当前时机偏弱，尚无具体否决证据",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 318.5,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 35.55 买 · 5个交易日内有效|75||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
+  },
+  "688206.SS": {
+   "name": "688206.SS",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "时机仅59，入场条件仍待确认",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 36.0,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 39.01 买 · 5个交易日内有效|75||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "001367.SZ": {
+   "name": "001367.SZ",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "评分支持但缺少可核验事实",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 20.1,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 19.76 买 · 3个交易日内有效|75||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "002971.SZ": {
+   "name": "002971.SZ",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "时机催化偏弱，尚不构成具体否决",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 318.5,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 41.18 买 · 5个交易日内有效|75||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
+  },
+  "000691.SZ": {
+   "name": "000691.SZ",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "时机与催化偏弱，未见硬伤",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 20.1,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 9.87 买 · 5个交易日内有效|75||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "300835.SZ": {
+   "name": "300835.SZ",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "时机与催化偏弱，未见硬伤",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 20.1,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 145.57 买 · 5个交易日内有效|75||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "300700.SZ": {
+   "name": "300700.SZ",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "时机与催化偏弱，未见硬伤",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 20.1,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 17.53 买 · 5个交易日内有效|70||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "MVLL": {
+   "name": "MVLL",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "时机56偏弱，但无明确反对理由",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 17.3,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 25.63 买 · 5个交易日内有效|70||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
+  },
+  "603118.SS": {
+   "name": "603118.SS",
+   "tier_at_verify": "2A",
+   "verdict": "否决",
+   "why": "逻辑自相矛盾：收盘后窗口已失效",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 20.1,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 15.89 买 · 0个交易日内有效|70||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "600353.SS": {
+   "name": "600353.SS",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "当前时机偏弱，尚无否决依据",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 20.1,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 33.19 买 · 5个交易日内有效|70||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "600397.SS": {
+   "name": "600397.SS",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "时机与催化偏弱，未见硬伤",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 20.1,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 16.26 买 · 5个交易日内有效|70||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "000657.SZ": {
+   "name": "000657.SZ",
+   "tier_at_verify": "2A",
+   "verdict": "否决",
+   "why": "逻辑自相矛盾：收盘后窗口已失效",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 20.1,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 62.28 买 · 0个交易日内有效|70||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "000026.SZ": {
+   "name": "000026.SZ",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "时机与催化偏弱，未见硬伤",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 20.1,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 18.94 买 · 5个交易日内有效|70||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "AAPL": {
+   "name": "苹果",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "长期价值偏弱，且证据链不足",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 21.5,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 308.28 买 · 0个交易日内有效|60||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
+  },
+  "MO": {
+   "name": "奥驰亚",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "赔率高，但长期价值证据偏弱",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 329.9,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 65.39 买 · 0个交易日内有效|60||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "SO": {
+   "name": "美国南方公司",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "长期价值仅34，尚不足以通过",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 21.5,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 92.19 买 · 0个交易日内有效|60||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
+  },
+  "APP": {
+   "name": "Applovin",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "长期价值仅22，但未构成强否决",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 21.5,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 349.02 买 · 0个交易日内有效|55||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
+  },
+  "600941.SH": {
+   "name": "中国移动",
+   "tier_at_verify": "0A",
+   "verdict": "否决",
+   "why": "赔率不足：获利空间仅40分",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 329.9,
+   "fresh_for_strong_days": 1,
+   "sig": "0A|回踩 96.58 买 · 0个交易日内有效|50||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607",
+   "carried_from_factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "002903.SZ": {
+   "name": "002903.SZ",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "综合分高，但核验事实链为空",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 329.9,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 29.74 买 · 5个交易日内有效|75||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "300486.SZ": {
+   "name": "300486.SZ",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "综合分高，但核验事实链为空",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 329.9,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 20.69 买 · 5个交易日内有效|75||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "7299.HK": {
+   "name": "南方两倍做多黄金",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "杠杆品种风险尚未充分核验",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 329.9,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 23.24~24.17 买 · 5个交易日|70||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "MRVL": {
+   "name": "MRVL",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "时机55、估值62，尚不足以通过",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 17.3,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 212.25 买 · 5个交易日内有效|70||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
+  },
+  "2590.HK": {
+   "name": "2590.HK",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "赔率突出，但长期价值偏弱",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 329.9,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 10.02 买 · 3个交易日内有效|70||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607",
+   "carried_from_factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "BTBT": {
+   "name": "BTBT",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "高波动标的，支撑证据不足",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 329.9,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 1.47 买 · 5个交易日内有效|65||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "300715.SZ": {
+   "name": "300715.SZ",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "赔率突出，但催化证据偏弱",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 329.9,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 13.19 买 · 5个交易日内有效|75||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "PG": {
+   "name": "宝洁",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "估值尚可，但获利空间一般",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 329.9,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 144.31 买 · 0个交易日内有效|60||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "300607.SZ": {
+   "name": "300607.SZ",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "核验事实为空，证据链不足以通过",
+   "ts": "2026-08-24 16:16（北京时间）",
+   "batch_seconds": 12.5,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 32.79 买 · 5个交易日内有效|70||",
+   "factpack_id": "3dba7390a2400f7a1fb59532491d99999b4eba2570ba3ec206e43aea3181a5b6"
+  },
+  "301568.SZ": {
+   "name": "301568.SZ",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "核验事实为空，证据链缺口未消",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 60.2,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 66.14 买 · 3个交易日内有效|80||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
+  },
+  "000632.SZ": {
+   "name": "000632.SZ",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "核验事实为空，证据链不足以通过",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 318.5,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 3.63 买 · 3个交易日内有效|80||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
+  },
+  "002631.SZ": {
+   "name": "002631.SZ",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "时机催化偏弱，尚不构成具体否决",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 318.5,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 8.04 买 · 5个交易日内有效|70||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
+  },
+  "600379.SS": {
+   "name": "600379.SS",
+   "tier_at_verify": "2A",
+   "verdict": "不否定",
+   "why": "核验事实为空，催化与时机偏弱",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 21.5,
+   "fresh_for_strong_days": 1,
+   "sig": "2A|回踩 14.64 买 · 5个交易日内有效|70||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
+  },
+  "300843.SZ": {
+   "name": "300843.SZ",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "时机58、估值57，尚不足以通过",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 17.3,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 130.87 买 · 2个交易日内有效|70||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
+  },
+  "2218.HK": {
+   "name": "安德利果汁",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "时机49偏弱，突破逻辑支撑不足",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 17.3,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 20.41 买 · 0个交易日内有效|70||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
+  },
+  "002655.SZ": {
+   "name": "002655.SZ",
+   "tier_at_verify": "1A",
+   "verdict": "不否定",
+   "why": "时机57、估值64，尚不足以通过",
+   "ts": "2026-08-24 22:22（北京时间）",
+   "batch_seconds": 17.3,
+   "fresh_for_strong_days": 1,
+   "sig": "1A|回踩 34.44 买 · 5个交易日内有效|70||",
+   "factpack_id": "65c906ae55b0cd39224edc85b89a09c87e6b755ff2b2743b3f29fd0b121aa607"
   }
  },
  "batches": [
   {
-   "n": 11,
-   "got": 11,
-   "seconds": 26.9,
+   "n": 10,
+   "got": 10,
+   "seconds": 38.9,
+   "error": ""
+  },
+  {
+   "n": 10,
+   "got": 10,
+   "seconds": 60.2,
+   "error": ""
+  },
+  {
+   "n": 10,
+   "got": 10,
+   "seconds": 318.5,
+   "error": ""
+  },
+  {
+   "n": 10,
+   "got": 10,
+   "seconds": 21.5,
+   "error": ""
+  },
+  {
+   "n": 10,
+   "got": 10,
+   "seconds": 17.3,
    "error": ""
   }
  ],
  "stats": {
-  "待验证": 11,
-  "本轮已验": 11,
+  "待验证": 72,
+  "本轮已验": 50,
   "假否决归位": 0,
   "分布": {
-   "不否定": 193,
-   "否决": 311,
+   "否决": 310,
+   "不否定": 250,
    "不可用": 119,
-   "通过": 56
+   "通过": 53
   }
  }
 }

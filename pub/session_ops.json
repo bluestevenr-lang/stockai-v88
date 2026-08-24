@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-24 14:36（北京时间）",
+ "generated_at": "2026-08-24 22:31（北京时间）",
  "version": "sessionops-v1",
  "ruleset_version": "v4.2",
  "gates_in_force": [
@@ -25,69 +25,55 @@
  "sell": [],
  "watch": [
   {
-   "code": "159632.SZ",
-   "name": "纳斯达克",
-   "level": "-2A",
-   "last": 2.412,
-   "stop": 2.414,
-   "dist_stop_pct": -0.1,
-   "sell_zone": "2.41~2.41 全部离场",
-   "c123": "①②③",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-2A·1-2-3 停在 ①②③ → 不主动卖，跌破 2.414 执行"
-  },
-  {
    "code": "SO",
    "name": "美国南方公司",
    "level": "-2A",
-   "last": 88.94,
+   "last": 89.3,
    "stop": 88.91,
-   "dist_stop_pct": 0.0,
-   "sell_zone": "88.91~88.94 全部离场",
-   "c123": "①②③",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-2A·1-2-3 停在 ①②③ → 不主动卖，跌破 88.91 执行"
-  },
-  {
-   "code": "600809.SS",
-   "name": "山西汾酒",
-   "level": "-1A",
-   "last": 117.84,
-   "stop": 117.655,
-   "dist_stop_pct": 0.2,
-   "sell_zone": "跌破117.66执行(距+0.2%)",
+   "dist_stop_pct": 0.4,
+   "sell_zone": "跌破88.91执行(距+0.4%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 117.655 执行"
+   "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 88.91 执行"
   },
   {
-   "code": "9988.HK",
-   "name": "阿里巴巴-SW",
+   "code": "APP",
+   "name": "Applovin",
    "level": "-2A",
-   "last": 111.6,
-   "stop": 110.1,
-   "dist_stop_pct": 1.4,
-   "sell_zone": "110.10~111.60 全部离场",
-   "c123": "①②③",
-   "frozen": true,
+   "last": 299.932,
+   "stop": 297.6,
+   "dist_stop_pct": 0.8,
+   "sell_zone": "跌破297.60执行(距+0.8%)",
+   "c123": "①②",
+   "frozen": false,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-2A·1-2-3 停在 ①②③；且有未解释异动，重动作已冻结（止损不受影响） → 不主动卖，跌破 110.1 执行"
+   "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 297.6 执行"
+  },
+  {
+   "code": "600809.SS",
+   "name": "山西汾酒",
+   "level": "-2A",
+   "last": 117.1,
+   "stop": 115.87,
+   "dist_stop_pct": 1.1,
+   "sell_zone": "跌破115.87执行(距+1.1%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 115.87 执行"
   },
   {
    "code": "000783.SZ",
    "name": "长江证券",
    "level": "-1A",
-   "last": 8.6,
+   "last": 8.63,
    "stop": 8.465,
-   "dist_stop_pct": 1.6,
-   "sell_zone": "跌破8.46执行(距+1.6%)",
+   "dist_stop_pct": 1.9,
+   "sell_zone": "跌破8.46执行(距+1.9%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
@@ -95,13 +81,27 @@
    "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 8.465 执行"
   },
   {
+   "code": "9988.HK",
+   "name": "阿里巴巴-SW",
+   "level": "-2A",
+   "last": 112.5,
+   "stop": 110.1,
+   "dist_stop_pct": 2.2,
+   "sell_zone": "110.10~112.50 全部离场",
+   "c123": "①②③",
+   "frozen": true,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-2A·1-2-3 停在 ①②③；且有未解释异动，重动作已冻结（止损不受影响） → 不主动卖，跌破 110.1 执行"
+  },
+  {
    "code": "GOOG",
    "name": "谷歌C",
    "level": "-2A",
-   "last": 341.75,
+   "last": 345.613,
    "stop": 336.17,
-   "dist_stop_pct": 1.7,
-   "sell_zone": "跌破336.17执行(距+1.7%)",
+   "dist_stop_pct": 2.8,
+   "sell_zone": "跌破336.17执行(距+2.8%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
@@ -109,60 +109,18 @@
    "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 336.17 执行"
   },
   {
-   "code": "PM",
-   "name": "菲利普莫里斯",
-   "level": "-1A",
-   "last": 188.23,
-   "stop": 184.02,
-   "dist_stop_pct": 2.3,
-   "sell_zone": "跌破184.02执行(距+2.3%)",
-   "c123": "①②",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 184.02 执行"
-  },
-  {
-   "code": "APP",
-   "name": "Applovin",
-   "level": "-1A",
-   "last": 305.77,
-   "stop": 298.0,
-   "dist_stop_pct": 2.6,
-   "sell_zone": "跌破298.00执行(距+2.6%)",
-   "c123": "①②",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 298.0 执行"
-  },
-  {
    "code": "AAPL",
    "name": "苹果",
-   "level": "-1A",
-   "last": 309.35,
-   "stop": 301.656,
-   "dist_stop_pct": 2.6,
-   "sell_zone": "跌破301.66执行(距+2.6%)",
-   "c123": "①②",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 301.656 执行"
-  },
-  {
-   "code": "MO",
-   "name": "奥驰亚",
-   "level": "-1A",
-   "last": 66.09,
-   "stop": 63.92,
+   "level": "-2A",
+   "last": 312.93,
+   "stop": 302.756,
    "dist_stop_pct": 3.4,
-   "sell_zone": "跌破63.92执行(距+3.4%)",
+   "sell_zone": "跌破302.76执行(距+3.4%)",
    "c123": "①②",
    "frozen": false,
    "listable": true,
    "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 63.92 执行"
+   "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 302.756 执行"
   }
  ],
  "buy": [],
@@ -173,34 +131,16 @@
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "不否定",
-   "kimi": "未验证",
-   "factpack_match": false
+   "kimi": "pass",
+   "factpack_match": true
   },
   {
-   "code": "002040.SZ",
-   "name": "南京港",
+   "code": "9633.HK",
+   "name": "农夫山泉",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
-   "gpt": "不否定",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "2245.HK",
-   "name": "力勤资源",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "不否定",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "601101.SS",
-   "name": "昊华能源",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
+   "gpt": "未验证",
+   "kimi": "pass",
    "factpack_match": false
   }
  ],
@@ -211,49 +151,31 @@
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "不否定",
-   "kimi": "未验证",
-   "factpack_match": false
+   "kimi": "pass",
+   "factpack_match": true
   },
   {
-   "code": "002040.SZ",
-   "name": "南京港",
+   "code": "9633.HK",
+   "name": "农夫山泉",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
-   "gpt": "不否定",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "2245.HK",
-   "name": "力勤资源",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "不否定",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "601101.SS",
-   "name": "昊华能源",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
+   "gpt": "未验证",
+   "kimi": "pass",
    "factpack_match": false
   }
  ],
  "stats": {
   "sell": 0,
-  "watch": 10,
+  "watch": 7,
   "buy": 0,
   "buy_dual": 0,
-  "blocked": 4,
+  "blocked": 2,
   "blocked_by_rr": 0
  },
  "src_asof": {
-  "sell_grade": "2026-08-24 14:34（北京时间）",
-  "rank_score": "2026-08-24 14:34（北京时间）",
-  "classics_lens": "2026-08-24 14:34（北京时间）",
-  "anomaly_gate": "2026-08-24 14:33（北京时间）"
+  "sell_grade": "2026-08-24 22:30（北京时间）",
+  "rank_score": "2026-08-24 22:30（北京时间）",
+  "classics_lens": "2026-08-24 22:22（北京时间）",
+  "anomaly_gate": "2026-08-24 22:22（北京时间）"
  }
 }
