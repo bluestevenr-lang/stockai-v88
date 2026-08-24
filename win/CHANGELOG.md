@@ -19,3 +19,10 @@
 8. **新建 cron「V88预算哨兵」** `7 21 * * *` @ Asia/Shanghai，kimi-coding/k3-256k（订阅零现金），announce → 飞书单聊；手动触发一次 ok（10.4s，delivered）。ID 17ce0d7a-f91e-42cd-a16c-778f5a234b6a。
 9. **AGENTS.md（模板+工作区）追加「预算红线」规则**：按量调用默认禁止、发现按量 fallback 立即报告、问预算跑 k3budget。
 10. **win/proposals/ai_budget_cap.md**：Mac 引擎级预算闸建议稿（铁律23 流程，不动私仓 src/）；含 65→35.41 消耗源核查请求。
+
+## 2026-08-24（任务书5：管线迁 Win 第一批）
+
+11. **win/bottomturn_job.bat 补两行环境**：`HTTP(S)_PROXY=127.0.0.1:7897`（实测 Yahoo/GitHub 直连 429 必走代理）与 `PYTHONUTF8=1`（GBK 控制台三次踩坑：v88_health git 解码、v88_json_merge stash 解码、bottom_turn 收尾 emoji 打印）。bat 纯 ASCII 保持。
+12. **新建 v88env**：`C:\Users\admin\v88env`（Python 3.12.14，pandas 3.0.5/numpy 2.5.2/yfinance 1.6.0），与 kimi-desktop 运行时隔离。
+13. **私仓 rebase 解卡**：5 个 data/*.json 冲突取本地重放侧，git rebase --continue 异常时用手动提交+update-ref+--quit 完成并推送 0ed722f；未改私仓任何脚本（铁律23），postpull 用 PYTHONUTF8=1 环境方式通过。
+14. **注册计划任务 V88-BottomTurn**（周一至五 17:07）：两次 /Run 验证，末次干净收尾（247.8s，上榜333只，推送 cec00e2）。

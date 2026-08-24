@@ -2,6 +2,11 @@
 rem V88 BottomTurn daily job (Win) - ASCII only, no CJK chars
 rem GPT-gate hardening: mutex lock, explicit workdir, push-fail logging
 setlocal
+rem Win outbound to Yahoo/GitHub needs local proxy (mission5实测: direct gets 429)
+set HTTP_PROXY=http://127.0.0.1:7897
+set HTTPS_PROXY=http://127.0.0.1:7897
+rem UTF8 mode: GBK console breaks src prints (emoji) and git subprocess decoding
+set PYTHONUTF8=1
 set LOGDIR=C:\Users\admin\Desktop\StockAI\win\logs
 set LOG=%LOGDIR%\bottomturn.log
 set LOCK=%LOGDIR%\bottomturn.lock
