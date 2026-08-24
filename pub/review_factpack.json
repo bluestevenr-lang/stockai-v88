@@ -1,0 +1,2725 @@
+{
+ "generated_at": "2026-08-24 14:34（北京时间）",
+ "source_generated_at": "2026-08-24 14:32（北京时间）",
+ "version": "review-factpack-v1",
+ "factpack_id": "7f62c92d24fe978bd2f9bbd1f3e4039c0d8348ca739a906bec3cae9e3b4d8e8d",
+ "authority": "仅含V88确定性事实；不含GPT、Kimi或DeepSeek裁决",
+ "items": [
+  {
+   "code": "06055.HK",
+   "name": "中烟香港",
+   "tier": "1A",
+   "rank_score": 75.0,
+   "opportunity_type": "趋势翻转",
+   "when": "🟢现在可买(涨势刚起,买得最早)",
+   "buckets": {},
+   "risk_score": 30.0,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "早期第10日;已涨6.8%;20日动量17.2%;规则上行估计75%;盈亏比0.17;期望优势-0.12;止损21.81",
+   "direct_module": true,
+   "held": true,
+   "sig": "1A|🟢现在可买(涨势刚起,买得最早)|75|早期第10日;已涨6.8%;20日动量17.2%;规则上行估计75%;盈亏比0.17;期望优势-0.12;止损21.81|"
+  },
+  {
+   "code": "0883.HK",
+   "name": "中海油",
+   "market": null,
+   "tier": "0A",
+   "subtype": "0A-风险",
+   "action_state": "风险回避",
+   "rank_score": 69.2,
+   "opportunity_type": "趋势翻转",
+   "when": "现在买（今日窗口内）",
+   "buckets": {
+    "long_value": {
+     "score": 63.3,
+     "pass": false,
+     "basis": "长期偏涨概率54%；ROE15%；营收下滑"
+    },
+    "timing": {
+     "score": 83.3,
+     "pass": true,
+     "basis": "窗口:现在买（今日窗口内）；量比0.48(长期型只核流动性)"
+    },
+    "catalyst": {
+     "score": 50.0,
+     "pass": false,
+     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
+    },
+    "valuation": {
+     "score": 74.7,
+     "pass": true,
+     "basis": "52周位50%；PE8(文本代理,非历史分位)"
+    },
+    "payoff": {
+     "score": 71.9,
+     "pass": true,
+     "basis": "赔率1.59；期望+3.3%；赢面+27.4pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 35.0,
+   "risk_flags": [],
+   "risk_veto": [
+    "双剑否决在案"
+   ],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "长期价值",
+    "机会催化"
+   ],
+   "extra_evidence": "早期第4日;已涨2.9%;20日动量8.4%;规则上行估计66%;盈亏比1.1;期望优势0.39;止损23.46",
+   "field_conflict": "action=持有观察 vs mode=现价可进",
+   "flags": [
+    "⚠️双剑否决在案",
+    "🔎字段冲突待复核(action=持有观察 vs mode=现价可进)"
+   ],
+   "why_focus": "港股冰点(2周43%)资金找避风港:20日跑赢大盘+7.7pp+股息5.1%托底",
+   "why_not_higher": "触发风险否决项：双剑否决在案",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "direct_module": true,
+   "held": true,
+   "sig": "0A|现在买（今日窗口内）|70|早期第4日;已涨2.9%;20日动量8.4%;规则上行估计66%;盈亏比1.1;期望优势0.39;止损23.46|action=持有观察 vs mode=现价可进"
+  },
+  {
+   "code": "MRK",
+   "name": "默沙东",
+   "market": "美股",
+   "tier": "0A",
+   "subtype": "0A-风险",
+   "action_state": "风险回避",
+   "rank_score": 59.8,
+   "opportunity_type": "趋势翻转",
+   "when": "回踩 134.23~139.6 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 93.0,
+     "pass": true,
+     "basis": "长期偏涨概率85%"
+    },
+    "timing": {
+     "score": 58.7,
+     "pass": false,
+     "basis": "窗口:回踩 134.23~139.6 买 · 5个交易日内有效；回踩中量比1.07(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 53.2,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损7.3%(中性)；⚠️贴新高且上行<5%=涨幅或已透支"
+    },
+    "payoff": {
+     "score": 29.9,
+     "pass": false,
+     "basis": "赔率0.17；期望+0.0%；赢面-0.5pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 35.0,
+   "risk_flags": [],
+   "risk_veto": [
+    "双剑否决在案"
+   ],
+   "data_completeness": 90,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "extra_evidence": "中期第20日;已涨16.4%;20日动量16.4%;规则上行估计85%;盈亏比0.08;期望优势-0.08;止损128.46",
+   "field_conflict": "",
+   "flags": [
+    "⚠️双剑否决在案"
+   ],
+   "why_focus": "",
+   "why_not_higher": "触发风险否决项：双剑否决在案",
+   "data_available_at": "2026-08-21 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "direct_module": true,
+   "held": true,
+   "sig": "0A|回踩 134.23~139.6 买 · 5个交易|60|中期第20日;已涨16.4%;20日动量16.4%;规则上行估计85%;盈亏比0.08;期望优势-0.08;止损128.46|"
+  },
+  {
+   "code": "PFE",
+   "name": "辉瑞",
+   "market": "美股",
+   "tier": "0A",
+   "subtype": "0A-风险",
+   "action_state": "风险回避",
+   "rank_score": 58.8,
+   "opportunity_type": "趋势翻转",
+   "when": "回踩 26.3~27.35 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 86.7,
+     "pass": true,
+     "basis": "长期偏涨概率76%"
+    },
+    "timing": {
+     "score": 58.8,
+     "pass": false,
+     "basis": "窗口:回踩 26.3~27.35 买 · 5个交易日内有效；回踩中量比1.05(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 60.2,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损4.9%(刚突破,入场成本低)；⚠️贴新高且上行<5%=涨幅或已透支"
+    },
+    "payoff": {
+     "score": 28.1,
+     "pass": false,
+     "basis": "赔率0.27；期望-0.8%；赢面-12.7pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 50.0,
+   "risk_flags": [],
+   "risk_veto": [
+    "双剑否决在案(2026-07-31·24天前)⚠️前提可能已变:否决已24天未复核",
+    "预期下跌(4.9%)明显大于潜在收益(1.3%)"
+   ],
+   "data_completeness": 90,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "extra_evidence": "早期第10日;已涨4.9%;20日动量14.4%;规则上行估计66%;盈亏比0.2;期望优势-0.21;止损25.92",
+   "field_conflict": "",
+   "flags": [
+    "⚠️双剑否决在案(2026-07-31·24天前)⚠️前提可能已变:否决已24天未复核",
+    "⚠️预期下跌(4.9%)明显大于潜在收益(1.3%)"
+   ],
+   "why_focus": "",
+   "why_not_higher": "触发风险否决项：双剑否决在案(2026-07-31·24天前)⚠️前提可能已变:否决已24天未复核；预期下跌(4.9%)明显大于潜在收益(1.3%)",
+   "data_available_at": "2026-08-21 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "direct_module": true,
+   "held": true,
+   "sig": "0A|回踩 26.3~27.35 买 · 5个交易日内|60|早期第10日;已涨4.9%;20日动量14.4%;规则上行估计66%;盈亏比0.2;期望优势-0.21;止损25.92|"
+  },
+  {
+   "code": "001309.SZ",
+   "name": "德明利",
+   "tier": "1A",
+   "rank_score": 91.0,
+   "opportunity_type": "价值回撤",
+   "when": "🟢跌得很深·可分批买",
+   "buckets": {},
+   "risk_score": 6.8,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "距历史高点-59.0%;52周位35.2%;可得历史4.0年;历史同级样本n=11,胜10,条件频率91%,6月中位38.7%,最差-6.8%",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|🟢跌得很深·可分批买|90|距历史高点-59.0%;52周位35.2%;可得历史4.0年;历史同级样本n=11,胜10,条件频率91%,6月中位38.7%,最差-6.8%|"
+  },
+  {
+   "code": "000338.SZ",
+   "name": "潍柴动力",
+   "tier": "1A",
+   "rank_score": 83.0,
+   "opportunity_type": "价值回撤",
+   "when": "🟢打折到位·可开始买",
+   "buckets": {},
+   "risk_score": 0.6,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "距历史高点-23.0%;52周位62.9%;可得历史9.6年;历史同级样本n=6,胜5,条件频率83%,6月中位30.3%,最差-0.6%",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|🟢打折到位·可开始买|85|距历史高点-23.0%;52周位62.9%;可得历史9.6年;历史同级样本n=6,胜5,条件频率83%,6月中位30.3%,最差-0.6%|"
+  },
+  {
+   "code": "600460.SS",
+   "name": "士兰微",
+   "tier": "1A",
+   "rank_score": 81.0,
+   "opportunity_type": "全市场机会",
+   "when": "双路径待触发",
+   "buckets": {},
+   "risk_score": 30.0,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "来源全市场·短线异动·量比3.1·换手11.87%·60日+4%;阶段启动确认;规则上行估计81%;盈亏比3.49;期望优势2.64;52周位35.0%;止损27.39",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|双路径待触发|80|来源全市场·短线异动·量比3.1·换手11.87%·60日+4%;阶段启动确认;规则上行估计81%;盈亏比3.49;期望优势2.64;52周位35.0%;止损2|"
+  },
+  {
+   "code": "AVGO",
+   "name": "博通",
+   "tier": "1A",
+   "rank_score": 80.0,
+   "opportunity_type": "价值回撤",
+   "when": "🟢打折到位·可开始买",
+   "buckets": {},
+   "risk_score": 2.3,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "距历史高点-23.4%;52周位41.9%;可得历史10.0年;历史同级样本n=10,胜8,条件频率80%,6月中位39.6%,最差-2.3%",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|🟢打折到位·可开始买|80|距历史高点-23.4%;52周位41.9%;可得历史10.0年;历史同级样本n=10,胜8,条件频率80%,6月中位39.6%,最差-2.3%|"
+  },
+  {
+   "code": "603179.SS",
+   "name": "新泉股份",
+   "tier": "1A",
+   "rank_score": 79.0,
+   "opportunity_type": "价值回撤",
+   "when": "🟢跌得很深·可分批买",
+   "buckets": {},
+   "risk_score": 37.6,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "距历史高点-49.5%;52周位10.8%;可得历史9.1年;历史同级样本n=19,胜15,条件频率79%,6月中位22.6%,最差-37.6%",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|🟢跌得很深·可分批买|80|距历史高点-49.5%;52周位10.8%;可得历史9.1年;历史同级样本n=19,胜15,条件频率79%,6月中位22.6%,最差-37.6%|"
+  },
+  {
+   "code": "301489.SZ",
+   "name": "思泉新材",
+   "tier": "1A",
+   "rank_score": 77.0,
+   "opportunity_type": "全市场机会",
+   "when": "等待",
+   "buckets": {},
+   "risk_score": 30.0,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "来源全市场·拐点抢筹·60日-27%但今日+9.1%·量比2.59;阶段启动确认;规则上行估计77%;盈亏比2.55;期望优势1.73;52周位25.0%;止损83.33",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|等待|75|来源全市场·拐点抢筹·60日-27%但今日+9.1%·量比2.59;阶段启动确认;规则上行估计77%;盈亏比2.55;期望优势1.73;52周位25.0%;止损|"
+  },
+  {
+   "code": "002460.SZ",
+   "name": "赣锋锂业",
+   "tier": "1A",
+   "rank_score": 75.0,
+   "opportunity_type": "全市场机会",
+   "when": "🟢跌得很深·可分批买",
+   "buckets": {},
+   "risk_score": 26.8,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "来源全池转强·52周35%;阶段启动确认;规则上行估计61%;盈亏比3.47;期望优势1.73;52周位34.0%;止损47.47",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|🟢跌得很深·可分批买|75|来源全池转强·52周35%;阶段启动确认;规则上行估计61%;盈亏比3.47;期望优势1.73;52周位34.0%;止损47.47|"
+  },
+  {
+   "code": "002756.SZ",
+   "name": "永兴材料",
+   "tier": "1A",
+   "rank_score": 75.0,
+   "opportunity_type": "价值回撤",
+   "when": "🟢跌得很深·可分批买",
+   "buckets": {},
+   "risk_score": 35.6,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "距历史高点-45.2%;52周位27.6%;可得历史9.6年;历史同级样本n=8,胜6,条件频率75%,6月中位20.3%,最差-35.6%",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|🟢跌得很深·可分批买|75|距历史高点-45.2%;52周位27.6%;可得历史9.6年;历史同级样本n=8,胜6,条件频率75%,6月中位20.3%,最差-35.6%|"
+  },
+  {
+   "code": "300953.SZ",
+   "name": "震裕科技",
+   "tier": "1A",
+   "rank_score": 75.0,
+   "opportunity_type": "价值回撤",
+   "when": "🟢跌得很深·可分批买",
+   "buckets": {},
+   "risk_score": 29.9,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "距历史高点-47.1%;52周位20.0%;可得历史5.2年;历史同级样本n=8,胜6,条件频率75%,6月中位24.1%,最差-29.9%",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|🟢跌得很深·可分批买|75|距历史高点-47.1%;52周位20.0%;可得历史5.2年;历史同级样本n=8,胜6,条件频率75%,6月中位24.1%,最差-29.9%|"
+  },
+  {
+   "code": "600031.SS",
+   "name": "三一重工",
+   "tier": "1A",
+   "rank_score": 75.0,
+   "opportunity_type": "价值回撤",
+   "when": "🟢打折到位·可开始买",
+   "buckets": {},
+   "risk_score": 21.6,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "距历史高点-21.3%;52周位23.9%;可得历史9.6年;历史同级样本n=4,胜3,条件频率75%,6月中位60.1%,最差-21.6%",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|🟢打折到位·可开始买|75|距历史高点-21.3%;52周位23.9%;可得历史9.6年;历史同级样本n=4,胜3,条件频率75%,6月中位60.1%,最差-21.6%|"
+  },
+  {
+   "code": "IBM",
+   "name": "IBM",
+   "tier": "1A",
+   "rank_score": 75.0,
+   "opportunity_type": "价值回撤",
+   "when": "🟢打折到位·可开始买",
+   "buckets": {},
+   "risk_score": 15.3,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "距历史高点-27.9%;52周位25.6%;可得历史10.0年;历史同级样本n=4,胜3,条件频率75%,6月中位10.5%,最差-15.3%",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|🟢打折到位·可开始买|75|距历史高点-27.9%;52周位25.6%;可得历史10.0年;历史同级样本n=4,胜3,条件频率75%,6月中位10.5%,最差-15.3%|"
+  },
+  {
+   "code": "CRM",
+   "name": "Salesforce",
+   "tier": "1A",
+   "rank_score": 74.0,
+   "opportunity_type": "全市场机会",
+   "when": "左侧低吸·半仓",
+   "buckets": {},
+   "risk_score": 30.0,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "来源黑马池;阶段主升阶段;规则上行估计74%;盈亏比3.04;期望优势1.99;52周位52.0%;止损167.14",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|左侧低吸·半仓|75|来源黑马池;阶段主升阶段;规则上行估计74%;盈亏比3.04;期望优势1.99;52周位52.0%;止损167.14|"
+  },
+  {
+   "code": "601799.SS",
+   "name": "星宇股份",
+   "tier": "1A",
+   "rank_score": 71.0,
+   "opportunity_type": "价值回撤",
+   "when": "🟢跌得很深·可分批买",
+   "buckets": {},
+   "risk_score": 16.7,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "距历史高点-45.7%;52周位0.0%;可得历史9.6年;历史同级样本n=7,胜5,条件频率71%,6月中位17.3%,最差-16.7%",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|🟢跌得很深·可分批买|70|距历史高点-45.7%;52周位0.0%;可得历史9.6年;历史同级样本n=7,胜5,条件频率71%,6月中位17.3%,最差-16.7%|"
+  },
+  {
+   "code": "688275.SS",
+   "name": "万润新能",
+   "tier": "1A",
+   "rank_score": 71.0,
+   "opportunity_type": "全市场机会",
+   "when": "双路径待触发",
+   "buckets": {},
+   "risk_score": 30.0,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "来源全市场·拐点抢筹·60日-35%但今日+1.2%·量比2.28;阶段启动确认;规则上行估计71%;盈亏比3.36;期望优势2.1;52周位31.0%;止损72.54",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|双路径待触发|70|来源全市场·拐点抢筹·60日-35%但今日+1.2%·量比2.28;阶段启动确认;规则上行估计71%;盈亏比3.36;期望优势2.1;52周位31.0%;止损7|"
+  },
+  {
+   "code": "NFLX",
+   "name": "奈飞",
+   "tier": "1A",
+   "rank_score": 71.0,
+   "opportunity_type": "价值回撤",
+   "when": "🟢跌得很深·可分批买",
+   "buckets": {},
+   "risk_score": 67.9,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "距历史高点-40.6%;52周位20.4%;可得历史10.0年;历史同级样本n=7,胜5,条件频率71%,6月中位4.1%,最差-67.9%",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|🟢跌得很深·可分批买|70|距历史高点-40.6%;52周位20.4%;可得历史10.0年;历史同级样本n=7,胜5,条件频率71%,6月中位4.1%,最差-67.9%|"
+  },
+  {
+   "code": "1772.HK",
+   "name": "赣锋锂业",
+   "tier": "1A",
+   "rank_score": 69.0,
+   "opportunity_type": "全市场机会",
+   "when": "双路径待触发",
+   "buckets": {},
+   "risk_score": 30.0,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "来源全池转强·52周23%;阶段启动确认;规则上行估计69%;盈亏比2.79;期望优势1.62;52周位23.0%;止损35.84",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|双路径待触发|70|来源全池转强·52周23%;阶段启动确认;规则上行估计69%;盈亏比2.79;期望优势1.62;52周位23.0%;止损35.84|"
+  },
+  {
+   "code": "002125.SZ",
+   "name": "湘潭电化",
+   "tier": "1A",
+   "rank_score": 67.0,
+   "opportunity_type": "全市场机会",
+   "when": "现价可进·半仓",
+   "buckets": {},
+   "risk_score": 30.0,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "来源全市场·短线异动·量比3.65·换手5.48%·60日-10%;阶段启动确认;规则上行估计67%;盈亏比6.32;期望优势3.9;52周位23.0%;止损11.51",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|现价可进·半仓|65|来源全市场·短线异动·量比3.65·换手5.48%·60日-10%;阶段启动确认;规则上行估计67%;盈亏比6.32;期望优势3.9;52周位23.0%;止损1|"
+  },
+  {
+   "code": "ORCL",
+   "name": "甲骨文",
+   "tier": "1A",
+   "rank_score": 67.0,
+   "opportunity_type": "价值回撤",
+   "when": "🟢跌得很深·可分批买",
+   "buckets": {},
+   "risk_score": 29.4,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "距历史高点-54.9%;52周位15.0%;可得历史10.0年;历史同级样本n=6,胜4,条件频率67%,6月中位21.6%,最差-29.4%",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|🟢跌得很深·可分批买|65|距历史高点-54.9%;52周位15.0%;可得历史10.0年;历史同级样本n=6,胜4,条件频率67%,6月中位21.6%,最差-29.4%|"
+  },
+  {
+   "code": "6185.HK",
+   "name": "康希诺生物",
+   "market": "港股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 66.9,
+   "opportunity_type": "全市场机会",
+   "when": "回踩 24.93~25.93 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 72.0,
+     "pass": false,
+     "basis": "长期偏涨概率62%"
+    },
+    "timing": {
+     "score": 58.8,
+     "pass": false,
+     "basis": "窗口:回踩 24.93~25.93 买 · 5个交易日内有效；回踩中量比1.06(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 68.0,
+     "pass": true,
+     "basis": "📈趋势跟随"
+    },
+    "valuation": {
+     "score": 40.1,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损19.6%(已拉升,追高成本高)；PE212(文本代理,非历史分位)"
+    },
+    "payoff": {
+     "score": 83.9,
+     "pass": true,
+     "basis": "赔率1.98；期望+29.4%；赢面+50.4pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "长期价值",
+    "当前时机",
+    "价格估值"
+   ],
+   "extra_evidence": "来源全池转强·52周26%;阶段启动确认;规则上行估计85%;盈亏比2.21;期望优势1.73;52周位24.0%;止损22.72",
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "20日跑赢大盘+16.8pp+今日放量2.08=资金持续选它",
+   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值),只按战术用途参与",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|回踩 24.93~25.93 买 · 5个交易日|65|来源全池转强·52周26%;阶段启动确认;规则上行估计85%;盈亏比2.21;期望优势1.73;52周位24.0%;止损22.72|"
+  },
+  {
+   "code": "300457.SZ",
+   "name": "赢合科技",
+   "tier": "1A",
+   "rank_score": 62.0,
+   "opportunity_type": "全市场机会",
+   "when": "现价可进·半仓",
+   "buckets": {},
+   "risk_score": 30.0,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "来源全市场·拐点抢筹·60日-21%但今日+6.5%·量比5.52;阶段启动确认;规则上行估计62%;盈亏比4.07;期望优势2.14;52周位19.0%;止损18.59",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|现价可进·半仓|60|来源全市场·拐点抢筹·60日-21%但今日+6.5%·量比5.52;阶段启动确认;规则上行估计62%;盈亏比4.07;期望优势2.14;52周位19.0%;止损|"
+  },
+  {
+   "code": "300731.SZ",
+   "name": "科创新源",
+   "tier": "1A",
+   "rank_score": 62.0,
+   "opportunity_type": "全市场机会",
+   "when": "双路径待触发",
+   "buckets": {},
+   "risk_score": 30.0,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "来源全市场·拐点抢筹·60日-35%但今日+4.1%·量比2.51;阶段启动确认;规则上行估计62%;盈亏比3.54;期望优势1.81;52周位29.0%;止损28.56",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|双路径待触发|60|来源全市场·拐点抢筹·60日-35%但今日+4.1%·量比2.51;阶段启动确认;规则上行估计62%;盈亏比3.54;期望优势1.81;52周位29.0%;止损|"
+  },
+  {
+   "code": "XPEV",
+   "name": "小鹏汽车",
+   "tier": "1A",
+   "rank_score": 62.0,
+   "opportunity_type": "全市场机会",
+   "when": "左侧低吸·半仓",
+   "buckets": {},
+   "risk_score": 30.0,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "来源全池转强·52周4%;阶段启动确认;规则上行估计62%;盈亏比6.97;期望优势3.94;52周位4.0%;止损11.49",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|左侧低吸·半仓|60|来源全池转强·52周4%;阶段启动确认;规则上行估计62%;盈亏比6.97;期望优势3.94;52周位4.0%;止损11.49|"
+  },
+  {
+   "code": "1333.HK",
+   "name": "博雷顿",
+   "tier": "1A",
+   "rank_score": 61.0,
+   "opportunity_type": "全市场机会",
+   "when": "等待",
+   "buckets": {},
+   "risk_score": 30.0,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "来源全市场·拐点抢筹·60日-33%但今日+2.9%·量比3.25;阶段启动确认;规则上行估计61%;盈亏比6.5;期望优势3.57;52周位2.0%;止损10.53",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|等待|60|来源全市场·拐点抢筹·60日-33%但今日+2.9%·量比3.25;阶段启动确认;规则上行估计61%;盈亏比6.5;期望优势3.57;52周位2.0%;止损10|"
+  },
+  {
+   "code": "UMAC",
+   "name": "Unusual Machines Inc",
+   "tier": "1A",
+   "rank_score": 56.0,
+   "opportunity_type": "趋势翻转",
+   "when": "🟢现在可买(涨势刚起,买得最早)",
+   "buckets": {},
+   "risk_score": 30.0,
+   "data_completeness": 100,
+   "missing": [],
+   "extra_evidence": "早期第6日;已涨0.7%;20日动量41.7%;规则上行估计56%;盈亏比1.51;期望优势0.41;止损25.58",
+   "direct_module": true,
+   "held": false,
+   "sig": "1A|🟢现在可买(涨势刚起,买得最早)|55|早期第6日;已涨0.7%;20日动量41.7%;规则上行估计56%;盈亏比1.51;期望优势0.41;止损25.58|"
+  },
+  {
+   "code": "1788.HK",
+   "name": "国泰君安国际",
+   "market": "港股",
+   "tier": "2A",
+   "subtype": "2A-等待时机",
+   "action_state": "等待回踩",
+   "rank_score": 75.6,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 2.51~2.61 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 85.5,
+     "pass": true,
+     "basis": "长期偏涨概率71%；ROE9%"
+    },
+    "timing": {
+     "score": 59.1,
+     "pass": false,
+     "basis": "窗口:回踩 2.51~2.61 买 · 5个交易日内有效；回踩中量比0.98(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 52.0,
+     "pass": false,
+     "basis": "💎超跌回归"
+    },
+    "valuation": {
+     "score": 74.6,
+     "pass": true,
+     "basis": "右侧·贴新高·距止损3.7%(刚突破,入场成本低)；PE19(文本代理,非历史分位)"
+    },
+    "payoff": {
+     "score": 93.5,
+     "pass": true,
+     "basis": "赔率6.52；期望+10.1%；赢面+36.7pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "机会催化"
+   ],
+   "field_conflict": "action=观察 vs mode=左侧低吸",
+   "flags": [
+    "🔎字段冲突待复核(action=观察 vs mode=左侧低吸)"
+   ],
+   "why_focus": "距2年高-51%、52周位24%=跌进历史便宜区",
+   "why_not_higher": "距3A缺：当前时机、机会催化",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "2A|回踩 2.51~2.61 买 · 5个交易日内有|75||action=观察 vs mode=左侧低吸"
+  },
+  {
+   "code": "0027.HK",
+   "name": "银河娱乐",
+   "market": "港股",
+   "tier": "2A",
+   "subtype": "2A-等待时机",
+   "action_state": "等待回踩",
+   "rank_score": 70.6,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 34.25~35.62 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 75.0,
+     "pass": true,
+     "basis": "长期偏涨概率62%；ROE13%"
+    },
+    "timing": {
+     "score": 60.7,
+     "pass": false,
+     "basis": "窗口:回踩 34.25~35.62 买 · 5个交易日内有效；回踩中量比0.75(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 66.2,
+     "pass": true,
+     "basis": "右侧·贴新高·距止损9.5%(中性)；PE15(文本代理,非历史分位)"
+    },
+    "payoff": {
+     "score": 81.7,
+     "pass": true,
+     "basis": "赔率2.20；期望+9.6%；赢面+31.8pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "当前时机"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "港股冰点(2周43%)资金找避风港:20日跑赢大盘+6.0pp+股息5.0%托底",
+   "why_not_higher": "距3A缺：当前时机",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "2A|回踩 34.25~35.62 买 · 5个交易日|70||"
+  },
+  {
+   "code": "600649.SS",
+   "name": "城投控股",
+   "market": "A股",
+   "tier": "2A",
+   "subtype": "2A-基本面待确认",
+   "action_state": "分批试探",
+   "rank_score": 66.1,
+   "opportunity_type": "突破趋势",
+   "when": "现在买（今日窗口内）",
+   "buckets": {
+    "long_value": {
+     "score": 54.9,
+     "pass": false,
+     "basis": "长期偏涨概率61%；财务质量分35.0；ROE1%"
+    },
+    "timing": {
+     "score": 79.0,
+     "pass": true,
+     "basis": "窗口:现在买（今日窗口内）；突破型量比1.05(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 52.0,
+     "pass": false,
+     "basis": "💎超跌回归"
+    },
+    "valuation": {
+     "score": 70.5,
+     "pass": true,
+     "basis": "右侧·贴新高·距止损5.5%(刚突破,入场成本低)；PE34(文本代理,非历史分位)"
+    },
+    "payoff": {
+     "score": 72.7,
+     "pass": true,
+     "basis": "赔率1.62；期望+3.9%；赢面+26.8pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 30.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "长期价值",
+    "机会催化"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "距2年高-32%、52周位18%=跌进历史便宜区",
+   "why_not_higher": "距3A缺：长期价值、机会催化",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "2A|现在买（今日窗口内）|65||"
+  },
+  {
+   "code": "ADBE",
+   "name": "奥多比",
+   "market": "美股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 73.9,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 260.47~270.89 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 80.8,
+     "pass": true,
+     "basis": "长期偏涨概率69%"
+    },
+    "timing": {
+     "score": 58.6,
+     "pass": false,
+     "basis": "窗口:回踩 260.47~270.89 买 · 5个交易日内有效；回踩中量比1.10(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 61.4,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损8.8%(中性)"
+    },
+    "payoff": {
+     "score": 93.7,
+     "pass": true,
+     "basis": "赔率3.97；期望+18.2%；赢面+41.9pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 90,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "",
+   "why_not_higher": "关键短板≥2项(当前时机、价格估值),只按战术用途参与",
+   "data_available_at": "2026-08-21",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 260.47~270.89 买 · 5个交|75||"
+  },
+  {
+   "code": "600028.SS",
+   "name": "中国石化",
+   "market": "A股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 72.8,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 5.12~5.32 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 72.0,
+     "pass": false,
+     "basis": "长期偏涨概率62%"
+    },
+    "timing": {
+     "score": 58.6,
+     "pass": false,
+     "basis": "窗口:回踩 5.12~5.32 买 · 5个交易日内有效；回踩中量比1.09(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 65.2,
+     "pass": true,
+     "basis": "右侧·贴新高·距止损7.3%(中性)"
+    },
+    "payoff": {
+     "score": 96.0,
+     "pass": true,
+     "basis": "赔率5.47；期望+24.9%；赢面+52.5pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 90,
+   "missing_data": [],
+   "missing": [
+    "长期价值",
+    "当前时机"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "",
+   "why_not_higher": "关键短板≥2项(长期价值、当前时机),只按战术用途参与",
+   "data_available_at": "2026-08-24",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 5.12~5.32 买 · 5个交易日内有|75||"
+  },
+  {
+   "code": "688152.SS",
+   "name": "麒麟信安",
+   "market": "A股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 71.3,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 29.59~30.77 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 77.2,
+     "pass": true,
+     "basis": "长期偏涨概率66%；财务质量分77.0"
+    },
+    "timing": {
+     "score": 59.9,
+     "pass": false,
+     "basis": "窗口:回踩 29.59~30.77 买 · 5个交易日内有效；回踩中量比0.86(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 77.0,
+     "pass": true,
+     "basis": "📈趋势跟随；预期差代理+40(观察级,RankIC已验)"
+    },
+    "valuation": {
+     "score": 52.7,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损14.3%(已拉升,追高成本高)"
+    },
+    "payoff": {
+     "score": 82.1,
+     "pass": true,
+     "basis": "赔率1.66；期望+16.5%；赢面+43.4pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 35.0,
+   "risk_flags": [
+    "财务风险25.0"
+   ],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值"
+   ],
+   "field_conflict": "",
+   "flags": [
+    "财务风险25.0"
+   ],
+   "why_focus": "20日跑赢大盘+24.4pp+今日放量1.41=资金持续选它",
+   "why_not_higher": "关键短板≥2项(当前时机、价格估值),只按战术用途参与",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 29.59~30.77 买 · 5个交易日|70||"
+  },
+  {
+   "code": "JUNS",
+   "name": "Jupiter Neurosciences Inc",
+   "market": "美股",
+   "tier": "1A",
+   "subtype": "1A-波段进攻",
+   "action_state": "等待回踩",
+   "rank_score": 69.1,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 3.52~3.66 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 92.4,
+     "pass": true,
+     "basis": "长期偏涨概率84%"
+    },
+    "timing": {
+     "score": 49.0,
+     "pass": false,
+     "basis": "窗口:回踩 3.52~3.66 买 · 5个交易日内有效；回踩中量比26.91(⚠️放量回踩=派发嫌疑,非买点(欧奈尔:回踩须缩量)·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 46.0,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损30%(已拉升,追高成本高)"
+    },
+    "payoff": {
+     "score": 80.1,
+     "pass": true,
+     "basis": "赔率1.33；期望+29.5%；赢面+42.1pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 90,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "",
+   "why_not_higher": "关键短板≥2项(当前时机、价格估值),只按战术用途参与",
+   "data_available_at": "2026-08-21",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 3.52~3.66 买 · 5个交易日内有|70||"
+  },
+  {
+   "code": "MRNA",
+   "name": "Moderna Inc",
+   "market": "美股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 69.0,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 72.57~75.47 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 93.0,
+     "pass": true,
+     "basis": "长期偏涨概率85%"
+    },
+    "timing": {
+     "score": 57.4,
+     "pass": false,
+     "basis": "窗口:回踩 72.57~75.47 买 · 5个交易日内有效；回踩中量比1.40(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 46.0,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损30%(已拉升,追高成本高)"
+    },
+    "payoff": {
+     "score": 72.5,
+     "pass": true,
+     "basis": "赔率0.72；期望+14.0%；赢面+26.9pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 90,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "",
+   "why_not_higher": "关键短板≥2项(当前时机、价格估值),只按战术用途参与",
+   "data_available_at": "2026-08-21",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 72.57~75.47 买 · 5个交易日|70||"
+  },
+  {
+   "code": "SPGI",
+   "name": "标普全球",
+   "market": "美股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 68.9,
+   "opportunity_type": "突破趋势",
+   "when": "现在买（今日窗口内）",
+   "buckets": {
+    "long_value": {
+     "score": 70.6,
+     "pass": false,
+     "basis": "长期偏涨概率61%"
+    },
+    "timing": {
+     "score": 77.6,
+     "pass": true,
+     "basis": "窗口:现在买（今日窗口内）；突破型量比1.01(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 68.5,
+     "pass": true,
+     "basis": "右侧·贴新高·距止损6.2%(中性)"
+    },
+    "payoff": {
+     "score": 64.8,
+     "pass": false,
+     "basis": "赔率1.15；期望+2.6%；赢面+19.5pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 90,
+   "missing_data": [],
+   "missing": [
+    "长期价值",
+    "获利空间"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "",
+   "why_not_higher": "关键短板≥2项(长期价值、获利空间),只按战术用途参与",
+   "data_available_at": "2026-08-21",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|现在买（今日窗口内）|70||"
+  },
+  {
+   "code": "1952.HK",
+   "name": "云顶新耀",
+   "market": "港股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 68.8,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 27.59~28.69 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 77.3,
+     "pass": true,
+     "basis": "长期偏涨概率66%"
+    },
+    "timing": {
+     "score": 60.3,
+     "pass": false,
+     "basis": "窗口:回踩 27.59~28.69 买 · 5个交易日内有效；回踩中量比0.81(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 68.0,
+     "pass": true,
+     "basis": "📈趋势跟随"
+    },
+    "valuation": {
+     "score": 46.0,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损26.9%(已拉升,追高成本高)"
+    },
+    "payoff": {
+     "score": 81.1,
+     "pass": true,
+     "basis": "赔率1.49；期望+28.6%；赢面+42.8pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "20日跑赢大盘+22.9pp+今日放量1.47=资金持续选它",
+   "why_not_higher": "关键短板≥2项(当前时机、价格估值),只按战术用途参与",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 27.59~28.69 买 · 5个交易日|70||"
+  },
+  {
+   "code": "601872.SS",
+   "name": "招商轮船",
+   "market": "A股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 68.3,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 17.56~18.26 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 89.5,
+     "pass": true,
+     "basis": "长期偏涨概率74%；财务质量分100.0"
+    },
+    "timing": {
+     "score": 57.6,
+     "pass": false,
+     "basis": "窗口:回踩 17.56~18.26 买 · 5个交易日内有效；回踩中量比1.35(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 52.9,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损14.1%(已拉升,追高成本高)"
+    },
+    "payoff": {
+     "score": 68.8,
+     "pass": false,
+     "basis": "赔率1.00；期望+5.9%；赢面+21.0pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "",
+   "why_not_higher": "关键短板≥2项(当前时机、价格估值、获利空间),只按战术用途参与",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 17.56~18.26 买 · 5个交易日|70||"
+  },
+  {
+   "code": "601212.SS",
+   "name": "白银有色",
+   "market": "A股",
+   "tier": "1A",
+   "subtype": "1A-波段进攻",
+   "action_state": "等待回踩",
+   "rank_score": 68.1,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 5.48~5.7 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 80.0,
+     "pass": true,
+     "basis": "长期偏涨概率68%"
+    },
+    "timing": {
+     "score": 54.2,
+     "pass": false,
+     "basis": "窗口:回踩 5.48~5.7 买 · 5个交易日内有效；回踩中量比2.27(⚠️放量回踩=派发嫌疑,非买点(欧奈尔:回踩须缩量)·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 47.1,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损20.7%(已拉升,追高成本高)"
+    },
+    "payoff": {
+     "score": 83.6,
+     "pass": true,
+     "basis": "赔率1.93；期望+26.0%；赢面+42.9pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 90,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "",
+   "why_not_higher": "关键短板≥2项(当前时机、价格估值),只按战术用途参与",
+   "data_available_at": "2026-08-24",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 5.48~5.7 买 · 5个交易日内有效|70||"
+  },
+  {
+   "code": "3069.HK",
+   "name": "华夏恒生生科",
+   "market": "港股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 68.0,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 15.07~15.67 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 83.3,
+     "pass": true,
+     "basis": "长期偏涨概率72%"
+    },
+    "timing": {
+     "score": 59.4,
+     "pass": false,
+     "basis": "窗口:回踩 15.07~15.67 买 · 5个交易日内有效；回踩中量比0.94(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 68.0,
+     "pass": true,
+     "basis": "📈趋势跟随"
+    },
+    "valuation": {
+     "score": 71.7,
+     "pass": true,
+     "basis": "右侧·贴新高·距止损5.1%(刚突破,入场成本低)"
+    },
+    "payoff": {
+     "score": 57.3,
+     "pass": false,
+     "basis": "赔率1.15；期望+1.2%；赢面+10.5pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "获利空间"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "20日跑赢大盘+9.5pp+今日放量1.2=资金持续选它",
+   "why_not_higher": "关键短板≥2项(当前时机、获利空间),只按战术用途参与",
+   "data_available_at": "2026-08-24",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 15.07~15.67 买 · 5个交易日|70||"
+  },
+  {
+   "code": "0992.HK",
+   "name": "联想集团",
+   "market": "港股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 67.9,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 27.94~29.06 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 99.2,
+     "pass": true,
+     "basis": "长期偏涨概率82%；ROE15%"
+    },
+    "timing": {
+     "score": 58.1,
+     "pass": false,
+     "basis": "窗口:回踩 27.94~29.06 买 · 5个交易日内有效；回踩中量比0.51(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 26.0,
+     "pass": false,
+     "basis": "📊仅规则达标"
+    },
+    "valuation": {
+     "score": 58.3,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损10.7%(中性)；PE27(文本代理,非历史分位)"
+    },
+    "payoff": {
+     "score": 75.5,
+     "pass": true,
+     "basis": "赔率2.17；期望+5.9%；赢面+17.5pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "机会催化"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "技术条件达标但**无明显驱动**(20日相对大盘+21.1pp)",
+   "why_not_higher": "关键短板≥2项(当前时机、价格估值、机会催化),只按战术用途参与",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 27.94~29.06 买 · 5个交易日|70||"
+  },
+  {
+   "code": "002040.SZ",
+   "name": "南京港",
+   "market": "A股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 66.8,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 8.3~8.63 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 70.9,
+     "pass": false,
+     "basis": "长期偏涨概率63%；财务质量分82.0；ROE6%"
+    },
+    "timing": {
+     "score": 57.4,
+     "pass": false,
+     "basis": "窗口:回踩 8.3~8.63 买 · 5个交易日内有效；回踩中量比1.40(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 72.8,
+     "pass": true,
+     "basis": "📈趋势跟随；预期差代理+8(观察级,RankIC已验)"
+    },
+    "valuation": {
+     "score": 62.0,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损8.4%(中性)；PE22(文本代理,非历史分位)"
+    },
+    "payoff": {
+     "score": 69.5,
+     "pass": false,
+     "basis": "赔率1.04；期望+4.7%；赢面+27.0pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "长期价值",
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "20日跑赢大盘+8.1pp+今日放量1.98=资金持续选它",
+   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值、获利空间),只按战术用途参与",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 8.3~8.63 买 · 5个交易日内有效|65||"
+  },
+  {
+   "code": "1801.HK",
+   "name": "信达生物",
+   "market": "港股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 66.8,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 93.71~97.46 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 90.0,
+     "pass": true,
+     "basis": "长期偏涨概率80%"
+    },
+    "timing": {
+     "score": 58.6,
+     "pass": false,
+     "basis": "窗口:回踩 93.71~97.46 买 · 5个交易日内有效；回踩中量比1.10(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 67.6,
+     "pass": true,
+     "basis": "右侧·贴新高·距止损6.5%(中性)"
+    },
+    "payoff": {
+     "score": 52.6,
+     "pass": false,
+     "basis": "赔率0.88；期望+0.9%；赢面+7.8pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 90,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "获利空间"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "",
+   "why_not_higher": "关键短板≥2项(当前时机、获利空间),只按战术用途参与",
+   "data_available_at": "2026-08-24",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 93.71~97.46 买 · 5个交易日|65||"
+  },
+  {
+   "code": "002953.SZ",
+   "name": "日丰股份",
+   "market": "A股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 66.7,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 10.01~10.41 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 67.9,
+     "pass": false,
+     "basis": "长期偏涨概率64%；财务质量分42.0；ROE8%"
+    },
+    "timing": {
+     "score": 56.2,
+     "pass": false,
+     "basis": "窗口:回踩 10.01~10.41 买 · 5个交易日内有效；回踩中量比1.71(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 68.0,
+     "pass": true,
+     "basis": "📈趋势跟随"
+    },
+    "valuation": {
+     "score": 59.6,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损9.9%(中性)；PE32(文本代理,非历史分位)"
+    },
+    "payoff": {
+     "score": 77.6,
+     "pass": true,
+     "basis": "赔率1.47；期望+8.5%；赢面+34.5pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "长期价值",
+    "当前时机",
+    "价格估值"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "20日跑赢大盘+8.2pp+今日放量1.63=资金持续选它",
+   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值),只按战术用途参与",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 10.01~10.41 买 · 5个交易日|65||"
+  },
+  {
+   "code": "2245.HK",
+   "name": "力勤资源",
+   "market": "港股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 66.4,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 14.77~15.36 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 85.8,
+     "pass": true,
+     "basis": "长期偏涨概率75%"
+    },
+    "timing": {
+     "score": 57.2,
+     "pass": false,
+     "basis": "窗口:回踩 14.77~15.36 买 · 5个交易日内有效；回踩中量比1.46(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 50.1,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损17.3%(已拉升,追高成本高)"
+    },
+    "payoff": {
+     "score": 67.0,
+     "pass": false,
+     "basis": "赔率0.69；期望+6.4%；赢面+21.8pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 90,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "",
+   "why_not_higher": "关键短板≥2项(当前时机、价格估值、获利空间),只按战术用途参与",
+   "data_available_at": "2026-08-24",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 14.77~15.36 买 · 5个交易日|65||"
+  },
+  {
+   "code": "002667.SZ",
+   "name": "*ST威领",
+   "market": "A股",
+   "tier": "1A",
+   "subtype": "1A-波段进攻",
+   "action_state": "等待回踩",
+   "rank_score": 65.4,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 14.05~14.61 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 80.8,
+     "pass": true,
+     "basis": "长期偏涨概率69%"
+    },
+    "timing": {
+     "score": 52.8,
+     "pass": false,
+     "basis": "窗口:回踩 14.05~14.61 买 · 5个交易日内有效；回踩中量比2.74(⚠️放量回踩=派发嫌疑,非买点(欧奈尔:回踩须缩量)·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 46.0,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损30%(已拉升,追高成本高)"
+    },
+    "payoff": {
+     "score": 73.7,
+     "pass": true,
+     "basis": "赔率0.78；期望+15.3%；赢面+28.8pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 90,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "",
+   "why_not_higher": "关键短板≥2项(当前时机、价格估值),只按战术用途参与",
+   "data_available_at": "2026-08-24",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 14.05~14.61 买 · 5个交易日|65||"
+  },
+  {
+   "code": "300534.SZ",
+   "name": "陇神戎发",
+   "market": "A股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 65.4,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 16.14~16.79 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 80.1,
+     "pass": true,
+     "basis": "长期偏涨概率79%；财务质量分59"
+    },
+    "timing": {
+     "score": 57.4,
+     "pass": false,
+     "basis": "窗口:回踩 16.14~16.79 买 · 5个交易日内有效；回踩中量比1.41(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 48.8,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损18.8%(已拉升,追高成本高)"
+    },
+    "payoff": {
+     "score": 69.3,
+     "pass": false,
+     "basis": "赔率1.11；期望+6.6%；赢面+16.6pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 35.0,
+   "risk_flags": [
+    "财务风险25"
+   ],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "field_conflict": "",
+   "flags": [
+    "财务风险25"
+   ],
+   "why_focus": "",
+   "why_not_higher": "关键短板≥2项(当前时机、价格估值、获利空间),只按战术用途参与",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 16.14~16.79 买 · 5个交易日|65||"
+  },
+  {
+   "code": "301130.SZ",
+   "name": "西点药业",
+   "market": "A股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 65.4,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 26.81~27.88 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 81.8,
+     "pass": true,
+     "basis": "长期偏涨概率71%；财务质量分80.0"
+    },
+    "timing": {
+     "score": 56.2,
+     "pass": false,
+     "basis": "窗口:回踩 26.81~27.88 买 · 5个交易日内有效；回踩中量比1.70(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 46.0,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损26.5%(已拉升,追高成本高)"
+    },
+    "payoff": {
+     "score": 70.1,
+     "pass": true,
+     "basis": "赔率0.66；期望+10.8%；赢面+24.8pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "",
+   "why_not_higher": "关键短板≥2项(当前时机、价格估值),只按战术用途参与",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 26.81~27.88 买 · 5个交易日|65||"
+  },
+  {
+   "code": "000505.SZ",
+   "name": "京粮控股",
+   "market": "A股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 64.6,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 6.04~6.28 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 70.5,
+     "pass": false,
+     "basis": "长期偏涨概率70%；财务质量分61.0；营收下滑"
+    },
+    "timing": {
+     "score": 55.6,
+     "pass": false,
+     "basis": "窗口:回踩 6.04~6.28 买 · 5个交易日内有效；回踩中量比1.84(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 68.0,
+     "pass": true,
+     "basis": "📈趋势跟随"
+    },
+    "valuation": {
+     "score": 48.0,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损19.7%(已拉升,追高成本高)"
+    },
+    "payoff": {
+     "score": 73.7,
+     "pass": true,
+     "basis": "赔率0.93；期望+11.4%；赢面+30.2pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 30.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "长期价值",
+    "当前时机",
+    "价格估值"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "20日跑赢大盘+24.8pp+今日放量2.83=资金持续选它",
+   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值),只按战术用途参与",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 6.04~6.28 买 · 5个交易日内有|65||"
+  },
+  {
+   "code": "2291.HK",
+   "name": "心泰医疗",
+   "market": "港股",
+   "tier": "1A",
+   "subtype": "1A-波段进攻",
+   "action_state": "等待回踩",
+   "rank_score": 64.4,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 11.85~12.32 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 81.7,
+     "pass": true,
+     "basis": "长期偏涨概率70%"
+    },
+    "timing": {
+     "score": 49.0,
+     "pass": false,
+     "basis": "窗口:回踩 11.85~12.32 买 · 5个交易日内有效；回踩中量比4.73(⚠️放量回踩=派发嫌疑,非买点(欧奈尔:回踩须缩量)·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 48.5,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损19.2%(已拉升,追高成本高)"
+    },
+    "payoff": {
+     "score": 70.4,
+     "pass": true,
+     "basis": "赔率0.72；期望+8.9%；赢面+26.9pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 90,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "",
+   "why_not_higher": "关键短板≥2项(当前时机、价格估值),只按战术用途参与",
+   "data_available_at": "2026-08-24",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 11.85~12.32 买 · 5个交易日|65||"
+  },
+  {
+   "code": "601101.SS",
+   "name": "昊华能源",
+   "market": "A股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 64.1,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 12.31~12.8 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 82.4,
+     "pass": true,
+     "basis": "长期偏涨概率84%；ROE7%；营收下滑"
+    },
+    "timing": {
+     "score": 60.5,
+     "pass": false,
+     "basis": "窗口:回踩 12.31~12.8 买 · 5个交易日内有效；回踩中量比0.77(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 68.0,
+     "pass": true,
+     "basis": "📈趋势跟随"
+    },
+    "valuation": {
+     "score": 60.6,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损9.3%(中性)；PE23(文本代理,非历史分位)"
+    },
+    "payoff": {
+     "score": 48.6,
+     "pass": false,
+     "basis": "赔率0.93；期望+0.6%；赢面+3.2pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "20日跑赢大盘+20.3pp+今日放量1.23=资金持续选它",
+   "why_not_higher": "关键短板≥2项(当前时机、价格估值、获利空间),只按战术用途参与",
+   "data_available_at": "2026-08-24",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 12.31~12.8 买 · 5个交易日内|65||"
+  },
+  {
+   "code": "002543.SZ",
+   "name": "万和电气",
+   "market": "A股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 63.2,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 6.89~7.17 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 60.6,
+     "pass": false,
+     "basis": "长期偏涨概率64%；财务质量分61.0；ROE2%；营收下滑"
+    },
+    "timing": {
+     "score": 58.1,
+     "pass": false,
+     "basis": "窗口:回踩 6.89~7.17 买 · 5个交易日内有效；回踩中量比1.22(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 51.8,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损9.8%(中性)；PE45(文本代理,非历史分位)"
+    },
+    "payoff": {
+     "score": 77.3,
+     "pass": true,
+     "basis": "赔率1.45；期望+8.2%；赢面+34.2pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 30.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "长期价值",
+    "当前时机",
+    "价格估值"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "A股冰点(2周36%)资金找避风港:20日跑赢大盘+12.6pp+股息3.6%托底",
+   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值),只按战术用途参与",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 6.89~7.17 买 · 5个交易日内有|65||"
+  },
+  {
+   "code": "8279.HK",
+   "name": "亚博科技控股",
+   "market": "港股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 62.9,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 1.06~1.1 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 81.7,
+     "pass": true,
+     "basis": "长期偏涨概率70%"
+    },
+    "timing": {
+     "score": 60.1,
+     "pass": false,
+     "basis": "窗口:回踩 1.06~1.1 买 · 5个交易日内有效；回踩中量比0.84(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 46.0,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损30%(已拉升,追高成本高)"
+    },
+    "payoff": {
+     "score": 57.0,
+     "pass": false,
+     "basis": "赔率0.42；期望+4.0%；赢面+9.6pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 90,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "",
+   "why_not_higher": "关键短板≥2项(当前时机、价格估值、获利空间),只按战术用途参与",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 1.06~1.1 买 · 5个交易日内有效|65||"
+  },
+  {
+   "code": "2556.HK",
+   "name": "迈富时",
+   "market": "港股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 62.6,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 46.68~48.55 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 92.2,
+     "pass": true,
+     "basis": "长期偏涨概率79%；ROE11%"
+    },
+    "timing": {
+     "score": 55.3,
+     "pass": false,
+     "basis": "窗口:回踩 46.68~48.55 买 · 5个交易日内有效；回踩中量比0.32(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 26.0,
+     "pass": false,
+     "basis": "📊仅规则达标"
+    },
+    "valuation": {
+     "score": 47.6,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损12.4%(已拉升,追高成本高)；PE42(文本代理,非历史分位)"
+    },
+    "payoff": {
+     "score": 69.8,
+     "pass": false,
+     "basis": "赔率1.45；期望+4.9%；赢面+16.2pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间",
+    "机会催化"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "技术条件达标但**无明显驱动**(20日相对大盘+19.5pp)",
+   "why_not_higher": "关键短板≥2项(当前时机、价格估值、获利空间、机会催化),只按战术用途参与",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 46.68~48.55 买 · 5个交易日|65||"
+  },
+  {
+   "code": "9887.HK",
+   "name": "维立志博-B",
+   "market": "港股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 61.6,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 64.26~66.83 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 77.3,
+     "pass": true,
+     "basis": "长期偏涨概率66%"
+    },
+    "timing": {
+     "score": 60.9,
+     "pass": false,
+     "basis": "窗口:回踩 64.26~66.83 买 · 5个交易日内有效；回踩中量比0.71(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 26.0,
+     "pass": false,
+     "basis": "📊仅规则达标"
+    },
+    "valuation": {
+     "score": 59.1,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损10.2%(中性)"
+    },
+    "payoff": {
+     "score": 69.3,
+     "pass": false,
+     "basis": "赔率1.27；期望+4.6%；赢面+19.9pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间",
+    "机会催化"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "技术条件达标但**无明显驱动**(20日相对大盘+18.5pp)",
+   "why_not_higher": "关键短板≥2项(当前时机、价格估值、获利空间、机会催化),只按战术用途参与",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 64.26~66.83 买 · 5个交易日|60||"
+  },
+  {
+   "code": "601658.SS",
+   "name": "邮储银行",
+   "market": "A股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 61.4,
+   "opportunity_type": "突破趋势",
+   "when": "现在买（今日窗口内）",
+   "buckets": {
+    "long_value": {
+     "score": 56.5,
+     "pass": false,
+     "basis": "长期偏涨概率50%；ROE8%"
+    },
+    "timing": {
+     "score": 68.7,
+     "pass": false,
+     "basis": "窗口:现在买（今日窗口内）；突破型量比0.76(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 50.0,
+     "pass": false,
+     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
+    },
+    "valuation": {
+     "score": 70.8,
+     "pass": true,
+     "basis": "右侧·贴新高·距止损2.6%(刚突破,入场成本低)；⚠️贴新高且上行<5%=涨幅或已透支；PE7(文本代理,非历史分位)"
+    },
+    "payoff": {
+     "score": 61.7,
+     "pass": false,
+     "basis": "赔率1.46；期望+1.0%；赢面+16.3pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "长期价值",
+    "当前时机",
+    "获利空间",
+    "机会催化"
+   ],
+   "field_conflict": "入场底稿模式=双路径待触发，不是可执行买点；执行动作=双路径待触发",
+   "flags": [
+    "🔎字段冲突待复核(入场底稿模式=双路径待触发，不是可执行买点；执行动作=双路径待触发)"
+   ],
+   "why_focus": "10日跑赢大盘+4.1pp+量能1.28=短线有资金",
+   "why_not_higher": "关键短板≥2项(长期价值、当前时机、获利空间、机会催化),只按战术用途参与",
+   "data_available_at": "2026-08-24",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|现在买（今日窗口内）|60||入场底稿模式=双路径待触发，不是可执行买点；执行动作=双路径待触发"
+  },
+  {
+   "code": "603395.SS",
+   "name": "红四方",
+   "market": "A股",
+   "tier": "1A",
+   "subtype": "1A-波段进攻",
+   "action_state": "等待回踩",
+   "rank_score": 61.1,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 24.05~25.01 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 60.6,
+     "pass": false,
+     "basis": "长期偏涨概率64%；财务质量分61.0；ROE4%；营收下滑"
+    },
+    "timing": {
+     "score": 55.0,
+     "pass": false,
+     "basis": "窗口:回踩 24.05~25.01 买 · 5个交易日内有效；回踩中量比2.01(⚠️放量回踩=派发嫌疑,非买点(欧奈尔:回踩须缩量)·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 68.0,
+     "pass": true,
+     "basis": "📈趋势跟随"
+    },
+    "valuation": {
+     "score": 41.4,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损18.1%(已拉升,追高成本高)；PE128(文本代理,非历史分位)"
+    },
+    "payoff": {
+     "score": 74.0,
+     "pass": true,
+     "basis": "赔率0.98；期望+10.9%；赢面+30.5pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "长期价值",
+    "当前时机",
+    "价格估值"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "20日跑赢大盘+15.2pp+今日放量2.76=资金持续选它",
+   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值),只按战术用途参与",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 24.05~25.01 买 · 5个交易日|60||"
+  },
+  {
+   "code": "1114.HK",
+   "name": "华晨中国",
+   "market": "港股",
+   "tier": "1A",
+   "subtype": "1A-波段进攻",
+   "action_state": "等待回踩",
+   "rank_score": 60.2,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 2.21~2.3 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 80.3,
+     "pass": true,
+     "basis": "长期偏涨概率66%；ROE8%"
+    },
+    "timing": {
+     "score": 49.0,
+     "pass": false,
+     "basis": "窗口:回踩 2.21~2.3 买 · 5个交易日内有效；回踩中量比9.91(⚠️放量回踩=派发嫌疑,非买点(欧奈尔:回踩须缩量)·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 47.8,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损15.4%(已拉升,追高成本高)；5日已涨12.5%·超买；PE10(文本代理,非历史分位)"
+    },
+    "payoff": {
+     "score": 55.3,
+     "pass": false,
+     "basis": "赔率0.49；期望+2.5%；赢面+10.9pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "港股冰点(2周43%)资金找避风港:20日跑赢大盘+24.3pp+股息34.3%托底",
+   "why_not_higher": "关键短板≥2项(当前时机、价格估值、获利空间),只按战术用途参与",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 2.21~2.3 买 · 5个交易日内有效|60||"
+  },
+  {
+   "code": "9698.HK",
+   "name": "万国数据-SW",
+   "market": null,
+   "tier": "1A",
+   "subtype": "1A-波段进攻",
+   "action_state": "等待回踩",
+   "rank_score": 57.8,
+   "opportunity_type": "回踩进入",
+   "when": "回踩 31.86 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 43.4,
+     "pass": false,
+     "basis": "长期偏涨概率42%；ROE13%"
+    },
+    "timing": {
+     "score": 60.5,
+     "pass": false,
+     "basis": "窗口:回踩 31.86 买 · 5个交易日内有效；回踩型量比0.67(缩量回踩健康,重新放量再进)"
+    },
+    "catalyst": {
+     "score": 52.0,
+     "pass": false,
+     "basis": "💎超跌回归"
+    },
+    "valuation": {
+     "score": 61.2,
+     "pass": false,
+     "basis": "52周位22%；⚠️低位但长期弱=疑似价值陷阱；PE14(文本代理,非历史分位)"
+    },
+    "payoff": {
+     "score": 71.4,
+     "pass": true,
+     "basis": "赔率1.75；期望+4.2%；赢面+18.6pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "长期价值",
+    "当前时机",
+    "价格估值",
+    "机会催化"
+   ],
+   "field_conflict": "action=观察 vs mode=左侧低吸",
+   "flags": [
+    "🔎字段冲突待复核(action=观察 vs mode=左侧低吸)"
+   ],
+   "why_focus": "距2年高-31%、52周位21%=跌进历史便宜区",
+   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值、机会催化),只按战术用途参与",
+   "data_available_at": "2026-08-24 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 31.86 买 · 5个交易日内有效|60||action=观察 vs mode=左侧低吸"
+  },
+  {
+   "code": "601818.SS",
+   "name": "光大银行",
+   "market": "A股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 57.0,
+   "opportunity_type": "突破趋势",
+   "when": "现在买（今日窗口内）",
+   "buckets": {
+    "long_value": {
+     "score": 40.1,
+     "pass": false,
+     "basis": "长期偏涨概率48%；ROE7%；营收下滑"
+    },
+    "timing": {
+     "score": 76.5,
+     "pass": true,
+     "basis": "窗口:现在买（今日窗口内）；突破型量比0.98(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 50.0,
+     "pass": false,
+     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
+    },
+    "valuation": {
+     "score": 69.6,
+     "pass": true,
+     "basis": "右侧·贴新高·距止损3.2%(刚突破,入场成本低)；⚠️贴新高且上行<5%=涨幅或已透支；PE5(文本代理,非历史分位)"
+    },
+    "payoff": {
+     "score": 55.0,
+     "pass": false,
+     "basis": "赔率1.30；期望+0.6%；赢面+8.5pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "长期价值",
+    "获利空间",
+    "机会催化"
+   ],
+   "field_conflict": "入场底稿模式=等待，不是可执行买点；执行动作=等待",
+   "flags": [
+    "🔎字段冲突待复核(入场底稿模式=等待，不是可执行买点；执行动作=等待)"
+   ],
+   "why_focus": "10日跑赢大盘+3.1pp+量能1.1=短线有资金",
+   "why_not_higher": "关键短板≥2项(长期价值、获利空间、机会催化),只按战术用途参与",
+   "data_available_at": "2026-08-24",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|现在买（今日窗口内）|55||入场底稿模式=等待，不是可执行买点；执行动作=等待"
+  },
+  {
+   "code": "600941.SS",
+   "name": "中国移动",
+   "market": "A股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 51.3,
+   "opportunity_type": "突破趋势",
+   "when": "现在买（今日窗口内）",
+   "buckets": {
+    "long_value": {
+     "score": 61.8,
+     "pass": false,
+     "basis": "长期偏涨概率56%；财务质量分48.0；ROE9%"
+    },
+    "timing": {
+     "score": 64.0,
+     "pass": false,
+     "basis": "窗口:现在买（今日窗口内）；突破型量比0.62(缩量·突破可信度低)"
+    },
+    "catalyst": {
+     "score": 26.0,
+     "pass": false,
+     "basis": "📊仅规则达标"
+    },
+    "valuation": {
+     "score": 64.8,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损2.6%(刚突破,入场成本低)；⚠️贴新高且上行<5%=涨幅或已透支；PE16(文本代理,非历史分位)"
+    },
+    "payoff": {
+     "score": 37.9,
+     "pass": false,
+     "basis": "赔率0.70；期望-0.3%；赢面-6.8pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "长期价值",
+    "当前时机",
+    "价格估值",
+    "获利空间",
+    "机会催化"
+   ],
+   "field_conflict": "入场底稿模式=等待，不是可执行买点；执行动作=等待",
+   "flags": [
+    "🔎字段冲突待复核(入场底稿模式=等待，不是可执行买点；执行动作=等待)"
+   ],
+   "why_focus": "技术条件达标但**无明显驱动**(20日相对大盘+3.4pp)",
+   "why_not_higher": "关键短板≥2项(长期价值、当前时机、价格估值、获利空间、机会催化),只按战术用途参与",
+   "data_available_at": "2026-08-24",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|现在买（今日窗口内）|50||入场底稿模式=等待，不是可执行买点；执行动作=等待"
+  },
+  {
+   "code": "VGIT",
+   "name": "中期国债ETF-Vanguard",
+   "market": "美股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 49.9,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 58.35~60.68 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 35.8,
+     "pass": false,
+     "basis": "长期偏涨概率39%"
+    },
+    "timing": {
+     "score": 58.6,
+     "pass": false,
+     "basis": "窗口:回踩 58.35~60.68 买 · 5个交易日内有效；回踩中量比1.10(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 50.0,
+     "pass": false,
+     "basis": "催化未知(不在why_buy覆盖内)·按中性计,已在完备度扣分"
+    },
+    "valuation": {
+     "score": 66.0,
+     "pass": true,
+     "basis": "右侧·贴新高·距止损1.5%(刚突破,入场成本低)；⚠️贴新高且上行<5%=涨幅或已透支"
+    },
+    "payoff": {
+     "score": 47.2,
+     "pass": false,
+     "basis": "赔率1.47；期望+0.0%；赢面-0.5pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "长期价值",
+    "当前时机",
+    "获利空间",
+    "机会催化"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "10日跑赢大盘+0.9pp+量能1.53=短线有资金",
+   "why_not_higher": "关键短板≥2项(长期价值、当前时机、获利空间、机会催化),只按战术用途参与",
+   "data_available_at": "2026-08-21",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 58.35~60.68 买 · 5个交易日|50||"
+  },
+  {
+   "code": "VTEB",
+   "name": "领航免税债券指数ETF-Vanguard",
+   "market": "美股",
+   "tier": "1A",
+   "subtype": "1A-短线突击",
+   "action_state": "短线进攻",
+   "rank_score": 46.4,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 49.65~51.64 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 35.8,
+     "pass": false,
+     "basis": "长期偏涨概率39%"
+    },
+    "timing": {
+     "score": 60.7,
+     "pass": false,
+     "basis": "窗口:回踩 49.65~51.64 买 · 5个交易日内有效；回踩中量比0.74(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 26.0,
+     "pass": false,
+     "basis": "📊仅规则达标"
+    },
+    "valuation": {
+     "score": 66.0,
+     "pass": true,
+     "basis": "右侧·贴新高·距止损1.5%(刚突破,入场成本低)；⚠️贴新高且上行<5%=涨幅或已透支"
+    },
+    "payoff": {
+     "score": 46.2,
+     "pass": false,
+     "basis": "赔率1.43；期望-0.1%；赢面-2.2pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 10.0,
+   "risk_flags": [],
+   "risk_veto": [],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "长期价值",
+    "当前时机",
+    "获利空间",
+    "机会催化"
+   ],
+   "field_conflict": "",
+   "flags": [],
+   "why_focus": "技术条件达标但**无明显驱动**(20日相对大盘-3.4pp)",
+   "why_not_higher": "关键短板≥2项(长期价值、当前时机、获利空间、机会催化),只按战术用途参与",
+   "data_available_at": "2026-08-21",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": false,
+   "sig": "1A|回踩 49.65~51.64 买 · 5个交易日|45||"
+  },
+  {
+   "code": "XOM",
+   "name": "埃克森美孚",
+   "market": "美股",
+   "tier": "0A",
+   "subtype": "0A-风险",
+   "action_state": "风险回避",
+   "rank_score": 61.7,
+   "opportunity_type": "突破趋势",
+   "when": "回踩 157.58~163.88 买 · 5个交易日内有效",
+   "buckets": {
+    "long_value": {
+     "score": 83.0,
+     "pass": true,
+     "basis": "长期偏涨概率74%；ROE13%；营收下滑"
+    },
+    "timing": {
+     "score": 58.9,
+     "pass": false,
+     "basis": "窗口:回踩 157.58~163.88 买 · 5个交易日内有效；回踩中量比1.03(缩量回踩健康·门派突破趋势但当前动作是回踩,按回踩尺量)"
+    },
+    "catalyst": {
+     "score": 62.0,
+     "pass": true,
+     "basis": "多周期偏涨(引擎周期共振·why_buy未覆盖时的兜底证据)"
+    },
+    "valuation": {
+     "score": 61.6,
+     "pass": false,
+     "basis": "右侧·贴新高·距止损4.2%(刚突破,入场成本低)；⚠️贴新高且上行<5%=涨幅或已透支；PE21(文本代理,非历史分位)"
+    },
+    "payoff": {
+     "score": 42.4,
+     "pass": false,
+     "basis": "赔率0.51；期望+0.2%；赢面+2.8pp(临时参数·待验证)"
+    }
+   },
+   "risk_score": 35.0,
+   "risk_flags": [],
+   "risk_veto": [
+    "双剑否决在案"
+   ],
+   "data_completeness": 100,
+   "missing_data": [],
+   "missing": [
+    "当前时机",
+    "价格估值",
+    "获利空间"
+   ],
+   "field_conflict": "",
+   "flags": [
+    "⚠️双剑否决在案"
+   ],
+   "why_focus": "10日跑赢大盘+9.7pp+量能1.01=短线有资金",
+   "why_not_higher": "触发风险否决项：双剑否决在案",
+   "data_available_at": "2026-08-21 00:00",
+   "signal_generated_at": "2026-08-24 14:32",
+   "held": true,
+   "sig": "0A|回踩 157.58~163.88 买 · 5个交|60||"
+  }
+ ]
+}

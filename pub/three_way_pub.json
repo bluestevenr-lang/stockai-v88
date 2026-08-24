@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-08-24 12:12（北京时间）",
+ "generated_at": "2026-08-24 14:36（北京时间）",
  "version": "three-way-dual-cli-v3",
  "note": "V88规则闸 + GPT/Codex终审 + Kimi K3证据/反对票 + 经典书理。基础K3-256K文字层不代签审核席位。",
  "counts": {
-  "⏳审核未完整": 15,
-  "🟡存在不否定·只观察": 26,
-  "⚡有分歧/否决": 57
+  "⏳审核未完整": 8,
+  "⚡有分歧/否决": 63,
+  "🟡存在不否定·只观察": 25
  },
  "rows": [
   {
@@ -26,8 +26,8 @@
    },
    "gpt": {
     "verdict": "不否定",
-    "why": "时机与估值偏弱，暂无具体反对理由",
-    "at": "2026-08-24 05:51（北京时间）",
+    "why": "估值仅30且时机偏弱，尚不足以通过",
+    "at": "2026-08-24 14:32（北京时间）",
     "model": "gpt-5.6-sol"
    },
    "kimi": {
@@ -38,6 +38,39 @@
    },
    "book": {
     "verdict": "书理不支持"
+   },
+   "consensus": "⚡有分歧/否决"
+  },
+  {
+   "code": "CRM",
+   "name": "Salesforce",
+   "market": "美股",
+   "rule": {
+    "dir": "看多",
+    "prob": 74,
+    "action": "左侧低吸",
+    "rr": 3.04,
+    "pos52": 52.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "否决",
+    "why": "主升阶段却称左侧低吸，逻辑自相矛盾",
+    "at": "2026-08-24 14:32（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "不否定",
+    "why": "池内登记,无评级数据,不进入推荐",
+    "at": "2026-08-17 00:55",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "书理支持"
    },
    "consensus": "⚡有分歧/否决"
   },
@@ -58,9 +91,9 @@
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "否决",
-    "why": "单日涨8.6%，现追入有追高风险",
-    "at": "2026-08-24 05:51（北京时间）",
+    "verdict": "通过",
+    "why": "盈亏比3.36且期望优势2.1，等待触发",
+    "at": "2026-08-24 14:32（北京时间）",
     "model": "gpt-5.6-sol"
    },
    "kimi": {
@@ -70,75 +103,9 @@
     "model": "Kimi K3"
    },
    "book": {
-    "verdict": "未覆盖"
+    "verdict": "书理不支持"
    },
    "consensus": "⚡有分歧/否决"
-  },
-  {
-   "code": "600460.SS",
-   "name": "士兰微",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 81,
-    "action": "双路径待触发",
-    "rr": 3.49,
-    "pos52": 35.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-24 05:51（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "不否定",
-    "why": "池内登记·蓄势·60日6.12%,无评级数据不推荐",
-    "at": "2026-08-17 00:55",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "301489.SZ",
-   "name": "思泉新材",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 77,
-    "action": "等待",
-    "rr": 2.55,
-    "pos52": 25.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-24 05:51（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "不否定",
-    "why": "池内登记·强势·60日-37.31%,无评级数据不推荐",
-    "at": "2026-08-17 00:55",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "⏳审核未完整"
   },
   {
    "code": "1772.HK",
@@ -153,13 +120,13 @@
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "未覆盖",
+    "verdict": "达标",
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-24 05:51（北京时间）",
+    "verdict": "通过",
+    "why": "上行69%，盈亏比2.79，期望优势为正",
+    "at": "2026-08-24 14:32（北京时间）",
     "model": "gpt-5.6-sol"
    },
    "kimi": {
@@ -169,108 +136,9 @@
     "model": "Kimi K3"
    },
    "book": {
-    "verdict": "未覆盖"
+    "verdict": "书理不支持"
    },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "002125.SZ",
-   "name": "湘潭电化",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 67,
-    "action": "现价可进",
-    "rr": 6.32,
-    "pos52": 23.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-24 05:51（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "不否定",
-    "why": "池内登记·蓄势·60日-9.2%,无评级数据不推荐",
-    "at": "2026-08-17 00:55",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "XPEV",
-   "name": "小鹏汽车",
-   "market": "美股",
-   "rule": {
-    "dir": "看多",
-    "prob": 62,
-    "action": "左侧低吸",
-    "rr": 6.97,
-    "pos52": 4.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-24 05:51（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-17 08:21（北京时间）",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "300457.SZ",
-   "name": "赢合科技",
-   "market": "A股",
-   "rule": {
-    "dir": "看多",
-    "prob": 62,
-    "action": "现价可进",
-    "rr": 4.07,
-    "pos52": 19.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-24 05:51（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "不否定",
-    "why": "池内登记·蓄势·60日-26.2%,无评级数据不推荐",
-    "at": "2026-08-17 00:55",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "⏳审核未完整"
+   "consensus": "⚡有分歧/否决"
   },
   {
    "code": "300731.SZ",
@@ -285,91 +153,25 @@
     "src": "池外机会"
    },
    "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-24 05:51（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-17 08:21（北京时间）",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "1333.HK",
-   "name": "博雷顿",
-   "market": "港股",
-   "rule": {
-    "dir": "看多",
-    "prob": 61,
-    "action": "等待",
-    "rr": 6.5,
-    "pos52": 2.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
-    "verdict": "未覆盖",
-    "source": "V88本地规则闸"
-   },
-   "gpt": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-24 05:51（北京时间）",
-    "model": "gpt-5.6-sol"
-   },
-   "kimi": {
-    "verdict": "未覆盖",
-    "why": "",
-    "at": "2026-08-17 08:21（北京时间）",
-    "model": "Kimi K3"
-   },
-   "book": {
-    "verdict": "未覆盖"
-   },
-   "consensus": "⏳审核未完整"
-  },
-  {
-   "code": "CRM",
-   "name": "Salesforce",
-   "market": "美股",
-   "rule": {
-    "dir": "看多",
-    "prob": 74,
-    "action": "左侧低吸",
-    "rr": 3.04,
-    "pos52": 52.0,
-    "src": "池外机会"
-   },
-   "rules_gate": {
     "verdict": "达标",
     "source": "V88本地规则闸"
    },
    "gpt": {
     "verdict": "不否定",
-    "why": "估值一般，回踩入场尚合理",
-    "at": "2026-08-07",
+    "why": "上行仅62%，等待触发更合适",
+    "at": "2026-08-24 14:32（北京时间）",
     "model": "gpt-5.6-sol"
    },
    "kimi": {
-    "verdict": "不否定",
-    "why": "池内登记,无评级数据,不进入推荐",
-    "at": "2026-08-17 00:55",
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 08:21（北京时间）",
     "model": "Kimi K3"
    },
    "book": {
-    "verdict": "未覆盖"
+    "verdict": "书理不支持"
    },
-   "consensus": "🟡存在不否定·只观察"
+   "consensus": "⚡有分歧/否决"
   },
   {
    "code": "002460.SZ",
@@ -388,9 +190,9 @@
     "source": "V88本地规则闸"
    },
    "gpt": {
-    "verdict": "不否定",
-    "why": "样本仅8次，五桶证据缺口",
-    "at": "2026-08-23 22:12（北京时间）",
+    "verdict": "通过",
+    "why": "上行61%，盈亏比3.47，期望优势为正",
+    "at": "2026-08-24 14:32（北京时间）",
     "model": "gpt-5.6-sol"
    },
    "kimi": {
@@ -400,7 +202,205 @@
     "model": "Kimi K3"
    },
    "book": {
-    "verdict": "未覆盖"
+    "verdict": "书理不支持"
+   },
+   "consensus": "⚡有分歧/否决"
+  },
+  {
+   "code": "XPEV",
+   "name": "小鹏汽车",
+   "market": "美股",
+   "rule": {
+    "dir": "看多",
+    "prob": 62,
+    "action": "左侧低吸",
+    "rr": 6.97,
+    "pos52": 4.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "通过",
+    "why": "低位转强且盈亏比6.97，赔率明确",
+    "at": "2026-08-24 14:32（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 08:21（北京时间）",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "证据不足"
+   },
+   "consensus": "⏳审核未完整"
+  },
+  {
+   "code": "600460.SS",
+   "name": "士兰微",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 81,
+    "action": "双路径待触发",
+    "rr": 3.49,
+    "pos52": 35.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "通过",
+    "why": "上行81%，盈亏比3.49，阶段启动确认",
+    "at": "2026-08-24 14:32（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "不否定",
+    "why": "池内登记·蓄势·60日6.12%,无评级数据不推荐",
+    "at": "2026-08-17 00:55",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "证据不足"
+   },
+   "consensus": "🟡存在不否定·只观察"
+  },
+  {
+   "code": "301489.SZ",
+   "name": "思泉新材",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 77,
+    "action": "等待",
+    "rr": 2.55,
+    "pos52": 25.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "不否定",
+    "why": "单日大涨后尚待触发，证据不足以通过",
+    "at": "2026-08-24 14:32（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "不否定",
+    "why": "池内登记·强势·60日-37.31%,无评级数据不推荐",
+    "at": "2026-08-17 00:55",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "证据不足"
+   },
+   "consensus": "🟡存在不否定·只观察"
+  },
+  {
+   "code": "002125.SZ",
+   "name": "湘潭电化",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 67,
+    "action": "现价可进",
+    "rr": 6.32,
+    "pos52": 23.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "通过",
+    "why": "盈亏比6.32且放量启动，赔率明确",
+    "at": "2026-08-24 14:32（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "不否定",
+    "why": "池内登记·蓄势·60日-9.2%,无评级数据不推荐",
+    "at": "2026-08-17 00:55",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "书理支持"
+   },
+   "consensus": "🟡存在不否定·只观察"
+  },
+  {
+   "code": "300457.SZ",
+   "name": "赢合科技",
+   "market": "A股",
+   "rule": {
+    "dir": "看多",
+    "prob": 62,
+    "action": "现价可进",
+    "rr": 4.07,
+    "pos52": 19.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "通过",
+    "why": "放量抢筹且盈亏比4.07，期望优势为正",
+    "at": "2026-08-24 14:32（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "不否定",
+    "why": "池内登记·蓄势·60日-26.2%,无评级数据不推荐",
+    "at": "2026-08-17 00:55",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "证据不足"
+   },
+   "consensus": "🟡存在不否定·只观察"
+  },
+  {
+   "code": "1333.HK",
+   "name": "博雷顿",
+   "market": "港股",
+   "rule": {
+    "dir": "看多",
+    "prob": 61,
+    "action": "等待",
+    "rr": 6.5,
+    "pos52": 2.0,
+    "src": "池外机会"
+   },
+   "rules_gate": {
+    "verdict": "达标",
+    "source": "V88本地规则闸"
+   },
+   "gpt": {
+    "verdict": "不否定",
+    "why": "上行仅61%，等待状态尚未形成入场",
+    "at": "2026-08-24 14:32（北京时间）",
+    "model": "gpt-5.6-sol"
+   },
+   "kimi": {
+    "verdict": "未覆盖",
+    "why": "",
+    "at": "2026-08-17 08:21（北京时间）",
+    "model": "Kimi K3"
+   },
+   "book": {
+    "verdict": "证据不足"
    },
    "consensus": "🟡存在不否定·只观察"
   }

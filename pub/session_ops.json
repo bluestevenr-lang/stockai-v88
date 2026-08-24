@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-24 12:08（北京时间）",
+ "generated_at": "2026-08-24 14:36（北京时间）",
  "version": "sessionops-v1",
  "ruleset_version": "v4.2",
  "gates_in_force": [
@@ -12,7 +12,7 @@
   "铁律21·不许静默吞错",
   "铁律18·成本标注"
  ],
- "market": "美股",
+ "market": "全部",
  "declaration": "**本场唯一结论源**：对话回答与 V88 页面渲染均引用本文件，逐字一致。全部字段取自落盘（sell_grade/rank_score/classics_lens/anomaly_gate/holdings_fundamentals），零现场推理。",
  "rules": [
   "-3A 才是立即卖；-2A 一律守线待触发并写明触发价",
@@ -24,6 +24,20 @@
  ],
  "sell": [],
  "watch": [
+  {
+   "code": "159632.SZ",
+   "name": "纳斯达克",
+   "level": "-2A",
+   "last": 2.412,
+   "stop": 2.414,
+   "dist_stop_pct": -0.1,
+   "sell_zone": "2.41~2.41 全部离场",
+   "c123": "①②③",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-2A·1-2-3 停在 ①②③ → 不主动卖，跌破 2.414 执行"
+  },
   {
    "code": "SO",
    "name": "美国南方公司",
@@ -37,6 +51,48 @@
    "listable": true,
    "action": "⚪守线待触发",
    "why": "-2A·1-2-3 停在 ①②③ → 不主动卖，跌破 88.91 执行"
+  },
+  {
+   "code": "600809.SS",
+   "name": "山西汾酒",
+   "level": "-1A",
+   "last": 117.84,
+   "stop": 117.655,
+   "dist_stop_pct": 0.2,
+   "sell_zone": "跌破117.66执行(距+0.2%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 117.655 执行"
+  },
+  {
+   "code": "9988.HK",
+   "name": "阿里巴巴-SW",
+   "level": "-2A",
+   "last": 111.6,
+   "stop": 110.1,
+   "dist_stop_pct": 1.4,
+   "sell_zone": "110.10~111.60 全部离场",
+   "c123": "①②③",
+   "frozen": true,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-2A·1-2-3 停在 ①②③；且有未解释异动，重动作已冻结（止损不受影响） → 不主动卖，跌破 110.1 执行"
+  },
+  {
+   "code": "000783.SZ",
+   "name": "长江证券",
+   "level": "-1A",
+   "last": 8.6,
+   "stop": 8.465,
+   "dist_stop_pct": 1.6,
+   "sell_zone": "跌破8.46执行(距+1.6%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 8.465 执行"
   },
   {
    "code": "GOOG",
@@ -112,8 +168,35 @@
  "buy": [],
  "blocked": [
   {
-   "code": "HL",
-   "name": "赫克拉矿业",
+   "code": "600028.SS",
+   "name": "中国石化",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "002040.SZ",
+   "name": "南京港",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "2245.HK",
+   "name": "力勤资源",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "601101.SS",
+   "name": "昊华能源",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "reject",
@@ -123,8 +206,35 @@
  ],
  "blocked_by_rr": [
   {
-   "code": "HL",
-   "name": "赫克拉矿业",
+   "code": "600028.SS",
+   "name": "中国石化",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "002040.SZ",
+   "name": "南京港",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "2245.HK",
+   "name": "力勤资源",
+   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
+   "rules_gate": "gate_pass",
+   "gpt": "不否定",
+   "kimi": "未验证",
+   "factpack_match": false
+  },
+  {
+   "code": "601101.SS",
+   "name": "昊华能源",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "reject",
@@ -134,16 +244,16 @@
  ],
  "stats": {
   "sell": 0,
-  "watch": 6,
+  "watch": 10,
   "buy": 0,
   "buy_dual": 0,
-  "blocked": 1,
+  "blocked": 4,
   "blocked_by_rr": 0
  },
  "src_asof": {
-  "sell_grade": "2026-08-24 05:52（北京时间）",
-  "rank_score": "2026-08-24 05:52（北京时间）",
-  "classics_lens": "2026-08-24 05:51（北京时间）",
-  "anomaly_gate": "2026-08-24 05:50（北京时间）"
+  "sell_grade": "2026-08-24 14:34（北京时间）",
+  "rank_score": "2026-08-24 14:34（北京时间）",
+  "classics_lens": "2026-08-24 14:34（北京时间）",
+  "anomaly_gate": "2026-08-24 14:33（北京时间）"
  }
 }
