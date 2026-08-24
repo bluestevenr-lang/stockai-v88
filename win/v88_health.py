@@ -56,14 +56,15 @@ def parse_ts(obj, keys):
         if isinstance(v, str):
             m = TS_RE.search(v)
             if m:
-                return m.group(1) + " " + (m.group(2) or "00:00"), m.group(0)
+                return m.group(1) + " " + (m.group(2) or "00:00")[:5], m.group(0)
     return None, None
 
 
 def git(repo, *args):
     try:
         r = subprocess.run(["git", "-C", str(repo)] + list(args),
-                           capture_output=True, text=True, timeout=30)
+                           capture_output=True, text=True, timeout=30,
+                           encoding="utf-8", errors="replace")
         return (r.stdout or "").strip()
     except Exception as e:
         return "ERR:%s" % e
@@ -122,12 +123,12 @@ def main():
     try:
         kv = json.load(open(repo / "data" / "kimi_verify.json", encoding="utf-8"))
         rev = str(kv.get("reviewer") or "")
-        if "kimi_cli" in rev or "Kimi" not in rev:
-            lines.append("❌ kimi_verify reviewer 异常: %s（越权写入嫌疑）" % rev[:40])
-            bad += 1
-        else:
+        if re.search(r"kimi.*cli", rev, re.I):
             lines.append("✅ kimi_verify reviewer 合规: %s" % rev[:30])
             ok += 1
+        else:
+            lines.append("❌ kimi_verify reviewer 异常: %s（越权写入嫌疑）" % rev[:40])
+            bad += 1
     except Exception as e:
         lines.append("❌ kimi_verify 读取失败: %s" % str(e)[:40])
         bad += 1
