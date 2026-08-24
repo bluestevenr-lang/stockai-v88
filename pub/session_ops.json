@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-24 05:54（北京时间）",
+ "generated_at": "2026-08-24 12:08（北京时间）",
  "version": "sessionops-v1",
  "ruleset_version": "v4.2",
  "gates_in_force": [
@@ -12,7 +12,7 @@
   "铁律21·不许静默吞错",
   "铁律18·成本标注"
  ],
- "market": "全部",
+ "market": "美股",
  "declaration": "**本场唯一结论源**：对话回答与 V88 页面渲染均引用本文件，逐字一致。全部字段取自落盘（sell_grade/rank_score/classics_lens/anomaly_gate/holdings_fundamentals），零现场推理。",
  "rules": [
   "-3A 才是立即卖；-2A 一律守线待触发并写明触发价",
@@ -37,48 +37,6 @@
    "listable": true,
    "action": "⚪守线待触发",
    "why": "-2A·1-2-3 停在 ①②③ → 不主动卖，跌破 88.91 执行"
-  },
-  {
-   "code": "600809.SS",
-   "name": "山西汾酒",
-   "level": "-2A",
-   "last": 116.55,
-   "stop": 116.01,
-   "dist_stop_pct": 0.5,
-   "sell_zone": "116.01~116.55 全部离场",
-   "c123": "①②③",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-2A·1-2-3 停在 ①②③ → 不主动卖，跌破 116.01 执行"
-  },
-  {
-   "code": "600941.SH",
-   "name": "中国移动",
-   "level": "-1A",
-   "last": 96.25,
-   "stop": 95.717,
-   "dist_stop_pct": 0.6,
-   "sell_zone": "跌破95.72执行(距+0.6%)",
-   "c123": "①②",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 95.717 执行"
-  },
-  {
-   "code": "000783.SZ",
-   "name": "长江证券",
-   "level": "-1A",
-   "last": 8.6,
-   "stop": 8.465,
-   "dist_stop_pct": 1.6,
-   "sell_zone": "跌破8.46执行(距+1.6%)",
-   "c123": "①②",
-   "frozen": false,
-   "listable": true,
-   "action": "⚪守线待触发",
-   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 8.465 执行"
   },
   {
    "code": "GOOG",
@@ -154,80 +112,8 @@
  "buy": [],
  "blocked": [
   {
-   "code": "1530.HK",
-   "name": "三生制药",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "不否定",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "688469.SS",
-   "name": "芯联集成-U",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "000100.SZ",
-   "name": "TCL科技",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "不否定",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "1787.HK",
-   "name": "山东黄金",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "不否定",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "0340.HK",
-   "name": "潼关黄金",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "不否定",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "002040.SZ",
-   "name": "南京港",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "不否定",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "688002.SS",
-   "name": "睿创微纳",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
    "code": "HL",
    "name": "赫克拉矿业",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "600346.SS",
-   "name": "恒力石化",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "reject",
@@ -237,80 +123,8 @@
  ],
  "blocked_by_rr": [
   {
-   "code": "1530.HK",
-   "name": "三生制药",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "不否定",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "688469.SS",
-   "name": "芯联集成-U",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "000100.SZ",
-   "name": "TCL科技",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "不否定",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "1787.HK",
-   "name": "山东黄金",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "不否定",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "0340.HK",
-   "name": "潼关黄金",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "不否定",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "002040.SZ",
-   "name": "南京港",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "不否定",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "688002.SS",
-   "name": "睿创微纳",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
    "code": "HL",
    "name": "赫克拉矿业",
-   "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
-   "rules_gate": "gate_pass",
-   "gpt": "reject",
-   "kimi": "未验证",
-   "factpack_match": false
-  },
-  {
-   "code": "600346.SS",
-   "name": "恒力石化",
    "why": "不进动作位：规则闸/GPT/Kimi未在同一当前事实包上全部明确通过",
    "rules_gate": "gate_pass",
    "gpt": "reject",
@@ -320,10 +134,10 @@
  ],
  "stats": {
   "sell": 0,
-  "watch": 9,
+  "watch": 6,
   "buy": 0,
   "buy_dual": 0,
-  "blocked": 9,
+  "blocked": 1,
   "blocked_by_rr": 0
  },
  "src_asof": {
