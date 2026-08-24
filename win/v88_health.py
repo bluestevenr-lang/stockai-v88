@@ -146,7 +146,7 @@ def main():
         lines.append("✅ git 无冲突 | %s | stash堆积 %d 个%s" % (sb, n_stash, "（建议清理）" if n_stash > 5 else ""))
         ok += 1
 
-    # 4) 余额（零 token，直连接口；失败不阻塞）
+    # 4) 余额（零 token，直连接口；失败不阻塞）+ 每月10元现金预算台账（2026-08-24 用户定纲）
     try:
         cfg = json.load(open(Path.home() / ".openclaw" / "openclaw.json", encoding="utf-8"))
         key = find_key(cfg)
@@ -154,9 +154,37 @@ def main():
             req = urllib.request.Request("https://api.moonshot.cn/v1/users/me/balance",
                                          headers={"Authorization": "Bearer " + key})
             d = json.load(urllib.request.urlopen(req, timeout=20)).get("data", {})
+            bal = float(d.get("available_balance", 0))
             lines.append("💰 Moonshot 余额: %.2f 元（现金 %.2f / 代金券 %.2f）" % (
-                float(d.get("available_balance", 0)), float(d.get("cash_balance", 0)),
-                float(d.get("voucher_balance", 0))))
+                bal, float(d.get("cash_balance", 0)), float(d.get("voucher_balance", 0))))
+            ok += 1
+            # 预算台账：快照落 jsonl，算本月已花（跳增=充值不计）；>10 ❌ / >8 ⚠️
+            bl = Path.home() / ".openclaw" / "moonshot_balance.jsonl"
+            snap = {"ts": now.strftime("%Y-%m-%d %H:%M:%S"), "balance": bal,
+                    "cash": float(d.get("cash_balance", 0)), "voucher": float(d.get("voucher_balance", 0))}
+            rows = []
+            if bl.exists():
+                for ln in bl.read_text(encoding="utf-8").splitlines():
+                    try:
+                        rows.append(json.loads(ln))
+                    except Exception:
+                        pass
+            if not rows or rows[-1].get("ts", "")[:16] != snap["ts"][:16]:
+                with open(bl, "a", encoding="utf-8") as f:
+                    f.write(json.dumps(snap, ensure_ascii=False) + "\n")
+                rows.append(snap)
+            month = now.strftime("%Y-%m")
+            pts = sorted((r for r in rows if str(r.get("ts", "")).startswith(month)), key=lambda r: r["ts"])
+            spent = sum(max(0.0, float(a["balance"]) - float(b["balance"])) for a, b in zip(pts, pts[1:]))
+            if spent > 10:
+                lines.append("❌ 本月现金已花 %.2f 元 > 10 元上限（台账起点 %s）" % (spent, pts[0]["ts"][:10] if pts else "?"))
+                bad += 1
+            elif spent > 8:
+                lines.append("⚠️ 本月现金已花 %.2f 元 > 8 元预警线" % spent)
+                warn += 1
+            else:
+                lines.append("✅ 本月现金预算: %.2f / 10 元" % spent)
+                ok += 1
     except Exception as e:
         lines.append("⚠️ 余额查询失败: %s" % str(e)[:40])
         warn += 1
