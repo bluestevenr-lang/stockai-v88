@@ -34,3 +34,4 @@
 - Windows 10 分钟常驻镜像班同步刷新 `v88-gpt/context` 与 `v88-gpt/knowledge/v88-claude-memory`，避免机器人重启后再次失忆。
 - 修复 Windows 私仓安全拉取调用不到 `python3` 的旧坑：改用既有 `v88env`/`py.exe` 执行合并驱动与 postpull 自检；失败时保留工作树和最后快照，不再对私仓执行 `reset --hard`。
 - 现有 `V88 24x7 Keepalive` 每 10 分钟同时执行一次安全 GitHub/持仓/记忆同步；常驻批处理的投影也固定使用 `v88env` Python，避免命中 Windows Store 的失效 `python` 别名。
+- 新增当前会话专用 `v88_context_sync_worker.ps1`（命名互斥、隐藏运行、10 分钟一轮）；下次 Windows 重启后由已存在的 `V88 24x7 Keepalive` 接管同一同步职责。
