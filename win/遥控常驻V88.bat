@@ -115,15 +115,7 @@ if not exist "%R%\.git" (
 git -C "%R%" -c credential.interactive=false pull --rebase --autostash origin main >> "%LOG%" 2>&1
 if not errorlevel 1 goto :eof
 
-echo [%STAMP%]   pull failed (auth or conflict), trying to self-heal; will NOT block startup>> "%LOG%"
-git -C "%R%" rebase --abort  >> "%LOG%" 2>&1
-git -C "%R%" merge  --abort  >> "%LOG%" 2>&1
-git -C "%R%" -c credential.interactive=false fetch origin main >> "%LOG%" 2>&1
-if errorlevel 1 (
-  echo [%STAMP%]   fetch failed too -> keeping on-disk snapshot, continuing anyway>> "%LOG%"
-  goto :eof
-)
-git -C "%R%" reset --hard origin/main >> "%LOG%" 2>&1
+echo [%STAMP%]   public pull failed; preserving local commits and last good snapshot>> "%LOG%"
 goto :eof
 
 
