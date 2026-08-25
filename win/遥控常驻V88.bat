@@ -152,8 +152,11 @@ if errorlevel 1 (
   echo [%STAMP%]   private pull failed; preserving worktree and last good snapshot>> "%LOG%"
   goto :eof
 )
-"%V88PY%" "%R%\scripts\v88_json_merge.py" --postpull >> "%LOG%" 2>&1
-if errorlevel 1 echo [%STAMP%]   private postpull validation failed; preserving last good snapshot>> "%LOG%"
+pushd "%R%" >nul 2>&1
+"%V88PY%" "scripts\v88_json_merge.py" --postpull >> "%LOG%" 2>&1
+set "POSTPULL_RC=%ERRORLEVEL%"
+popd >nul 2>&1
+if not "%POSTPULL_RC%"=="0" echo [%STAMP%]   private postpull validation failed; preserving last good snapshot>> "%LOG%"
 goto :eof
 
 
