@@ -136,7 +136,9 @@ class ProjectionTests(unittest.TestCase):
             destination = root / "workspace" / "context"
             self.assertEqual(MODULE.build(source, destination), 1)
 
-            stock = json.loads((destination / "stocks" / "AAPL.json").read_text())
+            stock = json.loads(
+                (destination / "stocks" / "AAPL.json").read_text(encoding="utf-8")
+            )
             decision = stock["decision_snapshot"]
             self.assertTrue(decision["is_held"])
             self.assertEqual(decision["position_mode"], "持仓管理")
@@ -145,7 +147,9 @@ class ProjectionTests(unittest.TestCase):
             self.assertEqual(decision["risk_line"]["stop"], 100)
             self.assertIn("why_buy_pub", decision["module_evidence"])
 
-            portfolio_text = (destination / "modules" / "portfolio_pub.json").read_text()
+            portfolio_text = (
+                destination / "modules" / "portfolio_pub.json"
+            ).read_text(encoding="utf-8")
             self.assertNotIn("secret-broker", portfolio_text)
             self.assertNotIn("secret-type", portfolio_text)
             self.assertNotIn('"qty"', portfolio_text)
@@ -159,6 +163,36 @@ class ProjectionTests(unittest.TestCase):
             write_json(source / "gpt_verify.json", {"rows": {}})
             with self.assertRaises(FileNotFoundError):
                 MODULE.build(source, root / "out")
+
+    def test_cloud_sanitized_portfolio_wins_over_stale_plaintext(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = self.make_source(root)
+            write_json(
+                source / "portfolio_pub.json",
+                {
+                    "source_updated_at": "2026-08-25 20:30（北京时间）",
+                    "items": [
+                        {"code": "MSFT", "name": "微软", "pnl_pct": 8.8},
+                    ],
+                },
+            )
+            destination = root / "workspace" / "context"
+            MODULE.build(source, destination)
+
+            apple = json.loads(
+                (destination / "stocks" / "AAPL.json").read_text(encoding="utf-8")
+            )
+            microsoft = json.loads(
+                (destination / "stocks" / "MSFT.json").read_text(encoding="utf-8")
+            )
+            portfolio = json.loads(
+                (destination / "modules" / "portfolio_pub.json").read_text(encoding="utf-8")
+            )
+            self.assertFalse(apple["decision_snapshot"]["is_held"])
+            self.assertTrue(microsoft["decision_snapshot"]["is_held"])
+            self.assertIn("GitHub云端解密后脱敏", portfolio["source"])
+            self.assertEqual(portfolio["updated_at"], "2026-08-25 20:30（北京时间）")
 
 
 if __name__ == "__main__":

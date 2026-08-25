@@ -7,10 +7,16 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $RepoRoot = Split-Path -Parent $PSScriptRoot
+$ReportRoot = Join-Path $env:USERPROFILE 'Desktop\ai-daily-report-v2'
 $ToolsDir = Join-Path $env:USERPROFILE '.openclaw\tools'
 $CfExe    = Join-Path $ToolsDir 'cloudflared.exe'
 $CfLog    = Join-Path $ToolsDir 'cloudflared.log'
 $PyLauncher = 'C:\Users\admin\AppData\Local\Programs\Python\Launcher\py.exe'
+$Projection = Join-Path $RepoRoot 'win\openclaw-v88\sync_v88_projection_win.py'
+$K3Context = Join-Path $env:USERPROFILE '.openclaw\workspaces\v88-mobile\context'
+$GptWorkspace = Join-Path $env:USERPROFILE '.openclaw\workspaces\v88-gpt'
+$GptContext = Join-Path $GptWorkspace 'context'
+$GptKnowledge = Join-Path $GptWorkspace 'knowledge\v88-claude-memory'
 
 function Test-V88Up {
     try {
@@ -66,6 +72,48 @@ function New-TunnelUrl {
     throw '隧道 URL 生成超时，请人工运行 cloudflared 排查。'
 }
 
+function Sync-V88Data {
+    if (-not (Test-Path -LiteralPath (Join-Path $ReportRoot '.git'))) {
+        throw "找不到 V88 私仓 $ReportRoot"
+    }
+    $bash = 'C:\Program Files\Git\bin\bash.exe'
+    $safePull = Join-Path $ReportRoot 'scripts\safe_pull.sh'
+    if (-not (Test-Path -LiteralPath $bash)) { throw "找不到 Git Bash $bash" }
+    if (-not (Test-Path -LiteralPath $safePull)) { throw "找不到安全同步脚本 $safePull" }
+    if (-not (Test-Path -LiteralPath $Projection)) { throw "找不到投影脚本 $Projection" }
+    if (-not (Test-Path -LiteralPath $PyLauncher)) { throw "找不到Python启动器 $PyLauncher" }
+
+    $publicPullOutput = & git -C $RepoRoot pull --ff-only origin main 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        throw "V88 公仓同步失败：$($publicPullOutput | Select-Object -Last 8 | Out-String)"
+    }
+
+    $pullOutput = & $bash $safePull 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        throw "V88 私仓安全同步失败：$($pullOutput | Select-Object -Last 8 | Out-String)"
+    }
+
+    foreach ($destination in @($K3Context, $GptContext)) {
+        $projectionOutput = & $PyLauncher -3 $Projection --source (Join-Path $ReportRoot 'data') --dest $destination 2>&1
+        if ($LASTEXITCODE -ne 0) {
+            throw "V88 持仓投影失败（$destination）：$($projectionOutput | Out-String)"
+        }
+    }
+
+    $memorySource = Join-Path $ReportRoot 'claude-memory'
+    if (Test-Path -LiteralPath $memorySource) {
+        New-Item -ItemType Directory -Force -Path $GptKnowledge | Out-Null
+        Get-ChildItem -LiteralPath $memorySource -Force |
+            Copy-Item -Destination $GptKnowledge -Recurse -Force
+    }
+
+    $portfolioPath = Join-Path $GptContext 'modules\portfolio_pub.json'
+    $portfolio = Get-Content -LiteralPath $portfolioPath -Raw | ConvertFrom-Json
+    Write-Output (($pullOutput | Select-Object -Last 3 | Out-String).Trim())
+    Write-Output "V88 GPT/K3 快照已更新：$(@($portfolio.items).Count) 只持仓，持仓源时间 $($portfolio.updated_at)"
+    Write-Output 'Claude 脱敏记忆镜像已同步到 GPT 龙虾知识库。'
+}
+
 switch ($Command) {
     'start'  { Start-V88 }
     'url'    {
@@ -74,10 +122,7 @@ switch ($Command) {
         Write-Output "手机访问链接: $u"
         Write-Output '⚠️ 链接即钥匙，请勿转发；重启隧道后旧链接失效。'
     }
-    'sync'   {
-        $out = & git -C $RepoRoot pull --ff-only 2>&1
-        Write-Output ($out | Select-Object -Last 5 | Out-String).Trim()
-    }
+    'sync'   { Sync-V88Data }
     'status' {
         $v88 = if (Test-V88Up) { '运行中' } else { '未运行' }
         $u = Get-TunnelUrl

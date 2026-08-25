@@ -198,6 +198,29 @@ def build_portfolio_index(positions):
     return index
 
 
+def build_public_portfolio_index(portfolio):
+    """读取 GitHub Actions 从加密持仓生成的脱敏快照。"""
+    index = {}
+    if not isinstance(portfolio, dict) or not isinstance(portfolio.get("items"), list):
+        return index
+    for row in portfolio["items"]:
+        if not isinstance(row, dict) or not row.get("code"):
+            continue
+        code = str(row["code"]).strip().upper()
+        values = []
+        if isinstance(row.get("pnl_pct"), (int, float)):
+            values.append(row["pnl_pct"])
+        pnl_range = row.get("pnl_pct_range")
+        if isinstance(pnl_range, list):
+            values.extend(value for value in pnl_range if isinstance(value, (int, float)))
+        index[norm_code(code)] = {
+            "code": code,
+            "name": row.get("name") or code,
+            "pnl_pct_values": sorted(set(values)),
+        }
+    return index
+
+
 def public_portfolio_item(item):
     """把同一代码的多账户记录压平，不暴露账户边界。"""
     if not isinstance(item, dict):
@@ -386,7 +409,16 @@ def build(source: Path, destination: Path) -> int:
     health = read_json(source / "health_gate_pub.json", {})
     release = read_json(source / "release_check.json", {})
     positions = read_json(source.parent / "positions.json", None)
-    portfolio_index = build_portfolio_index(positions)
+    cloud_portfolio = read_json(source / "portfolio_pub.json", None)
+    cloud_portfolio_index = build_public_portfolio_index(cloud_portfolio)
+    if isinstance(cloud_portfolio, dict) and isinstance(cloud_portfolio.get("items"), list):
+        portfolio_index = cloud_portfolio_index
+        portfolio_asof = cloud_portfolio.get("source_updated_at") or cloud_portfolio.get("updated_at")
+        portfolio_source = "data/portfolio_pub.json（GitHub云端解密后脱敏）"
+    else:
+        portfolio_index = build_portfolio_index(positions)
+        portfolio_asof = positions.get("updated_at") if isinstance(positions, dict) else None
+        portfolio_source = "positions.json（Windows本机明文回退）"
     exit_ledger = read_json(source / "exit_ledger.json", {})
     exit_index = latest_exit_index(exit_ledger)
     public_docs = {
@@ -476,7 +508,8 @@ def build(source: Path, destination: Path) -> int:
         decision_snapshot = {
             "position_mode": position_mode,
             "is_held": bool(portfolio_item),
-            "portfolio_asof": positions.get("updated_at") if isinstance(positions, dict) else None,
+            "portfolio_asof": portfolio_asof,
+            "portfolio_source": portfolio_source,
             "portfolio_fact": portfolio_item or {},
             "action_contract": action_contract(
                 public_docs.get("why_buy_pub.json", {}),
@@ -557,9 +590,10 @@ def build(source: Path, destination: Path) -> int:
     # 派生模块①：持仓名单 portfolio_pub.json
     # 隐私红线：快照会随提问发给模型 API，股数/成本/市值/账户金额一律不进投影；
     # 只放行 名称+代码+盈亏% 与最新止盈止损线（公开市价字段），够回答"买了啥/卖了啥/重点盯啥"。
-    if isinstance(positions, dict):
+    if isinstance(cloud_portfolio, dict) or isinstance(positions, dict):
         portfolio_pub = {
-            "updated_at": positions.get("updated_at"),
+            "updated_at": portfolio_asof,
+            "source": portfolio_source,
             "note": "V88 脱敏持仓名单：已删除账户、数量、成本和金额。个股问答必须先区分持仓管理与新开仓。",
             "items": [
                 public_portfolio_item(item)

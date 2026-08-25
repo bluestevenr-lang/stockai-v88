@@ -66,6 +66,7 @@ call :safepull_private "%REPORT%"
 
 REM -- refresh the privacy-minimized OpenClaw workspace ----------------
 set "OCWORK=%USERPROFILE%\.openclaw\workspaces\v88-mobile"
+set "OCGPT=%USERPROFILE%\.openclaw\workspaces\v88-gpt"
 set "OCPKG=%STOCKAI%\win\openclaw-v88"
 if exist "%OCPKG%\sync_v88_projection_win.py" if exist "%REPORT%\data\gpt_verify.json" (
   if not exist "%OCWORK%" mkdir "%OCWORK%" >nul 2>&1
@@ -75,6 +76,16 @@ if exist "%OCPKG%\sync_v88_projection_win.py" if exist "%REPORT%\data\gpt_verify
     echo [%STAMP%] WARN: OpenClaw projection refresh failed; keeping last good snapshot>> "%LOG%"
   ) else (
     echo [%STAMP%] OpenClaw privacy projection refreshed>> "%LOG%"
+  )
+  if exist "%OCGPT%" (
+    python "%OCPKG%\sync_v88_projection_win.py" --source "%REPORT%\data" --dest "%OCGPT%\context" >> "%LOG%" 2>&1
+    if errorlevel 1 (
+      echo [%STAMP%] WARN: GPT OpenClaw projection refresh failed; keeping last good snapshot>> "%LOG%"
+    ) else (
+      if not exist "%OCGPT%\knowledge\v88-claude-memory" mkdir "%OCGPT%\knowledge\v88-claude-memory" >nul 2>&1
+      xcopy /D /E /I /Y "%REPORT%\claude-memory\*" "%OCGPT%\knowledge\v88-claude-memory\" >nul 2>&1
+      echo [%STAMP%] GPT OpenClaw projection and sanitized Claude memory refreshed>> "%LOG%"
+    )
   )
 )
 

@@ -26,3 +26,9 @@
 12. **新建 v88env**：`C:\Users\admin\v88env`（Python 3.12.14，pandas 3.0.5/numpy 2.5.2/yfinance 1.6.0），与 kimi-desktop 运行时隔离。
 13. **私仓 rebase 解卡**：5 个 data/*.json 冲突取本地重放侧，git rebase --continue 异常时用手动提交+update-ref+--quit 完成并推送 0ed722f；未改私仓任何脚本（铁律23），postpull 用 PYTHONUTF8=1 环境方式通过。
 14. **注册计划任务 V88-BottomTurn**（周一至五 17:07）：两次 /Run 验证，末次干净收尾（247.8s，上榜333只，推送 cec00e2）。
+
+# 2026-08-25
+
+- 修复飞书 GPT 龙虾无法识别 V88 持仓：OpenClaw 投影优先读取 GitHub Actions 从加密持仓导出的 `data/portfolio_pub.json`，缺失时才回退 Windows 本机明文；输出继续排除账户、数量、成本、金额及身份信息。
+- `v88ctl sync` 现使用私仓规定的 `scripts/safe_pull.sh`，同步后同时刷新 K3 与 GPT 两个独立工作区，并把私仓 `claude-memory/` 脱敏镜像复制到 GPT 龙虾知识库。
+- Windows 10 分钟常驻镜像班同步刷新 `v88-gpt/context` 与 `v88-gpt/knowledge/v88-claude-memory`，避免机器人重启后再次失忆。
