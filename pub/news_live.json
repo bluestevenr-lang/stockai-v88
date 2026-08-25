@@ -1,72 +1,533 @@
 {
- "generated_at": "2026-08-26 01:05",
- "count": 462,
+ "generated_at": "2026-08-26 01:53",
+ "count": 464,
  "topics": [
   {
    "w": "AI",
-   "n": 93
+   "n": 87
   },
   {
    "w": "芯片",
-   "n": 30
+   "n": 29
   },
   {
    "w": "英伟达",
-   "n": 27
-  },
-  {
-   "w": "黄金",
-   "n": 18
-  },
-  {
-   "w": "财报",
-   "n": 18
+   "n": 25
   },
   {
    "w": "原油",
-   "n": 16
+   "n": 23
+  },
+  {
+   "w": "财报",
+   "n": 21
+  },
+  {
+   "w": "黄金",
+   "n": 19
+  },
+  {
+   "w": "IPO",
+   "n": 15
   },
   {
    "w": "美元",
    "n": 12
-  },
-  {
-   "w": "比特币",
-   "n": 10
   }
  ],
- "major_news": [
+ "major_news": [],
+ "items": [
   {
-   "t": "天山生物(300313):2026年度向特定对象发行A股股票申请获得深圳证券交易所受理 - 中财网",
-   "dir": 1,
+   "t": "S&P 500 rises slightly as yields fall, Nasdaq boosted by chip names: Live updates",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/08/24/stock-market-today-live-updates.html",
+   "time": "2026-08-26 01:52",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Here’s where it takes new homeowners almost 40 to 50 years to break even on buying a house",
+   "stk": [],
+   "dir": 0,
+   "s": "MarketWatch - Top Stories",
+   "url": "https://www.marketwatch.com/story/heres-where-it-takes-new-homeowners-almost-40-to-50-years-to-break-even-on-buying-a-house-c503cb50?mod=mw_rss_topstories",
+   "time": "2026-08-26 01:50",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Paramount CEO David Ellison is at the final hurdle before buying WBD. So far, he can't clear it",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/08/24/paramount-ceo-david-ellison-wbd-acquisition-final-hurdle.html",
+   "time": "2026-08-26 01:48",
+   "cat": "global_markets"
+  },
+  {
+   "t": "A股ETF易方达（561890）跌0.50%，半日成交额170.26万元 - finance.sina.com.cn",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMi_AFBVV95cUxPcUEwN2Rlc0JaQzBxeDNCM1lBbUZsZDBKd2dTZG9XSEVIZEFhMTF4UldlUlpkdnJ2SUhmYVNTVVpBWndvU19STnBwa0xicjhIRXVvRHZFb2dUX1FBd1QxUDBxQWFaQ2xtbDJucW4wLTZRblBDYlJiX1J3eUZOQjFqbEViVUlremRBWDdiT3dWQ21fNWxObXRJYkwtSFA4UVNBeG56QlNfVUhLclJUX0kzNkp5ODBwTWN0YzBFSWFTRWhjR2pKck5aS0pqMHVrNVd4YlktMnh0ZEdfYTVlMUNzaTdsTlBLSTBTdWd0d0Mxb2ZyT19mV1BqVmJIWmw?oc=5",
+   "time": "2026-08-26 01:48",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "3 Top Artificial Intelligence (AI) Stocks to Buy Before 2027 Arrives - The Motley Fool",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQWFRnMkpDSERzd0pXTWFYRTRtNlZkc0hDZXpLX2J6Ul91eEktcFpwQ2xBaG1kQ2l0ZGgxdlpYZkR5N25oOGVHanZvTjVyeGh5YnhVbVFZSFh4Sl9wVGRRcFJlZUtPb1pzZktYSzJ4bVpsN0VmSXhmbVZMVldCSDV6eUQyaw?oc=5",
+   "time": "2026-08-26 01:48",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Iran and Oman discuss joint shipping route in Strait of Hormuz and mine clearing mission",
+   "stk": [],
+   "dir": -1,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/08/25/iran-oman-strait-hormuz-oil.html",
+   "time": "2026-08-26 01:47",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Stock Markets Face Double Blow if Nvidia and the Fed Fail to Deliver - Barron's",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxNaXhFd0ZSTmZmNUZwTHVYYXZ4b0tDOVg3VGFDcXBua1NPRVBpN2MxNk5GVzg1RnVVdUJOamczMUIzY2dhS09Bd1d6RUdRT0w0UTM5M05hQVdZel9ZVjFLUUh2SGwyYXhxcEUxNi1DWkM5UG9JNmQtWUUzdmhBak1SR2FJZG9FQWowMHlZTktPWQ?oc=5",
+   "time": "2026-08-26 01:47",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Comex Gold Settles 0.06% Lower at $4638.10",
+   "stk": [],
+   "dir": 0,
+   "s": "WSJ - Markets",
+   "url": "https://www.wsj.com/finance/commodities-futures/gold-gains-potential-to-rise-to-5-000-intact-c72d3508?mod=rss_markets_main",
+   "time": "2026-08-26 01:46",
+   "cat": "global_markets"
+  },
+  {
+   "t": "英伟达股价七连跌，财报前市场在担心什么？ - finance.sina.com.cn",
    "stk": [
     {
-     "n": "天山生物",
-     "c": "300313.SZ"
+     "n": "英伟达",
+     "c": "NVDA"
     }
    ],
-   "url": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE5ad193R1VuX0ZiQ1dVZUtwSXBCZHF6bnNJcFl5S211Rm9xbEtERHdOejR4YUdRT25IajZyYlJVRXNXZV9yZGN3Mk1vZlJVcWpqZ1k0aWR3?oc=5",
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "time": "2026-08-26 00:27"
+   "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxPbi1PM0tTZlVkcWpBdlhaZ1A2TFEySWNRTnE4OHZrYmtRNWdNTm40SFlmZ0xnbEN3c0dwSS1GdzFHTXY2VmhoQVhnRU1OenFoaHNvZWZmeUpkNm80NEVGZzZiUXcyM1REUkNZRXJWRVkzNmZFdkRMR3JKWFI0cXlRNTVoTnRkelhtampDMmJsZEx6NEhMYzJ6eEplTEdVdl8wSTFTQUxLRlFORmRWV1NlUzl3?oc=5",
+   "time": "2026-08-26 01:45",
+   "cat": "cn_markets"
   },
   {
-   "t": "MSCI halts Turkey small cap index additions after feedback",
-   "dir": 0,
+   "t": "These 3 Sectors Will Outperform if the Fed Hikes Rates - Barron's",
    "stk": [],
-   "url": "https://www.investing.com/news/stock-market-news/msci-halts-turkey-small-cap-index-additions-after-feedback-93CH-4875752",
-   "s": "Investing.com - Stock Market News",
-   "time": "2026-08-26 00:26"
-  },
-  {
-   "t": "Diluted shares outstanding of Meridian3 Industrials Acquisition Corp – NASDAQ:MIAC - TradingView",
    "dir": 0,
-   "stk": [],
-   "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxORTQ0Wm9ocnFQTTVYUnRYbUVZNHhqbVNXX2VfWk9VSFk5VDVJbklXa3phcXhtREhmS1hIVFZCX3pmNmFORG92SzVGYlVMQkZPaUUtQWEzc2VHSHQzekJlOG9sOGRFd0NLd2J3eHJJamt3SWpsUkZaQndtTkxtZ05aZDM4dnQxNDZLVEhEbFZFT0l4SkZoa1dJbGNxeEVzY3YwNTE2N0lB?oc=5",
    "s": "Google News - EN Markets",
-   "time": "2026-08-26 00:21"
-  }
- ],
- "items": [
+   "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPY1l4MVR4M0Q1UmUycVJxT3gtcmQwdnFaeFFOeEJMZklDb3VUTThCM0d2NkRtcEV3RC1QblhIRlZ3cVpMZ29lckpuU2d6d1NPc0wzN1Jkdm1XZG9QVkN6N3hTWWJYb2N3dlF1Z3JXY3ZfaEkwZC1HWWJqQzhCQk1peTI4LTE?oc=5",
+   "time": "2026-08-26 01:40",
+   "cat": "global_markets"
+  },
+  {
+   "t": "SpaceX plans to build a $100 billion spaceport in Louisiana",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/08/25/spacex-louisiana-spaceport.html",
+   "time": "2026-08-26 01:35",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Schwab SCHD draws $679M as dividend ETF climbs 2.39%",
+   "stk": [],
+   "dir": 0,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/markets/stocks/articles/schwab-schd-draws-679m-dividend-173300246.html",
+   "time": "2026-08-26 01:33",
+   "cat": "global_finance"
+  },
+  {
+   "t": "This driverless-truck company could be a ‘long-term winner’ in a market Tesla plans to enter soon",
+   "stk": [],
+   "dir": 0,
+   "s": "MarketWatch - Top Stories",
+   "url": "https://www.marketwatch.com/story/this-driverless-truck-company-could-be-a-long-term-winner-in-a-market-tesla-plans-to-enter-soon-193bc8fe?mod=mw_rss_topstories",
+   "time": "2026-08-26 01:32",
+   "cat": "global_markets"
+  },
+  {
+   "t": "美股芯片股冲高回落，疫苗巨头深夜大涨，国际油价大跌 - 搜狐网",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNVGxyLVJxcGNRZ0Vhd0ZwSVdKSmtSeFFFVVhSZldHMzQ0UW4zT1A0WjRPLVFELUpneHRsaElLRkJGLVRjSTBoQWtNS0ZrY0NySWc5UlE2a214ay1HQkJCR0xlWkxXeUltVEZ4c09hUDhJaDlKMkpoUVZfSi1UTXd2UXBnY1V5U3RCZVZaVw?oc=5",
+   "time": "2026-08-26 01:31",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "3 No-Brainer Vanguard ETFs to Buy With $500 and Hold for the Next 20 Years - The Motley Fool",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxPZHgzRk5Wdjd6Sk5KRkRCYjZIY2ZWbTg4TWtMNHFxWEpqbWR2SjFUUV9sVU9xSi1tVXVDa2tWbDE3dzVlY0RWd1gtMnEwRGctOGtJeWJtOGpJUThsdWdMT0RGNjYzelI1ZW55ZDUzOEc0WWVlYVRpQ05fUS0wdDBvbmFXcUs0Z2tFVkRBcHVSYkJ5UXBlT2c?oc=5",
+   "time": "2026-08-26 01:31",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Waymo to launch driverless rides in Germany in 2027, entering third market outside U.S.",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/08/25/waymo-robotaxi-germany-2027.html",
+   "time": "2026-08-26 01:30",
+   "cat": "global_markets"
+  },
+  {
+   "t": "美股光通信龙头，大反弹 - 搜狐网",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQOTRnNDF3M0w0dlFpdHhSLVlDTEVsdHZ5UU53cUhnSEhmb0ZWMjBSNi1KYUF0R1hGeUNSM0NhckR1VWl2Y3hJRjN1aDZYci00OWdsVVRiQlVoaWpxeVRlTjRhb2JyeHlXTUN5VTFCazRRMWJlWmpFc2Y0WUNqcmpoYVMtUGp1bjltTmwycg?oc=5",
+   "time": "2026-08-26 01:30",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "‘There is considerable tension’: My grandmother, 99, wants to cut my mother out of her will. Should I intervene?",
+   "stk": [],
+   "dir": 0,
+   "s": "MarketWatch - Top Stories",
+   "url": "https://www.marketwatch.com/story/there-is-considerable-tension-my-grandmother-99-wants-to-cut-my-mother-out-of-her-will-should-i-intervene-5e8f408e?mod=mw_rss_topstories",
+   "time": "2026-08-26 01:30",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Winmark (NASDAQ:WINA) Stock Price Down 3.7% - Time to Sell? - MarketBeat",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxPSUlySkNjSkU1NVV5VkNaS0Y4eDA0RzBJdF90Nk1vWlMzSjhWZWZpa21Lc3hpcFFnWkRhaWYtZzlTUVBiM3dHVDl3aXJMSjNpQ0JWYWF0WUJoVnhLNDlvSE9rR1hFSnhQb1JISnJ0MVh5bG5kaFdMUnJsSXhsMmdTVHFsZndyamd6cVdZS25qNEpFN0M3YmhmemRXakoxbElkMHpkeWMwcHdYU3FFMEs2aXNR?oc=5",
+   "time": "2026-08-26 01:29",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Stocks making the biggest moves midday: Dick's Sporting Goods, Marvell, AMD, Kura Oncology & more",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/08/25/stocks-making-the-biggest-moves-midday-dks-mrvl-amd-kura.html",
+   "time": "2026-08-26 01:29",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Stocks making the biggest moves midday: Dick's Sporting Goods, Marvell, AMD, Kura Oncology & more",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Finance",
+   "url": "https://www.cnbc.com/2026/08/25/stocks-making-the-biggest-moves-midday-dks-mrvl-amd-kura.html",
+   "time": "2026-08-26 01:29",
+   "cat": "global_finance"
+  },
+  {
+   "t": "1 Quantum Computing Stock Everyone's Ignoring While IonQ Gets the Headlines",
+   "stk": [],
+   "dir": 0,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/technology/articles/1-quantum-computing-stock-everyones-172700356.html",
+   "time": "2026-08-26 01:27",
+   "cat": "global_finance"
+  },
+  {
+   "t": "Why Richtech Robotics Stock Popped Today",
+   "stk": [],
+   "dir": 0,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/markets/stocks/articles/why-richtech-robotics-stock-popped-172504862.html",
+   "time": "2026-08-26 01:25",
+   "cat": "global_finance"
+  },
+  {
+   "t": "Gold Hits Three-Month High as Bitcoin Tests $80,000",
+   "stk": [],
+   "dir": 0,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/markets/commodities/articles/gold-hits-three-month-high-172454643.html",
+   "time": "2026-08-26 01:24",
+   "cat": "global_finance"
+  },
+  {
+   "t": "Canada unveils retaliatory tariffs on about $20 billion of U.S. goods",
+   "stk": [],
+   "dir": -1,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/08/25/canada-trump-tariffs-trade-carney-leblanc.html",
+   "time": "2026-08-26 01:24",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Nebius Rises 4% Despite Adding $5.75B in Convertible Debt, Snapping a Six-Session Slide",
+   "stk": [],
+   "dir": -1,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/markets/stocks/articles/nebius-rises-4-despite-adding-172415679.html",
+   "time": "2026-08-26 01:24",
+   "cat": "global_finance"
+  },
+  {
+   "t": "US Stocks Turn Higher; Nasdaq Rises 0.54% - bloomingbit",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE1LVU5yWmdjZV9yRUJJdVFyMENZRGw4TFJSUmcxdTNNMDRqNkt2dlpDd1c4el9UdmJMZHhHQXNja3hRS0NJdUVFWkFkbGVzbGxJcGR1eg?oc=5",
+   "time": "2026-08-26 01:23",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Canadian Pacific Kansas City (CP) Reaffirms 36.9% Locomotive Emissions Reduction Goal by 2030",
+   "stk": [],
+   "dir": -1,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/markets/stocks/articles/canadian-pacific-kansas-city-cp-172304493.html",
+   "time": "2026-08-26 01:23",
+   "cat": "global_finance"
+  },
+  {
+   "t": "HELOC, refinance or home equity loan: What’s the best way to borrow against your home?",
+   "stk": [],
+   "dir": 0,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/news/home-equity-loan-heloc-vs-214358568.html",
+   "time": "2026-08-26 01:22",
+   "cat": "global_finance"
+  },
+  {
+   "t": "美股中概股，集体上涨 - 新浪财经",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE1DYlBNUUxlWWdHWHZDOEtMVUlqOXhpa254ZURNVDMwRVZzMlJGQ1VSZFNqRkdGbVJ4YThxLXNKMmkyeFh4cVMxQXdsOXI1U3JURVRoWWsyRm5PVkZwTjlSazBBZWFZMFBLOEU4WFNRWGFvSmhpZENQXw?oc=5",
+   "time": "2026-08-26 01:22",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Apple’s next chapter: 3 pressing challenges facing Tim Cook’s successor as CEO",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/08/25/apples-next-chapter-3-pressing-challenges-facing-tim-cooks-successor-as-ceo.html",
+   "time": "2026-08-26 01:21",
+   "cat": "global_markets"
+  },
+  {
+   "t": "The Nasdaq Floats as Oil Sinks and Memory Stocks Recover - The Motley Fool",
+   "stk": [],
+   "dir": -1,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1JLWtpQmhBbFpyM0tZWU50R0JmSXRMdjFqZVd5MmVHMGdhcUVFd0xXQUVmdFlCY3otRURlM0xNNjdyOXJyN1U0Qm4xZTRDTDJDaHlmeFljajBseG1EdUNvcnJ6VVNDN2NqVFRidm0wMkpCenhhMlZyYmZnYUFQdw?oc=5",
+   "time": "2026-08-26 01:21",
+   "cat": "global_markets"
+  },
+  {
+   "t": "RUM Group Surges 11% as CEO Vows to Take On CoreWeave and Nebius, Trump Media Holds Flat",
+   "stk": [],
+   "dir": 1,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/technology/ai/articles/rum-group-surges-11-ceo-172118850.html",
+   "time": "2026-08-26 01:21",
+   "cat": "global_finance"
+  },
+  {
+   "t": "Anthropic pitches IPO investors on $30 trillion market opportunity",
+   "stk": [],
+   "dir": 0,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/technology/ai/articles/anthropic-pitches-ipo-investors-30-172107288.html",
+   "time": "2026-08-26 01:21",
+   "cat": "global_finance"
+  },
+  {
+   "t": "3 No-Brainer Vanguard ETFs to Buy With $500 and Hold for the Next 20 Years",
+   "stk": [],
+   "dir": 0,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/markets/stocks/articles/3-no-brainer-vanguard-etfs-172000896.html",
+   "time": "2026-08-26 01:20",
+   "cat": "global_finance"
+  },
+  {
+   "t": "The Nasdaq Floats as Oil Sinks and Memory Stocks Recover",
+   "stk": [],
+   "dir": -1,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/markets/stocks/articles/nasdaq-floats-oil-sinks-memory-171734550.html",
+   "time": "2026-08-26 01:17",
+   "cat": "global_finance"
+  },
+  {
+   "t": "The Nasdaq Floats as Oil Sinks and Memory Stocks Recover - Yahoo Finance",
+   "stk": [],
+   "dir": -1,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxNeE55dk5rTC0ycDdCdm8wbmdUV0dGTHFYakJIN3pLQTVtTVpmVjJMZVlrRG1acmJwWW5saGhqOHhaaGdOVldJUVp5dWJ2d3ZvR2FxQ2EyTGNFTnhpTUVDUEQ3YzZkdGdPS29vZFNtZlpkUklRYVZEYUVKcU5SbVU0d04yLWdxcFlJTUJTajRtTE5JcV8yY01EZ2RSaw?oc=5",
+   "time": "2026-08-26 01:17",
+   "cat": "global_markets"
+  },
+  {
+   "t": "S2 Capital Sheds Two North Texas Apartments This Summer",
+   "stk": [],
+   "dir": 0,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/real-estate/articles/s2-capital-sheds-two-north-171629968.html",
+   "time": "2026-08-26 01:16",
+   "cat": "global_finance"
+  },
+  {
+   "t": "Food Hall Chain Wonder Plots Major Push Into Texas Suburbs",
+   "stk": [],
+   "dir": 0,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/real-estate/articles/food-hall-chain-wonder-plots-171624721.html",
+   "time": "2026-08-26 01:16",
+   "cat": "global_finance"
+  },
+  {
+   "t": "Stanley Druckenmiller leads doubters who think Bessent's bond ploys will fail",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/08/25/stanley-druckenmiller-leads-doubters-who-think-bessents-bond-ploys-will-fail.html",
+   "time": "2026-08-26 01:15",
+   "cat": "global_markets"
+  },
+  {
+   "t": "霍尔木兹航运迎突破！伊朗与阿曼拟设临时安全通道，原油盘中跌超4%",
+   "stk": [],
+   "dir": 1,
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3780275",
+   "time": "2026-08-26 01:13",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Target shares drop after Halloween costume backlash",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/target-shares-drop-5-after-halloween-costume-backlash-4875625",
+   "time": "2026-08-26 01:12",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Is Borr Drilling a Buy After Director Tor Olav Troim Buys 200,000 More Shares?",
+   "stk": [],
+   "dir": 0,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/markets/stocks/articles/borr-drilling-buy-director-tor-171001814.html",
+   "time": "2026-08-26 01:10",
+   "cat": "global_finance"
+  },
+  {
+   "t": "Nomad Foods CFO Baldew Buys 28,290 Shares at $11.85 -- Should Investors Be Buying Too?",
+   "stk": [],
+   "dir": 0,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/markets/stocks/articles/nomad-foods-cfo-baldew-buys-170954906.html",
+   "time": "2026-08-26 01:09",
+   "cat": "global_finance"
+  },
+  {
+   "t": "U.S. consumer confidence hits seven-month low in August 2026",
+   "stk": [],
+   "dir": 0,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/economy/articles/u-consumer-confidence-hits-seven-170933631.html",
+   "time": "2026-08-26 01:09",
+   "cat": "global_finance"
+  },
+  {
+   "t": "Netflix Rises 3% on a $95 Wolfe Research Price Target, Leaving Disney and Warner Bros. Discovery Behind",
+   "stk": [],
+   "dir": -1,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/media-advertising/articles/netflix-rises-3-95-wolfe-170855718.html",
+   "time": "2026-08-26 01:08",
+   "cat": "global_finance"
+  },
+  {
+   "t": "Qorvo (NASDAQ:QRVO) Stock Price Down 3.5% - Here's What Happened - MarketBeat",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPZVlMRlB5bDhjbDgzNUlGUF95Tzg0R3dhWHo1RFB0cXRST3BXeS1SYlhPcS1XaWM5WDBsS1dmX09QZ3dVNUVJdXd1M1BaZmpvem81X1dPRDltN19EVWxKZUh0UGRvV2xJQVNrOUhVWkQ0ZC1FNGlwMTFtZzNoY1J0NU5vQzlYZVlCdkFnMmFQenRrckJscmxKbHpfVXJQM0w5SjNNTVVyQ3pqbHhqaUxsZWcxcnBMZFll?oc=5",
+   "time": "2026-08-26 01:07",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Westrock Coffee (NASDAQ:WEST) Stock Price Down 3.8% - What's Next? - MarketBeat",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxONk1NRFFwam82MWdpZGtmRzRrQmxvMGN0WlowT05ubHFPalRCSVFPTzVjclV5NENVQmlTaFZsRlBncHhFNHN0T2hoVzgyYUhlV1JjQTJJeDJTdHQ5d1NqTzJfZUVVRFdQS0R3Ml9zWkcyMGtKRVBUOGtZaDQtM0tnQkw0Sk84MG5TNk1EMUwtS3FQbnhERW54RDBoWE0zTW92TWVtaTdPczZJY2lRLVJqMk9OYW05LVhUekE?oc=5",
+   "time": "2026-08-26 01:07",
+   "cat": "global_markets"
+  },
+  {
+   "t": "AMD, Marvell Technology, Semtech, Allegro MicroSystems, and MACOM Stocks Trade Up, What You Need To Know - StockStory",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMi8gFBVV95cUxNZ251ZV9CMzEycDEwSDk0aU52TzA2OEV1RmhtQjVpN3BkQ3ctWkxDZGx0NGFwTXF4ZFg1cEZmaGRSNjZkUWpnWDh0V0M0THNIcW5Ud19XdHY3eDk5dEd4ME53RURfS3Q2aTFhdkpqLWYybEIxYTNjSFF0eHdxZTFUZE01bjYxTXdxS1VrX0RNLTdqNFBZNURROUVzTGNKVkRsWkRLR1doTjFHanRnZmVOcjh2cHVzaUpNX3lnRW51U0llZVkzaFpGMnlGSG5WZ2tmenJGaXN4NFljWTNPZEhkTmpLZndNWFhFRko0MTNYU0lhdw?oc=5",
+   "time": "2026-08-26 01:07",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Why RLI (RLI) Stock Is Down Today - StockStory",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxOb056Zzc1Y0R4MXJvZ1Z2WDFFckgybXRjS1BKb1ktLUo2MWhUN3RqdzhhbEFzSmxfeGZjaU04N1pid1VMQkhDV0RlSHRFUEhicDFIV0RuVzlpUWhJRm5GUUhnNWFBa18tc0RxeXlEVHhiWW05T0txcDFCSm9lb1MzUThQWHlVcWNteVYyWVdZLUVXNjV6?oc=5",
+   "time": "2026-08-26 01:07",
+   "cat": "global_markets"
+  },
+  {
+   "t": "SpaceX Stock Is Moving Higher: What's Going On Today? - Benzinga",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxOTlBKcTJtY0RtQVQydjQ0a3lTU2JGTXRMYkZIVEVSQUozcE5CN3lUSTVmMmQ2Ym5nRkY0LWxBSnpMTVpNZ0tJVWNmV3RCa0lEdTM2dWVudnd2dTAxWGxvRktMdjNQbnZoVEM5NTByNDNHQllCbHgzb0tKNXBXdW85Vm95cVBiX3NvMlhPWnhGRW9DMzBfUGUwNXEwek0xREUxVUJFbnN1dllLNE1ZS2puUQ?oc=5",
+   "time": "2026-08-26 01:05",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Is Gold’s Best Month Since 2008 About to End? One Trader Just Bet $202 Million That It Is",
+   "stk": [],
+   "dir": 0,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/markets/options/articles/gold-best-month-since-2008-170515345.html",
+   "time": "2026-08-26 01:05",
+   "cat": "global_finance"
+  },
+  {
+   "t": "Investor competition for commercial real estate sees strongest growth in a year",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/08/25/cre-investor-competition-sees-strongest-growth-in-a-year.html",
+   "time": "2026-08-26 01:04",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Top chip analyst says the group could fall another 10%. Here's why",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/08/25/top-chip-analyst-says-the-group-could-fall-another-10percent-heres-why.html",
+   "time": "2026-08-26 01:04",
+   "cat": "global_markets"
+  },
   {
    "t": "超强厄尔尼诺影响种业 A股市场粮食概念受资金追捧 - 新浪网",
    "stk": [],
@@ -77,570 +538,54 @@
    "cat": "cn_markets"
   },
   {
-   "t": "S&P 500 rises slightly as yields fall, Nasdaq boosted by chip names: Live updates",
+   "t": "Stock Market Today: Nasdaq Leads Charge As Chip Names Gain; Gold Stocks Advance (Live Coverage)",
    "stk": [],
    "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/08/24/stock-market-today-live-updates.html",
-   "time": "2026-08-26 01:02",
-   "cat": "global_markets"
+   "s": "Yahoo Finance - Top",
+   "url": "https://www.investors.com/market-trend/stock-market-today/dow-jones-futures-sp500-treasury-yields-nvidia-micron-sandisk/?src=A00220&yptr=yahoo",
+   "time": "2026-08-26 01:03",
+   "cat": "global_finance"
   },
   {
-   "t": "HHS plans new FDA deputy commissioner roles for technology and drugs, sources say",
+   "t": "FedEx, Stock Of The Day, Eyes Buy Point — And A High-Margin Pivot",
    "stk": [],
-   "dir": -1,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/08/25/hhs-fda-leadership-roles-technology-drugs.html",
+   "dir": 0,
+   "s": "Yahoo Finance - Top",
+   "url": "https://www.investors.com/research/ibd-stock-of-the-day/fedex-stock-fdx-stock-buy-point-pivot-high-margin-businesses/?src=A00220&yptr=yahoo",
+   "time": "2026-08-26 01:03",
+   "cat": "global_finance"
+  },
+  {
+   "t": "Salesforce CEO Benioff Says Enterprise AI Adoption Is Still Just Beginning",
+   "stk": [
+    {
+     "n": "Salesforce",
+     "c": "CRM"
+    }
+   ],
+   "dir": 0,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/technology/ai/articles/salesforce-ceo-benioff-says-enterprise-170201424.html",
+   "time": "2026-08-26 01:02",
+   "cat": "global_finance"
+  },
+  {
+   "t": "Data Center Deals Propel July CRE Sales Volume To Best Performance Since 2005",
+   "stk": [],
+   "dir": 0,
+   "s": "Yahoo Finance - Top",
+   "url": "https://finance.yahoo.com/real-estate/articles/data-center-deals-propel-july-170119225.html",
+   "time": "2026-08-26 01:01",
+   "cat": "global_finance"
+  },
+  {
+   "t": "Anthropic expected to tell investors it sees over $30 trillion in potential revenue, WSJ reports",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/anthropic-expected-to-tell-investors-it-sees-over-30-trillion-in-potential-revenue-wsj-reports-4875772",
    "time": "2026-08-26 01:00",
    "cat": "global_markets"
-  },
-  {
-   "t": "Dick’s Sporting Goods’ epic drop hits other footwear giants, as shoppers sour on retro sneakers",
-   "stk": [],
-   "dir": 0,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/dicks-sporting-goods-stock-is-having-its-worst-day-ever-as-sneakers-arent-selling-without-deeper-discounts-5a868358?mod=mw_rss_topstories",
-   "time": "2026-08-26 00:59",
-   "cat": "global_markets"
-  },
-  {
-   "t": "凯莱英(002821):向激励对象首次授予A股限制性股票 - 中财网",
-   "stk": [
-    {
-     "n": "凯莱英",
-     "c": "002821.SZ"
-    }
-   ],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiVkFVX3lxTFBiYzAwSjVILWpYcnNFQ1dSUFdZSkdpcG9YTjluY2NmeV9yTk1Td2hvVzVlMTFfSWpyaWtiTEFhOEFUV19TLTdFNG9wQ0FxNTFEN04wVkdn?oc=5",
-   "time": "2026-08-26 00:57",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "凯莱英(002821):凯莱英2026年A股限制性股票激励计划首次授予激励对象名单 - 中财网",
-   "stk": [
-    {
-     "n": "凯莱英",
-     "c": "002821.SZ"
-    }
-   ],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE0tRjRWb3JWTGtRbEM3ZDJwQzl5cjdmSGNfUlFjWVphdlQ3R2dJa1p2QnJvalZKTmtVNnAzRmppbzNIN0V2X0ZxZTZPUzVfSzNkQWRBbTd3?oc=5",
-   "time": "2026-08-26 00:57",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "中广核技(000881):向特定对象发行A股股票并在主板上市募集说明书 - 中财网",
-   "stk": [
-    {
-     "n": "中广核技",
-     "c": "000881.SZ"
-    }
-   ],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE5fT0FKODFDS1NEWGNFblFQWFdxN19Cd2ptVy03bGVIT3lIX2Q3M1hZRzVSUUdyLXlHZkxGR19sbVdWbGtRWEJXSnhHS196RmpXdEE0dHNB?oc=5",
-   "time": "2026-08-26 00:57",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Masonglory (Nasdaq: MSGY) regains bid-price compliance after warning - Stock Titan",
-   "stk": [],
-   "dir": -1,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxNS09ONG1HOG10dzRWNzlYRFFLdUNGM3BfbkozNnFuNFo3cXVOSTE2ekhSaFVWa2ZNd1dKb2ZoOFJPeVNVSUtpR1FEZGMyN2ZnaUNfdkhDVXhia1BJTEE0NkxiTU5SM0dRdTEwampyak9LRXJQeXdKWDJZWk8wN0M1YzBMcFROZGZhdnVYckprWnNYLTdkY1FwanBSTW9WbVpsWE5UdHV4dHFxWDMxMF84?oc=5",
-   "time": "2026-08-26 00:48",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Stock Market Midday, Aug. 25: Tech Stocks Rebound and Dick's Sporting Goods Plummets 27% - The Motley Fool",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxOTDN0dmdxcUp5elBzRWpqbDFSdnNKN0dhY0hYM0tnMUdwaGdfUmZTVHN2SXBJcnZDc3pWTGUzSXNoUDhHV2tYRTlQX3NXMlo0V1dJTWdlSG1xZW9jUUdMM1d5M3JJOUNoamdIR2VmZnVLNnFJcnZLWWRBVkQyTC1hZHdPUmVtY3ZBd0ZzRjJBLUdkb3RXYzJQTHJEUDBnaXFjTXdMaTBLWlBmQTVINW41YzM4Q0g1TjlBM19zNUthc0FhOVV2aWtKblFaM1QyX1hNY3RQa0xrZWpFTlNQUnc?oc=5",
-   "time": "2026-08-26 00:48",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Why Nvidia rival AMD may see a 40% rip in its stock",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/article/why-nvidia-rival-amd-may-see-a-40-rip-in-its-stock-164720676.html",
-   "time": "2026-08-26 00:47",
-   "cat": "global_finance"
-  },
-  {
-   "t": "港股通红利低波ETF华夏 (159118): 华夏基金管理有限公司关于旗下部分深交所ETF新增申购赎回代办证券公司 - 中财网",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE01S3pyWWxfMHNodWs0bmV1QjdQOWRSeERPakZEdzEwZUlnU2wtZDBXRjRSUzhLdkdEV3VOYU9wZjVCa1BiWWF3NTg0Y0oxVG4z?oc=5",
-   "time": "2026-08-26 00:47",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "港股通金融ETF鹏华 (158000): 关于鹏华中证港股通内地金融交易型开放式指数证券投资基金上市交易提示性公告 - 中财网",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE54NEIwcWRpazRaUHA1ZVd0Y2t2RG04dFhmYTZqX3l5YUFLeldqcEhHOEF1MG9iaVpzSlRzX200YWk5SUtVRnc0cGY3d21kcVdQWXRHUk5B?oc=5",
-   "time": "2026-08-26 00:47",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Stocks Advance as Effects of Bessent’s ‘D-Day’ Look Contained",
-   "stk": [],
-   "dir": 0,
-   "s": "WSJ - Markets",
-   "url": "https://www.wsj.com/finance/stocks/u-s-futures-higher-yields-steady-after-bessent-iran-speech-573e9dd6?mod=rss_markets_main",
-   "time": "2026-08-26 00:47",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Trump goes all in on Sen. Darline Graham in South Carolina, as primary losses pile up",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/08/25/trump-darline-graham-south-carolina-primary.html",
-   "time": "2026-08-26 00:46",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Bitcoin price extends gains, briefly tops $81,000 as crypto rally gathers pace",
-   "stk": [],
-   "dir": 1,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/08/25/bitcoin-price-near-80000-cryptocurrency-ether-us-treasuries.html",
-   "time": "2026-08-26 00:46",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Gold hovers near three-month high on dollar weakness, Treasury bond buyback plans",
-   "stk": [],
-   "dir": 1,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/08/25/gold-hits-over-three-month-high-on-dollar-weakness-treasury-bond-buyback-plans.html",
-   "time": "2026-08-26 00:45",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Jim Cramer says this could be the key to sending Apple shares higher",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/08/25/jim-cramer-says-this-could-be-the-key-to-sending-apple-shares-higher.html",
-   "time": "2026-08-26 00:41",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Nvidia Customers Face a 15% Price Hike | Google Is Spending $200 Billion to Steal Them",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/nvidia-customers-face-15-price-164013458.html",
-   "time": "2026-08-26 00:40",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Should You Invest in the Vanguard Total World Stock ETF? Here's My Honest Take. - The Motley Fool",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxQRXVGQ0dhWmN4Snl0V3VJU0JWekxVZlp3dllmcUwzWkk3WGNVVlBJa2JxZEhWRXRtY3dvYVpvWUpaQlE1bHFlaHkyUVNIUEwwbTFEUTV5NWF0Y0lRc3dmQURFMUlFQ3FnRnRrbTZMOGRZdnBpbTRLVklrcjNJa2dHQmhQOG1XSEJFRjJUbFBidTR2dmdfZWtn?oc=5",
-   "time": "2026-08-26 00:39",
-   "cat": "global_markets"
-  },
-  {
-   "t": "A股ETF易方达（561890）开盘跌1.00%，重仓股宁德时代涨0.80%，中际旭创跌2.30% - finance.sina.com.cn",
-   "stk": [
-    {
-     "n": "宁德",
-     "c": "300750.SZ"
-    },
-    {
-     "n": "宁德时代",
-     "c": "300750.SZ"
-    },
-    {
-     "n": "中际旭创",
-     "c": "300308.SZ"
-    }
-   ],
-   "dir": 0,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTFBOSVpoZGNJaEQycjlKa1JWcWo0b1lFQ1FEcklfSTBiazFIeF9oWjRpTFdWaXp4RzNTWVdZR3hZN3NoV0Q2ZmJKYTh1RC1VVC1hb080QVplUmtJeC1PTzRNSHVkbk05Z0ZiejBzWTNYTHBiVEZySHk3eg?oc=5",
-   "time": "2026-08-26 00:39",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Cash is no longer king in home sales",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/08/25/cash-is-no-longer-king-in-home-sales.html",
-   "time": "2026-08-26 00:38",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Why Is IREN Stock Surging on Tuesday? - Benzinga",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxNNXk0cHEwTHNGUWRMLUVvNTZKTm0zN1VJQWI5Zng3LWtod0owblpENUtfc0xucmV3a1ozcndqcTBucWVqRzg3aGRQaEVXRFlIU0FCMUk4ZENXQ09CN21aZXRGOHNtRlhWUHMtZXFMNlBfR0lLNVJiZ1c4REI5M0hvZm9wWnlIZm1zYkV3ZHBWLTd2dWJRMFozRXI2NWZKZw?oc=5",
-   "time": "2026-08-26 00:37",
-   "cat": "global_markets"
-  },
-  {
-   "t": "SpaceX to build Starship spaceport in Louisiana",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/spacex-to-build-starship-spaceport-in-louisiana-4875762",
-   "time": "2026-08-26 00:36",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Wall Street rises amid falling oil prices and Treasury yields",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/wall-st-futures-steady-as-investors-brace-for-nvidia-results-fed-signals-4874359",
-   "time": "2026-08-26 00:35",
-   "cat": "global_markets"
-  },
-  {
-   "t": "QXO (QXO) is Rebuilding Business Models for Greater Value",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/qxo-qxo-rebuilding-business-models-163510879.html",
-   "time": "2026-08-26 00:35",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Should You Invest in the Vanguard Total World Stock ETF? Here's My Honest Take.",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/invest-vanguard-total-world-stock-163500062.html",
-   "time": "2026-08-26 00:35",
-   "cat": "global_finance"
-  },
-  {
-   "t": "The Family Bank: Parents Are Lending Their Kids Mortgage Money at Rates the IRS Itself Publishes, and No One Owes Gift Tax on the Discount.",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/real-estate/articles/family-bank-parents-lending-kids-163435843.html",
-   "time": "2026-08-26 00:34",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Gatik raises $200 million as autonomous freight demand grows",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/gatik-raises-200-million-as-autonomous-freight-demand-grows-93CH-4875761",
-   "time": "2026-08-26 00:33",
-   "cat": "global_markets"
-  },
-  {
-   "t": "‘It’s the ultimate regifting’: My mom gave me a house. Should I transfer it back to her to reduce capital gains?",
-   "stk": [],
-   "dir": 0,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/its-the-ultimate-regifting-my-mom-gave-me-a-house-should-i-transfer-it-back-to-her-to-reduce-capital-gains-e357f49c?mod=mw_rss_topstories",
-   "time": "2026-08-26 00:32",
-   "cat": "global_markets"
-  },
-  {
-   "t": "VF Corp, Levi's, Under Armour, Deckers, and Crocs Stocks Trade Down, What You Need To Know - StockStory",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxOaHZiZ042QzlBOUtTMXJ3U0M1WGFvYnMxZ1B5cU0xV3MwbmMyNU5ZMVhQZUdnbzd0M0JqdzNQVkRxcEYtUERnbHJaeGFCNjdSWk44SVU4QjlWR0tsa2xHTGtzUW9yS1NmVzM2N01Semg2UlZaVER6OWRoMUZ1T25sYkV6X0ZfdzE5YnRTS2thdFBhWTZQRUl5Y3ZPZVotMnhsODU5elNmOUdjd3pFUEQzbXFWWURGdjR6bGpxRnFnX2pVdllic0dPVERUa0VqUnFDMndIYVpVeXBqdEU?oc=5",
-   "time": "2026-08-26 00:31",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Why Paymentus (PAY) Shares Are Falling Today - StockStory",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxPOVphdEFHTlNTRG1QSEt4ejJDcVhTbG9MTlVRbXVvNDhmOUd5UTEtenRxUG1VMldkYTN6c3pibVR2eUN6RDRVWkFLX3d4SEE3SThCbUdWRHAxRzlNbzJjX3M0NC1qQVZSeVRkcnBBOVdrNGUxNjdVaW8tcXl6SWJwb3dDOWVneWZKUVZJNmZGc2JoTnVuNzVVZEh6eVNBYzJJMWdB?oc=5",
-   "time": "2026-08-26 00:31",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Why Dick's (DKS) Shares Are Plunging Today - StockStory",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxOcXVvVDlaTFlESVFtUmFhb0FGeWtHYVRHMkxsdm1ETmh3Rk4wdzI0a0xpdjNjX0JnU2sxMDRpcTZkSzI2ZXlNQmdvdmpBRWtSLTA0QVRMalMyMXFHNllHOEltc1pFVzgzNlNVZVFkOXVFby1YX2xzWlpyNHRFZnlRUVctVlg1V0drbkdub1dwRWc5T04xUUFNUk56NGp2Qlg1OXc?oc=5",
-   "time": "2026-08-26 00:31",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Are older Americans spoiling the economy for everyone else?",
-   "stk": [],
-   "dir": 0,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/are-older-americans-spoiling-the-economy-for-everyone-else-064b5820?mod=mw_rss_topstories",
-   "time": "2026-08-26 00:31",
-   "cat": "global_markets"
-  },
-  {
-   "t": "One Reason to Be Bullish on SanDisk Stock",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/one-reason-bullish-sandisk-stock-163042496.html",
-   "time": "2026-08-26 00:30",
-   "cat": "global_finance"
-  },
-  {
-   "t": "‘We are committed Christians’: Our son and daughter-in-law cut us off over politics. Should we change our $3 million will?",
-   "stk": [],
-   "dir": 0,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/we-are-hurt-our-son-and-daughter-in-law-cut-off-contact-with-us-over-politics-should-we-change-our-3-million-will-f763b761?mod=mw_rss_topstories",
-   "time": "2026-08-26 00:30",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Basic Materials Roundup: Market Talk",
-   "stk": [],
-   "dir": 0,
-   "s": "WSJ - Markets",
-   "url": "https://www.wsj.com/business/basic-materials-roundup-market-talk-a4a0f91f?mod=rss_markets_main",
-   "time": "2026-08-26 00:30",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Banco BPM faces takeover bid from Monte Paschi with no premium",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/banco-bpm-faces-takeover-bid-from-monte-paschi-with-no-premium-93CH-4875757",
-   "time": "2026-08-26 00:29",
-   "cat": "global_markets"
-  },
-  {
-   "t": "What's Going On With T3 Defense Stock Tuesday? - Benzinga",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxNcWdBbjF4UFVOYXpPRk5aTVNobk1QT092YU1PQ3U5d25iSmd0ZzNNODY4UnR3UDFqU1hrb3h2ejBuaDY0LUNvWDBIWlpldnRzcWtQSXdxZWdIVzJWVW9SSE43M2JDME5ndnR3SVRpMGxLSllpdENjbU84cmVSWVAwN2diejVGcV9mSldSNU5BQlpaMXBGcUN6QU1mTHVldzFic0lYclNzV0U?oc=5",
-   "time": "2026-08-26 00:29",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Crypto Group Warns Regulators Against Expanding Stablecoin KYC",
-   "stk": [],
-   "dir": -1,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/crypto/articles/crypto-group-warns-regulators-against-162859097.html",
-   "time": "2026-08-26 00:28",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Stanley Druckenmiller leads doubters who think Bessent's bond ploys will fail",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/08/25/stanley-druckenmiller-leads-doubters-who-think-bessents-bond-ploys-will-fail.html",
-   "time": "2026-08-26 00:27",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Monte dei Paschi stake sale on hold until takeover battle ends",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/monte-dei-paschi-stake-sale-on-hold-until-takeover-battle-ends-93CH-4875755",
-   "time": "2026-08-26 00:27",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Deutsche Bank sees Walmart’s international growth strategy expanding",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/deutsche-bank-sees-walmarts-international-growth-strategy-expanding-93CH-4875754",
-   "time": "2026-08-26 00:27",
-   "cat": "global_markets"
-  },
-  {
-   "t": "天山生物(300313):2026年度向特定对象发行A股股票申请获得深圳证券交易所受理 - 中财网",
-   "stk": [
-    {
-     "n": "天山生物",
-     "c": "300313.SZ"
-    }
-   ],
-   "dir": 1,
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE5ad193R1VuX0ZiQ1dVZUtwSXBCZHF6bnNJcFl5S211Rm9xbEtERHdOejR4YUdRT25IajZyYlJVRXNXZV9yZGN3Mk1vZlJVcWpqZ1k0aWR3?oc=5",
-   "time": "2026-08-26 00:27",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Gong cha Opens First Airport Location Phoenix Sky Harbor International Airport",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/small-business/articles/gong-cha-opens-first-airport-162702656.html",
-   "time": "2026-08-26 00:27",
-   "cat": "global_finance"
-  },
-  {
-   "t": "MSCI halts Turkey small cap index additions after feedback",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/msci-halts-turkey-small-cap-index-additions-after-feedback-93CH-4875752",
-   "time": "2026-08-26 00:26",
-   "cat": "global_markets",
-   "major": 1
-  },
-  {
-   "t": "Evercore hires Baird bankers to expand defense coverage - Bloomberg",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/evercore-hires-baird-bankers-to-expand-defense-coverage--bloomberg-93CH-4875751",
-   "time": "2026-08-26 00:26",
-   "cat": "global_markets"
-  },
-  {
-   "t": "The World’s Craziest Stock Market Has Turned Into a Fright Ride - WSJ",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxOUHc1cktvMF9zTEkxYm0tVVhfR1doLVVORmZTZGdjanhnbEJTdEtnWEVFb3ZhT3ZTcnRrYXo1MjJDc0tMdmNwTHMyRnRFYnctZEtrVE9BWFNQRVZpOTJPZS1Gc3R2UjZzSFpkSDdOSkhZSk5pLXU2d2p3S1EwMUl2b0lCRQ?oc=5",
-   "time": "2026-08-26 00:25",
-   "cat": "global_markets"
-  },
-  {
-   "t": "SpaceX Is Building a $16.8 Billion Chip Fab in Texas. Is This a Genius Move or a Red Flag For Investors?",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/technology/articles/spacex-building-16-8-billion-162500056.html",
-   "time": "2026-08-26 00:25",
-   "cat": "global_finance"
-  },
-  {
-   "t": "The Great Greek Mediterranean Grill Nears 100 Locations After Strong First Half of 2026",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/small-business/articles/great-greek-mediterranean-grill-nears-162417736.html",
-   "time": "2026-08-26 00:24",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Patterson-UTI Energy (NASDAQ: PTEN) holder plans 207,000-share sale - Stock Titan",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxOcGFnX3h3eEJLVWk0SEtlQ0IzSkRNd1Nzc2piLTJuYkxFcEI4YTNteDktTVVrelhyU2t0MjZ6LUg4Y2p5NG02Vjc0OG5wZGhBRU5lZGUwZ0hrSV9IWGNJTUJudVQ4M0ZfcU1MRmJMdi1KMWlQNnQ0UUI1X1dVUEE0NXVlMDl4clQ1Y2JldkVfQlE2R3ktcDhuWXBKOGJETjJIUDZv?oc=5",
-   "time": "2026-08-26 00:23",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Applied Optoelectronics (NASDAQ:AAOI) Stock Price Up 5.5% - Time to Buy? - MarketBeat",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxNLXV0WkZIZHB5alNSXzR5YW54R1NWOEdIS1ZKbmtrS19xU0xpV1VQNUNsUGRyTDcyM01uamRjZW9neTRQX1VMYW5UT3pWb1FqLUwyV041aU5LSUlKa2ptdnFlQVAxRkhYRHE3eFRUemY0bWpLSFdOQlJaazFYTnprNHQ4UF9CN3JWaEpaY0QtRjFLR0RZT2drZ0FWaVpFZEVENGliSTUtNWhXaktWbTNoVUMwcXQ2eGdHR01ManJDQ092TlE?oc=5",
-   "time": "2026-08-26 00:23",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Crocs (NASDAQ:CROX) Stock Price Down 3.9% - Time to Sell? - MarketBeat",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxONk1YcFVpMXVnT1ZSWTNKLWNHbnlwZ2VVNUJwbkx1Z01hNXJBR3hlbk9VREFmeXl5WU9XT2kyT2JNYVJiR2o2ek1ua2lvTEk0TXphbFFCSnNneFVaUElhZmNhdVBxRFR5TFVjbHFKSVNyQnVaUWYtSGp1YnVSLXZ5TjZ3Q2JCdGNETHhobWI0cS1jaG55R0VvV1B4cEZSbFJ1cDhBMHh3aXo2Z3FHU2Jn?oc=5",
-   "time": "2026-08-26 00:23",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Anthropic claims $30T AI market (just 12x the entire tech sector combined)",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/anthropic-claims-30t-ai-market-just-12x-the-entire-tech-sector-combined-4875750",
-   "time": "2026-08-26 00:22",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Iranian tankers gather off Sri Lankan coast",
-   "stk": [],
-   "dir": 0,
-   "s": "FT - Markets",
-   "url": "https://www.ft.com/content/ef62e345-2a76-46b4-8a69-9d02a306126b?syn-25a6b1a6=1",
-   "time": "2026-08-26 00:22",
-   "cat": "global_markets"
-  },
-  {
-   "t": "SpaceX Rises 3% as Musk Pulls the NVIDIA Orbital Data Center Into 2027, JPMorgan Sees 75% Upside",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/spacex-rises-3-musk-pulls-162211228.html",
-   "time": "2026-08-26 00:22",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Diluted shares outstanding of Meridian3 Industrials Acquisition Corp – NASDAQ:MIAC - TradingView",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxORTQ0Wm9ocnFQTTVYUnRYbUVZNHhqbVNXX2VfWk9VSFk5VDVJbklXa3phcXhtREhmS1hIVFZCX3pmNmFORG92SzVGYlVMQkZPaUUtQWEzc2VHSHQzekJlOG9sOGRFd0NLd2J3eHJJamt3SWpsUkZaQndtTkxtZ05aZDM4dnQxNDZLVEhEbFZFT0l4SkZoa1dJbGNxeEVzY3YwNTE2N0lB?oc=5",
-   "time": "2026-08-26 00:21",
-   "cat": "global_markets",
-   "major": 1
-  },
-  {
-   "t": "AI is Sharpening Ryan Specialty Holdings (RYAN), Not Replacing Them",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/ai-sharpening-ryan-specialty-holdings-162111595.html",
-   "time": "2026-08-26 00:21",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Executive Sells $1.4 Million Worth of Travel Stock, Following 54% Rally",
-   "stk": [],
-   "dir": 1,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/executive-sells-1-4-million-161901495.html",
-   "time": "2026-08-26 00:19",
-   "cat": "global_finance"
-  },
-  {
-   "t": "CLO and Style3D Settle 3D Fashion Software Patent Fight",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/technology/articles/clo-style3d-settle-3d-fashion-161739421.html",
-   "time": "2026-08-26 00:17",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Kura Oncology CEO Buys 100,000 Shares for $1.2 Million. Does This Large Buy Bode Well for Shares in 2026?",
-   "stk": [],
-   "dir": 0,
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/kura-oncology-ceo-buys-100-161701712.html",
-   "time": "2026-08-26 00:17",
-   "cat": "global_finance"
   }
  ]
 }
