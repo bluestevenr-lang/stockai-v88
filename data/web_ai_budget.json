@@ -1,28 +1,18 @@
 {
  "month": "2026-08",
- "spent_rmb": 0.054977,
+ "billing_mode": "kimi-code-subscription",
+ "model": "k3-256k",
+ "spent_rmb": 0.0,
  "calls": [
   {
-   "ts": 1785721556.358617,
-   "rmb": 0.009231
-  },
-  {
-   "ts": 1785721562.0477371,
-   "rmb": 0.00059
-  },
-  {
-   "ts": 1785721613.689544,
-   "rmb": 0.013143
-  },
-  {
-   "ts": 1785895506.23317,
-   "rmb": 0.013682
-  },
-  {
-   "ts": 1785981374.5305321,
-   "rmb": 0.018331
+   "ts": 1787557370.568634,
+   "ok": true,
+   "scope": "web-general",
+   "prompt_tokens": 1912,
+   "completion_tokens": 549,
+   "model": "k3-256k"
   }
  ],
  "pending": {},
- "cap_rmb": 1.0
+ "cap_rmb": 0.0
 }
