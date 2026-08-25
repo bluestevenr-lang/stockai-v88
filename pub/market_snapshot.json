@@ -1,6 +1,6 @@
 {
   "schema_version": "v88.snapshot/2.0",
-  "snapshot_id": "snap-ea9306fc40e1fbdb",
+  "snapshot_id": "snap-4e3372c12656603d",
   "rotation_forecast": {
     "schema_version": "v88.rotation/1.4",
     "snapshot_id": "snap-eeef62b697f96c92",
@@ -5562,7 +5562,7 @@
       }
     ]
   },
-  "generated_at": "2026-08-26 04:19",
+  "generated_at": "2026-08-26 04:53",
   "markets": {
     "美股": {
       "indices": [
@@ -5622,12 +5622,12 @@
         {
           "symbol": "XLK",
           "name": "科技",
-          "last": 181.78,
-          "chg1d": 0.96,
-          "chg5d": -2.07,
-          "chg20d": 6.25,
-          "vs_ma20": -0.98,
-          "vs_ma60": -0.99,
+          "last": 181.74,
+          "chg1d": 0.94,
+          "chg5d": -2.09,
+          "chg20d": 6.22,
+          "vs_ma20": -1.0,
+          "vs_ma60": -1.01,
           "trend": "📉 空头排列",
           "vol_ratio": 0.78,
           "px_pct": 40.0,
@@ -5730,12 +5730,12 @@
         {
           "symbol": "XLE",
           "name": "能源",
-          "last": 62.07,
-          "chg1d": -1.65,
-          "chg5d": -2.53,
-          "chg20d": 7.82,
-          "vs_ma20": 2.18,
-          "vs_ma60": 7.66,
+          "last": 62.06,
+          "chg1d": -1.66,
+          "chg5d": -2.54,
+          "chg20d": 7.8,
+          "vs_ma20": 2.16,
+          "vs_ma60": 7.65,
           "trend": "📈 多头排列",
           "vol_ratio": 0.97,
           "px_pct": 90.0,
@@ -5985,22 +5985,21 @@
           "turning_prompt": "放量跌破MA20（今日）：收 13794.29 破位（MA20≈14032.25），当日量为20日均量19.2倍，至今未收回。👉 你来确认三件事：①明日能否收回MA20（14032.25）——收不回=拐点成立；②量能是否持续放大（连续两日≥1.3倍=资金在跑）；③是否跌破今日低点 nan——破了立即执行纪律，不要等反弹"
         },
         {
-          "symbol": "159915.SZ",
-          "name": "创业板ETF代理",
-          "last": 3.56,
-          "chg1d": 1.37,
-          "chg5d": -2.33,
-          "chg20d": 1.48,
-          "vs_ma20": 0.89,
-          "vs_ma60": -6.9,
-          "trend": "🔄 震荡偏强",
-          "vol_ratio": 0.79,
-          "px_pct": 25.0,
+          "symbol": "399006.SZ",
+          "name": "创业板指",
+          "last": 3397.52,
+          "chg1d": -1.0,
+          "chg5d": -8.31,
+          "chg20d": 2.12,
+          "vs_ma20": -3.02,
+          "vs_ma60": -10.23,
+          "trend": "📉 空头排列",
+          "vol_ratio": 1.0,
+          "px_pct": 10.0,
           "vol_pct": null,
           "diverge": null,
           "turning": "",
-          "turning_prompt": "",
-          "unit": "元"
+          "turning_prompt": ""
         }
       ],
       "sectors": [
@@ -6186,19 +6185,19 @@
         }
       ],
       "temperature": {
-        "temp": 37,
-        "trend": 17,
+        "temp": 29,
+        "trend": 0,
         "breadth": 40,
-        "momentum": 13,
+        "momentum": 0,
         "vol_heat": 100,
-        "label": "🟠 偏冷",
-        "position": "30-50%",
-        "verdict": "🟠 偏冷震荡·轻仓等右侧信号"
+        "label": "🔵 冰点",
+        "position": "≤30%（仅留核心层大跌加仓弹药）",
+        "verdict": "🧊 情绪冰点·恐慌杀跌接近弹药区（属正常调整非见顶，核心层分批备弹、不追杀）"
       },
       "turn_risk": {
         "top_risk": 10,
-        "bottom_opp": 12,
-        "text": "顶部转向风险 低(10/100) ｜ 底部转机信号 低(12/100)｜顶部特征1/7·底部特征0/7",
+        "bottom_opp": 25,
+        "text": "顶部转向风险 低(10/100) ｜ 底部转机信号 低(25/100)｜顶部特征1/7·底部特征2/7",
         "ver": "v2"
       },
       "topbot": {
@@ -6207,7 +6206,7 @@
           {
             "key": "价格高位",
             "hit": false,
-            "text": "价格分位21.7"
+            "text": "价格分位16.7"
           },
           {
             "key": "量价背离",
@@ -6222,7 +6221,7 @@
           {
             "key": "动量衰竭",
             "hit": false,
-            "text": "20日-0.14%但5日仅-3.68%"
+            "text": "20日+0.08%但5日仅-5.68%"
           },
           {
             "key": "估值高位",
@@ -6232,7 +6231,7 @@
           {
             "key": "温度过热",
             "hit": false,
-            "text": "温度37"
+            "text": "温度29"
           },
           {
             "key": "指数拐点",
@@ -6243,8 +6242,8 @@
         "bottom": [
           {
             "key": "价格低位",
-            "hit": false,
-            "text": "价格分位21.7"
+            "hit": true,
+            "text": "价格分位16.7"
           },
           {
             "key": "放量杀跌",
@@ -6259,7 +6258,7 @@
           {
             "key": "深度超跌",
             "hit": false,
-            "text": "20日-0.14%"
+            "text": "20日+0.08%"
           },
           {
             "key": "估值低位",
@@ -6268,8 +6267,8 @@
           },
           {
             "key": "温度冰点",
-            "hit": false,
-            "text": "温度37"
+            "hit": true,
+            "text": "温度29"
           },
           {
             "key": "指数底拐",
@@ -6279,9 +6278,9 @@
         ],
         "top_hit": 1,
         "top_na": 2,
-        "bottom_hit": 0,
+        "bottom_hit": 2,
         "bottom_na": 2,
-        "px_pct": 21.7,
+        "px_pct": 16.7,
         "vol_pct": null,
         "diverge": null,
         "breadth_full_days": 0,
