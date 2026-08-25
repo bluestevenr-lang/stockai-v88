@@ -33,3 +33,4 @@
 - `v88ctl sync` 现使用私仓规定的 `scripts/safe_pull.sh`，同步后同时刷新 K3 与 GPT 两个独立工作区，并把私仓 `claude-memory/` 脱敏镜像复制到 GPT 龙虾知识库。
 - Windows 10 分钟常驻镜像班同步刷新 `v88-gpt/context` 与 `v88-gpt/knowledge/v88-claude-memory`，避免机器人重启后再次失忆。
 - 修复 Windows 私仓安全拉取调用不到 `python3` 的旧坑：改用既有 `v88env`/`py.exe` 执行合并驱动与 postpull 自检；失败时保留工作树和最后快照，不再对私仓执行 `reset --hard`。
+- 现有 `V88 24x7 Keepalive` 每 10 分钟同时执行一次安全 GitHub/持仓/记忆同步；常驻批处理的投影也固定使用 `v88env` Python，避免命中 Windows Store 的失效 `python` 别名。

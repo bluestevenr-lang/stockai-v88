@@ -50,6 +50,14 @@ while ($true) {
     } catch {
         Write-V88Log ("自愈失败：{0}" -f $_.Exception.Message)
     }
+    if ($Loop % 10 -eq 0) {
+        try {
+            $SyncResult = & $Ctl sync 2>&1
+            Write-V88Log ("GitHub/持仓/记忆同步：{0}" -f (($SyncResult | Select-Object -Last 3) -join ' | '))
+        } catch {
+            Write-V88Log ("GitHub/持仓/记忆同步失败，保留最后快照：{0}" -f $_.Exception.Message)
+        }
+    }
     $Loop += 1
     if ($Once) { break }
     Start-Sleep -Seconds 60

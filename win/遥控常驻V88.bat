@@ -71,14 +71,14 @@ set "OCPKG=%STOCKAI%\win\openclaw-v88"
 if exist "%OCPKG%\sync_v88_projection_win.py" if exist "%REPORT%\data\gpt_verify.json" (
   if not exist "%OCWORK%" mkdir "%OCWORK%" >nul 2>&1
   copy /Y "%OCPKG%\AGENTS.md" "%OCWORK%\AGENTS.md" >nul 2>&1
-  python "%OCPKG%\sync_v88_projection_win.py" --source "%REPORT%\data" --dest "%OCWORK%\context" >> "%LOG%" 2>&1
+  "%V88PY%" "%OCPKG%\sync_v88_projection_win.py" --source "%REPORT%\data" --dest "%OCWORK%\context" >> "%LOG%" 2>&1
   if errorlevel 1 (
     echo [%STAMP%] WARN: OpenClaw projection refresh failed; keeping last good snapshot>> "%LOG%"
   ) else (
     echo [%STAMP%] OpenClaw privacy projection refreshed>> "%LOG%"
   )
   if exist "%OCGPT%" (
-    python "%OCPKG%\sync_v88_projection_win.py" --source "%REPORT%\data" --dest "%OCGPT%\context" >> "%LOG%" 2>&1
+    "%V88PY%" "%OCPKG%\sync_v88_projection_win.py" --source "%REPORT%\data" --dest "%OCGPT%\context" >> "%LOG%" 2>&1
     if errorlevel 1 (
       echo [%STAMP%] WARN: GPT OpenClaw projection refresh failed; keeping last good snapshot>> "%LOG%"
     ) else (
