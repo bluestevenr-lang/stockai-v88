@@ -129,8 +129,8 @@ goto :eof
 
 REM ==============================================================
 REM  safe pull (private repo): route through scripts/safe_pull.sh
-REM  (merge drivers + postpull JSON/JSONL self-heal, no bare pull).
-REM  On failure keep the old mirror fallback: remote always wins.
+REM  Windows equivalent: Python launcher replaces the missing python3 command.
+REM  Never hard-reset this private worktree; preserve local runtime data on failure.
 REM ==============================================================
 :safepull_private
 set "R=%~1"
@@ -138,18 +138,22 @@ if not exist "%R%\.git" (
   echo [%STAMP%]   skip: %R% is not a git repo>> "%LOG%"
   goto :eof
 )
-"C:\Program Files\Git\bin\bash.exe" "%R%\scripts\safe_pull.sh" >> "%LOG%" 2>&1
-if not errorlevel 1 goto :eof
-
-echo [%STAMP%]   safe_pull failed, fallback: abort + fetch + hard reset (remote wins)>> "%LOG%"
-git -C "%R%" rebase --abort  >> "%LOG%" 2>&1
-git -C "%R%" merge  --abort  >> "%LOG%" 2>&1
-git -C "%R%" -c credential.interactive=false fetch origin main >> "%LOG%" 2>&1
-if errorlevel 1 (
-  echo [%STAMP%]   fetch failed too -> keeping on-disk snapshot, continuing anyway>> "%LOG%"
+set "V88PY=%USERPROFILE%\v88env\Scripts\python.exe"
+if not exist "%V88PY%" (
+  echo [%STAMP%]   private pull skipped: missing %V88PY%>> "%LOG%"
   goto :eof
 )
-git -C "%R%" reset --hard origin/main >> "%LOG%" 2>&1
+git -C "%R%" config merge.v88json.name "V88 JSON newest-timestamp-wins" >> "%LOG%" 2>&1
+git -C "%R%" config merge.v88json.driver "\"C:/Users/admin/v88env/Scripts/python.exe\" scripts/v88_json_merge.py %%O %%A %%B %%P" >> "%LOG%" 2>&1
+git -C "%R%" config merge.v88jsonl.name "V88 JSONL lossless-union" >> "%LOG%" 2>&1
+git -C "%R%" config merge.v88jsonl.driver "\"C:/Users/admin/v88env/Scripts/python.exe\" scripts/v88_jsonl_merge_driver.py %%O %%A %%B %%P" >> "%LOG%" 2>&1
+git -C "%R%" -c credential.interactive=false pull --rebase --autostash origin main >> "%LOG%" 2>&1
+if errorlevel 1 (
+  echo [%STAMP%]   private pull failed; preserving worktree and last good snapshot>> "%LOG%"
+  goto :eof
+)
+"%V88PY%" "%R%\scripts\v88_json_merge.py" --postpull >> "%LOG%" 2>&1
+if errorlevel 1 echo [%STAMP%]   private postpull validation failed; preserving last good snapshot>> "%LOG%"
 goto :eof
 
 

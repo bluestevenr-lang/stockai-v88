@@ -76,10 +76,6 @@ function Sync-V88Data {
     if (-not (Test-Path -LiteralPath (Join-Path $ReportRoot '.git'))) {
         throw "找不到 V88 私仓 $ReportRoot"
     }
-    $bash = 'C:\Program Files\Git\bin\bash.exe'
-    $safePull = Join-Path $ReportRoot 'scripts\safe_pull.sh'
-    if (-not (Test-Path -LiteralPath $bash)) { throw "找不到 Git Bash $bash" }
-    if (-not (Test-Path -LiteralPath $safePull)) { throw "找不到安全同步脚本 $safePull" }
     if (-not (Test-Path -LiteralPath $Projection)) { throw "找不到投影脚本 $Projection" }
     if (-not (Test-Path -LiteralPath $PyLauncher)) { throw "找不到Python启动器 $PyLauncher" }
 
@@ -88,9 +84,30 @@ function Sync-V88Data {
         throw "V88 公仓同步失败：$($publicPullOutput | Select-Object -Last 8 | Out-String)"
     }
 
-    $pullOutput = & $bash $safePull 2>&1
-    if ($LASTEXITCODE -ne 0) {
-        throw "V88 私仓安全同步失败：$($pullOutput | Select-Object -Last 8 | Out-String)"
+    $pythonForGit = 'C:/Users/admin/v88env/Scripts/python.exe'
+    if (-not (Test-Path -LiteralPath $pythonForGit)) {
+        throw "找不到 V88 Python $pythonForGit"
+    }
+    & git -C $ReportRoot config merge.v88json.name 'V88 JSON newest-timestamp-wins'
+    & git -C $ReportRoot config merge.v88json.driver "`"$pythonForGit`" scripts/v88_json_merge.py %O %A %B %P"
+    & git -C $ReportRoot config merge.v88jsonl.name 'V88 JSONL lossless-union'
+    & git -C $ReportRoot config merge.v88jsonl.driver "`"$pythonForGit`" scripts/v88_jsonl_merge_driver.py %O %A %B %P"
+
+    $pullOutput = & git -C $ReportRoot pull --rebase --autostash origin main 2>&1
+    $pullExit = $LASTEXITCODE
+    $previousPythonUtf8 = $env:PYTHONUTF8
+    $env:PYTHONUTF8 = '1'
+    Push-Location $ReportRoot
+    try {
+        $postPullOutput = & $PyLauncher -3 (Join-Path $ReportRoot 'scripts\v88_json_merge.py') --postpull 2>&1
+        $postPullExit = $LASTEXITCODE
+    } finally {
+        Pop-Location
+        $env:PYTHONUTF8 = $previousPythonUtf8
+    }
+    $unresolved = @(& git -C $ReportRoot diff --name-only --diff-filter=U)
+    if ($pullExit -ne 0 -or $postPullExit -ne 0 -or $unresolved.Count -gt 0) {
+        throw "V88 私仓安全同步失败：pull=$pullExit postpull=$postPullExit unresolved=$($unresolved.Count)`n$($pullOutput | Select-Object -Last 8 | Out-String)$($postPullOutput | Select-Object -Last 8 | Out-String)"
     }
 
     foreach ($destination in @($K3Context, $GptContext)) {
