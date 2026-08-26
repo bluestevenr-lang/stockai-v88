@@ -1334,56 +1334,14 @@ def _load_scan_cache_from_file(scan_type: str, scan_market: str, risk_pref: str 
         return None
 
 def _publish_scan_to_cloud(data: dict):
-    """【V99.6】把最近一次「一键全策略」榜单发布到公开仓 stockai-v88 data 分支
-    pub/scan_latest.json，云端查看器免引擎直接展示最近缓存结果。
-    原则：V88 是主体——本地扫出什么，云端就看什么。gh CLI 免密；10分钟节流；
-    只发榜单行（无持仓等隐私）。后台线程调用，失败静默不影响本地。"""
-    import base64 as _b64
-    import subprocess as _sp
-    try:
-        marker = SCAN_CACHE_DIR / "pub_scan_last.txt"
-        if marker.exists():
-            try:
-                if time.time() - float(marker.read_text().strip() or 0) < 600:
-                    return
-            except Exception:
-                pass
-        rows = data.get("data") or []
-        if not rows:
-            return
-        payload = {
-            "generated_at": time.strftime(
-                "%Y-%m-%d %H:%M:%S",
-                time.localtime(data.get("scan_timestamp", time.time()))),
-            "scan_market": data.get("scan_market", ""),
-            "rows": [{**r, "市场": market_of_code(r.get("代码", ""))} for r in rows],
-        }
-        content = _b64.b64encode(
-            json.dumps(payload, ensure_ascii=False).encode("utf-8")).decode()
-        # Streamlit 进程的 PATH 可能不含 homebrew，gh 需绝对路径解析（22:43 静默失败根因）
-        import shutil as _sh99
-        _gh = (_sh99.which("gh") or next((p for p in ("/opt/homebrew/bin/gh", "/usr/local/bin/gh")
-                                          if Path(p).exists()), "gh"))
-        _repo_path = "repos/bluestevenr-lang/stockai-v88/contents/pub/scan_latest.json"
-        sha = ""
-        try:
-            sha = _sp.run([_gh, "api", f"{_repo_path}?ref=data", "-q", ".sha"],
-                          capture_output=True, text=True, timeout=20).stdout.strip()
-        except Exception:
-            sha = ""
-        cmd = [_gh, "api", "-X", "PUT", _repo_path,
-               "-f", "message=publish scan_latest (auto from V88)",
-               "-f", "branch=data", "-f", f"content={content}"]
-        if sha:
-            cmd += ["-f", f"sha={sha}"]
-        r = _sp.run(cmd, capture_output=True, text=True, timeout=45)
-        if r.returncode == 0:
-            marker.write_text(str(time.time()))
-            logging.info("☁️ 一键全选榜单已发布到云端 pub/scan_latest.json")
-        else:
-            logging.warning(f"⚠️ 云端榜单发布失败: {(r.stderr or '')[:200]}")
-    except Exception as e:
-        logging.warning(f"⚠️ 云端榜单发布异常: {e}")
+    """Keep the local sensor cache private; it has zero recommendation weight.
+
+    The retired route uploaded raw legacy scores to ``pub/scan_latest.json`` and
+    bypassed the GPT × K3 × classics admission gate.  Cloud consumers now read
+    only ``triad_selection_pub.json`` produced by the central publisher.
+    """
+    logging.debug("本地全策略扫描仅作传感器；公开推荐只认中央三方认证榜")
+    return None
 
 
 def _save_scan_cache_to_file(data: dict):

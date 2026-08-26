@@ -1886,47 +1886,54 @@ elif _nav == "🔥 热点新闻":
         else:
             st.caption(f"共 {_shown} 条 · 时间均为新闻实际发生时间（北京时间）· 深度分析见 📊 日报（每时段生成一次）")
 
-# ── 🏆 全选榜单（V88 最近一次「一键全策略」扫描结果，V88是主体·云端跟随）──
+# ── 🏆 全选榜单（导航保留；内容改为中央三方认证榜）──────────────
 elif _nav == "🏆 全选榜单":
-    st.markdown("#### 🏆 一键全策略榜单 · 中美港分市场排名")
-    _scan_raw = pub_text("scan_latest.json")
-    _scan = None
+    st.markdown("#### 🏆 GPT × K3 × 经典书理 · 三方认证榜")
+    st.caption("模块和股票池保持不变；旧综合分仅作私域传感器，公开准入只认同一事实包上的中央三方结论。")
+    _scan_raw = pub_text("triad_selection_pub.json")
+    _scan = {}
     if _scan_raw:
         try:
             _scan = json.loads(_scan_raw)
         except Exception:
-            _scan = None
-    if not _scan or not _scan.get("rows"):
-        st.info("📭 暂无榜单（V88 桌面端跑过「一键全策略」后自动同步到这里，交易日 09:00/16:00/22:30 自动扫描）")
+            _scan = {}
+    _formal = list(_scan.get("recommendations") or [])
+    _observe = list(_scan.get("observations") or [])
+    _rows = _formal + _observe
+    if not _rows:
+        st.info("⚪ 当前没有可公开的三方统一认证个股。K3未完成、任一方否决、事实过期或交易合同不完整都会自动关闭推荐；空榜是合格结果。")
     else:
         import pandas as pd
-        st.caption(_fresh_caption(_scan.get("generated_at"), "扫描榜单") + f"（{_scan.get('scan_market', '')}）· 由 Mac V88 五维引擎产出，云端只展示不重算")
-        _df = pd.DataFrame(_scan["rows"])
-        if "市场" in _df.columns and "得分" in _df.columns:
-            _df["市场排名"] = (_df.groupby("市场")["得分"]
-                            .rank(ascending=False, method="first").astype(int))
-            _cols = _df.columns.tolist()
-            _cols.insert(_cols.index("市场") + 1, _cols.pop(_cols.index("市场排名")))
-            _df = _df[_cols]
+        st.caption(_fresh_caption(_scan.get("generated_at"), "三方认证榜"))
+        _display = []
+        for _r in _rows:
+            _is3 = bool(_r.get("formal_recommendation")) and _r.get("tier") == "3A"
+            _display.append({
+                "认证": "🟢 3A统一认证" if _is3 else "🟡 一致观察",
+                "代码": _r.get("code"), "名称": _r.get("name"),
+                "市场": _r.get("market"), "支持票": _r.get("support_count"),
+                "状态": _r.get("label") or _r.get("state"),
+                "执行属性": "中央合同可执行" if _is3 else "非推荐·不可直接执行",
+                "证据时点": _r.get("evidence_asof"),
+            })
+        _df = pd.DataFrame(_display)
         c_m, c_s = st.columns(2)
         with c_m:
-            _mopts = ["🌍 全部"] + [m for m in ("🇺🇸美股", "🇨🇳A股", "🇭🇰港股")
-                                   if "市场" in _df.columns and m in _df["市场"].unique()]
+            _markets = [str(m) for m in _df.get("市场", pd.Series(dtype=str)).dropna().unique()]
+            _mopts = ["🌍 全部"] + _markets
             _mp = st.selectbox("🌏 市场", _mopts)
             if _mp != "🌍 全部":
                 _df = _df[_df["市场"] == _mp]
         with c_s:
-            if "得分" in _df.columns:
-                _sb = st.selectbox("📊 得分", ["全部", "≥70 强势", "≥55 良好", "≥40 及格"])
-                _smap = {"≥70 强势": 70, "≥55 良好": 55, "≥40 及格": 40}
-                if _sb in _smap:
-                    _df = _df[_df["得分"] >= _smap[_sb]]
+            _sb = st.selectbox("✅ 认证", ["全部", "🟢 仅3A统一认证", "🟡 仅一致观察"])
+            if _sb == "🟢 仅3A统一认证":
+                _df = _df[_df["认证"] == "🟢 3A统一认证"]
+            elif _sb == "🟡 仅一致观察":
+                _df = _df[_df["认证"] == "🟡 一致观察"]
         st.download_button("📥 导出榜单CSV", data=_df.to_csv(index=False, encoding="utf-8-sig"),
-                           file_name="V88全选榜单.csv", mime="text/csv", use_container_width=True)
+                           file_name="V88三方认证榜.csv", mime="text/csv", use_container_width=True)
         st.dataframe(_df, hide_index=True, use_container_width=True, height=560)
-        st.caption("💡 得分=V88唯一统一分（短20%＋中25%＋长20%＋趋势15%＋赔率20%）｜表内同时显示概率、盈亏比与期望值｜口径V88-U2.0")
-        import cloud_engine as _ceg
-        exp_md("📖 术语速查（数值高低怎么看）", _ceg.GLOSSARY_MD)
+        st.caption("🟢 3A：GPT、K3、经典书理三方通过且硬闸与交易合同完整；🟡 观察：不可直接执行。任何一方否决或缺席都不会进入正式推荐。")
 
 # ── 🔍 个股搜索（云端实时·趋势脉搏）────────────────────────────
 elif _nav == "🔍 个股搜索":
