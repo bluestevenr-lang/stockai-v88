@@ -127,6 +127,23 @@ def safe_code(code: str) -> str:
     return cleaned or "UNKNOWN"
 
 
+def stock_filenames(code: str) -> tuple[str, ...]:
+    """Return the source ticker filename plus a five-digit HK alias.
+
+    V88 source files historically mix ``2382.HK`` and ``02382.HK``. Feishu
+    users and market-data providers commonly display the latter, so both
+    names must resolve to the same privacy-minimized document.
+    """
+    canonical = f"{safe_code(code)}.json"
+    filenames = [canonical]
+    match = re.fullmatch(r"(\d+)\.HK", str(code).strip().upper())
+    if match:
+        padded = f"{int(match.group(1)):05d}.HK.json"
+        if padded not in filenames:
+            filenames.append(padded)
+    return tuple(filenames)
+
+
 def assert_private_keys_absent(value, path="root") -> None:
     if isinstance(value, dict):
         for key, child in value.items():
@@ -585,9 +602,9 @@ def build(source: Path, destination: Path) -> int:
 
     expected_stocks = set()
     for code, document in stock_documents.items():
-        filename = f"{safe_code(code)}.json"
-        expected_stocks.add(filename)
-        atomic_json(stocks_dir / filename, document)
+        for filename in stock_filenames(code):
+            expected_stocks.add(filename)
+            atomic_json(stocks_dir / filename, document)
     for path in stocks_dir.glob("*.json"):
         if path.name not in expected_stocks:
             path.unlink()

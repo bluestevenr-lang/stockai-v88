@@ -183,6 +183,35 @@ class ProjectionTests(unittest.TestCase):
             with self.assertRaises(FileNotFoundError):
                 MODULE.build(source, root / "out")
 
+    def test_writes_five_digit_hk_alias_for_unpadded_source_code(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = self.make_source(root)
+            for filename in (
+                "gpt_verify.json",
+                "kimi_verify.json",
+                "three_way_pub.json",
+            ):
+                document = json.loads((source / filename).read_text(encoding="utf-8"))
+                document["rows"]["2382.HK"] = {
+                    "code": "2382.HK",
+                    "name": "舜宇光学科技",
+                    "verdict": "通过",
+                }
+                write_json(source / filename, document)
+
+            destination = root / "workspace" / "context"
+            MODULE.build(source, destination)
+
+            canonical = destination / "stocks" / "2382.HK.json"
+            padded = destination / "stocks" / "02382.HK.json"
+            self.assertTrue(canonical.is_file())
+            self.assertTrue(padded.is_file())
+            self.assertEqual(
+                json.loads(canonical.read_text(encoding="utf-8")),
+                json.loads(padded.read_text(encoding="utf-8")),
+            )
+
     def test_cloud_sanitized_portfolio_wins_over_stale_plaintext(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
