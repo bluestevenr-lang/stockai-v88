@@ -79,8 +79,19 @@ function Sync-V88Data {
     if (-not (Test-Path -LiteralPath $Projection)) { throw "找不到投影脚本 $Projection" }
     if (-not (Test-Path -LiteralPath $PyLauncher)) { throw "找不到Python启动器 $PyLauncher" }
 
-    $publicPullOutput = & git -C $RepoRoot pull --ff-only origin main 2>&1
-    if ($LASTEXITCODE -ne 0) {
+    # Windows PowerShell 5 turns benign native stderr (for example Git's
+    # "From ...") into an ErrorRecord when the script-wide preference is Stop.
+    # Capture native output under Continue, then judge the real process code.
+    $previousNativePreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = 'Continue'
+        $publicPullRaw = & git -C $RepoRoot pull --ff-only origin main 2>&1
+        $publicPullExit = $LASTEXITCODE
+        $publicPullOutput = @($publicPullRaw | ForEach-Object { $_.ToString() })
+    } finally {
+        $ErrorActionPreference = $previousNativePreference
+    }
+    if ($publicPullExit -ne 0) {
         throw "V88 公仓同步失败：$($publicPullOutput | Select-Object -Last 8 | Out-String)"
     }
 
@@ -93,14 +104,26 @@ function Sync-V88Data {
     & git -C $ReportRoot config merge.v88jsonl.name 'V88 JSONL lossless-union'
     & git -C $ReportRoot config merge.v88jsonl.driver "`"$pythonForGit`" scripts/v88_jsonl_merge_driver.py %O %A %B %P"
 
-    $pullOutput = & git -C $ReportRoot pull --rebase --autostash origin main 2>&1
-    $pullExit = $LASTEXITCODE
+    try {
+        $ErrorActionPreference = 'Continue'
+        $pullRaw = & git -C $ReportRoot pull --rebase --autostash origin main 2>&1
+        $pullExit = $LASTEXITCODE
+        $pullOutput = @($pullRaw | ForEach-Object { $_.ToString() })
+    } finally {
+        $ErrorActionPreference = $previousNativePreference
+    }
     $previousPythonUtf8 = $env:PYTHONUTF8
     $env:PYTHONUTF8 = '1'
     Push-Location $ReportRoot
     try {
-        $postPullOutput = & $PyLauncher -3 (Join-Path $ReportRoot 'scripts\v88_json_merge.py') --postpull 2>&1
-        $postPullExit = $LASTEXITCODE
+        try {
+            $ErrorActionPreference = 'Continue'
+            $postPullRaw = & $PyLauncher -3 (Join-Path $ReportRoot 'scripts\v88_json_merge.py') --postpull 2>&1
+            $postPullExit = $LASTEXITCODE
+            $postPullOutput = @($postPullRaw | ForEach-Object { $_.ToString() })
+        } finally {
+            $ErrorActionPreference = $previousNativePreference
+        }
     } finally {
         Pop-Location
         $env:PYTHONUTF8 = $previousPythonUtf8
@@ -111,8 +134,15 @@ function Sync-V88Data {
     }
 
     foreach ($destination in @($K3Context, $GptContext)) {
-        $projectionOutput = & $PyLauncher -3 $Projection --source (Join-Path $ReportRoot 'data') --dest $destination 2>&1
-        if ($LASTEXITCODE -ne 0) {
+        try {
+            $ErrorActionPreference = 'Continue'
+            $projectionRaw = & $PyLauncher -3 $Projection --source (Join-Path $ReportRoot 'data') --dest $destination 2>&1
+            $projectionExit = $LASTEXITCODE
+            $projectionOutput = @($projectionRaw | ForEach-Object { $_.ToString() })
+        } finally {
+            $ErrorActionPreference = $previousNativePreference
+        }
+        if ($projectionExit -ne 0) {
             throw "V88 持仓投影失败（$destination）：$($projectionOutput | Out-String)"
         }
     }
@@ -125,7 +155,9 @@ function Sync-V88Data {
     }
 
     $portfolioPath = Join-Path $GptContext 'modules\portfolio_pub.json'
-    $portfolio = Get-Content -LiteralPath $portfolioPath -Raw | ConvertFrom-Json
+    # Windows PowerShell 5 defaults BOM-less UTF-8 to the legacy ANSI codepage.
+    # The projection writes canonical UTF-8 JSON, so decode it explicitly.
+    $portfolio = Get-Content -LiteralPath $portfolioPath -Raw -Encoding UTF8 | ConvertFrom-Json
     Write-Output (($pullOutput | Select-Object -Last 3 | Out-String).Trim())
     Write-Output "V88 GPT/K3 快照已更新：$(@($portfolio.items).Count) 只持仓，持仓源时间 $($portfolio.updated_at)"
     Write-Output 'Claude 脱敏记忆镜像已同步到 GPT 龙虾知识库。'
