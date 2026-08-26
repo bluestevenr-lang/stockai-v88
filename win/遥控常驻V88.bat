@@ -78,8 +78,10 @@ if exist "%OCPKG%\sync_v88_projection_win.py" if exist "%REPORT%\data\gpt_verify
     echo [%STAMP%] OpenClaw privacy projection refreshed>> "%LOG%"
   )
   if exist "%OCGPT%" (
-    "%V88PY%" "%OCPKG%\sync_v88_projection_win.py" --source "%REPORT%\data" --dest "%OCGPT%\context" >> "%LOG%" 2>&1
-    if errorlevel 1 (
+    if exist "%OCPKG%\AGENTS-GPT.md" copy /Y "%OCPKG%\AGENTS-GPT.md" "%OCGPT%\AGENTS.md" >nul 2>&1
+    if not exist "%OCGPT%\context" mkdir "%OCGPT%\context" >nul 2>&1
+    robocopy "%OCWORK%\context" "%OCGPT%\context" /MIR /NFL /NDL /NJH /NJS /NP >nul
+    if errorlevel 8 (
       echo [%STAMP%] WARN: GPT OpenClaw projection refresh failed; keeping last good snapshot>> "%LOG%"
     ) else (
       if not exist "%OCGPT%\knowledge\v88-claude-memory" mkdir "%OCGPT%\knowledge\v88-claude-memory" >nul 2>&1

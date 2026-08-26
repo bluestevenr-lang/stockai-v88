@@ -55,6 +55,18 @@ class ProjectionTests(unittest.TestCase):
             },
         )
         write_json(
+            source / "rotation_forecast.json",
+            {"generated_at": "2026-08-23 19:57（北京时间）", "markets": {"US": {"top": ["technology"]}}},
+        )
+        write_json(
+            source / "review_factpack.json",
+            {"selection_policy": {"shortlist_max": 40}, "coverage": {"market_pool_rows": 2342, "shortlist_rows": 40}},
+        )
+        write_json(
+            source / "dual_cli_status.json",
+            {"version": "gpt-led-review-funnel-v2", "generated_at": "2026-08-23 20:05（北京时间）", "funnel": {"k3_shortlist_rows": 20}},
+        )
+        write_json(
             source / "why_buy_pub.json",
             {
                 "generated_at": "2026-08-23 19:58（北京时间）",
@@ -146,6 +158,13 @@ class ProjectionTests(unittest.TestCase):
             self.assertEqual(decision["action_contract"]["guidance"], "未破线先持有")
             self.assertEqual(decision["risk_line"]["stop"], 100)
             self.assertIn("why_buy_pub", decision["module_evidence"])
+
+            overview = json.loads(
+                (destination / "overview.json").read_text(encoding="utf-8")
+            )
+            self.assertEqual(overview["review_funnel"]["coverage"]["market_pool_rows"], 2342)
+            self.assertEqual(overview["review_funnel"]["funnel"]["k3_shortlist_rows"], 20)
+            self.assertTrue((destination / "modules" / "rotation_forecast.json").is_file())
 
             portfolio_text = (
                 destination / "modules" / "portfolio_pub.json"

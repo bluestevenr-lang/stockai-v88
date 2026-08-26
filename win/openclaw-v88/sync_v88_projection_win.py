@@ -23,6 +23,7 @@ PUBLIC_MODULES = (
     "health_gate_pub.json",
     "hot_theme_pub.json",
     "opportunity_scan_pub.json",
+    "rotation_forecast.json",
     "three_way_pub.json",
     "tomorrow_plan_pub.json",
     "trend_quality_pub.json",
@@ -408,6 +409,8 @@ def build(source: Path, destination: Path) -> int:
     classics = read_json(source / "classics_lens.json", {})
     health = read_json(source / "health_gate_pub.json", {})
     release = read_json(source / "release_check.json", {})
+    dual_status = read_json(source / "dual_cli_status.json", {})
+    factpack = read_json(source / "review_factpack.json", {})
     positions = read_json(source.parent / "positions.json", None)
     cloud_portfolio = read_json(source / "portfolio_pub.json", None)
     cloud_portfolio_index = build_public_portfolio_index(cloud_portfolio)
@@ -481,6 +484,14 @@ def build(source: Path, destination: Path) -> int:
                 "n_fails": release.get("n_fails"),
                 "warnings": release.get("warnings", []),
             },
+        },
+        "review_funnel": {
+            "policy": factpack.get("selection_policy"),
+            "coverage": factpack.get("coverage"),
+            "status_version": dual_status.get("version"),
+            "status_generated_at": dual_status.get("generated_at"),
+            "funnel": dual_status.get("funnel"),
+            "reviewers": dual_status.get("reviewers"),
         },
         "stock_count": len(codes),
     }
