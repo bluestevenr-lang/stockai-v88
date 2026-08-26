@@ -1,18 +1,12 @@
 {
- "schema_version": "v88.central-public/1.0",
- "generated_at": "2026-08-21 18:38（北京时间）",
- "source_module": "trend_shift_pub.json",
- "factpack_id": "a7abfc423e5a9ff1922be761b9af93e6ea3c05028dfe4f29941227b902b53450",
- "recommendations": [],
- "observations": [],
- "rows": [],
- "counts": {
-  "3A": 0,
-  "observation": 0
- },
- "selection_authority": {
-  "source": "triad_selection.json",
-  "legacy_decision_weight": 0,
-  "rule": "公开个股仅保留当前3A或2A/1A；正式动作仅3A"
+ "generated_at": "2026-08-26 22:32（北京时间）",
+ "note": "趋势翻转雷达(2026-07-27大改):报告已发生且处于早中期的翻转事实——无rr门槛无52周上限(创新高强票rr公式失真,LMT案);直接进推荐名单非影子,台账kind=trend_shift攒战绩数据说话;早期🟢直接进/中期🟡回调进/晚期⚪不追;下行翻转⚠️对称警告(沃森案);仓位建议看环境标注,环境不再硬拦;上行展示与主动推送另过统一质量闸,未过闸保留为研究而不冒充买单",
+ "studied": 159,
+ "up": [],
+ "down": [],
+ "quality_gate": {
+  "version": "rqg-1.0",
+  "refreshed_at": "2026-08-26 23:49（北京时间）",
+  "rule": "展示与主动推送分离；不删原内容，未过闸降为研究/观察"
  }
 }

@@ -1,18 +1,103 @@
 {
- "schema_version": "v88.central-public/1.0",
  "generated_at": "2026-07-29 23:12（北京时间）",
- "source_module": "three_way_override_pub.json",
- "factpack_id": "a7abfc423e5a9ff1922be761b9af93e6ea3c05028dfe4f29941227b902b53450",
- "recommendations": [],
- "observations": [],
- "rows": [],
- "counts": {
-  "3A": 0,
-  "observation": 0
- },
- "selection_authority": {
-  "source": "triad_selection.json",
-  "legacy_decision_weight": 0,
-  "rule": "公开个股仅保留当前3A或2A/1A；正式动作仅3A"
+ "market": "A股",
+ "triggered": true,
+ "override_tag": "🔺三方接管",
+ "divergence_pct": 92.3,
+ "threshold": 40.0,
+ "note": "差异超阈值 → **本日推荐位以三方裁定为准**，系统原始清单降为参考",
+ "passed": [
+  {
+   "code": "600938.SS",
+   "name": "中国海油",
+   "tag": "⚖️三方裁定",
+   "reason": "引擎rr3.30最高·GPT看多中置信·防守型(你实证+13.8%)；等回踩29.46-31.07"
+  }
+ ],
+ "rejected": [
+  {
+   "code": "600760.SS",
+   "name": "中航沈飞",
+   "tag": "🚫三方否决",
+   "reason": "引擎p_up76最高,但军工单日净流出30.87亿·GPT中性·成长型"
+  },
+  {
+   "code": "600036.SS",
+   "name": "招商银行",
+   "tag": "🚫三方否决",
+   "reason": "三方一致否：GPT看空\"位置偏高·银行补跌风险\""
+  },
+  {
+   "code": "300750.SZ",
+   "name": "宁德时代",
+   "tag": "🚫三方否决",
+   "reason": "回购催化真但主力净流出0.67亿·20日-0.5%"
+  },
+  {
+   "code": "601899.SS",
+   "name": "紫金矿业",
+   "tag": "🚫三方否决",
+   "reason": "vold0.25缩量+pos52=54非低位+rr0.99豁免用错对象"
+  },
+  {
+   "code": "600000.SS",
+   "name": "浦发银行",
+   "tag": "🚫三方否决",
+   "reason": "与已持中国移动同为冰点避险逻辑,加大同一赌注"
+  },
+  {
+   "code": "601727.SS",
+   "name": "上海电气",
+   "tag": "🚫三方否决",
+   "reason": "三项都对但无催化面+成长型,进观察不进推荐"
+  },
+  {
+   "code": "601799.SS",
+   "name": "星宇股份",
+   "tag": "🚫三方否决",
+   "reason": "vold0.39缩量"
+  },
+  {
+   "code": "600468.SS",
+   "name": "百利电气",
+   "tag": "🚫三方否决",
+   "reason": "5日已涨14.3%=追高"
+  },
+  {
+   "code": "002819.SZ",
+   "name": "东方中科",
+   "tag": "🚫三方否决",
+   "reason": "rs20 -2.6pp跑输大盘"
+  },
+  {
+   "code": "688660.SS",
+   "name": "电气风电",
+   "tag": "🚫三方否决",
+   "reason": "pos52=3极低但rs20仅+1.8,科创板波动大"
+  },
+  {
+   "code": "600733.SS",
+   "name": "北汽蓝谷",
+   "tag": "🚫三方否决",
+   "reason": "5日已涨22.6%=典型追高"
+  },
+  {
+   "code": "600637.SS",
+   "name": "东方明珠",
+   "tag": "🚫三方否决",
+   "reason": "pos52=7极低但rs20仅+6.0,未见催化"
+  },
+  {
+   "code": "300760.SZ",
+   "name": "迈瑞医疗",
+   "tag": "🚫三方否决",
+   "reason": "已持有,GPT中性\"医疗弱趋势待反转\"→持有不加"
+  }
+ ],
+ "legend": {
+  "pass_unanimous": "⚖️三方裁定",
+  "pass_split": "⚡三方通过·有分歧",
+  "reject": "🚫三方否决",
+  "override": "🔺三方接管"
  }
 }

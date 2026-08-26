@@ -1,18 +1,143 @@
 {
- "schema_version": "v88.central-public/1.0",
- "generated_at": "2026-08-25 20:51（北京时间）",
- "source_module": "session_ops.json",
- "factpack_id": "a7abfc423e5a9ff1922be761b9af93e6ea3c05028dfe4f29941227b902b53450",
- "recommendations": [],
- "observations": [],
- "rows": [],
- "counts": {
-  "3A": 0,
-  "observation": 0
+ "generated_at": "2026-08-26 23:49（北京时间）",
+ "version": "sessionops-v1",
+ "ruleset_version": "v4.2",
+ "gates_in_force": [
+  "铁律19v3·分级验证准入闸",
+  "铁律22·未解释异动闸",
+  "书理·1-2-3·斯波朗迪有序序列",
+  "书理·门派仲裁·买入时用哪套剧本进就用哪把尺卖",
+  "赔率闸·斯波朗迪·风险先于收益",
+  "闭环·以终为始·买入必须自带出口",
+  "铁律21·不许静默吞错",
+  "铁律18·成本标注"
+ ],
+ "market": "全部",
+ "declaration": "**本场唯一结论源**：对话回答与 V88 页面渲染均引用本文件，逐字一致。全部字段取自落盘（sell_grade/rank_score/classics_lens/anomaly_gate/holdings_fundamentals），零现场推理。",
+ "rules": [
+  "-3A 才是立即卖；-2A 一律守线待触发并写明触发价",
+  "未解释异动冻结重动作，但**不冻结止损**",
+  "书理未支持不进买入位（CLASSICS 门派仲裁）",
+  "V88规则闸+GPT+Kimi须同一事实包明确通过；未覆盖/不否定/过期均不进",
+  "最终精选最多2只；超编候选进入候补，不硬塞",
+  "数据缺≠达标，缺就写缺"
+ ],
+ "sell": [],
+ "watch": [
+  {
+   "code": "GOOG",
+   "name": "谷歌C",
+   "level": "-2A",
+   "last": 339.235,
+   "stop": 336.17,
+   "dist_stop_pct": 0.9,
+   "sell_zone": "跌破336.17执行(距+0.9%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 336.17 执行"
+  },
+  {
+   "code": "600809.SS",
+   "name": "山西汾酒",
+   "level": "-1A",
+   "last": 117.09,
+   "stop": 115.87,
+   "dist_stop_pct": 1.1,
+   "sell_zone": "跌破115.87执行(距+1.1%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 115.87 执行"
+  },
+  {
+   "code": "SO",
+   "name": "美国南方公司",
+   "level": "-1A",
+   "last": 90.13,
+   "stop": 88.91,
+   "dist_stop_pct": 1.4,
+   "sell_zone": "跌破88.91执行(距+1.4%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 88.91 执行"
+  },
+  {
+   "code": "MS",
+   "name": "摩根士丹利",
+   "level": "-1A",
+   "last": 213.245,
+   "stop": 209.715,
+   "dist_stop_pct": 1.7,
+   "sell_zone": "跌破209.72执行(距+1.7%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 209.715 执行"
+  },
+  {
+   "code": "NVDA",
+   "name": "英伟达",
+   "level": "-1A",
+   "last": 211.32,
+   "stop": 207.25,
+   "dist_stop_pct": 2.0,
+   "sell_zone": "跌破207.25执行(距+2.0%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 207.25 执行"
+  },
+  {
+   "code": "APP",
+   "name": "Applovin",
+   "level": "-1A",
+   "last": 307.63,
+   "stop": 297.5,
+   "dist_stop_pct": 3.4,
+   "sell_zone": "跌破297.50执行(距+3.4%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-1A·1-2-3 停在 ①② → 不主动卖，跌破 297.5 执行"
+  },
+  {
+   "code": "9988.HK",
+   "name": "阿里巴巴-SW",
+   "level": "-2A",
+   "last": 116.6,
+   "stop": 110.1,
+   "dist_stop_pct": 5.9,
+   "sell_zone": "跌破110.10执行(距+5.9%)",
+   "c123": "①②",
+   "frozen": false,
+   "listable": true,
+   "action": "⚪守线待触发",
+   "why": "-2A·1-2-3 停在 ①② → 不主动卖，跌破 110.1 执行"
+  }
+ ],
+ "buy": [],
+ "blocked": [],
+ "blocked_by_rr": [],
+ "stats": {
+  "sell": 0,
+  "watch": 7,
+  "buy": 0,
+  "buy_dual": 0,
+  "blocked": 0,
+  "blocked_by_rr": 0
  },
- "selection_authority": {
-  "source": "triad_selection.json",
-  "legacy_decision_weight": 0,
-  "rule": "公开个股仅保留当前3A或2A/1A；正式动作仅3A"
+ "src_asof": {
+  "sell_grade": "2026-08-26 23:47（北京时间）",
+  "rank_score": "2026-08-26 23:47（北京时间）",
+  "classics_lens": "2026-08-26 22:23（北京时间）",
+  "anomaly_gate": "2026-08-26 22:22（北京时间）"
  }
 }

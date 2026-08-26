@@ -1,18 +1,50 @@
 {
- "schema_version": "v88.central-public/1.0",
- "generated_at": "2026-08-21 18:39（北京时间）",
- "source_module": "pre_signals.json",
- "factpack_id": "a7abfc423e5a9ff1922be761b9af93e6ea3c05028dfe4f29941227b902b53450",
- "recommendations": [],
- "observations": [],
- "rows": [],
- "counts": {
-  "3A": 0,
-  "observation": 0
- },
- "selection_authority": {
-  "source": "triad_selection.json",
-  "legacy_decision_weight": 0,
-  "rule": "公开个股仅保留当前3A或2A/1A；正式动作仅3A"
- }
+ "generated_at": "2026-08-26 22:32（北京时间）",
+ "note": "【影子模式·不参与买卖名单】前置信号=事前预警;命名如实:蓄势=资金流入热度未起(仅A股),漂移=财报前价格位移;台账攒样本晋级",
+ "fund_lead": [
+  {
+   "kind": "fund_lead",
+   "name": "非银金融",
+   "note": "主力连续3日净流入·5日+69.2亿·热度未起(近似:不在轮动强榜,板块涨幅源待接)",
+   "streak": 3,
+   "net5d": 69.15
+  },
+  {
+   "kind": "fund_lead",
+   "name": "其他专用设备",
+   "note": "主力连续3日净流入·5日+40.0亿·热度未起(近似:不在轮动强榜,板块涨幅源待接)",
+   "streak": 3,
+   "net5d": 39.96
+  },
+  {
+   "kind": "fund_lead",
+   "name": "专用设备",
+   "note": "主力连续3日净流入·5日+38.2亿·热度未起(近似:不在轮动强榜,板块涨幅源待接)",
+   "streak": 3,
+   "net5d": 38.16
+  },
+  {
+   "kind": "fund_lead",
+   "name": "汽车",
+   "note": "主力连续3日净流入·5日+29.3亿·热度未起(近似:不在轮动强榜,板块涨幅源待接)",
+   "streak": 3,
+   "net5d": 29.3
+  },
+  {
+   "kind": "fund_lead",
+   "name": "印制电路板",
+   "note": "主力连续3日净流入·5日+27.8亿·热度未起(近似:不在轮动强榜,板块涨幅源待接)",
+   "streak": 3,
+   "net5d": 27.82
+  },
+  {
+   "kind": "fund_lead",
+   "name": "底盘与发动机系统",
+   "note": "主力连续3日净流入·5日+23.3亿·热度未起(近似:不在轮动强榜,板块涨幅源待接)",
+   "streak": 3,
+   "net5d": 23.31
+  }
+ ],
+ "earn_gap": [],
+ "policy": []
 }

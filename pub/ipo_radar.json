@@ -1,18 +1,440 @@
 {
- "schema_version": "v88.central-public/1.0",
- "generated_at": "2026-08-21 18:40（北京时间）",
- "source_module": "ipo_radar.json",
- "factpack_id": "a7abfc423e5a9ff1922be761b9af93e6ea3c05028dfe4f29941227b902b53450",
- "recommendations": [],
- "observations": [],
- "rows": [],
- "counts": {
-  "3A": 0,
-  "observation": 0
+ "ts": 1787755038.444761,
+ "generated_at": "2026-08-26 22:37（北京时间）",
+ "rows": [
+  {
+   "market": "A股",
+   "name": "洛轴股份",
+   "code": "301699.SZ",
+   "sub_code": "301699",
+   "apply_date": "20260826",
+   "price": 15.88,
+   "pe": 22.67,
+   "limit_wan": 1.45,
+   "amount_wan": 12400.0,
+   "funds_yi": 19.691,
+   "ballot_pct": 0,
+   "grade": "✅ 值得打",
+   "why": "发行PE23倍定价克制，A股打新胜率偏高",
+   "odds_n": 6,
+   "odds_rate": 100,
+   "odds_line": "打新成功率:近6只A股新股首日6涨0跌·上涨概率100%·中位+402.6%·最差+133.7%"
+  },
+  {
+   "market": "A股",
+   "name": "天博智能",
+   "code": "603448.SH",
+   "sub_code": "732448",
+   "apply_date": "20260826",
+   "price": 62.65,
+   "pe": 21.42,
+   "limit_wan": 0.95,
+   "amount_wan": 3000.0,
+   "funds_yi": 18.795,
+   "ballot_pct": 0,
+   "grade": "✅ 值得打",
+   "why": "发行PE21倍定价克制，A股打新胜率偏高",
+   "odds_n": 6,
+   "odds_rate": 100,
+   "odds_line": "打新成功率:近6只A股新股首日6涨0跌·上涨概率100%·中位+402.6%·最差+133.7%"
+  },
+  {
+   "market": "A股",
+   "name": "杰锋动力",
+   "code": "920269.BJ",
+   "sub_code": "920269",
+   "apply_date": "20260826",
+   "price": 30.7,
+   "pe": 12.98,
+   "limit_wan": 44.49,
+   "amount_wan": 1047.0,
+   "funds_yi": 3.214,
+   "ballot_pct": 0,
+   "grade": "✅ 值得打",
+   "why": "发行PE13倍定价克制，A股打新胜率偏高",
+   "odds_n": 6,
+   "odds_rate": 100,
+   "odds_line": "打新成功率:近6只A股新股首日6涨0跌·上涨概率100%·中位+402.6%·最差+133.7%"
+  },
+  {
+   "market": "A股",
+   "name": "电科思仪",
+   "code": "301689.SZ",
+   "sub_code": "301689",
+   "apply_date": "20260828",
+   "price": 0,
+   "pe": 0,
+   "limit_wan": 1.2,
+   "amount_wan": 10207.0,
+   "funds_yi": 0,
+   "ballot_pct": 0,
+   "grade": "✅ 常规打",
+   "why": "A股打新整体正期望，按顶格常规参与（未披露定价前以公告为准）",
+   "odds_n": 6,
+   "odds_rate": 100,
+   "odds_line": "打新成功率:近6只A股新股首日6涨0跌·上涨概率100%·中位+402.6%·最差+133.7%"
+  },
+  {
+   "market": "A股",
+   "name": "燧原科技",
+   "code": "688801.SH",
+   "sub_code": "787801",
+   "apply_date": "20260902",
+   "price": 0,
+   "pe": 0,
+   "limit_wan": 0.65,
+   "amount_wan": 4304.0,
+   "funds_yi": 0,
+   "ballot_pct": 0,
+   "grade": "✅ 常规打",
+   "why": "A股打新整体正期望，按顶格常规参与（未披露定价前以公告为准）",
+   "odds_n": 6,
+   "odds_rate": 100,
+   "odds_line": "打新成功率:近6只A股新股首日6涨0跌·上涨概率100%·中位+402.6%·最差+133.7%"
+  },
+  {
+   "market": "A股",
+   "name": "信诺维",
+   "code": "688837.SH",
+   "sub_code": "787837",
+   "apply_date": "20260903",
+   "price": 0,
+   "pe": 0,
+   "limit_wan": 1.0,
+   "amount_wan": 6532.0,
+   "funds_yi": 0,
+   "ballot_pct": 0,
+   "grade": "✅ 常规打",
+   "why": "A股打新整体正期望，按顶格常规参与（未披露定价前以公告为准）",
+   "odds_n": 6,
+   "odds_rate": 100,
+   "odds_line": "打新成功率:近6只A股新股首日6涨0跌·上涨概率100%·中位+402.6%·最差+133.7%"
+  },
+  {
+   "market": "美股",
+   "name": "JATT III Acquisition Corp",
+   "code": "JTTT",
+   "apply_date": "8/26/2026",
+   "price_range": "10.00",
+   "raise_usd": 60000000.0,
+   "exchange": "NASDAQ Capital",
+   "grade": "🚫 回避",
+   "why": "SPAC空壳，无基本面可判，散户不碰",
+   "odds_n": 0,
+   "odds_rate": null,
+   "odds_line": "打新成功率:样本0只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
+  },
+  {
+   "market": "美股",
+   "name": "Southern Cross Acquisition II Corp.",
+   "code": "SCATU",
+   "apply_date": "8/26/2026",
+   "price_range": "10.00",
+   "raise_usd": 75000000.0,
+   "exchange": "NASDAQ Capital",
+   "grade": "🚫 回避",
+   "why": "SPAC空壳，无基本面可判，散户不碰",
+   "odds_n": 0,
+   "odds_rate": null,
+   "odds_line": "打新成功率:样本0只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
+  },
+  {
+   "market": "美股",
+   "name": "SIYATA PTT",
+   "code": "PTT",
+   "apply_date": "9/08/2026",
+   "price_range": null,
+   "raise_usd": 0.0,
+   "exchange": "NASDAQ Capital",
+   "grade": "⚪ 一般",
+   "why": "小盘IPO波动极大，仅短线博弈者参与",
+   "odds_n": 0,
+   "odds_rate": null,
+   "odds_line": "打新成功率:样本0只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
+  },
+  {
+   "market": "港股",
+   "name": "永康控股",
+   "code": "02523.HK",
+   "apply_date": "2026-07-08",
+   "price_range": "2.200~2.680",
+   "lot_size": "2000",
+   "entrance_fee": "5,414.05",
+   "lucky_ratio": "待公布",
+   "grade": "🔎 关注",
+   "why": "入场费5,414.05港元门槛低，可小额博暗盘",
+   "odds_n": 0,
+   "odds_rate": null,
+   "odds_line": "打新成功率:样本0只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
+  },
+  {
+   "market": "港股",
+   "name": "梅卡曼德机器人",
+   "code": "09615.HK",
+   "apply_date": "2026-08-27",
+   "price_range": "95.300~101.700",
+   "lot_size": "30",
+   "entrance_fee": "3,081.76",
+   "lucky_ratio": "待公布",
+   "grade": "🔎 关注",
+   "why": "入场费3,081.76港元门槛低，可小额博暗盘",
+   "odds_n": 0,
+   "odds_rate": null,
+   "odds_line": "打新成功率:样本0只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
+  },
+  {
+   "market": "港股",
+   "name": "希音-W",
+   "code": "00625.HK",
+   "apply_date": "2026-08-27",
+   "price_range": "47.600~49.500",
+   "lot_size": "100",
+   "entrance_fee": "4,999.92",
+   "lucky_ratio": "待公布",
+   "grade": "🔎 关注",
+   "why": "入场费4,999.92港元门槛低，可小额博暗盘",
+   "odds_n": 0,
+   "odds_rate": null,
+   "odds_line": "打新成功率:样本0只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
+  },
+  {
+   "market": "港股",
+   "name": "政府银债二九零九",
+   "code": "44083.HK",
+   "apply_date": "2026-09-04",
+   "price_range": "100",
+   "lot_size": "100",
+   "entrance_fee": "10,000",
+   "lucky_ratio": "待公布",
+   "grade": "⚪ 常规",
+   "why": "港股打新暗盘波动大，按每手最小额参与并盯截止日",
+   "odds_n": 0,
+   "odds_rate": null,
+   "odds_line": "打新成功率:样本0只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
+  }
+ ],
+ "hk_source": "富途",
+ "odds": {
+  "A股": {
+   "n": 6,
+   "rate": 100,
+   "median": 402.6,
+   "worst": 133.7,
+   "line": "打新成功率:近6只A股新股首日6涨0跌·上涨概率100%·中位+402.6%·最差+133.7%"
+  },
+  "港股": {
+   "n": 0,
+   "rate": null,
+   "line": "打新成功率:样本0只(<5)·积累中——每只新股上市当天自动入库,够5只才报概率"
+  }
  },
- "selection_authority": {
-  "source": "triad_selection.json",
-  "legacy_decision_weight": 0,
-  "rule": "公开个股仅保留当前3A或2A/1A；正式动作仅3A"
- }
+ "archived_new": 3,
+ "hk_listed": [
+  {
+   "name": "AMBC比金-U",
+   "code": "09002.HK",
+   "dark": "--",
+   "first_day": "0.00%",
+   "cum": "0.00%"
+  },
+  {
+   "name": "AMBC比金",
+   "code": "03002.HK",
+   "dark": "--",
+   "first_day": "0.00%",
+   "cum": "0.00%"
+  },
+  {
+   "name": "君正股份",
+   "code": "03223.HK",
+   "dark": "-0.25%",
+   "first_day": "0.00%",
+   "cum": "-4.70%"
+  },
+  {
+   "name": "AGX恒息增-R",
+   "code": "83555.HK",
+   "dark": "--",
+   "first_day": "0.00%",
+   "cum": "0.00%"
+  },
+  {
+   "name": "AGX恒息增-U",
+   "code": "41555.HK",
+   "dark": "--",
+   "first_day": "0.00%",
+   "cum": "0.00%"
+  },
+  {
+   "name": "AGX恒息增",
+   "code": "03555.HK",
+   "dark": "--",
+   "first_day": "0.00%",
+   "cum": "0.00%"
+  },
+  {
+   "name": "拿森科技",
+   "code": "02261.HK",
+   "dark": "+60.27%",
+   "first_day": "+64.11%",
+   "cum": "+39.16%"
+  },
+  {
+   "name": "A南方韩国备兑",
+   "code": "03537.HK",
+   "dark": "--",
+   "first_day": "0.00%",
+   "cum": "0.00%"
+  },
+  {
+   "name": "中际旭创",
+   "code": "03308.HK",
+   "dark": "-0.92%",
+   "first_day": "-2.04%",
+   "cum": "+3.57%"
+  },
+  {
+   "name": "滨化股份",
+   "code": "06745.HK",
+   "dark": "-21.55%",
+   "first_day": "-18.68%",
+   "cum": "-10.34%"
+  },
+  {
+   "name": "晶合集成",
+   "code": "02249.HK",
+   "dark": "+9.85%",
+   "first_day": "0.00%",
+   "cum": "-7.37%"
+  },
+  {
+   "name": "三环集团",
+   "code": "06951.HK",
+   "dark": "-4.64%",
+   "first_day": "+4.69%",
+   "cum": "+6.28%"
+  }
+ ],
+ "cn_listed": [
+  {
+   "name": "高凯",
+   "code": "688835.SS",
+   "list_date": "2026-08-25",
+   "age_days": 1,
+   "last": 299.48,
+   "chg_today": 27.44,
+   "first_day": null,
+   "since_list": 0.0,
+   "pe": 140.99,
+   "mcap_yi": 299
+  },
+  {
+   "name": "绿控",
+   "code": "301655.SZ",
+   "list_date": "2026-08-20",
+   "age_days": 6,
+   "last": 28.07,
+   "chg_today": 5.53,
+   "first_day": null,
+   "since_list": -13.6,
+   "pe": 54.5,
+   "mcap_yi": 128
+  },
+  {
+   "name": "宇树科技-W",
+   "code": "688836.SS",
+   "list_date": "2026-08-19",
+   "age_days": 7,
+   "last": 591.53,
+   "chg_today": -1.87,
+   "first_day": null,
+   "since_list": -30.0,
+   "pe": 436.59,
+   "mcap_yi": 2393
+  },
+  {
+   "name": "频准激光",
+   "code": "688826.SS",
+   "list_date": "2026-08-18",
+   "age_days": 8,
+   "last": 1024.49,
+   "chg_today": 6.72,
+   "first_day": null,
+   "since_list": -11.1,
+   "pe": 231.95,
+   "mcap_yi": 410
+  },
+  {
+   "name": "国仪公司-U",
+   "code": "688828.SS",
+   "list_date": "2026-08-11",
+   "age_days": 15,
+   "last": 118.5,
+   "chg_today": 15.09,
+   "first_day": 390.06,
+   "since_list": 7.5,
+   "pe": -337.04,
+   "mcap_yi": 474
+  },
+  {
+   "name": "超纯应材",
+   "code": "301717.SZ",
+   "list_date": "2026-08-11",
+   "age_days": 15,
+   "last": 404.0,
+   "chg_today": 7.5,
+   "first_day": 645.57,
+   "since_list": -19.7,
+   "pe": 180.29,
+   "mcap_yi": 411
+  },
+  {
+   "name": "展芯股份",
+   "code": "301707.SZ",
+   "list_date": "2026-08-07",
+   "age_days": 19,
+   "last": 79.95,
+   "chg_today": 2.07,
+   "first_day": 402.56,
+   "since_list": -31.4,
+   "pe": 114.64,
+   "mcap_yi": 329
+  },
+  {
+   "name": "津富士达",
+   "code": "603468.SS",
+   "list_date": "2026-08-06",
+   "age_days": 20,
+   "last": 23.84,
+   "chg_today": 0.42,
+   "first_day": 133.68,
+   "since_list": -36.4,
+   "pe": 26.06,
+   "mcap_yi": 98
+  },
+  {
+   "name": "嘉立创",
+   "code": "001232.SZ",
+   "list_date": "2026-08-04",
+   "age_days": 22,
+   "last": 147.3,
+   "chg_today": -1.22,
+   "first_day": 146.28,
+   "since_list": -26.3,
+   "pe": 39.71,
+   "mcap_yi": 818
+  },
+  {
+   "name": "欣兴工具",
+   "code": "301677.SZ",
+   "list_date": "2026-07-30",
+   "age_days": 27,
+   "last": 54.39,
+   "chg_today": 0.68,
+   "first_day": null,
+   "since_list": -38.2,
+   "pe": 28.74,
+   "mcap_yi": 54
+  }
+ ]
 }
