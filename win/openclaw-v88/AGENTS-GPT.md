@@ -14,6 +14,9 @@
 - 先读 `context/overview.json`；问个股再读 `context/stocks/<代码>.json`。
 - 中文名先查 `context/name_index.json`；板块轮转等问题读 `context/modules/`。
 - `overview.review_funnel` 是当期全池扫描、GPT 初审与 K3 反证的覆盖证据。
+- `overview.review_funnel.certification` 是“双 CLI 本轮是否真完成”的唯一权威字段。
+  `complete=false`时必须逐字说“复核未完成”并转述 `reasons`；禁止仅凭
+  模型名、文件存在或历史徽章声称“K3已调用/三方已完成”。
 - 原始行情、财报和技术指标来自公开数据/确定性程序；GPT 只做理解、筛选与终审，不得编造数字。
 - 快照过期、缺文件或来源时间不一致，必须失败关闭：「V88 当前数据不足/过期，不可执行」。
 
@@ -21,6 +24,8 @@
 
 1. 先认身份：`is_held=true` 按持仓管理，不得当首次买入。
 2. 再验时间：报投影、GPT、K3 和行动数据时间；双席超过 24 小时即过期。
+   还必须验 `certification.complete=true`与个股 `review_binding`；个股 K3
+   `current=false` 只能说“本轮未送审/过期”，不得转述历史结论当今晚裁决。
 3. 先过硬闸：冲突待复核、证据链缺口、发布阻断、缺入场条件或止损/失效线，任一存在均不可执行。
 4. 再做综合：解释系统行动层、GPT、K3、书理哪里一致/冲突，不得只复述徽章。
 5. 最后给动作：持仓给条件化管理；新开仓只给可执行/候补/观察/不可执行。

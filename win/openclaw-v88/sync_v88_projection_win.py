@@ -39,10 +39,11 @@ GPT_FIELDS = (
     "verdict",
     "why",
     "ts",
+    "factpack_id",
     "tier_at_verify",
     "fresh_for_strong_days",
 )
-KIMI_FIELDS = ("verdict", "book_verdict", "why", "ts")
+KIMI_FIELDS = ("verdict", "book_verdict", "why", "ts", "factpack_id")
 CLASSICS_FIELDS = (
     "code",
     "name",
@@ -120,6 +121,51 @@ def pick(row, fields):
     if not isinstance(row, dict):
         return {}
     return {key: row[key] for key in fields if key in row}
+
+
+def parse_review_time(value):
+    """Parse the minute timestamp emitted by both subscription reviewers."""
+    raw = str(value or "").replace("（北京时间）", "").strip()
+    if len(raw) < 16:
+        return None
+    try:
+        return datetime.strptime(raw[:16], "%Y-%m-%d %H:%M").replace(tzinfo=CST)
+    except ValueError:
+        return None
+
+
+def current_review(row, fields, factpack_id, now):
+    """Project one verdict only when it belongs to the current pack and is fresh.
+
+    The guarded Kimi file intentionally keeps historical rows.  Exposing those
+    rows without their binding made the phone agent describe an old K verdict as
+    tonight's live review.  Keep the history as metadata, but fail closed in the
+    current-verdict fields.
+    """
+    raw = row if isinstance(row, dict) else {}
+    if not raw:
+        return {"verdict": "未送审", "current": False,
+                "why": "当前事实包无该席记录"}
+    row_pack = str(raw.get("factpack_id") or "")
+    ts = parse_review_time(raw.get("ts"))
+    fresh = bool(ts and timedelta(0) <= now - ts <= timedelta(hours=24))
+    if not factpack_id or row_pack != factpack_id:
+        return {
+            "verdict": "未送审", "current": False,
+            "why": "该记录不属于当前事实包",
+            "historical_verdict": raw.get("verdict"),
+            "historical_at": raw.get("ts"),
+            "historical_factpack_id": row_pack or None,
+        }
+    if not fresh:
+        return {
+            "verdict": "过期", "current": False,
+            "why": "审核时间已超过24小时或无法核验",
+            "historical_verdict": raw.get("verdict"),
+            "historical_at": raw.get("ts"),
+            "factpack_id": row_pack,
+        }
+    return {**pick(raw, fields), "current": True}
 
 
 def safe_code(code: str) -> str:
@@ -466,6 +512,43 @@ def build(source: Path, destination: Path) -> int:
     generated = datetime.now(CST).strftime(
         "%Y-%m-%d %H:%M:%S（北京时间）"
     )
+    now = datetime.now(CST)
+    current_pack = str(factpack.get("factpack_id") or "")
+    gpt_pack = str(gpt.get("factpack_id") or "")
+    kimi_pack = str(kimi.get("factpack_id") or "")
+    status_pack = str(dual_status.get("factpack_id") or "")
+    reviewers = dual_status.get("reviewers") if isinstance(dual_status, dict) else {}
+    reviewers = reviewers if isinstance(reviewers, dict) else {}
+    gpt_health = reviewers.get("gpt") if isinstance(reviewers.get("gpt"), dict) else {}
+    kimi_health = reviewers.get("kimi") if isinstance(reviewers.get("kimi"), dict) else {}
+    same_factpack = bool(
+        current_pack and current_pack == gpt_pack == kimi_pack == status_pack
+    )
+    gpt_fresh = bool(
+        (ts := parse_review_time(gpt.get("generated_at")))
+        and timedelta(0) <= now - ts <= timedelta(hours=24)
+    )
+    kimi_fresh = bool(
+        (ts := parse_review_time(kimi.get("generated_at")))
+        and timedelta(0) <= now - ts <= timedelta(hours=24)
+    )
+    promoted = dual_status.get("kimi_official_promoted") is True
+    review_complete = bool(
+        same_factpack and gpt_health.get("ok") is True
+        and kimi_health.get("ok") is True and promoted
+        and gpt_fresh and kimi_fresh
+    )
+    completion_reasons = []
+    if not same_factpack:
+        completion_reasons.append("双席/状态与当前事实包不同包")
+    if gpt_health.get("ok") is not True:
+        completion_reasons.append("GPT未全量完成")
+    if kimi_health.get("ok") is not True:
+        completion_reasons.append("K3未全量完成")
+    if not promoted:
+        completion_reasons.append("正式Kimi席未安全晋升")
+    if not gpt_fresh or not kimi_fresh:
+        completion_reasons.append("双席时效不足24小时要求")
 
     overview = {
         "projection_generated_at": generated,
@@ -509,6 +592,18 @@ def build(source: Path, destination: Path) -> int:
             "status_generated_at": dual_status.get("generated_at"),
             "funnel": dual_status.get("funnel"),
             "reviewers": dual_status.get("reviewers"),
+            "certification": {
+                "complete": review_complete,
+                "status": ("双CLI同包复核已完成" if review_complete
+                           else "复核未完成，不得声称三方已完成"),
+                "reasons": completion_reasons,
+                "current_factpack_id": current_pack,
+                "same_factpack": same_factpack,
+                "gpt_fresh_24h": gpt_fresh,
+                "kimi_fresh_24h": kimi_fresh,
+                "kimi_official_promoted": promoted,
+                "rule": "只有GPT全量+K3全量+正式K席晋升+同包+24h全满足，才能说双CLI复核完成",
+            },
         },
         "stock_count": len(codes),
     }
@@ -517,8 +612,10 @@ def build(source: Path, destination: Path) -> int:
     stock_documents = {}
     names_primary, names_aliases = load_stock_names()
     for code in codes:
-        gpt_row = pick(lookup_code(gpt_rows, code), GPT_FIELDS)
-        kimi_row = pick(lookup_code(kimi_rows, code), KIMI_FIELDS)
+        gpt_raw = lookup_code(gpt_rows, code)
+        kimi_raw = lookup_code(kimi_rows, code)
+        gpt_row = current_review(gpt_raw, GPT_FIELDS, current_pack, now)
+        kimi_row = current_review(kimi_raw, KIMI_FIELDS, current_pack, now)
         triad_raw = lookup_code(triad_rows, code)
         triad_row = triad_raw if isinstance(triad_raw, dict) else {}
         classics_row = pick(lookup_code(classics_rows, code), CLASSICS_FIELDS)
@@ -581,6 +678,18 @@ def build(source: Path, destination: Path) -> int:
             },
             "gpt_factpack_id": gpt.get("factpack_id"),
             "kimi_factpack_id": kimi.get("factpack_id"),
+            "review_binding": {
+                "current_factpack_id": current_pack,
+                "gpt_current": gpt_row.get("current") is True,
+                "kimi_current": kimi_row.get("current") is True,
+                "same_factpack": bool(
+                    gpt_row.get("current") is True and kimi_row.get("current") is True
+                ),
+                "action_consensus_possible": bool(
+                    review_complete and gpt_row.get("current") is True
+                    and kimi_row.get("current") is True
+                ),
+            },
             "gpt": gpt_row,
             "kimi": kimi_row,
             "triad": triad_row,

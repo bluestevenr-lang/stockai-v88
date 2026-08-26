@@ -2,6 +2,7 @@ import importlib.util
 import json
 import tempfile
 import unittest
+from datetime import datetime
 from pathlib import Path
 
 
@@ -19,16 +20,20 @@ def write_json(path, value):
 class ProjectionTests(unittest.TestCase):
     def make_source(self, root):
         source = root / "report" / "data"
+        pack_id = "pack-current"
+        now_text = datetime.now(MODULE.CST).strftime("%Y-%m-%d %H:%M（北京时间）")
         write_json(
             source / "gpt_verify.json",
             {
-                "generated_at": "2026-08-23 20:00（北京时间）",
+                "generated_at": now_text,
+                "factpack_id": pack_id,
                 "rows": {
                     "AAPL": {
                         "name": "苹果",
                         "verdict": "通过",
                         "why": "测试事实包",
-                        "ts": "2026-08-23 20:00（北京时间）",
+                        "ts": now_text,
+                        "factpack_id": pack_id,
                     }
                 },
             },
@@ -36,13 +41,15 @@ class ProjectionTests(unittest.TestCase):
         write_json(
             source / "kimi_verify.json",
             {
-                "generated_at": "2026-08-23 20:01（北京时间）",
+                "generated_at": now_text,
+                "factpack_id": pack_id,
                 "rows": {
                     "AAPL": {
                         "verdict": "通过",
                         "book_verdict": "通过",
                         "why": "测试复核",
-                        "ts": "2026-08-23 20:01（北京时间）",
+                        "ts": now_text,
+                        "factpack_id": pack_id,
                     }
                 },
             },
@@ -60,11 +67,14 @@ class ProjectionTests(unittest.TestCase):
         )
         write_json(
             source / "review_factpack.json",
-            {"selection_policy": {"shortlist_max": 40}, "coverage": {"market_pool_rows": 2342, "shortlist_rows": 40}},
+            {"factpack_id": pack_id, "selection_policy": {"shortlist_max": 40}, "coverage": {"market_pool_rows": 2342, "shortlist_rows": 40}},
         )
         write_json(
             source / "dual_cli_status.json",
-            {"version": "gpt-led-review-funnel-v2", "generated_at": "2026-08-23 20:05（北京时间）", "funnel": {"k3_shortlist_rows": 20}},
+            {"version": "gpt-led-review-funnel-v2", "generated_at": "2026-08-23 20:05（北京时间）", "factpack_id": pack_id,
+             "funnel": {"k3_shortlist_rows": 20},
+             "reviewers": {"gpt": {"ok": True}, "kimi": {"ok": True}},
+             "kimi_official_promoted": True},
         )
         write_json(
             source / "why_buy_pub.json",
@@ -164,6 +174,8 @@ class ProjectionTests(unittest.TestCase):
             )
             self.assertEqual(overview["review_funnel"]["coverage"]["market_pool_rows"], 2342)
             self.assertEqual(overview["review_funnel"]["funnel"]["k3_shortlist_rows"], 20)
+            self.assertTrue(overview["review_funnel"]["certification"]["complete"])
+            self.assertTrue(stock["review_binding"]["same_factpack"])
             self.assertTrue((destination / "modules" / "rotation_forecast.json").is_file())
 
             portfolio_text = (
@@ -211,6 +223,22 @@ class ProjectionTests(unittest.TestCase):
                 json.loads(canonical.read_text(encoding="utf-8")),
                 json.loads(padded.read_text(encoding="utf-8")),
             )
+
+    def test_stale_or_wrong_pack_kimi_is_not_projected_as_current(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = self.make_source(root)
+            kimi = json.loads((source / "kimi_verify.json").read_text(encoding="utf-8"))
+            kimi["factpack_id"] = "old-pack"
+            kimi["rows"]["AAPL"]["factpack_id"] = "old-pack"
+            write_json(source / "kimi_verify.json", kimi)
+            destination = root / "workspace" / "context"
+            MODULE.build(source, destination)
+            overview = json.loads((destination / "overview.json").read_text(encoding="utf-8"))
+            stock = json.loads((destination / "stocks" / "AAPL.json").read_text(encoding="utf-8"))
+            self.assertFalse(overview["review_funnel"]["certification"]["complete"])
+            self.assertEqual(stock["kimi"]["verdict"], "未送审")
+            self.assertFalse(stock["review_binding"]["kimi_current"])
 
     def test_cloud_sanitized_portfolio_wins_over_stale_plaintext(self):
         with tempfile.TemporaryDirectory() as temp:
