@@ -1,133 +1,18 @@
 {
- "generated_at": "2026-08-26 22:37",
- "date": "20260826",
- "total": 52,
- "first_boards": 39,
- "mainlines": [
-  {
-   "industry": "工业金属",
-   "count": 4,
-   "max_boards": 1,
-   "leaders": [
-    "精艺股份(1板)",
-    "金诚信(1板)",
-    "江西铜业(1板)",
-    "白银有色(1板)"
-   ]
-  },
-  {
-   "industry": "饰品",
-   "count": 3,
-   "max_boards": 5,
-   "leaders": [
-    "深中华A(5板)",
-    "金一文化(1板)",
-    "迪阿股份(1板)"
-   ]
-  },
-  {
-   "industry": "通信设备",
-   "count": 3,
-   "max_boards": 4,
-   "leaders": [
-    "楚天龙(4板)",
-    "剑桥科技(1板)",
-    "共进股份(1板)"
-   ]
-  },
-  {
-   "industry": "家居用品",
-   "count": 3,
-   "max_boards": 3,
-   "leaders": [
-    "海鸥住工(3板)",
-    "青岛金王(2板)",
-    "茶花股份(1板)"
-   ]
-  },
-  {
-   "industry": "电网设备",
-   "count": 3,
-   "max_boards": 1,
-   "leaders": [
-    "百利电气(1板)",
-    "杭电股份(1板)",
-    "顺钠股份(1板)"
-   ]
-  }
- ],
- "ladder": [
-  {
-   "boards": 5,
-   "names": [
-    "深中华A"
-   ]
-  },
-  {
-   "boards": 4,
-   "names": [
-    "楚天龙"
-   ]
-  },
-  {
-   "boards": 3,
-   "names": [
-    "海鸥住工"
-   ]
-  },
-  {
-   "boards": 2,
-   "names": [
-    "康盛股份",
-    "冀衡医药",
-    "捷荣技术",
-    "浙江世宝",
-    "豪尔赛",
-    "万向德农",
-    "青山纸业",
-    "华阳国际",
-    "华天酒店",
-    "青岛金王"
-   ]
-  }
- ],
- "relay": [
-  {
-   "name": "剑桥科技",
-   "code": "603083",
-   "industry": "通信设备",
-   "seal_yi": 2.44,
-   "turnover": 9.8
-  },
-  {
-   "name": "立新能源",
-   "code": "001258",
-   "industry": "电力",
-   "seal_yi": 1.6,
-   "turnover": 13.5
-  },
-  {
-   "name": "顺钠股份",
-   "code": "000533",
-   "industry": "电网设备",
-   "seal_yi": 1.36,
-   "turnover": 11.5
-  },
-  {
-   "name": "金诚信",
-   "code": "603979",
-   "industry": "工业金属",
-   "seal_yi": 1.24,
-   "turnover": 1.0
-  },
-  {
-   "name": "白银有色",
-   "code": "601212",
-   "industry": "工业金属",
-   "seal_yi": 1.06,
-   "turnover": 7.9
-  }
- ],
- "watch_hits": [],
- "ts": 1787755064.478369
+ "schema_version": "v88.central-public/1.0",
+ "generated_at": "2026-08-21 18:40",
+ "source_module": "limit_up_radar.json",
+ "factpack_id": "a7abfc423e5a9ff1922be761b9af93e6ea3c05028dfe4f29941227b902b53450",
+ "recommendations": [],
+ "observations": [],
+ "rows": [],
+ "counts": {
+  "3A": 0,
+  "observation": 0
+ },
+ "selection_authority": {
+  "source": "triad_selection.json",
+  "legacy_decision_weight": 0,
+  "rule": "公开个股仅保留当前3A或2A/1A；正式动作仅3A"
+ }
 }
