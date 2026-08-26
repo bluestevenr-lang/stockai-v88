@@ -1,0 +1,9576 @@
+{
+ "schema_version": "v88.market-pool.public/1.0",
+ "generated_at": "2026-08-24 13:33（北京时间）",
+ "markets": {
+  "A股": {
+   "universe": 5414,
+   "floor_rejected": 1824,
+   "strong_all": 174,
+   "brew_all": 241,
+   "trend_all": 76,
+   "plunge_all": 716,
+   "forced_in": 5,
+   "picked": 1212,
+   "guard": 2000,
+   "guard_truncated": 0
+  },
+  "港股": {
+   "universe": 4637,
+   "floor_rejected": 1990,
+   "strong_all": 22,
+   "brew_all": 25,
+   "trend_all": 12,
+   "plunge_all": 55,
+   "forced_in": 2,
+   "picked": 116,
+   "guard": 800,
+   "guard_truncated": 0
+  },
+  "美股": {
+   "universe": 8000,
+   "floor_rejected": 6590,
+   "strong_all": 92,
+   "brew_all": 299,
+   "trend_all": 151,
+   "plunge_all": 30,
+   "forced_in": 6,
+   "picked": 578,
+   "guard": 1200,
+   "guard_truncated": 0
+  }
+ },
+ "rows": [
+  {
+   "code": "300433.SZ",
+   "name": "蓝思科技",
+   "market": "A股"
+  },
+  {
+   "code": "301216.SZ",
+   "name": "万凯新材",
+   "market": "A股"
+  },
+  {
+   "code": "003040.SZ",
+   "name": "楚天龙",
+   "market": "A股"
+  },
+  {
+   "code": "002017.SZ",
+   "name": "东信和平",
+   "market": "A股"
+  },
+  {
+   "code": "688072.SS",
+   "name": "拓荆科技",
+   "market": "A股"
+  },
+  {
+   "code": "000065.SZ",
+   "name": "北方国际",
+   "market": "A股"
+  },
+  {
+   "code": "603065.SS",
+   "name": "宿迁联盛",
+   "market": "A股"
+  },
+  {
+   "code": "601083.SS",
+   "name": "锦江航运",
+   "market": "A股"
+  },
+  {
+   "code": "601600.SS",
+   "name": "中国铝业",
+   "market": "A股"
+  },
+  {
+   "code": "301234.SZ",
+   "name": "五洲医疗",
+   "market": "A股"
+  },
+  {
+   "code": "688136.SS",
+   "name": "科兴制药",
+   "market": "A股"
+  },
+  {
+   "code": "600150.SS",
+   "name": "中国船舶",
+   "market": "A股"
+  },
+  {
+   "code": "003035.SZ",
+   "name": "南网能源",
+   "market": "A股"
+  },
+  {
+   "code": "002552.SZ",
+   "name": "宝鼎科技",
+   "market": "A股"
+  },
+  {
+   "code": "300750.SZ",
+   "name": "宁德时代",
+   "market": "A股"
+  },
+  {
+   "code": "600031.SS",
+   "name": "三一重工",
+   "market": "A股"
+  },
+  {
+   "code": "600664.SS",
+   "name": "哈药股份",
+   "market": "A股"
+  },
+  {
+   "code": "600613.SS",
+   "name": "神奇制药",
+   "market": "A股"
+  },
+  {
+   "code": "600508.SS",
+   "name": "上海能源",
+   "market": "A股"
+  },
+  {
+   "code": "002506.SZ",
+   "name": "协鑫集成",
+   "market": "A股"
+  },
+  {
+   "code": "688432.SS",
+   "name": "有研硅",
+   "market": "A股"
+  },
+  {
+   "code": "002132.SZ",
+   "name": "恒星科技",
+   "market": "A股"
+  },
+  {
+   "code": "301152.SZ",
+   "name": "天力锂能",
+   "market": "A股"
+  },
+  {
+   "code": "000858.SZ",
+   "name": "五 粮 液",
+   "market": "A股"
+  },
+  {
+   "code": "601958.SS",
+   "name": "金钼股份",
+   "market": "A股"
+  },
+  {
+   "code": "300438.SZ",
+   "name": "鹏辉能源",
+   "market": "A股"
+  },
+  {
+   "code": "000807.SZ",
+   "name": "云铝股份",
+   "market": "A股"
+  },
+  {
+   "code": "601688.SS",
+   "name": "华泰证券",
+   "market": "A股"
+  },
+  {
+   "code": "688797.SS",
+   "name": "臻宝科技",
+   "market": "A股"
+  },
+  {
+   "code": "002277.SZ",
+   "name": "友阿股份",
+   "market": "A股"
+  },
+  {
+   "code": "603659.SS",
+   "name": "璞泰来",
+   "market": "A股"
+  },
+  {
+   "code": "002104.SZ",
+   "name": "恒宝股份",
+   "market": "A股"
+  },
+  {
+   "code": "301520.SZ",
+   "name": "万邦医药",
+   "market": "A股"
+  },
+  {
+   "code": "600721.SS",
+   "name": "百花医药",
+   "market": "A股"
+  },
+  {
+   "code": "300473.SZ",
+   "name": "德尔股份",
+   "market": "A股"
+  },
+  {
+   "code": "601857.SS",
+   "name": "中国石油",
+   "market": "A股"
+  },
+  {
+   "code": "601918.SS",
+   "name": "新集能源",
+   "market": "A股"
+  },
+  {
+   "code": "300012.SZ",
+   "name": "华测检测",
+   "market": "A股"
+  },
+  {
+   "code": "002142.SZ",
+   "name": "宁波银行",
+   "market": "A股"
+  },
+  {
+   "code": "600415.SS",
+   "name": "小商品城",
+   "market": "A股"
+  },
+  {
+   "code": "603105.SS",
+   "name": "芯能科技",
+   "market": "A股"
+  },
+  {
+   "code": "002716.SZ",
+   "name": "湖南白银",
+   "market": "A股"
+  },
+  {
+   "code": "300628.SZ",
+   "name": "亿联网络",
+   "market": "A股"
+  },
+  {
+   "code": "301655.SZ",
+   "name": "C绿控",
+   "market": "A股"
+  },
+  {
+   "code": "002532.SZ",
+   "name": "天山铝业",
+   "market": "A股"
+  },
+  {
+   "code": "300457.SZ",
+   "name": "赢合科技",
+   "market": "A股"
+  },
+  {
+   "code": "002192.SZ",
+   "name": "融捷股份",
+   "market": "A股"
+  },
+  {
+   "code": "601991.SS",
+   "name": "大唐发电",
+   "market": "A股"
+  },
+  {
+   "code": "603330.SS",
+   "name": "天洋新材",
+   "market": "A股"
+  },
+  {
+   "code": "600028.SS",
+   "name": "中国石化",
+   "market": "A股"
+  },
+  {
+   "code": "688828.SS",
+   "name": "国仪公司-U",
+   "market": "A股"
+  },
+  {
+   "code": "600900.SS",
+   "name": "长江电力",
+   "market": "A股"
+  },
+  {
+   "code": "600096.SS",
+   "name": "云天化",
+   "market": "A股"
+  },
+  {
+   "code": "600737.SS",
+   "name": "中粮糖业",
+   "market": "A股"
+  },
+  {
+   "code": "600406.SS",
+   "name": "国电南瑞",
+   "market": "A股"
+  },
+  {
+   "code": "601009.SS",
+   "name": "南京银行",
+   "market": "A股"
+  },
+  {
+   "code": "000711.SZ",
+   "name": "ST京蓝",
+   "market": "A股"
+  },
+  {
+   "code": "300530.SZ",
+   "name": "领湃科技",
+   "market": "A股"
+  },
+  {
+   "code": "000783.SZ",
+   "name": "长江证券",
+   "market": "A股"
+  },
+  {
+   "code": "000425.SZ",
+   "name": "徐工机械",
+   "market": "A股"
+  },
+  {
+   "code": "601888.SS",
+   "name": "中国中免",
+   "market": "A股"
+  },
+  {
+   "code": "600999.SS",
+   "name": "招商证券",
+   "market": "A股"
+  },
+  {
+   "code": "688419.SS",
+   "name": "耐科装备",
+   "market": "A股"
+  },
+  {
+   "code": "603123.SS",
+   "name": "翠微股份",
+   "market": "A股"
+  },
+  {
+   "code": "600938.SS",
+   "name": "中国海油",
+   "market": "A股"
+  },
+  {
+   "code": "002920.SZ",
+   "name": "德赛西威",
+   "market": "A股"
+  },
+  {
+   "code": "688356.SS",
+   "name": "键凯科技",
+   "market": "A股"
+  },
+  {
+   "code": "000712.SZ",
+   "name": "锦龙股份",
+   "market": "A股"
+  },
+  {
+   "code": "603221.SS",
+   "name": "爱丽家居",
+   "market": "A股"
+  },
+  {
+   "code": "001257.SZ",
+   "name": "盛龙股份",
+   "market": "A股"
+  },
+  {
+   "code": "002412.SZ",
+   "name": "汉森制药",
+   "market": "A股"
+  },
+  {
+   "code": "600219.SS",
+   "name": "南山铝业",
+   "market": "A股"
+  },
+  {
+   "code": "300546.SZ",
+   "name": "雄帝科技",
+   "market": "A股"
+  },
+  {
+   "code": "301598.SZ",
+   "name": "博科测试",
+   "market": "A股"
+  },
+  {
+   "code": "600985.SS",
+   "name": "淮北矿业",
+   "market": "A股"
+  },
+  {
+   "code": "300738.SZ",
+   "name": "奥飞数据",
+   "market": "A股"
+  },
+  {
+   "code": "300236.SZ",
+   "name": "上海新阳",
+   "market": "A股"
+  },
+  {
+   "code": "002827.SZ",
+   "name": "高争民爆",
+   "market": "A股"
+  },
+  {
+   "code": "600690.SS",
+   "name": "海尔智家",
+   "market": "A股"
+  },
+  {
+   "code": "002176.SZ",
+   "name": "江特电机",
+   "market": "A股"
+  },
+  {
+   "code": "688596.SS",
+   "name": "正帆科技",
+   "market": "A股"
+  },
+  {
+   "code": "603950.SS",
+   "name": "长源东谷",
+   "market": "A股"
+  },
+  {
+   "code": "688271.SS",
+   "name": "联影医疗",
+   "market": "A股"
+  },
+  {
+   "code": "600610.SS",
+   "name": "中毅达",
+   "market": "A股"
+  },
+  {
+   "code": "600367.SS",
+   "name": "红星发展",
+   "market": "A股"
+  },
+  {
+   "code": "603958.SS",
+   "name": "哈森股份",
+   "market": "A股"
+  },
+  {
+   "code": "002558.SZ",
+   "name": "巨人网络",
+   "market": "A股"
+  },
+  {
+   "code": "300498.SZ",
+   "name": "温氏股份",
+   "market": "A股"
+  },
+  {
+   "code": "300432.SZ",
+   "name": "富临精工",
+   "market": "A股"
+  },
+  {
+   "code": "601212.SS",
+   "name": "白银有色",
+   "market": "A股"
+  },
+  {
+   "code": "601668.SS",
+   "name": "中国建筑",
+   "market": "A股"
+  },
+  {
+   "code": "600010.SS",
+   "name": "包钢股份",
+   "market": "A股"
+  },
+  {
+   "code": "302132.SZ",
+   "name": "中航成飞",
+   "market": "A股"
+  },
+  {
+   "code": "002236.SZ",
+   "name": "大华股份",
+   "market": "A股"
+  },
+  {
+   "code": "600483.SS",
+   "name": "福能股份",
+   "market": "A股"
+  },
+  {
+   "code": "000723.SZ",
+   "name": "美锦能源",
+   "market": "A股"
+  },
+  {
+   "code": "603626.SS",
+   "name": "科森科技",
+   "market": "A股"
+  },
+  {
+   "code": "300927.SZ",
+   "name": "江天化学",
+   "market": "A股"
+  },
+  {
+   "code": "301138.SZ",
+   "name": "华研精机",
+   "market": "A股"
+  },
+  {
+   "code": "300316.SZ",
+   "name": "晶盛机电",
+   "market": "A股"
+  },
+  {
+   "code": "601766.SS",
+   "name": "中国中车",
+   "market": "A股"
+  },
+  {
+   "code": "002027.SZ",
+   "name": "分众传媒",
+   "market": "A股"
+  },
+  {
+   "code": "601088.SS",
+   "name": "中国神华",
+   "market": "A股"
+  },
+  {
+   "code": "601699.SS",
+   "name": "潞安环能",
+   "market": "A股"
+  },
+  {
+   "code": "601288.SS",
+   "name": "农业银行",
+   "market": "A股"
+  },
+  {
+   "code": "002423.SZ",
+   "name": "中粮资本",
+   "market": "A股"
+  },
+  {
+   "code": "002602.SZ",
+   "name": "世纪华通",
+   "market": "A股"
+  },
+  {
+   "code": "002882.SZ",
+   "name": "金龙羽",
+   "market": "A股"
+  },
+  {
+   "code": "600930.SS",
+   "name": "华电新能",
+   "market": "A股"
+  },
+  {
+   "code": "605499.SS",
+   "name": "东鹏饮料",
+   "market": "A股"
+  },
+  {
+   "code": "300942.SZ",
+   "name": "易瑞生物",
+   "market": "A股"
+  },
+  {
+   "code": "301035.SZ",
+   "name": "润丰股份",
+   "market": "A股"
+  },
+  {
+   "code": "603369.SS",
+   "name": "今世缘",
+   "market": "A股"
+  },
+  {
+   "code": "002340.SZ",
+   "name": "格林美",
+   "market": "A股"
+  },
+  {
+   "code": "000831.SZ",
+   "name": "中国稀土",
+   "market": "A股"
+  },
+  {
+   "code": "300855.SZ",
+   "name": "图南股份",
+   "market": "A股"
+  },
+  {
+   "code": "301179.SZ",
+   "name": "泽宇智能",
+   "market": "A股"
+  },
+  {
+   "code": "300313.SZ",
+   "name": "天山生物",
+   "market": "A股"
+  },
+  {
+   "code": "600660.SS",
+   "name": "福耀玻璃",
+   "market": "A股"
+  },
+  {
+   "code": "002379.SZ",
+   "name": "宏桥控股",
+   "market": "A股"
+  },
+  {
+   "code": "000690.SZ",
+   "name": "宝新能源",
+   "market": "A股"
+  },
+  {
+   "code": "603606.SS",
+   "name": "东方电缆",
+   "market": "A股"
+  },
+  {
+   "code": "300191.SZ",
+   "name": "潜能恒信",
+   "market": "A股"
+  },
+  {
+   "code": "301489.SZ",
+   "name": "思泉新材",
+   "market": "A股"
+  },
+  {
+   "code": "001337.SZ",
+   "name": "四川黄金",
+   "market": "A股"
+  },
+  {
+   "code": "601066.SS",
+   "name": "中信建投",
+   "market": "A股"
+  },
+  {
+   "code": "300468.SZ",
+   "name": "四方精创",
+   "market": "A股"
+  },
+  {
+   "code": "603444.SS",
+   "name": "吉比特",
+   "market": "A股"
+  },
+  {
+   "code": "603906.SS",
+   "name": "龙蟠科技",
+   "market": "A股"
+  },
+  {
+   "code": "002759.SZ",
+   "name": "ST天际",
+   "market": "A股"
+  },
+  {
+   "code": "605198.SS",
+   "name": "安德利",
+   "market": "A股"
+  },
+  {
+   "code": "600449.SS",
+   "name": "宁夏建材",
+   "market": "A股"
+  },
+  {
+   "code": "000893.SZ",
+   "name": "亚钾国际",
+   "market": "A股"
+  },
+  {
+   "code": "300254.SZ",
+   "name": "仟源医药",
+   "market": "A股"
+  },
+  {
+   "code": "300015.SZ",
+   "name": "爱尔眼科",
+   "market": "A股"
+  },
+  {
+   "code": "688433.SS",
+   "name": "华曙高科",
+   "market": "A股"
+  },
+  {
+   "code": "000603.SZ",
+   "name": "盛达资源",
+   "market": "A股"
+  },
+  {
+   "code": "601939.SS",
+   "name": "建设银行",
+   "market": "A股"
+  },
+  {
+   "code": "600436.SS",
+   "name": "片仔癀",
+   "market": "A股"
+  },
+  {
+   "code": "601006.SS",
+   "name": "大秦铁路",
+   "market": "A股"
+  },
+  {
+   "code": "600578.SS",
+   "name": "京能电力",
+   "market": "A股"
+  },
+  {
+   "code": "601328.SS",
+   "name": "交通银行",
+   "market": "A股"
+  },
+  {
+   "code": "000997.SZ",
+   "name": "新 大 陆",
+   "market": "A股"
+  },
+  {
+   "code": "000568.SZ",
+   "name": "泸州老窖",
+   "market": "A股"
+  },
+  {
+   "code": "600958.SS",
+   "name": "东方证券",
+   "market": "A股"
+  },
+  {
+   "code": "601728.SS",
+   "name": "中国电信",
+   "market": "A股"
+  },
+  {
+   "code": "300031.SZ",
+   "name": "宝通科技",
+   "market": "A股"
+  },
+  {
+   "code": "002157.SZ",
+   "name": "正邦科技",
+   "market": "A股"
+  },
+  {
+   "code": "000506.SZ",
+   "name": "招金黄金",
+   "market": "A股"
+  },
+  {
+   "code": "002203.SZ",
+   "name": "海亮股份",
+   "market": "A股"
+  },
+  {
+   "code": "601211.SS",
+   "name": "国泰海通",
+   "market": "A股"
+  },
+  {
+   "code": "600115.SS",
+   "name": "中国东航",
+   "market": "A股"
+  },
+  {
+   "code": "002293.SZ",
+   "name": "罗莱生活",
+   "market": "A股"
+  },
+  {
+   "code": "002125.SZ",
+   "name": "湘潭电化",
+   "market": "A股"
+  },
+  {
+   "code": "600839.SS",
+   "name": "四川长虹",
+   "market": "A股"
+  },
+  {
+   "code": "601985.SS",
+   "name": "中国核电",
+   "market": "A股"
+  },
+  {
+   "code": "689009.SS",
+   "name": "九号公司-WD",
+   "market": "A股"
+  },
+  {
+   "code": "601988.SS",
+   "name": "中国银行",
+   "market": "A股"
+  },
+  {
+   "code": "600598.SS",
+   "name": "北大荒",
+   "market": "A股"
+  },
+  {
+   "code": "600127.SS",
+   "name": "金健米业",
+   "market": "A股"
+  },
+  {
+   "code": "601117.SS",
+   "name": "中国化学",
+   "market": "A股"
+  },
+  {
+   "code": "000828.SZ",
+   "name": "东莞控股",
+   "market": "A股"
+  },
+  {
+   "code": "600785.SS",
+   "name": "新华百货",
+   "market": "A股"
+  },
+  {
+   "code": "601020.SS",
+   "name": "华钰矿业",
+   "market": "A股"
+  },
+  {
+   "code": "600050.SS",
+   "name": "中国联通",
+   "market": "A股"
+  },
+  {
+   "code": "003043.SZ",
+   "name": "华亚智能",
+   "market": "A股"
+  },
+  {
+   "code": "688361.SS",
+   "name": "中科飞测",
+   "market": "A股"
+  },
+  {
+   "code": "300180.SZ",
+   "name": "华峰超纤",
+   "market": "A股"
+  },
+  {
+   "code": "600506.SS",
+   "name": "统一股份",
+   "market": "A股"
+  },
+  {
+   "code": "000628.SZ",
+   "name": "高新发展",
+   "market": "A股"
+  },
+  {
+   "code": "601318.SS",
+   "name": "中国平安",
+   "market": "A股"
+  },
+  {
+   "code": "300345.SZ",
+   "name": "华民股份",
+   "market": "A股"
+  },
+  {
+   "code": "001268.SZ",
+   "name": "联合精密",
+   "market": "A股"
+  },
+  {
+   "code": "002311.SZ",
+   "name": "海大集团",
+   "market": "A股"
+  },
+  {
+   "code": "601162.SS",
+   "name": "天风证券",
+   "market": "A股"
+  },
+  {
+   "code": "600011.SS",
+   "name": "华能国际",
+   "market": "A股"
+  },
+  {
+   "code": "002785.SZ",
+   "name": "万里石",
+   "market": "A股"
+  },
+  {
+   "code": "601995.SS",
+   "name": "XD中金公",
+   "market": "A股"
+  },
+  {
+   "code": "688353.SS",
+   "name": "华盛锂电",
+   "market": "A股"
+  },
+  {
+   "code": "000799.SZ",
+   "name": "酒鬼酒",
+   "market": "A股"
+  },
+  {
+   "code": "300758.SZ",
+   "name": "七彩化学",
+   "market": "A股"
+  },
+  {
+   "code": "600391.SS",
+   "name": "航发科技",
+   "market": "A股"
+  },
+  {
+   "code": "300192.SZ",
+   "name": "科德教育",
+   "market": "A股"
+  },
+  {
+   "code": "603032.SS",
+   "name": "德新科技",
+   "market": "A股"
+  },
+  {
+   "code": "002726.SZ",
+   "name": "ST龙大",
+   "market": "A股"
+  },
+  {
+   "code": "603737.SS",
+   "name": "三棵树",
+   "market": "A股"
+  },
+  {
+   "code": "002703.SZ",
+   "name": "浙江世宝",
+   "market": "A股"
+  },
+  {
+   "code": "601099.SS",
+   "name": "太平洋",
+   "market": "A股"
+  },
+  {
+   "code": "600272.SS",
+   "name": "开开实业",
+   "market": "A股"
+  },
+  {
+   "code": "600594.SS",
+   "name": "益佰制药",
+   "market": "A股"
+  },
+  {
+   "code": "002620.SZ",
+   "name": "*ST瑞和",
+   "market": "A股"
+  },
+  {
+   "code": "001301.SZ",
+   "name": "尚太科技",
+   "market": "A股"
+  },
+  {
+   "code": "600926.SS",
+   "name": "杭州银行",
+   "market": "A股"
+  },
+  {
+   "code": "600809.SS",
+   "name": "山西汾酒",
+   "market": "A股"
+  },
+  {
+   "code": "688187.SS",
+   "name": "时代电气",
+   "market": "A股"
+  },
+  {
+   "code": "002555.SZ",
+   "name": "三七互娱",
+   "market": "A股"
+  },
+  {
+   "code": "601579.SS",
+   "name": "会稽山",
+   "market": "A股"
+  },
+  {
+   "code": "002385.SZ",
+   "name": "大北农",
+   "market": "A股"
+  },
+  {
+   "code": "002721.SZ",
+   "name": "金一文化",
+   "market": "A股"
+  },
+  {
+   "code": "603766.SS",
+   "name": "隆鑫通用",
+   "market": "A股"
+  },
+  {
+   "code": "688192.SS",
+   "name": "迪哲医药-U",
+   "market": "A股"
+  },
+  {
+   "code": "600722.SS",
+   "name": "金牛化工",
+   "market": "A股"
+  },
+  {
+   "code": "002460.SZ",
+   "name": "赣锋锂业",
+   "market": "A股"
+  },
+  {
+   "code": "600104.SS",
+   "name": "上汽集团",
+   "market": "A股"
+  },
+  {
+   "code": "300864.SZ",
+   "name": "南大环境",
+   "market": "A股"
+  },
+  {
+   "code": "000688.SZ",
+   "name": "国城矿业",
+   "market": "A股"
+  },
+  {
+   "code": "001280.SZ",
+   "name": "中国铀业",
+   "market": "A股"
+  },
+  {
+   "code": "300139.SZ",
+   "name": "晓程科技",
+   "market": "A股"
+  },
+  {
+   "code": "688147.SS",
+   "name": "微导纳米",
+   "market": "A股"
+  },
+  {
+   "code": "002213.SZ",
+   "name": "大为股份",
+   "market": "A股"
+  },
+  {
+   "code": "688185.SS",
+   "name": "康希诺",
+   "market": "A股"
+  },
+  {
+   "code": "601137.SS",
+   "name": "博威合金",
+   "market": "A股"
+  },
+  {
+   "code": "688586.SS",
+   "name": "江航装备",
+   "market": "A股"
+  },
+  {
+   "code": "300135.SZ",
+   "name": "宝利国际",
+   "market": "A股"
+  },
+  {
+   "code": "600795.SS",
+   "name": "国电电力",
+   "market": "A股"
+  },
+  {
+   "code": "301662.SZ",
+   "name": "宏工科技",
+   "market": "A股"
+  },
+  {
+   "code": "000838.SZ",
+   "name": "*ST发展",
+   "market": "A股"
+  },
+  {
+   "code": "300328.SZ",
+   "name": "宜安科技",
+   "market": "A股"
+  },
+  {
+   "code": "600595.SS",
+   "name": "中孚实业",
+   "market": "A股"
+  },
+  {
+   "code": "601601.SS",
+   "name": "中国太保",
+   "market": "A股"
+  },
+  {
+   "code": "300907.SZ",
+   "name": "康平科技",
+   "market": "A股"
+  },
+  {
+   "code": "000400.SZ",
+   "name": "许继电气",
+   "market": "A股"
+  },
+  {
+   "code": "000596.SZ",
+   "name": "古井贡酒",
+   "market": "A股"
+  },
+  {
+   "code": "601816.SS",
+   "name": "京沪高铁",
+   "market": "A股"
+  },
+  {
+   "code": "601225.SS",
+   "name": "陕西煤业",
+   "market": "A股"
+  },
+  {
+   "code": "601669.SS",
+   "name": "中国电建",
+   "market": "A股"
+  },
+  {
+   "code": "601700.SS",
+   "name": "风范股份",
+   "market": "A股"
+  },
+  {
+   "code": "000617.SZ",
+   "name": "中油资本",
+   "market": "A股"
+  },
+  {
+   "code": "688726.SS",
+   "name": "拉普拉斯",
+   "market": "A股"
+  },
+  {
+   "code": "002252.SZ",
+   "name": "上海莱士",
+   "market": "A股"
+  },
+  {
+   "code": "301218.SZ",
+   "name": "华是科技",
+   "market": "A股"
+  },
+  {
+   "code": "002900.SZ",
+   "name": "哈三联",
+   "market": "A股"
+  },
+  {
+   "code": "601011.SS",
+   "name": "宝泰隆",
+   "market": "A股"
+  },
+  {
+   "code": "002797.SZ",
+   "name": "第一创业",
+   "market": "A股"
+  },
+  {
+   "code": "300390.SZ",
+   "name": "天华新能",
+   "market": "A股"
+  },
+  {
+   "code": "601233.SS",
+   "name": "桐昆股份",
+   "market": "A股"
+  },
+  {
+   "code": "601229.SS",
+   "name": "上海银行",
+   "market": "A股"
+  },
+  {
+   "code": "000048.SZ",
+   "name": "京基智农",
+   "market": "A股"
+  },
+  {
+   "code": "300711.SZ",
+   "name": "广哈通信",
+   "market": "A股"
+  },
+  {
+   "code": "600547.SS",
+   "name": "山东黄金",
+   "market": "A股"
+  },
+  {
+   "code": "600227.SS",
+   "name": "赤天化",
+   "market": "A股"
+  },
+  {
+   "code": "603565.SS",
+   "name": "中谷物流",
+   "market": "A股"
+  },
+  {
+   "code": "600759.SS",
+   "name": "ST洲际",
+   "market": "A股"
+  },
+  {
+   "code": "000019.SZ",
+   "name": "深粮控股",
+   "market": "A股"
+  },
+  {
+   "code": "600403.SS",
+   "name": "大有能源",
+   "market": "A股"
+  },
+  {
+   "code": "300409.SZ",
+   "name": "道氏技术",
+   "market": "A股"
+  },
+  {
+   "code": "601838.SS",
+   "name": "成都银行",
+   "market": "A股"
+  },
+  {
+   "code": "600702.SS",
+   "name": "舍得酒业",
+   "market": "A股"
+  },
+  {
+   "code": "600570.SS",
+   "name": "恒生电子",
+   "market": "A股"
+  },
+  {
+   "code": "601898.SS",
+   "name": "中煤能源",
+   "market": "A股"
+  },
+  {
+   "code": "300731.SZ",
+   "name": "科创新源",
+   "market": "A股"
+  },
+  {
+   "code": "301419.SZ",
+   "name": "阿莱德",
+   "market": "A股"
+  },
+  {
+   "code": "603730.SS",
+   "name": "岱美股份",
+   "market": "A股"
+  },
+  {
+   "code": "301177.SZ",
+   "name": "迪阿股份",
+   "market": "A股"
+  },
+  {
+   "code": "600126.SS",
+   "name": "杭钢股份",
+   "market": "A股"
+  },
+  {
+   "code": "301327.SZ",
+   "name": "华宝新能",
+   "market": "A股"
+  },
+  {
+   "code": "002352.SZ",
+   "name": "顺丰控股",
+   "market": "A股"
+  },
+  {
+   "code": "601016.SS",
+   "name": "节能风电",
+   "market": "A股"
+  },
+  {
+   "code": "000683.SZ",
+   "name": "博源化工",
+   "market": "A股"
+  },
+  {
+   "code": "301611.SZ",
+   "name": "珂玛科技",
+   "market": "A股"
+  },
+  {
+   "code": "300145.SZ",
+   "name": "南方泵业",
+   "market": "A股"
+  },
+  {
+   "code": "002115.SZ",
+   "name": "三维通信",
+   "market": "A股"
+  },
+  {
+   "code": "601238.SS",
+   "name": "广汽集团",
+   "market": "A股"
+  },
+  {
+   "code": "301108.SZ",
+   "name": "洁雅股份",
+   "market": "A股"
+  },
+  {
+   "code": "688037.SS",
+   "name": "芯源微",
+   "market": "A股"
+  },
+  {
+   "code": "600863.SS",
+   "name": "华能蒙电",
+   "market": "A股"
+  },
+  {
+   "code": "600372.SS",
+   "name": "中航机载",
+   "market": "A股"
+  },
+  {
+   "code": "000975.SZ",
+   "name": "山金国际",
+   "market": "A股"
+  },
+  {
+   "code": "002528.SZ",
+   "name": "*ST英飞",
+   "market": "A股"
+  },
+  {
+   "code": "301238.SZ",
+   "name": "瑞泰新材",
+   "market": "A股"
+  },
+  {
+   "code": "603009.SS",
+   "name": "北特科技",
+   "market": "A股"
+  },
+  {
+   "code": "002853.SZ",
+   "name": "皮阿诺",
+   "market": "A股"
+  },
+  {
+   "code": "002614.SZ",
+   "name": "奥佳华",
+   "market": "A股"
+  },
+  {
+   "code": "300897.SZ",
+   "name": "山科智能",
+   "market": "A股"
+  },
+  {
+   "code": "600611.SS",
+   "name": "大众交通",
+   "market": "A股"
+  },
+  {
+   "code": "601919.SS",
+   "name": "中远海控",
+   "market": "A股"
+  },
+  {
+   "code": "002881.SZ",
+   "name": "美格智能",
+   "market": "A股"
+  },
+  {
+   "code": "000422.SZ",
+   "name": "湖北宜化",
+   "market": "A股"
+  },
+  {
+   "code": "001230.SZ",
+   "name": "劲旅环境",
+   "market": "A股"
+  },
+  {
+   "code": "600871.SS",
+   "name": "石化油服",
+   "market": "A股"
+  },
+  {
+   "code": "600744.SS",
+   "name": "华银电力",
+   "market": "A股"
+  },
+  {
+   "code": "600600.SS",
+   "name": "青岛啤酒",
+   "market": "A股"
+  },
+  {
+   "code": "001316.SZ",
+   "name": "润贝航科",
+   "market": "A股"
+  },
+  {
+   "code": "600685.SS",
+   "name": "中船防务",
+   "market": "A股"
+  },
+  {
+   "code": "301449.SZ",
+   "name": "天溯计量",
+   "market": "A股"
+  },
+  {
+   "code": "000625.SZ",
+   "name": "长安汽车",
+   "market": "A股"
+  },
+  {
+   "code": "601916.SS",
+   "name": "浙商银行",
+   "market": "A股"
+  },
+  {
+   "code": "300666.SZ",
+   "name": "江丰电子",
+   "market": "A股"
+  },
+  {
+   "code": "300615.SZ",
+   "name": "欣天科技",
+   "market": "A股"
+  },
+  {
+   "code": "601788.SS",
+   "name": "光大证券",
+   "market": "A股"
+  },
+  {
+   "code": "600251.SS",
+   "name": "冠农股份",
+   "market": "A股"
+  },
+  {
+   "code": "601881.SS",
+   "name": "中国银河",
+   "market": "A股"
+  },
+  {
+   "code": "002262.SZ",
+   "name": "恩华药业",
+   "market": "A股"
+  },
+  {
+   "code": "601665.SS",
+   "name": "齐鲁银行",
+   "market": "A股"
+  },
+  {
+   "code": "002949.SZ",
+   "name": "华阳国际",
+   "market": "A股"
+  },
+  {
+   "code": "600352.SS",
+   "name": "浙江龙盛",
+   "market": "A股"
+  },
+  {
+   "code": "300760.SZ",
+   "name": "迈瑞医疗",
+   "market": "A股"
+  },
+  {
+   "code": "300044.SZ",
+   "name": "*ST赛为",
+   "market": "A股"
+  },
+  {
+   "code": "002468.SZ",
+   "name": "申通快递",
+   "market": "A股"
+  },
+  {
+   "code": "600066.SS",
+   "name": "宇通客车",
+   "market": "A股"
+  },
+  {
+   "code": "600745.SS",
+   "name": "*ST闻泰",
+   "market": "A股"
+  },
+  {
+   "code": "002274.SZ",
+   "name": "华昌化工",
+   "market": "A股"
+  },
+  {
+   "code": "600539.SS",
+   "name": "狮头股份",
+   "market": "A股"
+  },
+  {
+   "code": "301487.SZ",
+   "name": "盟固利",
+   "market": "A股"
+  },
+  {
+   "code": "000670.SZ",
+   "name": "盈方微",
+   "market": "A股"
+  },
+  {
+   "code": "688065.SS",
+   "name": "凯赛生物",
+   "market": "A股"
+  },
+  {
+   "code": "600739.SS",
+   "name": "辽宁成大",
+   "market": "A股"
+  },
+  {
+   "code": "600326.SS",
+   "name": "西藏天路",
+   "market": "A股"
+  },
+  {
+   "code": "688409.SS",
+   "name": "富创精密",
+   "market": "A股"
+  },
+  {
+   "code": "002043.SZ",
+   "name": "兔 宝 宝",
+   "market": "A股"
+  },
+  {
+   "code": "600862.SS",
+   "name": "中航高科",
+   "market": "A股"
+  },
+  {
+   "code": "600339.SS",
+   "name": "中油工程",
+   "market": "A股"
+  },
+  {
+   "code": "600886.SS",
+   "name": "国投电力",
+   "market": "A股"
+  },
+  {
+   "code": "688779.SS",
+   "name": "五矿新能",
+   "market": "A股"
+  },
+  {
+   "code": "600535.SS",
+   "name": "天士力",
+   "market": "A股"
+  },
+  {
+   "code": "002469.SZ",
+   "name": "三维化学",
+   "market": "A股"
+  },
+  {
+   "code": "600998.SS",
+   "name": "九州通",
+   "market": "A股"
+  },
+  {
+   "code": "600619.SS",
+   "name": "海立股份",
+   "market": "A股"
+  },
+  {
+   "code": "601696.SS",
+   "name": "中银证券",
+   "market": "A股"
+  },
+  {
+   "code": "688069.SS",
+   "name": "德林海",
+   "market": "A股"
+  },
+  {
+   "code": "601058.SS",
+   "name": "赛轮轮胎",
+   "market": "A股"
+  },
+  {
+   "code": "002907.SZ",
+   "name": "华森制药",
+   "market": "A股"
+  },
+  {
+   "code": "300999.SZ",
+   "name": "金龙鱼",
+   "market": "A股"
+  },
+  {
+   "code": "600901.SS",
+   "name": "江苏金租",
+   "market": "A股"
+  },
+  {
+   "code": "601077.SS",
+   "name": "渝农商行",
+   "market": "A股"
+  },
+  {
+   "code": "601607.SS",
+   "name": "上海医药",
+   "market": "A股"
+  },
+  {
+   "code": "000007.SZ",
+   "name": "全新好",
+   "market": "A股"
+  },
+  {
+   "code": "603200.SS",
+   "name": "上海洗霸",
+   "market": "A股"
+  },
+  {
+   "code": "301511.SZ",
+   "name": "德福科技",
+   "market": "A股"
+  },
+  {
+   "code": "002322.SZ",
+   "name": "理工能科",
+   "market": "A股"
+  },
+  {
+   "code": "688766.SS",
+   "name": "普冉股份",
+   "market": "A股"
+  },
+  {
+   "code": "300394.SZ",
+   "name": "天孚通信",
+   "market": "A股"
+  },
+  {
+   "code": "603268.SS",
+   "name": "松发股份",
+   "market": "A股"
+  },
+  {
+   "code": "300933.SZ",
+   "name": "中辰股份",
+   "market": "A股"
+  },
+  {
+   "code": "600760.SS",
+   "name": "中航沈飞",
+   "market": "A股"
+  },
+  {
+   "code": "002120.SZ",
+   "name": "韵达股份",
+   "market": "A股"
+  },
+  {
+   "code": "002409.SZ",
+   "name": "雅克科技",
+   "market": "A股"
+  },
+  {
+   "code": "600546.SS",
+   "name": "山煤国际",
+   "market": "A股"
+  },
+  {
+   "code": "600170.SS",
+   "name": "上海建工",
+   "market": "A股"
+  },
+  {
+   "code": "601886.SS",
+   "name": "江河集团",
+   "market": "A股"
+  },
+  {
+   "code": "000931.SZ",
+   "name": "中 关 村",
+   "market": "A股"
+  },
+  {
+   "code": "601198.SS",
+   "name": "东兴证券",
+   "market": "A股"
+  },
+  {
+   "code": "000623.SZ",
+   "name": "吉林敖东",
+   "market": "A股"
+  },
+  {
+   "code": "603225.SS",
+   "name": "新凤鸣",
+   "market": "A股"
+  },
+  {
+   "code": "002539.SZ",
+   "name": "云图控股",
+   "market": "A股"
+  },
+  {
+   "code": "600529.SS",
+   "name": "山东药玻",
+   "market": "A股"
+  },
+  {
+   "code": "600525.SS",
+   "name": "ST长园",
+   "market": "A股"
+  },
+  {
+   "code": "000020.SZ",
+   "name": "深华发Ａ",
+   "market": "A股"
+  },
+  {
+   "code": "603408.SS",
+   "name": "建霖家居",
+   "market": "A股"
+  },
+  {
+   "code": "688727.SS",
+   "name": "恒坤新材",
+   "market": "A股"
+  },
+  {
+   "code": "300721.SZ",
+   "name": "怡达股份",
+   "market": "A股"
+  },
+  {
+   "code": "002033.SZ",
+   "name": "丽江股份",
+   "market": "A股"
+  },
+  {
+   "code": "600315.SS",
+   "name": "上海家化",
+   "market": "A股"
+  },
+  {
+   "code": "300716.SZ",
+   "name": "*ST泉为",
+   "market": "A股"
+  },
+  {
+   "code": "301190.SZ",
+   "name": "善水科技",
+   "market": "A股"
+  },
+  {
+   "code": "003816.SZ",
+   "name": "中国广核",
+   "market": "A股"
+  },
+  {
+   "code": "603320.SS",
+   "name": "迪贝电气",
+   "market": "A股"
+  },
+  {
+   "code": "301526.SZ",
+   "name": "国际复材",
+   "market": "A股"
+  },
+  {
+   "code": "002948.SZ",
+   "name": "青岛银行",
+   "market": "A股"
+  },
+  {
+   "code": "600967.SS",
+   "name": "内蒙一机",
+   "market": "A股"
+  },
+  {
+   "code": "300936.SZ",
+   "name": "中英科技",
+   "market": "A股"
+  },
+  {
+   "code": "301090.SZ",
+   "name": "华润材料",
+   "market": "A股"
+  },
+  {
+   "code": "600566.SS",
+   "name": "济川药业",
+   "market": "A股"
+  },
+  {
+   "code": "002440.SZ",
+   "name": "闰土股份",
+   "market": "A股"
+  },
+  {
+   "code": "600029.SS",
+   "name": "南方航空",
+   "market": "A股"
+  },
+  {
+   "code": "300386.SZ",
+   "name": "飞天诚信",
+   "market": "A股"
+  },
+  {
+   "code": "300308.SZ",
+   "name": "中际旭创",
+   "market": "A股"
+  },
+  {
+   "code": "002223.SZ",
+   "name": "鱼跃医疗",
+   "market": "A股"
+  },
+  {
+   "code": "600801.SS",
+   "name": "华新建材",
+   "market": "A股"
+  },
+  {
+   "code": "603089.SS",
+   "name": "正裕工业",
+   "market": "A股"
+  },
+  {
+   "code": "301396.SZ",
+   "name": "宏景科技",
+   "market": "A股"
+  },
+  {
+   "code": "002080.SZ",
+   "name": "中材科技",
+   "market": "A股"
+  },
+  {
+   "code": "600562.SS",
+   "name": "国睿科技",
+   "market": "A股"
+  },
+  {
+   "code": "300502.SZ",
+   "name": "新易盛",
+   "market": "A股"
+  },
+  {
+   "code": "605008.SS",
+   "name": "长鸿高科",
+   "market": "A股"
+  },
+  {
+   "code": "300736.SZ",
+   "name": "百邦科技",
+   "market": "A股"
+  },
+  {
+   "code": "603519.SS",
+   "name": "立霸股份",
+   "market": "A股"
+  },
+  {
+   "code": "301165.SZ",
+   "name": "锐捷网络",
+   "market": "A股"
+  },
+  {
+   "code": "002484.SZ",
+   "name": "江海股份",
+   "market": "A股"
+  },
+  {
+   "code": "000703.SZ",
+   "name": "恒逸石化",
+   "market": "A股"
+  },
+  {
+   "code": "301081.SZ",
+   "name": "严牌股份",
+   "market": "A股"
+  },
+  {
+   "code": "002270.SZ",
+   "name": "华明装备",
+   "market": "A股"
+  },
+  {
+   "code": "688141.SS",
+   "name": "杰华特",
+   "market": "A股"
+  },
+  {
+   "code": "601015.SS",
+   "name": "陕西黑猫",
+   "market": "A股"
+  },
+  {
+   "code": "600601.SS",
+   "name": "方正科技",
+   "market": "A股"
+  },
+  {
+   "code": "000923.SZ",
+   "name": "河钢资源",
+   "market": "A股"
+  },
+  {
+   "code": "002281.SZ",
+   "name": "光迅科技",
+   "market": "A股"
+  },
+  {
+   "code": "301215.SZ",
+   "name": "中汽股份",
+   "market": "A股"
+  },
+  {
+   "code": "600095.SS",
+   "name": "湘财股份",
+   "market": "A股"
+  },
+  {
+   "code": "003022.SZ",
+   "name": "联泓新科",
+   "market": "A股"
+  },
+  {
+   "code": "300097.SZ",
+   "name": "智云股份",
+   "market": "A股"
+  },
+  {
+   "code": "603118.SS",
+   "name": "共进股份",
+   "market": "A股"
+  },
+  {
+   "code": "601021.SS",
+   "name": "春秋航空",
+   "market": "A股"
+  },
+  {
+   "code": "002304.SZ",
+   "name": "洋河股份",
+   "market": "A股"
+  },
+  {
+   "code": "002436.SZ",
+   "name": "兴森科技",
+   "market": "A股"
+  },
+  {
+   "code": "159632.SZ",
+   "name": "纳斯达克",
+   "market": "A股"
+  },
+  {
+   "code": "600941.SH",
+   "name": "中国移动",
+   "market": "A股"
+  },
+  {
+   "code": "513500.SS",
+   "name": "标普500",
+   "market": "A股"
+  },
+  {
+   "code": "513650.SS",
+   "name": "标普ETF(南方标普500)",
+   "market": "A股"
+  },
+  {
+   "code": "002172.SZ",
+   "name": "澳洋健康",
+   "market": "A股"
+  },
+  {
+   "code": "688549.SS",
+   "name": "中巨芯-U",
+   "market": "A股"
+  },
+  {
+   "code": "688322.SS",
+   "name": "奥比中光-W",
+   "market": "A股"
+  },
+  {
+   "code": "603773.SS",
+   "name": "沃格光电",
+   "market": "A股"
+  },
+  {
+   "code": "300570.SZ",
+   "name": "太辰光",
+   "market": "A股"
+  },
+  {
+   "code": "000002.SZ",
+   "name": "万  科Ａ",
+   "market": "A股"
+  },
+  {
+   "code": "300489.SZ",
+   "name": "光智科技",
+   "market": "A股"
+  },
+  {
+   "code": "002428.SZ",
+   "name": "云南锗业",
+   "market": "A股"
+  },
+  {
+   "code": "000338.SZ",
+   "name": "潍柴动力",
+   "market": "A股"
+  },
+  {
+   "code": "300317.SZ",
+   "name": "珈伟新能",
+   "market": "A股"
+  },
+  {
+   "code": "301051.SZ",
+   "name": "信濠光电",
+   "market": "A股"
+  },
+  {
+   "code": "600869.SS",
+   "name": "远东股份",
+   "market": "A股"
+  },
+  {
+   "code": "688778.SS",
+   "name": "厦钨新能",
+   "market": "A股"
+  },
+  {
+   "code": "002273.SZ",
+   "name": "水晶光电",
+   "market": "A股"
+  },
+  {
+   "code": "300895.SZ",
+   "name": "铜牛信息",
+   "market": "A股"
+  },
+  {
+   "code": "301122.SZ",
+   "name": "采纳股份",
+   "market": "A股"
+  },
+  {
+   "code": "600905.SS",
+   "name": "三峡能源",
+   "market": "A股"
+  },
+  {
+   "code": "002487.SZ",
+   "name": "大金重工",
+   "market": "A股"
+  },
+  {
+   "code": "002238.SZ",
+   "name": "天威视讯",
+   "market": "A股"
+  },
+  {
+   "code": "688553.SS",
+   "name": "汇宇制药-W",
+   "market": "A股"
+  },
+  {
+   "code": "300418.SZ",
+   "name": "昆仑万维",
+   "market": "A股"
+  },
+  {
+   "code": "603156.SS",
+   "name": "养元饮品",
+   "market": "A股"
+  },
+  {
+   "code": "002537.SZ",
+   "name": "海联金汇",
+   "market": "A股"
+  },
+  {
+   "code": "601001.SS",
+   "name": "晋控煤业",
+   "market": "A股"
+  },
+  {
+   "code": "002851.SZ",
+   "name": "麦格米特",
+   "market": "A股"
+  },
+  {
+   "code": "002747.SZ",
+   "name": "埃斯顿",
+   "market": "A股"
+  },
+  {
+   "code": "002437.SZ",
+   "name": "誉衡药业",
+   "market": "A股"
+  },
+  {
+   "code": "688082.SS",
+   "name": "盛美上海",
+   "market": "A股"
+  },
+  {
+   "code": "600176.SS",
+   "name": "中国巨石",
+   "market": "A股"
+  },
+  {
+   "code": "300112.SZ",
+   "name": "万讯自控",
+   "market": "A股"
+  },
+  {
+   "code": "000767.SZ",
+   "name": "晋控电力",
+   "market": "A股"
+  },
+  {
+   "code": "300843.SZ",
+   "name": "胜蓝股份",
+   "market": "A股"
+  },
+  {
+   "code": "688578.SS",
+   "name": "艾力斯",
+   "market": "A股"
+  },
+  {
+   "code": "688256.SS",
+   "name": "寒武纪",
+   "market": "A股"
+  },
+  {
+   "code": "301319.SZ",
+   "name": "唯特偶",
+   "market": "A股"
+  },
+  {
+   "code": "002353.SZ",
+   "name": "杰瑞股份",
+   "market": "A股"
+  },
+  {
+   "code": "603823.SS",
+   "name": "百合花",
+   "market": "A股"
+  },
+  {
+   "code": "600864.SS",
+   "name": "哈投股份",
+   "market": "A股"
+  },
+  {
+   "code": "600584.SS",
+   "name": "长电科技",
+   "market": "A股"
+  },
+  {
+   "code": "301389.SZ",
+   "name": "隆扬电子",
+   "market": "A股"
+  },
+  {
+   "code": "001325.SZ",
+   "name": "元创股份",
+   "market": "A股"
+  },
+  {
+   "code": "688702.SS",
+   "name": "盛科通信-U",
+   "market": "A股"
+  },
+  {
+   "code": "300285.SZ",
+   "name": "国瓷材料",
+   "market": "A股"
+  },
+  {
+   "code": "600183.SS",
+   "name": "生益科技",
+   "market": "A股"
+  },
+  {
+   "code": "002579.SZ",
+   "name": "中京电子",
+   "market": "A股"
+  },
+  {
+   "code": "002008.SZ",
+   "name": "大族激光",
+   "market": "A股"
+  },
+  {
+   "code": "600246.SS",
+   "name": "万通发展",
+   "market": "A股"
+  },
+  {
+   "code": "002636.SZ",
+   "name": "金安国纪",
+   "market": "A股"
+  },
+  {
+   "code": "688020.SS",
+   "name": "方邦股份",
+   "market": "A股"
+  },
+  {
+   "code": "601333.SS",
+   "name": "广深铁路",
+   "market": "A股"
+  },
+  {
+   "code": "603580.SS",
+   "name": "艾艾精工",
+   "market": "A股"
+  },
+  {
+   "code": "603986.SS",
+   "name": "兆易创新",
+   "market": "A股"
+  },
+  {
+   "code": "603529.SS",
+   "name": "爱玛科技",
+   "market": "A股"
+  },
+  {
+   "code": "688525.SS",
+   "name": "佰维存储",
+   "market": "A股"
+  },
+  {
+   "code": "688593.SS",
+   "name": "新相微",
+   "market": "A股"
+  },
+  {
+   "code": "600906.SS",
+   "name": "财达证券",
+   "market": "A股"
+  },
+  {
+   "code": "603867.SS",
+   "name": "新化股份",
+   "market": "A股"
+  },
+  {
+   "code": "300323.SZ",
+   "name": "华灿光电",
+   "market": "A股"
+  },
+  {
+   "code": "688228.SS",
+   "name": "开普云",
+   "market": "A股"
+  },
+  {
+   "code": "688041.SS",
+   "name": "海光信息",
+   "market": "A股"
+  },
+  {
+   "code": "300142.SZ",
+   "name": "沃森生物",
+   "market": "A股"
+  },
+  {
+   "code": "300142.SZ",
+   "name": "沃森生物",
+   "market": "A股"
+  },
+  {
+   "code": "600378.SS",
+   "name": "昊华科技",
+   "market": "A股"
+  },
+  {
+   "code": "600353.SS",
+   "name": "旭光电子",
+   "market": "A股"
+  },
+  {
+   "code": "688598.SS",
+   "name": "金博股份",
+   "market": "A股"
+  },
+  {
+   "code": "002038.SZ",
+   "name": "双鹭药业",
+   "market": "A股"
+  },
+  {
+   "code": "000636.SZ",
+   "name": "风华高科",
+   "market": "A股"
+  },
+  {
+   "code": "600061.SS",
+   "name": "国投资本",
+   "market": "A股"
+  },
+  {
+   "code": "600667.SS",
+   "name": "太极实业",
+   "market": "A股"
+  },
+  {
+   "code": "300347.SZ",
+   "name": "泰格医药",
+   "market": "A股"
+  },
+  {
+   "code": "002384.SZ",
+   "name": "东山精密",
+   "market": "A股"
+  },
+  {
+   "code": "688143.SS",
+   "name": "长盈通",
+   "market": "A股"
+  },
+  {
+   "code": "688146.SS",
+   "name": "中船特气",
+   "market": "A股"
+  },
+  {
+   "code": "601156.SS",
+   "name": "东航物流",
+   "market": "A股"
+  },
+  {
+   "code": "002522.SZ",
+   "name": "浙江众成",
+   "market": "A股"
+  },
+  {
+   "code": "300765.SZ",
+   "name": "石药创新",
+   "market": "A股"
+  },
+  {
+   "code": "300759.SZ",
+   "name": "康龙化成",
+   "market": "A股"
+  },
+  {
+   "code": "003032.SZ",
+   "name": "传智教育",
+   "market": "A股"
+  },
+  {
+   "code": "600498.SS",
+   "name": "烽火通信",
+   "market": "A股"
+  },
+  {
+   "code": "002463.SZ",
+   "name": "沪电股份",
+   "market": "A股"
+  },
+  {
+   "code": "600282.SS",
+   "name": "南钢股份",
+   "market": "A股"
+  },
+  {
+   "code": "601216.SS",
+   "name": "君正集团",
+   "market": "A股"
+  },
+  {
+   "code": "605179.SS",
+   "name": "一鸣食品",
+   "market": "A股"
+  },
+  {
+   "code": "300408.SZ",
+   "name": "三环集团",
+   "market": "A股"
+  },
+  {
+   "code": "688017.SS",
+   "name": "绿的谐波",
+   "market": "A股"
+  },
+  {
+   "code": "301047.SZ",
+   "name": "义翘神州",
+   "market": "A股"
+  },
+  {
+   "code": "002670.SZ",
+   "name": "国盛证券",
+   "market": "A股"
+  },
+  {
+   "code": "002821.SZ",
+   "name": "凯莱英",
+   "market": "A股"
+  },
+  {
+   "code": "003031.SZ",
+   "name": "中瓷电子",
+   "market": "A股"
+  },
+  {
+   "code": "688048.SS",
+   "name": "长光华芯",
+   "market": "A股"
+  },
+  {
+   "code": "600805.SS",
+   "name": "悦达投资",
+   "market": "A股"
+  },
+  {
+   "code": "603228.SS",
+   "name": "景旺电子",
+   "market": "A股"
+  },
+  {
+   "code": "601800.SS",
+   "name": "中国交建",
+   "market": "A股"
+  },
+  {
+   "code": "601208.SS",
+   "name": "东材科技",
+   "market": "A股"
+  },
+  {
+   "code": "600212.SS",
+   "name": "绿能慧充",
+   "market": "A股"
+  },
+  {
+   "code": "000938.SZ",
+   "name": "紫光股份",
+   "market": "A股"
+  },
+  {
+   "code": "601186.SS",
+   "name": "中国铁建",
+   "market": "A股"
+  },
+  {
+   "code": "300373.SZ",
+   "name": "扬杰科技",
+   "market": "A股"
+  },
+  {
+   "code": "002422.SZ",
+   "name": "科伦药业",
+   "market": "A股"
+  },
+  {
+   "code": "688167.SS",
+   "name": "炬光科技",
+   "market": "A股"
+  },
+  {
+   "code": "600025.SS",
+   "name": "华能水电",
+   "market": "A股"
+  },
+  {
+   "code": "600179.SS",
+   "name": "安通控股",
+   "market": "A股"
+  },
+  {
+   "code": "301200.SZ",
+   "name": "大族数控",
+   "market": "A股"
+  },
+  {
+   "code": "002052.SZ",
+   "name": "同洲电子",
+   "market": "A股"
+  },
+  {
+   "code": "002183.SZ",
+   "name": "怡 亚 通",
+   "market": "A股"
+  },
+  {
+   "code": "600105.SS",
+   "name": "永鼎股份",
+   "market": "A股"
+  },
+  {
+   "code": "688266.SS",
+   "name": "泽璟制药-U",
+   "market": "A股"
+  },
+  {
+   "code": "300476.SZ",
+   "name": "胜宏科技",
+   "market": "A股"
+  },
+  {
+   "code": "301377.SZ",
+   "name": "鼎泰高科",
+   "market": "A股"
+  },
+  {
+   "code": "600452.SS",
+   "name": "涪陵电力",
+   "market": "A股"
+  },
+  {
+   "code": "301308.SZ",
+   "name": "江波龙",
+   "market": "A股"
+  },
+  {
+   "code": "688158.SS",
+   "name": "优刻得-W",
+   "market": "A股"
+  },
+  {
+   "code": "600873.SS",
+   "name": "梅花生物",
+   "market": "A股"
+  },
+  {
+   "code": "002832.SZ",
+   "name": "比音勒芬",
+   "market": "A股"
+  },
+  {
+   "code": "600330.SS",
+   "name": "天通股份",
+   "market": "A股"
+  },
+  {
+   "code": "601666.SS",
+   "name": "平煤股份",
+   "market": "A股"
+  },
+  {
+   "code": "000977.SZ",
+   "name": "浪潮信息",
+   "market": "A股"
+  },
+  {
+   "code": "002841.SZ",
+   "name": "视源股份",
+   "market": "A股"
+  },
+  {
+   "code": "688008.SS",
+   "name": "澜起科技",
+   "market": "A股"
+  },
+  {
+   "code": "002655.SZ",
+   "name": "共达电声",
+   "market": "A股"
+  },
+  {
+   "code": "600703.SS",
+   "name": "三安光电",
+   "market": "A股"
+  },
+  {
+   "code": "600491.SS",
+   "name": "ST龙元",
+   "market": "A股"
+  },
+  {
+   "code": "603486.SS",
+   "name": "科沃斯",
+   "market": "A股"
+  },
+  {
+   "code": "688323.SS",
+   "name": "瑞华泰",
+   "market": "A股"
+  },
+  {
+   "code": "603186.SS",
+   "name": "华正新材",
+   "market": "A股"
+  },
+  {
+   "code": "000061.SZ",
+   "name": "农 产 品",
+   "market": "A股"
+  },
+  {
+   "code": "002152.SZ",
+   "name": "广电运通",
+   "market": "A股"
+  },
+  {
+   "code": "688300.SS",
+   "name": "联瑞新材",
+   "market": "A股"
+  },
+  {
+   "code": "603127.SS",
+   "name": "昭衍新药",
+   "market": "A股"
+  },
+  {
+   "code": "301682.SZ",
+   "name": "宏明电子",
+   "market": "A股"
+  },
+  {
+   "code": "000513.SZ",
+   "name": "丽珠集团",
+   "market": "A股"
+  },
+  {
+   "code": "600009.SS",
+   "name": "上海机场",
+   "market": "A股"
+  },
+  {
+   "code": "002407.SZ",
+   "name": "多氟多",
+   "market": "A股"
+  },
+  {
+   "code": "000921.SZ",
+   "name": "海信家电",
+   "market": "A股"
+  },
+  {
+   "code": "300969.SZ",
+   "name": "恒帅股份",
+   "market": "A股"
+  },
+  {
+   "code": "002138.SZ",
+   "name": "顺络电子",
+   "market": "A股"
+  },
+  {
+   "code": "600062.SS",
+   "name": "华润双鹤",
+   "market": "A股"
+  },
+  {
+   "code": "603052.SS",
+   "name": "可川科技",
+   "market": "A股"
+  },
+  {
+   "code": "300857.SZ",
+   "name": "协创数据",
+   "market": "A股"
+  },
+  {
+   "code": "603259.SS",
+   "name": "药明康德",
+   "market": "A股"
+  },
+  {
+   "code": "002916.SZ",
+   "name": "深南电路",
+   "market": "A股"
+  },
+  {
+   "code": "688625.SS",
+   "name": "呈和科技",
+   "market": "A股"
+  },
+  {
+   "code": "600089.SS",
+   "name": "特变电工",
+   "market": "A股"
+  },
+  {
+   "code": "002980.SZ",
+   "name": "华盛昌",
+   "market": "A股"
+  },
+  {
+   "code": "301007.SZ",
+   "name": "德迈仕",
+   "market": "A股"
+  },
+  {
+   "code": "688257.SS",
+   "name": "新锐股份",
+   "market": "A股"
+  },
+  {
+   "code": "688627.SS",
+   "name": "精智达",
+   "market": "A股"
+  },
+  {
+   "code": "688498.SS",
+   "name": "源杰科技",
+   "market": "A股"
+  },
+  {
+   "code": "001317.SZ",
+   "name": "三羊马",
+   "market": "A股"
+  },
+  {
+   "code": "601138.SS",
+   "name": "工业富联",
+   "market": "A股"
+  },
+  {
+   "code": "301680.SZ",
+   "name": "固德电材",
+   "market": "A股"
+  },
+  {
+   "code": "688331.SS",
+   "name": "荣昌生物",
+   "market": "A股"
+  },
+  {
+   "code": "300223.SZ",
+   "name": "君正股份",
+   "market": "A股"
+  },
+  {
+   "code": "300607.SZ",
+   "name": "拓斯达",
+   "market": "A股"
+  },
+  {
+   "code": "688519.SS",
+   "name": "南亚新材",
+   "market": "A股"
+  },
+  {
+   "code": "603002.SS",
+   "name": "宏昌电子",
+   "market": "A股"
+  },
+  {
+   "code": "002668.SZ",
+   "name": "TCL智家",
+   "market": "A股"
+  },
+  {
+   "code": "688313.SS",
+   "name": "仕佳光子",
+   "market": "A股"
+  },
+  {
+   "code": "688548.SS",
+   "name": "广钢气体",
+   "market": "A股"
+  },
+  {
+   "code": "688183.SS",
+   "name": "生益电子",
+   "market": "A股"
+  },
+  {
+   "code": "002364.SZ",
+   "name": "中恒电气",
+   "market": "A股"
+  },
+  {
+   "code": "300725.SZ",
+   "name": "药石科技",
+   "market": "A股"
+  },
+  {
+   "code": "603061.SS",
+   "name": "金海通",
+   "market": "A股"
+  },
+  {
+   "code": "002774.SZ",
+   "name": "快意电梯",
+   "market": "A股"
+  },
+  {
+   "code": "002141.SZ",
+   "name": "贤丰控股",
+   "market": "A股"
+  },
+  {
+   "code": "002903.SZ",
+   "name": "宇环数控",
+   "market": "A股"
+  },
+  {
+   "code": "002971.SZ",
+   "name": "和远气体",
+   "market": "A股"
+  },
+  {
+   "code": "300395.SZ",
+   "name": "菲利华",
+   "market": "A股"
+  },
+  {
+   "code": "605376.SS",
+   "name": "博迁新材",
+   "market": "A股"
+  },
+  {
+   "code": "300862.SZ",
+   "name": "蓝盾光电",
+   "market": "A股"
+  },
+  {
+   "code": "000887.SZ",
+   "name": "中鼎股份",
+   "market": "A股"
+  },
+  {
+   "code": "301080.SZ",
+   "name": "百普赛斯",
+   "market": "A股"
+  },
+  {
+   "code": "002631.SZ",
+   "name": "德尔未来",
+   "market": "A股"
+  },
+  {
+   "code": "002365.SZ",
+   "name": "永安药业",
+   "market": "A股"
+  },
+  {
+   "code": "300604.SZ",
+   "name": "长川科技",
+   "market": "A股"
+  },
+  {
+   "code": "688981.SS",
+   "name": "中芯国际",
+   "market": "A股"
+  },
+  {
+   "code": "301227.SZ",
+   "name": "森鹰窗业",
+   "market": "A股"
+  },
+  {
+   "code": "600267.SS",
+   "name": "海正药业",
+   "market": "A股"
+  },
+  {
+   "code": "002185.SZ",
+   "name": "华天科技",
+   "market": "A股"
+  },
+  {
+   "code": "002439.SZ",
+   "name": "启明星辰",
+   "market": "A股"
+  },
+  {
+   "code": "300363.SZ",
+   "name": "博腾股份",
+   "market": "A股"
+  },
+  {
+   "code": "603129.SS",
+   "name": "春风动力",
+   "market": "A股"
+  },
+  {
+   "code": "301631.SZ",
+   "name": "壹连科技",
+   "market": "A股"
+  },
+  {
+   "code": "300164.SZ",
+   "name": "通源石油",
+   "market": "A股"
+  },
+  {
+   "code": "300627.SZ",
+   "name": "华测导航",
+   "market": "A股"
+  },
+  {
+   "code": "000657.SZ",
+   "name": "中钨高新",
+   "market": "A股"
+  },
+  {
+   "code": "600363.SS",
+   "name": "联创光电",
+   "market": "A股"
+  },
+  {
+   "code": "300136.SZ",
+   "name": "信维通信",
+   "market": "A股"
+  },
+  {
+   "code": "688629.SS",
+   "name": "华丰科技",
+   "market": "A股"
+  },
+  {
+   "code": "600118.SS",
+   "name": "中国卫星",
+   "market": "A股"
+  },
+  {
+   "code": "601000.SS",
+   "name": "唐山港",
+   "market": "A股"
+  },
+  {
+   "code": "002001.SZ",
+   "name": "新 和 成",
+   "market": "A股"
+  },
+  {
+   "code": "688090.SS",
+   "name": "瑞松科技",
+   "market": "A股"
+  },
+  {
+   "code": "002396.SZ",
+   "name": "星网锐捷",
+   "market": "A股"
+  },
+  {
+   "code": "300620.SZ",
+   "name": "光库科技",
+   "market": "A股"
+  },
+  {
+   "code": "300016.SZ",
+   "name": "北陆药业",
+   "market": "A股"
+  },
+  {
+   "code": "300401.SZ",
+   "name": "花园生物",
+   "market": "A股"
+  },
+  {
+   "code": "002443.SZ",
+   "name": "金洲管道",
+   "market": "A股"
+  },
+  {
+   "code": "300720.SZ",
+   "name": "海川智能",
+   "market": "A股"
+  },
+  {
+   "code": "000779.SZ",
+   "name": "甘咨询",
+   "market": "A股"
+  },
+  {
+   "code": "002859.SZ",
+   "name": "洁美科技",
+   "market": "A股"
+  },
+  {
+   "code": "300049.SZ",
+   "name": "福瑞医科",
+   "market": "A股"
+  },
+  {
+   "code": "688690.SS",
+   "name": "纳微科技",
+   "market": "A股"
+  },
+  {
+   "code": "600549.SS",
+   "name": "厦门钨业",
+   "market": "A股"
+  },
+  {
+   "code": "603678.SS",
+   "name": "火炬电子",
+   "market": "A股"
+  },
+  {
+   "code": "300870.SZ",
+   "name": "欧陆通",
+   "market": "A股"
+  },
+  {
+   "code": "300911.SZ",
+   "name": "亿田智能",
+   "market": "A股"
+  },
+  {
+   "code": "603663.SS",
+   "name": "三祥新材",
+   "market": "A股"
+  },
+  {
+   "code": "002955.SZ",
+   "name": "鸿合科技",
+   "market": "A股"
+  },
+  {
+   "code": "000025.SZ",
+   "name": "特  力Ａ",
+   "market": "A股"
+  },
+  {
+   "code": "002303.SZ",
+   "name": "美盈森",
+   "market": "A股"
+  },
+  {
+   "code": "603338.SS",
+   "name": "浙江鼎力",
+   "market": "A股"
+  },
+  {
+   "code": "301232.SZ",
+   "name": "飞沃科技",
+   "market": "A股"
+  },
+  {
+   "code": "301092.SZ",
+   "name": "争光股份",
+   "market": "A股"
+  },
+  {
+   "code": "300122.SZ",
+   "name": "智飞生物",
+   "market": "A股"
+  },
+  {
+   "code": "002222.SZ",
+   "name": "福晶科技",
+   "market": "A股"
+  },
+  {
+   "code": "002768.SZ",
+   "name": "国恩股份",
+   "market": "A股"
+  },
+  {
+   "code": "000534.SZ",
+   "name": "万泽股份",
+   "market": "A股"
+  },
+  {
+   "code": "688127.SS",
+   "name": "蓝特光学",
+   "market": "A股"
+  },
+  {
+   "code": "688234.SS",
+   "name": "天岳先进",
+   "market": "A股"
+  },
+  {
+   "code": "002432.SZ",
+   "name": "九安医疗",
+   "market": "A股"
+  },
+  {
+   "code": "688630.SS",
+   "name": "芯碁微装",
+   "market": "A股"
+  },
+  {
+   "code": "600872.SS",
+   "name": "中炬高新",
+   "market": "A股"
+  },
+  {
+   "code": "603296.SS",
+   "name": "华勤技术",
+   "market": "A股"
+  },
+  {
+   "code": "600860.SS",
+   "name": "京城股份",
+   "market": "A股"
+  },
+  {
+   "code": "600228.SS",
+   "name": "返利科技",
+   "market": "A股"
+  },
+  {
+   "code": "300440.SZ",
+   "name": "运达科技",
+   "market": "A股"
+  },
+  {
+   "code": "688808.SS",
+   "name": "联讯仪器",
+   "market": "A股"
+  },
+  {
+   "code": "000960.SZ",
+   "name": "锡业股份",
+   "market": "A股"
+  },
+  {
+   "code": "600642.SS",
+   "name": "申能股份",
+   "market": "A股"
+  },
+  {
+   "code": "301171.SZ",
+   "name": "易点天下",
+   "market": "A股"
+  },
+  {
+   "code": "603290.SS",
+   "name": "斯达半导",
+   "market": "A股"
+  },
+  {
+   "code": "300671.SZ",
+   "name": "富满微",
+   "market": "A股"
+  },
+  {
+   "code": "300558.SZ",
+   "name": "贝达药业",
+   "market": "A股"
+  },
+  {
+   "code": "300201.SZ",
+   "name": "海伦哲",
+   "market": "A股"
+  },
+  {
+   "code": "601168.SS",
+   "name": "西部矿业",
+   "market": "A股"
+  },
+  {
+   "code": "688507.SS",
+   "name": "索辰科技",
+   "market": "A股"
+  },
+  {
+   "code": "002941.SZ",
+   "name": "新疆交建",
+   "market": "A股"
+  },
+  {
+   "code": "688235.SS",
+   "name": "百济神州",
+   "market": "A股"
+  },
+  {
+   "code": "688105.SS",
+   "name": "诺唯赞",
+   "market": "A股"
+  },
+  {
+   "code": "600262.SS",
+   "name": "北方股份",
+   "market": "A股"
+  },
+  {
+   "code": "601808.SS",
+   "name": "中海油服",
+   "market": "A股"
+  },
+  {
+   "code": "300454.SZ",
+   "name": "深信服",
+   "market": "A股"
+  },
+  {
+   "code": "605080.SS",
+   "name": "浙江自然",
+   "market": "A股"
+  },
+  {
+   "code": "300683.SZ",
+   "name": "海特生物",
+   "market": "A股"
+  },
+  {
+   "code": "300522.SZ",
+   "name": "世名科技",
+   "market": "A股"
+  },
+  {
+   "code": "002896.SZ",
+   "name": "中大力德",
+   "market": "A股"
+  },
+  {
+   "code": "688536.SS",
+   "name": "思瑞浦",
+   "market": "A股"
+  },
+  {
+   "code": "001232.SZ",
+   "name": "嘉立创",
+   "market": "A股"
+  },
+  {
+   "code": "300199.SZ",
+   "name": "翰宇药业",
+   "market": "A股"
+  },
+  {
+   "code": "603538.SS",
+   "name": "美诺华",
+   "market": "A股"
+  },
+  {
+   "code": "000895.SZ",
+   "name": "双汇发展",
+   "market": "A股"
+  },
+  {
+   "code": "002947.SZ",
+   "name": "恒铭达",
+   "market": "A股"
+  },
+  {
+   "code": "002310.SZ",
+   "name": "东方新能",
+   "market": "A股"
+  },
+  {
+   "code": "300626.SZ",
+   "name": "华瑞股份",
+   "market": "A股"
+  },
+  {
+   "code": "688052.SS",
+   "name": "纳芯微",
+   "market": "A股"
+  },
+  {
+   "code": "600961.SS",
+   "name": "株冶集团",
+   "market": "A股"
+  },
+  {
+   "code": "600397.SS",
+   "name": "江钨装备",
+   "market": "A股"
+  },
+  {
+   "code": "688172.SS",
+   "name": "燕东微",
+   "market": "A股"
+  },
+  {
+   "code": "688180.SS",
+   "name": "君实生物-U",
+   "market": "A股"
+  },
+  {
+   "code": "300811.SZ",
+   "name": "铂科新材",
+   "market": "A股"
+  },
+  {
+   "code": "600563.SS",
+   "name": "法拉电子",
+   "market": "A股"
+  },
+  {
+   "code": "603920.SS",
+   "name": "世运电路",
+   "market": "A股"
+  },
+  {
+   "code": "000593.SZ",
+   "name": "德龙汇能",
+   "market": "A股"
+  },
+  {
+   "code": "601633.SS",
+   "name": "长城汽车",
+   "market": "A股"
+  },
+  {
+   "code": "300088.SZ",
+   "name": "长信科技",
+   "market": "A股"
+  },
+  {
+   "code": "601577.SS",
+   "name": "长沙银行",
+   "market": "A股"
+  },
+  {
+   "code": "600989.SS",
+   "name": "宝丰能源",
+   "market": "A股"
+  },
+  {
+   "code": "603005.SS",
+   "name": "晶方科技",
+   "market": "A股"
+  },
+  {
+   "code": "300624.SZ",
+   "name": "万兴科技",
+   "market": "A股"
+  },
+  {
+   "code": "003018.SZ",
+   "name": "金富科技",
+   "market": "A股"
+  },
+  {
+   "code": "301039.SZ",
+   "name": "中集车辆",
+   "market": "A股"
+  },
+  {
+   "code": "002860.SZ",
+   "name": "星帅尔",
+   "market": "A股"
+  },
+  {
+   "code": "688658.SS",
+   "name": "悦康药业",
+   "market": "A股"
+  },
+  {
+   "code": "300214.SZ",
+   "name": "日科化学",
+   "market": "A股"
+  },
+  {
+   "code": "688114.SS",
+   "name": "华大智造",
+   "market": "A股"
+  },
+  {
+   "code": "300762.SZ",
+   "name": "上海瀚讯",
+   "market": "A股"
+  },
+  {
+   "code": "605111.SS",
+   "name": "新洁能",
+   "market": "A股"
+  },
+  {
+   "code": "688785.SS",
+   "name": "恒运昌",
+   "market": "A股"
+  },
+  {
+   "code": "688668.SS",
+   "name": "鼎通科技",
+   "market": "A股"
+  },
+  {
+   "code": "300657.SZ",
+   "name": "弘信电子",
+   "market": "A股"
+  },
+  {
+   "code": "688515.SS",
+   "name": "裕太微-U",
+   "market": "A股"
+  },
+  {
+   "code": "301607.SZ",
+   "name": "富特科技",
+   "market": "A股"
+  },
+  {
+   "code": "603308.SS",
+   "name": "应流股份",
+   "market": "A股"
+  },
+  {
+   "code": "688387.SS",
+   "name": "信科移动-U",
+   "market": "A股"
+  },
+  {
+   "code": "002354.SZ",
+   "name": "天娱数科",
+   "market": "A股"
+  },
+  {
+   "code": "688321.SS",
+   "name": "微芯生物",
+   "market": "A股"
+  },
+  {
+   "code": "688502.SS",
+   "name": "茂莱光学",
+   "market": "A股"
+  },
+  {
+   "code": "688200.SS",
+   "name": "华峰测控",
+   "market": "A股"
+  },
+  {
+   "code": "603501.SS",
+   "name": "豪威集团",
+   "market": "A股"
+  },
+  {
+   "code": "301373.SZ",
+   "name": "凌玮科技",
+   "market": "A股"
+  },
+  {
+   "code": "600456.SS",
+   "name": "宝钛股份",
+   "market": "A股"
+  },
+  {
+   "code": "301536.SZ",
+   "name": "星宸科技",
+   "market": "A股"
+  },
+  {
+   "code": "603938.SS",
+   "name": "三孚股份",
+   "market": "A股"
+  },
+  {
+   "code": "600879.SS",
+   "name": "航天电子",
+   "market": "A股"
+  },
+  {
+   "code": "301338.SZ",
+   "name": "凯格精机",
+   "market": "A股"
+  },
+  {
+   "code": "603124.SS",
+   "name": "江南新材",
+   "market": "A股"
+  },
+  {
+   "code": "000937.SZ",
+   "name": "冀中能源",
+   "market": "A股"
+  },
+  {
+   "code": "300353.SZ",
+   "name": "东土科技",
+   "market": "A股"
+  },
+  {
+   "code": "688207.SS",
+   "name": "格灵深瞳",
+   "market": "A股"
+  },
+  {
+   "code": "688261.SS",
+   "name": "东微半导",
+   "market": "A股"
+  },
+  {
+   "code": "601126.SS",
+   "name": "四方股份",
+   "market": "A股"
+  },
+  {
+   "code": "601231.SS",
+   "name": "环旭电子",
+   "market": "A股"
+  },
+  {
+   "code": "002643.SZ",
+   "name": "万润股份",
+   "market": "A股"
+  },
+  {
+   "code": "300567.SZ",
+   "name": "精测电子",
+   "market": "A股"
+  },
+  {
+   "code": "688368.SS",
+   "name": "晶丰明源",
+   "market": "A股"
+  },
+  {
+   "code": "000710.SZ",
+   "name": "贝瑞基因",
+   "market": "A股"
+  },
+  {
+   "code": "301050.SZ",
+   "name": "雷电微力",
+   "market": "A股"
+  },
+  {
+   "code": "300482.SZ",
+   "name": "万孚生物",
+   "market": "A股"
+  },
+  {
+   "code": "300009.SZ",
+   "name": "安科生物",
+   "market": "A股"
+  },
+  {
+   "code": "000709.SZ",
+   "name": "河钢股份",
+   "market": "A股"
+  },
+  {
+   "code": "603699.SS",
+   "name": "纽威股份",
+   "market": "A股"
+  },
+  {
+   "code": "688220.SS",
+   "name": "翱捷科技-U",
+   "market": "A股"
+  },
+  {
+   "code": "301191.SZ",
+   "name": "菲菱科思",
+   "market": "A股"
+  },
+  {
+   "code": "603079.SS",
+   "name": "圣达生物",
+   "market": "A股"
+  },
+  {
+   "code": "603890.SS",
+   "name": "春秋电子",
+   "market": "A股"
+  },
+  {
+   "code": "002117.SZ",
+   "name": "东港股份",
+   "market": "A股"
+  },
+  {
+   "code": "688767.SS",
+   "name": "博拓生物",
+   "market": "A股"
+  },
+  {
+   "code": "002346.SZ",
+   "name": "柘中股份",
+   "market": "A股"
+  },
+  {
+   "code": "300795.SZ",
+   "name": "米奥会展",
+   "market": "A股"
+  },
+  {
+   "code": "688378.SS",
+   "name": "奥来德",
+   "market": "A股"
+  },
+  {
+   "code": "688802.SS",
+   "name": "沐曦股份-U",
+   "market": "A股"
+  },
+  {
+   "code": "300034.SZ",
+   "name": "钢研高纳",
+   "market": "A股"
+  },
+  {
+   "code": "002815.SZ",
+   "name": "崇达技术",
+   "market": "A股"
+  },
+  {
+   "code": "002984.SZ",
+   "name": "森麒麟",
+   "market": "A股"
+  },
+  {
+   "code": "605167.SS",
+   "name": "利柏特",
+   "market": "A股"
+  },
+  {
+   "code": "300324.SZ",
+   "name": "旋极信息",
+   "market": "A股"
+  },
+  {
+   "code": "300846.SZ",
+   "name": "首都在线",
+   "market": "A股"
+  },
+  {
+   "code": "600769.SS",
+   "name": "祥龙电业",
+   "market": "A股"
+  },
+  {
+   "code": "688777.SS",
+   "name": "中控技术",
+   "market": "A股"
+  },
+  {
+   "code": "300413.SZ",
+   "name": "芒果超媒",
+   "market": "A股"
+  },
+  {
+   "code": "000026.SZ",
+   "name": "飞亚达",
+   "market": "A股"
+  },
+  {
+   "code": "002901.SZ",
+   "name": "大博医疗",
+   "market": "A股"
+  },
+  {
+   "code": "603226.SS",
+   "name": "菲林格尔",
+   "market": "A股"
+  },
+  {
+   "code": "300004.SZ",
+   "name": "南风股份",
+   "market": "A股"
+  },
+  {
+   "code": "688729.SS",
+   "name": "屹唐股份",
+   "market": "A股"
+  },
+  {
+   "code": "301093.SZ",
+   "name": "华兰股份",
+   "market": "A股"
+  },
+  {
+   "code": "001339.SZ",
+   "name": "智微智能",
+   "market": "A股"
+  },
+  {
+   "code": "603688.SS",
+   "name": "石英股份",
+   "market": "A股"
+  },
+  {
+   "code": "300244.SZ",
+   "name": "迪安诊断",
+   "market": "A股"
+  },
+  {
+   "code": "603068.SS",
+   "name": "博通集成",
+   "market": "A股"
+  },
+  {
+   "code": "603087.SS",
+   "name": "甘李药业",
+   "market": "A股"
+  },
+  {
+   "code": "002179.SZ",
+   "name": "中航光电",
+   "market": "A股"
+  },
+  {
+   "code": "002378.SZ",
+   "name": "章源钨业",
+   "market": "A股"
+  },
+  {
+   "code": "300740.SZ",
+   "name": "水羊股份",
+   "market": "A股"
+  },
+  {
+   "code": "002965.SZ",
+   "name": "祥鑫科技",
+   "market": "A股"
+  },
+  {
+   "code": "002969.SZ",
+   "name": "嘉美包装",
+   "market": "A股"
+  },
+  {
+   "code": "603679.SS",
+   "name": "华体科技",
+   "market": "A股"
+  },
+  {
+   "code": "688615.SS",
+   "name": "合合信息",
+   "market": "A股"
+  },
+  {
+   "code": "002990.SZ",
+   "name": "盛视科技",
+   "market": "A股"
+  },
+  {
+   "code": "300991.SZ",
+   "name": "创益通",
+   "market": "A股"
+  },
+  {
+   "code": "688131.SS",
+   "name": "皓元医药",
+   "market": "A股"
+  },
+  {
+   "code": "300782.SZ",
+   "name": "卓胜微",
+   "market": "A股"
+  },
+  {
+   "code": "300069.SZ",
+   "name": "金利华电",
+   "market": "A股"
+  },
+  {
+   "code": "002913.SZ",
+   "name": "奥士康",
+   "market": "A股"
+  },
+  {
+   "code": "300790.SZ",
+   "name": "宇瞳光学",
+   "market": "A股"
+  },
+  {
+   "code": "600012.SS",
+   "name": "皖通高速",
+   "market": "A股"
+  },
+  {
+   "code": "688628.SS",
+   "name": "优利德",
+   "market": "A股"
+  },
+  {
+   "code": "000823.SZ",
+   "name": "超声电子",
+   "market": "A股"
+  },
+  {
+   "code": "000739.SZ",
+   "name": "普洛药业",
+   "market": "A股"
+  },
+  {
+   "code": "600459.SS",
+   "name": "贵研铂业",
+   "market": "A股"
+  },
+  {
+   "code": "001210.SZ",
+   "name": "金房能源",
+   "market": "A股"
+  },
+  {
+   "code": "301128.SZ",
+   "name": "强瑞技术",
+   "market": "A股"
+  },
+  {
+   "code": "603333.SS",
+   "name": "福华尚纬",
+   "market": "A股"
+  },
+  {
+   "code": "301362.SZ",
+   "name": "民爆光电",
+   "market": "A股"
+  },
+  {
+   "code": "301189.SZ",
+   "name": "奥尼电子",
+   "market": "A股"
+  },
+  {
+   "code": "688206.SS",
+   "name": "概伦电子",
+   "market": "A股"
+  },
+  {
+   "code": "603392.SS",
+   "name": "万泰生物",
+   "market": "A股"
+  },
+  {
+   "code": "000566.SZ",
+   "name": "海南海药",
+   "market": "A股"
+  },
+  {
+   "code": "688239.SS",
+   "name": "航宇科技",
+   "market": "A股"
+  },
+  {
+   "code": "300835.SZ",
+   "name": "龙磁科技",
+   "market": "A股"
+  },
+  {
+   "code": "603903.SS",
+   "name": "中持股份",
+   "market": "A股"
+  },
+  {
+   "code": "300970.SZ",
+   "name": "华绿生物",
+   "market": "A股"
+  },
+  {
+   "code": "300593.SZ",
+   "name": "新雷能",
+   "market": "A股"
+  },
+  {
+   "code": "603137.SS",
+   "name": "恒尚节能",
+   "market": "A股"
+  },
+  {
+   "code": "300747.SZ",
+   "name": "锐科激光",
+   "market": "A股"
+  },
+  {
+   "code": "300196.SZ",
+   "name": "长海股份",
+   "market": "A股"
+  },
+  {
+   "code": "300420.SZ",
+   "name": "五洋自控",
+   "market": "A股"
+  },
+  {
+   "code": "688166.SS",
+   "name": "博瑞医药",
+   "market": "A股"
+  },
+  {
+   "code": "603456.SS",
+   "name": "九洲药业",
+   "market": "A股"
+  },
+  {
+   "code": "688809.SS",
+   "name": "强一股份",
+   "market": "A股"
+  },
+  {
+   "code": "688428.SS",
+   "name": "诺诚健华",
+   "market": "A股"
+  },
+  {
+   "code": "603882.SS",
+   "name": "金域医学",
+   "market": "A股"
+  },
+  {
+   "code": "002126.SZ",
+   "name": "银轮股份",
+   "market": "A股"
+  },
+  {
+   "code": "688296.SS",
+   "name": "和达科技",
+   "market": "A股"
+  },
+  {
+   "code": "300568.SZ",
+   "name": "星源材质",
+   "market": "A股"
+  },
+  {
+   "code": "600008.SS",
+   "name": "首创环保",
+   "market": "A股"
+  },
+  {
+   "code": "603682.SS",
+   "name": "锦和商管",
+   "market": "A股"
+  },
+  {
+   "code": "002297.SZ",
+   "name": "博云新材",
+   "market": "A股"
+  },
+  {
+   "code": "002402.SZ",
+   "name": "和而泰",
+   "market": "A股"
+  },
+  {
+   "code": "600398.SS",
+   "name": "海澜之家",
+   "market": "A股"
+  },
+  {
+   "code": "300841.SZ",
+   "name": "康华生物",
+   "market": "A股"
+  },
+  {
+   "code": "300364.SZ",
+   "name": "中文在线",
+   "market": "A股"
+  },
+  {
+   "code": "301310.SZ",
+   "name": "鑫宏业",
+   "market": "A股"
+  },
+  {
+   "code": "301269.SZ",
+   "name": "华大九天",
+   "market": "A股"
+  },
+  {
+   "code": "300005.SZ",
+   "name": "探路者",
+   "market": "A股"
+  },
+  {
+   "code": "002865.SZ",
+   "name": "钧达股份",
+   "market": "A股"
+  },
+  {
+   "code": "002886.SZ",
+   "name": "沃特股份",
+   "market": "A股"
+  },
+  {
+   "code": "300357.SZ",
+   "name": "我武生物",
+   "market": "A股"
+  },
+  {
+   "code": "603588.SS",
+   "name": "高能环境",
+   "market": "A股"
+  },
+  {
+   "code": "301070.SZ",
+   "name": "开勒股份",
+   "market": "A股"
+  },
+  {
+   "code": "002429.SZ",
+   "name": "兆驰股份",
+   "market": "A股"
+  },
+  {
+   "code": "603516.SS",
+   "name": "淳中科技",
+   "market": "A股"
+  },
+  {
+   "code": "301566.SZ",
+   "name": "达利凯普",
+   "market": "A股"
+  },
+  {
+   "code": "301106.SZ",
+   "name": "骏成科技",
+   "market": "A股"
+  },
+  {
+   "code": "300469.SZ",
+   "name": "信息发展",
+   "market": "A股"
+  },
+  {
+   "code": "000582.SZ",
+   "name": "北部湾港",
+   "market": "A股"
+  },
+  {
+   "code": "688796.SS",
+   "name": "百奥赛图",
+   "market": "A股"
+  },
+  {
+   "code": "002449.SZ",
+   "name": "国星光电",
+   "market": "A股"
+  },
+  {
+   "code": "600114.SS",
+   "name": "东睦股份",
+   "market": "A股"
+  },
+  {
+   "code": "600588.SS",
+   "name": "用友网络",
+   "market": "A股"
+  },
+  {
+   "code": "688047.SS",
+   "name": "龙芯中科",
+   "market": "A股"
+  },
+  {
+   "code": "000782.SZ",
+   "name": "恒申新材",
+   "market": "A股"
+  },
+  {
+   "code": "688137.SS",
+   "name": "近岸蛋白",
+   "market": "A股"
+  },
+  {
+   "code": "000032.SZ",
+   "name": "深桑达Ａ",
+   "market": "A股"
+  },
+  {
+   "code": "688380.SS",
+   "name": "中微半导",
+   "market": "A股"
+  },
+  {
+   "code": "002943.SZ",
+   "name": "宇晶股份",
+   "market": "A股"
+  },
+  {
+   "code": "600410.SS",
+   "name": "华胜天成",
+   "market": "A股"
+  },
+  {
+   "code": "002235.SZ",
+   "name": "安妮股份",
+   "market": "A股"
+  },
+  {
+   "code": "688286.SS",
+   "name": "敏芯股份",
+   "market": "A股"
+  },
+  {
+   "code": "002686.SZ",
+   "name": "亿利达",
+   "market": "A股"
+  },
+  {
+   "code": "001326.SZ",
+   "name": "联域股份",
+   "market": "A股"
+  },
+  {
+   "code": "688270.SS",
+   "name": "ST臻镭",
+   "market": "A股"
+  },
+  {
+   "code": "600925.SS",
+   "name": "苏能股份",
+   "market": "A股"
+  },
+  {
+   "code": "301382.SZ",
+   "name": "蜂助手",
+   "market": "A股"
+  },
+  {
+   "code": "600116.SS",
+   "name": "三峡水利",
+   "market": "A股"
+  },
+  {
+   "code": "300487.SZ",
+   "name": "蓝晓科技",
+   "market": "A股"
+  },
+  {
+   "code": "688027.SS",
+   "name": "国盾量子",
+   "market": "A股"
+  },
+  {
+   "code": "002250.SZ",
+   "name": "联化科技",
+   "market": "A股"
+  },
+  {
+   "code": "688068.SS",
+   "name": "热景生物",
+   "market": "A股"
+  },
+  {
+   "code": "300540.SZ",
+   "name": "蜀道装备",
+   "market": "A股"
+  },
+  {
+   "code": "600908.SS",
+   "name": "无锡银行",
+   "market": "A股"
+  },
+  {
+   "code": "688059.SS",
+   "name": "华锐精密",
+   "market": "A股"
+  },
+  {
+   "code": "300486.SZ",
+   "name": "东杰智能",
+   "market": "A股"
+  },
+  {
+   "code": "301150.SZ",
+   "name": "中一科技",
+   "market": "A股"
+  },
+  {
+   "code": "688795.SS",
+   "name": "摩尔线程-U",
+   "market": "A股"
+  },
+  {
+   "code": "300354.SZ",
+   "name": "东华测试",
+   "market": "A股"
+  },
+  {
+   "code": "688046.SS",
+   "name": "药康生物",
+   "market": "A股"
+  },
+  {
+   "code": "688818.SS",
+   "name": "电科蓝天",
+   "market": "A股"
+  },
+  {
+   "code": "603395.SS",
+   "name": "红四方",
+   "market": "A股"
+  },
+  {
+   "code": "300149.SZ",
+   "name": "睿智医药",
+   "market": "A股"
+  },
+  {
+   "code": "002828.SZ",
+   "name": "贝肯能源",
+   "market": "A股"
+  },
+  {
+   "code": "002787.SZ",
+   "name": "华源控股",
+   "market": "A股"
+  },
+  {
+   "code": "688238.SS",
+   "name": "和元生物",
+   "market": "A股"
+  },
+  {
+   "code": "002897.SZ",
+   "name": "意华股份",
+   "market": "A股"
+  },
+  {
+   "code": "688319.SS",
+   "name": "欧林生物",
+   "market": "A股"
+  },
+  {
+   "code": "688381.SS",
+   "name": "帝奥微",
+   "market": "A股"
+  },
+  {
+   "code": "000951.SZ",
+   "name": "中国重汽",
+   "market": "A股"
+  },
+  {
+   "code": "600936.SS",
+   "name": "北投科技",
+   "market": "A股"
+  },
+  {
+   "code": "688416.SS",
+   "name": "恒烁股份",
+   "market": "A股"
+  },
+  {
+   "code": "300093.SZ",
+   "name": "金刚光伏",
+   "market": "A股"
+  },
+  {
+   "code": "002045.SZ",
+   "name": "国光电器",
+   "market": "A股"
+  },
+  {
+   "code": "688293.SS",
+   "name": "奥浦迈",
+   "market": "A股"
+  },
+  {
+   "code": "300877.SZ",
+   "name": "金春股份",
+   "market": "A股"
+  },
+  {
+   "code": "600750.SS",
+   "name": "华润江中",
+   "market": "A股"
+  },
+  {
+   "code": "688062.SS",
+   "name": "迈威生物-U",
+   "market": "A股"
+  },
+  {
+   "code": "603758.SS",
+   "name": "秦安股份",
+   "market": "A股"
+  },
+  {
+   "code": "301357.SZ",
+   "name": "北方长龙",
+   "market": "A股"
+  },
+  {
+   "code": "603260.SS",
+   "name": "合盛硅业",
+   "market": "A股"
+  },
+  {
+   "code": "301248.SZ",
+   "name": "杰创智能",
+   "market": "A股"
+  },
+  {
+   "code": "688383.SS",
+   "name": "新益昌",
+   "market": "A股"
+  },
+  {
+   "code": "688400.SS",
+   "name": "凌云光",
+   "market": "A股"
+  },
+  {
+   "code": "688018.SS",
+   "name": "乐鑫科技",
+   "market": "A股"
+  },
+  {
+   "code": "002488.SZ",
+   "name": "金固股份",
+   "market": "A股"
+  },
+  {
+   "code": "688506.SS",
+   "name": "百利天恒",
+   "market": "A股"
+  },
+  {
+   "code": "001359.SZ",
+   "name": "平安电工",
+   "market": "A股"
+  },
+  {
+   "code": "001367.SZ",
+   "name": "海森药业",
+   "market": "A股"
+  },
+  {
+   "code": "603439.SS",
+   "name": "三力制药",
+   "market": "A股"
+  },
+  {
+   "code": "001965.SZ",
+   "name": "招商公路",
+   "market": "A股"
+  },
+  {
+   "code": "603382.SS",
+   "name": "海阳科技",
+   "market": "A股"
+  },
+  {
+   "code": "688359.SS",
+   "name": "三孚新科",
+   "market": "A股"
+  },
+  {
+   "code": "001287.SZ",
+   "name": "中电港",
+   "market": "A股"
+  },
+  {
+   "code": "603267.SS",
+   "name": "鸿远电子",
+   "market": "A股"
+  },
+  {
+   "code": "600380.SS",
+   "name": "健康元",
+   "market": "A股"
+  },
+  {
+   "code": "300151.SZ",
+   "name": "昌红科技",
+   "market": "A股"
+  },
+  {
+   "code": "688258.SS",
+   "name": "卓易信息",
+   "market": "A股"
+  },
+  {
+   "code": "601799.SS",
+   "name": "星宇股份",
+   "market": "A股"
+  },
+  {
+   "code": "002922.SZ",
+   "name": "伊戈尔",
+   "market": "A股"
+  },
+  {
+   "code": "002755.SZ",
+   "name": "奥赛康",
+   "market": "A股"
+  },
+  {
+   "code": "301458.SZ",
+   "name": "钧崴电子",
+   "market": "A股"
+  },
+  {
+   "code": "300852.SZ",
+   "name": "四会富仕",
+   "market": "A股"
+  },
+  {
+   "code": "300003.SZ",
+   "name": "乐普医疗",
+   "market": "A股"
+  },
+  {
+   "code": "601615.SS",
+   "name": "明阳智能",
+   "market": "A股"
+  },
+  {
+   "code": "002843.SZ",
+   "name": "泰嘉股份",
+   "market": "A股"
+  },
+  {
+   "code": "300929.SZ",
+   "name": "华骐环保",
+   "market": "A股"
+  },
+  {
+   "code": "688608.SS",
+   "name": "恒玄科技",
+   "market": "A股"
+  },
+  {
+   "code": "603038.SS",
+   "name": "华立股份",
+   "market": "A股"
+  },
+  {
+   "code": "688221.SS",
+   "name": "前沿生物-U",
+   "market": "A股"
+  },
+  {
+   "code": "300951.SZ",
+   "name": "博硕科技",
+   "market": "A股"
+  },
+  {
+   "code": "002793.SZ",
+   "name": "罗欣药业",
+   "market": "A股"
+  },
+  {
+   "code": "000525.SZ",
+   "name": "红太阳",
+   "market": "A股"
+  },
+  {
+   "code": "301201.SZ",
+   "name": "诚达药业",
+   "market": "A股"
+  },
+  {
+   "code": "002669.SZ",
+   "name": "康达新材",
+   "market": "A股"
+  },
+  {
+   "code": "301379.SZ",
+   "name": "天山电子",
+   "market": "A股"
+  },
+  {
+   "code": "003013.SZ",
+   "name": "地铁设计",
+   "market": "A股"
+  },
+  {
+   "code": "603102.SS",
+   "name": "百合股份",
+   "market": "A股"
+  },
+  {
+   "code": "688720.SS",
+   "name": "艾森股份",
+   "market": "A股"
+  },
+  {
+   "code": "002940.SZ",
+   "name": "昂利康",
+   "market": "A股"
+  },
+  {
+   "code": "300465.SZ",
+   "name": "高伟达",
+   "market": "A股"
+  },
+  {
+   "code": "002208.SZ",
+   "name": "合肥城建",
+   "market": "A股"
+  },
+  {
+   "code": "000989.SZ",
+   "name": "九芝堂",
+   "market": "A股"
+  },
+  {
+   "code": "688568.SS",
+   "name": "中科星图",
+   "market": "A股"
+  },
+  {
+   "code": "300941.SZ",
+   "name": "创识科技",
+   "market": "A股"
+  },
+  {
+   "code": "688318.SS",
+   "name": "财富趋势",
+   "market": "A股"
+  },
+  {
+   "code": "605162.SS",
+   "name": "新中港",
+   "market": "A股"
+  },
+  {
+   "code": "688583.SS",
+   "name": "思看科技",
+   "market": "A股"
+  },
+  {
+   "code": "300692.SZ",
+   "name": "中赋科技",
+   "market": "A股"
+  },
+  {
+   "code": "603698.SS",
+   "name": "航天工程",
+   "market": "A股"
+  },
+  {
+   "code": "688390.SS",
+   "name": "固德威",
+   "market": "A股"
+  },
+  {
+   "code": "600151.SS",
+   "name": "航天机电",
+   "market": "A股"
+  },
+  {
+   "code": "301568.SZ",
+   "name": "思泰克",
+   "market": "A股"
+  },
+  {
+   "code": "688710.SS",
+   "name": "益诺思",
+   "market": "A股"
+  },
+  {
+   "code": "300046.SZ",
+   "name": "台基股份",
+   "market": "A股"
+  },
+  {
+   "code": "688775.SS",
+   "name": "影石创新",
+   "market": "A股"
+  },
+  {
+   "code": "001221.SZ",
+   "name": "悍高集团",
+   "market": "A股"
+  },
+  {
+   "code": "688091.SS",
+   "name": "上海谊众",
+   "market": "A股"
+  },
+  {
+   "code": "688117.SS",
+   "name": "圣诺生物",
+   "market": "A股"
+  },
+  {
+   "code": "688669.SS",
+   "name": "聚石化学",
+   "market": "A股"
+  },
+  {
+   "code": "603800.SS",
+   "name": "洪田股份",
+   "market": "A股"
+  },
+  {
+   "code": "300791.SZ",
+   "name": "仙乐健康",
+   "market": "A股"
+  },
+  {
+   "code": "300171.SZ",
+   "name": "东富龙",
+   "market": "A股"
+  },
+  {
+   "code": "601061.SS",
+   "name": "中信金属",
+   "market": "A股"
+  },
+  {
+   "code": "603590.SS",
+   "name": "康辰药业",
+   "market": "A股"
+  },
+  {
+   "code": "603400.SS",
+   "name": "华之杰",
+   "market": "A股"
+  },
+  {
+   "code": "600757.SS",
+   "name": "长江传媒",
+   "market": "A股"
+  },
+  {
+   "code": "301369.SZ",
+   "name": "联动科技",
+   "market": "A股"
+  },
+  {
+   "code": "688656.SS",
+   "name": "浩欧博",
+   "market": "A股"
+  },
+  {
+   "code": "301115.SZ",
+   "name": "联检科技",
+   "market": "A股"
+  },
+  {
+   "code": "688312.SS",
+   "name": "燕麦科技",
+   "market": "A股"
+  },
+  {
+   "code": "688711.SS",
+   "name": "宏微科技",
+   "market": "A股"
+  },
+  {
+   "code": "301176.SZ",
+   "name": "逸豪新材",
+   "market": "A股"
+  },
+  {
+   "code": "301257.SZ",
+   "name": "普蕊斯",
+   "market": "A股"
+  },
+  {
+   "code": "300174.SZ",
+   "name": "元力股份",
+   "market": "A股"
+  },
+  {
+   "code": "300697.SZ",
+   "name": "电工合金",
+   "market": "A股"
+  },
+  {
+   "code": "002911.SZ",
+   "name": "佛燃能源",
+   "market": "A股"
+  },
+  {
+   "code": "688758.SS",
+   "name": "赛分科技",
+   "market": "A股"
+  },
+  {
+   "code": "301095.SZ",
+   "name": "广立微",
+   "market": "A股"
+  },
+  {
+   "code": "301552.SZ",
+   "name": "科力装备",
+   "market": "A股"
+  },
+  {
+   "code": "300976.SZ",
+   "name": "达瑞电子",
+   "market": "A股"
+  },
+  {
+   "code": "301580.SZ",
+   "name": "爱迪特",
+   "market": "A股"
+  },
+  {
+   "code": "603211.SS",
+   "name": "晋拓股份",
+   "market": "A股"
+  },
+  {
+   "code": "301129.SZ",
+   "name": "瑞纳智能",
+   "market": "A股"
+  },
+  {
+   "code": "300485.SZ",
+   "name": "赛升药业",
+   "market": "A股"
+  },
+  {
+   "code": "603160.SS",
+   "name": "汇顶科技",
+   "market": "A股"
+  },
+  {
+   "code": "603716.SS",
+   "name": "塞力医疗",
+   "market": "A股"
+  },
+  {
+   "code": "300358.SZ",
+   "name": "楚天科技",
+   "market": "A股"
+  },
+  {
+   "code": "301202.SZ",
+   "name": "朗威股份",
+   "market": "A股"
+  },
+  {
+   "code": "300710.SZ",
+   "name": "万隆光电",
+   "market": "A股"
+  },
+  {
+   "code": "002289.SZ",
+   "name": "宇顺电子",
+   "market": "A股"
+  },
+  {
+   "code": "002693.SZ",
+   "name": "双成药业",
+   "market": "A股"
+  },
+  {
+   "code": "000899.SZ",
+   "name": "赣能股份",
+   "market": "A股"
+  },
+  {
+   "code": "688486.SS",
+   "name": "龙迅股份",
+   "market": "A股"
+  },
+  {
+   "code": "600063.SS",
+   "name": "皖维高新",
+   "market": "A股"
+  },
+  {
+   "code": "300589.SZ",
+   "name": "江龙船艇",
+   "market": "A股"
+  },
+  {
+   "code": "688327.SS",
+   "name": "云从科技-UW",
+   "market": "A股"
+  },
+  {
+   "code": "688289.SS",
+   "name": "圣湘生物",
+   "market": "A股"
+  },
+  {
+   "code": "603389.SS",
+   "name": "亚振家居",
+   "market": "A股"
+  },
+  {
+   "code": "001229.SZ",
+   "name": "魅视科技",
+   "market": "A股"
+  },
+  {
+   "code": "688209.SS",
+   "name": "英集芯",
+   "market": "A股"
+  },
+  {
+   "code": "301207.SZ",
+   "name": "华兰疫苗",
+   "market": "A股"
+  },
+  {
+   "code": "688276.SS",
+   "name": "百克生物",
+   "market": "A股"
+  },
+  {
+   "code": "300378.SZ",
+   "name": "鼎捷数智",
+   "market": "A股"
+  },
+  {
+   "code": "300304.SZ",
+   "name": "云意电气",
+   "market": "A股"
+  },
+  {
+   "code": "688307.SS",
+   "name": "中润光学",
+   "market": "A股"
+  },
+  {
+   "code": "000681.SZ",
+   "name": "视觉中国",
+   "market": "A股"
+  },
+  {
+   "code": "600237.SS",
+   "name": "铜峰电子",
+   "market": "A股"
+  },
+  {
+   "code": "600666.SS",
+   "name": "奥瑞德",
+   "market": "A股"
+  },
+  {
+   "code": "301333.SZ",
+   "name": "诺思格",
+   "market": "A股"
+  },
+  {
+   "code": "300913.SZ",
+   "name": "兆龙互连",
+   "market": "A股"
+  },
+  {
+   "code": "300735.SZ",
+   "name": "光弘科技",
+   "market": "A股"
+  },
+  {
+   "code": "300303.SZ",
+   "name": "聚飞光电",
+   "market": "A股"
+  },
+  {
+   "code": "603608.SS",
+   "name": "天创时尚",
+   "market": "A股"
+  },
+  {
+   "code": "002902.SZ",
+   "name": "铭普光磁",
+   "market": "A股"
+  },
+  {
+   "code": "688371.SS",
+   "name": "菲沃泰",
+   "market": "A股"
+  },
+  {
+   "code": "002345.SZ",
+   "name": "潮宏基",
+   "market": "A股"
+  },
+  {
+   "code": "300233.SZ",
+   "name": "金城医药",
+   "market": "A股"
+  },
+  {
+   "code": "600335.SS",
+   "name": "国机汽车",
+   "market": "A股"
+  },
+  {
+   "code": "603657.SS",
+   "name": "春光科技",
+   "market": "A股"
+  },
+  {
+   "code": "600812.SS",
+   "name": "华北制药",
+   "market": "A股"
+  },
+  {
+   "code": "300435.SZ",
+   "name": "中泰股份",
+   "market": "A股"
+  },
+  {
+   "code": "603533.SS",
+   "name": "掌阅科技",
+   "market": "A股"
+  },
+  {
+   "code": "688262.SS",
+   "name": "国芯科技",
+   "market": "A股"
+  },
+  {
+   "code": "600323.SS",
+   "name": "瀚蓝环境",
+   "market": "A股"
+  },
+  {
+   "code": "002796.SZ",
+   "name": "世嘉科技",
+   "market": "A股"
+  },
+  {
+   "code": "688107.SS",
+   "name": "安路科技",
+   "market": "A股"
+  },
+  {
+   "code": "605178.SS",
+   "name": "时空科技",
+   "market": "A股"
+  },
+  {
+   "code": "301326.SZ",
+   "name": "捷邦科技",
+   "market": "A股"
+  },
+  {
+   "code": "688135.SS",
+   "name": "利扬芯片",
+   "market": "A股"
+  },
+  {
+   "code": "688719.SS",
+   "name": "爱科赛博",
+   "market": "A股"
+  },
+  {
+   "code": "300632.SZ",
+   "name": "光莆股份",
+   "market": "A股"
+  },
+  {
+   "code": "688108.SS",
+   "name": "赛诺医疗",
+   "market": "A股"
+  },
+  {
+   "code": "301393.SZ",
+   "name": "昊帆生物",
+   "market": "A股"
+  },
+  {
+   "code": "002182.SZ",
+   "name": "宝武镁业",
+   "market": "A股"
+  },
+  {
+   "code": "002112.SZ",
+   "name": "三变科技",
+   "market": "A股"
+  },
+  {
+   "code": "002606.SZ",
+   "name": "大连电瓷",
+   "market": "A股"
+  },
+  {
+   "code": "002811.SZ",
+   "name": "郑中设计",
+   "market": "A股"
+  },
+  {
+   "code": "600857.SS",
+   "name": "宁波中百",
+   "market": "A股"
+  },
+  {
+   "code": "605018.SS",
+   "name": "长华集团",
+   "market": "A股"
+  },
+  {
+   "code": "002937.SZ",
+   "name": "兴瑞科技",
+   "market": "A股"
+  },
+  {
+   "code": "301166.SZ",
+   "name": "优宁维",
+   "market": "A股"
+  },
+  {
+   "code": "301012.SZ",
+   "name": "扬电科技",
+   "market": "A股"
+  },
+  {
+   "code": "300739.SZ",
+   "name": "明阳电路",
+   "market": "A股"
+  },
+  {
+   "code": "300633.SZ",
+   "name": "开立医疗",
+   "market": "A股"
+  },
+  {
+   "code": "301259.SZ",
+   "name": "艾布鲁",
+   "market": "A股"
+  },
+  {
+   "code": "002246.SZ",
+   "name": "北化股份",
+   "market": "A股"
+  },
+  {
+   "code": "301371.SZ",
+   "name": "敷尔佳",
+   "market": "A股"
+  },
+  {
+   "code": "002169.SZ",
+   "name": "智光电气",
+   "market": "A股"
+  },
+  {
+   "code": "300571.SZ",
+   "name": "平治信息",
+   "market": "A股"
+  },
+  {
+   "code": "603163.SS",
+   "name": "圣晖集成",
+   "market": "A股"
+  },
+  {
+   "code": "301137.SZ",
+   "name": "哈焊华通",
+   "market": "A股"
+  },
+  {
+   "code": "300825.SZ",
+   "name": "阿尔特",
+   "market": "A股"
+  },
+  {
+   "code": "300137.SZ",
+   "name": "先河环保",
+   "market": "A股"
+  },
+  {
+   "code": "300873.SZ",
+   "name": "海晨股份",
+   "market": "A股"
+  },
+  {
+   "code": "300939.SZ",
+   "name": "秋田微",
+   "market": "A股"
+  },
+  {
+   "code": "002993.SZ",
+   "name": "奥海科技",
+   "market": "A股"
+  },
+  {
+   "code": "688806.SS",
+   "name": "泰诺麦博-U",
+   "market": "A股"
+  },
+  {
+   "code": "600730.SS",
+   "name": "*ST高科",
+   "market": "A股"
+  },
+  {
+   "code": "002030.SZ",
+   "name": "达安基因",
+   "market": "A股"
+  },
+  {
+   "code": "301132.SZ",
+   "name": "满坤科技",
+   "market": "A股"
+  },
+  {
+   "code": "300668.SZ",
+   "name": "杰恩股份",
+   "market": "A股"
+  },
+  {
+   "code": "301225.SZ",
+   "name": "恒勃股份",
+   "market": "A股"
+  },
+  {
+   "code": "300964.SZ",
+   "name": "本川智能",
+   "market": "A股"
+  },
+  {
+   "code": "301603.SZ",
+   "name": "乔锋智能",
+   "market": "A股"
+  },
+  {
+   "code": "002592.SZ",
+   "name": "ST八菱",
+   "market": "A股"
+  },
+  {
+   "code": "002242.SZ",
+   "name": "九阳股份",
+   "market": "A股"
+  },
+  {
+   "code": "300962.SZ",
+   "name": "中金辐照",
+   "market": "A股"
+  },
+  {
+   "code": "300985.SZ",
+   "name": "致远新能",
+   "market": "A股"
+  },
+  {
+   "code": "002254.SZ",
+   "name": "泰和新材",
+   "market": "A股"
+  },
+  {
+   "code": "600400.SS",
+   "name": "红豆股份",
+   "market": "A股"
+  },
+  {
+   "code": "301630.SZ",
+   "name": "同宇新材",
+   "market": "A股"
+  },
+  {
+   "code": "300129.SZ",
+   "name": "泰胜风能",
+   "market": "A股"
+  },
+  {
+   "code": "301328.SZ",
+   "name": "维峰电子",
+   "market": "A股"
+  },
+  {
+   "code": "000639.SZ",
+   "name": "ST西王",
+   "market": "A股"
+  },
+  {
+   "code": "603016.SS",
+   "name": "新宏泰",
+   "market": "A股"
+  },
+  {
+   "code": "002221.SZ",
+   "name": "东华能源",
+   "market": "A股"
+  },
+  {
+   "code": "300587.SZ",
+   "name": "天铁科技",
+   "market": "A股"
+  },
+  {
+   "code": "688160.SS",
+   "name": "步科股份",
+   "market": "A股"
+  },
+  {
+   "code": "603398.SS",
+   "name": "*ST沐邦",
+   "market": "A股"
+  },
+  {
+   "code": "300053.SZ",
+   "name": "航宇微",
+   "market": "A股"
+  },
+  {
+   "code": "688488.SS",
+   "name": "艾迪药业",
+   "market": "A股"
+  },
+  {
+   "code": "688512.SS",
+   "name": "慧智微-U",
+   "market": "A股"
+  },
+  {
+   "code": "688551.SS",
+   "name": "科威尔",
+   "market": "A股"
+  },
+  {
+   "code": "002581.SZ",
+   "name": "*ST未名",
+   "market": "A股"
+  },
+  {
+   "code": "300520.SZ",
+   "name": "科大国创",
+   "market": "A股"
+  },
+  {
+   "code": "000608.SZ",
+   "name": "阳光股份",
+   "market": "A股"
+  },
+  {
+   "code": "603956.SS",
+   "name": "威派格",
+   "market": "A股"
+  },
+  {
+   "code": "688646.SS",
+   "name": "逸飞激光",
+   "market": "A股"
+  },
+  {
+   "code": "301677.SZ",
+   "name": "欣兴工具",
+   "market": "A股"
+  },
+  {
+   "code": "300686.SZ",
+   "name": "智动力",
+   "market": "A股"
+  },
+  {
+   "code": "600851.SS",
+   "name": "海欣股份",
+   "market": "A股"
+  },
+  {
+   "code": "601311.SS",
+   "name": "骆驼股份",
+   "market": "A股"
+  },
+  {
+   "code": "002023.SZ",
+   "name": "海特高新",
+   "market": "A股"
+  },
+  {
+   "code": "301182.SZ",
+   "name": "凯旺科技",
+   "market": "A股"
+  },
+  {
+   "code": "300712.SZ",
+   "name": "永福股份",
+   "market": "A股"
+  },
+  {
+   "code": "688520.SS",
+   "name": "神州细胞",
+   "market": "A股"
+  },
+  {
+   "code": "605366.SS",
+   "name": "宏柏新材",
+   "market": "A股"
+  },
+  {
+   "code": "301563.SZ",
+   "name": "云汉芯城",
+   "market": "A股"
+  },
+  {
+   "code": "300588.SZ",
+   "name": "熙菱信息",
+   "market": "A股"
+  },
+  {
+   "code": "000042.SZ",
+   "name": "中洲控股",
+   "market": "A股"
+  },
+  {
+   "code": "300071.SZ",
+   "name": "福石控股",
+   "market": "A股"
+  },
+  {
+   "code": "300785.SZ",
+   "name": "值得买",
+   "market": "A股"
+  },
+  {
+   "code": "300819.SZ",
+   "name": "聚杰微纤",
+   "market": "A股"
+  },
+  {
+   "code": "603380.SS",
+   "name": "易德龙",
+   "market": "A股"
+  },
+  {
+   "code": "300649.SZ",
+   "name": "杭州园林",
+   "market": "A股"
+  },
+  {
+   "code": "688218.SS",
+   "name": "江苏北人",
+   "market": "A股"
+  },
+  {
+   "code": "300853.SZ",
+   "name": "申昊科技",
+   "market": "A股"
+  },
+  {
+   "code": "300700.SZ",
+   "name": "岱勒新材",
+   "market": "A股"
+  },
+  {
+   "code": "003009.SZ",
+   "name": "中天火箭",
+   "market": "A股"
+  },
+  {
+   "code": "300515.SZ",
+   "name": "三德科技",
+   "market": "A股"
+  },
+  {
+   "code": "301323.SZ",
+   "name": "新莱福",
+   "market": "A股"
+  },
+  {
+   "code": "300294.SZ",
+   "name": "博雅生物",
+   "market": "A股"
+  },
+  {
+   "code": "001314.SZ",
+   "name": "亿道信息",
+   "market": "A股"
+  },
+  {
+   "code": "688176.SS",
+   "name": "亚虹医药-U",
+   "market": "A股"
+  },
+  {
+   "code": "300715.SZ",
+   "name": "凯伦股份",
+   "market": "A股"
+  },
+  {
+   "code": "300689.SZ",
+   "name": "澄天伟业",
+   "market": "A股"
+  },
+  {
+   "code": "300777.SZ",
+   "name": "中简科技",
+   "market": "A股"
+  },
+  {
+   "code": "300984.SZ",
+   "name": "金沃股份",
+   "market": "A股"
+  },
+  {
+   "code": "300617.SZ",
+   "name": "安靠智电",
+   "market": "A股"
+  },
+  {
+   "code": "603113.SS",
+   "name": "金能科技",
+   "market": "A股"
+  },
+  {
+   "code": "002123.SZ",
+   "name": "梦网科技",
+   "market": "A股"
+  },
+  {
+   "code": "301606.SZ",
+   "name": "绿联科技",
+   "market": "A股"
+  },
+  {
+   "code": "002404.SZ",
+   "name": "嘉欣丝绸",
+   "market": "A股"
+  },
+  {
+   "code": "300921.SZ",
+   "name": "南凌科技",
+   "market": "A股"
+  },
+  {
+   "code": "603886.SS",
+   "name": "元祖股份",
+   "market": "A股"
+  },
+  {
+   "code": "002399.SZ",
+   "name": "海普瑞",
+   "market": "A股"
+  },
+  {
+   "code": "688619.SS",
+   "name": "罗普特",
+   "market": "A股"
+  },
+  {
+   "code": "603416.SS",
+   "name": "信捷电气",
+   "market": "A股"
+  },
+  {
+   "code": "300055.SZ",
+   "name": "万邦达",
+   "market": "A股"
+  },
+  {
+   "code": "603130.SS",
+   "name": "云中马",
+   "market": "A股"
+  },
+  {
+   "code": "603712.SS",
+   "name": "七一二",
+   "market": "A股"
+  },
+  {
+   "code": "688636.SS",
+   "name": "智明达",
+   "market": "A股"
+  },
+  {
+   "code": "002559.SZ",
+   "name": "亚威股份",
+   "market": "A股"
+  },
+  {
+   "code": "002972.SZ",
+   "name": "科安达",
+   "market": "A股"
+  },
+  {
+   "code": "300018.SZ",
+   "name": "中元股份",
+   "market": "A股"
+  },
+  {
+   "code": "301387.SZ",
+   "name": "光大同创",
+   "market": "A股"
+  },
+  {
+   "code": "603367.SS",
+   "name": "辰欣药业",
+   "market": "A股"
+  },
+  {
+   "code": "600520.SS",
+   "name": "三佳科技",
+   "market": "A股"
+  },
+  {
+   "code": "688667.SS",
+   "name": "菱电电控",
+   "market": "A股"
+  },
+  {
+   "code": "300455.SZ",
+   "name": "航天智装",
+   "market": "A股"
+  },
+  {
+   "code": "688513.SS",
+   "name": "苑东生物",
+   "market": "A股"
+  },
+  {
+   "code": "002134.SZ",
+   "name": "天津普林",
+   "market": "A股"
+  },
+  {
+   "code": "301172.SZ",
+   "name": "君逸数码",
+   "market": "A股"
+  },
+  {
+   "code": "002788.SZ",
+   "name": "鹭燕医药",
+   "market": "A股"
+  },
+  {
+   "code": "688426.SS",
+   "name": "康为世纪",
+   "market": "A股"
+  },
+  {
+   "code": "300654.SZ",
+   "name": "世纪天鸿",
+   "market": "A股"
+  },
+  {
+   "code": "600261.SS",
+   "name": "阳光照明",
+   "market": "A股"
+  },
+  {
+   "code": "688418.SS",
+   "name": "震有科技",
+   "market": "A股"
+  },
+  {
+   "code": "300772.SZ",
+   "name": "运达股份",
+   "market": "A股"
+  },
+  {
+   "code": "300680.SZ",
+   "name": "隆盛科技",
+   "market": "A股"
+  },
+  {
+   "code": "300248.SZ",
+   "name": "新开普",
+   "market": "A股"
+  },
+  {
+   "code": "300858.SZ",
+   "name": "科拓生物",
+   "market": "A股"
+  },
+  {
+   "code": "300971.SZ",
+   "name": "博亚精工",
+   "market": "A股"
+  },
+  {
+   "code": "688443.SS",
+   "name": "智翔金泰-U",
+   "market": "A股"
+  },
+  {
+   "code": "002991.SZ",
+   "name": "甘源食品",
+   "market": "A股"
+  },
+  {
+   "code": "301161.SZ",
+   "name": "唯万密封",
+   "market": "A股"
+  },
+  {
+   "code": "688386.SS",
+   "name": "泛亚微透",
+   "market": "A股"
+  },
+  {
+   "code": "688590.SS",
+   "name": "新致软件",
+   "market": "A股"
+  },
+  {
+   "code": "001333.SZ",
+   "name": "光华股份",
+   "market": "A股"
+  },
+  {
+   "code": "002800.SZ",
+   "name": "天顺股份",
+   "market": "A股"
+  },
+  {
+   "code": "301687.SZ",
+   "name": "新广益",
+   "market": "A股"
+  },
+  {
+   "code": "300448.SZ",
+   "name": "浩云科技",
+   "market": "A股"
+  },
+  {
+   "code": "603311.SS",
+   "name": "金海高科",
+   "market": "A股"
+  },
+  {
+   "code": "002829.SZ",
+   "name": "星网宇达",
+   "market": "A股"
+  },
+  {
+   "code": "603001.SS",
+   "name": "奥康国际",
+   "market": "A股"
+  },
+  {
+   "code": "603004.SS",
+   "name": "鼎龙科技",
+   "market": "A股"
+  },
+  {
+   "code": "603435.SS",
+   "name": "嘉德利",
+   "market": "A股"
+  },
+  {
+   "code": "600835.SS",
+   "name": "上海机电",
+   "market": "A股"
+  },
+  {
+   "code": "300119.SZ",
+   "name": "瑞普生物",
+   "market": "A股"
+  },
+  {
+   "code": "300586.SZ",
+   "name": "美联新材",
+   "market": "A股"
+  },
+  {
+   "code": "300111.SZ",
+   "name": "向日葵",
+   "market": "A股"
+  },
+  {
+   "code": "301048.SZ",
+   "name": "金鹰重工",
+   "market": "A股"
+  },
+  {
+   "code": "300321.SZ",
+   "name": "同大股份",
+   "market": "A股"
+  },
+  {
+   "code": "600375.SS",
+   "name": "汉马科技",
+   "market": "A股"
+  },
+  {
+   "code": "301302.SZ",
+   "name": "华如科技",
+   "market": "A股"
+  },
+  {
+   "code": "300241.SZ",
+   "name": "瑞丰光电",
+   "market": "A股"
+  },
+  {
+   "code": "300893.SZ",
+   "name": "松原安全",
+   "market": "A股"
+  },
+  {
+   "code": "300478.SZ",
+   "name": "杭州高新",
+   "market": "A股"
+  },
+  {
+   "code": "300157.SZ",
+   "name": "新锦动力",
+   "market": "A股"
+  },
+  {
+   "code": "688216.SS",
+   "name": "气派科技",
+   "market": "A股"
+  },
+  {
+   "code": "603010.SS",
+   "name": "万盛股份",
+   "market": "A股"
+  },
+  {
+   "code": "300239.SZ",
+   "name": "东宝生物",
+   "market": "A股"
+  },
+  {
+   "code": "300608.SZ",
+   "name": "思特奇",
+   "market": "A股"
+  },
+  {
+   "code": "300407.SZ",
+   "name": "凯发电气",
+   "market": "A股"
+  },
+  {
+   "code": "688580.SS",
+   "name": "伟思医疗",
+   "market": "A股"
+  },
+  {
+   "code": "301261.SZ",
+   "name": "恒工精密",
+   "market": "A股"
+  },
+  {
+   "code": "688709.SS",
+   "name": "成都华微",
+   "market": "A股"
+  },
+  {
+   "code": "300902.SZ",
+   "name": "国安达",
+   "market": "A股"
+  },
+  {
+   "code": "688231.SS",
+   "name": "隆达股份",
+   "market": "A股"
+  },
+  {
+   "code": "688793.SS",
+   "name": "倍轻松",
+   "market": "A股"
+  },
+  {
+   "code": "688010.SS",
+   "name": "福光股份",
+   "market": "A股"
+  },
+  {
+   "code": "603777.SS",
+   "name": "来伊份",
+   "market": "A股"
+  },
+  {
+   "code": "001212.SZ",
+   "name": "中旗新材",
+   "market": "A股"
+  },
+  {
+   "code": "301252.SZ",
+   "name": "同星科技",
+   "market": "A股"
+  },
+  {
+   "code": "600603.SS",
+   "name": "广汇物流",
+   "market": "A股"
+  },
+  {
+   "code": "688026.SS",
+   "name": "洁特生物",
+   "market": "A股"
+  },
+  {
+   "code": "603316.SS",
+   "name": "诚邦股份",
+   "market": "A股"
+  },
+  {
+   "code": "688311.SS",
+   "name": "盟升电子",
+   "market": "A股"
+  },
+  {
+   "code": "688277.SS",
+   "name": "天智航-U",
+   "market": "A股"
+  },
+  {
+   "code": "301577.SZ",
+   "name": "美信科技",
+   "market": "A股"
+  },
+  {
+   "code": "002927.SZ",
+   "name": "泰永长征",
+   "market": "A股"
+  },
+  {
+   "code": "000890.SZ",
+   "name": "法尔胜",
+   "market": "A股"
+  },
+  {
+   "code": "300665.SZ",
+   "name": "飞鹿股份",
+   "market": "A股"
+  },
+  {
+   "code": "301028.SZ",
+   "name": "鼎熔岩",
+   "market": "A股"
+  },
+  {
+   "code": "688007.SS",
+   "name": "光峰科技",
+   "market": "A股"
+  },
+  {
+   "code": "603050.SS",
+   "name": "科林电气",
+   "market": "A股"
+  },
+  {
+   "code": "300878.SZ",
+   "name": "维康药业",
+   "market": "A股"
+  },
+  {
+   "code": "688133.SS",
+   "name": "泰坦科技",
+   "market": "A股"
+  },
+  {
+   "code": "688626.SS",
+   "name": "翔宇医疗",
+   "market": "A股"
+  },
+  {
+   "code": "300998.SZ",
+   "name": "宁波方正",
+   "market": "A股"
+  },
+  {
+   "code": "301023.SZ",
+   "name": "奕帆传动",
+   "market": "A股"
+  },
+  {
+   "code": "002861.SZ",
+   "name": "瀛通通讯",
+   "market": "A股"
+  },
+  {
+   "code": "300840.SZ",
+   "name": "酷特智能",
+   "market": "A股"
+  },
+  {
+   "code": "688212.SS",
+   "name": "澳华内镜",
+   "market": "A股"
+  },
+  {
+   "code": "300813.SZ",
+   "name": "泰林生物",
+   "market": "A股"
+  },
+  {
+   "code": "600501.SS",
+   "name": "航天晨光",
+   "market": "A股"
+  },
+  {
+   "code": "002802.SZ",
+   "name": "洪汇新材",
+   "market": "A股"
+  },
+  {
+   "code": "688670.SS",
+   "name": "金迪克",
+   "market": "A股"
+  },
+  {
+   "code": "301030.SZ",
+   "name": "*ST仕净",
+   "market": "A股"
+  },
+  {
+   "code": "300968.SZ",
+   "name": "格林精密",
+   "market": "A股"
+  },
+  {
+   "code": "688071.SS",
+   "name": "华依科技",
+   "market": "A股"
+  },
+  {
+   "code": "000691.SZ",
+   "name": "亚太实业",
+   "market": "A股"
+  },
+  {
+   "code": "300084.SZ",
+   "name": "海默科技",
+   "market": "A股"
+  },
+  {
+   "code": "603334.SS",
+   "name": "丰倍生物",
+   "market": "A股"
+  },
+  {
+   "code": "300733.SZ",
+   "name": "西菱动力",
+   "market": "A股"
+  },
+  {
+   "code": "002275.SZ",
+   "name": "桂林三金",
+   "market": "A股"
+  },
+  {
+   "code": "688571.SS",
+   "name": "杭华股份",
+   "market": "A股"
+  },
+  {
+   "code": "000659.SZ",
+   "name": "珠海中富",
+   "market": "A股"
+  },
+  {
+   "code": "002082.SZ",
+   "name": "ST万邦",
+   "market": "A股"
+  },
+  {
+   "code": "301119.SZ",
+   "name": "正强股份",
+   "market": "A股"
+  },
+  {
+   "code": "300419.SZ",
+   "name": "ST浩丰",
+   "market": "A股"
+  },
+  {
+   "code": "002935.SZ",
+   "name": "天奥电子",
+   "market": "A股"
+  },
+  {
+   "code": "301380.SZ",
+   "name": "挖金客",
+   "market": "A股"
+  },
+  {
+   "code": "688480.SS",
+   "name": "赛恩斯",
+   "market": "A股"
+  },
+  {
+   "code": "002393.SZ",
+   "name": "力生制药",
+   "market": "A股"
+  },
+  {
+   "code": "002199.SZ",
+   "name": "东晶电子",
+   "market": "A股"
+  },
+  {
+   "code": "300225.SZ",
+   "name": "金力泰",
+   "market": "A股"
+  },
+  {
+   "code": "001256.SZ",
+   "name": "炜冈科技",
+   "market": "A股"
+  },
+  {
+   "code": "300578.SZ",
+   "name": "会畅科技",
+   "market": "A股"
+  },
+  {
+   "code": "300019.SZ",
+   "name": "硅宝科技",
+   "market": "A股"
+  },
+  {
+   "code": "603727.SS",
+   "name": "博迈科",
+   "market": "A股"
+  },
+  {
+   "code": "300912.SZ",
+   "name": "凯龙高科",
+   "market": "A股"
+  },
+  {
+   "code": "603386.SS",
+   "name": "骏亚科技",
+   "market": "A股"
+  },
+  {
+   "code": "300781.SZ",
+   "name": "因赛集团",
+   "market": "A股"
+  },
+  {
+   "code": "688373.SS",
+   "name": "盟科药业-U",
+   "market": "A股"
+  },
+  {
+   "code": "301101.SZ",
+   "name": "明月镜片",
+   "market": "A股"
+  },
+  {
+   "code": "600846.SS",
+   "name": "同济科技",
+   "market": "A股"
+  },
+  {
+   "code": "000609.SZ",
+   "name": "*ST中迪",
+   "market": "A股"
+  },
+  {
+   "code": "300210.SZ",
+   "name": "森远股份",
+   "market": "A股"
+  },
+  {
+   "code": "301548.SZ",
+   "name": "崇德科技",
+   "market": "A股"
+  },
+  {
+   "code": "688712.SS",
+   "name": "北芯生命",
+   "market": "A股"
+  },
+  {
+   "code": "605056.SS",
+   "name": "咸亨国际",
+   "market": "A股"
+  },
+  {
+   "code": "300569.SZ",
+   "name": "天能重工",
+   "market": "A股"
+  },
+  {
+   "code": "300952.SZ",
+   "name": "恒辉安防",
+   "market": "A股"
+  },
+  {
+   "code": "0917.HK",
+   "name": "趣致集团",
+   "market": "港股"
+  },
+  {
+   "code": "0941.HK",
+   "name": "中国移动",
+   "market": "港股"
+  },
+  {
+   "code": "0883.HK",
+   "name": "中国海洋石油",
+   "market": "港股"
+  },
+  {
+   "code": "0939.HK",
+   "name": "建设银行",
+   "market": "港股"
+  },
+  {
+   "code": "0857.HK",
+   "name": "中国石油股份",
+   "market": "港股"
+  },
+  {
+   "code": "0386.HK",
+   "name": "中国石油化工股份",
+   "market": "港股"
+  },
+  {
+   "code": "9961.HK",
+   "name": "携程集团-S",
+   "market": "港股"
+  },
+  {
+   "code": "3988.HK",
+   "name": "中国银行",
+   "market": "港股"
+  },
+  {
+   "code": "3696.HK",
+   "name": "英矽智能",
+   "market": "港股"
+  },
+  {
+   "code": "3968.HK",
+   "name": "招商银行",
+   "market": "港股"
+  },
+  {
+   "code": "1114.HK",
+   "name": "华晨中国",
+   "market": "港股"
+  },
+  {
+   "code": "0027.HK",
+   "name": "银河娱乐",
+   "market": "港股"
+  },
+  {
+   "code": "1208.HK",
+   "name": "五矿资源",
+   "market": "港股"
+  },
+  {
+   "code": "1772.HK",
+   "name": "赣锋锂业",
+   "market": "港股"
+  },
+  {
+   "code": "3330.HK",
+   "name": "灵宝黄金",
+   "market": "港股"
+  },
+  {
+   "code": "1797.HK",
+   "name": "东方甄选",
+   "market": "港股"
+  },
+  {
+   "code": "2583.HK",
+   "name": "西普尼",
+   "market": "港股"
+  },
+  {
+   "code": "0728.HK",
+   "name": "中国电信",
+   "market": "港股"
+  },
+  {
+   "code": "6055.HK",
+   "name": "中烟香港",
+   "market": "港股"
+  },
+  {
+   "code": "2097.HK",
+   "name": "蜜雪集团",
+   "market": "港股"
+  },
+  {
+   "code": "2218.HK",
+   "name": "安德利果汁",
+   "market": "港股"
+  },
+  {
+   "code": "7552.HK",
+   "name": "南方两倍做空恒生科技",
+   "market": "港股"
+  },
+  {
+   "code": "1288.HK",
+   "name": "农业银行",
+   "market": "港股"
+  },
+  {
+   "code": "1818.HK",
+   "name": "招金矿业",
+   "market": "港股"
+  },
+  {
+   "code": "1336.HK",
+   "name": "新华保险",
+   "market": "港股"
+  },
+  {
+   "code": "2423.HK",
+   "name": "贝壳-W",
+   "market": "港股"
+  },
+  {
+   "code": "0992.HK",
+   "name": "联想集团",
+   "market": "港股"
+  },
+  {
+   "code": "0340.HK",
+   "name": "潼关黄金",
+   "market": "港股"
+  },
+  {
+   "code": "3939.HK",
+   "name": "万国黄金集团",
+   "market": "港股"
+  },
+  {
+   "code": "2601.HK",
+   "name": "中国太保",
+   "market": "港股"
+  },
+  {
+   "code": "7618.HK",
+   "name": "京东工业",
+   "market": "港股"
+  },
+  {
+   "code": "7500.HK",
+   "name": "南方两倍看空恒指",
+   "market": "港股"
+  },
+  {
+   "code": "7747.HK",
+   "name": "南方两倍做多三星电子",
+   "market": "港股"
+  },
+  {
+   "code": "2225.HK",
+   "name": "今海医疗科技",
+   "market": "港股"
+  },
+  {
+   "code": "6690.HK",
+   "name": "海尔智家",
+   "market": "港股"
+  },
+  {
+   "code": "6651.HK",
+   "name": "五一视界",
+   "market": "港股"
+  },
+  {
+   "code": "2313.HK",
+   "name": "申洲国际",
+   "market": "港股"
+  },
+  {
+   "code": "2319.HK",
+   "name": "蒙牛乳业",
+   "market": "港股"
+  },
+  {
+   "code": "9863.HK",
+   "name": "零跑汽车",
+   "market": "港股"
+  },
+  {
+   "code": "1093.HK",
+   "name": "石药集团",
+   "market": "港股"
+  },
+  {
+   "code": "3308.HK",
+   "name": "中际旭创",
+   "market": "港股"
+  },
+  {
+   "code": "1378.HK",
+   "name": "中国宏桥",
+   "market": "港股"
+  },
+  {
+   "code": "1057.HK",
+   "name": "浙江世宝",
+   "market": "港股"
+  },
+  {
+   "code": "1530.HK",
+   "name": "三生制药",
+   "market": "港股"
+  },
+  {
+   "code": "1088.HK",
+   "name": "中国神华",
+   "market": "港股"
+  },
+  {
+   "code": "1585.HK",
+   "name": "雅迪控股",
+   "market": "港股"
+  },
+  {
+   "code": "0354.HK",
+   "name": "中国软件国际",
+   "market": "港股"
+  },
+  {
+   "code": "6030.HK",
+   "name": "中信证券",
+   "market": "港股"
+  },
+  {
+   "code": "1308.HK",
+   "name": "海丰国际",
+   "market": "港股"
+  },
+  {
+   "code": "9988.HK",
+   "name": "阿里巴巴-W",
+   "market": "港股"
+  },
+  {
+   "code": "9988.HK",
+   "name": "阿里巴巴-W",
+   "market": "港股"
+  },
+  {
+   "code": "06055.HK",
+   "name": "中烟香港",
+   "market": "港股"
+  },
+  {
+   "code": "2028.HK",
+   "name": "映美控股",
+   "market": "港股"
+  },
+  {
+   "code": "2328.HK",
+   "name": "中国财险",
+   "market": "港股"
+  },
+  {
+   "code": "0100.HK",
+   "name": "MINIMAX-W",
+   "market": "港股"
+  },
+  {
+   "code": "0981.HK",
+   "name": "中芯国际",
+   "market": "港股"
+  },
+  {
+   "code": "7347.HK",
+   "name": "南方两倍做空三星电子",
+   "market": "港股"
+  },
+  {
+   "code": "0975.HK",
+   "name": "MONGOL MINING",
+   "market": "港股"
+  },
+  {
+   "code": "7709.HK",
+   "name": "南方东英SK海力士每日杠杆最多2x",
+   "market": "港股"
+  },
+  {
+   "code": "2343.HK",
+   "name": "太平洋航运",
+   "market": "港股"
+  },
+  {
+   "code": "7226.HK",
+   "name": "南方两倍做多恒生科技",
+   "market": "港股"
+  },
+  {
+   "code": "0288.HK",
+   "name": "万洲国际",
+   "market": "港股"
+  },
+  {
+   "code": "1347.HK",
+   "name": "华虹宏力",
+   "market": "港股"
+  },
+  {
+   "code": "1919.HK",
+   "name": "中远海控",
+   "market": "港股"
+  },
+  {
+   "code": "6160.HK",
+   "name": "百济神州",
+   "market": "港股"
+  },
+  {
+   "code": "2498.HK",
+   "name": "速腾聚创",
+   "market": "港股"
+  },
+  {
+   "code": "2162.HK",
+   "name": "康诺亚-B",
+   "market": "港股"
+  },
+  {
+   "code": "2269.HK",
+   "name": "药明生物",
+   "market": "港股"
+  },
+  {
+   "code": "1898.HK",
+   "name": "中煤能源",
+   "market": "港股"
+  },
+  {
+   "code": "0189.HK",
+   "name": "东岳集团",
+   "market": "港股"
+  },
+  {
+   "code": "1513.HK",
+   "name": "丽珠医药",
+   "market": "港股"
+  },
+  {
+   "code": "6693.HK",
+   "name": "赤峰黄金",
+   "market": "港股"
+  },
+  {
+   "code": "2338.HK",
+   "name": "潍柴动力",
+   "market": "港股"
+  },
+  {
+   "code": "2359.HK",
+   "name": "药明康德",
+   "market": "港股"
+  },
+  {
+   "code": "9888.HK",
+   "name": "百度集团-SW",
+   "market": "港股"
+  },
+  {
+   "code": "2099.HK",
+   "name": "中国黄金国际",
+   "market": "港股"
+  },
+  {
+   "code": "3692.HK",
+   "name": "翰森制药",
+   "market": "港股"
+  },
+  {
+   "code": "1929.HK",
+   "name": "周大福",
+   "market": "港股"
+  },
+  {
+   "code": "6082.HK",
+   "name": "壁仞科技",
+   "market": "港股"
+  },
+  {
+   "code": "9880.HK",
+   "name": "优必选",
+   "market": "港股"
+  },
+  {
+   "code": "3759.HK",
+   "name": "康龙化成",
+   "market": "港股"
+  },
+  {
+   "code": "2631.HK",
+   "name": "天岳先进",
+   "market": "港股"
+  },
+  {
+   "code": "1519.HK",
+   "name": "极兔速递-W",
+   "market": "港股"
+  },
+  {
+   "code": "2331.HK",
+   "name": "李宁",
+   "market": "港股"
+  },
+  {
+   "code": "7200.HK",
+   "name": "南方两倍看多恒指",
+   "market": "港股"
+  },
+  {
+   "code": "1133.HK",
+   "name": "哈尔滨电气",
+   "market": "港股"
+  },
+  {
+   "code": "2228.HK",
+   "name": "晶泰控股",
+   "market": "港股"
+  },
+  {
+   "code": "9995.HK",
+   "name": "荣昌生物",
+   "market": "港股"
+  },
+  {
+   "code": "6185.HK",
+   "name": "康希诺生物",
+   "market": "港股"
+  },
+  {
+   "code": "6821.HK",
+   "name": "凯莱英",
+   "market": "港股"
+  },
+  {
+   "code": "3200.HK",
+   "name": "大族数控",
+   "market": "港股"
+  },
+  {
+   "code": "2718.HK",
+   "name": "明略科技-W",
+   "market": "港股"
+  },
+  {
+   "code": "7299.HK",
+   "name": "南方两倍做多黄金",
+   "market": "港股"
+  },
+  {
+   "code": "2245.HK",
+   "name": "力勤资源",
+   "market": "港股"
+  },
+  {
+   "code": "6618.HK",
+   "name": "京东健康",
+   "market": "港股"
+  },
+  {
+   "code": "1478.HK",
+   "name": "丘钛科技",
+   "market": "港股"
+  },
+  {
+   "code": "2158.HK",
+   "name": "医渡科技",
+   "market": "港股"
+  },
+  {
+   "code": "9899.HK",
+   "name": "网易云音乐",
+   "market": "港股"
+  },
+  {
+   "code": "6682.HK",
+   "name": "范式智能",
+   "market": "港股"
+  },
+  {
+   "code": "0425.HK",
+   "name": "敏实集团",
+   "market": "港股"
+  },
+  {
+   "code": "1081.HK",
+   "name": "大金重工",
+   "market": "港股"
+  },
+  {
+   "code": "1072.HK",
+   "name": "东方电气",
+   "market": "港股"
+  },
+  {
+   "code": "9698.HK",
+   "name": "万国数据-SW",
+   "market": "港股"
+  },
+  {
+   "code": "1651.HK",
+   "name": "津上机床中国",
+   "market": "港股"
+  },
+  {
+   "code": "2252.HK",
+   "name": "微创机器人-B",
+   "market": "港股"
+  },
+  {
+   "code": "0371.HK",
+   "name": "北控水务集团",
+   "market": "港股"
+  },
+  {
+   "code": "1385.HK",
+   "name": "上海复旦",
+   "market": "港股"
+  },
+  {
+   "code": "1357.HK",
+   "name": "美图公司",
+   "market": "港股"
+  },
+  {
+   "code": "2432.HK",
+   "name": "越疆",
+   "market": "港股"
+  },
+  {
+   "code": "1428.HK",
+   "name": "耀才证券金融",
+   "market": "港股"
+  },
+  {
+   "code": "6088.HK",
+   "name": "鸿腾精密",
+   "market": "港股"
+  },
+  {
+   "code": "0968.HK",
+   "name": "信义光能",
+   "market": "港股"
+  },
+  {
+   "code": "2590.HK",
+   "name": "极智嘉-W",
+   "market": "港股"
+  },
+  {
+   "code": "2865.HK",
+   "name": "钧达股份",
+   "market": "港股"
+  },
+  {
+   "code": "2727.HK",
+   "name": "上海电气",
+   "market": "港股"
+  },
+  {
+   "code": "0853.HK",
+   "name": "微创医疗",
+   "market": "港股"
+  },
+  {
+   "code": "STX",
+   "name": "希捷科技",
+   "market": "美股"
+  },
+  {
+   "code": "LQD",
+   "name": "债券指数ETF-iShares iBoxx投资级",
+   "market": "美股"
+  },
+  {
+   "code": "XLE",
+   "name": "能源指数ETF-SPDR",
+   "market": "美股"
+  },
+  {
+   "code": "COHR",
+   "name": "Coherent Corp",
+   "market": "美股"
+  },
+  {
+   "code": "TJX",
+   "name": "The TJX Companies Inc",
+   "market": "美股"
+  },
+  {
+   "code": "MRNA",
+   "name": "Moderna Inc",
+   "market": "美股"
+  },
+  {
+   "code": "CVX",
+   "name": "雪佛龙",
+   "market": "美股"
+  },
+  {
+   "code": "TLT",
+   "name": "美国国债20年+ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "NBIS",
+   "name": "Nebius Group NV-A",
+   "market": "美股"
+  },
+  {
+   "code": "BKNG",
+   "name": "Booking Holdings",
+   "market": "美股"
+  },
+  {
+   "code": "JUNS",
+   "name": "Jupiter Neurosciences Inc",
+   "market": "美股"
+  },
+  {
+   "code": "SOXX",
+   "name": "半导体ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "AMZN",
+   "name": "亚马逊",
+   "market": "美股"
+  },
+  {
+   "code": "AAPL",
+   "name": "苹果",
+   "market": "美股"
+  },
+  {
+   "code": "AZO",
+   "name": "汽车地带",
+   "market": "美股"
+  },
+  {
+   "code": "BE",
+   "name": "Bloom Energy Corp-A",
+   "market": "美股"
+  },
+  {
+   "code": "SPGI",
+   "name": "标普全球",
+   "market": "美股"
+  },
+  {
+   "code": "BA",
+   "name": "波音",
+   "market": "美股"
+  },
+  {
+   "code": "QBTS",
+   "name": "D-Wave Quantum Inc",
+   "market": "美股"
+  },
+  {
+   "code": "TXN",
+   "name": "德州仪器",
+   "market": "美股"
+  },
+  {
+   "code": "CEG",
+   "name": "Constellation Energy Corp",
+   "market": "美股"
+  },
+  {
+   "code": "XOM",
+   "name": "埃克森美孚",
+   "market": "美股"
+  },
+  {
+   "code": "MU",
+   "name": "美光科技",
+   "market": "美股"
+  },
+  {
+   "code": "AGG",
+   "name": "美国全债市ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "SNPS",
+   "name": "新思科技",
+   "market": "美股"
+  },
+  {
+   "code": "NFLX",
+   "name": "奈飞",
+   "market": "美股"
+  },
+  {
+   "code": "AMAT",
+   "name": "应用材料",
+   "market": "美股"
+  },
+  {
+   "code": "RKLB",
+   "name": "Rocket Lab Corp",
+   "market": "美股"
+  },
+  {
+   "code": "TRV",
+   "name": "旅行者保险",
+   "market": "美股"
+  },
+  {
+   "code": "VCSH",
+   "name": "短期公司债券ETF-Vanguard",
+   "market": "美股"
+  },
+  {
+   "code": "CRDO",
+   "name": "Credo Technology Group Holding ",
+   "market": "美股"
+  },
+  {
+   "code": "JCI",
+   "name": "江森自控",
+   "market": "美股"
+  },
+  {
+   "code": "LLY",
+   "name": "礼来",
+   "market": "美股"
+  },
+  {
+   "code": "KWEB",
+   "name": "中国海外互联网ETF-KraneShares",
+   "market": "美股"
+  },
+  {
+   "code": "BND",
+   "name": "全债市指数ETF-Vanguard",
+   "market": "美股"
+  },
+  {
+   "code": "NVDA",
+   "name": "英伟达",
+   "market": "美股"
+  },
+  {
+   "code": "MUB",
+   "name": "美国市政债ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "TQQQ",
+   "name": "三倍做多纳斯达克100ETF-ProShare",
+   "market": "美股"
+  },
+  {
+   "code": "CRWD",
+   "name": "CrowdStrike Holdings Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "HL",
+   "name": "赫克拉矿业",
+   "market": "美股"
+  },
+  {
+   "code": "GOOG",
+   "name": "谷歌-C",
+   "market": "美股"
+  },
+  {
+   "code": "CB",
+   "name": "安达保险",
+   "market": "美股"
+  },
+  {
+   "code": "SNOW",
+   "name": "Snowflake Inc",
+   "market": "美股"
+  },
+  {
+   "code": "SQQQ",
+   "name": "三倍做空纳斯达克100ETF-ProShare",
+   "market": "美股"
+  },
+  {
+   "code": "XLF",
+   "name": "金融ETF-SPDR",
+   "market": "美股"
+  },
+  {
+   "code": "GEV",
+   "name": "GE Vernova Inc",
+   "market": "美股"
+  },
+  {
+   "code": "IEF",
+   "name": "美国国债7-10年ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "APP",
+   "name": "Applovin Corp-A",
+   "market": "美股"
+  },
+  {
+   "code": "IYR",
+   "name": "美国房地产指数ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "LOW",
+   "name": "劳氏",
+   "market": "美股"
+  },
+  {
+   "code": "MAR",
+   "name": "万豪国际",
+   "market": "美股"
+  },
+  {
+   "code": "DIA",
+   "name": "道琼斯指数ETF-SPDR",
+   "market": "美股"
+  },
+  {
+   "code": "KEYS",
+   "name": "是德科技",
+   "market": "美股"
+  },
+  {
+   "code": "VTEB",
+   "name": "领航免税债券指数ETF-Vanguard",
+   "market": "美股"
+  },
+  {
+   "code": "AVGO",
+   "name": "博通",
+   "market": "美股"
+  },
+  {
+   "code": "GOOGL",
+   "name": "谷歌-A",
+   "market": "美股"
+  },
+  {
+   "code": "IBM",
+   "name": "IBM国际商业机器",
+   "market": "美股"
+  },
+  {
+   "code": "JNJ",
+   "name": "强生",
+   "market": "美股"
+  },
+  {
+   "code": "HONA",
+   "name": "Honeywell Aerospace Inc",
+   "market": "美股"
+  },
+  {
+   "code": "TTWO",
+   "name": "Take-Two Interactive Software I",
+   "market": "美股"
+  },
+  {
+   "code": "LRCX",
+   "name": "拉姆研究",
+   "market": "美股"
+  },
+  {
+   "code": "TXG",
+   "name": "10x Genomics Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "DVN",
+   "name": "戴文能源",
+   "market": "美股"
+  },
+  {
+   "code": "TWST",
+   "name": "Twist Bioscience Corp",
+   "market": "美股"
+  },
+  {
+   "code": "PFE",
+   "name": "辉瑞",
+   "market": "美股"
+  },
+  {
+   "code": "WM",
+   "name": "美国废物管理",
+   "market": "美股"
+  },
+  {
+   "code": "PEP",
+   "name": "百事",
+   "market": "美股"
+  },
+  {
+   "code": "SLS",
+   "name": "SEELAS Life Sciences Group Inc",
+   "market": "美股"
+  },
+  {
+   "code": "GE",
+   "name": "GE航空航天",
+   "market": "美股"
+  },
+  {
+   "code": "IEFA",
+   "name": "安硕核心MSCI EAFE ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "OXY",
+   "name": "西方石油",
+   "market": "美股"
+  },
+  {
+   "code": "TEAM",
+   "name": "Atlassian Corp-A",
+   "market": "美股"
+  },
+  {
+   "code": "ADBE",
+   "name": "奥多比",
+   "market": "美股"
+  },
+  {
+   "code": "FANG",
+   "name": "Diamondback Energy Inc",
+   "market": "美股"
+  },
+  {
+   "code": "COIN",
+   "name": "Coinbase Global Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "BITX",
+   "name": "二倍比特币期货ETF-Volatility Sh",
+   "market": "美股"
+  },
+  {
+   "code": "CSCO",
+   "name": "思科",
+   "market": "美股"
+  },
+  {
+   "code": "PG",
+   "name": "宝洁",
+   "market": "美股"
+  },
+  {
+   "code": "CVS",
+   "name": "西维斯健康",
+   "market": "美股"
+  },
+  {
+   "code": "PGR",
+   "name": "前进保险",
+   "market": "美股"
+  },
+  {
+   "code": "EBAY",
+   "name": "易趣",
+   "market": "美股"
+  },
+  {
+   "code": "ABBV",
+   "name": "艾伯维",
+   "market": "美股"
+  },
+  {
+   "code": "FCX",
+   "name": "自由港麦克莫兰",
+   "market": "美股"
+  },
+  {
+   "code": "LYV",
+   "name": "Live Nation Entertainment Inc",
+   "market": "美股"
+  },
+  {
+   "code": "XLV",
+   "name": "医疗ETF-SPDR",
+   "market": "美股"
+  },
+  {
+   "code": "MA",
+   "name": "万事达",
+   "market": "美股"
+  },
+  {
+   "code": "ETN",
+   "name": "伊顿",
+   "market": "美股"
+  },
+  {
+   "code": "VNQ",
+   "name": "不动产信托指数ETF-Vanguard",
+   "market": "美股"
+  },
+  {
+   "code": "TSCO",
+   "name": "拖拉机供应",
+   "market": "美股"
+  },
+  {
+   "code": "VGIT",
+   "name": "中期国债ETF-Vanguard",
+   "market": "美股"
+  },
+  {
+   "code": "HWM",
+   "name": "Howmet Aerospace Inc",
+   "market": "美股"
+  },
+  {
+   "code": "ASST",
+   "name": "Strive Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "VGSH",
+   "name": "短期国债ETF-Vanguard",
+   "market": "美股"
+  },
+  {
+   "code": "EQT",
+   "name": "EQT能源",
+   "market": "美股"
+  },
+  {
+   "code": "TMUS",
+   "name": "T-Mobile US Inc",
+   "market": "美股"
+  },
+  {
+   "code": "UNH",
+   "name": "联合健康",
+   "market": "美股"
+  },
+  {
+   "code": "PSNL",
+   "name": "Personalis Inc",
+   "market": "美股"
+  },
+  {
+   "code": "V",
+   "name": "维萨",
+   "market": "美股"
+  },
+  {
+   "code": "SHEL",
+   "name": "壳牌",
+   "market": "美股"
+  },
+  {
+   "code": "EW",
+   "name": "爱德华兹生命科学",
+   "market": "美股"
+  },
+  {
+   "code": "PBF",
+   "name": "PBF Energy Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "HLT",
+   "name": "希尔顿酒店",
+   "market": "美股"
+  },
+  {
+   "code": "XBI",
+   "name": "标普生物科技ETF-SPDR",
+   "market": "美股"
+  },
+  {
+   "code": "XLY",
+   "name": "可选消费ETF-SPDR",
+   "market": "美股"
+  },
+  {
+   "code": "LIN",
+   "name": "Linde plc",
+   "market": "美股"
+  },
+  {
+   "code": "CAT",
+   "name": "卡特彼勒",
+   "market": "美股"
+  },
+  {
+   "code": "ISRG",
+   "name": "直觉外科",
+   "market": "美股"
+  },
+  {
+   "code": "UPS",
+   "name": "联合包裹服务",
+   "market": "美股"
+  },
+  {
+   "code": "AZN",
+   "name": "阿斯利康",
+   "market": "美股"
+  },
+  {
+   "code": "MDT",
+   "name": "美敦力",
+   "market": "美股"
+  },
+  {
+   "code": "ITW",
+   "name": "伊利诺伊机械",
+   "market": "美股"
+  },
+  {
+   "code": "INTU",
+   "name": "财捷",
+   "market": "美股"
+  },
+  {
+   "code": "LNG",
+   "name": "Cheniere Energy Inc",
+   "market": "美股"
+  },
+  {
+   "code": "AFL",
+   "name": "美国家庭人寿保险",
+   "market": "美股"
+  },
+  {
+   "code": "FUTU",
+   "name": "富途控股",
+   "market": "美股"
+  },
+  {
+   "code": "RBLX",
+   "name": "Roblox Corp-A",
+   "market": "美股"
+  },
+  {
+   "code": "DK",
+   "name": "Delek US Holdings Inc",
+   "market": "美股"
+  },
+  {
+   "code": "GD",
+   "name": "通用动力",
+   "market": "美股"
+  },
+  {
+   "code": "UEC",
+   "name": "Uranium Energy Corp",
+   "market": "美股"
+  },
+  {
+   "code": "UNP",
+   "name": "联合太平洋",
+   "market": "美股"
+  },
+  {
+   "code": "IGV",
+   "name": "扩展科技软件行业ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "OTIS",
+   "name": "Otis Worldwide Corp",
+   "market": "美股"
+  },
+  {
+   "code": "XOP",
+   "name": "标普油气开采指数ETF-SPDR",
+   "market": "美股"
+  },
+  {
+   "code": "AMLX",
+   "name": "Amylyx Pharmaceuticals Inc",
+   "market": "美股"
+  },
+  {
+   "code": "ARKG",
+   "name": "ARK Genomic Revolution ETF",
+   "market": "美股"
+  },
+  {
+   "code": "BKR",
+   "name": "Baker Hughes Co-A",
+   "market": "美股"
+  },
+  {
+   "code": "ON",
+   "name": "安森美半导体",
+   "market": "美股"
+  },
+  {
+   "code": "USAR",
+   "name": "USA Rare Earth Inc",
+   "market": "美股"
+  },
+  {
+   "code": "BP",
+   "name": "英国石油",
+   "market": "美股"
+  },
+  {
+   "code": "ET",
+   "name": "能源转换",
+   "market": "美股"
+  },
+  {
+   "code": "SOXS",
+   "name": "三倍做空半导体ETF-Direxion",
+   "market": "美股"
+  },
+  {
+   "code": "AXP",
+   "name": "美国运通",
+   "market": "美股"
+  },
+  {
+   "code": "AG",
+   "name": "First Majestic Silver Corp",
+   "market": "美股"
+  },
+  {
+   "code": "FOXA",
+   "name": "福克斯-A",
+   "market": "美股"
+  },
+  {
+   "code": "GOVT",
+   "name": "安硕核心美国国债ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "DDOG",
+   "name": "Datadog Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "HOOD",
+   "name": "Robinhood Markets Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "CRL",
+   "name": "查尔斯河",
+   "market": "美股"
+  },
+  {
+   "code": "CRM",
+   "name": "赛富时",
+   "market": "美股"
+  },
+  {
+   "code": "ABUS",
+   "name": "Arbutus Biopharma Corp",
+   "market": "美股"
+  },
+  {
+   "code": "VRSK",
+   "name": "Verisk分析",
+   "market": "美股"
+  },
+  {
+   "code": "TEM",
+   "name": "Tempus AI Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "SMTC",
+   "name": "先科电子",
+   "market": "美股"
+  },
+  {
+   "code": "QID",
+   "name": "二倍做空纳斯达克100ETF-ProShare",
+   "market": "美股"
+  },
+  {
+   "code": "MBB",
+   "name": "美国按揭抵押债ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "AVAH",
+   "name": "Aveanna Healthcare Holdings Inc",
+   "market": "美股"
+  },
+  {
+   "code": "NXPI",
+   "name": "恩智浦半导体",
+   "market": "美股"
+  },
+  {
+   "code": "IBIT",
+   "name": "比特币ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "VCLT",
+   "name": "长期公司债指数ETF-Vanguard",
+   "market": "美股"
+  },
+  {
+   "code": "BWET",
+   "name": "Breakwave Tanker Shipping ETF",
+   "market": "美股"
+  },
+  {
+   "code": "ADSK",
+   "name": "欧特克",
+   "market": "美股"
+  },
+  {
+   "code": "MRVI",
+   "name": "Maravai LifeSciences Holdings I",
+   "market": "美股"
+  },
+  {
+   "code": "CHYM",
+   "name": "Chime Financial Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "MCO",
+   "name": "穆迪",
+   "market": "美股"
+  },
+  {
+   "code": "MSI",
+   "name": "摩托罗拉解决方案",
+   "market": "美股"
+  },
+  {
+   "code": "WBD",
+   "name": "华纳兄弟探索",
+   "market": "美股"
+  },
+  {
+   "code": "SPDN",
+   "name": "做空标普500ETF-Direxion",
+   "market": "美股"
+  },
+  {
+   "code": "TSLA",
+   "name": "特斯拉",
+   "market": "美股"
+  },
+  {
+   "code": "TLN",
+   "name": "Talen Energy Corp",
+   "market": "美股"
+  },
+  {
+   "code": "NVO",
+   "name": "诺和诺德",
+   "market": "美股"
+  },
+  {
+   "code": "MSTR",
+   "name": "Strategy Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "SHY",
+   "name": "美国国债1-3年ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "PAAS",
+   "name": "泛美白银",
+   "market": "美股"
+  },
+  {
+   "code": "PSA",
+   "name": "大众仓储",
+   "market": "美股"
+  },
+  {
+   "code": "SCCO",
+   "name": "南方铜业",
+   "market": "美股"
+  },
+  {
+   "code": "CRCL",
+   "name": "Circle Internet Group Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "GWW",
+   "name": "固安捷",
+   "market": "美股"
+  },
+  {
+   "code": "XYL",
+   "name": "赛莱默",
+   "market": "美股"
+  },
+  {
+   "code": "CAKE",
+   "name": "起司工坊",
+   "market": "美股"
+  },
+  {
+   "code": "NBIX",
+   "name": "神经分泌生物科学",
+   "market": "美股"
+  },
+  {
+   "code": "CONL",
+   "name": "二倍做多Coinbase ETF-GraniteSha",
+   "market": "美股"
+  },
+  {
+   "code": "HAL",
+   "name": "哈里伯顿",
+   "market": "美股"
+  },
+  {
+   "code": "TSLG",
+   "name": "二倍做多特斯拉ETF-Leverage",
+   "market": "美股"
+  },
+  {
+   "code": "PSQ",
+   "name": "做空纳斯达克100指数ETF-ProShare",
+   "market": "美股"
+  },
+  {
+   "code": "ROST",
+   "name": "罗斯百货",
+   "market": "美股"
+  },
+  {
+   "code": "ALB",
+   "name": "美国雅保",
+   "market": "美股"
+  },
+  {
+   "code": "ETHU",
+   "name": "二倍以太币期货ETF-Volatility Sh",
+   "market": "美股"
+  },
+  {
+   "code": "FTI",
+   "name": "TechnipFMC plc",
+   "market": "美股"
+  },
+  {
+   "code": "HCA",
+   "name": "HCA Healthcare Inc",
+   "market": "美股"
+  },
+  {
+   "code": "PR",
+   "name": "Permian Resources Corp-A",
+   "market": "美股"
+  },
+  {
+   "code": "BULL",
+   "name": "微牛",
+   "market": "美股"
+  },
+  {
+   "code": "BITU",
+   "name": "二倍做多比特币期货ETF-ProShares",
+   "market": "美股"
+  },
+  {
+   "code": "ECHO",
+   "name": "回声星通信",
+   "market": "美股"
+  },
+  {
+   "code": "CAI",
+   "name": "Caris Life Sciences Inc",
+   "market": "美股"
+  },
+  {
+   "code": "CDNS",
+   "name": "铿腾电子",
+   "market": "美股"
+  },
+  {
+   "code": "SUNB",
+   "name": "Sunbelt Rentals Holdings Inc",
+   "market": "美股"
+  },
+  {
+   "code": "BTDR",
+   "name": "Bitdeer Technologies Group-A",
+   "market": "美股"
+  },
+  {
+   "code": "SPIB",
+   "name": "组合中期公司债券ETF-SPDR",
+   "market": "美股"
+  },
+  {
+   "code": "FCFS",
+   "name": "第一富金融服务",
+   "market": "美股"
+  },
+  {
+   "code": "ELV",
+   "name": "Elevance Health Inc",
+   "market": "美股"
+  },
+  {
+   "code": "ICE",
+   "name": "洲际交易所",
+   "market": "美股"
+  },
+  {
+   "code": "COPX",
+   "name": "铜矿ETF-Global X",
+   "market": "美股"
+  },
+  {
+   "code": "GILD",
+   "name": "吉利德科学",
+   "market": "美股"
+  },
+  {
+   "code": "CCL",
+   "name": "嘉年华邮轮",
+   "market": "美股"
+  },
+  {
+   "code": "AON",
+   "name": "怡安保险",
+   "market": "美股"
+  },
+  {
+   "code": "INFQ",
+   "name": "Infleqtion Inc",
+   "market": "美股"
+  },
+  {
+   "code": "CME",
+   "name": "芝加哥商业交易所",
+   "market": "美股"
+  },
+  {
+   "code": "CCJ",
+   "name": "卡梅科",
+   "market": "美股"
+  },
+  {
+   "code": "DD",
+   "name": "陶氏杜邦",
+   "market": "美股"
+  },
+  {
+   "code": "ORKA",
+   "name": "方舟生物医药",
+   "market": "美股"
+  },
+  {
+   "code": "CMCSA",
+   "name": "康卡斯特",
+   "market": "美股"
+  },
+  {
+   "code": "ITT",
+   "name": "ITT Inc",
+   "market": "美股"
+  },
+  {
+   "code": "NDSN",
+   "name": "诺信",
+   "market": "美股"
+  },
+  {
+   "code": "O",
+   "name": "Realty Income Corp",
+   "market": "美股"
+  },
+  {
+   "code": "CRML",
+   "name": "Critical Metals Corp",
+   "market": "美股"
+  },
+  {
+   "code": "DNN",
+   "name": "丹尼森矿业",
+   "market": "美股"
+  },
+  {
+   "code": "BX",
+   "name": "黑石集团",
+   "market": "美股"
+  },
+  {
+   "code": "BLK",
+   "name": "贝莱德",
+   "market": "美股"
+  },
+  {
+   "code": "UAL",
+   "name": "联合航空",
+   "market": "美股"
+  },
+  {
+   "code": "MRNX",
+   "name": "二倍做多MRNA ETF-Defiance",
+   "market": "美股"
+  },
+  {
+   "code": "ZM",
+   "name": "Zoom通讯",
+   "market": "美股"
+  },
+  {
+   "code": "MSTX",
+   "name": "二倍做多MSTR ETF-Defiance",
+   "market": "美股"
+  },
+  {
+   "code": "WDAY",
+   "name": "Workday Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "NTRA",
+   "name": "Natera Inc",
+   "market": "美股"
+  },
+  {
+   "code": "SPG",
+   "name": "西蒙地产",
+   "market": "美股"
+  },
+  {
+   "code": "FTNT",
+   "name": "防特网",
+   "market": "美股"
+  },
+  {
+   "code": "COR",
+   "name": "Cencora Inc",
+   "market": "美股"
+  },
+  {
+   "code": "OKLO",
+   "name": "Oklo Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "STRL",
+   "name": "Sterling Infrastructure Inc",
+   "market": "美股"
+  },
+  {
+   "code": "JD",
+   "name": "京东",
+   "market": "美股"
+  },
+  {
+   "code": "DOCN",
+   "name": "DigitalOcean Holdings Inc",
+   "market": "美股"
+  },
+  {
+   "code": "MKSI",
+   "name": "MKS Inc",
+   "market": "美股"
+  },
+  {
+   "code": "RCL",
+   "name": "皇家加勒比邮轮",
+   "market": "美股"
+  },
+  {
+   "code": "MSCI",
+   "name": "明晟",
+   "market": "美股"
+  },
+  {
+   "code": "RBA",
+   "name": "RB Global Inc",
+   "market": "美股"
+  },
+  {
+   "code": "PAYC",
+   "name": "Paycom Software Inc",
+   "market": "美股"
+  },
+  {
+   "code": "CNH",
+   "name": "CNH Industrial NV",
+   "market": "美股"
+  },
+  {
+   "code": "ODFL",
+   "name": "Old Dominion Freight Line Inc",
+   "market": "美股"
+  },
+  {
+   "code": "BVN",
+   "name": "布埃纳文图拉开采",
+   "market": "美股"
+  },
+  {
+   "code": "PLTR",
+   "name": "Palantir Technologies Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "BSX",
+   "name": "波士顿科学",
+   "market": "美股"
+  },
+  {
+   "code": "TMC",
+   "name": "TMC the metal company Inc",
+   "market": "美股"
+  },
+  {
+   "code": "AXON",
+   "name": "Axon Enterprise Inc",
+   "market": "美股"
+  },
+  {
+   "code": "TIP",
+   "name": "通胀债券指数ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "CTSH",
+   "name": "高知特",
+   "market": "美股"
+  },
+  {
+   "code": "KDP",
+   "name": "Keurig Dr Pepper Inc",
+   "market": "美股"
+  },
+  {
+   "code": "AU",
+   "name": "AngloGold Ashanti plc",
+   "market": "美股"
+  },
+  {
+   "code": "TSEM",
+   "name": "Tower半导体",
+   "market": "美股"
+  },
+  {
+   "code": "NSC",
+   "name": "诺福克南方",
+   "market": "美股"
+  },
+  {
+   "code": "MTB",
+   "name": "美国制商银行",
+   "market": "美股"
+  },
+  {
+   "code": "BIDU",
+   "name": "百度",
+   "market": "美股"
+  },
+  {
+   "code": "MCK",
+   "name": "麦克森",
+   "market": "美股"
+  },
+  {
+   "code": "EAT",
+   "name": "布林克国际",
+   "market": "美股"
+  },
+  {
+   "code": "PANW",
+   "name": "派拓网络",
+   "market": "美股"
+  },
+  {
+   "code": "XME",
+   "name": "金属与矿产业ETF-SPDR",
+   "market": "美股"
+  },
+  {
+   "code": "TGTX",
+   "name": "TG Therapeutics Inc",
+   "market": "美股"
+  },
+  {
+   "code": "BJ",
+   "name": "BJ批发俱乐部",
+   "market": "美股"
+  },
+  {
+   "code": "QLYS",
+   "name": "科力斯",
+   "market": "美股"
+  },
+  {
+   "code": "IQV",
+   "name": "艾昆纬",
+   "market": "美股"
+  },
+  {
+   "code": "ELF",
+   "name": "elf Beauty Inc",
+   "market": "美股"
+  },
+  {
+   "code": "STZ",
+   "name": "星座品牌-A",
+   "market": "美股"
+  },
+  {
+   "code": "UPRO",
+   "name": "三倍做多标普500ETF-ProShares",
+   "market": "美股"
+  },
+  {
+   "code": "DAL",
+   "name": "达美航空",
+   "market": "美股"
+  },
+  {
+   "code": "IBKR",
+   "name": "盈透证券",
+   "market": "美股"
+  },
+  {
+   "code": "MFC",
+   "name": "宏利金融",
+   "market": "美股"
+  },
+  {
+   "code": "CG",
+   "name": "凯雷集团",
+   "market": "美股"
+  },
+  {
+   "code": "TECK",
+   "name": "泰克资源",
+   "market": "美股"
+  },
+  {
+   "code": "GNRC",
+   "name": "Generac Holdings Inc",
+   "market": "美股"
+  },
+  {
+   "code": "PCAR",
+   "name": "帕卡",
+   "market": "美股"
+  },
+  {
+   "code": "WAT",
+   "name": "沃特世",
+   "market": "美股"
+  },
+  {
+   "code": "THC",
+   "name": "泰尼特保健",
+   "market": "美股"
+  },
+  {
+   "code": "PLTU",
+   "name": "二倍做多PLTR ETF-Direxion",
+   "market": "美股"
+  },
+  {
+   "code": "USIG",
+   "name": "iShares Broad USD Investment Gr",
+   "market": "美股"
+  },
+  {
+   "code": "IAU",
+   "name": "黄金信托ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "IUSB",
+   "name": "安硕核心总美元债券市场ETF-iShar",
+   "market": "美股"
+  },
+  {
+   "code": "VSXY",
+   "name": "Victoria’s Secret & Co",
+   "market": "美股"
+  },
+  {
+   "code": "KKR",
+   "name": "KKR & Co Inc",
+   "market": "美股"
+  },
+  {
+   "code": "ITA",
+   "name": "美国航天国防ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "CL",
+   "name": "高露洁",
+   "market": "美股"
+  },
+  {
+   "code": "EGO",
+   "name": "埃尔拉多黄金",
+   "market": "美股"
+  },
+  {
+   "code": "ABT",
+   "name": "雅培",
+   "market": "美股"
+  },
+  {
+   "code": "VG",
+   "name": "Venture Global Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "BTI",
+   "name": "英美烟草",
+   "market": "美股"
+  },
+  {
+   "code": "UUUU",
+   "name": "Energy Fuels Inc",
+   "market": "美股"
+  },
+  {
+   "code": "GIS",
+   "name": "通用磨坊",
+   "market": "美股"
+  },
+  {
+   "code": "FAST",
+   "name": "快扣",
+   "market": "美股"
+  },
+  {
+   "code": "BSV",
+   "name": "美国短期债券ETF-Vanguard",
+   "market": "美股"
+  },
+  {
+   "code": "VLO",
+   "name": "瓦莱罗能源",
+   "market": "美股"
+  },
+  {
+   "code": "LYB",
+   "name": "利安德巴塞尔工业",
+   "market": "美股"
+  },
+  {
+   "code": "DELL",
+   "name": "戴尔科技",
+   "market": "美股"
+  },
+  {
+   "code": "EZPW",
+   "name": "艾茨克普",
+   "market": "美股"
+  },
+  {
+   "code": "ILMN",
+   "name": "Illumina Inc",
+   "market": "美股"
+  },
+  {
+   "code": "MANH",
+   "name": "曼哈顿联合软件",
+   "market": "美股"
+  },
+  {
+   "code": "ULTA",
+   "name": "ULTA美妆",
+   "market": "美股"
+  },
+  {
+   "code": "CRCG",
+   "name": "二倍做多CRCL ETF-Leverage",
+   "market": "美股"
+  },
+  {
+   "code": "PATH",
+   "name": "UiPath Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "QUBT",
+   "name": "Quantum Computing Inc",
+   "market": "美股"
+  },
+  {
+   "code": "CORT",
+   "name": "Corcept Therapeutics Inc",
+   "market": "美股"
+  },
+  {
+   "code": "KGC",
+   "name": "金罗斯黄金",
+   "market": "美股"
+  },
+  {
+   "code": "ABNB",
+   "name": "爱彼迎",
+   "market": "美股"
+  },
+  {
+   "code": "PYPL",
+   "name": "PayPal Holdings Inc",
+   "market": "美股"
+  },
+  {
+   "code": "NET",
+   "name": "Cloudflare Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "EMR",
+   "name": "艾默生电气",
+   "market": "美股"
+  },
+  {
+   "code": "XYZ",
+   "name": "Block Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "A",
+   "name": "安捷伦",
+   "market": "美股"
+  },
+  {
+   "code": "INFY",
+   "name": "印孚瑟斯",
+   "market": "美股"
+  },
+  {
+   "code": "ROK",
+   "name": "罗克韦尔自动化",
+   "market": "美股"
+  },
+  {
+   "code": "LII",
+   "name": "雷诺士",
+   "market": "美股"
+  },
+  {
+   "code": "VEEV",
+   "name": "Veeva Systems Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "HNGE",
+   "name": "Hinge Health Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "XRT",
+   "name": "标普零售指数ETF-SPDR",
+   "market": "美股"
+  },
+  {
+   "code": "EWJ",
+   "name": "日本ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "VIAV",
+   "name": "Viavi Solutions Inc",
+   "market": "美股"
+  },
+  {
+   "code": "CHTR",
+   "name": "特许通讯",
+   "market": "美股"
+  },
+  {
+   "code": "RVMD",
+   "name": "Revolution Medicines Inc",
+   "market": "美股"
+  },
+  {
+   "code": "CVI",
+   "name": "CVR能源",
+   "market": "美股"
+  },
+  {
+   "code": "TOST",
+   "name": "Toast Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "XLB",
+   "name": "基础材料ETF-SPDR",
+   "market": "美股"
+  },
+  {
+   "code": "ADXN",
+   "name": "Addex Therapeutics Ltd ADR",
+   "market": "美股"
+  },
+  {
+   "code": "NVR",
+   "name": "NVR Inc",
+   "market": "美股"
+  },
+  {
+   "code": "RHI",
+   "name": "罗致恒富",
+   "market": "美股"
+  },
+  {
+   "code": "BDX",
+   "name": "碧迪医疗",
+   "market": "美股"
+  },
+  {
+   "code": "CF",
+   "name": "CF实业",
+   "market": "美股"
+  },
+  {
+   "code": "GPN",
+   "name": "环汇",
+   "market": "美股"
+  },
+  {
+   "code": "REGN",
+   "name": "再生元制药",
+   "market": "美股"
+  },
+  {
+   "code": "IWO",
+   "name": "罗素2000成长股ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "DINO",
+   "name": "HF Sinclair Corp",
+   "market": "美股"
+  },
+  {
+   "code": "SHOP",
+   "name": "Shopify Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "EXPE",
+   "name": "亿客行",
+   "market": "美股"
+  },
+  {
+   "code": "BLDR",
+   "name": "Builders FirstSource Inc",
+   "market": "美股"
+  },
+  {
+   "code": "IT",
+   "name": "加特纳",
+   "market": "美股"
+  },
+  {
+   "code": "MOS",
+   "name": "美盛",
+   "market": "美股"
+  },
+  {
+   "code": "ROBN",
+   "name": "二倍做多HOOD ETF-T-Rex",
+   "market": "美股"
+  },
+  {
+   "code": "ZBRA",
+   "name": "斑马技术",
+   "market": "美股"
+  },
+  {
+   "code": "NTNX",
+   "name": "路坦力",
+   "market": "美股"
+  },
+  {
+   "code": "AVTR",
+   "name": "Avantor Inc",
+   "market": "美股"
+  },
+  {
+   "code": "PSX",
+   "name": "Phillips 66",
+   "market": "美股"
+  },
+  {
+   "code": "ERO",
+   "name": "Ero Copper Corp",
+   "market": "美股"
+  },
+  {
+   "code": "REMX",
+   "name": "稀土战略原料ETF-VanEck Vectors",
+   "market": "美股"
+  },
+  {
+   "code": "TRU",
+   "name": "TransUnion",
+   "market": "美股"
+  },
+  {
+   "code": "MOD",
+   "name": "摩丁制造",
+   "market": "美股"
+  },
+  {
+   "code": "IBB",
+   "name": "生物科技指数ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "WAB",
+   "name": "美国西屋制动",
+   "market": "美股"
+  },
+  {
+   "code": "HSY",
+   "name": "好时",
+   "market": "美股"
+  },
+  {
+   "code": "DHR",
+   "name": "丹纳赫",
+   "market": "美股"
+  },
+  {
+   "code": "MRK",
+   "name": "默沙东",
+   "market": "美股"
+  },
+  {
+   "code": "TROW",
+   "name": "普信集团",
+   "market": "美股"
+  },
+  {
+   "code": "RNG",
+   "name": "RingCentral Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "CXW",
+   "name": "CoreCivic Inc",
+   "market": "美股"
+  },
+  {
+   "code": "SCHF",
+   "name": "嘉信国际股票ETF-Schwab",
+   "market": "美股"
+  },
+  {
+   "code": "SCHW",
+   "name": "嘉信理财",
+   "market": "美股"
+  },
+  {
+   "code": "GLPI",
+   "name": "Gaming and Leisure Properties I",
+   "market": "美股"
+  },
+  {
+   "code": "FBND",
+   "name": "Fidelity Total Bond ETF",
+   "market": "美股"
+  },
+  {
+   "code": "MDB",
+   "name": "MongoDB Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "TRMB",
+   "name": "天宝导航",
+   "market": "美股"
+  },
+  {
+   "code": "IEI",
+   "name": "美国国债3-7年ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "SYF",
+   "name": "Synchrony Financial",
+   "market": "美股"
+  },
+  {
+   "code": "HTFL",
+   "name": "Heartflow Inc",
+   "market": "美股"
+  },
+  {
+   "code": "BEKE",
+   "name": "贝壳",
+   "market": "美股"
+  },
+  {
+   "code": "HBM",
+   "name": "Hudbay Minerals Inc",
+   "market": "美股"
+  },
+  {
+   "code": "HDB",
+   "name": "HDFC银行",
+   "market": "美股"
+  },
+  {
+   "code": "TGT",
+   "name": "塔吉特",
+   "market": "美股"
+  },
+  {
+   "code": "VTIP",
+   "name": "Vanguard Short-Term Inflation-P",
+   "market": "美股"
+  },
+  {
+   "code": "FICO",
+   "name": "Fair Isaac Corp",
+   "market": "美股"
+  },
+  {
+   "code": "AGNC",
+   "name": "AGNC Investment Corp",
+   "market": "美股"
+  },
+  {
+   "code": "HIMS",
+   "name": "Hims & Hers Health Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "FERG",
+   "name": "Ferguson Enterprises Inc",
+   "market": "美股"
+  },
+  {
+   "code": "SPLV",
+   "name": "标普500低波幅ETF-PowerShares",
+   "market": "美股"
+  },
+  {
+   "code": "MLM",
+   "name": "马丁-玛丽埃塔材料",
+   "market": "美股"
+  },
+  {
+   "code": "CAG",
+   "name": "康尼格拉",
+   "market": "美股"
+  },
+  {
+   "code": "GEHC",
+   "name": "GE HealthCare Technologies Inc",
+   "market": "美股"
+  },
+  {
+   "code": "PFGC",
+   "name": "Performance Food Group Co",
+   "market": "美股"
+  },
+  {
+   "code": "SNX",
+   "name": "新聚思",
+   "market": "美股"
+  },
+  {
+   "code": "CYTK",
+   "name": "Cytokinetics Inc",
+   "market": "美股"
+  },
+  {
+   "code": "GWRE",
+   "name": "Guidewire Software Inc",
+   "market": "美股"
+  },
+  {
+   "code": "CPNG",
+   "name": "Coupang Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "FBIN",
+   "name": "Fortune Brands Innovations Inc",
+   "market": "美股"
+  },
+  {
+   "code": "OIH",
+   "name": "石油服务指数ETF-VanEck",
+   "market": "美股"
+  },
+  {
+   "code": "HPE",
+   "name": "慧与",
+   "market": "美股"
+  },
+  {
+   "code": "PNR",
+   "name": "滨特尔",
+   "market": "美股"
+  },
+  {
+   "code": "AMGN",
+   "name": "安进",
+   "market": "美股"
+  },
+  {
+   "code": "ZS",
+   "name": "Zscaler Inc",
+   "market": "美股"
+  },
+  {
+   "code": "RBRK",
+   "name": "Rubrik Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "CNC",
+   "name": "康西哥",
+   "market": "美股"
+  },
+  {
+   "code": "LNTH",
+   "name": "Lantheus Holdings Inc",
+   "market": "美股"
+  },
+  {
+   "code": "DGX",
+   "name": "奎斯特诊疗",
+   "market": "美股"
+  },
+  {
+   "code": "SYY",
+   "name": "西斯科",
+   "market": "美股"
+  },
+  {
+   "code": "URA",
+   "name": "全球铀与核元件ETF-Global X",
+   "market": "美股"
+  },
+  {
+   "code": "RWM",
+   "name": "做空罗素2000ETF-ProShares",
+   "market": "美股"
+  },
+  {
+   "code": "CTRE",
+   "name": "CareTrust REIT Inc",
+   "market": "美股"
+  },
+  {
+   "code": "AMP",
+   "name": "阿默普莱斯金融",
+   "market": "美股"
+  },
+  {
+   "code": "AGI",
+   "name": "Alamos Gold Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "UL",
+   "name": "联合利华(英国)",
+   "market": "美股"
+  },
+  {
+   "code": "SOXQ",
+   "name": "Invesco PHLX Semiconductor ETF",
+   "market": "美股"
+  },
+  {
+   "code": "ZETA",
+   "name": "Zeta Global Holdings Corp-A",
+   "market": "美股"
+  },
+  {
+   "code": "SO",
+   "name": "南方电力",
+   "market": "美股"
+  },
+  {
+   "code": "MS",
+   "name": "摩根士丹利",
+   "market": "美股"
+  },
+  {
+   "code": "PM",
+   "name": "菲利普莫里斯国际",
+   "market": "美股"
+  },
+  {
+   "code": "MO",
+   "name": "奥驰亚集团",
+   "market": "美股"
+  },
+  {
+   "code": "QQQM",
+   "name": "Invesco纳指",
+   "market": "美股"
+  },
+  {
+   "code": "VOO",
+   "name": "Vanguard标普500",
+   "market": "美股"
+  },
+  {
+   "code": "PURR",
+   "name": "Hyperliquid Strategies Inc",
+   "market": "美股"
+  },
+  {
+   "code": "PTIR",
+   "name": "二倍做多PLTR ETF-GraniteShares",
+   "market": "美股"
+  },
+  {
+   "code": "GTLB",
+   "name": "Gitlab Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "XRP",
+   "name": "Bitwise XRP ETF",
+   "market": "美股"
+  },
+  {
+   "code": "XXRP",
+   "name": "Teucrium 2x Long Daily XRP ETF",
+   "market": "美股"
+  },
+  {
+   "code": "BABA",
+   "name": "阿里巴巴",
+   "market": "美股"
+  },
+  {
+   "code": "CNK",
+   "name": "喜满客影城",
+   "market": "美股"
+  },
+  {
+   "code": "QSR",
+   "name": "餐饮品牌国际",
+   "market": "美股"
+  },
+  {
+   "code": "BIIB",
+   "name": "生化基因",
+   "market": "美股"
+  },
+  {
+   "code": "OSCR",
+   "name": "Oscar Health Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "LH",
+   "name": "徕博科",
+   "market": "美股"
+  },
+  {
+   "code": "BTC",
+   "name": "Grayscale Bitcoin Mini Trust ET",
+   "market": "美股"
+  },
+  {
+   "code": "MEDP",
+   "name": "Medpace Holdings Inc",
+   "market": "美股"
+  },
+  {
+   "code": "PODD",
+   "name": "银休特",
+   "market": "美股"
+  },
+  {
+   "code": "NOW",
+   "name": "现在服务公司",
+   "market": "美股"
+  },
+  {
+   "code": "BMO",
+   "name": "蒙特利尔银行",
+   "market": "美股"
+  },
+  {
+   "code": "LUV",
+   "name": "西南航空",
+   "market": "美股"
+  },
+  {
+   "code": "ACM",
+   "name": "AECOM",
+   "market": "美股"
+  },
+  {
+   "code": "FSLY",
+   "name": "Fastly Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "WCC",
+   "name": "西科国际",
+   "market": "美股"
+  },
+  {
+   "code": "VIRT",
+   "name": "Virtu Financial Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "DLTR",
+   "name": "美元树",
+   "market": "美股"
+  },
+  {
+   "code": "HMY",
+   "name": "哈莫尼黄金",
+   "market": "美股"
+  },
+  {
+   "code": "HALO",
+   "name": "奥洛兹美医疗",
+   "market": "美股"
+  },
+  {
+   "code": "DOV",
+   "name": "都福",
+   "market": "美股"
+  },
+  {
+   "code": "ITGR",
+   "name": "Integer Holdings Corp",
+   "market": "美股"
+  },
+  {
+   "code": "GSK",
+   "name": "葛兰素史克",
+   "market": "美股"
+  },
+  {
+   "code": "NVAX",
+   "name": "诺瓦瓦克斯医药",
+   "market": "美股"
+  },
+  {
+   "code": "VRTX",
+   "name": "福泰制药",
+   "market": "美股"
+  },
+  {
+   "code": "SSNC",
+   "name": "SS&C Technologies Holdings Inc",
+   "market": "美股"
+  },
+  {
+   "code": "SQM",
+   "name": "智利矿业化工",
+   "market": "美股"
+  },
+  {
+   "code": "AJG",
+   "name": "安睿嘉尔",
+   "market": "美股"
+  },
+  {
+   "code": "SYRE",
+   "name": "Spyre Therapeutics Inc",
+   "market": "美股"
+  },
+  {
+   "code": "HUT",
+   "name": "Hut 8 Corp",
+   "market": "美股"
+  },
+  {
+   "code": "NTAP",
+   "name": "美国网存",
+   "market": "美股"
+  },
+  {
+   "code": "SOLS",
+   "name": "Solstice Advanced Materials Inc",
+   "market": "美股"
+  },
+  {
+   "code": "GH",
+   "name": "Guardant Health Inc",
+   "market": "美股"
+  },
+  {
+   "code": "CIFR",
+   "name": "Cipher Digital Inc",
+   "market": "美股"
+  },
+  {
+   "code": "GOF",
+   "name": "Guggenheim Strategic Opportunit",
+   "market": "美股"
+  },
+  {
+   "code": "QS",
+   "name": "QuantumScape Corp-A",
+   "market": "美股"
+  },
+  {
+   "code": "ESI",
+   "name": "Element Solutions Inc",
+   "market": "美股"
+  },
+  {
+   "code": "MAA",
+   "name": "MAA房产信托",
+   "market": "美股"
+  },
+  {
+   "code": "PAYX",
+   "name": "沛齐",
+   "market": "美股"
+  },
+  {
+   "code": "BNTX",
+   "name": "BioNTech SE ADR",
+   "market": "美股"
+  },
+  {
+   "code": "AVDE",
+   "name": "Avantis International Equity ET",
+   "market": "美股"
+  },
+  {
+   "code": "NVS",
+   "name": "诺华制药",
+   "market": "美股"
+  },
+  {
+   "code": "TEVA",
+   "name": "梯瓦制药",
+   "market": "美股"
+  },
+  {
+   "code": "BROS",
+   "name": "Dutch Bros Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "SIL",
+   "name": "Global X Silver Miners ETF",
+   "market": "美股"
+  },
+  {
+   "code": "W",
+   "name": "Wayfair Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "KRYS",
+   "name": "Krystal Biotech Inc",
+   "market": "美股"
+  },
+  {
+   "code": "CHD",
+   "name": "丘奇&德怀特",
+   "market": "美股"
+  },
+  {
+   "code": "SSRM",
+   "name": "SSR Mining Inc",
+   "market": "美股"
+  },
+  {
+   "code": "GEN",
+   "name": "Gen Digital Inc",
+   "market": "美股"
+  },
+  {
+   "code": "RPRX",
+   "name": "Royalty Pharma plc-A",
+   "market": "美股"
+  },
+  {
+   "code": "DXCM",
+   "name": "德康医疗",
+   "market": "美股"
+  },
+  {
+   "code": "PHM",
+   "name": "普得集团(帕尔迪)",
+   "market": "美股"
+  },
+  {
+   "code": "MRVL",
+   "name": "迈威尔科技",
+   "market": "美股"
+  },
+  {
+   "code": "URNM",
+   "name": "Sprott Uranium Miners ETF",
+   "market": "美股"
+  },
+  {
+   "code": "RACE",
+   "name": "法拉利",
+   "market": "美股"
+  },
+  {
+   "code": "SBSW",
+   "name": "Sibanye Stillwater Ltd ADR",
+   "market": "美股"
+  },
+  {
+   "code": "ETH",
+   "name": "低成本以太坊ETF-Grayscale",
+   "market": "美股"
+  },
+  {
+   "code": "CPAY",
+   "name": "Corpay Inc",
+   "market": "美股"
+  },
+  {
+   "code": "ENVA",
+   "name": "易诺华国际",
+   "market": "美股"
+  },
+  {
+   "code": "LPLA",
+   "name": "LPL Financial Holdings Inc",
+   "market": "美股"
+  },
+  {
+   "code": "SDS",
+   "name": "二倍做空标普500ETF-ProShares",
+   "market": "美股"
+  },
+  {
+   "code": "KTOS",
+   "name": "克瑞拓斯安全防卫",
+   "market": "美股"
+  },
+  {
+   "code": "TTAN",
+   "name": "ServiceTitan Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "FIG",
+   "name": "Figma Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "CNI",
+   "name": "加拿大国家铁路",
+   "market": "美股"
+  },
+  {
+   "code": "DRI",
+   "name": "达登饭店",
+   "market": "美股"
+  },
+  {
+   "code": "TVTX",
+   "name": "Travere Therapeutics Inc",
+   "market": "美股"
+  },
+  {
+   "code": "JHX",
+   "name": "詹姆斯哈迪",
+   "market": "美股"
+  },
+  {
+   "code": "P",
+   "name": "Everpure Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "IRM",
+   "name": "铁山",
+   "market": "美股"
+  },
+  {
+   "code": "ILF",
+   "name": "拉美40ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "GEO",
+   "name": "GEO惩教集团",
+   "market": "美股"
+  },
+  {
+   "code": "IONS",
+   "name": "Ionis Pharmaceuticals Inc",
+   "market": "美股"
+  },
+  {
+   "code": "SBET",
+   "name": "SharpLink Inc",
+   "market": "美股"
+  },
+  {
+   "code": "ETHT",
+   "name": "ProShares Ultra Ether ETF",
+   "market": "美股"
+  },
+  {
+   "code": "UGI",
+   "name": "UGI公用事业",
+   "market": "美股"
+  },
+  {
+   "code": "PPG",
+   "name": "PPG工业",
+   "market": "美股"
+  },
+  {
+   "code": "KMX",
+   "name": "车美仕",
+   "market": "美股"
+  },
+  {
+   "code": "USFD",
+   "name": "美国食品控股",
+   "market": "美股"
+  },
+  {
+   "code": "WIX",
+   "name": "Wix.com Ltd",
+   "market": "美股"
+  },
+  {
+   "code": "BGC",
+   "name": "BGC Group Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "VRSN",
+   "name": "威瑞信",
+   "market": "美股"
+  },
+  {
+   "code": "AXGN",
+   "name": "AxoGen Inc",
+   "market": "美股"
+  },
+  {
+   "code": "LEN",
+   "name": "莱纳建筑-A",
+   "market": "美股"
+  },
+  {
+   "code": "HEI",
+   "name": "海科航空",
+   "market": "美股"
+  },
+  {
+   "code": "BILL",
+   "name": "BILL Holdings Inc",
+   "market": "美股"
+  },
+  {
+   "code": "NOG",
+   "name": "Northern Oil and Gas Inc",
+   "market": "美股"
+  },
+  {
+   "code": "AUR",
+   "name": "Aurora Innovation Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "ROL",
+   "name": "Rollins Inc",
+   "market": "美股"
+  },
+  {
+   "code": "MSTZ",
+   "name": "二倍做空MSTR ETF-T-Rex",
+   "market": "美股"
+  },
+  {
+   "code": "STE",
+   "name": "思泰瑞医疗",
+   "market": "美股"
+  },
+  {
+   "code": "FROG",
+   "name": "JFrog Ltd",
+   "market": "美股"
+  },
+  {
+   "code": "CVE",
+   "name": "Cenovus能源",
+   "market": "美股"
+  },
+  {
+   "code": "DAVE",
+   "name": "Dave Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "WULF",
+   "name": "TeraWulf Inc",
+   "market": "美股"
+  },
+  {
+   "code": "CCEP",
+   "name": "可口可乐欧洲太平洋合伙",
+   "market": "美股"
+  },
+  {
+   "code": "AMCR",
+   "name": "Amcor plc",
+   "market": "美股"
+  },
+  {
+   "code": "UMAC",
+   "name": "Unusual Machines Inc",
+   "market": "美股"
+  },
+  {
+   "code": "TTEK",
+   "name": "德照科技",
+   "market": "美股"
+  },
+  {
+   "code": "ETSY",
+   "name": "Etsy Inc",
+   "market": "美股"
+  },
+  {
+   "code": "RIOT",
+   "name": "Riot Platforms Inc",
+   "market": "美股"
+  },
+  {
+   "code": "CP",
+   "name": "加拿大太平洋堪萨斯城",
+   "market": "美股"
+  },
+  {
+   "code": "J",
+   "name": "Jacobs Solutions Inc",
+   "market": "美股"
+  },
+  {
+   "code": "PKG",
+   "name": "美国包装",
+   "market": "美股"
+  },
+  {
+   "code": "ANF",
+   "name": "阿贝克隆比&费奇",
+   "market": "美股"
+  },
+  {
+   "code": "SWK",
+   "name": "史丹利百得",
+   "market": "美股"
+  },
+  {
+   "code": "BAX",
+   "name": "百特国际",
+   "market": "美股"
+  },
+  {
+   "code": "SW",
+   "name": "Smurfit WestRock plc",
+   "market": "美股"
+  },
+  {
+   "code": "IP",
+   "name": "国际纸业",
+   "market": "美股"
+  },
+  {
+   "code": "SPHR",
+   "name": "Sphere Entertainment Co-A",
+   "market": "美股"
+  },
+  {
+   "code": "TGB",
+   "name": "Trekor Metals Ltd",
+   "market": "美股"
+  },
+  {
+   "code": "OSK",
+   "name": "Oshkosh Corp",
+   "market": "美股"
+  },
+  {
+   "code": "GFS",
+   "name": "GLOBALFOUNDRIES Inc",
+   "market": "美股"
+  },
+  {
+   "code": "PBR_A",
+   "name": "巴西石油-优先股",
+   "market": "美股"
+  },
+  {
+   "code": "EVR",
+   "name": "Evercore Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "MHK",
+   "name": "莫霍克工业",
+   "market": "美股"
+  },
+  {
+   "code": "APLD",
+   "name": "Applied Digital Corp",
+   "market": "美股"
+  },
+  {
+   "code": "FTV",
+   "name": "Fortive Corp",
+   "market": "美股"
+  },
+  {
+   "code": "WEX",
+   "name": "WEX Inc",
+   "market": "美股"
+  },
+  {
+   "code": "IOT",
+   "name": "Samsara Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "COGT",
+   "name": "Cogent Biosciences Inc",
+   "market": "美股"
+  },
+  {
+   "code": "PGY",
+   "name": "Pagaya Technologies Ltd-A",
+   "market": "美股"
+  },
+  {
+   "code": "IAG",
+   "name": "IAMGOLD Corp",
+   "market": "美股"
+  },
+  {
+   "code": "SRE",
+   "name": "桑普拉能源",
+   "market": "美股"
+  },
+  {
+   "code": "S",
+   "name": "SentinelOne Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "HNI",
+   "name": "HNI Corp",
+   "market": "美股"
+  },
+  {
+   "code": "SBLK",
+   "name": "Star Bulk Carriers Corp",
+   "market": "美股"
+  },
+  {
+   "code": "APPF",
+   "name": "AppFolio Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "BNS",
+   "name": "加拿大丰业银行",
+   "market": "美股"
+  },
+  {
+   "code": "TRI",
+   "name": "汤森路透",
+   "market": "美股"
+  },
+  {
+   "code": "BUD",
+   "name": "百威英博",
+   "market": "美股"
+  },
+  {
+   "code": "PSN",
+   "name": "Parsons Corp",
+   "market": "美股"
+  },
+  {
+   "code": "TOL",
+   "name": "托尔兄弟",
+   "market": "美股"
+  },
+  {
+   "code": "TXRH",
+   "name": "德州公路酒吧",
+   "market": "美股"
+  },
+  {
+   "code": "IOVA",
+   "name": "Iovance Biotherapeutics Inc",
+   "market": "美股"
+  },
+  {
+   "code": "BRZE",
+   "name": "Braze Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "TSLQ",
+   "name": "二倍做空特斯拉ETF-Tradr",
+   "market": "美股"
+  },
+  {
+   "code": "WING",
+   "name": "Wingstop Inc",
+   "market": "美股"
+  },
+  {
+   "code": "MVLL",
+   "name": "二倍做多MRVL ETF-GraniteShares",
+   "market": "美股"
+  },
+  {
+   "code": "HRB",
+   "name": "H&R布洛克",
+   "market": "美股"
+  },
+  {
+   "code": "FDS",
+   "name": "辉盛研究系统",
+   "market": "美股"
+  },
+  {
+   "code": "CLSK",
+   "name": "CleanSpark Inc",
+   "market": "美股"
+  },
+  {
+   "code": "COMP",
+   "name": "Compass Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "MOO",
+   "name": "农业ETF-VanEck Vectors",
+   "market": "美股"
+  },
+  {
+   "code": "IAUM",
+   "name": "iShares Gold Trust Micro ETF",
+   "market": "美股"
+  },
+  {
+   "code": "BMRN",
+   "name": "拜玛林制药",
+   "market": "美股"
+  },
+  {
+   "code": "CGNX",
+   "name": "康耐视",
+   "market": "美股"
+  },
+  {
+   "code": "UMC",
+   "name": "联华电子",
+   "market": "美股"
+  },
+  {
+   "code": "FSM",
+   "name": "Fortuna Mining Corp",
+   "market": "美股"
+  },
+  {
+   "code": "MT",
+   "name": "安赛乐米塔尔",
+   "market": "美股"
+  },
+  {
+   "code": "OSIS",
+   "name": "OSI Systems Inc",
+   "market": "美股"
+  },
+  {
+   "code": "ALLY",
+   "name": "Ally Financial Inc",
+   "market": "美股"
+  },
+  {
+   "code": "DUOL",
+   "name": "多邻国",
+   "market": "美股"
+  },
+  {
+   "code": "DOCU",
+   "name": "DocuSign Inc",
+   "market": "美股"
+  },
+  {
+   "code": "EIX",
+   "name": "爱迪生国际",
+   "market": "美股"
+  },
+  {
+   "code": "DNTH",
+   "name": "Dianthus Therapeutics Inc",
+   "market": "美股"
+  },
+  {
+   "code": "BRO",
+   "name": "布朗保险",
+   "market": "美股"
+  },
+  {
+   "code": "ELAN",
+   "name": "Elanco Animal Health Inc",
+   "market": "美股"
+  },
+  {
+   "code": "TPG",
+   "name": "TPG Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "PICK",
+   "name": "iShares MSCI Global Select Meta",
+   "market": "美股"
+  },
+  {
+   "code": "SBIT",
+   "name": "2倍做空比特币期货ETF-Proshares",
+   "market": "美股"
+  },
+  {
+   "code": "LECO",
+   "name": "林肯电气",
+   "market": "美股"
+  },
+  {
+   "code": "AAOX",
+   "name": "二倍做多AAOI ETF-Tradr",
+   "market": "美股"
+  },
+  {
+   "code": "VAC",
+   "name": "万豪度假环球",
+   "market": "美股"
+  },
+  {
+   "code": "OLLI",
+   "name": "Ollie's Bargain Outlet Holdings",
+   "market": "美股"
+  },
+  {
+   "code": "ATEN",
+   "name": "A10 Networks Inc",
+   "market": "美股"
+  },
+  {
+   "code": "SA",
+   "name": "Seabridge Gold Inc",
+   "market": "美股"
+  },
+  {
+   "code": "AXTX",
+   "name": "二倍做多AXTI ETF-Tradr",
+   "market": "美股"
+  },
+  {
+   "code": "VTRS",
+   "name": "Viatris Inc",
+   "market": "美股"
+  },
+  {
+   "code": "GDXD",
+   "name": "MicroSectors Gold Miners -3X In",
+   "market": "美股"
+  },
+  {
+   "code": "BTCZ",
+   "name": "T-Rex 2X Inverse Bitcoin Daily ",
+   "market": "美股"
+  },
+  {
+   "code": "TSDD",
+   "name": "二倍做空特斯拉ETF-GraniteShares",
+   "market": "美股"
+  },
+  {
+   "code": "PPTA",
+   "name": "Perpetua Resources Corp",
+   "market": "美股"
+  },
+  {
+   "code": "TX",
+   "name": "特尔尼翁钢铁",
+   "market": "美股"
+  },
+  {
+   "code": "LABD",
+   "name": "三倍做空生物技术ETF-Direxion",
+   "market": "美股"
+  },
+  {
+   "code": "DUST",
+   "name": "二倍做空金矿指数ETF-Direxion",
+   "market": "美股"
+  },
+  {
+   "code": "BITI",
+   "name": "1倍做空比特币期货ETF-Proshares",
+   "market": "美股"
+  },
+  {
+   "code": "BTBT",
+   "name": "比特数字",
+   "market": "美股"
+  },
+  {
+   "code": "PLTZ",
+   "name": "二倍做空PLTR ETF-Defiance",
+   "market": "美股"
+  },
+  {
+   "code": "REAL",
+   "name": "The RealReal Inc",
+   "market": "美股"
+  },
+  {
+   "code": "INTW",
+   "name": "二倍做多英特尔ETF-GraniteShares",
+   "market": "美股"
+  },
+  {
+   "code": "SNK",
+   "name": "二倍做空SpaceX ETF-GraniteShare",
+   "market": "美股"
+  }
+ ],
+ "count": 1906,
+ "selection_authority": "universe_membership_only; legacy score removed"
+}
