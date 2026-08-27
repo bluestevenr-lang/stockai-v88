@@ -84,9 +84,10 @@ if exist "%OCPKG%\sync_v88_projection_win.py" if exist "%REPORT%\data\gpt_verify
     if errorlevel 8 (
       echo [%STAMP%] WARN: GPT OpenClaw projection refresh failed; keeping last good snapshot>> "%LOG%"
     ) else (
-      if not exist "%OCGPT%\knowledge\v88-claude-memory" mkdir "%OCGPT%\knowledge\v88-claude-memory" >nul 2>&1
-      xcopy /D /E /I /Y "%REPORT%\claude-memory\*" "%OCGPT%\knowledge\v88-claude-memory\" >nul 2>&1
-      echo [%STAMP%] GPT OpenClaw projection and sanitized Claude memory refreshed>> "%LOG%"
+      REM Never copy private memory/portfolio prose into the Feishu workspace.
+      REM The generated context projection is the only approved mobile source.
+      if exist "%OCGPT%\knowledge\v88-claude-memory" rmdir /S /Q "%OCGPT%\knowledge\v88-claude-memory" >nul 2>&1
+      echo [%STAMP%] GPT OpenClaw privacy-safe projection refreshed>> "%LOG%"
     )
   )
 )
