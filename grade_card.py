@@ -376,17 +376,130 @@ def _three_a_time_strip(rk: dict, sg: dict) -> str:
     )
 
 
+_TRIAD_BUCKETS = (
+    # 冻结态优先去重：即使上游意外把同一代码同时放入 recommendations，
+    # 也必须先冻结、绝不能因后续桶重复而恢复执行许可。
+    ("blocked_3a", "3A冻结", "冻结·不可执行", False),
+    ("recommendations", "3A现买", "现在可进", True),
+    ("preparations", "3A准备", "准备买·等待触发", False),
+    ("conditional", "2A条件", "条件买·不可直接执行", False),
+    ("observations", "", "", False),
+    ("pending", "PENDING", "待复核·不是否决", False),
+)
+
+
+def _triad_v2_rows(rk: dict, triad: dict | None) -> tuple[list[dict], bool]:
+    """Overlay central v2 states on legacy rank evidence.
+
+    Rank rows retain buckets/explanations only.  Tier, action and every trade
+    contract field come from triad_selection.  When v2 is absent the legacy
+    rows remain visible but are explicitly non-executable.
+    """
+    legacy = {str(row.get("code") or ""): row for row in (rk.get("rows") or [])}
+    triad = triad if isinstance(triad, dict) else {}
+    version = str(triad.get("version") or "").strip()
+    schema = triad.get("schema_version", triad.get("schema"))
+    if isinstance(schema, dict):
+        schema = schema.get("version")
+    explicit_v2_schema = str(schema or "").strip().lower() in {
+        "2", "v2", "triad_selection_v2", "triad-selection-v2",
+    }
+    is_v2 = bool(
+        triad.get("factpack_id")
+        and (version == "gpt-triad-selection-v2"
+             or version.startswith("gpt-triad-selection-v2-")
+             or explicit_v2_schema)
+    )
+    if not is_v2:
+        fallback = []
+        for original in (rk.get("rows") or []):
+            row = dict(original)
+            row.update({
+                "listable": False, "formal_recommendation": False,
+                "central_bucket": "legacy", "central_state": "LEGACY_FALLBACK",
+                "display_action": "旧口径参考·不可执行（待复核·不可执行）",
+                "triad_fallback": True,
+            })
+            fallback.append(row)
+        return fallback, False
+
+    rows: list[dict] = []
+    seen: set[str] = set()
+    for bucket, fixed_tier, fixed_action, executable in _TRIAD_BUCKETS:
+        for central in triad.get(bucket) or []:
+            code = str(central.get("code") or central.get("canonical_code") or "")
+            if not code or code in seen:
+                continue
+            seen.add(code)
+            row = dict(legacy.get(code) or {})
+            plan = dict(central.get("trade_plan") or {})
+            tier = str(central.get("tier") or "PENDING")
+            state = str(central.get("state") or "")
+            display_tier = fixed_tier
+            display_action = fixed_action
+            if bucket == "observations":
+                if tier == "1A":
+                    display_tier, display_action = "1A研究", "单席机会·继续研究"
+                else:
+                    display_tier, display_action = "2A分歧观察", "分歧观察·不可执行"
+            publish_eligible = bool(
+                executable and central.get("publish_eligible") is True)
+            row.update({
+                "code": central.get("code") or code,
+                "name": central.get("name") or row.get("name") or code,
+                "market": central.get("market") or row.get("market"),
+                "tier": tier, "display_tier": display_tier,
+                "display_action": display_action,
+                "action_state": display_action,
+                "publish_eligible": publish_eligible,
+                "listable": publish_eligible,
+                "formal_recommendation": publish_eligible,
+                "central_bucket": bucket, "central_state": state,
+                "central_trade_plan": plan, "triad_fallback": False,
+                "horizon": plan.get("horizon") or central.get("horizon") or row.get("horizon"),
+                "rr": plan.get("rr") if plan.get("rr") is not None else row.get("rr"),
+            })
+            triggers = dict(row.get("triggers") or {})
+            triggers["enter"] = (plan.get("promotion_trigger") or plan.get("entry_range")
+                                 or triggers.get("enter") or "—")
+            triggers["invalid"] = (plan.get("invalidation") or plan.get("stop")
+                                   or triggers.get("invalid") or "—")
+            row["triggers"] = triggers
+            old_contract = dict(row.get("execution_contract") or {})
+            snapshot = dict(old_contract.get("snapshot") or {})
+            for key in ("last", "stop", "target", "rr", "horizon", "position_cap"):
+                if plan.get(key) is not None:
+                    snapshot[key] = plan.get(key)
+            snapshot["entry_range"] = plan.get("entry_range") or ""
+            snapshot["mode"] = display_action
+            row["execution_contract"] = {
+                **old_contract,
+                "ready": bool(row["listable"] and plan.get("ready") is True),
+                "snapshot": snapshot,
+            }
+            rows.append(row)
+    return rows, True
+
+
 def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
-                      pool: dict = None, limit_in: int = 12, limit_out: int = 8) -> str:
+                      pool: dict = None, limit_in: int = 12, limit_out: int = 8,
+                      triad: dict = None) -> str:
     """3A大系统完整模块(标题+IN表+OUT表+尾注),一次返回全部HTML。"""
-    rows = rk.get("rows") or []
+    rows, triad_v2 = _triad_v2_rows(rk, triad)
     # 页头只统计真正获得执行许可的等级。未通过的桶3A属于候选，不能再显示
     # “IN:3A×1”；这是 2026-08-17 长江证券真实成交事故的直接视觉诱因。
-    n3 = sum(1 for r in rows if r.get("tier") == "3A" and r.get("listable") is True)
-    n2 = sum(1 for r in rows if r.get("tier") == "2A" and r.get("listable") is True)
-    n1 = sum(1 for r in rows if r.get("tier") == "1A" and r.get("listable") is True)
-    nc = sum(1 for r in rows if r.get("tier") in ("3A", "2A", "1A")
-             and r.get("listable") is not True)
+    n3 = sum(1 for r in rows
+             if r.get("central_bucket") == "recommendations"
+             and r.get("publish_eligible") is True)
+    n3b = sum(1 for r in rows if r.get("central_bucket") == "blocked_3a")
+    n3p = sum(1 for r in rows if r.get("central_bucket") == "preparations")
+    n2c = sum(1 for r in rows if r.get("central_bucket") == "conditional")
+    n2o = sum(1 for r in rows if r.get("central_bucket") == "observations"
+              and r.get("tier") == "2A")
+    n1 = sum(1 for r in rows if r.get("central_bucket") == "observations"
+             and r.get("tier") == "1A")
+    np = sum(1 for r in rows if r.get("central_bucket") == "pending")
+    nc = n3b + n3p + n2c + n2o + n1 + np
     arch = rk.get("archived") or []
     sgm = {str(x.get("code")): x for x in (sg.get("rows") or [])}
     # 【2026-08-02 用户定纲】"哪个更接近当前就进入排名,还没到就不进名单"→
@@ -422,8 +535,9 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             f"<div style='font-size:12px;opacity:.95'>"
             + (f"全市场→通道自然产出{len(pool.get('rows') or [])}只→评级{len(rows)}只 ｜ "
                if pool else "")
-            + f"IN可执行: 3A×{n3} 2A×{n2} 战术1A×{n1} ｜ 待复核候选×{nc}"
-              f" ｜ OUT: 卖警×{len(out_src)} 否决×{len(arch)}"
+            + f"IN: 3A现买×{n3} ｜ 3A冻结×{n3b} ｜ 3A准备×{n3p} ｜ 2A条件×{n2c} "
+              f"｜ 2A分歧×{n2o} ｜ 1A研究×{n1} ｜ PENDING×{np}"
+              f" ｜ OUT: 持仓卖警×{len(_own)}"
             f"</div>"
             # 【2026-08-13 用户定纲】结论生成、证据可得、流水线状态必须分开显示；
             # 名单没变化时也明确标注“本班已重算”，避免误判系统停更。
@@ -451,9 +565,9 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
     # 把主脑已经判死的票摆在那里,既是噪音又可能诱导操作;它们的正确位置是漏斗计数与尾注。
     # 留在组里的只有**还可能翻身的**:流程没跑到(两方未表态)或仅GPT侧受阻。
     # 与既有铁律一致(claude-standard-gate:"红标不进推荐位")。
-    _blocked_rows = [x for x in rows if x.get("tier") in ("3A", "2A", "1A")
-                     and x.get("verification") and not x.get("listable")
-                     and (x.get("verification") or {}).get("rules_gate") != "reject"]
+    _blocked_rows = [x for x in rows if x.get("central_bucket") in
+                     ("blocked_3a", "preparations", "conditional",
+                      "observations", "pending", "legacy")]
     _n_cl_rej = sum(1 for x in rows if x.get("tier") in ("3A", "2A", "1A")
                     and (x.get("verification") or {}).get("rules_gate") == "reject")
     in_rows = ""
@@ -467,12 +581,14 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
         # rank 随行快照优先：候选不在 intraday_decisions 覆盖面时，买区也不能消失。
         ep = snap or d.get("entry_plan") or {}
         z = ep.get("zone") or []
-        zone = (f"{z[0]}~{z[1]}" if len(z) >= 2 else
+        central_range = str((r.get("central_trade_plan") or {}).get("entry_range") or "")
+        zone = (central_range if central_range else
+                f"{z[0]}~{z[1]}" if len(z) >= 2 else
                 (f"回踩{ep.get('pullback')}" if ep.get("pullback") else "—"))
-        shown_tier = (str(r.get("display_tier") or f"{r.get('tier')}候选")
-                      if blocked else str(r.get("tier")))
-        shown_action = ("⛔待复核·不可执行" if blocked else
-                        str(r.get("display_action") or r.get("action_state") or ""))
+        shown_tier = (str(r.get("display_tier") or
+                          (f"{r.get('tier')}候选" if blocked else r.get("tier"))))
+        shown_action = str(r.get("display_action") or r.get("action_state") or
+                           ("⛔待复核·不可执行" if blocked else ""))
         col = PALETTE["warn"] if blocked else TIER_COLOR.get(str(r.get("tier")), "#64748b")
         cf = (sgm.get(c) or {}).get("in_out_conflict")
         bk = r.get("buckets") or {}
@@ -663,7 +779,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
     return (head
             + f"<div style='font-size:13px;font-weight:800;color:{PALETTE['buy']};margin:8px 0 3px;"
               f"border-left:4px solid {PALETTE['buy']};padding-left:6px'>"
-              f"🟢 IN · 买入侧（3A/2A 核心推荐）</div>"
+              f"🟢 IN · 中央三周期机会分层</div>"
             # 【P1·覆盖率门禁上屏】GPT:"关键桶覆盖低于阈值时禁止发布确定性的IN榜,
             # 改报'评估不完整'"。不清空表(那等于另一种隐瞒),而是把"这份名单还不能当结论"
             # 明写在最前面——同类故障曾静默存在整天,就因为界面上没有覆盖率这个数。
@@ -683,6 +799,11 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                + "<br>覆盖不足可能是<b>数据管道故障</b>，而非市场真的没机会——"
                  "同族病：某桶大量取同一默认值＝该桶对这批票零区分度。</span></div>"
                if _cov and not _cov.get("publishable") else "")
+            + (("" if triad_v2 else
+                f"<div style='font-size:11.5px;background:{PALETTE['warn_bg']};"
+                f"border-left:4px solid {PALETTE['warn']};border-radius:5px;"
+                f"padding:5px 8px;margin-bottom:4px;color:{PALETTE['warn']}'>"
+                f"⚠️ 中央 triad_selection v2 未就绪：以下仅为旧口径参考，<b>不可冒充现买</b>。</div>"))
             + (f"<div style='font-size:11.5px;background:#eff6ff;border-radius:5px;"
                f"padding:4px 8px;margin-bottom:3px'>今日无 3A（现在可进+长期获益的完整机会），"
                f"不硬凑。{near}</div>" if n3 == 0 else "")
@@ -713,13 +834,18 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                          f"{k} {v}</span>"
                          for k, v in (_vf.get("stats") or {}).items() if v)
                + "</div>" if _vf else "")
+            # 行动表必须先于所有研究态：用户第一眼先看唯一可执行的 3A现买，
+            # 再看准备/条件/分歧/研究/PENDING，避免研究名单在视觉上盖过买单。
+            + (_tbl(in_rows, _TH_IN) or
+               "<div style='font-size:12px;color:#94a3b8'>"
+               "今日无 3A现买 —— 3A准备、2A条件及研究态见下方非执行组</div>")
             # ══ 被拦组:独立成组成表(用户"就像-3a里的非持仓组别一样") ══
             + (f"<div style='font-size:13px;font-weight:800;color:{PALETTE['warn']};"
                f"margin:12px 0 2px;border-left:4px solid {PALETTE['warn']};padding-left:6px'>"
-               f"⏸ 待验组（{len(_blocked_rows)}只"
-               + ("　<span style='font-weight:400'>桶评级够了、验证还没跑完，"
-                  "跑一次就可能上榜</span>" if _blocked_rows else
-                  "　<span style='font-weight:400'>验证已全部跑完，没有待验标的</span>")
+               f"⏸ 非执行研究组（{len(_blocked_rows)}只"
+               + ("　<span style='font-weight:400'>按中央状态分层展示；"
+                  "只有 3A现买 可执行</span>" if _blocked_rows else
+                  "　<span style='font-weight:400'>当前没有非执行研究标的</span>")
                + "）</div>"
                f"<div style='font-size:11px;color:{PALETTE['hold']};margin-bottom:3px'>"
                f"与上表同列同口径，可直接对照，差别只在「规则·GPT·Kimi·书」列。"
@@ -729,10 +855,8 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                + "</div>"
                + (_tbl(blocked_html, _TH_IN) if blocked_html else
                   f"<div style='font-size:12px;color:{PALETTE['hold']}'>"
-                  f"今日无待验标的——验证已跑完</div>")
+                  f"今日无非执行研究标的</div>")
                if (_blocked_rows or _n_cl_rej) else "")
-            + (_tbl(in_rows, _TH_IN) or "<div style='font-size:12px;color:#94a3b8'>今日无 3A/2A —— "
-                                "现金也是仓位；战术级1A见买表折叠区</div>")
             # 【三方定纲·可见性】被 OUT 证据撤销买点的票若不在上表(如1A),必须单独点名——
             # 仲裁若不可见,等于没发生。GPT:"IN候选结构保留,当前买点撤销"要两句都说出来。
             + (f"<div style='font-size:11px;background:#fef2f2;border-left:3px solid {PALETTE['sell']};"
@@ -788,10 +912,9 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                    for r in (_quiet.get("rows") or []) if r.get("vetoed"))
                + "</div>" if _quiet.get("rows") else "")
             # ══ 第二区：非持仓 ══
-            + f"<div style='font-size:13px;font-weight:800;color:#b45309;margin:12px 0 2px;"
-              f"border-left:4px solid #b45309;padding-left:6px'>"
-              f"👁 第二区 · 非持仓（{len(_oth)}只 · 自选/池内候选，"
-              f"<span style='font-weight:400'>不需要你动作，只是别买</span>）</div>"
+            + f"<details style='margin-top:10px'><summary style='cursor:pointer;font-size:13px;"
+              f"font-weight:800;color:#b45309;border-left:4px solid #b45309;padding-left:6px'>"
+              f"👁 第二区 · 非持仓回避（{len(_oth)}只，默认折叠）</summary>"
             + (f"<div style='font-size:11px;color:#64748b;margin-bottom:3px'>"
                f"漏斗 信号{_bd.get('signals')} → 入榜<b>{_bd.get('on_board')}</b>："
                f"{_funnel}　<span style='color:#94a3b8'>入榜闸=接近度×持有档"
@@ -803,6 +926,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + (_tbl("".join(_out_row(g) for g in _oth), _TH_OUT)
                or f"<div style='font-size:12px;color:{PALETTE['hold']}'>非持仓标的无回避信号 —— "
                                  "无 OUT 信号也是信号</div>")
+            + "</details>"
             + f"<div style='font-size:10.5px;color:#94a3b8;margin-top:4px'>"
               f"OUT为影子级(攒战绩不触发交易)·与引擎卖警一致率{cons.get('rate', '—')}%"
               f"({cons.get('shadow_agrees', '—')}/{cons.get('engine_sell_calls', '—')})"

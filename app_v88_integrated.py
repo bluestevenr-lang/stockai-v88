@@ -17466,7 +17466,8 @@ def _render_today_nav():
                     {str(x.get("code")): x for x in
                      (_j3a("intraday_decisions.json").get("rows") or [])},
                     (_j3a("why_buy.json").get("sells") or {}),
-                    _j3a("market_pool.json")), unsafe_allow_html=True)
+                    _j3a("market_pool.json"),
+                    triad=_j3a("triad_selection.json")), unsafe_allow_html=True)
             else:
                 st.warning("🎯 3A大系统: 评级数据未就绪(模块常驻,数据恢复后自动填充)")
         except Exception:

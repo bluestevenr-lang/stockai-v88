@@ -37,13 +37,22 @@ PUBLIC_MODULES = (
 GPT_FIELDS = (
     "name",
     "verdict",
+    "thesis_verdict",
+    "execution_status",
+    "risk_veto",
+    "horizon",
     "why",
     "ts",
     "factpack_id",
     "tier_at_verify",
     "fresh_for_strong_days",
+    "review_schema_version",
 )
-KIMI_FIELDS = ("verdict", "book_verdict", "why", "ts", "factpack_id")
+KIMI_FIELDS = (
+    "verdict", "thesis_verdict", "execution_status", "risk_veto",
+    "horizon", "book_verdict", "why", "ts", "factpack_id",
+    "review_schema_version",
+)
 CLASSICS_FIELDS = (
     "code",
     "name",
@@ -102,6 +111,38 @@ def rows_map(doc):
             if isinstance(row, dict) and row.get("code")
         }
     return {}
+
+
+def triad_rows_map(doc):
+    """Index central v2 states, including non-executable blocked 3A rows."""
+    if not isinstance(doc, dict):
+        return {}
+    result = {}
+    for bucket in ("recommendations", "preparations", "blocked_3a",
+                   "conditional", "observations", "pending"):
+        for original in doc.get(bucket) or []:
+            if not isinstance(original, dict) or not original.get("code"):
+                continue
+            row = dict(original)
+            row["central_bucket"] = bucket
+            result[str(row["code"])] = row
+    return result or rows_map(doc)
+
+
+def load_central_decision(source: Path):
+    """Require one valid central projection; seat files alone are not a decision."""
+    for filename in ("triad_selection_pub.json", "three_way_pub.json"):
+        doc = read_json(source / filename, None)
+        if not isinstance(doc, dict) or not str(doc.get("factpack_id") or ""):
+            continue
+        has_v2 = any(isinstance(doc.get(bucket), list) for bucket in (
+            "recommendations", "preparations", "blocked_3a", "conditional",
+            "observations", "pending"))
+        if has_v2 or isinstance(doc.get("rows"), (dict, list)):
+            return doc
+    raise FileNotFoundError(
+        "missing or invalid central decision projection: "
+        "triad_selection_pub.json / three_way_pub.json")
 
 
 def lookup_code(rows, code):
@@ -461,14 +502,14 @@ def load_stock_names():
 
 
 def build(source: Path, destination: Path) -> int:
-    required = ("gpt_verify.json", "kimi_verify.json", "three_way_pub.json")
+    required = ("gpt_verify.json", "kimi_verify.json")
     missing = [name for name in required if not (source / name).is_file()]
     if missing:
         raise FileNotFoundError(f"missing V88 source files: {', '.join(missing)}")
 
     gpt = read_json(source / "gpt_verify.json", {})
     kimi = read_json(source / "kimi_verify.json", {})
-    triad = read_json(source / "three_way_pub.json", {})
+    triad = load_central_decision(source)
     classics = read_json(source / "classics_lens.json", {})
     health = read_json(source / "health_gate_pub.json", {})
     release = read_json(source / "release_check.json", {})
@@ -495,7 +536,7 @@ def build(source: Path, destination: Path) -> int:
 
     gpt_rows = rows_map(gpt)
     kimi_rows = rows_map(kimi)
-    triad_rows = rows_map(triad)
+    triad_rows = triad_rows_map(triad)
     classics_rows = rows_map(classics)
     code_by_norm = {}
     for code in sorted(set(gpt_rows) | set(kimi_rows) | set(triad_rows) | set(classics_rows)):
