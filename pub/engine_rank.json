@@ -1,6 +1,6 @@
 {
  "schema_version": "v88.central-public/1.0",
- "generated_at": "2026-08-26 22:25",
+ "generated_at": "2026-08-27 20:18",
  "source_module": "engine_rank.json",
  "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d",
  "recommendations": [],
@@ -34,15 +34,16 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
-     "verdict": "gate_pass"
+     "verdict": "reject"
     }
    },
    "reason_codes": [
     "GPT_RISK_VETO:数据冲突",
+    "CLAUDE_CS_GATE_REJECTED",
     "EXECUTION_CONTRACT_INCOMPLETE",
     "GPT_EXECUTION:合同缺失",
     "K3_EXECUTION:合同缺失"
@@ -88,7 +89,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -141,7 +142,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -195,7 +196,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -247,7 +248,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -300,7 +301,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -353,7 +354,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -407,7 +408,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -459,7 +460,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -511,7 +512,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -562,16 +563,17 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
-     "verdict": "gate_pass"
+     "verdict": "reject"
     }
    },
    "reason_codes": [
     "GPT_REVIEW_STALE_OR_MISSING",
     "K3_REVIEW_STALE_OR_MISSING",
+    "CLAUDE_CS_GATE_REJECTED",
     "EXECUTION_CONTRACT_INCOMPLETE"
    ],
    "evidence_asof": "2026-08-27 10:24（北京时间）",
@@ -615,7 +617,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -669,7 +671,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -723,7 +725,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -776,7 +778,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -829,7 +831,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -882,7 +884,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -935,7 +937,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -988,7 +990,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -1042,7 +1044,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -1095,7 +1097,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -1149,7 +1151,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -1202,7 +1204,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -1256,7 +1258,7 @@
     },
     "classics": {
      "verdict": "书理不支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -1309,7 +1311,7 @@
     },
     "classics": {
      "verdict": "书理支持·有保留",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -1361,7 +1363,7 @@
     },
     "classics": {
      "verdict": "书理不支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -1412,7 +1414,7 @@
     },
     "classics": {
      "verdict": "书理不支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -1464,7 +1466,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -1516,7 +1518,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -1567,7 +1569,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -1618,7 +1620,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -1670,7 +1672,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -1721,7 +1723,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -1772,7 +1774,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -1825,7 +1827,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -1878,7 +1880,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -1930,7 +1932,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -1985,7 +1987,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -2038,7 +2040,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -2092,7 +2094,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -2145,7 +2147,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -2198,7 +2200,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -2252,7 +2254,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -2305,7 +2307,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -2357,7 +2359,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -2409,17 +2411,18 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
-     "verdict": "gate_pass"
+     "verdict": "reject"
     }
    },
    "reason_codes": [
     "FIELD_CONFLICT",
     "GPT_REVIEW_STALE_OR_MISSING",
     "K3_REVIEW_STALE_OR_MISSING",
+    "CLAUDE_CS_GATE_REJECTED",
     "EXECUTION_CONTRACT_INCOMPLETE"
    ],
    "evidence_asof": "2026-08-27 10:24（北京时间）",
@@ -2463,7 +2466,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -2516,7 +2519,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -2570,7 +2573,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -2624,7 +2627,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -2677,7 +2680,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -2729,7 +2732,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -2782,7 +2785,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -2835,7 +2838,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -2889,17 +2892,18 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
-     "verdict": "gate_pass"
+     "verdict": "reject"
     }
    },
    "reason_codes": [
     "FIELD_CONFLICT",
     "GPT_REVIEW_STALE_OR_MISSING",
     "K3_REVIEW_STALE_OR_MISSING",
+    "CLAUDE_CS_GATE_REJECTED",
     "EXECUTION_CONTRACT_INCOMPLETE"
    ],
    "evidence_asof": "2026-08-27 10:24（北京时间）",
@@ -2943,7 +2947,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -2998,7 +3002,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -3050,7 +3054,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -3103,7 +3107,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -3157,7 +3161,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -3211,7 +3215,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -3266,7 +3270,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -3318,7 +3322,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -3371,7 +3375,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -3424,7 +3428,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -3477,16 +3481,17 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
-     "verdict": "gate_pass"
+     "verdict": "reject"
     }
    },
    "reason_codes": [
     "GPT_REVIEW_STALE_OR_MISSING",
     "K3_REVIEW_STALE_OR_MISSING",
+    "CLAUDE_CS_GATE_REJECTED",
     "EXECUTION_CONTRACT_INCOMPLETE"
    ],
    "evidence_asof": "2026-08-27 10:24（北京时间）",
@@ -3530,7 +3535,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -3583,7 +3588,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -3637,7 +3642,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -3690,7 +3695,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -3743,7 +3748,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -3797,7 +3802,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -3850,7 +3855,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -3904,7 +3909,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -3958,7 +3963,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -4011,7 +4016,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -4064,7 +4069,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -4118,7 +4123,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -4172,7 +4177,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -4224,7 +4229,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -4277,7 +4282,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -4331,7 +4336,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -4385,7 +4390,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -4438,7 +4443,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -4492,7 +4497,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -4545,7 +4550,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -4598,7 +4603,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -4652,7 +4657,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -4705,7 +4710,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -4758,7 +4763,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -4811,16 +4816,17 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
-     "verdict": "gate_pass"
+     "verdict": "reject"
     }
    },
    "reason_codes": [
     "GPT_REVIEW_STALE_OR_MISSING",
     "K3_REVIEW_STALE_OR_MISSING",
+    "CLAUDE_CS_GATE_REJECTED",
     "EXECUTION_CONTRACT_INCOMPLETE"
    ],
    "evidence_asof": "2026-08-27 10:24（北京时间）",
@@ -4864,17 +4870,18 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
-     "verdict": "gate_pass"
+     "verdict": "reject"
     }
    },
    "reason_codes": [
     "FIELD_CONFLICT",
     "GPT_REVIEW_STALE_OR_MISSING",
     "K3_REVIEW_STALE_OR_MISSING",
+    "CLAUDE_CS_GATE_REJECTED",
     "EXECUTION_CONTRACT_INCOMPLETE"
    ],
    "evidence_asof": "2026-08-27 10:24（北京时间）",
@@ -4918,7 +4925,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -4972,7 +4979,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -5025,7 +5032,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -5079,7 +5086,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -5132,7 +5139,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -5185,7 +5192,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -5239,16 +5246,17 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
-     "verdict": "gate_pass"
+     "verdict": "reject"
     }
    },
    "reason_codes": [
     "GPT_REVIEW_STALE_OR_MISSING",
     "K3_REVIEW_STALE_OR_MISSING",
+    "CLAUDE_CS_GATE_REJECTED",
     "EXECUTION_CONTRACT_INCOMPLETE"
    ],
    "evidence_asof": "2026-08-27 10:24（北京时间）",
@@ -5292,7 +5300,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -5346,7 +5354,7 @@
     },
     "classics": {
      "verdict": "书理不支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -5399,7 +5407,7 @@
     },
     "classics": {
      "verdict": "书理支持·有保留",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -5451,7 +5459,7 @@
     },
     "classics": {
      "verdict": "书理支持·有保留",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -5503,7 +5511,7 @@
     },
     "classics": {
      "verdict": "书理支持·有保留",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -5555,7 +5563,7 @@
     },
     "classics": {
      "verdict": "书理支持·有保留",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -5607,7 +5615,7 @@
     },
     "classics": {
      "verdict": "书理支持·有保留",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -5659,7 +5667,7 @@
     },
     "classics": {
      "verdict": "书理支持·有保留",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -5711,7 +5719,7 @@
     },
     "classics": {
      "verdict": "书理支持·有保留",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -5763,7 +5771,7 @@
     },
     "classics": {
      "verdict": "书理支持·有保留",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -5817,15 +5825,16 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
-     "verdict": "gate_pass"
+     "verdict": "reject"
     }
    },
    "reason_codes": [
     "GPT_RISK_VETO:数据冲突",
+    "CLAUDE_CS_GATE_REJECTED",
     "EXECUTION_CONTRACT_INCOMPLETE",
     "GPT_EXECUTION:合同缺失",
     "K3_EXECUTION:合同缺失"
@@ -5871,7 +5880,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -5924,7 +5933,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -5978,7 +5987,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -6030,7 +6039,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -6083,7 +6092,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -6136,7 +6145,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -6190,7 +6199,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -6242,7 +6251,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -6294,7 +6303,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -6345,16 +6354,17 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
-     "verdict": "gate_pass"
+     "verdict": "reject"
     }
    },
    "reason_codes": [
     "GPT_REVIEW_STALE_OR_MISSING",
     "K3_REVIEW_STALE_OR_MISSING",
+    "CLAUDE_CS_GATE_REJECTED",
     "EXECUTION_CONTRACT_INCOMPLETE"
    ],
    "evidence_asof": "2026-08-27 10:24（北京时间）",
@@ -6398,7 +6408,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -6452,7 +6462,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -6506,7 +6516,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -6559,7 +6569,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -6612,7 +6622,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -6665,7 +6675,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -6718,7 +6728,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -6771,7 +6781,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -6825,7 +6835,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -6878,7 +6888,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -6932,7 +6942,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -6985,7 +6995,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -7039,7 +7049,7 @@
     },
     "classics": {
      "verdict": "书理不支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -7092,7 +7102,7 @@
     },
     "classics": {
      "verdict": "书理支持·有保留",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -7144,7 +7154,7 @@
     },
     "classics": {
      "verdict": "书理不支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -7195,7 +7205,7 @@
     },
     "classics": {
      "verdict": "书理不支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -7247,7 +7257,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -7299,7 +7309,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -7350,7 +7360,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -7401,7 +7411,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -7453,7 +7463,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -7504,7 +7514,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -7555,7 +7565,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -7608,7 +7618,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -7661,7 +7671,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -7713,7 +7723,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -7768,7 +7778,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -7821,7 +7831,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -7875,7 +7885,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -7928,7 +7938,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -7981,7 +7991,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -8035,7 +8045,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -8088,7 +8098,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -8140,7 +8150,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -8192,17 +8202,18 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
-     "verdict": "gate_pass"
+     "verdict": "reject"
     }
    },
    "reason_codes": [
     "FIELD_CONFLICT",
     "GPT_REVIEW_STALE_OR_MISSING",
     "K3_REVIEW_STALE_OR_MISSING",
+    "CLAUDE_CS_GATE_REJECTED",
     "EXECUTION_CONTRACT_INCOMPLETE"
    ],
    "evidence_asof": "2026-08-27 10:24（北京时间）",
@@ -8246,7 +8257,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -8299,7 +8310,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -8353,7 +8364,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -8407,7 +8418,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -8460,7 +8471,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -8512,7 +8523,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -8565,7 +8576,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -8618,7 +8629,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -8672,17 +8683,18 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
-     "verdict": "gate_pass"
+     "verdict": "reject"
     }
    },
    "reason_codes": [
     "FIELD_CONFLICT",
     "GPT_REVIEW_STALE_OR_MISSING",
     "K3_REVIEW_STALE_OR_MISSING",
+    "CLAUDE_CS_GATE_REJECTED",
     "EXECUTION_CONTRACT_INCOMPLETE"
    ],
    "evidence_asof": "2026-08-27 10:24（北京时间）",
@@ -8726,7 +8738,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -8781,7 +8793,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -8833,7 +8845,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -8886,7 +8898,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -8940,7 +8952,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -8994,7 +9006,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -9049,7 +9061,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -9101,7 +9113,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -9154,7 +9166,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -9207,7 +9219,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -9260,16 +9272,17 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
-     "verdict": "gate_pass"
+     "verdict": "reject"
     }
    },
    "reason_codes": [
     "GPT_REVIEW_STALE_OR_MISSING",
     "K3_REVIEW_STALE_OR_MISSING",
+    "CLAUDE_CS_GATE_REJECTED",
     "EXECUTION_CONTRACT_INCOMPLETE"
    ],
    "evidence_asof": "2026-08-27 10:24（北京时间）",
@@ -9313,7 +9326,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -9366,7 +9379,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -9420,7 +9433,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -9473,7 +9486,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -9526,7 +9539,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -9580,7 +9593,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -9633,7 +9646,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -9687,7 +9700,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -9741,7 +9754,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -9794,7 +9807,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -9847,7 +9860,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -9901,7 +9914,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -9955,7 +9968,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -10007,7 +10020,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -10060,7 +10073,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -10114,7 +10127,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -10168,7 +10181,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -10221,7 +10234,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -10275,7 +10288,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -10328,7 +10341,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -10381,7 +10394,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -10435,7 +10448,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -10488,7 +10501,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -10541,7 +10554,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -10594,16 +10607,17 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
-     "verdict": "gate_pass"
+     "verdict": "reject"
     }
    },
    "reason_codes": [
     "GPT_REVIEW_STALE_OR_MISSING",
     "K3_REVIEW_STALE_OR_MISSING",
+    "CLAUDE_CS_GATE_REJECTED",
     "EXECUTION_CONTRACT_INCOMPLETE"
    ],
    "evidence_asof": "2026-08-27 10:24（北京时间）",
@@ -10647,17 +10661,18 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
-     "verdict": "gate_pass"
+     "verdict": "reject"
     }
    },
    "reason_codes": [
     "FIELD_CONFLICT",
     "GPT_REVIEW_STALE_OR_MISSING",
     "K3_REVIEW_STALE_OR_MISSING",
+    "CLAUDE_CS_GATE_REJECTED",
     "EXECUTION_CONTRACT_INCOMPLETE"
    ],
    "evidence_asof": "2026-08-27 10:24（北京时间）",
@@ -10701,7 +10716,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -10755,7 +10770,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -10808,7 +10823,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -10862,7 +10877,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -10915,7 +10930,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -10968,7 +10983,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -11022,16 +11037,17 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
-     "verdict": "gate_pass"
+     "verdict": "reject"
     }
    },
    "reason_codes": [
     "GPT_REVIEW_STALE_OR_MISSING",
     "K3_REVIEW_STALE_OR_MISSING",
+    "CLAUDE_CS_GATE_REJECTED",
     "EXECUTION_CONTRACT_INCOMPLETE"
    ],
    "evidence_asof": "2026-08-27 10:24（北京时间）",
@@ -11075,7 +11091,7 @@
     },
     "classics": {
      "verdict": "书理支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -11129,7 +11145,7 @@
     },
     "classics": {
      "verdict": "书理不支持",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -11182,7 +11198,7 @@
     },
     "classics": {
      "verdict": "书理支持·有保留",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -11234,7 +11250,7 @@
     },
     "classics": {
      "verdict": "书理支持·有保留",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -11286,7 +11302,7 @@
     },
     "classics": {
      "verdict": "书理支持·有保留",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -11338,7 +11354,7 @@
     },
     "classics": {
      "verdict": "书理支持·有保留",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -11390,7 +11406,7 @@
     },
     "classics": {
      "verdict": "书理支持·有保留",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -11442,7 +11458,7 @@
     },
     "classics": {
      "verdict": "书理支持·有保留",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -11494,7 +11510,7 @@
     },
     "classics": {
      "verdict": "书理支持·有保留",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
@@ -11546,7 +11562,7 @@
     },
     "classics": {
      "verdict": "书理支持·有保留",
-     "at": "2026-08-27 10:29（北京时间）",
+     "at": "2026-08-27 20:52（北京时间）",
      "factpack_id": "e967754fc5f5ce27fd624873c511cc6e39584c3f69a01729aa6a2fb75d5aa98d"
     },
     "claude_cs": {
