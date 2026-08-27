@@ -1,12 +1,12 @@
-﻿# One-shot remote diagnostics and safe restart for the GPT OpenClaw incident.
-# This script never prints credentials, changes models, or changes V88 logic.
+﻿# One-shot recovery for the GPT OpenClaw subscription route.
+# It never prints credentials and never enables API-key/PAYG fallback.
 $ErrorActionPreference = 'Continue'
 
 $Repo = Split-Path -Parent $PSScriptRoot
 $State = Join-Path $env:USERPROFILE '.openclaw'
 $Config = Join-Path $State 'openclaw.json'
-$Done = Join-Path $State 'gpt_openclaw_recovery_20260824.done'
-$Report = Join-Path $PSScriptRoot 'CODEX_WIN_OPENCLAW_AUTO_REPORT_20260824.md'
+$Done = Join-Path $State 'gpt_openclaw_recovery_20260827.done'
+$Report = Join-Path $PSScriptRoot 'CODEX_WIN_OPENCLAW_AUTO_REPORT_20260827.md'
 
 if (Test-Path $Done) {
     Write-Output '[OpenClaw remote recovery] already completed.'
@@ -48,7 +48,64 @@ function Run-OpenClaw([string]$Label, [string[]]$Arguments) {
     return $output
 }
 
-Add-Line '# Win GPT OpenClaw automatic recovery report'
+function Set-SubscriptionModel([string]$Model) {
+    if (-not (Test-Path $Config)) {
+        Add-Line 'MODEL_REPAIR_CONFIG_MISSING'
+        return $false
+    }
+    try {
+        $doc = Get-Content -Raw -Encoding UTF8 $Config | ConvertFrom-Json
+        $agents = @($doc.agents.list)
+        $agentIndex = -1
+        for ($i = 0; $i -lt $agents.Count; $i++) {
+            if ($agents[$i].id -eq 'v88-gpt') { $agentIndex = $i; break }
+        }
+        if ($agentIndex -lt 0) {
+            Add-Line 'MODEL_REPAIR_AGENT_NOT_FOUND'
+            return $false
+        }
+        $batch = @(
+            @{ path = "agents.list[$agentIndex].model"; value = $Model },
+            @{ path = "agents.defaults.models[`"$Model`"].agentRuntime"; value = @{ id = 'codex' } },
+            @{ path = 'plugins.entries.codex.enabled'; value = $true }
+        )
+        $batchPath = Join-Path $env:TEMP 'v88_gpt_subscription_repair.json'
+        $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+        [System.IO.File]::WriteAllText(
+            $batchPath,
+            ($batch | ConvertTo-Json -Depth 12),
+            $utf8NoBom
+        )
+        try {
+            $output = @(& $OpenClaw config set --batch-file $batchPath 2>&1 | ForEach-Object { "$_" })
+            $exitCode = $LASTEXITCODE
+            foreach ($line in $output) { Add-Line $line }
+            Add-Line ("set_model={0}; runtime=codex; exit_code={1}" -f $Model, $exitCode)
+            return ($exitCode -eq 0)
+        } finally {
+            Remove-Item -Force $batchPath -ErrorAction SilentlyContinue
+        }
+    } catch {
+        Add-Line ("MODEL_REPAIR_ERROR={0}" -f $_.Exception.Message)
+        return $false
+    }
+}
+
+function Test-SubscriptionModel([string]$Model) {
+    Add-Line ''
+    Add-Line ("## Subscription route probe: {0}" -f $Model)
+    $output = @(& $OpenClaw agent --agent v88-gpt -m 'Reply with exactly V88_ROUTE_READY.' --json 2>&1 |
+        ForEach-Object { "$_" })
+    $exitCode = $LASTEXITCODE
+    foreach ($line in $output) { Add-Line $line }
+    $joined = $output -join "`n"
+    $ok = ($exitCode -eq 0 -and $joined -match 'V88_ROUTE_READY' -and
+        $joined -notmatch '(?i)(model is unavailable|configured model is unavailable|api[_ -]?key|billing)')
+    Add-Line ("probe_model={0}; ok={1}; exit_code={2}" -f $Model, $ok, $exitCode)
+    return $ok
+}
+
+Add-Line '# Win GPT OpenClaw subscription-route recovery report'
 Add-Line ''
 Add-Line ("- generated_at: {0}" -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss zzz'))
 Add-Line ("- host: {0}" -f $env:COMPUTERNAME)
@@ -62,6 +119,32 @@ if (-not $OpenClaw) {
     $env:OPENCLAW_STATE_DIR = $State
     $env:OPENCLAW_HOME = $State
     $env:CLAWDBOT_STATE_DIR = $State
+
+    # Zero-PAYG hard gate: keep OAuth files on disk but remove every common
+    # API-key/custom-endpoint variable from this process and its children.
+    Get-ChildItem Env: | Where-Object {
+        $_.Name -match '(?i)(API_KEY|ACCESS_TOKEN|AUTH_TOKEN|BASE_URL|API_BASE|ENDPOINT)'
+    } | ForEach-Object {
+        Remove-Item ("Env:{0}" -f $_.Name) -ErrorAction SilentlyContinue
+    }
+
+    Run-OpenClaw 'Doctor repair' @('doctor', '--fix') | Out-Null
+
+    $routeOk = $false
+    if (Set-SubscriptionModel 'openai/gpt-5.6-sol') {
+        Run-OpenClaw 'Gateway restart for GPT-5.6 Sol' @('gateway', 'restart') | Out-Null
+        Start-Sleep -Seconds 8
+        $routeOk = Test-SubscriptionModel 'openai/gpt-5.6-sol'
+    }
+    if (-not $routeOk) {
+        Add-Line 'GPT-5.6 Sol is not exposed to this OAuth workspace; trying the official subscription recovery model.'
+        if (Set-SubscriptionModel 'openai/gpt-5.5') {
+            Run-OpenClaw 'Gateway restart for GPT-5.5' @('gateway', 'restart') | Out-Null
+            Start-Sleep -Seconds 8
+            $routeOk = Test-SubscriptionModel 'openai/gpt-5.5'
+        }
+    }
+    Add-Line ("subscription_route_ready={0}" -f $routeOk)
 
     Add-Line ''
     Add-Line '## Safe configuration summary'
@@ -106,8 +189,9 @@ if (-not $OpenClaw) {
 
     Run-OpenClaw 'Version' @('--version') | Out-Null
     Run-OpenClaw 'Config validation' @('config', 'validate') | Out-Null
-    Run-OpenClaw 'Gateway restart' @('gateway', 'restart') | Out-Null
-    Start-Sleep -Seconds 8
+    if (-not $routeOk) {
+        Add-Line 'FAIL_CLOSED: no subscription model route is usable; no API-key fallback was attempted.'
+    }
     Run-OpenClaw 'Deep status after restart' @('status', '--deep') | Out-Null
     Run-OpenClaw 'Feishu channel probe' @('channels', 'status', '--probe') | Out-Null
     Run-OpenClaw 'Agent bindings' @('agents', 'list', '--json') | Out-Null

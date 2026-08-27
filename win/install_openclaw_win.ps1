@@ -208,7 +208,11 @@ try {
         @{ path = "agents.list[$AgentIndex].tools"; value = $ToolPolicy },
         @{ path = "agents.list[$AgentIndex].subagents"; value = @{ allowAgents = @(); requireAgentId = $true } },
         @{ path = "agents.list[$AgentIndex].identity"; value = @{ name = '蓝一'; emoji = '🛡️'; theme = 'V88 只读会审' } },
-        @{ path = 'agents.defaults.models["openai/gpt-5.6-sol"].agentRuntime'; value = @{ id = 'openclaw' } },
+        # ChatGPT/Codex OAuth must use the native Codex runtime.  Forcing the
+        # generic OpenClaw runtime makes gpt-5.6-sol appear "unavailable" even
+        # though the subscription is authenticated.
+        @{ path = 'agents.defaults.models["openai/gpt-5.6-sol"].agentRuntime'; value = @{ id = 'codex' } },
+        @{ path = 'plugins.entries.codex.enabled'; value = $true },
         @{ path = 'agents.defaults.skipBootstrap'; value = $true },
         @{ path = 'plugins.entries.codex.config'; value = $CodexPolicy },
         @{ path = 'tools.elevated.enabled'; value = $false },
