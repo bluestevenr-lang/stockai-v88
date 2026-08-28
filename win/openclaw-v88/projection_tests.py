@@ -57,7 +57,8 @@ class ProjectionTests(unittest.TestCase):
         write_json(
             source / "three_way_pub.json",
             {
-                "generated_at": "2026-08-23 20:02（北京时间）",
+                "generated_at": now_text,
+                "factpack_id": pack_id,
                 "rows": {"AAPL": {"code": "AAPL", "name": "苹果", "tier": "3A"}},
             },
         )
@@ -192,6 +193,17 @@ class ProjectionTests(unittest.TestCase):
             root = Path(temp)
             source = root / "report" / "data"
             write_json(source / "gpt_verify.json", {"rows": {}})
+            with self.assertRaises(FileNotFoundError):
+                MODULE.build(source, root / "out")
+
+    def test_missing_central_factpack_still_fails_closed(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = self.make_source(root)
+            central_path = source / "three_way_pub.json"
+            central = json.loads(central_path.read_text(encoding="utf-8"))
+            del central["factpack_id"]
+            write_json(central_path, central)
             with self.assertRaises(FileNotFoundError):
                 MODULE.build(source, root / "out")
 
