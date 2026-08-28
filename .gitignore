@@ -58,6 +58,8 @@ agent_memory_*.json
 #  而本仓库是公开仓 —— 任何人一次 git add -A 就会把令牌推上公网。
 #  故整目录排除（2026-07-30 实测 git add -An 确认会 stage 该 .bak）。
 win/logs/
+win/feishu_raw_log.jsonl
+win/.monitor_last_pos
 
 # ── macOS ────────────────────────────────────────────────
 .DS_Store

@@ -19,8 +19,12 @@ else
   CUR_POS=$LAST_POS
 fi
 
-# 输出新增日志
+# Never copy raw Feishu/OpenClaw logs into this public repository. Raw logs can
+# contain user identifiers, pairing details and operational metadata. Record
+# only the byte count in the Windows temp directory.
 if [ -f "$LOG" ] && [ "$CUR_POS" -gt "$LAST_POS" ]; then
-  tail -c +$((LAST_POS + 1)) "$LOG" | tee -a /c/Users/admin/Desktop/StockAI/win/feishu_raw_log.jsonl
+  DELTA=$((CUR_POS - LAST_POS))
+  printf '%s new_bytes=%s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$DELTA" \
+    >> "$HOME/AppData/Local/Temp/openclaw/feishu_pairing_monitor.status"
 fi
 echo "$CUR_POS" > "$LAST_POS_FILE"

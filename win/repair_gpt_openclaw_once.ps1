@@ -2,6 +2,12 @@
 # It never prints credentials and never enables API-key/PAYG fallback.
 $ErrorActionPreference = 'Continue'
 
+# Disabled on 2026-08-28.  The old one-shot repair guessed model routes, could
+# report success after a failed route probe, and published raw diagnostics to a
+# public repository.  A clean rebuild must follow the reviewed handoff instead.
+Write-Error 'This legacy repair is disabled. Read win/V88_WIN_REBUILD_HANDOFF_20260828.md and perform a clean, local-only recovery.'
+exit 12
+
 $Repo = Split-Path -Parent $PSScriptRoot
 $State = Join-Path $env:USERPROFILE '.openclaw'
 $Config = Join-Path $State 'openclaw.json'
@@ -202,9 +208,9 @@ $utf8Bom = New-Object System.Text.UTF8Encoding($true)
 [System.IO.File]::WriteAllLines($Report, $Lines, $utf8Bom)
 Write-Output ("[OpenClaw remote recovery] report written: {0}" -f $Report)
 
-& git -C $Repo add -- 'win/CODEX_WIN_OPENCLAW_AUTO_REPORT_20260824.md' 2>&1 | Out-Null
+& git -C $Repo add -- 'win/CODEX_WIN_OPENCLAW_AUTO_REPORT_20260827.md' 2>&1 | Out-Null
 & git -C $Repo commit --only -m 'win: report GPT OpenClaw remote recovery' -- `
-    'win/CODEX_WIN_OPENCLAW_AUTO_REPORT_20260824.md' 2>&1 | Out-Null
+    'win/CODEX_WIN_OPENCLAW_AUTO_REPORT_20260827.md' 2>&1 | Out-Null
 & git -C $Repo push origin HEAD:main 2>&1 | Out-Null
 if ($LASTEXITCODE -eq 0) {
     Set-Content -Path $Done -Value (Get-Date -Format o) -Encoding ASCII

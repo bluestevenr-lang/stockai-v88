@@ -56,10 +56,8 @@ echo [%STAMP%] ---- round start ----------------------->> "%LOG%"
 echo [%STAMP%] pull StockAI (public repo)...>> "%LOG%"
 call :safepull "%STOCKAI%"
 
-REM -- one-shot remote recovery for the 2026-08-24 GPT OpenClaw incident --
-if exist "%STOCKAI%\win\repair_gpt_openclaw_once.ps1" (
-  powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%STOCKAI%\win\repair_gpt_openclaw_once.ps1" >> "%LOG%" 2>&1
-)
+REM Legacy 2026-08-24 OpenClaw auto-repair is intentionally disabled.
+REM Rebuild only from win\V88_WIN_REBUILD_HANDOFF_20260828.md.
 
 echo [%STAMP%] pull ai-daily-report-v2 (private repo, safe_pull)...>> "%LOG%"
 call :safepull_private "%REPORT%"
