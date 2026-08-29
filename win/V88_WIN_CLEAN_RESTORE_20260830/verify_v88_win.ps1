@@ -19,8 +19,28 @@ $Workspace = Join-Path $env:USERPROFILE '.openclaw\workspaces\v88-gpt'
 $StateDir = Join-Path $env:LOCALAPPDATA 'V88CleanRestore'
 $StatePath = Join-Path $StateDir 'state.json'
 $ManifestPath = Join-Path $PackageRoot 'MANIFEST.sha256'
+$GatewayTaskName = 'OpenClaw Gateway'
 
 function Fail([string]$Message) { Write-Error $Message; exit 1 }
+
+function Get-OwnerFingerprint {
+    $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $profile = [IO.Path]::GetFullPath($env:USERPROFILE).TrimEnd('\').ToLowerInvariant()
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try {
+        $bytes = [Text.Encoding]::UTF8.GetBytes($identity.User.Value + '|' + $profile)
+        return ([BitConverter]::ToString($sha.ComputeHash($bytes))).Replace('-', '').ToLowerInvariant()
+    } finally { $sha.Dispose() }
+}
+
+function Resolve-PrincipalSid([string]$UserId) {
+    if ([string]::IsNullOrWhiteSpace($UserId)) { return $null }
+    try { return ([Security.Principal.SecurityIdentifier]::new($UserId)).Value }
+    catch {
+        try { return ([Security.Principal.NTAccount]::new($UserId)).Translate([Security.Principal.SecurityIdentifier]).Value }
+        catch { return $null }
+    }
+}
 
 function Assert-PackageIntegrity {
     if (-not (Test-Path -LiteralPath $ManifestPath -PathType Leaf)) { Fail 'MANIFEST.sha256 is missing.' }
@@ -35,6 +55,15 @@ function Assert-PackageIntegrity {
             Fail ('Package integrity failed: ' + $Matches[2])
         }
     }
+}
+
+function Update-VerificationState([hashtable]$Patch) {
+    $state = @{}
+    $old = Get-Content -LiteralPath $StatePath -Raw -Encoding UTF8 | ConvertFrom-Json
+    foreach ($property in $old.PSObject.Properties) { $state[$property.Name] = $property.Value }
+    foreach ($key in $Patch.Keys) { $state[$key] = $Patch[$key] }
+    $state['updated_at'] = [DateTimeOffset]::UtcNow.ToString('o')
+    [IO.File]::WriteAllText($StatePath, ($state | ConvertTo-Json -Depth 10), (New-Object Text.UTF8Encoding($false)))
 }
 
 function Resolve-Python {
@@ -71,11 +100,86 @@ function Invoke-Projection {
 function Stop-TemporaryGateway {
     if (-not (Test-Path -LiteralPath $StatePath -PathType Leaf)) { Fail 'Recovery state is missing.' }
     $state = Get-Content -LiteralPath $StatePath -Raw -Encoding UTF8 | ConvertFrom-Json
-    if (-not $state.temp_gateway_pid) { Fail 'Temporary Gateway PID is missing; refusing to stop an unknown process.' }
+    if (-not $state.temp_gateway_pid -or -not $state.temp_gateway_start_utc) { Fail 'Temporary Gateway identity is incomplete; refusing to stop an unknown process.' }
+    $before = (& $OpenClaw gateway status --json 2>$null) | ConvertFrom-Json
+    $listeners = @($before.port.listeners | ForEach-Object { $_.pid } | Sort-Object -Unique)
+    if (-not $before.rpc.ok -or $before.gateway.bindMode -ne 'loopback' -or $listeners.Count -ne 1 -or
+        [int]$listeners[0] -ne [int]$state.temp_gateway_pid) {
+        Fail 'The current listener no longer matches the recorded temporary Gateway; nothing was stopped.'
+    }
     $process = Get-Process -Id ([int]$state.temp_gateway_pid) -ErrorAction SilentlyContinue
-    if ($process) { Stop-Process -Id $process.Id -Force; Start-Sleep -Seconds 3 }
+    if (-not $process -or $process.StartTime.ToUniversalTime().ToString('o') -ne [string]$state.temp_gateway_start_utc) {
+        Fail 'The recorded temporary Gateway PID was reused or changed; nothing was stopped.'
+    }
+    $cim = Get-CimInstance Win32_Process -Filter ("ProcessId={0}" -f $process.Id) -ErrorAction SilentlyContinue
+    $owner = if ($cim) { Invoke-CimMethod -InputObject $cim -MethodName GetOwnerSid -ErrorAction SilentlyContinue } else { $null }
+    if (-not $cim -or $cim.CommandLine -notmatch '(?i)openclaw' -or $cim.CommandLine -notmatch '(?i)gateway' -or
+        $cim.CommandLine -notmatch '(?i)(--port\s+18789|--port=18789)' -or -not $owner -or $owner.ReturnValue -ne 0 -or
+        $owner.Sid -ne [Security.Principal.WindowsIdentity]::GetCurrent().User.Value -or
+        $state.temp_gateway_owner_fingerprint -ne (Get-OwnerFingerprint)) {
+        Fail 'The recorded process command is not the expected temporary OpenClaw Gateway; nothing was stopped.'
+    }
+    Stop-Process -Id $process.Id -Force
+    Start-Sleep -Seconds 3
     $after = & $OpenClaw gateway status --json 2>$null
     if ($LASTEXITCODE -eq 0 -and ($after | ConvertFrom-Json).rpc.ok) { Fail 'An unmanaged Gateway remained after stopping the recorded temporary process.' }
+}
+
+function Set-And-Test-GatewayTask {
+    Import-Module ScheduledTasks -ErrorAction Stop
+    $startup = [Environment]::GetFolderPath('Startup')
+    $fallbacks = @()
+    if ($startup -and (Test-Path -LiteralPath $startup -PathType Container)) {
+        $fallbacks = @(Get-ChildItem -LiteralPath $startup -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.BaseName -eq $GatewayTaskName -and $_.Extension -in @('.cmd','.vbs') })
+    }
+    if ($fallbacks.Count -gt 0) { Fail 'OpenClaw used the Startup-folder fallback; this host requires the formal Scheduled Task.' }
+    $tasks = @(Get-ScheduledTask -TaskName $GatewayTaskName -TaskPath '\' -ErrorAction SilentlyContinue)
+    if ($tasks.Count -ne 1) { Fail 'Expected exactly one formal OpenClaw Gateway Scheduled Task.' }
+    $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+    if ((Resolve-PrincipalSid ([string]$tasks[0].Principal.UserId)) -ne $identity.User.Value) {
+        Fail 'OpenClaw Gateway task belongs to a different Windows user.'
+    }
+    [xml]$taskXml = Export-ScheduledTask -TaskName $GatewayTaskName -TaskPath '\'
+    if (-not $taskXml.Task.Triggers.LogonTrigger -or $taskXml.Task.Principals.Principal.LogonType -ne 'InteractiveToken' -or
+        $taskXml.Task.Settings.MultipleInstancesPolicy -ne 'IgnoreNew') {
+        Fail 'OpenClaw Gateway task is not the expected current-user LogonTrigger/InteractiveToken task.'
+    }
+    $actionPath = [IO.Path]::GetFullPath([string]$taskXml.Task.Actions.Exec.Command)
+    if (-not (Test-Path -LiteralPath $actionPath -PathType Leaf) -or [IO.Path]::GetExtension($actionPath) -ne '.cmd') {
+        Fail 'OpenClaw Gateway task action is not a real gateway.cmd file.'
+    }
+    $settings = New-ScheduledTaskSettingsSet -MultipleInstances IgnoreNew -ExecutionTimeLimit (New-TimeSpan -Seconds 0) `
+        -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable `
+        -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)
+    Set-ScheduledTask -TaskName $GatewayTaskName -TaskPath '\' -Settings $settings | Out-Null
+    [xml]$updated = Export-ScheduledTask -TaskName $GatewayTaskName -TaskPath '\'
+    if ($updated.Task.Settings.RestartOnFailure.Count -ne '3' -or $updated.Task.Settings.RestartOnFailure.Interval -ne 'PT1M') {
+        Fail 'Gateway crash restart policy was not persisted.'
+    }
+}
+
+function Wait-FreshPermanentPhoneRoundtrip([DateTimeOffset]$After) {
+    & (Join-Path $PackageRoot 'test_feishu_roundtrip.ps1') -OpenClawPath $OpenClaw -After $After `
+        -Agent $Agent -Account $Account -Model 'gpt-5.6-sol' -RequireHumanConfirmation -TimeoutSeconds 300
+    if ($LASTEXITCODE -ne 0) { Fail 'Permanent formal Feishu nonce roundtrip failed.' }
+}
+
+function Test-PermanentGptSentinel {
+    $modelStatus = (& $OpenClaw models status --agent $Agent --json --probe --probe-provider openai --probe-max-tokens 8 --probe-timeout 30000) | ConvertFrom-Json
+    $provider = @($modelStatus.auth.providers | Where-Object { $_.provider -eq 'openai' })
+    $probe = @($modelStatus.auth.probes.results | Where-Object { $_.provider -eq 'openai' -and $_.mode -eq 'oauth' -and $_.status -eq 'ok' })
+    if ($modelStatus.resolvedDefault -ne $Model -or @($modelStatus.fallbacks).Count -ne 0 -or $provider.Count -ne 1 -or
+        $provider[0].profiles.oauth -ne 1 -or $provider[0].profiles.apiKey -ne 0 -or $provider[0].profiles.token -ne 0 -or $probe.Count -lt 1) {
+        Fail 'The permanent Gateway GPT route is not clean OAuth/no-fallback.'
+    }
+    $raw = & $OpenClaw agent --agent $Agent --session-id 'win-permanent-verify-gpt' --message 'Reply only: WIN_V88_PERMANENT_GPT_OK' --thinking low --timeout 180 --json
+    if ($LASTEXITCODE -ne 0) { Fail 'Permanent Gateway GPT sentinel failed.' }
+    $gpt = $raw | ConvertFrom-Json
+    if ($gpt.result.payloads[0].text -notmatch 'WIN_V88_PERMANENT_GPT_OK' -or
+        $gpt.result.meta.agentMeta.provider -ne 'openai' -or $gpt.result.meta.executionTrace.fallbackUsed) {
+        Fail 'Permanent Gateway GPT sentinel used the wrong provider or a fallback.'
+    }
 }
 
 function Install-ProjectionTask {
@@ -105,15 +209,37 @@ function Install-ProjectionTask {
 }
 
 Assert-PackageIntegrity
+if (-not (Test-Path -LiteralPath $StatePath -PathType Leaf)) { Fail 'Recovery state is missing.' }
+$restoreState = Get-Content -LiteralPath $StatePath -Raw -Encoding UTF8 | ConvertFrom-Json
+if (-not $restoreState.owner_fingerprint -or $restoreState.owner_fingerprint -ne (Get-OwnerFingerprint) -or
+    [string]$restoreState.owner_sid -ne [Security.Principal.WindowsIdentity]::GetCurrent().User.Value) {
+    Fail 'Verify is running under a different Windows user/profile than Prepare.'
+}
+& (Join-Path $PackageRoot 'preflight_new_ssd_win.ps1') -Phase Runtime
+if ($LASTEXITCODE -ne 0) { Fail 'Windows runtime preflight did not pass cleanly.' }
 $openclawCommand = Get-Command openclaw.cmd, openclaw.exe, openclaw -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
 if (-not $openclawCommand) { Fail 'OpenClaw is not installed.' }
 $OpenClaw = $openclawCommand.Source
+if ([IO.Path]::GetFullPath($OpenClaw) -ne [IO.Path]::GetFullPath([string]$restoreState.openclaw_path)) {
+    Fail 'OpenClaw executable path changed after Prepare.'
+}
+$nodeCommand = Get-Command node.exe, node -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
+if (-not $nodeCommand -or [IO.Path]::GetFullPath($nodeCommand.Source) -ne [IO.Path]::GetFullPath([string]$restoreState.node_path)) {
+    Fail 'Node executable path changed after Prepare.'
+}
+$actualNodeVersion = ((& $nodeCommand.Source --version 2>$null | Out-String).Trim().TrimStart('v'))
+if (-not $restoreState.node_version -or $actualNodeVersion -ne [string]$restoreState.node_version) {
+    Fail 'Node version changed after Prepare.'
+}
 
 $blocked = @('OPENAI_API_KEY','ANTHROPIC_API_KEY','GOOGLE_API_KEY','GEMINI_API_KEY','MOONSHOT_API_KEY',
     'KIMI_API_KEY','KIMI_CODE_API_KEY','DEEPSEEK_API_KEY','OPENROUTER_API_KEY','CODEX_API_KEY',
     'OPENAI_BASE_URL','ANTHROPIC_BASE_URL','MOONSHOT_BASE_URL','KIMI_BASE_URL','DEEPSEEK_BASE_URL',
     'OPENROUTER_BASE_URL','OPENAI_EXTRA_USAGE','CODEX_EXTRA_USAGE')
-if (@($blocked | Where-Object { [Environment]::GetEnvironmentVariable($_) }).Count -gt 0) { Fail 'A paid API environment variable is present.' }
+if (@($blocked | Where-Object {
+    $name = $_
+    @('Process','User','Machine') | Where-Object { [Environment]::GetEnvironmentVariable($name, $_) } | Select-Object -First 1
+}).Count -gt 0) { Fail 'A paid API environment variable is present.' }
 if (-not $MacReceiverDisabled) { Fail 'Mac formal V88-GPT receiver has not been confirmed disabled.' }
 if (-not $PhoneAnswerConfirmed) { Fail 'A real phone natural-language answer has not been confirmed.' }
 if (-not $RemoteMacReadConfirmed) { Fail 'Mac has not actually read the newly paired Windows Remote task.' }
@@ -164,13 +290,32 @@ if ($gpt.result.payloads[0].text -notmatch 'WIN_V88_GPT_VERIFY_OK' -or $gpt.resu
 
 Invoke-Projection
 
-Stop-TemporaryGateway
-& $OpenClaw gateway install --force --port 18789
-if ($LASTEXITCODE -ne 0) { Fail 'Gateway service installation failed.' }
-& $OpenClaw gateway restart
-if ($LASTEXITCODE -ne 0) { Fail 'Gateway restart failed.' }
-Start-Sleep -Seconds 5
-$gateway = (& $OpenClaw gateway status --json) | ConvertFrom-Json
+$serviceStartedAt = [DateTimeOffset]::UtcNow
+Import-Module ScheduledTasks -ErrorAction Stop
+$existingGatewayTasks = @(Get-ScheduledTask -TaskName $GatewayTaskName -TaskPath '\' -ErrorAction SilentlyContinue)
+if ($existingGatewayTasks.Count -gt 1) { Fail 'Multiple OpenClaw Gateway tasks exist.' }
+if ($existingGatewayTasks.Count -eq 0) {
+    Update-VerificationState @{ gateway_conversion_started = $true; gateway_autostart = $false }
+    $currentStatus = $null
+    try { $currentStatus = (& $OpenClaw gateway status --json 2>$null) | ConvertFrom-Json } catch { }
+    if ($currentStatus -and $currentStatus.rpc.ok) { Stop-TemporaryGateway }
+    & $OpenClaw gateway install --force --port 18789
+    if ($LASTEXITCODE -ne 0) { Fail 'Gateway service installation failed.' }
+} elseif (-not $restoreState.gateway_conversion_started) {
+    Fail 'An untracked permanent Gateway task exists; clean verification will not take it over.'
+}
+Set-And-Test-GatewayTask
+Update-VerificationState @{ gateway_conversion_started = $true; gateway_autostart = $true }
+Start-ScheduledTask -TaskName $GatewayTaskName -TaskPath '\'
+$gateway = $null
+for ($i = 0; $i -lt 12; $i++) {
+    Start-Sleep -Seconds 5
+    try {
+        $candidate = (& $OpenClaw gateway status --json) | ConvertFrom-Json
+        if ($candidate.rpc.ok) { $gateway = $candidate; break }
+    } catch { }
+}
+if (-not $gateway) { Fail 'Installed Gateway Scheduled Task did not become RPC-ready within one minute.' }
 $listenerPids = @($gateway.port.listeners | ForEach-Object { $_.pid } | Sort-Object -Unique)
 $serviceEnvNames = @($gateway.service.command.environment.PSObject.Properties.Name)
 if (-not $gateway.rpc.ok -or -not $gateway.service.loaded -or $gateway.gateway.bindMode -ne 'loopback' -or
@@ -179,12 +324,14 @@ if (-not $gateway.rpc.ok -or -not $gateway.service.loaded -or $gateway.gateway.b
     @($serviceEnvNames | Where-Object { $_ -match '(API_KEY|BASE_URL|ENDPOINT|EXTRA_USAGE)' }).Count -gt 0) {
     Fail 'Gateway is not one clean loopback-only, no-paid-env service.'
 }
+Wait-FreshPermanentPhoneRoundtrip $serviceStartedAt
+Test-PermanentGptSentinel
 
 $watchdog = Join-Path $WinRoot 'install_openclaw_watchdog.ps1'
 if (-not (Test-Path -LiteralPath $watchdog -PathType Leaf)) { Fail 'Approved health monitor installer is missing.' }
 & powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File $watchdog -Account $Account -Agent $Agent -DryRun
 if ($LASTEXITCODE -ne 0) { Fail 'Health monitor dry-run failed.' }
-& powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File $watchdog -Account $Account -Agent $Agent
+& powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File $watchdog -Account $Account -Agent $Agent -Notify
 if ($LASTEXITCODE -ne 0) { Fail 'Health monitor installation failed.' }
 $python = Resolve-Python; $pythonArgs = @($python.Prefix); $pythonExe = [string]$python.File
 $opsCore = Join-Path $env:USERPROFILE '.openclaw\ops\bin\openclaw_ops.py'
@@ -193,6 +340,6 @@ $opsState = Join-Path $env:USERPROFILE '.openclaw\ops'
 if ($LASTEXITCODE -ne 0) { Fail 'The installed health monitor did not pass one real read-only check.' }
 Install-ProjectionTask
 
-Write-Host 'VERIFY_OK: GPT subscription, no-fallback policy, formal Feishu, actual private projection, Remote confirmation, Gateway and monitors passed.'
+Write-Host 'VERIFY_OK: permanent Gateway, fresh phone roundtrip, GPT subscription/no-fallback, formal Feishu, projection, Remote and monitors passed.'
 Write-Host 'Kimi and current same-factpack V88 dual review remain a separate business-certification gate.'
 Write-Host 'No reboot was performed. Next: exit Codex and retest phone; then reboot manually and retest once.'

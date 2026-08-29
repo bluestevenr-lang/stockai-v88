@@ -21,8 +21,11 @@ class CleanRestoreBundleTests(unittest.TestCase):
             "AGENTS-GPT.md",
             "README.md",
             "RESTORE_V88.bat",
+            "accept_runtime_win.ps1",
+            "preflight_new_ssd_win.ps1",
             "projection_runner.ps1",
             "restore_v88_win.ps1",
+            "test_feishu_roundtrip.ps1",
             "verify_v88_win.ps1",
             "../install_openclaw_watchdog.ps1",
             "../openclaw_ops.py",
@@ -43,6 +46,9 @@ class CleanRestoreBundleTests(unittest.TestCase):
     def test_hard_gates_are_present(self):
         restore = (BUNDLE / "restore_v88_win.ps1").read_text(encoding="utf-8-sig")
         verify = (BUNDLE / "verify_v88_win.ps1").read_text(encoding="utf-8-sig")
+        preflight = (BUNDLE / "preflight_new_ssd_win.ps1").read_text(encoding="utf-8-sig")
+        accept = (BUNDLE / "accept_runtime_win.ps1").read_text(encoding="utf-8-sig")
+        phone = (BUNDLE / "test_feishu_roundtrip.ps1").read_text(encoding="utf-8-sig")
         for token in (
             "managed:kimi-code",
             "kimi-code/k3-256k",
@@ -51,17 +57,59 @@ class CleanRestoreBundleTests(unittest.TestCase):
             "fallbacks",
             "Assert-PackageIntegrity",
             "Privacy scan",
+            "PostReboot",
+            "owner_fingerprint",
+            "Invalidate-Downstream",
+            "gateway_conversion_started",
+            "post_exit_boot_utc",
+            "SsdHealthExternallyVerified",
+            "UnscopedEventsReviewed",
         ):
             self.assertIn(token, restore)
         for token in (
             "RemoteMacReadConfirmed",
-            "lastInboundAt",
-            "lastOutboundAt",
             "bindMode",
             "listenerPids.Count -ne 1",
             "Install-ProjectionTask",
+            "RestartCount 3",
+            "Wait-FreshPermanentPhoneRoundtrip",
+            "Startup-folder fallback",
+            "Resolve-PrincipalSid",
+            "gateway_conversion_started",
         ):
             self.assertIn(token, verify)
+        for token in (
+            "Get-StorageReliabilityCounter",
+            "REBOOT_REQUIRED",
+            "SLEEP_OR_HIBERNATE_ENABLED",
+            "REQUIRED_TLS_ENDPOINT_FAILED",
+            "PAID_OR_STATE_OVERRIDE_PRESENT",
+            "preflight-{0}.json",
+            "PYTHON_310_OR_NEWER",
+            "RUN_PREPARE_AS_ADMINISTRATOR",
+            "ELEVATION_CHANGED_WINDOWS_USER",
+        ):
+            self.assertIn(token, preflight)
+        for token in (
+            "POST_EXIT",
+            "POST_REBOOT",
+            "RestartOnFailure",
+            "test_feishu_roundtrip.ps1",
+            "post_exit_boot_utc",
+            "LastRunTime",
+            "Resolve-PrincipalSid",
+        ):
+            self.assertIn(token, accept)
+        for token in (
+            "V88PHONE-",
+            "RequireHumanConfirmation",
+            "lastOutboundAt",
+            "provider -eq 'openai'",
+            "model -eq $Model",
+            "formal Feishu session",
+        ):
+            self.assertIn(token, phone)
+        self.assertNotIn("$nodeVersion.Major -ge 26", preflight)
 
     def test_no_credential_material_or_legacy_cutover(self):
         material = "\n".join(

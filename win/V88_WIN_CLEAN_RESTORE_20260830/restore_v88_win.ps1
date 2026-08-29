@@ -1,11 +1,19 @@
 ﻿#requires -Version 5.1
 [CmdletBinding()]
 param(
-    [ValidateSet('Prepare','OAuth','Kimi','Feishu','Verify')]
+    [ValidateSet('Prepare','OAuth','Kimi','Feishu','Verify','PostExit','PostReboot')]
     [string]$Stage = 'Prepare',
     [switch]$MacReceiverDisabled,
     [switch]$PhoneAnswerConfirmed,
     [switch]$RemoteMacReadConfirmed,
+    [switch]$CodexClosedConfirmed,
+    [switch]$HostPreflightReviewed,
+    [switch]$SsdHealthExternallyVerified,
+    [switch]$UnscopedEventsReviewed,
+    [switch]$PowerSettingsExternallyVerified,
+    [switch]$TimeSyncExternallyVerified,
+    [switch]$PendingRenameReviewed,
+    [switch]$RemoteMacReadAfterRebootConfirmed,
     [string]$V88DataPath = (Join-Path $env:USERPROFILE 'Desktop\ai-daily-report-v2\data')
 )
 
@@ -25,6 +33,26 @@ $Workspace = Join-Path $env:USERPROFILE '.openclaw\workspaces\v88-gpt'
 $ManifestPath = Join-Path $PackageRoot 'MANIFEST.sha256'
 
 function Stop-Restore([string]$Message) { throw $Message }
+
+function Get-OwnerFingerprint {
+    $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $profile = [IO.Path]::GetFullPath($env:USERPROFILE).TrimEnd('\').ToLowerInvariant()
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try {
+        $bytes = [Text.Encoding]::UTF8.GetBytes($identity.User.Value + '|' + $profile)
+        return ([BitConverter]::ToString($sha.ComputeHash($bytes))).Replace('-', '').ToLowerInvariant()
+    } finally { $sha.Dispose() }
+}
+
+function Assert-SameRecoveryOwner {
+    if (-not (Test-Path -LiteralPath $StatePath -PathType Leaf)) { Stop-Restore 'Recovery state is missing. Run Prepare as the dedicated Windows user.' }
+    try { $state = Get-Content -LiteralPath $StatePath -Raw -Encoding UTF8 | ConvertFrom-Json }
+    catch { Stop-Restore 'Recovery state is unreadable.' }
+    if (-not $state.owner_fingerprint -or $state.owner_fingerprint -ne (Get-OwnerFingerprint) -or
+        [string]$state.owner_sid -ne [Security.Principal.WindowsIdentity]::GetCurrent().User.Value) {
+        Stop-Restore 'This stage is running under a different Windows user/profile than Prepare.'
+    }
+}
 
 function Protect-StateDirectory {
     New-Item -ItemType Directory -Path $StateDir -Force | Out-Null
@@ -70,12 +98,55 @@ function Save-State([hashtable]$Patch) {
     [IO.File]::WriteAllText($StatePath, ($state | ConvertTo-Json -Depth 8), (New-Object Text.UTF8Encoding($false)))
 }
 
+function Read-State {
+    if (-not (Test-Path -LiteralPath $StatePath -PathType Leaf)) { return $null }
+    try { return Get-Content -LiteralPath $StatePath -Raw -Encoding UTF8 | ConvertFrom-Json }
+    catch { Stop-Restore 'Recovery state is unreadable. Do not reuse old state.' }
+}
+
+function Assert-StateFlags([string[]]$Required) {
+    $state = Read-State
+    if (-not $state) { Stop-Restore 'Recovery state is missing. Start with Prepare.' }
+    foreach ($name in $Required) {
+        if (-not $state.$name) { Stop-Restore ('Required earlier stage is not valid: ' + $name) }
+    }
+}
+
+function Assert-UpstreamMutationAllowed {
+    $state = Read-State
+    if ($state -and ($state.service_accepted -or $state.gateway_conversion_started)) {
+        Stop-Restore 'The permanent Gateway conversion has started. Do not rerun Prepare/OAuth/Kimi/Feishu; resume Verify or use a separately reviewed maintenance/reset procedure.'
+    }
+}
+
+function Invalidate-Downstream([string]$FromStage) {
+    $fieldsByStage = @{
+        Prepare = @('prepared','projection_ready','gpt_oauth','gpt_sentinel','kimi_managed_oauth','kimi_sentinel',
+            'feishu_configured','phone_roundtrip','remote_mac_read','service_accepted','post_exit','post_reboot','verified')
+        OAuth = @('gpt_oauth','gpt_sentinel','kimi_managed_oauth','kimi_sentinel','feishu_configured','phone_roundtrip',
+            'remote_mac_read','service_accepted','post_exit','post_reboot','verified')
+        Kimi = @('kimi_managed_oauth','kimi_sentinel','feishu_configured','phone_roundtrip','remote_mac_read',
+            'service_accepted','post_exit','post_reboot','verified')
+        Feishu = @('feishu_configured','phone_roundtrip','remote_mac_read','service_accepted','post_exit','post_reboot','verified')
+        Verify = @('service_accepted','post_exit','post_reboot','verified')
+        PostExit = @('post_exit','post_reboot','verified')
+        PostReboot = @('post_reboot','verified')
+    }
+    if (-not $fieldsByStage.ContainsKey($FromStage)) { Stop-Restore ('Unknown recovery stage: ' + $FromStage) }
+    $patch = @{ gateway_autostart = $false }
+    foreach ($field in @($fieldsByStage[$FromStage])) { $patch[$field] = $false }
+    Save-State $patch
+}
+
 function Assert-ZeroPayEnvironment {
     $blocked = @('OPENAI_API_KEY','ANTHROPIC_API_KEY','GOOGLE_API_KEY','GEMINI_API_KEY',
         'MOONSHOT_API_KEY','KIMI_API_KEY','KIMI_CODE_API_KEY','DEEPSEEK_API_KEY','OPENROUTER_API_KEY',
         'CODEX_API_KEY','OPENAI_BASE_URL','ANTHROPIC_BASE_URL','MOONSHOT_BASE_URL','KIMI_BASE_URL',
         'DEEPSEEK_BASE_URL','OPENROUTER_BASE_URL','OPENAI_EXTRA_USAGE','CODEX_EXTRA_USAGE')
-    $present = @($blocked | Where-Object { [Environment]::GetEnvironmentVariable($_) })
+    $present = @($blocked | Where-Object {
+        $name = $_
+        @('Process','User','Machine') | Where-Object { [Environment]::GetEnvironmentVariable($name, $_) } | Select-Object -First 1
+    })
     if ($present.Count -gt 0) {
         Stop-Restore ('Paid API environment variables are present: ' + ($present -join ', ') + '. Remove them before continuing.')
     }
@@ -96,7 +167,7 @@ function Assert-CleanFirstRun {
             Stop-Restore 'Old OpenClaw agents, Feishu routes or credentials exist. Do not merge them into the clean restore.'
         }
     }
-    foreach ($taskName in @('V88 OpenClaw Health','V88 OpenClaw Projection')) {
+    foreach ($taskName in @('OpenClaw Gateway','V88 OpenClaw Health','V88 OpenClaw Projection')) {
         if (Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue) {
             Stop-Restore ('Old scheduled task exists: ' + $taskName + '. Remove it before clean restore.')
         }
@@ -126,6 +197,18 @@ function Resolve-Python {
     Stop-Restore 'Python 3.10+ is required.'
 }
 
+function Get-SupportedNodeVersion {
+    $node = Get-Command node.exe, node -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
+    if (-not $node) { Stop-Restore 'Node.js is missing.' }
+    try { $version = [version]((& $node.Source --version 2>$null | Out-String).Trim().TrimStart('v')) }
+    catch { Stop-Restore 'Node.js version is unreadable.' }
+    $supported = (($version.Major -eq 22 -and $version -ge [version]'22.22.3') -or
+        ($version.Major -eq 24 -and $version -ge [version]'24.15.0') -or
+        ($version.Major -eq 25 -and $version -ge [version]'25.9.0'))
+    if (-not $supported) { Stop-Restore 'Pinned OpenClaw 2026.7.1-2 requires Node 22.22.3-22.x, 24.15-24.x, or 25.9-25.x.' }
+    return $version.ToString()
+}
+
 function Install-PinnedRuntime {
     $npm = Get-Command npm.cmd, npm -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
     if (-not $npm) {
@@ -137,6 +220,7 @@ function Install-PinnedRuntime {
         $npm = Get-Command npm.cmd, npm -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
     }
     if (-not $npm) { Stop-Restore 'npm is still unavailable after Node.js setup.' }
+    [void](Get-SupportedNodeVersion)
     & $npm.Source install -g ("openclaw@{0}" -f $OpenClawVersion)
     if ($LASTEXITCODE -ne 0) { Stop-Restore 'Pinned OpenClaw installation failed.' }
     Invoke-OpenClaw -Arguments @('plugins','install',("@openclaw/codex@{0}" -f $CodexPluginVersion),'--pin','--force')
@@ -267,7 +351,13 @@ function Start-TemporaryGateway {
     $status = (& (Resolve-OpenClaw) gateway status --json) | ConvertFrom-Json
     $pids = @($status.port.listeners | ForEach-Object { $_.pid } | Sort-Object -Unique)
     if (-not $status.rpc.ok -or $status.gateway.bindMode -ne 'loopback' -or $pids.Count -ne 1) { Stop-Restore 'Temporary Gateway did not become healthy and loopback-only.' }
-    Save-State @{ temp_gateway_pid = [int]$pids[0]; gateway_autostart = $false }
+    $process = Get-Process -Id ([int]$pids[0]) -ErrorAction Stop
+    Save-State @{
+        temp_gateway_pid = [int]$pids[0]
+        temp_gateway_start_utc = $process.StartTime.ToUniversalTime().ToString('o')
+        temp_gateway_owner_fingerprint = Get-OwnerFingerprint
+        gateway_autostart = $false
+    }
 }
 
 function Test-GptSentinel {
@@ -319,6 +409,20 @@ function Configure-Feishu {
     Invoke-OpenClaw -Arguments @('agents','bind','--agent',$Agent,'--bind',("feishu:{0}" -f $Account))
     Invoke-OpenClaw -Arguments @('config','validate')
     Start-TemporaryGateway
+    $connected = $false
+    for ($i = 0; $i -lt 12; $i++) {
+        try {
+            $channel = (& (Resolve-OpenClaw) channels status --json) | ConvertFrom-Json
+            $formal = @($channel.channelAccounts.feishu | Where-Object { $_.accountId -eq $Account })
+            if ($formal.Count -eq 1 -and $formal[0].configured -and $formal[0].enabled -and
+                $formal[0].running -and $formal[0].connected -and -not $formal[0].lastError) {
+                $connected = $true
+                break
+            }
+        } catch { }
+        Start-Sleep -Seconds 5
+    }
+    if (-not $connected) { Stop-Restore 'Formal Feishu account did not become connected within 60 seconds.' }
 }
 
 Assert-ZeroPayEnvironment
@@ -328,14 +432,75 @@ Protect-StateDirectory
 
 switch ($Stage) {
     'Prepare' {
-        Assert-CleanFirstRun
+        Assert-UpstreamMutationAllowed
+        if (Test-Path -LiteralPath $StatePath -PathType Leaf) { Assert-SameRecoveryOwner }
+        else { Assert-CleanFirstRun }
+        & (Join-Path $PackageRoot 'preflight_new_ssd_win.ps1') -Phase Host
+        if ($LASTEXITCODE -notin @(0,2,3)) { Stop-Restore 'Windows host preflight did not complete.' }
+        if ($LASTEXITCODE -eq 2) { Stop-Restore 'Windows host preflight is blocked.' }
+        if ($LASTEXITCODE -eq 3) {
+            $preflightPath = Join-Path $StateDir 'preflight-host.json'
+            if (-not (Test-Path -LiteralPath $preflightPath -PathType Leaf)) { Stop-Restore 'Host preflight report is missing.' }
+            $preflight = Get-Content -LiteralPath $preflightPath -Raw -Encoding UTF8 | ConvertFrom-Json
+            $manualCodes = @($preflight.results | Where-Object { $_.status -eq 'MANUAL' } | ForEach-Object { $_.code })
+            $reviewRules = @{
+                AUTOLOGON_PRESENT_REVIEW_SECURITY = [bool]$HostPreflightReviewed
+                SMART_COUNTERS_UNAVAILABLE = [bool]$SsdHealthExternallyVerified
+                PHYSICAL_DISK_MAPPING_UNKNOWN = [bool]$SsdHealthExternallyVerified
+                SSD_REPORTED_CORRECTED_ERRORS = [bool]$SsdHealthExternallyVerified
+                UNSCOPED_STORAGE_OR_PCIE_EVENT_REVIEW = [bool]$UnscopedEventsReviewed
+                POWER_SETTINGS_UNKNOWN = [bool]$PowerSettingsExternallyVerified
+                TIME_SYNC_NOT_PROVEN = [bool]$TimeSyncExternallyVerified
+                TIME_SYNC_QUERY_FAILED = [bool]$TimeSyncExternallyVerified
+                PENDING_FILE_RENAME_REVIEW = [bool]$PendingRenameReviewed
+            }
+            $unknownManual = @($manualCodes | Where-Object { -not $reviewRules.ContainsKey($_) })
+            if ($unknownManual.Count -gt 0) {
+                Stop-Restore ('Host preflight has an unsupported manual condition that cannot be overridden: ' + ($unknownManual -join ', '))
+            }
+            $missingReviews = @($manualCodes | Where-Object { -not $reviewRules[$_] })
+            if ($missingReviews.Count -gt 0) {
+                Stop-Restore ('Host preflight needs matching item-by-item confirmation switches for: ' + ($missingReviews -join ', '))
+            }
+        }
+        Save-State @{
+            owner_fingerprint = Get-OwnerFingerprint
+            owner_sid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+            owner_profile = [IO.Path]::GetFullPath($env:USERPROFILE).TrimEnd('\')
+            host_preflight_hash = (Get-FileHash -LiteralPath (Join-Path $StateDir 'preflight-host.json') -Algorithm SHA256).Hash.ToLowerInvariant()
+            host_preflight_at = (Get-Item -LiteralPath (Join-Path $StateDir 'preflight-host.json')).LastWriteTimeUtc.ToString('o')
+            host_review_autologon = [bool]$HostPreflightReviewed
+            host_review_ssd_external = [bool]$SsdHealthExternallyVerified
+            host_review_unscoped_events = [bool]$UnscopedEventsReviewed
+            host_review_power = [bool]$PowerSettingsExternallyVerified
+            host_review_time = [bool]$TimeSyncExternallyVerified
+            host_review_pending_rename = [bool]$PendingRenameReviewed
+        }
+        Invalidate-Downstream 'Prepare'
         Install-PinnedRuntime
         Set-ReadOnlyAgent
         Invoke-Projection $V88DataPath
-        Save-State @{ prepared = $true; openclaw_version = $OpenClawVersion; gateway_autostart = $false; secrets_migrated = $false }
+        $node = Get-Command node.exe, node -CommandType Application -ErrorAction Stop | Select-Object -First 1
+        $nodeVersion = Get-SupportedNodeVersion
+        Save-State @{
+            prepared = $true
+            owner_fingerprint = Get-OwnerFingerprint
+            owner_sid = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+            owner_profile = [IO.Path]::GetFullPath($env:USERPROFILE).TrimEnd('\')
+            node_path = [IO.Path]::GetFullPath($node.Source)
+            node_version = $nodeVersion
+            openclaw_path = [IO.Path]::GetFullPath((Resolve-OpenClaw))
+            openclaw_version = $OpenClawVersion
+            gateway_autostart = $false
+            secrets_migrated = $false
+        }
         Write-Host 'PREPARE_OK. Next: RESTORE_V88.bat -Stage OAuth'
     }
     'OAuth' {
+        Assert-SameRecoveryOwner
+        Assert-UpstreamMutationAllowed
+        Assert-StateFlags @('prepared','projection_ready')
+        Invalidate-Downstream 'OAuth'
         Invoke-OpenClaw -Arguments @('models','auth','login','--provider','openai','--force')
         Assert-OnlyOpenAiOAuth
         Test-GptSentinel
@@ -343,11 +508,19 @@ switch ($Stage) {
         Write-Host 'GPT_OAUTH_OK. Install/login to official Kimi Code, then run Feishu stage.'
     }
     'Kimi' {
+        Assert-SameRecoveryOwner
+        Assert-UpstreamMutationAllowed
+        Assert-StateFlags @('prepared','projection_ready','gpt_oauth','gpt_sentinel')
+        Invalidate-Downstream 'Kimi'
         Test-KimiManaged
         Save-State @{ kimi_managed_oauth = $true; kimi_sentinel = $true }
         Write-Host 'KIMI_MANAGED_OK. This proves the independent review seat, not current V88 business certification.'
     }
     'Feishu' {
+        Assert-SameRecoveryOwner
+        Assert-UpstreamMutationAllowed
+        Assert-StateFlags @('prepared','projection_ready','gpt_oauth','gpt_sentinel','kimi_managed_oauth','kimi_sentinel')
+        Invalidate-Downstream 'Feishu'
         Assert-OnlyOpenAiOAuth
         Configure-Feishu
         Save-State @{ feishu_configured = $true; mac_receiver_disabled = $true; phone_roundtrip = $false; gateway_autostart = $false }
@@ -355,12 +528,48 @@ switch ($Stage) {
         Write-Host 'After a real answer and fresh Mac Remote read: RESTORE_V88.bat -Stage Verify -MacReceiverDisabled -PhoneAnswerConfirmed -RemoteMacReadConfirmed'
     }
     'Verify' {
+        Assert-SameRecoveryOwner
+        Assert-StateFlags @('prepared','projection_ready','gpt_oauth','gpt_sentinel','kimi_managed_oauth','kimi_sentinel','feishu_configured')
+        Invalidate-Downstream 'Verify'
         if (-not $MacReceiverDisabled -or -not $PhoneAnswerConfirmed -or -not $RemoteMacReadConfirmed) {
             Stop-Restore 'Verify requires Mac receiver disabled, real phone answer, and a fresh Mac Remote read confirmation.'
         }
         & (Join-Path $PackageRoot 'verify_v88_win.ps1') -MacReceiverDisabled -PhoneAnswerConfirmed -RemoteMacReadConfirmed -V88DataPath $V88DataPath
         if ($LASTEXITCODE -ne 0) { Stop-Restore 'Verification failed. Gateway autostart was not installed.' }
-        Save-State @{ verified = $true; phone_roundtrip = $true; remote_mac_read = $true; gateway_autostart = $true }
-        Write-Host 'V88 CLEAN RESTORE VERIFIED. No reboot was performed.'
+        Save-State @{
+            service_accepted = $true
+            post_exit = $false
+            post_reboot = $false
+            verified = $false
+            phone_roundtrip = $true
+            remote_mac_read = $true
+            gateway_autostart = $true
+        }
+        Write-Host 'SERVICE_ACCEPTED. Next: close Codex/ChatGPT Desktop and run -Stage PostExit -CodexClosedConfirmed.'
+    }
+    'PostExit' {
+        Assert-SameRecoveryOwner
+        Assert-StateFlags @('service_accepted')
+        Invalidate-Downstream 'PostExit'
+        if (-not $CodexClosedConfirmed) { Stop-Restore 'PostExit requires -CodexClosedConfirmed after closing Codex/ChatGPT Desktop.' }
+        & (Join-Path $PackageRoot 'accept_runtime_win.ps1') -Mode Exit
+        if ($LASTEXITCODE -ne 0) { Stop-Restore 'Post-exit acceptance failed.' }
+        $postExitBoot = (Get-CimInstance Win32_OperatingSystem).LastBootUpTime.ToUniversalTime().ToString('o')
+        Save-State @{ post_exit = $true; post_exit_boot_utc = $postExitBoot; post_reboot = $false; verified = $false; gateway_autostart = $true }
+        Write-Host 'POST_EXIT_OK. Reboot manually, allow the same Windows user to log in, then run -Stage PostReboot.'
+    }
+    'PostReboot' {
+        Assert-SameRecoveryOwner
+        Assert-StateFlags @('service_accepted','post_exit')
+        $before = Read-State
+        if (-not $before.post_exit_boot_utc) { Stop-Restore 'PostExit boot marker is missing.' }
+        Invalidate-Downstream 'PostReboot'
+        if (-not $RemoteMacReadAfterRebootConfirmed) {
+            Stop-Restore 'PostReboot requires a fresh Mac read of the newly paired Windows Remote task.'
+        }
+        & (Join-Path $PackageRoot 'accept_runtime_win.ps1') -Mode Reboot
+        if ($LASTEXITCODE -ne 0) { Stop-Restore 'Post-reboot acceptance failed.' }
+        Save-State @{ post_reboot = $true; verified = $true; gateway_autostart = $true; remote_mac_read_after_reboot = $true }
+        Write-Host 'V88 WINDOWS HOST VERIFIED: login-after-reboot 7x24 service is accepted.'
     }
 }
