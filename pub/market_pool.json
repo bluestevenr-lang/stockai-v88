@@ -1,6 +1,6 @@
 {
  "schema_version": "v88.market-pool.public/1.0",
- "generated_at": "2026-08-27 09:54（北京时间）",
+ "generated_at": "2026-09-01 08:57（北京时间）",
  "markets": {
   "A股": {
    "universe": 5553,
@@ -14,41 +14,1083 @@
    "guard": 2000,
    "guard_truncated": 0,
    "carried_from_prev": true,
-   "this_run_picked": 592,
-   "note": "本轮仅592只<上一版1601的50%,沿用上一版"
+   "this_run_picked": 9,
+   "note": "本轮仅9只<上一版1601的50%,沿用上一版"
   },
   "港股": {
    "universe": 4678,
-   "floor_rejected": 2093,
-   "strong_all": 29,
-   "brew_all": 71,
-   "trend_all": 28,
-   "plunge_all": 18,
-   "forced_in": 2,
-   "picked": 148,
+   "floor_rejected": 2078,
+   "strong_all": 53,
+   "brew_all": 56,
+   "trend_all": 15,
+   "plunge_all": 79,
+   "forced_in": 1,
+   "picked": 204,
    "guard": 800,
-   "guard_truncated": 0,
-   "carried_from_prev": true,
-   "this_run_picked": 36,
-   "note": "本轮仅36只<上一版148的50%,沿用上一版"
+   "guard_truncated": 0
   },
   "美股": {
    "universe": 8000,
-   "floor_rejected": 6670,
-   "strong_all": 27,
-   "brew_all": 349,
-   "trend_all": 98,
-   "plunge_all": 38,
-   "forced_in": 10,
-   "picked": 522,
+   "floor_rejected": 6603,
+   "strong_all": 36,
+   "brew_all": 189,
+   "trend_all": 108,
+   "plunge_all": 48,
+   "forced_in": 12,
+   "picked": 393,
    "guard": 1200,
    "guard_truncated": 0
   }
  },
  "rows": [
   {
+   "code": "2800.HK",
+   "name": "盈富基金",
+   "market": "港股"
+  },
+  {
+   "code": "3033.HK",
+   "name": "南方恒生科技",
+   "market": "港股"
+  },
+  {
+   "code": "9988.HK",
+   "name": "阿里巴巴-W",
+   "market": "港股"
+  },
+  {
+   "code": "0285.HK",
+   "name": "比亚迪电子",
+   "market": "港股"
+  },
+  {
+   "code": "0992.HK",
+   "name": "联想集团",
+   "market": "港股"
+  },
+  {
+   "code": "0700.HK",
+   "name": "腾讯控股",
+   "market": "港股"
+  },
+  {
+   "code": "9999.HK",
+   "name": "网易",
+   "market": "港股"
+  },
+  {
+   "code": "9678.HK",
+   "name": "云知声",
+   "market": "港股"
+  },
+  {
+   "code": "3986.HK",
+   "name": "兆易创新",
+   "market": "港股"
+  },
+  {
+   "code": "3988.HK",
+   "name": "中国银行",
+   "market": "港股"
+  },
+  {
+   "code": "1024.HK",
+   "name": "快手-W",
+   "market": "港股"
+  },
+  {
+   "code": "1658.HK",
+   "name": "邮储银行",
+   "market": "港股"
+  },
+  {
+   "code": "7709.HK",
+   "name": "南方东英SK海力士每日杠杆最多2x",
+   "market": "港股"
+  },
+  {
+   "code": "6082.HK",
+   "name": "壁仞科技",
+   "market": "港股"
+  },
+  {
+   "code": "2513.HK",
+   "name": "智谱",
+   "market": "港股"
+  },
+  {
+   "code": "0005.HK",
+   "name": "汇丰控股",
+   "market": "港股"
+  },
+  {
+   "code": "1810.HK",
+   "name": "小米集团-W",
+   "market": "港股"
+  },
+  {
+   "code": "0100.HK",
+   "name": "MINIMAX-W",
+   "market": "港股"
+  },
+  {
+   "code": "0941.HK",
+   "name": "中国移动",
+   "market": "港股"
+  },
+  {
+   "code": "0981.HK",
+   "name": "中芯国际",
+   "market": "港股"
+  },
+  {
+   "code": "2476.HK",
+   "name": "胜宏科技",
+   "market": "港股"
+  },
+  {
+   "code": "2328.HK",
+   "name": "中国财险",
+   "market": "港股"
+  },
+  {
+   "code": "0883.HK",
+   "name": "中国海洋石油",
+   "market": "港股"
+  },
+  {
+   "code": "1729.HK",
+   "name": "汇聚科技",
+   "market": "港股"
+  },
+  {
+   "code": "9868.HK",
+   "name": "小鹏集团-W",
+   "market": "港股"
+  },
+  {
+   "code": "0189.HK",
+   "name": "东岳集团",
+   "market": "港股"
+  },
+  {
+   "code": "1299.HK",
+   "name": "友邦保险",
+   "market": "港股"
+  },
+  {
+   "code": "0386.HK",
+   "name": "中国石油化工股份",
+   "market": "港股"
+  },
+  {
+   "code": "0300.HK",
+   "name": "美的集团",
+   "market": "港股"
+  },
+  {
+   "code": "1070.HK",
+   "name": "TCL电子",
+   "market": "港股"
+  },
+  {
+   "code": "2020.HK",
+   "name": "安踏体育",
+   "market": "港股"
+  },
+  {
+   "code": "3328.HK",
+   "name": "交通银行",
+   "market": "港股"
+  },
+  {
+   "code": "2331.HK",
+   "name": "李宁",
+   "market": "港股"
+  },
+  {
+   "code": "1988.HK",
+   "name": "民生银行",
+   "market": "港股"
+  },
+  {
+   "code": "7226.HK",
+   "name": "南方两倍做多恒生科技",
+   "market": "港股"
+  },
+  {
+   "code": "1787.HK",
+   "name": "山东黄金",
+   "market": "港股"
+  },
+  {
+   "code": "3888.HK",
+   "name": "金山软件",
+   "market": "港股"
+  },
+  {
+   "code": "2723.HK",
+   "name": "深演智能",
+   "market": "港股"
+  },
+  {
+   "code": "0270.HK",
+   "name": "粤海投资",
+   "market": "港股"
+  },
+  {
+   "code": "0939.HK",
+   "name": "建设银行",
+   "market": "港股"
+  },
+  {
+   "code": "2018.HK",
+   "name": "瑞声科技",
+   "market": "港股"
+  },
+  {
+   "code": "0826.HK",
+   "name": "天工国际",
+   "market": "港股"
+  },
+  {
+   "code": "0772.HK",
+   "name": "阅文集团",
+   "market": "港股"
+  },
+  {
+   "code": "1384.HK",
+   "name": "滴普科技",
+   "market": "港股"
+  },
+  {
+   "code": "3268.HK",
+   "name": "美格智能",
+   "market": "港股"
+  },
+  {
+   "code": "2556.HK",
+   "name": "迈富时",
+   "market": "港股"
+  },
+  {
+   "code": "2388.HK",
+   "name": "中银香港",
+   "market": "港股"
+  },
+  {
+   "code": "7747.HK",
+   "name": "南方两倍做多三星电子",
+   "market": "港股"
+  },
+  {
+   "code": "2382.HK",
+   "name": "舜宇光学科技",
+   "market": "港股"
+  },
+  {
+   "code": "1339.HK",
+   "name": "中国人民保险集团",
+   "market": "港股"
+  },
+  {
+   "code": "0148.HK",
+   "name": "建滔集团",
+   "market": "港股"
+  },
+  {
+   "code": "7552.HK",
+   "name": "南方两倍做空恒生科技",
+   "market": "港股"
+  },
+  {
+   "code": "0392.HK",
+   "name": "北京控股",
+   "market": "港股"
+  },
+  {
+   "code": "6618.HK",
+   "name": "京东健康",
+   "market": "港股"
+  },
+  {
+   "code": "1347.HK",
+   "name": "华虹宏力",
+   "market": "港股"
+  },
+  {
+   "code": "0316.HK",
+   "name": "东方海外国际",
+   "market": "港股"
+  },
+  {
+   "code": "1193.HK",
+   "name": "华润燃气",
+   "market": "港股"
+  },
+  {
+   "code": "3200.HK",
+   "name": "大族数控",
+   "market": "港股"
+  },
+  {
+   "code": "3896.HK",
+   "name": "金山云",
+   "market": "港股"
+  },
+  {
+   "code": "3968.HK",
+   "name": "招商银行",
+   "market": "港股"
+  },
+  {
+   "code": "3317.HK",
+   "name": "迅策",
+   "market": "港股"
+  },
+  {
+   "code": "6963.HK",
+   "name": "阳光保险",
+   "market": "港股"
+  },
+  {
+   "code": "1772.HK",
+   "name": "赣锋锂业",
+   "market": "港股"
+  },
+  {
+   "code": "0728.HK",
+   "name": "中国电信",
+   "market": "港股"
+  },
+  {
+   "code": "0780.HK",
+   "name": "同程旅行",
+   "market": "港股"
+  },
+  {
+   "code": "6031.HK",
+   "name": "三一重工",
+   "market": "港股"
+  },
+  {
+   "code": "7500.HK",
+   "name": "南方两倍看空恒指",
+   "market": "港股"
+  },
+  {
+   "code": "0003.HK",
+   "name": "香港中华煤气",
+   "market": "港股"
+  },
+  {
+   "code": "1357.HK",
+   "name": "美图公司",
+   "market": "港股"
+  },
+  {
+   "code": "1199.HK",
+   "name": "中远海运港口",
+   "market": "港股"
+  },
+  {
+   "code": "3939.HK",
+   "name": "万国黄金集团",
+   "market": "港股"
+  },
+  {
+   "code": "2611.HK",
+   "name": "国泰海通",
+   "market": "港股"
+  },
+  {
+   "code": "0267.HK",
+   "name": "中信股份",
+   "market": "港股"
+  },
+  {
+   "code": "3738.HK",
+   "name": "阜博集团",
+   "market": "港股"
+  },
+  {
+   "code": "3311.HK",
+   "name": "中国建筑国际",
+   "market": "港股"
+  },
+  {
+   "code": "0027.HK",
+   "name": "银河娱乐",
+   "market": "港股"
+  },
+  {
+   "code": "3067.HK",
+   "name": "安硕恒生科技",
+   "market": "港股"
+  },
+  {
+   "code": "3032.HK",
+   "name": "恒生科技ETF",
+   "market": "港股"
+  },
+  {
+   "code": "1308.HK",
+   "name": "海丰国际",
+   "market": "港股"
+  },
+  {
+   "code": "1882.HK",
+   "name": "海天国际",
+   "market": "港股"
+  },
+  {
+   "code": "9961.HK",
+   "name": "携程集团-S",
+   "market": "港股"
+  },
+  {
+   "code": "0322.HK",
+   "name": "康师傅控股",
+   "market": "港股"
+  },
+  {
+   "code": "2157.HK",
+   "name": "乐普生物",
+   "market": "港股"
+  },
+  {
+   "code": "1860.HK",
+   "name": "汇量科技",
+   "market": "港股"
+  },
+  {
+   "code": "1997.HK",
+   "name": "九龙仓置业",
+   "market": "港股"
+  },
+  {
+   "code": "1330.HK",
+   "name": "绿色动力环保",
+   "market": "港股"
+  },
+  {
+   "code": "0135.HK",
+   "name": "昆仑能源",
+   "market": "港股"
+  },
+  {
+   "code": "3800.HK",
+   "name": "协鑫科技",
+   "market": "港股"
+  },
+  {
+   "code": "0817.HK",
+   "name": "中国金茂",
+   "market": "港股"
+  },
+  {
+   "code": "3347.HK",
+   "name": "泰格医药",
+   "market": "港股"
+  },
+  {
+   "code": "0763.HK",
+   "name": "中兴通讯",
+   "market": "港股"
+  },
+  {
+   "code": "06055.HK",
+   "name": "中烟香港",
+   "market": "港股"
+  },
+  {
+   "code": "3416.HK",
+   "name": "AGX国指兑",
+   "market": "港股"
+  },
+  {
+   "code": "0019.HK",
+   "name": "太古股份公司A",
+   "market": "港股"
+  },
+  {
+   "code": "1385.HK",
+   "name": "上海复旦",
+   "market": "港股"
+  },
+  {
+   "code": "1109.HK",
+   "name": "华润置地",
+   "market": "港股"
+  },
+  {
+   "code": "3900.HK",
+   "name": "绿城中国",
+   "market": "港股"
+  },
+  {
+   "code": "6088.HK",
+   "name": "鸿腾精密",
+   "market": "港股"
+  },
+  {
+   "code": "2475.HK",
+   "name": "立讯精密",
+   "market": "港股"
+  },
+  {
+   "code": "1908.HK",
+   "name": "建发国际集团",
+   "market": "港股"
+  },
+  {
+   "code": "3277.HK",
+   "name": "长光辰芯",
+   "market": "港股"
+  },
+  {
+   "code": "9696.HK",
+   "name": "天齐锂业",
+   "market": "港股"
+  },
+  {
+   "code": "0023.HK",
+   "name": "东亚银行",
+   "market": "港股"
+  },
+  {
+   "code": "0777.HK",
+   "name": "网龙",
+   "market": "港股"
+  },
+  {
+   "code": "0688.HK",
+   "name": "中国海外发展",
+   "market": "港股"
+  },
+  {
+   "code": "0522.HK",
+   "name": "ASMPT",
+   "market": "港股"
+  },
+  {
+   "code": "9896.HK",
+   "name": "名创优品",
+   "market": "港股"
+  },
+  {
+   "code": "1918.HK",
+   "name": "融创中国",
+   "market": "港股"
+  },
+  {
+   "code": "9858.HK",
+   "name": "优然牧业",
+   "market": "港股"
+  },
+  {
+   "code": "6951.HK",
+   "name": "三环集团",
+   "market": "港股"
+  },
+  {
+   "code": "1304.HK",
+   "name": "FORTIOR",
+   "market": "港股"
+  },
+  {
+   "code": "1211.HK",
+   "name": "比亚迪股份",
+   "market": "港股"
+  },
+  {
+   "code": "2259.HK",
+   "name": "紫金黄金国际",
+   "market": "港股"
+  },
+  {
+   "code": "0656.HK",
+   "name": "复星国际",
+   "market": "港股"
+  },
+  {
+   "code": "0762.HK",
+   "name": "中国联通",
+   "market": "港股"
+  },
+  {
+   "code": "0325.HK",
+   "name": "布鲁可",
+   "market": "港股"
+  },
+  {
+   "code": "0123.HK",
+   "name": "越秀地产",
+   "market": "港股"
+  },
+  {
+   "code": "3330.HK",
+   "name": "灵宝黄金",
+   "market": "港股"
+  },
+  {
+   "code": "0136.HK",
+   "name": "中国儒意",
+   "market": "港股"
+  },
+  {
+   "code": "2333.HK",
+   "name": "长城汽车",
+   "market": "港股"
+  },
+  {
+   "code": "0968.HK",
+   "name": "信义光能",
+   "market": "港股"
+  },
+  {
+   "code": "0881.HK",
+   "name": "中升控股",
+   "market": "港股"
+  },
+  {
+   "code": "2899.HK",
+   "name": "紫金矿业",
+   "market": "港股"
+  },
+  {
+   "code": "6809.HK",
+   "name": "澜起科技",
+   "market": "港股"
+  },
+  {
+   "code": "9926.HK",
+   "name": "康方生物",
+   "market": "港股"
+  },
+  {
+   "code": "0012.HK",
+   "name": "恒基地产",
+   "market": "港股"
+  },
+  {
+   "code": "2525.HK",
+   "name": "禾赛-W",
+   "market": "港股"
+  },
+  {
+   "code": "2099.HK",
+   "name": "中国黄金国际",
+   "market": "港股"
+  },
+  {
+   "code": "1396.HK",
+   "name": "粤港湾智算",
+   "market": "港股"
+  },
+  {
+   "code": "9969.HK",
+   "name": "诺诚健华",
+   "market": "港股"
+  },
+  {
+   "code": "6682.HK",
+   "name": "范式智能",
+   "market": "港股"
+  },
+  {
+   "code": "3993.HK",
+   "name": "洛阳钼业",
+   "market": "港股"
+  },
+  {
+   "code": "2026.HK",
+   "name": "小马智行-W",
+   "market": "港股"
+  },
+  {
+   "code": "0358.HK",
+   "name": "江西铜业股份",
+   "market": "港股"
+  },
+  {
+   "code": "0960.HK",
+   "name": "龙湖集团",
+   "market": "港股"
+  },
+  {
+   "code": "6160.HK",
+   "name": "百济神州",
+   "market": "港股"
+  },
+  {
+   "code": "0016.HK",
+   "name": "新鸿基地产",
+   "market": "港股"
+  },
+  {
+   "code": "3696.HK",
+   "name": "英矽智能",
+   "market": "港股"
+  },
+  {
+   "code": "0288.HK",
+   "name": "万洲国际",
+   "market": "港股"
+  },
+  {
+   "code": "0991.HK",
+   "name": "大唐发电",
+   "market": "港股"
+  },
+  {
+   "code": "1691.HK",
+   "name": "JS环球生活",
+   "market": "港股"
+  },
+  {
+   "code": "1866.HK",
+   "name": "中国心连心化肥",
+   "market": "港股"
+  },
+  {
+   "code": "2028.HK",
+   "name": "映美控股",
+   "market": "港股"
+  },
+  {
+   "code": "9606.HK",
+   "name": "映恩生物-B",
+   "market": "港股"
+  },
+  {
+   "code": "6693.HK",
+   "name": "赤峰黄金",
+   "market": "港股"
+  },
+  {
+   "code": "1277.HK",
+   "name": "力量发展",
+   "market": "港股"
+  },
+  {
+   "code": "9863.HK",
+   "name": "零跑汽车",
+   "market": "港股"
+  },
+  {
+   "code": "1530.HK",
+   "name": "三生制药",
+   "market": "港股"
+  },
+  {
+   "code": "0179.HK",
+   "name": "德昌电机控股",
+   "market": "港股"
+  },
+  {
+   "code": "1072.HK",
+   "name": "东方电气",
+   "market": "港股"
+  },
+  {
+   "code": "1164.HK",
+   "name": "中广核矿业",
+   "market": "港股"
+  },
+  {
+   "code": "0470.HK",
+   "name": "先导智能",
+   "market": "港股"
+  },
+  {
+   "code": "1929.HK",
+   "name": "周大福",
+   "market": "港股"
+  },
+  {
+   "code": "9630.HK",
+   "name": "芯碁微装",
+   "market": "港股"
+  },
+  {
+   "code": "3808.HK",
+   "name": "中国重汽",
+   "market": "港股"
+  },
+  {
+   "code": "2186.HK",
+   "name": "绿叶制药",
+   "market": "港股"
+  },
+  {
+   "code": "9887.HK",
+   "name": "维立志博-B",
+   "market": "港股"
+  },
+  {
+   "code": "2315.HK",
+   "name": "百奥赛图-B",
+   "market": "港股"
+  },
+  {
+   "code": "1133.HK",
+   "name": "哈尔滨电气",
+   "market": "港股"
+  },
+  {
+   "code": "6969.HK",
+   "name": "思摩尔国际",
+   "market": "港股"
+  },
+  {
+   "code": "0975.HK",
+   "name": "MONGOL MINING",
+   "market": "港股"
+  },
+  {
+   "code": "6651.HK",
+   "name": "五一视界",
+   "market": "港股"
+  },
+  {
+   "code": "0914.HK",
+   "name": "海螺水泥",
+   "market": "港股"
+  },
+  {
+   "code": "6683.HK",
+   "name": "巨星传奇",
+   "market": "港股"
+  },
+  {
+   "code": "2142.HK",
+   "name": "和铂医药-B",
+   "market": "港股"
+  },
+  {
+   "code": "1776.HK",
+   "name": "广发证券",
+   "market": "港股"
+  },
+  {
+   "code": "0340.HK",
+   "name": "潼关黄金",
+   "market": "港股"
+  },
+  {
+   "code": "6818.HK",
+   "name": "中国光大银行",
+   "market": "港股"
+  },
+  {
+   "code": "0586.HK",
+   "name": "海螺创业",
+   "market": "港股"
+  },
+  {
+   "code": "9971.HK",
+   "name": "基本半导体",
+   "market": "港股"
+  },
+  {
+   "code": "2162.HK",
+   "name": "康诺亚-B",
+   "market": "港股"
+  },
+  {
+   "code": "2590.HK",
+   "name": "极智嘉-W",
+   "market": "港股"
+  },
+  {
+   "code": "2419.HK",
+   "name": "德康农牧",
+   "market": "港股"
+  },
+  {
+   "code": "0590.HK",
+   "name": "六福集团",
+   "market": "港股"
+  },
+  {
+   "code": "3323.HK",
+   "name": "中国建材",
+   "market": "港股"
+  },
+  {
+   "code": "3858.HK",
+   "name": "佳鑫国际资源",
+   "market": "港股"
+  },
+  {
+   "code": "6936.HK",
+   "name": "顺丰控股",
+   "market": "港股"
+  },
+  {
+   "code": "0753.HK",
+   "name": "中国国航",
+   "market": "港股"
+  },
+  {
+   "code": "2696.HK",
+   "name": "复宏汉霖",
+   "market": "港股"
+  },
+  {
+   "code": "6656.HK",
+   "name": "思格新能",
+   "market": "港股"
+  },
+  {
+   "code": "0119.HK",
+   "name": "保利置业集团",
+   "market": "港股"
+  },
+  {
+   "code": "6855.HK",
+   "name": "亚盛医药",
+   "market": "港股"
+  },
+  {
+   "code": "7299.HK",
+   "name": "南方两倍做多黄金",
+   "market": "港股"
+  },
+  {
+   "code": "1030.HK",
+   "name": "新城发展",
+   "market": "港股"
+  },
+  {
+   "code": "1114.HK",
+   "name": "华晨中国",
+   "market": "港股"
+  },
+  {
+   "code": "9688.HK",
+   "name": "再鼎医药",
+   "market": "港股"
+  },
+  {
+   "code": "8279.HK",
+   "name": "亚博科技控股",
+   "market": "港股"
+  },
+  {
+   "code": "0546.HK",
+   "name": "阜丰集团",
+   "market": "港股"
+  },
+  {
+   "code": "1666.HK",
+   "name": "同仁堂科技",
+   "market": "港股"
+  },
+  {
+   "code": "0116.HK",
+   "name": "周生生",
+   "market": "港股"
+  },
+  {
+   "code": "0683.HK",
+   "name": "嘉里建设",
+   "market": "港股"
+  },
+  {
+   "code": "2128.HK",
+   "name": "中国联塑",
+   "market": "港股"
+  },
+  {
+   "code": "0017.HK",
+   "name": "新世界发展",
+   "market": "港股"
+  },
+  {
+   "code": "3931.HK",
+   "name": "中创新航",
+   "market": "港股"
+  },
+  {
+   "code": "2273.HK",
+   "name": "固生堂",
+   "market": "港股"
+  },
+  {
+   "code": "0636.HK",
+   "name": "KLN",
+   "market": "港股"
+  },
+  {
+   "code": "2687.HK",
+   "name": "卓越睿新",
+   "market": "港股"
+  },
+  {
+   "code": "1055.HK",
+   "name": "中国南方航空股份",
+   "market": "港股"
+  },
+  {
+   "code": "6865.HK",
+   "name": "福莱特玻璃",
+   "market": "港股"
+  },
+  {
+   "code": "2039.HK",
+   "name": "中集集团",
+   "market": "港股"
+  },
+  {
+   "code": "1167.HK",
+   "name": "加科思-B",
+   "market": "港股"
+  },
+  {
+   "code": "0670.HK",
+   "name": "中国东方航空股份",
+   "market": "港股"
+  },
+  {
+   "code": "2233.HK",
+   "name": "西部水泥",
+   "market": "港股"
+  },
+  {
+   "code": "2238.HK",
+   "name": "广汽集团",
+   "market": "港股"
+  },
+  {
+   "code": "QQQ",
+   "name": "纳斯达克100ETF-Invesco",
+   "market": "美股"
+  },
+  {
    "code": "TQQQ",
    "name": "三倍做多纳斯达克100ETF-ProShare",
+   "market": "美股"
+  },
+  {
+   "code": "CRNX",
+   "name": "Crinetics Pharmaceuticals Inc",
+   "market": "美股"
+  },
+  {
+   "code": "XBI",
+   "name": "标普生物科技ETF-SPDR",
+   "market": "美股"
+  },
+  {
+   "code": "AVGO",
+   "name": "博通",
+   "market": "美股"
+  },
+  {
+   "code": "ADI",
+   "name": "亚德诺",
    "market": "美股"
   },
   {
@@ -57,183 +1099,53 @@
    "market": "美股"
   },
   {
-   "code": "CVX",
-   "name": "雪佛龙",
-   "market": "美股"
-  },
-  {
-   "code": "AMD",
-   "name": "超威半导体",
-   "market": "美股"
-  },
-  {
-   "code": "BE",
-   "name": "Bloom Energy Corp-A",
-   "market": "美股"
-  },
-  {
-   "code": "RSP",
-   "name": "平均加权指数ETF-Rydex S&P",
-   "market": "美股"
-  },
-  {
-   "code": "BABA",
-   "name": "阿里巴巴",
-   "market": "美股"
-  },
-  {
-   "code": "KLAC",
-   "name": "科磊",
-   "market": "美股"
-  },
-  {
-   "code": "DRAM",
-   "name": "Roundhill Memory ETF",
-   "market": "美股"
-  },
-  {
-   "code": "MU",
-   "name": "美光科技",
-   "market": "美股"
-  },
-  {
-   "code": "MCD",
-   "name": "麦当劳",
-   "market": "美股"
-  },
-  {
-   "code": "NU",
-   "name": "Nu Holdings Ltd-A",
-   "market": "美股"
-  },
-  {
    "code": "EWY",
    "name": "韩国ETF-iShares MSCI",
    "market": "美股"
   },
   {
-   "code": "ETHA",
-   "name": "以太坊ETF-iShares",
+   "code": "ANET",
+   "name": "Arista Networks Inc",
    "market": "美股"
   },
   {
-   "code": "UNP",
-   "name": "联合太平洋",
+   "code": "ACN",
+   "name": "埃森哲",
    "market": "美股"
   },
   {
-   "code": "XLE",
-   "name": "能源指数ETF-SPDR",
+   "code": "SLV",
+   "name": "白银ETF-iShares",
    "market": "美股"
   },
   {
-   "code": "WELL",
-   "name": "Welltower Inc",
+   "code": "INTU",
+   "name": "财捷",
    "market": "美股"
   },
   {
-   "code": "LRCX",
-   "name": "拉姆研究",
+   "code": "HOOD",
+   "name": "Robinhood Markets Inc-A",
    "market": "美股"
   },
   {
-   "code": "C",
-   "name": "花旗集团",
+   "code": "QQQM",
+   "name": "纳斯达克100指数ETF-Invesco",
    "market": "美股"
   },
   {
-   "code": "SOXS",
-   "name": "三倍做空半导体ETF-Direxion",
+   "code": "ABBV",
+   "name": "艾伯维",
    "market": "美股"
   },
   {
-   "code": "BA",
-   "name": "波音",
+   "code": "SMH",
+   "name": "半导体指数ETF-VanEck",
    "market": "美股"
   },
   {
-   "code": "SNOW",
-   "name": "Snowflake Inc",
-   "market": "美股"
-  },
-  {
-   "code": "SOXL",
-   "name": "三倍做多半导体ETF-Direxion",
-   "market": "美股"
-  },
-  {
-   "code": "EWZ",
-   "name": "巴西ETF-iShares",
-   "market": "美股"
-  },
-  {
-   "code": "GILD",
-   "name": "吉利德科学",
-   "market": "美股"
-  },
-  {
-   "code": "A",
-   "name": "安捷伦",
-   "market": "美股"
-  },
-  {
-   "code": "SMTC",
-   "name": "先科电子",
-   "market": "美股"
-  },
-  {
-   "code": "INTC",
-   "name": "英特尔",
-   "market": "美股"
-  },
-  {
-   "code": "WFC",
-   "name": "富国银行",
-   "market": "美股"
-  },
-  {
-   "code": "TTWO",
-   "name": "Take-Two Interactive Software I",
-   "market": "美股"
-  },
-  {
-   "code": "CLS",
-   "name": "天弘科技",
-   "market": "美股"
-  },
-  {
-   "code": "T",
-   "name": "美国电话电报(AT&T)",
-   "market": "美股"
-  },
-  {
-   "code": "IEFA",
-   "name": "安硕核心MSCI EAFE ETF-iShares",
-   "market": "美股"
-  },
-  {
-   "code": "TXN",
-   "name": "德州仪器",
-   "market": "美股"
-  },
-  {
-   "code": "MSFT",
-   "name": "微软",
-   "market": "美股"
-  },
-  {
-   "code": "LIN",
-   "name": "Linde plc",
-   "market": "美股"
-  },
-  {
-   "code": "SPOT",
-   "name": "Spotify Technology SA",
-   "market": "美股"
-  },
-  {
-   "code": "XLK",
-   "name": "科技行业精选指数ETF-SPDR",
+   "code": "AMAT",
+   "name": "应用材料",
    "market": "美股"
   },
   {
@@ -242,18 +1154,8 @@
    "market": "美股"
   },
   {
-   "code": "APP",
-   "name": "Applovin Corp-A",
-   "market": "美股"
-  },
-  {
-   "code": "WMT",
-   "name": "沃尔玛",
-   "market": "美股"
-  },
-  {
-   "code": "CEG",
-   "name": "Constellation Energy Corp",
+   "code": "XLF",
+   "name": "金融ETF-SPDR",
    "market": "美股"
   },
   {
@@ -262,263 +1164,13 @@
    "market": "美股"
   },
   {
-   "code": "NOW",
-   "name": "现在服务公司",
+   "code": "XLK",
+   "name": "科技行业精选指数ETF-SPDR",
    "market": "美股"
   },
   {
-   "code": "MMM",
-   "name": "3M公司",
-   "market": "美股"
-  },
-  {
-   "code": "AAL",
-   "name": "美国航空",
-   "market": "美股"
-  },
-  {
-   "code": "BITO",
-   "name": "比特币期货ETF-ProShares",
-   "market": "美股"
-  },
-  {
-   "code": "CDE",
-   "name": "科尔黛伦矿业",
-   "market": "美股"
-  },
-  {
-   "code": "SKHY",
-   "name": "SK海力士",
-   "market": "美股"
-  },
-  {
-   "code": "HD",
-   "name": "家得宝",
-   "market": "美股"
-  },
-  {
-   "code": "SHW",
-   "name": "宣伟",
-   "market": "美股"
-  },
-  {
-   "code": "XLU",
-   "name": "公用事业ETF-SPDR",
-   "market": "美股"
-  },
-  {
-   "code": "EFA",
-   "name": "欧澳远东指数ETF-iShares",
-   "market": "美股"
-  },
-  {
-   "code": "XLB",
-   "name": "基础材料ETF-SPDR",
-   "market": "美股"
-  },
-  {
-   "code": "VEA",
-   "name": "富时成熟市场ETF-Vanguard",
-   "market": "美股"
-  },
-  {
-   "code": "AAPL",
-   "name": "苹果",
-   "market": "美股"
-  },
-  {
-   "code": "UPS",
-   "name": "联合包裹服务",
-   "market": "美股"
-  },
-  {
-   "code": "CBRS",
-   "name": "Cerebras Systems Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "RTX",
-   "name": "雷神技术",
-   "market": "美股"
-  },
-  {
-   "code": "BMY",
-   "name": "百时美施贵宝",
-   "market": "美股"
-  },
-  {
-   "code": "PNC",
-   "name": "PNC金融服务集团",
-   "market": "美股"
-  },
-  {
-   "code": "MCO",
-   "name": "穆迪",
-   "market": "美股"
-  },
-  {
-   "code": "EQIX",
-   "name": "易昆尼克斯",
-   "market": "美股"
-  },
-  {
-   "code": "MDB",
-   "name": "MongoDB Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "SPCX",
-   "name": "SpaceX",
-   "market": "美股"
-  },
-  {
-   "code": "MCK",
-   "name": "麦克森",
-   "market": "美股"
-  },
-  {
-   "code": "AEP",
-   "name": "美国电力",
-   "market": "美股"
-  },
-  {
-   "code": "ECL",
-   "name": "艺康",
-   "market": "美股"
-  },
-  {
-   "code": "PFE",
-   "name": "辉瑞",
-   "market": "美股"
-  },
-  {
-   "code": "COF",
-   "name": "第一资本金融",
-   "market": "美股"
-  },
-  {
-   "code": "CAH",
-   "name": "卡地纳健康",
-   "market": "美股"
-  },
-  {
-   "code": "SNDK",
-   "name": "闪迪",
-   "market": "美股"
-  },
-  {
-   "code": "ZTS",
-   "name": "硕腾",
-   "market": "美股"
-  },
-  {
-   "code": "CB",
-   "name": "安达保险",
-   "market": "美股"
-  },
-  {
-   "code": "LHX",
-   "name": "L3Harris Technologies Inc",
-   "market": "美股"
-  },
-  {
-   "code": "TER",
-   "name": "泰瑞达",
-   "market": "美股"
-  },
-  {
-   "code": "XLV",
-   "name": "医疗ETF-SPDR",
-   "market": "美股"
-  },
-  {
-   "code": "AZO",
-   "name": "汽车地带",
-   "market": "美股"
-  },
-  {
-   "code": "UNH",
-   "name": "联合健康",
-   "market": "美股"
-  },
-  {
-   "code": "CDNS",
-   "name": "铿腾电子",
-   "market": "美股"
-  },
-  {
-   "code": "MSI",
-   "name": "摩托罗拉解决方案",
-   "market": "美股"
-  },
-  {
-   "code": "SOFI",
-   "name": "SoFi Technologies Inc",
-   "market": "美股"
-  },
-  {
-   "code": "CMCSA",
-   "name": "康卡斯特",
-   "market": "美股"
-  },
-  {
-   "code": "PGR",
-   "name": "前进保险",
-   "market": "美股"
-  },
-  {
-   "code": "COP",
-   "name": "康菲石油",
-   "market": "美股"
-  },
-  {
-   "code": "DUK",
-   "name": "杜克能源",
-   "market": "美股"
-  },
-  {
-   "code": "CSCO",
-   "name": "思科",
-   "market": "美股"
-  },
-  {
-   "code": "OXY",
-   "name": "西方石油",
-   "market": "美股"
-  },
-  {
-   "code": "GM",
-   "name": "通用汽车",
-   "market": "美股"
-  },
-  {
-   "code": "XLC",
-   "name": "通讯服务行业精选指数ETF-SPDR",
-   "market": "美股"
-  },
-  {
-   "code": "DAL",
-   "name": "达美航空",
-   "market": "美股"
-  },
-  {
-   "code": "HUM",
-   "name": "哈门那",
-   "market": "美股"
-  },
-  {
-   "code": "QLD",
-   "name": "二倍做多纳斯达克100ETF-ProShare",
-   "market": "美股"
-  },
-  {
-   "code": "URBN",
-   "name": "Urban Outfitters Inc",
-   "market": "美股"
-  },
-  {
-   "code": "SLB",
-   "name": "斯伦贝谢",
+   "code": "MRNA",
+   "name": "Moderna Inc",
    "market": "美股"
   },
   {
@@ -527,688 +1179,8 @@
    "market": "美股"
   },
   {
-   "code": "BKR",
-   "name": "Baker Hughes Co-A",
-   "market": "美股"
-  },
-  {
-   "code": "USB",
-   "name": "美国合众银行",
-   "market": "美股"
-  },
-  {
-   "code": "CAT",
-   "name": "卡特彼勒",
-   "market": "美股"
-  },
-  {
-   "code": "XOP",
-   "name": "标普油气开采指数ETF-SPDR",
-   "market": "美股"
-  },
-  {
-   "code": "MUU",
-   "name": "二倍做多美光科技ETF-Direxion",
-   "market": "美股"
-  },
-  {
-   "code": "CSX",
-   "name": "CSX运输",
-   "market": "美股"
-  },
-  {
-   "code": "MCHP",
-   "name": "微芯科技",
-   "market": "美股"
-  },
-  {
-   "code": "NOK",
-   "name": "诺基亚",
-   "market": "美股"
-  },
-  {
-   "code": "KEYS",
-   "name": "是德科技",
-   "market": "美股"
-  },
-  {
-   "code": "WBD",
-   "name": "华纳兄弟探索",
-   "market": "美股"
-  },
-  {
-   "code": "TXG",
-   "name": "10x Genomics Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "ADP",
-   "name": "自动数据处理",
-   "market": "美股"
-  },
-  {
-   "code": "SPGI",
-   "name": "标普全球",
-   "market": "美股"
-  },
-  {
-   "code": "HLT",
-   "name": "希尔顿酒店",
-   "market": "美股"
-  },
-  {
-   "code": "FDX",
-   "name": "联邦快递",
-   "market": "美股"
-  },
-  {
-   "code": "NXPI",
-   "name": "恩智浦半导体",
-   "market": "美股"
-  },
-  {
-   "code": "URI",
-   "name": "联合租赁",
-   "market": "美股"
-  },
-  {
-   "code": "XLY",
-   "name": "可选消费ETF-SPDR",
-   "market": "美股"
-  },
-  {
-   "code": "CI",
-   "name": "信诺",
-   "market": "美股"
-  },
-  {
-   "code": "SEDG",
-   "name": "SolarEdge Technologies Inc",
-   "market": "美股"
-  },
-  {
-   "code": "GE",
-   "name": "GE航空航天",
-   "market": "美股"
-  },
-  {
-   "code": "IJH",
-   "name": "标普中型股指数ETF-iShares",
-   "market": "美股"
-  },
-  {
-   "code": "HUT",
-   "name": "Hut 8 Corp",
-   "market": "美股"
-  },
-  {
-   "code": "FSLR",
-   "name": "第一太阳能",
-   "market": "美股"
-  },
-  {
-   "code": "XEL",
-   "name": "埃克西尔能源",
-   "market": "美股"
-  },
-  {
-   "code": "CTAS",
-   "name": "信达思",
-   "market": "美股"
-  },
-  {
-   "code": "RSG",
-   "name": "共和废品处理",
-   "market": "美股"
-  },
-  {
-   "code": "MTZ",
-   "name": "MasTec Inc",
-   "market": "美股"
-  },
-  {
    "code": "ELF",
    "name": "elf Beauty Inc",
-   "market": "美股"
-  },
-  {
-   "code": "VGT",
-   "name": "信息科技指数ETF-Vanguard",
-   "market": "美股"
-  },
-  {
-   "code": "XRT",
-   "name": "标普零售指数ETF-SPDR",
-   "market": "美股"
-  },
-  {
-   "code": "IYR",
-   "name": "美国房地产指数ETF-iShares",
-   "market": "美股"
-  },
-  {
-   "code": "DLR",
-   "name": "数字房地产信托",
-   "market": "美股"
-  },
-  {
-   "code": "TWST",
-   "name": "Twist Bioscience Corp",
-   "market": "美股"
-  },
-  {
-   "code": "HBAN",
-   "name": "亨廷顿银行",
-   "market": "美股"
-  },
-  {
-   "code": "USO",
-   "name": "美国原油ETF",
-   "market": "美股"
-  },
-  {
-   "code": "CMI",
-   "name": "康明斯",
-   "market": "美股"
-  },
-  {
-   "code": "ALNY",
-   "name": "Alnylam Pharmaceuticals Inc",
-   "market": "美股"
-  },
-  {
-   "code": "XYZ",
-   "name": "Block Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "VSXY",
-   "name": "Victoria’s Secret & Co",
-   "market": "美股"
-  },
-  {
-   "code": "DOW",
-   "name": "陶氏",
-   "market": "美股"
-  },
-  {
-   "code": "STM",
-   "name": "意法半导体",
-   "market": "美股"
-  },
-  {
-   "code": "TD",
-   "name": "道明银行",
-   "market": "美股"
-  },
-  {
-   "code": "TDG",
-   "name": "TransDigm Group Inc",
-   "market": "美股"
-  },
-  {
-   "code": "CL",
-   "name": "高露洁",
-   "market": "美股"
-  },
-  {
-   "code": "PLAB",
-   "name": "福尼克斯",
-   "market": "美股"
-  },
-  {
-   "code": "APH",
-   "name": "安费诺",
-   "market": "美股"
-  },
-  {
-   "code": "RCL",
-   "name": "皇家加勒比邮轮",
-   "market": "美股"
-  },
-  {
-   "code": "CRH",
-   "name": "CRH水泥",
-   "market": "美股"
-  },
-  {
-   "code": "PCG",
-   "name": "太平洋煤气电力",
-   "market": "美股"
-  },
-  {
-   "code": "FIVE",
-   "name": "Five Below Inc",
-   "market": "美股"
-  },
-  {
-   "code": "ECHO",
-   "name": "回声星通信",
-   "market": "美股"
-  },
-  {
-   "code": "ORLY",
-   "name": "奥莱利",
-   "market": "美股"
-  },
-  {
-   "code": "PODD",
-   "name": "银休特",
-   "market": "美股"
-  },
-  {
-   "code": "MRVL",
-   "name": "迈威尔科技",
-   "market": "美股"
-  },
-  {
-   "code": "COPX",
-   "name": "铜矿ETF-Global X",
-   "market": "美股"
-  },
-  {
-   "code": "ODFL",
-   "name": "Old Dominion Freight Line Inc",
-   "market": "美股"
-  },
-  {
-   "code": "CP",
-   "name": "加拿大太平洋堪萨斯城",
-   "market": "美股"
-  },
-  {
-   "code": "CRS",
-   "name": "卡朋特科技",
-   "market": "美股"
-  },
-  {
-   "code": "ROK",
-   "name": "罗克韦尔自动化",
-   "market": "美股"
-  },
-  {
-   "code": "AMKR",
-   "name": "艾马克技术",
-   "market": "美股"
-  },
-  {
-   "code": "CME",
-   "name": "芝加哥商业交易所",
-   "market": "美股"
-  },
-  {
-   "code": "ARES",
-   "name": "Ares Management Corp-A",
-   "market": "美股"
-  },
-  {
-   "code": "MDY",
-   "name": "标普中型股400指数ETF-SPDR",
-   "market": "美股"
-  },
-  {
-   "code": "QCOM",
-   "name": "高通",
-   "market": "美股"
-  },
-  {
-   "code": "STT",
-   "name": "道富",
-   "market": "美股"
-  },
-  {
-   "code": "RWM",
-   "name": "做空罗素2000ETF-ProShares",
-   "market": "美股"
-  },
-  {
-   "code": "FITB",
-   "name": "五三银行",
-   "market": "美股"
-  },
-  {
-   "code": "XME",
-   "name": "金属与矿产业ETF-SPDR",
-   "market": "美股"
-  },
-  {
-   "code": "CVS",
-   "name": "西维斯健康",
-   "market": "美股"
-  },
-  {
-   "code": "TFC",
-   "name": "Truist Financial Corp",
-   "market": "美股"
-  },
-  {
-   "code": "MTUM",
-   "name": "安硕MSCI美国动量因素ETF-iShares",
-   "market": "美股"
-  },
-  {
-   "code": "CRL",
-   "name": "查尔斯河",
-   "market": "美股"
-  },
-  {
-   "code": "CHD",
-   "name": "丘奇&德怀特",
-   "market": "美股"
-  },
-  {
-   "code": "CG",
-   "name": "凯雷集团",
-   "market": "美股"
-  },
-  {
-   "code": "OKTA",
-   "name": "Okta Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "ON",
-   "name": "安森美半导体",
-   "market": "美股"
-  },
-  {
-   "code": "BBWI",
-   "name": "Bath & Body Works Inc",
-   "market": "美股"
-  },
-  {
-   "code": "RF",
-   "name": "地区金融",
-   "market": "美股"
-  },
-  {
-   "code": "MET",
-   "name": "大都会人寿",
-   "market": "美股"
-  },
-  {
-   "code": "FTAI",
-   "name": "FTAI Aviation Ltd-A",
-   "market": "美股"
-  },
-  {
-   "code": "FIG",
-   "name": "Figma Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "ULTA",
-   "name": "ULTA美妆",
-   "market": "美股"
-  },
-  {
-   "code": "GPN",
-   "name": "环汇",
-   "market": "美股"
-  },
-  {
-   "code": "CNC",
-   "name": "康西哥",
-   "market": "美股"
-  },
-  {
-   "code": "ADSK",
-   "name": "欧特克",
-   "market": "美股"
-  },
-  {
-   "code": "AMLX",
-   "name": "Amylyx Pharmaceuticals Inc",
-   "market": "美股"
-  },
-  {
-   "code": "GRMN",
-   "name": "佳明",
-   "market": "美股"
-  },
-  {
-   "code": "ELV",
-   "name": "Elevance Health Inc",
-   "market": "美股"
-  },
-  {
-   "code": "SW",
-   "name": "Smurfit WestRock plc",
-   "market": "美股"
-  },
-  {
-   "code": "MOS",
-   "name": "美盛",
-   "market": "美股"
-  },
-  {
-   "code": "KKR",
-   "name": "KKR & Co Inc",
-   "market": "美股"
-  },
-  {
-   "code": "O",
-   "name": "Realty Income Corp",
-   "market": "美股"
-  },
-  {
-   "code": "BHVN",
-   "name": "Biohaven Ltd",
-   "market": "美股"
-  },
-  {
-   "code": "PNR",
-   "name": "滨特尔",
-   "market": "美股"
-  },
-  {
-   "code": "AIG",
-   "name": "美国国际集团",
-   "market": "美股"
-  },
-  {
-   "code": "MO",
-   "name": "奥驰亚集团",
-   "market": "美股"
-  },
-  {
-   "code": "LMT",
-   "name": "洛克希德马丁",
-   "market": "美股"
-  },
-  {
-   "code": "AHR",
-   "name": "American Healthcare REIT Inc",
-   "market": "美股"
-  },
-  {
-   "code": "SU",
-   "name": "森科能源",
-   "market": "美股"
-  },
-  {
-   "code": "TEVA",
-   "name": "梯瓦制药",
-   "market": "美股"
-  },
-  {
-   "code": "SOUN",
-   "name": "SoundHound AI Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "BROS",
-   "name": "Dutch Bros Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "BIIB",
-   "name": "生化基因",
-   "market": "美股"
-  },
-  {
-   "code": "CDW",
-   "name": "CDW Corp",
-   "market": "美股"
-  },
-  {
-   "code": "RVMD",
-   "name": "Revolution Medicines Inc",
-   "market": "美股"
-  },
-  {
-   "code": "HPQ",
-   "name": "惠普",
-   "market": "美股"
-  },
-  {
-   "code": "SPG",
-   "name": "西蒙地产",
-   "market": "美股"
-  },
-  {
-   "code": "MSS",
-   "name": "Maison Solutions Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "IDXX",
-   "name": "IDEXX实验室",
-   "market": "美股"
-  },
-  {
-   "code": "APD",
-   "name": "空气化工",
-   "market": "美股"
-  },
-  {
-   "code": "CAKE",
-   "name": "起司工坊",
-   "market": "美股"
-  },
-  {
-   "code": "BZ",
-   "name": "BOSS直聘",
-   "market": "美股"
-  },
-  {
-   "code": "TLN",
-   "name": "Talen Energy Corp",
-   "market": "美股"
-  },
-  {
-   "code": "IRM",
-   "name": "铁山",
-   "market": "美股"
-  },
-  {
-   "code": "VO",
-   "name": "中盘股ETF-Vanguard",
-   "market": "美股"
-  },
-  {
-   "code": "TYL",
-   "name": "泰勒科技",
-   "market": "美股"
-  },
-  {
-   "code": "OVV",
-   "name": "Ovintiv Inc",
-   "market": "美股"
-  },
-  {
-   "code": "SCHF",
-   "name": "嘉信国际股票ETF-Schwab",
-   "market": "美股"
-  },
-  {
-   "code": "FN",
-   "name": "Fabrinet",
-   "market": "美股"
-  },
-  {
-   "code": "DASH",
-   "name": "DoorDash Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "WST",
-   "name": "西氏医药服务",
-   "market": "美股"
-  },
-  {
-   "code": "XYL",
-   "name": "赛莱默",
-   "market": "美股"
-  },
-  {
-   "code": "ACGL",
-   "name": "艾奇资本",
-   "market": "美股"
-  },
-  {
-   "code": "NOC",
-   "name": "诺斯罗普-格鲁曼",
-   "market": "美股"
-  },
-  {
-   "code": "ED",
-   "name": "爱迪生联合电气",
-   "market": "美股"
-  },
-  {
-   "code": "BBY",
-   "name": "百思买",
-   "market": "美股"
-  },
-  {
-   "code": "STE",
-   "name": "思泰瑞医疗",
-   "market": "美股"
-  },
-  {
-   "code": "TRU",
-   "name": "TransUnion",
-   "market": "美股"
-  },
-  {
-   "code": "NTRS",
-   "name": "北方信托",
-   "market": "美股"
-  },
-  {
-   "code": "GAP",
-   "name": "盖普",
-   "market": "美股"
-  },
-  {
-   "code": "GD",
-   "name": "通用动力",
-   "market": "美股"
-  },
-  {
-   "code": "XPO",
-   "name": "XPO",
-   "market": "美股"
-  },
-  {
-   "code": "VNQ",
-   "name": "不动产信托指数ETF-Vanguard",
-   "market": "美股"
-  },
-  {
-   "code": "STZ",
-   "name": "星座品牌-A",
-   "market": "美股"
-  },
-  {
-   "code": "CHYM",
-   "name": "Chime Financial Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "CBOE",
-   "name": "芝加哥期权交易所",
    "market": "美股"
   },
   {
@@ -1217,583 +1189,63 @@
    "market": "美股"
   },
   {
-   "code": "JBL",
-   "name": "捷普",
+   "code": "EWT",
+   "name": "台湾ETF-iShares MSCI",
    "market": "美股"
   },
   {
-   "code": "SJM",
-   "name": "JM斯马克",
+   "code": "META",
+   "name": "Meta Platforms Inc-A",
    "market": "美股"
   },
   {
-   "code": "HAL",
-   "name": "哈里伯顿",
+   "code": "HD",
+   "name": "家得宝",
    "market": "美股"
   },
   {
-   "code": "RAM",
-   "name": "二倍做多DRAM ETF-T-REX",
+   "code": "APH",
+   "name": "安费诺",
    "market": "美股"
   },
   {
-   "code": "KDP",
-   "name": "Keurig Dr Pepper Inc",
+   "code": "GS",
+   "name": "高盛",
    "market": "美股"
   },
   {
-   "code": "ALB",
-   "name": "美国雅保",
+   "code": "VRT",
+   "name": "Vertiv Holdings Co-A",
    "market": "美股"
   },
   {
-   "code": "CNH",
-   "name": "CNH Industrial NV",
+   "code": "SMCI",
+   "name": "超微电脑",
    "market": "美股"
   },
   {
-   "code": "XLRE",
-   "name": "房地产ETF-SPDR",
+   "code": "TXN",
+   "name": "德州仪器",
    "market": "美股"
   },
   {
-   "code": "CHRW",
-   "name": "罗宾逊全球物流",
+   "code": "DIA",
+   "name": "道琼斯指数ETF-SPDR",
    "market": "美股"
   },
   {
-   "code": "CGDV",
-   "name": "股息价值ETF-Capital Group",
+   "code": "AMD",
+   "name": "超威半导体",
    "market": "美股"
   },
   {
-   "code": "NVMI",
-   "name": "Nova Ltd",
+   "code": "CRWV",
+   "name": "CoreWeave Inc-A",
    "market": "美股"
   },
   {
-   "code": "PBF",
-   "name": "PBF Energy Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "CMS",
-   "name": "CMS能源",
-   "market": "美股"
-  },
-  {
-   "code": "CLX",
-   "name": "高乐氏",
-   "market": "美股"
-  },
-  {
-   "code": "RGLD",
-   "name": "皇家黄金",
-   "market": "美股"
-  },
-  {
-   "code": "LNG",
-   "name": "Cheniere Energy Inc",
-   "market": "美股"
-  },
-  {
-   "code": "P",
-   "name": "Everpure Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "CRWD",
-   "name": "CrowdStrike Holdings Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "NTRA",
-   "name": "Natera Inc",
-   "market": "美股"
-  },
-  {
-   "code": "ITW",
-   "name": "伊利诺伊机械",
-   "market": "美股"
-  },
-  {
-   "code": "AVUV",
-   "name": "美国小盘价值股ETF-Avantis",
-   "market": "美股"
-  },
-  {
-   "code": "MTB",
-   "name": "美国制商银行",
-   "market": "美股"
-  },
-  {
-   "code": "TEL",
-   "name": "泰科电子",
-   "market": "美股"
-  },
-  {
-   "code": "SN",
-   "name": "SharkNinja Inc",
-   "market": "美股"
-  },
-  {
-   "code": "GEN",
-   "name": "Gen Digital Inc",
-   "market": "美股"
-  },
-  {
-   "code": "EXPE",
-   "name": "亿客行",
-   "market": "美股"
-  },
-  {
-   "code": "ARE",
-   "name": "亚历山大房地产",
-   "market": "美股"
-  },
-  {
-   "code": "VLO",
-   "name": "瓦莱罗能源",
-   "market": "美股"
-  },
-  {
-   "code": "RMBS",
-   "name": "Rambus Inc",
-   "market": "美股"
-  },
-  {
-   "code": "GPC",
-   "name": "通用配件",
-   "market": "美股"
-  },
-  {
-   "code": "NI",
-   "name": "尼索思",
-   "market": "美股"
-  },
-  {
-   "code": "EFX",
-   "name": "艾可菲",
-   "market": "美股"
-  },
-  {
-   "code": "HAS",
-   "name": "孩之宝",
-   "market": "美股"
-  },
-  {
-   "code": "PYPL",
-   "name": "PayPal Holdings Inc",
-   "market": "美股"
-  },
-  {
-   "code": "AFL",
-   "name": "美国家庭人寿保险",
-   "market": "美股"
-  },
-  {
-   "code": "VCTR",
-   "name": "Victory Capital Holdings Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "MPC",
-   "name": "马拉松原油",
-   "market": "美股"
-  },
-  {
-   "code": "WEC",
-   "name": "WEC能源",
-   "market": "美股"
-  },
-  {
-   "code": "ADM",
-   "name": "阿彻丹尼尔斯米德兰",
-   "market": "美股"
-  },
-  {
-   "code": "SMMT",
-   "name": "Summit Therapeutics Inc",
-   "market": "美股"
-  },
-  {
-   "code": "EVR",
-   "name": "Evercore Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "CNI",
-   "name": "加拿大国家铁路",
-   "market": "美股"
-  },
-  {
-   "code": "HALO",
-   "name": "奥洛兹美医疗",
-   "market": "美股"
-  },
-  {
-   "code": "WAB",
-   "name": "美国西屋制动",
-   "market": "美股"
-  },
-  {
-   "code": "FTI",
-   "name": "TechnipFMC plc",
-   "market": "美股"
-  },
-  {
-   "code": "NDSN",
-   "name": "诺信",
-   "market": "美股"
-  },
-  {
-   "code": "GKOS",
-   "name": "Glaukos Corp",
-   "market": "美股"
-  },
-  {
-   "code": "LEN",
-   "name": "莱纳建筑-A",
-   "market": "美股"
-  },
-  {
-   "code": "AMGN",
-   "name": "安进",
-   "market": "美股"
-  },
-  {
-   "code": "GEHC",
-   "name": "GE HealthCare Technologies Inc",
-   "market": "美股"
-  },
-  {
-   "code": "WCN",
-   "name": "Waste Connections Inc",
-   "market": "美股"
-  },
-  {
-   "code": "ERAS",
-   "name": "Erasca Inc",
-   "market": "美股"
-  },
-  {
-   "code": "SITM",
-   "name": "SiTime Corp",
-   "market": "美股"
-  },
-  {
-   "code": "DRI",
-   "name": "达登饭店",
-   "market": "美股"
-  },
-  {
-   "code": "JKHY",
-   "name": "杰克亨利",
-   "market": "美股"
-  },
-  {
-   "code": "EQNR",
-   "name": "Equinor ASA ADR",
-   "market": "美股"
-  },
-  {
-   "code": "RBA",
-   "name": "RB Global Inc",
-   "market": "美股"
-  },
-  {
-   "code": "ICLN",
-   "name": "环球清洁能源ETF-iShares",
-   "market": "美股"
-  },
-  {
-   "code": "ONON",
-   "name": "昂跑",
-   "market": "美股"
-  },
-  {
-   "code": "ARKG",
-   "name": "ARK Genomic Revolution ETF",
-   "market": "美股"
-  },
-  {
-   "code": "TRMB",
-   "name": "天宝导航",
-   "market": "美股"
-  },
-  {
-   "code": "CCEP",
-   "name": "可口可乐欧洲太平洋合伙",
-   "market": "美股"
-  },
-  {
-   "code": "JCI",
-   "name": "江森自控",
-   "market": "美股"
-  },
-  {
-   "code": "LII",
-   "name": "雷诺士",
-   "market": "美股"
-  },
-  {
-   "code": "EXPD",
-   "name": "康捷国际物流",
-   "market": "美股"
-  },
-  {
-   "code": "NTR",
-   "name": "Nutrien Ltd",
-   "market": "美股"
-  },
-  {
-   "code": "IQV",
-   "name": "艾昆纬",
-   "market": "美股"
-  },
-  {
-   "code": "NCLH",
-   "name": "挪威邮轮",
-   "market": "美股"
-  },
-  {
-   "code": "TOST",
-   "name": "Toast Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "LPLA",
-   "name": "LPL Financial Holdings Inc",
-   "market": "美股"
-  },
-  {
-   "code": "HNGE",
-   "name": "Hinge Health Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "ETR",
-   "name": "安特吉",
-   "market": "美股"
-  },
-  {
-   "code": "TZA",
-   "name": "三倍做空小型股ETF-Direxion",
-   "market": "美股"
-  },
-  {
-   "code": "U",
-   "name": "Unity Software Inc",
-   "market": "美股"
-  },
-  {
-   "code": "ABT",
-   "name": "雅培",
-   "market": "美股"
-  },
-  {
-   "code": "SWKS",
-   "name": "思佳讯",
-   "market": "美股"
-  },
-  {
-   "code": "THC",
-   "name": "泰尼特保健",
-   "market": "美股"
-  },
-  {
-   "code": "IWR",
-   "name": "罗素中型股ETF-iShares",
-   "market": "美股"
-  },
-  {
-   "code": "KEY",
-   "name": "KeyCorp",
-   "market": "美股"
-  },
-  {
-   "code": "VB",
-   "name": "小型股指数ETF-Vanguard",
-   "market": "美股"
-  },
-  {
-   "code": "PHM",
-   "name": "普得集团(帕尔迪)",
-   "market": "美股"
-  },
-  {
-   "code": "REGN",
-   "name": "再生元制药",
-   "market": "美股"
-  },
-  {
-   "code": "MDGL",
-   "name": "Madrigal Pharmaceuticals Inc",
-   "market": "美股"
-  },
-  {
-   "code": "CCI",
-   "name": "冠城",
-   "market": "美股"
-  },
-  {
-   "code": "PSX",
-   "name": "Phillips 66",
-   "market": "美股"
-  },
-  {
-   "code": "DY",
-   "name": "戴康工业",
-   "market": "美股"
-  },
-  {
-   "code": "HIG",
-   "name": "哈特福德保险",
-   "market": "美股"
-  },
-  {
-   "code": "TMO",
-   "name": "赛默飞世尔科技",
-   "market": "美股"
-  },
-  {
-   "code": "PAYC",
-   "name": "Paycom Software Inc",
-   "market": "美股"
-  },
-  {
-   "code": "TWLO",
-   "name": "Twilio Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "VGK",
-   "name": "欧洲ETF-Vanguard FTSE",
-   "market": "美股"
-  },
-  {
-   "code": "ABNB",
-   "name": "爱彼迎",
-   "market": "美股"
-  },
-  {
-   "code": "DTE",
-   "name": "DTE能源",
-   "market": "美股"
-  },
-  {
-   "code": "AME",
-   "name": "阿美特克",
-   "market": "美股"
-  },
-  {
-   "code": "COO",
-   "name": "库珀医疗",
-   "market": "美股"
-  },
-  {
-   "code": "TDY",
-   "name": "Teledyne Technologies Inc",
-   "market": "美股"
-  },
-  {
-   "code": "SBAC",
-   "name": "SBA通信-A",
-   "market": "美股"
-  },
-  {
-   "code": "SPDW",
-   "name": "投资组合发达世界(美国除外)ETF-S",
-   "market": "美股"
-  },
-  {
-   "code": "VG",
-   "name": "Venture Global Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "PATH",
-   "name": "UiPath Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "TRV",
-   "name": "旅行者保险",
-   "market": "美股"
-  },
-  {
-   "code": "IR",
-   "name": "英格索兰",
-   "market": "美股"
-  },
-  {
-   "code": "DK",
-   "name": "Delek US Holdings Inc",
-   "market": "美股"
-  },
-  {
-   "code": "TGT",
-   "name": "塔吉特",
-   "market": "美股"
-  },
-  {
-   "code": "CNP",
-   "name": "中点能源",
-   "market": "美股"
-  },
-  {
-   "code": "BG",
-   "name": "邦吉",
-   "market": "美股"
-  },
-  {
-   "code": "DINO",
-   "name": "HF Sinclair Corp",
-   "market": "美股"
-  },
-  {
-   "code": "MRK",
-   "name": "默沙东",
-   "market": "美股"
-  },
-  {
-   "code": "PPG",
-   "name": "PPG工业",
-   "market": "美股"
-  },
-  {
-   "code": "ETH",
-   "name": "低成本以太坊ETF-Grayscale",
-   "market": "美股"
-  },
-  {
-   "code": "JBHT",
-   "name": "JB亨特运输服务",
-   "market": "美股"
-  },
-  {
-   "code": "VOO",
-   "name": "Vanguard标普500",
-   "market": "美股"
-  },
-  {
-   "code": "NVDA",
-   "name": "英伟达",
-   "market": "美股"
-  },
-  {
-   "code": "GOOG",
-   "name": "谷歌-C",
-   "market": "美股"
-  },
-  {
-   "code": "TSLA",
-   "name": "特斯拉",
-   "market": "美股"
-  },
-  {
-   "code": "QQQM",
-   "name": "Invesco纳指",
+   "code": "NXPI",
+   "name": "恩智浦半导体",
    "market": "美股"
   },
   {
@@ -1802,8 +1254,1018 @@
    "market": "美股"
   },
   {
-   "code": "JNJ",
-   "name": "强生",
+   "code": "RKLB",
+   "name": "Rocket Lab Corp",
+   "market": "美股"
+  },
+  {
+   "code": "F",
+   "name": "福特汽车",
+   "market": "美股"
+  },
+  {
+   "code": "PWR",
+   "name": "广达服务",
+   "market": "美股"
+  },
+  {
+   "code": "SNPS",
+   "name": "新思科技",
+   "market": "美股"
+  },
+  {
+   "code": "FCX",
+   "name": "自由港麦克莫兰",
+   "market": "美股"
+  },
+  {
+   "code": "SOXL",
+   "name": "三倍做多半导体ETF-Direxion",
+   "market": "美股"
+  },
+  {
+   "code": "BA",
+   "name": "波音",
+   "market": "美股"
+  },
+  {
+   "code": "CLS",
+   "name": "天弘科技",
+   "market": "美股"
+  },
+  {
+   "code": "SHEL",
+   "name": "壳牌",
+   "market": "美股"
+  },
+  {
+   "code": "C",
+   "name": "花旗集团",
+   "market": "美股"
+  },
+  {
+   "code": "NVDA",
+   "name": "英伟达",
+   "market": "美股"
+  },
+  {
+   "code": "USHY",
+   "name": "美元高收益公司债券ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "PODD",
+   "name": "银休特",
+   "market": "美股"
+  },
+  {
+   "code": "MCHP",
+   "name": "微芯科技",
+   "market": "美股"
+  },
+  {
+   "code": "SPCX",
+   "name": "SpaceX",
+   "market": "美股"
+  },
+  {
+   "code": "TWST",
+   "name": "Twist Bioscience Corp",
+   "market": "美股"
+  },
+  {
+   "code": "HUBS",
+   "name": "HubSpot Inc",
+   "market": "美股"
+  },
+  {
+   "code": "IBB",
+   "name": "生物科技指数ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "QLD",
+   "name": "二倍做多纳斯达克100ETF-ProShare",
+   "market": "美股"
+  },
+  {
+   "code": "NOK",
+   "name": "诺基亚",
+   "market": "美股"
+  },
+  {
+   "code": "VALE",
+   "name": "淡水河谷",
+   "market": "美股"
+  },
+  {
+   "code": "GDXJ",
+   "name": "小型黄金矿业ETF-VanEck",
+   "market": "美股"
+  },
+  {
+   "code": "VGT",
+   "name": "信息科技指数ETF-Vanguard",
+   "market": "美股"
+  },
+  {
+   "code": "BWET",
+   "name": "Breakwave Tanker Shipping ETF",
+   "market": "美股"
+  },
+  {
+   "code": "SNDK",
+   "name": "闪迪",
+   "market": "美股"
+  },
+  {
+   "code": "APLD",
+   "name": "Applied Digital Corp",
+   "market": "美股"
+  },
+  {
+   "code": "VMRK",
+   "name": "Vivmark Residential",
+   "market": "美股"
+  },
+  {
+   "code": "SOFI",
+   "name": "SoFi Technologies Inc",
+   "market": "美股"
+  },
+  {
+   "code": "ASND",
+   "name": "Ascendis Pharma AS",
+   "market": "美股"
+  },
+  {
+   "code": "SLB",
+   "name": "斯伦贝谢",
+   "market": "美股"
+  },
+  {
+   "code": "PBF",
+   "name": "PBF Energy Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "URI",
+   "name": "联合租赁",
+   "market": "美股"
+  },
+  {
+   "code": "CAKE",
+   "name": "起司工坊",
+   "market": "美股"
+  },
+  {
+   "code": "ADSK",
+   "name": "欧特克",
+   "market": "美股"
+  },
+  {
+   "code": "ISRG",
+   "name": "直觉外科",
+   "market": "美股"
+  },
+  {
+   "code": "CVNA",
+   "name": "Carvana Co-A",
+   "market": "美股"
+  },
+  {
+   "code": "EL",
+   "name": "雅诗兰黛",
+   "market": "美股"
+  },
+  {
+   "code": "KEYS",
+   "name": "是德科技",
+   "market": "美股"
+  },
+  {
+   "code": "INDA",
+   "name": "印度ETF-iShares MSCI",
+   "market": "美股"
+  },
+  {
+   "code": "CLGN",
+   "name": "CollPlant Biotechnologies Ltd",
+   "market": "美股"
+  },
+  {
+   "code": "MKSI",
+   "name": "MKS Inc",
+   "market": "美股"
+  },
+  {
+   "code": "NVO",
+   "name": "诺和诺德",
+   "market": "美股"
+  },
+  {
+   "code": "EWZ",
+   "name": "巴西ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "TWLO",
+   "name": "Twilio Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "TSCO",
+   "name": "拖拉机供应",
+   "market": "美股"
+  },
+  {
+   "code": "IBIT",
+   "name": "比特币ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "RBLX",
+   "name": "Roblox Corp-A",
+   "market": "美股"
+  },
+  {
+   "code": "TSLA",
+   "name": "特斯拉",
+   "market": "美股"
+  },
+  {
+   "code": "AMLX",
+   "name": "Amylyx Pharmaceuticals Inc",
+   "market": "美股"
+  },
+  {
+   "code": "ARES",
+   "name": "Ares Management Corp-A",
+   "market": "美股"
+  },
+  {
+   "code": "ARM",
+   "name": "Arm Holdings plc ADR",
+   "market": "美股"
+  },
+  {
+   "code": "SGI",
+   "name": "Somnigroup International Inc",
+   "market": "美股"
+  },
+  {
+   "code": "WIX",
+   "name": "Wix.com Ltd",
+   "market": "美股"
+  },
+  {
+   "code": "EQT",
+   "name": "EQT能源",
+   "market": "美股"
+  },
+  {
+   "code": "SPMO",
+   "name": "标普500动量ETF-Invesco",
+   "market": "美股"
+  },
+  {
+   "code": "SN",
+   "name": "SharkNinja Inc",
+   "market": "美股"
+  },
+  {
+   "code": "CI",
+   "name": "信诺",
+   "market": "美股"
+  },
+  {
+   "code": "SPDN",
+   "name": "做空标普500ETF-Direxion",
+   "market": "美股"
+  },
+  {
+   "code": "SH",
+   "name": "做空标普500ETF-ProShares",
+   "market": "美股"
+  },
+  {
+   "code": "PAYC",
+   "name": "Paycom Software Inc",
+   "market": "美股"
+  },
+  {
+   "code": "TXG",
+   "name": "10x Genomics Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "KORU",
+   "name": "三倍做多韩国ETF-Direxion",
+   "market": "美股"
+  },
+  {
+   "code": "INFY",
+   "name": "印孚瑟斯",
+   "market": "美股"
+  },
+  {
+   "code": "PATH",
+   "name": "UiPath Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "BITO",
+   "name": "比特币期货ETF-ProShares",
+   "market": "美股"
+  },
+  {
+   "code": "MOD",
+   "name": "摩丁制造",
+   "market": "美股"
+  },
+  {
+   "code": "HTFL",
+   "name": "Heartflow Inc",
+   "market": "美股"
+  },
+  {
+   "code": "VEEV",
+   "name": "Veeva Systems Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "VLO",
+   "name": "瓦莱罗能源",
+   "market": "美股"
+  },
+  {
+   "code": "DK",
+   "name": "Delek US Holdings Inc",
+   "market": "美股"
+  },
+  {
+   "code": "AAOI",
+   "name": "应用光电",
+   "market": "美股"
+  },
+  {
+   "code": "PASW",
+   "name": "平安生物医药",
+   "market": "美股"
+  },
+  {
+   "code": "MTUM",
+   "name": "安硕MSCI美国动量因素ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "DECK",
+   "name": "德克斯户外",
+   "market": "美股"
+  },
+  {
+   "code": "HUT",
+   "name": "Hut 8 Corp",
+   "market": "美股"
+  },
+  {
+   "code": "LYV",
+   "name": "Live Nation Entertainment Inc",
+   "market": "美股"
+  },
+  {
+   "code": "DRAM",
+   "name": "Roundhill Memory ETF",
+   "market": "美股"
+  },
+  {
+   "code": "RWM",
+   "name": "做空罗素2000ETF-ProShares",
+   "market": "美股"
+  },
+  {
+   "code": "PSX",
+   "name": "Phillips 66",
+   "market": "美股"
+  },
+  {
+   "code": "ASST",
+   "name": "Strive Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "CARR",
+   "name": "Carrier Global Corp",
+   "market": "美股"
+  },
+  {
+   "code": "SPXL",
+   "name": "三倍做多标普500ETF-Direxion",
+   "market": "美股"
+  },
+  {
+   "code": "IOVA",
+   "name": "Iovance Biotherapeutics Inc",
+   "market": "美股"
+  },
+  {
+   "code": "MPC",
+   "name": "马拉松原油",
+   "market": "美股"
+  },
+  {
+   "code": "ESTC",
+   "name": "Elastic NV",
+   "market": "美股"
+  },
+  {
+   "code": "PANW",
+   "name": "派拓网络",
+   "market": "美股"
+  },
+  {
+   "code": "RJF",
+   "name": "瑞杰金融",
+   "market": "美股"
+  },
+  {
+   "code": "TTMI",
+   "name": "TTM科技",
+   "market": "美股"
+  },
+  {
+   "code": "DE",
+   "name": "迪尔",
+   "market": "美股"
+  },
+  {
+   "code": "RIG",
+   "name": "越洋钻探",
+   "market": "美股"
+  },
+  {
+   "code": "QQQI",
+   "name": "NEOS Nasdaq-100 High Income ETF",
+   "market": "美股"
+  },
+  {
+   "code": "DINO",
+   "name": "HF Sinclair Corp",
+   "market": "美股"
+  },
+  {
+   "code": "TEL",
+   "name": "泰科电子",
+   "market": "美股"
+  },
+  {
+   "code": "XRT",
+   "name": "标普零售指数ETF-SPDR",
+   "market": "美股"
+  },
+  {
+   "code": "BJ",
+   "name": "BJ批发俱乐部",
+   "market": "美股"
+  },
+  {
+   "code": "ALLY",
+   "name": "Ally Financial Inc",
+   "market": "美股"
+  },
+  {
+   "code": "SPXS",
+   "name": "三倍做空标普500ETF-Direxion",
+   "market": "美股"
+  },
+  {
+   "code": "ARGX",
+   "name": "argenx SE ADR",
+   "market": "美股"
+  },
+  {
+   "code": "UMC",
+   "name": "联华电子",
+   "market": "美股"
+  },
+  {
+   "code": "BR",
+   "name": "布罗德里奇金融",
+   "market": "美股"
+  },
+  {
+   "code": "AU",
+   "name": "AngloGold Ashanti plc",
+   "market": "美股"
+  },
+  {
+   "code": "GDDY",
+   "name": "GoDaddy Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "SSO",
+   "name": "二倍做多标普500ETF-ProShares",
+   "market": "美股"
+  },
+  {
+   "code": "EAT",
+   "name": "布林克国际",
+   "market": "美股"
+  },
+  {
+   "code": "ENB",
+   "name": "恩桥",
+   "market": "美股"
+  },
+  {
+   "code": "GTLB",
+   "name": "Gitlab Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "CRL",
+   "name": "查尔斯河",
+   "market": "美股"
+  },
+  {
+   "code": "APGE",
+   "name": "Apogee Therapeutics Inc",
+   "market": "美股"
+  },
+  {
+   "code": "ALNY",
+   "name": "Alnylam Pharmaceuticals Inc",
+   "market": "美股"
+  },
+  {
+   "code": "AES",
+   "name": "爱依斯电力",
+   "market": "美股"
+  },
+  {
+   "code": "AKAM",
+   "name": "阿卡迈",
+   "market": "美股"
+  },
+  {
+   "code": "JBL",
+   "name": "捷普",
+   "market": "美股"
+  },
+  {
+   "code": "CVX",
+   "name": "雪佛龙",
+   "market": "美股"
+  },
+  {
+   "code": "PTC",
+   "name": "PTC Inc",
+   "market": "美股"
+  },
+  {
+   "code": "STLD",
+   "name": "Steel Dynamics Inc",
+   "market": "美股"
+  },
+  {
+   "code": "ZETA",
+   "name": "Zeta Global Holdings Corp-A",
+   "market": "美股"
+  },
+  {
+   "code": "OKLO",
+   "name": "Oklo Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "GFI",
+   "name": "金田",
+   "market": "美股"
+  },
+  {
+   "code": "AGQ",
+   "name": "二倍做多白银ETF-ProShares",
+   "market": "美股"
+  },
+  {
+   "code": "ASTS",
+   "name": "AST SpaceMobile Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "UNM",
+   "name": "尤纳姆",
+   "market": "美股"
+  },
+  {
+   "code": "AR",
+   "name": "Antero Resources Corp",
+   "market": "美股"
+  },
+  {
+   "code": "ARKK",
+   "name": "创新ETF-ARK",
+   "market": "美股"
+  },
+  {
+   "code": "STM",
+   "name": "意法半导体",
+   "market": "美股"
+  },
+  {
+   "code": "UPRO",
+   "name": "三倍做多标普500ETF-ProShares",
+   "market": "美股"
+  },
+  {
+   "code": "ACHR",
+   "name": "Archer Aviation Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "PCG",
+   "name": "太平洋煤气电力",
+   "market": "美股"
+  },
+  {
+   "code": "CAR",
+   "name": "安飞士",
+   "market": "美股"
+  },
+  {
+   "code": "U",
+   "name": "Unity Software Inc",
+   "market": "美股"
+  },
+  {
+   "code": "GNRC",
+   "name": "Generac Holdings Inc",
+   "market": "美股"
+  },
+  {
+   "code": "XOP",
+   "name": "标普油气开采指数ETF-SPDR",
+   "market": "美股"
+  },
+  {
+   "code": "IBKR",
+   "name": "盈透证券",
+   "market": "美股"
+  },
+  {
+   "code": "JHX",
+   "name": "詹姆斯哈迪",
+   "market": "美股"
+  },
+  {
+   "code": "SNOW",
+   "name": "Snowflake Inc",
+   "market": "美股"
+  },
+  {
+   "code": "RGTI",
+   "name": "Rigetti Computing Inc",
+   "market": "美股"
+  },
+  {
+   "code": "EIX",
+   "name": "爱迪生国际",
+   "market": "美股"
+  },
+  {
+   "code": "QBTS",
+   "name": "D-Wave Quantum Inc",
+   "market": "美股"
+  },
+  {
+   "code": "FPS",
+   "name": "Forgent Power Solutions Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "FTNT",
+   "name": "防特网",
+   "market": "美股"
+  },
+  {
+   "code": "NTRA",
+   "name": "Natera Inc",
+   "market": "美股"
+  },
+  {
+   "code": "DASH",
+   "name": "DoorDash Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "NTNX",
+   "name": "路坦力",
+   "market": "美股"
+  },
+  {
+   "code": "CRWD",
+   "name": "CrowdStrike Holdings Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "CRM",
+   "name": "赛富时",
+   "market": "美股"
+  },
+  {
+   "code": "PCTY",
+   "name": "Paylocity Holding Corp",
+   "market": "美股"
+  },
+  {
+   "code": "WFRD",
+   "name": "威德福国际",
+   "market": "美股"
+  },
+  {
+   "code": "FFIV",
+   "name": "F5",
+   "market": "美股"
+  },
+  {
+   "code": "SIMO",
+   "name": "慧荣科技",
+   "market": "美股"
+  },
+  {
+   "code": "BDX",
+   "name": "碧迪医疗",
+   "market": "美股"
+  },
+  {
+   "code": "BTI",
+   "name": "英美烟草",
+   "market": "美股"
+  },
+  {
+   "code": "AVAV",
+   "name": "AeroVironment Inc",
+   "market": "美股"
+  },
+  {
+   "code": "AA",
+   "name": "美国铝业",
+   "market": "美股"
+  },
+  {
+   "code": "BMNR",
+   "name": "BitMine Immersion Technologies ",
+   "market": "美股"
+  },
+  {
+   "code": "SPXU",
+   "name": "三倍做空标普500ETF-ProShares",
+   "market": "美股"
+  },
+  {
+   "code": "SOUN",
+   "name": "SoundHound AI Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "PSLV",
+   "name": "Sprott Physical Silver Trust",
+   "market": "美股"
+  },
+  {
+   "code": "DVN",
+   "name": "戴文能源",
+   "market": "美股"
+  },
+  {
+   "code": "ZS",
+   "name": "Zscaler Inc",
+   "market": "美股"
+  },
+  {
+   "code": "PSKY",
+   "name": "Paramount Skydance Corp-B",
+   "market": "美股"
+  },
+  {
+   "code": "RRX",
+   "name": "Regal Rexnord Corp",
+   "market": "美股"
+  },
+  {
+   "code": "RIO",
+   "name": "力拓",
+   "market": "美股"
+  },
+  {
+   "code": "CPAY",
+   "name": "Corpay Inc",
+   "market": "美股"
+  },
+  {
+   "code": "REGN",
+   "name": "再生元制药",
+   "market": "美股"
+  },
+  {
+   "code": "RACE",
+   "name": "法拉利",
+   "market": "美股"
+  },
+  {
+   "code": "OMC",
+   "name": "宏盟集团",
+   "market": "美股"
+  },
+  {
+   "code": "PLTR",
+   "name": "Palantir Technologies Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "QYLD",
+   "name": "纳斯达克100备兑看涨期权ETF-Glob",
+   "market": "美股"
+  },
+  {
+   "code": "EFV",
+   "name": "EAFE价值股ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "BMO",
+   "name": "蒙特利尔银行",
+   "market": "美股"
+  },
+  {
+   "code": "CF",
+   "name": "CF实业",
+   "market": "美股"
+  },
+  {
+   "code": "OLLI",
+   "name": "Ollie's Bargain Outlet Holdings",
+   "market": "美股"
+  },
+  {
+   "code": "OKTA",
+   "name": "Okta Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "CHKP",
+   "name": "Check Point Software Technologi",
+   "market": "美股"
+  },
+  {
+   "code": "NTRS",
+   "name": "北方信托",
+   "market": "美股"
+  },
+  {
+   "code": "FDS",
+   "name": "辉盛研究系统",
+   "market": "美股"
+  },
+  {
+   "code": "FROG",
+   "name": "JFrog Ltd",
+   "market": "美股"
+  },
+  {
+   "code": "BNS",
+   "name": "加拿大丰业银行",
+   "market": "美股"
+  },
+  {
+   "code": "XE",
+   "name": "X-Energy Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "TRV",
+   "name": "旅行者保险",
+   "market": "美股"
+  },
+  {
+   "code": "TRGP",
+   "name": "Targa Resources Corp",
+   "market": "美股"
+  },
+  {
+   "code": "ORKA",
+   "name": "方舟生物医药",
+   "market": "美股"
+  },
+  {
+   "code": "KMI",
+   "name": "金德摩根",
+   "market": "美股"
+  },
+  {
+   "code": "TVTX",
+   "name": "Travere Therapeutics Inc",
+   "market": "美股"
+  },
+  {
+   "code": "CCEP",
+   "name": "可口可乐欧洲太平洋合伙",
+   "market": "美股"
+  },
+  {
+   "code": "BAH",
+   "name": "博思艾伦",
+   "market": "美股"
+  },
+  {
+   "code": "LSCC",
+   "name": "莱迪思半导体",
+   "market": "美股"
+  },
+  {
+   "code": "GIS",
+   "name": "通用磨坊",
+   "market": "美股"
+  },
+  {
+   "code": "PURR",
+   "name": "Hyperliquid Strategies Inc",
+   "market": "美股"
+  },
+  {
+   "code": "BBWI",
+   "name": "Bath & Body Works Inc",
+   "market": "美股"
+  },
+  {
+   "code": "DBX",
+   "name": "Dropbox Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "RNG",
+   "name": "RingCentral Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "SAIA",
+   "name": "Saia Inc",
+   "market": "美股"
+  },
+  {
+   "code": "ETHA",
+   "name": "以太坊ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "MNDY",
+   "name": "monday.com Ltd",
+   "market": "美股"
+  },
+  {
+   "code": "GPN",
+   "name": "环汇",
+   "market": "美股"
+  },
+  {
+   "code": "AG",
+   "name": "First Majestic Silver Corp",
+   "market": "美股"
+  },
+  {
+   "code": "MEDP",
+   "name": "Medpace Holdings Inc",
+   "market": "美股"
+  },
+  {
+   "code": "ARW",
+   "name": "艾睿电子",
+   "market": "美股"
+  },
+  {
+   "code": "ET",
+   "name": "能源转换",
+   "market": "美股"
+  },
+  {
+   "code": "PAYX",
+   "name": "沛齐",
+   "market": "美股"
+  },
+  {
+   "code": "TMO",
+   "name": "赛默飞世尔科技",
+   "market": "美股"
+  },
+  {
+   "code": "AAPL",
+   "name": "苹果",
+   "market": "美股"
+  },
+  {
+   "code": "MRK",
+   "name": "默沙东",
    "market": "美股"
   },
   {
@@ -1813,7 +2275,22 @@
   },
   {
    "code": "PM",
-   "name": "菲利普莫里斯",
+   "name": "菲利普莫里斯国际",
+   "market": "美股"
+  },
+  {
+   "code": "VOO",
+   "name": "Vanguard标普500",
+   "market": "美股"
+  },
+  {
+   "code": "MO",
+   "name": "奥驰亚",
+   "market": "美股"
+  },
+  {
+   "code": "APP",
+   "name": "Applovin Corp-A",
    "market": "美股"
   },
   {
@@ -1822,238 +2299,53 @@
    "market": "美股"
   },
   {
-   "code": "IP",
-   "name": "国际纸业",
+   "code": "JNJ",
+   "name": "强生",
    "market": "美股"
   },
   {
-   "code": "VTRS",
-   "name": "Viatris Inc",
+   "code": "PFE",
+   "name": "辉瑞",
    "market": "美股"
   },
   {
-   "code": "BMRN",
-   "name": "拜玛林制药",
+   "code": "GOOG",
+   "name": "谷歌-C",
    "market": "美股"
   },
   {
-   "code": "OC",
-   "name": "欧文斯科宁",
+   "code": "MU",
+   "name": "美光科技",
    "market": "美股"
   },
   {
-   "code": "CSL",
-   "name": "卡莱尔伙伴",
+   "code": "CM",
+   "name": "加拿大帝国商业银行",
    "market": "美股"
   },
   {
-   "code": "XBI",
-   "name": "标普生物科技ETF-SPDR",
+   "code": "XPO",
+   "name": "XPO",
    "market": "美股"
   },
   {
-   "code": "AGNC",
-   "name": "AGNC Investment Corp",
+   "code": "LABD",
+   "name": "三倍做空生物技术ETF-Direxion",
    "market": "美股"
   },
   {
-   "code": "MKL",
-   "name": "Markel Group Inc",
+   "code": "RVMD",
+   "name": "Revolution Medicines Inc",
    "market": "美股"
   },
   {
-   "code": "BMNR",
-   "name": "BitMine Immersion Technologies ",
+   "code": "HNGE",
+   "name": "Hinge Health Inc-A",
    "market": "美股"
   },
   {
-   "code": "AMRZ",
-   "name": "Amrize Ltd",
-   "market": "美股"
-  },
-  {
-   "code": "LECO",
-   "name": "林肯电气",
-   "market": "美股"
-  },
-  {
-   "code": "BAX",
-   "name": "百特国际",
-   "market": "美股"
-  },
-  {
-   "code": "HSY",
-   "name": "好时",
-   "market": "美股"
-  },
-  {
-   "code": "GH",
-   "name": "Guardant Health Inc",
-   "market": "美股"
-  },
-  {
-   "code": "CBRE",
-   "name": "世邦魏理仕",
-   "market": "美股"
-  },
-  {
-   "code": "SRE",
-   "name": "桑普拉能源",
-   "market": "美股"
-  },
-  {
-   "code": "GLXY",
-   "name": "Galaxy Digital Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "CW",
-   "name": "寇蒂斯莱特",
-   "market": "美股"
-  },
-  {
-   "code": "ASHR",
-   "name": "沪深300ETF-德银嘉实",
-   "market": "美股"
-  },
-  {
-   "code": "ARGX",
-   "name": "argenx SE ADR",
-   "market": "美股"
-  },
-  {
-   "code": "BTI",
-   "name": "英美烟草",
-   "market": "美股"
-  },
-  {
-   "code": "IVZ",
-   "name": "景顺",
-   "market": "美股"
-  },
-  {
-   "code": "VEEV",
-   "name": "Veeva Systems Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "ITA",
-   "name": "美国航天国防ETF-iShares",
-   "market": "美股"
-  },
-  {
-   "code": "MDT",
-   "name": "美敦力",
-   "market": "美股"
-  },
-  {
-   "code": "AEO",
-   "name": "美鹰傲飞",
-   "market": "美股"
-  },
-  {
-   "code": "REET",
-   "name": "iShares Trust iShares Global RE",
-   "market": "美股"
-  },
-  {
-   "code": "PH",
-   "name": "派克汉尼汾",
-   "market": "美股"
-  },
-  {
-   "code": "AJG",
-   "name": "安睿嘉尔",
-   "market": "美股"
-  },
-  {
-   "code": "KTOS",
-   "name": "克瑞拓斯安全防卫",
-   "market": "美股"
-  },
-  {
-   "code": "QXO",
-   "name": "QXO Inc",
-   "market": "美股"
-  },
-  {
-   "code": "EXR",
-   "name": "Extra Space Storage Inc",
-   "market": "美股"
-  },
-  {
-   "code": "OTIS",
-   "name": "Otis Worldwide Corp",
-   "market": "美股"
-  },
-  {
-   "code": "GWRE",
-   "name": "Guidewire Software Inc",
-   "market": "美股"
-  },
-  {
-   "code": "CROX",
-   "name": "卡骆驰",
-   "market": "美股"
-  },
-  {
-   "code": "FBL",
-   "name": "二倍做多META ETF-GraniteShares",
-   "market": "美股"
-  },
-  {
-   "code": "AGX",
-   "name": "Argan Inc",
-   "market": "美股"
-  },
-  {
-   "code": "ZBH",
-   "name": "捷迈邦美",
-   "market": "美股"
-  },
-  {
-   "code": "RHI",
-   "name": "罗致恒富",
-   "market": "美股"
-  },
-  {
-   "code": "ES",
-   "name": "能源方案",
-   "market": "美股"
-  },
-  {
-   "code": "SM",
-   "name": "SM Energy Co",
-   "market": "美股"
-  },
-  {
-   "code": "LNT",
-   "name": "美国联合能源",
-   "market": "美股"
-  },
-  {
-   "code": "DFAR",
-   "name": "Dimensional US Real Estate ETF",
-   "market": "美股"
-  },
-  {
-   "code": "FAST",
-   "name": "快扣",
-   "market": "美股"
-  },
-  {
-   "code": "SYRE",
-   "name": "Spyre Therapeutics Inc",
-   "market": "美股"
-  },
-  {
-   "code": "SCHH",
-   "name": "美国房地产投资信托ETF-Schwab",
-   "market": "美股"
-  },
-  {
-   "code": "CPNG",
-   "name": "Coupang Inc-A",
+   "code": "TRU",
+   "name": "TransUnion",
    "market": "美股"
   },
   {
@@ -2062,323 +2354,158 @@
    "market": "美股"
   },
   {
-   "code": "PEG",
-   "name": "公共服务企业",
+   "code": "GME",
+   "name": "游戏驿站",
    "market": "美股"
   },
   {
-   "code": "M",
-   "name": "梅西百货",
+   "code": "FTI",
+   "name": "TechnipFMC plc",
    "market": "美股"
   },
   {
-   "code": "RRX",
-   "name": "Regal Rexnord Corp",
+   "code": "ZBRA",
+   "name": "斑马技术",
    "market": "美股"
   },
   {
-   "code": "NCNO",
-   "name": "nCino Inc",
+   "code": "SDS",
+   "name": "二倍做空标普500ETF-ProShares",
    "market": "美股"
   },
   {
-   "code": "SRRK",
-   "name": "Scholar Rock Holding Corp",
+   "code": "USFD",
+   "name": "美国食品控股",
    "market": "美股"
   },
   {
-   "code": "BWA",
-   "name": "博格华纳",
+   "code": "TGT",
+   "name": "塔吉特",
    "market": "美股"
   },
   {
-   "code": "QBTS",
-   "name": "D-Wave Quantum Inc",
+   "code": "EQX",
+   "name": "Equinox Gold Corp",
    "market": "美股"
   },
   {
-   "code": "GTLB",
-   "name": "Gitlab Inc-A",
+   "code": "APA",
+   "name": "阿帕奇石油",
    "market": "美股"
   },
   {
-   "code": "W",
-   "name": "Wayfair Inc-A",
+   "code": "ZBH",
+   "name": "捷迈邦美",
    "market": "美股"
   },
   {
-   "code": "IREN",
-   "name": "IREN Ltd",
+   "code": "SITM",
+   "name": "SiTime Corp",
    "market": "美股"
   },
   {
-   "code": "ATO",
-   "name": "Atmos Energy Corp",
+   "code": "BULL",
+   "name": "微牛",
    "market": "美股"
   },
   {
-   "code": "WT",
-   "name": "WisdomTree Inc",
+   "code": "IEX",
+   "name": "IDEX Corp",
    "market": "美股"
   },
   {
-   "code": "BDX",
-   "name": "碧迪医疗",
+   "code": "SAN",
+   "name": "桑坦德银行",
    "market": "美股"
   },
   {
-   "code": "GFI",
-   "name": "金田",
+   "code": "ESI",
+   "name": "Element Solutions Inc",
    "market": "美股"
   },
   {
-   "code": "BWET",
-   "name": "Breakwave Tanker Shipping ETF",
+   "code": "ILMN",
+   "name": "Illumina Inc",
    "market": "美股"
   },
   {
-   "code": "HUBB",
-   "name": "哈勃集团",
+   "code": "DT",
+   "name": "Dynatrace Inc",
    "market": "美股"
   },
   {
-   "code": "SOLS",
-   "name": "Solstice Advanced Materials Inc",
+   "code": "HWM",
+   "name": "Howmet Aerospace Inc",
    "market": "美股"
   },
   {
-   "code": "HTFL",
-   "name": "Heartflow Inc",
+   "code": "NTSK",
+   "name": "Netskope Inc-A",
    "market": "美股"
   },
   {
-   "code": "ITB",
-   "name": "美国房屋建筑业ETF-iShares",
+   "code": "SNDQ",
+   "name": "二倍做空SNDK ETF-Tradr",
    "market": "美股"
   },
   {
-   "code": "S",
-   "name": "SentinelOne Inc-A",
+   "code": "AON",
+   "name": "怡安保险",
    "market": "美股"
   },
   {
-   "code": "TPL",
-   "name": "Texas Pacific Land Corp",
+   "code": "HRL",
+   "name": "荷美尔食品",
    "market": "美股"
   },
   {
-   "code": "ZM",
-   "name": "Zoom通讯",
+   "code": "GPC",
+   "name": "通用配件",
    "market": "美股"
   },
   {
-   "code": "EGO",
-   "name": "埃尔拉多黄金",
+   "code": "CHEF",
+   "name": "The Chefs' Warehouse Inc",
    "market": "美股"
   },
   {
-   "code": "XENE",
-   "name": "Xenon制药",
+   "code": "PARR",
+   "name": "Par Pacific Holdings Inc",
    "market": "美股"
   },
   {
-   "code": "SFM",
-   "name": "Sprouts Farmers Market Inc",
+   "code": "DOCU",
+   "name": "DocuSign Inc",
    "market": "美股"
   },
   {
-   "code": "JLL",
-   "name": "仲量联行",
+   "code": "AEIS",
+   "name": "先进能源工业",
    "market": "美股"
   },
   {
-   "code": "AEE",
-   "name": "阿曼瑞恩",
+   "code": "USAR",
+   "name": "USA Rare Earth Inc",
    "market": "美股"
   },
   {
-   "code": "CFG",
-   "name": "Citizens Financial Group Inc",
+   "code": "HALO",
+   "name": "奥洛兹美医疗",
    "market": "美股"
   },
   {
-   "code": "PVH",
-   "name": "PVH Corp",
+   "code": "RHI",
+   "name": "罗致恒富",
    "market": "美股"
   },
   {
-   "code": "OKLO",
-   "name": "Oklo Inc-A",
+   "code": "TTWO",
+   "name": "Take-Two Interactive Software I",
    "market": "美股"
   },
   {
-   "code": "SNAP",
-   "name": "Snap Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "IBB",
-   "name": "生物科技指数ETF-iShares",
-   "market": "美股"
-  },
-  {
-   "code": "WTW",
-   "name": "Willis Towers Watson PLC",
-   "market": "美股"
-  },
-  {
-   "code": "MT",
-   "name": "安赛乐米塔尔",
-   "market": "美股"
-  },
-  {
-   "code": "ROIV",
-   "name": "Roivant Sciences Ltd",
-   "market": "美股"
-  },
-  {
-   "code": "ALL",
-   "name": "好事达保险",
-   "market": "美股"
-  },
-  {
-   "code": "AER",
-   "name": "AerCap飞机租赁",
-   "market": "美股"
-  },
-  {
-   "code": "XPEV",
-   "name": "小鹏集团",
-   "market": "美股"
-  },
-  {
-   "code": "TVTX",
-   "name": "Travere Therapeutics Inc",
-   "market": "美股"
-  },
-  {
-   "code": "DGX",
-   "name": "奎斯特诊疗",
-   "market": "美股"
-  },
-  {
-   "code": "AXON",
-   "name": "Axon Enterprise Inc",
-   "market": "美股"
-  },
-  {
-   "code": "DD",
-   "name": "陶氏杜邦",
-   "market": "美股"
-  },
-  {
-   "code": "LTH",
-   "name": "Life Time Group Holdings Inc",
-   "market": "美股"
-  },
-  {
-   "code": "AR",
-   "name": "Antero Resources Corp",
-   "market": "美股"
-  },
-  {
-   "code": "BRO",
-   "name": "布朗保险",
-   "market": "美股"
-  },
-  {
-   "code": "KRYS",
-   "name": "Krystal Biotech Inc",
-   "market": "美股"
-  },
-  {
-   "code": "IOT",
-   "name": "Samsara Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "ET",
-   "name": "能源转换",
-   "market": "美股"
-  },
-  {
-   "code": "ASST",
-   "name": "Strive Inc-A",
-   "market": "美股"
-  },
-  {
-   "code": "SMR",
-   "name": "NuScale Power Corp-A",
-   "market": "美股"
-  },
-  {
-   "code": "APLD",
-   "name": "Applied Digital Corp",
-   "market": "美股"
-  },
-  {
-   "code": "CIBR",
-   "name": "NASDAQ网络安全ETF-First Trust",
-   "market": "美股"
-  },
-  {
-   "code": "ZETA",
-   "name": "Zeta Global Holdings Corp-A",
-   "market": "美股"
-  },
-  {
-   "code": "SWK",
-   "name": "史丹利百得",
-   "market": "美股"
-  },
-  {
-   "code": "ALHC",
-   "name": "Alignment Healthcare Inc",
-   "market": "美股"
-  },
-  {
-   "code": "IONQ",
-   "name": "IonQ Inc",
-   "market": "美股"
-  },
-  {
-   "code": "WEX",
-   "name": "WEX Inc",
-   "market": "美股"
-  },
-  {
-   "code": "JAZZ",
-   "name": "爵士制药",
-   "market": "美股"
-  },
-  {
-   "code": "IESC",
-   "name": "IES Holdings Inc",
-   "market": "美股"
-  },
-  {
-   "code": "QFIN",
-   "name": "奇富科技",
-   "market": "美股"
-  },
-  {
-   "code": "KMX",
-   "name": "车美仕",
-   "market": "美股"
-  },
-  {
-   "code": "GTX",
-   "name": "Garrett Motion Inc",
-   "market": "美股"
-  },
-  {
-   "code": "FIGR",
-   "name": "Figure Technology Solutions Inc",
-   "market": "美股"
-  },
-  {
-   "code": "HRB",
-   "name": "H&R布洛克",
+   "code": "AMZD",
+   "name": "做空亚马逊ETF-Direxion",
    "market": "美股"
   },
   {
@@ -2387,188 +2514,228 @@
    "market": "美股"
   },
   {
+   "code": "NVTS",
+   "name": "Navitas Semiconductor Corp",
+   "market": "美股"
+  },
+  {
+   "code": "KVYO",
+   "name": "Klaviyo Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "FRPT",
+   "name": "Freshpet Inc",
+   "market": "美股"
+  },
+  {
+   "code": "EPAM",
+   "name": "EPAM Systems Inc",
+   "market": "美股"
+  },
+  {
+   "code": "CIBR",
+   "name": "NASDAQ网络安全ETF-First Trust",
+   "market": "美股"
+  },
+  {
+   "code": "S",
+   "name": "SentinelOne Inc-A",
+   "market": "美股"
+  },
+  {
    "code": "KNX",
    "name": "Knight-Swift Transportation Hol",
    "market": "美股"
   },
   {
-   "code": "DCI",
-   "name": "唐纳森",
+   "code": "POOL",
+   "name": "Pool Corp",
    "market": "美股"
   },
   {
-   "code": "AU",
-   "name": "AngloGold Ashanti plc",
+   "code": "SHAZ",
+   "name": "SharonAI Holdings Inc-A",
    "market": "美股"
   },
   {
-   "code": "EMBJ",
-   "name": "巴西航空工业",
+   "code": "OVV",
+   "name": "Ovintiv Inc",
    "market": "美股"
   },
   {
-   "code": "OSCR",
-   "name": "Oscar Health Inc-A",
+   "code": "FIVE",
+   "name": "Five Below Inc",
    "market": "美股"
   },
   {
-   "code": "GMAB",
-   "name": "Genmab A/S ADR",
+   "code": "BRO",
+   "name": "布朗保险",
    "market": "美股"
   },
   {
-   "code": "FTV",
-   "name": "Fortive Corp",
+   "code": "WTW",
+   "name": "Willis Towers Watson PLC",
    "market": "美股"
   },
   {
-   "code": "VSEC",
-   "name": "VSE Corp",
+   "code": "AUGO",
+   "name": "Aura Minerals Inc",
    "market": "美股"
   },
   {
-   "code": "MEDP",
-   "name": "Medpace Holdings Inc",
+   "code": "SLS",
+   "name": "SEELAS Life Sciences Group Inc",
    "market": "美股"
   },
   {
-   "code": "RVTY",
-   "name": "Revvity Inc",
+   "code": "PTGX",
+   "name": "Protagonist Therapeutics Inc",
    "market": "美股"
   },
   {
-   "code": "MHK",
-   "name": "莫霍克工业",
+   "code": "PRAX",
+   "name": "Praxis Precision Medicines Inc",
    "market": "美股"
   },
   {
-   "code": "GRAB",
-   "name": "Grab Holdings Ltd-A",
+   "code": "LW",
+   "name": "蓝威斯顿控股",
    "market": "美股"
   },
   {
-   "code": "ROAD",
-   "name": "Construction Partners Inc-A",
+   "code": "BOX",
+   "name": "Box Inc-A",
    "market": "美股"
   },
   {
-   "code": "DAVE",
-   "name": "Dave Inc-A",
+   "code": "CLX",
+   "name": "高乐氏",
    "market": "美股"
   },
   {
-   "code": "INCY",
-   "name": "因塞特医疗",
+   "code": "VVOS",
+   "name": "Vivos Therapeutics Inc",
    "market": "美股"
   },
   {
-   "code": "MANH",
-   "name": "曼哈顿联合软件",
+   "code": "DXCM",
+   "name": "德康医疗",
    "market": "美股"
   },
   {
-   "code": "SNX",
-   "name": "新聚思",
+   "code": "FBTC",
+   "name": "比特币ETF-Fidelity",
    "market": "美股"
   },
   {
-   "code": "SHLS",
-   "name": "Shoals Technologies Group Inc-A",
+   "code": "DUOL",
+   "name": "多邻国",
    "market": "美股"
   },
   {
-   "code": "CCK",
-   "name": "皇冠控股",
+   "code": "CVE",
+   "name": "Cenovus能源",
    "market": "美股"
   },
   {
-   "code": "UHS",
-   "name": "Universal Health Services Inc-B",
+   "code": "UBER",
+   "name": "优步",
    "market": "美股"
   },
   {
-   "code": "PTEN",
-   "name": "Patterson-UTI Energy Inc",
+   "code": "PCG_X",
+   "name": "PG&E Corp Series A Pfd",
    "market": "美股"
   },
   {
-   "code": "CHWY",
-   "name": "Chewy Inc-A",
+   "code": "NAVN",
+   "name": "Navan Inc-A",
    "market": "美股"
   },
   {
-   "code": "CAG",
-   "name": "康尼格拉",
+   "code": "YUMC",
+   "name": "百胜中国",
    "market": "美股"
   },
   {
-   "code": "HMY",
-   "name": "哈莫尼黄金",
+   "code": "AXON",
+   "name": "Axon Enterprise Inc",
    "market": "美股"
   },
   {
-   "code": "UNG",
-   "name": "美国天然气ETF",
+   "code": "PINS",
+   "name": "Pinterest Inc-A",
    "market": "美股"
   },
   {
-   "code": "GDDY",
-   "name": "GoDaddy Inc-A",
+   "code": "EGO",
+   "name": "埃尔拉多黄金",
    "market": "美股"
   },
   {
-   "code": "JHX",
-   "name": "詹姆斯哈迪",
+   "code": "BURL",
+   "name": "伯灵顿百货",
    "market": "美股"
   },
   {
-   "code": "HII",
-   "name": "亨廷顿英戈尔斯工业",
+   "code": "ONC",
+   "name": "百济神州",
    "market": "美股"
   },
   {
-   "code": "WERN",
-   "name": "沃纳企业",
+   "code": "AFRM",
+   "name": "Affirm Holdings Inc-A",
    "market": "美股"
   },
   {
-   "code": "CLH",
-   "name": "Clean Harbors Inc",
+   "code": "WCC",
+   "name": "西科国际",
    "market": "美股"
   },
   {
-   "code": "TXT",
-   "name": "德事隆",
+   "code": "SSRM",
+   "name": "SSR Mining Inc",
    "market": "美股"
   },
   {
-   "code": "GENB",
-   "name": "Generate Biomedicines Inc",
+   "code": "SJM",
+   "name": "JM斯马克",
    "market": "美股"
   },
   {
-   "code": "BIO",
-   "name": "Bio Rad实验室-A",
+   "code": "ERAS",
+   "name": "Erasca Inc",
    "market": "美股"
   },
   {
-   "code": "PLUG",
-   "name": "普拉格能源",
+   "code": "AGX",
+   "name": "Argan Inc",
    "market": "美股"
   },
   {
-   "code": "AEHR",
-   "name": "Aehr Test Systems",
+   "code": "TSLQ",
+   "name": "二倍做空特斯拉ETF-Tradr",
    "market": "美股"
   },
   {
-   "code": "FCFS",
-   "name": "第一富金融服务",
+   "code": "SE",
+   "name": "Sea Ltd ADR",
    "market": "美股"
   },
   {
-   "code": "IRE",
-   "name": "二倍做多IREN ETF-Defiance",
+   "code": "JKHY",
+   "name": "杰克亨利",
+   "market": "美股"
+  },
+  {
+   "code": "FIG",
+   "name": "Figma Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "FUTU",
+   "name": "富途控股",
    "market": "美股"
   },
   {
@@ -2577,83 +2744,288 @@
    "market": "美股"
   },
   {
-   "code": "TNK",
-   "name": "Teekay Tankers Ltd-A",
+   "code": "TPG",
+   "name": "TPG Inc-A",
    "market": "美股"
   },
   {
-   "code": "RS",
-   "name": "Reliance Steel & Aluminum Co",
+   "code": "LUMN",
+   "name": "Lumen Technologies Inc",
    "market": "美股"
   },
   {
-   "code": "MXL",
-   "name": "MaxLinear Inc",
+   "code": "EXLS",
+   "name": "伊克赛尔服务控股",
    "market": "美股"
   },
   {
-   "code": "OKLL",
-   "name": "二倍做多OKLO ETF-Defiance",
+   "code": "ARKG",
+   "name": "ARK Genomic Revolution ETF",
    "market": "美股"
   },
   {
-   "code": "FER",
-   "name": "Ferrovial NV",
+   "code": "PTEN",
+   "name": "Patterson-UTI Energy Inc",
    "market": "美股"
   },
   {
-   "code": "LCID",
-   "name": "Lucid Group Inc-A",
+   "code": "TGTX",
+   "name": "TG Therapeutics Inc",
    "market": "美股"
   },
   {
-   "code": "DHT",
-   "name": "DHT控股",
+   "code": "GLNG",
+   "name": "Golar LNG Ltd",
    "market": "美股"
   },
   {
-   "code": "XE",
-   "name": "X-Energy Inc-A",
+   "code": "OBDC",
+   "name": "Blue Owl Capital Corp",
    "market": "美股"
   },
   {
-   "code": "LTM",
-   "name": "LATAM Airlines Group SA ADR",
+   "code": "TENB",
+   "name": "Tenable Holdings Inc",
    "market": "美股"
   },
   {
-   "code": "WIX",
-   "name": "Wix.com Ltd",
+   "code": "GEO",
+   "name": "GEO惩教集团",
    "market": "美股"
   },
   {
-   "code": "FRVO",
-   "name": "Fervo Energy Co-A",
+   "code": "MIR",
+   "name": "Mirion Technologies Inc-A",
    "market": "美股"
   },
   {
-   "code": "TRMD",
-   "name": "TORM plc-A",
+   "code": "WETO",
+   "name": "Wetour Robotics Ltd",
    "market": "美股"
   },
   {
-   "code": "INSW",
-   "name": "International Seaways Inc",
+   "code": "EMBJ",
+   "name": "巴西航空工业",
    "market": "美股"
   },
   {
-   "code": "RLAY",
-   "name": "Relay Therapeutics Inc",
+   "code": "KRMN",
+   "name": "Karman Holdings Inc",
    "market": "美股"
   },
   {
-   "code": "NG",
-   "name": "NOVAGOLD Resources Inc",
+   "code": "BILL",
+   "name": "BILL Holdings Inc",
    "market": "美股"
   },
   {
-   "code": "PLTZ",
-   "name": "二倍做空PLTR ETF-Defiance",
+   "code": "ITUB",
+   "name": "艾涛巴西联合银行",
+   "market": "美股"
+  },
+  {
+   "code": "LNC",
+   "name": "林肯国民",
+   "market": "美股"
+  },
+  {
+   "code": "BH",
+   "name": "Biglari Holdings Inc-B",
+   "market": "美股"
+  },
+  {
+   "code": "GAP",
+   "name": "盖普",
+   "market": "美股"
+  },
+  {
+   "code": "SITE",
+   "name": "SiteOne Landscape Supply Inc",
+   "market": "美股"
+  },
+  {
+   "code": "OSCR",
+   "name": "Oscar Health Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "NWL",
+   "name": "纽威品牌",
+   "market": "美股"
+  },
+  {
+   "code": "BTU",
+   "name": "皮博迪能源",
+   "market": "美股"
+  },
+  {
+   "code": "TRI",
+   "name": "汤森路透",
+   "market": "美股"
+  },
+  {
+   "code": "CELH",
+   "name": "燃力士控股",
+   "market": "美股"
+  },
+  {
+   "code": "BRKR",
+   "name": "布鲁克",
+   "market": "美股"
+  },
+  {
+   "code": "CCK",
+   "name": "皇冠控股",
+   "market": "美股"
+  },
+  {
+   "code": "KSS",
+   "name": "柯尔百货",
+   "market": "美股"
+  },
+  {
+   "code": "W",
+   "name": "Wayfair Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "WYNN",
+   "name": "永利度假村",
+   "market": "美股"
+  },
+  {
+   "code": "DAVE",
+   "name": "Dave Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "TAP",
+   "name": "摩森康胜-B",
+   "market": "美股"
+  },
+  {
+   "code": "LYFT",
+   "name": "Lyft Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "DPC",
+   "name": "DPC Holdings PLC",
+   "market": "美股"
+  },
+  {
+   "code": "TE",
+   "name": "T1 Energy Inc",
+   "market": "美股"
+  },
+  {
+   "code": "AMZU",
+   "name": "二倍做多亚马逊ETF-Direxion",
+   "market": "美股"
+  },
+  {
+   "code": "GGLL",
+   "name": "二倍做多谷歌ETF-Direxion",
+   "market": "美股"
+  },
+  {
+   "code": "HLF",
+   "name": "康宝莱",
+   "market": "美股"
+  },
+  {
+   "code": "NN",
+   "name": "NextNav Inc",
+   "market": "美股"
+  },
+  {
+   "code": "TSDD",
+   "name": "二倍做空特斯拉ETF-GraniteShares",
+   "market": "美股"
+  },
+  {
+   "code": "FND",
+   "name": "Floor & Decor Holdings Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "SCO",
+   "name": "二倍做空原油ETF-ProShares",
+   "market": "美股"
+  },
+  {
+   "code": "ERY",
+   "name": "二倍做空能源ETF-Direxion",
+   "market": "美股"
+  },
+  {
+   "code": "JBLU",
+   "name": "捷蓝航空",
+   "market": "美股"
+  },
+  {
+   "code": "GPI",
+   "name": "汽车一组",
+   "market": "美股"
+  },
+  {
+   "code": "MOVE",
+   "name": "Corvex Inc",
+   "market": "美股"
+  },
+  {
+   "code": "MUZ",
+   "name": "二倍做空美光科技ETF-Defiance",
+   "market": "美股"
+  },
+  {
+   "code": "LPTH",
+   "name": "LightPath Technologies Inc-A",
+   "market": "美股"
+  },
+  {
+   "code": "GLBE",
+   "name": "Global-E Online Ltd",
+   "market": "美股"
+  },
+  {
+   "code": "TMDX",
+   "name": "TransMedics Group Inc",
+   "market": "美股"
+  },
+  {
+   "code": "TSLZ",
+   "name": "二倍做空特斯拉ETF-T-Rex",
+   "market": "美股"
+  },
+  {
+   "code": "ERO",
+   "name": "Ero Copper Corp",
+   "market": "美股"
+  },
+  {
+   "code": "DXYZ",
+   "name": "Destiny Tech100 Inc",
+   "market": "美股"
+  },
+  {
+   "code": "CHH",
+   "name": "精选国际酒店",
+   "market": "美股"
+  },
+  {
+   "code": "VAC",
+   "name": "万豪度假环球",
+   "market": "美股"
+  },
+  {
+   "code": "COCO",
+   "name": "The Vita Coco Co Inc",
+   "market": "美股"
+  },
+  {
+   "code": "JMKE",
+   "name": "Jersey Mike’s Subs Inc-A",
    "market": "美股"
   },
   {
@@ -10660,748 +11032,8 @@
    "code": "603307.SS",
    "name": "扬州金泉",
    "market": "A股"
-  },
-  {
-   "code": "0939.HK",
-   "name": "建设银行",
-   "market": "港股"
-  },
-  {
-   "code": "2259.HK",
-   "name": "紫金黄金国际",
-   "market": "港股"
-  },
-  {
-   "code": "9992.HK",
-   "name": "泡泡玛特",
-   "market": "港股"
-  },
-  {
-   "code": "0700.HK",
-   "name": "腾讯控股",
-   "market": "港股"
-  },
-  {
-   "code": "2318.HK",
-   "name": "中国平安",
-   "market": "港股"
-  },
-  {
-   "code": "3308.HK",
-   "name": "中际旭创",
-   "market": "港股"
-  },
-  {
-   "code": "1398.HK",
-   "name": "工商银行",
-   "market": "港股"
-  },
-  {
-   "code": "1797.HK",
-   "name": "东方甄选",
-   "market": "港股"
-  },
-  {
-   "code": "1801.HK",
-   "name": "信达生物",
-   "market": "港股"
-  },
-  {
-   "code": "7226.HK",
-   "name": "南方两倍做多恒生科技",
-   "market": "港股"
-  },
-  {
-   "code": "1548.HK",
-   "name": "金斯瑞生物科技",
-   "market": "港股"
-  },
-  {
-   "code": "9618.HK",
-   "name": "京东集团-SW",
-   "market": "港股"
-  },
-  {
-   "code": "1276.HK",
-   "name": "恒瑞医药",
-   "market": "港股"
-  },
-  {
-   "code": "3968.HK",
-   "name": "招商银行",
-   "market": "港股"
-  },
-  {
-   "code": "6869.HK",
-   "name": "长飞光纤光缆",
-   "market": "港股"
-  },
-  {
-   "code": "7747.HK",
-   "name": "南方两倍做多三星电子",
-   "market": "港股"
-  },
-  {
-   "code": "9926.HK",
-   "name": "康方生物",
-   "market": "港股"
-  },
-  {
-   "code": "1288.HK",
-   "name": "农业银行",
-   "market": "港股"
-  },
-  {
-   "code": "0005.HK",
-   "name": "汇丰控股",
-   "market": "港股"
-  },
-  {
-   "code": "0136.HK",
-   "name": "中国儒意",
-   "market": "港股"
-  },
-  {
-   "code": "1888.HK",
-   "name": "建滔积层板",
-   "market": "港股"
-  },
-  {
-   "code": "2388.HK",
-   "name": "中银香港",
-   "market": "港股"
-  },
-  {
-   "code": "9988.HK",
-   "name": "阿里巴巴-W",
-   "market": "港股"
-  },
-  {
-   "code": "0805.HK",
-   "name": "新吉奥房车",
-   "market": "港股"
-  },
-  {
-   "code": "0148.HK",
-   "name": "建滔集团",
-   "market": "港股"
-  },
-  {
-   "code": "7709.HK",
-   "name": "南方东英SK海力士每日杠杆最多2x",
-   "market": "港股"
-  },
-  {
-   "code": "1109.HK",
-   "name": "华润置地",
-   "market": "港股"
-  },
-  {
-   "code": "9660.HK",
-   "name": "地平线机器人-W",
-   "market": "港股"
-  },
-  {
-   "code": "2319.HK",
-   "name": "蒙牛乳业",
-   "market": "港股"
-  },
-  {
-   "code": "3759.HK",
-   "name": "康龙化成",
-   "market": "港股"
-  },
-  {
-   "code": "0981.HK",
-   "name": "中芯国际",
-   "market": "港股"
-  },
-  {
-   "code": "2331.HK",
-   "name": "李宁",
-   "market": "港股"
-  },
-  {
-   "code": "6990.HK",
-   "name": "科伦博泰生物",
-   "market": "港股"
-  },
-  {
-   "code": "2583.HK",
-   "name": "西普尼",
-   "market": "港股"
-  },
-  {
-   "code": "1177.HK",
-   "name": "中国生物制药",
-   "market": "港股"
-  },
-  {
-   "code": "2007.HK",
-   "name": "碧桂园",
-   "market": "港股"
-  },
-  {
-   "code": "0003.HK",
-   "name": "香港中华煤气",
-   "market": "港股"
-  },
-  {
-   "code": "2442.HK",
-   "name": "怡俊集团控股",
-   "market": "港股"
-  },
-  {
-   "code": "2268.HK",
-   "name": "药明合联",
-   "market": "港股"
-  },
-  {
-   "code": "0857.HK",
-   "name": "中国石油股份",
-   "market": "港股"
-  },
-  {
-   "code": "0027.HK",
-   "name": "银河娱乐",
-   "market": "港股"
-  },
-  {
-   "code": "1519.HK",
-   "name": "极兔速递-W",
-   "market": "港股"
-  },
-  {
-   "code": "6166.HK",
-   "name": "剑桥科技",
-   "market": "港股"
-  },
-  {
-   "code": "2338.HK",
-   "name": "潍柴动力",
-   "market": "港股"
-  },
-  {
-   "code": "2269.HK",
-   "name": "药明生物",
-   "market": "港股"
-  },
-  {
-   "code": "0001.HK",
-   "name": "长和",
-   "market": "港股"
-  },
-  {
-   "code": "1171.HK",
-   "name": "兖矿能源",
-   "market": "港股"
-  },
-  {
-   "code": "0688.HK",
-   "name": "中国海外发展",
-   "market": "港股"
-  },
-  {
-   "code": "0291.HK",
-   "name": "华润啤酒",
-   "market": "港股"
-  },
-  {
-   "code": "0631.HK",
-   "name": "三一国际",
-   "market": "港股"
-  },
-  {
-   "code": "1825.HK",
-   "name": "STERLING GP",
-   "market": "港股"
-  },
-  {
-   "code": "1088.HK",
-   "name": "中国神华",
-   "market": "港股"
-  },
-  {
-   "code": "2057.HK",
-   "name": "中通快递-W",
-   "market": "港股"
-  },
-  {
-   "code": "0340.HK",
-   "name": "潼关黄金",
-   "market": "港股"
-  },
-  {
-   "code": "6030.HK",
-   "name": "中信证券",
-   "market": "港股"
-  },
-  {
-   "code": "0020.HK",
-   "name": "商汤-W",
-   "market": "港股"
-  },
-  {
-   "code": "3032.HK",
-   "name": "恒生科技ETF",
-   "market": "港股"
-  },
-  {
-   "code": "9995.HK",
-   "name": "荣昌生物",
-   "market": "港股"
-  },
-  {
-   "code": "2601.HK",
-   "name": "中国太保",
-   "market": "港股"
-  },
-  {
-   "code": "0002.HK",
-   "name": "中电控股",
-   "market": "港股"
-  },
-  {
-   "code": "6821.HK",
-   "name": "凯莱英",
-   "market": "港股"
-  },
-  {
-   "code": "0268.HK",
-   "name": "金蝶国际",
-   "market": "港股"
-  },
-  {
-   "code": "2099.HK",
-   "name": "中国黄金国际",
-   "market": "港股"
-  },
-  {
-   "code": "1833.HK",
-   "name": "平安好医生",
-   "market": "港股"
-  },
-  {
-   "code": "2359.HK",
-   "name": "药明康德",
-   "market": "港股"
-  },
-  {
-   "code": "1167.HK",
-   "name": "加科思-B",
-   "market": "港股"
-  },
-  {
-   "code": "0081.HK",
-   "name": "中国海外宏洋集团",
-   "market": "港股"
-  },
-  {
-   "code": "2382.HK",
-   "name": "舜宇光学科技",
-   "market": "港股"
-  },
-  {
-   "code": "2611.HK",
-   "name": "国泰海通",
-   "market": "港股"
-  },
-  {
-   "code": "0297.HK",
-   "name": "中化化肥",
-   "market": "港股"
-  },
-  {
-   "code": "7200.HK",
-   "name": "南方两倍看多恒指",
-   "market": "港股"
-  },
-  {
-   "code": "2328.HK",
-   "name": "中国财险",
-   "market": "港股"
-  },
-  {
-   "code": "0823.HK",
-   "name": "领展房产基金",
-   "market": "港股"
-  },
-  {
-   "code": "0772.HK",
-   "name": "阅文集团",
-   "market": "港股"
-  },
-  {
-   "code": "0992.HK",
-   "name": "联想集团",
-   "market": "港股"
-  },
-  {
-   "code": "3067.HK",
-   "name": "安硕恒生科技",
-   "market": "港股"
-  },
-  {
-   "code": "2475.HK",
-   "name": "立讯精密",
-   "market": "港股"
-  },
-  {
-   "code": "0836.HK",
-   "name": "华润电力",
-   "market": "港股"
-  },
-  {
-   "code": "3888.HK",
-   "name": "金山软件",
-   "market": "港股"
-  },
-  {
-   "code": "3328.HK",
-   "name": "交通银行",
-   "market": "港股"
-  },
-  {
-   "code": "0066.HK",
-   "name": "港铁公司",
-   "market": "港股"
-  },
-  {
-   "code": "7500.HK",
-   "name": "南方两倍看空恒指",
-   "market": "港股"
-  },
-  {
-   "code": "2802.HK",
-   "name": "A南方国指备兑",
-   "market": "港股"
-  },
-  {
-   "code": "2400.HK",
-   "name": "心动公司",
-   "market": "港股"
-  },
-  {
-   "code": "1860.HK",
-   "name": "汇量科技",
-   "market": "港股"
-  },
-  {
-   "code": "0696.HK",
-   "name": "中国民航信息网络",
-   "market": "港股"
-  },
-  {
-   "code": "0293.HK",
-   "name": "国泰航空",
-   "market": "港股"
-  },
-  {
-   "code": "3692.HK",
-   "name": "翰森制药",
-   "market": "港股"
-  },
-  {
-   "code": "1339.HK",
-   "name": "中国人民保险集团",
-   "market": "港股"
-  },
-  {
-   "code": "2652.HK",
-   "name": "长风药业",
-   "market": "港股"
-  },
-  {
-   "code": "0285.HK",
-   "name": "比亚迪电子",
-   "market": "港股"
-  },
-  {
-   "code": "1057.HK",
-   "name": "浙江世宝",
-   "market": "港股"
-  },
-  {
-   "code": "1658.HK",
-   "name": "邮储银行",
-   "market": "港股"
-  },
-  {
-   "code": "1113.HK",
-   "name": "长实集团",
-   "market": "港股"
-  },
-  {
-   "code": "1308.HK",
-   "name": "海丰国际",
-   "market": "港股"
-  },
-  {
-   "code": "2510.HK",
-   "name": "德翔海运",
-   "market": "港股"
-  },
-  {
-   "code": "3808.HK",
-   "name": "中国重汽",
-   "market": "港股"
-  },
-  {
-   "code": "06055.HK",
-   "name": "中烟香港",
-   "market": "港股"
-  },
-  {
-   "code": "0883.HK",
-   "name": "中国海洋石油",
-   "market": "港股"
-  },
-  {
-   "code": "1918.HK",
-   "name": "融创中国",
-   "market": "港股"
-  },
-  {
-   "code": "1368.HK",
-   "name": "特步国际",
-   "market": "港股"
-  },
-  {
-   "code": "2343.HK",
-   "name": "太平洋航运",
-   "market": "港股"
-  },
-  {
-   "code": "2333.HK",
-   "name": "长城汽车",
-   "market": "港股"
-  },
-  {
-   "code": "6690.HK",
-   "name": "海尔智家",
-   "market": "港股"
-  },
-  {
-   "code": "1093.HK",
-   "name": "石药集团",
-   "market": "港股"
-  },
-  {
-   "code": "9868.HK",
-   "name": "小鹏集团-W",
-   "market": "港股"
-  },
-  {
-   "code": "0763.HK",
-   "name": "中兴通讯",
-   "market": "港股"
-  },
-  {
-   "code": "1999.HK",
-   "name": "敏华控股",
-   "market": "港股"
-  },
-  {
-   "code": "2556.HK",
-   "name": "迈富时",
-   "market": "港股"
-  },
-  {
-   "code": "2723.HK",
-   "name": "深演智能",
-   "market": "港股"
-  },
-  {
-   "code": "3690.HK",
-   "name": "美团-W",
-   "market": "港股"
-  },
-  {
-   "code": "6862.HK",
-   "name": "海底捞",
-   "market": "港股"
-  },
-  {
-   "code": "0788.HK",
-   "name": "中国铁塔",
-   "market": "港股"
-  },
-  {
-   "code": "1060.HK",
-   "name": "大麦娱乐",
-   "market": "港股"
-  },
-  {
-   "code": "6160.HK",
-   "name": "百济神州",
-   "market": "港股"
-  },
-  {
-   "code": "2142.HK",
-   "name": "和铂医药-B",
-   "market": "港股"
-  },
-  {
-   "code": "2888.HK",
-   "name": "渣打集团",
-   "market": "港股"
-  },
-  {
-   "code": "1929.HK",
-   "name": "周大福",
-   "market": "港股"
-  },
-  {
-   "code": "9688.HK",
-   "name": "再鼎医药",
-   "market": "港股"
-  },
-  {
-   "code": "0966.HK",
-   "name": "中国太平",
-   "market": "港股"
-  },
-  {
-   "code": "9630.HK",
-   "name": "芯碁微装",
-   "market": "港股"
-  },
-  {
-   "code": "3330.HK",
-   "name": "灵宝黄金",
-   "market": "港股"
-  },
-  {
-   "code": "0100.HK",
-   "name": "MINIMAX-W",
-   "market": "港股"
-  },
-  {
-   "code": "3939.HK",
-   "name": "万国黄金集团",
-   "market": "港股"
-  },
-  {
-   "code": "6127.HK",
-   "name": "昭衍新药",
-   "market": "港股"
-  },
-  {
-   "code": "1997.HK",
-   "name": "九龙仓置业",
-   "market": "港股"
-  },
-  {
-   "code": "9969.HK",
-   "name": "诺诚健华",
-   "market": "港股"
-  },
-  {
-   "code": "1818.HK",
-   "name": "招金矿业",
-   "market": "港股"
-  },
-  {
-   "code": "9901.HK",
-   "name": "新东方-S",
-   "market": "港股"
-  },
-  {
-   "code": "0780.HK",
-   "name": "同程旅行",
-   "market": "港股"
-  },
-  {
-   "code": "9863.HK",
-   "name": "零跑汽车",
-   "market": "港股"
-  },
-  {
-   "code": "6031.HK",
-   "name": "三一重工",
-   "market": "港股"
-  },
-  {
-   "code": "2687.HK",
-   "name": "卓越睿新",
-   "market": "港股"
-  },
-  {
-   "code": "6693.HK",
-   "name": "赤峰黄金",
-   "market": "港股"
-  },
-  {
-   "code": "1772.HK",
-   "name": "赣锋锂业",
-   "market": "港股"
-  },
-  {
-   "code": "2233.HK",
-   "name": "西部水泥",
-   "market": "港股"
-  },
-  {
-   "code": "2162.HK",
-   "name": "康诺亚-B",
-   "market": "港股"
-  },
-  {
-   "code": "2688.HK",
-   "name": "新奥能源",
-   "market": "港股"
-  },
-  {
-   "code": "3858.HK",
-   "name": "佳鑫国际资源",
-   "market": "港股"
-  },
-  {
-   "code": "2714.HK",
-   "name": "牧原股份",
-   "market": "港股"
-  },
-  {
-   "code": "0019.HK",
-   "name": "太古股份公司A",
-   "market": "港股"
-  },
-  {
-   "code": "0316.HK",
-   "name": "东方海外国际",
-   "market": "港股"
-  },
-  {
-   "code": "2315.HK",
-   "name": "百奥赛图-B",
-   "market": "港股"
-  },
-  {
-   "code": "9696.HK",
-   "name": "天齐锂业",
-   "market": "港股"
-  },
-  {
-   "code": "2526.HK",
-   "name": "德适-B",
-   "market": "港股"
-  },
-  {
-   "code": "1882.HK",
-   "name": "海天国际",
-   "market": "港股"
-  },
-  {
-   "code": "1513.HK",
-   "name": "丽珠医药",
-   "market": "港股"
-  },
-  {
-   "code": "2026.HK",
-   "name": "小马智行-W",
-   "market": "港股"
   }
  ],
- "count": 2271,
+ "count": 2198,
  "selection_authority": "universe_membership_only; legacy score removed"
 }
