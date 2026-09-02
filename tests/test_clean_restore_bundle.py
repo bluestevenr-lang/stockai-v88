@@ -76,6 +76,10 @@ class CleanRestoreBundleTests(unittest.TestCase):
             "Startup-folder fallback",
             "Resolve-PrincipalSid",
             "gateway_conversion_started",
+            "Read-LockedJsonSnapshot",
+            "preflight-runtime-{0}.json",
+            "Runtime MANUAL evidence changed after Host review",
+            "runtime_preflight_hash",
         ):
             self.assertIn(token, verify)
         for token in (

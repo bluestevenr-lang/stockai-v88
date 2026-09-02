@@ -66,6 +66,103 @@ function Update-VerificationState([hashtable]$Patch) {
     [IO.File]::WriteAllText($StatePath, ($state | ConvertTo-Json -Depth 10), (New-Object Text.UTF8Encoding($false)))
 }
 
+function Read-LockedJsonSnapshot([string]$Path) {
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { Fail ('Required report is missing: ' + $Path) }
+    $stream = [IO.File]::Open($Path, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::None)
+    try {
+        if ($stream.Length -lt 2 -or $stream.Length -gt 4MB) { Fail ('Report size is invalid: ' + $Path) }
+        $bytes = New-Object byte[] ([int]$stream.Length)
+        $offset = 0
+        while ($offset -lt $bytes.Length) {
+            $read = $stream.Read($bytes, $offset, $bytes.Length - $offset)
+            if ($read -le 0) { Fail ('Report could not be read completely: ' + $Path) }
+            $offset += $read
+        }
+    } finally { $stream.Dispose() }
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try { $hash = ([BitConverter]::ToString($sha.ComputeHash($bytes))).Replace('-', '').ToLowerInvariant() }
+    finally { $sha.Dispose() }
+    try { $document = ([Text.Encoding]::UTF8.GetString($bytes) | ConvertFrom-Json) }
+    catch { Fail ('Report JSON is invalid: ' + $Path) }
+    return [pscustomobject]@{ Document = $document; Hash = $hash }
+}
+
+function Invoke-And-AcceptRuntimePreflight($RestoreState) {
+    $runtimePath = Join-Path $StateDir ('preflight-runtime-{0}.json' -f [guid]::NewGuid().ToString('N'))
+    $started = [DateTimeOffset]::UtcNow
+    & (Join-Path $PackageRoot 'preflight_new_ssd_win.ps1') -Phase Runtime -OutputPath $runtimePath
+    $preflightExit = $LASTEXITCODE
+    $finished = [DateTimeOffset]::UtcNow
+    if ($preflightExit -eq 2) { Fail 'Windows runtime preflight is blocked.' }
+    if ($preflightExit -notin @(0,3)) { Fail ('Windows runtime preflight returned an invalid exit code: ' + $preflightExit) }
+
+    $runtimeSnapshot = Read-LockedJsonSnapshot $runtimePath
+    $runtime = $runtimeSnapshot.Document
+    if ($runtime.schema -ne 'v88.windows.preflight.v1' -or $runtime.phase -ne 'Runtime') {
+        Fail 'Runtime preflight report schema or phase is invalid.'
+    }
+    try { $checkedAt = [DateTimeOffset]::Parse([string]$runtime.checked_at) }
+    catch { Fail 'Runtime preflight checked_at is invalid.' }
+    if ($checkedAt -lt $started.AddSeconds(-2) -or $checkedAt -gt $finished.AddSeconds(2)) {
+        Fail 'Runtime preflight report is stale or future-dated.'
+    }
+    $blockedRows = @($runtime.results | Where-Object { $_.status -eq 'BLOCKED' })
+    $runtimeManual = @($runtime.results | Where-Object { $_.status -eq 'MANUAL' })
+    if ($blockedRows.Count -ne 0 -or [int]$runtime.blocked_count -ne 0) { Fail 'Runtime report contains a blocked condition.' }
+    if (($preflightExit -eq 0 -and ($runtime.verdict -ne 'PASS' -or $runtimeManual.Count -ne 0)) -or
+        ($preflightExit -eq 3 -and ($runtime.verdict -ne 'MANUAL_REQUIRED' -or $runtimeManual.Count -lt 1))) {
+        Fail 'Runtime preflight exit code and report verdict disagree.'
+    }
+
+    $acceptedCodes = @()
+    if ($preflightExit -eq 3) {
+        $hostPath = Join-Path $StateDir 'preflight-host.json'
+        $hostSnapshot = Read-LockedJsonSnapshot $hostPath
+        if (-not $RestoreState.host_preflight_hash -or
+            $hostSnapshot.Hash -ne ([string]$RestoreState.host_preflight_hash).ToLowerInvariant()) {
+            Fail 'The reviewed Host preflight report changed after Prepare.'
+        }
+        $host = $hostSnapshot.Document
+        if ($host.schema -ne 'v88.windows.preflight.v1' -or $host.phase -ne 'Host') {
+            Fail 'The reviewed Host preflight report schema or phase is invalid.'
+        }
+        $hostManual = @($host.results | Where-Object { $_.status -eq 'MANUAL' })
+        if (@($hostManual | Group-Object code | Where-Object { $_.Count -ne 1 }).Count -gt 0 -or
+            @($runtimeManual | Group-Object code | Where-Object { $_.Count -ne 1 }).Count -gt 0) {
+            Fail 'A preflight report contains duplicate MANUAL codes.'
+        }
+        $hostByCode = @{}
+        foreach ($row in $hostManual) { $hostByCode[[string]$row.code] = $row }
+        $reviewRules = @{
+            SMART_COUNTERS_UNAVAILABLE = [bool]$RestoreState.host_review_ssd_external
+            PHYSICAL_DISK_MAPPING_UNKNOWN = [bool]$RestoreState.host_review_ssd_external
+            SSD_REPORTED_CORRECTED_ERRORS = [bool]$RestoreState.host_review_ssd_external
+            UNSCOPED_STORAGE_OR_PCIE_EVENT_REVIEW = [bool]$RestoreState.host_review_unscoped_events
+            POWER_SETTINGS_UNKNOWN = [bool]$RestoreState.host_review_power
+            TIME_SYNC_NOT_PROVEN = [bool]$RestoreState.host_review_time
+            TIME_SYNC_QUERY_FAILED = [bool]$RestoreState.host_review_time
+            PENDING_FILE_RENAME_REVIEW = [bool]$RestoreState.host_review_pending_rename
+        }
+        foreach ($row in $runtimeManual) {
+            $code = [string]$row.code
+            if (-not $reviewRules.ContainsKey($code) -or -not $reviewRules[$code] -or -not $hostByCode.ContainsKey($code)) {
+                Fail ('Runtime has a new, unknown or unreviewed MANUAL condition: ' + $code)
+            }
+            $hostRowJson = $hostByCode[$code] | ConvertTo-Json -Depth 12 -Compress
+            $runtimeRowJson = $row | ConvertTo-Json -Depth 12 -Compress
+            if ($runtimeRowJson -cne $hostRowJson) {
+                Fail ('Runtime MANUAL evidence changed after Host review: ' + $code)
+            }
+            $acceptedCodes += $code
+        }
+    }
+    Update-VerificationState @{
+        runtime_preflight_hash = $runtimeSnapshot.Hash
+        runtime_preflight_at = $checkedAt.ToUniversalTime().ToString('o')
+        runtime_manual_codes = @($acceptedCodes | Sort-Object)
+    }
+}
+
 function Resolve-Python {
     foreach ($name in @('py.exe','python.exe','python3.exe')) {
         $command = Get-Command $name -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
@@ -215,8 +312,7 @@ if (-not $restoreState.owner_fingerprint -or $restoreState.owner_fingerprint -ne
     [string]$restoreState.owner_sid -ne [Security.Principal.WindowsIdentity]::GetCurrent().User.Value) {
     Fail 'Verify is running under a different Windows user/profile than Prepare.'
 }
-& (Join-Path $PackageRoot 'preflight_new_ssd_win.ps1') -Phase Runtime
-if ($LASTEXITCODE -ne 0) { Fail 'Windows runtime preflight did not pass cleanly.' }
+Invoke-And-AcceptRuntimePreflight $restoreState
 $openclawCommand = Get-Command openclaw.cmd, openclaw.exe, openclaw -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
 if (-not $openclawCommand) { Fail 'OpenClaw is not installed.' }
 $OpenClaw = $openclawCommand.Source

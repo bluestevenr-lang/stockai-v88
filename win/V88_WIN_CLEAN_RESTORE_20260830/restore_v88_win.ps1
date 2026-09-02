@@ -505,7 +505,7 @@ switch ($Stage) {
         Assert-OnlyOpenAiOAuth
         Test-GptSentinel
         Save-State @{ gpt_oauth = $true; gpt_sentinel = $true; gateway_autostart = $false }
-        Write-Host 'GPT_OAUTH_OK. Install/login to official Kimi Code, then run Feishu stage.'
+        Write-Host 'GPT_OAUTH_OK. Install/login to official Kimi Code, then run Kimi stage.'
     }
     'Kimi' {
         Assert-SameRecoveryOwner
@@ -535,7 +535,9 @@ switch ($Stage) {
             Stop-Restore 'Verify requires Mac receiver disabled, real phone answer, and a fresh Mac Remote read confirmation.'
         }
         & (Join-Path $PackageRoot 'verify_v88_win.ps1') -MacReceiverDisabled -PhoneAnswerConfirmed -RemoteMacReadConfirmed -V88DataPath $V88DataPath
-        if ($LASTEXITCODE -ne 0) { Stop-Restore 'Verification failed. Gateway autostart was not installed.' }
+        if ($LASTEXITCODE -ne 0) {
+            Stop-Restore 'Verification failed. Inspect the actual Gateway task, listener and Feishu state before retry or rollback; do not assume autostart was not installed.'
+        }
         Save-State @{
             service_accepted = $true
             post_exit = $false
