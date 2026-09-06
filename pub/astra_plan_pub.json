@@ -1,0 +1,56 @@
+{
+ "version": "astra-monthly-v1-constraints",
+ "generated_at": "2026-09-06T22:48:19.262548+08:00",
+ "month": "2026-09",
+ "factpack_id": "3e98e60f9233e3e13e3bf2718f254802fd4d3f0b9b5794903b91d77deea3f6e6",
+ "status": "空仓研究：尚无当前可执行中央3A",
+ "policy": {
+  "version": "astra-monthly-v1-constraints",
+  "name": "Astra月度计划",
+  "core_book": "斯波朗迪《专业投机原理》",
+  "principle": "约束先于标的，失效位先于仓位，空仓合法，实际净收益达标后停止新开仓",
+  "filters": [
+   {
+    "id": "trend",
+    "name": "趋势与可执行触发",
+    "required": "本月成长趋势策略：价格在同口径MA50上方、触发及相对强弱有来源；未触发只研究"
+   },
+   {
+    "id": "earnings",
+    "name": "盈利与营收",
+    "required": "可比期间EPS为正、同比增长且较前期加速，营收正增长；官方财报日期/币种/非经常项一致"
+   },
+   {
+    "id": "valuation",
+    "name": "估值与同周期空间",
+    "required": "盈利/现金流估值及同周期目标有独立依据；分析师评级/15%空间仅辅助，不强制购买数据，不直接用年度目标作月止盈"
+   },
+   {
+    "id": "catalyst",
+    "name": "本月事件证据",
+    "required": "月内日期及官方出处可核验；事件存在不等于利好方向。未预审的财报二元风险不得持仓穿越"
+   },
+   {
+    "id": "volatility",
+    "name": "失效位与波动",
+    "required": "结构失效价先锁定；用ATR、历史跳空和流动性核风险。beta只辅助，不能用1.2分界替代短期价格风险"
+   },
+   {
+    "id": "lot",
+    "name": "交易单位与仓位",
+    "required": "用该证券当期最小申报量/增量及真实费用、币种算股数，向下取整。不能为买够一手挪近结构止损"
+   }
+  ],
+  "one_r_action": "达到1R触发利润保护复核；含费保本/结构跟踪仅按入场前选定且验证的退出版本执行，不自动追改历史止损",
+  "backup": "最多一个研究替补，主攻仍占用风险时不能把替补当独立可成交订单",
+  "constraint_resolution": [
+   "减少或放弃交易",
+   "下调目标或延长未来计划周期后重审",
+   "只有用户另行明确同意才可调整风险上限；模型不能自行放宽"
+  ]
+ },
+ "private_redacted": true,
+ "new_order_authority": false,
+ "automatic_trading": false,
+ "state_boundary": "六项证据全部可复算且月度状态允许后，才形成最多一笔主攻计划供审阅；任何方案均不是成交，不计入收益进度"
+}

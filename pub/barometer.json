@@ -1,88 +1,88 @@
 {
- "generated_at": "2026-09-06 07:22（北京时间）",
+ "generated_at": "2026-09-06 10:45（北京时间）",
  "note": "市场宽度晴雨表:全市场逐只统计(非抽样);单日读数看分位才有意义;分化度=指数涨跌−中位涨跌,正=权重扛指数",
  "markets": {
   "A股": {
-   "n": 5208,
-   "adv": 2249,
-   "dec": 2773,
-   "flat": 186,
-   "ad_ratio": 0.81,
-   "pct_up": 43.2,
-   "limit_up": 51,
+   "n": 5548,
+   "adv": 2443,
+   "dec": 2914,
+   "flat": 191,
+   "ad_ratio": 0.84,
+   "pct_up": 44.0,
+   "limit_up": 56,
    "limit_down": 16,
-   "amount_yi": 20304.4,
-   "strong_pct": 2.8,
-   "weak_pct": 3.9,
-   "median_chg": -0.2,
+   "amount_yi": 20505.4,
+   "strong_pct": 2.9,
+   "weak_pct": 3.8,
+   "median_chg": -0.17,
    "index_chg": -0.3,
    "coverage_note": "全量",
    "dist": {
-    "涨停": 51,
-    "大涨≥5%": 94,
-    "涨0~5%": 2104,
-    "平": 186,
-    "跌0~5%": 2570,
-    "大跌≥5%": 187,
+    "涨停": 56,
+    "大涨≥5%": 105,
+    "涨0~5%": 2282,
+    "平": 191,
+    "跌0~5%": 2698,
+    "大跌≥5%": 200,
     "跌停": 16
    },
    "dist_bands": [
     {
      "band": "≤-7",
-     "n": 65,
+     "n": 71,
      "side": "跌"
     },
     {
      "band": "-7~-5",
-     "n": 137,
+     "n": 142,
      "side": "跌"
     },
     {
      "band": "-5~-3",
-     "n": 473,
+     "n": 498,
      "side": "跌"
     },
     {
      "band": "-3~-1",
-     "n": 1126,
+     "n": 1187,
      "side": "跌"
     },
     {
      "band": "-1~0",
-     "n": 972,
+     "n": 1016,
      "side": "跌"
     },
     {
      "band": "0~1",
-     "n": 1058,
+     "n": 1133,
      "side": "涨"
     },
     {
      "band": "1~3",
-     "n": 849,
+     "n": 935,
      "side": "涨"
     },
     {
      "band": "3~5",
-     "n": 197,
+     "n": 214,
      "side": "涨"
     },
     {
      "band": "5~7",
-     "n": 64,
+     "n": 71,
      "side": "涨"
     },
     {
      "band": "≥7",
-     "n": 81,
+     "n": 90,
      "side": "涨"
     }
    ],
-   "divergence": -0.1,
+   "divergence": -0.13,
    "pctile": {
-    "pct_up": null,
-    "amount_yi": null,
-    "median_chg": null
+    "pct_up": 25,
+    "amount_yi": 15,
+    "median_chg": 25
    },
    "verdict": "分化"
   },
@@ -164,33 +164,33 @@
    ],
    "divergence": 1.74,
    "pctile": {
-    "pct_up": null,
-    "amount_yi": null,
-    "median_chg": null
+    "pct_up": 90,
+    "amount_yi": 75,
+    "median_chg": 10
    },
    "verdict": "分化；⚠️权重扛指数(多数股票跑输指数)"
   },
   "美股": {
-   "n": 7969,
-   "adv": 3981,
-   "dec": 3988,
-   "flat": 0,
-   "ad_ratio": 1.0,
-   "pct_up": 50.0,
+   "n": 12763,
+   "adv": 5803,
+   "dec": 6190,
+   "flat": 770,
+   "ad_ratio": 0.94,
+   "pct_up": 45.5,
    "limit_up": 0,
    "limit_down": 0,
-   "amount_yi": 7166.7,
-   "strong_pct": 6.6,
-   "weak_pct": 5.1,
-   "median_chg": -0.35,
+   "amount_yi": 8603.1,
+   "strong_pct": 4.1,
+   "weak_pct": 3.2,
+   "median_chg": 0.0,
    "index_chg": -0.29,
    "coverage_note": "全量",
    "dist": {
     "涨停": 183,
     "大涨≥5%": 348,
-    "涨0~5%": 3450,
-    "平": 0,
-    "跌0~5%": 3585,
+    "涨0~5%": 5272,
+    "平": 770,
+    "跌0~5%": 5787,
     "大跌≥5%": 269,
     "跌停": 134
    },
@@ -217,12 +217,12 @@
     },
     {
      "band": "-1~0",
-     "n": 1731,
+     "n": 3933,
      "side": "跌"
     },
     {
      "band": "0~1",
-     "n": 1498,
+     "n": 3320,
      "side": "涨"
     },
     {
@@ -246,11 +246,11 @@
      "side": "涨"
     }
    ],
-   "divergence": 0.06,
+   "divergence": -0.29,
    "pctile": {
-    "pct_up": null,
-    "amount_yi": null,
-    "median_chg": null
+    "pct_up": 0,
+    "amount_yi": 75,
+    "median_chg": 40
    },
    "verdict": "分化"
   }
