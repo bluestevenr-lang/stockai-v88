@@ -1,23 +1,23 @@
 {
- "generated_at": "2026-09-04 13:38（北京时间）",
+ "generated_at": "2026-09-08 02:11（北京时间）",
  "note": "宏观硬表(Fed/BLS/Census官方日历)+Nasdaq财报日历;接口降级会显式标注，不再把失败伪装成无事件(公开版:个股仅七巨头)",
  "source_status": {
   "official_hard_calendar": "ok",
   "nasdaq_earnings": "degraded",
   "detail": {
    "nasdaq_success": 0,
-   "nasdaq_fail": 6,
+   "nasdaq_fail": 8,
    "nonus_success": 0,
    "nonus_fail": 19
   }
  },
  "events": [
   {
-   "date": "2026-09-04",
-   "dow": "五",
-   "event": "美国非农就业",
+   "date": "2026-09-16",
+   "dow": "三",
+   "event": "FOMC利率决议",
    "kind": "宏观",
-   "note": "美东8:30·波动放大日"
+   "note": "美东14:00=北京次日凌晨2:00·决议前美股常缩量观望"
   }
  ]
 }
