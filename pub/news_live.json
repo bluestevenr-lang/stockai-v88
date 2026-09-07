@@ -1,51 +1,595 @@
 {
- "generated_at": "2026-09-07 12:39",
- "count": 246,
+ "generated_at": "2026-09-07 13:31",
+ "count": 408,
  "topics": [
   {
    "w": "AI",
-   "n": 50
-  },
-  {
-   "w": "芯片",
-   "n": 12
+   "n": 97
   },
   {
    "w": "原油",
-   "n": 12
+   "n": 18
   },
   {
-   "w": "美元",
-   "n": 9
-  },
-  {
-   "w": "黄金",
-   "n": 8
-  },
-  {
-   "w": "IPO",
-   "n": 8
-  },
-  {
-   "w": "伊朗",
-   "n": 7
+   "w": "芯片",
+   "n": 16
   },
   {
    "w": "美联储",
-   "n": 6
+   "n": 14
+  },
+  {
+   "w": "黄金",
+   "n": 13
+  },
+  {
+   "w": "IPO",
+   "n": 9
+  },
+  {
+   "w": "美元",
+   "n": 8
+  },
+  {
+   "w": "CPI",
+   "n": 7
+  }
+ ],
+ "major_news": [
+  {
+   "t": "创业板涨超3%，算力硬件爆发、CPO、PCB集体拉升，摩尔线程上市以来首次跌停，恒科指跌1%，权重科网股多数承压",
+   "dir": -1,
+   "stk": [
+    {
+     "n": "摩尔线程",
+     "c": "688795.SS"
+    }
+   ],
+   "url": "https://wallstreetcn.com/articles/3781200",
+   "s": "华尔街见闻",
+   "time": "2026-09-07 13:23"
+  },
+  {
+   "t": "Burkhalter H1 earnings per share climb 8% on energy demand",
+   "dir": 0,
+   "stk": [],
+   "url": "https://www.investing.com/news/stock-market-news/burkhalter-h1-earnings-per-share-climb-8-on-energy-demand-93CH-4890364",
+   "s": "Investing.com - Stock Market News",
+   "time": "2026-09-07 13:20"
+  },
+  {
+   "t": "A股午评来了！CPO掀起涨停潮，创业板大涨2.63% - Sohu",
+   "dir": 1,
+   "stk": [],
+   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNMm9TVHl3dGRsMWJoeFE4bXk0UTZfSHdEVjZGOHFfekpZVGR6N3lLQ3ZWSFNFai04bUFxUnJDWVVOZm9WSzczN0JKOW5FZTVZUnlhVmVLVW1uN0FRN1k4V2dNdVBjdkEzQU05cU1mR3JGNUQza3l5dkZUR0lSZ1VXZDJJN094ajZBTFgwbQ?oc=5",
+   "s": "Google News - 中文市场聚合",
+   "time": "2026-09-07 13:16"
+  },
+  {
+   "t": "A股午评来了！CPO掀起涨停潮，创业板大涨2.63% - 同花顺",
+   "dir": 1,
+   "stk": [
+    {
+     "n": "同花顺",
+     "c": "300033.SZ"
+    }
+   ],
+   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE1ReXByR1VkWUJpVkx1UzlZa3MyMnBmUjIwc0d0MWtaNXNzTzVlcWxUX0dRRnVFRUk1bEVFNllRWUVnd1pzWFhBdmw3MGlsMEFZWkhyN0J4SWFGaGRXSkpSS2N3?oc=5",
+   "s": "Google News - 中文市场聚合",
+   "time": "2026-09-07 13:16"
+  },
+  {
+   "t": "A股半导体芯片股震荡拉升，综艺股份午后涨停，恒烁股份、强一股份、普冉股份、华海诚科、长鑫科技涨超5%。 - 新浪财经",
+   "dir": 1,
+   "stk": [
+    {
+     "n": "综艺股份",
+     "c": "600770.SS"
+    },
+    {
+     "n": "恒烁股份",
+     "c": "688416.SS"
+    },
+    {
+     "n": "华海诚科",
+     "c": "688535.SS"
+    }
+   ],
+   "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE5oRzZlTEdMVmtrZVc0QmJRTmNGdU9kbnVoQncyZTM5Q0lkWGtWSXF2QUVfQW1FSUxWU1h1VVplblNDckpaNkRjRDFxcDJQbzQ?oc=5",
+   "s": "Google News - 中文市场聚合",
+   "time": "2026-09-07 13:14"
+  },
+  {
+   "t": "A股午评来了！CPO掀起涨停潮，创业板大涨2.63% - 新浪财经",
+   "dir": 1,
+   "stk": [],
+   "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9OeGNnd2pQY2ZQQmZyQnl1ZGhuaEoyYUhVaGtjSWlTTVMtWW90SktfbUdIRTc5Zm9jNkk5UFRaTVZwOHJBSFhMLXZIdHRjMmlfUmx5RlFOWUUtbmFrQ1AyNzBGd2FGSVJDeTN5c0w1MkcwLXhCclZTOQ?oc=5",
+   "s": "Google News - 中文市场聚合",
+   "time": "2026-09-07 13:05"
   }
  ],
  "items": [
   {
-   "t": "海清智元(01392)获纳入港股通标的证券名单 - 新浪财经",
+   "t": "华尔街早报：通胀审判周来袭！美股今日休市，科技巨头旗舰新机扎堆 - PANews",
    "stk": [],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNWTlEN2wwd01OMzVmOWkxc29Tc095M29SQUMybkdhelJkN3dPOVRZVExIbEctX2dVbm9XUWJJUTA2QVBYNmNrM0xHcmtlaWZJYWEzSi1QMjFJaVJPbEJ4clBmY2FkdGNEWmJ3ODY0bVBRNHJ2NktROXZOZVJOVkVXV242aGVjbFhxVFRqYzk2MVYzZ0VFdTdDTW1jMHVqclRudnpSVU5xZmc2SEdWSHRGMnhn?oc=5",
-   "time": "2026-09-07 12:36",
+   "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTE9rdkVXVGtMUVF2NWNFZ1FXLWtQNXo2R1NKTlgwWERoRnR5WEtnZWtRV1JJNnM5NS1zZWJkS1ZoZXZBYkcxZHYtWGlYdFY3ZTBmQ2Zva2EzaHFCRGtHLXctN1Nld05XVElfLUhwczNJR0JvcEpSU0FHdjBsX2JZdlU?oc=5",
+   "time": "2026-09-07 13:25",
    "cat": "cn_markets"
   },
   {
-   "t": "云英谷科技H股纳入港股通,9月7日正式生效 - 东方财富",
+   "t": "创业板涨超3%，算力硬件爆发、CPO、PCB集体拉升，摩尔线程上市以来首次跌停，恒科指跌1%，权重科网股多数承压",
+   "stk": [
+    {
+     "n": "摩尔线程",
+     "c": "688795.SS"
+    }
+   ],
+   "dir": -1,
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3781200",
+   "time": "2026-09-07 13:23",
+   "cat": "cn_markets",
+   "major": 1
+  },
+  {
+   "t": "Sensex slides 190 pts; media shares decline - Business Standard",
+   "stk": [],
+   "dir": -1,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxQUGhNS3lySWNteFVia3A0a1VzelBaTHpVV0RUMUY1aC1DdVNNRWt3SDBDSUFLYmdoYTJ3YzhmZzNPRWlaLUFDdmlhLXkzSFdybGl6YnJ3UW9fSkZlXzM3ZlpYOHNhc2ZkdktVaEl1Y1VONkNNRnhydFNsSXpab08tUGZmcnhRQk5keUhXcUJFMjAzSGVTRGdvdkJxTENoRUo2Q3BzWFZEcEM2QXRiVXlObjB6VGk5NlNXTXhzV1d4UWk4Z9IBxwFBVV95cUxNT2ZNMnZBNElQWk5jZXRjd2Q3bzlqel95MktaWWxhdGd4MGdIWjZqUkx6Y3ZyazdhbWhWOVlEejFfSHRXUjUwZWJUNGVqN3FxeUdaVDY4Ylpxb3ZVUVRBRjVNQUZkSW02MkZXaUxYZWF6VnhZWUphV3p1cm5HejBrcUZ4S0lrRFhDeFVkX1Fzd08tQmg0OTFCNVBneWJVWmRIbEt3Zmg4S0xwZng1RnlfcWo5eVczQnE4X3FvZWgxbllWdVpuYjJ3?oc=5",
+   "time": "2026-09-07 13:22",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Burkhalter H1 earnings per share climb 8% on energy demand",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/burkhalter-h1-earnings-per-share-climb-8-on-energy-demand-93CH-4890364",
+   "time": "2026-09-07 13:20",
+   "cat": "global_markets",
+   "major": 1
+  },
+  {
+   "t": "高盛、大摩、小摩等扎堆布局，这些A股被多家外资盯上！ - Moomoo",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE44ZGJGV3NJaXFmdWE1b1BrZ1Z6Z0plV1RKbnFZY0p2ZXJTb0tzUkxpNW0xeHdzU1NSTXJLRWRHZ2ZpSXp0dkZ6YnpXUnR5THk5TTlYQ0d0N1FHQQ?oc=5",
+   "time": "2026-09-07 13:19",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "因美国劳动节 美股今日休市一日 - 新浪财经",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE9tejdlM3JkNnRkZS1MR05ENWh1Zmt1N1B5T2RPMW4yQzZrcjM5WmZ6eWdHcUFTbWVOd3pQR3RaZXdJSzltWFNQM0J5aw?oc=5",
+   "time": "2026-09-07 13:19",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "300308，成交额A股第一，两大板块集体飙升 - finance.ifeng.com",
+   "stk": [],
+   "dir": 1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE9YNUpyZ2xpTkJ4VjdUNmFMcjdPTGtkOGtablRNTFd2Z0ljV1JPUktQS1FSZ1hRQlF4dEdvdHE4cE5IWDcwM2RfbkVKUTg3eFRm?oc=5",
+   "time": "2026-09-07 13:18",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Why is Austal stock rallying today?",
+   "stk": [],
+   "dir": 1,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/why-is-austal-stock-rallying-today-93CH-4890362",
+   "time": "2026-09-07 13:17",
+   "cat": "global_markets"
+  },
+  {
+   "t": "A股午评来了！CPO掀起涨停潮，创业板大涨2.63% - Sohu",
+   "stk": [],
+   "dir": 1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNMm9TVHl3dGRsMWJoeFE4bXk0UTZfSHdEVjZGOHFfekpZVGR6N3lLQ3ZWSFNFai04bUFxUnJDWVVOZm9WSzczN0JKOW5FZTVZUnlhVmVLVW1uN0FRN1k4V2dNdVBjdkEzQU05cU1mR3JGNUQza3l5dkZUR0lSZ1VXZDJJN094ajZBTFgwbQ?oc=5",
+   "time": "2026-09-07 13:16",
+   "cat": "cn_markets",
+   "major": 1
+  },
+  {
+   "t": "A股午评来了！CPO掀起涨停潮，创业板大涨2.63% - 同花顺",
+   "stk": [
+    {
+     "n": "同花顺",
+     "c": "300033.SZ"
+    }
+   ],
+   "dir": 1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE1ReXByR1VkWUJpVkx1UzlZa3MyMnBmUjIwc0d0MWtaNXNzTzVlcWxUX0dRRnVFRUk1bEVFNllRWUVnd1pzWFhBdmw3MGlsMEFZWkhyN0J4SWFGaGRXSkpSS2N3?oc=5",
+   "time": "2026-09-07 13:16",
+   "cat": "cn_markets",
+   "major": 1
+  },
+  {
+   "t": "Israel-Hezbollah clashes deepen threat to fragile truce as Lebanon's president calls for U.S. support",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/09/07/us-iran-war-trump-hormuz-israel-hezbollah-fighting-strikes-.html",
+   "time": "2026-09-07 13:15",
+   "cat": "global_markets"
+  },
+  {
+   "t": "A股半导体芯片股震荡拉升，综艺股份午后涨停，恒烁股份、强一股份、普冉股份、华海诚科、长鑫科技涨超5%。 - 新浪财经",
+   "stk": [
+    {
+     "n": "综艺股份",
+     "c": "600770.SS"
+    },
+    {
+     "n": "恒烁股份",
+     "c": "688416.SS"
+    },
+    {
+     "n": "华海诚科",
+     "c": "688535.SS"
+    }
+   ],
+   "dir": 1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE5oRzZlTEdMVmtrZVc0QmJRTmNGdU9kbnVoQncyZTM5Q0lkWGtWSXF2QUVfQW1FSUxWU1h1VVplblNDckpaNkRjRDFxcDJQbzQ?oc=5",
+   "time": "2026-09-07 13:14",
+   "cat": "cn_markets",
+   "major": 1
+  },
+  {
+   "t": "“中国版Palantir”中科闻歌获恒生综指、港股通“双纳入” - 新浪财经",
+   "stk": [
+    {
+     "n": "Palantir",
+     "c": "PLTR"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE52cUU0d1JZSy1ZYUdfNmV5S2hNbTRvT1V1aUdxQkFaTWhkYkhMOVRNdmNXaHk2SFdHczZNci1JMzY4ZExNWkNrbmY4QTR3aXFIdk1ON3p4ZHNPaTlFalJsN2dmd2pHVU5uLWlWLXl1aFFOUGxpUEdIVQ?oc=5",
+   "time": "2026-09-07 13:13",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Volkswagen’s surprise turnaround deal averts showdown as job cuts loom",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/volkswagens-surprise-turnaround-deal-averts-showdown-as-job-cuts-loom-4890361",
+   "time": "2026-09-07 13:12",
+   "cat": "global_markets"
+  },
+  {
+   "t": "港股午评：恒指跌约1%，科网股普跌，内银股、保险股集体转跌_市场分析 - 中金在线",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTFA5c0x2eWdfRUg2S2lBS3FhN00wUmRkdTdtMnV2WmxJZ3NZUlQ0Mm0wc3pzMFBwOE1Cc3dxbm50UFZMYkZtQ1c0eVlIVkJlOXd5b3lwYzV4VUZBY2dLc1kzTDM2SkxlcW1vN1lsSTl6SQ?oc=5",
+   "time": "2026-09-07 13:11",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "A股午评：超2900股上涨！创业板指涨2.63%，算力硬件板块方向大涨，大金融板块走弱_市场分析 - 中金在线",
+   "stk": [],
+   "dir": 1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE9fdE5WSHhKUE9OaEVfbmo1WmI4NEtDVHN5OThNeWlUZHh3ZElfRXJQT3plZVg2aHpVWXFWTmhRMlE1UWNzUGhQbDlmU3I3WWhTcDYtY2dPZ3pKLTVobUg2R2c2MmFGNWRCUjBIeFpUTQ?oc=5",
+   "time": "2026-09-07 13:11",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "海清智元获纳入港股通标的证券名单 - 新浪财经",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNQmdKTkUtWUdieDV0NFJvaTZrM3I4VDFrekJMXzMyZklTTjJhUEU1MW5YVGlzejFOLXZPQ19vNU9XemFIcV95cUlsa2NJU2ozSjFHVHhldnhyYTlObS00cGFKaXctLTJmT2RMeHVoRElmS18yYTFjc1EwTk41WkFSckxySUJJX2steEF1c240eGZ4RFFiVk1DWEFtYzNNaGdQaUhrTkNxbmRTZw?oc=5",
+   "time": "2026-09-07 13:10",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Meta Platforms stock heads into the open after a 1.0% Nasdaq gain - AD HOC NEWS",
+   "stk": [
+    {
+     "n": "Meta",
+     "c": "META"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxPZU9SbXhZVllISl9CdEV0dVdMS09ORERyQWlENkRfYmE4Wm1KTldPX2szRTI4U3hGWkd0ZW9rb1JVVDE5ay1EYjRBRHF5U25Wbi1wMWF6b2RYU1gtamc5ck5UWEMxemMtUXlmbi1vMWgxUmxkYkhiWVRyNG1CZUJUYmpoLVlYekZBaTFFRmhMNnlKakRoYklpWUx5M01INnZzNEJobVlXazVnZ0xnZHhFN2JIc0hwaUxaQW5SLTVNWUNsMXJteUVBQzlKVGR2ZllZ?oc=5",
+   "time": "2026-09-07 13:09",
+   "cat": "global_markets"
+  },
+  {
+   "t": "SK Hynix tests KRW 1,770,000 resistance: Live levels",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/sk-hynix-tests-krw-1750000-resistance-live-levels-93CH-4890335",
+   "time": "2026-09-07 13:06",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Nikkei 225 tests 66,550 resistance at make-or-break zone: Live",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/nikkei-225-hits-200-sma-resistance-live-levels-93CH-4890337",
+   "time": "2026-09-07 13:06",
+   "cat": "global_markets"
+  },
+  {
+   "t": "A股午评来了！CPO掀起涨停潮，创业板大涨2.63% - 新浪财经",
+   "stk": [],
+   "dir": 1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9OeGNnd2pQY2ZQQmZyQnl1ZGhuaEoyYUhVaGtjSWlTTVMtWW90SktfbUdIRTc5Zm9jNkk5UFRaTVZwOHJBSFhMLXZIdHRjMmlfUmx5RlFOWUUtbmFrQ1AyNzBGd2FGSVJDeTN5c0w1MkcwLXhCclZTOQ?oc=5",
+   "time": "2026-09-07 13:05",
+   "cat": "cn_markets",
+   "major": 1
+  },
+  {
+   "t": "A股午评：创业板指上涨2.63%，CPO概念涨幅居前 - 同花顺财经",
+   "stk": [
+    {
+     "n": "同花顺",
+     "c": "300033.SZ"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTFBMN0U4MC1GRTk4WmgyYmRvRUZIQWREbVVSVE1rOEZRUlMxS2R3ek8wTXQxaldaRHhUd0dyanZCMzdOaGRHa2tGaGZZSzgxbW5MS0NLbW1CZzlxTFNYUWc?oc=5",
+   "time": "2026-09-07 13:03",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Tech shares lead mixed Asian market as new OpenAI model fuels memory chip optimism - Seeking Alpha",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxOdkhDWTBHTHJZclBMTzFwbGdERDh5SzdCUGE5aW9COWNPQ3FFMFkxSm10d3J6RE9vVHA3RjVuRFQyZTFVUEFaX0F3TmhTazB5bU9tV3YwMlZudWhFSmUxWHpDanJzbXBBYno4emVKZWZxUk5ydkF6OWk2UDNOTFRDM25mS1hSVlRJR255cUFzZmxVaDFDRlZWQkt4X0VxS1I3UTRNU2V6emxYX3FhT3NrY3hEZ1RtSEZ3aEZBZw?oc=5",
+   "time": "2026-09-07 13:02",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Fear and compromise: How Volkswagen struck a deal over historic job cuts",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/fear-and-compromise-how-volkswagen-struck-a-deal-over-historic-job-cuts-4890359",
+   "time": "2026-09-07 13:00",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Treasurys are losing foreign appeal in a historic capital flow reversal — and here's one trade investors favor instead",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/09/07/treasurys-bonds-investors-deficit-debt.html",
+   "time": "2026-09-07 13:00",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Asia-Pacific markets rise as investors assess renewed Middle East hostilities",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/09/07/stock-market-today-live-updates.html",
+   "time": "2026-09-07 13:00",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Stock Market Update: Nifty 50 Opened 14.5 points Lower, Sensex Fell 69.38 Points - Analytics Insight",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxQNHNPRWpSZGVrUEdKeTRCdUFrWXNRb3VOcGtucmJTWE9ia2l4dlR2OWZCNEJOOWVQVVJsRjZad2dYY3VDeF85VGptcTNRU0QyS1djc1N0WHMwRjQyY1hDaGpaMVVlZWV3SWd5MWRkc2gzSjRNVklXSVFWSmJrejR2WDFFaGN0UGtFSGhfbGdFSEdGbjh3eEtGdGQxOEJJWDhLMXhUaWdqWDd2YWdYQWhCR01BRXg4WGfSAcQBQVVfeXFMTm9NV3owcFpJRWdkRHRLU2NaNUZsLUpfcUM1a3FSelcwVU80TVQxZjRuOVFfTjFxelZCbVN4M09OQ1ZpQ3J0Y3gzOXBEMUJmYXlqbTdRRnJpZFltN2hVejNkZUwtRXFSRHRTajVuZEcwaURubXBycjY0Ry1GMDFuT2o0YXdfS2t5QS1wZ2pDcU8wUDFGWDdCTFFYWnRMeU5yRFNLQUNMYlFFbTJnVUVGeFp5Y3NhcTNGYklEN1hVZU45VTQ0Yw?oc=5",
+   "time": "2026-09-07 13:00",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Can Li-Ning Achieve Extraordinary Success Again with the \"Feifan\" Line? - 36 Kr",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE9HQkZDaWREUjZPREp2RmpUMzdCa1JrRDIzUVdXRUZ2OWc5dzdNaHVQekQzSm02LTN0U1hxazNPMHBabFVRRG1KVldJYVpvQ1lKNU1J?oc=5",
+   "time": "2026-09-07 12:55",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Markets Fall Amid Iran‑US Tensions, Crude Spike - HDFC Sky",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxObnhyRW01RlU3SEZmUUtQanlHZDdWRkdiOXFFNThjRS1Yblp0eEJGallsZmhzWlhaRTlHdEZEMDluUnFDa1ZNRUVlcW5wN1FZZHdoWWFkTGtXeVk0Rk1uNnhyQUt6a29adFNfRXhkM09MTElLWVVaQ0tDSVBUSFlUU2UwVk1OZ1lBSnJMTERUR1U4cWN1cWkzMWpfb08wckM3MTFXMVpVbFAwZ2tGdFI5R1RROHU?oc=5",
+   "time": "2026-09-07 12:53",
+   "cat": "global_markets"
+  },
+  {
+   "t": "300308，成交额A股第一！两大板块，集体飙升 - Sohu",
+   "stk": [],
+   "dir": 1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPb0twTE5VRHMtTmZESWc2R2F1Z0FKbmNUZXlXOEg4cFo3S0FLRVlwckx1TjNGUFRsMXBBNEpSTnZFbjJJNzNuSlAxRU45Y21ONVhkeFNkZjNUNldRcGtHMjI4X3BoWmVuSVhYTFBCOXFWb1Q3aUJSdDUxSks5N2pmdDdtZnU3bXF6cVJiag?oc=5",
+   "time": "2026-09-07 12:53",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "【百强透视】港股通名单正式生效：入通并非普涨，标的分化加剧 - Sohu",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPOEM4Z2xjNVVPNkwxQ0RUWHVQa3dIcFFtN2MtcDlienVYVXoyU2ZIMDVoaW5vMTJrNjduMnNPOXE0eVVJdUx1ZGNibVo4a1h2NGZ0Rl9CMFdBT3JnWTFCSGdNTGQ2TW1ITnMwVWx0WFcwSUw5TlZ4SUUzRy1WUmlrazktR01vUHhT?oc=5",
+   "time": "2026-09-07 12:53",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "001267，直线封板！A股两大板块，掀涨停潮！ - 新浪财经",
+   "stk": [],
+   "dir": 1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE1BTmZXU040OGVVazJPVXdfOTZxUnJCNmZPQndxUm9xTi1RUUxYNDIya21HeVJCM3J1bzV6dnp1WHBxQktuVW5Xc205WE9COUFLallsMFFGb3o1N3JlQWFXQXlHQVN4T0ZEWkNHczdRVWlRaHVDdnc?oc=5",
+   "time": "2026-09-07 12:52",
+   "cat": "cn_markets",
+   "major": 1
+  },
+  {
+   "t": "Beyond FTSE: an upcoming capital market opportunity - Vietnam Investment Review - VIR",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQbVhzQ21KeG9NTjRTZG5VQzFtd2VDaEpWZ2RQbHJhaDA3MUQzWnYxbG1tRTZUdzNsV3RDWUpNWjJCQTlEYldyRzJ2Rl9mbUh6RlNLdEwxZTRqM24zNlFBT2xqZmFUWlhnRDFqWlNzZUZfTk5adzBFZlh0aldtV0FhNE00eGxZVmtL?oc=5",
+   "time": "2026-09-07 12:51",
+   "cat": "global_markets"
+  },
+  {
+   "t": "告别“逢新必打”！A+港股打新进入体系化竞争时代 - 新浪财经",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE91Sm04LV9zU3RCYjhiZ3JHNTJTWG1FVzM3elZfTmZBVGdmRFgxM1o0UUIwTXpDT3B0ZnBWRTdKWWFPV05obXdTN2wzTUQ2WENqNXhjNGRZNG1peE5RNzJGOGNZTFk5X2hJRTg0N2xR?oc=5",
+   "time": "2026-09-07 12:51",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "300308，成交额A股第一！两大板块，集体飙升 - 新浪财经",
+   "stk": [],
+   "dir": 1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxPbUgyczdtbXJPMmc4NTV1YV9vd2x3cUZpb0I0SzFUV1dUOWY5SklSREk3YW9oa0U2SEpwdW52X094dmNCT3pSTGZUYWotYXE3TWFNOUxVWFNkWVhxaVpGQ1ZmNkMyeUdpNXNTazdqYkV4Qk9lZTZ2dWpGRUxsajhWNQ?oc=5",
+   "time": "2026-09-07 12:51",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "\"卖掉20亿韩元房产全仓押注美股\"：韩国上班族宣言引发争论 - chinese.joins.com",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1qWkZyVjZfOWdDdVFxSHdBdThPY01CNUEyWndQdFFPTUlKWW0tdVlQMHVfRVY3bWZxS05aVjN6MlVsUzI3dzVjVVp0dWRuLWszUDdSNzdiUXc4MGE4UWdhUWVuSU1NbGdqRFJfcg?oc=5",
+   "time": "2026-09-07 12:50",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "歌礼制药普通股获纳入港股通名单 9月7日起生效 - 观点网",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE5jOHg2NF80enN5Nkg4UFlEX2tsQkVwS2IxdldmaFMzdEV2TkFjMnE5WGRFcGFSM0ZLZHpvcnl1bkxRR1Jkb2pIYnc4ejNGWFBQbk54ZEJkeVdPRGlEN3hCczdB?oc=5",
+   "time": "2026-09-07 12:46",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "海光芯正已获纳入港股通股票名单 - 观点网",
+   "stk": [
+    {
+     "n": "海光",
+     "c": "688041.SS"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE9ZN20xaUF4bF80TklRQ2RucnJ4OWM3LTV1RXdlWkhKbTNHUlE2UGpLd1RmdTg3REw0VG9NUXhicFp2eTdfaWw2T3pmME42MjloWVh1eHJORFZWcFB5b2c5UEJ3?oc=5",
+   "time": "2026-09-07 12:45",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "海清智元获纳入港股通证券名单 - 观点网",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE9MM2hDZzZWdHJWaHo4c05naDFUTWIwc29JYzUtUm1BQzlveE5NSk50ODcwOTcxNTQ5VlJNbmpZX0k0SzhKVUVqUnlRQ193XzlYUGUtLVZjVFBDM1V1WHlLdGZn?oc=5",
+   "time": "2026-09-07 12:44",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "A股股价第一、第二名，联袂上涨 - 新浪财经",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE5pN19NbU00Q29DY2libmJLNE5TWWh1Tk5tU2hLdExTdnE1WXhXQTEweW5wSFdpMTlWVTF1REU0TEtOQ2pXN0tNd3A5WjNxanZwNTBCaHlJRTdlbFRFYlBuUDRKZHljLXc1cko1akVrY3BzaElRSDdzYQ?oc=5",
+   "time": "2026-09-07 12:44",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "#a股##光通信##光模块# 【“光”又回来了？高盛重磅发声！“易中天”集体大涨】9月7日早盘，CPO概念强势反弹，剑桥科技、汇绿生态、中京电子等多股强势涨停，太辰光、智立方、蘅东光、泰金新能等涨超10%，博敏电子、拓斯达、仕佳光子等多股均大涨；中际旭创大涨8% - 新浪网",
+   "stk": [
+    {
+     "n": "中际旭创",
+     "c": "300308.SZ"
+    },
+    {
+     "n": "汇绿生态",
+     "c": "001267.SZ"
+    },
+    {
+     "n": "中京电子",
+     "c": "002579.SZ"
+    }
+   ],
+   "dir": 1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE5UOVBaZkhhRmlNdVdUYWNLcmlUWk5wWGo0WTVQZEdHSFBFQzRyS05fRWIwVXpSVlFvemFqOWFNYkZTckxkcGlIXzhFV0RtcWRkSVNONUhmVHNrUnlwcVR2U3U0QQ?oc=5",
+   "time": "2026-09-07 12:43",
+   "cat": "cn_markets",
+   "major": 1
+  },
+  {
+   "t": "海光芯正获纳入港股通股票名单 - 新浪财经",
+   "stk": [
+    {
+     "n": "海光",
+     "c": "688041.SS"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxONXpWeHRhUDd0aWRRbFVIdTZXTjVaWTJYRDUtc05kVllJWHZYWmNxYXVacWpHRGhDVy03UlQxWWQzbTR3RjVjVHZlZ0dwdFRVajJBYmdiSGx6ZUJiR1hzTmY4TVNnRl83LWRCazBOWVp1NENWUFMzeE1SLU9oUkNXc3hLNzBsZk5EeFhQUDJR?oc=5",
+   "time": "2026-09-07 12:39",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "潼关黄金(00340)获纳入港股通的证券名单_股市直播_市场 - 中金在线",
+   "stk": [
+    {
+     "n": "潼关黄金",
+     "c": "00340.HK"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBFSEUwVzZzVmROT0hJT0pQbmF3MEZ0dzNmSnJ2V1lZRlF6c0RjUDl4djB5QjRuNjA2V1E2LXlzQkdVYlFDNHdEaTVzNzdWNGFPcWluYjlhbGhmenBjM2RDYWl5a3lPT1BWa0tsVA?oc=5",
+   "time": "2026-09-07 12:37",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "海清智元(01392.HK)：获纳入港股通标的证券名单_股市直播_市场 - 中金在线",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5pQjFscW5QekFhSFM2T0xlVmt3YmZNeUtZLXdWaTVGSnZuM2dwb2o2M2RWVEVmeERyYW1raEpwU1YxLVdfZnMtY3NnUjZnc1p2M21ESmxfaGwyYVdtMC1vckRTOXB6MU5DX1Z3Zw?oc=5",
+   "time": "2026-09-07 12:37",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Bitcoin-based Liquid Network says $320 million withdrawn in hack",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/bitcoinbased-liquid-network-says-320-million-withdrawn-in-hack-4890358",
+   "time": "2026-09-07 12:36",
+   "cat": "global_markets"
+  },
+  {
+   "t": "云英谷科技H股纳入港股通，9月7日正式生效 - 东方财富",
    "stk": [
     {
      "n": "东方财富",
@@ -56,18 +600,30 @@
      "c": "03310.HK"
     }
    ],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
    "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBMdW51Zk1fTEZwaHBFM1JOQjJleUtGVUstWVNYRjRnSk5HNjVLUWU3TmdUUzBFeXJteDl4M05TM1p4OG9scTVDWThEUnRaTjFCMy1VTm9WcVE1aF80aFVUcXV0Q0t1QQ?oc=5",
    "time": "2026-09-07 12:33",
    "cat": "cn_markets"
   },
   {
+   "t": "S&P 500 index showed little change after the Stockholm stock market closed - marketscreener.com",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxNbXRzMEk4dzJlNW5uRHF0Q01PUU9SY1h0QzdpSUc0eHp6SkQ2SkZiYW1ES1QxYm9CNS1RTEJTc2ptRVpEdFFncFZmSWFzZXhwWURVNW1NTV91YktJMWpLOUd1Z0xuNmIxOHJ4dENIWkp3ZEpZbDB0NTVWT1gzYlZTMVBKVzJiMk9BdFNoMXpZNjM4ejdKUUZSemd5UV9uM3RRcWtkeEdkUFpfWlZXbGZpSjAtemdia2hVLTJsc21GQzl2ZlZIckE?oc=5",
+   "time": "2026-09-07 12:32",
+   "cat": "global_markets"
+  },
+  {
    "t": "Australia’s Pacific Current shares rise after rejecting a buyout proposal",
    "stk": [],
+   "dir": 0,
    "s": "Investing.com - Stock Market News",
    "url": "https://www.investing.com/news/stock-market-news/australias-pacific-current-shares-rise-after-rejecting-a-buyout-proposal-4890356",
    "time": "2026-09-07 12:31",
-   "cat": "global_markets"
+   "cat": "global_markets",
+   "major": 1
   },
   {
    "t": "复宏汉霖获调入港股通标的证券名单 - 观点网",
@@ -77,6 +633,7 @@
      "c": "02696.HK"
     }
    ],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
    "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTFByajM4MkNBLWhkVkJvOUZEVlZnSzRORGxZdlVxc3N4ZlZiS1k1Y05mYjlKVkdBOFhWY2RvRzNpZzNrVllCNGdhMUZBdEQ4S19pZTBGR0R5Zko4S3prRlIwb21B?oc=5",
    "time": "2026-09-07 12:30",
@@ -90,552 +647,120 @@
      "c": "03310.HK"
     }
    ],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
    "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTFBFUVdQbDNIVVpmNThJWkhzX0oyRHYzSFVUN2hNVkpuM2tBSDVLTHBkeE44bmxuU3ZfZlkya1RsdWhVS2tMT3hJY0tQeHhJcHI4X2xnMTZQb3RDeXNucEtaSDhn?oc=5",
    "time": "2026-09-07 12:29",
    "cat": "cn_markets"
   },
   {
-   "t": "千亿牛股涨停、炸板又封涨停,A股超2900股上涨,算力、半导体大反弹,股王涨近6%,银行股全线下挫 - 同花顺财经",
-   "stk": [
-    {
-     "n": "同花顺",
-     "c": "300033.SZ"
-    }
-   ],
+   "t": "美股新股解读│通盈集团（TYZ.US）：“增收不增利”的大宗贸易商，如何圆梦纳斯达克？ 提供者智通财经 - 英为财情 Investing.com",
+   "stk": [],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1pdXZXT1l5U1FrZ1pKX29rTTdSRFZOdnkzVlVRWWNQYVE3WFRfUlI5ekZiUTljbTJhb0gtSWVmOTUxUkc0M3B2XzlBVER2dzRBckNNQjJxbDFkc1R3WXc?oc=5",
-   "time": "2026-09-07 12:21",
+   "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTFBWZXhSVGduRWJOSXVMdjZIWnF4R0lqR0dNQmZnYzlQcHB5dHNFaVF5eFg0LVBCQV9NamJId21BRW50MnJZRG5WRVV6Y0M1THN3UWdZZ0FyZ2tISXhlV0o4Sm9Uc2NZNkYwRkFRcjVkclM?oc=5",
+   "time": "2026-09-07 12:28",
    "cat": "cn_markets"
   },
   {
-   "t": "A股:不用等到明天开盘,行情已现新动向,周二趋势或将这样走! - 手机网易网",
-   "stk": [
-    {
-     "n": "网易",
-     "c": "NTES"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE4zUkQ1V1BwV05aWXhGNWhrNEpBeGc3eThHVXZta0hzd0dvSnNiN0ozNFNCTTE2TDNrU0pQY3dHMEZTUXg4RGMxTVdZMGpEN2Y3MkFpelRKckYxcElfNTFRRGxn?oc=5",
-   "time": "2026-09-07 12:20",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "复宏汉霖获纳入港股通标的证券名单 - Sohu",
-   "stk": [
-    {
-     "n": "复宏汉霖",
-     "c": "02696.HK"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOSW11RmxOaWRva3F4Qzg3MFI0OUpRZ1FQSnIycEt1a0phc212YkFlUUdSa1k3c3VqNGtXVXRpMDlZakdoR0U4ZUhjektCY1VyN2NVRmpFQUFsNzF0eTlVN0cxRE5DWEdwWFdZUVFmZ0N0NnhPTy12Rk9IaW1uSzJrX0w0c3NQVWwxZmZ3dQ?oc=5",
-   "time": "2026-09-07 12:19",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "A股午评:创业板指上涨2.63%,CPO概念涨幅居前 - 同花顺",
-   "stk": [
-    {
-     "n": "同花顺",
-     "c": "300033.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTFBBd1lsUlRVSXZ4Zkw3V0s0M1o3dEFyV0tqSHpjYWh4cEsxS25VMW9FcjdBbGFEV0FsTEpBNnIyeGY4ejgwNFdzM1B4SG9taTYyd0lYVjRtZkw5ZEVzbmtpVkpR?oc=5",
-   "time": "2026-09-07 12:17",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "云英谷科技(03310.HK):获调入港股通证券名单_股市直播_市场 - 中金在线",
+   "t": "国产AMOLED显示驱动龙头纳入港股通，云英谷科技开启价值重估新阶段 - 新浪财经",
    "stk": [
     {
      "n": "云英谷科技",
      "c": "03310.HK"
     }
    ],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5TTjRhVzF2bjNCT3llSmhtMWZfVERJU2IyOFJfQUVSamgwTjd2ZkdKWEE3VVlfbDF5ZENhejZGM2o4cFhQc1dIdkQ3dUZkUDUtbHc2b2l1eV9VWWRPOHM1QlpGTm9abGxaczRYZg?oc=5",
-   "time": "2026-09-07 12:17",
+   "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxNU3I4d1poeGp2N19JVzR4RDRMRC1nSEFiY25KeHlWak01S1BsMFBvY1ZsUjJBWnA2WnVlQzJGVDFPUmJLb1VaYWpqbTZIM1dUZ0s1NVhpT2Q1S1JLMHJLbVAyUzNzRjB4WTBCUmNsQkFlUHo4dHQxV0xwdFhkVmVaUDltRWtTQkdESEdZ?oc=5",
+   "time": "2026-09-07 12:25",
    "cat": "cn_markets"
   },
   {
-   "t": "港股午评|恒生指数早盘跌0.97% 光通信+PCB概念逆市走高_股市直播_市场 - 中金在线",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1WZjNLQXVBaWpMaU1XLWltakpsSXF4eFFSVng0VW5ZWnl0N1ZGU1FiVHh3aF9kYXlfb09idUNMSXBIRlo5MVAxRDBzWUUtT21RQ1h0Q2RkVDN2Q3MyZ3EtZDJjeHhPd2ZKYV8xQw?oc=5",
-   "time": "2026-09-07 12:17",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "港股午评:恒指跌约1%,科网股普跌,内银股、保险股集体转跌_股市直播_市场 - 中金在线",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE8xRUplNFhwZG9jUkJBbGl3cTRjUWhvVThLcmdZZFJzSVZjWi03Y1VBZElpaW1ORE5VN1ZSWjdoTmNkRk1jQVN2YUZfb3FxZDlTellGM1g5SlZHYmZCQ2NmNDRNd2FpWEppX3NIUg?oc=5",
-   "time": "2026-09-07 12:17",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "复宏汉霖(02696.HK):获纳入港股通标的证券名单_股市直播_市场 - 中金在线",
-   "stk": [
-    {
-     "n": "复宏汉霖",
-     "c": "02696.HK"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5oTy1JbXpvUVN0SW5XRVBPdDlRYmdoMThVWEsxaHRIZ3ZJX0c3U1NsQnJ1Vy1WX0Q0aEpXU3htdjZOTm1HaTQxZ2tYLU9VTWpjN0wyQ3dGZVJDZWpDU0xabnNHc0YtYWRJdVpwVQ?oc=5",
-   "time": "2026-09-07 12:17",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "潼关黄金(00340.HK):公司获纳入港股通(沪港通及深港通)证券名单_股市直播_市场 - 中金在线",
-   "stk": [
-    {
-     "n": "潼关黄金",
-     "c": "00340.HK"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFAtTFl1clRSM2sxWmloSVkyM1hMcDlWaVFLaEc4LWd3RWw0TUdtOF9OdnFuREJ1V1hpUTRVanBUdFJFZDVBVkxOM1dVcFBFeXJSUnh1SVAtMXhpNXF1dzFzZzZPeG5YMk4tWkFnQw?oc=5",
-   "time": "2026-09-07 12:17",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "A股股价第一、第二名,联袂上涨 - 新浪财经",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxQWHpaNnUxVDgycFVOaVV2Ty12aS1ZQWlRaXdwWFNGcHh6UTc5Nk8tVlprbUg0WHJRQTF5U0swOGhFa1o2XzlmWUwycWVqRmpEdnB4Wl9pRk92d09hUE1UVFhHRmhEaksxMURRaUdGR1V2S3lQNEN2SGRmR3FmQjVpZ3NZdXdxOXFseWNVQ1ZhY3NIZ25BemdYSUNhcnIzbHY3UF9aQ3lyNA?oc=5",
-   "time": "2026-09-07 12:14",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "港股午评:恒生指数跌0.97% 恒生科技指数跌1% - 新浪财经",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTFA1bmdIUDg2a200U0VHZGRJUmxGQVRwN0FKLWdrc0V2Qlp1Z2RhNTFZZkVILW1oSHJhTTZ3eUJSdjE1dEZRTFYxOVJ0RGJiV0lKeF9oZWVKUjI4YW1CdkdMRmxidWJIWWpFdXE3VTBlT3JlekYxUHNvWg?oc=5",
-   "time": "2026-09-07 12:12",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "潼关黄金:获纳入港股通证券名单 - 东方财富",
-   "stk": [
-    {
-     "n": "东方财富",
-     "c": "300059.SZ"
-    },
-    {
-     "n": "潼关黄金",
-     "c": "00340.HK"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE10OWJNQldCYWYzUEUtOVFPek9PQ2tUR21CN0sxSDlPVXVELXA0dS1SR29EWGlranZLQ2NlTkRLNTlXNExQeXh2QjBXWGVQOWNIeWhyNS1pTWd0S2dJcHAwVWF6UEwzdw?oc=5",
-   "time": "2026-09-07 12:12",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "港股午评:恒指跌0.97% 科指跌1% 科网股跌多涨少 PCB概念股全线走高 - 星岛环球网",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE01djI0ZEMxUmpvajRDNl9JdkFGZU9rVW5lYU1PVW95LWxMdlNwY3ZfSVFwNHBkU29YNlhpallWeVozY3c3Y3FPbnNzQXlQU3NuaVhEV09sSnZNN1FwWW1WdklZeEc4TkE?oc=5",
-   "time": "2026-09-07 12:12",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "今海医疗科技午前涨逾20% 公司获纳入港股通名单 - 新浪财经",
-   "stk": [
-    {
-     "n": "今海医疗科技",
-     "c": "02225.HK"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQV1lhUlRnd3JkTE1qMEFncDRPVXMwczZaVVNEa2Q3VXBnNk1QcDB5SE1rdzkzVElZRGJpODZPdEE4LUtLNzJhb2ZmZHdyQ3FCbUtTaGZ5bzVVQ3Y1YlhXeloyMzBMWjlCYkNrcHVCd2xfbXV3OGR6QTlYZ2xpUFFDcXZEUEhOd3BrN2FRM28ySVFJTlRuQzRVZjI2THFRc1hjTmRpeUhqU3JNaFQxOUE?oc=5",
-   "time": "2026-09-07 12:10",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "今起被剔除港股通名单,IFBH跌超12%创新低 - Sohu",
-   "stk": [
-    {
-     "n": "IFBH",
-     "c": "06603.HK"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQYzZxc19KRzhxZ3NuV2Q5Q0RqX1NXQTd1eGFEWDlNZzhFaUhDeG1LYld6LUdKQ3lnR1JWQWpGTW52SkZfYldvQ25QWnJDQUdJUGlqdG9OZHo4TWJEaUtJSWU2ZXVRVkFaS0NhODhlNElaTmpzQ2tiRzZvYTRGZFFqcE9wRTFpdFkxb0RaVQ?oc=5",
-   "time": "2026-09-07 12:09",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Amazon cargo plane crash at Miami airport kills five",
-   "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/amazon-cargo-plane-reportedly-crashes-near-miami-airport-4890316",
-   "time": "2026-09-07 12:08",
-   "cat": "global_markets"
-  },
-  {
-   "t": "港股异动 | 海昌海洋公园(02255)跌超12% 今起被剔除港股通名单 公司上半年亏损同比扩至3.32亿元 - 中金在线",
-   "stk": [
-    {
-     "n": "海昌海洋公园",
-     "c": "02255.HK"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE1wRnBoUEhxYmdtaVp1R2lmUkJrd1hKcGI0MUhMNEhrandJc0JDVkpPRVFYMXdfNzd3SXRNXzYySHpsdXQ0bi1iZWRINmhiOUtPN0ZzVXR3cG9uMFVnYzUyb3dlM1FnS2E3VzhlVg?oc=5",
-   "time": "2026-09-07 12:07",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Moore vs Muxi vs Biren vs Tianshu: Who Leads the Global Semiconductor Industry in 2024? - 36 Kr",
-   "stk": [],
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE1aMjF5TGVabG5MdVBEMWdaMUFOYm84QzJiYUVCamZPU05rX2lZUHBvYTNrRjhGQ0s0SW1EU1hMRGVjaW03TE9XTURoZ29QamQ2Q25r?oc=5",
-   "time": "2026-09-07 12:05",
-   "cat": "global_markets"
-  },
-  {
-   "t": "创业板涨超2%,算力硬件爆发、CPO、PCB集体拉升,算力芯片龙头跌停,恒科指跌1%,权重科网股多数承压",
-   "stk": [],
-   "s": "华尔街见闻",
-   "url": "https://wallstreetcn.com/articles/3781200",
-   "time": "2026-09-07 12:04",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Gift Nifty 50 breaches 50% Fib at 23,900: Live levels",
-   "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/gift-nifty-50-breaches-50-fib-at-23900-live-levels-93CH-4890352",
-   "time": "2026-09-07 12:02",
-   "cat": "global_markets"
-  },
-  {
-   "t": "港股午评:恒指跌0.97% 科指跌1% 科网股跌多涨少 PCB概念股全线走高 - 新浪财经",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxPQ3VqTkpCV1VsSmFmdlhGdDBYaHdOVWtBT2c2clA0YU9QZDBTY3Vuc2xKV21jVWJOQ1dkcmJzS1lFTzNvRTJNQTJwOHhIR3cxcDVnYjBObGlRUzVOR1FRNUpUS3RkSzBUVTcyTUxqaktmdHRhVkE1bnhvajhFQkprTGJBNUl5WWpLYW42Nzl3TUpTODQwX2c?oc=5",
-   "time": "2026-09-07 12:00",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "圣邦股份午前涨超5% 二季度实现收入14.97亿元同比增长45.48% - 新浪财经",
-   "stk": [
-    {
-     "n": "圣邦股份",
-     "c": "300661.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQME96ZEdCaFlIcE9hQkdaV1dtU1VBeDd4RFB1VmMtenVkS1NCNWUtd1MwcWpfb2U4ODVOUUpzUWJBZ1cyV2FDVm9ZWUJTc1o1QjVPVERQSFFmNkJYWUdaci1ZRVhWcmt6NHRrYlpGTFpsa09fMjRaaFUxZ2Q1ZUJKb3BhNXlweWdPby1wXzVpcUVwVlRUdnc?oc=5",
-   "time": "2026-09-07 11:56",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "A股异动丨提示风险,新炬网络回调5.4%,此前连续2日涨停 - 新浪财经",
-   "stk": [
-    {
-     "n": "新炬网络",
-     "c": "605398.SS"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE11WHpzbGVvZm5qcWw3N2ZsRU5wenp2NG5EYkVkdWNZdHNaejVPWW1Hd09Fbk1EZWhDbXpTUkYxMUh2b21UZnk5VDJkOHI5MWtnSWpCQmhHUklSMk8xNmJWMHFGbloxS3Brb0dQQ05jblM5N2NiTkE?oc=5",
-   "time": "2026-09-07 11:54",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "A股“股王”,直线拉升 - 凤凰网财经",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE1vcHMtRDhuNm1JVktCZnFvLWVFcGFMVWJVQk1qeDJIV2FrVHlpWFlrM3QtM1JYSktfZXNYaFFhenl4aG0wcXRvVFZ1eU11VFpm?oc=5",
-   "time": "2026-09-07 11:52",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "A股ETF易方达(561890)涨0.40%,半日成交额269.76万元 - 新浪财经",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE5BUjVzMHU3SE5YeGxUaWFPRHBBSVg3SWRpQS1HQ2RzdnJDcThlOVdmYUlvaGZGal96VXZvRkFLbl8xX2FlMDN2MUZGVVhqZHdiTmR6ckpaa2FjRVdMM3hleW8yMXF6bmh6Q3IzM3NqUDRuRE9BU0dRVA?oc=5",
-   "time": "2026-09-07 11:52",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "“吹哨人”叶飞出狱拍短剧,A股老板谁在瑟瑟发抖? - yemacaijing.com",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE0wb24yZFBkNlJwZGxvUWdwdDVjTlJWMmdWa2o3c0pFVElKenU2TFI0NzFsZ2NFejBqNXpkX1VDaEVQNHNJVEtCN283dzUwaEpoRVhsRDNmNG5tbG5RMWZicHJ3?oc=5",
-   "time": "2026-09-07 11:50",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "A股三大指数午间收盘涨跌不一 创业板指上涨2.63% - 观点网",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE55dzBtY1RrTXV5dXB1c1pkN3Z5YTk2M2QwSHAtOWFpVU5uOGU3a0xnOVNZTVQ4X1gyZzA0N1BNQ3YzQUZ6RDE1VHJLUXE4MVpHelk4V1MtakQzQl9SUlc5Wlhn?oc=5",
-   "time": "2026-09-07 11:48",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "沪深交易所调整港股通名单 54只股份获调入 - 观点网",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE5iRHBLVHFLXzg4MjFXdzBnempqWUlfX3FZa092RWp0VGg3Uzdzak1DNXRqRGxfMkV3QkR5eTJxRWs3UU1hSWlHM1Z2SEJrcURfZ3NPYlBIa3VrNU1SRnN6eDh3?oc=5",
-   "time": "2026-09-07 11:47",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Asian stocks rally as chipmakers surge, oil and Fed bets keep risks in view",
-   "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/asian-stocks-rally-as-chipmakers-surge-oil-and-fed-bets-keep-risks-in-view-4890351",
-   "time": "2026-09-07 11:45",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Dollar Expected to Trade in 154.30-157.60 Yen Range This Week",
-   "stk": [],
-   "s": "WSJ - Markets",
-   "url": "https://www.wsj.com/finance/currencies/asian-currencies-consolidate-may-be-weighed-by-fed-rate-hike-prospects-b9db2269?mod=rss_markets_main",
-   "time": "2026-09-07 11:45",
-   "cat": "global_markets"
-  },
-  {
-   "t": "A股“股王”大涨!算力硬件概念集体反弹,煤炭板块震荡调整,超2900只个股上涨|A股早盘 - 凤凰网",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiSEFVX3lxTE1xSmc4UDhqUzQ5WTB5MWNxTzRsd1U2WjFyWjBOOVg3bXB5MGJuT0FIelExT3B2Um4zLXJPbzRzbkI1bC1mbFJLSg?oc=5",
-   "time": "2026-09-07 11:43",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "2026年前八月港股递表全景:527家递表,AH占比超四分之一,独家行业顾问沙利文占比70% - frostchina.com",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTFBvU0NZbWozNXNUajVJVzZQWnNyeEo0OGNfcmxNXzM1ZlRuV3pCSTRNekpFN0E3a01lXzFpWTZZQzlhQU1JdVpxRXBXVWcwSGUtcXl5NTRMaG04NEs1T1pPXzVXZEV4LVFKdlQxelhENnlFV1gtMzgyYTZJTQ?oc=5",
-   "time": "2026-09-07 11:42",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "港股内房股盘中普跌 绿城中国、中国金茂跌近3% - 观点网",
-   "stk": [
-    {
-     "n": "绿城中国",
-     "c": "03900.HK"
-    },
-    {
-     "n": "中国金茂",
-     "c": "00817.HK"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE9KdmNuWm54UHgxbzdLcmVyMy0wbE1LS3hoMDNCa1dQblV1eDh5STl5NnFBdUc0QkpJZ0trUTZuV3ZFN0FTd2gxcUxUeldsa05vQmZKOTVoZmg3TUFsR3pZTEN3?oc=5",
-   "time": "2026-09-07 11:40",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "A股午评:超2900只个股飘红,沪指收跌,深指、创业板指收涨 - 凤凰网财经",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTFBHN0RwOFMxNWE5NVZtTTBnNmd1WkV1NlB2T1d6QjRCRFJ4aTRMbUNlcDV5OEVMY3ZlaW9TRFMwQmpXZmFmVm1TSHV0Y0ViazM0?oc=5",
-   "time": "2026-09-07 11:39",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "标普A股红利ETF华宝(562060)跌0.81%,半日成交额5412.93万元 - 新浪财经",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNZVp6bVZvRUVXeHNVZnI5WnFLWkJXZFRYU3ZaS3Fqbm1EMDV6eUttb0RjMEdGYXUtVElsMGNRYnUxVU5nYnBLYTJWcHk3QnRXenNvbGNvc1dmV1hndk9CNW9Sa0ptaUlIUFNlZ1ZxcTJpVGJ4RDZTb2dxMGtXdnBTUzhiemxrTEZJOVNjNmY3OVVuVC1hOVZ5WDR4NE9xYVUt?oc=5",
-   "time": "2026-09-07 11:38",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "A股ETF富国(159078)涨0.00%,半日成交额430.13万元 - 新浪财经",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxOQTVyR0N2QXppSklCNlFuVk8wMXZwdHFKakhraElITERIZm9MbjJMSDE0cFBZOWZJM1lfTnFTWXJDQTB3R1VkVUQ0azBGOUZoS3RteExJcjkxMmhJcnlaUkxZU0k3WW9zVlVoUXNycmZGbk9YR1FTOEhIQnVLaGNiUG0wLXp4TE04V2RFdEhZeDlsdUlIY1BneA?oc=5",
-   "time": "2026-09-07 11:38",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "More children under 12 in US are being prescribed weight-loss drugs, study finds",
-   "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/more-children-under-12-in-us-are-being-prescribed-weightloss-drugs-study-finds-4890350",
-   "time": "2026-09-07 11:36",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Brazilian court suspends licenses for Sigma Lithium mine",
-   "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/brazilian-court-suspends-licenses-for-sigma-lithium-mine-4890307",
-   "time": "2026-09-07 11:36",
-   "cat": "global_markets"
-  },
-  {
-   "t": "A股ETF华泰柏瑞(563330)涨0.48%,半日成交额2266.10万元 - 新浪财经",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxONGVXLTlwWUtzdUp4Q1RZeEhWcXphOFppNEhrWFRrMjJYRFMyU2JfaC0zR1Etd0RKc3RBdGR1ZF9COEZ4VmtTS1ZiX1I4YV9DZElvTm1XVWhYck9LWlNhSzFCNDhLTDlmNW1yeDJHbWRHMGtRdTZiZk9oQlBONkpvTnAwbE5yRkg1X1dRaGZrZVRvYzYxd016Ug?oc=5",
-   "time": "2026-09-07 11:35",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "A股午评:创业板指高开高走涨2.63%,算力硬件股集体上涨 - 同花顺财经",
+   "t": "千亿牛股涨停、炸板又封涨停，A股超2900股上涨，算力、半导体大反弹，股王涨近6%，银行股全线下挫 - 同花顺财经",
    "stk": [
     {
      "n": "同花顺",
      "c": "300033.SZ"
     }
    ],
+   "dir": 1,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE10RW8yRHZCMzI2VVRHbkNTazdaT2NxOEVONGV4S1R6bmNKcWFyTE83eXE0ZVU1S3FVQVhMc1VENnVIMFRsNmZrUmtGYXFLdUdCMmFTQkdkTzZBa0RCYWc?oc=5",
-   "time": "2026-09-07 11:31",
-   "cat": "cn_markets"
+   "url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1pdXZXT1l5U1FrZ1pKX29rTTdSRFZOdnkzVlVRWWNQYVE3WFRfUlI5ekZiUTljbTJhb0gtSWVmOTUxUkc0M3B2XzlBVER2dzRBckNNQjJxbDFkc1R3WXc?oc=5",
+   "time": "2026-09-07 12:21",
+   "cat": "cn_markets",
+   "major": 1
   },
   {
-   "t": "India’s Top Stock Picks Across Key Sectors, According to Jefferies",
+   "t": "Asian stocks rally as chipmakers surge, oil and Fed bets keep risks in view - Investing.com",
    "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/indias-top-stock-picks-across-key-sectors-according-to-jefferies-93CH-4890349",
-   "time": "2026-09-07 11:30",
+   "dir": 1,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMiywFBVV95cUxOaUtSa2FFQ3NaMnd1SlFKejNSV1FrYlA3dUdwOEtfdmVsTmdrQVFsaEZRVVc4cDVHT3pZWHZRSmp5M3FCV2wxQkZBVzd4Nm9zVjRWLUZTUHVwYk8tMVVsNjRWT3IxRUFFbUZ0RlJkMzBEUndtWnpzOHlWUmRkellxNHVhRnA1VWtlMlRlbFNkWmhlMTdqeE9oTFRGUzlJV0w2LTJCS096TTQ2X0RWanlqYURfQVgzd1RHd1R4N21YZGJjUG1DTmNXNy1yTQ?oc=5",
+   "time": "2026-09-07 12:20",
    "cat": "global_markets"
   },
   {
-   "t": "海清智元正式获纳入港股通 - 东方财富",
+   "t": "A股温商上市公司交出近年最佳“期中成绩单” - 温州新闻",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE1wMnZRUmowQ19rZTBuNGRRS0NDSmJiNm1iRGhud0VLWXZvUDRjVnlHT2VfZGtvMVJHd0hjLWlFcHBGVXluQVRUajdTRGJnbmc1a3o3RWxGc2huNUJVUzNoTHNRaS1HRHMycnc?oc=5",
+   "time": "2026-09-07 12:17",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Ascletis Announces Inclusion in the Hong Kong Stock Connect List under the Shanghai-Hong Kong Stock Connect and the Shenzhen-Hong Kong Stock",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMivwJBVV95cUxPT0RLZTNmbGNjeUVHMDV1WjE5TDI2WU9FVF9rczI0TGhTcWZSU092TkszX1pnWHdGb3VZVXRuMkVtS21qaVJEaHlReGhFSHFiM1BRMkM4bnVRQU16dXhkUGpTUm5QZnVmSlc5emZ5em5mNDZnalM1Q2xUMGoxN2pPUXhNUy05endmbm83clloVWFSbTMyT2ZncTdna3FCQllwdzdUZUdmbk1wcWlfelJOSm5CSnIzZ1lMTFloU2ZEVHlONDZYQWxqSVJfNzNsaERneHk5QmJyTG1OZG1HQWdXZjE0Z0FjOWFmRHdpRzJ1d0FVLTRXckNwak5BbjZaQkxzWldZX3p5aVM0VGNOV2tqVVJHcmYzSmtHX1JJV2FJclVTbEdkUngtQVZhNWNJR2NjQ3h5QmM4cDVNT0NFUFNz?oc=5",
+   "time": "2026-09-07 12:15",
+   "cat": "global_markets"
+  },
+  {
+   "t": "A股股价第一、第二名，联袂上涨 - 新浪财经",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxQWHpaNnUxVDgycFVOaVV2Ty12aS1ZQWlRaXdwWFNGcHh6UTc5Nk8tVlprbUg0WHJRQTF5U0swOGhFa1o2XzlmWUwycWVqRmpEdnB4Wl9pRk92d09hUE1UVFhHRmhEaksxMURRaUdGR1V2S3lQNEN2SGRmR3FmQjVpZ3NZdXdxOXFseWNVQ1ZhY3NIZ25BemdYSUNhcnIzbHY3UF9aQ3lyNA?oc=5",
+   "time": "2026-09-07 12:14",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Is the stock market open on Labor Day? NYSE, Nasdaq hours today - Cincinnati Enquirer",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxQVkRPNkZab0lwWVoxYVo0ZkktN2h0bFVGUS1WSnBOWTJCNk94RkxJODI5cmpxSVdhLXZvVjNENkVDVFlYaWc5Sy1XQlo3NDNyUkpINW1PbkhUTDkzSXNlcU5Ic2J2SllyWVRsN0FTQ0lJNVRyU1g3Q3ZjTXROVGlMRmxxckpEWFBEZnZnZVNoZ2xtZms3a25KQVpzNjZQWW1mdWJuQ0xBLWlUOUk2ZnpTWnQ0bDlPZw?oc=5",
+   "time": "2026-09-07 12:12",
+   "cat": "global_markets"
+  },
+  {
+   "t": "港股午评：恒生指数跌0.97% 恒生科技指数跌1% - 新浪财经",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTFA1bmdIUDg2a200U0VHZGRJUmxGQVRwN0FKLWdrc0V2Qlp1Z2RhNTFZZkVILW1oSHJhTTZ3eUJSdjE1dEZRTFYxOVJ0RGJiV0lKeF9oZWVKUjI4YW1CdkdMRmxidWJIWWpFdXE3VTBlT3JlekYxUHNvWg?oc=5",
+   "time": "2026-09-07 12:12",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "潼关黄金：获纳入港股通证券名单 - 东方财富",
    "stk": [
     {
      "n": "东方财富",
      "c": "300059.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE80dlBtZFRWV2dXRDAyQ2pCWXdxNVRnNEJNRjlTRW1BaTFmaW9JSEdMZ3hLeEdPbThSUjRzQTUwTnNCdUVoYlpJN05zcDNQX2FpV2U0NGJHdmdQSDVaclQ5WXhXOXRYQQ?oc=5",
-   "time": "2026-09-07 11:27",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "一周美股牛榜|SanDisk 和 Robinhood 上周飙升 17%,戴尔周涨 15%,美光上涨 9% - Tiger Brokers",
-   "stk": [
+    },
     {
-     "n": "美光",
-     "c": "MU"
+     "n": "潼关黄金",
+     "c": "00340.HK"
     }
    ],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE5LRThSQzBMa1hfWVhaNXluMm1JejJrbjNKS0Vta3hxVUx0dGVuNVgzWllLUmF3M2JFbDVWWUFxcUtUNnJrdWJabnNVVERjNk5KRFNLSmxB?oc=5",
-   "time": "2026-09-07 11:27",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Nigerian stock market heads for N300tr capitalisation - The Nation Newspaper",
-   "stk": [],
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNZ25JaDdSdXZiWUhiaV9OZmYydWMyTG9PT09FbnVnUkJFM2MtTUV6VUdTT2EzVWYzQ2hJQU1XTERvNWg1V3pVdU1Qand6UXNIRUF5M1Q0S1BKREUxbHdRTEJnc1Y2WkpvRTl1UXdJLURsbU54bko0eUV4a0g5bDl3cnhJZ2JiNFkydHpfZtIBkgFBVV95cUxQcGt0X2tEN2JXWDlubkE3SWJmY19UdGpuTkhMcUVXOTNyWUZ2UWxzTHJBbTNjbGNDbFhHQkR6WUQ2dl9MazR5c0F2THp6a1RZRm9SbVVJR2VPTEJUYnJpLTBGNlI1VnRvZnVnbVFwdkxDZVFhUVNQNHB3UXlCcHhrOEwtQ19taGJiSndKWU9fa3JXdw?oc=5",
-   "time": "2026-09-07 11:24",
-   "cat": "global_markets"
-  },
-  {
-   "t": "“十四五”以来陕西新增A股上市公司29家 - 新浪财经",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxOV2VrdXN6WV96d0Q4YWcwMTZYT1NSTFR0c2hPcDQxOEpRUnRTMlhTZnNTYW02dDVPdlppdHNUb3hKV215cExnUmVNVVp1ZVd1OGc4VEl3b3NnX0VPaDdWanZZVElocUdlQmVQX29oQzc1VElVNkNuZDU1X28xVk83TVFTRkpHbE00VmdMejNNQVlkYWphamw4WQ?oc=5",
-   "time": "2026-09-07 11:18",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "中科闻歌盘中涨超10%正式进入港股通名单 上半年收入同比增超四成 - 新浪财经",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMi7gFBVV95cUxOM21fYWdWS1ZoNWVsNXhMa3FjUUhzeEl2Y0s1bjBxZmFrYjR5b1hQLVhTVG9vSDRTa0JfLWlET3ZKX2JJLWlZdFVUQk9McWpTRGFseXFXR2tiQWFQYUJic2lQcmJ3dVRDMUwzR3A0aGdteXBRdS1ZN3VGMnN1UTNjaFhkT3g3S1JvYThVNzJ0c2xpZERnZWRobFNuaXpTTkh2T0lKN0JTcm1CNWxmdTE5M29Vb2gzTWZodm1CVG9nNWZhS2pmYmNkSmUxNi16NHJRNmZuclo3T0w2SE9Da0hqVk9jZjd5UWpKb2V5cGh3?oc=5",
-   "time": "2026-09-07 11:16",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "港股异动丨石油股集体下跌,中石油跌超2%,美财长喊话油价或跌至40美元 - 新浪财经",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxObk45X2F4YXZfMUNydUVZX0l4WW5Rb3J6MWdkODRpTEFtRjE0djBsYjlxcHlMQThuSHhCdVZTVjhEZ0hkQVlLdkxjOV9xMzg3dFFzS1k2UnZTYWxtWGExWXA1VmhRRHFacjFza0NtYzZGMlAzXzB4ZGhXdW9IX1ZGTA?oc=5",
-   "time": "2026-09-07 11:16",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Taiwan flexes chip diplomacy muscles as it faces pressure to share AI wealth with allies",
-   "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/taiwan-flexes-chip-diplomacy-muscles-as-it-faces-pressure-to-share-ai-wealth-with-allies-4890346",
-   "time": "2026-09-07 11:12",
-   "cat": "global_markets"
-  },
-  {
-   "t": "中金:上半年A股非金融资本开支增3.8% AI产业链增速33.7%_公司新闻_财经 - 证券之星",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBDRzktQTBsQVNXUVRRb1A5OG9PdlVFZVlOb2ZxQW5WTllmZjBsNGM4WWNpZDVaRmFSS2xpbGhpUWkxWEtFcnF6eWpIbDM0Y0VVWTYzZGYxSENCckp1djE1OQ?oc=5",
-   "time": "2026-09-07 11:10",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "It’s a Concentrated World - A Wealth of Common Sense",
-   "stk": [],
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE5uVS1lTnBoMlJRMTd6ckpTaERScHJyOXByaS16emV2anFmS0tmWmN4cHYyTXMxakJmRjI4WlFOWWZfZEhPcjNIRWFiT1ZMeGR3Smw4Mm8xdWx0QWlub0ROUGtHSW9sMFM0S3hkUlBDUHY3Tmdl?oc=5",
-   "time": "2026-09-07 11:09",
-   "cat": "global_markets"
-  },
-  {
-   "t": "A股“股王”,直线拉升 - 新浪财经",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTFBTNEtqQnMzeFc4OWlhVG9tcE5VM05rX3pyOEp1MG1nMVNfUWNHQkpUcmNRTWtxa0M1a1d5SUhqVE9WVWVkTE50TXF0SmVETXhSS1hPRDBfOE5BYlhoaUpzY0lkcU1raE5iOVZVSDlsN09UNnhvOXhMbw?oc=5",
-   "time": "2026-09-07 11:06",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "中科闻歌获恒生综指、港股通双纳入 - 东方财富",
-   "stk": [
-    {
-     "n": "东方财富",
-     "c": "300059.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFA3RXc5V2d0bmdtd0doNnBtX0x0TEwwYXBmMnlwSFBIenNZWC1fMGRNM2Z0cDlUdXZramRlVDF0U0Z4UTFydXV5R25fbU5nTlZxZVE1V3ZydzdMR2hidUhfVi12eGJWdw?oc=5",
-   "time": "2026-09-07 11:04",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "高盛复盘中国股票二季报:盈利增速创五年新高,增长从“硬科技”扩散到更多行业",
-   "stk": [],
-   "s": "华尔街见闻",
-   "url": "https://wallstreetcn.com/articles/3781205",
-   "time": "2026-09-07 11:03",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "At least 5 killed in Amazon Prime Air cargo plane crash in Miami",
-   "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/amazon-prime-air-boeing-767-overruns-runway-at-miami-airport-4890317",
-   "time": "2026-09-07 10:54",
-   "cat": "global_markets"
-  },
-  {
-   "t": "优地机器人冲刺港股:机器人越卖越便宜,五大客户收入占比超八成 - 新浪财经",
-   "stk": [
-    {
-     "n": "机器人",
-     "c": "300024.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE0wNGVnN2E2SVROZFdNOUJhMXRPNmwySHQxZkNBRjNGNHJZRGk5WF8tYlRrN1NXYmpFRzE0cTY0RmhVNGIzNU8zWjZSdGxqeERRWTlYTW9aang4bG04S0xFal9yMFFMbkl6VnlnUjNR?oc=5",
-   "time": "2026-09-07 10:49",
+   "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE10OWJNQldCYWYzUEUtOVFPek9PQ2tUR21CN0sxSDlPVXVELXA0dS1SR29EWGlranZLQ2NlTkRLNTlXNExQeXh2QjBXWGVQOWNIeWhyNS1pTWd0S2dJcHAwVWF6UEwzdw?oc=5",
+   "time": "2026-09-07 12:12",
    "cat": "cn_markets"
   }
  ]
