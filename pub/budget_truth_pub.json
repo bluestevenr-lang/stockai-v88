@@ -1,14 +1,10 @@
 {
- "checked_at": "2026-09-06 16:15",
+ "checked_at": "2026-09-07 00:06",
  "real_month_spent": null,
- "base_budget_cap": 0.0,
- "budget_cap": 0.0,
- "conditional_monthly_cash_cap_cny": 10.0,
+ "base_budget_cap": 7.0,
+ "budget_cap": 10.0,
  "over_budget": false,
  "month_projection": null,
- "alarm": "",
- "paid_api_enabled": false,
- "explicit_user_approval_required": true,
- "approved_new_cash_cny": 0,
- "budget_policy": "用户已确认0元新增费用方案：优先使用免费来源；可使用已有额度，但不得新增收费或自动续费。任何付费数据或按量模型调用，须先说明供应商、覆盖、延迟、价格及费用上限，取得用户明确同意。此前10元月度上限不是付款授权；GPT验收也不能代替用户同意。额度耗尽或费用不明时停止，不自动付费切换。"
+ "alarm": "⚠️ GPT/Codex订阅不可用，LLM文字任务将确定性降级",
+ "budget_policy": "GPT/Codex订阅承担文字与初筛；K3只审短名单；不走按量API"
 }
