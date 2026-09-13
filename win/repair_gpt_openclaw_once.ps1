@@ -137,18 +137,13 @@ if (-not $OpenClaw) {
     Run-OpenClaw 'Doctor repair' @('doctor', '--fix') | Out-Null
 
     $routeOk = $false
-    if (Set-SubscriptionModel 'openai/gpt-5.6-sol') {
-        Run-OpenClaw 'Gateway restart for GPT-5.6 Sol' @('gateway', 'restart') | Out-Null
+    if (Set-SubscriptionModel 'openai/gpt-6-astra') {
+        Run-OpenClaw 'Gateway restart for GPT-6 Astra' @('gateway', 'restart') | Out-Null
         Start-Sleep -Seconds 8
-        $routeOk = Test-SubscriptionModel 'openai/gpt-5.6-sol'
+        $routeOk = Test-SubscriptionModel 'openai/gpt-6-astra'
     }
     if (-not $routeOk) {
-        Add-Line 'GPT-5.6 Sol is not exposed to this OAuth workspace; trying the official subscription recovery model.'
-        if (Set-SubscriptionModel 'openai/gpt-5.5') {
-            Run-OpenClaw 'Gateway restart for GPT-5.5' @('gateway', 'restart') | Out-Null
-            Start-Sleep -Seconds 8
-            $routeOk = Test-SubscriptionModel 'openai/gpt-5.5'
-        }
+        Add-Line 'GPT-6 Astra is unavailable in this OAuth workspace; no fallback is allowed.'
     }
     Add-Line ("subscription_route_ready={0}" -f $routeOk)
 

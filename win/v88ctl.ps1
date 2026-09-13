@@ -1,5 +1,5 @@
 ﻿# V88 遥控 wrapper —— OpenClaw 代理唯一允许执行的脚本
-# 子命令: start / url / sync / review(订阅双审) / status
+# 子命令: start(启动V88) / url(手机链接) / sync(git同步) / review(订阅双审) / status(状态)
 param(
     [Parameter(Mandatory=$true)]
     [ValidateSet('start','url','sync','review','status')]
@@ -14,7 +14,7 @@ $CfLog    = Join-Path $ToolsDir 'cloudflared.log'
 $PyLauncher = 'C:\Users\admin\AppData\Local\Programs\Python\Launcher\py.exe'
 $V88Python = 'C:\Users\admin\v88env\Scripts\python.exe'
 $Projection = Join-Path $RepoRoot 'win\openclaw-v88\sync_v88_projection_win.py'
-$K3Context = Join-Path $env:USERPROFILE '.openclaw\workspaces\v88-mobile\context'
+$MobileContext = Join-Path $env:USERPROFILE '.openclaw\workspaces\v88-mobile\context'
 $GptWorkspace = Join-Path $env:USERPROFILE '.openclaw\workspaces\v88-gpt'
 $GptContext = Join-Path $GptWorkspace 'context'
 $GptKnowledge = Join-Path $GptWorkspace 'knowledge\v88-claude-memory'
@@ -54,7 +54,7 @@ function Get-TunnelUrl {
 }
 
 function New-TunnelUrl {
-    if (-not (Test-Path $CfExe)) { throw "缺少 $CfExe（请先运行 配置K3遥控.ps1）" }
+    if (-not (Test-Path $CfExe)) { throw "缺少 $CfExe（请先运行 install_openclaw_win.ps1）" }
     $running = Get-Process cloudflared -ErrorAction SilentlyContinue
     if ($running) {
         $u = Get-TunnelUrl
@@ -134,7 +134,7 @@ function Sync-V88Data {
         throw "V88 私仓安全同步失败：pull=$pullExit postpull=$postPullExit unresolved=$($unresolved.Count)`n$($pullOutput | Select-Object -Last 8 | Out-String)$($postPullOutput | Select-Object -Last 8 | Out-String)"
     }
 
-    foreach ($destination in @($K3Context, $GptContext)) {
+    foreach ($destination in @($MobileContext, $GptContext)) {
         try {
             $ErrorActionPreference = 'Continue'
             $projectionRaw = & $PyLauncher -3 $Projection --source (Join-Path $ReportRoot 'data') --dest $destination 2>&1
@@ -148,8 +148,9 @@ function Sync-V88Data {
         }
     }
 
-    # 私有记忆可能含账户结构、数量、成本和资产目标。远端会审只需要 AGENTS
-    # 纪律与脱敏数据投影；清掉旧镜像，此后不再复制 claude-memory 正文。
+    # 旧版曾把 claude-memory 整目录复制给 OpenClaw，其中可能含账户结构、成本和
+    # 资产目标。远端会审只需要下面的 AGENTS 纪律与脱敏数据投影；先清掉历史镜像，
+    # 此后不再复制任何私有记忆正文。
     if (Test-Path -LiteralPath $GptKnowledge) {
         Remove-Item -LiteralPath $GptKnowledge -Recurse -Force
     }
@@ -160,12 +161,12 @@ function Sync-V88Data {
         Copy-Item -LiteralPath $gptInstructions -Destination `
             (Join-Path $GptWorkspace 'AGENTS.md') -Force
     }
-    $k3Instructions = Join-Path $RepoRoot 'win\openclaw-v88\AGENTS.md'
-    if (Test-Path -LiteralPath $k3Instructions) {
-        $k3Workspace = Split-Path -Parent $K3Context
-        New-Item -ItemType Directory -Force -Path $k3Workspace | Out-Null
-        Copy-Item -LiteralPath $k3Instructions -Destination `
-            (Join-Path $k3Workspace 'AGENTS.md') -Force
+    $mobileInstructions = Join-Path $RepoRoot 'win\openclaw-v88\AGENTS.md'
+    if (Test-Path -LiteralPath $mobileInstructions) {
+        $mobileWorkspace = Split-Path -Parent $MobileContext
+        New-Item -ItemType Directory -Force -Path $mobileWorkspace | Out-Null
+        Copy-Item -LiteralPath $mobileInstructions -Destination `
+            (Join-Path $mobileWorkspace 'AGENTS.md') -Force
     }
 
     $portfolioPath = Join-Path $GptContext 'modules\portfolio_pub.json'
@@ -173,18 +174,20 @@ function Sync-V88Data {
     # The projection writes canonical UTF-8 JSON, so decode it explicitly.
     $portfolio = Get-Content -LiteralPath $portfolioPath -Raw -Encoding UTF8 | ConvertFrom-Json
     Write-Output (($pullOutput | Select-Object -Last 3 | Out-String).Trim())
-    Write-Output "V88 GPT/K3 快照已更新：$(@($portfolio.items).Count) 只持仓，持仓源时间 $($portfolio.updated_at)"
-    Write-Output 'GPT/K3纪律与只读脱敏数据投影已同步；私有记忆正文未复制。'
+    Write-Output "V88 GPT-6/经典巨著 快照已更新：$(@($portfolio.items).Count) 只持仓，持仓源时间 $($portfolio.updated_at)"
+    Write-Output 'GPT-6/经典巨著纪律与只读脱敏数据投影均已同步；私有记忆正文未复制。'
 }
 
 function Invoke-V88SubscriptionReview {
+    # 先拉取最新代码和事实。模型子进程本身还会清除按量API覆盖；这里再做一层
+    # Windows 入口硬隔离，确保只使用现有 Codex OAuth 订阅。
     $null = @(Sync-V88Data)
     if (-not (Test-Path -LiteralPath $V88Python)) {
         throw "找不到 V88 Python $V88Python"
     }
-
-    # OAuth凭据来自本机配置目录。清除所有密钥、令牌和自定义端点，避免误走
-    # Moonshot/Open Platform/Extra Usage等按量接口。
+    # 不只清理已知供应商名称：任何 API key、访问令牌或自定义端点都可能把
+    # 本机订阅 CLI 误导到按量接口。Codex 的 OAuth 凭据在各自配置目录中，
+    # 不依赖这些环境变量。
     Get-ChildItem Env: | Where-Object {
         $_.Name -match '(?i)(API_KEY|ACCESS_TOKEN|AUTH_TOKEN|BASE_URL|API_BASE|ENDPOINT)'
     } | ForEach-Object {
@@ -193,7 +196,7 @@ function Invoke-V88SubscriptionReview {
     foreach ($name in @('V88_DISABLE_LLM','GITHUB_ACTIONS','ANALYSIS_PROVIDER')) {
         Remove-Item -Path "Env:$name" -ErrorAction SilentlyContinue
     }
-    $env:V88_GPT_MODEL = 'gpt-5.6-sol'
+    $env:V88_GPT_MODEL = 'gpt-6-astra'
     $reviewStartedAt = Get-Date
     $previousPythonUtf8 = $env:PYTHONUTF8
     $previousNativePreference = $ErrorActionPreference
@@ -202,7 +205,7 @@ function Invoke-V88SubscriptionReview {
     try {
         try {
             $ErrorActionPreference = 'Continue'
-            $reviewRaw = & $V88Python (Join-Path $ReportRoot 'src\dual_cli_review.py') `
+            $reviewRaw = & $V88Python (Join-Path $ReportRoot 'src\review_pipeline.py') `
                 review --trigger scheduled --limit-batches 5 2>&1
             $reviewExit = $LASTEXITCODE
             $reviewOutput = @($reviewRaw | ForEach-Object { $_.ToString() })
@@ -214,34 +217,27 @@ function Invoke-V88SubscriptionReview {
         $env:PYTHONUTF8 = $previousPythonUtf8
     }
     if ($reviewExit -ne 0) {
-        throw "V88 GPT/K3订阅双审失败：$($reviewOutput | Select-Object -Last 12 | Out-String)"
+        throw "V88 GPT-6/经典巨著订阅双审失败：$($reviewOutput | Select-Object -Last 12 | Out-String)"
     }
 
-    # 进程退出0不代表席位晋升成功；必须验证本轮状态、两席覆盖及中央同包。
-    $statusPath = Join-Path $ReportRoot 'data\dual_cli_status.json'
+    # review_pipeline 的状态必须证明当前模型审核成功；只有本轮状态文件明确证明双方
+    # 同包晋升，才能宣称“双审完成”。
+    $statusPath = Join-Path $ReportRoot 'data\dual_cli_review.json'
     if (-not (Test-Path -LiteralPath $statusPath)) {
         throw 'V88双审未生成状态文件，保持PENDING。'
     }
     $statusFile = Get-Item -LiteralPath $statusPath
-    $status = Get-Content -LiteralPath $statusPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    $status = Get-Content -LiteralPath $statusPath -Raw | ConvertFrom-Json
     if ($statusFile.LastWriteTimeUtc -lt $reviewStartedAt.ToUniversalTime().AddSeconds(-2) `
-            -or -not $status.ok -or -not $status.promoted `
-            -or $status.state -ne 'completed' -or -not $status.kimi_official_promoted `
-            -or [int]$status.gpt_reviewed -le 0 -or [int]$status.k3_reviewed -le 0) {
-        throw "V88双审失败关闭：状态=$($status.state)，保持PENDING。"
+            -or $status.status -ne 'complete' -or $status.model -ne 'gpt-6-astra' `
+            -or -not $status.sell_promotion_ok -or [int]$status.unreviewed_count -gt 0) {
+        throw "V88双审失败关闭：状态=$($status.status)，未形成可用同包裁决，保持PENDING。"
     }
 
-    foreach ($destination in @($K3Context, $GptContext)) {
-        try {
-            $ErrorActionPreference = 'Continue'
-            $projectionRaw = & $PyLauncher -3 $Projection `
-                --source (Join-Path $ReportRoot 'data') --dest $destination 2>&1
-            $projectionExit = $LASTEXITCODE
-            $projectionOutput = @($projectionRaw | ForEach-Object { $_.ToString() })
-        } finally {
-            $ErrorActionPreference = $previousNativePreference
-        }
-        if ($projectionExit -ne 0) {
+    foreach ($destination in @($MobileContext, $GptContext)) {
+        $projectionOutput = & $PyLauncher -3 $Projection `
+            --source (Join-Path $ReportRoot 'data') --dest $destination 2>&1
+        if ($LASTEXITCODE -ne 0) {
             throw "双审完成但投影刷新失败（$destination）：$($projectionOutput | Out-String)"
         }
     }
@@ -259,7 +255,7 @@ function Invoke-V88SubscriptionReview {
     $pendingCount = @($selection.pending).Count
     Write-Output ("V88订阅双审完成：3A现买{0}、3A准备{1}、3A冻结{2}、2A条件{3}、研究/分歧{4}、待审{5}。" -f `
         $nowCount,$prepCount,$blockedCount,$conditionalCount,$researchCount,$pendingCount)
-    Write-Output '路由：Codex OAuth + Kimi Code OAuth；按量API与fallback已禁用。'
+    Write-Output '路由：Codex OAuth + 独立经典规则；按量API与fallback均已禁用。'
 }
 
 switch ($Command) {

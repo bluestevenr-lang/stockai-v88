@@ -1,0 +1,194 @@
+"""Scored grade tables and separate continuous research tracking."""
+from html import escape
+from datetime import datetime, timezone
+import json
+import math
+from pathlib import Path
+from zoneinfo import ZoneInfo
+
+from grade_focus import MARKETS, GRADES, GRADE_LIMITS as LIMITS
+
+ROOT=Path('/Users/bluesteven/Desktop/ai-daily-report-v2/data')
+LISTING_HISTORY_RULE='上次上榜指上一版真实正式榜；同版后台刷新不重复计次，历史名次按当时市场及评级。时间统一为北京时间。'
+
+
+def _listing_history_html(row):
+    """Display a verified publication receipt, never infer history from a rank."""
+    missing='<div class="v88-listing-history" style="font-size:11px!important;color:#64748b!important">上次上榜：暂无可核验历史</div>'
+    history=row.get('listing_history')
+    if (not isinstance(history,dict) or history.get('status')!='verified'
+            or history.get('rank_scope')!='同市场同评级正式榜'
+            or history.get('timezone')!='Asia/Shanghai'):return missing
+    previous=history.get('previous')
+    if not isinstance(previous,dict):return missing
+    market=previous.get('market');tier=previous.get('tier');rank=previous.get('rank')
+    listed_at=previous.get('listed_at');key=previous.get('publication_key')
+    if (market not in MARKETS or tier not in GRADES or type(rank) is not int or rank<1
+            or not isinstance(key,str) or not key.strip() or not isinstance(listed_at,str)):
+        return missing
+    try:
+        at=datetime.fromisoformat(listed_at)
+        if at.tzinfo is None or at.utcoffset() is None:return missing
+        at=at.astimezone(ZoneInfo('Asia/Shanghai'))
+    except (ValueError,TypeError,OverflowError):return missing
+    rank_text=f'{market}{tier} 第{rank}名'
+    title=escape(f'{at:%Y-%m-%d %H:%M:%S} 北京时间（BJT） · {rank_text}',quote=True)
+    return (f'<div class="v88-listing-history" style="font-size:11px!important;color:#64748b!important" title="{title}">'
+            +f'上次上榜 {at:%m-%d %H:%M}<br>'+escape(rank_text)+'</div>')
+
+
+def _scored(row):
+    value=row.get('audit_score')
+    return row.get('tier') in GRADES and isinstance(value,(int,float)) and not isinstance(value,bool) and math.isfinite(value) and 0<=value<=100
+
+
+def read(root=ROOT):
+    try:return json.loads((Path(root)/'persistent_watchlist_pub.json').read_text())
+    except (OSError,ValueError):return {}
+
+
+def html(doc,selection,*,code=None,view='period'):
+    from grade_card import _td,_tbl,stock_link,_flag
+    from grade_focus import canonical
+    from stock_profile_view import html as profile_html, load as profiles_load, display_name
+    from scorecard_html import gpt_html, books_html, profit_html
+    from entry_opportunity import html as entry_html
+    from review_display import current_scorecard
+    esc=lambda v:escape(str(v if v is not None else '—'))
+    if not doc:return ''
+    matches=doc.get('factpack_id')==selection.get('factpack_id') and doc.get('source_generated_at')==selection.get('generated_at')
+    try:
+        matches=matches and 0 <= (datetime.now(timezone.utc)-datetime.fromisoformat(doc['generated_at'])).total_seconds() <= 900
+    except (KeyError,ValueError,TypeError):
+        matches=False
+    profiles=profiles_load(ROOT/'stock_profiles_pub.json')
+    if view=='current':
+        source=[r for r in (doc.get('current_focus') or {}).get('rows',[]) if _scored(r)]
+        source.sort(key=lambda r:(GRADES.index(r['tier']),MARKETS.index(r['market']) if r.get('market') in MARKETS else 99,
+                                 -r['audit_score'],r.get('central_rank') or 999999,canonical(r.get('code'))))
+        # A stale producer must not put unreviewed placeholders or unlimited
+        # lists into a formal grade table.
+        limited=[];seen={}
+        for row in source:
+            key=(row.get('market'),row['tier']);seen[key]=seen.get(key,0)+1
+            if seen[key]<=LIMITS[row['tier']]:limited.append(row)
+        source=limited
+    elif view=='tracking':
+        source=(doc.get('tracking') or {}).get('rows',[])
+    else:source=doc.get('rows',[])
+    rows=[r for r in source if code is None or canonical(r['code'])==canonical(code)]
+    if not rows and (view!='current' or code is not None):return ''
+    live_focus={}
+    central_by_code={}
+    for bucket in ('observations','conditional','preparations','blocked_3a','recommendations','pending','excluded'):
+        for item in selection.get(bucket,[]):
+            central_by_code.setdefault(canonical(item.get('code')),[]).append(item)
+    if view=='current':
+        from grade_focus import build as focus_build
+        central_rows=[r for b in ('observations','conditional','preparations','blocked_3a','recommendations')
+                      for r in selection.get(b,[]) if r.get('tier') in GRADES]
+        live_focus=focus_build([{**r,'scorecard':current_scorecard(selection,r)} for r in central_rows])['records']
+    body='';bodies={tier:'' for tier in GRADES}
+    counts={market:{'total':0,'graded':0,'paused':0,'awaiting':0,'stale':0,**{tier:0 for tier in GRADES}} for market in MARKETS}
+    for r in rows:
+        p=r['trade_plan'];c=r['code'];tier=r.get('tier');score=r.get('audit_score')
+        paused=str(r.get('seat_kind','')).startswith('暂停研究')
+        label=({'3A':'🟢 ','2A':'🟠 ','1A':'🔵 '}.get(tier,'')+tier+'价值跟踪') if tier in ('1A','2A','3A') else (r['seat_kind'] if paused else '新候选·待双审')
+        current = matches
+        candidates=central_by_code.get(canonical(c),[])
+        central=candidates[0] if len(candidates)==1 else None
+        card=current_scorecard(selection,central) if central else {}
+        if tier:
+            from investment_maturity import assess
+            value=assess(card,(central or {}).get('horizon'),(central or {}).get('trade_plan') or {})
+            current=(current and value.get('tier')==tier and value.get('value_confirmed') is True
+                     and score==card.get('total') and p==(central or {}).get('trade_plan'))
+            if view=='current':
+                expected=live_focus.get(canonical(c)) or {}
+                current=(current and expected.get('selected') is True
+                    and type(r.get('watch_rank')) is int and r['watch_rank']==expected.get('central_rank')
+                    and r.get('central_rank')==expected.get('central_rank')
+                    and r.get('focus_rank')==expected.get('rank')
+                    and r.get('focus_eligible') is bool((expected.get('entry_opportunity') or {}).get('focus_eligible')))
+            if not current:label='原'+tier+'·复核中'
+        elif paused:
+            # A retained identity is not approval. Read rejected/pending rows
+            # again as well: an unchanged document hash cannot validate its
+            # copied score, changed contract, or an expired review.
+            complete=bool((card.get('gpt') or {}).get('current') and (card.get('gpt') or {}).get('complete'))
+            entry=r.get('entry_opportunity') or {}
+            current=bool(current and central and r.get('scorecard')==card
+                and score==(card.get('total') if complete else None)
+                and r.get('review_complete') is complete
+                and p==central.get('trade_plan') and r.get('horizon')==central.get('horizon')
+                and r.get('source_asof')==central.get('factpack_asof')
+                and r.get('executable') is False and r.get('focus_eligible') is False
+                and entry.get('executable') is False and entry.get('focus_eligible') is False)
+            label='⏸ 持续跟踪·暂停' if current else '⏸ 持续跟踪·证据待更新'
+        book=r.get('book_checks') or []
+        book_text=books_html(r.get('scorecard') or {}) if not book else (
+            f'<div>书理 {sum(x.get("ok") is True for x in book)}/{len(book)}项通过</div><details><summary>逐项书理</summary>'
+            +'<br>'.join(esc(x['label'])+'：'+('通过' if x.get('ok') is True else '待补证/未通过') for x in book)+'</details>')
+        if current and tier:book_text=books_html(card)
+        elif not current:book_text='<small>原书理快照 · 待重核</small>'+book_text
+        review_card=card if current and (tier or paused) else r.get('scorecard') or {}
+        review_html=gpt_html(review_card) if (not paused or current) and (tier or r.get('review_complete')) else '当前双审证据待更新；未授级'
+        if not current:review_html='<small>原GPT审核快照 · 待重核</small>'+review_html
+        entry=(live_focus.get(canonical(c)) or {}).get('entry_opportunity') if view=='current' and current else r.get('entry_opportunity')
+        action=entry_html(entry or {}) if tier else '<b>候选研究·不可执行</b><div>补齐GPT双审及量价触发；不是1A/2A/3A。</div>'
+        if paused:action='<b>⏸ 暂停研究·不可执行</b><details><summary>暂停原因与原评级</summary>'+(('原'+esc(r['previous_tier'])+' → 暂停研究<br>') if r.get('previous_tier') else '')+esc(r['reason'])+'</details>'
+        if not current:action='<b>当前证据待更新·不可执行</b><div>下列为原研究合同，等待新一轮同源核对。</div>'
+        row_class='v88-watch-history-row' if view=='history' else 'v88-watch-tracking-row' if view=='tracking' else 'v88-watch-row'
+        attention=bool(current and r.get('focus_eligible') is True)
+        tally=counts.setdefault(r['market'],{'total':0,'graded':0,'paused':0,'awaiting':0,'stale':0,**{t:0 for t in GRADES}})
+        tally['total']+=1;tally['graded']+=bool(current and tier in ('1A','2A','3A'))
+        if current and tier in GRADES:tally[tier]+=1
+        tally['paused']+=paused;tally['awaiting']+=bool(not paused and not tier);tally['stale']+=not current
+        published_rank=r.get('watch_rank')
+        valid_rank=type(published_rank) is int and 1<=published_rank<=LIMITS.get(tier,0)
+        rank_label=((f'{esc(r["market"])} {esc(tier)} '+('' if current else '原榜')+f'第{published_rank}名'
+                     if valid_rank else f'{esc(r["market"])} {esc(tier)} 名次待核') if view=='current'
+                    else f'{esc(r["market"])} 跟踪 {esc(published_rank)}')
+        weekly=('<br><small>📌 本周主观察 · 与上方周度同股同分</small>'
+                if view=='current' and attention and r.get('weekly_link') is True else '')
+        anchor=f' id="v88-watch-{esc(canonical(c))}"' if view=='current' else f' id="v88-tracking-{esc(canonical(c))}"' if view=='tracking' else ''
+        row_html=(f'<tr{anchor} class="{row_class}" data-code="{esc(c)}" data-market="{esc(r["market"])}" data-tier="{esc(tier or "none")}" data-paused="{str(paused).lower()}" data-continuity="{str(r.get("continuity") is True).lower()}" data-current="{str(current).lower()}">'
+               +_td('<b>'+stock_link(display_name(r['name'],c,profiles),c,_flag(c,r['market']))+'</b><br>'+esc(c)+profile_html(c,profiles))
+               +_td(rank_label+f'<br><b>{esc(label)}</b><br>'
+                    +(f'{"审核分" if current else "原审核分"} {score:g}/100' if score is not None else '审核分：证据待更新' if paused else '审核分：尚未完成双审')
+                    +weekly+_listing_history_html(r))
+               +_td(f'<b>{esc(p.get("last"))}</b><br>{esc(str(r.get("source_asof") or "")[:10])}'
+                    +f'<br><small>{esc(str(r.get("source_asof") or "")[11:16])} 源时区</small>')
+               +_td(action)
+               +_td(esc(p.get('entry_range'))+'<details><summary>原入场条件</summary>'+esc(p.get('promotion_trigger'))+'</details>')
+               +_td(profit_html({'trade_plan':p,'central_trade_plan':p,'horizon':r['horizon']}))
+               +_td('<b>'+esc(p.get('stop'))+'</b><details><summary>失效条件</summary>'+esc(p.get('invalidation'))+'</details>')
+               +_td({'short':'短期（1–30日）','medium':'中期（31–90日）','long':'长期（91–365日）'}.get(r['horizon'],'周期待核'))
+               +_td(review_html)
+               +_td(book_text)
+               +_td('🔎 本期持续跟踪'+'<details><summary>依据与升降级条件</summary>'+esc(r['reason'])+'<br>'+esc('；'.join(r.get('gaps') or []))
+                    +'<br>暂不宜开仓仍保留原档案；升降级与实际行情见下方演变监控。</details>')+'</tr>')
+        if view=='current':bodies[tier]+=row_html
+        else:body+=row_html
+    title=(f'<div class="v88-persistent-watch-summary" style="font-size:13px;font-weight:600;margin:8px 0">'
+           +('三市场正式评级榜' if view=='current' else '持续跟踪与补审（不计入正式评级）' if view=='tracking' else '本期固定跟踪档案')+f' · {len(rows)}只</div>')
+    note='<details style="font-size:11px;color:#64748b"><summary>ℹ️ 跟踪名单与评级说明</summary>本期固定跟踪，显示中央最新评级与分数；跟踪序号不代表当前质量排名。降级明确暂停研究、保留原合同。3A主线为中长期，短期研究另注明。</details>'
+    if view=='current':
+        market_note=' · '.join(f'<span data-watch-market="{esc(m)}">{esc(m)}：1A {v["1A"]}/3–5 · 2A {v["2A"]}/1–2 · 3A {v["3A"]}/1–2'+(f' · 1A缺口{max(0,3-v["1A"])}' if v['1A']<3 else '')+(f' · 2A缺口{max(0,1-v["2A"])}' if v['2A']<1 else '')+(f' · 3A缺口{max(0,1-v["3A"])}' if v['3A']<1 else '')+'</span>' for m,v in counts.items())
+        note='<div class="v88-watch-market-summary" style="font-size:11px;color:#64748b">'+market_note+'</div><details style="font-size:11px;color:#64748b"><summary>ℹ️ 评级与排序规则</summary>各市场1A目标3–5只，2A和3A每档各目标1–2只；同档审核分从高到低，同分沿用中央质量排序。进场条件只决定动作，不改变名次。<br>只有完成当前双审、取得真实评级与分数的个股进入正式榜；数量不足会显示补审缺口，不用候选或暂停项冒充。周度观察沿用相同评级与分数，标记不占用或提升名次。<br>下方持续跟踪与补审保留降级原因及恢复条件，历史合同及升降级持续留档。</details>'
+        for grade in GRADES:
+            grade_note=' · '.join(f'{esc(m)} {v[grade]}/{"3–5" if grade=="1A" else "1–2"}' for m,v in counts.items())
+            body+=f'<tr class="v88-grade-section" data-grade="{grade}"><td colspan="11" style="font-size:11px;font-weight:600;background:#eff6ff;padding:5px 7px">{grade} · {grade_note}</td></tr>'
+            body+=bodies[grade] or f'<tr class="v88-grade-empty"><td colspan="11" style="font-size:11px;color:#64748b;padding:5px 7px">本档尚无完成双审并达标的个股；补审与持续跟踪见下方。</td></tr>'
+    elif view=='tracking':
+        market_note=' · '.join(f'<span data-tracking-market="{esc(m)}">{esc(m)} {v["total"]}只（暂停{v["paused"]} / 待双审{v["awaiting"]}）</span>' for m,v in counts.items())
+        note='<div style="font-size:11px;color:#64748b">'+market_note+'</div><details style="font-size:11px;color:#64748b"><summary>ℹ️ 跟踪与恢复条件</summary>这里保留未授级、暂停和待补审个股；已完成的真实审核显示分数，尚未完成的审核不填造分数。补齐证据并通过当前双审后，按正式评级与分数进入上方对应榜单。</details>'
+    note=note.replace('</details>','<br>'+LISTING_HISTORY_RULE+'</details>')
+    changes=doc.get('recent_seat_changes') or []
+    history=''
+    if code is None and changes and view not in ('current','tracking'):
+        exits=[e for e in changes if e.get('kind')=='WATCH_LEFT']
+        if exits:
+            history='<div style="font-size:11px;color:#64748b">近期移出席位（仍持续留档）：'+ ' · '.join(stock_link(e['code'],e['code']) for e in exits[-8:])+'</div>'
+        history+='<details style="font-size:11px"><summary>固定席位变更记录</summary>'+'<br>'.join(esc(e['at'])+' '+stock_link(e['code'],e['code'])+' '+('进入席位' if e['kind']=='WATCH_ENTERED' else '退出席位，保留档案') for e in reversed(changes))+'</details>'
+    return title+note+_tbl(body)+history

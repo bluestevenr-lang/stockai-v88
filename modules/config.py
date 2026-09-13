@@ -17,15 +17,14 @@ APP_ICON = "👑"
 # ═══════════════════════════════════════════════════════════════
 # API 配置
 # ═══════════════════════════════════════════════════════════════
-GEMINI_API_KEY = st.secrets.get("GEMINI_API_KEY", os.getenv("GEMINI_API_KEY", ""))
-GEMINI_MODEL_NAME = "gemini-2.5-flash"  # 保持2.5版本
-
-# Gemini 模型选项（用于下拉框）
-GEMINI_MODELS = {
-    "gemini-2.5-flash": "Gemini 2.5 Flash（推荐）",
-    "gemini-1.5-flash": "Gemini 1.5 Flash",
-    "gemini-1.5-pro": "Gemini 1.5 Pro（更强）",
-}
+from desktop_gpt_subscription import api_key as _subscription_ready
+MODEL_ACCESS_READY = _subscription_ready()
+MODEL_NAME = "gpt-6-astra"
+MODEL_OPTIONS = {MODEL_NAME: "GPT-6 Astra（已有 Codex 订阅）"}
+# 兼容旧调用名称；此值是订阅可用标记，不是真实 API 密钥。
+GEMINI_API_KEY = MODEL_ACCESS_READY
+GEMINI_MODEL_NAME = MODEL_NAME
+GEMINI_MODELS = MODEL_OPTIONS
 
 # ═══════════════════════════════════════════════════════════════
 # 缓存配置
@@ -135,7 +134,7 @@ def validate_config() -> bool:
     errors = []
     
     if not GEMINI_API_KEY:
-        errors.append("❌ 未配置 Gemini API Key")
+        errors.append("❌ GPT-6 Codex 订阅当前不可用；不切换付费 API")
     
     if CACHE_TTL_SECONDS < 60:
         errors.append("⚠️ 缓存TTL过短，建议至少60秒")

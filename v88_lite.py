@@ -204,7 +204,7 @@ if _nav == "🧭 导航":
             st.markdown("**板块轮动**：" + " ｜ ".join(_hints[:5]))
         _rot_lite = (_snap or {}).get("rotation_forecast") or {}
         _cyc_lite = (_snap or {}).get("cycle_scan") or {}
-        if _rot_lite or _cyc_lite.get("stocks"):
+        if _rot_lite or _cyc_lite.get("stocks") or _cyc_lite.get("status") == "pending":
             st.markdown("**🧭 板块轮动＋个股周期总览（2 / 5 / 8 / 16周＋预计拐点）**")
             from rotation_ui import combined_cycle_dashboard_html as _cycle_board_lite, available_markets as _am_lite
             _mk_l = _am_lite(_rot_lite)

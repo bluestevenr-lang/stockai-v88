@@ -3,6 +3,15 @@
 from html.parser import HTMLParser
 
 from rotation_ui import combined_cycle_dashboard_html
+from rotation_ui import rotation_map_html, stock_cycle_html, _swimlane_svg
+from copy import deepcopy
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def isolate_stock_future(monkeypatch):
+    import stock_future_context
+    monkeypatch.setattr(stock_future_context, "for_stock", lambda code,name="": None)
 
 
 class _LayoutParser(HTMLParser):
@@ -25,7 +34,7 @@ class _LayoutParser(HTMLParser):
             self.style_inside = True
         if inside and "cc-panel" in attrs.get("class", "").split():
             self.panel_count += 1
-        if inside and attrs.get("aria-label") == "中美港板块热度轮动时钟与2至16周拐点走向":
+        if inside and attrs.get("aria-label") == "中美港板块未来周期展望":
             self.sector_inside = True
         if inside and attrs.get("aria-label") == "个股周期切换扫描":
             self.stock_inside = True
@@ -76,5 +85,48 @@ def test_combined_cycle_dashboard_keeps_both_modules_in_compact_grid():
     assert html.count("<style>") == 1
     assert "grid-template-columns:minmax(0,1fr) minmax(0,1fr)" in html
     assert "@media(max-width:920px)" in html
-    assert "2／5／8／16周＋拐点" in html
-    assert "预计拐点：顶部转弱" in html
+    assert "未来周期" in html and "rf-phase-clock" in html
+    assert "预计拐点" not in html and "条件 / 反证" in html
+
+
+def test_scenario_scores_are_independent_cells_and_never_future_turning_dates():
+    forecast=_sample_forecast();forecast['strong_review']={'status':'completed'}
+    forecast['trajectories']['美股'][0]['now']=0
+    forecast['trajectories']['美股'][0]['points']['2周']['score']=float('nan')
+    before=deepcopy(forecast)
+    html=rotation_map_html(forecast)
+    assert 'rf-scenario-matrix' in html and '0/100' in html and '○ 缺证' in html
+    for misleading in ('<polyline','预计拐点','拐点临近','高置信','最强思考已复核','今天 →'):
+        assert misleading not in html
+    assert forecast['trajectories']['美股'][0]['now']==before['trajectories']['美股'][0]['now']
+
+
+def test_observed_motion_uses_past_facts_not_scenario_score_slope():
+    item=_sample_forecast()['trajectories']['美股'][0]
+    item['facts']={'5d':-2,'20d':8}
+    for point in item['points'].values():point['score']=95
+    html=_swimlane_svg('美股',[item])
+    assert '⚠ 月强周弱' in html and '↑ 增强' not in html
+
+
+def test_stock_cycle_keeps_zero_missing_and_neutral_records_visible(monkeypatch):
+    import sys
+    from types import SimpleNamespace
+    monkeypatch.setitem(sys.modules,'stock_profile_view',SimpleNamespace(
+        load=lambda:{},display_label=lambda name,code,profiles:name,
+        link_html=lambda name,code,profiles:f'<a href="/?q={code}">{name}</a>'))
+    cycle={'stocks':[{'code':'ZERO','name':'实际零','direction':'up','up':60,'down':0,'pos52':0},
+                     {'code':'MISS','name':'缺证股','direction':'up','pos52':None},
+                     {'code':'NEUT','name':'分歧股','direction':'hold','up':50,'down':50,'pos52':50}]}
+    html=stock_cycle_html(cycle,profiles={})
+    assert all(x in html for x in ('实际零','缺证股','分歧股','○ 方向分缺证','↔ 方向分歧'))
+    assert '<td>0%<div>' in html and '<td>○ 缺证<div>' in html
+    assert '即将进入' not in html and '高置信' not in html
+    assert '原历史位置字段，全年窗口未附凭据' in html
+
+
+def test_sector_scores_and_conditions_escape_external_text():
+    forecast=_sample_forecast();row=forecast['trajectories']['美股'][0]
+    row['name']='<script>alert(1)</script>';row['points']['2周']['trigger']='<img src=x>'
+    html=rotation_map_html(forecast)
+    assert '<script>' not in html and '<img' not in html and '&lt;script&gt;' in html

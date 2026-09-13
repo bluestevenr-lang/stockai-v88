@@ -1,8 +1,8 @@
 """
-AI分析引擎模块 - Gemini API集成 + Prompt管理
+AI分析引擎模块 - GPT-6订阅集成 + Prompt管理
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 功能：
-  - Gemini API调用
+  - GPT-6订阅调用
   - Prompt模板管理
   - 上下文对话支持
   - 错误重试机制
@@ -15,9 +15,9 @@ from typing import Optional, List, Dict, Any
 
 from .config import GEMINI_API_KEY, GEMINI_MODEL_NAME
 
-# 尝试导入Gemini API
+# 尝试导入GPT-6订阅
 try:
-    import google.generativeai as genai
+    import gpt_genai_compat as genai
     HAS_GEMINI = True
     
     # 配置API
@@ -25,7 +25,7 @@ try:
         genai.configure(api_key=GEMINI_API_KEY)
 except ImportError:
     HAS_GEMINI = False
-    logging.warning("google-generativeai未安装，AI功能将不可用")
+    logging.warning("GPT-6订阅兼容桥未安装，AI功能将不可用")
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -135,14 +135,14 @@ PROMPT_TEMPLATES = {
 # 核心API调用函数
 # ═══════════════════════════════════════════════════════════════
 
-def call_gemini_api(
+def call_model_api(
     prompt: str,
     model_name: Optional[str] = None,
     max_retries: int = 3,
     retry_delay: float = 1.0
 ) -> str:
     """
-    调用Gemini API生成内容
+    调用GPT-6订阅生成内容
     
     Args:
         prompt: 提示词
@@ -154,10 +154,10 @@ def call_gemini_api(
         生成的文本，失败返回错误消息
     """
     if not HAS_GEMINI:
-        return "❌ Gemini API未安装，请运行: pip install google-generativeai"
+        return "❌ GPT-6订阅兼容桥不可用"
     
     if not GEMINI_API_KEY:
-        return "❌ 未配置 Gemini API Key"
+        return "❌ GPT-6订阅当前不可用"
     
     model_name = model_name or GEMINI_MODEL_NAME
     
@@ -169,11 +169,11 @@ def call_gemini_api(
             if response and response.text:
                 return response.text
             else:
-                logging.warning(f"Gemini API返回空内容 (尝试 {attempt + 1}/{max_retries})")
+                logging.warning(f"GPT-6订阅返回空内容 (尝试 {attempt + 1}/{max_retries})")
         
         except Exception as e:
             error_msg = f"{type(e).__name__}: {str(e)[:100]}"
-            logging.error(f"Gemini API调用失败 (尝试 {attempt + 1}/{max_retries}): {error_msg}")
+            logging.error(f"GPT-6订阅调用失败 (尝试 {attempt + 1}/{max_retries}): {error_msg}")
             
             if attempt < max_retries - 1:
                 time.sleep(retry_delay * (attempt + 1))  # 递增延迟
@@ -296,7 +296,7 @@ def generate_market_brief(
         cn_stocks=cn_stocks
     )
     
-    return call_gemini_api(prompt)
+    return call_model_api(prompt)
 
 
 def generate_stock_sentiment(
@@ -327,7 +327,7 @@ def generate_stock_sentiment(
         rsi=f"{rsi:.1f}"
     )
     
-    return call_gemini_api(prompt)
+    return call_model_api(prompt)
 
 
 def generate_industry_analysis(
@@ -349,7 +349,7 @@ def generate_industry_analysis(
         industry=industry
     )
     
-    return call_gemini_api(prompt)
+    return call_model_api(prompt)
 
 
 def generate_stock_comparison(
@@ -368,7 +368,7 @@ def generate_stock_comparison(
         stock_summary=stock_summary
     )
     
-    return call_gemini_api(prompt)
+    return call_model_api(prompt)
 
 
 def generate_qa_response(
@@ -393,7 +393,7 @@ def generate_qa_response(
         question=question
     )
     
-    return call_gemini_api(prompt)
+    return call_model_api(prompt)
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -416,3 +416,6 @@ def get_conversation_context() -> ConversationContext:
         _global_conversation_context = ConversationContext(max_history=5)
     
     return _global_conversation_context
+
+# 一轮兼容，旧调用仍委托同一个GPT-6实现。
+call_gemini_api = call_model_api

@@ -1,7 +1,7 @@
 [server]
 headless = true
-# 【安全 2026-07-25 用户批准】只监听本机:局域网设备不可再打开持仓页面
-address = "127.0.0.1"
+# 2026-09-06 用户要求手机网页显示同一内容：开放本机局域网，保留跨站保护
+address = "0.0.0.0"
 enableCORS = true
 enableXsrfProtection = true
 

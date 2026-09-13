@@ -1,61 +1,67 @@
-"""V88 板块热度与2/5/8/16周轮换、拐点思维导图（网页/云端/Lite 共用）。"""
+"""V88 板块及个股未来周期展望（圆周相位＋证据约束情景曲线）。"""
 from html import escape
 import re
+import math
+import hashlib
 
 
 HORIZONS = ("2周", "5周", "8周", "16周")
 LEGACY_HORIZONS = ("明日", "下周", "半个月")
-HORIZON_LABELS = {**{h: f"周期·{h}" for h in HORIZONS},
-                  "明日": "日线·明日", "下周": "周线·下周", "半个月": "月线·半个月"}
+HORIZON_LABELS = {**{h: f"{h}条件档" for h in HORIZONS},
+                  "明日": "旧日档", "下周": "旧周档", "半个月": "旧半月档"}
 MARKET_ICONS = {"美股": "🇺🇸", "A股": "🇨🇳", "港股": "🇭🇰"}
 HORIZON_SHORT = {**{h: h for h in HORIZONS},
                  "明日": "明日 (日)", "下周": "下周 (周)", "半个月": "半月 (月)"}
 SECTOR_COLORS = ("#3b82f6", "#8b5cf6", "#14b8a6", "#f97316", "#ec4899")
 
 _ROTATION_CSS = """
-#__ID__{color:var(--foreground,var(--text-color));margin:.25rem 0 .6rem;
-  --rf-hot:#22c55e;--rf-warm:#f59e0b;--rf-cold:#ef4444;--rf-node-bg:var(--background,#fff)}
-#__ID__ .rf-meta{display:flex;gap:.7rem;flex-wrap:wrap;color:var(--muted-foreground,var(--text-color));font-size:11px;margin-bottom:.3rem}
-#__ID__ .rf-root{width:max-content;max-width:100%;margin:0 auto .5rem;padding:.32rem .8rem;background:color-mix(in srgb,currentColor 9%,transparent);border-radius:7px;text-align:center}
-#__ID__ .rf-root small{color:var(--muted-foreground,var(--text-color));margin-left:.4rem}
-#__ID__ .rf-card{background:color-mix(in srgb,currentColor 6%,transparent);border-radius:9px;padding:.4rem .6rem .2rem;margin:.42rem 0}
-#__ID__ .rf-mkt{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;font-size:12px;margin-bottom:.2rem}
-#__ID__ .rf-mkt span{color:var(--muted-foreground,var(--text-color));font-size:11px}
-#__ID__ .rf-heat{height:4px;margin:.15rem 0 .25rem;background:color-mix(in srgb,currentColor 10%,transparent);overflow:hidden;border-radius:4px}
-#__ID__ .rf-heat i{display:block;height:100%;background:var(--primary-color,var(--primary,currentColor))}
-#__ID__ svg{display:block;width:100%;height:auto;overflow:visible}
-#__ID__ svg text{font-size:11px;font-family:inherit}
-#__ID__ .b-hot{fill:var(--rf-hot);fill-opacity:.12}
-#__ID__ .b-warm{fill:var(--rf-warm);fill-opacity:.12}
-#__ID__ .b-cold{fill:var(--rf-cold);fill-opacity:.12}
-#__ID__ .grid{stroke:color-mix(in srgb,currentColor 16%,transparent);stroke-width:1}
-#__ID__ .axis{stroke:color-mix(in srgb,currentColor 34%,transparent);stroke-width:1}
-#__ID__ .ph{fill:var(--muted-foreground,var(--text-color));opacity:.75}
-#__ID__ .lbl{fill:currentColor}
-#__ID__ .mut{fill:var(--muted-foreground,var(--text-color))}
-#__ID__ .rf-warning{font-size:11px;color:var(--destructive,var(--primary-color));margin-top:.3rem}
-#__ID__ .rf-foot{font-size:11px;color:var(--muted-foreground,var(--text-color));margin-top:.35rem;display:flex;gap:1rem;flex-wrap:wrap}
-@media(max-width:640px){#__ID__ svg text{font-size:10.5px}}
-
-#__ID__ .rf-ck{display:flex;gap:.6rem;align-items:flex-start}
-#__ID__ .rf-ckSvg{width:38%;max-width:300px;flex:0 0 auto;height:auto}
-#__ID__ .rf-ckR{flex:1;min-width:0}
-#__ID__ .rf-ckHead{font-size:12px;margin:.1rem 0 .25rem}
-#__ID__ .rf-lg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 12px}
-/* 【字号统一 2026-07-27 用户"字体不协调,调成一致"】原来板块名/热度链/方向词/拐点
-   各带各的内联字号(12/11/继承),同一行三种大小=乱。现在收成两级:
-   主信息(名称·相位·热度链·方向)统一12px,辅助信息(拐点/说明)统一11px,粗细分主次而非字号 */
-#__ID__ .rf-li{display:flex;align-items:center;gap:5px;font-size:12px;line-height:1.5;min-width:0;flex-wrap:wrap}
-#__ID__ .rf-li *{font-size:12px}
-#__ID__ .rf-dot{width:9px;height:9px;border-radius:3px;flex:0 0 auto}
-#__ID__ .rf-liName{flex:0 0 auto;font-weight:600}
-#__ID__ .rf-liChain{color:#475569;font-variant-numeric:tabular-nums}
-#__ID__ .rf-turn,#__ID__ .rf-turn *{font-size:11px !important;white-space:nowrap}
-#__ID__ .rf-mut2{color:#94a3b8}
-#__ID__ .rf-cert{font-size:11px !important}
-@media(max-width:900px){#__ID__ .rf-lg{grid-template-columns:1fr}}
+#__ID__{font-size:12px;line-height:1.55;margin:6px 0;color:var(--text-color,#334155)}
+#__ID__ .rf-meta,#__ID__ .rf-foot{font-size:10px;color:#64748b;margin:4px 0}
+#__ID__ .rf-root{margin:5px 0}#__ID__ .rf-root small{display:block;font-size:10px;color:#64748b}
+#__ID__ .rf-card{padding:6px;border:1px solid #e2e8f0;border-radius:6px;margin:6px 0}
+#__ID__ .rf-scroll{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+#__ID__ table{border-collapse:collapse;width:100%;min-width:690px;font-size:11px}
+#__ID__ td,#__ID__ th{border:1px solid #e2e8f0;padding:5px;text-align:left;vertical-align:top}
+#__ID__ th{background:#eff6ff}#__ID__ .rf-meter{height:3px;background:#e2e8f0;margin-top:3px;min-width:55px}
+#__ID__ .rf-meter i{display:block;height:3px;background:#64748b}#__ID__ details{font-size:10px}
+#__ID__ .rf-warning{font-size:11px;color:#b45309;margin-top:5px}
 """
 
+
+def _number(value):
+    return float(value) if type(value) in (int,float) and math.isfinite(value) else None
+
+
+def _score(value):
+    number = _number(value)
+    return number if number is not None and 0 <= number <= 100 else None
+
+
+def _research_text(value):
+    text = str(value or '')
+    if re.search(r'买入|卖出|加仓|减仓|满仓|试仓|跟进|必涨|必跌', text):
+        return '原说明含交易动作；本模块仅保留观察，执行仍查中央原合同'
+    return text
+
+
+def _score_cell(value):
+    score = _score(value)
+    if score is None:
+        return '<span class="rf-missing">○ 缺证</span>'
+    return f'<span>{score:g}/100</span><div class="rf-meter"><i style="width:{score:g}%"></i></div>'
+
+
+def _observed_change(facts):
+    five, twenty = (_number((facts or {}).get(k)) for k in ('5d','20d'))
+    if five is None or twenty is None:
+        return '○ 历史动量缺证'
+    if five < 0 < twenty:
+        return '⚠ 月强周弱'
+    if five > 0 and twenty > 0:
+        return '↑ 增强·5/20日同涨'
+    if five < 0 and twenty < 0:
+        return '↓ 减弱·5/20日同跌'
+    return '↔ 窗口分歧'
 
 def _phase(strength: float, mom: float) -> str:
     if strength >= 0 and mom >= 0:
@@ -84,221 +90,172 @@ def _node(x: float, y: float, color: str, conf: str, title: str) -> str:
 
 
 def _swimlane_svg(market: str, trajectory: list) -> str:
+    """Compatibility name: separate score cells, never a future price line."""
     if not trajectory:
-        return ""
-    W, H = 700, 132
+        return ''
     horizons = _trajectory_horizons(trajectory)
-    # 【V88·今天锚点 2026-07-18 用户点单】线从"今天"画起，2周前不再是空白。
-    # 旧缓存无 now 字段时按原版画（下一轮流水线自然补齐）。
-    has_now = any(isinstance(t.get("now"), (int, float)) for t in trajectory)
-    if has_now:
-        x_positions = (218, 318, 418, 514) if len(horizons) == 4 else (250, 382, 514)
-        x_today = 118
-    else:
-        x_positions = (125, 255, 385, 515) if len(horizons) == 4 else (150, 330, 510)
-        x_today = None
-    cols = dict(zip(horizons, x_positions))
-    top, bot = 26, 108
-    span = bot - top
-
-    lo, hi = 38.0, 72.0  # 收窄纵轴到真实热度区间，放大板块之间的差异
-
-    def yv(score):
-        s = max(lo, min(hi, float(score)))
-        return bot - (s - lo) / (hi - lo) * span
-
-    yb1, yb2 = yv(60), yv(48)  # 热≥60 / 温48-60 / 冷<48
-    p = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="{escape(market)}板块今天至16周热度与拐点走向">']
-    p.append(f'<rect class="b-hot" x="96" y="{top}" width="420" height="{yb1-top:.0f}"/>')
-    p.append(f'<rect class="b-warm" x="96" y="{yb1:.0f}" width="420" height="{yb2-yb1:.0f}"/>')
-    p.append(f'<rect class="b-cold" x="96" y="{yb2:.0f}" width="420" height="{bot-yb2:.0f}"/>')
-    for label, yy in (("热", (top+yb1)/2), ("温", (yb1+yb2)/2), ("冷", (yb2+bot)/2)):
-        p.append(f'<text class="ph" x="90" y="{yy+4:.0f}" text-anchor="end">{label}</text>')
-    if x_today is not None:
-        p.append(f'<line class="grid" x1="{x_today}" y1="{top}" x2="{x_today}" y2="{bot}"/>')
-        p.append(f'<text class="mut" x="{x_today}" y="16" text-anchor="middle">今天</text>')
-    for h, x in cols.items():
-        p.append(f'<line class="grid" x1="{x}" y1="{top}" x2="{x}" y2="{bot}"/>')
-        p.append(f'<text class="mut" x="{x}" y="16" text-anchor="middle">{HORIZON_SHORT[h]}</text>')
-    end_labels = []
-    for i, t in enumerate(trajectory):
-        color = SECTOR_COLORS[i % len(SECTOR_COLORS)]
-        seq = [(cols[h], yv(t["points"][h]["score"]), h) for h in horizons if h in t["points"]]
-        if not seq:
-            continue
-        if x_today is not None and isinstance(t.get("now"), (int, float)):
-            _ny = yv(t["now"])
-            seq.insert(0, (x_today, _ny, "今天"))
-            p.append(f'<circle cx="{x_today}" cy="{_ny:.0f}" r="3.4" fill="{color}">'
-                     f'<title>{escape(t["name"])}·今天热度{t["now"]:.0f}/100（当日动量+MA20位置+量能实算）</title></circle>')
-        pts = " ".join(f"{x:.0f},{y:.0f}" for x, y, _ in seq)
-        p.append(f'<polyline points="{pts}" fill="none" stroke="{color}" stroke-width="2" '
-                 f'stroke-linejoin="round" stroke-linecap="round"/>')
-        for x, y, h in seq:
-            if h == "今天":
-                continue  # 今天锚点已单独画，points里没有它
-            pt = t["points"][h]
-            title = (f'{t["name"]}·{h}：热度{pt["score"]}/100 · {pt["confidence"]}置信\n'
-                     f'触发 {pt.get("trigger","")}｜失效 {pt.get("invalid","")}')
-            p.append(_node(x, y, color, pt["confidence"], title))
-            turn = t.get("turning") or {}
-            if h == turn.get("horizon"):
-                p.append(f'<circle cx="{x:.0f}" cy="{y:.0f}" r="8" fill="none" stroke="{color}" '
-                         f'stroke-width="1.5" stroke-dasharray="2 2"><title>预计拐点：{escape(str(turn.get("type", "待确认")))}</title></circle>')
-        end_labels.append([seq[-1][1], seq[-1][0], color, t["name"]])
-    # 右端标签防重叠：按 y 排序后强制最小行距
-    end_labels.sort()
-    min_gap = 14.0
-    for j in range(1, len(end_labels)):
-        if end_labels[j][0] - end_labels[j-1][0] < min_gap:
-            end_labels[j][0] = end_labels[j-1][0] + min_gap
-    for ly, lx, color, name in end_labels:
-        p.append(f'<text x="{lx+10:.0f}" y="{ly+4:.0f}" fill="{color}">{escape(name)}</text>')
-    p.append('</svg>')
-    return "".join(p)
+    out = ['<div class="rf-scroll"><table class="rf-scenario-matrix"><thead><tr><th>板块与实际动量</th><th>当前规则分</th>']
+    out.extend('<th>'+escape(HORIZON_LABELS[h])+'</th>' for h in horizons)
+    out.append('</tr></thead><tbody>')
+    for item in trajectory:
+        points = item.get('points') or {}; facts = item.get('facts') or {}
+        out.append('<tr><td><b>'+escape(str(item.get('name') or '名称待核'))+'</b><div>'+_observed_change(facts)+'</div>')
+        if facts:
+            out.append('<div>实际5/20日变动 '+escape(str(facts.get('5d', '缺证')))+'% / '+escape(str(facts.get('20d', '缺证')))+'%</div>')
+        out.append('</td><td>'+_score_cell(item.get('now'))+'</td>')
+        for horizon in horizons:
+            point = points.get(horizon) or {}
+            out.append('<td>'+_score_cell(point.get('score')))
+            if point:
+                out.append('<details><summary>条件 / 反证</summary><div>确认：'+escape(_research_text(point.get('trigger')) or '○ 未记录')+'</div><div>失效：'+escape(_research_text(point.get('invalid')) or '○ 未记录')+'</div></details>')
+            out.append('</td>')
+        out.append('</tr>')
+    out.append('</tbody></table></div>')
+    return ''.join(out)
 
 
-def _clock_svg(market: str, trajectory: list, heat: dict) -> str:
-    """【V88·阅读友好重排 2026-07-25 用户抓"图例看不懂+右侧大空间浪费"】
-    时钟收窄为左侧小SVG,图例改右侧HTML两列人话卡:每板块一行"名称·相位｜热度链｜拐点",
-    拐点≤2周红字加粗"临近"。返回flex容器HTML(调用处已按普通HTML嵌入)。"""
-    if not trajectory:
-        return ""
-    cx, cy, R = 150, 94, 74
-    p = [f'<svg class="rf-ckSvg" viewBox="0 0 300 194" role="img" '
-         f'aria-label="{escape(market)}板块轮动时钟">']
-    p.append('<defs><marker id="rf-arrow" markerWidth="7" markerHeight="7" refX="5" refY="3" '
-             'orient="auto"><path d="M0 0 L6 3 L0 6 Z" fill="context-stroke"/></marker></defs>')
-    p.append(f'<circle class="grid" cx="{cx}" cy="{cy}" r="{R}" fill="none"/>')
-    p.append(f'<circle class="grid" cx="{cx}" cy="{cy}" r="{R*0.5:.0f}" fill="none" stroke-dasharray="3 4"/>')
-    p.append(f'<line class="axis" x1="{cx}" y1="{cy-R}" x2="{cx}" y2="{cy+R}"/>')
-    p.append(f'<line class="axis" x1="{cx-R}" y1="{cy}" x2="{cx+R}" y2="{cy}"/>')
-    p.append(f'<text class="ph" x="{cx}" y="{cy-R-6}" text-anchor="middle">领涨启动</text>')
-    p.append(f'<text class="ph" x="{cx}" y="{cy+R+16}" text-anchor="middle">退潮杀跌</text>')
-    p.append(f'<text class="ph" x="{cx+R+6}" y="{cy+4}" text-anchor="start">高位派发</text>')
-    p.append(f'<text class="ph" x="{cx-R-6}" y="{cy+4}" text-anchor="end">低位蓄势</text>')
-    items = []
-    horizons = _trajectory_horizons(trajectory)
-    for i, t in enumerate(trajectory):
-        color = SECTOR_COLORS[i % len(SECTOR_COLORS)]
-        scores = [t["points"][h]["score"] for h in horizons if h in t["points"]]
-        if not scores:
-            continue
-        avg = sum(scores) / len(scores)
-        near = t["points"].get(horizons[0], {}).get("score", avg)
-        far = t["points"].get(horizons[-1], {}).get("score", avg)
-        strength = max(-1.0, min(1.0, (avg - 50) / 20.0))
-        mom = max(-1.0, min(1.0, (far - near) / 12.0))
-        x = cx + strength * R * 0.78
-        y = cy - mom * R * 0.78
-        ay = y - (1 if mom >= 0 else -1) * min(26.0, 11 + abs(mom) * 18)
-        p.append(f'<line x1="{x:.0f}" y1="{y:.0f}" x2="{x:.0f}" y2="{ay:.0f}" stroke="{color}" '
-                 f'stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#rf-arrow)"/>')
-        p.append(f'<circle cx="{x:.0f}" cy="{y:.0f}" r="5.5" fill="{color}">'
-                 f'<title>{escape(t["name"])}</title></circle>')
-        phase = _phase(strength, mom)
-        # ── HTML图例(人话):走向词+热度链+拐点临近高亮 ──
-        _dir_w = ("↑升温" if far - near >= 3 else ("↓降温" if near - far >= 3 else "→持平"))
-        _dir_c = ("#dc2626" if far - near >= 3 else ("#16a34a" if near - far >= 3 else "#94a3b8"))
-        turn = t.get("turning") or {}
-        _th = str(turn.get("horizon") or "")
-        if _th in ("2周", "5周"):
-            _turn_html = (f'<b class="rf-turn" style="color:#dc2626">⏰拐点临近≈{escape(_th)}</b>' if _th == "2周"
-                          else f'<span class="rf-turn" style="color:#b45309">⏰拐点≈{escape(_th)}</span>')
-        elif _th:
-            _turn_html = f'<span class="rf-turn rf-mut2">拐点≈{escape(_th)}</span>'
-        else:
-            _turn_html = '<span class="rf-turn rf-mut2">暂无拐点</span>'
-        _now_t = (f'今天{int(t["now"])}→' if isinstance(t.get("now"), (int, float)) else '')
-        items.append(
-            f'<div class="rf-li"><span class="rf-dot" style="background:{color}"></span>'
-            f'<span class="rf-liName"><b>{escape(t["name"])}</b>·{escape(phase)}</span>'
-            f'<span class="rf-liChain">{_now_t}{escape(horizons[0])}{int(near)}→'
-            f'{escape(horizons[-1])}{int(far)} <b style="color:{_dir_c}">{_dir_w}</b></span>'
-            f'{_turn_html}</div>')
-    p.append('</svg>')
-    heat_txt = ""
-    if heat:
-        hs = heat.get("score")
-        heat_txt = f'当前热度 {hs}/100 {escape(str(heat.get("label", "")))}' if hs is not None else ""
-    return (
-        '<div class="rf-ck">' + "".join(p)
-        + '<div class="rf-ckR">'
-        + f'<div class="rf-ckHead">{MARKET_ICONS.get(market, "")} <b>{escape(market)}</b>'
-        + f'<span class="rf-mut2">　{heat_txt}　图例:数字=热度(红↑升温/绿↓降温)·拐点=预计转向时间</span></div>'
-        + '<div class="rf-lg">' + "".join(items) + '</div>'
-        + '<div class="rf-mut2">外圈=一轮周期·点=板块当前相位·虚箭头=热度走向(升温↑/退潮↓)</div>'
-        + '</div></div>')
+def _scenario_id(prefix, name, code='', index=0):
+    token = hashlib.sha256(f'{name}|{code}|{index}'.encode()).hexdigest()[:12]
+    return re.sub(r'[^a-zA-Z0-9_-]', '-', prefix) + '-' + token
+
+
+def _strip_styles(content):
+    styles = []
+    def collect(match):
+        styles.append(match.group(1))
+        return ''
+    body = re.sub(r'<style>(.*?)</style>', collect, content or '', flags=re.S)
+    return '\n'.join(styles), body
+
+
+def _clock_svg(market: str, trajectory: list, heat: dict | None = None) -> str:
+    """All objects retain their actual phase; each point opens its own future path.
+
+    The caller supplies phase from evidence or the preserved cycle record. No
+    difference between old horizon scores is used to invent a clock position.
+    """
+    out = ['<div class="rf-clock-main"><svg class="rf-phase-clock" viewBox="0 0 440 310" role="img" aria-label="全部对象当前圆周相位">',
+           '<circle cx="220" cy="155" r="108" fill="none" stroke="#cbd5e1"/>',
+           '<circle cx="220" cy="155" r="60" fill="none" stroke="#e2e8f0" stroke-dasharray="4 5"/>',
+           '<path d="M112 155H328 M220 47V263" stroke="#94a3b8" fill="none"/>',
+           '<text x="220" y="26" text-anchor="middle">↑ 领涨启动</text>',
+           '<text x="336" y="159">高位转弱</text>',
+           '<text x="104" y="159" text-anchor="end">低位修复</text>',
+           '<text x="220" y="293" text-anchor="middle">↓ 下行压力</text>']
+    missing = []
+    for index, row in enumerate(trajectory or []):
+        phase = row.get('phase') or {}
+        x, y = (_number(phase.get(k)) for k in ('x', 'y')) if isinstance(phase, dict) else (None, None)
+        label = str(row.get('label') or row.get('name') or '名称待核')
+        target = str(row.get('target') or '')
+        href = str(row.get('href') or '#'+target)
+        if x is None or y is None:
+            missing.append((label,href)); continue
+        x, y = max(-1,min(1,x)), max(-1,min(1,y))
+        token=int(hashlib.sha256((label+'|'+str(index)).encode()).hexdigest()[:8],16)
+        angle=(token%360)*math.pi/180
+        x+=math.cos(angle)*.07; y+=math.sin(angle)*.07
+        # Radial cap preserves the source quadrant; scatter overlap uses a
+        # stable tiny separation purely for visibility, never changes phase.
+        radius = math.hypot(x,y)
+        if radius > .94:
+            x, y = x*.94/radius, y*.94/radius
+        cx, cy = 220+x*108, 155-y*108
+        color = row.get('color') or SECTOR_COLORS[index % len(SECTOR_COLORS)]
+        title = label+' · '+str(phase.get('label') or '相位待核')+'；点击查看未来情景曲线'
+        arrow=''
+        dx,dy=(_number(phase.get(k)) for k in ('dx','dy'))
+        if dx is not None and dy is not None and math.hypot(dx,dy)>.02:
+            length=math.hypot(dx,dy); ux,uy=dx/length,-dy/length
+            ex,ey=cx+ux*21,cy+uy*21
+            arrow=(f'<path d="M{cx:.1f} {cy:.1f} L{ex:.1f} {ey:.1f} '
+                   f'M{ex-ux*5-uy*3:.1f} {ey-uy*5+ux*3:.1f} L{ex:.1f} {ey:.1f} '
+                   f'L{ex-ux*5+uy*3:.1f} {ey-uy*5-ux*3:.1f}" fill="none" stroke="{color}" stroke-width="1.5" stroke-dasharray="3 2"/>')
+        out.append('<a href="'+escape(href,quote=True)+'" aria-label="'+escape(title,quote=True)+'">'
+                   +arrow+f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="7" fill="{color}" stroke="white" stroke-width="1.3"><title>'+escape(title)+'</title></circle>'
+                   +f'<text x="{cx+9:.1f}" y="{cy-7:.1f}" fill="{color}" font-size="10">{index+1}</text></a>')
+    out.append('</svg>')
+    if missing:
+        out.append('<details class="rf-meta rf-clock-missing"><summary>○ 相位待核 · '+str(len(missing))+'只</summary>'+' · '.join('<a href="'+escape(href,quote=True)+'">'+escape(name)+'</a>' for name,href in missing)+'</details>')
+    out.append('</div>')
+    return ''.join(out)
+
+
+def _future_group(items, prefix, market='', compact=False):
+    """A script-free selection links every clock point to the matching curve."""
+    from future_trend_visual import render
+    entries = []
+    for i, item in enumerate(items):
+        doc = item['doc']
+        label = str(item.get('label') or doc.get('name') or doc.get('code') or '名称待核')
+        target = _scenario_id(prefix, label, doc.get('code'), i)
+        entries.append({**item, 'label': label, 'target': target,
+                        'phase': item.get('phase') or doc.get('phase'),
+                        'color': item.get('color') or SECTOR_COLORS[i % len(SECTOR_COLORS)]})
+    if not entries:
+        return '<div class="rf-meta">○ 当前对象资料待补</div>'
+    nav = ''.join('<a href="#'+e['target']+'" style="border-color:'+e['color']+'">'
+                  +str(i+1)+'. '+escape(e['label'])+'</a>' for i,e in enumerate(entries))
+    panels=[]
+    for e in entries:
+        panels.append('<section class="rf-future-panel" id="'+e['target']+'" tabindex="-1">'
+                      +render(e['doc'],compact=compact)+'</section>')
+    return ('<div class="rf-future-selector"><div class="rf-clock-wrap">'
+            +_clock_svg(market,entries,{})+'<div class="rf-pick-list">'+nav+'</div></div>'
+            +'<div class="rf-meta">圆点是当前相位，虚箭头为条件方向；点击圆点或名称切换下方未来曲线。曲线为条件情景，后续按实际证据更新。</div>'
+            +'<div class="rf-future-panels">'+''.join(panels)+'</div></div>')
+
+
+_FUTURE_CSS = """
+.rf-future-panels .vf-phase{display:none}.rf-future-panels .v88-future .vf-grid{grid-template-columns:minmax(0,1fr)}
+.rf-future-panels .v88-future .vf-path-svg{min-width:600px}.rf-clock-missing{font-size:10px;max-height:120px;overflow:auto}.rf-clock-main{min-width:0}
+.rf-phase-clock{width:100%;height:auto;max-height:300px;display:block;color:#475569}
+.rf-phase-clock text{font-family:inherit;font-size:11px;fill:currentColor}
+.rf-phase-clock a{cursor:pointer}.rf-phase-clock a:hover circle{stroke:#0f172a;stroke-width:3}
+.rf-clock-wrap{display:grid;grid-template-columns:minmax(220px,1fr) minmax(130px,.7fr);align-items:center;gap:8px}
+.rf-pick-list{display:flex;flex-wrap:wrap;gap:5px;align-content:start;max-height:250px;overflow:auto}
+.rf-pick-list a{display:inline-block;border:1px solid #cbd5e1;border-radius:6px;padding:3px 6px;color:inherit;font-size:11px;text-decoration:none}
+.rf-pick-list a:hover{background:#eff6ff}.rf-future-panel{display:none;scroll-margin-top:25px}
+.rf-future-panel:first-child{display:block}.rf-future-panels:has(>.rf-future-panel:target)>.rf-future-panel:first-child{display:none}
+.rf-future-panels>.rf-future-panel:target{display:block!important}
+@media(max-width:600px){.rf-clock-wrap{grid-template-columns:1fr}.rf-pick-list{max-height:140px}}
+"""
 
 
 def _rich_rotation_html(forecast: dict, element_id: str, focus_market: str,
                         compact: bool = False) -> str:
-    safe_id = re.sub(r"[^a-zA-Z0-9_-]", "-", element_id)
-    trajectories = forecast.get("trajectories") or {}
-    heat_all = forecast.get("market_heat") or {}
-    order = [focus_market] + [m for m in ("美股", "A股", "港股") if m != focus_market]
-    focus = next((m for m in order if (trajectories.get(m))), None)
-
-    review_status = (forecast.get("strong_review") or {}).get("status")
-    review_label = "🧠 最强思考已复核" if review_status == "completed" else "🧠 最强思考待下一轮"
-    analysis_time = escape(str(forecast.get("analysis_time") or "未知"))
-
-    clock = _clock_svg(focus, trajectories.get(focus) or [], heat_all.get(focus) or {}) if focus else ""
-
-    cards = []
-    _card_markets = (focus,) if compact and focus else ("美股", "A股", "港股")
-    for market in _card_markets:
-        traj = trajectories.get(market) or []
-        if not traj:
+    from trend_scenarios import build_sector
+    from exchange_sessions import latest_completed
+    from datetime import datetime, timezone
+    safe_id = re.sub(r'[^a-zA-Z0-9_-]', '-', element_id)
+    trajectories = forecast.get('trajectories') or {}
+    order = [focus_market]+[m for m in ('美股','A股','港股') if m != focus_market]
+    focus = next((m for m in order if trajectories.get(m)), None)
+    cards=[]
+    for market in ((focus,) if compact and focus else ('美股','A股','港股')):
+        rows = trajectories.get(market) or []
+        quality = (forecast.get('data_quality') or {}).get(market) or {}
+        if not rows and not quality:
             continue
-        heat = heat_all.get(market) or {}
-        hs = heat.get("score")
-        try:
-            hw = max(0, min(100, int(hs)))
-        except (TypeError, ValueError):
-            hw = 0
-        htext = (f"当前热度 {hs}/100 · {escape(str(heat.get('label','中性')))}"
-                 if hs is not None else "热度待更新")
-        cards.append(
-            '<div class="rf-card">'
-            f'<div class="rf-mkt"><b>{MARKET_ICONS[market]} {escape(market)}</b><span>{htext}</span></div>'
-            f'<div class="rf-heat" role="img" aria-label="{htext}"><i style="width:{hw}%"></i></div>'
-            + _swimlane_svg(market, traj) +
-            '</div>'
-        )
-
-    warnings = []
-    for item in (forecast.get("warnings") or [])[:3]:
-        warnings.append(f"{item.get('market')}·{item.get('sector')}：{item.get('reason')}")
-    warning_html = (f'<div class="rf-warning">⚠️ {escape("；".join(warnings))}</div>' if warnings else "")
-
-    css = _ROTATION_CSS.replace("__ID__", safe_id)
-    if compact:
-        css += f"""
-#{safe_id}{{margin:0}}
-#{safe_id} .rf-meta,#{safe_id} .rf-foot,#{safe_id} .rf-warning{{font-size:8px;line-height:1.25}}
-#{safe_id} .rf-meta{{gap:.35rem;margin-bottom:.16rem}}
-#{safe_id} .rf-root{{font-size:10px;margin:0 auto .2rem;padding:.18rem .45rem}}
-#{safe_id} .rf-root small,#{safe_id} .rf-mkt span{{font-size:8px}}
-#{safe_id} .rf-card{{padding:.2rem .28rem .08rem;margin:.2rem 0}}
-#{safe_id} .rf-mkt{{font-size:9px;margin:0}}
-#{safe_id} svg text{{font-size:8px}}
-#{safe_id} .rf-foot{{gap:.35rem;margin-top:.15rem}}
-"""
-    clock_block = (f'<div class="rf-card">{clock}</div>' if clock else "")
-    return (
-        f'<style>{css}</style>'
-        f'<div id="{safe_id}" role="figure" aria-label="中美港板块热度轮动时钟与2至16周拐点走向">'
-        f'<div class="rf-meta"><span>🕒 分析于 {analysis_time}（北京时间）</span>'
-        f'<span>{review_label}</span><span>条件成立才升级，失效即撤销</span></div>'
-        f'<div class="rf-root"><b>🧠 板块热度 · 轮动时钟与走向</b>'
-        f'<small>今天 → 2周 → 5周 → 8周 → 16周（圆环=预计拐点）</small></div>'
-        f'{clock_block}{"".join(cards)}{warning_html}'
-        f'<div class="rf-foot"><span>● 实心=高置信 ◐ 半实=中 ○ 空心=低</span>'
-        f'<span>横轴=今天→2/5/8/16周（今天=实算起点，其后=预测） · 纵轴热→温→冷 · 圆环=预计拐点</span>'
-        f'<span>悬停节点看触发/失效</span></div>'
-        f'</div>'
-    )
+        # Only the explicit source clock is admissible, never analysis_time.
+        dates = (forecast.get('source_dates_by_market') or {}).get(market) or []
+        source = dates[0] if len(dates)==1 else forecast.get('source_asof') if not dates else None
+        required_session=latest_completed(market,datetime.now(timezone.utc)).isoformat()
+        entries=[{'doc':build_sector(row,market=market,source_asof=row.get('source_asof') or source or '',required_session=required_session),
+                  'label':row.get('name')} for row in rows]
+        cards.append('<div class="rf-card"><b>'+MARKET_ICONS.get(market,'')+' '+escape(market)+' · 未来周期展望</b>')
+        if quality:
+            cards.append('<div class="rf-meta">原板块样本 '+escape(str(quality.get('valid_count','待核')))+' / '+escape(str(quality.get('input_count','待核')))+'；保留原排序</div>')
+        cards.append(_future_group(entries,safe_id+'-'+market,market,compact=compact) if rows else '<div>○ 板块数据待补，不能据此判断无机会</div>')
+        cards.append('<details class="rf-history"><summary>历史因子与原条件档 · 推演依据</summary>'+_swimlane_svg(market,rows)+'</details></div>')
+    warnings=[str(item.get('market',''))+'·'+str(item.get('sector',''))+'：'+_research_text(item.get('reason')) for item in forecast.get('warnings') or []]
+    warning='<details class="rf-warning"><summary>⚠ 板块风险与反证</summary>'+escape('；'.join(warnings))+'</details>' if warnings else ''
+    body=('<div id="'+safe_id+'" role="figure" aria-label="中美港板块未来周期展望">'
+          +'<div class="rf-meta">行情日 '+escape(str(forecast.get('source_asof') or '逐对象核验'))+' · 原计算 '+escape(str(forecast.get('analysis_time') or '未记录'))+'</div>'
+          +'<div class="rf-root"><b>圆周相位 ＋ 未来一年变化路径</b><small>基准、改善与恶化三条条件路径；不是承诺涨幅或已验证概率。</small></div>'
+          +''.join(cards)+warning+'<div class="rf-foot">未来情景复用原事实，不修改中央评级、原进场/止盈/失效价或期限。本地绘图，新增模型调用 0。</div></div>')
+    nested_css,body=_strip_styles(body)
+    return '<style>'+_ROTATION_CSS.replace('__ID__',safe_id)+_FUTURE_CSS+nested_css+'</style>'+body
 
 
 _CYCLE_CSS = """
@@ -315,7 +272,7 @@ _CYCLE_CSS = """
 #__ID__ .cy-col b{font-size:12.5px}
 #__ID__ .cy-row{font-size:12px;color:var(--muted-foreground,var(--text-color));margin:.2rem 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.5}
 #__ID__ .cy-row .cy-nm{font-weight:600}
-#__ID__ .cy-cert{display:inline-block;width:14px;height:14px;line-height:14px;text-align:center;border-radius:50%;font-size:9.5px;font-weight:800;margin-left:3px;vertical-align:middle}
+#__ID__ .cy-cert{display:inline-block;white-space:nowrap;padding:0 3px;line-height:14px;text-align:center;border-radius:3px;font-size:9.5px;font-weight:800;margin-left:3px;vertical-align:middle}
 #__ID__ .cy-legend{font-size:11px;color:#94a3b8;margin-top:.35rem;line-height:1.6}
 #__ID__ .cy-nm{color:var(--foreground,var(--text-color))}
 #__ID__ .cy-up{color:var(--cy-up)}#__ID__ .cy-down{color:var(--cy-down)}
@@ -325,119 +282,116 @@ _CYCLE_CSS = """
 
 def _cert_mark(code: str = "", name: str = "", cert: dict | None = None,
                std: dict | None = None) -> str:
-    """轮动页统一标识：G=GPT/Codex复核，R=V88本地规则闸。"""
+    """Legacy notes are history, never current GPT or turning-point approval."""
     cert, std = cert or {}, std or {}
-    for k in (str(code or ""), str(code or "").split(".")[0], str(name or "")):
-        if not k:
-            continue
-        e = (cert.get("by_code") or {}).get(k) or (cert.get("by_name") or {}).get(k)
-        if e and e.get("verdict") == "一致":
-            tip = f"GPT/Codex复核通过·{e.get('shift', '')}·{e.get('note','')}".replace('"', "'")
-            return (f'<span class="cy-cert" title="{escape(tip)}" '
-                    'style="background:#0d9488;color:#fff">G</span>')
-        if e:
-            mark = "G̸" if e.get("verdict") == "分歧" else "G"
-            return (f'<span class="cy-cert" title="GPT/Codex:{escape(str(e.get("gpt_verdict") or e.get("verdict")))}" '
-                    f'style="background:#ccfbf1;color:#0f766e">{mark}</span>')
-    for k in (str(code or ""), str(code or "").split(".")[0]):
-        if k and k in (std.get("pass") or {}):
-            return ('<span class="cy-cert" title="V88本地规则闸达标；非AI背书" '
-                    'style="background:#dcfce7;color:#15803d;border:1px solid #86efac">R</span>')
+    # No bare numeric ticker or name lookup: historical notes must not attach
+    # another exchange's security merely because its digits/name look similar.
+    key = str(code or '').strip()
+    entry = (cert.get('by_code') or {}).get(key) if key else None
+    if isinstance(entry, dict):
+        at = escape(str(cert.get('asof') or '日期未记录'), quote=True)
+        return (f'<span class="cy-cert" title="历史审核备注·{at}；不是当前有效GPT审核，也未验证本次周期拐点" '
+                'style="background:#f1f5f9;color:#64748b">旧审核</span>')
+    if key and key in (std.get('pass') or {}):
+        return ('<span class="cy-cert" title="旧本地规则记录；未核对本次事实和原周期，不是当前审核许可" '
+                'style="background:#f1f5f9;color:#64748b">旧规则</span>')
     return ""
 
 
-def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle") -> str:
-    """个股周期切换：一张个股级周期钟(点=个股,按相位落位,切换带箭头) + ↑/↓ 分组清单。
-    cycle = {analysis_time, stocks:[{code,name,phase,direction,headline,up,down,confidence,horizon,pos52,...}]}"""
-    stocks = (cycle or {}).get("stocks") or []
-    if not stocks:
-        return ""
-    _cert, _std = {}, {}
-    try:                     # 认证数据:桌面读私仓,云端读pub(两处都没有就不打标,不报错)
-        import json as _j_c, pathlib as _p_c
-        _base_c = _p_c.Path.home() / "Desktop" / "ai-daily-report-v2" / "data"
-        for _fn, _tgt in (("ai_cert.json", "cert"), ("claude_standard.json", "std"),
-                          ("ai_cert_pub.json", "cert"), ("claude_standard_pub.json", "std")):
-            _fp = _base_c / _fn
-            if _fp.exists():
-                _d = _j_c.loads(_fp.read_text(encoding="utf-8"))
-                if _tgt == "cert" and not _cert:
-                    _cert = _d
-                elif _tgt == "std" and not _std:
-                    _std = _d
-    except Exception:
-        pass
-    safe_id = re.sub(r"[^a-zA-Z0-9_-]", "-", element_id)
-    W, H = 700, 196
-    cx, cy, R = 350, 96, 78
-    p = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-label="个股周期切换时钟">']
-    p.append('<defs>'
-             '<marker id="cyu" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="var(--cy-up)"/></marker>'
-             '<marker id="cyd" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="var(--cy-down)"/></marker>'
-             '</defs>')
-    p.append(f'<circle class="grid" cx="{cx}" cy="{cy}" r="{R}" fill="none"/>')
-    p.append(f'<circle class="grid" cx="{cx}" cy="{cy}" r="{R*0.5:.0f}" fill="none" stroke-dasharray="3 4"/>')
-    p.append(f'<line class="axis" x1="{cx}" y1="{cy-R}" x2="{cx}" y2="{cy+R}"/>')
-    p.append(f'<line class="axis" x1="{cx-R}" y1="{cy}" x2="{cx+R}" y2="{cy}"/>')
-    p.append(f'<text class="ph" x="{cx}" y="{cy-R-6}" text-anchor="middle">领涨启动</text>')
-    p.append(f'<text class="ph" x="{cx}" y="{cy+R+16}" text-anchor="middle">退潮杀跌</text>')
-    p.append(f'<text class="ph" x="{cx+R+6}" y="{cy+4}" text-anchor="start">高位派发</text>')
-    p.append(f'<text class="ph" x="{cx-R-6}" y="{cy+4}" text-anchor="end">低位蓄势</text>')
-    ups, downs = [], []
-    for s in stocks:
-        pos52 = float(s.get("pos52") or 50)
-        up, down = float(s.get("up") or 0), float(s.get("down") or 0)
-        direction = s.get("direction")
-        strength = max(-1.0, min(1.0, (pos52 - 50) / 50.0))
-        mom = max(-1.0, min(1.0, (up - down) / 60.0))
-        x = cx + strength * R * 0.8
-        y = cy - mom * R * 0.8
-        if direction == "up":
-            color, mk = "var(--cy-up)", "cyu"; ups.append(s)
-            p.append(f'<line x1="{x:.0f}" y1="{y:.0f}" x2="{x:.0f}" y2="{y-18:.0f}" stroke="{color}" stroke-width="1.5" marker-end="url(#{mk})"/>')
-        elif direction == "down":
-            color, mk = "var(--cy-down)", "cyd"; downs.append(s)
-            p.append(f'<line x1="{x:.0f}" y1="{y:.0f}" x2="{x:.0f}" y2="{y+18:.0f}" stroke="{color}" stroke-width="1.5" marker-end="url(#{mk})"/>')
-        else:
-            color = "var(--cy-hold)"
-        p.append(f'<circle cx="{x:.0f}" cy="{y:.0f}" r="4.5" fill="{color}"><title>{escape(s.get("name",""))}·{escape(s.get("headline",""))}</title></circle>')
+def _cycle_record_phase(stock, index=0):
+    """Position encodes the preserved phase label, never a future peak date."""
+    mapping={'蓄势→领涨':(-.5,.65), '派发→退潮':(.5,-.55),
+             '领涨中':(-.15,.78), '退潮中':(.15,-.78),
+             '偏多整理':(-.65,.15), '偏空整理':(.65,-.15), '整理':(0,0)}
+    label=str(stock.get('phase') or '')
+    if stock.get('stale_preserved') or label not in mapping:
+        return {'label':label or '相位待核','x':None,'y':None}
+    x,y=mapping[label]
+    # Small stable visual offsets separate records in the same phase category.
+    token=int(hashlib.sha256(str(stock.get('code') or index).encode()).hexdigest()[:8],16)
+    angle=(token%360)*math.pi/180; radius=.025+.09*((token//360)%10)/9
+    return {'label':label,'x':x+math.cos(angle)*radius,'y':y+math.sin(angle)*radius}
 
-    def _rows(items, cls):
-        out = []
-        # 自选与持仓全部展示，不按8只截断；长清单由页面自然向下延伸。
-        for s in items:
-            # 【2026-08-02 用户"全系统出现的个股都可以点名称做深度分析"】
-            _c = str(s.get("code") or "")
-            _nm = escape(str(s.get("name", "")))
-            _lk = (f'<a href="?q={_c}&focus=deep#v88-deep-analysis" target="_blank" '
-                   f'rel="noopener" style="color:inherit;text-decoration:underline;'
-                   f'text-underline-offset:2px">{_nm}</a>') if _c else _nm
-            out.append(f'<div class="cy-row"><span class="cy-nm">{_lk}</span>'
-                       f'{_cert_mark(s.get("code"), s.get("name"), _cert, _std)} '
-                       f'{escape(str(s.get("phase","")))} · {s.get("confidence","")}置信 · '
-                       f'{escape(str(s.get("horizon","")))} · 52周{s.get("pos52","")}%</div>')
-        return "".join(out) or '<div class="cy-row">—</div>'
-    p.append('</svg>')
-    svg = "".join(p)
-    css = _CYCLE_CSS.replace("__ID__", safe_id)
-    at = escape(str((cycle or {}).get("analysis_time") or ""))
-    return (
-        f'<style>{css}</style>'
-        f'<div id="{safe_id}" role="figure" aria-label="个股周期切换扫描">'
-        f'<div class="cy-meta">🕒 {at} · 点=个股按周期相位落位，箭头=即将切换方向</div>'
-        f'<div class="cy-card">{svg}</div>'
-        f'<div class="cy-list">'
-        f'<div class="cy-col"><b class="cy-up">🟢 即将进入上行周期</b>{_rows(ups, "cy-up")}</div>'
-        f'<div class="cy-col"><b class="cy-down">🔴 即将进入下行周期</b>{_rows(downs, "cy-down")}</div>'
-        f'</div>'
-        f'<div class="cy-legend">验证标识：'
-        f'<span class="cy-cert" style="background:#0d9488;color:#fff">G</span>'
-        f' GPT/Codex独立复核通过　'
-        f'<span class="cy-cert" style="background:#dcfce7;color:#15803d;border:1px solid #86efac">R</span>'
-        f' V88本地规则闸达标　无标=尚未覆盖。'
-        f'周期切换=方向判断,不是买卖指令——买卖看行动中心。</div>'
-        f'</div>'
-    )
+
+def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle", profiles=None) -> str:
+    """All cycle records stay visible, with at most three local future previews."""
+    safe_id = re.sub(r"[^a-zA-Z0-9_-]", "-", element_id)
+    if (cycle or {}).get('status') == 'pending':
+        # A pending scan is not an empty opportunity verdict. Only display
+        # clocks already present in this document; rendering never renews facts.
+        clocks = []
+        for key, label in (('source_asof', '原行情日期'), ('analysis_time', '原周期计算')):
+            if cycle.get(key):
+                clocks.append(f'{label} {escape(str(cycle[key]))}')
+        recorded = f'<div class="cy-meta">{" · ".join(clocks)}</div>' if clocks else ''
+        css = _CYCLE_CSS.replace('__ID__', safe_id)
+        return (f'<style>{css}</style><div id="{safe_id}" role="status">'
+                '<div class="cy-meta"><b>个股周期扫描待完成</b></div>'
+                '<div class="cy-legend">当前不能据此判断有无观察标的。</div>'
+                f'{recorded}</div>')
+    stocks = (cycle or {}).get('stocks') or []
+    if not stocks:
+        return ''
+    from urllib.parse import quote
+    from stock_profile_view import display_label, link_html, load as load_profiles
+    profiles=load_profiles() if profiles is None else profiles
+    entries=[]; rendered=[]; rows=[]; previewed=set(); memo={}
+    for i, stock in enumerate(stocks):
+        code=str(stock.get('code') or '')
+        label=display_label(stock.get('name'),code,profiles)
+        deep='/?q='+quote(code,safe='')+'&focus=deep'
+        target=_scenario_id(safe_id+'-future',label,code,i)
+        direction=stock.get('direction') if stock.get('direction') in {'up','down','hold'} else 'hold'
+        color={'up':'#16a34a','down':'#dc2626','hold':'#64748b'}[direction]
+        doc=None
+        # One representative per current direction; the complete pool remains
+        # clickable without calculating dozens of annual views on every load.
+        if code and not stock.get('stale_preserved') and direction not in previewed and len(previewed)<3:
+            previewed.add(direction)
+            try:
+                from stock_future_context import for_stock
+                if code not in memo:
+                    memo[code]=for_stock(code,label)
+                doc=memo[code]
+            except Exception:
+                # Render the original record even when optional local context
+                # fails; do not replace its source date or infer a future curve.
+                doc=None
+        phase=_cycle_record_phase(stock,i)
+        if doc and doc.get('status')=='ready':
+            # When a current same-source future view exists, its shared phase
+            # is also used here; otherwise retain the dated original record.
+            if str(doc.get('source_asof') or '')[:10] == str(stock.get('source_asof') or '')[:10]:
+                phase=doc.get('phase') or phase
+            else:
+                doc=None
+        href='#'+target if doc else deep
+        entries.append({'label':label,'phase':phase,'target':target,'href':href,'color':color})
+        if doc:
+            from future_trend_visual import render
+            rendered.append('<section class="rf-future-panel" id="'+target+'" tabindex="-1">'+render(doc,compact=True)+'</section>')
+        up,down,position=(_score(stock.get(k)) for k in ('up','down','pos52'))
+        tag=('○ 方向分缺证' if up is None or down is None else '↑ 增强线索' if direction=='up' and up>down else
+             '↓ 减弱线索' if direction=='down' and down>up else '↔ 方向分歧')
+        values=' / '.join(f'{value:g}' if value is not None else '○ 缺证' for value in (up,down))
+        position_text=f'{position:g}%' if position is not None else '○ 缺证'
+        rows.append('<tr><td>'+link_html(stock.get('name'),code,profiles)+'<div>'+tag+'</div></td><td>'+values+'</td><td>'+position_text+'<div>原历史位置字段，全年窗口未附凭据</div></td><td>'
+                    +escape(str(stock.get('source_asof') or '日期未记录'))+'<details><summary>确认 / 失效</summary><div>确认：'+escape(_research_text(stock.get('trigger')) or '○ 未记录')+'</div><div>失效：'+escape(_research_text(stock.get('invalid')) or '○ 未记录')+'</div></details></td></tr>')
+    nav=''.join('<a href="'+escape(row['href'],quote=True)+'" style="border-color:'+row['color']+'">'+str(i+1)+'. '+escape(row['label'])+'</a>' for i,row in enumerate(entries))
+    body=(f'<div id="{safe_id}" role="figure" aria-label="个股周期切换扫描">'
+          +'<div class="cy-meta">原周期计算 '+escape(str((cycle or {}).get('analysis_time') or '未记录'))+' · 全部 '+str(len(stocks))+' 只保留</div>'
+          +'<div class="rf-clock-wrap">'+_clock_svg('',entries,{})+'<div class="rf-pick-list">'+nav+'</div></div>'
+          +'<div class="cy-meta">↑ 改善 / ↓ 承压 / ↔ 待确认；圆点表示当前相位。点击圆点或名称看未来曲线；本页预览至多3只，其余直达同源深度分析。</div>'
+          +'<div class="rf-future-panels">'+''.join(rendered)+'</div>'
+          +'<details class="cy-history"><summary>全部历史技术记录与触发条件 · '+str(len(stocks))+' 只</summary><div class="cy-scroll"><table><thead><tr><th>证券</th><th>原上/下方向分 /100</th><th>原历史位置</th><th>行情日与条件</th></tr></thead><tbody>'+''.join(rows)+'</tbody></table></div></details>'
+          +'<div class="cy-legend">未来曲线是同源本地条件推演；本次周期拐点没有独立GPT验证凭据。历史周期线索不授予评级或买卖许可，原合同与保护条件保持。</div></div>')
+    nested_css,body=_strip_styles(body)
+    css=_CYCLE_CSS.replace('__ID__',safe_id)+_FUTURE_CSS+f"""
+#{safe_id} .cy-scroll{{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}}
+#{safe_id} table{{width:100%;min-width:650px;border-collapse:collapse;font-size:11px}}
+#{safe_id} th,#{safe_id} td{{padding:5px;border:1px solid #e2e8f0;text-align:left;vertical-align:top}}
+#{safe_id} th{{background:#eff6ff}}#{safe_id} td div,#{safe_id} details{{font-size:10px;color:#64748b}}"""
+    return '<style>'+css+nested_css+'</style>'+body
 
 
 def available_markets(forecast: dict) -> list:
@@ -466,17 +420,13 @@ def combined_cycle_dashboard_html(forecast: dict, cycle: dict,
 
     def _split_style(html: str):
         """抽出纯CSS并合进唯一style，避免Streamlit把第二个style内容显示成正文。"""
-        m = re.match(r"\s*(<style>.*?</style>)(.*)\Z", html or "", flags=re.S)
-        if not m:
-            return "", html or ""
-        style = re.sub(r"^<style>|</style>$", "", m.group(1), flags=re.S)
-        return style, m.group(2)
+        return _strip_styles(html)
 
     sector_style, sector_body = _split_style(sector_html)
     stock_style, stock_body = _split_style(stock_html)
     panels = []
     if sector_body:
-        panels.append('<div class="cc-panel"><div class="cc-title">🧠 板块轮动 · 2／5／8／16周＋拐点</div>'
+        panels.append('<div class="cc-panel"><div class="cc-title">🧭 板块未来周期 · 圆周＋曲线</div>'
                       + sector_body + '</div>')
     if stock_body:
         panels.append('<div class="cc-panel"><div class="cc-title">🎯 个股周期 · 持仓＋自选</div>'
@@ -497,6 +447,7 @@ def combined_cycle_dashboard_html(forecast: dict, cycle: dict,
 #{safe_id} .cy-card{{padding:.2rem .28rem;margin:.2rem 0}}
 #{safe_id} .cy-card svg text{{font-size:8px}}
 #{safe_id} .cy-list{{gap:.25rem;margin-top:.15rem;max-height:190px;overflow:auto;padding-right:2px}}
+#{safe_id} .cy-scroll{{max-height:340px;overflow:auto}}#{safe_id} .cy-scroll th{{position:sticky;top:0}}
 #{safe_id} .cy-col b{{font-size:9px}}
 #{safe_id} .cy-row{{font-size:8px;line-height:1.25;margin:.08rem 0}}
 @media(max-width:920px){{#{safe_id} .cc-grid{{grid-template-columns:1fr}}}}
@@ -504,91 +455,22 @@ def combined_cycle_dashboard_html(forecast: dict, cycle: dict,
 {stock_style}
 </style>
 <div id="{safe_id}" role="figure" aria-label="板块轮动与个股周期综合总览">
-  <div class="cc-head"><b>🧭 周期总览</b><span>左看2/5/8/16周板块与拐点 · 右看全部持仓/自选切换 · 悬停查看触发与失效</span></div>
+  <div class="cc-head"><b>🧭 周期总览</b><span>左看板块未来路径 · 右看持仓/自选周期 · 点圆点切换曲线</span></div>
   <div class="cc-grid{single}">{''.join(panels)}</div>
 </div>'''
 
 
 def _legacy_rotation_html(forecast: dict, element_id: str = "v88-rotation-map") -> str:
-    if not forecast or not forecast.get("markets"):
-        return ""
-    safe_id = re.sub(r"[^a-zA-Z0-9_-]", "-", element_id)
-    reviewed = ((forecast.get("strong_review") or {}).get("focus") or {})
-    market_maps = forecast.get("markets") or {}
-    _legacy_keys = {h for rows in market_maps.values() for h in (rows or {})}
-    view_horizons = HORIZONS if any(h in _legacy_keys for h in HORIZONS) else LEGACY_HORIZONS
-    review_status = (forecast.get("strong_review") or {}).get("status")
-    review_label = "🧠 最强思考已复核" if review_status == "completed" else "🧠 最强思考待下一轮"
-    branches = []
-    for market in ("美股", "A股", "港股"):
-        horizons = (forecast.get("markets") or {}).get(market) or {}
-        heat = (forecast.get("market_heat") or {}).get(market) or {}
-        heat_score = heat.get("score")
-        try:
-            heat_width = max(0, min(100, int(heat_score)))
-        except (TypeError, ValueError):
-            heat_width = 0
-        heat_text = (f"当前热度 {heat_score}/100 · {heat.get('label', '中性')}"
-                     if heat_score is not None else "当前热度待下一轮更新")
-        nodes = []
-        for horizon in view_horizons:
-            candidates = horizons.get(horizon) or []
-            if not candidates:
-                nodes.append('<div class="rf-node rf-empty">暂无候选</div>')
-                continue
-            pick = ((reviewed.get(market) or {}).get(horizon) or candidates[0].get("name"))
-            row = next((r for r in candidates if r.get("name") == pick), candidates[0])
-            trigger = escape(str(row.get("trigger", "")))
-            invalid = escape(str(row.get("invalid", "")))
-            nodes.append(
-                f'<div class="rf-node" title="触发：{trigger}｜失效：{invalid}">'
-                f'<span class="rf-period">{escape(HORIZON_LABELS[horizon])}</span>'
-                f'<b>{escape(str(row.get("name", "—")))}</b>'
-                f'<span>预测热度 {escape(str(row.get("score", "—")))}/100 · '
-                f'{escape(str(row.get("confidence", "—")))}置信</span>'
-                f'<small>{escape(str(row.get("reason", "")))}</small>'
-                f'<small class="rf-rule">触发：{trigger}</small>'
-                f'<small class="rf-rule">失效：{invalid}</small>'
-                '</div>'
-            )
-        branches.append(
-            '<section class="rf-branch">'
-            f'<div class="rf-market"><b>{MARKET_ICONS[market]} {escape(market)}</b>'
-            f'<span>{escape(heat_text)}</span>'
-            f'<div class="rf-heat" role="img" aria-label="{escape(heat_text)}">'
-            f'<i style="width:{heat_width}%"></i></div></div>'
-            '<div class="rf-periods">' + ''.join(nodes) + '</div>'
-            '</section>'
-        )
-    warnings = []
-    for item in (forecast.get("warnings") or [])[:3]:
-        warnings.append(f"{item.get('market')}·{item.get('sector')}：{item.get('reason')}")
-    warning_html = (f'<div class="rf-warning">⚠️ {escape("；".join(warnings))}</div>' if warnings else "")
-    analysis_time = escape(str(forecast.get("analysis_time") or "未知"))
-    return f'''<style>
-#{safe_id}{{color:var(--foreground,var(--text-color));margin:.25rem 0 .55rem}}
-#{safe_id} .rf-meta{{display:flex;gap:.75rem;flex-wrap:wrap;color:var(--muted-foreground,var(--text-color));font-size:11px;margin-bottom:.35rem}}
-#{safe_id} .rf-root{{width:max-content;max-width:100%;margin:0 auto .65rem;padding:.35rem .8rem;background:color-mix(in srgb,currentColor 9%,transparent);border-radius:7px;text-align:center}}
-#{safe_id} .rf-tree{{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem;position:relative}}
-#{safe_id} .rf-branch{{min-width:0;position:relative}}
-#{safe_id} .rf-branch:before{{content:"";display:block;width:1px;height:.45rem;margin:-.65rem auto .2rem;background:color-mix(in srgb,currentColor 25%,transparent)}}
-#{safe_id} .rf-market,#{safe_id} .rf-node{{background:color-mix(in srgb,currentColor 7%,transparent);color:inherit;padding:.4rem .5rem;border-radius:7px;display:flex;flex-direction:column;justify-content:center;min-width:0}}
-#{safe_id} .rf-market{{text-align:center;margin-bottom:.35rem}}
-#{safe_id} .rf-market span{{font-size:11px;color:var(--muted-foreground,var(--text-color))}}
-#{safe_id} .rf-heat{{height:4px;margin-top:.3rem;background:color-mix(in srgb,currentColor 10%,transparent);overflow:hidden;border-radius:4px}}
-#{safe_id} .rf-heat i{{display:block;height:100%;background:var(--primary-color,var(--primary,currentColor))}}
-#{safe_id} .rf-periods{{display:grid;gap:.3rem;padding-left:.55rem;border-left:1px solid color-mix(in srgb,currentColor 22%,transparent)}}
-#{safe_id} .rf-node{{background:color-mix(in srgb,currentColor 4%,transparent)}}
-#{safe_id} .rf-node b{{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
-#{safe_id} small,#{safe_id} .rf-node span{{font-size:11px;color:var(--muted-foreground,var(--text-color));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
-#{safe_id} .rf-rule{{font-size:11px}}
-#{safe_id} .rf-period{{color:var(--foreground,var(--text-color))!important}}
-#{safe_id} .rf-warning{{font-size:11px;color:var(--destructive,var(--primary-color));margin-top:.35rem}}
-@media(max-width:700px){{#{safe_id} .rf-tree{{grid-template-columns:1fr}}#{safe_id} .rf-branch:before{{display:none}}}}
-</style>
-<div id="{safe_id}" role="figure" aria-label="中美港板块热度与周期轮换思维导图">
-  <div class="rf-meta"><span>🕒 分析于 {analysis_time}（北京时间）</span><span>{review_label}</span><span>条件成立才升级，失效即撤销</span></div>
-  <div class="rf-root"><b>🧠 中美港板块热度与周期预测</b><small>2周 → 5周 → 8周 → 16周</small></div>
-  <div class="rf-tree">{''.join(branches)}</div>
-  {warning_html}
-</div>'''
+    """Old cache remains visible as conditions, without adopting old review votes."""
+    trajectories = {}
+    for market, horizons in (forecast.get('markets') or {}).items():
+        by_name = {}
+        for horizon, candidates in (horizons or {}).items():
+            for candidate in candidates or []:
+                name = str(candidate.get('name') or '名称待核')
+                item = by_name.setdefault(name, {'name':name, 'points':{}, 'facts':candidate.get('facts') or {}})
+                item['points'][horizon] = {k:candidate.get(k) for k in ('score','trigger','invalid')}
+                if 'now' in candidate:
+                    item['now'] = candidate['now']
+        trajectories[market] = list(by_name.values())
+    return _rich_rotation_html(dict(forecast,trajectories=trajectories),element_id,'美股')

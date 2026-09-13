@@ -12,6 +12,10 @@
 """
 from __future__ import annotations
 
+from datetime import date
+from html import escape
+import math
+
 # 跌绿涨红（A股习惯，与截图一致）；由深到浅表示极端到温和
 _BAND_COLOR = {
     "≤-7": "#15803d", "-7~-5": "#16a34a", "-5~-3": "#22c55e",
@@ -26,15 +30,9 @@ _LINE_COLOR = {"中国": "#dc2626", "港股": "#eab308", "美股": "#0ea5e9"}
 # 显示窗口：按**周**聚合(用户2026-08-01"横轴变为周为单位")。
 # 日线受屏幕限制只能放~120天，改周单位后同样宽度能放下整整一年(~52个点)，
 # 手机上每点仍有~7px——"日期尽可能多"和"看得清"这次同时满足。
-# 周内取日偏离的均值：因 rel 对量能是线性的，mean(v_i/ma20−1) == mean(v_i)/ma20−1，
-# 即"该周平均量能 vs 最近20日常态"，与日线口径完全一致，不是另一把尺子。
+# 周/月取各日偏离的均值；各日有自己的滚动基准，不能称为周均量对同一基准。
 SHOW_DAYS = 500
-# 三档单位与各自窗口(2026-08-01 用户"可选日和周,像下面的周轮转一样")。
-# 窗口按分辨率配:日档看半年、周档看一年、月档看两年——每档都落在"点数够多又看得清"的区间。
-# 实测 Kaufman 效率比(净变化/路径总长,越高趋势越干净,季度跨度):
-#   日线 0.03~0.06 = 净移动1格线要走30格,基本是噪音；周线 0.12~0.16 好3~5倍；
-#   月线 0.38~0.60 最干净但一年12点、转折要1~2月才确认,对1~2周决策节奏太钝。
-# 故默认周。(另:实测周内星期几效应只有±3%,可忽略——周聚合的价值在信噪比不在日历效应)
+# 沿用默认周聚合；它只改变显示颗粒度，不提供未来转折时间或预测精度。
 # 【2026-08-01 用户"日期要一致:月线到去年8月,周线日线也要在这个区间内"】
 # 原设计每档各带各的窗口(日120交易日/周52周/月24月),结果切换单位连时间段一起变,
 # 三张图跨的根本不是同一段行情,没法对照——这是设计错误不是取舍。
@@ -46,6 +44,48 @@ DEFAULT_UNIT = "周"
 DEFAULT_SPAN = "1年"
 
 
+def _number(value):
+    if isinstance(value, bool):
+        return None
+    try:
+        result = float(value)
+        return result if math.isfinite(result) else None
+    except (TypeError, ValueError, OverflowError):
+        return None
+
+
+def _count(value):
+    value = _number(value)
+    return int(value) if value is not None and value >= 0 and value.is_integer() else None
+
+
+def _text(value, missing="未提供"):
+    return escape(str(value if value is not None and value != "" else missing))
+
+
+def _day(value):
+    try:
+        return date.fromisoformat(str(value)[:10]).isoformat()
+    except (TypeError, ValueError):
+        return None
+
+
+def _breadth_state(d):
+    """保留生产端涨跌比 2/0.5、分化度 0.8 的界限，只描述已发生样本。"""
+    ratio = _number(d.get("ad_ratio"))
+    if ratio is None or ratio < 0 or _count(d.get("adv")) is None or _count(d.get("dec")) is None:
+        return "○缺证·涨跌家数或涨跌比未取得"
+    state = ("↑增强·该日样本上涨家数占优" if ratio >= 2 else
+             "↓减弱·该日样本下跌家数占优" if ratio <= 0.5 else
+             "↔分歧·该日样本涨跌分化")
+    divergence = _number(d.get("divergence"))
+    if divergence is not None and divergence > 0.8:
+        state += "；⚠风险·样本中位涨幅低于指数"
+    elif divergence is not None and divergence < -0.8:
+        state += "；↔分歧·样本中位涨幅高于指数"
+    return state
+
+
 def breadth_html(bm: dict, markets=("A股", "港股", "美股")) -> str:
     """万得式涨跌分布柱状图 + 指数vs中位对照。bm = barometer.json 解析后的 dict。"""
     mks = bm.get("markets") or {}
@@ -53,187 +93,244 @@ def breadth_html(bm: dict, markets=("A股", "港股", "美股")) -> str:
     for mk in markets:
         d = mks.get(mk) or {}
         bands = d.get("dist_bands") or []
-        if not bands:
+        if not bands or d.get("error") or d.get("stale"):
+            blocks.append(f"<div style='font-size:12px;color:#b45309'><b>{_text(mk)}</b> "
+                          f"○缺证·{_text(d.get('error') or ('数据已标旧' if d.get('stale') else '宽度数据未取得'))}"
+                          f"（源日期{_text(d.get('source_asof'))}）</div>")
             continue
-        peak = max((b.get("n") or 0) for b in bands) or 1
+        peak = max((_count(b.get("n")) or 0) for b in bands) or 1
         cols = []
         for b in bands:
-            n = b.get("n") or 0
-            h = max(2, round(n / peak * 74))          # 柱高按最高档归一
+            n = _count(b.get("n"))
+            h = max(2, round(n / peak * 74)) if n else 0
             c = _BAND_COLOR.get(b.get("band"), "#94a3b8")
             cols.append(
                 f"<div style='flex:1;display:flex;flex-direction:column;justify-content:flex-end;"
-                f"align-items:center;height:92px' title='{b.get('band')}%: {n}只'>"
-                f"<div style='font-size:9.5px;color:{c};line-height:1.1;margin-bottom:1px'>{n}</div>"
+                f"align-items:center;height:92px' title='{_text(b.get('band'))}%: {_text(n, '○缺证')}只'>"
+                f"<div style='font-size:9.5px;color:{c};line-height:1.1;margin-bottom:1px'>{_text(n, '○缺证')}</div>"
                 f"<div style='width:72%;height:{h}px;background:{c};border-radius:2px 2px 0 0'></div>"
                 f"</div>")
         axis = "".join(f"<div style='flex:1;text-align:center'>{a}</div>" for a in _AXIS)
-        ix, md, dv = d.get("index_chg"), d.get("median_chg"), d.get("divergence")
-        cmp_txt = ""
+        ix, md, dv = (_number(d.get(k)) for k in ("index_chg", "median_chg", "divergence"))
+        cmp_txt = "　○缺证·指数或样本中位涨跌幅未取得"
         if ix is not None and md is not None:
-            who = ("个股跑赢指数" if (dv or 0) < -0.3 else
-                   ("指数靠权重扛" if (dv or 0) > 0.3 else "指数与个股同步"))
-            col = "#16a34a" if (dv or 0) < -0.3 else ("#b45309" if (dv or 0) > 0.3 else "#64748b")
+            who = ("○缺证·分化度未取得" if dv is None else
+                   "样本中位涨幅高于指数" if dv < -0.3 else
+                   "样本中位涨幅低于指数" if dv > 0.3 else "指数与样本中位接近")
+            col = "#b45309" if dv is None or abs(dv) > 0.3 else "#64748b"
             cmp_txt = (f"　指数<b>{ix:+.2f}%</b> vs 中位<b>{md:+.2f}%</b>"
                        f" <span style='color:{col}'>({who})</span>")
-        lu = d.get("limit_up") or 0
-        ld = d.get("limit_down") or 0
-        lim = f"　涨停<b style='color:#b91c1c'>{lu}</b>/跌停<b style='color:#15803d'>{ld}</b>" if (lu or ld) else ""
+        lu, ld = _count(d.get("limit_up")), _count(d.get("limit_down"))
+        lim = (f"　≥+9.8%档<b style='color:#b91c1c'>{_text(lu, '○缺证')}</b>"
+               f"/≤−9.8%档<b style='color:#15803d'>{_text(ld, '○缺证')}</b>"
+               "（近似幅度档）") if mk == "A股" else ""
+        counts = {k: _count(d.get(k)) for k in ("adv", "dec", "flat")}
+        observed = _count(d.get("sample_count", d.get("n")))
+        coverage = d.get("coverage_note") or f"有效样本{observed if observed is not None else '未提供'}只；全交易所覆盖另核"
+        notes = [f"源日期{_text(d.get('source_asof'))}", _text(coverage),
+                 f"来源：{_text(d.get('source'))}"]
+        if not _day(d.get("source_asof")):
+            notes.append("○缺证·源日期未核验")
+        if mk == "A股":
+            notes.append("±9.8%为近似档，并非真实涨跌停数量")
+        if d.get("dist_band_scope"):
+            notes.append(_text(d["dist_band_scope"]))
+        if all(counts[k] is not None for k in counts):
+            band_counts = [_count(b.get("n")) for b in bands]
+            if any(n is None for n in band_counts) or sum(band_counts) != counts["adv"] + counts["dec"]:
+                notes.append("⚠风险·分档与涨跌家数未对齐")
+        state = _breadth_state(d)
         blocks.append(
-            f"<div style='margin:8px 0 2px;font-size:12px'><b>{mk}</b> "
-            f"跌<b style='color:#16a34a'>{d.get('dec')}</b>家　平{d.get('flat')}家　"
-            f"涨<b style='color:#dc2626'>{d.get('adv')}</b>家{lim}{cmp_txt}</div>"
+            f"<div style='margin:8px 0 2px;font-size:12px'><b>{_text(mk)}</b> "
+            f"跌<b style='color:#16a34a'>{_text(counts['dec'], '○缺证')}</b>家　平{_text(counts['flat'], '○缺证')}家　"
+            f"涨<b style='color:#dc2626'>{_text(counts['adv'], '○缺证')}</b>家{lim}{cmp_txt}</div>"
             f"<div style='display:flex;align-items:flex-end;border-bottom:1px solid #cbd5e1'>{''.join(cols)}</div>"
             f"<div style='display:flex;font-size:10px;color:#94a3b8;margin-top:1px'>{axis}</div>"
-            f"<div style='font-size:10.5px;color:#64748b;margin:2px 0 6px'>→ {d.get('verdict') or ''}</div>")
+            f"<div style='font-size:10.5px;color:#64748b;margin:2px 0'>{state}</div>"
+            f"<div style='font-size:10px;color:#64748b;margin-bottom:6px'>{'；'.join(notes)}</div>")
     if not blocks:
-        return "<div style='font-size:12px;color:#94a3b8'>宽度数据生成中</div>"
+        return "<div style='font-size:12px;color:#94a3b8'>○缺证·宽度数据未取得</div>"
+    failed = (f"<div style='font-size:11px;color:#b45309'>⚠风险·最近刷新失败：{_text(bm.get('last_failed_at'))}；"
+              "以下保留原源日期的历史样本</div>") if bm.get("last_failed_at") else ""
     return ("<div style='font-size:11px;color:#94a3b8;margin-bottom:2px'>"
-            "横轴=当日涨跌幅(%)分档，纵轴=家数；全市场逐只统计非抽样</div>" + "".join(blocks))
+            "横轴=源日期涨跌幅(%)分档，纵轴=有效样本家数；平盘单列。"
+            "↑增强/↓减弱描述该日样本宽度，单日读数不确认持续趋势。</div>" + failed + "".join(blocks))
 
 
 def _aggregate(series: list, mode: str) -> list:
-    """日序列 → 日/周/月序列。桶内取 rel_pct 均值。
-    因 rel 对量能是线性的，mean(v_i/base−1) == mean(v_i)/base−1，
-    即"该周(月)平均量能 vs 同一基准"——三档共用一把尺子，不是三套口径。
-    date 记为桶内最后一个交易日，横轴刻度按它标。"""
-    if mode == "D":
-        return [{"date": str(p.get("date"))[:10], "rel_pct": p.get("rel_pct") or 0,
-                 "value": p.get("value"), "days": 1} for p in series
-                if p.get("rel_pct") is not None]
-    from datetime import date as _d
-    buckets: dict = {}
+    """各日滚动偏离取桶内均值；保留部分桶及缺值，不补零、不删首桶。"""
+    buckets = {}
     for p in series:
-        raw = str(p.get("date"))[:10]
-        try:
-            y, m, dd = (int(x) for x in raw.split("-"))
-            iso = _d(y, m, dd).isocalendar()
-            key = (iso[0], iso[1]) if mode == "W" else (y, m)
-        except (ValueError, TypeError):
+        raw = _day(p.get("date"))
+        if not raw:
             continue
-        b = buckets.setdefault(key, {"vals": [], "raw": [], "last": "", "n": 0})
-        if p.get("rel_pct") is not None:
-            b["vals"].append(float(p["rel_pct"]))
-        if p.get("value") is not None:
-            b["raw"].append(float(p["value"]))
-        b["last"] = max(b["last"], raw)
-        b["n"] += 1
-    out = []
-    for key in sorted(buckets):
-        b = buckets[key]
-        if not b["vals"]:
-            continue
-        out.append({"date": b["last"], "rel_pct": round(sum(b["vals"]) / len(b["vals"]), 1),
-                    "value": (sum(b["raw"]) / len(b["raw"])) if b["raw"] else None,
-                    "days": b["n"]})
-    # 丢掉不完整的**首**桶：窗口切下来的第一周/月常只剩一两天(港股实测1天)，
-    # 一天的均值当一整周画在最左端是纯噪音。末桶不丢——它是"至今"，是真实进度。
-    _min = 3 if mode == "W" else (10 if mode == "M" else 1)
-    while out and out[0]["days"] < _min:
-        out.pop(0)
-    return out
+        day = date.fromisoformat(raw)
+        iso = day.isocalendar()
+        key = raw if mode == "D" else (iso[0], iso[1]) if mode == "W" else (day.year, day.month)
+        b = buckets.setdefault(key, {"vals": [], "raw": [], "dates": [], "missing": [], "short": 0})
+        rel, value = _number(p.get("rel_pct")), _number(p.get("value"))
+        b["dates"].append(raw)
+        if rel is None:
+            b["missing"].append(raw)
+        else:
+            b["vals"].append(rel)
+        if value is not None and value > 0:
+            b["raw"].append(value)
+        window = _count(p.get("window_n"))
+        if window is not None and window < 20:
+            b["short"] += 1
+    return [{"date": max(b["dates"]), "start_date": min(b["dates"]),
+             "rel_pct": round(sum(b["vals"]) / len(b["vals"]), 1) if b["vals"] else None,
+             "value": sum(b["raw"]) / len(b["raw"]) if b["raw"] else None,
+             "days": len(b["vals"]), "observed_days": len(b["dates"]),
+             "missing_dates": b["missing"], "short_baseline_days": b["short"]}
+            for _, b in sorted(buckets.items())]
 
 
 def amount_daily_html(ad: dict, height: int = 170, unit: str = DEFAULT_UNIT,
                       span: str = DEFAULT_SPAN) -> str:
-    """三市场量能走势（日/周/月三档，相对最近20日均量的偏离%）。
-
-    为什么画相对值而不是绝对值：三市场单位不同（亿元/亿港元/亿股），绝对值同图＝没法比；
-    相对基准的偏离才是"钱在进还是在退"的可比刻度。
-    """
+    """已发生的成交活跃度；量/额和自身滚动基准比较，不推断净资金方向。"""
     mode = UNITS.get(unit, UNITS[DEFAULT_UNIT])
-    days = SPANS.get(span, SPANS[DEFAULT_SPAN])
+    unit = unit if unit in UNITS else DEFAULT_UNIT
+    span_label = span if span in SPANS else DEFAULT_SPAN
+    days = SPANS[span_label]
     mks = ad.get("markets") or {}
-    usable = {}
-    for k, v in mks.items():
-        if not v.get("series") or v.get("error"):
+    usable, notices = {}, []
+    for mk, v in mks.items():
+        quality = v.get("data_quality") or {}
+        source_day = _day(v.get("latest_date"))
+        if v.get("error") or v.get("stale") or quality.get("latest_session_verified") is False:
+            notices.append(f"{mk}：○缺证·{v.get('error') or '最近交易日未核验'}（数据至{source_day or '未取得'}）")
             continue
-        # 先按**区间**切日线，再按单位聚合——顺序反过来就会出现"周档和日档跨不同时间段"
-        agg = _aggregate((v["series"] or [])[-days:], mode)
-        if agg:
-            usable[k] = {**v, "series": agg, "_raw": v["series"]}
+        raw = v.get("series") or []
+        dates = [_day(p.get("date")) for p in raw]
+        if not raw or any(d is None for d in dates) or dates != sorted(set(dates)):
+            notices.append(f"{mk}：○缺证·量能日期缺失、重复或无序（数据至{source_day or '未取得'}）")
+            continue
+        selected = raw[-days:]
+        agg = _aggregate(selected, mode)
+        if not any(p["rel_pct"] is not None for p in agg):
+            notices.append(f"{mk}：○缺证·量能偏离未取得（数据至{source_day or dates[-1]}）")
+            continue
+        continuity = quality.get("continuity") or {}
+        gap_dates = sorted({_day(d) for d in continuity.get("missing_sessions", []) if _day(d)} |
+                           {p["date"] for p in selected if _number(p.get("rel_pct")) is None})
+        usable[mk] = {**v, "series": agg, "_raw": raw, "_selected": selected,
+                      "_gaps": [d for d in gap_dates if dates[-min(days, len(dates))] <= d <= dates[-1]]}
+        if v.get("history_warning"):
+            notices.append(f"{mk}：○缺证·{v['history_warning']}（数据至{source_day or dates[-1]}）")
+        if len(selected) < days:
+            notices.append(f"{mk}：○缺证·所选窗口需{days}个源交易日，实际{len(selected)}日（{selected[0]['date']} ~ {selected[-1]['date']}）")
+        if usable[mk]["_gaps"]:
+            notices.append(f"{mk}：○缺证·窗口内{len(usable[mk]['_gaps'])}个缺值或缺交易日，跨缺口断线")
+        if not source_day or source_day != dates[-1]:
+            notices.append(f"{mk}：○缺证·最新源日期与序列末日未对齐；序列至{dates[-1]}")
+        if v.get("relative_basis") != "rolling20-through-each-date-v1":
+            notices.append(f"{mk}：○缺证·滚动基准口径未核验，仅展示原始偏离记录")
     if not usable:
-        errs = "；".join(f"{k}:{v.get('error')}" for k, v in mks.items() if v.get("error"))
-        return f"<div style='font-size:12px;color:#b45309'>量能走势不可用（{errs or '无数据'}）</div>"
+        return ("<div style='font-size:12px;color:#b45309'>○缺证·量能走势不可用（"
+                + _text("；".join(notices), "无数据") + "）</div>")
 
     W, PAD, LAB = 620, 30, 15
-    H, PH = height, height - LAB
-    _abs = sorted(abs(p["rel_pct"]) for v in usable.values() for p in v["series"])
-    # 纵轴取95分位而非最大值：单根尖峰会把整轴撑满、其余压成直线。超出者截到边界并报数。
-    span = max(10, round((_abs[int(len(_abs) * 0.95)] if _abs else 10) / 5) * 5)
-    _peak = _abs[-1] if _abs else 0
-    _clipped = sum(1 for x in _abs if x > span)
-    n_max = max(len(v["series"]) for v in usable.values())
+    H, PH = max(80, height), max(80, height) - LAB
+    magnitudes = sorted(abs(p["rel_pct"]) for v in usable.values() for p in v["series"]
+                        if p["rel_pct"] is not None)
+    # 保留既有95分位截轴；真实读数在点提示中完整显示。
+    axis_span = max(10, round(magnitudes[int(len(magnitudes) * 0.95)] / 5) * 5)
+    clipped = sum(x > axis_span for x in magnitudes)
+    shared_dates = sorted({p['date'] for v in usable.values() for p in v['series']})
+    first_day = date.fromisoformat(shared_dates[0]).toordinal()
+    date_span = max(1, date.fromisoformat(shared_dates[-1]).toordinal() - first_day)
 
-    def xy(i, n, rel):
-        x = PAD + (W - PAD - 8) * (i / max(1, n - 1))
-        rel = max(-span, min(span, rel))
-        return x, PH / 2 - (rel / span) * (PH / 2 - 10)
+    def xy(day, rel):
+        position = (date.fromisoformat(day).toordinal() - first_day) / date_span
+        x = PAD + (W - PAD - 8) * position
+        rel = max(-axis_span, min(axis_span, rel))
+        return x, PH / 2 - (rel / axis_span) * (PH / 2 - 10)
 
-    import statistics as _st
-    paths, legend = [], []
+    import statistics
+    paths, legend, caps = [], [], []
     for mk, v in usable.items():
-        s = v["series"]
-        c = _LINE_COLOR.get(mk, "#64748b")
-        pts = " ".join(f"{x:.1f},{y:.1f}" for x, y in
-                       (xy(i, len(s), p["rel_pct"]) for i, p in enumerate(s)))
-        paths.append(f"<polyline points='{pts}' fill='none' stroke='{c}' stroke-width='1.2' "
-                     f"stroke-linejoin='round'/>")
-        for i, p in enumerate(s):
-            if abs(p["rel_pct"]) > span:
-                x, y = xy(i, len(s), p["rel_pct"])
-                paths.append(f"<circle cx='{x:.1f}' cy='{y:.1f}' r='2.2' fill='{c}' "
-                             f"stroke='#fff' stroke-width='0.8'><title>{p['date']} "
-                             f"{p['rel_pct']:+.1f}%（超出纵轴{span:.0f}%已截顶）</title></circle>")
-        vs = v.get("vs_ma20_pct")
-        # 【2026-08-01 实测发现】只报 vs20日均会把"最后一天的跳动"读成趋势：
-        # 美股 vs20日均+50%看着是大放量，但近4周均量其实比全年中位低11.8%。
-        # 故同时给"近4周 vs 全年中位"——一个答当下、一个答水位，缺一会误判。
-        _raw = [p["value"] for p in v.get("_raw") or [] if p.get("value")]
+        s, color = v["series"], _LINE_COLOR.get(mk, "#64748b")
+        segments, segment, previous = [], [], None
+        for p in s:
+            rel = p["rel_pct"]
+            crosses_gap = previous and any(previous <= d <= p["date"] for d in v["_gaps"])
+            if rel is None or crosses_gap or p["missing_dates"]:
+                if segment:
+                    segments.append(segment)
+                segment = []
+            if rel is None:
+                previous = None
+                continue
+            x, y = xy(p["date"], rel)
+            segment.append(f"{x:.1f},{y:.1f}")
+            title = (f"{mk} {p['start_date']} ~ {p['date']}：偏离{rel:+.1f}%；"
+                     f"有效{p['days']}日 / 返回{p['observed_days']}日")
+            if p["short_baseline_days"]:
+                title += f"；{p['short_baseline_days']}日基准不足20日"
+            if abs(rel) > axis_span:
+                title += f"（超出纵轴{axis_span:.0f}%已截顶）"
+            paths.append(f"<circle cx='{x:.1f}' cy='{y:.1f}' r='2.0' fill='{color}'>"
+                         f"<title>{_text(title)}</title></circle>")
+            previous = p["date"]
+        if segment:
+            segments.append(segment)
+        for points in segments:
+            if len(points) >= 2:
+                paths.append(f"<polyline points='{' '.join(points)}' fill='none' stroke='{color}' "
+                             "stroke-width='1.9' stroke-linejoin='round'/>")
+        vs, latest = _number(v.get("vs_ma20_pct")), _number(v.get("latest"))
+        basis_ok = v.get("relative_basis") == "rolling20-through-each-date-v1"
+        latest_ok = _day(v.get("latest_date")) == _day(v["_raw"][-1]["date"])
+        state = "○缺证·最新偏离或基准未核验"
+        if vs is not None and basis_ok and latest_ok:
+            state = ("↑增强·量能高于基准" if vs >= 10 else "↓减弱·量能低于基准" if vs <= -10
+                     else "↔分歧·量能未明显偏离基准")
+        last_window = _count(v["_raw"][-1].get("window_n"))
+        if last_window is not None and last_window < 20:
+            state += f"；○缺证·20日基准不足，实际{last_window}日"
+        raw_values = [_number(p.get("value")) for p in v["_raw"][-250:]]
+        valid_values = [x for x in raw_values if x is not None and x > 0]
         pos = ""
-        if len(_raw) >= 60:
-            _med = _st.median(_raw[-250:])
-            _r4 = sum(_raw[-20:]) / 20
-            pos = (f" <span style='color:#64748b'>·近4周vs全年中位"
-                   f"{(_r4 / _med - 1) * 100:+.0f}%</span>") if _med else ""
-        legend.append(
-            f"<span style='white-space:nowrap'>"
-            f"<span style='display:inline-block;width:9px;height:9px;background:{c};"
-            f"border-radius:2px;margin-right:3px'></span>"
-            f"<b>{mk}</b> {v.get('latest')}{v.get('unit')} "
-            f"<span style='color:{'#dc2626' if (vs or 0) > 0 else '#16a34a'}'>{vs:+.1f}%</span>"
-            f"{pos}</span>")
+        if len(valid_values) == len(raw_values) and len(valid_values) >= 60:
+            med = statistics.median(valid_values)
+            r20 = sum(valid_values[-20:]) / 20
+            pos = (f" · 近20个源交易日均值vs近{len(valid_values)}个源交易日中位"
+                   f"{(r20 / med - 1) * 100:+.0f}%")
+        latest_text = f"{latest:g}{_text(v.get('unit'))}" if latest is not None else "○缺证·最新量能"
+        vs_text = f"{vs:+.1f}%" if vs is not None else "○缺证"
+        legend.append(f"<span style='min-width:0;max-width:100%;overflow-wrap:anywhere'><span style='display:inline-block;width:9px;height:9px;"
+                      f"background:{color};border-radius:2px;margin-right:3px'></span><b>{_text(mk)}</b> "
+                      f"{latest_text} · 源日期{_text(v.get('latest_date'))} · 偏离{vs_text} · {state}{pos}</span>")
+        caps.append(f"{mk}={v.get('label') or '样本范围未提供'}；来源{v.get('source') or '未提供'}；"
+                    f"所画{len(s)}桶/{len(v['_selected'])}个源交易日；"
+                    f"{v['_selected'][0]['date']} ~ {v['_selected'][-1]['date']}")
 
     grid = "".join(
         f"<line x1='{PAD}' y1='{PH/2 - k*(PH/2-10):.1f}' x2='{W-8}' y2='{PH/2 - k*(PH/2-10):.1f}' "
         f"stroke='#e2e8f0' stroke-width='1' stroke-dasharray='{'0' if k == 0 else '3,3'}'/>"
-        f"<text x='0' y='{PH/2 - k*(PH/2-10) + 3:.1f}' font-size='9' fill='#94a3b8'>{k*span:+.0f}%</text>"
+        f"<text x='0' y='{PH/2 - k*(PH/2-10) + 3:.1f}' font-size='9' fill='#94a3b8'>{k*axis_span:+.0f}%</text>"
         for k in (1, 0.5, 0, -0.5, -1))
-
+    tick_indices = sorted({0, len(shared_dates) - 1} | set(range(0, len(shared_dates), max(1, (len(shared_dates)-1)//5))))
     ticks = ""
-    ref = max(usable.values(), key=lambda v: len(v["series"]))["series"]
-    n = len(ref)
-    for i in range(0, n, max(1, (n - 1) // 5)):
-        x, _ = xy(i, n, 0)
-        d = str(ref[i]["date"])
-        # 刻度格式跟**区间**走不跟单位走:跨年的区间标 年/月,一年内标 月/日
+    for i in tick_indices:
+        d = shared_dates[i]
+        x, _ = xy(d, 0)
         lab = f"{d[2:4]}/{d[5:7]}" if days > 250 else f"{d[5:7]}/{d[8:10]}"
+        anchor = 'start' if i == 0 else 'end' if i == len(shared_dates) - 1 else 'middle'
         ticks += (f"<line x1='{x:.1f}' y1='0' x2='{x:.1f}' y2='{PH}' stroke='#f1f5f9'/>"
-                  f"<text x='{x:.1f}' y='{H-3}' font-size='9' fill='#94a3b8' "
-                  f"text-anchor='middle'>{lab}</text>")
-
-    _first = min(str(v["series"][0]["date"]) for v in usable.values())
-    _last = max(str(v["series"][-1]["date"]) for v in usable.values())
-    _unit_txt = {"D": "个交易日", "W": "周", "M": "个月"}[mode]
-    # 起止日期写进标题:三档切换时你能一眼确认看的是同一段行情
-    _span_txt = f"{span}（{_first} ~ {_last}）· {n_max}{_unit_txt}"
-    caps = " · ".join(f"{k}={v.get('label')}" for k, v in usable.items())
-    return (f"<div style='font-size:11px;color:#94a3b8;margin-bottom:2px'>"
-            f"纵轴=每{unit}平均量能相对<b>最近20日均量</b>(固定基准,非滚动)的偏离(%)，"
-            f"横轴={_span_txt}；单位各市场不同故只比形状不比绝对值"
-            + (f"；<b>{_clipped}点超出纵轴已截顶</b>(最大{_peak:.0f}%)" if _clipped else "")
+                  f"<text x='{x:.1f}' y='{H-3}' font-size='9' fill='#94a3b8' text-anchor='{anchor}'>{lab}</text>")
+    first = min(v["_selected"][0]["date"] for v in usable.values())
+    last = max(v["_selected"][-1]["date"] for v in usable.values())
+    return (f"<div style='font-size:11px;color:#64748b;margin-bottom:2px'>"
+            f"历史窗口={span_label}（最多{days}个源交易日；实际{first} ~ {last}）；按{unit}聚合。"
+            "纵轴=各日偏离的桶内均值；已声明滚动口径时，各日相对截至该日20日均量，"
+            "不足20日按已有窗口。首末桶保留实际日数；不同市场日期与单位分别披露。"
+            "成交额/成交量描述活跃度，不能据此判断净资金流向或未来涨跌。"
+            + (f" ⚠风险·{clipped}点超出纵轴已截顶（最大绝对偏离{magnitudes[-1]:.0f}%）" if clipped else "")
             + "</div>"
             f"<svg viewBox='0 0 {W} {H}' style='width:100%;height:auto'>{ticks}{grid}{''.join(paths)}</svg>"
-            f"<div style='font-size:11px;margin-top:2px;display:flex;flex-wrap:wrap;"
-            f"gap:4px 14px'>{''.join(legend)}</div>"
-            f"<div style='font-size:10px;color:#94a3b8;margin-top:1px'>口径：{caps}</div>")
+            f"<div style='font-size:11px;margin-top:2px;display:flex;flex-wrap:wrap;gap:4px 14px'>{''.join(legend)}</div>"
+            f"<div style='font-size:10px;color:#64748b;margin-top:1px'>口径：{_text(' · '.join(caps))}</div>"
+            + (f"<div style='font-size:11px;color:#b45309'>{_text('；'.join(notices))}</div>" if notices else ""))

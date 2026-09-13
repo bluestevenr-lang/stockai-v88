@@ -6,7 +6,6 @@ import json
 import re
 import subprocess
 import sys
-import urllib.request
 from datetime import datetime
 from pathlib import Path
 
@@ -24,7 +23,7 @@ FILES = [
     ("data/trend_shift.json",        ["generated_at"], 4),
     ("data/rotation_forecast.json",  ["analysis_time", "generated_at"], 4),
     ("data/intraday_decisions.json", ["generated_at"], 4),
-    ("data/kimi_verify.json",        ["generated_at"], 4),
+    ("data/classics_lens.json",      ["generated_at"], 4),
     ("data/gpt_verify.json",         ["generated_at"], 4),
     ("data/tomorrow_plan.json",      ["generated_at"], 4),
     ("data/fable_plan.json",         ["generated_at", "asof"], 999),  # 只查字段存在性
@@ -70,15 +69,6 @@ def git(repo, *args):
         return "ERR:%s" % e
 
 
-def find_key(cfg):
-    mp = cfg.get("models", {}).get("providers", {}).get("moonshot", {})
-    if isinstance(mp, dict):
-        for c in (mp.get("apiKey"), (mp.get("auth") or {}).get("apiKey") if isinstance(mp.get("auth"), dict) else None):
-            if isinstance(c, str) and c.strip().startswith("sk-"):
-                return c.strip()
-    m = re.search(r"sk-[A-Za-z0-9]{16,}", json.dumps(cfg, ensure_ascii=False))
-    return m.group(0) if m else None
-
 
 def main():
     now = datetime.now()
@@ -119,18 +109,15 @@ def main():
             ok += 1
         lines.append("%s %s: %s（%d天前, 行数%s）" % (tag, rel.split("/")[-1], raw, age, n))
 
-    # 2) 裁决文件纪律（三方会审供数）
+    # 2) Current model binding; stale records remain unusable.
     try:
-        kv = json.load(open(repo / "data" / "kimi_verify.json", encoding="utf-8"))
-        rev = str(kv.get("reviewer") or "")
-        if re.search(r"kimi.*cli", rev, re.I):
-            lines.append("✅ kimi_verify reviewer 合规: %s" % rev[:30])
-            ok += 1
-        else:
-            lines.append("❌ kimi_verify reviewer 异常: %s（越权写入嫌疑）" % rev[:40])
-            bad += 1
-    except Exception as e:
-        lines.append("❌ kimi_verify 读取失败: %s" % str(e)[:40])
+        doc = json.loads((repo / "data" / "gpt_verify.json").read_text(encoding="utf-8"))
+        valid = doc.get("model") == "gpt-6-astra"
+        lines.append("✅ GPT-6审核模型已绑定" if valid else "❌ 缺少当前GPT-6审核，保持待复核")
+        ok += int(valid)
+        bad += int(not valid)
+    except (OSError, ValueError):
+        lines.append("❌ GPT-6审核文件未就绪")
         bad += 1
 
     # 3) git 健康
@@ -146,48 +133,7 @@ def main():
         lines.append("✅ git 无冲突 | %s | stash堆积 %d 个%s" % (sb, n_stash, "（建议清理）" if n_stash > 5 else ""))
         ok += 1
 
-    # 4) 余额（零 token，直连接口；失败不阻塞）+ 每月10元现金预算台账（2026-08-24 用户定纲）
-    try:
-        cfg = json.load(open(Path.home() / ".openclaw" / "openclaw.json", encoding="utf-8"))
-        key = find_key(cfg)
-        if key:
-            req = urllib.request.Request("https://api.moonshot.cn/v1/users/me/balance",
-                                         headers={"Authorization": "Bearer " + key})
-            d = json.load(urllib.request.urlopen(req, timeout=20)).get("data", {})
-            bal = float(d.get("available_balance", 0))
-            lines.append("💰 Moonshot 余额: %.2f 元（现金 %.2f / 代金券 %.2f）" % (
-                bal, float(d.get("cash_balance", 0)), float(d.get("voucher_balance", 0))))
-            ok += 1
-            # 预算台账：快照落 jsonl，算本月已花（跳增=充值不计）；>10 ❌ / >8 ⚠️
-            bl = Path.home() / ".openclaw" / "moonshot_balance.jsonl"
-            snap = {"ts": now.strftime("%Y-%m-%d %H:%M:%S"), "balance": bal,
-                    "cash": float(d.get("cash_balance", 0)), "voucher": float(d.get("voucher_balance", 0))}
-            rows = []
-            if bl.exists():
-                for ln in bl.read_text(encoding="utf-8").splitlines():
-                    try:
-                        rows.append(json.loads(ln))
-                    except Exception:
-                        pass
-            if not rows or rows[-1].get("ts", "")[:16] != snap["ts"][:16]:
-                with open(bl, "a", encoding="utf-8") as f:
-                    f.write(json.dumps(snap, ensure_ascii=False) + "\n")
-                rows.append(snap)
-            month = now.strftime("%Y-%m")
-            pts = sorted((r for r in rows if str(r.get("ts", "")).startswith(month)), key=lambda r: r["ts"])
-            spent = sum(max(0.0, float(a["balance"]) - float(b["balance"])) for a, b in zip(pts, pts[1:]))
-            if spent > 10:
-                lines.append("❌ 本月现金已花 %.2f 元 > 10 元上限（台账起点 %s）" % (spent, pts[0]["ts"][:10] if pts else "?"))
-                bad += 1
-            elif spent > 8:
-                lines.append("⚠️ 本月现金已花 %.2f 元 > 8 元预警线" % spent)
-                warn += 1
-            else:
-                lines.append("✅ 本月现金预算: %.2f / 10 元" % spent)
-                ok += 1
-    except Exception as e:
-        lines.append("⚠️ 余额查询失败: %s" % str(e)[:40])
-        warn += 1
+    lines.append("订阅：GPT-6/Codex；不调用按量余额接口")
 
     lines.append("—— 汇总: ✅%d ⚠️%d ❌%d ——" % (ok, warn, bad))
     print("\n".join(lines))

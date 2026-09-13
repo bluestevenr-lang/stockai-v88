@@ -174,7 +174,7 @@ class MarketForecaster:
         self,
         market_analyses: List[Dict[str, Any]],
         gemini_api_key: str,
-        model_name: str = "gemini-2.5-flash"
+        model_name: str = "gpt-6-astra"
     ) -> Dict[str, str]:
         """
         调用Gemini进行市场预测
@@ -195,7 +195,7 @@ class MarketForecaster:
         }
         
         try:
-            import google.generativeai as genai
+            import gpt_genai_compat as genai
             import json
             
             # 配置API

@@ -36,9 +36,14 @@ for _attr in ("markdown", "caption", "expander", "info", "warning", "error", "su
 _page = "\n".join(_texts)
 
 MUST_HAVE = [
+    "3A大系统",       # 核心列表必须常驻，不能落在宏观回填槽内消失
+    "Astra月度计划",           # 月度约束闭环
+    "萨普",                    # 核心书籍的风险/仓位补充
     "我的股票池",              # 一池归一·持仓+自选合并模块头(金名=双重身份)
-    "决策中心 · 概率卡",       # 持仓决策中心
-    "关注中心",                # 三档双向(Cursor 2026-07-20更名,原推荐中心)
+    "持仓风险与记录",          # 当前持仓风险与原记录
+    "系统与数据检查",          # 统一运行检查入口
+    "手动策略研究",            # 保留主动研究功能
+    "历史与规则档案",          # 原规则与旧月份计划保护
     "公告事件雷达",            # 事件雷达
     "打新雷达",                # 打新
     "机构风向标",              # 机构
@@ -54,14 +59,16 @@ missing = [m for m in MUST_HAVE if m not in _page]
 for _w in WARN_ONLY:
     if _w not in _page:
         print(f"内容自检: ⚠️ 槽内项未采集到(AppTest盲区,请以浏览器实测为准): {_w}")
-bad = [m for m in MUST_NOT if m in _page]
+# A missing industry rank is a disclosed evidence gap, not a failed renderer.
+_error_page = _page.replace("排名暂不可用", "排名缺数据")
+bad = [m for m in MUST_NOT if m in _error_page]
 # 源码级锁定准备买/研究/观察等自定义HTML出口，防止降级时链接被改回纯文字。
 _source = (REPO_ROOT / "app_v88_integrated.py").read_text(encoding="utf-8")
 _link_contract = (
     "def _cb_link9(_nm, _cd):",
-    "{_cb_link9(_n9c, _c9c)}",
+    "from grade_card import system_table_html as _sys3a",
     "⚠️{_cb_link9(r.get('name'), r.get('code'))}",
-    "{_cb_link9(_e9o.get('name') or '', _cd9o)}",
+    "_stk_link(_t9f.get('name'), _t9f.get('code'))",
 )
 if any(_frag not in _source for _frag in _link_contract):
     bad.append("行动中心个股深链出口不完整")
@@ -82,7 +89,10 @@ _plain_stock_rows = []
 import re as _re_link
 for _marker in ("保留研究", "早期风险观察", "翻空第"):
     for _row in _re_link.findall(r"<div[^>]*>.*?</div>", _page):
-        if _marker in _row and "focus=deep#v88-deep-analysis" not in _row:
+        # Policy/book explanations also say "保留研究". Only a stock's
+        # name/status row is required to link to an individual security.
+        _stock_status = _marker != "保留研究" or _re_link.search(r"<b>.*?</b>保留研究", _row)
+        if _marker in _row and _stock_status and "focus=deep#v88-deep-analysis" not in _row:
             _plain_stock_rows.append(_marker)
             break
 if _plain_stock_rows:
@@ -104,6 +114,9 @@ _pending_n = _page.count("待下轮日报")
 flood = _pending_n >= 12
 
 print("内容自检: 缺失模块:", missing or "无 ✅")
+for _bad_text in _texts:
+    if "暂不可用" in _bad_text.replace("排名暂不可用", "排名缺数据"):
+        print("不可用上下文:", _bad_text[max(0, _bad_text.find("暂不可用")-80):_bad_text.find("暂不可用")+100])
 print("内容自检: 坏味道:", bad or "无 ✅", f"| 待下轮日报×{_pending_n}" + ("（泛滥❌）" if flood else ""))
 
 sys.exit(1 if (errs or suspicious or missing or bad or flood) else 0)

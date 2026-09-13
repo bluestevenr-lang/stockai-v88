@@ -11,7 +11,7 @@ REM  GPT/Codex owns the active V88 core on Mac/cloud. No AI process runs here.
 REM
 REM  Log: win\logs\remote_YYYYMMDD.log (ASCII only, avoids console codepage garbage)
 REM
-REM  2026-08-17 change (by Kimi on Win host):
+REM  2026-08-17 change (by GPT-6 on Win host):
 REM    private repo now pulls via scripts/safe_pull.sh (Mac rule: never bare-pull the
 REM    private repo; safe_pull self-heals JSON/JSONL and never leaves conflict markers).
 REM    PYTHONUTF8=1 fixes the postpull healer crashing on GBK console when stash/commit

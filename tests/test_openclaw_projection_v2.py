@@ -62,7 +62,7 @@ def test_central_projection_is_required(tmp_path):
 
 
 def test_valid_empty_v2_central_projection_is_accepted(tmp_path):
-    expected = {"version": "gpt-triad-selection-v2", "factpack_id": "pack-1",
+    expected = {"version": "gpt-classics-selection-v9-tharp", "factpack_id": "pack-1",
                 "recommendations": [], "pending": []}
     (tmp_path / "triad_selection_pub.json").write_text(
         __import__("json").dumps(expected), encoding="utf-8")
@@ -73,8 +73,8 @@ def test_win_wrapper_clears_private_memory_and_verifies_real_promotion():
     text = V88CTL_PATH.read_text(encoding="utf-8-sig")
     assert "Remove-Item -LiteralPath $GptKnowledge -Recurse -Force" in text
     assert "Copy-Item -Destination $GptKnowledge" not in text
-    for proof in ("$status.ok", "$status.promoted", "$status.kimi_official_promoted",
-                  "$status.gpt_reviewed", "$status.k3_reviewed",
+    for proof in ("$status.status", "$status.model", "$status.sell_promotion_ok",
+                  "$status.unreviewed_count",
                   "$selection.factpack_id", "$status.factpack_id"):
         assert proof in text
 

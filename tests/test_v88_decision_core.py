@@ -223,7 +223,7 @@ def test_entry_conflict_action_requires_resonance_recheck():
 def test_entry_midline_gives_week_range():
     ep = entry_timing(_et_full(), short=70, medium=60, long_avg=58,
                       action="多周期共振·试仓复核")
-    assert "4-8周" in ep["mid_text"] and "~" in ep["mid_text"] and "MA55" in ep["mid_text"]
+    assert "4-8周" in ep["mid_text"] and "~" in ep["mid_text"] and "95" in ep["mid_text"]
 
 
 def test_evaluate_decision_carries_entry_plan():

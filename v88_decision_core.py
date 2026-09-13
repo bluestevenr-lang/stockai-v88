@@ -10,6 +10,8 @@ import json
 import logging
 from pathlib import Path as _P_eg
 BASE = _P_eg(__file__).resolve().parent.parent
+if _P_eg(__file__).resolve().parent.name == 'StockAI':
+    BASE = _P_eg(__file__).resolve().parent.parent / 'ai-daily-report-v2'
 import math
 from datetime import datetime, timedelta, timezone
 
@@ -643,11 +645,21 @@ def env_gate(code: str, mode: str, rr: float, pos52=None, evidence: dict | None 
         out["reasons"].append(f"{ev_hit}(提示:临近波动放大)")
     # rr仅作提示:创新高/主升票(pos52>80)豁免——LMT案:阻力在头顶rr必然失真,
     # 强趋势票以p_up与趋势质量为准,不再让失真公式一票否决
+    # 【869 2026-08-01 P728统计裁决·分市场收窄】样本68只×1年前瞻10日:
+    #   A股突破+2.25pp(扣双边费~0.15%仍+2.1pp)→豁免维持+统计加持
+    #   港股突破-0.95pp胜率45%(汇丰是个案非规律)→豁免收回,建议等回踩
+    #   美股突破-0.14pp≈基线但绝对+1.69%→豁免维持不加持(LMT原案仍成立)
     try:
         rr_v = float(rr or 0)
     except (TypeError, ValueError):
         rr_v = 0.0
-    if rr_v < out["need_rr"] and _p52 <= 80:
+    if _p52 > 80:
+        if mk == "港股" and rr_v < out["need_rr"]:
+            out["reasons"].append(f"赔率{rr_v:.2f}偏窄且港股突破态统计不占优"
+                                  f"(P728:-0.95pp/胜率45%)→建议等回踩确认再进")
+        elif mk == "A股":
+            out["reasons"].append("A股突破态有统计背书(P728:+2.25pp,扣费仍+2.1pp)")
+    elif rr_v < out["need_rr"]:
         out["reasons"].append(f"赔率{rr_v:.2f}偏窄(创新高票此值失真,参考为主)")
     out["action"] = f"{mode}·{out['position']}"
     return out
@@ -874,6 +886,9 @@ def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
     return {
         "schema": SCHEMA, "score_version": SCORE_VERSION,
         "score_weights": dict(SCORE_WEIGHTS), "data_signature": facts.get("data_signature", ""),
+        "score_terms": {"short": short, "medium": medium, "long": long_,
+                        "trend_quality": trend_quality, "entry_odds": entry_odds},
+        "score_kind": "technical_research_not_audit", "grade_authority": False,
         "analysis_time": now, "data_asof": facts.get("asof", ""),
         "name": name, "code": code, "last": last,
         "short_score": round(short), "medium_score": round(medium),

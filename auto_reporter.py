@@ -49,7 +49,7 @@ _load_env_file()
 
 # ── 诊断：打印关键 env 变量的前几个字符（不暴露完整值）──────────────────────
 def _diag_env():
-    for k in ('GEMINI_API_KEY', 'TUSHARE_TOKEN', 'DINGTALK_WEBHOOK', 'DINGTALK_SECRET', 'DINGTALK_KEYWORD'):
+    for k in ('GEMINI_API_KEY', 'DINGTALK_WEBHOOK', 'DINGTALK_SECRET', 'DINGTALK_KEYWORD'):
         v = os.environ.get(k, '')
         if v:
             preview = v[:6] + '...' if len(v) > 6 else v
@@ -80,12 +80,12 @@ logger = logging.getLogger(__name__)
 _REPORT_DATA_CACHE: dict = {}
 
 try:
-    from google import genai as genai
+    import gpt_genai_compat as genai
     _GENAI_NEW = True
 except ImportError:
     import warnings
     warnings.filterwarnings("ignore", category=FutureWarning, module="google.generativeai")
-    import google.generativeai as genai  # type: ignore
+    import gpt_genai_compat as genai  # type: ignore
     _GENAI_NEW = False
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
@@ -99,10 +99,10 @@ import time
 import ssl
 import pandas as pd
 
-# Tushare A股数据助手（优先于 yfinance）
+# 免费行情源 A股数据助手（优先于 yfinance）
 try:
     sys.path.insert(0, str(Path(__file__).parent))
-    from ts_helper import fetch_df as _ts_fetch_df, fetch_latest_price as _ts_price, is_cn as _ts_is_cn
+    from market_data_helper import fetch_df as _ts_fetch_df, fetch_latest_price as _ts_price, is_cn as _ts_is_cn
     _TS_AVAILABLE = True
 except Exception:
     _TS_AVAILABLE = False
@@ -124,7 +124,7 @@ else:
 # ─── 配置 ───────────────────────────────────────────────────────────────────
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
 TZ_SHANGHAI = ZoneInfo("Asia/Shanghai")
-GEMINI_MODEL = "gemini-2.5-flash"
+GEMINI_MODEL = "gpt-6-astra"
 USE_GOOGLE_SEARCH_GROUNDING = os.environ.get('USE_GOOGLE_SEARCH_GROUNDING', '0') == '1'
 DINGTALK_WEBHOOK = os.environ.get('DINGTALK_WEBHOOK', '')
 DINGTALK_SECRET = os.environ.get('DINGTALK_SECRET', '')
@@ -188,7 +188,7 @@ def _to_yf_cn_code(code):
 def _v88_fetch_price(code):
     try:
         yf_code = _to_yf_cn_code(code) if not code.endswith(".HK") and not code.endswith(".SS") and not code.endswith(".SZ") else code
-        # A股优先 Tushare
+        # A股优先 免费行情源
         if _TS_AVAILABLE and _ts_is_cn(yf_code):
             r = _ts_price(yf_code)
             if r:
@@ -203,7 +203,7 @@ def _v88_fetch_price(code):
 
 def _v88_index_change(code, label):
     try:
-        # A股优先 Tushare
+        # A股优先 免费行情源
         if _TS_AVAILABLE and _ts_is_cn(code):
             r = _ts_price(code)
             if r:
@@ -637,7 +637,7 @@ def _screened_candidates(pool, min_score, prefix, market_label, max_per_type=40,
     def _worker(item):
         try:
             yf_code = item[2] if len(item) >= 3 else _to_yf_cn_code(item[0])
-            # A股优先 Tushare
+            # A股优先 免费行情源
             df = None
             if _TS_AVAILABLE and _ts_is_cn(yf_code):
                 df = _ts_fetch_df(yf_code, period="1y")
@@ -1718,7 +1718,7 @@ def _generate_report_fallback(report_type="evening"):
         except Exception:
             tx_price, ali_price, xm_price = 360, 80, 18
         try:
-            # A股优先 Tushare
+            # A股优先 免费行情源
             def _cn_price(c, fallback):
                 if _TS_AVAILABLE:
                     r = _ts_price(c)

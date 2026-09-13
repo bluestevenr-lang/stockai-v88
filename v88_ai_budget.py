@@ -1,6 +1,6 @@
-"""V88网页端Kimi Code订阅用量账本。
+"""V88网页端GPT-6 Codex订阅用量账本。
 
-会员共享额度由Kimi服务端执行；本地仅记录调用与token，不再按人民币余额拦截。
+会员共享额度由ChatGPT服务端执行；本地仅记录调用与token，不再按人民币余额拦截。
 """
 from __future__ import annotations
 
@@ -26,9 +26,9 @@ def _load():
         data = json.loads(LEDGER.read_text(encoding="utf-8"))
     except Exception:
         data = {}
-    if data.get("month") != month or data.get("billing_mode") != "kimi-code-subscription":
-        data = {"month": month, "billing_mode": "kimi-code-subscription",
-                "model": "k3-256k", "spent_rmb": 0.0, "calls": []}
+    if data.get("month") != month or data.get("billing_mode") != "chatgpt-codex-subscription":
+        data = {"month": month, "billing_mode": "chatgpt-codex-subscription",
+                "model": "gpt-6-astra", "spent_rmb": 0.0, "calls": []}
     return data
 
 
@@ -73,7 +73,7 @@ def _effective_spent(data: dict, *, sync_truth: bool = False) -> float:
 def reserve(prompt: str, output_tokens=1600, *, scope="web-general", priority=False):
     data = _load()
     ticket = {"id": uuid.uuid4().hex[:10], "rmb": 0.0, "ts": time.time(),
-              "scope": str(scope), "priority": bool(priority), "model": "k3-256k",
+              "scope": str(scope), "priority": bool(priority), "model": "gpt-6-astra",
               "estimated_input_tokens": max(1, int(len(str(prompt)) / 1.5)),
               "estimated_output_tokens": max(1, int(output_tokens))}
     data.setdefault("pending", {})[ticket["id"]] = ticket
@@ -94,7 +94,7 @@ def settle(ticket, usage=None, ok=True):
     out = int(usage.get("completion_tokens", 0) or 0)
     data["calls"] = (data.get("calls") or [])[-999:] + [{
         "ts": time.time(), "ok": bool(ok), "scope": ticket.get("scope"),
-        "prompt_tokens": inp, "completion_tokens": out, "model": "k3-256k"}]
+        "prompt_tokens": inp, "completion_tokens": out, "model": "gpt-6-astra"}]
     data["cap_rmb"] = CAP
     LEDGER.parent.mkdir(exist_ok=True)
     LEDGER.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -104,7 +104,7 @@ def status():
     data = _load()
     calls = data.get("calls") or []
     good = [x for x in calls if x.get("ok")]
-    return {"billing_mode": "kimi-code-subscription", "model": "k3-256k",
+    return {"billing_mode": "chatgpt-codex-subscription", "model": "gpt-6-astra",
             "calls": len(good), "failed_calls": len(calls) - len(good),
             "prompt_tokens": sum(int(x.get("prompt_tokens", 0) or 0) for x in good),
             "completion_tokens": sum(int(x.get("completion_tokens", 0) or 0) for x in good),

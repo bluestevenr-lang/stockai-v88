@@ -47,10 +47,10 @@ def main():
     # 可选：Gemini 调用（需配置 GEMINI_API_KEY）
     if os.environ.get("GEMINI_API_KEY"):
         try:
-            import google.generativeai as genai
+            import gpt_genai_compat as genai
             from zoneinfo import ZoneInfo
             genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-            model = genai.GenerativeModel("gemini-2.5-flash")
+            model = genai.GenerativeModel("gpt-6-astra")
             today = datetime.now().strftime("%Y年%m月%d日")
             ts = datetime.now(ZoneInfo("Asia/Shanghai")).strftime("%Y-%m-%d %H:%M:%S")
             us_c = format_bundle_wsj_candidates(bundle, "US", "$", 100)

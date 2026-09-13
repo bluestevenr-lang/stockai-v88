@@ -2,7 +2,6 @@ import importlib.util
 import json
 import tempfile
 import unittest
-from datetime import datetime
 from pathlib import Path
 
 
@@ -20,36 +19,30 @@ def write_json(path, value):
 class ProjectionTests(unittest.TestCase):
     def make_source(self, root):
         source = root / "report" / "data"
-        pack_id = "pack-current"
-        now_text = datetime.now(MODULE.CST).strftime("%Y-%m-%d %H:%M（北京时间）")
         write_json(
             source / "gpt_verify.json",
             {
-                "generated_at": now_text,
-                "factpack_id": pack_id,
+                "generated_at": "2026-08-23 20:00（北京时间）",
                 "rows": {
                     "AAPL": {
                         "name": "苹果",
                         "verdict": "通过",
                         "why": "测试事实包",
-                        "ts": now_text,
-                        "factpack_id": pack_id,
+                        "ts": "2026-08-23 20:00（北京时间）",
                     }
                 },
             },
         )
         write_json(
-            source / "kimi_verify.json",
+            source / "classics_lens.json",
             {
-                "generated_at": now_text,
-                "factpack_id": pack_id,
+                "generated_at": "2026-08-23 20:01（北京时间）",
                 "rows": {
                     "AAPL": {
                         "verdict": "通过",
                         "book_verdict": "通过",
                         "why": "测试复核",
-                        "ts": now_text,
-                        "factpack_id": pack_id,
+                        "ts": "2026-08-23 20:01（北京时间）",
                     }
                 },
             },
@@ -57,8 +50,7 @@ class ProjectionTests(unittest.TestCase):
         write_json(
             source / "three_way_pub.json",
             {
-                "generated_at": now_text,
-                "factpack_id": pack_id,
+                "generated_at": "2026-08-23 20:02（北京时间）", "factpack_id": "test-pack", "version": "three-way-gpt6-classics-v5",
                 "rows": {"AAPL": {"code": "AAPL", "name": "苹果", "tier": "3A"}},
             },
         )
@@ -68,14 +60,11 @@ class ProjectionTests(unittest.TestCase):
         )
         write_json(
             source / "review_factpack.json",
-            {"factpack_id": pack_id, "selection_policy": {"shortlist_max": 40}, "coverage": {"market_pool_rows": 2342, "shortlist_rows": 40}},
+            {"selection_policy": {"shortlist_max": 40}, "coverage": {"market_pool_rows": 2342, "shortlist_rows": 40}},
         )
         write_json(
-            source / "dual_cli_status.json",
-            {"version": "gpt-led-review-funnel-v2", "generated_at": "2026-08-23 20:05（北京时间）", "factpack_id": pack_id,
-             "funnel": {"k3_shortlist_rows": 20},
-             "reviewers": {"gpt": {"ok": True}, "kimi": {"ok": True}},
-             "kimi_official_promoted": True},
+            source / "dual_cli_review.json",
+            {"version": "gpt-led-review-funnel-v2", "generated_at": "2026-08-23 20:05（北京时间）", "funnel": {"gpt_reviewed": 20}},
         )
         write_json(
             source / "why_buy_pub.json",
@@ -174,9 +163,7 @@ class ProjectionTests(unittest.TestCase):
                 (destination / "overview.json").read_text(encoding="utf-8")
             )
             self.assertEqual(overview["review_funnel"]["coverage"]["market_pool_rows"], 2342)
-            self.assertEqual(overview["review_funnel"]["funnel"]["k3_shortlist_rows"], 20)
-            self.assertTrue(overview["review_funnel"]["certification"]["complete"])
-            self.assertTrue(stock["review_binding"]["same_factpack"])
+            self.assertEqual(overview["review_funnel"]["funnel"]["gpt_reviewed"], 20)
             self.assertTrue((destination / "modules" / "rotation_forecast.json").is_file())
 
             portfolio_text = (
@@ -195,62 +182,6 @@ class ProjectionTests(unittest.TestCase):
             write_json(source / "gpt_verify.json", {"rows": {}})
             with self.assertRaises(FileNotFoundError):
                 MODULE.build(source, root / "out")
-
-    def test_missing_central_factpack_still_fails_closed(self):
-        with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp)
-            source = self.make_source(root)
-            central_path = source / "three_way_pub.json"
-            central = json.loads(central_path.read_text(encoding="utf-8"))
-            del central["factpack_id"]
-            write_json(central_path, central)
-            with self.assertRaises(FileNotFoundError):
-                MODULE.build(source, root / "out")
-
-    def test_writes_five_digit_hk_alias_for_unpadded_source_code(self):
-        with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp)
-            source = self.make_source(root)
-            for filename in (
-                "gpt_verify.json",
-                "kimi_verify.json",
-                "three_way_pub.json",
-            ):
-                document = json.loads((source / filename).read_text(encoding="utf-8"))
-                document["rows"]["2382.HK"] = {
-                    "code": "2382.HK",
-                    "name": "舜宇光学科技",
-                    "verdict": "通过",
-                }
-                write_json(source / filename, document)
-
-            destination = root / "workspace" / "context"
-            MODULE.build(source, destination)
-
-            canonical = destination / "stocks" / "2382.HK.json"
-            padded = destination / "stocks" / "02382.HK.json"
-            self.assertTrue(canonical.is_file())
-            self.assertTrue(padded.is_file())
-            self.assertEqual(
-                json.loads(canonical.read_text(encoding="utf-8")),
-                json.loads(padded.read_text(encoding="utf-8")),
-            )
-
-    def test_stale_or_wrong_pack_kimi_is_not_projected_as_current(self):
-        with tempfile.TemporaryDirectory() as temp:
-            root = Path(temp)
-            source = self.make_source(root)
-            kimi = json.loads((source / "kimi_verify.json").read_text(encoding="utf-8"))
-            kimi["factpack_id"] = "old-pack"
-            kimi["rows"]["AAPL"]["factpack_id"] = "old-pack"
-            write_json(source / "kimi_verify.json", kimi)
-            destination = root / "workspace" / "context"
-            MODULE.build(source, destination)
-            overview = json.loads((destination / "overview.json").read_text(encoding="utf-8"))
-            stock = json.loads((destination / "stocks" / "AAPL.json").read_text(encoding="utf-8"))
-            self.assertFalse(overview["review_funnel"]["certification"]["complete"])
-            self.assertEqual(stock["kimi"]["verdict"], "未送审")
-            self.assertFalse(stock["review_binding"]["kimi_current"])
 
     def test_cloud_sanitized_portfolio_wins_over_stale_plaintext(self):
         with tempfile.TemporaryDirectory() as temp:

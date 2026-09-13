@@ -16,6 +16,7 @@ CST = timezone(timedelta(hours=8))
 
 
 PUBLIC_MODULES = (
+    "astra_plan_pub.json",
     "ai_cert_pub.json",
     "claude_standard_pub.json",
     "dragon_board_pub.json",
@@ -43,17 +44,13 @@ GPT_FIELDS = (
     "horizon",
     "why",
     "ts",
-    "factpack_id",
     "tier_at_verify",
     "fresh_for_strong_days",
     "review_schema_version",
-)
-KIMI_FIELDS = (
-    "verdict", "thesis_verdict", "execution_status", "risk_veto",
-    "horizon", "book_verdict", "why", "ts", "factpack_id",
-    "review_schema_version",
+    "model", "counterargument", "invalidation", "evidence", "criteria", "review_pair", "selected_review", "prompt_hash", "review_scope", "sig", "factpack_id",
 )
 CLASSICS_FIELDS = (
+    "rubric_version", "horizon", "fact_sig", "factpack_id", "source_timestamps", "applicability",
     "code",
     "name",
     "tier",
@@ -114,7 +111,7 @@ def rows_map(doc):
 
 
 def triad_rows_map(doc):
-    """Index central v2 states, including non-executable blocked 3A rows."""
+    """Index the privacy-safe central v2 buckets by canonical stock code."""
     if not isinstance(doc, dict):
         return {}
     result = {}
@@ -126,19 +123,29 @@ def triad_rows_map(doc):
             row = dict(original)
             row["central_bucket"] = bucket
             result[str(row["code"])] = row
-    return result or rows_map(doc)
+    # Transitional fallback for the legacy three_way_pub rows schema.
+    if not result:
+        return rows_map(doc)
+    return result
 
 
 def load_central_decision(source: Path):
-    """Require one valid central projection; seat files alone are not a decision."""
+    """Load one valid central decision projection or fail closed.
+
+    GPT-6/经典巨著 seat files alone are not a recommendation: the central document is
+    where same-pack freshness, books, execution, system and risk are combined.
+    """
     for filename in ("triad_selection_pub.json", "three_way_pub.json"):
         doc = read_json(source / filename, None)
         if not isinstance(doc, dict) or not str(doc.get("factpack_id") or ""):
             continue
-        has_v2 = any(isinstance(doc.get(bucket), list) for bucket in (
-            "recommendations", "preparations", "blocked_3a", "conditional",
-            "observations", "pending"))
-        if has_v2 or isinstance(doc.get("rows"), (dict, list)):
+        has_v2_buckets = any(
+            isinstance(doc.get(bucket), list)
+            for bucket in ("recommendations", "preparations", "blocked_3a",
+                           "conditional", "observations", "pending")
+        )
+        has_legacy_rows = isinstance(doc.get("rows"), (dict, list))
+        if (has_v2_buckets and doc.get("version") == "gpt-classics-selection-v9-tharp") or (has_legacy_rows and doc.get("version") == "three-way-gpt6-classics-v5"):
             return doc
     raise FileNotFoundError(
         "missing or invalid central decision projection: "
@@ -164,71 +171,9 @@ def pick(row, fields):
     return {key: row[key] for key in fields if key in row}
 
 
-def parse_review_time(value):
-    """Parse the minute timestamp emitted by both subscription reviewers."""
-    raw = str(value or "").replace("（北京时间）", "").strip()
-    if len(raw) < 16:
-        return None
-    try:
-        return datetime.strptime(raw[:16], "%Y-%m-%d %H:%M").replace(tzinfo=CST)
-    except ValueError:
-        return None
-
-
-def current_review(row, fields, factpack_id, now):
-    """Project one verdict only when it belongs to the current pack and is fresh.
-
-    The guarded Kimi file intentionally keeps historical rows.  Exposing those
-    rows without their binding made the phone agent describe an old K verdict as
-    tonight's live review.  Keep the history as metadata, but fail closed in the
-    current-verdict fields.
-    """
-    raw = row if isinstance(row, dict) else {}
-    if not raw:
-        return {"verdict": "未送审", "current": False,
-                "why": "当前事实包无该席记录"}
-    row_pack = str(raw.get("factpack_id") or "")
-    ts = parse_review_time(raw.get("ts"))
-    fresh = bool(ts and timedelta(0) <= now - ts <= timedelta(hours=24))
-    if not factpack_id or row_pack != factpack_id:
-        return {
-            "verdict": "未送审", "current": False,
-            "why": "该记录不属于当前事实包",
-            "historical_verdict": raw.get("verdict"),
-            "historical_at": raw.get("ts"),
-            "historical_factpack_id": row_pack or None,
-        }
-    if not fresh:
-        return {
-            "verdict": "过期", "current": False,
-            "why": "审核时间已超过24小时或无法核验",
-            "historical_verdict": raw.get("verdict"),
-            "historical_at": raw.get("ts"),
-            "factpack_id": row_pack,
-        }
-    return {**pick(raw, fields), "current": True}
-
-
 def safe_code(code: str) -> str:
     cleaned = re.sub(r"[^A-Za-z0-9._-]", "_", code)
     return cleaned or "UNKNOWN"
-
-
-def stock_filenames(code: str) -> tuple[str, ...]:
-    """Return the source ticker filename plus a five-digit HK alias.
-
-    V88 source files historically mix ``2382.HK`` and ``02382.HK``. Feishu
-    users and market-data providers commonly display the latter, so both
-    names must resolve to the same privacy-minimized document.
-    """
-    canonical = f"{safe_code(code)}.json"
-    filenames = [canonical]
-    match = re.fullmatch(r"(\d+)\.HK", str(code).strip().upper())
-    if match:
-        padded = f"{int(match.group(1)):05d}.HK.json"
-        if padded not in filenames:
-            filenames.append(padded)
-    return tuple(filenames)
 
 
 def assert_private_keys_absent(value, path="root") -> None:
@@ -502,18 +447,17 @@ def load_stock_names():
 
 
 def build(source: Path, destination: Path) -> int:
-    required = ("gpt_verify.json", "kimi_verify.json")
+    required = ("gpt_verify.json", "classics_lens.json")
     missing = [name for name in required if not (source / name).is_file()]
     if missing:
         raise FileNotFoundError(f"missing V88 source files: {', '.join(missing)}")
 
     gpt = read_json(source / "gpt_verify.json", {})
-    kimi = read_json(source / "kimi_verify.json", {})
     triad = load_central_decision(source)
     classics = read_json(source / "classics_lens.json", {})
     health = read_json(source / "health_gate_pub.json", {})
     release = read_json(source / "release_check.json", {})
-    dual_status = read_json(source / "dual_cli_status.json", {})
+    dual_status = read_json(source / "dual_cli_review.json", {})
     factpack = read_json(source / "review_factpack.json", {})
     positions = read_json(source.parent / "positions.json", None)
     cloud_portfolio = read_json(source / "portfolio_pub.json", None)
@@ -535,11 +479,10 @@ def build(source: Path, destination: Path) -> int:
     }
 
     gpt_rows = rows_map(gpt)
-    kimi_rows = rows_map(kimi)
     triad_rows = triad_rows_map(triad)
     classics_rows = rows_map(classics)
     code_by_norm = {}
-    for code in sorted(set(gpt_rows) | set(kimi_rows) | set(triad_rows) | set(classics_rows)):
+    for code in sorted(set(gpt_rows) | set(triad_rows) | set(classics_rows)):
         code_by_norm.setdefault(norm_code(code), code)
     for item in portfolio_index.values():
         code = item.get("code")
@@ -553,51 +496,15 @@ def build(source: Path, destination: Path) -> int:
     generated = datetime.now(CST).strftime(
         "%Y-%m-%d %H:%M:%S（北京时间）"
     )
-    now = datetime.now(CST)
-    current_pack = str(factpack.get("factpack_id") or "")
-    gpt_pack = str(gpt.get("factpack_id") or "")
-    kimi_pack = str(kimi.get("factpack_id") or "")
-    status_pack = str(dual_status.get("factpack_id") or "")
-    reviewers = dual_status.get("reviewers") if isinstance(dual_status, dict) else {}
-    reviewers = reviewers if isinstance(reviewers, dict) else {}
-    gpt_health = reviewers.get("gpt") if isinstance(reviewers.get("gpt"), dict) else {}
-    kimi_health = reviewers.get("kimi") if isinstance(reviewers.get("kimi"), dict) else {}
-    same_factpack = bool(
-        current_pack and current_pack == gpt_pack == kimi_pack == status_pack
-    )
-    gpt_fresh = bool(
-        (ts := parse_review_time(gpt.get("generated_at")))
-        and timedelta(0) <= now - ts <= timedelta(hours=24)
-    )
-    kimi_fresh = bool(
-        (ts := parse_review_time(kimi.get("generated_at")))
-        and timedelta(0) <= now - ts <= timedelta(hours=24)
-    )
-    promoted = dual_status.get("kimi_official_promoted") is True
-    review_complete = bool(
-        same_factpack and gpt_health.get("ok") is True
-        and kimi_health.get("ok") is True and promoted
-        and gpt_fresh and kimi_fresh
-    )
-    completion_reasons = []
-    if not same_factpack:
-        completion_reasons.append("双席/状态与当前事实包不同包")
-    if gpt_health.get("ok") is not True:
-        completion_reasons.append("GPT未全量完成")
-    if kimi_health.get("ok") is not True:
-        completion_reasons.append("K3未全量完成")
-    if not promoted:
-        completion_reasons.append("正式Kimi席未安全晋升")
-    if not gpt_fresh or not kimi_fresh:
-        completion_reasons.append("双席时效不足24小时要求")
 
     overview = {
         "projection_generated_at": generated,
+        "profit_policy": triad.get("profit_policy"),
+        "by_horizon": triad.get("by_horizon"),
         "privacy": "不含账户、资产、持仓数量、成本、现金或交易凭据",
         "decision_semantics": {
-            "gpt_role": "51%终审与综合判断；不得越过硬闸或2A/3A双审",
-            "kimi_role": "49%证据官、反对票与漏审检查",
-            "classics_role": "纪律校正，只能否决或降级",
+            "gpt_role": "GPT-6证据审核、反证与失效条件；不得越过硬闸",
+            "classics_role": "独立经典书理核验；与GPT-6同包同周期通过后才可形成3A",
             "fail_closed": "过期、分歧、证据不足或执行阻断均不可执行",
         },
         "sources": {
@@ -607,12 +514,6 @@ def build(source: Path, destination: Path) -> int:
                 "model": gpt.get("model"),
                 "reviewer": gpt.get("reviewer"),
                 "stats": gpt.get("stats"),
-            },
-            "kimi": {
-                "generated_at": kimi.get("generated_at"),
-                "factpack_id": kimi.get("factpack_id"),
-                "reviewer": kimi.get("reviewer"),
-                "coverage": kimi.get("coverage"),
             },
             "triad": {
                 "generated_at": triad.get("generated_at"),
@@ -633,18 +534,6 @@ def build(source: Path, destination: Path) -> int:
             "status_generated_at": dual_status.get("generated_at"),
             "funnel": dual_status.get("funnel"),
             "reviewers": dual_status.get("reviewers"),
-            "certification": {
-                "complete": review_complete,
-                "status": ("双CLI同包复核已完成" if review_complete
-                           else "复核未完成，不得声称三方已完成"),
-                "reasons": completion_reasons,
-                "current_factpack_id": current_pack,
-                "same_factpack": same_factpack,
-                "gpt_fresh_24h": gpt_fresh,
-                "kimi_fresh_24h": kimi_fresh,
-                "kimi_official_promoted": promoted,
-                "rule": "只有GPT全量+K3全量+正式K席晋升+同包+24h全满足，才能说双CLI复核完成",
-            },
         },
         "stock_count": len(codes),
     }
@@ -653,10 +542,7 @@ def build(source: Path, destination: Path) -> int:
     stock_documents = {}
     names_primary, names_aliases = load_stock_names()
     for code in codes:
-        gpt_raw = lookup_code(gpt_rows, code)
-        kimi_raw = lookup_code(kimi_rows, code)
-        gpt_row = current_review(gpt_raw, GPT_FIELDS, current_pack, now)
-        kimi_row = current_review(kimi_raw, KIMI_FIELDS, current_pack, now)
+        gpt_row = pick(lookup_code(gpt_rows, code), GPT_FIELDS)
         triad_raw = lookup_code(triad_rows, code)
         triad_row = triad_raw if isinstance(triad_raw, dict) else {}
         classics_row = pick(lookup_code(classics_rows, code), CLASSICS_FIELDS)
@@ -714,25 +600,12 @@ def build(source: Path, destination: Path) -> int:
             "projection_generated_at": generated,
             "source_times": {
                 "gpt": gpt.get("generated_at"),
-                "kimi": kimi.get("generated_at"),
+                "classics": classics.get("generated_at"),
                 "triad": triad.get("generated_at"),
             },
             "gpt_factpack_id": gpt.get("factpack_id"),
-            "kimi_factpack_id": kimi.get("factpack_id"),
-            "review_binding": {
-                "current_factpack_id": current_pack,
-                "gpt_current": gpt_row.get("current") is True,
-                "kimi_current": kimi_row.get("current") is True,
-                "same_factpack": bool(
-                    gpt_row.get("current") is True and kimi_row.get("current") is True
-                ),
-                "action_consensus_possible": bool(
-                    review_complete and gpt_row.get("current") is True
-                    and kimi_row.get("current") is True
-                ),
-            },
+            "classics_factpack_id": classics.get("factpack_id"),
             "gpt": gpt_row,
-            "kimi": kimi_row,
             "triad": triad_row,
             "classics": classics_row,
             "decision_snapshot": decision_snapshot,
@@ -752,9 +625,9 @@ def build(source: Path, destination: Path) -> int:
 
     expected_stocks = set()
     for code, document in stock_documents.items():
-        for filename in stock_filenames(code):
-            expected_stocks.add(filename)
-            atomic_json(stocks_dir / filename, document)
+        filename = f"{safe_code(code)}.json"
+        expected_stocks.add(filename)
+        atomic_json(stocks_dir / filename, document)
     for path in stocks_dir.glob("*.json"):
         if path.name not in expected_stocks:
             path.unlink()

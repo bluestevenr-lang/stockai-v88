@@ -10,7 +10,6 @@
 #   5. 可选地立即启动 GPT OAuth
 #
 # 不做什么：
-#   - 不安装或默认启用 Kimi API。K3 仍由 V88 定时评审写入快照。
 #   - 不启动第二套 V88 行情流水线，不重复推送飞书。
 #   - 不把 GPT OAuth、飞书密钥或资产明文写进仓库/日志。
 # ============================================================
@@ -153,7 +152,7 @@ try {
     if (-not ($agents | Where-Object { $_.id -eq 'v88-mobile' })) {
         Run-Native '[5/7] 创建 v88-mobile 只读代理 ...' 'openclaw' @(
             'agents', 'add', 'v88-mobile', '--non-interactive',
-            '--workspace', $Workspace, '--model', 'openai/gpt-5.6-sol'
+            '--workspace', $Workspace, '--model', 'openai/gpt-6-astra'
         )
     } else {
         Log '[5/7] v88-mobile 代理已存在，更新安全配置。'
@@ -204,14 +203,14 @@ try {
     }
     $Batch = @(
         @{ path = "agents.list[$AgentIndex].workspace"; value = $Workspace },
-        @{ path = "agents.list[$AgentIndex].model"; value = 'openai/gpt-5.6-sol' },
+        @{ path = "agents.list[$AgentIndex].model"; value = 'openai/gpt-6-astra' },
         @{ path = "agents.list[$AgentIndex].tools"; value = $ToolPolicy },
         @{ path = "agents.list[$AgentIndex].subagents"; value = @{ allowAgents = @(); requireAgentId = $true } },
         @{ path = "agents.list[$AgentIndex].identity"; value = @{ name = '蓝一'; emoji = '🛡️'; theme = 'V88 只读会审' } },
         # ChatGPT/Codex OAuth must use the native Codex runtime.  Forcing the
-        # generic OpenClaw runtime makes gpt-5.6-sol appear "unavailable" even
+        # generic OpenClaw runtime makes gpt-6-astra appear "unavailable" even
         # though the subscription is authenticated.
-        @{ path = 'agents.defaults.models["openai/gpt-5.6-sol"].agentRuntime'; value = @{ id = 'codex' } },
+        @{ path = 'agents.defaults.models["openai/gpt-6-astra"].agentRuntime'; value = @{ id = 'codex' } },
         @{ path = 'plugins.entries.codex.enabled'; value = $true },
         @{ path = 'agents.defaults.skipBootstrap'; value = $true },
         @{ path = 'plugins.entries.codex.config'; value = $CodexPolicy },
@@ -261,8 +260,6 @@ try {
     Log '[6/7] OpenClaw Gateway 已注册：开机+2分钟，无需用户登录，失败自动重试。'
 
     Log '[7/7] 安装主体完成。'
-    Log '说明：本方案默认只使用 GPT 订阅；没有安装 Kimi API，也不会产生 Kimi API 费用。'
-    Log 'K3 的评审结果由 V88 定时文件同步进本地只读工作区。'
     Log ''
     $startOauth = Read-Host '现在启动 GPT OAuth 授权吗？直接回车=是，输入 N=稍后'
     if ($startOauth -notmatch '^[Nn]$') {

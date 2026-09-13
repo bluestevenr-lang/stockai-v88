@@ -27,6 +27,8 @@ auto_report_v88_optimized.py
 
 # ── 测试文件 ─────────────────────────────────────────────
 test_*.py
+# 正式回归测试必须可检索和版本管理；根目录临时测试仍忽略。
+!tests/test_*.py
 quick_test_*.py
 run_test.sh
 FINAL_TEST.md
@@ -76,3 +78,8 @@ positions.json
 *.plist
 CLAUDE.md
 HANDOFF.md
+
+# Local user history and release/update logs.
+logs/
+search_history.json
+.cache_profile/

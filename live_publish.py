@@ -108,7 +108,7 @@ def _hot_topics(items, top=8):
 
 def _translate_titles(items):
     """【V88·新闻中文化】英文标题→中文：复用上一版已译结果(按url)，只译新增；
-    Kimi Code订阅K3-256K单次批量调用，失败保留原文。译文放 t，原文存 t_en。"""
+    GPT-6 Codex订阅GPT-6 Astra单次批量调用，失败保留原文。译文放 t，原文存 t_en。"""
     import requests as _rq
     prev = {}
     try:
@@ -129,8 +129,8 @@ def _translate_titles(items):
             it["t_en"], it["t"], it["zh"] = t, prev[it["url"]], 1
         else:
             todo.append(it)
-    from kimi_subscription import api_key as _kimi_api_key, chat_completion, message_text, model_name
-    key = _kimi_api_key()
+    from desktop_gpt_subscription import api_key as _gpt_subscription_ready, chat_completion, message_text, model_name
+    key = _gpt_subscription_ready()
     if not key or not todo:
         return
     # 只在6个整点档调用翻译（07/09/12/15/18/21 BJT），

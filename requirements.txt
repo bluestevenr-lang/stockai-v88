@@ -1,4 +1,4 @@
-streamlit>=1.35.0
+streamlit>=1.52.2,<2
 pandas>=2.0.0
 numpy>=1.26.0
 plotly>=5.18.0
@@ -9,7 +9,13 @@ requests>=2.31.0
 google-generativeai>=0.7.0
 urllib3>=2.0.0
 tomli>=2.0.0
-tushare>=1.2.89
 flask>=3.0.0
 openpyxl>=3.1.0
 schedule>=1.2.0
+
+# 已在本机回归验证的日历/时区依赖；官方日历适配器继续负责核验边界。
+exchange_calendars==4.13.1
+pytz==2025.2
+
+# Windows zoneinfo has no system IANA database.
+tzdata>=2025.2

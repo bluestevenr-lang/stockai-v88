@@ -1,9 +1,8 @@
 """
-行业映射模块 - 统一数据源，覆盖全部682只股票池
+行业映射辅助模块 - 部分静态代码映射与名称关键词
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-【V91.7】单一数据源，无论 AI/模块如何调整，行业映射永不变
-  - 美股 240 只 + 港股 200 只 + A股 240 只 = 680 只
-  - 所有扫描（regime/batch_scan/并发）统一使用 get_sector()
+这是旧研究池的辅助分类，不是全市场行业数据库或权威行业认证。
+未匹配的证券必须保留待核；不能因为不在静态表就归为消费。
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
 
@@ -168,14 +167,14 @@ KEYWORDS_CN = {
 
 def get_sector(code: str, name: str) -> str:
     """
-    根据股票代码和名称判断行业分类（单一数据源，全682只覆盖）
+    根据静态代码表或名称关键词提供行业映射，未知证券保留待核。
     
     Args:
         code: 股票代码（如 AAPL, 00700, 600519）
         name: 股票名称（中英文均可）
     
     Returns:
-        行业字符串（如 "💻 科技"），未匹配时返回 "🛒 消费"（零售兜底，避免❓其他）
+        行业字符串（如 "💻 科技"），未匹配时返回 "待核行业"，不得虚构消费行业。
     """
     code_upper = (code or "").upper().strip()
     code_raw = (code or "").strip().replace(".SS", "").replace(".SZ", "").replace(".HK", "")
@@ -209,5 +208,5 @@ def get_sector(code: str, name: str) -> str:
             if kw in name_safe:
                 return sector
     
-    # 5. 兜底：零售/消费（避免❓其他刷屏）
-    return "🛒 消费"
+    # Missing mappings are not evidence of a consumer-sector classification.
+    return "待核行业"

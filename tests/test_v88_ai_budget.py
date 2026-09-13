@@ -26,8 +26,8 @@ class WebBudgetTests(unittest.TestCase):
         self.assertIsNotNone(budget.reserve(
             "材料", output_tokens=1000, priority=True, scope="stock-cycle-thinking"))
         status = budget.status()
-        self.assertEqual("kimi-code-subscription", status["billing_mode"])
-        self.assertEqual("k3-256k", status["model"])
+        self.assertEqual("chatgpt-codex-subscription", status["billing_mode"])
+        self.assertEqual("gpt-6-astra", status["model"])
         self.assertEqual(0.0, status["cash_rmb"])
         self.assertEqual((12, 34), (status["prompt_tokens"], status["completion_tokens"]))
 

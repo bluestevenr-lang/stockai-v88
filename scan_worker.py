@@ -505,11 +505,10 @@ def _fallback_cn():
     ]}.values())
 
 
-# ── Tushare：优先用 ts_helper 共享模块 ──────────────────────────
+# ── 免费行情源：优先用 ts_helper 共享模块 ──────────────────────────
 try:
-    from ts_helper import (
-        get_pro as _get_ts_pro_ext,
-        fetch_daily_tushare as _fetch_daily_ts_ext,
+    from market_data_helper import (
+        fetch_daily_free as _fetch_daily_ts_ext,
         fetch_cn_stock_pool as _fetch_cn_pool_ext,
         is_cn as _is_cn_ext,
     )
@@ -517,23 +516,12 @@ try:
 except Exception:
     _USE_TS_HELPER = False
 
-# ── 本地 Tushare 单例（ts_helper 不可用时的备用）────────────────
+# ── 本地 免费行情源 单例（ts_helper 不可用时的备用）────────────────
 _ts_pro_instance = None
 
 def _get_ts_pro():
-    """获取 Tushare pro_api 单例（懒初始化）"""
-    global _ts_pro_instance
-    if _ts_pro_instance is None:
-        token = os.environ.get("TUSHARE_TOKEN", "")
-        if token:
-            try:
-                import tushare as _ts
-                _ts.set_token(token)
-                _ts_pro_instance = _ts.pro_api()
-                log.info("Tushare 初始化成功")
-            except Exception as e:
-                log.warning(f"Tushare 初始化失败: {e}")
-    return _ts_pro_instance
+    """Retired provider: no token read, login, retry or paid route."""
+    return None
 
 
 def _fetch_cn_pool_tushare(limit: int = 300) -> list:
@@ -541,7 +529,7 @@ def _fetch_cn_pool_tushare(limit: int = 300) -> list:
         return _fetch_cn_pool_ext(limit)
     # 以下为本地实现兜底
     """
-    Tushare 获取 A 股股票池（主板+中小板+创业板+科创板，上市状态）
+    免费行情源 获取 A 股股票池（主板+中小板+创业板+科创板，上市状态）
     返回 [(code6, name, yf_code), ...]
     """
     pro = _get_ts_pro()
@@ -560,10 +548,10 @@ def _fetch_cn_pool_tushare(limit: int = 300) -> list:
             name    = str(row["name"])
             yf_code = (ts_code[:-3] + ".SS") if ts_code.endswith(".SH") else ts_code
             pool.append((ts_code[:6], name, yf_code))
-        log.info(f"Tushare CN 股票池获取: {len(pool)} 只，取前 {limit} 只")
+        log.info(f"免费行情源 CN 股票池获取: {len(pool)} 只，取前 {limit} 只")
         return pool[:limit]
     except Exception as e:
-        log.warning(f"Tushare CN 股票池失败: {e}")
+        log.warning(f"免费行情源 CN 股票池失败: {e}")
         return []
 
 
@@ -572,7 +560,7 @@ def _fetch_df_tushare(yf_code: str):
         return _fetch_daily_ts_ext(yf_code, days=400)
     # 以下为本地实现兜底
     """
-    A股专用数据获取（Tushare）
+    A股专用数据获取（免费行情源）
     yf_code: 600519.SS 或 000858.SZ
     返回标准化 DataFrame [Open/High/Low/Close/Volume]
     """
@@ -582,7 +570,7 @@ def _fetch_df_tushare(yf_code: str):
     if not (yf_code.endswith(".SS") or yf_code.endswith(".SZ")):
         return None
     try:
-        # yfinance .SS → Tushare .SH
+        # yfinance .SS → 免费行情源 .SH
         ts_code = (yf_code[:-3] + ".SH") if yf_code.endswith(".SS") else yf_code
         from datetime import datetime as _dt2, timedelta as _td2
         end_d   = _dt2.now().strftime("%Y%m%d")
@@ -597,12 +585,12 @@ def _fetch_df_tushare(yf_code: str):
                                  "close": "Close", "vol": "Volume"})
         return df[["Open", "High", "Low", "Close", "Volume"]].astype(float)
     except Exception as e:
-        log.debug(f"Tushare daily {yf_code}: {e}")
+        log.debug(f"免费行情源 daily {yf_code}: {e}")
         return None
 
 
 def _load_pool_or_fetch() -> tuple:
-    """获取股票池：缓存 → Tushare(CN) / 东财(US/HK) → 内置备用池"""
+    """获取股票池：缓存 → 免费行情源(CN) / 东财(US/HK) → 内置备用池"""
     try:
         if POOL_CACHE_FILE.exists():
             data = json.loads(POOL_CACHE_FILE.read_text(encoding="utf-8"))
@@ -621,10 +609,10 @@ def _load_pool_or_fetch() -> tuple:
     us = _fetch_eastmoney("us", 350) or _fallback_us()
     hk = _fetch_eastmoney("hk", 200) or _fallback_hk()
 
-    # CN：优先 Tushare（全球可用，覆盖率高）→ 东财 → 内置备用池
+    # CN：优先 免费行情源（全球可用，覆盖率高）→ 东财 → 内置备用池
     cn = _fetch_cn_pool_tushare(300)
     if len(cn) < 50:
-        log.info("Tushare CN 池不足，尝试东财...")
+        log.info("免费行情源 CN 池不足，尝试东财...")
         cn = _fetch_eastmoney("cn", 250)
     if len(cn) < 50:
         log.info("东财 CN 池不足，使用内置备用池")
@@ -649,13 +637,13 @@ def _load_pool_or_fetch() -> tuple:
 def _fetch_df(yf_code: str):
     """
     拉取最近 350 天日线数据。
-    优先通过 ts_helper.fetch_df（Tushare + curl_cffi yfinance），
+    优先通过 ts_helper.fetch_df（免费行情源 + curl_cffi yfinance），
     不可用时本地兜底。
     """
-    # ── 优先 ts_helper（已集成 Tushare 熔断 + curl_cffi session）──
+    # ── 优先 ts_helper（已集成 免费行情源 熔断 + curl_cffi session）──
     if _USE_TS_HELPER:
         try:
-            from ts_helper import fetch_df as _ts_fetch
+            from market_data_helper import fetch_df as _ts_fetch
             df = _ts_fetch(yf_code, period="350d", timeout=15)
             if df is not None and len(df) >= 30:
                 _ok_cols = all(c in df.columns for c in ("Close", "Open", "High", "Low", "Volume"))
@@ -666,12 +654,12 @@ def _fetch_df(yf_code: str):
         except Exception as e:
             log.debug(f"ts_helper.fetch_df {yf_code}: {e}")
 
-    # ── A股 Tushare 备用路径（ts_helper 不可用时）────────────────
+    # ── A股 免费行情源 备用路径（ts_helper 不可用时）────────────────
     if yf_code.endswith(".SS") or yf_code.endswith(".SZ"):
         df = _fetch_df_tushare(yf_code)
         if df is not None and len(df) >= 30:
             return df
-        log.debug(f"Tushare 失败，降级 yfinance: {yf_code}")
+        log.debug(f"免费行情源 失败，降级 yfinance: {yf_code}")
 
     # ── yfinance 兜底（带 curl_cffi session 防反爬）───────────────
     try:
@@ -977,11 +965,11 @@ def _gen_rationale(df, channel: str, result: dict) -> str:
 
 
 def _get_bm_return(ticker: str, days: int = 5) -> float:
-    """拉取基准指数 N 日收益率（A股指数优先 Tushare）"""
-    # A股指数优先 Tushare
+    """拉取基准指数 N 日收益率（A股指数优先 免费行情源）"""
+    # A股指数优先 免费行情源
     if _USE_TS_HELPER and (ticker.endswith(".SS") or ticker.endswith(".SZ")):
         try:
-            from ts_helper import fetch_daily_tushare as _ts_daily
+            from market_data_helper import fetch_daily_free as _ts_daily
             df = _ts_daily(ticker, days=60)
             if df is not None and len(df) >= days + 1:
                 closes = df["Close"].dropna()

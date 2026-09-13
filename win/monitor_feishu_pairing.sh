@@ -2,7 +2,7 @@
 # 监控飞书配对码和消息
 OC="/c/Users/admin/AppData/Roaming/npm/openclaw.cmd"
 LOG="$HOME/AppData/Local/Temp/openclaw/openclaw-$(date +%Y-%m-%d).log"
-REPORT="/c/Users/admin/Desktop/StockAI/win/KIMI_WIN_REPORT2.md"
+REPORT="/c/Users/admin/Desktop/StockAI/win/V88_WIN_REPORT.md"
 LAST_POS_FILE="/c/Users/admin/Desktop/StockAI/win/.monitor_last_pos"
 
 touch "$REPORT"

@@ -18,6 +18,13 @@ AI 皇冠双核 V88 - 集成版（模块化架构 + 完整功能）
 """
 
 import streamlit as st
+# Explicit stock deep links must dispatch before homepage imports, pools and panels.
+# Ordinary navigation retains the complete original overview and research tools.
+if st.query_params.get("focus") == "deep":
+    from focused_deep_view import render as _render_focused_deep
+    _render_focused_deep(st, st.query_params.get("q", ""))
+    st.stop()
+
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
@@ -27,6 +34,9 @@ import time
 import json
 import urllib3
 from datetime import datetime
+from modules.utils import to_yf_cn_code, parse_market_from_code
+from runtime_guard import ensure_file_capacity
+_V88_FILE_CAPACITY = ensure_file_capacity()
 
 # ══ 前置定义区(2026-07-31 用户抓'_dt_global未定义'·pyflakes全扫修'使用先于定义'家族) ══
 # 根因:分页切段搬代码后,多个名字的定义落到了调用之后(NameError被except吞=功能静默死)。
@@ -56,9 +66,9 @@ def _v88_sentinel9(_repo, module, exc=None):
 
 
 
-def call_gemini_api(prompt, model_name=None, *, priority=False, scope="web-general"):
+def call_model_api(prompt, model_name=None, *, priority=False, scope="web-general"):
     """
-    V88统一AI调用入口（历史函数名保留；实际使用Kimi Code订阅K3-256K）
+    V88统一AI调用入口（历史函数名保留；实际使用GPT-6 Codex订阅GPT-6 Astra）
     
     参数:
         prompt: 提示词
@@ -69,12 +79,12 @@ def call_gemini_api(prompt, model_name=None, *, priority=False, scope="web-gener
     """
     ticket = None
     try:
-        from kimi_subscription import complete
+        from desktop_gpt_subscription import complete
         from v88_ai_budget import reserve, settle
         ticket = reserve(prompt, output_tokens=8192, priority=priority, scope=scope)
         if not ticket:
-            return "❌ Kimi Code订阅调用正在冷却，请稍后重试"
-        text, body = complete(prompt, model=model_name or "k3-256k", temperature=0.3,
+            return "❌ GPT-6 Codex订阅调用正在冷却，请稍后重试"
+        text, body = complete(prompt, model=model_name or "gpt-6-astra", temperature=0.3,
                               reasoning_effort="high", max_tokens=8192, timeout=150)
         settle(ticket, body.get("usage"), ok=True)
         return text
@@ -84,13 +94,18 @@ def call_gemini_api(prompt, model_name=None, *, priority=False, scope="web-gener
                 settle(ticket, ok=False)
             except Exception:
                 pass
-        logging.error(f"❌ Kimi Code订阅调用异常: {str(e)}")
-        return f"❌ Kimi Code订阅调用失败: {str(e)}"
+        logging.error(f"❌ GPT-6 Codex订阅调用异常: {str(e)}")
+        return f"❌ GPT-6 Codex订阅调用失败: {str(e)}"
 
 
-def call_gemini_api_stream(prompt, model_name=None, max_output_tokens=8192):
-    """历史流式入口兼容层；实际固定调用订阅K3-256K。"""
-    yield call_gemini_api(prompt, model_name=model_name)
+def call_model_api_stream(prompt, model_name=None, max_output_tokens=8192):
+    """历史流式入口兼容层；实际固定调用订阅GPT-6 Astra。"""
+    yield call_model_api(prompt, model_name=model_name)
+
+# 历史入口兼容一轮；全部仍调用同一GPT-6订阅实现。
+call_gemini_api = call_model_api
+call_gemini_api_stream = call_model_api_stream
+
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -224,7 +239,7 @@ def _validate_plan_a(report_path, manifest_path, snapshot_path, check_snapshot=T
     ★关键：质检失败时也把正文交出来（content 非空），由调用方决定是否作为 Plan B 用——
     因为质检失败往往只是"权威新闻来源不足3条A/B级"，而报告里的操作榜/评分/温度是确定性引擎
     今日实算的真实数据，完全可用，不该跟着新闻叙事一起被丢掉。content 仅在文件缺失/读不出时才为 None。
-    check_snapshot=False 仅保留为旧协议兼容；当前Plan B必须绑定当天快照。"""
+    check_snapshot=False 仅保留为旧协议兼容；生产读取已统一交给report_contract。"""
     if not report_path.exists():
         return None, None, {"status": "missing", "issues": ["报告文件不存在"]}
     ts = report_path.stat().st_mtime
@@ -256,38 +271,16 @@ def _validate_plan_a(report_path, manifest_path, snapshot_path, check_snapshot=T
 
 
 def _load_report_planab():
-    """【V88·全站统一 Plan A/B】唯一数据源：桌面今日导航/AI简报/云端 三处必须调用同一份，禁止各读各的。
-    Plan A=今日报告硬质检通过；Plan B=基于当天新闻/快照/榜单生成的纯观察安全版，绝不复制历史日报；
-    都没有则如实告知。返回 (content, meta)。
-    文件很小，逐次读取以确保Plan B生成后立即生效，避免旧“missing”状态残留。"""
+    """网页与后台共用原件、中央权限和完整交易日校验，不独立按午夜截断。"""
     global _AUTHORITATIVE_BRIEF_META
-
-    content, ts, meta = _validate_plan_a(_AUTHORITATIVE_REPORT, _AUTHORITATIVE_MANIFEST, _AUTHORITATIVE_SNAPSHOT)
-    if content is not None and meta.get("status") in ("passed", "legacy"):
-        result = (content, {**meta, "plan": "A", "ts": ts})
-        _AUTHORITATIVE_BRIEF_META = result[1]
-        return result
-
-    # Plan A 不合格：只接受当天、同快照、校验和一致的安全 Plan B。
-    _today_issues = meta.get("issues") or []
-    pb_content, pb_ts, pb_meta = _validate_plan_a(
-        _AUTHORITATIVE_PLAN_B_REPORT, _AUTHORITATIVE_PLAN_B_MANIFEST, _AUTHORITATIVE_SNAPSHOT)
-    _today_bj = datetime.now().strftime("%Y-%m-%d")
-    if (pb_content is not None and pb_meta.get("status") == "plan_b"
-            and str(pb_meta.get("generated_at") or "")[:10] == _today_bj):
-        result = (pb_content, {**pb_meta, "plan": "B", "status": "plan_b",
-                               "ts": pb_ts, "today_issues": _today_issues, "today_ts": ts})
-        _AUTHORITATIVE_BRIEF_META = result[1]
-        return result
-
-    # Plan A/B 均不可用：真空，如实告知
-    result = (None, {"plan": None, "status": "missing", "issues": _today_issues, "ts": ts})
-    _AUTHORITATIVE_BRIEF_META = result[1]
-    return result
+    from report_view import load_report
+    content, meta = load_report()
+    _AUTHORITATIVE_BRIEF_META = meta
+    return content, meta
 
 
 def _load_authoritative_brief():
-    """兼容旧调用名：Plan A为硬质检版，Plan B为当天纯观察安全版。"""
+    """兼容旧调用名：Plan A为硬质检版，Plan B为最近完整交易日观察稿。"""
     content, meta = _load_report_planab()
     return content, meta.get("ts")
 
@@ -881,8 +874,8 @@ def _em_mark(ok: bool):
             _EM_DISABLED_UNTIL = time.time() + _EM_COOLDOWN
             logging.warning(f"🚫 东方财富连续 {_EM_FAIL_COUNT} 次失败/空，熔断 {_EM_COOLDOWN}s，期间直接走 yfinance")
 
-# ── 全局 Tushare 熔断器 ───────────────────────────────────────────────────
-# Tushare token 失效/无权限时，整个会话直接跳过，A股 走 yfinance(.SS/.SZ)。
+# ── 全局 免费行情源 熔断器 ───────────────────────────────────────────────────
+# 免费源适配失败仅跳过当前入口；没有Token、积分或收费恢复路径。
 _TS_DISABLED = False
 
 def _ts_blocked() -> bool:
@@ -892,7 +885,7 @@ def _ts_mark_dead(reason: str = ""):
     global _TS_DISABLED
     if not _TS_DISABLED:
         _TS_DISABLED = True
-        logging.warning(f"🚫 Tushare 不可用（{reason}），本会话跳过 Tushare，A股直接走 yfinance")
+        logging.warning(f"🚫 免费行情源 不可用（{reason}），本会话跳过 免费行情源，A股直接走 yfinance")
 
 def _normalize_hk_for_yahoo(symbol: str) -> str:
     """雅虎港股代码用 4 位（去前导零后零填充到 4 位）。app 内部用 5 位(00700.HK)
@@ -905,10 +898,10 @@ def _normalize_hk_for_yahoo(symbol: str) -> str:
         return f"{int(digits):04d}.HK"
     return symbol
 
-# 【Kimi Code订阅迁移】
+# 【GPT-6 Codex订阅迁移】
 try:
-    import kimi_subscription as _kimi_subscription
-    HAS_GEMINI = True                 # 历史变量名，实为“Kimi订阅调用模块可用”
+    import desktop_gpt_subscription as _gpt_subscription
+    HAS_GEMINI = True                 # 历史变量名，实为“GPT-6订阅调用模块可用”
     genai = None
 except ImportError:
     HAS_GEMINI = False
@@ -1274,17 +1267,11 @@ def _v88_buy_gate9(_d, _repo):
             return False, f"GPT复核{_gpt9 or '缺失'}"
         if not _review_fresh9(_gpt_ts9):
             return False, "GPT复核已过期或时间缺失"
-        # 【2026-08-16 三方会谈恢复·Kimi接替Claude席位】用户定纲：
-        # 双剑合璧=所有关键推荐必须 GPT+Kimi 双通过；3A 另加经典书理=三方会谈。
-        from recommendation_gate import kimi_review_for as _kimi_for9
-        _kimi9, _book9, _kimi_ts9 = _kimi_for9(_d.get("code"))
-        if _kimi9 != "通过":
-            return False, f"Kimi复核{_kimi9 or '缺失'}·双剑缺一剑"
-        if not _review_fresh9(_kimi_ts9):
-            return False, "Kimi复核已超过24小时或时间缺失"
-        _tier9 = str(_d.get("tier") or _d.get("tier_label") or _d.get("grade") or "")
-        if _tier9.startswith("3A") and _book9 != "通过":
-            return False, "3A须三方会谈·经典书理未通过"
+        from recommendation_gate import classics_review_for as _book_for9
+        _book9, _book_ts9 = _book_for9(_d.get("code"))
+        if _book9 != "通过":
+            return False, f"经典巨著复核{_book9 or '缺失'}"
+
     except Exception:
         return False, "统一复核闸不可用"
     if _d.get("cycle_conflict"):
@@ -1334,14 +1321,56 @@ def _load_scan_cache_from_file(scan_type: str, scan_market: str, risk_pref: str 
         return None
 
 def _publish_scan_to_cloud(data: dict):
-    """Keep the local sensor cache private; it has zero recommendation weight.
-
-    The retired route uploaded raw legacy scores to ``pub/scan_latest.json`` and
-    bypassed the GPT × K3 × classics admission gate.  Cloud consumers now read
-    only ``triad_selection_pub.json`` produced by the central publisher.
-    """
-    logging.debug("本地全策略扫描仅作传感器；公开推荐只认中央三方认证榜")
-    return None
+    """【V99.6】把最近一次「一键全策略」榜单发布到公开仓 stockai-v88 data 分支
+    pub/scan_latest.json，云端查看器免引擎直接展示最近缓存结果。
+    原则：V88 是主体——本地扫出什么，云端就看什么。gh CLI 免密；10分钟节流；
+    只发榜单行（无持仓等隐私）。后台线程调用，失败静默不影响本地。"""
+    import base64 as _b64
+    import subprocess as _sp
+    try:
+        marker = SCAN_CACHE_DIR / "pub_scan_last.txt"
+        if marker.exists():
+            try:
+                if time.time() - float(marker.read_text().strip() or 0) < 600:
+                    return
+            except Exception:
+                pass
+        rows = data.get("data") or []
+        if not rows:
+            return
+        payload = {
+            "generated_at": time.strftime(
+                "%Y-%m-%d %H:%M:%S",
+                time.localtime(data.get("scan_timestamp", time.time()))),
+            "scan_market": data.get("scan_market", ""),
+            "rows": [{**r, "市场": market_of_code(r.get("代码", ""))} for r in rows],
+        }
+        content = _b64.b64encode(
+            json.dumps(payload, ensure_ascii=False).encode("utf-8")).decode()
+        # Streamlit 进程的 PATH 可能不含 homebrew，gh 需绝对路径解析（22:43 静默失败根因）
+        import shutil as _sh99
+        _gh = (_sh99.which("gh") or next((p for p in ("/opt/homebrew/bin/gh", "/usr/local/bin/gh")
+                                          if Path(p).exists()), "gh"))
+        _repo_path = "repos/bluestevenr-lang/stockai-v88/contents/pub/scan_latest.json"
+        sha = ""
+        try:
+            sha = _sp.run([_gh, "api", f"{_repo_path}?ref=data", "-q", ".sha"],
+                          capture_output=True, text=True, timeout=20).stdout.strip()
+        except Exception:
+            sha = ""
+        cmd = [_gh, "api", "-X", "PUT", _repo_path,
+               "-f", "message=publish scan_latest (auto from V88)",
+               "-f", "branch=data", "-f", f"content={content}"]
+        if sha:
+            cmd += ["-f", f"sha={sha}"]
+        r = _sp.run(cmd, capture_output=True, text=True, timeout=45)
+        if r.returncode == 0:
+            marker.write_text(str(time.time()))
+            logging.info("☁️ 一键全选榜单已发布到云端 pub/scan_latest.json")
+        else:
+            logging.warning(f"⚠️ 云端榜单发布失败: {(r.stderr or '')[:200]}")
+    except Exception as e:
+        logging.warning(f"⚠️ 云端榜单发布异常: {e}")
 
 
 def _save_scan_cache_to_file(data: dict):
@@ -1575,9 +1604,8 @@ _EM_SECID_KNOWN = {
     'CNY=X': '119.USDCNH', 'HKD=X': '119.USDHKD',
 }
 
-_DIRECT_SESSION = requests.Session()
-_DIRECT_SESSION.trust_env = False
-_DIRECT_SESSION.verify = False
+from network_resources import http_session as _shared_http_session
+_DIRECT_SESSION = _shared_http_session(direct=True)
 
 # ── Alpha Vantage 数据源（直连，无需代理，东财/雅虎被封时的主力替代）──────────
 _AV_KEY = os.getenv("ALPHA_VANTAGE_KEY", "")
@@ -1626,57 +1654,7 @@ def fetch_from_alphavantage(symbol: str, period: str = "1y") -> pd.DataFrame:
         _safe_print(f"[AlphaVantage] ✅ {symbol}→{av_sym} {len(df)}行")
         return df
     except Exception as e:
-        _safe_print(f"[AlphaVantage] ❌ {symbol}: {e}")
-        return None
-
-# ── Alpha Vantage 数据源（直连，无需代理，东财/雅虎被封时的主力替代）──────────
-_AV_KEY = os.getenv("ALPHA_VANTAGE_KEY", "")
-_AV_SYMBOL_MAP = {
-    "SPY": "SPY", "QQQ": "QQQ", "TLT": "TLT", "GLD": "GLD",
-    "^VIX": "VIX", "^TNX": "TNX", "DX-Y.NYB": "DXY",
-    "NVDA": "NVDA", "AAPL": "AAPL", "TSLA": "TSLA", "MSFT": "MSFT",
-    "ABBV": "ABBV", "LLY": "LLY", "TSM": "TSM", "PM": "PM",
-    "NVO": "NVO", "ACMR": "ACMR", "GOOG": "GOOG", "VOO": "VOO",
-    "QQQM": "QQQM",
-}
-
-def fetch_from_alphavantage(symbol: str, period: str = "1y") -> pd.DataFrame:
-    """Alpha Vantage 直连数据源（不需代理），覆盖美股/ETF/指数"""
-    if not _AV_KEY:
-        return None
-    av_sym = _AV_SYMBOL_MAP.get(symbol, symbol)
-    # 指数符号处理
-    if av_sym.startswith("^"):
-        av_sym = av_sym[1:]
-    # 只支持美股/ETF，A股和港股跳过
-    if symbol.endswith(".SS") or symbol.endswith(".SZ") or symbol.endswith(".HK"):
-        return None
-    try:
-        url = (f"https://www.alphavantage.co/query"
-               f"?function=TIME_SERIES_DAILY_ADJUSTED&symbol={av_sym}"
-               f"&outputsize=full&apikey={_AV_KEY}")
-        r = requests.get(url, timeout=15)
-        if r.status_code != 200:
-            return None
-        data = r.json()
-        ts = data.get("Time Series (Daily)")
-        if not ts:
-            return None
-        rows = []
-        for date_str, v in sorted(ts.items()):
-            rows.append({
-                "Date": pd.Timestamp(date_str),
-                "Open":   float(v["1. open"]),
-                "High":   float(v["2. high"]),
-                "Low":    float(v["3. low"]),
-                "Close":  float(v["5. adjusted close"]),
-                "Volume": float(v["6. volume"]),
-            })
-        df = pd.DataFrame(rows).set_index("Date").sort_index()
-        _safe_print(f"[AlphaVantage] ✅ {symbol}→{av_sym} {len(df)}行")
-        return df
-    except Exception as e:
-        _safe_print(f"[AlphaVantage] ❌ {symbol}: {e}")
+        _safe_print(f"[AlphaVantage] ❌ {symbol}: {type(e).__name__}")
         return None
 # 【修复东财被封】让东财请求走 Clash 代理
 _PROXY_ADDR = "http://127.0.0.1:7897"
@@ -1878,31 +1856,25 @@ class DataProvider:
                 _em_mark(False)
                 self.logger.warning(f"⚠️ 东财万能源 {symbol} 异常: {type(_e).__name__}: {str(_e)[:100]}")
 
-        # 2a. A股：优先 Tushare（带熔断：token 失效后本会话跳过，直接走 yfinance）
+        # 2a. A股：优先 免费行情源（同源核验缓存/腾讯日线，失败后尝试Yahoo）
         if (symbol.endswith(".SS") or symbol.endswith(".SZ")) and not _ts_blocked():
             try:
-                from ts_helper import fetch_df as _ts_fetch
+                from market_data_helper import fetch_df as _ts_fetch
                 _ts_df = _ts_fetch(symbol, period=period)
                 if _ts_df is not None and len(_ts_df) >= min_rows:
                     self.cache_mgr.set(cache_key, _ts_df, data_type)
                     elapsed = (time.time() - start_time) * 1000
                     self.perf.record('fetch', elapsed)
-                    self.logger.info(f"✅ Tushare 获取 {symbol}，共 {len(_ts_df)} 条记录")
+                    self.logger.info(f"✅ 免费行情源 获取 {symbol}，共 {len(_ts_df)} 条记录")
                     return _ts_df
             except Exception as _e:
                 _msg = str(_e)
-                if any(k in _msg for k in ('token', 'Token', '权限', '积分', '不对')):
-                    _ts_mark_dead(_msg[:50])
-                self.logger.debug(f"Tushare {symbol} 失败，降级 yfinance: {_e}")
+                self.logger.debug(f"免费行情源 {symbol} 失败，降级 yfinance: {_e}")
 
         # 2b. 尝试从 yfinance 获取（带重试 + rate limit 熔断）
         def _make_yf_session(attempt_idx: int):
-            try:
-                import curl_cffi.requests as _cffi
-                _impersonates = ["chrome110", "chrome120", "safari17_0"]
-                return _cffi.Session(impersonate=_impersonates[attempt_idx % len(_impersonates)])
-            except ImportError:
-                return None
+            from network_resources import yahoo_session
+            return yahoo_session()
 
         if _yf_is_rate_limited() or _yf_opserr_blocked():
             self.logger.warning(f"⏭️ {symbol} 跳过 yfinance（{'rate limit' if _yf_is_rate_limited() else 'OperationalError'} 冷却中），直接尝试备用源")
@@ -1944,7 +1916,7 @@ class DataProvider:
                     if attempt < Config.RETRY_COUNT - 1:
                         time.sleep(1 * (attempt + 1))
         
-        # 2c. A股：yfinance 失败时尝试东方财富备用（Tushare 需 token，Cloud 环境常失败）
+        # 2c. A股：yfinance 失败时尝试东方财富备用（免费行情源 需 token，Cloud 环境常失败）
         if (symbol.endswith('.SS') or symbol.endswith('.SZ')) and USE_NEW_MODULES:
             try:
                 _em_cn = mod_data.fetch_from_eastmoney(symbol)
@@ -2823,7 +2795,7 @@ else:
 
 # 【V89.4】初始化舆情分析中心
 if SENTIMENT_ANALYZER_AVAILABLE:
-    # call_gemini_api函数在后面定义，这里先设为None，后续再绑定
+    # call_model_api函数在后面定义，这里先设为None，后续再绑定
     _sentiment_analyzer = SentimentAnalyzer(gemini_api_caller=None)
     logging.info("✅ V89.4 舆情分析中心初始化完成")
 else:
@@ -2840,7 +2812,7 @@ logging.info("  - 并发线程池: 最大{}线程".format(Config.MAX_WORKERS))
 
 # ═══════════════════════════════════════════════════════════════
 
-st.set_page_config(layout="wide", page_title="AI 皇冠双核", page_icon="👑", initial_sidebar_state="collapsed")
+st.set_page_config(layout="wide", page_title="V88 · GPT-6与经典巨著", page_icon="👑", initial_sidebar_state="collapsed")
 
 # 【全站字体层级 2026-07-31 用户定纲"主要内容字体大一点,解释说明≤图标字体,不超过现有最大"】
 # 主内容(表格数据/矩阵)=13.5px;解释说明/悬停提示行=11px封顶;层级恒定:重要>说明
@@ -2885,11 +2857,36 @@ html, body, [data-testid="stAppViewContainer"], .stMarkdown, .stMarkdown p, .stM
 html { font-size: 14px; }                              /* 五号基准 */
 .stMarkdown p, .stMarkdown li { font-size: 14px; line-height: 1.65; }
 [data-testid="stCaptionContainer"], .stCaption, small { font-size: 12px !important; }  /* 小五下限 */
+[data-testid="stAppViewContainer"] [data-testid="stCaptionContainer"] p,
+[data-testid="stAppViewContainer"] [data-testid="stCaptionContainer"] li,
+[data-testid="stExpander"] > details > summary p {
+  font-size:12px!important;line-height:1.45!important;
+}
+[data-testid="stCaptionContainer"] p{margin-bottom:3px}
+.v88-quick-nav{display:flex;gap:16px;align-items:center;padding:3px 0;font-size:12px}
+.v88-quick-nav a{color:#334155;text-decoration:none;border-bottom:1px solid #cbd5e1}
+.v88-triad-header,.v88-scan,#v88-grade-list{scroll-margin-top:40px}
 h1 { font-size: 18px !important; }                     /* 上限≈四号 */
 h2 { font-size: 17px !important; }
 h3 { font-size: 16px !important; }
 h4 { font-size: 14px !important; }
 </style>""", unsafe_allow_html=True)
+
+st.markdown('<nav class="v88-quick-nav" aria-label="列表快捷导航">'
+            '<a href="#v88-market-scan" target="_self">全市场扫描</a>'
+            '<a href="#v88-grade-list" target="_self">3A / 2A / 1A 列表</a>'
+            '<a href="#v88-astra-monthly" target="_self">Astra月度</a>'
+            '<a href="#v88-deep-analysis" target="_self">个股深度</a>'
+            '<a href="#v88-system-check" target="_self">系统检查</a>'
+            '</nav>', unsafe_allow_html=True)
+from presentation_style import CSS as _professional_style
+st.markdown(_professional_style, unsafe_allow_html=True)
+from phone_access import html as _phone_access_html
+st.markdown(_phone_access_html(), unsafe_allow_html=True)
+from runtime_status_ui import html as _runtime_status_html
+st.markdown(_runtime_status_html(), unsafe_allow_html=True)
+st.markdown('<div id="v88-system-check"></div>', unsafe_allow_html=True)
+_v88_system_details = st.expander("⚙️ 系统与数据检查", expanded=False)
 
 # 【V88·页面防跳动 2026-07-20 用户反馈"浏览时页面跳动/点击后跳页"】
 # Streamlit 每次 rerun(缓存回填/按钮/自动刷新)都会把滚动位置弹回顶部——
@@ -2946,33 +2943,77 @@ try:
     # 三市场体制条:全部读落盘(零网络),保住总览页秒开;
     # 带AI解读的完整宏观脉搏面板仍在下方(LISTS段),这里是"永远看得到"的那一层。
     _mk_cells9 = []
+    _snapshot_label9 = "快照时间未知"
     try:
         _snap9c = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
                               "market_snapshot.json").read_text(encoding="utf-8"))
-        for _m9c, _fl9c in (("美股", "🇺🇸"), ("A股", "🇨🇳"), ("港股", "🇭🇰")):
-            _b9c = (_snap9c.get("markets") or {}).get(_m9c) or {}
-            _vd9c = str((_b9c.get("temperature") or {}).get("verdict") or "")
-            _pr9c = dict((x[0], x[1]) for x in ((_b9c.get("l3") or {}).get("probs") or []))
-            _p29c = _pr9c.get("2周")
-            _ix9c = (_b9c.get("indices") or [{}])[0] or {}
-            _col9c = ("#dc2626" if (_p29c or 50) >= 55 else
-                      ("#16a34a" if (_p29c or 50) <= 45 else "#b45309"))
-            _mk_cells9.append(
-                f"<span style='margin-left:10px'>{_fl9c}<b>{_ix9c.get('name') or _m9c}</b> "
-                f"{_ix9c.get('last') or '—'} "
-                f"<b style='color:{_col9c}'>2周{_p29c if _p29c is not None else '—'}%</b>"
-                f"<span style='color:#64748b'>·{_vd9c[:10]}</span></span>")
+        _snapshot_label9 = "分析快照 " + str(_snap9c.get("generated_at") or "未知")[:16]
+        from market_overview_ui import cells as _market_cells, legend as _market_legend
+        _mk_cells9 = [_market_cells(_snap9c)]
     except Exception:
         pass
     st.markdown(
         f"<div style='padding:.2rem .45rem;margin:0 0 .3rem;border-bottom:1px solid #e2e8f0;"
-        f"font-size:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap'>"
-        f"<span><b style='color:#334155'>🌍 全球市场概览</b>{''.join(_mk_cells9)}</span>"
+        f"font-size:11px;line-height:1.45;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap' class='v88-market-overview'>"
+        f"<span><b style='color:#334155'>🌍 全球市场概览</b>{''.join(_mk_cells9)}"
+        f"<span style='margin-left:8px;color:#b45309'>{_snapshot_label9}</span></span>"
         f"<span style='color:#1e3a5f;font-weight:600;white-space:nowrap'>"
-        f"{_dtc9.now().strftime('%Y-%m-%d')} {_wd9}　🇺🇸纽约 {_ny9}　🇨🇳北京 {_bj9}</span></div>",
+        f"{_dtc9.now().strftime('%Y-%m-%d')} {_wd9}　🇺🇸纽约 {_ny9}　🇨🇳北京 {_bj9}</span>"
+        f"<span style='flex-basis:100%'>{__import__('market_overview_ui').legend()}</span></div>",
         unsafe_allow_html=True)
 except Exception as _clk_e9:
     logging.exception(f"[V88] 置顶全球概览渲染失败: {_clk_e9}")
+# 扫描与评级紧接置顶行情时钟；完整宏观面板在列表之后。
+# 独立常驻容器，不能随宏观槽位的回填/条件而消失。
+_three_a_slot = st.container()
+# 先渲染本地中央列表；后续行情预载超时不能挡住3A持续跟踪。
+with _three_a_slot:
+    @st.fragment(run_every=60)
+    def _three_a_fragment():
+        # ═══════════════════════════════════════════════════════════════
+        # 【🎯 3A大系统·常驻模块 2026-08-02 用户"放在大盘和今日之间"·第4版】
+        # 前两版分别错在:①做成卡片(用户要图二的11列表格) ②塞进买表嵌套作用域→
+        # 渲染在页面别处、用户根本看不到。现改用 grade_card.system_table_html
+        # (模块级自包含,自产表格HTML,不依赖任何嵌套闭包),故可挂页面任意位置。
+        # 常驻:无3A也在,空态明说并指出离3A最近者。
+        # ═══════════════════════════════════════════════════════════════
+        try:
+            from grade_card import system_table_html as _sys3a
+            _d3a = Path.home() / "Desktop" / "ai-daily-report-v2" / "data"
+
+            def _j3a(_f):
+                try:
+                    return json.loads((_d3a / _f).read_text(encoding="utf-8"))
+                except Exception:
+                    return {}
+            _rk3a = _j3a("rank_score.json")
+            if _rk3a.get("rows"):
+                # This is complete HTML, not Markdown. Use the native HTML
+                # parser + DOMPurify instead of reconstructing every tag in
+                # React; audit text remains text and scripts stay disabled.
+                st.html(_sys3a(
+                    _rk3a, _j3a("sell_grade.json"),
+                    {str(x.get("code")): x for x in
+                     (_j3a("intraday_decisions.json").get("rows") or [])},
+                    (_j3a("why_buy.json").get("sells") or {}),
+                    _j3a("market_pool.json"),
+                    triad=_j3a("triad_selection.json"), weekly=_j3a("weekly_candidates_pub.json"),
+                    reverse_audit=_j3a("reverse_audit_pub.json"), reverse_status=_j3a("reverse_audit_status.json"),
+                    relations=_j3a('module_relations_pub.json'), watchlist=_j3a('persistent_watchlist_pub.json')))
+            else:
+                st.warning("🎯 3A大系统: 评级数据未就绪(模块常驻,数据恢复后自动填充)")
+            st.caption("列表读取：" + datetime.now().strftime("%m-%d %H:%M:%S") + " · 每60秒局部更新；源数据日期见表格")
+            from investment_tracking_ui import render_tracking
+            from evolution_learning_ui import render as render_evolution
+            render_evolution(_j3a('evolution_learning_pub.json'), _j3a('evolution_learning_status.json'), _j3a('triad_selection.json'))
+            render_tracking(_j3a("triad_selection.json"), _j3a("investment_tracks.json"), _j3a("idea_journal.json"))
+            from weekly_quality_ui import render as render_weekly_quality
+            render_weekly_quality(_j3a('weekly_quality.json'),_j3a('database_quality.json'))
+        except Exception:
+            logging.exception("[V88] 3A大系统模块渲染失败")
+            st.warning("🎯 3A大系统: 渲染异常(见日志);模块常驻不消失")
+    _three_a_fragment()
+
 _macro_top_slot = st.empty()
 # 【2026-07-29 用户"版面设计有点浪费"】按钮字号-30%，数据时点从按钮下方挪到右侧同一行——
 # 省掉一整行垂直空间。只作用于 .st-key-btn_force_now，不动全站其它按钮。
@@ -3036,127 +3077,6 @@ with _now_c3:
 # 【V88·今日指令牌 2026-07-24 用户定纲"每天打开=方向+进攻防守+成功率,升级要明显提示"】
 # 开屏第一眼三行:①方向(定调+三市场周概率) ②进攻/防守名单点名 ③实盘战绩背书+✨最新升级。
 # 全读落盘零重计算,秒开;明细仍在下方各模块,此处只做"今天该干什么"的最短路径。
-try:
-    _bn_repo9 = Path.home() / "Desktop" / "ai-daily-report-v2"
-    _bn_snap9 = json.loads((_bn_repo9 / "data" / "market_snapshot.json").read_text(encoding="utf-8"))
-    _bn_cells9, _bn_chgs9 = [], []
-    for _bm9 in ("美股", "A股", "港股"):
-        _bb9 = (_bn_snap9.get("markets") or {}).get(_bm9) or {}
-        _bl39 = dict((x[0], x[1]) for x in ((_bb9.get("l3") or {}).get("probs") or []))
-        _bc9 = float(((_bb9.get("indices") or [{}])[0] or {}).get("chg1d") or 0)
-        _bn_chgs9.append(_bc9)
-        _bp9 = _bl39.get("2周")
-        if _bp9 is not None:
-            _bpc9 = "#dc2626" if int(_bp9) >= 55 else ("#16a34a" if int(_bp9) <= 45 else "#64748b")
-            _bn_cells9.append(f"{_bm9}周概率<b style='color:{_bpc9}'>{int(_bp9)}%</b>")
-    _bn_tone9, _bn_tc9 = (("🛡️ 防守日", "#16a34a") if (_bn_chgs9 and min(_bn_chgs9) <= -1.5) else
-                          (("⚔️ 进攻日", "#dc2626") if (_bn_chgs9 and max(_bn_chgs9) >= 1.5) else
-                           ("⚖️ 中性日", "#2563eb")))
-    _bn_rule9 = {"🛡️ 防守日": "逻辑没破的别慌割·破位的别扛·抄底等企稳",
-                 "⚔️ 进攻日": "拿住在手的·新进等回踩·别FOMO追高",
-                 "⚖️ 中性日": "按既定计划执行·不因单日波动改纪律"}[_bn_tone9]
-    # 【V88·发言权规则 2026-07-25 用户批准】实盘战绩n≥5且<50%的信号源→降级"研究参考",
-    # 不得进第一屏点名(引擎短线34%/黑马40%当前被闸)。反指标hot_dual不受此闸。到期核算翻身自动恢复。
-    def _v88_voice9(_rp9v):
-        try:
-            _t9v = (json.loads((_rp9v / "data" / "success_rates.json").read_text(encoding="utf-8"))
-                    .get("types") or {})
-        except Exception:
-            return {}
-        _o9v = {}
-        for _k9v, _v9v in _t9v.items():
-            if _k9v == "hot_dual":
-                _o9v[_k9v] = True
-                continue
-            _r9v = (_v9v.get("short") or {}) if _k9v == "engine" else _v9v
-            _o9v[_k9v] = not (int(_r9v.get("n") or 0) >= 5 and (_r9v.get("rate") or 100) < 50)
-        return _o9v
-    _bn_voice9 = _v88_voice9(_bn_repo9)
-    _bn_go9, _bn_cut9 = [], []
-    _bn_gated9 = not _bn_voice9.get("darkhorse", True)
-    try:
-        if not _bn_gated9:
-            for _bh9 in (json.loads((_bn_repo9 / "data" / "darkhorse.json").read_text(encoding="utf-8"))
-                         .get("horses") or []):
-                if ((_bh9.get("trade_plan") or {}).get("short") or {}).get("mode") in (
-                        "现价可进", "回踩到位", "突破确认"):
-                    _bn_go9.append((_bh9.get("name"), int(_bh9.get("p_up") or 0)))
-    except Exception:
-        pass
-    try:
-        # 发言权补位:黑马被闸时,进攻点名改用入场窗口候选(择时信号·战绩积累中=有发言权)
-        if _bn_gated9 and not _bn_go9:
-            for _br9e in (json.loads((_bn_repo9 / "data" / "intraday_decisions.json")
-                                     .read_text(encoding="utf-8")).get("rows") or []):
-                if (((_br9e.get("entry_plan") or {}).get("mode") in ("现价可进", "回踩到位", "突破确认", "左侧低吸"))
-                        and _br9e.get("scope") != "持仓"):
-                    _bn_go9.append((_br9e.get("name"), int(_br9e.get("p_up") or 0)))
-    except Exception:
-        pass
-    try:
-        for _br9 in (json.loads((_bn_repo9 / "data" / "intraday_decisions.json").read_text(encoding="utf-8"))
-                     .get("rows") or []):
-            if _br9.get("scope") == "持仓" and any(k in str(_br9.get("action", ""))
-                                                  for k in ("减", "退", "清", "止损")):
-                _bn_cut9.append((_br9.get("name"), int(_br9.get("p_down") or 0)))
-    except Exception:
-        pass
-    _bn_go9.sort(key=lambda x: -x[1])
-    _bn_cut9.sort(key=lambda x: -x[1])
-    _bn_go_txt9 = ("、".join(f"{n}{p}%" for n, p in _bn_go9[:2])
-                   + (f" 等{len(_bn_go9)}只" if len(_bn_go9) > 2 else "")) if _bn_go9 else (
-        "无高胜率买点(黑马池40%<50%已降级研究参考·现金也是仓位)" if _bn_gated9
-        else "今日无绿灯(现金也是仓位)")
-    _bn_cut_txt9 = ("、".join(f"{n}" for n, _ in _bn_cut9[:2])
-                    + (f" 等{len(_bn_cut9)}只" if len(_bn_cut9) > 2 else "")) if _bn_cut9 else "无警示"
-    _bn_sr_txt9 = ""
-    try:
-        _bn_sr9 = (json.loads((_bn_repo9 / "data" / "success_rates.json").read_text(encoding="utf-8"))
-                   .get("types") or {})
-        _bn_parts9 = [f"{_l9}{_v9['rate']}%" for _k9, _l9 in
-                      (("entry_green", "绿灯"), ("darkhorse", "黑马"), ("gate_guard", "警示"))
-                      if (_v9 := _bn_sr9.get(_k9) or {}).get("rate") is not None]
-        if _bn_parts9:
-            _bn_sr_txt9 = "📊实盘:" + "·".join(_bn_parts9) + "(到期核算)"
-    except Exception:
-        pass
-    _bn_new_txt9 = ""
-    try:
-        _bn_cl9 = (json.loads((_bn_repo9 / "data" / "v88_changelog.json").read_text(encoding="utf-8"))
-                   .get("rows") or [])
-        if _bn_cl9:
-            _bn_new_txt9 = ("<span style='background:#fef9c3;border-radius:4px;padding:0 4px'>✨新:"
-                            + str(_bn_cl9[0].get("t"))[:38] + "</span>")
-    except Exception:
-        pass
-    # 【⏱大盘节奏 2026-07-27 用户定纲"周五大跌周一大涨这种提前量最关键最核心"】
-    # 1~3日节奏行:概率=10年回测真实频率(急跌反弹55%/暴跌次日74%/连涨调整54%),非拍脑袋;
-    # 有信号才占行;弱优势如实标注(诚实闸:偏离基线<3pp不报)
-    _bn_rhythm9 = ""
-    try:
-        _bn_rj9 = json.loads((_bn_repo9 / "data" / "market_rhythm.json").read_text(encoding="utf-8"))
-        _bn_rhythm9 = "".join(
-            f"<div style='font-size:12px;color:{'#dc2626' if '偏调整' in str(b.get('line')) else '#15803d'}'>"
-            f"⏱<b>{mk}节奏</b>:{str(b.get('line'))[:118]}</div>"
-            for mk, b in (_bn_rj9.get("markets") or {}).items()
-            if "无节奏信号" not in str(b.get("line")))
-    except Exception:
-        pass
-    st.markdown(
-        f"<div style='background:linear-gradient(90deg,{_bn_tc9}11,transparent);border:1px solid {_bn_tc9}44;"
-        f"border-left:5px solid {_bn_tc9};border-radius:10px;padding:.5rem .8rem;margin-bottom:.4rem'>"
-        f"<div style='font-size:15px;font-weight:800;color:{_bn_tc9}'>📣 "
-        f"{'周末V88·下一交易日展望(按周五收盘)' if __import__('datetime').datetime.now().weekday() >= 5 else '今日V88'} · {_bn_tone9}"
-        f"<span style='font-size:12.5px;font-weight:400;color:#475569'>　{'｜'.join(_bn_cells9)}"
-        f"　📏{_bn_rule9}</span></div>"
-        f"<div style='font-size:12px;color:#64748b;margin-top:2px'>{_bn_sr_txt9}　{_bn_new_txt9}"
-        f"<span style='font-size:11px;color:#94a3b8' title='周概率=统一引擎2周方向分(规则估计);买卖点名见下方行动中心表格;名单明细在双门与关注中心;升级历史在🧬系统自省'>　ⓘ</span></div>"
-        f"{_bn_rhythm9}</div>", unsafe_allow_html=True)
-except Exception:
-    try:
-        _v88_sentinel9(Path.home() / "Desktop" / "ai-daily-report-v2", "今日指令牌")
-    except Exception:
-        pass
 
 # 【V88·个股-大盘统一裁决 2026-07-25 用户定纲"逻辑和说明要统一"】一把尺三态:
 # 偏弱/拐点(p2w≤45或verdict转弱杀跌派发偏冷)→该市场绿灯⏸️暂不执行留档跟踪;
@@ -3194,11 +3114,11 @@ def _v88_mkt_gate9x(_repo9x):
             if _weak9x:
                 _st9x, _po9x = "weak", "⏸️大盘拐点/偏弱·绿灯暂不执行,留档跟踪(回中性激活)"
             elif _hot9x:
-                _st9x, _po9x = "hot", "🔶大盘过热·只限回踩位不追高·仓位减半"
+                _st9x, _po9x = "hot", "⚠ 大盘过热·复核回撤与仓位风险"
             elif _p9x is not None and int(_p9x) >= 55:
-                _st9x, _po9x = "up", "✅大盘良性·按纲领执行"
+                _st9x, _po9x = "up", "↑ 大盘规则偏强·核对个股中央原条件"
             else:
-                _st9x, _po9x = "mid", "⚖️大盘中性·轻仓试·涨靠个股(见领涨引擎)"
+                _st9x, _po9x = "mid", "↔ 大盘规则中性·个股执行仍需中央原条件"
             out[_mk9x] = {"state": _st9x, "policy": _po9x, "p2w": _p9x,
                           "temp": int(_tv9x), "leaders": _lead9x}
         except Exception:
@@ -3251,6 +3171,9 @@ try:
         # 【2026-07-27】无代码的条目(板块名如"半导体")不生成死链,原样返回文字。
         if not str(_cd9x or "").strip():
             return str(_nm9x or "")
+        from stock_profile_view import display_label as _profile_name9, compact_html as _profile_compact9
+        if '<' not in str(_nm9x or ''):
+            _nm9x = _profile_name9(_nm9x, _cd9x)
         # 名字前统一挂市场旗(用户"所有股写到一块,是不是美股我都不知道");
         # 已自带旗的调用点(五行业代表)不重复挂
         _fg9x = "" if str(_nm9x or "")[:2] in ("🇨🇳", "🇭🇰", "🇺🇸") else _flag9(_cd9x)
@@ -3259,10 +3182,10 @@ try:
         # 名称与徽章一起处于深链内，任何显示档位都能直接进入个股深度分析。
         _cert9x = "" if "title='V88" in _nm_html9x or 'title="V88' in _nm_html9x else _cert_badge9(_cd9x, _nm9x)
         _gpt9x = "" if "title='GPT" in _nm_html9x or 'title="GPT' in _nm_html9x else _gpt_badge9(_cd9x, _nm9x)
-        _kimi9x = "" if "title='Kimi" in _nm_html9x or 'title="Kimi' in _nm_html9x else _kimi_badge9(_cd9x, _nm9x)
+        _book9x = "" if "title='经典巨著" in _nm_html9x or 'title="经典巨著' in _nm_html9x else _book_badge9(_cd9x, _nm9x)
         return (f'{_fg9x}<a href="?q={_cd9x}&focus=deep#v88-deep-analysis" target="_blank" rel="noopener" '
                 f'style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{_nm9x}</a>'
-                + _cert9x + _gpt9x + _kimi9x)
+                + _cert9x + _gpt9x + _book9x + _profile_compact9(_cd9x))
     _cb_gate9 = _v88_mkt_gate9x(_cb_repo9)
     _cb_nt9, _cb_day9 = _v88_nontrade9x()
     # 【U3⑥数据闸门 2026-07-26 GPT审计采纳】行情异常=degraded→买侧禁发,只留卖警
@@ -3348,8 +3271,16 @@ try:
             _g9 = next(((_GV9 or {}).get(k) for k in _keys9 if (_GV9 or {}).get(k)), {})
         except Exception:
             _g9 = {}
+        try:
+            from recommendation_gate import review_for, review_is_fresh
+            _, _current_vote9, _current_at9 = review_for(_cd)
+            if not review_is_fresh(_current_at9):
+                return ""
+            _g9 = {**_g9, "verdict": _current_vote9}
+        except Exception:
+            return ""
         _v9 = str(_g9.get("verdict") or "")
-        # 【2026-08-16 Kimi修·视觉噪音】无复核记录的票不再挂灰色"G—"徽章——
+        # 【2026-08-16 界面修复·视觉噪音】无复核记录的票不再挂灰色"G—"徽章——
         # 一屏几十个灰点会淹没真正的红徽章；只保留有记录时的警示/通过标识。
         if not _v9:
             return ""
@@ -3371,47 +3302,19 @@ try:
         _GV9 = (_nwj9("gpt_verify.json").get("rows") or {})
     except Exception:
         _GV9 = {}
-    try:
-        _KV9 = (_nwj9("kimi_verify.json").get("rows") or {})
-    except Exception:
-        _KV9 = {}
-
-    def _kimi_badge9(_cd, _nm=""):
-        """【2026-08-16 三方会谈恢复·Kimi接替Claude席位】K 徽章=Kimi 复核可视标识。
-        身份色紫(#7c3aed),与 C(金/绿)/G(青) 三色分立;裁决符号同规格:✓/×/?。
-        与 G 徽章同规则:无复核记录不显示(降噪,2026-08-16 同批定)。"""
+    def _book_badge9(_cd, _nm=""):
         try:
-            _rawk9 = str(_cd or "").upper()
-            _keysk9 = [_rawk9]
-            if _rawk9.endswith(".HK"):
-                _barek9 = _rawk9[:-3].lstrip("0") or "0"
-                _keysk9 += [_barek9 + ".HK", _barek9.zfill(5) + ".HK"]
-            _k9 = next(((_KV9 or {}).get(k) for k in _keysk9 if (_KV9 or {}).get(k)), {})
+            from recommendation_gate import classics_review_for
+            from html import escape
+            verdict, at = classics_review_for(_cd)
+            if not at:
+                return ""
+            mark = "✓" if verdict == "通过" else "×" if verdict == "否决" else "?"
+            return (f"<span title='{escape('经典巨著：'+verdict+'｜'+at, quote=True)}' "
+                    "style='color:#6d28d9;font-weight:800;margin-left:3px'>"
+                    f"书{mark}</span>")
         except Exception:
-            _k9 = {}
-        _vk9 = str(_k9.get("verdict") or "")
-        _bk9 = str(_k9.get("book_verdict") or "")
-        _km9 = "✓" if _vk9 == "通过" else ("×" if _vk9 == "否决" else ("?" if _vk9 else "—"))
-        _bm9 = "✓" if _bk9 == "通过" else ("×" if _bk9 == "否决" else ("?" if _bk9 else "—"))
-        _basek9 = ("display:inline-block;line-height:15px;padding:0 4px;"
-                   "text-align:center;border-radius:8px;font-size:10px;font-weight:800;"
-                   "margin-left:3px;vertical-align:middle;letter-spacing:-.2px")
-        _stk9 = (("#7c3aed", "#fff") if _vk9 == "通过" and _bk9 == "通过" else
-                 ("#991b1b", "#fff") if "否决" in (_vk9, _bk9) else
-                 ("#ede9fe", "#6d28d9") if _vk9 or _bk9 else
-                 ("#e5e7eb", "#64748b"))
-        _tipk9 = (f"Kimi独立复核:{_vk9 or '不可用'}"
-                  + f"｜经典书理:{_bk9 or '不可用'}"
-                  + f"｜{str(_k9.get('why', ''))[:56]}").replace('"', "'")
-        _opk9 = "1" if _vk9 in ("通过", "否决") else ".8"
-        _gvk9 = next(((_GV9 or {}).get(k) for k in _keysk9 if (_GV9 or {}).get(k)), {}) or {}
-        _vg9 = str(_gvk9.get("verdict") or "")
-        _votes9 = [v for v in (_vg9, _vk9, _bk9) if v]
-        _div9 = len(_votes9) >= 2 and len(set(_votes9)) > 1
-        _div_html9 = ("<span style='font-size:10px;color:#b45309;margin-left:3px'>⚖️三方分歧</span>"
-                      if _div9 else "")
-        return (f"<span title=\"{_tipk9}\" style='{_basek9};background:{_stk9[0]};"
-                f"color:{_stk9[1]};opacity:{_opk9}'>K{_km9}·书{_bm9}</span>{_div_html9}")
+            return ""
     def _cb_nm9(_nm, _cd):
         # 【2026-07-27 统一名字真源】优先私仓 watch_alerts.resolve_name
         # (库内中文名>美股补充表>池名;港股前导零双向归一);不可用回退本地简版。
@@ -3422,17 +3325,17 @@ try:
             from watch_alerts import resolve_name as _rn9c
             _n9 = _rn9c(_cd, _nm)
             return (_n9 + _cert_badge9(_cd, _n9) + _gpt_badge9(_cd, _n9)
-                    + _kimi_badge9(_cd, _n9))
+                    + _book_badge9(_cd, _n9))
         except Exception:
             pass
         _n = str(_nm or "")
         if _n and _n != str(_cd):
             return (_n + _cert_badge9(_cd, _n) + _gpt_badge9(_cd, _n)
-                    + _kimi_badge9(_cd, _n))
+                    + _book_badge9(_cd, _n))
         _k = str(_cd or "").upper()
         _out9 = (_cb_names9.get(_k) or _cb_names9.get(_k.split(".")[0].lstrip("0") + ".HK")
                  or _n or _k)
-        return (_out9 + _cert_badge9(_cd, _out9) + _gpt_badge9(_cd, _out9) + _kimi_badge9(_cd, _out9))
+        return (_out9 + _cert_badge9(_cd, _out9) + _gpt_badge9(_cd, _out9) + _book_badge9(_cd, _out9))
 
     def _cb_link9(_nm, _cd):
         """V88行动中心唯一股票名出口：先解析正式名称，再生成深度分析链接。
@@ -3440,7 +3343,9 @@ try:
         永久硬规则：推荐、准备买、研究、陷阱、风险、未达标等所有档位只要出现
         个股名称，就必须由此处或同等深链输出；档位改变不得取消可点击能力。
         """
-        return _nw_link9(_cb_nm9(_nm, _cd), _cd)
+        # Company identity is formatted before badges; prebuilt badge HTML used
+        # to bypass the shared English/Chinese/code name overlay entirely.
+        return _nw_link9(_nm, _cd)
 
     def _cb_mk9(_cd):
         _c = str(_cd or "").upper()
@@ -3563,8 +3468,11 @@ try:
     # 【V88·排名分R1 2026-08-01 用户"把重要的项目的分数排名更高,你来判断和设定"】
     # 档内次序改由 rank_score.json 决定:赢面40+催化20+量能15+位置15+认证10。
     # 认证降到10%是关键——它是"资格"不是"赢面",当赢面用就是ARXS/BBVA(印证分满分却负期望)那个病根。
-    for _rr9 in (_cbj9("rank_score.json").get("rows") or []):
-        _rank9map[str(_rr9.get("code"))] = _rr9
+    # 【2026-08-24】评级段=rows+watch。只读 rows 会漏掉非持仓/非自选的票——
+    # 事实包已改读全段，界面若只读一半，同一只票在榜上有分、在这里却显示"—"。
+    for _rr9 in ((_cbj9("rank_score.json").get("rows") or [])
+                 + (_cbj9("rank_score.json").get("watch") or [])):
+        _rank9map.setdefault(str(_rr9.get("code")), _rr9)
 
     def _edge9(_cd):
         """档内赢面(pp)。无数据返回None——不拿0冒充,缺数据要看得见。"""
@@ -3619,7 +3527,7 @@ try:
         _ms9x = _rk9x.get("missing") or []
         if _ms9x and _gd9 in ("2A", "1A"):
             _chip9 += (f"<br><span style='color:#b45309;font-size:8.5px' "
-                       f"title='木桶定级:3A=即可进+板全;2A=其他都好缺一两样;1A=缺得多但标用途'>"
+                       f"title='木桶定级:现行等级取中央GPT-6、书理与短中长期收益矩阵；旧桶分不授级'>"
                        f"缺:{','.join(_ms9x[:3])}</span>")
         if _rk9x.get("use"):
             _chip9 += (f"<br><span style='color:#0891b2;font-size:8.5px'>"
@@ -3637,15 +3545,15 @@ try:
         if _rs9 is not None:
             _rk9 = (_rank9map.get(str(_cd)) or {}).get("rank")
             _chip9 += (f"<br><span style='color:#1d4ed8;font-size:9px;font-weight:700' "
-                       f"title='排名分R1(全表通用·越高越值得买)=赢面40%+催化20%+量能15%"
-                       f"+位置15%+认证10%;层级写在分段里:3A 82~100/2A 55~82/1A 15~55'>"
+                       f"title='历史发现分R1(不授予当前评级或买入权)=赢面40%+催化20%+量能15%"
+                       f"+位置15%+认证10%;旧分段不对应现行1A/2A/3A'>"
                        f"分{_rs9:.1f}" + (f"·#{_rk9}" if _rk9 else "") + "</span>")
         _eg9 = _edge9map.get(str(_cd))
         if _eg9 is not None:
             _ec9 = "#dc2626" if _eg9 > 0 else "#16a34a"
             _chip9 += (f"<br><span style='color:{_ec9};font-size:9px;font-weight:700' "
-                       f"title='赢面=2周上涨概率−打平所需胜率;正=正期望,负=赔率太薄不够本'>"
-                       f"赢面{_eg9:+.1f}</span>")
+                       f"title='旧规则分与盈亏平衡比例之差，方向分未标定，不能证明正期望'>"
+                       f"规则差值{_eg9:+.1f}</span>")
         else:
             _chip9 += ("<br><span style='color:#cbd5e1;font-size:8px' "
                        "title='该股不在 intraday_decisions 里,拿不到赔率与打平线,故无赢面'>"
@@ -3799,7 +3707,7 @@ try:
             except (TypeError, ValueError):
                 return ""
             if _side == "up":
-                _t = ("高把握" if _p >= 70 else "偏多" if _p >= 60 else "略偏多" if _p >= 55 else "中性")
+                _t = ("规则高分" if _p >= 70 else "偏多" if _p >= 60 else "略偏多" if _p >= 55 else "中性")
             else:
                 _t = ("强看跌" if _p >= 80 else "明确看跌" if _p >= 65 else "偏跌" if _p >= 55 else "中性")
             return f"<span style='font-weight:400;font-size:10.5px;color:#94a3b8'>({_t})</span>"
@@ -3866,11 +3774,11 @@ try:
             return ("<table style='width:100%;font-size:12.5px;border-collapse:collapse'>"
                     "<tr style='color:#94a3b8;font-size:11px;text-align:left'>"
                     "<th>名称</th>"
-                    "<th title='统一印证评级:3A=双剑+技术≥2;2A/1A括号标得分项;评时点@基价,漂移>3%红标待重算'>评级 ⓘ</th>"
+                    "<th title='当前评级以GPT-6双审、书理及分周期净空间为准；本模块历史印证仅作发现线索'>评级 ⓘ</th>"
                     "<th title='分析所依据的行情价与时间点:🟢同日(盘中/收盘定稿)=新鲜;"
                     "⚠️红=隔日旧数据,判断可能已被行情推翻,以现价复核后再动手'>现价·时点 ⓘ</th>"
                     "<th title='动作+未来2周方向概率(统一引擎规则估计,非实盘胜率);"
-                    "买侧=上涨概率,卖侧=下跌概率;≥70%高把握·60-70%偏多·55-60%略偏·<55%中性'>"
+                    "买卖侧规则方向分，未经概率标定；≥70较高·60–70偏向·55–60略偏·<55中性'>"
                     "动作·2周概率 ⓘ</th><th>触发/买区</th><th>失效价</th><th>仓位</th><th>状态</th>"
                     "<th title='三层决策:①周期层=该不该有这只票(看年报营收趋势+估值+长周期结构,"
                     "不看技术线) ②仓位层=拿多少 ③节奏层=今天动不动手。"
@@ -4032,7 +3940,7 @@ try:
                         f"</b>→财报前不加仓" if _urg9r else "")
             if _bm_parts9:
                 st.markdown(
-                    "<div style='font-size:11.5px;color:#475569;margin:2px 0'>🌡️ 市场宽度(全市场逐只): "
+                    "<div style='font-size:11.5px;color:#475569;margin:2px 0'>🌡️ 市场宽度(有效样本): "
                     + " ｜ ".join(_bm_parts9) + _ec_txt9
                     + "<span title='研究数据层(2026-08-01上线):宽度=涨跌家数/中位涨幅,比指数更真;"
                       "财报窗=美股持仓7日内出财报,降险纪律。数据文件barometer.json/"
@@ -4078,15 +3986,26 @@ try:
             "font-size:9.5px;font-weight:800'>R</span> V88本地规则闸达标　"
             "<span style='display:inline-block;width:14px;height:14px;line-height:14px;text-align:center;"
             "border-radius:50%;background:#dcfce7;color:#15803d;border:1px solid #86efac;"
-            "font-size:9.5px;font-weight:800'>G</span> GPT/Codex独立复核　"
+            "font-size:9.5px;font-weight:800'>G</span> GPT-6独立复核　"
             "<span style='display:inline-block;width:14px;height:14px;line-height:14px;text-align:center;"
             "border-radius:50%;background:#ede9fe;color:#7c3aed;border:1px solid #c4b5fd;"
-            "font-size:9.5px;font-weight:800'>K</span> Kimi三方会谈复核　"
-            "<span style='display:inline-block;width:14px;height:14px;line-height:14px;text-align:center;"
-            "border-radius:50%;background:#fef3c7;color:#b45309;border:1px solid #fcd34d;"
-            "font-size:9.5px;font-weight:800'>书</span> 经典书理校验　"
-            "<span style='color:#94a3b8'>3A=四方全通过｜2A=G+K双双通过｜无标=引擎自判(未经复核)｜未通过的已移出名单</span></div>",
+            "font-size:9.5px;font-weight:800'>书</span> 经典巨著复核　"
+            "<span style='color:#94a3b8'>3A=GPT-6五项＋书理全通过＋本周期净空间达标；执行另查触发｜1A/2A按短中长期矩阵持续研究｜缺审不授级</span></div>",
             unsafe_allow_html=True)
+        st.caption("旧系统全部模型职责由 GPT-6 接管｜审核统一 GPT-6＋经典巨著｜基础行情来自真实免费接口。"
+                   "DeepSeek暂不启用；优先免费，可用已有额度。任何新增收费须先经你明确同意，10元月上限不是付款授权；额度耗尽不自动付费切换。")
+        # All modules read the same dated complete-directory coverage.
+        from market_coverage_view import render as _render_market_coverage
+        _render_market_coverage(st, _cb_repo9)
+        from market_directory_view import render as _render_directory_search
+        _render_directory_search(st, _cb_repo9)
+        from module_health_ui import render as _render_module_health9
+        with _v88_system_details:
+            _render_module_health9(_cb_repo9)
+        _accuracy9 = _cbj9("accuracy_audit.json") or {}
+        st.caption("GPT-6 × 经典巨著：数字证据、反方情景、触发与失效条件逐项核验。"
+                   + f"当前版本已到期样本 {int(_accuracy9.get('current_settled') or 0)} 条；"
+                   + "精准度提升待样本外验证，情景概率不等于实测胜率。")
         # 【3A并板 2026-07-31 用户"图二内容整合到图一"】雷达榜面行进同一张表:
         # 评级列代替动作概率;🎯进入区间/💰盈利带进触发列;止损-8%进失效列;认证状态进状态列
         try:
@@ -4101,8 +4020,8 @@ try:
                 _sf9m = str(_x9.get("safety") or "")
                 # 【评级=行动指令 2026-07-31 用户定纲"3A=现在买就是最好的时候"】
                 _ts9x = str(_x9.get("trigger_state") or "")
-                if _x9.get("tier_label") == "3A":
-                    _act9m = ("<b style='color:#dc2626;font-size:12px'>🟢现在买·最佳窗口</b>"
+                if _x9.get("tier_label") == "3A" and _x9.get("formal_recommendation") is True:
+                    _act9m = ("<b style='color:#dc2626;font-size:12px'>🟢3A·当前合同允许入场</b>"
                               + (f"<br><span style='font-size:8px;color:#64748b'>涨{_x9.get('p_2w')}%</span>"
                                  if _x9.get("p_2w") is not None else ""))
                 elif _ts9x.startswith("🟢"):
@@ -4180,9 +4099,11 @@ try:
         # (与腾讯案同一条原则:「未评估」不能冒充任何结论,连"可买"都不行)。
         # 修:主买表**只留 tier∈{3A,2A} 且未被验证闸否决**;
         # 待评估/查无评级 → 收进"🔭发现候选·未过闸"折叠区——发现保留,呈现降级。
+        from module_signal_view import current_buy_codes, admitted_rank
+        _current_action_codes9 = current_buy_codes()
         def _gate_ok9(_c):
             _r = _rank9map.get(str(_c)) or {}
-            return str(_r.get("tier")) in ("3A", "2A") and _r.get("listable") is not False
+            return admitted_rank(_r, _c, _current_action_codes9)
         _disc9 = [(c, h) for _t, _s, c, h in _buy_order9
                   if c not in _arch_set9 and c not in _tac_set9 and not _gate_ok9(c)]
         _disc_set9 = {c for c, _ in _disc9}
@@ -4219,7 +4140,7 @@ try:
                                             max_selections=_MXC9, key="buy_pk_sel",
                                             label_visibility="collapsed",
                                             placeholder=f"⚔️ 勾选2~{_MXC9}只做深度对比"
-                                                        "（谁值得买/是不是同一个赌注/同期谁跑赢）…")
+                                                        "（中央评级/原合同/同期走势）…")
                     if len(_bsel9) >= 2 and st.button(f"⚔️ 深度对比这{len(_bsel9)}只",
                                                       key="buy_pk_go", type="primary"):
                         st.session_state.pk_codes = [_bopt9[s][0] for s in _bsel9]
@@ -4246,25 +4167,9 @@ try:
                 logging.exception("[V88] 今天可买筛选失败")
             # 【R2完整输出 2026-08-02 用户第十五节】行动清单完整卡:等级/子类型/五桶板/
             # 风险·完备·置信/为什么是这个等级/为什么不是更高/触发·升级·降级·失效条件。
-            try:
-                from grade_card import board_html as _bh_r2, veto_review_html as _vr_r2
-                _rkall9 = _cbj9("rank_score.json")
-                if _rkall9.get("rows"):
-                    with st.expander(
-                            f"🎯 行动清单·完整评级卡（{_rkall9.get('version', 'R2')}木桶定级）",
-                            expanded=False):
-                        _vh9 = _vr_r2(_rkall9)
-                        if _vh9:
-                            st.markdown(_vh9, unsafe_allow_html=True)
-                        st.markdown(_bh_r2(_rkall9, limit=8, show_detail=3),
-                                    unsafe_allow_html=True)
-            except Exception:
-                logging.exception("[V88] R2完整评级卡渲染失败")
             if _tac9:
-                with st.expander(f"⚡ 战术级 1A · {len(_tac9)} 只（短线/波段/低吸·缺≥2块桶板·"
-                                 f"非核心推荐,自选参与）", expanded=False):
-                    st.caption("三方印证收敛:主表只留3A/2A,与顶部行动清单同一口径;"
-                               "1A是独立战术信号,保留但降层——每只带用途/触发/失效(见评级章)。")
+                with st.expander(f"历史技术观察 · {len(_tac9)} 只 · 当前评级见中央列表", expanded=False):
+                    st.caption("保留原技术记录及日期；旧规则的1A标签不代表当前双审评级。")
                     st.markdown(_tbl9([h for _, h in _tac9]), unsafe_allow_html=True)
             # 【2026-08-06 用户抓获·发现候选降级呈现】原漏进主买表的 待评估/查无评级 票收进这里。
             # 发现层的价值保留(右侧雷达=欧奈尔-lite发现通道),但**它们不是"可买",是"待验"**——
@@ -4307,34 +4212,32 @@ try:
                                         + f"{str(_g9a.get('out_reason') or '—')}</div>",
                                         unsafe_allow_html=True)
             if not _t_buy9:
-                st.info(f"🎯 今日无 3A/2A 核心买单（木桶门槛严,不硬凑）。"
+                st.info(f"🎯 今日无通过双审与执行检查的3A买单。"
                         f"战术级1A {len(_tac9)}只在下方折叠区;0A/存档 {len(_arch9)}只已过滤。")
             st.markdown(_tbl9(_t_buy9) if _t_buy9 else
                         ("<span style='font-size:12px;color:#94a3b8'>买侧无可执行买单——现金也是仓位"
                          "(环境弱时买单自带仓位分级提示,不再硬拦)</span>"), unsafe_allow_html=True)
             # (为什么现在=表格内一列,见 _row6_9 的 _wnow 参数;不再另起板块)
             if _cb_near9:
-                st.markdown("<div style='font-size:12px;color:#64748b;margin-top:4px'>"
-                            "<b>🕐 准备买·等触发</b><span style='font-size:11px;color:#94a3b8'>"
-                            "(技术上尚未到位,到价再评环境闸)</span>"
-                            + "".join(f"<div style='font-size:12px'>{_cb_link9(_n9c, _c9c)}"
-                                      f"<span style='color:#94a3b8'>·{str(_w9c)[:76]}</span></div>"
-                                      for _n9c, _c9c, _m9c, _w9c in _cb_near9[:4]) + "</div>",
-                            unsafe_allow_html=True)
+                from module_signal_view import discovery_note
+                with st.expander(f"技术线索 · {len(_cb_near9)}只 · 中央列表统一审核",expanded=False):
+                    st.markdown(''.join(discovery_note(n,c,_cb_link9) for n,c,m,w in _cb_near9),unsafe_allow_html=True)
             # ── ⚾击球区(2026-07-27礼来案"800多你都不告诉我该进了"):白马打折中长线喊进 ──
             try:
                 _vzj9c = _cbj9("value_zone.json")
+                from module_signal_view import current_buy_codes, admitted
+                _v88_buy_codes = current_buy_codes()
                 # “可分批买”与飞书主动推送共用同一把严格闸；未过推送闸只保留研究。
-                _vzr9c = [r for r in (_vzj9c.get("rows") or []) if r.get("push_eligible")][:5]
+                _vzr9c = [r for r in (_vzj9c.get("rows") or []) if admitted(r,_v88_buy_codes)][:5]
                 _vzh9c = [r for r in (_vzj9c.get("rows") or [])
-                           if r.get("verdict") == "进" and not r.get("push_eligible")][:5]
+                           if r.get("verdict") == "进" and not admitted(r,_v88_buy_codes)][:5]
                 _vzt9c = [r for r in (_vzj9c.get("rows") or []) if r.get("verdict") == "陷阱"][:3]
                 if _vzr9c or _vzh9c or _vzt9c:
                     st.markdown("<div style='background:#fefce8;border:1px solid #fde047;border-radius:8px;"
                                 "padding:5px 9px;margin-top:5px'><b style='font-size:12.5px;color:#a16207'>"
-                                "🛒 好公司打折·可分批买</b><span style='font-size:10.5px;color:#94a3b8' "
+                                "🛒 价值区间观察 · 以中央评级为准</b><span style='font-size:10.5px;color:#94a3b8' "
                                 "title='好公司(10年年化≥8%)股价打了大折→可分批买,拿3~6个月;"
-                                "概率=该股自身10年同级回撤回测(礼来850案:历史80%胜率中位+22%,系统当时没喊,错过+40%);"
+                                "规则分与历史样本统计须分别核对，均不保证未来结果;"
                                 "陷阱档=历史同级回撤后多数继续跌,明说不接刀'>ⓘ推送同闸·分析"
                                 + str(_vzj9c.get("generated_at") or "时间缺失") + "</span>"
                                 + "".join(
@@ -4355,17 +4258,19 @@ try:
             # ── 📈趋势先行(2026-07-27大改"要提前量":小米/LMT被安全线拦掉的翻转,这里直接说) ──
             try:
                 _tsj9c = _cbj9("trend_shift.json")
+                from module_signal_view import current_buy_codes, admitted
+                _v88_buy_codes = current_buy_codes()
                 # 只有规则闸+当日GPT复核都通过，页面才写“可买”；其余不删除，降级研究。
-                _tsu9c = [r for r in (_tsj9c.get("up") or []) if r.get("push_eligible")][:6]
+                _tsu9c = [r for r in (_tsj9c.get("up") or []) if admitted(r,_v88_buy_codes)][:6]
                 _tsr9c = [r for r in (_tsj9c.get("up") or [])
-                           if r.get("phase") in ("早期", "中期") and not r.get("push_eligible")][:5]
+                           if r.get("phase") in ("早期", "中期") and not admitted(r,_v88_buy_codes)][:5]
                 _tsd9c = [r for r in (_tsj9c.get("down") or []) if r.get("push_eligible")][:4]
                 _tsw9c = [r for r in (_tsj9c.get("down") or [])
                            if r.get("in_pool") and not r.get("push_eligible")][:3]
                 if _tsu9c or _tsr9c or _tsd9c or _tsw9c:
                     st.markdown("<div style='background:#eff6ff;border:1px solid #93c5fd;border-radius:8px;"
                                 "padding:5px 9px;margin-top:5px'><b style='font-size:12.5px;color:#1d4ed8'>"
-                                "📈 涨势刚起·可买</b><span style='font-size:10.5px;color:#94a3b8' "
+                                "📈 趋势观察 · 以中央评级为准</b><span style='font-size:10.5px;color:#94a3b8' "
                                 "title='翻转已发生且在早中期=提前量窗口;主动推荐仍须统一概率/盈亏比/期望优势/复核闸;"
                                 "直接推荐非影子,每条已入台账攒战绩;仓位建议按牛熊态(bear=1/3仓)'>ⓘ推送同闸·分析"
                                 + str(_tsj9c.get("generated_at") or "时间缺失") + "</span>"
@@ -4514,16 +4419,6 @@ except Exception:
         pass
 
 # 【V88·U3金字塔导航 2026-07-26】五层阅读顺序显性化:行动→预判→机会→防守→证据
-try:
-    st.markdown("<div style='font-size:11.5px;color:#94a3b8;padding:.15rem 0'>"
-                "📐 阅读顺序: <b style='color:#dc2626'>①行动</b>(上方确认买卖单+指令牌)"
-                " → <b style='color:#2563eb'>②预判</b>(作战板:大盘/轮转/拐点倒计时/前置信号)"
-                " → <b style='color:#b45309'>③机会</b>(埋伏/准备买/五行业代表)"
-                " → <b style='color:#16a34a'>④防守</b>(卖单/地狱门)"
-                " → ⑤证据(综述/归因/雷达族,按需展开)——3秒知道该干什么,证据按需查</div>",
-                unsafe_allow_html=True)
-except Exception:
-    pass
 
 # 【V88·时间作战板 2025-07-25 用户批准"六档一个模块,时间上方选,省版面+每档最优口径"】
 # 今日/本周/下周/本月/下月/本季度/下季度 七档切换,六问结构复用:大盘/板块轮转/低位埋伏/买/卖/事件。
@@ -4581,7 +4476,7 @@ try:
     }
     # (3A榜已并入上方行动中心确认买表格——2026-07-31 用户'图二整合到图一')
     with st.expander("⏱ 时间作战板 · 今日→下季度七档切换：大盘/轮转/低位埋伏/买/卖/事件（一屏六问）",
-                     expanded=True):
+                     expanded=False):
         _tbc_t9, _tbc_m9 = st.columns([5.2, 3.8])
         with _tbc_t9:
             _tb_tier9 = st.radio("时间档", list(_TB_CFG9.keys()),
@@ -4842,8 +4737,15 @@ try:
             # ── ③a 🌍全市场机会(2026-07-27 用户定纲"扩大股票池·熊市也有逆势股") ──
             try:
                 _op9 = _nwj9("opportunity_scan.json")
-                _op_ex9 = [r for r in (_op9.get("exec") or []) if _mkfit9(r.get("code"))]
+                _op_candidates9 = [r for r in (_op9.get("exec") or []) if _mkfit9(r.get("code"))]
                 _op_bk9 = [r for r in (_op9.get("blocked") or []) if _mkfit9(r.get("code"))]
+                _op_ex9, _op_rows9 = [], []
+                for _op_candidate9 in _op_candidates9:
+                    _op_ok9, _op_reason9 = _v88_buy_gate9(_op_candidate9, _nw_repo9)
+                    if _op_ok9:
+                        _op_ex9.append(_op_candidate9)
+                    else:
+                        _op_bk9.append({**_op_candidate9, "block_reasons": [_op_reason9 or "GPT-6＋经典巨著未通过"]})
                 if _op_ex9 or _op_bk9:
                     _op_rows9 = []
                     for _r9o in _op_ex9[:6]:
@@ -5208,7 +5110,7 @@ try:
                               f"{_nw_link9(_r9p.get('name'), _r9p.get('code'))}"
                               f"<span>·待验证：{str(_why9p)[:48]}</span></div>"
                               for _r9p, _why9p in _prep_pending9[:5]]
-            # 【2026-08-16 Kimi改·空栏给证据】前置读取,带独立保护——失败只丢数字,
+            # 【2026-08-16 界面修正·空栏给证据】前置读取,带独立保护——失败只丢数字,
             # 绝不让空栏文案把④区块炸掉。此处早于 _v88_success9 的 def,只能就地读文件。
             try:
                 _eg_succ9 = ((json.loads((_cb_repo9 / "data" / "success_rates.json")
@@ -5222,7 +5124,7 @@ try:
                         + ("".join(_rows_c9) if _rows_c9
                            else ("<div style='font-size:12.5px;color:#94a3b8'>🔇黑马池实盘<50%已降级研究参考——"
                                  "点名暂停,完整名单在🐴黑马雷达模块(战绩回升自动恢复)</div>" if _dh_gate9n else
-                                 # 【2026-08-16 Kimi改·空栏给证据】"0只"不是程序坏了:把从严原因和实盘战绩
+                                 # 【2026-08-16 界面修正·空栏给证据】"0只"不是程序坏了:把从严原因和实盘战绩
                                  # 直接写出来,让空仓成为看得见的决策而不是疑心病。数据来自 success_rates.json。
                                  # 注意:此处(约5270行)早于 _v88_success9 的 def(15435行),不能调它——
                                  # 就地读文件(pyflakes undefined-name 会抓,铁律6),读不到就不带数字。
@@ -5234,7 +5136,7 @@ try:
                         + (f"<div style='font-size:12px;margin-top:3px'><b style='color:#b45309'>🎯 准备买"
                            f"({len(_prep_ready9)}只)<span style='font-weight:400;font-size:11px;color:#94a3b8' title='{_prep_lbl9}·已过统一复核闸·到价再确认'>ⓘ</span></b>"
                            + (lambda _ov9q: (f"<span style='font-size:11px;color:#94a3b8'>"
-                                             # 【2026-08-16 Kimi修·口径一致】分子只数过闸票,分母同步改为过闸数,
+                                             # 【2026-08-16 界面修复·口径一致】分子只数过闸票,分母同步改为过闸数,
                                              # 不再出现"屏上5只却写/12只"的对不上。
                                              f"·与{_ov9q[0]}榜重合{_ov9q[1]}/{len(_prep_ready9)}只——16与32周趋势"
                                              "一致属长周期常态,差异看各档分数/支撑压力对照</span>")
@@ -5291,78 +5193,15 @@ try:
                         + ("".join(_rows_d9) if _rows_d9
                            else "<div style='font-size:12.5px;color:#94a3b8'>本档暂无警示——按各卡💰卖点纪律执行</div>"),
                         unsafe_allow_html=True)
-            # 【V88·五行业代表 2026-07-25 用户点单"各行业下周关注代表+价格区间要进界面"】
-            # 医疗/能源/军工/银行/消费,统一引擎实跑择优;浅回踩带~突破~失效全价格口径。
+            # Current industry samples reuse central scores and original contracts.
             try:
-                _sr9v = _nwj9("sector_reps.json")
-                # 【2026-07-26 三市场版】筛选具体市场=该市场组完整行;全部=每行业三市场并列精简
-                _sr_mkts9 = _sr9v.get("markets") or {}
-                if _sr_mkts9 and _tb_mkt9 == "全部":
-                    _sr_all9 = []
-                    _secs_order9 = [x["sector"] for x in (_sr_mkts9.get("美股") or [])]
-                    for _sec9a in _secs_order9:
-                        _cells9a = []
-                        for _mk9a, _fl9a in (("美股", "🇺🇸"), ("A股", "🇨🇳"), ("港股", "🇭🇰")):
-                            _row9a = next((x for x in (_sr_mkts9.get(_mk9a) or [])
-                                           if x["sector"] == _sec9a), None)
-                            if not _row9a:
-                                continue
-                            _pk9a = _row9a.get("pick") or _row9a.get("watch") or {}
-                            # 旗已由_nw_link9统一挂,此处不再重复(防双旗)
-                            _cells9a.append(f"{_nw_link9(_pk9a.get('name'), _pk9a.get('sym'))}"
-                                            + (f"<b style='color:#dc2626'>{_pk9a.get('p_up')}%</b>"
-                                               if _row9a.get("pick") else
-                                               "<span style='font-size:11px;color:#94a3b8'>观察</span>"))
-                        _sr_all9.append(f"<div style='font-size:12.5px'><b>{_sec9a}</b>："
-                                        + "　".join(_cells9a) + "</div>")
-                    st.markdown("<b style='font-size:13px'>🎖️ 五行业代表·三市场</b>"
-                                f"<span style='font-size:11px;color:#94a3b8' title='点名可点进深度分析;区间明细=上方市场筛选选定单市场后显示'>"
-                                f"{str(_sr9v.get('generated_at'))[5:16]} ⓘ</span>"
-                                + "".join(_sr_all9), unsafe_allow_html=True)
-                    _sr_sel9 = []
-                else:
-                    _sr_sel9 = (_sr_mkts9.get(_tb_mkt9.lstrip("🇨🇳🇭🇰🇺🇸")) or _sr9v.get("sectors")
-                                or []) if _sr_mkts9 else (_sr9v.get("sectors") or [])
-                if _sr_sel9:
-                    _sr_rows9 = []
-                    for _sv9 in _sr_sel9:
-                        _pk9 = _sv9.get("pick") or _sv9.get("watch") or {}
-                        _is_pick9 = bool(_sv9.get("pick"))
-                        _dist9 = ((_pk9.get("last", 0) / _pk9.get("shallow", [0, 1])[1] - 1) * 100
-                                  if _pk9.get("shallow", [0, 0])[1] else 0)
-                        _far9 = _dist9 > 5
-                        _pol9v = _pol9p(_pk9.get("sym"))
-                        _sr_rows9.append(
-                            "<div style='font-size:12.5px'>"
-                            f"<b>{_sv9['sector']}</b>·{'代表' if _is_pick9 else '仅观察'} "
-                            f"{_nw_link9(_pk9.get('name'), _pk9.get('sym'))}"
-                            f"<span style='font-size:11px;color:#64748b'>现{_pk9.get('last')}</span>"
-                            + (f"<b style='color:#dc2626'>{_pk9.get('p_up')}%</b>" if _is_pick9 else "")
-                            + f"<span style='font-size:11.5px;color:#475569'>·回踩带{_pk9.get('shallow', ['?', '?'])[0]}"
-                            f"~{_pk9.get('shallow', ['?', '?'])[1]}·突破{_pk9.get('breakout')}"
-                            f"·失效{_pk9.get('invalid')}</span>"
-                            + (f"<span style='font-size:11px;color:#b45309'>·🔶现价高出回踩带{_dist9:.0f}%勿追,只等回踩</span>" if _far9 else "")
-                            + (f"<span style='font-size:11px;color:#b45309'>·📅{_pk9['earn']}财报博弈期</span>" if _pk9.get("earn") else "")
-                            + f"{_pol9v}"
-                            f"<div style='font-size:11px;color:#94a3b8;margin-left:8px'>└{str(_sv9.get('why'))[:70]}</div></div>")
-                    st.markdown(f"<b style='font-size:13px'>🎖️ 五行业代表·{_tb_mkt9}·下周关注</b>"
-                                f"<span style='font-size:11px;color:#94a3b8' title='医疗/能源/军工/银行/消费·统一引擎实跑择优·弱行业不硬凑如实标观察·{str(_sr9v.get(chr(39) + chr(39)) or chr(32))}'>·{str(_sr9v.get('generated_at'))[5:16]} ⓘ</span>"
-                                + "".join(_sr_rows9), unsafe_allow_html=True)
-
-                    def _rf_secrep9():
-                        import sys as _sy9v
-                        if str(_nw_repo9 / "src") not in _sy9v.path:
-                            _sy9v.path.insert(0, str(_nw_repo9 / "src"))
-                        import importlib as _il9v
-                        import sector_reps as _srm9
-                        _il9v.reload(_srm9)
-                        _srm9.build(force=True)
-                    _v88_refresh9("五行业代表", "约2-3分钟", _rf_secrep9, "rf_secrep9")
+                from sector_reps_view import html as _sector_reference_html
+                st.markdown(_sector_reference_html(_nwj9("sector_reps.json"),market=_tb_mkt9,
+                    factpack_id=(_nwj9("triad_selection_pub.json") or {}).get("factpack_id"),
+                    stock_link=_nw_link9),unsafe_allow_html=True)
             except Exception:
-                try:
-                    _v88_sentinel9(_nw_repo9, "五行业代表")
-                except Exception:
-                    pass
+                _v88_sentinel9(_nw_repo9,"行业参考样本")
+                st.caption("行业样本暂不可用；当前评级与原合同见3A中央列表。")
             # 【V88·上下榜对账 2026-07-25 用户点单"新上榜和下榜要有补充说明"】与绿灯留痕
             # 同款:每档买/卖名单落盘跨日对比——新上榜说"为什么来了",下榜说"为什么走了",
             # 名单变动不许无声蒸发。同日内多次刷新只更新last,不动prev(对账基准=上一个交易日)。
@@ -5465,7 +5304,7 @@ try:
                         unsafe_allow_html=True)
         # 【V88·分析时间+节奏显性化 2026-07-25 用户点单】各数据源时间必须可见;
         # 更新节奏=交易日07/13/19三班流水线(盘中三次)+桌面三时段相位扫描,周末每日09:00一趟——
-        # 全跑公共仓Actions+Kimi订阅既有缓存，不新增按量API费用。
+        # 全跑公共仓Actions+GPT-6订阅既有缓存，不新增按量API费用。
         _ts_line9 = []
         for _lbl9t, _src9t in (("快照", _nw_snap9.get("generated_at")),
                                ("轮动", (_nw_snap9.get("rotation_forecast") or {}).get("analysis_time")),
@@ -5477,7 +5316,7 @@ try:
                    + f" ｜ 当前档:{_tb_tier9}(大盘={_cfg9['mkt_hz'] or '当日实况'}·板块={_cfg9['sec_hz'] or '当日涨跌'}·买={_buy_note9})"
                    " ｜ 更新节奏:交易日07/13/19点三班+盘中三时段相位扫描·周末每日09:00一趟"
                    "(下周/本月/下月档同源同步更新·Actions公共仓免费,预算内)")
-        # 【2026-08-16 Kimi加·轮动过期警示】轮动是快变量,过期3天的预测约等于作废;
+        # 【2026-08-16 界面增强·轮动过期警示】轮动是快变量,过期3天的预测约等于作废;
         # 时间戳虽已展示但混在一行里不显眼。落后最近交易日→单独红条点名。
         try:
             import datetime as _dt_rf9
@@ -5566,55 +5405,6 @@ except Exception:
 # (U3.2 slot已上移至页首——用户点单'全球概览置顶,看时间方便')
 
 # Fable复核呈现：现役只读 GPT/Codex + 经典书理结果，不展示旧Claude日报。
-try:
-    _fr_fp9 = Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "fable_plan.json"
-    if _fr_fp9.exists():
-        _fr_obj9 = json.loads(_fr_fp9.read_text(encoding="utf-8"))
-        _fr_months9 = _fr_obj9.get("months") or {}
-        _fr_key9 = sorted(_fr_months9)[-1] if _fr_months9 else ""
-        _fr_month9 = _fr_months9.get(_fr_key9) or {}
-        _fr_plan9 = _fr_month9.get("plan") or {}
-        _fr_exec9 = _fr_month9.get("execution_summary") or {}
-        _fr_tri9 = (_fr_month9.get("triad_review") or {})
-        _fr_con9 = _fr_tri9.get("consensus") or {}
-        with st.expander("🎖️ Fable月计划状态 · GPT/Codex＋经典书理（不自动交易）", expanded=False):
-            st.markdown("<div style='background:#eef2ff;border-left:4px solid #6366f1;border-radius:6px;"
-                        "padding:.3rem .6rem;font-size:12px;color:#4338ca'>"
-                        "🎖️ 现役复核=GPT/Codex独立判断＋经典书理校验；V88规则闸单独显示。"
-                        "复核只提供证据和异议，不自动下单。</div>",
-                        unsafe_allow_html=True)
-            _fr_has9 = bool(_fr_plan9.get("trades"))
-            st.markdown(
-                f"**月份**：{_fr_key9 or '待生成'}　**计划**："
-                f"{'已有' + str(len(_fr_plan9.get('trades') or [])) + '笔' if _fr_has9 else '空仓待机'}　"
-                f"**执行状态**：{_fr_exec9.get('state') or '待体检'}　"
-                f"**体检时间**：{_fr_month9.get('checked_at') or '—'}")
-            if _fr_has9:
-                _fr_names9 = []
-                for _fr_t9 in (_fr_plan9.get("trades") or []):
-                    _fr_cd9 = str(_fr_t9.get("code") or "")
-                    _fr_nm9 = str(_fr_t9.get("name") or _fr_cd9)
-                    _fr_names9.append(
-                        f'<a href="?q={_fr_cd9}&focus=deep#v88-deep-analysis" target="_blank" '
-                        f'rel="noopener" style="color:#1d4ed8;font-weight:700">{_fr_nm9}</a>')
-                st.markdown(
-                    "<div style='background:#f0fdf4;border-left:4px solid #22c55e;border-radius:6px;"
-                    "padding:.35rem .6rem;font-size:12px;color:#166534'>"
-                    "✅ 本月正式计划：" + "、".join(_fr_names9) + "<br>"
-                    "当前动作：" + str(_fr_exec9.get("current_action") or "维持冻结参数，不追价") + "<br>"
-                    "<b>本轮不新增 ≠ 本月没有推荐</b>；先处理已发布计划的成交/出口/结算。"
-                    "</div>", unsafe_allow_html=True)
-            else:
-                st.caption("本月没有通过硬闸的标的时，空仓待机是元文件规定的合格结果，不会为了凑数硬推。")
-            st.markdown(f"**双层复核**：{_fr_con9.get('state','待复核')}　"
-                        f"**分析时间**：{_fr_tri9.get('reviewed_at') or _fr_tri9.get('checked_at') or '—'}")
-            for _fr_r9 in (_fr_tri9.get("reviews") or []):
-                st.markdown(f"- **{_fr_r9.get('party')}**：{_fr_r9.get('verdict')}　"
-                            f"{str(_fr_r9.get('reason') or _fr_r9.get('why') or '')[:100]}")
-    else:
-        st.caption("🎖️ Fable复核：待GPT/Codex＋经典书理生成")
-except Exception:
-    pass
 
 # ===V88_PAGE_BREAK:LISTS===
 _v88_front_decision_slot = st.empty()
@@ -5635,7 +5425,7 @@ with _v88_hold_mod9:
     st.markdown('<div style="font-size:17px;font-weight:800;color:#123a70;'
                 'border-left:4px solid #b8860b;padding-left:.5rem;margin:.4rem 0 .05rem">'
                 '📊 我的股票池（持仓＋自选） <span style="font-size:12px;color:#94a3b8;font-weight:400">'
-                '——两池全部信息只在此模块；<b style="color:#b8860b">金色名=持仓∩自选</b>·💼纯持仓·⭐纯自选</span></div>',
+                '持仓风险与自选管理</span></div>',
                 unsafe_allow_html=True)
 
 # 【V88界面修改原则】默认只新增、压缩与重排；不得删除或隐藏原有内容，
@@ -5668,8 +5458,8 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"],
 [data-testid="stMarkdownContainer"] table p,
 [data-testid="stMarkdownContainer"] table li { font-size: inherit !important; line-height: inherit !important; }
 [data-testid="stCaptionContainer"] { font-size: 12px !important; color: #5a6378 !important; }
-h1, [data-testid="stHeading"] h1 { font-size: 22px !important; font-weight: 700 !important; color: #1a1a2e !important; }
-h2, [data-testid="stHeading"] h2 { font-size: 18px !important; font-weight: 700 !important; color: #1e3a5f !important; }
+h1, [data-testid="stHeading"] h1 { font-size: 18px !important; font-weight: 700 !important; color: #1a1a2e !important; }
+h2, [data-testid="stHeading"] h2 { font-size: 16px !important; font-weight: 700 !important; color: #1e3a5f !important; }
 h3, [data-testid="stHeading"] h3 { font-size: 16px !important; font-weight: 600 !important; color: #2c4a6e !important; }
 
 /* 蓝底主按钮统一白字：覆盖全局 Markdown 深色正文规则。 */
@@ -5780,30 +5570,29 @@ _check_daily_cache_clear()
 # 【V89.5 修复】提前定义MY_GEMINI_KEY - 避免在全球市场概览中未定义错误
 # ═══════════════════════════════════════════════════════════════
 try:
-    from kimi_subscription import api_key as _kimi_api_key, model_name as _kimi_model_name
-    _secret_kimi = (st.secrets.get("KIMI_CODE_API_KEY", "") if hasattr(st, "secrets") else "")
-    MY_KIMI_KEY = _kimi_api_key(_secret_kimi)
-    # 历史Gemini变量只作调用链兼容；生产模型固定为订阅K3-256K。
+    from desktop_gpt_subscription import api_key as _gpt_subscription_ready, model_name as _gpt_model_name
+    GPT_SUBSCRIPTION_READY = _gpt_subscription_ready()
+    # 历史Gemini变量只作调用链兼容；生产模型固定为订阅GPT-6 Astra。
     MY_GEMINI_KEY_RAW = ""
-    if MY_KIMI_KEY:
-        MY_GEMINI_KEY = MY_KIMI_KEY
-        AI_PROVIDER = "kimi-subscription"
+    if GPT_SUBSCRIPTION_READY:
+        MY_GEMINI_KEY = GPT_SUBSCRIPTION_READY
+        AI_PROVIDER = "codex-subscription"
     else:
         MY_GEMINI_KEY = ""
         AI_PROVIDER = "none"
-    GEMINI_MODEL_NAME = "gemini-2.5-flash"
-    KIMI_MODEL_NAME = _kimi_model_name()
-    logging.info("✅ Kimi Code订阅配置完成: %s", KIMI_MODEL_NAME)
+    GEMINI_MODEL_NAME = "gpt-6-astra"
+    GPT_MODEL_NAME = _gpt_model_name()
+    logging.info("✅ GPT-6 Codex订阅配置完成: %s", GPT_MODEL_NAME)
 except Exception as e:
-    MY_GEMINI_KEY = ""; MY_KIMI_KEY = ""; GEMINI_MODEL_NAME = "gemini-2.5-flash"; KIMI_MODEL_NAME = "k3-256k"
+    MY_GEMINI_KEY = ""; GPT_SUBSCRIPTION_READY = ""; GEMINI_MODEL_NAME = "gpt-6-astra"; GPT_MODEL_NAME = "gpt-6-astra"
     AI_PROVIDER = "none"
     logging.error(f"⚠️ AI API配置失败: {e}")
 
 # 【V91.9】AI分析统一模型说明：所有spinner和报告统一使用
 def _ai_model_label(model=None):
     """返回模型显示名称，用于 spinner 和报告底部"""
-    if AI_PROVIDER == "kimi-subscription":
-        return "Kimi K3-256K（订阅）"
+    if AI_PROVIDER == "codex-subscription":
+        return "GPT-6 Astra（订阅）"
     m = model or GEMINI_MODEL_NAME
     if USE_NEW_MODULES and hasattr(mod_config, 'GEMINI_MODELS') and m in mod_config.GEMINI_MODELS:
         return mod_config.GEMINI_MODELS[m]
@@ -5847,7 +5636,7 @@ def _local_name_search9(search_key):
 
 
 def render_cloud_search():
-    """东方财富API全量搜索 - 渲染在主内容区（深度作战室顶部）"""
+    """本地输入即筛选；显式选择后直达深度页，共用最近查看和对比篮。"""
     # 【2026-07-18修】本函数经slot提前执行,早于11083行的初始化——先补位防AttributeError
     # 【2026-08-01 连环案②】compare_basket原init在1.3万行处,本函数7495行先用→
     # 历史一恢复就崩'no attribute compare_basket'(以前历史恒空侥幸不触发)。就地init。
@@ -5865,174 +5654,20 @@ def render_cloud_search():
                 for c, v in sorted(_sh9.items(), key=lambda kv: -(kv[1] or {}).get("ts", 0))[:10]]
         except Exception:
             pass
-    st.markdown("""
-    <div style="padding: 0.4rem 0 0.2rem 0; margin-bottom: 0.5rem; border-left: 3px solid #00d4aa; padding-left: 0.8rem;">
-        <span style="font-size: 13px; font-weight: 700; color: #00d4aa;">🔍 个股搜索</span>
-        <span style="font-size: 12px; color: #888; margin-left: 0.6rem;">美股 / 港股 / A股</span>
-    </div>
-    """, unsafe_allow_html=True)
-    col_search, col_filter = st.columns([3, 1])
-    with col_search:
-        search_input = st.text_input(
-            "输入股票名字或代码（全量云端搜索）",
-            placeholder="例如：宁波 / 紫金 / 腾讯 / AAPL / NVDA",
-            key="stock_search_input",
-            label_visibility="collapsed"
-        )
-    with col_filter:
-        search_market_filter = st.selectbox(
-            "市场筛选",
-            ["全部", "🇺🇸 美股", "🇭🇰 港股", "🇨🇳 A股"],
-            key="search_market_filter",
-            help="筛选搜索结果为指定市场"
-        )
-    
-    if search_input:
-        search_key = search_input.strip()
-        
-        if search_key:
-            _search_t0 = time.time()
-            _search_prog = st.progress(0)
-            _search_status = st.empty()
-            _search_status.text("🔍 请求东方财富API... (0%)")
-            all_matches = []
-            try:
-                search_url = f"https://searchapi.eastmoney.com/api/suggest/get"
-                params = {
-                    "input": search_key,
-                    "type": "14",
-                    "token": "D43BF722C8E33BDC906FB84D85E326E8",
-                    "count": 50
-                }
-                response = _DIRECT_SESSION.get(search_url, params=params, timeout=5)
-                if response.status_code == 200:
-                    data = response.json()
-                    if data and 'QuotationCodeTable' in data and 'Data' in data['QuotationCodeTable']:
-                        results = data['QuotationCodeTable']['Data']
-                        for item in results:
-                            code_raw = item.get('Code', '')
-                            name = item.get('Name', '')
-                            market_code = item.get('MktNum', '')
-                            yf_code = None
-                            if market_code == '1':
-                                yf_code = f"{code_raw}.SS"
-                            elif market_code == '0':
-                                yf_code = f"{code_raw}.SZ"
-                            elif market_code == '116':
-                                yf_code = f"{code_raw.zfill(5)}.HK"
-                            elif market_code == '155':
-                                yf_code = code_raw
-                            else:
-                                yf_code = code_raw
-                            if yf_code and name:
-                                all_matches.append((yf_code, name))
-                        _safe_print(f"[东方财富API] 搜索 '{search_key}' 找到 {len(all_matches)} 个结果")
-                        _search_prog.progress(0.5)
-                        _search_status.text(f"✅ API返回 {len(all_matches)} 个结果 (50%)")
-
-                if len(all_matches) == 0:
-                    _search_prog.progress(0.3)
-                    _search_status.text("🔍 API失败，降级到本地名录…")
-                    _safe_print("[东方财富API] 失败，降级到本地名录")
-                    all_matches.extend(_local_name_search9(search_key))
-
-            except Exception as e:
-                _safe_print(f"[东方财富API] 错误: {e}")
-                _search_prog.progress(0.2)
-                _search_status.text("🔍 API异常，降级到本地名录…")
-                all_matches.extend(_local_name_search9(search_key))
-
-            _search_prog.progress(1.0)
-            _search_status.text(f"✅ 搜索完成，共 {len(all_matches)} 个结果 · 用时 {time.time()-_search_t0:.1f}s")
-            time.sleep(0.3)
-            _search_prog.empty()
-            _search_status.empty()
-
-            if len(all_matches) > 0:
-                us_stocks = [(c, n) for c, n in all_matches if "." not in c]
-                hk_stocks = [(c, n) for c, n in all_matches if ".HK" in c]
-                cn_stocks = [(c, n) for c, n in all_matches if ".SS" in c or ".SZ" in c]
-                # 【V93】按市场筛选
-                if search_market_filter == "🇺🇸 美股":
-                    us_stocks, hk_stocks, cn_stocks = us_stocks, [], []
-                elif search_market_filter == "🇭🇰 港股":
-                    us_stocks, hk_stocks, cn_stocks = [], hk_stocks, []
-                elif search_market_filter == "🇨🇳 A股":
-                    us_stocks, hk_stocks, cn_stocks = [], [], cn_stocks
-                filtered_count = len(us_stocks) + len(hk_stocks) + len(cn_stocks)
-                if filtered_count == 0:
-                    st.warning(f"该市场下无匹配结果，请尝试「全部」或切换其他市场")
-                else:
-                    st.success(f"✅ 找到 {filtered_count} 个结果" + (f"（已筛选 {search_market_filter}）" if search_market_filter != "全部" else ""))
-                
-                options = ["请选择要分析的股票..."]
-                code_map = {}
-                
-                if us_stocks:
-                    options.append("─────── 🇺🇸 美股 ───────")
-                    for code, name in us_stocks:
-                        option_text = f"🇺🇸 {name} ({code})"
-                        options.append(option_text)
-                        code_map[option_text] = (code, name)
-                
-                if hk_stocks:
-                    options.append("─────── 🇭🇰 港股 ───────")
-                    for code, name in hk_stocks:
-                        option_text = f"🇭🇰 {name} ({code})"
-                        options.append(option_text)
-                        code_map[option_text] = (code, name)
-                
-                if cn_stocks:
-                    options.append("─────── 🇨🇳 A股 ───────")
-                    for code, name in cn_stocks:
-                        option_text = f"🇨🇳 {name} ({code})"
-                        options.append(option_text)
-                        code_map[option_text] = (code, name)
-                
-                selected_option = st.selectbox(
-                    "② 从结果中选择股票",
-                    options=options,
-                    key="stock_select_dropdown"
-                )
-                
-                if filtered_count > 0 and selected_option != "请选择要分析的股票..." and selected_option not in ["─────── 🇺🇸 美股 ───────", "─────── 🇭🇰 港股 ───────", "─────── 🇨🇳 A股 ───────"]:
-                    if selected_option in code_map:
-                        code, name = code_map[selected_option]
-                        
-                        if (code, name) not in st.session_state.search_history:
-                            st.session_state.search_history.insert(0, (code, name))
-                            if len(st.session_state.search_history) > 10:
-                                st.session_state.search_history = st.session_state.search_history[:10]
-                        
-                        _prev_code = st.session_state.get('scan_selected_code')
-                        if _prev_code != code:
-                            st.session_state.scan_selected_code = code
-                            st.session_state.scan_selected_name = name
-                            st.session_state.pk_codes = []
-                            st.session_state.pk_names = []
-                            _search_history_persist(code, name)  # 【V88·搜索习惯】
-                            # 【V96.1】搜索过的个股自动加入自选股（上限20只，先进先出）
-                            if _watchlist_add(code, name):
-                                st.session_state["_wl_new_pick"] = (code, name)  # rerun后弹窗选A/B/C
-                                st.toast(f"✅ 已选中 {name}，并加入自选股", icon="🎯")
-                            else:
-                                st.toast(f"✅ 已选中 {name}，正在分析...", icon="🎯")
-                            st.rerun()
-                        
-                        is_in_basket = (code, name) in st.session_state.compare_basket
-                        if is_in_basket:
-                            st.button("✅ 已在对比篮", key="search_compare", disabled=True, width='stretch')
-                        else:
-                            if st.button("➕ 加入对比篮", key="search_compare", width='stretch'):
-                                (st.session_state.compare_basket.append((code, name)) if len(st.session_state.compare_basket) < _MAXCMP else st.toast(f'⚠️ 对比篮最多{_MAXCMP}只(先移出再加)', icon='⚠️'))
-                                st.toast(f"✅ 已加入对比篮: {name}", icon="➕")
-                                st.rerun()
+    from stock_switcher import render as _render_stock_switcher
+    _render_stock_switcher(st, st.session_state.get('scan_selected_code') or '', key='v88_overview_stock_switch')
+    _active_code = st.session_state.get('scan_selected_code')
+    _active_name = st.session_state.get('scan_selected_name') or _active_code
+    if _active_code:
+        _active_pair = (_active_code, _active_name)
+        if st.button('➕ 当前股票加入对比篮', key='search_compare',
+                     disabled=_active_pair in st.session_state.compare_basket):
+            if len(st.session_state.compare_basket) < _MAXCMP:
+                st.session_state.compare_basket.append(_active_pair)
+                st.rerun()
             else:
-                st.warning("❌ 未找到匹配的股票")
-                st.caption("💡 搜索提示：")
-                st.caption("• 关键字：宁波、紫金、腾讯")
-                st.caption("• 代码：AAPL、02899、600519")
-    
+                st.toast(f'对比篮最多{_MAXCMP}只，请先移出再添加')
+
     if len(st.session_state.search_history) > 0:
         st.markdown('<p style="font-size: 12px; font-weight: 600; margin-top: 1rem; margin-bottom: 0.3rem;">📜 搜索历史</p>', unsafe_allow_html=True)
         st.caption(f"最近搜索 {len(st.session_state.search_history)} 只")
@@ -6072,19 +5707,15 @@ def render_cloud_search():
     # 【V88·评级榜多选对比 2026-08-01 用户点单"3A/2A/1A多只多选对比,最多5只,简单化"】
     # 直接从评级快照取榜面股,多选≤5一键进PK视图(与对比篮同一通道,零新链路)
     try:
-        _tqc9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
-                            "trend_quality.json").read_text(encoding="utf-8"))
+        from feishu_snapshot import build as _pk_selector_snapshot
+        _tqc9 = _pk_selector_snapshot()
         _pko9 = {}
-        for _r9k in sorted((_tqc9.get("rows") or []),
-                           key=lambda r: -({"3A": 3, "2A": 2}.get(r.get("tier_label"), 1))):
-            if _r9k.get("tier_label"):
-                # 全系统统一:榜单选项也带排名分与何时买,与买表同一口径
-                _rk9k = (_rank9map.get(str(_r9k.get("code"))) or {})
-                _sc9k = _rk9k.get("rank_score")
-                _pko9[f"{_r9k.get('tier_label')}｜{_r9k.get('name')}（{_r9k.get('code')}）"
-                      + (f" 分{_sc9k:.0f}" if _sc9k is not None else "")
-                      + (f"·{str(_rk9k.get('when'))[:10]}" if _rk9k.get("when") else "")] = (
-                    str(_r9k.get("code")), _r9k.get("name") or str(_r9k.get("code")))
+        for _r9k in _tqc9.get('rows') or []:
+            if _r9k.get('tier') in ('3A', '2A', '1A'):
+                _sc9k = _r9k.get('audit_score')
+                _pko9[f"{_r9k['tier']}｜{_r9k.get('name')}（{_r9k.get('code')}）"
+                      + (f" 审核分{_sc9k:g}" if isinstance(_sc9k, (int,float)) else '')] = (
+                          str(_r9k.get('code')), _r9k.get('name') or str(_r9k.get('code')))
         if _pko9:
             st.markdown('<p style="font-size:12px;font-weight:600;margin:0.6rem 0 0.2rem">'
                         f'⚔️ 评级榜多选对比（3A/2A/1A·最多{_MAXCMP}只）</p>', unsafe_allow_html=True)
@@ -6252,17 +5883,16 @@ def render_clickable_table(df_results, table_key):
 # ═══════════════════════════════════════════════════════════════
 if USE_NEW_MODULES:
     ProxyContext = mod_data.ProxyContext
-    to_yf_cn_code = mod_utils.to_yf_cn_code
     batch_scan_analysis_concurrent = mod_analysis.batch_scan_analysis_concurrent
     logging.info("✅ 模块别名映射完成（3项）")
 
 # 无论哪种模式，确保舆情分析器绑定了AI调用函数
 try:
     if SENTIMENT_ANALYZER_AVAILABLE and _sentiment_analyzer:
-        _sentiment_analyzer.call_ai = call_gemini_api
-        logging.info("✅ 舆情分析器已绑定 call_gemini_api")
+        _sentiment_analyzer.call_ai = call_model_api
+        logging.info("✅ 舆情分析器已绑定 call_model_api")
 except NameError:
-    logging.warning("⚠️ call_gemini_api 尚未定义，稍后绑定")
+    logging.warning("⚠️ call_model_api 尚未定义，稍后绑定")
 
 # ═══════════════════════════════════════════════════════════════
 # Fragment 函数：AI综合分析（局部刷新，按钮交互不触发全页重跑）
@@ -6335,7 +5965,7 @@ def _build_market_ai_context():
 def _run_all_markets_ai():
     """【V99.8】一键分析重构：单次 LLM 调用产出三市场精简分析。
     旧版=逐市场串行调 Gemini(直连SDK,key已失效)且只喂5根K线无新闻；
-    新版=本地快照+真实新闻拼上下文 → 一次订阅K3-256K调用（热点有真实依据）。
+    新版=本地快照+真实新闻拼上下文 → 一次订阅GPT-6 Astra调用（热点有真实依据）。
     返回 {mk: {'pred':…, 'tech':…}}；按【市场】标记切分，解析失败时共享全文兜底。"""
     ctx, tech = _build_market_ai_context()
     prompt = f"""你是买方投资总监。以下材料是唯一事实来源（真实行情快照+当日真实新闻日报），禁止使用材料之外的新闻、数据或价格。
@@ -6351,7 +5981,7 @@ def _run_all_markets_ai():
 【港股】（同格式）
 【A股】（同格式）
 【跨市场联动】≤60字：三市场传导关系与今日最重要的一条主线"""
-    _llm = globals().get("call_gemini_api")
+    _llm = globals().get("call_model_api")
     text = ""
     try:
         if callable(_llm):
@@ -6412,7 +6042,7 @@ def _auto_generate_market_ai():
         ('hk', '港股', '^HSI', 'market_ai_hk', '_hk_tech_data', 'market_sentiment_hk'),
         ('cn', 'A股', '000001.SS', 'market_ai_cn', '_cn_tech_data', 'market_sentiment_cn'),
     ]
-    if not MY_KIMI_KEY or not _market_ai_auto_due():
+    if not GPT_SUBSCRIPTION_READY or not _market_ai_auto_due():
         return
 
     _safe_print("[AI市场分析] 盘中3小时缓存到期，单次调用生成三市场...")
@@ -6430,126 +6060,6 @@ def _auto_generate_market_ai():
         st.session_state['_market_ai_auto_done'] = True
 
 
-@st.fragment
-def _render_ai_market_analysis():
-    from datetime import datetime as _dt_ai
-    # 【V99.8】不再要求先加载宏观脉搏：分析上下文全部来自本地快照+新闻日报文件
-    _all = st.session_state.get('all_markets', {})
-    us_result = _all.get('us_market', {'data_ok': False, 'verdict': 'Unknown', 'reason': ''})
-    hk_result = _all.get('hk_market', {'data_ok': False, 'verdict': 'Unknown', 'reason': ''})
-    cn_result = _all.get('cn_market', {'data_ok': False, 'verdict': 'Unknown', 'reason': ''})
-
-    _has_any_ai = bool(MY_KIMI_KEY)
-    if not _has_any_ai:
-        return
-
-    st.caption(f"复用权威AI日报的行情快照与真实新闻 · {_dt_ai.now().strftime('%Y-%m-%d')}")
-
-    _has_cached = any(k in st.session_state for k in ['market_ai_us', 'market_ai_hk', 'market_ai_cn'])
-    if _has_cached:
-        _cached_ts = None
-        for mk in ['us', 'hk', 'cn']:
-            _, _t = _load_ai_report_cache(f"market_{mk}")
-            if _t:
-                _cached_ts = _t
-                break
-        _ts_str = _dt_ai.fromtimestamp(_cached_ts).strftime('%H:%M') if _cached_ts else ""
-        st.caption(f"走势研判+真实新闻热点+3-5日预判 · 单次调用三市场 · 缓存自动加载{f' · 生成于 {_ts_str}' if _ts_str else ''}")
-    else:
-        st.caption("走势研判+真实新闻热点+3-5日预判 · 单次调用三市场 · 快照与新闻均为1小时内真实数据")
-
-    _btn_cols = st.columns([3, 1])
-    with _btn_cols[0]:
-        _do_gen = st.button("⚡ 一键分析全市场（美股＋港股＋A股）", key="btn_one_click_all_markets",
-                     type="primary", use_container_width=True)
-    with _btn_cols[1]:
-        _do_refresh = st.button("🔄 强制刷新", key="btn_refresh_market_ai", use_container_width=True)
-
-    if _do_refresh:
-        for _k in ['market_ai_us', '_us_tech_data', 'market_sentiment_us',
-                    'market_ai_hk', '_hk_tech_data', 'market_sentiment_hk',
-                    'market_ai_cn', '_cn_tech_data', 'market_sentiment_cn',
-                    '_market_ai_auto_done']:
-            st.session_state.pop(_k, None)
-        for mk in ['us', 'hk', 'cn']:
-            try:
-                _rf = _AI_REPORT_CACHE_DIR / f"ai_report_market_{mk}.json"
-                if _rf.exists():
-                    _rf.unlink()
-            except Exception:
-                pass
-        _do_gen = True
-
-    _trigger_all = _do_gen
-
-    _markets_config = [
-        ('美股', '^GSPC', us_result, 'market_ai_us', '_us_tech_data', 'market_sentiment_us', 'us'),
-        ('港股', '^HSI', hk_result, 'market_ai_hk', '_hk_tech_data', 'market_sentiment_hk', 'hk'),
-        ('A股', '000001.SS', cn_result, 'market_ai_cn', '_cn_tech_data', 'market_sentiment_cn', 'cn'),
-    ]
-
-    if _trigger_all:
-        # 【V99.8】单次 LLM 调用产出三市场（原三次串行调用），上下文=本地快照+真实新闻
-        _need99 = _do_refresh or any(
-            _sp not in st.session_state for _, _, _, _sp, _, _, _ in _markets_config)
-        if _need99:
-            _t099 = time.time()
-            with _v88_running("AI分析三市场 · 快照与真实新闻"):
-                _res_all = _run_all_markets_ai()
-            _ok99 = 0
-            for _mname, _mcode, _mresult, _ss_pred, _ss_tech, _ss_sent, _mk in _markets_config:
-                _r = _res_all.get(_mk) or {}
-                if _r.get('pred'):
-                    st.session_state[_ss_pred] = _r['pred']
-                    _save_ai_report_cache(f"market_{_mk}", _r)
-                    _ok99 += 1
-                if _r.get('tech'):
-                    st.session_state[_ss_tech] = _r['tech']
-            if _ok99:
-                st.session_state['_market_ai_auto_done'] = True
-                st.success(f"✅ 全市场AI分析完成（{time.time() - _t099:.0f}秒 · 单次调用 · 真实新闻锚定）")
-            else:
-                st.error("❌ 分析失败：LLM 不可用或行情/日报数据缺失，请稍后重试")
-        else:
-            st.session_state['_market_ai_auto_done'] = True
-            st.success("✅ 已有本次分析结果（点「🔄 强制刷新」重新生成）")
-
-    ai_tabs = st.tabs(["🇺🇸 美股", "🇭🇰 港股", "🇨🇳 A股"])
-
-    for _tab, (_mname, _mcode, _mresult, _ss_pred, _ss_tech, _ss_sent, _mk) in zip(ai_tabs, _markets_config):
-        with _tab:
-            if _ss_pred in st.session_state:
-                _tech_d = st.session_state.get(_ss_tech, {})
-                if _tech_d:
-                    _tc1, _tc2, _tc3 = st.columns(3)
-                    with _tc1:
-                        st.metric("当前价格", f"{_tech_d.get('current_price', 0):.2f}")
-                    with _tc2:
-                        st.metric("技术趋势", _tech_d.get('trend', '震荡'))
-                    with _tc3:
-                        st.metric("技术强度", f"{_tech_d.get('strength', 50)}/100",
-                                  help="0–100，越高越强势；>60 偏强，<40 偏弱。")
-                if COPY_UTILS_AVAILABLE:
-                    CopyUtils.create_copy_button(st.session_state[_ss_pred], button_text="📋 复制全文", key=f"copy_{_mk}_pred_full")
-                    CopyUtils.render_markdown_with_section_copy(st.session_state[_ss_pred], key_prefix=f"{_mk}_pred")
-                else:
-                    st.markdown(st.session_state[_ss_pred])
-                st.caption(f"📌 AI生成 · 模型: {_ai_model_label()}")
-            else:
-                st.caption("点击「一键分析全市场」或等待自动生成")
-
-    _link_items = []
-    for _mk, _mr in [('🇺🇸 美股', us_result), ('🇭🇰 港股', hk_result), ('🇨🇳 A股', cn_result)]:
-        if _mr.get('data_ok'):
-            _link_items.append(f"{_mk}：{_mr.get('verdict', 'Unknown')}")
-    if _link_items and ('market_ai_us' in st.session_state or 'market_ai_hk' in st.session_state or 'market_ai_cn' in st.session_state):
-        st.caption("🌐 体制 · " + " | ".join(_link_items))
-        _strong = [n for n, d in [('美股', us_result), ('港股', hk_result), ('A股', cn_result)] if d.get('data_ok') and d.get('verdict') == 'Risk On']
-        _weak = [n for n, d in [('美股', us_result), ('港股', hk_result), ('A股', cn_result)] if d.get('data_ok') and d.get('verdict') == 'Risk Off']
-        if _strong:
-            st.success(f"✅ 风险偏好：{', '.join(_strong)}")
-        if _weak:
-            st.warning(f"⚠️ 避险模式：{', '.join(_weak)}")
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -7058,7 +6568,7 @@ def get_market_heat(_cache_ver="v98"):
 
     import yfinance as _yf
     try:
-        from ts_helper import fetch_daily_tushare as _ts_daily, is_cn as _is_cn
+        from market_data_helper import fetch_daily_free as _ts_daily, is_cn as _is_cn
         _has_ts = True
     except Exception:
         _has_ts = False
@@ -7456,7 +6966,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
             _mc_title, _mc_b1, _mc_b2 = st.columns([10, 1.5, 0.7])
             with _mc_title:
                 st.markdown(f'<div class="v88-macro-title" style="margin:.35rem 0 .2rem"><b>📡 宏观脉搏</b>'
-                            f'<span>AI解读 {_macro_ai_time_text} · 今日{_macro_ai_state.get("runs", 0)}/3次 · 盘中每3h ｜ 最近收盘 {_dt_global.now().strftime("%m/%d %H:%M")}</span></div>',
+                            f'<span>AI解读 {_macro_ai_time_text} · 今日{_macro_ai_state.get("runs", 0)}/3次 · 盘中每3h ｜ 本次读取 {_dt_global.now().strftime("%m/%d %H:%M")}</span></div>',
                             unsafe_allow_html=True)
             # 【V88·按钮矮化 2026-07-17 用户要求】这两个按钮要和左侧文字行同高，
             # Streamlit 原生按钮默认 35px 高；用 container(key=) 精确限定 CSS 只改这两个按钮
@@ -7547,7 +7057,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
                 _macro_card("🇨🇳 A股", cn_result.get("verdict", "—"), [
                     ("上证", f"{float(cn_result.get('index_level') or 0):.0f}", f"{float(cn_result.get('index_change_pct') or 0):+.1f}%"),
                     ("沪深300", f"{float(cn_result.get('hs300_price') or 0):.0f}", f"{float(cn_result.get('hs300_change_pct') or 0):+.1f}%"),
-                    ("创业板", _cyb_txt9, f"{float(cn_result.get('cyb_change_pct') or 0):+.1f}%"),
+                    ("创业板ETF代理" if cn_result.get("cyb_use_etf") else "创业板", _cyb_txt9, f"{float(cn_result.get('cyb_change_pct') or 0):+.1f}%"),
                     ("波动率", f"{float(cn_result.get('volatility') or 0):.1f}%", "风险温度"),
                     ("人民币", f"{float(cn_result.get('cny_price') or 0):.4f}", f"{float(cn_result.get('cny_change_pct') or 0):+.1f}%"),
                     ("水位", _water_cn[0], _water_cn[1]),
@@ -7555,7 +7065,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
             with _mc3:
                 _macro_card("🇭🇰 港股", hk_result.get("verdict", "—"), [
                     ("恒指", f"{float(hk_result.get('index_level') or 0):.0f}", f"{float(hk_result.get('index_change_pct') or 0):+.1f}%"),
-                    ("恒生科技", f"{float(hk_result.get('hstech_price') or 0):.2f}", f"{float(hk_result.get('hstech_change_pct') or 0):+.1f}%"),
+                    ("恒生科技ETF代理" if hk_result.get("hstech_use_etf") else "恒生科技", f"{float(hk_result.get('hstech_price') or 0):.2f}", f"{float(hk_result.get('hstech_change_pct') or 0):+.1f}%"),
                     ("国企指数", f"{float(hk_result.get('hsce_price') or 0):.0f}", f"{float(hk_result.get('hsce_change_pct') or 0):+.1f}%"),
                     ("波动率", f"{float(hk_result.get('volatility') or 0):.1f}%", "风险温度"),
                     ("港币", f"{float(hk_result.get('hkd_price') or 0):.4f}", f"{float(hk_result.get('hkd_change_pct') or 0):+.1f}%"),
@@ -7601,8 +7111,8 @@ if Config.ENABLE_EXPECTATION_LAYER:
                     st.session_state.pop("sector_analysis_heat", None)
                     st.rerun()
 
-                if not MY_KIMI_KEY:
-                    st.error("❌ Kimi Code订阅未登录或KIMI_CODE_API_KEY未配置")
+                if not GPT_SUBSCRIPTION_READY:
+                    st.error("❌ GPT-6 Codex订阅未登录")
                 else:
                     from datetime import datetime as _dt_sector
                     today_s = _dt_sector.now().strftime("%Y年%m月%d日")
@@ -7627,7 +7137,7 @@ if Config.ENABLE_EXPECTATION_LAYER:
                         cn_forum_score=f"{_cn_f.get('score', 50)}/100 ({_cn_f.get('level', '平淡')})",
                     )
                     try:
-                        analysis_text_s = st.write_stream(call_gemini_api_stream(prompt_s))
+                        analysis_text_s = st.write_stream(call_model_api_stream(prompt_s))
                         if COPY_UTILS_AVAILABLE:
                             CopyUtils.create_copy_button(analysis_text_s, button_text="📋 复制全文", key="copy_global_sector_full")
                         st.caption(f"📌 AI生成 · 模型: {_ai_model_label()}")
@@ -7680,8 +7190,8 @@ st.markdown("""
     section[data-testid="stSidebar"] { background: #f0f2f6 !important; }
     .block-container { background: transparent !important; }
     /* 标题层级：深蓝色系区分 */
-    h1, [data-testid="stMarkdown"] h1 { font-family: var(--v88-sans) !important; font-weight: 700 !important; color: #1a1a2e !important; font-size: 22px !important; }
-    h2, [data-testid="stMarkdown"] h2 { font-family: var(--v88-sans) !important; font-weight: 700 !important; color: #1e3a5f !important; font-size: 18px !important; }
+    h1, [data-testid="stMarkdown"] h1 { font-family: var(--v88-sans) !important; font-weight: 700 !important; color: #1a1a2e !important; font-size: 18px !important; }
+    h2, [data-testid="stMarkdown"] h2 { font-family: var(--v88-sans) !important; font-weight: 700 !important; color: #1e3a5f !important; font-size: 16px !important; }
     h3, [data-testid="stMarkdown"] h3 { font-family: var(--v88-sans) !important; font-weight: 600 !important; color: #2c4a6e !important; font-size: 16px !important; }
     h4, h5, h6, [data-testid="stMarkdown"] strong { font-family: var(--v88-sans) !important; font-weight: 700 !important; }
     /* st.metric */
@@ -7995,7 +7505,7 @@ st.markdown("""
 
 # 注入 viewport meta + iOS standalone 支持
 st.markdown("""
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#f1f5f9">
@@ -8013,7 +7523,7 @@ if USE_NEW_MODULES:
     logging.info(f"✅ 使用V88配置模块: Gemini={GEMINI_MODEL_NAME}, 缓存={CACHE_MAX_SIZE_MB}MB")
 else:
     # MY_GEMINI_KEY = st.secrets.get("GEMINI_API_KEY", os.getenv("GEMINI_API_KEY", ""))  # 已在前面定义
-    # GEMINI_MODEL_NAME = "gemini-2.5-flash"  # 已在前面定义
+    # GEMINI_MODEL_NAME = "gpt-6-astra"  # 已在前面定义
     CACHE_TTL = 900  # 交易日15分钟
     CACHE_MAX_SIZE_MB = 1500
 
@@ -8593,28 +8103,28 @@ def fetch_stock_data(code, return_source=False, return_quality=False):
     proxy_url = get_proxy_url()
     data_source = "无数据"
 
-    # 【V92】A股优先 Tushare（直连不走代理、~0.2s、稳定）——扫描提速 & 修复 A 股 N/A
+    # 【V92】A股优先 免费行情源（直连不走代理、~0.2s、稳定）——扫描提速 & 修复 A 股 N/A
     if target_code.endswith('.SS') or target_code.endswith('.SZ'):
         try:
-            from ts_helper import fetch_daily_tushare as _ts_daily
+            from market_data_helper import fetch_daily_free as _ts_daily
             _ts_df = _ts_daily(target_code, days=400)
             if _ts_df is not None and len(_ts_df) >= 30:
-                _safe_print(f"[fetch] ✅ Tushare 获取 {target_code}")
+                _safe_print(f"[fetch] ✅ 免费行情源 获取 {target_code}")
                 data_quality = {
-                    'source': 'Tushare', 'last_updated': pd.Timestamp.now(),
+                    'source': _ts_df.attrs.get('source', '免费核验日线'), 'last_updated': pd.Timestamp.now(),
                     'is_delayed': True, 'data_points': len(_ts_df),
                     'date_range': f"{_ts_df.index[0].date()} 至 {_ts_df.index[-1].date()}"
                 }
                 if return_quality:
                     result = (_ts_df, data_quality)
                 elif return_source:
-                    result = (_ts_df, 'Tushare')
+                    result = (_ts_df, _ts_df.attrs.get('source', '免费核验日线'))
                 else:
                     result = _ts_df
                 local_cache.set(cache_key, result)
                 return result
         except Exception as _ts_e:
-            _safe_print(f"[fetch] Tushare {target_code} 失败: {_ts_e}")
+            _safe_print(f"[fetch] 免费行情源 {target_code} 失败: {_ts_e}")
 
     # 【速度优化】东方财富万能源作为第一数据源（带熔断：不可达时全局跳过，避免每只都卡超时）
     if not _em_blocked():
@@ -8890,7 +8400,7 @@ def fetch_stock_data(code, return_source=False, return_quality=False):
 
 # ═══════════════════════════════════════════════════════════════
 # 【V95.1】当日实时补条：解决"底层时间不一致"
-# 根因：东财熔断降级到 Tushare 后，A股日线只有截至昨日的收盘数据，
+# 根因：东财熔断降级到 免费行情源 后，A股日线只有截至昨日的收盘数据，
 # 盘中/收盘后显示的"最新价"实为上一交易日收盘价（用户实测宁德时代偏差~1.5%）。
 # 修法：fetch_stock_data 外层包装——A股/港股取完日线后，若最后一根K线不是今天，
 # 用腾讯实时接口(qt.gtimg.cn，国内直连极稳)把今天这根补上；若是今天但可能是
@@ -8915,7 +8425,7 @@ def _tencent_realtime_quote(yf_code: str):
     if hit and now - hit[0] < 60:
         return hit[1]
     try:
-        s = requests.Session(); s.trust_env = False
+        s = _shared_http_session(direct=True)
         r = s.get(f"https://qt.gtimg.cn/q={sym}", timeout=4)
         f = r.text.split("~")
         if len(f) < 35 or not f[3]:
@@ -8951,7 +8461,7 @@ def _ensure_today_bar(df, yf_code: str):
         q = _tencent_realtime_quote(c)
         if not q or not q["ts"].startswith(bj.strftime("%Y%m%d")):
             return df  # 无实时数据或时间戳不是今天（停牌/休市），保持原样
-        # 成交量单位自适应：Tushare日线是"手"、腾讯是"股"，混用会让量能因子误判100倍
+        # 成交量单位自适应：免费行情源日线是"手"、腾讯是"股"，混用会让量能因子误判100倍
         _v = q["vol"]
         try:
             _med = float(pd.Series(df["Volume"].tail(5)).median())
@@ -9232,6 +8742,7 @@ def render_fundamentals_panel(fundamentals: dict, target_c: str):
     sector = fundamentals.get("sector", "")
     industry = fundamentals.get("industry", "")
     mkt_cap = fundamentals.get("market_cap", 0)
+    st.caption(f"财报币种：{fundamentals.get('financial_currency') or fundamentals.get('financialCurrency') or '待核'} · 市值币种：{fundamentals.get('currency') or '待核'}；三表日期为报告期，公告时间须另核。")
 
     # ── 公司头部 ──
     _cap_str = _fmt_fin(mkt_cap) if mkt_cap else "N/A"
@@ -9271,28 +8782,13 @@ def render_fundamentals_panel(fundamentals: dict, target_c: str):
         with hc[4]:
             rec = fundamentals.get("recommendation", "")
             rec_cn = {"buy": "买入", "strong_buy": "强买", "hold": "持有", "sell": "卖出"}.get(rec, rec or "N/A")
-            st.metric("共识", rec_cn)
+            st.metric("供应商观点", rec_cn, help="供应商分析师意见，不是V88中央评级或交易许可")
         _biz_cache_key = f"_biz_cn_{target_c}"
         _biz_cn = st.session_state.get(_biz_cache_key, "")
         if not _biz_cn:
-            _cname = fundamentals.get("company_name", target_c)
-            _sector = fundamentals.get("sector", "")
-            _industry = fundamentals.get("industry", "")
-            try:
-                _biz_cn = call_gemini_api(
-                    f"请用中文撰写「{_cname}」（股票代码：{target_c}，行业：{_sector}/{_industry}）的公司简介，"
-                    f"包括：主营业务、核心产品/服务、商业模式、市场地位。"
-                    f"要求：200-300字，专业简洁，全部中文，不要英文。",
-                    model_name="gemini-2.0-flash"
-                )
-            except Exception:
-                _biz_cn = ""
-            if _biz_cn and not _biz_cn.startswith("❌") and any('\u4e00' <= ch <= '\u9fff' for ch in _biz_cn[:30]):
-                st.session_state[_biz_cache_key] = _biz_cn
-            else:
-                _biz_cn = ""
+            _biz_cn = str(fundamentals.get('business_summary') or '')
         if _biz_cn:
-            with st.expander("📖 公司简介 & 业务概况", expanded=False):
+            with st.expander("📖 公司简介与业务概况 · 已有资料", expanded=False):
                 st.markdown(f'<p style="font-size:13px;line-height:1.8;color:#374151;">{_biz_cn}</p>', unsafe_allow_html=True)
         return
 
@@ -9409,28 +8905,13 @@ def render_fundamentals_panel(fundamentals: dict, target_c: str):
             _de = f"{_tl/_eq:.2f}" if _eq and _tl and _eq != 0 else "N/A"
             st.metric("负债/权益", _de)
 
-    # ── 公司简介（AI 直接生成中文）──
+    # ── 公司简介原文／既有摘要；渲染不请求模型 ──
     _biz_cache_key = f"_biz_cn_{target_c}"
     _biz_cn = st.session_state.get(_biz_cache_key, "")
     if not _biz_cn:
-        _cname = fundamentals.get("company_name", target_c)
-        _sector = fundamentals.get("sector", "")
-        _industry = fundamentals.get("industry", "")
-        try:
-            _biz_cn = call_gemini_api(
-                f"请用中文撰写「{_cname}」（股票代码：{target_c}，行业：{_sector}/{_industry}）的公司简介，"
-                f"包括：主营业务、核心产品/服务、商业模式、市场地位。"
-                f"要求：200-300字，专业简洁，全部中文，不要英文。",
-                model_name="gemini-2.0-flash"
-            )
-        except Exception:
-            _biz_cn = ""
-        if _biz_cn and not _biz_cn.startswith("❌") and any('\u4e00' <= ch <= '\u9fff' for ch in _biz_cn[:30]):
-            st.session_state[_biz_cache_key] = _biz_cn
-        else:
-            _biz_cn = ""
+        _biz_cn = str(fundamentals.get('business_summary') or '')
     if _biz_cn:
-        with st.expander("📖 公司简介 & 业务概况", expanded=False):
+        with st.expander("📖 公司简介与业务概况 · 已有资料", expanded=False):
             st.markdown(f'<p style="font-size:13px;line-height:1.8;color:#374151;">{_biz_cn}</p>', unsafe_allow_html=True)
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -9444,7 +8925,7 @@ def fetch_us_pool_sp500(limit=500):
     """
     try:
         import re as _re
-        sess = requests.Session()  # trust_env=True，自动用环境代理
+        sess = _shared_http_session(direct=False)  # 复用连接，自动用环境代理
         r = sess.get("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies",
                      timeout=15, headers={"User-Agent": "Mozilla/5.0"})
         rows = _re.findall(r'<td><a [^>]*>([A-Z][A-Z.\-]{0,5})</a>\s*</td>\s*<td><a [^>]*>([^<]+)</a>', r.text)
@@ -9464,7 +8945,7 @@ def fetch_us_pool_sp500(limit=500):
 
 def init_stock_pools():
     """
-    【V94 扩容】总量1300只（美500+港300+A500），配合批量预取+Tushare直连
+    【V94 扩容】总量1300只（美500+港300+A500），配合批量预取+免费行情源直连
     - 美股: 500只（东财按市值降序）
     - 港股: 300只（东财按市值降序）
     - A股: 500只（东财按市值降序，已剔除ST/退市/ETF）
@@ -9472,7 +8953,7 @@ def init_stock_pools():
 
     源优先级（【V94.3】三级回退，不绑死单一数据源）：
       美股: 东财 → 维基百科标普500 → 本地备用池
-      A股: 东财 → Tushare市值榜 → 本地备用池
+      A股: 东财 → 免费行情源市值榜 → 本地备用池
       港股: 东财 → 本地备用池
     """
     _safe_print("[股票池] 开始初始化（扩容模式：总量1300只 = 美500+港300+A500）...")
@@ -9660,14 +9141,14 @@ def init_stock_pools():
     # 3. 尝试从云端获取A股（250只）
     cn_pool = fetch_eastmoney_stock_list("cn", 500)
     if not cn_pool or len(cn_pool) < 30:
-        # 【V94.3】二级云端源：Tushare 市值榜（国内直连，稳定；已剔除ST/退市/北交所）
+        # 【V94.3】二级云端源：免费行情源 市值榜（国内直连，稳定；已剔除ST/退市/北交所）
         try:
-            from ts_helper import fetch_cn_top_pool
+            from market_data_helper import fetch_cn_top_pool
             cn_pool = fetch_cn_top_pool(500)
             if cn_pool:
-                _safe_print(f"[股票池] ✅ 二级源(Tushare市值榜): {len(cn_pool)} 只")
+                _safe_print(f"[股票池] ✅ 二级源(免费行情源市值榜): {len(cn_pool)} 只")
         except Exception as _tse:
-            _safe_print(f"[股票池] ⚠️ Tushare市值榜失败: {str(_tse)[:60]}")
+            _safe_print(f"[股票池] ⚠️ 免费行情源市值榜失败: {str(_tse)[:60]}")
     if not cn_pool or len(cn_pool) < 30:
         _safe_print("[股票池] ⚠️ A股云端获取失败，使用备用池（沪深300+创业板）")
         # 【V87.3】A股备用池扩展到240只
@@ -10107,10 +9588,10 @@ rl_agent = AlphaMatrixAgent()
 # ═══════════════════════════════════════════════════════════════
 # 6.5 Gemini AI API 调用函数（提前定义，供后续所有模块使用）
 # ═══════════════════════════════════════════════════════════════
-# (call_gemini_api / call_gemini_api_stream 已前移至文件顶部——2026-07-31修使用先于定义)
+# (call_model_api / call_model_api_stream 已前移至文件顶部——2026-07-31修使用先于定义)
 
 
-def calculate_metrics_all(df, code):
+def calculate_metrics_all(df, code, *, benchmark_loader=None):
     """
     【V87.16】完整的双核评级系统 - 增强防御性检查
     即使数据不足,也尽量计算能计算的指标
@@ -10377,8 +9858,8 @@ def calculate_metrics_all(df, code):
     rs20 = None
     try:
         _tc = to_yf_cn_code(code)
-        _idx_code = "000001.SS" if (_tc.endswith(".SS") or _tc.endswith(".SZ")) else ("^HSI" if _tc.endswith(".HK") else "^GSPC")
-        _idx_df = fetch_stock_data(_idx_code)
+        _idx_code = get_benchmark_code(_tc)
+        _idx_df = (benchmark_loader or fetch_stock_data)(_idx_code)
         if _idx_df is not None and len(_idx_df) >= 21:
             _idx_chg = (float(_idx_df['Close'].iloc[-1]) / float(_idx_df['Close'].iloc[-21]) - 1) * 100
             rs20 = chg20d - _idx_chg
@@ -10389,8 +9870,7 @@ def calculate_metrics_all(df, code):
     except Exception:
         pass
     if rs20 is None:
-        mom_score += 10  # 大盘数据不可用时按中性计，避免误伤
-        momentum_rows.append({"因子": "11. 相对强度RS", "状态": "—", "说明": "大盘数据不可用，按中性计"})
+        momentum_rows.append({"因子": "11. 相对强度RS", "状态": "—", "说明": "缺少同日合格指数数据，本项不计分；不授级"})
 
     mom_score = min(100, mom_score)
     # 附在专业投机因子表之后，深度作战室现有表格直接可见，无需新增UI
@@ -10674,10 +10154,11 @@ def monte_carlo_forecast(df, days=10, sims=1000):
         ret = df['Close'].pct_change().dropna()
         mu = ret.mean()
         sigma = ret.std()
-        final_prices = []
-        for _ in range(sims):
-            price = last_p * np.exp((mu - 0.5 * sigma**2) * days + sigma * np.sqrt(days) * np.random.normal(0, 1))
-            final_prices.append(price)
+        # 同一行情与参数复算必须一致，不因点击/刷新随机改写情景区间。
+        seed_payload = df['Close'].to_csv() + f"|{days}|{sims}"
+        rng = np.random.default_rng(int(hashlib.sha256(seed_payload.encode()).hexdigest()[:16], 16))
+        final_prices = last_p * np.exp((mu - 0.5 * sigma**2) * days
+                                      + sigma * np.sqrt(days) * rng.normal(0, 1, sims))
         p90 = np.percentile(final_prices, 90)
         p50 = np.percentile(final_prices, 50)
         p10 = np.percentile(final_prices, 10)
@@ -10692,12 +10173,12 @@ def get_benchmark_code(stock_code):
     """根据股票市场自动选择基准指数"""
     if stock_code.endswith('.HK'):
         return '^HSI'  # 恒生指数
-    elif stock_code.endswith('.SS') or stock_code.endswith('.SZ'):
+    elif stock_code.endswith(('.SS', '.SZ', '.BJ')):
         return '000001.SS'  # 上证指数
     else:
         return '^GSPC'  # 标普500
 
-def calculate_risk_metrics(df, stock_code):
+def calculate_risk_metrics(df, stock_code, *, benchmark_loader=None):
     """
     【V83 P0.2】计算风险指标：Beta, Alpha, Correlation, Volatility
     
@@ -10717,7 +10198,7 @@ def calculate_risk_metrics(df, stock_code):
         _safe_print(f"[Risk] 获取基准指数: {benchmark_code}")
         
         # 获取基准数据（使用相同时间范围）
-        benchmark_df = fetch_stock_data(benchmark_code)
+        benchmark_df = (benchmark_loader or fetch_stock_data)(benchmark_code)
         if benchmark_df is None or len(benchmark_df) < 60:
             _safe_print(f"[Risk] ⚠️ 基准数据获取失败")
             return None
@@ -10947,21 +10428,10 @@ def fetch_news_headlines(code):
         
         with ProxyContext(proxy_url):
             ticker = yf.Ticker(target_code)
-            # 【V87.5】增加超时控制，避免卡顿
-            import signal
-            
-            def timeout_handler(signum, frame):
-                raise TimeoutError("新闻获取超时")
-            
-            # 设置5秒超时
-            try:
-                signal.signal(signal.SIGALRM, timeout_handler)
-                signal.alarm(5)
-                news = ticker.news
-                signal.alarm(0)  # 取消超时
-            except:
-                # Windows不支持signal.SIGALRM，直接获取
-                news = ticker.news
+            # Streamlit executes on a worker thread where SIGALRM is invalid.
+            # A timeout must return once, never retry the same unbounded call.
+            from deep_optional_data import bounded_call
+            news = bounded_call(lambda: ticker.news, timeout=5)
         
         _safe_print(f"[News] 📊 原始新闻数量: {len(news) if news else 0}")
         
@@ -11012,6 +10482,26 @@ def fetch_news_headlines(code):
         _safe_print(f"[News] ❌ 获取失败: {type(e).__name__} - {str(e)}")
         return []
 
+def _fetch_deep_supplement(code):
+    """Optional facts only; each provider wait is bounded and never calls a model."""
+    from deep_optional_data import bounded_call
+    from stock_profile import get_profile
+    from announcement_radar import fetch_for, DIR_TXT
+    result = {'errors': [], 'announcement_directions': dict(DIR_TXT)}
+    for key, provider in (
+        ('profile', lambda: get_profile(code)),
+        ('extremes', lambda: _price_extremes9(code)),
+        ('announcements', lambda: fetch_for(code)),
+        ('news', lambda: fetch_news_headlines(code)),
+        ('fundamentals', lambda: fetch_stock_fundamentals(code)),
+    ):
+        try:
+            result[key] = bounded_call(provider, timeout=4)
+        except Exception as exc:
+            result['errors'].append(f'{key}: {type(exc).__name__}')
+    return result
+
+
 # ═══════════════════════════════════════════════════════════════
 # 【V88·人话理由（预算自适应，个股/大盘/板块共用）】
 # 默认规则版（不烧钱）；手动点按钮才切思考模式并立刻出结果；预算用满自动关、按钮禁用。
@@ -11032,28 +10522,28 @@ def render_readable_reasons(fwd, *, kind, symbol, name, context="", key_prefix="
     except Exception as _e:
         st.caption(f"判断理由暂不可用：{type(_e).__name__}")
         return
-    _exhausted = not bool(MY_KIMI_KEY)
+    _exhausted = not bool(GPT_SUBSCRIPTION_READY)
     _sk = f"_reason_think_{key_prefix}_{symbol}"
     _think_on = bool(st.session_state.get(_sk, False))
 
     st.markdown(f"#### 🗣️ 各周期判断理由（人话版：{_REASON_FUSE_LABEL.get(kind, '')}）")
     if _exhausted:
         st.button("🧠 开启思考模式精讲", key=f"btn{_sk}", disabled=True,
-                  help="Kimi Code订阅不可用，思考模式已自动关闭")
-        st.caption("💤 Kimi Code订阅不可用，当前为规则版；登录订阅或配置KIMI_CODE_API_KEY后可开启。")
+                  help="GPT-6 Codex订阅不可用，思考模式已自动关闭")
+        st.caption("💤 GPT-6 Codex订阅不可用，当前为规则版；登录订阅后可开启。")
         _think_on = False
         st.session_state[_sk] = False
     else:
-        _lab = "🔄 重新用思考模式精讲" if _think_on else "🧠 开启K3-256K思考精讲（使用订阅额度）"
+        _lab = "🔄 重新用思考模式精讲" if _think_on else "🧠 开启GPT-6 Astra思考精讲（使用订阅额度）"
         if st.button(_lab, key=f"btn{_sk}"):
             _think_on = True
             st.session_state[_sk] = True
 
     if _think_on and not _exhausted:
-        with st.spinner("🧠 Kimi K3-256K思考：把每档判断讲成人话…"):
+        with st.spinner("🧠 GPT-6 Astra思考：把每档判断讲成人话…"):
             _out = _forward_reasons(
                 name, symbol, fwd, context=context, kind=kind, allow_ai=True,
-                api_key=MY_KIMI_KEY)
+                api_key=GPT_SUBSCRIPTION_READY)
     else:
         # 默认规则版：allow_ai=False 强制不调用 AI、不花预算（即使环境有 Key）。
         _out = _forward_reasons(name, symbol, fwd, context=context, kind=kind, allow_ai=False)
@@ -11063,7 +10553,9 @@ def render_readable_reasons(fwd, *, kind, symbol, name, context="", key_prefix="
     if kind == "个股":
         _prof9r = ""
         try:
-            _fn0r = fetch_stock_fundamentals(symbol) or {}
+            _fn0r = (st.session_state.get(f'_fundamentals_{symbol}') or {})
+            from deep_optional_data import session_once as _read_optional
+            _fn0r = _read_optional(st.session_state, symbol).get('fundamentals') or _fn0r
             _pb9r = []
             for _k9r, _lab9r in (("sector", "行业"), ("industry", "细分")):
                 if _fn0r.get(_k9r):
@@ -11082,7 +10574,8 @@ def render_readable_reasons(fwd, *, kind, symbol, name, context="", key_prefix="
             _na0r = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
                                 "news_analyzed.json").read_text(encoding="utf-8"))
             _bc9r = str(symbol).split(".")[0].lstrip("0")
-            for _n9r in _na0r.get("news") or []:
+            from news_evidence import current_news, news_note
+            for _n9r in current_news(_na0r):
                 _blob9r = str(_n9r.get("title", "")) + str(_n9r.get("affected_tickers", ""))
                 if ((len(str(name)) >= 2 and str(name) in _blob9r)
                         or (_bc9r and len(_bc9r) >= 4 and _bc9r in str(_n9r.get("affected_tickers", "")))):
@@ -11090,7 +10583,7 @@ def render_readable_reasons(fwd, *, kind, symbol, name, context="", key_prefix="
                     _tag9r = ("🔴利好" if "好" in _dir9r else ("🟢利空" if "空" in _dir9r else "⚪中性"))
                     # 【2026-07-18 出处铁律】消息必带媒体名
                     _src9r = str(_n9r.get("source") or "").split(" - ")[0].strip()[:16] or "新闻流"
-                    _nws9r.append(f"{str(_n9r.get('title'))[:42]}（{_tag9r}·{_src9r}）")
+                    _nws9r.append(f"{str(_n9r.get('title'))[:42]}（{_tag9r}·{_src9r}；{news_note(_n9r)}）")
                 if len(_nws9r) >= 2:
                     break
         except Exception:
@@ -11103,7 +10596,7 @@ def render_readable_reasons(fwd, *, kind, symbol, name, context="", key_prefix="
         if _eg9r:
             st.markdown(_eg9r)
         if _nws9r:
-            st.markdown("📰 **近日消息面**：" + "；".join(_nws9r))
+            st.markdown("📰 **近期关联线索（不证明因果）**：" + "；".join(_nws9r))
         else:
             st.caption("📰 近3日新闻流中无该股直接消息——本次判断以技术面与估值为主（如实说明，不编事由）。")
     if _out.get("overall"):
@@ -11111,14 +10604,14 @@ def render_readable_reasons(fwd, *, kind, symbol, name, context="", key_prefix="
     _m = _out.get("reasons") or {}
     for _r in fwd.get("horizons") or []:
         _lb = _r.get("label")
-        st.markdown(f"- **{_lb}**（上涨概率 {_r.get('p_up')}%）：{_m.get(_lb) or '—'}")
+        st.markdown(f"- **{_lb}**（规则方向分 {_r.get('p_up')}/100）：{_m.get(_lb) or '—'}")
     _stt = _out.get("status")
     if _stt in ("completed", "cached"):
-        st.caption(f"🧠 {_out.get('model', 'k3-256k')} · 思考模式 ｜ 生成于 {_out.get('analysis_time', '—')}")
+        st.caption(f"🧠 {_out.get('model', 'gpt-6-astra')} · 思考模式 ｜ 生成于 {_out.get('analysis_time', '—')}")
     elif _stt == "budget":
-        st.caption("ℹ️ Kimi订阅额度/限流触发，已回退规则版。概率与盈亏比不受影响。")
+        st.caption("ℹ️ GPT-6订阅额度/限流触发，已回退规则版。仅保留原规则分与技术盈亏比，不作为已标定概率。")
     else:
-        st.caption("ℹ️ 当前为规则版大白话理由（点上方按钮用思考模式精讲）。概率与盈亏比不受影响。")
+        st.caption("ℹ️ 当前为规则版大白话理由（点上方按钮用思考模式精讲）。仅保留原规则分与技术盈亏比，不作为已标定概率。")
 
 # ═══════════════════════════════════════════════════════════════
 # 【V83 P1】交易计划与风险预算
@@ -11252,700 +10745,8 @@ def display_scan_failures(all_errors, total_failed):
 # ═══════════════════════════════════════════════════════════════
 # 【V89.7 重构】持仓管理 - 包装为函数，延迟到主内容区渲染
 # ═══════════════════════════════════════════════════════════════
-def _render_portfolio_section():
-  """持仓管理渲染函数 - 在主内容区调用"""
-  if not (Config.PORTFOLIO_ENABLED and PORTFOLIO_MANAGER_AVAILABLE and _portfolio_manager):
-    return
-  try:
-    from datetime import datetime as _dt_port
-    _port_today = _dt_port.now().strftime("%Y-%m-%d")
-    st.markdown(f'<div style="font-family: inherit; background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 1.2rem; border-radius: 10px; margin: 0.5rem 0;"><h3 style="font-family: inherit; color: white; margin: 0; text-align: center; font-size: 14px; font-weight: 700;">💼 我的持仓</h3><p style="font-family: inherit; color: rgba(255,255,255,0.85); margin: 0.3rem 0 0 0; text-align: center; font-size: 12px;">Excel数据源 · 实时盈亏 · AI分析</p><p style="font-family: inherit; color: rgba(255,255,255,0.6); margin: 0.2rem 0 0 0; text-align: center; font-size: 12px;">📅 {_port_today}</p></div>', unsafe_allow_html=True)
-    
-    try:
-        # 【V89.6.2】显示文件信息和自动检测文件变更
-        file_path = os.path.abspath(Config.PORTFOLIO_FILE)
-        file_mtime_str = "未知"  # 默认值
-        file_mtime = None
-        
-        if os.path.exists(file_path):
-            import time
-            file_mtime = os.path.getmtime(file_path)
-            file_mtime_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(file_mtime))
-            
-            # 【V89.6.2】自动检测文件是否被修改
-            if 'portfolio_last_mtime' not in st.session_state:
-                st.session_state.portfolio_last_mtime = file_mtime
-                logging.info(f"📝 初始化持仓文件修改时间: {file_mtime_str}")
-            elif st.session_state.portfolio_last_mtime != file_mtime:
-                # 文件已被修改！
-                st.info(f"🔔 检测到持仓文件已更新！（{file_mtime_str}）正在自动刷新...")
-                st.session_state.portfolio_last_mtime = file_mtime
-                logging.info(f"🔄 持仓文件已变更，自动刷新: {file_mtime_str}")
-                
-                # 清除所有可能的缓存
-                if hasattr(_portfolio_manager, '_cached_df'):
-                    delattr(_portfolio_manager, '_cached_df')
-                if 'portfolio_data_cache' in st.session_state:
-                    del st.session_state.portfolio_data_cache
-                
-                time.sleep(0.5)  # 短暂延迟确保文件写入完成
-            
-            info_col1, info_col2, info_col3 = st.columns([2, 2, 1])
-            with info_col1:
-                st.caption(f"📁 文件位置: `{file_path}`")
-            with info_col2:
-                st.caption(f"🕒 最后修改: {file_mtime_str}")
-            with info_col3:
-                if st.button("🔄 强制刷新", key="force_reload_portfolio", help="重新加载Excel文件"):
-                    # 清除所有可能的缓存
-                    if hasattr(_portfolio_manager, '_cached_df'):
-                        delattr(_portfolio_manager, '_cached_df')
-                    if 'portfolio_data_cache' in st.session_state:
-                        del st.session_state.portfolio_data_cache
-                    if 'portfolio_last_mtime' in st.session_state:
-                        del st.session_state.portfolio_last_mtime
-                    st.toast("🔄 正在重新加载Excel...", icon="🔄")
-                    st.rerun()
-        
-        # 【V89.6.2】强制每次都重新读取Excel，不使用任何缓存
-        # 先清除 PortfolioManager 内部可能的缓存
-        if hasattr(_portfolio_manager, '_cached_df'):
-            delattr(_portfolio_manager, '_cached_df')
-        
-        # 直接读取Excel文件，完全绕过缓存
-        try:
-            import pandas as pd
-            portfolio_df = pd.read_excel(Config.PORTFOLIO_FILE, sheet_name='我的持仓', engine='openpyxl')
-            
-            # 数据验证和清洗
-            if '股票代码' in portfolio_df.columns and len(portfolio_df) > 0:
-                original_count = len(portfolio_df)
-                
-                # 清理空值
-                portfolio_df = portfolio_df.dropna(subset=['股票代码'])
-                
-                # 数据类型转换
-                portfolio_df['持仓数量'] = pd.to_numeric(portfolio_df['持仓数量'], errors='coerce')
-                portfolio_df['买入价格'] = pd.to_numeric(portfolio_df['买入价格'], errors='coerce')
-                
-                # 移除无效数据
-                portfolio_df = portfolio_df.dropna(subset=['持仓数量', '买入价格'])
-                portfolio_df = portfolio_df[portfolio_df['持仓数量'] > 0]
-                portfolio_df = portfolio_df[portfolio_df['买入价格'] > 0]
-                
-                if len(portfolio_df) < original_count:
-                    st.caption(f"⚠️ 已过滤 {original_count - len(portfolio_df)} 行无效数据")
-                
-                logging.info(f"✅ 直接读取Excel成功: {len(portfolio_df)}只股票")
-            else:
-                portfolio_df = None
-                logging.warning("⚠️ Excel文件格式不正确或为空")
-                
-        except Exception as e:
-            logging.error(f"❌ 直接读取Excel失败: {str(e)}")
-            # 降级到 PortfolioManager
-            portfolio_df = _portfolio_manager.get_dataframe() if _portfolio_manager else None
-        
-        # 【V89.6.2】显示读取状态
-        if portfolio_df is not None and len(portfolio_df) > 0:
-            st.success(f"✅ 成功读取持仓: {len(portfolio_df)}只股票 | 文件: {os.path.basename(Config.PORTFOLIO_FILE)} | 最后修改: {file_mtime_str}")
-            
-            # 显示读取到的股票名称
-            stock_names = ', '.join([f"{row['股票名称']}" for _, row in portfolio_df.head(5).iterrows()])
-            if len(portfolio_df) > 5:
-                stock_names += f" 等{len(portfolio_df)}只"
-            st.caption(f"📋 持仓股票: {stock_names}")
-            
-            # 【V89.6.7】醒目的价格缓存状态显示
-            st.markdown("---")
-            cache_status_col1, cache_status_col2, cache_status_col3 = st.columns([1, 2, 1])
-            
-            with cache_status_col1:
-                if 'portfolio_prices_cache' in st.session_state and 'portfolio_prices_timestamp' in st.session_state:
-                    cache_age = time.time() - st.session_state['portfolio_prices_timestamp']
-                    if cache_age < 86400:
-                        st.metric("📦 缓存状态", "✅ 有效")
-                    else:
-                        st.metric("⏰ 缓存状态", "❌ 已过期")
-                else:
-                    st.metric("🆕 缓存状态", "无缓存")
-            
-            with cache_status_col2:
-                if 'portfolio_prices_timestamp' in st.session_state:
-                    cache_age = time.time() - st.session_state['portfolio_prices_timestamp']
-                    remaining_hours = (86400 - cache_age) / 3600
-                    if remaining_hours > 0:
-                        cache_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(st.session_state['portfolio_prices_timestamp']))
-                        st.caption(f"🕐 更新时间: {cache_time}")
-                        st.caption(f"⏳ 剩余有效期: {remaining_hours:.1f}小时")
-                    else:
-                        st.caption(f"⏰ 缓存已过期: {-remaining_hours:.1f}小时前")
-                else:
-                    st.caption("首次获取价格数据")
-            
-            with cache_status_col3:
-                if 'portfolio_prices_cache' in st.session_state:
-                    cached_count = len(st.session_state['portfolio_prices_cache'])
-                    st.metric("缓存股票数", f"{cached_count}只")
-            
-            st.markdown("---")
-        
-        if portfolio_df is None or len(portfolio_df) == 0:
-            st.warning(f"⚠️ 未读取到持仓数据。请检查 **{Config.PORTFOLIO_FILE}** 文件是否有有效数据。")
-            
-            
-            col_create, col_open = st.columns(2)
-            with col_create:
-                if st.button("📝 创建持仓模板", type="primary", width='stretch'):
-                    if _portfolio_manager.create_template():
-                        st.success(f"✅ 已创建持仓模板: {Config.PORTFOLIO_FILE}")
-                        st.info("💡 请手动编辑Excel文件，添加您的真实持仓数据后刷新页面。")
-                    else:
-                        st.error("❌ 创建模板失败")
-            
-            with col_open:
-                if st.button("📂 打开Excel编辑", width='stretch'):
-                    import subprocess
-                    import platform
-                    try:
-                        file_path = os.path.abspath(Config.PORTFOLIO_FILE)
-                        if platform.system() == 'Darwin':  # macOS
-                            subprocess.call(['open', file_path])
-                        elif platform.system() == 'Windows':
-                            os.startfile(file_path)
-                        else:  # Linux
-                            subprocess.call(['xdg-open', file_path])
-                        st.success(f"✅ 已打开文件: {Config.PORTFOLIO_FILE}")
-                        st.info("💡 编辑并保存后，刷新页面即可自动加载新数据")
-                        st.caption("⚡ 应用会自动检测文件变化！")
-                    except Exception as e:
-                        st.error(f"❌ 打开文件失败: {str(e)}")
-                        st.caption(f"💡 请手动打开: {os.path.abspath(Config.PORTFOLIO_FILE)}")
-        
-        else:
-            # 【V90.4】直接交互式编辑持仓表格 - 点击即可修改/删除/添加
-            st.caption("💡 直接点击单元格修改 | 底部 ➕ 添加新股票 | 勾选左侧复选框后按 Delete 删除")
-            
-            # 准备编辑用的DataFrame：只保留预期列 + 强制转换类型避免报错
-            expected_cols = ['股票代码', '股票名称', '持仓数量', '买入价格', '买入日期', '备注']
-            edit_df = portfolio_df.copy()
-            
-            # 确保所有预期列都存在
-            for _ec in expected_cols:
-                if _ec not in edit_df.columns:
-                    edit_df[_ec] = ""
-            
-            # 只保留预期列，丢弃多余列
-            edit_df = edit_df[expected_cols]
-            
-            # 【关键修复】强制将文本列转为 str，避免 NaN/float 与 TextColumn 配置冲突
-            edit_df['股票代码'] = edit_df['股票代码'].astype(str).replace('nan', '')
-            edit_df['股票名称'] = edit_df['股票名称'].astype(str).replace('nan', '')
-            edit_df['买入日期'] = edit_df['买入日期'].astype(str).replace('nan', '').replace('NaT', '')
-            edit_df['备注'] = edit_df['备注'].astype(str).replace('nan', '')
-            
-            # 直接用 data_editor 显示，用户可即时编辑
-            edited_df = st.data_editor(
-                edit_df,
-                num_rows="dynamic",
-                width='stretch',
-                column_config={
-                    "股票代码": st.column_config.TextColumn(
-                        "股票代码",
-                        required=True,
-                        help="美股: AAPL | 港股: 00700.HK | A股: 600519.SS"
-                    ),
-                    "股票名称": st.column_config.TextColumn(
-                        "股票名称",
-                        required=True,
-                        help="股票中文名称"
-                    ),
-                    "持仓数量": st.column_config.NumberColumn(
-                        "持仓数量",
-                        required=True,
-                        min_value=1,
-                        help="持有股数（>0）"
-                    ),
-                    "买入价格": st.column_config.NumberColumn(
-                        "买入价格",
-                        required=True,
-                        min_value=0.01,
-                        format="%.2f",
-                        help="成本价（>0）"
-                    ),
-                    "买入日期": st.column_config.TextColumn(
-                        "买入日期",
-                        help="格式: YYYY-MM-DD"
-                    ),
-                    "备注": st.column_config.TextColumn(
-                        "备注",
-                        help="个人备注"
-                    ),
-                },
-                hide_index=True,
-                key="portfolio_data_editor"
-            )
-            
-            # 检测是否有修改
-            _has_change = False
-            if len(edited_df) != len(edit_df):
-                _has_change = True
-            elif not edited_df.equals(edit_df):
-                _has_change = True
-            
-            # 操作按钮行
-            btn_col1, btn_col2, btn_col3 = st.columns([1, 1, 2])
-            with btn_col1:
-                _save_clicked = st.button("💾 保存修改", type="primary", width='stretch', disabled=not _has_change)
-            with btn_col2:
-                if st.button("📂 打开Excel", width='stretch', key="open_excel_btn"):
-                    import subprocess
-                    import platform
-                    try:
-                        file_path = os.path.abspath(Config.PORTFOLIO_FILE)
-                        if platform.system() == 'Darwin':
-                            subprocess.call(['open', file_path])
-                        elif platform.system() == 'Windows':
-                            os.startfile(file_path)
-                        else:
-                            subprocess.call(['xdg-open', file_path])
-                        st.success(f"✅ 已打开: {Config.PORTFOLIO_FILE}")
-                    except Exception as e:
-                        st.error(f"❌ 打开失败: {str(e)}")
-            with btn_col3:
-                if _has_change:
-                    if len(edited_df) > len(edit_df):
-                        st.info(f"➕ 新增 {len(edited_df) - len(edit_df)} 只股票，点击「保存修改」生效")
-                    elif len(edited_df) < len(edit_df):
-                        st.warning(f"🗑️ 删除 {len(edit_df) - len(edited_df)} 只股票，点击「保存修改」生效")
-                    else:
-                        st.info("✏️ 检测到数据修改，点击「保存修改」生效")
-            
-            # 保存逻辑
-            if _save_clicked:
-                try:
-                    valid_df = edited_df.copy()
-                    
-                    # 清理空行
-                    valid_df = valid_df.dropna(subset=['股票代码', '股票名称'])
-                    valid_df = valid_df[valid_df['股票代码'].str.strip() != '']
-                    valid_df = valid_df[valid_df['股票名称'].str.strip() != '']
-                    
-                    # 验证数值
-                    valid_df['持仓数量'] = pd.to_numeric(valid_df['持仓数量'], errors='coerce')
-                    valid_df['买入价格'] = pd.to_numeric(valid_df['买入价格'], errors='coerce')
-                    
-                    # 过滤无效数据
-                    before_count = len(valid_df)
-                    valid_df = valid_df.dropna(subset=['持仓数量', '买入价格'])
-                    valid_df = valid_df[valid_df['持仓数量'] > 0]
-                    valid_df = valid_df[valid_df['买入价格'] > 0]
-                    filtered_count = before_count - len(valid_df)
-                    
-                    if filtered_count > 0:
-                        st.warning(f"⚠️ 已过滤 {filtered_count} 行无效数据")
-                    
-                    # 保存到Excel
-                    valid_df.to_excel(Config.PORTFOLIO_FILE, index=False, sheet_name='我的持仓')
-                    
-                    # 清除价格缓存
-                    if 'portfolio_prices_cache' in st.session_state:
-                        del st.session_state['portfolio_prices_cache']
-                    if 'portfolio_prices_timestamp' in st.session_state:
-                        del st.session_state['portfolio_prices_timestamp']
-                    
-                    st.success(f"✅ 已保存（共{len(valid_df)}只股票）")
-                    time.sleep(0.5)
-                    st.rerun()
-                except Exception as e:
-                    st.error(f"❌ 保存失败: {str(e)}")
-                    logging.error(f"保存持仓失败: {str(e)}", exc_info=True)
-            
-            st.markdown("---")
-            
-            # 【V89.6.7】获取当前价格 - 【V91.10】统一缓存：交易日15分钟，非交易日24小时
-            cache_key = 'portfolio_prices_cache'
-            cache_timestamp_key = 'portfolio_prices_timestamp'
-            cache_ttl = get_smart_cache_ttl('daily')
-            
-            current_time = time.time()
-            current_prices = None  # 使用None而不是{}，方便判断是否已从缓存加载
-            
-            # 【V89.6.7】调试信息：检查缓存状态
-            force_refresh_price = st.session_state.get('force_refresh_price', False)
-            has_cache = cache_key in st.session_state
-            has_timestamp = cache_timestamp_key in st.session_state
-            
-            st.markdown("---")
-            st.markdown("### 💰 价格数据")
-            
-            
-            logging.info(f"📊 持仓价格缓存检查: force_refresh={force_refresh_price}, has_cache={has_cache}, has_timestamp={has_timestamp}")
-            
-            # 尝试使用缓存
-            if not force_refresh_price and has_cache and has_timestamp:
-                try:
-                    cache_age = current_time - st.session_state[cache_timestamp_key]
-                    remaining_hours = (cache_ttl - cache_age) / 3600
-                    
-                    if cache_age < cache_ttl:
-                        # 缓存有效 - 直接使用！
-                        current_prices = st.session_state[cache_key]
-                        cache_time_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(st.session_state[cache_timestamp_key]))
-                        st.success(f"✅ 使用缓存价格数据 | 更新时间: {cache_time_str} | 剩余有效期: {remaining_hours:.1f}小时")
-                        logging.info(f"✅ 使用持仓价格缓存，剩余{remaining_hours:.1f}小时")
-                    else:
-                        # 缓存过期
-                        st.info(f"⏰ 价格缓存已过期（{cache_age/3600:.1f}小时前），正在重新获取...")
-                        logging.info(f"⏰ 持仓价格缓存过期: {cache_age/3600:.1f}小时")
-                except Exception as e:
-                    st.warning(f"⚠️ 读取缓存失败: {str(e)}，将重新获取")
-                    logging.error(f"读取缓存失败: {str(e)}")
-            elif force_refresh_price:
-                st.info("🔄 强制刷新模式，忽略缓存")
-                logging.info("🔄 强制刷新持仓价格")
-            elif not has_cache or not has_timestamp:
-                _ttl_hint = f"{cache_ttl//3600}小时" if cache_ttl >= 3600 else f"{cache_ttl//60}分钟"
-                st.info(f"🆕 首次获取价格数据，将缓存{_ttl_hint}")
-                logging.info("🆕 首次获取持仓价格数据")
-            
-            # 如果缓存无效（current_prices仍为None），重新获取价格
-            if current_prices is None:
-                st.markdown("---")
-                st.markdown("#### 📡 正在获取最新价格...")
-                
-                current_prices = {}
-                price_progress = st.progress(0)
-                price_status = st.empty()
-                
-                for idx, row in portfolio_df.iterrows():
-                    code = str(row['股票代码']).strip()
-                    stock_name = row['股票名称']
-                    price_status.text(f"正在获取 {stock_name}({code}) 最新价格...")
-                    
-                    try:
-                        # 获取数据
-                        df_stock = fetch_stock_data(to_yf_cn_code(code))
-                        if df_stock is not None and len(df_stock) > 0:
-                            current_prices[code] = float(df_stock['Close'].iloc[-1])
-                            logging.info(f"✅ {stock_name}({code}) 当前价格: {current_prices[code]}")
-                        else:
-                            current_prices[code] = None
-                            logging.warning(f"⚠️ {stock_name}({code}) 价格获取失败：数据为空")
-                    except Exception as e:
-                        current_prices[code] = None
-                        logging.error(f"❌ {stock_name}({code}) 价格获取异常: {str(e)}")
-                    
-                    price_progress.progress((idx + 1) / len(portfolio_df))
-                
-                price_progress.empty()
-                price_status.empty()
-                
-                # 显示价格获取统计
-                success_count = sum(1 for v in current_prices.values() if v is not None)
-                st.caption(f"📊 价格获取: {success_count}/{len(portfolio_df)} 成功")
-                
-                # 【V89.6.7】强制保存到缓存
-                try:
-                    st.session_state[cache_key] = current_prices
-                    st.session_state[cache_timestamp_key] = current_time
-                    st.session_state['force_refresh_price'] = False
-                    
-                    cache_time_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(current_time))
-                    st.success(f"✅ 价格数据已更新并缓存（有效期: 24小时） | 缓存时间: {cache_time_str}")
-                    logging.info(f"✅ 持仓价格已保存到缓存: {len(current_prices)}只股票, 时间戳: {current_time}")
-                except Exception as e:
-                    st.error(f"❌ 缓存保存失败: {str(e)}")
-                    logging.error(f"缓存保存失败: {str(e)}")
-            
-            # 添加强制刷新价格按钮
-            refresh_col1, refresh_col2, refresh_col3 = st.columns([2, 2, 2])
-            with refresh_col1:
-                if st.button("🔄 强制刷新价格", key="force_refresh_prices_btn"):
-                    st.session_state['force_refresh_price'] = True
-                    if cache_key in st.session_state:
-                        del st.session_state[cache_key]
-                    if cache_timestamp_key in st.session_state:
-                        del st.session_state[cache_timestamp_key]
-                    st.toast("🔄 价格缓存已清除，正在重新获取...", icon="🔄")
-                    st.rerun()
-            
-            with refresh_col2:
-                if cache_timestamp_key in st.session_state:
-                    cache_time = time.strftime('%H:%M:%S', time.localtime(st.session_state[cache_timestamp_key]))
-                    st.caption(f"⏰ 价格数据时间: {cache_time}")
-            
-            with refresh_col3:
-                st.caption("💡 价格每天自动更新一次")
-            
-            # 计算持仓指标
-            try:
-                metrics_df = _portfolio_manager.calculate_portfolio_metrics(portfolio_df, current_prices)
-            except Exception as e:
-                st.error(f"❌ 计算持仓指标失败: {str(e)}")
-                logging.error(f"计算持仓指标失败: {str(e)}", exc_info=True)
-                # 使用简化计算
-                metrics_df = portfolio_df.copy()
-                for code in current_prices:
-                    if code in metrics_df['股票代码'].values:
-                        idx = metrics_df[metrics_df['股票代码'] == code].index[0]
-                        current_price = current_prices[code]
-                        if current_price is not None:
-                            metrics_df.loc[idx, '当前价格'] = current_price
-                            cost = metrics_df.loc[idx, '买入价格']
-                            quantity = metrics_df.loc[idx, '持仓数量']
-                            metrics_df.loc[idx, '盈亏比例'] = ((current_price - cost) / cost * 100)
-                            metrics_df.loc[idx, '盈亏金额'] = (current_price - cost) * quantity
-                            metrics_df.loc[idx, '持仓市值'] = current_price * quantity
-                        else:
-                            metrics_df.loc[idx, '当前价格'] = None
-                            metrics_df.loc[idx, '盈亏比例'] = None
-                            metrics_df.loc[idx, '盈亏金额'] = None
-                            metrics_df.loc[idx, '持仓市值'] = None
-            
-            # 获取汇总信息
-            summary = _portfolio_manager.get_portfolio_summary(metrics_df)
-            
-            if summary:
-                # 显示汇总
-                st.markdown("### 📊 持仓汇总")
-                sum_col1, sum_col2, sum_col3, sum_col4 = st.columns(4)
-                
-                with sum_col1:
-                    st.metric("总市值", f"¥{summary['total_market_value']:,.2f}")
-                
-                with sum_col2:
-                    st.metric("总成本", f"¥{summary['total_cost']:,.2f}")
-                
-                with sum_col3:
-                    profit_color = "normal" if summary['total_profit'] >= 0 else "inverse"
-                    st.metric("总盈亏", f"¥{summary['total_profit']:,.2f}", 
-                             delta=f"{summary['total_profit_pct']:.2f}%",
-                             delta_color=profit_color)
-                
-                with sum_col4:
-                    st.metric("持仓股票", f"{summary['stock_count']}只",
-                             delta=f"盈利{summary['profitable_count']}只")
-                
-                st.markdown("---")
-            
-            # 显示持仓明细
-            st.markdown("### 💼 持仓明细")
-            
-            # 格式化显示
-            display_df = metrics_df.copy()
-            display_df = display_df[['股票代码', '股票名称', '持仓数量', '买入价格', 
-                                    '当前价格', '盈亏比例', '盈亏金额', '持仓市值', '备注']]
-            
-            # 添加样式
-            def highlight_profit(row):
-                if pd.isna(row['盈亏比例']):
-                    return [''] * len(row)
-                
-                color = ''
-                if row['盈亏比例'] > 0:
-                    color = 'background-color: #10b98120'
-                elif row['盈亏比例'] < 0:
-                    color = 'background-color: #ef444420'
-                
-                return [color] * len(row)
-            
-            styled_df = display_df.style.apply(highlight_profit, axis=1)
-            st.dataframe(styled_df, width='stretch', height=400)
-            
-            # 【V89.5】AI持仓组合分析
-            st.markdown("---")
-            st.markdown("### 🤖 AI持仓组合分析")
-            st.caption("💡 按市场分组分析您的持仓组合（美股/港股/A股）")
-            
-            # 按市场分组持仓
-            def classify_market(code):
-                """判断股票所属市场"""
-                code_str = str(code).strip()
-                if code_str[0].isalpha():  # 以字母开头，美股
-                    return "🇺🇸 美股"
-                elif len(code_str) == 5 or (len(code_str) >= 4 and code_str[0] == '0' and not code_str.startswith('00')):  # 港股
-                    return "🇭🇰 港股"
-                elif code_str.startswith('6') or code_str.startswith('0') or code_str.startswith('3'):  # A股
-                    return "🇨🇳 A股"
-                else:
-                    return "❓ 其他"
-            
-            # 为每只股票分类
-            metrics_df['市场'] = metrics_df['股票代码'].apply(classify_market)
-            
-            # 按市场分组统计
-            market_summary = {}
-            for market in ["🇺🇸 美股", "🇭🇰 港股", "🇨🇳 A股"]:
-                market_stocks = metrics_df[metrics_df['市场'] == market]
-                if len(market_stocks) > 0:
-                    market_summary[market] = {
-                        'count': len(market_stocks),
-                        'total_value': market_stocks['持仓市值'].sum(),
-                        'total_profit': market_stocks['盈亏金额'].sum(),
-                        'stocks': market_stocks,
-                        'top_stock': market_stocks.nlargest(1, '持仓市值').iloc[0] if len(market_stocks) > 0 else None
-                    }
-            
-            # 显示市场分组
-            if market_summary:
-                st.markdown("#### 📊 市场分布")
-                market_cols = st.columns(len(market_summary))
-                
-                for idx, (market, data) in enumerate(market_summary.items()):
-                    with market_cols[idx]:
-                        profit_pct = (data['total_profit'] / (data['total_value'] - data['total_profit']) * 100) if (data['total_value'] - data['total_profit']) > 0 else 0
-                        st.metric(
-                            market,
-                            f"{data['count']}只",
-                            delta=f"{profit_pct:+.2f}%"
-                        )
-                        st.caption(f"市值: ¥{data['total_value']:,.0f}")
-                
-                st.markdown("---")
-                
-                # AI分析选择
-                analysis_option = st.radio(
-                    "选择分析类型",
-                    options=["📊 分市场组合分析", "🎯 单只股票深度分析"],
-                    horizontal=True,
-                    key="portfolio_analysis_type"
-                )
-                
-                if analysis_option == "📊 分市场组合分析":
-                    # 选择要分析的市场
-                    available_markets = list(market_summary.keys())
-                    selected_market = st.selectbox(
-                        "选择市场进行AI组合分析",
-                        options=available_markets,
-                        key="portfolio_market_select"
-                    )
-                    
-                    if st.button("🚀 启动市场组合分析", type="primary", key="portfolio_market_ai_btn", width='stretch'):
-                        if MY_GEMINI_KEY:
-                            with _v88_running(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · {selected_market}持仓组合"):
-                                try:
-                                    market_data = market_summary[selected_market]
-                                    stocks_info = []
-                                    
-                                    # 收集该市场的所有持仓信息
-                                    for _, row in market_data['stocks'].iterrows():
-                                        stock_info = {
-                                            '代码': row['股票代码'],
-                                            '名称': row['股票名称'],
-                                            '持仓数量': row['持仓数量'],
-                                            '买入价': row['买入价格'],
-                                            '当前价': row['当前价格'],
-                                            '盈亏': f"{row['盈亏比例']:.2f}%" if not pd.isna(row['盈亏比例']) else 'N/A',
-                                            '市值': f"¥{row['持仓市值']:,.0f}",
-                                            '市值占比': f"{row['持仓市值'] / market_data['total_value'] * 100:.1f}%"
-                                        }
-                                        stocks_info.append(stock_info)
-                                    
-                                    # 生成AI分析提示词
-                                    prompt = f"""作为专业投资顾问，请分析以下{selected_market}持仓组合：
 
-【组合概况】
-- 持仓股票数: {market_data['count']}只
-- 总市值: ¥{market_data['total_value']:,.2f}
-- 总盈亏: ¥{market_data['total_profit']:,.2f}
-- 盈亏比例: {market_data['total_profit'] / (market_data['total_value'] - market_data['total_profit']) * 100:.2f}%
-
-【持仓明细】
-"""
-                                    for stock in stocks_info:
-                                        prompt += f"\n{stock['名称']}({stock['代码']}): 持仓{stock['持仓数量']}股, 成本{stock['买入价']}, 现价{stock['当前价']}, 盈亏{stock['盈亏']}, 市值{stock['市值']} (占比{stock['市值占比']})"
-                                    
-                                    prompt += f"""
-
-请从以下维度进行专业分析：
-
-## 📊 组合结构分析
-1. 仓位配置是否合理？是否过于集中？
-2. 行业分散度如何？（根据股票名称判断）
-3. 单只股票占比是否合适？（建议单只不超过20%）
-
-## 💰 盈亏表现分析
-1. 整体盈亏情况评价（优秀/良好/一般/较差）
-2. 哪些股票贡献了主要收益？
-3. 哪些股票拖累了组合表现？
-
-## 🎯 持仓建议
-1. 建议增持的股票及理由
-2. 建议减持的股票及理由
-3. 建议止盈/止损的股票及价位
-
-## ⚖️ 风险评估
-1. 组合整体风险等级（低/中/高）
-2. 主要风险点
-3. 风险控制建议
-
-## 🔮 后市展望
-1. {selected_market}市场短期展望（1-2周）
-2. 该组合在当前市场环境下的适应性
-3. 未来1-2个月的操作策略
-
-请提供专业、具体、可操作的分析建议，字数600-800字。"""
-                                    
-                                    # 调用Gemini API
-                                    ai_response = call_gemini_api(
-                                        prompt, priority=True, scope="holding-portfolio-analysis")
-                                    
-                                    # 显示分析结果
-                                    st.success(f"✅ {selected_market}持仓组合分析完成")
-                                    
-                                    # 显示组合信息
-                                    with st.expander("📊 查看持仓明细", expanded=False):
-                                        st.dataframe(
-                                            pd.DataFrame(stocks_info),
-                                            width='stretch',
-                                            hide_index=True
-                                        )
-                                    
-                                    # 显示AI分析
-                                    st.markdown("---")
-                                    st.markdown("##### 🤖 AI组合分析报告")
-                                    # 【V90.3】段落级复制
-                                    if COPY_UTILS_AVAILABLE:
-                                        CopyUtils.render_markdown_with_section_copy(ai_response, key_prefix=f"port_{selected_market}")
-                                    else:
-                                        st.markdown(ai_response)
-                                    st.caption(f"📌 本报告由 AI 生成 · 模型: {_ai_model_label()}")
-                                
-                                except Exception as e:
-                                    st.error(f"❌ AI分析失败: {str(e)[:100]}")
-                                    logging.error(f"持仓组合AI分析异常: {e}")
-                        else:
-                            st.warning("⚠️ 请登录Kimi Code订阅或配置KIMI_CODE_API_KEY以使用AI分析功能")
-                
-                else:  # 单只股票深度分析
-                    # 原有的单只股票分析
-                    analyze_options = [f"{row['股票名称']} ({row['股票代码']})" 
-                                      for _, row in portfolio_df.iterrows()]
-                    
-                    selected_stock = st.selectbox("选择股票进行深度分析", 
-                                                 options=analyze_options,
-                                                 key="portfolio_single_stock_select")
-                    
-                    if selected_stock and st.button("🚀 启动深度分析", type="primary", key="portfolio_single_stock_btn", width='stretch'):
-                        # 提取股票代码
-                        import re
-                        match = re.search(r'\(([^)]+)\)', selected_stock)
-                        if match:
-                            selected_code = match.group(1)
-                            st.session_state.scan_selected_code = selected_code
-                            st.session_state.scan_selected_name = selected_stock.split('(')[0].strip()
-                            st.toast(f"🎯 已选中: {selected_stock}，请向上滚动查看作战室", icon="🎯")
-                            st.info("👆 **请向上滚动到「⚔️ 深度作战室」（模块①）查看完整AI分析报告**")
-    
-    except Exception as e:
-        st.error(f"❌ 持仓管理加载异常: {str(e)[:100]}")
-        logging.error(f"持仓管理异常: {e}")
-  except Exception as e:
-    st.warning(f"⚠️ 持仓模块异常: {str(e)[:80]}")
-    logging.error(f"持仓模块渲染异常: {e}")
-
-# 旧位置不再直接渲染，在主内容区域通过 _render_portfolio_section() 调用
+# 持仓统一在当前风险中心与Astra成交记录中呈现。
 
 # ═══════════════════════════════════════════════════════════════
 # 8. 批量扫描（增强版）
@@ -12358,7 +11159,7 @@ def batch_scan_dual(pool, market: str = "US", progress_callback=None) -> dict:
     breakout_pool   = []
     stats = {"success": 0, "failed": 0, "total": len(pool)}
 
-    # 【V92 修复】扫描前预热行情：美股/港股批量下载(避免限流只取到A段)，A股 Tushare
+    # 【V92 修复】扫描前预热行情：美股/港股批量下载(避免限流只取到A段)，A股 免费行情源
     if len(pool) > 1:
         _prefetch_pool(pool, progress_callback)
 
@@ -12443,7 +11244,7 @@ def batch_scan_analysis(pool, scan_type="TOP", ma_target=None, progress_callback
     # 【V91.7】使用统一行业映射模块（sector_map.py），全682只覆盖，单一数据源
     from modules.sector_map import get_sector
 
-    # 【V92 修复】扫描前预热行情：美股/港股批量下载(避免限流只取到A段)，A股 Tushare
+    # 【V92 修复】扫描前预热行情：美股/港股批量下载(避免限流只取到A段)，A股 免费行情源
     if total_stocks > 1:
         _prefetch_pool(pool, progress_callback)
 
@@ -12682,7 +11483,7 @@ def batch_scan_analysis(pool, scan_type="TOP", ma_target=None, progress_callback
 
 # ═══════════════════════════════════════════════════════════════
 # 8a1. 【V92 关键修复】扫描行情预热：美股/港股批量下载（避免逐只触发 Yahoo 限流
-#       导致只取到字母A段、后面全无数据），A股走 Tushare 直连。
+#       导致只取到字母A段、后面全无数据），A股走 免费行情源 直连。
 # ═══════════════════════════════════════════════════════════════
 def _batch_prefetch_yf(yf_codes, period='1y', on_each=None) -> int:
     """用 yf.download 批量下载美股/港股，复用单会话/crumb，避免逐只请求触发 429。
@@ -12740,7 +11541,7 @@ def _batch_prefetch_yf(yf_codes, period='1y', on_each=None) -> int:
 
 
 def _prefetch_pool(pool, progress_callback=None):
-    """扫描前预热行情缓存：美股/港股批量下载，A股 Tushare 并发逐只。"""
+    """扫描前预热行情缓存：美股/港股批量下载，A股 免费行情源 并发逐只。"""
     if not pool:
         return
     cn, ovs = [], []
@@ -12768,7 +11569,7 @@ def _prefetch_pool(pool, progress_callback=None):
             with _TPE(max_workers=min(12, max(2, Config.MAX_WORKERS))) as ex:
                 _futs = [ex.submit(fetch_stock_data, c) for c in cn]
                 for _ in _ac(_futs):
-                    _bump(1, "⚡预取(A股·Tushare)")
+                    _bump(1, "⚡预取(A股·免费行情源)")
     except Exception as e:
         logging.warning(f"⚠️ A股预取异常：{e}")
     # 补缺：批量 yfinance 未命中的标的，逐只走东财/yfinance（避免只剩 A 段有数据）
@@ -13058,7 +11859,7 @@ def run_unified_scan(pool, scan_market, risk_preference="平衡", use_concurrent
 
     total = len(pool)
 
-    # ── 预热缓存：美股/港股批量下载（避免限流只取到A段），A股 Tushare ──
+    # ── 预热缓存：美股/港股批量下载（避免限流只取到A段），A股 免费行情源 ──
     if total > 1:
         _prefetch_pool(pool, progress_callback)
     # 三大指数先取一次入缓存（个股RS都要用，避免并发时挤在第一只上）
@@ -13421,7 +12222,7 @@ def run_regime_scan(pool, use_concurrent, scan_market, risk_preference="平衡",
 
     total = len(pool)
 
-    # 【V92 修复】扫描前预热行情：美股/港股批量下载(避免限流只取到A段)，A股 Tushare
+    # 【V92 修复】扫描前预热行情：美股/港股批量下载(避免限流只取到A段)，A股 免费行情源
     if total > 1:
         _prefetch_pool(pool, progress_callback)
 
@@ -13661,126 +12462,8 @@ def run_regime_scan(pool, use_concurrent, scan_market, risk_preference="平衡",
 # 8c. 【V91.9】AI选股 - Gemini 筛选短中长期好股，中美港各 Top3
 # ═══════════════════════════════════════════════════════════════
 def run_ai_stock_selector(progress_callback=None):
-    """
-    一键AI选股：扫描中美港三市场，取每市场前15只候选，由Gemini选出各市场Top3，
-    输出：理由、背景、增长点（短中长期）
-    返回: (result_dict, error_msg)
-    result_dict: {'us': [], 'hk': [], 'cn': [], 'ai_report': str}
-    """
-    def _update(msg):
-        if progress_callback:
-            progress_callback(msg)
-    
-    result = {'us': [], 'hk': [], 'cn': [], 'ai_report': ''}
-    
-    # 1. 三市场并行扫描，各取 Top15 候选
-    markets_data = [
-        ("美股", RAW_US),
-        ("港股", RAW_HK),
-        ("A股", RAW_CN_TOP),
-    ]
-    
-    all_candidates = {}
-    for idx, (market_name, pool) in enumerate(markets_data):
-        def _make_progress(mkt):
-            def _cb(c, t, name):
-                _update(f"正在扫描 {mkt}... {c}/{t} {name[:12]}")
-            return _cb
-        _update(f"正在扫描 {market_name}...")
-        try:
-            res, stats, _meta = run_unified_scan(
-                pool, market_name, "平衡", True, progress_callback=_make_progress(market_name))
-            # 按得分排序，取前15
-            sorted_res = sorted(res, key=lambda x: x.get('得分', 0), reverse=True)[:15]
-            all_candidates[market_name] = sorted_res
-        except Exception as e:
-            logging.error(f"AI选股扫描 {market_name} 失败: {e}")
-            all_candidates[market_name] = []
-    
-    # 2. 构建 Gemini 输入
-    _update("正在构建 AI 分析数据...")
-    prompt_data = []
-    for mkt, candidates in all_candidates.items():
-        if not candidates:
-            prompt_data.append(f"\n【{mkt}】无有效候选")
-            continue
-        lines = [f"\n【{mkt}】"]
-        for i, r in enumerate(candidates[:15], 1):
-            name = r.get('股票', r.get('名称', 'N/A'))
-            code = r.get('代码', 'N/A')
-            score = r.get('得分', 0)
-            sector = r.get('行业', 'N/A')
-            suggestion = r.get('建议', '')[:80]
-            lines.append(f"  {i}. {name}({code}) 得分:{score} 行业:{sector} 建议:{suggestion}")
-        prompt_data.append("\n".join(lines))
-    
-    input_summary = "\n".join(prompt_data)
-    
-    # 3. 调用 Gemini
-    _update(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · AI选股...")
-    prompt = f"""你是顶级量化分析师，根据以下三市场量化扫描候选（每市场前15只，按得分排序），为每个市场选出 **Top 3 最值得关注** 的股票。
-
-【候选数据】
-{input_summary}
-
-【任务要求】
-对每个市场（美股、港股、A股）各选出 Top 3 只股票，综合短中长期考量。对每只股票必须输出：
-1. **选股理由**：为何入选，核心逻辑（1-2句）
-2. **背景概况**：公司/行业背景（1-2句）
-3. **增长点**：分别说明短期(1-4周)、中期(1-3月)、长期(3-12月)主要增长驱动
-
-【输出格式】（严格按以下 Markdown 结构，便于解析）
-## 🇺🇸 美股 Top3
-### 1. [股票名](代码)
-- **理由**：...
-- **背景**：...
-- **增长点**：短期... | 中期... | 长期...
-
-### 2. ...
-### 3. ...
-
-## 🇭🇰 港股 Top3
-### 1. ...
-### 2. ...
-### 3. ...
-
-## 🇨🇳 A股 Top3
-### 1. ...
-### 2. ...
-### 3. ...
-
-要求：内容专业、具体、可操作，每只股票分析 80-150 字。"""
-    
-    ai_report = ""
-    if MY_GEMINI_KEY:
-        try:
-            ai_report = call_gemini_api(prompt)
-            if ai_report.startswith("❌"):
-                return result, ai_report
-        except Exception as e:
-            err = f"❌ Gemini 调用失败: {type(e).__name__}: {str(e)[:80]}"
-            logging.error(err)
-            return result, err
-    else:
-        return result, "❌ Kimi Code订阅未登录或KIMI_CODE_API_KEY未配置"
-    
-    result['ai_report'] = ai_report or "无输出"
-    
-    # 4. 简单解析：提取每市场 Top3 代码（用于匹配表格）
-    import re
-    for mkt_tag, mkt_key in [("美股", "us"), ("港股", "hk"), ("A股", "cn")]:
-        candidates = all_candidates.get(mkt_tag, [])
-        if not candidates:
-            continue
-        # 从 AI 报告中提取提到的股票名
-        for r in candidates[:5]:  # 只看前5，AI 通常从里面选
-            name = r.get('股票', r.get('名称', ''))
-            if name and name in ai_report:
-                result[mkt_key].append(r)
-                if len(result[mkt_key]) >= 3:
-                    break
-    
-    return result, None
+    """Retired ungrounded selector; only signed central reviews grant grades."""
+    return {'us': [], 'hk': [], 'cn': [], 'ai_report': ''}, '旧独立AI选股已停用；请使用3A中央评级与固定跟踪席位。'
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -13818,115 +12501,18 @@ def _get_watchlist_scan_signals():
 
 
 def run_watchlist_analysis(progress_callback=None):
-    """
-    自选股分析：按中美港划分，对每只逐只给出近期催化、技术面、风险点、操作建议。
-    注入V88扫描信号，强制差异化（加仓/减仓/持仓/观望），禁止全部观望。
-    返回: (ai_report_str, error_msg)
-    """
-    def _update(msg):
-        if progress_callback:
-            progress_callback(msg)
-    
-    # 1. 获取现价
-    _update("正在获取自选股现价...")
-    price_lines = []
-    for mkt, pfx, key in [("美股", "$", "US"), ("港股", "HK$", "HK"), ("A股", "¥", "CN")]:
-        lines = [f"\n【{mkt}】"]
-        for code, name in WATCHLIST.get(key, []):
-            p = _get_watchlist_price(code)
-            s = f"  {name}({code}): {pfx}{p:.2f}" if p is not None else f"  {name}({code}): 数据获取中"
-            lines.append(s)
-        price_lines.append("\n".join(lines))
-    
-    input_data = "\n".join(price_lines)
-    
-    # 2. 获取V88扫描信号（与钉钉日报同源）
-    _update("正在读取V88量化扫描信号...")
-    scan_sigs = _get_watchlist_scan_signals()
-    scan_block_lines = []
-    for mkt, key in [("美股", "US"), ("港股", "HK"), ("A股", "CN")]:
-        in_scan = []
-        for code, name in WATCHLIST.get(key, []):
-            c = str(code).upper().strip()
-            if c in scan_sigs:
-                lbl, reason, _ = scan_sigs[c]
-                in_scan.append(f"{name}({code})【{lbl}】{reason}")
-        if in_scan:
-            em = "🇺🇸" if key == "US" else ("🇭🇰" if key == "HK" else "🇨🇳")
-            scan_block_lines.append(f"- {em} {mkt}：{'；'.join(in_scan)}")
-    scan_block = "\n".join(scan_block_lines) if scan_block_lines else "今日无持仓进榜"
-
-    # 3. 调用 Gemini
-    _update(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · 自选股分析...")
-    prompt = f"""你是顶级量化分析师，对以下用户的跨账户自选股进行逐只分析。
-
-【自选股及现价】
-{input_data}
-
-【V88量化扫描信号】以下持仓今日进入扫描榜（强势=趋势向好，蓄势=未启动，拐点=弱势反转）：
-{scan_block}
-
-【任务要求】
-按中美港划分，对每只自选股**逐只**给出：
-1. **近期催化**：24-72h 内可能影响股价的事件或数据
-2. **技术面**：关键支撑/压力、趋势判断
-3. **风险点**：1-2 条主要风险
-4. **操作建议**：持有/加仓/减仓/观望（简洁可执行）
-5. **简要理由**：基本面、技术面各一句，每句不超过20个字；无数据须直说
-
-【操作规则】⚠️ 必须差异化，禁止全部或多数为观望：
-- 📈加仓：强势进榜+逻辑支持、或蓄势突破+催化明确，至少1-2只
-- 📉减仓：拐点进榜、技术破位、估值过高、基本面恶化，至少1只
-- 📌持仓：逻辑未变、继续持有
-- 🔍观望：短期不明朗、等待信号，不超过半数
-
-【输出格式】（严格按以下 Markdown 结构）
-## 🇺🇸 美股自选
-### 1. [股票名](代码)
-- **催化**：...
-- **技术面**：...
-- **风险**：...
-- **基本面理由**：...（≤20字）
-- **技术面理由**：...（≤20字）
-- **建议**：持有/加仓/减仓/观望
-
-### 2. ...
-（逐只分析至第11只，含TSLA）
-
-## 🇭🇰 港股自选
-### 1. ...
-### 2. ...
-（逐只分析 4 只）
-
-## 🇨🇳 A股自选
-### 1. ...
-### 2. ...
-（逐只分析 3 只）
-
-要求：每只 2-4 句，简洁可执行，避免空泛套话；操作建议必须差异化。"""
-    
-    if not MY_GEMINI_KEY:
-        return "", "❌ Kimi Code订阅未登录或KIMI_CODE_API_KEY未配置"
-    
-    try:
-        ai_report = call_gemini_api(prompt)
-        if ai_report.startswith("❌"):
-            return "", ai_report
-        return ai_report or "无输出", None
-    except Exception as e:
-        err = f"❌ 自选股分析失败: {type(e).__name__}: {str(e)[:80]}"
-        logging.error(err)
-        return "", err
+    """Retired legacy force-trade entry; current research uses central reviews."""
+    return '', '此旧自选点评入口已停用；请通过3A中央评级或个股深度分析查看当前GPT双审、证据与原合同。'
 
 
 # ═══════════════════════════════════════════════════════════════
-# 9. 【V89.6.2】注释：call_gemini_api已在前面定义（2815行）
+# 9. 【V89.6.2】注释：call_model_api已在前面定义（2815行）
 # ═══════════════════════════════════════════════════════════════
-# call_gemini_api函数已提前定义，确保所有模块都能正常调用
+# call_model_api函数已提前定义，确保所有模块都能正常调用
 
 # 【V89.4】绑定舆情分析器的AI调用函数
 if SENTIMENT_ANALYZER_AVAILABLE and _sentiment_analyzer:
-    _sentiment_analyzer.call_ai = call_gemini_api
+    _sentiment_analyzer.call_ai = call_model_api
 
 # ═══════════════════════════════════════════════════════════════
 # 10. Session State 初始化
@@ -14211,27 +12797,14 @@ if st.session_state.get('scan_selected_code'):
 # ═══════════════════════════════════════════════════════════════
 # 【V89.8 布局重构】模块分隔函数
 # ═══════════════════════════════════════════════════════════════
-def _module_header(icon, title, subtitle="", color_from="#667eea", color_to="#764ba2", compact=False):
-    """统一的模块标题样式 - compact=True 时窄边化显示"""
-    from datetime import datetime as _dt_hdr
-    _weekday_cn = {"Monday": "周一", "Tuesday": "周二", "Wednesday": "周三", "Thursday": "周四", "Friday": "周五", "Saturday": "周六", "Sunday": "周日"}
-    _today_display = _dt_hdr.now().strftime("%Y-%m-%d") + " " + _weekday_cn.get(_dt_hdr.now().strftime("%A"), "")
-    if compact:
-        # 上下变窄：标题+副标题同一行，日期单独一行
-        title_line = f"{icon} {title}" + (f" · {subtitle}" if subtitle else "")
-        st.markdown(f'''<div style="background: linear-gradient(135deg, {color_from} 0%, {color_to} 100%); 
-            padding: 0.4rem 1rem; border-radius: 8px; margin: 1rem 0 0.8rem 0; width: 100%;">
-            <div style="color: white; text-align: center; font-size: 12px; font-weight: 700; margin: 0;">{title_line}</div>
-            <div style="color: rgba(255,255,255,0.7); text-align: center; font-size: 12px; margin: 0.15rem 0 0 0;">📅 {_today_display}</div>
-        </div>''', unsafe_allow_html=True)
-    else:
-        sub_html = f'<p style="color: rgba(255,255,255,0.85); margin: 0.3rem 0 0 0; text-align: center; font-size: 12px;">{subtitle}</p>' if subtitle else ''
-        st.markdown(f'''<div style="background: linear-gradient(135deg, {color_from} 0%, {color_to} 100%); 
-            padding: 1.2rem; border-radius: 10px; margin: 1.5rem 0 1rem 0;">
-            <h3 style="color: white; margin: 0; text-align: center; font-size: 14px; font-weight: 700;">{icon} {title}</h3>
-            {sub_html}
-            <p style="color: rgba(255,255,255,0.6); margin: 0.4rem 0 0 0; text-align: center; font-size: 12px;">📅 数据日期: {_today_display}</p>
-        </div>''', unsafe_allow_html=True)
+def _module_header(icon, title, subtitle='', color_from='#2563eb', color_to='#e0f2fe', compact=False):
+    """Compact section label; render date must never masquerade as data date."""
+    from html import escape as _header_escape
+    detail = ('<details style="font-size:11px;color:#64748b;margin-top:3px"><summary>查看说明</summary>'
+              + _header_escape(subtitle) + '</details>') if subtitle else ''
+    st.markdown('<div style="border-left:3px solid #2563eb;background:#eff6ff;padding:7px 10px;'
+                'border-radius:5px;margin:10px 0"><div style="font-size:14px;font-weight:600;color:#1e40af">'
+                + _header_escape(str(icon)+' '+str(title)) + '</div>'+detail+'</div>', unsafe_allow_html=True)
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -14322,8 +12895,10 @@ def _linkify_md(md: str) -> str:
 def _stk_link(name, code):
     """【V88·内联可点个股】不改字体字号，名字即链接（?q=深链→自动深度分析+入观察池）。
     【V88·点击不跳页 2026-07-20 用户反馈】新标签页打开——主页面停在原位不被带走。"""
-    return (f'<a href="?q={code}&focus=deep#v88-deep-analysis" target="_blank" rel="noopener" '
-            f'style="color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600">{name}</a>')
+    from stock_profile_view import link_html as _profile_link, compact_html as _profile_compact
+    return (_profile_link(name, code,
+            style='color:#1e3a5f;text-decoration:underline;cursor:pointer;font-weight:600')
+            + _profile_compact(code))
 
 
 # 【V88·决策卡·共用】自选决策台与持仓决策台共用同一张卡片（短/中/长/16周概率走势条+盈亏比+期望）。
@@ -14708,76 +13283,14 @@ def _v88_attach_diag9(_wa, _live_chg):
             continue
 
 
-def _render_my_stocks_today(_wa, _live_chg, *, scopes=("持仓", "自选"), container=None):
-    """【V88·我的票·今日逐只怎么办 2026-07-17 用户点单】对持仓+自选+重点关注,
-    逐只说清"今天能不能动+为什么"——区分破位该躲vs错杀可低吸,不再满屏"等回踩"。
-    【两池归一 2026-07-18】scopes/container: 持仓部分进💼持仓模块,自选部分进⭐自选模块。"""
-    _decs = [d for d in (_wa or {}).get("decisions") or []
-             if (d.get("scope") in scopes or ("自选" in scopes and d.get("in_watchlist")
-                                              and d.get("scope") != "持仓"))]
-    if not _decs:
-        return
-    try:
-        from v88_decision_core import diagnose_today as _diag9
-    except Exception:
-        return
-    _mkt_chg = {"🇺🇸美股": _live_chg.get("美股", 0), "🇭🇰港股": _live_chg.get("港股", 0),
-                "🇨🇳A股": _live_chg.get("A股", 0)}
-    _kind_col = {"破位": "#dc2626", "个股利空": "#b91c1c", "错杀": "#16a34a",
-                 "可进": "#16a34a", "持有": "#2563eb", "观察": "#64748b"}
-    _rows = []
-    for _d in _decs:
-        _mk = _d.get("market") or market_of_code(_d.get("code", ""))
-        _diag = _diag9(scope=_d.get("scope", "自选"),
-                       today_chg=float(_d.get("today_chg") or 0),
-                       market_chg=float(_mkt_chg.get(_mk, 0) or 0),
-                       stage=str(_d.get("stage") or ""),
-                       broke_stop=bool(_d.get("broke_stop")),
-                       pos52=_d.get("pos52") or 50,
-                       action=str(_d.get("action") or ""),
-                       entry_mode=((_d.get("entry_plan") or {}).get("mode") or ""),
-                       name=_d.get("name", ""))
-        _rows.append((_d, _diag))
-    # 排序：破位/利空最前（要处理），其次错杀低吸机会，再持有观察
-    _order = {"破位": 0, "个股利空": 0, "错杀": 1, "可进": 1, "持有": 2, "观察": 3}
-    _rows.sort(key=lambda x: (0 if x[0].get("scope") == "持仓" else 1,
-                              _order.get(x[1]["kind"], 9), float(x[0].get("today_chg") or 0)))
-    _pool_word9 = "持仓" if tuple(scopes) == ("持仓",) else ("自选" if tuple(scopes) == ("自选",) else "我的票")
-    _ctx9r = container if container is not None else st.container()
-    with _ctx9r, st.expander(f"📌 {_pool_word9} · 今日逐只怎么办（能不能动+为什么 · {len(_rows)}只）", expanded=False):
-        st.caption("区分「破位该躲」和「错杀可低吸」——不是永远等回踩。点名进深度分析。")
-        _html = ["<div style='font-size:13px;line-height:1.5'>"]
-        for _d, _diag in _rows:
-            _tag = "💼" if _d.get("scope") == "持仓" else "👁"
-            _tc = float(_d.get("today_chg") or 0)
-            _tcol = "#dc2626" if _tc > 0.05 else ("#16a34a" if _tc < -0.05 else "#64748b")
-            _kc = _kind_col.get(_diag["kind"], "#334155")
-            _html.append(
-                f"<div style='padding:4px 0;border-bottom:1px solid #eef2f7'>"
-                f"{_tag} {_stk_link(_d.get('name'), _d.get('code'))} "
-                f"<b style='color:{_tcol}'>{_tc:+.1f}%</b> "
-                f"<b style='color:{_kc}'>[{_diag['kind']}·{_diag['verdict']}]</b><br>"
-                f"<span style='font-size:12px;color:#475569'>└ {_diag['why']}</span></div>")
-        _html.append("</div>")
-        st.markdown("".join(_html), unsafe_allow_html=True)
 
 
 def _next_trading_day9(_repo):
-    """下一交易日（跳周末+holidays.txt），返回 (date, '07-21周一')。"""
-    from datetime import date as _date, timedelta as _td
-    _hol = set()
-    try:
-        _hol = {ln.strip().split()[0] for ln in (_repo / "holidays.txt").read_text(encoding="utf-8").splitlines()
-                if ln.strip() and not ln.strip().startswith("#")}
-    except Exception:
-        pass
-    _wk = "一二三四五六日"
-    _d = _date.today() + _td(days=1)
-    for _ in range(15):
-        if _d.weekday() < 5 and _d.strftime("%Y-%m-%d") not in _hol:
-            return _d, f"{_d.strftime('%m-%d')}周{_wk[_d.weekday()]}"
-        _d += _td(days=1)
-    return _d, _d.strftime("%m-%d")
+    """Shared navigation uses the earliest exchange session; each market is labelled separately."""
+    from exchange_sessions import next_session
+    from datetime import date
+    d=min(next_session(date.today(),m) for m in ('A股','港股','美股'))
+    return d,f"{d.strftime('%m-%d')}周{'一二三四五六日'[d.weekday()]}"
 
 
 def _v88_upside_pct9(_d):
@@ -14891,284 +13404,6 @@ def _v88_t_plan9(_repo, _max_n=3):
     return _out, _note
 
 
-def _render_four_tier_recos9(_wa, _repo, _is_trading):
-    """【V88·三档双向关注 2026-07-20 用户定纲】原"今日/明天/本周/下周"四档推荐改为三档关注：
-    ①今日及本周 ②下周 ③本月及下月。每档双向对仗——🐉看涨(龙虎门口径·上攻)＋⚔️看跌(鬼门关口径·先躲)，
-    每只必带「导致涨/跌的事」(消息归因>研报/新闻定性>技术阶段,无据如实标纯技术)＋成功概率标注
-    (看涨=对应周期上涨概率/看跌=对应周期下行概率;🎯=概率≥65高把握)。零新计算,全用现成引擎输出。
-    档期口径：今日=时机绿灯/涨停接力(休市如实由下一交易日接棒)；本周=双路径5日窗(2周分)；
-    下周=中线蓄势(4-8周分≥58)或下周财报催化；本月=4周周期分；下月=8周周期分(≥58看涨/≤42看跌)。
-    候选=一键全选池+引擎榜Top+触底触线(黑马漏斗复判)∪自选/持仓决策。"""
-    import json as _jf
-    _, _ntd_label = _next_trading_day9(_repo)
-    _cands = {}
-    try:
-        for _h in (_jf.loads((_repo / "data" / "darkhorse.json").read_text(encoding="utf-8"))
-                   .get("horses") or []):
-            _cands[str(_h.get("code"))] = {**_h, "_tag": "🐴"}
-    except Exception:
-        pass
-    for _d in (_wa or {}).get("decisions") or []:
-        if _d.get("scope") in ("持仓", "自选") or _d.get("in_watchlist"):
-            _c = str(_d.get("code"))
-            _tag = "💼" if _d.get("scope") == "持仓" else "👁"
-            if _c in _cands:
-                _cands[_c]["_tag"] = _tag + _cands[_c].get("_tag", "")
-            else:
-                _cands[_c] = {**_d, "_tag": _tag}
-    def _hzsc9(_h, _lab):
-        """某周期引擎方向分(0-100,>50偏涨)；无则None。"""
-        try:
-            _v = (((_h.get("facts") or {}).get("horizons") or {}).get(_lab) or {}).get("rule_score")
-            return int(round(float(_v))) if _v is not None else None
-        except (TypeError, ValueError):
-            return None
-
-    def _why9(_h, _bear):
-        """导致涨/跌的事：消息归因 > 研报/新闻定性 > 诊断结论/技术阶段 > 触发条件；无据如实标。"""
-        for _t in (str(_h.get("move_reason") or ""),
-                   _v88_fund_edge_short(_h.get("name") or "", max_len=18) or "",
-                   (str(_h.get("diag_why") or "") if _bear else ""),
-                   (str(_h.get("stage") or "") if _bear else str(_h.get("touch") or "")),
-                   str((_h.get("entry_plan") or {}).get("mode") or "")):
-            _t = str(_t).strip()
-            if _t:
-                return _t[:22]
-        return "无消息面·纯技术驱动"
-
-    # 双向分档：看涨/看跌各自独立走 elif 漏斗（一只票同侧只进最先命中的一档，不重复刷屏）
-    # 【V88·可买纪律 2026-07-20 用户定纲】短线看涨推荐两条硬门槛：
-    # ①不做T——涨停接力/隔日惯性类整体撤出推荐(日内快手玩法,与用户操作方式不符,relay仅看跌侧参考)
-    # ②上行空间≥10%——不足10%或空间不明的不推(小空间不值得动)，剔除数如实计数不静默丢。
-    _tiers9 = {_k: {"bull": [], "bear": []} for _k in ("t1", "t2", "t3")}
-    _skip_small9 = 0
-    # 【V88·空档给理由 2026-07-21 用户点单"下周本月零推荐总有原因和关注点吧"】
-    # 没达标≠没信息：收集离门槛最近的候选(50-57.9分),空档时亮出来"差几分+关注什么"。
-    _near9 = {"t2": [], "t3": []}
-    # 看跌侧近警示(2026-07-24 用户抓"看跌空档也不许无说明"):离转弱线≤42最近的43-48分候选
-    _near_bear9 = {"t1": [], "t2": [], "t3": []}
-    for _c, _h in _cands.items():
-        _ep = _h.get("entry_plan") or {}
-        _mode = str(_ep.get("mode") or ((_h.get("trade_plan") or {}).get("short") or {}).get("mode") or "")
-        _med = float(_h.get("medium_score") or 0)
-        _srcs = _h.get("sources") or []
-        _s2 = _hzsc9(_h, "2周")
-        _pup = int(_h.get("p_up") or 0) or (_s2 or 0)
-        _pdn = int(_h.get("p_down") or 0)
-        _s4, _s8 = _hzsc9(_h, "4周"), _hzsc9(_h, "8周")
-        # ── 🐉 看涨（龙虎门口径） ──
-        # 【V88·推送严选五闸 2026-07-20】今日/本周档=可执行买入推送→过 _v88_buy_gate9
-        # （概率≥65+盈亏比≥1.5+无周期冲突+大盘顺风+非拥挤），宁可少推不可错推
-        if _mode in ("现价可进", "回踩到位", "突破确认", "双路径待触发"):
-            _ups9 = _v88_upside_pct9(_h)
-            _ok9g, _ = _v88_buy_gate9(_h, _repo)
-            if _ups9 is None or _ups9 < 10 or not _ok9g:
-                _skip_small9 += 1
-            elif _mode == "双路径待触发":
-                _tiers9["t1"]["bull"].append((_h, _pup or 52, f"本周·双路径待触发·空间约+{_ups9:.0f}%"))
-            else:
-                _tiers9["t1"]["bull"].append((_h, _pup or 55, f"今日·{_mode}·空间约+{_ups9:.0f}%"))
-        elif _med >= 58:
-            _tiers9["t2"]["bull"].append((_h, int(round(_med)), "下周·中线蓄势"))
-        elif any("财报" in str(_s) for _s in _srcs):
-            _tiers9["t2"]["bull"].append((_h, _pup or int(round(_med)) or 52, "下周·财报催化"))
-        elif _s4 is not None and _s4 >= 58:
-            _tiers9["t3"]["bull"].append((_h, _s4, "本月·4周周期走强"))
-        elif _s8 is not None and _s8 >= 58:
-            _tiers9["t3"]["bull"].append((_h, _s8, "下月·8周周期走强"))
-        else:
-            # 近门槛候选(空档时展示"差几分",不入正式推荐)
-            if 50 <= _med < 58:
-                _near9["t2"].append((_h, _med, "中线分"))
-            _sml9 = max((x for x in (_s4, _s8) if x is not None), default=None)
-            if _sml9 is not None and 50 <= _sml9 < 58:
-                _near9["t3"].append((_h, _sml9, "4-8周分"))
-        # ── ⚔️ 看跌（鬼门关口径） ──
-        _dgk = str(_h.get("diag_kind") or "")
-        _stg = str(_h.get("stage") or "")
-        _bad_now = (_dgk in ("破位", "个股利空") or _h.get("broke_stop")
-                    or any(_k in _stg for _k in ("破位", "顶拐", "放量滞涨"))
-                    or any(_k in str(_h.get("action") or "")
-                           for _k in ("减仓", "退出", "清仓", "回避", "止损")))
-        if _bad_now:
-            _tiers9["t1"]["bear"].append((_h, _pdn or (100 - _pup if _pup else 55),
-                                          "今日·" + (_dgk or "破位/拐点先躲")))
-        elif _s2 is not None and _s2 <= 42:
-            _tiers9["t1"]["bear"].append((_h, 100 - _s2, "本周·2周周期转弱"))
-        elif 0 < _med <= 42:
-            _tiers9["t2"]["bear"].append((_h, 100 - int(round(_med)), "下周·中线转弱"))
-        elif _s4 is not None and _s4 <= 42:
-            _tiers9["t3"]["bear"].append((_h, 100 - _s4, "本月·4周周期偏弱"))
-        elif _s8 is not None and _s8 <= 42:
-            _tiers9["t3"]["bear"].append((_h, 100 - _s8, "下月·8周周期偏弱"))
-        else:
-            # 【V88·看跌空档也给理由 2026-07-24 用户抓"地狱门没上榜也没原因"】
-            # 未触发警示的收集"离转弱线(≤42)最近的"——空档时亮出来差几分,不许空白无说明。
-            if _s2 is not None and 42 < _s2 <= 48:
-                _near_bear9["t1"].append((_h, _s2, "2周分"))
-            if 42 < _med <= 48:
-                _near_bear9["t2"].append((_h, _med, "中线分"))
-            _swk9 = min((x for x in (_s4, _s8) if x is not None), default=None)
-            if _swk9 is not None and 42 < _swk9 <= 48:
-                _near_bear9["t3"].append((_h, _swk9, "4-8周分"))
-    for _k in _tiers9:
-        for _sd in ("bull", "bear"):
-            _tiers9[_k][_sd].sort(key=lambda x: -x[1])
-
-    def _rate_badge9(_h, _bear):
-        """【V88·推荐必带实盘成功率 2026-07-21 用户三催"成功率百分比还是没全程加上"】
-        每行推荐末尾挂同类历史到期核算命中率(非情景概率)——沃森生物"没和预期一样"就该
-        在推荐时就看到这类信号历史真实命中几成。样本<5如实标积累中。"""
-        _k9r = ("gate_guard" if _bear else
-                ("darkhorse" if "🐴" in str(_h.get("_tag", "")) else "entry_green"))
-        _t9r = (_v88_success9().get("types") or {}).get(_k9r) or {}
-        if _t9r.get("rate") is not None:
-            _c9r = ("#16a34a" if _t9r["rate"] >= 55 else
-                    ("#dc2626" if _t9r["rate"] < 45 else "#b45309"))
-            return (f"<b style='font-size:11.5px;color:{_c9r}'>"
-                    f"·📊同类实盘{_t9r['rate']}%(n{_t9r.get('n', 0)})</b>")
-        return "<span style='font-size:11.5px;color:#94a3b8'>·📊实盘积累中</span>"
-
-    def _item9(_h, _prob, _sub, _bear):
-        _pc = "#16a34a" if _bear else "#dc2626"
-        _star = "🎯" if _prob >= 65 else ""
-        _hn9 = _v88_hot_note9(_h.get("code"))
-        return (f"{_h.get('_tag', '')}{_stk_link(_h.get('name'), _h.get('code'))}"
-                f"<span style='font-size:12px;color:#94a3b8'>[{_sub}]</span>"
-                f"<span style='font-size:12px;color:#64748b'>·{_why9(_h, _bear)}</span>"
-                f"<b style='color:{_pc};font-size:12.5px'>·{_star}{'跌' if _bear else '涨'}概率{_prob}%</b>"
-                + _rate_badge9(_h, _bear)
-                + (f"<span style='font-size:12px;color:#b45309'>{_hn9}</span>" if _hn9 else ""))
-
-    # 【V88·计划做T并档 2026-07-20 用户定纲】做T可以：把握分≥90·最多3只·必须明标【计划做T】
-    _t_items9 = []
-    try:
-        _tps9f, _ = _v88_t_plan9(_repo)
-        _t_items9 = [
-            f"<b style='color:#b45309'>【计划做T】</b>{_stk_link(_t9['name'], _t9['code'])}"
-            f"<b style='color:#b45309'>·🎯把握{_t9['score']}分</b>"
-            f"<span style='font-size:12px;color:#64748b'>·{_t9['why']}·当日往返不留仓</span>"
-            for _t9 in _tps9f]
-    except Exception:
-        pass
-    # 空档原因用:三市场l3方向分(函数外_snap不可见——从快照文件自读一次,10行内零成本)
-    _l3mkts9 = {}
-    try:
-        _l3mkts9 = (_jf.loads((_repo / "data" / "market_snapshot.json")
-                              .read_text(encoding="utf-8")).get("markets") or {})
-    except Exception:
-        _l3mkts9 = {}
-    _t1_title = ("🟢 ① 今日关注 及 本周关注" if _is_trading
-                 else f"⏸ ① 今日(休市·看{_ntd_label}) 及 本周关注")
-    _t1_sub = (("今日=时机绿灯·盘中可执行；本周=双路径5日窗" if _is_trading
-                else f"休市——「今日」由下一交易日({_ntd_label})接棒；本周=双路径5日窗")
-               + "·波段票空间≥10%才推·做T仅收把握≥90分最多3只")
-    _meta9 = [
-        ("t1", _t1_title, _t1_sub),
-        ("t2", "🗓 ② 下周关注", "中线蓄势(4-8周分≥58)/下周财报催化；看跌=中线周期分转弱"),
-        ("t3", "📆 ③ 本月关注 及 下月关注", "本月=4周周期分·下月=8周周期分（≥58看涨/≤42看跌）"),
-    ]
-    _html = ["<div style='font-size:14px;line-height:1.8'>"]
-    for _k, _title, _sub in _meta9:
-        _bulls9 = _tiers9[_k]["bull"][:6]
-        _bears9 = _tiers9[_k]["bear"][:6]
-        _html.append(f"<div style='margin:4px 0 2px'><b>{_title}</b>"
-                     f"<span style='font-size:12px;color:#94a3b8'>（{_sub}）</span></div>")
-        # 大盘该档方向分——看涨/看跌两侧空档共用(2026-07-24修:原只在看涨空档算,看跌空档引用会NameError)
-        _hz_map9 = {"t1": "2周", "t2": "2周", "t3": "4周"}
-        _mkt_ps9, _avg9z, _ps_txt9 = [], 50.0, ""
-        for _mk9z in ("美股", "A股", "港股"):
-            _p9z = dict((x[0], x[1]) for x in
-                        (((_l3mkts9.get(_mk9z) or {})
-                          .get("l3") or {}).get("probs") or [])).get(_hz_map9[_k])
-            if _p9z is not None:
-                _mkt_ps9.append((_mk9z, int(_p9z)))
-        if _mkt_ps9:
-            _avg9z = sum(p for _, p in _mkt_ps9) / len(_mkt_ps9)
-            _ps_txt9 = "·".join(f"{m[0]}{p}%" for m, p in _mkt_ps9)
-        _bull_cells9 = ([] if _k != "t1" else list(_t_items9)) \
-            + [_item9(_h, _p, _s, False) for _h, _p, _s in _bulls9]
-        _html.append("<div style='margin-left:10px'>🐉 <b style='color:#dc2626;font-size:13px'>看涨</b>：")
-        if _bull_cells9:
-            _html.append("　".join(_bull_cells9))
-        else:
-            # 【V88·空档给理由 2026-07-21 用户定纲"没推荐就说明原因,可能大跌要给跌幅量+概率"】
-            # ①大盘该档三市场方向分→偏空时明说"跌概率X%"(=100-方向分,与三层总览同源)
-            # ②近门槛候选差几分。跌幅统计区间在决断卡「🔮大盘四档预判」灰字(±1σ),此处引用不重算。
-            _mkt_note9 = ""
-            if _mkt_ps9:
-                if _avg9z <= 45:
-                    _mkt_note9 = (f"<b style='color:#16a34a'>原因:大盘该档偏空(方向分{_ps_txt9}"
-                                  f"→平均跌概率约{100 - _avg9z:.0f}%)</b>——偏空期引擎收紧买入防的就是大跌，"
-                                  "预计跌幅区间见上方🔮大盘四档预判灰字(±1σ)；")
-                elif _avg9z < 55:
-                    _mkt_note9 = f"原因:大盘该档中性震荡(方向分{_ps_txt9})，个股周期分没走强，不硬凑；"
-                else:
-                    _mkt_note9 = f"大盘该档不弱(方向分{_ps_txt9})但个股未达标——等个股周期分补到58；"
-            _nr9 = sorted(_near9.get(_k) or [], key=lambda x: -x[1])[:3]
-            if _nr9:
-                _nr_cells9 = "、".join(
-                    f"{_stk_link(_h9n.get('name'), _h9n.get('code'))}"
-                    f"<span style='font-size:12px;color:#64748b'>({_lb9n}{int(_sc9n)}·差{58 - int(_sc9n)}分)</span>"
-                    for _h9n, _sc9n, _lb9n in _nr9)
-                _html.append(f"<span style='color:#94a3b8'>本档暂无达标（门槛:对应周期分≥58）。{_mkt_note9}"
-                             "最接近：</span>" + _nr_cells9
-                             + "<span style='font-size:12px;color:#94a3b8'>·分数补到58自动入档，先观察别抢跑</span>")
-            else:
-                _html.append(f"<span style='color:#94a3b8'>本档暂无达标。{_mkt_note9}"
-                             "候选池该周期普遍在58分以下，转红自动入档</span>")
-        _html.append("</div>")
-        _html.append("<div style='margin-left:10px'>⚔️ <b style='color:#16a34a;font-size:13px'>看跌</b>：")
-        if _bears9:
-            _html.append("　".join(_item9(_h, _p, _s, True) for _h, _p, _s in _bears9))
-        else:
-            # 【V88·看跌空档必给原因 2026-07-24 用户抓"没上榜也没说明,不允许空白"】
-            # ①说清门槛(≤42分/破位/顶拐/利空才警示,当前无一触发) ②大盘该档对照
-            # (大盘弱但个股没破位=阴跌市信号滞后,如实点破) ③离警示线最近的候选差几分。
-            _bmk_note9 = ""
-            if _mkt_ps9:
-                if _avg9z <= 45:
-                    _bmk_note9 = (f"<b style='color:#b45309'>注意:大盘该档偏弱(方向分{_ps_txt9})"
-                                  "但个股均未触发破位/顶拐/转弱硬信号(≤42分)——阴跌市个股信号"
-                                  "常滞后于大盘,别把'无警示'当'安全',防区间看🔮四档预判</b>；")
-                else:
-                    _bmk_note9 = f"大盘该档{_ps_txt9}·个股无一触发警示条件；"
-            _nrb9 = sorted(_near_bear9.get(_k) or [], key=lambda x: x[1])[:3]
-            if _nrb9:
-                _nrb_cells9 = "、".join(
-                    f"{_stk_link(_h9b.get('name'), _h9b.get('code'))}"
-                    f"<span style='font-size:12px;color:#64748b'>({_lb9b}{int(_sc9b)}·再跌{int(_sc9b) - 42}分触发警示)</span>"
-                    for _h9b, _sc9b, _lb9b in _nrb9)
-                _html.append(f"<span style='color:#94a3b8'>暂无预警（门槛:周期分≤42或破位/顶拐/利空）。"
-                             f"{_bmk_note9}离警示最近：</span>" + _nrb_cells9)
-            else:
-                _html.append(f"<span style='color:#94a3b8'>暂无预警（门槛:周期分≤42或破位/顶拐/利空）。"
-                             f"{_bmk_note9}候选池该周期均在48分以上，无临近警示者</span>")
-        _html.append("</div>")
-    _html.append("</div>")
-    st.markdown("".join(_html), unsafe_allow_html=True)
-    st.caption("🐉看涨=龙虎门口径(上攻·红)｜⚔️看跌=鬼门关口径(先躲·绿) · 概率=引擎对应周期方向分"
-               "(规则情景估计,非回测真实胜率)，🎯=概率≥65%高把握 · 事由优先级:消息归因>研报定性>技术阶段"
-               "(无据如实标纯技术) · 候选=一键全选池∪引擎Top∪黑马漏斗∪自选/持仓 · 💼持仓👁自选🐴黑马"
-               + (f" · 严选五闸(概率≥65/盈亏比≥1.5/无周期冲突/大盘顺风/非拥挤)+空间≥10%已拦{_skip_small9}只"
-                  "——宁可少推不可错推,完整候选在双门/黑马模块" if _skip_small9 else "")
-               + " · 做T仅收把握分≥90·最多3只·必标【计划做T】·当日往返不留仓,其余接力类不推")
-    # 【V88·统一战绩总账 2026-07-19】推荐旁必挂自己的实盘成功率(自我监督)
-    try:
-        _eng9s = ((_v88_success9().get("types") or {}).get("engine")) or {}
-        _eg_parts9 = []
-        for _lb9s, _k9s in (("短线", "short"), ("中线", "mid"), ("长线", "long")):
-            _e9s = _eng9s.get(_k9s) or {}
-            _eg_parts9.append(f"{_lb9s}{str(_e9s.get('rate')) + '%' if _e9s.get('rate') is not None else '未到期'}"
-                              f"(n={_e9s.get('n', 0)})")
-        _lines9s = [x for x in (
-            ("📊 引擎榜到期核算：" + "·".join(_eg_parts9) + "（扣0.3%摩擦·出处:引擎战绩）") if _eng9s else "",
-            _v88_rate_line9("entry_green", "入场绿灯"),
-        ) if x]
-        if _lines9s:
-            st.caption("　｜　".join(_lines9s))
-    except Exception:
-        pass
 
 
 
@@ -15189,8 +13424,7 @@ def _v88_fast_news9():
         return _c["rows"]
     try:
         import requests as _rqf
-        _sf = _rqf.Session()
-        _sf.trust_env = False
+        _sf = _shared_http_session(direct=True)
         _r = _sf.get("https://np-listapi.eastmoney.com/comm/web/getFastNewsList", timeout=10,
                      headers={"User-Agent": "Mozilla/5.0", "Referer": "https://kuaixun.eastmoney.com/"},
                      params={"client": "web", "biz": "web_724", "fastColumn": "102",
@@ -15216,8 +13450,9 @@ def _v88_load_news():
     try:
         _na = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
                           "news_analyzed.json").read_text(encoding="utf-8"))
-        # AI分析池在前(带方向,归因用),7x24快讯垫后(无方向,凭什么定性用)
-        _V88_NEWS_CACHE["news"] = (_na.get("news") or []) + _v88_fast_news9()
+        # 近期消息必须保留原发布时间；缓存刷新不使旧闻变新。
+        from news_evidence import current_news
+        _V88_NEWS_CACHE["news"] = current_news(_na) + current_news({"news": _v88_fast_news9()})
         _V88_NEWS_CACHE["ts"] = _t.time()
     except Exception:
         _V88_NEWS_CACHE["news"] = []
@@ -15532,6 +13767,7 @@ def _v88_mkt_why9(mk, _repo):
     if mk in _c["d"]:
         return _c["d"][mk]
     _out = ""
+    _ma, _r = {}, {}
     try:
         _ma = json.loads((_repo / "data" / "move_attribution.json").read_text(encoding="utf-8"))
         _r = ((_ma.get("reasons") or {}).get(mk) or {}) if _ma.get("status") == "completed" else {}
@@ -15544,13 +13780,13 @@ def _v88_mkt_why9(mk, _repo):
                         f"（出处:{_src.get('s') or '新闻'}·点击看原文）</span>")
             else:
                 _out = (f"{str(_r['why'])[:40]}"
-                        f"<span style='font-size:11px;color:#94a3b8'>（出处:AI异动归因·思考模式）</span>")
+                        f"<span style='font-size:11px;color:#94a3b8'>（出处:历史异动归因记录·需核源时点）</span>")
     except Exception:
         pass
     if not _out:
         try:   # ②新闻直配:该市场scope命中+高影响的最新一条,带原文链接,明标非AI归因
-            _ns = (json.loads((_repo / "data" / "news_analyzed.json").read_text(encoding="utf-8"))
-                   .get("news") or [])
+            from news_evidence import current_news, news_note_html
+            _ns = current_news(json.loads((_repo / "data" / "news_analyzed.json").read_text(encoding="utf-8")))
             for _n in _ns:
                 _sc = str(_n.get("market_scope") or "")
                 if (mk in _sc or "宏观" in _sc or "综合" in _sc) and "高" in str(_n.get("impact_level") or ""):
@@ -15560,14 +13796,16 @@ def _v88_mkt_why9(mk, _repo):
                         _out = ((f"<a href='{_uu}' target='_blank' "
                                  f"style='color:inherit;text-decoration:underline'>{_tt}</a>" if _uu else _tt)
                                 + f"<span style='font-size:11px;color:#94a3b8'>"
-                                  f"（新闻直配·非AI归因·{str(_n.get('source') or '')[:12]}）</span>")
+                                  f"（新闻关联·非因果·{str(_n.get('source') or '')[:12]}；{news_note_html(_n)}）</span>")
                         break
         except Exception:
             pass
     if not _out:
         _out = _v88_market_edge(mk) or ""
     if not _out:
-        _out = "今日无显著消息驱动——纯量价与温度实算（如实）"
+        _out = "尚无足够新鲜的消息证据；量价分不能证明消息驱动"
+    if _out and _ma.get("status") == "completed" and _r.get("why"):
+        _out = "历史归因线索 · " + str(_ma.get("generated_at") or "原时间待核") + " · " + _out
     _c["d"][mk] = _out
     return _out
 
@@ -15677,727 +13915,35 @@ def _v88_sector_edge9(label):
 
 
 def _render_today_verdict(_snap, _repo):
-    """【V88·今日总决断 2026-07-17 用户点单】把各模块结论浓缩成"今天该干什么"——
-    治大跌日"满屏观察=没推荐"。纯整合层零AI零流量：
-    定调(实时涨跌+温度)→仓位纲领→可进(黑马绿灯)→持仓要处理(盘中落盘)→纪律。"""
-    import json as _jv
-    _chg, _idx_close9 = {}, {}
-    for _mk, (_nm, _sym) in {"美股": ("标普500", "^GSPC"), "A股": ("上证指数", "000001.SS"),
-                             "港股": ("恒生指数", "^HSI")}.items():
+    """Read the linked observation panel; no hidden legacy decision engine."""
+    # Published discovery -> verified local prices -> sector context -> central
+    # authority. Reading this panel never launches market scans or model calls.
+    try:
+        from next_session_data import load_signals as _ns_load
+        from next_session_model import build as _ns_build
+        from next_session_view import render as _ns_render
+        from stock_profile_view import load as _ns_profiles_load
+        from scanner_central import _load_current_snapshot as _ns_central_load
+        from datetime import timezone as _ns_timezone
+        _ns_now = datetime.now(_ns_timezone.utc)
+        _ns_phase = _v88_phase_turn_full9(_repo) or {}
+        if not _ns_phase.get("stocks"):
+            _ns_phase = dict((_snap or {}).get("cycle_scan") or {})
+            _ns_phase["generated_at"] = _ns_phase.get("analysis_time")
+            _ns_phase["scanned"] = len(_ns_phase.get("stocks") or [])
+        _ns_signals = _ns_load(_ns_phase, now=_ns_now)
+        _ns_profiles = _ns_profiles_load()
         try:
-            _c = fetch_stock_data(_sym)["Close"]
-            _chg[_mk] = (float(_c.iloc[-1]) / float(_c.iloc[-2]) - 1) * 100
-            _idx_close9[_mk] = _c   # 留序列给四档预判算波动区间(±1σ)
+            _ns_central = _ns_central_load(_ns_now)
         except Exception:
-            continue
-    if not _chg:
-        return
-    _lo, _hi = min(_chg.values()), max(_chg.values())
-    if _lo <= -1.5:
-        _tone, _tcol, _tbg = "🛡️ 防守日", "#16a34a", "#f0fdf4"
-        _rule = ("大跌日现金也是仓位——逻辑没破的别恐慌割、破位破止损的别扛；"
-                 "抄底要等企稳信号，别接下落的刀")
-    elif _hi >= 1.5:
-        _tone, _tcol, _tbg = "⚔️ 进攻日", "#dc2626", "#fef2f2"
-        _rule = "普涨日别追高——在手的拿住，新进的等回踩或突破确认，别 FOMO 追板"
-    else:
-        _tone, _tcol, _tbg = "⚖️ 分化/中性日", "#2563eb", "#eff6ff"
-        _rule = "平衡日按既定计划执行，不因单日波动改纪律"
-    _pos = []
-    for _mk in ("美股", "A股", "港股"):
-        _t = ((_snap or {}).get("markets") or {}).get(_mk, {}).get("temperature") or {}
-        if _t:
-            _ps = str(_t.get("position", "")).split("（")[0]
-            _cg = _chg.get(_mk)
-            _cc = "#dc2626" if (_cg or 0) > 0.05 else ("#16a34a" if (_cg or 0) < -0.05 else "#64748b")
-            _pos.append(f"{_mk}<b>{_t.get('temp', '?')}°</b>"
-                        + (f"<b style='color:{_cc}'>{_cg:+.1f}%</b>" if _cg is not None else "")
-                        + f"→{_ps}")
-    # 【V88·可进场单一事实源 2026-07-18 用户抓不统一】原来只读黑马6小时落盘快照,
-    # 与自选台15分钟实时数据时点不同→同一票(OTIS)两处说法分裂。
-    # 修:①实时优先——自选/持仓 session 绿灯(与决策台同一份数据,天然一致)
-    #    ②黑马落盘只补充"你还没关注的",同票以实时为准;每只带来源标签。
-    _go, _seen_go = [], set()
-    try:
-        for _d in ((st.session_state.get("watch_alerts_v88") or {}).get("decisions") or []):
-            if ((_d.get("entry_plan") or {}).get("mode")) in ("现价可进", "回踩到位", "突破确认", "左侧低吸"):
-                _go.append({**_d, "_src": ("💼持仓" if _d.get("scope") == "持仓" else "👁自选")})
-                _seen_go.add(str(_d.get("code")).upper().split(".")[0].lstrip("0"))
+            logging.warning("联动观察无法核实中央发布", exc_info=True)
+            _ns_central = {}
+        _ns_doc = _ns_build(_ns_signals, (_snap or {}).get("rotation_forecast") or {},
+                            central=_ns_central, profiles=_ns_profiles, now=_ns_now)
+        st.html(_ns_render(_ns_doc, _ns_profiles))
     except Exception:
-        pass
-    # 【V88·落盘兜底 2026-07-25 用户抓"美股0推荐但落盘辉瑞明明现价可进"】session是
-    # 30分钟会话缓存,滞后/未扫时会吞掉最新绿灯(辉瑞案)——流水线落盘是19点班最新产物,
-    # 合并补位(session优先,同码去重),龙虎门不再看会话脸色。
-    try:
-        for _r9g in (_jv.loads((_repo / "data" / "intraday_decisions.json")
-                               .read_text(encoding="utf-8")).get("rows") or []):
-            _rc9g = str(_r9g.get("code")).upper().split(".")[0].lstrip("0")
-            if _rc9g in _seen_go:
-                continue
-            if ((_r9g.get("entry_plan") or {}).get("mode")) in ("现价可进", "回踩到位", "突破确认", "左侧低吸"):
-                _go.append({**_r9g, "_src": ("💼持仓" if _r9g.get("scope") == "持仓" else "👁自选")})
-                _seen_go.add(_rc9g)
-    except Exception:
-        pass
-    try:
-        _dh = _jv.loads((_repo / "data" / "darkhorse.json").read_text(encoding="utf-8"))
-        for _h in (_dh.get("horses") or []):
-            _hc = str(_h.get("code") or "").upper().split(".")[0].lstrip("0")
-            if _hc in _seen_go:
-                continue                     # 已被实时数据覆盖(如后来加入自选的票),以实时为准
-            if ((_h.get("trade_plan") or {}).get("short") or {}).get("mode") in (
-                    "现价可进", "回踩到位", "突破确认"):
-                _go.append({**_h, "_src": "🐴黑马"})
-    except Exception:
-        pass
-    _cut, _cut_d = {}, {}   # _cut_d: 名称→完整决策dict（双门卡片化用，能配到session实时数据的才有）
-    try:
-        _idc = _jv.loads((_repo / "data" / "intraday_decisions.json").read_text(encoding="utf-8"))
-        # 【V88·减仓必附10字原因 2026-07-18 用户定纲】优先归因引擎(新闻/评级),否则用系统证据链
-        _wa_map9 = {str(d.get("code")): d for d in
-                    ((st.session_state.get("watch_alerts_v88") or {}).get("decisions") or [])}
-        for _r in (_idc.get("rows") or []):
-            if _r.get("scope") == "持仓" and any(k in str(_r.get("action", ""))
-                                                for k in ("减", "退", "清", "止损")):
-                _nm = _r.get("name")
-                if _nm not in _cut or (_r.get("p_down", 0) > _cut[_nm][1]):
-                    _wd9 = _wa_map9.get(str(_r.get("code"))) or {}
-                    _why10 = (str(_wd9.get("move_reason") or "")[:10]
-                              or str(_wd9.get("stage") or _r.get("reason") or "趋势转弱")[:10])
-                    # 卡片数据源:session实时优先,没有(如首屏未算完)用盘中落盘行兜底——
-                    # intraday行本就是完整决策dict(含facts走势链),卡片自带analysis_time如实标时点
-                    _cut[_nm] = (_r.get("action"), _r.get("p_down", 0), _r.get("code"), _why10)
-                    _cut_d[_nm] = _wd9 or _r
-    except Exception:
-        pass
-
-    # 【V88·地狱门 2026-07-19 用户点单】龙虎门(上攻)的对仗面——拐点/破位/利空先躲名单:
-    # 持仓cut(盘中落盘)之外,并入 自选+持仓 的破位/顶拐/个股利空(diagnose+阶段),
-    # 每只带10字原因(优先消息归因=技术+新闻双源),同名去重取更严重者。
-    try:
-        for _d in ((st.session_state.get("watch_alerts_v88") or {}).get("decisions") or []):
-            if _d.get("scope") not in ("持仓", "自选") and not _d.get("in_watchlist"):
-                continue
-            _dgk = str(_d.get("diag_kind") or "")
-            _stg = str(_d.get("stage") or "")
-            _bad = (_dgk in ("破位", "个股利空") or _d.get("broke_stop")
-                    or any(k in _stg for k in ("破位", "顶拐", "放量滞涨"))
-                    or any(k in str(_d.get("action") or "") for k in ("减仓", "退出", "清仓", "回避")))
-            if not _bad:
-                continue
-            _nm = _d.get("name")
-            _why10 = (str(_d.get("move_reason") or "")[:10]
-                      or str(_d.get("diag_why") or _stg or "趋势转弱")[:10])
-            _act = str(_d.get("action") or ("破位回避" if _dgk == "破位" else "拐点警示"))
-            _tag_gd = "💼" if _d.get("scope") == "持仓" else "👁"
-            if _nm not in _cut or float(_d.get("p_down") or 0) > _cut[_nm][1]:
-                _cut[_nm] = (_tag_gd + _act, float(_d.get("p_down") or 0), _d.get("code"), _why10)
-                _cut_d[_nm] = _d
-    except Exception:
-        pass
-
-    # 【V88·地狱门记档 2026-07-19 双门卡片化】警示名单落盘→总账反向核算(警示后≥3天跌=躲对了)。
-    # 与绿灯留痕同理:说话要算数,警示也要对账。按 code:date 去重,保留最近400条。
-    try:
-        _gg_fp = _repo / "data" / "gate_guard_signals.json"
-        _tdy_gg = datetime.now().strftime("%Y-%m-%d")
-        try:
-            _gg_rows = _jv.loads(_gg_fp.read_text(encoding="utf-8"))
-        except Exception:
-            _gg_rows = []
-        _gg_seen = {str(r.get("id")) for r in _gg_rows}
-        _gg_new = False
-        for _k9g, _v9g in _cut.items():
-            _id9g = f"{_v9g[2] or _k9g}:{_tdy_gg}"
-            if _id9g in _gg_seen:
-                continue
-            _gg_rows.append({"id": _id9g, "date": _tdy_gg, "code": _v9g[2],
-                             "name": _k9g, "action": _v9g[0], "why": _v9g[3]})
-            _gg_new = True
-        if _gg_new:
-            _gg_fp.write_text(_jv.dumps(_gg_rows[-400:], ensure_ascii=False, indent=1),
-                              encoding="utf-8")
-    except Exception:
-        pass
-
-    # 【V88·绿灯留痕对账 2026-07-18 用户点单】推荐不许无声蒸发（"昨天有OTIS今天没了"）：
-    # 每次渲染把绿灯榜落盘；与上一榜（不同日期）对账，掉榜必须给下榜理由。
-    # 已按昨日绿灯进场的仍按原计划（止损/作废价/目标）执行——下榜=窗口或条件变化，不是翻案。
-    _dropped = []
-    try:
-        _gl_fp = _repo / "data" / "greenlight_log.json"
-        _today9 = datetime.now().strftime("%Y-%m-%d")
-        try:
-            _gl = _jv.loads(_gl_fp.read_text(encoding="utf-8"))
-        except Exception:
-            _gl = {}
-        _cur_items = {}
-        for _h in _go:
-            _ck9 = str(_h.get("code") or "").upper().split(".")[0].lstrip("0")
-            _cur_items[_ck9] = {
-                "name": _h.get("name"), "code": _h.get("code"),
-                "mode": ((_h.get("entry_plan") or {}).get("mode")
-                         or ((_h.get("trade_plan") or {}).get("short") or {}).get("mode") or "绿灯")}
-        _last9 = _gl.get("last") or {}
-        if _last9.get("date") and _last9["date"] != _today9:
-            _gl["prev"] = _last9
-        _gl["last"] = {"date": _today9, "items": _cur_items}
-        _prev9 = _gl.get("prev") or {}
-        _wa_all9 = {str(d.get("code") or "").upper().split(".")[0].lstrip("0"): d for d in
-                    ((st.session_state.get("watch_alerts_v88") or {}).get("decisions") or [])}
-        for _ck9, _it9 in (_prev9.get("items") or {}).items():
-            if _ck9 in _cur_items:
-                continue
-            _d9 = _wa_all9.get(_ck9) or {}
-            _mode9 = str((_d9.get("entry_plan") or {}).get("mode") or "")
-            if _it9.get("name") in _cut:
-                _why9 = "已转减仓信号"
-            elif _mode9 and _mode9 not in ("现价可进", "回踩到位", "突破确认", "左侧低吸"):
-                _why9 = f"时机灯转「{_mode9}」"
-            elif _d9:
-                _why9 = "绿灯条件今日不满足"
-            else:
-                _why9 = "本轮未覆盖计算（黑马榜轮换）"
-            _dropped.append((_it9.get("name") or _ck9, _it9.get("code") or _ck9,
-                             _prev9.get("date") or "上一交易日", _why9))
-        _gl_fp.write_text(_jv.dumps(_gl, ensure_ascii=False, indent=1), encoding="utf-8")
-    except Exception:
-        pass
-
-    # 【V88·核心一屏 2026-07-20 用户定纲"第一时间看到持仓/可买/要卖+为什么,不要光数字"】
-    # 决断卡升级为全站唯一核心：①大盘白话(技术面+消息面各一句人话) ②持仓·要卖/警惕(每只带why)
-    # ③现在可买(硬门槛:非做T+上行空间≥10%,每只带技术面+基本面why)。其余模块全是这张卡的展开。
-    _html = [f"<div style='background:{_tbg};border:1px solid {_tcol}33;border-left:4px solid {_tcol};"
-             f"border-radius:10px;padding:.6rem .85rem;margin:.2rem 0 .5rem'>"
-             f"<div style='font-size:15px;font-weight:800;color:{_tcol};margin-bottom:4px'>"
-             f"🎯 今日核心 · 一屏决断"
-             f"<span style='font-size:12px;font-weight:400;color:#94a3b8'>　定调与纪律见顶部📣指令牌(去重);"
-             f"这里看:研报定性→四档预判→双门</span></div>"]
-    # 【V88·模块合并 2026-07-25 用户点单"今日核心/今日综述内容重复,综合简化成一个"】
-    # 原「①大盘怎么看」三行(温度仓位/阶段结论/转向风险)已全量并入「📰三市场综述(交易日=今日;休市=上一交易日收盘+下一交易日展望)」——
-    # 一处看全不重复;此处只留一行指路(合并非删除,守"不做减法"总纲)。
-    _html.append("<div style='font-size:12px;color:#94a3b8;margin-bottom:3px'>"
-                 "🧭 大盘怎么看(涨跌/温度仓位/阶段/为什么/四档概率)→已合并至上方「📰 三市场今日综述」一处看全</div>")
-    # 🏛 基本面/策略定性(说人话的why,近3日研报)
-    try:
-        _medge_seen9, _medge_txts9 = set(), []
-        for _mk9e in ("美股", "A股", "港股"):
-            _e9e = _v88_market_edge(_mk9e)
-            if _e9e and _e9e not in _medge_seen9:
-                _medge_seen9.add(_e9e)
-                _medge_txts9.append(_e9e)
-        _html.append("<div style='font-size:12px;color:#64748b;margin-bottom:4px'>"
-                     + (" ".join(_medge_txts9[:2]) if _medge_txts9
-                        else "🏛️ 近3日无策略研报直接定性——今日定调为量价与温度实算（如实说明）")
-                     + "</div>")
-    except Exception:
-        pass
-
-    # 【V88·大盘四档预判 2026-07-21 用户点单"导读要有明日/本周/本月/下月的概率+区间+why"
-    # +"大跌没看到为什么"】明日=当日动量+温度规则估计(低置信如实标)；本周/本月/下月=统一引擎
-    # 2/4/8周方向分(与三层总览完全同源,非另立口径)；区间=近21日波动率×√天数(±1σ统计区间,非承诺)；
-    # why=当日异动AI归因(出处:move_attribution思考模式)>策略研报定性>纯量价如实。
-    try:
-        _ma9v = {}
-        try:
-            _ma9v = (_jv.loads((_repo / "data" / "move_attribution.json")
-                               .read_text(encoding="utf-8")).get("reasons") or {})
-        except Exception:
-            _ma9v = {}
-
-        def _pcol9v(_p):
-            return "#dc2626" if _p >= 55 else ("#16a34a" if _p <= 45 else "#64748b")
-        _fc_rows9 = []
-        for _mk9v in ("美股", "A股", "港股"):
-            _blk9v = ((_snap or {}).get("markets") or {}).get(_mk9v) or {}
-            _l39v = dict((x[0], x[1]) for x in ((_blk9v.get("l3") or {}).get("probs") or []))
-            if not _l39v:
-                continue
-            # ±1σ波动区间:近21日日收益标准差×√档期交易日
-            _sd9v = None
-            try:
-                _ret9v = _idx_close9[_mk9v].pct_change().dropna().tail(21)
-                _sd9v = float(_ret9v.std()) * 100 if len(_ret9v) >= 10 else None
-            except Exception:
-                _sd9v = None
-
-            def _rng9v(_days):
-                return (f"±{_sd9v * (_days ** 0.5):.1f}%" if _sd9v else "")
-            _cells9v = []
-            _cg9v = _chg.get(_mk9v)
-            _t9v = float((_blk9v.get("temperature") or {}).get("temp") or 50)
-            if _cg9v is not None:
-                _tm9v = int(round(max(25, min(75, 50 + 2.2 * _cg9v + 0.15 * (_t9v - 50)))))
-                _cells9v.append(f"明日<b style='color:{_pcol9v(_tm9v)}'>{_tm9v}%</b>"
-                                f"<span style='font-size:11px;color:#94a3b8'>{_rng9v(1)}</span>")
-            for _lb9v, _hz9v, _d9v in (("本周", "2周", 5), ("本月", "4周", 20), ("下月", "8周", 40)):
-                _p9v = _l39v.get(_hz9v)
-                if _p9v is not None:
-                    _cells9v.append(f"{_lb9v}<b style='color:{_pcol9v(int(_p9v))}'>{int(_p9v)}%</b>"
-                                    f"<span style='font-size:11px;color:#94a3b8'>{_rng9v(_d9v)}</span>")
-            if not _cells9v:
-                continue
-            _rs9v = _ma9v.get(_mk9v) or {}
-            _drv9v = f"[{_rs9v.get('driver')}] " if _rs9v.get("driver") else ""
-            _fc_rows9.append(
-                f"<div style='font-size:12.5px;margin:1px 0'><b>{_mk9v}</b>："
-                + " ｜ ".join(_cells9v)
-                + f"<br><span style='font-size:12px;color:#64748b'>└ ❓为什么动:{_drv9v}"
-                + _v88_mkt_why9(_mk9v, _repo) + "</span></div>")
-        if _fc_rows9:
-            _html.append("<div style='margin:3px 0;border-top:1px dashed #e2e8f0;padding-top:3px'>"
-                         "<b style='font-size:13px'>🔮 大盘四档预判</b>"
-                         "<span style='font-size:12px;color:#94a3b8'>（数字=该档上涨概率：明日=动量+温度规则估计·低置信；"
-                         "本周/本月/下月=统一引擎2/4/8周方向分·与三层总览同源；灰字=±1σ统计波动区间非承诺）</span>"
-                         + "".join(_fc_rows9) + "</div>")
-    except Exception:
-        pass
-
-    # ── ② 持仓·今天要卖/警惕（每只带技术面+消息面why,不许光给数字） ──
-    def _v88_why_full9(_dd, _bear=True):
-        """一句完整的人话why：技术面 + 消息面/基本面。"""
-        _tech = str(_dd.get("diag_why") or _dd.get("stage")
-                    or (_dd.get("facts") or {}).get("stage") or "").strip()
-        _news = str(_dd.get("move_reason") or "").strip()
-        if not _news:
-            _news = (_v88_fund_edge_short(_dd.get("name") or "", max_len=20) or "").strip()
-        _parts = []
-        if _tech:
-            _parts.append(f"技术面:{_tech[:26]}")
-        if _news:
-            _parts.append(f"消息面:{_news[:26]}")
-        elif _bear:
-            _parts.append("消息面:无个股利空——系技术信号(如实说明)")
-        else:
-            _parts.append("基本面:无研报/新闻定性——纯技术驱动(如实说明)")
-        return "；".join(_parts)
-    _hold_rows9, _watch_warn9 = [], []
-    for _nm9c, _v9c in sorted(_cut.items(), key=lambda x: -x[1][1]):
-        _act9c = str(_v9c[0])
-        _dd9c = _cut_d.get(_nm9c) or {}
-        if _act9c.startswith("👁") or str(_dd9c.get("scope") or "持仓") == "自选":
-            _watch_warn9.append(f"{_stk_link(_nm9c, _v9c[2] or _nm9c)}({_v9c[3]})")
-            continue
-        _pd9c = int(float(_v9c[1] or 0))
-        _hold_rows9.append(
-            f"<div style='font-size:13px;line-height:1.5;margin:1px 0'>"
-            f"💼{_stk_link(_nm9c, _v9c[2] or _nm9c)} <b style='color:#16a34a'>{_act9c.lstrip('💼')}</b>"
-            + (f"<span style='font-size:12px;color:#64748b'>·下行概率{_pd9c}%</span>" if _pd9c else "")
-            + f"<br><span style='font-size:12px;color:#475569'>└ {_v88_why_full9(_dd9c or {'name': _nm9c, 'stage': _v9c[3]})}</span></div>")
-    _html.append("<div style='margin:4px 0 2px;border-top:1px dashed #e2e8f0;padding-top:4px'>"
-                 "<b style='font-size:13px;color:#16a34a'>⚔️ 持仓·今天要卖/警惕</b>"
-                 + (f"<span style='font-size:12px;color:#94a3b8'>（{len(_hold_rows9)}只·按严重度排序）</span>"
-                    if _hold_rows9 else "") + "："
-                 + ("".join(_hold_rows9[:5]) if _hold_rows9
-                    else "<span style='font-size:13px;color:#475569'>今天没有需要卖出或警惕的持仓——按原计划拿住，别自己吓自己</span>")
-                 + (f"<div style='font-size:12px;color:#b45309;margin-top:1px'>👁 自选别接刀："
-                    + "、".join(_watch_warn9[:6]) + "</div>" if _watch_warn9 else "")
-                 + "</div>")
-
-    # ── ③ 现在可买（推送严选五闸+战绩熔断 2026-07-20 用户定纲"推送成功率一定要高"） ──
-    _buy_rows9, _skip_buy9, _gate_skips9 = [], 0, {}
-    _brk9 = _v88_gate_breaker9("entry_green")
-    for _h9b in sorted(_go, key=lambda h: -(int(h.get("p_up") or 0))):
-        _ups9b = _v88_upside_pct9(_h9b)
-        if _ups9b is None or _ups9b < 10:
-            _skip_buy9 += 1
-            continue
-        _ok9b, _no9b = _v88_buy_gate9(_h9b, _repo)
-        if not _ok9b:
-            _gate_skips9[_no9b] = _gate_skips9.get(_no9b, 0) + 1
-            continue
-        _md9b = str((_h9b.get("entry_plan") or {}).get("mode")
-                    or ((_h9b.get("trade_plan") or {}).get("short") or {}).get("mode") or "")
-        _fund9b = (_v88_fund_edge_short(_h9b.get("name") or "", max_len=22)
-                   or "无研报/新闻定性——纯技术驱动(如实说明)")
-        _stg9b = str(_h9b.get("stage") or (_h9b.get("facts") or {}).get("stage") or "").strip()
-        # 【V88·逐只实盘成功率角标 2026-07-20】每只推荐末尾摊开"同类到期命中率"——
-        # 来源标签决定挂哪类战绩:黑马🐴→darkhorse,其余→entry_green(入场绿灯)。
-        _rate_key9b = "darkhorse" if "黑马" in str(_h9b.get("_src", "")) else "entry_green"
-        _rt9b = (_v88_success9().get("types") or {}).get(_rate_key9b) or {}
-        if _rt9b.get("rate") is not None:
-            _badge9b = (f"<b style='color:{'#16a34a' if _rt9b['rate'] >= 55 else ('#dc2626' if _rt9b['rate'] < 45 else '#b45309')}'>"
-                        f"📊同类实盘{_rt9b['rate']}%(n{_rt9b.get('n', 0)})</b>")
-        else:
-            _badge9b = f"<span style='color:#94a3b8'>📊同类战绩积累中(n{_rt9b.get('n', 0)})</span>"
-        _buy_rows9.append(
-            f"<div style='font-size:13px;line-height:1.5;margin:1px 0'>"
-            f"{_h9b.get('_src', '')}{_stk_link(_h9b.get('name'), _h9b.get('code'))} "
-            f"<b style='color:#dc2626'>{_md9b}·涨概率{int(_h9b.get('p_up') or 0)}%·盈亏比{float(_h9b.get('rr') or 0):.1f}"
-            f"·空间约+{_ups9b:.0f}%</b> "
-            f"<span style='font-size:12px'>{_badge9b}</span>"
-            f"<br><span style='font-size:12px;color:#475569'>└ 技术面:{(_stg9b + '、') if _stg9b else ''}"
-            f"{_md9b}(时机绿灯)；基本面:{_fund9b}</span></div>")
-    if _brk9:
-        _buy_rows9 = []
-    _gate_note9 = "、".join(f"{_k}×{_v}" for _k, _v in _gate_skips9.items())
-    # 【V88·推荐必带实盘成功率 2026-07-20 用户定纲"推荐个股一定要加上成功率"】
-    # 标题旁挂这类推荐的到期核算真实命中率(非情景概率)——农业银行/埃克森"感觉一般"就是
-    # 情景概率还行但历史命中一般,把真实战绩摊开你才知道该信几分。样本<5如实说积累中。
-    _buy_rate9 = _v88_rate_line9("entry_green", "同类买点")
-    _html.append("<div style='margin:4px 0 2px;border-top:1px dashed #e2e8f0;padding-top:4px'>"
-                 "<b style='font-size:13px;color:#dc2626'>🐉 现在可买·当天/本周</b>"
-                 "<span style='font-size:12px;color:#94a3b8'>（严选五闸:概率≥65·盈亏比≥1.5·无周期冲突"
-                 "·大盘顺风·非双榜拥挤＋空间≥10%＋战绩熔断——宁可少推不可错推）</span>"
-                 + (f"<div style='font-size:12px;color:#0369a1;margin:2px 0'>{_buy_rate9}</div>"
-                    if _buy_rate9 else "")
-                 + "："
-                 + ("".join(_buy_rows9[:5]) if _buy_rows9
-                    else ("<span style='font-size:13px;color:#475569'>"
-                          + (f"⛔ {_brk9}" if _brk9
-                             else "今天没有过五闸的买点——空仓等待也是决策，别为了买而买")
-                          + "</span>"))
-                 + ((f"<div style='font-size:12px;color:#94a3b8'>严选拦下：{_gate_note9}"
-                     + (f"；另{_skip_buy9}只空间&lt;10%" if _skip_buy9 else "")
-                     + "（完整候选在下方双门模块，被拦≠看空，只是把握不够不进推送）</div>")
-                    if (_gate_skips9 or _skip_buy9) else "")
-                 + "</div>")
-    # ── ③b 计划做T（2026-07-20 用户定纲：做T可以，但把握分≥90才推、最多3只、必须明标"计划做T"） ──
-    try:
-        _tps9, _tnote9 = _v88_t_plan9(_repo)
-        _html.append("<div style='margin:2px 0'>"
-                     "<b style='font-size:13px;color:#b45309'>🔁 计划做T·当日往返</b>"
-                     f"<span style='font-size:12px;color:#94a3b8'>（{_tnote9}）</span>："
-                     + ("　".join(
-                         f"<b style='color:#b45309'>【计划做T】</b>{_stk_link(t['name'], t['code'])}"
-                         f"<b style='color:#b45309'>把握{t['score']}分</b>"
-                         f"<span style='font-size:12px;color:#64748b'>·{t['why']}</span>"
-                         for t in _tps9) if _tps9
-                        else "<span style='font-size:13px;color:#475569'>今日无把握分≥90的做T机会——"
-                             "做T宁缺毋滥,把握不足不硬凑</span>")
-                     + (f"<div style='font-size:12px;color:#94a3b8'>纪律：{_V88_T_RULE9}</div>" if _tps9 else "")
-                     + "</div>")
-    except Exception:
-        pass
-    _html.append(f"<div style='font-size:12px;color:#94a3b8;margin-top:2px'>🚪 展开看细节：双门决断模块"
-                 f"（⚔️先躲{len(_cut)}只｜🐉绿灯{len(_go)}只·含卡片证据链）、三档关注、持仓/自选决策台</div>")
-    # 【瘦身2026-07-27】纪律行已去重——顶部📣指令牌📏一处呈现
-    _html.append("</div>")
-    # 【2026-08-01 用户裁撤】一屏决断卡与行动中心表/三层总览/卖减表全量重复(四档预判同源、
-    # 卖警同源、可买同源)——零token模块,按用户"没什么用就删除"gate渲染;构建保留(改回一行即恢复)。
-    _V88_ONE_SCREEN_UI = False
-    if _V88_ONE_SCREEN_UI:
-        st.markdown("".join(_html), unsafe_allow_html=True)
-
-    # 【V88·双门决断独立模块 2026-07-19 用户定纲】左半=⚔️地狱门(先躲)、右半=🐉龙虎门(上攻)，
-    # 两门内部都按中美港三部分分列(与自选台/黑马台同构)；文字名单+卡片细看(自选台同款决策卡,
-    # 今天锚点+2/4/8/16/32周走势条)+统一战绩总账成功率+🎯高把握分档+命中<50%自动收紧。
-    try:
-        def _gate_tighten9(_key9t):
-            _t9t = (_v88_success9().get("types") or {}).get(_key9t) or {}
-            if _t9t.get("rate") is not None and int(_t9t["rate"]) < 50:
-                return "——⚠️近期命中偏低，只执行🎯高把握档，其余仅观察"
-            return ""
-
-        def _gate_mkey9(_d9g):
-            _m9g = str(_d9g.get("market") or "")
-            if not any(k in _m9g for k in ("美股", "港股", "A股")):
-                try:
-                    _m9g = market_of_code(str(_d9g.get("code") or "")) or ""
-                except Exception:
-                    _m9g = ""
-            return ("🇺🇸美股" if "美股" in _m9g else
-                    "🇭🇰港股" if "港股" in _m9g else
-                    "🇨🇳A股" if "A股" in _m9g else "🌐其他")
-        _MKS9 = ("🇺🇸美股", "🇭🇰港股", "🇨🇳A股", "🌐其他")
-
-        def _gate_sections9(_groups9):
-            """市场分组卡片→黑马台同构 section 列（半栏内单列堆叠）。"""
-            _secs9 = []
-            for _mk9s in _MKS9:
-                _its9 = _groups9.get(_mk9s) or []
-                if _its9:
-                    _secs9.append(f'<section class="v88-watch-market"><h4>{_mk9s} '
-                                  f'<span>{len(_its9)}只</span></h4>' + "".join(_its9) + '</section>')
-            return ('<div class="v88-watch-grid" style="grid-template-columns:1fr">'
-                    + "".join(_secs9) + '</div>')
-        if _V88_GATES_UI:   # 2026-07-31 用户裁定:双门版面撤(记档/台账反向核算照跑,卖警已入3A否决链)
-            st.markdown("##### 🚪 双门决断 · ⚔️地狱门（先躲） ⟷ 🐉龙虎门（上攻）"
-                        "<span style='font-size:12px;color:#94a3b8'>　预测主力模块·中美港分列·战绩到期对账</span>",
-                        unsafe_allow_html=True)
-            _colGG9, _colLH9 = st.columns(2)
-
-            # ── 左半：⚔️ 地狱门 ─────────────────────────────
-            with _colGG9:
-                st.markdown(f"<div style='background:#f0fdf4;border-left:4px solid #16a34a;border-radius:8px;"
-                            f"padding:.4rem .6rem;margin-bottom:4px'><b style='color:#16a34a'>"
-                            f"⚔️ 地狱门 · 拐点/破位先躲</b>（持仓+自选 {len(_cut)} 只·技术+消息双源）</div>",
-                            unsafe_allow_html=True)
-                st.caption((_v88_rate_line9("gate_guard", "地狱门警示")
-                            or "📊 地狱门警示实盘成功率：样本积累中（警示后≥3天下跌=躲对了，反向口径）")
-                           + _gate_tighten9("gate_guard"))
-                if _cut:
-                    # 文字名单·按市场分列（全量不截断）
-                    _cut_mk9 = {}
-                    for _k9c, _v9c in sorted(_cut.items(), key=lambda x: -x[1][1]):
-                        _cut_mk9.setdefault(_gate_mkey9({"code": _v9c[2],
-                                                         "market": (_cut_d.get(_k9c) or {}).get("market")}),
-                                            []).append(
-                            f"{_stk_link(_k9c, _v9c[2] or _k9c)}<b style='color:#16a34a'>{_v9c[0]}</b>"
-                            + (f"<span style='font-size:12px;color:#94a3b8'>({_v9c[3]})</span>"
-                               if len(_v9c) > 3 and _v9c[3] else ""))
-                    _cut_rows9 = "".join(
-                        f"<div style='font-size:13px;margin-bottom:2px'><b>{_mk9s}</b>："
-                        + "、".join(_cut_mk9[_mk9s]) + "</div>"
-                        for _mk9s in _MKS9 if _cut_mk9.get(_mk9s))
-                    st.markdown(_cut_rows9
-                                + "<div style='font-size:12px;color:#94a3b8'>💼持仓按纪律减/走，👁自选别接刀；"
-                                  "括号=10字原因（优先新闻归因）</div>", unsafe_allow_html=True)
-                    _gg_groups9, _gg_miss9 = {}, []
-                    for _k9c, _v9c in sorted(_cut.items(), key=lambda x: -x[1][1]):
-                        _dd9c = _cut_d.get(_k9c)
-                        if not _dd9c:
-                            _gg_miss9.append(_k9c)   # 禁静默截断:配不到实时数据的如实列名
-                            continue
-                        _gg_groups9.setdefault(_gate_mkey9(_dd9c), []).append(
-                            f'<div style="border-left:4px solid #16a34a;border-radius:8px;'
-                            f'background:#f0fdf4;padding:2px 0 2px 6px;margin-bottom:6px">'
-                            f'<div style="font-size:12px;font-weight:700;color:#16a34a;'
-                            f'padding:2px 0 0 4px">'
-                            + ("🎯高把握·" if float(_v9c[1] or 0) >= 60 else "")
-                            + f'⚔️ {_v9c[0]}（{_v9c[3]}）</div>'
-                            + _v88_decision_card(_dd9c) + '</div>')
-                    if _gg_groups9 or _gg_miss9:
-                        with st.expander(f"⚔️ 卡片细看（{sum(len(v) for v in _gg_groups9.values())} 只·完整证据链）",
-                                         expanded=False):
-                            st.caption("🎯高把握=下行概率≥60，已按严重度排序｜走势条=今天→2/4/8/16/32周")
-                            if _gg_groups9:
-                                st.markdown(_V88_CARD_CSS + _gate_sections9(_gg_groups9),
-                                            unsafe_allow_html=True)
-                            if _gg_miss9:
-                                st.caption("以下 " + str(len(_gg_miss9)) + " 只本轮session未覆盖实时计算，"
-                                           "暂无卡片（下轮刷新自动补齐）：" + "、".join(_gg_miss9))
-                else:
-                    # 【V88·空档必给原因 2026-07-24 用户抓"没上榜也没说明"】亮门槛+离警示最近的持仓/自选
-                    _gg_near9 = sorted(
-                        [d for d in ((st.session_state.get("watch_alerts_v88") or {}).get("decisions") or [])
-                         if int(d.get("p_down") or 0) >= 40],
-                        key=lambda d: -int(d.get("p_down") or 0))[:3]
-                    _gg_near_txt9 = ("；下行概率最高：" + "、".join(
-                        f"{_stk_link(d.get('name'), d.get('code'))}(下行{int(d.get('p_down') or 0)}%)" for d in _gg_near9)
-                        + "——未达警示条件，先观察" if _gg_near9 else "")
-                    st.markdown("<span style='font-size:12px;color:#64748b'>今日无拐点/破位警示"
-                                "（门槛:破位/顶拐/个股利空/破止损/减仓动作,当前持仓自选无一触发）"
-                                + _gg_near_txt9 + "。大盘偏弱时个股信号可能滞后，防区间看决断卡🔮四档预判。</span>",
-                                unsafe_allow_html=True)
-
-            # ── 右半：🐉 龙虎门 ─────────────────────────────
-            with _colLH9:
-                st.markdown(f"<div style='background:#fef2f2;border-left:4px solid #dc2626;border-radius:8px;"
-                            f"padding:.4rem .6rem;margin-bottom:4px'><b style='color:#dc2626'>"
-                            f"🐉 龙虎门 · 上攻关注</b>（严门槛绿灯 {len(_go)} 只·技术时机+消息加持）</div>",
-                            unsafe_allow_html=True)
-                # 【V88·胜率闭环 2026-07-18】绿灯旁挂实盘对账(近30日到期核算,1小时session缓存)
-                _esb9 = st.session_state.get("_entry_sb9")
-                import time as _tsb9
-                if not _esb9 or _tsb9.time() - float(_esb9.get("ts") or 0) > 3600:
-                    try:
-                        import sys as _sys9b
-                        if str(_repo / "src") not in _sys9b.path:
-                            _sys9b.path.insert(0, str(_repo / "src"))
-                        from entry_scoreboard import score as _esb_score9
-                        _s9 = _esb_score9(30)
-                        _esb9 = {"ts": _tsb9.time(), "n": _s9["n"], "right": _s9["right"],
-                                 "avg": (round(sum(_r["chg_pct"] for _r in _s9["rows"]) / _s9["n"], 1)
-                                         if _s9["n"] else 0.0)}
-                    except Exception:
-                        _esb9 = {"ts": _tsb9.time(), "n": 0}
-                    st.session_state["_entry_sb9"] = _esb9
-                _esb_txt9 = ""
-                if _esb9.get("n"):
-                    _rate9 = round(100 * _esb9["right"] / _esb9["n"])
-                    _esb_txt9 = (f"｜近30日同类绿灯{_esb9['n']}次·命中{_rate9}%·均{_esb9['avg']:+.1f}%"
-                                 "（出处:入场日志到期核算）"
-                                 + ("——命中偏低，只挑与板块相位共振的执行" if _rate9 < 45 else ""))
-                st.caption((_v88_rate_line9("entry_green", "入场绿灯")
-                            or "📊 入场绿灯实盘成功率：样本积累中")
-                           + _gate_tighten9("entry_green") + _esb_txt9)
-                if _go:
-                    # 【V88·名单清爽化 2026-07-20 用户点单"一定要这么乱的排列么"】名单只留名字+涨概率,
-                    # 触线MA55/52周低位等技术细节+热议全部移到下方「卡片细看」——名单一眼扫完不糊成一片。
-                    _go_mk9 = {}
-                    for _h9c in _go:
-                        _pu9c = int(_h9c.get("p_up") or 0)
-                        _pc9c = "#dc2626" if _pu9c >= 60 else ("#16a34a" if _pu9c <= 45 else "#64748b")
-                        _go_mk9.setdefault(_gate_mkey9(_h9c), []).append(
-                            f"{_stk_link(_h9c.get('name'), _h9c.get('code'))}"
-                            + (f"<span style='font-size:12px;color:{_pc9c}'>{_pu9c}%</span>" if _pu9c else ""))
-                    # 【V88·统一裁决 2026-07-25 用户定纲"逻辑和说明要统一"】覆巢之下无完卵:
-                    # 偏弱/拐点市场的绿灯=⏸️逆势单,只留档跟踪不作执行建议;过热市场🔶限回踩不追高;
-                    # 良性/中性市场无绿灯→报领涨引擎(涨是个股涨出来的,说清谁在撑指数)。一把尺=_v88_mkt_gate9x。
-                    _mgate9 = _v88_mkt_gate9x(_repo)
-                    _MKMAP9g = {"🇺🇸美股": "美股", "🇨🇳A股": "A股", "🇭🇰港股": "港股"}
-
-                    def _mk_head9g(_mk9s):
-                        _g9g = _mgate9.get(_MKMAP9g.get(_mk9s, _mk9s)) or {}
-                        if not _g9g:
-                            return f"<b>{_mk9s}</b>"
-                        _pc9g = {"weak": "#16a34a", "hot": "#b45309", "up": "#dc2626", "mid": "#64748b"}[_g9g["state"]]
-                        return (f"<b>{_mk9s}</b><span style='font-size:11px;color:#94a3b8'>"
-                                f"(2周{_g9g.get('p2w', '?')}%·{_g9g.get('temp', '?')}°)</span>"
-                                f"<span style='font-size:11px;color:{_pc9g}'>{_g9g['policy']}</span>")
-                    _go_rows9 = ""
-                    for _mk9s in _MKS9:
-                        _items9g = _go_mk9.get(_mk9s)
-                        _g9g = _mgate9.get(_MKMAP9g.get(_mk9s, _mk9s)) or {}
-                        if _items9g:
-                            # 偏弱市场绿灯整行降灰=留档不执行;其余正常
-                            _dim9g = _g9g.get("state") == "weak"
-                            _go_rows9 += (f"<div style='font-size:13px;margin-bottom:2px;"
-                                          f"{'opacity:.55' if _dim9g else ''}'>{_mk_head9g(_mk9s)}："
-                                          + " ".join(_items9g)
-                                          + ("<span style='font-size:11px;color:#64748b'>（逆势单·不执行,"
-                                             "大盘回中性自动转正式绿灯）</span>" if _dim9g else "") + "</div>")
-                        else:
-                            _cutn9g = sum(1 for _n9g in _cut if _gate_mkey9(_cut_d.get(_n9g) or {}) == _mk9s)
-                            _lead9g = _g9g.get("leaders")
-                            _go_rows9 += (f"<div style='font-size:12px;color:#94a3b8'>{_mk_head9g(_mk9s)}："
-                                          f"0只绿灯" + (f"·{_cutn9g}只在地狱门警示" if _cutn9g else "")
-                                          + (f"——与大盘态一致(弱市无买点=系统统一口径)" if _g9g.get("state") == "weak"
-                                             else (f"——撑指数的领涨引擎:{_lead9g};池内无票达买点,"
-                                                   "可在③埋伏/全行业雷达找对应板块低位票" if _lead9g else "")) + "</div>")
-                    st.markdown(_go_rows9
-                                + "<div style='font-size:12px;color:#94a3b8'>数字=1-2周涨概率·触线/热议等细节见下方卡片细看；仓位按纲领别越线</div>",
-                                unsafe_allow_html=True)
-                    _go_sorted9 = sorted(_go, key=lambda h: -(int(h.get("p_up") or 0)
-                                                              + (8 if float(h.get("rr") or 0) >= 1.5 else 0)))
-                    _lh_groups9 = {}
-                    for _h9c in _go_sorted9:
-                        _lh_groups9.setdefault(_gate_mkey9(_h9c), []).append(
-                            f'<div style="border-left:4px solid #dc2626;border-radius:8px;'
-                            f'background:#fef2f2;padding:2px 0 2px 6px;margin-bottom:6px">'
-                            f'<div style="font-size:12px;font-weight:700;color:#dc2626;'
-                            f'padding:2px 0 0 4px">'
-                            + ("🎯高把握·" if (int(_h9c.get("p_up") or 0) >= 60
-                                            and float(_h9c.get("rr") or 0) >= 1.5) else "")
-                            + f'🐉 {_h9c.get("_src", "")} 上攻关注'
-                            f'{_v88_hot_note9(_h9c.get("code"))}</div>'
-                            + _v88_decision_card(_h9c) + '</div>')
-                    with st.expander(f"🐉 卡片细看（{len(_go)} 只·与自选台同款走势条）", expanded=False):
-                        st.caption("🎯高把握=2周上涨概率≥60且盈亏比≥1.5，已按把握度排序｜走势条=今天→2/4/8/16/32周")
-                        st.markdown(_V88_CARD_CSS + _gate_sections9(_lh_groups9), unsafe_allow_html=True)
-                else:
-                    st.caption("今日无严门槛绿灯——空仓等待也是决策（现金也是仓位）")
-                if _dropped:
-                    _dr_txt = "、".join(
-                        f"{_stk_link(_n9, _c9)}<span style='font-size:12px;color:#94a3b8'>（{_dt9}在榜·{_w9}）</span>"
-                        for _n9, _c9, _dt9, _w9 in _dropped[:6])
-                    st.markdown("<div style='font-size:12px;margin-top:2px'>⬇️ <b style='color:#64748b'>下榜说明</b>："
-                                + _dr_txt +
-                                "<span style='color:#94a3b8'>——下榜=窗口关闭或条件变化；已进场的按原计划执行，不是翻案</span></div>",
-                                unsafe_allow_html=True)
-    except Exception:
-        pass
-
-    # 【V88·即将调整提醒·双向+全池 2026-07-24 用户点单"低谷转强也要+个股在最全960只池里筛"】
-    # ⚠️转弱(顶拐/退潮)+🌱转强(低谷→启动)双向对仗;数据源优先全池扫描缓存(676-1300只),
-    # 无缓存退持仓自选池(如实标池子大小)+给扫描按钮。空市场也给原因(空白无说明铁律)。
-    try:
-        _traj_all9w = ((_snap or {}).get("rotation_forecast") or {}).get("trajectories") or {}
-        _full9w = _v88_phase_turn_full9(_repo)
-        _slot_now9w = _v88_phase_slot9()
-        _slot_name9w = {"cn-am": "A/港早盘档", "cn-pm": "A/港尾盘档", "us": "美股盘档"}.get(
-            _slot_now9w[11:], _slot_now9w)   # 槽形如"2026-07-24-cn-am",日期固定10字符+1个"-"
-        if _full9w and _full9w.get("stocks"):
-            _src_st9w = _full9w["stocks"]
-            _stale_slot9w = _full9w.get("slot") != _slot_now9w
-            _pool_tag9w = (f"全市场大池{_full9w.get('scanned')}只·扫描于{_full9w.get('generated_at')}"
-                           f"·当前{_slot_name9w}"
-                           + ("·<b style='color:#b45309'>新时段后台刷新中,先显示上一时段</b>"
-                              if _stale_slot9w else "·本时段已最新"))
-            # 【V88·三时段自动刷新 2026-07-24 用户点单"一天盘中三次,中美港时段不同"】
-            # 槽变→daemon线程后台重扫(不卡页面),标记文件防重复起(30分钟内只起一个)。
-            if _stale_slot9w:
-                _flag9w = _repo / "data" / "phase_turn_scanning.flag"
-                _flag_ok9w = True
-                try:
-                    if _flag9w.exists() and time.time() - float(_flag9w.read_text().strip() or 0) < 1800:
-                        _flag_ok9w = False
-                except Exception:
-                    pass
-                if _flag_ok9w:
-                    try:
-                        _flag9w.write_text(str(time.time()))
-                        import threading as _th9w
-
-                        def _bg_scan9w():
-                            try:
-                                _v88_phase_turn_full9(_repo, force=True)
-                            finally:
-                                try:
-                                    _flag9w.unlink()
-                                except Exception:
-                                    pass
-                        _th9w.Thread(target=_bg_scan9w, daemon=True).start()
-                    except Exception:
-                        pass
-        else:
-            _src_st9w = ((_snap or {}).get("cycle_scan") or {}).get("stocks") or []
-            _pool_tag9w = f"当前池=持仓+自选{len(_src_st9w)}只·点下方按钮扫全市场大池"
-
-        def _mkt_of_code9w(code):
-            _c = str(code or "").upper()
-            if _c.endswith(".HK") or (_c.isdigit() and len(_c) in (4, 5)):
-                return "🇭🇰港股"
-            if _c.endswith((".SS", ".SZ", ".SH", ".BJ")) or (_c.isdigit() and len(_c) == 6):
-                return "🇨🇳A股"
-            return "🇺🇸美股"
-        _dir_mk9w = {"down": {"🇺🇸美股": [], "🇨🇳A股": [], "🇭🇰港股": []},
-                     "up": {"🇺🇸美股": [], "🇨🇳A股": [], "🇭🇰港股": []}}
-        for _s9w in _src_st9w:
-            _d9wv = str(_s9w.get("direction") or "")
-            if _d9wv in ("up", "down"):
-                _dir_mk9w[_d9wv][_mkt_of_code9w(_s9w.get("code"))].append(_s9w)
-
-        def _cell9w(_s):
-            _extra9w = (f"·1-2周涨概率{int(_s['p_up'])}%" if _s.get("p_up") is not None
-                        else (f"·强度{_s.get('strength')}" if _s.get("strength") is not None else ""))
-            return (f"{_stk_link(_s.get('name'), _s.get('code'))}"
-                    f"<span style='font-size:12px;color:#64748b'>({_s.get('phase')}"
-                    f"·{_s.get('confidence')}置信{_extra9w})</span>")
-
-        def _side_rows9w(_dirkey9w, _sec_kw9w, _sec_lbl9w, _empty_msg9w):
-            _rows9w = []
-            for _mk9w, _plain9w in (("🇺🇸美股", "美股"), ("🇨🇳A股", "A股"), ("🇭🇰港股", "港股")):
-                _ds9w = sorted(_dir_mk9w[_dirkey9w].get(_mk9w) or [],
-                               key=lambda s: ({"高": 0, "中": 1, "低": 2}.get(str(s.get("confidence")), 3),
-                                              -float(s.get("strength") or 0)))
-                _shown9w = _ds9w[:8]
-                _more9w = (f"<span style='font-size:12px;color:#94a3b8'>等{len(_ds9w)}只(全量在周期总览)</span>"
-                           if len(_ds9w) > 8 else "")
-                _st_txt9w = ("、".join(_cell9w(_s) for _s in _shown9w) + _more9w) if _ds9w else \
-                    f"<span style='color:#94a3b8'>{_empty_msg9w}</span>"
-                _sec9w = [f"{_t.get('name')}(拐点{(_t.get('turning') or {}).get('horizon')})"
-                          for _t in (_traj_all9w.get(_plain9w) or [])
-                          if _sec_kw9w in str((_t.get("turning") or {}).get("type"))]
-                _sec_txt9w = (f"｜<b>板块{_sec_lbl9w}</b>:" + "、".join(_sec9w)) if _sec9w \
-                    else f"｜板块:无{_sec_lbl9w}拐点"
-                _rows9w.append(f"<div style='font-size:12.5px;margin:1px 0'><b>{_mk9w}</b> {_st_txt9w}"
-                               f"<span style='font-size:12px;color:#b45309'>{_sec_txt9w}</span></div>")
-            return "".join(_rows9w)
-        st.markdown(
-            "<div style='background:#fffbeb;border:1px solid #f59e0b44;border-left:4px solid #f59e0b;"
-            "border-radius:8px;padding:.45rem .7rem;margin:.3rem 0'>"
-            "<b style='font-size:13px'>⚠️ 即将转弱 · 个股顶拐/退潮＋板块顶部拐点</b>"
-            f"<span style='font-size:12px;color:#94a3b8'>（{_pool_tag9w}）</span>"
-            + _side_rows9w("down", "顶部转弱", "顶部转弱",
-                           "暂无顶拐/退潮信号（门槛:相位切换=向下,该市场无一触发——相位未到不硬报）")
-            + "</div>"
-            "<div style='background:#f0fdf4;border:1px solid #16a34a44;border-left:4px solid #16a34a;"
-            "border-radius:8px;padding:.45rem .7rem;margin:.3rem 0'>"
-            "<b style='font-size:13px'>🌱 即将转强 · 个股低谷→启动＋板块底部拐点</b>"
-            "<span style='font-size:12px;color:#94a3b8'>（与转弱同池同口径·转强≠立刻买,配合龙虎门时机绿灯）</span>"
-            + _side_rows9w("up", "底部转强", "底部转强",
-                           "暂无低谷转强信号（门槛:相位切换=向上,该市场无一触发——底未到不硬报）")
-            + "</div>", unsafe_allow_html=True)
-        if st.button("🔭 全市场大池双向扫描（约676-1300只·首扫5-15分钟·6小时缓存）",
-                     key="btn_phase_turn_full9"):
-            _v88_usage9(_repo, "全池相位扫描")
-            with st.spinner("全池扫描中…8线程并发,首扫慢缓存热则快"):
-                _v88_phase_turn_full9(_repo, force=True)
-            st.rerun()
-    except Exception:
-        _v88_sentinel9(_repo, "即将调整提醒")
+        logging.exception("下一交易日联动观察加载失败")
+        st.warning("联动观察暂未完成数据核验，请查看3A中央列表；原评级和交易条件继续保留。")
 
 
 def _render_l3_cycle_board(_snap, _is_trading):
@@ -16689,20 +14235,17 @@ def _render_today_nav():
 
     # 【V88·非交易日判定】周末/节假日：无"今日盘中"，改看"下一交易日前瞻"
     def _v88_is_trading_day(_d=None):
-        from datetime import datetime as _dtt
-        _d = _d or _dtt.now().date()
-        if _d.weekday() >= 5:
-            return False
-        try:
-            _hol = {ln.strip().split()[0] for ln in (_repo / "holidays.txt").read_text(encoding="utf-8").splitlines()
-                    if ln.strip() and not ln.strip().startswith("#")}
-            if _d.strftime("%Y-%m-%d") in _hol:
-                return False
-        except Exception:
-            pass
-        return True
+        from exchange_sessions import is_session
+        from datetime import date
+        try:return any(is_session(_d or date.today(),market) for market in ('A股','港股','美股'))
+        except ValueError:return False
 
     _is_trading = _v88_is_trading_day()
+    try:
+        from exchange_sessions import next_labels
+        st.caption("三地下一交易日（当地日期）："+next_labels())
+    except ValueError:
+        st.caption("新年度交易所日历待核对；不推断交易日期。")
 
     # 【V88·防跳动 2026-07-21 用户点单"页面老跳动"】原30分钟自动整页重跑=阅读中突然跳回顶部。
     # 改为：数据过期时 fragment 原地亮一个"点此更新"按钮（只动这一小块，不打断阅读），
@@ -16722,181 +14265,14 @@ def _render_today_nav():
             pass
     _auto_refresh_tick9()
 
-    # 【V99.7】及时性保障：快照/日报文件超过1小时 → 后台自动重跑生成流水线
-    # （launchd 定时之外的兜底：只要打开 V88 就能触发，1小时节流防重复）
-    # 交易日兜底跑完整流水线；非交易日兜底只生成前瞻 outlook.md
+    # Viewing/refreshing a page reads published results only. Scheduled
+    # maintenance owns collection/review; never launch the legacy report/push
+    # shell from a stale file mtime or a browser session.
     _stale_note = ""
-    try:
-        _watch_fp = (_repo / "data" / ("daily_report.md" if _is_trading else "outlook.md"))
-        _mts = [fp.stat().st_mtime for fp in (_repo / "data" / "market_snapshot.json", _watch_fp) if fp.exists()]
-        _age = (time.time() - max(_mts)) if _mts else None
-        _thresh = 3600 if _is_trading else 6 * 3600  # 非交易日前瞻低频，6小时兜底足矣
-        if _age is None or _age > _thresh:
-            _mk99 = SCAN_CACHE_DIR / "nav_refresh_last.txt"
-            _last99 = 0.0
-            if _mk99.exists():
-                try:
-                    _last99 = float(_mk99.read_text().strip() or 0)
-                except Exception:
-                    _last99 = 0.0
-            if time.time() - _last99 > _thresh:
-                SCAN_CACHE_DIR.mkdir(parents=True, exist_ok=True)
-                _mk99.write_text(str(time.time()))
-                import subprocess as _sp99
-                if _is_trading:
-                    _sp99.Popen(["/bin/bash", str(_repo / "run_trading_day_push.sh")],
-                                stdout=_sp99.DEVNULL, stderr=_sp99.DEVNULL, start_new_session=True)
-                else:
-                    _env99 = dict(os.environ, FEISHU_WEBHOOK="")  # 页面兜底不重复推飞书
-                    _sp99.Popen(["python3", str(_repo / "src" / "outlook_report.py")],
-                                cwd=str(_repo), env=_env99,
-                                stdout=_sp99.DEVNULL, stderr=_sp99.DEVNULL, start_new_session=True)
-            _stale_note = (" ｜ ⏳ 数据已超时，正在后台重新生成（约1-2分钟，稍后刷新页面即最新）"
-                           if _is_trading else " ｜ ⏳ 前瞻正在后台生成（约1-2分钟，稍后刷新）")
-    except Exception:
-        pass
 
-    st.markdown("### 🧭 今日导航 · 该关注什么" if _is_trading else "### 🔮 下一交易日前瞻 · 非交易日看这里")
+    # The linked observation board supplies its own single section title.
 
-    # 【V88·系统健康条】（2026-07-16 用户点单）一眼看整个系统在正常运转还是哪里卡了：
-    # 数据新鲜度 / AI预算 / 三端同步 / 云端在线。10分钟缓存，不拖首屏。
-    try:
-        _hb = st.session_state.get("_sys_health9")
-        if not _hb or time.time() - _hb.get("ts", 0) > 600:
-            _hb = {"ts": time.time()}
-            # 数据新鲜度
-            try:
-                _snap_age = (time.time() - (_repo / "data" / "market_snapshot.json").stat().st_mtime) / 60
-                _hb["data_min"] = int(_snap_age)
-            except Exception:
-                _hb["data_min"] = None
-            # 三端同步：决策核心两端逐字节
-            try:
-                import hashlib as _hl9
-                _a = _hl9.sha256((Path.cwd() / "v88_decision_core.py").read_bytes()).hexdigest()
-                _b = _hl9.sha256((_repo / "src" / "v88_decision_core.py").read_bytes()).hexdigest()
-                _hb["core_sync_ok"] = (_a == _b)
-            except Exception:
-                _hb["core_sync_ok"] = None
-            # 控制面真相：版本、冲突、周报与事实闸。文件哈希相同不代表仓库同步。
-            try:
-                _hg9 = json.loads((_repo / "data" / "health_gate.json").read_text(encoding="utf-8"))
-                _cp9 = _hg9.get("control_plane") or {}
-                _hb["control"] = _cp9
-                _hb["sync_ok"] = (bool(_cp9.get("in_sync"))
-                                  and not int(_cp9.get("unresolved_count") or 0)
-                                  and _hb.get("core_sync_ok") is not False)
-                _hb["degraded"] = bool(_hg9.get("degraded"))
-                _hb["degraded_reasons"] = list(_hg9.get("reasons") or [])
-            except Exception:
-                _hb["control"] = {}
-                _hb["sync_ok"] = False
-                _hb["degraded"] = True
-                _hb["degraded_reasons"] = ["健康闸不可读"]
-            # AI预算只读预算真相账，禁止再用桌面进程自己的局部计数冒充实付。
-            try:
-                _bt9 = json.loads((_repo / "data" / "budget_truth.json").read_text(encoding="utf-8"))
-                _hb["budget"] = round(float(_bt9.get("real_month_spent") or 0), 2)
-                _hb["budget_cap"] = float(_bt9.get("budget_cap") or 10)
-                _hb["budget_projection"] = float(_bt9.get("month_projection") or 0)
-            except Exception:
-                _hb["budget"] = None
-            # 云端在线：/_stcore/health 返回200=在线，303=被登录墙挡(保活失效)，超时=挂了
-            try:
-                import requests as _rq9
-                _r9 = _rq9.get("https://stockai-v88.streamlit.app/_stcore/health",
-                               timeout=8, allow_redirects=False)
-                _hb["cloud"] = ("online" if _r9.status_code == 200 else
-                                ("walled" if _r9.status_code in (302, 303, 307) else "down"))
-            except Exception:
-                _hb["cloud"] = "down"
-            st.session_state["_sys_health9"] = _hb
-        # 渲染
-        _parts9 = []
-        _dm = _hb.get("data_min")
-        if _dm is not None:
-            _parts9.append((f"📊 数据{_dm}分钟前" if _dm < 90 else f"⚠️ 数据{_dm//60}小时前偏旧",
-                            "#16a34a" if _dm < 90 else "#ea580c"))
-        _bd = _hb.get("budget")
-        if _bd is not None:
-            _bc = float(_hb.get("budget_cap") or 10)
-            _bp = _bd / _bc * 100 if _bc else 100
-            _parts9.append((f"🧮 AI实付{_bd}/{_bc:g}元", "#dc2626" if _bp >= 95 else ("#ea580c" if _bp >= 80 else "#64748b")))
-        _sy = _hb.get("sync_ok")
-        if _sy is not None:
-            _parts9.append(("🔗 三端同步✓" if _sy else "🔗 三端漂移⚠️", "#16a34a" if _sy else "#dc2626"))
-        _cl = _hb.get("cloud")
-        _cl_txt = {"online": ("☁️ 云端在线", "#16a34a"),
-                   "walled": ("☁️ 云端被登录墙挡·保活失效", "#dc2626"),
-                   "down": ("☁️ 云端离线·需重启", "#dc2626")}.get(_cl)
-        if _cl_txt:
-            _parts9.append(_cl_txt)
-        if _hb.get("degraded"):
-            _whyh9 = "；".join(str(x) for x in (_hb.get("degraded_reasons") or [])[:2])
-            _parts9.append((f"⛔ 决策降级：{_whyh9}", "#dc2626"))
-        # 【V88·异常哨兵 2026-07-24】今日被吞渲染异常计数——不再让模块静默消失
-        try:
-            _re9h = json.loads((_repo / "data" / "render_errors.json").read_text(encoding="utf-8"))
-            _tdy9h = datetime.now().strftime("%Y-%m-%d")
-            _err_tdy9 = [r for r in _re9h if str(r.get("ts", "")).startswith(_tdy9h)]
-            if _err_tdy9:
-                _mods9h = "、".join(sorted({str(r.get("module")) for r in _err_tdy9})[:3])
-                _parts9.append((f"🚨 哨兵:今日吞掉{len(_err_tdy9)}个异常({_mods9h})——跟我说一声即修",
-                                "#dc2626"))
-            else:
-                _parts9.append(("🛡️ 哨兵:今日零静默异常", "#16a34a"))
-        except Exception:
-            _parts9.append(("🛡️ 哨兵:待首个记录", "#94a3b8"))
-        st.markdown("🩺 " + " ｜ ".join(f"<span style='color:{c};font-weight:600'>{t}</span>"
-                                        for t, c in _parts9),
-                    unsafe_allow_html=True)
-        if _hb.get("cloud") in ("walled", "down"):
-            st.caption("云端异常：Streamlit Cloud 需人工在 share.streamlit.io 点 Reboot；"
-                       "若长期需保活，把该 App 的 Sharing 改为 Public（隐私仍由密码门+持仓Token保护，见下方说明）。")
-    except Exception:
-        pass
 
-    # 【V88·系统自省 2026-07-24 用户批准三层自愈B+C层】战绩提案待批+使用热力。
-    # 提案=战绩总账到期核算自动生成(零AI规则化),只列不执行——用户一句话批准才改规则(定纲红线)。
-    try:
-        _sr_d9 = {}
-        try:
-            _sr_d9 = json.loads((_repo / "data" / "self_review.json").read_text(encoding="utf-8"))
-        except Exception:
-            _sr_d9 = {}
-        _props9 = _sr_d9.get("proposals") or []
-        _usage_d9 = {}
-        try:
-            _usage_d9 = json.loads((_repo / "data" / "usage_log.json").read_text(encoding="utf-8"))
-        except Exception:
-            _usage_d9 = {}
-        _SIG_CN9 = {"entry_green": "入场绿灯", "darkhorse": "黑马池", "gate_guard": "地狱门警示",
-                    "relay": "涨停接力", "hot_dual": "双榜热股", "cycle_turn": "个股周期象限",
-                    "bottom_turn": "触底拐点", "ipo_hk": "港股打新"}
-        with st.expander(f"🧬 系统自省 · 待批改进提案 {len(_props9)} 条 ＋ 使用热力（三层自愈·2026-07-24启用）",
-                         expanded=bool(_props9)):
-            if _props9:
-                st.markdown("**📋 改进提案**（战绩到期核算自动生成·**回复我一句话批准才执行**，不批不动规则）")
-                for _p9s in _props9[:6]:
-                    st.markdown(f"- **{_SIG_CN9.get(_p9s.get('signal'), _p9s.get('signal'))}** "
-                                f"实盘命中{_p9s.get('rate')}%（n{_p9s.get('n')}）→ 提案：{_p9s.get('proposal')}")
-                st.caption(f"生成于 {_sr_d9.get('generated_at', '')} · 出处:统一战绩总账到期核算 · 每周一刷新")
-            else:
-                st.caption("📋 暂无待批提案——战绩样本到期后每周一自动体检，命中差的信号会在这里给改进方案等你批。")
-            from datetime import timedelta as _td9u
-            _days7 = [(datetime.now() - _td9u(days=_i9u)).strftime("%Y-%m-%d") for _i9u in range(7)]
-            _agg9u = {}
-            for _d9u in _days7:
-                for _e9u, _n9u in (_usage_d9.get(_d9u) or {}).items():
-                    _agg9u[_e9u] = _agg9u.get(_e9u, 0) + int(_n9u)
-            if _agg9u:
-                _top9u = sorted(_agg9u.items(), key=lambda x: -x[1])[:8]
-                st.caption("🖱️ 近7日使用热力（只存本机不上传）：" + "、".join(f"{k}×{v}" for k, v in _top9u)
-                           + "——长期零使用的模块我会主动提减法")
-            else:
-                st.caption("🖱️ 使用热力开始记录（点按钮/搜索会计数，只存本机不上传）")
-    except Exception:
-        _v88_sentinel9(_repo, "系统自省面板")
 
     # 【V88·轮动挂钩仓位】持仓/自选正好踩今日涨停主线 → 导航顶部醒目高亮（2026-07-16 用户点单）
     try:
@@ -16993,7 +14369,7 @@ def _render_today_nav():
                    or d.get("scope") in ("自选", "持仓")]
         if not _watch9:
             with _v88_watch_mod9:
-                st.info("⭐ 我的自选股决策台正在计算；完成后将在这里显示上涨/下跌概率与盈亏比。")
+                st.info("⭐ 我的自选股决策台正在计算；完成后将在这里显示规则方向分（非概率）与盈亏比。")
                 _render_front_watch_add9()
             return
 
@@ -17059,10 +14435,12 @@ def _render_today_nav():
         _pab_ts = _rep_planab_meta.get("ts")
         _pab_str = datetime.fromtimestamp(_pab_ts).strftime("%m-%d %H:%M") if _pab_ts else "—"
         _pab_issues = _rep_planab_meta.get("today_issues") or []
-        st.warning(f"🟡 Plan B当日安全版（{'；'.join(_pab_issues) or 'Plan A条件不足'}）· {_pab_str}生成。"
-                  f"内容来自今日新闻、今日快照及今日引擎榜单；所有标的仅作观察，不沿用历史日报。 · {_report_analysis_note9}")
+        _pab_sessions = " / ".join(f"{k} {v}" for k, v in (_rep_planab_meta.get("source_sessions") or {}).items()) or "见原件时间"
+        st.caption(f"🟡 最近完整交易日观察稿 · {_pab_str}生成 · 行情：{_pab_sessions}")
+        with st.expander("观察稿来源与限制", expanded=False):
+            st.caption(f"{'；'.join(_pab_issues) or '叙事证据尚未齐备'}。快照生成于 {_rep_planab_meta.get('source_snapshot_generated_at') or '见原件'}；标的仅作观察，生成报告不授予交易权限。{_report_analysis_note9}")
     elif _pab_status == "missing":
-        st.error(f"📭 今日Plan A与当天安全Plan B均未生成，下方暂无操作榜/评分数据，请等待本轮流水线完成。 · {_report_analysis_note9}")
+        st.error(f"📭 当前报告尚未通过来源与交易日核验，观察摘要暂不展示；中央评级以3A列表为准。 · {_report_analysis_note9}")
 
     # 【V88·非交易日前瞻置顶】把 outlook.md 前瞻正文醒目展示（个股名可点深度分析）
     if not _is_trading:
@@ -17072,77 +14450,30 @@ def _render_today_nav():
         except Exception:
             _outlook_md = ""
         if _outlook_md.strip():
-            st.markdown(_linkify_md(_outlook_md), unsafe_allow_html=True)
-            with st.popover("📋 复制前瞻"):
-                st.code(_outlook_md, language=None)
+            _outlook_current9 = datetime.now().strftime("%Y-%m-%d") in _outlook_md[:700]
+            with st.expander("🔮 下一交易日前瞻" if _outlook_current9 else "📁 历史前瞻·日期见原文·暂停执行用途", expanded=_outlook_current9):
+                st.markdown(_linkify_md(_outlook_md), unsafe_allow_html=True)
+                with st.popover("📋 复制前瞻"):
+                    st.code(_outlook_md, language=None)
         else:
-            st.info("🔮 下一交易日前瞻正在生成中，请稍后刷新页面。" + _stale_note)
+            st.info("暂无可展示的下一交易日前瞻；最近扫描进度见3A列表顶部。")
         st.divider()
         st.caption("下方为最近交易日的行情快照与温度定位（供延续参考）：")
     # 【V88·今日焦点】醒目置顶：重点推荐（引擎买入档）+ 重点观察（搜索过的个股）
     # 【模块可折叠】今日焦点整块折叠（默认展开）
-    if _V88_WATCHLIST_UI:   # 2026-07-31 用户令:删自选版面(数据池保留,仅撤显示)
-        with st.expander("⭐ 关注中心 · ①今日及本周 ②下周 ③本月及下月 三档双向(看涨/看跌+概率) + 高分榜 + 重点观察", expanded=True):
-            # 【V88·三档双向关注 2026-07-20 用户定纲】置于关注中心最顶：三档常在,每档看涨(龙虎门)+
-            # 看跌(鬼门关)双向,每只带导致涨/跌的事+成功概率标注;按交易日滚动,休市不喊今日。
-            try:
-                _render_four_tier_recos9(st.session_state.get('watch_alerts_v88') or {}, _repo, _is_trading)
-                st.markdown("<hr style='margin:4px 0;border:none;border-top:1px dashed #e2e8f0'>", unsafe_allow_html=True)
-            except Exception:
-                logging.debug("三档双向关注渲染失败", exc_info=True)
-                _v88_sentinel9(_repo, "三档双向关注")   # 【哨兵】曾静默崩半天,现在落盘显影
-            def _tok2code(tok):
-                tok = str(tok).strip("`[] ")
-                return tok.split(":", 1)[1] if ":" in tok else tok
-
-            try:
-                # 【V88·去重统一口径 2026-07-18 用户点单】原"⭐引擎买入档Top3"与今日总决断
-                # 「🟢可进场」是两套"今天买"(操作榜=75分+催化 vs 总决断=时机绿灯),口径不同造成
-                # 图一图二推荐打架——整块删除,全页"今天买"只留总决断绿灯一个口径(省渲染省流量)。
-                _pb_focus_lines = []
-                _iop = _rep.find("## 🎯 今日操作榜")
-                if _pab_status == "plan_b":
-                    _pb_sec = _rep[_rep.find("## 六、🔭 明日与本周参考"):]
-                    _pb_market = ""
-                    for _pbl in _pb_sec.splitlines():
-                        if _pbl.startswith("### "):
-                            _pb_market = _pbl.replace("### ", "").strip()
-                        elif "**观察个股**：" in _pbl:
-                            _pb_focus_lines.append(f"<b>{_pb_market}·机会观察</b>：{_pbl.split('**：', 1)[-1] if '**：' in _pbl else _pbl.split('：', 1)[-1]}")
-                        elif "**风险保护**：" in _pbl:
-                            _pb_focus_lines.append(f"<b>{_pb_market}·风险保护</b>：{_pbl.split('**：', 1)[-1] if '**：' in _pbl else _pbl.split('：', 1)[-1]}")
-                    st.info(f"⭐ **今日策略：不强制给买入指令，转为机会观察＋风险保护** · {_report_analysis_note9}")
-                    if _pb_focus_lines:
-                        st.markdown("<div style='line-height:1.75;font-size:12px'>" + "<br>".join(_pb_focus_lines) + "</div>", unsafe_allow_html=True)
-                # 【瘦身2026-07-27用户批准】高分榜已删(=操作榜Top3同数据第四次呈现:日报操作榜/行动中心/龙虎门已覆盖)
-                _wl9 = _watchlist_load() or {}
-                _obs = []
-                for _mk9, _lst9 in _wl9.items():
-                    for _c9, _n9 in list(_lst9)[-4:]:
-                        _obs.append((_n9, _c9))
-                if _obs:
-                    _wa9 = st.session_state.get('watch_alerts_v88') or {}
-                    _obs_html = "、".join(_stk_link(_n9, _c9) for _n9, _c9 in _obs[:12])
-                    st.markdown(
-                        f"👁 <b>重点观察个股</b>（搜索/点击即自动加入，移除在「自选股」Tab）：{_obs_html}"
-                        + (f" ｜ ⚡{len(_wa9.get('alerts') or [])} 条触发（见下方预警）" if _wa9.get('alerts') else ""),
-                        unsafe_allow_html=True)
-                    st.caption(_analysis_label9((_wa9 or {}).get("ts") or _report_analysis_ts9, "重点观察分析"))
-            except Exception:
-                pass
         # 【模块可折叠】使用指引与AI预算收进折叠区（默认收起）
     with st.expander("📖 使用指引 · 参数白话 / AI预算", expanded=False):
         _gen = (_snap or {}).get("generated_at", "")
         st.caption(f"💡 不知道买什么先看这里：温度定仓位 → 水位定方向 → 轮动定板块 → 操作榜定标的 → 持仓提醒定纪律 ｜ 数据时间 {_gen}{_stale_note}")
         st.caption("参数白话：上行概率（越大越有利）｜下行概率（越小越有利）｜盈亏比（越大越好，>1才有正向空间）｜期望值（>0才是正期望）｜ATR（越大波动越大）｜历史水位（越接近0%越靠近历史最高点）")
 
-        # Kimi会员共享额度以会员中心为准；页面仅展示本机调用统计，不臆测剩余额度。
+        # ChatGPT订阅共享额度以会员中心为准；页面仅展示本机调用统计，不臆测剩余额度。
         try:
             import v88_ai_budget as _wb9
             _web9 = _wb9.status()
-            st.caption(f"🧮 AI：Kimi Code订阅 / {_web9.get('model', 'k3-256k')}｜"
+            st.caption(f"🧮 AI：GPT-6 Codex订阅 / {_web9.get('model', 'gpt-6-astra')}｜"
                        f"本月本机记录{int(_web9.get('calls', 0))}次｜"
-                       "共享额度与限流以Kimi会员中心为准")
+                       "共享额度与限流以ChatGPT订阅额度页面为准")
         except Exception:
             pass
 
@@ -17289,7 +14620,7 @@ def _render_today_nav():
             _ttl9 = (f"🔬 研究数据层 · 市场宽度/财务体检/预期差/财报日历"
                      f"（{('⚠️%d只财务风险 · ' % _n_risk9) if _n_risk9 else ''}"
                      f"{('📅%d只持仓临近财报' % _n_urg9) if _n_urg9 else '无临近财报'}）")
-            with st.expander(_ttl9, expanded=bool(_n_urg9 or _n_risk9)):
+            with st.expander(_ttl9, expanded=bool(_n_urg9)):
                 st.caption(f"2026-08-01上线 · 全免费源零成本 · 更新 {str(_bm9.get('generated_at'))[:16]}"
                            " · 这四层是引擎的证据来源,此处只做可见化")
                 _c9a, _c9b = st.columns(2)
@@ -17360,7 +14691,10 @@ def _render_today_nav():
                         _au9 = st.radio("单位", list(_AU9), horizontal=True,
                                         index=list(_AU9).index(_AD9), key="_amt_unit9",
                                         label_visibility="collapsed")
-                    st.markdown(_adhtml9(_rlj9("market_amount_daily.json"),
+                    _amount_meta9 = _rlj9("market_amount_daily.json")
+                    _amount_dates9 = "；".join(f"{k} {v.get('latest_date') or '未标明'}" for k,v in (_amount_meta9.get('markets') or {}).items())
+                    st.caption("量能源数据截至：" + _amount_dates9 + "；图表末日未更新时仅保留历史走势，不作为当前资金信号。")
+                    st.markdown(_adhtml9(_amount_meta9,
                                          unit=_au9, span=_asp9), unsafe_allow_html=True)
                 except Exception:
                     logging.exception("[V88] 量能日线渲染失败")
@@ -17411,8 +14745,8 @@ def _render_today_nav():
                 # ③+④ 周期总览：板块轮动与个股切换合并为同一行双栏，信息保留、字号压小。
                 _rot_forecast9 = (_snap or {}).get("rotation_forecast") or {}
                 _cyc9 = (_snap or {}).get("cycle_scan") or {}
-                if _rot_forecast9 or _cyc9.get("stocks"):
-                    st.markdown("**🧭 板块轮动＋个股周期总览（2 / 5 / 8 / 16周＋预计拐点）**")
+                if _rot_forecast9 or _cyc9.get("stocks") or _cyc9.get("status") == "pending":
+                    st.markdown("**🧭 板块与个股 · 未来趋势圆周与曲线**")
                     try:
                         from rotation_ui import combined_cycle_dashboard_html as _cycle_board9, available_markets as _am9
                         _mk9 = _am9(_rot_forecast9)
@@ -17442,37 +14776,6 @@ def _render_today_nav():
                     pass
             else:
                 st.info("📭 大盘快照尚未生成（每日07:00/14:00/21:00自动更新）")
-
-        # ═══════════════════════════════════════════════════════════════
-        # 【🎯 3A大系统·常驻模块 2026-08-02 用户"放在大盘和今日之间"·第4版】
-        # 前两版分别错在:①做成卡片(用户要图二的11列表格) ②塞进买表嵌套作用域→
-        # 渲染在页面别处、用户根本看不到。现改用 grade_card.system_table_html
-        # (模块级自包含,自产表格HTML,不依赖任何嵌套闭包),故可挂页面任意位置。
-        # 常驻:无3A也在,空态明说并指出离3A最近者。
-        # ═══════════════════════════════════════════════════════════════
-        try:
-            from grade_card import system_table_html as _sys3a
-            _d3a = Path.home() / "Desktop" / "ai-daily-report-v2" / "data"
-
-            def _j3a(_f):
-                try:
-                    return json.loads((_d3a / _f).read_text(encoding="utf-8"))
-                except Exception:
-                    return {}
-            _rk3a = _j3a("rank_score.json")
-            if _rk3a.get("rows"):
-                st.markdown(_sys3a(
-                    _rk3a, _j3a("sell_grade.json"),
-                    {str(x.get("code")): x for x in
-                     (_j3a("intraday_decisions.json").get("rows") or [])},
-                    (_j3a("why_buy.json").get("sells") or {}),
-                    _j3a("market_pool.json"),
-                    triad=_j3a("triad_selection.json")), unsafe_allow_html=True)
-            else:
-                st.warning("🎯 3A大系统: 评级数据未就绪(模块常驻,数据恢复后自动填充)")
-        except Exception:
-            logging.exception("[V88] 3A大系统模块渲染失败")
-            st.warning("🎯 3A大系统: 渲染异常(见日志);模块常驻不消失")
 
     # 【V88·关注股预警】底层仍统一扫描自选+常搜+持仓；页面展示分流：
     # 持仓风险只进入下方“持仓决策中心”，自选预警不再重复罗列正式持仓。
@@ -17688,142 +14991,16 @@ def _render_today_nav():
             logging.debug("逐只诊断附着失败", exc_info=True)
         _render_front_watch_board9(_wa, _alert_analysis_note9)
 
-        # 【V88·黑马雷达 2026-07-17】各发现模块产出→统一引擎复判→严门槛出黑马（纯黑马:排除自选/持仓）
-        # 用户拍板:第一屏、宁缺毋滥、漏斗数字透明。30分钟缓存,不拖首屏。
+        # Discovery contributes evidence; the central 3A record is the only rating authority.
         try:
-            _dh9 = st.session_state.get("_darkhorse9")
-            if not _dh9 or time.time() - _dh9.get("_ts", 0) > 1800:
-                # 优先读云端/流水线产物（全选大池116只版，6小时内新鲜）——桌面秒开
-                _dh9 = None
-                try:
-                    _dh_disk9 = json.loads((_repo / "data" / "darkhorse.json").read_text(encoding="utf-8"))
-                    if time.time() - float(_dh_disk9.get("ts", 0)) < 6 * 3600:
-                        _dh9 = _dh_disk9
-                except Exception:
-                    _dh9 = None
-                if _dh9 is None:
-                    _excl9 = set()
-                    try:
-                        for _lst9x in (_watchlist_load() or {}).values():
-                            for _cx9, _nx9 in _lst9x:
-                                _excl9.add(str(_cx9).upper().split(".")[0].lstrip("0") or str(_cx9))
-                    except Exception:
-                        pass
-                    for _dx9 in (_wa.get("decisions") or []):
-                        if _dx9.get("scope") == "持仓":
-                            _cx9 = str(_dx9.get("code") or "").upper().split(".")[0]
-                            _excl9.add(_cx9.lstrip("0") or _cx9)
-                    import darkhorse_radar as _dhm9
-                    import importlib as _il_dh9
-                    _dhm9 = _il_dh9.reload(_dhm9)
-                    _dh9 = _dhm9.build_darkhorse(_excl9)
-                _dh9["_ts"] = time.time()
-                st.session_state["_darkhorse9"] = _dh9
-            _fn9 = _dh9.get("funnel") or {}
-            _horses9 = _dh9.get("horses") or []
-            # 【V88·市场透明 2026-07-24 用户抓"黑马0美股是不是逻辑不一致"】复判按市场轮询计数,
-            # 某市场0达标必须能看到"判了多少只、被谁拦"——不是没判,是判了没过(通常=该市场相位差)。
-            _jbm9 = _fn9.get("judged_by_mkt") or {}
-            _jbm_txt9 = ("（" + "/".join(f"{k[-2:]}{v}" for k, v in _jbm9.items() if v) + "）") if _jbm9 else ""
-            from collections import Counter as _Ct9
-            _mkt_pass9 = _Ct9(h.get("market") for h in _horses9)
-            _zero_mkts9 = [k[-2:] for k in ("🇺🇸美股", "🇭🇰港股", "🇨🇳A股")
-                           if _jbm9.get(k, 0) > 0 and not _mkt_pass9.get(k)]
-            _fn_txt9 = (f"发现{_fn9.get('found', 0)} → 除自选持仓{_fn9.get('excluded_watch', 0)} → "
-                        f"复判{_fn9.get('judged', 0)}{_jbm_txt9} → 达标{_fn9.get('passed', 0)}"
-                        + ("｜拦截：" + "、".join(f"{k}{v}" for k, v in (_fn9.get('blocked') or {}).items() if v))
-                        + (f"｜<b style='color:#b45309'>{'/'.join(_zero_mkts9)}判而未达标"
-                           f"（多为相位在派发/转弱——该市场弱势期不硬荐,与地狱门口径一致）</b>"
-                           if _zero_mkts9 else ""))
-            if _horses9:
-                # 【分级分色】🔴重点=红左边条,🟡待观察=琥珀左边条（用户定纲：不同颜色标出）
-                def _dh_wrap9(_h9x):
-                    _key9x = _h9x.get("grade") == "重点"
-                    _bc9x = "#dc2626" if _key9x else "#f59e0b"
-                    _bg9x = "#fef2f2" if _key9x else "#fffbeb"
-                    _badge9x = ("🔴 重点黑马" if _key9x else "🟡 待观察")
-                    return (f'<div style="border-left:4px solid {_bc9x};border-radius:8px;'
-                            f'background:{_bg9x};padding:2px 0 2px 6px;margin-bottom:6px">'
-                            f'<div style="font-size:12px;font-weight:700;color:{_bc9x};'
-                            f'padding:2px 0 0 4px">{_badge9x}</div>'
-                            + _v88_decision_card(_h9x) + '</div>')
-                # 【V88·市场分列 2026-07-17 用户修正】与自选/持仓台同构：一列一个市场，不混排
-                _dh_groups9 = {"🇺🇸美股": [], "🇭🇰港股": [], "🇨🇳A股": []}
-                for _hx9 in _horses9[:15]:
-                    _mk_h9 = _hx9.get("market") or market_of_code(_hx9.get("code", ""))
-                    _dh_groups9.setdefault(_mk_h9, []).append(_hx9)
-                _dh_cols9 = []
-                for _mk_h9 in ("🇺🇸美股", "🇭🇰港股", "🇨🇳A股"):
-                    _hs9 = _dh_groups9.get(_mk_h9) or []
-                    if not _hs9:
-                        continue
-                    _dh_cols9.append(f'<section class="v88-watch-market"><h4>{_mk_h9} <span>{len(_hs9)}只</span></h4>'
-                                     + "".join(_dh_wrap9(h) for h in _hs9) + "</section>")
-                _nk9 = sum(1 for h in _horses9 if h.get("grade") == "重点")
-                _rl_dh9 = _v88_rate_line9("darkhorse", "黑马池")
-                if _rl_dh9:
-                    st.caption(_rl_dh9)
-                with st.expander(f"🐴 黑马雷达 · 全选大池复判达标（🔴重点{_nk9}·🟡待观察{len(_horses9) - _nk9}）",
-                                 expanded=False):
-                    st.markdown(
-                        _V88_CARD_CSS
-                        + '<div class="v88-watch-shell" style="border-color:#fbbf24;background:#fffdf5">'
-                        + '<div class="v88-watch-title">'
-                        + f'<p>严门槛:2周分≥62+多源共振(≥2源)+盈亏比≥1.2+非派发+时机在窗｜🔴=多源共振或高分高赔率｜{_fn_txt9}｜'
-                        + f'🕒 {_dh9.get("generated_at", "")}</p></div>'
-                        + f'<div class="v88-watch-grid">{"".join(_dh_cols9)}</div></div>',
-                        unsafe_allow_html=True)
-                    # 【预期视角】按2周情景期望排序——"预期涨幅最大"直接排名（用户点单：要有效预期）
-                    _ev_top9 = sorted(_horses9, key=lambda h: -float(h.get("expected_pct") or 0))[:5]
-                    st.markdown("**💰 预期收益榜**（2周情景期望·规则估计非承诺）：" + " ｜ ".join(
-                        f"{_stk_link(h.get('name'), h.get('code'))} "
-                        f"<b style='color:#dc2626'>{float(h.get('expected_pct') or 0):+.1f}%</b>"
-                        f"(上{h.get('p_up')}%)" for h in _ev_top9), unsafe_allow_html=True)
-                    for _h9 in _horses9[:3]:
-                        _src9 = "＋".join(_h9.get("sources") or [])
-                        _tc9 = _h9.get("touch") or ""
-                        _pl9 = (_h9.get("trade_plan") or {}).get("short") or {}
-                        st.markdown(
-                            f"<span style='font-size:12px;color:#64748b'>{'🔴' if _h9.get('grade') == '重点' else '🟡'} "
-                            f"{_stk_link(_h9.get('name'), _h9.get('code'))}：来源[{_src9[:40]}]"
-                            f"{('·' + _tc9) if _tc9 else ''} ｜ {str(_pl9.get('in', ''))[:60]} → "
-                            f"{str(_pl9.get('out', ''))[:40]}</span>", unsafe_allow_html=True)
-            else:
-                st.caption(f"🐴 黑马雷达：今日无达标黑马（{_fn_txt9}）——严门槛宁缺毋滥，拦截原因如上。")
-            # 【V88·相对最优候选榜 2026-07-19 用户点单】0达标也要有结果：被拦截者中
-            # 每市场前3，标明差在哪+三期限概率——研究参考，非绿灯非建议，纪律不松。
-            _runners9 = _dh9.get("runners") or []
-            if _runners9:
-                _rn_grp9 = {}
-                for _r9 in _runners9:
-                    _rn_grp9.setdefault(_r9.get("market") or "", []).append(_r9)
-                with st.expander(f"📊 相对最优候选 · 未过严门槛（{len(_runners9)}只·仅相对排序·研究参考非建议）",
-                                 expanded=not _horses9):
-                    st.caption("严门槛纪律不变——以下是被拦截候选中的相对最优：⛔后为差在哪；"
-                               "10/60/120日=对应交易日内上涨概率（规则情景估计，非胜率）")
-                    for _mk9r in ("🇺🇸美股", "🇨🇳A股", "🇭🇰港股"):
-                        _rs9 = _rn_grp9.get(_mk9r) or []
-                        if not _rs9:
-                            continue
-                        _rn_lines9 = []
-                        for _r9 in _rs9:
-                            _hz9 = {str(_h9r.get("label")): _h9r for _h9r in (_r9.get("horizons") or [])}
-                            _hz_txt9 = " ".join(
-                                f"{_lb9}↑{(_hz9.get(_lb9) or {}).get('p_up', '—')}%"
-                                for _lb9 in ("10日", "60日", "120日"))
-                            _rn_lines9.append(
-                                f"<div style='font-size:13px;margin:2px 0'>"
-                                f"{_stk_link(_r9.get('name'), _r9.get('code'))} "
-                                f"统一分{float(_r9.get('unified_score') or 0):.0f}·"
-                                f"短线分{float(_r9.get('short_score') or 0):.0f}·"
-                                f"赔率{float(_r9.get('rr') or 0):.1f}·"
-                                f"预期<b>{float(_r9.get('expected_pct') or 0):+.1f}%</b> ｜ "
-                                f"{_hz_txt9} ｜ {_r9.get('stage') or '—'} ｜ "
-                                f"<span style='color:#b45309'>⛔{_r9.get('why_blocked') or ''}</span></div>")
-                        st.markdown(f"**{_mk9r}**（{len(_rs9)}只）" + "".join(_rn_lines9),
-                                    unsafe_allow_html=True)
+            from darkhorse_radar import load_projection as _load_discovery_projection
+            from discovery_review_ui import render as _render_discovery_review
+            _discovery_projection = _load_discovery_projection()
+            with st.expander(f"🔎 跨模块发现与3A核对（{len(_discovery_projection.get('rows') or [])}条）", expanded=False):
+                st.markdown(_render_discovery_review(_discovery_projection, stock_link=_stk_link), unsafe_allow_html=True)
         except Exception:
-            logging.debug("黑马雷达渲染失败", exc_info=True)
+            logging.exception("发现线索中央核对暂不可用")
+            st.caption("🔎 发现线索核对暂不可用；请以3A主榜的当前审核与原合同为准。")
         if _wa.get("alerts"):
             _critical9 = [a for a in _wa["alerts"]
                           if "[持仓" in a or "[已确认持仓" in a]
@@ -17850,7 +15027,7 @@ def _render_today_nav():
         logging.debug(f"关注股预警异常: {_we9}", exc_info=True)
 
     # 【V88·持仓决策中心】唯一持仓展示：完整日报分析 + 实时风险 + 可修改底稿。
-    with _v88_hold_mod9, st.expander("📊 决策中心 · 概率卡+完整分析+生命周期+录单（中美港同源 · 可修改）", expanded=True):
+    with _v88_hold_mod9, st.expander("💼 持仓风险与记录", expanded=True):
         import sys as _sysf
         if str(_repo / "src") not in _sysf.path:
             _sysf.path.insert(0, str(_repo / "src"))
@@ -17865,6 +15042,28 @@ def _render_today_nav():
             _claim_names9 = "、".join(f"{r['名称']}({r['代码']})" for r in _claim_rows9)
             st.warning(f"⚠️ 已确认持仓·资料待补录：{_claim_names9}。已按持仓优先预警；补齐账户、股数和成本后自动启用浮盈/峰值回撤/个性化止损。 · {_analysis_label9((_wa or {}).get('ts'), '持仓识别分析')}")
         _rows_pt = _pmf.holdings_rows()
+
+        if (_repo / "positions.json").is_file():
+            with st.expander("📒 已登记持仓与历史成交", expanded=False):
+                st.caption("通用持仓账本；Astra成交记录在Astra模块独立管理。")
+                from portfolio_archive_view import records_html as _portfolio_records_html9
+                def _archive_table9(rows):
+                    return _portfolio_records_html9(rows, stock_link=_stk_link)
+                if _rows_pt:
+                    st.markdown(_archive_table9(_rows_pt), unsafe_allow_html=True)
+                else:
+                    st.caption("暂无已登记持仓。")
+                _legacy_trade_path9 = _repo / "journal" / "trades.json"
+                if _legacy_trade_path9.is_file():
+                    try:
+                        _legacy_trades9 = json.loads(_legacy_trade_path9.read_text(encoding="utf-8"))
+                        if not isinstance(_legacy_trades9, list):
+                            raise ValueError("历史成交格式不正确")
+                        st.caption(f"历史成交 {len(_legacy_trades9)} 条；显示最近20条原记录，不计为已核验实盘业绩。")
+                        if _legacy_trades9:
+                            st.markdown(_archive_table9(list(reversed(_legacy_trades9[-20:]))), unsafe_allow_html=True)
+                    except Exception:
+                        st.caption("历史成交暂不可读，原文件保留。")
 
         # ── 唯一持仓分析：复用日报最完整的“基本面+技术面+新闻面+综合建议”，按市场拆分。 ──
         if _critical9:
@@ -17882,7 +15081,7 @@ def _render_today_nav():
                 f'<div style="background:#fee2e2;border-left:4px solid #ef4444;border-radius:8px;'
                 f'padding:.5rem .8rem;color:#7f1d1d;font-size:13px"><b>🚨 持仓风险优先 {len(_names_r9)}只</b>：'
                 + "、".join(_names_r9[:12])
-                + f'<span style="font-size:12px;color:#991b1b">——急跌/破位纪律复核,动作与数字见下方各卡(同源不重复) · {_risk_time9}</span></div>',
+                + f'<span style="font-size:12px;color:#991b1b">——急跌/破位请核对原退出条件；预警原文可展开 · {_risk_time9}</span></div>',
                 unsafe_allow_html=True)
             with st.popover("📄 预警原文备查"):
                 st.markdown("\n".join(f"- {a}" for a in _critical9[:10]))
@@ -17892,19 +15091,6 @@ def _render_today_nav():
         try:
             _hold_dec9 = [d for d in (_wa.get("decisions") or []) if d.get("scope") == "持仓"]
             if _hold_dec9:
-                _hg9 = {"🇺🇸美股": [], "🇭🇰港股": [], "🇨🇳A股": []}
-                for _d9 in _hold_dec9:
-                    _hg9.setdefault(str(_d9.get("market") or market_of_code(_d9.get("code", ""))), []).append(_d9)
-                for _mk9 in _hg9:
-                    _hg9[_mk9].sort(key=lambda d: -float(d.get("p_up") or 0))
-                _cols_h9 = []
-                for _mk9 in ("🇺🇸美股", "🇭🇰港股", "🇨🇳A股"):
-                    _r9 = _hg9.get(_mk9) or []
-                    if not _r9:
-                        continue
-                    _cols_h9.append(f'<section class="v88-watch-market"><h4>{_mk9} <span>{len(_r9)}只</span></h4>'
-                                    + "".join(_v88_decision_card(d) for d in _r9) + "</section>")
-                _htime9 = _analysis_label9(_wa.get("ts"), "持仓分析")
                 # 【V88·持仓组合体检】把持仓当一盘棋的思考模式判断（每天一次,读落盘零成本）
                 _pcx_html9 = ""
                 try:
@@ -17926,419 +15112,103 @@ def _render_today_nav():
                 # 💼=纯持仓)——此处只留独有的组合体检,重复网格撤掉缩小版面。
                 if _pcx_html9:
                     st.markdown(_pcx_html9, unsafe_allow_html=True)
-                st.caption("💼 持仓概率卡已并入上方「我的股票池」（金色名=持仓∩自选·💼纯持仓）；"
-                           "破止损见上方🚨红框。下方表格为基本面/技术面/新闻面完整分析。")
+
         except Exception as _hpe9:
             logging.debug(f"持仓决策台渲染失败: {_hpe9}")
 
-        def _holding_advice_rows9(_text):
-            _start9 = _text.find("## 💼 我的持仓·框架化建议")
-            if _start9 < 0:
-                return [], ""
-            _end9 = _text.find("\n## ", _start9 + 5)
-            _sec9 = _text[_start9:_end9 if _end9 > 0 else len(_text)]
-            _time9 = next((ln.lstrip("> ").replace("**", "") for ln in _sec9.splitlines()
-                           if "分析生成时间" in ln), "")
-            _header9, _out9 = None, []
-            for _ln9 in _sec9.splitlines():
-                if not _ln9.strip().startswith("|"):
-                    continue
-                _cells9 = [c.strip().replace("**", "") for c in _ln9.strip().strip("|").split("|")]
-                if not _cells9 or all(set(c) <= set(":- ") for c in _cells9):
-                    continue
-                if _cells9[0] == "持仓":
-                    _header9 = _cells9
-                    continue
-                if _header9 and len(_cells9) >= len(_header9):
-                    _out9.append(dict(zip(_header9, _cells9)))
-            return _out9, _time9
 
-        if _V88_WATCHLIST_UI:   # 2026-07-31 用户'这个模块删掉,鸡肋'——持仓框架化建议表撤(数据源=已停用的日报AI正文,全表'—';下方另有持仓模块)
-            _advice_rows9, _advice_time9 = _holding_advice_rows9(_rep)
-            _advice_by_name9 = {}
-            for _ar9 in _advice_rows9:
-                _advice_by_name9.setdefault(str(_ar9.get("持仓", "")).strip(), []).append(_ar9)
-            _combined_hold9 = []
-            for _hr9 in _rows_pt:
-                _nm9 = str(_hr9.get("名称", "")).strip()
-                _choices9 = _advice_by_name9.get(_nm9) or []
-                _ar9 = _choices9.pop(0) if _choices9 else {}
-                _combined_hold9.append({**_ar9, **_hr9, "市场": market_of_code(str(_hr9.get("代码", "")))})
-
-            if _advice_time9:
-                st.caption("🕒 " + _advice_time9)
-            if _combined_hold9:
-                _market_specs9 = (("🇺🇸美股", "🇺🇸 美股"), ("🇭🇰港股", "🇭🇰 港股"), ("🇨🇳A股", "🇨🇳 A股"))
-                _market_tabs9 = st.tabs([
-                    f"{_label9}（{sum(1 for r in _combined_hold9 if r['市场'] == _mk9)}）"
-                    for _mk9, _label9 in _market_specs9
-                ])
-                for _tab9, (_mk9, _label9) in zip(_market_tabs9, _market_specs9):
-                    with _tab9:
-                        _mr9 = [r for r in _combined_hold9 if r["市场"] == _mk9]
-                        if not _mr9:
-                            st.caption("暂无该市场持仓")
-                            continue
-                        _tbl9 = ["|持仓|级别|层|现价|盈亏|历史水位|基本面|技术面|新闻面|综合建议|",
-                                 "|---|---|---|---:|---:|---|---|---|---|---|"]
-                        # 【V88·占位根治 2026-07-21】日报持仓段已改叙述式,旧表格解析不到字段→
-                        # 曾经13只×8列全是"待下轮日报"(用户看到104个占位)。缺字段改用session实时
-                        # 决策回填(stage/action/归因,数据比日报还新),实在没有才标"待实时扫描"。
-                        _wa_code9 = {str(d.get("code")): d
-                                     for d in ((_wa or {}).get("decisions") or [])}
-                        for _r9 in _mr9:
-                            _code9 = str(_r9.get("代码", ""))
-                            _base9 = str(_r9.get("级别") or "B").upper()
-                            # 【2026-07-18修】_wa可能为None(扫描未跑/被此刻按钮清缓存)——曾炸掉整个今日导航
-                            _dyn9 = (((_wa or {}).get("holding_levels") or {}).get(_code9) or {}).get("level", _base9)
-                            _lv9 = f"{_base9}级" if _dyn9 == _base9 else f"{_base9}→{_dyn9}"
-                            _d9w = _wa_code9.get(_code9) or {}
-                            _fund_f9 = (str(_r9.get("基本面") or "").strip()
-                                        or _v88_fund_edge_short(_r9.get("名称", ""), max_len=18)
-                                        or "纯技术驱动(如实)")
-                            _tech_f9 = (str(_r9.get("技术面") or "").strip()
-                                        or str(_d9w.get("stage") or (_d9w.get("facts") or {}).get("stage") or "")
-                                        or "待实时扫描")
-                            _news_f9 = (str(_r9.get("新闻面") or "").strip()
-                                        or str(_d9w.get("move_reason") or "")[:22] or "—")
-                            _adv_f9 = (str(_r9.get("综合建议") or "").strip()
-                                       or (f"{_d9w.get('action', '')}·{str(_d9w.get('entry_note') or '')[:22]}"
-                                           .strip("·") if _d9w else "待实时扫描"))
-                            _vals9 = [f"{_r9.get('名称','')}（{_code9}）", _lv9, _r9.get("层", _r9.get("类别", "—")) or "—",
-                                      _r9.get("现价", "—"), _r9.get("盈亏", "—"), _r9.get("历史水位", "—"),
-                                      _fund_f9, _tech_f9, _news_f9,
-                                      # 【一票一卡】剥掉与概率卡重复的尾巴(规则概率/盈亏比/期望在卡上)
-                                      re.sub(r"(?:<br>)?规则概率\(非回测\):[^<]*", "", _adv_f9)]
-                            _tbl9.append("|" + "|".join(str(v).replace("|", "／") for v in _vals9) + "|")
-                        st.markdown(_linkify_md("\n".join(_tbl9)), unsafe_allow_html=True)
-                        # 【V88·持仓信念文字】≤50字/只：动作+依据+情绪镜子（北极星：压住追高/割肉）
-                        try:
-                            _conv9 = json.loads((_repo / "data" / "position_conviction.json")
-                                                .read_text(encoding="utf-8"))
-                            _citems9 = _conv9.get("items") or {}
-                            _clines9 = []
-                            for _r9 in _mr9:
-                                _ci9 = _citems9.get(str(_r9.get("代码", "")))
-                                if _ci9 and _ci9.get("text"):
-                                    _clines9.append(f"🧠 <b>{_stk_link(_ci9.get('name'), str(_r9.get('代码', '')))}</b>：{_ci9['text']}")
-                            if _clines9:
-                                st.markdown(
-                                    "<div style='background:#f0f9ff;border-left:3px solid #0284c7;"
-                                    "border-radius:6px;padding:.5rem .7rem;font-size:12px;line-height:1.9'>"
-                                    + "<br>".join(_clines9)
-                                    + f"<br><span style='color:#64748b;font-size:12px'>信念速记·"
-                                    f"{_conv9.get('generated_at', '')}·跌回成本不是卖出理由，破线才是</span></div>",
-                                    unsafe_allow_html=True)
-                        except Exception:
-                            pass
-            else:
-                st.caption("持仓分析待本轮日报生成；下方仍可维护持仓资料。")
-
-            st.markdown("##### ✎ 持仓交易与资料维护")
-            st.caption("先明确选择买入或卖出；买入支持中文简称联想，卖出直接从当前持仓选择。账户、股数、成本和基础级别仍可在下表修改。")
-            # ── 结构化录单表单：买卖分流，避免用“卖出价是否为空”猜操作。 ──
-            _pt_action = st.radio("交易类型", ["买入 / 加仓", "卖出 / 减仓"], horizontal=True,
-                                  key="_ptf_action", help="卖出会写入交易日志并计算已实现盈亏；下表×仅用于纠错删除")
-            _pt_accounts = _pmf.account_names()
-            from datetime import date as _date9
-            _pt_buy, _pt_sell, _pt_qty, _pt_chosen = "", "", "", None
-            _pt_date = _date9.today()
-
-            if _pt_action == "买入 / 加仓":
-                _f1, _f2, _f3, _f4, _f5, _f6 = st.columns([2.1, 2.25, 1.0, .85, 1.15, .65])
-                _pt_name = _f1.text_input("名称/简称/代码", placeholder="中微 / 腾讯 / NVDA", key="_ptf_buy_name")
-                _pt_cands = []
-                if _pt_name.strip():
-                    try:
-                        _pt_cands = _pmf.candidates_for(_pt_name.strip(), limit=6) or []
-                    except Exception:
-                        _pt_cands = []
-                if _pt_cands:
-                    _pt_opts = [f"{n}（{c}·{m}）" for n, c, m in _pt_cands]
-                    _pt_pick = _f2.selectbox("简称匹配（请选择）", _pt_opts, key="_ptf_buy_match")
-                    _pt_chosen = _pt_cands[_pt_opts.index(_pt_pick)][1]
-                else:
-                    _f2.text_input("简称匹配", value="输入简称后自动显示全称和代码", disabled=True,
-                                   key="_ptf_buy_match_empty")
-                _pt_buy = _f3.text_input("买入价", placeholder="469", key="_ptf_buy_price")
-                _pt_qty = _f4.text_input("买入股数", placeholder="100", key="_ptf_buy_qty")
-                _pt_date = _f5.date_input("成交日期", value=_date9.today(), key="_ptf_buy_date")
-                _pt_account = _f6.selectbox("账户", _pt_accounts, key="_ptf_buy_account")
-                _pt_level = st.selectbox("关注级别", ["A", "B", "C"], index=1, key="_ptf_buy_level",
-                                         help="人工基础级别；急跌、亏损或拐点风险仍会自动升为A级")
-                _pt_token = _pt_name.strip()
-                _pt_button = "✅ 确认买入 / 加仓"
-            else:
-                _pt_holds = _pmf.holdings_rows()
-                _pt_sell_map = {
-                    f"{r.get('名称')}（{r.get('代码')}｜{r.get('账户')}｜现持{r.get('股数')}股）": r
-                    for r in _pt_holds
-                }
-                if not _pt_sell_map:
-                    st.warning("当前没有可卖出的正式持仓")
-                    _pt_selected = {}
-                else:
-                    _s1, _s2, _s3, _s4 = st.columns([3.0, 1.0, 1.05, 1.25])
-                    _pt_sell_label = _s1.selectbox("选择要卖出的持仓", list(_pt_sell_map), key="_ptf_sell_holding")
-                    _pt_selected = _pt_sell_map[_pt_sell_label]
-                    _pt_sell = _s2.text_input("实际卖出价", placeholder="必填", key="_ptf_sell_price")
-                    _pt_qty = _s3.text_input("卖出股数", placeholder="留空=全部", key="_ptf_sell_qty")
-                    _pt_date = _s4.date_input("成交日期", value=_date9.today(), key="_ptf_sell_date")
-                    st.caption(f"将从 {_pt_selected.get('账户')} 卖出 {_pt_selected.get('名称')}；留空股数表示全部清仓。")
-                _pt_name = str(_pt_selected.get("代码") or "")
-                _pt_token = _pt_name
-                _pt_account = str(_pt_selected.get("账户") or (_pt_accounts[0] if _pt_accounts else ""))
-                _pt_level = str(_pt_selected.get("级别") or "B")
-                _pt_button = "🟥 确认卖出 / 减仓"
-
-            _pt_reason = st.text_input("原因（选填，随交易日志留档）", placeholder="如：止盈一半 / 逻辑失效 / 情绪操作复盘",
-                                       key="_pt_reason_desk")
-
-            def _pt_git_sync(_label):
-                import subprocess as _sp9
-                _sp9.run(["git", "-C", str(_repo), "add", "-f", "positions.json", "position_claims.json",
-                          "journal/trades.json", "watch_levels.json"], capture_output=True, text=True)
-                _sp9.run(["git", "-C", str(_repo), "commit", "-m", f"持仓终端(桌面): {_label[:40]}"],
-                         capture_output=True, text=True)
-                _p9 = _sp9.run(["git", "-C", str(_repo), "push", "origin", "main"], capture_output=True, text=True)
-                if _p9.returncode != 0:
-                    _sp9.run(["git", "-C", str(_repo), "pull", "--rebase", "-X", "theirs", "origin", "main"],
-                             capture_output=True, text=True)
-                    _p9 = _sp9.run(["git", "-C", str(_repo), "push", "origin", "main"], capture_output=True, text=True)
-                st.caption("☁️ 已同步私仓（云端/飞书下一轮生效）" if _p9.returncode == 0
-                           else "⚠️ 本地已改，私仓推送失败——网络恢复后自动随下次提交带上")
-
-            def _pt_run_form(_kw, _chosen=None):
-                _msg9, _needs9 = _pmf.record_trade(chosen_code=_chosen, **_kw)
-                if _needs9:  # 简称多解（"腾讯"→腾讯/腾讯控股/腾讯音乐…）→ 弹窗确认
-                    st.session_state["_pt_pending"] = {"kw": _kw, "cands": _needs9}
-                    st.rerun()
-                if _msg9.startswith(("已录入", "已加仓", "已清仓", "已减仓")):
-                    _pt_git_sync(f"{_kw.get('token', '')}")
-                    st.session_state["_pt_flash"] = _msg9 + "　✅已落盘并同步私仓"
-                    st.rerun()  # 立刻刷新下方持仓表——所见即所存
-                else:
-                    st.error(_msg9)
-
-            if st.button(_pt_button, type="primary", key="_pt_go_desk") and _pt_token:
-                try:
-                    _pt_run_form({"token": _pt_token, "shares": _pt_qty or 0,
-                                  "buy_px": float(_pt_buy) if _pt_buy.strip() else None,
-                                  "sell_px": float(_pt_sell) if _pt_sell.strip() else None,
-                                  "date": str(_pt_date), "reason": _pt_reason.strip(),
-                                  "account": _pt_account, "level": _pt_level}, _chosen=_pt_chosen)
-                except ValueError:
-                    st.error("价格/股数须为数字")
-                except Exception as _pe9:
-                    st.error(f"持仓终端异常: {_pe9}")
-
-            if st.session_state.get("_pt_pending"):
-                @st.dialog("该简称有多个匹配，请确认标的")
-                def _pt_pick_dialog():
-                    _pd = st.session_state["_pt_pending"]
-                    _opts = [f"{nm}（{cd}·{mk}）" for nm, cd, mk in _pd["cands"]]
-                    _sel = st.selectbox("候选", _opts, key="_pt_pick_sel")
-                    _c1d, _c2d = st.columns(2)
-                    if _c1d.button("✅ 确认", type="primary", key="_pt_pick_ok"):
-                        _code_sel = _pd["cands"][_opts.index(_sel)][1]
-                        st.session_state.pop("_pt_pending")
-                        try:
-                            _pt_run_form(_pd["kw"], _chosen=_code_sel)
-                        except Exception as _pe9:
-                            st.error(f"持仓终端异常: {_pe9}")
-                    if _c2d.button("✕ 取消", key="_pt_pick_no"):
-                        st.session_state.pop("_pt_pending")
-                        st.rerun()
-                _pt_pick_dialog()
-
-            # ── 常驻持仓表+最近交易（读盘实时渲染，刷新页面不丢——这就是"记忆"）──
-            try:
-                _rows_pt = _pmf.holdings_rows()
-                if _rows_pt:
-                    _pt_codes = tuple(dict.fromkeys(str(r.get("代码", "")).upper() for r in _rows_pt if r.get("代码")))
-                    with _v88_running("计算持仓历史最高水位"):
-                        _pt_water = _ath_many_display(_pt_codes) if _pt_codes else {}
-                        _pt_px = _last_px_many(_pt_codes) if _pt_codes else {}
-                    # 【2026-07-12 用户要求】新增现价/盈亏列 + 表尾整体盈亏汇总（红涨绿跌）
-                    _pt_ccy = {"🇨🇳A股": "¥", "🇭🇰港股": "HK$", "🇺🇸美股": "$"}
-                    _pt_totals = {}  # 市场 → [盈亏额, 成本额]
-                    def _pnl_html(_amt, _pct=None):
-                        _c = "#dc2626" if _amt >= 0 else "#16a34a"
-                        _t = f"{_amt:+,.0f}" + (f"（{_pct:+.1f}%）" if _pct is not None else "")
-                        return f'<span style="color:{_c};font-size:13px">{_t}</span>'
-                    # 自定义逐行渲染，提供与自选股一致的 × 删除入口。
-                    _pt_widths = [1.0, 1.12, .92, .6, .65, .55, .52, .68, 1.0, 1.25, .62]
-                    _ph = st.columns(_pt_widths)
-                    for _hc, _ht in zip(_ph, ("账户", "名称", "代码", "股数", "成本", "类别", "级别",
-                                                       "现价", "盈亏", "历史水位", "操作")):
-                        _hc.caption(_ht)
-                    for _ri9, _row9 in enumerate(_rows_pt):
-                        _edit_id9 = f"{_row9.get('账户')}|{_row9.get('代码')}"
-                        _row_water9 = _pt_water.get(str(_row9.get("代码", "")).upper(), "历史水位待核")
-                        # 逐行盈亏：现价来自 _last_px_many（与水位同一份历史数据，1小时缓存）
-                        _row_px9 = _pt_px.get(str(_row9.get("代码", "")).upper())
-                        _row_mkt9 = market_of_code(str(_row9.get("代码", "")))
-                        _row_ccy9 = _pt_ccy.get(_row_mkt9, "")
-                        _px_txt9, _pnl_txt9 = "—", "—"
-                        try:
-                            _sh9 = float(str(_row9.get("股数", "")).replace(",", ""))
-                            _co9 = float(str(_row9.get("成本", "")).replace(",", ""))
-                            if _row_px9 and _co9 > 0 and _sh9 > 0:
-                                _pnl_amt9 = (_row_px9 - _co9) * _sh9
-                                _pnl_pct9 = (_row_px9 / _co9 - 1) * 100
-                                _px_txt9 = f"{_row_px9:,.3f}" if _row_px9 < 10 else f"{_row_px9:,.2f}"
-                                _pnl_txt9 = _pnl_html(_pnl_amt9, _pnl_pct9)
-                                _tot9 = _pt_totals.setdefault(_row_mkt9, [0.0, 0.0])
-                                _tot9[0] += _pnl_amt9
-                                _tot9[1] += _co9 * _sh9
-                        except (TypeError, ValueError):
-                            pass
-                        if st.session_state.get("_pt_edit_row") == _edit_id9:
-                            _pc = st.columns(_pt_widths)
-                            _acc_opts9 = list(_pt_accounts)
-                            if str(_row9.get("账户", "")) not in _acc_opts9:
-                                _acc_opts9.append(str(_row9.get("账户", "")))
-                            _ev_acc9 = _pc[0].selectbox("账户", _acc_opts9,
-                                                       index=_acc_opts9.index(str(_row9.get("账户", ""))),
-                                                       key=f"_pe_acc_{_ri9}", label_visibility="collapsed")
-                            _ev_nm9 = _pc[1].text_input("名称", value=str(_row9.get("名称", "")), key=f"_pe_nm_{_ri9}", label_visibility="collapsed")
-                            _ev_cd9 = _pc[2].text_input("代码", value=str(_row9.get("代码", "")), key=f"_pe_cd_{_ri9}", label_visibility="collapsed")
-                            _ev_sh9 = _pc[3].text_input("股数", value=str(_row9.get("股数", "")), key=f"_pe_sh_{_ri9}", label_visibility="collapsed")
-                            _ev_co9 = _pc[4].text_input("成本", value=str(_row9.get("成本", "")), key=f"_pe_co_{_ri9}", label_visibility="collapsed")
-                            _ev_cl9 = _pc[5].text_input("类别", value=str(_row9.get("类别", "")), key=f"_pe_cl_{_ri9}", label_visibility="collapsed")
-                            _base_lv9 = str(_row9.get("级别") or "B").upper()
-                            _base_lv9 = _base_lv9 if _base_lv9 in ("A", "B", "C") else "B"
-                            _ev_lv9 = _pc[6].selectbox("级别", ["A", "B", "C"],
-                                                      index=["A", "B", "C"].index(_base_lv9),
-                                                      key=f"_pe_lv_{_ri9}", label_visibility="collapsed")
-                            _pc[7].caption(_px_txt9)
-                            _pc[8].markdown(_pnl_txt9, unsafe_allow_html=True)
-                            _pc[9].caption(_row_water9)
-                            _save_col9, _cancel_col9 = _pc[10].columns(2)
-                            if _save_col9.button("✓", key=f"_pt_save_{_ri9}", help="保存修改"):
-                                _msg_edit9 = _pmf.update_holding(
-                                    _row9.get("账户", ""), _row9.get("代码", ""), account=_ev_acc9,
-                                    name=_ev_nm9, code=_ev_cd9, shares=_ev_sh9, cost=_ev_co9,
-                                    category=_ev_cl9, level=_ev_lv9)
-                                if _msg_edit9.startswith("已修改"):
-                                    st.session_state.pop("_pt_edit_row", None)
-                                    _pt_git_sync(_msg_edit9)
-                                    st.session_state["_pt_flash"] = _msg_edit9 + "　✅已落盘并同步私仓"
-                                    st.rerun()
-                                else:
-                                    st.error(_msg_edit9)
-                            if _cancel_col9.button("↩", key=f"_pt_cancel_{_ri9}", help="取消修改"):
-                                st.session_state.pop("_pt_edit_row", None)
-                                st.rerun()
-                        else:
-                            _pc = st.columns(_pt_widths)
-                            for _ci9, _key9 in enumerate(("账户", "名称", "代码", "股数", "成本", "类别")):
-                                if _key9 == "名称":
-                                    _pc[_ci9].markdown(_stk_link(str(_row9.get("名称", "")),
-                                                                 str(_row9.get("代码", ""))),
-                                                        unsafe_allow_html=True)
-                                else:
-                                    _pc[_ci9].write(str(_row9.get(_key9, "")))
-                            _base_lv9 = str(_row9.get("级别") or "B").upper()
-                            _dl9 = ((_wa.get("holding_levels") or {}).get(str(_row9.get("代码", ""))) or {})
-                            _effective_lv9 = str(_dl9.get("level") or _base_lv9)
-                            _lv_txt9 = f"{_base_lv9}级" if _effective_lv9 == _base_lv9 else f"{_base_lv9}→{_effective_lv9}"
-                            _pc[6].write(_lv_txt9)
-                            _pc[7].write(_px_txt9)
-                            _pc[8].markdown(_pnl_txt9, unsafe_allow_html=True)
-                            _pc[9].caption(_row_water9)
-                            _edit_col9, _del_col9 = _pc[10].columns(2)
-                            if _edit_col9.button("✎", key=f"_pt_edit_{_ri9}", help=f"修改 {_row9.get('名称')}"):
-                                st.session_state["_pt_edit_row"] = _edit_id9
-                                st.rerun()
-                            if _del_col9.button("×", key=f"_pt_del_{_ri9}_{_row9.get('账户')}_{_row9.get('代码')}",
-                                               help=f"删除 {_row9.get('名称')}（仅从持仓中移除）"):
-                                _msg_del9 = _pmf.remove_holding(_row9.get("账户", ""), _row9.get("代码", ""))
-                                if _msg_del9.startswith("已删除"):
-                                    _pt_git_sync(_msg_del9)
-                                    st.session_state["_pt_flash"] = _msg_del9 + "　✅已落盘并同步私仓"
-                                    st.rerun()
-                                else:
-                                    st.error(_msg_del9)
-                    # ── 整体盈亏汇总：分市场原币种 + 折合人民币合计（汇率取不到则省略合计）──
-                    if _pt_totals:
-                        _sum_parts9 = []
-                        _cny_total9, _cny_ok9 = 0.0, True
-                        _fx_map9 = {"🇺🇸美股": "USDCNY=X", "🇭🇰港股": "HKDCNY=X"}
-                        for _mk9, (_pnl_s9, _cost_s9) in _pt_totals.items():
-                            _pct_s9 = (_pnl_s9 / _cost_s9 * 100) if _cost_s9 > 0 else 0.0
-                            _sum_parts9.append(f"{_mk9} {_pt_ccy.get(_mk9,'')}{_pnl_html(_pnl_s9, _pct_s9)}")
-                            if _mk9 in _fx_map9:
-                                _fx9 = _fx_to_cny(_fx_map9[_mk9])
-                                if _fx9:
-                                    _cny_total9 += _pnl_s9 * _fx9
-                                else:
-                                    _cny_ok9 = False
-                            else:
-                                _cny_total9 += _pnl_s9
-                        _sum_line9 = "　｜　".join(_sum_parts9)
-                        if _cny_ok9 and len(_pt_totals) > 1:
-                            _sum_line9 += f"　｜　合计折合 ¥{_pnl_html(_cny_total9)}"
-                        st.markdown(
-                            f'<div style="font-size:13px;margin:.3rem .1rem"><b>💰 整体盈亏</b>：{_sum_line9}'
-                            f'<span style="color:#94a3b8;font-size:12px">　（按最新收盘价，未含手续费）</span></div>',
-                            unsafe_allow_html=True)
-                _tr_fp = _repo / "journal" / "trades.json"
-                if _tr_fp.exists():
-                    _trs = json.loads(_tr_fp.read_text(encoding="utf-8"))[-5:]
-                    if _trs:
-                        st.caption("最近5笔：" + "　".join(
-                            f"{t.get('date','')[:10]} {t.get('action','')}{t.get('name','')}{t.get('shares','')}股"
-                            f"@{t.get('sell_price') or t.get('cost','')}" for t in reversed(_trs)))
-            except Exception:
-                pass
-            # 高级：一行指令（老语法保留）
-            with st.popover("⌨️ 一行指令"):
-                _pt_cmd = st.text_input("指令", placeholder="中国海油 18.5 1000 ｜ 卖 海油 500 #止盈 ｜ 查",
-                                        key="_pt_cmd_desk", label_visibility="collapsed")
-                if st.button("执行", key="_pt_go_line") and _pt_cmd.strip():
-                    try:
-                        _msgL, _needsL = _pmf.handle_ex(_pt_cmd.strip(), reason=_pt_reason.strip())
-                        if _needsL:
-                            st.warning(_msgL + "——请改用上方表单录入以弹窗选择")
-                        else:
-                            st.success(_msgL)
-                            if _pt_cmd.strip() not in ("查", "查询"):
-                                _pt_git_sync(_pt_cmd.strip())
-                    except Exception as _pe9:
-                        st.error(f"异常: {_pe9}")
 
 try:
     with _v88_front_decision_slot.container():
         _render_today_nav()
-        try:
-            from v88_ai_budget import status as _web_budget_status
-            _wb = _web_budget_status()
-            st.caption(f"🧠 AI：Kimi Code订阅 / {_wb.get('model', 'k3-256k')}｜"
-                       f"本月本机记录{int(_wb.get('calls', 0))}次｜GPT-5.6终审保持独立")
-        except Exception:
-            pass
+
 except Exception as _nav_e:
     st.caption(f"今日导航暂不可用: {str(_nav_e)[:50]}")
 st.markdown("---")
 
-# ═══════════════════════════════════════════════════════════════
-# 【V88·本场操作·唯一结论源】2026-08-04 接入
-# 用户 08-03 定纲："保证这个 V88 最终得出的结论一致。"
-# 我当时建了 src/session_ops.py 并说"对话与页面读同一个函数"——
-# **但页面从来没接**（grep session_ops = 0）。又是「写了不等于生效」。
-# 现在真接上：本段直接渲染 session_ops.json，与对话回答**同一份数据、同一套措辞**。
-# 规则版本号显式展示：答案与上次不同时，先比版本号——同版本不同答案才是 bug。
-# ═══════════════════════════════════════════════════════════════
-# ═══════════════════════════════════════════════════════════════
-# 【V88·Fable月计划】2026-08-06 用户定纲:"每月计划一只或几只,我严格按照你的操作,
-# 目标每月$125"。治理=GPT/Codex+经典书理双层复核。用户会**严格照做**,
-# 故必须置顶且全价格无歧义;参数冻结,改动=出新计划,不许悄悄改。
-# ═══════════════════════════════════════════════════════════════
-with st.expander("🎖️ Fable月计划 · 每月$125（GPT/Codex＋经典书理·参数冻结）", expanded=True):
+# Astra monthly research and actual trade journal share one workspace.
+# Independent monthly workspace; general release diagnostics remain separate.
+try:
+    from astra_plan_view import render as _render_astra_monthly
+    _astra_doc = _cbj9('astra_plan.json') or _cbj9('astra_plan_pub.json') or {}
+    _astra_private_records = bool(_astra_doc) and not _astra_doc.get('private_redacted') and (_cb_repo9/'data/astra_plan.json').is_file()
+    _render_astra_monthly(st, _astra_doc, stock_link=_stk_link,
+                          expected_factpack_id=(_cbj9('triad_selection_pub.json') or {}).get('factpack_id'),
+                          allow_trade_recording=_astra_private_records)
+    if _astra_private_records:
+        try:
+            from astra_trade_entry_view import render as _render_astra_records
+            _render_astra_records(st, (_astra_doc.get('research_report') or {}).get('candidates') or [],
+                                  factpack_id=_astra_doc.get('factpack_id'))
+        except Exception as _astra_record_error:
+            st.error(f'Astra成交记录暂不可用：{type(_astra_record_error).__name__}；请稍后重试，原记录保留')
+except Exception as _astra_error:
+    st.error(f'Astra月度模块读取失败：{type(_astra_error).__name__}；保留原合同，不新增交易')
+
+with _v88_system_details, st.expander('🔬 审核与验证进度', expanded=False):
     try:
+        _notice_doc = _cbj9("notification_plan.json") or {}
+        if _notice_doc:
+            with st.expander("🔔 行动 / 准备 / 观察 · 通知状态", expanded=False):
+                st.info(_notice_doc.get("status_text", "通知计划待生成"))
+                st.caption(_notice_doc.get("delivery", ""))
+                st.caption("1A/2A到区间仅提示准备复核，不增加买入权限；未发送和失败不能算送达。")
+                st.caption(_notice_doc.get("coverage_note", ""))
+        _upgrade_doc = _cbj9("upgrade_acceptance.json") or {}
+        if _upgrade_doc:
+            _ug2 = _upgrade_doc.get("2a", {})
+            _ugc = _upgrade_doc.get("coverage", {})
+            _ugs = _upgrade_doc.get("samples", {})
+            st.info(f"量化改进验收：合格2A {_ug2.get('current', 0)}/{_ug2.get('target_minimum', 1)}；"
+                    f"固定批次累计双审 {_ugc.get('cumulative_completed', 0)}/{_ugc.get('fixed_cohort', 0)}；"
+                    f"合规已结算回放 {_ugs.get('qualified_settled', 0)}/{_ugs.get('target', 3000)}。"
+                    f"{_upgrade_doc.get('status', '')}")
+            st.caption(f"当前有效双审 {_ugc.get('current_valid_complete', 0)} 只；累计审核不因过期删除，当前有效数另算。"
+                       "2A数量和3000笔目标不改变评分；未触发、重复、缺历史成分证明的回放不计入。")
+            _ugb = _upgrade_doc.get("one_a_bottlenecks", {})
+            _ugg = _ugb.get("gaps", {})
+            st.caption(f"1A升级卡点（可重叠）：反证 {_ugg.get('gpt_countercase', 0)} 只；"
+                       f"兑现周期 {_ugg.get('gpt_horizon', 0)} 只；同策略净期望 {_ugg.get('tharp_expectancy', 0)} 只；"
+                       f"入场确认 {_ugg.get('entry', 0)} 只。数据和策略证据覆盖未完成，不能据空榜断定全市场没有机会。")
+
+        with st.expander("🔬 前瞻验证 · 原始凭据、模拟结算与实际履历", expanded=False):
+            from research_validation_view import render as _render_research_validation
+            _render_research_validation(st, _cbj9("research_validation.json") or {})
+
+        _grade_acceptance = _cbj9("grade_acceptance.json") or {}
+        if _grade_acceptance:
+            st.info(f"新增评级验收：合格2A {_grade_acceptance.get('qualified_2a', 0)}只；"
+                    f"合格3A {_grade_acceptance.get('qualified_3a', 0)}只"
+                    f"（当前可执行 {_grade_acceptance.get('executable_3a', 0)}只）。"
+                    f"{_grade_acceptance.get('status', '待核验')}")
+            _grade_run = _grade_acceptance.get("review_run", {})
+            st.caption(f"当前事实包完整双审 {_grade_run.get('complete_pairs_in_current_pack', 0)}只；"
+                       f"{'复核仍在运行' if _grade_run.get('in_progress') else '本轮复核已结束'}。"
+                       "双审完成不等于评级通过；本轮有限批次不等于全市场审核完成。")
+            _grade_bounds = _grade_acceptance.get('deterministic_review_bounds', {})
+            st.caption(f"当前有源复核队列 {_grade_acceptance.get('review_queue_count', 0)}只；"
+                       f"书理与空间允许进一步审核2A/3A的候选 "
+                       f"{_grade_bounds.get('2A', 0)+_grade_bounds.get('3A', 0)}只。"
+                       "这是复核顺序依据，不是预先授级；不满足条件时验收明确不通过。")
+
+    except Exception as _acceptance_error:
+        st.caption(f'系统验收记录暂不可用：{type(_acceptance_error).__name__}')
+
+
+# Full-market coverage and directory search are rendered once in the main action area.
+
+_v88_history_details = st.expander("📁 历史与规则档案", expanded=False)
+with _v88_history_details, st.expander("📚 原Fable5计划与持仓保护", expanded=False):
+    try:
+        st.caption("原Fable5已由Astra月度计划接替；以下为历史参数和既有持仓保护，不形成新的开仓指令。")
         _fp9 = _cbj9("fable_plan.json") or _cbj9("fable_plan_pub.json") or {}
-        _fpm9 = (_fp9.get("months") or {}).get(datetime.now().strftime("%Y-%m")) or {}
+        _fmonths9 = _fp9.get("months") or {}
+        _fmonth_options9 = sorted(_fmonths9, reverse=True)
+        _fmonth_default9 = next((m for m in _fmonth_options9 if (_fmonths9[m] or {}).get("plan")), None)
+        _fmonth9 = st.selectbox("历史计划月份", _fmonth_options9,
+                               index=_fmonth_options9.index(_fmonth_default9) if _fmonth_default9 else 0,
+                               key="v88_fable_archive_month") if _fmonth_options9 else None
+        _fpm9 = _fmonths9.get(_fmonth9) or {}
         _fpp9 = _fpm9.get("plan") or {}
         if not _fpp9:
             if _fp9.get("private_redacted"):
@@ -18349,7 +15219,7 @@ with st.expander("🎖️ Fable月计划 · 每月$125（GPT/Codex＋经典书�
                 st.caption(_fps9.get("meaning") or
                            "云端公开版不展示具体仓位与交易参数；完整 Fable 计划仅在桌面/飞书私域显示。")
             else:
-                st.caption(_fpm9.get("why") or "本月计划未出——空仓待机是合格结果,不是失败。")
+                st.caption(_fpm9.get("why") or "该月份没有已发布计划。")
         else:
             st.caption(f"发布 {_fpp9.get('issued_at')}｜规则 {_fpp9.get('ruleset')}｜"
                        f"目标 ${_fpp9.get('target_usd')}｜{_fpp9.get('governance')}")
@@ -18394,43 +15264,6 @@ with st.expander("🎖️ Fable月计划 · 每月$125（GPT/Codex＋经典书�
     except Exception as _e9fp:
         st.caption(f"⚠️ Fable计划渲染失败：{type(_e9fp).__name__}: {str(_e9fp)[:110]}")
 
-with st.expander("📋 本场操作 · 唯一结论源（对话与本页逐字一致）", expanded=True):
-    try:
-        _so9 = _cbj9("session_ops.json") or {}
-        if not _so9:
-            st.caption("⚠️ session_ops.json 未读到 —— 这是**读取失败**，不是「今天没操作」。")
-        else:
-            _rv9 = _so9.get("ruleset_version", "?")
-            _st9 = _so9.get("stats") or {}
-            st.markdown(
-                f"<div style='font-size:12px;color:#64748b'>规则版本 <b>{_rv9}</b>"
-                f"　生效闸 {len(_so9.get('gates_in_force') or [])} 道"
-                f"　算于 {_so9.get('generated_at','?')}"
-                f"　—— 答案与上次不同时先比版本号：<b>同版本不同答案才是 bug</b></div>",
-                unsafe_allow_html=True)
-            _c1, _c2, _c3, _c4 = st.columns(4)
-            _c1.metric("🔴 立即卖出", _st9.get("sell", 0))
-            _c2.metric("⚪ 守线待触发", _st9.get("watch", 0))
-            _c3.metric("🔵 买入", _st9.get("buy", 0))
-            _c4.metric("⛔ 赔率闸挡下", _st9.get("blocked_by_rr", 0))
-            _tabs9 = st.tabs(["🇨🇳 A股", "🇭🇰 港股", "🇺🇸 美股"])
-            for _tb9, _mk9x in zip(_tabs9, ("A股", "港股", "美股")):
-                with _tb9:
-                    try:
-                        import importlib, sys as _sy9
-                        _rp9 = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
-                        if _rp9 not in _sy9.path:
-                            _sy9.path.insert(0, _rp9)
-                        _sop9 = importlib.import_module("session_ops")
-                        # 同一个 render_md —— 这就是"逐字一致"的实现方式，不是靠我抄一遍
-                        st.markdown(_sop9.render_md(_sop9.build(_mk9x)), unsafe_allow_html=False)
-                    except Exception as _e9so:
-                        st.caption(f"⚠️ {_mk9x} 渲染失败：{type(_e9so).__name__}: {str(_e9so)[:110]}")
-    except Exception as _e9s2:
-        import traceback as _tb9s
-        st.caption(f"⚠️ 本场操作段渲染失败：{type(_e9s2).__name__}: {str(_e9s2)[:110]}")
-        with st.expander("异常详情", expanded=False):
-            st.code(_tb9s.format_exc()[-1200:])
 
 # ═══════════════════════════════════════════════════════════════
 # 【V88·出口清单 + 三方台账 + 规则版本】2026-08-06 用户批准接入
@@ -18438,14 +15271,16 @@ with st.expander("📋 本场操作 · 唯一结论源（对话与本页逐字�
 # 出口清单=以始为终（每只票同时带进场与出场，出口是价格不是文字）；
 # 三方台账=默默统计四方胜率（只记录不参与决策）；规则版本=答案变时先比版本号。
 # ═══════════════════════════════════════════════════════════════
-with st.expander("🎯 出口清单 · 以始为终（持仓+评级榜，每只都带止盈/止损/清仓条件）", expanded=False):
+with _v88_hold_mod9, st.expander("🛡️ 原退出条件", expanded=False):
     try:
         import importlib, sys as _sy8
         _rp8 = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
         if _rp8 not in _sy8.path:
             _sy8.path.insert(0, _rp8)
         _ep8 = importlib.import_module("exit_plan")
-        _eo8 = _ep8.build()
+        _eo8 = _cbj9("exit_plan.json") or {}
+        if not _eo8:
+            raise ValueError("退出计划尚未生成，等待后台更新")
         _es8 = _eo8.get("stats") or {}
         st.caption(f"覆盖 {_es8.get('total')} 只｜门派 {_es8.get('by_school')}｜"
                    f"有止盈线 {_es8.get('has_take_profit')}｜有止损线 {_es8.get('has_stop')}"
@@ -18457,7 +15292,7 @@ with st.expander("🎯 出口清单 · 以始为终（持仓+评级榜，每只�
     except Exception as _e8x:
         st.caption(f"⚠️ 出口清单渲染失败：{type(_e8x).__name__}: {str(_e8x)[:120]}")
 
-with st.expander("⚖️ 三方胜率总账 · 默默统计（样本<20不报胜率）", expanded=False):
+with _v88_history_details, st.expander("⚖️ 历史审核记录", expanded=False):
     try:
         _lg8 = _cbj9("three_way_ledger.json") or {}
         _sm8 = _lg8.get("summary") or {}
@@ -18477,7 +15312,7 @@ with st.expander("⚖️ 三方胜率总账 · 默默统计（样本<20不报胜
     except Exception as _e8y:
         st.caption(f"⚠️ 三方台账渲染失败：{type(_e8y).__name__}: {str(_e8y)[:120]}")
 
-with st.expander("📐 规则版本与生效闸（答案变了先比版本号）", expanded=False):
+with _v88_system_details, st.expander("📐 规则版本与生效记录", expanded=False):
     try:
         _rs8 = _cbj9("ruleset.json") or {}
         st.caption(f"**{_rs8.get('version')}**　冻结={_rs8.get('frozen')}　"
@@ -18499,48 +15334,6 @@ with st.expander("📐 规则版本与生效闸（答案变了先比版本号）
                        "区分『评估后不合格』(正常)与『从未被评估』(bug)")
     except Exception as _e8z:
         st.caption(f"⚠️ 规则版本渲染失败：{type(_e8z).__name__}: {str(_e8z)[:120]}")
-
-# ═══════════════════════════════════════════════════════════════
-# 【V88·打新雷达】中美港新股申购日历+评级（2026-07-16 用户点单：热门打新从来没提示过）。
-# 数据由私仓日报流水线生成（A股=Tushare/美股=Nasdaq/港股源接入中），这里零网络秒开。
-# ═══════════════════════════════════════════════════════════════
-# ═══════════════════════════════════════════════════════════════
-# 【V88·三段作战计划台】（2026-07-16 用户定纲）持仓+自选每只一行：
-# 短线=日期窗进/10日目标出/止损废；中线=区间分批/60日目标/破MA55废；长线=区间/120日目标/破年线退。
-# 数据来自预警扫描顺手组装的 trade_plan（与决策台同一份唯一决策，零额外请求）。
-# ═══════════════════════════════════════════════════════════════
-with st.expander("📋 三段作战计划台 · 哪天进/到哪出/何时废（持仓+自选）", expanded=False):
-    try:
-        _wa_tp9 = st.session_state.get('watch_alerts_v88') or {}
-        _tp_rows9 = [d for d in (_wa_tp9.get("decisions") or [])
-                     if d.get("trade_plan") and d.get("scope") in ("持仓", "自选")]
-        if _tp_rows9:
-            # 【修复2026-07-18】原用 _analysis_label9(今日导航局部函数)→顶层NameError被except吞→整块空白
-            try:
-                _tp_ts9 = datetime.fromtimestamp(float(_wa_tp9.get("ts") or 0)).strftime("%m-%d %H:%M")
-            except Exception:
-                _tp_ts9 = "—"
-            st.caption("短线能给具体日期窗；中长线=区间+触发条件+周数（拍日历日是伪精确）。"
-                       f"目标价=规则情景估计非承诺 · 🕒 计划生成于 {_tp_ts9}")
-            _tp_rows9.sort(key=lambda d: (0 if d.get("scope") == "持仓" else 1,
-                                          -float(d.get("p_up") or 0)))
-            _md9 = ["| 标的 | 段 | 进 | 出 | 作废线 |", "|---|---|---|---|---|"]
-            for _d9 in _tp_rows9:
-                _p9 = _d9["trade_plan"]
-                _tag9 = "💼" if _d9.get("scope") == "持仓" else "👁"
-                _nm9 = f"{_tag9}**{_d9.get('name')}**（{_d9.get('code')}）"
-                for _seg9, _lab9 in (("short", "短"), ("mid", "中"), ("long", "长")):
-                    _s9 = _p9.get(_seg9) or {}
-                    _md9.append(f"| {_nm9 if _seg9 == 'short' else ''} | {_lab9} "
-                                f"| {str(_s9.get('in', ''))[:60]} | {str(_s9.get('out', ''))[:40]} "
-                                f"| {str(_s9.get('invalid', ''))[:24]} |")
-            st.markdown(_linkify_md("\n".join(_md9)), unsafe_allow_html=True)
-        else:
-            st.info("计划随首屏自选/持仓扫描生成（约15分钟一轮），稍后刷新即可看到。")
-    except Exception as _tp_e9:
-        # 不再静默吞错——空白区块比报错更迷惑（图四空白事故教训）
-        st.caption(f"⚠️ 计划台渲染异常：{type(_tp_e9).__name__}，已记录日志")
-        logging.warning("三段作战计划台渲染失败", exc_info=True)
 
 # ═══════════════════════════════════════════════════════════════
 # 【V88·机构风向标 2026-07-18 用户点单】权威机构研报评级/外资观点综合分析推荐池,
@@ -18668,7 +15461,7 @@ with st.expander("⚡ 公告事件雷达 · 自选+持仓公司公告（可转�
                              "announcements.json").read_text(encoding="utf-8"))
         st.caption(f"🕒 {_annj9.get('generated_at', '')} · 池{_annj9.get('pool_n', 0)}只 · "
                    "出处:东财公告库（A股+港股；美股8-K不覆盖，如实说明） · "
-                   "交易日随流水线更新；盘中出新事件自动推飞书预警（48h同事件只推一次）")
+                   "来源时点见原公告；后台状态与飞书送达以运行监控及发送回执为准")
         # 【V88·全市场可转债日历 2026-07-18 用户点单】低频事件全市场一网打尽,
         # 申购/上市提前预警;⭐=正股在你的池内(抢权窗口重点)。
         _cbs9 = _annj9.get("cb_calendar") or []
@@ -18684,8 +15477,8 @@ with st.expander("⚡ 公告事件雷达 · 自选+持仓公司公告（可转�
                 + ("<b style='color:#b45309'> ⭐池内正股·抢权窗口</b>" if _x9.get('in_pool') else "")
                 + "</div>"
                 for _x9 in _cbs9[:8]) + "</div>", unsafe_allow_html=True)
-            st.caption("申购日当天/前一天盘中会自动推飞书提醒；转债打新顶格申购不占资金，"
-                       "抢权博弈两面（配售权vs摊薄+登记日后惯性回落），仅短线纪律仓。")
+            st.caption("申购及上市日期须核对原公告；提醒是否送达以回执为准，"
+                       "配售权、摊薄和价格回落应合并核验；此日历不授予交易权限。")
         # 【V88·即将申购储备 2026-07-18 用户点单"已申购的没操作空间"】同意注册=
         # 申购日随时公告(一般数周内),提前进入观察;池内正股注册当轮盘中就会推飞书。
         _pipe9 = _annj9.get("cb_pipeline") or []
@@ -18712,7 +15505,7 @@ with st.expander("⚡ 公告事件雷达 · 自选+持仓公司公告（可转�
                        "公告申购日后自动进上方日历并推提醒。")
         _evs_all9 = _annj9.get("events") or {}
         if not _evs_all9:
-            st.info("近5日池内无可转债/回购/减持等公告事件——无事件也是信息（如实说明）。")
+            st.info("当前缓存没有可展示的公告事件；需核对采集状态与日期，不能据此认定近5日没有公告。")
         else:
             _grp9 = {}
             for _blk9 in _evs_all9.values():
@@ -18727,9 +15520,9 @@ with st.expander("⚡ 公告事件雷达 · 自选+持仓公司公告（可转�
                         f"{str(_e9.get('date'))[5:]}「{str(_e9.get('title'))[:30]}」"
                         f"<span style='color:#64748b'>——{_e9.get('note')}</span></div>"
                         for _b9, _e9 in _grp9[_dk9][:8]) + "</div>", unsafe_allow_html=True)
-            st.caption("硬边界：事件只做语境参考，不推翻周期裁决；⚡两面事件若该股被判「回避」，最多短线纪律小仓。")
+            st.caption("公告是复核证据，不能单独授权开仓；中央处于回避或未满足原条件时，事件机会也不可执行。")
     except Exception:
-        st.info("公告事件数据随日报流水线生成（交易日 07/13/19 点），稍后刷新。")
+        st.info("公告证据读取失败或尚未生成，请查数据与后台状态；当前无法判断是否存在新公告。")
 
 # 【V88·散户情绪三榜 2026-07-19 用户问"热榜细节在哪"】此前只做池内命中提示,
 # 这里给完整三榜详情——反指标语义:越热闹越要冷静,不是买入榜。
@@ -18832,15 +15625,16 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
     except Exception:
         pass
 
-    _rl_ipo9 = _v88_rate_line9("ipo_hk", "港股新股首日")
-    if _rl_ipo9:
-        st.caption(_rl_ipo9)
     try:
         _ipo9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "ipo_radar.json")
                            .read_text(encoding="utf-8"))
         _ipo_rows9 = _ipo9.get("rows") or []
+        _cn_ipo_status9 = _ipo9.get('cn_source') or {}
+        if _cn_ipo_status9:
+            st.caption('A股申购源：东方财富公开沪深/北交所日历 · 新增费用0元 · ' +
+                       ('分页核对完成' if _cn_ipo_status9.get('complete') else '部分来源缺失，不能视为无新股'))
         if _ipo_rows9:
-            st.caption(f"🕒 {_ipo9.get('generated_at', '')} · 评级=确定性规则+AI一句话 · 打新决策以正式公告为准")
+            st.caption(f"🕒 {_ipo9.get('generated_at', '')} · 日历观察与规则风险提示 · 不代表3A评级或申购指令 · 以正式公告为准")
 
             def _ipo_tb9(_lst9):
                 _out9 = []
@@ -18848,8 +15642,8 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
                     if _r9x.get("market") == "A股":
                         _d9x = str(_r9x.get("apply_date") or "")
                         _d9x = f"{_d9x[:4]}-{_d9x[4:6]}-{_d9x[6:]}" if len(_d9x) == 8 else _d9x
-                        _px9 = (f"{_r9x.get('price')}元/PE{_r9x.get('pe'):g}" if _r9x.get("price") else "未披露")
-                        _sz9 = f"募{_r9x.get('funds_yi'):g}亿" if _r9x.get("funds_yi") else f"{_r9x.get('amount_wan'):g}万股"
+                        _px9 = (f"{_r9x.get('price')}元/PE" + (f"{_r9x['pe']:g}" if _r9x.get("pe") is not None else "未披露") if _r9x.get("price") else "未披露")
+                        _sz9 = f"募{_r9x.get('funds_yi'):g}亿" if _r9x.get("funds_yi") else (f"{_r9x['amount_wan']:g}万股" if _r9x.get("amount_wan") is not None else "规模未披露")
                     elif _r9x.get("market") == "港股":
                         _d9x = str(_r9x.get("apply_date") or "")
                         _px9 = _r9x.get("price_range") or "未披露"
@@ -18858,7 +15652,7 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
                         _d9x = str(_r9x.get("apply_date") or "")
                         _px9 = _r9x.get("price_range") or "未披露"
                         _sz9 = f"募{_r9x.get('raise_usd', 0) / 1e8:.1f}亿$" if _r9x.get("raise_usd") else "—"
-                    # 【V88·中签率公示 2026-07-24 用户点单】A股=Tushare ballot,港股=富途luckyRatio,
+                    # 【V88·中签率公示 2026-07-24 用户点单】A股=东方财富 ONLINE_ISSUE_LWR,港股=富途luckyRatio,
                     # 美股=配售制无中签率(如实);未披露标"待披露"不留空。
                     if _r9x.get("market") == "A股":
                         _bl9 = _r9x.get("ballot_pct")
@@ -18870,7 +15664,7 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
                         _lot9 = "配售制·无中签率"
                     _out9.append({"市场": _r9x.get("market"), "新股": f"{_r9x.get('name')}（{_r9x.get('code')}）",
                                   "申购/定价日": _d9x, "价格/PE": _px9, "规模": _sz9, "中签率": _lot9,
-                                  "评级": _r9x.get("grade", ""), "点评": _r9x.get("ai") or _r9x.get("why", "")})
+                                  "日历规则标签": _r9x.get("grade", ""), "规则风险说明": _r9x.get("why", "")})
                 return _out9
 
             # 【用户定则】只推荐Top3：评级最优+申购日最近置顶，其余进完整清单
@@ -18878,30 +15672,20 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
                       "⚪ 一般": 4, "⚠️ 谨慎": 5, "🚫 回避": 6}
             _picks9 = sorted(_ipo_rows9, key=lambda r: (_rank9.get(r.get("grade", ""), 9),
                                                         str(r.get("apply_date") or "")))[:3]
-            st.markdown("**📌 打新推荐 Top3**")
-            # 【V88·打新必带成功率 2026-07-24 用户点单"打新一定要加上成功率分析"】
-            # 港股=总账近12只首日上涨率(到期核算);A股/美股战绩源接入前如实标积累中,不编数。
-            _ipo_r9p = (_v88_success9().get("types") or {}).get("ipo_hk") or {}
-            if _ipo_r9p.get("rate") is not None:
-                _ipo_c9p = ("#16a34a" if _ipo_r9p["rate"] >= 60 else
-                            ("#dc2626" if _ipo_r9p["rate"] < 45 else "#b45309"))
-                st.markdown(f"<span style='font-size:13px'>📊 <b>同类实盘成功率</b>："
-                            f"港股新股首日上涨率 <b style='color:{_ipo_c9p}'>{_ipo_r9p['rate']}%</b>"
-                            f"（近{_ipo_r9p.get('n', 0)}只"
-                            + (f"·首日均{_ipo_r9p['avg']:+.1f}%" if _ipo_r9p.get("avg") is not None else "")
-                            + "·出处:上市回看到期核算）｜A股/美股首日战绩：样本积累中（不编数，接入后自动显示）"
-                            + ("——<b style='color:#dc2626'>近期首日上涨率偏低，谨慎档一律放弃</b>"
-                               if _ipo_r9p["rate"] < 45 else "")
-                            + "</span>", unsafe_allow_html=True)
-            else:
-                st.caption(f"📊 打新实盘成功率：样本积累中（{_ipo_r9p.get('n', 0)}只·<5不报率）"
-                           "——上市回看自动核算，别只看评级要看历史落地率")
+            st.markdown("**📅 IPO日历关注 Top3**")
+            with st.expander('📊 历史首日观察（分市场，非未来胜率）', expanded=False):
+                from ipo_radar import refresh_history_labels as _ipo_history_labels
+                _ipo_history9 = _ipo_history_labels(_ipo9)
+                for _history_market in ('A股','港股','美股'):
+                    _hist_rows9 = [r for r in _ipo_history9.get('rows',[]) if r.get('market') == _history_market]
+                    _line9 = next((r.get('odds_line') for r in _hist_rows9 if r.get('odds_line')), None)
+                    st.caption(_line9 or f'{_history_market}：暂无可核实的首日历史观察；不表示获配率或未来收益。')
             st.dataframe(_ipo_tb9(_picks9), hide_index=True, use_container_width=True)
             _rest9 = [r for r in _ipo_rows9 if r not in _picks9]
             if _rest9:
                 with st.expander(f"完整清单（其余 {len(_rest9)} 只，含谨慎/回避）"):
                     st.dataframe(_ipo_tb9(_rest9), hide_index=True, use_container_width=True)
-            st.caption("A股/美股=申购或定价日；港股=招股截止日、规模列为入场费/手（数据源：Tushare/Nasdaq/富途）。")
+            st.caption("A股/美股=申购或定价日；港股=招股截止日、规模列为入场费/手（数据源：免费行情源/Nasdaq/富途）。")
             _listed9 = _ipo9.get("hk_listed") or []
             if _listed9:
                 _win9 = sum(1 for x in _listed9 if str(x.get("first_day", "")).startswith("+"))
@@ -18919,54 +15703,20 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
 # 【V88·涨停接力雷达】A股涨停主线+连板梯队+接力候选（2026-07-16 用户点单：市场天天有涨停，
 # 系统不该说"今天无推荐"）。数据由私仓日报流水线生成，这里零网络秒开。
 # ═══════════════════════════════════════════════════════════════
-if _V88_WATCHLIST_UI:   # 2026-08-01 用户裁定:接力雷达版面撤;零token后台照跑,喂进化库与3A催化维度
-    with st.expander("🔥 涨停接力雷达 · A股短线主线（打板高风险·非价值投资）", expanded=False):
-        _rl_relay9 = _v88_rate_line9("relay", "接力候选隔日红盘")
-        if _rl_relay9:
-            st.caption(_rl_relay9)
-        try:
-            _zt9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "limit_up_radar.json")
-                              .read_text(encoding="utf-8"))
-            if _zt9.get("total"):
-                st.caption(f"🕒 {_zt9.get('generated_at', '')} · 全市场涨停 {_zt9['total']} 只"
-                           f"（首板 {_zt9.get('first_boards', 0)} 只）· ⚠️ T+1情绪博弈，追高即接盘")
-                _mls9 = _zt9.get("mainlines") or []
-                if _mls9:
-                    st.markdown("**📈 今日主线**")
-                    for _m9 in _mls9:
-                        st.markdown(f"- **{_m9['industry']}**（{_m9['count']}只·最高{_m9['max_boards']}板）："
-                                    + "、".join(_m9["leaders"]))
-                _lad9 = _zt9.get("ladder") or []
-                if _lad9:
-                    st.markdown("**🪜 连板梯队**：" + " ｜ ".join(
-                        f"{_l9['boards']}板：{'、'.join(_l9['names'][:3])}" for _l9 in _lad9[:4]))
-                _rel9 = _zt9.get("relay") or []
-                if _rel9:
-                    st.markdown("**🎯 接力候选**（主线内首板·零炸板·封单≥1亿·明日惯性看点）")
-                    st.dataframe([{"个股": f"{r['name']}（{r['code']}）", "主线": r["industry"],
-                                   "封单额": f"{r['seal_yi']}亿", "换手": f"{r['turnover']}%"} for r in _rel9],
-                                 hide_index=True, use_container_width=True)
-                    st.caption("打板须设分时止损，破封单立走，不追隔日高开。系统只梳理方向与梯队，打不打由你按纪律定。")
-                else:
-                    st.caption("主线内暂无封板强度达标的首板接力候选（情绪偏弱/炸板多，谨慎）。")
-            else:
-                st.info("今日无涨停数据（休市或数据源未更新，随日报每时段刷新）。")
-        except Exception:
-            st.info("涨停接力雷达数据待今日日报生成（A股交易日07/13/19点更新）。")
 
     # ═══════════════════════════════════════════════════════════════
     # 【瘦身2026-07-27用户批准】全行业机会雷达已删(手动90秒扫描,被五行业代表+全市场机会扫描+涨停接力全面覆盖)
     # 【V88·触底拐点机会池 2026-07-19 用户点单恢复+现代化】前身"深度回调机会池"。
     # 优质池116只里"跌得深(52周双口径)且拐点已现"的中美港各Top10——仍在寻底的不收。
 with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现（中美港各Top10）", expanded=False):
-    st.caption("三闸门：①全市场大池(2187只·含持仓自选) ②深水位(距52周高≤-25%或52周分位≤20%) "
+    st.caption("三闸门：①历史研究样本池(含持仓自选，实际数量见扫描记录) ②深水位(距52周高≤-25%或52周分位≤20%) "
                "③拐点已现(放量收复MA20/放量长阳/底背离金叉/底部启动确认)——仍在寻底的不收，宁缺毋滥。"
                "🔻标近52周最低区(≤3%)，历史最低区(≤10%)单独标注。"
                "概率=规则情景估计(非回测胜率)；观察清单非买入指令，进场仍走时机灯纪律。")
     _rl_bt9 = _v88_rate_line9("bottom_turn", "触底拐点池")
     if _rl_bt9:
         st.caption(_rl_bt9)
-    # 【2026-08-16 Kimi加·过期警示】离线管线曾因本地脏文件顶住 safe_pull 的 autostash
+    # 【2026-08-16 界面增强·过期警示】离线管线曾因本地脏文件顶住 safe_pull 的 autostash
     # 而停滞(08-07旧版盖掉08-14新版,已修)。数据若落后于最近一个交易日→红条警示不可执行。
     # 周末/周一盘前不算过期:以最近一个工作日为基准,避免周五数据在周日误报。
     try:
@@ -19276,9 +16026,13 @@ if _deep_code_now:
                      or (dict(st.query_params).get("q") if hasattr(st, "query_params") else None))
         if _dp_code9:
             _dp_code9 = str(_dp_code9)
+            from stock_profile_view import profile as _dp_profile_read9, compact_html as _dp_profile_compact9
+            _dp_company9 = _dp_profile_read9(_dp_code9)
             try:
                 from modules.sector_map import get_sector as _gs9dp
                 _dp_sec9 = _gs9dp(_dp_code9, str(st.session_state.get("scan_selected_name") or ""))
+                if _dp_sec9 == '待核行业':
+                    _dp_sec9 = ''
             except Exception:
                 _dp_sec9 = ""
             _mk9dp = ("A股" if _dp_code9.endswith((".SS", ".SZ", ".SH", ".BJ"))
@@ -19292,12 +16046,11 @@ if _deep_code_now:
                         _hits9dp.append(f"<b>{_hz9dp}</b> {_s9dp.get('name')} 分{_s9dp.get('score')}"
                                         f"<span style='font-size:8px;color:#94a3b8'>·{str(_s9dp.get('reason'))[:26]}"
                                         f"·失效:{str(_s9dp.get('invalid'))[:16]}</span>")
-            st.markdown("<div style='font-size:13px;background:#f0f9ff;border-left:3px solid #0369a1;"
+            st.markdown("<div class='v88-deep-sector' style='font-size:12px;background:#f0f9ff;border-left:3px solid #0369a1;"
                         "padding:.35rem .6rem;border-radius:6px'>🧭 <b>板块轮转定位</b>"
-                        + (f"　所属[{_dp_sec9 or '未识别'}]｜" if _dp_sec9 else "　板块映射未识别｜")
-                        + ("；".join(_hits9dp) if _hits9dp else
-                           f"未进{_mk9dp}各周期强板块榜(2/5/8/16周)——个股强于板块或板块未启动,"
-                           "谨慎给板块顺风加分")
+                        + (_dp_profile_compact9(_dp_code9) if _dp_company9.get('industry') else " · 公司行业待核")
+                        + (f"｜轮动映射[{_dp_sec9}]："+"；".join(_hits9dp) if _hits9dp else
+                           "｜暂无匹配的强板块轮动证据；不改变公司行业与审核分。")
                         + "</div>", unsafe_allow_html=True)
     except Exception:
         logging.exception("[V88] 深度页板块轮转段失败")
@@ -19333,11 +16086,13 @@ if st.session_state.get('scan_selected_code'):
     _safe_print(f"[深度作战室] ✅ 检测到选中股票: {stock_name} ({q_input}), execute_analysis = {execute_analysis}")
     
     # 明显的提示
+    from stock_profile_view import display_name as _profile_name
+    stock_name = _profile_name(stock_name, q_input)
     st.success(f"🎯 已自动选中：**{stock_name}** ({q_input})")
     
     # 【V82.9新增】显示扫描分析表格
     st.markdown("#### 📊 扫描结果（勾选2-4只股票进行对比）")
-    st.caption("💡 与首页、自选、持仓、云端和飞书共用 V88-U2.0 唯一评分底稿")
+    st.caption("中央审核分与原3A列表一致；量价辅助分和情景估计另列，不作为授级依据。")
     
     # 【V96】闪烁修复：页面任何交互都会触发 rerun 并重跑本块，原进度条每次
     # 挂载/卸载+sleep(0.2) 造成"不断闪现搜索/字符波动"。15分钟内同一代码
@@ -19352,47 +16107,65 @@ if st.session_state.get('scan_selected_code'):
     _scan_status = _NoopProg() if _wr_fresh else st.empty()
     _scan_status.text("📊 获取数据... (0%)")
     target_c = to_yf_cn_code(q_input)
-    df_temp = fetch_stock_data(target_c)
+    from deep_analysis_data import fetch as _deep_fetch, report_html as _deep_report_html, snapshot_signature as _deep_signature
+    from deep_cross_validation import load_context as _deep_context_load, reconcile as _deep_reconcile, html as _deep_cross_html, span as _deep_span
+    _deep_context = None
+    _deep_cross = None
+    _deep_synthesis = {}
+    _deep_annual = {}
+    _search_dc = {}
+    _deep_trend = {}
+    try:
+        _deep_context = _deep_context_load(target_c)
+        st.markdown(_deep_report_html(target_c, context=_deep_context), unsafe_allow_html=True)
+    except Exception as _deep_report_error:
+        logging.exception("中央深度报告读取失败")
+        st.warning("中央报告暂未读取成功；下方技术研究不授予评级。")
+    from deep_optional_data import read_local_benchmark as _deep_read_benchmark
+    _deep_benchmark_frames = {}
+    def _deep_benchmark(index_code):
+        if index_code not in _deep_benchmark_frames:
+            _deep_benchmark_frames[index_code] = _deep_read_benchmark(index_code)
+        return _deep_benchmark_frames[index_code]
+    _deep_extras = {}
+    df_temp, _deep_quality = _deep_fetch(target_c, allow_network=False)
+    if df_temp is None:
+        st.caption('本地完整日线暂缺，中央原合同仍保留；补查不会改动评级或执行权限。')
+        from deep_optional_data import session_once as _deep_once, bounded_call as _deep_bounded
+        _deep_history_state = st.session_state.setdefault('_deep_history_requests', {})
+        _deep_history_saved = _deep_once(_deep_history_state, target_c)
+        _deep_retry = st.button('补查完整日线（免费来源）', key=f'deep_history_request_{target_c}',
+                                disabled=bool(_deep_history_saved))
+        _deep_retry_data = _deep_once(_deep_history_state, target_c, requested=_deep_retry,
+            loader=lambda: {'result': _deep_bounded(lambda: _deep_fetch(target_c), timeout=10)})
+        if _deep_retry_data.get('result'):
+            from deep_analysis_data import revalidate_cached as _deep_revalidate_cached
+            df_temp, _deep_quality = _deep_revalidate_cached(_deep_retry_data['result'], target_c)
+        if _deep_retry_data and df_temp is None:
+            st.caption('本会话已补查，日线仍未通过当前完整交易日核验：'
+                       + str(_deep_quality.get('error_detail') or '；'.join(_deep_retry_data.get('errors') or [])))
+    _deep_annual_slot = st.empty()
+    _deep_cross_slot = st.empty()
+    from annual_outlook import build as _annual_build, html as _annual_html
+    # A rolling twelve-month view has its own evidence scope; MA200 is history,
+    # and a signed short contract cannot become an annual target by relabeling.
+    _deep_annual = _annual_build(_deep_context or {'code': target_c}, df_temp, _deep_quality)
+    _deep_annual_slot.markdown(_annual_html(_deep_annual), unsafe_allow_html=True)
     _scan_prog.progress(0.4)
     _scan_status.text("📊 计算指标... (40%)")
 
     if df_temp is not None:
-        m = calculate_metrics_all(df_temp, target_c)
+        m = calculate_metrics_all(df_temp, target_c, benchmark_loader=_deep_benchmark)
+        if m and m.get('rs20') is None:
+            st.caption('指数辅助资料未覆盖最近完整交易日：RS、Beta与Alpha留空，不按中性补分；中央评级仍查原审核。')
         _scan_prog.progress(0.8)
         _scan_status.text("📊 构建表格... (80%)")
         if m:
-                # 判断市场（美股/港股/A股）
-                if q_input[0].isalpha(): 
-                    sector = "美股"
-                elif len(q_input) == 5 or (len(q_input) >= 4 and q_input[0] == '0'): 
-                    sector = "港股"
-                elif q_input.startswith('6') or q_input.startswith('5'): 
-                    sector = "A股(沪)"
-                elif q_input.startswith('0') or q_input.startswith('3'): 
-                    sector = "A股(深)"
-                else: 
-                    sector = "其他"
-                
-                # 长期趋势
-                ma200 = m['last'].get('MA200', 0)
-                if ma200 > 0 and m['last_price'] > ma200:
-                    long_term = "📈 多头"
-                elif ma200 > 0 and m['last_price'] < ma200 * 0.9:
-                    long_term = "📉 空头"
-                else:
-                    long_term = "➡️ 震荡"
-                
-                # 短期趋势
-                rsi = m['rsi']
-                if rsi > 70:
-                    short_term = "🔥 超买"
-                elif rsi > 50:
-                    short_term = "📈 强势"
-                elif rsi > 30:
-                    short_term = "📉 弱势"
-                else:
-                    short_term = "❄️ 超卖"
-                
+                # 后缀先于前导数字，避免 000558.SZ / 0661.HK 互相串市场。
+                sector = {"CN":"A股", "HK":"港股", "US":"美股"}.get(parse_market_from_code(target_c), "未知市场")
+
+                # 统一研判在同一行情快照完成后填入；禁止单项指标先授强弱结论。
+                long_term = short_term = "等待同源研判"
                 # 资金状态
                 if len(m['df']) >= 5:
                     vol_ma5 = m['df']['Volume'].tail(5).mean()
@@ -19438,32 +16211,71 @@ if st.session_state.get('scan_selected_code'):
                             _touch += 1
                 _pos_pct = (m['last_price'] - l250) / (h250 - l250) * 100 if h250 > l250 else 50.0
                 from v88_decision_core import evaluate_decision as _evaluate_search_decision
+                import cloud_engine as _deep_ce
+                _deep_trend = _deep_ce.analyze_trend_full(df_temp) or {}
                 _search_dc = _evaluate_search_decision(
-                    df_temp, m.get('trend_full') or {}, name=stock_name, code=q_input)
-                _action = _search_dc.get('action', '观察')
-                _stop_target = (f"防守{_search_dc.get('stop') or '—'} → 压力"
-                                f"{_search_dc.get('resistance') or '—'}")
+                    df_temp, _deep_trend, name=stock_name, code=target_c)
+                try:
+                    _deep_cross = _deep_reconcile(_deep_context or {}, df_temp, _deep_quality, _search_dc)
+                    from deep_synthesis import build as _synth_build, html as _synth_html
+                    _deep_synthesis = _synth_build(_deep_context or {}, df_temp, _deep_quality, _search_dc, _deep_trend, _deep_cross)
+                    _deep_cross['joint_conclusion'] = _deep_synthesis
+                    _deep_annual = _annual_build(_deep_context or {'code': target_c}, df_temp, _deep_quality, synthesis=_deep_synthesis)
+                    _deep_cross['annual_outlook'] = _deep_annual
+                    from stock_horizon import analyze as _period_analyze
+                    from period_consistency import build as _period_build, html as _period_html
+                    _deep_period = _period_build(target_c, df_temp, _deep_quality,
+                        _period_analyze(stock_name, target_c, df_temp, full=_deep_trend, allow_ai=False),
+                        _deep_trend, _deep_annual, _deep_synthesis)
+                    _deep_cross['period_consistency'] = _deep_period
+                    from trend_scenarios import build_stock as _future_build
+                    from future_trend_visual import render as _future_render
+                    _deep_future = _future_build(_deep_annual, _deep_synthesis, _deep_period, code=target_c, name=stock_name)
+                    _deep_cross['future_scenario'] = _deep_future
+                    from evidence_visuals import deep_overview as _deep_visual_overview, contract_strip as _contract_visual
+                    with _deep_annual_slot.container():
+                        st.markdown(_deep_visual_overview(_deep_synthesis, _deep_annual, _deep_period), unsafe_allow_html=True)
+                        st.markdown(_future_render(_deep_future), unsafe_allow_html=True)
+                        with st.expander('未来一年分阶段条件与年度依据', expanded=False):
+                            st.markdown(_annual_html(_deep_annual), unsafe_allow_html=True)
+                            st.markdown(_period_html(_deep_period), unsafe_allow_html=True)
+                    _deep_cross_slot.markdown(_deep_cross_html(_deep_cross)+_synth_html(_deep_synthesis, details=False)
+                        +_contract_visual(_deep_synthesis.get('original_plan'), (_deep_synthesis.get('observations') or {}).get('last'),
+                            verified=_deep_cross.get('status') in {'一致·等原条件', '一致·仍按中央执行闸'}), unsafe_allow_html=True)
+                    long_term = _deep_synthesis['annual_label']
+                    short_term = _deep_synthesis['momentum_label']
+                except Exception:
+                    logging.exception('深度交叉核验失败')
+                    _deep_cross_slot.warning('交叉核验暂不可用；保留中央原合同，技术研究不提供执行许可。')
+                _central_plan = ((_deep_context or {}).get('row') or {}).get('trade_plan') or {}
+                _action = ('发现差异·先复核' if not _deep_cross or _deep_cross['status'] == '需复核' else
+                           '仅按中央执行闸与原合同' if (_deep_context or {}).get('formal') else '仅研究·等待原条件')
+                _stop_target = (f"失效{_central_plan.get('stop') or '未核实'} → 止盈"
+                                f"{_deep_span(_central_plan.get('take_profit_range'))}")
                 scan_result = pd.DataFrame([{
                     "代码": q_input,
                     "名称": stock_name,
                     "市场": sector,
-                    "统一分": _search_dc.get('unified_score', 0),
+                    "中央评级·审核分": (f"{_deep_cross.get('current_grade') or '无当前评级'} / {_deep_cross.get('audit_score') if _deep_cross.get('audit_score') is not None else '未形成当前分数'}" if _deep_cross else '核验未完成'),
+                    "量价辅助分": _search_dc.get('unified_score'),
                     "短/中/长": (f"{_search_dc.get('short_score', 0)}/"
                                   f"{_search_dc.get('medium_score', 0)}/"
                                   f"{_search_dc.get('long_score', 0)}"),
                     "2周上/下估计": f"{_search_dc.get('p_up', 0)}%/{_search_dc.get('p_down', 0)}%",
-                    "盈亏比": f"{_search_dc.get('rr', 0):.2f}",
-                    "期望值": f"{_search_dc.get('expected_pct', 0):+.1f}%",
+                    "技术毛RR": f"{_search_dc.get('rr', 0):.2f}",
+                    "规则情景值": f"{_search_dc.get('expected_pct', 0):+.1f}%",
                     "评分口径": _search_dc.get('score_version', 'V88-U2.0'),
                     "20日动量": f"{m.get('chg20d', 0) or 0:+.1f}%",
                     "RS强度": (f"{m['rs20']:+.1f}" if m.get('rs20') is not None else "—"),
                     "ESG": f"{_esg_t} ({_esg_g})",
-                    "长期": long_term,
-                    "短期": short_term,
-                    "资金": capital,
+                    "年线位置（200日）": long_term,
+                    "未来一年条件主线": _deep_annual.get('headline', '年度研判待核'),
+                    "RSI动量 / 转弱反证": short_term,
+                    "成交量（非资金净流）": capital,
                     "水位": water_level,
-                    "操作指引": _action,
-                    "止损/目标": _stop_target,
+                    "联合结论": _deep_synthesis.get("status", "研判未完成"),
+                    "中央动作约束": _action,
+                    "原合同失效/止盈": _stop_target,
                     "现价": f"{m['last_price']:.2f}"
                 }])
                 
@@ -19480,69 +16292,57 @@ if st.session_state.get('scan_selected_code'):
                     width='stretch',
                     hide_index=True,
                     column_config={
-                        "统一分": st.column_config.ProgressColumn(
-                            "统一分",
+                        "量价辅助分": st.column_config.ProgressColumn(
+                            "量价辅助分",
                             format="%d",
                             min_value=0,
                             max_value=100,
                         ),
                     }
                 )
+                if _deep_cross:
+                    st.download_button('下载本票交叉核验凭据',
+                        data=json.dumps(_deep_cross, ensure_ascii=False, indent=2),
+                        file_name=f'V88-{target_c}-cross-validation.json', mime='application/json',
+                        key=f'deep_cross_download_{target_c}')
 
-                # ══ 【单票 ±3A 裁决 2026-08-02 用户定纲】 ══
-                # "个股搜索的深度分析也要和3a系统一样进行买卖分析,出来的结果看符合-3a
-                #  还是+3a,都要有双剑合璧系统的验证,和3a一样"。
-                # 与 3A 大系统**同源**:同一套木桶五桶板 + 同一套斯波朗迪1-2-3 + 同一套铁律19v3。
-                # 摆在量价趋势之前——先给结论,再给过程。
+                # 中央买侧评级与合同已在页首先行展示；这里仅补充独立卖侧保护。
                 try:
-                    import sys as _sv_sys
-                    _sv_p = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
-                    if _sv_p not in _sv_sys.path:
-                        _sv_sys.path.insert(0, _sv_p)
                     from stock_verdict import verdict as _sv_verdict
-                    from grade_card import verdict_html as _sv_html
                     _sv = _sv_verdict(str(target_c), stock_name)
-                    st.markdown(_sv_html(_sv), unsafe_allow_html=True)
-                except Exception as _e_sv:
-                    st.caption(f"±3A 裁决暂不可用：{type(_e_sv).__name__}")
+                    if _sv.get("sell"):
+                        with st.expander("独立卖侧风险证据", expanded=False):
+                            from grade_card import verdict_html as _sv_html
+                            st.markdown(_sv_html(_sv), unsafe_allow_html=True)
+                except Exception:
+                    logging.exception("独立卖侧风险证据读取失败")
 
                 # 【V99】综合量价趋势判断（8分拆解/9态量价/9段趋势/6级水位/全价位）
                 # 复用 cloud_engine（三端同一套引擎），桌面版注入真实板块强度
                 try:
                     import cloud_engine as _ce
-                    _sec_str = None
-                    try:
-                        _mt99 = _load_market_temp()
-                        _mk99 = "A股" if str(target_c).upper().endswith((".SS", ".SZ", ".SH", ".BJ")) else ("港股" if str(target_c).upper().endswith(".HK") else "美股")
-                        from modules.sector_map import get_sector as _gs99
-                        _sname = str(_gs99(target_c, stock_name) or "")
-                        _rot99 = (_mt99.get("_rotation") or {}).get(_mk99) or {}
-                        if any(_sname and (_h in _sname or _sname in _h) for _h in _rot99.get("hot", [])):
-                            _sec_str = 80
-                        elif any(_sname and (_h in _sname or _sname in _h) for _h in _rot99.get("cold", [])):
-                            _sec_str = 25
-                    except Exception:
-                        pass
-                    _F = _ce.analyze_trend_full(df_temp, sector_strength=_sec_str)
+                    # Same trend term as the upper 5-component technical score.
+                    # A guessed sector must not silently add another score here.
+                    _F = _deep_trend
                     if _F:
                         # 【V88·拐点识别】放量+破趋势=拐点，卡片最顶端直接亮出来
                         _turn99 = _F.get("turning") or {}
                         if _turn99.get("side"):
                             (st.error if _turn99["side"] == "top" else st.success)(
                                 f"**{_turn99['label']}**：" + "；".join(_turn99["signals"])
-                                + f"\n\n👉 {_turn99['prompt']}")
-                        with st.expander(f"🔥 综合量价趋势 · {_F['stage']} · 趋势分{_F['total']}(辅助量纲·非统一分,买卖以统一分为准) · 结论「{_F['conclusion']}」", expanded=True):
+                                + "\n\n这是技术反证提示，需结合中央原合同复核；不自动改动失效价、止盈或交易动作。")
+                        with st.expander(f"趋势分项拆解 · {_F['stage']}（占量价辅助分15%，不另授级）", expanded=False):
                             st.markdown(
-                                f"**一句话结论：{_F['conclusion']}** ｜ 操作建议：{_F['action']}\n\n"
-                                f"- 趋势总分：**{_F['total']}/100**\n"
+                                f"**技术状态：{_F['stage']}**；以下为量价参考，执行以页首原合同与独立卖侧风控为准。\n\n"
+                                f"- 趋势分项：**{_F['total']}/100**（在上方量价辅助分中占15%）\n"
                                 f"- 趋势阶段：{_F['stage']}\n"
                                 f"- 量价状态：{_F['vp']}\n"
                                 f"- 水位判断：{_F['water']}（{_F['pos52']}%）→ {_F['water_adv']}\n"
                                 f"- MACD状态：{_F['macd_txt']}\n"
                                 f"- 均线状态：{_F['ma_state']}（{_F['ma_txt']}）\n"
-                                f"- 买入区间：{_F['buy_zone']} ｜ 回踩买点：{_F['pullback']} ｜ 突破加仓：{_F['breakout']}\n"
-                                f"- 止损位：{_F['stop']} ｜ 减仓位：{_F['reduce']}\n"
-                                f"- 失效条件：{_F['invalid']}")
+                                f"- 技术支撑区：{_F['buy_zone']} ｜ 回踩参考：{_F['pullback']} ｜ 突破参考：{_F['breakout']}\n"
+                                f"- 结构风险参考：{_F['stop']} ｜ 压力参考：{_F['reduce']}\n"
+                                f"- 原合同失效条件：{_central_plan.get('invalidation') or '尚无已审核合同'}")
                             # 【V88·U3全局时间轴 2026-07-26】深度分析跟随作战板档位:当前档周期分+区间
                             try:
                                 _gt9 = str(st.session_state.get("tb_tier9") or "今日")
@@ -19563,226 +16363,49 @@ if st.session_state.get('scan_selected_code'):
                                                     unsafe_allow_html=True)
                             except Exception:
                                 pass
-                            # 【V88·涨跌归因链 2026-07-25 用户定纲"不能光说技术面破坏,总有个原因,
-                            # 所有个股都要有简明说明,深度分析要更多字数"】四层证据拼装(全落盘零AI):
-                            # ①个股自身新闻(别名硬命中防中烟香港式错配) ②板块联动(相位+板块当日+主力资金)
-                            # ③市场联动(大盘当日+综述归因) ④事件带(财报临近/FOMC)——都没有就如实说技术性。
-                            try:
-                                _wc_repo9 = Path.home() / "Desktop" / "ai-daily-report-v2"
-                                _wc_lines9 = []
-                                _wc_chg9 = None
-                                try:
-                                    _wc_chg9 = round(float(df_temp["Close"].iloc[-1] /
-                                                           df_temp["Close"].iloc[-2] - 1) * 100, 2)
-                                except Exception:
-                                    pass
-                                _wc_dir9 = "跌" if (_wc_chg9 or 0) < 0 else "涨"
-                                # ①个股新闻(require_name同款硬门槛)
-                                try:
-                                    import sys as _sy9w
-                                    if str(_wc_repo9 / "src") not in _sy9w.path:
-                                        _sy9w.path.insert(0, str(_wc_repo9 / "src"))
-                                    from catalyst_alias import aliases_for as _af9w, title_matches as _tm9w
-                                    _als9w = _af9w(stock_name, target_c)
-                                    _hit9w = None
-                                    for _it9w in (json.loads((_wc_repo9 / "data" / "news_analyzed.json")
-                                                             .read_text(encoding="utf-8")).get("items") or [])[:80]:
-                                        if _tm9w(str(_it9w.get("title") or ""), _als9w):
-                                            _hit9w = _it9w
-                                            break
-                                    if _hit9w:
-                                        _lk9w = str(_hit9w.get("link") or _hit9w.get("url") or "")
-                                        _tt9w = str(_hit9w.get("title"))[:44]
-                                        _wc_lines9.append(
-                                            "**直接原因(个股新闻)**：「"
-                                            + (f'<a href="{_lk9w}" target="_blank">{_tt9w}</a>' if _lk9w else _tt9w)
-                                            + f"」（{_hit9w.get('source', '新闻')}）——个股自身消息在发酵。")
-                                except Exception:
-                                    pass
-                                # ②板块联动:当日板块涨跌+主力资金+相位
-                                try:
-                                    from modules.sector_map import get_sector as _gs9w
-                                    _sn9w = str(_gs9w(target_c, stock_name) or "")
-                                    _mk9w = ("A股" if str(target_c).upper().endswith((".SS", ".SZ", ".SH", ".BJ"))
-                                             else ("港股" if str(target_c).upper().endswith(".HK") else "美股"))
-                                    _snap9w = json.loads((_wc_repo9 / "data" / "market_snapshot.json")
-                                                         .read_text(encoding="utf-8"))
-                                    _sec9w = next((x for x in ((_snap9w.get("markets") or {}).get(_mk9w) or {})
-                                                   .get("sectors", []) if isinstance(x, dict) and _sn9w
-                                                   and (str(x.get("name")) in _sn9w or _sn9w in str(x.get("name")))), None)
-                                    _ffs9w = None
-                                    try:
-                                        from fund_flow_radar import sector_flow_of as _ffo9w
-                                        _ffs9w = _ffo9w(_sn9w, json.loads(
-                                            (_wc_repo9 / "data" / "fund_flow.json").read_text(encoding="utf-8")))
-                                    except Exception:
-                                        pass
-                                    _sec_bits9 = []
-                                    if _sec9w is not None:
-                                        _sc9w = float(_sec9w.get("chg1d") or _sec9w.get("chg") or 0)
-                                        _sec_bits9.append(f"所属「{_sn9w}」板块当日{_sc9w:+.1f}%"
-                                                          + ("(同板块普跌,联动为主)" if _sc9w < -1 and _wc_dir9 == "跌"
-                                                             else ("(板块共振上行)" if _sc9w > 1 and _wc_dir9 == "涨" else "")))
-                                    if _ffs9w:
-                                        _fn9w = float(_ffs9w.get("today_net") or 0)
-                                        _sec_bits9.append(f"板块主力资金今日{_fn9w:+.1f}亿"
-                                                          + ("·5日" + format(float(_ffs9w.get('net5d') or 0), '+.1f')
-                                                             + "亿" if _ffs9w.get("net5d") is not None else "")
-                                                          + ("——钱在离场,技术破位的背后是资金面" if _fn9w < -3
-                                                             else ("——主力在进,回调更像洗盘" if _fn9w > 3 else "")))
-                                    if _sec_bits9:
-                                        _wc_lines9.append("**板块联动**：" + "；".join(_sec_bits9) + "。")
-                                except Exception:
-                                    pass
-                                # ③市场联动:大盘当日+综述归因(带原文链接,复用综述同款三级兜底)
-                                try:
-                                    _mb9w = ((_snap9w.get("markets") or {}).get(_mk9w) or {})
-                                    _mc9w = float(((_mb9w.get("indices") or [{}])[0] or {}).get("chg1d") or 0)
-                                    _mwhy9w = ""
-                                    try:
-                                        _mwhy9w = str(_v88_mkt_why9(_mk9w, _wc_repo9) or "")
-                                    except Exception:
-                                        pass
-                                    if abs(_mc9w) >= 0.8 and ((_mc9w < 0) == (_wc_dir9 == "跌")):
-                                        _wc_lines9.append(f"**市场联动**：{_mk9w}大盘当日{_mc9w:+.2f}%,"
-                                                          f"个股难独善其身。{_mwhy9w}")
-                                except Exception:
-                                    pass
-                                # ④事件带:自家财报临近/FOMC等宏观事件(博弈期资金先撤是常见连锁)
-                                try:
-                                    for _e9w in (json.loads((_wc_repo9 / "data" / "macro_events.json")
-                                                            .read_text(encoding="utf-8")).get("events") or []):
-                                        _ev9w = str(_e9w.get("event") or "")
-                                        if str(target_c).upper().split(".")[0] in _ev9w or stock_name[:3] in _ev9w:
-                                            _wc_lines9.append(f"**事件带**：{_e9w['date'][5:]}(周{_e9w['dow']})"
-                                                              f"自家财报——博弈期资金先撤、波动放大是常见连锁,"
-                                                              "财报落地前技术信号可信度打折。")
-                                            break
-                                        if "FOMC" in _ev9w and _mk9w == "美股":
-                                            _wc_lines9.append(f"**事件带**：{_e9w['date'][5:]}(周{_e9w['dow']})FOMC,"
-                                                              "决议前机构降杠杆、高估值科技先被卖是惯常连锁。")
-                                            break
-                                except Exception:
-                                    pass
-                                if not _wc_lines9:
-                                    _wc_lines9.append("**归因**：未捕捉到个股利空/利好新闻,板块与大盘亦无显著联动——"
-                                                      "本次波动判定为技术性(获利了结/止损盘),重点回到价格纪律本身。")
-                                # 【V88·系统裁定 2026-07-25 用户纠偏"不是我来拍板,V88要给判断+证据佐证"】
-                                # 证据链末尾必须收口成系统结论:联动型/自身受损型/技术型三判+对应动作含义。
-                                # 接止损哲学:逻辑破才清仓——联动杀跌≠逻辑破。
-                                try:
-                                    _has_self9 = any("直接原因" in x for x in _wc_lines9)
-                                    _has_ext9 = any(("板块联动" in x or "市场联动" in x or "事件带" in x)
-                                                    for x in _wc_lines9)
-                                    _ls9w = None
-                                    try:
-                                        _ls9w = int(_F.get("total") or 0)
-                                    except Exception:
-                                        pass
-                                    if _has_self9 and _wc_dir9 == "跌":
-                                        _vd9w = ("<b>系统裁定：个股自身逻辑受损为主(置信偏高·有直接新闻证据)"
-                                                 "——止损纪律从严执行,反弹减仓优先,不轻言抄底。</b>")
-                                    elif _has_ext9 and not _has_self9:
-                                        _vd9w = ("<b>系统裁定：外部联动为主(板块/大盘/事件拖累·置信中高)"
-                                                 "——个股自身逻辑未见新破坏证据:短线按价格纪律执行,"
-                                                 "但这不是清长仓的理由;联动源(大盘/事件)转向时该股常率先修复。</b>")
-                                    else:
-                                        _vd9w = ("<b>系统裁定：技术性波动(无消息面证据·置信中)"
-                                                 "——按买卖区间与止损位机械执行,不赋予额外含义。</b>")
-                                    _wc_lines9.append(_vd9w)
-                                except Exception:
-                                    pass
-                                st.markdown(f"##### 🔎 为什么{_wc_dir9}·归因链"
-                                            + (f"（当日{_wc_chg9:+.2f}%）" if _wc_chg9 is not None else ""))
-                                st.markdown("<div style='font-size:13.5px;line-height:1.7'>"
-                                            + "<br>".join(_wc_lines9)
-                                            + "<br><span style='font-size:11.5px;color:#94a3b8'>归因链=个股新闻→板块联动→"
-                                            "市场联动→事件带四层证据拼装·全部落盘数据可核验·未命中层不硬编</span></div>",
-                                            unsafe_allow_html=True)
-                            except Exception:
-                                pass
                             # 【V88·明白话判读】量价/K线/MACD 的事实与判断要点（不是分数）
                             _ro99 = _ce.plain_readout(_F, _turn99 if _turn99.get("side") else None)
                             if _ro99:
                                 st.markdown("##### 📖 量价判读（事实+要点·佐证上方结论）")
                                 st.markdown("\n".join(f"- {ln}" for ln in _ro99))
-                            # 【V88·公司档案 2026-07-18 用户点单"像东财一样看到公司介绍/历史价"】
-                            # 中文简介(东财F10三市场,7天缓存)+历史/52周高低+股息率+财报日,全带出处。
-                            try:
-                                from stock_profile import get_profile as _gp9
-                                _prof9d = _gp9(target_c) or {}
-                                _ext9d = _price_extremes9(to_yf_cn_code(target_c) if 'to_yf_cn_code' in globals() else target_c)
-                                if _prof9d.get("profile") or _ext9d:
-                                    _lines9d = []
-                                    if _prof9d.get("profile"):
-                                        _lines9d.append(f"{str(_prof9d['profile'])[:180]}…"
-                                                        f"（出处:{_prof9d.get('source', '')}）")
-                                    if _ext9d:
-                                        _lp9d = _ext9d["last"]
-                                        _dh9d = (_lp9d / _ext9d["hist_high"] - 1) * 100
-                                        _p529d = ((_lp9d - _ext9d["w52_low"]) /
-                                                  (_ext9d["w52_high"] - _ext9d["w52_low"]) * 100
-                                                  if _ext9d["w52_high"] > _ext9d["w52_low"] else 50)
-                                        _lines9d.append(
-                                            f"历史最高 **{_ext9d['hist_high']:.2f}**"
-                                            f"（{_ext9d['hist_high_date'][:7]}·现距{_dh9d:+.1f}%）"
-                                            f" ｜ 历史最低 {_ext9d['hist_low']:.2f}"
-                                            f" ｜ 52周 {_ext9d['w52_low']:.2f}~{_ext9d['w52_high']:.2f}"
-                                            f"（现价处52周{_p529d:.0f}%位,越低越接近一年低点·按收盘价口径,与行情软件盘中高低点略有差异）")
-                                    try:
-                                        _dy9d = (fetch_stock_fundamentals(target_c) or {}).get("dividend_yield")
-                                        if _dy9d:
-                                            _dy9v = float(_dy9d)
-                                            _lines9d.append(f"股息率TTM {(_dy9v * 100 if _dy9v < 1 else _dy9v):.2f}%（出处:Yahoo）")
-                                    except Exception:
-                                        pass
-                                    st.markdown("**📇 公司档案**  \n" + "  \n".join(_lines9d))
-                            except Exception:
-                                pass
-                            _fu99 = None
-                            try:
-                                _fu99 = _ce.fundamentals(target_c)
-                                if _fu99:
-                                    # 【V88·基本面必带定性 2026-07-18 用户点单·全系统】共用 _v88_fund_edge。
-                                    _edge99 = _v88_fund_edge(st.session_state.get("scan_selected_name") or "")
-                                    st.markdown(f"**🧾 基本面**：`{_fu99['tag']}`  \n{_fu99['line']}"
-                                                + (f"  \n{_edge99}" if _edge99 else ""))
-                            except Exception:
-                                pass
-                            # 【V88·公告事件行 2026-07-18 用户点单·久吾高科案】媒体新闻抓不到的
-                            # 公司公告(可转债/回购/减持…)按需单查(30分钟缓存,A股港股;美股不覆盖)。
-                            # 事件只做语境化——不推翻上方周期裁决。
-                            try:
-                                _evk9 = f"_ann_stock_{target_c}"
-                                _evc9 = st.session_state.get(_evk9)
-                                import time as _tev9
-                                if not _evc9 or _tev9.time() - float(_evc9.get("ts") or 0) > 1800:
-                                    import sys as _sysev9
-                                    _repo_ev9 = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
-                                    if _repo_ev9 not in _sysev9.path:
-                                        _sysev9.path.insert(0, _repo_ev9)
-                                    from announcement_radar import fetch_for as _ann_fetch9, DIR_TXT as _dirtxt9
-                                    _evc9 = {"ts": _tev9.time(), "items": _ann_fetch9(target_c),
-                                             "dirtxt": dict(_dirtxt9)}
-                                    st.session_state[_evk9] = _evc9
-                                if _evc9.get("items"):
-                                    _ev_lines9 = "  \n".join(
-                                        f"{_e9['icon']} {str(_e9['date'])[5:]}「{str(_e9['title'])[:30]}」"
-                                        f"——{_e9['note']}（{(_evc9.get('dirtxt') or {}).get(_e9.get('dir'), '')}）"
-                                        for _e9 in _evc9["items"][:3])
-                                    st.markdown(f"**⚡ 公司公告事件**（近5日·出处:东财公告库）  \n{_ev_lines9}")
-                                    st.caption("事件只做语境参考，不推翻上方周期裁决；⚡两面事件（可转债/定增）"
-                                               "既有抢权/输血的一面也有摊薄的一面——若上方判「回避」，最多短线纪律小仓博弈。")
-                            except Exception:
-                                pass
-                            _pl99 = _ce.horizon_plans(_F, df_temp)
-                            if _pl99:
-                                st.markdown("##### ⏱ 分期限剧本（短线做T｜中线锚MA55｜长线锚年线）")
-                                st.markdown("\n".join(f"- {_pl99[k]}" for k in ("short", "mid", "long") if _pl99.get(k)))
+                            # Closed technical details only read already stored facts.
+                            # Supplemental providers require one explicit request per session/security.
+                            from deep_optional_data import session_once as _deep_once, cached_profile as _deep_cached_profile
+                            _extras_saved9 = _deep_once(st.session_state, target_c)
+                            _extras_go9 = st.button('按需补充外部资料（公司、三表、新闻）',
+                                key=f'deep_supplement_{target_c}', disabled=bool(_extras_saved9))
+                            _deep_extras = _deep_once(st.session_state, target_c, requested=_extras_go9,
+                                                     loader=lambda: _fetch_deep_supplement(target_c))
+                            _prof9d = _deep_extras.get('profile') or _deep_cached_profile(target_c)
+                            if _prof9d.get('profile'):
+                                st.markdown('**📇 公司档案**  \n' + str(_prof9d['profile'])[:180])
+                                st.caption(f"来源：{_prof9d.get('source') or '未注明'}；缓存采集："
+                                           + (datetime.fromtimestamp(float(_prof9d['ts'])).strftime('%Y-%m-%d %H:%M')
+                                              if _prof9d.get('ts') else '未注明'))
+                            else:
+                                st.caption('公司简介尚未覆盖；行业和原审核资料见页首。')
+                            st.caption('股息率：当前已发布公司资料未覆盖。')
+                            _ext9d = _deep_extras.get('extremes')
+                            if _ext9d:
+                                st.markdown(f"补充历史收盘区间：{_ext9d['hist_low']:.2f}～{_ext9d['hist_high']:.2f}；"
+                                            f"52周：{_ext9d['w52_low']:.2f}～{_ext9d['w52_high']:.2f}（Yahoo，独立资料，不替换原合同）")
+                            st.markdown("**基本面与技术面交叉结论**：" + _deep_synthesis.get('business_conclusion', '同包证据待核'))
+                            for _ev9 in (_deep_extras.get('announcements') or [])[:3]:
+                                st.markdown(f"{_ev9.get('icon', '')} {_ev9.get('date', '')}「{_ev9.get('title', '')}」——{_ev9.get('note', '')}")
+                            if _deep_extras.get('announcements'):
+                                st.caption('出处：东财公告库。公告是待核事件线索，不生成交易许可。')
+                            if _deep_extras:
+                                st.caption(f"本会话已补查：{_deep_extras.get('attempted_at')}；后续页面交互复用该次结果。")
+                                if _deep_extras.get('errors'):
+                                    st.caption('补充资料部分未完成：' + '；'.join(_deep_extras['errors']))
+                            else:
+                                st.caption('补充资料尚未请求；当前技术分项使用本票同一份已核验日线。')
+                            st.caption('分期限技术情景见下方；实际研究进场、止盈和失效沿用页首同周期中央合同。')
                             with st.expander("📖 术语速查（每个数值高低代表什么，非专业版）"):
                                 st.markdown(_ce.GLOSSARY_MD)
                             # 【V88·复制纪要】整段分析一键复制（与云端同格式）
-                            _cp99 = _ce.analysis_text(stock_name, target_c, _F, fund=_fu99)
+                            _cp99 = (f"{stock_name} {target_c}\n中央审核与技术研究分开；以原合同和当前执行闸为准。\n"
+                                     + json.dumps(_deep_cross or {'status':'核验暂不可用'}, ensure_ascii=False, indent=2))
                             if _cp99:
                                 if COPY_UTILS_AVAILABLE:
                                     CopyUtils.create_copy_button(_cp99, button_text="📋 复制分析纪要",
@@ -19802,8 +16425,7 @@ if st.session_state.get('scan_selected_code'):
                     st.caption(f"⚠️ 完整评分失败，已降级简版：{type(_e99).__name__}: {str(_e99)[:100]}")
                     _tp = analyze_trend_pulse(df_temp, target_c)
                     if _tp:
-                        with st.expander(f"🔥 趋势脉搏 · {_tp['stage']} · 趋势分{_tp['score']}", expanded=False):
-                            st.markdown(render_trend_pulse_md(_tp, stock_name))
+                        st.caption(f"技术简版状态：{_tp['stage']}；完整分项未完成，不能代替量价分或中央审核。")
         else:
             _scan_prog.progress(1.0)
             _scan_status.text("❌ 指标计算失败")
@@ -19897,28 +16519,15 @@ if execute_analysis and q_input:
     
     st.subheader(f"🎯 {target_c}")
     
-    # 【V91.9】深度作战室缓存：K 线点击等 rerun 时复用数据，减少 Running 时长与灰屏
-    # 【V91.10】统一缓存：交易日15分钟，非交易日24小时
-    _cache_key = f"_warroom_{target_c}"
-    _cache_ttl = get_smart_cache_ttl('daily')
-    import time as _time_module
-    _now = _time_module.time()
-    _cached = (_cache_key in st.session_state and
-               (_now - st.session_state.get(f"{_cache_key}_ts", 0)) <= _cache_ttl)
-    if _cached:
-        df, data_quality = st.session_state[_cache_key]
-        _safe_print(f"[深度作战室] 使用缓存数据 (剩余 {int(_cache_ttl - (_now - st.session_state[f'{_cache_key}_ts']))}s)")
-    else:
-        try:
-            df, data_quality = fetch_stock_data(target_c, return_quality=True)
-            _safe_print(f"[深度作战室] 数据获取: df={'有数据' if df is not None else '无数据'}")
-            if df is not None:
-                st.session_state[_cache_key] = (df, data_quality or {})
-                st.session_state[f"{_cache_key}_ts"] = _now
-        except Exception as e:
-            df, data_quality = None, {}
-            _safe_print(f"[深度作战室] 数据异常: {e}")
-    
+    # 预览与详情复用同一份完整日线；缓存身份包含全部OHLCV和来源。
+    df, data_quality = df_temp, _deep_quality
+    _cache_key = f"_warroom_local_refs_v1_{target_c}"
+    _deep_sig = _deep_signature(df)
+    _benchmark_sig = _deep_signature(_deep_benchmark(get_benchmark_code(target_c)))
+    _computed_sig = f'{_deep_sig}:{_benchmark_sig}'
+    _cached = st.session_state.get(f"{_cache_key}_signature") == _computed_sig
+    st.session_state[f"{_cache_key}_signature"] = _computed_sig
+
     # 【V83 P0.1】显示数据质量标签
     if df is not None and data_quality:
         col_src1, col_src2, col_src3 = st.columns([2, 2, 1])
@@ -19929,6 +16538,7 @@ if execute_analysis and q_input:
             st.caption(f"📅 **数据范围**: {data_quality.get('date_range', 'N/A')}")
         with col_src3:
             st.caption(f"📊 **数据点**: {data_quality.get('data_points', 0)}")
+        st.caption(f"完整日线截至 {data_quality.get('source_asof', '未知')} · 价格口径：{data_quality.get('price_basis', '未声明')}；不拼接盘中报价。")
     
     # 【V87.15修复】数据获取失败的处理
     if df is None:
@@ -19990,23 +16600,25 @@ if execute_analysis and q_input:
         st.stop()
     
     if df is not None:
-        _computed_key = f"_warroom_computed_{target_c}"
+        _computed_key = f"_warroom_computed_local_refs_v1_{target_c}"
+        news_headlines = _deep_extras.get('news') or []
         if _cached and _computed_key in st.session_state:
             metrics = st.session_state[_computed_key].get("metrics")
             quant = st.session_state[_computed_key].get("quant")
             mc = st.session_state[_computed_key].get("mc")
             risk_metrics = st.session_state[_computed_key].get("risk_metrics")
-            news_headlines = st.session_state[_computed_key].get("news_headlines")
             _safe_print(f"[深度作战室] 使用缓存指标")
         else:
             try:
                 _safe_print(f"[深度作战室] 📊 开始计算指标...")
-                metrics = calculate_metrics_all(df, target_c)
+                metrics = m or calculate_metrics_all(df, target_c, benchmark_loader=_deep_benchmark)
+                if not metrics:
+                    st.warning("完整行情已读取，但技术指标不足；上方中央合同和审核证据仍可查看。")
+                    st.stop()
                 quant = calculate_advanced_quant(df)
                 mc = monte_carlo_forecast(df)
-                risk_metrics = calculate_risk_metrics(df, target_c)
-                news_headlines = fetch_news_headlines(target_c)
-                if _cache_key in st.session_state:
+                risk_metrics = calculate_risk_metrics(df, target_c, benchmark_loader=_deep_benchmark)
+                if df is not None:
                     st.session_state[_computed_key] = {
                         "metrics": metrics, "quant": quant, "mc": mc,
                         "risk_metrics": risk_metrics, "news_headlines": news_headlines,
@@ -20021,98 +16633,58 @@ if execute_analysis and q_input:
 
         # ═══════════════════════════════════════════════════════════════
         # 【V88·个股当下前瞻】用最新价，主动给这只票未来 5/10/20/60/120 交易日的
-        # 上涨/下跌概率 + 盈亏比 + 一句拿/加/减/回避。用户最需要的"个股走概率"入口。
+        # 规则方向分（非概率） + 盈亏比 + 一句拿/加/减/回避。用户最需要的"个股走概率"入口。
         # 放在最前、纯确定性计算，不等 AI，秒出——解决"系统不及时给信号"。
         # ═══════════════════════════════════════════════════════════════
         try:
             from v88_decision_core import evaluate_forward_outlook as _evaluate_forward_outlook
             # 【V88·入场时机确认】传入趋势引擎价位（买入区/回踩/突破/止损），
             # 让前瞻给出"现在可进/双路径"的交易日窗口，不再只会说等更低价
-            _fwd_full9 = None
-            try:
-                import cloud_engine as _ce_fwd9
-                _fwd_full9 = _ce_fwd9.analyze_trend_full(df)
-            except Exception:
-                _fwd_full9 = None
+            _fwd_full9 = _deep_trend
             _fwd = _evaluate_forward_outlook(
                 df, name=(st.session_state.get("scan_selected_name") or target_c),
                 code=target_c, full=_fwd_full9)
             if _fwd.get("error"):
                 st.info(f"个股前瞻暂不可用：{_fwd['error']}")
             else:
-                st.markdown("### 🎯 个股当下前瞻 · 未来 5 / 10 / 20 / 60 / 120 交易日 概率 + 盈亏比")
+                st.markdown("### 🎯 量价情景研究 · 5 / 10 / 20 / 60 / 120 交易日")
                 st.caption(
-                    "用最新收盘价向前看：短(5-10日)看该不该继续拿、长(60-120日)看趋势能走多远。"
-                    "概率=规则情景估计（非回测胜率），代表方向占优程度。"
+                    "使用同一完整日线计算各期限的技术情景，不能替代上方同周期GPT与书理审核。"
+                    "规则情景值不是经标定概率或回测胜率；技术价位不替换原合同。"
                 )
                 _fm1, _fm2, _fm3, _fm4 = st.columns(4)
-                _fm1.metric("综合上/下概率", f"{_fwd['weighted_p_up']}% / {_fwd['weighted_p_down']}%",
-                            help="5档加权，规则情景估计非胜率")
+                _fm1.metric("规则方向分", f"{_fwd['weighted_p_up']} / 100",
+                            help="5档规则加权，未经概率标定，不是上涨概率")
                 _fm2.metric("综合盈亏比", f"{_fwd.get('weighted_rr', 0):.2f}",
                             help="上涨空间÷下跌空间，越大越好，≥2优秀")
-                _fm3.metric("综合期望", f"{_fwd.get('weighted_expected_pct', 0):+.1f}%",
-                            help="概率×空间的净期望，>0较好")
+                _fm3.metric("规则情景值", f"{_fwd.get('weighted_expected_pct', 0):+.1f}%",
+                            help="规则分加权的技术空间，不是统计期望收益")
                 _fm4.metric("阶段", _fwd.get("stage", "—"),
                             help="多头/震荡/转弱，由最新价与MA20/MA60关系判定")
-                st.success(f"**结论：{_fwd.get('overall_action')}** ｜ 操作建议：{_fwd.get('suggestion')}")
-                _ep9 = _fwd.get("entry_plan") or {}
-                if _ep9.get("mid_text") or _ep9.get("long_text"):
-                    st.caption(f"{_ep9.get('mid_text', '')}　｜　{_ep9.get('long_text', '')}")
-                # 【V88·三段作战计划】哪天进/到哪出/何时废，一张卡说全（与计划台同源）
-                try:
-                    from v88_decision_core import build_trade_plan as _btp_deep9
-                    _plan_deep9 = _btp_deep9(_fwd_full9 or {}, _ep9, _fwd)
-                    _pl_md9 = ["| 段 | 进 | 出 | 作废线 |", "|---|---|---|---|"]
-                    for _seg9d, _lab9d in (("short", "⚡短线"), ("mid", "🎯中线"), ("long", "🏛长线")):
-                        _s9d = _plan_deep9.get(_seg9d) or {}
-                        _pl_md9.append(f"| {_lab9d} | {_s9d.get('in', '')} | {_s9d.get('out', '')} "
-                                       f"| {_s9d.get('invalid', '')} |")
-                    st.markdown("**📋 三段作战计划**（目标价=规则情景估计）")
-                    st.markdown(_linkify_md("\n".join(_pl_md9)), unsafe_allow_html=True)
-                except Exception:
-                    pass
+                st.caption('执行与仓位只查中央原合同；下表保留各周期技术反证，不另生成买单或移动止损。')
                 _fwd_rows = []
                 for _fr in _fwd.get("horizons") or []:
                     _fwd_rows.append({
                         "周期(交易日)": _fr.get("label"),
-                        "上涨/下跌概率": f"{_fr.get('p_up')}% / {_fr.get('p_down')}%",
+                        "方向参考分/100": _fr.get('p_up'),
                         "上涨空间": f"+{_fr.get('upside_pct')}%",
                         "下跌风险": f"-{_fr.get('downside_pct')}%",
-                        "目标/风险价": f"{_fr.get('target_price')} / {_fr.get('risk_price')}",
+                        "技术上界/下界": f"{_fr.get('target_price')} / {_fr.get('risk_price')}",
                         "盈亏比(越大越好)": _fr.get("rr"),
-                        "期望值(>0较好)": f"{_fr.get('expected_pct'):+.1f}%",
+                        "规则加权空间": f"{_fr.get('expected_pct'):+.1f}%",
                         "判断": _fr.get("view"),
                     })
                 st.dataframe(_fwd_rows, hide_index=True, use_container_width=True)
 
                 # 【V88·每档判断理由讲人话】基本面+个股新闻+技术面融合成一句中文，不出现术语。
                 # 预算自适应：默认规则版，手动点按钮切思考模式，预算到底自动关（render_readable_reasons）。
-                _fwd_ctx_parts = []
-                try:
-                    _fwd_fn = fetch_stock_fundamentals(target_c) or {}
-                    _fb = []
-                    for _k, _lab in (("sector", "行业"), ("industry", "细分"),
-                                     ("trailing_pe", "市盈率"), ("price_to_book", "市净率"),
-                                     ("dividend_yield", "股息率"), ("recommendation", "机构评级")):
-                        _v = _fwd_fn.get(_k)
-                        if _v not in (None, "", 0):
-                            _fb.append(f"{_lab}{_v}")
-                    if _fwd_fn.get("business_summary"):
-                        _fb.append("主营:" + str(_fwd_fn["business_summary"])[:120])
-                    if _fb:
-                        _fwd_ctx_parts.append("基本面:" + "、".join(str(x) for x in _fb))
-                except Exception:
-                    pass
-                try:
-                    _fwd_news = fetch_news_headlines(target_c) or []
-                    _fwd_titles = [(n.get("title") if isinstance(n, dict) else str(n))
-                                   for n in _fwd_news[:5]]
-                    _fwd_titles = [t for t in _fwd_titles if t]
-                    if _fwd_titles:
-                        _fwd_ctx_parts.append("近期新闻:" + "；".join(_fwd_titles))
-                except Exception:
-                    pass
-                _fwd_ctx = " | ".join(_fwd_ctx_parts)
+                from deep_prompt_context import build as _deep_prompt_build
+                _fwd_ctx = json.dumps(_deep_prompt_build(
+                    joint_conclusion=_deep_synthesis, annual_outlook=_deep_annual,
+                    cross_validation=_deep_cross,
+                    central={'tier': _deep_synthesis.get('central_grade'), 'executable': False,
+                             'trade_plan': _deep_synthesis.get('original_plan')}),
+                    ensure_ascii=False, separators=(',', ':'))
                 render_readable_reasons(
                     _fwd, kind="个股", symbol=target_c,
                     name=st.session_state.get("scan_selected_name") or target_c,
@@ -20127,126 +16699,124 @@ if execute_analysis and q_input:
             st.warning(f"个股前瞻暂不可用：{type(_fwd_exc).__name__}")
 
         # ═══════════════════════════════════════════════════════════════
-        # 【V88·个股五周期】2/4/8/16/32周量化底稿 + K3-256K high复核
+        # 【V88·个股五周期】2/4/8/16/32周量化底稿 + GPT-6 Astra high复核
         # 点击任一个股均自动执行；同一行情快照缓存6小时，节省会员共享额度。
         # ═══════════════════════════════════════════════════════════════
-        st.markdown("### 🧭 个股周期轮换总览（深度分析第一判断）")
-        st.caption("先看周期象限与2/4/8/16/32周走向，再看明细和K线；置信度表示证据一致性，不是回测胜率。")
-        _hz_align = {}
-        _hz_decision = {}
-        try:
-            import stock_horizon as _stock_horizon
-            # 与首页自选卡使用同一套趋势阶段，避免“启动确认”在首页加权、
-            # 深度分析却漏传阶段而产生同股同周期分差。
-            _hz_full = (metrics or {}).get("trend_full") or {}
+        with st.expander("历史量价计算明细 · 按需查看", expanded=False):
+            st.markdown("### 🧭 历史量价窗口 · 2 / 4 / 8 / 16 / 32周")
+            st.caption("各档回看截至同一行情日的历史结构；后续方向统一参照年度条件主线。")
+            _hz_align = {}
+            _hz_decision = {}
             try:
-                import cloud_engine as _ce_hz_same
-                _hz_full = _ce_hz_same.analyze_trend_full(df) or _hz_full
-            except Exception:
-                pass
-            # 不能只按交易日期缓存：盘中价格/成交量已变化时，继续复用旧底稿会让
-            # 首页概率与深度分析互相打架。用末价+末量组成同源行情签名。
-            _hz_last_px = float(pd.to_numeric(df["Close"], errors="coerce").dropna().iloc[-1])
-            _hz_last_vol = (float(pd.to_numeric(df["Volume"], errors="coerce").dropna().iloc[-1])
-                            if "Volume" in df and not pd.to_numeric(df["Volume"], errors="coerce").dropna().empty else 0.0)
-            _hz_stage = str((_hz_full or {}).get("stage") or "阶段待核")
-            _hz_last = f"{str(df.index[-1])[:19]}_{_hz_last_px:.4f}_{_hz_last_vol:.0f}_{len(df)}_{_hz_stage}"
-            _hz_cache_key = f"_stock_horizon_{target_c}_{_hz_last}"
-            if _hz_cache_key not in st.session_state:
-                _hz_bar = st.progress(0, text="正在计算五周期量价底稿…")
-                _hz_bar.progress(35, text="量化底稿完成，K3-256K思考复核中…")
-                _hz_news_parts = []
-                for _hz_news in (news_headlines or [])[:8]:
-                    if isinstance(_hz_news, dict):
-                        _hz_news_parts.append(str(_hz_news.get("title") or _hz_news.get("headline") or ""))
-                    else:
-                        _hz_news_parts.append(str(_hz_news))
-                _hz_context = ("买卖评分与动作仅由V88-U2.0唯一决策核心给出；"
-                               f"近期新闻:{'；'.join(x for x in _hz_news_parts if x)[:700]}")
-                _hz_result = _stock_horizon.analyze(
+                import stock_horizon as _stock_horizon
+                # 与首页自选卡使用同一套趋势阶段，避免“启动确认”在首页加权、
+                # 深度分析却漏传阶段而产生同股同周期分差。
+                _hz_full = _deep_trend
+                # 不能只按交易日期缓存：盘中价格/成交量已变化时，继续复用旧底稿会让
+                # 首页概率与深度分析互相打架。用末价+末量组成同源行情签名。
+                _hz_last_px = float(pd.to_numeric(df["Close"], errors="coerce").dropna().iloc[-1])
+                _hz_last_vol = (float(pd.to_numeric(df["Volume"], errors="coerce").dropna().iloc[-1])
+                                if "Volume" in df and not pd.to_numeric(df["Volume"], errors="coerce").dropna().empty else 0.0)
+                _hz_stage = str((_hz_full or {}).get("stage") or "阶段待核")
+                _hz_last = f"{str(df.index[-1])[:19]}_{_hz_last_px:.4f}_{_hz_last_vol:.0f}_{len(df)}_{_hz_stage}"
+                _hz_cache_key = f"_stock_horizon_cross_v2_historical_{target_c}_{_deep_sig}_{_hz_last}"
+                if _hz_cache_key not in st.session_state:
+                    _hz_bar = st.progress(0, text="正在计算五周期量价底稿…")
+                    _hz_bar.progress(35, text="计算五周期辅助研究；复用上方中央双审…")
+                    _hz_news_parts = []
+                    for _hz_news in (news_headlines or [])[:8]:
+                        if isinstance(_hz_news, dict):
+                            _hz_news_parts.append(str(_hz_news.get("title") or _hz_news.get("headline") or ""))
+                        else:
+                            _hz_news_parts.append(str(_hz_news))
+                    _hz_context = ("本区只输出量价研究；评级和执行合同由中央GPT双审与书理决定；"
+                                   f"近期新闻:{'；'.join(x for x in _hz_news_parts if x)[:700]}")
+                    _hz_result = _stock_horizon.analyze(
+                        st.session_state.get("scan_selected_name") or target_c,
+                        target_c,
+                        df,
+                        full=_hz_full,
+                        context=_hz_context,
+                        allow_ai=False,
+                    )
+                    st.session_state[_hz_cache_key] = _hz_result
+                    _hz_bar.progress(100, text="五周期走势分析完成")
+                    _hz_bar.empty()
+                else:
+                    _hz_result = st.session_state[_hz_cache_key]
+
+                _hz_review = _hz_result.get("review") or {}
+                _hz_align = _stock_horizon.cycle_alignment(_hz_result.get("facts") or {})
+                # Reuse exactly the same complete-series computation as the upper list.
+                _hz_decision = dict(_search_dc)
+                _hz_action = _hz_decision.get("action", "观察")
+                from period_consistency import build as _period_build
+                _hz_period = _period_build(target_c, df, _deep_quality, _hz_result,
+                                          _hz_full, _deep_annual, _deep_synthesis)
+                _hz_result = dict(_hz_result, decision=_hz_decision, period_consistency=_hz_period)
+                _ud1, _ud2, _ud3, _ud4, _ud5 = st.columns(5)
+                _ud1.metric("量价辅助分", _hz_decision.get("unified_score", "—"),
+                            help="与上方量价表复用同一计算；短20%＋中25%＋长20%＋趋势15%＋赔率20%，不是中央审核分")
+                _ud2.metric("短/中/长", f"{_hz_decision.get('short_score','—')}/"
+                            f"{_hz_decision.get('medium_score','—')}/{_hz_decision.get('long_score','—')}")
+                _ud3.metric("短窗方向分", f"{_hz_decision.get('p_up','—')} / 100",
+                            help="历史量价规则分，非未来2周上涨概率")
+                _ud4.metric("盈亏比", f"{_hz_decision.get('rr',0):.2f}",
+                            help="潜在收益÷潜在风险，越大越好")
+                _ud5.metric("规则加权空间", f"{_hz_decision.get('expected_pct',0):+.1f}%",
+                            help="用未标定规则分加权的技术空间，不是统计期望收益")
+                st.info(f"**量价状态：{_hz_decision.get('cycle_status','待核')}**｜执行仍查中央原合同｜"
+                        f"口径{_hz_decision.get('score_version')}｜数据签名"
+                        f"{_hz_decision.get('data_signature')}｜分析{_hz_decision.get('analysis_time')}")
+                _hz_rows = _stock_horizon.table_rows(_hz_result)
+                _hz_visual = _stock_horizon.historical_visual_html(
+                    _hz_result,
                     st.session_state.get("scan_selected_name") or target_c,
                     target_c,
-                    df,
-                    full=_hz_full,
-                    context=_hz_context,
+                    f"v88-stock-cycle-{target_c}",
                 )
-                st.session_state[_hz_cache_key] = _hz_result
-                _hz_bar.progress(100, text="五周期走势分析完成")
-                _hz_bar.empty()
-            else:
-                _hz_result = st.session_state[_hz_cache_key]
-
-            _hz_review = _hz_result.get("review") or {}
-            _hz_align = _stock_horizon.cycle_alignment(_hz_result.get("facts") or {})
-            from v88_decision_core import evaluate_decision as _evaluate_deep_decision
-            _hz_decision = _evaluate_deep_decision(
-                df, _hz_full, facts=_hz_result.get("facts") or {},
-                analysis_time=datetime.now().strftime("%m-%d %H:%M"),
-                name=st.session_state.get("scan_selected_name") or target_c,
-                code=target_c)
-            _hz_action = _hz_decision.get("action", "观察")
-            _hz_result = dict(_hz_result, decision=_hz_decision)
-            _ud1, _ud2, _ud3, _ud4, _ud5 = st.columns(5)
-            _ud1.metric("唯一统一分", _hz_decision.get("unified_score", "—"),
-                        help="短20%＋中25%＋长20%＋趋势质量15%＋入场赔率20%")
-            _ud2.metric("短/中/长", f"{_hz_decision.get('short_score','—')}/"
-                        f"{_hz_decision.get('medium_score','—')}/{_hz_decision.get('long_score','—')}")
-            _ud3.metric("2周上/下", f"{_hz_decision.get('p_up','—')}%/"
-                        f"{_hz_decision.get('p_down','—')}%",
-                        help="规则情景估计，不是回测胜率")
-            _ud4.metric("盈亏比", f"{_hz_decision.get('rr',0):.2f}",
-                        help="潜在收益÷潜在风险，越大越好")
-            _ud5.metric("情景期望", f"{_hz_decision.get('expected_pct',0):+.1f}%",
-                        help="概率加权收益，>0为正期望")
-            st.info(f"**统一动作：{_hz_action}**｜{_hz_decision.get('entry_note','')}｜"
-                    f"口径{_hz_decision.get('score_version')}｜数据签名"
-                    f"{_hz_decision.get('data_signature')}｜分析{_hz_decision.get('analysis_time')}")
-            _hz_rows = _stock_horizon.table_rows(_hz_result)
-            _hz_visual = _stock_horizon.cycle_visual_html(
-                _hz_result,
-                st.session_state.get("scan_selected_name") or target_c,
-                target_c,
-                f"v88-stock-cycle-{target_c}",
-            )
-            if _hz_visual:
-                st.markdown(_hz_visual, unsafe_allow_html=True)
-            if _hz_rows:
-                st.dataframe(_hz_rows, hide_index=True, use_container_width=True)
-            if _hz_review.get("status") in ("completed", "cached"):
-                st.info(
-                    f"🧠 **思考复核**：{_hz_review.get('summary', '五周期复核完成')} ｜ "
-                    f"周期相位：{_hz_review.get('cycle_phase', '震荡')} ｜ "
-                    f"周期口径：{_hz_align.get('note', '待核')} ｜ "
-                    f"综合动作：{_hz_action} ｜ "
-                    f"失效条件：{_hz_review.get('invalid_summary', '破位后重评')}"
-                )
-                st.caption(
-                    f"模型：{_hz_review.get('model', 'k3-256k')} · reasoning-high ｜ "
-                    f"分析于 {_hz_review.get('analysis_time', '缓存时间待核')}"
-                )
-            else:
-                st.warning(
-                    f"K3-256K思考复核未完成（{_hz_review.get('reason', _hz_review.get('status', '未知'))}）；"
-                    "当前仅展示量化底稿，不冒充AI结论。"
-                )
-        except Exception as _hz_exc:
-            logging.exception("个股五周期分析失败")
-            st.warning(f"五周期走势暂不可用：{type(_hz_exc).__name__}")
+                if _hz_visual:
+                    st.markdown(_hz_visual, unsafe_allow_html=True)
+                if _hz_rows:
+                    st.dataframe(_hz_rows, hide_index=True, use_container_width=True)
+                if _hz_review.get("status") in ("completed", "cached"):
+                    st.info(
+                        f"🧠 **思考复核**：{_hz_review.get('summary', '五周期复核完成')} ｜ "
+                        f"周期相位：{_hz_review.get('cycle_phase', '震荡')} ｜ "
+                        f"周期口径：{_hz_align.get('note', '待核')} ｜ "
+                        f"综合动作：{_hz_action} ｜ "
+                        f"失效条件：{_hz_review.get('invalid_summary', '破位后重评')}"
+                    )
+                    st.caption(
+                        f"模型：{_hz_review.get('model', 'gpt-6-astra')} · reasoning-high ｜ "
+                        f"分析于 {_hz_review.get('analysis_time', '缓存时间待核')}"
+                    )
+                elif _hz_review.get("status") == "deterministic":
+                    st.caption("本区为量价辅助研究；GPT双审与书理逐项证据见页首，打开页面未新增模型调用。")
+                else:
+                    st.warning(
+                        f"GPT-6 Astra思考复核未完成（{_hz_review.get('reason', _hz_review.get('status', '未知'))}）；"
+                        "当前仅展示量化底稿，不冒充AI结论。"
+                    )
+            except Exception as _hz_exc:
+                logging.exception("个股五周期分析失败")
+                st.warning(f"五周期走势暂不可用：{type(_hz_exc).__name__}")
 
         # ═══════════════════════════════════════════════════════════════
         # 【V88·参数图例】用户不熟的指标一次讲清：值大好还是小好。纯说明，不改数据。
         # ═══════════════════════════════════════════════════════════════
         with st.expander("📖 参数怎么看（括号里=大了好还是小了好）", expanded=False):
             st.markdown(
-                "- **综合分 / 统一分**（0–100，越高越偏多）：>60 偏多，40–60 震荡，<40 偏跌。\n"
-                "- **上涨概率 p_up**（越高越可能涨）：规则情景估计，**不是回测真实胜率**，只代表方向占优程度。\n"
+                "- **中央审核分**：GPT主审、反审与适用书理的证据分，评级只以中央当前结果为准。\n"
+                "- **量价辅助分**（0–100）：描述规则下的趋势与赔率；不是审核分，不与审核分平均，也不是胜率。\n"
+                "- **方向分 p_up**：历史量价规则分，不是未来上涨概率，不证明越高越容易盈利。\n"
                 "- **盈亏比 RR**（越大越好）：上涨空间÷下跌空间。≥2 优秀，1.5–2 可关注，<1 冒险不划算。\n"
-                "- **期望值 EV**（越大越好，**>0 才有正期望**）：概率×上涨空间 − 概率×下跌空间。\n"
-                "- **概率优势 edge**（越大越占优，>0 才划算）：真实概率 − 盈亏比要求的保本概率。\n"
+                "- **情景期望 EV**：规则情景加权空间；正值不证明策略盈利，须另看扣费结算样本。\n"
+                "- **情景差值 edge**：规则估计 − 赔率要求的保本概率；不是已验证的真实概率优势。\n"
                 "- **RSI**（**不是越大越好**）：50 中性；>70 超买（偏贵、易回调），<30 超卖（偏便宜、易反弹）。\n"
-                "- **ATR / 波动率**（越大风险越高）：数值大=波动剧烈、止损要放宽；小=平稳。\n"
-                "- **距历史高 / 水位**（越低越安全）：越高越贵、回撤空间大；越低越接近底部、安全边际高。\n"
-                "- **52 周分位**（越低越便宜）：0–100%，靠近 0=一年最低位，靠近 100=一年最高位。\n"
+                "- **ATR / 波动率**：描述波动宽度；先定逻辑失效位再算仓位，不能为凑仓位改止损。\n"
+                "- **历史价格位置**：仅描述所用行情区间的相对位置；低位不等于安全，也不等于估值便宜。\n"
+                "- **52周区间位置**：0–100%，0接近区间低点、100接近高点；不足一年须按实际样本解释。\n"
                 "- **量比**（>1 为放量）：越大资金越活跃；放量上涨=承接强，放量下跌=出逃要警惕。\n"
                 "- **换手率**（适中为宜）：越高越活跃/分歧大；异常放大要警惕见顶。\n"
                 "- **乖离率 / 距均线**（正=强，过大要防回踩）：价在均线上方为强势，偏离过大易回调。\n"
@@ -20261,8 +16831,8 @@ if execute_analysis and q_input:
         st.markdown("### 🧷 我的决策锚点(事后复盘) · 5 / 10 / 20 / 60 / 120 交易日")
         st.caption(
             "填你当时分析/买卖的**时间和价格**，系统只读取该时点以前的行情，"
-            "推算未来 2、5、8、16 个交易日的上涨/下跌概率与盈亏比，并复盘当时决策是否有依据。"
-            "上/下概率为规则情景估计（非回测胜率，仅代表方向占优程度），后续行情仅用于复盘。"
+            "计算当时各档规则方向分与技术空间，再用后续行情复盘。"
+            "规则方向分未经概率标定，后续行情仅用于复盘。"
         )
         try:
             from v88_decision_core import evaluate_anchor_outlook as _evaluate_anchor_outlook
@@ -20392,7 +16962,7 @@ if execute_analysis and q_input:
             if _anchor_run:
                 _anchor_dt = datetime.combine(_anchor_date, _anchor_clock)
                 _anchor_bar = st.progress(15, text="正在截断锚点后的行情…")
-                _anchor_bar.progress(55, text="正在计算 5/10/20/60/120 交易日概率与盈亏比…")
+                _anchor_bar.progress(55, text="正在计算各档规则方向分与技术空间…")
                 _anchor_result = _evaluate_anchor_outlook(
                     df, _anchor_dt, _anchor_price, action=_anchor_action,
                     name=_anchor_name, code=target_c,
@@ -20426,16 +16996,15 @@ if execute_analysis and q_input:
             _anchor_result = st.session_state.get(_anchor_result_key) or {}
             if _anchor_result and not _anchor_result.get("error"):
                 _am1, _am2, _am3, _am4 = st.columns(4)
-                _am1.metric("综合上/下", f"{_anchor_result.get('weighted_p_up')}% / "
-                            f"{_anchor_result.get('weighted_p_down')}%",
+                _am1.metric("规则方向分", f"{_anchor_result.get('weighted_p_up')} / 100",
                             help="规则情景估计，不是回测胜率")
                 _am2.metric("综合盈亏比", f"{_anchor_result.get('weighted_rr', 0):.2f}",
                             help="估计上涨空间÷估计下跌空间，越大越好")
-                _am3.metric("综合期望", f"{_anchor_result.get('weighted_expected_pct', 0):+.1f}%",
-                            help="上涨概率×上涨空间－下跌概率×下跌空间，>0较好")
+                _am3.metric("规则加权空间", f"{_anchor_result.get('weighted_expected_pct', 0):+.1f}%",
+                            help="用规则分加权的技术空间，不能证明正期望收益")
                 _anchor_track = _anchor_result.get('tracking') or {}
                 _anchor_since = _anchor_track.get('since_anchor_pct')
-                _am4.metric("锚点后实绩", (f"{_anchor_since:+.1f}%" if _anchor_since is not None else "待最新行情"),
+                _am4.metric("锚点后价格变化", (f"{_anchor_since:+.1f}%" if _anchor_since is not None else "待最新行情"),
                             help="仅用于复盘，不参与当时预测")
                 st.info(
                     f"**当时结论：{_anchor_result.get('overall_action')}**｜"
@@ -20446,12 +17015,12 @@ if execute_analysis and q_input:
                 for _row in _anchor_result.get("horizons") or []:
                     _anchor_rows.append({
                         "周期(交易日)": _row.get("label"),
-                        "上涨/下跌概率": f"{_row.get('p_up')}% / {_row.get('p_down')}%",
+                        "规则方向分/100": _row.get("p_up"),
                         "上涨空间": f"+{_row.get('upside_pct')}%",
                         "下跌风险": f"-{_row.get('downside_pct')}%",
                         "目标/风险价": f"{_row.get('target_price')} / {_row.get('risk_price')}",
                         "盈亏比(越大越好)": _row.get("rr"),
-                        "期望值(>0较好)": f"{_row.get('expected_pct'):+.1f}%",
+                        "规则加权空间（非收益期望）": f"{_row.get('expected_pct'):+.1f}%",
                         "判断": _row.get("view"),
                         "触发": _row.get("trigger"),
                         "失效": _row.get("invalid"),
@@ -20459,7 +17028,7 @@ if execute_analysis and q_input:
                 st.dataframe(_anchor_rows, hide_index=True, use_container_width=True)
                 _track_rows = (_anchor_result.get("tracking") or {}).get("rows") or []
                 st.caption(
-                    f"🔒 无未来函数：是｜口径{_anchor_result.get('score_version')}｜"
+                    f"🔒 原锚点时间截断｜口径{_anchor_result.get('score_version')}｜"
                     f"预测签名{_anchor_result.get('data_signature')}｜生成于{_anchor_result.get('analysis_time')}｜"
                     f"行情截至{_anchor_track.get('market_asof') or '未知'}｜"
                     + "；".join(f"{r.get('days', r.get('weeks'))}日{r.get('status')}" for r in _track_rows)
@@ -20500,7 +17069,7 @@ if execute_analysis and q_input:
                 x=df.index,
                 y=_chart_vwap,
                 mode='lines',
-                name='VWAP(20日) 机构成本线',
+                name='20日量权均价（HLC3近似）',
                 line=dict(color='#FFD700', width=2.5, dash='solid'),
                 hovertemplate='VWAP: %{y:.2f}<extra></extra>'
             ))
@@ -20515,9 +17084,9 @@ if execute_analysis and q_input:
                 x=df.index,
                 y=_ce_long,
                 mode='lines',
-                name='Chandelier多头止损',
+                name='多头波动参照',
                 line=dict(color='#10b981', width=1.5, dash='dash'),
-                hovertemplate='多头止损: %{y:.2f}<extra></extra>'
+                hovertemplate='多头波动参照: %{y:.2f}<extra></extra>'
             ))
             
             # 空头止损线（红色虚线）
@@ -20525,9 +17094,9 @@ if execute_analysis and q_input:
                 x=df.index,
                 y=_ce_short,
                 mode='lines',
-                name='Chandelier空头止损',
+                name='空头波动参照',
                 line=dict(color='#ef4444', width=1.5, dash='dash'),
-                hovertemplate='空头止损: %{y:.2f}<extra></extra>'
+                hovertemplate='空头波动参照: %{y:.2f}<extra></extra>'
             ))
         
         # 添加可点击的收盘价散点层（用于选点交互）
@@ -20543,7 +17112,7 @@ if execute_analysis and q_input:
         ))
         
         fig.update_layout(
-            title="K线图 + 机构作战层 （点击紫色圆点选定入场价位）",
+            title="历史K线与波动参照（点击圆点记录研究锚点）",
             xaxis_title="日期",
             yaxis_title="价格",
             height=600,
@@ -20585,14 +17154,14 @@ if execute_analysis and q_input:
         # K线图注释说明
         _chart_note_cols = st.columns(3)
         with _chart_note_cols[0]:
-            st.markdown('<p style="font-size:12px;color:#FFD700;font-weight:600;">━━ VWAP(20日) 机构成本线</p>', unsafe_allow_html=True)
-            st.markdown('<p style="font-size:12px;color:#888;">📖 成交量加权平均价=机构大资金的平均持仓成本。<b>价格在VWAP上方</b>=机构盈利、多头主导；<b>跌破VWAP</b>=机构被套、可能抛售</p>', unsafe_allow_html=True)
+            st.markdown('<p style="font-size:12px;color:#b45309;font-weight:600;">━━ 20日量权均价</p>', unsafe_allow_html=True)
+            st.caption('日线典型价HLC3按成交量加权，观察价格偏离；没有机构身份数据，不能推断机构成本或盈亏。')
         with _chart_note_cols[1]:
-            st.markdown('<p style="font-size:12px;color:#10b981;font-weight:600;">┅┅ Chandelier多头止损线</p>', unsafe_allow_html=True)
-            st.markdown('<p style="font-size:12px;color:#888;">📖 22日最高价 - 3×ATR = 动态追踪止损。<b>价格跌破此线</b>=趋势可能反转，多头应离场。比固定止损更科学，随趋势自动上移</p>', unsafe_allow_html=True)
+            st.markdown('<p style="font-size:12px;color:#15803d;font-weight:600;">┅┅ 多头波动参照</p>', unsafe_allow_html=True)
+            st.caption('22日最高价－3×ATR。跌破只触发结构复核，不能替换原合同止损或自动授予卖出许可。')
         with _chart_note_cols[2]:
-            st.markdown('<p style="font-size:12px;color:#ef4444;font-weight:600;">┅┅ Chandelier空头止损线</p>', unsafe_allow_html=True)
-            st.markdown('<p style="font-size:12px;color:#888;">📖 22日最低价 + 3×ATR = 空头追踪止损。<b>价格突破此线</b>=下跌趋势可能结束，空头应离场。两线之间=安全通道</p>', unsafe_allow_html=True)
+            st.markdown('<p style="font-size:12px;color:#b91c1c;font-weight:600;">┅┅ 空头波动参照</p>', unsafe_allow_html=True)
+            st.caption('22日最低价＋3×ATR。突破仍须确认；两条线之间不代表安全，也不能确定趋势反转。')
         
         # Chandelier Exit 当前状态速览
         if _chart_ce and _chart_ce.get('ce_long_latest', 0) > 0:
@@ -20601,19 +17170,19 @@ if execute_analysis and q_input:
             _ce_short_val = _chart_ce.get('ce_short_latest', 0)
             _curr_price = float(df['Close'].iloc[-1])
             _ce_signal_color = "#ef4444" if "跌破" in _ce_signal else ("#10b981" if "突破" in _ce_signal else "#f59e0b")
-            st.markdown(f'<div style="background: {_ce_signal_color}15; border-left: 4px solid {_ce_signal_color}; padding: 0.7rem 1rem; border-radius: 4px; margin: 0.5rem 0;"><span style="font-weight:600;">{_ce_signal}</span> &nbsp;|&nbsp; 当前价 <b>{_curr_price:.2f}</b> &nbsp;|&nbsp; 多头止损 <b style="color:#10b981">{_ce_long_val:.2f}</b> &nbsp;|&nbsp; 空头止损 <b style="color:#ef4444">{_ce_short_val:.2f}</b></div>', unsafe_allow_html=True)
+            st.markdown(f'<div style="background: {_ce_signal_color}15; border-left: 4px solid {_ce_signal_color}; padding: 0.7rem 1rem; border-radius: 4px; margin: 0.5rem 0;"><span style="font-weight:600;">{_ce_signal}</span> &nbsp;|&nbsp; 当前价 <b>{_curr_price:.2f}</b> &nbsp;|&nbsp; 多头参照 <b style="color:#10b981">{_ce_long_val:.2f}</b> &nbsp;|&nbsp; 空头参照 <b style="color:#ef4444">{_ce_short_val:.2f}</b></div>', unsafe_allow_html=True)
         
         # ═══════════════════════════════════════════════════════════════
         # 【V93】财务数据 & 行业背景面板
         # ═══════════════════════════════════════════════════════════════
         st.markdown("---")
         st.markdown("### 📊 财务数据 & 行业背景")
-        st.caption("💡 来源: Yahoo Finance · 估值/盈利/资产质量/行业信息")
+        st.caption("供应商财务原始资料；报告期不等于公告日。核实程度与技术反证共同见上方统一研判，未进入同包双审的新增资料不改变当前评级。")
         _fundamentals_cache_key = f"_fundamentals_{target_c}"
-        if _fundamentals_cache_key not in st.session_state:
-            with _v88_running("📥 获取财务数据..."):
-                st.session_state[_fundamentals_cache_key] = fetch_stock_fundamentals(target_c)
-        _fundamentals = st.session_state[_fundamentals_cache_key]
+        _fundamentals = (_deep_extras.get('fundamentals')
+                         or st.session_state.get(_fundamentals_cache_key) or {})
+        if not _fundamentals:
+            st.caption('财务原始三表尚未请求；可在上方趋势分项内按需补充。同包财务核验与原评级见页首。')
         render_fundamentals_panel(_fundamentals, target_c)
 
         # ═══════════════════════════════════════════════════════════════
@@ -20628,8 +17197,13 @@ if execute_analysis and q_input:
             st.markdown("### 🤖 AI 综合分析")
 
             # v2缓存强制淘汰未接入五周期裁决的旧报告，防止旧“推荐”继续与顶部结论冲突。
-            _stock_ai_report_key = f"stock_consensus_v2_{target_c}"
-            _unified_ai_cache_key = f"_unified_ai_consensus_v2_{target_c}"
+            from stock_verdict import _triad_record as _ai_cache_record
+            _ai_cache_sel, _ai_cache_row, _ai_cache_allowed = _ai_cache_record(target_c)
+            _ai_decision_sig = hashlib.sha256(json.dumps({
+                "pack": _ai_cache_sel.get("factpack_id"), "row": _ai_cache_row,
+                "executable": _ai_cache_allowed, "joint_conclusion": _deep_synthesis.get('input_id')}, sort_keys=True, default=str).encode()).hexdigest()[:16]
+            _stock_ai_report_key = f"stock_consensus_cross_v1_{target_c}_{_deep_sig[:16]}_{_ai_decision_sig}"
+            _unified_ai_cache_key = f"_unified_ai_consensus_cross_v1_{target_c}_{_deep_sig[:16]}_{_ai_decision_sig}"
 
             # 从文件缓存恢复（session_state 没有时）
             if _unified_ai_cache_key not in st.session_state:
@@ -20663,17 +17237,12 @@ if execute_analysis and q_input:
                 _run_unified_ai = True
                 _has_stock_cache = False
 
-            # 自动生成：无缓存时首次自动触发
-            _stock_auto_key = f"_stock_ai_auto_{target_c}"
-            if not _has_stock_cache and not st.session_state.get(_stock_auto_key) and MY_GEMINI_KEY and not _run_unified_ai:
-                st.session_state[_stock_auto_key] = True
-                _run_unified_ai = True
+            # 点击个股只读已有中央审核；额外文字分析由按钮明确触发。
 
             if _run_unified_ai and MY_GEMINI_KEY:
                 with _v88_running(f"🤖 {_ai_model_label()} 综合分析中 · 预计 15-30 秒..."):
                     try:
                         _curr_p = float(df['Close'].iloc[-1])
-                        _last5 = df.tail(5)[['Open','High','Low','Close','Volume']].to_string()
                         _rsi_v = metrics.get('rsi', 50)
                         _score_v = metrics.get('score', 0)  # 旧研究质量分，仅用于下方因子归因
                         _sharpe_v = quant.get('sharpe', 'N/A')
@@ -20683,8 +17252,8 @@ if execute_analysis and q_input:
                         if _chart_predictor:
                             _af = _chart_predictor.calculate_alpha_factors()
                             _rm = _chart_predictor.calculate_risk_engine()
-                            _vwap_v = f"VWAP(20日): {_af.get('vwap_20',0):.2f}, 偏离: {_af.get('vwap_deviation',0):+.2f}%, 信号: {_af.get('vwap_signal','无')}"
-                            _vwap_v += f"\n止损价(ATR): {_rm.get('stop_loss',0):.2f}, 建议仓位(Kelly): {_rm.get('kelly_position',5):.1f}%, 风险评级: {_rm.get('risk_grade','N/A')}"
+                            _vwap_v = f"日线量权均值(20条): {_af.get('vwap_20')}, 偏离百分数: {_af.get('vwap_deviation')}, 信号: {_af.get('vwap_signal','待核')}"
+                            _vwap_v += f"\nATR技术参照价: {_rm.get('stop_loss')}, ATR距离分档: {_rm.get('risk_grade','待核')}。{_rm.get('position_basis','仓位须查中央风险预算')}；技术参照不替换原合同止损。"
                         _fund_ctx = ""
                         if _fundamentals:
                             _f = _fundamentals
@@ -20742,13 +17311,13 @@ if execute_analysis and q_input:
                         try:
                             if _hz_decision:
                                 _guide_ctx = (
-                                    f"V88唯一动作: {_hz_decision['action']}｜统一分{_hz_decision['unified_score']}"
+                                    f"量价研究状态: {_hz_decision.get('cycle_status')}｜量价辅助分{_hz_decision['unified_score']}"
                                     f"（短{_hz_decision['short_score']}/中{_hz_decision['medium_score']}/长{_hz_decision['long_score']}）\n"
                                     f"2周上/下: {_hz_decision['p_up']}%/{_hz_decision['p_down']}%｜"
                                     f"盈亏比: {_hz_decision['rr']:.2f}｜期望: {_hz_decision['expected_pct']:+.1f}%｜"
                                     f"{_hz_decision['entry_note']}｜口径{_hz_decision['score_version']}")
                             if not _guide_ctx:
-                                _guide_ctx = "V88唯一决策底稿暂不可用：禁止输出买入/卖出动作，等待数据恢复。"
+                                _guide_ctx = "量价底稿暂不可用：只解释中央原合同和证据缺口。"
                         except Exception:
                             pass
 
@@ -20782,12 +17351,12 @@ if execute_analysis and q_input:
                         _cycle_gate_ctx = ""
                         if _hz_decision:
                             _cycle_gate_ctx = f"""
-    【最高优先级五周期统一裁决（不可推翻）】
-    统一分：{_hz_decision.get('unified_score')}（短{_hz_decision.get('short_score')}/中{_hz_decision.get('medium_score')}/长{_hz_decision.get('long_score')}）；
+    【五周期量价研究（不是授级裁决）】
+    量价辅助分：{_hz_decision.get('unified_score')}（短{_hz_decision.get('short_score')}/中{_hz_decision.get('medium_score')}/长{_hz_decision.get('long_score')}）；
     上/下估计：{_hz_decision.get('p_up')}%/{_hz_decision.get('p_down')}%；盈亏比{_hz_decision.get('rr')}；期望{_hz_decision.get('expected_pct')}%；
-    统一动作：{_hz_decision.get('action')}；周期状态：{_hz_decision.get('cycle_status')}；是否冲突：{'是' if _hz_decision.get('cycle_conflict') else '否'}。
-    若为“是”：操作评级最高只能写“中性”或“回避”，仓位必须为0%，买点必须写“不参与，等待周期共振”；
-    不得因基本面优秀、短期反弹概率、正期望或高盈亏比输出“推荐/强烈推荐/建仓/逢低吸纳”。
+    周期状态：{_hz_decision.get('cycle_status')}；是否冲突：{'是' if _hz_decision.get('cycle_conflict') else '否'}。
+    保留并解释周期冲突的反证，不得擅自改变中央评级、进场、目标、止损或期限；需要新方案时列明重新双审条件。
+    相同日线的模型、书理解释与GPT论述不构成统计独立证据，不得把分数或情景值描述为已验证胜率。
     必须明确区分2周与4-16周，不得把短期反弹解释成中长期转多。"""
 
                         # 【V94.5】注入真实新闻日报：本股/其行业若在今日新闻中，催化必须锚定真实
@@ -20806,12 +17375,23 @@ if execute_analysis and q_input:
                         # 【V94.5】证据链纪要：移植 AI 新闻日报的"参考性"内核——先证据后判断、
                         # 每个结论走"信号→传导→价格/估值影响"链条、事实/推断/策略三分、失效条件可证伪、
                         # 标注置信度、禁绝对化语言。深度来自证据密度，不是字数堆砌。
+                        from stock_verdict import _triad_record as _deep_ai_record
+                        _ai_sel, _ai_row, _ai_allowed = _deep_ai_record(target_c)
+                        from deep_prompt_context import build as _deep_prompt_build
+                        _deep_central_prompt = json.dumps(_deep_prompt_build(
+                            central={"tier": _ai_row.get("tier"), "executable": _ai_allowed,
+                                     "trade_plan": _ai_row.get("trade_plan"), "audit_score": _ai_row.get("audit_score"),
+                                     "audit_id": _ai_row.get("audit_id"), "factpack_id": _ai_sel.get("factpack_id")},
+                            cross_validation=_deep_cross, joint_conclusion=_deep_synthesis,
+                            annual_outlook=_deep_annual), ensure_ascii=False, separators=(',', ':'))
                         _unified_prompt = f"""你是买方机构的首席分析师，为投委会写一份可直接决策的个股研判。标准对标机构晨会纪要：事实可追溯、推理有链条、结论可执行、风险能证伪。禁止聊天体、行业科普、教科书式铺陈。
 
     【标的】{target_c}
+    【中央评级约束】{_deep_central_prompt}
+    只能解释所给中央合同；无正式执行资格时必须中性/回避、仓位0%、买点不参与。不得创造新的评级、止损或目标价。
 
-    【实时数据】
-    最新价: {_curr_p:.2f} | RSI: {_rsi_v:.1f} | 唯一统一分: {_hz_decision.get('unified_score','待核')}/100 | 统一动作: {_hz_decision.get('action','待核')}
+    【最近完整收盘数据】
+    最新价: {_curr_p:.2f} | RSI: {_rsi_v:.1f} | 量价辅助分: {_hz_decision.get('unified_score','待核')}/100 | 技术状态: {_hz_decision.get('cycle_status','待核')}
     {_guide_ctx}
     K线形态: {_pattern_v} | 夏普比率: {_sharpe_v} | 最大回撤: {_maxdd_v}
     {_vwap_v}
@@ -20820,13 +17400,11 @@ if execute_analysis and q_input:
     {_score_ctx}
     {_cycle_gate_ctx}
 
-    【最近5日行情】
-    {_last5}
     {_fund_ctx}
     {_stock_news_ctx}
 
     ━━━ 写作纪律（违反任一条即不合格）━━━
-    0. 【五周期统一裁决】是最高优先级硬门，任何基本面、估值或短线信号都无权推翻；冲突时严禁推荐和建仓。
+    0. 中央签名评级与原合同是唯一执行授权；必须逐条回应【joint_conclusion】的技术反证、基本面限制及review_blocks。必须结合【annual_outlook】解释未来0–3、3–6、6–9、9–12个月的条件路径；区分已发生的年线结构与未来推演，不得把短期分数、目标价或双审改称一年结论，不得编造季度收益或确定性拐点日期。五周期分只属量价辅助证据，不能压过企业事实，也不能覆盖原失效线。任何分歧未解决时禁止新增开仓。
     1. 先证据、后判断：每个判断必须挂靠上方某个具体数据/因子/新闻，不得空谈。
     2. 事实 / 推断 / 策略三分：事实照录不夸大；推断必须写出传导链（信号→对盈利或资金的影响→对价格或估值的影响）；策略必须带失效条件。
     3. 不复述数据原文，要给数字背后的含义与相互印证/矛盾之处（如"RS为负但站上年线"这类冲突必须点破并裁决）。
@@ -20868,7 +17446,7 @@ if execute_analysis and q_input:
 
                         _unified_result = ""
                         _unified_ph = st.empty()
-                        for _chunk in call_gemini_api_stream(_unified_prompt, model_name=GEMINI_MODEL_NAME, max_output_tokens=4096):
+                        for _chunk in call_model_api_stream(_unified_prompt, model_name=GEMINI_MODEL_NAME, max_output_tokens=4096):
                             _unified_result += _chunk
                             _unified_ph.markdown(_unified_result + " ▌")
                         _unified_ph.empty()
@@ -20889,7 +17467,9 @@ if execute_analysis and q_input:
                     "回避", "仅观察·不追涨", "等待短线止跌", "趋势偏多·等待回踩",
                     "观察", "持有观察·不加仓", "减仓", "评估减仓", "退出", "清仓",
                 }
-                _ua_entry_blocked = _ua_conflict or _ua_action in _ua_no_entry_actions
+                from stock_verdict import _triad_record as _deep_central_record
+                _deep_selection, _deep_row, _deep_can_execute = _deep_central_record(target_c)
+                _ua_entry_blocked = not _deep_can_execute or _ua_conflict or _ua_action in _ua_no_entry_actions or bool(_deep_synthesis.get("entry_recheck_required", True))
                 # 不能只检查“推荐”两个字：周期冲突时，AI若偷偷给了非零仓位或买点，
                 # 同样属于可执行性冲突。三项必须同时通过才允许作为建议展示。
                 _ua_plain = re.sub(r"[*_#]", "", str(_ua_res))
@@ -21005,20 +17585,10 @@ if os.environ.get("V88_ENGINE_ONLY") == "1":
 
 
 
-# ═══════════════════════════════════════════════════════════════
-# 【模块 ③】深度作战室 + 猎手战位 + Top30（作战室为首 Tab，点击后自动切换）
-# ═══════════════════════════════════════════════════════════════
-# 【V90.7】深度作战室作为第一个 Tab，解决"点击无反应"——选中后自动显示
-tab_warroom, tab_scanner, tab_watchlist = st.tabs(["⚔️ 深度作战室", "📡 猎手战位", "📋 自选股分析"])
+# Optional manual research shares the engine; individual analysis is rendered above.
+st.markdown('<div id="v88-strategy-research"></div>', unsafe_allow_html=True)
+tab_scanner = st.expander("🔎 手动策略研究", expanded=False)
 
-# 【V90.7】深度作战室 Tab - 完整分析内容在顶部区块渲染，此处仅占位
-with tab_warroom:
-    _warroom_code = st.session_state.get('scan_selected_code')
-    if _warroom_code:
-        st.success(f"🎯 正在分析：**{st.session_state.get('scan_selected_name', '')}** ({_warroom_code})")
-    # 无选中时空白，顶部深度作战室区块会显示分析内容
-
-# 【V89.7】模块独立化 - 各Tab互不影响
 # 【V91.8】用 st.fragment 包装猎手战位：缓存命中时仅 fragment 重跑，跳过全局市场分析，10 秒内显示
 # 【V99.5】一键全选节流：每天最多3次，锚定 9:00/16:00/22:30（北京），省流量
 _AUTOSCAN_SLOTS = ("09:00", "16:00", "22:30")
@@ -21062,60 +17632,13 @@ with tab_scanner:
     def _scanner_fragment():
         st.markdown("#### 智能筛选引擎")
 
-        # 【V99.5】自动一键全选：打开页面时，若已过锚点(9:00/16:00/22:30)且今日该时点未跑，
-        # 且缓存已过1小时 → 自动扫中美港全部。每天最多3次，省流量。
-        try:
-            _due = _autoscan_due_slot()
-            _sr0 = st.session_state.get('scanner_results') or {}
-            _fresh0 = (_sr0.get('type') == 'unified'
-                       and (time.time() - _sr0.get('scan_timestamp', 0)) < 3600)
-            if _due and not _fresh0 and not st.session_state.get('_autoscan_running'):
-                st.session_state['_autoscan_running'] = True
-                st.info(f"🕘 已过 {_due} 自动时点，正在自动执行「中美港一键全选」（每日3次·省流量）…")
-                _as_bar = st.progress(0); _as_txt = st.empty(); _as_t0 = time.time()
-
-                def _as_cb(cur, total, name):
-                    _as_bar.progress(min(1.0, cur / max(1, total)))
-                    _el = time.time() - _as_t0
-                    _eta = (_el / cur * (total - cur)) if cur > 3 else 0
-                    _as_txt.text(f"⏱ 自动全选 已用{_el:.0f}s·剩余约{_eta:.0f}s ｜ {cur}/{total} - {name}")
-                try:
-                    _ap = list(RAW_US) + list(RAW_HK) + list(RAW_CN_TOP)
-                    _arows, _ast, _amt = run_unified_scan(_ap, "美股", "平衡", True, progress_callback=_as_cb)
-                    _arows = [{"市场": market_of_code(r.get("代码", "")), **r} for r in (_arows or [])]
-                    _as_bar.empty(); _as_txt.empty()
-                    st.session_state.scanner_results = {
-                        'type': 'unified', 'scan_market': '🌍 中美港全部', 'risk_preference': '平衡',
-                        'title': '#### 🔍 全策略一页榜单 (🌍 中美港全部 · 自动)', 'caption': '',
-                        'data': _arows, 'stats': _ast, 'key': 'unified_table',
-                        'scan_timestamp': time.time()}
-                    _save_scan_cache_to_file(st.session_state.scanner_results)
-                    _autoscan_mark(_due)
-                    st.toast(f"✅ 自动全选完成（今日第{len(_autoscan_state()['done'])}/3次）", icon="🎯")
-                except Exception as _ae:
-                    _as_bar.empty(); _as_txt.empty()
-                    st.caption(f"自动全选异常：{str(_ae)[:60]}")
-                finally:
-                    st.session_state['_autoscan_running'] = False
-        except Exception:
-            pass
-
-        
-        # 【V87.1】显示股票池大小和来源（安全限流模式）
+        # Scheduled market updates are owned by the background service.
+        # Page opening only reads cache; it must not launch a second full scan.
         us_count, hk_count, cn_count = len(RAW_US), len(RAW_HK), len(RAW_CN_TOP)
         total_count = us_count + hk_count + cn_count
-        
-        # 判断是否使用云端数据（阈值降低到50）
-        is_cloud_us = us_count >= 50
-        is_cloud_hk = hk_count >= 50
-        is_cloud_cn = cn_count >= 50
-        
-        source_icon = "☁️" if (is_cloud_us and is_cloud_hk and is_cloud_cn) else "💾"
-        source_text = "云端实时" if (is_cloud_us and is_cloud_hk and is_cloud_cn) else "本地备用"
-        
-        _as_done = len(_autoscan_state().get("done", []))
-        st.caption(f"{source_icon} **股票池来源**: {source_text} | 美股 {us_count} 只 | 港股 {hk_count} 只 | A股 {cn_count} 只 | 总计 {total_count} 只 | 📦 1小时缓存 | 🕘 自动全选 09:00/16:00/22:30（今日已 {_as_done}/3）")
-        
+        st.caption(f'🔎 手动策略研究池：美股{us_count}、港股{hk_count}、A股{cn_count}，共{total_count}只。'
+                   '全市场目录与有效日线覆盖率以页首验收表为准；后台独立更新，打开页面不另启动全量扫描。')
+
         # 初始化 session_state
         if 'scanner_results' not in st.session_state:
             st.session_state.scanner_results = {}
@@ -21286,7 +17809,7 @@ with tab_scanner:
                     st.session_state.scanner_results = {
                         'type': 'unified', 'scan_market': scan_market, 'risk_preference': risk_preference,
                         'title': f"#### 🔍 全策略一页榜单 ({scan_market}) · 市场状态 {_reg}",
-                        'caption': "💡 一表看全：得分=五维综合评分×时机修正（**高分=现在值得买**；高位背离/减仓类自动降分，持仓提醒看操作指引）| 20日动量=近月自身涨幅 | RS强度=近月跑赢大盘幅度 | 52周位置：+100贴近52周高点 / -100贴近低点 | 多重支撑=同时靠近≥2条均线 | MACD/量价：明显放量≥+20%/明显缩量≤-20% | 操作指引（🟢买入区 · 🟡持有减仓/别追 · 🔵持有 · ⚪回避观望）| 止损/目标：破止损离场，到目标减仓",
+                        'caption': '量价辅助筛选；评级与交易条件引用中央原合同。',
                         'data': _u_rows, 'stats': _u_stats, 'key': 'unified_table',
                         'scan_timestamp': time.time(),
                     }
@@ -21321,7 +17844,7 @@ with tab_scanner:
                 st.session_state.scanner_results = {
                     'type': 'ma60', 'scan_market': scan_market,
                     'title': f"#### 📈 MA60 季线机会 ({scan_market})",
-                    'caption': "💡 适合波段交易，持仓1-3周，中期趋势确认，胜率更高",
+                    'caption': "MA60量价观察；实际周期与进场条件查看中央原合同。",
                     'data': res, 'stats': stats, 'key': 'ma60_table',
                     'scan_timestamp': time.time(),
                 }
@@ -21336,7 +17859,7 @@ with tab_scanner:
                 st.session_state.scanner_results = {
                     'type': 'ma120', 'scan_market': scan_market,
                     'title': f"#### 📉 MA120 半年线布局 ({scan_market})",
-                    'caption': "💡 适合价值投资，持仓1-3月，长期支撑位，适合分批建仓",
+                    'caption': "MA120量价观察；均线支撑不构成企业价值或入场许可。",
                     'data': res, 'stats': stats, 'key': 'ma120_table',
                     'scan_timestamp': time.time(),
                 }
@@ -21549,7 +18072,16 @@ with tab_scanner:
         
         # 【V82.12】显示保存的扫描结果（支持caption）
         if st.session_state.scanner_results:
-            result_info = st.session_state.scanner_results
+            # Every sink, including restored cache / CSV / copy, shares this
+            # current projection. Never write it back over research history.
+            from scanner_central import project_rows as _project_scan_central
+            result_info = dict(st.session_state.scanner_results)
+            result_info['data'] = [
+                {k: v for k, v in r.items() if not k.startswith('_')}
+                for r in _project_scan_central(result_info.get('data') or [])
+            ]
+            result_info['title'] = '### 🔎 策略扫描 · 中央评级核对'
+            result_info['caption'] = '量价辅助分仅筛选研究线索；评级、执行许可和进场/止盈/失效条件均引用当前3A中央原合同。'
 
             # 【V99.6】市场列自愈：旧缓存/旧版本存的「市场」可能整列误标美股，
             # 渲染前一律按代码重判（全局唯一口径 market_of_code），CSV导出同步修正
@@ -21592,75 +18124,37 @@ with tab_scanner:
                         for _i9, _r9 in enumerate(_cp_rows):
                             _cp_lines.append(
                                 f"{_i9+1}. {_r9.get('市场','')}{_r9.get('名称','')}({_r9.get('代码','')}) "
-                                f"分{_r9.get('得分', _r9.get('评分',''))} {_r9.get('拐点','')} {_r9.get('操作指引','')}".strip())
+                                f"{_r9.get('中央评级','未获当前评级')} · 审核分{_r9.get('中央审核分') if _r9.get('中央审核分') is not None else '—'} "
+                                f"{_r9.get('中央动作','')} · 原周期{_r9.get('原周期','未核实')}".strip())
                         st.code("\n".join(_cp_lines), language=None)
             
             # 【NEW V88 Phase 2】表格筛选功能
             df_results = pd.DataFrame(result_info['data'])
 
             if not df_results.empty:
-                # 【V99.6】中美港分市场排名：先按全量结果算「市场排名」（得分降序、同分RS靠前），
-                # 再提供市场筛选——选单一市场时即是该市场的完整名次
-                if '市场' in df_results.columns and '得分' in df_results.columns:
-                    df_results['市场排名'] = (df_results.groupby('市场')['得分']
-                                          .rank(ascending=False, method='first').astype(int))
-                    _cols_mr = df_results.columns.tolist()
-                    _cols_mr.insert(_cols_mr.index('市场') + 1, _cols_mr.pop(_cols_mr.index('市场排名')))
-                    df_results = df_results[_cols_mr]
-                    _mkt_opts = ["🌍 全部"] + [m for m in ("🇺🇸美股", "🇨🇳A股", "🇭🇰港股")
-                                             if m in df_results['市场'].unique()]
-                    _sel_mkt = st.selectbox("🌏 市场筛选（看单一市场排名）", _mkt_opts,
-                                            key=f"filter_market_{result_info['key']}")
-                    if _sel_mkt != "🌍 全部":
+                if '市场' in df_results.columns:
+                    _mkt_opts = ['🌍 全部'] + sorted(df_results['市场'].dropna().unique().tolist())
+                    _sel_mkt = st.selectbox('🌏 市场筛选', _mkt_opts, key=f"filter_market_{result_info['key']}")
+                    if _sel_mkt != '🌍 全部':
                         df_results = df_results[df_results['市场'] == _sel_mkt]
-
-                # 筛选器
-                n_cols = 3 if (result_info.get('type') == 'regime' and 'pool_assignment' in df_results.columns
-                    and result_info.get('meta', {}).get('use_potential_engine', False)) else 2
-                filter_cols = st.columns(n_cols)
-                
+                filter_cols = st.columns(2)
                 with filter_cols[0]:
-                    # 行业筛选（用户要求：板块→行业）
                     col_name = '行业' if '行业' in df_results.columns else '板块'
                     if col_name in df_results.columns:
-                        industries = ['全部'] + sorted(df_results[col_name].unique().tolist())
-                        selected_industry = st.selectbox("🏷️ 筛选行业", industries, key=f"filter_industry_{result_info['key']}")
+                        industries = ['全部'] + sorted(df_results[col_name].dropna().astype(str).unique().tolist())
+                        selected_industry = st.selectbox('🏷️ 行业', industries, key=f"filter_industry_{result_info['key']}")
                         if selected_industry != '全部':
                             df_results = df_results[df_results[col_name] == selected_industry]
-                
                 with filter_cols[1]:
-                    # 三池筛选（仅双引擎模式显示）
-                    if (result_info.get('type') == 'regime' and 'pool_assignment' in df_results.columns
-                        and result_info.get('meta', {}).get('use_potential_engine', False)):
-                        pool_options = ['全部', 'A-已验证强势', 'B-预期差潜力', 'C-左侧观察']
-                        selected_pool = st.selectbox("🏊 三池筛选", pool_options, key=f"filter_pool_{result_info['key']}")
-                        if selected_pool != '全部':
-                            pool_map = {'A-已验证强势': 'A', 'B-预期差潜力': 'B', 'C-左侧观察': 'C'}
-                            df_results = df_results[df_results['pool_assignment'] == pool_map[selected_pool]]
-                    elif '得分' in df_results.columns:
-                        # 手机友好：下拉代替滑块
-                        score_band = st.selectbox(
-                            "📊 得分筛选",
-                            ["全部", "≥70 强势", "≥55 良好", "≥40 及格"],
-                            key=f"filter_score_band_{result_info['key']}",
-                            help="快速筛选高分股"
-                        )
-                        _min_map = {"≥70 强势": 70, "≥55 良好": 55, "≥40 及格": 40}
-                        if score_band in _min_map:
-                            df_results = df_results[df_results['得分'] >= _min_map[score_band]]
-                
-                if n_cols >= 3:
-                    with filter_cols[2]:
-                        if '得分' in df_results.columns:
-                            score_band2 = st.selectbox(
-                                "📊 得分筛选",
-                                ["全部", "≥70 强势", "≥55 良好", "≥40 及格"],
-                                key=f"filter_score_band2_{result_info['key']}",
-                            )
-                            _min_map2 = {"≥70 强势": 70, "≥55 良好": 55, "≥40 及格": 40}
-                            if score_band2 in _min_map2:
-                                df_results = df_results[df_results['得分'] >= _min_map2[score_band2]]
-                
+                    selected_grade = st.selectbox('🔖 中央评级', ['全部', '3A', '2A', '1A', '未获当前评级'],
+                                                  key=f"filter_central_grade_{result_info['key']}")
+                    if selected_grade != '全部':
+                        df_results = df_results[df_results['中央评级'] == selected_grade]
+                _leading = [c for c in ('代码', '名称', '股票', '市场', '行业', '中央评级', '中央审核分',
+                                       '原周期', '中央动作', '原合同进场', '原合同止盈', '原合同失效',
+                                       '原合同截止') if c in df_results.columns]
+                df_results = df_results[_leading + [c for c in df_results.columns if c not in _leading]]
+
                 # 首字母筛选（修复 A 段扎堆时快速找其他字母）
                 if '代码' in df_results.columns:
                     _letters = sorted({
@@ -22049,8 +18543,8 @@ def _fetch_macro_risk(force_refresh: bool = False) -> dict:
         if _cached_ss and not _cached_ss.get("_error"):
             return _cached_ss
 
-    if not MY_KIMI_KEY:
-        fb = _macro_risk_fallback("Kimi Code订阅未登录或KIMI_CODE_API_KEY未配置")
+    if not GPT_SUBSCRIPTION_READY:
+        fb = _macro_risk_fallback("GPT-6 Codex订阅未登录")
         st.session_state["_macro_risk_result"] = fb
         return fb
 
@@ -22064,7 +18558,7 @@ risk_level为1-5整数，其余字段用简短中文填写。"""
 
     _err_msg = ""
     try:
-        raw = str(call_gemini_api(prompt) or "").strip()
+        raw = str(call_model_api(prompt) or "").strip()
         if not raw:
             raise ValueError("API 返回空文本")
 
@@ -22240,133 +18734,13 @@ def _dingtalk_push_top30(res: dict | None) -> tuple[bool, str]:
     ]
     return _dingtalk_send("\n".join(lines))
 
-if _V88_WATCHLIST_UI:   # 2026-07-31 用户令:删自选版面(数据池保留,仅撤显示)
-    with tab_watchlist:
-        st.markdown("#### 📋 自选股分析")
-        st.caption("💡 按中美港划分，对每只自选股逐只分析：近期催化、技术面、风险点、操作建议（持有/加仓/减仓/观望）")
-    
-        # 【V96.1】动态自选股：搜索过的个股自动加入，上限20只，可单只移除
-        _wl_total = sum(len(v) for v in WATCHLIST.values())
-        st.markdown(f"**当前自选股 {_wl_total}/{_WATCHLIST_MAX}**　"
-                    f"<span style='font-size:12px;color:#6b7280'>🔍 搜索过的个股自动加入 · 满{_WATCHLIST_MAX}只时淘汰最早的 · 点 ✕ 移除</span>",
-                    unsafe_allow_html=True)
-        # 【V88·自选分级】A=交易日盘中每3小时 B=每天 C=每周低频；单一权威=私仓 watch_levels.json
-        try:
-            import sys as _syswl
-            _repo_wl = Path.home() / "Desktop" / "ai-daily-report-v2"
-            if str(_repo_wl / "src") not in _syswl.path:
-                _syswl.path.insert(0, str(_repo_wl / "src"))
-            from watch_alerts import watch_levels as _wl_levels_load, save_watch_levels as _wl_levels_save
-            _wl_lv = _wl_levels_load()
-        except Exception:
-            _wl_lv, _wl_levels_save = {}, None
-        st.caption("级别：**A**=对应市场交易日盘中每3小时（休市不扫）｜**B**=每天1次｜**C**=每周低频。持仓仍按原风险频率检查。")
-        _wl_codes_all = tuple(str(c).upper() for _lst in WATCHLIST.values() for c, _n in _lst)
-        with _v88_running("计算自选股历史最高水位"):
-            _wl_water = _ath_many_display(_wl_codes_all) if _wl_codes_all else {}
-        col1, col2, col3 = st.columns(3)
-        _wl_changed = False
-        for _col, _mk, _flag in ((col1, "US", "🇺🇸 美股"), (col2, "HK", "🇭🇰 港股"), (col3, "CN", "🇨🇳 A股")):
-            with _col:
-                _market_rows_wl = list(WATCHLIST.get(_mk, []))
-                _lv_counts_wl = {lv: sum(1 for code, _ in _market_rows_wl
-                                         if str(_wl_lv.get(str(code), "B")).upper() == lv)
-                                 for lv in ("A", "B", "C")}
-                st.markdown(
-                    f"**{_flag}**（{len(_market_rows_wl)}）　"
-                    f"<span style='font-size:12px;color:#dc2626'>A {_lv_counts_wl['A']}</span> · "
-                    f"<span style='font-size:12px;color:#2563eb'>B {_lv_counts_wl['B']}</span> · "
-                    f"<span style='font-size:12px;color:#64748b'>C {_lv_counts_wl['C']}</span>",
-                    unsafe_allow_html=True)
-                for _group_lv, _group_name, _group_color in (
-                        ("A", "A级重点", "#dc2626"), ("B", "B级观察", "#2563eb"), ("C", "C级低频", "#64748b")):
-                    _group_rows = [(code, name) for code, name in _market_rows_wl
-                                   if str(_wl_lv.get(str(code), "B")).upper() == _group_lv]
-                    if not _group_rows:
-                        continue
-                    st.markdown(
-                        f"<div style='font-size:12px;font-weight:700;color:{_group_color};margin:.35rem 0 .1rem 0;"
-                        f"border-bottom:1px solid #e5e7eb'>{_group_name}（{len(_group_rows)}）</div>",
-                        unsafe_allow_html=True)
-                    for code, name in _group_rows:
-                        _c1, _clv, _c2 = st.columns([4, 1.6, .7])
-                        _water_line = _wl_water.get(str(code).upper(), "历史水位待核")
-                        _c1.markdown(
-                            f"<div style='font-size:12px;padding:3px 0 0 0'>• {_stk_link(name, code)} "
-                            f"<span style='color:#9ca3af;font-size:12px'>({code})</span>"
-                            f"<div style='font-size:12px;color:#64748b;margin-left:10px'>{_water_line}</div></div>",
-                            unsafe_allow_html=True)
-                        _cur_lv = str(_wl_lv.get(str(code), "B")).upper()
-                        _cur_lv = _cur_lv if _cur_lv in ("A", "B", "C") else "B"
-                        _new_lv = _clv.selectbox("级别", ["A", "B", "C"], index=["A", "B", "C"].index(_cur_lv),
-                                                 key=f"wl_lv_{code}", label_visibility="collapsed")
-                        if _new_lv != _cur_lv and _wl_levels_save:
-                            _wl_lv[str(code)] = _new_lv
-                            _wl_levels_save(_wl_lv)
-                            _wl_changed = True
-                        if _c2.button("✕", key=f"wl_rm_{code}", help=f"从自选股移除 {name}"):
-                            _watchlist_remove(code)
-                            st.toast(f"已移除 {name}", icon="🗑️")
-                            st.rerun()
-        if _wl_changed:
-            try:
-                import subprocess as _spwl
-                _spwl.run(["git", "-C", str(_repo_wl), "add", "-f", "watch_levels.json"], capture_output=True)
-                _spwl.run(["git", "-C", str(_repo_wl), "commit", "-m", "自选分级调整(桌面)"], capture_output=True)
-                _spwl.Popen(["git", "-C", str(_repo_wl), "push", "origin", "main"],
-                            stdout=_spwl.DEVNULL, stderr=_spwl.DEVNULL)
-                st.toast("✅ 级别已保存并后台同步私仓", icon="🏷️")
-            except Exception:
-                st.toast("级别已本地保存，私仓同步失败", icon="⚠️")
-    
-        if 'watchlist_analysis' not in st.session_state:
-            st.session_state.watchlist_analysis = None
-    
-        ttl = get_smart_cache_ttl('daily')
-        cached = False
-        if st.session_state.watchlist_analysis:
-            ts = st.session_state.watchlist_analysis.get('timestamp', 0)
-            if (time.time() - ts) < ttl:
-                cached = True
-                remaining = (ttl - (time.time() - ts)) / 60
-                st.info(f"📦 使用缓存 | 剩余 {remaining:.1f} 分钟有效")
-    
-        if st.button("🚀 一键自选股分析（中美港逐只）", type="primary", width='stretch', key="btn_watchlist"):
-            if cached:
-                st.toast("📦 使用缓存，无需重新分析", icon="📦")
-            else:
-                progress_bar = st.progress(0)
-                status_text = st.empty()
-                report, err = run_watchlist_analysis(progress_callback=lambda m: status_text.text(m))
-                progress_bar.progress(1.0)
-                progress_bar.empty()
-                status_text.empty()
-                if err:
-                    st.error(err)
-                else:
-                    st.session_state.watchlist_analysis = {'report': report, 'timestamp': time.time()}
-                    st.toast("✅ 自选股分析完成", icon="📋")
-                    st.rerun()
-    
-        if st.button("🗑️ 清除自选股分析缓存", help="清除自选股分析结果", width='stretch', key="btn_watchlist_clear"):
-            st.session_state.watchlist_analysis = None
-            st.toast("✅ 已清除", icon="🗑️")
-            st.rerun()
-    
-        if st.session_state.watchlist_analysis:
-            report = st.session_state.watchlist_analysis.get('report', '')
-            if report:
-                st.markdown("---")
-                st.markdown("### 📋 自选股分析报告")
-                st.markdown(report)
-                st.caption(f"📌 本报告由 AI 生成 · 模型: {_ai_model_label()}")
 
 
     # ═══════════════════════════════════════════════════════════════
     # 【模块 ④】股票PK对决（仅在有对比股票时显示）
     # ═══════════════════════════════════════════════════════════════
 if st.session_state.get('pk_codes') and len(st.session_state.pk_codes) >= 2:
-    _module_header("⚔️", "股票深度对比", "2~4只:谁值得买/是不是同一个赌注/同期谁跑赢", "#f093fb", "#f5576c")
+    _module_header("⚔️", "股票深度对比", "2～4只中央评级、原合同、共同日期走势及相关性核对；各股行情日期单列。")
     
     pk_codes = st.session_state.pk_codes
     pk_names = st.session_state.get('pk_names', pk_codes)
@@ -22404,107 +18778,95 @@ if st.session_state.get('pk_codes') and len(st.session_state.pk_codes) >= 2:
                 # 【2026-08-01 深度对比】同一份已拉到的K线顺手带出:收盘序列(走势图+相关性)
                 # 与排序卡字段。不额外拉数据、不调AI,零成本。
                 try:
-                    _pk_hist[name] = [float(x) for x in df_pk['Close'].tolist()]
-                    # 【2026-08-01 全系统统一口径】排序分改用 rank_score(赢面45/催化25/量能15/位置15),
-                    # 不再用 unified_score——两把尺同屏会让"谁更值得买"出现两种答案。
-                    try:
-                        _rkj9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" /
-                                            "data" / "rank_score.json").read_text(encoding="utf-8"))
-                        _rkmap9 = {str(x.get("code")): x for x in (_rkj9.get("rows") or [])}
-                        _rkmap9.update({str(x.get("code")): x
-                                        for x in (_rkj9.get("archived") or [])})
-                    except Exception:
-                        _rkmap9 = {}
-                    _rs_pk9 = (_rkmap9.get(str(code)) or {}).get("rank_score")
+                    _pk_hist[name] = {str(day)[:10]: float(px) for day, px in df_pk['Close'].items()}
                     _pk_rank.append({
-                        "name": name, "code": code,
-                        "score": _rs_pk9 if _rs_pk9 is not None else _pk_dc.get('unified_score', 0),
-                        "score_kind": "排名分R1" if _rs_pk9 is not None else "统一分(无排名分兜底)",
-                        "tier": (_rkmap9.get(str(code)) or {}).get("tier"),
-                        "when": (_rkmap9.get(str(code)) or {}).get("when"),
-                        "action": _pk_dc.get('action'), "p_up": _pk_dc.get('p_up'),
-                        "rr": _pk_dc.get('rr'), "expected": _pk_dc.get('expected_pct'),
-                        "pos52": _pk_dc.get('pos52'), "stop": _pk_dc.get('stop'),
-                        "vold": (metrics.get('trend_full') or {}).get('vold')})
+                        'name': name, 'code': code,
+                        'technical_score': _pk_dc.get('unified_score'),
+                        'data_asof': str(df_pk.index[-1])[:10]})
                 except Exception:
                     logging.exception("[V88] 深度对比字段收集失败 %s", code)
                 pk_results.append({
-                    "股票": name,
-                    "代码": code,
-                    "当前价": f"{df_pk['Close'].iloc[-1]:.2f}",
-                    "统一分": _pk_dc.get('unified_score', 0),
-                    "短/中/长": f"{_pk_dc.get('short_score',0)}/{_pk_dc.get('medium_score',0)}/{_pk_dc.get('long_score',0)}",
-                    "2周上/下估计": f"{_pk_dc.get('p_up',0)}%/{_pk_dc.get('p_down',0)}%",
-                    "盈亏比": f"{_pk_dc.get('rr',0):.2f}",
-                    "期望值": f"{_pk_dc.get('expected_pct',0):+.1f}%",
-                    "建议": _pk_dc.get('action', '观察'),
-                    "口径": _pk_dc.get('score_version', 'V88-U2.0'),
-                    "RSI": f"{metrics.get('rsi', 50):.1f}",
-                    "夏普比率": quant.get('sharpe', 'N/A'),
-                    "最大回撤": quant.get('max_dd', 'N/A'),
-                    "历史样本胜率": quant.get('win_rate', 'N/A')
-                })
-    
+                    '股票': name, '代码': code, '市场': market_of_code(code),
+                    '当前价': float(df_pk['Close'].iloc[-1]),
+                    '行情日期': str(df_pk.index[-1])[:10],
+                    '量化辅助分': _pk_dc.get('unified_score'),
+                    '短/中/长辅助分': f"{_pk_dc.get('short_score',0)}/{_pk_dc.get('medium_score',0)}/{_pk_dc.get('long_score',0)}",
+                    '技术价位RR（非合同）': _pk_dc.get('rr'),
+                    '量价口径': _pk_dc.get('score_version', 'V88-U2.0'),
+                    'RSI': round(float(metrics.get('rsi', 50)), 1),
+                    '历史价格夏普（非策略）': quant.get('sharpe', 'N/A'),
+                    '历史价格最大回撤': quant.get('max_dd', 'N/A')})
+
     # 【V87.17】清除进度条
     progress_bar.empty()
     status_text.empty()
     
     if pk_results:
+        from deep_cross_validation import load_context as _load_pk_context
+        from compare_ui import comparison_records as _pk_records
+        _pk_contexts = {str(r['code']): _load_pk_context(r['code']) for r in _pk_rank}
+        _pk_central_records = _pk_records(_pk_rank, contexts=_pk_contexts)
+        _pk_records_by_code = {r['code']: r for r in _pk_central_records}
         # 【V88·深度对比 2026-08-01 用户"最多四只·帮我设计"】
         # 原来只有一张12列指标表=参数并列,看完还得自己心算"那我买哪只"。
         # 补三块回答真正的问题:谁值得买 / 是不是同一个赌注 / 同期谁跑赢。原表格保留在下方。
         try:
             from compare_ui import verdict_html as _vh9, family_html as _fh9, trend_svg as _ts9
             if _pk_rank:
-                st.markdown("#### ① 谁值得买")
-                st.markdown(_vh9(_pk_rank), unsafe_allow_html=True)
+                st.markdown("#### ① 中央评级与原合同对照")
+                st.markdown(_vh9(_pk_rank, contexts=_pk_contexts), unsafe_allow_html=True)
             if len(_pk_hist) >= 2:
-                st.markdown("#### ② 是不是同一个赌注")
+                st.markdown("#### ② 同日收益相关性")
                 st.markdown(_fh9(_pk_hist), unsafe_allow_html=True)
-                st.markdown("#### ③ 同期谁跑赢")
+                st.markdown("#### ③ 共同交易日期走势")
                 _cw9 = st.radio("走势窗口", ["20日", "60日", "120日"], horizontal=True,
                                 index=1, key="_pk_win9", label_visibility="collapsed")
                 st.markdown(_ts9(_pk_hist, days=int(_cw9[:-1])), unsafe_allow_html=True)
             st.markdown("#### ④ 全指标横排")
         except Exception:
             logging.exception("[V88] 深度对比区块渲染失败")
-        # 显示对比表格
-        df_pk_display = pd.DataFrame(pk_results)
-        st.dataframe(df_pk_display, width='stretch', hide_index=True)
-        
-        # AI 综合点评
-        st.markdown("---")
-        st.markdown("#### 🤖 AI 综合点评")
-        
-        # 【V88·原地交互铁律 2026-07-18】fragment：生成分析原地出现，不整页重跑对比扫描。
-        @st.fragment
-        def _pk_ai_frag():
-            col_ai1, col_ai2 = st.columns([1, 4])
-            with col_ai1:
-                gen_pk_ai = st.button("⚡ 生成分析", key="btn_pk_ai_main", type="primary", width='stretch')
-            with col_ai2:
-                clear_pk = st.button("🔄 清除对比", key="btn_clear_pk", width='stretch')
-        
-            if clear_pk:
-                st.session_state.pk_codes = None
-                st.session_state.pk_names = None
-                st.rerun()
-        
-            if gen_pk_ai:
-                with _v88_running(f"🤖 Gemini 分析中 · 模型: {_ai_model_label()} · PK对比分析"):
-                    pk_summary = "\n".join([
-                        f"{r['股票']}({r['代码']}): 统一分{r['统一分']}, {r['建议']}, "
-                        f"短中长{r['短/中/长']}, 上下估计{r['2周上/下估计']}, "
-                        f"盈亏比{r['盈亏比']}, 期望值{r['期望值']}, RSI={r['RSI']}"
-                        for r in pk_results
-                    ])
-                
-                    prompt = _load_prompt("pk_analysis.txt", pk_summary=pk_summary)
-                    result = st.write_stream(call_gemini_api_stream(prompt))
-                    st.caption(f"📌 AI生成 · 模型: {_ai_model_label()}")
-                    if COPY_UTILS_AVAILABLE:
-                        CopyUtils.create_copy_button(result, button_text="📋 复制", key="copy_pk")
-        _pk_ai_frag()
+        # The table and existing GPT explanations use the same validated
+        # records as the comparison cards, with no independent AI winner.
+        _pk_display_rows = []
+        for _aux in pk_results:
+            _rec = _pk_records_by_code.get(_aux['代码']) or {}
+            _plan = _rec.get('trade_plan') or {}
+            _pc = _plan.get('profit_contract') or {}
+            _band_pk = lambda v: '～'.join(str(n) for n in v) if isinstance(v, (list, tuple)) and len(v) == 2 else '未核实'
+            _pk_display_rows.append({
+                '代码': _aux['代码'], '名称': _rec.get('name') or _aux['股票'],
+                '中央评级': _rec.get('tier') or '未获当前评级',
+                '中央审核分': _rec.get('audit_score'),
+                '原周期': {'short':'短期', 'medium':'中期', 'long':'长期'}.get(_rec.get('horizon'), '未核实'),
+                '原合同进场': _band_pk(_plan.get('entry_range')),
+                '原合同止盈': _band_pk(_plan.get('take_profit_range')),
+                '原合同失效': str(_plan.get('stop') or '未核实'),
+                '原合同截止': _pc.get('thesis_deadline') or '未核实',
+                '核对结论': '；'.join(_rec.get('errors') or []) or '一致；执行另查中央当次闸门',
+                **{k:v for k,v in _aux.items() if k not in ('代码','股票')}})
+        st.dataframe(pd.DataFrame(_pk_display_rows), width='stretch', hide_index=True)
+        st.caption('同一中央发布、同一原合同；量价指标不参与审核分排序。原合同仅供研究，不新增交易许可。')
+        st.markdown('#### 🧠 GPT双审与书籍依据')
+        st.caption('直接复用已签名的当前审核；查看不额外调用模型。缺证或过期结论保留提示，不由临时点评替代。')
+        from review_display import current_scorecard as _pk_current_card
+        for _rec in _pk_central_records:
+            _ctx = _pk_contexts.get(_rec['code']) or {}
+            with st.expander(f"{_rec['name']} · GPT依据与反证", expanded=False):
+                _card = _pk_current_card(_ctx.get('selection') or {}, _ctx.get('row') or {})
+                _g = _card.get('gpt') or {}
+                if not _g.get('current'):
+                    st.caption('当前GPT审核缺失或过期；历史解释不能形成新的推荐。')
+                else:
+                    for _criterion in _g.get('criteria') or []:
+                        _score = _criterion.get('score')
+                        st.markdown(f"**{_criterion.get('title','核对项')} · {_score if _score is not None else '缺证'}/20**")
+                        st.caption(_criterion.get('reason') or '缺少可核验理由')
+                    with st.expander('独立反审与书籍逐条原证据', expanded=False):
+                        st.json({'双审': _card.get('review_pair'), '书籍': (_card.get('books') or {}).get('checks')}, expanded=False)
+        if st.button('🔄 清除对比', key='btn_clear_pk'):
+            st.session_state.pk_codes = None
+            st.session_state.pk_names = None
+            st.rerun()
 
 
 

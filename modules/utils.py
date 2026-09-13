@@ -317,9 +317,8 @@ def to_yf_cn_code(code: str) -> str:
         # 港股特殊处理：去除前导0
         if code.endswith('.HK'):
             base_code = code.split('.')[0]
-            if len(base_code) == 5 and base_code.startswith('0'):
-                # 09992.HK -> 9992.HK, 00836.HK -> 0836.HK
-                return base_code[1:] + '.HK'
+            if base_code.isdigit():
+                return str(int(base_code)).zfill(4) + '.HK'
         return code
     
     # 纯数字代码判断
@@ -329,7 +328,7 @@ def to_yf_cn_code(code: str) -> str:
             # 00700 -> 0700.HK
             # 02318 -> 2318.HK
             # 09988 -> 9988.HK
-            hk_code = code[1:]  # 去掉第一个字符
+            hk_code = str(int(code)).zfill(4)
             return f"{hk_code}.HK"
         
         # 港股代码：4位数字
@@ -342,6 +341,8 @@ def to_yf_cn_code(code: str) -> str:
                 return f"{code}.SS"  # 沪市
             elif code.startswith('0') or code.startswith('3'):
                 return f"{code}.SZ"  # 深市
+            elif code.startswith(('4', '8', '92')):
+                return f"{code}.BJ"
     
     # 美股：字母开头
     if code and code[0].isalpha():
@@ -382,15 +383,15 @@ def parse_market_from_code(code: str) -> str:
     Returns:
         市场标识（US/HK/CN）
     """
-    code = code.upper()
+    code = to_yf_cn_code(str(code or ''))
     
-    if '.SS' in code or '.SZ' in code:
+    if code.endswith(('.SS', '.SZ', '.BJ')):
         return "CN"
     
-    if '.HK' in code:
+    if code.endswith('.HK'):
         return "HK"
     
-    if code[0].isalpha():
+    if code and code[0].isalpha():
         return "US"
     
     if code.startswith('6') or code.startswith('5') or code.startswith('0') or code.startswith('3'):

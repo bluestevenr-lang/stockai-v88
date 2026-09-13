@@ -10,6 +10,7 @@ import hashlib
 import json
 import requests
 import streamlit as st
+from grade_card import stock_link
 from datetime import datetime, timezone, timedelta
 
 PUB_BASE = "https://raw.githubusercontent.com/bluestevenr-lang/stockai-v88/data/pub"
@@ -555,7 +556,7 @@ if _nav == "🧭 导航":
                         _tqp9 = _pubj9("trend_quality_pub.json")
                         _tqr9 = (_tqp9.get("rows") or [])[:8]
                         if _tqr9 or _tqp9.get("private_board_n"):
-                            st.markdown("🏆 **3A优选榜**（三层评级+双剑认证·全市场大库段·"
+                            st.markdown("🏆 **趋势模块线索**（当前评级、区间与执行权见中央列表·"
                                         f"{_tqp9.get('generated_at', '')}）"
                                         + (f"　另有{_tqp9.get('private_board_n')}只涉私仓标的,完整版在桌面/飞书"
                                            if _tqp9.get("private_board_n") else ""))
@@ -697,7 +698,7 @@ if _nav == "🧭 导航":
                 st.markdown("<b style='font-size:13px'>🌱 ③ 低位拐点·可注意埋伏</b>"
                             f"<span style='font-size:11px;color:#94a3b8'>（全池{_pt9c2.get('scanned', '?')}只·转强≠立刻买·💰=主力今日净流入）</span>"
                             + ("<div style='font-size:12.5px'>" + "、".join(
-                                f"{_flag9c(x.get('code'))}{x.get('name')}{_cert9c(x.get('code'), x.get('name'))}(52周{int(float(x.get('pos52') or 0))}%·{x.get('confidence')}{_fftag9c(x.get('code'))})"
+                                f"{stock_link(x.get('name'), x.get('code'))}(52周{int(float(x.get('pos52') or 0))}%·{x.get('confidence')}{_fftag9c(x.get('code'))})"
                                 for x in _up9c2) + "</div>" if _up9c2
                                else "<div style='font-size:12.5px;color:#94a3b8'>全池文件待发布或暂无低位转强</div>"),
                             unsafe_allow_html=True)
@@ -1046,7 +1047,7 @@ if _nav == "🧭 导航":
         if (_bm_c.get("markets") or _ad_c_data.get("markets")):
             with st.expander("🌡️ 市场晴雨表 · 万得式宽度 + 三市场每日量能走势", expanded=False):
                 if _bm_c.get("markets"):
-                    st.markdown("**🌡️ 市场宽度**（全市场逐只，非抽样）")
+                    st.markdown("**🌡️ 市场宽度**（已获取有效样本）")
                     st.markdown(_bh_c(_bm_c), unsafe_allow_html=True)
                 if _ad_c_data.get("markets"):
                     st.markdown("**💰 三市场量能走势**（替代当日分时）")
@@ -1067,71 +1068,18 @@ if _nav == "🧭 导航":
                            f"量能 {str(_ad_c_data.get('generated_at'))[:16]} · 与桌面同源")
     except Exception:
         pass
-    # 【V88·排名分上云 2026-08-01 用户"全系统更新此逻辑"】桌面已按排名分排序,
-    # 云端此前完全没有——三端不同源就等于没统一。级别只表示买入时机不表示质量高低。
+    # Use the same central list, per-market caps and weekly references as desktop.
     try:
-        _rk_c = _json_text("rank_score.json")
-        # 【R2 2026-08-02】0A不进行动清单(定纲第十节);每条给子类型/动作/短板/为什么不是更高级
-        _rr_c = [r for r in (_rk_c.get("rows") or []) if str(r.get("tier")) != "0A"][:10]
-        _n0a_c = sum(1 for r in (_rk_c.get("rows") or []) if str(r.get("tier")) == "0A")
-        # 【2026-08-02 用户"有没有数据都要有大3A模块"】常驻+默认展开+IN/OUT;
-        # OUT侧持仓卖警属隐私(💼铁律),云端只示公开的存档否决+指路桌面/飞书
-        _n3_c = sum(1 for r in (_rk_c.get("rows") or []) if str(r.get("tier")) == "3A")
-        _n2_c = sum(1 for r in (_rk_c.get("rows") or []) if str(r.get("tier")) == "2A")
-        if True:
-            with st.expander(
-                    f"🎯 3A大系统 · IN(3A×{_n3_c}·2A×{_n2_c}) / OUT"
-                    f"（木桶评级·长期25/时机20/催化15/估值15/空间25）", expanded=True):
-                st.caption(_three_a_cloud_caption(_rk_c, _snap or {}, _pub_state or {}))
-                if _n3_c == 0:
-                    _near_c = min([r for r in (_rk_c.get("rows") or [])
-                                   if str(r.get("tier")) == "2A"],
-                                  key=lambda r: len(r.get("missing") or []), default=None)
-                    st.info("今日无 3A(完整机会),不硬凑。"
-                            + (f"离3A最近: **{_near_c.get('name')}** 差「"
-                               f"{'、'.join(_near_c.get('missing') or [])}」" if _near_c else ""))
-                _arc_c = _rk_c.get("archived") or []
-                if _arc_c:
-                    st.markdown("**🔴 OUT(公开部分)** · " + "；".join(
-                        f"{a.get('name')}已否决({str(a.get('out_reason'))[:16]})"
-                        for a in _arc_c[:3]) + "　*持仓卖警属隐私,见桌面/飞书*")
-                st.caption("木桶决定等级、分数决定同级排序：3A关键桶板零缺失，2A必须说清短板，"
-                           "1A必须标战术用途，0A无行动价值已过滤（本次过滤 "
-                           f"{_n0a_c} 只）。风险否决不可被总分补偿。")
-                try:
-                    from grade_card import board_html as _bh_c, veto_review_html as _vr_c
-                    _v_c = _vr_c(_rk_c)
-                    if _v_c:
-                        st.markdown(_v_c, unsafe_allow_html=True)
-                    st.markdown(_bh_c(_rk_c, limit=8, show_detail=3), unsafe_allow_html=True)
-                    _rr_c = []      # 完整卡已覆盖,不再重复渲染精简行
-                except Exception:
-                    pass
-                for _r in _rr_c:
-                    _ms = "、".join(_r.get("missing") or []) or "板全"
-                    _col = ("#dc2626" if _r.get("tier") == "3A" else
-                            "#ea580c" if _r.get("tier") == "2A" else "#2563eb")
-                    st.markdown(
-                        f"<div style='font-size:12.5px;margin:3px 0'>#{_r.get('rank')} "
-                        f"<b>{_r.get('name')}</b> "
-                        f"<span style='color:{_col};font-weight:700'>{_r.get('subtype') or _r.get('tier')}</span> "
-                        f"<b>分{_r.get('rank_score'):.1f}</b> "
-                        f"<span style='color:#64748b'>{_r.get('action_state') or ''} · 缺:{_ms}</span>"
-                        f"<br><span style='font-size:11px;color:#94a3b8'>"
-                        f"{_r.get('why_not_higher') or _r.get('why_grade') or ''}"
-                        f" ｜ 风险{_r.get('risk_score')} 完备{_r.get('data_completeness')} "
-                        f"置信{_r.get('model_confidence')}</span></div>",
-                        unsafe_allow_html=True)
-                st.caption("⏱ 收盘后生成，最早 T+1 执行（实测隔夜缺口平均绝对偏差0.86%，"
-                           "按T日收盘价假设成交会系统性高估回测收益）。")
-                _ar_c = [a for a in (_rk_c.get("archived") or []) if a.get("review_needed")]
-                for _a in _ar_c:
-                    st.markdown(
-                        f"<div style='font-size:12px;color:#b91c1c'>⚠️ {_a.get('name')} "
-                        f"分{_a.get('rank_score'):.1f} 高于中位却被一票否决 → "
-                        f"{_a.get('out_reason')}（请人工复核）</div>", unsafe_allow_html=True)
+        from grade_card import system_table_html
+        # Same HTML-only path as desktop; do not reparse emoji-rich tables as Markdown.
+        st.html(system_table_html({}, {}, {}, {},
+            triad=_json_text('triad_selection_pub.json'),
+            weekly=_json_text('weekly_candidates_pub.json'),
+            reverse_audit=_json_text('reverse_audit_pub.json'),
+            reverse_status=_json_text('reverse_audit_status.json'),
+            relations=_json_text('module_relations_pub.json')))
     except Exception:
-        pass
+        st.warning('中央关联视图暂不可用；保留数据时间，等待同版发布。')
     st.caption("温度定仓位 → 轮动定板块 → 操作榜定标的")
     st.caption(_fresh_caption((_snap or {}).get("generated_at"), "行情快照") + " · 持仓盘中每15分钟快扫；强思考最多每6小时")
     _meta0 = pub_meta()
@@ -1226,8 +1174,8 @@ if _nav == "🧭 导航":
             st.markdown("**板块轮动**：" + " ｜ ".join(_hints[:5]))
         _rot_cloud = (_snap or {}).get("rotation_forecast") or {}
         _cyc_cloud = (_snap or {}).get("cycle_scan") or {}
-        if _rot_cloud or _cyc_cloud.get("stocks"):
-            st.markdown("**🧭 板块轮动＋个股周期总览（2 / 5 / 8 / 16周＋预计拐点）**")
+        if _rot_cloud or _cyc_cloud.get("stocks") or _cyc_cloud.get("status") == "pending":
+            st.markdown("**🧭 板块与个股 · 未来趋势圆周与曲线**")
             from rotation_ui import combined_cycle_dashboard_html as _cycle_board_cloud, available_markets as _am_cloud
             _mk_c = _am_cloud(_rot_cloud)
             _focus_c = (st.radio("时钟聚焦市场", _mk_c, horizontal=True, key="v88_cloud_nav_rot_focus",
@@ -1411,8 +1359,8 @@ if _nav == "🧭 导航":
                                  + "｜".join(_tw_ab9[_abk9t][:3]) + "</div>")
         _tw_html9.append("</div>")
         st.markdown("".join(_tw_html9), unsafe_allow_html=True)
-        st.caption("🐉看涨=龙虎门口径(上攻)｜⚔️看跌=鬼门关口径(先躲) · 概率=引擎对应周期方向分"
-                   "(规则情景估计,非回测真实胜率)，🎯=概率≥65%高把握 · 事由=触发条件/周期备注(无据标纯技术) · "
+        st.caption("🐉看涨=龙虎门口径(上攻)｜⚔️看跌=鬼门关口径(先躲) · 方向分=引擎对应周期规则分"
+                   "(未经概率标定)，🎯=规则分≥65/100 · 事由=触发条件/周期备注(无据标纯技术) · "
                    "可买纪律:波段票上行空间≥10%才推"
                    + (f"(已剔除{_tw_skip9}只空间不足/不明的绿灯)" if _tw_skip9 else "")
                    + " · 做T仅收把握分≥90·最多3只·必标【计划做T】·当日往返不留仓"
@@ -1569,7 +1517,7 @@ if _nav == "🧭 导航":
                     st.caption(_rl_lh9)
                 _lh_pairs9 = [(_gate_mkey9c(h),
                                _gcard9(h, "#dc2626", "#fef2f2",
-                                       ("🎯高把握·" if (int(h.get("p_up") or 0) >= 60
+                                       ("🎯较高规则分·" if (int(h.get("p_up") or 0) >= 60
                                                      and float(h.get("rr") or 0) >= 1.5) else "")
                                        + "🐉 " + str(((h.get('trade_plan') or {}).get('short') or {})
                                                      .get('mode') or '绿灯')))
@@ -1601,7 +1549,7 @@ if _nav == "🧭 导航":
                         st.caption(_rl_gg9 or "📊 地狱门警示实盘成功率：样本积累中（警示后≥3天下跌=躲对了，反向口径）")
                         _gg_pairs9 = [(_gate_mkey9c(r),
                                        _gcard9(r, "#16a34a", "#f0fdf4",
-                                               ("🎯高把握·" if int(r.get("p_down") or 0) >= 60 else "")
+                                               ("🎯较高规则分·" if int(r.get("p_down") or 0) >= 60 else "")
                                                + "⚔️ " + str(r.get("reason") or "拐点/破位警示")[:14]))
                                       for r in sorted(_cut_g9, key=lambda r: -int(r.get("p_down") or 0))]
                         st.markdown(_gate_grid9c(_gg_pairs9) + _gate_note9, unsafe_allow_html=True)
@@ -1984,14 +1932,27 @@ elif _nav == "🔍 个股搜索":
             _concl_color = {"进攻": "🟢", "试仓": "🧪", "持有": "🔵", "等待": "⏳", "减仓": "🟡", "回避": "🔴"}
             from v88_decision_core import evaluate_decision as _evaluate_cloud_decision
             _cloud_decision = _evaluate_cloud_decision(_df, f, name=_tname, code=_tsym)
+            from grade_card import _triad_v2_rows, card_html
+            from scorecard_html import profit_html
+            from stock_reference import canonical as _canon_cloud
+            from module_relations_ui import html as _relations_cloud
+            _central_cloud = _json_text('triad_selection_pub.json')
+            _central_rows_cloud, _ = _triad_v2_rows({}, _central_cloud)
+            _match_cloud = next((r for r in _central_rows_cloud if _canon_cloud(r.get('code')) == _canon_cloud(_tsym)), None)
+            if _match_cloud:
+                st.markdown(card_html(_match_cloud) + profit_html(_match_cloud), unsafe_allow_html=True)
+            else:
+                st.caption('本票暂无当前中央评级；下方为量价辅助研究。')
+            st.markdown(_relations_cloud(_json_text('module_relations_pub.json'), _central_cloud, _tsym), unsafe_allow_html=True)
+
             c1, c2, c3, c4, c5 = st.columns(5)
-            c1.metric("唯一统一分", _cloud_decision["unified_score"])
+            c1.metric("量价辅助分", _cloud_decision["unified_score"])
             c2.metric("短/中/长", f"{_cloud_decision['short_score']}/"
                       f"{_cloud_decision['medium_score']}/{_cloud_decision['long_score']}")
             c3.metric("2周上/下", f"{_cloud_decision['p_up']}%/{_cloud_decision['p_down']}%")
             c4.metric("盈亏比", f"{_cloud_decision['rr']:.2f}")
             c5.metric("情景期望", f"{_cloud_decision['expected_pct']:+.1f}%")
-            st.info(f"**统一动作：{_cloud_decision['action']}**｜{_cloud_decision['entry_note']}｜"
+            st.info(f"**量价辅助状态（不构成执行指令）：{_cloud_decision['action']}**｜{_cloud_decision['entry_note']}｜"
                     f"口径{_cloud_decision['score_version']}｜数据签名{_cloud_decision['data_signature']}｜"
                     f"分析{_cloud_decision['analysis_time']}")
             # 【V88·涨跌归因链·云端简版 2026-07-25 用户定纲"不能光说技术面破坏"】
@@ -2036,9 +1997,9 @@ elif _nav == "🔍 个股搜索":
                 st.markdown(f"{_concl_color.get(f['conclusion'],'')} 技术阶段：**{f['conclusion']}**｜{f['action']}")
 
             # 【V88·云端个股五周期】点击直达后自动显示2/4/8/16/32周，
-            # 行情规则先算、订阅K3-256K reasoning-high再复核，失败也不伪装AI结果。
-            st.markdown("##### 🧭 个股周期轮换总览（深度分析第一判断）")
-            st.caption("先看周期象限与2/4/8/16/32周走向；同一行情快照复用6小时思考缓存。")
+            # 行情规则先算、订阅GPT-6 Astra reasoning-high再复核，失败也不伪装AI结果。
+            st.markdown("##### 🧭 未来趋势展望 · 圆周与曲线")
+            st.caption("未来展望沿用同股年度与跨周期凭据；历史窗口仅作折叠依据。")
             _fu = None
             try:
                 import stock_horizon as _stock_horizon_cloud
@@ -2048,23 +2009,34 @@ elif _nav == "🔍 个股搜索":
                 _hz_context = ((f"基本面:{(_fu or {}).get('line', '暂无')}；")
                                + f"日报相关:{'；'.join(_rel_lines)[:700]}")
                 _hz_bar = st.progress(0, text="正在计算五周期量价底稿…")
-                _hz_bar.progress(35, text="K3-256K思考模式复核中…")
+                _hz_bar.progress(35, text="关联本地年度条件与未来研判…")
                 _hz_result = _stock_horizon_cloud.analyze(
                     _tname, _tsym, _df, full=f, context=_hz_context,
-                    api_key=str(st.secrets.get("KIMI_CODE_API_KEY", "") or ""),
+                    api_key="codex-subscription", allow_ai=False,
                 )
                 _hz_bar.progress(100, text="五周期走势分析完成")
                 _hz_bar.empty()
                 _hz_rows = _stock_horizon_cloud.table_rows(_hz_result)
                 _hz_align = _stock_horizon_cloud.cycle_alignment(_hz_result.get("facts") or {})
                 _hz_action = _cloud_decision["action"]
-                _hz_result = dict(_hz_result, decision=_cloud_decision)
+                from stock_future_context import for_stock_context as _stock_future_context
+                _cloud_future_context = _stock_future_context(_tsym, _tname)
+                _cloud_future = _cloud_future_context['future_scenario']
+                # Only render the same local complete-series snapshot. A cloud
+                # chart from another basis cannot borrow local future authority.
+                from deep_analysis_data import snapshot_signature as _cloud_series_sig
+                _future_refs = _cloud_future.get('reference_ids') or {}
+                _future_bound = (_cloud_future.get('snapshot_signature') == _cloud_series_sig(_df))
+                _hz_result = dict(_hz_result, decision=_cloud_decision,
+                    future_scenario=_cloud_future if (_future_bound or _cloud_future.get('status') != 'ready') else {},
+                    period_consistency=_cloud_future_context['period_consistency'] if _future_bound else {})
                 _hz_visual = _stock_horizon_cloud.cycle_visual_html(
                     _hz_result, _tname, _tsym, f"v88-cloud-stock-cycle-{_tsym}")
                 if _hz_visual:
                     st.markdown(_hz_visual, unsafe_allow_html=True)
                 if _hz_rows:
-                    st.dataframe(_hz_rows, hide_index=True, use_container_width=True)
+                    with st.expander("历史量价计算明细", expanded=False):
+                        st.dataframe(_hz_rows, hide_index=True, use_container_width=True)
                 _hz_review = _hz_result.get("review") or {}
                 if _hz_review.get("status") in ("completed", "cached"):
                     st.info(
@@ -2075,13 +2047,13 @@ elif _nav == "🔍 个股搜索":
                         f"失效：{_hz_review.get('invalid_summary', '破位后重评')}"
                     )
                     st.caption(
-                        f"模型：{_hz_review.get('model', 'k3-256k')} · reasoning-high ｜ "
+                        f"模型：{_hz_review.get('model', 'gpt-6-astra')} · reasoning-high ｜ "
                         f"分析于 {_hz_review.get('analysis_time', '缓存时间待核')}"
                     )
                 else:
                     st.caption(
-                        "ℹ️ 云端为轻量只读版，个股分析用**确定性规则底稿**（各周期概率/动量/量比/支撑压力"
-                        "+规则人话理由，上表已完整）；K3订阅复核不可用时自动失败关闭，不冒充AI结论。"
+                        "ℹ️ 云端为轻量只读版，个股分析用**确定性规则底稿**（各周期规则分/动量/量比/支撑压力"
+                        "+规则人话理由，上表已完整）；GPT-6订阅复核不可用时自动失败关闭，不冒充AI结论。"
                     )
             except Exception as _hz_cloud_exc:
                 st.warning(f"五周期走势暂不可用：{type(_hz_cloud_exc).__name__}")
@@ -2117,11 +2089,11 @@ elif _nav == "🔍 个股搜索":
                     pass
                 _mp_txt9 = (
                     f"【V88系统研究包】{_tname}（{_tsym}）· 生成{_now_bjt():%Y-%m-%d %H:%M}北京\n"
-                    f"■ 主判断（周期口径·24小时涨跌不改主判断）：1-2周上涨{_cloud_decision.get('p_up')}%"
+                    f"■ 量价辅助情景（须关联中央审核与原合同）：1-2周上涨{_cloud_decision.get('p_up')}%"
                     f"/下行{_cloud_decision.get('p_down')}%｜中(4-8周)分{_cloud_decision.get('medium_score')}"
                     f"｜长(16-32周)分{_cloud_decision.get('long_score')}"
                     f"｜统一分{_cloud_decision.get('unified_score')}（短{_cloud_decision.get('short_score')}）\n"
-                    f"■ 今日动作（纪律指令，次于主判断）：{_cloud_decision.get('action')}"
+                    f"■ 技术状态（不构成执行指令）：{_cloud_decision.get('action')}"
                     f"｜盈亏比{_cloud_decision.get('rr')}｜2周期望{_cloud_decision.get('expected_pct'):+.1f}%\n"
                     f"■ 入场/时机：{_cloud_decision.get('entry_note')}\n"
                     f"■ 周期链（各档上涨概率，规则情景估计非胜率）：{_mp_chain9}｜技术阶段：{f.get('conclusion')}\n"
@@ -2129,7 +2101,7 @@ elif _nav == "🔍 个股搜索":
                     f"｜止损{_cloud_decision.get('stop')}\n"
                     + (f"■ 大盘环境：{'｜'.join(_mp_env9)}\n" if _mp_env9 else "")
                     + (f"■ 系统实盘对账（到期核算）：{'·'.join(_mp_sr9)}\n" if _mp_sr9 else "")
-                    + "■ 口径：统一分=短20%+中25%+长20%+趋势15%+赔率20%；周期=2/4/8/16/32交易周翻倍律；"
+                    + "■ 辅助分口径：短20%+中25%+长20%+趋势15%+赔率20%；周期=2/4/8/16/32交易周翻倍律；"
                       "概率为确定性规则情景估计，非回测胜率\n"
                     + "→ 请结合你能获取的最新新闻/基本面/行业信息，与以上V88确定性引擎数据交叉验证，回答：\n"
                       "①同意/不同意系统动作，理由；②该股当前的催化与风险事由（要具体事件，不要泛泛）；"
@@ -2176,7 +2148,7 @@ elif _nav == "🔍 个股搜索":
                 if st.button("🧠 按当时视角推算", type="primary", use_container_width=True,
                              key=f"cloud_anchor_run_{_tsym}"):
                     _ca_bar = st.progress(25, text="正在截断锚点后的行情…")
-                    _ca_bar.progress(65, text="正在计算2/5/8/16周概率、赔率和期望…")
+                    _ca_bar.progress(65, text="正在计算各档规则方向分与技术空间…")
                     st.session_state[f"cloud_anchor_result_{_tsym}"] = _evaluate_cloud_anchor(
                         _df, datetime.combine(_ca_date, _ca_clock), _ca_price,
                         action=_ca_action, name=_tname, code=_tsym,
@@ -2190,21 +2162,20 @@ elif _nav == "🔍 个股搜索":
                     st.error(_ca_result["error"])
                 elif _ca_result:
                     _cm1, _cm2, _cm3, _cm4 = st.columns(4)
-                    _cm1.metric("综合上/下", f"{_ca_result.get('weighted_p_up')}%/"
-                                f"{_ca_result.get('weighted_p_down')}%")
+                    _cm1.metric("规则方向分（非概率）", f"{_ca_result.get('weighted_p_up')} / 100")
                     _cm2.metric("综合盈亏比", f"{_ca_result.get('weighted_rr', 0):.2f}")
-                    _cm3.metric("综合期望", f"{_ca_result.get('weighted_expected_pct', 0):+.1f}%")
+                    _cm3.metric("规则加权空间", f"{_ca_result.get('weighted_expected_pct', 0):+.1f}%")
                     _ca_track = _ca_result.get('tracking') or {}
                     _ca_since = _ca_track.get('since_anchor_pct')
-                    _cm4.metric("锚点后实绩", (f"{_ca_since:+.1f}%" if _ca_since is not None else "待最新行情"))
+                    _cm4.metric("锚点后价格变化", (f"{_ca_since:+.1f}%" if _ca_since is not None else "待最新行情"))
                     st.info(f"**当时结论：{_ca_result.get('overall_action')}**｜"
                             f"动作复盘：{_ca_result.get('decision_review')}")
                     _ca_rows = [{
                         "周期": x.get("label"),
-                        "上涨/下跌": f"{x.get('p_up')}%/{x.get('p_down')}%",
+                        "规则方向分/100": x.get("p_up"),
                         "上涨/下跌空间": f"+{x.get('upside_pct')}% / -{x.get('downside_pct')}%",
                         "目标/风险价": f"{x.get('target_price')} / {x.get('risk_price')}",
-                        "盈亏比": x.get("rr"), "期望值": f"{x.get('expected_pct'):+.1f}%",
+                        "盈亏比": x.get("rr"), "规则加权空间": f"{x.get('expected_pct'):+.1f}%",
                         "判断": x.get("view"), "触发": x.get("trigger"), "失效": x.get("invalid"),
                     } for x in (_ca_result.get("horizons") or [])]
                     st.dataframe(_ca_rows, hide_index=True, use_container_width=True)

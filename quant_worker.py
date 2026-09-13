@@ -185,52 +185,18 @@ def _is_trading_time() -> tuple[bool, str]:
 # 钉钉通知
 # ═══════════════════════════════════════════════════════════════
 
-_DINGTALK_WEBHOOK = os.environ.get("DINGTALK_WEBHOOK", "")
-_DINGTALK_SECRET  = os.environ.get("DINGTALK_SECRET", "")
-_DINGTALK_KEYWORD = os.environ.get("DINGTALK_KEYWORD", "股票行情")
-
-
-def _send_dingtalk(title: str, content: str) -> bool:
-    """发送 Markdown 消息到钉钉（复用 dingtalk_bot.py 逻辑）"""
-    if not _DINGTALK_WEBHOOK:
-        return False
-    try:
-        url = _DINGTALK_WEBHOOK
-        if _DINGTALK_SECRET:
-            ts   = str(round(time.time() * 1000))
-            sign = urllib.parse.quote_plus(
-                base64.b64encode(
-                    hmac.new(
-                        _DINGTALK_SECRET.encode("utf-8"),
-                        f"{ts}\n{_DINGTALK_SECRET}".encode("utf-8"),
-                        digestmod=hashlib.sha256,
-                    ).digest()
-                ).decode("ascii")
-            )
-            url = f"{_DINGTALK_WEBHOOK}&timestamp={ts}&sign={sign}"
-
-        safe_title = title if _DINGTALK_KEYWORD in title else f"{_DINGTALK_KEYWORD} {title}"
-        msg = {
-            "msgtype": "markdown",
-            "markdown": {
-                "title": f"🤖 {safe_title}",
-                "text": f"### 🤖 {safe_title}\n\n{content}\n\n---\n*量化模拟 · V88*",
-            },
-        }
-        data = json.dumps(msg, ensure_ascii=False).encode("utf-8")
-        ctx  = ssl._create_unverified_context()
-        req  = urllib.request.Request(
-            url, data=data,
-            headers={"Content-Type": "application/json; charset=utf-8"},
-        )
-        with urllib.request.urlopen(req, timeout=15, context=ctx) as resp:
-            result = json.loads(resp.read().decode("utf-8"))
-            ok = result.get("errcode") == 0
-            log.info(f"钉钉{'✅' if ok else '❌'}: {result}")
-            return ok
-    except Exception as e:
-        log.warning(f"钉钉发送失败: {e}")
-        return False
+def _record_simulation_notice(title: str, content: str) -> bool:
+    """退役量化模型仅留本机研究事件，不能经新通道冒充当前V88指令。"""
+    import hashlib
+    path = Path("data/legacy_simulation_notices.jsonl")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    row = {"at": datetime.now().isoformat(), "title": title,
+           "message_hash": hashlib.sha256(content.encode()).hexdigest(),
+           "status": "LOCAL_ONLY_RETIRED_STRATEGY", "actual_trade": False}
+    with path.open("a", encoding="utf-8") as stream:
+        stream.write(json.dumps(row, ensure_ascii=False)+"\n")
+    log.info("旧量化通知已本地留档，不发当前交易提示")
+    return False
 
 
 def _notify_open(pos: dict, ind: dict):
@@ -256,7 +222,7 @@ def _notify_open(pos: dict, ind: dict):
         f"**信号**: EMA金叉 · RSI={rsi:.1f} · MACD✓  \n"
         f"**时间**: {_now_str()}"
     )
-    _send_dingtalk("量化开仓信号", content)
+    _record_simulation_notice("量化开仓信号", content)
 
 
 def _notify_close(pos: dict, exit_price: float, pnl: float, reason: str):
@@ -278,7 +244,7 @@ def _notify_close(pos: dict, exit_price: float, pnl: float, reason: str):
         f"**盈亏**: {emoji} ¥{pnl:+,.2f}（{pnl_pct:+.2f}%）  \n"
         f"**时间**: {_now_str()}"
     )
-    _send_dingtalk("量化平仓通知", content)
+    _record_simulation_notice("量化平仓通知", content)
 
 
 def _notify_summary(state: dict, action_count: int):
@@ -301,7 +267,7 @@ def _notify_summary(state: dict, action_count: int):
         f"**累计盈亏**: {emoji} ¥{profit:+,.2f}（{pct:+.2f}%）  \n"
         f"**时间**: {_now_str()}"
     )
-    _send_dingtalk("量化账户快报", content)
+    _record_simulation_notice("量化账户快报", content)
 
 
 def _send_daily_report(state: dict):
@@ -388,7 +354,7 @@ def _send_daily_report(state: dict):
         f"---\n"
         f"*策略：5m EMA金叉+1H共振+ATR止损+分层追踪+市场过滤*"
     )
-    _send_dingtalk("量化交易日报", content)
+    _record_simulation_notice("量化交易日报", content)
     log.info("✅ 量化日报（含学习总结）已发送到钉钉")
 
 
