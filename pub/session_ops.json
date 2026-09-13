@@ -1,14 +1,1170 @@
 {
- "schema_version": "v88.central-public/1.0",
- "generated_at": null,
+ "schema_version": "v88.central-public/2.0-linked",
+ "generated_at": "2026-09-13 13:35（北京时间）",
  "source_module": "session_ops.json",
- "factpack_id": null,
+ "sensor_source_asof": "2026-09-13 13:35（北京时间）",
+ "sensor_relation_scope": "只表示原模块含此股票；不代表当前行情或另一份独立审核。原模块日期单列。",
+ "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
  "recommendations": [],
- "observations": [],
- "rows": [],
+ "observations": [
+  {
+   "code": "DRD",
+   "name": "DRDGOLD Limited American Depositary Shares",
+   "market": "美股",
+   "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+   "tier": "1A",
+   "state": "RESEARCH_1A",
+   "label": "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+   "support_count": 0,
+   "votes": {
+    "gpt": "observe",
+    "classics": "reject"
+   },
+   "reviews": {
+    "gpt": {
+     "verdict": "不否定",
+     "why": "短期有条件关注逻辑尚可保留，但反证和期限内路径证据未充分解决，故不否定。9月11日收盘26.81尚未站上27.5，量比0.7361未达1.2；合同齐全但未触发。即使以后触发，也须核对下一开盘原区间、实际收益风险及执行门槛；本复核不代签独立经典规则闸。",
+     "at": "2026-09-13 08:11（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "classics": {
+     "verdict": "书理不支持",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "claude_cs": {
+     "verdict": "gate_pass"
+    }
+   },
+   "reason_codes": [
+    "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+    "量价确认：量比≥1.2；量比口径与事实来源一并保留（V88参数）",
+    "萨普：同策略扣费R期望：本周期同策略已结算≥20笔，净R均值及均值−2标准误均>0；后者只是V88描述性保守门槛。样本不足保留研究，不能声称正期望；中长期须有对应周期模型",
+    "兑现周期仍需确认：GPT-6周期匹配项≥15分",
+    "反证尚待处理：GPT-6反证项≥15分，明确解决当前反例"
+   ],
+   "evidence_asof": "2026-09-11T16:00:00-04:00",
+   "formal_recommendation": false,
+   "listable": false,
+   "push_eligible": false,
+   "audit_score": 65,
+   "master_ref": {
+    "version": "stock-reference-v1",
+    "code": "DRD",
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "central_generated_at": "2026-09-13 09:55（北京时间）",
+    "audit_id": "6c27eca080320b611727d2f9ae45073fbd0164a8cb38cf66a4b50024e0df3019",
+    "audit_score": 65,
+    "tier": "1A",
+    "horizon": "short",
+    "contract_id": "5ec9d3fe1736043eca0f5cd77ca8479ec780dae287bc3355e540d51a32297105",
+    "reference_id": "d494e8d0dd3054e55654ccbeaf565df8c7d215e5f512df07eea4aa029781045c",
+    "no_grade_authority": true
+   },
+   "sensor_relation": "本模块包含该股票；评级仅引用中央，不构成另一份独立审核",
+   "instruction": "非推荐、不可直接执行",
+   "observation_contract": {
+    "promotion_trigger": "收盘重新站上27.5000且当日量/此前20日均量≥1.2；实际入场收益风险比仍须≥2；实际入场价必须在[26.6727, 28.2467]，超出则重新审核。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+    "invalidation": "收盘跌破既定结构失效线26.6700，本轮短期结构失效；不外推长期价值",
+    "horizon": "short",
+    "next_review_at": null
+   }
+  },
+  {
+   "code": "QNCX",
+   "name": "Quince Therapeutics, Inc. - Common Stock",
+   "market": "美股",
+   "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+   "tier": "1A",
+   "state": "RESEARCH_1A",
+   "label": "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+   "support_count": 0,
+   "votes": {
+    "gpt": "observe",
+    "classics": "reject"
+   },
+   "reviews": {
+    "gpt": {
+     "verdict": "不否定",
+     "why": "短期条件论文具有可检验的价格结构，但弱量、均线阻力和零结算样本使反证与周期证据不足，只能不否定。冻结收盘29.55未重新站上30，量比0.5561未达1.2；合同齐全但不得现在买。后续须按单阶段原触发确认，下一可交易开盘仍在[28.3128,30.6767]且实际收益风险比≥2，并另行通过执行约束及独立经典规则闸。",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "classics": {
+     "verdict": "书理不支持",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "claude_cs": {
+     "verdict": "gate_pass"
+    }
+   },
+   "reason_codes": [
+    "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+    "量价确认：量比≥1.2；量比口径与事实来源一并保留（V88参数）",
+    "萨普：同策略扣费R期望：本周期同策略已结算≥20笔，净R均值及均值−2标准误均>0；后者只是V88描述性保守门槛。样本不足保留研究，不能声称正期望；中长期须有对应周期模型",
+    "兑现周期仍需确认：GPT-6周期匹配项≥15分",
+    "反证尚待处理：GPT-6反证项≥15分，明确解决当前反例"
+   ],
+   "evidence_asof": "2026-09-11T16:00:00-04:00",
+   "formal_recommendation": false,
+   "listable": false,
+   "push_eligible": false,
+   "audit_score": 65,
+   "master_ref": {
+    "version": "stock-reference-v1",
+    "code": "QNCX",
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "central_generated_at": "2026-09-13 09:55（北京时间）",
+    "audit_id": "17468a141a82b2a4fd606bb73c9d9a20fc40919b380b6c9d7b2a7326fcc4e28f",
+    "audit_score": 65,
+    "tier": "1A",
+    "horizon": "short",
+    "contract_id": "4969cad1fd80baf1e26eb80861f58b3a050fb9664c5999a50c4e4a223fb5f5fd",
+    "reference_id": "56116697270ff83332b3b627ff88a649ba4e6f3e2103c78af30696f3bc35f733",
+    "no_grade_authority": true
+   },
+   "sensor_relation": "本模块包含该股票；评级仅引用中央，不构成另一份独立审核",
+   "instruction": "非推荐、不可直接执行",
+   "observation_contract": {
+    "promotion_trigger": "收盘重新站上30.0000且当日量/此前20日均量≥1.2；实际入场收益风险比仍须≥2；实际入场价必须在[28.3128, 30.6767]，超出则重新审核。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+    "invalidation": "收盘跌破既定结构失效线28.3100，本轮短期结构失效；不外推长期价值",
+    "horizon": "short",
+    "next_review_at": null
+   }
+  },
+  {
+   "code": "BCTX",
+   "name": "BriaCell Therapeutics Corp. - Common Shares",
+   "market": "美股",
+   "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+   "tier": "1A",
+   "state": "RESEARCH_1A",
+   "label": "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+   "support_count": 0,
+   "votes": {
+    "gpt": "observe",
+    "classics": "reject"
+   },
+   "reviews": {
+    "gpt": {
+     "verdict": "不否定",
+     "why": "BCTX具备可检验的短期条件关注逻辑，但反证与周期兑现证据仍不足。最新冻结收盘3.63未站上3.65，量比0.1223未达到1.2；合同齐全，应等一阶段确认及下一可交易开盘落在原区间。即使触发，仍须复核实际收益风险、成本和独立规则闸，本复核不代签其通过。未见足以认定硬性风险否决的已核实证据。",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "classics": {
+     "verdict": "书理不支持",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "claude_cs": {
+     "verdict": "gate_pass"
+    }
+   },
+   "reason_codes": [
+    "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+    "量价确认：量比≥1.2；量比口径与事实来源一并保留（V88参数）",
+    "萨普：同策略扣费R期望：本周期同策略已结算≥20笔，净R均值及均值−2标准误均>0；后者只是V88描述性保守门槛。样本不足保留研究，不能声称正期望；中长期须有对应周期模型",
+    "兑现周期仍需确认：GPT-6周期匹配项≥15分",
+    "反证尚待处理：GPT-6反证项≥15分，明确解决当前反例"
+   ],
+   "evidence_asof": "2026-09-11T16:00:00-04:00",
+   "formal_recommendation": false,
+   "listable": false,
+   "push_eligible": false,
+   "audit_score": 65,
+   "master_ref": {
+    "version": "stock-reference-v1",
+    "code": "BCTX",
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "central_generated_at": "2026-09-13 09:55（北京时间）",
+    "audit_id": "c2ed384ef34d24da48f8417348e6401179f70c08f24e4ada95b858a3fefbfb1e",
+    "audit_score": 65,
+    "tier": "1A",
+    "horizon": "short",
+    "contract_id": "e0ff41c6121c859e7b8c04734efd6da78c074079d4c1764a9f98576b814407cd",
+    "reference_id": "4571fea67f4bb3c15dc0b1a2e8d2af34bd5d4278118fa33c655773bfa422de3c",
+    "no_grade_authority": true
+   },
+   "sensor_relation": "本模块包含该股票；评级仅引用中央，不构成另一份独立审核",
+   "instruction": "非推荐、不可直接执行",
+   "observation_contract": {
+    "promotion_trigger": "收盘重新站上3.6500且当日量/此前20日均量≥1.2；实际入场收益风险比仍须≥2；实际入场价必须在[3.4203, 3.6733]，超出则重新审核。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+    "invalidation": "收盘跌破既定结构失效线3.4200，本轮短期结构失效；不外推长期价值",
+    "horizon": "short",
+    "next_review_at": null
+   }
+  },
+  {
+   "code": "SPRB",
+   "name": "Spruce Biosciences, Inc. - Common Stock",
+   "market": "美股",
+   "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+   "tier": "1A",
+   "state": "RESEARCH_1A",
+   "label": "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+   "support_count": 0,
+   "votes": {
+    "gpt": "observe",
+    "classics": "reject"
+   },
+   "reviews": {
+    "gpt": {
+     "verdict": "不否定",
+     "why": "正60日收益和价格仍在60日均线上方支持保留条件性回踩论文，但反证与短期兑现路径不足，故不否定。现价53.7虽在原区间，两个新完整日企稳、后续放量突破及下一开盘确认均未完成，执行为等触发。新闻标题未证实本持有窗口有确定重大事件，不据此设置事件否决；本复核不代签独立经典规则闸。",
+     "at": "2026-09-13 08:11（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "classics": {
+     "verdict": "书理不支持",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "claude_cs": {
+     "verdict": "gate_pass"
+    }
+   },
+   "reason_codes": [
+    "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+    "等待新的入场确认点：原突破价超出空间上限；需后续在上限内形成新的两日企稳及突破确认点，当前阶段未完成",
+    "量价确认：量比≥1.2；量比口径与事实来源一并保留（V88参数）",
+    "萨普：同策略扣费R期望：本周期同策略已结算≥20笔，净R均值及均值−2标准误均>0；后者只是V88描述性保守门槛。样本不足保留研究，不能声称正期望；中长期须有对应周期模型",
+    "兑现周期仍需确认：GPT-6周期匹配项≥15分",
+    "反证尚待处理：GPT-6反证项≥15分，明确解决当前反例"
+   ],
+   "evidence_asof": "2026-09-11T16:00:00-04:00",
+   "formal_recommendation": false,
+   "listable": false,
+   "push_eligible": false,
+   "audit_score": 62.5,
+   "master_ref": {
+    "version": "stock-reference-v1",
+    "code": "SPRB",
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "central_generated_at": "2026-09-13 09:55（北京时间）",
+    "audit_id": "b67e46a9344e3e5bc03bd20aaf93d2f49f5409de2fbc51dbd153f38d7b7abf4e",
+    "audit_score": 62.5,
+    "tier": "1A",
+    "horizon": "short",
+    "contract_id": "a86d11b3b96977e9c77d8fac4c9cdf3e55fa84d5b41b63f876ad0136ed401a5a",
+    "reference_id": "f9dcc118111a7c49f3a03eb6ea649259ed32323afef2e04ed14c6841ce028bf7",
+    "no_grade_authority": true
+   },
+   "sensor_relation": "本模块包含该股票；评级仅引用中央，不构成另一份独立审核",
+   "instruction": "非推荐、不可直接执行",
+   "observation_contract": {
+    "promotion_trigger": "两阶段等待：连续两个新完整交易日收盘均在[53.0953, 56.8933]观察区间，最低价均>53.0900且第二日收盘≥第一日；随后收盘突破前一日最高价，成交量/此前20日均量≥1.2，实际入场价在[53.0953, 56.8933]。仅以后续新日线验证，当前未触发；若不能同时满足则不进入。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+    "invalidation": "收盘跌破既定结构失效线53.0900，本轮短期结构失效；不外推长期价值",
+    "horizon": "short",
+    "next_review_at": null
+   }
+  },
+  {
+   "code": "TRVG",
+   "name": "trivago N.V. - American Depositary Shares",
+   "market": "美股",
+   "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+   "tier": "1A",
+   "state": "RESEARCH_1A",
+   "label": "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+   "support_count": 0,
+   "votes": {
+    "gpt": "observe",
+    "classics": "reject"
+   },
+   "reviews": {
+    "gpt": {
+     "verdict": "不否定",
+     "why": "趋势及合同支持有条件关注，但急跌后的企稳、新确认点和持有期兑现缺少验证，因此不否定而非通过。最新完整收盘5.62虽在观察区间，量比0.343且未有后续两阶段确认，不能现在买；合同并不缺失。触发完成也须重新核对执行条件及独立经典规则闸，不自动取得执行资格。",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "classics": {
+     "verdict": "书理不支持",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "claude_cs": {
+     "verdict": "gate_pass"
+    }
+   },
+   "reason_codes": [
+    "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+    "等待新的入场确认点：原突破价超出空间上限；需后续在上限内形成新的两日企稳及突破确认点，当前阶段未完成",
+    "量价确认：量比≥1.2；量比口径与事实来源一并保留（V88参数）",
+    "萨普：同策略扣费R期望：本周期同策略已结算≥20笔，净R均值及均值−2标准误均>0；后者只是V88描述性保守门槛。样本不足保留研究，不能声称正期望；中长期须有对应周期模型",
+    "兑现周期仍需确认：GPT-6周期匹配项≥15分",
+    "反证尚待处理：GPT-6反证项≥15分，明确解决当前反例"
+   ],
+   "evidence_asof": "2026-09-11T16:00:00-04:00",
+   "formal_recommendation": false,
+   "listable": false,
+   "push_eligible": false,
+   "audit_score": 62.5,
+   "master_ref": {
+    "version": "stock-reference-v1",
+    "code": "TRVG",
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "central_generated_at": "2026-09-13 09:55（北京时间）",
+    "audit_id": "a79bc01684b8fb576bb334df7116cf59b68f958daab83e182fe8d0e10110357c",
+    "audit_score": 62.5,
+    "tier": "1A",
+    "horizon": "short",
+    "contract_id": "4cc37cb7d1e42352625175b90e6d59450995b7baa13cf4f40d64cc2f8386c8b5",
+    "reference_id": "b7c0bc5886f484542f08f514de63a0c57b030421534401082e3f90f4fb8cdd13",
+    "no_grade_authority": true
+   },
+   "sensor_relation": "本模块包含该股票；评级仅引用中央，不构成另一份独立审核",
+   "instruction": "非推荐、不可直接执行",
+   "observation_contract": {
+    "promotion_trigger": "两阶段等待：连续两个新完整交易日收盘均在[5.5306, 5.8500]观察区间，最低价均>5.5300且第二日收盘≥第一日；随后收盘突破前一日最高价，成交量/此前20日均量≥1.2，实际入场价在[5.5306, 5.8500]。仅以后续新日线验证，当前未触发；若不能同时满足则不进入。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+    "invalidation": "收盘跌破既定结构失效线5.5300，本轮短期结构失效；不外推长期价值",
+    "horizon": "short",
+    "next_review_at": null
+   }
+  },
+  {
+   "code": "BMEA",
+   "name": "Biomea Fusion, Inc. - Common Stock",
+   "market": "美股",
+   "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+   "tier": "1A",
+   "state": "RESEARCH_1A",
+   "label": "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+   "support_count": 0,
+   "votes": {
+    "gpt": "observe",
+    "classics": "reject"
+   },
+   "reviews": {
+    "gpt": {
+     "verdict": "不否定",
+     "why": "BMEA具备趋势回踩的有条件关注逻辑，合同价位齐全；但量比0.6719、两阶段尚未触发且结算样本为0，反证与10日兑现路径仍待补证，因此不否定、等触发。报价仅代表所给完整日线时点；不代签独立经典规则闸。",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "classics": {
+     "verdict": "书理不支持",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "claude_cs": {
+     "verdict": "gate_pass"
+    }
+   },
+   "reason_codes": [
+    "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+    "等待新的入场确认点：原突破价超出空间上限；需后续在上限内形成新的两日企稳及突破确认点，当前阶段未完成",
+    "量价确认：量比≥1.2；量比口径与事实来源一并保留（V88参数）",
+    "萨普：同策略扣费R期望：本周期同策略已结算≥20笔，净R均值及均值−2标准误均>0；后者只是V88描述性保守门槛。样本不足保留研究，不能声称正期望；中长期须有对应周期模型",
+    "兑现周期仍需确认：GPT-6周期匹配项≥15分",
+    "反证尚待处理：GPT-6反证项≥15分，明确解决当前反例"
+   ],
+   "evidence_asof": "2026-09-11T16:00:00-04:00",
+   "formal_recommendation": false,
+   "listable": false,
+   "push_eligible": false,
+   "audit_score": 62.5,
+   "master_ref": {
+    "version": "stock-reference-v1",
+    "code": "BMEA",
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "central_generated_at": "2026-09-13 09:55（北京时间）",
+    "audit_id": "3c0e8a30f23d307f4bf89b7220350c3344ae292f74383562574ba53db843d54f",
+    "audit_score": 62.5,
+    "tier": "1A",
+    "horizon": "short",
+    "contract_id": "125b04fef5ea6f8ac4924894cdfe86fbcbc465f64dbaa3ab89f75a410f9f42ca",
+    "reference_id": "ecb5b9efbbbd2bfca231dd957afbca61529c7de3d7ac734d34f7dccb7eaff7e7",
+    "no_grade_authority": true
+   },
+   "sensor_relation": "本模块包含该股票；评级仅引用中央，不构成另一份独立审核",
+   "instruction": "非推荐、不可直接执行",
+   "observation_contract": {
+    "promotion_trigger": "两阶段等待：连续两个新完整交易日收盘均在[1.6585, 1.7900]观察区间，最低价均>1.6500且第二日收盘≥第一日；随后收盘突破前一日最高价，成交量/此前20日均量≥1.2，实际入场价在[1.6585, 1.7900]。仅以后续新日线验证，当前未触发；若不能同时满足则不进入。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+    "invalidation": "收盘跌破既定结构失效线1.6500，本轮短期结构失效；不外推长期价值",
+    "horizon": "short",
+    "next_review_at": null
+   }
+  },
+  {
+   "code": "ACIU",
+   "name": "AC Immune SA - Common Stock",
+   "market": "美股",
+   "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+   "tier": "1A",
+   "state": "RESEARCH_1A",
+   "label": "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+   "support_count": 0,
+   "votes": {
+    "gpt": "observe",
+    "classics": "reject"
+   },
+   "reviews": {
+    "gpt": {
+     "verdict": "不否定",
+     "why": "保留两阶段回踩论文，但反证和完整期限路径证据不足，结论为不否定。冻结收盘2.76高于观察上沿2.72，现价收益风险比1.3333且量比0.5423，不能现在买。须等待新日线完成原两阶段条件及下一开盘区间确认；合同齐全，后续触发仍不代表独立经典规则闸通过。",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "classics": {
+     "verdict": "书理不支持",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "claude_cs": {
+     "verdict": "gate_pass"
+    }
+   },
+   "reason_codes": [
+    "EXECUTION_CONTRACT_INCOMPLETE",
+    "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+    "等待新的入场确认点：原突破价超出空间上限；需后续在上限内形成新的两日企稳及突破确认点，当前阶段未完成",
+    "量价确认：量比≥1.2；量比口径与事实来源一并保留（V88参数）",
+    "萨普：同策略扣费R期望：本周期同策略已结算≥20笔，净R均值及均值−2标准误均>0；后者只是V88描述性保守门槛。样本不足保留研究，不能声称正期望；中长期须有对应周期模型",
+    "兑现周期仍需确认：GPT-6周期匹配项≥15分",
+    "反证尚待处理：GPT-6反证项≥15分，明确解决当前反例"
+   ],
+   "evidence_asof": "2026-09-11T16:00:00-04:00",
+   "formal_recommendation": false,
+   "listable": false,
+   "push_eligible": false,
+   "audit_score": 62.5,
+   "master_ref": {
+    "version": "stock-reference-v1",
+    "code": "ACIU",
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "central_generated_at": "2026-09-13 09:55（北京时间）",
+    "audit_id": "ae77c77ca2816d3456a054edda6c307e8875dfaa9479e14918d632edcd85c4b7",
+    "audit_score": 62.5,
+    "tier": "1A",
+    "horizon": "short",
+    "contract_id": "17a366369267edbb1d4d6b9c235ee26d094b922922ca9ee58bc7ec45fb52e15f",
+    "reference_id": "aa8b2057aa3c8ce2eda504875ab08248eebebcac4fbec6d22cce5aaea7d7b679",
+    "no_grade_authority": true
+   },
+   "sensor_relation": "本模块包含该股票；评级仅引用中央，不构成另一份独立审核",
+   "instruction": "非推荐、不可直接执行",
+   "observation_contract": {
+    "promotion_trigger": "两阶段等待：连续两个新完整交易日收盘均在[2.5803, 2.7200]观察区间，最低价均>2.5800且第二日收盘≥第一日；随后收盘突破前一日最高价，成交量/此前20日均量≥1.2，实际入场价在[2.5803, 2.7200]。仅以后续新日线验证，当前未触发；若不能同时满足则不进入。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+    "invalidation": "收盘跌破既定结构失效线2.5800，本轮短期结构失效；不外推长期价值",
+    "horizon": "short",
+    "next_review_at": null
+   }
+  },
+  {
+   "code": "FWDI",
+   "name": "Forward Industries, Inc. - Common Stock",
+   "market": "美股",
+   "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+   "tier": "1A",
+   "state": "RESEARCH_1A",
+   "label": "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+   "support_count": 0,
+   "votes": {
+    "gpt": "observe",
+    "classics": "reject"
+   },
+   "reviews": {
+    "gpt": {
+     "verdict": "不否定",
+     "why": "FWDI的趋势回落关注逻辑有依据，但当前6.55高于6.18观察上限，量比0.9575不足，新的两阶段路径尚未发生。合同并不缺失，执行应等触发；零完成历史交易及回落后能否按期重测前高的争议，使论文仅不否定。财务疑点未核实到足以构成质量或数据冲突否决，独立规则闸仍须另行计算。",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "classics": {
+     "verdict": "书理不支持",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "claude_cs": {
+     "verdict": "gate_pass"
+    }
+   },
+   "reason_codes": [
+    "EXECUTION_CONTRACT_INCOMPLETE",
+    "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+    "等待新的入场确认点：原突破价超出空间上限；需后续在上限内形成新的两日企稳及突破确认点，当前阶段未完成",
+    "量价确认：量比≥1.2；量比口径与事实来源一并保留（V88参数）",
+    "萨普：同策略扣费R期望：本周期同策略已结算≥20笔，净R均值及均值−2标准误均>0；后者只是V88描述性保守门槛。样本不足保留研究，不能声称正期望；中长期须有对应周期模型",
+    "兑现周期仍需确认：GPT-6周期匹配项≥15分",
+    "反证尚待处理：GPT-6反证项≥15分，明确解决当前反例"
+   ],
+   "evidence_asof": "2026-09-11T16:00:00-04:00",
+   "formal_recommendation": false,
+   "listable": false,
+   "push_eligible": false,
+   "audit_score": 62.5,
+   "master_ref": {
+    "version": "stock-reference-v1",
+    "code": "FWDI",
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "central_generated_at": "2026-09-13 09:55（北京时间）",
+    "audit_id": "04b27526b286a5b51f4f116250b8cae184cead8a12c35eb8c60d821f4468375c",
+    "audit_score": 62.5,
+    "tier": "1A",
+    "horizon": "short",
+    "contract_id": "5521e7a1ebda44e6aaf9d9e6b99c33774f990c3a2d3d172945a14053c4794c11",
+    "reference_id": "4551c3e2b0aad7270e33af4681e15abb336219733700dacd77efcb1774891bba",
+    "no_grade_authority": true
+   },
+   "sensor_relation": "本模块包含该股票；评级仅引用中央，不构成另一份独立审核",
+   "instruction": "非推荐、不可直接执行",
+   "observation_contract": {
+    "promotion_trigger": "两阶段等待：连续两个新完整交易日收盘均在[5.7606, 6.1800]观察区间，最低价均>5.7600且第二日收盘≥第一日；随后收盘突破前一日最高价，成交量/此前20日均量≥1.2，实际入场价在[5.7606, 6.1800]。仅以后续新日线验证，当前未触发；若不能同时满足则不进入。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+    "invalidation": "收盘跌破既定结构失效线5.7600，本轮短期结构失效；不外推长期价值",
+    "horizon": "short",
+    "next_review_at": null
+   }
+  },
+  {
+   "code": "TSAT",
+   "name": "Telesat Corporation - Class A Common Shares and Class B Variable Voting Shares",
+   "market": "美股",
+   "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+   "tier": "1A",
+   "state": "RESEARCH_1A",
+   "label": "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+   "support_count": 0,
+   "votes": {
+    "gpt": "observe",
+    "classics": "reject"
+   },
+   "reviews": {
+    "gpt": {
+     "verdict": "不否定",
+     "why": "TSAT有趋势回落的条件关注依据，但49.75高于45.9565观察上限，量比0.7295不足，原两阶段企稳和确认路径尚未发生。合同齐全，应等触发；历史窗口幅度不能替代条件交易证据，反证与周期均未充分解决，因此不否定。没有已核实的硬性风险否决事实，后续仍须独立规则闸，不能由本复核代签。",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "classics": {
+     "verdict": "书理不支持",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "claude_cs": {
+     "verdict": "gate_pass"
+    }
+   },
+   "reason_codes": [
+    "EXECUTION_CONTRACT_INCOMPLETE",
+    "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+    "等待新的入场确认点：原突破价超出空间上限；需后续在上限内形成新的两日企稳及突破确认点，当前阶段未完成",
+    "量价确认：量比≥1.2；量比口径与事实来源一并保留（V88参数）",
+    "萨普：同策略扣费R期望：本周期同策略已结算≥20笔，净R均值及均值−2标准误均>0；后者只是V88描述性保守门槛。样本不足保留研究，不能声称正期望；中长期须有对应周期模型",
+    "兑现周期仍需确认：GPT-6周期匹配项≥15分",
+    "反证尚待处理：GPT-6反证项≥15分，明确解决当前反例"
+   ],
+   "evidence_asof": "2026-09-11T16:00:00-04:00",
+   "formal_recommendation": false,
+   "listable": false,
+   "push_eligible": false,
+   "audit_score": 62.5,
+   "master_ref": {
+    "version": "stock-reference-v1",
+    "code": "TSAT",
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "central_generated_at": "2026-09-13 09:55（北京时间）",
+    "audit_id": "539e03373107f32f38edcd96aafdfb4f511907c50e38e5b243b0b764ea20971d",
+    "audit_score": 62.5,
+    "tier": "1A",
+    "horizon": "short",
+    "contract_id": "470d6b55680ba568dc5fdb78ac37de4a8ecff5dda13bb483be4f7725b616629a",
+    "reference_id": "e42eaef5171c72aa271b92fb3cc992246713adcdc0e73608a37fe6390ee78522",
+    "no_grade_authority": true
+   },
+   "sensor_relation": "本模块包含该股票；评级仅引用中央，不构成另一份独立审核",
+   "instruction": "非推荐、不可直接执行",
+   "observation_contract": {
+    "promotion_trigger": "两阶段等待：连续两个新完整交易日收盘均在[44.2423, 45.9565]观察区间，最低价均>42.2800且第二日收盘≥第一日；随后收盘突破前一日最高价，成交量/此前20日均量≥1.2，实际入场价在[44.2423, 45.9565]。仅以后续新日线验证，当前未触发；若不能同时满足则不进入。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+    "invalidation": "收盘跌破既定结构失效线42.2800，本轮短期结构失效；不外推长期价值",
+    "horizon": "short",
+    "next_review_at": null
+   }
+  }
+ ],
+ "rows": [
+  {
+   "code": "DRD",
+   "name": "DRDGOLD Limited American Depositary Shares",
+   "market": "美股",
+   "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+   "tier": "1A",
+   "state": "RESEARCH_1A",
+   "label": "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+   "support_count": 0,
+   "votes": {
+    "gpt": "observe",
+    "classics": "reject"
+   },
+   "reviews": {
+    "gpt": {
+     "verdict": "不否定",
+     "why": "短期有条件关注逻辑尚可保留，但反证和期限内路径证据未充分解决，故不否定。9月11日收盘26.81尚未站上27.5，量比0.7361未达1.2；合同齐全但未触发。即使以后触发，也须核对下一开盘原区间、实际收益风险及执行门槛；本复核不代签独立经典规则闸。",
+     "at": "2026-09-13 08:11（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "classics": {
+     "verdict": "书理不支持",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "claude_cs": {
+     "verdict": "gate_pass"
+    }
+   },
+   "reason_codes": [
+    "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+    "量价确认：量比≥1.2；量比口径与事实来源一并保留（V88参数）",
+    "萨普：同策略扣费R期望：本周期同策略已结算≥20笔，净R均值及均值−2标准误均>0；后者只是V88描述性保守门槛。样本不足保留研究，不能声称正期望；中长期须有对应周期模型",
+    "兑现周期仍需确认：GPT-6周期匹配项≥15分",
+    "反证尚待处理：GPT-6反证项≥15分，明确解决当前反例"
+   ],
+   "evidence_asof": "2026-09-11T16:00:00-04:00",
+   "formal_recommendation": false,
+   "listable": false,
+   "push_eligible": false,
+   "audit_score": 65,
+   "master_ref": {
+    "version": "stock-reference-v1",
+    "code": "DRD",
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "central_generated_at": "2026-09-13 09:55（北京时间）",
+    "audit_id": "6c27eca080320b611727d2f9ae45073fbd0164a8cb38cf66a4b50024e0df3019",
+    "audit_score": 65,
+    "tier": "1A",
+    "horizon": "short",
+    "contract_id": "5ec9d3fe1736043eca0f5cd77ca8479ec780dae287bc3355e540d51a32297105",
+    "reference_id": "d494e8d0dd3054e55654ccbeaf565df8c7d215e5f512df07eea4aa029781045c",
+    "no_grade_authority": true
+   },
+   "sensor_relation": "本模块包含该股票；评级仅引用中央，不构成另一份独立审核",
+   "instruction": "非推荐、不可直接执行",
+   "observation_contract": {
+    "promotion_trigger": "收盘重新站上27.5000且当日量/此前20日均量≥1.2；实际入场收益风险比仍须≥2；实际入场价必须在[26.6727, 28.2467]，超出则重新审核。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+    "invalidation": "收盘跌破既定结构失效线26.6700，本轮短期结构失效；不外推长期价值",
+    "horizon": "short",
+    "next_review_at": null
+   }
+  },
+  {
+   "code": "QNCX",
+   "name": "Quince Therapeutics, Inc. - Common Stock",
+   "market": "美股",
+   "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+   "tier": "1A",
+   "state": "RESEARCH_1A",
+   "label": "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+   "support_count": 0,
+   "votes": {
+    "gpt": "observe",
+    "classics": "reject"
+   },
+   "reviews": {
+    "gpt": {
+     "verdict": "不否定",
+     "why": "短期条件论文具有可检验的价格结构，但弱量、均线阻力和零结算样本使反证与周期证据不足，只能不否定。冻结收盘29.55未重新站上30，量比0.5561未达1.2；合同齐全但不得现在买。后续须按单阶段原触发确认，下一可交易开盘仍在[28.3128,30.6767]且实际收益风险比≥2，并另行通过执行约束及独立经典规则闸。",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "classics": {
+     "verdict": "书理不支持",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "claude_cs": {
+     "verdict": "gate_pass"
+    }
+   },
+   "reason_codes": [
+    "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+    "量价确认：量比≥1.2；量比口径与事实来源一并保留（V88参数）",
+    "萨普：同策略扣费R期望：本周期同策略已结算≥20笔，净R均值及均值−2标准误均>0；后者只是V88描述性保守门槛。样本不足保留研究，不能声称正期望；中长期须有对应周期模型",
+    "兑现周期仍需确认：GPT-6周期匹配项≥15分",
+    "反证尚待处理：GPT-6反证项≥15分，明确解决当前反例"
+   ],
+   "evidence_asof": "2026-09-11T16:00:00-04:00",
+   "formal_recommendation": false,
+   "listable": false,
+   "push_eligible": false,
+   "audit_score": 65,
+   "master_ref": {
+    "version": "stock-reference-v1",
+    "code": "QNCX",
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "central_generated_at": "2026-09-13 09:55（北京时间）",
+    "audit_id": "17468a141a82b2a4fd606bb73c9d9a20fc40919b380b6c9d7b2a7326fcc4e28f",
+    "audit_score": 65,
+    "tier": "1A",
+    "horizon": "short",
+    "contract_id": "4969cad1fd80baf1e26eb80861f58b3a050fb9664c5999a50c4e4a223fb5f5fd",
+    "reference_id": "56116697270ff83332b3b627ff88a649ba4e6f3e2103c78af30696f3bc35f733",
+    "no_grade_authority": true
+   },
+   "sensor_relation": "本模块包含该股票；评级仅引用中央，不构成另一份独立审核",
+   "instruction": "非推荐、不可直接执行",
+   "observation_contract": {
+    "promotion_trigger": "收盘重新站上30.0000且当日量/此前20日均量≥1.2；实际入场收益风险比仍须≥2；实际入场价必须在[28.3128, 30.6767]，超出则重新审核。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+    "invalidation": "收盘跌破既定结构失效线28.3100，本轮短期结构失效；不外推长期价值",
+    "horizon": "short",
+    "next_review_at": null
+   }
+  },
+  {
+   "code": "BCTX",
+   "name": "BriaCell Therapeutics Corp. - Common Shares",
+   "market": "美股",
+   "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+   "tier": "1A",
+   "state": "RESEARCH_1A",
+   "label": "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+   "support_count": 0,
+   "votes": {
+    "gpt": "observe",
+    "classics": "reject"
+   },
+   "reviews": {
+    "gpt": {
+     "verdict": "不否定",
+     "why": "BCTX具备可检验的短期条件关注逻辑，但反证与周期兑现证据仍不足。最新冻结收盘3.63未站上3.65，量比0.1223未达到1.2；合同齐全，应等一阶段确认及下一可交易开盘落在原区间。即使触发，仍须复核实际收益风险、成本和独立规则闸，本复核不代签其通过。未见足以认定硬性风险否决的已核实证据。",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "classics": {
+     "verdict": "书理不支持",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "claude_cs": {
+     "verdict": "gate_pass"
+    }
+   },
+   "reason_codes": [
+    "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+    "量价确认：量比≥1.2；量比口径与事实来源一并保留（V88参数）",
+    "萨普：同策略扣费R期望：本周期同策略已结算≥20笔，净R均值及均值−2标准误均>0；后者只是V88描述性保守门槛。样本不足保留研究，不能声称正期望；中长期须有对应周期模型",
+    "兑现周期仍需确认：GPT-6周期匹配项≥15分",
+    "反证尚待处理：GPT-6反证项≥15分，明确解决当前反例"
+   ],
+   "evidence_asof": "2026-09-11T16:00:00-04:00",
+   "formal_recommendation": false,
+   "listable": false,
+   "push_eligible": false,
+   "audit_score": 65,
+   "master_ref": {
+    "version": "stock-reference-v1",
+    "code": "BCTX",
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "central_generated_at": "2026-09-13 09:55（北京时间）",
+    "audit_id": "c2ed384ef34d24da48f8417348e6401179f70c08f24e4ada95b858a3fefbfb1e",
+    "audit_score": 65,
+    "tier": "1A",
+    "horizon": "short",
+    "contract_id": "e0ff41c6121c859e7b8c04734efd6da78c074079d4c1764a9f98576b814407cd",
+    "reference_id": "4571fea67f4bb3c15dc0b1a2e8d2af34bd5d4278118fa33c655773bfa422de3c",
+    "no_grade_authority": true
+   },
+   "sensor_relation": "本模块包含该股票；评级仅引用中央，不构成另一份独立审核",
+   "instruction": "非推荐、不可直接执行",
+   "observation_contract": {
+    "promotion_trigger": "收盘重新站上3.6500且当日量/此前20日均量≥1.2；实际入场收益风险比仍须≥2；实际入场价必须在[3.4203, 3.6733]，超出则重新审核。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+    "invalidation": "收盘跌破既定结构失效线3.4200，本轮短期结构失效；不外推长期价值",
+    "horizon": "short",
+    "next_review_at": null
+   }
+  },
+  {
+   "code": "SPRB",
+   "name": "Spruce Biosciences, Inc. - Common Stock",
+   "market": "美股",
+   "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+   "tier": "1A",
+   "state": "RESEARCH_1A",
+   "label": "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+   "support_count": 0,
+   "votes": {
+    "gpt": "observe",
+    "classics": "reject"
+   },
+   "reviews": {
+    "gpt": {
+     "verdict": "不否定",
+     "why": "正60日收益和价格仍在60日均线上方支持保留条件性回踩论文，但反证与短期兑现路径不足，故不否定。现价53.7虽在原区间，两个新完整日企稳、后续放量突破及下一开盘确认均未完成，执行为等触发。新闻标题未证实本持有窗口有确定重大事件，不据此设置事件否决；本复核不代签独立经典规则闸。",
+     "at": "2026-09-13 08:11（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "classics": {
+     "verdict": "书理不支持",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "claude_cs": {
+     "verdict": "gate_pass"
+    }
+   },
+   "reason_codes": [
+    "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+    "等待新的入场确认点：原突破价超出空间上限；需后续在上限内形成新的两日企稳及突破确认点，当前阶段未完成",
+    "量价确认：量比≥1.2；量比口径与事实来源一并保留（V88参数）",
+    "萨普：同策略扣费R期望：本周期同策略已结算≥20笔，净R均值及均值−2标准误均>0；后者只是V88描述性保守门槛。样本不足保留研究，不能声称正期望；中长期须有对应周期模型",
+    "兑现周期仍需确认：GPT-6周期匹配项≥15分",
+    "反证尚待处理：GPT-6反证项≥15分，明确解决当前反例"
+   ],
+   "evidence_asof": "2026-09-11T16:00:00-04:00",
+   "formal_recommendation": false,
+   "listable": false,
+   "push_eligible": false,
+   "audit_score": 62.5,
+   "master_ref": {
+    "version": "stock-reference-v1",
+    "code": "SPRB",
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "central_generated_at": "2026-09-13 09:55（北京时间）",
+    "audit_id": "b67e46a9344e3e5bc03bd20aaf93d2f49f5409de2fbc51dbd153f38d7b7abf4e",
+    "audit_score": 62.5,
+    "tier": "1A",
+    "horizon": "short",
+    "contract_id": "a86d11b3b96977e9c77d8fac4c9cdf3e55fa84d5b41b63f876ad0136ed401a5a",
+    "reference_id": "f9dcc118111a7c49f3a03eb6ea649259ed32323afef2e04ed14c6841ce028bf7",
+    "no_grade_authority": true
+   },
+   "sensor_relation": "本模块包含该股票；评级仅引用中央，不构成另一份独立审核",
+   "instruction": "非推荐、不可直接执行",
+   "observation_contract": {
+    "promotion_trigger": "两阶段等待：连续两个新完整交易日收盘均在[53.0953, 56.8933]观察区间，最低价均>53.0900且第二日收盘≥第一日；随后收盘突破前一日最高价，成交量/此前20日均量≥1.2，实际入场价在[53.0953, 56.8933]。仅以后续新日线验证，当前未触发；若不能同时满足则不进入。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+    "invalidation": "收盘跌破既定结构失效线53.0900，本轮短期结构失效；不外推长期价值",
+    "horizon": "short",
+    "next_review_at": null
+   }
+  },
+  {
+   "code": "TRVG",
+   "name": "trivago N.V. - American Depositary Shares",
+   "market": "美股",
+   "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+   "tier": "1A",
+   "state": "RESEARCH_1A",
+   "label": "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+   "support_count": 0,
+   "votes": {
+    "gpt": "observe",
+    "classics": "reject"
+   },
+   "reviews": {
+    "gpt": {
+     "verdict": "不否定",
+     "why": "趋势及合同支持有条件关注，但急跌后的企稳、新确认点和持有期兑现缺少验证，因此不否定而非通过。最新完整收盘5.62虽在观察区间，量比0.343且未有后续两阶段确认，不能现在买；合同并不缺失。触发完成也须重新核对执行条件及独立经典规则闸，不自动取得执行资格。",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "classics": {
+     "verdict": "书理不支持",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "claude_cs": {
+     "verdict": "gate_pass"
+    }
+   },
+   "reason_codes": [
+    "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+    "等待新的入场确认点：原突破价超出空间上限；需后续在上限内形成新的两日企稳及突破确认点，当前阶段未完成",
+    "量价确认：量比≥1.2；量比口径与事实来源一并保留（V88参数）",
+    "萨普：同策略扣费R期望：本周期同策略已结算≥20笔，净R均值及均值−2标准误均>0；后者只是V88描述性保守门槛。样本不足保留研究，不能声称正期望；中长期须有对应周期模型",
+    "兑现周期仍需确认：GPT-6周期匹配项≥15分",
+    "反证尚待处理：GPT-6反证项≥15分，明确解决当前反例"
+   ],
+   "evidence_asof": "2026-09-11T16:00:00-04:00",
+   "formal_recommendation": false,
+   "listable": false,
+   "push_eligible": false,
+   "audit_score": 62.5,
+   "master_ref": {
+    "version": "stock-reference-v1",
+    "code": "TRVG",
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "central_generated_at": "2026-09-13 09:55（北京时间）",
+    "audit_id": "a79bc01684b8fb576bb334df7116cf59b68f958daab83e182fe8d0e10110357c",
+    "audit_score": 62.5,
+    "tier": "1A",
+    "horizon": "short",
+    "contract_id": "4cc37cb7d1e42352625175b90e6d59450995b7baa13cf4f40d64cc2f8386c8b5",
+    "reference_id": "b7c0bc5886f484542f08f514de63a0c57b030421534401082e3f90f4fb8cdd13",
+    "no_grade_authority": true
+   },
+   "sensor_relation": "本模块包含该股票；评级仅引用中央，不构成另一份独立审核",
+   "instruction": "非推荐、不可直接执行",
+   "observation_contract": {
+    "promotion_trigger": "两阶段等待：连续两个新完整交易日收盘均在[5.5306, 5.8500]观察区间，最低价均>5.5300且第二日收盘≥第一日；随后收盘突破前一日最高价，成交量/此前20日均量≥1.2，实际入场价在[5.5306, 5.8500]。仅以后续新日线验证，当前未触发；若不能同时满足则不进入。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+    "invalidation": "收盘跌破既定结构失效线5.5300，本轮短期结构失效；不外推长期价值",
+    "horizon": "short",
+    "next_review_at": null
+   }
+  },
+  {
+   "code": "BMEA",
+   "name": "Biomea Fusion, Inc. - Common Stock",
+   "market": "美股",
+   "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+   "tier": "1A",
+   "state": "RESEARCH_1A",
+   "label": "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+   "support_count": 0,
+   "votes": {
+    "gpt": "observe",
+    "classics": "reject"
+   },
+   "reviews": {
+    "gpt": {
+     "verdict": "不否定",
+     "why": "BMEA具备趋势回踩的有条件关注逻辑，合同价位齐全；但量比0.6719、两阶段尚未触发且结算样本为0，反证与10日兑现路径仍待补证，因此不否定、等触发。报价仅代表所给完整日线时点；不代签独立经典规则闸。",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "classics": {
+     "verdict": "书理不支持",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "claude_cs": {
+     "verdict": "gate_pass"
+    }
+   },
+   "reason_codes": [
+    "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+    "等待新的入场确认点：原突破价超出空间上限；需后续在上限内形成新的两日企稳及突破确认点，当前阶段未完成",
+    "量价确认：量比≥1.2；量比口径与事实来源一并保留（V88参数）",
+    "萨普：同策略扣费R期望：本周期同策略已结算≥20笔，净R均值及均值−2标准误均>0；后者只是V88描述性保守门槛。样本不足保留研究，不能声称正期望；中长期须有对应周期模型",
+    "兑现周期仍需确认：GPT-6周期匹配项≥15分",
+    "反证尚待处理：GPT-6反证项≥15分，明确解决当前反例"
+   ],
+   "evidence_asof": "2026-09-11T16:00:00-04:00",
+   "formal_recommendation": false,
+   "listable": false,
+   "push_eligible": false,
+   "audit_score": 62.5,
+   "master_ref": {
+    "version": "stock-reference-v1",
+    "code": "BMEA",
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "central_generated_at": "2026-09-13 09:55（北京时间）",
+    "audit_id": "3c0e8a30f23d307f4bf89b7220350c3344ae292f74383562574ba53db843d54f",
+    "audit_score": 62.5,
+    "tier": "1A",
+    "horizon": "short",
+    "contract_id": "125b04fef5ea6f8ac4924894cdfe86fbcbc465f64dbaa3ab89f75a410f9f42ca",
+    "reference_id": "ecb5b9efbbbd2bfca231dd957afbca61529c7de3d7ac734d34f7dccb7eaff7e7",
+    "no_grade_authority": true
+   },
+   "sensor_relation": "本模块包含该股票；评级仅引用中央，不构成另一份独立审核",
+   "instruction": "非推荐、不可直接执行",
+   "observation_contract": {
+    "promotion_trigger": "两阶段等待：连续两个新完整交易日收盘均在[1.6585, 1.7900]观察区间，最低价均>1.6500且第二日收盘≥第一日；随后收盘突破前一日最高价，成交量/此前20日均量≥1.2，实际入场价在[1.6585, 1.7900]。仅以后续新日线验证，当前未触发；若不能同时满足则不进入。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+    "invalidation": "收盘跌破既定结构失效线1.6500，本轮短期结构失效；不外推长期价值",
+    "horizon": "short",
+    "next_review_at": null
+   }
+  },
+  {
+   "code": "ACIU",
+   "name": "AC Immune SA - Common Stock",
+   "market": "美股",
+   "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+   "tier": "1A",
+   "state": "RESEARCH_1A",
+   "label": "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+   "support_count": 0,
+   "votes": {
+    "gpt": "observe",
+    "classics": "reject"
+   },
+   "reviews": {
+    "gpt": {
+     "verdict": "不否定",
+     "why": "保留两阶段回踩论文，但反证和完整期限路径证据不足，结论为不否定。冻结收盘2.76高于观察上沿2.72，现价收益风险比1.3333且量比0.5423，不能现在买。须等待新日线完成原两阶段条件及下一开盘区间确认；合同齐全，后续触发仍不代表独立经典规则闸通过。",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "classics": {
+     "verdict": "书理不支持",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "claude_cs": {
+     "verdict": "gate_pass"
+    }
+   },
+   "reason_codes": [
+    "EXECUTION_CONTRACT_INCOMPLETE",
+    "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+    "等待新的入场确认点：原突破价超出空间上限；需后续在上限内形成新的两日企稳及突破确认点，当前阶段未完成",
+    "量价确认：量比≥1.2；量比口径与事实来源一并保留（V88参数）",
+    "萨普：同策略扣费R期望：本周期同策略已结算≥20笔，净R均值及均值−2标准误均>0；后者只是V88描述性保守门槛。样本不足保留研究，不能声称正期望；中长期须有对应周期模型",
+    "兑现周期仍需确认：GPT-6周期匹配项≥15分",
+    "反证尚待处理：GPT-6反证项≥15分，明确解决当前反例"
+   ],
+   "evidence_asof": "2026-09-11T16:00:00-04:00",
+   "formal_recommendation": false,
+   "listable": false,
+   "push_eligible": false,
+   "audit_score": 62.5,
+   "master_ref": {
+    "version": "stock-reference-v1",
+    "code": "ACIU",
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "central_generated_at": "2026-09-13 09:55（北京时间）",
+    "audit_id": "ae77c77ca2816d3456a054edda6c307e8875dfaa9479e14918d632edcd85c4b7",
+    "audit_score": 62.5,
+    "tier": "1A",
+    "horizon": "short",
+    "contract_id": "17a366369267edbb1d4d6b9c235ee26d094b922922ca9ee58bc7ec45fb52e15f",
+    "reference_id": "aa8b2057aa3c8ce2eda504875ab08248eebebcac4fbec6d22cce5aaea7d7b679",
+    "no_grade_authority": true
+   },
+   "sensor_relation": "本模块包含该股票；评级仅引用中央，不构成另一份独立审核",
+   "instruction": "非推荐、不可直接执行",
+   "observation_contract": {
+    "promotion_trigger": "两阶段等待：连续两个新完整交易日收盘均在[2.5803, 2.7200]观察区间，最低价均>2.5800且第二日收盘≥第一日；随后收盘突破前一日最高价，成交量/此前20日均量≥1.2，实际入场价在[2.5803, 2.7200]。仅以后续新日线验证，当前未触发；若不能同时满足则不进入。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+    "invalidation": "收盘跌破既定结构失效线2.5800，本轮短期结构失效；不外推长期价值",
+    "horizon": "short",
+    "next_review_at": null
+   }
+  },
+  {
+   "code": "FWDI",
+   "name": "Forward Industries, Inc. - Common Stock",
+   "market": "美股",
+   "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+   "tier": "1A",
+   "state": "RESEARCH_1A",
+   "label": "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+   "support_count": 0,
+   "votes": {
+    "gpt": "observe",
+    "classics": "reject"
+   },
+   "reviews": {
+    "gpt": {
+     "verdict": "不否定",
+     "why": "FWDI的趋势回落关注逻辑有依据，但当前6.55高于6.18观察上限，量比0.9575不足，新的两阶段路径尚未发生。合同并不缺失，执行应等触发；零完成历史交易及回落后能否按期重测前高的争议，使论文仅不否定。财务疑点未核实到足以构成质量或数据冲突否决，独立规则闸仍须另行计算。",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "classics": {
+     "verdict": "书理不支持",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "claude_cs": {
+     "verdict": "gate_pass"
+    }
+   },
+   "reason_codes": [
+    "EXECUTION_CONTRACT_INCOMPLETE",
+    "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+    "等待新的入场确认点：原突破价超出空间上限；需后续在上限内形成新的两日企稳及突破确认点，当前阶段未完成",
+    "量价确认：量比≥1.2；量比口径与事实来源一并保留（V88参数）",
+    "萨普：同策略扣费R期望：本周期同策略已结算≥20笔，净R均值及均值−2标准误均>0；后者只是V88描述性保守门槛。样本不足保留研究，不能声称正期望；中长期须有对应周期模型",
+    "兑现周期仍需确认：GPT-6周期匹配项≥15分",
+    "反证尚待处理：GPT-6反证项≥15分，明确解决当前反例"
+   ],
+   "evidence_asof": "2026-09-11T16:00:00-04:00",
+   "formal_recommendation": false,
+   "listable": false,
+   "push_eligible": false,
+   "audit_score": 62.5,
+   "master_ref": {
+    "version": "stock-reference-v1",
+    "code": "FWDI",
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "central_generated_at": "2026-09-13 09:55（北京时间）",
+    "audit_id": "04b27526b286a5b51f4f116250b8cae184cead8a12c35eb8c60d821f4468375c",
+    "audit_score": 62.5,
+    "tier": "1A",
+    "horizon": "short",
+    "contract_id": "5521e7a1ebda44e6aaf9d9e6b99c33774f990c3a2d3d172945a14053c4794c11",
+    "reference_id": "4551c3e2b0aad7270e33af4681e15abb336219733700dacd77efcb1774891bba",
+    "no_grade_authority": true
+   },
+   "sensor_relation": "本模块包含该股票；评级仅引用中央，不构成另一份独立审核",
+   "instruction": "非推荐、不可直接执行",
+   "observation_contract": {
+    "promotion_trigger": "两阶段等待：连续两个新完整交易日收盘均在[5.7606, 6.1800]观察区间，最低价均>5.7600且第二日收盘≥第一日；随后收盘突破前一日最高价，成交量/此前20日均量≥1.2，实际入场价在[5.7606, 6.1800]。仅以后续新日线验证，当前未触发；若不能同时满足则不进入。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+    "invalidation": "收盘跌破既定结构失效线5.7600，本轮短期结构失效；不外推长期价值",
+    "horizon": "short",
+    "next_review_at": null
+   }
+  },
+  {
+   "code": "TSAT",
+   "name": "Telesat Corporation - Class A Common Shares and Class B Variable Voting Shares",
+   "market": "美股",
+   "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+   "tier": "1A",
+   "state": "RESEARCH_1A",
+   "label": "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+   "support_count": 0,
+   "votes": {
+    "gpt": "observe",
+    "classics": "reject"
+   },
+   "reviews": {
+    "gpt": {
+     "verdict": "不否定",
+     "why": "TSAT有趋势回落的条件关注依据，但49.75高于45.9565观察上限，量比0.7295不足，原两阶段企稳和确认路径尚未发生。合同齐全，应等触发；历史窗口幅度不能替代条件交易证据，反证与周期均未充分解决，因此不否定。没有已核实的硬性风险否决事实，后续仍须独立规则闸，不能由本复核代签。",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "classics": {
+     "verdict": "书理不支持",
+     "at": "2026-09-13 09:17（北京时间）",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13"
+    },
+    "claude_cs": {
+     "verdict": "gate_pass"
+    }
+   },
+   "reason_codes": [
+    "EXECUTION_CONTRACT_INCOMPLETE",
+    "本周期1A空间与价值基础达标；反证/周期争议及触发条件列明，保留研究跟踪",
+    "等待新的入场确认点：原突破价超出空间上限；需后续在上限内形成新的两日企稳及突破确认点，当前阶段未完成",
+    "量价确认：量比≥1.2；量比口径与事实来源一并保留（V88参数）",
+    "萨普：同策略扣费R期望：本周期同策略已结算≥20笔，净R均值及均值−2标准误均>0；后者只是V88描述性保守门槛。样本不足保留研究，不能声称正期望；中长期须有对应周期模型",
+    "兑现周期仍需确认：GPT-6周期匹配项≥15分",
+    "反证尚待处理：GPT-6反证项≥15分，明确解决当前反例"
+   ],
+   "evidence_asof": "2026-09-11T16:00:00-04:00",
+   "formal_recommendation": false,
+   "listable": false,
+   "push_eligible": false,
+   "audit_score": 62.5,
+   "master_ref": {
+    "version": "stock-reference-v1",
+    "code": "TSAT",
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "central_generated_at": "2026-09-13 09:55（北京时间）",
+    "audit_id": "539e03373107f32f38edcd96aafdfb4f511907c50e38e5b243b0b764ea20971d",
+    "audit_score": 62.5,
+    "tier": "1A",
+    "horizon": "short",
+    "contract_id": "470d6b55680ba568dc5fdb78ac37de4a8ecff5dda13bb483be4f7725b616629a",
+    "reference_id": "e42eaef5171c72aa271b92fb3cc992246713adcdc0e73608a37fe6390ee78522",
+    "no_grade_authority": true
+   },
+   "sensor_relation": "本模块包含该股票；评级仅引用中央，不构成另一份独立审核",
+   "instruction": "非推荐、不可直接执行",
+   "observation_contract": {
+    "promotion_trigger": "两阶段等待：连续两个新完整交易日收盘均在[44.2423, 45.9565]观察区间，最低价均>42.2800且第二日收盘≥第一日；随后收盘突破前一日最高价，成交量/此前20日均量≥1.2，实际入场价在[44.2423, 45.9565]。仅以后续新日线验证，当前未触发；若不能同时满足则不进入。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+    "invalidation": "收盘跌破既定结构失效线42.2800，本轮短期结构失效；不外推长期价值",
+    "horizon": "short",
+    "next_review_at": null
+   }
+  }
+ ],
  "counts": {
   "3A": 0,
-  "observation": 0
+  "observation": 9
  },
  "selection_authority": {
   "source": "triad_selection.json",

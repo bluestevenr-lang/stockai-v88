@@ -1,14 +1,25 @@
 {
- "version": "astra-monthly-v1-constraints",
- "generated_at": "2026-09-07T22:46:33.646813+08:00",
+ "version": "astra-monthly-v2-usd200",
+ "generated_at": "2026-09-13T13:35:43.148338+08:00",
  "month": "2026-09",
- "factpack_id": "710c83920f2673743581c8e6caa69549bc039fcbad250937b2d2f851d6d1815f",
- "status": "空仓研究：尚无当前可执行中央3A",
+ "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+ "status": "精选3只短期研究，中港优先；月度证据与执行许可另核",
  "policy": {
-  "version": "astra-monthly-v1-constraints",
-  "name": "Astra月度计划",
+  "version": "astra-monthly-v2-usd200",
+  "name": "Astra月度短线计划",
   "core_book": "斯波朗迪《专业投机原理》",
   "principle": "约束先于标的，失效位先于仓位，空仓合法，实际净收益达标后停止新开仓",
+  "target_currency": "USD",
+  "monthly_target": 200,
+  "target_revision": {
+   "effective_from": "2026-09-12",
+   "previous_target_usd": 125,
+   "reason": "用户明确升级为每月200美元净收益目标；目标不是收益保证",
+   "preserve_month_halt": true,
+   "rewrite_historical_trades": false
+  },
+  "planning_horizon": "short",
+  "planning_horizon_label": "月内短线；不借用中长期3A期限",
   "filters": [
    {
     "id": "trend",
@@ -52,5 +63,5120 @@
  "private_redacted": true,
  "new_order_authority": false,
  "automatic_trading": false,
+ "research_report": {
+  "version": "astra-monthly-research-v2-curated-three",
+  "generated_at": "2026-09-13T13:35:43.148338+08:00",
+  "month": "2026-09",
+  "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+  "central_generated_at": "2026-09-13 09:55（北京时间）",
+  "status": "精选3只短期研究，中港优先；月度证据与执行许可另核",
+  "monthly_target": 200,
+  "target_currency": "USD",
+  "policy": {
+   "version": "astra-monthly-v2-usd200",
+   "name": "Astra月度短线计划",
+   "monthly_target": 200,
+   "target_currency": "USD",
+   "monthly_risk_cap": 125,
+   "per_trade_risk_cap": 62.5,
+   "max_stops_per_month": 2,
+   "max_entries_per_month": 2,
+   "max_active_main_positions": 1,
+   "no_automatic_risk_increase": true,
+   "new_cash_budget_cny": 0
+  },
+  "ranking_rule": "共精选至多3只当前已授级短期研究。先比较已核验月度筛选、中央等级和明显审核分优势；质量相当时优先中港，并尽量覆盖两者。书理、成熟度、原净RR和净空间沿统一顺序细排。原分数、评级和合同均不改变。",
+  "selection_policy": {
+   "version": "astra-monthly-research-v2-curated-three",
+   "total_limit": 3,
+   "preferred_markets": [
+    "A股",
+    "港股"
+   ],
+   "current_grade_required": true,
+   "material_audit_score_gap": 10,
+   "score_gap_configuration": "policy.research_material_score_gap，默认10分",
+   "material_quality_order": [
+    "已核月度PASS数更多",
+    "同通过数中央原等级更高",
+    "同级原审核分达到明显差值"
+   ],
+   "geography_rule": "先排除明显弱于其他候选者，再在同质量层优先尚未覆盖的中港市场；美股确有优势或中港不足时参与",
+   "score_gap_meaning": "只用于研究偏好，不是评分加减、授级门槛或已验证的胜率差",
+   "per_market_safety_cap": 3,
+   "no_forced_fill": true
+  },
+  "not_selected_summary": {
+   "total": 99,
+   "reason_counts": {
+    "COMPARABLE_CN_HK_PREFERRED": 29,
+    "CURRENT_GRADE_REQUIRED": 70
+   },
+   "records": [
+    {
+     "code": "SEPN",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 70,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "SKYQ",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 65,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "CTOR",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 65,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "ECOR",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 65,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "QNCX",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 65,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "NET",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 65,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "BCTX",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 65,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "NEPH",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 65,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "PBM",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 65,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "DRD",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 65,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "SCWO",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 62.5,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "APLM",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 62.5,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "SY",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 62.5,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "BDSX",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 62.5,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "VSAT",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 62.5,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "TSAT",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 62.5,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "KYNB",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 62.5,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "SOWG",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 62.5,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "BMEA",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 62.5,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "CMDB",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 62.5,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "FWDI",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 62.5,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "DHX",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 62.5,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "SPRB",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 62.5,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "INTG",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 62.5,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "BRLT",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 62.5,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "TRVG",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 62.5,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "COCP",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 62.5,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "HOWL",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 62.5,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "ACIU",
+     "market": "美股",
+     "central_tier": "1A",
+     "audit_score": 62.5,
+     "reason_code": "COMPARABLE_CN_HK_PREFERRED",
+     "reason": "未达到明显质量优势，按用户偏好优先中港；美股原评级和合同继续保留"
+    },
+    {
+     "code": "920130.BJ",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 65,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "KRRO",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 65,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "CTEV",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 65,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "RCKT",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 65,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "SLDB",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 65,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "ANL",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 65,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "FXHO",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 62.5,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "SAFX",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 62.5,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "LEDS",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 62.5,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "NWTG",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 62.5,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "300939.SZ",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 62.5,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "920199.BJ",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 62.5,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "688620.SS",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 62.5,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "GRPN",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "XHLD",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "600693.SS",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "AGEN",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "603657.SS",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "HMY",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "603533.SS",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "MENS",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "603679.SS",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "002174.SZ",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "LCUT",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "ABCL",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "688543.SS",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "CNCK",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "PGY",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "BRCB",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "ZLAB",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "UPC",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "NUAI",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "TJGC",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "FOSL",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "APPS",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "600403.SS",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "301333.SZ",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "FIGR",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "300426.SZ",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "920976.BJ",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "603819.SS",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "301607.SZ",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "603400.SS",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "MXC",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "TRDA",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "ACHV",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "GPRE",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "UROY",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "HSAI",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "IOVA",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "300829.SZ",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "NVAX",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "ANRO",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "300559.SZ",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "PAYS",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "002862.SZ",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "000558.SZ",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "MSTR",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "300977.SZ",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "FATE",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "688176.SS",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "STLN",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "GSM",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "TWLO",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 60,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "PYXS",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 55,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "VEEE",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 55,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "BTLN",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 55,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "HLP",
+     "market": "美股",
+     "central_tier": null,
+     "audit_score": 55,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "002062.SZ",
+     "market": "A股",
+     "central_tier": null,
+     "audit_score": 55,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    },
+    {
+     "code": "1005.HK",
+     "market": "港股",
+     "central_tier": null,
+     "audit_score": 50,
+     "reason_code": "CURRENT_GRADE_REQUIRED",
+     "reason": "已有复审仍未获当前等级，保留中央研究与补证，不凑精选名额"
+    }
+   ]
+  },
+  "unfilled_total_slots": 0,
+  "market_summary": {
+   "A股": {
+    "current_signed_short_research": 27,
+    "current_graded_short_research": 3,
+    "shown": 3,
+    "uses_market_quota": false
+   },
+   "美股": {
+    "current_signed_short_research": 74,
+    "current_graded_short_research": 29,
+    "shown": 0,
+    "uses_market_quota": false
+   },
+   "港股": {
+    "current_signed_short_research": 1,
+    "current_graded_short_research": 0,
+    "shown": 0,
+    "uses_market_quota": false
+   }
+  },
+  "candidates": [
+   {
+    "code": "688002.SS",
+    "name": "睿创微纳",
+    "market": "A股",
+    "research_status": "RESEARCH_ONLY",
+    "central_tier": "1A",
+    "audit_score": 70,
+    "audit_id": "bf2e7e07554d5dc9760d372d4a6396d000d65e5afc82e8f20d1d46f32bb70d87",
+    "master_ref": {
+     "version": "stock-reference-v1",
+     "code": "688002.SS",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+     "central_generated_at": "2026-09-13 09:55（北京时间）",
+     "audit_id": "bf2e7e07554d5dc9760d372d4a6396d000d65e5afc82e8f20d1d46f32bb70d87",
+     "audit_score": 70,
+     "tier": "1A",
+     "horizon": "short",
+     "contract_id": "3e56adfa063408c1242a644560f0e9c2549ab0bfda0caac8717bf1ebd9f75880",
+     "reference_id": "a2760f42b6718e609797f557c780bfa24c8d9f146e65276b396c620e26f9e4ff",
+     "no_grade_authority": true
+    },
+    "original_plan": {
+     "entry_range": [
+      161.232,
+      164.27
+     ],
+     "stop": 153.41,
+     "take_profit_range": [
+      185.96,
+      185.99
+     ],
+     "last": 177.0,
+     "promotion_trigger": "两阶段等待：先回到[161.2320, 164.2700]观察区间，连续两个完整交易日最低价均>153.4100且第二日收盘≥第一日；随后收盘突破前一日最高价，成交量/此前20日均量≥1.2，实际入场价在[161.2320, 164.2700]。仅以后续新日线验证，当前未触发；若不能同时满足则不进入。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+     "invalidation": "收盘跌破既定结构失效线153.4100，本轮短期结构失效；不外推长期价值",
+     "deadline": "2026-10-04T15:00:00+08:00",
+     "horizon": "short",
+     "holding_sessions": 10,
+     "net_upside_pct": 12.077464991351757,
+     "net_reward_risk": 1.6017198997461521,
+     "evidence_asof": "2026-09-04T15:00:00+08:00",
+     "cost_assumption": "买入0.5%＋卖出0.5%，合并手续费与滑点假设；不是实际券商报价；未计个人税费、汇率、股息"
+    },
+    "monthly_fit": {
+     "month_end": "2026-09-30T23:59:59+08:00",
+     "original_deadline": "2026-10-04T15:00:00+08:00",
+     "original_deadline_within_month": false,
+     "required_holding_sessions": 10,
+     "remaining_weekdays_upper_bound": 13,
+     "nominal_window_can_fit": true,
+     "status": "MONTH_SPECIFIC_REVIEW_NEEDED",
+     "reason": "名义工作日可能容纳原持有期，仍缺实际入场日、交易所假期与本月兑现证据",
+     "deadline_boundary": "原期限未改写；原目标不得因月末提前而视为已经重新验证",
+     "new_order_authority": false
+    },
+    "monthly_checks": [
+     {
+      "id": "trend",
+      "name": "趋势与可执行触发",
+      "status": "MISSING",
+      "required": "本月成长趋势策略：价格在同口径MA50上方、触发及相对强弱有来源；未触发只研究",
+      "reason": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "earnings",
+      "name": "盈利与营收",
+      "status": "MISSING",
+      "required": "可比期间EPS为正、同比增长且较前期加速，营收正增长；官方财报日期/币种/非经常项一致",
+      "reason": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "valuation",
+      "name": "估值与同周期空间",
+      "status": "MISSING",
+      "required": "盈利/现金流估值及同周期目标有独立依据；分析师评级/15%空间仅辅助，不强制购买数据，不直接用年度目标作月止盈",
+      "reason": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "catalyst",
+      "name": "本月事件证据",
+      "status": "MISSING",
+      "required": "月内日期及官方出处可核验；事件存在不等于利好方向。未预审的财报二元风险不得持仓穿越",
+      "reason": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "volatility",
+      "name": "失效位与波动",
+      "status": "MISSING",
+      "required": "结构失效价先锁定；用ATR、历史跳空和流动性核风险。beta只辅助，不能用1.2分界替代短期价格风险",
+      "reason": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "lot",
+      "name": "交易单位与仓位",
+      "status": "MISSING",
+      "required": "用该证券当期最小申报量/增量及真实费用、币种算股数，向下取整。不能为买够一手挪近结构止损",
+      "reason": "Invalid isoformat string: ''"
+     }
+    ],
+    "gaps": [
+     {
+      "id": "monthly_review",
+      "title": "需要本月独立研判",
+      "detail": "已有GPT意见只审原短期合同，不能代签本月目标路径"
+     },
+     {
+      "id": "monthly_trend",
+      "title": "趋势与可执行触发",
+      "detail": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "monthly_earnings",
+      "title": "盈利与营收",
+      "detail": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "monthly_valuation",
+      "title": "估值与同周期空间",
+      "detail": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "monthly_catalyst",
+      "title": "本月事件证据",
+      "detail": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "monthly_volatility",
+      "title": "失效位与波动",
+      "detail": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "monthly_lot",
+      "title": "交易单位与仓位",
+      "detail": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "original_deadline",
+      "title": "原期限跨月",
+      "detail": "原目标仍归原期限；提前到本月末兑现须独立论证，不自动换期限"
+     },
+     {
+      "id": "risk_target_shortfall",
+      "title": "单笔风险预算下目标不足",
+      "detail": "原风险比情景最多对应 100.11 美元，距整月目标差 99.89 美元；不能据此加仓或放宽风险"
+     },
+     {
+      "id": "entry",
+      "title": "现价未在原入场区间",
+      "detail": "等待原触发；现价不能直接套用原进场空间"
+     },
+     {
+      "id": "central_execution",
+      "title": "中央没有当前新开仓许可",
+      "detail": "保留原等级与研究价值；本月研究排序不授交易权"
+     }
+    ],
+    "reviews": {
+     "primary": {
+      "model": "gpt-6-astra",
+      "completed_at": "2026-09-12 20:42（北京时间）",
+      "original_scope": "原短期合同审核；不是本月专门裁决",
+      "thesis_verdict": "不否定",
+      "execution_status": "等触发",
+      "risk_veto": "无",
+      "why": "趋势和原合同支持继续观察，但放量下跌、偏弱走势代理与零结算路径使反证和周期均为10分。177.0超出[161.232,164.27]，两阶段条件没有完成证据，故等触发。合同净空间12.077464991351757不能代替路径验证，净收益风险比也未满足所给3A数值条件。无已证实的风险否决事项，不继承旧评级或代签经典规则闸。",
+      "counterargument": "高位放量下跌可能预示趋势转弱；回到原观察区间后，现有均线支撑关系也可能改变。单日主力净流入与有限财务增长数据不能保证回踩健康，更不能保证随后在10个交易日重测原止盈带。",
+      "criteria": [
+       {
+        "id": "facts",
+        "score": 20,
+        "reason": "9月11日日线与独立报价均为177.0，原目标边界185.99与新观测188.39用途明确。固定窗口保留原锚点，不把批次时间视为行情时间；资金净流入与价格下跌不构成字段冲突。",
+        "evidence_fields": [
+         "last",
+         "market_evidence.independent_quote_price",
+         "market_evidence.observed_high20",
+         "market_evidence.latest_observed_high20"
+        ]
+       },
+       {
+        "id": "thesis",
+        "score": 15,
+        "reason": "末价高于MA20及MA60，60日收益19.7889，支持保留有条件趋势回踩逻辑。原两阶段路径可检验，当前高于观察上沿只阻止入场；不能据此自动否定未来企稳机会。",
+        "evidence_fields": [
+         "last",
+         "market_evidence.ma20",
+         "market_evidence.ma60",
+         "market_evidence.return60_pct",
+         "market_evidence.watch_price_ceiling"
+        ]
+       },
+       {
+        "id": "countercase",
+        "score": 10,
+        "reason": "当日下跌-3.5054且量比2.0551，相关代理20日下跌，支持高位转弱反例。主力口径净流入及正面财务快照未证明承接成功，方向分歧不等于数据冲突。",
+        "evidence_fields": [
+         "market_evidence.last_day_change_pct",
+         "market_evidence.volume_ratio20",
+         "joint_evidence.domains.sector.facts.return20_pct",
+         "joint_evidence.domains.flow.facts.main_net_cny"
+        ]
+       },
+       {
+        "id": "horizon",
+        "score": 10,
+        "reason": "原20日边界及10个交易日持有期明确；待入场区间对应目标距离13.2221至15.3555，不能使用现价距离5.0791替代。先回踩企稳、再越过届时均线和高点障碍的路径无结算验证，原截止日也不后移。",
+        "evidence_fields": [
+         "market_evidence.target_required_pct",
+         "market_evidence.watch_target_required_ceiling_pct",
+         "market_evidence.watch_target_required_floor_pct",
+         "market_evidence.horizon_mfe_q80_pct",
+         "market_evidence.target_sessions",
+         "conditional_path_evidence.settled_n"
+        ]
+       },
+       {
+        "id": "risk",
+        "score": 15,
+        "reason": "原失效线153.41未记录被突破，初始净R为12.4484，研究仓位上限6.631027及期限明确。现价RR仅0.3811，必须等待原区间；净收益风险比1.6017198997461521不能解释为交易期望或最大损失保证。",
+        "evidence_fields": [
+         "stop",
+         "market_evidence.prior_thesis_stop_breached",
+         "tharp_risk.initial_net_r",
+         "tharp_risk.position_limit_pct_nav",
+         "market_evidence.rr_current",
+         "profit_contract.net_reward_risk"
+        ]
+       }
+      ]
+     },
+     "counteraudit": {
+      "model": "gpt-6-astra",
+      "completed_at": "2026-09-12 20:42（北京时间）",
+      "original_scope": "原短期合同审核；不是本月专门裁决",
+      "thesis_verdict": "不否定",
+      "execution_status": "等触发",
+      "risk_veto": "无",
+      "why": "放量下跌与弱势走势代理尚未被单日净流入证据化解，等待后按原期限兑现的路径也无已结算交易，故反证和周期均为10分。177.0高于原入场上沿164.27，合同完整但两阶段尚未触发，只能等待。原目标、止损及截止日继续固定，不使用历史档位或代签独立规则闸。",
+      "counterargument": "当前价格虽仍在两条均线上方，但高位放量下跌可能意味着趋势转弱；若回到原观察区间，随后还须重新克服MA20及近期交易高位。主力分类净流入不证明因果承接，旧目标也不能因新高出现而自动提高。",
+      "criteria": [
+       {
+        "id": "facts",
+        "score": 20,
+        "reason": "末价与独立报价均177.0，刷新证据记录481根重叠行情一致。数据时点按2026-09-11日线及个股报价认定；统计较早起点已有固定窗口和省略前缀说明，原目标与最新高点差异亦有明确锚点解释，不据此认定冲突。",
+        "evidence_fields": [
+         "last",
+         "market_evidence.independent_quote_price",
+         "data_provenance.contract_refresh_evidence.overlap_bars_identical"
+        ]
+       },
+       {
+        "id": "thesis",
+        "score": 15,
+        "reason": "现价高于MA20和MA60，60日收益为正，原回踩再确认方案有条件关注价值。保留旧两阶段定义：第一收盘在区间、两日低点守住原止损、第二收盘不低于第一，随后另日突破前一日高点；不能改用新版本条件。",
+        "evidence_fields": [
+         "last",
+         "market_evidence.ma20",
+         "market_evidence.ma60",
+         "market_evidence.return60_pct",
+         "market_evidence.entry_stages_required"
+        ]
+       },
+       {
+        "id": "countercase",
+        "score": 10,
+        "reason": "最强反例是高位放量转弱：当日下跌3.5054%、量比2.0551，走势代理同时偏弱。单日主力净流入与价格下跌可以并存，并非数据冲突，但不能证明承接有效；回落至原区间后仍能恢复突破尚待验证。",
+        "evidence_fields": [
+         "market_evidence.last_day_change_pct",
+         "vol_ratio",
+         "joint_evidence.domains.sector.facts.return20_pct",
+         "joint_evidence.domains.flow.facts.main_net_pct"
+        ]
+       },
+       {
+        "id": "horizon",
+        "score": 10,
+        "reason": "当前目标距离5.0791%不能代替区间入场后所需的13.2221%至15.3555%。先回落、企稳、再突破并重测原止盈带的路径无结算样本；MA20及近期高位为中间待处理位置，固定截止日不因等待重置，历史波幅不足以给15分。",
+        "evidence_fields": [
+         "market_evidence.target_required_pct",
+         "market_evidence.watch_target_required_ceiling_pct",
+         "market_evidence.watch_target_required_floor_pct",
+         "profit_inputs.holding_sessions",
+         "conditional_path_evidence.settled_n"
+        ]
+       },
+       {
+        "id": "risk",
+        "score": 15,
+        "reason": "原止损153.41保持，未见下调或触线复活论文证据；初始净R和研究仓位上限明确。现价收益风险比0.3811且高于区间上沿，不能追买；原区间净目标R仍非正期望证明，实际资金、相关性和跳空风险待执行时检查。",
+        "evidence_fields": [
+         "stop",
+         "market_evidence.prior_stop_lowering_blocked",
+         "market_evidence.prior_thesis_stop_breached",
+         "tharp_risk.initial_net_r",
+         "tharp_risk.position_limit_pct_nav",
+         "rr"
+        ]
+       }
+      ]
+     }
+    },
+    "eight_domains": [
+     {
+      "id": "technical",
+      "title": "技术与量价",
+      "status": "observed",
+      "limitations": [
+       "历史位置不是企业估值；原合同目标和失效价保持"
+      ],
+      "origins": [
+       {
+        "provider": "yahoo",
+        "source_asof": "2026-09-11"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "混合",
+        "reason": "末价高于两条均线，但年度位置偏高且五日收益为负；支持条件趋势假设，未消除高位转弱反例，逻辑15分、反证10分。",
+        "effects": [
+         "facts",
+         "thesis",
+         "countercase",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.technical.facts.last",
+         "joint_evidence.domains.technical.facts.ma20",
+         "joint_evidence.domains.technical.facts.ma60",
+         "joint_evidence.domains.technical.facts.position252_pct",
+         "joint_evidence.domains.technical.facts.return5_pct"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "混合",
+        "reason": "现价仍高于两条均线，但五日收益为负且年度位置偏高。支持条件趋势观察，无法消除放量转弱反例，反证项不升至15分。",
+        "effects": [
+         "facts",
+         "thesis",
+         "countercase",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.technical.facts.last",
+         "joint_evidence.domains.technical.facts.ma20",
+         "joint_evidence.domains.technical.facts.ma60",
+         "joint_evidence.domains.technical.facts.return5_pct",
+         "joint_evidence.domains.technical.facts.position252_pct"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "sector",
+      "title": "板块轮动",
+      "status": "observed",
+      "limitations": [
+       "走势相关性代理，不能当作行业归属、因果或第二份独立公司事实"
+      ],
+      "origins": [
+       {
+        "provider": "tencent",
+        "source_url": "https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=sh512760,day,,,640,qfq",
+        "source_asof": "2026-09-11"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "反对",
+        "reason": "相关代理20日下跌且低于MA20，削弱短期顺风环境，加重反证及周期争议；相关性仅支持走势比较，不证明行业归属或因果。",
+        "effects": [
+         "thesis",
+         "countercase",
+         "horizon"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.sector.facts.correlation",
+         "joint_evidence.domains.sector.facts.return20_pct",
+         "joint_evidence.domains.sector.facts.above_ma20"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "反对",
+        "reason": "走势代理20日下跌且低于MA20，对短期重测路径不利。相关性仅为走势联系，不能当军工电子行业归属或公司因果证据。",
+        "effects": [
+         "thesis",
+         "countercase",
+         "horizon"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.sector.facts.return20_pct",
+         "joint_evidence.domains.sector.facts.above_ma20",
+         "joint_evidence.domains.sector.facts.correlation"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "market",
+      "title": "市场环境",
+      "status": "observed",
+      "limitations": [
+       "已覆盖板块ETF环境，不等于全市场广度；同源不重复加分"
+      ],
+      "origins": [
+       {
+        "provider": "tencent",
+        "source_url": "https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=sh512760,day,,,640,qfq",
+        "source_asof": "2026-09-11"
+       },
+       {
+        "provider": "tencent",
+        "source_url": "https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=sh512690,day,,,640,qfq",
+        "source_asof": "2026-09-11"
+       },
+       {
+        "provider": "tencent",
+        "source_url": "https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=sh512010,day,,,640,qfq",
+        "source_asof": "2026-09-11"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "混合",
+        "reason": "半导体代理低于MA60而银行代理高于MA20，环境分化；与板块域重复的代理只计一次，不补足周期与风险的执行证据。",
+        "effects": [
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.market.facts.proxies.4.vs_ma60",
+         "joint_evidence.domains.market.facts.proxies.5.vs_ma20"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "混合",
+        "reason": "多只代理低于MA20，银行代理仍较强，环境分化偏弱。周期缺少普遍助力；半导体代理与板块域同源，不重复计证。",
+        "effects": [
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.market.facts.proxies[1].vs_ma20",
+         "joint_evidence.domains.market.facts.proxies[4].vs_ma20",
+         "joint_evidence.domains.market.facts.proxies[5].vs_ma20"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "news",
+      "title": "新闻与催化",
+      "status": "limited",
+      "limitations": [
+       "仅源页面标题与精确代码关联，未阅读正文核实影响；有限搜索，无结果不代表不存在风险"
+      ],
+      "origins": [
+       {
+        "provider": "eastmoney",
+        "source_url": "https://np-anotice-stock.eastmoney.com/api/security/ann?sr=-1&page_size=30&page_index=1&ann_type=A&client_source=web&stock_list=688002&f_node=0&s_node=0"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "中性",
+        "reason": "二十一条关联公告仅有标题，分派时点与影响未经正文核实；不能签催化通过或推断正股停牌，相关评分保留事件核验缺口。",
+        "effects": [
+         "thesis",
+         "countercase",
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.news.facts.matched_events"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "中性",
+        "reason": "权益分派及转股价调整仅有标题，执行日期与价格口径影响未核验。不能认定正股停牌、利好或既成数据冲突，亦不支持周期通过。",
+        "effects": [
+         "thesis",
+         "countercase",
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.news.facts.events[0].title",
+         "joint_evidence.domains.news.facts.events[2].title",
+         "joint_evidence.domains.news.facts.matched_events"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "flow",
+      "title": "资金流",
+      "status": "observed",
+      "limitations": [
+       "供应商主力分类估算，非全部机构净买入；单日净流不单独决定评级"
+      ],
+      "origins": [
+       {
+        "provider": "eastmoney",
+        "source_url": "https://push2delay.eastmoney.com/api/qt/ulist.np/get?secids=1.688002&fields=f12%2Cf13%2Cf14%2Cf62%2Cf184%2Cf124&fltt=2&invt=2&np=1"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "混合",
+        "reason": "主力净流入及占比为正，却与当日下跌方向相反；分类估算不证明承接因果，反证仍为10分，属于解释争议而非数据冲突。",
+        "effects": [
+         "thesis",
+         "countercase"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.flow.facts.main_net_cny",
+         "joint_evidence.domains.flow.facts.main_net_pct"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "混合",
+        "reason": "供应商主力净流为正，提供有限承接线索，但与当日跌价并存。分类估算不能证明机构一致买入，未化解放量转弱反例。",
+        "effects": [
+         "thesis",
+         "countercase"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.flow.facts.main_net_cny",
+         "joint_evidence.domains.flow.facts.main_net_pct"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "fundamental",
+      "title": "基本面",
+      "status": "limited",
+      "limitations": [
+       "供应商采集快照；未验证最新财报公告日、口径可比性与三表，不能签中长期价值通过",
+       "外部分析师预期不能替代冻结的原目标；不得年化或混币种"
+      ],
+      "origins": [
+       {
+        "provider": "yahoo",
+        "source_url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/688002.SS"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "混合",
+        "reason": "利润率与自由现金流为正，提供有限经营支持；三表、公告时点及口径未核实，不能签基本面通过或化解短线量价反例。",
+        "effects": [
+         "facts",
+         "thesis",
+         "countercase"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.fundamental.facts.profitMargins",
+         "joint_evidence.domains.fundamental.facts.freeCashflow"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "混合",
+        "reason": "盈利增长、利润率及经营现金流提供经营支持，但仅为供应商快照。未核验三表与可比口径，不能据此补足短期反证或签价值通过。",
+        "effects": [
+         "facts",
+         "thesis",
+         "countercase"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.fundamental.facts.earningsGrowth",
+         "joint_evidence.domains.fundamental.facts.profitMargins",
+         "joint_evidence.domains.fundamental.facts.operatingCashflow"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "valuation",
+      "title": "估值与空间",
+      "status": "limited",
+      "limitations": [
+       "供应商采集快照；未验证最新财报公告日、口径可比性与三表，不能签中长期价值通过",
+       "外部分析师预期不能替代冻结的原目标；不得年化或混币种"
+      ],
+      "origins": [
+       {
+        "provider": "yahoo",
+        "source_url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/688002.SS"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "中性",
+        "reason": "市盈率42.344498、市净率10.083172缺少可比估值依据；有限快照不能签低估通过，不改变原目标或补足周期兑现证据。",
+        "effects": [
+         "thesis",
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.valuation.facts.trailingPE",
+         "joint_evidence.domains.valuation.facts.priceToBook"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "中性",
+        "reason": "市盈率及市净率缺少可比估值锚，不能单凭绝对水平断言便宜或昂贵。快照不证明原目标在10日内可达，也不替代风险合同。",
+        "effects": [
+         "thesis",
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.valuation.facts.trailingPE",
+         "joint_evidence.domains.valuation.facts.forwardPE",
+         "joint_evidence.domains.valuation.facts.priceToBook"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "validation",
+      "title": "历史与前瞻验证",
+      "status": "observed",
+      "limitations": [
+       "当前策略单票历史模拟，与技术面共享日线；不是独立样本外或实盘胜率；不足样本不能称已验证正期望"
+      ],
+      "origins": [
+       {
+        "provider": "yahoo",
+        "source_asof": "2026-09-11"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "中性",
+        "reason": "两个历史方案无结算结果，净期望尚不可估，不是已证实负期望；与技术共享日线，反证与周期10分，风险只认可原计划。",
+        "effects": [
+         "countercase",
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.validation.facts.setup_n",
+         "joint_evidence.domains.validation.facts.settled_n",
+         "joint_evidence.domains.validation.facts.minimum_settled_n"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "阻断",
+        "reason": "两次方案均无已结算结果，无法认证扣费后正期望。此为验证不足而非数据冲突，不能用历史幅度替代等待后完整交易路径。",
+        "effects": [
+         "countercase",
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.validation.facts.setup_n",
+         "joint_evidence.domains.validation.facts.settled_n",
+         "joint_evidence.domains.validation.facts.expectancy_net_r"
+        ]
+       }
+      },
+      "independent_votes": false
+     }
+    ],
+    "capital_path": {
+     "kind": "conditional_target_algebra",
+     "currency": "USD",
+     "goal_basis": "整个本月目标；未读取实际收益，不能称剩余目标",
+     "proposed_unit_count": null,
+     "actual_cash": null,
+     "expected_profit": null,
+     "target_progress_contribution": 0,
+     "guaranteed": false,
+     "assumptions": [
+      "只有原进场上沿成交且原止盈下沿兑现时成立；两者均未假定会发生",
+      "仅沿用原合同费用/滑点假设，尚未计账户税费、汇兑及额外跳空损失",
+      "美元等值名义本金不是本币可买金额或股数；整手、可用余额和汇率交月度六项核验"
+     ],
+     "cost_assumption": "买入0.5%＋卖出0.5%，合并手续费与滑点假设；不是实际券商报价；未计个人税费、汇率、股息",
+     "status": "CONDITIONAL_ONLY",
+     "objective_usd": 200,
+     "nominal_capital_usd_equivalent": 1655.98,
+     "modeled_risk_to_cover_goal_usd": 124.87,
+     "original_net_upside_pct": 12.077464991351757,
+     "original_net_reward_risk": 1.6017198997461521,
+     "policy_per_trade_risk_usd": 62.5,
+     "risk_limited_one_trade_target_scenario_usd": 100.11,
+     "one_trade_scenario_shortfall_usd": 99.89,
+     "risk_budget_shortfall_usd": 62.37,
+     "can_cover_goal_under_risk_scenario": false
+    },
+    "book_pass_n": 6,
+    "book_required": 8,
+    "evidence_refs": [
+     {
+      "field": "last",
+      "value": 177.0
+     },
+     {
+      "field": "market_evidence.independent_quote_price",
+      "value": 177.0
+     },
+     {
+      "field": "market_evidence.observed_high20",
+      "value": 185.99
+     },
+     {
+      "field": "market_evidence.latest_observed_high20",
+      "value": 188.39
+     },
+     {
+      "field": "market_evidence.ma20",
+      "value": 171.637
+     },
+     {
+      "field": "market_evidence.ma60",
+      "value": 156.8685
+     },
+     {
+      "field": "market_evidence.return60_pct",
+      "value": 19.7889
+     },
+     {
+      "field": "market_evidence.watch_price_ceiling",
+      "value": 164.27
+     },
+     {
+      "field": "market_evidence.last_day_change_pct",
+      "value": -3.5054
+     },
+     {
+      "field": "market_evidence.volume_ratio20",
+      "value": 2.0551
+     },
+     {
+      "field": "market_evidence.target_required_pct",
+      "value": 5.0791
+     },
+     {
+      "field": "market_evidence.watch_target_required_ceiling_pct",
+      "value": 13.2221
+     },
+     {
+      "field": "market_evidence.watch_target_required_floor_pct",
+      "value": 15.3555
+     },
+     {
+      "field": "market_evidence.horizon_mfe_q80_pct",
+      "value": 15.3555
+     },
+     {
+      "field": "market_evidence.target_sessions",
+      "value": 10
+     },
+     {
+      "field": "conditional_path_evidence.settled_n",
+      "value": 0
+     },
+     {
+      "field": "stop",
+      "value": 153.41
+     },
+     {
+      "field": "market_evidence.prior_thesis_stop_breached",
+      "value": 0
+     },
+     {
+      "field": "tharp_risk.initial_net_r",
+      "value": 12.4484
+     },
+     {
+      "field": "tharp_risk.position_limit_pct_nav",
+      "value": 6.631027
+     },
+     {
+      "field": "profit_contract.net_reward_risk",
+      "value": 1.6017198997461521
+     },
+     {
+      "field": "profit_contract.net_upside_pct",
+      "value": 12.077464991351757
+     },
+     {
+      "field": "market_evidence.rr_current",
+      "value": 0.3811
+     },
+     {
+      "field": "joint_evidence.domains.sector.facts.return20_pct",
+      "value": -10.820244328097727
+     },
+     {
+      "field": "joint_evidence.domains.flow.facts.main_net_cny",
+      "value": 649637232.0
+     }
+    ],
+    "remaining_central_conditions": [
+     "等待新的入场确认点",
+     "萨普：同策略扣费R期望",
+     "兑现周期仍需确认",
+     "反证尚待处理"
+    ],
+    "new_order_authority": false,
+    "new_grade_authority": false,
+    "actual_fill": false,
+    "target_progress_contribution": 0,
+    "predictive_win_probability": null,
+    "rank_basis": {
+     "monthly_passed": 0,
+     "central_tier_order": 2,
+     "original_audit_score": 70,
+     "central_remaining_count": 4
+    },
+    "selection_reason": {
+     "slot": 1,
+     "reason": "质量层内补充尚未覆盖的中港市场",
+     "quality_frontier_size": 32,
+     "remaining_eligible": 32
+    },
+    "market_research_rank": 1,
+    "research_role": "首要研究；未指定实际主仓"
+   },
+   {
+    "code": "300530.SZ",
+    "name": "领湃科技",
+    "market": "A股",
+    "research_status": "RESEARCH_ONLY",
+    "central_tier": "1A",
+    "audit_score": 62.5,
+    "audit_id": "b53424d036b4035671b2ff4cbfec791a21a4a4ca28d84d5e851d8bec21c6c181",
+    "master_ref": {
+     "version": "stock-reference-v1",
+     "code": "300530.SZ",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+     "central_generated_at": "2026-09-13 09:55（北京时间）",
+     "audit_id": "b53424d036b4035671b2ff4cbfec791a21a4a4ca28d84d5e851d8bec21c6c181",
+     "audit_score": 62.5,
+     "tier": "1A",
+     "horizon": "short",
+     "contract_id": "6c47bbb33ed2454485768db460215118a08fe77ef4db767db3f7e4ce3e24fad9",
+     "reference_id": "aabd9731d7a390c678b5f4436bfc22c99c7f8f54a124aa3313a6bbf1171a4af6",
+     "no_grade_authority": true
+    },
+    "original_plan": {
+     "entry_range": [
+      18.0969,
+      19.56
+     ],
+     "stop": 18.09,
+     "take_profit_range": [
+      22.29,
+      22.5
+     ],
+     "last": 19.93,
+     "promotion_trigger": "两阶段等待：连续两个新完整交易日收盘均在[18.0969, 19.5600]观察区间，最低价均>18.0900且第二日收盘≥第一日；随后收盘突破前一日最高价，成交量/此前20日均量≥1.2，实际入场价在[18.0969, 19.5600]。仅以后续新日线验证，当前未触发；若不能同时满足则不进入。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+     "invalidation": "收盘跌破既定结构失效线18.0900，本轮短期结构失效；不外推长期价值",
+     "deadline": "2026-10-11T15:00:00+08:00",
+     "horizon": "short",
+     "holding_sessions": 10,
+     "net_upside_pct": 12.82315416781125,
+     "net_reward_risk": 1.5201266395296247,
+     "evidence_asof": "2026-09-11T15:00:00+08:00",
+     "cost_assumption": "买入0.5%＋卖出0.5%，合并手续费与滑点假设；不是实际券商报价；未计个人税费、汇率、股息"
+    },
+    "monthly_fit": {
+     "month_end": "2026-09-30T23:59:59+08:00",
+     "original_deadline": "2026-10-11T15:00:00+08:00",
+     "original_deadline_within_month": false,
+     "required_holding_sessions": 10,
+     "remaining_weekdays_upper_bound": 13,
+     "nominal_window_can_fit": true,
+     "status": "MONTH_SPECIFIC_REVIEW_NEEDED",
+     "reason": "名义工作日可能容纳原持有期，仍缺实际入场日、交易所假期与本月兑现证据",
+     "deadline_boundary": "原期限未改写；原目标不得因月末提前而视为已经重新验证",
+     "new_order_authority": false
+    },
+    "monthly_checks": [
+     {
+      "id": "trend",
+      "name": "趋势与可执行触发",
+      "status": "MISSING",
+      "required": "本月成长趋势策略：价格在同口径MA50上方、触发及相对强弱有来源；未触发只研究",
+      "reason": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "earnings",
+      "name": "盈利与营收",
+      "status": "MISSING",
+      "required": "可比期间EPS为正、同比增长且较前期加速，营收正增长；官方财报日期/币种/非经常项一致",
+      "reason": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "valuation",
+      "name": "估值与同周期空间",
+      "status": "MISSING",
+      "required": "盈利/现金流估值及同周期目标有独立依据；分析师评级/15%空间仅辅助，不强制购买数据，不直接用年度目标作月止盈",
+      "reason": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "catalyst",
+      "name": "本月事件证据",
+      "status": "MISSING",
+      "required": "月内日期及官方出处可核验；事件存在不等于利好方向。未预审的财报二元风险不得持仓穿越",
+      "reason": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "volatility",
+      "name": "失效位与波动",
+      "status": "MISSING",
+      "required": "结构失效价先锁定；用ATR、历史跳空和流动性核风险。beta只辅助，不能用1.2分界替代短期价格风险",
+      "reason": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "lot",
+      "name": "交易单位与仓位",
+      "status": "MISSING",
+      "required": "用该证券当期最小申报量/增量及真实费用、币种算股数，向下取整。不能为买够一手挪近结构止损",
+      "reason": "Invalid isoformat string: ''"
+     }
+    ],
+    "gaps": [
+     {
+      "id": "monthly_review",
+      "title": "需要本月独立研判",
+      "detail": "已有GPT意见只审原短期合同，不能代签本月目标路径"
+     },
+     {
+      "id": "monthly_trend",
+      "title": "趋势与可执行触发",
+      "detail": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "monthly_earnings",
+      "title": "盈利与营收",
+      "detail": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "monthly_valuation",
+      "title": "估值与同周期空间",
+      "detail": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "monthly_catalyst",
+      "title": "本月事件证据",
+      "detail": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "monthly_volatility",
+      "title": "失效位与波动",
+      "detail": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "monthly_lot",
+      "title": "交易单位与仓位",
+      "detail": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "original_deadline",
+      "title": "原期限跨月",
+      "detail": "原目标仍归原期限；提前到本月末兑现须独立论证，不自动换期限"
+     },
+     {
+      "id": "risk_target_shortfall",
+      "title": "单笔风险预算下目标不足",
+      "detail": "原风险比情景最多对应 95.01 美元，距整月目标差 104.99 美元；不能据此加仓或放宽风险"
+     },
+     {
+      "id": "entry",
+      "title": "现价未在原入场区间",
+      "detail": "等待原触发；现价不能直接套用原进场空间"
+     },
+     {
+      "id": "central_execution",
+      "title": "中央没有当前新开仓许可",
+      "detail": "保留原等级与研究价值；本月研究排序不授交易权"
+     }
+    ],
+    "reviews": {
+     "primary": {
+      "model": "gpt-6-astra",
+      "completed_at": "2026-09-12 21:38（北京时间）",
+      "original_scope": "原短期合同审核；不是本月专门裁决",
+      "thesis_verdict": "不否定",
+      "execution_status": "等触发",
+      "risk_veto": "无",
+      "why": "短期有条件回踩逻辑可保留，风险合同可检验，但趋势延续反证与期限路径未获充分印证。现价19.93高于19.56上沿，量比0.4252不足1.2，两阶段均未完成，故等触发；无已证实事件、组合或数据冲突硬否决。独立规则闸另审。",
+      "counterargument": "年线下反弹可能已结束，五日跌幅与亏损、负现金流相互强化；小额单日净流入不能推翻这一反例。即便未来回落至区间，也可能先触及18.09而无法形成后续放量突破。",
+      "criteria": [
+       {
+        "id": "facts",
+        "score": 15,
+        "reason": "9月11日报价与日线时点明确，报价差异仅2e-06，属于显示精度差异而非实质冲突。价格、止损、止盈带及期限齐全，财务快照仍非已核实三表。",
+        "evidence_fields": [
+         "last",
+         "market_evidence.quote_difference_pct"
+        ]
+       },
+       {
+        "id": "thesis",
+        "score": 15,
+        "reason": "60日上涨且价格高于MA60支持趋势回落候选；两阶段新确认路径明确，现价高于区间并不否定未来形成路径。该判断仅限有条件关注，不代表当前反转或可买。",
+        "evidence_fields": [
+         "chg60",
+         "market_evidence.ma60",
+         "market_evidence.entry_stages_required",
+         "market_evidence.watch_price_ceiling"
+        ]
+       },
+       {
+        "id": "countercase",
+        "score": 10,
+        "reason": "最强反例是年线下的反弹已经结束；五日下跌、亏损和负经营现金流支持该反例。单日主力净流入较小，不能证明资金持续承接或消除经营弱势。",
+        "evidence_fields": [
+         "joint_evidence.domains.technical.facts.return5_pct",
+         "joint_evidence.domains.fundamental.facts.operatingCashflow",
+         "joint_evidence.domains.flow.facts.main_net_pct"
+        ]
+       },
+       {
+        "id": "horizon",
+        "score": 10,
+        "reason": "10交易日和30自然日合同匹配短期，目标来自20日高点；但入场上沿对应目标涨幅15.0307，途中还有20.94阻力。历史仅一次设置且未入场即失效，窗口80分位不能证明替代路径按期兑现。",
+        "evidence_fields": [
+         "market_evidence.target_sessions",
+         "market_evidence.watch_target_required_ceiling_pct",
+         "market_evidence.horizon_mfe_q80_pct",
+         "market_evidence.previous_high",
+         "conditional_path_evidence.setup_n",
+         "conditional_path_evidence.settled_n"
+        ]
+       },
+       {
+        "id": "risk",
+        "score": 15,
+        "reason": "18.09失效线、初始净R和5.927273仓位上限可检验，下一开盘退出及到期不延长明确。仍须核查实际成交、组合和交易单位；净目标R仅是收益风险结构，不代表正期望或损失上限。",
+        "evidence_fields": [
+         "stop",
+         "tharp_risk.initial_net_r",
+         "tharp_risk.position_limit_pct_nav",
+         "profit_contract.net_reward_risk"
+        ]
+       }
+      ]
+     },
+     "counteraudit": {
+      "model": "gpt-6-astra",
+      "completed_at": "2026-09-12 21:38（北京时间）",
+      "original_scope": "原短期合同审核；不是本月专门裁决",
+      "thesis_verdict": "不否定",
+      "execution_status": "等触发",
+      "risk_veto": "无",
+      "why": "有条件回落重测的因果框架完整，现价超出入场区间不否定未来关注价值；但历史路径、阻力消化及财务反证未得到充分处理，故不能通过。当前量比0.4252且两阶段未形成，执行为等触发，未代签独立规则闸。",
+      "counterargument": "60日反弹可能处于年线下方的弱势结构中，回落至观察区间后还需重新穿越20日均线及20.94阻力。亏损、负经营现金流和高市净率使基本面无法托底，单日资金净流入不证明10日内重测前高。",
+      "criteria": [
+       {
+        "id": "facts",
+        "score": 15,
+        "reason": "2026-09-11独立报价差异仅0.000002，符合日线浮点精度差异，未见实质价格冲突；485根历史有连续性筛查，但不证明真正PIT或实际成交。",
+        "evidence_fields": [
+         "market_evidence.quote_difference_pct",
+         "market_evidence.history_bars"
+        ]
+       },
+       {
+        "id": "thesis",
+        "score": 15,
+        "reason": "60日涨幅为正且价格高于60日均线，支持回落后有条件重测；两阶段须在原区间形成新确认点，当前19.93高于19.56上限，明确不能按原20.94突破追买。",
+        "evidence_fields": [
+         "chg60",
+         "market_evidence.ma60",
+         "last",
+         "market_evidence.watch_price_ceiling"
+        ]
+       },
+       {
+        "id": "countercase",
+        "score": 10,
+        "reason": "五日跌幅明显，原20.94和20日均线构成到达止盈带前的阻力；负现金流与高市净率削弱托底，单日主力净流入不能化解这些反证。",
+        "evidence_fields": [
+         "market_evidence.previous_high",
+         "market_evidence.ma20",
+         "joint_evidence.domains.fundamental.facts.operatingCashflow",
+         "joint_evidence.domains.valuation.facts.priceToBook"
+        ]
+       },
+       {
+        "id": "horizon",
+        "score": 10,
+        "reason": "净收益须用22.29止盈下沿而非22.5计算。历史10日幅度分位仅支持幅度可能性，唯一方案入场前失效、零已结算，不能验证两阶段等待后穿越中间阻力的兑现路径。",
+        "evidence_fields": [
+         "profit_contract.take_profit_range.0",
+         "market_evidence.horizon_mfe_q80_pct",
+         "conditional_path_evidence.settled_n",
+         "conditional_path_evidence.invalidated_before_entry_n"
+        ]
+       },
+       {
+        "id": "risk",
+        "score": 15,
+        "reason": "初始净R为1.65825，仓位上限5.927273及18.09止损可核验，退出和截止日明确；收益风险比不是期望，仓位只是研究上限，跳空及组合可执行性仍须入场时核对。",
+        "evidence_fields": [
+         "tharp_risk.initial_net_r",
+         "tharp_risk.position_limit_pct_nav",
+         "stop",
+         "profit_contract.net_reward_risk"
+        ]
+       }
+      ]
+     }
+    },
+    "eight_domains": [
+     {
+      "id": "technical",
+      "title": "技术与量价",
+      "status": "observed",
+      "limitations": [
+       "历史位置不是企业估值；原合同目标和失效价保持"
+      ],
+      "origins": [
+       {
+        "provider": "yahoo",
+        "source_asof": "2026-09-11"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "混合",
+        "reason": "价格高于MA60但低于MA200，五日回落明显；支持条件性回踩研究，同时保留反弹结束反例，不能认定当前已企稳。",
+        "effects": [
+         "facts",
+         "thesis",
+         "countercase",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.technical.facts.last",
+         "joint_evidence.domains.technical.facts.ma60",
+         "joint_evidence.domains.technical.facts.cross_period_observations.ma200",
+         "joint_evidence.domains.technical.facts.return5_pct"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "混合",
+        "reason": "现价略高于20日均线且高于60日均线，但五日跌幅明显并处年线下；支持条件回踩，反转与阻力消化尚无充分证据。",
+        "effects": [
+         "facts",
+         "thesis",
+         "countercase",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.technical.facts.last",
+         "joint_evidence.domains.technical.facts.ma20",
+         "joint_evidence.domains.technical.facts.ma60",
+         "joint_evidence.domains.technical.facts.return5_pct",
+         "joint_evidence.domains.technical.facts.cross_period_observations.ma200"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "sector",
+      "title": "板块轮动",
+      "status": "missing",
+      "limitations": [
+       "没有可核验的本票证据；缺失不是通过，也不是明确看空"
+      ],
+      "origins": [],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "缺失",
+        "reason": "只有电池行业分类，没有本票相关板块轮动证据；其他行业ETF不能替代该缺口，因此逻辑及周期缺少行业独立印证。",
+        "effects": [
+         "thesis",
+         "countercase",
+         "horizon"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.sector.status"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "缺失",
+        "reason": "电池行业归属不能证明板块轮动，缺乏本票行业强弱证据；因此不能补足重测逻辑、最强反证及10日兑现路径。",
+        "effects": [
+         "thesis",
+         "countercase",
+         "horizon"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.sector.status"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "market",
+      "title": "市场环境",
+      "status": "observed",
+      "limitations": [
+       "已覆盖板块ETF环境，不等于全市场广度；同源不重复加分"
+      ],
+      "origins": [
+       {
+        "provider": "tencent",
+        "source_url": "https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=sh512760,day,,,640,qfq",
+        "source_asof": "2026-09-11"
+       },
+       {
+        "provider": "tencent",
+        "source_url": "https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=sh512690,day,,,640,qfq",
+        "source_asof": "2026-09-11"
+       },
+       {
+        "provider": "tencent",
+        "source_url": "https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=sh512010,day,,,640,qfq",
+        "source_asof": "2026-09-11"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "混合",
+        "reason": "多只代理走弱而银行代理高于MA20，环境分化且总体有逆风；并非全市场广度或电池专属证据，限制周期信心。",
+        "effects": [
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.market.facts.proxies.4.vs_ma20",
+         "joint_evidence.domains.market.facts.proxies.5.vs_ma20",
+         "joint_evidence.domains.market.facts.proxies.0.chg5d"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "混合",
+        "reason": "多个代理ETF走弱，银行代理20日上涨显示分化；这些代理不能直接代表电池板块，短期环境证据偏逆风且覆盖有限。",
+        "effects": [
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.market.facts.proxies.4.chg20d",
+         "joint_evidence.domains.market.facts.proxies.5.chg20d",
+         "joint_evidence.domains.market.facts.proxies.0.chg5d"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "news",
+      "title": "新闻与催化",
+      "status": "limited",
+      "limitations": [
+       "仅源页面标题与精确代码关联，未阅读正文核实影响；有限搜索，无结果不代表不存在风险"
+      ],
+      "origins": [
+       {
+        "provider": "eastmoney",
+        "source_url": "https://np-anotice-stock.eastmoney.com/api/security/ann?sr=-1&page_size=30&page_index=1&ann_type=A&client_source=web&stock_list=300530&f_node=0&s_node=0"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "中性",
+        "reason": "半年报、资金往来表与担保公告仅有标题，不能推断违规占用或担保损失；正文未核实，不能据此增强逻辑或事件否决。",
+        "effects": [
+         "thesis",
+         "countercase",
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.news.facts.events.1.title",
+         "joint_evidence.domains.news.facts.events.2.title",
+         "joint_evidence.domains.news.facts.events.5.title"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "中性",
+        "reason": "半年报、担保及资金往来公告只有标题，不能推断违规或利好；正文未核实，无法消除财务反证或建立短期催化依据。",
+        "effects": [
+         "thesis",
+         "countercase",
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.news.facts.events.1.title",
+         "joint_evidence.domains.news.facts.events.2.title",
+         "joint_evidence.domains.news.facts.events.5.title"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "flow",
+      "title": "资金流",
+      "status": "observed",
+      "limitations": [
+       "供应商主力分类估算，非全部机构净买入；单日净流不单独决定评级"
+      ],
+      "origins": [
+       {
+        "provider": "eastmoney",
+        "source_url": "https://push2.eastmoney.com/api/qt/ulist.np/get?secids=0.300530&fields=f12%2Cf13%2Cf14%2Cf62%2Cf184%2Cf124&fltt=2&invt=2&np=1"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "支持",
+        "reason": "供应商口径单日净流入566706、占比0.99，提供有限承接线索；不能证明持续机构买入或反转因果，反证仍为10分。",
+        "effects": [
+         "thesis",
+         "countercase"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.flow.facts.main_net_cny",
+         "joint_evidence.domains.flow.facts.main_net_pct"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "支持",
+        "reason": "供应商口径单日主力净流入566706元、占比0.99，提供有限买盘支持；与五日下跌并存不构成数据冲突，也不能证明反转因果。",
+        "effects": [
+         "thesis",
+         "countercase"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.flow.facts.main_net_cny",
+         "joint_evidence.domains.flow.facts.main_net_pct"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "fundamental",
+      "title": "基本面",
+      "status": "limited",
+      "limitations": [
+       "供应商采集快照；未验证最新财报公告日、口径可比性与三表，不能签中长期价值通过",
+       "外部分析师预期不能替代冻结的原目标；不得年化或混币种"
+      ],
+      "origins": [
+       {
+        "provider": "yahoo",
+        "source_url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/300530.SZ"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "混合",
+        "reason": "收入增长提供有限支持，但亏损与负经营现金流构成更强经营反证；未经核实三表，不能确认恢复，也不据此硬否决短期结构。",
+        "effects": [
+         "facts",
+         "thesis",
+         "countercase"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.fundamental.facts.revenueGrowth",
+         "joint_evidence.domains.fundamental.facts.profitMargins",
+         "joint_evidence.domains.fundamental.facts.operatingCashflow"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "混合",
+        "reason": "收入增长与负利润率、负经营现金流并存，基本面托底不足；供应商快照非已核实三表，反证未化解但不直接否定短线条件机会。",
+        "effects": [
+         "facts",
+         "thesis",
+         "countercase"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.fundamental.facts.revenueGrowth",
+         "joint_evidence.domains.fundamental.facts.profitMargins",
+         "joint_evidence.domains.fundamental.facts.operatingCashflow"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "valuation",
+      "title": "估值与空间",
+      "status": "limited",
+      "limitations": [
+       "供应商采集快照；未验证最新财报公告日、口径可比性与三表，不能签中长期价值通过",
+       "外部分析师预期不能替代冻结的原目标；不得年化或混币种"
+      ],
+      "origins": [
+       {
+        "provider": "yahoo",
+        "source_url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/300530.SZ"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "反对",
+        "reason": "市净率39.86且每股收益为负，不支持估值安全垫；供应商快照不能独立确认高估幅度，短期兑现仍依原止盈带检验。",
+        "effects": [
+         "thesis",
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.valuation.facts.priceToBook",
+         "joint_evidence.domains.valuation.facts.trailingEps"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "反对",
+        "reason": "市净率39.86且每股收益为负，不支持低估托底；快照不决定短期目标，但使技术回踩不能借估值理由提高周期或风险评价。",
+        "effects": [
+         "thesis",
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.valuation.facts.priceToBook",
+         "joint_evidence.domains.valuation.facts.trailingEps"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "validation",
+      "title": "历史与前瞻验证",
+      "status": "observed",
+      "limitations": [
+       "当前策略单票历史模拟，与技术面共享日线；不是独立样本外或实盘胜率；不足样本不能称已验证正期望"
+      ],
+      "origins": [
+       {
+        "provider": "yahoo",
+        "source_asof": "2026-09-11"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "阻断",
+        "reason": "一次设置零完成且无前瞻样本，阻断正期望认证；历史连续不等于策略有效，与技术同源，周期和反证均不能升至15分。",
+        "effects": [
+         "countercase",
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.validation.facts.setup_n",
+         "joint_evidence.domains.validation.facts.settled_n",
+         "joint_evidence.domains.validation.facts.prospective_out_of_sample"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "阻断",
+        "reason": "仅一个方案、零已结算，样本不足阻断正期望认证；日线筛查通过不等于路径验证，因此反证及周期仍为10分，风险框架另评。",
+        "effects": [
+         "countercase",
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.validation.facts.setup_n",
+         "joint_evidence.domains.validation.facts.settled_n",
+         "joint_evidence.domains.validation.facts.status"
+        ]
+       }
+      },
+      "independent_votes": false
+     }
+    ],
+    "capital_path": {
+     "kind": "conditional_target_algebra",
+     "currency": "USD",
+     "goal_basis": "整个本月目标；未读取实际收益，不能称剩余目标",
+     "proposed_unit_count": null,
+     "actual_cash": null,
+     "expected_profit": null,
+     "target_progress_contribution": 0,
+     "guaranteed": false,
+     "assumptions": [
+      "只有原进场上沿成交且原止盈下沿兑现时成立；两者均未假定会发生",
+      "仅沿用原合同费用/滑点假设，尚未计账户税费、汇兑及额外跳空损失",
+      "美元等值名义本金不是本币可买金额或股数；整手、可用余额和汇率交月度六项核验"
+     ],
+     "cost_assumption": "买入0.5%＋卖出0.5%，合并手续费与滑点假设；不是实际券商报价；未计个人税费、汇率、股息",
+     "status": "CONDITIONAL_ONLY",
+     "objective_usd": 200,
+     "nominal_capital_usd_equivalent": 1559.68,
+     "modeled_risk_to_cover_goal_usd": 131.57,
+     "original_net_upside_pct": 12.82315416781125,
+     "original_net_reward_risk": 1.5201266395296247,
+     "policy_per_trade_risk_usd": 62.5,
+     "risk_limited_one_trade_target_scenario_usd": 95.01,
+     "one_trade_scenario_shortfall_usd": 104.99,
+     "risk_budget_shortfall_usd": 69.07,
+     "can_cover_goal_under_risk_scenario": false
+    },
+    "book_pass_n": 5,
+    "book_required": 8,
+    "evidence_refs": [
+     {
+      "field": "last",
+      "value": 19.93
+     },
+     {
+      "field": "market_evidence.quote_difference_pct",
+      "value": 2e-06
+     },
+     {
+      "field": "chg60",
+      "value": 9.7467
+     },
+     {
+      "field": "market_evidence.ma60",
+      "value": 18.4258
+     },
+     {
+      "field": "market_evidence.entry_stages_required",
+      "value": 2
+     },
+     {
+      "field": "market_evidence.watch_price_ceiling",
+      "value": 19.56
+     },
+     {
+      "field": "joint_evidence.domains.technical.facts.return5_pct",
+      "value": -7.17279486460356
+     },
+     {
+      "field": "joint_evidence.domains.fundamental.facts.operatingCashflow",
+      "value": -43743552
+     },
+     {
+      "field": "joint_evidence.domains.flow.facts.main_net_pct",
+      "value": 0.99
+     },
+     {
+      "field": "market_evidence.target_sessions",
+      "value": 10
+     },
+     {
+      "field": "market_evidence.watch_target_required_ceiling_pct",
+      "value": 15.0307
+     },
+     {
+      "field": "market_evidence.horizon_mfe_q80_pct",
+      "value": 24.3306
+     },
+     {
+      "field": "market_evidence.previous_high",
+      "value": 20.94
+     },
+     {
+      "field": "conditional_path_evidence.setup_n",
+      "value": 1
+     },
+     {
+      "field": "conditional_path_evidence.settled_n",
+      "value": 0
+     },
+     {
+      "field": "stop",
+      "value": 18.09
+     },
+     {
+      "field": "tharp_risk.initial_net_r",
+      "value": 1.65825
+     },
+     {
+      "field": "tharp_risk.position_limit_pct_nav",
+      "value": 5.927273
+     },
+     {
+      "field": "profit_contract.net_reward_risk",
+      "value": 1.5201266395296247
+     }
+    ],
+    "remaining_central_conditions": [
+     "等待新的入场确认点",
+     "量价确认",
+     "萨普：同策略扣费R期望",
+     "兑现周期仍需确认",
+     "反证尚待处理"
+    ],
+    "new_order_authority": false,
+    "new_grade_authority": false,
+    "actual_fill": false,
+    "target_progress_contribution": 0,
+    "predictive_win_probability": null,
+    "rank_basis": {
+     "monthly_passed": 0,
+     "central_tier_order": 2,
+     "original_audit_score": 62.5,
+     "central_remaining_count": 5
+    },
+    "selection_reason": {
+     "slot": 2,
+     "reason": "同质量层优先中港研究",
+     "quality_frontier_size": 31,
+     "remaining_eligible": 31
+    },
+    "market_research_rank": 2,
+    "research_role": "研究替补；不增加开仓名额"
+   },
+   {
+    "code": "301321.SZ",
+    "name": "翰博高新",
+    "market": "A股",
+    "research_status": "RESEARCH_ONLY",
+    "central_tier": "1A",
+    "audit_score": 62.5,
+    "audit_id": "b6bcd8e02f2e876510a5d49eea001d1c87527f78b07b25d45c7f8d34b8da2364",
+    "master_ref": {
+     "version": "stock-reference-v1",
+     "code": "301321.SZ",
+     "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+     "central_generated_at": "2026-09-13 09:55（北京时间）",
+     "audit_id": "b6bcd8e02f2e876510a5d49eea001d1c87527f78b07b25d45c7f8d34b8da2364",
+     "audit_score": 62.5,
+     "tier": "1A",
+     "horizon": "short",
+     "contract_id": "25b4d91e77fbdb9482b4aa043e5de59886011c74b3a8273655d982c33ad568dc",
+     "reference_id": "e4d36f4f0d154677d07fe05f22c5484346aab01d3ab8a7e3c3b49c5340083957",
+     "no_grade_authority": true
+    },
+    "original_plan": {
+     "entry_range": [
+      40.2468,
+      42.09
+     ],
+     "stop": 39.02,
+     "take_profit_range": [
+      47.98,
+      48.23
+     ],
+     "last": 43.98,
+     "promotion_trigger": "两阶段等待：连续两个新完整交易日收盘均在[40.2468, 42.0900]观察区间，最低价均>39.0200且第二日收盘≥第一日；随后收盘突破前一日最高价，成交量/此前20日均量≥1.2，实际入场价在[40.2468, 42.0900]。仅以后续新日线验证，当前未触发；若不能同时满足则不进入。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+     "invalidation": "收盘跌破既定结构失效线39.0200，本轮短期结构失效；不外推长期价值",
+     "deadline": "2026-10-11T15:00:00+08:00",
+     "horizon": "short",
+     "holding_sessions": 10,
+     "net_upside_pct": 12.859555867608973,
+     "net_reward_risk": 1.565119189768526,
+     "evidence_asof": "2026-09-11T15:00:00+08:00",
+     "cost_assumption": "买入0.5%＋卖出0.5%，合并手续费与滑点假设；不是实际券商报价；未计个人税费、汇率、股息"
+    },
+    "monthly_fit": {
+     "month_end": "2026-09-30T23:59:59+08:00",
+     "original_deadline": "2026-10-11T15:00:00+08:00",
+     "original_deadline_within_month": false,
+     "required_holding_sessions": 10,
+     "remaining_weekdays_upper_bound": 13,
+     "nominal_window_can_fit": true,
+     "status": "MONTH_SPECIFIC_REVIEW_NEEDED",
+     "reason": "名义工作日可能容纳原持有期，仍缺实际入场日、交易所假期与本月兑现证据",
+     "deadline_boundary": "原期限未改写；原目标不得因月末提前而视为已经重新验证",
+     "new_order_authority": false
+    },
+    "monthly_checks": [
+     {
+      "id": "trend",
+      "name": "趋势与可执行触发",
+      "status": "MISSING",
+      "required": "本月成长趋势策略：价格在同口径MA50上方、触发及相对强弱有来源；未触发只研究",
+      "reason": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "earnings",
+      "name": "盈利与营收",
+      "status": "MISSING",
+      "required": "可比期间EPS为正、同比增长且较前期加速，营收正增长；官方财报日期/币种/非经常项一致",
+      "reason": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "valuation",
+      "name": "估值与同周期空间",
+      "status": "MISSING",
+      "required": "盈利/现金流估值及同周期目标有独立依据；分析师评级/15%空间仅辅助，不强制购买数据，不直接用年度目标作月止盈",
+      "reason": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "catalyst",
+      "name": "本月事件证据",
+      "status": "MISSING",
+      "required": "月内日期及官方出处可核验；事件存在不等于利好方向。未预审的财报二元风险不得持仓穿越",
+      "reason": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "volatility",
+      "name": "失效位与波动",
+      "status": "MISSING",
+      "required": "结构失效价先锁定；用ATR、历史跳空和流动性核风险。beta只辅助，不能用1.2分界替代短期价格风险",
+      "reason": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "lot",
+      "name": "交易单位与仓位",
+      "status": "MISSING",
+      "required": "用该证券当期最小申报量/增量及真实费用、币种算股数，向下取整。不能为买够一手挪近结构止损",
+      "reason": "Invalid isoformat string: ''"
+     }
+    ],
+    "gaps": [
+     {
+      "id": "monthly_review",
+      "title": "需要本月独立研判",
+      "detail": "已有GPT意见只审原短期合同，不能代签本月目标路径"
+     },
+     {
+      "id": "monthly_trend",
+      "title": "趋势与可执行触发",
+      "detail": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "monthly_earnings",
+      "title": "盈利与营收",
+      "detail": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "monthly_valuation",
+      "title": "估值与同周期空间",
+      "detail": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "monthly_catalyst",
+      "title": "本月事件证据",
+      "detail": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "monthly_volatility",
+      "title": "失效位与波动",
+      "detail": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "monthly_lot",
+      "title": "交易单位与仓位",
+      "detail": "Invalid isoformat string: ''"
+     },
+     {
+      "id": "original_deadline",
+      "title": "原期限跨月",
+      "detail": "原目标仍归原期限；提前到本月末兑现须独立论证，不自动换期限"
+     },
+     {
+      "id": "risk_target_shortfall",
+      "title": "单笔风险预算下目标不足",
+      "detail": "原风险比情景最多对应 97.82 美元，距整月目标差 102.18 美元；不能据此加仓或放宽风险"
+     },
+     {
+      "id": "entry",
+      "title": "现价未在原入场区间",
+      "detail": "等待原触发；现价不能直接套用原进场空间"
+     },
+     {
+      "id": "central_execution",
+      "title": "中央没有当前新开仓许可",
+      "detail": "保留原等级与研究价值；本月研究排序不授交易权"
+     }
+    ],
+    "reviews": {
+     "primary": {
+      "model": "gpt-6-astra",
+      "completed_at": "2026-09-13 07:02（北京时间）",
+      "original_scope": "原短期合同审核；不是本月专门裁决",
+      "thesis_verdict": "不否定",
+      "execution_status": "等触发",
+      "risk_veto": "无",
+      "why": "短期有条件关注逻辑仍成立，但反证与周期路径尚未充分验证，不能通过。43.98高于观察上沿42.09，量比0.7538未达确认要求，且没有后续两阶段新日线，故等触发。合同齐全，未发现足以认定事件、组合、数据冲突或公司质量硬伤的证据；本复核不代签独立经典规则闸。",
+      "counterargument": "价格位于主要均线上方且供应商主力净流为正，是支持回踩后恢复上涨的最强证据；但不能抵消弱势板块代理与零结算样本，更不能证明10交易日内能穿越前高阻力。",
+      "criteria": [
+       {
+        "id": "facts",
+        "score": 15,
+        "reason": "报价与日线截至2026-09-11，独立报价一致；价格、成本及期限合同齐全。财务仅供应商快照，新闻仅标题，批次时间不能证明新增行情。",
+        "evidence_fields": [
+         "last",
+         "market_evidence.quote_difference_pct"
+        ]
+       },
+       {
+        "id": "thesis",
+        "score": 15,
+        "reason": "价格高于20日及60日均线，支持趋势回落候选；两阶段企稳后放量突破的条件路径明确。只认可有条件关注逻辑，尚不认可已企稳或已验证正期望。",
+        "evidence_fields": [
+         "last",
+         "market_evidence.ma20",
+         "market_evidence.ma60"
+        ]
+       },
+       {
+        "id": "countercase",
+        "score": 10,
+        "reason": "最强反例是回落继续演变为趋势破坏：板块代理疲弱、当日下跌且量能未确认。主力净流估算不能消除该反例，历史没有结算交易可检验其发生后的收益分布。",
+        "evidence_fields": [
+         "market_evidence.last_day_change_pct",
+         "vol_ratio",
+         "conditional_path_evidence.settled_n"
+        ]
+       },
+       {
+        "id": "horizon",
+        "score": 10,
+        "reason": "止盈带来自20日高点，持有10交易日且受原30自然日截止约束；幅度分位仅说明历史波动空间。等待两阶段确认、穿越46.39附近阻力再重测止盈带的完整路径没有结算样本支持。",
+        "evidence_fields": [
+         "market_evidence.horizon_mfe_q80_pct",
+         "market_evidence.previous_high",
+         "profit_contract.holding_sessions",
+         "conditional_path_evidence.settled_n"
+        ]
+       },
+       {
+        "id": "risk",
+        "score": 15,
+        "reason": "原止损、净初始R及研究仓位上限明确，收盘触线后下一可交易开盘退出。计划风险不保证最大损失；上沿净收益风险比有限，实际组合、成交约束及独立规则闸仍须另审。",
+        "evidence_fields": [
+         "stop",
+         "tharp_risk.initial_net_r",
+         "tharp_risk.position_limit_pct_nav",
+         "profit_contract.net_reward_risk"
+        ]
+       }
+      ]
+     },
+     "counteraudit": {
+      "model": "gpt-6-astra",
+      "completed_at": "2026-09-13 07:02（北京时间）",
+      "original_scope": "原短期合同审核；不是本月专门裁决",
+      "thesis_verdict": "不否定",
+      "execution_status": "等触发",
+      "risk_veto": "无",
+      "why": "保留有条件短期关注逻辑，但反证与10日兑现路径未解决，不能通过。43.98高于42.09观察上限，量比0.7538，尚无后续两阶段确认。合同齐备不代表执行成熟，独立经典闸仍须另算。",
+      "counterargument": "价格仍在20日、60日均线上且有单日净流入，回落可能只是正常整理；但这些不能排除历史反复入场前失效，也不能证明弱市场中能穿越46.39并重测前高。",
+      "criteria": [
+       {
+        "id": "facts",
+        "score": 15,
+        "reason": "报价与独立日线末价一致，行情证据截至9月11日；财务仅供应商快照，采集和批次时间不能更新行情时点。未发现可确认的实质数据冲突。",
+        "evidence_fields": [
+         "market_evidence.quote_difference_pct"
+        ]
+       },
+       {
+        "id": "thesis",
+        "score": 15,
+        "reason": "价格高于20日均线，60日收益为正，支持有条件回踩关注。原46.39突破方案已明确撤换为两阶段新确认，不能沿用原突破条件宣称触发；当前尚在观察上限之外。",
+        "evidence_fields": [
+         "last",
+         "market_evidence.ma20",
+         "chg60",
+         "market_evidence.watch_price_ceiling"
+        ]
+       },
+       {
+        "id": "countercase",
+        "score": 10,
+        "reason": "最强反证是回落继续发展而未形成可成交企稳；历史15次方案中9次入场前失效，零次结算，弱势相关代理与亏损快照增加争议，尚无证据排除。",
+        "evidence_fields": [
+         "conditional_path_evidence.setup_n",
+         "conditional_path_evidence.invalidated_before_entry_n",
+         "conditional_path_evidence.settled_n"
+        ]
+       },
+       {
+        "id": "horizon",
+        "score": 10,
+        "reason": "目标来自20日高点，持有10交易日且等待消耗原30天预算。幅度分位只说明历史波幅；零结算路径不能证明经46.39附近阻力后按期到达止盈带，关键路径仍缺验证。",
+        "evidence_fields": [
+         "profit_contract.holding_sessions",
+         "market_evidence.previous_high",
+         "conditional_path_evidence.settled_n",
+         "market_evidence.horizon_mfe_q80_pct"
+        ]
+       },
+       {
+        "id": "risk",
+        "score": 15,
+        "reason": "止损、下一开盘退出、期限和研究仓位齐备；净收益风险比仅1.565119189768526，不能当交易期望。未提供旧止损记录，不能证实曾下调；实际组合及跳空成交风险仍须执行前核对。",
+        "evidence_fields": [
+         "stop",
+         "tharp_risk.position_limit_pct_nav",
+         "profit_contract.net_reward_risk"
+        ]
+       }
+      ]
+     }
+    },
+    "eight_domains": [
+     {
+      "id": "technical",
+      "title": "技术与量价",
+      "status": "observed",
+      "limitations": [
+       "历史位置不是企业估值；原合同目标和失效价保持"
+      ],
+      "origins": [
+       {
+        "provider": "sina",
+        "source_asof": "2026-09-11"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "混合",
+        "reason": "价格高于20日及60日均线支持条件回踩，但当日下跌、量比不足，企稳未确认。逻辑可保留，反证项不能据此通过。",
+        "effects": [
+         "facts",
+         "thesis",
+         "countercase",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.technical.facts.last",
+         "joint_evidence.domains.technical.facts.ma20",
+         "joint_evidence.domains.technical.facts.ma60",
+         "joint_evidence.domains.technical.facts.cross_period_observations.volume_ratio20"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "混合",
+        "reason": "价格高于均线支持回踩关注，但单日回落、缩量未构成企稳确认；支持逻辑项，保留反证争议，不能据此现买。",
+        "effects": [
+         "thesis",
+         "countercase"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.technical.facts.last",
+         "joint_evidence.domains.technical.facts.ma20",
+         "joint_evidence.domains.technical.facts.cross_period_observations.volume_ratio20"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "sector",
+      "title": "板块轮动",
+      "status": "observed",
+      "limitations": [
+       "走势相关性代理，不能当作行业归属、因果或第二份独立公司事实"
+      ],
+      "origins": [
+       {
+        "provider": "tencent",
+        "source_url": "https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=sh512760,day,,,640,qfq",
+        "source_asof": "2026-09-11"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "反对",
+        "reason": "代理20日收益为负且低于20日均线，削弱重测前高的环境支持；相关性不代表行业归属或因果，反证与周期仍待验证。",
+        "effects": [
+         "thesis",
+         "countercase",
+         "horizon"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.sector.facts.return20_pct",
+         "joint_evidence.domains.sector.facts.above_ma20",
+         "joint_evidence.domains.sector.facts.correlation"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "反对",
+        "reason": "相关代理20日下跌且未在20日线上，对短期重测构成逆风；仅为走势相关代理，不能当作本公司行业因果。",
+        "effects": [
+         "thesis",
+         "countercase",
+         "horizon"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.sector.facts.return20_pct",
+         "joint_evidence.domains.sector.facts.correlation",
+         "joint_evidence.domains.sector.facts.above_ma20"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "market",
+      "title": "市场环境",
+      "status": "observed",
+      "limitations": [
+       "已覆盖板块ETF环境，不等于全市场广度；同源不重复加分"
+      ],
+      "origins": [
+       {
+        "provider": "tencent",
+        "source_url": "https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=sh512760,day,,,640,qfq",
+        "source_asof": "2026-09-11"
+       },
+       {
+        "provider": "tencent",
+        "source_url": "https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=sh512690,day,,,640,qfq",
+        "source_asof": "2026-09-11"
+       },
+       {
+        "provider": "tencent",
+        "source_url": "https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=sh512010,day,,,640,qfq",
+        "source_asof": "2026-09-11"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "混合",
+        "reason": "所列代理短期普遍走弱，银行代理20日表现相对较强，环境存在分化；不能据此认定全市场广度，周期项保留争议。",
+        "effects": [
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.market.facts.proxies.0.chg5d",
+         "joint_evidence.domains.market.facts.proxies.5.chg20d"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "混合",
+        "reason": "消费等代理走弱，银行代理20日仍上涨，环境分化而偏弱；削弱期限兑现信心，但不足单独触发风险否决。",
+        "effects": [
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.market.facts.proxies.0.chg20d",
+         "joint_evidence.domains.market.facts.proxies.5.chg20d"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "news",
+      "title": "新闻与催化",
+      "status": "limited",
+      "limitations": [
+       "仅源页面标题与精确代码关联，未阅读正文核实影响；有限搜索，无结果不代表不存在风险"
+      ],
+      "origins": [
+       {
+        "provider": "eastmoney",
+        "source_url": "https://np-anotice-stock.eastmoney.com/api/security/ann?sr=-1&page_size=30&page_index=1&ann_type=A&client_source=web&stock_list=301321&f_node=0&s_node=0"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "中性",
+        "reason": "担保、关联投资及减值仅有公告标题，无法确认金额和实际影响。不能认证利好或事件否决，反证覆盖仍不充分。",
+        "effects": [
+         "thesis",
+         "countercase",
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.news.facts.events.1.title",
+         "joint_evidence.domains.news.facts.events.2.title",
+         "joint_evidence.domains.news.facts.events.15.title"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "中性",
+        "reason": "存在担保及减值公告标题，正文金额和影响未核实；既不能认定催化，也不足确认事件否决，反证仍留缺口。",
+        "effects": [
+         "countercase",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.news.facts.events.1.title",
+         "joint_evidence.domains.news.facts.events.15.title"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "flow",
+      "title": "资金流",
+      "status": "observed",
+      "limitations": [
+       "供应商主力分类估算，非全部机构净买入；单日净流不单独决定评级"
+      ],
+      "origins": [
+       {
+        "provider": "eastmoney",
+        "source_url": "https://push2delay.eastmoney.com/api/qt/ulist.np/get?secids=0.301321&fields=f12%2Cf13%2Cf14%2Cf62%2Cf184%2Cf124&fltt=2&invt=2&np=1"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "支持",
+        "reason": "供应商口径单日主力净流为正，对回踩承接提供有限支持；与当日价格下跌并存，不能证明机构持续买入或消除反证。",
+        "effects": [
+         "thesis",
+         "countercase"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.flow.facts.main_net_cny",
+         "joint_evidence.domains.flow.facts.main_net_pct"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "支持",
+        "reason": "供应商口径单日主力净流为正，提供有限承接证据；不能等同机构持续买入，无法消除价格回落的最强反证。",
+        "effects": [
+         "thesis",
+         "countercase"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.flow.facts.main_net_cny",
+         "joint_evidence.domains.flow.facts.main_net_pct"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "fundamental",
+      "title": "基本面",
+      "status": "limited",
+      "limitations": [
+       "供应商采集快照；未验证最新财报公告日、口径可比性与三表，不能签中长期价值通过",
+       "外部分析师预期不能替代冻结的原目标；不得年化或混币种"
+      ],
+      "origins": [
+       {
+        "provider": "yahoo",
+        "source_url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/301321.SZ"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "混合",
+        "reason": "营收增长及经营现金流为正，但利润率、净资产收益率为负。快照未核实三表，增加反证，尚不足认定短期交易质量硬伤。",
+        "effects": [
+         "facts",
+         "thesis",
+         "countercase"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.fundamental.facts.revenueGrowth",
+         "joint_evidence.domains.fundamental.facts.operatingCashflow",
+         "joint_evidence.domains.fundamental.facts.profitMargins",
+         "joint_evidence.domains.fundamental.facts.returnOnEquity"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "混合",
+        "reason": "收入增长及正经营现金流提供支持，负利润率与负ROE形成反证；快照未核实三表，不能提升短期路径确信度。",
+        "effects": [
+         "facts",
+         "thesis",
+         "countercase"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.fundamental.facts.revenueGrowth",
+         "joint_evidence.domains.fundamental.facts.operatingCashflow",
+         "joint_evidence.domains.fundamental.facts.profitMargins",
+         "joint_evidence.domains.fundamental.facts.returnOnEquity"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "valuation",
+      "title": "估值与空间",
+      "status": "limited",
+      "limitations": [
+       "供应商采集快照；未验证最新财报公告日、口径可比性与三表，不能签中长期价值通过",
+       "外部分析师预期不能替代冻结的原目标；不得年化或混币种"
+      ],
+      "origins": [
+       {
+        "provider": "yahoo",
+        "source_url": "https://query2.finance.yahoo.com/v10/finance/quoteSummary/301321.SZ"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "反对",
+        "reason": "市净率7.4065337与负每股收益不支持便宜的估值叙事；有限快照不能认证价值，短期空间仍只能依据原止盈合同。",
+        "effects": [
+         "thesis",
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.valuation.facts.priceToBook",
+         "joint_evidence.domains.valuation.facts.trailingEps"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "反对",
+        "reason": "市净率7.4065337且每股收益为负，不提供低估保护；快照口径有限，不能据此判定公司质量硬伤或替换短期目标。",
+        "effects": [
+         "thesis",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.valuation.facts.priceToBook",
+         "joint_evidence.domains.valuation.facts.trailingEps"
+        ]
+       }
+      },
+      "independent_votes": false
+     },
+     {
+      "id": "validation",
+      "title": "历史与前瞻验证",
+      "status": "observed",
+      "limitations": [
+       "当前策略单票历史模拟，与技术面共享日线；不是独立样本外或实盘胜率；不足样本不能称已验证正期望"
+      ],
+      "origins": [
+       {
+        "provider": "sina",
+        "source_asof": "2026-09-11"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "阻断",
+        "reason": "15个设置没有结算交易，无法认证正期望或完整期限路径；仅阻断验证通过，不能把未触发计作亏损，且与技术日线同源。",
+        "effects": [
+         "countercase",
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.validation.facts.setup_n",
+         "joint_evidence.domains.validation.facts.settled_n",
+         "joint_evidence.domains.validation.facts.minimum_settled_n"
+        ]
+       },
+       "counteraudit": {
+        "conclusion": "中性",
+        "reason": "15次方案没有结算样本，正期望未获验证；与技术面共享日线不能重复增信，反证和周期项因此保留10分。",
+        "effects": [
+         "countercase",
+         "horizon",
+         "risk"
+        ],
+        "evidence_fields": [
+         "joint_evidence.domains.validation.facts.setup_n",
+         "joint_evidence.domains.validation.facts.settled_n",
+         "joint_evidence.domains.validation.facts.minimum_settled_n"
+        ]
+       }
+      },
+      "independent_votes": false
+     }
+    ],
+    "capital_path": {
+     "kind": "conditional_target_algebra",
+     "currency": "USD",
+     "goal_basis": "整个本月目标；未读取实际收益，不能称剩余目标",
+     "proposed_unit_count": null,
+     "actual_cash": null,
+     "expected_profit": null,
+     "target_progress_contribution": 0,
+     "guaranteed": false,
+     "assumptions": [
+      "只有原进场上沿成交且原止盈下沿兑现时成立；两者均未假定会发生",
+      "仅沿用原合同费用/滑点假设，尚未计账户税费、汇兑及额外跳空损失",
+      "美元等值名义本金不是本币可买金额或股数；整手、可用余额和汇率交月度六项核验"
+     ],
+     "cost_assumption": "买入0.5%＋卖出0.5%，合并手续费与滑点假设；不是实际券商报价；未计个人税费、汇率、股息",
+     "status": "CONDITIONAL_ONLY",
+     "objective_usd": 200,
+     "nominal_capital_usd_equivalent": 1555.26,
+     "modeled_risk_to_cover_goal_usd": 127.79,
+     "original_net_upside_pct": 12.859555867608973,
+     "original_net_reward_risk": 1.565119189768526,
+     "policy_per_trade_risk_usd": 62.5,
+     "risk_limited_one_trade_target_scenario_usd": 97.82,
+     "one_trade_scenario_shortfall_usd": 102.18,
+     "risk_budget_shortfall_usd": 65.29,
+     "can_cover_goal_under_risk_scenario": false
+    },
+    "book_pass_n": 5,
+    "book_required": 8,
+    "evidence_refs": [
+     {
+      "field": "last",
+      "value": 43.98
+     },
+     {
+      "field": "market_evidence.quote_difference_pct",
+      "value": 0.0
+     },
+     {
+      "field": "market_evidence.ma20",
+      "value": 41.55
+     },
+     {
+      "field": "market_evidence.ma60",
+      "value": 39.6607
+     },
+     {
+      "field": "market_evidence.last_day_change_pct",
+      "value": -3.9318
+     },
+     {
+      "field": "vol_ratio",
+      "value": 0.7538
+     },
+     {
+      "field": "conditional_path_evidence.settled_n",
+      "value": 0
+     },
+     {
+      "field": "market_evidence.horizon_mfe_q80_pct",
+      "value": 19.8355
+     },
+     {
+      "field": "market_evidence.previous_high",
+      "value": 46.39
+     },
+     {
+      "field": "profit_contract.holding_sessions",
+      "value": 10
+     },
+     {
+      "field": "stop",
+      "value": 39.02
+     },
+     {
+      "field": "tharp_risk.initial_net_r",
+      "value": 3.47555
+     },
+     {
+      "field": "tharp_risk.position_limit_pct_nav",
+      "value": 6.085433
+     },
+     {
+      "field": "profit_contract.net_reward_risk",
+      "value": 1.565119189768526
+     },
+     {
+      "field": "market_evidence.watch_price_ceiling",
+      "value": 42.09
+     }
+    ],
+    "remaining_central_conditions": [
+     "等待新的入场确认点",
+     "量价确认",
+     "萨普：同策略扣费R期望",
+     "兑现周期仍需确认",
+     "反证尚待处理"
+    ],
+    "new_order_authority": false,
+    "new_grade_authority": false,
+    "actual_fill": false,
+    "target_progress_contribution": 0,
+    "predictive_win_probability": null,
+    "rank_basis": {
+     "monthly_passed": 0,
+     "central_tier_order": 2,
+     "original_audit_score": 62.5,
+     "central_remaining_count": 5
+    },
+    "selection_reason": {
+     "slot": 3,
+     "reason": "同质量层优先中港研究",
+     "quality_frontier_size": 30,
+     "remaining_eligible": 30
+    },
+    "market_research_rank": 3
+   }
+  ],
+  "primary_research_code": "688002.SS",
+  "backup_research_code": "300530.SZ",
+  "excluded_counts": {
+   "无同票公开事实或属于私有持仓": 103,
+   "身份或原行情时效未通过": 602,
+   "当前双审显示契约已过期或不完整": 2,
+   "当前真实双审或书理回算未通过": 4,
+   "原审核有明确否决，不列主研究候选": 1,
+   "非中美港普通股票": 1
+  },
+  "checked_central_rows": 815,
+  "model_calls": 0,
+  "new_cash_cost_cny": 0,
+  "reuses_existing_gpt_reviews": true,
+  "no_order_authority": true,
+  "no_grade_authority": true,
+  "public_safe": true,
+  "account_data_included": false,
+  "actual_target_progress": null,
+  "predictive_win_probability": null,
+  "input_id": "403c916bc63a0a8fec6ef1106ad3998bcbc591e494c0ffd78855f72002df109c"
+ },
+ "monthly_history": {
+  "version": "astra-monthly-history-v1",
+  "generated_at": "2026-09-13T13:35:43.148338+08:00",
+  "current_month": "2026-09",
+  "months": [
+   {
+    "month": "2026-09",
+    "first_observed_at": "2026-09-12T22:46:15.606630+08:00",
+    "last_checked_at": "2026-09-13T13:35:43.148338+08:00",
+    "current_policy": {
+     "version": "astra-monthly-v2-usd200",
+     "monthly_target": 200,
+     "target_currency": "USD"
+    },
+    "policy_versions": [
+     {
+      "version": "astra-monthly-v2-usd200",
+      "monthly_target": 200,
+      "target_currency": "USD",
+      "observed_at": "2026-09-12T22:46:15.606630+08:00"
+     }
+    ],
+    "ledger_state": "LEDGER_UNVERIFIED",
+    "actual_result_unknown": true,
+    "candidates": [
+     {
+      "code": "688002.SS",
+      "market": "A股",
+      "central_tier": "1A",
+      "audit_score": 70
+     },
+     {
+      "code": "300530.SZ",
+      "market": "A股",
+      "central_tier": "1A",
+      "audit_score": 62.5
+     },
+     {
+      "code": "301321.SZ",
+      "market": "A股",
+      "central_tier": "1A",
+      "audit_score": 62.5
+     }
+    ],
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "research_input_id": "403c916bc63a0a8fec6ef1106ad3998bcbc591e494c0ffd78855f72002df109c"
+   }
+  ],
+  "private_progress_redacted": true,
+  "model_calls": 0,
+  "weekly_observation": {
+   "period_days": 7,
+   "research_changes": [
+    {
+     "at": "2026-09-12T22:46:15.606630+08:00",
+     "kind": "MONTH_OPENED",
+     "candidates_added": [
+      "2310.HK",
+      "3330.HK",
+      "600403.SS",
+      "661.HK",
+      "688002.SS",
+      "920718.BJ",
+      "DRD",
+      "PGY",
+      "SEPN"
+     ],
+     "candidates_removed": [],
+     "candidates_revised": [],
+     "research_input_id": "70b2e27d7daec7333017d1136be445c772f40acf734309c846d38b941a72ceb7",
+     "policy_version": "astra-monthly-v2-usd200",
+     "ledger_state": "LEDGER_UNVERIFIED",
+     "actual_result_unknown": true,
+     "factpack_id": "3b7309ff13bebc86803c1771f9b2ce668e70cef2468c57ef85ab6e68ac9b5ec1"
+    },
+    {
+     "at": "2026-09-12T23:01:33.977638+08:00",
+     "kind": "OBSERVATION_CHANGED",
+     "candidates_added": [],
+     "candidates_removed": [
+      "2310.HK",
+      "600403.SS",
+      "661.HK",
+      "DRD",
+      "PGY",
+      "SEPN"
+     ],
+     "candidates_revised": [],
+     "research_input_id": "9bfa4b3e4c6c9f1a62e13cc4bd996a52efa3b366118cef2fba033c3d653922cc",
+     "policy_version": "astra-monthly-v2-usd200",
+     "ledger_state": "LEDGER_UNVERIFIED",
+     "actual_result_unknown": true,
+     "factpack_id": "3b7309ff13bebc86803c1771f9b2ce668e70cef2468c57ef85ab6e68ac9b5ec1"
+    },
+    {
+     "at": "2026-09-13T07:26:07.527375+08:00",
+     "kind": "OBSERVATION_CHANGED",
+     "candidates_added": [
+      "301333.SZ"
+     ],
+     "candidates_removed": [
+      "3330.HK"
+     ],
+     "candidates_revised": [],
+     "research_input_id": "b0b310aa9bddee5c35bdf3a06bac2237b715520eeb0b479031b15db05f2ce9b6",
+     "policy_version": "astra-monthly-v2-usd200",
+     "ledger_state": "LEDGER_UNVERIFIED",
+     "actual_result_unknown": true,
+     "factpack_id": "e96bc67aae010ad8fd63c2bb3c226371a21f5093a3160b21041be8def1d2751f"
+    },
+    {
+     "at": "2026-09-13T08:55:12.838537+08:00",
+     "kind": "OBSERVATION_CHANGED",
+     "candidates_added": [
+      "300530.SZ",
+      "301321.SZ"
+     ],
+     "candidates_removed": [
+      "301333.SZ",
+      "920718.BJ"
+     ],
+     "candidates_revised": [],
+     "research_input_id": "f89e093a8a39c740af94a1e5ce1cbee194e31eb8e97db36f989da9ce47e8b462",
+     "policy_version": "astra-monthly-v2-usd200",
+     "ledger_state": "LEDGER_UNVERIFIED",
+     "actual_result_unknown": true,
+     "factpack_id": "38667f5ecb4cf5b7ea623ef8db0d24adb259805b9cc8896604e854ffd8852600"
+    }
+   ],
+   "rating_changes": [],
+   "evolution_reference": {
+    "generated_at": "2026-09-13T13:34:47.438884+08:00",
+    "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+    "source_generated_at": "2026-09-13 09:55（北京时间）"
+   },
+   "meaning": "记录研究名单和原评级演变；不等于成交结果或已验证的胜率提升"
+  },
+  "actual_progress_public": null,
+  "no_order_authority": true
+ },
+ "advisor": {
+  "version": "astra-monthly-advisor-v2-focus3",
+  "current": false,
+  "status": "NEEDS_REVIEW",
+  "reason": "本月或事实已变化、报告过期，或尚未完成专门GPT研判",
+  "month": "2026-09",
+  "input_id": "63fb2732b11d156f6592b71364a1044aa6e43a3eff4711e4535b0b5f643876dd",
+  "source_input_id": "403c916bc63a0a8fec6ef1106ad3998bcbc591e494c0ffd78855f72002df109c",
+  "factpack_id": "508282394d1ff50ab5e1a91b277c55ba8b21fdaa409b829210e74d7ec03f1e13",
+  "generated_at": "2026-09-12T23:03:00.926764+08:00",
+  "last_attempt_status": "BACKOFF",
+  "validation_status": null,
+  "original_schema_issue": null,
+  "projection_version": null,
+  "analysis": null,
+  "evidence": null,
+  "historical_analysis_available": true,
+  "historical_advisor": {
+   "month": "2026-09",
+   "generated_at": "2026-09-12T23:03:00.926764+08:00",
+   "input_id": "2abda8d94fe5048e82f783a0b074fdbede1cb3928ac5fd71e58ee9e13377863e",
+   "source_input_id": "9bfa4b3e4c6c9f1a62e13cc4bd996a52efa3b366118cef2fba033c3d653922cc",
+   "factpack_id": "3b7309ff13bebc86803c1771f9b2ce668e70cef2468c57ef85ab6e68ac9b5ec1",
+   "analysis": {
+    "version": "astra-monthly-advisor-v2-focus3",
+    "month": "2026-09",
+    "input_id": "2abda8d94fe5048e82f783a0b074fdbede1cb3928ac5fd71e58ee9e13377863e",
+    "assessment": "先补关键证据",
+    "summary": "按原条件路径的可核验程度排序，旧双审均不代表本月通过。名义窗口尚须扣除等待与休市，原期限不变。周月前瞻尚无核实结算，不能推算胜率或收益进度。预算内单笔情景均不足覆盖整月目标，不得靠叠加持仓、增加次数或放宽风险补差；资金与许可未核实，空仓合法。",
+    "evidence_ids": [
+     "POLICY",
+     "LEARNING",
+     "C01_WINDOW",
+     "C01_CAPITAL",
+     "C01_GAPS",
+     "C02_WINDOW",
+     "C02_CAPITAL",
+     "C02_DOMAIN_validation"
+    ],
+    "research_priority": [
+     {
+      "code": "688002.SS",
+      "stance": "优先研究",
+      "reason": "原回踩再确认条件明确，趋势与有限经营证据支持先核验。相较其余候选，本票未见港股候选所述历史执行缺陷，也没有北交所候选的全域签名缺口，故优先安排补证；优先级来自路径可核性，不沿用旧审核结论。",
+      "support_ids": [
+       "C01_PLAN",
+       "C01_PRIMARY",
+       "C01_DOMAIN_technical",
+       "C01_DOMAIN_fundamental",
+       "C03_DOMAIN_validation",
+       "C02_DOMAIN_technical",
+       "C02_DOMAIN_validation"
+      ],
+      "countercase": "放量下跌与弱势代理构成趋势转弱反例，单日分类净流入不能化解。新闻仅有标题，财务估值缺可比核验，历史模拟与技术同源且无结算；本月检查缺失，等待可能耗尽窗口，预算内情景亦不足覆盖整月目标。",
+      "counter_ids": [
+       "C01_COUNTERAUDIT",
+       "C01_DOMAIN_sector",
+       "C01_DOMAIN_market",
+       "C01_DOMAIN_flow",
+       "C01_DOMAIN_news",
+       "C01_DOMAIN_valuation",
+       "C01_DOMAIN_validation",
+       "C01_CHECKS"
+      ],
+      "monthly_tasks": [
+       {
+        "task_id": "trend",
+        "reason": "本月待有后续完整日线，逐项核对原回踩、企稳、突破及次开盘条件，同时反查放量转弱；不能以当前均线关系替代回落后的验证。",
+        "evidence_ids": [
+         "C01_PLAN",
+         "C01_COUNTERAUDIT",
+         "C01_DOMAIN_technical"
+        ]
+       },
+       {
+        "task_id": "monthly_target",
+        "reason": "本月须补实际交易日历与候选触发日，检验等待后能否容纳原持有期，并独立说明月内兑现依据；无法容纳即暂停本月路径，不提前改写原期限。",
+        "evidence_ids": [
+         "C01_WINDOW",
+         "C01_GAPS",
+         "C01_CAPITAL",
+         "POLICY"
+        ]
+       },
+       {
+        "task_id": "earnings",
+        "reason": "本月待补官方财报公告时点与可比营收、盈利及现金流，核对供应商快照和估值分母；缺件继续标缺，不把经营背景视为短期兑现证明。",
+        "evidence_ids": [
+         "C01_DOMAIN_fundamental",
+         "C01_DOMAIN_valuation",
+         "C01_CHECKS"
+        ]
+       },
+       {
+        "task_id": "execution_evidence",
+        "reason": "本月须在本地核实交易单位、可用资金、实际费用及执行许可，并检查跳空滑点是否仍受原风险预算约束；情景资金不能当作账户资金，账户原件不外传。",
+        "evidence_ids": [
+         "C01_CAPITAL",
+         "C01_GAPS",
+         "C01_CHECKS",
+         "POLICY"
+        ]
+       }
+      ],
+      "own_support_ids": [
+       "C01_PLAN",
+       "C01_PRIMARY",
+       "C01_DOMAIN_technical",
+       "C01_DOMAIN_fundamental"
+      ],
+      "comparison_refs": [
+       "C03_DOMAIN_validation",
+       "C02_DOMAIN_technical",
+       "C02_DOMAIN_validation"
+      ],
+      "comparison_note": "仅比较当前附录记载的证据缺口。港股的执行历史未核实不是已证实成交错误；本票未记载该项不等于执行已经核实。北交所全域缺口仅指八域附录签名，不能说原合同没有量价事实。"
+     },
+     {
+      "code": "3330.HK",
+      "stance": "补证后研究",
+      "reason": "趋势方向比首位候选更清晰，原条件合同也可逐项核验；但历史执行证据存在额外缺陷，当前量能未满足确认，资金流缺失且估值涉及币种口径，故先修复执行与验证证据，再投入深入研究。",
+      "support_ids": [
+       "C03_PLAN",
+       "C03_PRIMARY",
+       "C03_DOMAIN_technical",
+       "C01_DOMAIN_technical",
+       "C03_DOMAIN_fundamental"
+      ],
+      "countercase": "强势可能使原区间始终无法成交，回落又可能代表动能衰减。市场代理偏弱，关连交易影响未核，债务与混币估值仍待核对；历史无结算且执行未核实，不能因目标空间较大而提前排序或补足预算缺口。",
+      "counter_ids": [
+       "C03_COUNTERAUDIT",
+       "C03_DOMAIN_sector",
+       "C03_DOMAIN_market",
+       "C03_DOMAIN_news",
+       "C03_DOMAIN_flow",
+       "C03_DOMAIN_fundamental",
+       "C03_DOMAIN_valuation",
+       "C03_DOMAIN_validation"
+      ],
+      "monthly_tasks": [
+       {
+        "task_id": "prospective_validation",
+        "reason": "本月先反查历史方案的成交量、成交可行性及结算凭据，按周月总账保留待数据与待触发状态；共享日线不另算独立证据，无结算不认证正期望。",
+        "evidence_ids": [
+         "C03_DOMAIN_validation",
+         "C03_COUNTERAUDIT",
+         "LEARNING"
+        ]
+       },
+       {
+        "task_id": "trend",
+        "reason": "本月待补后续日线，核对原回踩企稳、放量突破及次开盘条件，重点区分健康回踩与动能衰减；保持原条件定义，不额外收紧企稳收盘要求。",
+        "evidence_ids": [
+         "C03_PLAN",
+         "C03_PRIMARY",
+         "C03_COUNTERAUDIT",
+         "C03_DOMAIN_technical"
+        ]
+       },
+       {
+        "task_id": "monthly_target",
+        "reason": "本月须核实港股实际交易窗口与等待耗时，补月内兑现及可比估值依据；原目标仍归原期限，费用和汇率假设须复核，不用目标空间代替路径证据。",
+        "evidence_ids": [
+         "C03_WINDOW",
+         "C03_CAPITAL",
+         "C03_DOMAIN_valuation",
+         "C03_GAPS"
+        ]
+       },
+       {
+        "task_id": "catalyst",
+        "reason": "本月待补关连收购及管理层变动公告正文，核对生效时点、条款与落空情景；标题不足以认定利好或硬性否决，也不能补齐盈利核验缺口。",
+        "evidence_ids": [
+         "C03_DOMAIN_news",
+         "C03_DOMAIN_fundamental",
+         "C03_CHECKS"
+        ]
+       }
+      ],
+      "own_support_ids": [
+       "C03_PLAN",
+       "C03_PRIMARY",
+       "C03_DOMAIN_technical",
+       "C03_DOMAIN_fundamental"
+      ],
+      "comparison_refs": [
+       "C01_DOMAIN_technical"
+      ],
+      "comparison_note": "仅比较同源同日技术背景：本票五日收益为正、原双审均支持，首位候选五日为负、原双审均混合。不是更高胜率、评级、成交许可，也不另计独立数据源。"
+     },
+     {
+      "code": "920718.BJ",
+      "stance": "暂停研究",
+      "reason": "原合同和旧审保留条件趋势观察依据，但各域均无已签名证据，本月检查也缺失，无法据此建立本月可核兑现路径。暂停深入研究，仅保留恢复研究所需的补证任务；不据此否定公司质量。",
+      "support_ids": [
+       "C02_PLAN",
+       "C02_PRIMARY",
+       "C02_DOMAIN_technical",
+       "C02_DOMAIN_validation",
+       "C02_CHECKS"
+      ],
+      "countercase": "狭窄区间可能无法同时容纳企稳、突破及次开盘，目标附近阻力亦未获穿越证据。当前放量不能提前满足未来触发；原期限跨月且等待挤压窗口，预算内情景不足，旧审核不能填补各域证据空白。",
+      "counter_ids": [
+       "C02_COUNTERAUDIT",
+       "C02_WINDOW",
+       "C02_GAPS",
+       "C02_CAPITAL",
+       "C02_DOMAIN_sector",
+       "C02_DOMAIN_market",
+       "C02_DOMAIN_news",
+       "C02_DOMAIN_flow"
+      ],
+      "monthly_tasks": [
+       {
+        "task_id": "trend",
+        "reason": "恢复研究前须补签技术域原始证据，逐项检验狭窄区间能否满足完整触发和次开盘条件，并反查阻力与环境；本月未补齐则保持暂停。",
+        "evidence_ids": [
+         "C02_PLAN",
+         "C02_COUNTERAUDIT",
+         "C02_DOMAIN_technical",
+         "C02_DOMAIN_sector",
+         "C02_DOMAIN_market"
+        ]
+       },
+       {
+        "task_id": "earnings",
+        "reason": "本月先补官方财报及可比营收、盈利和现金流口径，为基本面与估值建立可追溯依据；不得将旧审核中的趋势意见移作经营或估值证据。",
+        "evidence_ids": [
+         "C02_DOMAIN_fundamental",
+         "C02_DOMAIN_valuation",
+         "C02_CHECKS"
+        ]
+       },
+       {
+        "task_id": "monthly_target",
+        "reason": "恢复研究前须补实际交易日历、触发时点与月内兑现依据，保留原期限及风险上限；若等待后窗口不足，本月继续暂停，不以情景差额推动追加风险。",
+        "evidence_ids": [
+         "C02_WINDOW",
+         "C02_CAPITAL",
+         "C02_GAPS",
+         "POLICY"
+        ]
+       },
+       {
+        "task_id": "prospective_validation",
+        "reason": "本月追溯缺失域的来源、签名与时间，补同策略前瞻登记及失败证据；缺少历史实例不等于负期望，周月无核实结算也不能支持成功率推断。",
+        "evidence_ids": [
+         "C02_DOMAIN_validation",
+         "C02_COUNTERAUDIT",
+         "C02_DOMAIN_news",
+         "C02_DOMAIN_flow",
+         "LEARNING"
+        ]
+       }
+      ],
+      "own_support_ids": [
+       "C02_PLAN",
+       "C02_PRIMARY",
+       "C02_DOMAIN_technical",
+       "C02_DOMAIN_validation",
+       "C02_CHECKS"
+      ],
+      "comparison_refs": [],
+      "comparison_note": null
+     }
+    ],
+    "no_order_authority": true,
+    "no_grade_authority": true
+   },
+   "validation_status": "COMPARISON_REVIEWED",
+   "current": false,
+   "historical_input_verified": true,
+   "evidence": {
+    "POLICY": {
+     "code": null,
+     "field": "public_monthly_policy",
+     "value": {
+      "version": "astra-monthly-v2-usd200",
+      "monthly_target": 200,
+      "target_currency": "USD",
+      "monthly_risk_cap": 125,
+      "per_trade_risk_cap": 62.5,
+      "max_stops_per_month": 2,
+      "max_entries_per_month": 2,
+      "max_active_main_positions": 1,
+      "no_automatic_risk_increase": true,
+      "new_cash_budget_cny": 0
+     }
+    },
+    "LEARNING": {
+     "code": null,
+     "field": "public_learning",
+     "value": {
+      "version": "evolution-learning-v1",
+      "factpack_id": "3b7309ff13bebc86803c1771f9b2ce668e70cef2468c57ef85ab6e68ac9b5ec1",
+      "periods": [
+       {
+        "cadence": "week",
+        "period": "2026-W37",
+        "period_end": "2026-09-14T00:00:00+08:00",
+        "new_contracts": 80,
+        "all_tracked_contracts": 99,
+        "denominator": {
+         "WAITING_DATA": 14,
+         "WAITING_ENTRY": 85
+        },
+        "new_verified_settlements": 0,
+        "scope": "北京时间日历周/月；结算按凭据首次可用时间归属；比例仅同策略/市场/周期/版本/实验且≥30笔后显示",
+        "rule_update_status": "收集前瞻样本；分数不变。候选改进须冻结训练截止、新实验和后续独立验证后再评估",
+        "status": "OPEN"
+       },
+       {
+        "cadence": "month",
+        "period": "2026-09",
+        "period_end": "2026-10-01T00:00:00+08:00",
+        "new_contracts": 99,
+        "all_tracked_contracts": 99,
+        "denominator": {
+         "WAITING_DATA": 14,
+         "WAITING_ENTRY": 85
+        },
+        "new_verified_settlements": 0,
+        "scope": "北京时间日历周/月；结算按凭据首次可用时间归属；比例仅同策略/市场/周期/版本/实验且≥30笔后显示",
+        "rule_update_status": "收集前瞻样本；分数不变。候选改进须冻结训练截止、新实验和后续独立验证后再评估",
+        "status": "OPEN"
+       }
+      ],
+      "summary": {
+       "tracked_stocks": 126,
+       "contracts": 99,
+       "states": {
+        "WAITING_DATA": 14,
+        "WAITING_ENTRY": 85
+       },
+       "verified_settlements": 0
+      },
+      "sample_minimum": 30,
+      "learning_policy": "日常续跟原合同；每周/月封存复盘；缺数据和失败证据优先反查。规则改进另立实验，足量跨期验证通过才改版；不以亏赢直接改评级或止损。",
+      "predictive_win_probability": null,
+      "performance_improvement_proven": false,
+      "scope": "只引用既有前瞻跟踪总账；未提供实际个人收益，不能推算达标进度或胜率"
+     }
+    },
+    "C01_CORE": {
+     "code": "688002.SS",
+     "field": "CORE",
+     "value": {
+      "central_tier": "1A",
+      "audit_score": 70,
+      "audit_id": "a7921d4f2ea18bbe708e0b7fb14b8aad569442b90952d95697da2c9a13dfe04c",
+      "book_pass_n": 6,
+      "book_required": 8,
+      "remaining_central_conditions": [
+       "等待新的入场确认点",
+       "萨普：同策略扣费R期望",
+       "兑现周期仍需确认",
+       "反证尚待处理"
+      ]
+     }
+    },
+    "C01_PLAN": {
+     "code": "688002.SS",
+     "field": "PLAN",
+     "value": {
+      "entry_range": [
+       161.232,
+       164.27
+      ],
+      "stop": 153.41,
+      "take_profit_range": [
+       185.96,
+       185.99
+      ],
+      "last": 177.0,
+      "promotion_trigger": "两阶段等待：先回到[161.2320, 164.2700]观察区间，连续两个完整交易日最低价均>153.4100且第二日收盘≥第一日；随后收盘突破前一日最高价，成交量/此前20日均量≥1.2，实际入场价在[161.2320, 164.2700]。仅以后续新日线验证，当前未触发；若不能同时满足则不进入。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+      "invalidation": "收盘跌破既定结构失效线153.4100，本轮短期结构失效；不外推长期价值",
+      "deadline": "2026-10-04T15:00:00+08:00",
+      "horizon": "short",
+      "holding_sessions": 10,
+      "net_upside_pct": 12.077464991351757,
+      "net_reward_risk": 1.6017198997461521,
+      "evidence_asof": "2026-09-04T15:00:00+08:00",
+      "cost_assumption": "买入0.5%＋卖出0.5%，合并手续费与滑点假设；不是实际券商报价；未计个人税费、汇率、股息"
+     }
+    },
+    "C01_WINDOW": {
+     "code": "688002.SS",
+     "field": "WINDOW",
+     "value": {
+      "month_end": "2026-09-30T23:59:59+08:00",
+      "original_deadline": "2026-10-04T15:00:00+08:00",
+      "original_deadline_within_month": false,
+      "required_holding_sessions": 10,
+      "remaining_weekdays_upper_bound": 13,
+      "nominal_window_can_fit": true,
+      "reason": "名义工作日可能容纳原持有期，仍缺实际入场日、交易所假期与本月兑现证据",
+      "deadline_boundary": "原期限未改写；原目标不得因月末提前而视为已经重新验证"
+     }
+    },
+    "C01_GAPS": {
+     "code": "688002.SS",
+     "field": "GAPS",
+     "value": [
+      {
+       "id": "monthly_review",
+       "title": "需要本月独立研判"
+      },
+      {
+       "id": "monthly_trend",
+       "title": "趋势与可执行触发"
+      },
+      {
+       "id": "monthly_earnings",
+       "title": "盈利与营收"
+      },
+      {
+       "id": "monthly_valuation",
+       "title": "估值与同周期空间"
+      },
+      {
+       "id": "monthly_catalyst",
+       "title": "本月事件证据"
+      },
+      {
+       "id": "monthly_volatility",
+       "title": "失效位与波动"
+      },
+      {
+       "id": "monthly_lot",
+       "title": "交易单位与仓位"
+      },
+      {
+       "id": "original_deadline",
+       "title": "原期限跨月",
+       "detail": "原目标仍归原期限；提前到本月末兑现须独立论证，不自动换期限"
+      },
+      {
+       "id": "risk_target_shortfall",
+       "title": "单笔风险预算下目标不足",
+       "detail": "原风险比情景最多对应 100.11 美元，距整月目标差 99.89 美元；不能据此加仓或放宽风险"
+      },
+      {
+       "id": "entry",
+       "title": "现价未在原入场区间",
+       "detail": "等待原触发；现价不能直接套用原进场空间"
+      },
+      {
+       "id": "central_execution",
+       "title": "中央没有当前新开仓许可",
+       "detail": "保留原等级与研究价值；本月研究排序不授交易权"
+      }
+     ]
+    },
+    "C01_CHECKS": {
+     "code": "688002.SS",
+     "field": "CHECKS",
+     "value": [
+      {
+       "id": "trend",
+       "name": "趋势与可执行触发",
+       "status": "MISSING",
+       "reason": "Invalid isoformat string: ''"
+      },
+      {
+       "id": "earnings",
+       "name": "盈利与营收",
+       "status": "MISSING",
+       "reason": "Invalid isoformat string: ''"
+      },
+      {
+       "id": "valuation",
+       "name": "估值与同周期空间",
+       "status": "MISSING",
+       "reason": "Invalid isoformat string: ''"
+      },
+      {
+       "id": "catalyst",
+       "name": "本月事件证据",
+       "status": "MISSING",
+       "reason": "Invalid isoformat string: ''"
+      },
+      {
+       "id": "volatility",
+       "name": "失效位与波动",
+       "status": "MISSING",
+       "reason": "Invalid isoformat string: ''"
+      },
+      {
+       "id": "lot",
+       "name": "交易单位与仓位",
+       "status": "MISSING",
+       "reason": "Invalid isoformat string: ''"
+      }
+     ]
+    },
+    "C01_CAPITAL": {
+     "code": "688002.SS",
+     "field": "CAPITAL",
+     "value": {
+      "status": "CONDITIONAL_ONLY",
+      "objective_usd": 200,
+      "currency": "USD",
+      "goal_basis": "整个本月目标；未读取实际收益，不能称剩余目标",
+      "nominal_capital_usd_equivalent": 1655.98,
+      "modeled_risk_to_cover_goal_usd": 124.87,
+      "policy_per_trade_risk_usd": 62.5,
+      "risk_limited_one_trade_target_scenario_usd": 100.11,
+      "one_trade_scenario_shortfall_usd": 99.89,
+      "risk_budget_shortfall_usd": 62.37,
+      "can_cover_goal_under_risk_scenario": false,
+      "cost_assumption": "买入0.5%＋卖出0.5%，合并手续费与滑点假设；不是实际券商报价；未计个人税费、汇率、股息"
+     }
+    },
+    "C01_PRIMARY": {
+     "code": "688002.SS",
+     "field": "PRIMARY",
+     "value": {
+      "completed_at": "2026-09-12 20:42（北京时间）",
+      "original_scope": "原短期合同审核；不是本月专门裁决",
+      "thesis_verdict": "不否定",
+      "execution_status": "等触发",
+      "risk_veto": "无",
+      "why": "趋势和原合同支持继续观察，但放量下跌、偏弱走势代理与零结算路径使反证和周期均为10分。177.0超出[161.232,164.27]，两阶段条件没有完成证据，故等触发。合同净空间12.077464991351757不能代替路径验证，净收益风〔节录〕",
+      "counterargument": "高位放量下跌可能预示趋势转弱；回到原观察区间后，现有均线支撑关系也可能改变。单日主力净流入与有限财务增长数据不能保证回踩健康，更不能保证随后在10个交易日重测原止盈带。",
+      "criteria": [
+       {
+        "id": "facts",
+        "score": 20,
+        "reason": "9月11日日线与独立报价均为177.0，原目标边界185.99与新观测188.39用途明确。固定窗口〔节录〕"
+       },
+       {
+        "id": "thesis",
+        "score": 15,
+        "reason": "末价高于MA20及MA60，60日收益19.7889，支持保留有条件趋势回踩逻辑。原两阶段路径可检验〔节录〕"
+       },
+       {
+        "id": "countercase",
+        "score": 10,
+        "reason": "当日下跌-3.5054且量比2.0551，相关代理20日下跌，支持高位转弱反例。主力口径净流入及正面〔节录〕"
+       },
+       {
+        "id": "horizon",
+        "score": 10,
+        "reason": "原20日边界及10个交易日持有期明确；待入场区间对应目标距离13.2221至15.3555，不能使用〔节录〕"
+       },
+       {
+        "id": "risk",
+        "score": 15,
+        "reason": "原失效线153.41未记录被突破，初始净R为12.4484，研究仓位上限6.631027及期限明确。〔节录〕"
+       }
+      ]
+     }
+    },
+    "C01_COUNTERAUDIT": {
+     "code": "688002.SS",
+     "field": "COUNTERAUDIT",
+     "value": {
+      "completed_at": "2026-09-12 20:42（北京时间）",
+      "original_scope": "原短期合同审核；不是本月专门裁决",
+      "thesis_verdict": "不否定",
+      "execution_status": "等触发",
+      "risk_veto": "无",
+      "why": "放量下跌与弱势走势代理尚未被单日净流入证据化解，等待后按原期限兑现的路径也无已结算交易，故反证和周期均为10分。177.0高于原入场上沿164.27，合同完整但两阶段尚未触发，只能等待。原目标、止损及截止日继续固定，不使用历史档位或代签独立〔节录〕",
+      "counterargument": "当前价格虽仍在两条均线上方，但高位放量下跌可能意味着趋势转弱；若回到原观察区间，随后还须重新克服MA20及近期交易高位。主力分类净流入不证明因果承接，旧目标也不能因新高出现而自动提高。",
+      "criteria": [
+       {
+        "id": "facts",
+        "score": 20,
+        "reason": "末价与独立报价均177.0，刷新证据记录481根重叠行情一致。数据时点按2026-09-11日线及个〔节录〕"
+       },
+       {
+        "id": "thesis",
+        "score": 15,
+        "reason": "现价高于MA20和MA60，60日收益为正，原回踩再确认方案有条件关注价值。保留旧两阶段定义：第一收〔节录〕"
+       },
+       {
+        "id": "countercase",
+        "score": 10,
+        "reason": "最强反例是高位放量转弱：当日下跌3.5054%、量比2.0551，走势代理同时偏弱。单日主力净流入与〔节录〕"
+       },
+       {
+        "id": "horizon",
+        "score": 10,
+        "reason": "当前目标距离5.0791%不能代替区间入场后所需的13.2221%至15.3555%。先回落、企稳、〔节录〕"
+       },
+       {
+        "id": "risk",
+        "score": 15,
+        "reason": "原止损153.41保持，未见下调或触线复活论文证据；初始净R和研究仓位上限明确。现价收益风险比0.3〔节录〕"
+       }
+      ]
+     }
+    },
+    "C01_DOMAIN_technical": {
+     "code": "688002.SS",
+     "field": "DOMAIN_technical",
+     "value": {
+      "title": "技术与量价",
+      "status": "observed",
+      "limitations": [
+       "历史位置不是企业估值；原合同目标和失效价保持"
+      ],
+      "origins": [
+       {
+        "provider": "yahoo",
+        "source_asof": "2026-09-11"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "混合",
+        "reason": "末价高于两条均线，但年度位置偏高且五日收益为负；支持条件趋势假设，未消除高位转弱反例，逻辑15分、反证10分。"
+       },
+       "counteraudit": {
+        "conclusion": "混合",
+        "reason": "现价仍高于两条均线，但五日收益为负且年度位置偏高。支持条件趋势观察，无法消除放量转弱反例，反证项不升至15分。"
+       }
+      }
+     }
+    },
+    "C01_DOMAIN_sector": {
+     "code": "688002.SS",
+     "field": "DOMAIN_sector",
+     "value": {
+      "title": "板块轮动",
+      "status": "observed",
+      "limitations": [
+       "走势相关性代理，不能当作行业归属、因果或第二份独立公司事实"
+      ],
+      "origins": [
+       {
+        "provider": "tencent",
+        "source_asof": "2026-09-11"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "反对",
+        "reason": "相关代理20日下跌且低于MA20，削弱短期顺风环境，加重反证及周期争议；相关性仅支持走势比较，不证明行业归属或因果。"
+       },
+       "counteraudit": {
+        "conclusion": "反对",
+        "reason": "走势代理20日下跌且低于MA20，对短期重测路径不利。相关性仅为走势联系，不能当军工电子行业归属或公司因果证据。"
+       }
+      }
+     }
+    },
+    "C01_DOMAIN_market": {
+     "code": "688002.SS",
+     "field": "DOMAIN_market",
+     "value": {
+      "title": "市场环境",
+      "status": "observed",
+      "limitations": [
+       "已覆盖板块ETF环境，不等于全市场广度；同源不重复加分"
+      ],
+      "origins": [
+       {
+        "provider": "tencent",
+        "source_asof": "2026-09-11"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "混合",
+        "reason": "半导体代理低于MA60而银行代理高于MA20，环境分化；与板块域重复的代理只计一次，不补足周期与风险的执行证据。"
+       },
+       "counteraudit": {
+        "conclusion": "混合",
+        "reason": "多只代理低于MA20，银行代理仍较强，环境分化偏弱。周期缺少普遍助力；半导体代理与板块域同源，不重复计证。"
+       }
+      }
+     }
+    },
+    "C01_DOMAIN_news": {
+     "code": "688002.SS",
+     "field": "DOMAIN_news",
+     "value": {
+      "title": "新闻与催化",
+      "status": "limited",
+      "limitations": [
+       "仅源页面标题与精确代码关联，未阅读正文核实影响；有限搜索，无结果不代表不存在风险"
+      ],
+      "origins": [
+       {
+        "provider": "eastmoney"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "中性",
+        "reason": "二十一条关联公告仅有标题，分派时点与影响未经正文核实；不能签催化通过或推断正股停牌，相关评分保留事件核验缺口。"
+       },
+       "counteraudit": {
+        "conclusion": "中性",
+        "reason": "权益分派及转股价调整仅有标题，执行日期与价格口径影响未核验。不能认定正股停牌、利好或既成数据冲突，亦不支持周期通过。"
+       }
+      }
+     }
+    },
+    "C01_DOMAIN_flow": {
+     "code": "688002.SS",
+     "field": "DOMAIN_flow",
+     "value": {
+      "title": "资金流",
+      "status": "observed",
+      "limitations": [
+       "供应商主力分类估算，非全部机构净买入；单日净流不单独决定评级"
+      ],
+      "origins": [
+       {
+        "provider": "eastmoney"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "混合",
+        "reason": "主力净流入及占比为正，却与当日下跌方向相反；分类估算不证明承接因果，反证仍为10分，属于解释争议而非数据冲突。"
+       },
+       "counteraudit": {
+        "conclusion": "混合",
+        "reason": "供应商主力净流为正，提供有限承接线索，但与当日跌价并存。分类估算不能证明机构一致买入，未化解放量转弱反例。"
+       }
+      }
+     }
+    },
+    "C01_DOMAIN_fundamental": {
+     "code": "688002.SS",
+     "field": "DOMAIN_fundamental",
+     "value": {
+      "title": "基本面",
+      "status": "limited",
+      "limitations": [
+       "供应商采集快照；未验证最新财报公告日、口径可比性与三表，不能签中长期价值通过"
+      ],
+      "origins": [
+       {
+        "provider": "yahoo"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "混合",
+        "reason": "利润率与自由现金流为正，提供有限经营支持；三表、公告时点及口径未核实，不能签基本面通过或化解短线量价反例。"
+       },
+       "counteraudit": {
+        "conclusion": "混合",
+        "reason": "盈利增长、利润率及经营现金流提供经营支持，但仅为供应商快照。未核验三表与可比口径，不能据此补足短期反证或签价值通过。"
+       }
+      }
+     }
+    },
+    "C01_DOMAIN_valuation": {
+     "code": "688002.SS",
+     "field": "DOMAIN_valuation",
+     "value": {
+      "title": "估值与空间",
+      "status": "limited",
+      "limitations": [
+       "供应商采集快照；未验证最新财报公告日、口径可比性与三表，不能签中长期价值通过"
+      ],
+      "origins": [
+       {
+        "provider": "yahoo"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "中性",
+        "reason": "市盈率42.344498、市净率10.083172缺少可比估值依据；有限快照不能签低估通过，不改变原目标或补足周期兑现证据。"
+       },
+       "counteraudit": {
+        "conclusion": "中性",
+        "reason": "市盈率及市净率缺少可比估值锚，不能单凭绝对水平断言便宜或昂贵。快照不证明原目标在10日内可达，也不替代风险合同。"
+       }
+      }
+     }
+    },
+    "C01_DOMAIN_validation": {
+     "code": "688002.SS",
+     "field": "DOMAIN_validation",
+     "value": {
+      "title": "历史与前瞻验证",
+      "status": "observed",
+      "limitations": [
+       "当前策略单票历史模拟，与技术面共享日线；不是独立样本外或实盘胜率；不足样本不能称已验证正期望"
+      ],
+      "origins": [
+       {
+        "provider": "yahoo",
+        "source_asof": "2026-09-11"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "中性",
+        "reason": "两个历史方案无结算结果，净期望尚不可估，不是已证实负期望；与技术共享日线，反证与周期10分，风险只认可原计划。"
+       },
+       "counteraudit": {
+        "conclusion": "阻断",
+        "reason": "两次方案均无已结算结果，无法认证扣费后正期望。此为验证不足而非数据冲突，不能用历史幅度替代等待后完整交易路径。"
+       }
+      }
+     }
+    },
+    "C02_CORE": {
+     "code": "920718.BJ",
+     "field": "CORE",
+     "value": {
+      "central_tier": "1A",
+      "audit_score": 65,
+      "audit_id": "f39a9b3bae0dc18660f221e89b710c6aea393d90f3ba0f4d2c7f001b6a6d3c93",
+      "book_pass_n": 6,
+      "book_required": 8,
+      "remaining_central_conditions": [
+       "等待新的入场确认点",
+       "萨普：同策略扣费R期望",
+       "兑现周期仍需确认",
+       "反证尚待处理"
+      ]
+     }
+    },
+    "C02_PLAN": {
+     "code": "920718.BJ",
+     "field": "PLAN",
+     "value": {
+      "entry_range": [
+       10.0622,
+       10.19
+      ],
+      "stop": 9.57,
+      "take_profit_range": [
+       11.39,
+       11.43
+      ],
+      "last": 11.15,
+      "promotion_trigger": "两阶段等待：连续两个新完整交易日收盘均在[10.0622, 10.1900]观察区间，最低价均>9.5700且第二日收盘≥第一日；随后收盘突破前一日最高价，成交量/此前20日均量≥1.2，实际入场价在[10.0622, 10.1900]。仅以后续新日线验证，当前未触发；若不能同时满足则不进入。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+      "invalidation": "收盘跌破既定结构失效线9.5700，本轮短期结构失效；不外推长期价值",
+      "deadline": "2026-10-11T15:00:00+08:00",
+      "horizon": "short",
+      "holding_sessions": 10,
+      "net_upside_pct": 10.664049721949624,
+      "net_reward_risk": 1.5193377851975516,
+      "evidence_asof": "2026-09-11T15:00:00+08:00",
+      "cost_assumption": "买入0.5%＋卖出0.5%，合并手续费与滑点假设；不是实际券商报价；未计个人税费、汇率、股息"
+     }
+    },
+    "C02_WINDOW": {
+     "code": "920718.BJ",
+     "field": "WINDOW",
+     "value": {
+      "month_end": "2026-09-30T23:59:59+08:00",
+      "original_deadline": "2026-10-11T15:00:00+08:00",
+      "original_deadline_within_month": false,
+      "required_holding_sessions": 10,
+      "remaining_weekdays_upper_bound": 13,
+      "nominal_window_can_fit": true,
+      "reason": "名义工作日可能容纳原持有期，仍缺实际入场日、交易所假期与本月兑现证据",
+      "deadline_boundary": "原期限未改写；原目标不得因月末提前而视为已经重新验证"
+     }
+    },
+    "C02_GAPS": {
+     "code": "920718.BJ",
+     "field": "GAPS",
+     "value": [
+      {
+       "id": "monthly_review",
+       "title": "需要本月独立研判"
+      },
+      {
+       "id": "monthly_trend",
+       "title": "趋势与可执行触发"
+      },
+      {
+       "id": "monthly_earnings",
+       "title": "盈利与营收"
+      },
+      {
+       "id": "monthly_valuation",
+       "title": "估值与同周期空间"
+      },
+      {
+       "id": "monthly_catalyst",
+       "title": "本月事件证据"
+      },
+      {
+       "id": "monthly_volatility",
+       "title": "失效位与波动"
+      },
+      {
+       "id": "monthly_lot",
+       "title": "交易单位与仓位"
+      },
+      {
+       "id": "original_deadline",
+       "title": "原期限跨月",
+       "detail": "原目标仍归原期限；提前到本月末兑现须独立论证，不自动换期限"
+      },
+      {
+       "id": "risk_target_shortfall",
+       "title": "单笔风险预算下目标不足",
+       "detail": "原风险比情景最多对应 94.96 美元，距整月目标差 105.04 美元；不能据此加仓或放宽风险"
+      },
+      {
+       "id": "entry",
+       "title": "现价未在原入场区间",
+       "detail": "等待原触发；现价不能直接套用原进场空间"
+      },
+      {
+       "id": "central_execution",
+       "title": "中央没有当前新开仓许可",
+       "detail": "保留原等级与研究价值；本月研究排序不授交易权"
+      }
+     ]
+    },
+    "C02_CHECKS": {
+     "code": "920718.BJ",
+     "field": "CHECKS",
+     "value": [
+      {
+       "id": "trend",
+       "name": "趋势与可执行触发",
+       "status": "MISSING",
+       "reason": "Invalid isoformat string: ''"
+      },
+      {
+       "id": "earnings",
+       "name": "盈利与营收",
+       "status": "MISSING",
+       "reason": "Invalid isoformat string: ''"
+      },
+      {
+       "id": "valuation",
+       "name": "估值与同周期空间",
+       "status": "MISSING",
+       "reason": "Invalid isoformat string: ''"
+      },
+      {
+       "id": "catalyst",
+       "name": "本月事件证据",
+       "status": "MISSING",
+       "reason": "Invalid isoformat string: ''"
+      },
+      {
+       "id": "volatility",
+       "name": "失效位与波动",
+       "status": "MISSING",
+       "reason": "Invalid isoformat string: ''"
+      },
+      {
+       "id": "lot",
+       "name": "交易单位与仓位",
+       "status": "MISSING",
+       "reason": "Invalid isoformat string: ''"
+      }
+     ]
+    },
+    "C02_CAPITAL": {
+     "code": "920718.BJ",
+     "field": "CAPITAL",
+     "value": {
+      "status": "CONDITIONAL_ONLY",
+      "objective_usd": 200,
+      "currency": "USD",
+      "goal_basis": "整个本月目标；未读取实际收益，不能称剩余目标",
+      "nominal_capital_usd_equivalent": 1875.46,
+      "modeled_risk_to_cover_goal_usd": 131.64,
+      "policy_per_trade_risk_usd": 62.5,
+      "risk_limited_one_trade_target_scenario_usd": 94.96,
+      "one_trade_scenario_shortfall_usd": 105.04,
+      "risk_budget_shortfall_usd": 69.14,
+      "can_cover_goal_under_risk_scenario": false,
+      "cost_assumption": "买入0.5%＋卖出0.5%，合并手续费与滑点假设；不是实际券商报价；未计个人税费、汇率、股息"
+     }
+    },
+    "C02_PRIMARY": {
+     "code": "920718.BJ",
+     "field": "PRIMARY",
+     "value": {
+      "completed_at": "2026-09-12 13:43（北京时间）",
+      "original_scope": "原短期合同审核；不是本月专门裁决",
+      "thesis_verdict": "不否定",
+      "execution_status": "等触发",
+      "risk_veto": "无",
+      "why": "当前量能达到了触发量比数值，但末价11.15高于10.19观察上限，也未完成两阶段新确认，因此只能等待。零历史方案不等于负期望，却使条件路径和周期缺少实证。",
+      "counterargument": "价格可能不回落至观察区间，或回落后已经转弱；当前放量无法证明未来区间企稳。即便完成确认，11.37阻力也可能使11.39至11.43止盈带无法兑现。",
+      "criteria": [
+       {
+        "id": "facts",
+        "score": 20,
+        "reason": "按2026-09-11日线及当日15:34:17+08:00报价审查，末价和独立报价一致，复权价格及〔节录〕"
+       },
+       {
+        "id": "thesis",
+        "score": 15,
+        "reason": "末价高于60日均线，支持条件回踩研究；原方案明确等待较低区间形成两阶段新确认，不能将当前放量上涨直接〔节录〕"
+       },
+       {
+        "id": "countercase",
+        "score": 10,
+        "reason": "量比1.3204虽提供需求支持，但现价毛收益风险比仅0.1772；回落后能否在狭窄区间完成确认仍无证〔节录〕"
+       },
+       {
+        "id": "horizon",
+        "score": 10,
+        "reason": "现价所需涨幅2.5112%不能代替观察区间入场后的12.1688%至13.594%目标距离；下沿距离〔节录〕"
+       },
+       {
+        "id": "risk",
+        "score": 15,
+        "reason": "止损9.57、初始净R及研究仓位上限明确，固定截止日与次开盘止错可检验；费用滑点为假设，实际成交和组〔节录〕"
+       }
+      ]
+     }
+    },
+    "C02_COUNTERAUDIT": {
+     "code": "920718.BJ",
+     "field": "COUNTERAUDIT",
+     "value": {
+      "completed_at": "2026-09-12 13:43（北京时间）",
+      "original_scope": "原短期合同审核；不是本月专门裁决",
+      "thesis_verdict": "不否定",
+      "execution_status": "等触发",
+      "risk_veto": "无",
+      "why": "趋势与合同支持保留条件观察，但没有历史方案实例，阻力穿越及10交易日兑现路径未获支持。当前放量不构成两阶段确认，现价也高于入场上沿，因此只能等触发；缺少统计支持不等于公司质量否决。",
+      "counterargument": "狭窄观察区间可能长期无法同时容纳企稳、放量突破和下一开盘成交；即使成交，11.37附近阻力也可能让止盈带无法兑现。",
+      "criteria": [
+       {
+        "id": "facts",
+        "score": 15,
+        "reason": "报价与日线对应2026-09-11完整交易日，独立报价一致，新浪价格及成交量口径已有说明。903根历〔节录〕"
+       },
+       {
+        "id": "thesis",
+        "score": 15,
+        "reason": "正60日趋势支持有条件回踩关注，原突破价高于允许区间的问题已通过明确的新两阶段方案处理。当前量比虽超〔节录〕"
+       },
+       {
+        "id": "countercase",
+        "score": 10,
+        "reason": "当前毛收益风险比仅0.1772，直接买入反证很强。条件方案虽避免追高，但观察区间狭窄，且11.37原〔节录〕"
+       },
+       {
+        "id": "horizon",
+        "score": 10,
+        "reason": "目标来自20日高点，区间入场所需涨幅12.1688%至13.594%，已接近历史幅度80分位13.5〔节录〕"
+       },
+       {
+        "id": "risk",
+        "score": 15,
+        "reason": "净R和研究仓位上限明确，止损及期限退出可核验。净收益风险比1.5193377851975516不证明〔节录〕"
+       }
+      ]
+     }
+    },
+    "C02_DOMAIN_technical": {
+     "code": "920718.BJ",
+     "field": "DOMAIN_technical",
+     "value": {
+      "title": "技术与量价",
+      "status": "missing",
+      "limitations": [
+       "本票没有已签名的该域证据"
+      ],
+      "origins": [],
+      "review_opinions": {
+       "primary": {
+        "conclusion": null,
+        "reason": ""
+       },
+       "counteraudit": {
+        "conclusion": null,
+        "reason": ""
+       }
+      }
+     }
+    },
+    "C02_DOMAIN_sector": {
+     "code": "920718.BJ",
+     "field": "DOMAIN_sector",
+     "value": {
+      "title": "板块轮动",
+      "status": "missing",
+      "limitations": [
+       "本票没有已签名的该域证据"
+      ],
+      "origins": [],
+      "review_opinions": {
+       "primary": {
+        "conclusion": null,
+        "reason": ""
+       },
+       "counteraudit": {
+        "conclusion": null,
+        "reason": ""
+       }
+      }
+     }
+    },
+    "C02_DOMAIN_market": {
+     "code": "920718.BJ",
+     "field": "DOMAIN_market",
+     "value": {
+      "title": "市场环境",
+      "status": "missing",
+      "limitations": [
+       "本票没有已签名的该域证据"
+      ],
+      "origins": [],
+      "review_opinions": {
+       "primary": {
+        "conclusion": null,
+        "reason": ""
+       },
+       "counteraudit": {
+        "conclusion": null,
+        "reason": ""
+       }
+      }
+     }
+    },
+    "C02_DOMAIN_news": {
+     "code": "920718.BJ",
+     "field": "DOMAIN_news",
+     "value": {
+      "title": "新闻与催化",
+      "status": "missing",
+      "limitations": [
+       "本票没有已签名的该域证据"
+      ],
+      "origins": [],
+      "review_opinions": {
+       "primary": {
+        "conclusion": null,
+        "reason": ""
+       },
+       "counteraudit": {
+        "conclusion": null,
+        "reason": ""
+       }
+      }
+     }
+    },
+    "C02_DOMAIN_flow": {
+     "code": "920718.BJ",
+     "field": "DOMAIN_flow",
+     "value": {
+      "title": "资金流",
+      "status": "missing",
+      "limitations": [
+       "本票没有已签名的该域证据"
+      ],
+      "origins": [],
+      "review_opinions": {
+       "primary": {
+        "conclusion": null,
+        "reason": ""
+       },
+       "counteraudit": {
+        "conclusion": null,
+        "reason": ""
+       }
+      }
+     }
+    },
+    "C02_DOMAIN_fundamental": {
+     "code": "920718.BJ",
+     "field": "DOMAIN_fundamental",
+     "value": {
+      "title": "基本面",
+      "status": "missing",
+      "limitations": [
+       "本票没有已签名的该域证据"
+      ],
+      "origins": [],
+      "review_opinions": {
+       "primary": {
+        "conclusion": null,
+        "reason": ""
+       },
+       "counteraudit": {
+        "conclusion": null,
+        "reason": ""
+       }
+      }
+     }
+    },
+    "C02_DOMAIN_valuation": {
+     "code": "920718.BJ",
+     "field": "DOMAIN_valuation",
+     "value": {
+      "title": "估值与空间",
+      "status": "missing",
+      "limitations": [
+       "本票没有已签名的该域证据"
+      ],
+      "origins": [],
+      "review_opinions": {
+       "primary": {
+        "conclusion": null,
+        "reason": ""
+       },
+       "counteraudit": {
+        "conclusion": null,
+        "reason": ""
+       }
+      }
+     }
+    },
+    "C02_DOMAIN_validation": {
+     "code": "920718.BJ",
+     "field": "DOMAIN_validation",
+     "value": {
+      "title": "历史与前瞻验证",
+      "status": "missing",
+      "limitations": [
+       "本票没有已签名的该域证据"
+      ],
+      "origins": [],
+      "review_opinions": {
+       "primary": {
+        "conclusion": null,
+        "reason": ""
+       },
+       "counteraudit": {
+        "conclusion": null,
+        "reason": ""
+       }
+      }
+     }
+    },
+    "C03_CORE": {
+     "code": "3330.HK",
+     "field": "CORE",
+     "value": {
+      "central_tier": "1A",
+      "audit_score": 62.5,
+      "audit_id": "06ec9ff7570b3cfc31df282d3ee628f383e5c8c1ac47b7d7ce3d585651da76e0",
+      "book_pass_n": 5,
+      "book_required": 8,
+      "remaining_central_conditions": [
+       "等待新的入场确认点",
+       "量价确认",
+       "萨普：同策略扣费R期望",
+       "兑现周期仍需确认",
+       "反证尚待处理"
+      ]
+     }
+    },
+    "C03_PLAN": {
+     "code": "3330.HK",
+     "field": "PLAN",
+     "value": {
+      "entry_range": [
+       21.0506,
+       21.913
+      ],
+      "stop": 20.16,
+      "take_profit_range": [
+       25.46,
+       26.7
+      ],
+      "last": 23.5,
+      "promotion_trigger": "两阶段等待：先回到[21.0506, 21.9130]观察区间，连续两个完整交易日最低价均>20.1600且第二日收盘≥第一日；随后收盘突破前一日最高价，成交量/此前20日均量≥1.2，实际入场价在[21.0506, 21.9130]。仅以后续新日线验证，当前未触发；若不能同时满足则不进入。；收盘确认后，下一可交易开盘仍在区间内才视为模拟入场；超出区间不追价。",
+      "invalidation": "收盘跌破既定结构失效线20.1600，本轮短期结构失效；不外推长期价值",
+      "deadline": "2026-10-04T16:00:00+08:00",
+      "horizon": "short",
+      "holding_sessions": 10,
+      "net_upside_pct": 15.030651515842955,
+      "net_reward_risk": 1.6859498870561511,
+      "evidence_asof": "2026-09-04T16:00:00+08:00",
+      "cost_assumption": "买入0.5%＋卖出0.5%，合并手续费与滑点假设；不是实际券商报价；未计个人税费、汇率、股息"
+     }
+    },
+    "C03_WINDOW": {
+     "code": "3330.HK",
+     "field": "WINDOW",
+     "value": {
+      "month_end": "2026-09-30T23:59:59+08:00",
+      "original_deadline": "2026-10-04T16:00:00+08:00",
+      "original_deadline_within_month": false,
+      "required_holding_sessions": 10,
+      "remaining_weekdays_upper_bound": 13,
+      "nominal_window_can_fit": true,
+      "reason": "名义工作日可能容纳原持有期，仍缺实际入场日、交易所假期与本月兑现证据",
+      "deadline_boundary": "原期限未改写；原目标不得因月末提前而视为已经重新验证"
+     }
+    },
+    "C03_GAPS": {
+     "code": "3330.HK",
+     "field": "GAPS",
+     "value": [
+      {
+       "id": "monthly_review",
+       "title": "需要本月独立研判"
+      },
+      {
+       "id": "monthly_trend",
+       "title": "趋势与可执行触发"
+      },
+      {
+       "id": "monthly_earnings",
+       "title": "盈利与营收"
+      },
+      {
+       "id": "monthly_valuation",
+       "title": "估值与同周期空间"
+      },
+      {
+       "id": "monthly_catalyst",
+       "title": "本月事件证据"
+      },
+      {
+       "id": "monthly_volatility",
+       "title": "失效位与波动"
+      },
+      {
+       "id": "monthly_lot",
+       "title": "交易单位与仓位"
+      },
+      {
+       "id": "original_deadline",
+       "title": "原期限跨月",
+       "detail": "原目标仍归原期限；提前到本月末兑现须独立论证，不自动换期限"
+      },
+      {
+       "id": "risk_target_shortfall",
+       "title": "单笔风险预算下目标不足",
+       "detail": "原风险比情景最多对应 105.37 美元，距整月目标差 94.63 美元；不能据此加仓或放宽风险"
+      },
+      {
+       "id": "entry",
+       "title": "现价未在原入场区间",
+       "detail": "等待原触发；现价不能直接套用原进场空间"
+      },
+      {
+       "id": "central_execution",
+       "title": "中央没有当前新开仓许可",
+       "detail": "保留原等级与研究价值；本月研究排序不授交易权"
+      }
+     ]
+    },
+    "C03_CHECKS": {
+     "code": "3330.HK",
+     "field": "CHECKS",
+     "value": [
+      {
+       "id": "trend",
+       "name": "趋势与可执行触发",
+       "status": "MISSING",
+       "reason": "Invalid isoformat string: ''"
+      },
+      {
+       "id": "earnings",
+       "name": "盈利与营收",
+       "status": "MISSING",
+       "reason": "Invalid isoformat string: ''"
+      },
+      {
+       "id": "valuation",
+       "name": "估值与同周期空间",
+       "status": "MISSING",
+       "reason": "Invalid isoformat string: ''"
+      },
+      {
+       "id": "catalyst",
+       "name": "本月事件证据",
+       "status": "MISSING",
+       "reason": "Invalid isoformat string: ''"
+      },
+      {
+       "id": "volatility",
+       "name": "失效位与波动",
+       "status": "MISSING",
+       "reason": "Invalid isoformat string: ''"
+      },
+      {
+       "id": "lot",
+       "name": "交易单位与仓位",
+       "status": "MISSING",
+       "reason": "Invalid isoformat string: ''"
+      }
+     ]
+    },
+    "C03_CAPITAL": {
+     "code": "3330.HK",
+     "field": "CAPITAL",
+     "value": {
+      "status": "CONDITIONAL_ONLY",
+      "objective_usd": 200,
+      "currency": "USD",
+      "goal_basis": "整个本月目标；未读取实际收益，不能称剩余目标",
+      "nominal_capital_usd_equivalent": 1330.61,
+      "modeled_risk_to_cover_goal_usd": 118.63,
+      "policy_per_trade_risk_usd": 62.5,
+      "risk_limited_one_trade_target_scenario_usd": 105.37,
+      "one_trade_scenario_shortfall_usd": 94.63,
+      "risk_budget_shortfall_usd": 56.13,
+      "can_cover_goal_under_risk_scenario": false,
+      "cost_assumption": "买入0.5%＋卖出0.5%，合并手续费与滑点假设；不是实际券商报价；未计个人税费、汇率、股息"
+     }
+    },
+    "C03_PRIMARY": {
+     "code": "3330.HK",
+     "field": "PRIMARY",
+     "value": {
+      "completed_at": "2026-09-12 21:05（北京时间）",
+      "original_scope": "原短期合同审核；不是本月专门裁决",
+      "thesis_verdict": "不否定",
+      "execution_status": "等触发",
+      "risk_veto": "无",
+      "why": "趋势背景足以支持等待回踩的条件逻辑，但反证与期限内实际路径尚不充分。23.5高于原买区上沿21.913，量比不足且当前收益风险比偏低；完整合同存在，当前未触发，应等待。保留旧版两阶段条件，不把第二次企稳收盘改成必须在区间，也不移动原目标与期〔节录〕",
+      "counterargument": "60日大幅上涨后，回撤进入原区间可能标志趋势衰减，而非健康回踩。市场代理走弱、当日量能不足及历史方案可交易性未核实，使盈利快照不能单独推翻这一反例；关连交易标题影响亦未明。",
+      "criteria": [
+       {
+        "id": "facts",
+        "score": 15,
+        "reason": "所列9月11日日线与独立报价同为23.5，原合同锚点和新观测明确区分。历史一项方案存在成交证据缺陷，〔节录〕"
+       },
+       {
+        "id": "thesis",
+        "score": 15,
+        "reason": "价格高于20日与60日均线，60日收益51.4175支持趋势背景；原方案等待回落企稳再突破，能避免当〔节录〕"
+       },
+       {
+        "id": "countercase",
+        "score": 10,
+        "reason": "强势可能已透支空间，回到买区也可能意味着趋势转弱；当前量比0.8647且收益风险比0.9581，后续〔节录〕"
+       },
+       {
+        "id": "horizon",
+        "score": 10,
+        "reason": "目标保留原20日边界，当前所需涨幅13.617不能替代低位入场所需涨幅；买区下沿所需26.8371仅〔节录〕"
+       },
+       {
+        "id": "risk",
+        "score": 15,
+        "reason": "原止损20.16保持且未记录原论文触线，初始净R和仓位上限明确；净收益风险比1.6859498870〔节录〕"
+       }
+      ]
+     }
+    },
+    "C03_COUNTERAUDIT": {
+     "code": "3330.HK",
+     "field": "COUNTERAUDIT",
+     "value": {
+      "completed_at": "2026-09-12 21:05（北京时间）",
+      "original_scope": "原短期合同审核；不是本月专门裁决",
+      "thesis_verdict": "不否定",
+      "execution_status": "等触发",
+      "risk_veto": "无",
+      "why": "趋势与保留原止损支持有条件回踩逻辑，但23.5高于21.913入场上限，量比0.8647不达确认要求，完整两阶段路径尚未出现。原合同有效且不续期；历史执行证据不完整、结算样本为零，反证和周期只能10分。新闻标题不足以建立事件硬否决，不继承任〔节录〕",
+      "counterargument": "现价高于两条均线，支持强趋势延续；但这一强势本身可能使低价等待方案无法成交。若回落，仍须重新验证企稳和后续量价突破，不能沿用23.18旧观察值替代未来前一日最高价，也不能用26.7目标空间证明路径可实现。",
+      "criteria": [
+       {
+        "id": "facts",
+        "score": 15,
+        "reason": "最新报价一致，原合同锚点与新观测分列，重叠日线及目标窗口保留一致证据。历史零量、单价方案属于执行证据〔节录〕"
+       },
+       {
+        "id": "thesis",
+        "score": 15,
+        "reason": "价格高于20日及60日均线，60日上涨支持趋势回踩候选；原区间仍可观察，止损未被突破。只认可条件关注〔节录〕"
+       },
+       {
+        "id": "countercase",
+        "score": 10,
+        "reason": "最强反例是强势股不回落至区间，或回落后已失去动能，无法再完成突破及次日区间开盘。现价高于入场上限且量〔节录〕"
+       },
+       {
+        "id": "horizon",
+        "score": 10,
+        "reason": "现价到目标所需涨幅不能代表区间入场后的任务；区间两端所需涨幅虽受历史80分位约束，但回落、企稳、后续〔节录〕"
+       },
+       {
+        "id": "risk",
+        "score": 15,
+        "reason": "原止损20.16未下调、未触线，仓位研究上限及成本退出明确。现价收益风险比不足，区间上沿净收益风险比〔节录〕"
+       }
+      ]
+     }
+    },
+    "C03_DOMAIN_technical": {
+     "code": "3330.HK",
+     "field": "DOMAIN_technical",
+     "value": {
+      "title": "技术与量价",
+      "status": "observed",
+      "limitations": [
+       "历史位置不是企业估值；原合同目标和失效价保持"
+      ],
+      "origins": [
+       {
+        "provider": "yahoo",
+        "source_asof": "2026-09-11"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "支持",
+        "reason": "现价高于两条均线且五日收益为正，支持趋势回踩候选逻辑；只能确认趋势背景，不能替代原买区和后续量价触发。"
+       },
+       "counteraudit": {
+        "conclusion": "支持",
+        "reason": "价格高于20日和60日均线，五日收益为正，支持趋势回踩的条件逻辑；仅是走势证据，不能证明原低价区间必然成交。"
+       }
+      }
+     }
+    },
+    "C03_DOMAIN_sector": {
+     "code": "3330.HK",
+     "field": "DOMAIN_sector",
+     "value": {
+      "title": "板块轮动",
+      "status": "observed",
+      "limitations": [
+       "走势相关性代理，不能当作行业归属、因果或第二份独立公司事实"
+      ],
+      "origins": [
+       {
+        "provider": "tencent",
+        "source_asof": "2026-09-11"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "混合",
+        "reason": "走势代理相关系数约0.38且五日回落，不支持明确板块共振；它并非黄金行业因果证据，限制反证与周期信心。"
+       },
+       "counteraudit": {
+        "conclusion": "混合",
+        "reason": "代理相关性有限且五日下跌、未站上20日均线，不能确认黄金行业共振；与个股强势分歧保留反证及周期争议。"
+       }
+      }
+     }
+    },
+    "C03_DOMAIN_market": {
+     "code": "3330.HK",
+     "field": "DOMAIN_market",
+     "value": {
+      "title": "市场环境",
+      "status": "observed",
+      "limitations": [
+       "已覆盖板块ETF环境，不等于全市场广度；同源不重复加分"
+      ],
+      "origins": [
+       {
+        "provider": "tencent",
+        "source_asof": "2026-09-11"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "反对",
+        "reason": "两只市场代理均低于20日均线，对短期上行兑现构成逆风；其中3110与板块域同源，不重复计证，也不直接否决个股。"
+       },
+       "counteraudit": {
+        "conclusion": "混合",
+        "reason": "两只代理均低于20日均线但仍高于60日均线，环境短弱长稳；不能抵消个股路径风险，与板块重复代理不另加分。"
+       }
+      }
+     }
+    },
+    "C03_DOMAIN_news": {
+     "code": "3330.HK",
+     "field": "DOMAIN_news",
+     "value": {
+      "title": "新闻与催化",
+      "status": "limited",
+      "limitations": [
+       "仅源页面标题与精确代码关联，未阅读正文核实影响；有限搜索，无结果不代表不存在风险"
+      ],
+      "origins": [
+       {
+        "provider": "eastmoney"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "中性",
+        "reason": "关连收购与总裁变动仅有标题，无法确认交易条件或经营影响；事件不确定性保留，但尚无足够事实签事件风险否决。"
+       },
+       "counteraudit": {
+        "conclusion": "中性",
+        "reason": "收购及关连交易标题提示待核实事项，缺少条款和正文无法定量影响；不能视为利好，也不足以直接作事件风险否决。"
+       }
+      }
+     }
+    },
+    "C03_DOMAIN_flow": {
+     "code": "3330.HK",
+     "field": "DOMAIN_flow",
+     "value": {
+      "title": "资金流",
+      "status": "missing",
+      "limitations": [
+       "该市场无已验证免费主力净流量；成交量不替代资金净流"
+      ],
+      "origins": [],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "缺失",
+        "reason": "缺少可验证净流量，不能把股价强势解释为持续资金流入；逻辑依赖价格条件，反证检验缺少资金方向补充。"
+       },
+       "counteraudit": {
+        "conclusion": "缺失",
+        "reason": "资金净流证据缺失，不能将成交额或个股相对强势解释为持续资金流入；逻辑依赖量价，买盘持续性的反例仍未解决。"
+       }
+      }
+     }
+    },
+    "C03_DOMAIN_fundamental": {
+     "code": "3330.HK",
+     "field": "DOMAIN_fundamental",
+     "value": {
+      "title": "基本面",
+      "status": "limited",
+      "limitations": [
+       "供应商采集快照；未验证最新财报公告日、口径可比性与三表，不能签中长期价值通过"
+      ],
+      "origins": [
+       {
+        "provider": "yahoo"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "混合",
+        "reason": "盈利增长与正利润率提供经营背景，债务高于现金构成反证；仅为供应商快照，不能与强势价格合并视为企业价值认证。"
+       },
+       "counteraudit": {
+        "conclusion": "混合",
+        "reason": "收入及盈利增长为正，但债务高于现金，且仅为供应商快照；对短期逻辑提供有限背景，不能签价值通过或质量否决。"
+       }
+      }
+     }
+    },
+    "C03_DOMAIN_valuation": {
+     "code": "3330.HK",
+     "field": "DOMAIN_valuation",
+     "value": {
+      "title": "估值与空间",
+      "status": "limited",
+      "limitations": [
+       "供应商采集快照；未验证最新财报公告日、口径可比性与三表，不能签中长期价值通过"
+      ],
+      "origins": [
+       {
+        "provider": "yahoo"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "中性",
+        "reason": "预期市盈率低于历史值依赖预测盈利，且报价与报表币种不同；不能据此认定低估或改变原合同空间、期限与风险。"
+       },
+       "counteraudit": {
+        "conclusion": "中性",
+        "reason": "预期市盈率低于历史值仅反映预期口径，报价与财务币种不同亦须核实；无法支持十日目标兑现，不另作混币估值推算。"
+       }
+      }
+     }
+    },
+    "C03_DOMAIN_validation": {
+     "code": "3330.HK",
+     "field": "DOMAIN_validation",
+     "value": {
+      "title": "历史与前瞻验证",
+      "status": "observed",
+      "limitations": [
+       "当前策略单票历史模拟，与技术面共享日线；不是独立样本外或实盘胜率；不足样本不能称已验证正期望"
+      ],
+      "origins": [
+       {
+        "provider": "yahoo",
+        "source_asof": "2026-09-11"
+       }
+      ],
+      "review_opinions": {
+       "primary": {
+        "conclusion": "阻断",
+        "reason": "九次设置均无结算且执行历史未核实，阻断净期望认证；这是回放证据不足而非报价冲突，反证及周期维持10分。"
+       },
+       "counteraudit": {
+        "conclusion": "阻断",
+        "reason": "执行历史未核实且九个方案零结算，阻断正期望认证；这是验证缺口而非当前报价冲突，限制反证与周期，未否定条件机会。"
+       }
+      }
+     }
+    }
+   },
+   "no_grade_authority": true,
+   "no_order_authority": true,
+   "scope": "原输入与原回执校验通过的历史专项研判；当前事实已更新，不代表新版本审核或交易许可"
+  },
+  "model_calls": 0,
+  "new_cash_cost_cny": 0,
+  "no_order_authority": true,
+  "no_grade_authority": true,
+  "actual_target_progress": null,
+  "predictive_win_probability": null
+ },
+ "ledger_state": "LEDGER_UNVERIFIED",
+ "execution_status": "尚无当前可执行中央3A",
  "state_boundary": "六项证据全部可复算且月度状态允许后，才形成最多一笔主攻计划供审阅；任何方案均不是成交，不计入收益进度"
 }
