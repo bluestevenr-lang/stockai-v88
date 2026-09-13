@@ -27,7 +27,7 @@ class Parsed(HTMLParser):
 def assert_plain_prose(html, expected=PROSE):
     parsed = Parsed(html)
     known = {'a', 'b', 'br', 'details', 'div', 'p', 'section', 'small',
-             'span', 'style', 'summary', 'table', 'tbody', 'td', 'th', 'thead', 'tr'}
+             'span', 'style', 'summary', 'table', 'tbody', 'td', 'th', 'thead', 'tr', 'img', 'svg', 'title', 'rect', 'polygon', 'g', 'path'}
     assert {name for name, _ in parsed.nodes} <= known
     assert all(not any(c in name for c in '<>"\'=/ \n')
                for _, attrs in parsed.nodes for name in attrs)

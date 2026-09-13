@@ -16,6 +16,7 @@ AI 皇冠双核 V88 - 集成版（模块化架构 + 完整功能）
   ✅ 交易日15分钟/非交易日24小时缓存
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
+from v88_paths import core_root
 
 import streamlit as st
 # Explicit stock deep links must dispatch before homepage imports, pools and panels.
@@ -226,7 +227,7 @@ if 'startup_health' not in st.session_state:
 _BRIEF_CACHE_DIR = Path(__file__).parent / ".cache_brief"
 _BRIEF_CACHE_FILE = _BRIEF_CACHE_DIR / "daily_brief.json"
 _BRIEF_CACHE_TTL = 3600  # 1小时（由 config.toml [cache].brief_ttl 覆盖；2026-07-09 全模块统一1小时）
-_AUTHORITATIVE_REPORT = Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "daily_report.md"
+_AUTHORITATIVE_REPORT = core_root() / "data" / "daily_report.md"
 _AUTHORITATIVE_MANIFEST = _AUTHORITATIVE_REPORT.parent / "report_manifest.json"
 _AUTHORITATIVE_SNAPSHOT = _AUTHORITATIVE_REPORT.parent / "market_snapshot.json"
 _AUTHORITATIVE_PLAN_B_REPORT = _AUTHORITATIVE_REPORT.parent / "daily_report.plan_b.md"
@@ -364,7 +365,7 @@ def _record_market_ai_auto_success():
 
 # ── 真实新闻报告（ai-daily-report-v2 日报，约束日报触发事件，禁止编造）────────────────
 _AI_DAILY_REPORT_PATHS = [
-    Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "daily_report.md",  # Mac 本地优先
+    core_root() / "data" / "daily_report.md",  # Mac 本地优先
     Path("/root/ai-daily-report-v2/data/daily_report.md"),  # VPS 备选
 ]
 if os.environ.get("AI_DAILY_REPORT_PATH"):
@@ -1184,7 +1185,7 @@ def _v88_intel9():
     if _t.time() - _c["ts"] < 600 and _c["d"]:
         return _c["d"]
     try:
-        _raw = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+        _raw = json.loads((core_root() / "data" /
                            "intel_feed.json").read_text(encoding="utf-8"))
         _c["d"] = {"policy": _raw.get("policy") or [],
                    "hot_map": {str(h.get("canon")): {"rank": int(h.get("rank") or 0),
@@ -1331,7 +1332,7 @@ def _publish_scan_to_cloud(data: dict):
         marker = SCAN_CACHE_DIR / "pub_scan_last.txt"
         if marker.exists():
             try:
-                if time.time() - float(marker.read_text().strip() or 0) < 600:
+                if time.time() - float(marker.read_text(encoding='utf-8').strip() or 0) < 600:
                     return
             except Exception:
                 pass
@@ -2945,7 +2946,7 @@ try:
     _mk_cells9 = []
     _snapshot_label9 = "快照时间未知"
     try:
-        _snap9c = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+        _snap9c = json.loads((core_root() / "data" /
                               "market_snapshot.json").read_text(encoding="utf-8"))
         _snapshot_label9 = "分析快照 " + str(_snap9c.get("generated_at") or "未知")[:16]
         from market_overview_ui import cells as _market_cells, legend as _market_legend
@@ -2979,7 +2980,7 @@ with _three_a_slot:
         # ═══════════════════════════════════════════════════════════════
         try:
             from grade_card import system_table_html as _sys3a
-            _d3a = Path.home() / "Desktop" / "ai-daily-report-v2" / "data"
+            _d3a = core_root() / "data"
 
             def _j3a(_f):
                 try:
@@ -3030,7 +3031,7 @@ _now_c1, _now_c2, _now_c3 = st.columns([7.35, 1.35, 1.30])
 with _now_c2:
     if st.button("📡 此刻最新", key="btn_force_now", use_container_width=True,
                  help="强制用此刻最新行情重算全页（约30-60秒）；不点则按原缓存节奏。AI解读不重跑、不花预算。"):
-        _v88_usage9(Path.home() / "Desktop" / "ai-daily-report-v2", "此刻最新")   # 【点击热力】
+        _v88_usage9(core_root(), "此刻最新")   # 【点击热力】
         import time as _tnow9
         if _tnow9.time() - float(st.session_state.get("_force_now_ts") or 0) < 60:
             st.toast("60秒内刚强刷过，当前已是此刻数据", icon="⏳")
@@ -3062,7 +3063,7 @@ with _now_c2:
         _col9b = "#16a34a" if _mins9b < 30 else "#b45309"
     else:
         try:
-            _snap_ts9b = str(json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+            _snap_ts9b = str(json.loads((core_root() / "data" /
                                          "market_snapshot.json").read_text(encoding="utf-8")).get("generated_at"))[:16]
             _age9b = (_dtn9b.now() - _dtn9b.strptime(_snap_ts9b, "%Y-%m-%d %H:%M")).total_seconds() / 3600
             _tip9b = f"📊数据{_snap_ts9b[5:]}·{_age9b:.1f}h前"
@@ -3134,7 +3135,7 @@ def _v88_mkt_gate9x(_repo9x):
 # 开屏置顶大字:所有有发言权源的"现价可进"信号汇总成明确告知——该买谁/为什么/买区/止损/
 # 概率/裁决仓位;没有确认单=如实说"最近的差什么"(准确认队列),绝不让该买的时刻淹没在小字里。
 try:
-    _cb_repo9 = Path.home() / "Desktop" / "ai-daily-report-v2"
+    _cb_repo9 = core_root()
     # ══ 【2026-08-02 用户"右边全空了""云端能不能和V88页面一样"】 ══
     # 根因:上面是**本机绝对路径**,云端容器里没有 ~/Desktop/ai-daily-report-v2,
     # 于是 _cbj9 对每个文件都返回 {} —— 而且 `except: return {}` **把错误全吞了**,
@@ -3369,7 +3370,7 @@ try:
 
 except Exception:
     try:
-        _v88_sentinel9(Path.home() / "Desktop" / "ai-daily-report-v2", "目录与覆盖检查")
+        _v88_sentinel9(core_root(), "目录与覆盖检查")
     except Exception:
         pass
 
@@ -3381,7 +3382,7 @@ except Exception:
 try:
     from datetime import datetime as _dtnw, timedelta as _tdnw
     _is_weekend9 = _dtnw.now().weekday() >= 5
-    _nw_repo9 = Path.home() / "Desktop" / "ai-daily-report-v2"
+    _nw_repo9 = core_root()
 
     # (_nwj9 已改为 _cbj9 别名并前移——2026-07-31)
 
@@ -4344,7 +4345,7 @@ except Exception:
     import traceback as _tb9e
     try:
         import json as _j9e
-        _fp9e = Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "render_errors.json"
+        _fp9e = core_root() / "data" / "render_errors.json"
         try:
             _rs9e = _j9e.loads(_fp9e.read_text(encoding="utf-8"))
         except Exception:
@@ -4866,7 +4867,7 @@ def _build_market_ai_context():
     """【V99.8】AI综合分析的事实上下文：全部来自本地文件（量化快照+真实新闻日报，
     两者已由 launchd/导航兜底保持1小时内新鲜），零额外网络请求。
     返回 (context_text, tech_by_market)——技术指标由快照确定性算出，不劳 LLM。"""
-    _repo = Path.home() / "Desktop" / "ai-daily-report-v2"
+    _repo = core_root()
     ctx_parts, tech = [], {}
     try:
         snap = json.loads((_repo / "data" / "market_snapshot.json").read_text(encoding="utf-8"))
@@ -6530,7 +6531,7 @@ def _watchlist_save(d):
     # 【V88·重点观察同步】搜索过的个股自动入观察池，镜像到私仓目录随日报提交上云
     try:
         import json as _j
-        (Path.home() / "Desktop" / "ai-daily-report-v2" / "watchlist_v88.json").write_text(
+        (core_root() / "watchlist_v88.json").write_text(
             _j.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8")
     except Exception:
         pass
@@ -6624,7 +6625,7 @@ if st.session_state.get("_wl_new_pick"):
         if st.button("✅ 确定", type="primary", key="_wl_lv_ok"):
             try:
                 import sys as _syslv
-                _repo_lv = Path.home() / "Desktop" / "ai-daily-report-v2"
+                _repo_lv = core_root()
                 if str(_repo_lv / "src") not in _syslv.path:
                     _syslv.path.insert(0, str(_repo_lv / "src"))
                 from watch_alerts import watch_levels as _lvl, save_watch_levels as _lvs
@@ -7471,7 +7472,7 @@ def _load_market_temp():
         return _MKT_TEMP_CACHE["data"]
     out = {}
     try:
-        _p = Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "market_snapshot.json"
+        _p = core_root() / "data" / "market_snapshot.json"
         _snap = json.loads(_p.read_text(encoding="utf-8"))
         rot = {}
         for _mk, _blk in (_snap.get("markets") or {}).items():
@@ -8359,7 +8360,7 @@ RAW_CN_TOP = _stratify_pool_by_letter(RAW_CN_TOP)
 # ── 写股票池缓存（供 scan_worker.py 直接读取，避免二次拉取）─────────────
 try:
     _pool_cache_path = _BRIEF_CACHE_DIR / "pool_cache.json"
-    _pool_cache_age  = time.time() - json.loads(_pool_cache_path.read_text()).get("ts", 0) \
+    _pool_cache_age  = time.time() - json.loads(_pool_cache_path.read_text(encoding='utf-8')).get("ts", 0) \
                        if _pool_cache_path.exists() else 99999
     if _pool_cache_age > 3600:          # 超过 1 小时才刷写
         _BRIEF_CACHE_DIR.mkdir(exist_ok=True)
@@ -9526,7 +9527,7 @@ def render_readable_reasons(fwd, *, kind, symbol, name, context="", key_prefix="
             _prof9r = ""
         _nws9r = []
         try:
-            _na0r = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+            _na0r = json.loads((core_root() / "data" /
                                 "news_analyzed.json").read_text(encoding="utf-8"))
             _bc9r = str(symbol).split(".")[0].lstrip("0")
             from news_evidence import current_news, news_note
@@ -12403,7 +12404,7 @@ def _v88_load_news():
     if _t.time() - _V88_NEWS_CACHE["ts"] < 300 and _V88_NEWS_CACHE["news"]:
         return _V88_NEWS_CACHE["news"]
     try:
-        _na = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+        _na = json.loads((core_root() / "data" /
                           "news_analyzed.json").read_text(encoding="utf-8"))
         # 近期消息必须保留原发布时间；缓存刷新不使旧闻变新。
         from news_evidence import current_news
@@ -12421,7 +12422,7 @@ def _v88_rating_moves():
     if _t.time() - _c["ts"] < 600 and _c["rows"]:
         return _c["rows"]
     try:
-        _d = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+        _d = json.loads((core_root() / "data" /
                          "institutional_signals.json").read_text(encoding="utf-8"))
         _c["rows"] = [r for r in ((_d.get("reports")) or _d.get("all_reports") or [])
                       if r.get("stock")]
@@ -12442,7 +12443,7 @@ def _v88_announcements():
     if _t.time() - _c["ts"] < 600 and _c["d"]:
         return _c["d"]
     try:
-        _c["d"] = (json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+        _c["d"] = (json.loads((core_root() / "data" /
                                "announcements.json").read_text(encoding="utf-8")).get("events")) or {}
     except Exception:
         _c["d"] = {}
@@ -12633,7 +12634,7 @@ def _v88_success9():
     if _t.time() - _c["ts"] < 600 and _c["d"]:
         return _c["d"]
     try:
-        _c["d"] = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+        _c["d"] = json.loads((core_root() / "data" /
                               "success_rates.json").read_text(encoding="utf-8"))
     except Exception:
         _c["d"] = {}
@@ -12689,7 +12690,7 @@ def _v88_market_edge(market):
     if _t.time() - _c["ts"] > 600:
         try:
             _c["d"] = {"titles": (json.loads(
-                (Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+                (core_root() / "data" /
                  "institutional_signals.json").read_text(encoding="utf-8"))
                 .get("strategy_titles")) or []}
         except Exception:
@@ -12858,7 +12859,7 @@ def _v88_sector_edge9(label):
         return _c["d"][_k]
     try:
         import sys as _sy9e
-        _p9e = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
+        _p9e = str(core_root() / "src")
         if _p9e not in _sy9e.path:
             _sy9e.path.insert(0, _p9e)
         from rotation_forecast import sector_edge as _se9e
@@ -12997,7 +12998,7 @@ def _render_l3_cycle_board(_snap, _is_trading):
         # 【V88·三市场今日综述 2026-07-25 用户点单"只有A股没营养——中美港都要今日+四档+原因写清"】
         # 常显(不再只异动日才有):每市场=今日涨跌+领涨领跌板块+❓为什么(带原文链接三级兜底永不空)
         # +明日/本周/本月/下月四档概率(与🔮四档预判同口径)。异动市场行底色高亮。
-        _repo9s = Path.home() / "Desktop" / "ai-daily-report-v2"
+        _repo9s = core_root()
 
         def _pc9s(_p):
             return "#dc2626" if _p >= 55 else ("#16a34a" if _p <= 45 else "#64748b")
@@ -13063,7 +13064,7 @@ def _render_l3_cycle_board(_snap, _is_trading):
                 "+明日/本周/本月/下月概率·与🔮四档预判同口径）</span>"
                 + "".join(_sum_rows9) + "</div>", unsafe_allow_html=True)
     except Exception:
-        _v88_sentinel9(Path.home() / "Desktop" / "ai-daily-report-v2", "三市场今日综述")
+        _v88_sentinel9(core_root(), "三市场今日综述")
 
     st.markdown(
         "<span style='font-size:12px;color:#64748b'>"
@@ -13121,7 +13122,7 @@ def _render_l3_cycle_board(_snap, _is_trading):
 
 
 def _render_today_nav():
-    _repo = Path.home() / "Desktop" / "ai-daily-report-v2"
+    _repo = core_root()
     # ?q= 深链：点击任何内联个股名到达这里
     try:
         _q0 = st.query_params.get("q")
@@ -13562,7 +13563,7 @@ def _render_today_nav():
         # 后台四层(宽度/预期差/财务体检/财报日历)原本只喂引擎,用户无法验收→合成一个展开块,
         # 放在大盘环境正上方(视线第一落点)。只读data下的json,不新增计算、不花token。
         try:
-            _rl9 = Path.home() / "Desktop" / "ai-daily-report-v2" / "data"
+            _rl9 = core_root() / "data"
             def _rlj9(_f):
                 try:
                     return json.loads((_rl9 / _f).read_text(encoding="utf-8"))
@@ -14229,7 +14230,7 @@ with _v88_history_details, st.expander("📚 原Fable5计划与持仓保护", ex
 with _v88_hold_mod9, st.expander("🛡️ 原退出条件", expanded=False):
     try:
         import importlib, sys as _sy8
-        _rp8 = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
+        _rp8 = str(core_root() / "src")
         if _rp8 not in _sy8.path:
             _sy8.path.insert(0, _rp8)
         _ep8 = importlib.import_module("exit_plan")
@@ -14298,7 +14299,7 @@ with st.expander("🏛️ 机构风向标 · 权威研报评级×系统推荐池
     # 【V88·立刻更新 2026-07-25】缓存模块强刷按钮(60s防重,通用helper)
     def _rf_inst9():
         import sys as _s9z
-        _p9z = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
+        _p9z = str(core_root() / "src")
         if _p9z not in _s9z.path:
             _s9z.path.insert(0, _p9z)
         import importlib as _il9z
@@ -14311,7 +14312,7 @@ with st.expander("🏛️ 机构风向标 · 权威研报评级×系统推荐池
         pass
 
     try:
-        _inst9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+        _inst9 = json.loads((core_root() / "data" /
                              "institutional_signals.json").read_text(encoding="utf-8"))
         # 【2026-07-18 出处铁律】机构信息(尤其带评级/家数得分的)必须写明出自哪里
         st.caption(f"🕒 {_inst9.get('generated_at', '')} · 近3日研报{_inst9.get('reports_n', 0)}篇 · "
@@ -14399,7 +14400,7 @@ with st.expander("⚡ 公告事件雷达 · 自选+持仓公司公告（可转�
     # 【V88·立刻更新 2026-07-25】缓存模块强刷按钮(60s防重,通用helper)
     def _rf_ann9():
         import sys as _s9z
-        _p9z = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
+        _p9z = str(core_root() / "src")
         if _p9z not in _s9z.path:
             _s9z.path.insert(0, _p9z)
         import importlib as _il9z
@@ -14412,7 +14413,7 @@ with st.expander("⚡ 公告事件雷达 · 自选+持仓公司公告（可转�
         pass
 
     try:
-        _annj9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" /
+        _annj9 = json.loads((core_root() / "data" /
                              "announcements.json").read_text(encoding="utf-8"))
         st.caption(f"🕒 {_annj9.get('generated_at', '')} · 池{_annj9.get('pool_n', 0)}只 · "
                    "出处:东财公告库（A股+港股；美股8-K不覆盖，如实说明） · "
@@ -14485,7 +14486,7 @@ with st.expander("🔥 散户情绪三榜 · 东财人气/雪球热股/雅虎热
     # 【V88·立刻更新 2026-07-25】缓存模块强刷按钮(60s防重,通用helper)
     def _rf_intel9():
         import sys as _s9z
-        _p9z = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
+        _p9z = str(core_root() / "src")
         if _p9z not in _s9z.path:
             _s9z.path.insert(0, _p9z)
         import importlib as _il9z
@@ -14568,7 +14569,7 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
     # 【V88·立刻更新 2026-07-25】缓存模块强刷按钮(60s防重,通用helper)
     def _rf_ipo9():
         import sys as _s9z
-        _p9z = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
+        _p9z = str(core_root() / "src")
         if _p9z not in _s9z.path:
             _s9z.path.insert(0, _p9z)
         import importlib as _il9z
@@ -14581,7 +14582,7 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
         pass
 
     try:
-        _ipo9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "ipo_radar.json")
+        _ipo9 = json.loads((core_root() / "data" / "ipo_radar.json")
                            .read_text(encoding="utf-8"))
         _ipo_rows9 = _ipo9.get("rows") or []
         _cn_ipo_status9 = _ipo9.get('cn_source') or {}
@@ -14676,7 +14677,7 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
     # 周末/周一盘前不算过期:以最近一个工作日为基准,避免周五数据在周日误报。
     try:
         import datetime as _dt_bt9
-        _btp_gen9 = str(json.loads((Path.home() / "Desktop" / "ai-daily-report-v2"
+        _btp_gen9 = str(json.loads((core_root()
                                    / "data" / "bottom_turn_pool.json").read_text(encoding="utf-8")
                                    ).get("generated_at") or "")[:16]
         _btp_ts9 = _dt_bt9.datetime.strptime(_btp_gen9, "%Y-%m-%d %H:%M")
@@ -14721,7 +14722,7 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
     _btp_src9 = "本次重扫"
     if not _btp_state9:
         try:
-            _btp_off9 = json.loads((Path.home() / "Desktop" / "ai-daily-report-v2"
+            _btp_off9 = json.loads((core_root()
                                     / "data" / "bottom_turn_pool.json").read_text(encoding="utf-8"))
             _s9o = _btp_off9.get("stats") or {}
             _btp_state9 = {
@@ -14774,7 +14775,7 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
             st.session_state["_bottom_turn_pool9"] = _btp_state9
             # 【战绩总账】上榜即记档(去重按 code:date)——3天后由 success_ledger 到期核算
             try:
-                _sig_fp9 = Path.home() / "Desktop" / "ai-daily-report-v2" / "data" / "bottom_turn_signals.json"
+                _sig_fp9 = core_root() / "data" / "bottom_turn_signals.json"
                 try:
                     _sig_log9 = json.loads(_sig_fp9.read_text(encoding="utf-8"))
                 except Exception:
@@ -14835,7 +14836,7 @@ with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现�
         # 本地自带一份,借不到就退化成"不显徽章",绝不因徽章打掉整张榜。
         try:
             from grade_card import cert_map as _cmap_b9, cert_badge as _cbadge_b9
-            _CMB9 = _cmap_b9(json.loads((Path.home() / "Desktop" / "ai-daily-report-v2"
+            _CMB9 = _cmap_b9(json.loads((core_root()
                                          / "data" / "rank_score.json").read_text(encoding="utf-8")))
         except Exception:
             _CMB9, _cbadge_b9 = {}, (lambda c, m: "")
@@ -15028,7 +15029,7 @@ if st.session_state.get('scan_selected_code'):
     # 数字代码当作名称写进 session。先从3A底稿/GPT审核/名录纠正，再渲染表格。
     try:
         import sys as _name_sys9
-        _name_src9 = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
+        _name_src9 = str(core_root() / "src")
         if _name_src9 not in _name_sys9.path:
             _name_sys9.path.insert(0, _name_src9)
         from stock_verdict import resolve_name as _resolve_sv_name9
@@ -15793,7 +15794,7 @@ if execute_analysis and q_input:
             from v88_decision_core import evaluate_anchor_outlook as _evaluate_anchor_outlook
 
             _anchor_name = st.session_state.get("scan_selected_name") or target_c
-            _anchor_store = Path.home() / "Desktop" / "ai-daily-report-v2" / "journal" / "decision_anchors.json"
+            _anchor_store = core_root() / "journal" / "decision_anchors.json"
 
             def _anchor_code_key(_value):
                 _raw = str(_value or "").strip().upper().replace(" ", "")
@@ -15830,7 +15831,7 @@ if execute_analysis and q_input:
 
             # 能匹配成交日志时一键带入；腾讯等未记账的历史卖出仍可手动输入。
             _trade_choices = [{"label": "手动输入", "trade": None}]
-            _trade_path = Path.home() / "Desktop" / "ai-daily-report-v2" / "journal" / "trades.json"
+            _trade_path = core_root() / "journal" / "trades.json"
             try:
                 _all_trades = json.loads(_trade_path.read_text(encoding="utf-8"))
                 for _trade in reversed(_all_trades if isinstance(_all_trades, list) else []):
@@ -17400,7 +17401,7 @@ def _scan_read_progress() -> dict:
 def _scan_worker_running() -> bool:
     """检查 scan_worker.py 进程是否存活"""
     try:
-        pid = int(_SCAN_PID_FILE.read_text().strip())
+        pid = int(_SCAN_PID_FILE.read_text(encoding='utf-8').strip())
         from runtime_guard import process_alive
         return process_alive(pid)
     except Exception:

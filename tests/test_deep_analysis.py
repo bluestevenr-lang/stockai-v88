@@ -70,6 +70,8 @@ def test_whole_series_failure_returns_diagnostic(monkeypatch):
     from deep_analysis_data import fetch
     def failed(*a,**kw):raise RuntimeError('offline')
     monkeypatch.setattr(verified_history,'read',failed)
+    import portable_history
+    monkeypatch.setattr(portable_history,'read',failed)
     monkeypatch.setattr(market_data_helper,'fetch_df',failed)
     data,quality=fetch('661.HK')
     assert data is None and quality['data_points']==0 and 'offline' in quality['error_detail']
@@ -84,6 +86,8 @@ def test_quarantined_series_does_not_retry_same_provider(monkeypatch):
     monkeypatch.setattr(verified_history,'read',lambda *a,**kw:quarantined)
     def forbidden(*a,**kw):raise AssertionError('must preserve quarantine')
     monkeypatch.setattr(market_data_helper,'fetch_df',forbidden)
+    import portable_history
+    monkeypatch.setattr(portable_history,'read',forbidden)
     data,quality=fetch('GRPN')
     assert data is None and quality['source']=='日线已隔离'
 

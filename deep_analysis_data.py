@@ -51,16 +51,24 @@ def fetch(code, *, allow_network=True):
             raise ValueError('深度分析完整日线不足61根')
     except Exception as exc:
         failures.append(str(exc)[:180])
-        if not allow_network:
-            return None, {'source': '本地合格日线暂缺', 'error_detail': '；'.join(failures),
-                          'data_points': 0, 'network_requested': False}
         try:
-            # Leave room before the one-year anchor and for the MA200 slope;
-            # a today-based 1y request can lose the leading sessions on weekends.
-            frame = fetch_df(code, period='2y', timeout=8)
-        except Exception as fallback_error:
-            failures.append(type(fallback_error).__name__)
-            frame = None
+            from portable_history import read as read_portable
+            from market_data_helper import CORE
+            frame = read_portable(code, (datetime.now()-timedelta(days=1100)).date().isoformat(),
+                                  datetime.now().date().isoformat(), path=CORE/'data/portable_history_pub.json')
+            frame = frame.rename(columns={k:k.title() for k in frame.columns})
+            frame = validate(frame, code, source=frame.attrs.get('provider_source') or '同步核验日线')
+            if len(frame) < 61: raise ValueError('同步完整日线不足61根')
+        except Exception as mirror_error:
+            failures.append(str(mirror_error)[:180])
+            if not allow_network:
+                return None, {'source': '本地及同步日线暂缺', 'error_detail': '；'.join(failures),
+                              'data_points': 0, 'network_requested': False}
+            try:
+                frame = fetch_df(code, period='2y', timeout=8)
+            except Exception as fallback_error:
+                failures.append(type(fallback_error).__name__)
+                frame = None
     if frame is None or len(frame) < 61:
         return None, {'source': '暂无合格日线', 'error_detail': '；'.join(failures), 'data_points': 0}
     # Revalidate any adapter result rather than trusting a cache timestamp.
@@ -116,7 +124,7 @@ def report_html(code, data_dir=None, context=None):
     from entry_opportunity import assess as entry_assess, html as entry_html
     content += entry_html(entry_assess({**row, 'scorecard': card, 'formal_recommendation': formal}))
     try:
-        weekly = json.loads((root/'weekly_candidates_pub.json').read_text())
+        weekly = json.loads((root/'weekly_candidates_pub.json').read_text(encoding='utf-8'))
         item = next((r for r in weekly.get('rows',[]) if canonical(r.get('code'))==canonical(code)), None)
         if item:
             from weekly_candidates_ui import html
@@ -130,14 +138,14 @@ def report_html(code, data_dir=None, context=None):
     content += '<div>下方量价分与情景估计用于辅助研究；不会覆盖中央评级，也不是实测胜率。打开页面复用已有审核，不自动调用模型。</div>'
     from module_relations_ui import html as relations_html
     try:
-        relations=json.loads((root/'module_relations_pub.json').read_text())
+        relations=json.loads((root/'module_relations_pub.json').read_text(encoding='utf-8'))
     except (OSError,ValueError):
         relations={}
     content += relations_html(relations,selection,code)
     from evolution_learning_ui import read as evolution_read, stock_html as evolution_html, health as evolution_health
     evolution = evolution_read(root)
     try:
-        evolution_status=json.loads((root/'evolution_learning_status.json').read_text())
+        evolution_status=json.loads((root/'evolution_learning_status.json').read_text(encoding='utf-8'))
     except (OSError,ValueError):
         evolution_status={}
     content += '<div class="v88-evolution-health">'+esc(evolution_health(evolution,evolution_status,selection))+' · '+esc(evolution.get('generated_at'))+'</div>'

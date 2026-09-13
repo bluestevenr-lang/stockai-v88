@@ -1,4 +1,5 @@
 """Shared, read-only company identity overlay. Keep core and desktop identical."""
+from v88_paths import core_root
 from datetime import datetime, timezone, timedelta
 from functools import lru_cache
 from html import escape
@@ -7,12 +8,12 @@ import math
 import re
 from pathlib import Path
 
-DEFAULT = Path.home()/'Desktop/ai-daily-report-v2/data/stock_profiles_pub.json'
+DEFAULT = core_root()/'data/stock_profiles_pub.json'
 
 
 @lru_cache(maxsize=4)
 def _read(path, mtime, size):
-    return json.loads(Path(path).read_text())
+    return json.loads(Path(path).read_text(encoding='utf-8'))
 
 
 def load(path=None):

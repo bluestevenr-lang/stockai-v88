@@ -1,11 +1,12 @@
 """Shared read-only evolution display; no fetch, model, grading or ledger writes."""
+from v88_paths import core_root
 from datetime import datetime, timezone
 from html import escape
 import json
 import math
 from pathlib import Path
 
-ROOT = Path('/Users/bluesteven/Desktop/ai-daily-report-v2/data')
+ROOT = core_root()/'data'
 LABELS = {'ADDED':'首次建档','PROMOTED':'升级','DEMOTED':'降级','UPDATED':'条件/分数更新',
     'REVIEW_STATUS_CHANGED':'审核状态变化','REENTERED':'重新入选','EXITED':'价值失效',
     'HORIZON_CHANGED':'审核周期变化','RETAINED_OUTSIDE_POOL':'扫描落选·持续跟踪',
@@ -22,7 +23,7 @@ def esc(value):
 
 def read(root=ROOT):
     try:
-        return json.loads((Path(root)/'evolution_learning_pub.json').read_text())
+        return json.loads((Path(root)/'evolution_learning_pub.json').read_text(encoding='utf-8'))
     except (OSError, ValueError):
         return {}
 

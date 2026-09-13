@@ -4,6 +4,7 @@ Directory membership provides discoverability, never current price/grade authori
 Names from old dictionaries only enrich identities retained in current directories.
 """
 from __future__ import annotations
+from v88_paths import core_root
 from collections import Counter
 from datetime import datetime, timezone
 from functools import lru_cache
@@ -16,7 +17,7 @@ import unicodedata
 from zoneinfo import ZoneInfo
 
 VERSION = 'local-stock-picker-v1'
-CORE = Path.home() / 'Desktop/ai-daily-report-v2'
+CORE = core_root()
 _MARKETS = ('A股', '港股', '美股', 'B股')
 _CLASSES = {'BRK.A':'BRK_A', 'BRK-A':'BRK_A', 'BRK.B':'BRK_B', 'BRK-B':'BRK_B',
             'BF.A':'BF_A', 'BF-A':'BF_A', 'BF.B':'BF_B', 'BF-B':'BF_B'}

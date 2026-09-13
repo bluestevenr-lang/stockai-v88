@@ -101,6 +101,9 @@ def test_missing_local_series_cannot_start_network(monkeypatch):
     import verified_history
     from deep_analysis_data import fetch
     monkeypatch.setattr(verified_history, 'read', lambda *a, **kw: pd.DataFrame())
+    import portable_history
+    def missing(*a, **kw):raise FileNotFoundError('portable mirror absent')
+    monkeypatch.setattr(portable_history, 'read', missing)
     def prohibited(*a, **kw):
         pytest.fail('passive detail read attempted network')
     monkeypatch.setattr(market_data_helper, 'fetch_df', prohibited)

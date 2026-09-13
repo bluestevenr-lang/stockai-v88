@@ -32,6 +32,42 @@ def verify_startup_imports(root=ROOT):
     import os
     if not process_alive(os.getpid()):raise RuntimeError('Process liveness check failed')
 
+
+def verify_research_views(report=REPORT, *, allow_stale=False):
+    """Exercise actual mirror inputs, never the developer's home-directory DB."""
+    from stock_profile_view import load, profile, industry_peers
+    from portable_history import read
+    from market_data_helper import validate
+    from focused_deep_view import calculate
+    from deep_cross_validation import load_context
+    from deep_analysis_data import snapshot_signature
+    from market_badge import html
+    profiles=load(report/'data/stock_profiles_pub.json')
+    if not profiles.get('records'):raise RuntimeError('Company profiles are missing or unreadable')
+    for code,market in [('688002.SS','A股'),('SEPN','美股'),('661.HK','港股')]:
+        p=profile(code,profiles)
+        if not p.get('industry') or not industry_peers(code,profiles)['ok']:
+            raise RuntimeError(f'Industry ranking/Top10 unavailable: {code}')
+        frame=read(code,'2000-01-01','2100-01-01',path=report/'data/portable_history_pub.json')
+        frame=frame.rename(columns={k:k.title() for k in frame.columns})
+        try:
+            frame=validate(frame,code,source=frame.attrs['provider_source'])
+        except ValueError as exc:
+            if allow_stale and str(exc)=='缺少最近已完成交易日行情':
+                print(f'NOTICE: {code} source date {frame.attrs.get("source_asof")} needs market refresh; no current forecast granted.')
+                continue
+            raise
+        quality={'code':code,**frame.attrs,'snapshot_signature':snapshot_signature(frame)}
+        context=load_context(code,data_dir=report/'data')
+        result=calculate(context,frame,quality,p.get('name_zh') or code,code)
+        outlook=result['annual_outlook']
+        if not outlook.get('valid12month'):
+            raise RuntimeError(f'Annual evidence incomplete: {code}: {outlook.get("gaps")}')
+        future=result['future_scenario']
+        if future.get('status')!='ready':raise RuntimeError(f'Future trend view not ready: {code}')
+        if '<svg' not in html(market):raise RuntimeError(f'Market symbol missing: {market}')
+    print('PASS: CN/HK/US portable research inputs checked; current-source charts verified, any stale source explicitly reported.')
+
 def verify():
     sys.path[:0]=[str(ROOT),str(REPORT/'src')]
     manifest=json.loads((ROOT/'win/release.json').read_text(encoding='utf-8'))
@@ -58,6 +94,7 @@ def verify():
     docs=[json.loads((REPORT/'data'/n).read_text(encoding='utf-8')) for n in ('triad_selection.json','triad_selection_pub.json','gpt_verify.json','classics_lens.json','review_factpack.json')]
     ids={d.get('factpack_id') for d in docs}
     if len(ids)!=1 or None in ids:raise RuntimeError('Mixed central snapshot versions')
+    verify_research_views(REPORT,allow_stale=True)
     print('PASS: syntax, desktop startup imports, process checks, time zones and central factpack consistency.')
 
 if __name__=='__main__':verify()

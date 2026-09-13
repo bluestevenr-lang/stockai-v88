@@ -3,6 +3,7 @@
 No collector, model, publication, grade or order authority. A scan timestamp is
 never accepted as a market-data date. Results are a bounded in-memory snapshot.
 """
+from v88_paths import core_root
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 from datetime import datetime, timezone
@@ -18,7 +19,7 @@ _LOCK = RLock()
 
 
 def _store_stamp():
-    root = Path.home() / 'Desktop/ai-daily-report-v2/data'
+    root = core_root()/'data'
     result = []
     for name in ('wdata.db', 'wdata.db-wal'):
         try:

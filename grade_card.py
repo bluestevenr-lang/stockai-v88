@@ -8,6 +8,7 @@
 只用内联 HTML（与 barometer_ui / compare_ui 同一套做法），桌面与云端读同一份 rank_score.json。
 """
 from __future__ import annotations
+from v88_paths import core_root
 from html import escape
 from scorecard_html import gpt_html, books_html, score_label, reasons_html, rubric_html, text as audit_text
 from module_signal_view import legacy_review_text
@@ -174,6 +175,8 @@ def stock_link(name, code, flag: str = "") -> str:
     from urllib.parse import quote
     c = quote(str(code or "").strip(), safe=".-")
     n = escape(str(profile_name(name, code) or ""))
+    from market_badge import html as market_badge_html
+    flag = market_badge_html(flag,image_mode=True)
     if not c:
         return flag + n
     return (f'{flag}<a href="?q={c}&focus=deep#v88-deep-analysis" target="_blank" '
@@ -201,7 +204,7 @@ def _book_review(code: str):
     try:
         import sys
         from pathlib import Path
-        source = str(Path.home() / "Desktop" / "ai-daily-report-v2" / "src")
+        source = str(core_root() / "src")
         if source not in sys.path:
             sys.path.insert(0, source)
         from recommendation_gate import classics_review_for
@@ -217,11 +220,11 @@ def _book_health() -> dict:
         from datetime import datetime
         from review_display import fresh, BJT, source_times_fresh
         from review_scorecard import book_result
-        doc = json.loads((Path.home()/"Desktop/ai-daily-report-v2/data/classics_lens.json").read_text())
+        doc = json.loads((Path.home()/"Desktop/ai-daily-report-v2/data/classics_lens.json").read_text(encoding='utf-8'))
         rows = list((doc.get("rows") or {}).values())
         now = datetime.now(BJT)
         hours = 72 if now.weekday() >= 5 else 30
-        pack = json.loads((Path.home()/"Desktop/ai-daily-report-v2/data/review_factpack.json").read_text())
+        pack = json.loads((Path.home()/"Desktop/ai-daily-report-v2/data/review_factpack.json").read_text(encoding='utf-8'))
         items = {r.get("code"): r for r in pack.get("items") or []}
         valid = [r for code, r in (doc.get("rows") or {}).items()
                  if doc.get("factpack_id") == r.get("factpack_id") == pack.get("factpack_id")
@@ -584,7 +587,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + f"<div class='v88-grade-counts' style='font-size:13px;padding:6px 0;font-weight:600'>"
             + ((f"当前研究精选 {(watchlist.get('current_focus') or {}).get('total',0)}只 · " + " ｜ ".join(f"{m} {v['selected']}只" for m,v in (watchlist.get('current_focus') or {}).get('markets',{}).items())) if persistent_html else
                "重点榜：" + " ｜ ".join(f"{g} {sum(v['selected'] for v in focus['summary'][g].values())}只" for g in grade_focus.GRADES)
-               + f" <span style='font-weight:400'>· 各周期合计Top3 · 不凑数</span>" if focus else
+               + f" <span style='font-weight:400'>· 每周期中美港各Top3，共9席 · 不凑数</span>" if focus else
                f"全部原周期评级：3A {n3+n3b+n3p}只 ｜ 2A {n2c+n2o}只 ｜ 1A {n1}只")
             + f" <span style='font-size:12px;font-weight:400'>｜ 可执行3A {n3}只 · 持仓卖警 {len(_own)}只</span>"
             f"</div></section>")
@@ -720,7 +723,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
         for horizon in grade_focus.HORIZONS:
             blocks.append(f"<tr class='v88-horizon-section'><td colspan='11'><b>{grade_focus.HORIZON_LABELS[horizon]} · 独立名额</b></td></tr>")
             group=[r for r in focus_rows if (r.get('central_trade_plan') or {}).get('horizon')==horizon and r not in executable_rows]
-            group.sort(key=lambda r:focus['records'][grade_focus.canonical(r['code'])]['rank'])
+            group.sort(key=lambda r:(grade_focus.MARKETS.index(focus['records'][grade_focus.canonical(r['code'])]['market']),focus['records'][grade_focus.canonical(r['code'])]['rank']))
             blocks.extend(_in_row(r,blocked=True) for r in group)
             if not group:blocks.append("<tr><td colspan='11' style='font-size:11px;color:#64748b'>暂无本周期有效研究精选；等待对应证据。</td></tr>")
         blocked_html = "".join(blocks)

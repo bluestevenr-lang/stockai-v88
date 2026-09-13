@@ -1,4 +1,5 @@
 """Read-only scan accounting: directory checks, usable data and GPT are distinct."""
+from v88_paths import core_root
 from collections import Counter
 from datetime import datetime, timezone, timedelta
 from html import escape
@@ -25,7 +26,7 @@ def active_review_progress(core, *, now=None):
     data=Path(core)/'data'
     marker=data/'.gpt_classics_review_running'
     try:
-        pid=marker.read_text().strip()
+        pid=marker.read_text(encoding='utf-8').strip()
         if not pid.isdigit() or int(pid)<=0:
             return None
         if not process_alive(int(pid)):return None
@@ -36,9 +37,9 @@ def active_review_progress(core, *, now=None):
         run=candidates[0];input_path=run/'input.json'
         # A prior run must not look active merely because a new process owns the lease.
         if input_path.stat().st_mtime<started or (run/'result.json').exists():return None
-        inputs=json.loads(input_path.read_text())
-        pack=json.loads((run/'data/review_factpack.json').read_text())
-        cohort=json.loads((run/'review-cohort.json').read_text())
+        inputs=json.loads(input_path.read_text(encoding='utf-8'))
+        pack=json.loads((run/'data/review_factpack.json').read_text(encoding='utf-8'))
+        cohort=json.loads((run/'review-cohort.json').read_text(encoding='utf-8'))
         if inputs['factpack_id']!=pack['factpack_id'] or cohort['factpack_id']!=pack['factpack_id']:return None
         if hashlib.sha256((run/'data/review_factpack.json').read_bytes()).hexdigest()!=cohort['factpack_sha256']:return None
         now=now or datetime.now(timezone.utc)
@@ -50,8 +51,8 @@ def active_review_progress(core, *, now=None):
             try:at=datetime.strptime(str(rec.get('ts',''))[:16],'%Y-%m-%d %H:%M').replace(tzinfo=ZoneInfo('Asia/Shanghai'))
             except ValueError:return False
             return timedelta(0)<=now-at<=timedelta(hours=24) and source_times_fresh(item,now)
-        live=json.loads((data/'gpt_verify.json').read_text()).get('rows',{})
-        stage=json.loads((run/'data/gpt_verify.json').read_text())
+        live=json.loads((data/'gpt_verify.json').read_text(encoding='utf-8')).get('rows',{})
+        stage=json.loads((run/'data/gpt_verify.json').read_text(encoding='utf-8'))
         staged=stage.get('rows',{}) if stage.get('factpack_id')==pack['factpack_id'] else {}
         reused={r['code'] for r in rows if fresh(live.get(r['code'],{}),r)}
         completed=reused|{r['code'] for r in rows if fresh(staged.get(r['code'],{}),r)}
@@ -65,7 +66,7 @@ def active_review_progress(core, *, now=None):
 def snapshot(core, *, now=None):
     now = now or datetime.now(timezone.utc)
     data = Path(core)/'data'
-    daily = json.loads((data/'universe_data_coverage.json').read_text())
+    daily = json.loads((data/'universe_data_coverage.json').read_text(encoding='utf-8'))
     path = data/'full_market_research.sqlite'
     with sqlite3.connect(path.resolve().as_uri()+'?mode=ro', uri=True) as db:
         row = db.execute('SELECT s.id,s.source_available_at FROM snapshots s JOIN active a ON a.snapshot=s.id WHERE a.id=1').fetchone()
@@ -77,7 +78,7 @@ def snapshot(core, *, now=None):
     manifest_path = Path(manifest_ref.get('path') or '')
     if not manifest_path.resolve().is_relative_to((data/'universe_manifests').resolve()):
         raise ValueError('目录凭据路径未通过核验')
-    manifest = json.loads(manifest_path.read_text())
+    manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
     frozen = {k: manifest[k] for k in ('codes_by_market','catalogs','excluded_exchange_declared_etf_etp','invalid_entries')}
     digest = hashlib.sha256(json.dumps(frozen,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
     if digest != manifest_ref.get('sha256_canonical_content') or digest != manifest.get('sha256_canonical_content'):
@@ -171,7 +172,7 @@ CSS = '''<style>
 
 def html(rows, *, core=None, source=None, now=None):
     try:
-        source = source if source is not None else snapshot(core or Path.home()/'Desktop/ai-daily-report-v2', now=now)
+        source = source if source is not None else snapshot(core or core_root(), now=now)
         entries = metrics(source, rows, now=now)
         total = sum(r['directory'] for r in entries)
         checked = sum(r['checked'] for r in entries)
@@ -249,4 +250,4 @@ def html(rows, *, core=None, source=None, now=None):
                 +'分母为已收录交易所目录，剔除明确标注的ETF/ETP；未细分证券仍保留。目录日期、缺失来源与三表核验见下方覆盖详情。'
                 +f'<br>扫描凭据：{escape(source["receipt"])}</details></section>')
     except (OSError, ValueError, TypeError, KeyError, sqlite3.Error):
-        return CSS+'<section id="v88-market-scan" class="v88-scan">扫描进度暂不可核对；不以报价条数或审核池数量代替全市场扫描。</section>'
+        return CSS+'<section id="v88-market-scan" class="v88-scan">当前完整GPT双审与扫描进度暂不可核对：本机扫描凭据尚未同步；不以报价条数或审核池数量代替全市场扫描。个股当前审核见列表。</section>'

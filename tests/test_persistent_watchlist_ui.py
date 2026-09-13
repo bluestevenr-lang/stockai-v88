@@ -36,9 +36,9 @@ def test_main_list_uses_grade_ranks_instead_of_entry_ranks_with_original_scores(
     out=html(doc,selection,view='current',horizon='short')
     assert out.count('<th ')==11 and out.count('class="v88-watch-row"')==2
     assert out.count('class="v88-week-archive-row"')==0
-    assert '美股 1A 本周期Top1' in out and '美股 1A 本周期Top3' in out
+    assert '美股 1A 本市场Top1' in out and '美股 1A 本市场Top3' in out
     assert out.index('data-code="AA"') < out.index('data-code="TEST"')
-    assert '港股 0只' in out and '📌 本周主观察 · 与上方周度同股同分' in out
+    assert '港股 0/3只' in out and '📌 本周主观察 · 与上方周度同股同分' in out
     assert out.count('审核分 75/100')==2 and '?q=TEST' in out
     assert '⏸ 暂不入场·等待条件修复' in out and '条件观察' in out
 
@@ -109,7 +109,7 @@ def paused_hk_fixture(*,bucket='pending',expired=False):
 def test_hk_paused_seats_stay_in_separate_tracking_with_real_scores_and_grade_gap(bucket):
     selection,doc,now=paused_hk_fixture(bucket=bucket)
     formal=html(doc,selection,view='current',horizon='short')
-    assert '港股 0只' in formal
+    assert '港股 0/3只' in formal
     assert '?q=661.HK' not in formal
     out=html(doc,selection,view='tracking')
     assert out.count('<th ')==11 and out.count('class="v88-watch-tracking-row"')==5
@@ -183,7 +183,7 @@ def test_lower_scored_entry_candidate_cannot_outrank_higher_scored_research():
     out=html(doc,selection,view='current',horizon='short')
     assert '审核分 70/100' in out and '审核分 75/100' in out
     assert out.index('data-code="AA"') < out.index('data-code="TEST"')
-    assert '美股 1A 本周期Top1' in out and '美股 1A 本周期Top3' in out
+    assert '美股 1A 本市场Top1' in out and '美股 1A 本市场Top3' in out
     assert '条件关注 1' not in out
 
 
@@ -204,7 +204,7 @@ def test_empty_formal_view_keeps_all_market_grade_gaps_visible():
     out=html(doc,selection,view='current',horizon='short')
     assert '按审核分精选 · 0只' in out
     assert '1A缺口' not in out and '/3–5' not in out
-    assert all("data-grade='"+g+"'" in out for g in ('3A','2A','1A'))
+    assert all("data-market-group='"+m+"'" in out for m in ('A股','美股','港股'))
     assert '尚未完成双审' not in out
 
 
@@ -236,9 +236,9 @@ def test_per_market_grade_limits_and_complete_numeric_scores():
             'entry_opportunity':rec['entry_opportunity'],'reason':'当前双审证据'})
     out=html(doc,selection,view='current',horizon='short')
     out=html(doc,selection,view='current')
-    assert out.count('class="v88-watch-row"')==6
+    assert out.count('class="v88-watch-row"')==18
     for lane in ('short','long'):
-        assert sum(r['selected'] and r['horizon']==lane for r in records.values())==3
+        assert sum(r['selected'] and r['horizon']==lane for r in records.values())==9
     assert '1A缺口' not in out and '/3–5' not in out
     assert '尚未完成双审' not in out and 'nan/100' not in out
 
@@ -293,7 +293,7 @@ def test_previous_listing_in_rating_cell_preserves_eleven_columns_and_current_sc
     rating=''.join(parsed.rows[0]['cells'][1])
     assert '上次上榜 09-13 09:44' in rating and '美股1A 第3名' in rating
     assert '审核分 75/100' in rating
-    assert ('美股 1A 本周期Top3' if view=='current' else '美股 候补 Top2' if view=='tracking' else '美股 跟踪 3') in rating
+    assert ('美股 1A 本市场Top3' if view=='current' else '美股 候补 Top2' if view=='tracking' else '美股 跟踪 3') in rating
     assert parsed.history_titles==['2026-09-13 09:44:05 北京时间（BJT） · 原混合榜 · 美股1A 第3名']
     assert 'class="v88-listing-history" style="font-size:11px!important;' in out
     assert '&lt;script&gt;alert(&quot;bad&quot;)&lt;/script&gt; &amp; 公司' in out
@@ -369,7 +369,7 @@ def test_publication_key_is_internal_and_not_an_html_attribute():
 def test_missing_competitor_does_not_promote_published_third_place_to_second():
     selection,doc,now=fixture()
     page=html(doc,selection,code='TEST',view='current',horizon='short')
-    assert '美股 1A 本周期Top3' in page and '美股 1A 本周期Top2' not in page
+    assert '美股 1A 本市场Top3' in page and '美股 1A 本市场Top2' not in page
     assert 'data-current="true"' in page
 
 
@@ -413,7 +413,7 @@ def test_stale_review_preserves_original_evidence_with_historical_label():
     selection,doc,now=fixture();doc['source_generated_at']='prior-package'
     page=html(doc,selection,code='TEST',view='current',horizon='short')
     assert '原GPT审核快照 · 待重核' in page and '原书理快照 · 待重核' in page
-    assert '独立反审' in page and '原榜本周期Top3' in page
+    assert '独立反审' in page and '原榜本市场Top3' in page
 
 
 def test_horizon_sections_default_to_short_and_explain_empty_lanes():
@@ -422,7 +422,7 @@ def test_horizon_sections_default_to_short_and_explain_empty_lanes():
     assert "<section class='v88-horizon-lane' data-horizon='short'>" in out
     assert "<details class='v88-horizon-lane' data-horizon='medium'>" in out
     assert "<details class='v88-horizon-lane' data-horizon='long'>" in out
-    assert '研究精选 3/3' in out
+    assert '研究精选 3/9' in out
     assert '已评级但周内入场未通过 2' in out
     assert '缺少本周期证据时留空' in out
     assert out.count('data-code="TEST"')==1

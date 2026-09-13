@@ -158,6 +158,38 @@ def start_app(root):
     raise RuntimeError(f'V88 did not start. See {logs / "streamlit.log"}')
 
 
+def restart_updated_ui(root):
+    """Reload only the exact installed V88 process, once per program version."""
+    import runtime_guard
+    import psutil
+    pids=runtime_guard.listeners(8501)
+    if not pids:return False
+    if len(pids)!=1 or not runtime_guard.owned(pids[0]):
+        print('Port 8501 belongs to another process; it was not changed.')
+        return False
+    process=psutil.Process(pids[0])
+    token={'pid':process.pid,'created':process.create_time(),
+           'release':hashlib.sha256((root/'win/release.json').read_bytes()).hexdigest()}
+    marker=root/'win/logs/ui-release.json'
+    if marker.exists() and json.loads(marker.read_text(encoding='utf-8'))==token:return True
+    # owned() checked the complete script path, not merely a port or process name.
+    command=process.cmdline();working=process.cwd()
+    process.terminate();process.wait(timeout=20)
+    logs=root/'win/logs';logs.mkdir(parents=True,exist_ok=True)
+    with (logs/'streamlit.log').open('ab') as stream:
+        env={**os.environ,'PYTHONUTF8':'1'}
+        child=subprocess.Popen(command,cwd=working,env=env,stdout=stream,stderr=subprocess.STDOUT,
+                               **({'creationflags':subprocess.CREATE_NEW_PROCESS_GROUP} if os.name=='nt' else {'start_new_session':True}))
+    for _ in range(40):
+        if runtime_guard.health(8501):
+            marker.write_text(json.dumps({**token,'pid':child.pid,'created':psutil.Process(child.pid).create_time()}),encoding='utf-8')
+            print('Restarted the installed V88 service with updated modules and UTF-8.')
+            return True
+        if child.poll() is not None:break
+        time.sleep(.5)
+    raise RuntimeError('Updated V88 did not become healthy; see win/logs/streamlit.log')
+
+
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--start',action='store_true');parser.add_argument('--after-pull',action='store_true')
     args=parser.parse_args()
@@ -171,6 +203,8 @@ def main():
     install_dependencies(ROOT,REPORT)
     install_snapshot(REPORT)
     run([sys.executable,ROOT/'win/verify_runtime.py'],cwd=ROOT)
+    sys.path.insert(0,str(ROOT))
+    restart_updated_ui(ROOT)
     print(f'V88 {release_version()}: UPDATE VERIFIED. No model call or message was sent.')
     if args.start:start_app(ROOT)
 

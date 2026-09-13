@@ -26,6 +26,8 @@ def cells(snapshot):
         if any(word in mood for word in ('买','卖','加仓','减仓','满仓','跟进','躲')):
             mood = '情绪标签待核'
         clock = '指数行情 '+str(index.get('source_asof') or '日期未记录')+'；方向分日期 '+str(layer.get('source_asof') or '未单独记录')
+        from market_badge import html as market_badge_html
+        flag = market_badge_html(flag)
         result.append(f"<span class='v88-market-item' style='display:inline-block;margin-left:9px'>{flag}<b>{name}</b> {last} "
             f"<span style='color:{color}' title='{escape(clock, quote=True)}；过去约10个交易日窗口的量价规则分，非涨幅、非上涨概率或实测胜率'>{icon} 过去2周档方向 {value}·{label}</span>"
             + (f" <span style='color:#64748b'>{escape(mood)}</span>" if mood else '') + '</span>')

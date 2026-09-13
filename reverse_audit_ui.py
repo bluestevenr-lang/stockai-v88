@@ -23,7 +23,7 @@ def html(doc=None, status=None, selection=None, now=None):
                  and doc.get('source_generated_at') == selection.get('generated_at'))
     e = lambda value: escape(str(value if value is not None else '—'))
     focus = ("<div class='v88-investment-focus' style='font-size:12px;color:#334155;margin:5px 0'>"
-             "<b>三周期3A研究</b> · 短期未来8周、中期8–24周、长期12–36周，各自Top3，按审核分排序。"
+             "<b>三周期3A研究</b> · 短期未来8周、中期8–24周、长期12–36周，每周期中美港各Top3、共9席，按各市场审核分排序。"
              "入场统一核未来5个交易日；持有与退出沿用各周期原合同，3A是审核等级。</div>")
     if not valid:
         return focus + "<div class='v88-reverse-audit' style='font-size:12px;color:#92400e'>反查本轮未就绪或超过10分钟未核对；历史记录保留，等待同步。</div>"

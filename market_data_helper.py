@@ -1,4 +1,5 @@
 """Free market-data adapter for desktop/chart workers; no paid-provider route."""
+from v88_paths import core_root
 from pathlib import Path
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
@@ -8,7 +9,7 @@ import sys
 import numpy as np
 import pandas as pd
 
-CORE = Path.home() / 'Desktop/ai-daily-report-v2'
+CORE = core_root()
 log = logging.getLogger(__name__)
 COLUMNS = ['Open', 'High', 'Low', 'Close', 'Volume']
 INDEX_CODES = {'000001.SS', '000300.SS', '000016.SS', '000905.SS',
@@ -172,7 +173,7 @@ def fetch_cn_top_pool(limit=500):
         from free_market_data import code_for, number, source_status
         from market_symbols import canonical
         root = CORE/'data/free_market_data'
-        doc = json.loads((root/'cn.json').read_text())
+        doc = json.loads((root/'cn.json').read_text(encoding='utf-8'))
         if not doc.get('pagination_complete'):
             raise ValueError('报价分页未完成')
         listed = set()
@@ -180,7 +181,7 @@ def fetch_cn_top_pool(limit=500):
             path = root/name
             if not path.exists():
                 raise ValueError('缺少交易所上市名录，不能输出全市场排序')
-            directory = json.loads(path.read_text())
+            directory = json.loads(path.read_text(encoding='utf-8'))
             if directory.get('status') not in ('ok', 'downloaded') or not directory.get('codes'):
                 raise ValueError('交易所名录不完整')
             at = datetime.fromisoformat(str(directory.get('fetched_at')).replace('Z', '+00:00'))

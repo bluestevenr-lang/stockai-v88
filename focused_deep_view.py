@@ -79,7 +79,7 @@ def _sell_evidence(st, code):
     from market_data_helper import CORE
     from modules.utils import to_yf_cn_code
     try:
-        doc = json.loads((CORE / 'data' / 'sell_grade.json').read_text())
+        doc = json.loads((CORE / 'data' / 'sell_grade.json').read_text(encoding='utf-8'))
     except (OSError, ValueError):
         st.caption('独立卖侧风险资料暂未读取成功；原合同失效条件仍须遵守。')
         return

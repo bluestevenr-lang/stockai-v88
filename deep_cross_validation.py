@@ -30,7 +30,7 @@ def load_context(code, data_dir=None):
     for _ in range(2):
         selection, row, formal = _triad_record(code)
         try:
-            pack = json.loads((root/'review_factpack.json').read_text())
+            pack = json.loads((root/'review_factpack.json').read_text(encoding='utf-8'))
         except (OSError, ValueError):
             pack = {}
         if pack.get('factpack_id') == selection.get('factpack_id'):
