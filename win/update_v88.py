@@ -49,10 +49,16 @@ def sync_repo(root, private=False):
             bash = str(candidate) if candidate.exists() else None
         if not bash:
             raise RuntimeError('Git for Windows bash is required.')
+        # Older checkouts may have CRLF before the new .gitattributes arrives.
+        for name in ('safe_pull.sh','setup_merge_driver.sh'):
+            path=root/'scripts'/name
+            if path.exists():
+                raw=path.read_bytes()
+                if b'\r\n' in raw:path.write_bytes(raw.replace(b'\r\n',b'\n'))
         # Older Windows Git helpers call python3 although only py.exe exists.
         with tempfile.TemporaryDirectory(prefix='v88-python-') as tmp:
             shim=Path(tmp)/'python3'
-            shim.write_text('#!/usr/bin/env bash\nexec "$V88_PYTHON" "$@"\n',encoding='utf-8')
+            shim.write_bytes(b'#!/usr/bin/env bash\nexec "$V88_PYTHON" "$@"\n')
             shim.chmod(0o700)
             previous=os.environ.get('PATH','')
             os.environ['PATH']=tmp+os.pathsep+previous
