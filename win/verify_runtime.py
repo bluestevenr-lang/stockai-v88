@@ -27,7 +27,7 @@ def verify():
     for p in list(ROOT.glob('*.py'))+list((ROOT/'modules').glob('*.py'))+list((REPORT/'src').glob('*.py')):
         ast.parse(p.read_text(encoding='utf-8-sig'),filename=str(p))
     for module in ('grade_card','annual_outlook','future_trend_visual','next_session_model','next_session_view',
-                   'next_session_data','stock_switcher','deep_cross_validation','astra_trade_entry_view'):
+                   'next_session_data','stock_switcher','deep_cross_validation','astra_trade_entry_view','action_source_view'):
         importlib.import_module(module)
     for name in ('triad_selection.json','triad_selection_pub.json','gpt_verify.json','classics_lens.json','review_factpack.json'):
         if not (REPORT/'data'/name).exists():raise RuntimeError(f'Missing central data: {name}')

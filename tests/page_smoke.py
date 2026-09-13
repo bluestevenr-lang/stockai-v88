@@ -27,6 +27,10 @@ for b in suspicious[:5]:
 
 # ── 内容级自检：把页面全部文本拼起来查关键标志 ────────────────────────────
 _texts = []
+# Native st.html is not a Markdown element. Ignoring it made the central board
+# invisible to this test while the stale Markdown drawer passed unnoticed.
+for _el in at.get("html"):
+    _texts.append(str(_el.proto.body))
 for _attr in ("markdown", "caption", "expander", "info", "warning", "error", "subheader", "header"):
     try:
         for _el in getattr(at, _attr):
@@ -37,6 +41,8 @@ _page = "\n".join(_texts)
 
 MUST_HAVE = [
     "3A大系统",       # 核心列表必须常驻，不能落在宏观回填槽内消失
+    "技术线索关联核对",        # 线索只关联中央，不再另起旧评级表
+    "我的持仓处置",            # 中央OUT继续呈现持仓保护
     "Astra月度计划",           # 月度约束闭环
     "萨普",                    # 核心书籍的风险/仓位补充
     "我的股票池",              # 一池归一·持仓+自选合并模块头(金名=双重身份)
@@ -54,6 +60,8 @@ WARN_ONLY = ["今日总决断"]
 MUST_NOT = [
     "暂不可用",                # 顶部搜索/今日导航挂掉的降级文案
     "⚠️渲染异常",              # 渲染兜底提示
+    "历史技术观察 ·",           # 旧表不能只改标题再发布旧1A/买单
+    "战术级1A",
 ]
 missing = [m for m in MUST_HAVE if m not in _page]
 for _w in WARN_ONLY:
@@ -67,7 +75,7 @@ _source = (REPO_ROOT / "app_v88_integrated.py").read_text(encoding="utf-8")
 _link_contract = (
     "def _cb_link9(_nm, _cd):",
     "from grade_card import system_table_html as _sys3a",
-    "⚠️{_cb_link9(r.get('name'), r.get('code'))}",
+    "from action_source_view import html as _source_links3a",
     "_stk_link(_t9f.get('name'), _t9f.get('code'))",
 )
 if any(_frag not in _source for _frag in _link_contract):

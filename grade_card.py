@@ -986,7 +986,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                           f"· {audit_text(x.get('name'))}：{legacy_review_text(x.get('note'))}</span>"
                           for x in (_dc.get("detail") or [])[:4])
                 + "</details>") if _dc else "")((sg.get("sell_verification") or {}).get("dual_cert"))
-            + f"<div style='font-size:13px;font-weight:800;color:{PALETTE['sell']};margin:12px 0 2px;"
+            + f"<div id='v88-central-out' style='font-size:13px;font-weight:800;color:{PALETTE['sell']};margin:12px 0 2px;"
               f"border-left:4px solid {PALETTE['sell']};padding-left:6px'>"
               f"💼 第一区 · 我的持仓处置"
               f"（{_quiet.get('held_total', len(_own))}只全覆盖：{len(_own)}只有卖出信号 ／ "
