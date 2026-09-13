@@ -20,10 +20,10 @@ def fixture():
     focus=grade_focus.build(selection['observations'],now=now)
     seat=doc['current_focus']['rows'][0]
     seat.update(market='美股',horizon='short',reason='原审核与合同继续跟踪',
-                focus_rank=1,central_rank=3,focus_eligible=True,weekly_link=True)
+                focus_rank=3,central_rank=3,focus_eligible=True,weekly_link=True)
     reserve=deepcopy(selection['observations'][0]);rec=focus['records'][reserve['code']]
     reserve.update(market='美股',watch_rank=1,seat_kind='已评级跟踪',source_asof=reserve['factpack_asof'],
-        focus_rank=None,central_rank=1,focus_eligible=False,weekly_link=False,
+        focus_rank=1,central_rank=1,focus_eligible=False,weekly_link=False,
         entry_opportunity=rec['entry_opportunity'],reason='原区间与趋势参考无交集，保留研究')
     doc['current_focus'].update(rows=[seat,reserve],graded=2,awaiting_review=0,
         rule='条件关注优先；其余席位保留研究跟踪，全部沿用原合同')
@@ -33,17 +33,14 @@ def fixture():
 
 def test_main_list_uses_grade_ranks_instead_of_entry_ranks_with_original_scores():
     selection,doc,now=fixture()
-    out=html(doc,selection,view='current')
+    out=html(doc,selection,view='current',horizon='short')
     assert out.count('<th ')==11 and out.count('class="v88-watch-row"')==2
-    assert '美股 1A 第1名' in out and '美股 1A 第3名' in out
-    assert '美股 1A 第2名' not in out
+    assert out.count('class="v88-week-archive-row"')==0
+    assert '美股 1A 本周期Top1' in out and '美股 1A 本周期Top3' in out
     assert out.index('data-code="AA"') < out.index('data-code="TEST"')
-    assert '进场关注序' not in out and '审核质量序' not in out
-    assert '港股：1A 0/3–5 · 2A 0/1–2 · 3A 0/1–2 · 1A缺口3' in out
-    assert '📌 本周主观察 · 与上方周度同股同分' in out
-    assert 'id="v88-watch-TEST"' in out and '研究Top' not in out
-    assert out.count('审核分 75/100')==2 and '原审核分' not in out
-    assert '原区间' in out and '?q=TEST' in out
+    assert '港股 0只' in out and '📌 本周主观察 · 与上方周度同股同分' in out
+    assert out.count('审核分 75/100')==2 and '?q=TEST' in out
+    assert '⏸ 暂不入场·等待条件修复' in out and '条件观察' in out
 
 
 def test_stale_or_changed_ranks_cannot_claim_current_attention_or_weekly_link():
@@ -57,7 +54,7 @@ def test_stale_or_changed_ranks_cannot_claim_current_attention_or_weekly_link():
         elif change=='focus_eligible':seat['focus_eligible']=False
         elif change=='score':seat['audit_score']=99
         else:seat['trade_plan']['stop']=1
-        out=html(bad,selection,code='TEST',view='current')
+        out=html(bad,selection,code='TEST',view='current',horizon='short')
         assert '条件关注 1' not in out,change
         assert '与上方周度同股同分' not in out,change
         assert '当前证据待更新·不可执行' in out,change
@@ -67,7 +64,7 @@ def test_stale_or_changed_ranks_cannot_claim_current_attention_or_weekly_link():
 def test_original_period_keeps_research_identity_without_current_ranking():
     selection,doc,now=fixture()
     out=html(doc,selection,view='history')
-    assert '本期固定跟踪档案' in out and '美股 跟踪 3' in out
+    assert '本期固定跟踪档案' in out and '美股 跟踪 1' in out
     assert '研究Top' not in out and 'id="v88-watch-' not in out
     assert out.count('class="v88-watch-history-row"')==2
     assert '?q=TEST' in out and '?q=AA' in out
@@ -111,13 +108,13 @@ def paused_hk_fixture(*,bucket='pending',expired=False):
 @pytest.mark.parametrize('bucket',['pending','excluded'])
 def test_hk_paused_seats_stay_in_separate_tracking_with_real_scores_and_grade_gap(bucket):
     selection,doc,now=paused_hk_fixture(bucket=bucket)
-    formal=html(doc,selection,view='current')
-    assert '港股：1A 0/3–5 · 2A 0/1–2 · 3A 0/1–2 · 1A缺口3' in formal
+    formal=html(doc,selection,view='current',horizon='short')
+    assert '港股 0只' in formal
     assert '?q=661.HK' not in formal
     out=html(doc,selection,view='tracking')
     assert out.count('<th ')==11 and out.count('class="v88-watch-tracking-row"')==5
     assert out.count('data-market="港股" data-tier="none" data-paused="true" data-continuity="true" data-current="true"')==5
-    assert '持续跟踪与补审（不计入正式评级） · 5只' in out
+    assert '候补跟踪与补审（原评级保留） · 5只' in out
     assert '港股 5只（暂停5 / 待双审0）' in out
     assert '美股 0只（暂停0 / 待双审0）' in out and 'A股 0只（暂停0 / 待双审0）' in out
     assert '已评级99' not in out and '待双审5' not in out
@@ -180,13 +177,13 @@ def test_lower_scored_entry_candidate_cannot_outrank_higher_scored_research():
     records=grade_focus.build([{**r,'scorecard':current_scorecard(selection,r)} for r in selection['observations']])['records']
     for row in doc['current_focus']['rows']:
         record=records[row['code']]
-        row['central_rank']=record['central_rank'];row['watch_rank']=record['central_rank'];row['focus_rank']=record['rank']
+        row['central_rank']=record['central_rank'];row['watch_rank']=record['rank'] or record['central_rank'];row['focus_rank']=record['rank']
         if row['code']=='TEST':
             row['audit_score']=central['audit_score'];row['scorecard']=deepcopy(central['scorecard'])
-    out=html(doc,selection,view='current')
+    out=html(doc,selection,view='current',horizon='short')
     assert '审核分 70/100' in out and '审核分 75/100' in out
     assert out.index('data-code="AA"') < out.index('data-code="TEST"')
-    assert '美股 1A 第1名' in out and '美股 1A 第3名' in out
+    assert '美股 1A 本周期Top1' in out and '美股 1A 本周期Top3' in out
     assert '条件关注 1' not in out
 
 
@@ -196,7 +193,7 @@ def test_formal_view_never_lists_unscored_candidates_or_paused_seats():
     for value in (None,float('nan'),float('inf'),True):
         row=deepcopy(doc['current_focus']['rows'][0]);row.update(code='UNSCORED',audit_score=value)
         doc['current_focus']['rows'].append(row)
-    out=html(doc,selection,view='current')
+    out=html(doc,selection,view='current',horizon='short')
     assert 'UNSCORED' not in out and '?q=661.HK' not in out
     assert '尚未完成双审' not in out and '暂停原因与原评级' not in out
     assert out.count('class="v88-watch-row"')==2
@@ -204,10 +201,10 @@ def test_formal_view_never_lists_unscored_candidates_or_paused_seats():
 
 def test_empty_formal_view_keeps_all_market_grade_gaps_visible():
     selection,doc,now=fixture();doc['current_focus']['rows']=[]
-    out=html(doc,selection,view='current')
-    assert '三市场正式评级榜 · 0只' in out
-    assert out.count('1A缺口3')==3
-    assert all('data-grade="'+g+'"' in out for g in ('3A','2A','1A'))
+    out=html(doc,selection,view='current',horizon='short')
+    assert '按审核分精选 · 0只' in out
+    assert '1A缺口' not in out and '/3–5' not in out
+    assert all("data-grade='"+g+"'" in out for g in ('3A','2A','1A'))
     assert '尚未完成双审' not in out
 
 
@@ -233,17 +230,16 @@ def test_per_market_grade_limits_and_complete_numeric_scores():
     for row in reversed(central_rows):
         rec=records[grade_focus.canonical(row['code'])]
         doc['current_focus']['rows'].append({**deepcopy(row),
-            'watch_rank':rec['central_rank'],'seat_kind':'已评级跟踪','source_asof':row['factpack_asof'],
+            'watch_rank':rec['rank'] or rec['central_rank'],'seat_kind':'已评级跟踪','source_asof':row['factpack_asof'],
             'focus_rank':rec['rank'],'central_rank':rec['central_rank'],
             'focus_eligible':rec['entry_opportunity']['focus_eligible'],
             'entry_opportunity':rec['entry_opportunity'],'reason':'当前双审证据'})
+    out=html(doc,selection,view='current',horizon='short')
     out=html(doc,selection,view='current')
-    assert out.count('class="v88-watch-row"')==27
-    for market in ('A股','美股','港股'):
-        for tier,limit in (('3A',2),('2A',2),('1A',5)):
-            assert len(re.findall(f'data-market="{market}" data-tier="{tier}"',out))==limit
-            assert re.search(f'{market} {tier} (?:原榜)?第{limit}名',out)
-            assert not re.search(f'{market} {tier} (?:原榜)?第{limit+1}名',out)
+    assert out.count('class="v88-watch-row"')==6
+    for lane in ('short','long'):
+        assert sum(r['selected'] and r['horizon']==lane for r in records.values())==3
+    assert '1A缺口' not in out and '/3–5' not in out
     assert '尚未完成双审' not in out and 'nan/100' not in out
 
 
@@ -290,20 +286,20 @@ def history_view_fixture(view,history):
 def test_previous_listing_in_rating_cell_preserves_eleven_columns_and_current_score(view):
     selection,doc,row=history_view_fixture(view,listing_history())
     row['name']='样例 <script>alert("bad")</script> & 公司'
-    out=html(doc,selection,code='TEST',view=view)
+    out=html(doc,selection,code='TEST',view=view,horizon='short')
     parsed=WatchTableParser();parsed.feed(out)
     assert len(parsed.rows)==1 and len(parsed.rows[0]['cells'])==11
     assert out.count('<th ')==11 and "class='v88-grade-scroll'" in out
     rating=''.join(parsed.rows[0]['cells'][1])
     assert '上次上榜 09-13 09:44' in rating and '美股1A 第3名' in rating
     assert '审核分 75/100' in rating
-    assert ('美股 1A 第3名' if view=='current' else '美股 跟踪 3') in rating
-    assert parsed.history_titles==['2026-09-13 09:44:05 北京时间（BJT） · 美股1A 第3名']
+    assert ('美股 1A 本周期Top3' if view=='current' else '美股 候补 Top2' if view=='tracking' else '美股 跟踪 3') in rating
+    assert parsed.history_titles==['2026-09-13 09:44:05 北京时间（BJT） · 原混合榜 · 美股1A 第3名']
     assert 'class="v88-listing-history" style="font-size:11px!important;' in out
     assert '&lt;script&gt;alert(&quot;bad&quot;)&lt;/script&gt; &amp; 公司' in out
     assert '<script>' not in out and '?q=TEST&focus=deep#v88-deep-analysis' in out
     assert '上次上榜指上一版真实正式榜' in out
-    assert '同版后台刷新不重复计次，历史名次按当时市场及评级' in out
+    assert '同版后台刷新不重复计次，历史名次按当时榜单范围' in out
     assert '首次上榜' not in out
 
 
@@ -312,7 +308,7 @@ def test_previous_rating_and_rank_are_not_replaced_by_current_grade_or_tracking_
     selection,doc,row=history_view_fixture('tracking',history)
     row.update(watch_rank=91,previous_tier='3A')
     out=html(doc,selection,code='TEST',view='tracking')
-    assert '美股2A 第2名' in out and '美股 跟踪 91' in out
+    assert '美股2A 第2名' in out and '美股 候补 Top2' in out and '跟踪 91' not in out
     assert '美股1A 第2名' not in out and '美股3A 第91名' not in out
 
 
@@ -321,7 +317,7 @@ def test_previous_rating_and_rank_are_not_replaced_by_current_grade_or_tracking_
     {'status':'no_verified_previous','previous':None}])
 def test_missing_previous_listing_is_explicit_without_inventing_first_listing(view,history):
     selection,doc,row=history_view_fixture(view,history)
-    out=html(doc,selection,code='TEST',view=view)
+    out=html(doc,selection,code='TEST',view=view,horizon='short')
     parsed=WatchTableParser();parsed.feed(out)
     assert len(parsed.rows[0]['cells'])==11
     assert '上次上榜：暂无可核验历史' in ''.join(parsed.rows[0]['cells'][1])
@@ -341,7 +337,7 @@ def test_missing_previous_listing_is_explicit_without_inventing_first_listing(vi
 def test_malformed_previous_receipt_does_not_render_a_historical_date_or_rank(field,value):
     history=listing_history();history['previous'][field]=value
     selection,doc,row=history_view_fixture('current',history)
-    out=html(doc,selection,code='TEST',view='current')
+    out=html(doc,selection,code='TEST',view='current',horizon='short')
     parsed=WatchTableParser();parsed.feed(out)
     assert '上次上榜：暂无可核验历史' in ''.join(parsed.rows[0]['cells'][1])
     assert '上次上榜 09-13' not in out and '美股1A 第3名' not in out
@@ -356,7 +352,7 @@ def test_malformed_previous_receipt_does_not_render_a_historical_date_or_rank(fi
 def test_unverified_or_wrong_scope_history_is_not_presented_as_verified(field,value):
     history=listing_history();history[field]=value
     selection,doc,row=history_view_fixture('current',history)
-    out=html(doc,selection,code='TEST',view='current')
+    out=html(doc,selection,code='TEST',view='current',horizon='short')
     assert '上次上榜：暂无可核验历史' in out
     assert '上次上榜 09-13' not in out and '美股1A 第3名' not in out
 
@@ -365,15 +361,15 @@ def test_publication_key_is_internal_and_not_an_html_attribute():
     history=listing_history()
     history['previous']['publication_key']='pub" onmouseover="alert(1)<script>&'
     selection,doc,row=history_view_fixture('current',history)
-    out=html(doc,selection,code='TEST',view='current')
+    out=html(doc,selection,code='TEST',view='current',horizon='short')
     assert '美股1A 第3名' in out and '上次上榜 09-13 09:44' in out
     assert 'onmouseover=' not in out and '<script>' not in out
 
 
 def test_missing_competitor_does_not_promote_published_third_place_to_second():
     selection,doc,now=fixture()
-    page=html(doc,selection,code='TEST',view='current')
-    assert '美股 1A 第3名' in page and '美股 1A 第1名' not in page and '美股 1A 第2名' not in page
+    page=html(doc,selection,code='TEST',view='current',horizon='short')
+    assert '美股 1A 本周期Top3' in page and '美股 1A 本周期Top2' not in page
     assert 'data-current="true"' in page
 
 
@@ -381,7 +377,7 @@ def test_missing_competitor_does_not_promote_published_third_place_to_second():
 def test_wrong_published_position_cannot_claim_current_rank_or_weekly_link(rank):
     selection,doc,now=fixture()
     doc['current_focus']['rows'][0]['watch_rank']=rank
-    page=html(doc,selection,code='TEST',view='current')
+    page=html(doc,selection,code='TEST',view='current',horizon='short')
     assert 'data-current="false"' in page and '当前证据待更新·不可执行' in page
     assert '同股同分' not in page
 
@@ -390,7 +386,7 @@ def test_wrong_published_position_cannot_claim_current_rank_or_weekly_link(rank)
 def test_out_of_range_review_scores_do_not_enter_formal_table(score):
     selection,doc,now=fixture()
     doc['current_focus']['rows'][0]['audit_score']=score
-    page=html(doc,selection,view='current')
+    page=html(doc,selection,view='current',horizon='short')
     assert 'data-code="TEST"' not in page
 
 
@@ -398,7 +394,7 @@ def test_current_grade_action_uses_recomputed_entry_not_unverified_cached_label(
     selection,doc,now=fixture()
     row=doc['current_focus']['rows'][0]
     row['entry_opportunity']={'label':'FAKE_EXECUTION_SENTINEL','state':'EXECUTABLE','executable':True}
-    page=html(doc,selection,code='TEST',view='current')
+    page=html(doc,selection,code='TEST',view='current',horizon='short')
     assert 'data-current="true"' in page
     assert 'FAKE_EXECUTION_SENTINEL' not in page and '条件观察' in page
 
@@ -408,13 +404,25 @@ def test_current_grade_displays_recomputed_review_and_books_not_cached_detail():
     row=doc['current_focus']['rows'][0]
     row['scorecard']={'gpt':{'total':100,'current':True,'criteria':[{'reason':'FAKE_REVIEW_SENTINEL'}]}}
     row['book_checks']=[{'label':'FAKE_BOOK_SENTINEL','ok':True}]
-    page=html(doc,selection,code='TEST',view='current')
+    page=html(doc,selection,code='TEST',view='current',horizon='short')
     assert 'data-current="true"' in page
     assert 'FAKE_REVIEW_SENTINEL' not in page and 'FAKE_BOOK_SENTINEL' not in page
 
 
 def test_stale_review_preserves_original_evidence_with_historical_label():
     selection,doc,now=fixture();doc['source_generated_at']='prior-package'
-    page=html(doc,selection,code='TEST',view='current')
+    page=html(doc,selection,code='TEST',view='current',horizon='short')
     assert '原GPT审核快照 · 待重核' in page and '原书理快照 · 待重核' in page
-    assert '独立反审' in page and '原榜第3名' in page
+    assert '独立反审' in page and '原榜本周期Top3' in page
+
+
+def test_horizon_sections_default_to_short_and_explain_empty_lanes():
+    selection,doc,now=fixture()
+    out=html(doc,selection,view='current')
+    assert "<section class='v88-horizon-lane' data-horizon='short'>" in out
+    assert "<details class='v88-horizon-lane' data-horizon='medium'>" in out
+    assert "<details class='v88-horizon-lane' data-horizon='long'>" in out
+    assert '研究精选 3/3' in out
+    assert '已评级但周内入场未通过 2' in out
+    assert '缺少本周期证据时留空' in out
+    assert out.count('data-code="TEST"')==1

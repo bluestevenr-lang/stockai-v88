@@ -38,13 +38,31 @@ JOINT_CONTRACT = (
 JOINT_HASH = hashlib.sha256((PROMPT_HASH+JOINT_CONTRACT).encode()).hexdigest()
 
 
+LEGACY_PROTOCOLS={False:(SCHEMA_VERSION,PROMPT_HASH),True:(JOINT_VERSION,JOINT_HASH)}
+SCHEMA_VERSION='v88.gpt6-classics-evidence/7.1-multiclassic'
+JOINT_VERSION='v88.gpt6-classics-evidence/8.1-multiclassic'
+MULTI_CLASSIC_CONTRACT=(
+    '多经典按问题选择：专业投机原理是重点之一，不享有无条件优先。'
+    '趋势/入场结合Sperandeo、Edwards与Magee、欧奈尔；企业/估值结合Lynch、Graham与Dodd安全边际；'
+    '资本风险结合Tharp初始R、仓位与退出；验证结合Aronson循证及Lopez de Prado防过拟合。'
+    '只能用冻结事实，未提供财报/估值/形态/样本外证据则列缺口，禁止按作者名猜通过或编引文。'
+    '有适用范围的策略不能机械混用；说明支持和最强反证，风险否决不能被多书支持冲抵。'
+    '同源观察只计一次，不额外添加书籍分；所有结论仍映射既定五项评分与八域复审。'
+    '研究榜短8周、中8–24周、长12–36周是研究议程；原交易合同仍按facts内期限验证，不外推目标。'
+)
+CONTRACT += MULTI_CLASSIC_CONTRACT
+PROMPT_HASH=hashlib.sha256((CONTRACT+json.dumps(CLASSICS,ensure_ascii=False,sort_keys=True)).encode()).hexdigest()
+JOINT_HASH=hashlib.sha256((PROMPT_HASH+JOINT_CONTRACT).encode()).hexdigest()
+
+
 def profile(row):
     return (JOINT_VERSION, JOINT_HASH) if 'joint_evidence' in (row or {}) else (SCHEMA_VERSION, PROMPT_HASH)
 
 
 def known_protocol(rec, row=None):
     actual=(rec.get('review_schema_version'),rec.get('prompt_hash'))
-    return actual==profile(row) if row is not None else actual in {(SCHEMA_VERSION,PROMPT_HASH),(JOINT_VERSION,JOINT_HASH)}
+    return (actual in {profile(row),LEGACY_PROTOCOLS['joint_evidence' in row]} if row is not None
+            else actual in {(SCHEMA_VERSION,PROMPT_HASH),(JOINT_VERSION,JOINT_HASH),*LEGACY_PROTOCOLS.values()})
 
 
 def schema(n: int, *, joint=False) -> dict:

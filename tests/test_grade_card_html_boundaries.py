@@ -83,7 +83,7 @@ def test_in_board_prose_cannot_change_table_structure_or_contract(field):
     result = grade_card.system_table_html({'rows': [row]}, {'rows': []}, {}, {})
     assert_plain_prose(result)
     assert row == original
-    assert '研究参考·非买单' in result
+    assert '原研究区间与触发' in result
     assert '卖出分' not in result
 
 

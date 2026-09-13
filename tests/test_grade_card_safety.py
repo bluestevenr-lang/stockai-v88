@@ -66,7 +66,7 @@ def central_row(code: str, name: str, tier: str, state: str,
                     "classics": {"horizon": "short", "factpack_id": "p"*64, "at": now, "source_timestamps": {"test": now}},
                     "claude_cs": {"verdict": "gate_pass"}},
         "trade_plan": {
-            "ready": True, "last": 10.3, "entry_range": "[10.2, 10.6]",
+            "ready": True, "last": 10.3, "entry_range": "10.2 ～ 10.6",
             "promotion_trigger": "收盘重新站上10.2000且当日量/此前20日均量≥1.2；下一开盘仍在原区间", "stop": 9.7,
             "target": 12.5, "rr": 2.4, "invalidation": "收盘跌破9.70",
             "horizon": "short", "position_cap": "不超过10%",
@@ -141,7 +141,7 @@ class GradeCardSafetyTest(unittest.TestCase):
         self.assertIn("IN: 3A现买×0", html)
         self.assertIn("3A候选", html)
         self.assertIn("待复核·不可执行", html)
-        self.assertIn("研究参考·非买单", html)
+        self.assertIn("原研究区间与触发", html)
         self.assertNotIn("IN: 3A现买×1", html)
 
 
@@ -194,7 +194,7 @@ class GradeCardTriadV2Test(unittest.TestCase):
                       "2A·价值机会", "1A价值跟踪", "数据处理与审核队列"):
             self.assertIn(label, html)
         self.assertEqual(html.count("现在可进"), 1)
-        self.assertIn("研究参考·非买单", html)
+        self.assertIn("原研究区间与触发", html)
 
     def test_non_publishable_recommendation_is_not_counted_as_current_buy(self):
         triad = central_v2()
@@ -236,7 +236,7 @@ class GradeCardTriadV2Test(unittest.TestCase):
         html = system_table_html(rank, {"rows": []}, {}, {}, triad=central_v2())
 
         self.assertIn("现10.3", html)
-        self.assertIn("[10.2, 10.6]", html)
+        self.assertIn("10.2 ～ 10.6", html)
         self.assertIn("收盘重新站上10.2000", html)
         self.assertIn("收盘跌破9.70", html)
         self.assertNotIn("旧口径现买", html)

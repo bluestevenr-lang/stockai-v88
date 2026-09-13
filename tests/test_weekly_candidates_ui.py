@@ -12,7 +12,7 @@ def fixture():
         'history':{'position_bars':252,'position252_pct':20,'low_recovery':True},'gaps':[],
         'book_checks':[],'no_grade_authority':True,'executable':False}
     return {'version':'weekly-candidates-v1','generated_at':NOW.isoformat(),'factpack_id':'pack',
-        'policy':{'ranking':'central-score-quota-with-weekly-eligibility-v5'},
+        'policy':{'ranking':'central-five-session-entry-with-weekly-eligibility-v6'},
         'week':{'start':'2026-09-14','end':'2026-09-18'},'rows':[row],
         'market_slots':{'美股':{'selected':1,'qualified_2a_3a':0}}}
 
@@ -133,7 +133,7 @@ def test_weekly_distinguishes_attention_from_quality_and_links_actual_seat():
     doc,selection,watchlist,now=linked_fixture()
     out=html(doc,selection,now,watchlist=watchlist)
     assert '本市场1A审核分第3名' in out
-    assert "href='#v88-watch-TEST'" in out and '主榜1A第3名 · 同股同分' in out
+    assert "href='#v88-watch-TEST'" in out and '短期Top3 · 1A同股同分' in out
     assert '当前评级 1A' in out and "data-cross-ok='true'" in out
 
 
@@ -205,13 +205,13 @@ def test_weekly_cannot_promote_a_score_rank_six_one_a_into_main_top_five():
     assert '原评级 1A' in out and '?q=ZZTOP' in out
 
 
-def test_two_a_three_a_each_have_two_positions_and_no_third_position():
+def test_weekly_cannot_reintroduce_fourth_candidate_outside_horizon_top3():
     for tier in ('2A','3A'):
         doc,selection,watchlist,now=ranked_fixture(tier,2)
         out=html(doc,selection,now,watchlist=watchlist)
         assert f'当前评级 {tier}' in out,tier
-        assert f'主榜{tier}第2名 · 同股同分' in out,tier
-        doc,selection,watchlist,now=ranked_fixture(tier,3)
+        assert f'短期Top2 · {tier}同股同分' in out,tier
+        doc,selection,watchlist,now=ranked_fixture(tier,4)
         out=html(doc,selection,now,watchlist=watchlist)
         assert '超出当前正式榜本档名额' in out,tier
         assert f'当前评级 {tier}' not in out,tier

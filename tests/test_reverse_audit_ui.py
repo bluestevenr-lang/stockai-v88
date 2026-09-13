@@ -16,7 +16,8 @@ def test_medium_long_position_does_not_relabel_short_and_escapes():
     out = html(*inputs())
     assert '中长期：3A 0 · 2A 0 · 1A 0' in out
     assert '&lt;script&gt;' in out and '<script>' not in out
-    assert '短期1–30天' in out and '审核分不是胜率' in out
+    assert '短期未来8周' in out and '中期8–24周' in out and '长期12–36周' in out
+    assert '审核分不是胜率' in out
 
 def test_old_or_failed_or_mixed_report_is_not_current():
     doc, status, selection, now = inputs()
@@ -28,7 +29,7 @@ def test_old_or_failed_or_mixed_report_is_not_current():
 
 def test_missing_audit_keeps_clear_horizon_without_fake_counts():
     out = html()
-    assert '3A主线：中长期研究' in out and '本轮未就绪' in out
+    assert '三周期3A研究' in out and '本轮未就绪' in out
     assert '中长期：3A 0' not in out
 
 

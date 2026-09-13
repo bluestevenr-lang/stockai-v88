@@ -3,7 +3,7 @@ from datetime import datetime,timezone
 from html import escape
 import json
 from pathlib import Path
-ROOT=Path('/Users/bluesteven/Desktop/ai-daily-report-v2/data')
+ROOT=Path(__file__).resolve().parent.parent/'ai-daily-report-v2/data'
 
 def status(doc,now=None):
  now=now or datetime.now(timezone.utc)

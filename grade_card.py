@@ -458,6 +458,8 @@ def _triad_v2_rows(rk: dict, triad: dict | None) -> tuple[list[dict], bool]:
                 "formal_recommendation": publish_eligible,
                 "central_bucket": "pending" if expired_quality or bucket == "recommendations" and not publish_eligible else bucket, "central_state": state,
                 "central_trade_plan": plan, "triad_fallback": False,
+                "source_timestamps":central.get("source_timestamps"), "audit_id":central.get("audit_id"),
+                "factpack_id":central.get("factpack_id"),
                 "scorecard": live_card, "central_reviews": central.get("reviews") or {},
                 "master_ref": __import__('stock_reference').reference(triad,central),
                 "rank_score": live_card.get("total"), "rank": None,
@@ -577,12 +579,12 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
     empty_cause = ('行情或双审待更新；历史评级保留在下方' if not current_review_count
                    else '尚无同时满足本档证据、收益空间与成熟条件的标的')
     head = (f"<section id='v88-3a-system' class='v88-triad-header' style='color:#1e293b;margin:4px 0 6px'>"
-            f"<div style='font-size:16px;font-weight:800'>🎯 3A大系统 · 中长期主线 / 短期跟踪 / OUT</div>"
+            f"<div style='font-size:16px;font-weight:800'>🎯 3A大系统 · 短期周月 / 中期 / 长期</div>"
             + scan_progress_html(rows)
             + f"<div class='v88-grade-counts' style='font-size:13px;padding:6px 0;font-weight:600'>"
             + ((f"当前研究精选 {(watchlist.get('current_focus') or {}).get('total',0)}只 · " + " ｜ ".join(f"{m} {v['selected']}只" for m,v in (watchlist.get('current_focus') or {}).get('markets',{}).items())) if persistent_html else
                "重点榜：" + " ｜ ".join(f"{g} {sum(v['selected'] for v in focus['summary'][g].values())}只" for g in grade_focus.GRADES)
-               + f" <span style='font-weight:400'>· 每档最多15只 / 每市场最多5只</span>" if focus else
+               + f" <span style='font-weight:400'>· 各周期合计Top3 · 不凑数</span>" if focus else
                f"全部原周期评级：3A {n3+n3b+n3p}只 ｜ 2A {n2c+n2o}只 ｜ 1A {n1}只")
             + f" <span style='font-size:12px;font-weight:400'>｜ 可执行3A {n3}只 · 持仓卖警 {len(_own)}只</span>"
             f"</div></section>")
@@ -698,13 +700,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + _td(entry_html(entry_state)
                   + f"<details><summary>原中央状态</summary>{audit_text(shown_action)}；当前行动以上方进场核验为准。</details>"
                   + f"<details><summary>评级说明</summary>{audit_text(r.get('subtype') or '待复核')}</details>")
-            + _td((f"<span style='color:{PALETTE['warn']};font-weight:700'>研究参考·非买单</span><br>"
-                   if blocked else "")
-                  + f"<b style='color:{PALETTE['warn'] if blocked else PALETTE['buy']}'>{_text(zone)}</b>"
-                  + (f"<br><span style='font-size:9px'>破{_text(ep.get('breakout'))}</span>"
-                     if ep.get("breakout") else "")
-                  + f"<details><summary>入场触发条件</summary>"
-                    f"{_text(('待触发·' + str((r.get('central_trade_plan') or {}).get('promotion_trigger') or '缺少有效触发')) if blocked else (r.get('triggers') or {}).get('enter', '—'))}</details>")
+            + _td(__import__('entry_opportunity').price_html(entry_state,r.get('central_trade_plan') or r.get('trade_plan') or {}))
             + _td(profit_html(r), "min-width:160px;max-width:230px;line-height:1.5")
             + _td((f"<b>收盘跌破{snap['stop']:g}</b><details><summary>失效依据</summary>"
                    + audit_text((r.get('triggers') or {}).get('invalid')) + '</details>')
@@ -721,15 +717,12 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
     in_rows = "".join(_in_row(r) for r in (executable_rows if triad_v2 else executable_rows[:limit_in]))
     if triad_v2:
         blocks = []
-        for grade, title in (("3A", "3A · 双审与书理通过"), ("2A", "2A · 等待成熟条件"), ("1A", "1A · 价值研究")):
-            group = [r for r in focus_rows if r.get("tier") == grade and r not in executable_rows]
-            total_selected = sum(v['selected'] for v in focus['summary'][grade].values())
-            empty_note = ' · '+empty_cause if not total_selected else ''
-            allocation = ' ｜ '.join(f"{m} {v['selected']}/{v['current']}" for m, v in focus['summary'][grade].items())
-            execution_note = f"；其中{total_selected-len(group)}只许可标的见上表，本表跟踪{len(group)}只" if total_selected > len(group) else ''
-            blocks.append(f"<tr><td colspan='11' style='padding:6px;background:#eff6ff'><b>{title} · 重点（{total_selected}只）</b>"
-                          f"　<span style='font-size:11px'>{allocation}（重点/当前评级）{execution_note}</span>{empty_note}</td></tr>")
-            blocks.extend(_in_row(r, blocked=True) for r in group)
+        for horizon in grade_focus.HORIZONS:
+            blocks.append(f"<tr class='v88-horizon-section'><td colspan='11'><b>{grade_focus.HORIZON_LABELS[horizon]} · 独立名额</b></td></tr>")
+            group=[r for r in focus_rows if (r.get('central_trade_plan') or {}).get('horizon')==horizon and r not in executable_rows]
+            group.sort(key=lambda r:focus['records'][grade_focus.canonical(r['code'])]['rank'])
+            blocks.extend(_in_row(r,blocked=True) for r in group)
+            if not group:blocks.append("<tr><td colspan='11' style='font-size:11px;color:#64748b'>暂无本周期有效研究精选；等待对应证据。</td></tr>")
         blocked_html = "".join(blocks)
         history_blocks = []
         retained = [r for r in _blocked_rows if r.get("tier") == "PENDING" and (r.get("tracking") or {}).get("last_value_tier")]
@@ -749,10 +742,10 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
 
     focus_guide = ''
     if focus is not None:
-        reserve = [v for v in focus['records'].values() if not v['selected']]
-        reserve.sort(key=lambda v: (grade_focus.GRADES.index(v['tier']), str(v['market']), v['rank'] or 99999, v['code']))
+        reserve = grade_focus.ranked_reserves([{**v,'audit_score':(v.get('metrics') or {}).get('audit_score')}
+                    for v in focus['records'].values() if not v['selected']])
         reserve_lines = ''.join('<tr>' + _td(stock_link(v['name'], v['source_code']) + profile_html(v['source_code']))
-            + _td(audit_text(v['source_code'])) + _td(audit_text(v['tier']))
+            + _td(audit_text(v['source_code'])) + _td(audit_text(v['tier'])+' · 审核分 '+audit_text(v.get('audit_score') if v.get('audit_score') is not None else '待审'))
             + _td(audit_text(v['reason'])+'<br><small>'+audit_text((indexed.get(grade_focus.canonical(v['code'])) or {}).get('display_action'))+'</small>') + '</tr>' for v in reserve)
         focus_guide = (
             f"<div class='v88-focus-summary' style='font-size:12px;color:#475569;margin:5px 0'>"

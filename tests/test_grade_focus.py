@@ -26,9 +26,9 @@ def test_every_grade_has_independent_market_cap():
         else: r['code'] = 'US' + str(i)
     before = json.dumps(rows, sort_keys=True)
     result = focus.build(rows)
-    assert result['selected_count'] == 27
-    assert result['reserve_count'] == 45
-    assert all(x['selected'] == focus.GRADE_LIMITS[t] for t,markets in result['summary'].items() for x in markets.values())
+    assert result['selected_count'] == 6
+    assert result['reserve_count'] == 66
+    assert all(len(lane['selected_codes']) <= 3 for lane in result['by_horizon'].values())
     assert json.dumps(rows, sort_keys=True) == before
     assert result['no_grade_authority'] and result['model_calls'] == 0
 
@@ -36,9 +36,9 @@ def test_every_grade_has_independent_market_cap():
 def test_missing_hk_slots_do_not_overflow_into_other_markets():
     rows = [row('US'+str(i)) for i in range(12)] + [row('661.HK')]
     result = focus.build(rows)
-    assert result['selected_count'] == 6
-    assert result['summary']['1A']['港股']['vacancies'] == 4
-    assert result['summary']['1A']['A股']['vacancies'] == 5
+    assert result['selected_count'] == 3
+    assert result['by_horizon']['short']['summary']['1A']['港股']['minimum_gap'] == 0
+    assert result['by_horizon']['short']['summary']['1A']['A股']['minimum_gap'] == 0
     assert len(result['records']) == 13
     assert all('保留评级' in r['reason'] for r in result['records'].values() if not r['selected'])
 
@@ -48,7 +48,7 @@ def test_input_shuffle_cannot_change_same_snapshot_order():
     first = focus.build(rows)
     random.Random(77).shuffle(rows)
     assert focus.build(rows) == first
-    assert first['selected_codes'] == sorted(r['code'] for r in rows)[:5]
+    assert first['selected_codes'] == sorted(r['code'] for r in rows)[:3]
 
 
 def test_audit_quality_precedes_larger_price_target():
@@ -100,7 +100,7 @@ def test_entry_conflict_cannot_change_formal_grade_order_but_keeps_execution_blo
     assert result['selected_codes'] == ['COHERENT','CONFLICT']
     assert not result['records']['CONFLICT']['entry_opportunity']['executable']
     assert result['records']['CONFLICT']['tier']=='1A'
-    assert '无共同价带' in result['records']['CONFLICT']['reason']
+    assert '无共同价带' in result['records']['CONFLICT']['entry_opportunity']['reasons'][0]
     assert bad == original and result['reserve_count']==0
 
 
@@ -111,7 +111,7 @@ def test_shadow_caution_does_not_replace_concrete_entry_explanation():
     assert '进场必要条件与解除条件' in out and '条件观察' in out
 
 
-def test_short_and_long_3a_share_cap_and_keep_original_horizons():
+def test_short_and_long_3a_have_independent_caps_and_keep_original_horizons():
     from review_scorecard import scorecard
     rows = [row('LONG'+str(i),'3A') for i in range(4)]
     for i in range(4):
@@ -121,7 +121,10 @@ def test_short_and_long_3a_share_cap_and_keep_original_horizons():
         r['audit_score'] = r['scorecard']['total']; r['tier'] = '3A'
         rows.append(r)
     result = focus.build(rows)
-    assert result['selected_codes'] == ['LONG0','LONG1']
+    assert result['selected_codes'] == ['SHORT0','SHORT1','SHORT2','LONG0','LONG1','LONG2']
+    assert result['by_horizon']['short']['selected_codes']==['SHORT0','SHORT1','SHORT2']
+    assert result['by_horizon']['long']['selected_codes']==['LONG0','LONG1','LONG2']
+    assert result['records']['LONG0']['rank']==result['records']['SHORT0']['rank']==1
     assert result['records']['SHORT0']['metrics']['horizon'] == 'short'
 
 
@@ -134,13 +137,13 @@ def test_cross_bucket_limit_and_full_reserve_in_horizontal_renderer():
             row('US'+str(i), '3A', publish=i % 3 == 0))
     original = deepcopy(triad)
     html = system_table_html({}, {}, {}, {}, triad=triad, limit_in=1)
-    assert html.count("class='v88-focus-row'") == 2
-    assert html.count("data-grade='3A'") == 2
-    assert '候补跟踪（7只）' in html
+    assert html.count("class='v88-focus-row'") == 3
+    assert html.count("data-grade='3A'") == 3
+    assert '候补跟踪（5只）' in html
     assert '入选依据与分数分解' in html
     assert 'colspan=\'11\'' in html
     assert triad == original
-    for i in range(9):
+    for i in range(8):
         assert 'US'+str(i) in html
 
 
@@ -149,3 +152,22 @@ def test_shared_core_algorithm_is_byte_identical():
     core = Path('/Users/bluesteven/Desktop/ai-daily-report-v2/src/grade_focus.py')
     if not core.exists(): pytest.skip('separate deployment')
     assert core.read_bytes() == Path(focus.__file__).read_bytes()
+
+
+def test_three_horizon_top3_independent_and_no_minimum_market_quota():
+    rows=[]
+    for horizon,base in [('short',65),('medium',75),('long',90)]:
+        for i in range(6):
+            rows.append({'code':horizon+str(i),'market':['A股','美股','港股'][i%3],
+                         'horizon':horizon,'tier':'1A','audit_score':base-i,
+                         'central_rank':i+1,'entry_opportunity':{'focus_eligible':True}})
+    original=deepcopy(rows)
+    out=focus.attention_rows(rows)
+    assert len(out)==9 and rows==original
+    for horizon in focus.HORIZONS:
+        selected=[r for r in out if r['horizon']==horizon]
+        assert [r['code'] for r in selected]==[horizon+str(i) for i in range(3)]
+        assert [r['watch_rank'] for r in selected]==[1,2,3]
+    assert len(focus.attention_rows(rows[:1]))==1
+    rows[0]['entry_opportunity']['focus_eligible']=False
+    assert 'short0' in [r['code'] for r in focus.attention_rows(rows)]

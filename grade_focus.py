@@ -13,19 +13,66 @@ from collections import Counter, defaultdict
 from investment_maturity import assess
 from review_scorecard import gpt_result
 
-VERSION = "grade-focus-v3-score-quota"
+VERSION = "grade-focus-v7-research-windows"
 GRADES = ("3A", "2A", "1A")
+HORIZONS = ("short", "medium", "long")
+HORIZON_LABELS = {"short":"短期3A · 未来8周", "medium":"中期3A · 8–24周", "long":"长期3A · 12–36周"}
+RESEARCH_WEEKS = {"short":(0,8), "medium":(8,24), "long":(12,36)}
+RESERVE_PER_MARKET = 5
 MARKETS = ("A股", "美股", "港股")
-PER_MARKET = 5
-GRADE_LIMITS = {'3A': 2, '2A': 2, '1A': 5}
-GRADE_MINIMUMS = {'3A': 1, '2A': 1, '1A': 3}
-ATTENTION_VERSION = 'central-grade-score-with-market-quota-v2'
-RULE = ("正式榜只含当前已评级且有真实审核分的个股：同档同市场按审核分降序；"
-        "1A每市场目标3–5只，2A/3A各目标1–2只，不足记录补审缺口，不虚授等级。"
-        "进场条件及周度关注只作状态标记，不改变分数顺序；中长期与短期注明原周期。"
-        "同档同市场依次比较审核分、书籍通过率、未成熟条件数、净收益风险比档、"
-        "本周期净空间倍数档；同档以股票代码稳定排序。"
-        "风险比和空间倍数每0.1一档，微小价格差不制造精确排名；排名不是另一个评分或胜率。")
+PER_MARKET = 3  # Any one market may occupy the whole horizon Top3.
+HORIZON_LIMIT = 3
+GRADE_LIMITS = {t: HORIZON_LIMIT for t in GRADES}
+GRADE_MINIMUMS = {t: 0 for t in GRADES}
+ATTENTION_VERSION = 'central-research-window-top3-v6'
+RULE = ("短期3A研究未来8周、中期8–24周、长期12–36周；各榜独立Top3，不凑数。"
+        "按当前中央审核分降序；同分比较原书理分、待确认项与原收益风险，股票代码固定打破平分。"
+        "研究上榜和当前开仓分开：入场冲突不删除研究价值，未来5交易日入场核验单列。"
+        "3A是系统名称，个股保留实际1A/2A/3A审核等级。研究窗口不续签原合同，目标与截止日不延长。"
+        "中长期窗口重叠，分别核证；不因短线高分自动复制到中长期。候补各市场最多5只，总计最多15只。")
+
+
+def research_window(row):
+    """A prospective research agenda, never an extension of a signed target.
+
+    Route only the source's explicit strategy horizon, not the entry gate or a
+    competing horizon's score. Overlapping agendas need independent evidence;
+    absent such a source, never synthesize another rated contract.
+    """
+    plan=row.get('central_trade_plan') or row.get('trade_plan') or {}
+    horizon=plan.get('horizon') or row.get('horizon')
+    weeks=RESEARCH_WEEKS.get(horizon)
+    if weeks is None:return None
+    inputs=plan.get('profit_inputs') or {}
+    return {'version':'research-window-v1','horizon':horizon,
+            'label':HORIZON_LABELS[horizon],'start_week':weeks[0],'end_week':weeks[1],
+            'contract_horizon':horizon,'contract_max_calendar_days':inputs.get('max_calendar_days'),
+            'contract_deadline':(plan.get('profit_contract') or {}).get('thesis_deadline') or plan.get('deadline') or plan.get('expires_at'),
+            'basis':'沿用当前同周期机会审核；研究窗口独立于单笔交易合同',
+            'extension_status':'后续阶段逐次补证复审，不将原目标延伸至整个研究窗口',
+            'no_contract_extension':True}
+
+
+def ranked_reserves(rows, *, exclude=()):
+    """Bound ALL reserve sources together; scored first, never invented scores."""
+    excluded={canonical(c) for c in exclude};unique={}
+    def key(r):
+        score=r.get('audit_score');scored=_finite(score) and 0<=score<=100
+        return (not scored,-score if scored else 0,
+                tuple(r.get('sort_key') or []),canonical(r.get('code')))
+    for r in rows:
+        code=canonical(r.get('code'))
+        if not code or code in excluded or r.get('market') not in MARKETS:continue
+        # Current producer rows precede older continuity; no stale score wins a
+        # duplicate simply because it was larger in a previous publication.
+        unique.setdefault(code,r)
+    result=[]
+    for market in MARKETS:
+        group=sorted((r for r in unique.values() if r['market']==market),key=key)
+        result.extend({**r,'watch_rank':i,'reserve_rank':i,'no_rating_authority':True}
+                      for i,r in enumerate(group[:RESERVE_PER_MARKET],1))
+    return result
+
 
 
 def canonical(code):
@@ -48,24 +95,22 @@ def market_of(code):
 
 
 def attention_rows(graded, *, weekly_codes=()):
-    """Formal graded list, ordered by actual score within each market/grade.
+    """Formal graded list, independent Top3 across markets for each horizon.
 
     Weekly flags annotate the SAME ranked rows; they never reserve or reorder.
     Caller must validate current review and contract identity first.
     """
     weekly = set(weekly_codes)
     result = []
-    for tier in GRADES:
-        for market in MARKETS:
-            group = [r for r in graded if r['market'] == market and r.get('tier') == tier
-                     and _finite(r.get('audit_score')) and 0 <= r['audit_score'] <= 100]
-            group.sort(key=lambda r: (-r['audit_score'], r['central_rank'], r['code']))
-            for index, row in enumerate(group[:GRADE_LIMITS[tier]], 1):
-                eligible=(row.get('entry_opportunity') or {}).get('focus_eligible') is True
-                result.append({**row, 'watch_rank': index,
-                    'seat_kind': '条件关注' if eligible else '研究跟踪',
-                    'weekly_link': row['code'] in weekly and eligible,
-                    'weekly_reserved': False, 'attention_policy': ATTENTION_VERSION})
+    for horizon in HORIZONS:
+        group=[r for r in graded if r.get('market') in MARKETS and r.get('tier') in GRADES
+               and (r.get('horizon') or (r.get('trade_plan') or {}).get('horizon') or 'short')==horizon
+               and _finite(r.get('audit_score')) and 0 <= r['audit_score'] <= 100
+               ]
+        group.sort(key=lambda r:tuple(r.get('sort_key') or [-r['audit_score'],r.get('central_rank') or 999999,r['code']]))
+        for index,row in enumerate(group[:HORIZON_LIMIT],1):
+            result.append({**row,'watch_rank':index,'seat_kind':'研究精选','research_window':research_window(row),
+                'weekly_link':row['code'] in weekly,'weekly_reserved':False,'attention_policy':ATTENTION_VERSION})
     return result
 
 
@@ -108,7 +153,7 @@ def _metrics(row):
 
 
 def build(rows, *, now=None):
-    """Bound each grade across ALL execution buckets/horizons, preserving reserves.
+    """Bound each grade within its own horizon and market, preserving reserves.
 
     No grades/scores are modified. Duplicate identities (including aliases) are
     kept out of the focus list until the upstream publication resolves them.
@@ -130,46 +175,49 @@ def build(rows, *, now=None):
         from entry_opportunity import assess as entry_assess
         opportunity = entry_assess(row, now=now)
         rec = {"code": code, "source_code": row.get("code"), "tier": tier,
-               "name": row.get("name"), "market": market, "selected": False,
+               "name": row.get("name"), "market": market, "horizon": (row.get("central_trade_plan") or row.get("trade_plan") or {}).get("horizon") or row.get("horizon"), "selected": False,
                "rank": None, "central_rank": None, "metrics": metrics, "reason": error,
-               "entry_opportunity": opportunity}
+               "entry_opportunity": opportunity, "research_window": research_window(row)}
         records[code] = rec
         if error is None:
-            # Medium/long is the primary 3A product. Original short evidence stays short.
-            lane = int(tier == "3A" and metrics["horizon"] == "short")
-            rec["sort_key"] = [-metrics["audit_score"], lane, -metrics["book_score"],
+            rec["sort_key"] = [-metrics["audit_score"], -metrics["book_score"],
                                metrics["remaining_count"], -metrics["rr_band"],
                                -metrics["space_band"], code]
-            groups[tier, market].append(rec)
-    summary, selected = {}, []
-    for tier in GRADES:
-        summary[tier] = {}
-        for market in MARKETS:
-            group = sorted(groups[tier, market], key=lambda r: r["sort_key"])
-            eligible_n = 0
-            for central_rank, rec in enumerate(group, 1):
-                rec['central_rank'] = central_rank
-                rec['selected'] = central_rank <= GRADE_LIMITS[tier]
-                if rec['selected']:
-                    selected.append(rec['code'])
-                if not rec['entry_opportunity']['focus_eligible']:
-                    rec['reason'] = '；'.join(rec['entry_opportunity']['reasons'])
-                    continue
-                eligible_n += 1
-                rank = eligible_n
-                rec.update(rank=rank)
-                rec["reason"] = (f"{market}{tier}审核分第{central_rank}名，入选正式榜" if rec['selected'] else
-                                 f"{market}{tier}审核分第{central_rank}名，超出本档前{GRADE_LIMITS[tier]}；保留评级和原合同跟踪")
-            full_n = sum(r["tier"] == tier and r["market"] == market for r in records.values())
-            summary[tier][market] = {"selected": min(GRADE_LIMITS[tier], len(group)),
-                                    "eligible": eligible_n, "current": full_n,
-                                    "limit": GRADE_LIMITS[tier], "minimum": GRADE_MINIMUMS[tier],
-                                    "minimum_gap": max(0,GRADE_MINIMUMS[tier]-len(group)),
-                                    "vacancies": max(0, GRADE_LIMITS[tier] - len(group))}
-    return {"version": VERSION, "rule": RULE, "per_market_limit": sum(GRADE_LIMITS.values()),
-            "per_grade_limit": {t:n*len(MARKETS) for t,n in GRADE_LIMITS.items()}, "per_grade_limits": dict(GRADE_LIMITS),
-            "minimums": dict(GRADE_MINIMUMS), "summary": summary,
+            groups[metrics["horizon"], tier, market].append(rec)
+    by_horizon, selected = {}, []
+    for horizon in HORIZONS:
+        pool=[]
+        for tier in GRADES:
+            for market in MARKETS:
+                group=sorted(groups[horizon,tier,market],key=lambda r:r['sort_key'])
+                for central_rank,rec in enumerate(group,1):
+                    rec['central_rank']=central_rank
+                    pool.append(rec)
+        pool.sort(key=lambda r:r['sort_key'])
+        for rank,rec in enumerate(pool,1):
+            rec.update(rank=rank,selected=rank<=HORIZON_LIMIT)
+            rec['reason']=(f"{HORIZON_LABELS[horizon]} Top{rank}；原{rec['market']}{rec['tier']}审核第{rec['central_rank']}名"
+                           if rec['selected'] else f"本周期研究第{rank}，超出Top3；保留评级和原合同跟踪")
+            if rec['selected']:selected.append(rec['code'])
+        summary={t:{m:{'selected':sum(r['selected'] and r['tier']==t and r['market']==m for r in pool),
+            'eligible':sum(r['tier']==t and r['market']==m for r in pool),
+            'current':sum(r['horizon']==horizon and r['tier']==t and r['market']==m for r in records.values()),
+            'limit':HORIZON_LIMIT,'minimum':0,'minimum_gap':0,'vacancies':0}
+            for m in MARKETS} for t in GRADES}
+        by_horizon[horizon]={'label':HORIZON_LABELS[horizon],'summary':summary,
+            'selected_codes':[c for c in selected if records[c]['horizon']==horizon],
+            'limit':HORIZON_LIMIT,'minimum':0,'limit_scope':'all_markets_and_grades_in_horizon',
+            'research_weeks':list(RESEARCH_WEEKS[horizon]),
+            'entry_eligible_count':sum(r['selected'] and r['entry_opportunity']['focus_eligible'] for r in pool),
+            'current_count':sum(r['horizon']==horizon for r in records.values())}
+    # Compatibility totals are explicit sums; caps apply separately per horizon.
+    summary={t:{m:{k:sum(by_horizon[h]['summary'][t][m][k] for h in HORIZONS)
+                       for k in ('selected','eligible','current','limit','minimum','minimum_gap','vacancies')}
+                for m in MARKETS} for t in GRADES}
+    return {"version": VERSION, "rule": RULE, "horizon_limit": HORIZON_LIMIT, "limit_scope": "all_markets_and_grades_in_horizon", "per_market_limit": HORIZON_LIMIT,
+            "per_grade_limit": dict(GRADE_LIMITS), "per_grade_limits": dict(GRADE_LIMITS),
+            "minimums": dict(GRADE_MINIMUMS), "summary": summary, "by_horizon": by_horizon,
             "selected_codes": selected, "records": records,
-            "current_count": len(records), "selected_count": len(selected),
+            "current_count": len(records), "horizons": list(HORIZONS), "selected_count": len(selected),
             "reserve_count": len(records) - len(selected), "no_grade_authority": True,
             "model_calls": 0}

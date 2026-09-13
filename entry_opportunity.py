@@ -10,8 +10,7 @@ import re
 
 from profit_contract import evaluate
 
-VERSION = 'entry-opportunity-v1'
-MAX_DISTANCE_PCT = 10  # Existing weekly attention distance, not a forecast.
+VERSION = 'entry-opportunity-v2-five-sessions'
 MIN_NET_RR = 2
 
 
@@ -34,7 +33,7 @@ def _evidence(card, field):
     return values[0]
 
 
-def assess(row, *, now=None):
+def assess(row, *, now=None, week_doc=None):
     """A feasible conditional path is attention-worthy, never a buy approval.
 
     For short trend/retest contracts require an overlap between the ORIGINAL
@@ -47,7 +46,7 @@ def assess(row, *, now=None):
     card = row.get('scorecard') or {}
     horizon = plan.get('horizon') or row.get('horizon')
     out = dict(version=VERSION, focus_eligible=False, executable=False,
-               state='ARCHIVE', label='暂不推荐·保留跟踪', reasons=[],
+               state='ARCHIVE', label='⏸ 暂不入场·等待条件修复', reasons=[],
                original_entry_range=plan.get('entry_range'), feasible_price_band=[],
                original_trigger=plan.get('promotion_trigger'), no_grade_authority=True,
                model_calls=0, minimum_net_rr=MIN_NET_RR)
@@ -107,8 +106,13 @@ def assess(row, *, now=None):
         distance = max(floor / last - 1, last / top - 1, Decimal(0)) * 100
         out['distance_pct'] = float(distance)
         out['feasible_price_band'] = [float(floor), float(top)]
-        if distance > MAX_DISTANCE_PCT:
-            raise ValueError(f'距可行观察价带{distance:.2f}%超过10%关注范围，保留长期跟踪')
+        from entry_week import assess as week_assess
+        week = week_assess(row, out['feasible_price_band'], now=now, doc=week_doc)
+        out['week_entry'] = week
+        if not week['eligible']:
+            raise ValueError(week['reason'])
+        out['week_entry_range'] = week['entry_range']
+        floor, top = map(_num, week['entry_range'])
         gaps = (row.get('value_assessment') or {}).get('remaining_conditions') or []
         if not gaps:
             gaps = (card.get('books') or {}).get('missing') or []
@@ -120,9 +124,9 @@ def assess(row, *, now=None):
                        and (row.get('execution') or {}).get('triggered') is True)
         out.update(focus_eligible=True, executable=central_buy,
                    state='READY' if central_buy else 'CONDITIONAL',
-                   label='中央许可·按原合同核查成交' if central_buy else
-                         '条件观察·等量价与审核' if in_band else '条件观察·等价位与确认',
-                   reasons=['原区间、趋势参考与扣费风险比存在交集；不代表后续一定到价或成交'])
+                   label='中央许可·本周核查成交' if central_buy else
+                         '条件观察·已在本周区间' if in_band else '条件观察·本周等价位与确认',
+                   reasons=[week['reason']])
     except (ValueError, TypeError, KeyError, ArithmeticError) as exc:
         out['reasons'] = [str(exc)]
     return out
@@ -133,8 +137,18 @@ def html(result):
     price = lambda value: f'{value:.4f}'.rstrip('0').rstrip('.')
     band = result.get('feasible_price_band') or []
     band_text = (' ～ '.join(price(x) for x in band)) if len(band) == 2 else '无可核验交集'
-    return (f"<div class='v88-entry-opportunity' data-entry-state='{esc(result['state'])}' style='font-size:11px;color:#475569'>"
-            f"<b>{esc(result['label'])}</b><br>{esc('；'.join(result['reasons']))}"
+    week = result.get('week_entry') or {}
+    sessions = week.get('sessions') or []
+    window = (f'📅 {sessions[0]} ～ {sessions[-1]} · {len(sessions)}个交易日' if sessions else '📅 未来5个交易日 · 待核验')
+    return (f"<div class='v88-entry-opportunity' data-entry-state='{esc(result.get('state','ARCHIVE'))}' style='font-size:11px;color:#475569'>"
+            f"<b>{esc(result.get('label','⏸ 暂不入场·等待条件修复'))}</b><br><small>{esc(window)}</small>"
+            + (f"<br>🎯 {' ～ '.join(price(x) for x in result['week_entry_range'])}" if result.get('focus_eligible') and result.get('week_entry_range') else '')
+            +
+            f"<details><summary>本周入场核验 · {esc('通过' if week.get('eligible') else '未通过')}</summary>{esc('；'.join(result.get('reasons') or ['周内条件待核验']))}<br>"
+            + esc(week.get('steps') or '先补齐同源行情与原入场步骤')
+            + '<br>可达性依据：近120交易日不重叠5日块，至少20组；按到价预算取收盘幅度中位数。仅为历史波动情景估算，非到价概率；到价不代表成交。'
+            + f"<br>同源日线 {esc(week.get('source_asof') or '待核')} · 样本 {esc(week.get('sample_n') or '待补')}组</details>"
+            +
             f"<details><summary>进场必要条件与解除条件</summary>"
             f"可行观察价带：{band_text}（连续价格测算，未核交易单位；非新买单）<br>"
             + esc(result.get('trend_condition') or '沿用本周期原书理与入场条件')
@@ -143,3 +157,20 @@ def html(result):
             + '<br>审核待补：' + esc('；'.join(result.get('maturity_gaps') or []) or '参见原GPT/书理逐项条件')
             + '<br>仅当前3A许可且全部条件通过才进入可执行区；新事实、新审核或到期后重算。'
             + '<br>原截止：' + esc(result.get('deadline') or '待核') + '</details></div>')
+
+
+def price_html(result, plan):
+    """All consumers show the same bounded entry band; original prices fold away."""
+    esc = lambda value: escape(str(value))
+    def fmt(xs):
+        if isinstance(xs,list) and len(xs)==2 and all(type(x) in (int,float) and math.isfinite(x) for x in xs):
+            return ' ～ '.join(f'{x:.4f}'.rstrip('0').rstrip('.') for x in xs)
+        return str(xs) if xs is not None else '待核验'
+    week = result.get('week_entry') or {}
+    dates = week.get('sessions') or []
+    valid = result.get('focus_eligible') is True and week.get('eligible') is True
+    label = '🎯 本周入场带' if valid else '⏸ 本周无合格入场带'
+    return (f"<div class='v88-week-entry-price'><b>{label}</b>"
+            + (f"<br><b style='color:#047857'>{esc(fmt(result.get('week_entry_range')))}</b>" if valid else '')
+            + (f"<br><small>📅 {esc(dates[0][5:])}～{esc(dates[-1][5:])} · {len(dates)}交易日</small>" if dates else '')
+            + f"<details style='font-size:11px'><summary>原研究区间与触发</summary>{esc(fmt(plan.get('entry_range')))}<br>{esc(plan.get('promotion_trigger'))}</details></div>")

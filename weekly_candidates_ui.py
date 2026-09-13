@@ -4,7 +4,7 @@ from html import escape
 from collections import Counter
 from zoneinfo import ZoneInfo
 
-RANKING='central-score-quota-with-weekly-eligibility-v5'
+RANKING='central-five-session-entry-with-weekly-eligibility-v6'
 
 
 def html(doc,selection,now=None,detail=False,watchlist=None):
@@ -55,7 +55,7 @@ def html(doc,selection,now=None,detail=False,watchlist=None):
                     cross_errors.append('中央当前审核已失效或评级变化')
                 expected_focus=live_focus['records'].get(canonical(r.get('code'))) or {}
                 quality_rank=expected_focus.get('central_rank')
-                if not (expected_focus.get('selected') is True and type(quality_rank) is int and 1<=quality_rank<=limit):
+                if not (expected_focus.get('selected') is True and type(expected_focus.get('rank')) is int and 1<=expected_focus['rank']<=limit):
                     cross_errors.append('超出当前正式榜本档名额，不能进入周度重点')
                 entry_rank=expected_focus.get('rank')
                 if not (type(entry_rank) is int and 1<=entry_rank<=limit):
@@ -79,7 +79,7 @@ def html(doc,selection,now=None,detail=False,watchlist=None):
                 seat=seats[0] if len(seats)==1 else {}
                 seat_matches=bool(central and seat and linked.get('current') is True
                     and type(linked.get('watch_rank')) is int and 1<=linked['watch_rank']<=limit
-                    and linked.get('watch_rank')==(live_focus['records'].get(canonical(r.get('code'))) or {}).get('central_rank')
+                    and linked.get('watch_rank')==(live_focus['records'].get(canonical(r.get('code'))) or {}).get('rank')
                     and linked.get('watch_rank')==seat.get('watch_rank')
                     and linked.get('seat_kind')==seat.get('seat_kind')
                     and seat.get('tier')==r.get('central_tier')
@@ -102,7 +102,7 @@ def html(doc,selection,now=None,detail=False,watchlist=None):
         audit=num(r.get('audit_score'))+'/100' if r.get('audit_score') is not None else '尚无可用审核分'
         grade=esc(r.get('central_tier') or '尚未授级')
         ranks=r.get('master_focus') or {}
-        association=(f"<a href='#v88-watch-{esc(canonical(r.get('code')))}'>主榜{grade}第{esc((r.get('master_watchlist') or {}).get('watch_rank'))}名 · 同股同分</a>"
+        association=(f"<a href='#v88-watch-{esc(canonical(r.get('code')))}'>短期Top{esc((r.get('master_watchlist') or {}).get('watch_rank'))} · {grade}同股同分</a>"
                      if current and watchlist is not None else
                      ('主榜关联待核对' if watchlist is not None else '主榜位置：当前视图未载入'))
         score=(f"<b style='color:#0369a1'>{esc(r.get('state')) if current else '准状态·待当日重核'}</b>"
@@ -118,7 +118,7 @@ def html(doc,selection,now=None,detail=False,watchlist=None):
         why=(f"<b>统一主榜＋周度条件</b><br>{esc(r.get('ranking_reason'))}<br>"
              +(f"<span style='color:#b45309'>{esc('；'.join(cross_errors))}</span><br>" if cross_errors else '')
              +f"<details class='v88-weekly-cross'><summary>为什么周重点与总榜首名不同</summary>{exclusions or ('本股已是本市场通过周度条件的最高中央排序。' if current else '本记录当前未通过周度条件；只保留原证据与合同，不参与本期推荐排序。')}"
-             f"<br>仅在当前正式榜内另核流动性、完整行情、原止损、距原进场区间≤10%；周度不插队、不改分。"
+             f"<br>仅在当前正式榜内另核流动性、完整行情、原止损、未来5交易日可达价带及确认步骤；周度不插队、不改分。"
              f"<br>同一审核/原合同引用 {esc((r.get('master_ref') or {}).get('reference_id','')[:12])}</details>"
              f"{esc(r.get('continuity'))}<br>"
              f"<details><summary>升级条件与反证（{len(gaps)}项）</summary>"+
@@ -145,7 +145,7 @@ def html(doc,selection,now=None,detail=False,watchlist=None):
             score,'<b>'+px(r.get('last'))+'</b><br>收盘 '+esc(r.get('source_asof')),
             (__import__('entry_opportunity').html(__import__('entry_opportunity').assess({**(central or {}),'scorecard':card}, now=now))
              + '<br>周度研究·不可执行' if current else '<b>⏸ 历史周度·不可执行</b><br>等待当周同版证据与主榜关联重核'),
-            '<b>'+span(plan.get('entry_range'))+'</b><br><details><summary>原量价触发条件</summary>'+esc(plan.get('promotion_trigger') or plan.get('entry_trigger'))+'</details>',
+            __import__('entry_opportunity').price_html(__import__('entry_opportunity').assess({**(central or {}),'scorecard':card}, now=now) if current else {},plan),
             '<b>'+span(plan.get('take_profit_range'))+'</b><br>原合同净空间 '+num(pc.get('net_upside_pct'))+'%<br>净RR '+num(pc.get('net_reward_risk'))+
               '<br>'+esc(pc.get('holding_sessions'))+'交易日 · 截止 '+esc(pc.get('thesis_deadline')),
             px(plan.get('stop'))+'<br>'+esc(plan.get('invalidation')),
