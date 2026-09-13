@@ -2797,7 +2797,8 @@ def main():
     Part D（AI市场技术分析）已停用，节省 Gemini token。
     进程锁防止 cron/watchdog 短时间内重复触发。
     """
-    import fcntl, tempfile
+    import platform_lock as fcntl
+    import tempfile
     _lock_path = os.path.join(tempfile.gettempdir(), "auto_reporter.lock")
     _lock_fd = open(_lock_path, "w")
     try:

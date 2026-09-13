@@ -20,7 +20,9 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT.parent / 'ai-daily-report-v2'
-RELEASE = '2026.09.13'
+
+def release_version():
+    return json.loads((ROOT/'win/release.json').read_text(encoding='utf-8'))['version']
 
 
 def run(args, cwd=None, capture=False):
@@ -169,7 +171,7 @@ def main():
     install_dependencies(ROOT,REPORT)
     install_snapshot(REPORT)
     run([sys.executable,ROOT/'win/verify_runtime.py'],cwd=ROOT)
-    print(f'V88 {RELEASE}: UPDATE VERIFIED. No model call or message was sent.')
+    print(f'V88 {release_version()}: UPDATE VERIFIED. No model call or message was sent.')
     if args.start:start_app(ROOT)
 
 

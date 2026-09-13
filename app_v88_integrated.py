@@ -17401,8 +17401,8 @@ def _scan_worker_running() -> bool:
     """检查 scan_worker.py 进程是否存活"""
     try:
         pid = int(_SCAN_PID_FILE.read_text().strip())
-        os.kill(pid, 0)     # 不抛异常说明进程存活
-        return True
+        from runtime_guard import process_alive
+        return process_alive(pid)
     except Exception:
         return False
 

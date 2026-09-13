@@ -12,6 +12,7 @@ from zoneinfo import ZoneInfo
 
 from session_coverage import project
 from evidence_freshness import source_times_fresh
+from runtime_guard import process_alive
 
 MARKETS = ('A股', '港股', '美股')
 SCAN_STATES = {'facts_generated', 'missing_history', 'source_rejected', 'fact_rejected'}
@@ -27,7 +28,7 @@ def active_review_progress(core, *, now=None):
         pid=marker.read_text().strip()
         if not pid.isdigit() or int(pid)<=0:
             return None
-        os.kill(int(pid),0)
+        if not process_alive(int(pid)):return None
         started=marker.stat().st_mtime
         runs=data/'full_market_review_runs'
         candidates=sorted((p for p in runs.iterdir() if p.is_dir() and re.fullmatch(r'\d{8}T\d{6}-[0-9a-f]{8}',p.name)),reverse=True)

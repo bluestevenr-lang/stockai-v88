@@ -1173,8 +1173,8 @@ def main():
     if PID_FILE.exists():
         try:
             old_pid = int(PID_FILE.read_text().strip())
-            if old_pid != os.getpid():
-                os.kill(old_pid, 0)     # 不抛说明进程存活
+            from runtime_guard import process_alive
+            if old_pid != os.getpid() and process_alive(old_pid):
                 log.info(f"进程 {old_pid} 已在运行，退出")
                 return
         except (ProcessLookupError, ValueError):

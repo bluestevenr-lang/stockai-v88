@@ -1,11 +1,16 @@
 """Idempotent local UI startup. Reuse a healthy V88; never kill by port/pattern."""
-import argparse,fcntl,json,os,socket,subprocess,sys,time
-from contextlib import contextmanager
+import argparse,json,os,subprocess,sys,time
+import platform_lock as fcntl
+import psutil
 from pathlib import Path
 from urllib.request import build_opener,ProxyHandler
 from datetime import datetime,timezone
 
 ROOT=Path(__file__).resolve().parent
+
+def process_alive(pid):
+    """Read-only on Windows too; os.kill(pid, 0) can terminate there."""
+    return type(pid) is int and pid > 0 and psutil.pid_exists(pid)
 
 def ensure_file_capacity(target=4096, resource_api=None):
     """Raise only this process's soft limit, bounded by the OS hard limit."""
@@ -28,10 +33,26 @@ def health(port):
     except (OSError,ValueError):return False
 
 def listeners(port):
+    if os.name == 'nt':
+        connections=[c for c in psutil.net_connections(kind='tcp')
+                     if c.status == psutil.CONN_LISTEN and c.laddr.port == port]
+        if any(c.pid is None for c in connections):
+            raise PermissionError('Cannot identify the owner of the listening port')
+        return sorted({c.pid for c in connections})
     r=subprocess.run(['/usr/sbin/lsof','-nP','-tiTCP:'+str(port),'-sTCP:LISTEN'],capture_output=True,text=True,timeout=5)
     return sorted({int(x) for x in r.stdout.split() if x.isdigit()})
 
 def owned(pid):
+    if os.name == 'nt':
+        try:
+            process=psutil.Process(pid)
+            args=process.cmdline()
+            index=args.index('-m')
+            if args[index+1:index+3] != ['streamlit','run']:return False
+            script=Path(args[index+3])
+            if not script.is_absolute():script=Path(process.cwd())/script
+            return script.resolve() == ROOT/'app_v88_integrated.py'
+        except (psutil.Error,OSError,ValueError,IndexError):return False
     r=subprocess.run(['/bin/ps','-p',str(pid),'-o','command='],capture_output=True,text=True,timeout=5)
     command=r.stdout.strip()
     if ' -m streamlit run ' not in command:return False
@@ -41,7 +62,9 @@ def owned(pid):
     return script=='app_v88_integrated.py' and 'n'+str(ROOT) in cwd.stdout.splitlines()
 
 def ensure(port=8501,*,probe=health,find=listeners,identify=owned,start=None):
-    pids=find(port)
+    try:pids=find(port)
+    except (psutil.Error,OSError,subprocess.SubprocessError) as exc:
+        return {'ok':False,'status':'listener_lookup_failed','error':type(exc).__name__,'port':port}
     if pids:
         if len(pids)!=1 or not identify(pids[0]):return {'ok':False,'status':'port_owned_by_other_service','port':port}
         if probe(port):return {'ok':True,'status':'reused_healthy','pid':pids[0],'port':port}
@@ -56,7 +79,9 @@ def ensure(port=8501,*,probe=health,find=listeners,identify=owned,start=None):
         args=[sys.executable,'-m','streamlit','run',str(ROOT/'app_v88_integrated.py'),'--server.address','0.0.0.0','--server.port',str(port),'--server.headless','true','--server.enableCORS','true','--server.enableXsrfProtection','true','--browser.gatherUsageStats','false']
         def start():
             with log.open('ab') as output:
-                return subprocess.Popen(args,cwd=ROOT,stdout=output,stderr=subprocess.STDOUT,start_new_session=True).pid
+                options=({'creationflags':subprocess.CREATE_NEW_PROCESS_GROUP} if os.name == 'nt'
+                         else {'start_new_session':True})
+                return subprocess.Popen(args,cwd=ROOT,stdout=output,stderr=subprocess.STDOUT,**options).pid
     pid=start()
     for _ in range(25):
         if probe(port):return {'ok':True,'status':'started_healthy','pid':pid,'port':port}
