@@ -126,14 +126,17 @@ def _metrics(row):
     score = card.get("total")
     if not _finite(score) or not 0 <= score <= 100:
         return None, "审核分缺失或非有限值，保留跟踪待核"
-    if row.get('audit_score') is not None and row['audit_score'] != score:
+    from review_scorecard import card_valid
+    if not card_valid(card):
+        return None, "审核分计算策略或贡献与原始分项不一致，保留跟踪待核"
+    legacy_projection = bool(card.get('source_audit_id') and card.get('source_audit_id') == row.get('audit_id')
+                             and row.get('audit_score') == card.get('legacy_total'))
+    if row.get('audit_score') is not None and row['audit_score'] != score and not legacy_projection:
         return None, "发布分与审核分不一致，保留跟踪待核"
     value = assess(card, horizon, plan)
     if value["tier"] != tier or not value["value_confirmed"]:
         return None, "当前审核/收益合同与原等级不一致，保留跟踪待核"
     books, gpt = card["books"], card["gpt"]
-    if score != min(gpt["total"], books["total"]):
-        return None, "审核分与原始分项不一致，保留跟踪待核"
     profit = value["profit_contract"]  # Recompute from inputs, not an unverified saved RR.
     rr, upside = profit["net_reward_risk"], profit["net_upside_pct"]
     floor = profit["period_thresholds"][tier]

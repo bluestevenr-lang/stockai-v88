@@ -3,8 +3,27 @@ from __future__ import annotations
 
 import hashlib
 import json
+from copy import deepcopy
 
-VERSION = "3a-evidence-v5-tharp"
+VERSION = "3a-evidence-v5-tharp"  # Original atomic rubric and signed drafts remain valid.
+SCORE_POLICY_VERSION = "3a-weighted-evidence-v1"
+GPT_WEIGHTS = {"facts":20, "thesis":25, "countercase":20, "horizon":10, "risk":25}
+BOOK_WEIGHTS = {
+    "short": {"trend":10, "entry":12, "volume":8, "stop":15, "payoff":12, "profit":15, "tharp_risk":15, "tharp_expectancy":13},
+    "medium": {"trend":8, "entry":8, "volume":6, "stop":12, "payoff":10, "earnings":10, "cash":8, "profit":13, "tharp_risk":13, "tharp_expectancy":12},
+    "long": {"earnings":14, "cash":12, "quality":10, "valuation":12, "history":6, "invalidation":12, "profit":12, "tharp_risk":12, "tharp_expectancy":10},
+}
+
+
+def score_policy():
+    return {"version": SCORE_POLICY_VERSION, "gpt_weights": dict(GPT_WEIGHTS),
+            # Classic IDs are values, never private-account-shaped JSON keys.
+            "book_weights": {h:[{"id":key,"weight_pct":weight} for key,weight in weights.items()]
+                             for h,weights in BOOK_WEIGHTS.items()},
+            "formula": "min(保守原稿GPT加权分,适用书理加权分)",
+            "missing": "缺项总分为空；保留已核贡献与覆盖率，不重新分配缺项权重",
+            "parameter_status": "待校准V88参数；不是书籍原文数字、胜率或收益证明"}
+
 CRITERIA = {
     "facts": ("事实可信", "核对来源、时点、字段冲突和关键数据缺口"),
     "thesis": ("逻辑成立", "说明具体机会或退出逻辑及其因果证据，不能复述旧评级"),
@@ -65,17 +84,24 @@ def gpt_result(rec: dict) -> dict:
     valid = bool(valid and set(indexed) == set(CRITERIA))
     known = sum(r.get("score") is not None for r in indexed.values()) if valid else 0
     complete = valid and known == len(CRITERIA)
-    total = sum(r["score"] for r in indexed.values()) if complete else None
+    legacy_total = sum(r["score"] for r in indexed.values()) if complete else None
+    total = round(sum(GPT_WEIGHTS[k] * r["score"] / 20 for k,r in indexed.items()), 4) if complete else None
     passed = complete and all(r["score"] >= 15 for r in indexed.values())
     rejected = valid and any(r["score"] == 0 for r in indexed.values())
     expected = "通过" if passed else "否决" if rejected else "不否定"
     valid = bool(valid and (rec.get("thesis_verdict") or rec.get("verdict")) == expected)
+    known_contribution = round(sum(GPT_WEIGHTS[k] * r["score"] / 20 for k,r in indexed.items() if r["score"] is not None), 4) if valid else 0
+    coverage = sum(GPT_WEIGHTS[k] for k,r in indexed.items() if r["score"] is not None) if valid else 0
     return {"valid": valid, "complete": bool(complete and valid), "total": total if valid else None,
+            "legacy_total": legacy_total if valid else None, "score_policy": score_policy(),
+            "known_contribution": known_contribution, "coverage_pct": coverage,
             "passed": bool(passed and valid), "known": known if valid else 0,
-            "required": len(CRITERIA), "evidence": evidence if valid else [], "criteria": [
+            "required": len(CRITERIA), "evidence": deepcopy(evidence) if valid else [], "criteria": [
                 {"id": key, "title": title, "requirement": requirement,
-                 **(indexed[key] if valid else {}),
+                 **(deepcopy(indexed[key]) if valid else {}),
                  "score": indexed.get(key, {}).get("score") if valid else None,
+                 "weight_pct": GPT_WEIGHTS[key],
+                 "contribution": round(GPT_WEIGHTS[key] * indexed[key]["score"] / 20, 4) if valid and indexed[key]["score"] is not None else None,
                  "reason": indexed.get(key, {}).get("reason", "待GPT-6按新版评分表审核") if valid else "待GPT-6按新版评分表审核"}
                 for key, (title, requirement) in CRITERIA.items()]}
 
@@ -94,22 +120,35 @@ def book_result(rec: dict) -> dict:
     missing = sum(c["ok"] is None for c in rows) if valid else len(required)
     failed = len(required) - missing - passed if valid else 0
     complete = bool(valid and not missing)
-    total = round(100 * passed / len(required), 1) if complete else None
+    weights = BOOK_WEIGHTS.get(rec.get("horizon"), {})
+    legacy_total = round(100 * passed / len(required), 1) if complete else None
+    contribution = sum(weights[c["id"]] for c in rows if c["ok"] is True) if valid else 0
+    coverage = sum(weights[c["id"]] for c in rows if c["ok"] is not None) if valid else 0
+    total = contribution if complete else None
     return {"valid": valid, "complete": complete, "total": total,
+            "horizon": rec.get("horizon"), "score_policy": score_policy(), "legacy_total": legacy_total,
+            "known_contribution": contribution, "coverage_pct": coverage,
             "passed": bool(complete and not failed), "pass_n": passed, "fail_n": failed,
-            "missing_n": missing, "required": len(required), "checks": rows if valid else [],
-            "applicability": rec.get("applicability") or []}
+            "missing_n": missing, "required": len(required), "checks": [
+                {**deepcopy(c),"weight_pct":weights[c["id"]],"contribution":weights[c["id"]] if c["ok"] is True else 0 if c["ok"] is False else None}
+                for c in rows] if valid else [],
+            "applicability": deepcopy(rec.get("applicability") or [])}
 
 
 
-def choose_conservative(primary, counter):
-    """Keep both independent originals; select an actual complete review, never average votes."""
+def choose_conservative(primary, counter, *, weighted=False):
+    """Preserve signed envelope selection; weighted=True derives the new score view.
+
+    Original envelopes used equal totals to break ties. Their authentication
+    remains unchanged; the scorecard independently selects with weighted totals.
+    Both paths choose one actual original, never synthesize or average a review.
+    """
     def order(rec):
         result = gpt_result(rec)
         scores = {r["id"]: r.get("score") for r in result["criteria"]}
         value = [scores.get(k) for k in ("facts","thesis","countercase","risk")]
         return ({"否决":0,"不否定":1,"通过":2}.get(rec.get("thesis_verdict"), -1),
-                min((-1 if v is None else v) for v in value), result["total"] if result["total"] is not None else -1)
+                min((-1 if v is None else v) for v in value), result["total" if weighted else "legacy_total"] if result["total"] is not None else -1)
     role, chosen = min((("primary",primary),("counteraudit",counter)), key=lambda pair: order(pair[1]))
     return {**chosen, "review_pair": {"primary":primary,"counteraudit":counter}, "selected_review":role}
 
@@ -119,26 +158,54 @@ def pair_complete(rec):
     return bool(set(pair) == {"primary","counteraudit"} and all(gpt_result(pair[k])["valid"] and gpt_result(pair[k])["complete"] for k in pair))
 
 
+def pair_valid(rec):
+    """A current, authentic draft can explicitly leave evidence incomplete."""
+    pair = rec.get("review_pair") or {}
+    return bool(set(pair) == {"primary","counteraudit"} and all(gpt_result(pair[k])["valid"] for k in pair))
+
+
 def pair_passed(rec):
     pair = rec.get("review_pair") or {}
     return bool(set(pair) == {"primary","counteraudit"} and all(gpt_result(pair[k])["passed"] for k in pair))
 
-def scorecard(gpt: dict, book: dict, *, gpt_current: bool, book_current: bool) -> dict:
-    g, b = gpt_result(gpt), book_result(book)
-    g["current"], b["current"] = bool(gpt_current and g["valid"] and pair_complete(gpt)), bool(book_current and b["valid"])
-    complete = g["complete"] and b["complete"] and g["current"] and b["current"]
+
+def _progress(g, b, pair):
+    partial = not pair_complete({'review_pair':pair})
+    pair_results = [gpt_result(r) for r in pair.values()] if partial and g['current'] else [g]
+    known = min(r['known_contribution'] for r in pair_results) if g['current'] else 0
+    coverage = min(r['coverage_pct'] for r in pair_results) if g['current'] else 0
+    return (min(known,b['known_contribution'] if b['current'] else 0),
+            min(coverage,b['coverage_pct'] if b['current'] else 0))
+
+
+def scorecard(gpt: dict, book: dict, *, gpt_current: bool, book_current: bool, source_audit_id=None) -> dict:
+    pair = gpt.get("review_pair") or {}
+    chosen = choose_conservative(pair["primary"], pair["counteraudit"], weighted=True) if set(pair) == {"primary","counteraudit"} else gpt
+    g, b = gpt_result(chosen), book_result(book)
+    g["current"], b["current"] = bool(gpt_current and g["valid"] and pair_valid(gpt)), bool(book_current and b["valid"])
+    complete = g["complete"] and b["complete"] and g["current"] and b["current"] and pair_complete(gpt)
     total = min(g["total"], b["total"]) if complete else None
+    # Historical comparison is the original envelope's arithmetic, not a new rank.
+    original_g = gpt_result(gpt)
+    legacy_total = min(original_g["legacy_total"], b["legacy_total"]) if complete and original_g["legacy_total"] is not None else None
     missing = []
     if not g["current"]:
         missing.append("GPT-6新版审核缺失、过期或事实已变化")
     if not b["current"]:
         missing.append("书籍审核缺失、过期或事实已变化")
+    if not pair_complete(gpt):
+        missing.append("双份GPT原审尚有缺项")
     missing += [c["title"] + "待补证" for c in g["criteria"] if c.get("score") is None]
     missing += [c["label"] + "待补证" for c in b["checks"] if c.get("ok") is None]
-    result = {"version": VERSION, "score_name": "审核证据分", "formula": "min(GPT五项总分,书籍通过率分)",
-              "total": total, "gpt": g, "books": b, "missing": missing,
+    known, coverage = _progress(g,b,pair)
+    result = {"version": VERSION, "score_name": "加权审核证据分", "formula": score_policy()["formula"],
+              "score_policy": score_policy(), "total": total, "legacy_total": legacy_total,
+              "known_contribution": known, "coverage_pct": coverage,
+              "gpt": g, "books": b, "missing": missing,
               "all_passed": bool(complete and g["passed"] and b["passed"] and pair_passed(gpt)),
-              "review_pair": gpt.get("review_pair") or {}, "selected_review": gpt.get("selected_review"),
+              "review_pair": deepcopy(pair), "selected_review": chosen.get("selected_review"),
+              "source_selected_review": gpt.get("selected_review"),
+              "source_audit_id": source_audit_id,
               "double_audit_complete": pair_complete(gpt),
               "probability": None, "legacy_score_weight": 0}
     result["audit_id"] = hashlib.sha256(json.dumps(
@@ -147,20 +214,58 @@ def scorecard(gpt: dict, book: dict, *, gpt_current: bool, book_current: bool) -
     return result
 
 
+def _same(left, right):
+    # JSON comparison also rejects bools masquerading as numeric weights/scores.
+    return json.dumps(left, sort_keys=True, ensure_ascii=False) == json.dumps(right, sort_keys=True, ensure_ascii=False)
+
+
+def card_valid(card: dict) -> bool:
+    """Recompute policy, contributions and flags; source authenticity is checked upstream.
+
+    Legacy saved cards are historical only. current_scorecard can re-project
+    their authentic atomic reviews under this policy without changing originals.
+    """
+    try:
+        if card.get("version") != VERSION or not _same(card.get("score_policy"), score_policy()):
+            return False
+        g, b = card["gpt"], card["books"]
+        pair = card.get("review_pair") or {}
+        if set(pair) != {"primary", "counteraudit"}:
+            return False
+        chosen = choose_conservative(pair["primary"], pair["counteraudit"], weighted=True)
+        expected_g = gpt_result(chosen)
+        expected_b = book_result({"rubric_version": VERSION, "horizon": b.get("horizon"),
+                                  "checks": b.get("checks"), "applicability": b.get("applicability")})
+        if not expected_g["valid"] or not expected_b["valid"]:
+            return False
+        if type(g.get("current")) is not bool or type(b.get("current")) is not bool:
+            return False
+        if g["current"] and not pair_valid({"review_pair":pair}):
+            return False
+        if not _same(g, {**expected_g,"current":g["current"]}) or not _same(b, {**expected_b,"current":b["current"]}):
+            return False
+        complete = expected_g["complete"] and expected_b["complete"] and g["current"] and b["current"] and pair_complete({'review_pair':pair})
+        expected_total = min(expected_g["total"], expected_b["total"]) if complete else None
+        all_passed = bool(complete and expected_g["passed"] and expected_b["passed"] and pair_passed({"review_pair":pair}))
+        known, coverage = _progress(g,b,pair)
+        original = choose_conservative(pair["primary"], pair["counteraudit"])
+        original_total = gpt_result(original)["legacy_total"]
+        expected_legacy = min(original_total,expected_b["legacy_total"]) if complete and original_total is not None else None
+        return bool(_same(card.get("total"),expected_total)
+                    and card.get("score_name")=="加权审核证据分"
+                    and card.get("formula")==score_policy()["formula"]
+                    and card.get("probability") is None and type(card.get("legacy_score_weight")) is int and card["legacy_score_weight"]==0
+                    and _same(card.get("legacy_total"),expected_legacy)
+                    and _same(card.get("all_passed"),all_passed)
+                    and _same(card.get("double_audit_complete"),pair_complete({"review_pair":pair}))
+                    and card.get("selected_review")==chosen.get("selected_review")
+                    and card.get("source_selected_review") in (None,original.get("selected_review"))
+                    and _same(card.get("known_contribution"),known) and _same(card.get("coverage_pct"),coverage))
+    except (KeyError, TypeError, ValueError):
+        return False
+
+
 def card_passed(card: dict) -> bool:
-    """Consumers recompute arithmetic; a cached green flag is insufficient."""
-    g, b = card.get("gpt") or {}, card.get("books") or {}
-    rows, checks = g.get("criteria") or [], b.get("checks") or []
-    scores = [r.get("score") for r in rows]
-    return bool(card.get("version") == VERSION and card.get("all_passed") is True
-                and card.get("double_audit_complete") is True
-                and all(gpt_result(v)["passed"] for v in (card.get("review_pair") or {}).values())
-                and len(card.get("review_pair") or {}) == 2
-                and g.get("current") is True and b.get("current") is True
-                and len(rows) == 5 and {r.get("id") for r in rows} == set(CRITERIA)
-                and all(type(n) is int and n in (15, 20) for n in scores)
-                and len(checks) == b.get("required") and len(checks) >= 5
-                and len({c.get("id") for c in checks}) == len(checks)
-                and all(c.get("ok") is True for c in checks)
-                and g.get("total") == sum(scores) and b.get("total") == 100
-                and card.get("total") == sum(scores) and sum(scores) >= 75)
+    return bool(card_valid(card) and card.get("all_passed") is True
+                and card.get("gpt",{}).get("current") is True and card.get("books",{}).get("current") is True
+                and card.get("total") is not None and card["total"] >= 75)

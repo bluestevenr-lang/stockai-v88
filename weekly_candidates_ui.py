@@ -9,7 +9,7 @@ RANKING='central-five-session-entry-with-weekly-eligibility-v6'
 
 def html(doc,selection,now=None,detail=False,watchlist=None):
     if not doc or doc.get('version')!='weekly-candidates-v1':return ''
-    from grade_card import _tbl,_td,_TH_IN,stock_link,_flag
+    from grade_card import _tbl,_td,_TH_IN,stock_link,_flag,_market_rows
     from stock_profile_view import html as profile_html
     from scorecard_html import gpt_html,books_html
     from stock_reference import reference, compare, canonical
@@ -38,7 +38,7 @@ def html(doc,selection,now=None,detail=False,watchlist=None):
     px=lambda x:esc(f'{x:.4f}'.rstrip('0').rstrip('.') if isinstance(x,(int,float)) else '—')
     span=lambda xs:' ～ '.join(px(x) for x in xs) if isinstance(xs,list) and len(xs)==2 else '未核实'
     rows=[];archived_rows=[];live_formal=0;live_slots={}
-    for r in doc.get('rows',[]):
+    for r in _market_rows(doc.get('rows',[])):
         current=fresh and r.get('eligible') is True
         cross_errors=[]
         central=central_rows.get(canonical(r.get('code')))
@@ -106,7 +106,7 @@ def html(doc,selection,now=None,detail=False,watchlist=None):
                      if current and watchlist is not None else
                      ('主榜关联待核对' if watchlist is not None else '主榜位置：当前视图未载入'))
         score=(f"<b style='color:#0369a1'>{esc(r.get('state')) if current else '准状态·待当日重核'}</b>"
-               f"<br>{'当前' if current else '原'}评级 {grade} · 审核 {audit}"
+               f"<br>{'当前' if current else '原'}评级 {grade} · 加权审核 {audit}"
                +(f"<br>本市场{grade}审核分第{esc(ranks.get('central_rank'))}名" if current else
                  '<br>当前不参与周度名次；原审核与合同继续留档')
                +
@@ -114,7 +114,7 @@ def html(doc,selection,now=None,detail=False,watchlist=None):
                f"<details><summary>周度辅助指标</summary>筛选 {num(r.get('screen_score'))}/100；用于轮动与位置研究，不改变中央排序。</details>")
         parts='；'.join(esc(k)+' '+num(v) for k,v in (r.get('score_parts') or {}).items())
         exclusions=''.join('<div>'+stock_link(x.get('name'),x['code'])+f" · 审核 {num(x.get('audit_score'))} · 同档第{esc(x.get('rank'))}名："+
-                          esc(x.get('reason'))+'；距原区间 '+num(x.get('entry_distance_pct'))+'%</div>' for x in sorted(r.get('higher_rank_exclusions',[]),key=lambda x:x.get('rank') or 999))
+                          esc(x.get('reason'))+'；距原区间 '+num(x.get('entry_distance_pct'))+'%</div>' for x in _market_rows(sorted(r.get('higher_rank_exclusions',[]),key=lambda x:x.get('rank') or 999)))
         why=(f"<b>统一主榜＋周度条件</b><br>{esc(r.get('ranking_reason'))}<br>"
              +(f"<span style='color:#b45309'>{esc('；'.join(cross_errors))}</span><br>" if cross_errors else '')
              +f"<details class='v88-weekly-cross'><summary>为什么周重点与总榜首名不同</summary>{exclusions or ('本股已是本市场通过周度条件的最高中央排序。' if current else '本记录当前未通过周度条件；只保留原证据与合同，不参与本期推荐排序。')}"
@@ -155,9 +155,7 @@ def html(doc,selection,now=None,detail=False,watchlist=None):
     week=doc.get('week') or {};slots=doc.get('market_slots') or {}
     formal=live_formal
     caption=' · '.join(esc(m)+' '+str(live_slots.get(m,0))+'/1' for m,s in slots.items())
-    funnel='；'.join(esc(m)+f" 检查{v.get('directory',0):,} / 当前事实{v.get('fresh_facts',0):,} / 周度候选{v.get('weekly_eligible',0)}"
-                    for m,v in (doc.get('funnel') or {}).items())
-    histories=''.join('<div>'+esc(e.get('week'))+' '+esc(e.get('code'))+'：'+esc(e.get('event'))+' '+esc(e.get('reason',''))+'</div>' for e in doc.get('events',[])[-30:])
+    histories='<div>完整个股档案可按名称或代码检索。</div>'
     styles=[]
     sector_brief='；'.join(esc(m)+'：'+('、'.join(esc(p['name'])+' '+num(p['chg5d'])+'%（5日）' for p in group) or '缺当前证据')
         for m,group in (doc.get('sector_rotation') or {}).items())
@@ -168,7 +166,7 @@ def html(doc,selection,now=None,detail=False,watchlist=None):
         names=[]
         for market,group in (doc.get(key) or {}).items():
             names.append(esc(market)+'：'+('、'.join(stock_link(r.get('display_name') or r.get('name'),r['code'])+
-                '（'+num(r.get('history',{}).get('position252_pct'))+'%位置，筛选'+num(r.get('screen_score'))+'）' for r in group) or '暂无同条件候选'))
+                '（'+num(r.get('history',{}).get('position252_pct'))+'%位置，筛选'+num(r.get('screen_score'))+'）' for r in _market_rows([{**r,'market':r.get('market') or market} for r in group])) or '暂无同条件候选'))
         styles.append('<div><b>'+title+'</b> · '+'；'.join(names)+'</div>')
     archive=("<details class='v88-weekly-archive'><summary>暂停的周度候选 · 保留原合同与解除条件</summary>"
              +_tbl(''.join(archived_rows),_TH_IN)+"</details>") if archived_rows else ''
@@ -181,4 +179,4 @@ def html(doc,selection,now=None,detail=False,watchlist=None):
             f"<div style='font-size:13px;font-weight:700'>周度三市场重点候选 · {esc(week.get('start'))} ～ {esc(week.get('end'))}</div>"
             f"<div>{caption} · 当前正式2A/3A {formal}只 · 准状态保留原评级，筛选分不代表胜率</div>"
             +(f"<div style='color:#b45309'>原周度快照已过期或事实包已变化；等待当日重核，保留原跟踪记录。</div>" if not fresh else '')+
-            _tbl(''.join(rows),_TH_IN)+archive+''.join(styles)+f'<details><summary>扫描数量、排序规则与跟踪记录</summary>{funnel}<p>沿用中央同档排序与进场可行性；周度再核时效、流动性及原区间距离。未审核发现线索不填补重点名额。辅助指标不覆盖审核分；更换主候选保留原合同及沿革。</p>{histories}</details></section>')
+            _tbl(''.join(rows),_TH_IN)+archive+''.join(styles)+f'<details><summary>排序规则与跟踪记录</summary><p>沿用中央同档排序与进场可行性；周度再核时效、流动性及原区间距离。未审核发现线索不填补重点名额。辅助指标不覆盖审核分；更换主候选保留原合同及沿革。</p>{histories}</details></section>')

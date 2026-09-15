@@ -1,86 +1,50 @@
-"""Independent render/callback checks; no Streamlit server or market requests."""
-from copy import deepcopy
-import stock_switcher as ui
+"""Search routing and filtering against real Streamlit widget state."""
+from pathlib import Path
+from streamlit.testing.v1 import AppTest
+
+
+def app():
+    return AppTest.from_string('''
+import streamlit as st
+import stock_switcher
 from stock_search_index import build_catalog
+catalog = build_catalog([
+ {'code':'000100.SZ','name':'TCL科技','market':'A股'},
+ {'code':'1070.HK','name':'TCL电子','market':'港股'},
+ {'code':'NVDA','name':'NVIDIA Corporation','market':'美股'}])
+import stock_search_index
+from unittest.mock import patch
+with patch.object(stock_search_index, 'load_catalog', return_value=catalog), patch.object(stock_switcher, 'recent_rows', return_value=[]):
+ stock_switcher.render(st, st.query_params.get('q',''), key='picker')
+''').run()
 
 
-class FakeSt:
-    def __init__(self, state=None, params=None):
-        self.session_state = dict(state or {})
-        self.query_params = dict(params or {})
-        self.widgets = {}
-    def __enter__(self): return self
-    def __exit__(self, *args): return False
-    def container(self, **kwargs): return self
-    def columns(self, *args, **kwargs): return self, self
-    def markdown(self, *args, **kwargs): pass
-    def caption(self, *args, **kwargs): pass
-    def warning(self, *args, **kwargs): pass
-    def selectbox(self, label, **kwargs): self.widgets[kwargs['key']] = kwargs
-    def pills(self, label, **kwargs): self.widgets[kwargs['key']] = kwargs
-    def button(self, label, **kwargs): self.widgets[kwargs['key']] = kwargs
+def test_partial_name_results_are_clickable_and_market_filter_does_not_navigate():
+    at=app()
+    at.text_input[0].input('TCL').run()
+    hits=[b for b in at.button if b.key.startswith('picker_hit_')]
+    assert len(hits)==2 and not at.query_params
+    at.radio[0].set_value('港股').run()
+    assert len([b for b in at.button if b.key.startswith('picker_hit_')])==1
+    assert not at.query_params
+    at.button(key='picker_hit_1070.HK').click().run()
+    assert at.query_params['q']==['1070.HK'] and not at.exception
+    assert at.radio[0].value=='港股'
+    assert len([b for b in at.button if b.key.startswith('picker_hit_')])==1
 
 
-def fixture_catalog():
-    return build_catalog([
-        {'code':'688002.SS', 'name':'睿创微纳', 'market':'A股'},
-        {'code':'0700.HK', 'name':'TENCENT', 'market':'港股'},
-        {'code':'NVDA', 'name':'NVIDIA Corporation', 'market':'美股'},
-    ], {'records':{'700.HK':{'code':'700.HK', 'market':'港股', 'name_zh':'腾讯控股',
-                           'name_en':'Tencent Holdings Limited'}}})
+def test_exact_code_enters_without_refresh_and_unmatched_search_preserves_stock():
+    at=app()
+    at.text_input[0].input('000100').run()
+    assert at.query_params['q']==['000100.SZ']
+    at.text_input[0].input('不存在').run()
+    assert at.query_params['q']==['000100.SZ']
+    assert any('未找到' in msg.value for msg in at.info)
+    assert not at.exception
 
 
-def prepare(monkeypatch, state=None, params=None):
-    catalog = fixture_catalog()
-    import stock_search_index
-    monkeypatch.setattr(stock_search_index, 'load_catalog', lambda: catalog)
-    monkeypatch.setattr(ui, 'recent_rows', lambda state, _catalog: [
-        catalog['by_code'][code] for code in state.get('_v88_recent_deep_codes', [])
-        if code in catalog['by_code']])
-    return FakeSt(state, params), catalog
-
-
-def test_url_alias_synchronizes_current_picker_without_touching_financial_state(monkeypatch):
-    state={'picker':'NVDA', 'ledger':{'position':7}, 'watchlist':['NVDA'],
-           'pending_reviews':{'688002.SS':{'score':70}}}
-    st, catalog=prepare(monkeypatch,state,{'q':'00700.HK','focus':'deep'})
-    preserved=deepcopy({k:state[k] for k in ('ledger','watchlist','pending_reviews')})
-    ui.render(st,'00700.HK',key='picker')
-    assert st.session_state['picker']=='0700.HK'
-    assert all(st.session_state[k]==v for k,v in preserved.items())
-    assert st.widgets['picker']['format_func']('0700.HK').startswith('腾讯控股')
-    assert st.widgets['picker']['accept_new_options'] is True
-    assert len(st.widgets['picker']['options'])==3
-
-
-def test_unknown_input_callback_keeps_current_route_and_records_visible_error(monkeypatch):
-    st,_=prepare(monkeypatch,{'picker':'NVDA'}, {'q':'NVDA','focus':'deep'})
-    ui.render(st,'NVDA',key='picker')
-    st.session_state['picker']='不存在的股票'
-    widget=st.widgets['picker']
-    widget['on_change'](*widget['args'])
-    assert st.query_params=={'q':'NVDA','focus':'deep'}
-    assert '_v88_stock_search_error' in st.session_state
-    ui.render(st,'NVDA',key='picker')
-    assert st.session_state['picker']=='NVDA'
-    assert '_v88_stock_search_error' in st.session_state
-
-
-def test_refresh_callback_keeps_exact_stock_and_clears_only_search_error(monkeypatch):
-    state={'picker':'0700.HK', '_v88_stock_search_error':'old', 'reviews':{'unchanged':True}}
-    st,_=prepare(monkeypatch,state,{'q':'00700.HK','focus':'deep','other':'kept'})
-    ui.render(st,'00700.HK',key='picker')
-    st.widgets['picker_refresh']['on_click']()
-    assert st.query_params=={'q':'0700.HK','focus':'deep','other':'kept'}
-    assert st.session_state['reviews']=={'unchanged':True}
-    assert '_v88_stock_search_error' not in st.session_state
-
-
-def test_keyboard_selection_callback_routes_before_deep_calculation(monkeypatch):
-    st,_=prepare(monkeypatch,{'picker':'NVDA'}, {'q':'NVDA','focus':'deep'})
-    ui.render(st,'NVDA',key='picker')
-    st.session_state['picker']='688002.SH'
-    w=st.widgets['picker'];w['on_change'](*w['args'])
-    assert st.query_params=={'q':'688002.SS','focus':'deep'}
-    assert st.session_state['scan_selected_name']=='睿创微纳'
-    assert st.session_state['_v88_recent_deep_codes'][0]=='688002.SS'
+def test_refresh_keeps_current_stock():
+    at=app()
+    at.text_input[0].input('1070.HK').run()
+    at.button(key='picker_refresh').click().run()
+    assert at.query_params['q']==['1070.HK'] and not at.exception

@@ -26,11 +26,14 @@ class Parsed(HTMLParser):
 
 def assert_plain_prose(html, expected=PROSE):
     parsed = Parsed(html)
-    known = {'a', 'b', 'br', 'details', 'div', 'p', 'section', 'small',
-             'span', 'style', 'summary', 'table', 'tbody', 'td', 'th', 'thead', 'tr', 'img', 'svg', 'title', 'rect', 'polygon', 'g', 'path'}
+    known = {'a', 'b', 'br', 'details', 'div', 'img', 'p', 'section', 'small',
+             'span', 'style', 'summary', 'table', 'tbody', 'td', 'th', 'thead', 'tr'}
     assert {name for name, _ in parsed.nodes} <= known
     assert all(not any(c in name for c in '<>"\'=/ \n')
                for _, attrs in parsed.nodes for name in attrs)
+    assert all(not name.lower().startswith('on') for _, attrs in parsed.nodes for name in attrs)
+    assert all(attrs.get('src','').startswith('data:image/svg+xml;base64,')
+               for tag, attrs in parsed.nodes if tag=='img')
     assert expected in ''.join(parsed.texts) or any(
         expected in str(value) for _, attrs in parsed.nodes for value in attrs.values())
     return parsed
@@ -39,7 +42,12 @@ def assert_plain_prose(html, expected=PROSE):
 @pytest.fixture(autouse=True)
 def local_only(monkeypatch):
     import scan_progress_view
+    import market_adaptation_ui, market_watch_ui
     monkeypatch.setattr(scan_progress_view, 'html', lambda *args, **kwargs: '')
+    # These independent panels have their own HTML/identity tests. Live
+    # headings and market badge images are not injected financial prose.
+    monkeypatch.setattr(market_adaptation_ui, 'html', lambda *args, **kwargs: '')
+    monkeypatch.setattr(market_watch_ui, 'html', lambda *args, **kwargs: '')
     monkeypatch.setattr(grade_card, '_book_health', lambda: {})
     monkeypatch.setattr(grade_card, 'profile_name', lambda name, code: name)
     monkeypatch.setattr(grade_card, 'profile_html', lambda code: '')

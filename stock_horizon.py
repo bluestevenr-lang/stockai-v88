@@ -20,6 +20,7 @@ from desktop_gpt_subscription import api_key as gpt_subscription_ready, chat_com
 
 
 from v88_decision_core import HORIZONS  # One cycle contract for facts, GPT schema and display.
+from horizon_score_policy import POLICY_VERSION as HORIZON_SCORE_POLICY_VERSION, horizon_score
 BJT = timezone(timedelta(hours=8))
 CACHE_DIR = Path.home() / ".cache_v88" / "stock_horizon"
 CACHE_TTL = 6 * 3600
@@ -374,16 +375,24 @@ def table_rows(result) -> list[dict]:
 def cycle_alignment(facts: dict) -> dict:
     """回看档位的一致性。旧 p_up 键仅兼容调用方，数值语义是方向分。"""
     horizons = (facts or {}).get("horizons") or {}
-    short = horizons.get("2周") or next(iter(horizons.values()), {})
-    short_score = _score(short.get("rule_score"))
-    short_up = int(round(short_score if short_score is not None else 50))
-    long_scores = [float((horizons.get(f"{w}周") or {}).get("rule_score"))
-                   for w in (4, 8, 16, 32)
-                   if (horizons.get(f"{w}周") or {}).get("rule_score") is not None]
-    long_up = int(round(sum(long_scores) / len(long_scores))) if long_scores else short_up
+    aggregation = {group: horizon_score(horizons, group) for group in ("short", "alignment")}
+    short_score, long_score = (aggregation[group]["score"] for group in ("short", "alignment"))
+    short_up = int(round(short_score)) if short_score is not None else None
+    long_up = int(round(long_score)) if long_score is not None else None
+    if short_up is None or long_up is None:
+        missing = sorted({key for row in aggregation.values() for key in row["missing_components"]})
+        return {"horizon": "2周", "p_up": short_up,
+                "p_down": 100 - short_up if short_up is not None else None,
+                "long_p_up": long_up, "short_score": short_up, "long_score": long_up,
+                "short_side": "待核", "long_side": "待核", "conflict": None,
+                "status": "周期缺证", "safe_action": "补齐观察档后复核",
+                "score_semantics": "historical-direction-score-not-probability",
+                "score_policy_version": HORIZON_SCORE_POLICY_VERSION,
+                "score_aggregation": aggregation, "score_status": "limited",
+                "note": "周期方向分缺失或无效：" + "、".join(missing) + "；不填中性分、不借用另一周期"}
     short_side = "偏涨" if short_up >= 59 else ("偏跌" if short_up <= 41 else "震荡")
     long_side = "偏涨" if long_up >= 59 else ("偏跌" if long_up <= 41 else "震荡")
-    # 不只拦“完全反向”，也拦短期很强但中长线均值已落到50以下的期限错配。
+    # 不只拦“完全反向”，也拦短期很强但中长线加权分已落到50以下的期限错配。
     # 紫金矿业这类2周反弹、4-32周持续转弱必须自动降级，不能继续显示可关注。
     conflict = ((short_side == "偏涨" and long_up <= 48) or
                 (short_side == "偏跌" and long_up >= 52))
@@ -408,8 +417,10 @@ def cycle_alignment(facts: dict) -> dict:
         "status": status,
         "safe_action": "历史窗口分歧·需复核" if conflict else "辅助研究·核对原合同",
         "short_score": short_up, "long_score": long_up,
+        "score_policy_version": HORIZON_SCORE_POLICY_VERSION,
+        "score_aggregation": aggregation, "score_status": "complete",
         "score_semantics": "historical-direction-score-not-probability",
-        "note": f"过去2周{_past_view(short_side)}{short_up}/100｜过去4/8/16/32周规则均分{long_up}/100；观察窗口并列，非未来路径",
+        "note": f"过去2周{_past_view(short_side)}{short_up}/100｜过去4/8/16/32周不等权分{long_up}/100（权重10/20/30/40）；观察窗口并列，非未来路径",
     }
 
 

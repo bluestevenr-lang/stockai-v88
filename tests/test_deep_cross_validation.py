@@ -39,7 +39,8 @@ def case():
            'fact':fact, 'card':card, 'formal':False}
     quality = {'code':'688002.SS','source_asof':'2026-09-11','price_basis':'split-adjusted OHLC; not total return',
                'snapshot_signature':snapshot_signature(df)}
-    technical = evaluate_decision(df, {}, code='688002.SS')
+    from cloud_engine import analyze_trend_full
+    technical = evaluate_decision(df, analyze_trend_full(df), code='688002.SS')
     return ctx, df, quality, technical
 
 
@@ -191,3 +192,22 @@ def test_verified_identity_factor_basis_reconciles_without_equating_other_series
     assert basis(proven.replace('均为1且偏移0','可能为1')) is None
     case[2]['price_basis']='unadjusted'
     assert status(reconcile(*case,now=NOW),'basis')=='gap'
+
+
+def test_completed_zero_grade_is_consistent_not_missing_review(case):
+    case[0]['row'].update(tier='0A',audit_score=50)
+    case[0]['card']['total']=50
+    report=reconcile(*case,now=NOW)
+    assert status(report,'reviews')=='pass'
+    assert report['status']=='一致·审核完成未入选'
+    assert report['audit_score']==50 and report['current_grade']=='0A'
+    assert not report['current_price_meets_numeric_hurdles']
+
+
+def test_missing_trend_quality_is_not_imputed_as_fifty(case):
+    technical = evaluate_decision(case[1], {}, code='688002.SS', action_hint='减仓')
+    assert technical['unified_score'] is None
+    assert technical['score_status'] == 'limited'
+    assert '趋势质量' in technical['error']
+    assert technical['action'] == '减仓'
+    assert status(reconcile(case[0], case[1], case[2], technical, now=NOW), 'quant') == 'gap'

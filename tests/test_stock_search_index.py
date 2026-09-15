@@ -124,3 +124,12 @@ def test_profile_updates_invalidate_cache(tmp_path):
     second=picker.load_catalog(core,names_path=names)
     assert '中文名待核' in first['rows'][0]['label']
     assert '苹果' in second['rows'][0]['label']
+
+
+def test_latin_query_does_not_match_across_unrelated_word_boundaries():
+    doc=picker.build_catalog([
+        {'code':'000100.SZ','name':'TCL科技','market':'A股'},
+        {'code':'1070.HK','name':'TCL ELECTRONICS','market':'港股'},
+        {'code':'SKYY','name':'First Cloud Fund','market':'美股'}])
+    assert {r['code'] for r in picker.search('TCL',doc)}=={'000100.SZ','1070.HK'}
+    assert picker.search('Cloud',doc)[0]['code']=='SKYY'

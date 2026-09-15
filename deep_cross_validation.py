@@ -9,6 +9,9 @@ import hashlib
 import json
 import math
 from pathlib import Path
+from collections import OrderedDict
+from copy import deepcopy
+from threading import RLock
 
 from modules.utils import to_yf_cn_code
 
@@ -18,6 +21,56 @@ VERSION = 'deep-cross-validation-v1'
 FACT_ROUNDING_TOLERANCE = .000051
 BJT = timezone(timedelta(hours=8))
 HORIZONS = {'short': '短期（1–30天）', 'medium': '中期（31–90天）', 'long': '长期（91–365天）'}
+_SNAPSHOTS = OrderedDict()
+_SNAPSHOT_LOCK = RLock()
+_SELECTION_GROUPS = ('recommendations', 'preparations', 'blocked_3a', 'conditional',
+                     'pending', 'observations', 'excluded')
+
+
+def _file_version(path):
+    stat = path.stat()
+    return (stat.st_dev, stat.st_ino, stat.st_mtime_ns, stat.st_ctime_ns, stat.st_size)
+
+
+def read_json_snapshot(path):
+    """Borrow immutable source data; callers must copy any returned mutable view.
+
+    Retain one generation per absolute path, never an old good file after a
+    missing/broken replacement. Current review/freshness decisions are not cached.
+    """
+    path = Path(path).resolve()
+    with _SNAPSHOT_LOCK:
+        try:
+            for _ in range(2):
+                before = _file_version(path)
+                hit = _SNAPSHOTS.get(path)
+                if hit and hit[0] == before:
+                    _SNAPSHOTS.move_to_end(path)
+                    return hit[1]
+                doc = json.loads(path.read_text(encoding='utf-8'))
+                if _file_version(path) != before:
+                    continue
+                _SNAPSHOTS[path] = (before, doc)
+                _SNAPSHOTS.move_to_end(path)
+                while len(_SNAPSHOTS) > 12:
+                    _SNAPSHOTS.popitem(last=False)
+                return doc
+            raise OSError('Snapshot changed while being read')
+        except (OSError, ValueError):
+            _SNAPSHOTS.pop(path, None)
+            raise
+
+
+def _stock_selection(doc, code):
+    """Detached single-stock input to the unchanged central validation helper."""
+    from market_symbols import canonical
+    target = canonical(code)
+    result = {key: deepcopy(doc.get(key)) for key in
+              ('version', 'generated_at', 'factpack_id', 'factpack_fresh')}
+    for group in _SELECTION_GROUPS:
+        result[group] = [deepcopy(row) for row in doc.get(group) or []
+                         if canonical(row.get('code')) == target]
+    return result
 
 
 def load_context(code, data_dir=None):
@@ -28,18 +81,21 @@ def load_context(code, data_dir=None):
     root = Path(data_dir or CORE/'data')
     # A publication may change between reads. Retry the entire pair, not one leg.
     for _ in range(2):
-        selection, row, formal = _triad_record(code)
         try:
-            pack = json.loads((root/'review_factpack.json').read_text(encoding='utf-8'))
+            selection_doc = read_json_snapshot(root/'triad_selection.json')
+            pack = read_json_snapshot(root/'review_factpack.json')
         except (OSError, ValueError):
-            pack = {}
+            selection_doc, pack = {}, {}
+        selection, row, formal = _triad_record(code, selection=_stock_selection(selection_doc, code))
         if pack.get('factpack_id') == selection.get('factpack_id'):
             break
     fact = next((r for r in pack.get('items', [])
                  if to_yf_cn_code(r.get('code', '')) == to_yf_cn_code(code)), {})
+    paired = bool(pack.get('factpack_id') and pack.get('factpack_id') == selection.get('factpack_id'))
     return {'code': to_yf_cn_code(code), 'selection': selection, 'row': row,
-            'formal': formal, 'card': current_scorecard(selection, row) if row else {},
-            'fact': fact, 'loaded_factpack_id': pack.get('factpack_id')}
+            'formal': bool(formal and paired),
+            'card': current_scorecard(selection if paired else {}, row) if row else {},
+            'fact': deepcopy(fact), 'loaded_factpack_id': pack.get('factpack_id')}
 
 
 def finite(value):
@@ -118,7 +174,7 @@ def reconcile(context, frame, quality, technical, now=None):
     add('binding', '同包合同与周期', 'pass' if bound else 'gap',
         f"事实包 {str(selection.get('factpack_id') or '缺失')[:12]}；{HORIZONS.get(row.get('horizon'), '周期缺失')}",
         '重新读取同一发布批次；合同变化须冻结新事实并实际双审，不能沿用旧分数。')
-    review_ok = bool(row.get('tier') in ('1A', '2A', '3A')
+    review_ok = bool(row.get('tier') in ('0A', '1A', '2A', '3A')
                      and all((card.get(k) or {}).get('current') and (card.get(k) or {}).get('complete')
                              for k in ('gpt', 'books'))
                      and finite(card.get('total')) and card['total'] == row.get('audit_score'))
@@ -201,7 +257,7 @@ def reconcile(context, frame, quality, technical, now=None):
                            and current_scenario['net_upside_pct'] >= hurdle
                            and current_scenario['net_reward_risk'] >= (2 if grade == '3A' else 1.5))
     gaps = [x for x in checks if x['status'] == 'gap']
-    status = '需复核' if gaps else '一致·等原条件' if not context.get('formal') or not in_zone else '一致·仍按中央执行闸'
+    status = '需复核' if gaps else '一致·审核完成未入选' if grade == '0A' else '一致·等原条件' if not context.get('formal') or not in_zone else '一致·仍按中央执行闸'
     result = {'version': VERSION, 'code': context.get('code'), 'checked_at': now.isoformat(),
               'status': status, 'current_grade': grade, 'audit_score': card.get('total') if review_ok else None,
               'technical_score': technical.get('unified_score'), 'score_version': technical.get('score_version'),

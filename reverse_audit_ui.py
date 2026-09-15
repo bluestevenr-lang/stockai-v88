@@ -33,7 +33,8 @@ def html(doc=None, status=None, selection=None, now=None):
             f" ｜ 反查 {e(summary.get('audited_rows'))}条 · 待修 {e(summary.get('open_issues'))}项")
     issues = ''.join(f"<tr><td>{e(i.get('priority'))}</td><td>{e(i.get('title'))}</td>"
                      f"<td>{e(i.get('next_action'))}</td></tr>" for i in doc.get('issues', []))
-    active = [r for r in doc.get('rows', []) if r.get('current_tier')]
+    from grade_card import _market_rows
+    active = _market_rows([r for r in doc.get('rows', []) if r.get('current_tier')])
     rows = ''
     for r in active:
         gaps = '；'.join(c.get('title', '') for c in r.get('checks', []) if c.get('status') != 'pass')
@@ -44,6 +45,6 @@ def html(doc=None, status=None, selection=None, now=None):
             f"<summary>{head}</summary><p style='font-size:12px'>核对时间 {checked.astimezone(timezone(timedelta(hours=8))).strftime('%m-%d %H:%M')} 北京时间；"
             "结论→事实→合同→主审/反审→书理→后续结算。反查不修改评级；审核分不是胜率。</p>"
             "<div style='overflow:auto;max-height:320px'><table style='font-size:12px;width:100%;min-width:680px'><thead><tr><th>级别</th><th>待修事项</th><th>完成条件</th></tr></thead>"
-            f"<tbody>{issues}</tbody></table></div><details><summary>当前有效评级逐股反查</summary>"
+            f"<tbody>{issues}</tbody></table></div><details><summary>当前有效评级反查 · 每市场Top5</summary>"
             "<div style='overflow-x:auto'><table style='font-size:12px;width:100%'><thead><tr><th>个股</th><th>定位·原评级·分数</th><th>仍缺证据</th></tr></thead>"
             f"<tbody>{rows}</tbody></table></div></details></details>")

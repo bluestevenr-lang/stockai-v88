@@ -14,7 +14,7 @@ def row(code, tier='1A', **kw):
     return central_row(code, '测试' + code, tier, tier + '_PREPARE', **kw)
 
 
-def test_every_grade_has_independent_market_cap():
+def test_each_horizon_keeps_three_places_per_market_across_grades():
     rows = [row(code, tier) for tier in focus.GRADES
             for code in [*(f'{i:06}.SZ' for i in range(1,9)),
                          *(f'{i}.HK' for i in range(1,9)),
@@ -26,9 +26,14 @@ def test_every_grade_has_independent_market_cap():
         else: r['code'] = 'US' + str(i)
     before = json.dumps(rows, sort_keys=True)
     result = focus.build(rows)
+    # These legacy contracts occupy short and long research lanes. Each lane
+    # can hold CN3 + US3 + HK3; grades share that lane/market quota.
     assert result['selected_count'] == 18
     assert result['reserve_count'] == 54
     assert all(len(lane['selected_codes']) <= 9 for lane in result['by_horizon'].values())
+    for lane in result['by_horizon'].values():
+        for market in focus.MARKETS:
+            assert sum(result['records'][code]['market']==market for code in lane['selected_codes']) <= 3
     assert json.dumps(rows, sort_keys=True) == before
     assert result['no_grade_authority'] and result['model_calls'] == 0
 
@@ -37,6 +42,8 @@ def test_missing_hk_slots_do_not_overflow_into_other_markets():
     rows = [row('US'+str(i)) for i in range(12)] + [row('661.HK')]
     result = focus.build(rows)
     assert result['selected_count'] == 4
+    assert sum(r['selected'] and r['market']=='美股' for r in result['records'].values()) == 3
+    assert result['records']['661.HK']['selected'] is True
     assert result['by_horizon']['short']['summary']['1A']['港股']['minimum_gap'] == 0
     assert result['by_horizon']['short']['summary']['1A']['A股']['minimum_gap'] == 0
     assert len(result['records']) == 13
@@ -154,23 +161,23 @@ def test_shared_core_algorithm_is_byte_identical():
     assert core.read_bytes() == Path(focus.__file__).read_bytes()
 
 
-def test_three_horizons_each_have_nine_slots_and_independent_market_scores():
+def test_three_horizon_top3_independent_and_no_minimum_market_quota():
     rows=[]
     for horizon,base in [('short',65),('medium',75),('long',90)]:
-        for market in focus.MARKETS:
-            for i in range(5):
-                rows.append({'code':horizon+market+str(i),'market':market,
-                             'horizon':horizon,'tier':'1A','audit_score':base-i,
-                             'central_rank':i+1,'entry_opportunity':{'focus_eligible':True}})
+        for i in range(6):
+            rows.append({'code':horizon+str(i),'market':['A股','美股','港股'][i%3],
+                         'horizon':horizon,'tier':'1A','audit_score':base-i,
+                         'central_rank':i+1,'entry_opportunity':{'focus_eligible':True}})
     original=deepcopy(rows)
-    out=focus.attention_rows(list(reversed(rows)))
-    assert len(out)==27 and rows==original
+    out=focus.attention_rows(rows)
+    assert len(out)==18 and rows==original
     for horizon in focus.HORIZONS:
-        assert len([r for r in out if r['horizon']==horizon])==9
+        selected=[r for r in out if r['horizon']==horizon]
         for market in focus.MARKETS:
-            selected=[r for r in out if r['horizon']==horizon and r['market']==market]
-            assert [r['code'] for r in selected]==[horizon+market+str(i) for i in range(3)]
-            assert [r['watch_rank'] for r in selected]==[1,2,3]
+            original_market=[r for r in rows if r['horizon']==horizon and r['market']==market]
+            market_selected=[r for r in selected if r['market']==market]
+            assert [r['code'] for r in market_selected]==[r['code'] for r in original_market]
+            assert [r['watch_rank'] for r in market_selected]==[1,2]
     assert len(focus.attention_rows(rows[:1]))==1
     rows[0]['entry_opportunity']['focus_eligible']=False
-    assert rows[0]['code'] in [r['code'] for r in focus.attention_rows(rows)]
+    assert 'short0' in [r['code'] for r in focus.attention_rows(rows)]

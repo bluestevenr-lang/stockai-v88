@@ -11,6 +11,61 @@ from grade_focus import MARKETS, GRADES, GRADE_LIMITS as LIMITS
 ROOT=Path(__file__).resolve().parent.parent/'ai-daily-report-v2/data'
 LISTING_HISTORY_RULE='上次上榜指上一版真实正式榜；同版后台刷新不重复计次，历史名次按当时榜单范围。时间统一为北京时间。'
 
+HORIZON_STYLE='''<style>
+.v88-horizon-board{--lane-accent:#2563eb;--lane-bg:#eff6ff}
+.v88-horizon-board .v88-horizon-lane{border:1px solid #dbe3ef;border-left:5px solid var(--lane-accent);border-radius:12px;background:#fff;margin:16px 0;overflow:hidden}
+.v88-horizon-board .v88-horizon-lane[data-horizon="medium"]{--lane-accent:#b45309;--lane-bg:#fffbeb}
+.v88-horizon-board .v88-horizon-lane[data-horizon="long"]{--lane-accent:#7c3aed;--lane-bg:#f5f3ff}
+[data-testid="stAppViewContainer"] .v88-horizon-board .v88-horizon-lane>.v88-lane-header,
+.v88-horizon-board .v88-horizon-lane>.v88-lane-header{display:flex!important;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;padding:18px 20px!important;margin:0;background:var(--lane-bg);color:#1e293b!important;line-height:1.5!important;font-size:15px!important;list-style:none}
+.v88-lane-header::-webkit-details-marker{display:none}
+.v88-horizon-board .v88-lane-title{font-size:22px!important;font-weight:800;color:var(--lane-accent)}
+.v88-horizon-board .v88-lane-window{font-size:13px!important;color:#64748b;margin-left:12px;font-weight:400;white-space:nowrap}
+.v88-horizon-board .v88-lane-markets{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:5px;font-size:14px!important;color:#475569;font-weight:400}
+.v88-horizon-board .v88-lane-result{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.v88-horizon-board .v88-lane-count{font-size:15px!important;font-weight:600;white-space:nowrap;color:var(--lane-accent)}
+.v88-horizon-board .v88-lane-count strong{font-size:32px!important;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums;margin:0 5px}
+.v88-horizon-board .v88-lane-grades{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px!important;color:#64748b;font-weight:400}
+.v88-horizon-board .v88-lane-grade{padding:3px 8px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;white-space:nowrap;color:#334155}
+.v88-horizon-board .v88-lane-grade[data-grade="3A"][data-count]:not([data-count="0"]){background:#f0fdf4;color:#166534;border-color:#bbf7d0}
+.v88-horizon-board .v88-lane-grade[data-grade="2A"][data-count]:not([data-count="0"]){background:#fffbeb;color:#92400e;border-color:#fde68a}
+.v88-horizon-board .v88-lane-toggle{font-size:12px!important;color:#475569;font-weight:500;white-space:nowrap}
+.v88-horizon-board .v88-lane-toggle:after{content:'查看名单 ▾'}
+.v88-horizon-board details[open]>.v88-lane-header .v88-lane-toggle:after{content:'收起名单 ▴'}
+.v88-horizon-board .v88-lane-header:focus-visible{outline:3px solid var(--lane-accent);outline-offset:-3px}
+.v88-horizon-board .v88-lane-body{padding:12px 16px}
+.v88-horizon-board .v88-lane-empty{font-size:13px!important;color:#64748b;padding:0;margin:0 0 6px}
+.v88-horizon-board .v88-lane-notes{font-size:12px;color:#64748b}
+@media(max-width:600px){
+[data-testid="stAppViewContainer"] .v88-horizon-board .v88-horizon-lane>.v88-lane-header,
+.v88-horizon-board .v88-horizon-lane>.v88-lane-header{padding:14px 12px!important;gap:10px}
+.v88-horizon-board .v88-lane-result{width:100%;justify-content:space-between;gap:8px}
+.v88-horizon-board .v88-lane-title{font-size:20px!important}
+.v88-horizon-board .v88-lane-count strong{font-size:28px!important}
+.v88-horizon-board .v88-lane-body{padding:10px 8px}
+}
+</style>'''
+
+
+def _horizon_shell(horizon, counts, content):
+    """Counts come from the same validated rows as the table, including zero."""
+    from grade_focus import HORIZON_LABELS
+    total=sum(v['total'] for v in counts.values())
+    title,window=HORIZON_LABELS[horizon].split(' · ',1)
+    markets=''.join(f'<span data-watch-market="{escape(m)}">{escape(m)} {counts[m]["total"]}只</span>' for m in MARKETS)
+    grades=''.join(f'<span class="v88-lane-grade" data-grade="{g}" data-count="{sum(v[g] for v in counts.values())}">{g} · {sum(v[g] for v in counts.values())}只</span>' for g in GRADES)
+    header=(f'<span><span class="v88-lane-title">{title}</span><span class="v88-lane-window">{window} · 各市场Top3</span>'
+            f'<span class="v88-lane-markets">{markets}</span></span>'
+            f'<span class="v88-lane-result"><span class="v88-lane-count">入选 <strong>{total}</strong> 只</span>'
+            f'<span class="v88-lane-grades">实际评级 {grades}</span>'
+            +('<span class="v88-lane-toggle" aria-hidden="true"></span>' if total else '')+'</span>')
+    tag='details' if total else 'section'
+    head_tag='summary' if total else 'div'
+    opened=' open' if total and horizon=='short' else ''
+    return (f'<{tag} class="v88-horizon-lane" data-horizon="{horizon}" data-selected-count="{total}"{opened}>'
+            f'<{head_tag} class="v88-lane-header">{header}</{head_tag}>'
+            f'<div class="v88-lane-body">{content}</div></{tag}>')
+
 
 def _listing_history_html(row):
     """Display a verified publication receipt, never infer history from a rank."""
@@ -55,17 +110,14 @@ def html(doc,selection,*,code=None,view='period',horizon=None):
     from scorecard_html import gpt_html, books_html, profit_html
     from entry_opportunity import html as entry_html, price_html, assess as entry_assess
     from review_display import current_scorecard
+    from nontechnical_reason_ui import load_index, for_code, html as business_html, action_html, has_support
     esc=lambda v:escape(str(v if v is not None else '—'))
     if not doc:return ''
     if view=='current' and horizon is None:
-        from grade_focus import HORIZONS,HORIZON_LABELS
-        sections=[]
-        for lane in HORIZONS:
-            content=html(doc,selection,code=code,view=view,horizon=lane)
-            title=HORIZON_LABELS[lane]+' · 中美港各Top3 / 共9席'
-            sections.append((f"<section class='v88-horizon-lane' data-horizon='{lane}'><h4>⏱ {title}</h4>{content}</section>" if lane=='short' else
-                f"<details class='v88-horizon-lane' data-horizon='{lane}'><summary>🗓 {title} · 独立名额</summary>{content}</details>"))
-        return '<div style="font-size:12px;color:#475569">研究榜按审核分排序；🔵研究价值　⏳等待入场　🟢触发许可。周内能否入场另行核验，不挤掉研究名额。</div>'+''.join(sections)
+        from grade_focus import HORIZONS
+        return ''.join(html(doc,selection,code=code,view=view,horizon=lane) for lane in HORIZONS)
+
+    business_index=load_index(ROOT.parent)
 
     matches=doc.get('factpack_id')==selection.get('factpack_id') and doc.get('source_generated_at')==selection.get('generated_at')
     try:
@@ -88,6 +140,9 @@ def html(doc,selection,*,code=None,view='period',horizon=None):
         source=ranked_reserves((doc.get('tracking') or {}).get('rows',[]))
     else:source=doc.get('rows',[])
     rows=[r for r in source if code is None or canonical(r['code'])==canonical(code)]
+    if view not in ('current', 'tracking') and code is None:
+        from display_limits import market_top
+        rows=market_top(rows)
     if not rows and (view!='current' or code is not None):return ''
     live_focus={}
     central_by_code={}
@@ -106,15 +161,12 @@ def html(doc,selection,*,code=None,view='period',horizon=None):
         verified=[r for r in live_focus.values() if r.get('horizon')==horizon and r.get('metrics')]
         failed=sum(r.get('tier')=='0A' or r.get('state') in ('REJECTED','EXCLUDED') for r in lane_rows)
         waiting=max(0,len(lane_rows)-len(verified)-failed)
-        eligible=sum(r.get('selected') is True for r in verified)
         blocked=sum(not (r.get('entry_opportunity') or {}).get('focus_eligible') for r in verified)
-        entry_ready=sum(r.get('selected') and (r.get('entry_opportunity') or {}).get('focus_eligible') for r in verified)
         pool_note=(f'<div class="v88-horizon-status" style="font-size:12px;color:#475569">'
-            f'🔎 研究精选 {eligible}/9　🎯 其中周内入场条件通过 {entry_ready}只'
-            f'<details style="font-size:11px"><summary>候选范围与审核缺口</summary>'
             f'本周期中央档案 {len(lane_rows)}只 → 当前有效评级 {len(verified)}只；'
             f'缺证/待审 {waiting} · 未授级/排除 {failed} · 已评级但周内入场未通过 {blocked}。'
-            '缺少本周期证据时留空，不将另一周期分数搬入。</details></div>')
+            '缺少本周期证据时留空，不将另一周期分数搬入。</div>')
+    shown_entry_ready=0
     body='';week_archives='';market_bodies={m:'' for m in MARKETS}
     counts={market:{'total':0,'graded':0,'paused':0,'awaiting':0,'stale':0,**{tier:0 for tier in GRADES}} for market in MARKETS}
     for r in rows:
@@ -166,11 +218,14 @@ def html(doc,selection,*,code=None,view='period',horizon=None):
         action=entry_html(entry or {}) if tier else '<b>候选研究·不可执行</b><div>补齐GPT双审及量价触发；不是1A/2A/3A。</div>'
         if paused:action='<b>⏸ 暂停研究·不可执行</b><details><summary>暂停原因与原评级</summary>'+(('原'+esc(r['previous_tier'])+' → 暂停研究<br>') if r.get('previous_tier') else '')+esc(r['reason'])+'</details>'
         if not current:action='<b>当前证据待更新·不可执行</b><div>下列为原研究合同，等待新一轮同源核对。</div>'
+        business=for_code(c,business_index,r)
+        action=action_html(action,business)
         row_class='v88-watch-history-row' if view=='history' else 'v88-watch-tracking-row' if view=='tracking' else 'v88-watch-row'
         attention=bool(current and (view!='current' or (live_focus.get(canonical(c)) or {}).get('selected') is True))
         if view=='current' and not attention:
             row_class='v88-week-archive-row'
         active_in_view=view!='current' or attention
+        shown_entry_ready+=bool(attention and (entry or {}).get('focus_eligible') and has_support(business))
         tally=counts.setdefault(r['market'],{'total':0,'graded':0,'paused':0,'awaiting':0,'stale':0,**{t:0 for t in GRADES}})
         tally['total']+=int(active_in_view);tally['graded']+=bool(active_in_view and current and tier in ('1A','2A','3A'))
         if active_in_view and current and tier in GRADES:tally[tier]+=1
@@ -192,7 +247,7 @@ def html(doc,selection,*,code=None,view='period',horizon=None):
         row_html=(f'<tr{anchor} class="{row_class}" data-code="{esc(c)}" data-market="{esc(r["market"])}" data-tier="{esc(tier or "none")}" data-paused="{str(paused).lower()}" data-continuity="{str(r.get("continuity") is True).lower()}" data-current="{str(current).lower()}">'
                +_td('<b>'+stock_link(display_name(r['name'],c,profiles),c,_flag(c,r['market']))+'</b><br>'+esc(c)+profile_html(c,profiles))
                +_td(rank_label+f'<br><b>{esc(label)}</b><br>'
-                    +(f'{"审核分" if current else "原审核分"} {score:g}/100' if score is not None else '审核分：证据待更新' if paused else '审核分：尚未完成双审')
+                    +(f'{"加权审核分" if current and review_card.get("score_policy") else "审核分" if current else "原审核分"} {score:g}/100' if score is not None else '审核分：证据待更新' if paused else '审核分：尚未完成双审')
                     +weekly+_listing_history_html(r))
                +_td(f'<b>{esc(p.get("last"))}</b><br>{esc(str(r.get("source_asof") or "")[:10])}'
                     +f'<br><small>{esc(str(r.get("source_asof") or "")[11:16])} 源时区</small>')
@@ -203,7 +258,7 @@ def html(doc,selection,*,code=None,view='period',horizon=None):
                +_td(window_text)
                +_td(review_html)
                +_td(book_text)
-               +_td('🔎 本期持续跟踪'+'<details><summary>依据与升降级条件</summary>'+esc(r['reason'])+'<br>'+esc('；'.join(r.get('gaps') or []))
+               +_td(business_html(business)+'🔎 本期持续跟踪'+'<details><summary>依据与升降级条件</summary>'+esc(r['reason'])+'<br>'+esc('；'.join(r.get('gaps') or []))
                     +'<br>暂不宜开仓仍保留原档案；升降级与实际行情见下方演变监控。</details>')+'</tr>')
         if view=='current' and not attention:week_archives+=row_html
         elif view=='current':market_bodies[r['market']]+=row_html
@@ -212,9 +267,8 @@ def html(doc,selection,*,code=None,view='period',horizon=None):
            +('按审核分精选' if view=='current' else '候补跟踪与补审（原评级保留）' if view=='tracking' else '本期固定跟踪档案')+f' · {sum(v["total"] for v in counts.values())}只</div>')
     note='<details style="font-size:11px;color:#64748b"><summary>ℹ️ 跟踪名单与评级说明</summary>本期固定跟踪，显示中央最新评级与分数；跟踪序号不代表当前质量排名。降级明确暂停研究、保留原合同。3A表示审核等级；短、中、长期各自推荐，不把周期当等级。</details>'
     if view=='current':
-        market_note=' · '.join(f'<span data-watch-market="{esc(m)}">{esc(m)} {v["total"]}/3只</span>' for m,v in counts.items())
         from grade_focus import RULE
-        note='<div class="v88-watch-market-summary" style="font-size:11px;color:#64748b">'+market_note+'</div><details style="font-size:11px;color:#64748b"><summary>ℹ️ 评级与排序规则</summary>'+esc(RULE)+'</details>'
+        note='<div class="v88-lane-notes">'+esc(RULE)+'<br>'+LISTING_HISTORY_RULE+'</div>'
     elif view=='tracking':
         market_note=' · '.join(f'<span data-tracking-market="{esc(m)}">{esc(m)} {v["total"]}只（暂停{v["paused"]} / 待双审{v["awaiting"]}）</span>' for m,v in counts.items())
         note='<div style="font-size:11px;color:#64748b">'+market_note+'</div><details style="font-size:11px;color:#64748b"><summary>ℹ️ 跟踪与恢复条件</summary>候补按同市场审核分降序，最多各5只；有真实分数的排前，未审排后。已完成的真实审核显示分数，尚未完成的审核不填造分数。补齐证据并通过当前双审后，按正式评级与分数进入上方对应榜单。</details>'
@@ -222,15 +276,18 @@ def html(doc,selection,*,code=None,view='period',horizon=None):
     changes=doc.get('recent_seat_changes') or []
     history=''
     if code is None and changes and view not in ('current','tracking'):
-        exits=[e for e in changes if e.get('kind')=='WATCH_LEFT']
-        if exits:
-            history='<div style="font-size:11px;color:#64748b">近期移出席位（仍持续留档）：'+ ' · '.join(stock_link(e['code'],e['code']) for e in exits[-8:])+'</div>'
-        history+='<details style="font-size:11px"><summary>固定席位变更记录</summary>'+'<br>'.join(esc(e['at'])+' '+stock_link(e['code'],e['code'])+' '+('进入席位' if e['kind']=='WATCH_ENTERED' else '退出席位，保留档案') for e in reversed(changes))+'</details>'
+        history='<div style="font-size:11px;color:#64748b">后台保留 '+str(len(changes))+' 条固定席位变更；按名称或代码检索个股可查看完整档案。</div>'
     archive=(f"<details class='v88-week-archives' style='font-size:11px'><summary>榜单待更新 · 原评级跟踪</summary>{_tbl(week_archives)}</details>" if week_archives else '')
     if view=='current':
         for market in MARKETS:
-            body+=f"<tr class='v88-market-group' data-market-group='{esc(market)}'><td colspan='11' style='padding:7px;background:#eaf2ff;font-weight:600'>{esc(market)} · Top3 · {counts[market]['total']}/3只</td></tr>"
-            body+=market_bodies[market] or "<tr class='v88-horizon-empty'><td colspan='11' style='font-size:12px;color:#64748b;padding:10px'>⏳ 本市场暂无当前有效的本周期审核；名额保留，补证复审后入榜。</td></tr>"
+            amount=counts[market]['total']
+            body+=f"<tr class='v88-market-group' data-market-group='{esc(market)}'><td colspan='11' style='padding:9px;background:#eaf2ff;font-size:14px;font-weight:700'>{esc(market)} · 入选 {amount} 只"+(' / 最多3只' if amount else ' · 暂无当前有效入选')+'</td></tr>'
+            body+=market_bodies[market]
+        total=sum(v['total'] for v in counts.values())
+        evidence='<details class="v88-lane-notes"><summary>查看审核缺口与排序说明</summary>'+pool_note+note+'</details>'
+        content=((f'<div class="v88-lane-notes">按审核分排序 · 经营支持＋周内入场条件通过 {shown_entry_ready}只</div>'+evidence+_tbl(body)) if total else
+                 '<div class="v88-lane-empty">暂无当前有效入选；补证复审通过后更新。</div>'+evidence)
+        return HORIZON_STYLE+'<div class="v88-horizon-board">'+_horizon_shell(horizon,counts,content+archive)+'</div>'
     content=title+pool_note+note+_tbl(body)+archive+history
     if view=='tracking':return "<details class='v88-research-reserves'><summary>🔎 候补跟踪与补审 · "+str(len(rows))+"只 · 展开原因与原合同</summary>"+content+"</details>"
     return content

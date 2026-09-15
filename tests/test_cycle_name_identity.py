@@ -54,6 +54,18 @@ def test_legacy_receipts_never_become_current_gpt_or_turn_approval():
     assert not _cert_mark('2618.HK', '', {'by_code': {'2618': {'verdict': '一致'}}})
 
 
+def test_local_curve_preview_keeps_every_name_linked_to_deep_analysis(monkeypatch):
+    import stock_future_context, future_trend_visual
+    monkeypatch.setattr(stock_future_context,'for_stock',lambda *args:{'status':'pending'})
+    monkeypatch.setattr(future_trend_visual,'render',lambda *args,**kwargs:'<div>曲线待核</div>')
+    cycle, profiles=fixture()
+    body=stock_cycle_html(cycle,profiles=profiles)
+    navigation=unescape(re.search(r'<div class="rf-pick-list">(.*?)</div>',body,re.S).group(1))
+    assert '?q=GRPN&focus=deep#v88-deep-analysis' in navigation
+    assert 'href="#v88-stock-cycle-future-' in navigation
+    assert '↗ 曲线' in navigation and '点名称进入深度分析' in body
+
+
 def test_cycle_legend_discloses_absent_prediction_receipt():
     cycle, profiles = fixture()
     body = stock_cycle_html(cycle, profiles=profiles)

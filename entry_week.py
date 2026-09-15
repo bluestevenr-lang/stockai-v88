@@ -26,7 +26,8 @@ def binding(row):
     # audit identity, stock, original contract and market-source timestamps.
     from grade_focus import canonical
     value = [canonical(row.get('code')), row.get('audit_id') or (row.get('scorecard') or {}).get('audit_id'),
-             row.get('central_trade_plan') or row.get('trade_plan'), row.get('source_timestamps')]
+             row.get('central_trade_plan') or row.get('trade_plan'), row.get('source_timestamps'),
+             (row.get('scorecard') or {}).get('score_policy')]
     return hashlib.sha256(json.dumps(value,sort_keys=True,ensure_ascii=False,separators=(',',':')).encode()).hexdigest()
 
 

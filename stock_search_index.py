@@ -150,14 +150,25 @@ def search(query, catalog=None, *, limit=30, market='全部'):
     for row in catalog['rows']:
         if market != '全部' and row['market'] != market: continue
         codes, names = row['_codes'], row['_names']
+        # Preserve English word boundaries: "TCL" must not match the joined
+        # tail/head of "First Cloud" after whitespace normalization.
+        partial_names = names if _has_zh(q) else tuple(
+            unicodedata.normalize('NFKC', n).casefold() for n in row['aliases'])
         if q in codes: rank = 0
         elif q in names or q == row['_label']: rank = 1
-        elif any(t.startswith(q) for t in codes + names): rank = 2
-        elif all(any(term in t for t in codes + names) for term in terms): rank = 3
+        elif any(t.startswith(q) for t in codes + partial_names): rank = 2
+        elif all(any(term in t for t in codes + partial_names) for term in terms): rank = 3
         else: continue
         candidates.append((rank, row['label'], row))
     candidates.sort(key=lambda t:(t[0], t[1]))
     return [r for _,_,r in candidates[:limit]]
+
+
+def display_search(query, catalog=None, *, market='全部'):
+    """Bound visible matches after full-catalog matching and relevance order."""
+    from display_limits import market_top
+    catalog = load_catalog() if catalog is None else catalog
+    return market_top(search(query, catalog, market=market, limit=max(1, len(catalog['rows']))))
 
 
 def resolve_exact(value, catalog=None):

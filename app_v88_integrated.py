@@ -4593,6 +4593,8 @@ def _local_name_search9(search_key):
 
 def render_cloud_search():
     """本地输入即筛选；显式选择后直达深度页，共用最近查看和对比篮。"""
+    from display_limits import market_top as _display_market_top
+    from grade_focus import market_of as _display_market_of, canonical as _display_canonical
     # 【2026-07-18修】本函数经slot提前执行,早于11083行的初始化——先补位防AttributeError
     # 【2026-08-01 连环案②】compare_basket原init在1.3万行处,本函数7495行先用→
     # 历史一恢复就崩'no attribute compare_basket'(以前历史恒空侥幸不触发)。就地init。
@@ -4625,11 +4627,14 @@ def render_cloud_search():
                 st.toast(f'对比篮最多{_MAXCMP}只，请先移出再添加')
 
     if len(st.session_state.search_history) > 0:
+        _visible_search_history = _display_market_top([
+            {'code': c, 'name': n, 'market': _display_market_of(_display_canonical(c))}
+            for c, n in st.session_state.search_history])
         st.markdown('<p style="font-size: 12px; font-weight: 600; margin-top: 1rem; margin-bottom: 0.3rem;">📜 搜索历史</p>', unsafe_allow_html=True)
         st.caption(f"最近搜索 {len(st.session_state.search_history)} 只")
         # 【2026-08-01 用户"从历史里挑选历史个股进行深度对比,最多四只"】
         # 原来只能一只一只点➕,挑四只要点四次还看不到全貌;这里一次多选直接进对比。
-        _hopt9 = {f"{_n9}（{_c9}）": (_c9, _n9) for _c9, _n9 in st.session_state.search_history}
+        _hopt9 = {f"{r['name']}（{r['code']}）": (r['code'], r['name']) for r in _visible_search_history}
         _hsel9 = st.multiselect("从搜索历史挑", list(_hopt9), max_selections=_MAXCMP,
                                 key="hist_pk_sel", label_visibility="collapsed",
                                 placeholder=f"从历史挑2~{_MAXCMP}只做深度对比…")
@@ -4651,7 +4656,7 @@ def render_cloud_search():
             f"border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc;"
             f"text-decoration:none;font-size:12px;color:#1e293b;white-space:nowrap'>"
             f"<b>{_n}</b><span style='font-size:10px;color:#94a3b8'>{_c}</span></a>"
-            for _c, _n in st.session_state.search_history)
+            for _c, _n in ((r['code'], r['name']) for r in _visible_search_history))
         st.markdown(f"<div style='line-height:1.9;margin:2px 0 4px'>{_hchips9}</div>",
                     unsafe_allow_html=True)
         _hc1, _hc2 = st.columns([3, 1])
@@ -4666,7 +4671,7 @@ def render_cloud_search():
         from feishu_snapshot import build as _pk_selector_snapshot
         _tqc9 = _pk_selector_snapshot()
         _pko9 = {}
-        for _r9k in _tqc9.get('rows') or []:
+        for _r9k in _display_market_top(_tqc9.get('rows') or []):
             if _r9k.get('tier') in ('3A', '2A', '1A'):
                 _sc9k = _r9k.get('audit_score')
                 _pko9[f"{_r9k['tier']}｜{_r9k.get('name')}（{_r9k.get('code')}）"
@@ -4708,12 +4713,18 @@ def render_clickable_table(df_results, table_key):
         st.dataframe(df_results, width='stretch', hide_index=True, key=f"table_plain_{table_key}")
         return
     
-    df_display = df_results.copy()
+    from display_limits import market_top as _display_market_top
+    from grade_focus import market_of as _display_market_of, canonical as _display_canonical
+    _table_rows = [{'code': str(row['代码']).strip(),
+                    'market': row.get('市场') or _display_market_of(_display_canonical(row['代码'])),
+                    '_position': i} for i, (_, row) in enumerate(df_results.iterrows())]
+    df_display = df_results.iloc[[r['_position'] for r in _display_market_top(_table_rows)]].copy()
     if "得分" in df_display.columns:
         df_display["得分"] = pd.to_numeric(df_display["得分"], errors="coerce").fillna(0).astype(int)
     
     st.markdown("##### 📊 扫描结果")
     st.caption("💡 快捷入口选股点击「深度分析」| 勾选1只=深度分析 | 勾选2只以上=立即对比")
+    st.caption(f"展示 {len(df_display)}只 · 每市场Top5，合计至多15只；完整扫描记录保留后台。")
     
     # 【V90.6】快捷入口：选择框+按钮
     stock_options = []
@@ -13952,7 +13963,7 @@ def _render_today_nav():
             from darkhorse_radar import load_projection as _load_discovery_projection
             from discovery_review_ui import render as _render_discovery_review
             _discovery_projection = _load_discovery_projection()
-            with st.expander(f"🔎 跨模块发现与3A核对（{len(_discovery_projection.get('rows') or [])}条）", expanded=False):
+            with st.expander("🔎 跨模块发现与3A核对 · 精选", expanded=False):
                 st.markdown(_render_discovery_review(_discovery_projection, stock_link=_stk_link), unsafe_allow_html=True)
         except Exception:
             logging.exception("发现线索中央核对暂不可用")
@@ -14623,7 +14634,7 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
                                   "日历规则标签": _r9x.get("grade", ""), "规则风险说明": _r9x.get("why", "")})
                 return _out9
 
-            # 【用户定则】只推荐Top3：评级最优+申购日最近置顶，其余进完整清单
+            # 日历沿用Top3；完整原始日历保留后台。
             _rank9 = {"✅ 值得打": 0, "🔎 重点关注": 1, "🔎 关注": 2, "✅ 常规打": 3,
                       "⚪ 一般": 4, "⚠️ 谨慎": 5, "🚫 回避": 6}
             _picks9 = sorted(_ipo_rows9, key=lambda r: (_rank9.get(r.get("grade", ""), 9),
@@ -14639,16 +14650,17 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
             st.dataframe(_ipo_tb9(_picks9), hide_index=True, use_container_width=True)
             _rest9 = [r for r in _ipo_rows9 if r not in _picks9]
             if _rest9:
-                with st.expander(f"完整清单（其余 {len(_rest9)} 只，含谨慎/回避）"):
-                    st.dataframe(_ipo_tb9(_rest9), hide_index=True, use_container_width=True)
+                st.caption(f"后台另保留 {len(_rest9)} 只原始日历记录。")
             st.caption("A股/美股=申购或定价日；港股=招股截止日、规模列为入场费/手（数据源：免费行情源/Nasdaq/富途）。")
             _listed9 = _ipo9.get("hk_listed") or []
             if _listed9:
+                from display_limits import market_top as _ipo_market_top
+                _listed_display9 = _ipo_market_top([{**r, 'market': '港股'} for r in _listed9])
                 _win9 = sum(1 for x in _listed9 if str(x.get("first_day", "")).startswith("+"))
                 with st.expander(f"📉 近期港股打新回看（{len(_listed9)}只上市·首日红盘{_win9}只，验证打新性价比）"):
                     st.dataframe([{"新股": f"{x.get('name')}（{x.get('code')}）",
                                    "暗盘": x.get("dark") or "—", "首日": x.get("first_day") or "—",
-                                   "较发行价累计": x.get("cum") or "—"} for x in _listed9],
+                                   "较发行价累计": x.get("cum") or "—"} for x in _listed_display9],
                                  hide_index=True, use_container_width=True)
         else:
             st.info("未来窗口内暂无披露的新股申购/定价（随日报每日更新）。")
@@ -14664,262 +14676,18 @@ with st.expander("🆕 打新雷达 · 中美港新股申购（提前布局）",
     # 【瘦身2026-07-27用户批准】全行业机会雷达已删(手动90秒扫描,被五行业代表+全市场机会扫描+涨停接力全面覆盖)
     # 【V88·触底拐点机会池 2026-07-19 用户点单恢复+现代化】前身"深度回调机会池"。
     # 优质池116只里"跌得深(52周双口径)且拐点已现"的中美港各Top10——仍在寻底的不收。
-with st.expander("💎 触底拐点机会池 · 优质股深水位+拐点已现（中美港各Top10）", expanded=False):
-    st.caption("三闸门：①历史研究样本池(含持仓自选，实际数量见扫描记录) ②深水位(距52周高≤-25%或52周分位≤20%) "
-               "③拐点已现(放量收复MA20/放量长阳/底背离金叉/底部启动确认)——仍在寻底的不收，宁缺毋滥。"
-               "🔻标近52周最低区(≤3%)，历史最低区(≤10%)单独标注。"
-               "概率=规则情景估计(非回测胜率)；观察清单非买入指令，进场仍走时机灯纪律。")
-    _rl_bt9 = _v88_rate_line9("bottom_turn", "触底拐点池")
-    if _rl_bt9:
-        st.caption(_rl_bt9)
-    # 【2026-08-16 界面增强·过期警示】离线管线曾因本地脏文件顶住 safe_pull 的 autostash
-    # 而停滞(08-07旧版盖掉08-14新版,已修)。数据若落后于最近一个交易日→红条警示不可执行。
-    # 周末/周一盘前不算过期:以最近一个工作日为基准,避免周五数据在周日误报。
-    try:
-        import datetime as _dt_bt9
-        _btp_gen9 = str(json.loads((core_root()
-                                   / "data" / "bottom_turn_pool.json").read_text(encoding="utf-8")
-                                   ).get("generated_at") or "")[:16]
-        _btp_ts9 = _dt_bt9.datetime.strptime(_btp_gen9, "%Y-%m-%d %H:%M")
-        _now9 = _dt_bt9.datetime.now()
-        _last_td9 = _now9.replace(hour=0, minute=0, second=0, microsecond=0)
-        if _now9.weekday() < 5 and _now9.hour < 18:
-            _last_td9 -= _dt_bt9.timedelta(days=1)  # 交易日下午5点前,基准是上一交易日
-        while _last_td9.weekday() >= 5:  # 周末不算交易日,回退到周五
-            _last_td9 -= _dt_bt9.timedelta(days=1)
-        if _btp_ts9.date() < _last_td9.date():
-            _btp_age9 = (_now9 - _btp_ts9).days
-            st.markdown(f"<div style='background:#fef2f2;border:1px solid #fca5a5;border-radius:6px;"
-                        f"padding:6px 10px;font-size:12.5px;color:#b91c1c'>⚠️ 本池数据为 "
-                        f"<b>{_btp_gen9}</b> 生成，落后最近交易日 <b>{_btp_age9} 天</b>——"
-                        f"名单只作研究参考，<b>不可直接执行</b>；管线恢复后本警示自动消失。</div>",
-                        unsafe_allow_html=True)
-    except Exception:
-        pass
-    # ═══ 【2026-08-03 用户"每次点击都不出来,优化一下"】离线化改造 ═══
-    # 原实现把 565 只全量扫描挂在按钮上:前台跑 6-12 分钟,Streamlit 任何一次
-    # rerun 就全丢 —— 用户体感是"点了没反应",其实它一直在跑,只是从没跑到能显示。
-    # 与今天修的作战板同一类病:**算力放错了执行位置**。
-    # 改法:管线离线预算(src/bottom_turn.py,全池2187只·两阶段省90%请求)→页面秒读。
-    # 按钮保留为**可选重扫**,不再是唯一入口。
-    def _btp_adapt9(_r):
-        """离线 json 行 → 渲染字段(离线口径字段名与前台版不同,在此归一)。"""
-        _hist = ""
-        if _r.get("at_all_low"):
-            _hist = f"历史最低区(距历史低{_r.get('to_lowall_pct')}%)"
-        elif _r.get("to_lowall_pct") is not None:
-            _hist = f"距历史低{_r.get('to_lowall_pct')}%"
-        if _r.get("at_52low"):
-            _hist = "🔻52周新低区·" + _hist
-        # 【台账#1·08-23】回测验证色:已验证绿/验证失败红/样本不足灰(前台重扫无此字段→灰)
-        _hvc9 = {"已验证": "#16a34a", "验证失败": "#b91c1c"}.get(_r.get("hist_verdict"), "#94a3b8")
-        return {**_r, "hist": _hist, "ev": _r.get("expected_pct") or 0,
-                "turn_label": str(_r.get("stage") or "拐点已现"),
-                "turn_sigs": _r.get("turning_note") or "—",
-                "hist_color": _hvc9}
-
-    _btp_state9 = st.session_state.get("_bottom_turn_pool9")
-    _btp_src9 = "本次重扫"
-    if not _btp_state9:
-        try:
-            _btp_off9 = json.loads((core_root()
-                                    / "data" / "bottom_turn_pool.json").read_text(encoding="utf-8"))
-            _s9o = _btp_off9.get("stats") or {}
-            _btp_state9 = {
-                "markets": {m: [_btp_adapt9(r) for r in v]
-                            for m, v in (_btp_off9.get("markets") or {}).items()},
-                "pool_size": _s9o.get("universe", 0), "scanned": _s9o.get("fetched", 0),
-                "deep": _s9o.get("deep_survivors", 0), "turned": _s9o.get("listed", 0),
-                "cut_low": max(0, _s9o.get("deep_survivors", 0) - _s9o.get("listed", 0)),
-                "ts": 0, "gen": _btp_off9.get("generated_at", ""),
-                "truncated": _btp_off9.get("truncated") or {},
-                "elapsed": _s9o.get("elapsed_sec")}
-            _btp_state9["stats9"] = _s9o
-            _btp_state9["top52"] = [_btp_adapt9(r) for r in (_btp_off9.get("top") or [])]
-            _btp_state9["tophist"] = [_btp_adapt9(r) for r in (_btp_off9.get("top_hist") or [])]
-            # 只看🔔:读**另一份**预算好的信号档榜,不是现场过滤上面那份
-            _btp_state9["top52_sig"] = [_btp_adapt9(r) for r in (_btp_off9.get("top_sig") or [])]
-            _btp_state9["tophist_sig"] = [_btp_adapt9(r) for r in (_btp_off9.get("top_hist_sig") or [])]
-            _btp_state9["markets_sig"] = {m: [_btp_adapt9(r) for r in v]
-                                          for m, v in (_btp_off9.get("markets_sig") or {}).items()}
-            _btp_state9["truncated_sig"] = _btp_off9.get("truncated_sig") or {}
-            _btp_src9 = "管线离线预算"
-        except Exception as _bo_e9:
-            # 不静默:读不到就说读不到(铁律21)
-            st.caption(f"⚠️ 离线触底拐点池读取失败（{type(_bo_e9).__name__}），可点下方按钮当场重扫")
-            _btp_state9 = None
-    _btp_go9 = st.button("🔄 重新扫描（可选·全池当场重算，约6-12分钟）", key="btn_bottom_turn9")
-    if _btp_go9:
-        try:
-            from bottom_turn_pool import scan_bottom_turns as _sbt9
-            import cloud_engine as _ce_btp
-            from v88_decision_core import evaluate_forward_outlook as _efo_btp
-            _mk_pool9 = lambda raw: {"codes": [(str(it[2] if len(it) >= 3 else it[0]), str(it[1]))
-                                               for it in raw]}
-            _pools_big9 = {"美股": _mk_pool9(RAW_US), "港股": _mk_pool9(RAW_HK),
-                           "A股": _mk_pool9(RAW_CN_TOP)}
-            _prog_btp9 = st.progress(0)
-            _stat_btp9 = st.empty()
-            def _cb_btp9(done, total, turned):
-                _prog_btp9.progress(min(1.0, done / max(1, total)))
-                _stat_btp9.caption(f"⏳ 闸门筛选 {done}/{total} · 拐点已现 {turned} 只")
-            _btp_state9 = _sbt9(
-                lambda c: fetch_stock_data(to_yf_cn_code(c)),
-                _ce_btp.analyze_trend_full, _efo_btp, _pools_big9,
-                extremes_fn=lambda c: _price_extremes9(to_yf_cn_code(c)),
-                max_workers=8, min_score=55, progress_cb=_cb_btp9)
-            _prog_btp9.empty()
-            _stat_btp9.empty()
-            _btp_state9["ts"] = time.time()
-            _btp_src9 = "本次重扫"
-            st.session_state["_bottom_turn_pool9"] = _btp_state9
-            # 【战绩总账】上榜即记档(去重按 code:date)——3天后由 success_ledger 到期核算
-            try:
-                _sig_fp9 = core_root() / "data" / "bottom_turn_signals.json"
-                try:
-                    _sig_log9 = json.loads(_sig_fp9.read_text(encoding="utf-8"))
-                except Exception:
-                    _sig_log9 = []
-                _seen_sig9 = {str(x.get("id")) for x in _sig_log9}
-                _today_sig9 = datetime.now().strftime("%Y-%m-%d")
-                for _mk9s2, _rows9s2 in (_btp_state9.get("markets") or {}).items():
-                    for _r9s2 in _rows9s2:
-                        _id9s2 = f"{_r9s2['code']}:{_today_sig9}"
-                        if _id9s2 in _seen_sig9:
-                            continue
-                        _seen_sig9.add(_id9s2)
-                        _sig_log9.append({"id": _id9s2, "date": _today_sig9,
-                                          "code": _r9s2["code"], "name": _r9s2["name"],
-                                          "score": _r9s2["score"], "last": _r9s2["last"]})
-                _sig_fp9.write_text(json.dumps(_sig_log9[-400:], ensure_ascii=False), encoding="utf-8")
-            except Exception:
-                pass
-        except Exception as _btp_e9:
-            st.error(f"⚠️ 扫描异常: {str(_btp_e9)[:80]}")
-    if _btp_state9:
-        _when9 = (_btp_state9.get("gen") or
-                  (datetime.fromtimestamp(_btp_state9.get("ts") or 0).strftime("%m-%d %H:%M")))
-        st.caption(f"🕒 {_btp_src9} · 算于 {_when9}"
-                   + (f"（耗时{_btp_state9.get('elapsed')}秒·后台跑,你0等待）"
-                      if _btp_state9.get("elapsed") else "")
-                   + f" · 大池{_btp_state9.get('pool_size', 0)}只 → 有效{_btp_state9.get('scanned', 0)}"
-                   f" → 深水位{_btp_state9.get('deep', 0)} → 拐点已现{_btp_state9.get('turned', 0)}"
-                   f" → 低分淘汰{_btp_state9.get('cut_low', 0)}（机会分≥55才上榜·漏斗透明）")
-        # 【2026-08-03 用户点单】"可以搜索到历史最低位的TOP30只个股,处在拐点位置的...
-        # 每次都会提示近52周最低点 还有历史最低点的个股 都搜索出来"
-        # → 两个口径各一张 Top30。排序按**距最低点百分比升序**(近者在前),
-        #   机会分只做闸③过滤,不做排序键(首版按机会分排 → Top30里没一只真在低点)。
-        _sg9b = _btp_state9.get("stats9") or {}
-        if _sg9b.get("turn_signal") is not None:
-            st.caption(f"🔔 拐点证据分档：真实信号 {_sg9b.get('turn_signal')} 只 ｜ "
-                       f"○ 仅阶段判定 {_sg9b.get('turn_stage_only')} 只"
-                       "（阶段档=未出现任何底部拐点信号，只是趋势阶段被判为启动，证据弱一档）")
-        # 【台账#1·08-23】回测验证分布上屏——"多少只是历史验证过的底"必须一眼可见
-        if _sg9b.get("hist_verified") is not None:
-            st.caption(f"📜 历史回测验证（贴近52周低≤3%后6个月·硬线 n≥8/胜率≥60%/中位>0/最差>-35%/历史≥5年）："
-                       f"已验证 {_sg9b.get('hist_verified')} 只 ｜ 验证失败 {_sg9b.get('hist_failed')} 只 ｜ "
-                       f"样本不足 {_sg9b.get('hist_insufficient')} 只")
-        # 【2026-08-03 用户批准】"只看🔔"开关。为什么是开关而不是直接收紧闸②:
-        # 闸②写的是"有底部信号 **或** stage含启动确认",实测82%走后半句进来 ——
-        # 在2100只的池子上这个闸几乎等于没有。但**收紧是改阈值**,得用户点头,
-        # 且收紧后美股会常态空榜(今日Top10全是○)。开关最轻:什么都不改,由你切。
-        _sig_only9 = st.checkbox(
-            "🔔 只看有真实拐点信号的（底背离金叉／放量收复MA20／放量长阳）",
-            value=False, key="btp_sig_only9",
-            help="不勾=全部(含仅阶段判定的弱证据档)。勾上后读的是**另一份**按同口径"
-                 "重排的信号档榜——不是把上面的Top10现场过滤掉，"
-                 "否则美股会显示0只，而实际上美股有真信号股只是不在按距底排的前10里。")
-        _kk9 = "_sig" if _sig_only9 else ""
-
-        # 【2026-08-03 不再跨作用域借变量】_CM9/_cbadge 定义在作战板的嵌套块里(L4923),
-        # 本段在模块级 —— 直接引用就是今天那个 `_base9` NameError 的翻版。
-        # 本地自带一份,借不到就退化成"不显徽章",绝不因徽章打掉整张榜。
-        try:
-            from grade_card import cert_map as _cmap_b9, cert_badge as _cbadge_b9
-            _CMB9 = _cmap_b9(json.loads((core_root()
-                                         / "data" / "rank_score.json").read_text(encoding="utf-8")))
-        except Exception:
-            _CMB9, _cbadge_b9 = {}, (lambda c, m: "")
-
-        def _btp_top9(_rows, _key, _title, _tip):
-            if not _rows:
-                return
-            st.markdown(f"**{_title}** <span style='font-size:11px;color:#94a3b8'>{_tip}</span>",
-                        unsafe_allow_html=True)
-            st.markdown("<div style='font-size:12.5px;line-height:1.7'>" + "".join(
-                f"<div style='border-bottom:1px solid #f1f5f9;padding:2px 0'>"
-                f"<span style='color:#94a3b8'>{_i:2}.</span> "
-                f"{'🇺🇸' if _r['market'] == '美股' else ('🇨🇳' if _r['market'] == 'A股' else '🇭🇰')}"
-                f"{_stk_link(_r['name'], _r['code'])}"
-                f"{_cbadge_b9(_r.get('code'), _CMB9)}"
-                # 距最低点是本榜主角 —— 用绿色(买入侧语义)且加粗,别的都退成灰
-                f" <b style='color:#16a34a'>距{'52周低' if _key == 'to_low52_pct' else '历史低'}"
-                f"{_r.get(_key)}%</b>"
-                + ("<span style='font-size:11px;color:#b45309'>·次新(上市不足2年·"
-                   "'历史低'实为上市以来低)</span>" if _r.get("newly_listed") else "")
-                + f"<span style='font-size:11.5px;color:#64748b'>·现价{_r['last']}"
-                f"·机会分{_r['score']}·{str(_r.get('turn_sigs') or '')[:26]}</span>"
-                # 【台账#1·08-23】📜历史回测标注:该股自身"贴52周低后6个月"统计,只加证据不改排序
-                + (f"<span style='font-size:11px;color:{_r.get('hist_color') or '#94a3b8'}'>"
-                   f"·📜{str(_r.get('hist_note'))[:38]}</span>" if _r.get("hist_note") else "")
-                + "</div>"
-                for _i, _r in enumerate(_rows[:30], 1)) + "</div>", unsafe_allow_html=True)
-
-        _btp_top9(_btp_state9.get("top52" + _kk9) or [], "to_low52_pct",
-                  "📉 距 52 周最低点最近 · Top30",
-                  "（近者在前·已过深水位+拐点已现+机会分≥55三闸）")
-        _btp_top9(_btp_state9.get("tophist" + _kk9) or [], "to_lowall_pct",
-                  "🕳 距历史最低点最近 · Top30",
-                  "（真·长历史股优先，次新股排后并标注）")
-        # ═══ 【2026-08-03 用户点单】"中美港各top10的底点和拐点反馈模块" ═══
-        # 两件事各自说清楚,不混成一句:
-        #   底点 = 52周低价/历史低价的**绝对价位**+当前距离(能直接拿去挂单)
-        #   拐点 = 证据强度分档 —— 🔔信号档(底背离/放量收复MA20/放量长阳,强)
-        #          vs ○阶段档(仅stage含"启动确认",**什么信号都没有**,弱)
-        # 首版两者都写成"启动确认",阶段档看着像信号其实是空的 —— 用措辞冒充证据。
-        _any_btp9 = False
-        for _mk_btp9 in ("美股", "A股", "港股"):
-            _rows_btp9 = (_btp_state9.get("markets" + _kk9) or {}).get(_mk_btp9) or []
-            if not _rows_btp9:
-                if _sig_only9:      # 空榜必须明说,否则"筛没了"与"渲染挂了"长得一样
-                    st.caption(f"{'🇺🇸' if _mk_btp9 == '美股' else ('🇨🇳' if _mk_btp9 == 'A股' else '🇭🇰')}"
-                               f" {_mk_btp9}：本轮**无**既在底部又出现真实拐点信号的标的"
-                               "（不是数据缺失，是确实没有——宁缺毋滥）")
-                continue
-            _any_btp9 = True
-            _tr9 = (_btp_state9.get("truncated" + _kk9) or {}).get(_mk_btp9) or 0
-            _nsig9 = sum(1 for _r in _rows_btp9 if _r.get("turn_kind") == "信号")
-            st.markdown(f"**{'🇺🇸' if _mk_btp9 == '美股' else ('🇨🇳' if _mk_btp9 == 'A股' else '🇭🇰')} "
-                        f"{_mk_btp9} · 底点+拐点 Top{len(_rows_btp9)}**"
-                        f"<span style='font-size:11px;color:#94a3b8'>（🔔真信号{_nsig9}只·"
-                        f"○阶段档{len(_rows_btp9) - _nsig9}只"
-                        + (f"·另有{_tr9}只达标未展示" if _tr9 else "") + "）</span>",
-                        unsafe_allow_html=True)
-            st.markdown("<div style='font-size:12.5px;line-height:1.75'>" + "".join(
-                f"<div style='border-bottom:1px solid #f1f5f9;padding:3px 0'>"
-                f"{'🔔' if _r.get('turn_kind') == '信号' else '○'} "
-                f"{_stk_link(_r['name'], _r['code'])}{_cbadge_b9(_r.get('code'), _CMB9)}"
-                # ── 底点：绝对价位 + 距离(绿色=买入侧语义) ──
-                f"<span style='font-size:11.5px;color:#475569'> 现{_r['last']}</span>"
-                f"<b style='color:#16a34a;font-size:11.5px'> ⤓52周低{_r.get('low52_px', '—')}"
-                f"(距{_r.get('to_low52_pct')}%)</b>"
-                + (f"<b style='color:#0d9488;font-size:11.5px'> ⤓史低{_r.get('low_all_px', '—')}"
-                   f"(距{_r.get('to_lowall_pct')}%)</b>" if _r.get('low_all_px') else "")
-                + ("<span style='font-size:11px;color:#b45309'>·次新</span>"
-                   if _r.get("newly_listed") else "")
-                # ── 拐点：信号档给内容，阶段档明说"无信号" ──
-                + (f"<br><span style='font-size:11.5px;color:"
-                   f"{'#16a34a' if _r.get('turn_kind') == '信号' else '#94a3b8'}'>"
-                   f"{'拐点信号' if _r.get('turn_kind') == '信号' else '证据弱'}："
-                   f"{str(_r.get('turning_note') or '')[:52]}</span>")
-                + f"<span style='font-size:11px;color:#64748b'>｜机会分{_r['score']}"
-                f"·上涨{_r.get('p_up')}%·赔率{_r.get('rr')}</span>"
-                + "</div>"
-                for _r in _rows_btp9) + "</div>", unsafe_allow_html=True)
-        if not _any_btp9:
-            st.info("本轮无'深水位+拐点已现'双闸达标的优质股——宁缺毋滥，仍在寻底的不硬凑。")
-    elif not _btp_go9:
-        st.info("离线池尚未生成（管线跑过一趟后即秒开）。可点上方按钮当场重扫。")
+# 新的左侧观察已统一四连跌、52周/波段/已覆盖历史低位和经营依据。
+# 旧机会分/概率池退出当前推荐展示；原始信号与研究记录保留下载。
+with _v88_history_details, st.expander("📁 旧低位池档案 · 已合并至左侧观察", expanded=False):
+    st.caption("当前低位与企稳提醒统一见上方左侧观察；旧机会分与概率不再作为当前推荐展示。")
+    st.markdown('[打开统一左侧观察 ↗](#v88-left-entry-watch)')
+    _legacy_bottom_path = core_root() / 'data' / 'bottom_turn_pool.json'
+    if _legacy_bottom_path.is_file():
+        st.download_button('下载旧版研究原始记录', _legacy_bottom_path.read_bytes(),
+                           file_name='v88-legacy-bottom-turn.json', mime='application/json',
+                           key='v88_legacy_bottom_download')
+    else:
+        st.caption('暂无旧版记录；当前提醒按新的核验结果展示。')
 
 # 用户明确要求删除重复持仓展示：旧 Excel“我的持仓/AI组合分析”不再渲染；
 # 数据与函数保留兼容，唯一入口为上方“持仓决策中心”。
@@ -15073,7 +14841,8 @@ if st.session_state.get('scan_selected_code'):
     _deep_trend = {}
     try:
         _deep_context = _deep_context_load(target_c)
-        st.markdown(_deep_report_html(target_c, context=_deep_context), unsafe_allow_html=True)
+        from deep_review_job import render as _render_3a_review
+        _render_3a_review(st, target_c)
     except Exception as _deep_report_error:
         logging.exception("中央深度报告读取失败")
         st.warning("中央报告暂未读取成功；下方技术研究不授予评级。")
@@ -15188,8 +14957,13 @@ if st.session_state.get('scan_selected_code'):
                     from future_trend_visual import render as _future_render
                     _deep_future = _future_build(_deep_annual, _deep_synthesis, _deep_period, code=target_c, name=stock_name)
                     _deep_cross['future_scenario'] = _deep_future
+                    from research_path_diagnostics import build as _research_paths_build
+                    from research_path_view import html as _research_paths_html
+                    _deep_paths = _research_paths_build(_deep_context or {}, df_temp, _deep_quality, _deep_cross)
+                    _deep_cross['research_paths'] = _deep_paths
                     from evidence_visuals import deep_overview as _deep_visual_overview, contract_strip as _contract_visual
                     with _deep_annual_slot.container():
+                        st.markdown(_research_paths_html(_deep_paths), unsafe_allow_html=True)
                         st.markdown(_deep_visual_overview(_deep_synthesis, _deep_annual, _deep_period), unsafe_allow_html=True)
                         st.markdown(_future_render(_deep_future), unsafe_allow_html=True)
                         with st.expander('未来一年分阶段条件与年度依据', expanded=False):

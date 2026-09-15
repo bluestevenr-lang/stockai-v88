@@ -92,3 +92,42 @@ def test_action_suggestions_are_not_propagated_from_auxiliary_engine():
     assert '分批加' not in row['suggestion'] and '持有' not in row['suggestion']
     assert row['direction_score']==row['p_up'] and row['data_signature']
     assert '非全市场' in result['coverage_scope']
+
+
+def test_short_and_long_factors_use_explicit_unequal_weights():
+    from stock_forward_radar import _horizon_means
+    rows = [{"days": days, "p_up": score} for days, score in ((5,80),(10,20),(60,20),(120,80))]
+    assert _horizon_means(rows) == (59,59)
+    for row in rows:
+        row['p_up'] = 100 - row['p_up']
+    assert _horizon_means(rows) == (41,41)
+
+
+@pytest.mark.parametrize('missing_day', [5,10,20,60,120])
+def test_removed_standard_window_never_inherits_another_window(missing_day):
+    fwd = evaluate_forward_outlook(_df(1), code='UP')
+    fwd['horizons'] = [row for row in fwd['horizons'] if row['days'] != missing_day]
+    assert opportunity_score(fwd)['opp_score'] is None
+
+
+def test_duplicate_window_is_not_an_extra_confirmation():
+    fwd = evaluate_forward_outlook(_df(1), code='UP')
+    fwd['horizons'].append(deepcopy(fwd['horizons'][0]))
+    result = opportunity_score(fwd)
+    assert result['opp_score'] is None and not result['starting']
+
+
+def test_sector_cross_sectional_description_preserves_member_and_ratio_means():
+    def forward(frame, name='', code=''):
+        result = evaluate_forward_outlook(frame, name=name, code=code)
+        result['weighted_p_up'] = 80 if code == 'HIGH' else 20
+        result['weighted_rr'] = 3 if code == 'HIGH' else 1
+        return result
+    result = scan_forward_opportunities(lambda _: _df(1), lambda c,n:'same',
+                                        pool=[('HIGH','high'),('LOW','low')], forward_fn=forward)
+    sector = result['sectors'][0]
+    assert sector['avg_p_up'] == 50
+    assert sector['avg_rr'] == 2  # descriptive ratio statistic is unchanged
+    assert sector['aggregation_kind'] == 'cross-sectional-equal-member-descriptive-mean'
+    assert not sector['grade_authority']
+    assert not result['entry_permission']

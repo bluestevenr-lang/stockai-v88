@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 
 MODEL = 'gpt-6-astra'
 VERSION = 'gpt-classics-selection-v9-tharp'
-from review_scorecard import card_passed, gpt_result, book_result, scorecard
+from review_scorecard import card_passed, card_valid, gpt_result, book_result, scorecard, SCORE_POLICY_VERSION
 from review_contract import SCHEMA_VERSION, PROMPT_HASH, known_protocol
 BJT = timezone(timedelta(hours=8))
 from evidence_freshness import source_times_fresh
@@ -37,9 +37,11 @@ def current_scorecard(snapshot, row, now=None):
                      and fresh(b.get('at'), hours, now) and b.get('source_timestamps')
                      and source_times_fresh(row, now, sources=b['source_timestamps'])
                      and source_times_fresh(row, now))
-    card = scorecard(g, b, gpt_current=g_current, book_current=b_current)
-    card['audit_id'] = row.get('audit_id') or (row.get('scorecard') or {}).get('audit_id') or card['audit_id']
-    return card
+    saved = row.get('scorecard') or {}
+    source_audit_id = saved.get('source_audit_id') or row.get('source_audit_id')
+    if (saved.get('score_policy') or {}).get('version') != SCORE_POLICY_VERSION:
+        source_audit_id = row.get('audit_id') or saved.get('audit_id') or source_audit_id
+    return scorecard(g, b, gpt_current=g_current, book_current=b_current, source_audit_id=source_audit_id)
 
 def actionable(snapshot, row, now=None):
     from investment_maturity import assess
@@ -52,7 +54,7 @@ def actionable(snapshot, row, now=None):
     hours = 72 if now.weekday() >= 5 else 30
     return bool(assess(current_scorecard(snapshot, row, now), row.get('horizon'), row.get('trade_plan'))['tier'] == '3A' and card_passed(current_scorecard(snapshot, row, now)) and card_passed(row.get('scorecard') or {}) and gpt_result(gpt)['passed']
         and book_result(book)['passed']
-        and gpt_result(gpt)['total'] == (row.get('scorecard') or {}).get('total')
+        and current_scorecard(snapshot, row, now)['total'] == (row.get('scorecard') or {}).get('total')
         and snapshot.get('version') == VERSION and pack
         and snapshot.get('factpack_fresh') is True and fresh(snapshot.get('generated_at'), hours, now)
         and row.get('factpack_id') == gpt.get('factpack_id') == book.get('factpack_id') == pack

@@ -8,12 +8,18 @@ def text(value, missing="待补证"):
 
 def score_label(card):
     total = card.get("total")
-    return "审核分：待评分" if total is None else f"审核分 {total:g}/100"
+    if total is None:
+        known, coverage = card.get("known_contribution"), card.get("coverage_pct")
+        if type(known) in (int, float) and type(coverage) in (int, float) and coverage > 0:
+            return f"审核待补 · 已核贡献 {known:g}分 · 覆盖{coverage:g}%"
+        return "加权审核分：待评分"
+    return f"加权审核分 {total:g}/100" if card.get("score_policy") else f"原审核分 {total:g}/100"
 
 
 def gpt_html(card):
     g = card.get("gpt") or {}
-    title = f"GPT‑6 {g['total']:g}/100" if g.get("total") is not None else f"GPT‑6 已评分 {g.get('known', 0)}/5"
+    prefix = "GPT‑6 加权" if card.get("score_policy") else "原GPT‑6"
+    title = f"{prefix} {g['total']:g}/100" if g.get("total") is not None else f"GPT‑6 已评分 {g.get('known', 0)}/5"
     if not g.get("current"):
         title += " · 待新审"
     values = {e.get("field"): e.get("value") for e in g.get("evidence") or []}
@@ -21,7 +27,10 @@ def gpt_html(card):
     for c in g.get("criteria") or []:
         score = "待补证" if c.get("score") is None else str(c["score"]) + "/20"
         refs = "、".join(f"{f}={values.get(f)}" for f in c.get("evidence_fields") or []) or "未提供"
-        rows.append(f"<div style='margin:6px 0'><b>{text(c.get('title'))}：{score}</b><br>"
+        weight, contribution = c.get("weight_pct"), c.get("contribution")
+        parts = f"权重 {weight:g}% · 贡献 {contribution:g}分" if weight is not None and contribution is not None else f"权重 {weight:g}% · 待核" if weight is not None else "原审核记录"
+        rows.append(f"<div style='margin:8px 0;padding:8px;border-left:3px solid #60a5fa;background:#f8fafc'><b>{text(c.get('title'))}：{score}</b>"
+                    f"<br><span style='color:#1d4ed8'>{text(parts)}</span><br>"
                     f"标准：{text(c.get('requirement'))}<br>依据：{text(c.get('reason'))}<br>字段：{text(refs)}</div>")
     pair_html = ""
     from review_scorecard import gpt_result
@@ -31,23 +40,52 @@ def gpt_html(card):
         score = view.get("total")
         detail = "<br>".join(f"{text(c.get('title'))} {text(c.get('score'))}/20：{text(c.get('reason'))}" for c in view.get("criteria") or [])
         pair_html += f"<details><summary>{label}：{text(score)}分 · {text(review.get('thesis_verdict'))}</summary>{detail}</details>"
-    return f"<details><summary><b>{title}</b> · 展开五项及交叉审核</summary>" + "".join(rows or ["等待GPT‑6按新版五项评分表审核"]) + pair_html + "</details>"
+    return f"<details><summary><b>{title}</b> · 五项权重与交叉审核</summary>" + policy_html(card) + "".join(rows or ["等待GPT‑6按新版五项评分表审核"]) + pair_html + "</details>"
 
 
 def books_html(card):
     b = card.get("books") or {}
-    title = f"书籍 {b.get('pass_n', 0)}/{b.get('required', 0)}项通过"
+    title = f"书理 {b['total']:g}分 · {b.get('pass_n', 0)}/{b.get('required', 0)}项通过" if b.get('total') is not None else f"书理待核 · {b.get('pass_n', 0)}/{b.get('required', 0)}项通过"
     if not b.get("current"):
         title += " · 待新审"
     from classics_framework import html as framework_html
     lines = [framework_html(card)]
     for c in b.get("checks") or []:
         status = "通过" if c.get("ok") is True else "未通过" if c.get("ok") is False else "待补证"
-        lines.append(f"<div style='margin:6px 0'><b>{text(c.get('label'))}：{status}</b><br>"
-                     f"{text(c.get('book'))}<br>标准：{text(c.get('threshold'))}<br>证据：{text(c.get('detail'))}</div>")
+        weight, contribution = c.get('weight_pct'), c.get('contribution')
+        detail = f"权重 {weight:g}% · 贡献 {contribution:g}分" if weight is not None and contribution is not None else f"权重 {weight:g}% · 待核" if weight is not None else "原审核记录"
+        if c.get('ok') is False and weight is not None:
+            detail += f" · 扣 {weight:g}分"
+        color = '#166534' if c.get('ok') is True else '#be123c' if c.get('ok') is False else '#64748b'
+        lines.append(f"<div style='margin:8px 0;padding:8px;border-left:3px solid {color}'><b>{text(c.get('label'))}：{status}</b><br>"
+                     f"<span style='color:{color}'>{text(detail)}</span><br>{text(c.get('book'))}<br>标准：{text(c.get('threshold'))}<br>证据：{text(c.get('detail'))}</div>")
     lines += [f"<div>{text(a.get('book'))}：{'适用' if a.get('applicable') else '不适用'}；{text(a.get('reason'))}</div>"
               for a in b.get("applicability") or []]
     return f"<details><summary><b>{title}</b> · 展开书理</summary>" + "".join(lines or ["等待同事实、同周期的书籍核验"]) + "</details>"
+
+
+
+def policy_html(card):
+    """Explain the bound central calculation; never compute a second UI score."""
+    policy = card.get('score_policy')
+    if not policy:
+        return "<small>原政策历史分，等待同源加权重算。</small>"
+    label = policy.get('version', '') if isinstance(policy, dict) else str(policy)
+    g, b = card.get('gpt') or {}, card.get('books') or {}
+    parts = []
+    for name, component in (("GPT", g), ("书理", b)):
+        known, coverage = component.get('known_contribution'), component.get('coverage_pct')
+        if known is not None and coverage is not None:
+            parts.append(f"{name}已核贡献 {known:g}分 / 覆盖 {coverage:g}%")
+    prior = card.get('legacy_total')
+    if prior is None and g.get('legacy_total') is not None and b.get('legacy_total') is not None:
+        prior = min(g['legacy_total'], b['legacy_total'])
+    original = f"<br>同一原子证据在旧等权政策下为 {prior:g}分；仅供追溯。" if prior is not None else ""
+    return ("<div style='font-size:12px;line-height:1.5;margin:6px 0;color:#475569'>"
+            "⚖️ 不等权复合：逻辑25% · 风险25% · 事实20% · 反证20% · 周期10%。"
+            "书理按持有周期赋权；取两条证据链较低分，关键条件失败不能靠其他高分抵消。"
+            + ("<br>" + text(" · ".join(parts)) if parts else "") + original
+            + "<br>策略版本：" + text(label) + " · 权重为V88待校准参数。</div>")
 
 
 def reasons_html(row):
@@ -69,14 +107,15 @@ def rubric_html():
     return """<details class='v88-rubric' style='font-size:12px;line-height:1.5;background:#f8fafc;border:1px solid #e2e8f0;border-radius:5px;padding:6px 10px;margin:6px 0'>
 <summary style='cursor:pointer;font-size:12px;color:#475569'>评级规则 · 3A / 2A / 1A、周期目标与经典书理</summary>
 <div style='padding-top:8px'>
-<b>短中长期收益与证据矩阵 · 周期在审核前锁定</b><br>
-短期≤30天：1A净空间≥5%、2A≥8%、3A≥10%。<br>
-中期31–90天：1A≥10%、2A≥15%、3A≥20%。<br>
-长期91–365天：1A≥20%、2A≥30%、3A≥40%；一年≥50%另标高空间。不存在“一年5%也推荐”。<br>
+<b>原合同核价口径 · 审核前锁定，不随研究窗口延长</b><br>
+榜单研究窗口：短期0–8周、中期8–24周、长期12–36周。下列自然日期限用于原合同核价；实际入场、持有与退出期限以每只股票原合同为准。<br>
+原短期合同≤30自然日：1A净空间≥5%、2A≥8%、3A≥10%。<br>
+原中期合同31–90自然日：1A≥10%、2A≥15%、3A≥20%。<br>
+原长期合同91–365自然日：1A≥20%、2A≥30%、3A≥40%；一年≥50%另标高空间。<br>
 <b>1A：</b>有依据的价值研究；GPT主审与反审均完整，事实/逻辑/风险各≥15，反证/周期各≥10，审核分≥60；书籍价值基础、资本保护、周期幅度和净空间都通过。允许列明非致命争议，不能当成全部通过。<br>
 <b>2A：</b>GPT双审五项各≥15、审核分≥75，至多一项量价成熟条件未达，且本周期2A空间达标。<br>
 <b>3A：</b>GPT双审与适用书籍100%通过、审核分≥75、本周期3A空间达标、净收益风险比≥2。准备/冻结与现在可执行分开；只有3A现买获当前执行许可。<br>
-<b>审核分=min(GPT较保守完整裁决总分，书籍通过率分)</b>。五项：事实、逻辑、反证、周期、风险，各0/10/15/20分；15须充分证据，20须至少两字段交叉印证。短期8项、中期10项、长期9项必审。分数不是上涨概率，高空间不能替代高质量。<br>
+<b>加权审核分=min(GPT较保守完整裁决加权分，适用书理加权分)</b>。GPT权重：事实20%、逻辑25%、反证20%、周期10%、风险25%；每项原分0/10/15/20，以原分÷20×权重计贡献。15须充分证据，20须至少两字段交叉印证。短期8项、中期10项、长期9项书理按周期分别赋权；失败扣除该项权重，关键风险仍可否决。缺项不补中性分、不重分配权重。数值是待检验的V88参数；分数不是上涨概率。<br>
 <b>净空间=[止盈下沿×0.995÷(进场上沿×1.005)−1]×100%</b>；所有档位净收益风险比至少1.5。买卖各0.5%为手续费与滑点假设，未计个人税费、汇率、股息；不是券商费率。用未四舍五入值过闸。<br>
 <b>核心书与多书印证：</b>斯波朗迪《专业投机原理》是重点参考之一；经典按趋势、企业估值、资本风险和实证验证四类分工。更多独立证据用于交叉检验，更多书名不自动提高准确率。冲突列依据和缺口，不按书的数量投票，不把工程阈值当成原著定律。<br>
 <b>萨普补充：</b>三个周期均纳入范 K·萨普《通向财务自由之路》（Trade Your Way to Financial Freedom），与斯波朗迪《专业投机原理》分开。初始净R、仓位及退出必须明确；同策略扣费R期望须单独验证。历史不足20笔或描述性保守下界不大于0，不能声称正期望，3A不通过该项。样本充分且净期望非正，不授价值等级。0.5%净值风险预算、10%单票上限为V88研究参数；跳空、停牌及成交限制可能扩大损失。<br>

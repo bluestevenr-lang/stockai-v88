@@ -3,6 +3,7 @@ from datetime import datetime, timezone, timedelta
 from html import escape
 import math
 from urllib.parse import urlencode
+from astra_market_policy import US_MIN_AUDIT_SCORE, valid_composition
 
 BJT=timezone(timedelta(hours=8))
 
@@ -80,10 +81,11 @@ def render(st, doc, *, stock_link=None, expected_factpack_id=None, allow_trade_r
     report=doc.get('research_report') or {}
     report_factpack=report.get('factpack_id')
     current=bool(current_document(doc) and current_document(report)
+                 and valid_composition(report.get('candidates') or [])
                  and (not expected_factpack_id or doc.get('factpack_id')==expected_factpack_id)
                  and report_factpack and report_factpack==doc.get('factpack_id'))
     if not current:
-        st.warning('Astra报告已过期、跨月或事实版本变化：下列为历史研究，等待后台更新。原持仓保护继续按原合同执行。')
+        st.warning('Astra报告已过期、跨月、事实版本或市场规则变化：下列为历史研究，等待后台更新。原持仓保护继续按原合同执行。')
         doc['month_state']={**(doc.get('month_state') or {}),'state':'LEDGER_UNVERIFIED','realized_net_pnl':None}
         doc['monthly_contracts']=[]
         doc['execution_status']='报告时效未通过；不展示为本月可审交易方案'
@@ -114,6 +116,7 @@ def render(st, doc, *, stock_link=None, expected_factpack_id=None, allow_trade_r
                                         historical=True),unsafe_allow_html=True)
     candidates=report.get('candidates') or []
     st.markdown('**🔎 本月短线研究清单**')
+    st.markdown(market_policy_html(candidates, historical=not current), unsafe_allow_html=True)
     if candidates:
         # Source contract is adapted by research_rows() after module integration.
         st.markdown(research_rows(candidates,stock_link=stock_link,monthly_target=report.get('monthly_target'),target_currency=report.get('target_currency'),
@@ -134,7 +137,7 @@ def render(st, doc, *, stock_link=None, expected_factpack_id=None, allow_trade_r
         for review in doc.get('protection_reviews') or []:
             st.caption(f"{review.get('code') or review.get('trade_id')}：{review.get('reason','利润保护待核实')}")
     with st.expander('📚 计划规则与风险口径',expanded=False):
-        st.caption('Astra研究当月短线，3A主榜负责中长期；最多精选3只，优先A股与港股，美股仅作质量更高或缺额时的补充。共用事实和审核，保留各自等级与原合同。')
+        st.caption('Astra研究当月短线，最多精选3只，中港优先；美股最多1只且中央当前审核至少85分，仅供参考，不作主攻或交易替补。质量相当第三席也优先中港，缺额不强凑。共用事实和审核，保留各自等级与原合同。')
         st.caption('进度只计已对账、扣费后的本月实际已实现收益；浮盈、目标情景和未成交方案不计入。目标需要检验可行性，不保证每月获利。')
         if not doc.get('private_redacted'):
             m=doc.get('constraints') or {}
@@ -144,6 +147,14 @@ def render(st, doc, *, stock_link=None, expected_factpack_id=None, allow_trade_r
         st.caption('每日检查行情、事件、审核与触发；每周记录验证与证伪；月末按真实净结算复盘。达标停止新增，未达标不加倍、不挪止损；新月重新对账，已有持仓保护继续。')
         for item in p.get('filters') or []:st.caption(f"{item['name']}：{item['required']}")
         st.caption('斯波朗迪《专业投机原理》为核心；萨普补充风险R、仓位和退出，欧奈尔等按适用条件交叉检验。')
+
+
+def market_policy_html(candidates, *, historical=False):
+    counts={m:sum(r.get('market')==m for r in candidates) for m in ('A股','港股','美股')}
+    return ('<div class="v88-astra-market-policy" style="font-size:12px;background:#eef6ff;border-left:3px solid #2563eb;padding:8px;margin-bottom:8px">'
+            '<b>中港优先 · 共至多3只</b>　｜　美股≤1只 · 审核≥'+str(US_MIN_AUDIT_SCORE)+'分 · 仅参考'
+            '<br><span style="color:#64748b">'+('历史清单' if historical else '当前清单')+'：A股 '+str(counts['A股'])+' · 港股 '+str(counts['港股'])+' · 美股 '+str(counts['美股'])+
+            '；中港不足时留空，美股不作主攻或交易替补。</span></div>')
 
 
 def research_rows(candidates,stock_link=None,*,monthly_target=200,target_currency='USD',record_buy=False,historical=False):
@@ -167,6 +178,8 @@ def research_rows(candidates,stock_link=None,*,monthly_target=200,target_currenc
         gaps='<br>'.join('<b>'+text(g.get('title'))+'</b>：'+text(g.get('detail')) for g in checks if isinstance(g,dict))
         reasons=primary.get('why') or primary.get('counterargument') or '请展开查看原审分项与证据缺口。'
         role=row.get('research_role') or ('市场研究序位 '+str(row.get('market_research_rank','—')))
+        if row.get('reference_only'):
+            role='🔎 美股高分参考 · 不作主攻或交易替补'
         selected_reason=(row.get('selection_reason') or {}).get('reason')
         if selected_reason:role+='；'+selected_reason
         out.append('<tr data-astra-code="'+text(code)+'" data-astra-market="'+text(row.get('market'))+'" style="border-bottom:1px solid #e2e8f0;vertical-align:top"><td style="padding:8px">'+text(row.get('market'))+'<br>'+link+'<br><small>'+text(code)+'<br>'+text(role)+'</small></td>'

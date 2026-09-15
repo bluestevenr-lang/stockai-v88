@@ -17,6 +17,7 @@ from datetime import datetime, timedelta, timezone
 
 import numpy as np
 import pandas as pd
+from horizon_score_policy import POLICY_VERSION as HORIZON_SCORE_POLICY_VERSION, horizon_score
 
 _LOG = logging.getLogger(__name__)
 
@@ -28,7 +29,7 @@ def _log_exc(msg: str) -> None:
 
 
 SCHEMA = "v88.stock-decision/2.0"
-SCORE_VERSION = "V88-U2.1"   # 2026-07-17 用户定纲:周期体系翻倍律重构(2/4/8/16/32周),战绩按版本分段
+SCORE_VERSION = "V88-U2.2-horizon-weighted"  # Derived-score policy only; raw indicators unchanged.
 # 【V88·翻倍律周期 2026-07-17 用户定纲】旧2/4/6/8/16的4/6/8三档挤在中期高度相关(常年同值),
 # 16周(3.7月)截断在动量甜区(3-12月,Jegadeesh-Titman)门口。翻倍律=市场分形自相似
 # (Mandelbrot/缠论级别递归/艾略特浪级),每档信息独立:4周锚MA20月线、16周贴季度、32周入动量甜区。
@@ -40,8 +41,8 @@ HORIZON_DAY_WEIGHTS = {5: 0.15, 10: 0.20, 20: 0.25, 60: 0.25, 120: 0.15}
 BJT = timezone(timedelta(hours=8))
 SCORE_WEIGHTS = {
     "short": 0.20,       # 2周
-    "medium": 0.25,      # 4/8周均值
-    "long": 0.20,        # 16/32周均值
+    "medium": 0.25,      # 4/8周按35/65合成
+    "long": 0.20,        # 16/32周按35/65合成
     "trend_quality": 0.15,
     "entry_odds": 0.20,
 }
@@ -173,19 +174,6 @@ def build_horizon_facts(df, full=None, horizons=HORIZONS, unit="week") -> dict:
             json.dumps(raw_sig, sort_keys=True).encode("utf-8")).hexdigest()[:12],
         "horizons": out,
     }
-
-
-def _mean_scores(horizons, labels, default=50.0):
-    values = []
-    for label in labels:
-        value = (horizons.get(label) or {}).get("rule_score")
-        try:
-            value = float(value)
-            if math.isfinite(value):
-                values.append(value)
-        except (TypeError, ValueError):
-            pass
-    return sum(values) / len(values) if values else float(default)
 
 
 def _scenario_prices(full, facts):
@@ -784,12 +772,30 @@ def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
     if not horizons:
         return {"schema": SCHEMA, "score_version": SCORE_VERSION,
                 "error": facts.get("error", "行情不足"), "name": name, "code": code}
-    short = _num((horizons.get("2周") or {}).get("rule_score"), 50)
-    medium = _mean_scores(horizons, ("4周", "8周"), short)
-    long_ = _mean_scores(horizons, ("16周", "32周"), medium)
-    long_avg = _mean_scores(horizons, ("4周", "8周", "16周", "32周"), medium)
-    trend_quality = _clip(full.get("total", 50), 0, 100)
-
+    aggregation = {group: horizon_score(horizons, group)
+                   for group in ("short", "medium", "long", "alignment")}
+    short, medium, long_, long_avg = (aggregation[group]["score"]
+                                    for group in ("short", "medium", "long", "alignment"))
+    from horizon_score_policy import finite_score
+    trend_quality = finite_score(full.get("total"))
+    if any(value is None for value in (short, medium, long_, long_avg, trend_quality)):
+        missing = sorted({key for row in aggregation.values() for key in row["missing_components"]}
+                         | ({"趋势质量"} if trend_quality is None else set()))
+        protective = str(action_hint) in ("退出", "清仓", "减仓", "评估减仓", "回避")
+        return {
+            "schema": SCHEMA, "score_version": SCORE_VERSION,
+            "score_policy_version": HORIZON_SCORE_POLICY_VERSION,
+            "score_aggregation": aggregation, "score_weights": dict(SCORE_WEIGHTS),
+            "score_status": "limited", "error": "周期方向分缺失或无效：" + "、".join(missing),
+            "unified_score": None, "short_score": short, "medium_score": medium, "long_score": long_,
+            "p_up": None, "p_down": None, "long_p_up": long_avg,
+            "score_kind": "technical_research_not_audit", "grade_authority": False,
+            "action": str(action_hint) if protective else "数据不足·待复核",
+            "entry_note": "缺失观察不填中性分、不借用另一周期；已承诺保护动作保留",
+            "name": name, "code": code, "last": facts.get("last", full.get("last")),
+            "data_signature": facts.get("data_signature", ""), "data_asof": facts.get("asof", ""),
+            "facts": facts,
+        }
     last, resistance, stop, upside, downside = _scenario_prices(full, facts)
     p_up = int(round(_clip(short, 15, 85)))
     p_down = 100 - p_up
@@ -885,6 +891,8 @@ def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
         entry_plan = {}
     return {
         "schema": SCHEMA, "score_version": SCORE_VERSION,
+        "score_policy_version": HORIZON_SCORE_POLICY_VERSION,
+        "score_aggregation": aggregation, "score_status": "complete",
         "score_weights": dict(SCORE_WEIGHTS), "data_signature": facts.get("data_signature", ""),
         "score_terms": {"short": short, "medium": medium, "long": long_,
                         "trend_quality": trend_quality, "entry_odds": entry_odds},
@@ -910,7 +918,7 @@ def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
         "cycle_conflict": conflict, "cycle_status": cycle_status,
         "action": action, "reason": reason, "entry_note": entry_note,
         "entry_plan": entry_plan,
-        "cycle_note": f"2周{short_side}{round(short)}%｜4-32周{long_side}{round(long_avg)}%",
+        "cycle_note": f"2周{short_side}{round(short)}/100｜4-32周不等权{long_side}{round(long_avg)}/100",
         "facts": facts,
     }
 

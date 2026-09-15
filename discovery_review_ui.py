@@ -1,6 +1,7 @@
 """Compact, read-only comparison of discovery clues with the central decision."""
 from html import escape
 import math
+from display_limits import market_top
 from urllib.parse import urlencode
 
 
@@ -18,23 +19,15 @@ def band(value):
 
 def render(projection, stock_link=None):
     original = projection.get('rows') or []
-    preview_indices = []
-    for market in ('A股', '美股', '港股'):
-        preview_indices.extend([i for i, row in enumerate(original) if market in str(row.get('market') or '')][:5])
-    chosen = set(preview_indices)
-    rows = [original[i] for i in preview_indices] + [row for i, row in enumerate(original) if i not in chosen]
-    preview_count = len(preview_indices)
+    rows = market_top(original)
     parts = ['<div class="v88-discovery-review">',
-             '<p style="font-size:12px">发现线索 '+str(len(rows))+' 条 · 分市场预览 '+str(preview_count)+' 条（每市场至多5条）；不是推荐名额。等级、审核分和原合同取自3A中央记录。</p>',
+             '<p style="font-size:12px">发现线索 · '+str(len(rows))+' 条（每市场Top5，总计至多15条）。等级、审核分和原合同取自3A中央记录。</p>',
              '<small>发现记录 '+text(projection.get('discovery_generated_at'))+
              (' · 已过期，仅供追溯' if not projection.get('discovery_fresh') else '')+
              ' ｜ 中央版本 '+text(projection.get('central_generated_at'))+'</small>',
              '<div style="overflow-x:auto"><table style="min-width:1100px;width:100%;font-size:12px;border-collapse:collapse">',
              '<thead style="background:#edf4ff"><tr><th>名称·市场</th><th>中央评级·审核分</th><th>原周期·研究合同</th><th>与3A主榜的关系</th><th>发现证据与下一步</th></tr></thead><tbody>']
-    table_header = ''.join(parts[-2:])
-    for row_index, row in enumerate(rows):
-        if row_index == preview_count:
-            parts.append('</tbody></table><details style="font-size:11px;margin-top:8px"><summary>展开其余 '+str(len(rows)-preview_count)+' 条发现线索（不是推荐名额）</summary>'+table_header)
+    for row in rows:
         central = row.get('central') or {}
         current = central.get('current') is True
         tier = central.get('tier') if current else None
@@ -72,5 +65,5 @@ def render(projection, stock_link=None):
                      '<br><small>同引擎不同周期、重复名单不计独立数据源。</small></details></td></tr>')
     if not rows:
         parts.append('<tr><td colspan="5">本轮没有可关联的发现记录；继续查看3A中央列表。</td></tr>')
-    parts.append('</tbody></table>'+('</details>' if len(rows)>preview_count else '')+'</div></div>')
+    parts.append('</tbody></table></div></div>')
     return ''.join(parts)

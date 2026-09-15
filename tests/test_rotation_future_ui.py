@@ -53,7 +53,7 @@ def test_analysis_timestamp_cannot_supply_missing_source_clock():
     assert '证据截至 时间待核' in html
 
 
-def test_stock_clock_all_records_max_three_preview_calls_and_canonical_links(monkeypatch):
+def test_stock_clock_market_top5_max_three_previews_keeps_source_and_links(monkeypatch):
     calls=[]
     def build(code,name=''):
         calls.append(code)
@@ -67,9 +67,12 @@ def test_stock_clock_all_records_max_three_preview_calls_and_canonical_links(mon
     cycle={'stocks':stocks,'analysis_time':'2026-09-13 08:00'};before=deepcopy(cycle)
     html=rotation_ui.stock_cycle_html(cycle,profiles={})
     assert len(calls)==3 and len(set(calls))==3
-    assert '全部 12 只保留' in html
-    assert all(f'对象{i}' in html for i in range(12))
-    assert '/?q=STOCK11&amp;focus=deep' in html
+    assert '展示 5 只（每市场Top5）' in html
+    assert '后台保留' not in html
+    assert all(f'对象{i}' in html for i in range(5))
+    assert all(f'>对象{i}<' not in html for i in range(5,12))
+    assert '/?q=STOCK4&amp;focus=deep' in html
+    assert '/?q=STOCK5' not in html
     assert 'rf-phase-clock' in html and '<td>0%<div>' in html
     assert cycle==before
 

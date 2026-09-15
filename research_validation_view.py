@@ -38,7 +38,8 @@ def render(st, doc):
     if doc.get('blocked_new_contracts') or doc.get('data_errors'):
         st.warning(f"本轮新合同受阻 {len(doc.get('blocked_new_contracts') or [])} 只；"
                    f"行情凭据错误 {len(doc.get('data_errors') or [])} 只。原始档案保留，不隐藏失败。")
-        for item in (doc.get('blocked_new_contracts') or [])[:8]:
+        from grade_card import _market_rows
+        for item in _market_rows(doc.get('blocked_new_contracts') or [])[:8]:
             st.caption(f"{item['code']}：{item['reason']}")
     st.caption(f"本快照已核验真实成交 {_count(doc.get('broker_fills_verified'))} 笔；"
                f"合规历史PIT回放 {_count(doc.get('historical_pit_settlements_verified'))} 笔。"

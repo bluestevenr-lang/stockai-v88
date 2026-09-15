@@ -20,7 +20,8 @@ def assess(card, horizon, plan=None):
     foundations = VALUE_CHECKS.get(horizon, set()) | {"profit", "tharp_risk"}
     if horizon in {"short", "medium"}:
         foundations |= {"stop", "payoff"}
-    full = bool(g.get("valid") and b.get("valid") and g.get("current") and b.get("current")
+    from review_scorecard import card_valid
+    full = bool(card_valid(card) and g.get("valid") and b.get("valid") and g.get("current") and b.get("current")
                 and g.get("complete") and b.get("complete")
                 and card.get("double_audit_complete") is True)
     from review_scorecard import gpt_result
@@ -30,7 +31,8 @@ def assess(card, horizon, plan=None):
         s = {x["id"]:x.get("score") for x in r["criteria"]}
         return bool(r["valid"] and r["complete"] and all(s.get(k,0) >= (15 if k in {"facts","thesis","risk"} else 10) for k in VALUE_GPT | {"horizon"}))
     value_gpt = bool(full and len(pair)==2 and all(research_floor(r) for r in pair.values()))
-    negative_expectancy = (checks.get("tharp_expectancy", {}).get("evidence") or {}).get("status") == "NONPOSITIVE_HISTORY"
+    path_evidence = checks.get('tharp_expectancy', {}).get('evidence') or {}
+    negative_expectancy = any(path_evidence.get(k) == 'NONPOSITIVE_HISTORY' for k in ('status','raw_status'))
     value_books = bool(full and not negative_expectancy and foundations and all(checks.get(k, {}).get("ok") is True for k in foundations))
     geometry = True
     if horizon in {"short", "medium"}:

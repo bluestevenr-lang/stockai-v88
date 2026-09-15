@@ -13,7 +13,9 @@ from html import escape
 from scorecard_html import gpt_html, books_html, score_label, reasons_html, rubric_html, text as audit_text
 from module_signal_view import legacy_review_text
 import grade_focus
+from display_limits import market_top
 from stock_profile_view import display_name as profile_name, html as profile_html
+from nontechnical_reason_ui import load_index as business_index, for_code as business_for, html as business_html, action_html as business_action, has_support as business_supported
 
 BUCKET_CN = {"long_value": "长期价值", "timing": "当前时机", "catalyst": "机会催化",
              "valuation": "价格估值", "payoff": "获利空间"}
@@ -65,6 +67,11 @@ def _text(value) -> str:
     return escape(str(value), quote=True)
 
 
+def _market_rows(rows):
+    """Bound rendering only, including legacy records without a market field."""
+    return market_top([{**r, 'market': r.get('market') or grade_focus.market_of(grade_focus.canonical(r.get('code')))} for r in rows])
+
+
 def _bar(score: float, ok: bool, w: int) -> str:
     """桶板进度条：达标绿、未达标橙；条长按分数，标签带权重。"""
     c = PALETTE["wait"] if ok else PALETTE["warn"]
@@ -76,29 +83,32 @@ def _bar(score: float, ok: bool, w: int) -> str:
             f"{score:.0f} {'✓' if ok else '✗'}</span></div>")
 
 
-def card_html(r: dict, compact: bool = False) -> str:
+def card_html(r: dict, compact: bool = False, _business_index=None) -> str:
     """All active cards project the central rubric, including incomplete reviews."""
     from review_scorecard import card_passed
     card = r.get("scorecard") or {}
     grade = str(r.get("tier") or "PENDING")
     if grade == "3A" and not card_passed(card):
         grade = "PENDING"
+    business = business_for(r.get('code'),_business_index if _business_index is not None else business_index(),r)
     return ("<div style='padding:10px;border:1px solid #cbd5e1;border-radius:6px'>"
             + f"<b>{audit_text(r.get('name'))} · {audit_text(grade)} · {score_label(card)}</b>"
-            + f"<div>{audit_text(r.get('display_action') or r.get('action_state'))}</div>"
+            + business_action(f"<div>{audit_text(r.get('display_action') or r.get('action_state'))}</div>",business)
+            + business_html(business)
             + gpt_html(card) + books_html(card) + reasons_html(r) + "</div>")
 
 
 def board_html(data: dict, limit: int = 8, show_detail: int = 3) -> str:
     """行动清单：3A/2A 出完整卡，其余出紧凑行；0A 不进（用户第十节）。"""
-    rows = [r for r in (data.get("rows") or [])
-            if str(r.get("tier")) != "0A" and r.get("listable") is True][:limit]
+    rows = _market_rows([r for r in (data.get("rows") or [])
+            if str(r.get("tier")) != "0A" and r.get("listable") is True])[:limit]
     if not rows:
         return (f"<div style='font-size:12px;color:{PALETTE['hold']}'>今日无 3A/2A/1A 行动标的"
                 "（木桶门槛严，不硬凑）</div>")
     out = []
+    reasons_index = business_index()
     for i, r in enumerate(rows):
-        out.append(card_html(r, compact=(i >= show_detail)))
+        out.append(card_html(r, compact=(i >= show_detail),_business_index=reasons_index))
     n0 = sum(1 for r in (data.get("rows") or []) if str(r.get("tier")) == "0A")
     tail = (f"<div style='font-size:11px;color:#94a3b8;margin-top:4px'>"
             f"另有 {n0} 只判为 0A（无行动价值/风险过高）已移出行动清单；"
@@ -113,15 +123,16 @@ def veto_review_html(data: dict) -> str:
     for r in (data.get("rows") or []) + (data.get("archived") or []):
         for v in (r.get("risk_veto") or []):
             if "前提可能已变" in v or r.get("review_needed"):
-                items.append((r, v))
+                items.append({**r, '_display_veto': v})
                 break
     if not items:
         return ""
+    items = _market_rows(items)
     body = "".join(
         f"<div style='font-size:12px;color:{PALETTE['warn']};margin:2px 0'>⚠️ <b>{_text(r.get('name'))}</b>"
         f"（{_text(r.get('code'))}）排序分 {_text(r.get('rank_score'))} · 五桶"
         f"{sum(1 for b in (r.get('buckets') or {}).values() if b.get('pass'))}/5达标"
-        f" → 被拦：{_text(v)}</div>" for r, v in items)
+        f" → 被拦：{_text(r['_display_veto'])}</div>" for r in items)
     return (f"<div style='border:1px solid #fecaca;background:#fef2f2;border-radius:6px;"
             f"padding:6px 9px;margin:6px 0'>"
             f"<div style='font-size:12.5px;font-weight:700;color:{PALETTE['warn']}'>🔎 待人工复核的否决"
@@ -517,6 +528,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                       relations: dict = None, watchlist: dict = None) -> str:
     """3A大系统完整模块(标题+IN表+OUT表+尾注),一次返回全部HTML。"""
     rows, triad_v2 = _triad_v2_rows(rk, triad)
+    reasons_index = business_index()
     from persistent_watchlist_ui import html as watchlist_html
     persistent_html = watchlist_html(watchlist or {}, triad or {},view='current')
     tracking_html = watchlist_html(watchlist or {}, triad or {},view='tracking')
@@ -535,7 +547,8 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
     n3 = sum(1 for r in rows
              if r.get("central_bucket") == "recommendations"
              and r.get("publish_eligible") is True
-             and ((focus or {}).get('records', {}).get(grade_focus.canonical(r['code']), {}).get('entry_opportunity') or {}).get('executable') is True)
+             and ((focus or {}).get('records', {}).get(grade_focus.canonical(r['code']), {}).get('entry_opportunity') or {}).get('executable') is True
+             and business_supported(business_for(r.get('code'),reasons_index,r)))
     n3b = sum(1 for r in rows if r.get("central_bucket") == "blocked_3a")
     n3p = sum(1 for r in rows if r.get("central_bucket") == "preparations")
     n2c = sum(1 for r in rows if r.get("central_bucket") == "conditional")
@@ -559,6 +572,8 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
     if not _board:      # 生产端尚未产出榜单字段时退回旧口径,不让模块空白
         _board = _sig[:limit_out]
     out_src = _board
+    _own_total = sum(bool(g.get('held')) for g in out_src)
+    _board = _market_rows(_board)
     _bd = sg.get("board") or {}
     # 【P1·2026-08-02 三方裁决】用户"out首先关注的是我的持仓,其次是其他"。
     # GPT B2:"选**改分区**,不改门槛,也不把所有股票混在一个统一榜单中。
@@ -582,14 +597,14 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
     empty_cause = ('行情或双审待更新；历史评级保留在下方' if not current_review_count
                    else '尚无同时满足本档证据、收益空间与成熟条件的标的')
     head = (f"<section id='v88-3a-system' class='v88-triad-header' style='color:#1e293b;margin:4px 0 6px'>"
-            f"<div style='font-size:16px;font-weight:800'>🎯 3A大系统 · 短期周月 / 中期 / 长期</div>"
+            f"<div style='font-size:20px;font-weight:800'>🎯 3A大系统 · 短期周月 / 中期 / 长期</div>"
             + scan_progress_html(rows)
             + f"<div class='v88-grade-counts' style='font-size:13px;padding:6px 0;font-weight:600'>"
-            + ((f"当前研究精选 {(watchlist.get('current_focus') or {}).get('total',0)}只 · " + " ｜ ".join(f"{m} {v['selected']}只" for m,v in (watchlist.get('current_focus') or {}).get('markets',{}).items())) if persistent_html else
+            + ("入选数量见各周期标题栏 · 中美港各自Top3" if persistent_html else
                "重点榜：" + " ｜ ".join(f"{g} {sum(v['selected'] for v in focus['summary'][g].values())}只" for g in grade_focus.GRADES)
                + f" <span style='font-weight:400'>· 每周期中美港各Top3，共9席 · 不凑数</span>" if focus else
                f"全部原周期评级：3A {n3+n3b+n3p}只 ｜ 2A {n2c+n2o}只 ｜ 1A {n1}只")
-            + f" <span style='font-size:12px;font-weight:400'>｜ 可执行3A {n3}只 · 持仓卖警 {len(_own)}只</span>"
+            + f" <span style='font-size:12px;font-weight:400'>｜ 可执行3A {n3}只 · 持仓卖警 {_own_total}只</span>"
             f"</div></section>")
     guide = ("<details class='v88-list-guide' style='font-size:12px;color:#64748b;margin:3px 0'>"
               "<summary>评级规则、周期与更新时间</summary>"
@@ -598,7 +613,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             # 名单没变化时也明确标注“本班已重算”，避免误判系统停更。
             + "<details style='font-size:12px;color:#64748b'><summary>结论与证据时间</summary>"
             + f"IN: 3A现买×{n3} ｜ 3A冻结×{n3b} ｜ 3A准备×{n3p} ｜ 2A条件×{n2c} "
-              f"｜ 2A价值×{n2o} ｜ 1A价值×{n1} ｜ OUT: 持仓卖警×{len(_own)}。"
+              f"｜ 2A价值×{n2o} ｜ 1A价值×{n1} ｜ OUT: 持仓卖警×{_own_total}。"
             + _three_a_time_strip({"rows": rows, "generated_at": triad.get("generated_at")} if triad_v2 else rk, sg)
             + "列表每60秒读取最新已发布结果；行情采集与GPT审核分别运行。</details>"
             + (_review_gap_strip(rows) if triad_v2 else "")
@@ -644,6 +659,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
     def _in_row(r, blocked: bool = False):
         """IN 行构造(上榜组与被拦组共用同一套列,保证两组可直接对照)。"""
         c = str(r.get("code"))
+        business = business_for(c,reasons_index,r)
         d = dec.get(c) or {}
         snap = ((r.get("execution_contract") or {}).get("snapshot") or {})
         # rank 随行快照优先：候选不在 intraday_decisions 覆盖面时，买区也不能消失。
@@ -700,7 +716,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             # 【2026-08-02 三方定纲】IN 侧有 OUT 风险证据时**不删行**(GPT:原IN结构尚可观察),
             # 而是把"本次入场触发已失效"的门票摆在动作位——机会结构仍在 ≠ 现在能买,
             # 这两件事必须能同时表达。删行=监守自盗的镜像(用一侧结果消音另一侧证据)。
-            + _td(entry_html(entry_state)
+            + _td(business_action(entry_html(entry_state),business)
                   + f"<details><summary>原中央状态</summary>{audit_text(shown_action)}；当前行动以上方进场核验为准。</details>"
                   + f"<details><summary>评级说明</summary>{audit_text(r.get('subtype') or '待复核')}</details>")
             + _td(__import__('entry_opportunity').price_html(entry_state,r.get('central_trade_plan') or r.get('trade_plan') or {}))
@@ -712,12 +728,13 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                   f"{audit_text(r.get('opportunity_type'))}</details>")
             + _td(gpt_html(r.get("scorecard") or {}), "min-width:180px;max-width:260px;line-height:1.5")
             + _td(books_html(r.get("scorecard") or {}), "min-width:200px;max-width:280px;line-height:1.5")
-            + _td(focus_detail + reasons_html(r), "min-width:190px;max-width:280px;line-height:1.5")
+            + _td(business_html(business) + focus_detail + reasons_html(r), "min-width:190px;max-width:280px;line-height:1.5")
             + "</tr>")
 
     executable_rows = [x for x in focus_rows if x.get("tier") in ("3A", "2A", "1A") and x.get("listable") is True
+                       and business_supported(business_for(x.get('code'),reasons_index,x))
                        and (focus['records'][grade_focus.canonical(x['code'])]['entry_opportunity']['executable'] if focus else False)]
-    in_rows = "".join(_in_row(r) for r in (executable_rows if triad_v2 else executable_rows[:limit_in]))
+    in_rows = "".join(_in_row(r) for r in (executable_rows if triad_v2 else _market_rows(executable_rows)[:limit_in]))
     if triad_v2:
         blocks = []
         for horizon in grade_focus.HORIZONS:
@@ -728,20 +745,21 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             if not group:blocks.append("<tr><td colspan='11' style='font-size:11px;color:#64748b'>暂无本周期有效研究精选；等待对应证据。</td></tr>")
         blocked_html = "".join(blocks)
         history_blocks = []
-        retained = [r for r in _blocked_rows if r.get("tier") == "PENDING" and (r.get("tracking") or {}).get("last_value_tier")]
+        history_rows = _market_rows([r for r in _blocked_rows if r.get("tier") in {"PENDING", "0A"} and (r.get("tracking") or {}).get("last_value_tier")])
+        retained = [r for r in history_rows if r.get("tier") == "PENDING"]
         if retained:
             history_blocks.append(f"<tr><td colspan='11' style='padding:9px;background:#f1f5f9'><b>持续保留的价值档案（{len(retained)}只）· 上次等级与分数注明审核日期，当前暂停执行</b></td></tr>")
             history_blocks.extend(_in_row(r,blocked=True) for r in retained)
-        exits = [r for r in _blocked_rows if r.get("tier") == "0A" and (r.get("tracking") or {}).get("last_value_tier")]
+        exits = [r for r in history_rows if r.get("tier") == "0A"]
         if exits:
             history_blocks.append(f"<tr><td colspan='11' style='padding:9px;background:#fff7ed'><b>已退出当前推荐的原价值档案（{len(exits)}只）· 显示收益门槛/失效原因，原分数仅供追溯</b></td></tr>")
             history_blocks.extend(_in_row(r, blocked=True) for r in exits)
         if history_blocks:
             history_html = (f"<details class='v88-grade-history' style='font-size:12px;color:#64748b;margin:8px 0'>"
-                            f"<summary>历史评级与退出档案（{len(retained)+len(exits)}只）· 展开原列表</summary>"
+                            f"<summary>历史评级与退出档案（{len(retained)+len(exits)}只）· 每市场Top5</summary>"
                             + _tbl("".join(history_blocks), _TH_IN) + "</details>")
     else:
-        blocked_html = "".join(_in_row(r, blocked=True) for r in _blocked_rows[:10])
+        blocked_html = "".join(_in_row(r, blocked=True) for r in _market_rows(_blocked_rows)[:10])
 
     focus_guide = ''
     if focus is not None:
@@ -855,9 +873,6 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + "</tr>")
 
     out_rows = "".join(_out_row(g) for g in _board)
-    _bs = _bd.get("by_scope") or {}
-    _funnel = ("　".join(f"{_text(k)} {_text(v[0])}→<b>{_text(v[1])}</b>" for k, v in _bs.items())
-               if _bs else "")
 
     near = ""
     if n3 == 0:
@@ -870,11 +885,17 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
     from weekly_candidates_ui import html as weekly_html
     from reverse_audit_ui import html as reverse_html
     from module_relations_ui import html as relations_html
+    from market_watch_ui import html as market_watch_html
+    from market_adaptation_ui import html as market_adaptation_html
     return (head + relations_html(relations,triad or {}) + reverse_html(reverse_audit, reverse_status, triad)
             + weekly_html(weekly,triad or {},watchlist=watchlist or {})
-            + f"<div id='v88-grade-list' style='font-size:13px;font-weight:800;color:{PALETTE['buy']};margin:8px 0 3px;"
+            + f"<div id='v88-grade-list' style='font-size:20px;font-weight:800;color:{PALETTE['buy']};margin:14px 0 8px;"
               f"border-left:4px solid {PALETTE['buy']};padding-left:6px'>"
               f"IN · 3A / 2A / 1A 重点列表</div>"
+            + "<div class='v88-section-nav' aria-label='研究与提醒导航' style='display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px;font-size:13px'>"
+              "<a href='#v88-grade-list'>🎯 当前榜</a>"
+              "<a href='#v88-market-adaptation'>🔔 风险与左侧</a>"
+              "<a href='#v88-market-watch'>👁 视角名单</a></div>"
             # 【P1·覆盖率门禁上屏】GPT:"关键桶覆盖低于阈值时禁止发布确定性的IN榜,
             # 改报'评估不完整'"。不清空表(那等于另一种隐瞒),而是把"这份名单还不能当结论"
             # 明写在最前面——同类故障曾静默存在整天,就因为界面上没有覆盖率这个数。
@@ -905,6 +926,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                (f"<div style='font-size:12px;color:#64748b'>{near}</div>" if near else ""))
             # ══ 被拦组:独立成组成表(用户"就像-3a里的非持仓组别一样") ══
             + persistent_html
+            + market_adaptation_html() + market_watch_html()
             + tracking_html
             + fixed_archive
             + ("<details class='v88-entry-qualified' style='font-size:12px'><summary>进场条件关注子集（不改变当前等级与固定跟踪档案）</summary>" if persistent_html else "")
@@ -962,8 +984,6 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + (f"<div style='font-size:11px;background:#fef2f2;border-left:3px solid {PALETTE['sell']};"
                f"border-radius:4px;padding:4px 8px;margin:4px 0'>"
                f"⛔ <b>本次买点被 OUT 证据撤销 {len(_revoked)} 只</b>："
-               + "、".join(f"{_text(_nm)}<span style='color:#94a3b8'>({_text(_t)})</span>"
-                           for _nm, _t in _revoked)
                + "　<span style='color:#64748b'>买入结构可继续观察，但<b>现在不能买</b>"
                  "（解除需:缩量止跌／收复MA20／结构重新确认）。"
                  "两侧计算互盲、都不删——删一侧就成了用结果消音证据。</span></div>"
@@ -985,10 +1005,10 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
             + f"<div id='v88-central-out' style='font-size:13px;font-weight:800;color:{PALETTE['sell']};margin:12px 0 2px;"
               f"border-left:4px solid {PALETTE['sell']};padding-left:6px'>"
               f"💼 第一区 · 我的持仓处置"
-              f"（{_quiet.get('held_total', len(_own))}只全覆盖：{len(_own)}只有卖出信号 ／ "
-              f"{_quiet.get('count', 0)}只无信号）</div>"
+              f"（{_quiet.get('held_total', _own_total)}只全覆盖：{_own_total}只有卖出信号 ／ "
+              f"{_quiet.get('count', 0)}只无信号；本榜展示{len(_own)}只）</div>"
             + (_tbl("".join(_out_row(g) for g in _own), _TH_OUT)
-               or f"<div style='font-size:12px;color:{PALETTE['hold']}'>持仓本轮无卖出信号</div>")
+               or f"<div style='font-size:12px;color:{PALETTE['hold']}'>"+('持仓卖警保留后台，当前Top名单未列出；按代码查询完整记录。' if _own_total else '持仓本轮无卖出信号')+'</div>')
             # 无信号的持仓：必须交代状态，但绝不说"安全"或"建议继续持有"（GPT B3）
             + (f"<div style='font-size:11.5px;background:#f8fafc;border-left:3px solid {PALETTE['hold']};"
                f"border-radius:4px;padding:5px 8px;margin:4px 0'>"
@@ -1001,26 +1021,19 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                    f"{stock_link(r.get('name'), r.get('code'))}"
                    f"<span style='color:#94a3b8;font-size:10px'>"
                    f"[{_text(r.get('nearest_risk'))}]</span></span>"
-                   for r in (_quiet.get("rows") or []) if not r.get("vetoed"))
+                   for r in _market_rows(_quiet.get("rows") or []) if not r.get("vetoed"))
                # 被验证压掉的必须与"真没信号"分开列——混在一起就是撒谎:
                # 它们触发了,只是裁决没放行。同"无信号≠安全"的措辞铁律。
                + "".join(
                    f"<div style='font-size:10.5px;color:{PALETTE['warn']};margin-top:2px'>"
                    f"⏸ <b>{stock_link(r.get('name'), r.get('code'))}</b>：{_text(r.get('status'))}</div>"
-                   for r in (_quiet.get("rows") or []) if r.get("vetoed"))
+                   for r in _market_rows(_quiet.get("rows") or []) if r.get("vetoed"))
                + "</div>" if _quiet.get("rows") else "")
             # ══ 第二区：非持仓 ══
             + f"<details style='margin-top:10px'><summary style='cursor:pointer;font-size:13px;"
               f"font-weight:800;color:#b45309;border-left:4px solid #b45309;padding-left:6px'>"
-              f"👁 第二区 · 非持仓回避（{len(_oth)}只，默认折叠）</summary>"
-            + (f"<div style='font-size:11px;color:#64748b;margin-bottom:3px'>"
-               f"漏斗 信号{_bd.get('signals')} → 入榜<b>{_bd.get('on_board')}</b>："
-               f"{_funnel}　<span style='color:#94a3b8'>入榜闸=接近度×持有档"
-               f"（💼持仓{_text(_bd.get('gates', {}).get('持仓', ''))}最松／👁自选"
-               f"{_text(_bd.get('gates', {}).get('自选', ''))}／🔍候选"
-               f"{_text(_bd.get('gates', {}).get('池内候选', ''))}最严）。"
-               f"排序口径未改（仍按接近触发度）——分区只决定<b>你先看到什么</b>，"
-               f"不给持仓伪造风险分。未入榜=<b>还没到</b>，不等于安全。</span></div>" if _bd else "")
+              f"👁 第二区 · 非持仓回避（{len(_oth)}只，默认折叠）"
+            + "</summary>"
             + (_tbl("".join(_out_row(g) for g in _oth), _TH_OUT)
                or f"<div style='font-size:12px;color:{PALETTE['hold']}'>非持仓标的无回避信号 —— "
                                  "无 OUT 信号也是信号</div>")
@@ -1040,6 +1053,10 @@ def verdict_html(v: dict) -> str:
         return ""
     cl = v.get("rules_gate")
     gp = v.get("codex") or v.get("gpt")
+    business = business_for(v.get('code'),business_index(),v)
+    shown_headline = str(v.get('headline') or '').replace('**', '')
+    if v.get('buy') and not business_supported(business):
+        shown_headline = '经营依据待核 · 仅技术观察；原中央评级与合同保留'
 
     def _badge(who, st):
         c = (PALETTE["buy"] if st in ("pass", "gate_pass") else
@@ -1091,7 +1108,7 @@ def verdict_html(v: dict) -> str:
             f"{_badge('V88规则闸', cl)}{_badge('GPT/Codex', gp)}"
             f"<span style='font-size:10.5px;color:{PALETTE['mute']}'>{_text(v.get('source'))}</span></div>"
             f"<div style='font-size:12.5px;font-weight:700;margin:4px 0;color:#1e293b'>"
-            f"{_text(str(v.get('headline')).replace('**', ''))}</div>"
+            f"{_text(shown_headline)}</div>"
             + (f"<div style='font-size:10.5px;color:"
                f"{PALETTE['warn'] if gp == 'reject' else '#0f766e'};margin-bottom:2px'>"
                f"GPT/Codex复核：<b>{'通过' if gp == 'pass' else '不否定' if gp == '不否定' else '否决' if gp == 'reject' else '待复核'}</b>"
@@ -1100,7 +1117,7 @@ def verdict_html(v: dict) -> str:
                + (f"｜{_text(v.get('gpt_model'))}" if v.get('gpt_model') else "")
                + "</div>")
             + gpt_html(v.get("scorecard") or {}) + books_html(v.get("scorecard") or {})
-            + reasons_html(v) + _side(v.get("buy"), True) + _side(v.get("sell"), False)
+            + business_html(business) + reasons_html(v) + business_action(_side(v.get("buy"), True),business) + _side(v.get("sell"), False)
             + f"<div style='font-size:10px;color:{PALETTE['mute']};margin-top:3px'>"
               f"{_text(v.get('rule'))}　｜　3A等级须GPT-6评分及适用书理全通过，执行再核对规则和触发；"
               f"GPT-6/经典巨著未复核或仅不否定时自动降档。</div></div>")

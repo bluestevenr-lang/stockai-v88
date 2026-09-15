@@ -10,6 +10,71 @@ from zoneinfo import ZoneInfo
 ROOT=Path(__file__).resolve().parents[1]
 REPORT=ROOT.parent/'ai-daily-report-v2'
 
+# Both import orders occur in V88: desktop pages and core-generated digests.
+SCORING_SHARED_FILES=(
+    'observation_score.py','horizon_score_policy.py','display_limits.py',
+    'review_scorecard.py','profit_contract.py','investment_maturity.py',
+    'market_watch_ui.py','market_adaptation_ui.py','exchange_sessions.py',
+)
+SCORING_CORE_FILES=(
+    'market_symbols.py','history_calendar.py',
+    'market_watch.py','market_adaptation.py','left_entry_watch.py',
+    'recommendation_rationale.py','feishu_digest.py',
+)
+
+
+def verify_scoring_dependencies(root=ROOT, report=REPORT):
+    """Check copied source packages without collector/model/network execution."""
+    root,report=Path(root).resolve(),Path(report).resolve()
+    source=report/'src'
+    for name in SCORING_SHARED_FILES:
+        paths=(root/name,source/name)
+        for path in paths:
+            if not path.is_file():raise RuntimeError(f'Missing scoring dependency: {path}')
+        if paths[0].read_bytes().replace(b'\r\n',b'\n') != paths[1].read_bytes().replace(b'\r\n',b'\n'):
+            raise RuntimeError(f'Scoring mirror version mismatch: {name}')
+    for name in SCORING_CORE_FILES:
+        if not (source/name).is_file():raise RuntimeError(f'Missing scoring dependency: {source/name}')
+    # Fresh isolated interpreters prevent sys.modules/PYTHONPATH from masking a
+    # missing packaged file with a module from the developer's other checkout.
+    probe=r'''
+import importlib, socket, sys
+from datetime import datetime
+from pathlib import Path
+network_calls=[]
+def offline(*args, **kwargs):
+    network_calls.append(True)
+    raise RuntimeError('Network access is forbidden in offline scoring verification')
+socket.create_connection=offline
+socket.socket.connect=offline
+root,source=Path(sys.argv[1]),Path(sys.argv[2])
+order=sys.argv[3]
+sys.path[:0]=[str(root),str(source)] if order=='desktop' else [str(source),str(root)]
+expected=root if order=='desktop' else source
+for name in sys.argv[4].split(','):
+    module=importlib.import_module(name)
+    assert Path(module.__file__).resolve()==expected/(name+'.py'), (order,name,module.__file__)
+for name in sys.argv[5].split(','):
+    module=importlib.import_module(name)
+    if not (root/(name+'.py')).exists():
+        assert Path(module.__file__).resolve()==source/(name+'.py'), (order,name,module.__file__)
+import observation_score, horizon_score_policy, profit_contract, investment_maturity, review_scorecard
+score=observation_score.assess({'code':'TEST','market':'美股'},now=datetime.fromisoformat('2026-09-15T21:00:00+08:00'))
+assert score['coverage_pct']==0 and score['total'] is None
+assert horizon_score_policy.horizon_score({'4周':{'rule_score':60},'8周':{'rule_score':80}},'medium')['score']==73
+assert not profit_contract.evaluate({},'short')['valid']
+assert investment_maturity.assess({},'short')['tier']=='PENDING'
+assert review_scorecard.score_policy()['version']==review_scorecard.SCORE_POLICY_VERSION
+assert not network_calls, 'An imported scoring dependency attempted a network call'
+'''
+    shared=','.join(Path(name).stem for name in SCORING_SHARED_FILES)
+    core=','.join(Path(name).stem for name in SCORING_CORE_FILES)
+    for order in ('desktop','core'):
+        subprocess.run([sys.executable,'-I','-c',probe,str(root),str(source),order,shared,core],
+                       cwd=root,check=True,capture_output=True,text=True,encoding='utf-8',timeout=30)
+    return {'shared_files':len(SCORING_SHARED_FILES),'core_dependencies':len(SCORING_CORE_FILES),
+            'isolated_import_orders':['desktop','core'],'network_calls':0}
+
 def verify_startup_imports(root=ROOT):
     """Import the actual UI prelude, including names imported inside branches.
 
@@ -88,6 +153,7 @@ def verify():
                    'next_session_data','stock_switcher','deep_cross_validation','astra_trade_entry_view','action_source_view',
                    'runtime_guard','scan_progress_view','platform_lock'):
         importlib.import_module(module)
+    verify_scoring_dependencies()
     verify_startup_imports()
     for name in ('triad_selection.json','triad_selection_pub.json','gpt_verify.json','classics_lens.json','review_factpack.json'):
         if not (REPORT/'data'/name).exists():raise RuntimeError(f'Missing central data: {name}')

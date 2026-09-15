@@ -314,7 +314,7 @@ def _cycle_record_phase(stock, index=0):
 
 
 def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle", profiles=None) -> str:
-    """All cycle records stay visible, with at most three local future previews."""
+    """Show bounded cycle names while retaining the complete source document."""
     safe_id = re.sub(r"[^a-zA-Z0-9_-]", "-", element_id)
     if (cycle or {}).get('status') == 'pending':
         # A pending scan is not an empty opportunity verdict. Only display
@@ -329,7 +329,10 @@ def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle", profiles=
                 '<div class="cy-meta"><b>个股周期扫描待完成</b></div>'
                 '<div class="cy-legend">当前不能据此判断有无观察标的。</div>'
                 f'{recorded}</div>')
-    stocks = (cycle or {}).get('stocks') or []
+    from display_limits import market_top
+    from grade_focus import canonical, market_of
+    original_stocks = (cycle or {}).get('stocks') or []
+    stocks = market_top([{**r, 'market': r.get('market') or market_of(canonical(r.get('code')))} for r in original_stocks])
     if not stocks:
         return ''
     from urllib.parse import quote
@@ -339,7 +342,7 @@ def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle", profiles=
     for i, stock in enumerate(stocks):
         code=str(stock.get('code') or '')
         label=display_label(stock.get('name'),code,profiles)
-        deep='/?q='+quote(code,safe='')+'&focus=deep'
+        deep='/?q='+quote(code,safe='')+'&focus=deep#v88-deep-analysis'
         target=_scenario_id(safe_id+'-future',label,code,i)
         direction=stock.get('direction') if stock.get('direction') in {'up','down','hold'} else 'hold'
         color={'up':'#16a34a','down':'#dc2626','hold':'#64748b'}[direction]
@@ -366,7 +369,7 @@ def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle", profiles=
             else:
                 doc=None
         href='#'+target if doc else deep
-        entries.append({'label':label,'phase':phase,'target':target,'href':href,'color':color})
+        entries.append({'label':label,'phase':phase,'target':target,'href':href,'deep':deep,'color':color})
         if doc:
             from future_trend_visual import render
             rendered.append('<section class="rf-future-panel" id="'+target+'" tabindex="-1">'+render(doc,compact=True)+'</section>')
@@ -377,13 +380,15 @@ def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle", profiles=
         position_text=f'{position:g}%' if position is not None else '○ 缺证'
         rows.append('<tr><td>'+link_html(stock.get('name'),code,profiles)+'<div>'+tag+'</div></td><td>'+values+'</td><td>'+position_text+'<div>原历史位置字段，全年窗口未附凭据</div></td><td>'
                     +escape(str(stock.get('source_asof') or '日期未记录'))+'<details><summary>确认 / 失效</summary><div>确认：'+escape(_research_text(stock.get('trigger')) or '○ 未记录')+'</div><div>失效：'+escape(_research_text(stock.get('invalid')) or '○ 未记录')+'</div></details></td></tr>')
-    nav=''.join('<a href="'+escape(row['href'],quote=True)+'" style="border-color:'+row['color']+'">'+str(i+1)+'. '+escape(row['label'])+'</a>' for i,row in enumerate(entries))
+    nav=''.join('<span><a href="'+escape(row['deep'],quote=True)+'" style="border-color:'+row['color']+'">'+str(i+1)+'. '+escape(row['label'])+'</a>'
+                +('<a href="'+escape(row['href'],quote=True)+'" aria-label="'+escape(row['label']+' · 本页未来曲线',quote=True)+'">↗ 曲线</a>' if row['href'].startswith('#') else '')+'</span>'
+                for i,row in enumerate(entries))
     body=(f'<div id="{safe_id}" role="figure" aria-label="个股周期切换扫描">'
-          +'<div class="cy-meta">原周期计算 '+escape(str((cycle or {}).get('analysis_time') or '未记录'))+' · 全部 '+str(len(stocks))+' 只保留</div>'
+          +'<div class="cy-meta">原周期计算 '+escape(str((cycle or {}).get('analysis_time') or '未记录'))+' · 展示 '+str(len(stocks))+' 只（每市场Top5）</div>'
           +'<div class="rf-clock-wrap">'+_clock_svg('',entries,{})+'<div class="rf-pick-list">'+nav+'</div></div>'
-          +'<div class="cy-meta">↑ 改善 / ↓ 承压 / ↔ 待确认；圆点表示当前相位。点击圆点或名称看未来曲线；本页预览至多3只，其余直达同源深度分析。</div>'
+          +'<div class="cy-meta">↑ 改善 / ↓ 承压 / ↔ 待确认；圆点表示当前相位。点名称进入深度分析；点圆点或“曲线”看本页预览（至多3只）。</div>'
           +'<div class="rf-future-panels">'+''.join(rendered)+'</div>'
-          +'<details class="cy-history"><summary>全部历史技术记录与触发条件 · '+str(len(stocks))+' 只</summary><div class="cy-scroll"><table><thead><tr><th>证券</th><th>原上/下方向分 /100</th><th>原历史位置</th><th>行情日与条件</th></tr></thead><tbody>'+''.join(rows)+'</tbody></table></div></details>'
+          +'<details class="cy-history"><summary>当前Top名单技术记录与触发条件 · '+str(len(stocks))+' 只</summary><div class="cy-scroll"><table><thead><tr><th>证券</th><th>原上/下方向分 /100</th><th>原历史位置</th><th>行情日与条件</th></tr></thead><tbody>'+''.join(rows)+'</tbody></table></div></details>'
           +'<div class="cy-legend">未来曲线是同源本地条件推演；本次周期拐点没有独立GPT验证凭据。历史周期线索不授予评级或买卖许可，原合同与保护条件保持。</div></div>')
     nested_css,body=_strip_styles(body)
     css=_CYCLE_CSS.replace('__ID__',safe_id)+_FUTURE_CSS+f"""

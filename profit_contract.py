@@ -138,15 +138,30 @@ def evaluate(plan, horizon, *, now=None):
     return out
 
 
-def attach_observed(row, bars):
+def observed_asof(row):
+    """Use the typed daily evidence clock; ambiguous or absent clocks stay absent."""
+    stamps = row.get("source_timestamps") or {}
+    clocks = [stamps[k] for k in ("yahoo_daily", "tencent_daily", "sina_daily") if stamps.get(k)]
+    try:
+        parsed = [datetime.fromisoformat(str(value)) for value in clocks]
+        if not parsed or any(value.tzinfo is None for value in parsed) or len(set(parsed)) != 1:
+            return None
+    except (ValueError, TypeError):
+        return None
+    return clocks[0]
+
+
+def attach_observed(row, bars, *, now=None):
     """Measured only from complete bars; never change entry to meet a hurdle."""
     peaks = sorted(bars[-20:], key=lambda b: b["high"])[-2:]
     row["profit_inputs"] = {"version": VERSION, "horizon": "short", "kind": "observed_20day_boundary",
                             "max_calendar_days": 30, "holding_sessions": 10,
-                            "asof": row["source_timestamps"].get("yahoo_daily") or row["source_timestamps"].get("tencent_daily"),
+                            "asof": observed_asof(row),
                             "source_url": row["data_provenance"]["history"],
                             "peaks": [{"date": b["date"], "high": round(b["high"],4)} for b in peaks]}
-    contract = evaluate(row, "short")
+    contract = evaluate(row, "short", now=now)
+    if row["profit_inputs"]["asof"] is None:
+        contract["reasons"] = ["日线证据日期缺失、无时区或冲突，不能用抓取时间代替"]
     row["profit_zone"] = contract["take_profit_range"]
     row["profit_contract"] = contract
     return row

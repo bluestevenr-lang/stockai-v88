@@ -38,7 +38,7 @@ def test_main_list_uses_grade_ranks_instead_of_entry_ranks_with_original_scores(
     assert out.count('class="v88-week-archive-row"')==0
     assert '美股 1A 本市场Top1' in out and '美股 1A 本市场Top3' in out
     assert out.index('data-code="AA"') < out.index('data-code="TEST"')
-    assert '港股 0/3只' in out and '📌 本周主观察 · 与上方周度同股同分' in out
+    assert '港股 0只' in out and '📌 本周主观察 · 与上方周度同股同分' in out
     assert out.count('审核分 75/100')==2 and '?q=TEST' in out
     assert '⏸ 暂不入场·等待条件修复' in out and '条件观察' in out
 
@@ -109,7 +109,7 @@ def paused_hk_fixture(*,bucket='pending',expired=False):
 def test_hk_paused_seats_stay_in_separate_tracking_with_real_scores_and_grade_gap(bucket):
     selection,doc,now=paused_hk_fixture(bucket=bucket)
     formal=html(doc,selection,view='current',horizon='short')
-    assert '港股 0/3只' in formal
+    assert '港股 0只' in formal
     assert '?q=661.HK' not in formal
     out=html(doc,selection,view='tracking')
     assert out.count('<th ')==11 and out.count('class="v88-watch-tracking-row"')==5
@@ -118,7 +118,7 @@ def test_hk_paused_seats_stay_in_separate_tracking_with_real_scores_and_grade_ga
     assert '港股 5只（暂停5 / 待双审0）' in out
     assert '美股 0只（暂停0 / 待双审0）' in out and 'A股 0只（暂停0 / 待双审0）' in out
     assert '已评级99' not in out and '待双审5' not in out
-    assert out.count('⏸ 持续跟踪·暂停')==5 and out.count('审核分 70/100')==5
+    assert out.count('⏸ 持续跟踪·暂停')==5 and out.count('审核分 68.75/100')==5
     assert out.count('<summary>暂停原因与原评级</summary>原1A → 暂停研究')==5
     assert '&lt;新证据需复核&gt;' in out and '<新证据需复核>' not in out
     assert 'id="v88-tracking-661.HK"' in out and '?q=661.HK' in out
@@ -158,7 +158,7 @@ def test_expired_review_retains_identity_without_inheriting_prior_score():
     selection,doc,now=paused_hk_fixture(expired=True)
     out=html(doc,selection,code='661.HK',view='tracking')
     assert 'data-current="true"' in out
-    assert '审核分：证据待更新' in out and '审核分 70/100' not in out
+    assert '审核分：证据待更新' in out and '审核分 68.75/100' not in out
     assert '原1A → 暂停研究' in out
     assert '当前双审证据待更新；未授级' in out and '?q=661.HK' in out
 
@@ -181,7 +181,7 @@ def test_lower_scored_entry_candidate_cannot_outrank_higher_scored_research():
         if row['code']=='TEST':
             row['audit_score']=central['audit_score'];row['scorecard']=deepcopy(central['scorecard'])
     out=html(doc,selection,view='current',horizon='short')
-    assert '审核分 70/100' in out and '审核分 75/100' in out
+    assert '审核分 72.5/100' in out and '审核分 75/100' in out
     assert out.index('data-code="AA"') < out.index('data-code="TEST"')
     assert '美股 1A 本市场Top1' in out and '美股 1A 本市场Top3' in out
     assert '条件关注 1' not in out
@@ -202,9 +202,10 @@ def test_formal_view_never_lists_unscored_candidates_or_paused_seats():
 def test_empty_formal_view_keeps_all_market_grade_gaps_visible():
     selection,doc,now=fixture();doc['current_focus']['rows']=[]
     out=html(doc,selection,view='current',horizon='short')
-    assert '按审核分精选 · 0只' in out
+    assert '入选 <strong>0</strong> 只' in out
+    assert '<table' not in out
     assert '1A缺口' not in out and '/3–5' not in out
-    assert all("data-market-group='"+m+"'" in out for m in ('A股','美股','港股'))
+    assert all('data-grade="'+g+'"' in out for g in ('3A','2A','1A'))
     assert '尚未完成双审' not in out
 
 
@@ -417,12 +418,36 @@ def test_stale_review_preserves_original_evidence_with_historical_label():
 
 
 def test_horizon_sections_default_to_short_and_explain_empty_lanes():
+    from bs4 import BeautifulSoup
     selection,doc,now=fixture()
     out=html(doc,selection,view='current')
-    assert "<section class='v88-horizon-lane' data-horizon='short'>" in out
-    assert "<details class='v88-horizon-lane' data-horizon='medium'>" in out
-    assert "<details class='v88-horizon-lane' data-horizon='long'>" in out
-    assert '研究精选 3/9' in out
+    soup=BeautifulSoup(out,'html.parser')
+    short=soup.select_one('.v88-horizon-lane[data-horizon="short"]')
+    assert short.name=='details' and short.has_attr('open')
+    assert short['data-selected-count']=='2'
+    assert short.select_one(':scope > summary .v88-lane-count').get_text(' ',strip=True)=='入选 2 只'
+    for lane in ('medium','long'):
+        section=soup.select_one(f'.v88-horizon-lane[data-horizon="{lane}"]')
+        assert section.name=='section' and section['data-selected-count']=='0'
+        assert section.select_one('.v88-lane-count').get_text(' ',strip=True)=='入选 0 只'
+        assert section.select_one('table') is None
+        assert section.select_one('.v88-lane-toggle') is None
+        assert len(section.select('[data-watch-market]'))==3
+        assert all(n['data-count']=='0' for n in section.select('[data-grade]'))
     assert '已评级但周内入场未通过 2' in out
     assert '缺少本周期证据时留空' in out
     assert out.count('data-code="TEST"')==1
+
+
+def test_horizon_counts_exclude_stale_rows_but_preserve_their_archive():
+    from bs4 import BeautifulSoup
+    selection,doc,now=fixture()
+    doc['generated_at']=(now-timedelta(minutes=16)).isoformat()
+    out=html(doc,selection,view='current')
+    soup=BeautifulSoup(out,'html.parser')
+    for lane in soup.select('.v88-horizon-lane'):
+        assert lane['data-selected-count']=='0'
+        assert lane.select_one('.v88-lane-count').get_text(' ',strip=True)=='入选 0 只'
+        assert all(n['data-count']=='0' for n in lane.select('[data-grade]'))
+    assert soup.select_one('.v88-week-archives [data-code="TEST"]') is not None
+    assert soup.select_one('tr.v88-watch-row') is None

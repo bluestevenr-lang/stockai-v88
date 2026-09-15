@@ -1,6 +1,7 @@
 """Complete local watch/exit ledger, independent of the daily top-N table."""
 from copy import deepcopy
 from collections import Counter
+from display_limits import market_top
 
 BUCKETS = ("blocked_3a", "recommendations", "preparations", "conditional", "observations", "pending", "excluded")
 TIER_LABEL = {"PENDING": "待补证·不评级", "0A": "不予推荐"}
@@ -41,7 +42,7 @@ def render_tracking(selection, registry, journal=None):
     from scorecard_html import gpt_html, books_html, reasons_html, score_label, text, profit_html
     rows = entries(selection, registry)
     counts = Counter(r["current_tier"] for r in rows)
-    st.markdown("**1A / 2A / 3A 持续跟踪台 · 全名单与退出档案**")
+    st.markdown("**1A / 2A / 3A 持续跟踪台 · 重点与档案检索**")
     st.caption(f"当前 3A {counts['3A']} · 2A {counts['2A']} · 1A {counts['1A']} · 待复核 {counts['PENDING']} · 档案总数 {len(rows)}。"
                "首次出现、历次等级及原因持续保留；数据或审核过期保留最近确认等级。1A/2A均不可直接执行。")
     contracts = (journal or {}).get('contracts') or []
@@ -60,13 +61,16 @@ def render_tracking(selection, registry, journal=None):
                 for c in contracts if month=='全部' or c['cohort_month']==month], hide_index=True, use_container_width=True)
         else:
             st.info("尚无符合本版量化与审核要求的研究合同。")
-    with st.expander("查询完整名单、时间/价格条件和等级沿革", expanded=False):
+    with st.expander("检索股票、时间/价格条件和等级沿革", expanded=False):
         tier = st.selectbox("当前档位", ["全部", "3A", "2A", "1A", "PENDING", "0A", "退出档案"], format_func=lambda v:TIER_LABEL.get(v,v), key="v88_track_tier")
         market = st.selectbox("市场", ["全部"] + sorted({str(r.get("market") or "未识别") for r in rows}), key="v88_track_market")
         query = st.text_input("按代码或名称查找", key="v88_track_search").strip().casefold()
         visible = [r for r in rows if (tier == "全部" or r["current_tier"] == tier)
                    and (market == "全部" or str(r.get("market") or "未识别") == market)
                    and (not query or query in (str(r.get("code")) + str(r.get("name"))).casefold())]
+        matched_count = len(visible)
+        visible = market_top(visible)
+        st.caption(f"匹配 {matched_count}只，展示 {len(visible)}只 · 每市场Top5，合计至多15只。输入名称或完整代码可查其他档案；个股沿革完整保留。")
         if not visible:
             st.info("本档位当前没有满足条件的股票。缺审核或证据不足的股票仍在待复核档案中，不会补位为1A。")
             return

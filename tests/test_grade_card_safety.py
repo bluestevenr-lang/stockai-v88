@@ -10,7 +10,17 @@ def isolated_company_profiles(monkeypatch):
     # profiles must not replace these test labels or make safety tests depend
     # on the current downloaded catalog; name resolution has its own tests.
     import stock_profile_view
+    import grade_card, market_adaptation_ui, market_watch_ui
     monkeypatch.setattr(stock_profile_view, 'load', lambda *args, **kwargs: {})
+    monkeypatch.setattr(market_adaptation_ui, 'html', lambda *args, **kwargs: '')
+    monkeypatch.setattr(market_watch_ui, 'html', lambda *args, **kwargs: '')
+    # This suite isolates central execution/duplicate authority. Supply the
+    # new independent business prerequisite explicitly; its missing/failed
+    # cases are exercised in test_nontechnical_business_ui.
+    monkeypatch.setattr(grade_card, 'business_index', lambda *args, **kwargs: {})
+    monkeypatch.setattr(grade_card, 'business_for', lambda code, *args, **kwargs: {
+        'code':code, 'status':'supported', 'has_current_non_technical_support':True,
+        'support_summary':'合成经营依据，仅用于隔离中央权限测试', 'evidence':[], 'risks':[], 'gaps':[]})
 
 
 def blocked_3a_row():

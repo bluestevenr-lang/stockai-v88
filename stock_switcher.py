@@ -1,7 +1,7 @@
 """Fast local stock navigation shared by overview and focused deep analysis.
 
-Typing filters a native dropdown in the browser. Only an explicit selection
-changes the route. No model, provider, watchlist, ledger or grade writes.
+Local name/code search runs in an isolated UI fragment; market filtering
+does not recompute the deep report. Explicit selection changes the route. No model, provider, watchlist, ledger or grade writes.
 """
 from pathlib import Path
 import json
@@ -16,7 +16,7 @@ def choose(st, value, catalog):
     from stock_search_index import resolve_exact
     row = resolve_exact(value, catalog)
     if row is None:
-        st.session_state['_v88_stock_search_error'] = '没有找到唯一匹配，请输入名称片段后从下拉候选中选择，或核对证券代码。'
+        st.session_state['_v88_stock_search_error'] = '没有找到唯一匹配，请输入名称片段后从匹配结果中选择，或核对证券代码。'
         return False
     code = row['code']
     st.session_state.pop('_v88_stock_search_error', None)
@@ -49,59 +49,100 @@ def recent_rows(state, catalog, history_file=None):
             found.append(row)
         if len(found) == 6:
             break
-    return found
+    from display_limits import market_top
+    return market_top(found)
 
 
 def render(st, current_code='', *, key='v88_deep_switch'):
-    from stock_search_index import load_catalog, resolve_exact
+    @st.fragment
+    def search_panel():
+        _render(st, current_code, key=key)
+    search_panel()
+
+
+def _render(st, current_code='', *, key='v88_deep_switch'):
+    navigate = st.session_state.pop(key+'_navigate', False)
+    from stock_search_index import load_catalog, resolve_exact, display_search as search
+    from html import escape
     catalog = load_catalog()
-    rows = catalog['rows']
-    by_code = {row['code']: row for row in rows}
     current = resolve_exact(current_code, catalog)
     if current:
         remember(st.session_state, current['code'])
-    # URL/history navigation and the visible selected name must stay in sync.
-    if current and st.session_state.get(key) != current['code']:
-        st.session_state[key] = current['code']
-    def select(widget):
-        value = st.session_state.get(widget)
-        if value:
-            choose(st, value, catalog)
+
+    def open_stock(code):
+        if choose(st, code, catalog):
+            st.session_state[key+'_navigate'] = True
+
+    def submit():
+        query = st.session_state.get(key+'_query', '').strip()
+        st.session_state[key+'_submitted'] = query
+        st.session_state.pop('_v88_stock_search_error', None)
+        exact = resolve_exact(query, catalog)
+        market = st.session_state.get(key+'_market') or '全部'
+        if exact and (market == '全部' or exact['market'] == market):
+            open_stock(exact['code'])
+
     def refresh():
         st.session_state.pop('_v88_stock_search_error', None)
         if current_code:
             st.query_params.update({'q': current['code'] if current else current_code, 'focus': 'deep'})
-    def label(value):
-        row = by_code.get(value)
-        return row['label'] if row else str(value)
-    def search_label(value):
-        row = by_code.get(value)
-        if row and row.get('market') != '美股' and row.get('name_en'):
-            return f"{row.get('name_zh') or row['name']} · {row['name_en']} · {row['code']} · {row['market']}"
-        return label(value)
-    st.markdown('''<style>
-    .st-key-v88_deep_searchbar,.st-key-v88_overview_searchbar{padding:9px 12px;border:1px solid #dce6f2;border-left:3px solid #2563eb;border-radius:9px;background:#f5f9ff;margin:5px 0 10px}
-    .st-key-v88_deep_searchbar p,.st-key-v88_overview_searchbar p{font-size:12px}
-    .st-key-v88_deep_searchbar [data-testid="stCaptionContainer"] p,.st-key-v88_overview_searchbar [data-testid="stCaptionContainer"] p{font-size:11px;color:#64748b}
-    </style>''', unsafe_allow_html=True)
+            st.session_state[key+'_navigate'] = True
+
+    st.markdown("""<style>
+    .st-key-v88_deep_searchbar,.st-key-v88_overview_searchbar{padding:16px 20px;border:1px solid #93c5fd;border-top:4px solid #2563eb;border-radius:12px;background:linear-gradient(120deg,#eff6ff,#fff);margin:4px 0 16px}
+    [class*="_hit_"] button{justify-content:flex-start;text-align:left}
+    .v88-search-title{font-size:22px;font-weight:800;color:#153e75;margin-bottom:4px}
+    .v88-search-current{font-size:13px;color:#475569;margin-bottom:10px}
+    .st-key-v88_deep_searchbar [data-testid="stTextInput"] input,.st-key-v88_overview_searchbar [data-testid="stTextInput"] input{font-size:17px;min-height:46px;background:white}
+    .st-key-v88_deep_searchbar [data-testid="stTextInput"] label p,.st-key-v88_overview_searchbar [data-testid="stTextInput"] label p{font-size:14px;font-weight:650;color:#1e3a5f}
+    .st-key-v88_deep_searchbar button p,.st-key-v88_overview_searchbar button p{font-size:14px}
+    .st-key-v88_deep_searchbar [data-testid="stCaptionContainer"] p,.st-key-v88_overview_searchbar [data-testid="stCaptionContainer"] p{font-size:12px;color:#64748b}
+    </style>""", unsafe_allow_html=True)
     with st.container(key='v88_deep_searchbar' if current_code else 'v88_overview_searchbar'):
-        st.markdown('**🔎 搜索并切换个股**')
+        st.markdown('<div class="v88-search-title">🔎 查找个股 · 打开深度分析</div>', unsafe_allow_html=True)
+        if current:
+            st.markdown('<div class="v88-search-current">当前查看：'+escape(current['label'])+'</div>', unsafe_allow_html=True)
         left, right = st.columns([5, 1], vertical_alignment='bottom')
         with left:
-            st.selectbox('输入名称或代码，选中即分析', options=list(by_code), index=None,
-                         format_func=search_label, key=key, on_change=select, args=(key,),
-                         placeholder='输入名称 / 代码，选中或按回车即可分析',
-                         label_visibility='collapsed', accept_new_options=True)
+            st.text_input('股票名称 / 代码', key=key+'_query', on_change=submit,
+                          placeholder='例如：TCL、腾讯、688002、NVDA · 回车搜索')
         with right:
-            st.button('↻ 刷新本股', key=key+'_refresh', on_click=refresh,
-                      disabled=not bool(current_code), width='stretch',
-                      help='重新读取后台最新本地数据，保留当前股票，无需重输名称。')
+            st.button('搜索 →', type='primary', key=key+'_search', on_click=submit, width='stretch')
+        st.radio('筛选市场', ['全部', 'A股', '港股', '美股'], horizontal=True, key=key+'_market')
+        query = st.session_state.get(key+'_submitted', '')
+        market = st.session_state.get(key+'_market') or '全部'
+        if query:
+            hits = search(query, catalog, market=market)
+            if hits:
+                st.caption(f'“{query}”匹配结果 · 精确代码、名称优先 · 点击整行打开'
+                           + f' · {len(hits)}只 · 每市场至多5只；补充名称或代码可查其他个股')
+                for row in hits:
+                    st.button(row['market']+' ｜ '+row['label'].rsplit(' · ',1)[0],
+                              key=key+'_hit_'+row['code'], width='stretch',
+                              on_click=open_stock, args=(row['code'],))
+            else:
+                st.info('未找到匹配个股，请核对名称、代码，或切换到“全部”市场。')
+        else:
+            st.caption('输入名称片段可列出匹配个股；完整名称或代码回车直达。支持中文、英文、沪深港代码。')
         if st.session_state.get('_v88_stock_search_error'):
             st.warning(st.session_state['_v88_stock_search_error'])
         recents = recent_rows(st.session_state, catalog)
         if recents:
-            recent_key = key+'_recent'
-            st.session_state[recent_key] = current['code'] if current else None
-            st.pills('最近查看 · 点击切换', options=[r['code'] for r in recents],
-                     format_func=label, key=recent_key, on_change=select, args=(recent_key,))
-        st.caption(f"名称、英文名或代码均可筛选 · 已下载证券目录 {len(rows):,} 条 · 选中后直接打开分析")
+            st.caption('🕘 最近查看 · 点击直达')
+            for offset in range(0,len(recents),3):
+                columns = st.columns(3)
+                for column, row in zip(columns,recents[offset:offset+3]):
+                    with column:
+                        title = row['name_zh'] or row['name']
+                        if row['market']=='美股':
+                            title = (row.get('name_en') or row['code']) + (' · '+row['name_zh'] if row['name_zh'] else '')
+                        st.button(title+' · '+row['code'], key=key+'_recent_'+row['code'],
+                                  on_click=open_stock, args=(row['code'],), width='stretch')
+        if current_code:
+            st.button('↻ 更新当前分析', key=key+'_refresh', on_click=refresh,
+                      help='读取后台最新结果，复用仍有效的评分。')
+
+    # Register widgets before escalating a fragment navigation to a full rerun;
+    # aborting earlier makes Streamlit discard the selected market state.
+    if navigate:
+        st.rerun(scope='app')

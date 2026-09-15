@@ -4,6 +4,7 @@ import re
 
 import numpy as np
 import pandas as pd
+import pytest
 
 import stock_horizon
 
@@ -63,7 +64,7 @@ def test_cross_cycle_conflict_forces_safe_action():
             "action": "试仓复核", "reason": "短线启动"}
     aligned = stock_horizon.align_decision_card(card, facts)
     assert aligned["p_up"] == 70
-    assert aligned["long_p_up"] == 36
+    assert aligned["long_p_up"] == 35
     assert aligned["cycle_conflict"] is True
     assert aligned["action"] == "仅观察·不追涨"
     assert "2周偏涨" in aligned["cycle_note"]
@@ -81,7 +82,7 @@ def test_short_bullish_long_slightly_weak_is_still_conflict():
         {"upside_pct": 25, "downside_pct": 8, "rr": 3.1,
          "expected_pct": 15, "action": "试仓复核"}, facts)
     assert aligned["p_up"] == 76
-    assert aligned["long_p_up"] == 41
+    assert aligned["long_p_up"] == 39
     assert aligned["cycle_conflict"] is True
     assert aligned["action"] == "仅观察·不追涨"
 
@@ -207,11 +208,20 @@ def test_alignment_names_direction_scores_and_includes_all_four_longer_windows()
     facts = {'horizons': {f'{weeks}周': {'rule_score': score}
                          for weeks, score in ((2, 70), (4, 20), (8, 40), (16, 60), (32, 80))}}
     aligned = stock_horizon.cycle_alignment(facts)
-    assert aligned['long_score'] == 50 and aligned['long_p_up'] == 50
+    assert aligned['long_score'] == 60 and aligned['long_p_up'] == 60
     assert aligned['short_score'] == aligned['p_up'] == 70
     assert '/100' in aligned['note'] and '%' not in aligned['note']
     assert aligned['score_semantics'] == 'historical-direction-score-not-probability'
     assert not stock_horizon._turning_candidate([{'score': 80}, {'score':30}, {'score':70}])['horizon']
+
+
+def test_alignment_missing_direction_score_does_not_become_neutral_or_short_score():
+    facts = {'horizons': {'2周': {'rule_score': 80}, '4周': {'rule_score': 80},
+                          '8周': {'rule_score': 80}, '16周': {'rule_score': 80}}}
+    result = stock_horizon.cycle_alignment(facts)
+    assert result['short_score'] == 80 and result['long_score'] is None
+    assert result['score_status'] == 'limited' and result['conflict'] is None
+    assert result['score_aggregation']['alignment']['coverage'] == pytest.approx(.6)
 
 
 def test_deterministic_reasons_do_not_create_unreviewed_followup_or_trading_actions():

@@ -18,6 +18,7 @@ def research_index_caption(report):
             f"事实条件未过{counts.get('fact_rejected',0):,}只。未审不授级，分批数量不是全市场分母。")
 
 def render(st, core):
+    from display_limits import market_top
     from market_directory_search import search
     from market_symbols import canonical
     def keep_results_open():
@@ -41,16 +42,15 @@ def render(st, core):
             st.session_state['v88_directory_result']=search(query,market,base=core)
         found=st.session_state.get('v88_directory_result')
         if found is None:return
-        st.caption(f"共匹配 {found['match_count']:,} 条；表格最多显示前100条，下载包含全部匹配。无匹配不代表公司不存在。")
+        st.caption(f"共匹配 {found['match_count']:,} 条；每市场显示前5只、合计至多15只。输入更完整的名称或代码可检索其他证券。")
         states={r['code']:r['status'] for r in (research or {}).get('members',[])}
         labels={'in_active_review_lane':'当前审核池（不等于已审）','queued_for_admission':'待分批接入审核','source_expired':'来源过期·待更新','missing_history':'缺日线资料','fact_rejected':'事实条件未过'}
         records=[{'名称':r['name'],'代码':r['code'],'市场':r['market'],'证券类型':r['security_type'],
                   '目录日期':r['catalog_asof'],'日期校验':r['time_status'],
                   '研究状态':labels.get(states.get(canonical(r['code'])), '当前研究索引未覆盖'),
                   '来源':' | '.join(str(s) for s in r['sources']),
-                  '详情':'/?'+urlencode({'q':r['code'],'focus':'deep'})} for r in found['rows']]
+                  '详情':'/?'+urlencode({'q':r['code'],'focus':'deep'})} for r in market_top(found['rows'])]
         if records:
             frame=pd.DataFrame(records)
-            st.dataframe(frame.head(100),hide_index=True,column_config={'详情':st.column_config.LinkColumn('详情',display_text='查看')})
-            st.download_button('下载全部匹配目录 CSV',frame.to_csv(index=False).encode('utf-8-sig'),file_name='v88_directory_search.csv',mime='text/csv')
+            st.dataframe(frame,hide_index=True,column_config={'详情':st.column_config.LinkColumn('详情',display_text='查看')})
         st.caption('目录检索不授予1A/2A/3A，不生成行情、胜率或买入建议。未来生效目录不算当前在市证明。')

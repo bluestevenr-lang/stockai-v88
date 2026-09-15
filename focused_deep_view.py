@@ -49,11 +49,14 @@ def calculate(context, frame, quality, name, code):
     from trend_scenarios import build_stock
     future = build_stock(annual, synthesis, period, code=code, name=name)
     cross['future_scenario'] = future
+    from research_path_diagnostics import build as research_paths
+    paths = research_paths(context, frame, quality, cross)
+    cross['research_paths'] = paths
     if cycles:
         cycles = dict(cycles, period_consistency=period, future_scenario=future)
     return {'technical': technical, 'trend': trend, 'cycles': cycles,
             'cross': cross, 'synthesis': synthesis, 'annual_outlook': annual,
-            'period_consistency': period, 'future_scenario': future}
+            'period_consistency': period, 'future_scenario': future, 'research_paths': paths}
 
 
 def history_window(frame):
@@ -105,6 +108,8 @@ def _technical_view(st, result, frame, quality, name, code):
     from annual_outlook import html as annual_html
     from stock_horizon import cycle_visual_html, table_rows
     from evidence_visuals import deep_overview, contract_strip
+    from research_path_view import html as paths_html
+    st.markdown(paths_html(result.get('research_paths')), unsafe_allow_html=True)
     st.markdown(deep_overview(result.get('synthesis'), result.get('annual_outlook'),
                              result.get('period_consistency')), unsafe_allow_html=True)
     st.markdown(cycle_visual_html(dict(result.get('cycles') or {},
@@ -186,7 +191,8 @@ def render(st, raw_code):
     context = {'code': code, 'selection': {}, 'row': {}, 'formal': False, 'card': {}}
     try:
         context = load_context(code)
-        st.markdown(report_html(code, context=context), unsafe_allow_html=True)
+        from deep_review_job import render as render_3a_review
+        render_3a_review(st, code)
     except Exception as exc:
         logging.exception('聚焦深度：中央原合同读取失败')
         st.warning(f'中央原合同暂未读取成功（{type(exc).__name__}）；技术研究不授予评级。')

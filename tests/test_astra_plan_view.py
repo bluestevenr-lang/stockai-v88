@@ -54,6 +54,15 @@ def test_ungraded_candidate_has_review_score_without_invented_tier():
     assert '仅研究·无新开仓许可' in page
 
 
+def test_market_summary_and_us_reference_label_are_explicit():
+    row={**candidate('SEPN','美股'),'audit_score':90,'reference_only':True}
+    text=view.market_policy_html([candidate(),row])
+    assert '中港优先' in text and '美股≤1只' in text and '审核≥85分' in text
+    assert 'A股 1 · 港股 0 · 美股 1' in text
+    page=view.research_rows([row])
+    assert '美股高分参考' in page and '不作主攻或交易替补' in page
+
+
 def test_original_deadline_source_clock_and_monthly_window_all_survive():
     page=view.research_rows([candidate()])
     assert '2026-10-11T16:00:00+08:00' in page

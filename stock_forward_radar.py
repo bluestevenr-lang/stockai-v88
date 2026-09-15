@@ -9,7 +9,10 @@
 """
 from __future__ import annotations
 
-from v88_decision_core import evaluate_forward_outlook
+from v88_decision_core import HORIZON_DAYS, evaluate_forward_outlook
+from horizon_score_policy import (
+    POLICY_VERSION as HORIZON_SCORE_POLICY_VERSION, horizon_score,
+)
 import logging
 import math
 
@@ -61,24 +64,44 @@ def _number(value):
     return float(value) if type(value) in (int, float) and math.isfinite(value) else None
 
 
+def _horizon_aggregation(rows):
+    horizons = {}
+    duplicates = set()
+    for row in rows:
+        days = _number(row.get("days"))
+        if days is not None and days.is_integer():
+            label = f"{int(days)}日"
+            if label in horizons:
+                duplicates.add(label)
+            horizons[label] = row
+    # Duplicated windows are ambiguous, not additional confirming observations.
+    for label in duplicates:
+        horizons[label] = {}
+    return {group: horizon_score(horizons, group, field="p_up")
+            for group in ("radar_short", "radar_long")}
+
+
 def _horizon_means(rows):
-    """短/长观察档的规则方向均分；缺档保留空值。"""
-    short = [r["p_up"] for r in rows if r.get("days", 999) <= 10]
-    long_ = [r["p_up"] for r in rows if r.get("days", 0) >= 60]
-    short_p = round(sum(short) / len(short)) if short else None
-    long_p = round(sum(long_) / len(long_)) if long_ else None
-    return short_p, long_p
+    """Compatibility tuple; values now use declared unequal horizon weights."""
+    aggregation = _horizon_aggregation(rows)
+    return tuple(round(aggregation[group]["score"]) if aggregation[group]["score"] is not None else None
+                 for group in ("radar_short", "radar_long"))
 
 
 def opportunity_score(fwd: dict) -> dict:
     """保留原公式，缺少任一事实或完整观察档时不生成排名分。"""
     rows = fwd.get("horizons") or []
+    aggregation = _horizon_aggregation(rows)
+    score_policy = {"score_policy_version": HORIZON_SCORE_POLICY_VERSION, "score_aggregation": aggregation}
     p_up = _number(fwd.get("weighted_p_up")); rr = _number(fwd.get("weighted_rr"))
     ev = _number(fwd.get("weighted_expected_pct")); gaps = []
     if p_up is None or not 0 <= p_up <= 100: gaps.append('综合规则方向分缺失或无效')
     if rr is None or rr < 0: gaps.append('规则空间比缺失或无效')
     if ev is None: gaps.append('规则加权空间缺失或无效')
     if not rows: gaps.append('观察档缺失')
+    days_seen = [row.get("days") for row in rows]
+    if sorted(days for days in days_seen if type(days) in (int, float) and math.isfinite(days)) != list(HORIZON_DAYS):
+        gaps.append('标准5/10/20/60/120日观察档缺失、重复或不匹配')
     for row in rows:
         days, sample, score = (_number(row.get(k)) for k in ('days','sample_days','p_up'))
         if days is None or days <= 0 or sample is None or sample < days:
@@ -86,17 +109,19 @@ def opportunity_score(fwd: dict) -> dict:
         if score is None or not 0 <= score <= 100: gaps.append('观察档方向分缺失或无效')
     if gaps:
         return {'opp_score':None, 'short_p':None, 'long_p':None, 'starting':False,
-                'status':'limited', 'gaps':list(dict.fromkeys(gaps)), 'no_grade_authority':True, 'entry_permission':False}
+                'status':'limited', 'gaps':list(dict.fromkeys(gaps)), 'no_grade_authority':True, 'entry_permission':False,
+                **score_policy}
     short_p, long_p = _horizon_means(rows)
     if short_p is None or long_p is None:
         return {'opp_score':None, 'short_p':short_p, 'long_p':long_p, 'starting':False,
-                'status':'limited', 'gaps':['短端或长端观察档缺失'], 'no_grade_authority':True, 'entry_permission':False}
+                'status':'limited', 'gaps':['短端或长端观察档缺失或重复'], 'no_grade_authority':True, 'entry_permission':False,
+                **score_policy}
     score = round(p_up + 12 * min(rr, 2.5) + 2 * ev)
     # '起步'：中长期方向已明显偏多、短期未破位、净期望为正（趋势正在形成，越早发现越值钱）。
     # 注意：平滑趋势股的盈亏比天然偏低（阻力贴着现价），所以'起步'看概率与期望，不卡盈亏比。
     starting = bool(long_p >= 60 and short_p >= 52 and ev > 0)
     return {"opp_score": score, "short_p": short_p, "long_p": long_p, "starting": starting,
-            'status':'observed', 'gaps':[], 'no_grade_authority':True, 'entry_permission':False}
+            'status':'observed', 'gaps':[], 'no_grade_authority':True, 'entry_permission':False, **score_policy}
 
 
 def scan_forward_opportunities(fetch_fn, get_sector_fn, pool=None, *,
@@ -163,7 +188,8 @@ def scan_forward_opportunities(fetch_fn, get_sector_fn, pool=None, *,
     stocks = sorted(rows, key=lambda r: r["opp_score"], reverse=True)
 
     # 板块聚合：按 市场×板块 拆开（2026-07-18 用户抓"只有美股板块"——混在一起时
-    # 中港的预计被美股代表淹没），各市场独立算平均概率与起步只数。
+    # 中港观察被美股代表淹没），各市场独立描述成员平均规则分与起步只数。
+    # 横截面描述统计保留等成员均值；它不是新的多因素评分或行业概率。
     by_sector = {}
     for r in rows:
         by_sector.setdefault((r["market"], r["sector"]), []).append(r)
@@ -176,6 +202,9 @@ def scan_forward_opportunities(fetch_fn, get_sector_fn, pool=None, *,
         sectors.append({
             "market": market, "sector": sector, "count": n,
             "avg_p_up": avg_p, "avg_rr": avg_rr,
+            "aggregation_kind": "cross-sectional-equal-member-descriptive-mean",
+            "aggregation_description": "本次同市场同板块成员规则分的横截面描述均值，非综合评分或概率",
+            "grade_authority": False,
             "starting_count": starting_n,
             "starting_names": [i["name"] for i in items if i["starting"]][:5],
             "hot": bool(avg_p >= 56 and starting_n >= 1),
@@ -183,7 +212,8 @@ def scan_forward_opportunities(fetch_fn, get_sector_fn, pool=None, *,
     sectors.sort(key=lambda s: (s["starting_count"], s["avg_p_up"]), reverse=True)
 
     return {
-        "schema": "v88.forward-radar/1.2", "pool_source": source,
+        "schema": "v88.forward-radar/1.3-weighted", "pool_source": source,
+        "score_policy_version": HORIZON_SCORE_POLICY_VERSION,
         "coverage_complete": bool(pool) and errors == 0 and not unranked,
         "scanned": len(rows), "skipped": errors, "pool_size": len(pool),
         "probability_kind": "未校准规则方向分（非概率或胜率）",

@@ -183,7 +183,7 @@ def industry_rank_html(code, doc=None, now=None, *, compact=False):
     if p.get('industry_group_id') and not peer['ok']:r=None
     label=(f"行业排名（按市值）<b>{r['rank']}/{r['comparable']}</b>" if r else '行业排名：缺当期可比数据')
     if peer['ok']:
-        g=peer['group'];peers=peer['rows'];n=len(peers)
+        g=peer['group'];peers=peer['rows'][:5];n=len(peers)
         heading=f"{escape(g['market'])} · {escape(g['industry'])} · 前{n}家公司"
         rows=''.join(f"<div class='v88-industry-peer-row' data-peer-code='{escape(q['code'],quote=True)}' "
               "style='display:grid;grid-template-columns:26px minmax(0,1fr);gap:5px;padding:5px 0;border-bottom:1px solid #dbe4ef'>"
@@ -192,12 +192,12 @@ def industry_rank_html(code, doc=None, now=None, *, compact=False):
               for q in peers)
         body=(f"<div style='font-weight:600'>{heading}</div>"
               f"<div style='font-size:10px;color:#64748b'>{escape(g['session'])} · 可比{g['comparable']}/{g['classified']}只已分类同业</div>"
-              +rows+f"<div style='font-size:10px;color:#64748b;margin-top:5px'>{'同业不足10家，按实际数量显示。' if n<10 else ''}"
-              '按股票总市值排序，仅表示规模；不代表竞争力、GPT审核分或推荐顺序。相同市值并列；不同股类分别计数，边界同值按代码顺序取10只。</div>')
-    else:body=f"<div>{escape(peer['reason'])}</div>"
+              +rows+f"<div style='font-size:10px;color:#64748b;margin-top:5px'>{'同业不足5家，按实际数量显示。' if n<5 else ''}"
+              '按股票总市值排序，仅表示规模；不代表竞争力、GPT审核分或推荐顺序。相同市值并列；不同股类分别计数，边界同值按代码顺序取5只。</div>')
+    else:body=f"<div>{escape(peer['reason'].replace('前十','名单'))}</div>"
     style='display:inline-block;vertical-align:top;' if compact else ''
     return (f"<details class='v88-industry-ranking' data-industry-code='{escape(str(code),quote=True)}' style='{style}font-size:11px'>"
-            f"<summary style='cursor:pointer;color:#0369a1'>{label} · 查看同业前十</summary>"
+            f"<summary style='cursor:pointer;color:#0369a1'>{label} · 查看同业Top5</summary>"
             f"<div class='v88-industry-peer-list' style='min-width:210px;max-width:420px;white-space:normal;padding:7px;background:#f0f7ff;border:1px solid #dbeafe;border-radius:5px'>{body}</div></details>")
 
 

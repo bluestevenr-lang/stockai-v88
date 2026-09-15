@@ -51,10 +51,11 @@ def assess(row, *, now=None, week_doc=None):
                original_trigger=plan.get('promotion_trigger'), no_grade_authority=True,
                model_calls=0, minimum_net_rr=MIN_NET_RR)
     try:
-        if row.get('tier') not in ('1A', '2A', '3A') or not all(
-                (card.get(k) or {}).get('current') is True and
-                (card.get(k) or {}).get('complete') is True for k in ('gpt', 'books')):
+        if not all((card.get(k) or {}).get('current') is True and
+                   (card.get(k) or {}).get('complete') is True for k in ('gpt', 'books')):
             raise ValueError('当前评级审核缺失或过期，仅保留原研究档案')
+        if row.get('tier') not in ('1A', '2A', '3A'):
+            raise ValueError('双审已完成，但当前结论未达到1A准入条件；查看上方真实评分与逐项审核')
         pc = evaluate(plan, horizon, now=now)
         out['deadline'] = pc.get('thesis_deadline')
         if not pc.get('valid') or not pc.get('eligible'):

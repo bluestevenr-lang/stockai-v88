@@ -26,6 +26,8 @@ def reference(selection, row):
             'central_generated_at': selection.get('generated_at'),
             'audit_id': row.get('audit_id') or (row.get('scorecard') or {}).get('audit_id'),
             'audit_score': row.get('audit_score', (row.get('scorecard') or {}).get('total')),
+            'score_policy_version': row.get('score_policy_version') or ((row.get('scorecard') or {}).get('score_policy') or {}).get('version'),
+            'score_policy_digest': digest((row.get('scorecard') or {}).get('score_policy')),
             'tier': row.get('tier'), 'horizon': plan.get('horizon') or row.get('horizon'),
             'contract_id': digest(contract)}
     return {**base, 'reference_id': digest(base), 'no_grade_authority': True}
