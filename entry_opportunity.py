@@ -10,7 +10,7 @@ import re
 
 from profit_contract import evaluate
 
-VERSION = 'entry-opportunity-v2-five-sessions'
+VERSION = 'entry-opportunity-v4-explicit-outcomes'
 MIN_NET_RR = 2
 
 
@@ -46,7 +46,7 @@ def assess(row, *, now=None, week_doc=None):
     card = row.get('scorecard') or {}
     horizon = plan.get('horizon') or row.get('horizon')
     out = dict(version=VERSION, focus_eligible=False, executable=False,
-               state='ARCHIVE', label='⏸ 暂不入场·等待条件修复', reasons=[],
+               state='ARCHIVE', label='🔎 研究跟踪', failure_kind='EVIDENCE', reasons=[],
                original_entry_range=plan.get('entry_range'), feasible_price_band=[],
                original_trigger=plan.get('promotion_trigger'), no_grade_authority=True,
                model_calls=0, minimum_net_rr=MIN_NET_RR)
@@ -55,14 +55,17 @@ def assess(row, *, now=None, week_doc=None):
                    (card.get(k) or {}).get('complete') is True for k in ('gpt', 'books')):
             raise ValueError('当前评级审核缺失或过期，仅保留原研究档案')
         if row.get('tier') not in ('1A', '2A', '3A'):
+            out['failure_kind']='REJECTED'
             raise ValueError('双审已完成，但当前结论未达到1A准入条件；查看上方真实评分与逐项审核')
         pc = evaluate(plan, horizon, now=now)
         out['deadline'] = pc.get('thesis_deadline')
         if not pc.get('valid') or not pc.get('eligible'):
+            out['failure_kind']='EXPIRED' if any('期限已到' in str(r) for r in pc.get('reasons',[])) else ('NO_PATH' if pc.get('valid') else 'EVIDENCE')
             raise ValueError('原收益合同未通过：' + '；'.join(pc.get('reasons') or []))
         last, stop = _num(plan.get('last')), _num(plan.get('stop'))
         lo, hi = map(_num, plan['entry_range'])
-        if last <= stop:
+        if last <= stop and row.get('data_fresh', row.get('central_data_fresh')) is not False:
+            out['failure_kind']='INVALIDATED'
             raise ValueError('现价已触及原失效线，暂停新开仓并核查原保护合同')
         if row.get('data_fresh', row.get('central_data_fresh')) is False:
             raise ValueError('行情证据过期，需更新同包审核')
@@ -103,6 +106,7 @@ def assess(row, *, now=None, week_doc=None):
         top = min(hi, cap)
         out['continuous_floor'], out['continuous_ceiling'] = float(floor), float(top)
         if floor > top:
+            out['failure_kind']='NO_PATH'
             raise ValueError(f'趋势/原触发所需价格≥{floor:.4f}，但原区间与净RR≥2允许≤{top:.4f}，无共同价带；需新事实复核，不能追价')
         distance = max(floor / last - 1, last / top - 1, Decimal(0)) * 100
         out['distance_pct'] = float(distance)
@@ -111,6 +115,8 @@ def assess(row, *, now=None, week_doc=None):
         week = week_assess(row, out['feasible_price_band'], now=now, doc=week_doc)
         out['week_entry'] = week
         if not week['eligible']:
+            if week.get('arrival_budget',1)<1 or week.get('reachable_range'):
+                out['failure_kind']='OUTSIDE_WINDOW'
             raise ValueError(week['reason'])
         out['week_entry_range'] = week['entry_range']
         floor, top = map(_num, week['entry_range'])
@@ -121,7 +127,7 @@ def assess(row, *, now=None, week_doc=None):
         in_band = floor <= last <= top
         central_buy = (row.get('formal_recommendation') is True and row.get('tier') == '3A'
                        and card.get('all_passed') is True
-                       and not row.get('action_blocks') and in_band
+                       and not row.get('action_blocks') and in_band and week.get('capacity_passed') is True
                        and (row.get('execution') or {}).get('triggered') is True)
         out.update(focus_eligible=True, executable=central_buy,
                    state='READY' if central_buy else 'CONDITIONAL',
@@ -130,7 +136,48 @@ def assess(row, *, now=None, week_doc=None):
                    reasons=[week['reason']])
     except (ValueError, TypeError, KeyError, ArithmeticError) as exc:
         out['reasons'] = [str(exc)]
+    out['action_summary'] = action_summary(row, out)
     return out
+
+
+def action_summary(row, result):
+    """One entry explanation for desktop and digest; never infer a live fill."""
+    plan=row.get('central_trade_plan') or row.get('trade_plan') or {}
+    last=plan.get('last');band=result.get('week_entry_range') or []
+    inside=(len(band)==2 and type(last) in (int,float) and math.isfinite(last)
+            and band[0]<=last<=band[1])
+    confirmed=(row.get('execution') or {}).get('triggered') is True
+    if result.get('executable') is True:
+        status,label,reason='READY','🟢入场条件已确认','核查实际成交价仍在原入场带'
+    elif result.get('focus_eligible') is not True:
+        status=result.get('failure_kind','EVIDENCE')
+        label={'REJECTED':'× 审核未通过·本次不推荐',
+               'NO_PATH':'× 入场条件无解·本次方案不可执行',
+               'EXPIRED':'⌛ 原方案到期·停止等待',
+               'INVALIDATED':'🛑 原方案失效·停止等待',
+               'OUTSIDE_WINDOW':'↗ 超出本周入场窗口·不列本周推荐'}.get(status,'🔎研究跟踪·证据待补')
+        if status=='EVIDENCE':status='RESEARCH'
+        reason='；'.join(result.get('reasons') or ['本周入场依据待核'])
+    elif not inside:
+        status,label,reason='WAIT_PRICE','↔尚未到价','已核价格未在本周入场带；到价后核查原信号'
+    elif not confirmed:
+        status,label='WAIT_SIGNAL','👁已到观察区·信号未确认'
+        reason=('原两阶段信号尚未完成：企稳后突破并放量' if str(plan.get('promotion_trigger') or '').startswith('两阶段等待：')
+                else '原一阶段量价信号尚未确认；不额外加等两天')
+    else:
+        status,label,reason='WAIT_REVIEW','◉信号已确认·准入待核','价格与信号已满足，中央执行审核仍未全部通过'
+    warnings=(result.get('week_entry') or {}).get('warnings') or []
+    if warnings:reason+='；成交较薄，容量待核'
+    dates=(result.get('week_entry') or {}).get('sessions') or []
+    deadline=dates[-1] if dates else result.get('deadline')
+    if status in {'WAIT_PRICE','WAIT_SIGNAL','WAIT_REVIEW'} and deadline:
+        reason+='；本次窗口截至'+str(deadline)[:10]+'，未触发不计买入'
+    if status in {'NO_PATH','EXPIRED','INVALIDATED','OUTSIDE_WINDOW','REJECTED'}:
+        reason+='；原记录保留，须新事实与复审形成新方案，不能无限等待'
+    return {'status':status,'label':label,'reason':reason,'deadline':deadline,
+            'original_trigger':plan.get('promotion_trigger'),'price_in_band':inside,
+            'signal_confirmed':confirmed,'capacity_passed':(result.get('week_entry') or {}).get('capacity_passed') is True,
+            'quote_scope':'按已核行情判断，实际成交前核价','no_order_authority':True}
 
 
 def html(result):
@@ -139,13 +186,15 @@ def html(result):
     band = result.get('feasible_price_band') or []
     band_text = (' ～ '.join(price(x) for x in band)) if len(band) == 2 else '无可核验交集'
     week = result.get('week_entry') or {}
+    action = result.get('action_summary') or {}
     sessions = week.get('sessions') or []
     window = (f'📅 {sessions[0]} ～ {sessions[-1]} · {len(sessions)}个交易日' if sessions else '📅 未来5个交易日 · 待核验')
     return (f"<div class='v88-entry-opportunity' data-entry-state='{esc(result.get('state','ARCHIVE'))}' style='font-size:11px;color:#475569'>"
-            f"<b>{esc(result.get('label','⏸ 暂不入场·等待条件修复'))}</b><br><small>{esc(window)}</small>"
+            f"<b style='font-size:13px'>{esc(action.get('label') or result.get('label','研究跟踪'))}</b>"
+            + f"<br>{esc(action.get('reason') or '')}<br><small>{esc(window)} · 按已核行情</small>"
             + (f"<br>🎯 {' ～ '.join(price(x) for x in result['week_entry_range'])}" if result.get('focus_eligible') and result.get('week_entry_range') else '')
             +
-            f"<details><summary>本周入场核验 · {esc('通过' if week.get('eligible') else '未通过')}</summary>{esc('；'.join(result.get('reasons') or ['周内条件待核验']))}<br>"
+            f"<details><summary>本周入场核验 · {esc('通过' if week.get('eligible') else '未通过')}</summary>{esc('；'.join((result.get('reasons') or ['周内条件待核验']) + (week.get('warnings') or [])))}<br>"
             + esc(week.get('steps') or '先补齐同源行情与原入场步骤')
             + '<br>可达性依据：近120交易日不重叠5日块，至少20组；按到价预算取收盘幅度中位数。仅为历史波动情景估算，非到价概率；到价不代表成交。'
             + f"<br>同源日线 {esc(week.get('source_asof') or '待核')} · 样本 {esc(week.get('sample_n') or '待补')}组</details>"

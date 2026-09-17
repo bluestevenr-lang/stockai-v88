@@ -12,7 +12,8 @@ from pathlib import Path
 import statistics
 from zoneinfo import ZoneInfo
 
-VERSION = 'entry-week-v2'
+VERSION = 'entry-week-v2'  # Evidence schema; unchanged source binding.
+POLICY_VERSION = 'entry-week-attention-v3-capacity-separated'
 MIN_TURNOVER={'A股':20_000_000,'美股':5_000_000,'港股':5_000_000}
 SESSIONS = 5
 MIN_SAMPLES = 20
@@ -66,7 +67,7 @@ def assess(row, band, *, now=None, doc=None):
     from exchange_sessions import latest_completed, next_session, HALF
     from profit_contract import evaluate
     now=now or datetime.now(timezone.utc)
-    result={'version':VERSION,'eligible':False,'entry_sessions':SESSIONS,'entry_range':[],
+    result={'version':VERSION,'policy_version':POLICY_VERSION,'capacity_passed':False,'warnings':[],'eligible':False,'entry_sessions':SESSIONS,'entry_range':[],
             'sessions':[],'label':'⏸ 本周入场依据不足','model_calls':0,'probability':None}
     try:
         plan=row.get('central_trade_plan') or row.get('trade_plan') or {}
@@ -109,7 +110,10 @@ def assess(row, band, *, now=None, doc=None):
         if type(turnover) not in (int,float) or not math.isfinite(turnover) or turnover<0:
             raise ValueError('同源20日成交额待核，不能判断入场流动性')
         result.update(turnover20_local=turnover,minimum_turnover20_local=MIN_TURNOVER[market])
-        if turnover<MIN_TURNOVER[market]:raise ValueError(f'20日平均成交额{turnover:,.0f}低于本市场{MIN_TURNOVER[market]:,}门槛，周内流动性未通过')
+        if turnover<=0:raise ValueError('20日成交额为零，无法核查可交易容量')
+        result['capacity_passed']=turnover>=MIN_TURNOVER[market]
+        if not result['capacity_passed']:
+            result['warnings'].append('成交较薄，须核对拟交易金额、买卖价差与盘口容量；不因固定成交额门槛删除观察机会')
         scale=evidence['budgets'][str(budget)]
         if any(type(scale[k]) not in (int,float) or not math.isfinite(scale[k]) or scale[k]<0 for k in ('up_pct','down_pct')):
             raise ValueError('周内波幅数值非法')
