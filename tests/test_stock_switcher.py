@@ -60,3 +60,26 @@ def test_directory_search_remains_local_and_overview_uses_same_switcher():
     assert 'searchapi.eastmoney.com' not in block and '_DIRECT_SESSION.get' not in block
     focused=(Path(__file__).resolve().parents[1]/'focused_deep_view.py').read_text()
     assert focused.index('render_stock_switcher(st,') < focused.index('context = load_context(code)')
+
+
+def test_dropdown_has_full_catalog_and_selection_alone_navigates():
+    from streamlit.testing.v1 import AppTest
+    script='''
+import streamlit as st
+import stock_switcher
+import stock_search_index
+catalog=stock_search_index.build_catalog([
+ {'code':'600176.SS','name':'中国巨石','market':'A股'},
+ {'code':'1380.HK','name':'中国金石','market':'港股'},
+ *[{'code':f'600{n:03}.SS','name':f'测试公司{n}','market':'A股'} for n in range(20)]])
+stock_search_index.load_catalog=lambda:catalog
+stock_switcher._render(st,'',key='test_picker')
+'''
+    app=AppTest.from_string(script).run()
+    assert not app.exception and not app.text_input and not app.radio
+    picker=app.selectbox[0]
+    assert picker.value is None and len(picker.options)==22
+    assert len([s for s in picker.options if 'zgjs' in s])==2
+    assert all(b.label!='搜索 →' for b in app.button)
+    picker.select('600176.SS').run()
+    assert not app.exception and app.query_params['q']==['600176.SS']

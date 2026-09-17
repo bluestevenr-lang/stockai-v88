@@ -80,7 +80,7 @@ def clip_calendar(frame, days, code):
 
 
 def fetch_daily_free(code, days=400):
-    if not is_cn(code):
+    if not (is_cn(code) or str(code).endswith('.HK')):
         return None
     try:
         _core()
@@ -108,7 +108,7 @@ def fetch_daily_free(code, days=400):
         frame.attrs['volume_unit'] = 'shares'
         return clip_calendar(validate(frame, code, source='腾讯整段前复权日线'), days, code)
     except Exception as exc:
-        log.warning('免费A股日线不可用 %s: %s', code, type(exc).__name__)
+        log.warning('免费中港股日线不可用 %s: %s', code, type(exc).__name__)
         return None
 
 
@@ -136,7 +136,7 @@ def fetch_df(code, period='1y', timeout=10):
     n, unit = int(span[1]), span[2]
     begin = end - (pd.DateOffset(months=n) if unit == 'mo' else pd.DateOffset(years=n) if unit == 'y' else pd.Timedelta(days=n))
     days = (end - begin).days
-    if is_cn(code):
+    if is_cn(code) or str(code).endswith('.HK'):
         frame = fetch_daily_free(code, max(30, days))
         if frame is not None:
             if period in ('1d', '5d'):

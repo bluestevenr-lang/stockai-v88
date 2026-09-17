@@ -30,6 +30,22 @@ def revalidate_cached(result, code):
                    'data_points': len(frame), 'snapshot_signature': snapshot_signature(frame)}
 
 
+def load_for_view(code, recover):
+    """Reuse current local bars; recover only this stock when the store is stale.
+
+    The UI supplies a bounded cache for free-provider requests. The returned
+    series is revalidated every visit; cached retrieval time grants no validity.
+    A quarantined identity/series is never bypassed by this convenience path.
+    """
+    frame, quality = fetch(code, allow_network=False)
+    if frame is not None or quality.get('source') == '日线已隔离':
+        return frame, quality
+    recovered = recover(code)
+    if recovered[0] is None:
+        return recovered
+    return revalidate_cached(recovered, code)
+
+
 def fetch(code, *, allow_network=True):
     """Prefer the full-market validated store; never append an intraday quote."""
     from market_data_helper import _core, validate, fetch_df

@@ -1,6 +1,7 @@
-"""Focused stock route. Read existing evidence; never run the overview as setup.
+"""Focused stock route. Reuse evidence and recover missing free stock history.
 
 The main app dispatches here before any pool, provider or homepage initialization.
+Only the selected stock may need a bounded free history request.
 All decision calculations below are the same pure engines as the full deep view.
 The complete overview/manual research tools remain at the non-focused URL.
 """
@@ -187,7 +188,7 @@ def render(st, raw_code):
     st.subheader(f'个股深度 · {code}')
     # Render the central contract before loading the local history or chart stack.
     from deep_cross_validation import load_context
-    from deep_analysis_data import fetch, report_html
+    from deep_analysis_data import fetch, load_for_view, report_html
     context = {'code': code, 'selection': {}, 'row': {}, 'formal': False, 'card': {}}
     try:
         context = load_context(code)
@@ -199,7 +200,21 @@ def render(st, raw_code):
     name = (context.get('row') or {}).get('name') or code
     _sell_evidence(st, code)
     try:
-        frame, quality = fetch(code, allow_network=False)
+        from market_data_helper import _core, is_cn
+        _core()
+        from history_calendar import latest_completed
+        from datetime import datetime, timezone
+        market = 'A股' if is_cn(code) else '港股' if code.endswith('.HK') else '美股'
+        completed_session = latest_completed(market, datetime.now(timezone.utc)).isoformat()
+
+        @st.cache_data(ttl=120, max_entries=64, show_spinner=False)
+        def recover_history(symbol, session):
+            # Cache includes the completed session, so a close/day change
+            # cannot reuse an earlier session's successful or failed recovery.
+            return fetch(symbol, allow_network=True)
+
+        with st.spinner('正在核验日线；缺失时自动补齐当前个股的免费数据…'):
+            frame, quality = load_for_view(code, lambda symbol: recover_history(symbol, completed_session))
         result = calculate(context, frame, quality, name, code)
         _technical_view(st, result, frame, quality, name, code)
     except Exception as exc:

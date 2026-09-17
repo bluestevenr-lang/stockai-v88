@@ -62,7 +62,7 @@ def render(st, current_code='', *, key='v88_deep_switch'):
 
 def _render(st, current_code='', *, key='v88_deep_switch'):
     navigate = st.session_state.pop(key+'_navigate', False)
-    from stock_search_index import load_catalog, resolve_exact, display_search as search
+    from stock_search_index import load_catalog, resolve_exact, dropdown_label
     from html import escape
     catalog = load_catalog()
     current = resolve_exact(current_code, catalog)
@@ -73,14 +73,10 @@ def _render(st, current_code='', *, key='v88_deep_switch'):
         if choose(st, code, catalog):
             st.session_state[key+'_navigate'] = True
 
-    def submit():
-        query = st.session_state.get(key+'_query', '').strip()
-        st.session_state[key+'_submitted'] = query
-        st.session_state.pop('_v88_stock_search_error', None)
-        exact = resolve_exact(query, catalog)
-        market = st.session_state.get(key+'_market') or '全部'
-        if exact and (market == '全部' or exact['market'] == market):
-            open_stock(exact['code'])
+    def select_stock():
+        code = st.session_state.get(key+'_picker')
+        if code:
+            open_stock(code)
 
     def refresh():
         st.session_state.pop('_v88_stock_search_error', None)
@@ -102,28 +98,13 @@ def _render(st, current_code='', *, key='v88_deep_switch'):
         st.markdown('<div class="v88-search-title">🔎 查找个股 · 打开深度分析</div>', unsafe_allow_html=True)
         if current:
             st.markdown('<div class="v88-search-current">当前查看：'+escape(current['label'])+'</div>', unsafe_allow_html=True)
-        left, right = st.columns([5, 1], vertical_alignment='bottom')
-        with left:
-            st.text_input('股票名称 / 代码', key=key+'_query', on_change=submit,
-                          placeholder='例如：TCL、腾讯、688002、NVDA · 回车搜索')
-        with right:
-            st.button('搜索 →', type='primary', key=key+'_search', on_click=submit, width='stretch')
-        st.radio('筛选市场', ['全部', 'A股', '港股', '美股'], horizontal=True, key=key+'_market')
-        query = st.session_state.get(key+'_submitted', '')
-        market = st.session_state.get(key+'_market') or '全部'
-        if query:
-            hits = search(query, catalog, market=market)
-            if hits:
-                st.caption(f'“{query}”匹配结果 · 精确代码、名称优先 · 点击整行打开'
-                           + f' · {len(hits)}只 · 每市场至多5只；补充名称或代码可查其他个股')
-                for row in hits:
-                    st.button(row['market']+' ｜ '+row['label'].rsplit(' · ',1)[0],
-                              key=key+'_hit_'+row['code'], width='stretch',
-                              on_click=open_stock, args=(row['code'],))
-            else:
-                st.info('未找到匹配个股，请核对名称、代码，或切换到“全部”市场。')
-        else:
-            st.caption('输入名称片段可列出匹配个股；完整名称或代码回车直达。支持中文、英文、沪深港代码。')
+        # Native searchable dropdown filters immediately in the browser.
+        # Include the complete catalog: matching symbols are not Top5-truncated.
+        labels = {row['code']: dropdown_label(row) for row in catalog['rows']}
+        st.selectbox('名称 / 代码 / 拼音简写', options=list(labels), index=None,
+                     format_func=lambda code: labels.get(code, code), key=key+'_picker',
+                     placeholder='输入 zgjs、rcwn、腾讯或代码，下拉选择个股',
+                     on_change=select_stock, width='stretch')
         if st.session_state.get('_v88_stock_search_error'):
             st.warning(st.session_state['_v88_stock_search_error'])
         recents = recent_rows(st.session_state, catalog)
@@ -143,6 +124,6 @@ def _render(st, current_code='', *, key='v88_deep_switch'):
                       help='读取后台最新结果，复用仍有效的评分。')
 
     # Register widgets before escalating a fragment navigation to a full rerun;
-    # aborting earlier makes Streamlit discard the selected market state.
+    # aborting earlier makes Streamlit discard the dropdown selection.
     if navigate:
         st.rerun(scope='app')

@@ -105,14 +105,15 @@ def test_navigation_clears_focus_and_preserves_explicit_full_research_link():
     assert normalize_code('  grpn ') == 'GRPN'
 
 
-def test_renderer_reads_local_history_and_never_imports_main_engine():
+def test_renderer_uses_bounded_single_stock_recovery_and_never_imports_main_engine():
     source = (Path(__file__).resolve().parents[1] / 'focused_deep_view.py').read_text()
     tree = ast.parse(source)
     calls = [node for node in ast.walk(tree) if isinstance(node, ast.Call)]
     fetches = [node for node in calls if ast.unparse(node.func) == 'fetch']
     assert len(fetches) == 1
-    assert any(k.arg == 'allow_network' and isinstance(k.value, ast.Constant) and k.value.value is False
+    assert any(k.arg == 'allow_network' and isinstance(k.value, ast.Constant) and k.value.value is True
                for k in fetches[0].keywords)
+    assert 'load_for_view(code,' in source and 'max_entries=64' in source and 'ttl=120' in source
     assert not any(ast.unparse(n.func) in {'verdict', 'call_model_api', 'init_stock_pools', 'exec'} for n in calls)
     assert not any(isinstance(n, ast.ImportFrom) and n.module == 'app_v88_integrated' for n in ast.walk(tree))
 

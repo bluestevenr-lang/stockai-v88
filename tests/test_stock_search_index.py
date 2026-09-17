@@ -133,3 +133,32 @@ def test_latin_query_does_not_match_across_unrelated_word_boundaries():
         {'code':'SKYY','name':'First Cloud Fund','market':'美股'}])
     assert {r['code'] for r in picker.search('TCL',doc)}=={'000100.SZ','1070.HK'}
     assert picker.search('Cloud',doc)[0]['code']=='SKYY'
+
+
+@pytest.mark.parametrize('query', ['zgjs', 'ZGJS', 'ｚｇｊｓ', 'zhongguojushi', 'zhong guo ju shi'])
+def test_pinyin_restores_user_reported_stock(query):
+    doc=picker.build_catalog([{'code':'600176.SS','name':'中国巨石','market':'A股'}])
+    assert picker.search(query,doc)[0]['code']=='600176.SS'
+    assert picker.resolve_exact(query,doc)['code']=='600176.SS'
+
+
+def test_pinyin_duplicates_require_selection_and_codes_take_priority():
+    rows=[{'code':'600001.SS','name':'中光技术','market':'A股'},
+          {'code':'600176.SS','name':'中国巨石','market':'A股'}]
+    doc=picker.build_catalog(rows)
+    assert len(picker.search('zgjs',doc))==2
+    assert picker.resolve_exact('zgjs',doc) is None
+    doc=picker.build_catalog(rows+[{'code':'ZGJS','name':'Exact ticker','market':'美股'}])
+    assert picker.search('zgjs',doc)[0]['code']=='ZGJS'
+    assert picker.resolve_exact('zgjs',doc)['code']=='ZGJS'
+    assert len(picker.search('zgjs',doc,market='A股'))==2
+
+
+def test_pinyin_for_phrases_aliases_and_mixed_latin_names(catalog):
+    assert picker.resolve_exact('rcwn',catalog)['code']=='688002.SS'
+    assert picker.resolve_exact('txkg',catalog)['code']=='0700.HK'
+    assert picker.resolve_exact('pingan yinhang',catalog)['code']=='000001.SZ'
+    doc=picker.build_catalog([{'code':'1070.HK','name':'TCL电子','market':'港股'},
+                             {'code':'1963.HK','name':'重庆银行','market':'港股'}])
+    assert picker.resolve_exact('tcldz',doc)['code']=='1070.HK'
+    assert picker.resolve_exact('cqyh',doc)['code']=='1963.HK'

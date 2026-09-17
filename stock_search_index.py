@@ -14,9 +14,10 @@ import hashlib
 from pathlib import Path
 import re
 import unicodedata
+from pypinyin import lazy_pinyin, Style
 from zoneinfo import ZoneInfo
 
-VERSION = 'local-stock-picker-v1'
+VERSION = 'local-stock-picker-v2-pinyin'
 CORE = core_root()
 _MARKETS = ('A股', '港股', '美股', 'B股')
 _CLASSES = {'BRK.A':'BRK_A', 'BRK-A':'BRK_A', 'BRK.B':'BRK_B', 'BRK-B':'BRK_B',
@@ -50,6 +51,28 @@ def _norm(value):
 
 def _has_zh(value):
     return bool(re.search(r'[\u3400-\u9fff]', str(value or '')))
+
+
+@lru_cache(maxsize=32768)
+def _pinyin_aliases(name):
+    if not _has_zh(name):
+        return ()
+    # Keep Latin fragments (TCL电子 -> tcldz) and use phrase pronunciations
+    # (重庆/银行). These are navigation aliases, never security identities.
+    return tuple(sorted({_norm(''.join(lazy_pinyin(name, style=style)))
+                         for style in (Style.NORMAL, Style.FIRST_LETTER)}))
+
+
+@lru_cache(maxsize=32768)
+def _pinyin_initials(name):
+    return _norm(''.join(lazy_pinyin(name, style=Style.FIRST_LETTER))) if _has_zh(name) else ''
+
+
+def dropdown_label(row):
+    """Native dropdown searches its labels locally, including pinyin initials."""
+    name = row.get('name_zh') or row['name']
+    initials = _pinyin_initials(name)
+    return row['label'] + (' · ' + initials if initials else '')
 
 
 def _valid(code, market):
@@ -120,6 +143,8 @@ def build_catalog(directory_rows, profiles=None, legacy_names=(), *, scope='', s
         row['code_aliases'] = codes
         row['search_text'] = ' '.join(aliases + codes + [row['market']])
         row['_names'] = tuple(_norm(n) for n in aliases)
+        row['_pinyin'] = tuple(sorted({p for n in aliases for p in _pinyin_aliases(n)}))
+        row['search_text'] += ' ' + ' '.join(row['_pinyin'])
         row['_codes'] = tuple(_norm(n) for n in codes)
         row['_label'] = _norm(row['label'])
         del row['names']
@@ -156,8 +181,9 @@ def search(query, catalog=None, *, limit=30, market='全部'):
             unicodedata.normalize('NFKC', n).casefold() for n in row['aliases'])
         if q in codes: rank = 0
         elif q in names or q == row['_label']: rank = 1
-        elif any(t.startswith(q) for t in codes + partial_names): rank = 2
-        elif all(any(term in t for t in codes + partial_names) for term in terms): rank = 3
+        elif q in row['_pinyin']: rank = 2
+        elif any(t.startswith(q) for t in codes + partial_names + row['_pinyin']): rank = 3
+        elif all(any(term in t for t in codes + partial_names + row['_pinyin']) for term in terms): rank = 4
         else: continue
         candidates.append((rank, row['label'], row))
     candidates.sort(key=lambda t:(t[0], t[1]))
@@ -179,7 +205,9 @@ def resolve_exact(value, catalog=None):
     code_matches = [r for r in catalog['rows'] if q in r['_codes']]
     if code_matches: return code_matches[0] if len(code_matches) == 1 else None
     names = [r for r in catalog['rows'] if q in r['_names'] or q == r['_label']]
-    return names[0] if len(names) == 1 else None
+    if names: return names[0] if len(names) == 1 else None
+    pinyin = [r for r in catalog['rows'] if q in r['_pinyin']]
+    return pinyin[0] if len(pinyin) == 1 else None
 
 
 def _fingerprint(paths):
