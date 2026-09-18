@@ -170,9 +170,9 @@ def render(doc, profiles=None):
         market_name = market.get("market") or "市场待核"
         panel = (f'<section class="ns-market" data-market="{_e(market_name)}">'
                  f'<div class="ns-market-header"><h4>{flags.get(market_name, "○")} {_e(market_name)}</h4>'
-                 f'<span class="ns-session">下次开市 {_e(market.get("next_session"), "待核")}</span></div>'
+                 f'<span class="ns-session">关注交易日 {_e(market.get("next_session"), "待核")} · {_e(market.get("market_status"), "待核")}</span></div>'
                  f'<div class="ns-market-summary">↓ {_count(counts.get("down", 0))} · ↗ {_count(counts.get("up", 0))} · ± {_count(counts.get("mixed", 0))}'
-                 f' <span>｜行情 {_e(market.get("source_date"), "待核")}</span></div>'
+                 f' <span>｜完整日线 {_e(market.get("source_date"), "待核")}</span></div>'
                  + _group(rows, "down", profiles) + _group(rows, "up", profiles))
         if mixed:
             panel += (f'<details class="ns-mixed"><summary>± 分歧或待核信号 {len(mixed)}只</summary>'
@@ -180,7 +180,7 @@ def render(doc, profiles=None):
         markets.append(panel + '</section>')
     notes = "".join(f'<li>{_e(note)}</li>' for note in doc.get("notes") or [])
     return (_STYLE + '<section id="v88-next-session-board" aria-label="下一交易日联动观察">'
-            '<div class="ns-heading"><h3>◷ 下一交易日 · 联动观察</h3>'
+            '<div class="ns-heading"><h3>◷ 当前交易时段 · 联动观察</h3>'
             f'<span class="ns-meta">观察池 {_count(doc.get("pool_size"))}只 · 信号 {_count(doc.get("signal_count"))}只 · 本地复核 {_count(doc.get("verified_count"))}只</span></div>'
             '<p class="ns-intro"><span class="ns-flow">个股信号 → 板块核验 → 中央结论</span> · '
             '先看中央已评级标的，再按规则强度；交易动作以中央原条件为准。</p>'

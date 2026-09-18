@@ -155,14 +155,15 @@ def build(signals, rotation, *, central, profiles, now=None):
         rows = sorted(grouped[market], key=lambda r: (r['priority'], -(r['rule_score'] if finite(r['rule_score']) else -1), r['code']))
         try:
             local = now.astimezone(ZoneInfo('America/New_York' if market == '美股' else 'Asia/Shanghai'))
-            before_open = (local.hour, local.minute) < (9,30)
-            next_day = (local.date() if before_open and is_session(local.date(), market)
-                        else next_session(local.date(), market)).isoformat()
+            from exchange_sessions import session_view
+            timing=session_view(market,now)
+            next_day=timing['attention_session']
             source_day = latest_completed(market, now).isoformat()
         except ValueError:
             next_day, source_day = '交易日待核', '行情日待核'
+            timing={}
         markets.append({'market': market, 'next_session': next_day, 'source_date': source_day,
-                        'rows': rows, 'counts': dict(Counter(r['direction'] for r in rows))})
+                        'market_status':timing.get('market_status','待核'), 'rows': rows, 'counts': dict(Counter(r['direction'] for r in rows))})
     return {'version': VERSION, 'generated_at': signals.get('generated_at'),
             'verified_at': signals.get('verified_at') or signals.get('snapshot_at'), 'pool_size': signals.get('scanned',0),
             'signal_count': len(seen), 'verified_count': sum(r['source_status']=='verified' for m in markets for r in m['rows']),

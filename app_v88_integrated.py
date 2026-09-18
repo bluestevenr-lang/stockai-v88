@@ -13210,7 +13210,7 @@ def _render_today_nav():
     _is_trading = _v88_is_trading_day()
     try:
         from exchange_sessions import next_labels
-        st.caption("三地下一交易日（当地日期）："+next_labels())
+        st.caption("三地关注交易日（当地日期）："+next_labels())
     except ValueError:
         st.caption("新年度交易所日历待核对；不推断交易日期。")
 

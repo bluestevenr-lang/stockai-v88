@@ -45,8 +45,24 @@ def latest_completed(market, now):
         day -= timedelta(days=1)
     return day
 
+def session_view(market,now=None):
+    now=now or datetime.now(ZoneInfo('Asia/Shanghai'))
+    if now.tzinfo is None:raise ValueError('market clock requires timezone')
+    local=now.astimezone(ZoneInfo('America/New_York' if market=='美股' else 'Asia/Shanghai'))
+    day=local.date();minute=local.hour*60+local.minute
+    close=15*60 if market=='A股' else 16*60
+    if day.strftime('%m-%d') in HALF[market]:close=13*60 if market=='美股' else 12*60
+    active=is_session(day,market)
+    state=('休市' if not active else '未开市' if minute<570 else
+           '已收市' if minute>=close else '午间休市' if market!='美股' and (690 if market=='A股' else 720)<=minute<780 else '交易中')
+    attention=day if active and minute<close else next_session(day,market)
+    return {'attention_session':attention.isoformat(),'market_status':state,
+            'local_date':day.isoformat(),'completed_session':latest_completed(market,now).isoformat()}
+
+
 def next_labels(day=None):
-    return '；'.join(f'{m} {next_session(day,m).isoformat()}' for m in CLOSED)
+    if day is not None:return '；'.join(f'{m} {next_session(day,m).isoformat()}' for m in CLOSED)
+    return '；'.join(f'{m} {v["attention_session"]}（{v["market_status"]}）' for m in CLOSED for v in [session_view(m)])
 
 
 def calendar_health(day=None):

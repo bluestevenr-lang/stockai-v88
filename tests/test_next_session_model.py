@@ -89,4 +89,4 @@ def test_next_open_respects_local_market_clock_before_open():
     assert all(m['next_session']=='2026-09-14' for m in result['markets'])
     now=datetime(2026,9,14,22,tzinfo=NOW.tzinfo)
     result=model.build({}, {}, central={},profiles={},now=now)
-    assert all(m['next_session']=='2026-09-15' for m in result['markets'])
+    assert {m['market']:m['next_session'] for m in result['markets']}=={'A股':'2026-09-15','港股':'2026-09-15','美股':'2026-09-14'}
