@@ -1,6 +1,6 @@
 {
  "schema_version": "v88.market-pool.public/1.0",
- "generated_at": "2026-09-19 07:40（北京时间）",
+ "generated_at": "2026-09-20 07:35（北京时间）",
  "markets": {
   "A股": {
    "universe": 5554,
@@ -27,8 +27,8 @@
    "guard_truncated": 0
   },
   "美股": {
-   "universe": 12850,
-   "floor_rejected": 10313,
+   "universe": 12851,
+   "floor_rejected": 10314,
    "strong_all": 126,
    "brew_all": 207,
    "trend_all": 213,
@@ -6066,13 +6066,18 @@
    "market": "A股"
   },
   {
-   "code": "159632.SZ",
-   "name": "纳斯达克",
+   "code": "600941.SH",
+   "name": "中国移动",
    "market": "A股"
   },
   {
-   "code": "600941.SH",
-   "name": "中国移动",
+   "code": "513500.SS",
+   "name": "标普500",
+   "market": "A股"
+  },
+  {
+   "code": "159632.SZ",
+   "name": "纳斯达克",
    "market": "A股"
   },
   {
@@ -6088,11 +6093,6 @@
   {
    "code": "300142.SZ",
    "name": "沃森生物",
-   "market": "A股"
-  },
-  {
-   "code": "513500.SS",
-   "name": "标普500",
    "market": "A股"
   },
   {
@@ -10206,13 +10206,13 @@
    "market": "港股"
   },
   {
-   "code": "06055.HK",
-   "name": "中烟香港",
+   "code": "0883.HK",
+   "name": "中国海洋石油",
    "market": "港股"
   },
   {
-   "code": "0883.HK",
-   "name": "中国海洋石油",
+   "code": "06055.HK",
+   "name": "中烟香港",
    "market": "港股"
   },
   {
@@ -10776,13 +10776,13 @@
    "market": "美股"
   },
   {
-   "code": "VTV",
-   "name": "价值股指数ETF-Vanguard",
+   "code": "BOXX",
+   "name": "Alpha Architect 1-3 Month Box E",
    "market": "美股"
   },
   {
-   "code": "BOXX",
-   "name": "Alpha Architect 1-3 Month Box E",
+   "code": "VTV",
+   "name": "价值股指数ETF-Vanguard",
    "market": "美股"
   },
   {
@@ -10831,13 +10831,13 @@
    "market": "美股"
   },
   {
-   "code": "WDAY",
-   "name": "Workday Inc-A",
+   "code": "EWZ",
+   "name": "巴西ETF-iShares",
    "market": "美股"
   },
   {
-   "code": "EWZ",
-   "name": "巴西ETF-iShares",
+   "code": "WDAY",
+   "name": "Workday Inc-A",
    "market": "美股"
   },
   {
@@ -10926,13 +10926,13 @@
    "market": "美股"
   },
   {
-   "code": "TXG",
-   "name": "10x Genomics Inc-A",
+   "code": "SNXX",
+   "name": "二倍做多SNDK ETF-Tradr",
    "market": "美股"
   },
   {
-   "code": "SNXX",
-   "name": "二倍做多SNDK ETF-Tradr",
+   "code": "TXG",
+   "name": "10x Genomics Inc-A",
    "market": "美股"
   },
   {
@@ -10986,13 +10986,13 @@
    "market": "美股"
   },
   {
-   "code": "IOND",
-   "name": "Ionic Digital Inc-A",
+   "code": "TSLL",
+   "name": "二倍做多特斯拉ETF-Direxion",
    "market": "美股"
   },
   {
-   "code": "TSLL",
-   "name": "二倍做多特斯拉ETF-Direxion",
+   "code": "IOND",
+   "name": "Ionic Digital Inc-A",
    "market": "美股"
   },
   {
@@ -11026,13 +11026,13 @@
    "market": "美股"
   },
   {
-   "code": "CVI",
-   "name": "CVR能源",
+   "code": "SH",
+   "name": "做空标普500ETF-ProShares",
    "market": "美股"
   },
   {
-   "code": "SH",
-   "name": "做空标普500ETF-ProShares",
+   "code": "CVI",
+   "name": "CVR能源",
    "market": "美股"
   },
   {
@@ -11116,13 +11116,13 @@
    "market": "美股"
   },
   {
-   "code": "IYR",
-   "name": "美国房地产指数ETF-iShares",
+   "code": "IWD",
+   "name": "罗素1000价值指数ETF-iShares",
    "market": "美股"
   },
   {
-   "code": "IWD",
-   "name": "罗素1000价值指数ETF-iShares",
+   "code": "IYR",
+   "name": "美国房地产指数ETF-iShares",
    "market": "美股"
   },
   {
@@ -11321,6 +11321,11 @@
    "market": "美股"
   },
   {
+   "code": "JEPQ",
+   "name": "纳斯达克股票溢价收益ETF-JPMorga",
+   "market": "美股"
+  },
+  {
    "code": "PBLS",
    "name": "Parabilis Medicines Inc",
    "market": "美股"
@@ -11333,11 +11338,6 @@
   {
    "code": "BSY",
    "name": "Bentley Systems Inc-B",
-   "market": "美股"
-  },
-  {
-   "code": "JEPQ",
-   "name": "纳斯达克股票溢价收益ETF-JPMorga",
    "market": "美股"
   },
   {
@@ -11356,6 +11356,11 @@
    "market": "美股"
   },
   {
+   "code": "ZCSH",
+   "name": "The Zcash ETF",
+   "market": "美股"
+  },
+  {
    "code": "XNCR",
    "name": "Xencor Inc",
    "market": "美股"
@@ -11368,11 +11373,6 @@
   {
    "code": "SLV",
    "name": "白银ETF-iShares",
-   "market": "美股"
-  },
-  {
-   "code": "ZCSH",
-   "name": "The Zcash ETF",
    "market": "美股"
   },
   {
@@ -11611,13 +11611,13 @@
    "market": "美股"
   },
   {
-   "code": "ZBRA",
-   "name": "斑马技术",
+   "code": "AVGO",
+   "name": "博通",
    "market": "美股"
   },
   {
-   "code": "AVGO",
-   "name": "博通",
+   "code": "ZBRA",
+   "name": "斑马技术",
    "market": "美股"
   },
   {
@@ -11781,13 +11781,13 @@
    "market": "美股"
   },
   {
-   "code": "MKSI",
-   "name": "MKS Inc",
+   "code": "EWT",
+   "name": "台湾ETF-iShares MSCI",
    "market": "美股"
   },
   {
-   "code": "EWT",
-   "name": "台湾ETF-iShares MSCI",
+   "code": "MKSI",
+   "name": "MKS Inc",
    "market": "美股"
   },
   {
@@ -11821,23 +11821,23 @@
    "market": "美股"
   },
   {
-   "code": "TRP",
-   "name": "TC Energy Corp",
-   "market": "美股"
-  },
-  {
    "code": "DBX",
    "name": "Dropbox Inc-A",
    "market": "美股"
   },
   {
-   "code": "ESTC",
-   "name": "Elastic NV",
+   "code": "TRP",
+   "name": "TC Energy Corp",
    "market": "美股"
   },
   {
    "code": "HURN",
    "name": "休伦咨询",
+   "market": "美股"
+  },
+  {
+   "code": "ESTC",
+   "name": "Elastic NV",
    "market": "美股"
   },
   {
@@ -11906,13 +11906,13 @@
    "market": "美股"
   },
   {
-   "code": "BRR",
-   "name": "ProCap Financial Inc",
+   "code": "SOLT",
+   "name": "2x Solana ETF",
    "market": "美股"
   },
   {
-   "code": "SOLT",
-   "name": "2x Solana ETF",
+   "code": "BRR",
+   "name": "ProCap Financial Inc",
    "market": "美股"
   },
   {
@@ -12171,18 +12171,23 @@
    "market": "美股"
   },
   {
-   "code": "TD",
-   "name": "道明银行",
-   "market": "美股"
-  },
-  {
    "code": "NEO",
    "name": "NeoGenomics Inc",
    "market": "美股"
   },
   {
+   "code": "GDXU",
+   "name": "三倍做多黄金矿业ETN-MicroSector",
+   "market": "美股"
+  },
+  {
    "code": "AEIS",
    "name": "先进能源工业",
+   "market": "美股"
+  },
+  {
+   "code": "TD",
+   "name": "道明银行",
    "market": "美股"
   },
   {
@@ -12203,11 +12208,6 @@
   {
    "code": "MTZ",
    "name": "MasTec Inc",
-   "market": "美股"
-  },
-  {
-   "code": "GDXU",
-   "name": "三倍做多黄金矿业ETN-MicroSector",
    "market": "美股"
   },
   {
@@ -12366,13 +12366,13 @@
    "market": "美股"
   },
   {
-   "code": "ELF",
-   "name": "elf Beauty Inc",
+   "code": "SCHP",
+   "name": "美国抗通胀债ETF-Schwab",
    "market": "美股"
   },
   {
-   "code": "SCHP",
-   "name": "美国抗通胀债ETF-Schwab",
+   "code": "ELF",
+   "name": "elf Beauty Inc",
    "market": "美股"
   },
   {
@@ -12406,13 +12406,13 @@
    "market": "美股"
   },
   {
-   "code": "TECK",
-   "name": "泰克资源",
+   "code": "CAKE",
+   "name": "起司工坊",
    "market": "美股"
   },
   {
-   "code": "CAKE",
-   "name": "起司工坊",
+   "code": "TECK",
+   "name": "泰克资源",
    "market": "美股"
   },
   {
@@ -12466,13 +12466,13 @@
    "market": "美股"
   },
   {
-   "code": "CAR",
-   "name": "安飞士",
+   "code": "DDS",
+   "name": "狄乐百货",
    "market": "美股"
   },
   {
-   "code": "DDS",
-   "name": "狄乐百货",
+   "code": "CAR",
+   "name": "安飞士",
    "market": "美股"
   },
   {
@@ -12551,28 +12551,13 @@
    "market": "美股"
   },
   {
-   "code": "MRK",
-   "name": "默沙东",
-   "market": "美股"
-  },
-  {
-   "code": "AAPL",
-   "name": "苹果",
-   "market": "美股"
-  },
-  {
-   "code": "PFE",
-   "name": "辉瑞",
-   "market": "美股"
-  },
-  {
    "code": "SO",
    "name": "南方电力",
    "market": "美股"
   },
   {
-   "code": "PM",
-   "name": "菲利普莫里斯国际",
+   "code": "NVDA",
+   "name": "英伟达",
    "market": "美股"
   },
   {
@@ -12586,23 +12571,38 @@
    "market": "美股"
   },
   {
-   "code": "JNJ",
-   "name": "强生",
+   "code": "AAPL",
+   "name": "苹果",
    "market": "美股"
   },
   {
-   "code": "NVDA",
-   "name": "英伟达",
-   "market": "美股"
-  },
-  {
-   "code": "MO",
-   "name": "奥驰亚集团",
+   "code": "MRK",
+   "name": "默沙东",
    "market": "美股"
   },
   {
    "code": "GOOG",
    "name": "谷歌-C",
+   "market": "美股"
+  },
+  {
+   "code": "PFE",
+   "name": "辉瑞",
+   "market": "美股"
+  },
+  {
+   "code": "PM",
+   "name": "菲利普莫里斯国际",
+   "market": "美股"
+  },
+  {
+   "code": "JNJ",
+   "name": "强生",
+   "market": "美股"
+  },
+  {
+   "code": "MO",
+   "name": "奥驰亚集团",
    "market": "美股"
   },
   {
@@ -12681,6 +12681,11 @@
    "market": "美股"
   },
   {
+   "code": "NVTS",
+   "name": "Navitas Semiconductor Corp",
+   "market": "美股"
+  },
+  {
    "code": "AVT",
    "name": "安富利",
    "market": "美股"
@@ -12693,11 +12698,6 @@
   {
    "code": "SCHA",
    "name": "Schwab U.S. Small-Cap ETF",
-   "market": "美股"
-  },
-  {
-   "code": "NVTS",
-   "name": "Navitas Semiconductor Corp",
    "market": "美股"
   },
   {
@@ -12756,6 +12756,11 @@
    "market": "美股"
   },
   {
+   "code": "FRO",
+   "name": "Frontline plc",
+   "market": "美股"
+  },
+  {
    "code": "GDXJ",
    "name": "小型黄金矿业ETF-VanEck",
    "market": "美股"
@@ -12811,13 +12816,13 @@
    "market": "美股"
   },
   {
-   "code": "RIO",
-   "name": "力拓",
+   "code": "VAL",
+   "name": "Valaris Ltd",
    "market": "美股"
   },
   {
-   "code": "VAL",
-   "name": "Valaris Ltd",
+   "code": "RIO",
+   "name": "力拓",
    "market": "美股"
   },
   {
@@ -12991,13 +12996,13 @@
    "market": "美股"
   },
   {
-   "code": "PBR",
-   "name": "巴西石油",
+   "code": "UVXY",
+   "name": "1.5倍做多恐慌指数短期期货ETF",
    "market": "美股"
   },
   {
-   "code": "UVXY",
-   "name": "1.5倍做多恐慌指数短期期货ETF",
+   "code": "PBR",
+   "name": "巴西石油",
    "market": "美股"
   },
   {
@@ -13076,11 +13081,6 @@
    "market": "美股"
   },
   {
-   "code": "EXLS",
-   "name": "伊克赛尔服务控股",
-   "market": "美股"
-  },
-  {
    "code": "ACN",
    "name": "埃森哲",
    "market": "美股"
@@ -13093,6 +13093,11 @@
   {
    "code": "TLH",
    "name": "10-20年国债ETF-iShares",
+   "market": "美股"
+  },
+  {
+   "code": "EXLS",
+   "name": "伊克赛尔服务控股",
    "market": "美股"
   },
   {
@@ -13113,11 +13118,6 @@
   {
    "code": "APP",
    "name": "Applovin Corp-A",
-   "market": "美股"
-  },
-  {
-   "code": "FRO",
-   "name": "Frontline plc",
    "market": "美股"
   },
   {
@@ -13151,6 +13151,11 @@
    "market": "美股"
   },
   {
+   "code": "TTAN",
+   "name": "ServiceTitan Inc-A",
+   "market": "美股"
+  },
+  {
    "code": "ADPT",
    "name": "Adaptive Biotechnologies Corp",
    "market": "美股"
@@ -13158,11 +13163,6 @@
   {
    "code": "TH",
    "name": "Target Hospitality Corp",
-   "market": "美股"
-  },
-  {
-   "code": "TTAN",
-   "name": "ServiceTitan Inc-A",
    "market": "美股"
   },
   {
@@ -13316,13 +13316,13 @@
    "market": "美股"
   },
   {
-   "code": "BWIN",
-   "name": "The Baldwin Insurance Group Inc",
+   "code": "BTC",
+   "name": "Grayscale Bitcoin Mini Trust ET",
    "market": "美股"
   },
   {
-   "code": "BTC",
-   "name": "Grayscale Bitcoin Mini Trust ET",
+   "code": "BWIN",
+   "name": "The Baldwin Insurance Group Inc",
    "market": "美股"
   },
   {
@@ -13341,13 +13341,13 @@
    "market": "美股"
   },
   {
-   "code": "NIO",
-   "name": "蔚来",
+   "code": "ALGM",
+   "name": "Allegro MicroSystems Inc",
    "market": "美股"
   },
   {
-   "code": "ALGM",
-   "name": "Allegro MicroSystems Inc",
+   "code": "NIO",
+   "name": "蔚来",
    "market": "美股"
   },
   {
@@ -13386,13 +13386,13 @@
    "market": "美股"
   },
   {
-   "code": "MP",
-   "name": "MP Materials Corp-A",
+   "code": "UGL",
+   "name": "二倍做多黄金ETF-ProShares",
    "market": "美股"
   },
   {
-   "code": "UGL",
-   "name": "二倍做多黄金ETF-ProShares",
+   "code": "MP",
+   "name": "MP Materials Corp-A",
    "market": "美股"
   },
   {
@@ -13591,13 +13591,13 @@
    "market": "美股"
   },
   {
-   "code": "SRRK",
-   "name": "Scholar Rock Holding Corp",
+   "code": "SBIT",
+   "name": "2倍做空比特币期货ETF-Proshares",
    "market": "美股"
   },
   {
-   "code": "SBIT",
-   "name": "2倍做空比特币期货ETF-Proshares",
+   "code": "SRRK",
+   "name": "Scholar Rock Holding Corp",
    "market": "美股"
   },
   {
@@ -13786,13 +13786,13 @@
    "market": "美股"
   },
   {
-   "code": "AMLX",
-   "name": "Amylyx Pharmaceuticals Inc",
+   "code": "SMCX",
+   "name": "二倍做多SMCI ETF-Defiance",
    "market": "美股"
   },
   {
-   "code": "SMCX",
-   "name": "二倍做多SMCI ETF-Defiance",
+   "code": "AMLX",
+   "name": "Amylyx Pharmaceuticals Inc",
    "market": "美股"
   },
   {
