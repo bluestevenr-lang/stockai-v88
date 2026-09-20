@@ -1,6 +1,6 @@
 {
  "schema_version": "v88.market-pool.public/1.0",
- "generated_at": "2026-09-20 07:35（北京时间）",
+ "generated_at": "2026-09-21 07:36（北京时间）",
  "markets": {
   "A股": {
    "universe": 5554,
@@ -12,7 +12,10 @@
    "forced_in": 6,
    "picked": 1902,
    "guard": 2000,
-   "guard_truncated": 0
+   "guard_truncated": 0,
+   "carried_from_prev": true,
+   "this_run_picked": 9,
+   "note": "本轮仅9只<上一版1902的50%,沿用上一版"
   },
   "港股": {
    "universe": 3095,
@@ -24,7 +27,10 @@
    "forced_in": 2,
    "picked": 197,
    "guard": 800,
-   "guard_truncated": 0
+   "guard_truncated": 0,
+   "carried_from_prev": true,
+   "this_run_picked": 3,
+   "note": "本轮仅3只<上一版197的50%,沿用上一版"
   },
   "美股": {
    "universe": 12851,
@@ -36,7 +42,10 @@
    "forced_in": 12,
    "picked": 659,
    "guard": 1200,
-   "guard_truncated": 0
+   "guard_truncated": 0,
+   "carried_from_prev": true,
+   "this_run_picked": 16,
+   "note": "本轮仅16只<上一版659的50%,沿用上一版"
   }
  },
  "rows": [
