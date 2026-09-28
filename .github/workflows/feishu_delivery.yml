@@ -35,17 +35,20 @@ jobs:
           ref: main
           token: ${{ secrets.PRIVATE_TOKEN }}
           path: core
+      - name: Check each due slot before installing dependencies
+        id: due
+        env:
+          FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+        run: |
+          gh api -H 'Accept: application/vnd.github.raw+json' 'repos/bluestevenr-lang/v88-daily-report/contents/feishu_sync_delivery.json?ref=feishu-delivery-state' > /tmp/v88-outbox.json
+          python3 src/feishu_reconcile.py --check-state /tmp/v88-outbox.json
       - uses: actions/checkout@v4
+        if: steps.due.outputs.needed == 'true'
         with:
           repository: bluestevenr-lang/v88-daily-report
           token: ${{ secrets.PRIVATE_TOKEN }}
           ref: feishu-delivery-state
           path: state
-      - name: Check each due slot before installing dependencies
-        id: due
-        env:
-          FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
-        run: python3 src/feishu_reconcile.py --check-state ../state/feishu_sync_delivery.json
       - uses: actions/setup-python@v5
         if: steps.due.outputs.needed == 'true'
         with:
