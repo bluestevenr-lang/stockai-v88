@@ -35,17 +35,27 @@ def html(doc,now=None):
                 style='background:#eff5ff;box-shadow:inset 0 0 0 2px #6393ff' if day==today else 'background:#f4f6f9' if day.month!=mon else ''
                 out.append(f'<td style="{style}"><div class="day">{day.day}</div>')
                 daily=events.get(day.isoformat(),[]) if day.month==mon else []
-                counts=defaultdict(int);shown=set()
-                for label,record in daily:
-                    r=record['row'];key=(r['code'],record['id'],label)
-                    if key in shown or counts[r['market']]>=5:continue
-                    shown.add(key);counts[r['market']]+=1
-                    score=(r.get('strategy_score') or {}).get('value');outcome=record.get('outcome') or {}
+                groups=defaultdict(list)
+                for label,record in daily:groups[(record['row']['market'],record['row']['code'])].append((label,record))
+                counts=defaultdict(int);shown=0
+                ranked=sorted(groups.values(),key=lambda items: -float((max(items,key=lambda item:item[1]['at'])[1]['row'].get('strategy_score') or {}).get('value') or 0))
+                for items in ranked:
+                    items=sorted(items,key=lambda item:item[1]['at'],reverse=True)
+                    label,record=items[0];r=record['row']
+                    if counts[r['market']]>=5:continue
+                    counts[r['market']]+=1;shown+=1
                     flags={'A股':'🇨🇳','港股':'🇭🇰','美股':'🇺🇸'}
-                    description=f'{label} · 原评分 {score}（历史规则 {(r.get('strategy_score') or {}).get('revision','旧版')}） · 入场 {band(r.get("entry_range"))} · 止盈 {band(r.get("take_profit_range"))} · 止损 {band(r.get("stop_range"))} · {r.get("business_reason", "")} '
-                    out.append(f'<details class="event {"hit" if label.startswith("🎯") else ""}" title="{esc(description)}"><summary>{flags.get(r["market"],"")} {esc(r["name"])}<br>{esc(label)}</summary><p>{esc(description)}</p><p>计划轮次 {esc(record["cycle_id"])}<br>实际记录 {esc(record["at"])}<br>截止 {esc((r.get("window") or {}).get("deadline"))}</p><p>{esc(outcome.get("label","○ 待核"))}<br>{esc(outcome.get("reason",outcome.get("scope","")))}</p></details>')
+                    hit=any(item[0].startswith('🎯') for item in items)
+                    caption='🎯 目标触及（行情）' if hit else '📝 推荐 / 跟踪'
+                    tooltip=f'{r["name"]} · {caption} · 入场 {band(r.get("entry_range"))} · 止盈 {band(r.get("take_profit_range"))} · {r.get("business_reason", "")}'
+                    out.append(f'<details class="event {"hit" if hit else ""}" title="{esc(tooltip)}"><summary>{flags.get(r["market"],"")} {esc(r["name"])}<br>{caption} · {len(items)}条记录</summary>')
+                    for label,record in items:
+                        r=record['row'];score=(r.get('strategy_score') or {}).get('value');outcome=record.get('outcome') or {}
+                        description=f'{label} · 原评分 {score}（历史规则 {(r.get("strategy_score") or {}).get("revision","旧版")}） · 入场 {band(r.get("entry_range"))} · 止盈 {band(r.get("take_profit_range"))} · 止损 {band(r.get("stop_range"))} · {r.get("business_reason", "")}'
+                        out.append(f'<p>{esc(description)}</p><p>计划轮次 {esc(record["cycle_id"])}<br>实际记录 {esc(record["at"])}<br>截止 {esc((r.get("window") or {}).get("deadline"))}</p><p>{esc(outcome.get("label","○ 待核"))}<br>{esc(outcome.get("reason",outcome.get("scope","")))}</p><hr>')
+                    out.append('</details>')
                 if not daily and day.month==mon:out.append('<small>'+('尚未到期' if day>today else '暂无记录')+'</small>')
-                if len(daily)>len(shown):out.append('<small>其余变化已归档；每日各市场最多显示5条</small>')
+                if len(groups)>shown:out.append('<small>其余已归档；每日各市场最多显示5只</small>')
                 out.append('</td>')
             out.append('</tr>')
         out.append('</tbody></table></div></details>')
