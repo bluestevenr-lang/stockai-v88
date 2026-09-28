@@ -6,6 +6,16 @@ from exchange_sessions import latest_completed
 
 def view(doc,now=None):
     now=now or datetime.now(timezone.utc);out=deepcopy(doc)
+    # Rolling deployments may briefly read an old cached bundle. Never render
+    # a 61-point investment lead under the new >=80 highest-grade heading.
+    if out.get('grade_policy')!='2026-09-28-highest-3a-v2':
+        keep=[];pending=out.setdefault('investment_candidates',[])
+        for row in out.get('rows',[]):
+            value=(row.get('strategy_score') or {}).get('value',0)
+            if (row.get('strategy_tier')=='3A' and (value<80 or not row.get('business_supported'))) or (row.get('strategy_tier')!='3A' and value>=80):
+                row['grade_pending']=True;pending.append(row)
+            else:keep.append(row)
+        out['rows']=keep
     for row in out.get('rows',[])+out.get('investment_candidates',[]):
         try:
             zone=ZoneInfo('America/New_York' if row['market']=='美股' else 'Asia/Shanghai')
