@@ -26,7 +26,7 @@ def html(doc,now=None):
         year,mon=map(int,month.split('-'))
         month_records=[r for r in records if datetime.fromisoformat(r['at']).astimezone(ZoneInfo('Asia/Shanghai')).date().isoformat()[:7]==month]
         hits=[r for r in records if (r.get('outcome') or {}).get('status')=='target_touched' and (r['outcome'].get('date') or '').startswith(month)]
-        out.append(f'<details {"open" if month==today.isoformat()[:7] else ""}><summary style="font-size:18px;font-weight:700">{year}年{mon}月 · {len(month_records)}条原计划 · 🎯 {len(hits)}条目标触及记录</summary>')
+        out.append(f'<details {"open" if month==today.isoformat()[:7] else ""}><summary style="font-size:18px;font-weight:700">{year}年{mon}月 · {len({r["row"]["code"] for r in month_records})}只个股 · {len(month_records)}条留档版本 · 🎯 {len(hits)}条目标触及记录</summary>')
         if not hits:out.append('<p><small>本月暂无已核实的15日内目标触及记录；不会把历史上涨回填为新推荐成绩。</small></p>')
         out.append('<div style="overflow-x:auto"><table><thead><tr>'+''.join(f'<th>{x}</th>' for x in ('周一','周二','周三','周四','周五','周六','周日'))+'</tr></thead><tbody>')
         for week in calendar.Calendar().monthdatescalendar(year,mon):
@@ -42,7 +42,7 @@ def html(doc,now=None):
                     shown.add(key);counts[r['market']]+=1
                     score=(r.get('strategy_score') or {}).get('value');outcome=record.get('outcome') or {}
                     flags={'A股':'🇨🇳','港股':'🇭🇰','美股':'🇺🇸'}
-                    description=f'{label} · 原评分 {score} · 入场 {band(r.get("entry_range"))} · 止盈 {band(r.get("take_profit_range"))} · 止损 {band(r.get("stop_range"))} · {r.get("business_reason", "")} '
+                    description=f'{label} · 原评分 {score}（历史规则 {(r.get('strategy_score') or {}).get('revision','旧版')}） · 入场 {band(r.get("entry_range"))} · 止盈 {band(r.get("take_profit_range"))} · 止损 {band(r.get("stop_range"))} · {r.get("business_reason", "")} '
                     out.append(f'<details class="event {"hit" if label.startswith("🎯") else ""}" title="{esc(description)}"><summary>{flags.get(r["market"],"")} {esc(r["name"])}<br>{esc(label)}</summary><p>{esc(description)}</p><p>计划轮次 {esc(record["cycle_id"])}<br>实际记录 {esc(record["at"])}<br>截止 {esc((r.get("window") or {}).get("deadline"))}</p><p>{esc(outcome.get("label","○ 待核"))}<br>{esc(outcome.get("reason",outcome.get("scope","")))}</p></details>')
                 if not daily and day.month==mon:out.append('<small>'+('尚未到期' if day>today else '暂无记录')+'</small>')
                 if len(daily)>len(shown):out.append('<small>其余变化已归档；每日各市场最多显示5条</small>')
