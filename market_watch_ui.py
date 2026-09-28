@@ -37,7 +37,17 @@ def html(doc=None,*,now=None,base=None):
          '</tr></thead><tbody>']
     for market,flag in (('A股','🇨🇳'),('港股','🇭🇰'),('美股','🇺🇸')):
         group=[r for r in rows if r['market']==market]
-        if not group:out.append(f"<tr><td colspan='6' style='padding:10px'>{market_badge(market)} · 0只，报价或线索待补</td></tr>")
+        if not group:
+            info=(doc.get('markets') or {}).get(market,{})
+            counts=info.get('scan_counts') or {}
+            usable=counts.get('usable_quotes',0)
+            if info.get('status')=='available':
+                message=f"已核{usable:,}只报价，本轮未出现符合条件的异动"
+            else:
+                message='⏳ 报价更新缺口 · 不能解读为没有机会'
+                if counts.get('missing_quote'):message+=f"；{counts['missing_quote']:,}只缺价格/量能字段"
+                elif counts.get('old_quote_session'):message+=f"；{counts['old_quote_session']:,}只报价过期"
+            out.append(f"<tr><td colspan='6' style='padding:12px;font-size:14px'>{market_badge(market)} · {e(message)}</td></tr>")
         for display_rank,r in enumerate(group,1):
             p=r.get('profile') or {};code=r['code'];shown=code[:-3].zfill(4)+'.HK' if code.endswith('.HK') else code
             name=(f"{p.get('name_en') or code} · {p.get('name_zh') or '中文名待核'}" if market=='美股' else p.get('name_zh') or r['name'])
