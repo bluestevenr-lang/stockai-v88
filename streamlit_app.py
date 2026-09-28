@@ -629,10 +629,14 @@ if _nav == "🧭 导航":
                     _b9c = ((_snap or {}).get("markets") or {}).get(_m9c) or {}
                     _l9c2 = dict((x[0], x[1]) for x in ((_b9c.get("l3") or {}).get("probs") or []))
                     _t9c2 = _b9c.get("temperature") or {}
-                    _cg9c2 = float(((_b9c.get("indices") or [{}])[0] or {}).get("chg1d") or 0)
+                    _ix9c2 = ((_b9c.get("indices") or [{}])[0] or {})
+                    if _ix9c2.get("chg1d") is None:
+                        _ra9.append(f"<div><b>{_m9c}</b> 行情待更新</div>")
+                        continue
+                    _cg9c2 = float(_ix9c2["chg1d"])
                     if _cf9c["mkt_hz"] is None:
                         _cc9 = "#dc2626" if _cg9c2 > 0.05 else ("#16a34a" if _cg9c2 < -0.05 else "#64748b")
-                        _core9 = (f"今日<b style='color:{_cc9}'>{_cg9c2:+.2f}%</b>·温度{_t9c2.get('temp', '?')}°"
+                        _core9 = (f"收盘 {_ix9c2.get('source_asof', '日期待核')} <b style='color:{_cc9}'>{_cg9c2:+.2f}%</b>·温度{_t9c2.get('temp', '?')}°"
                                   f"→仓位{str(_t9c2.get('position', '?')).split('（')[0]}")
                     else:
                         if _cf9c["mkt_hz"] == "明日":
@@ -935,7 +939,7 @@ if _nav == "🧭 导航":
                     _tsl9c.append(f"{_lb9t}{str(_sc9t)[5:16]}")
             st.caption("🕒 分析时间: " + " · ".join(_tsl9c)
                        + f" ｜ 当前档:{_tt9c}·与桌面同源(pub快照)"
-                       " ｜ 更新节奏:交易日07/13/19点三班·周末每日09:00一趟(各档同源同步·预算内)"
+                       " ｜ 更新节奏:每日07/14/21点三班，25分钟后补查（北京时间）"
                        " ｜ 持仓明细守隐私铁律")
     except Exception:
         pass
@@ -1099,7 +1103,7 @@ if _nav == "🧭 导航":
     if _autonomous.get('version')=='autonomous-public-v1':
         st.caption(_analysis_label(_autonomous.get('generated_at'),'行情与观察日报')+' · AI审核与行情分开更新')
     elif _meta0.get("daily_report_ts"):
-        st.caption(_fresh_caption(_meta0["daily_report_ts"], "日报/操作榜") + " · 每时段更新（07/13/19点）")
+        st.caption(_fresh_caption(_meta0["daily_report_ts"], "日报/操作榜") + " · 每天07/14/21点更新（北京时间）")
     if _snap and _snap.get("markets"):
         for _mkt in ("美股", "A股", "港股"):
             _t = (_snap["markets"].get(_mkt) or {}).get("temperature")
@@ -2269,7 +2273,7 @@ elif _nav in ("📊 日报", "📅 周报"):
             st.caption(_analysis_label(_autonomous.get('generated_at'),'报告编制')+' · 北京时间07:00/14:00/21:00自动更新；周报按已结束交易周')
         elif _meta1.get(_mk1):
             st.caption(_fresh_caption(_meta1[_mk1], "本报告")
-                       + (" · 每时段更新（北京时间07/13/19点）" if _nav == "📊 日报" else " · 每周日更新"))
+                       + (" · 每天07/14/21点更新（北京时间）" if _nav == "📊 日报" else " · 每周日更新"))
         # 【V88·复制】下载 md 原文 + 复制全文（st.code 右上角自带复制按钮）
         _cc1, _cc2 = st.columns(2)
         _fn = "V88日报.md" if _nav == "📊 日报" else "V88周报.md"
