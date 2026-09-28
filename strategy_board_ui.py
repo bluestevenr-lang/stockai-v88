@@ -23,7 +23,7 @@ def html(doc=None,code=None,now=None,profiles=None):
     .strategy-board td,.strategy-board th{padding:12px 14px;border-bottom:1px solid #e5ebf4;vertical-align:top;font-size:14px!important;line-height:1.6;overflow-wrap:anywhere}
     .strategy-board details{font-size:13px}.strategy-board .score{font-size:21px;color:#2459c7;font-weight:700}.strategy-board .market{background:#edf4ff;font-weight:600}
     </style><div class="strategy-board"><h3>🎯 3A / 2A / 1A 重点榜</h3>
-    <p>3A 最高分档 ≥80 · 2A 短中线 · 1A 超短线。每档各市场 Top3；周期、入场、止盈与止损分别列示。</p>
+    <p>3A 最高分档 ≥80 · 2A 短中线 · 1A 超短线。每档各市场 Top3；同股同数据版本共用一个综合分；周期适用性、入场、止盈与止损分别列示。</p>
     <small>2026-09-28 新策略制 · 筛选分不代表胜率或 GPT 复审分；入场状态单列。旧评级与日历原样保留。</small>''']
     settings=[('3A','3A · 最高分优选','≥80分且有企业依据 · 价值投资 / 成长潜力 / 超跌反弹 / 优质量价机会'),('2A','2A · 短线 / 月度','2周–1个月'),('1A','1A · 超短线','3–5个交易日'),('watch','投资研究候选 · 未授3A','保留线索与原分数；不冒充最高评级')]
     for tier,title,period in settings:
@@ -36,13 +36,14 @@ def html(doc=None,code=None,now=None,profiles=None):
         if not members:
             out.append('<p style="padding:0 20px">本轮所需证据不足或未达到策略条件；不会用其他周期填补名额。</p>')
         else:
-            out.append('<div style="overflow-x:auto"><table><thead><tr><th>市场 / 排名 / 个股 / 所属板块</th><th>评级 / 复合分</th><th>现价 / 行情时间</th><th>周期 / 推荐原因</th><th>入场区间 / 条件</th><th>止盈区间 / 离场</th><th>止损区间 / 失效</th></tr></thead><tbody>')
+            out.append('<div style="overflow-x:auto"><table><thead><tr><th>市场 / 排名 / 个股 / 所属板块</th><th>评级 / 统一综合分</th><th>现价 / 行情时间</th><th>周期 / 推荐原因</th><th>入场区间 / 条件</th><th>止盈区间 / 离场</th><th>止损区间 / 失效</th></tr></thead><tbody>')
             for market,flag in flags.items():
                 chosen=sorted([r for r in members if r['market']==market],key=lambda r:r['rank'])[:3]
                 out.append(f'<tr class="market"><td colspan="7">{flag} {market} · {len(chosen)}/3只</td></tr>')
                 for r in chosen:
                     href='?'+urlencode({'q':r['code'],'focus':'deep'})
                     s=r['strategy_score'];parts=''.join(f'<div>{esc(p["factor"])} · 权重 {p["weight"]}% · 贡献 {p["contribution"]:g}分</div>' for p in s['factors'])
+                    periods=''.join(f'<div>{esc(p.get("period"))} · {esc(p.get("lane"))}</div>' for p in r.get('applicable_periods',[]))
                     band='–'.join(f'{p:g}' for p in r['entry_range']) if r.get('entry_range') else '待核结构'
                     missing=' / '.join(r.get('missing',[]))
                     profit = r.get('take_profit_range')
@@ -62,9 +63,9 @@ def html(doc=None,code=None,now=None,profiles=None):
                         peers=''.join(f'<div>#{esc(peer["rank"])} <a href="?{esc(urlencode({"q":peer["code"],"focus":"deep"}))}">{esc(peer["name"])}</a></div>' for peer in info.get('peers',[])[:5])
                         profile_markup=f'<div>{esc(info.get("industry") or "所属板块待核")}<br><small>{esc(rank_label)}</small><details><summary>同业Top5 · 按市值</summary>{peers or "同业名单待补"}<small>以上述源日期为准；仅展示公开可比同业，市值排名不代表推荐评级。</small></details></div>'
                     out.append(f'<tr><td><b>#{r["rank"]} <a href="{esc(href)}">{esc(r["name"])}</a></b><br><small>{esc(r["code"])}</small>{profile_markup}</td>'
-                        f'<td><b>{"未授级" if r.get("grade_pending") else esc(r["strategy_tier"])}</b><br><span class="score">{s["value"]:g}</span> /100<br><small>证据覆盖 {s["coverage"]}%</small><details><summary>权重与贡献</summary>{parts}<div>共振 +{s["interaction"]} · 过热扣 {s["penalty"]}</div></details></td>'
+                        f'<td><b>{"未授级" if r.get("grade_pending") else esc(r["strategy_tier"])}</b><br><span class="score">{s["value"]:g}</span> /100<br><small>证据覆盖 {s["coverage"]}%</small><br><small>{esc(s.get("label", "旧版周期分"))}</small><details><summary>权重与贡献</summary>{parts}<div>数据版本 {esc(s.get("snapshot_id"))} · 评分规则 {esc(s.get("revision"))}</div><div>共振 +{s["interaction"]} · 过热扣 {s["penalty"]}</div></details></td>'
                         f'<td><b>{r["last"]:g}</b> · {r["change_pct"]:+.2f}%<br><small>{esc(r["quote_asof"][5:16])}<br>源时区</small></td>'
-                        f'<td><b>{esc(r["lane"])}</b> · {esc(r["period"])}<br>{esc(r["reason"])}<details><summary>🏢 企业依据与反证</summary>{esc(r["business_reason"])}<br>{esc(r.get("business_risk"))}</details></td>'
+                        f'<td><b>{esc(r["lane"])}</b> · {esc(r["period"])}<br>{esc(r["reason"])}<details><summary>周期适用性 · 共用综合分</summary>{periods}<small>仅表示筛选适用；本行价带对应上方周期，其它周期须独立核验。</small></details><details><summary>🏢 企业依据与反证</summary>{esc(r["business_reason"])}<br>{esc(r.get("business_risk"))}</details></td>'
                         f'<td><b>{esc(band)}</b><br>◉ {esc(r["status"])}<br><small>{esc(missing or "结构条件匹配；核对最新价格")}</small></td>'
                         f'<td><b>{esc(profit_label)}</b><br><small>💰 到目标净空间：{esc(returns_label)}<br>首段目标参考：{esc(r.get("target"))}<br>净收益风险比：{esc(r.get("net_rr"))}<br>{esc(r.get("price_plan_method"))}<br>结构截至：{esc(r.get("price_plan_source_asof"))}<br>条件测算，非预期必得利润<br>往返费用假设0.5%</small><details><summary>区间依据与适用范围</summary>{esc(r.get("price_plan_scope") or "区间依据尚待补齐")}</details></td>'
                         f'<td><b>{esc(stop_label)}</b><br><small>止损情景：{esc(loss_label)}<br>失效触发参考：{esc(r.get("stop"))}</small><br>{esc(r["invalidation"])}<details><summary>模型审核状态</summary>{esc(r["model_review"])}</details></td></tr>')

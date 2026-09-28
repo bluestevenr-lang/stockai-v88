@@ -29,7 +29,7 @@ def html(doc, now=None):
         rank = f'行业市值 #{info["rank"]}/{info.get("comparable", "—")} · {info.get("source_session", "待核")}' if info.get('rank') else '行业排名待核'
         link = '?'+urlencode({'focus':'deep','q':r['code']})
         out += ['<article style="border:1px solid #dbe3f3;border-radius:10px;background:white;padding:14px;margin:12px 0">',
-                f'<div style="font-size:18px"><b>{flags.get(r["market"], "")} #{r["rank"]} <a href="{escape(link,quote=True)}">{text(r["name"])} · {text(r["code"])}</a></b>　<b style="color:#4338ca">{text((r.get("strategy_score") or {}).get("value"))}分</b>　{text(r["status"])}</div>',
+                f'<div style="font-size:18px"><b>{flags.get(r["market"], "")} #{r["rank"]} <a href="{escape(link,quote=True)}">{text(r["name"])} · {text(r["code"])}</a></b>　<b style="color:#4338ca">{text((r.get("strategy_score") or {}).get("value"))}分 · {text((r.get("strategy_score") or {}).get("label", "旧版周期分"))}</b>　{text(r["status"])}</div>',
                 f'<p style="font-size:13px;color:#64748b">{text(info.get("industry"))} · {text(rank)} · {text(r.get("role"))}</p>',
                 '<div style="display:flex;gap:22px;flex-wrap:wrap;font-size:16px">'
                 f'<span>📥 研究入场 <b>{band(r.get("entry_range"))}</b></span>'
@@ -47,6 +47,8 @@ def html(doc, now=None):
         for peer in info.get('peers', [])[:5]:
             out.append(f'<p>#{text(peer.get("rank"))} {text(peer.get("name"))} · {text(peer.get("code"))}</p>')
         out.append('</details></article>')
+    from astra_calendar_view import html as calendar_html
+    out.append(calendar_html(d,now))
     out += ['<details><summary>📚 历轮记录 · 首次研究区间永久保留</summary>']
     for key, h in sorted(d.get('history', {}).items(), reverse=True):
         out.append(f'<p><b>{text(key)}轮</b> · 实际建立 {text(h.get("created_at"))} · {text(h.get("updates"))}次变化</p>')
