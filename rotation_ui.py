@@ -352,6 +352,8 @@ def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle", profiles=
     for i, stock in enumerate(stocks):
         code=str(stock.get('code') or '')
         label=display_label(stock.get('name'),code,profiles)
+        if stock.get('source_current') is False:
+            label += ' · '+(str(stock.get('source_asof'))[5:10]+'历史' if stock.get('source_asof') else '待补行情')
         deep='/?q='+quote(code,safe='')+'&focus=deep#v88-deep-analysis'
         target=_scenario_id(safe_id+'-future',label,code,i)
         direction=stock.get('direction') if stock.get('direction') in {'up','down','hold'} else 'hold'
@@ -359,7 +361,7 @@ def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle", profiles=
         doc=None
         # One representative per current direction; the complete pool remains
         # clickable without calculating dozens of annual views on every load.
-        if code and not stock.get('stale_preserved') and direction not in previewed and len(previewed)<3:
+        if code and stock.get('source_current',True) and not stock.get('stale_preserved') and direction not in previewed and len(previewed)<3:
             previewed.add(direction)
             try:
                 from stock_future_context import for_stock
@@ -389,13 +391,14 @@ def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle", profiles=
         values=' / '.join(f'{value:g}' if value is not None else '○ 缺证' for value in (up,down))
         position_text=f'{position:g}%' if position is not None else '○ 缺证'
         rows.append('<tr><td>'+link_html(stock.get('name'),code,profiles)+'<div>'+tag+'</div></td><td>'+values+'</td><td>'+position_text+'<div>原历史位置字段，全年窗口未附凭据</div></td><td>'
-                    +escape(str(stock.get('source_asof') or '日期未记录'))+'<details><summary>确认 / 失效</summary><div>确认：'+escape(_research_text(stock.get('trigger')) or '○ 未记录')+'</div><div>失效：'+escape(_research_text(stock.get('invalid')) or '○ 未记录')+'</div></details></td></tr>')
+                    +escape(str(stock.get('source_asof') or '行情待补'))+('<div>⏳ '+escape(str(stock.get('refresh_error') or '等待最新完整行情，保留原日期'))+'</div>' if stock.get('source_current') is False else '')+'<details><summary>确认 / 失效</summary><div>确认：'+escape(_research_text(stock.get('trigger')) or '○ 未记录')+'</div><div>失效：'+escape(_research_text(stock.get('invalid')) or '○ 未记录')+'</div></details></td></tr>')
     nav=''.join('<span><a href="'+escape(row['deep'],quote=True)+'" style="border-color:'+row['color']+'">'+str(i+1)+'. '+escape(row['label'])+'</a>'
                 +('<a href="'+escape(row['href'],quote=True)+'" aria-label="'+escape(row['label']+' · 本页未来曲线',quote=True)+'">↗ 曲线</a>' if row['href'].startswith('#') else '')+'</span>'
                 for i,row in enumerate(entries))
     body=(f'<div id="{safe_id}" role="figure" aria-label="个股周期切换扫描">'
           +'<div class="cy-meta">原周期计算 '+escape(str((cycle or {}).get('analysis_time') or '未记录'))+' · 展示 '+str(len(stocks))+' 只（每市场Top5）</div>'
           +'<div class="rf-clock-wrap">'+_clock_svg('',entries,{})+'<div class="rf-pick-list">'+nav+'</div></div>'
+          +'<div class="cy-meta">名单 '+str((cycle or {}).get('pool_count',len(original_stocks)))+' 只 · 最新完整行情 '+str(sum(r.get('source_current') is True for r in original_stocks))+' 只；历史与缺口逐只标注，不删除持仓或自选。</div>'
           +'<div class="cy-meta">↑ 改善 / ↓ 承压 / ↔ 待确认；圆点表示当前相位。点名称进入深度分析；点圆点或“曲线”看本页预览（至多3只）。</div>'
           +'<div class="rf-future-panels">'+''.join(rendered)+'</div>'
           +'<details class="cy-history"><summary>当前Top名单技术记录与触发条件 · '+str(len(stocks))+' 只</summary><div class="cy-scroll"><table><thead><tr><th>证券</th><th>原上/下方向分 /100</th><th>原历史位置</th><th>行情日与条件</th></tr></thead><tbody>'+''.join(rows)+'</tbody></table></div></details>'
@@ -444,7 +447,7 @@ def combined_cycle_dashboard_html(forecast: dict, cycle: dict,
         panels.append('<div class="cc-panel"><div class="cc-title">🧭 板块未来周期 · 圆周＋曲线</div>'
                       + sector_body + '</div>')
     if stock_body:
-        panels.append('<div class="cc-panel"><div class="cc-title">🎯 个股周期 · 持仓＋自选</div>'
+        panels.append('<div class="cc-panel"><div class="cc-title">🎯 个股周期 · '+('公开自选' if (cycle or {}).get('scope')=='public_watchlist' else '持仓＋自选')+'</div>'
                       + stock_body + '</div>')
     if not panels:
         return ""

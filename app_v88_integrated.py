@@ -13733,7 +13733,8 @@ def _render_today_nav():
                     st.markdown("**板块轮动**：" + " ｜ ".join(_hints[:5]))
                 # ③+④ 周期总览：板块轮动与个股切换合并为同一行双栏，信息保留、字号压小。
                 _rot_forecast9 = (_snap or {}).get("rotation_forecast") or {}
-                _cyc9 = (_snap or {}).get("cycle_scan") or {}
+                from cycle_scan_state import read_cycle as _read_cycle9
+                _cyc9 = _read_cycle9((_snap or {}).get("cycle_scan"), core_root()/"data")
                 if _rot_forecast9 or _cyc9.get("stocks") or _cyc9.get("status") == "pending":
                     st.markdown("**🧭 板块与个股 · 未来趋势圆周与曲线**")
                     try:
