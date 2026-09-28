@@ -1094,7 +1094,7 @@ if _nav == "🧭 导航":
             weekly=_json_text('weekly_candidates_pub.json'),
             reverse_audit=_json_text('reverse_audit_pub.json'),
             reverse_status=_json_text('reverse_audit_status.json'),
-            relations=_json_text('module_relations_pub.json'), market_watch=_autonomous.get('watch')))
+            relations=_json_text('module_relations_pub.json'), market_watch=_autonomous.get('watch'), strategy_board=_autonomous.get('strategy',{})))
     except Exception:
         st.warning('中央关联视图暂不可用；保留数据时间，等待同版发布。')
     st.caption("温度定仓位 → 轮动定板块 → 操作榜定标的")
@@ -1949,6 +1949,9 @@ elif _nav == "🔍 个股搜索":
             from stock_reference import canonical as _canon_cloud
             from module_relations_ui import html as _relations_cloud
             _central_cloud = _json_text('triad_selection_pub.json')
+            from strategy_board_ui import html as _strategy_html
+            if any(r.get('code')==_canon_cloud(_tsym) for r in (_autonomous.get('strategy') or {}).get('rows',[])):
+                st.markdown(_strategy_html(_autonomous['strategy'],code=_canon_cloud(_tsym)),unsafe_allow_html=True)
             _central_rows_cloud, _ = _triad_v2_rows({}, _central_cloud)
             _match_cloud = next((r for r in _central_rows_cloud if _canon_cloud(r.get('code')) == _canon_cloud(_tsym)), None)
             if _match_cloud:

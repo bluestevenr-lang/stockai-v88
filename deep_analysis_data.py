@@ -238,4 +238,9 @@ def report_html(code, data_dir=None, context=None):
     except (OSError,ValueError):
         watchlist = {}
     content += watch_html(watchlist, selection, code=code)
+    from strategy_board_ui import html as strategy_html
+    try:strategies=read_json_snapshot(root/'strategy_board.json')
+    except (OSError,ValueError):strategies={}
+    current=strategy_html(strategies,code=canonical(code)) if any(r['code']==canonical(code) for r in strategies.get('rows',[])) else ''
+    if current:content=current+'<details><summary>旧制中央审核与原合同（保留历史含义）</summary>'+content+'</details>'
     return '<section class="v88-deep-contract" style="font-size:12px;padding:10px;border:1px solid #cbd5e1;border-radius:6px">'+content+'</section>'

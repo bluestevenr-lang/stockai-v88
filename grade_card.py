@@ -525,12 +525,16 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                       pool: dict = None, limit_in: int = 12, limit_out: int = 8,
                       triad: dict = None, weekly: dict = None,
                       reverse_audit: dict = None, reverse_status: dict = None,
-                      relations: dict = None, watchlist: dict = None, market_watch: dict = None) -> str:
+                      relations: dict = None, watchlist: dict = None, market_watch: dict = None, strategy_board: dict = None) -> str:
     """3A大系统完整模块(标题+IN表+OUT表+尾注),一次返回全部HTML。"""
     rows, triad_v2 = _triad_v2_rows(rk, triad)
     reasons_index = business_index()
     from persistent_watchlist_ui import html as watchlist_html
     persistent_html = watchlist_html(watchlist or {}, triad or {},view='current')
+    from strategy_board_ui import html as strategy_html
+    current_strategies = strategy_html(strategy_board)
+    if current_strategies:
+        persistent_html = current_strategies + '<details><summary>旧制审核档案（历史评级含义保留）</summary>'+persistent_html+'</details>'
     tracking_html = watchlist_html(watchlist or {}, triad or {},view='tracking')
     fixed_archive = watchlist_html(watchlist or {},triad or {},view='history')
     if fixed_archive:
@@ -887,6 +891,13 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
     from module_relations_ui import html as relations_html
     from market_watch_ui import html as market_watch_html
     from market_adaptation_ui import html as market_adaptation_html
+    if current_strategies:
+        return ("<section id='v88-3a-system'><div id='v88-grade-list'></div>"
+            + "<a href='?focus=journal'>📅 推荐日历与连续跟踪</a>"+persistent_html
+            + market_adaptation_html()+tracking_html+fixed_archive
+            + "<details><summary>旧制周度复审、关联核验与原合同</summary>"
+            + relations_html(relations,triad or {})+reverse_html(reverse_audit,reverse_status,triad)
+            + weekly_html(weekly,triad or {},watchlist=watchlist or {})+"</details></section>")
     return (head + relations_html(relations,triad or {}) + reverse_html(reverse_audit, reverse_status, triad)
             + weekly_html(weekly,triad or {},watchlist=watchlist or {})
             + f"<div id='v88-grade-list' style='font-size:20px;font-weight:800;color:{PALETTE['buy']};margin:14px 0 8px;"

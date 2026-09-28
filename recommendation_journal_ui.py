@@ -115,8 +115,9 @@ def calendar_html(doc,month,selected,query='',now=None):
                 row=next((r for r in listed if r['market']==market),None)
                 if row:shown.append(row)
             for r in shown:
-                e=r['appearance'];formal=r['kind']=='formal'
+                e=r['appearance'];formal=r['kind']=='formal' or r['kind'].startswith('strategy_')
                 grade=f"{e.get('tier','')} {e['score']:g}分" if formal and e.get('score') is not None else '观察'
+                if r['kind'].startswith('strategy_'):grade+=' · 策略'
                 reason=e.get('reason') or '原说明未留存'
                 title=f"{r['name']}（{r['code']}）\n{e['at'][11:16]} {grade} · #{e.get('rank') or '—'}\n{reason}\n点击查看当天内容"
                 out.append(f'<a class="event {"" if formal else "observe"}" href="{esc(href(iso,r["code"]))}" title="{esc(title)}">{flags[r["market"]]} {esc(r["name"])} · {esc(grade)}<br><span>{esc(reason[:20])}</span></a>')
