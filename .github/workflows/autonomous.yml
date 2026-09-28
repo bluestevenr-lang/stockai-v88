@@ -1,9 +1,9 @@
 name: V88 免费行情·日报周报·飞书（无模型额度依赖）
 on:
   schedule:
-    - cron: '0,25 23 * * *'
-    - cron: '0,25 6 * * *'
-    - cron: '0,25 13 * * *'
+    - cron: '41 22 * * *'
+    - cron: '41 5 * * *'
+    - cron: '41 12 * * *'
   workflow_dispatch:
     inputs:
       send:
@@ -61,18 +61,6 @@ jobs:
           assert d.get('status')=='PREVIEW' and 'GitHub规则版' in d.get('text',''), 'Rule digest not ready'
           print(json.dumps({'report_mode':'github-rules-three-slot-v1','model_calls':d.get('model_calls'),'characters':len(d['text']),'external_messages':0}))
           PYCODE
-      - name: Deliver existing due slot
-        if: github.event_name == 'schedule' || inputs.send == true
-        env:
-          FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
-        run: |
-          python src/feishu_schedule.py --now > /tmp/v88-delivery.json
-          python - <<'PY'
-          import json
-          d=json.load(open('/tmp/v88-delivery.json'))
-          print(json.dumps({k:d.get(k) for k in ('status','accepted','complete','success','slot')}))
-          if d.get('status') in ('FAILED','ERROR'):raise SystemExit(1)
-          PY
       - name: Verify Astra cycle refreshed (reports already delivered independently)
         run: |
           python - <<'PY'
@@ -92,3 +80,9 @@ jobs:
           PY
       # Never upload a private checkout, logs, source bundle, or full report as
       # artifacts of this public repository. Runtime history stays in state.
+
+  delivery:
+    needs: facts
+    if: always() && (github.event_name == 'schedule' || inputs.send == true)
+    uses: ./.github/workflows/feishu_delivery.yml
+    secrets: inherit
