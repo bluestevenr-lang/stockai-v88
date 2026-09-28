@@ -1090,6 +1090,9 @@ if _nav == "🧭 导航":
     _strategy_markup = _strategy_html(_autonomous.get('strategy', {}), profiles=_json_text('stock_profiles_pub.json'))
     if _strategy_markup:
         st.html('<div id="v88-grade-list"></div>' + _strategy_markup)
+    from astra_cycle_view import html as _astra_cycle_html
+    _astra_markup = _astra_cycle_html(_autonomous.get('astra') or {})
+    if _astra_markup: st.html(_astra_markup)
     def _legacy_central_view():
         from grade_card import system_table_html
         return system_table_html({}, {}, {}, {},

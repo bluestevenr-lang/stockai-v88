@@ -14108,9 +14108,17 @@ try:
     from astra_plan_view import render as _render_astra_monthly
     _astra_doc = _cbj9('astra_plan.json') or _cbj9('astra_plan_pub.json') or {}
     _astra_private_records = bool(_astra_doc) and not _astra_doc.get('private_redacted') and (_cb_repo9/'data/astra_plan.json').is_file()
-    _render_astra_monthly(st, _astra_doc, stock_link=_stk_link,
-                          expected_factpack_id=(_cbj9('triad_selection_pub.json') or {}).get('factpack_id'),
-                          allow_trade_recording=_astra_private_records)
+    from astra_cycle_view import html as _astra_cycle_html
+    _astra_cycle_markup = _astra_cycle_html(_cbj9('astra_cycle.json') or {})
+    if _astra_cycle_markup:
+        st.html(_astra_cycle_markup)
+        with st.expander('月度实际收益与原计划档案 · 持仓保护继续', expanded=False):
+            _render_astra_monthly(st, _astra_doc, stock_link=_stk_link,
+                                  allow_trade_recording=_astra_private_records)
+    else:
+        _render_astra_monthly(st, _astra_doc, stock_link=_stk_link,
+                              expected_factpack_id=(_cbj9('triad_selection_pub.json') or {}).get('factpack_id'),
+                              allow_trade_recording=_astra_private_records)
     if _astra_private_records:
         try:
             from astra_trade_entry_view import render as _render_astra_records
