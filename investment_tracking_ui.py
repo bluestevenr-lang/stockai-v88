@@ -42,9 +42,9 @@ def render_tracking(selection, registry, journal=None):
     from scorecard_html import gpt_html, books_html, reasons_html, score_label, text, profit_html
     rows = entries(selection, registry)
     counts = Counter(r["current_tier"] for r in rows)
-    st.markdown("**1A / 2A / 3A 持续跟踪台 · 重点与档案检索**")
-    st.caption(f"当前 3A {counts['3A']} · 2A {counts['2A']} · 1A {counts['1A']} · 待复核 {counts['PENDING']} · 档案总数 {len(rows)}。"
-               "首次出现、历次等级及原因持续保留；数据或审核过期保留最近确认等级。1A/2A均不可直接执行。")
+    st.markdown("**旧制中央审核档案 · 持续跟踪与原合同**")
+    st.caption(f"旧制有效审核：3A {counts['3A']} · 2A {counts['2A']} · 1A {counts['1A']} · 待复核 {counts['PENDING']} · 档案总数 {len(rows)}。"
+               "这里保留旧评级含义及原持仓条件；当前1A超短线、2A月度与3A投资机会见上方新策略榜。")
     contracts = (journal or {}).get('contracts') or []
     with st.expander(f"月度原始研究合同 · {len(contracts)}份 · 原区间与期限不追改", expanded=False):
         st.caption("按首次建档月份留存1A/2A/3A；没有实际入场证据，后来触及止盈位也不计盈利。升降级不改写原始预测。")

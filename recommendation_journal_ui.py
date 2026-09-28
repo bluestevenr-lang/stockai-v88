@@ -45,6 +45,7 @@ def html(rows,week,now=None):
     for r in rows:
         href='?'+urlencode({'q':r['code'],'focus':'deep'})+'#v88-deep-analysis'
         kind='⭐ 正式研究榜 · '+HORIZONS.get(r['horizon'],'—') if r['kind']=='formal' else '👁 机会观察 · 未授级'
+        if r['kind'].startswith('strategy_'):kind='🎯 新策略榜 · '+r['horizon']
         first=r['first'];score=f"{first.get('tier')} · {first['audit_score']:g}分" if first.get('audit_score') is not None else '未授中央评分'
         why=first.get('reason') or '旧档仅保存评级、分数与名次；原说明未留存。'
         out.append(f"<tr><td>{badge(r['market'],image_mode=True)}<br><a href='{esc(href)}'><b>{esc(display_name(r['name'],r['code'],profiles))}</b></a><br>{esc(r['code'])}<br><small>{esc(kind)}</small></td>")
@@ -161,7 +162,7 @@ def render(doc=None):
     except ValueError:month_arg=today.strftime('%Y-%m')
     months=sorted({day[:7] for day in dates}|{today.strftime('%Y-%m'),month_arg},reverse=True)
     st.markdown('<div id="v88-week-journal"></div><div style="font-size:24px;font-weight:800;color:#1e3a8a">📅 推荐日历</div>',unsafe_allow_html=True)
-    st.caption('🔵 正式研究　🟢 机会观察　🟠 后续跟进 · 悬停看摘要，点击日期或个股查看当天详情。北京时间留档。')
+    st.caption('🔵 策略榜 / 旧制研究　🟢 机会观察　🟠 后续跟进 · 新评分标注“策略”；悬停看摘要，点击查看当天详情。北京时间留档。')
     left,right=st.columns([1,2])
     with left:month=st.selectbox('选择月份',months,index=months.index(month_arg),format_func=lambda m:m[:4]+'年'+str(int(m[5:]))+'月',key='v88_calendar_month_'+month_arg)
     with right:query=st.text_input('查找历史个股',value=st.query_params.get('journal_query',''),placeholder='名称 / 代码，例如 睿创、688002',key='v88_calendar_query')
