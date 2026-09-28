@@ -1963,7 +1963,7 @@ elif _nav == "🔍 个股搜索":
             from module_relations_ui import html as _relations_cloud
             _central_cloud = _json_text('triad_selection_pub.json')
             from strategy_board_ui import html as _strategy_html
-            if any(r.get('code')==_canon_cloud(_tsym) for r in (_autonomous.get('strategy') or {}).get('rows',[])):
+            if any(r.get('code')==_canon_cloud(_tsym) for r in ((_autonomous.get('strategy') or {}).get('rows',[])+(_autonomous.get('strategy') or {}).get('investment_candidates',[]))):
                 st.markdown(_strategy_html(_autonomous['strategy'],code=_canon_cloud(_tsym),profiles=_json_text('stock_profiles_pub.json')),unsafe_allow_html=True)
             _central_rows_cloud, _ = _triad_v2_rows({}, _central_cloud)
             _match_cloud = next((r for r in _central_rows_cloud if _canon_cloud(r.get('code')) == _canon_cloud(_tsym)), None)
