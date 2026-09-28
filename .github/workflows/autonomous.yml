@@ -73,5 +73,22 @@ jobs:
           print(json.dumps({k:d.get(k) for k in ('status','accepted','complete','success','slot')}))
           if d.get('status') in ('FAILED','ERROR'):raise SystemExit(1)
           PY
+      - name: Verify Astra cycle refreshed (reports already delivered independently)
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import datetime, timezone
+          from astra_cycle import cycle_dates
+          now = datetime.now(timezone.utc)
+          status = json.load(open('data/autonomous_status.json'))
+          step = next((s for s in status['steps'] if s['step'] == 'astra_cycle'), {})
+          assert step.get('ok'), 'Astra refresh failed; retained history is not a new calculation'
+          doc = json.load(open('data/astra_cycle.json'))
+          assert doc['cycle_id'] == cycle_dates(now)[0].isoformat(), 'Astra cycle not rolled over'
+          age = (now-datetime.fromisoformat(doc['generated_at'])).total_seconds()
+          assert 0 <= age < 3600 and doc['model_calls'] == 0, 'Astra calculation is not current'
+          print(json.dumps({'astra_cycle':doc['cycle_id'],'candidates':len(doc['rows']),
+                            'rule_matched':doc['rule_matched_count'],'model_calls':0}))
+          PY
       # Never upload a private checkout, logs, source bundle, or full report as
       # artifacts of this public repository. Runtime history stays in state.
