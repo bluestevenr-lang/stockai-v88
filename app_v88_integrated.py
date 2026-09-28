@@ -3026,6 +3026,19 @@ with _three_a_slot:
             st.warning("🎯 3A大系统: 渲染异常(见日志);模块常驻不消失")
     _three_a_fragment()
 
+# Astra reads its persisted research before legacy network-heavy panels.
+@st.fragment(run_every=60)
+def _astra_cycle_fragment():
+    from astra_cycle_view import html as cycle_html
+    path = core_root() / 'data/astra_cycle.json'
+    if path.is_file():
+        try:
+            markup = cycle_html(json.loads(path.read_text(encoding='utf-8')))
+            if markup: st.html(markup)
+        except (ValueError, KeyError, TypeError):
+            st.caption('Astra本轮文件读取失败；历史与原持仓记录保留。')
+_astra_cycle_fragment()
+
 _macro_top_slot = st.empty()
 # 【2026-07-29 用户"版面设计有点浪费"】按钮字号-30%，数据时点从按钮下方挪到右侧同一行——
 # 省掉一整行垂直空间。只作用于 .st-key-btn_force_now，不动全站其它按钮。
@@ -14111,7 +14124,6 @@ try:
     from astra_cycle_view import html as _astra_cycle_html
     _astra_cycle_markup = _astra_cycle_html(_cbj9('astra_cycle.json') or {})
     if _astra_cycle_markup:
-        st.html(_astra_cycle_markup)
         with st.expander('月度实际收益与原计划档案 · 持仓保护继续', expanded=False):
             _render_astra_monthly(st, _astra_doc, stock_link=_stk_link,
                                   allow_trade_recording=_astra_private_records)
