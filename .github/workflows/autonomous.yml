@@ -52,6 +52,15 @@ jobs:
         run: python src/feishu_cloud_bundle.py restore ../state/source-bundle.tar.gz > /tmp/v88-restore.log 2>&1
       - name: Refresh facts, reports and permanent calendar without models
         run: python src/autonomous_runtime.py
+      - name: Validate the replacement rule digest without sending
+        run: |
+          python src/feishu_schedule.py --preview > /tmp/v88-preview.json
+          python - <<'PYCODE'
+          import json
+          d=json.load(open('/tmp/v88-preview.json'))
+          assert d.get('status')=='PREVIEW' and 'GitHub规则版' in d.get('text',''), 'Rule digest not ready'
+          print(json.dumps({'report_mode':'github-rules-three-slot-v1','model_calls':d.get('model_calls'),'characters':len(d['text']),'external_messages':0}))
+          PYCODE
       - name: Deliver existing due slot
         if: github.event_name == 'schedule' || inputs.send == true
         env:
