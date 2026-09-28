@@ -527,6 +527,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                       reverse_audit: dict = None, reverse_status: dict = None,
                       relations: dict = None, watchlist: dict = None, market_watch: dict = None, strategy_board: dict = None) -> str:
     """3A大系统完整模块(标题+IN表+OUT表+尾注),一次返回全部HTML。"""
+    watchlist = watchlist or {}
     rows, triad_v2 = _triad_v2_rows(rk, triad)
     reasons_index = business_index()
     from persistent_watchlist_ui import html as watchlist_html

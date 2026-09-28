@@ -1085,18 +1085,31 @@ if _nav == "🧭 导航":
                            f"量能 {str(_ad_c_data.get('generated_at'))[:16]} · 与桌面同源")
     except Exception:
         pass
-    # Use the same central list, per-market caps and weekly references as desktop.
-    try:
+    # Strategy results must remain visible even if a legacy audit renderer fails.
+    from strategy_board_ui import html as _strategy_html
+    _strategy_markup = _strategy_html(_autonomous.get('strategy', {}))
+    if _strategy_markup:
+        st.html('<div id="v88-grade-list"></div>' + _strategy_markup)
+    def _legacy_central_view():
         from grade_card import system_table_html
-        # Same HTML-only path as desktop; do not reparse emoji-rich tables as Markdown.
-        st.html(system_table_html({}, {}, {}, {},
+        return system_table_html({}, {}, {}, {},
             triad=_json_text('triad_selection_pub.json'),
             weekly=_json_text('weekly_candidates_pub.json'),
             reverse_audit=_json_text('reverse_audit_pub.json'),
             reverse_status=_json_text('reverse_audit_status.json'),
-            relations=_json_text('module_relations_pub.json'), market_watch=_autonomous.get('watch'), strategy_board=_autonomous.get('strategy',{})))
-    except Exception:
-        st.warning('中央关联视图暂不可用；保留数据时间，等待同版发布。')
+            relations=_json_text('module_relations_pub.json'),
+            market_watch=_autonomous.get('watch'), strategy_board={})
+    if _strategy_markup:
+        with st.expander('旧制中央审核档案 · 原评级与记录保留', expanded=False):
+            try:
+                st.html(_legacy_central_view())
+            except Exception:
+                st.caption('旧制档案显示暂不可用；新策略榜与推荐日历独立更新。')
+    else:
+        try:
+            st.html(_legacy_central_view())
+        except Exception:
+            st.warning('中央关联视图暂不可用；保留数据时间，等待同版发布。')
     st.caption("温度定仓位 → 轮动定板块 → 操作榜定标的")
     st.caption(_fresh_caption((_snap or {}).get("generated_at"), "行情快照") + " · 持仓盘中每15分钟快扫；强思考最多每6小时")
     _meta0 = pub_meta()
