@@ -215,6 +215,7 @@ _FUTURE_CSS = """
 .rf-clock-wrap{display:grid;grid-template-columns:minmax(220px,1fr) minmax(130px,.7fr);align-items:center;gap:8px}
 .rf-pick-list{display:flex;flex-wrap:wrap;gap:5px;align-content:start;max-height:250px;overflow:auto}
 .rf-pick-list a{display:inline-block;border:1px solid #cbd5e1;border-radius:6px;padding:3px 6px;color:inherit;font-size:11px;text-decoration:none}
+.rf-pick-list{min-width:0;max-width:100%}.rf-pick-list>span{display:flex;flex-wrap:wrap;gap:3px;min-width:0;max-width:100%}.rf-pick-list a{max-width:100%;box-sizing:border-box;overflow-wrap:anywhere;white-space:normal}
 .rf-pick-list a:hover{background:#eff6ff}.rf-future-panel{display:none;scroll-margin-top:25px}
 .rf-future-panel:first-child{display:block}.rf-future-panels:has(>.rf-future-panel:target)>.rf-future-panel:first-child{display:none}
 .rf-future-panels>.rf-future-panel:target{display:block!important}
@@ -399,7 +400,7 @@ def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle", profiles=
           +'<div class="cy-meta">原周期计算 '+escape(str((cycle or {}).get('analysis_time') or '未记录'))+' · 展示 '+str(len(stocks))+' 只（每市场Top5）</div>'
           +'<div class="rf-clock-wrap">'+_clock_svg('',entries,{})+'<div class="rf-pick-list">'+nav+'</div></div>'
           +'<div class="cy-meta">名单 '+str((cycle or {}).get('pool_count',len(original_stocks)))+' 只 · 最新完整行情 '+str(sum(r.get('source_current') is True for r in original_stocks))+' 只；历史与缺口逐只标注，不删除持仓或自选。</div>'
-          +'<div class="cy-meta">↑ 改善 / ↓ 承压 / ↔ 待确认；圆点表示当前相位。点名称进入深度分析；点圆点或“曲线”看本页预览（至多3只）。</div>'
+          +'<div class="cy-meta">↑ 改善 / ↓ 承压 / ↔ 待确认；圆点表示各自行情日的相位。点名称进入深度分析；点圆点或“曲线”看本页预览（至多3只）。</div>'
           +'<div class="rf-future-panels">'+''.join(rendered)+'</div>'
           +'<details class="cy-history"><summary>当前Top名单技术记录与触发条件 · '+str(len(stocks))+' 只</summary><div class="cy-scroll"><table><thead><tr><th>证券</th><th>原上/下方向分 /100</th><th>原历史位置</th><th>行情日与条件</th></tr></thead><tbody>'+''.join(rows)+'</tbody></table></div></details>'
           +'<div class="cy-legend">未来曲线是同源本地条件推演；本次周期拐点没有独立GPT验证凭据。历史周期线索不授予评级或买卖许可，原合同与保护条件保持。</div></div>')
