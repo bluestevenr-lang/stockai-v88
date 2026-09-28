@@ -229,7 +229,7 @@ def pub_journal_list():
 
 
 st.title("☁️ V88 云端版")
-st.caption("24小时在线 · 日报每交易日07:00/13:00/19:00更新 · 持仓盘中每15分钟风险快扫 · 访问权限由Streamlit部署设置控制")
+st.caption("GitHub独立更新 · 每天07:00/14:00/21:00（北京时间） · 行情与日历不依赖模型额度 · 访问权限由部署设置控制")
 
 c_nav, c_rf = st.columns([5, 1])
 with c_rf:
@@ -354,7 +354,9 @@ if _LATEST_PUB_TS:
     _global_analysis_note += " · " + _analysis_label(_LATEST_PUB_TS, "数据更新")
 _today_bj = (__import__("datetime").datetime.now(__import__("zoneinfo").ZoneInfo("Asia/Shanghai"))
             .strftime("%Y-%m-%d"))
-if not _contract_available:
+if _autonomous.get('version')=='autonomous-public-v1':
+    st.caption('📊 行情与观察已独立更新 · '+_analysis_label(_autonomous.get('generated_at'),'报告生成')+' · GPT复审另行核验')
+elif not _contract_available:
     st.warning(f"⚠️ 旧版日报缺少硬质检清单，交易建议暂不展示；下一次日报任务完成后自动升级。 · {_global_analysis_note}")
 elif not _report_sync_ok:
     st.warning(f"⚠️ {_report_block_reason}，交易建议暂不展示；实时市场快照仍可查看。 · {_global_analysis_note}")
@@ -1088,13 +1090,15 @@ if _nav == "🧭 导航":
             weekly=_json_text('weekly_candidates_pub.json'),
             reverse_audit=_json_text('reverse_audit_pub.json'),
             reverse_status=_json_text('reverse_audit_status.json'),
-            relations=_json_text('module_relations_pub.json')))
+            relations=_json_text('module_relations_pub.json'), market_watch=_autonomous.get('watch')))
     except Exception:
         st.warning('中央关联视图暂不可用；保留数据时间，等待同版发布。')
     st.caption("温度定仓位 → 轮动定板块 → 操作榜定标的")
     st.caption(_fresh_caption((_snap or {}).get("generated_at"), "行情快照") + " · 持仓盘中每15分钟快扫；强思考最多每6小时")
     _meta0 = pub_meta()
-    if _meta0.get("daily_report_ts"):
+    if _autonomous.get('version')=='autonomous-public-v1':
+        st.caption(_analysis_label(_autonomous.get('generated_at'),'行情与观察日报')+' · AI审核与行情分开更新')
+    elif _meta0.get("daily_report_ts"):
         st.caption(_fresh_caption(_meta0["daily_report_ts"], "日报/操作榜") + " · 每时段更新（07/13/19点）")
     if _snap and _snap.get("markets"):
         for _mkt in ("美股", "A股", "港股"):
@@ -2261,7 +2265,9 @@ elif _nav in ("📊 日报", "📅 周报"):
     if _txt:
         _meta1 = pub_meta()
         _mk1 = "daily_report_ts" if _nav == "📊 日报" else "weekly_report_ts"
-        if _meta1.get(_mk1):
+        if _autonomous.get('version')=='autonomous-public-v1':
+            st.caption(_analysis_label(_autonomous.get('generated_at'),'报告编制')+' · 北京时间07:00/14:00/21:00自动更新；周报按已结束交易周')
+        elif _meta1.get(_mk1):
             st.caption(_fresh_caption(_meta1[_mk1], "本报告")
                        + (" · 每时段更新（北京时间07/13/19点）" if _nav == "📊 日报" else " · 每周日更新"))
         # 【V88·复制】下载 md 原文 + 复制全文（st.code 右上角自带复制按钮）

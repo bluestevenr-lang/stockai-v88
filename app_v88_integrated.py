@@ -13185,6 +13185,8 @@ def _render_today_nav():
     # 导致"简报说数据源不足停止展示"而首页仍在显示同一份报告里的评分——现在统一为同一数据源。
     _rep, _rep_planab_meta = _load_report_planab()
     _rep = _rep or ""
+    from autonomous_reports_view import render as _render_free_reports
+    _render_free_reports(st)
 
     def _analysis_label9(_ts, _what="分析"):
         """重点提示统一显示分析发生时间；缓存展示时绝不冒充当前刷新时间。"""

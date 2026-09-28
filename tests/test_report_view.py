@@ -19,3 +19,14 @@ def test_failed_loader_does_not_fall_back_to_cached_report():
     def fail():raise ValueError('invalid original')
     text,meta=load_report(loader=fail)
     assert text is None and meta['status']=='missing' and 'ValueError' in meta['issues'][0]
+
+
+def test_model_loader_failure_cannot_hide_separately_dated_free_report(tmp_path,monkeypatch):
+    import json,v88_paths
+    (tmp_path/'data').mkdir()
+    (tmp_path/'data/autonomous_report.json').write_text(json.dumps({'version':'autonomous-reports-v1',
+        'generated_at':'2026-09-28T03:00:00+00:00','model_calls':0,'daily':'free facts'}))
+    monkeypatch.setattr(v88_paths,'core_root',lambda:tmp_path)
+    def fail():raise RuntimeError('quota unavailable')
+    text,meta=load_report(loader=fail)
+    assert text=='free facts' and meta['no_rating_authority'] and meta['basis']=='autonomous_market_facts'

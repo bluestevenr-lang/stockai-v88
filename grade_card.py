@@ -525,7 +525,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                       pool: dict = None, limit_in: int = 12, limit_out: int = 8,
                       triad: dict = None, weekly: dict = None,
                       reverse_audit: dict = None, reverse_status: dict = None,
-                      relations: dict = None, watchlist: dict = None) -> str:
+                      relations: dict = None, watchlist: dict = None, market_watch: dict = None) -> str:
     """3A大系统完整模块(标题+IN表+OUT表+尾注),一次返回全部HTML。"""
     rows, triad_v2 = _triad_v2_rows(rk, triad)
     reasons_index = business_index()
@@ -926,7 +926,7 @@ def system_table_html(rk: dict, sg: dict, dec: dict, why_sells: dict,
                (f"<div style='font-size:12px;color:#64748b'>{near}</div>" if near else ""))
             # ══ 被拦组:独立成组成表(用户"就像-3a里的非持仓组别一样") ══
             + persistent_html
-            + market_adaptation_html() + market_watch_html()
+            + market_adaptation_html() + market_watch_html(market_watch)
             + tracking_html
             + fixed_archive
             + ("<details class='v88-entry-qualified' style='font-size:12px'><summary>进场条件关注子集（不改变当前等级与固定跟踪档案）</summary>" if persistent_html else "")

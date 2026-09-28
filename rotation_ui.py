@@ -417,7 +417,7 @@ def available_markets(forecast: dict) -> list:
 
 def rotation_map_html(forecast: dict, element_id: str = "v88-rotation-map",
                       focus_market: str = "美股", compact: bool = False) -> str:
-    if not forecast or not forecast.get("markets"):
+    if not forecast or not (forecast.get("markets") or forecast.get("trajectories")):
         return ""
     if forecast.get("trajectories"):
         return _rich_rotation_html(forecast, element_id, focus_market, compact=compact)

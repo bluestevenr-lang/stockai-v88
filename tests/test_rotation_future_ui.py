@@ -95,3 +95,9 @@ def test_old_complete_factors_remain_dated_historical_graph_not_empty():
     assert '上次行情情景（2026-09-11）' in html and '当前待更新' in html
     assert '历史图保留供对照' in html
     assert 'data-status="ready"' in html
+
+
+def test_allowlisted_public_forecast_does_not_require_legacy_markets():
+    f=sector_forecast();f.pop('markets')
+    html=rotation_ui.rotation_map_html(f)
+    assert 'rf-phase-clock' in html and 'data-status="ready"' in html
