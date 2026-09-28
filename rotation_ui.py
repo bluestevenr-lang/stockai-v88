@@ -241,8 +241,18 @@ def _rich_rotation_html(forecast: dict, element_id: str, focus_market: str,
         dates = (forecast.get('source_dates_by_market') or {}).get(market) or []
         source = dates[0] if len(dates)==1 else forecast.get('source_asof') if not dates else None
         required_session=latest_completed(market,datetime.now(timezone.utc)).isoformat()
-        entries=[{'doc':build_sector(row,market=market,source_asof=row.get('source_asof') or source or '',required_session=required_session),
-                  'label':row.get('name')} for row in rows]
+        entries=[]
+        for row in rows:
+            stamp=row.get('source_asof') or source or ''
+            doc=build_sector(row,market=market,source_asof=stamp,required_session=required_session)
+            if doc['status']=='missing' and stamp and str(stamp)[:10]<required_session:
+                historical=build_sector(row,market=market,source_asof=stamp)
+                if historical['status']=='ready':
+                    historical.update(historical=True,required_session=required_session,
+                        headline='⏳ 上次行情情景（'+str(stamp)[:10]+'），当前待更新 · '+historical['headline'])
+                    historical['assumptions'].insert(0,'历史图保留供对照；不能当作今天的方向、推荐或入场依据。')
+                    doc=historical
+            entries.append({'doc':doc,'label':row.get('name')})
         cards.append('<div class="rf-card"><b>'+MARKET_ICONS.get(market,'')+' '+escape(market)+' · 未来周期展望</b>')
         if quality:
             cards.append('<div class="rf-meta">原板块样本 '+escape(str(quality.get('valid_count','待核')))+' / '+escape(str(quality.get('input_count','待核')))+'；保留原排序</div>')

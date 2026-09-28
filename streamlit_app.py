@@ -262,7 +262,7 @@ def jump_stock(name, code):
     st.rerun()
 
 with c_nav:
-    _nav = st.radio("导航", ["🧭 导航", "🔥 热点新闻", "🏆 全选榜单", "🔍 个股搜索", "📊 日报", "📅 周报", "📈 大盘板块", "🛰️ 雷达族", "🔁 复盘", "💼 持仓终端"],
+    _nav = st.radio("导航", ["🧭 导航", "🔥 热点新闻", "🏆 全选榜单", "🔍 个股搜索", "📊 日报", "📅 周报", "🗓 推荐日历", "📈 大盘板块", "🛰️ 雷达族", "🔁 复盘", "💼 持仓终端"],
                     horizontal=True, label_visibility="collapsed", key="_nav")
 
 _pub_state = pub_meta()
@@ -304,6 +304,12 @@ def _json_text(name: str, publish_version: str = _PUB_VERSION) -> dict:
     except Exception:
         return {}
 
+
+_autonomous = _json_text('autonomous_runtime.json', str(int(_now_bjt().timestamp()//60)))
+if _autonomous.get('version')=='autonomous-public-v1':
+    _new_snap=_autonomous.get('snapshot') or {}
+    if str(_new_snap.get('generated_at',''))>str((_snap or {}).get('generated_at','')):
+        _snap=_new_snap
 
 _report_bundle = _json_text("report_bundle.json")
 if (_report_bundle.get("schema_version") == "v88.report.bundle/1.0"
@@ -416,6 +422,11 @@ def _cloud_is_nontrading(meta: dict = None) -> bool:
         pass
     return False
 
+
+if st.query_params.get('focus')=='journal':
+    from recommendation_journal_ui import render as _render_cloud_calendar
+    _render_cloud_calendar(_autonomous.get('journal') or {'rows':[]})
+    st.stop()
 
 if _nav == "🧭 导航":
     # 【V88·今日指令牌·云端版 2026-07-25 用户"全系统更新"】与桌面同款开屏三要素:
@@ -2236,10 +2247,17 @@ elif _nav == "🔍 个股搜索":
                     st.code(_cp_txt, language=None)
 
 # ── 📊 日报 / 📅 周报 ────────────────────────────────────────
+elif _nav == '🗓 推荐日历' or st.query_params.get('focus')=='journal':
+    from recommendation_journal_ui import render as _render_calendar
+    _render_calendar(_autonomous.get('journal') or {'rows':[]})
+
 elif _nav in ("📊 日报", "📅 周报"):
     _txt = _report_text if _nav == "📊 日报" else pub_text("weekly_report.md")
     if _nav == "📊 日报" and not _report_sync_ok:
         _txt = None
+    if _autonomous.get('version')=='autonomous-public-v1':
+        _txt=_autonomous.get('daily' if _nav=='📊 日报' else 'weekly') or _txt
+        st.caption('行情与观察报告 · 模型调用0 · AI复审独立更新；各项行情以原始日期为准。')
     if _txt:
         _meta1 = pub_meta()
         _mk1 = "daily_report_ts" if _nav == "📊 日报" else "weekly_report_ts"

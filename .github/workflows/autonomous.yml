@@ -1,0 +1,68 @@
+name: V88 免费行情·日报周报·飞书（无模型额度依赖）
+on:
+  schedule:
+    - cron: '0,25 23 * * *'
+    - cron: '0,25 6 * * *'
+    - cron: '0,25 13 * * *'
+  workflow_dispatch:
+    inputs:
+      send:
+        description: '发送当前时段飞书（沿用持久去重，不重复发送）'
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: v88-autonomous-facts
+  cancel-in-progress: false
+jobs:
+  facts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: core
+    env:
+      V88_DISABLE_LLM: '1'
+      V88_FEISHU_ALLOW_PUSH: '0'
+      PYTHONPATH: src
+      PYTHONUNBUFFERED: '1'
+      V88_FEISHU_STATE_DIR: ${{ github.workspace }}/state
+      GH_TOKEN: ${{ secrets.PRIVATE_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: bluestevenr-lang/v88-daily-report
+          token: ${{ secrets.PRIVATE_TOKEN }}
+          path: core
+      - uses: actions/checkout@v4
+        with:
+          repository: bluestevenr-lang/v88-daily-report
+          token: ${{ secrets.PRIVATE_TOKEN }}
+          ref: feishu-delivery-state
+          path: state
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install free runtime
+        run: pip install -q -r requirements.txt
+      - name: Git authentication for existing private state and public facts
+        run: gh auth setup-git
+      - name: Restore private inputs (no public logs or artifacts)
+        run: python src/feishu_cloud_bundle.py restore ../state/source-bundle.tar.gz > /tmp/v88-restore.log 2>&1
+      - name: Refresh facts, reports and permanent calendar without models
+        run: python src/autonomous_runtime.py
+      - name: Deliver existing due slot
+        if: github.event_name == 'schedule' || inputs.send == true
+        env:
+          FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+        run: |
+          python src/feishu_schedule.py --now > /tmp/v88-delivery.json
+          python - <<'PY'
+          import json
+          d=json.load(open('/tmp/v88-delivery.json'))
+          print(json.dumps({k:d.get(k) for k in ('status','accepted','complete','success','slot')}))
+          if d.get('status') in ('FAILED','ERROR'):raise SystemExit(1)
+          PY
+      # Never upload a private checkout, logs, source bundle, or full report as
+      # artifacts of this public repository. Runtime history stays in state.

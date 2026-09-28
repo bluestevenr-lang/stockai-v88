@@ -19,6 +19,13 @@ AI 皇冠双核 V88 - 集成版（模块化架构 + 完整功能）
 from v88_paths import core_root
 
 import streamlit as st
+from autonomous_desktop import schedule_sync
+schedule_sync()
+if st.query_params.get('focus')=='journal':
+    st.set_page_config(page_title='V88 · 推荐日历',layout='wide')
+    from recommendation_journal_ui import render as _journal_render
+    _journal_render()
+    st.stop()
 # Explicit stock deep links must dispatch before homepage imports, pools and panels.
 # Ordinary navigation retains the complete original overview and research tools.
 if st.query_params.get("focus") == "deep":

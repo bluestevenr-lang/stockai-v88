@@ -87,3 +87,11 @@ def test_stale_cycle_record_never_builds_current_future_preview(monkeypatch):
          'source_asof':'2026-08-12','stale_preserved':True,'direction':'hold'}]},profiles={})
     assert '旧记录' in html and '相位待核' in html
     assert 'class="rf-future-panel"' not in html
+
+
+def test_old_complete_factors_remain_dated_historical_graph_not_empty():
+    f=sector_forecast();f['source_asof']='2026-09-11';f['source_dates_by_market']={'A股':['2026-09-11']}
+    html=rotation_ui.rotation_map_html(f)
+    assert '上次行情情景（2026-09-11）' in html and '当前待更新' in html
+    assert '历史图保留供对照' in html
+    assert 'data-status="ready"' in html
