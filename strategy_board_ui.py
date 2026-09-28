@@ -50,7 +50,7 @@ def html(doc=None,code=None,now=None,profiles=None):
                     stop_band = r.get('stop_range')
                     stop_label = '–'.join(f'{v:g}' for v in stop_band) if stop_band else '区间待核实'
                     profile_markup = profile_html(r['code'], profiles, now)
-                    if profiles is not None and not profiles.get('records') and r.get('industry_snapshot'):
+                    if r.get('industry_snapshot') and (r['industry_snapshot'].get('rank') or profiles is not None and not profiles.get('records')):
                         info=r['industry_snapshot'];rank=info.get('rank');session=info.get('source_session')
                         from exchange_sessions import latest_completed
                         from datetime import datetime,timezone
