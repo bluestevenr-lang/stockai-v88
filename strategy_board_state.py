@@ -6,7 +6,7 @@ from exchange_sessions import latest_completed
 
 def view(doc,now=None):
     now=now or datetime.now(timezone.utc);out=deepcopy(doc)
-    for row in out.get('rows',[]):
+    for row in out.get('rows',[])+out.get('investment_candidates',[]):
         try:
             zone=ZoneInfo('America/New_York' if row['market']=='美股' else 'Asia/Shanghai')
             at=datetime.fromisoformat(row['quote_asof'])

@@ -1087,7 +1087,7 @@ if _nav == "🧭 导航":
         pass
     # Strategy results must remain visible even if a legacy audit renderer fails.
     from strategy_board_ui import html as _strategy_html
-    _strategy_markup = _strategy_html(_autonomous.get('strategy', {}))
+    _strategy_markup = _strategy_html(_autonomous.get('strategy', {}), profiles=_json_text('stock_profiles_pub.json'))
     if _strategy_markup:
         st.html('<div id="v88-grade-list"></div>' + _strategy_markup)
     def _legacy_central_view():
@@ -1964,7 +1964,7 @@ elif _nav == "🔍 个股搜索":
             _central_cloud = _json_text('triad_selection_pub.json')
             from strategy_board_ui import html as _strategy_html
             if any(r.get('code')==_canon_cloud(_tsym) for r in (_autonomous.get('strategy') or {}).get('rows',[])):
-                st.markdown(_strategy_html(_autonomous['strategy'],code=_canon_cloud(_tsym)),unsafe_allow_html=True)
+                st.markdown(_strategy_html(_autonomous['strategy'],code=_canon_cloud(_tsym),profiles=_json_text('stock_profiles_pub.json')),unsafe_allow_html=True)
             _central_rows_cloud, _ = _triad_v2_rows({}, _central_cloud)
             _match_cloud = next((r for r in _central_rows_cloud if _canon_cloud(r.get('code')) == _canon_cloud(_tsym)), None)
             if _match_cloud:
