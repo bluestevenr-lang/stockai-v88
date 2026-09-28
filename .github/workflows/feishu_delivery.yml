@@ -1,7 +1,10 @@
 name: V88 飞书三时段回执与补漏
 on:
   schedule:
-    # Off-hour polling; target slots remain Beijing 07:00 / 14:00 / 21:00.
+    # Primary triggers: Beijing 06:30 / 12:01 / 19:01 (UTC below).
+    - cron: '30 22 * * *'
+    - cron: '1 4,11 * * *'
+    # Independent 15-minute receipt reconciliation retains catch-up/deduplication.
     - cron: '3,18,33,48 * * * *'
   workflow_dispatch: {}
   workflow_call: {}

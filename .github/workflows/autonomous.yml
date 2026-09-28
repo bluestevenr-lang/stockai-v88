@@ -1,9 +1,9 @@
 name: V88 免费行情·日报周报·飞书（无模型额度依赖）
 on:
   schedule:
-    - cron: '41 22 * * *'
-    - cron: '41 5 * * *'
-    - cron: '41 12 * * *'
+    - cron: '11 22 * * *'
+    - cron: '42 3 * * *'
+    - cron: '42 10 * * *'
   workflow_dispatch:
     inputs:
       send:
