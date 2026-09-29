@@ -4,8 +4,8 @@ on:
     - cron: '11 22 * * *'
     - cron: '42 3 * * *'
     - cron: '42 10 * * *'
-    # Ten-minute intraday ticks; avoid the congested top of each hour.
-    - cron: '7,17,27,37,47,57 1-8,13-21 * * 1-5'
+    # Half-hour intraday ticks; avoid the congested top of each hour.
+    - cron: '7,37 1-8,13-21 * * 1-5'
   workflow_dispatch:
     inputs:
       fast:
@@ -41,24 +41,36 @@ jobs:
           repository: bluestevenr-lang/v88-daily-report
           token: ${{ secrets.PRIVATE_TOKEN }}
           path: core
+      - name: Check verified exchange trading window
+        id: window
+        env:
+          FAST_REFRESH: ${{ inputs.fast == true || github.event.schedule == '7,37 1-8,13-21 * * 1-5' }}
+          SCHEDULED: ${{ github.event_name == 'schedule' }}
+        run: python3 src/intraday_schedule.py
       - uses: actions/checkout@v4
+        if: steps.window.outputs.run == 'true'
         with:
           repository: bluestevenr-lang/v88-daily-report
           token: ${{ secrets.PRIVATE_TOKEN }}
           ref: feishu-delivery-state
           path: state
       - uses: actions/setup-python@v5
+        if: steps.window.outputs.run == 'true'
         with:
           python-version: '3.12'
       - name: Install free runtime
+        if: steps.window.outputs.run == 'true'
         run: pip install -q -r requirements.txt
       - name: Git authentication for existing private state and public facts
+        if: steps.window.outputs.run == 'true'
         run: gh auth setup-git
       - name: Restore private inputs (no public logs or artifacts)
+        if: steps.window.outputs.run == 'true'
         run: python src/feishu_cloud_bundle.py restore ../state/source-bundle.tar.gz > /tmp/v88-restore.log 2>&1
       - name: Refresh facts, reports and permanent calendar without models
+        if: steps.window.outputs.run == 'true'
         env:
-          FAST_REFRESH: ${{ inputs.fast == true || github.event.schedule == '7,17,27,37,47,57 1-8,13-21 * * 1-5' }}
+          FAST_REFRESH: ${{ inputs.fast == true || github.event.schedule == '7,37 1-8,13-21 * * 1-5' }}
         run: |
           if [ "$FAST_REFRESH" = "true" ]; then
             python src/autonomous_runtime.py --fast
@@ -66,6 +78,7 @@ jobs:
             python src/autonomous_runtime.py
           fi
       - name: Validate the replacement rule digest without sending
+        if: steps.window.outputs.run == 'true'
         run: |
           python src/feishu_schedule.py --preview > /tmp/v88-preview.json
           python - <<'PYCODE'
@@ -75,6 +88,7 @@ jobs:
           print(json.dumps({'report_mode':'github-rules-three-slot-v1','model_calls':d.get('model_calls'),'characters':len(d['text']),'external_messages':0}))
           PYCODE
       - name: Verify Astra cycle refreshed (reports already delivered independently)
+        if: steps.window.outputs.run == 'true'
         run: |
           python - <<'PY'
           import json
@@ -93,9 +107,8 @@ jobs:
           PY
       # Never upload a private checkout, logs, source bundle, or full report as
       # artifacts of this public repository. Runtime history stays in state.
-
   delivery:
     needs: facts
-    if: always() && (inputs.send == true || (github.event_name == 'schedule' && github.event.schedule != '7,17,27,37,47,57 1-8,13-21 * * 1-5'))
+    if: always() && (inputs.send == true || (github.event_name == 'schedule' && github.event.schedule != '7,37 1-8,13-21 * * 1-5'))
     uses: ./.github/workflows/feishu_delivery.yml
     secrets: inherit

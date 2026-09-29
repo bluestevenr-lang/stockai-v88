@@ -38,7 +38,7 @@ def html(doc=None,code=None,now=None,profiles=None):
     <p>3A 最高分档 ≥80 · 2A 短中线 · 1A 超短线。每档各市场 Top3；同股同数据版本共用一个综合分；周期适用性、入场、止盈与止损分别列示。</p>
     <small>2026-09-28 新策略制 · 筛选分不代表胜率或 GPT 复审分；入场状态单列。旧评级与日历原样保留。</small>''']
     out.append('<p class="screen-clock">'+esc(read_clock)+'</p>')
-    out.append('<p>🔄 盘中云端每10分钟筛选 · 页面每60秒核对 · 免费规则计算，不消耗模型额度；实际完成时间以下方为准。</p>')
+    out.append('<p>🔄 交易日盘中云端每30分钟筛选 · 页面每60秒核对 · 免费规则计算，不消耗模型额度；实际完成时间以下方为准。</p>')
     source_check=doc.get('quote_refresh_status') or {}
     if source_check.get('status') not in (None,'complete'):
         out.append('<p>⏳ 报价采集未完整成功 · 最近尝试 '+esc(display(source_check.get('finished_at') or source_check.get('requested_at')))+'；逐股行情时间保留，重新筛选不等于报价已更新。</p>')
