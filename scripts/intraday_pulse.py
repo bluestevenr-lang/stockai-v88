@@ -19,6 +19,9 @@ def dispatch(workflow,inputs):
 
 
 def main():
+    if os.environ.get('PULSE_PRIME')=='true':
+        dispatch('autonomous.yml',{'fast':True,'send':False})
+        print('initial_refresh_dispatch_accepted',flush=True)
     end=datetime.now(timezone.utc)+timedelta(minutes=325)
     target=next_tick(datetime.now(timezone.utc))
     print('clock_started next_tick='+target.isoformat(),flush=True)

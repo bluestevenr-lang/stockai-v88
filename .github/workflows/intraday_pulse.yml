@@ -1,6 +1,11 @@
 name: V88 盘中半小时云端时钟
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      prime:
+        description: '启动时立即核验一次行情刷新，随后按交易时段计时'
+        type: boolean
+        default: false
   schedule:
     - cron: '13 */3 * * 1-5'
 permissions:
@@ -26,4 +31,5 @@ jobs:
           PYTHONPATH: core/src
           GH_TOKEN: ${{ github.token }}
           PYTHONUNBUFFERED: '1'
+          PULSE_PRIME: ${{ inputs.prime == true }}
         run: python3 scripts/intraday_pulse.py
