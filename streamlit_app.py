@@ -305,7 +305,8 @@ def _json_text(name: str, publish_version: str = _PUB_VERSION) -> dict:
         return {}
 
 
-_autonomous = _json_text('autonomous_runtime.json', str(int(_now_bjt().timestamp()//60)))
+_opened_at = st.session_state.setdefault('_v88_opened_at', _now_bjt().isoformat())
+_autonomous = _json_text('autonomous_runtime.json', _opened_at + '-' + str(int(_now_bjt().timestamp()//60)))
 if _autonomous.get('version')=='autonomous-public-v1':
     _new_snap=_autonomous.get('snapshot') or {}
     if str(_new_snap.get('generated_at',''))>str((_snap or {}).get('generated_at','')):

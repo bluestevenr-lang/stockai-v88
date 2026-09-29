@@ -15,3 +15,23 @@ def schedule_sync():
         with log.open('a') as out:
             subprocess.Popen([sys.executable,str(script)],cwd=base,stdout=out,stderr=out,start_new_session=True)
     except OSError:return
+
+
+def sync_on_open():
+    """Check the latest private publication once before a new session reads tables."""
+    import streamlit as st
+    from datetime import datetime,timezone
+    if '_v88_opened_at' in st.session_state:
+        schedule_sync()
+        return
+    st.session_state['_v88_opened_at']=datetime.now(timezone.utc).isoformat()
+    base=core_root();script=base/'src/autonomous_sync.py'
+    if not script.exists():return
+    try:
+        with st.spinner('正在核对 GitHub 最新筛选结果…'):
+            result=subprocess.run([sys.executable,str(script)],cwd=base,capture_output=True,text=True,timeout=20)
+        state='已核对GitHub最新发布' if result.returncode==0 else '云端核对失败，显示本机缓存'
+    except (OSError,subprocess.TimeoutExpired):state='云端核对超时，显示本机缓存'
+    st.session_state['_v88_open_sync']=state
+    try:(base/'data/.autonomous_sync_attempt').touch()
+    except OSError:pass

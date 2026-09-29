@@ -1,0 +1,36 @@
+name: V88 飞书提前就绪定时发送
+on:
+  schedule:
+    # Start two hours before Beijing 06:30 / 12:01 / 19:01.
+    - cron: '30 20 * * *'
+    - cron: '1 2 * * *'
+    - cron: '1 9 * * *'
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: '提前就绪的日报时段（北京时间）'
+        required: true
+        type: choice
+        options: [morning, afternoon, evening]
+permissions:
+  contents: read
+  actions: write
+concurrency:
+  group: v88-feishu-warm-${{ inputs.slot || github.event.schedule }}
+  cancel-in-progress: false
+jobs:
+  ready:
+    runs-on: ubuntu-latest
+    timeout-minutes: 135
+    steps:
+      - uses: actions/checkout@v4
+      - name: Refresh data before target time and wait for delivery
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPORT_SLOT: ${{ inputs.slot }}
+          REPORT_CRON: ${{ github.event.schedule }}
+        run: python3 scripts/feishu_warm_guard.py
+  delivery:
+    needs: ready
+    uses: ./.github/workflows/feishu_delivery.yml
+    secrets: inherit
