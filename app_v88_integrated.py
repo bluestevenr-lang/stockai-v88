@@ -2978,6 +2978,8 @@ _three_a_slot = st.container()
 with _three_a_slot:
     @st.fragment(run_every=60)
     def _three_a_fragment():
+        from autonomous_desktop import schedule_sync
+        schedule_sync()
         # ═══════════════════════════════════════════════════════════════
         # 【🎯 3A大系统·常驻模块 2026-08-02 用户"放在大盘和今日之间"·第4版】
         # 前两版分别错在:①做成卡片(用户要图二的11列表格) ②塞进买表嵌套作用域→

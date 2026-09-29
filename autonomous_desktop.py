@@ -9,7 +9,7 @@ def schedule_sync():
     if not script.exists():return
     stamp=base/'data/.autonomous_sync_attempt'
     try:
-        if stamp.exists() and time.time()-stamp.stat().st_mtime<300:return
+        if stamp.exists() and time.time()-stamp.stat().st_mtime<60:return
         stamp.touch()
         log=base/'logs/autonomous_sync.log';log.parent.mkdir(exist_ok=True)
         with log.open('a') as out:

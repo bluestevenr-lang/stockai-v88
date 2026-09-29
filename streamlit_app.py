@@ -1088,9 +1088,12 @@ if _nav == "🧭 导航":
         pass
     # Strategy results must remain visible even if a legacy audit renderer fails.
     from strategy_board_ui import html as _strategy_html
-    _strategy_markup = _strategy_html(_autonomous.get('strategy', {}), profiles=_json_text('stock_profiles_pub.json'))
-    if _strategy_markup:
-        st.html('<div id="v88-grade-list"></div>' + _strategy_markup)
+    @st.fragment(run_every=60)
+    def _current_strategy_board():
+        latest=_json_text('autonomous_runtime.json', _opened_at + '-' + str(int(_now_bjt().timestamp()//60)))
+        markup=_strategy_html(latest.get('strategy', _autonomous.get('strategy', {})), profiles=_json_text('stock_profiles_pub.json'))
+        if markup: st.html('<div id="v88-grade-list"></div>' + markup)
+    _current_strategy_board()
     from astra_cycle_view import html as _astra_cycle_html
     _astra_markup = _astra_cycle_html(_autonomous.get('astra') or {})
     if _astra_markup: st.html(_astra_markup)

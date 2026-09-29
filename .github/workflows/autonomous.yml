@@ -4,8 +4,14 @@ on:
     - cron: '11 22 * * *'
     - cron: '42 3 * * *'
     - cron: '42 10 * * *'
+    # Ten-minute intraday ticks; avoid the congested top of each hour.
+    - cron: '7,17,27,37,47,57 1-8,13-21 * * 1-5'
   workflow_dispatch:
     inputs:
+      fast:
+        description: '轻量盘中报价与规则筛选，不调用模型'
+        type: boolean
+        default: false
       send:
         description: '发送当前时段飞书（沿用持久去重，不重复发送）'
         type: boolean
@@ -51,7 +57,14 @@ jobs:
       - name: Restore private inputs (no public logs or artifacts)
         run: python src/feishu_cloud_bundle.py restore ../state/source-bundle.tar.gz > /tmp/v88-restore.log 2>&1
       - name: Refresh facts, reports and permanent calendar without models
-        run: python src/autonomous_runtime.py
+        env:
+          FAST_REFRESH: ${{ inputs.fast == true || github.event.schedule == '7,17,27,37,47,57 1-8,13-21 * * 1-5' }}
+        run: |
+          if [ "$FAST_REFRESH" = "true" ]; then
+            python src/autonomous_runtime.py --fast
+          else
+            python src/autonomous_runtime.py
+          fi
       - name: Validate the replacement rule digest without sending
         run: |
           python src/feishu_schedule.py --preview > /tmp/v88-preview.json
@@ -83,6 +96,6 @@ jobs:
 
   delivery:
     needs: facts
-    if: always() && (github.event_name == 'schedule' || inputs.send == true)
+    if: always() && (inputs.send == true || (github.event_name == 'schedule' && github.event.schedule != '7,17,27,37,47,57 1-8,13-21 * * 1-5'))
     uses: ./.github/workflows/feishu_delivery.yml
     secrets: inherit
