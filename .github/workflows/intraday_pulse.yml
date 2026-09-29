@@ -1,0 +1,29 @@
+name: V88 盘中半小时云端时钟
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '13 */3 * * 1-5'
+permissions:
+  contents: read
+  actions: write
+concurrency:
+  group: v88-intraday-clock
+  cancel-in-progress: false
+jobs:
+  clock:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: bluestevenr-lang/v88-daily-report
+          token: ${{ secrets.PRIVATE_TOKEN }}
+          path: core
+          sparse-checkout: src
+      - name: Dispatch inside verified market windows without models
+        env:
+          PYTHONPATH: core/src
+          GH_TOKEN: ${{ github.token }}
+          PYTHONUNBUFFERED: '1'
+        run: python3 scripts/intraday_pulse.py
