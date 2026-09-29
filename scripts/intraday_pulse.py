@@ -34,7 +34,9 @@ def main():
                 try:dispatch('autonomous.yml',{'fast':True,'send':False});print('accepted_half_hour_refresh',target.isoformat(),flush=True);break
                 except (urllib.error.URLError,TimeoutError,RuntimeError) as exc:
                     print('dispatch_failure',type(exc).__name__,flush=True)
-                    if attempt==2:raise
+                    if attempt==2:
+                        print('refresh_trigger_unconfirmed; retain_clock_for_next_tick',flush=True)
+                        break
                     time.sleep(15)
         else:print('exchange_closed_skip',target.isoformat(),flush=True)
         target=next_tick(datetime.now(timezone.utc))
