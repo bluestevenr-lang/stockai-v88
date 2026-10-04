@@ -1,37 +1,255 @@
 {
  "schema_version": "v88.snapshot.public/1.0",
- "snapshot_id": "snap-2258443c84b9539d",
- "generated_at": "2026-10-01 08:52",
+ "snapshot_id": "snap-972f334e4735ee4c",
+ "generated_at": "2026-10-04 08:04",
  "private_redacted": true,
  "selection_authority": "market_context_only; no stock recommendation authority",
  "markets": {
-  "美股": {
-   "indices": [],
+  "A股": {
+   "indices": [
+    {
+     "symbol": "000001.SS",
+     "vs_ma60": -1.58,
+     "chg5d": -2.78,
+     "name": "上证指数",
+     "last": 3842.19,
+     "trend": "🔄 震荡偏弱",
+     "vol_ratio": 1.0,
+     "vs_ma20": -1.62,
+     "chg20d": -3.46,
+     "chg1d": 0.31
+    },
+    {
+     "symbol": "399001.SZ",
+     "vs_ma60": -7.42,
+     "chg5d": -6.09,
+     "name": "深证成指",
+     "last": 12887.62,
+     "trend": "📉 空头排列",
+     "vol_ratio": 1.0,
+     "vs_ma20": -4.28,
+     "chg20d": -7.1,
+     "chg1d": -0.11
+    },
+    {
+     "symbol": "399006.SZ",
+     "vs_ma60": -9.63,
+     "chg5d": -7.78,
+     "name": "创业板指",
+     "last": 3135.28,
+     "trend": "📉 空头排列",
+     "vol_ratio": 1.0,
+     "vs_ma20": -5.12,
+     "chg20d": -7.61,
+     "chg1d": -0.23
+    }
+   ],
    "sectors": [
     {
-     "chg1d": -0.81,
-     "chg20d": -6.04,
-     "symbol": "XLB",
-     "vs_ma20": -3.54,
-     "last": 48.7,
-     "vol_ratio": 1.04,
-     "name": "材料",
+     "symbol": "512760.SS",
+     "vs_ma60": -10.95,
+     "heat": 29,
+     "chg5d": -8.99,
+     "name": "半导体芯片",
+     "last": 1.01,
      "trend": "📉 空头排列",
-     "heat": 43,
-     "chg5d": -3.14,
-     "vs_ma60": -4.94
+     "vol_ratio": 1.0,
+     "vs_ma20": -4.25,
+     "chg20d": -7.24,
+     "chg1d": -2.88
+    },
+    {
+     "symbol": "515030.SS",
+     "vs_ma60": -8.28,
+     "heat": 38,
+     "chg5d": -3.83,
+     "name": "新能源车",
+     "last": 1.46,
+     "trend": "📉 空头排列",
+     "vol_ratio": 1.0,
+     "vs_ma20": -3.32,
+     "chg20d": -8.71,
+     "chg1d": 0.76
+    },
+    {
+     "symbol": "512690.SS",
+     "vs_ma60": -1.36,
+     "heat": 51,
+     "chg5d": 0.48,
+     "name": "白酒",
+     "last": 0.42,
+     "trend": "🔄 震荡偏强",
+     "vol_ratio": 1.03,
+     "vs_ma20": 0.12,
+     "chg20d": -2.8,
+     "chg1d": 2.96
+    },
+    {
+     "symbol": "512010.SS",
+     "vs_ma60": 2.33,
+     "heat": 53,
+     "chg5d": 1.04,
+     "name": "医药",
+     "last": 0.39,
+     "trend": "🔄 震荡偏强",
+     "vol_ratio": 1.0,
+     "vs_ma20": 3.11,
+     "chg20d": 2.65,
+     "chg1d": 2.92
+    },
+    {
+     "symbol": "512880.SS",
+     "vs_ma60": -5.41,
+     "heat": 39,
+     "chg5d": -3.74,
+     "name": "证券",
+     "last": 1.03,
+     "trend": "📉 空头排列",
+     "vol_ratio": 1.0,
+     "vs_ma20": -3.3,
+     "chg20d": -7.55,
+     "chg1d": 0.39
+    },
+    {
+     "symbol": "512800.SS",
+     "vs_ma60": 4.32,
+     "heat": 53,
+     "chg5d": 1.67,
+     "name": "银行",
+     "last": 0.85,
+     "trend": "📈 多头排列",
+     "vol_ratio": 1.0,
+     "vs_ma20": 1.32,
+     "chg20d": 0.83,
+     "chg1d": 1.43
+    },
+    {
+     "symbol": "512400.SS",
+     "vs_ma60": -7.49,
+     "heat": 27,
+     "chg5d": -6.46,
+     "name": "有色金属",
+     "last": 1.62,
+     "trend": "📉 空头排列",
+     "vol_ratio": 0.9,
+     "vs_ma20": -6.89,
+     "chg20d": -12.61,
+     "chg1d": 0.12
+    },
+    {
+     "symbol": "512660.SS",
+     "vs_ma60": -2.97,
+     "heat": 21,
+     "chg5d": -5.74,
+     "name": "军工",
+     "last": 1.1,
+     "trend": "🔄 震荡偏弱",
+     "vol_ratio": 0.66,
+     "vs_ma20": -3.99,
+     "chg20d": -3.51,
+     "chg1d": -0.09
+    },
+    {
+     "symbol": "159928.SZ",
+     "vs_ma60": -0.99,
+     "heat": 40,
+     "chg5d": 0.0,
+     "name": "消费",
+     "last": 0.66,
+     "trend": "📉 空头排列",
+     "vol_ratio": 0.82,
+     "vs_ma20": -0.44,
+     "chg20d": -2.37,
+     "chg1d": 1.7
+    },
+    {
+     "symbol": "515220.SS",
+     "vs_ma60": 0.86,
+     "heat": 29,
+     "chg5d": -2.79,
+     "name": "煤炭",
+     "last": 1.26,
+     "trend": "🔄 震荡偏弱",
+     "vol_ratio": 0.72,
+     "vs_ma20": -1.93,
+     "chg20d": -6.41,
+     "chg1d": 0.88
     }
    ],
    "temperature": {
-    "trend": 50,
-    "breadth": 0,
-    "temp": 32,
-    "label": "🟠 偏冷",
-    "momentum": 50,
+    "label": "🔵 冰点",
     "vol_heat": 50,
-    "verdict": "🟠 偏冷震荡·轻仓等右侧信号"
+    "breadth": 30,
+    "momentum": 0,
+    "verdict": "🧊 情绪冰点·地量磨底（等企稳信号再动，不逆势加主题）",
+    "temp": 18,
+    "trend": 0
    },
-   "turn_risk": {},
+   "turn_risk": {
+    "text": "顶部转向风险 低(0/100) ｜ 底部转机信号 低(25/100)｜顶部特征0/7·底部特征2/7",
+    "bottom_opp": 25,
+    "top_risk": 0,
+    "ver": "v2"
+   },
+   "l3": {}
+  },
+  "港股": {
+   "indices": [
+    {
+     "symbol": "^HSI",
+     "vs_ma60": -4.83,
+     "chg5d": -3.19,
+     "name": "恒生指数",
+     "last": 23972.29,
+     "trend": "📉 空头排列",
+     "vol_ratio": 0.83,
+     "vs_ma20": -3.54,
+     "chg20d": -4.92,
+     "chg1d": -2.6
+    },
+    {
+     "symbol": "3033.HK",
+     "vs_ma60": -9.93,
+     "chg5d": -4.82,
+     "name": "恒生科技(ETF代理)",
+     "last": 4.07,
+     "trend": "📉 空头排列",
+     "vol_ratio": 0.85,
+     "vs_ma20": -4.8,
+     "chg20d": -7.21,
+     "chg1d": -2.45
+    }
+   ],
+   "sectors": [
+    {
+     "symbol": "3033.HK",
+     "vs_ma60": -9.93,
+     "heat": 30,
+     "chg5d": -4.82,
+     "name": "恒生科技",
+     "last": 4.07,
+     "trend": "📉 空头排列",
+     "vol_ratio": 0.85,
+     "vs_ma20": -4.8,
+     "chg20d": -7.21,
+     "chg1d": -2.45
+    }
+   ],
+   "temperature": {
+    "label": "🔵 冰点",
+    "vol_heat": 26,
+    "breadth": 0,
+    "momentum": 10,
+    "verdict": "🧊 情绪冰点·恐慌杀跌接近弹药区（属正常调整非见顶，核心层分批备弹、不追杀）",
+    "temp": 5,
+    "trend": 0
+   },
+   "turn_risk": {
+    "text": "顶部转向风险 低(10/100) ｜ 底部转机信号 低(25/100)｜顶部特征1/7·底部特征2/7",
+    "bottom_opp": 25,
+    "top_risk": 10,
+    "ver": "v2"
+   },
    "l3": {}
   }
  }
