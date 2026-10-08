@@ -9,96 +9,96 @@
    "indices": [
     {
      "chg1d": -0.79,
-     "chg5d": -3.17,
      "name": "上证指数",
-     "symbol": "000001.SS",
-     "vs_ma20": -2.24,
      "trend": "📉 空头排列",
-     "vs_ma60": -2.29,
-     "last": 3811.9,
      "chg20d": -3.29,
-     "vol_ratio": 1.0
+     "vol_ratio": 1.0,
+     "symbol": "000001.SS",
+     "chg5d": -3.17,
+     "vs_ma20": -2.24,
+     "last": 3811.9,
+     "vs_ma60": -2.29
     },
     {
      "chg1d": -2.07,
-     "chg5d": -7.44,
      "name": "深证成指",
-     "symbol": "399001.SZ",
-     "vs_ma20": -5.91,
      "trend": "📉 空头排列",
-     "vs_ma60": -9.08,
-     "last": 12620.9,
      "chg20d": -7.28,
-     "vol_ratio": 1.0
+     "vol_ratio": 1.0,
+     "symbol": "399001.SZ",
+     "chg5d": -7.44,
+     "vs_ma20": -5.91,
+     "last": 12620.9,
+     "vs_ma60": -9.08
     },
     {
      "chg1d": -3.15,
-     "chg5d": -10.15,
      "name": "创业板指",
-     "symbol": "399006.SZ",
-     "vs_ma20": -7.72,
      "trend": "📉 空头排列",
-     "vs_ma60": -12.13,
-     "last": 3036.66,
      "chg20d": -8.32,
-     "vol_ratio": 1.0
+     "vol_ratio": 1.0,
+     "symbol": "399006.SZ",
+     "chg5d": -10.15,
+     "vs_ma20": -7.72,
+     "last": 3036.66,
+     "vs_ma60": -12.13
     }
    ],
    "sectors": [
     {
      "chg1d": -0.55,
      "heat": 39,
-     "chg5d": -3.72,
      "name": "新能源车",
-     "symbol": "515030.SS",
-     "vs_ma20": -3.51,
      "trend": "📉 空头排列",
-     "vs_ma60": -8.53,
-     "last": 1.45,
      "chg20d": -7.0,
-     "vol_ratio": 1.0
+     "vol_ratio": 1.0,
+     "symbol": "515030.SS",
+     "chg5d": -3.72,
+     "vs_ma20": -3.51,
+     "last": 1.45,
+     "vs_ma60": -8.53
     },
     {
      "chg1d": 0.7,
      "heat": 56,
-     "chg5d": 3.12,
      "name": "银行",
-     "symbol": "512800.SS",
-     "vs_ma20": 1.95,
      "trend": "📈 多头排列",
-     "vs_ma60": 4.86,
-     "last": 0.86,
      "chg20d": 1.78,
-     "vol_ratio": 1.0
+     "vol_ratio": 1.0,
+     "symbol": "512800.SS",
+     "chg5d": 3.12,
+     "vs_ma20": 1.95,
+     "last": 0.86,
+     "vs_ma60": 4.86
     },
     {
      "chg1d": -0.76,
      "heat": 41,
-     "chg5d": -0.46,
      "name": "消费",
-     "symbol": "159928.SZ",
-     "vs_ma20": -1.08,
      "trend": "📉 空头排列",
-     "vs_ma60": -1.81,
-     "last": 0.65,
      "chg20d": -2.25,
-     "vol_ratio": 0.86
+     "vol_ratio": 0.86,
+     "symbol": "159928.SZ",
+     "chg5d": -0.46,
+     "vs_ma20": -1.08,
+     "last": 0.65,
+     "vs_ma60": -1.81
     }
    ],
    "temperature": {
+    "breadth": 33,
+    "verdict": "🧊 情绪冰点·恐慌杀跌接近弹药区（属正常调整非见顶，核心层分批备弹、不追杀）",
+    "temp": 19,
+    "vol_heat": 50,
     "momentum": 0,
     "trend": 0,
-    "breadth": 33,
-    "vol_heat": 50,
-    "label": "🔵 冰点",
-    "temp": 19,
-    "verdict": "🧊 情绪冰点·恐慌杀跌接近弹药区（属正常调整非见顶，核心层分批备弹、不追杀）"
+    "label": "🔵 冰点"
    },
    "turn_risk": {
-    "text": "顶部转向风险 低(0/100) ｜ 底部转机信号 低(25/100)｜顶部特征0/7·底部特征2/7",
     "top_risk": 0,
+    "ver": "v2",
     "bottom_opp": 25,
-    "ver": "v2"
+    "text": "顶部转向风险 低(0/100) ｜ 底部转机信号 低(25/100)｜顶部特征0/7·底部特征2/7"
    },
    "l3": {}
   },
@@ -106,32 +106,32 @@
    "indices": [
     {
      "chg1d": -0.62,
-     "chg5d": -1.6,
      "name": "恒生指数",
-     "symbol": "^HSI",
-     "vs_ma20": -2.13,
      "trend": "📉 空头排列",
-     "vs_ma60": -4.19,
-     "last": 24130.5,
      "chg20d": -4.69,
-     "vol_ratio": 0.74
+     "vol_ratio": 0.74,
+     "symbol": "^HSI",
+     "chg5d": -1.6,
+     "vs_ma20": -2.13,
+     "last": 24130.5,
+     "vs_ma60": -4.19
     }
    ],
    "sectors": [],
    "temperature": {
+    "breadth": 50,
+    "verdict": "🧊 情绪冰点·地量磨底（等企稳信号再动，不逆势加主题）",
+    "temp": 24,
+    "vol_heat": 11,
     "momentum": 34,
     "trend": 0,
-    "breadth": 50,
-    "vol_heat": 11,
-    "label": "🔵 冰点",
-    "temp": 24,
-    "verdict": "🧊 情绪冰点·地量磨底（等企稳信号再动，不逆势加主题）"
+    "label": "🔵 冰点"
    },
    "turn_risk": {
-    "text": "顶部转向风险 低(0/100) ｜ 底部转机信号 低(25/100)｜顶部特征0/7·底部特征2/7",
     "top_risk": 0,
+    "ver": "v2",
     "bottom_opp": 25,
-    "ver": "v2"
+    "text": "顶部转向风险 低(0/100) ｜ 底部转机信号 低(25/100)｜顶部特征0/7·底部特征2/7"
    },
    "l3": {}
   }
