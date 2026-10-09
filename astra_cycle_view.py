@@ -15,10 +15,10 @@ def html(doc, now=None):
     d = view(doc, now)
     if not d.get('version'): return ''
     out = ['<section id="v88-astra-monthly" style="border:1px solid #c7d2fe;border-left:5px solid #6366f1;border-radius:12px;padding:18px;margin:18px 0;background:#f8faff">',
-           '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px"><b style="font-size:23px;color:#3730a3">🎯 Astra · 15日短线计划</b>',
+           '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px"><b style="font-size:23px;color:#3730a3">🎯 Astra · 定期短线计划</b>',
            f'<b style="font-size:20px">研究 {len(d.get("rows", []))} 只　·　条件匹配 {d.get("rule_matched_count", 0)} 只</b></div>',
-           f'<p>📅 {text(d.get("cycle_id"))} 轮　｜　🔄 下轮 {text(d.get("next_recalculation"))}　｜　每月15日重算 · 每日复核</p>',
-           '<p style="color:#64748b">中港优先 · 共最多3只 · 美股最多1只且规则分≥85，仅参考。持有窗口按15个交易日计算。</p>',
+           f'<p>📅 {text(d.get("cycle_id"))} 轮　｜　🔄 下轮 {text(d.get("next_recalculation"))}　｜　每月1、10、20日重算 · 休市也更新</p>',
+           '<p style="color:#64748b">中港优先 · 共最多3只 · 美股最多1只且规则分≥85，仅参考。重算按自然日；目标跟踪仍按原15个交易日计算。</p>',
            '<p>🎯 沿用净收益目标 $200（非收益承诺） · 实际净收益见原月度账本；本轮重算不重置风险限额。</p>',
            f'<p style="font-size:12px;color:#64748b">本轮实际建立 {text(d.get("created_at"))} · 最近计算 {text(d.get("generated_at"))} · 原行情日期逐股保留</p>']
     from module_freshness import html as freshness_html

@@ -65,6 +65,30 @@ def html(rows,week,now=None):
     return ''.join(out)
 
 
+def with_astra(doc, astra):
+    """Read-only calendar union; original publication times and prices survive."""
+    result=dict(doc); groups={}
+    band=lambda v:'～'.join(f'{x:g}' for x in v) if v else '待核'
+    for record in astra.get('calendar_records',[]):
+        r=record.get('row') or {}; at=record.get('at')
+        if r.get('market') not in MARKETS or not at:continue
+        try:clock=datetime.fromisoformat(at).astimezone(BJT)
+        except (ValueError,TypeError):continue
+        key=(record.get('cycle_id'),r.get('code'))
+        item=groups.setdefault(key,{'code':r['code'],'name':r.get('name') or r['code'],'market':r['market'],
+            'kind':'astra','horizon':'Astra','days':{},'current':{'label':'Astra原计划持续跟踪','reason':'原区间与历史评分保留'}})
+        reason=(f"{record.get('cycle_id')}轮 · 入场 {band(r.get('entry_range'))} · 止盈 {band(r.get('take_profit_range'))} · 止损 {band(r.get('stop_range'))} · "+str(r.get('business_reason') or r.get('reason') or '原依据待核'))
+        event={'at':clock.isoformat(),'state':'listed','tier':'Astra','score':(r.get('strategy_score') or {}).get('value'),
+               'rank':r.get('rank'),'reason':reason,'label':'Astra推荐留档'}
+        item['days'].setdefault(clock.date().isoformat(),[]).append(event)
+        outcome=record.get('outcome') or {}
+        if outcome.get('label'):item['current']={'label':outcome['label'],'reason':outcome.get('reason') or outcome.get('scope') or '原计划继续留档'}
+    for item in groups.values():
+        for events in item['days'].values():events.sort(key=lambda e:e['at'])
+    result['rows']=[r for r in result.get('rows',[]) if r.get('kind')!='astra']+list(groups.values())
+    return result
+
+
 def day_rows(doc,day,query=''):
     q=query.strip().casefold();out=[]
     for row in doc.get('rows',[]):
@@ -95,6 +119,7 @@ def calendar_html(doc,month,selected,query='',now=None):
 .v88-cal .event{display:block;padding:4px 6px;margin:4px 0;border-radius:5px;border-left:3px solid #3b82f6;background:#e8f0ff;color:#1746a2;font-size:12px;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .v88-cal .event:hover,.v88-cal .event:focus{filter:brightness(.94);outline:2px solid #93b4ec}
 .v88-cal .observe{background:#e2f5ef;border-color:#0d9488;color:#0f766e}.v88-cal .follow{background:#fff3dc;border-color:#d99b28;color:#936316}
+.v88-cal .astra{background:#f1eaff;border-color:#9561d5;color:#6436a5}
 .v88-cal .more{font-size:11px;color:#64748b;display:block;margin:5px 2px}.v88-cal .empty{font-size:11px;color:#b2bccb;margin-top:20px;text-align:center}
 .v88-day-table{overflow-x:auto;border:1px solid #dce5ef;border-radius:10px}.v88-day-table table{border-collapse:collapse;width:100%;min-width:900px}
 .v88-day-table th{background:#eaf2ff;color:#234269}.v88-day-table td,.v88-day-table th{padding:10px;border-bottom:1px solid #e2e8f0;font-size:13px;text-align:left;vertical-align:top}.v88-day-table details{font-size:11px;color:#64748b}.v88-day-table summary{cursor:pointer}
@@ -113,15 +138,18 @@ def calendar_html(doc,month,selected,query='',now=None):
             listed=[r for r in members if r['appearance']]
             shown=[]
             for market in MARKETS:
-                row=next((r for r in listed if r['market']==market),None)
+                row=next((r for r in listed if r['market']==market and r['kind']!='astra'),None)
                 if row:shown.append(row)
+                plan=next((r for r in listed if r['market']==market and r['kind']=='astra'),None)
+                if plan:shown.append(plan)
             for r in shown:
                 e=r['appearance'];formal=r['kind']=='formal' or r['kind'].startswith('strategy_')
                 grade=f"{e.get('tier','')} {e['score']:g}分" if formal and e.get('score') is not None else '观察'
                 if r['kind'].startswith('strategy_'):grade+=' · 策略'
+                if r['kind']=='astra':grade='🟣 Astra'+(f" {e['score']:g}分" if e.get('score') is not None else '')
                 reason=e.get('reason') or '原说明未留存'
                 title=f"{r['name']}（{r['code']}）\n{e['at'][11:16]} {grade} · #{e.get('rank') or '—'}\n{reason}\n点击查看当天内容"
-                out.append(f'<a class="event {"" if formal else "observe"}" href="{esc(href(iso,r["code"]))}" title="{esc(title)}">{flags[r["market"]]} {esc(r["name"])} · {esc(grade)}<br><span>{esc(reason[:20])}</span></a>')
+                out.append(f'<a class="event {"astra" if r["kind"]=="astra" else "" if formal else "observe"}" href="{esc(href(iso,r["code"]))}" title="{esc(title)}">{flags[r["market"]]} {esc(r["name"])} · {esc(grade)}<br><span>{esc(reason[:20])}</span></a>')
             follow=sum(r['appearance'] is None for r in members)
             if listed:out.append(f'<a class="more" href="{esc(href(iso))}">当天{len(listed)}条上榜 / 观察 · 查看全部 ›</a>')
             if follow:out.append(f'<a class="event follow" href="{esc(href(iso))}" title="原上榜个股的今日跟进；不计为新推荐">⏳ {follow}条跟进变化</a>')
@@ -155,6 +183,8 @@ def render(doc=None):
     if doc is None:
         try:doc=json.loads(path.read_text())
         except (OSError,ValueError):st.info('📅 推荐日历 · 正在整理原始记录');return
+    try:doc=with_astra(doc,json.loads((core_root()/'data/astra_cycle.json').read_text()))
+    except (OSError,ValueError):pass
     from module_freshness import html as freshness_html
     st.html(freshness_html('recommendation_journal_pub.json',doc))
     today=datetime.now(BJT).date()
@@ -164,7 +194,7 @@ def render(doc=None):
     except ValueError:month_arg=today.strftime('%Y-%m')
     months=sorted({day[:7] for day in dates}|{today.strftime('%Y-%m'),month_arg},reverse=True)
     st.markdown('<div id="v88-week-journal"></div><div style="font-size:24px;font-weight:800;color:#1e3a8a">📅 推荐日历</div>',unsafe_allow_html=True)
-    st.caption('🔵 策略榜 / 旧制研究　🟢 机会观察　🟠 后续跟进 · 新评分标注“策略”；悬停看摘要，点击查看当天详情。北京时间留档。')
+    st.caption('🔵 策略榜 / 旧制研究　🟢 机会观察　🟣 Astra计划　🟠 后续跟进 · 悬停看摘要，点击查看当天详情。北京时间留档。')
     left,right=st.columns([1,2])
     with left:month=st.selectbox('选择月份',months,index=months.index(month_arg),format_func=lambda m:m[:4]+'年'+str(int(m[5:]))+'月',key='v88_calendar_month_'+month_arg)
     with right:query=st.text_input('查找历史个股',value=st.query_params.get('journal_query',''),placeholder='名称 / 代码，例如 睿创、688002',key='v88_calendar_query')

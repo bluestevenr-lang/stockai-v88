@@ -19,9 +19,9 @@ def html(doc,now=None):
         outcome=record.get('outcome') or {}
         if outcome.get('date'):events[outcome['date']].append((outcome['label'],record))
     months=sorted({day[:7] for day in events}|{today.isoformat()[:7]},reverse=True)
-    out=['''<style>.astra-calendar{margin:20px 0}.astra-calendar table{border-collapse:collapse;width:100%;min-width:800px;table-layout:fixed}.astra-calendar th,.astra-calendar td{border:1px solid #dbe3f3;padding:7px;vertical-align:top}.astra-calendar td{height:104px}.astra-calendar summary{cursor:pointer}.astra-calendar .event{background:#eaf0ff;border-left:3px solid #6366f1;padding:5px;margin-top:5px;font-size:13px;border-radius:4px}.astra-calendar .hit{background:#e7f8ef;border-color:#16945a}.astra-calendar .day{font-weight:700}.astra-calendar small{color:#64748b}.astra-calendar details p{overflow-wrap:anywhere}</style>
-    <section class="astra-calendar" id="v88-astra-calendar"><h3>📅 Astra月度记录 · 15日目标跟踪</h3>
-    <p>推荐、原区间与结果持续留档。🎯 代表发布后触及原止盈下沿的行情记录；实际盈利以成交账本为准。</p>''']
+    out=['''<style>.astra-calendar{margin:20px 0}.astra-calendar table{border-collapse:collapse;width:100%;min-width:800px;table-layout:fixed}.astra-calendar th,.astra-calendar td{border:1px solid #dbe3f3;padding:7px;vertical-align:top}.astra-calendar td{height:104px}.astra-calendar summary{cursor:pointer}.astra-calendar .event{background:#f1eaff;color:#6436a5;border-left:3px solid #9561d5;padding:5px;margin-top:5px;font-size:13px;border-radius:4px}.astra-calendar .hit{background:#e7f8ef;border-color:#16945a}.astra-calendar .day{font-weight:700}.astra-calendar small{color:#64748b}.astra-calendar details p{overflow-wrap:anywhere}</style>
+    <section class="astra-calendar" id="v88-astra-calendar"><h3>📅 Astra月度记录 · 历次推荐持续跟踪</h3>
+    <p>🟣 Astra推荐 / 跟踪 · 🟢 目标触及。推荐、原区间与结果持续留档。🎯 代表发布后触及原止盈下沿的行情记录；实际盈利以成交账本为准。</p>''']
     for month in months:
         year,mon=map(int,month.split('-'))
         month_records=[r for r in records if datetime.fromisoformat(r['at']).astimezone(ZoneInfo('Asia/Shanghai')).date().isoformat()[:7]==month]

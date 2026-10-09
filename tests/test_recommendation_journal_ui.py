@@ -59,3 +59,21 @@ def test_calendar_escapes_tooltips_and_never_moves_a_record_to_another_day():
     page=calendar_html({'rows':[r]},'2026-09','2026-09-17',now=datetime.fromisoformat('2026-09-17T10:01:00+08:00'))
     assert '<script>' not in page and '&quot;' in page
     assert page.count('class="event "')==1
+
+
+def test_astra_union_is_purple_keeps_old_month_and_does_not_backdate():
+    from recommendation_journal_ui import with_astra, calendar_html, day_rows
+    from copy import deepcopy
+    original={'rows':[row()]};before=deepcopy(original)
+    r={'code':'144.HK','name':'招商局港口','market':'港股','strategy_score':{'value':68},'entry_range':[16,17],'take_profit_range':[18,19],'stop_range':[15,15.5],'business_reason':'企业经营依据'}
+    astra={'calendar_records':[{'cycle_id':'2026-09-15','at':'2026-09-28T08:37:00+00:00','row':r},
+        {'cycle_id':'2026-10-01','at':'2026-10-09T10:00:00+00:00','row':r}]}
+    doc=with_astra(original,astra)
+    assert original==before and len(doc['rows'])==3
+    assert not day_rows(doc,'2026-10-01')
+    now=datetime.fromisoformat('2026-10-09T20:00:00+08:00')
+    old=calendar_html(doc,'2026-09','2026-09-28',now=now)
+    new=calendar_html(doc,'2026-10','2026-10-09',now=now)
+    assert 'class="event astra"' in old and 'class="event astra"' in new
+    assert '🟣 Astra 68分' in new and '入场 16～17' in new and '止盈 18～19' in new
+    assert '16:37' in old and '2026-10-01轮' in new

@@ -70,8 +70,9 @@ def left_entry_html(doc,*,now=None):
              'scan':(doc.get('low_reversals') or {}).get('scan') or {}}
     selected=market_top(low.get('rows') or [],rank_key='rank')
     kinds=(('decline4','🔔 连跌≥4日'),('history_low','🕰 已有历史低位'),('low52','📉 52周低位'),('swing_low','〰 波段低位'))
+    unscanned=not selected and not (low.get('scan') or {}).get('current_series')
     counts={kind:sum(any(s.get('kind')==kind for s in row.get('signals',[])) for row in selected) for kind,_ in kinds}
-    out=[f"<h3 id='v88-left-entry-watch'>③ 左侧观察 · {len(selected)}只</h3><small>中美港各最多5只 · 按观察优先级排列，非审核分排名</small>",'<div class="signal-counts">'+''.join(f"<span class='chip'>{label} {counts[kind]}</span> " for kind,label in kinds)+'</div>',
+    out=[f"<h3 id='v88-left-entry-watch'>③ 左侧观察 · {'待核验' if unscanned else str(len(selected))+'只'}</h3><small>中美港各最多5只 · 按观察优先级排列，非审核分排名</small>",'<div class="signal-counts">'+''.join(f"<span class='chip'>{label} {'—' if unscanned else counts[kind]}</span> " for kind,label in kinds)+'</div>',
          "<div class='note'>🔴 未确认企稳 → 🟡 企稳迹象 → 🔵 突破待验。本栏标签可重叠；接近低位不等于已见底。</div>"]
     if selected:
         out.append("<div class='scroll'><table><thead><tr><th>市场 / 个股</th><th>提醒类型 / 当前阶段</th><th>下一步 / 风险边界</th><th>技术面以外的依据</th></tr></thead><tbody>")
@@ -93,7 +94,7 @@ def left_entry_html(doc,*,now=None):
             amount='现价待核' if row.get('last') is None else f"现 {row['last']:g}"
             out.append(f"<tr><td>{market_badge(row.get('market'))} · {name(row)}<br><small>{amount} · 日线 {e(row.get('source_asof') or row.get('window_end'))}</small></td><td>{''.join(chips)}<br><b>{icon} {e(state_label)}</b><details><summary>低位窗口与信号依据</summary>{''.join(windows)}{e(row.get('why'))}</details></td><td><b>👁 {e(row.get('next_check'))}</b><br><small>↘ {e(bounds)}<br>观察位不替代原合同止损。</small></td><td>{observation_html(row,now=now)}{nontechnical_html(row)}</td></tr>")
         out.append('</tbody></table></div>')
-    else:out.append("<div class='note'>本次已核范围没有触发以上提醒；缺失行情继续补核。</div>")
+    else:out.append("<div class='note'>尚无当前完整行情进入扫描，不能解释为没有低位或连跌风险。</div>" if unscanned else "<div class='note'>已核范围未触发提醒；其余行情待补，不能代表全市场无风险。</div>")
     out.append('<small>其余对象继续后台监控。历史低位仅指已核数据范围，具体窗口见个股依据。</small>')
     return ''.join(out)
 
@@ -130,11 +131,15 @@ def html(doc=None,*,base=None,now=None):
         paths=("<div style='padding:7px 0;color:#0369a1'>↗ 修复均线 → 突破区间 → 再评延续</div><small>↘ 持续破位 → 防守复核</small>" if signals else '<div>○ 待证据更新后显示条件路径</div>')
         out.append(f"<tr><td style='width:28%'><b>{market_badge(market)}</b><br><strong style='font-size:19px;color:{color}'>{icon} {e(r.get('label'))}</strong><br><small>{e(stamps)}</small></td><td style='width:43%'><b>{e(weakness)} · {e(structure)}</b>{paths}<details><summary>GPT判断与具体条件</summary>{e(summary)}<br>↗ {e(v.get('up_condition') or r.get('up_case'))}<br>↘ {e(v.get('down_condition') or r.get('down_case'))}</details></td><td><b>{e(r.get('mode'))}</b><br>{e(r.get('horizon'))}<br><small>{e(r.get('intraday_rule'))}</small></td></tr>")
     out+=['</tbody></table></div>',"<div class='note'>👁 环境识别 → 候选观察 → 核验触发与风险 → 独立复审。模式变化不放宽原止损、不延长原期限；持续下跌先防守。</div>"]
+    checked_time=datetime.fromisoformat(doc['generated_at']).astimezone(ZoneInfo('Asia/Shanghai')).strftime('%m-%d %H:%M')
+    out.append(f"<small>核验完成 {checked_time} 北京时间 · 行情日期分别列于各市场</small>")
     monthly=doc.get('monthly_monitor') or {};rows=monthly.get('rows') or [];alerts=[r for r in rows if r.get('status')=='alert'];pending=[r for r in rows if r.get('status')=='data_pending'];near=[r for r in rows if r.get('status')=='checked' and (r.get('streak') or {}).get('days',0)==3]
     ranked=sorted(alerts,key=lambda r:-(r.get('streak') or {}).get('days',0))+sorted(near,key=lambda r:-(r.get('streak') or {}).get('days',0))
     displayed=market_top(ranked)
-    out.append(f"<h3>② 月度名单 · 连跌风险 · {len(displayed)}只</h3><div><small>按提醒优先、连跌天数排列 · 各市场最多5只 · ⏳ 待核 {monthly.get('pending',0)}只</small></div>")
-    if not alerts:out.append("<div class='note'>当前已核部分未触发四连跌；待核部分不能据此排除风险。</div>" if pending else "<div class='note'>当前已核名单未触发四连跌，继续按完整交易日监控。</div>")
+    out.append(f"<h3>② 月度名单 · 连跌风险 · {str(len(displayed))+'只' if monthly.get('checked') else '待核验'}</h3><div><small>按提醒优先、连跌天数排列 · 各市场最多5只 · ⏳ 待核 {monthly.get('pending',0)}只</small></div>")
+    if not rows:out.append("<div class='note'>本月名单尚未接入，不能按没有风险处理。</div>")
+    elif not monthly.get('checked'):out.append("<div class='note'>月度名单已保留，完整日线待补；尚不能判断是否触发四连跌。</div>")
+    elif not alerts:out.append("<div class='note'>当前已核部分未触发四连跌；待核部分不能据此排除风险。</div>" if pending else "<div class='note'>当前已核名单未触发四连跌，继续按完整交易日监控。</div>")
     if alerts or near:
         out.append("<div class='scroll'><table><thead><tr><th>月度观察股</th><th>连续收盘下跌</th><th>需要关注</th></tr></thead><tbody>")
         for r in displayed:
