@@ -41,13 +41,13 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install yfinance>=0.2.37 pandas numpy requests
+          pip install "yfinance>=0.2.37" pandas numpy requests "schedule>=1.2,<2"
 
       - name: Run quant worker
         env:
           GIST_TOKEN:        ${{ secrets.GIST_TOKEN }}
           GIST_ID:           ${{ secrets.GIST_ID }}
-        run: python quant_worker.py --cloud
+        run: python quant_worker.py --once --cloud
 
       - name: Report result
         if: always()
