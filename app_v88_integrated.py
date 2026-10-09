@@ -26,6 +26,22 @@ if st.query_params.get('focus')=='journal':
     from recommendation_journal_ui import render as _journal_render
     _journal_render()
     st.stop()
+# Astra has a lightweight route so manual refresh never waits for legacy panels.
+if st.query_params.get('focus') == 'astra':
+    st.set_page_config(page_title='V88 · Astra计划', layout='wide')
+    st.markdown('[← 返回总览](./#v88-astra-monthly) · [📅 推荐日历](?focus=journal)')
+    import json as _astra_json
+    from astra_refresh_control import render as _astra_controls
+    from astra_cycle_view import html as _astra_html
+    @st.fragment(run_every=10)
+    def _astra_focused():
+        _astra_controls(core_root())
+        path = core_root()/'data/astra_cycle.json'
+        if path.exists():
+            try: st.html(_astra_html(_astra_json.loads(path.read_text())))
+            except (ValueError, KeyError, TypeError): st.caption('Astra文件读取失败；原历史保留，可点击更新重试。')
+    _astra_focused()
+    st.stop()
 # Explicit stock deep links must dispatch before homepage imports, pools and panels.
 # Ordinary navigation retains the complete original overview and research tools.
 if st.query_params.get("focus") == "deep":
@@ -2883,7 +2899,7 @@ h4 { font-size: 14px !important; }
 st.markdown('<nav class="v88-quick-nav" aria-label="列表快捷导航">'
             '<a href="#v88-market-scan" target="_self">全市场扫描</a>'
             '<a href="#v88-grade-list" target="_self">3A / 2A / 1A 列表</a>'
-            '<a href="#v88-astra-monthly" target="_self">Astra月度</a>'
+            '<a href="?focus=astra" target="_self">Astra计划</a>'
             '<a href="#v88-deep-analysis" target="_self">个股深度</a>'
             '<a href="#v88-system-check" target="_self">系统检查</a>'
             '</nav>', unsafe_allow_html=True)
@@ -3029,8 +3045,10 @@ with _three_a_slot:
     _three_a_fragment()
 
 # Astra reads its persisted research before legacy network-heavy panels.
-@st.fragment(run_every=60)
+@st.fragment(run_every=10)
 def _astra_cycle_fragment():
+    from astra_refresh_control import render as refresh_controls
+    refresh_controls(core_root())
     from astra_cycle_view import html as cycle_html
     path = core_root() / 'data/astra_cycle.json'
     if path.is_file():

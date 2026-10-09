@@ -10,7 +10,7 @@ def test_cycle_view_keeps_prices_explanation_counts_and_escapes_names():
     quote=q();quote['name']='<script>alert(1)</script>'
     d=build({'rows':[quote]},now=NOW)
     result=html(d,now=NOW)
-    for expected in ['研究 1 只','每月15日重算','2026-10-15','研究入场','止盈','止损','净空间','截止','行业排名','未对账不计零']:
+    for expected in ['研究 1 只','每月1、10、20日重算','2026-10-01','研究入场','止盈','止损','净空间','截止','行业排名','未对账不计零']:
         assert expected in result
     assert '<script>' not in result and '&lt;script&gt;' in result
     assert '0只可买' not in result
