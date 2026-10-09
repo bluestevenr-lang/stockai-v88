@@ -76,7 +76,7 @@ jobs:
         if: steps.due.outputs.needed == 'true'
         run: |
           gh auth setup-git
-          python src/feishu_cloud_bundle.py restore ../state/source-bundle.tar.gz > /tmp/v88-restore.log 2>&1
+          python src/feishu_cloud_bundle.py restore ../state/source-bundle.tar.gz --reports-only > /tmp/v88-restore.log 2>&1
       - name: Deliver due reports; require durable provider acceptance
         if: steps.due.outputs.needed == 'true'
         env:
