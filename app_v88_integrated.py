@@ -34,8 +34,11 @@ if st.query_params.get('focus') == 'astra':
     from astra_refresh_control import render as _astra_controls
     from astra_cycle_view import html as _astra_html
     @st.fragment(run_every=10)
-    def _astra_focused():
+    def _astra_focused_controls():
         _astra_controls(core_root())
+    _astra_focused_controls()
+    @st.fragment(run_every=60)
+    def _astra_focused():
         path = core_root()/'data/astra_cycle.json'
         if path.exists():
             try: st.html(_astra_html(_astra_json.loads(path.read_text())))
@@ -3046,9 +3049,12 @@ with _three_a_slot:
 
 # Astra reads its persisted research before legacy network-heavy panels.
 @st.fragment(run_every=10)
-def _astra_cycle_fragment():
+def _astra_refresh_fragment():
     from astra_refresh_control import render as refresh_controls
     refresh_controls(core_root())
+_astra_refresh_fragment()
+@st.fragment(run_every=60)
+def _astra_cycle_fragment():
     from astra_cycle_view import html as cycle_html
     path = core_root() / 'data/astra_cycle.json'
     if path.is_file():

@@ -144,6 +144,10 @@ def render(base):
     import streamlit as st
     state = read(base)
     running = busy(base)
+    completed = state.get('completed_at') if state.get('status') == 'complete' else None
+    if completed and st.query_params.get('focus') == 'astra' and st.session_state.get('_astra_displayed_completion') != completed:
+        st.session_state['_astra_displayed_completion'] = completed
+        st.rerun()
     left, right = st.columns([1, 4])
     with left:
         if st.button('↻ 立即更新 Astra', key='astra_cloud_refresh', disabled=running,
