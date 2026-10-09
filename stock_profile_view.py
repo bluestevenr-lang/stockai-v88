@@ -13,7 +13,8 @@ DEFAULT = core_root()/'data/stock_profiles_pub.json'
 
 @lru_cache(maxsize=4)
 def _read(path, mtime, size):
-    return json.loads(Path(path).read_text(encoding='utf-8'))
+    from industry_corrections import corrected_document
+    return corrected_document(json.loads(Path(path).read_text(encoding='utf-8')))
 
 
 def load(path=None):
@@ -30,6 +31,8 @@ def profile(code, doc=None, now=None):
     from exchange_sessions import latest_completed
     doc = load() if doc is None else doc
     if doc.get('version') not in ('stock-profiles-v1','stock-profiles-v2-industry-peers'): return {}
+    from industry_corrections import corrected_document
+    doc = corrected_document(doc)
     key = canonical(code); row = dict((doc.get('records') or {}).get(key) or {})
     if row.get('code') != key: return {}
     now = now or datetime.now(timezone.utc)
@@ -126,6 +129,8 @@ def industry_peers(code, doc=None, now=None):
     from grade_focus import canonical
     from exchange_sessions import latest_completed
     doc=load() if doc is None else doc
+    from industry_corrections import corrected_document
+    doc=corrected_document(doc)
     now=now or datetime.now(timezone.utc)
     p=profile(code,doc,now);key=canonical(code)
     failure=lambda message:{'ok':False,'reason':message,'rows':[]}
