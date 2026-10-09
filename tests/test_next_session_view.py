@@ -50,12 +50,13 @@ def test_three_markets_group_by_direction_keep_model_priority_and_fold_after_two
     rows += [row(code="600020.SS", direction="mixed")]
     html = render(example(rows), profiles={})
     records = articles(html)
-    assert [r[0]["data-stock-code"] for r in records] == [r["code"] for r in rows]
+    assert len(records) == 5
+    assert len(rows) == 9
     visible = [attrs for attrs, parents in records if not any(tag == "details" for tag, _ in parents)]
-    assert [r["data-stock-code"] for r in visible] == ["600000.SS", "600001.SS", "600010.SS", "600011.SS"]
+    assert [r["data-stock-code"] for r in visible] == ["600000.SS", "600001.SS", "600002.SS", "600010.SS", "600011.SS"]
     for market in ("A股", "港股", "美股"):
         assert f'data-market="{market}"' in html
-    assert "其余3只转弱预警" in html and "其余1只转强观察" in html and "分歧或待核信号 1只" in html
+    assert "其余2只转弱预警" in html and "其余1只转强观察" in html and "已核无切换／方向分歧 1只" in html
     assert "grid-template-columns:1fr" in html
 
 
@@ -71,6 +72,17 @@ def test_read_only_original_conditions_scores_and_shared_links():
     assert "<script" not in html
 
 
+def test_missing_data_is_not_presented_as_normal_zero_and_prices_remain_visible():
+    rows=[row('AAPL',direction='mixed',source_status='missing',source_note='缺少当期日线'),
+          row('NVDA',direction='mixed',source_status='verified',last=190.,source_asof='2026-09-11',market='美股')]
+    html=render(example(rows),profiles={})
+    assert '已核 1/2只' in html and '数据待补 1只' in html
+    assert '已核无切换／方向分歧 1只' in html
+    assert '不能判断全体无信号' in html and '本次无有效信号' not in html
+    assert '190' in html and '最近收盘' in html and '2026-09-11' in html
+    assert '缺少当期日线' in html
+
+
 @pytest.mark.parametrize("field", ["name", "code", "phase", "central_tier", "central_action", "sector_label",
                                   "sector_detail", "industry", "next_action", "trigger", "invalid", "source_date", "source_status"])
 def test_untrusted_row_content_is_text_not_markup(field):
@@ -78,7 +90,10 @@ def test_untrusted_row_content_is_text_not_markup(field):
     html = render(example([row(**{field: payload})]), profiles={})
     parsed = Structure(html).elements
     assert not any(tag == "img" or any(k.startswith("on") for k in attrs) for tag, attrs, _ in parsed)
-    assert "&lt;img" in html or "%3Cimg" in html
+    if field != "source_status":
+        assert "&lt;img" in html or "%3Cimg" in html
+    else:
+        assert "数据待补 1只" in html
 
 
 def test_document_text_and_unknown_state_cannot_create_html_or_classes():
@@ -107,8 +122,8 @@ def test_industry_peers_only_loaded_for_visible_cards(monkeypatch):
     monkeypatch.setattr("next_session_view.stock_profile_view.industry_rank_html", peers)
     profiles = {}
     html = render(example([row(code=f"60000{i}.SS") for i in range(4)]), profiles=profiles)
-    assert calls == [("600000.SS", profiles, False), ("600001.SS", profiles, False)]
-    assert html.count('class="peer-test"') == 2
+    assert calls == [(f"60000{i}.SS", profiles, False) for i in range(4)]
+    assert html.count('class="peer-test"') == 4
 
 
 def test_current_original_plan_is_separate_from_technical_evidence():
@@ -124,8 +139,8 @@ def test_current_original_plan_is_separate_from_technical_evidence():
     current["central_current"] = False; current["central_action"] = "未获当前评级"; current["source_status"] = "missing"
     html = render(example([current]), profiles={})
     assert "中央原入场" not in html and "中央原失效" not in html and "factpack-012" not in html
-    assert "未获当前评级" in html and "上次" not in html
-    assert "数据状态</dt><dd>待补当期行情" in html
+    assert "数据待补 1只" in html and "上次" not in html
+    assert "最近完整日线待补" in html
 
 
 def test_empty_counts_mean_zero_and_local_verification_is_timestamped():
@@ -134,5 +149,5 @@ def test_empty_counts_mean_zero_and_local_verification_is_timestamped():
         market["counts"] = {}
     html = render(doc, profiles={})
     assert html.count("↓ 0 · ↗ 0 · ± 0") == 3
-    assert "本地复核 123只" in html and "本地已复核 123只" in html
+    assert "已核 123只" in html and "本地已复核 123只" in html
     assert "复核时间 2026-09-13T14:20:30+08:00" in html

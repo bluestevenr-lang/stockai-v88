@@ -109,11 +109,14 @@ def build(signals, rotation, *, central, profiles, now=None):
         try: current_source = current_source and source.get('source_date') == latest_completed(market, now).isoformat()
         except ValueError: current_source = False
         direction = source.get('direction') if current_source and source.get('direction') in ('up','down') else 'mixed'
-        row = {'code': code, 'name': source.get('name') or code, 'direction': direction,
+        row = {'code': code, 'market':market, 'name': source.get('name') or code, 'direction': direction,
                'phase': source.get('phase') if current_source else '原信号待行情复核',
                'rule_score': source.get('strength') if current_source and finite(source.get('strength')) else None,
                'source_date': source.get('source_date') or '未核实',
                'source_status': 'verified' if current_source else 'missing',
+               'source_note': source.get('source_note'),
+               'last': source.get('last') if current_source else None,
+               'source_asof': source.get('source_date') if current_source else None,
                'trigger': source.get('trigger') if current_source else '补齐最近完整交易日的行情后重算',
                'invalid': source.get('invalid') if current_source else '旧信号不继续作为当前方向',
                'source_signature': source.get('snapshot_signature')}
@@ -162,14 +165,17 @@ def build(signals, rotation, *, central, profiles, now=None):
         except ValueError:
             next_day, source_day = '交易日待核', '行情日待核'
             timing={}
+        checked = sum(r['source_status']=='verified' for r in rows)
         markets.append({'market': market, 'next_session': next_day, 'source_date': source_day,
+                        'checked_count': checked, 'pending_count':len(rows)-checked,
+                        'coverage_complete': bool(rows) and checked==len(rows),
                         'market_status':timing.get('market_status','待核'), 'rows': rows, 'counts': dict(Counter(r['direction'] for r in rows))})
     return {'version': VERSION, 'generated_at': signals.get('generated_at'),
             'verified_at': signals.get('verified_at') or signals.get('snapshot_at'), 'pool_size': signals.get('scanned',0),
             'signal_count': len(seen), 'verified_count': sum(r['source_status']=='verified' for m in markets for r in m['rows']),
             'central_version': central.get('factpack_id') if usable else '待核', 'markets': markets,
             'notes': list(signals.get('notes') or []) + [
-                '本页复核已有发现队列，不代表全市场扫描；优先显示中央已有评级的标的，同组按规则强度排序。',
+                '本页复核当期策略、最新日线及历史发现队列，不代表全市场扫描；优先显示中央已有评级的标的，同组按规则强度排序。',
                 '个股规则强度、板块历史动量、中央审核分分别列示；不相加、不代替彼此。',
                 '下一交易日是观察检查点，不是承诺转折日；入场与退出继续引用中央原合同。'],
             'model_calls': 0, 'network_calls': 0, 'entry_permission': False}

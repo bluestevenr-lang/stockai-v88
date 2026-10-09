@@ -46,6 +46,7 @@ def _conditions(row, profiles, *, peers):
         ("板块依据", row.get("sector_detail") or "暂无可核验的同口径板块证据"),
         ("数据截至", row.get("source_date") or "未提供"),
         ("数据状态", source_status),
+        ("待补原因", row.get("source_note") or "—"),
     ]
     plan = row.get("central_plan")
     if row.get("central_current") is True and isinstance(plan, dict) and plan:
@@ -66,6 +67,9 @@ def _conditions(row, profiles, *, peers):
 
 
 def _card(row, profiles, *, compact=False):
+    from market_data_helper import _core
+    _core()
+    from risk_quote import quote_html
     direction = row.get("direction") if row.get("direction") in _DIRECTION else "mixed"
     symbol, _ = _DIRECTION[direction]
     state, sector_text = _SECTOR.get(row.get("sector_state"), _SECTOR["missing"])
@@ -81,6 +85,7 @@ def _card(row, profiles, *, compact=False):
     return (f'<article class="ns-stock ns-{direction}{" ns-compact" if compact else ""}" data-stock-code="{_e(code)}" '
             f'data-direction="{direction}"><div class="ns-stock-title"><span aria-hidden="true">{symbol}</span> {link}</div>'
             f'<div class="ns-industry">{_e(industry)}</div>'
+            + quote_html(row) +
             f'<div class="ns-signal"><span>个股：{_e(row.get("phase"), "规则状态待核")}</span>'
             f'<span class="ns-rule-score">规则强度 {_score(row.get("rule_score"))}</span></div>'
             '<div class="ns-linkage">'
@@ -91,17 +96,17 @@ def _card(row, profiles, *, compact=False):
             + _conditions(row, profiles, peers=not compact) + '</article>')
 
 
-def _group(rows, direction, profiles):
+def _group(rows, direction, profiles, *, visible_rows=None, pending=0):
     selected = [row for row in rows if row.get("direction") == direction]
     symbol, title = _DIRECTION[direction]
     head = f'<h4 class="ns-group-title ns-text-{direction}">{symbol} {title}<span>{len(selected)}</span></h4>'
     if not selected:
-        return head + '<div class="ns-empty">本次无有效信号</div>'
-    visible = "".join(_card(row, profiles) for row in selected[:2])
-    rest = selected[2:]
-    if rest:
-        visible += (f'<details class="ns-more"><summary>＋ 其余{len(rest)}只{title}</summary>'
-                    + "".join(_card(row, profiles, compact=True) for row in rest) + '</details>')
+        message = '已核部分未触发；仍有行情待补，不能判断全体无信号' if pending else '已核部分未触发此类切换信号'
+        return head + f'<div class="ns-empty">{message}</div>'
+    shown = selected if visible_rows is None else [r for r in visible_rows if r.get('direction')==direction]
+    visible = "".join(_card(row, profiles) for row in shown)
+    if len(selected)>len(shown):
+        visible += f'<div class="ns-subtle">其余{len(selected)-len(shown)}只{title}保留后台跟踪</div>'
     return head + visible
 
 
@@ -164,26 +169,40 @@ def render(doc, profiles=None):
     markets = []
     for market in doc.get("markets") or []:
         rows = market.get("rows") or []
-        mixed = [row for row in rows if row.get("direction") not in ("up", "down")]
+        pending = [r for r in rows if r.get('source_status') not in ('verified','current')]
+        checked = [r for r in rows if r.get('source_status') in ('verified','current')]
+        mixed = [r for r in checked if r.get('direction') not in ('up','down')]
+        # Five names total per market, including folded content. Full history
+        # stays in the model; a data failure cannot masquerade as neutral signal.
+        visible = []
+        for d in ('down','up'):
+            visible.extend([r for r in checked if r.get('direction')==d][:2])
+        visible.extend([r for r in checked if r not in visible][:max(0,5-len(visible))])
         counts = market.get("counts") or {}
         flags = {"A股": "🇨🇳", "美股": "🇺🇸", "港股": "🇭🇰"}
         market_name = market.get("market") or "市场待核"
         panel = (f'<section class="ns-market" data-market="{_e(market_name)}">'
                  f'<div class="ns-market-header"><h4>{flags.get(market_name, "○")} {_e(market_name)}</h4>'
                  f'<span class="ns-session">关注交易日 {_e(market.get("next_session"), "待核")} · {_e(market.get("market_status"), "待核")}</span></div>'
-                 f'<div class="ns-market-summary">↓ {_count(counts.get("down", 0))} · ↗ {_count(counts.get("up", 0))} · ± {_count(counts.get("mixed", 0))}'
-                 f' <span>｜完整日线 {_e(market.get("source_date"), "待核")}</span></div>'
-                 + _group(rows, "down", profiles) + _group(rows, "up", profiles))
+                 f'<div class="ns-market-summary">↓ {_count(counts.get("down", 0))} · ↗ {_count(counts.get("up", 0))} · ± {len(mixed)}'
+                 f' <span>｜应核日线 {_e(market.get("source_date"), "待核")}</span></div>'
+                 f'<div class="ns-subtle">已核 {len(checked)}/{len(rows)}只 · 数据待补 {len(pending)}只 · 已核无切换/分歧 {len(mixed)}只</div>'
+                 + _group(checked, "down", profiles, visible_rows=visible, pending=len(pending))
+                 + _group(checked, "up", profiles, visible_rows=visible, pending=len(pending)))
         if mixed:
-            panel += (f'<details class="ns-mixed"><summary>± 分歧或待核信号 {len(mixed)}只</summary>'
-                      + "".join(_card(row, profiles, compact=True) for row in mixed) + '</details>')
+            panel += (f'<details class="ns-mixed"><summary>± 已核无切换／方向分歧 {len(mixed)}只</summary>'
+                      + "".join(_card(row, profiles, compact=True) for row in mixed if row in visible) + '</details>')
+        if pending:
+            reasons = list(dict.fromkeys(r.get('source_note') or '最近完整日线待补' for r in pending))
+            panel += (f'<details class="ns-mixed"><summary>⏳ 数据待补 {len(pending)}只 · 不计为无机会</summary>'
+                      + ''.join(f'<p>{_e(s)}</p>' for s in reasons[:3]) + '</details>')
         markets.append(panel + '</section>')
     notes = "".join(f'<li>{_e(note)}</li>' for note in doc.get("notes") or [])
     return (_STYLE + '<section id="v88-next-session-board" aria-label="下一交易日联动观察">'
             '<div class="ns-heading"><h3>◷ 当前交易时段 · 联动观察</h3>'
-            f'<span class="ns-meta">观察池 {_count(doc.get("pool_size"))}只 · 信号 {_count(doc.get("signal_count"))}只 · 本地复核 {_count(doc.get("verified_count"))}只</span></div>'
+            f'<span class="ns-meta">本轮复核队列 {_count(doc.get("signal_count"))}只 · 已核 {_count(doc.get("verified_count"))}只 · 各市场最多显示5只</span></div>'
             '<p class="ns-intro"><span class="ns-flow">个股信号 → 板块核验 → 中央结论</span> · '
-            '先看中央已评级标的，再按规则强度；交易动作以中央原条件为准。</p>'
+            '本栏只统计周期切换，不是全部推荐；完整候选见 <a href="#v88-grade-list">1A / 2A / 3A 策略榜</a>。数据待补不等于零机会。</p>'
             '<div class="ns-grid">' + "".join(markets) + '</div>'
             '<details class="ns-notes"><summary>ⓘ 数据时间与观察口径</summary>'
             f'<p>汇总 {_e(doc.get("generated_at"), "未提供")} · 中央版本 {_e(doc.get("central_version"), "未提供")}</p>'

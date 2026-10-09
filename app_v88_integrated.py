@@ -12932,7 +12932,7 @@ def _render_today_verdict(_snap, _repo):
     # Published discovery -> verified local prices -> sector context -> central
     # authority. Reading this panel never launches market scans or model calls.
     try:
-        from next_session_data import load_signals as _ns_load
+        from next_session_data import load_signals as _ns_load, discovery_source as _ns_source
         from next_session_model import build as _ns_build
         from next_session_view import render as _ns_render
         from stock_profile_view import load as _ns_profiles_load
@@ -12944,6 +12944,7 @@ def _render_today_verdict(_snap, _repo):
             _ns_phase = dict((_snap or {}).get("cycle_scan") or {})
             _ns_phase["generated_at"] = _ns_phase.get("analysis_time")
             _ns_phase["scanned"] = len(_ns_phase.get("stocks") or [])
+        _ns_phase = _ns_source(_ns_phase, base=_repo, now=_ns_now)
         _ns_signals = _ns_load(_ns_phase, now=_ns_now)
         _ns_profiles = _ns_profiles_load()
         try:

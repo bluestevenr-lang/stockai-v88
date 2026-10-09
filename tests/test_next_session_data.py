@@ -10,6 +10,7 @@ NOW = datetime(2026, 9, 13, 4, 20, tzinfo=timezone.utc)
 @pytest.fixture
 def setup(monkeypatch):
     data._CACHE.clear()
+    monkeypatch.setattr(data, '_available_dates', lambda: None)
     calls = []
     responses = {}
     frame = pd.DataFrame({'Close': [10., 11.]}, index=pd.to_datetime(['2026-09-10', '2026-09-11']))
@@ -121,3 +122,31 @@ def test_source_change_invalidates_cache_in_same_minute(setup):
 def test_naive_clock_rejected(setup):
     with pytest.raises(ValueError, match='zoned'):
         data.load_signals(source('ONE'), NOW.replace(tzinfo=None))
+
+
+def test_current_candidates_and_histories_enter_queue_without_granting_direction(tmp_path):
+    import sqlite3, json
+    root=tmp_path/'data';root.mkdir()
+    with sqlite3.connect(root/'wdata.db') as con:
+        con.execute('CREATE TABLE verified_series(code TEXT,last_date TEXT)')
+        con.executemany('INSERT INTO verified_series VALUES (?,?)',
+                        [('AAPL','2026-09-11'),('OLD','2026-09-10'),('^GSPC','2026-09-11')])
+    (root/'strategy_board.json').write_text(json.dumps({'rows':[
+        {'code':'NVDA','source_session':'2026-09-11','strategy_tier':'1A'},
+        {'code':'STALE','source_session':'2026-09-10','strategy_tier':'1A'}]}))
+    legacy=source('AAPL','LEGACY'); before=deepcopy(legacy)
+    merged=data.discovery_source(legacy,base=tmp_path,now=NOW)
+    assert legacy==before
+    assert [r['code'] for r in merged['stocks']]==['NVDA','AAPL','LEGACY']
+    assert not merged['stocks'][0].get('direction')
+    assert merged['stocks'][1]['origins']==['current_daily','legacy_discovery']
+
+
+def test_stale_catalogue_does_not_load_large_history_but_current_still_validates(setup, monkeypatch):
+    calls, responses, *_ = setup
+    monkeypatch.setattr(data, '_available_dates', lambda: {'OLD':'2026-09-10','BAD':'2026-09-11'})
+    responses['BAD'] = (None, {'error_detail':'日线被隔离'})
+    result=data.load_signals(source('OLD','BAD'),NOW)
+    assert calls==['BAD'] and result['verified_count']==0
+    assert '应到2026-09-11' in result['stocks'][0]['source_note']
+    assert '被隔离' in result['stocks'][1]['source_note']
