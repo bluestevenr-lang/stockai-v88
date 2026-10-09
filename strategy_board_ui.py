@@ -37,6 +37,8 @@ def html(doc=None,code=None,now=None,profiles=None):
     </style><div class="strategy-board"><h3>🎯 3A / 2A / 1A 重点榜</h3>
     <p>3A 最高分档 ≥80 · 2A 短中线 · 1A 超短线。每档各市场 Top3；同股同数据版本共用一个综合分；周期适用性、入场、止盈与止损分别列示。</p>
     <small>2026-09-28 新策略制 · 筛选分不代表胜率或 GPT 复审分；入场状态单列。旧评级与日历原样保留。</small>''']
+    from module_freshness import html as freshness_html, record as freshness_record
+    out.append(freshness_html('strategy_board.json',doc,now=now))
     out.append('<p class="screen-clock">'+esc(read_clock)+'</p>')
     out.append('<p>🔄 交易日盘中云端每30分钟筛选 · 页面每60秒核对 · 免费规则计算，不消耗模型额度；实际完成时间以下方为准。</p>')
     source_check=doc.get('quote_refresh_status') or {}
@@ -56,8 +58,8 @@ def html(doc=None,code=None,now=None,profiles=None):
         if code and not members:continue
         matched=sum(r['status']=='条件匹配' for r in members)
         retained=sum(not r.get('current_source') for r in members)
-        out.append(f'<section class="lane"><div class="head"><div><h3>{title}</h3><small>{period} · '+ ' · '.join(f'{m} {sum(r["market"]==m for r in members)}只' for m in flags)+f'</small></div><div><span class="count">{len(members)} 只</span><br><small>条件匹配 {matched} · 研究候选 {len(members)-matched-retained} · 待更新留存 {retained}</small></div></div>')
-        out.append('<div class="screen-clock" style="padding:10px 20px;font-size:15px;color:#2459c7">'+esc(clock)+'</div>')
+        out.append(f'<section class="lane" id="strategy-{tier}"><div class="head"><div><h3>{title}</h3><small>{period} · '+ ' · '.join(f'{m} {sum(r["market"]==m for r in members)}只' for m in flags)+f'</small></div><div><span class="count">{len(members)} 只</span><br><small>条件匹配 {matched} · 研究候选 {len(members)-matched-retained} · 待更新留存 {retained}</small></div></div>')
+        out.append('<div class="screen-clock" style="padding:10px 20px;font-size:15px;color:#2459c7">'+esc(clock)+' · 💾 缓存写入 '+esc(freshness_record('strategy_board.json',doc,now=now)['cached'])+'（北京时间）</div>')
         if not members:
             out.append('<p style="padding:0 20px">本轮所需证据不足或未达到策略条件；不会用其他周期填补名额。</p>')
         else:
@@ -78,7 +80,7 @@ def html(doc=None,code=None,now=None,profiles=None):
                     loss_label='～'.join(f'{v:+.2f}%' for v in loss) if loss else '待核算'
                     stop_band = r.get('stop_range')
                     stop_label = '–'.join(f'{v:g}' for v in stop_band) if stop_band else '区间待核实'
-                    profile_markup = profile_html(r['code'], profiles, now)
+                    profile_markup = ''
                     if r.get('industry_snapshot') and (r['industry_snapshot'].get('rank') or profiles is not None and not profiles.get('records')):
                         info=r['industry_snapshot'];rank=info.get('rank');session=info.get('source_session')
                         from exchange_sessions import latest_completed
@@ -86,9 +88,10 @@ def html(doc=None,code=None,now=None,profiles=None):
                         rank_label=(f"最近行业市值排名 {rank}/{info.get('comparable')} · {session}（{'历史参考' if old else '最近完整交易日'}）" if rank else '行业排名：可比数据待补')
                         peers=''.join(f'<div>#{esc(peer["rank"])} <a href="?{esc(urlencode({"q":peer["code"],"focus":"deep"}))}">{esc(peer["name"])}</a></div>' for peer in info.get('peers',[])[:5])
                         profile_markup=f'<div>{esc(info.get("industry") or "所属板块待核")}<br><small>{esc(rank_label)}</small><details><summary>同业Top5 · 按市值</summary>{peers or "同业名单待补"}<small>以上述源日期为准；仅展示公开可比同业，市值排名不代表推荐评级。</small></details></div>'
+                    if not profile_markup:profile_markup = profile_html(r['code'], profiles, now)
                     out.append(f'<tr><td><b>#{r["rank"]} <a href="{esc(href)}">{esc(r["name"])}</a></b><br><small>{esc(r["code"])}</small>{profile_markup}</td>'
                         f'<td><b>{"未授级" if r.get("grade_pending") else esc(r["strategy_tier"])}</b><br><span class="score">{s["value"]:g}</span> /100<br><small>证据覆盖 {s["coverage"]}%</small><br><small>{esc(s.get("label", "旧版周期分"))}</small><details><summary>权重与贡献</summary>{parts}<div>数据版本 {esc(s.get("snapshot_id"))} · 评分规则 {esc(s.get("revision"))}</div><div>共振 +{s["interaction"]} · 过热扣 {s["penalty"]}</div></details></td>'
-                        f'<td><b>{r["last"]:g}</b> · {r["change_pct"]:+.2f}%<br><small>{esc(r["quote_asof"][5:16])}<br>源时区</small></td>'
+                        f'<td><b>{r["last"]:g}</b> · {r["change_pct"]:+.2f}%<br><small>{esc(display(r["quote_asof"]))}<br>北京时间</small></td>'
                         f'<td><b>{esc(r["lane"])}</b> · {esc(r["period"])}<br>{esc(r["reason"])}<details><summary>周期适用性 · 共用综合分</summary>{periods}<small>仅表示筛选适用；本行价带对应上方周期，其它周期须独立核验。</small></details><details><summary>🏢 企业依据与反证</summary>{esc(r["business_reason"])}<br>{esc(r.get("business_risk"))}</details></td>'
                         f'<td><b>{esc(band)}</b><br>◉ {esc(r["status"])}<br><small>{esc(missing or "结构条件匹配；核对最新价格")}</small></td>'
                         f'<td><b>{esc(profit_label)}</b><br><small>💰 到目标净空间：{esc(returns_label)}<br>首段目标参考：{esc(r.get("target"))}<br>净收益风险比：{esc(r.get("net_rr"))}<br>{esc(r.get("price_plan_method"))}<br>结构截至：{esc(r.get("price_plan_source_asof"))}<br>条件测算，非预期必得利润<br>往返费用假设0.5%</small><details><summary>区间依据与适用范围</summary>{esc(r.get("price_plan_scope") or "区间依据尚待补齐")}</details></td>'

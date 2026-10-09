@@ -21,6 +21,8 @@ def html(doc, now=None):
            '<p style="color:#64748b">中港优先 · 共最多3只 · 美股最多1只且规则分≥85，仅参考。持有窗口按15个交易日计算。</p>',
            '<p>🎯 沿用净收益目标 $200（非收益承诺） · 实际净收益见原月度账本；本轮重算不重置风险限额。</p>',
            f'<p style="font-size:12px;color:#64748b">本轮实际建立 {text(d.get("created_at"))} · 最近计算 {text(d.get("generated_at"))} · 原行情日期逐股保留</p>']
+    from module_freshness import html as freshness_html
+    out.append(freshness_html('astra_cycle.json',doc,now=now))
     if not d.get('rows'): out.append('<p>'+text(d.get('status'))+'</p>')
     for r in d.get('rows', []):
         info = r.get('industry_snapshot') or {}; window = r.get('window') or {}

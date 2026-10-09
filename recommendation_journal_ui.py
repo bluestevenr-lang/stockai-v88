@@ -155,6 +155,8 @@ def render(doc=None):
     if doc is None:
         try:doc=json.loads(path.read_text())
         except (OSError,ValueError):st.info('📅 推荐日历 · 正在整理原始记录');return
+    from module_freshness import html as freshness_html
+    st.html(freshness_html('recommendation_journal_pub.json',doc))
     today=datetime.now(BJT).date()
     dates={day for r in doc.get('rows',[]) for day in r.get('days',{})}
     month_arg=st.query_params.get('month','')

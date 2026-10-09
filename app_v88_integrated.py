@@ -2891,7 +2891,7 @@ from presentation_style import CSS as _professional_style
 st.markdown(_professional_style, unsafe_allow_html=True)
 from phone_access import html as _phone_access_html
 st.markdown(_phone_access_html(), unsafe_allow_html=True)
-from runtime_status_ui import html as _runtime_status_html
+from desktop_runtime_status_ui import html as _runtime_status_html
 st.markdown(_runtime_status_html(), unsafe_allow_html=True)
 st.markdown('<div id="v88-system-check"></div>', unsafe_allow_html=True)
 _v88_system_details = st.expander("⚙️ 系统与数据检查", expanded=False)
@@ -2997,7 +2997,7 @@ with _three_a_slot:
                 except Exception:
                     return {}
             _rk3a = _j3a("rank_score.json")
-            if _rk3a.get("rows"):
+            if _rk3a.get("rows") or _j3a("strategy_board.json").get("version"):
                 # This is complete HTML, not Markdown. Use the native HTML
                 # parser + DOMPurify instead of reconstructing every tag in
                 # React; audit text remains text and scripts stay disabled.
