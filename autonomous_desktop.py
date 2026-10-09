@@ -51,7 +51,7 @@ def sync_on_open():
     @st.fragment(run_every=5)
     def sync_status():
         schedule_sync()
-        from module_freshness import read,inventory
+        from module_freshness import read_snapshot as read,inventory
         base=core_root()/'data'
         state=read(base/'autonomous_sync_ui_status.json')
         receipt=read(base/'autonomous_sync_status.json')

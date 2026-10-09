@@ -89,6 +89,10 @@ def _dependencies():
     return fetch, analyze_trend_full, cycle_phase, latest_completed, canonical
 
 
+# The portable pack is ~200MB; its per-code dates only change when files do.
+_DATES_CACHE={}
+
+
 def _available_dates():
     """Cheap rejection only: avoid decoding the same portable pack per old row.
 
@@ -99,6 +103,13 @@ def _available_dates():
     from contextlib import closing
     from market_symbols import canonical
     root=core_root()/'data'
+    signature=[]
+    for name in ('wdata.db','wdata.db-wal','portable_history_pub.json'):
+        try:
+            st=(root/name).stat();signature.append((name,st.st_mtime_ns,st.st_size))
+        except OSError:signature.append((name,None,None))
+    signature=(str(root),tuple(signature))
+    if _DATES_CACHE.get('key')==signature:return dict(_DATES_CACHE['dates'])
     try:
         with closing(sqlite3.connect((root/'wdata.db').resolve().as_uri()+'?mode=ro',uri=True)) as con:
             dates={canonical(code):str(day) for code,day in con.execute('SELECT code,last_date FROM verified_series')}
@@ -108,7 +119,8 @@ def _available_dates():
             for code,row in (doc.get('records') or {}).items():
                 code=canonical(code)
                 dates[code]=max(dates.get(code,''),str(row.get('source_asof') or ''))
-        return dates
+        _DATES_CACHE.update(key=signature,dates=dates)
+        return dict(dates)
     except (OSError,ValueError,TypeError,AttributeError,sqlite3.Error):
         return None
 

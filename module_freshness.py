@@ -29,6 +29,36 @@ def read(path):
         return doc if isinstance(doc,dict) else {}
     except (OSError,ValueError): return {}
 
+# Status fragments poll every few seconds while *_pub.json files reach hundreds
+# of MB; only reparse when a file's (mtime, size) actually changes.
+_SNAPSHOTS={}
+_STAMPS={}
+STAMP_KEYS=('screening_finished_at','generated_at','analysis_time','updated_at','checked_at')
+
+def _signature(path):
+    try:
+        st=Path(path).stat();return (st.st_mtime_ns,st.st_size)
+    except OSError:return None
+
+def read_snapshot(path):
+    """Shared parsed document for read-only status views; callers must not mutate it."""
+    key=str(path);sig=_signature(path)
+    if sig is None:_SNAPSHOTS.pop(key,None);return {}
+    hit=_SNAPSHOTS.get(key)
+    if hit and hit[0]==sig:return hit[1]
+    doc=read(path);_SNAPSHOTS[key]=(sig,doc)
+    return doc
+
+def generated_at(path):
+    key=str(path);sig=_signature(path)
+    if sig is None:_STAMPS.pop(key,None);return None
+    hit=_STAMPS.get(key)
+    if hit and hit[0]==sig:return hit[1]
+    doc=read(path)
+    value=next((doc.get(k) for k in STAMP_KEYS if doc.get(k)),None)
+    _STAMPS[key]=(sig,value)
+    return value
+
 def parse(value):
     try:
         dt=datetime.fromisoformat(str(value).replace('Z','+00:00'))
@@ -50,8 +80,7 @@ def age(value,now=None):
 
 def record(filename,doc=None,base=None,now=None):
     path=(Path(base) if base else core_root()/'data')/filename
-    doc=read(path) if doc is None else doc
-    generated=next((doc.get(k) for k in ('screening_finished_at','generated_at','analysis_time','updated_at','checked_at') if doc.get(k)),None)
+    generated=generated_at(path) if doc is None else next((doc.get(k) for k in STAMP_KEYS if doc.get(k)),None)
     try:cached=datetime.fromtimestamp(path.stat().st_mtime,timezone.utc).isoformat()
     except OSError:cached=None
     return {'module':MODULES.get(filename,filename.removesuffix('.json')), 'generated':display(generated),
