@@ -53,3 +53,17 @@ def test_success_requires_fresh_synced_astra_file(tmp_path):
         a.worker(tmp_path,'test')
     assert a.read(tmp_path)['status']=='failed'
     assert '尚未同步' in a.read(tmp_path)['message']
+
+
+def test_success_shows_completed_only_after_new_result_is_installed(tmp_path):
+    data=tmp_path/'data';data.mkdir()
+    (data/a.LOCK).write_text('test')
+    a.write(tmp_path,{'status':'requested','requested_at':'2026-10-10T00:00:00+00:00'})
+    (data/'astra_cycle.json').write_text(json.dumps({'generated_at':'2026-10-10T00:05:00+00:00','cycle_id':'2026-10-10'}))
+    run={'databaseId':123,'createdAt':'2026-10-10T00:00:00Z'}
+    with patch.object(a,'request_run',return_value=(run,True)),patch.object(a,'run_cli',return_value={'status':'completed','conclusion':'success','url':'https://github.com/x'}),patch.object(a.subprocess,'run') as sync:
+        a.worker(tmp_path,'test')
+        sync.assert_called_once()
+    assert a.read(tmp_path)['status']=='complete'
+    assert a.read(tmp_path)['cycle_id']=='2026-10-10'
+    assert not (data/a.LOCK).exists()
