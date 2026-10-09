@@ -8,110 +8,110 @@
   "A股": {
    "indices": [
     {
+     "chg5d": -1.92,
      "symbol": "000001.SS",
      "last": 3813.79,
-     "vs_ma60": -2.15,
-     "chg1d": 0.05,
+     "trend": "📉 空头排列",
      "vs_ma20": -2.03,
-     "chg20d": -3.25,
-     "vol_ratio": 1.0,
-     "chg5d": -1.92,
+     "chg1d": 0.05,
      "name": "上证指数",
-     "trend": "📉 空头排列"
+     "vs_ma60": -2.15,
+     "vol_ratio": 1.0,
+     "chg20d": -3.25
     },
     {
+     "chg5d": -5.07,
      "symbol": "399001.SZ",
      "last": 12641.86,
-     "vs_ma60": -8.63,
-     "chg1d": 0.17,
+     "trend": "📉 空头排列",
      "vs_ma20": -5.41,
-     "chg20d": -7.22,
-     "vol_ratio": 1.0,
-     "chg5d": -5.07,
+     "chg1d": 0.17,
      "name": "深证成指",
-     "trend": "📉 空头排列"
+     "vs_ma60": -8.63,
+     "vol_ratio": 1.0,
+     "chg20d": -7.22
     },
     {
+     "chg5d": -7.47,
      "symbol": "399006.SZ",
      "last": 3043.33,
-     "vs_ma60": -11.53,
-     "chg1d": 0.22,
+     "trend": "📉 空头排列",
      "vs_ma20": -7.13,
-     "chg20d": -8.13,
-     "vol_ratio": 1.0,
-     "chg5d": -7.47,
+     "chg1d": 0.22,
      "name": "创业板指",
-     "trend": "📉 空头排列"
+     "vs_ma60": -11.53,
+     "vol_ratio": 1.0,
+     "chg20d": -8.13
     }
    ],
    "sectors": [
     {
-     "symbol": "515030.SS",
-     "last": 1.48,
-     "vs_ma60": -6.58,
-     "chg1d": 1.86,
-     "vs_ma20": -1.38,
-     "chg20d": -6.29,
-     "vol_ratio": 1.0,
      "heat": 47,
      "chg5d": 0.2,
+     "symbol": "515030.SS",
+     "last": 1.48,
+     "trend": "📉 空头排列",
+     "vs_ma20": -1.38,
+     "chg1d": 1.86,
      "name": "新能源车",
-     "trend": "📉 空头排列"
+     "vs_ma60": -6.58,
+     "vol_ratio": 1.0,
+     "chg20d": -6.29
     },
     {
-     "symbol": "512880.SS",
-     "last": 1.03,
-     "vs_ma60": -4.57,
-     "chg1d": 2.48,
-     "vs_ma20": -2.08,
-     "chg20d": -5.74,
-     "vol_ratio": 0.92,
      "heat": 42,
      "chg5d": -1.05,
+     "symbol": "512880.SS",
+     "last": 1.03,
+     "trend": "📉 空头排列",
+     "vs_ma20": -2.08,
+     "chg1d": 2.48,
      "name": "证券",
-     "trend": "📉 空头排列"
+     "vs_ma60": -4.57,
+     "vol_ratio": 0.92,
+     "chg20d": -5.74
     },
     {
-     "symbol": "512400.SS",
-     "last": 1.64,
-     "vs_ma60": -6.21,
-     "chg1d": 2.31,
-     "vs_ma20": -4.61,
-     "chg20d": -10.42,
-     "vol_ratio": 0.97,
      "heat": 42,
      "chg5d": -0.97,
+     "symbol": "512400.SS",
+     "last": 1.64,
+     "trend": "📉 空头排列",
+     "vs_ma20": -4.61,
+     "chg1d": 2.31,
      "name": "有色金属",
-     "trend": "📉 空头排列"
+     "vs_ma60": -6.21,
+     "vol_ratio": 0.97,
+     "chg20d": -10.42
     },
     {
-     "symbol": "512660.SS",
-     "last": 1.08,
-     "vs_ma60": -4.24,
-     "chg1d": -1.19,
-     "vs_ma20": -5.21,
-     "chg20d": -5.09,
-     "vol_ratio": 0.9,
      "heat": 35,
      "chg5d": -4.16,
+     "symbol": "512660.SS",
+     "last": 1.08,
+     "trend": "🔄 震荡偏弱",
+     "vs_ma20": -5.21,
+     "chg1d": -1.19,
      "name": "军工",
-     "trend": "🔄 震荡偏弱"
+     "vs_ma60": -4.24,
+     "vol_ratio": 0.9,
+     "chg20d": -5.09
     }
    ],
    "temperature": {
+    "temp": 8,
     "verdict": "🧊 情绪冰点·地量磨底（等企稳信号再动，不逆势加主题）",
     "label": "🔵 冰点",
-    "momentum": 2,
     "breadth": 0,
-    "temp": 8,
     "trend": 0,
+    "momentum": 2,
     "vol_heat": 50
    },
    "turn_risk": {
-    "top_risk": 0,
     "text": "顶部转向风险 低(0/100) ｜ 底部转机信号 低(25/100)｜顶部特征0/7·底部特征2/7",
-    "bottom_opp": 25,
-    "ver": "v2"
+    "ver": "v2",
+    "top_risk": 0,
+    "bottom_opp": 25
    },
    "l3": {}
   }
