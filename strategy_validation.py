@@ -26,7 +26,7 @@ def freeze(row):
 
 def audit(board, profiles=None):
     """Recompute invariants independently from the producer; no policy changes."""
-    from industry_diversity import industry
+    from industry_diversity import selection_industry
     errors=[]; seen={}; sectors=Counter(); examined=0
     for r in board.get('rows',[]):
         code=r['code'];s=r['strategy_score'];key=(code,s.get('snapshot_id'))
@@ -35,7 +35,7 @@ def audit(board, profiles=None):
         if r.get('strategy_tier')!='3A':continue
         examined+=1
         if s['value']<80 or not r.get('business_supported'):errors.append({'code':code,'error':'invalid_3a_eligibility'})
-        sector=industry(r,profiles)
+        sector=selection_industry(r,profiles)
         if sector:sectors[(r['market'],sector)]+=1
         entry=r.get('entry_range');target=r.get('take_profit_range');stop=r.get('stop_range')
         if not all((entry,target,stop)):continue
