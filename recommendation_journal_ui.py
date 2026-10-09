@@ -140,7 +140,7 @@ def calendar_html(doc,month,selected,query='',now=None):
             for market in MARKETS:
                 row=next((r for r in listed if r['market']==market and r['kind']!='astra'),None)
                 if row:shown.append(row)
-                plan=next((r for r in listed if r['market']==market and r['kind']=='astra'),None)
+                plan=max((r for r in listed if r['market']==market and r['kind']=='astra'),key=lambda r:r['appearance']['at'],default=None)
                 if plan:shown.append(plan)
             for r in shown:
                 e=r['appearance'];formal=r['kind']=='formal' or r['kind'].startswith('strategy_')

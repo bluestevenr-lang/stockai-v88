@@ -7,6 +7,13 @@ from astra_cycle_state import view
 def text(v): return escape(str(v if v is not None else '待核'))
 
 
+def clock(v):
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    try:return datetime.fromisoformat(v).astimezone(ZoneInfo('Asia/Shanghai')).strftime('%m-%d %H:%M 北京时间')
+    except (ValueError,TypeError):return '待核'
+
+
 def band(v):
     return '～'.join(f'{x:.2f}' for x in v) if isinstance(v, (list, tuple)) and len(v) == 2 else '待核'
 
@@ -20,7 +27,7 @@ def html(doc, now=None):
            f'<p>📅 {text(d.get("cycle_id"))} 轮　｜　🔄 下轮 {text(d.get("next_recalculation"))}　｜　每月1、10、20日重算 · 休市也更新</p>',
            '<p style="color:#64748b">中港优先 · 共最多3只 · 美股最多1只且规则分≥85，仅参考。重算按自然日；目标跟踪仍按原15个交易日计算。</p>',
            '<p>🎯 沿用净收益目标 $200（非收益承诺） · 实际净收益见原月度账本；本轮重算不重置风险限额。</p>',
-           f'<p style="font-size:12px;color:#64748b">本轮实际建立 {text(d.get("created_at"))} · 最近计算 {text(d.get("generated_at"))} · 原行情日期逐股保留</p>']
+           f'<p style="font-size:12px;color:#64748b">本轮实际建立 {text(clock(d.get("created_at")))} · 最近计算 {text(clock(d.get("generated_at")))} · 原行情日期逐股保留</p>']
     from module_freshness import html as freshness_html
     out.append(freshness_html('astra_cycle.json',doc,now=now))
     if not d.get('rows'): out.append('<p>'+text(d.get('status'))+'</p>')
