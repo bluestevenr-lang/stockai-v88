@@ -8,6 +8,7 @@ import json
 from v88_paths import core_root
 from market_badge import html as _market_badge
 from display_limits import market_top
+from risk_quote import quote_html
 
 def market_badge(market):
     return _market_badge(market,image_mode=True)
@@ -75,7 +76,7 @@ def left_entry_html(doc,*,now=None):
     out=[f"<h3 id='v88-left-entry-watch'>③ 左侧观察 · {'待核验' if unscanned else str(len(selected))+'只'}</h3><small>中美港各最多5只 · 按观察优先级排列，非审核分排名</small>",'<div class="signal-counts">'+''.join(f"<span class='chip'>{label} {'—' if unscanned else counts[kind]}</span> " for kind,label in kinds)+'</div>',
          "<div class='note'>🔴 未确认企稳 → 🟡 企稳迹象 → 🔵 突破待验。本栏标签可重叠；接近低位不等于已见底。</div>"]
     if selected:
-        out.append("<div class='scroll'><table><thead><tr><th>市场 / 个股</th><th>提醒类型 / 当前阶段</th><th>下一步 / 风险边界</th><th>技术面以外的依据</th></tr></thead><tbody>")
+        out.append("<div class='scroll'><table><thead><tr><th>市场 / 个股</th><th>现价 / 涨跌 / 报价时间</th><th>提醒类型 / 当前阶段</th><th>下一步 / 风险边界</th><th>技术面以外的依据</th></tr></thead><tbody>")
         for row in selected:
             state=row.get('setup_state','falling');state_label={'falling':'未确认企稳','stabilizing':'企稳迹象','breakout_watch':'突破待验'}.get(state,'待核')
             icon={'falling':'🔴','stabilizing':'🟡','breakout_watch':'🔵'}.get(state,'○')
@@ -91,8 +92,7 @@ def left_entry_html(doc,*,now=None):
                 windows.append(f"<div>• {e(label)} · {e(' · '.join(values))}<br>{e(signal.get('window_start') or '起点待核')} → {e(signal.get('window_end') or '终点待核')}</div>")
             bounds='失效位待核' if row.get('invalidation') is None else f"跌破 {row['invalidation']:g}，撤销当前企稳线索"
             if state=='falling':bounds=('观察低位 '+f"{row['invalidation']:g}"+'；' if row.get('invalidation') is not None else '')+'原风险线优先，继续破低加强风险复核'
-            amount='现价待核' if row.get('last') is None else f"现 {row['last']:g}"
-            out.append(f"<tr><td>{market_badge(row.get('market'))} · {name(row)}<br><small>{amount} · 日线 {e(row.get('source_asof') or row.get('window_end'))}</small></td><td>{''.join(chips)}<br><b>{icon} {e(state_label)}</b><details><summary>低位窗口与信号依据</summary>{''.join(windows)}{e(row.get('why'))}</details></td><td><b>👁 {e(row.get('next_check'))}</b><br><small>↘ {e(bounds)}<br>观察位不替代原合同止损。</small></td><td>{observation_html(row,now=now)}{nontechnical_html(row)}</td></tr>")
+            out.append(f"<tr><td>{market_badge(row.get('market'))} · {name(row)}</td><td>{quote_html(row,now)}</td><td>{''.join(chips)}<br><b>{icon} {e(state_label)}</b><details><summary>低位窗口与信号依据</summary>{''.join(windows)}{e(row.get('why'))}</details></td><td><b>👁 {e(row.get('next_check'))}</b><br><small>↘ {e(bounds)}<br>观察位不替代原合同止损。</small></td><td>{observation_html(row,now=now)}{nontechnical_html(row)}</td></tr>")
         out.append('</tbody></table></div>')
     else:out.append("<div class='note'>尚无当前完整行情进入扫描，不能解释为没有低位或连跌风险。</div>" if unscanned else "<div class='note'>已核范围未触发提醒；其余行情待补，不能代表全市场无风险。</div>")
     out.append('<small>其余对象继续后台监控。历史低位仅指已核数据范围，具体窗口见个股依据。</small>')
@@ -115,7 +115,7 @@ def html(doc=None,*,base=None,now=None):
     .v88-adaptation td{padding:12px;border-bottom:1px solid #e2e8f0;vertical-align:top;font-size:14px!important;line-height:1.5!important}
     .v88-adaptation th{padding:10px;background:#eff6ff;text-align:left;font-size:13px!important}.v88-adaptation small,.v88-adaptation details{font-size:12px!important;color:#64748b}
     .v88-adaptation .signal-counts{display:flex;gap:5px;flex-wrap:wrap}.v88-adaptation .evidence{margin-top:5px}.v88-adaptation details>summary{cursor:pointer;padding:4px 0}.v88-adaptation .v88-market-badge span{font-size:12px!important}.v88-adaptation a{font-weight:700;color:#075985}.v88-adaptation .metric{font-size:24px;font-weight:800}.v88-adaptation .chip{display:inline-block;padding:4px 10px;border-radius:20px;background:#e0f2fe;font-weight:700}
-    .v88-adaptation table{width:100%;min-width:920px;border-collapse:collapse}.v88-adaptation .scroll{overflow-x:auto}.v88-adaptation .note{background:#f1f5f9;padding:9px 12px;border-radius:8px;margin:8px 0;font-size:13px}
+    .v88-adaptation .risk-price{white-space:nowrap}.v88-adaptation .risk-price strong{font-size:21px;color:#16324f}.v88-adaptation .risk-price span{font-size:12px;color:#64748b}.v88-adaptation .risk-change{font-weight:650}.v88-adaptation table{width:100%;min-width:920px;border-collapse:collapse}.v88-adaptation .scroll{overflow-x:auto}.v88-adaptation .note{background:#f1f5f9;padding:9px 12px;border-radius:8px;margin:8px 0;font-size:13px}
     </style><section id='v88-market-adaptation' class='v88-adaptation'><h2>🧭 市场环境与风险观察</h2>
     <div class='chip'>📝 整改确认预览</div> <small>正式推送等待确认 · 与飞书共用数据</small>
     <h3>① 先看环境，再选观察周期</h3><div class='scroll'><table><thead><tr><th>市场 / 当前结构</th><th>未来条件路径</th><th>观察方案</th></tr></thead><tbody>"""]
@@ -141,10 +141,10 @@ def html(doc=None,*,base=None,now=None):
     elif not monthly.get('checked'):out.append("<div class='note'>月度名单已保留，完整日线待补；尚不能判断是否触发四连跌。</div>")
     elif not alerts:out.append("<div class='note'>当前已核部分未触发四连跌；待核部分不能据此排除风险。</div>" if pending else "<div class='note'>当前已核名单未触发四连跌，继续按完整交易日监控。</div>")
     if alerts or near:
-        out.append("<div class='scroll'><table><thead><tr><th>月度观察股</th><th>连续收盘下跌</th><th>需要关注</th></tr></thead><tbody>")
+        out.append("<div class='scroll'><table><thead><tr><th>月度观察股</th><th>现价 / 涨跌 / 报价时间</th><th>连续收盘下跌</th><th>需要关注</th></tr></thead><tbody>")
         for r in displayed:
             s=r['streak'];level='🔴 提醒' if r['status']=='alert' else '🟠 接近提醒'
-            out.append(f"<tr><td>{name(r)}<br><small>{e(r['membership'])}</small>{observation_html(r,now=now)}</td><td><b>{level} · {s['days']}交易日 / {s['change_pct']:+.2f}%</b><br><small>{e(s['start'])} → {e(s['end'])}</small></td><td>核对原失效位、下跌原因与退出条件<br><small>连跌涨跌幅以该段前一日收盘为基准；不等于入选后收益，不自动抄底或卖出。</small></td></tr>")
+            out.append(f"<tr><td>{name(r)}<br><small>{e(r['membership'])}</small>{observation_html(r,now=now)}</td><td>{quote_html(r,now)}</td><td><b>{level} · {s['days']}交易日 / {s['change_pct']:+.2f}%</b><br><small>{e(s['start'])} → {e(s['end'])}</small></td><td>核对原失效位、下跌原因与退出条件<br><small>连跌涨跌幅以该段前一日收盘为基准；不等于入选后收益，不自动抄底或卖出。</small></td></tr>")
         out.append('</tbody></table></div>')
     out.append("<small>本月曾入选、已退榜及其余对象继续后台监控；待核不等于安全。</small>")
     out.append(left_entry_html(doc,now=now))
