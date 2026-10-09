@@ -144,7 +144,7 @@ def calendar_html(doc,month,selected,query='',now=None):
                 if plan:shown.append(plan)
             for r in shown:
                 e=r['appearance'];formal=r['kind']=='formal' or r['kind'].startswith('strategy_')
-                grade=f"{e.get('tier','')} {e['score']:g}分" if formal and e.get('score') is not None else '观察'
+                grade=f"{(e.get('tier') or '观察')} {e['score']:g}分" if formal and e.get('score') is not None else '观察'
                 if r['kind'].startswith('strategy_'):grade+=' · 策略'
                 if r['kind']=='astra':grade='🟣 Astra'+(f" {e['score']:g}分" if e.get('score') is not None else '')
                 reason=e.get('reason') or '原说明未留存'
@@ -165,7 +165,7 @@ def detail_html(rows,day):
     out=['<div class="v88-day-table"><table><thead><tr><th>市场 / 个股</th><th>当天记录</th><th>当时简述 / 变化</th><th>现在的跟进状态</th></tr></thead><tbody>']
     for r in rows:
         e=r['appearance'];events=r['day_events'];last=events[-1]
-        state=(f"⭐ {e.get('tier')} · {e['score']:g}分 · #{e.get('rank')}" if e and e.get('score') is not None else '👁 机会观察' if e else '⏳ 后续跟进')
+        state=(f"⭐ {e.get('tier') or '观察'} · {e['score']:g}分 · #{e.get('rank')}" if e and e.get('score') is not None else '👁 机会观察' if e else '⏳ 后续跟进')
         reason=(e or last).get('reason') or '原说明未留存'
         href='?'+urlencode({'focus':'deep','q':r['code']})
         trail=[]
