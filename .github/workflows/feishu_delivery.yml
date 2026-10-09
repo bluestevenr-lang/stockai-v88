@@ -6,7 +6,13 @@ on:
     - cron: '1 4,11 * * *'
     # Independent 15-minute receipt reconciliation retains catch-up/deduplication.
     - cron: '3,18,33,48 * * * *'
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      debug_slot:
+        description: '用户主动要求的调试版；独立回执，不占用定时报'
+        type: choice
+        default: none
+        options: [none, morning, afternoon, evening]
   workflow_call: {}
   workflow_run:
     # Independent existing wakeups recover when this workflow's cron is delayed.
@@ -42,9 +48,14 @@ jobs:
         id: due
         env:
           FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+          DEBUG_SLOT: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_slot || 'none' }}
         run: |
           gh api -H 'Accept: application/vnd.github.raw+json' 'repos/bluestevenr-lang/v88-daily-report/contents/feishu_sync_delivery.json?ref=feishu-delivery-state' > /tmp/v88-outbox.json
-          python3 src/feishu_reconcile.py --check-state /tmp/v88-outbox.json
+          if [ "$DEBUG_SLOT" != "none" ]; then
+            echo 'needed=true' >> "$GITHUB_OUTPUT"
+          else
+            python3 src/feishu_reconcile.py --check-state /tmp/v88-outbox.json
+          fi
       - uses: actions/checkout@v4
         if: steps.due.outputs.needed == 'true'
         with:
@@ -70,5 +81,11 @@ jobs:
         if: steps.due.outputs.needed == 'true'
         env:
           FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
-        run: python src/feishu_reconcile.py
+          DEBUG_SLOT: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_slot || 'none' }}
+        run: |
+          if [ "$DEBUG_SLOT" != "none" ]; then
+            python src/feishu_debug.py --slot "$DEBUG_SLOT"
+          else
+            python src/feishu_reconcile.py
+          fi
       # No private sources, payloads, secrets or state uploaded as public artifacts.
