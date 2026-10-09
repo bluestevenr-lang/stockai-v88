@@ -24,7 +24,7 @@ STYLE='''<style>
 
 def html(board,receipt,state,*,running=False,opened=None,modules=(),base=None,now=None):
     e=lambda v:escape(str(v))
-    complete=bool(receipt) and not running and state.get('status')!='failed'
+    complete=bool(board) and bool(receipt) and not running and state.get('status')!='failed'
     percent=100 if complete else 50 if board else 0
     failed=state.get('status')=='failed' and not running
     title='正在同步' if running else '已载入保存结果' if failed or not receipt else '准备就绪'
@@ -41,6 +41,7 @@ def html(board,receipt,state,*,running=False,opened=None,modules=(),base=None,no
     out.append('</div><span style="color:#a1a1a6;font-size:11px!important">北京时间 · 名单数量</span></div><details><summary>查看更新时间与缓存详情</summary>')
     out.append(f'<div class="sync-detail-note">本次打开 {e(display(opened))}　·　云端核对 {e(display(receipt.get("at")))}　·　云端发布 {e(display(receipt.get("cloud_generated_at")))}<br>进度表示读取与同步阶段，不代表行情覆盖率。刷新页面不改变原始筛选时间。</div><div class="sync-modules">')
     for m in modules:
-        out.append(f'<div class="sync-module"><strong>{e(m["module"])}</strong>计算 {e(m["generated"])} · {e(m["age"])}前<br>缓存写入 {e(m["cached"])} · {e(m["cache_age"])}前</div>')
+        m={**m,'age':('未记录' if m['age']=='未知' else m['age']+'前'),'cache_age':('未记录' if m['cache_age']=='未知' else m['cache_age']+'前')}
+        out.append(f'<div class="sync-module"><strong>{e(m["module"])}</strong>计算 {e(m["generated"])} · {e(m["age"])}<br>缓存写入 {e(m["cached"])} · {e(m["cache_age"])}</div>')
     out.append('</div></details></section>')
     return ''.join(out)
