@@ -25,12 +25,13 @@ def html(doc, now=None):
            '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px"><b style="font-size:23px;color:#3730a3">🎯 Astra · 定期短线计划</b>',
            f'<b style="font-size:20px">研究 {len(d.get("rows", []))} 只　·　条件匹配 {d.get("rule_matched_count", 0)} 只</b></div>',
            f'<p>📅 {text(d.get("cycle_id"))} 轮　｜　🔄 下轮 {text(d.get("next_recalculation"))}　｜　每月1、10、20日重算 · 休市也更新</p>',
-           '<p style="color:#64748b">中港优先 · 共最多3只 · 美股最多1只且规则分≥85，仅参考。重算按自然日；目标跟踪仍按原15个交易日计算。</p>',
-           '<p>🎯 沿用净收益目标 $200（非收益承诺） · 实际净收益见原月度账本；本轮重算不重置风险限额。</p>',
+           '<p style="color:#64748b">中港优先 · 共最多3只 · 美股最多1只且为当轮美股前5%（≥80分），仅参考。重算按自然日；目标跟踪仍按原15个交易日计算。</p>',
+           money_html(d),
            f'<p style="font-size:12px;color:#64748b">本轮实际建立 {text(clock(d.get("created_at")))} · 最近计算 {text(clock(d.get("generated_at")))} · 原行情日期逐股保留</p>']
     from module_freshness import html as freshness_html
     out.append(freshness_html('astra_cycle.json',doc,now=now))
     if not d.get('rows'): out.append('<p>'+text(d.get('status'))+'</p>')
+    out.append(backtest_html(d.get('backtest')))
     for r in d.get('rows', []):
         info = r.get('industry_snapshot') or {}; window = r.get('window') or {}
         flags = {'A股': '🇨🇳', '港股': '🇭🇰', '美股': '🇺🇸'}
@@ -45,6 +46,7 @@ def html(doc, now=None):
                 f'<span>🎯 止盈 <b>{band(r.get("take_profit_range"))}</b></span>'
                 f'<span>🛑 止损 <b>{band(r.get("stop_range"))}</b></span></div>',
                 f'<p>💰 到止盈净空间 {band(r.get("net_target_return_pct"))}%　｜　止损情景 {band(r.get("stop_loss_pct"))}%　｜　净盈亏比 {text(r.get("net_rr"))}</p>',
+                contribution_html(r),
                 f'<p>🏢 {text(r.get("business_reason"))}</p>',
                 f'<p>⚠️ {text(r.get("business_risk") or "未提供新增反证；仍需核验最新公告")}</p>',
                 f'<p>⏱ 截止 {text(window.get("deadline"))} · 剩余 {text(window.get("remaining_sessions"))} 交易日；到期复盘，未入场不延长原计划。</p>',
@@ -56,6 +58,7 @@ def html(doc, now=None):
         for peer in info.get('peers', [])[:5]:
             out.append(f'<p>#{text(peer.get("rank"))} {text(peer.get("name"))} · {text(peer.get("code"))}</p>')
         out.append('</details></article>')
+    out.append(watch_html(d.get('watch') or []))
     from astra_calendar_view import html as calendar_html
     out.append(calendar_html(d,now))
     out += ['<details><summary>📚 历轮记录 · 首次研究区间永久保留</summary>']
@@ -65,4 +68,53 @@ def html(doc, now=None):
             r = first['row']
             out.append(f'<p>{text(first["at"])} · {text(r.get("name"))} · 首次入场 {band(r.get("entry_range"))} / 止盈 {band(r.get("take_profit_range"))} / 止损 {band(r.get("stop_range"))}</p>')
     out += ['</details><p style="font-size:12px;color:#64748b">规则筛选分不是GPT审核分或胜率。研究区间不改变已有持仓合同；月度实际收益与风险账本独立核算，未对账不计零。GitHub更新不依赖模型额度。</p></section>']
+    return ''.join(out)
+
+
+def money_html(d):
+    ms = d.get('month_status') or {}; pol = d.get('selection_policy') or {}
+    target = ms.get('monthly_target_usd', 200); risk = ms.get('risk_per_trade_usd'); cap = ms.get('monthly_risk_cap_usd')
+    realized = '待对账（未对账不计零）' if ms.get('realized_net_usd') is None else f'{ms["realized_net_usd"]:g} 美元'
+    out = ['<div style="background:#eef2ff;border-radius:10px;padding:10px 14px;margin:8px 0">',
+           f'<p style="margin:2px 0">🎯 月净收益目标 <b>${text(target)}</b>（目标，非收益承诺） · 本月已实现 <b>{text(realized)}</b> · 台账 {text(ms.get("ledger_state"))}</p>']
+    if risk:
+        out.append(f'<p style="margin:2px 0">🧮 单笔风险 ${text(risk)} · 月风险上限 ${text(cap)} · 每月最多{text(ms.get("max_new_entries"))}次新开仓 · 止盈收益 ≈ 净盈亏比 × ${text(risk)}</p>')
+    if pol.get('version'):
+        out.append(f'<p style="margin:2px 0;font-size:13px">盈利门槛 {text(pol["version"])}：净空间≥{text(pol.get("min_net_target_pct"))}% · 净盈亏比≥{text(pol.get("min_net_rr"))} · 规则分≥{text(pol.get("min_score"))} · {text(pol.get("time_rule"))}；美股本轮门槛 {text(pol.get("us_floor_this_run"))}分</p>')
+    if ms.get('note'): out.append(f'<p style="margin:2px 0;font-size:12px;color:#64748b">{text(ms["note"])}</p>')
+    out.append('</div>')
+    return ''.join(out)
+
+
+def contribution_html(r):
+    c = r.get('target_contribution') or {}
+    gate = '✅ 通过盈利门槛' if r.get('profit_gate') else '⏳ 未过盈利门槛：' + '；'.join(r.get('profit_gaps') or [])
+    setup = f' · 形态 {text(r.get("setup"))}' if r.get('setup') else ''
+    if not c.get('profit_at_target_usd'): return f'<p>{text(gate)}{setup}</p>'
+    return (f'<p>{text(gate)}{setup}　｜　按单笔风险${text(c.get("risk_per_trade_usd"))}计：止盈情景约 <b>+${text(c["profit_at_target_usd"])}</b>'
+            f'（月目标 {text(c.get("target_coverage_pct"))}%） · 每股风险 {text(c.get("per_share_risk"))}</p>'
+            f'<p style="font-size:12px;color:#64748b">{text(c.get("sizing_rule"))}；{text(c.get("scope"))}</p>')
+
+
+def backtest_html(bt):
+    if not (bt or {}).get('by_market'): return ''
+    names = {'all': '合计', 'A股': '🇨🇳 A股', '港股': '🇭🇰 港股', '美股': '🇺🇸 美股'}
+    rows = ''.join(f'<tr><td>{names.get(m, text(m))}</td><td>{text(v.get("trades"))}</td><td>{text(v.get("target_hit_pct"))}%</td><td>{text(v.get("stop_pct"))}%</td>'
+                   f'<td>{text(v.get("time_exit_pct"))}%</td><td>{text(v.get("mean_r"))}R</td><td>{text(v.get("mean_pct"))}%</td></tr>'
+                   for m, v in sorted(bt['by_market'].items(), key=lambda kv: kv[0] != 'all') if v.get('trades'))
+    return ('<details><summary>📊 规则历史回顾（技术面，非收益保证）</summary>'
+            f'<p style="font-size:13px">{text(bt.get("scope"))} · 生成 {text(clock(bt.get("generated_at")))} · {text(bt.get("symbols"))}只</p>'
+            '<div style="overflow-x:auto"><table style="border-collapse:collapse;min-width:640px"><thead><tr><th>市场</th><th>模拟次数</th><th>触及止盈</th><th>止损</th><th>到期离场</th><th>平均每笔</th><th>平均涨跌</th></tr></thead>'
+            f'<tbody>{rows}</tbody></table></div></details>')
+
+
+def watch_html(watch):
+    if not watch: return ''
+    out = ['<details open><summary>🔎 Astra候补 · 未过盈利门槛，逐项列出差距</summary>']
+    for r in watch:
+        s = r.get('strategy_score') or {}
+        out.append(f'<p>{text(r.get("market"))} {text(r.get("name"))} · {text(r.get("code"))} · 现价 {text(r.get("last"))} · {text(clock(r.get("quote_asof")))} · {text(s.get("value"))}分'
+                   f' · 入场 {band(r.get("entry_range"))} / 止盈 {band(r.get("take_profit_range"))} / 止损 {band(r.get("stop_range"))}'
+                   f'<br><small>差距：{text("；".join(r.get("profit_gaps") or r.get("missing") or []) or "待核")}</small></p>')
+    out.append('</details>')
     return ''.join(out)
