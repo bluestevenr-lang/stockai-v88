@@ -59,8 +59,13 @@ def record(filename,doc=None,base=None,now=None):
 
 def html(filename,doc=None,base=None,now=None):
     r=record(filename,doc,base,now)
-    text=f"🕒 计算完成 {r['generated']} · 结果距今 {r['age']}　｜　💾 缓存写入 {r['cached']} · 缓存年龄 {r['cache_age']}（北京时间）"
-    return '<div class="module-freshness" style="padding:10px 14px;margin:8px 0;background:#f0f6ff;border-left:4px solid #3b82f6;font-size:15px;line-height:1.7;color:#1e3a5f">'+escape(text)+'</div>'
+    e=lambda value:escape(str(value))
+    return ('<div class="module-freshness" style="display:flex;align-items:center;gap:10px 24px;flex-wrap:wrap;padding:12px 16px;margin:10px 0;background:#f5f5f7;border-radius:14px;color:#86868b;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:13px!important;line-height:1.7">'
+        f'<span>筛选完成 <b style="color:#424245;font-weight:500">{e(r["generated"])}</b></span>'
+        f'<span>结果距今 <b style="color:#424245;font-weight:500">{e(r["age"])}</b></span>'
+        f'<span>缓存年龄 <b style="color:#424245;font-weight:500">{e(r["cache_age"])}</b></span>'
+        f'<details style="margin-left:auto"><summary style="cursor:pointer;color:#007aff">时间详情</summary><span>缓存写入 {e(r["cached"])} · 北京时间</span></details></div>')
+
 
 def inventory(base=None,now=None):
     base=Path(base) if base else core_root()/'data'
