@@ -27,3 +27,27 @@ def select(rows,limit,profiles=None,*,key=None,reason=REASON):
             if sector:occupied.add(key)
         else:reserve.append(row)
     return chosen,reserve
+
+
+def candidate_top3(rows):
+    """Presentation-only Top3 per market; never mutate the retained research pool."""
+    from math import isfinite
+    from market_symbols import canonical
+    def score(row):
+        try:
+            value=float((row.get('strategy_score') or {}).get('value'))
+            return value if isfinite(value) else float('-inf')
+        except (TypeError, ValueError):
+            return float('-inf')
+    focused=[]
+    for market in ('A股','港股','美股'):
+        seen=set()
+        pool=sorted((r for r in rows if r.get('market')==market and r.get('code')),
+                    key=lambda r:(-score(r),canonical(r['code'])))
+        for row in pool:
+            code=canonical(row['code'])
+            if code in seen:continue
+            seen.add(code)
+            focused.append(dict(row,rank=len(seen)))
+            if len(seen)==3:break
+    return focused

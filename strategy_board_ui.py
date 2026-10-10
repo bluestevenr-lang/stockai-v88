@@ -123,10 +123,12 @@ def source_tags(r,esc):
 
 
 def near_html(near,doc,esc,flags,display):
+    from industry_diversity import candidate_top3
+    near=candidate_top3(near)
     counts=doc.get('pool_counts') or {}
     pool=' · '.join(f'{m} 评分{c.get("scored",0)} / 企业依据{c.get("business_supported",0)} / 有日线结构{c.get("with_structure",0)} / ≥70分{c.get("score_ge_70",0)}' for m,c in counts.items())
     out=['<div style="padding:4px 20px 14px"><h4 style="margin:8px 0">🔎 3A候补 · 未授3A，逐项列出差距</h4>',
-         '<small>每市场最高分的非3A候选；差距逐项列示，补齐后下一轮自动重评。不冒充3A，也不代表买入信号。</small>',
+         '<small>A股、港股、美股各按统一综合分展示Top3，合计最多9只；差距逐项列示，补齐后下一轮自动重评。不冒充3A，也不代表买入信号。</small>',
          f'<p><small>候选池：{esc(pool or "待核")}</small></p>' if pool else '',
          '<div style="overflow-x:auto"><table style="min-width:1100px"><thead><tr><th>市场 / 个股</th><th>统一综合分</th><th>现价 / 行情时间</th><th>当前所在档 / 依据来源</th><th>距3A的差距</th></tr></thead><tbody>']
     for market,flag in flags.items():
@@ -134,7 +136,7 @@ def near_html(near,doc,esc,flags,display):
             s=r.get('strategy_score') or {}
             out.append(f'<tr><td><b>{flag} #{esc(r["rank"])} {esc(r["name"])}</b><br><small>{esc(r["code"])}</small></td>'
                 f'<td><span class="score">{esc(s.get("value"))}</span> /100<br><small>证据覆盖 {esc(s.get("coverage"))}%</small></td>'
-                f'<td><b>{esc(r.get("last"))}</b> · {r.get("change_pct",0):+.2f}%<br><small>{esc(display(r.get("quote_asof")))} 北京时间</small></td>'
+                f'<td><b>{esc(r.get("last"))} {esc(r.get("currency") or {"A股":"CNY","港股":"HKD","美股":"USD"}.get(r["market"],""))}</b> · {r.get("change_pct",0):+.2f}%<br><small>{esc(display(r.get("quote_asof")))} 北京时间</small></td>'
                 f'<td>{esc(r.get("strategy_tier") or r.get("source_strategy"))} · {esc(r.get("lane"))}{source_tags(r,esc)}</td>'
                 f'<td>{"".join("<div>· "+esc(g)+"</div>" for g in r.get("gaps",[])) or "—"}</td></tr>')
     out.append('</tbody></table></div></div>')
