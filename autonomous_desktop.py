@@ -72,7 +72,8 @@ def sync_on_open():
             if refreshing:
                 done, total = refresh.get('steps_done', 0), refresh.get('steps_total', 0)
                 step = f'{done}/{total} 步' if total else '排队中'
-                st.caption('行情更新 · '+step+' · '+(refresh.get('phase') or '连接云端；原结果保留'))
+                phase = ('同步新结果' if refresh.get('status') == 'syncing' else '采集行情并重新筛选' if 'Refresh facts' in refresh.get('phase', '') else '核验新结果' if 'Validate' in refresh.get('phase', '') or 'Verify' in refresh.get('phase', '') else '准备云端更新')
+                st.caption('行情更新 · '+step+' · '+phase+'；原结果保留')
             elif refresh.get('status') == 'failed':
                 st.caption('更新未完成 · '+refresh.get('message', '请重试，原记录保留'))
             elif refresh.get('status') == 'complete':
@@ -85,7 +86,7 @@ def sync_on_open():
                          width='content', help='立即抓取最新可得行情并重新筛选3A/2A/1A和Astra；休市可用，不调用模型，不发送飞书。'):
                 start(base.parent, fast=True)
                 st.session_state['_v88_manual_refresh_status'] = 'requested'
-                st.rerun(scope='fragment')
+                st.rerun()
     sync_status()
 
 if __name__=='__main__' and len(sys.argv)>2 and sys.argv[1]=='--worker':_worker(sys.argv[2])

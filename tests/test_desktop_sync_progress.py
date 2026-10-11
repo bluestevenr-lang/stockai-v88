@@ -38,3 +38,19 @@ def test_recent_attempt_throttles_without_leaking_lock(tmp_path):
         assert not schedule_sync()
         assert not (tmp_path/'data/.autonomous_sync_ui_lock').exists()
         spawn.assert_not_called()
+
+
+def test_header_button_dispatches_fast_refresh_on_full_apptest_rerun(monkeypatch):
+    from streamlit.testing.v1 import AppTest
+    import autonomous_desktop as desktop
+    import astra_refresh_control as refresh
+    monkeypatch.setattr(desktop, 'schedule_sync', lambda: False)
+    monkeypatch.setattr(refresh, 'busy', lambda base: False)
+    monkeypatch.setattr(refresh, 'read', lambda base: {})
+    calls=[]
+    monkeypatch.setattr(refresh, 'start', lambda base, fast=False: calls.append(fast) or True)
+    app=AppTest.from_string('from autonomous_desktop import sync_on_open\nsync_on_open()')
+    app.run(timeout=30)
+    app.button(key='v88_update_market_now').click().run(timeout=30)
+    assert not app.exception
+    assert calls == [True]
