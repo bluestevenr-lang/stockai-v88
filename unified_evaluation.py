@@ -5,9 +5,13 @@ regime, company evidence, plan, buy status) into strategy_board.json. Deep
 analysis, 3A and the board all read that same record.
 """
 from html import escape
+from copy import deepcopy
+from threading import RLock
+from datetime import datetime, timezone
 
 CURRENT_POLICIES = ('2026-10-11-evidence-tiers-v5', '2026-10-11-buyable-3a-v4')
 _INDEX = {}
+_INDEX_LOCK = RLock()
 
 
 def _canonical(code):
@@ -23,20 +27,40 @@ def _doc():
     return read_snapshot(DATA / 'strategy_board.json') or {}
 
 
-def lookup(code, doc=None):
+def lookup(code, doc=None, now=None):
     """Return the unified record for ``code`` or None (never a fabricated grade)."""
     doc = _doc() if doc is None else doc
     if doc.get('grade_policy') not in CURRENT_POLICIES:
         return None
     evaluations = doc.get('evaluations') or {}
-    key = (id(evaluations), len(evaluations))
-    if _INDEX.get('key') != key:
-        _INDEX.update(key=key, map={_canonical(k): k for k in evaluations})
-    raw = _INDEX['map'].get(_canonical(code))
-    if not raw:
-        return None
-    return dict(evaluations[raw], code=raw, board_generated_at=doc.get('generated_at'),
-                grade_policy=doc.get('grade_policy'))
+    # Hold the snapshot itself: Python can recycle an old dictionary's id.
+    # Lookup and replacement share a lock across Streamlit sessions.
+    with _INDEX_LOCK:
+        if _INDEX.get('source') is not evaluations or _INDEX.get('size') != len(evaluations):
+            _INDEX.update(source=evaluations, size=len(evaluations),
+                          map={_canonical(k): k for k in evaluations})
+        raw = _INDEX['map'].get(_canonical(code))
+        if not raw or raw not in evaluations:
+            return None
+        row = deepcopy(evaluations[raw])
+    row.update(code=raw, board_generated_at=(doc.get('market_source_generated_at') or {}).get(row.get('market'))
+               or doc.get('generated_at'), grade_policy=doc.get('grade_policy'))
+    from strategy_board_state import quote_timing
+    now = now or datetime.now(timezone.utc)
+    try:
+        at = datetime.fromisoformat(row['quote_asof'])
+        timing = quote_timing(row, now) if at.tzinfo and at <= now else 'stale'
+    except (KeyError, TypeError, ValueError):
+        timing = 'stale'
+    row['buy_timing'] = timing
+    for result in [row, *(row.get('tiers') or {}).values()]:
+        result['published_buyable'] = bool(result.get('buyable'))
+        result['buy_timing'] = timing
+        if timing == 'stale' and result.get('buyable'):
+            result['buyable'] = False
+            result['verdict'] = str(result.get('verdict') or '').replace('现在可买', '报价待更新')
+            result['gaps'] = list(dict.fromkeys([*(result.get('gaps') or []), '入场前更新报价']))
+    return row
 
 
 TIMING = {'live': '可立即买入（现价在入场区间内）',
@@ -74,6 +98,8 @@ def html(u):
         if not t:
             continue
         text = f'<b>{escape(t.get("verdict") or tier)}</b> · {escape(str(t.get("setup") or ""))}'
+        if t.get('buyable'):
+            text += ' · ' + escape(TIMING.get(t.get('buy_timing') or u.get('buy_timing'), ''))
         if t.get('plan_enabled'):
             text += (f' · 入场 {escape(str(t.get("entry_range")))} · 止损 {_num(t.get("stop"))} · {escape(str(t.get("exit_text") or ""))}'
                      + (f'（{_num(t.get("exit_ma"))}）' if t.get('exit_ma') else '')
@@ -83,7 +109,8 @@ def html(u):
         lines.append('<div>' + text + '</div>')
     if u.get('business_reason'):
         lines.append('<div style="color:#5b6577">' + escape(u['business_reason']) + '</div>')
-    lines.append(f'<div style="color:#8a94a6;font-size:12px">行情 {escape(str(u.get("quote_asof") or "待核"))} · 现价 {_num(u.get("last"))}'
-                 f' · 统一评估生成 {escape(str(u.get("board_generated_at") or "待核"))} · 与3A/策略榜同一规则、同一数据，曲线方向据此绘制</div>')
+    currency = u.get('currency') or {'A股':'CNY','港股':'HKD','美股':'USD'}.get(u.get('market'), '')
+    lines.append(f'<div style="color:#8a94a6;font-size:12px">行情 {escape(str(u.get("quote_asof") or "待核"))} · 现价 {_num(u.get("last"))} {escape(currency)}'
+                 f' · 统一评估生成 {escape(str(u.get("board_generated_at") or "待核"))} · 与策略榜共用评估；年度图表资料不足时另列缺口</div>')
     return ('<div class="v88-unified" style="border:1px solid #c9d6ea;border-left:4px solid ' + color +
             ';border-radius:10px;padding:10px 14px;margin:6px 0 10px;line-height:1.7">' + ''.join(lines) + '</div>')

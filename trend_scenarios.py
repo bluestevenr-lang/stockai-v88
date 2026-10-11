@@ -9,6 +9,7 @@ from datetime import date, timedelta
 import hashlib
 import json
 import math
+from copy import deepcopy
 
 VERSION = 'trend-scenarios-v1'
 WEEKS = (0, 2, 4, 8, 16, 32, 52)
@@ -115,6 +116,14 @@ def build_stock(annual, synthesis, period, code='', name=''):
     out = _base(code, name, annual.get('market'), annual.get('source_asof'), 'stock')
     out.update(snapshot_signature=annual.get('snapshot_signature'), source=annual.get('source'),
                price_basis=annual.get('price_basis'))
+    # The published stock verdict does not depend on this chart's local history.
+    # Preserve it on incomplete chart receipts, but never across stock identities.
+    unified = annual.get('unified')
+    unified = (deepcopy(unified) if isinstance(unified, dict) and code
+               and _canonical(unified.get('code')) == code
+               and _canonical(annual.get('code')) == code else None)
+    if unified:
+        out['unified'] = unified
     out['reference_ids'] = {'annual': annual.get('input_id'), 'synthesis': synthesis.get('input_id'),
                             'period': period.get('input_id')}
     gaps = []
@@ -150,7 +159,6 @@ def build_stock(annual, synthesis, period, code='', name=''):
         out['gaps'] = gaps
         return _seal(out)
     evidence = annual.get('evidence') if isinstance(annual.get('evidence'), dict) else {}
-    unified = annual.get('unified') if isinstance(annual.get('unified'), dict) else None
     # With a unified verdict the annual bundle already carries the board's
     # regime/top flag; page-only short signals are notes, not curve changes.
     top = bool(annual.get('top_warning') or (not unified and (

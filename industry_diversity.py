@@ -42,9 +42,8 @@ def candidate_top3(rows):
     focused=[]
     for market in ('A股','港股','美股'):
         seen=set()
-        kinds={'待买点':0,'接近3A':1,'行业分散':2}
         pool=sorted((r for r in rows if r.get('market')==market and r.get('code')),
-                    key=lambda r:(kinds.get(r.get('watch_kind'),1),-score(r),canonical(r['code'])))
+                    key=lambda r:(-score(r),canonical(r['code'])))
         for row in pool:
             code=canonical(row['code'])
             if code in seen:continue
