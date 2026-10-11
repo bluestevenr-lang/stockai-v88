@@ -23,15 +23,14 @@ def freeze(row):
         'take_profit_range','net_rr','fee_allowance_pct','resistance_levels',
         'nearest_resistance','target_evidence','missing','annual_regime','price_plan_method',
         'trend_exit_ma60','setup_evidence','buy_timing','tier_setup','tier_exit_text','signal_date',
-        'selection_category','quality_eligible','period','buyable','opportunity','opportunity_eligible','opportunity_downgraded')})}
+        'selection_category','quality_eligible','period','buyable')})}
 
 
 def audit(board, profiles=None):
     """Recompute invariants independently from the producer; no policy changes."""
     from industry_diversity import selection_industry
     errors=[]; seen={}; sectors=Counter(); examined=0; short=0
-    opportunity_policy=board.get('grade_policy')=='2026-10-11-opportunity-v7'
-    quality_policy=opportunity_policy or board.get('grade_policy')=='2026-10-11-quality-readiness-v6'
+    quality_policy=board.get('grade_policy')=='2026-10-11-quality-readiness-v6'
     if quality_policy:
         counts=Counter((r['strategy_tier'],r['market']) for r in board.get('rows',[]))
         if any(n>3 for n in counts.values()):errors.append({'error':'market_cap_exceeded'})
@@ -46,28 +45,12 @@ def audit(board, profiles=None):
         tier=r.get('strategy_tier')
         if quality_policy:
             lower,upper={'3A':(80,101),'2A':(60,80),'1A':(50,60)}.get(tier,(0,0))
-            if opportunity_policy and tier=='2A' and r.get('opportunity_downgraded'):lower,upper=80,101
             if not lower<=s['value']<upper:errors.append({'code':code,'error':'score_band_overlap'})
             if tier=='3A':
                 sector=selection_industry(r,profiles)
                 if sector:sectors[(r['market'],sector)]+=1
                 if not r.get('business_supported'):errors.append({'code':code,'error':'3a_missing_business'})
-                if opportunity_policy:
-                    o=r.get('opportunity') or {}
-                    entry=r.get('entry_range');stop=r.get('stop_range');target=r.get('take_profit_range')
-                    if not (o.get('passed') and entry and stop and target and r.get('annual_regime')=='up'):
-                        errors.append({'code':code,'error':'3a_current_opportunity_missing'})
-                    else:
-                        ref=max(entry[1],r['last']);fee=r.get('fee_allowance_pct',.5)
-                        reward=(min(target[0],o['nearest_resistance'])/ref-1)*100-fee
-                        risk=(1-stop[0]/ref)*100+fee
-                        if reward<5 or risk<=0 or reward/risk<2:
-                            errors.append({'code':code,'error':'3a_current_space_or_rr_insufficient'})
-                        if risk<=0 or abs(reward-o['net_space_pct'])>.001 or abs(reward/risk-o['current_net_rr'])>.001:
-                            errors.append({'code':code,'error':'3a_opportunity_geometry_mismatch'})
-                    if any(g!='现价未进入计划区间，待触发且不追价' for g in r.get('missing',[])):
-                        errors.append({'code':code,'error':'3a_waiting_for_more_than_trigger'})
-                expected='买入条件已满足' if r.get('buyable') else '机会达标 · 等待触发' if opportunity_policy else '最高价值研究' 
+                expected='买入条件已满足' if r.get('buyable') else '最高价值研究'
                 if r.get('selection_category')!=expected:errors.append({'code':code,'error':'category_conflict'})
                 if not r.get('buyable'):
                     examined+=1
@@ -75,9 +58,6 @@ def audit(board, profiles=None):
                     continue
             if r.get('buyable') and (r.get('missing') or r.get('buy_timing')=='stale'):
                 errors.append({'code':code,'error':'buyable_with_gaps'})
-        if opportunity_policy and r.get('opportunity_downgraded'):
-            if r.get('buyable') or r.get('status')=='条件匹配':errors.append({'code':code,'error':'downgrade_is_not_buy_permission'})
-            continue
         if quality_policy and r.get('research_retained') and not r.get('buyable'):continue
         if tier in ('1A','2A') or quality_policy and r.get('source_strategy') in ('1A','2A'):
             short+=1;ev=r.get('setup_evidence') or {}
