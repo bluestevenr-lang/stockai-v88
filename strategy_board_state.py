@@ -7,11 +7,11 @@ from exchange_sessions import latest_completed
 # v4: 3A means buyable now (>=70, business, annual uptrend, net RR>=1.5, in range).
 # Rows produced under older rules are never shown under the buyable heading.
 # v5: 2A/1A use the same buyable contract with backtested setups.
-CURRENT_POLICIES=('2026-10-11-evidence-tiers-v5',)
+CURRENT_POLICIES=('2026-10-11-quality-readiness-v6','2026-10-11-evidence-tiers-v5')
 STILL_VALID={'2026-10-11-buyable-3a-v4':('3A',)}
-BUY_FLOOR=70
-TIMING_TEXT={'live':'可立即买入（规则条件满足，现价在入场区间内）',
-             'next_open':'下一交易时段开盘可买（开盘价仍在入场区间内才成立）',
+BUY_FLOOR=80
+TIMING_TEXT={'live':'买入条件已满足（现价在入场区间内，交易前复核）',
+             'next_open':'收盘价有效·下一交易日开盘前复核（开盘价须仍在入场区间内）',
              'stale':'报价已过时，入场前更新报价'}
 
 def _zone(market):
@@ -38,6 +38,28 @@ def quote_timing(row,now):
     end=datetime.combine(day,time(minute//60,minute%60),_zone(row['market']))
     if row.get('source_session')!=day.isoformat():return 'stale'
     return 'next_open' if at>=end-timedelta(minutes=20) else 'stale'
+
+def readiness(row):
+    """Describe observed timing, never predict that a price will enter soon."""
+    high=row.get('quality_eligible') or row.get('strategy_tier')=='3A'
+    prefix='高分 · ' if high else ''
+    gaps=row.get('missing') or row.get('gaps') or []
+    detail='；'.join(gaps)
+    if row.get('research_retained') or row.get('buy_timing')=='stale':
+        return {'readiness_label':prefix+'等待数据更新','readiness_detail':detail or '更新报价和结构后复核'}
+    if row.get('buyable'):
+        label=prefix+('买入条件已满足' if row.get('buy_timing')=='live' else '收盘条件满足 · 等待开盘复核')
+        return {'readiness_label':label,'readiness_detail':TIMING_TEXT.get(row.get('buy_timing'),'交易前复核实际报价')}
+    entry=row.get('entry_range');price=row.get('last')
+    if row.get('annual_regime')=='up' and entry and isinstance(price,(int,float)) and price>0:
+        if price<entry[0] or price>entry[1]:
+            edge=entry[0] if price<entry[0] else entry[1]
+            distance=round((edge/price-1)*100,2)
+            return {'readiness_label':'趋势符合 · 等待进入买入区',
+                    'readiness_detail':f'现价需变化{distance:+.2f}%至价带最近边界；进入后仍须复核其余条件。'+detail,
+                    'entry_distance_pct':distance}
+        return {'readiness_label':prefix+'已在买入区 · 等待核验','readiness_detail':detail or '入场条件尚未全部通过'}
+    return {'readiness_label':prefix+'研究观察 · 继续等待','readiness_detail':detail or '趋势与买点待核'}
 
 def view(doc,now=None):
     now=now or datetime.now(timezone.utc);out=deepcopy(doc)
@@ -73,4 +95,14 @@ def view(doc,now=None):
                 if not row['missing'] and row['status']=='研究候选' and row.get('buyable'):row['status']='条件匹配'
         except (ValueError,KeyError,TypeError):
             row['current_source']=False;row['status']='源行情待更新';row['executable']=False;row['buy_timing']='stale'
+    if out.get('grade_policy')=='2026-10-11-quality-readiness-v6':
+        for row in out.get('rows',[]):
+            row['buyable']=bool(row.get('buyable') and row.get('current_source') and not row.get('research_retained') and row.get('buy_timing')!='stale' and not row.get('missing'))
+            if row.get('strategy_tier')=='3A':
+                row['selection_category']='买入条件已满足' if row['buyable'] else '最高价值研究'
+            row.update(readiness(row))
+        for tier,markets in out.get('counts',{}).items():
+            for market,counts in markets.items():
+                members=[r for r in out['rows'] if r['strategy_tier']==tier and r['market']==market]
+                counts['matched']=sum(bool(r.get('buyable')) for r in members)
     return out

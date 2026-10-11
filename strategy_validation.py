@@ -22,13 +22,18 @@ def freeze(row):
         'price_plan_version','price_plan_source_asof','entry_range','stop_range',
         'take_profit_range','net_rr','fee_allowance_pct','resistance_levels',
         'nearest_resistance','target_evidence','missing','annual_regime','price_plan_method',
-        'trend_exit_ma60','setup_evidence','buy_timing','tier_setup','tier_exit_text','signal_date')})}
+        'trend_exit_ma60','setup_evidence','buy_timing','tier_setup','tier_exit_text','signal_date',
+        'selection_category','quality_eligible','period','buyable')})}
 
 
 def audit(board, profiles=None):
     """Recompute invariants independently from the producer; no policy changes."""
     from industry_diversity import selection_industry
     errors=[]; seen={}; sectors=Counter(); examined=0; short=0
+    quality_policy=board.get('grade_policy')=='2026-10-11-quality-readiness-v6'
+    if quality_policy:
+        counts=Counter((r['strategy_tier'],r['market']) for r in board.get('rows',[]))
+        if any(n>3 for n in counts.values()):errors.append({'error':'market_cap_exceeded'})
     floors=board.get('tier_floor') or {'2A':60,'1A':50}
     tiers_of=Counter(r['code'] for r in board.get('rows',[]))
     for code,count in tiers_of.items():
@@ -37,9 +42,26 @@ def audit(board, profiles=None):
         code=r['code'];s=r['strategy_score'];key=(code,s.get('snapshot_id'))
         if key in seen and seen[key]!=s['value']:errors.append({'code':code,'error':'same_snapshot_score_conflict'})
         seen[key]=s['value']
-        if r.get('strategy_tier') in ('1A','2A'):
+        tier=r.get('strategy_tier')
+        if quality_policy:
+            lower,upper={'3A':(80,101),'2A':(60,80),'1A':(50,60)}.get(tier,(0,0))
+            if not lower<=s['value']<upper:errors.append({'code':code,'error':'score_band_overlap'})
+            if tier=='3A':
+                sector=selection_industry(r,profiles)
+                if sector:sectors[(r['market'],sector)]+=1
+                if not r.get('business_supported'):errors.append({'code':code,'error':'3a_missing_business'})
+                expected='买入条件已满足' if r.get('buyable') else '最高价值研究'
+                if r.get('selection_category')!=expected:errors.append({'code':code,'error':'category_conflict'})
+                if not r.get('buyable'):
+                    examined+=1
+                    if r.get('status')=='条件匹配':errors.append({'code':code,'error':'research_marked_matched'})
+                    continue
+            if r.get('buyable') and (r.get('missing') or r.get('buy_timing')=='stale'):
+                errors.append({'code':code,'error':'buyable_with_gaps'})
+        if quality_policy and r.get('research_retained') and not r.get('buyable'):continue
+        if tier in ('1A','2A') or quality_policy and r.get('source_strategy') in ('1A','2A'):
             short+=1;ev=r.get('setup_evidence') or {}
-            if (s['value']<floors.get(r['strategy_tier'],100) or r.get('annual_regime') not in ('up','range')
+            if (s['value']<floors.get(r.get('source_strategy') or r['strategy_tier'],100) or r.get('annual_regime') not in ('up','range')
                     or not r.get('tier_setup')):
                 errors.append({'code':code,'error':'invalid_short_eligibility'})
             if r.get('net_rr')!=ev.get('payoff'):
@@ -56,7 +78,7 @@ def audit(board, profiles=None):
         if s['value']<70 or not r.get('business_supported') or r.get('annual_regime')!='up':
             errors.append({'code':code,'error':'invalid_3a_eligibility'})
         sector=selection_industry(r,profiles)
-        if sector:sectors[(r['market'],sector)]+=1
+        if sector and not quality_policy:sectors[(r['market'],sector)]+=1
         entry=r.get('entry_range');target=r.get('take_profit_range');stop=r.get('stop_range')
         if not all((entry,target,stop)):continue
         trend=r.get('price_plan_method')=='中期趋势延续'

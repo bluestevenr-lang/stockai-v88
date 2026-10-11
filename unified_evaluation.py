@@ -9,7 +9,7 @@ from copy import deepcopy
 from threading import RLock
 from datetime import datetime, timezone
 
-CURRENT_POLICIES = ('2026-10-11-evidence-tiers-v5', '2026-10-11-buyable-3a-v4')
+CURRENT_POLICIES = ('2026-10-11-quality-readiness-v6', '2026-10-11-evidence-tiers-v5', '2026-10-11-buyable-3a-v4')
 _INDEX = {}
 _INDEX_LOCK = RLock()
 
@@ -58,14 +58,16 @@ def lookup(code, doc=None, now=None):
         result['buy_timing'] = timing
         if timing == 'stale' and result.get('buyable'):
             result['buyable'] = False
-            result['verdict'] = str(result.get('verdict') or '').replace('现在可买', '报价待更新')
+            result['verdict'] = str(result.get('verdict') or '').replace('现在可买', '报价待更新').replace('买入条件已满足', '最高价值研究·报价待更新')
+            if result.get('quality_eligible'):result['selection_category']='最高价值研究'
             result['gaps'] = list(dict.fromkeys([*(result.get('gaps') or []), '入场前更新报价']))
+    if row.get('grade_policy')=='2026-10-11-quality-readiness-v6':
+        from strategy_board_state import readiness
+        row.update(readiness(row))
     return row
 
 
-TIMING = {'live': '可立即买入（现价在入场区间内）',
-          'next_open': '下一交易时段开盘可买（开盘价仍在入场区间内才成立）',
-          'stale': '报价已过时，入场前更新报价'}
+from strategy_board_state import TIMING_TEXT as TIMING
 
 
 def _num(x):
@@ -85,14 +87,17 @@ def html(u):
              f'年度{escape(str(u.get("annual_label") or "待核"))}',
              '企业依据：' + escape(str(u.get('business_source') or ('反证' if u.get('business_status') == 'counterevidence' else '待补')))]
     lines = ['<div>' + ' · '.join(parts) + '</div>']
+    if u.get('readiness_label'):lines.append('<div><b>'+escape(u['readiness_label'])+'</b>：'+escape(u.get('readiness_detail') or '')+'</div>')
+    if u.get('period'):lines.append('<div>计划周期：'+escape(u['period'])+'</div>')
     if buy:
+        exit_text=u.get('tier_exit_text') or ('收盘跌破60日线 '+_num(u.get('trend_exit_ma60')))
         lines.append('<div>' + escape(TIMING.get(u.get('buy_timing'), '')) + f'；入场 {escape(str(u.get("entry_range")))} · 止损 {_num(u.get("stop"))}'
-                     + f' · 离场：收盘跌破60日线 {_num(u.get("trend_exit_ma60"))} 或触及止损 · 历史同型盈亏比 {_num(u.get("net_rr"))}（回测，非承诺）</div>')
+                     + f' · 离场：{escape(exit_text)} 或触及止损 · 历史同型盈亏比 {_num(u.get("net_rr"))}（回测，非承诺）</div>')
     trig = (u.get('trigger') or {}).get('text')
     if not buy and trig:
         lines.append('<div>买点触发条件：' + escape(trig) + '</div>')
     elif not buy and u.get('gaps'):
-        lines.append('<div>未入3A原因：' + escape('；'.join(u['gaps'][:3])) + '</div>')
+        lines.append('<div>'+('入场待核：' if u.get('quality_eligible') else '未入3A原因：') + escape('；'.join(u['gaps'][:3])) + '</div>')
     for tier in ('2A', '1A'):
         t = (u.get('tiers') or {}).get(tier)
         if not t:
