@@ -9,7 +9,7 @@ from copy import deepcopy
 from threading import RLock
 from datetime import datetime, timezone
 
-CURRENT_POLICIES = ('2026-10-11-quality-readiness-v6', '2026-10-11-evidence-tiers-v5', '2026-10-11-buyable-3a-v4')
+CURRENT_POLICIES = ('2026-10-11-opportunity-v7', '2026-10-11-quality-readiness-v6', '2026-10-11-evidence-tiers-v5', '2026-10-11-buyable-3a-v4')
 _INDEX = {}
 _INDEX_LOCK = RLock()
 
@@ -58,10 +58,10 @@ def lookup(code, doc=None, now=None):
         result['buy_timing'] = timing
         if timing == 'stale' and result.get('buyable'):
             result['buyable'] = False
-            result['verdict'] = str(result.get('verdict') or '').replace('现在可买', '报价待更新').replace('买入条件已满足', '最高价值研究·报价待更新')
-            if result.get('quality_eligible'):result['selection_category']='最高价值研究'
+            result['verdict'] = str(result.get('verdict') or '').replace('现在可买', '报价待更新').replace('买入条件已满足', '等待报价更新')
+            if result.get('quality_eligible'):result['selection_category']='机会复核待更新' if result.get('grade_policy')=='2026-10-11-opportunity-v7' else '最高价值研究'
             result['gaps'] = list(dict.fromkeys([*(result.get('gaps') or []), '入场前更新报价']))
-    if row.get('grade_policy')=='2026-10-11-quality-readiness-v6':
+    if row.get('grade_policy') in ('2026-10-11-opportunity-v7','2026-10-11-quality-readiness-v6'):
         from strategy_board_state import readiness
         row.update(readiness(row))
     return row
@@ -93,6 +93,9 @@ def html(u):
         exit_text=u.get('tier_exit_text') or ('收盘跌破60日线 '+_num(u.get('trend_exit_ma60')))
         lines.append('<div>' + escape(TIMING.get(u.get('buy_timing'), '')) + f'；入场 {escape(str(u.get("entry_range")))} · 止损 {_num(u.get("stop"))}'
                      + f' · 离场：{escape(exit_text)} 或触及止损 · 历史同型盈亏比 {_num(u.get("net_rr"))}（回测，非承诺）</div>')
+    o=u.get('opportunity') or {}
+    if o.get('current_net_rr') is not None:
+        lines.append('<div>当前结构净空间 '+_num(o['net_space_pct'])+'% · 当前净收益风险比 '+_num(o['current_net_rr'])+' · 首段结构目标 '+_num(o['first_objective'])+'</div>')
     trig = (u.get('trigger') or {}).get('text')
     if not buy and trig:
         lines.append('<div>买点触发条件：' + escape(trig) + '</div>')

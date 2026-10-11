@@ -7,7 +7,11 @@ from exchange_sessions import latest_completed
 # v4: 3A means buyable now (>=70, business, annual uptrend, net RR>=1.5, in range).
 # Rows produced under older rules are never shown under the buyable heading.
 # v5: 2A/1A use the same buyable contract with backtested setups.
-CURRENT_POLICIES=('2026-10-11-quality-readiness-v6','2026-10-11-evidence-tiers-v5')
+OPPORTUNITY_POLICY='2026-10-11-opportunity-v7'
+MIN_NET_SPACE_PCT=5.0
+MIN_CURRENT_RR=2.0
+
+CURRENT_POLICIES=(OPPORTUNITY_POLICY,'2026-10-11-quality-readiness-v6','2026-10-11-evidence-tiers-v5')
 STILL_VALID={'2026-10-11-buyable-3a-v4':('3A',)}
 BUY_FLOOR=80
 TIMING_TEXT={'live':'买入条件已满足（现价在入场区间内，交易前复核）',
@@ -39,8 +43,52 @@ def quote_timing(row,now):
     if row.get('source_session')!=day.isoformat():return 'stale'
     return 'next_open' if at>=end-timedelta(minutes=20) else 'stale'
 
+def opportunity(row, structure=None):
+    """Current price geometry, not historical payoff or a breakout assumption.
+
+    Conservative entry is the worse of current price and planned entry ceiling.
+    The nearest evidenced overhead level caps the existing scenario target.
+    Existing stops and holding periods remain unchanged. No tuning to fill seats.
+    """
+    import math
+    good=lambda x:isinstance(x,(int,float)) and not isinstance(x,bool) and math.isfinite(x) and x>0
+    out={'policy':OPPORTUNITY_POLICY,'min_net_space_pct':MIN_NET_SPACE_PCT,
+         'min_current_rr':MIN_CURRENT_RR,'passed':False,'gaps':[]}
+    entry=row.get('entry_range');stop=row.get('stop_range');target=row.get('take_profit_range')
+    structure=structure or {}
+    if not (entry and stop and target and len(entry)==len(stop)==len(target)==2 and
+            all(good(x) for x in [*entry,*stop,*target,row.get('last')])):
+        out['gaps']=['当前入场、止损或目标结构未核实'];return out
+    if not 0<stop[0]<=stop[1]<entry[0]<entry[1]<target[0]<=target[1]:
+        out['gaps']=['当前价带顺序不成立'];return out
+    levels=[*(row.get('resistance_levels') or []),row.get('nearest_resistance')]
+    levels += [structure.get(k) for k in ('previous_high20','high60','high120','high52')]
+    levels=sorted({x for x in levels if good(x) and x>entry[0]})
+    if not levels:
+        out['gaps']=['缺少可核实的上方结构目标，历史盈利情景不能代替当前空间'];return out
+    ceiling=max(entry[1],row['last']);barrier=levels[0]
+    objective=min(target[0],barrier)
+    fee=row.get('fee_allowance_pct',.5)
+    if not isinstance(fee,(int,float)) or not math.isfinite(fee) or fee<0:
+        out['gaps']=['费用假设无效'];return out
+    reward=(objective/ceiling-1)*100-fee
+    risk=(1-stop[0]/ceiling)*100+fee
+    rr=reward/risk if risk>0 else None
+    out.update(reference_entry=ceiling,first_objective=objective,nearest_resistance=barrier,
+               stop=stop[0],fee_allowance_pct=fee,net_space_pct=round(reward,4),
+               risk_pct=round(risk,4),current_net_rr=round(rr,4) if rr is not None else None,
+               basis='现价/入场上沿至最近结构目标，扣往返费用；未假定突破')
+    if reward<MIN_NET_SPACE_PCT:out['gaps'].append(f'当前净空间{reward:.2f}%不足{MIN_NET_SPACE_PCT:g}%')
+    if rr is None or rr<MIN_CURRENT_RR:out['gaps'].append(f'当前净收益风险比{rr:.2f}不足{MIN_CURRENT_RR:g}' if rr is not None else '当前风险无法核实')
+    out['passed']=not out['gaps']
+    return out
+
+
 def readiness(row):
     """Describe observed timing, never predict that a price will enter soon."""
+    if row.get('opportunity_downgraded'):
+        return {'readiness_label':'2A观察 · 当前机会不足 · 等待',
+                'readiness_detail':'；'.join((row.get('opportunity') or {}).get('gaps',[]))}
     high=row.get('quality_eligible') or row.get('strategy_tier')=='3A'
     prefix='高分 · ' if high else ''
     gaps=row.get('missing') or row.get('gaps') or []
@@ -95,11 +143,11 @@ def view(doc,now=None):
                 if not row['missing'] and row['status']=='研究候选' and row.get('buyable'):row['status']='条件匹配'
         except (ValueError,KeyError,TypeError):
             row['current_source']=False;row['status']='源行情待更新';row['executable']=False;row['buy_timing']='stale'
-    if out.get('grade_policy')=='2026-10-11-quality-readiness-v6':
+    if out.get('grade_policy') in (OPPORTUNITY_POLICY,'2026-10-11-quality-readiness-v6'):
         for row in out.get('rows',[]):
             row['buyable']=bool(row.get('buyable') and row.get('current_source') and not row.get('research_retained') and row.get('buy_timing')!='stale' and not row.get('missing'))
             if row.get('strategy_tier')=='3A':
-                row['selection_category']='买入条件已满足' if row['buyable'] else '最高价值研究'
+                row['selection_category']='买入条件已满足' if row['buyable'] else ('机会达标 · 等待触发' if out.get('grade_policy')==OPPORTUNITY_POLICY else '最高价值研究')
             row.update(readiness(row))
         for tier,markets in out.get('counts',{}).items():
             for market,counts in markets.items():
