@@ -33,7 +33,7 @@ def busy(base):
     return lock.exists() and time.time()-lock.stat().st_mtime < 180
 
 
-def start(base):
+def start(base, *, fast=False):
     """Only spawn locally; network calls never run on Streamlit's UI thread."""
     base = Path(base)
     (base/'data').mkdir(exist_ok=True)
@@ -49,7 +49,7 @@ def start(base):
         return False
     with os.fdopen(fd, 'w') as out:
         out.write(token)
-    write(base, {'status': 'requested', 'requested_at': datetime.now(timezone.utc).isoformat()})
+    write(base, {'status': 'requested', 'requested_at': datetime.now(timezone.utc).isoformat(), 'fast': bool(fast)})
     try:
         subprocess.Popen([sys.executable, str(Path(__file__).resolve()), '--worker', str(base), token],
                          cwd=base, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
@@ -67,14 +67,14 @@ def run_cli(args):
     return json.loads(result.stdout) if result.stdout.strip() else None
 
 
-def request_run(cli=run_cli):
+def request_run(cli=run_cli, *, fast=False):
     runs = cli(['run', 'list', '-R', REPO, '--workflow', 'autonomous.yml', '--limit', '20',
                 '--json', 'databaseId,status,url,createdAt']) or []
     active = [r for r in runs if r['status'] in {'queued', 'in_progress', 'waiting', 'pending'}]
     if active:
         return min(active, key=lambda r: r['createdAt']), True
     # Manual full runs are intentionally NOT gated by exchange working days.
-    cli(['workflow', 'run', 'autonomous.yml', '-R', REPO, '-f', 'fast=false', '-f', 'send=false'])
+    cli(['workflow', 'run', 'autonomous.yml', '-R', REPO, '-f', 'fast=true' if fast else 'fast=false', '-f', 'send=false'])
     return None, False
 
 
@@ -84,7 +84,7 @@ def worker(base, token):
     lock = base/'data'/LOCK
     state = read(base)
     try:
-        run, reused = request_run()
+        run, reused = request_run(fast=state.get('fast', False))
         state['reused'] = reused
         state['status'] = 'queued'
         write(base, state)
@@ -120,6 +120,17 @@ def worker(base, token):
                     started = datetime.fromisoformat(run['createdAt'].replace('Z', '+00:00'))
                     if generated < started:
                         raise RuntimeError('云端结束，但新 Astra 文件尚未同步；保留原记录，请重试')
+                    board = json.loads((base/'data/strategy_board.json').read_text())
+                    board_at = datetime.fromisoformat(board['generated_at'].replace('Z', '+00:00'))
+                    if board_at < started:
+                        raise RuntimeError('云端结束，但新策略榜尚未同步；保留原记录，请重试')
+                    health = json.loads((base/'data/autonomous_status.json').read_text())
+                    health_at = datetime.fromisoformat(health['generated_at'].replace('Z', '+00:00'))
+                    if health_at < started:
+                        raise RuntimeError('本轮行情采集状态尚未同步，请重试；原记录保留')
+                    failed = [s['step'] for s in health.get('steps', []) if not s.get('ok')]
+                    state['data_warning'] = ('部分数据源更新失败：' + '、'.join(failed)) if failed else ''
+                    state['board_screening_at'] = board['generated_at']
                     state.update(status='complete', completed_at=datetime.now(timezone.utc).isoformat(),
                                  screening_at=doc['generated_at'], cycle_id=doc['cycle_id'])
                     write(base, state)
@@ -164,6 +175,7 @@ def render(base):
         elif status == 'complete':
             stamp = datetime.fromisoformat(state['screening_at']).astimezone(timezone(timedelta(hours=8)))
             st.caption(f'✓ 已更新 · 筛选完成 {stamp:%m-%d %H:%M:%S} 北京时间')
+            if state.get('data_warning'): st.caption('⚠ '+state['data_warning'])
         elif status == 'failed':
             st.caption('⚠ '+state.get('message', '更新未完成，可重试'))
         elif status in ACTIVE:

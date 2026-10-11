@@ -58,8 +58,34 @@ def sync_on_open():
         board=read(base/'strategy_board.json')
         running=(base/'.autonomous_sync_ui_lock').exists()
         from sync_status_view import html as status_card
-        st.html(status_card(board,receipt,state,running=running,
-            opened=st.session_state['_v88_opened_at'],modules=inventory(),base=base))
+        from astra_refresh_control import start, read as refresh_read, busy, ACTIVE
+        refresh = refresh_read(base.parent)
+        refreshing = busy(base.parent)
+        previous = st.session_state.get('_v88_manual_refresh_status')
+        st.session_state['_v88_manual_refresh_status'] = refresh.get('status')
+        if previous in ACTIVE and refresh.get('status') == 'complete':
+            st.rerun()  # Reload all panels only after the new files are installed.
+        status_column, action_column = st.columns([7, 1], vertical_alignment='center')
+        with status_column:
+            st.html(status_card(board,receipt,state,running=running,
+                opened=st.session_state['_v88_opened_at'],modules=inventory(),base=base))
+            if refreshing:
+                done, total = refresh.get('steps_done', 0), refresh.get('steps_total', 0)
+                step = f'{done}/{total} 步' if total else '排队中'
+                st.caption('行情更新 · '+step+' · '+(refresh.get('phase') or '连接云端；原结果保留'))
+            elif refresh.get('status') == 'failed':
+                st.caption('更新未完成 · '+refresh.get('message', '请重试，原记录保留'))
+            elif refresh.get('status') == 'complete':
+                st.caption('已重新采集并筛选 · 休市时沿用最近收盘，行情时间以每只个股为准')
+                if refresh.get('data_warning'): st.caption('⚠ '+refresh['data_warning'])
+            elif refresh.get('status') in ACTIVE:
+                st.caption('更新连接中断 · 点击立刻更新可接续云端任务')
+        with action_column:
+            if st.button('↻ 立刻更新', key='v88_update_market_now', disabled=refreshing,
+                         width='content', help='立即抓取最新可得行情并重新筛选3A/2A/1A和Astra；休市可用，不调用模型，不发送飞书。'):
+                start(base.parent, fast=True)
+                st.session_state['_v88_manual_refresh_status'] = 'requested'
+                st.rerun(scope='fragment')
     sync_status()
 
 if __name__=='__main__' and len(sys.argv)>2 and sys.argv[1]=='--worker':_worker(sys.argv[2])
