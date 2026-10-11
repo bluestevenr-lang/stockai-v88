@@ -217,8 +217,8 @@ def worker(code):
         queue_path.unlink(missing_ok=True)
 
 
-def render(st, code):
-    """Auto-start once; poll only the small score panel, not the whole page."""
+def _render_legacy(st, code):
+    """Explicitly requested legacy contract review; never an on-open action."""
     from deep_cross_validation import load_context
     from deep_analysis_data import report_html
 
@@ -264,13 +264,36 @@ def render(st, code):
         elif job['status'] == 'complete':
             st.caption('✅ 3A分析 100% · 评分已完成，当前有效结果直接复用')
         elif job['status'] == 'failed':
-            st.warning('3A分析未完成：' + str(job.get('error', '需要重新分析')))
+            st.warning('旧制 GPT 合同复审未完成：' + str(job.get('error', '需要重新分析')))
             if st.button('重新进行3A分析', key='deep_3a_retry_' + code):
                 st.session_state[state_key] = request(code, context, retry=True)
                 st.rerun()
         st.markdown(report_html(code, context=context), unsafe_allow_html=True)
 
     panel()
+
+
+def render(st, code):
+    """Current deterministic analysis and historical model review are separate."""
+    from deep_cross_validation import load_context
+    from deep_analysis_data import report_html
+
+    # Opening/reloading a stock must not invoke the retired joint-review lane.
+    # Its archived history can be older than the current screening dataset.
+    context = load_context(code)
+    st.markdown(report_html(code, context=context), unsafe_allow_html=True)
+    with st.expander('旧制 GPT 合同复审（独立流程与历史记录）', expanded=False):
+        st.caption('当前策略分析与榜单同源；旧制复审另需独立核验日线及模型额度，打开页面不会自动启动。')
+        prior = read(code)
+        if prior.get('status') == 'failed':
+            st.caption('上次旧制复审未完成：' + str(prior.get('error', '来源待核验')))
+        active_key = 'deep_legacy_explicit_' + code
+        if st.button('手动启动旧制 GPT 合同复审', key='deep_legacy_start_' + code):
+            st.session_state[active_key] = True
+            st.session_state['deep_3a_job_' + code] = request(code, context, retry=True)
+            st.session_state['deep_3a_requested_' + code] = True
+        if st.session_state.get(active_key):
+            _render_legacy(st, code)
 
 
 if __name__ == '__main__':
