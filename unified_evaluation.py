@@ -9,7 +9,7 @@ from copy import deepcopy
 from threading import RLock
 from datetime import datetime, timezone
 
-CURRENT_POLICIES = ('2026-10-11-quality-readiness-v6', '2026-10-11-evidence-tiers-v5', '2026-10-11-buyable-3a-v4')
+CURRENT_POLICIES = ('2026-10-11-quality-followup-v8', '2026-10-11-quality-readiness-v6', '2026-10-11-evidence-tiers-v5', '2026-10-11-buyable-3a-v4')
 _INDEX = {}
 _INDEX_LOCK = RLock()
 
@@ -59,9 +59,11 @@ def lookup(code, doc=None, now=None):
         if timing == 'stale' and result.get('buyable'):
             result['buyable'] = False
             result['verdict'] = str(result.get('verdict') or '').replace('现在可买', '报价待更新').replace('买入条件已满足', '最高价值研究·报价待更新')
-            if result.get('quality_eligible'):result['selection_category']='最高价值研究'
+            if result.get('quality_eligible'):
+                result['selection_category']='高价值可跟进 · 重点观察' if row.get('grade_policy')=='2026-10-11-quality-followup-v8' else '最高价值研究'
+                result['verdict']='3A·'+result['selection_category']+'·报价待更新'
             result['gaps'] = list(dict.fromkeys([*(result.get('gaps') or []), '入场前更新报价']))
-    if row.get('grade_policy')=='2026-10-11-quality-readiness-v6':
+    if row.get('grade_policy') in ('2026-10-11-quality-followup-v8','2026-10-11-quality-readiness-v6'):
         from strategy_board_state import readiness
         row.update(readiness(row))
     return row
@@ -88,6 +90,8 @@ def html(u):
              '企业依据：' + escape(str(u.get('business_source') or ('反证' if u.get('business_status') == 'counterevidence' else '待补')))]
     lines = ['<div>' + ' · '.join(parts) + '</div>']
     if u.get('readiness_label'):lines.append('<div><b>'+escape(u['readiness_label'])+'</b>：'+escape(u.get('readiness_detail') or '')+'</div>')
+    o=u.get('opportunity') or {}
+    if o.get('current_net_rr') is not None:lines.append(f'<div>当前首段结构净空间 {o["net_space_pct"]:.2f}% · 当前净收益风险比 {o["current_net_rr"]:.2f} · 首段观察位 {o["first_objective"]:g}；与历史盈利情景分开</div>')
     if u.get('period'):lines.append('<div>计划周期：'+escape(u['period'])+'</div>')
     if buy:
         exit_text=u.get('tier_exit_text') or ('收盘跌破60日线 '+_num(u.get('trend_exit_ma60')))

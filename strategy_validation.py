@@ -23,14 +23,15 @@ def freeze(row):
         'take_profit_range','net_rr','fee_allowance_pct','resistance_levels',
         'nearest_resistance','target_evidence','missing','annual_regime','price_plan_method',
         'trend_exit_ma60','setup_evidence','buy_timing','tier_setup','tier_exit_text','signal_date',
-        'selection_category','quality_eligible','period','buyable')})}
+        'selection_category','quality_eligible','period','buyable','opportunity')})}
 
 
 def audit(board, profiles=None):
     """Recompute invariants independently from the producer; no policy changes."""
     from industry_diversity import selection_industry
     errors=[]; seen={}; sectors=Counter(); examined=0; short=0
-    quality_policy=board.get('grade_policy')=='2026-10-11-quality-readiness-v6'
+    followup_policy=board.get('grade_policy')=='2026-10-11-quality-followup-v8'
+    quality_policy=followup_policy or board.get('grade_policy')=='2026-10-11-quality-readiness-v6'
     if quality_policy:
         counts=Counter((r['strategy_tier'],r['market']) for r in board.get('rows',[]))
         if any(n>3 for n in counts.values()):errors.append({'error':'market_cap_exceeded'})
@@ -50,8 +51,17 @@ def audit(board, profiles=None):
                 sector=selection_industry(r,profiles)
                 if sector:sectors[(r['market'],sector)]+=1
                 if not r.get('business_supported'):errors.append({'code':code,'error':'3a_missing_business'})
-                expected='买入条件已满足' if r.get('buyable') else '最高价值研究'
+                expected='买入条件已满足' if r.get('buyable') else '高价值可跟进 · 重点观察' if followup_policy else '最高价值研究'
                 if r.get('selection_category')!=expected:errors.append({'code':code,'error':'category_conflict'})
+                if followup_policy and r.get('buyable'):
+                    o=r.get('opportunity') or {}
+                    entry=r.get('entry_range');stop=r.get('stop_range');target=r.get('take_profit_range')
+                    try:
+                        ref=max(entry[1],r['last']);fee=r.get('fee_allowance_pct',.5)
+                        reward=(min(target[0],o['nearest_resistance'])/ref-1)*100-fee
+                        risk=(1-stop[0]/ref)*100+fee
+                        if not o.get('passed') or reward<5 or risk<=0 or reward/risk<2:raise ValueError('opportunity')
+                    except (KeyError,TypeError,ValueError,ZeroDivisionError):errors.append({'code':code,'error':'3a_buyable_without_current_space'})
                 if not r.get('buyable'):
                     examined+=1
                     if r.get('status')=='条件匹配':errors.append({'code':code,'error':'research_marked_matched'})
