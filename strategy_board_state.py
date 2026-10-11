@@ -6,7 +6,9 @@ from exchange_sessions import latest_completed
 
 # v4: 3A means buyable now (>=70, business, annual uptrend, net RR>=1.5, in range).
 # Rows produced under older rules are never shown under the buyable heading.
-CURRENT_POLICIES=('2026-10-11-buyable-3a-v4',)
+# v5: 2A/1A use the same buyable contract with backtested setups.
+CURRENT_POLICIES=('2026-10-11-evidence-tiers-v5',)
+STILL_VALID={'2026-10-11-buyable-3a-v4':('3A',)}
 BUY_FLOOR=70
 TIMING_TEXT={'live':'可立即买入（规则条件满足，现价在入场区间内）',
              'next_open':'下一交易时段开盘可买（开盘价仍在入场区间内才成立）',
@@ -41,12 +43,14 @@ def view(doc,now=None):
     now=now or datetime.now(timezone.utc);out=deepcopy(doc)
     if out.get('grade_policy') not in CURRENT_POLICIES:
         keep=[];pending=out.setdefault('investment_candidates',[])
+        valid=STILL_VALID.get(out.get('grade_policy'),())
         for row in out.get('rows',[]):
-            value=(row.get('strategy_score') or {}).get('value',0)
-            if row.get('strategy_tier')=='3A' or value>=80:
+            value=(row.get('strategy_score') or {}).get('value',0);tier=row.get('strategy_tier')
+            if tier in valid:keep.append(row);continue
+            if valid or tier=='3A' or value>=80:
                 row['grade_pending']=True
-                if '旧规则结果，待按“现在可买”规则重算' not in row.setdefault('missing',[]):
-                    row['missing'].append('旧规则结果，待按“现在可买”规则重算')
+                note='旧规则结果，待按历史验证形态重算' if tier in ('1A','2A') else '旧规则结果，待按“现在可买”规则重算'
+                if note not in row.setdefault('missing',[]):row['missing'].append(note)
                 pending.append(row)
             else:keep.append(row)
         out['rows']=keep

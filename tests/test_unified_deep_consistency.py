@@ -67,3 +67,18 @@ def test_verdict_strip_and_render_scope():
     assert '3A·现在可买' in render(stock)
     sector = copy.deepcopy(stock); sector['scope'] = 'sector'; sector.pop('unified')
     assert 'v88-unified' not in render(sector) and 'v88-unified' in render(stock)
+
+
+def test_deep_strip_shows_short_tier_verdicts_from_the_same_record():
+    from unified_evaluation import html, lookup
+    u = dict(U, verdict='3A待买点', buyable=False, trigger={'text': '等年度结构转上行'},
+             tiers={'2A': {'verdict': '2A·现在可买', 'buyable': True, 'plan_enabled': True, 'setup': '放量突破',
+                           'entry_range': [50.9, 51.9], 'stop': 49.87, 'net_rr': 2.3,
+                           'exit_text': '持有20个交易日后收盘离场'},
+                    '1A': {'verdict': '1A·不启用', 'buyable': False, 'plan_enabled': False, 'setup': '放量启动',
+                           'gaps': ['本市场该形态历史回测无稳定正期望，不启用']}})
+    text = html(u)
+    assert '3A待买点' in text and '2A·现在可买' in text and '放量突破' in text and '49.87' in text
+    assert '1A·不启用' in text and '无稳定正期望' in text
+    doc = {'grade_policy': '2026-10-11-evidence-tiers-v5', 'evaluations': {'000538.SZ': u}}
+    assert lookup('000538.SZ', doc)['tiers']['2A']['verdict'] == '2A·现在可买'

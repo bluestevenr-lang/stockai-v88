@@ -6,7 +6,7 @@ analysis, 3A and the board all read that same record.
 """
 from html import escape
 
-CURRENT_POLICIES = ('2026-10-11-buyable-3a-v4',)
+CURRENT_POLICIES = ('2026-10-11-evidence-tiers-v5', '2026-10-11-buyable-3a-v4')
 _INDEX = {}
 
 
@@ -69,6 +69,18 @@ def html(u):
         lines.append('<div>买点触发条件：' + escape(trig) + '</div>')
     elif not buy and u.get('gaps'):
         lines.append('<div>未入3A原因：' + escape('；'.join(u['gaps'][:3])) + '</div>')
+    for tier in ('2A', '1A'):
+        t = (u.get('tiers') or {}).get(tier)
+        if not t:
+            continue
+        text = f'<b>{escape(t.get("verdict") or tier)}</b> · {escape(str(t.get("setup") or ""))}'
+        if t.get('plan_enabled'):
+            text += (f' · 入场 {escape(str(t.get("entry_range")))} · 止损 {_num(t.get("stop"))} · {escape(str(t.get("exit_text") or ""))}'
+                     + (f'（{_num(t.get("exit_ma"))}）' if t.get('exit_ma') else '')
+                     + f' · 历史同型盈亏比 {_num(t.get("net_rr"))}（回测，非承诺）')
+        if t.get('gaps') and not t.get('buyable'):
+            text += ' · ' + escape('；'.join(t['gaps']))
+        lines.append('<div>' + text + '</div>')
     if u.get('business_reason'):
         lines.append('<div style="color:#5b6577">' + escape(u['business_reason']) + '</div>')
     lines.append(f'<div style="color:#8a94a6;font-size:12px">行情 {escape(str(u.get("quote_asof") or "待核"))} · 现价 {_num(u.get("last"))}'

@@ -35,8 +35,8 @@ def html(doc=None,code=None,now=None,profiles=None):
     .strategy-board td,.strategy-board th{padding:12px 14px;border-bottom:1px solid #e5ebf4;vertical-align:top;font-size:14px!important;line-height:1.6;overflow-wrap:anywhere}
     .strategy-board details{font-size:13px}.strategy-board .score{font-size:21px;color:#2459c7;font-weight:700}.strategy-board .market{background:#edf4ff;font-weight:600}
     </style><div class="strategy-board"><h3>🎯 3A / 2A / 1A 重点榜</h3>
-    <p>3A ＝ 现在可买（综合分≥70＋企业依据＋年度上行结构＋中期净盈亏比≥1.5＋现价在入场区间＋公告无风险）· 2A 短中线 · 1A 超短线。每档各市场 Top3；个股深度分析读取同一份统一评估，结论一致。</p>
-    <small>2026-10-09 中期统一分（企业基本面25 · 估值10 · 中期趋势20 · 中期动量10 · 量能10 · 成交承载10 · 风险约束15）；1A另设盘中时机门槛 · 筛选分不代表胜率或 GPT 复审分；入场状态单列。旧评级与日历原样保留。</small>''']
+    <p>三档都是“现在可买”：3A 中期（综合分≥70＋企业依据＋年度上行＋历史同型盈亏比≥1.5＋现价在入场区间＋公告无风险）· 2A 短线波段（≥60分）· 1A 超短线（≥50分）。2A/1A 须年度结构上行或震荡（不逆深度分析方向）、财报非反证、公告无风险，且上一交易日出现本市场经回测验证的形态。一股只占一档（3A＞2A＞1A）；A股/港股/美股同等对待，各市场 Top3；个股深度分析读取同一份统一评估。</p>
+    <small>中期统一分（企业基本面25 · 估值10 · 中期趋势20 · 中期动量10 · 量能10 · 成交承载10 · 风险约束15）· 形态验证：样本≥300、平均≥+0.05R、盈亏比≥1.5、前后两段均为正 · 筛选分不代表胜率或 GPT 复审分。旧评级与日历原样保留。</small>''']
     from module_freshness import html as freshness_html, record as freshness_record
     out.append(freshness_html('strategy_board.json',doc,now=now))
     out.append('<p class="screen-clock">'+esc(read_clock)+'</p>')
@@ -51,7 +51,10 @@ def html(doc=None,code=None,now=None,profiles=None):
     out.append('<p class="screen-clock">📈 报价截至（北京时间）：'+esc(' · '.join(m+' '+t for m,t in quote_clocks(doc).items()))+'</p>')
     if doc.get('refresh_state')=='source_unavailable_retained':
         out.append('<p>⏳ 最近核对 '+esc(display(doc.get('checked_at')))+'；源数据不足，保留原筛选时间。</p>')
-    settings=[('3A','3A · 现在可买','≥70分＋企业依据＋年度上行（与深度分析同一规则）＋历史同型盈亏比≥1.5 · 中期1–6个月趋势延续计划，收盘跌破60日线离场'),('2A','2A · 短线 / 月度','2周–1个月'),('1A','1A · 超短线','3–5个交易日'),('watch','投资研究候选 · 未授3A','保留线索与原分数；不冒充最高评级')]
+    settings=[('3A','3A · 现在可买','≥70分＋企业依据＋年度上行（与深度分析同一规则）＋历史同型盈亏比≥1.5 · 中期1–6个月趋势延续计划，收盘跌破60日线离场'),
+              ('2A','2A · 短线波段 · 现在可买','≥60分＋年度上行或震荡＋本市场经回测验证的形态 · 最长20个交易日，按形态的实测离场规则'),
+              ('1A','1A · 超短线 · 现在可买','≥50分＋年度上行或震荡＋本市场经回测验证的形态 · 最长5个交易日'),
+              ('watch','投资研究候选 · 未授3A','保留线索与原分数；不冒充最高评级')]
     for tier,title,period in settings:
         members=[r for r in rows if (bool(r.get('grade_pending')) if tier=='watch' else r['strategy_tier']==tier and not r.get('grade_pending'))]
         if tier=='watch' and not members:continue
@@ -60,13 +63,19 @@ def html(doc=None,code=None,now=None,profiles=None):
         retained=sum(not r.get('current_source') for r in members)
         out.append(f'<section class="lane" id="strategy-{tier}"><div class="head"><div><h3>{title}</h3><small>{period} · '+ ' · '.join(f'{m} {sum(r["market"]==m for r in members)}只' for m in flags)+f'</small></div><div><span class="count">{len(members)} 只</span><br><small>条件匹配 {matched} · 研究候选 {len(members)-matched-retained} · 待更新留存 {retained}</small></div></div>')
         out.append('<div class="screen-clock" style="padding:10px 20px;font-size:15px;color:#2459c7">'+esc(clock)+' · 💾 缓存写入 '+esc(freshness_record('strategy_board.json',doc,now=now)['cached'])+'（北京时间）</div>')
-        if not members:
+        status=(doc.get('tier_status') or {}).get(tier) or {}
+        if tier in ('2A','1A') and status and not any(v.get('enabled_cells') for v in status.values()):
+            out.append(f'<p style="padding:0 20px"><b>{tier}暂停：</b>A股、港股、美股的{tier}候选形态历史回测扣费后均无稳定正期望，不填充名额；每月重跑回测，出现合格形态后自动启用。</p>')
+        elif not members and tier=='watch':
             out.append('<p style="padding:0 20px">本轮所需证据不足或未达到策略条件；不会用其他周期填补名额。</p>')
         else:
             out.append('<div style="overflow-x:auto"><table><thead><tr><th>市场 / 排名 / 个股 / 所属板块</th><th>评级 / 统一综合分</th><th>现价 / 行情时间</th><th>周期 / 推荐原因</th><th>入场区间 / 条件</th><th>止盈区间 / 离场</th><th>止损区间 / 失效</th></tr></thead><tbody>')
             for market,flag in flags.items():
                 chosen=sorted([r for r in members if r['market']==market],key=lambda r:r['rank'])[:3]
-                out.append(f'<tr class="market"><td colspan="7">{flag} {market} · {len(chosen)}/3只</td></tr>')
+                src=' · 云端行情' if (doc.get('market_sources') or {}).get(market)=='cloud' else ''
+                out.append(f'<tr class="market"><td colspan="7">{flag} {market} · {len(chosen)}/3只{src}</td></tr>')
+                if not chosen and tier!='watch':
+                    out.append('<tr><td colspan="7"><small>'+esc(market_note(doc,tier,market))+'</small></td></tr>')
                 for r in chosen:
                     href='?'+urlencode({'q':r['code'],'focus':'deep'})
                     s=r['strategy_score'];parts=''.join(f'<div>{esc(p["factor"])} · 权重 {p["weight"]}% · 贡献 {p["contribution"]:g}分</div>' for p in s['factors'])
@@ -93,8 +102,8 @@ def html(doc=None,code=None,now=None,profiles=None):
                         f'<td><b>{"未授级" if r.get("grade_pending") else esc(r["strategy_tier"])}</b><br><span class="score">{s["value"]:g}</span> /100<br><small>证据覆盖 {s["coverage"]}%</small><br><small>{esc(s.get("label", "旧版周期分"))}</small><details><summary>权重与贡献</summary>{parts}<div>数据版本 {esc(s.get("snapshot_id"))} · 评分规则 {esc(s.get("revision"))}</div><div>共振 +{s["interaction"]} · 过热扣 {s["penalty"]}</div></details></td>'
                         f'<td><b>{r["last"]:g} {esc(r.get("currency") or {"A股":"CNY","港股":"HKD","美股":"USD"}.get(r["market"],""))}</b> · {r["change_pct"]:+.2f}%<br><small>{esc(display(r["quote_asof"]))}<br>北京时间</small></td>'
                         f'<td><b>{esc(r["lane"])}</b> · {esc(r["period"])}'+(f' · 年度{esc(r["annual_label"])}' if r.get('annual_label') else '')+f'<br>{esc(r["reason"])}{source_tags(r,esc)}<details><summary>周期适用性 · 共用综合分</summary>{periods}<small>仅表示筛选适用；本行价带对应上方周期，其它周期须独立核验。</small></details><details><summary>🏢 企业依据与反证</summary>{esc(r["business_reason"])}<br>{esc(r.get("business_risk"))}</details></td>'
-                        f'<td><b>{esc(band)}</b><br>◉ {esc(r["status"])}'+(f'<br><b style="color:#0f7b45">✅ {esc(TIMING_TEXT.get(r.get("buy_timing"),""))}</b>' if tier=='3A' and r['status']=='条件匹配' else '')+f'<br><small>{esc(missing or "结构条件匹配；核对最新价格")}</small></td>'
-                        f'<td><b>{esc(profit_label)}</b><br><small>💰 到目标净空间：{esc(returns_label)}<br>首段目标参考：{esc(r.get("target"))}<br>{"历史同型盈亏比（回测）" if r.get("rr_basis") else "净收益风险比"}：{esc(r.get("net_rr"))}<br>{("离场：收盘跌破60日线 "+esc(r.get("trend_exit_ma60"))+"<br>") if r.get("trend_exit_ma60") else ""}{esc(r.get("price_plan_method"))}<br>结构截至：{esc(r.get("price_plan_source_asof"))}<br>条件测算，非预期必得利润<br>往返费用假设0.5%</small><details><summary>区间依据与适用范围</summary>{esc(r.get("price_plan_scope") or "区间依据尚待补齐")}</details></td>'
+                        f'<td><b>{esc(band)}</b><br>◉ {esc(r["status"])}'+(f'<br><b style="color:#0f7b45">✅ {esc(TIMING_TEXT.get(r.get("buy_timing"),""))}</b>' if tier in ('3A','2A','1A') and r['status']=='条件匹配' else '')+f'<br><small>{esc(missing or "结构条件匹配；核对最新价格")}</small></td>'
+                        f'<td><b>{esc(profit_label)}</b><br><small>💰 到目标净空间：{esc(returns_label)}<br>首段目标参考：{esc(r.get("target"))}<br>{"历史同型盈亏比（回测）" if r.get("rr_basis") else "净收益风险比"}：{esc(r.get("net_rr"))}<br>{("离场：收盘跌破60日线 "+esc(r.get("trend_exit_ma60"))+"<br>") if r.get("trend_exit_ma60") and tier=='3A' else ("离场："+esc(r.get("tier_exit_text"))+(" "+esc(r.get("tier_exit_ma")) if r.get("tier_exit_ma") else "")+"<br>") if r.get("tier_exit_text") else ""}{esc(r.get("price_plan_method"))}<br>结构截至：{esc(r.get("price_plan_source_asof"))}<br>条件测算，非预期必得利润<br>往返费用假设0.5%</small><details><summary>区间依据与适用范围</summary>{esc(r.get("price_plan_scope") or "区间依据尚待补齐")}</details></td>'
                         f'<td><b>{esc(stop_label)}</b><br><small>止损情景：{esc(loss_label)}<br>失效触发参考：{esc(r.get("stop"))}</small><br>{esc(r["invalidation"])}<details><summary>模型审核状态</summary>{esc(r["model_review"])}</details></td></tr>')
             out.append('</tbody></table></div>')
         if tier=='3A':
@@ -103,6 +112,9 @@ def html(doc=None,code=None,now=None,profiles=None):
             out.append('<small style="display:block;padding:10px 20px">'+esc(doc.get('value_lane_status'))+'</small>')
             near=[r for r in doc.get('top_grade_watch',[]) if not code or r['code']==code]
             if near and not code:out.append(near_html(near,doc,esc,flags,display))
+        if tier in ('2A','1A') and not code:
+            waiting=(doc.get('tier_watch') or {}).get(tier) or []
+            if waiting:out.append(tier_watch_html(tier,waiting,esc,flags,display))
         out.append('</section>')
     out.append('</div>')
     return ''.join(out)
@@ -121,6 +133,36 @@ def source_tags(r,esc):
     if isinstance(f.get('roe_annual'),(int,float)):facts.append(f'年化ROE {f["roe_annual"]:.1f}%')
     if facts:tags.append('财报（数据商口径）'+' '.join(facts)+(' · 报告期 '+f['period_end'] if f.get('period_end') else ''))
     return '<br><small>'+esc(' ｜ '.join(tags))+'</small>' if tags else ''
+
+
+def market_note(doc,tier,market):
+    """Why a market has no buyable name this round (never filled from other tiers)."""
+    m=((doc.get('markets') or {}).get(market) or {})
+    if not ((m.get('scan_counts') or {}).get('usable_quotes') or 0):
+        return f'{market}本轮无最新交易日报价（本机与云端均未取得），待下次刷新；不以旧报价入选。'
+    if tier=='3A':
+        c=(doc.get('pool_counts') or {}).get(market) or {}
+        return f'{market}本轮无现在可买：评分{c.get("scored",0)} / 企业依据{c.get("business_supported",0)} / 年度上行{c.get("annual_up",0)} / ≥70分{c.get("score_ge_70",0)} / 可买{c.get("buyable",0)}；见下方待买点。'
+    st=((doc.get('tier_status') or {}).get(tier) or {}).get(market) or {}
+    cells='、'.join(f'{x["setup"]}（{"上行" if x["regime"]=="up" else "震荡"}）' for x in st.get('enabled_cells',[])) or '无'
+    return f'{market}本轮无现在可买：形态匹配{st.get("matched",0)} / 计划启用{st.get("plan_enabled",0)} / 可买{st.get("buyable",0)}；本市场经验证形态：{cells}。'
+
+
+def tier_watch_html(tier,rows,esc,flags,display):
+    out=[f'<div style="padding:4px 20px 14px"><h4 style="margin:8px 0">🔎 {tier}待买点 · 形态与回测已通过，暂不可买</h4>',
+         '<small>差在价格离开信号收盘区间、报价过时、公告待核或综合分不足；条件满足后下一轮自动进入。</small>',
+         '<div style="overflow-x:auto"><table style="min-width:1100px"><thead><tr><th>市场 / 个股</th><th>统一综合分</th><th>现价 / 行情时间</th><th>形态 / 年度结构 / 离场</th><th>入场区间 / 差距</th></tr></thead><tbody>']
+    for market,flag in flags.items():
+        for r in sorted([r for r in rows if r['market']==market],key=lambda r:r.get('rank',9)):
+            s=r.get('strategy_score') or {}
+            band='–'.join(f'{p:g}' for p in r['entry_range']) if r.get('entry_range') else '待核'
+            out.append(f'<tr><td><b>{flag} #{esc(r.get("rank"))} {esc(r["name"])}</b><br><small>{esc(r["code"])}</small></td>'
+                f'<td><span class="score">{esc(s.get("value"))}</span> /100</td>'
+                f'<td><b>{esc(r.get("last"))} {esc({"A股":"CNY","港股":"HKD","美股":"USD"}.get(r["market"],""))}</b><br><small>{esc(display(r.get("quote_asof")))} 北京时间</small></td>'
+                f'<td><b>{esc(r.get("tier_setup"))}</b> · 年度{esc(r.get("annual_label") or "待核")}<br><small>{esc(r.get("tier_exit_text"))} · 历史同型盈亏比 {esc(r.get("net_rr"))}（回测）</small></td>'
+                f'<td><b>{esc(band)}</b><br><small>{esc((r.get("trigger") or {}).get("text"))}</small></td></tr>')
+    out.append('</tbody></table></div></div>')
+    return ''.join(out)
 
 
 def near_html(near,doc,esc,flags,display):

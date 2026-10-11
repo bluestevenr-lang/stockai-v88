@@ -10,7 +10,7 @@ import argparse
 import json
 from pathlib import Path
 
-VERSION='3a-independent-validation-v2'
+VERSION='3a-independent-validation-v3'
 NOTE='3A独立验证：尚无成熟样本外结论；Astra技术回放不代表3A胜率，评分权重保持不变。'
 
 
@@ -22,17 +22,35 @@ def freeze(row):
         'price_plan_version','price_plan_source_asof','entry_range','stop_range',
         'take_profit_range','net_rr','fee_allowance_pct','resistance_levels',
         'nearest_resistance','target_evidence','missing','annual_regime','price_plan_method',
-        'trend_exit_ma60','setup_evidence','buy_timing')})}
+        'trend_exit_ma60','setup_evidence','buy_timing','tier_setup','tier_exit_text','signal_date')})}
 
 
 def audit(board, profiles=None):
     """Recompute invariants independently from the producer; no policy changes."""
     from industry_diversity import selection_industry
-    errors=[]; seen={}; sectors=Counter(); examined=0
+    errors=[]; seen={}; sectors=Counter(); examined=0; short=0
+    floors=board.get('tier_floor') or {'2A':60,'1A':50}
+    tiers_of=Counter(r['code'] for r in board.get('rows',[]))
+    for code,count in tiers_of.items():
+        if count>1:errors.append({'code':code,'error':'security_in_multiple_tiers'})
     for r in board.get('rows',[]):
         code=r['code'];s=r['strategy_score'];key=(code,s.get('snapshot_id'))
         if key in seen and seen[key]!=s['value']:errors.append({'code':code,'error':'same_snapshot_score_conflict'})
         seen[key]=s['value']
+        if r.get('strategy_tier') in ('1A','2A'):
+            short+=1;ev=r.get('setup_evidence') or {}
+            if (s['value']<floors.get(r['strategy_tier'],100) or r.get('annual_regime') not in ('up','range')
+                    or not r.get('tier_setup')):
+                errors.append({'code':code,'error':'invalid_short_eligibility'})
+            if r.get('net_rr')!=ev.get('payoff'):
+                errors.append({'code':code,'error':'net_rr_mismatch','calculated':ev.get('payoff'),'published':r.get('net_rr')})
+            if not ((ev.get('n') or 0)>=300 and (ev.get('mean_r') or 0)>=.05 and (ev.get('payoff') or 0)>=1.5
+                    and (ev.get('early_mean_r') or 0)>0 and (ev.get('late_mean_r') or 0)>0):
+                errors.append({'code':code,'error':'short_setup_evidence_insufficient'})
+            entry=r.get('entry_range');target=r.get('take_profit_range');stop=r.get('stop_range')
+            if not (entry and target and stop and 0<stop[0]<=stop[1]<entry[0]<entry[1]<target[0]<=target[1]):
+                errors.append({'code':code,'error':'invalid_price_order'})
+            continue
         if r.get('strategy_tier')!='3A':continue
         examined+=1
         if s['value']<70 or not r.get('business_supported') or r.get('annual_regime')!='up':
@@ -64,7 +82,7 @@ def audit(board, profiles=None):
             errors.append({'code':code,'error':'matched_with_insufficient_rr'})
     for (market,sector),count in sectors.items():
         if count>1:errors.append({'market':market,'industry':sector,'error':'duplicate_industry','count':count})
-    return {'version':VERSION,'rows_checked':len(board.get('rows',[])),'three_a_checked':examined,
+    return {'version':VERSION,'rows_checked':len(board.get('rows',[])),'three_a_checked':examined,'short_checked':short,
             'invariants_passed':not errors,'errors':errors,'oos_validated':False,
             'auto_weight_changes':False,'note':NOTE}
 
