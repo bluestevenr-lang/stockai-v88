@@ -35,7 +35,7 @@ def html(doc=None,code=None,now=None,profiles=None):
     .strategy-board td,.strategy-board th{padding:12px 14px;border-bottom:1px solid #e5ebf4;vertical-align:top;font-size:14px!important;line-height:1.6;overflow-wrap:anywhere}
     .strategy-board details{font-size:13px}.strategy-board .score{font-size:21px;color:#2459c7;font-weight:700}.strategy-board .market{background:#edf4ff;font-weight:600}
     </style><div class="strategy-board"><h3>🎯 3A / 2A / 1A 重点榜</h3>
-    <p>3A 最高分档 ≥80 · 2A 短中线 · 1A 超短线。每档各市场 Top3；同股同数据版本共用一个综合分；周期适用性、入场、止盈与止损分别列示。</p>
+    <p>3A ＝ 现在可买（综合分≥70＋企业依据＋年度上行结构＋中期净盈亏比≥1.5＋现价在入场区间＋公告无风险）· 2A 短中线 · 1A 超短线。每档各市场 Top3；个股深度分析读取同一份统一评估，结论一致。</p>
     <small>2026-10-09 中期统一分（企业基本面25 · 估值10 · 中期趋势20 · 中期动量10 · 量能10 · 成交承载10 · 风险约束15）；1A另设盘中时机门槛 · 筛选分不代表胜率或 GPT 复审分；入场状态单列。旧评级与日历原样保留。</small>''']
     from module_freshness import html as freshness_html, record as freshness_record
     out.append(freshness_html('strategy_board.json',doc,now=now))
@@ -51,7 +51,7 @@ def html(doc=None,code=None,now=None,profiles=None):
     out.append('<p class="screen-clock">📈 报价截至（北京时间）：'+esc(' · '.join(m+' '+t for m,t in quote_clocks(doc).items()))+'</p>')
     if doc.get('refresh_state')=='source_unavailable_retained':
         out.append('<p>⏳ 最近核对 '+esc(display(doc.get('checked_at')))+'；源数据不足，保留原筛选时间。</p>')
-    settings=[('3A','3A · 最高分优选','≥80分且有企业依据（公告原文或数据商财报）· 中期统一分1–6个月 · 价值投资 / 成长潜力 / 超跌反弹 / 优质量价机会'),('2A','2A · 短线 / 月度','2周–1个月'),('1A','1A · 超短线','3–5个交易日'),('watch','投资研究候选 · 未授3A','保留线索与原分数；不冒充最高评级')]
+    settings=[('3A','3A · 现在可买','≥70分＋企业依据＋年度上行（与深度分析同一规则）＋历史同型盈亏比≥1.5 · 中期1–6个月趋势延续计划，收盘跌破60日线离场'),('2A','2A · 短线 / 月度','2周–1个月'),('1A','1A · 超短线','3–5个交易日'),('watch','投资研究候选 · 未授3A','保留线索与原分数；不冒充最高评级')]
     for tier,title,period in settings:
         members=[r for r in rows if (bool(r.get('grade_pending')) if tier=='watch' else r['strategy_tier']==tier and not r.get('grade_pending'))]
         if tier=='watch' and not members:continue
@@ -92,9 +92,9 @@ def html(doc=None,code=None,now=None,profiles=None):
                     out.append(f'<tr><td><b>#{r["rank"]} <a href="{esc(href)}">{esc(r["name"])}</a></b><br><small>{esc(r["code"])}</small>{profile_markup}</td>'
                         f'<td><b>{"未授级" if r.get("grade_pending") else esc(r["strategy_tier"])}</b><br><span class="score">{s["value"]:g}</span> /100<br><small>证据覆盖 {s["coverage"]}%</small><br><small>{esc(s.get("label", "旧版周期分"))}</small><details><summary>权重与贡献</summary>{parts}<div>数据版本 {esc(s.get("snapshot_id"))} · 评分规则 {esc(s.get("revision"))}</div><div>共振 +{s["interaction"]} · 过热扣 {s["penalty"]}</div></details></td>'
                         f'<td><b>{r["last"]:g} {esc(r.get("currency") or {"A股":"CNY","港股":"HKD","美股":"USD"}.get(r["market"],""))}</b> · {r["change_pct"]:+.2f}%<br><small>{esc(display(r["quote_asof"]))}<br>北京时间</small></td>'
-                        f'<td><b>{esc(r["lane"])}</b> · {esc(r["period"])}<br>{esc(r["reason"])}{source_tags(r,esc)}<details><summary>周期适用性 · 共用综合分</summary>{periods}<small>仅表示筛选适用；本行价带对应上方周期，其它周期须独立核验。</small></details><details><summary>🏢 企业依据与反证</summary>{esc(r["business_reason"])}<br>{esc(r.get("business_risk"))}</details></td>'
-                        f'<td><b>{esc(band)}</b><br>◉ {esc(r["status"])}<br><small>{esc(missing or "结构条件匹配；核对最新价格")}</small></td>'
-                        f'<td><b>{esc(profit_label)}</b><br><small>💰 到目标净空间：{esc(returns_label)}<br>首段目标参考：{esc(r.get("target"))}<br>净收益风险比：{esc(r.get("net_rr"))}<br>{esc(r.get("price_plan_method"))}<br>结构截至：{esc(r.get("price_plan_source_asof"))}<br>条件测算，非预期必得利润<br>往返费用假设0.5%</small><details><summary>区间依据与适用范围</summary>{esc(r.get("price_plan_scope") or "区间依据尚待补齐")}</details></td>'
+                        f'<td><b>{esc(r["lane"])}</b> · {esc(r["period"])}'+(f' · 年度{esc(r["annual_label"])}' if r.get('annual_label') else '')+f'<br>{esc(r["reason"])}{source_tags(r,esc)}<details><summary>周期适用性 · 共用综合分</summary>{periods}<small>仅表示筛选适用；本行价带对应上方周期，其它周期须独立核验。</small></details><details><summary>🏢 企业依据与反证</summary>{esc(r["business_reason"])}<br>{esc(r.get("business_risk"))}</details></td>'
+                        f'<td><b>{esc(band)}</b><br>◉ {esc(r["status"])}'+(f'<br><b style="color:#0f7b45">✅ {esc(TIMING_TEXT.get(r.get("buy_timing"),""))}</b>' if tier=='3A' and r['status']=='条件匹配' else '')+f'<br><small>{esc(missing or "结构条件匹配；核对最新价格")}</small></td>'
+                        f'<td><b>{esc(profit_label)}</b><br><small>💰 到目标净空间：{esc(returns_label)}<br>首段目标参考：{esc(r.get("target"))}<br>{"历史同型盈亏比（回测）" if r.get("rr_basis") else "净收益风险比"}：{esc(r.get("net_rr"))}<br>{("离场：收盘跌破60日线 "+esc(r.get("trend_exit_ma60"))+"<br>") if r.get("trend_exit_ma60") else ""}{esc(r.get("price_plan_method"))}<br>结构截至：{esc(r.get("price_plan_source_asof"))}<br>条件测算，非预期必得利润<br>往返费用假设0.5%</small><details><summary>区间依据与适用范围</summary>{esc(r.get("price_plan_scope") or "区间依据尚待补齐")}</details></td>'
                         f'<td><b>{esc(stop_label)}</b><br><small>止损情景：{esc(loss_label)}<br>失效触发参考：{esc(r.get("stop"))}</small><br>{esc(r["invalidation"])}<details><summary>模型审核状态</summary>{esc(r["model_review"])}</details></td></tr>')
             out.append('</tbody></table></div>')
         if tier=='3A':
@@ -108,6 +108,7 @@ def html(doc=None,code=None,now=None,profiles=None):
     return ''.join(out)
 
 
+from strategy_board_state import TIMING_TEXT
 STRUCTURE_LABEL={'verified':'日线结构：正式核验','screening':'日线结构：筛选用日线（非正式核验）'}
 
 
@@ -127,17 +128,17 @@ def near_html(near,doc,esc,flags,display):
     near=candidate_top3(near)
     counts=doc.get('pool_counts') or {}
     pool=' · '.join(f'{m} 评分{c.get("scored",0)} / 企业依据{c.get("business_supported",0)} / 有日线结构{c.get("with_structure",0)} / ≥70分{c.get("score_ge_70",0)}' for m,c in counts.items())
-    out=['<div style="padding:4px 20px 14px"><h4 style="margin:8px 0">🔎 3A候补 · 未授3A，逐项列出差距</h4>',
-         '<small>A股、港股、美股各按统一综合分展示Top3，合计最多9只；差距逐项列示，补齐后下一轮自动重评。不冒充3A，也不代表买入信号。</small>',
+    out=['<div style="padding:4px 20px 14px"><h4 style="margin:8px 0">🔎 3A待买点 / 接近3A · 暂不可买，列出触发条件</h4>',
+         '<small>待买点：≥80分且有企业依据，但年度结构、公告或止损距离等条件未满足；接近3A：70–80分、年度上行但仍有缺口；行业分散：已可买但同行业名额已满。每市场最多3只，条件满足后下一轮自动进入3A。</small>',
          f'<p><small>候选池：{esc(pool or "待核")}</small></p>' if pool else '',
-         '<div style="overflow-x:auto"><table style="min-width:1100px"><thead><tr><th>市场 / 个股</th><th>统一综合分</th><th>现价 / 行情时间</th><th>当前所在档 / 依据来源</th><th>距3A的差距</th></tr></thead><tbody>']
+         '<div style="overflow-x:auto"><table style="min-width:1100px"><thead><tr><th>市场 / 个股</th><th>统一综合分</th><th>现价 / 行情时间</th><th>状态 / 年度结构 / 依据来源</th><th>买点触发条件 / 差距</th></tr></thead><tbody>']
     for market,flag in flags.items():
         for r in sorted([r for r in near if r['market']==market],key=lambda r:r['rank']):
             s=r.get('strategy_score') or {}
             out.append(f'<tr><td><b>{flag} #{esc(r["rank"])} {esc(r["name"])}</b><br><small>{esc(r["code"])}</small></td>'
                 f'<td><span class="score">{esc(s.get("value"))}</span> /100<br><small>证据覆盖 {esc(s.get("coverage"))}%</small></td>'
                 f'<td><b>{esc(r.get("last"))} {esc(r.get("currency") or {"A股":"CNY","港股":"HKD","美股":"USD"}.get(r["market"],""))}</b> · {r.get("change_pct",0):+.2f}%<br><small>{esc(display(r.get("quote_asof")))} 北京时间</small></td>'
-                f'<td>{esc(r.get("strategy_tier") or r.get("source_strategy"))} · {esc(r.get("lane"))}{source_tags(r,esc)}</td>'
-                f'<td>{"".join("<div>· "+esc(g)+"</div>" for g in r.get("gaps",[])) or "—"}</td></tr>')
+                f'<td><b>{esc(r.get("watch_kind") or "候补")}</b> · 年度{esc(r.get("annual_label") or "待核")} · {esc(r.get("lane"))}{source_tags(r,esc)}</td>'
+                f'<td>{("<b>"+esc((r.get("trigger") or {}).get("text"))+"</b>") if (r.get("trigger") or {}).get("text") else ""}{"".join("<div>· "+esc(g)+"</div>" for g in r.get("gaps",[])) or ("" if r.get("trigger") else "—")}</td></tr>')
     out.append('</tbody></table></div></div>')
     return ''.join(out)

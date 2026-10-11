@@ -146,7 +146,7 @@ def test_annual_plan_is_built_after_synthesis_even_without_history(monkeypatch):
     calls=[]
     annual={'version':'annual-test','code':'GRPN','phases':[{'quarter':i} for i in range(1,5)],
             'gaps':['缺完整行情'], 'no_grade_authority':True,'entry_permission':False,'model_calls':0}
-    def annual_build(context,frame,quality,synthesis=None,now=None):
+    def annual_build(context,frame,quality,synthesis=None,now=None,unified=None):
         calls.append((context,frame,quality,synthesis))
         return deepcopy(annual)
     import annual_outlook

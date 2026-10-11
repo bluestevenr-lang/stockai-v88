@@ -316,7 +316,7 @@ def html(report):
     gap_html=('<div class="v88-deep-cross-gaps" style="color:#92400e">待核实 '+str(len(gaps))+' 项：'
               +esc('；'.join(c['title'] for c in gaps))+'</div>') if gaps else ''
     return ('<section class="v88-deep-cross" style="font-size:12px;margin:8px 0;padding:10px;border:1px solid #cbd5e1;border-radius:6px">'
-            f'<b>3A ↔ 深度分析交叉核验：{esc(report["status"])}</b> · 当前评级 {esc(report["current_grade"] or "无有效评级")}'
+            f'<b>旧制中央评级 ↔ 深度分析交叉核验：{esc(report["status"])}</b> · 旧制评级 {esc(report["current_grade"] or "无（新3A结论见上方“V88统一评估”）")}'
             +gap_html+f'<div style="font-size:11px;color:#64748b">行情日 {esc(report["source_asof"])}</div>'
             '<details class="v88-deep-cross-detail"><summary>查看数值对照与核验明细</summary>'
             '<div>两种分数衡量不同问题，不要求同分、不平均。同一日线的重算属于一致性检查，不是新增独立数据源或第三份GPT审核。</div>'

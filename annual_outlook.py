@@ -194,6 +194,10 @@ def _history(frame, data, market, end, quality, metrics, now):
     return result
 
 
+REGIME_KEYS = ('up', 'up_caution', 'down', 'range', 'limited')
+_REGIME_LABEL = {'up': '上行结构', 'up_caution': '高位承压', 'down': '下行结构', 'range': '震荡结构', 'limited': '年度证据不足'}
+
+
 def _evidence(context, synthesis, quality):
     synthesis = synthesis or {}; row = context.get('row') or {}; fact = context.get('fact') or {}
     pack = (context.get('selection') or {}).get('factpack_id'); card = context.get('card') or {}
@@ -260,7 +264,7 @@ def _phases(start, regime, metrics, evidence):
             for i, t in enumerate(texts[regime])]
 
 
-def build(context, frame, quality, synthesis=None, now=None):
+def build(context, frame, quality, synthesis=None, now=None, unified=None):
     """Four future calendar quarters; historical levels are never targets."""
     context = context or {}; quality = quality or {}; now = now or datetime.now(timezone.utc)
     if now.tzinfo is None:
@@ -275,26 +279,44 @@ def build(context, frame, quality, synthesis=None, now=None):
             if not complete:
                 gaps.append(f"自然年窗口不完整或长均线斜率不足：{metrics['annual_bars']}/{metrics['expected_annual_bars']}个应有交易日；缺失{len(metrics['missing_sessions'])}日")
             else:
-                last = metrics['last']; up = last > metrics['ma60'] > metrics['ma120'] > metrics['ma200'] and metrics['ma200_slope20_pct'] > 0 and metrics['annual_return_pct'] > 0
-                down = last < metrics['ma200'] and metrics['ma60'] < metrics['ma120'] and metrics['ma200_slope20_pct'] < 0
-                regime = 'up' if up else 'down' if down else 'range'
+                from trend_regime import base_regime
+                regime = base_regime(metrics)
             data_status = 'complete' if complete else 'limited'
         except (ValueError, TypeError, KeyError, ImportError, IndexError) as exc:
             gaps.append('年度交易日完整性未通过：'+str(exc)); data_status = 'limited'
     evidence = _evidence(context, synthesis, quality)
     if data_status != 'complete':
         evidence['annual_gpt_current'] = False
-    top = bool(data_status == 'complete' and ((metrics.get('return1_pct') or 0) <= -3 and (metrics.get('volume_ratio20') or 0) >= 1.5))
+    from trend_regime import volume_top, long_up as _long_up
+    top = bool(data_status == 'complete' and volume_top(metrics))
     synthesis_bound = bool(synthesis and _canonical(synthesis.get('code')) == _canonical(context.get('code'))
                            and synthesis.get('snapshot_signature') == quality.get('snapshot_signature')
                            and synthesis.get('source_asof') == quality.get('source_asof'))
     if synthesis_bound and data_status == 'complete':
         top = top or (synthesis.get('turning') or {}).get('side') == 'top' or bool((synthesis.get('turning') or {}).get('mixed'))
-    long_up = bool(data_status == 'complete' and metrics['last'] > metrics['ma120']
-                   and metrics['ma60'] > metrics['ma120'] > metrics['ma200']
-                   and metrics['ma200_slope20_pct'] > 0 and metrics['annual_return_pct'] > 0)
+    long_up = bool(data_status == 'complete' and _long_up(metrics))
     if top and (regime == 'up' or long_up):
         regime = 'up_caution'
+    unified = unified if isinstance(unified, dict) and unified.get('annual_regime') in REGIME_KEYS else None
+    short_signals = []
+    if unified:
+        # One conclusion per security: the board's annual regime and company
+        # evidence (same trend_regime rule, same financial assessment) decide
+        # this page too. Page-only short-term signals are listed, not applied.
+        if synthesis_bound and data_status == 'complete' and ((synthesis.get('turning') or {}).get('side') == 'top'
+                                                            or (synthesis.get('turning') or {}).get('mixed')):
+            short_signals.append('深度页技术面出现短期转折/分歧信号；属短周期观察，不改变统一年度结论')
+        if data_status == 'complete' and unified['annual_regime'] != 'limited':
+            if unified['annual_regime'] != regime:
+                gaps.append(f"本页完整年度行情按同一规则得出{_REGIME_LABEL.get(regime, regime)}，统一评估（{(unified.get('annual_metrics') or {}).get('basis') or '筛选'}日线，"
+                            f"{(unified.get('annual_metrics') or {}).get('asof') or '日期待核'}）为{unified.get('annual_label')}；数据源不同，以统一评估为准")
+            regime = unified['annual_regime']
+            top = bool((unified.get('annual_metrics') or {}).get('top_warning'))
+        status = unified.get('business_status')
+        evidence['company_support'] = bool(unified.get('business_supported')) and status != 'counterevidence'
+        evidence['company_adverse'] = status == 'counterevidence'
+        evidence['company_source'] = unified.get('business_source') or ('数据商财报' if status else None)
+        evidence['company_summary'] = unified.get('business_reason')
     headlines = {'up':'上升结构占优，未来一年以延续后验证兑现为主线', 'up_caution':'长结构仍向上，未来一年先防回撤、再验修复与延续',
                  'down':'下行结构占优，未来一年先看止跌修复、再谈趋势反转',
                  'range':'方向尚未形成共识，未来一年以区间选择与条件切换为主线',
@@ -306,6 +328,8 @@ def build(context, frame, quality, synthesis=None, now=None):
               'limited':'当前输入不能证明一整年的完整走势；下面仍保留未来12个月的核验计划，但不输出伪精确方向、概率或一年目标。'}[regime]
     if evidence['company_adverse']:
         thesis += ' 同包基本面或估值存在反对证据，技术走强也不能抵消；年度企业前景保留分歧。'
+    elif evidence['company_support'] and evidence.get('company_source'):
+        thesis += f" 企业依据（{evidence['company_source']}）支持：{evidence.get('company_summary') or '已核'}；未来财报仍须持续兑现。"
     elif evidence['company_support']:
         thesis += ' 同包基本面与估值均有支持，引用仅限原审核周期；未来财报仍须持续兑现。'
     else:
@@ -334,6 +358,7 @@ def build(context, frame, quality, synthesis=None, now=None):
               'data_status': data_status, 'valid12month': data_status == 'complete', 'regime': regime, 'headline': headlines[regime], 'thesis': thesis,
               'top_warning': top, 'metrics': metrics, 'phases': phases,
               'scenarios': scenarios, 'evidence': evidence, 'gaps': gaps,
+              'unified': unified, 'short_signals': short_signals,
               'structure_scope':'所有均线、高低点均为已发生历史结构参考；不是一年目标、买卖区间或对原合同的修改。',
               'method_scope':'V88确定性条件框架；均线顺序、20交易日斜率与放量跌幅预警是工程参数，未宣称经典原文阈值或经验证未来胜率。',
               'no_grade_authority': True, 'entry_permission': False, 'model_calls': 0, 'network_calls': 0}

@@ -10,7 +10,7 @@ import argparse
 import json
 from pathlib import Path
 
-VERSION='3a-independent-validation-v1'
+VERSION='3a-independent-validation-v2'
 NOTE='3A独立验证：尚无成熟样本外结论；Astra技术回放不代表3A胜率，评分权重保持不变。'
 
 
@@ -21,7 +21,8 @@ def freeze(row):
         'filing_check','industry_snapshot','source_sha256','quote_asof','source_session',
         'price_plan_version','price_plan_source_asof','entry_range','stop_range',
         'take_profit_range','net_rr','fee_allowance_pct','resistance_levels',
-        'nearest_resistance','target_evidence','missing')})}
+        'nearest_resistance','target_evidence','missing','annual_regime','price_plan_method',
+        'trend_exit_ma60','setup_evidence','buy_timing')})}
 
 
 def audit(board, profiles=None):
@@ -34,15 +35,25 @@ def audit(board, profiles=None):
         seen[key]=s['value']
         if r.get('strategy_tier')!='3A':continue
         examined+=1
-        if s['value']<80 or not r.get('business_supported'):errors.append({'code':code,'error':'invalid_3a_eligibility'})
+        if s['value']<70 or not r.get('business_supported') or r.get('annual_regime')!='up':
+            errors.append({'code':code,'error':'invalid_3a_eligibility'})
         sector=selection_industry(r,profiles)
         if sector:sectors[(r['market'],sector)]+=1
         entry=r.get('entry_range');target=r.get('take_profit_range');stop=r.get('stop_range')
         if not all((entry,target,stop)):continue
+        trend=r.get('price_plan_method')=='中期趋势延续'
         barrier=r.get('nearest_resistance')
-        if barrier and target[0]>barrier:errors.append({'code':code,'error':'nearest_resistance_skipped'})
+        if not trend and barrier and target[0]>barrier:errors.append({'code':code,'error':'nearest_resistance_skipped'})
         if not 0<stop[0]<=stop[1]<entry[0]<entry[1]<target[0]<=target[1]:
             errors.append({'code':code,'error':'invalid_price_order'});continue
+        if trend:
+            # Trend plans publish the measured payoff of the same setup/market.
+            ev=r.get('setup_evidence') or {}
+            if r.get('net_rr')!=ev.get('payoff'):
+                errors.append({'code':code,'error':'net_rr_mismatch','calculated':ev.get('payoff'),'published':r.get('net_rr')})
+            if not ((ev.get('n') or 0)>=300 and (ev.get('mean_r') or 0)>0 and (ev.get('payoff') or 0)>=1.5):
+                errors.append({'code':code,'error':'trend_setup_evidence_insufficient'})
+            continue
         fee=r.get('fee_allowance_pct',.5)
         reward=(target[0]/entry[1]-1)*100-fee
         risk=(1-stop[0]/entry[1])*100+fee

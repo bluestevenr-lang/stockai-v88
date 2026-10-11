@@ -150,8 +150,11 @@ def build_stock(annual, synthesis, period, code='', name=''):
         out['gaps'] = gaps
         return _seal(out)
     evidence = annual.get('evidence') if isinstance(annual.get('evidence'), dict) else {}
-    top = bool(annual.get('top_warning') or (synthesis.get('turning') or {}).get('side') == 'top'
-               or (synthesis.get('turning') or {}).get('mixed'))
+    unified = annual.get('unified') if isinstance(annual.get('unified'), dict) else None
+    # With a unified verdict the annual bundle already carries the board's
+    # regime/top flag; page-only short signals are notes, not curve changes.
+    top = bool(annual.get('top_warning') or (not unified and (
+        (synthesis.get('turning') or {}).get('side') == 'top' or (synthesis.get('turning') or {}).get('mixed'))))
     if top and regime == 'up':
         regime = 'up_caution'
     adverse = bool(evidence.get('company_adverse'))
@@ -165,7 +168,7 @@ def build_stock(annual, synthesis, period, code='', name=''):
     counter_text = '；'.join(str(d['title'])+'：'+'；'.join(d['reasons']) for d in counterevidence)
     # Interpret only the same-bound annual conclusion; never re-score raw domains.
     base, up, down = _paths(regime, top=top, company_adverse=adverse, company_support=support)
-    divergent = period.get('status') == 'divergent'
+    divergent = period.get('status') == 'divergent' and not unified
     if divergent and not top:
         # A short/annual disagreement changes the near branch, not just a footnote.
         # Preserve the annual direction at longer checkpoints, conditional on
@@ -206,7 +209,16 @@ def build_stock(annual, synthesis, period, code='', name=''):
     elif not support:
         out['assumptions'].append('企业与估值尚无完整同包支持；中长期扩展须补证，不能继承短期GPT评级。')
     if period.get('status') == 'divergent':
-        out['assumptions'].append('短期动量与年度结构存在分歧；需先复核跨周期冲突，不能称为全周期同向。')
+        out['assumptions'].append('短期动量与年度结构存在分歧；需先复核跨周期冲突，不能称为全周期同向。'
+                                  + ('属短周期观察，不改变统一年度结论与曲线。' if unified else ''))
+    for note in annual.get('short_signals') or []:
+        out['assumptions'].append(str(note))
+    if unified:
+        out['unified'] = unified
+        out['assumptions'].insert(0, '年度结构与企业依据取自V88统一评估（与3A/策略榜同一规则、同一财报），本页不另行评级。')
+        verdict = unified.get('verdict')
+        if verdict:
+            out['headline'] = verdict + '｜' + out['headline']
     for i, week in enumerate(WEEKS):
         stage = 0 if week <= 12 else 1 if week <= 26 else 2 if week <= 39 else 3
         p = phases[stage]

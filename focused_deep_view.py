@@ -43,7 +43,8 @@ def calculate(context, frame, quality, name, code):
     synthesis = build(context, frame, quality, technical, trend, cross)
     cross['joint_conclusion'] = synthesis
     from annual_outlook import build as annual_build
-    annual = annual_build(context, frame, quality, synthesis=synthesis)
+    from unified_evaluation import lookup
+    annual = annual_build(context, frame, quality, synthesis=synthesis, unified=lookup(code))
     from period_consistency import build as period_build
     period = period_build(code, frame, quality, cycles, trend, annual, synthesis)
     cross['period_consistency'] = period

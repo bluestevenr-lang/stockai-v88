@@ -14929,9 +14929,10 @@ if st.session_state.get('scan_selected_code'):
     _deep_annual_slot = st.empty()
     _deep_cross_slot = st.empty()
     from annual_outlook import build as _annual_build, html as _annual_html
+    from unified_evaluation import lookup as _unified_lookup
     # A rolling twelve-month view has its own evidence scope; MA200 is history,
     # and a signed short contract cannot become an annual target by relabeling.
-    _deep_annual = _annual_build(_deep_context or {'code': target_c}, df_temp, _deep_quality)
+    _deep_annual = _annual_build(_deep_context or {'code': target_c}, df_temp, _deep_quality, unified=_unified_lookup(target_c))
     _deep_annual_slot.markdown(_annual_html(_deep_annual), unsafe_allow_html=True)
     _scan_prog.progress(0.4)
     _scan_status.text("📊 计算指标... (40%)")
@@ -15002,7 +15003,7 @@ if st.session_state.get('scan_selected_code'):
                     from deep_synthesis import build as _synth_build, html as _synth_html
                     _deep_synthesis = _synth_build(_deep_context or {}, df_temp, _deep_quality, _search_dc, _deep_trend, _deep_cross)
                     _deep_cross['joint_conclusion'] = _deep_synthesis
-                    _deep_annual = _annual_build(_deep_context or {'code': target_c}, df_temp, _deep_quality, synthesis=_deep_synthesis)
+                    _deep_annual = _annual_build(_deep_context or {'code': target_c}, df_temp, _deep_quality, synthesis=_deep_synthesis, unified=_unified_lookup(target_c))
                     _deep_cross['annual_outlook'] = _deep_annual
                     from stock_horizon import analyze as _period_analyze
                     from period_consistency import build as _period_build, html as _period_html

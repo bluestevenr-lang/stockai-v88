@@ -221,6 +221,9 @@ def render(doc, compact=False):
     s = [CSS, f'<section class="{classes}" data-input-id="{_e(doc.get("input_id"))}" data-status="{_e(doc.get("status") or "missing")}" aria-label="{_e(caption)}未来条件趋势">',
          f'<h3>◉ {_e(caption)} · 未来趋势研判</h3>',
          f'<div class="vf-meta">证据截至 {_e(doc.get("source_asof") or "时间待核")} · 研判起点 {_e(doc.get("anchor_date") or doc.get("source_asof") or "待核")} · 未来条件情景</div>']
+    if not compact and doc.get("scope") == "stock":
+        from unified_evaluation import html as unified_html
+        s.append(unified_html(doc.get("unified")))
     if doc.get("headline"):
         s.append(f'<div class="vf-headline">{_e(doc["headline"])}</div>')
     s += ['<div class="vf-grid">', _phase(doc, uid), _paths(doc, uid, rows), '</div>',
