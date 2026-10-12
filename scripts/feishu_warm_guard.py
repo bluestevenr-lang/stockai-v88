@@ -25,21 +25,39 @@ def collect_muse(slot):
                           timeout=25,capture_output=True,text=True)
     if result.returncode:return 'collector_failed'
     # Log only a fixed status, never private evidence, credentials or report text.
-    status=json.loads(result.stdout).get('status')
+    output=json.loads(result.stdout);status=output.get('status')
+    if status=='unverified':
+        reason=output.get('reason')
+        return 'unverified:'+reason if reason in {'not_found','invalid','late','unavailable'} else 'unverified'
     return status if status in {'received','unverified','draft_missing','outside_window'} else 'unknown'
 
-def wait_with_muse(target,slot,collect=collect_muse,clock=lambda:datetime.now(timezone.utc),sleep=time.sleep):
+def prepare_muse(slot):
+    token=os.environ.get('GH_TOKEN');repo=os.environ.get('GITHUB_REPOSITORY')
+    if not token or not repo:return 'unavailable'
+    req=urllib.request.Request(f'https://api.github.com/repos/{repo}/actions/workflows/muse_review.yml/dispatches',
+        data=json.dumps({'ref':'main','inputs':{'slot':slot}}).encode(),method='POST',
+        headers={'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json','Content-Type':'application/json'})
+    with urllib.request.urlopen(req,timeout=10):return 'dispatched'
+
+def wait_with_muse(target,slot,collect=collect_muse,clock=lambda:datetime.now(timezone.utc),sleep=time.sleep,prepare=prepare_muse):
     start,end=REVIEW_WINDOWS[slot]
     opening=target.replace(hour=start[0],minute=start[1],second=0,microsecond=0)
     cutoff=target.replace(hour=end[0],minute=end[1],second=0,microsecond=0)
     next_poll=opening
+    next_prepare=opening
     while (remaining:=(target-clock()).total_seconds())>0:
         now=clock()
         # Leave time for a bounded request; receipt validation uses actual fetch time.
         if next_poll <= now < cutoff-timedelta(seconds=5):
+            if now >= next_prepare:
+                try:prepared=prepare(slot)
+                except Exception as exc:prepared=type(exc).__name__
+                print(json.dumps({'muse_draft_wakeup':prepared,'slot':slot}),flush=True)
+                next_prepare=clock()+timedelta(minutes=5)
             try:status=collect(slot)
             except Exception as exc:status=type(exc).__name__
             print(json.dumps({'muse_collection':status,'slot':slot}),flush=True)
+            if status != 'draft_missing':next_prepare=cutoff
             next_poll=clock()+timedelta(seconds=120)
         remaining=(target-clock()).total_seconds()
         if remaining>0:sleep(min(30,remaining))

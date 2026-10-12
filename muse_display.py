@@ -63,6 +63,7 @@ def result(review, row):
             'checked_at': vote.get('checked_at'), 'evidence_ref': vote.get('evidence_ref'),
             'criteria_version': review.get('criteria_version') or CRITERIA,
             'verdict_version': review.get('verdict_blob_sha'), 'draft_sha256': review.get('draft_sha256'),
+            'verdict_commit_sha': review.get('verdict_commit_sha'),
             'item_sha256': row.get('item_sha256'), 'delivery_id': review.get('delivery_id')}
 
 
@@ -133,7 +134,7 @@ def badge(value):
             '<details><summary style="color:#667085">'+info+'</summary>'
             '<div>evidence_ref：'+esc(value.get('evidence_ref'))+'</div><div>delivery_id：'+esc(value.get('delivery_id'))+
             '</div><div>draft_sha256：'+esc(value.get('draft_sha256'))+'</div><div>item_sha256：'+esc(value.get('item_sha256'))+
-            '</div><div>裁决完整版本：'+esc(value.get('verdict_version'))+'</div></details></div>')
+            '</div><div>裁决完整版本：'+esc(value.get('verdict_version'))+'</div><div>裁决提交：'+esc(value.get('verdict_commit_sha'))+'</div></details></div>')
 
 
 @lru_cache(maxsize=4)

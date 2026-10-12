@@ -13,6 +13,10 @@ on:
         type: choice
         default: auto
         options: [auto, morning, afternoon, evening]
+      probe_date:
+        description: '只读凭据/路径诊断日期YYYY-MM-DD；填写时不发布草案或写回执，slot须指定'
+        type: string
+        default: ''
   workflow_run:
     # Independent wakeups; the existing window check prevents off-hours work.
     workflows: ['Keep Streamlit Cloud Awake', 'V88 健康自检（公共仓免费运行）']
@@ -35,6 +39,7 @@ jobs:
       V88_FEISHU_ALLOW_PUSH: '0'
       PYTHONPATH: src
       REVIEW_SLOT: ${{ inputs.slot || 'auto' }}
+      PROBE_DATE: ${{ inputs.probe_date }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -45,7 +50,10 @@ jobs:
       - name: Check window before dependencies
         id: window
         run: |
-          if [ "$REVIEW_SLOT" != "auto" ]; then
+          if [ -n "$PROBE_DATE" ]; then
+            python3 src/muse_exchange.py --probe-date "$PROBE_DATE" --slot "$REVIEW_SLOT"
+            echo 'needed=false' >> "$GITHUB_OUTPUT"
+          elif [ "$REVIEW_SLOT" != "auto" ]; then
             echo 'needed=true' >> "$GITHUB_OUTPUT"
           else
             python3 src/muse_exchange.py --check-window
