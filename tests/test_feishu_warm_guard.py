@@ -54,3 +54,13 @@ def test_subprocess_collection_has_timeout_and_no_sending(monkeypatch):
         return types.SimpleNamespace(returncode=0,stdout='{"status":"received"}')
     monkeypatch.setattr(guard.subprocess,'run',run)
     assert guard.collect_muse('evening')=='received'
+
+
+def test_warm_window_wakes_missing_draft_without_scheduled_runner():
+    target=datetime.fromisoformat('2026-10-13T06:30:00+08:00')
+    now=[target.replace(hour=5,minute=40)];wakes=[]
+    def sleep(seconds):now[0]+=timedelta(seconds=seconds)
+    guard.wait_with_muse(target,'morning',collect=lambda s:'draft_missing' if now[0].minute<48 else 'received',
+        clock=lambda:now[0],sleep=sleep,prepare=lambda s:wakes.append(now[0]) or 'dispatched')
+    assert wakes[0].hour==5 and wakes[0].minute==40 and len(wakes)==2
+    assert now[0]==target
