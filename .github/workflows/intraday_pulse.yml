@@ -8,6 +8,8 @@ on:
         default: false
   schedule:
     - cron: '13 */3 * * 1-5'
+    # Awake before the Monday-Friday 07:00 Beijing checkpoint (Sunday UTC included).
+    - cron: '13 21 * * 0-4'
 permissions:
   contents: read
   actions: write

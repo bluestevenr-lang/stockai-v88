@@ -1,12 +1,12 @@
 """Bounded cloud timer: half-hour dispatch with independent cron recovery."""
 from datetime import datetime,timedelta,timezone
 import json,os,time,urllib.request,urllib.error
-from intraday_schedule import active_markets
+from intraday_schedule import active_markets, preopen_markets
 
 
 def next_tick(now):
     target=now.replace(second=0,microsecond=0)
-    while target<=now or target.minute not in (7,37):target+=timedelta(minutes=1)
+    while target<=now or not (target.minute in (7,37) or (target.hour==23 and target.minute==0)):target+=timedelta(minutes=1)
     return target
 
 
@@ -18,10 +18,39 @@ def dispatch(workflow,inputs):
         if response.status!=204:raise RuntimeError('dispatch not accepted')
 
 
+def preopen_needed(now,runs):
+    """Any successful/running facts pass begun after today's 07:00 covers it.
+
+    Failed/skipped jobs do not satisfy the checkpoint. GitHub's independent
+    cron and this already-awake timer can recover each other without Feishu.
+    """
+    if not preopen_markets(now):return False
+    bjt=timezone(timedelta(hours=8))
+    since=now.astimezone(bjt).replace(hour=7,minute=0,second=0,microsecond=0)
+    for run in runs:
+        at=datetime.fromisoformat(run['created_at'].replace('Z','+00:00'))
+        if at>=since and (run.get('status') in ('queued','in_progress','waiting','pending') or run.get('conclusion')=='success'):
+            return False
+    return True
+
+
+def preopen_catchup(now):
+    if not preopen_markets(now):return False
+    url='https://api.github.com/repos/'+os.environ['GITHUB_REPOSITORY']+'/actions/workflows/autonomous.yml/runs?per_page=30'
+    req=urllib.request.Request(url,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
+    with urllib.request.urlopen(req,timeout=20) as response:runs=json.load(response)['workflow_runs']
+    if not preopen_needed(now,runs):return False
+    dispatch('autonomous.yml',{'fast':True,'send':False})
+    print('accepted_0700_refresh_catchup',now.isoformat(),flush=True)
+    return True
+
+
 def main():
     if os.environ.get('PULSE_PRIME')=='true':
         dispatch('autonomous.yml',{'fast':True,'send':False})
         print('initial_refresh_dispatch_accepted',flush=True)
+    try:preopen_catchup(datetime.now(timezone.utc))
+    except (urllib.error.URLError,TimeoutError,RuntimeError) as exc:print('preopen_check_failure',type(exc).__name__,flush=True)
     end=datetime.now(timezone.utc)+timedelta(minutes=325)
     target=next_tick(datetime.now(timezone.utc))
     print('clock_started next_tick='+target.isoformat(),flush=True)
@@ -29,7 +58,10 @@ def main():
         while datetime.now(timezone.utc)<target:
             time.sleep(min(30,max(0,(target-datetime.now(timezone.utc)).total_seconds())))
         now=datetime.now(timezone.utc)
-        if active_markets(now):
+        try:recovered=preopen_catchup(now)
+        except (urllib.error.URLError,TimeoutError,RuntimeError) as exc:
+            recovered=False;print('preopen_check_failure',type(exc).__name__,flush=True)
+        if not recovered and active_markets(now):
             for attempt in range(3):
                 try:dispatch('autonomous.yml',{'fast':True,'send':False});print('accepted_half_hour_refresh',target.isoformat(),flush=True);break
                 except (urllib.error.URLError,TimeoutError,RuntimeError) as exc:

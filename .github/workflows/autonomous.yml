@@ -2,6 +2,8 @@ name: V88 免费行情·日报周报·飞书（无模型额度依赖）
 on:
   schedule:
     - cron: '11 22 * * *'
+    # Beijing 07:00, exchange-calendar gated; delayed triggers still catch up.
+    - cron: '0 23 * * *'
     - cron: '42 3 * * *'
     - cron: '42 10 * * *'
     # Half-hour intraday ticks; avoid the congested top of each hour.
@@ -45,6 +47,7 @@ jobs:
         id: window
         env:
           FAST_REFRESH: ${{ inputs.fast == true || github.event.schedule == '7,37 1-8,13-21 * * 1-5' }}
+          PREOPEN_REFRESH: ${{ github.event.schedule == '0 23 * * *' }}
           SCHEDULED: ${{ github.event_name == 'schedule' }}
         run: python3 src/intraday_schedule.py
       - uses: actions/checkout@v4

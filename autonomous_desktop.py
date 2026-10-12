@@ -43,6 +43,15 @@ def _worker(base):
     finally:(base/'data/.autonomous_sync_ui_lock').unlink(missing_ok=True)
 
 
+def refresh_failure_current(refresh,board):
+    """Keep the error history, but stop showing it after a newer real screening."""
+    if refresh.get('status')!='failed':return False
+    try:
+        finished=board.get('screening_finished_at') or board.get('generated_at')
+        return datetime.fromisoformat(finished.replace('Z','+00:00')) <= datetime.fromisoformat(refresh['requested_at'].replace('Z','+00:00'))
+    except (KeyError,TypeError,ValueError,AttributeError):return True
+
+
 def sync_on_open():
     import streamlit as st
     st.session_state.setdefault('_v88_opened_at',datetime.now(timezone.utc).isoformat())
@@ -74,7 +83,7 @@ def sync_on_open():
                 step = f'{done}/{total} 步' if total else '排队中'
                 phase = ('同步新结果' if refresh.get('status') == 'syncing' else '采集行情并重新筛选' if 'Refresh facts' in refresh.get('phase', '') else '核验新结果' if 'Validate' in refresh.get('phase', '') or 'Verify' in refresh.get('phase', '') else '准备云端更新')
                 st.caption('行情更新 · '+step+' · '+phase+'；原结果保留')
-            elif refresh.get('status') == 'failed':
+            elif refresh_failure_current(refresh,board):
                 st.caption('更新未完成 · '+refresh.get('message', '请重试，原记录保留'))
             elif refresh.get('status') == 'complete':
                 st.caption('已重新采集并筛选 · 休市时沿用最近收盘，行情时间以每只个股为准')
