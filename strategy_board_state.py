@@ -106,6 +106,10 @@ def readiness(row):
     if row.get('buyable'):
         label=prefix+('买入条件已满足' if row.get('buy_timing')=='live' else '收盘条件满足 · 等待开盘复核')
         return {'readiness_label':label,'readiness_detail':TIMING_TEXT.get(row.get('buy_timing'),'交易前复核实际报价')}
+    quality_gaps=[g for g in gaps if g.startswith('利润质量：')]
+    if quality_gaps:
+        return {'readiness_label':prefix+'重点观察 · 利润质量待核',
+                'readiness_detail':detail+'；研究名单不等于可买，须先核实经常性利润。'}
     o=row.get('opportunity') or {}
     if high and row.get('grade_policy')==FOLLOWUP_POLICY and not o.get('passed'):
         reason='；'.join(o.get('gaps') or ['当前空间与风险待核'])
@@ -114,12 +118,17 @@ def readiness(row):
                 'readiness_detail':reason+'；待回调改善入场空间，或有效突破后按新结构复核；不追价，不移动原止损。'+detail}
     entry=row.get('entry_range');price=row.get('last')
     if row.get('annual_regime')=='up' and entry and isinstance(price,(int,float)) and price>0:
-        if price<entry[0] or price>entry[1]:
+        price_gap='现价未进入计划区间，待触发且不追价'
+        other_gaps=[g for g in gaps if g!=price_gap]
+        if (price<entry[0] or price>entry[1]) and not other_gaps:
             edge=entry[0] if price<entry[0] else entry[1]
             distance=round((edge/price-1)*100,2)
             return {'readiness_label':'趋势符合 · 等待进入买入区',
                     'readiness_detail':f'现价需变化{distance:+.2f}%至价带最近边界；进入后仍须复核其余条件。'+detail,
                     'entry_distance_pct':distance}
+        if other_gaps and (price<entry[0] or price>entry[1]):
+            return {'readiness_label':prefix+'重点观察 · 条件待核',
+                    'readiness_detail':detail+'；不只等待价格触发。'}
         return {'readiness_label':prefix+'已在买入区 · 等待核验','readiness_detail':detail or '入场条件尚未全部通过'}
     return {'readiness_label':prefix+'研究观察 · 继续等待','readiness_detail':detail or '趋势与买点待核'}
 
@@ -159,6 +168,9 @@ def view(doc,now=None):
             row['current_source']=False;row['status']='源行情待更新';row['executable']=False;row['buy_timing']='stale'
     if out.get('grade_policy') in (FOLLOWUP_POLICY,'2026-10-11-quality-readiness-v6'):
         for row in out.get('rows',[]):
+            from earnings_quality import entry_gaps
+            gaps=entry_gaps(row.get('fundamentals'))
+            row['missing']=list(dict.fromkeys(row.get('missing',[])+gaps))
             row['buyable']=bool(row.get('buyable') and row.get('current_source') and not row.get('research_retained') and row.get('buy_timing')!='stale' and not row.get('missing'))
             if row.get('strategy_tier')=='3A':
                 row['selection_category']='买入条件已满足' if row['buyable'] else RESEARCH_CATEGORY if out.get('grade_policy')==FOLLOWUP_POLICY else '最高价值研究'

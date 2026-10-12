@@ -105,7 +105,7 @@ def html(doc=None,code=None,now=None,profiles=None):
                         profile_markup=f'<div>{esc(info.get("industry") or "所属板块待核")}<br><small>{esc(rank_label)}</small><details><summary>同业Top5 · 按市值</summary>{peers or "同业名单待补"}<small>以上述源日期为准；仅展示公开可比同业，市值排名不代表推荐评级。</small></details></div>'
                     if not profile_markup:profile_markup = profile_html(r['code'], profiles, now)
                     out.append(f'<tr><td><b>#{r["rank"]} <a href="{esc(href)}">{esc(r["name"])}</a></b><br><small>{esc(r["code"])}</small>{profile_markup}</td>'
-                        f'<td><b>{"未授级" if r.get("grade_pending") else esc(r["strategy_tier"])}</b>{('<br><b>'+esc(r.get('selection_category'))+'</b>') if tier=='3A' and r.get('selection_category') else ''}<br><span class="score">{s["value"]:g}</span> /100<br><small>评分字段覆盖 {s["coverage"]}%</small><br><small>{esc(s.get("label", "旧版周期分"))}</small><details><summary>权重与贡献</summary>{parts}<div>数据版本 {esc(s.get("snapshot_id"))} · 评分规则 {esc(s.get("revision"))}</div><div>共振 +{s["interaction"]} · 过热扣 {s["penalty"]}</div></details></td>'
+                        f'<td><b>{"未授级" if r.get("grade_pending") else esc(r["strategy_tier"])}</b>{('<br><b>'+esc(r.get('selection_category'))+'</b>') if tier=='3A' and r.get('selection_category') else ''}<br><span class="score">{s["value"]:g}</span> /100<br><small>评分字段覆盖 {s["coverage"]}%（非质量通过率）</small><br><small>{esc(s.get("label", "旧版周期分"))}</small><details><summary>权重与贡献</summary>{parts}<div>数据版本 {esc(s.get("snapshot_id"))} · 评分规则 {esc(s.get("revision"))}</div><div>共振 +{s["interaction"]} · 过热扣 {s["penalty"]}</div></details></td>'
                         f'<td><b>{r["last"]:g} {esc(r.get("currency") or {"A股":"CNY","港股":"HKD","美股":"USD"}.get(r["market"],""))}</b> · {r["change_pct"]:+.2f}%<br><small>{esc(display(r["quote_asof"]))}<br>北京时间</small></td>'
                         f'<td>'+('<b>原研究留存 · 本轮未重算</b><br><small>原评估 '+esc(display(r.get('last_evaluated_at')))+'</small><br>' if r.get('research_retained') else '')+f'<b>{esc(r["lane"])}</b> · {esc(r["period"])}'+(f' · 年度{esc(r["annual_label"])}' if r.get('annual_label') else '')+f'<br>{esc(r["reason"])}{source_tags(r,esc)}<details><summary>周期适用性 · 共用综合分</summary>{periods}<small>仅表示筛选适用；本行价带对应上方周期，其它周期须独立核验。</small></details><details><summary>🏢 企业依据与反证</summary>{esc(r["business_reason"])}<br>{esc(r.get("business_risk"))}</details></td>'
                         f'<td><b>{esc(band)}</b><br><b style="color:{"#0f7b45" if r.get("buyable") else "#a66316"}">{esc(r.get("readiness_label") or r["status"])}</b><br><small>{esc(r.get("readiness_detail") or "")}</small>'+(f'<br><b style="color:#0f7b45">✅ {esc(TIMING_TEXT.get(r.get("buy_timing"),""))}</b>' if tier in ('3A','2A','1A') and r['status']=='条件匹配' and not r.get('readiness_detail') else '')+f'<br><small>{esc(missing or "结构条件匹配；核对最新价格")}</small></td>'
@@ -135,6 +135,8 @@ def source_tags(r,esc):
     if r.get('business_source'):tags.append('企业依据：'+r['business_source'])
     if r.get('structure_source'):tags.append(STRUCTURE_LABEL.get(r['structure_source'],r['structure_source']))
     f=r.get('fundamentals') or {}
+    from earnings_quality import summary as earnings_summary
+    tags.append('利润质量：'+earnings_summary(f))
     facts=[f'{k}{f[v]:+.1f}%' for k,v in (('营收同比','revenue_yoy'),('净利同比','profit_yoy')) if isinstance(f.get(v),(int,float))]
     if isinstance(f.get('roe_annual'),(int,float)):facts.append(f'年化ROE {f["roe_annual"]:.1f}%')
     if facts:tags.append('财报（数据商口径）'+' '.join(facts)+(' · 报告期 '+f['period_end'] if f.get('period_end') else ''))
@@ -184,7 +186,7 @@ def near_html(near,doc,esc,flags,display):
         for r in sorted([r for r in near if r['market']==market],key=lambda r:r['rank']):
             s=r.get('strategy_score') or {}
             out.append(f'<tr><td><b>{flag} #{esc(r["rank"])} {esc(r["name"])}</b><br><small>{esc(r["code"])}</small></td>'
-                f'<td><span class="score">{esc(s.get("value"))}</span> /100<br><small>证据覆盖 {esc(s.get("coverage"))}%</small></td>'
+                f'<td><span class="score">{esc(s.get("value"))}</span> /100<br><small>评分字段覆盖 {esc(s.get("coverage"))}%（非质量通过率）</small></td>'
                 f'<td><b>{esc(r.get("last"))} {esc(r.get("currency") or {"A股":"CNY","港股":"HKD","美股":"USD"}.get(r["market"],""))}</b> · {r.get("change_pct",0):+.2f}%<br><small>{esc(display(r.get("quote_asof")))} 北京时间</small></td>'
                 f'<td><b>{esc(r.get("watch_kind") or "候补")}</b> · 年度{esc(r.get("annual_label") or "待核")} · {esc(r.get("lane"))}{source_tags(r,esc)}</td>'
                 f'<td>{("<b>"+esc((r.get("trigger") or {}).get("text"))+"</b>") if (r.get("trigger") or {}).get("text") else ""}{"".join("<div>· "+esc(g)+"</div>" for g in r.get("gaps",[])) or ("" if r.get("trigger") else "—")}</td></tr>')

@@ -44,6 +44,13 @@ def audit(board, profiles=None):
         if key in seen and seen[key]!=s['value']:errors.append({'code':code,'error':'same_snapshot_score_conflict'})
         seen[key]=s['value']
         tier=r.get('strategy_tier')
+        if r.get('buyable') and str(s.get('revision','')).startswith('2026-10-12'):
+            # Do not trust a producer's "passed" label on its own.
+            q=(r.get('fundamentals') or {}).get('earnings_quality') or {}
+            if (q.get('score_basis')!='recurring' or q.get('status')!='normalized'
+                    or q.get('entry_verified') is not True or q.get('gaps')
+                    or not isinstance(q.get('recurring_profit'),(int,float)) or q['recurring_profit']<=0):
+                errors.append({'code':code,'error':'buyable_without_recurring_earnings'})
         if quality_policy:
             lower,upper={'3A':(80,101),'2A':(60,80),'1A':(50,60)}.get(tier,(0,0))
             if not lower<=s['value']<upper:errors.append({'code':code,'error':'score_band_overlap'})

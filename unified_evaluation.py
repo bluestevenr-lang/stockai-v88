@@ -52,10 +52,19 @@ def lookup(code, doc=None, now=None):
         timing = quote_timing(row, now) if at.tzinfo and at <= now else 'stale'
     except (KeyError, TypeError, ValueError):
         timing = 'stale'
+    from earnings_quality import entry_gaps
+    earnings_gaps=entry_gaps(row.get('fundamentals'))
     row['buy_timing'] = timing
     for result in [row, *(row.get('tiers') or {}).values()]:
         result['published_buyable'] = bool(result.get('buyable'))
         result['buy_timing'] = timing
+        if earnings_gaps:
+            result['gaps']=list(dict.fromkeys([*(result.get('gaps') or []),*earnings_gaps]))
+            result['buyable']=False
+            if result.get('quality_eligible'):
+                result['selection_category']='高价值可跟进 · 重点观察'
+                result['verdict']='3A·'+result['selection_category']
+            else:result['verdict']=str(result.get('verdict') or '').replace('买入条件已满足','利润质量待核')
         if timing == 'stale' and result.get('buyable'):
             result['buyable'] = False
             result['verdict'] = str(result.get('verdict') or '').replace('现在可买', '报价待更新').replace('买入条件已满足', '最高价值研究·报价待更新')
@@ -89,6 +98,8 @@ def html(u):
              f'年度{escape(str(u.get("annual_label") or "待核"))}',
              '企业依据：' + escape(str(u.get('business_source') or ('反证' if u.get('business_status') == 'counterevidence' else '待补')))]
     lines = ['<div>' + ' · '.join(parts) + '</div>']
+    from earnings_quality import summary as earnings_summary
+    lines.append('<div>利润质量：'+escape(earnings_summary(u.get('fundamentals')))+'</div>')
     if u.get('readiness_label'):lines.append('<div><b>'+escape(u['readiness_label'])+'</b>：'+escape(u.get('readiness_detail') or '')+'</div>')
     o=u.get('opportunity') or {}
     if o.get('current_net_rr') is not None:lines.append(f'<div>当前首段结构净空间 {o["net_space_pct"]:.2f}% · 当前净收益风险比 {o["current_net_rr"]:.2f} · 首段观察位 {o["first_objective"]:g}；与历史盈利情景分开</div>')
