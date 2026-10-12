@@ -6,7 +6,7 @@ from intraday_schedule import active_markets, preopen_markets
 
 def next_tick(now):
     target=now.replace(second=0,microsecond=0)
-    while target<=now or not (target.minute in (7,37) or (target.hour==23 and target.minute==0)):target+=timedelta(minutes=1)
+    while target<=now or not (target.minute in (7,37) or (target.astimezone(timezone.utc).hour==23 and target.minute==0)):target+=timedelta(minutes=1)
     return target
 
 
