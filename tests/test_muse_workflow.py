@@ -18,3 +18,12 @@ def test_delivery_keeps_original_times_and_feature_flag():
     raw=(ROOT/'.github/workflows/feishu_delivery.yml').read_text()
     assert "'30 22 * * *'" in raw and "'1 4,11 * * *'" in raw
     assert "V88_MUSE_SHADOW: '1'" in raw
+
+
+def test_review_has_independent_wakeups_and_warm_runner_backup():
+    raw=(ROOT/'.github/workflows/muse_review.yml').read_text()
+    assert 'workflow_run:' in raw and 'Check window before dependencies' in raw
+    warm=(ROOT/'.github/workflows/feishu_warm_guard.yml').read_text()
+    assert 'MUSE_COLLECTOR_SCRIPT:' in warm and 'MUSE_PRIVATE_TOKEN:' in warm
+    assert 'continue-on-error: true' in warm
+    assert 'FEISHU_WEBHOOK' not in warm

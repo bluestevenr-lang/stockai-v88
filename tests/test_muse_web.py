@@ -101,6 +101,22 @@ def test_fixed_feishu_copy_and_metadata():
     assert '❌ 不认可｜治理未出清' in text
 
 
+def test_background_sync_preserves_history_on_failure(tmp_path):
+    from muse_web_sync import sync
+    row,record,cache=fixture()
+    def fetch(repo,path,branch,deadline,optional=False):
+        if path=='feishu_sync_delivery.json':return {'deliveries':{'r':record}}
+        if path.endswith('latest.json'):return {'delivery_id':record['delivery_id'],'draft_sha256':'abc'}
+        return None
+    assert sync(tmp_path,NOW,fetch)['status']=='complete'
+    archive=list((tmp_path/'data/muse_receipt_archive').glob('*.json'));assert len(archive)==1
+    def fail(*a,**k):raise RuntimeError('offline')
+    assert sync(tmp_path,NOW,fail)['status']=='failed'
+    retained=json.loads((tmp_path/'data/muse_review_web.json').read_text())
+    assert len(retained['records'])==1 and archive[0].exists()
+    assert ui.current(row,'3A',retained,NOW)['state']=='unverified'
+
+
 def test_legacy_success_receipts_without_id_are_kept():
     rows=ui.project({'deliveries':{'oldsha':{'at':NOW.isoformat(),'complete':True,'accepted':True,'parts':[]}}})
     assert rows[0]['delivery_id']=='legacy-receipt:oldsha'
@@ -119,3 +135,35 @@ def test_verdict_snapshot_never_overrides_receipt():
     row,record,cache=fixture(vote='fail')
     cache['verdict_snapshots']={record['delivery_id']:{'present':True,'snapshot':{'verdict':'pass'}}}
     assert ui.current(row,'3A',cache,NOW)['state']=='fail'
+
+
+def test_sync_does_not_rewrite_a_frozen_success(tmp_path):
+    from muse_web_sync import sync
+    row,record,cache=fixture()
+    def fetch(repo,path,branch,deadline,optional=False):
+        if path=='feishu_sync_delivery.json':return {'deliveries':{'r':record}}
+        return None
+    sync(tmp_path,NOW,fetch)
+    record['muse_review']['accepted_items']={}
+    assert sync(tmp_path,NOW,fetch)['status']=='partial'
+    cache=json.loads((tmp_path/'data/muse_review_web.json').read_text())
+    assert cache['receipt_conflicts']==[record['delivery_id']]
+    assert ui.result(cache['records'][0]['muse_review'],cache['records'][0]['muse_review']['items'][0])['state']=='pass'
+    assert len(list((tmp_path/'data/muse_receipt_archive').glob('*.json')))==2
+
+
+def test_missing_vote_explains_no_submission_instead_of_draft_change():
+    row,record,cache=fixture()
+    cache['records'][0]['muse_review']['accepted_items']={}
+    cache['latest_drafts'][record['delivery_id']]['draft_sha256']='changed'
+    cache['verdict_snapshots']={record['delivery_id']:{'present':False,'snapshot':None}}
+    answer=ui.current(row,'3A',cache,NOW)
+    assert answer['state']=='unverified' and '尚未收到本时段' in answer['reason']
+    cache['verdict_snapshots'][record['delivery_id']]={'present':True,'snapshot':{'items':[
+        {'item_id':m.item(row,'3A')['item_id'],'code':row['code'],'verdict':'pass','reason':'认可观察'}]}}
+    answer=ui.current(row,'3A',cache,NOW)
+    assert answer['state']=='unverified' and '本次投递未采用' in answer['reason']
+    markup=ui.panel(cache,NOW)
+    assert '非当前认证' in markup and '认可观察' in markup
+    assert '✅ Muse 认证·通过' not in markup
+    assert cache['records'][0]['muse_review']['accepted_items']=={}

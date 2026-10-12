@@ -17,3 +17,40 @@ def test_guard_waits_without_early_release_and_late_start_catches_up():
     guard.wait_until(target,clock=lambda:current[0],sleep=sleep)
     assert current[0]==target and waits==[30,30,1]
     guard.wait_until(target,clock=lambda:target+timedelta(minutes=53),sleep=lambda _:(_ for _ in ()).throw(AssertionError('late start must not wait another day')))
+
+
+def test_warm_runner_collects_without_cron_and_stops_at_cutoff():
+    target=datetime.fromisoformat('2026-10-12T19:01:00+08:00')
+    current=[target.replace(hour=18,minute=13)];collected=[]
+    def sleep(seconds):current[0]+=timedelta(seconds=seconds)
+    guard.wait_with_muse(target,'evening',collect=lambda slot:collected.append((slot,current[0])) or 'received',
+                         clock=lambda:current[0],sleep=sleep)
+    assert current[0]==target
+    assert len(collected)>10
+    assert all(slot=='evening' and at<target.replace(hour=18,minute=50) for slot,at in collected)
+
+
+def test_collector_failure_never_blocks_sender_or_calls_after_cutoff():
+    target=datetime.fromisoformat('2026-10-12T12:01:00+08:00')
+    current=[target.replace(hour=11,minute=54)];attempts=[]
+    def fail(slot):attempts.append(slot);raise TimeoutError('bounded request')
+    def sleep(seconds):current[0]+=timedelta(seconds=seconds)
+    guard.wait_with_muse(target,'afternoon',collect=fail,clock=lambda:current[0],sleep=sleep)
+    assert current[0]==target and attempts==['afternoon']
+    guard.wait_with_muse(target,'afternoon',collect=fail,clock=lambda:target+timedelta(seconds=1),sleep=sleep)
+    assert attempts==['afternoon']
+
+
+def test_subprocess_collection_has_timeout_and_no_sending(monkeypatch):
+    import types
+    monkeypatch.setenv('MUSE_COLLECTOR_SCRIPT','collector.py')
+    monkeypatch.setenv('MUSE_PRIVATE_TOKEN','test-private-token')
+    def run(command,**kwargs):
+        assert command[-3:]==['--collect-only','--slot','evening']
+        assert kwargs['timeout']==25 and kwargs['capture_output']
+        assert kwargs['env']['V88_FEISHU_ALLOW_PUSH']=='0'
+        assert kwargs['env']['GH_TOKEN']=='test-private-token'
+        assert 'MUSE_PRIVATE_TOKEN' not in kwargs['env']
+        return types.SimpleNamespace(returncode=0,stdout='{"status":"received"}')
+    monkeypatch.setattr(guard.subprocess,'run',run)
+    assert guard.collect_muse('evening')=='received'

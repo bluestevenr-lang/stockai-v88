@@ -24,9 +24,23 @@ jobs:
     timeout-minutes: 135
     steps:
       - uses: actions/checkout@v4
+      - name: Read private Muse collector (no sending credentials)
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          repository: bluestevenr-lang/v88-daily-report
+          ref: main
+          token: ${{ secrets.PRIVATE_TOKEN }}
+          path: muse-core
+          sparse-checkout: |
+            src/muse_exchange.py
+            src/muse_review.py
+          sparse-checkout-cone-mode: false
       - name: Refresh data before target time and wait for delivery
         env:
           GH_TOKEN: ${{ github.token }}
+          MUSE_PRIVATE_TOKEN: ${{ secrets.PRIVATE_TOKEN }}
+          MUSE_COLLECTOR_SCRIPT: muse-core/src/muse_exchange.py
           REPORT_SLOT: ${{ inputs.slot }}
           REPORT_CRON: ${{ github.event.schedule }}
         run: python3 scripts/feishu_warm_guard.py

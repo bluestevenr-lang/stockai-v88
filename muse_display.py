@@ -85,6 +85,18 @@ def current(row, module, cache, now=None):
         review = record.get('muse_review') or {}
         if record['date'] != now.astimezone(BJT).date().isoformat():
             return unverified('此前裁决仅适用于历史版本')
+        # Diagnose missing collection before version drift; neither can grant certification.
+        vote = (review.get('accepted_items') or {}).get(binding['item_id'])
+        if not vote:
+            snap = (cache.get('verdict_snapshots') or {}).get(record['delivery_id']) or {}
+            submitted = (snap.get('snapshot') or {}).get('items') or []
+            if any(r.get('item_id') == binding['item_id'] for r in submitted if isinstance(r, dict)):
+                return unverified('Muse已提交本股裁决；本次投递未采用，详见双重验证')
+            if snap.get('present') is False:
+                return unverified('尚未收到本时段Muse裁决；未验证不等于不通过')
+            if snap.get('present') is True:
+                return unverified('本时段裁决未包含本股；等待Muse核查')
+            return unverified('本次投递无本股有效裁决；提交状态待核')
         latest = (cache.get('latest_drafts') or {}).get(record['delivery_id'])
         if not latest or latest.get('draft_sha256') != review.get('draft_sha256'):
             return unverified('草案改版或版本未核对，等待本版裁决')
@@ -181,7 +193,17 @@ def panel(cache=None, now=None, day=None):
     if pending:
         out.append('<details><summary>裁决仓库快照（仅供核对；不覆盖投递回执）</summary>')
         for identity, snap in pending.items():
+            if day and f':{today}:' not in identity:
+                continue
             out.append('<p>'+esc(identity)+' · '+('已看到裁决文件，是否采用以回执为准' if snap.get('present') else '未见裁决文件')+' · 快照 '+esc(str(snap.get('snapshot_sha256') or '—')[:12])+'</p>')
+            submitted = snap.get('snapshot') or {}
+            for vote in submitted.get('items') or []:
+                if not isinstance(vote, dict):continue
+                label = {'pass':'认可', 'fail':'不认可', 'unverified':'未验证'}.get(vote.get('verdict',vote.get('claude_verdict')), '格式待核')
+                out.append('<details><summary>'+esc(vote.get('code'))+' · 仓库原裁决：'+label+'（非当前认证）</summary><p>'+
+                           esc(vote.get('reason'))+'<br>核查 '+esc(clock(vote.get('checked_at')))+' · 标准 '+esc(submitted.get('criteria_version'))+
+                           '<br>证据 '+esc(vote.get('evidence_ref'))+'<br>草案 '+esc(submitted.get('draft_sha256'))+
+                           '</p><small>仅展示Muse原始提交；不据此推断已赶上截止或通过版本校验，认证仍以冻结投递回执为准。</small></details>')
         out.append('</details>')
     stats = cache.get('statistics') or {}
     out.append('<details><summary>验收进度与冻结核查标准</summary><p>已投递复核覆盖 '+esc(stats.get('delivered_review_days', 0))+

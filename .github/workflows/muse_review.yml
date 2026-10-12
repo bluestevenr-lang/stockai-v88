@@ -13,6 +13,10 @@ on:
         type: choice
         default: auto
         options: [auto, morning, afternoon, evening]
+  workflow_run:
+    # Independent wakeups; the existing window check prevents off-hours work.
+    workflows: ['Keep Streamlit Cloud Awake', 'V88 健康自检（公共仓免费运行）']
+    types: [completed]
 permissions:
   contents: read
 concurrency:
