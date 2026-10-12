@@ -249,3 +249,87 @@ V88_FEISHU_ALLOW_PUSH=0；不发飞书、不改启动链、不删除历史。基
 - 实测：本机筛选2026-10-11 19:10:32 → 2026-10-12 08:02:38北京时间；三个市场从local → cloud；报价仍保留10月9日真实收盘时间，没有改成10月12日实时价。活跃src及网页文件与提交字节一致，部署前备份于work/oct12-preopen/live-backup。
 - 云端：38188110093在部署最终跳过保护后已主动替换为38188354259，新计时工作流已进入运行。38188113362为显式fast=true/send=false验收刷新，当前仍在行情采集步骤，尚未将其计为验收成功；本机新筛选同步已单独实测成功。
 - 风险：07:00是启动/补检目标，不是承诺07:00数据已经计算完成。GitHub排队或外部数据服务仍可能延迟；提前计时与漏跑恢复降低漏更风险。未改V88.app、v88_master_launch.sh、runtime_guard.py或8501；未删除日历及合同历史；未自动调分/调止损。
+
+
+## 2026-10-12 GitHub 运行可靠性修复验收（北京时间 09:33）
+
+范围：修复云端运行链路，保持现有评分/3A 规则、历史档案、桌面启动和 8501 不变。测试环境禁止飞书外发，未启用模型或付费数据。正式飞书仍由独立公共仓工作流运行，06:30/12:01 中港合并、19:01 美股；本轮不重复发送已成功恢复的早报。
+
+### 提交与文件
+
+核心修复：`b4e101bbf1b2e902e3799f3a9aa7841c8cc8abda`；排队 `dcb224153e663951e820f41560dc031375136bb8`；验证 `38c50824c5db92849fe7b2e47a4316b5def4b410`；历史恢复/采集耗时 `a8c410789bed62c51bd0095409515136e338cbc9`；健康检查 `625ad150aadc532284bb577a0b734b841e4265de`；同文件推送冲突保护 `49c0aff4838bca423f6d5f0d9e2308f76db5ea5b`；原脚本可执行权限恢复 `6b1e47293466796fa5fd1fbd5dcca4130298a1a2`。
+公共仓：`6ab594624ebfdbb4a007bf71b1faace1922682f9`、`5561e2e22546e5a69d7f6b21308ae232675f5c76`、`c8d53334ba169b7406a411627f337f31b0b3f342`。
+
+根因与处理详见 `docs/GITHUB_RELIABILITY_20261012.md`。本条和该报告在两个仓库保持字节一致；原工作区未提交修改保留，云端通过已审阅文件单独提交，不覆盖其他助手工作。
+
+### 实际 GitHub 验收
+
+| 工作流 | run id | 改前 → 改后 |
+|---|---|---|
+| autonomous（第一轮） | stockai-v88 / 38189163885 | quotes 返回失败 → 所有步骤成功、status=complete、published=true、model_calls=0；总运行约 8分46秒。核验研究报价 CN 5180/HK 720/US 1626；明确 primary_degraded=true，不宣称全市场完整。 |
+| autonomous（第二轮） | stockai-v88 / 38189776561 | 再次从压缩历史恢复，所有步骤成功；00:54:05 UTC 启动，01:02:36 发布完成，约 8分31秒；核验研究报价 CN 2351/HK 724/US 2081。集合随源质量变化，并非用固定计数填充。 |
+| report | v88-daily-report / 38189168592 | 原 37974949173 缺少 wdata.db 失败 → 历史恢复、正文生成、提交存档全部成功；08:51:56–09:08:48 BJT，16分52秒；无飞书外发。 |
+| bottom_turn | v88-daily-report / 38189717131 | 连续5次历史库故障 → 恢复1214条核验序列，扫描/回仓成功；09:08:51–09:11:51，3分钟；扫描本身44.8秒。2762只池中，满足最新完整日及长度要求的仅33只，9只进入二阶段、2只入榜；此覆盖缺口仍保留，不能解释为其余全部无机会。 |
+| health | stockai-v88 / 38192252960 | 旧检查仅查旧 meta/report → 真实发布、成功完整投递、17条工作流及存储检查；09:32:28 BJT 输出 healthy，issues=[]。仍警示主源覆盖不完整及仓库>5GiB。 |
+
+第一轮任务等待时，旧并发配置曾取消 pending；升级 `queue: max` 后最终 report 与 bottom_turn 按先后顺序实际完成。没有用取消运行冒充通过。此前健康运行 38189774259 正确报 report 未恢复；最终检查在真实成功后转绿。
+
+### 测试与量化证据
+
+- 原远端相关基线：46 passed / 2.47 秒；扩展原有相关测试21 passed / 1.16 秒；合并新增保护测试后 **86 passed / 5.61 秒**，无本轮相关测试失败。
+- 用户提及的历史全仓基线“核心8失败、页面73失败”本轮未全量复跑，不能宣称消除；本轮不改页面渲染，未虚报 AppTest 首屏秒数或闲置CPU。
+- 真实临时 bare Git 用例验证：不相交提交可重试回仓；同文件冲突失败并保留两端，不使用 `-X theirs` 覆盖行情/回执。
+- 校验2026-10-12起32天交易日及11月美股冬令时；所有变更YAML解析与Python编译通过。
+- 旧事件文件73,663,923字节保留；新无损gzip副本3,587,905字节。旧视图22,648,444字节保留；新gzip 1,027,541字节；下一轮云端恢复已成功。只冻结旧文件增长，不删除历史。
+- 桌面启动保护清单11个文件hash未变；不动端口与快捷方式。测试运行禁外发、模型调用0；无需Mac开机或GPT额度。
+
+### 未完成/持续约束
+
+- 免费主源仍有分页 `missing_total`，备用源提供已核验研究集合，未解决全市场/全部日线覆盖；触底模块33/2762的最新完整日覆盖已如实列出，未放宽证据门槛。
+- 私有仓库约5.16GiB，容量提醒有效；不删除历史、不重写Git。压缩和稀疏检出降低新增长/下载负担，不能承诺无限增长无风险。
+- 未获得账户账单读取scope，无法核验私仓未来分钟余额；未开启按量付费。公共核心刷新/飞书不依赖私仓收费运行。
+- 固定Ubuntu24.04和已验依赖版本，避免本月ubuntu-latest迁移冲击；GitHub自身排队、外部数据源、凭据和平台故障仍不能作一个月零故障承诺。
+
+修改文件清单：
+
+核心仓库：
+- `.github/workflows/bottom_turn.yml`
+- `.github/workflows/cloud_refresh.yml`
+- `.github/workflows/feishu_digest.yml`
+- `.github/workflows/intraday_alert.yml`
+- `.github/workflows/monthly.yml`
+- `.github/workflows/report.yml`
+- `.github/workflows/rotation_refresh.yml`
+- `.github/workflows/us_close_finalize.yml`
+- `.github/workflows/weekend_evolution.yml`
+- `constraints-cloud-20261012.txt`
+- `docs/CHATGPT_RESULTS_20261009.md`
+- `docs/GITHUB_RELIABILITY_20261012.md`
+- `requirements.txt`
+- `scripts/git_push_retry.sh`
+- `src/autonomous_runtime.py`
+- `src/bottom_turn.py`
+- `src/cloud_history_bootstrap.py`
+- `src/cloud_journal_archive.py`
+- `src/cloud_reliability.py`
+- `src/feishu_cloud_bundle.py`
+- `src/feishu_cloud_refresh.py`
+- `src/feishu_cloud_state.py`
+- `src/market_discovery_refresh.py`
+- `src/quote_refresh_coordinator.py`
+- `tests/test_cloud_reliability_audit.py`
+- `tests/test_quote_refresh_coordinator.py`
+
+网页/公共仓库：
+- `.github/workflows/autonomous.yml`
+- `.github/workflows/feishu_delivery.yml`
+- `.github/workflows/feishu_warm_guard.yml`
+- `.github/workflows/health.yml`
+- `.github/workflows/intraday.yml`
+- `.github/workflows/intraday_pulse.yml`
+- `.github/workflows/keepalive.yml`
+- `.github/workflows/live.yml`
+- `.github/workflows/quant.yml`
+- `.github/workflows/scan.yml`
+- `docs/CHATGPT_RESULTS_20261009.md`
+- `docs/GITHUB_RELIABILITY_20261012.md`
