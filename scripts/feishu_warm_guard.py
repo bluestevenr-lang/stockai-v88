@@ -18,7 +18,7 @@ def main():
     slot=os.environ.get('REPORT_SLOT') or CRONS[os.environ['REPORT_CRON']]
     target=target_time(datetime.now(timezone.utc),slot)
     print(json.dumps({'slot':slot,'target_beijing':target.isoformat(),'mode':'warm_wait'},ensure_ascii=False),flush=True)
-    wait_until(target-timedelta(minutes=20))
+    wait_until(target-timedelta(minutes=60))
     token=os.environ['GH_TOKEN'];repo=os.environ['GITHUB_REPOSITORY']
     req=urllib.request.Request(f'https://api.github.com/repos/{repo}/actions/workflows/autonomous.yml/dispatches',
         data=json.dumps({'ref':'main','inputs':{'send':False}}).encode(),method='POST',

@@ -33,6 +33,7 @@ jobs:
     env:
       V88_DISABLE_LLM: '1'
       V88_FEISHU_ALLOW_PUSH: '0'
+      V88_MUSE_SHADOW: '1'
       PYTHONPATH: src
       PYTHONUNBUFFERED: '1'
       V88_FEISHU_STATE_DIR: ${{ github.workspace }}/state

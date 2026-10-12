@@ -375,3 +375,11 @@ web：
 - `strategy_board_ui.py`
 - `strategy_validation.py`
 - `unified_evaluation.py`
+
+## 2026-10-12 Muse 事前双重验证·影子管线
+- 提交：见本节后续部署回执；实施时未改变评分/交易资格。
+- 改动文件：src/muse_review.py、muse_exchange.py、muse_shadow_stats.py、feishu_schedule.py、feishu_snapshot.py、strategy_digest.py、astra_cycle.py；tests/test_muse_review.py；docs/MUSE_PRESEND_REVIEW.md；网页仓库的 autonomous/feishu_delivery/muse_review 工作流及提前就绪脚本。
+- 测试：相关扩展回归176通过、1个既有失败；在改前HEAD单独重放 test_feishu_editor.py，同一个旧文案断言失败（11通过、1失败），确认非本次引入。新增试运行集及重点投递回归结果见后续部署回执。未声称全库历史8/73失败已修复。
+- 行为对比：改前无提前草案/裁决绑定；改后独立私有草案与裁决仓库、完整正文哈希、15秒读取硬上限、逐条未验证降级、重试冻结、成功补发supersedes。改前等待期无验证样本口径；改后只读统计排除debug/被成功替代记录，重复原计划只算一次。
+- 云端验证：待部署后追加运行编号与实际草案路径；没有伪造Muse通过裁决。
+- 未完成/限制：Muse需为新裁决仓库配置独立写入权限并实际提交裁决；首次接收时间为截止判定，建议提前10分钟；GitHub排队无准点保证。收益效果需成熟样本，未运行/伪造配对收益，禁止自动调权或转正。原桌面启动链、8501与全部历史不变。
