@@ -422,3 +422,16 @@ web：
 - GitHub运行 `38260166767` 成功：22:04窗口外检查正确输出window:null、跳过依赖及发布，无推送。此证据只确认新工作流可运行与窗口保护，**不等于未来窗口真实收集端到端已验收**。
 - 桌面：同步前备份 `work/oct12-muse/muse-collector-backup-220310/`；共享显示文件两仓和桌面一致；11个受保护文件哈希不变，原runtime_guard重载成功healthy，8501未改。没有补发飞书、修改过往投递状态或伪造认证。
 - 待验证：下一真实截止窗口Muse提交→收集→发送采用的闭环；GitHub平台调度/网络不可用仍可能延迟，备用路径不能承诺绝对准点。无中港裁决仍须Muse实际提交。当前影子收益验收尚未完成，不自动转正。
+
+## 2026-10-12 夜间 Muse 与晚报 Astra 两项修复（含时间口径）
+
+- 实现提交：核心 `c11d381d`、`0e9a09f6`；网页 `e148f0e`、`6219296`，均部署main。原10-12历史回执和裁决不回改，不补发消息。
+- Muse原因：17:34云端旧运行38230573494输出verdict_repository_readable=true，但18:10–18:50没有收集任务实际运行；已提交文件未被接收。新云端只读实测38264146590再次证实仓库可读、main路径与verdict_file一致、3条裁决、草案9917d815与提交4945fc63d39af458e4a351c7c8b8d8ddee7cfb99匹配。不是仅用本地登录身份推断云端权限。
+- 修复：明确not_found / invalid / late / unavailable，独立collection诊断；accepted和发送muse_review增加实际verdict_commit_sha，验证commit/blob一致，真实received_at不倒签；发送回退保留collection_reason。预热在窗口初主动唤醒草案，缺草案最多每5分钟重试，已有窗口内120秒直接收集不依赖cron另起runner。
+- Astra原因：`strategy_digest.render` 明确写了 `if markets!=('美股',)`，整段被跳过。当前生产数据已续到2026-10-10轮，下轮2026-10-20；本轮正式研究3只均为中港，美股0只，另有本市场候补，不能为凑数授予入选。
+- 修复：三时段均展示按市场过滤的Astra，0候选保留头部/轮次/下轮/回顾/历史；缺模块显示待核，不冒充0。候补和历史同样按市场过滤。美股实际预览显示研究0只/条件匹配0只、规则回顾5237次、目标触及20.5%、止损48.7%、平均+0.144R，明确技术面历史回顾，非样本外证明和实际盈利。未改变筛选分、门槛、持仓期限或美股参考角色。
+- 时间小修：新投递data_time取最终冻结正文的报价截至行，避免午报引用不相干美股指数日期；analysis_time采用已审草案筛选时间。Astra逐股补充币种和真实报价时间（北京时间），补发不替换为当前发送时间。
+- 改动文件：核心 src/astra_cycle.py、src/strategy_digest.py、src/feishu_snapshot.py、src/muse_exchange.py、src/muse_display.py；tests/test_muse_review.py、test_strategy_digest.py、test_feishu_reconcile.py；网页共享muse_display.py、.github/workflows/muse_review.yml、scripts/feishu_warm_guard.py、tests/test_feishu_warm_guard.py；两仓协议及结果文档。
+- pytest：核心151通过，网页31通过，覆盖提交绑定、第一次真实接收保留、无权限不能说未找到、晚到不回改accepted、无有效条目不可接受、Astra 0只与缺数据区分、市场隔离、补发报价时间、冻结正文/回执时间一致、预热无cron时唤醒草案及收集。未重跑全库，不宣称旧核心8/网页73失败已消除。代码并非P0首屏性能修改，没有编造改前/改后秒数。
+- 云端验收运行38264146590为只读probe成功，不能据此宣布早报真实采用。实际晚报预览留于work/oct12-muse/evening-astra-preview.txt，未发送。生产6个文件同步前备份work/oct12-muse/muse-astra-deploy-223714，11个受保护启动文件哈希不变；共享Muse展示两仓和桌面一致。
+- 有限早报跟进automation=v88-muse，2026-10-13北京05:10/05:40/05:50/06:10/06:40/06:50共6次检查，完成或07:00截止后停止；本地验收依赖Codex可用，生产GitHub独立。仍待Muse真实中港裁决和明早正式投递、下一份美股晚报验证；试运行标签保留，不伪造认证或回写昨天。
