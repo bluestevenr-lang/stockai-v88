@@ -157,8 +157,9 @@ def merge(draft, accepted=None, *, error=None, verdict_sha=None):
         label = {'pass': '✅ 认可买入条件' if ready else '✅ 认可重点观察',
                  'fail': '❌ 不认可', 'unverified': '⚪ 未验证'}[state]
         suffix = '｜' + v['reason'] if v.get('reason') and state != 'unverified' else ''
-        insertions.setdefault(row['insert_after'], []).extend(['  Muse 验证（试运行）：' + label + suffix,
-            '  标准 ' + draft['criteria_version'] + '｜核查 ' + str(v.get('checked_at') or '—') + '｜裁决 ' + str(verdict_sha or '—')[:12]])
+        insertions.setdefault(row['insert_after'], []).extend([
+            '  标准 ' + draft['criteria_version'] + '｜核查 ' + str(v.get('checked_at') or '—') + '｜裁决 ' + str(verdict_sha or '—')[:12],
+            '  Muse 验证（试运行）：' + label + suffix])
     lines = []
     for index, line in enumerate(draft['text'].splitlines(), 1):
         lines.append(line)
