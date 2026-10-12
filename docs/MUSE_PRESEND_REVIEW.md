@@ -8,6 +8,7 @@
 - 按日入口：`drafts/YYYY-MM-DD/manifest.json`。日期为北京时间。
 - manifest 的 `files` 保留所有草案修订；每个 delivery_id 的当前版本见 `drafts/<日期>/<sha256(delivery_id)>/latest.json`，读取其 `file`。
 - 草案保留 `text` 和 `payload_parts`（生成时正文；未附加发送层时间行/分段编号）。正文不包含 Muse 裁决。
+- 草案的 `verdict_repository` 与 `verdict_file` 给出直接提交位置，无需自行猜路径。
 - 裁决只写：私有 `bluestevenr-lang/v88-muse-verdicts` 的 `main` 分支，`verdicts/<日期>/<sha256(delivery_id)>.json`。每次独立提交，Git 历史不删除。
 - 发送原文和采用裁决：原核心仓库 `feishu-delivery-state` 分支 `feishu_sync_delivery.json`。只以 `complete=true AND accepted=true` 为已投递。`muse_review` 是新增字段，不改变旧回执字段语义。`payload_parts` 仍保存实际发送的正文分段；发送层时间行/编号另加，不宣称完整群消息逐字一致。
 
@@ -80,6 +81,8 @@
 `src/muse_shadow_stats.py --state <实际回执文件> --out <统计文件>` 只读统计完整已接受投递；排除debug与成功替代的旧版。相同模块/市场/股票/原计划锚点仅算一个独立样本；缺锚点不凑30个样本。日常重复出现不增加独立样本数。输出还包含缺锚点数与未验证覆盖。
 
 至少3周且30个独立已裁决计划只是工程样本门槛，不代表收益验收。Astra按原15交易日窗口，3A按月跟踪与原期限结算；未触发/入场后/仅触目标分开；同日双触不明记不确定。只在有完整入场及行情轨迹后比较原系统与Muse筛选的同一批计划，含费用/跳空等原执行规则，报告净R、回撤、错失机会和区间不确定性。
+
+草案任务同时把只读统计发布到核心交换分支 `statistics/YYYY-MM-DD.json`；没有成熟轨迹时不会输出虚构命中率。
 
 本版不编造配对收益、不自动调权、不自动转正。统计中的 `performance_acceptance=not_evaluated_requires_matured_paired_outcomes` 明确表示效果待验证。后续由用户根据成熟样本拍板。
 
