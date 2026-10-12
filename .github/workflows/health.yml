@@ -7,20 +7,30 @@ on:
     - cron: "23 3 * * 0,6"
   workflow_dispatch: {}
 
+permissions:
+  contents: read
+concurrency:
+  group: v88-cloud-health
+  cancel-in-progress: false
 jobs:
   health:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      V88_DISABLE_LLM: '1'
+      V88_FEISHU_ALLOW_PUSH: '0'
     steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: bluestevenr-lang/v88-daily-report
+          token: ${{ secrets.PRIVATE_TOKEN }}
+          path: core
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: '3.12'
       - run: pip install --quiet requests
-      - name: Check
+      - name: Check actual publications, source health and durable receipts
         env:
-          FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
-          GITHUB_TOKEN: ${{ secrets.PRIVATE_TOKEN }}
-          PT: ${{ secrets.PRIVATE_TOKEN }}
-        run: |
-          git clone -q --depth 1 https://x-access-token:${PT}@github.com/bluestevenr-lang/v88-daily-report.git priv
-          python priv/src/health_check.py
+          GH_TOKEN: ${{ secrets.PRIVATE_TOKEN }}
+          PYTHONPATH: core/src
+        run: python core/src/cloud_reliability.py

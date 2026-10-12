@@ -25,7 +25,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   facts:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     defaults:
       run:
@@ -57,6 +57,23 @@ jobs:
           token: ${{ secrets.PRIVATE_TOKEN }}
           ref: feishu-delivery-state
           path: state
+          # Immutable runtime-history remains in GitHub, not downloaded on each tick.
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /source-bundle.tar.gz
+            /runtime-bundle.json
+            /feishu_sync_delivery.json
+            /history-state.json
+            /recommendation-journal.json
+            /recommendation-journal.json.gz
+            /recommendation-journal-view.json
+            /recommendation-journal-view.json.gz
+            /cloud-history.json.gz
+            /quote-cache.json.gz
+            /screen-history.json.gz
+            /fundamental-snapshot.json.gz
+            /filing-check.json
+            /astra-backtest.json
       - uses: actions/setup-python@v5
         if: steps.window.outputs.run == 'true'
         with:

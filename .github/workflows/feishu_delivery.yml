@@ -22,7 +22,7 @@ permissions:
   contents: read
 jobs:
   deliver:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 12
     concurrency:
       group: v88-feishu-durable-outbox
@@ -63,6 +63,23 @@ jobs:
           token: ${{ secrets.PRIVATE_TOKEN }}
           ref: feishu-delivery-state
           path: state
+          # Immutable runtime-history remains in GitHub, not downloaded on each tick.
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /source-bundle.tar.gz
+            /runtime-bundle.json
+            /feishu_sync_delivery.json
+            /history-state.json
+            /recommendation-journal.json
+            /recommendation-journal.json.gz
+            /recommendation-journal-view.json
+            /recommendation-journal-view.json.gz
+            /cloud-history.json.gz
+            /quote-cache.json.gz
+            /screen-history.json.gz
+            /fundamental-snapshot.json.gz
+            /filing-check.json
+            /astra-backtest.json
       - uses: actions/setup-python@v5
         if: steps.due.outputs.needed == 'true'
         with:

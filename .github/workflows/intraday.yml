@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   alert:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 8
     steps:
       - uses: actions/setup-python@v5
@@ -31,6 +31,5 @@ jobs:
           python src/intraday_alert.py
           git config user.name v88bot && git config user.email v88@bot
           git add -f data/alert_state.json data/push_state.json data/position_peaks.json 2>/dev/null || true
-          git commit -m "intraday alert state" 2>/dev/null || true
-          git pull --rebase -q origin main 2>/dev/null || true
-          git push -q origin main 2>/dev/null || true
+          bash scripts/setup_merge_driver.sh
+          bash scripts/git_push_retry.sh "intraday alert state"
