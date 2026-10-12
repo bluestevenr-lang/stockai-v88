@@ -35,12 +35,21 @@ def _worker(base):
     def write(status):
         tmp=state.with_suffix('.tmp')
         tmp.write_text(json.dumps({'status':status,'at':datetime.now(timezone.utc).isoformat()}));tmp.replace(state)
+    muse_process = None
     try:
+        # Private verification sync runs beside market sync, never on the UI thread.
+        muse_script = base/'src/muse_web_sync.py'
+        if muse_script.exists():
+            muse_process = subprocess.Popen([sys.executable, str(muse_script)], cwd=base)
         write('running')
         result=subprocess.run([sys.executable,str(base/'src/autonomous_sync.py')],cwd=base,timeout=120)
         write('complete' if result.returncode==0 else 'failed')
     except (OSError,subprocess.TimeoutExpired):write('failed')
-    finally:(base/'data/.autonomous_sync_ui_lock').unlink(missing_ok=True)
+    finally:
+        if muse_process is not None:
+            try:muse_process.wait(timeout=30)
+            except subprocess.TimeoutExpired:muse_process.kill();muse_process.wait()
+        (base/'data/.autonomous_sync_ui_lock').unlink(missing_ok=True)
 
 
 def refresh_failure_current(refresh,board):

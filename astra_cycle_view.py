@@ -19,6 +19,8 @@ def band(v):
 
 
 def html(doc, now=None):
+    from muse_display import row_badge, load as muse_load
+    muse_cache = muse_load()
     d = view(doc, now)
     if not d.get('version'): return ''
     out = ['<section id="v88-astra-monthly" style="border:1px solid #c7d2fe;border-left:5px solid #6366f1;border-radius:12px;padding:18px;margin:18px 0;background:#f8faff">',
@@ -40,6 +42,7 @@ def html(doc, now=None):
         link = '?'+urlencode({'focus':'deep','q':r['code']})
         out += ['<article style="border:1px solid #dbe3f3;border-radius:10px;background:white;padding:14px;margin:12px 0">',
                 f'<div style="font-size:18px"><b>{flags.get(r["market"], "")} #{r["rank"]} <a href="{escape(link,quote=True)}">{text(r["name"])} · {text(r["code"])}</a></b>　<b style="color:#4338ca">{text((r.get("strategy_score") or {}).get("value"))}分 · {text((r.get("strategy_score") or {}).get("label", "旧版周期分"))}</b>　{text(r["status"])}</div>',
+                row_badge(r, 'Astra', muse_cache, now),
                 f'<p style="font-size:13px;color:#64748b">{text(info.get("industry"))} · {text(rank)} · {text(r.get("role"))}</p>',
                 '<div style="display:flex;gap:22px;flex-wrap:wrap;font-size:16px">'
                 f'<span>📥 研究入场 <b>{band(r.get("entry_range"))}</b></span>'
@@ -68,6 +71,13 @@ def html(doc, now=None):
             r = first['row']
             out.append(f'<p>{text(first["at"])} · {text(r.get("name"))} · 首次入场 {band(r.get("entry_range"))} / 止盈 {band(r.get("take_profit_range"))} / 止损 {band(r.get("stop_range"))}</p>')
     out += ['</details><p style="font-size:12px;color:#64748b">规则筛选分不是GPT审核分或胜率。研究区间不改变已有持仓合同；月度实际收益与风险账本独立核算，未对账不计零。GitHub更新不依赖模型额度。</p></section>']
+    try:
+        import streamlit as st
+        from streamlit.runtime.scriptrunner import get_script_run_ctx
+        if get_script_run_ctx(suppress_warning=True) and st.query_params.get('focus') == 'astra':
+            from muse_display import panel
+            out.append(panel(muse_cache, now))
+    except ImportError:pass
     return ''.join(out)
 
 

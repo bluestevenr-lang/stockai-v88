@@ -11,4 +11,8 @@ def render(st):
         st.html(freshness_html('autonomous_report.json',doc))
         st.caption('编制 '+str(doc.get('generated_at',''))+' · 报价日期见各项；AI评级独立审核')
         for tab,key in zip(st.tabs(['📊 日报','📅 周报']),('daily','weekly')):
-            with tab:st.markdown(doc.get(key) or '本期数据尚未生成')
+            with tab:
+                st.markdown(doc.get(key) or '本期数据尚未生成')
+                if key == 'daily':
+                    from muse_display import panel
+                    st.html(panel())

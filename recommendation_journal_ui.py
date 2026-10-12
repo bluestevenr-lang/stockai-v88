@@ -221,4 +221,7 @@ def render(doc=None):
     index=0
     if len(groups)>1:index=st.selectbox('当天详情分页 · 每市场最多5条 / 每页最多15条',range(len(groups)),format_func=lambda i:f'第 {i+1} / {len(groups)} 页',key='v88_calendar_page_'+selected+'_'+query+'_'+chosen)
     st.html(detail_html(groups[index],selected))
+    from muse_display import panel as muse_panel
+    with st.expander('M · 当日 Muse 冻结回执与替代版本', expanded=False):
+        st.html(muse_panel(day=selected))
     st.caption('旧分保留当时值；跟进不算新推荐。未留记录不补造，全部历史保留，可按月或个股查找。')

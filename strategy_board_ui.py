@@ -24,6 +24,8 @@ def html(doc=None,code=None,now=None,profiles=None):
     from stock_profile_view import html as profile_html
     from strategy_board_state import view
     doc=view(doc,now)
+    from muse_display import row_badge, panel as muse_panel, load as muse_load
+    muse_cache = muse_load()
     esc=lambda v:escape(str(v if v is not None else '—'),quote=True)
     flags={'A股':'🇨🇳','港股':'🇭🇰','美股':'🇺🇸'}
     rows=[r for r in doc.get('rows',[])+doc.get('investment_candidates',[]) if not code or r['code']==code]
@@ -104,7 +106,7 @@ def html(doc=None,code=None,now=None,profiles=None):
                         peers=''.join(f'<div>#{esc(peer["rank"])} <a href="?{esc(urlencode({"q":peer["code"],"focus":"deep"}))}">{esc(peer["name"])}</a></div>' for peer in info.get('peers',[])[:5])
                         profile_markup=f'<div>{esc(info.get("industry") or "所属板块待核")}<br><small>{esc(rank_label)}</small><details><summary>同业Top5 · 按市值</summary>{peers or "同业名单待补"}<small>以上述源日期为准；仅展示公开可比同业，市值排名不代表推荐评级。</small></details></div>'
                     if not profile_markup:profile_markup = profile_html(r['code'], profiles, now)
-                    out.append(f'<tr><td><b>#{r["rank"]} <a href="{esc(href)}">{esc(r["name"])}</a></b><br><small>{esc(r["code"])}</small>{profile_markup}</td>'
+                    out.append(f'<tr><td><b>#{r["rank"]} <a href="{esc(href)}">{esc(r["name"])}</a></b><br><small>{esc(r["code"])}</small>{profile_markup}{row_badge(r, '3A', muse_cache, now) if tier=='3A' else ''}</td>'
                         f'<td><b>{"未授级" if r.get("grade_pending") else esc(r["strategy_tier"])}</b>{('<br><b>'+esc(r.get('selection_category'))+'</b>') if tier=='3A' and r.get('selection_category') else ''}<br><span class="score">{s["value"]:g}</span> /100<br><small>评分字段覆盖 {s["coverage"]}%（非质量通过率）</small><br><small>{esc(s.get("label", "旧版周期分"))}</small><details><summary>权重与贡献</summary>{parts}<div>数据版本 {esc(s.get("snapshot_id"))} · 评分规则 {esc(s.get("revision"))}</div><div>共振 +{s["interaction"]} · 过热扣 {s["penalty"]}</div></details></td>'
                         f'<td><b>{r["last"]:g} {esc(r.get("currency") or {"A股":"CNY","港股":"HKD","美股":"USD"}.get(r["market"],""))}</b> · {r["change_pct"]:+.2f}%<br><small>{esc(display(r["quote_asof"]))}<br>北京时间</small></td>'
                         f'<td>'+('<b>原研究留存 · 本轮未重算</b><br><small>原评估 '+esc(display(r.get('last_evaluated_at')))+'</small><br>' if r.get('research_retained') else '')+f'<b>{esc(r["lane"])}</b> · {esc(r["period"])}'+(f' · 年度{esc(r["annual_label"])}' if r.get('annual_label') else '')+f'<br>{esc(r["reason"])}{source_tags(r,esc)}<details><summary>周期适用性 · 共用综合分</summary>{periods}<small>仅表示筛选适用；本行价带对应上方周期，其它周期须独立核验。</small></details><details><summary>🏢 企业依据与反证</summary>{esc(r["business_reason"])}<br>{esc(r.get("business_risk"))}</details></td>'
@@ -122,6 +124,7 @@ def html(doc=None,code=None,now=None,profiles=None):
             waiting=(doc.get('tier_watch') or {}).get(tier) or []
             if waiting:out.append(tier_watch_html(tier,waiting,esc,flags,display))
         out.append('</section>')
+    if not code:out.append(muse_panel(muse_cache, now))
     out.append('</div>')
     return ''.join(out)
 
