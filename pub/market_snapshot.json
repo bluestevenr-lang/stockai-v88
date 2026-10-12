@@ -1,7 +1,7 @@
 {
  "schema_version": "v88.snapshot.public/1.0",
- "snapshot_id": "snap-2a45c239796b081b",
- "generated_at": "2026-10-12 15:12",
+ "snapshot_id": "snap-b6ffe6bb14ccd783",
+ "generated_at": "2026-10-12 16:00",
  "private_redacted": true,
  "selection_authority": "market_context_only; no stock recommendation authority",
  "markets": {
@@ -9,53 +9,27 @@
    "indices": [],
    "sectors": [
     {
-     "chg1d": -1.51,
-     "vol_ratio": 0.91,
-     "heat": 45,
-     "trend": "🔄 震荡偏弱",
+     "chg20d": -1.65,
      "chg5d": 0.05,
      "vs_ma20": -1.54,
+     "chg1d": -1.51,
      "name": "通信",
-     "symbol": "XLC",
+     "heat": 45,
      "last": 110.38,
      "vs_ma60": -0.57,
-     "chg20d": -1.65
-    },
-    {
-     "chg1d": 0.92,
-     "vol_ratio": 0.88,
-     "heat": 47,
-     "trend": "🔄 震荡偏强",
-     "chg5d": 2.32,
-     "vs_ma20": 0.03,
-     "name": "金融",
-     "symbol": "XLF",
-     "last": 54.73,
-     "vs_ma60": -2.91,
-     "chg20d": -4.06
-    },
-    {
-     "chg1d": 1.86,
-     "vol_ratio": 1.2,
-     "heat": 61,
-     "trend": "📉 空头排列",
-     "chg5d": 1.96,
-     "vs_ma20": -0.06,
-     "name": "房地产",
-     "symbol": "XLRE",
-     "last": 41.61,
-     "vs_ma60": -4.33,
-     "chg20d": -3.36
+     "trend": "🔄 震荡偏弱",
+     "symbol": "XLC",
+     "vol_ratio": 0.91
     }
    ],
    "temperature": {
-    "breadth": 33,
     "momentum": 50,
-    "temp": 44,
-    "verdict": "🟠 偏冷震荡·轻仓等右侧信号",
-    "trend": 50,
+    "breadth": 0,
     "vol_heat": 50,
-    "label": "🟠 偏冷"
+    "trend": 50,
+    "verdict": "🟠 偏冷震荡·轻仓等右侧信号",
+    "label": "🟠 偏冷",
+    "temp": 32
    },
    "turn_risk": {},
    "l3": {}
@@ -63,33 +37,73 @@
   "A股": {
    "indices": [
     {
-     "chg1d": -2.61,
-     "vol_ratio": 0.98,
-     "trend": "📉 空头排列",
+     "chg20d": -9.82,
      "chg5d": -5.61,
      "vs_ma20": -9.11,
+     "chg1d": -2.61,
      "name": "创业板指",
-     "symbol": "399006.SZ",
      "last": 2963.82,
      "vs_ma60": -13.47,
-     "chg20d": -9.82
+     "trend": "📉 空头排列",
+     "symbol": "399006.SZ",
+     "vol_ratio": 1.0
     }
    ],
-   "sectors": [],
+   "sectors": [
+    {
+     "chg20d": -0.26,
+     "chg5d": 0.8,
+     "vs_ma20": 0.65,
+     "chg1d": -0.26,
+     "name": "医药",
+     "heat": 60,
+     "last": 0.38,
+     "vs_ma60": -0.36,
+     "trend": "🔄 震荡偏强",
+     "symbol": "512010.SS",
+     "vol_ratio": 1.19
+    },
+    {
+     "chg20d": 2.36,
+     "chg5d": 3.95,
+     "vs_ma20": 2.83,
+     "chg1d": 2.12,
+     "name": "银行",
+     "heat": 63,
+     "last": 0.87,
+     "vs_ma60": 5.55,
+     "trend": "📈 多头排列",
+     "symbol": "512800.SS",
+     "vol_ratio": 1.1
+    },
+    {
+     "chg20d": -3.06,
+     "chg5d": 3.26,
+     "vs_ma20": 1.08,
+     "chg1d": 0.76,
+     "name": "消费",
+     "heat": 56,
+     "last": 0.67,
+     "vs_ma60": -0.05,
+     "trend": "🔄 震荡偏强",
+     "symbol": "159928.SZ",
+     "vol_ratio": 1.02
+    }
+   ],
    "temperature": {
-    "breadth": 50,
     "momentum": 0,
-    "temp": 25,
-    "verdict": "🧊 情绪冰点·恐慌杀跌接近弹药区（属正常调整非见顶，核心层分批备弹、不追杀）",
+    "breadth": 100,
+    "vol_heat": 50,
     "trend": 0,
-    "vol_heat": 47,
-    "label": "🔵 冰点"
+    "verdict": "🟠 转弱调整·控节奏（未到弹药区，减主题不加杠杆）",
+    "label": "🟠 偏冷",
+    "temp": 42
    },
    "turn_risk": {
     "top_risk": 0,
-    "text": "顶部转向风险 低(0/100) ｜ 底部转机信号 低(25/100)｜顶部特征0/7·底部特征2/7",
-    "ver": "v2",
-    "bottom_opp": 25
+    "text": "顶部转向风险 低(0/100) ｜ 底部转机信号 低(0/100)｜顶部特征0/7·底部特征1/7",
+    "bottom_opp": 0,
+    "ver": "v2"
    },
    "l3": {}
   }
