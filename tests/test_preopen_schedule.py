@@ -23,6 +23,10 @@ def test_clock_wakes_at_seven_and_checks_delayed_runs():
     assert pulse.preopen_needed(now,[{'created_at':'2026-10-11T22:30:00Z','status':'completed','conclusion':'success'}])
     for state in ['queued','in_progress','waiting']:
         assert not pulse.preopen_needed(now,[{'created_at':'2026-10-11T23:01:00Z','status':state}])
-    assert not pulse.preopen_needed(now,[{'created_at':'2026-10-11T23:01:00Z','status':'completed','conclusion':'success'}])
+    assert not pulse.preopen_needed(now,[{'created_at':'2026-10-11T23:01:00Z','status':'completed','conclusion':'success','data_refreshed':True}])
     assert pulse.preopen_needed(now,[{'created_at':'2026-10-11T23:01:00Z','status':'completed','conclusion':'failure'}])
     assert pulse.preopen_needed(now,[{'created_at':'2026-10-11T23:01:00Z','status':'completed','conclusion':'skipped'}])
+
+
+def test_skipped_facts_is_not_a_completed_daily_refresh():
+    assert pulse.preopen_needed(at('2026-10-12T09:10:00+08:00'),[{'created_at':'2026-10-12T01:07:00Z','status':'completed','conclusion':'success','data_refreshed':False}])

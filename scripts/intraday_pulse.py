@@ -29,7 +29,7 @@ def preopen_needed(now,runs):
     since=now.astimezone(bjt).replace(hour=7,minute=0,second=0,microsecond=0)
     for run in runs:
         at=datetime.fromisoformat(run['created_at'].replace('Z','+00:00'))
-        if at>=since and (run.get('status') in ('queued','in_progress','waiting','pending') or run.get('conclusion')=='success'):
+        if at>=since and (run.get('status') in ('queued','in_progress','waiting','pending') or (run.get('conclusion')=='success' and run.get('data_refreshed') is True)):
             return False
     return True
 
@@ -39,6 +39,14 @@ def preopen_catchup(now):
     url='https://api.github.com/repos/'+os.environ['GITHUB_REPOSITORY']+'/actions/workflows/autonomous.yml/runs?per_page=30'
     req=urllib.request.Request(url,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
     with urllib.request.urlopen(req,timeout=20) as response:runs=json.load(response)['workflow_runs']
+    since=now.astimezone(timezone(timedelta(hours=8))).replace(hour=7,minute=0,second=0,microsecond=0)
+    for run in runs:
+        if run.get('conclusion')!='success' or datetime.fromisoformat(run['created_at'].replace('Z','+00:00'))<since:continue
+        jobs_req=urllib.request.Request(run['jobs_url'],headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
+        with urllib.request.urlopen(jobs_req,timeout=20) as response:jobs=json.load(response)['jobs']
+        run['data_refreshed']=any(step.get('name')=='Validate the replacement rule digest without sending' and step.get('conclusion')=='success'
+                                  for job in jobs for step in job.get('steps',[]))
+        if run['data_refreshed']:break
     if not preopen_needed(now,runs):return False
     dispatch('autonomous.yml',{'fast':True,'send':False})
     print('accepted_0700_refresh_catchup',now.isoformat(),flush=True)
