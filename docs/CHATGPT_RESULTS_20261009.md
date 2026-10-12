@@ -333,3 +333,45 @@ V88_FEISHU_ALLOW_PUSH=0；不发飞书、不改启动链、不删除历史。基
 - `.github/workflows/scan.yml`
 - `docs/CHATGPT_RESULTS_20261009.md`
 - `docs/GITHUB_RELIABILITY_20261012.md`
+
+
+## 2026-10-12 Muse 利润质量/等待分类升级 · 实际验收
+
+- 核心提交：`4e2ca3cb3f8598eef0de948b375c36643782a4b3`；网页提交：`e6dedca420c2d60509e1ba2627b9c63a01bdf001`。扣非亏损文案纠正核心`2c1aea22dfdddbd0f2161da70ba4b6c92817620f`；增量迁移修正`6fea79118ca5cee4baf10b1852efbf42a0af8f35`。
+- 口径：保留v8的最高分3A研究名单/各市场Top3及行业去重；原评分权重不变。有同口径扣非财务时替换评分输入，未知明确标注暂存研究分，不授可买。网页/深度/飞书一致区分研究、等待、买入条件；字段覆盖不是质量通过率。原情景目标和当前首段结构空间分别保留。
+- 根因：原版归母净利增速、ROE与盈利收益率没有经常性利润分解，且“等待进入价带”可能掩盖其他未通过条件。另查出云端版本迁移重抓三市场财报导致150秒超时，已改为复用有效缓存增量补齐，不修改财报原始获取时间。
+- 冻结同一批7,086只/同一时间/同一原始财报：计算1.710→1.353秒；3A均为A股3/港股3/美股3。原美股3只2A缺少经常性核验，不再标可买；研究/历史保留。此为逻辑对比，不是收益回测。
+- 扣非补充实际匹配5,659只A股，5,594只通过完整字段及口径核对；港美股仍缺可核经常性口径。云端旧缓存增量迁移本地复现6.74秒，桌面7.138秒；原获取时间不变。
+- pytest：本次针对性基线57通过；最终223通过/0失败（1.33秒）。未重跑全仓历史基线，不宣称核心原8项/网页原73项历史失败已消除。
+- AppTest 3A组件连跑两次：旧0.145/0.091秒，新0.127/0.138秒；是组件耗时，不代表整站首屏。实际桌面当前快照已核版本、现价/币种/行情时钟及质量说明。
+- GitHub第一轮38197764130：工作流success，但财务子任务timeout，不能按全通过验收。修正后正式验收运行[38198762368](https://github.com/bluestevenr-lang/stockai-v88/actions/runs/38198762368)：runtime status=complete，10个子任务全部ok，筛选时间2026-10-12T03:21:09.808193+00:00，模型调用0，独立不变量校验通过。
+- 本轮最新行情结果：3A A股3/港股3/美股3，均为观察等待；A股2A有3只条件匹配。与冻结回放名单不同，是当前行情重新筛选，不把旧分数改写为新时点。行情采集仍标注full_market_coverage=false，不冒称全市场100%。
+- 飞书用户要求的新版验证运行[38199687931](https://github.com/bluestevenr-lang/stockai-v88/actions/runs/38199687931)，delivery_id=`v88-manual-resend:debug-38199687931`，complete=True，accepted=True，时间2026-10-12T11:26:22.929462+08:00，正文利润质量说明已核。debug记录单列，不替代正式时段统计；正式06:30/12:01中港、19:01美股继续。
+- 桌面部署前备份：`work/oct12-muse/deployment-backup/manifest.json`；4份共享源文件两仓/桌面一致；11个受保护文件hash未变，端口8501健康检查200。原工作目录其他未提交改动保留。
+- 未完成/后续验证：港美股经常性与一次性项目逐项对账、周期股跨周期财务口径、研究席位长期结构退出/轮换、双方结果台账正式接入、supersedes元数据（当前仅有recovery ID）。ATR和权重未调整，没有新的样本外胜率结论。详见docs/EARNINGS_QUALITY_20261012.md。
+
+改动文件：
+
+core：
+- `AGENTS.md`
+- `docs/EARNINGS_QUALITY_20261012.md`
+- `src/autonomous_runtime.py`
+- `src/earnings_quality.py`
+- `src/fundamental_snapshot.py`
+- `src/strategy_board.py`
+- `src/strategy_board_state.py`
+- `src/strategy_validation.py`
+- `src/unified_evaluation.py`
+- `tests/test_earnings_quality.py`
+- `tests/test_strategy_board.py`
+- `tests/test_strategy_digest.py`
+- `tests/test_strategy_quality_readiness.py`
+
+web：
+- `AGENTS.md`
+- `docs/EARNINGS_QUALITY_20261012.md`
+- `earnings_quality.py`
+- `strategy_board_state.py`
+- `strategy_board_ui.py`
+- `strategy_validation.py`
+- `unified_evaluation.py`
