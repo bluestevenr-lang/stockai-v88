@@ -15,7 +15,7 @@ Accept: application/vnd.github.raw+json
 
 - `kind=latest-screening`，`schema_version=1`。
 - `snapshot_id`、`snapshot_sha256`：整轮快照身份。sha为规范JSON内容哈希，排除 `snapshot_id`、`snapshot_sha256`、`published_at`；编码同 muse_review.digest。
-- `source_run`：云端工作流run id和attempt；首次补发布以原私有运行包的提交号溯源。`source_commit`是生产代码提交，不冒充行情来源。
+- `source_run`：云端工作流run id和attempt；首次补发布以原私有运行包的提交号溯源。`source_commit`是生产任务环境提供的Git提交；云端为工作流所在仓库的触发提交，不冒称核心代码或行情来源的提交。
 - `source_screened_at`：3A与Astra原计算时间。`screened_at`为二者较晚时间；`published_at`单独表示写入交换区时间，不能替代计算或行情时间。
 - `counts`：模块×cn/hk/us计数，零候选明确为0；`astra_cycle_id`为现有Astra轮次。
 - `items`仅当前正式3A榜单与Astra研究名单，不额外混入候补或历史持仓。
