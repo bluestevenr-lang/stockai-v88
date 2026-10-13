@@ -101,3 +101,17 @@ def test_new_astra_is_not_enough_and_partial_sources_remain_visible(tmp_path, st
     result=a.read(tmp_path)
     assert result['status']==('failed' if stale_file else 'complete')
     if not stale_file: assert 'quotes' in result['data_warning']
+
+
+def test_old_failed_manual_run_is_not_current_after_both_modules_refresh(tmp_path):
+    import json
+    from astra_refresh_control import newer_screening_after_failure
+    data=tmp_path/'data';data.mkdir()
+    state={'status':'failed','requested_at':'2026-10-11T09:57:29+00:00','message':'old error'}
+    (data/'strategy_board.json').write_text(json.dumps({'generated_at':'2026-10-13T16:00:00+00:00'}))
+    assert newer_screening_after_failure(tmp_path,state) is None
+    (data/'astra_cycle.json').write_text(json.dumps({'generated_at':'2026-10-13T16:01:00+00:00'}))
+    assert newer_screening_after_failure(tmp_path,state).isoformat()=='2026-10-14T00:00:00+08:00'
+    assert state['status']=='failed' and state['message']=='old error'
+    (data/'astra_cycle.json').write_text(json.dumps({'generated_at':'2026-10-13T16:01:00+00:00','refresh_state':'source_unavailable_retained'}))
+    assert newer_screening_after_failure(tmp_path,state) is None

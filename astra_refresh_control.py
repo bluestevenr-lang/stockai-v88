@@ -151,6 +151,24 @@ def worker(base, token):
             pass
 
 
+
+def newer_screening_after_failure(base, state):
+    """An old manual failure remains history, not the current freshness status."""
+    if state.get('status') != 'failed':return None
+    from module_freshness import read_snapshot
+    try:
+        requested=datetime.fromisoformat(state['requested_at'].replace('Z','+00:00'))
+        clocks=[]
+        for name in ('strategy_board.json','astra_cycle.json'):
+            doc=read_snapshot(Path(base)/'data'/name)
+            if doc.get('refresh_state')=='source_unavailable_retained':return None
+            stamp=datetime.fromisoformat(doc['generated_at'].replace('Z','+00:00'))
+            if stamp <= requested:return None
+            clocks.append(stamp)
+        return min(clocks).astimezone(timezone(timedelta(hours=8)))
+    except (KeyError,ValueError,TypeError,AttributeError,OSError):return None
+
+
 def render(base):
     import streamlit as st
     state = read(base)
@@ -177,7 +195,12 @@ def render(base):
             st.caption(f'✓ 已更新 · 筛选完成 {stamp:%m-%d %H:%M:%S} 北京时间')
             if state.get('data_warning'): st.caption('⚠ '+state['data_warning'])
         elif status == 'failed':
-            st.caption('⚠ '+state.get('message', '更新未完成，可重试'))
+            newer=newer_screening_after_failure(base,state)
+            if newer:
+                st.caption(f'✓ 后台已有较新筛选 · {newer:%m-%d %H:%M:%S} 北京时间')
+                with st.expander('上次手动更新记录'):
+                    st.caption(state.get('message','上次手动更新未完成'))
+            else:st.caption('⚠ '+state.get('message', '更新未完成，可重试'))
         elif status in ACTIVE:
             st.caption('上次连接已中断；点击接续云端任务，原记录保留')
         else:
