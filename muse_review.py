@@ -9,6 +9,7 @@ import unicodedata
 BJT = timezone(timedelta(hours=8))
 SCHEMA = 1
 CRITERIA = 'muse-shadow-v1'
+STOP_QUALITY_NOTICE = '止损质量核查：波幅与结构锚、止损触发口径、仓位风险（含0.3%–0.5%滑点）；是否完成以本条裁决证据为准，不自动改动原止损。'
 CAPTURE = ContextVar('muse_capture', default=None)
 CLOCKS = {'morning': (6, 20, 6, 30), 'afternoon': (11, 55, 12, 1), 'evening': (18, 50, 19, 1)}
 MARKETS = {'A股': 'cn', '港股': 'hk', '美股': 'us'}
@@ -165,12 +166,14 @@ def merge(draft, accepted=None, *, error=None, verdict_sha=None):
         lines.append(line)
         lines.extend(insertions.get(index, []))
     lines += ['', f'Muse 双重验证（试运行）：通过{counts["pass"]}｜未通过{counts["fail"]}｜未验证{counts["unverified"]}；仅针对本版草案，不代表收益保证；认证≠买入授权，观察通过不代表买入。',
+              STOP_QUALITY_NOTICE,
               '核对编号：' + draft['delivery_id'] + ' · 草案 ' + draft['draft_sha256'][:12]]
     audit = {'schema_version': SCHEMA, 'mode': 'shadow', 'draft_sha256': draft['draft_sha256'],
              'criteria_version': draft['criteria_version'], 'counts': counts, 'verdict_blob_sha': verdict_sha,
              'delivery_id': draft['delivery_id'], 'slot': draft['slot'], 'date': draft.get('date'),
              'created_at': draft.get('created_at'), 'cutoff_at': draft.get('cutoff_at'),
              'scheduled_at': draft.get('scheduled_at'), 'review_sha256': draft.get('review_sha256'),
-             'source_generated_at': draft.get('source_generated_at'), 'display_version': 'muse-display-v1',
+             'source_generated_at': draft.get('source_generated_at'), 'display_version': 'muse-display-v2-stop-notice',
+             'review_notice': STOP_QUALITY_NOTICE,
              'fallback': error, 'accepted_items': accepted, 'items': draft['items']}
     return '\n'.join(lines), audit

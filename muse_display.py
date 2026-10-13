@@ -5,7 +5,7 @@ from html import escape
 import json
 from pathlib import Path
 import re
-from muse_review import BJT, CRITERIA, digest, item, moment
+from muse_review import BJT, CRITERIA, STOP_QUALITY_NOTICE, digest, item, moment
 
 SLOTS = {'morning': '早报 06:30 · 中港', 'afternoon': '午报 12:01 · 中港', 'evening': '晚报 19:01 · 美股'}
 
@@ -209,7 +209,7 @@ def panel(cache=None, now=None, day=None):
     stats = cache.get('statistics') or {}
     out.append('<details><summary>验收进度与冻结核查标准</summary><p>已投递复核覆盖 '+esc(stats.get('delivered_review_days', 0))+
         ' 天 · 有锚点独立样本 '+esc(stats.get('unique_anchored_verdict_plans', 0))+'/30；工程观察至少21天，成熟配对结果尚需独立验收，不自动转正、不调权重。</p>'
-        '<p>muse-shadow-v1：原公告；经常性利润；多年利润/现金流/周期；当前结构与情景分开；买入净空间≥5%且净盈亏比≥2；行情/价带/止损；治理未出清可否决观察；独立可追溯证据；重复持仓仅提醒；标准冻结。</p></details>')
+        '<p>muse-shadow-v1：原公告；经常性利润；多年利润/现金流/周期；当前结构与情景分开；买入净空间≥5%且净盈亏比≥2；行情/价带/止损；治理未出清可否决观察；独立可追溯证据；重复持仓仅提醒；标准冻结。</p><p>'+esc(STOP_QUALITY_NOTICE)+'</p><small>10月13日新增核查说明；历史通过不自动代表已完成此项，criteria版本以各回执为准。</small></details>')
     replaced = {r.get('supersedes'): r['delivery_id'] for r in records if r.get('supersedes') and not r.get('debug')}
     out.append('<details><summary>逐份明细与历史冻结记录 · '+str(len(records))+'份</summary>')
     for day in sorted({r['date'] for r in records}, reverse=True):
