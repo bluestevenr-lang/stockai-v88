@@ -468,3 +468,19 @@ web：
 - 部署界限：未覆盖桌面旧autonomous_runtime（发现与云端既有实现不同，保留本机版本；本功能生产在GitHub）。本地首写遇Python CA包缺失，改用已安装certifi的有效CA完成验证，未关闭TLS校验。核心仓库秘密未写入快照或日志；不改历史飞书回执。
 
 - 后续真实自动验收：38358606356本轮自动在14:53:26覆盖同一路径；source_run=38358606356:1，3A原筛选14:52:21、Astra14:52:52；新快照screening-950b644ab62c9008f04f。GitHub API回读验证整轮snapshot_sha256及所有12项item_sha256，字段齐全，3A各市场3只、Astra中2港1美0。覆盖行为由云端本轮筛选触发，非手工更新；该运行send=false。发布步骤成功已核实，验收时其后续常规报表/归档仍运行中，不将它表述为飞书已发送。
+
+
+## 2026-10-13 夜间 Muse 草案/发送定版闭环修复（待下一正式时段实证）
+
+- 代码提交：核心4e48059f、c266b896、c7a693b8；网页fa092b7、f486a09、142485e、5ace576。云端实际部署核心3bfd6a9d1d268af35c30f27c421466c869ab8e0a、网页610aebb6a53850a9d9d00850d431f88eda7ae968。Git直连反复TLS/HTTP2失败，采用GitHub Git Data API逐文件校对旧blob、以最新main为父创建提交、force=false更新引用；核心当时父ad098fcf的实时数据均保留。没有reset、强推、关闭TLS或覆盖其他更新。
+- 根因实证：10-13午报草案11:18:42/8项，发送12:02:15按11:48新数据变为9项（增减股票且价带变化）；晚报18:10:50草案与18:37评分字段变动，19:10:45发送退回draft_missing_or_changed。两次窗口内采集实际运行，最后11:54:50/18:49:18均not_found且仓库可读；指定Muse裁决文件22:07复查仍404。因此既有发送版本问题，也缺实际裁决提交，不能将一方问题掩盖成另一方。
+- 核心改动：src/muse_review.py、src/muse_exchange.py、src/feishu_schedule.py、src/muse_display.py；tests/test_muse_frozen_delivery.py（20项）、tests/test_muse_web.py；协议docs/MUSE_PRESEND_REVIEW.md。网页同名共享muse_review/muse_display、scripts/feishu_warm_guard.py、scripts/intraday_pulse.py及其测试。双方共享文件和协议相同。
+- 新草案published-draft-v1：先读正式时段已发布的整份定版，发送时不重绘正文、不依赖新行情读取成功；原定版真实筛选/报价时间明确保留。当前实时筛选继续独立更新，旧裁决不认证新事实。正式ID/date/slot/draft/item/commit/received_at/截止均校验，超过原定发送90分钟改正常新报告且未验证；新补发ID/旧协议不静默套用。试运行标签/评分/止损/目标不改。
+- 可靠性：已冻结outbox优先续传；manifest半途失败后下轮收集补修；并发首个latest胜出，普通轮询不改版；最后90秒30秒收集并预留25秒执行预算；云钟接续最多3次有限重试，失败显式记录。
+- 网页：当前事实变化仍灰标，旁边可展开最新正式已发送版的真实裁决、当时价格/币种/报价时间及草案/提交绑定，明确非当前认证，不向前挑更老的通过。三时段汇总直接显示采用数/截止接收/失败原因，逐股冻结证据一层展开。
+- pytest：核心相关209 passed，网页相关46 passed；最后将端到端测试改为直接走新source-first后20项冻结投递再测通过。已模拟发布→真实逻辑接收→发送选择→持久outbox→网页冻结徽章；外部发送函数全mock，无生产假裁决。覆盖改名单/价带、无裁决、晚到、不同ID、过期、篡改、当前行情不可用与outbox重试、manifest修复。未重跑全仓原核心8/网页73既有失败基线，不声明全仓通过。
+- 改前→改后：重算导致草案哈希失配→整份已核正文/哈希被保留；当前行情不可用阻止冻结重试→直接冻结outbox续传。仅Muse模块AppTest两次：旧0.0478/0.0033秒→新0.0063/0.0033秒；这不是全首页性能。证据work/oct12-muse/muse-web-frozen-apptest.json。
+- 部署：备份work/oct12-muse/frozen-delivery-deploy-223035后同步6个桌面文件；11个受保护文件哈希不变。原V88进程36316确认身份后正常退出，经原runtime_guard启动66038、8501 healthy；启动链/端口不改。只读网页同步95份成功回执，messages_sent=0。
+- 云端：仅取消旧云钟38406418140及待启动38410598379，未取消行情/发送；新版38414354054已于22:34进入守候（head610aebb6）。无发送只读probe38414362508成功，确认裁决仓库可读；明早草案当时尚未到生成窗口，返回draft_missing是预期结果，不冒充真实采用。
+- 下一正式验收：2026-10-14 06:30早报，ID v88-three-slot:2026-10-14:morning；05:50草案目标、Muse请06:10前提交、06:20真实接收截止。有限跟进v88-muse已重新启用至08:05，调度时钟按UTC配置、动作按北京时间窗口再检查；成功或截止后暂停。必须核对正式complete+accepted回执、同草案及真实裁决提交、payload_parts和网页已发送版，未发生前不说已验收。
+- 未完成：Muse须提交下一早报真实裁决并提供路径/commit；下一正式发送的双端实际采用尚待发生。没有额外测试/重发飞书，没有回改10-13历史，无新增费用。criteria_version仍muse-shadow-v1。
