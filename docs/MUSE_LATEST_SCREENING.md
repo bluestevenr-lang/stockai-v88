@@ -24,7 +24,7 @@ Accept: application/vnd.github.raw+json
 
 | 字段 | 含义 |
 |---|---|
-| `score` | 原统一综合分 |
+| `score` | 当轮统一综合分；缺少当前事实时为null，score_current_unknown=true；旧已核分仅在原facts保留 |
 | `state` | 原系统状态（研究/等待不等于买入） |
 | `entry_range` | 原入场带 |
 | `first_target` | 3A当前首段结构目标；Astra相对固定计划复核的当前首段目标，缺时明确回退原计划目标 |

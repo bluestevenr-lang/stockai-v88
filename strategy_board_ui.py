@@ -5,6 +5,15 @@ from html import escape
 from urllib.parse import urlencode
 from v88_paths import core_root
 
+
+def score_value_html(row):
+    value=(row.get('strategy_score') or {}).get('value')
+    label=escape(str(value if value is not None else '—'))
+    if row.get('score_current_unknown'):
+        return '<b>当前分待核</b><br><small>上次已核 '+label+' /100</small>'
+    return '<span class="score">'+label+'</span> /100'
+
+
 def html(doc=None,code=None,now=None,profiles=None):
     if doc is None:
         try:
@@ -112,7 +121,7 @@ def html(doc=None,code=None,now=None,profiles=None):
                     roster=r.get('research_roster') or {}
                     roster_note=('<br><small>日度研究 · '+esc(roster.get('review_session'))+' · 入选 '+esc(roster.get('selection_score'))+'分 · '+('当前分待核' if roster.get('current_score') is None else '当前 '+esc(roster.get('current_score'))+'分')+'</small>') if roster else ''
                     out.append(f'<tr><td><b>#{r["rank"]} <a href="{esc(href)}">{esc(r["name"])}</a></b><br><small>{esc(r["code"])}</small>{profile_markup}{roster_note}{row_badge(raw_rows.get(r['code'],r), '3A', muse_cache, now, (raw_doc.get('market_source_generated_at') or {}).get(r['market']) or raw_doc.get('generated_at'), display_row=r) if tier=='3A' else ''}</td>'
-                        f'<td><b>{"未授级" if r.get("grade_pending") else esc(r["strategy_tier"])}</b>{('<br><b>'+esc(r.get('selection_category'))+'</b>') if tier=='3A' and r.get('selection_category') else ''}<br><span class="score">{s["value"]:g}</span> /100<br><small>评分字段覆盖 {s["coverage"]}%（非质量通过率）</small><br><small>{esc(s.get("label", "旧版周期分"))}</small><details><summary>权重与贡献</summary>{parts}<div>数据版本 {esc(s.get("snapshot_id"))} · 评分规则 {esc(s.get("revision"))}</div><div>共振 +{s["interaction"]} · 过热扣 {s["penalty"]}</div></details></td>'
+                        f'<td><b>{"未授级" if r.get("grade_pending") else esc(r["strategy_tier"])}</b>{('<br><b>'+esc(r.get('selection_category'))+'</b>') if tier=='3A' and r.get('selection_category') else ''}<br>{score_value_html(r)}<br><small>评分字段覆盖 {s["coverage"]}%（非质量通过率）</small><br><small>{esc(s.get("label", "旧版周期分"))}</small><details><summary>权重与贡献</summary>{parts}<div>数据版本 {esc(s.get("snapshot_id"))} · 评分规则 {esc(s.get("revision"))}</div><div>共振 +{s["interaction"]} · 过热扣 {s["penalty"]}</div></details></td>'
                         f'<td><b>{r["last"]:g} {esc(r.get("currency") or {"A股":"CNY","港股":"HKD","美股":"USD"}.get(r["market"],""))}</b> · {r["change_pct"]:+.2f}%<br><small>{esc(display(r["quote_asof"]))}<br>北京时间</small></td>'
                         f'<td>'+('<b>原研究留存 · 本轮未重算</b><br><small>原评估 '+esc(display(r.get('last_evaluated_at')))+'</small><br>' if r.get('research_retained') else '')+f'<b>{esc(r["lane"])}</b> · {esc(r["period"])}'+(f' · 年度{esc(r["annual_label"])}' if r.get('annual_label') else '')+f'<br>{esc(r["reason"])}{source_tags(r,esc)}<details><summary>周期适用性 · 共用综合分</summary>{periods}<small>仅表示筛选适用；本行价带对应上方周期，其它周期须独立核验。</small></details><details><summary>🏢 企业依据与反证</summary>{esc(r["business_reason"])}<br>{esc(r.get("business_risk"))}</details></td>'
                         f'<td><b>{esc(band)}</b><br><b style="color:{"#0f7b45" if r.get("buyable") else "#a66316"}">{esc(r.get("readiness_label") or r["status"])}</b><br><small>{esc(r.get("readiness_detail") or "")}</small>'+(f'<br><b style="color:#0f7b45">✅ {esc(TIMING_TEXT.get(r.get("buy_timing"),""))}</b>' if tier in ('3A','2A','1A') and r['status']=='条件匹配' and not r.get('readiness_detail') else '')+f'<br><small>{esc(missing or "结构条件匹配；核对最新价格")}</small></td>'
