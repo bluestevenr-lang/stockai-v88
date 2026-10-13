@@ -508,3 +508,17 @@ web：
 - 3A网页实际验收：浏览器总览明确显示日度研究规则，A股3/3、港股3/3、美股3/3；各条入选分与当前分分开。最新同步日期可见，原10-11失败记录保留。独立审计确认本轮变动的共享文件一致；更广范围原有7个同名文件差异未改动，不宣称全项目所有副本完全相同。
 
 - 最后评分口径补齐：核心b4ebdccb、网页3ce018e。缺当前证据时主评分显示“当前分待核 / 上次已核”，latest快照score=null并携带score_current_unknown；原facts和item签名依据仍保留。相关69项通过（0.24秒），未改评分权重或旧分。
+
+
+## 2026-10-14 凌晨 · 今晚美股实测与Muse完成时钟绑定修复
+
+- 用户要求实测最新 V88、实际飞书正文和 Muse；本次没有额外推送、没有模型调用，也没有代替Muse提交裁决。
+- 实际最新完成源：公共工作流 `38427831747`（success），美股3A筛选完成北京时间00:19:16，报价00:17。EQNR 88.2 / USD44.79，AES 89.8 / USD14.98，THC 85.9 / USD267.885，均为重点观察，当前空间/RR及利润质量尚未满足买入条件。前后两轮名单相同；美股Astra为0。
+- 实际旧正式晚报：`v88-three-slot:2026-10-13:evening`，complete/accepted均true，19:10:45完成；CVX/AES/NMM，Muse 0通过/0失败/3未验证。旧发布草案5c49b5557c80…与发送草案5eed1a29c9f6…不同，fallback=draft_missing_or_changed，指定裁决文件404。该旧回执不回改；新冻结发送协议仍待下一正式时段真实Muse票验收。
+- 新发现的可复现根因：云端最新快照逐股`screened_at`取generated_at=16:18:55Z，桌面整包合并取screening_finished_at=16:19:16Z；三个item事实哈希全相同，但21.49秒时间差会拒绝认证。部分合并另有丢失原市场时点与ISO格式改写隐患。
+- 修复：统一`market_screened_at`（原分市场时点优先，随后真实完成时点，最后旧generated_at），发布、全/部分合并、3A/Astra网页都保留同一原始字符串。仍严格验证snapshot/item哈希、状态与时点；旧源、未来时间、缺裁决均不授通过。
+- 代码提交：核心`1ebd50a3`，网页`02b8690`；云端main已逐文件回读：核心`a047e3c2`、网页`6b933deb`。改动：核心src/{screening_clock,muse_screening,strategy_board,strategy_board_ui,astra_cycle_view}.py及4个对应测试；网页共享screening_clock/strategy_board_ui/astra_cycle_view.py同步。screening_clock还合并核心已存在的空榜行情时钟读取，避免两仓已有差异继续存在。
+- pytest：新增复现用例修前1 failed→修后通过；核心相关119 passed，网页33 passed。首次命令缺网页模块/核心测试PYTHONPATH，出现4/2个import错误；按真实跨仓依赖运行全部消失。未重跑全套，不能将既有核心8/网页73失败宣称清零。本项非性能改造，未新增AppTest速度目标。
+- 已校验真实运行包两模块源文件hash与旧screening的source_documents_sha256完全相同，仅修正时间绑定生成新不可变快照`screening-60640406b17f1d5d98fc`，来源运行仍为38427831747:1，所有12个item_sha保持不变。latest发布提交`9d0d8011a945c607c4a8414edf7945c3546167af`；旧snapshot及历史裁决不改写。不是新一次筛选，不冒写更晚行情时间。
+- 桌面同步前备份`work/oct12-muse/clock-binding-deploy-20261014-002917/manifest.json`，8处代码；11个启动保护文件hash保持原样，8501未变。
+- 未完成：当前按需裁决文件尚无真实Muse提交；下一正式早报必须实测accepted→正式成功回执→正文→网页冻结版，测试fixtures通过不能替代真实采用。保留试运行，三时段及按需验证都不取消。
