@@ -12,10 +12,19 @@ def display(value):
 def screened_at(doc):
     return doc.get('screening_finished_at') or doc.get('generated_at')
 
+def market_screened_at(doc, market):
+    """Keep the chosen producer's exact clock through publication and merging."""
+    return (doc.get('market_source_generated_at') or {}).get(market) or screened_at(doc)
+
 def quote_clocks(doc):
     result={}
     for market in ('A股','港股','美股'):
         values=[]
+        # A market can have valid quotes without a selected recommendation.
+        try:
+            at=datetime.fromisoformat(str((doc.get('market_quote_times') or {}).get(market)).replace('Z','+00:00'))
+            if at.tzinfo is not None:values.append(at)
+        except (ValueError,TypeError):pass
         for row in doc.get('rows',[])+doc.get('investment_candidates',[]):
             if row.get('market')!=market:continue
             try:

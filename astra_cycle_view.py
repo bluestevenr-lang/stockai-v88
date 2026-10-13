@@ -20,6 +20,7 @@ def band(v):
 
 def html(doc, now=None):
     from muse_display import row_badge, load as muse_load
+    from screening_clock import market_screened_at
     muse_cache = muse_load()
     raw_rows={r['code']:r for r in doc.get('rows',[])}
     d = view(doc, now)
@@ -44,7 +45,7 @@ def html(doc, now=None):
         link = '?'+urlencode({'focus':'deep','q':r['code']})
         out += ['<article style="border:1px solid #dbe3f3;border-radius:10px;background:white;padding:14px;margin:12px 0">',
                 f'<div style="font-size:18px"><b>{flags.get(r["market"], "")} #{r["rank"]} <a href="{escape(link,quote=True)}">{text(r["name"])} · {text(r["code"])}</a></b>　<b style="color:#4338ca">{text((r.get("strategy_score") or {}).get("value"))}分 · {text((r.get("strategy_score") or {}).get("label", "旧版周期分"))}</b>　{text(r["status"])}</div>',
-                row_badge(raw_rows.get(r['code'],r), 'Astra', muse_cache, now, doc.get('generated_at'), display_row=r),
+                row_badge(raw_rows.get(r['code'],r), 'Astra', muse_cache, now, market_screened_at(doc,r['market']), display_row=r),
                 f'<p><b>现价 {text(r.get("last"))} {text(r.get("currency") or {"A股":"CNY","港股":"HKD","美股":"USD"}.get(r["market"]))}</b> · 报价 {text(clock(r.get("quote_asof")))}</p>',
                 f'<p style="font-size:13px;color:#64748b">{text(info.get("industry"))} · {text(rank)} · {text(r.get("role"))}</p>',
                 '<div style="display:flex;gap:22px;flex-wrap:wrap;font-size:16px">'
