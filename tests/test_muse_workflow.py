@@ -27,3 +27,16 @@ def test_review_has_independent_wakeups_and_warm_runner_backup():
     assert 'MUSE_COLLECTOR_SCRIPT:' in warm and 'MUSE_PRIVATE_TOKEN:' in warm
     assert 'continue-on-error: true' in warm
     assert 'FEISHU_WEBHOOK' not in warm
+
+
+def test_existing_cloud_clock_collects_reviews_without_sending_credentials():
+    doc=yaml.safe_load((ROOT/'.github/workflows/intraday_pulse.yml').read_text())
+    job=doc['jobs']['clock']
+    assert job['timeout-minutes']<360
+    env=job['steps'][-1]['env']
+    assert env['MUSE_COLLECTOR_SCRIPT']=='core/src/muse_exchange.py'
+    assert 'MUSE_PRIVATE_TOKEN' in env and 'FEISHU_WEBHOOK' not in env
+    script=(ROOT/'scripts/intraday_pulse.py').read_text()
+    assert 'review_tick(datetime.now(timezone.utc),review_state)' in script
+    warm=yaml.safe_load((ROOT/'.github/workflows/feishu_warm_guard.yml').read_text())
+    assert warm['jobs']['delivery']['if']=="needs.ready.outputs.deliver == 'true'"

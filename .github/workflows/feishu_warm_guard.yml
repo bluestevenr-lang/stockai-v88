@@ -22,6 +22,8 @@ jobs:
   ready:
     runs-on: ubuntu-24.04
     timeout-minutes: 135
+    outputs:
+      deliver: ${{ steps.wait.outputs.deliver }}
     steps:
       - uses: actions/checkout@v4
       - name: Read private Muse collector (no sending credentials)
@@ -37,6 +39,7 @@ jobs:
             src/muse_review.py
           sparse-checkout-cone-mode: false
       - name: Refresh data before target time and wait for delivery
+        id: wait
         env:
           GH_TOKEN: ${{ github.token }}
           MUSE_PRIVATE_TOKEN: ${{ secrets.PRIVATE_TOKEN }}
@@ -46,5 +49,6 @@ jobs:
         run: python3 scripts/feishu_warm_guard.py
   delivery:
     needs: ready
+    if: needs.ready.outputs.deliver == 'true'
     uses: ./.github/workflows/feishu_delivery.yml
     secrets: inherit

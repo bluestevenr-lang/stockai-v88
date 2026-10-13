@@ -54,6 +54,9 @@ def preopen_catchup(now):
 
 
 def main():
+    from feishu_warm_guard import review_tick
+    review_state={}
+    review_tick(datetime.now(timezone.utc),review_state)
     if os.environ.get('PULSE_PRIME')=='true':
         dispatch('autonomous.yml',{'fast':True,'send':False})
         print('initial_refresh_dispatch_accepted',flush=True)
@@ -64,6 +67,7 @@ def main():
     print('clock_started next_tick='+target.isoformat(),flush=True)
     while target<end:
         while datetime.now(timezone.utc)<target:
+            review_tick(datetime.now(timezone.utc),review_state)
             time.sleep(min(30,max(0,(target-datetime.now(timezone.utc)).total_seconds())))
         now=datetime.now(timezone.utc)
         try:recovered=preopen_catchup(now)
@@ -82,7 +86,7 @@ def main():
         target=next_tick(datetime.now(timezone.utc))
     # Fresh runner before the hosted job's six-hour execution limit. The shared
     # concurrency group serializes successors and independent recovery cron.
-    if datetime.now(timezone.utc).weekday()<5:
-        dispatch('intraday_pulse.yml',{});print('successor_requested',flush=True)
+    # Reports/reviews also run on weekends. Market refresh remains calendar-gated.
+    dispatch('intraday_pulse.yml',{});print('successor_requested',flush=True)
 
 if __name__=='__main__':main()

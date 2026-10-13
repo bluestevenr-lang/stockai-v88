@@ -60,7 +60,34 @@ def test_warm_window_wakes_missing_draft_without_scheduled_runner():
     target=datetime.fromisoformat('2026-10-13T06:30:00+08:00')
     now=[target.replace(hour=5,minute=40)];wakes=[]
     def sleep(seconds):now[0]+=timedelta(seconds=seconds)
-    guard.wait_with_muse(target,'morning',collect=lambda s:'draft_missing' if now[0].minute<48 else 'received',
+    guard.wait_with_muse(target,'morning',collect=lambda s:'draft_missing' if now[0]<target.replace(hour=5,minute=48) else 'received',
         clock=lambda:now[0],sleep=sleep,prepare=lambda s:wakes.append(now[0]) or 'dispatched')
     assert wakes[0].hour==5 and wakes[0].minute==40 and len(wakes)==2
     assert now[0]==target
+
+
+def test_delayed_previous_evening_cron_does_not_wait_for_next_evening():
+    now=datetime.fromisoformat('2026-10-13T02:42:58+08:00')
+    assert guard.warm_target(now,'evening') is None
+    assert guard.warm_target(now.replace(hour=10,minute=11),'morning') is None
+    assert guard.warm_target(now.replace(hour=4,minute=30),'morning').hour==6
+    assert guard.warm_target(now.replace(hour=11,minute=18),'afternoon').hour==12
+
+
+def test_existing_review_draft_never_regenerated_and_transient_failure_retried():
+    now=datetime.fromisoformat('2026-10-13T11:30:00+08:00');state={};calls=[]
+    def collect(slot):
+        calls.append(slot)
+        return 'unavailable' if len(calls)==1 else 'unverified:not_found'
+    def prepare(slot):raise AssertionError('existing draft must remain frozen')
+    for minutes in (0,1,2,3,4):guard.review_tick(now+timedelta(minutes=minutes),state,collect,prepare)
+    assert len(calls)==3
+
+
+def test_review_clock_outside_window_does_not_fetch_and_weekend_is_supported():
+    state={};calls=[]
+    def collect(slot):calls.append(slot);return 'received'
+    guard.review_tick(datetime.fromisoformat('2026-10-17T11:29:00+08:00'),state,collect)
+    guard.review_tick(datetime.fromisoformat('2026-10-17T11:30:00+08:00'),state,collect)
+    guard.review_tick(datetime.fromisoformat('2026-10-17T11:55:00+08:00'),state,collect)
+    assert calls==['afternoon']
