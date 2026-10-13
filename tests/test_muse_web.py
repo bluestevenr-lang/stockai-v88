@@ -167,3 +167,61 @@ def test_missing_vote_explains_no_submission_instead_of_draft_change():
     assert '非当前认证' in markup and '认可观察' in markup
     assert '✅ Muse 认证·通过' not in markup
     assert cache['records'][0]['muse_review']['accepted_items']=={}
+
+
+def test_changed_current_facts_keep_gray_but_show_labeled_frozen_receipt():
+    row, record, cache = fixture()
+    review = cache['records'][0]['muse_review']
+    review['items'][0]['facts'].update(currency='CNY', quote_asof='2026-10-12T11:45:00+08:00')
+    review['verdict_commit_sha'] = 'accepted-commit'
+    row['last'] = 28.5
+    assert ui.current(row, '3A', cache, NOW)['state'] == 'unverified'
+    markup = ui.row_badge(row, '3A', cache, NOW)
+    assert markup.index('⚪ 未验证') < markup.index('已发送版核查') < markup.index('✅ Muse 认证·通过')
+    for text in ('仅对应发送时快照，非当前认证', '27.7 CNY', '11:45:00', 'accepted-commit', record['delivery_id']):
+        assert text in markup
+    assert '28.5' not in markup  # frozen evidence must not display the current quote
+
+
+def test_frozen_receipt_is_visible_even_when_sync_failed_but_not_reused_as_current():
+    row, record, cache = fixture()
+    cache['sync_status'] = 'failed'
+    markup = ui.row_badge(row, '3A', cache, NOW)
+    assert '回执同步待核' in markup and '已发送版核查' in markup
+    assert ui.current(row, '3A', cache, NOW)['state'] == 'unverified'
+
+
+def test_latest_formal_receipt_without_vote_does_not_reach_back_for_green():
+    row, record, cache = fixture()
+    newer = deepcopy(cache['records'][0])
+    newer['at'] = (NOW+timedelta(minutes=1)).isoformat()
+    newer['delivery_id'] = 'v88-manual-resend:recovery-afternoon'
+    newer['muse_review']['accepted_items'] = {}
+    cache['records'].insert(0, newer)  # correctness must not depend on cache list ordering
+    markup = ui.row_badge(row, '3A', cache, NOW)
+    assert '✅ Muse 认证·通过' not in markup and '已发送版核查' not in markup
+
+
+def test_daily_summary_exposes_frozen_adoption_binding_and_keeps_changed_current_unverified():
+    row, record, cache = fixture()
+    review = cache['records'][0]['muse_review']
+    review.update(delivery_policy='published-draft-v1', verdict_commit_sha='commit-1234567890',
+                  received_at='2026-10-12T11:51:00+08:00', cutoff_at='2026-10-12T11:55:00+08:00')
+    old = deepcopy(cache)
+    row['last'] = 99
+    markup = ui.panel(cache, NOW)
+    for text in ('本次正式投递已采用 1 项明确裁决', '本时段已发送版逐股核查', '冻结一致',
+                 '赶上截止', 'commit-12345', '✅ Muse 认证·通过'):
+        assert text in markup
+    assert ui.current(row, '3A', cache, NOW)['state'] == 'unverified'
+    assert cache == old
+
+
+def test_daily_summary_reports_actual_nonadoption_reason_without_fake_success():
+    row, record, cache = fixture()
+    review = cache['records'][0]['muse_review']
+    review.update(accepted_items={}, fallback='draft_missing_or_changed', collection_reason='not_found')
+    markup = ui.panel(cache, NOW)
+    assert '本次正式投递已采用 0 项明确裁决' in markup
+    assert '发送时草案缺失或版本不一致' in markup and '指定路径未找到裁决' in markup
+    assert '✅ Muse 认证·通过' not in markup

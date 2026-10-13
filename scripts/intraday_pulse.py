@@ -18,6 +18,23 @@ def dispatch(workflow,inputs):
         if response.status!=204:raise RuntimeError('dispatch not accepted')
 
 
+def request_successor(dispatcher=None,sleep=time.sleep):
+    """Bounded recovery for the existing successor; no sender or facts job."""
+    dispatcher=dispatcher or dispatch
+    for attempt in range(1,4):
+        try:
+            dispatcher('intraday_pulse.yml',{})
+            print('successor_requested',flush=True)
+            return True
+        except (urllib.error.URLError,TimeoutError,RuntimeError) as exc:
+            # Fixed metadata only; exception messages may contain URLs/tokens.
+            print(json.dumps({'successor_dispatch_failure':type(exc).__name__,
+                              'attempt':attempt}),flush=True)
+            if attempt<3:sleep(15*attempt)
+    print('successor_trigger_unconfirmed; independent_recovery_cron_required',flush=True)
+    return False
+
+
 def preopen_needed(now,runs):
     """Any successful/running facts pass begun after today's 07:00 covers it.
 
@@ -87,6 +104,6 @@ def main():
     # Fresh runner before the hosted job's six-hour execution limit. The shared
     # concurrency group serializes successors and independent recovery cron.
     # Reports/reviews also run on weekends. Market refresh remains calendar-gated.
-    dispatch('intraday_pulse.yml',{});print('successor_requested',flush=True)
+    if not request_successor():raise RuntimeError('cloud clock successor not confirmed')
 
 if __name__=='__main__':main()

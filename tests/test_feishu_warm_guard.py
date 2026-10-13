@@ -36,9 +36,9 @@ def test_collector_failure_never_blocks_sender_or_calls_after_cutoff():
     def fail(slot):attempts.append(slot);raise TimeoutError('bounded request')
     def sleep(seconds):current[0]+=timedelta(seconds=seconds)
     guard.wait_with_muse(target,'afternoon',collect=fail,clock=lambda:current[0],sleep=sleep)
-    assert current[0]==target and attempts==['afternoon']
+    assert current[0]==target and attempts==['afternoon','afternoon']
     guard.wait_with_muse(target,'afternoon',collect=fail,clock=lambda:target+timedelta(seconds=1),sleep=sleep)
-    assert attempts==['afternoon']
+    assert attempts==['afternoon','afternoon']
 
 
 def test_subprocess_collection_has_timeout_and_no_sending(monkeypatch):
@@ -91,3 +91,29 @@ def test_review_clock_outside_window_does_not_fetch_and_weekend_is_supported():
     guard.review_tick(datetime.fromisoformat('2026-10-17T11:30:00+08:00'),state,collect)
     guard.review_tick(datetime.fromisoformat('2026-10-17T11:55:00+08:00'),state,collect)
     assert calls==['afternoon']
+
+
+def test_final_window_polls_new_verdict_before_cutoff_without_backdating():
+    cutoff=datetime.fromisoformat('2026-10-14T06:20:00+08:00')
+    state={};calls=[];statuses=[]
+    # An ordinary poll just before the final 90 seconds must not defer the
+    # next read until after cutoff. Muse posts a real verdict at 06:19:05.
+    submitted=cutoff-timedelta(seconds=55)
+    for seconds in (105,90,75,60,45,30,20,0,-1):
+        now=cutoff-timedelta(seconds=seconds)
+        def collect(slot):
+            calls.append(now)
+            return 'received' if now>=submitted else 'unverified:not_found'
+        statuses.append(guard.review_tick(now,state,collect))
+    assert calls==[cutoff-timedelta(seconds=n) for n in (105,90,60,30)]
+    assert statuses[5]=='received'
+    assert calls[-1]>submitted
+    assert all(at<=cutoff-timedelta(seconds=25) for at in calls)
+
+
+def test_review_final_poll_state_does_not_leak_across_beijing_days():
+    state={};calls=[]
+    for day in (13,14):
+        now=datetime.fromisoformat(f'2026-10-{day}T06:19:30+08:00')
+        guard.review_tick(now,state,lambda slot:calls.append((day,slot)) or 'received')
+    assert calls==[(13,'morning'),(14,'morning')]

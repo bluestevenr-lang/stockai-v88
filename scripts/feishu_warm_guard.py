@@ -5,6 +5,7 @@ BJT=timezone(timedelta(hours=8))
 SLOTS={'morning':(6,30),'afternoon':(12,1),'evening':(19,1)}
 CRONS={'30 20 * * *':'morning','1 2 * * *':'afternoon','1 9 * * *':'evening'}
 REVIEW_WINDOWS={'morning':((5,40),(6,20)), 'afternoon':((11,30),(11,55)), 'evening':((18,10),(18,50))}
+REVIEW_COLLECT_TIMEOUT=25
 
 def target_time(now,slot):
     local=now.astimezone(BJT)
@@ -22,7 +23,7 @@ def collect_muse(slot):
     env={**os.environ,'GH_TOKEN':token,'V88_FEISHU_ALLOW_PUSH':'0','V88_DISABLE_LLM':'1'}
     env.pop('MUSE_PRIVATE_TOKEN',None)
     result=subprocess.run([sys.executable,script,'--collect-only','--slot',slot],env=env,
-                          timeout=25,capture_output=True,text=True)
+                          timeout=REVIEW_COLLECT_TIMEOUT,capture_output=True,text=True)
     if result.returncode:return 'collector_failed'
     # Log only a fixed status, never private evidence, credentials or report text.
     output=json.loads(result.stdout);status=output.get('status')
@@ -45,11 +46,17 @@ def review_tick(now,state,collect=collect_muse,prepare=prepare_muse):
     for slot,(start,end) in REVIEW_WINDOWS.items():
         opening=local.replace(hour=start[0],minute=start[1],second=0,microsecond=0)
         cutoff=local.replace(hour=end[0],minute=end[1],second=0,microsecond=0)
-        if not opening <= local < cutoff-timedelta(seconds=5):continue
+        # Leave the collector's full budget before cutoff. Its own receive clock
+        # remains authoritative; polling earlier never backdates a late verdict.
+        if not opening <= local <= cutoff-timedelta(seconds=REVIEW_COLLECT_TIMEOUT):continue
         identity=(str(local.date()),slot)
         entry=state.setdefault(identity,{})
         if local < entry.get('poll',opening):return
-        entry['poll']=local+timedelta(seconds=120)
+        final_window=cutoff-timedelta(seconds=90)
+        # Clamp the ordinary poll to the final window, even if the preceding
+        # two-minute interval would otherwise skip most of that window.
+        entry['poll']=(local+timedelta(seconds=30) if local>=final_window
+                       else min(local+timedelta(seconds=120),final_window))
         try:status=collect(slot)
         except Exception as exc:status=type(exc).__name__
         print(json.dumps({'muse_collection':status,'slot':slot}),flush=True)

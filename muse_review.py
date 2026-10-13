@@ -9,6 +9,7 @@ import unicodedata
 BJT = timezone(timedelta(hours=8))
 SCHEMA = 1
 CRITERIA = 'muse-shadow-v1'
+DELIVERY_POLICY = 'published-draft-v1'
 STOP_QUALITY_NOTICE = '止损质量核查：波幅与结构锚、止损触发口径、仓位风险（含0.3%–0.5%滑点）；是否完成以本条裁决证据为准，不自动改动原止损。'
 CAPTURE = ContextVar('muse_capture', default=None)
 CLOCKS = {'morning': (6, 20, 6, 30), 'afternoon': (11, 55, 12, 1), 'evening': (18, 50, 19, 1)}
@@ -61,8 +62,12 @@ def collect(row, module, lines):
         lines.append('[[MUSE:' + value['item_id'] + ']]')
 
 
-def build(snapshot, text, rows, delivery_id, slot, now):
+def build(snapshot, text, rows, delivery_id, slot, now, *, freeze_for_delivery=False):
     lines = text.splitlines()
+    if freeze_for_delivery:
+        # Part of the reviewed body/hash, not a timestamp added at send time.
+        lines.insert(1, '🧊 本时段定版：' + now.astimezone(BJT).strftime('%Y-%m-%d %H:%M:%S')
+                     + '（北京时间）；名单、价格及认证均对应本版。最新筛选见V88，交易前须重新核对。')
     items = []
     clean = []
     by_id = {r['item_id']: r for r in rows}
@@ -77,6 +82,8 @@ def build(snapshot, text, rows, delivery_id, slot, now):
     semantic = '\n'.join(x for x in clean[1:] if not x.startswith('📝 摘要编制：'))
     payload = {'schema_version': SCHEMA, 'delivery_id': delivery_id, 'slot': slot['id'],
                'criteria_version': CRITERIA, 'items': items, 'semantic_body': semantic}
+    if freeze_for_delivery:
+        payload['delivery_policy'] = DELIVERY_POLICY
     h, m, sh, sm = CLOCKS[slot['id']]
     date = now.astimezone(BJT).date()
     cutoff = datetime(date.year, date.month, date.day, h, m, tzinfo=BJT)
@@ -88,6 +95,9 @@ def build(snapshot, text, rows, delivery_id, slot, now):
             'verdict_repository': 'bluestevenr-lang/v88-muse-verdicts',
             'verdict_file': f'verdicts/{date}/{key(delivery_id)}.json',
             'text': body, 'payload_parts': split_messages(body, max_len=2800)}
+    if freeze_for_delivery:
+        # Beyond the normal catch-up window, use a fresh unverified report.
+        result['send_until'] = (cutoff.replace(hour=sh, minute=sm) + timedelta(minutes=90)).isoformat()
     result['draft_sha256'] = digest(result)
     return result
 
@@ -176,4 +186,7 @@ def merge(draft, accepted=None, *, error=None, verdict_sha=None):
              'source_generated_at': draft.get('source_generated_at'), 'display_version': 'muse-display-v2-stop-notice',
              'review_notice': STOP_QUALITY_NOTICE,
              'fallback': error, 'accepted_items': accepted, 'items': draft['items']}
+    if draft.get('delivery_policy'):
+        audit.update(delivery_policy=draft['delivery_policy'], send_until=draft.get('send_until'),
+                     source_snapshot_id=draft.get('snapshot_id'))
     return '\n'.join(lines), audit

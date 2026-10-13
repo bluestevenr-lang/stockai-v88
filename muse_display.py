@@ -71,6 +71,13 @@ def unverified(reason):
     return {'state': 'unverified', 'reason': reason, 'criteria_version': CRITERIA}
 
 
+def latest_record(market, cache):
+    candidates = [r for r in effective(cache.get('records', []))
+                  if (r.get('slot') == 'evening' if market == 'us' else r.get('slot') in ('morning', 'afternoon'))]
+    ordered = sorted(candidates, key=lambda r: r.get('completed_at') or r.get('at') or '')
+    return ordered[-1] if ordered else None
+
+
 def current(row, module, cache, now=None):
     now = now or datetime.now(BJT)
     try:
@@ -78,11 +85,9 @@ def current(row, module, cache, now=None):
             return unverified('回执同步待核；历史徽章见下方冻结记录')
         binding = item(row, module)
         market = binding['market']
-        candidates = [r for r in effective(cache.get('records', []))
-                      if (r['slot'] == 'evening' if market == 'us' else r['slot'] in ('morning', 'afternoon'))]
-        if not candidates:
+        record = latest_record(market, cache)
+        if not record:
             return unverified('尚无对应时段的已投递裁决')
-        record = candidates[-1]
         review = record.get('muse_review') or {}
         if record['date'] != now.astimezone(BJT).date().isoformat():
             return unverified('此前裁决仅适用于历史版本')
@@ -155,7 +160,68 @@ def load(base=None):
 
 
 def row_badge(row, module, cache=None, now=None):
-    return badge(current(row, module, load() if cache is None else cache, now))
+    cache = load() if cache is None else cache
+    value = current(row, module, cache, now)
+    markup = badge(value)
+    if value['state'] != 'unverified':
+        return markup
+    try:
+        binding = item(row, module)
+        record = latest_record(binding['market'], cache)
+        review = (record or {}).get('muse_review') or {}
+        frozen = next((r for r in review.get('items') or [] if r.get('item_id') == binding['item_id']), None)
+        if not frozen or result(review, frozen)['state'] == 'unverified':
+            return markup
+        # This is the same market's latest successful report, never an older convenient pass.
+        # The current badge above remains unverified when current facts have changed.
+        return markup + ('<details class="muse-sent-version" style="font-size:11px;margin-top:4px">'
+            '<summary>已发送版核查 · '+esc(clock(record.get('completed_at') or record.get('at')))+
+            '</summary><div>仅对应发送时快照，非当前认证；当前行情与条件以上方为准。</div>'+
+            frozen_item(review, frozen, record['delivery_id'])+'</details>')
+    except (KeyError, TypeError, ValueError, AttributeError):
+        return markup
+
+
+def frozen_item(review, row, identity):
+    facts = row.get('facts') or {}
+    price = facts.get('last')
+    quote = facts.get('quote_asof')
+    price_line = ('现价 '+esc(price)+' '+esc(facts.get('currency')) if price is not None else '现价待核')
+    return ('<div class="muse-frozen-item"><b>'+esc(row.get('module'))+' · '+esc(row.get('name'))+' '+
+            esc(row.get('code'))+'</b><div>发送版'+price_line+' · 报价 '+esc(clock(quote) if quote else '未记录')+
+            '</div>'+badge(dict(result(review, row), delivery_id=identity))+'</div>')
+
+
+def adoption_details(record):
+    review = record.get('muse_review') or {}
+    total = counts(record)
+    adopted = total['pass'] + total['fail']
+    reason_labels = {
+        'no_on_time_verdict': '没有截止前有效裁决',
+        'draft_missing_or_changed': '发送时草案缺失或版本不一致',
+        'not_found': '指定路径未找到裁决', 'no_verdict': '尚未收到裁决',
+        'invalid': '裁决格式或绑定校验失败', 'late': '实际接收已过截止',
+        'unavailable': '裁决来源暂时无法读取',
+    }
+    out = ['<div class="muse-adoption" style="font-size:12px">本次正式投递已采用 '+str(adopted)+' 项明确裁决；'+
+           '未验证 '+str(total['unverified'])+' 项。']
+    for field in ('fallback', 'collection_reason'):
+        if review.get(field):
+            reason = str(review[field])
+            out.append('<br>'+esc(reason_labels.get(reason, reason)))
+    if review.get('delivery_policy') == 'published-draft-v1':
+        out.append('<br>发送版正文与已发布核查草案冻结一致；最新筛选另列，认证不自动沿用。')
+    arrived, cutoff = review.get('received_at'), review.get('cutoff_at')
+    try:
+        timely = '赶上截止' if arrived and cutoff and moment(arrived) <= moment(cutoff) else '没有有效的截止前裁决'
+    except (TypeError, ValueError):
+        timely = '截止校验失败'
+    if not cutoff:
+        timely = '旧回执未记录截止元数据'
+    out.append('<br>收到裁决 '+esc(clock(arrived))+' · 截止 '+esc(clock(cutoff))+' · '+timely+
+               '<br>草案 '+esc(str(review.get('draft_sha256') or '—')[:12])+' · 裁决提交 '+
+               esc(str(review.get('verdict_commit_sha') or '—')[:12])+'</div>')
+    return ''.join(out)
 
 
 def counts(record):
@@ -190,6 +256,17 @@ def panel(cache=None, now=None, day=None):
         out.append('<p><b>'+label+'</b> · '+summary)
         if selected and not any(r.get('muse_review') for r in selected):out.append(' · 旧回执无认证字段，不能按已验证计数')
         out.append('</p>')
+        for record in selected:
+            review = record.get('muse_review') or {}
+            if not review:
+                continue
+            out.append(adoption_details(record))
+            out.append('<details><summary>本时段已发送版逐股核查（冻结快照）</summary><small>认证只对应本次已投递正文；不以当前行情改写历史。</small><p>'+
+                       esc(record['delivery_id'])+' · 实际发送 '+esc(clock(record.get('completed_at') or record.get('at')))+
+                       '<br>筛选 '+esc(record.get('analysis_time'))+' · 行情 '+esc(record.get('data_time'))+'</p>')
+            for row in review.get('items') or []:
+                out.append(frozen_item(review, row, record['delivery_id']))
+            out.append('</details>')
     pending = cache.get('verdict_snapshots') or {}
     if pending:
         out.append('<details><summary>裁决仓库快照（仅供核对；不覆盖投递回执）</summary>')
@@ -227,7 +304,7 @@ def panel(cache=None, now=None, day=None):
                 '<br>筛选 '+esc(record.get('analysis_time'))+' · 行情 '+esc(record.get('data_time'))+
                 '<br>截止 '+esc(clock(cutoff))+' · 收到裁决 '+esc(clock(arrived))+' · '+timely+'</p>')
             for row in review.get('items') or []:
-                out.append('<p><b>'+esc(row.get('module'))+' · '+esc(row.get('name'))+' '+esc(row.get('code'))+'</b></p>'+badge(dict(result(review,row),delivery_id=identity)))
+                out.append(frozen_item(review, row, identity))
             if not review:out.append('<p>⚪ 未验证 · 旧回执没有 Muse 认证字段；不补写历史认证。</p>')
             out.append('<details><summary>已投递正文（按 payload_parts 原序）</summary><pre style="white-space:pre-wrap;font-size:12px">'+esc('\n\n'.join(record.get('payload_parts') or []))+'</pre><small>旧回执可能不含发送层时间行与分段编号，不宣称与飞书完整消息逐字一致。</small></details></details>')
         out.append('</details>')
