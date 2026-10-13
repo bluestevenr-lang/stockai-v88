@@ -39,7 +39,9 @@ def item(row, module):
               'entry_range', 'take_profit_range', 'stop_range', 'opportunity', 'net_rr',
               'net_target_return_pct', 'period', 'window', 'reason', 'business_reason', 'business_risk',
               'buyable', 'rule_matched', 'status', 'selection_category', 'missing', 'profit_gaps',
-              'first_seen_at', 'business_source', 'filing_check', 'fundamentals')
+              'first_seen_at', 'business_source', 'filing_check', 'fundamentals',
+              'research_roster', 'plan_id', 'plan_created_at', 'plan_state', 'plan_waiting_reasons',
+              'plan_current_structure_target', 'plan_current_net_space_pct', 'plan_current_net_rr')
     facts = {k: row[k] for k in fields if k in row}
     identity = f'{module}:{MARKETS.get(row.get("market"), "unknown")}:{row["code"]}'
     return {'item_id': identity, 'module': module, 'market': MARKETS.get(row.get('market'), 'unknown'),

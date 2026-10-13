@@ -30,7 +30,7 @@ def view(doc, now=None):
             row['status'] = '原轮次跟踪 · 待重算' if old_cycle else '本轮到期复盘' if expired else '原研究保留 · 报价待更新'
         elif row.get('missing'):
             row['rule_matched'] = False
-            row['status'] = '研究候选'
+            row['status'] = '原计划研究 · 等待' if row.get('plan_id') else '研究候选'
     out['rows'] = rows
     out['rule_matched_count'] = sum(r.get('rule_matched', False) for r in rows)
     return out

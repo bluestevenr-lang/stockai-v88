@@ -101,6 +101,15 @@ def readiness(row):
     prefix='高分 · ' if high else ''
     gaps=row.get('missing') or row.get('gaps') or []
     detail='；'.join(gaps)
+    roster=row.get('research_roster') or {}
+    if roster.get('policy')=='3a-daily-research-v1' and not row.get('buyable'):
+        if row.get('score_current_unknown'):
+            return {'readiness_label':'日度研究续列 · 当前分待核',
+                    'readiness_detail':detail or '保留原研究日期和已核报价；补齐数据后重评，不代表当前可买。'}
+        current=(row.get('strategy_score') or {}).get('value')
+        if isinstance(current,(int,float)) and current<80:
+            return {'readiness_label':'日度研究续列 · 当前分低于80',
+                    'readiness_detail':f'选入分{roster.get("selection_score")}，当前统一分{current:g}；本日研究身份续列，下一完整交易日重评；当前不满足3A买入分数门槛。'+detail}
     if row.get('research_retained') or row.get('buy_timing')=='stale':
         return {'readiness_label':prefix+'等待数据更新','readiness_detail':detail or '更新报价和结构后复核'}
     if row.get('buyable'):

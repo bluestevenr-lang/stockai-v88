@@ -21,11 +21,6 @@ from v88_paths import core_root
 import streamlit as st
 from autonomous_desktop import sync_on_open
 sync_on_open()
-if st.query_params.get('focus')=='journal':
-    st.set_page_config(page_title='V88 · 推荐日历',layout='wide')
-    from recommendation_journal_ui import render as _journal_render
-    _journal_render()
-    st.stop()
 # Astra has a lightweight route so manual refresh never waits for legacy panels.
 if st.query_params.get('focus') == 'astra':
     st.set_page_config(page_title='V88 · Astra计划', layout='wide')
@@ -47,6 +42,15 @@ if st.query_params.get('focus') == 'astra':
     st.stop()
 # Explicit stock deep links must dispatch before homepage imports, pools and panels.
 # Ordinary navigation retains the complete original overview and research tools.
+if st.query_params.get("focus") == "journal":
+    import sys as _journal_sys
+    _journal_sys.path.insert(0,str(core_root()/'src'))
+    st.set_page_config(layout="wide",page_title="V88 · 推荐日历",page_icon="📅")
+    st.markdown("<style>.block-container{padding-top:1.5rem}</style>",unsafe_allow_html=True)
+    st.markdown('[← 返回V88总览](/#v88-grade-list)')
+    from recommendation_journal_ui import render as _render_journal
+    st.fragment(run_every=60)(_render_journal)()
+    st.stop()
 if st.query_params.get("focus") == "deep":
     from focused_deep_view import render as _render_focused_deep
     _render_focused_deep(st, st.query_params.get("q", ""))
@@ -3012,7 +3016,8 @@ with _three_a_slot:
 
             def _j3a(_f):
                 try:
-                    return json.loads((_d3a / _f).read_text(encoding="utf-8"))
+                    from module_freshness import read_snapshot
+                    return read_snapshot(_d3a / _f)
                 except Exception:
                     return {}
             _rk3a = _j3a("rank_score.json")
@@ -3036,6 +3041,8 @@ with _three_a_slot:
             else:
                 st.warning("🎯 3A大系统: 评级数据未就绪(模块常驻,数据恢复后自动填充)")
             st.caption("列表读取：" + datetime.now().strftime("%m-%d %H:%M:%S") + " · 每60秒局部更新；源数据日期见表格")
+            from recommendation_journal_ui import render as render_recommendation_journal
+            render_recommendation_journal()
             from investment_tracking_ui import render_tracking
             from evolution_learning_ui import render as render_evolution
             render_evolution(_j3a('evolution_learning_pub.json'), _j3a('evolution_learning_status.json'), _j3a('triad_selection.json'))
@@ -3059,7 +3066,8 @@ def _astra_cycle_fragment():
     path = core_root() / 'data/astra_cycle.json'
     if path.is_file():
         try:
-            markup = cycle_html(json.loads(path.read_text(encoding='utf-8')))
+            from module_freshness import read_snapshot
+            markup = cycle_html(read_snapshot(path))
             if markup: st.html(markup)
         except (ValueError, KeyError, TypeError):
             st.caption('Astra本轮文件读取失败；历史与原持仓记录保留。')

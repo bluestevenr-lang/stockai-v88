@@ -1,5 +1,5 @@
 """Read-only Muse receipt projection and shared UI. Never computes a verdict."""
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import lru_cache
 from html import escape
 import json
@@ -78,8 +78,10 @@ def latest_record(market, cache):
     return ordered[-1] if ordered else None
 
 
-def current(row, module, cache, now=None):
+def current(row, module, cache, now=None, source_time=None):
     now = now or datetime.now(BJT)
+    if 'latest_sync_status' in cache:
+        return latest_current(row, module, cache, now, source_time)
     try:
         if cache.get('sync_status') != 'complete' or not 0 <= (now-moment(cache['synced_at'])).total_seconds() <= 300:
             return unverified('回执同步待核；历史徽章见下方冻结记录')
@@ -116,6 +118,49 @@ def current(row, module, cache, now=None):
         return unverified('绑定校验失败')
 
 
+def latest_current(row, module, cache, now, source_time):
+    """Only an exact current raw item can use the separate on-demand receipt."""
+    try:
+        if cache.get('latest_sync_status') != 'complete' or not 0 <= (now-moment(cache['synced_at'])).total_seconds() <= 300:
+            return unverified('最新筛选裁决同步待核；正式发送版另列')
+        doc = cache.get('latest_screening') or {}; review = cache.get('screening_review') or {}
+        content = {k:v for k,v in doc.items() if k not in ('snapshot_id','snapshot_sha256','published_at')}
+        sha = digest(content)
+        if (doc.get('kind') != 'latest-screening' or doc.get('review_protocol') != 'screening-review-v1'
+                or doc.get('snapshot_sha256') != sha or doc.get('snapshot_id') != 'screening-'+sha[:20]):
+            return unverified('最新筛选版本待核')
+        if not 0 <= (now-moment(doc['screened_at'])).total_seconds() <= 86400:
+            return unverified('最新筛选已过受理期，等待本版更新')
+        binding = item(row, module)
+        expected = next((r for r in doc['items'] if r['item_id']==binding['item_id']), None)
+        if (not expected or expected.get('item_sha256') != binding['item_sha256']
+                or expected.get('item_sha256') != digest(expected.get('facts'))
+                or expected.get('system_state') != binding['system_state']
+                or source_time != expected.get('screened_at')):
+            return unverified('网页与最新筛选事实或时点不同，等待同步本版')
+        if (review.get('status') != 'accepted' or review.get('kind') != 'screening-review'
+                or review.get('snapshot_id') != doc['snapshot_id'] or review.get('snapshot_sha256') != sha
+                or review.get('criteria_version') != doc.get('criteria_version') or doc.get('criteria_version') != CRITERIA
+                or review.get('review_sha256') != digest({k:v for k,v in review.items() if k!='review_sha256'})
+                or not review.get('verdict_commit_sha')):
+            return unverified('尚无本轮最新筛选的有效Muse裁决；正式报告认证另列')
+        frozen = next((r for r in review.get('items',[]) if r.get('item_id')==binding['item_id']), None)
+        if frozen != expected:
+            return unverified('按需回执条目绑定校验失败')
+        vote = (review.get('accepted_items') or {}).get(binding['item_id']) or {}
+        if (vote.get('verdict') not in ('pass','fail','unverified')
+                or not all(vote.get(k) for k in ('reason','checked_at','evidence_ref'))
+                or not moment(doc['published_at']) <= moment(vote['checked_at']) <= moment(review['received_at']) <= moment(doc['screened_at'])+timedelta(hours=24)):
+            return unverified('本股裁决缺失或时间校验失败')
+        ready = bool(binding['facts'].get('buyable' if module=='3A' else 'rule_matched'))
+        return dict(vote, state=vote['verdict'], meaning='认可买入条件' if ready else '认可重点观察（不代表可买）',
+                    criteria_version=CRITERIA, verdict_version=review.get('verdict_blob_sha'),
+                    verdict_commit_sha=review['verdict_commit_sha'], item_sha256=binding['item_sha256'],
+                    snapshot_id=doc['snapshot_id'], snapshot_sha256=sha)
+    except (KeyError,ValueError,TypeError,AttributeError):
+        return unverified('最新筛选裁决绑定校验失败')
+
+
 def esc(value):
     return escape(str(value if value is not None else '—'), quote=True)
 
@@ -139,7 +184,7 @@ def badge(value):
             '<details><summary style="color:#667085">'+info+'</summary>'
             '<div>evidence_ref：'+esc(value.get('evidence_ref'))+'</div><div>delivery_id：'+esc(value.get('delivery_id'))+
             '</div><div>draft_sha256：'+esc(value.get('draft_sha256'))+'</div><div>item_sha256：'+esc(value.get('item_sha256'))+
-            '</div><div>裁决完整版本：'+esc(value.get('verdict_version'))+'</div><div>裁决提交：'+esc(value.get('verdict_commit_sha'))+'</div></details></div>')
+            '</div><div>snapshot_id：'+esc(value.get('snapshot_id'))+'</div><div>snapshot_sha256：'+esc(value.get('snapshot_sha256'))+'</div><div>裁决完整版本：'+esc(value.get('verdict_version'))+'</div><div>裁决提交：'+esc(value.get('verdict_commit_sha'))+'</div></details></div>')
 
 
 @lru_cache(maxsize=4)
@@ -159,9 +204,13 @@ def load(base=None):
         return {}
 
 
-def row_badge(row, module, cache=None, now=None):
+def row_badge(row, module, cache=None, now=None, source_time=None, display_row=None):
     cache = load() if cache is None else cache
-    value = current(row, module, cache, now)
+    value = current(row, module, cache, now, source_time)
+    if display_row is not None and 'latest_sync_status' in cache:
+        ready='buyable' if module=='3A' else 'rule_matched'
+        if display_row.get('current_source') is False or (row.get(ready) and not display_row.get(ready)):
+            value=unverified('当前报价或入场条件已失效；原裁决只对应核查时快照')
     markup = badge(value)
     if value['state'] != 'unverified':
         return markup
@@ -243,6 +292,15 @@ def panel(cache=None, now=None, day=None):
     out = ['<section id="v88-muse-review" style="margin:12px 0;padding:12px;border:1px solid #e2e8f0;border-radius:10px">',
            '<b>M · Muse 双重验证（试运行）</b><p style="font-size:12px">认证≠买入授权。认可重点观察只认可观察资格，不代表可买；不改变评分、榜单或持仓。无裁决、超时、改版、校验失败统一为未验证。</p>',
            '<small>只读飞书冻结回执 · 同步 '+esc(clock(cache.get('synced_at')))+' · '+esc(cache.get('sync_status') or '待同步')+'</small>']
+    if not day and cache.get('latest_screening'):
+        latest = cache['latest_screening']; counts_latest = dict.fromkeys(('pass','fail','unverified'),0)
+        for row in latest.get('items',[]):
+            raw = dict(row.get('facts') or {}, market={'cn':'A股','hk':'港股','us':'美股'}.get(row.get('market')))
+            value = latest_current(raw,row['module'],cache,now,row.get('screened_at'))
+            counts_latest[value['state']] += 1
+        out.append('<details><summary>最新筛选 · 按需验证 · 通过 {pass}｜未通过 {fail}｜未验证 {unverified}</summary>'.format(**counts_latest)+
+                   '<p>筛选 '+esc(clock(latest.get('screened_at')))+' · '+esc(latest.get('snapshot_id'))+
+                   '</p><small>三时段自动验证保留；在Muse说“验证最新V88”可核查此版。最新筛选独立于下方正式发送档案，事实改版需新裁决。</small></details>')
     if cache.get('receipt_conflicts'):
         out.append('<p>回执同ID内容变更待核：保留首次成功版本，冲突副本只归档，不改历史徽章。</p>')
     for slot, label in SLOTS.items():

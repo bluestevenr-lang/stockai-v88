@@ -23,7 +23,8 @@ def freeze(row):
         'take_profit_range','net_rr','fee_allowance_pct','resistance_levels',
         'nearest_resistance','target_evidence','missing','annual_regime','price_plan_method',
         'trend_exit_ma60','setup_evidence','buy_timing','tier_setup','tier_exit_text','signal_date',
-        'selection_category','quality_eligible','period','buyable','opportunity')})}
+        'selection_category','quality_eligible','period','buyable','opportunity',
+        'research_roster','score_current_unknown','current_quality_eligible')})}
 
 
 def audit(board, profiles=None):
@@ -44,6 +45,9 @@ def audit(board, profiles=None):
         if key in seen and seen[key]!=s['value']:errors.append({'code':code,'error':'same_snapshot_score_conflict'})
         seen[key]=s['value']
         tier=r.get('strategy_tier')
+        from research_roster import valid_admission
+        daily_observation=(tier=='3A' and not r.get('buyable') and valid_admission(r,board)
+                           and (r.get('research_roster') or {}).get('status') in ('continuing','data_pending'))
         if r.get('buyable') and str(s.get('revision','')).startswith('2026-10-12'):
             # Do not trust a producer's "passed" label on its own.
             q=(r.get('fundamentals') or {}).get('earnings_quality') or {}
@@ -53,11 +57,12 @@ def audit(board, profiles=None):
                 errors.append({'code':code,'error':'buyable_without_recurring_earnings'})
         if quality_policy:
             lower,upper={'3A':(80,101),'2A':(60,80),'1A':(50,60)}.get(tier,(0,0))
-            if not lower<=s['value']<upper:errors.append({'code':code,'error':'score_band_overlap'})
+            if not lower<=s['value']<upper and not daily_observation:errors.append({'code':code,'error':'score_band_overlap'})
             if tier=='3A':
                 sector=selection_industry(r,profiles)
                 if sector:sectors[(r['market'],sector)]+=1
-                if not r.get('business_supported'):errors.append({'code':code,'error':'3a_missing_business'})
+                if not r.get('business_supported') and not (daily_observation and r.get('score_current_unknown')):
+                    errors.append({'code':code,'error':'3a_missing_business'})
                 expected='买入条件已满足' if r.get('buyable') else '高价值可跟进 · 重点观察' if followup_policy else '最高价值研究'
                 if r.get('selection_category')!=expected:errors.append({'code':code,'error':'category_conflict'})
                 if followup_policy and r.get('buyable'):

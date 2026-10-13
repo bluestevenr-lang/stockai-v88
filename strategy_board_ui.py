@@ -7,7 +7,9 @@ from v88_paths import core_root
 
 def html(doc=None,code=None,now=None,profiles=None):
     if doc is None:
-        try:doc=json.loads((core_root()/'data/strategy_board.json').read_text())
+        try:
+            from module_freshness import read_snapshot
+            doc=read_snapshot(core_root()/'data/strategy_board.json')
         except (OSError,ValueError):doc={}
     if doc.get('version')!='strategy-taxonomy-2026-09-28-v1':return ''
     now=now or datetime.now(timezone.utc)
@@ -23,6 +25,7 @@ def html(doc=None,code=None,now=None,profiles=None):
     read_clock='🖥 本次打开：'+display(opened)+' · 页面读取：'+display(now)+'（北京时间）'
     from stock_profile_view import html as profile_html
     from strategy_board_state import view
+    raw_doc=doc; raw_rows={r['code']:r for r in doc.get('rows',[])}
     doc=view(doc,now)
     from muse_display import row_badge, panel as muse_panel, load as muse_load
     muse_cache = muse_load()
@@ -37,7 +40,7 @@ def html(doc=None,code=None,now=None,profiles=None):
     .strategy-board td,.strategy-board th{padding:12px 14px;border-bottom:1px solid #e5ebf4;vertical-align:top;font-size:14px!important;line-height:1.6;overflow-wrap:anywhere}
     .strategy-board details{font-size:13px}.strategy-board .score{font-size:21px;color:#2459c7;font-weight:700}.strategy-board .market{background:#edf4ff;font-weight:600}
     </style><div class="strategy-board"><h3>🎯 3A / 2A / 1A 重点榜</h3>
-    <p>3A为最高分优选（≥80分且有企业依据），分“买入条件已满足”和“高价值可跟进 · 重点观察”；两组合计每市场最多3只，统一按分数排序、同业最多1只。2A为60–不足80分的短中线波段，1A为50–不足60分的超短线。空间不足仍保留3A重点观察；当前净空间5%与净收益风险比2只用于区分入场状态，不改变3A名单。研究优先级与买入时机分开；同股同快照共用一个分数，按实际计划标注周期，短期计划不延长为长期。</p>
+    <p>3A为最高分优选（≥80分且有企业依据），按各市场完整交易日日度评审，盘中不因短时排名波动换股；分“买入条件已满足”和“高价值可跟进 · 重点观察”；两组合计每市场最多3只，日度选入按分数排序、同业最多1只。当前分仍随最新行情更新，跌破80当日仅续列研究、不可买。2A为60–不足80分的短中线波段，1A为50–不足60分的超短线。空间不足仍保留3A重点观察；当前净空间5%与净收益风险比2只用于区分入场状态，不改变3A名单。研究优先级与买入时机分开；同股同快照共用一个分数，按实际计划标注周期，短期计划不延长为长期。</p>
     <small>中期统一分（企业基本面25 · 估值10 · 中期趋势20 · 中期动量10 · 量能10 · 成交承载10 · 风险约束15）· 形态验证：样本≥300、平均≥+0.05R、盈亏比≥1.5、前后两段均为正 · 筛选分不代表胜率或 GPT 复审分。旧评级与日历原样保留。</small>''']
     from module_freshness import html as freshness_html, record as freshness_record
     out.append(freshness_html('strategy_board.json',doc,now=now))
@@ -53,7 +56,7 @@ def html(doc=None,code=None,now=None,profiles=None):
     out.append('<p class="screen-clock">📈 报价截至（北京时间）：'+esc(' · '.join(m+' '+t for m,t in quote_clocks(doc).items()))+'</p>')
     if doc.get('refresh_state')=='source_unavailable_retained':
         out.append('<p>⏳ 最近核对 '+esc(display(doc.get('checked_at')))+'；源数据不足，保留原筛选时间。</p>')
-    settings=[('3A','3A · 最高分优选','≥80分＋企业依据 · 买入条件已满足 / 高价值可跟进 · 重点观察 · 两组合计各市场Top3'),
+    settings=[('3A','3A · 最高分优选','日度入选≥80分＋企业依据 · 当前分随行情更新 · 买入条件已满足 / 高价值可跟进 · 重点观察 · 两组合计各市场Top3'),
               ('2A','2A · 短中线波段','60≤分数<80 · 2周–1个月（最长20个交易日）· 经回测验证的形态'),
               ('1A','1A · 超短线','50≤分数<60 · 3–5个交易日 · 经回测验证的形态'),
               ('watch','投资研究候选 · 未授3A','保留线索与原分数；不冒充最高评级')]
@@ -106,7 +109,9 @@ def html(doc=None,code=None,now=None,profiles=None):
                         peers=''.join(f'<div>#{esc(peer["rank"])} <a href="?{esc(urlencode({"q":peer["code"],"focus":"deep"}))}">{esc(peer["name"])}</a></div>' for peer in info.get('peers',[])[:5])
                         profile_markup=f'<div>{esc(info.get("industry") or "所属板块待核")}<br><small>{esc(rank_label)}</small><details><summary>同业Top5 · 按市值</summary>{peers or "同业名单待补"}<small>以上述源日期为准；仅展示公开可比同业，市值排名不代表推荐评级。</small></details></div>'
                     if not profile_markup:profile_markup = profile_html(r['code'], profiles, now)
-                    out.append(f'<tr><td><b>#{r["rank"]} <a href="{esc(href)}">{esc(r["name"])}</a></b><br><small>{esc(r["code"])}</small>{profile_markup}{row_badge(r, '3A', muse_cache, now) if tier=='3A' else ''}</td>'
+                    roster=r.get('research_roster') or {}
+                    roster_note=('<br><small>日度研究 · '+esc(roster.get('review_session'))+' · 入选 '+esc(roster.get('selection_score'))+'分 · '+('当前分待核' if roster.get('current_score') is None else '当前 '+esc(roster.get('current_score'))+'分')+'</small>') if roster else ''
+                    out.append(f'<tr><td><b>#{r["rank"]} <a href="{esc(href)}">{esc(r["name"])}</a></b><br><small>{esc(r["code"])}</small>{profile_markup}{roster_note}{row_badge(raw_rows.get(r['code'],r), '3A', muse_cache, now, (raw_doc.get('market_source_generated_at') or {}).get(r['market']) or raw_doc.get('generated_at'), display_row=r) if tier=='3A' else ''}</td>'
                         f'<td><b>{"未授级" if r.get("grade_pending") else esc(r["strategy_tier"])}</b>{('<br><b>'+esc(r.get('selection_category'))+'</b>') if tier=='3A' and r.get('selection_category') else ''}<br><span class="score">{s["value"]:g}</span> /100<br><small>评分字段覆盖 {s["coverage"]}%（非质量通过率）</small><br><small>{esc(s.get("label", "旧版周期分"))}</small><details><summary>权重与贡献</summary>{parts}<div>数据版本 {esc(s.get("snapshot_id"))} · 评分规则 {esc(s.get("revision"))}</div><div>共振 +{s["interaction"]} · 过热扣 {s["penalty"]}</div></details></td>'
                         f'<td><b>{r["last"]:g} {esc(r.get("currency") or {"A股":"CNY","港股":"HKD","美股":"USD"}.get(r["market"],""))}</b> · {r["change_pct"]:+.2f}%<br><small>{esc(display(r["quote_asof"]))}<br>北京时间</small></td>'
                         f'<td>'+('<b>原研究留存 · 本轮未重算</b><br><small>原评估 '+esc(display(r.get('last_evaluated_at')))+'</small><br>' if r.get('research_retained') else '')+f'<b>{esc(r["lane"])}</b> · {esc(r["period"])}'+(f' · 年度{esc(r["annual_label"])}' if r.get('annual_label') else '')+f'<br>{esc(r["reason"])}{source_tags(r,esc)}<details><summary>周期适用性 · 共用综合分</summary>{periods}<small>仅表示筛选适用；本行价带对应上方周期，其它周期须独立核验。</small></details><details><summary>🏢 企业依据与反证</summary>{esc(r["business_reason"])}<br>{esc(r.get("business_risk"))}</details></td>'

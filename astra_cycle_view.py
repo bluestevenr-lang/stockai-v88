@@ -21,6 +21,7 @@ def band(v):
 def html(doc, now=None):
     from muse_display import row_badge, load as muse_load
     muse_cache = muse_load()
+    raw_rows={r['code']:r for r in doc.get('rows',[])}
     d = view(doc, now)
     if not d.get('version'): return ''
     out = ['<section id="v88-astra-monthly" style="border:1px solid #c7d2fe;border-left:5px solid #6366f1;border-radius:12px;padding:18px;margin:18px 0;background:#f8faff">',
@@ -33,6 +34,7 @@ def html(doc, now=None):
     from module_freshness import html as freshness_html
     out.append(freshness_html('astra_cycle.json',doc,now=now))
     if not d.get('rows'): out.append('<p>'+text(d.get('status'))+'</p>')
+    if d.get('plan_stability_version'):out.append('<p style="font-size:12px;color:#64748b">本轮计划固定 · 盘中更新报价、分数与风险；原入场、目标、止损和期限不随刷新移动。</p>')
     out.append(backtest_html(d.get('backtest')))
     for r in d.get('rows', []):
         info = r.get('industry_snapshot') or {}; window = r.get('window') or {}
@@ -42,13 +44,15 @@ def html(doc, now=None):
         link = '?'+urlencode({'focus':'deep','q':r['code']})
         out += ['<article style="border:1px solid #dbe3f3;border-radius:10px;background:white;padding:14px;margin:12px 0">',
                 f'<div style="font-size:18px"><b>{flags.get(r["market"], "")} #{r["rank"]} <a href="{escape(link,quote=True)}">{text(r["name"])} · {text(r["code"])}</a></b>　<b style="color:#4338ca">{text((r.get("strategy_score") or {}).get("value"))}分 · {text((r.get("strategy_score") or {}).get("label", "旧版周期分"))}</b>　{text(r["status"])}</div>',
-                row_badge(r, 'Astra', muse_cache, now),
+                row_badge(raw_rows.get(r['code'],r), 'Astra', muse_cache, now, doc.get('generated_at'), display_row=r),
+                f'<p><b>现价 {text(r.get("last"))} {text(r.get("currency") or {"A股":"CNY","港股":"HKD","美股":"USD"}.get(r["market"]))}</b> · 报价 {text(clock(r.get("quote_asof")))}</p>',
                 f'<p style="font-size:13px;color:#64748b">{text(info.get("industry"))} · {text(rank)} · {text(r.get("role"))}</p>',
                 '<div style="display:flex;gap:22px;flex-wrap:wrap;font-size:16px">'
                 f'<span>📥 研究入场 <b>{band(r.get("entry_range"))}</b></span>'
                 f'<span>🎯 止盈 <b>{band(r.get("take_profit_range"))}</b></span>'
                 f'<span>🛑 止损 <b>{band(r.get("stop_range"))}</b></span></div>',
-                f'<p>💰 到止盈净空间 {band(r.get("net_target_return_pct"))}%　｜　止损情景 {band(r.get("stop_loss_pct"))}%　｜　净盈亏比 {text(r.get("net_rr"))}</p>',
+                f'<p>💰 原计划情景净空间 {band(r.get("net_target_return_pct"))}%　｜　止损情景 {band(r.get("stop_loss_pct"))}%　｜　原计划净盈亏比 {text(r.get("net_rr"))}</p>',
+                (f'<p>当前首段净空间 {text(r.get("plan_current_net_space_pct"))}% · 当前净盈亏比 {text(r.get("plan_current_net_rr"))} · 原计划版本 {text(r.get("plan_revision"))}</p>' if r.get('plan_id') else ''),
                 contribution_html(r),
                 f'<p>🏢 {text(r.get("business_reason"))}</p>',
                 f'<p>⚠️ {text(r.get("business_risk") or "未提供新增反证；仍需核验最新公告")}</p>',
@@ -61,6 +65,10 @@ def html(doc, now=None):
         for peer in info.get('peers', [])[:5]:
             out.append(f'<p>#{text(peer.get("rank"))} {text(peer.get("name"))} · {text(peer.get("code"))}</p>')
         out.append('</details></article>')
+    if d.get('exited_rows'):
+        out.append('<details><summary>本轮退出与原计划留档</summary>')
+        for old in d['exited_rows']:out.append('<p>'+text(old.get('name'))+' · '+text(old.get('plan_exit_reason'))+' · 原止损 '+band(old.get('stop_range'))+'</p>')
+        out.append('</details>')
     out.append(watch_html(d.get('watch') or []))
     from astra_calendar_view import html as calendar_html
     out.append(calendar_html(d,now))

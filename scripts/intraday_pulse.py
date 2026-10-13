@@ -1,6 +1,7 @@
 """Bounded cloud timer: half-hour dispatch with independent cron recovery."""
 from datetime import datetime,timedelta,timezone
-import json,os,time,urllib.request,urllib.error
+import json,os,time,urllib.request,urllib.error,subprocess,sys
+from pathlib import Path
 from intraday_schedule import active_markets, preopen_markets
 
 
@@ -70,10 +71,39 @@ def preopen_catchup(now):
     return True
 
 
+def screening_review_tick(now,state):
+    """Collect user-requested latest reviews with the existing awake runner.
+
+    This never asks a model to review; it only accepts an actual Muse JSON.
+    Formal review deadlines take priority over optional on-demand collection.
+    """
+    from feishu_warm_guard import BJT, REVIEW_WINDOWS
+    local=now.astimezone(BJT)
+    for _,end in REVIEW_WINDOWS.values():
+        cutoff=local.replace(hour=end[0],minute=end[1],second=0,microsecond=0)
+        if cutoff-timedelta(seconds=90)<=local<=cutoff:return
+    if now<state.get('next_screening_review',now):return
+    state['next_screening_review']=now+timedelta(seconds=120)
+    parent=os.environ.get('MUSE_COLLECTOR_SCRIPT');token=os.environ.get('MUSE_PRIVATE_TOKEN')
+    if not parent or not token:return
+    env={**os.environ,'GH_TOKEN':token,'V88_FEISHU_ALLOW_PUSH':'0','V88_DISABLE_LLM':'1'}
+    env.pop('MUSE_PRIVATE_TOKEN',None)
+    try:
+        result=subprocess.run([sys.executable,str(Path(parent).with_name('muse_screening_review.py'))],
+                              env=env,timeout=25,capture_output=True,text=True)
+        status=json.loads(result.stdout).get('status') if result.returncode==0 else 'collector_failed'
+        if status not in {'received','not_found','invalid','unavailable'}:status='unknown'
+    except Exception as exc:status=type(exc).__name__
+    if status!=state.get('last_screening_review_status'):
+        print(json.dumps({'muse_screening_collection':status}),flush=True)
+        state['last_screening_review_status']=status
+
+
 def main():
     from feishu_warm_guard import review_tick
     review_state={}
     review_tick(datetime.now(timezone.utc),review_state)
+    screening_review_tick(datetime.now(timezone.utc),review_state)
     if os.environ.get('PULSE_PRIME')=='true':
         dispatch('autonomous.yml',{'fast':True,'send':False})
         print('initial_refresh_dispatch_accepted',flush=True)
@@ -85,6 +115,7 @@ def main():
     while target<end:
         while datetime.now(timezone.utc)<target:
             review_tick(datetime.now(timezone.utc),review_state)
+            screening_review_tick(datetime.now(timezone.utc),review_state)
             time.sleep(min(30,max(0,(target-datetime.now(timezone.utc)).total_seconds())))
         now=datetime.now(timezone.utc)
         try:recovered=preopen_catchup(now)
