@@ -5,6 +5,8 @@ from urllib.parse import urlencode
 from pathlib import Path
 import json, math
 from v88_paths import core_root
+from recommendation_counting import (annotated_rows, count_asof, count_label,
+    count_tooltip, is_recommendation, recommendation_days, row_count, security_key)
 
 BJT=timezone(timedelta(hours=8))
 MARKETS=('A股','港股','美股')
@@ -13,7 +15,7 @@ HORIZONS={'short':'短期','medium':'中期','long':'长期','':'—'}
 
 def week_rows(doc,week,query=''):
     start=date.fromisoformat(week);end=start+timedelta(days=7)
-    rows=[r for r in doc.get('rows',[]) if any(start<=date.fromisoformat(day)<end for day in r['days'])]
+    rows=[r for r in annotated_rows(doc) if any(start<=date.fromisoformat(day)<end for day in r['days'])]
     q=query.strip().casefold()
     if q:rows=[r for r in rows if q in (r['code']+' '+r['name']).casefold()]
     return sorted(rows,key=lambda r:(MARKETS.index(r['market']),r['kind']!='formal',r['first_at'],r['code'],r['horizon']))
@@ -24,6 +26,19 @@ def pages(rows):
     groups={m:[r for r in rows if r['market']==m] for m in MARKETS}
     count=max([math.ceil(len(g)/5) for g in groups.values()]+[1])
     return [sum((g[i*5:i*5+5] for g in groups.values()),[]) for i in range(count)]
+
+
+def quote_html(row):
+    """Show retained price and its own source clock; never call it a live tick."""
+    quote=row.get('latest') or {}
+    price=quote.get('observation_price',quote.get('last'))
+    currency=quote.get('currency') or {'A股':'CNY','港股':'HKD','美股':'USD'}.get(row.get('market'),'币种待核')
+    at=quote.get('source_asof') or quote.get('quote_asof')
+    try:valid=not isinstance(price,bool) and math.isfinite(float(price)) and float(price)>0
+    except (ValueError,TypeError):valid=False
+    if not valid or not at:return '<span class="journal-quote">现价待更新 · '+escape(currency)+'</span>'
+    return ('<span class="journal-quote"><b>最近留档价 '+escape(str(price))+' '+escape(currency)+
+            '</b><br>报价 '+escape(str(at))+'（非实时）</span>')
 
 
 def html(rows,week,now=None):
@@ -48,17 +63,20 @@ def html(rows,week,now=None):
         if r['kind'].startswith('strategy_'):kind='🎯 新策略榜 · '+r['horizon']
         first=r['first'];score=f"{first.get('tier')} · {first['audit_score']:g}分" if first.get('audit_score') is not None else '未授中央评分'
         why=first.get('reason') or '旧档仅保存评级、分数与名次；原说明未留存。'
-        out.append(f"<tr><td>{badge(r['market'],image_mode=True)}<br><a href='{esc(href)}'><b>{esc(display_name(r['name'],r['code'],profiles))}</b></a><br>{esc(r['code'])}<br><small>{esc(kind)}</small></td>")
+        summary_day=min(today,start+timedelta(days=6)).isoformat();n=row_count(r,summary_day)
+        label_name=count_label(display_name(r['name'],r['code'],profiles),n)
+        out.append(f"<tr><td>{badge(r['market'],image_mode=True)}<br><a href='{esc(href)}' title='{esc(count_tooltip(n,summary_day,False))}'><b>{esc(label_name)}</b></a><br>{esc(r['code'])}<br>{quote_html(r)}<br><small>{esc(kind)}</small></td>")
         out.append(f"<td>{esc(r['first_at'][5:10])} {esc(r['first_at'][11:16])}<br>{esc(score)}<details><summary>当时说明</summary>{esc(why)}</details></td>")
         for i in range(7):
             day=start+timedelta(days=i);events=r['days'].get(day.isoformat(),[])
             if not events:
                 out.append('<td style="color:#94a3b8">'+('待到日期' if day>today else '— 未留记录')+'</td>');continue
-            appearances=[e for e in events if e['state']=='listed'];last=events[-1]
+            appearances=[e for e in events if is_recommendation(e)];last=events[-1]
             headline=label(appearances[-1]) if appearances else label(last)
             status='<br>'+esc(label(last)) if appearances and last['state']!='listed' else ''
             details=''.join(f"<div>{esc(e['at'][11:16])} {esc(label(e))}<br>{esc(e.get('reason'))}</div>" for e in events)
-            out.append(f"<td><b>{esc(headline)}</b>{status}<details><summary>当天记录 {len(events)} 条</summary>{details}</details></td>")
+            n=row_count(r,day.isoformat());named=count_label(r['name'],n)
+            out.append(f"<td><b title='{esc(count_tooltip(n,day.isoformat(),bool(appearances)))}'>{esc(named)}</b><br><b>{esc(headline)}</b>{status}<details><summary>当天记录 {len(events)} 条</summary>{details}</details></td>")
         current=r['current'];out.append(f"<td><b>{esc(current['label'])}</b><br>{esc(current['reason'][:110])}<details><summary>完整跟进说明</summary>{esc(current['reason'])}<br>历史评级不代表今日获准买入；榜单变化不等于投资结论已被证伪。</details></td></tr>")
     if not rows:out.append('<tr><td colspan="10">本周暂无已留存记录；不会补造此前的每日推荐。</td></tr>')
     out.append('</tbody></table></div>')
@@ -72,30 +90,51 @@ def with_astra(doc, astra):
     for record in astra.get('calendar_records',[]):
         r=record.get('row') or {}; at=record.get('at')
         if r.get('market') not in MARKETS or not at:continue
-        try:clock=datetime.fromisoformat(at).astimezone(BJT)
+        try:
+            clock=datetime.fromisoformat(at)
+            if clock.tzinfo is None:continue
+            clock=clock.astimezone(BJT)
         except (ValueError,TypeError):continue
-        key=(record.get('cycle_id'),r.get('code'))
+        key=(record.get('cycle_id'),security_key(r.get('market'),r.get('code')))
         item=groups.setdefault(key,{'code':r['code'],'name':r.get('name') or r['code'],'market':r['market'],
             'kind':'astra','horizon':'Astra','days':{},'current':{'label':'Astra原计划持续跟踪','reason':'原区间与历史评分保留'}})
         reason=(f"{record.get('cycle_id')}轮 · 入场 {band(r.get('entry_range'))} · 止盈 {band(r.get('take_profit_range'))} · 止损 {band(r.get('stop_range'))} · "+str(r.get('business_reason') or r.get('reason') or '原依据待核'))
         event={'at':clock.isoformat(),'state':'listed','tier':'Astra','score':(r.get('strategy_score') or {}).get('value'),
                'rank':r.get('rank'),'reason':reason,'label':'Astra推荐留档'}
+        for field in ('counts_as_recommendation','event_type'):
+            if field in record:event[field]=record[field]
         item['days'].setdefault(clock.date().isoformat(),[]).append(event)
+        item['latest']={'observation_price':r.get('last'),'currency':r.get('currency'),
+                        'source_asof':r.get('quote_asof') or r.get('source_asof')}
         outcome=record.get('outcome') or {}
         if outcome.get('label'):item['current']={'label':outcome['label'],'reason':outcome.get('reason') or outcome.get('scope') or '原计划继续留档'}
     for item in groups.values():
         for events in item['days'].values():events.sort(key=lambda e:e['at'])
-    result['rows']=[r for r in result.get('rows',[]) if r.get('kind')!='astra']+list(groups.values())
+    # An incomplete Astra source must not hide proposals already in the journal.
+    # Repeated unions keep each original event once without editing its payload.
+    known={(security_key(r.get('market'),r.get('code')),day,json.dumps(e,sort_keys=True,ensure_ascii=False))
+           for r in result.get('rows',[]) if r.get('kind')=='astra'
+           for day,events in r.get('days',{}).items() for e in events}
+    additions=[]
+    for item in groups.values():
+        days={day:[e for e in events if (security_key(item['market'],item['code']),day,
+                    json.dumps(e,sort_keys=True,ensure_ascii=False)) not in known]
+              for day,events in item['days'].items()}
+        days={day:events for day,events in days.items() if events}
+        if days:additions.append({**item,'days':days})
+    result['rows']=list(result.get('rows',[]))+additions
     return result
 
 
-def day_rows(doc,day,query=''):
+def day_rows(doc,day,query='',*,index=None):
+    index=recommendation_days(doc) if index is None else index
     q=query.strip().casefold();out=[]
     for row in doc.get('rows',[]):
         events=row.get('days',{}).get(day,[])
         if not events or (q and q not in (row['name']+' '+row['code']).casefold()):continue
-        appearances=[e for e in events if e['state']=='listed']
-        out.append({**row,'day_events':events,'appearance':appearances[-1] if appearances else None})
+        appearances=[e for e in events if is_recommendation(e)]
+        out.append({**row,'day_events':events,'appearance':appearances[-1] if appearances else None,
+            'monthly_recommendation_count':count_asof(index,row['market'],row['code'],day)})
     return sorted(out,key=lambda r:(r['appearance'] is None,r['kind']!='formal',MARKETS.index(r['market']),
         -(r['appearance'].get('score') or 0) if r['appearance'] else 0,
         (r['appearance'].get('rank') or 999) if r['appearance'] else 999,r['code']))
@@ -105,6 +144,7 @@ def calendar_html(doc,month,selected,query='',now=None):
     import calendar
     now=now or datetime.now(BJT);today=now.astimezone(BJT).date()
     year,mon=map(int,month.split('-'));esc=lambda x:escape(str(x),quote=True)
+    index=recommendation_days(doc)
     def href(day,code=''):
         return '?'+urlencode({'focus':'journal','month':day[:7],'day':day,'journal_query':query,
                              'journal_stock':code})+'#v88-day-detail'
@@ -120,6 +160,7 @@ def calendar_html(doc,month,selected,query='',now=None):
 .v88-cal .event:hover,.v88-cal .event:focus{filter:brightness(.94);outline:2px solid #93b4ec}
 .v88-cal .observe{background:#e2f5ef;border-color:#0d9488;color:#0f766e}.v88-cal .follow{background:#fff3dc;border-color:#d99b28;color:#936316}
 .v88-cal .astra{background:#f1eaff;border-color:#9561d5;color:#6436a5}
+.journal-quote{display:block;white-space:normal;font-size:11px;line-height:1.4;margin-top:3px}
 .v88-cal .more{font-size:11px;color:#64748b;display:block;margin:5px 2px}.v88-cal .empty{font-size:11px;color:#b2bccb;margin-top:20px;text-align:center}
 .v88-day-table{overflow-x:auto;border:1px solid #dce5ef;border-radius:10px}.v88-day-table table{border-collapse:collapse;width:100%;min-width:900px}
 .v88-day-table th{background:#eaf2ff;color:#234269}.v88-day-table td,.v88-day-table th{padding:10px;border-bottom:1px solid #e2e8f0;font-size:13px;text-align:left;vertical-align:top}.v88-day-table details{font-size:11px;color:#64748b}.v88-day-table summary{cursor:pointer}
@@ -134,7 +175,7 @@ def calendar_html(doc,month,selected,query='',now=None):
             out.append('<td class="'+('outside' if outside else 'selected' if iso==selected else '')+'">')
             label=f'<span class="today">{day.day}</span>' if day==today else str(day.day)
             out.append(f'<a class="date" href="{esc(href(iso))}" aria-label="查看{iso}推荐">{label}</a>')
-            members=day_rows(doc,iso,query) if not outside and day<=today else []
+            members=day_rows(doc,iso,query,index=index) if not outside and day<=today else []
             listed=[r for r in members if r['appearance']]
             shown=[]
             for market in MARKETS:
@@ -148,8 +189,9 @@ def calendar_html(doc,month,selected,query='',now=None):
                 if r['kind'].startswith('strategy_'):grade+=' · 策略'
                 if r['kind']=='astra':grade='🟣 Astra'+(f" {e['score']:g}分" if e.get('score') is not None else '')
                 reason=e.get('reason') or '原说明未留存'
-                title=f"{r['name']}（{r['code']}）\n{e['at'][11:16]} {grade} · #{e.get('rank') or '—'}\n{reason}\n点击查看当天内容"
-                out.append(f'<a class="event {"astra" if r["kind"]=="astra" else "" if formal else "observe"}" href="{esc(href(iso,r["code"]))}" title="{esc(title)}">{flags[r["market"]]} {esc(r["name"])} · {esc(grade)}<br><span>{esc(reason[:20])}</span></a>')
+                n=r['monthly_recommendation_count'];name=count_label(r['name'],n)
+                title=f"{name}（{r['code']}）\n{count_tooltip(n,iso)}\n{e['at'][11:16]} {grade} · #{e.get('rank') or '—'}\n{reason}\n点击查看当天内容"
+                out.append(f'<a class="event {"astra" if r["kind"]=="astra" else "" if formal else "observe"}" href="{esc(href(iso,r["code"]))}" title="{esc(title)}">{flags[r["market"]]} {esc(name)} · {esc(grade)}<br><span>{esc(reason[:20])}</span>{quote_html(r)}</a>')
             follow=sum(r['appearance'] is None for r in members)
             if listed:out.append(f'<a class="more" href="{esc(href(iso))}">当天{len(listed)}条上榜 / 观察 · 查看全部 ›</a>')
             if follow:out.append(f'<a class="event follow" href="{esc(href(iso))}" title="原上榜个股的今日跟进；不计为新推荐">⏳ {follow}条跟进变化</a>')
@@ -167,24 +209,27 @@ def detail_html(rows,day):
         e=r['appearance'];events=r['day_events'];last=events[-1]
         state=(f"⭐ {e.get('tier') or '观察'} · {e['score']:g}分 · #{e.get('rank')}" if e and e.get('score') is not None else '👁 机会观察' if e else '⏳ 后续跟进')
         reason=(e or last).get('reason') or '原说明未留存'
+        n=r.get('monthly_recommendation_count',row_count(r,day));name=count_label(r['name'],n)
         href='?'+urlencode({'focus':'deep','q':r['code']})
         trail=[]
         for event in events:
             desc=(event.get('label') or '↘ 移出当次榜') if event['state']!='listed' else (f"{event.get('tier')} {event.get('score')}分" if event.get('tier') else '机会观察')
             trail.append(esc(event['at'][11:16]+' '+desc+'：'+str(event.get('reason') or '原说明未留存')))
-        out.append(f'<tr><td>{esc(r["market"])}<br><a href="{esc(href)}" target="_blank"><b>{esc(r["name"])}</b></a><br>{esc(r["code"])}</td><td>{esc(state)}<br><small>{esc((e or last)["at"][11:16])} 北京</small></td><td>{esc(reason)}<details><summary>当天全部变化 · {len(events)}条</summary>'+ '<hr>'.join(trail)+f'</details></td><td>{esc(r["current"]["label"])}<br>{esc(r["current"]["reason"])}</td></tr>')
+        out.append(f'<tr><td>{esc(r["market"])}<br><a href="{esc(href)}" target="_blank" title="{esc(count_tooltip(n,day,bool(e)))}"><b>{esc(name)}</b></a><br>{esc(r["code"])}{quote_html(r)}</td><td>{esc(state)}<br><small>{esc((e or last)["at"][11:16])} 北京</small></td><td>{esc(reason)}<details><summary>当天全部变化 · {len(events)}条</summary>'+ '<hr>'.join(trail)+f'</details></td><td>{esc(r["current"]["label"])}<br>{esc(r["current"]["reason"])}</td></tr>')
     if not rows:out.append('<tr><td colspan="4">这一天没有符合当前筛选的留存记录。</td></tr>')
     out.append('</tbody></table></div>');return ''.join(out)
 
 
-def render(doc=None):
+def render(doc=None, *, astra=None):
     import streamlit as st
     path=core_root()/'data/recommendation_journal_pub.json'
     if doc is None:
         try:doc=json.loads(path.read_text())
         except (OSError,ValueError):st.info('📅 推荐日历 · 正在整理原始记录');return
-    try:doc=with_astra(doc,json.loads((core_root()/'data/astra_cycle.json').read_text()))
-    except (OSError,ValueError):pass
+    if astra is None:
+        try:astra=json.loads((core_root()/'data/astra_cycle.json').read_text())
+        except (OSError,ValueError):astra={}
+    doc=with_astra(doc,astra)
     from module_freshness import html as freshness_html
     st.html(freshness_html('recommendation_journal_pub.json',doc))
     today=datetime.now(BJT).date()
@@ -224,4 +269,4 @@ def render(doc=None):
     from muse_display import panel as muse_panel
     with st.expander('M · 当日 Muse 冻结回执与替代版本', expanded=False):
         st.html(muse_panel(day=selected))
-    st.caption('旧分保留当时值；跟进不算新推荐。未留记录不补造，全部历史保留，可按月或个股查找。')
+    st.caption('名称*n表示截至所选日期，本月第n个不同推荐日；同股同日跨模块仅计一次，次月重新计数。旧分与日期保留；跟进不算新推荐。未留记录不补造，全部历史保留。')

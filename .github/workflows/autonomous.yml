@@ -14,6 +14,10 @@ on:
         description: '轻量盘中报价与规则筛选，不调用模型'
         type: boolean
         default: false
+      rotation_only:
+        description: '仅刷新板块相对强弱；保持个股名单和Muse草案，不发送消息'
+        type: boolean
+        default: false
       send:
         description: '发送当前时段飞书（沿用持久去重，不重复发送）'
         type: boolean
@@ -92,8 +96,11 @@ jobs:
         if: steps.window.outputs.run == 'true'
         env:
           FAST_REFRESH: ${{ inputs.fast == true || github.event.schedule == '7,37 1-8,13-21 * * 1-5' }}
+          ROTATION_ONLY: ${{ inputs.rotation_only == true }}
         run: |
-          if [ "$FAST_REFRESH" = "true" ]; then
+          if [ "$ROTATION_ONLY" = "true" ]; then
+            python src/autonomous_runtime.py --rotation-only
+          elif [ "$FAST_REFRESH" = "true" ]; then
             python src/autonomous_runtime.py --fast
           else
             python src/autonomous_runtime.py
@@ -109,7 +116,7 @@ jobs:
           print(json.dumps({'report_mode':'github-rules-three-slot-v1','model_calls':d.get('model_calls'),'characters':len(d['text']),'external_messages':0}))
           PYCODE
       - name: Verify Astra cycle refreshed (reports already delivered independently)
-        if: steps.window.outputs.run == 'true'
+        if: steps.window.outputs.run == 'true' && inputs.rotation_only != true
         run: |
           python - <<'PY'
           import json
@@ -130,6 +137,6 @@ jobs:
       # artifacts of this public repository. Runtime history stays in state.
   delivery:
     needs: facts
-    if: always() && (inputs.send == true || (github.event_name == 'schedule' && github.event.schedule != '7,37 1-8,13-21 * * 1-5'))
+    if: always() && inputs.rotation_only != true && (inputs.send == true || (github.event_name == 'schedule' && github.event.schedule != '7,37 1-8,13-21 * * 1-5'))
     uses: ./.github/workflows/feishu_delivery.yml
     secrets: inherit

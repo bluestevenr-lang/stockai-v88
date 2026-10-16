@@ -25,6 +25,8 @@ class _LayoutParser(HTMLParser):
         self.style_inside = False
 
     def handle_starttag(self, tag, attrs):
+        if tag in {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}:
+            return  # Void elements have no closing tag and cannot affect ancestry.
         attrs = dict(attrs)
         self.stack.append((tag, attrs))
         if attrs.get("aria-label") == "板块轮动与个股周期综合总览":
@@ -67,7 +69,7 @@ def _sample_cycle():
     return {
         "analysis_time": "2026-07-15 12:00",
         "stocks": [{
-            "name": "中微公司", "phase": "低位蓄势", "direction": "up",
+            "code": "688012.SS", "name": "中微公司", "phase": "低位蓄势", "direction": "up",
             "confidence": 72, "horizon": "明日", "pos52": 20, "up": 60, "down": 10,
         }],
     }

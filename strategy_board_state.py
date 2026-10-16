@@ -102,7 +102,7 @@ def readiness(row):
     gaps=row.get('missing') or row.get('gaps') or []
     detail='；'.join(gaps)
     roster=row.get('research_roster') or {}
-    if roster.get('policy')=='3a-daily-research-v1' and not row.get('buyable'):
+    if roster.get('policy') in ('3a-daily-research-v1','3a-daily-research-v2') and not row.get('buyable'):
         if row.get('score_current_unknown'):
             return {'readiness_label':'日度研究续列 · 当前分待核',
                     'readiness_detail':detail or '保留原研究日期和已核报价；补齐数据后重评，不代表当前可买。'}
@@ -184,6 +184,8 @@ def view(doc,now=None):
             if row.get('strategy_tier')=='3A':
                 row['selection_category']='买入条件已满足' if row['buyable'] else RESEARCH_CATEGORY if out.get('grade_policy')==FOLLOWUP_POLICY else '最高价值研究'
             row.update(readiness(row))
+            from strategy_multicheck import apply_entry_review
+            apply_entry_review(row,now)
         for tier,markets in out.get('counts',{}).items():
             for market,counts in markets.items():
                 members=[r for r in out['rows'] if r['strategy_tier']==tier and r['market']==market]

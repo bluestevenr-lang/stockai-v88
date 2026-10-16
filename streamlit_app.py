@@ -428,7 +428,7 @@ def _cloud_is_nontrading(meta: dict = None) -> bool:
 
 if st.query_params.get('focus')=='journal':
     from recommendation_journal_ui import render as _render_cloud_calendar
-    _render_cloud_calendar(_autonomous.get('journal') or {'rows':[]})
+    _render_cloud_calendar(_autonomous.get('journal') or {'rows':[]}, astra=_autonomous.get('astra') or {})
     st.stop()
 
 if _nav == "🧭 导航":
@@ -1095,7 +1095,7 @@ if _nav == "🧭 导航":
         if markup: st.html('<div id="v88-grade-list"></div>' + markup)
     _current_strategy_board()
     from astra_cycle_view import html as _astra_cycle_html
-    _astra_markup = _astra_cycle_html(_autonomous.get('astra') or {})
+    _astra_markup = _astra_cycle_html(_autonomous.get('astra') or {}, journal=_autonomous.get('journal') or {'rows':[]})
     if _astra_markup: st.html(_astra_markup)
     def _legacy_central_view():
         from grade_card import system_table_html
@@ -2280,7 +2280,7 @@ elif _nav == "🔍 个股搜索":
 # ── 📊 日报 / 📅 周报 ────────────────────────────────────────
 elif _nav == '🗓 推荐日历' or st.query_params.get('focus')=='journal':
     from recommendation_journal_ui import render as _render_calendar
-    _render_calendar(_autonomous.get('journal') or {'rows':[]})
+    _render_calendar(_autonomous.get('journal') or {'rows':[]}, astra=_autonomous.get('astra') or {})
 
 elif _nav in ("📊 日报", "📅 周报"):
     _txt = _report_text if _nav == "📊 日报" else pub_text("weekly_report.md")

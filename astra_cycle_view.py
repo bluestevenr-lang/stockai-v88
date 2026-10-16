@@ -18,7 +18,8 @@ def band(v):
     return '～'.join(f'{x:.2f}' for x in v) if isinstance(v, (list, tuple)) and len(v) == 2 else '待核'
 
 
-def html(doc, now=None):
+def html(doc, now=None, *, journal=None):
+    from strategy_crosscheck_view import html as crosscheck_html
     from muse_display import row_badge, load as muse_load
     from screening_clock import market_screened_at
     muse_cache = muse_load()
@@ -55,6 +56,7 @@ def html(doc, now=None):
                 f'<p>💰 原计划情景净空间 {band(r.get("net_target_return_pct"))}%　｜　止损情景 {band(r.get("stop_loss_pct"))}%　｜　原计划净盈亏比 {text(r.get("net_rr"))}</p>',
                 (f'<p>当前首段净空间 {text(r.get("plan_current_net_space_pct"))}% · 当前净盈亏比 {text(r.get("plan_current_net_rr"))} · 原计划版本 {text(r.get("plan_revision"))}</p>' if r.get('plan_id') else ''),
                 contribution_html(r),
+                crosscheck_html(r,now=now),
                 f'<p>🏢 {text(r.get("business_reason"))}</p>',
                 f'<p>⚠️ {text(r.get("business_risk") or "未提供新增反证；仍需核验最新公告")}</p>',
                 f'<p>⏱ 截止 {text(window.get("deadline"))} · 剩余 {text(window.get("remaining_sessions"))} 交易日；到期复盘，未入场不延长原计划。</p>',
@@ -72,7 +74,7 @@ def html(doc, now=None):
         out.append('</details>')
     out.append(watch_html(d.get('watch') or []))
     from astra_calendar_view import html as calendar_html
-    out.append(calendar_html(d,now))
+    out.append(calendar_html(d,now,journal=journal))
     out += ['<details><summary>📚 历轮记录 · 首次研究区间永久保留</summary>']
     for key, h in sorted(d.get('history', {}).items(), reverse=True):
         out.append(f'<p><b>{text(key)}轮</b> · 实际建立 {text(h.get("created_at"))} · {text(h.get("updates"))}次变化</p>')

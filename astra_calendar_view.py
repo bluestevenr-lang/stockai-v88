@@ -1,19 +1,28 @@
 """Monthly Astra calendar; records survive selection changes and cycle rollover."""
 import calendar
+import json
 from collections import defaultdict
 from datetime import datetime, timezone
 from html import escape
 from zoneinfo import ZoneInfo
+from recommendation_counting import (recommendation_days, count_asof, count_label,
+                                     count_tooltip, security_key, is_recommendation)
+from v88_paths import core_root
 
 
-def html(doc,now=None):
+def html(doc,now=None,*,journal=None):
     now=now or datetime.now(timezone.utc);today=now.astimezone(ZoneInfo('Asia/Shanghai')).date()
     records=doc.get('calendar_records',[]);events=defaultdict(list)
+    if journal is None:
+        try:journal=json.loads((core_root()/'data/recommendation_journal_pub.json').read_text())
+        except (OSError,ValueError):journal={}
+    recommendation_index=recommendation_days(journal=journal,astra=doc)
     esc=lambda v:escape(str(v if v is not None else '待核'),quote=True)
     band=lambda v:'～'.join(f'{x:.2f}' for x in v) if v else '待核'
     for record in records:
         day=datetime.fromisoformat(record['at']).astimezone(ZoneInfo('Asia/Shanghai')).date().isoformat()
-        events[day].append(('📝 推荐记录',record))
+        label='📝 推荐记录' if is_recommendation({**record,'state':'listed'}) else '↻ 继续跟踪'
+        events[day].append((label,record))
         for seen in record.get('seen_dates',[]):
             if seen!=day:events[seen].append(('↻ 继续跟踪',record))
         outcome=record.get('outcome') or {}
@@ -26,29 +35,37 @@ def html(doc,now=None):
         year,mon=map(int,month.split('-'))
         month_records=[r for r in records if datetime.fromisoformat(r['at']).astimezone(ZoneInfo('Asia/Shanghai')).date().isoformat()[:7]==month]
         hits=[r for r in records if (r.get('outcome') or {}).get('status')=='target_touched' and (r['outcome'].get('date') or '').startswith(month)]
-        out.append(f'<details {"open" if month==today.isoformat()[:7] else ""}><summary style="font-size:18px;font-weight:700">{year}年{mon}月 · {len({r["row"]["code"] for r in month_records})}只个股 · {len(month_records)}条留档版本 · 🎯 {len(hits)}条目标触及记录</summary>')
+        securities={security_key(r['row']['market'],r['row']['code']) or (r['row']['market'],r['row']['code']) for r in month_records}
+        out.append(f'<details {"open" if month==today.isoformat()[:7] else ""}><summary style="font-size:18px;font-weight:700">{year}年{mon}月 · {len(securities)}只个股 · {len(month_records)}条留档版本 · 🎯 {len(hits)}条目标触及记录</summary>')
         if not hits:out.append('<p><small>本月暂无已核实的15日内目标触及记录；不会把历史上涨回填为新推荐成绩。</small></p>')
         out.append('<div style="overflow-x:auto"><table><thead><tr>'+''.join(f'<th>{x}</th>' for x in ('周一','周二','周三','周四','周五','周六','周日'))+'</tr></thead><tbody>')
         for week in calendar.Calendar().monthdatescalendar(year,mon):
             out.append('<tr>')
             for day in week:
                 style='background:#eff5ff;box-shadow:inset 0 0 0 2px #6393ff' if day==today else 'background:#f4f6f9' if day.month!=mon else ''
-                out.append(f'<td style="{style}"><div class="day">{day.day}</div>')
+                out.append(f'<td style="{style}" data-date="{day.isoformat()}"><div class="day">{day.day}</div>')
                 daily=events.get(day.isoformat(),[]) if day.month==mon else []
                 groups=defaultdict(list)
-                for label,record in daily:groups[(record['row']['market'],record['row']['code'])].append((label,record))
+                for label,record in daily:
+                    r=record['row'];key=security_key(r['market'],r['code']) or (r['market'],r['code'])
+                    groups[key].append((label,record))
                 counts=defaultdict(int);shown=0
                 ranked=sorted(groups.values(),key=lambda items: -float((max(items,key=lambda item:item[1]['at'])[1]['row'].get('strategy_score') or {}).get('value') or 0))
                 for items in ranked:
                     items=sorted(items,key=lambda item:item[1]['at'],reverse=True)
                     label,record=items[0];r=record['row']
-                    if counts[r['market']]>=5:continue
-                    counts[r['market']]+=1;shown+=1
+                    market=(security_key(r['market'],r['code']) or (r['market'],r['code']))[0]
+                    if counts[market]>=5:continue
+                    counts[market]+=1;shown+=1
                     flags={'A股':'🇨🇳','港股':'🇭🇰','美股':'🇺🇸'}
                     hit=any(item[0].startswith('🎯') for item in items)
                     caption='🎯 目标触及（行情）' if hit else '📝 推荐 / 跟踪'
-                    tooltip=f'{r["name"]} · {caption} · 入场 {band(r.get("entry_range"))} · 止盈 {band(r.get("take_profit_range"))} · {r.get("business_reason", "")}'
-                    out.append(f'<details class="event {"hit" if hit else ""}" title="{esc(tooltip)}"><summary>{flags.get(r["market"],"")} {esc(r["name"])}<br>{caption} · {len(items)}条记录</summary>')
+                    count=count_asof(recommendation_index,r['market'],r['code'],day.isoformat())
+                    name=count_label(r['name'],count)
+                    recommended=any(item[0]=='📝 推荐记录' for item in items)
+                    frequency=count_tooltip(count,day.isoformat(),recommended=recommended)
+                    tooltip=f'{name} · {frequency} · {caption} · 入场 {band(r.get("entry_range"))} · 止盈 {band(r.get("take_profit_range"))} · {r.get("business_reason", "")}'
+                    out.append(f'<details class="event {"hit" if hit else ""}" title="{esc(tooltip)}"><summary>{flags.get(market,"")} {esc(name)}<br>{caption} · {len(items)}条记录</summary>')
                     for label,record in items:
                         r=record['row'];score=(r.get('strategy_score') or {}).get('value');outcome=record.get('outcome') or {}
                         description=f'{label} · 原评分 {score}（历史规则 {(r.get("strategy_score") or {}).get("revision","旧版")}） · 入场 {band(r.get("entry_range"))} · 止盈 {band(r.get("take_profit_range"))} · 止损 {band(r.get("stop_range"))} · {r.get("business_reason", "")}'

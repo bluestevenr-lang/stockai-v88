@@ -416,16 +416,30 @@ def stock_cycle_html(cycle: dict, element_id: str = "v88-stock-cycle", profiles=
 def available_markets(forecast: dict) -> list:
     """有走向数据、可作为时钟焦点的市场列表（保持 美股/A股/港股 顺序）。"""
     traj = (forecast or {}).get("trajectories") or {}
-    return [m for m in ("美股", "A股", "港股") if traj.get(m)]
+    relative = ((forecast or {}).get("relative_strength") or {}).get("markets") or {}
+    return [m for m in ("美股", "A股", "港股") if traj.get(m) or m in relative]
 
 
 def rotation_map_html(forecast: dict, element_id: str = "v88-rotation-map",
                       focus_market: str = "美股", compact: bool = False) -> str:
-    if not forecast or not (forecast.get("markets") or forecast.get("trajectories")):
+    if not forecast or not (forecast.get("markets") or forecast.get("trajectories") or forecast.get("relative_strength")):
         return ""
+    from sector_rotation_view import sector_rotation_html
+    markets = available_markets(forecast)
+    if markets and focus_market not in markets:
+        focus_market = markets[0]
+    relative = sector_rotation_html(forecast.get("relative_strength"), focus_market,
+                                    element_id=element_id+"-relative")
     if forecast.get("trajectories"):
-        return _rich_rotation_html(forecast, element_id, focus_market, compact=compact)
-    return _legacy_rotation_html(forecast, element_id)
+        prior = _rich_rotation_html(forecast, element_id, focus_market, compact=compact)
+    elif forecast.get("markets"):
+        prior = _legacy_rotation_html(forecast, element_id)
+    else:
+        prior = ""
+    if prior:
+        relative += '<details class="rf-prior-view"><summary>原未来条件视图 · 展开</summary>'+prior+'</details>'
+    styles, body = _strip_styles(relative)
+    return '<style>'+styles+'</style>'+body
 
 
 def combined_cycle_dashboard_html(forecast: dict, cycle: dict,
@@ -445,7 +459,7 @@ def combined_cycle_dashboard_html(forecast: dict, cycle: dict,
     stock_style, stock_body = _split_style(stock_html)
     panels = []
     if sector_body:
-        panels.append('<div class="cc-panel"><div class="cc-title">🧭 板块未来周期 · 圆周＋曲线</div>'
+        panels.append('<div class="cc-panel"><div class="cc-title">🧭 板块轮动 · 相对强弱</div>'
                       + sector_body + '</div>')
     if stock_body:
         panels.append('<div class="cc-panel"><div class="cc-title">🎯 个股周期 · '+('公开自选' if (cycle or {}).get('scope')=='public_watchlist' else '持仓＋自选')+'</div>'
@@ -474,7 +488,7 @@ def combined_cycle_dashboard_html(forecast: dict, cycle: dict,
 {stock_style}
 </style>
 <div id="{safe_id}" role="figure" aria-label="板块轮动与个股周期综合总览">
-  <div class="cc-head"><b>🧭 周期总览</b><span>左看板块未来路径 · 右看持仓/自选周期 · 点圆点切换曲线</span></div>
+  <div class="cc-head"><b>🧭 周期总览</b><span>板块相对强弱 · 持仓/自选周期 · 原条件视图可展开</span></div>
   <div class="cc-grid{single}">{''.join(panels)}</div>
 </div>'''
 
