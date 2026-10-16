@@ -40,7 +40,9 @@ def business_facts(row, raw):
             'source':r.get('source_url'),'period':r.get('period_end'),
             'period_end':r.get('period_end'),'currency':r.get('currency'),
             'asof':r.get('captured_at'),'captured_at':r.get('captured_at'),
-            'published_at':raw.get('notice_date')}
+            'published_at':raw.get('notice_date'),
+            'publication_timezone':'Asia/Shanghai' if r['code'].endswith(('.SS','.SZ')) else None,
+            'publication_scope':'associated_financial_report_notice_date_not_recurring_fact_first_release'}
     return out
 
 

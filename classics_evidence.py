@@ -32,6 +32,7 @@ import json
 import math
 import re
 from statistics import fmean
+from zoneinfo import ZoneInfo
 
 from exchange_sessions import is_session, latest_completed
 from market_symbols import canonical
@@ -323,12 +324,35 @@ def _financial_fact(business, name, now, code):
         elif age>(7 if name in {'pe_ttm','pb'} else 210):gaps.append('stale_fact')
         if len(str(item.get('asof')))>10 and _clock(item['asof'])>now:gaps.append('future_fact')
     except (ValueError,TypeError):gaps.append('missing_asof')
-    # Current caches cannot be reused as historical point-in-time fundamentals.
-    for key in ('captured_at','published_at'):
-        if item.get(key):
-            try:
-                if _clock(item[key])>now:gaps.append('future_'+key)
-            except (ValueError,TypeError):gaps.append('invalid_'+key)
+    # Date-only notices remain dates, never invented midnight timestamps.
+    captured=None;publication=None;precision='unknown'
+    if item.get('captured_at'):
+        try:
+            captured=_clock(item['captured_at'])
+            if captured>now:gaps.append('future_captured_at')
+        except (ValueError,TypeError):gaps.append('invalid_captured_at')
+    published=item.get('published_at')
+    if published:
+        try:
+            if re.fullmatch(r'\d{4}-\d{2}-\d{2}',str(published)):
+                precision='date';day=date.fromisoformat(published)
+                zone=item.get('publication_timezone') or business.get('publication_timezone')
+                if not zone:
+                    symbol=canonical(code or item.get('code') or '')
+                    zone='Asia/Shanghai' if symbol.endswith(('.SS','.SZ')) else 'Asia/Hong_Kong' if symbol.endswith('.HK') else None
+                if not zone:
+                    gaps.append('unknown_publication_timezone')
+                else:
+                    tz=ZoneInfo(zone);today=now.astimezone(tz).date()
+                    capture_day=captured.astimezone(tz).date() if captured and captured<=now else None
+                    if day>today:gaps.append('future_published_at')
+                    if day==today and capture_day!=day:gaps.append('same_day_publication_time_unverified')
+                    if capture_day and capture_day<day:gaps.append('publication_after_capture')
+            else:
+                precision='timestamp';publication=_clock(published)
+                if publication>now:gaps.append('future_published_at')
+                if captured and publication>captured:gaps.append('publication_after_capture')
+        except (ValueError,TypeError,KeyError):gaps.append('invalid_published_at')
     if name in {'recurring_profit','operating_cash_flow'}:
         if not item.get('period'):gaps.append('missing_period')
         if not item.get('currency'):gaps.append('missing_currency')
@@ -340,7 +364,11 @@ def _financial_fact(business, name, now, code):
     return {'status':'MISSING' if number is None else 'UNVERIFIED' if gaps else 'OBSERVED',
             'value':number,'source':item.get('source'),'asof':item.get('asof'),
             'period':item.get('period'),'currency':item.get('currency'),'gaps':gaps,
-            'pit_capture_known':bool(item.get('captured_at') and item.get('published_at'))}
+            'captured_at':item.get('captured_at'),'published_at':published,
+            'publication_precision':precision,
+            'publication_scope':item.get('publication_scope'),
+            'capture_known':bool(captured and captured<=now),
+            'pit_capture_known':bool(captured and publication and publication<=captured<=now)}
 
 
 def _graham(business, now, code):
@@ -388,6 +416,8 @@ def evaluate(data, *, asof, market, now=None, code=None, source=None, basis=None
         for name in ('gmma','candlesticks','price_volume','structure'):
             out[name]=_block(status,reason)
         return out
+    if asof is None or not str(asof).strip():
+        return unavailable('MISSING','missing_completed_session_date')
     try:
         asof=_day(asof);market=MARKETS.get(market)
         if market is None:return unavailable('INVALID','unknown_market')

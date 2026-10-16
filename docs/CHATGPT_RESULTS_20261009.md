@@ -522,3 +522,23 @@ web：
 - 已校验真实运行包两模块源文件hash与旧screening的source_documents_sha256完全相同，仅修正时间绑定生成新不可变快照`screening-60640406b17f1d5d98fc`，来源运行仍为38427831747:1，所有12个item_sha保持不变。latest发布提交`9d0d8011a945c607c4a8414edf7945c3546167af`；旧snapshot及历史裁决不改写。不是新一次筛选，不冒写更晚行情时间。
 - 桌面同步前备份`work/oct12-muse/clock-binding-deploy-20261014-002917/manifest.json`，8处代码；11个启动保护文件hash保持原样，8501未变。
 - 未完成：当前按需裁决文件尚无真实Muse提交；下一正式早报必须实测accepted→正式成功回执→正文→网页冻结版，测试fixtures通过不能替代真实采用。保留试运行，三时段及按需验证都不取消。
+
+
+## 2026-10-16：规则存 GitHub、零模型云端复核、3A 稳定性与日历次数
+
+- 用户纠正优先：新增分析逻辑固化为版本化 Python 规则，在既有 GitHub Actions 免费行情流水线运行；网页读缓存。移除本轮未部署的可选模型分析入口，没有实际模型请求、付费回退或新收费。Muse 的三时段自动核查及按需裁决保留独立；系统规则不冒充 Muse 通过。
+- 根因：旧名单仅盘中锁定，跨完整交易日全量抢排名；普通发行审核问询曾误作治理风险；旧板块叙述把同一快照的5/20日差异当真实跨日轮入。分别改为研究席位续留、明确治理事件、真实连续观察和同日期基准；同源量价指标不重复计票。
+- 名单：`3a-daily-research-v2` 每市场最多3只、同业最多1只。挑战者连续两个完整交易日领先同一原席≥3分才替换；源缺失逐股待核，硬风险即时退出。入选分/当前分分别显示，盘中低于80不会伪造高分，下一日度复核退出不合格席。买点或新增技术证据不足保留有效研究、明确等待，不降低5%净空间/净RR≥2门槛，不改评分权重、原价带/期限或历史。
+- 新增核心模块：src/classics_evidence.py、strategy_multicheck.py、strategy_crosscheck_view.py、market_stock_alignment.py、sector_rotation.py、sector_rotation_brief.py、sector_rotation_view.py、recommendation_counting.py。改动strategy_board/state/ui/digest、astra_cycle/state/view/calendar、research_roster、strategy_price_plan、market_snapshot、rotation_forecast/ui、feishu_schedule、muse_review、autonomous_runtime和网页streamlit_app.py/.github/workflows/autonomous.yml；同名共享文件同步。原strategy_crosscheck.py回顾实验室保持不变，未被实时模块覆盖。详见 CLOUD_CLASSICS_RULES_20261016.md 和 RESEARCH_ROSTER_STABILITY_20261016.md。
+- 五类证据：顾比短长EMA组、带上下文及确认的吞没/锤子形态、已确认高低点与ATR风险、经常性利润/现金流/估值事实、量价关系。大盘→明确行业代理→个股同日交叉；缺行业代理或原文催化明确缺证。止损核对要求原计划与日线价格口径一致；未确认锚/噪声内止损阻止标可买，绝不移动原止损。工程参数不是原书原话或胜率证明。
+- 日历：同市场同代码、当月截至该日累计不同推荐日，显示名称*3；同日跨模块/刷新只算一次，跟踪/退出不新增次数、未来推荐不回填以前日期。网页云端调用显式传入完整日历/Astra资料，避免依赖桌面文件；历史未删改。
+- 代码提交：核心 c2f3c07f、139fd401、25d7db1f；网页1084ed1、faaba99、0e345d4、b186cda。云端已回读核心8f7b44636ffb56caef36a3ca18f38eeabd03dee0、网页2e5bc8b16170be17d38379e62dd645acd226df92。Git Data API检查远端旧blob、使用最新父提交、force=false；递归树一次校验减少网络请求，保留其他实时数据更新。
+- pytest：核心相关443 passed（2.13秒），网页93 passed（0.33秒）；随后来源透传47 passed、中文展示33 passed。未重跑全仓，不宣称原核心8/网页73个既有失败清零。3A板块 AppTest 同进程两次：改前0.1719/0.1100秒→改后0.1123/0.1134秒；热缓存0.1100→0.1134秒，非整个首页性能。21份冻结快照回放，CN/HK/US换股次数3/2/0→2/0/1；美股1次是质量退出，三市场均3只。这是稳定性验证，不是收益样本外验证。
+- 真实 GitHub 验证：仅板块任务38842372035 success，source_session=2026-10-15，CN/HK/US当前代理10/10、3/3、11/11，model_calls=0、external_messages=0。完整无发送快速任务38843038811 success，delivery skipped；报告预览7574字，model_calls=0、external_messages=0。其数据状态partial：targeted_quotes失败，批量报价和backup_quotes成功；不把工作流绿色冒充所有源均正常。
+- 实际不可变筛选：review-exchange/screenings/screening-2a919834486461598bfd.json，source_run=38843038811:1，SHA256=2a919834486461598bfd17658b5111433321693f13b1ae25101afd967c876933，筛选2026-10-16T03:04:43.977043+00:00。12项（3A中港美各3+Astra3）均有新crosscheck和0模型调用；10项完整日线可计算，AES/EQNR上游日线不足、分数当前未知，保留原研究待核，未伪造通过。之后正常任务38843898080:1也已发布同协议新快照，证明不依赖手动测试。
+- 部署备份：work/oct12-muse/cloud-rules-desktop-backup-20261016-104728，45处源码备份/同步，后续来源/中文补丁另备份。共享18模块一致；运行包FILES仍18；11个快捷方式/启动链受保护文件哈希未变，8501不改。正常自主同步已安装真实云端数据，模型调用0。过期的10-14限定验收heartbeat v88-muse已删除，仅停止失效本地跟进，生产三时段Muse协议不变。
+- 未完成/限制：行业代理不是全行业覆盖，港股3个代理尤其不能代表所有行业；多年经常性利润、现金流及原公告缺项如实待核；AES/EQNR日线缺口及定向报价子任务失败未因本轮改版消失。没有新增飞书测试或补发，未宣称本轮新规则已有正式Muse裁决/双端通过；下次正常报告使用当时冻结草案，新事实不得继承旧徽章。收益改善须以后实际结果验证，不自动调权。
+
+- 实际桌面验收：正常自主同步完成（changed=2、model_calls=0），确认原UI进程身份后正常退出，经原runtime_guard启动43690，8501 healthy，未编辑启动链。真实浏览器Astra三条出现“五类依据”；展开可见顾比、蜡烛、结构/ATR、价值缺项、量价、大盘/板块/个股和“该版0次模型调用”，无页面异常。板块未覆盖及原计划口径缺失明确待核，未涂成通过。日历已有名称*2/*3等真实累计。
+- 总览真实浏览器再次验收：中港美3A各3/3，3A9项+Astra3项均有五类依据折叠，未出现Traceback/模块错误；入选分与当前分分列，AES/EQNR当前分待核，Muse缺新裁决保持未验证。
+- 收尾修复：核心3b29e5b5、网页5964726。真实数据公告字段为YYYY-MM-DD，旧解析误作必须带时区的时刻；现在保留日期/精度/实际抓取时间，不补午夜、不伪称完整PIT。同日公告需本地同日已发生抓取；未来/无时区时刻继续拦截。AES/EQNR缺日线日期明确MISSING，不再暴露ISO解析错误。相关46项通过，四份真实财务快照复现invalid_published_at→OBSERVED（仅该数值来源事实；多年质量仍未证实）。补丁已备份同步，下一正常云端轮次重算，不改已发布快照或额外重跑全行情。
