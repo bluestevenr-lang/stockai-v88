@@ -42,7 +42,7 @@ def html(row, now=None):
     a=d.get('alignment') or {};t=d.get('technical') or {};g=t.get('gmma') or {}
     long=(g.get('slopes') or {}).get('long') or {};short=(g.get('slopes') or {}).get('short') or {}
     patterns=(t.get('candlesticks') or {}).get('patterns') or []
-    pattern_text='；'.join(str(p.get('pattern'))+' '+str(p.get('date'))+' '+{
+    pattern_text='；'.join({'bullish_engulfing':'看涨吞没','bearish_engulfing':'看跌吞没','hammer':'锤子线'}.get(p.get('pattern'),str(p.get('pattern')))+' '+str(p.get('date'))+' '+{
         'CONFIRMED':'下一完整日已确认','PENDING_CONFIRMATION':'等下一完整日确认',
         'NOT_CONFIRMED':'未获确认','CONTEXT_MISSING':'前置趋势/位置不符'}.get(p.get('status'),'待核') for p in patterns[-3:])
     pv=t.get('price_volume') or {};s=t.get('structure') or {};f=t.get('graham') or {};stop=d.get('stop_check') or {}
@@ -51,8 +51,8 @@ def html(row, now=None):
     desc=[('顾比趋势线', '短组'+DIRECTION.get(short.get('direction'),'待核')+' / 长组'+DIRECTION.get(long.get('direction'),'待核')+'；'+{
         'short_above_long':'短组位于长组上方','short_below_long':'短组位于长组下方','overlapping':'两组缠绕'}.get(g.get('group_relationship'),str(g.get('reason') or '完整日线待补'))),
         ('日本蜡烛图',pattern_text or ('最近两根完整K线无所测形态' if (t.get('candlesticks') or {}).get('status')=='OBSERVED' else str((t.get('candlesticks') or {}).get('reason') or '形态待核'))),
-        ('专业投机·结构与风险',structure.get(s.get('trend'),'结构待核')+'；ATR14 '+num(s.get('atr14'))+'；原止损距离 '+num(stop.get('distance_atr'))+' ATR；'+('锚有已确认低点' if stop.get('anchor_status')=='confirmed' else '止损锚待核')),
-        ('聪明的投资者·价值基础','经常性利润/现金流/估值 '+str(f.get('status','MISSING'))+'；缺项 '+','.join(f.get('missing') or [])+'；安全边际尚未证实'),
+        ('专业投机·结构与风险',structure.get(s.get('trend'),'结构待核')+'；ATR14 '+num(s.get('atr14'))+'；原止损距离 '+num(stop.get('distance_atr'))+' ATR；'+('锚有已确认低点' if stop.get('anchor_status')=='confirmed' else '止损锚待核')+('；'+str(stop['reason']) if stop.get('reason') else '')),
+        ('聪明的投资者·价值基础','经常性利润/现金流/估值 '+{'OBSERVED':'已有事实','PARTIAL':'部分齐备','MISSING':'证据待补'}.get(f.get('status'),'待核')+'；缺项 '+','.join({'recurring_profit':'经常性利润','operating_cash_flow':'经营现金流','pe_ttm':'滚动市盈率','pb':'市净率'}.get(x,x) for x in f.get('missing') or [])+'；安全边际尚未证实'),
         ('量价关系','末日/前20日均量 '+num(pv.get('volume_ratio20'))+'；'+{'price_up_volume_down':'价升量降','price_down_volume_up':'价跌量增','not_observed':'未见所测背离','unknown':'量能待核'}.get(pv.get('divergence'),'量能待核'))]
     heading=LABELS.get(a.get('state'),LABELS['unknown'])
     if a.get('state')=='aligned' and (a.get('stock_context') or {}).get('direction')=='down':heading='三层同向下行 · 先核风险'
@@ -62,13 +62,13 @@ def html(row, now=None):
     elif freshness != 'current':
         heading='当前核查待更新 · 完整交易日证据待核'
     out=['<div style="margin-top:6px;font-size:12px;color:#475569"><b>'+esc(heading)+'</b>',
-         '<details><summary>'+('历史版本 · ' if freshness != 'current' else '')+'五类依据 · 大盘→板块→个股</summary><div>完整日线 '+esc(d.get('asof'))+' · '+esc(d.get('provenance',{}).get('source'))+'</div>']
+         '<details><summary>'+('历史版本 · ' if freshness == 'historical' else '待补齐 · ' if freshness != 'current' else '')+'五类依据 · 大盘→板块→个股</summary><div>完整日线 '+esc(d.get('asof'))+' · '+esc(d.get('provenance',{}).get('source'))+'</div>']
     if freshness != 'current':
         out.append('<p>原版结论：'+esc(original_heading)+'；仅保留当时依据，不代表当前核查。最近完整交易日 '+esc(expected)+'</p>')
     for title,text in desc:out.append('<p style="margin:4px 0"><b>'+esc(title)+'：</b>'+esc(text)+'</p>')
     for key,label in [('market_context','大盘'),('sector_context','板块'),('stock_context','个股')]:
         c=a.get(key) or {}
-        out.append('<p style="margin:4px 0">'+label+'：'+esc(c.get('direction') or c.get('absolute_direction') or c.get('status'))+' · '+esc(c.get('source_asof'))+'</p>')
+        out.append('<p style="margin:4px 0">'+label+'：'+esc(DIRECTION.get(c.get('direction') or c.get('absolute_direction'),'待核'))+' · '+esc(c.get('source_asof'))+'</p>')
     out.append('<div>'+esc('；'.join(a.get('reasons') or []))+'</div>')
     ex=a.get('exception') or {}
     if a.get('state')=='countertrend':out.append('<b>逆势催化：'+esc('有原文待复核，未自动认可' if ex.get('status')=='documented_for_review' else '未取得可追溯证据')+'</b>')

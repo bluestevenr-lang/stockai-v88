@@ -67,18 +67,20 @@ def enrich(doc, source, *, base, now=None, previous=None, module="3A"):
             q=sources.get(row['code']) or {};struct=q.get('structure') or {}
             bars=[];provenance={'source':struct.get('provider_source'),'basis':struct.get('basis'),
                 'sha256':struct.get('raw_sha256'),'source_asof':struct.get('source_asof')}
+            metadata={'source_sha256':struct.get('raw_sha256'),'screening_only':bool(struct.get('screening_only'))}
             if struct.get('screening_only'):
                 if screening is None:screening=screen_load(base).get('records',{})
                 record=screening.get(row['code']) or {}
                 if record.get('source_sha256') and record.get('source_sha256')==struct.get('raw_sha256'):
                     bars=(record.get('bars') or [])[-300:]
+                    metadata.update({k:record[k] for k in ('fetched_at','checked_at','quality_error') if k in record})
             elif struct and db is not None:
                 try:
                     meta=db.execute('SELECT sha256 FROM verified_source_receipts WHERE code=?',(row['code'],)).fetchone()
                     if meta and meta[0]==struct.get('raw_sha256'):
                         bars=db.execute('SELECT code,date,open,close,high,low,volume,amount FROM daily_verified WHERE code=? ORDER BY date DESC LIMIT 300',(row['code'],)).fetchall()[::-1]
                 except sqlite3.OperationalError:pass
-            technical=classical(bars,asof=struct.get('source_asof'),market=row['market'],now=now,
+            technical=classical({'bars':bars,**metadata},asof=struct.get('source_asof'),market=row['market'],now=now,
                 code=row['code'],source=provenance['source'],basis=provenance['basis'],
                 business=business_facts(row,financials.get(row['code']) or {}))
             technical.pop('generated_at',None)  # recomputation time is not a changed market fact
