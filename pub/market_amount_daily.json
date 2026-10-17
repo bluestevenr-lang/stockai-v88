@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-17 08:00（北京时间）",
+ "generated_at": "2026-10-18 07:32（北京时间）",
  "note": "三市场每日量能走势(替代当日分时):同图比的是相对自身20日均量的偏离,绝对值单位各市场不同见 unit;美股为成交量口径；沪深为官方股票合计、不含北交所；量能仅表示成交活跃度，不能据此判断净资金流向或未来涨跌",
  "days": 500,
  "markets": {
@@ -2520,7 +2520,7 @@
    "verdict": "○缺证·本次来源失败，保留原日期历史",
    "error": "ValueError: 沪深官方成交额未取得同日合格记录",
    "stale": true,
-   "last_failed_at": "2026-10-17T08:00:08.876777+08:00"
+   "last_failed_at": "2026-10-18T07:32:10.803044+08:00"
   },
   "港股": {
    "unit": "亿港元",
@@ -6066,144 +6066,137 @@
    "source": "sina 纳斯达克综指日线",
    "series": [
     {
-     "date": "2024-10-17",
-     "value": 52.2,
-     "rel_pct": 0.0,
-     "ma20": 52.2,
-     "window_n": 1
-    },
-    {
      "date": "2024-10-18",
      "value": 46.0,
-     "rel_pct": -6.3,
-     "ma20": 49.1,
-     "window_n": 2
+     "rel_pct": 0.0,
+     "ma20": 46.0,
+     "window_n": 1
     },
     {
      "date": "2024-10-21",
      "value": 54.9,
-     "rel_pct": 7.6,
-     "ma20": 51.0333,
-     "window_n": 3
+     "rel_pct": 8.8,
+     "ma20": 50.45,
+     "window_n": 2
     },
     {
      "date": "2024-10-22",
      "value": 58.3,
-     "rel_pct": 10.3,
-     "ma20": 52.85,
-     "window_n": 4
+     "rel_pct": 9.9,
+     "ma20": 53.0667,
+     "window_n": 3
     },
     {
      "date": "2024-10-23",
      "value": 55.1,
-     "rel_pct": 3.4,
-     "ma20": 53.3,
-     "window_n": 5
+     "rel_pct": 2.8,
+     "ma20": 53.575,
+     "window_n": 4
     },
     {
      "date": "2024-10-24",
      "value": 50.1,
-     "rel_pct": -5.1,
-     "ma20": 52.7667,
-     "window_n": 6
+     "rel_pct": -5.3,
+     "ma20": 52.88,
+     "window_n": 5
     },
     {
      "date": "2024-10-25",
      "value": 52.4,
-     "rel_pct": -0.6,
-     "ma20": 52.7143,
-     "window_n": 7
+     "rel_pct": -0.8,
+     "ma20": 52.8,
+     "window_n": 6
     },
     {
      "date": "2024-10-28",
      "value": 49.7,
-     "rel_pct": -5.0,
-     "ma20": 52.3375,
-     "window_n": 8
+     "rel_pct": -5.1,
+     "ma20": 52.3571,
+     "window_n": 7
     },
     {
      "date": "2024-10-29",
      "value": 60.9,
-     "rel_pct": 14.3,
-     "ma20": 53.2889,
-     "window_n": 9
+     "rel_pct": 14.0,
+     "ma20": 53.425,
+     "window_n": 8
     },
     {
      "date": "2024-10-30",
      "value": 54.3,
-     "rel_pct": 1.7,
-     "ma20": 53.39,
-     "window_n": 10
+     "rel_pct": 1.5,
+     "ma20": 53.5222,
+     "window_n": 9
     },
     {
      "date": "2024-10-31",
      "value": 49.7,
-     "rel_pct": -6.3,
-     "ma20": 53.0545,
-     "window_n": 11
+     "rel_pct": -6.5,
+     "ma20": 53.14,
+     "window_n": 10
     },
     {
      "date": "2024-11-01",
      "value": 50.9,
-     "rel_pct": -3.7,
-     "ma20": 52.875,
-     "window_n": 12
+     "rel_pct": -3.8,
+     "ma20": 52.9364,
+     "window_n": 11
     },
     {
      "date": "2024-11-04",
      "value": 47.6,
      "rel_pct": -9.3,
-     "ma20": 52.4692,
-     "window_n": 13
+     "ma20": 52.4917,
+     "window_n": 12
     },
     {
      "date": "2024-11-05",
      "value": 64.0,
-     "rel_pct": 20.1,
-     "ma20": 53.2929,
-     "window_n": 14
+     "rel_pct": 19.9,
+     "ma20": 53.3769,
+     "window_n": 13
     },
     {
      "date": "2024-11-06",
      "value": 63.5,
-     "rel_pct": 17.7,
-     "ma20": 53.9733,
-     "window_n": 15
+     "rel_pct": 17.4,
+     "ma20": 54.1,
+     "window_n": 14
     },
     {
      "date": "2024-11-07",
      "value": 85.3,
-     "rel_pct": 52.5,
-     "ma20": 55.9312,
-     "window_n": 16
+     "rel_pct": 51.8,
+     "ma20": 56.18,
+     "window_n": 15
     },
     {
      "date": "2024-11-08",
      "value": 64.1,
-     "rel_pct": 13.6,
-     "ma20": 56.4118,
-     "window_n": 17
+     "rel_pct": 13.1,
+     "ma20": 56.675,
+     "window_n": 16
     },
     {
      "date": "2024-11-11",
      "value": 71.9,
-     "rel_pct": 25.5,
-     "ma20": 57.2722,
-     "window_n": 18
+     "rel_pct": 24.9,
+     "ma20": 57.5706,
+     "window_n": 17
     },
     {
      "date": "2024-11-12",
      "value": 69.4,
-     "rel_pct": 19.8,
-     "ma20": 57.9105,
-     "window_n": 19
+     "rel_pct": 19.2,
+     "ma20": 58.2278,
+     "window_n": 18
     },
     {
      "date": "2024-11-13",
      "value": 88.0,
-     "rel_pct": 48.1,
-     "ma20": 59.415,
-     "window_n": 20
+     "rel_pct": 47.2,
+     "ma20": 59.7947,
+     "window_n": 19
     },
     {
      "date": "2024-11-14",
@@ -9564,6 +9557,13 @@
      "rel_pct": 35.3,
      "ma20": 70.225,
      "window_n": 20
+    },
+    {
+     "date": "2026-10-16",
+     "value": 81.6,
+     "rel_pct": 19.3,
+     "ma20": 68.375,
+     "window_n": 20
     }
    ],
    "n": 500,
@@ -9571,38 +9571,37 @@
     "verified_days": 500,
     "requested_days": 500,
     "expected_latest_session": "2026-10-16",
-    "latest_session_verified": false,
+    "latest_session_verified": true,
     "history_depth_complete": true,
-    "history_complete": false,
+    "history_complete": true,
     "continuity": {
-     "start": "2024-10-17",
+     "start": "2024-10-18",
      "end": "2026-10-16",
-     "expected_sessions": 501,
-     "missing_sessions": [
-      "2026-10-16"
-     ],
+     "expected_sessions": 500,
+     "missing_sessions": [],
      "unexpected_dates": [],
-     "continuity_ok": false,
+     "continuity_ok": true,
      "calendar_basis": "2026官方核验；A股2024/2025官方历史休市表；其余历史使用exchange_calendars",
      "calendar_library_version": "4.13.1"
     },
     "source_publication_expected": null
    },
-   "stale": true,
+   "stale": false,
    "relative_basis": "rolling20-through-each-date-v1",
-   "history_warning": "历史覆盖存在未核验日期，详见数据源状态",
-   "latest": 95.0,
-   "latest_date": "2026-10-15",
-   "prev": 73.8,
-   "dod_pct": 28.7,
-   "ma20": 70.2,
-   "vs_ma20_pct": 35.3,
-   "chg5d_pct": 24.3,
-   "verdict": "○缺证·最近交易日未核验（实际20日基准）"
+   "history_warning": null,
+   "latest": 81.6,
+   "latest_date": "2026-10-16",
+   "prev": 95.0,
+   "dod_pct": -14.1,
+   "ma20": 68.4,
+   "vs_ma20_pct": 19.3,
+   "chg5d_pct": 36.9,
+   "verdict": "↑增强·量能高于自身滚动均量（实际20日基准）"
   }
  },
  "fresh_markets": [
-  "港股"
+  "港股",
+  "美股"
  ],
  "current_fetch_ok": true
 }
