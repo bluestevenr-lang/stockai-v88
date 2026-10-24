@@ -1,30 +1,30 @@
-# 📅 V88 事实与监控周报（10/05 – 10/09）
+# 📅 V88 事实与监控周报（10/12 – 10/16）
 <!-- v88-weekly-facts-v1 -->
 
-报告区间：2026-10-05 至 2026-10-09；编制时间：2026-10-17 01:14 北京时间。
+报告区间：2026-10-12 至 2026-10-16；编制时间：2026-10-24 01:46 北京时间。
 周涨跌按周前最后交易日收盘至本周最后交易日收盘计算；不是滚动5日，也不是账户收益。
-已核验 11 / 31 份配置行情；板块为ETF代理，缺失源单列。
+已核验 1 / 31 份配置行情；板块为ETF代理，缺失源单列。
 
 ## A股本周行情
 
 | 指数 / 板块ETF代理 | 起止交易日 | 起点 → 终点收盘 | 周涨跌 |
 |---|---|---:|---:|
-| 半导体芯片（512760.SS） | 2026-09-30 → 2026-10-09 | 1.01 → 0.97 | -4.15% |
-| 新能源车（515030.SS） | 2026-09-30 → 2026-10-09 | 1.46 → 1.48 | +1.30% |
-| 白酒（512690.SS） | 2026-09-30 → 2026-10-09 | 0.42 → 0.42 | +0.48% |
-| 医药（512010.SS） | 2026-09-30 → 2026-10-09 | 0.39 → 0.38 | -2.06% |
-| 证券（512880.SS） | 2026-09-30 → 2026-10-09 | 1.03 → 1.03 | +0.58% |
-| 银行（512800.SS） | 2026-09-30 → 2026-10-09 | 0.85 → 0.85 | -0.35% |
-| 有色金属（512400.SS） | 2026-09-30 → 2026-10-09 | 1.62 → 1.64 | +1.30% |
-| 军工（512660.SS） | 2026-09-30 → 2026-10-09 | 1.10 → 1.08 | -1.73% |
-| 消费（159928.SZ） | 2026-09-30 → 2026-10-09 | 0.66 → 0.66 | +0.46% |
-| 煤炭（515220.SS） | 2026-09-30 → 2026-10-09 | 1.26 → 1.30 | +3.34% |
 
 <details><summary>未通过原件或日期核验的行情</summary>
 
 - 上证指数（000001.SS）：源末日 2026-09-18；history does not reach latest completed session。
 - 深证成指（399001.SZ）：源末日 2026-09-18；history does not reach latest completed session。
 - 创业板指（399006.SZ）：源末日 无；verified_original_missing。
+- 半导体芯片（512760.SS）：源末日 2026-10-22；history does not reach latest completed session。
+- 新能源车（515030.SS）：源末日 2026-10-22；history does not reach latest completed session。
+- 白酒（512690.SS）：源末日 2026-10-22；history does not reach latest completed session。
+- 医药（512010.SS）：源末日 2026-10-22；history does not reach latest completed session。
+- 证券（512880.SS）：源末日 2026-10-22；history does not reach latest completed session。
+- 银行（512800.SS）：源末日 2026-10-22；history does not reach latest completed session。
+- 有色金属（512400.SS）：源末日 2026-10-22；history does not reach latest completed session。
+- 军工（512660.SS）：源末日 2026-10-22；history does not reach latest completed session。
+- 消费（159928.SZ）：源末日 2026-10-22；history does not reach latest completed session。
+- 煤炭（515220.SS）：源末日 2026-10-22；history does not reach latest completed session。
 
 </details>
 
@@ -46,7 +46,7 @@
 
 | 指数 / 板块ETF代理 | 起止交易日 | 起点 → 终点收盘 | 周涨跌 |
 |---|---|---:|---:|
-| 通信（XLC） | 2026-10-02 → 2026-10-09 | 110.32 → 110.38 | +0.05% |
+| 通信（XLC） | 2026-10-09 → 2026-10-16 | 110.38 → 110.32 | -0.05% |
 
 <details><summary>未通过原件或日期核验的行情</summary>
 
