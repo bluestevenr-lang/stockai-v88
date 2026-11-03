@@ -1,6 +1,6 @@
 {
- "ts": 1793692682.7061028,
- "generated_at": "2026-11-03 15:58（北京时间）",
+ "ts": 1793737241.9588094,
+ "generated_at": "2026-11-04 04:20（北京时间）",
  "min_n": 5,
  "types": {
   "entry_green": {
@@ -16,10 +16,11 @@
    "rate": null
   },
   "ipo_hk": {
-   "n": 0,
-   "win": 0,
+   "n": 12,
+   "win": 1,
    "note": "港股新股·首日上涨率·近12只",
-   "rate": null
+   "avg": -0.5,
+   "rate": 8
   },
   "darkhorse": {
    "n": 0,
@@ -28,10 +29,11 @@
    "rate": null
   },
   "hot_dual": {
-   "n": 0,
-   "win": 0,
+   "n": 67,
+   "win": 25,
    "note": "双榜热股·隔日表现(反指标:上涨率低=拥挤信号成立)",
-   "rate": null
+   "avg": NaN,
+   "rate": 37
   },
   "gate_guard": {
    "n": 0,
@@ -40,10 +42,10 @@
    "rate": null
   },
   "cycle_turn": {
-   "n": 0,
+   "n": 11,
    "win": 0,
    "note": "个股周期象限·上行判断涨/下行判断跌=对·≥3天到期",
-   "rate": null
+   "rate": 0
   },
   "bottom_turn": {
    "n": 0,
