@@ -52,10 +52,12 @@ jobs:
           python src/cloud_history_bootstrap.py --source ../state/cloud-history.json.gz
           python src/feishu_cloud_bundle.py runtime-reports ../state/runtime-bundle.json \
             --only benchmark_close_history.json,strategy_board.json
-      - name: 刷新收盘指数和板块
+      - name: 刷新并核验收盘指数
         run: |
-          python -c "from benchmark_history import refresh; refresh()"
-          python -c "from market_snapshot import generate_market_snapshot; generate_market_snapshot(include_cycle_scan=False,facts_only=True)"
+          timeout 90s python -c "from benchmark_history import refresh; refresh()"
+      - name: 有界更新板块快照（失败保留真实日期并明示）
+        continue-on-error: true
+        run: timeout 90s python -c "from market_snapshot import generate_market_snapshot; generate_market_snapshot(include_cycle_scan=False,facts_only=True)"
       - name: 更新ETF份额与净值
         continue-on-error: true
         run: timeout 110s python src/etf_flow_monitor.py
