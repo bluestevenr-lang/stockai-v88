@@ -16,7 +16,7 @@ on:
   workflow_call: {}
   workflow_run:
     # Independent existing wakeups recover when this workflow's cron is delayed.
-    workflows: ["Keep Streamlit Cloud Awake", "V88 健康自检（公共仓免费运行）"]
+    workflows: ["Keep Streamlit Cloud Awake", "V88 健康自检（公共仓免费运行）", "V88 免费行情·日报周报·飞书（无模型额度依赖）", "Quant Simulation Worker", "V88 盘中即时预警（公共仓免费运行）"]
     types: [completed]
 permissions:
   contents: read
