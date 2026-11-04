@@ -1,0 +1,128 @@
+name: V88 收盘日报与资金快照（免费规则）
+on:
+  schedule:
+    - cron: '0,15,30 9 * * 1-5'
+    - cron: '0,15,30 23 * * 1-5'
+  workflow_dispatch: {}
+permissions:
+  contents: read
+concurrency:
+  group: v88-autonomous-facts
+  queue: max
+  cancel-in-progress: false
+jobs:
+  brief:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: core
+    env:
+      V88_DISABLE_LLM: '1'
+      V88_FEISHU_ALLOW_PUSH: '0'
+      PYTHONPATH: src
+      GH_TOKEN: ${{ secrets.PRIVATE_TOKEN }}
+      V88_FEISHU_STATE_DIR: ${{ github.workspace }}/state
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: bluestevenr-lang/v88-daily-report
+          token: ${{ secrets.PRIVATE_TOKEN }}
+          path: core
+      - uses: actions/checkout@v4
+        with:
+          repository: bluestevenr-lang/v88-daily-report
+          token: ${{ secrets.PRIVATE_TOKEN }}
+          ref: feishu-delivery-state
+          path: state
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /runtime-bundle.json
+            /runtime-core.json
+            /cloud-history.json.gz
+            /feishu_sync_delivery.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: core/requirements.txt
+      - run: pip install -q -r requirements.txt
+      - name: 还原已核验序列
+        run: |
+          python src/cloud_history_bootstrap.py --source ../state/cloud-history.json.gz
+          python src/feishu_cloud_bundle.py runtime-reports ../state/runtime-bundle.json \
+            --only benchmark_close_history.json,strategy_board.json
+      - name: 刷新收盘指数和板块
+        run: |
+          python -c "from benchmark_history import refresh; refresh()"
+          python -c "from market_snapshot import generate_market_snapshot; generate_market_snapshot(include_cycle_scan=False,facts_only=True)"
+      - name: 更新ETF份额与净值
+        continue-on-error: true
+        run: timeout 110s python src/etf_flow_monitor.py
+      - name: 更新六类资金事实
+        continue-on-error: true
+        run: timeout 110s python src/funding_watch.py
+      - name: 生成收盘分析（过旧会明确失败，不伪装今日）
+        id: generate
+        continue-on-error: true
+        run: python src/market_daily_brief_job.py
+      - name: 发布主仓缓存与同步包
+        if: always()
+        run: |
+          if [ ! -f data/market_daily_brief.json ]; then exit 1; fi
+          git config user.name v88-bot
+          git config user.email actions@github.com
+          bash scripts/setup_merge_driver.sh
+          git add -f data/market_daily_brief.json data/benchmark_close_history.json
+          for file in etf_flow_monitor funding_watch; do
+            if [ -f "data/$file.json" ]; then git add -f "data/$file.json"; fi
+          done
+          if ! git diff --cached --quiet; then
+            bash scripts/git_push_retry.sh "data: closing brief with dated funding facts"
+          fi
+          python -c "from market_daily_brief_job import publish_runtime; publish_runtime()"
+      - name: 保留真实生成结果
+        if: steps.generate.outcome != 'success'
+        run: exit 1
+  send:
+    needs: brief
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    concurrency:
+      group: v88-feishu-three-slots
+      cancel-in-progress: false
+    defaults:
+      run:
+        working-directory: core
+    env:
+      V88_DISABLE_LLM: '1'
+      PYTHONPATH: src
+      GH_TOKEN: ${{ secrets.PRIVATE_TOKEN }}
+      V88_FEISHU_STATE_DIR: ${{ github.workspace }}/state
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: bluestevenr-lang/v88-daily-report
+          token: ${{ secrets.PRIVATE_TOKEN }}
+          path: core
+      - uses: actions/checkout@v4
+        with:
+          repository: bluestevenr-lang/v88-daily-report
+          token: ${{ secrets.PRIVATE_TOKEN }}
+          ref: feishu-delivery-state
+          path: state
+          sparse-checkout-cone-mode: false
+          sparse-checkout: /feishu_sync_delivery.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: core/requirements.txt
+      - run: pip install -q -r requirements.txt
+      - name: 正式收盘日报（同日同档持久去重）
+        env:
+          FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+        run: |
+          mkdir -p data
+          cp ../state/feishu_sync_delivery.json data/feishu_sync_delivery.json
+          python src/market_brief_feishu.py

@@ -69,6 +69,8 @@ jobs:
           sparse-checkout: |
             /source-bundle.tar.gz
             /runtime-bundle.json
+            /screen-history.json.gz
+            /fundamental-snapshot.json.gz
             /feishu_sync_delivery.json
             /history-state.json
             /recommendation-journal.json
