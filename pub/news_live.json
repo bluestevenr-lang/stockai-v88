@@ -1,723 +1,695 @@
 {
- "generated_at": "2026-11-06 09:57",
- "count": 240,
+ "generated_at": "2026-11-06 15:31",
+ "count": 443,
  "topics": [
   {
    "w": "AI",
-   "n": 40
-  },
-  {
-   "w": "芯片",
-   "n": 11
-  },
-  {
-   "w": "原油",
-   "n": 9
+   "n": 127
   },
   {
    "w": "美元",
-   "n": 5
+   "n": 21
   },
   {
-   "w": "券商",
-   "n": 4
+   "w": "芯片",
+   "n": 15
   },
   {
-   "w": "收益率",
-   "n": 3
+   "w": "原油",
+   "n": 14
   },
   {
-   "w": "IPO",
-   "n": 3
+   "w": "纳指",
+   "n": 14
   },
   {
-   "w": "苹果",
-   "n": 3
+   "w": "英伟达",
+   "n": 10
+  },
+  {
+   "w": "黄金",
+   "n": 9
+  },
+  {
+   "w": "特斯拉",
+   "n": 6
+  }
+ ],
+ "major_news": [
+  {
+   "t": "美股暴跌冲击：对冲基金10月撤仓创十余年最快，多家机构裁员",
+   "dir": -1,
+   "stk": [],
+   "url": "https://wallstreetcn.com/articles/3785346",
+   "s": "华尔街见闻",
+   "time": "2026-11-06 14:30"
+  },
+  {
+   "t": "董少鹏：美股这次暴跌是逆转性的，还将持续下去，特朗普第二任期内的全部涨幅都是荒唐的 - 金融界",
+   "dir": -1,
+   "stk": [],
+   "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE5WNVZxZUZhWFFHVEVRamxWNEpGSDJvOVhGUFdLRXpITHo5eWZSazg0VkNSdmYtT2NURXhOU2FXa044dm02cGlwdS1qNFJidmI1SXNvRUhyRUFCN2dERm5pcDdoekFuOHBDemVhaHlJOVdHZUht?oc=5",
+   "s": "Google News - 中文市场聚合",
+   "time": "2026-11-06 14:16"
+  },
+  {
+   "t": "美股刚遭重挫，“牛市狂潮”又将至？投行：两党若合作，标普将剑指9000点！ - 东方财富",
+   "dir": -1,
+   "stk": [
+    {
+     "n": "东方财富",
+     "c": "300059.SZ"
+    }
+   ],
+   "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE9VRGI4TG8tNTNHLVZmOGh5LU5ndW1fU1k3YWthaVBsX3lMN1VQYXFKaGFOR1duQkh4bTcwV19LcmVNdkNUMjgweWItY2p3ZG5adVk1RW9ZNE1vTXNESVdzcFRUTE5sZw?oc=5",
+   "s": "Google News - 中文市场聚合",
+   "time": "2026-11-06 14:12"
+  },
+  {
+   "t": "美股暴跌市值一度蒸发近3万亿美元，资金涌向国债、黄金避险 - 金融界",
+   "dir": -1,
+   "stk": [],
+   "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE9tdTNDdHl3djVndDJ6dW9vVFQ4c1JVTGRDVTZPSnBmNmRyeV9jbnplZEJjbnRIQmtJeTk2Z3pGSzRHa2Z0THdNSWcxRVRVbzhuRDlnN2xwaGd4d2gxSDNaNXgzOXVabzFNSVY0bjdBWlFWZw?oc=5",
+   "s": "Google News - 中文市场聚合",
+   "time": "2026-11-06 13:53"
+  },
+  {
+   "t": "美股一夜崩盘，Anthropic估值暴跌至5000亿！搞ASI或被判20年 - 凤凰网科技",
+   "dir": -1,
+   "stk": [],
+   "url": "https://news.google.com/rss/articles/CBMiTEFVX3lxTE5nQzBZYTRtZ3VtM3hDc1NyTWZwaldwekl6aURHY2ZrcWJkZVl2cXhQZFZ5SVpKdEswenhEN0RaMmoyb0tQYml4NU5tblU?oc=5",
+   "s": "Google News - 中文市场聚合",
+   "time": "2026-11-06 13:49"
+  },
+  {
+   "t": "A股 “东方”系多股涨停，东方海洋13天8板！从“羊字辈”到“东方系”，A股弱市玄学炒作此起彼伏 - 金融界",
+   "dir": 1,
+   "stk": [
+    {
+     "n": "东方海洋",
+     "c": "002086.SZ"
+    }
+   ],
+   "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE5SQUc2Z0d2bWR4cW9pbjgzaXFnTm83Nkt0M1RERGlpMF9yYkN1MmlkOEowVldtZENKbTBmQ3UxTlVWLUw4eE1DdGhEbEp6THBwNUFHUzdoTGRZck9mTk1VaTQtWWxJeXRZc0ZQdVZKSlEzQQ?oc=5",
+   "s": "Google News - 中文市场聚合",
+   "time": "2026-11-06 13:47"
   }
  ],
  "items": [
   {
-   "t": "港股上演“冰火两重天”:硬科技狂飙,科网大金融却“拖后腿” - Sohu",
+   "t": "The 'World's Best Airline' is updating its business and first-class experience",
    "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNZE9RZ3FFcnVUSkZ4VklpbUNtMGZjUzlUODFINHUtakxFaDNKaG82LS0wM0FJYmhxWGdpOGtfaGxxelJvZ2FHT0h5dWc4NmtOd0FQeFlueGhXbEFsTFhYdUNpR0ZVbksyLU11V2ZVU1FNZU5BSTNOQW9fRE03Q1JxTGFSOGZlRll4?oc=5",
-   "time": "2026-09-08 00:02",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "港股上演“冰火两重天”:硬科技狂飙,科网大金融却“拖后腿” - 每日经济新闻",
-   "stk": [],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1oNzdtUEdrUllGLWxFQTgyRzMzaUFRcnZNaW9KdEk3ZFlKWmFmcGt3Ml9obHpScm9IMktTTlphbGo4VmdtM0MtdXFUOXhzeFpJQWRPSVJWOUZrMzliYmROMkE4WkV2UQ?oc=5",
-   "time": "2026-09-08 00:02",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Sweden stocks higher at close of trade; OMX Stockholm 30 up 0.24%",
-   "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/sweden-stocks-higher-at-close-of-trade-omx-stockholm-30-up-024-4890697",
-   "time": "2026-09-08 00:00",
-   "cat": "global_markets"
-  },
-  {
-   "t": "My wife and I are in our 70s. Should we move to California and take on a bigger mortgage to be near our kids?",
-   "stk": [],
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/my-wife-and-i-are-in-our-70s-should-we-move-to-california-and-take-on-a-bigger-mortgage-to-be-near-our-kids-1d619084?mod=mw_rss_topstories",
-   "time": "2026-09-08 00:00",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Hyperliquid Strategies Soared by 94% in August. Should Investors Forget Bitcoin and Buy This Stock Instead?",
-   "stk": [],
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/hyperliquid-strategies-soared-94-august-155606307.html",
-   "time": "2026-09-07 23:56",
-   "cat": "global_finance"
-  },
-  {
-   "t": "'Ah! Rejected, yet again': How this 45-year-old turned his 'demoralizing' job search into a one-man show",
-   "stk": [],
+   "dir": 0,
    "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/09/07/45-year-old-turns-job-search-into-a-one-man-show.html",
-   "time": "2026-09-07 23:55",
+   "url": "https://www.cnbc.com/2026/11/06/singapore-airlines-new-first-business-class-a350-starlink.html",
+   "time": "2026-11-06 15:30",
    "cat": "global_markets"
   },
   {
-   "t": "Volkswagen finds defence future for German plant amid major overhaul",
+   "t": "U.S. Treasurys Little Changed, Markets Await Employment Data",
    "stk": [],
+   "dir": 0,
+   "s": "WSJ - Markets",
+   "url": "https://www.wsj.com/finance/investing/u-s-treasurys-little-changed-markets-await-employment-data-88f3f2b6?mod=rss_markets_main",
+   "time": "2026-11-06 15:26",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Asia stocks tumble as AI rout batters Japan, S. Korea",
+   "stk": [],
+   "dir": -1,
    "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/volkswagen-finds-defence-future-for-german-plant-amid-major-overhaul-4890601",
-   "time": "2026-09-07 23:54",
+   "url": "https://www.investing.com/news/stock-market-news/asia-stocks-tumble-as-ai-rout-batters-japan-s-korea-5006358",
+   "time": "2026-11-06 15:10",
    "cat": "global_markets"
   },
   {
-   "t": "Oil closes in on $100 as renewed supply crunch looms",
+   "t": "AI boom turns chip packaging into the next battleground for semiconductors",
    "stk": [],
-   "s": "FT - Markets",
-   "url": "https://www.ft.com/content/c8167dc7-f472-4846-8005-ee18b23736a8?syn-25a6b1a6=1",
-   "time": "2026-09-07 23:51",
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/ai-boom-turns-chip-packaging-into-the-next-battleground-for-semiconductors-5006549",
+   "time": "2026-11-06 15:06",
    "cat": "global_markets"
   },
   {
-   "t": "佳创视讯A股股东户数增加172户增幅0.70%,流通A股户均持股1.5万股降幅0.70%,户均持股市值9.72万元降幅6.33% - 新浪财经",
-   "stk": [
-    {
-     "n": "佳创视讯",
-     "c": "300264.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPa2ZwNGZUQnNMaFlTODB2Z1RudVgxaEJOQjN1Y1dtZE9yZDN1eFR6bWdScDFHOC1TcmxjUXZJM1Z4VW9KalMxRlY2NEctZUhRRy1NYlZ0YTJweUVTTGdqX0J0NkQ5WnBOdlRqSmNUQ1U1SXZQV2VlQ0JaV2tRMDloWVlMNWI3VXB2WWJuOWJheGZScmEwZzRWcw?oc=5",
-   "time": "2026-09-07 23:50",
-   "cat": "cn_markets"
+   "t": "Tesla to wind down Cybertruck production at Texas gigafactory next year, Musk says",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/tesla-to-wind-down-cybertruck-production-at-texas-gigafactory-next-year-musk-says-5006624",
+   "time": "2026-11-06 15:06",
+   "cat": "global_markets"
   },
   {
-   "t": "Super Micro Has Gained 35% in 2026. What Would It Take to Get SMCI Stock Up to $50?",
+   "t": "Japan stocks lower at close of trade; Nikkei 225 down 6.04%",
    "stk": [],
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/super-micro-gained-35-2026-155008651.html",
-   "time": "2026-09-07 23:50",
-   "cat": "global_finance"
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/japan-stocks-lower-at-close-of-trade-nikkei-225-down-604-5006620",
+   "time": "2026-11-06 15:00",
+   "cat": "global_markets"
   },
   {
-   "t": "This Is What I'd Do With Pfizer Stock Right Now",
+   "t": "Goldman Sachs weighs in on three Australian gold stocks",
    "stk": [],
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/id-pfizer-stock-now-155001764.html",
-   "time": "2026-09-07 23:50",
-   "cat": "global_finance"
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/goldman-sachs-weighs-in-on-three-australian-gold-stocks-5006619",
+   "time": "2026-11-06 14:58",
+   "cat": "global_markets"
   },
   {
-   "t": "OPEC+维持10月产量配额不变,焦点转向2027年产能上限",
+   "t": "Nikkei Falls 6.0%, Posts Biggest Loss in 1.5 Years",
    "stk": [],
+   "dir": 0,
+   "s": "WSJ - Markets",
+   "url": "https://www.wsj.com/finance/stocks/nikkei-falls-5-9-dragged-by-chip-stocks-d8937761?mod=rss_markets_main",
+   "time": "2026-11-06 14:55",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Stock futures mixed after Nasdaq correction; Japan's Nikkei 225 enters bear market: Live updates",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/11/05/stock-market-today-live-updates.html",
+   "time": "2026-11-06 14:54",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Singapore Airlines unveils $1.6 bln cabin upgrade plan",
+   "stk": [],
+   "dir": 1,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/singapore-airlines-unveils-16-bln-cabin-upgrade-plan-93CH-5006618",
+   "time": "2026-11-06 14:49",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Japan’s GPIF posts $33.3 bln Q2 loss as global bond selloff hits foreign holdings",
+   "stk": [],
+   "dir": -1,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/japans-gpif-posts-333-bln-q2-loss-as-global-bond-selloff-hits-foreign-holdings-5006616",
+   "time": "2026-11-06 14:48",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Analysts and investors react to AI market rout",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/analysts-and-investors-react-to-ai-market-rout-5006243",
+   "time": "2026-11-06 14:48",
+   "cat": "global_markets"
+  },
+  {
+   "t": "AI交易回撤，最佳对冲工具是日元？",
+   "stk": [],
+   "dir": 0,
    "s": "华尔街见闻",
-   "url": "https://wallstreetcn.com/articles/3781251",
-   "time": "2026-09-07 23:49",
+   "url": "https://wallstreetcn.com/articles/3785357",
+   "time": "2026-11-06 14:44",
    "cat": "cn_markets"
   },
   {
-   "t": "Alibaba vs. Coupang: Which Asia Retail Powerhouse Stock Is a Better Buy in 2026?",
+   "t": "美股暴跌冲击：对冲基金10月撤仓创十余年最快，多家机构裁员",
    "stk": [],
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/alibaba-vs-coupang-asia-retail-154701812.html",
-   "time": "2026-09-07 23:47",
-   "cat": "global_finance"
+   "dir": -1,
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3785346",
+   "time": "2026-11-06 14:30",
+   "cat": "cn_markets",
+   "major": 1
   },
   {
-   "t": "Microsoft Is Close to a New All-Time High. This Number Will Determine If It Keeps Climbing - 24/7 Wall St.",
+   "t": "撞上AI崩盘！今晚，一份强劲非农报告，或给美股又一重击",
    "stk": [],
+   "dir": -1,
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3785351",
+   "time": "2026-11-06 14:30",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Nasdaq Stock Market Correction: 3 Words From Warren Buffett To Remember RIght Now - Yahoo Finance",
+   "stk": [],
+   "dir": 0,
    "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNLU1WNHhPRi1NdF93d1pEMl8wcExBYjNGc1o5Q0FkY1hVeFlIQk5aNGRLOUFhTWpjQ2Y4Y3VTaU5IcUxHTmllMTh1WWtNQ2FRRVBwcV90RHAyVVphTnF6WnVQT2xpWGl3X0JnWEFWcGt5aERxY2JHSHlKSWFYUVYzRFRLXzVhTzhOTl8wZVRUd012MFAwVnp0NkJ1YnpBZkU1Q1F2dVpsaENKNzVncjdFWHJnYWdyQ0JCZURGcnRFbFl5aUU3allEdFNsMFNzUQ?oc=5",
-   "time": "2026-09-07 23:45",
+   "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPZDNZX3M5QzdfMjFlUjRrcUFsTUcyRXVkbC1fUFRrWVNrMElyZ2Z1RzFvNXN4TGdTYjVQYmhnSG10eEVOakVicXJEcGpxR28yd011Mi1TWDQ1cmQxa3JmV3I2MEx0TU5ZYVdmV29XNmZpRFNLRUMzT2ZkSk9fR21PV3k5NGZPSGFCT0Nzck5YU0kzRFJ1MFBWVWQzS1dtQQ?oc=5",
+   "time": "2026-11-06 14:27",
    "cat": "global_markets"
   },
   {
-   "t": "新晋港股通标的行情分化,群核科技大涨近30% - 新浪财经",
+   "t": "A股“东方”系个股，集体走强 - 东方财富",
+   "stk": [
+    {
+     "n": "东方财富",
+     "c": "300059.SZ"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE16NUhfZXl4ZkRrQUw3YnlJZGtfWEtmc0xvMk91aWp3S3ZtYktxQ3VfS1lKUnFtWkRYTkRELW5jN3ZZdHJHTkJQLVRuOHZnV3pYcGRfRmdLcEtmUUFVOEd1QQ?oc=5",
+   "time": "2026-11-06 14:26",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Investors wipe $2.5 trillion off Nasdaq as blue tsunami prompts AI fears",
    "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/ai-datacenter-stocks-slip-as-democratic-sweep-clouds-expansion-plans-5003196",
+   "time": "2026-11-06 14:24",
+   "cat": "global_markets"
+  },
+  {
+   "t": "“暂停数据中心审批”！美股史上“最糟糕交易日之一”背后，得州新州长究竟说了什么？ - 每日经济新闻",
+   "stk": [],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTFBjcmg3MzV6Z001eUZQTzdpUVRjNFVSbENSU0NMTHlUWG56bnoxVmVIRl9tNHdSZW1uSDVDalRpaWsxZVNSXzZZckFfX0hPa3F0V0swdV9faEpGRmdqYmNGX0djbFpQQ3dqRGdkZTVLSQ?oc=5",
-   "time": "2026-09-07 23:42",
+   "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE5od0ZXb3ZUdVg0Vk1kSHBPd1NCUW5jVEU4ei1yWXUzZHFjMVVEeFN6MnBCZXU5M0hkVWRGVXZJVjdfT0xBNXMxem53OXlORThMYTFGaU9odzJ2eU5fUmVzM09oalBCUQ?oc=5",
+   "time": "2026-11-06 14:23",
    "cat": "cn_markets"
   },
   {
-   "t": "天禄科技A股股东户数减少2132户降幅16.46%,流通A股户均持股8384.44股增幅19.71%,户均持股市值57.06万元增幅22.96% - Sohu",
+   "t": "Aryzta CFO Martin Huber to leave company for new role",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/aryzta-cfo-martin-huber-to-leave-company-for-new-role-93CH-5006591",
+   "time": "2026-11-06 14:17",
+   "cat": "global_markets"
+  },
+  {
+   "t": "董少鹏：美股这次暴跌是逆转性的，还将持续下去，特朗普第二任期内的全部涨幅都是荒唐的 - 金融界",
+   "stk": [],
+   "dir": -1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE5WNVZxZUZhWFFHVEVRamxWNEpGSDJvOVhGUFdLRXpITHo5eWZSazg0VkNSdmYtT2NURXhOU2FXa044dm02cGlwdS1qNFJidmI1SXNvRUhyRUFCN2dERm5pcDdoekFuOHBDemVhaHlJOVdHZUht?oc=5",
+   "time": "2026-11-06 14:16",
+   "cat": "cn_markets",
+   "major": 1
+  },
+  {
+   "t": "港股异动 | 锂电池概念股再度走低 小摩指税费转嫁较预期困难 再度下调行业盈利预测 - Moomoo",
+   "stk": [],
+   "dir": -1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxQREdHZVBTckxCdERMUkp6dTRaS3ZIU1JReHRySFpkSDU0YzgzRFV4Z3VFaXhsZVpIMUQzQjdnamcwTTIyQ3JVQUZvVHY4anNVRlhCTmI4TUd4UVJxc04wNU1pZWpVcE9hSERzekVWeHh6eTVkelJ5SF9mN1VuY24xOFhiSXhYMXA5NEZLREg3d3h0R1lMM2M5bl80eVU4R0owTDVQS2hDby1oVUticjE5Q1hvdkxEbWk2?oc=5",
+   "time": "2026-11-06 14:14",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "美股刚遭重挫，“牛市狂潮”又将至？投行：两党若合作，标普将剑指9000点！ - 东方财富",
    "stk": [
     {
-     "n": "天禄科技",
-     "c": "301045.SZ"
+     "n": "东方财富",
+     "c": "300059.SZ"
     }
    ],
+   "dir": -1,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNZVlxSmRLa3hRSEdRTXhDUVpsUjV6QWFIVEtmLV81Unlaa3RDQTRFbzlGSjFycHNXYnF2QlQtTDY0OXRPdHdkalZnTGVVSEtTYVNONUN1eHJRbVJKX25IOVEzZGpBRkE3amlHV0dBeXpzOEU3ZUtnaWVCbHFTTENqOXNZalplTkdBZjdQcg?oc=5",
-   "time": "2026-09-07 23:40",
+   "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE9VRGI4TG8tNTNHLVZmOGh5LU5ndW1fU1k3YWthaVBsX3lMN1VQYXFKaGFOR1duQkh4bTcwV19LcmVNdkNUMjgweWItY2p3ZG5adVk1RW9ZNE1vTXNESVdzcFRUTE5sZw?oc=5",
+   "time": "2026-11-06 14:12",
    "cat": "cn_markets"
   },
   {
-   "t": "万丰股份A股股东户数增加921户增幅9.72%,流通A股户均持股1.28万股降幅8.86%,户均持股市值24.18万元增幅9.36% - Sohu",
+   "t": "Hong Kong property investors buck Asia-Pacific buying shift, survey shows",
+   "stk": [],
+   "dir": 0,
+   "s": "SCMP - Business",
+   "url": "https://www.scmp.com/business/article/3373513/hong-kong-property-investors-buck-asia-pacific-buying-shift-survey-shows",
+   "time": "2026-11-06 14:10",
+   "cat": "hk_markets"
+  },
+  {
+   "t": "热门板块速睇：港股医药外包概念走弱，金斯瑞生物科技领跌 - Moomoo",
    "stk": [
     {
-     "n": "万丰股份",
-     "c": "603172.SS"
+     "n": "金斯瑞生物科技",
+     "c": "01548.HK"
     }
    ],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNVXJnUTRXQmpSQVA2RDZEeUppQ2FIZ0V5SS0zOEtaYjNGWVNjb21LUU90X0FhbTdWRkQxMy1MQ1RSbTBHNUxwQV9razZUTW9HV1BVdDRzc0hmWUM1VXVtU3FHeWNqUk01c0pHc21FSU1QZlF1dEhEU2Joa2puSmhkVUtJWTh4bzA0dTI3Yw?oc=5",
-   "time": "2026-09-07 23:40",
+   "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxNRjExQndqUFZ0NGlLZ28zemFFYUtJVHQ5NDE0elZlWnVJbXpFY3Fac3VhRW9INlNIV3h1M1puX2hNRWxrZC0ydWVfdlVCOHpFd1M4RlQ0YXgxTmN4enkzTGdCN2U2Q1ByWnlpaVM2TElRejF3bzBUdVBaTzA0ZFFRVGxadTdoNVZWN1ZGbnF1TG5vYXdmSF9JTWE3MWFSckdtdGo0OUI2NDFVLVBPajcwaUFKYw?oc=5",
+   "time": "2026-11-06 14:10",
    "cat": "cn_markets"
   },
   {
-   "t": "永泰运A股股东户数增加945户增幅11.21%,流通A股户均持股8517.98股降幅10.08%,户均持股市值24.88万元降幅3.29% - Sohu",
+   "t": "A股CPO概念股11月6日全线下跌 蘅东光跌超14% 创业板指午后跌4% - 观点网",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTFBhSS1lbUNHQ2V6bUI4OGl3TG96elRfUXRjX3ZlQ0llOHRLOEZ4dG1vZUhPWm52Ull4ZlBEQ2RrZXhZZGdJU2pzVk8zWDBOTVZzdHdwcm9VYThQTFF0bmFWeUlB?oc=5",
+   "time": "2026-11-06 14:07",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "高盛大砍黄金目标价！央行购金挡不住美联储转鹰，当前格局像极了2022年",
+   "stk": [],
+   "dir": 0,
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3785345",
+   "time": "2026-11-06 14:07",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Nasdaq Stock Market Correction: 3 Words From Warren Buffett To Remember RIght Now - The Motley Fool",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxPc2s5ZTNSZ21PYlVINzJOeXZDeUwxRGNhbnNDYkN0VzB6dF8tRGtaMXJxQkc1RlBULWJmUjBSTnR1MGIyV3NZNzB6c2RBYVBIZWRjNmR4Qm42TnBMdkdROFJhWklGbzNRNzlSOHdTUmI5dEVaVzBfTlNFX2s2a0V0dGcwNU5Vcm81cUdPZ1Z5SER0THR5VklsZlNrb0ctVmFzZXN6bjFaRUthUjdvbkVWbTQwUXk4eC03d1c4TUFn?oc=5",
+   "time": "2026-11-06 14:07",
+   "cat": "global_markets"
+  },
+  {
+   "t": "India as an AI hedge? The country's stocks could see robust inflows as markets globally tank",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/11/06/india-ai-tech-hedge-nifty50.html",
+   "time": "2026-11-06 14:02",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Ark Invest wants to bring some ‘disruptive innovation’ to interval funds",
+   "stk": [],
+   "dir": 0,
+   "s": "FT - Markets",
+   "url": "https://www.ft.com/content/dce2b9da-a4c6-4016-af78-7c41ac41a6b0",
+   "time": "2026-11-06 14:00",
+   "cat": "global_markets"
+  },
+  {
+   "t": "港股锂电池板块午后震荡走低 - 观点网",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE81WGJKcnd1c0xiUUl5R2FWYm83dUxTM01pcWJIRUVpT09uc1NvR1RsaUx4TmJKY05hOWlGamlleWNPRThqYmJNc2pTT3cyRnNsSTFMcjZseEFnajl4bm9ORUN3?oc=5",
+   "time": "2026-11-06 13:58",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "A股银行板块午后逆势走高 沪农商行涨超4%多股跟涨 - 观点网",
    "stk": [
     {
-     "n": "永泰运",
-     "c": "001228.SZ"
+     "n": "沪农商行",
+     "c": "601825.SS"
     }
    ],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPVGJ2clNfbWRYMy1PMGJyUTNOalYtWldrZ2lWMHNYTldIcE92Q2FpbmFmOG9WSnpZbFFEXzczRzFBTWItVVlZeE10WjhhcDFjUDNyNWlSekJMU3lpakJ0SDBWdjNRZ3hxOVdzLURpamh4RllUdGNMNDBMOFJyQlNHd2VNQ0dyMWxoTjg5Tg?oc=5",
-   "time": "2026-09-07 23:40",
+   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE5KR2kzRFNTTExXa05IUzAtSDRGdkozMlRpZWlCcnBUZ1liQU1YVGlHQ3Nkb3QwQ3d4cS1laXR5d2JDcUtqd3hjT0NJQTc0SWZxbDd5Y19XalZJYVJlWlRVRlln?oc=5",
+   "time": "2026-11-06 13:57",
    "cat": "cn_markets"
   },
   {
-   "t": "润都股份A股股东户数减少1080户降幅5.24%,流通A股户均持股1.32万股增幅5.53%,户均持股市值14.63万元降幅0.58% - Sohu",
+   "t": "Asian Stocks Brace for Selloff as AI Rout Deepens: Markets Wrap - Bloomberg.com",
+   "stk": [],
+   "dir": -1,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxOX2RxUlFvNmxoUFFUd2pmeUk3MTJoSkNvTkxwOS1TUlNFd1hDZkNZZ0huMHIxQXhDeWtpWVdVcmJGcDQwdVcwMFJTaHg2Q040OTBCZm5Ja2doTnpQcTh1OFFSdDNucHFXVzFRR2EyTEJfa3BRWDFUY19lcFNNXzRmR2F2UEw4dlVOUW1xSnFqNmI1Wmtr?oc=5",
+   "time": "2026-11-06 13:57",
+   "cat": "global_markets"
+  },
+  {
+   "t": "多位券商人士研判A股：短期结构性分化 中长期向上趋势未改 - 观点网",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTFBPQWU0ZGE2T2FCSzRDam5HY0U1enAxN0EzZTB1bmJRVWlnRnFVX0lVbWczcTdlMXJGa3g5OEQ5dmR5blMtYVFWNEpKc3hHTnhsZmlodFVfRlBZQnkyQmNYWVh3?oc=5",
+   "time": "2026-11-06 13:56",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Stock Market: Will S&P 500 Open Up or Down Today? - Benzinga",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxQcm9mYXlXVWk3a1dseGdaWnltd2xTTVdBTV9sTlJIZE9sREkyVlZELW9vVWJoaUE3OWtlTkVVYUtCbWhwWTBxWFZUX0YtSjJsZEZMaHRFSjVveGhOUjM0VTZxdU53WjNTcEVabkI2OVJucl9xOUR6WTdfd3NDYTg1MGtPZlppQXNmbFVybTBJeUx6aE92MlAwQV9WbGtCcTVyY1BUYWEyN2NFOGpIV3g2bDBVYjdxVTQ?oc=5",
+   "time": "2026-11-06 13:56",
+   "cat": "global_markets"
+  },
+  {
+   "t": "美股暴跌市值一度蒸发近3万亿美元，资金涌向国债、黄金避险 - 金融界",
+   "stk": [],
+   "dir": -1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE9tdTNDdHl3djVndDJ6dW9vVFQ4c1JVTGRDVTZPSnBmNmRyeV9jbnplZEJjbnRIQmtJeTk2Z3pGSzRHa2Z0THdNSWcxRVRVbzhuRDlnN2xwaGd4d2gxSDNaNXgzOXVabzFNSVY0bjdBWlFWZw?oc=5",
+   "time": "2026-11-06 13:53",
+   "cat": "cn_markets",
+   "major": 1
+  },
+  {
+   "t": "Micron Stock Has Lost Over 40% Since Its June Record. I'd Still Buy It. - The Motley Fool",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNQkFPWXhXak1JUWpfOHNxa1BNR0diSllLc3B3ZEtNZHYxakxYY0RFakJWRk9lMkY3Yk5sZUYtaEp2c2pCR0dIdlFCWWh3RmhKb2xVZElVeFc5aXlHQkNNS09xQlB6X1JCY3RoYThhQTRTS1ZDdDluQXc0ODB5OGxMOVRPVlJGM2hsRnBOM09MVlBqWHUzQ0lzWDBPWVpSTElPR2NPQ1UyMUlWV3g2ZEV1cQ?oc=5",
+   "time": "2026-11-06 13:53",
+   "cat": "global_markets"
+  },
+  {
+   "t": "特朗普：美股经历史上最糟交易日之一，都怪民主党",
+   "stk": [],
+   "dir": 0,
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3785344",
+   "time": "2026-11-06 13:52",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "美股一夜崩盘，Anthropic估值暴跌至5000亿！搞ASI或被判20年 - 凤凰网科技",
+   "stk": [],
+   "dir": -1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiTEFVX3lxTE5nQzBZYTRtZ3VtM3hDc1NyTWZwaldwekl6aURHY2ZrcWJkZVl2cXhQZFZ5SVpKdEswenhEN0RaMmoyb0tQYml4NU5tblU?oc=5",
+   "time": "2026-11-06 13:49",
+   "cat": "cn_markets",
+   "major": 1
+  },
+  {
+   "t": "6位券商首席最新研判：A股短期震荡不改长期向上趋势 - ThePaper.cn",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1pdkFEUUpTS1VWLU5FSk5BcWY4UjZJdlVSYmNscjRtZ29URFBKU0hZdFFBclVHNzNnNlRSSk1aUmdCT3J0M1NEdGhEU08waFE5YWR5RlM5RDNxTVJ4QTdPUw?oc=5",
+   "time": "2026-11-06 13:48",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "A股 “东方”系多股涨停，东方海洋13天8板！从“羊字辈”到“东方系”，A股弱市玄学炒作此起彼伏 - 金融界",
    "stk": [
     {
-     "n": "润都股份",
-     "c": "002923.SZ"
+     "n": "东方海洋",
+     "c": "002086.SZ"
     }
    ],
+   "dir": 1,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQNktaSDZjUjFHUVJoeE1RakJXTWpGZkJGSDlDX3l6d2ZXTlhFeEJ1RlFWWk5UVC00TFB1NExmZUpZc3NWSld3YWt6ZWxQWEZ4MWRYMW02aFRTMDdWWWVfN1NMV3FhLVRSY3BCLTNJY3h0ci1TMkdJclUwV2NMTW16aDBSWVJXRXpzejdqdQ?oc=5",
-   "time": "2026-09-07 23:40",
+   "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE5SQUc2Z0d2bWR4cW9pbjgzaXFnTm83Nkt0M1RERGlpMF9yYkN1MmlkOEowVldtZENKbTBmQ3UxTlVWLUw4eE1DdGhEbEp6THBwNUFHUzdoTGRZck9mTk1VaTQtWWxJeXRZc0ZQdVZKSlEzQQ?oc=5",
+   "time": "2026-11-06 13:47",
+   "cat": "cn_markets",
+   "major": 1
+  },
+  {
+   "t": "美股暴跌引发连锁反应！算力硬件股重挫，“易中天”均跌超10% - 新浪财经",
+   "stk": [],
+   "dir": -1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxPMFRkTEtLX29YQjdEVXQ4Sm54eFdkQ3R4QU9QVTVxREgteTZHUzNUbkpxMkYwZXV0bXdZTG5ZNFM0bFdpNGJNX0dMemEyemVmUjZYbWl6cEdhT2dpSDBkNlk2ZmVacllMaGY0N2pRdHZOUDhWNHBTVmlzaGVMb3VSaA?oc=5",
+   "time": "2026-11-06 13:44",
+   "cat": "cn_markets",
+   "major": 1
+  },
+  {
+   "t": "港股通红利低波ETF鹏华(159117)标的指数红盘向上，板块迎来政策产业催化| 界面新闻 - Jiemian.com",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTFBMaHRBaVlXODF6Qlg3MWRlUHVoQzBYMmsyRzF4MVVDdndyQXNhNkg2RXgxWDd3VjA4eUhMN3hSSVkwWjVPTktDZ2VDVVM4bzBaaXBsSWFfTTI?oc=5",
+   "time": "2026-11-06 13:43",
    "cat": "cn_markets"
   },
   {
-   "t": "捷佳伟创A股股东户数减少975户降幅1.23%,流通A股户均持股3695.5股增幅1.24%,户均持股市值20.84万元降幅2.09% - Sohu",
+   "t": "India as an AI hedge? The country's stocks could see robust inflows as markets globally tank - CNBC",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMickFVX3lxTFBMMzlGMlNVWG1idmxXbTVQbnE3SXlhWFFmYXNkRkQ5X292bEF3dl9nUXJMZDVPc3hLdTlPU0QyQ2VOd3JSZGhvcEFfdzhWSl9BajNwUk1yYWhxWlkzNlBEeEYwR2JsLW5XaFVscmI0MF8wQdIBd0FVX3lxTFByeldnLVAxM3IteTh5Z05zM3A3M0tMbmVFRmVpLWUxemQ0bnhUU1hJTjRpLWpEd19IemtGWFFqX1hzUldtMkxuZjRoRlVpSzBUZF9HLTZOeExiZ3NoeGF6VjBKakZSSlQxTmQ2ZFNqSzdubnZxUXNN?oc=5",
+   "time": "2026-11-06 13:41",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Hong Kong’s Exchange Fund earnings tumble 74% as HKMA warns of more market turbulence",
+   "stk": [],
+   "dir": -1,
+   "s": "SCMP - Business",
+   "url": "https://www.scmp.com/business/banking-finance/article/3373507/hong-kongs-exchange-fund-earnings-tumble-74-hkma-warns-more-market-turbulence",
+   "time": "2026-11-06 13:35",
+   "cat": "hk_markets"
+  },
+  {
+   "t": "美股AI板块遭抛售：纳斯达克100指数跌6.4%，市值蒸发2.5万亿美元 - 凤凰网",
+   "stk": [],
+   "dir": -1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE82MkNDLWdDcG5PelhiWGRwWDNHcDJWWDIxTFN6anFjU1F0ZEhMc2hSdUhWZUpvY3pWcFV2Z3ZveEtnenBndnlDdDlLbDl4U1poSlE?oc=5",
+   "time": "2026-11-06 13:34",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Stocks tumble, erasing post-midterm gains as markets weigh future of AI build-out - The Washington Post",
+   "stk": [],
+   "dir": -1,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxQQUpGQzkxVmNmRExmRDFCaThqUVpEeHRlaW9WaV9tYUJ0TFFPUEdtRllXUE1CNHpsRzdhdGJkNHh3M2RsX0hQLThEUm5WRnFzYXJ4VFF0S2dwVS1sWWI4Y3ptQlBQVzBLbGlwSXBSSEhvYWVTUXM0YldfY2luaDc0TURVUUE2aWZhdnFTc2Zlcm1pdXljRHdfb25ZaDJfZw?oc=5",
+   "time": "2026-11-06 13:32",
+   "cat": "global_markets"
+  },
+  {
+   "t": "A股风格切换进行时，华泰证券年度峰会亮观点 - 中金在线",
    "stk": [
     {
-     "n": "捷佳伟创",
-     "c": "300724.SZ"
+     "n": "华泰证券",
+     "c": "601688.SS"
     }
    ],
+   "dir": 0,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQVTNBeXQ5OE5tZmtmbXVPalZLYlAwYTFzb1AxTzhlVUxKZ2VmWU41RF9hb1FqSDhGeUhkSHo3RTRWQWV3MGJmTHJzcHFXYjdJeGxmb3pDb3NyQTNRbjRObmZPXzdYY0kzTDNDV0pvU1ZzRVp0MWIwRThab2x3R2NxRmxNejVrUTF3dHFfaA?oc=5",
-   "time": "2026-09-07 23:40",
+   "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE5RejZud25mbXMwZ1RhaEROazZuVjhRMklPZXo1cTlGcVA3WGl4MHYzWDA5RmFVREFLQlhMYl85RlBZQ1dkV1g5aDVpSnVrWUtaRnM4d09JTEl2YkJLTTQ2TV9tUlpjQ1NaaGc?oc=5",
+   "time": "2026-11-06 13:32",
    "cat": "cn_markets"
   },
   {
-   "t": "ST美晨A股股东户数增加266户增幅0.86%,流通A股户均持股4.6万股降幅0.85%,户均持股市值9.81万元增幅8.30% - Sohu",
-   "stk": [
-    {
-     "n": "ST美晨",
-     "c": "300237.SZ"
-    }
-   ],
+   "t": "A股低开反弹，这一板块多股大涨 - 凤凰网财经",
+   "stk": [],
+   "dir": 1,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNYU1ta0RDdFhITEhDdXFmQnVpNy1lU1M2c0JlWXFBaVVIRmZZVkdRNjAxVDlFUHREbktIenF2LU4yQ05oRkQ3eVV6UV85S1Y0THlRRjNvWmhGUjlaSEpFNUlKMU1tT191bzRLNHpmakdYTm13ZGE2aFl4dzBPT3JuMmJyanU0ME9RZ0RvUg?oc=5",
-   "time": "2026-09-07 23:40",
+   "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE1kTjBEYlFObUx6WjljNWFwdzk0alhtYTBFYnktUWh1a0lqUl9uVkFvOUJ5bjJaRUJwODNsY1BGNm45SnJ0WnhLMG1CRnBxM2F1?oc=5",
+   "time": "2026-11-06 13:31",
    "cat": "cn_markets"
   },
   {
-   "t": "Which Telecom Stock Has Dominated in 2026: AT&T, Verizon, or T-Mobile? (It’s Not Even Close)",
+   "t": "Renewed U.S.-Iran tension could push oil past $100: Rapidan Energy",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/11/06/us-iran-war-trump-hormuz-oil-midterms.html",
+   "time": "2026-11-06 13:27",
+   "cat": "global_markets"
+  },
+  {
+   "t": "A股暴力反弹原因 - 手机新浪网",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMihAFBVV95cUxPZndLT1NTWnNVZmpSZndzUTRKSE1wdVRKSnhURDQ2RmdtcXJnalNHUlB6RVBjRFdCVmZWMkRpSVhhNk4wNDlyU2tsZDl5a1dmQl9SQ09FMndlbmJhTkthNEg2bkVxUWxvcjJRSVNvb01vazVDaU5ubVZhSUMtakktbzZDckw?oc=5",
+   "time": "2026-11-06 13:25",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "消息人士：本轮美股对冲基金清算将达2009年以来最高水平 - 金融界",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE5ERFVyYWF2WUJaS1ZVaU4tUXhCdTU2UGFHY0hLenk2bXZNQWh3eENsVVQ5V2ZZN1FlLWpWMExId2JTNlpvX2tNUzVCc09TRGlMOGdOOGd5d1hQUFgzamhEZElBd3lyakpOanZkZVV0NFR2Zw?oc=5",
+   "time": "2026-11-06 13:24",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Can Japan’s Stock Market Revival Survive the AI Rout? - Bloomberg.com",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxQTS0zcTdDYlpEbWVWd005ZUpQdDY3ajhFLVkxM09kNlA2ZksxOWFpemt4SVIzUFYyTFR3bFJmbW0yeWVhdzJ3WU9OWnZKQnpJRGliSHpGZFJqNG96LVZwQTQwd1B6MWVOY0duZm5kbHh6R3BpU1p1c19obkxMZm9Xc2d2cEJQQTMzdmVwM0FmVTFMa3BSQ3laQlViaGVnMm5XLTRsbUw2SW1QSERLYW8wRkJ6bGlFcGc?oc=5",
+   "time": "2026-11-06 13:24",
+   "cat": "global_markets"
+  },
+  {
+   "t": "美股跌势加剧促使对冲基金抛售持仓并裁员 - 华尔街日报中文网",
+   "stk": [],
+   "dir": -1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMisgJBVV95cUxQZk92bXdlMURab0FSaHByR0VCWHNqU1lQWC1YUWc2aXdYWW1pUUNQWHhtZFpPSmgxSV9ieDlvWkxtbWc0aWlBWGlzS2RIR3Q4Q3VhUk9vRUtNWTh1aExjTHhVaHNJS05KM1ZrcjVPeDR4VmQ0Y0FxMW1OOGtXSG42eXJiVnRxUDc4ZW5nUWtSUkt5TkNMZWx1YUtkYUhnX1Jid19pVjVycHF5Y05JYWZKaEpEVWl5S0x2RVl6RGdKbngyVUlLY00xQ0Vhd3d4NHJpR1UySXBTZGp4MDYzMHMxV1BBa0EycjhLMllUaG1FMXFZZF9oN1oxQ3p3cjlORDF1Q01oUEVBTFlBS3hEUjJ6WldwcHphek1LQWMwTmNnSWFmSVFpR3NYV2pka08wYTJRTmc?oc=5",
+   "time": "2026-11-06 13:22",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "El-Erian Says Stock Market Is ‘Overdoing It’ On AI Fears: SNDK, MU, AMD, NBIS Hit Multi-Month Lows - Stocktwits",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxPdjZlMWlqLTdwYnhoaEo5c2JDNmZvVHZuNEJFUkpham1GZ3h1cWVfT3F0QVh0U2d2NXFBVzJpaXRVWlBPbnB1X2wzVk1BTU1vbFIyeldUVUxDMzhpRlptSURFUXd4MEN4MlRNNTBTSVBmcGdGMzV2MU41empIOGMzY1RDSTB3RVhYU1VQVk1sZjF5b0Jiay01YUJtRXQzN2NycFJlVmlhT3N2aUYzVlVIeF9TUm1Hak50TGtQWnBZZHY3ZnZjcFh3VG9SYm5JQ3BWMWhFSHpJczdVUQ?oc=5",
+   "time": "2026-11-06 13:22",
+   "cat": "global_markets"
+  },
+  {
+   "t": "AI stocks plunge after US election, driving down markets - Al Jazeera",
+   "stk": [],
+   "dir": -1,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxOTUVrR294T3BIbUVvTlEzZ2dlUkhxc09weTF3RGZWTmR5bldoQ3h5OG4zS3ctN2lWSUtzcTNUbVQxN1RuTWY3a0tqWmFZTW5WMDBQMGJvaXNTNU9WV1h3ZXcxNkJaSUtVd2JNeGVTOWNUR2wyR29USF9heDhoM0ZSSkFjR2hxbVpnZS1jZ3dQSFViRVBldlU4RVRnNnhNdXVh0gGmAUFVX3lxTE5PbkJvMFphbUp4cnZfU0xEOVlrZWcwU0pkOWFPSGtmZ1FfUlZiZkxtSWl6TmR0Y2pXY0VUVTVUT1Q1a3dpMnRnSUU3SkowQnQ0WEh4OGpYdHUzQ0YzQkZXOXhqR2E2MXZkc05pRGg2cC1KM19mOGxOcTRsRkM5NmtyeTdaOEFlRjllRktBYVFxZ3BfQzVHRm5fRU1aTWRCVy1LYk0zX1E?oc=5",
+   "time": "2026-11-06 13:19",
+   "cat": "global_markets"
+  },
+  {
+   "t": "A股午间利好！中际旭创、新易盛、天孚通信、大普微等，集体公告！-证券之星 - 证券之星",
    "stk": [
     {
-     "n": "Verizon",
-     "c": "VZ"
+     "n": "中际旭创",
+     "c": "300308.SZ"
     },
     {
-     "n": "AT&T",
-     "c": "T"
+     "n": "天孚通信",
+     "c": "300394.SZ"
     },
     {
-     "n": "T-Mobile",
-     "c": "TMUS"
+     "n": "新易盛",
+     "c": "300502.SZ"
     }
    ],
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/telecom-stock-dominated-2026-t-154015387.html",
-   "time": "2026-09-07 23:40",
-   "cat": "global_finance"
+   "dir": 1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1BYWJFd1Y3Vk9fTDlBQWpKMDZwTjRrN2hRU0txS0ZzTV9jVlpFdUVXVUVyMW9TdnhBOGFxanJJQU9ZcnRELWpoeV9KSHhKRmlGaUw5UExaNUpJcHRVWXc?oc=5",
+   "time": "2026-11-06 13:18",
+   "cat": "cn_markets"
   },
   {
-   "t": "CAVA COO Douglas Thompson Buys 6,500 Shares, Valued at $432,000",
+   "t": "中际旭创回应美股波动 市场信心待修复 - 中华网",
+   "stk": [
+    {
+     "n": "中际旭创",
+     "c": "300308.SZ"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1YazV5eHEtc3V0VnEtRXpyZFRVMDYxNzJHQ2pBVFM3Vnh5SUp3amE1NXZhV2MyNERTU25QZzZKaGNLbFIyWkJtTml2cmdoVEstRnpuV3RVQVplQUtSZHBlUTJFQnVoRk1vRTVVcGdkZnk?oc=5",
+   "time": "2026-11-06 13:18",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "美股暴跌，特朗普说是民主党害的，马斯克财富已蒸发千亿美元，韩国股市熔断 - 手机新浪网",
    "stk": [],
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/cava-coo-douglas-thompson-buys-154001448.html",
-   "time": "2026-09-07 23:40",
-   "cat": "global_finance"
-  },
-  {
-   "t": "德赛电池A股股东户数增加1135户增幅2.03%,流通A股户均持股6750.84股降幅1.99%,户均持股市值15.88万元降幅7.31% - 新浪财经",
-   "stk": [
-    {
-     "n": "德赛电池",
-     "c": "000049.SZ"
-    }
-   ],
+   "dir": -1,
    "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQSTdyZGd5dmpyWmp4aUxOM2VfR0Y4bWJWLUloQm9uWFQtRktnWlR2M3JYS0ZyQmNsYjluSjhadVZDbjZhSS1YSlVaOVFCZXJIWDhaZ0VCN3p2Q1p3SVhwLXZoazJGbmloNVpiOENzLTI3QmpkNGkxSjdnSTlsQ1FpRS00RXp1XzllazlMVA?oc=5",
-   "time": "2026-09-07 23:40",
-   "cat": "cn_markets"
+   "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxOWEJOWXM1YnZYT3JiYjVRNUpwQ2UwTUlkcHBSZUIyMU1YbmN1REJNSjdOOUpaWnMtcTd2cUFOYm11TWZkZ29TNFN4WjVhRTBSc0FPZnB6NzhBdHFDRTNEZ1B5U0VmTjJ4dFdNWWo3M2wwM3JaWVBYUVg4N2M0dkVWLWxqOA?oc=5",
+   "time": "2026-11-06 13:17",
+   "cat": "cn_markets",
+   "major": 1
   },
   {
-   "t": "跨境通A股股东户数增加4038户增幅2.27%,流通A股户均持股8506.23股降幅2.22%,户均持股市值2.97万元增幅13.37% - 新浪财经",
-   "stk": [
-    {
-     "n": "跨境通",
-     "c": "002640.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOTVFIbmVtR1V3LUR2a3dKckQzUm01NDZ5a3VvTFJfN2pzazhPYWlRNnZEN21oLU95MTU4dFBTR2d2eFpGYVJoRldTcEhTajZkM1FtWHZiWGlUWHZodGo0ZGt3YmttRnZPdGxEd0xPbklTY3NNWGE5TllhckpKMGRFTG1Xbk1venZMUnp1bg?oc=5",
-   "time": "2026-09-07 23:40",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "天禄科技A股股东户数减少2132户降幅16.46%,流通A股户均持股8384.44股增幅19.71%,户均持股市值57.06万元增幅22.96% - 新浪财经",
-   "stk": [
-    {
-     "n": "天禄科技",
-     "c": "301045.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNSzZPSlg4UGdtbWg4aW5ycnRsSDZxelNOb0VVbXdabDNlVDF5VDZfQmJjMHI4MTBBR2JIb3lMZzFrNUdVQlhmb3NoUEFQR3F2TjZaN2tfaHVoZFZGWXgxSVdTVHVRZl9CRjFUZUV3S0QxNFhZWEFfVUhkYk5nOEZYUE1CMVZkX28xQWt1Uw?oc=5",
-   "time": "2026-09-07 23:40",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "华平股份A股股东户数增加71户增幅0.27%,流通A股户均持股2.1万股降幅0.26%,户均持股市值8.04万元增幅1.33% - 新浪财经",
-   "stk": [
-    {
-     "n": "华平股份",
-     "c": "300074.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOWDFRRjJ3VTBuWmNpRVY3RUNjSlp6d2lUemUzdVU3XzUyLUVhcXNJZ1NVei0zMWNnYXF5Rlh1TEZLUmt4ZW1WdkZOSFJPRTFvc0xEQzdUdkcwX3ZndDNFQXdRNkpyNlphT3ZYWTlfU29WVGVTdmZiVTRyT2hoZ0t4WHJIU3NCdDlVLWQ0Rw?oc=5",
-   "time": "2026-09-07 23:40",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "金智科技A股股东户数减少523户降幅1.38%,流通A股户均持股1.06万股增幅1.39%,户均持股市值10.05万元增幅5.06% - 新浪财经",
-   "stk": [
-    {
-     "n": "金智科技",
-     "c": "002090.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQNTNZQ3pQS2c1U29aUzFHZUd5dy1mWHVHZXJoRnpBYTRLOUY4YzRYUGRfa0ZOdy13V3NiUl9sWUpjQU1fS2ptMEc1RXFubTZrQm5MWWE0dVk3SngzQmo4bGUzSUFkLUsxemM4bm1jZ0s0YnlwT09ZcktBWTJXWjhXUzd5NDZ4NlFVemxnSg?oc=5",
-   "time": "2026-09-07 23:40",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "桂林旅游A股股东户数减少1517户降幅4.09%,流通A股户均持股1.32万股增幅4.27%,户均持股市值8.33万元增幅11.88% - 新浪财经",
-   "stk": [
-    {
-     "n": "桂林旅游",
-     "c": "000978.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQNmNOZllWc2UtZFBQQkR3V2FFUDlVVFlNTHNtYTBFRXFfMTRqLTJScmpnLWduNU1zVDNmVy1NaFYzZHJWNGI5a2FFZWpBdDhFMXNUbHYwR3dNbG9GdU1vLWQ3cV8xdnIxZm1fZmJsalZVV0dGV1V3UXctcE9qZ3JJY3UzUEZidjhUTlE4Mg?oc=5",
-   "time": "2026-09-07 23:40",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "居然智家A股股东户数减少19户降幅0.02%,流通A股户均持股7.19万股增幅0.02%,户均持股市值16.39万元增幅1.36% - 新浪财经",
-   "stk": [
-    {
-     "n": "居然智家",
-     "c": "000785.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNOWl2c0ZWeUtNaktWV1lETWlYYk1RZzdpYVZrX2Z4V3pRMk42VTVYbnUwaE9LSW9fRzd3Uk5qRWpIVzV6Tndva3psdC1McEt2U2xZVUYtQ3lxM3ctVXRHcThxYjQycXd1aE1VUXpSVjFtbHlCRFhKbUdLR3NSZURlMlg2dHBwcTVDVUZMcQ?oc=5",
-   "time": "2026-09-07 23:40",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "西域旅游A股股东户数增加845户增幅4.09%,流通A股户均持股7210.64股降幅3.93%,户均持股市值20.28万元降幅1.48% - 新浪财经",
-   "stk": [
-    {
-     "n": "西域旅游",
-     "c": "300859.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPaUFPQzN6VE12UXpBUGgtaEs5U3NjR2g3cXZLU2tHc2NYcW5Yb1R1ZGp5VlR0bmktSGxmVGlVUzRzdEd3bHVmajBxX3hhZS1LQjBVSXBBem51cWFzQTZRUjZWaTBpQmpzd2xxLVBtbDQ2Zm9uMDdhVVVMOHZsWG13anJFNmFQRG1yeW5iZg?oc=5",
-   "time": "2026-09-07 23:40",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "上海新阳A股股东户数减少386户降幅0.86%,流通A股户均持股6252.36股增幅0.87%,户均持股市值55.23万元增幅5.56% - 新浪财经",
-   "stk": [
-    {
-     "n": "上海新阳",
-     "c": "300236.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQdHFYMGJwNDRvb0g5Mnp6ZElBQWZGRUZuaUlqMnplNzdSdUFUR1lkRkMwMlZsSVBPd3Frb1VuaUlMZVJORmlTQ3BndzdNcW5SelllcTEyOFN4UG9OVkt1WWFMMFJzNUtkblJOdmpKTHRzYkNmMVA1clcyNDF1emNDUFVvVGxFY1NlSEdvYQ?oc=5",
-   "time": "2026-09-07 23:40",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "皮阿诺A股股东户数减少69户降幅0.73%,流通A股户均持股1.37万股增幅0.74%,户均持股市值31.06万元增幅10.18% - 新浪财经",
-   "stk": [
-    {
-     "n": "皮阿诺",
-     "c": "002853.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNYUxDdTVvUURLTHc4MTlyWGs2NFdHQWJBU1ZkazdKQnFCVkJJYkpUWklIaGFjU1FFZ2ZKV203N3BQblRkMG9tbzJub09PSWFVLUtnTF9xV005c0tndW1FeVhfSWxZaWZTLS0wYWZKTnJpSHRBYW91aWw0SFNtSElZeVlJSTBkWUxZODNpRA?oc=5",
-   "time": "2026-09-07 23:40",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "三川智慧A股股东户数减少1062户降幅1.81%,流通A股户均持股1.74万股增幅1.84%,户均持股市值8.77万元降幅4.78% - 新浪财经",
-   "stk": [
-    {
-     "n": "三川智慧",
-     "c": "300066.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQOHVuNWpFRHRnUXYzbzZqc0ljWGJXY3NOY3M5MDhsOWFIeWVHUTlzX2VkM2prNGRLblhqR2thdmtwbTIybklUdXhhOC1XX0VKa2RIaHJWYWUwZXlLcHItM3lqalhhRGhMVjlRMkU3eTdFMjNVeS1mVnc2RzhQVnlwWTdaMlV5UkRmNVJ1dQ?oc=5",
-   "time": "2026-09-07 23:40",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "图南股份A股股东户数减少1300户降幅7.83%,流通A股户均持股1.91万股增幅8.50%,户均持股市值66.15万元增幅16.02% - 新浪财经",
-   "stk": [
-    {
-     "n": "图南股份",
-     "c": "300855.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNM2FGT2Uzb1pDTXFjWWJKektTU19kbXBOQkliSDM3YXhzTkVGSTJSVERnbnhzREN3SkRObEdtT0t0Y3ZwZ3hrY2d0MHAtdk5GcGVnRlhjZ2pwM3NPeDF6N2hvaUxUdk81OFAwU0RlNEVCNUdtcGxtWHhLczh6aUhRMFVsMTR1Ql9IREN6VQ?oc=5",
-   "time": "2026-09-07 23:40",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "ST美晨A股股东户数增加266户增幅0.86%,流通A股户均持股4.6万股降幅0.85%,户均持股市值9.81万元增幅8.30% - 新浪财经",
-   "stk": [
-    {
-     "n": "ST美晨",
-     "c": "300237.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNaGFZekFDQUxiV1lnZXF4cG80d2pLbVB3dlRUSi1Cc0YtVFVJcDFRbTJDRmJrM3J1d2ZjVnVHWUF4c3VOVm0weVFKVjZZS0Q5bnRKSnY3T0prVURQZzltUFJEc1JRdFdsOW5DOWN3NGFFOGdtMEdEUTFwQkdPaERLclN1N1dIMzFNNnBqVg?oc=5",
-   "time": "2026-09-07 23:40",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "戴维医疗A股股东户数减少800户降幅3.92%,流通A股户均持股7333.75股增幅4.08%,户均持股市值8.67万元降幅10.98% - 新浪财经",
-   "stk": [
-    {
-     "n": "戴维医疗",
-     "c": "300314.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOTE1SZXFlY3pmblZTZVRZVFhvOTNXWWlnSzdtNEw5QmhLSzdsZlFMMlNlenBRRHZPT2ZwSjgyTTBLTXAwY0ZYeGs1U1N3NTJ1WjN5cXhGQmE2WFRPS1lxZTN4S0lZR3k1NUM5dk53US1aejV0Yk5QZ192RzF1am9id2FDNGM3ODRkdTlZRg?oc=5",
-   "time": "2026-09-07 23:40",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "佳创视讯A股股东户数减少138户降幅0.56%,流通A股户均持股1.51万股增幅0.56%,户均持股市值10.38万元增幅10.01% - 新浪财经",
-   "stk": [
-    {
-     "n": "佳创视讯",
-     "c": "300264.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQbnc3WlV6SkcxRkJUSENqREk5WF9WV2FmUlJORzFtMEFvZlZCV2V3cmdOM0gxcnd2LTc0SWZzbm5vZVFyWXNiLUp4ZkEtNEt0Qk1Kd0tQSWtZVGk4Y3lYLUJ3LVhfMGt4eWpNa0IyNVQ1WTJ5NW9qamxpeC1nOXdQNWh6a1lfOXFvdEgyRQ?oc=5",
-   "time": "2026-09-07 23:40",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "莱美药业A股股东户数增加5333户增幅22.56%,流通A股户均持股3.64万股降幅18.41%,户均持股市值20.81万元降幅21.57% - 新浪财经",
-   "stk": [
-    {
-     "n": "莱美药业",
-     "c": "300006.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPVVlXMERsMjE0Y0F0d1BhU0hVTXhwMm0wZ2VNcnViY09HOVR2VFVJSXVNQl9ianJBd3Q1b3F0MkZhdXcyaGotVjRsN2F1OThLTHpUMmN1aHUwT191b3RJOUVpLW9kX2gxWll2bkw4dGRiOHBWNzNqX0JmY283T3dxWFdWSU5NQ1RNM0tXNw?oc=5",
-   "time": "2026-09-07 23:40",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "广东宏大A股股东户数增加144户增幅0.45%,流通A股户均持股2.05万股降幅0.44%,户均持股市值63.12万元增幅9.25% - 新浪财经",
-   "stk": [
-    {
-     "n": "广东宏大",
-     "c": "002683.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPd2thVk5GNHVjcVNsM1p2aTI4dHNDMWNsd1pEUzM2VEFlWnRzTkk5b0syazNLT1RHVEQ5cUhHQzVieDViTTU5NlhiSm5Fa1M2SFhUVnotcEREOXhwN010NVRFYkZ6N2k2SFhyZzIwdUlGNTEyX0tfRWc1MFd6cDVBWVY0M2xNX05wbDFZVg?oc=5",
-   "time": "2026-09-07 23:40",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "1 Stat That Makes Costco Hard to Ignore this September",
+   "t": "Why China Uses a ‘National Team’ to Influence Trading - Bloomberg.com",
    "stk": [],
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/1-stat-makes-costco-hard-153900337.html",
-   "time": "2026-09-07 23:39",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Entegris (ENTG) Positions to Benefit From Rebounding Wafer Starts and Memory Capex",
-   "stk": [],
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/entegris-entg-positions-benefit-rebounding-153817721.html",
-   "time": "2026-09-07 23:38",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Up 26% in 2026, Is Coca-Cola a Buy Near an All-Time High?",
-   "stk": [],
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/markets/stocks/articles/26-2026-coca-cola-buy-153700368.html",
-   "time": "2026-09-07 23:37",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Poland stocks higher at close of trade; WIG30 up 0.47%",
-   "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/poland-stocks-higher-at-close-of-trade-wig30-up-047-4890692",
-   "time": "2026-09-07 23:35",
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxQWGZ4NFVYSllGdXQxUWhaT2g5VEpYSkUydFF4ZnVHelAtUkFRdXV6dF9zcVFxaEJMSUVJSFp4VDlOVlFYUFRFa1ZpR01SdVpfTG5INFRldXdPNHpzbXU5SndLbk5SMFBfb2ZIMGk4SGkwUzZmMWZKbExqZW81TW5Ob2xfNWk0RWNMSGEyMUc2bWVUa1I4UjFka1pfa3Y4bURpUWtWTC1ZbWhkRFF5SHRoc0lXZw?oc=5",
+   "time": "2026-11-06 13:12",
    "cat": "global_markets"
-  },
-  {
-   "t": "Snowflake stock explodes 17% as AI fears suddenly flip",
-   "stk": [
-    {
-     "n": "Snowflake",
-     "c": "SNOW"
-    }
-   ],
-   "s": "Yahoo Finance - Top",
-   "url": "https://finance.yahoo.com/technology/ai/articles/snowflake-stock-explodes-17-ai-153300218.html",
-   "time": "2026-09-07 23:33",
-   "cat": "global_finance"
-  },
-  {
-   "t": "博实结A股股东户数增加707户增幅7.29%,流通A股户均持股5717.92股降幅6.79%,户均持股市值26.06万元降幅7.74% - Sohu",
-   "stk": [
-    {
-     "n": "博实结",
-     "c": "301608.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxObVluNnpXYUV6X2Rnb01fb1d0QzgyZVZnZUlSSGE0T0RmUll6TjNBZWpzN1ZHTEwxQ01ZZWI2U1U0NmZtRU1oMDNPX0ZnaVNIY3Bld1R6LTNjc216Rzk4aHJsMDQ1NmFVTkJNRnV0SEtJaENnWjNhb0xuc3E0b29YejhHNzRPbU1SMWJUQw?oc=5",
-   "time": "2026-09-07 23:31",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "鑫宏业A股股东户数增加585户增幅4.60%,流通A股户均持股7328.87股降幅4.40%,户均持股市值38.78万元降幅8.43% - Sohu",
-   "stk": [
-    {
-     "n": "鑫宏业",
-     "c": "301310.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQVDFIaGJWTjJzMHdhblZXN2xrcjNtUGhxNjNSOUs1WDI4anpTR01CU2g1YzZFUTN5LVZjT093bjA2RGVrdDN3STBWMHhxSFEyN084OHplbjlfRzBJQnMtajVMV1VoRUlYUUtyMjkybHJhcVpkWlZIdGVkWnpJeWU4UUIydERZb2kyY1FGLQ?oc=5",
-   "time": "2026-09-07 23:31",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "江苏博云A股股东户数增加128户增幅1.66%,流通A股户均持股9562.25股降幅1.63%,户均持股市值58.33万元增幅6.39% - Sohu",
-   "stk": [
-    {
-     "n": "江苏博云",
-     "c": "301003.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNQVFzU2tNOS1kaGt2d0dUcHhNejBIODB5eklzTDlHRExqNHg0SDhTQTYwTlpqV05MUmM3ZmgweFp6LXFCRDRadFlkakhncWxxanFzMDJ3Y0QtNGEtNVdSR3hmQVZGbXNlaFhpdjB3NlBGS2d0aWdLc2V4NmVJam85RU1IejhDUDZ3RE9oUA?oc=5",
-   "time": "2026-09-07 23:31",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "竞业达A股股东户数增加4648户增幅17.29%,流通A股户均持股4255.15股降幅14.74%,户均持股市值7.03万元增幅1.47% - Sohu",
-   "stk": [
-    {
-     "n": "竞业达",
-     "c": "003005.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOel9KY3dnNmw1NTFDVjN1WXhkNXZVU2dMT0ZBcUhJUzNGWENoS2tzc3JrNTNHNTNzN0I4eFZ4T2NFcFZVa2hQczVtdEZpaEJ3REh3MVZxZUJMMGVkYjJVaWhha2VyZEZBRnBzcVdsa0tHU1ZYWTZ6S2tuT2tVNkxpVzh2aDFZMTk5ZWlHdA?oc=5",
-   "time": "2026-09-07 23:31",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "聚杰微纤A股股东户数减少158户降幅0.96%,流通A股户均持股8256.48股增幅0.97%,户均持股市值38.96万元增幅3.54% - Sohu",
-   "stk": [
-    {
-     "n": "聚杰微纤",
-     "c": "300819.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPRjNaQlF0SUk3b3d4bW01dDRYZDBaa3VzclNNSWhHSFdWcmZBbTU5U3l3UHRvenZYN3ozVTJYYUZkdjZPOV9OeEUxLWVDUGI4dDFwYWlpMzJFTWVUcHVtamEtNEZjM0hYNlh1dG45cnFCYWV0bGlOZk5oN19QLS1uUHd6NXg3S1dfWm0zTQ?oc=5",
-   "time": "2026-09-07 23:31",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "德艺文创A股股东户数减少196户降幅1.39%,流通A股户均持股1.63万股增幅1.41%,户均持股市值10.93万元降幅2.67% - 新浪财经",
-   "stk": [
-    {
-     "n": "德艺文创",
-     "c": "300640.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNTmZnbWY3U3pneFA3cjZQdGIzSXIydFFFd2tnXzFDTlRUM1p0OWFzOExDS01sanRJbTZIVk96NmJGamtZUU9ZUWRzY3owYU8xeUR4ZUdxM3VITUVpV2hkQ1dSdU9EUmdoamVvdWJRZTZxMlJ0U1ZnWWxxV1V2RTM1TjQ3eWVmOVRsUk9XdQ?oc=5",
-   "time": "2026-09-07 23:31",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "甬金股份A股股东户数减少124户降幅0.75%,流通A股户均持股2.2万股增幅0.75%,户均持股市值55.63万元降幅0.20% - 新浪财经",
-   "stk": [
-    {
-     "n": "甬金股份",
-     "c": "603995.SS"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOOXR1aGYtNHBQU0UzNERPMUgxZlBZU1NLdjVvRzVzSlo3ZklIYkJTQ1dXa3VJZVNHd09TQ1J6RHBXdktYT3BrVmNQNURJQlItUENtWWJZRlRzeVdmckozOUw3S1pJUGluall3MTZoUVFlc1oydDBDUXowNnB5bXBMdFdHWkJjblNBYnA5WA?oc=5",
-   "time": "2026-09-07 23:31",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "赛升药业A股股东户数减少1653户降幅5.27%,流通A股户均持股9215.75股增幅5.56%,户均持股市值8.02万元降幅6.09% - 新浪财经",
-   "stk": [
-    {
-     "n": "赛升药业",
-     "c": "300485.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNMmhLV3hSbHl3OVpKWkIwWXAtZXFSajZrS2RSSENLYnMtVkVRYUtPNi1KVzBtcDVrcnQ3alo1c0MzcndmUlhkRjZaR1hVOS1hQ1dlLW84dmRtOEdoT2I5MDhFYUhCUHVHTWIwWVBOblZ6SXc0TEpna3JKWkRDcFhza1hVMUhKUEtRMFA4VA?oc=5",
-   "time": "2026-09-07 23:31",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "飞凯材料A股股东户数增加2046户增幅2.24%,流通A股户均持股6076.87股降幅2.19%,户均持股市值22.13万元增幅0.68% - 新浪财经",
-   "stk": [
-    {
-     "n": "飞凯材料",
-     "c": "300398.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQN0d5QmpMbEFKbzBlS1BVSGx3ZHlPRDlRaFBzOVVBVGZFTXlVS1otN05BSzRuX2Y2eTRyNlpWM0F0eF9jY0doTkFncTAzYzVfeFZYYlNld3BhN21UY3o2cXpZcGNwX1djSG5xM1FlZ2hwSzNRUWtVWkk5cTgtX2xvWXFHaFpMZklkRXotUg?oc=5",
-   "time": "2026-09-07 23:31",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "克明食品A股股东户数减少112户降幅0.45%,流通A股户均持股1.24万股增幅0.45%,户均持股市值9.85万元降幅1.90% - 新浪财经",
-   "stk": [
-    {
-     "n": "克明食品",
-     "c": "002661.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPNlFXLWZQTG9jSFZVbmRNOHNxY1BRZ1g5M1Q5Tl9OWFVHYm1GNUVscGYtLUM0R1B5QVlmWU1Qdk9hSVQxa21tRU5zUlJabDhQU0ExNk9lbHVCeFlmR09mQm96WDYtdzM1NVlHR3NoTzcxeUVCblJGTlpCVkFVQzUxVDB5QlUxX2ZWT3Ztbw?oc=5",
-   "time": "2026-09-07 23:31",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "久量股份A股股东户数增加243户增幅2.94%,流通A股户均持股1.4万股降幅2.86%,户均持股市值26.6万元降幅1.77% - 新浪财经",
-   "stk": [
-    {
-     "n": "久量股份",
-     "c": "300808.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOeGJpWFgxbmZHd09Fbl90TkktWUFtTWxTTU1EUlpPaUtkcmd0QzJMbWF1c25rNTlPNy1IU2xFcnlIc1dDNHI4V2dxXzlscXl6c1FjR0gxY3dVQTVjVHhrc2JYMEs2ZTRQelN0MEY3dGY4c0FZUTYta2NHNzhOLXp3OXZwOGZuVWdOQ0w4NA?oc=5",
-   "time": "2026-09-07 23:31",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Turkey stocks higher at close of trade; BIST 100 up 0.99%",
-   "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/turkey-stocks-higher-at-close-of-trade-bist-100-up-099-4890689",
-   "time": "2026-09-07 23:30",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Denmark stocks lower at close of trade; OMX Copenhagen 20 down 0.01%",
-   "stk": [],
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/denmark-stocks-lower-at-close-of-trade-omx-copenhagen-20-down-001-4890687",
-   "time": "2026-09-07 23:30",
-   "cat": "global_markets"
-  },
-  {
-   "t": "阳光照明A股股东户数增加398户增幅0.99%,流通A股户均持股3.29万股降幅0.98%,户均持股市值10.77万元增幅5.47% - 新浪财经",
-   "stk": [
-    {
-     "n": "阳光照明",
-     "c": "600261.SS"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxObi12NlRBZEpqNWo4czZ0YmRha2FsS2hyR2JDWTktX0toQ2dmLXg4MFNyZDMwb0xWZGxJN0drTnJtNzBtaVhwMkFOLTNSVXQzV3RUaHBhWlBTVXAwRS00Qnd3S2tlV29RUUpvSkR1dllHQzNkTE1MUC1aOGNITzM0T2RtTUJDd0ExMEtRcQ?oc=5",
-   "time": "2026-09-07 23:30",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "新时达A股股东户数减少174户降幅0.32%,流通A股户均持股1.02万股增幅0.32%,户均持股市值11.5万元增幅1.31% - 新浪财经",
-   "stk": [
-    {
-     "n": "新时达",
-     "c": "002527.SZ"
-    }
-   ],
-   "s": "Google News - 中文市场聚合",
-   "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxQcDVjLS0zekVHOElyWmR4SHlXVjF6cldVblJsZ1Z2LWlsNndDYUdwRTdqMF9xOTVkZk40d3VMRXkzVXZlcVA4YnY5NTNDSm5JWE0yQXZZamJLSDNPQ1BxSzVZaVRfaTBMNldvaW5LR2NESjV1RFVvWUNQZDBGdWppVjVpWWo2TGFLYkpQMg?oc=5",
-   "time": "2026-09-07 23:30",
-   "cat": "cn_markets"
   }
  ]
 }
