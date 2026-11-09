@@ -54,7 +54,19 @@ jobs:
           FAST_REFRESH: ${{ inputs.fast == true || github.event.schedule == '7,37 1-8,13-21 * * 1-5' }}
           PREOPEN_REFRESH: ${{ github.event.schedule == '0 23 * * *' }}
           SCHEDULED: ${{ github.event_name == 'schedule' }}
-        run: python3 src/intraday_schedule.py
+          # 只读报价 tick（不发送、非板块专刷）轮到时若已有更新的轮次在排队，就让给新轮次，
+          # 不再把过时 tick 跑满 15–25 分钟；发送轮、定时报告轮永不跳过。
+          SUPERSEDE_CHECK: ${{ inputs.send != true && inputs.rotation_only != true && (inputs.fast == true || github.event.schedule == '7,37 1-8,13-21 * * 1-5') }}
+        run: |
+          python3 src/intraday_schedule.py
+          if [ "$SUPERSEDE_CHECK" = "true" ] && tail -n1 "$GITHUB_OUTPUT" | grep -q '^run=true$'; then
+            newer=$(gh api "repos/${{ github.repository }}/actions/workflows/autonomous.yml/runs?per_page=30" \
+              --jq '[.workflow_runs[]|select(.id>${{ github.run_id }} and (.status=="queued" or .status=="pending" or .status=="waiting" or .status=="requested"))]|length' 2>/dev/null || echo 0)
+            if [ "${newer:-0}" -gt 0 ]; then
+              echo 'run=false' >> "$GITHUB_OUTPUT"
+              echo "superseded: ${newer} newer run(s) queued; this quote tick yields"
+            fi
+          fi
       - uses: actions/checkout@v4
         if: steps.window.outputs.run == 'true'
         with:
