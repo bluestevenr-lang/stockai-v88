@@ -72,7 +72,6 @@ jobs:
             /screen-history.json.gz
             /fundamental-snapshot.json.gz
             /feishu_sync_delivery.json
-            /recommendation-journal-view.json
             /recommendation-journal-view.json.gz
       - uses: actions/setup-python@v5
         if: steps.window.outputs.needed == 'true'
