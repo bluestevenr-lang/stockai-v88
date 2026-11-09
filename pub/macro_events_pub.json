@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-11-06 15:48（北京时间）",
+ "generated_at": "2026-11-09 15:49（北京时间）",
  "note": "宏观硬表(Fed/BLS/Census官方日历)+Nasdaq财报日历;接口降级会显式标注，不再把失败伪装成无事件(公开版:个股仅七巨头)",
  "source_status": {
   "official_hard_calendar": "ok",
   "nasdaq_earnings": "ok",
   "detail": {
-   "nasdaq_success": 6,
+   "nasdaq_success": 8,
    "nasdaq_fail": 0,
    "nonus_success": 12,
    "nonus_fail": 0
@@ -13,11 +13,18 @@
  },
  "events": [
   {
-   "date": "2026-11-06",
-   "dow": "五",
-   "event": "美国非农就业",
+   "date": "2026-11-17",
+   "dow": "二",
+   "event": "英伟达(NVDA)财报",
+   "kind": "财报",
+   "note": "盘后"
+  },
+  {
+   "date": "2026-11-18",
+   "dow": "三",
+   "event": "FOMC10月会议纪要",
    "kind": "宏观",
-   "note": "美东8:30·波动放大日"
+   "note": "美东14:00·关注措辞与降息路径分歧"
   }
  ]
 }
