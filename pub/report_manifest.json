@@ -1,0 +1,32 @@
+{
+  "schema_version": "v88.report/2.0",
+  "snapshot_id": "snap-26e5aaffa8c3412e",
+  "generated_at": "2026-11-11T15:58:38.903998+08:00",
+  "source_snapshot_generated_at": "2026-11-11 15:34",
+  "source_sessions": {
+    "A股": "2026-11-11",
+    "美股": "2026-11-10",
+    "港股": "2026-11-10"
+  },
+  "source_receipts": {
+    "market_snapshot.json": "dda8aafa7ed418821e903df6b8022c082e4efcedd0a41dbc2470bea4e71f1f29",
+    "triad_selection.json": "226cade140483cc18bc8905417c467cf47d8eacff353f8470d71c3d2d88382c9",
+    "source_ledger.json": "86ef124cb4704bcbd2a5102fdc3e4fffbffb6b120dcd7f5652254f2e4e07e965",
+    "triad_selection_pub.json": "e2e7ae32926b3dc5a9f2212633915ee5b39cd33860f622863c6f26e6f36279eb",
+    "gpt_verify.json": "f3319d45dec6cb15e9a101658937a64d749173f67ae9e57098a7637a84240eb4",
+    "classics_lens.json": "4bb151e440acb7976cf98ffff4f2e0f9015241d30be5bfa92c9c3a47796b8f3c"
+  },
+  "report_sha256": "d005c7f718c03077bed7b95d7aeb6c04ed3ddf0b4174f15c8e15864a1f11b244",
+  "quality": {
+    "status": "plan_b",
+    "issues": [],
+    "safety": "central_3a_only",
+    "current_day": true,
+    "fact_basis": "latest_completed_sessions",
+    "source_current_session": true,
+    "composed_from_rejected_report": false
+  },
+  "source_count": 50,
+  "operation_row_count": 0,
+  "visibility": "public_redacted"
+}
