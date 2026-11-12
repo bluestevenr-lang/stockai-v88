@@ -1,0 +1,46 @@
+{
+  "actions": [
+    "refresh_waiting:cooldown"
+  ],
+  "checked_at": "2026-11-12T05:32:56.000803+00:00",
+  "checks_failed": [],
+  "critical": [],
+  "escalated": [],
+  "external_messages": 0,
+  "first_seen": {
+    "muse_exchange_behind": "2026-11-12T05:32:56.000803+00:00",
+    "refresh_step_failed:discovery": "2026-11-12T05:32:56.000803+00:00",
+    "refresh_step_failed:fundamentals": "2026-11-12T05:32:56.000803+00:00",
+    "refresh_step_failed:muse_directive": "2026-11-12T05:32:56.000803+00:00",
+    "refresh_step_failed:muse_screening": "2026-11-12T05:32:56.000803+00:00",
+    "refresh_step_failed:targeted_quotes": "2026-11-12T05:32:56.000803+00:00"
+  },
+  "issue_sync": null,
+  "issues": [
+    "muse_exchange_behind",
+    "refresh_step_failed:discovery",
+    "refresh_step_failed:fundamentals",
+    "refresh_step_failed:muse_directive",
+    "refresh_step_failed:muse_screening",
+    "refresh_step_failed:targeted_quotes"
+  ],
+  "model_calls": 0,
+  "plan": {
+    "degraded": [
+      "refresh_step_failed:discovery",
+      "refresh_step_failed:fundamentals",
+      "refresh_step_failed:muse_directive",
+      "refresh_step_failed:muse_screening",
+      "refresh_step_failed:targeted_quotes"
+    ],
+    "refresh": [
+      "muse_exchange_behind"
+    ]
+  },
+  "status": "healing",
+  "version": "v88-self-heal-v1",
+  "warnings": [
+    "primary_quote_coverage_partial:validated_subset_only",
+    "repository_over_5GiB:v88-daily-report"
+  ]
+}
