@@ -1,30 +1,44 @@
 {
-  "actions": [],
-  "checked_at": "2026-11-12T06:02:18.017216+00:00",
+  "actions": [
+    "refresh_waiting:refresh_running"
+  ],
+  "checked_at": "2026-11-12T15:14:23.999609+00:00",
   "checks_failed": [],
   "critical": [],
-  "dispatches": [
-    "2026-11-12T05:34:34.353790+00:00"
-  ],
+  "dispatches": [],
   "escalated": [],
   "external_messages": 0,
   "first_seen": {
-    "refresh_step_failed:free_observations": "2026-11-12T06:02:18.017216+00:00",
-    "refresh_step_failed:fundamentals": "2026-11-12T05:32:56.000803+00:00"
+    "refresh_step_failed:discovery": "2026-11-12T15:14:23.999609+00:00",
+    "refresh_step_failed:fundamentals": "2026-11-12T05:32:56.000803+00:00",
+    "refresh_step_failed:muse_directive": "2026-11-12T15:14:23.999609+00:00",
+    "refresh_step_failed:muse_screening": "2026-11-12T15:14:23.999609+00:00",
+    "refresh_step_failed:strategy_board": "2026-11-12T15:14:23.999609+00:00",
+    "refresh_step_failed:targeted_quotes": "2026-11-12T15:14:23.999609+00:00"
   },
   "issue_sync": null,
   "issues": [
-    "refresh_step_failed:free_observations",
-    "refresh_step_failed:fundamentals"
+    "refresh_step_failed:discovery",
+    "refresh_step_failed:fundamentals",
+    "refresh_step_failed:muse_directive",
+    "refresh_step_failed:muse_screening",
+    "refresh_step_failed:strategy_board",
+    "refresh_step_failed:targeted_quotes"
   ],
   "model_calls": 0,
   "plan": {
     "degraded": [
-      "refresh_step_failed:free_observations",
-      "refresh_step_failed:fundamentals"
+      "refresh_step_failed:discovery",
+      "refresh_step_failed:fundamentals",
+      "refresh_step_failed:muse_directive",
+      "refresh_step_failed:muse_screening",
+      "refresh_step_failed:targeted_quotes"
+    ],
+    "refresh": [
+      "refresh_step_failed:strategy_board"
     ]
   },
-  "status": "degraded",
+  "status": "healing",
   "version": "v88-self-heal-v1",
   "warnings": [
     "primary_quote_coverage_partial:validated_subset_only",
