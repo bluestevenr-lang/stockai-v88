@@ -1,24 +1,24 @@
 {
   "actions": [],
-  "checked_at": "2026-11-12T21:51:36.613516+00:00",
+  "checked_at": "2026-11-13T02:38:32.519824+00:00",
   "checks_failed": [],
   "critical": [],
   "dispatches": [],
   "escalated": [],
   "external_messages": 0,
   "first_seen": {
-    "refresh_step_failed:discovery": "2026-11-12T15:14:23.999609+00:00",
+    "refresh_step_failed:free_observations": "2026-11-13T02:38:32.519824+00:00",
     "refresh_step_failed:fundamentals": "2026-11-12T05:32:56.000803+00:00"
   },
   "issue_sync": null,
   "issues": [
-    "refresh_step_failed:discovery",
+    "refresh_step_failed:free_observations",
     "refresh_step_failed:fundamentals"
   ],
   "model_calls": 0,
   "plan": {
     "degraded": [
-      "refresh_step_failed:discovery",
+      "refresh_step_failed:free_observations",
       "refresh_step_failed:fundamentals"
     ]
   },
