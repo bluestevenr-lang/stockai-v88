@@ -1,6 +1,6 @@
 {
   "actions": [],
-  "checked_at": "2026-11-13T10:57:39.030353+00:00",
+  "checked_at": "2026-11-13T18:32:25.486224+00:00",
   "checks_failed": [],
   "critical": [],
   "dispatches": [],
@@ -10,18 +10,21 @@
   "external_messages": 0,
   "first_seen": {
     "refresh_step_failed:discovery": "2026-11-13T10:57:39.030353+00:00",
-    "refresh_step_failed:fundamentals": "2026-11-12T05:32:56.000803+00:00"
+    "refresh_step_failed:fundamentals": "2026-11-12T05:32:56.000803+00:00",
+    "refresh_step_failed:targeted_quotes": "2026-11-13T18:32:25.486224+00:00"
   },
-  "issue_sync": "opened",
+  "issue_sync": "updated",
   "issues": [
     "refresh_step_failed:discovery",
-    "refresh_step_failed:fundamentals"
+    "refresh_step_failed:fundamentals",
+    "refresh_step_failed:targeted_quotes"
   ],
   "model_calls": 0,
   "plan": {
     "degraded": [
       "refresh_step_failed:discovery",
-      "refresh_step_failed:fundamentals"
+      "refresh_step_failed:fundamentals",
+      "refresh_step_failed:targeted_quotes"
     ]
   },
   "status": "degraded",
