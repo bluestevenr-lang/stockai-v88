@@ -1,9 +1,13 @@
 {
-  "actions": [],
-  "checked_at": "2026-11-13T18:32:25.486224+00:00",
+  "actions": [
+    "refresh_dispatched:full"
+  ],
+  "checked_at": "2026-11-14T00:20:13.347702+00:00",
   "checks_failed": [],
   "critical": [],
-  "dispatches": [],
+  "dispatches": [
+    "2026-11-14T00:20:13.347702+00:00"
+  ],
   "escalated": [
     "persistent:refresh_step_failed:fundamentals"
   ],
@@ -11,13 +15,15 @@
   "first_seen": {
     "refresh_step_failed:discovery": "2026-11-13T10:57:39.030353+00:00",
     "refresh_step_failed:fundamentals": "2026-11-12T05:32:56.000803+00:00",
-    "refresh_step_failed:targeted_quotes": "2026-11-13T18:32:25.486224+00:00"
+    "refresh_step_failed:targeted_quotes": "2026-11-13T18:32:25.486224+00:00",
+    "scheduled_screening_overdue": "2026-11-14T00:20:13.347702+00:00"
   },
   "issue_sync": "updated",
   "issues": [
     "refresh_step_failed:discovery",
     "refresh_step_failed:fundamentals",
-    "refresh_step_failed:targeted_quotes"
+    "refresh_step_failed:targeted_quotes",
+    "scheduled_screening_overdue"
   ],
   "model_calls": 0,
   "plan": {
@@ -25,9 +31,12 @@
       "refresh_step_failed:discovery",
       "refresh_step_failed:fundamentals",
       "refresh_step_failed:targeted_quotes"
+    ],
+    "refresh": [
+      "scheduled_screening_overdue"
     ]
   },
-  "status": "degraded",
+  "status": "healing",
   "version": "v88-self-heal-v1",
   "warnings": [
     "primary_quote_coverage_partial:validated_subset_only",
