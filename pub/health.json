@@ -2,13 +2,17 @@
   "actions": [
     "refresh_dispatched:full"
   ],
-  "checked_at": "2026-11-14T18:01:53.596759+00:00",
+  "checked_at": "2026-11-14T22:24:39.922760+00:00",
   "checks_failed": [],
-  "critical": [],
+  "critical": [
+    "persistent:market_rows_dropped:港股"
+  ],
   "dispatches": [
-    "2026-11-14T18:01:53.596759+00:00"
+    "2026-11-14T18:01:53.596759+00:00",
+    "2026-11-14T22:24:39.922760+00:00"
   ],
   "escalated": [
+    "persistent:market_rows_dropped:港股",
     "persistent:refresh_step_failed:fundamentals"
   ],
   "external_messages": 0,
@@ -33,7 +37,7 @@
       "market_rows_dropped:港股"
     ]
   },
-  "status": "healing",
+  "status": "escalated",
   "version": "v88-self-heal-v1",
   "warnings": [
     "primary_quote_coverage_partial:validated_subset_only",
