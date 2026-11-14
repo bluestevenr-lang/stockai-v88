@@ -2,41 +2,48 @@
   "actions": [
     "refresh_dispatched:full"
   ],
-  "checked_at": "2026-11-14T00:20:13.347702+00:00",
+  "checked_at": "2026-11-14T06:22:56.994595+00:00",
   "checks_failed": [],
-  "critical": [],
+  "critical": [
+    "delivery_unconfirmed:2026-11-14:afternoon",
+    "persistent:scheduled_screening_overdue"
+  ],
   "dispatches": [
-    "2026-11-14T00:20:13.347702+00:00"
+    "2026-11-14T06:22:56.994595+00:00"
   ],
   "escalated": [
+    "delivery_unconfirmed:2026-11-14:afternoon",
+    "persistent:scheduled_screening_overdue",
     "persistent:refresh_step_failed:fundamentals"
   ],
   "external_messages": 0,
   "first_seen": {
-    "refresh_step_failed:discovery": "2026-11-13T10:57:39.030353+00:00",
+    "delivery_unconfirmed:2026-11-14:afternoon": "2026-11-14T06:22:56.994595+00:00",
+    "refresh_step_failed:free_observations": "2026-11-14T06:22:56.994595+00:00",
     "refresh_step_failed:fundamentals": "2026-11-12T05:32:56.000803+00:00",
-    "refresh_step_failed:targeted_quotes": "2026-11-13T18:32:25.486224+00:00",
     "scheduled_screening_overdue": "2026-11-14T00:20:13.347702+00:00"
   },
   "issue_sync": "updated",
   "issues": [
-    "refresh_step_failed:discovery",
+    "delivery_unconfirmed:2026-11-14:afternoon",
+    "refresh_step_failed:free_observations",
     "refresh_step_failed:fundamentals",
-    "refresh_step_failed:targeted_quotes",
     "scheduled_screening_overdue"
   ],
   "model_calls": 0,
   "plan": {
     "degraded": [
-      "refresh_step_failed:discovery",
-      "refresh_step_failed:fundamentals",
-      "refresh_step_failed:targeted_quotes"
+      "refresh_step_failed:free_observations",
+      "refresh_step_failed:fundamentals"
+    ],
+    "escalate": [
+      "delivery_unconfirmed:2026-11-14:afternoon"
     ],
     "refresh": [
       "scheduled_screening_overdue"
     ]
   },
-  "status": "healing",
+  "status": "escalated",
   "version": "v88-self-heal-v1",
   "warnings": [
     "primary_quote_coverage_partial:validated_subset_only",
