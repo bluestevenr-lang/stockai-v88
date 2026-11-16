@@ -9,30 +9,38 @@ def num(value):return f'{value:.2f}' if isinstance(value,(int,float)) else '待�
 DIRECTION={'up':'上行','down':'下行','flat':'走平','unknown':'待核'}
 
 
+def _source_freshness(value, expected, status=None):
+    """A date describes only its own evidence layer, not the whole stock."""
+    try:
+        observed = date.fromisoformat(str(value)[:10]).isoformat()
+    except (ValueError, TypeError):
+        return 'pending', None
+    if expected is None:
+        return 'pending', observed
+    if observed < expected:
+        return 'historical', observed
+    if observed != expected or str(status or '').lower() in ('missing', 'stale', 'invalid', 'unavailable'):
+        return 'pending', observed
+    return 'current', observed
+
+
 def _freshness(row, data, now):
-    """Project cache age at read time; never rewrite its original signed facts."""
+    """Project the stock's daily-bar age, independently of market/sector caches."""
     from exchange_sessions import latest_completed
     try:
         expected = latest_completed(row.get('market'), now).isoformat()
     except (ValueError, TypeError, AttributeError):
-        return 'pending', None, None
-    alignment = data.get('alignment') or {}
+        expected = None
     technical = data.get('technical') or {}
-    dates = [data.get('asof'), alignment.get('expected_session'),
-             technical.get('source_asof') or technical.get('asof')]
-    dates += [(alignment.get(key) or {}).get('source_asof') for key in
-              ('market_context', 'sector_context', 'stock_context')]
-    valid = []
-    for value in dates:
-        try:
-            valid.append(date.fromisoformat(str(value)[:10]).isoformat())
-        except (ValueError, TypeError):
-            pass
-    if any(value < expected for value in valid):
-        return 'historical', min(valid), expected
-    if len(valid) != len(dates) or any(value != expected for value in valid):
-        return 'pending', data.get('asof'), expected
-    return 'current', data.get('asof'), expected
+    state, observed = _source_freshness(technical.get('source_asof') or technical.get('asof'),
+                                        expected, technical.get('status'))
+    return state, observed, expected
+
+
+def _date_label(state, observed):
+    return (str(observed) + '（最新完整日）' if state == 'current' else
+            str(observed) + '（历史参考）' if state == 'historical' else
+            (str(observed) + '（日期或数据待核）' if observed else '待补'))
 
 
 def html(row, now=None):
@@ -40,6 +48,11 @@ def html(row, now=None):
     if d.get('version')!=VERSION:return '<small>多重核查：待本轮数据更新</small>'
     freshness, observed, expected = _freshness(row, d, now or datetime.now(timezone.utc))
     a=d.get('alignment') or {};t=d.get('technical') or {};g=t.get('gmma') or {}
+    layers = {key: _source_freshness((a.get(key) or {}).get('source_asof'), expected,
+                                   (a.get(key) or {}).get('status'))
+              for key in ('market_context', 'sector_context', 'stock_context')}
+    combined_dates = [_source_freshness(v, expected)[0] for v in (d.get('asof'), a.get('expected_session'))]
+    alignment_current = all(state == 'current' for state, _ in layers.values()) and all(state == 'current' for state in combined_dates)
     long=(g.get('slopes') or {}).get('long') or {};short=(g.get('slopes') or {}).get('short') or {}
     patterns=(t.get('candlesticks') or {}).get('patterns') or []
     pattern_text='；'.join({'bullish_engulfing':'看涨吞没','bearish_engulfing':'看跌吞没','hammer':'锤子线'}.get(p.get('pattern'),str(p.get('pattern')))+' '+str(p.get('date'))+' '+{
@@ -60,20 +73,25 @@ def html(row, now=None):
     if freshness == 'historical':
         heading='历史核查 · 截至 '+str(observed)+' · 当前待更新'
     elif freshness != 'current':
-        heading='当前核查待更新 · 完整交易日证据待核'
+        heading='当前核查待更新 · 个股完整交易日证据待核'
+    elif not alignment_current:
+        heading='个股日线已更新 · 分层背景待核'
     out=['<div style="margin-top:6px;font-size:12px;color:#475569"><b>'+esc(heading)+'</b>',
-         '<details><summary>'+('历史版本 · ' if freshness == 'historical' else '待补齐 · ' if freshness != 'current' else '')+'五类依据 · 大盘→板块→个股</summary><div>完整日线 '+esc(d.get('asof'))+' · '+esc(d.get('provenance',{}).get('source'))+'</div>']
+         '<div>个股日线：'+esc(_date_label(freshness, observed))+' · 大盘：'+esc(_date_label(*layers['market_context']))+' · 板块：'+esc(_date_label(*layers['sector_context']))+'</div>',
+         '<details><summary>'+('历史版本 · ' if freshness == 'historical' else '待补齐 · ' if freshness != 'current' or not alignment_current else '')+'五类依据 · 大盘→板块→个股</summary><div>个股完整日线 '+esc(observed)+' · '+esc(d.get('provenance',{}).get('source'))+'</div>']
     if freshness != 'current':
         out.append('<p>原版结论：'+esc(original_heading)+'；仅保留当时依据，不代表当前核查。最近完整交易日 '+esc(expected)+'</p>')
+    elif not alignment_current:
+        out.append('<p>分层背景结论：'+esc(original_heading)+'；大盘、板块及方向证据按各自日期核对，不把背景缺项当作个股日线缺失。最近完整交易日 '+esc(expected)+'</p>')
     for title,text in desc:out.append('<p style="margin:4px 0"><b>'+esc(title)+'：</b>'+esc(text)+'</p>')
     for key,label in [('market_context','大盘'),('sector_context','板块'),('stock_context','个股')]:
         c=a.get(key) or {}
-        out.append('<p style="margin:4px 0">'+label+'：'+esc(DIRECTION.get(c.get('direction') or c.get('absolute_direction'),'待核'))+' · '+esc(c.get('source_asof'))+'</p>')
+        out.append('<p style="margin:4px 0">'+label+'：'+esc(DIRECTION.get(c.get('direction') or c.get('absolute_direction'),'待核'))+' · '+esc(_date_label(*layers[key]))+'</p>')
     out.append('<div>'+esc('；'.join(a.get('reasons') or []))+'</div>')
     ex=a.get('exception') or {}
     if a.get('state')=='countertrend':out.append('<b>逆势催化：'+esc('有原文待复核，未自动认可' if ex.get('status')=='documented_for_review' else '未取得可追溯证据')+'</b>')
     for evidence in ex.get('evidence') or []:
         out.append('<div>'+esc(evidence)+'</div>')
-    out.append('<p>GitHub云端规则复核 · '+('该版' if freshness != 'current' else '本轮')+'0次模型调用 · 算法版本 '+esc(d.get('version'))+'</p>')
+    out.append('<p>GitHub云端规则复核 · '+('该版' if freshness != 'current' or not alignment_current else '本轮')+'0次模型调用 · 算法版本 '+esc(d.get('version'))+'</p>')
     out.append('<small>技术指标同属一份行情证据，不重复计票；阈值为工程规则，非原书承诺。缺证不视为通过，原止损与计划不随分析移动。</small></details></div>')
     return ''.join(out)

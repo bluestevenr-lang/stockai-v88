@@ -523,7 +523,7 @@ def refresh(*, base=BASE, now=None, source=None):
         try:
             from action_directive import publishable
             from astra_cycle_state import view as _state_view
-            shown = {r['code'] for r in publishable(_state_view(deepcopy(doc), now), 'Astra').get('rows', [])}
+            shown = {r['code'] for r in publishable(_state_view(deepcopy(doc), now), 'Astra', now=now).get('rows', [])}
         except Exception as exc:
             shown = set(); doc['publish_mark_error'] = f'{type(exc).__name__}: {exc}'
         for row in doc['rows']: row['published'] = row['code'] in shown
@@ -559,7 +559,7 @@ def digest_lines(doc, *, markets=None, now=None):
     from astra_cycle_state import view
     from screening_clock import display
     from action_directive import publishable
-    doc = publishable(view(doc, now), 'Astra')
+    doc = publishable(view(doc, now), 'Astra', now=now)
     scope = ' / '.join(markets) if markets else '全市场'
     if not doc.get('version'):
         return [f'🎯 Astra｜{scope} · 轮次待核 · 研究数量待核 / 条件匹配待核',

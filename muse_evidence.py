@@ -3,19 +3,48 @@ from copy import deepcopy
 from datetime import datetime
 import math
 
-VERSION = 'muse-evidence-v3'
+VERSION = 'muse-evidence-v4'
+
+
+def stable_review_facts(value):
+    """Keep execution evidence, excluding only moving assessment clocks/ages.
+
+    Quote/source timestamps, execution states, reasons and thresholds remain
+    signed. Recurse through frozen signal plans without mutating source facts.
+    """
+    if isinstance(value, dict):
+        out = {key: stable_review_facts(item) for key, item in value.items()}
+        readiness = out.get('execution_readiness')
+        if isinstance(readiness, dict):
+            readiness.pop('assessed_at', None)
+            readiness.pop('quote_age_seconds', None)
+        return out
+    if isinstance(value, (list, tuple)):
+        return [stable_review_facts(item) for item in value]
+    return deepcopy(value)
+
+
+def review_directive(row, module=None):
+    """Use the same recursive privacy boundary as every public instruction."""
+    from action_directive import public_directive
+    return stable_review_facts(public_directive(row.get('directive') or {}, module))
 
 
 def review_task():
     """Scope of the independent stock review, not an instruction to endorse V88."""
     return {
-        'version': 'selected-stock-review-2026-11-16-v1',
+        'version': 'selected-stock-review-2026-11-16-v3',
         'task': '逐项复核本包筛选后的股票、买入/等待状态及原价格计划，给出独立结论和可追溯证据。',
         'input': 'items[].facts；最新名单与正式定版各自绑定，不能用运行日志或端口检查代替个股复核。',
         'policy': '先核 facts.decision_contract 与记录的规则版本；旧统一RR/评分门槛不能冒充本版系统规则。'
                   '可以独立反对本版规则，但须注明独立判断及依据，不能仅因系统自检通过而判通过。',
         'evidence': '核对原财务、同复权口径日线、量价拐点、位置追高、止损目标、财报及到期。'
                     '历史回测胜率与本月利润情景不等于当前个股胜率或已实现收益。',
+        'qualification': '按facts.entry_window_qualification核对：3A中长期向上且今明两个交易日买点；'
+                         '2A中期且本周买点；1A超短且今日即时入场。90%仅是优化目标，非授级门槛或已验证概率。'
+                         '胜率按原出口扣费后净收益>0定义，目标命中率另列。不符合窗口的后台研究不补主推荐。',
+        'execution': '核对directive.execution_readiness与signal_plan原价格计划；研究、等待开市、'
+                     '等待核价或等待触发均不等于当下可买，保留原止损、目标与期限。',
         'data_failure': '无法取得或核实本版数据时保留unverified并指明缺项；传输/端口/工作流问题单列，'
                         '不伪装为个股投资反证。复权或报告期冲突仍属于个股证据问题，必须保留。',
         'output': '每股pass/fail/unverified、简短理由、真实核查时间及证据引用；复制原身份/状态/哈希，'
@@ -38,7 +67,7 @@ def decision_contract(row, module):
     graded = current and (row.get('grade_basis') == 'grade-ladder-v1' or module == 'Astra')
     rule_stats = stats((row.get('astra_regime') or {}).get('cell')) if specific else None
     return {
-        'version': 'muse-decision-contract-v1', 'module': module,
+        'version': 'muse-decision-contract-v2', 'module': module,
         'recorded_directive_version': directive.get('version'),
         'producer_version_matches': current,
         'status': 'CURRENT_RULE_EXPORTED' if current else 'LEGACY_OR_UNKNOWN_RULE',
@@ -52,6 +81,8 @@ def decision_contract(row, module):
         'fundamentals_note': '基本面分只是一个检查项；反证、利润质量、资料待补仍分别核查，不能以过分数代替核验。',
         'rule_reference': {'statistics': rule_stats, 'sample_scope': SPAN,
                            'meaning': '当前规则历史样本，非本股成功概率、非样本外验证'} if rule_stats else None,
+        'three_a_qualification': deepcopy(row.get('three_a_qualification')),
+        'entry_window_qualification': deepcopy(row.get('entry_window_qualification')),
         'scope': '指令价处净RR检查参数，不是胜率或Muse结论；并行保留报价、原计划和全部硬伤。',
     }
 
@@ -125,12 +156,13 @@ def financial_facts(row, raw):
     }
 
 
-def review_evidence(row):
+def review_evidence(row, module=None):
     cross = row.get('crosscheck') or {}
     technical = cross.get('technical') or {}
     structure = technical.get('structure') or {}
     stop = deepcopy(cross.get('stop_check') or {})
     target = row.get('target_evidence')
+    directive = review_directive(row, module)
     if not target:
         target = {
             'status': 'UNVERIFIED', 'type': 'unattributed_plan',
@@ -152,6 +184,10 @@ def review_evidence(row):
             'price_volume', 'structure', 'gaps')},
         'entry_progression': {k: deepcopy(row.get(k)) for k in (
             'decision_policy', 'entry_location', 'price_volume')},
+        'three_a_qualification': deepcopy(row.get('three_a_qualification')),
+        'entry_window_qualification': deepcopy(row.get('entry_window_qualification')),
+        'execution_readiness': deepcopy(directive.get('execution_readiness')),
+        'signal_plan': deepcopy(directive.get('signal_plan')),
         'financial': deepcopy(row.get('financial_evidence') or {
             'status': 'MISSING', 'gaps': ['原始同报告期财务数字与来源未随本版提供']}),
         'publication_gaps': publication_gaps(row),

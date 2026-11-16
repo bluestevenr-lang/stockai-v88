@@ -61,6 +61,30 @@ def violations(row, module, now=None):
     d = row.get('directive') or {}
     act = d.get('action')
     out = []
+    if act in ('研究候选', '策略条件匹配', '等待开市', '等待核价', '等待核验', '等待触发'):
+        original = d.get('signal_plan') or {}
+        if original.get('action') not in BUY:
+            return ['公开计划缺原始策略指令']
+        for field in ('price', 'stop', 'target', 'valid_until', 'size_pct', 'size_notional_usd'):
+            if d.get(field) != original.get(field):
+                out.append('公开计划改写原始字段：' + field)
+        q = row.get('three_a_qualification') or {}
+        audit_plan = dict(original)
+        # A previously immediate plan is now a fixed research limit. A changed
+        # live quote may wait above that limit; this never authorizes chasing it.
+        if (audit_plan.get('action') == '立即买入'
+                and not (d.get('execution_readiness') or {}).get('executable_now')):
+            audit_plan['action'] = '限价买入'
+            audit_plan['text'] = str(audit_plan.get('text') or '').replace('立即买入', '限价买入', 1)
+        candidate = dict(row, directive=audit_plan,
+                         buyable=q.get('pre_requirement_buyable', row.get('buyable')))
+        out.extend(violations(candidate, module, now))
+        ready = d.get('execution_readiness') or {}
+        if act == '策略条件匹配' and not ready.get('executable_now'):
+            out.append('执行前置条件未满足却标策略条件匹配')
+        if act == '研究候选' and (row.get('buyable') or q.get('qualified')):
+            out.append('未认证研究候选被标可买或达标')
+        return out
     if act not in BUY + ('财报后买入', '不买'):
         return ['指令动作不在五种之内']
     if not str(d.get('text') or '').startswith(act):
@@ -138,7 +162,8 @@ def enforce(doc, module, now=None):
     for row in rows:
         d = row.get('directive') or {}
         bad = violations(row, module, now)
-        if drift and d.get('action') in BUY + ('财报后买入',):
+        underlying = d.get('signal_plan') or d
+        if drift and underlying.get('action') in BUY + ('财报后买入',):
             bad = bad + ['判例库不一致（逻辑漂移），本轮不发买入指令']
         if bad:
             row['directive_original'] = d
@@ -148,9 +173,11 @@ def enforce(doc, module, now=None):
                            'rules': bad})
         from action_directive import buy_window, TODAY
         window = buy_window(row, row.get('directive') or {})
-        row['buyable'] = window == TODAY
+        current = row.get('directive') or {}
+        row['buyable'] = (bool((current.get('execution_readiness') or {}).get('executable_now'))
+                          if current.get('action') == '策略条件匹配' else window == TODAY)
         if 'rule_matched' in row:
-            row['rule_matched'] = window == TODAY
+            row['rule_matched'] = row['buyable']
         checks.append({'code': row.get('code'), 'name': row.get('name'), 'market': row.get('market'),
                        'original_action': d.get('action'),
                        'final_action': (row.get('directive') or {}).get('action'),

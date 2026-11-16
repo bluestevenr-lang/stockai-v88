@@ -1,33 +1,38 @@
 {
-  "version": "v88-upgrade-2026-11-16",
-  "source_base": "4f0cba51ce5e7c406c2658837a004afc00a9a650",
+  "version": "v88-entry-window-2026-11-16",
+  "source_base": "e3e7c9056932a2b21cad63eb947ea88da7dc769f",
   "shared_modules": {
-    "action_directive.py": "35bf3f9a60b03f01684c337dd3c506e510aa1b1d76ef41ca2d0386094e52867f",
-    "astra_cycle.py": "f631772f1fec1f6d428e391eda3d2b9564773e3aae575c8bb61a4000f71da66d",
+    "action_directive.py": "45b680c1992bf12c8115310a10cae9c3283cb4bc6cad3a7b794665145f4551c6",
+    "astra_cycle.py": "5bded3229f68c9efddad917ae4cf14d6278b0de707840df4c30b0e79e030ead3",
     "astra_cycle_state.py": "7cfa823bf2bc16812b50b5c159d9cd170391e691e29108ba1d1c54c9fc54d1f2",
     "strategy_board_state.py": "f9a2093a623f840db9f8eea4012d8a1b3a36a0fc0cd181db2173e2fbdc5f81fe",
     "shadow_screen.py": "2fe511ab14a9d7daf8c5b1557605c33a47f7e394e630edb8a7cde234c958747a",
     "horizon_book.py": "b5c2fbf4f3ac387bab436e7c69c42d8b0f7e4f1c362f3488f5fe7cafc0e7c38a",
-    "directive_audit.py": "43c3490acf87a5d7d96a2c97f6eee2893f7191d577a2f145bd743cd1dc86e31f",
+    "directive_audit.py": "23f595cb9d5f064606aaefbc0ba1e09cb025c018c80b1e4b2282285b6c0d3537",
     "directive_casebook.py": "208507c3da58af870ba79e6c9d28f7d7e5dd3022038bd82738a8fb5bba9138f3",
-    "muse_evidence.py": "644038e653947c1204d813b88308431c6e309af717aea234b039ce01340694fe",
+    "muse_evidence.py": "9099fbf962defa8db18dae358685485ddd41834a55a73da04e3e3d28e3621875",
     "entry_progression.py": "6d1811b616160345abe42afa486ed006fd20368ea9607f1b9a35d7290269d960",
     "early_opportunity_view.py": "2d54642ec5acb62cd89d417a019353e4ec95530c2a397fd165429c96182d19f6",
-    "grade_ladder.py": "f18015da4d7af0bd223be47618e11db496d7fef2d64f36f5c69e7b01766438a3",
+    "grade_ladder.py": "0ae3bfd9126fea8b5a7ce49366bbb4635102cdc13c4b9fdbc4c4f9ff4871e49f",
     "business_support.py": "3f822ac48418d2266f3d91bd750bd8dfe14e12bf1ffb9e76c3efcb311b17e13d",
     "earnings_quality.py": "b3f03e22e144bffb305cfa9276a2ea6ddefb228956df2fe2633dcb367c494dfa",
     "strategy_multicheck.py": "c9a0456917ce18ae41677bdaf6a2274216825ffdaf195fa35e55602638ab0775",
     "classics_evidence.py": "f1c854096a7ad2e15deab25ade401c443c9c981fa050067b7f5bafe35b13c117",
     "muse_display.py": "4bc06a68b39c91ef00ce8736995eb8fa670e7be84093f43499d17d0c8af770b3",
-    "muse_review.py": "caa5969cd52fb8313bb0873eeeabb5bbf1704fa87b66ba4bcfb3fbc94154b367",
+    "muse_review.py": "a7c431b0ecbb42e9abba01992c90543f69352a2e091fd9b7bbdfcd80bbdd5181",
     "market_session_view.py": "983979fe52d0baeff87b0ca52248294b49147de4596459b59c2873033ae2849a",
     "promise_sentry_rules.py": "948305a20a9858bb285bce614dc90d30b6960a270331ea92c80ffefa50dbb647",
-    "v88_decision_core.py": "15a5f7cdc1a56de412ab21c050cc35840d3e8d1e44c43e7eabad8915c837e66b"
+    "v88_decision_core.py": "15a5f7cdc1a56de412ab21c050cc35840d3e8d1e44c43e7eabad8915c837e66b",
+    "three_a_qualification.py": "ebd8b3ed03996485a8690d6ee6137d2eaf46052188f3e76ae5356ab71e6e77ee",
+    "execution_readiness.py": "6eeabb58fa324a7f5b2cca7d1ae8dce472f85dbc1263787485ad9c858baae186",
+    "entry_window_policy.py": "3c135a1d6ca7635b0ca10a0c3a16e279e33c49cebc2f94baf2402e02de2395a3"
   },
   "views": {
-    "strategy_board_ui.py": "6ad163b5560fb0bbae208b695e2223c76c6fd1e4fa27b4ea29af675da88292af",
-    "astra_cycle_view.py": "b42fb994b90691255e30eeaf0e9518a9d67c6285dde11c46292b4a5b489c7755"
+    "strategy_board_ui.py": "3e7f100f9010b4983b2dbb2f813f22c2f4ea70f29caa1120981c3f17f6d0da9c",
+    "astra_cycle_view.py": "95e4cc1bc451713a7d932d861c72df6005bd3bcb192966b5b4bd43d55ad224a2",
+    "strategy_crosscheck_view.py": "307ea9b04d1b7b7f10bcb0553211b352fc999b46ec84e540d490a0db9f34d238"
   },
   "view_source": "Core src, desktop root and cloud runtime are identical",
-  "review_packet_version": "selected-stock-review-2026-11-16-v1"
+  "review_packet_version": "selected-stock-review-2026-11-16-v3",
+  "source_commit": "90002e793b093b55e38e49822356162c758cd7b6"
 }

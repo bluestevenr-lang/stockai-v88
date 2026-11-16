@@ -57,7 +57,7 @@ def item(row, module):
               'entry_gate', 'live_gate', 'earnings_risk', 'entry_location', 'price_volume',
               'decision_policy', 'max_sessions', 'monthly_entry_deadline', 'month_sessions_left',
               'time_feasible', 'fee_allowance_pct', 'price_plan_version', 'price_plan_source_asof',
-              'stop_anchor', 'invalidation')
+              'stop_anchor', 'invalidation', 'three_a_qualification', 'entry_window_qualification')
     facts = {k: row[k] for k in fields if k in row}
     window = row.get('buy_window')
     planned = 'buy_window' in row or bool(row.get('entry_range'))
@@ -65,18 +65,26 @@ def item(row, module):
         import action_directive as ad
         d = row.get('directive') or (ad.decide_astra(row) if module == 'Astra' else ad.decide_3a(row))
         window = ad.buy_window(row, d)
-    # 送审事实与正文同源：可买与否只认 buy_window，不再沿用评分阶段的旧 buyable。
+    # Legacy rounds use their buy window. Current projections additionally bind
+    # readiness and qualification; their new labels need not equal legacy TODAY.
     if planned:
         facts['buy_window'] = window
     if module in BOARD_MODULES and planned:
         import action_directive as ad
         facts['buyable'] = window == ad.TODAY
+    readiness = (row.get('directive') or {}).get('execution_readiness')
+    if isinstance(readiness, dict):
+        facts['buyable'] = bool(row.get('buyable') is True and readiness.get('executable_now') is True)
+    qualification = row.get('three_a_qualification')
+    if module == '3A' and isinstance(qualification, dict) and qualification.get('qualified') is not True:
+        facts['buyable'] = False
     if row.get('directive'):
-        from action_directive import public_directive
-        facts['directive'] = public_directive(row['directive'], module)
-    from muse_evidence import review_evidence, decision_contract
-    facts['review_evidence'] = review_evidence(row)
+        from muse_evidence import review_directive
+        facts['directive'] = review_directive(row, module)
+    from muse_evidence import review_evidence, decision_contract, stable_review_facts
+    facts['review_evidence'] = review_evidence(row, module)
     facts['decision_contract'] = decision_contract(row, module)
+    facts = stable_review_facts(facts)
     identity = f'{module}:{MARKETS.get(row.get("market"), "unknown")}:{row["code"]}'
     return {'item_id': identity, 'module': module, 'market': MARKETS.get(row.get('market'), 'unknown'),
             'code': row['code'], 'display_code': display_code(row['code']), 'name': row['name'],

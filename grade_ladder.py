@@ -18,7 +18,7 @@ from copy import deepcopy
 
 # 分级行标识（下游指令/审核/日报/验证按此识别，保持不变）；逻辑版本见 LADDER_VERSION。
 LADDER_POLICY = 'grade-ladder-v1'
-LADDER_VERSION = 'horizon-book-v5-entry-progression'
+LADDER_VERSION = 'horizon-book-v6-entry-window-before-seats'
 GOOD_FLOOR = 60.0
 TIER_BUSINESS = {'3A': GOOD_FLOOR, '2A': GOOD_FLOOR, '1A': GOOD_FLOOR}
 SEATS = 3
@@ -246,8 +246,18 @@ def rank(r):
             -(lad.get('business_score') or 0), -lad['rr_backtest_basis'], r['code'])
 
 
+def window_eligible(row):
+    return (row.get('entry_window_qualification') or {}).get('eligible') is True
+
+
 def apply(doc, fresh, base, now, profiles=None):
-    """分级席位优先于旧路径：每档每市场最多3席，分级可买者先入，旧路径可买者补，其后才是研究席。"""
+    """Qualify each tier's complete pool before assigning its bounded seats.
+
+    Evidence caches are loaded once per tier, including newly regraded overflow.
+    A valid next-session plan competes even though it is not executable now.
+    Old research rows may remain in the document archive; publication filters
+    them independently and never lets them displace a current qualified row.
+    """
     from industry_diversity import select
     from strategy_board import compact, MARKETS
     from shadow_screen import attach_rs
@@ -290,14 +300,48 @@ def apply(doc, fresh, base, now, profiles=None):
         graded.append(r)
     seats, watch = {}, []
     by_code = {q.get('code'): q for q in fresh}
+    # Preserve eligibility under the unchanged financial/price rules before the
+    # time-specific projection turns closed-market buyable flags off. A 3A
+    # trend/window failure can still compete under an independently hit 2A plan.
+    financial_candidates = {id(r) for r in graded if r.get('buyable')}
+    checked = set()
+    preselection_errors = []
     for tier in TIERS3:
+        pending = [r for r in graded if r['strategy_tier'] == tier and id(r) not in checked]
+        if pending:
+            batch = {'rows': pending}
+            try:
+                from strategy_multicheck import enrich
+                from action_directive import annotate
+                enrich(batch, {'rows': fresh}, base=base, now=now)
+                annotate(batch, '3A', now=now, sentry=doc.get('promise_sentry'))
+            except Exception as exc:
+                reason = '选席前证据核验失败：' + type(exc).__name__
+                preselection_errors.append({'tier': tier, 'reason': reason})
+                for r in pending:
+                    r['buyable'] = False
+                    r['entry_window_qualification'] = {'eligible': False, 'label': '数据待核', 'reasons': [reason]}
+            checked.update(id(r) for r in pending)
+            for r in pending:
+                # Raw candidate.buyable can already be false at a closed
+                # exchange. Use the independently audited financial plan for
+                # overflow, then apply the lower tier's own time/trend policy.
+                d=r.get('directive') or {}
+                original=d.get('signal_plan') or d
+                if original.get('action'):
+                    from action_directive import ARMED_ACTIONS, buy_window
+                    financial_candidates.discard(id(r))
+                    if original['action'] in ARMED_ACTIONS and buy_window(r,original):
+                        financial_candidates.add(id(r))
+                funnel[r['market']]['window_checked_' + tier] += 1
+                funnel[r['market']]['window_eligible_' + tier] += int(window_eligible(r))
         for m in MARKETS:
             pool = [r for r in graded if r['strategy_tier'] == tier and r['market'] == m]
-            chosen, rest = select([r for r in pool if r['buyable']], SEATS, profiles, key=rank)
+            chosen, rest = select([r for r in pool if window_eligible(r)], SEATS, profiles, key=rank)
             seats[(tier, m)] = chosen
-            watch += sorted([r for r in pool if not r['buyable']], key=rank)[:3]
+            watch += sorted([r for r in pool if not window_eligible(r)], key=rank)[:3]
             # 高档满席：落选者若本身也命中低档证据（低档规则自己的前3或格子，不是顺延名次），按低档计划重算后进入低档竞争。
-            for r in [r for r in pool if r['buyable'] and r not in chosen]:
+            for r in [r for r in pool if id(r) in financial_candidates and r not in chosen]:
                 lower = [t for t in ((r.get('ladder') or {}).get('also_tiers') or []) if TIERS3.index(t) > TIERS3.index(tier)]
                 if not lower or r['code'] not in by_code:
                     continue
@@ -308,12 +352,14 @@ def apply(doc, fresh, base, now, profiles=None):
                 if r2 is not None and r2['strategy_tier'] in lower:
                     r2['ladder']['overflow_from'] = tier
                     graded.append(r2)
+                    if r2.get('buyable'):
+                        financial_candidates.add(id(r2))
                     funnel[m]['graded_' + r2['strategy_tier']] += 1
                     funnel[m]['buyable_' + r2['strategy_tier']] += int(r2['buyable'])
     taken = {r['code'] for v in seats.values() for r in v}
     now_graded = {}
     for r in graded:
-        if r['code'] not in now_graded or r['buyable']:
+        if r['code'] not in now_graded or window_eligible(r):
             now_graded[r['code']] = r
     rows = [r for r in doc['rows'] if r['code'] not in taken]
     # 一个程序一套逻辑：旧路径的可买行也必须过同一道分级门，否则降为研究行并写明原因。
@@ -324,7 +370,7 @@ def apply(doc, fresh, base, now, profiles=None):
         m, tier = r['market'], r['strategy_tier']
         cur = now_graded.get(r['code'])
         why = rejected.get(r['code']) or \
-            (('本轮分级未满足：' + '；'.join(cur['missing'])[:40]) if cur is not None and not cur['buyable'] else None) or \
+            (('本轮分级未满足：' + '；'.join(cur.get('missing') or (cur.get('entry_window_qualification') or {}).get('reasons') or [])[:80]) if cur is not None and not window_eligible(cur) else None) or \
             (None if r.get('grade_basis') == LADDER_POLICY else '未入周期证据表分级')
         if not why and r.get('buyable'):
             continue
@@ -351,7 +397,8 @@ def apply(doc, fresh, base, now, profiles=None):
                 r['rank'] = k
             final += keep
             c = doc['counts'].setdefault(tier, {}).setdefault(m, {})
-            c.update(selected=len(keep), matched=sum(bool(r.get('buyable')) for r in keep), ladder=len(mine))
+            c.update(selected=len(keep), matched=sum(bool(r.get('buyable')) for r in keep), ladder=len(mine),
+                     window_eligible=sum(window_eligible(r) for r in keep))
     final += [r for r in rows if r['strategy_tier'] not in ('3A', '2A', '1A')]
     doc['rows'] = final
     for key in ('top_grade_watch', 'investment_candidates'):
@@ -362,12 +409,12 @@ def apply(doc, fresh, base, now, profiles=None):
     empty = {}
     for tier in ('3A', '2A', '1A'):
         for m in MARKETS:
-            if any(r.get('buyable') for r in final if r['strategy_tier'] == tier and r['market'] == m):
+            if any(window_eligible(r) for r in final if r['strategy_tier'] == tier and r['market'] == m):
                 continue
             b = (envs.get(m) or {}).get('breadth') or {}
             from shadow_screen import playbook
             book = playbook(m, b.get('value'), tiers=(tier,))
-            upper = [r for r in final if r['market'] == m and r.get('buyable') and
+            upper = [r for r in final if r['market'] == m and window_eligible(r) and
                      tier in ((r.get('ladder') or {}).get('also_tiers') or [])]
             if upper:
                 from horizon_book import PLAN
@@ -391,6 +438,7 @@ def apply(doc, fresh, base, now, profiles=None):
         'evidence': {m: playbook_of(m, envs)['text'] for m in MARKETS}, 'scope': SCOPE,
         'breadth': {m: (envs.get(m) or {}).get('breadth') for m in MARKETS},
         'funnel': {m: dict(funnel[m]) for m in MARKETS},
+        'preselection_errors': preselection_errors,
         'skipped_top': {m: skipped[m].most_common(5) for m in MARKETS},
         'empty_reasons': empty, 'displaced': displaced, 'demoted': demoted,
         'playbook': {m: playbook_of(m, envs) for m in MARKETS},

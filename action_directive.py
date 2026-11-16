@@ -1,4 +1,9 @@
-"""action_directive.py — 操作指令层：每个席位最后只给一条可执行指令。
+"""action_directive.py — 原价格计划与当前执行状态分别保留。
+
+2026-11-16最终口径：3A中长期向上+今明两交易日，2A中期+本周，
+1A超短+今日当前可执行；90%为提升目标。以下旧动作是内部金融计划，
+不是直接发布授权；所有公开名单再经project_public的时段/报价/趋势/
+入场窗口检查。未满足者不以观察补主推荐，原计划和研究记录留后台。
 
 为什么需要这一层：入场门、多重核查、环境门、财报窗各自给出"不可买"的理由，
 但用户拿到的是一堆"等回调/重点观察/待核"——没有一条能直接下单。这里不新增
@@ -32,8 +37,9 @@ from __future__ import annotations
 import math
 from datetime import date, datetime, timedelta
 
-VERSION = 'action-directive-2026-11-16-v8-entry-progression'
-ACTIONS = ('立即买入', '限价买入', '挂单买入', '财报后买入', '不买')
+VERSION = 'action-directive-2026-11-16-v10-entry-window'
+ACTIONS = ('立即买入', '限价买入', '挂单买入', '财报后买入', '不买',
+           '等待开市', '等待核价', '等待核验', '等待触发', '研究候选', '策略条件匹配')
 ACCOUNT_RISK_PCT = 1.0       # 3A 标准仓：单笔最大亏损 = 账户 1%（范·撒普）
 MAX_POSITION_PCT = 25.0      # 单票仓位上限
 FEE_PCT = 0.5
@@ -47,7 +53,7 @@ HARD_GAP_MARKERS = ('不能认定', '利润现金含量不足', '不为正', '�
 RANGE_MARKER = '年度结构为震荡'
 SAME_DAY = '当日有效'
 STALE_MARKERS = ('最新交易日报价', '入场前更新报价', '最新收盘日线待更新')
-# 软缺口：报价/日线刷新、复核类，限价单本身就能消化（成交价不高于计划价）。
+# 金融计划保留这些缺口；公开执行层必须另核真实报价和完整日线。
 SOFT_GAP_PREFIX = ('入场前更新报价', '盘中报价', '本日研究续列', '收盘价有效', '最新收盘日线待更新',
                    '多重核查', '利润质量：经常性利润、一次性项目', '当前日线结构', '现价未进入原计划区间',
                    '原计划在剩余', '原计划当前净盈亏比')
@@ -424,7 +430,7 @@ def _decide_3a(row, *, now=None):
             return pullback(rotation + market)
         return pending(upper, market + price_r, '价格不高于计划入场上沿')
     if gate.get('entry_state') or soft:
-        # 已过全部入场门，只差多重核查/报价刷新等软缺口：限价单本身就消化这些缺口。
+        # 可生成原限价研究计划；缺口是否补齐由公开执行层核对，不能直接标今日可买。
         if in_range:
             return pullback([])
         if headwind:
@@ -652,6 +658,8 @@ def long_pending(row, doc):
 
 
 def stale_price(row, d):
+    if d.get('action') in ('研究候选', '策略条件匹配', '等待开市', '等待核价', '等待核验', '等待触发'):
+        d = d.get('signal_plan') or d
     rng = row.get('entry_range') or []
     price = d.get('price')
     if d.get('action') not in ARMED_ACTIONS or len(rng) != 2 or not (_num(price) and _num(rng[0]) and _num(rng[1])):
@@ -662,6 +670,10 @@ def stale_price(row, d):
 def directive_label(row):
     """指令行标签与 buy_window 同源：进入今日/1–3日买点才叫「操作指令」，否则是未激活的条件单。"""
     act = (row.get('directive') or {}).get('action')
+    if act == '研究候选':
+        return '研究计划'
+    if act in ('等待开市', '等待核价', '等待核验', '等待触发', '策略条件匹配'):
+        return '条件计划'
     if act in ARMED_ACTIONS and row.get('buy_window') not in (TODAY, SOON):
         return '条件单（未激活）'
     return '操作指令'   # 仅 Astra：在席证据表已命中股，暂未进入买点窗口
@@ -702,10 +714,19 @@ def rr_ok(row, d):
 
 
 def buy_window(row, d):
-    """唯一的推荐口径：只推今天立刻可买、或 1–3 个交易日内大概率可成交的票；其余返回 None（不推荐）。
+    """内部计划近价分类用于排序；不是近期成交概率或公开入场许可。
 
-    立即买入/限价买入 → 今日；挂单买入且挂单价距现价 ≤1.5×ATR（无 ATR 用 3%）→ 1–3 日；
-    被内部否决（接飞刀/原推荐破位）、须等大盘转好才成交的条件单、财报后买入、不买 → None。"""
+    对外必须经过project_public与entry_window_policy；不以ATR距离
+    断言会成交，不把下面的旧TODAY常量直接写成用户可买结论。
+    """
+    # Public projections are already checked against the unchanged financial
+    # plan. Keep them visible without promoting a waiting/research row to TODAY.
+    if d.get('action') == '研究候选':
+        return '研究候选·' + ((d.get('execution_readiness') or {}).get('label') or '待核验')
+    if d.get('action') in ('等待开市', '等待核价', '等待核验', '等待触发'):
+        return (d.get('execution_readiness') or {}).get('label') or d['action']
+    if d.get('action') == '策略条件匹配':
+        return '策略条件匹配'
     if fade_of(row):
         return None
     action = d.get('action')
@@ -740,6 +761,81 @@ def priority(row, module='3A', *, now=None):
 MATCHED_STATUS, MATCHED_CATEGORY = '条件匹配', '买入条件已满足'
 
 
+def project_public(row, module='3A', *, now=None):
+    """One projection: financial plan -> readiness -> trend/horizon/entry window.
+
+    Raw research tiers and numeric contracts remain available in history. A
+    public grade is not a 90% probability; 90% is an improvement objective.
+    """
+    from copy import deepcopy
+    from execution_readiness import apply
+    from entry_window_policy import assess as entry_window_assess
+    from three_a_qualification import assess, research_directive
+    row = deepcopy(row)
+    original = row.get('directive') or {}
+    if original.get('action') in ('研究候选', '策略条件匹配', '等待开市', '等待核价', '等待核验', '等待触发'):
+        original = original.get('signal_plan') or original
+    # A later financial/event veto must also hold on read-only publication;
+    # callers need not rebuild the entire board to withdraw an obsolete plan.
+    hard = hard_gaps(row)
+    event = (row.get('earnings_risk') or {}).get('state')
+    if original.get('action') in ARMED_ACTIONS and hard:
+        row['directive_original'] = original
+        original = _directive('不买', why=hard, module=module)
+    elif original.get('action') in ARMED_ACTIONS and (event in ('blackout', 'stale')
+            or (row.get('entry_gate') or {}).get('entry_state') == '等财报'):
+        row['directive_original'] = original
+        original = _directive('财报后买入', why=['当前财报窗口需重新核验'], module=module)
+    if original.get('action') in ARMED_ACTIONS:
+        from directive_audit import violations
+        audit_input = dict(row, directive=original,
+                           buyable=(row.get('three_a_qualification') or {}).get('pre_requirement_buyable', row.get('buyable')))
+        bad = violations(audit_input, 'Astra' if module == 'Astra' else '3A', now)
+        if bad:
+            row['directive_original'] = original
+            original = _directive('不买', why=['原计划当前复核未通过：' + bad[0]], module=module)
+    financial_window = buy_window(row, original)
+    d = apply(row, original, now)
+    entry_module = (row.get('strategy_tier') or '3A') if module == '3A' else module
+    window = entry_window_assess(row, original, now=now, module=entry_module)
+    if not financial_window:
+        window = dict(window, eligible=False, reasons=list(window.get('reasons') or []) + ['原金融策略未通过近期入场条件'])
+    row['entry_window_qualification'] = window
+    is_3a = module == '3A' and row.get('strategy_tier', '3A') == '3A'
+    if is_3a:
+        q = assess(row, original, pre_requirement_buyable=financial_window == TODAY, window=window)
+        row['three_a_qualification'] = q
+        if not q['qualified'] and financial_window and original.get('action') in ARMED_ACTIONS:
+            d = research_directive(d, q)
+        row['selection_category'] = q['public_label']
+        if not q['qualified']:
+            row['status'] = '研究候选'
+    else:
+        row.pop('three_a_qualification', None)
+    if d.get('action') in ('立即买入', '限价买入'):
+        d['signal_plan'] = deepcopy(original)
+        if window.get('eligible'):
+            d['action'] = '策略条件匹配'
+            d['text'] = str(d.get('text') or '').replace('立即买入', '策略条件匹配').replace('限价买入', '策略条件匹配')
+        else:
+            d['action'] = '等待核验'
+            d['why'] = list(window.get('reasons') or [])
+            d['text'] = '等待核验 · 未满足本档近期入场条件 · ' + '；'.join(d['why'])
+    # A price/data wait cannot revive a financial veto or an unreachable plan.
+    w = window.get('label') if window.get('eligible') else None
+    row['directive'] = d
+    row['execution_readiness'] = deepcopy(d.get('execution_readiness') or {})
+    row['buyable'] = bool(w and row['execution_readiness'].get('executable_now'))
+    if 'rule_matched' in row:
+        row['rule_matched'] = row['buyable']
+    if w:
+        row['buy_window'] = w
+    else:
+        row.pop('buy_window', None)
+    sync_status(row)
+    return row
+
+
 def sync_status(row):
     """buyable 的唯一裁决在 annotate；状态/类别文字跟随它，不再各写各的（长鑫科技「条件匹配」却不可买）。"""
     if row.get('buyable'):
@@ -763,37 +859,46 @@ def annotate(doc, module='3A', *, now=None, sentry=None):
     summary = {'version': VERSION, 'markets': {}}
     for row in rows:
         try:
-            d = decide_astra(row, now=now) if module == 'Astra' else decide_3a(row, now=now)
+            prior = row.get('directive') or {}
+            if prior.get('action'):
+                # A saved contract, including an old-version one, is immutable
+                # on re-read. Fresh screening builds a new row/plan explicitly.
+                # Changed price bands can exclude it, never reprice or renew it.
+                d = project_public(row, module, now=now)['directive']
+            else:
+                d = decide_astra(row, now=now) if module == 'Astra' else decide_3a(row, now=now)
         except Exception as exc:  # 指令层永不拖垮名单
             d = _directive('不买', why=[f'指令计算异常：{type(exc).__name__}'], module=module)
         row['directive'] = d
+        row.update(project_public(row, module, now=now))
     try:  # GitHub 结论 ≡ Copilot 结论：独立复核 + 判例一致性，违规行降为不买
         from directive_audit import enforce
         summary['audit'] = enforce(doc, module, now)
     except Exception as exc:
         summary['audit'] = {'consistent': False, 'text': f'🔒 一致性复核异常：{type(exc).__name__}'}
     for row in rows:
-        w = buy_window(row, row['directive'])
-        row['buyable'] = w == TODAY
-        if 'rule_matched' in row:row['rule_matched'] = w == TODAY
-        if w:
-            row['buy_window'] = w
-        else:
-            row.pop('buy_window', None)
-        sync_status(row)
+        projected = project_public(row, module, now=now)
+        row.clear()
+        row.update(projected)
     for row in rows:
         m = summary['markets'].setdefault(row.get('market') or '未知', {a: 0 for a in ACTIONS})
         m[row['directive']['action']] += 1
-    summary['windows'] = {w: sum(r.get('buy_window') == w for r in rows) for w in (TODAY, SOON)}
+    summary['windows'] = {
+        '近期入场计划': sum((r.get('entry_window_qualification') or {}).get('eligible') is True for r in rows),
+        '当前条件匹配': sum(bool(r.get('buyable')) for r in rows),
+        '待开市核价': sum((r.get('entry_window_qualification') or {}).get('eligible') is True
+                       and not r.get('buyable') for r in rows),
+    }
     summary['guarded'] = sum(bool(r['directive'].get('guard')) for r in rows)
     doc['directive_summary'] = summary
     return summary
 
 
-def publishable(doc, module='3A'):
-    """对外输出（页面、飞书、推荐日志）的唯一过滤：只留今日可买 / 1–3日内可买，其余不推，允许 0 只；
-    Astra 另列在席的证据表已命中股（启动跟踪·等买点）。
-    存档文件保留全量（固定计划、历史留档、续持复核仍要用），只是不再展示、不再推送。"""
+def publishable(doc, module='3A', *, now=None):
+    """主推荐只留对应周期/趋势/近期入场窗口合格项，允许0只。
+
+    不加观察或远挂单补位；全量固定计划、历史与学习记录保留在原档。
+    """
     if not isinstance(doc, dict):
         return doc
     out = dict(doc)
@@ -825,26 +930,21 @@ def publishable(doc, module='3A'):
             dropped[m] = dropped.get(m, 0) + 1
             continue
         d = r.get('directive')
-        if d and stale_price(r, d):
-            # 指令限价必须随当前入场带更新；旧限价落在入场带外即按同一指令层重算。
-            try:
-                d = decide_astra(r) if module == 'Astra' else decide_3a(r)
-                r = {**r, 'directive': d, 'directive_repriced_from': (r.get('directive') or {}).get('price')}
-            except Exception:
-                d = {}
+        # Existing instructions never reprice on a page/report read. In
+        # particular a changed band must not turn an expired order into a new
+        # SAME_DAY order; entry_window_policy excludes an incompatible contract.
         if not d:
             try:
-                d = decide_astra(r) if module == 'Astra' else decide_3a(r)
+                d = decide_astra(r, now=now) if module == 'Astra' else decide_3a(r, now=now)
             except Exception:
                 d = {}
-        r = {**r, 'directive':d}
-        w = buy_window(r, d)
+        r = project_public({**r, 'directive':d}, module, now=now)
+        d = r['directive']
+        w = r.get('buy_window')
         # Astra 在席股证据表已命中：今日/1–3日内买不到的也照列，标「启动跟踪·等买点」。
-        if not w and module == 'Astra' and (r.get('astra_position') or {}).get('ok') and not fade_of(r):
-            w = LAUNCH
+        # Owner requests only near-entry plans: no observation/launch fallback.
         if w:
-            r = {**r, 'buy_window':w, 'buyable':w==TODAY}
-            if 'rule_matched' in r:r['rule_matched'] = w==TODAY
+            r = {**r, 'buy_window':w}
             keep.append(r)
         else:
             m = r.get('market') or '未知'
@@ -861,7 +961,8 @@ def publishable(doc, module='3A'):
     out['publication_excluded'] = incomplete
     if module == 'Astra':
         out['watch'] = []
-        out['rule_matched_count'] = sum(r.get('buy_window') in (TODAY, SOON) for r in keep)
+        out['rule_matched_count'] = sum((r.get('entry_window_qualification') or {}).get('eligible') is True for r in keep)
+        out['executable_now_count'] = sum(bool(r.get('buyable')) for r in keep)
     else:
         out.update(investment_candidates=[], top_grade_watch=[], entry_blocked=[], tier_watch={})
     summary = dict(out.get('directive_summary') or {})
@@ -920,9 +1021,24 @@ def public_directive(d, module=None):
         return {}
     out = dict(d)
     if (module or out.get('module')) not in ('3A', '2A', '1A'):
+        # Position amounts sometimes also occur in older human-readable text.
+        # Redact only known account-notional fragments; stock USD prices stay.
+        import re
+        amount = out.get('size_notional_usd') or out.get('size_pct')
+        for key in ('text', 'condition', 'canon'):
+            if isinstance(out.get(key), str):
+                value = out[key]
+                if isinstance(out.get('size'), str) and out['size']:
+                    value = value.replace(out['size'], '研究仓位')
+                if _num(amount):
+                    literal = re.escape(f'{amount:g}')
+                    value = re.sub(r'(?:约\s*)?(?:\$\s*' + literal + r'(?![\d.])|' + literal + r'\s*(?:美元|USD)(?:等值)?)', '账户金额已隐藏', value)
+                out[key] = value
         out.pop('size', None)
         out.pop('size_pct', None)
         out.pop('size_notional_usd', None)
+    if isinstance(out.get('signal_plan'), dict):
+        out['signal_plan'] = public_directive(out['signal_plan'], module or out.get('module'))
     return out
 
 

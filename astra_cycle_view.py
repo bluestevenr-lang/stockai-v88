@@ -1,9 +1,10 @@
 """The same bounded, dated Astra research plan on desktop and cloud."""
 from html import escape
+from datetime import datetime, timezone
 from astra_cycle import live_note
 from urllib.parse import urlencode
 from astra_cycle_state import view
-from strategy_board_ui import directive_html, audit_html
+from strategy_board_ui import directive_html, audit_html, execution_ready, execution_status, in_entry_window
 
 
 def text(v): return escape(str(v if v is not None else '待核'))
@@ -21,6 +22,7 @@ def band(v):
 
 
 def html(doc, now=None, *, journal=None):
+    now=now or datetime.now(timezone.utc)
     from strategy_crosscheck_view import html as crosscheck_html
     from muse_display import row_badge, load as muse_load
     from screening_clock import market_screened_at
@@ -29,14 +31,15 @@ def html(doc, now=None, *, journal=None):
     from action_directive import publishable
     from shadow_screen import ASTRA_POSITION_NOTE, FADE_NOTE
     checked = view(doc, now)
-    d = publishable(checked, 'Astra')
+    d = publishable(checked, 'Astra', now=now)
+    d={**d,'rows':[r for r in d.get('rows',[]) if in_entry_window(r,'Astra')]}
     if not d.get('version'): return ''
     out = ['<section id="v88-astra-monthly" style="border:1px solid #c7d2fe;border-left:5px solid #6366f1;border-radius:12px;padding:18px;margin:18px 0;background:#f8faff">',
            '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px"><b style="font-size:23px;color:#3730a3">🎯 Astra · 定期短线计划</b>',
-           f'<b style="font-size:20px">⚡今日可买 {sum(r.get("buy_window")=="今日可买" for r in d.get("rows", []))} 只　·　⏳1–3日内可买 {sum(r.get("buy_window")=="1-3日内可买" for r in d.get("rows", []))} 只　·　🌱启动跟踪 {sum(r.get("buy_window")=="启动跟踪·等买点" for r in d.get("rows", []))} 只</b></div>',
+           f'<b style="font-size:20px">✓ 策略条件匹配 {sum(execution_ready(r,"Astra") for r in d.get("rows", []))} 只　·　⏳研究 / 等待 {sum(not execution_ready(r,"Astra") for r in d.get("rows", []))} 只　·　🌱启动跟踪 {sum(r.get("buy_window")=="启动跟踪·等买点" for r in d.get("rows", []))} 只</b></div>',
            f'<p style="color:#0f7b45;font-weight:600">{text(ASTRA_POSITION_NOTE)}</p>',
            f'<p style="color:#b42318;font-weight:600">{text(FADE_NOTE)}</p>',
-           f'<p style="color:#334155">当前大盘反弹标记：{text("、".join(m for m, v in (d.get("market_bottom_rebound") or {}).items() if v) or "未确认")}。个股分别标注今日可买、回踩等待、条件触发或启动跟踪。</p>',
+           f'<p style="color:#334155">当前大盘反弹标记：{text("、".join(m for m, v in (d.get("market_bottom_rebound") or {}).items() if v) or "未确认")}。个股分别列示策略条件匹配、待开市核价、报价待更新或等待触发；原计划保留。</p>',
            f'<p>📅 {text(d.get("cycle_id"))} 轮　｜　🔄 下轮 {text(d.get("next_recalculation"))}　｜　每月1、10、20日开新轮 · 每天复筛补空位</p>',
            '<p style="color:#64748b">中港优先 · 共最多3只 · 美股最多1只，仅在中港合格名单留有空位时列为参考。重算按自然日；新增入场限于本月；原合同的价格、期限与跟踪记录保留。</p>',
            money_html(d, now=now),
@@ -44,7 +47,7 @@ def html(doc, now=None, *, journal=None):
     from module_freshness import html as freshness_html
     out.append(freshness_html('astra_cycle.json',doc,now=now))
     out.append(audit_html(d, 'Astra', now, text))
-    if not d.get('rows'): out.append('<p><b>本轮Astra 0只</b>；全市场没有「左侧启动或趋势延续（非M头、非过热）」且净空间/本月内可达的票。</p>')
+    if not d.get('rows'): out.append('<p><b>本轮Astra 0只</b>；本轮暂无同时满足月内期限与近期入场条件的计划。</p>')
     published = {(r.get('market'), r.get('code'), r.get('plan_id')) for r in d.get('rows', [])}
     retained = [r for r in checked.get('rows', []) if (r.get('market'), r.get('code'), r.get('plan_id')) not in published]
     if retained:
@@ -64,11 +67,11 @@ def html(doc, now=None, *, journal=None):
         rank = f'行业市值 #{info["rank"]}/{info.get("comparable", "—")} · {info.get("source_session", "待核")}' if info.get('rank') else '行业排名待核'
         link = '?'+urlencode({'focus':'deep','q':r['code']})
         out += ['<article style="border:1px solid #dbe3f3;border-radius:10px;background:white;padding:14px;margin:12px 0">',
-                f'<div style="font-size:18px"><b>{flags.get(r["market"], "")} #{r["rank"]} <a href="{escape(link,quote=True)}">{text(r["name"])} · {text(r["code"])}</a></b>　<b style="color:#4338ca">{text((r.get("strategy_score") or {}).get("value"))}分 · {text((r.get("strategy_score") or {}).get("label", "旧版周期分"))}</b>　<b style="color:{"#0f7b45" if r.get("buy_window") else "#64748b"}">{text(r.get("buy_window") or r["status"])}</b></div>',
+                f'<div style="font-size:18px"><b>{flags.get(r["market"], "")} #{r["rank"]} <a href="{escape(link,quote=True)}">{text(r["name"])} · {text(r["code"])}</a></b>　<b style="color:#4338ca">{text((r.get("strategy_score") or {}).get("value"))}分 · {text((r.get("strategy_score") or {}).get("label", "旧版周期分"))}</b>　<b style="color:{"#0f7b45" if execution_ready(r,"Astra") else "#a66316"}">{text(execution_status(r))}</b></div>',
                 (f'<div style="margin:8px 0;padding:8px 12px;border-radius:8px;background:#fff1f0;border:1px solid #ffa39e;color:#a8071a;font-weight:600">⚠️ {text(live_note(r))}</div>' if (r.get("live_gate") or {}).get("hold") is False else ''),
                 (f'<div style="margin:8px 0;padding:8px 12px;border-radius:8px;background:#f6ffed;border:1px solid #b7eb8f;color:#0f7b45;font-weight:600">🚀 {text((r.get("live_gate") or {}).get("note"))}</div>' if (r.get("live_gate") or {}).get("trend_trial") else ''),
                 (f'<div style="margin:6px 0;color:#065f46"><b>{text((r.get("astra_position") or {}).get("state"))}</b> · {text((r.get("astra_position") or {}).get("reason"))}</div>' if r.get("astra_position") else ''),
-                directive_html(r, text, 'Astra'),
+                directive_html(r, text, 'Astra', now=now),
                 row_badge(raw_rows.get(r['code'],r), 'Astra', muse_cache, now, market_screened_at(doc,r['market']), display_row=r),
                 f'<p><b>现价 {text(r.get("last"))} {text(r.get("currency") or {"A股":"CNY","港股":"HKD","美股":"USD"}.get(r["market"]))}</b> · 报价 {text(clock(r.get("quote_asof")))}</p>',
                 f'<p style="font-size:13px;color:#64748b">{text(info.get("industry"))} · {text(rank)} · {text(r.get("role"))}</p>',
@@ -83,7 +86,7 @@ def html(doc, now=None, *, journal=None):
                 f'<p>🏢 {text(r.get("business_reason"))}</p>',
                 f'<p>⚠️ {text(r.get("business_risk") or "未提供新增反证；仍需核验最新公告")}</p>',
                 f'<p>⏱ 原计划截止 {text(window.get("deadline"))} · 新增入场限于 {text(r.get("monthly_entry_deadline") or window.get("deadline"))} · 剩余 {text(window.get("remaining_sessions"))} 交易日；到期复盘，未入场不延长原计划。</p>',
-                (f'<p style="font-size:13px;color:#64748b">待补资料（不影响上方买入指令）：{text("；".join(r.get("missing",[])))}</p>' if r.get("buy_window") and r.get("missing") else f'<p style="font-size:13px">下一步：{text("；".join(r.get("missing",[])) or "核对实际账户资金、费用与交易单位后再决定")}</p>'),
+                (f'<p style="font-size:13px;color:#64748b">待补资料与复核事项：{text("；".join(r.get("missing",[])))}</p>' if r.get("buy_window") and r.get("missing") else f'<p style="font-size:13px">下一步：{text("；".join(r.get("missing",[])) or "核对实际账户资金、费用与交易单位后再决定")}</p>'),
                 f'<details><summary>价格依据 · 复合评分 · 同业Top5</summary><p>{text(r.get("price_plan_scope"))}</p>',
                 f'<p>报价 {text(r.get("last"))} {currency.get(r["market"], "")} · {text(r.get("quote_asof"))}；结构日 {text(r.get("price_plan_source_asof"))}；往返费用假设0.5%，非收益承诺。</p>']
         for f in (r.get('strategy_score') or {}).get('factors', []):

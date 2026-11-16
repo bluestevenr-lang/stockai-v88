@@ -19,42 +19,82 @@ DIRECTIVE_COLOR={'立即买入':('#0f7b45','#f6ffed','#b7eb8f'),'限价买入':(
                  '不买':('#595959','#fafafa','#d9d9d9')}
 
 
-def directive_html(r,esc=escape,module='3A'):
-    """唯一操作指令：动作、价格、仓位、止损、目标、有效期与离场规则同一行给全。
-    数据尚无 directive（云端下一轮前的旧快照）时，用同一指令层就地计算；失败则不显示。"""
+def execution_metadata(row):
+    return (row.get('directive') or {}).get('execution_readiness') or row.get('execution_readiness') or {}
+
+
+def in_entry_window(row,module='3A'):
+    """Read the canonical gate; the display never manufactures eligibility."""
+    if (row.get('entry_window_qualification') or {}).get('eligible') is not True:
+        return False
+    return module=='Astra' or row.get('strategy_tier')!='3A' or (row.get('three_a_qualification') or {}).get('qualified') is True
+
+
+def execution_ready(row,module='3A'):
+    """A nonempty research/wait window never means executable now."""
+    if not in_entry_window(row,module) or not row.get('buyable') or not execution_metadata(row).get('executable_now'):
+        return False
+    return module=='Astra' or row.get('strategy_tier')!='3A' or (row.get('three_a_qualification') or {}).get('qualified') is True
+
+
+def public_rating(row):
+    if row.get('grade_pending'):
+        return '未授级'
+    if row.get('strategy_tier')=='3A':
+        q=row.get('three_a_qualification') or {}
+        return q.get('public_label') or ('3A' if q.get('qualified') is True else '研究候选（3A未达标）')
+    return row.get('strategy_tier') or '研究候选'
+
+
+def execution_status(row):
+    """Show the current operational requirement separately from qualification."""
+    meta=execution_metadata(row)
+    if meta.get('label'):
+        return meta['label']
+    action=(row.get('directive') or {}).get('action')
+    if action in ('不买','财报后买入'):
+        return '暂不入场' if action=='不买' else '财报后复核'
+    if action=='挂单买入' or (row.get('directive') or {}).get('order')=='条件单':
+        return '等待触发'
+    # Older snapshots can carry a buy window without a current session check.
+    return '当前执行状态待核'
+
+
+def directive_html(r,esc=escape,module='3A',now=None):
+    """Render the published plan without recalculating prices or admission."""
     d=r.get('directive') or {}
     if not d.get('text'):
-        try:
-            from action_directive import decide_3a,decide_astra
-            d=(decide_astra if module=='Astra' else decide_3a)(r)
-        except Exception:return ''
-    fg,bg,bd=DIRECTIVE_COLOR.get(d.get('action'),DIRECTIVE_COLOR['不买'])
-    extra=[('依据','；'.join(d.get('why') or [])),('待补资料（不影响本指令）','；'.join(d.get('checks') or [])),('离场',d.get('exit') or '')]
+        return ''
+    shown_text=d['text']
+    legacy=not d.get('execution_readiness') or not in_entry_window(r,module)
+    if legacy:
+        shown_text=str(shown_text).replace('立即买入','原入场计划').replace('今日可买','当前执行状态待核').replace('限价买入','原限价计划')
+    ready=execution_ready(r,module)
+    fg,bg,bd=(DIRECTIVE_COLOR['限价买入'] if ready else
+              DIRECTIVE_COLOR['不买'] if d.get('action')=='不买' else DIRECTIVE_COLOR['挂单买入'])
+    extra=[('原记录依据' if legacy else '依据','；'.join(d.get('why') or [])),('待补资料与复核事项','；'.join(d.get('checks') or [])),('离场',d.get('exit') or '')]
     tail=''.join(f'<br><small style="color:#595959">{k}：{esc(v)}</small>' for k,v in extra if v)
-    w=r.get('buy_window')
+    w=execution_status(r)
     from action_directive import directive_label
-    label=directive_label({**r,'directive':d})
+    label='原计划待核' if legacy else directive_label({**r,'directive':d})
     badge=(f'<span style="display:inline-block;margin-bottom:4px;padding:1px 8px;border-radius:10px;color:#fff;'
-           f'background:{"#0f7b45" if w=="今日可买" else "#d46b08"}">{"⚡" if w=="今日可买" else "⏳"} {esc(w)}</span><br>') if w else ''
+           f'background:{"#0f7b45" if ready else "#d46b08"}">{"✓" if ready else "⏳"} {esc(w)}</span><br>') if w else ''
     return (f'<div style="margin:6px 0;padding:6px 10px;border-radius:8px;background:{bg};border:1px solid {bd}">'
-            f'{badge}<b style="color:{fg}">📌 {"" if label=="操作指令" else esc(label)+"｜"}{esc(d["text"])}</b>{tail}</div>')
+            f'{badge}<b style="color:{fg}">📌 {"" if label=="操作指令" else esc(label)+"｜"}{esc(shown_text)}</b>{tail}</div>')
 
 
 def audit_html(doc,module='3A',now=None,esc=escape):
-    """一致性复核结果常驻页面；旧快照尚无复核时用同一指令层就地补算（含复核），不另立口径。"""
+    """Display the completed audit; rendering never mutates the plan."""
     s=doc.get('directive_summary') or {}
     if not (s.get('audit') or {}).get('text'):
-        try:
-            from action_directive import annotate
-            s=annotate(doc,module,now=now)
-        except Exception:return ''
+        return '<div style="color:#64748b;font-size:13px">本轮规则一致性复核结果待更新。</div>'
     a=s.get('audit') or {}
     ok=a.get('consistent')
     return (f'<div style="margin:6px 0;padding:6px 10px;border-radius:8px;font-size:13px;'
             f'background:{"#f6ffed" if ok else "#fff7e6"};border:1px solid {"#b7eb8f" if ok else "#ffd591"};'
             f'color:{"#0f7b45" if ok else "#ad4e00"}"><b>{esc(a.get("text") or "")}</b>'
             '<br><small style="color:#595959">云端按同一份规则代码计算；每次运行先复算Copilot判例库，再独立复核每条指令'
-            '（价格/止损/目标顺序、追高、财报、硬伤、逆风半仓、匹配周期的净盈亏比门槛），不一致即降为不买。无模型调用。</small></div>')
+            '（价格/止损/目标顺序、追高、财报、硬伤、逆风半仓、匹配周期的净盈亏比门槛），不一致即降为不买。这里只验证规则一致性，不代表胜率认证或Muse复核通过。无模型调用。</small></div>')
 
 
 def html(doc=None,code=None,now=None,profiles=None):
@@ -79,13 +119,13 @@ def html(doc=None,code=None,now=None,profiles=None):
     from strategy_board_state import view
     raw_doc=doc; raw_rows={r['code']:r for r in doc.get('rows',[])}
     from action_directive import publishable
-    doc=publishable(view(doc,now),'3A')
+    doc=publishable(view(doc,now),'3A',now=now)
     from strategy_crosscheck_view import html as crosscheck_html
     from muse_display import row_badge, panel as muse_panel, load as muse_load
     muse_cache = muse_load()
     esc=lambda v:escape(str(v if v is not None else '—'),quote=True)
     flags={'A股':'🇨🇳','港股':'🇭🇰','美股':'🇺🇸'}
-    rows=[r for r in doc.get('rows',[])+doc.get('investment_candidates',[]) if not code or r['code']==code]
+    rows=[r for r in doc.get('rows',[]) if in_entry_window(r) and (not code or r['code']==code)]
     out=['''<style>.strategy-board .lane{margin:14px 0;border:1px solid #d8e4f3;border-radius:14px;overflow:hidden;background:#fff}
     .strategy-board .head{padding:18px 20px;background:#eef5ff;display:flex;justify-content:space-between;align-items:center;gap:12px}
     .strategy-board h3{font-size:22px!important;margin:0 0 5px}.strategy-board small{font-size:13px!important;color:#64748b}
@@ -100,7 +140,7 @@ def html(doc=None,code=None,now=None,profiles=None):
     .strategy-board td,.strategy-board th{padding:12px 14px;border-bottom:1px solid #e5ebf4;vertical-align:top;font-size:14px!important;line-height:1.6;overflow-wrap:anywhere}
     .strategy-board details{font-size:13px}.strategy-board .score{font-size:21px;color:#2459c7;font-weight:700}.strategy-board .market{background:#edf4ff;font-weight:600}
     </style><div class="strategy-board"><h3>🎯 3A / 2A / 1A 重点榜</h3>
-    <p><b>🍀 正式策略与 🌱 提前拐点提醒分别展示。</b>3A、2A、1A 的计划周期和目标随匹配规则列示；综合分是筛选分，不是胜率。当前命中历史规则也须通过位置检查；过度偏离均线或高位量价转弱时等待回踩。条件单未触发不能标为今日可买。底部提醒允许左侧与初升机会，保留结构失效位和财务反证；新规则胜率由前瞻记录积累。</p>
+    <p><b>3A：中长期走势向上，今明两个交易日内入场；2A：中期，本周内入场；1A：超短线，今天入场。</b>主推荐只列趋势、证据与近期入场窗口同时符合的个股；观察和远期买点不补位。90%净盈利胜率是持续优化目标，尚未验证，不作为当前硬门槛或成功承诺。综合分与历史规则组胜率均不等于本次获胜概率；当前执行状态另核交易时段、最新报价和触发条件。</p>
     <small>中期统一分（企业基本面25 · 估值10 · 中期趋势20 · 中期动量10 · 量能10 · 成交承载10 · 风险约束15）· 形态验证：样本≥300、平均≥+0.05R、盈亏比≥1.5、前后两段均为正 · 筛选分不代表胜率或 GPT 复审分。旧评级与日历原样保留。</small>''']
     from module_freshness import html as freshness_html, record as freshness_record
     out.append(freshness_html('strategy_board.json',doc,now=now))
@@ -117,9 +157,9 @@ def html(doc=None,code=None,now=None,profiles=None):
     out.append('<p class="screen-clock">📈 报价截至（北京时间）：'+esc(' · '.join(m+' '+t for m,t in quote_clocks(doc).items()))+'</p>')
     if doc.get('refresh_state')=='source_unavailable_retained':
         out.append('<p>⏳ 最近核对 '+esc(display(doc.get('checked_at')))+'；源数据不足，保留原筛选时间。</p>')
-    settings=[('3A','3A · 中期策略','按匹配规则持有 · 分数不是胜率 · 各市场最多3只'),
-              ('2A','2A · 短中期策略','独立入场与退出计划 · 未触发条件单明确等待'),
-              ('1A','1A · 超短线策略','按原价格与期限执行 · 不延长旧合同')]
+    settings=[('3A','3A · 中长期向上','今明两个交易日内入场 · 各市场最多3只'),
+              ('2A','2A · 中期策略','本周内入场 · 条件未触发时明确等待'),
+              ('1A','1A · 超短线策略','今天入场 · 已收市不列今日计划')]
     if doc.get('grade_policy')!='2026-10-11-quality-followup-v8':
         out.append('<p>历史版本结果：下列名单保留原分数与原分类，等待新规则重算；不代表已按新口径筛选。</p>')
 
@@ -129,7 +169,7 @@ def html(doc=None,code=None,now=None,profiles=None):
         if code and not members:continue
         matched=sum(r['status']=='条件匹配' for r in members)
         retained=sum(not r.get('current_source') or bool(r.get('research_retained')) for r in members)
-        out.append(f'<section class="lane" id="strategy-{tier}"><div class="head"><div><h3>{title}</h3><small>{period} · '+ ' · '.join(f'{m} {sum(r["market"]==m for r in members)}只' for m in flags)+f'</small></div><div><span class="count">{len(members)} 只</span><br><small>⚡今日条件满足 {sum(r.get('buy_window')=='今日可买' for r in members)} · ⏳等待触发 {sum(r.get('buy_window')!='今日可买' for r in members)}</small></div></div>')
+        out.append(f'<section class="lane" id="strategy-{tier}"><div class="head"><div><h3>{title}</h3><small>{period} · '+ ' · '.join(f'{m} {sum(r["market"]==m for r in members)}只' for m in flags)+f'</small></div><div><span class="count">{len(members)} 只</span><br><small>✓ 当前执行条件满足 {sum(execution_ready(r) for r in members)} · ⏳窗口内待触发 {sum(not execution_ready(r) for r in members)}</small></div></div>')
         out.append('<div class="screen-clock" style="padding:10px 20px;font-size:15px;color:#2459c7">'+esc(clock)+' · 💾 缓存写入 '+esc(freshness_record('strategy_board.json',doc,now=now)['cached'])+'（北京时间）</div>')
         status=(doc.get('tier_status') or {}).get(tier) or {}
         if tier in ('2A','1A') and status and not any(v.get('enabled_cells') for v in status.values()):
@@ -194,10 +234,10 @@ def html(doc=None,code=None,now=None,profiles=None):
                     roster=r.get('research_roster') or {}
                     roster_note=('<br><small>日度研究 · '+esc(roster.get('review_session'))+' · 入选 '+esc(roster.get('selection_score'))+'分 · '+('当前分待核' if roster.get('current_score') is None else '当前 '+esc(roster.get('current_score'))+'分')+'</small>') if roster else ''
                     out.append(f'<tr><td><b>#{r["rank"]} <a href="{esc(href)}">{esc(r["name"])}</a></b><br><small>{esc(r["code"])}</small>{profile_markup}{roster_note}{row_badge(raw_rows.get(r['code'],r), '3A', muse_cache, now, market_screened_at(raw_doc,r['market']), display_row=r) if tier=='3A' else ''}</td>'
-                        f'<td><b>{"未授级" if r.get("grade_pending") else esc(r["strategy_tier"])}</b>{('<br><b>'+esc(r.get('selection_category'))+'</b>') if tier=='3A' and r.get('selection_category') else ''}{('<br><b style="color:#0958d9">🪑 '+esc(r.get('seat_fill'))+'</b><br><small>'+esc(r.get('seat_fill_reason') or '同业已有更高分入选，为避免空席按统一分补入本席；80分线与企业依据未放宽')+'</small>') if tier=='3A' and r.get('seat_fill') else ''}<br>{score_value_html(r)}<details><summary>权重与贡献</summary><div><small>评分字段覆盖 {s["coverage"]}%（非质量通过率）· {esc(s.get("label", "旧版周期分"))}</small></div>{parts}<div>数据版本 {esc(s.get("snapshot_id"))} · 评分规则 {esc(s.get("revision"))}</div><div>共振 +{s["interaction"]} · 过热扣 {s["penalty"]}</div></details></td>'
+                        f'<td><b>{"未授级" if r.get("grade_pending") else esc(public_rating(r))}</b>{('<br><small>'+esc((r.get('entry_window_qualification') or {}).get('label'))+'</small>') if (r.get('entry_window_qualification') or {}).get('label') else ''}{('<br><b style="color:#0958d9">🪑 '+esc(r.get('seat_fill'))+'</b><br><small>'+esc(r.get('seat_fill_reason') or '同业已有更高分入选，为避免空席按统一分补入本席；80分线与企业依据未放宽')+'</small>') if tier=='3A' and r.get('seat_fill') else ''}<br>{score_value_html(r)}<details><summary>权重与贡献</summary><div><small>评分字段覆盖 {s["coverage"]}%（非质量通过率）· {esc(s.get("label", "旧版周期分"))}</small></div>{parts}<div>数据版本 {esc(s.get("snapshot_id"))} · 评分规则 {esc(s.get("revision"))}</div><div>共振 +{s["interaction"]} · 过热扣 {s["penalty"]}</div></details></td>'
                         f'<td class="px"><b>{r["last"]:g} {esc(r.get("currency") or {"A股":"CNY","港股":"HKD","美股":"USD"}.get(r["market"],""))}</b> · {r["change_pct"]:+.2f}%<br><small>{esc(display(r["quote_asof"]))}<br>北京时间</small></td>'
                         f'<td>'+('<b>原研究留存 · 本轮未重算</b><br><small>原评估 '+esc(display(r.get('last_evaluated_at')))+'</small><br>' if r.get('research_retained') else '')+f'<b>{esc(r["lane"])}</b> · {esc(r["period"])}'+(f' · 年度{esc(r["annual_label"])}' if r.get('annual_label') else '')+f'<br>{esc(r["reason"])}{source_tags(r,esc)}<details><summary>周期适用性 · 共用综合分</summary>{periods}<small>仅表示筛选适用；本行价带对应上方周期，其它周期须独立核验。</small></details><details><summary>🏢 企业依据与反证</summary>{esc(r["business_reason"])}<br>{esc(r.get("business_risk"))}</details>{crosscheck_html(r,now=now) if tier=="3A" else ""}</td>'
-                        f'<td><b>{esc(band)}</b>{band_note}<br><b style="color:{"#0f7b45" if r.get("buyable") or r.get("buy_window") else "#a66316"}">{esc(r.get("buy_window") or r.get("readiness_label") or r["status"])}</b><br><small>{esc("" if r.get("buy_window") else (r.get("readiness_detail") or ""))}</small>'+directive_html(r,esc)+(f'<br><b style="color:#0f7b45">✅ {esc(TIMING_TEXT.get(r.get("buy_timing"),""))}</b>' if tier in ('3A','2A','1A') and r['status']=='条件匹配' and not r.get('readiness_detail') else '')+(f'<br><b style="color:#a8071a">⏳ 入场质量门·{esc((r.get("entry_gate") or {}).get("entry_state") or "暂不可买")}：{esc("；".join((r.get("live_gate") or {}).get("reasons") or []))}</b>' if (r.get("live_gate") or {}).get("demoted") else '')+(f'<br><b style="color:#a8071a">🎯 解禁价 {esc((r.get("entry_gate") or {}).get("unlock_price"))}｜{esc((r.get("entry_gate") or {}).get("unlock_note"))}</b>' if (r.get("entry_gate") or {}).get("unlock_price") else '')+(f'<br><b style="color:#a8071a">📅 财报事件窗·{esc((r.get("earnings_risk") or {}).get("state"))}：{esc("；".join((r.get("earnings_risk") or {}).get("reasons") or []))}</b>' if (r.get("earnings_risk") or {}).get("state") in ("blackout","stale","window") else '')+(f'<br><b style="color:#0f7b45">🚀 {esc((r.get("live_gate") or {}).get("note"))}</b>' if (r.get("live_gate") or {}).get("rescued") else '')+(f'<br><small>{esc((r.get("entry_gate") or {}).get("note"))}</small>' if (r.get("entry_gate") or {}).get("note") else '')+'<br>'+missing_html+'</td>'
+                        f'<td><b>{esc(band)}</b>{band_note}<br><b style="color:{"#0f7b45" if execution_ready(r) else "#a66316"}">{esc(execution_status(r))}</b><br><small>{esc("" if r.get("buy_window") else (r.get("readiness_detail") or ""))}</small>'+directive_html(r,esc,now=now)+(f'<br><b style="color:#0f7b45">✅ {esc(TIMING_TEXT.get(r.get("buy_timing"),""))}</b>' if execution_ready(r) and not r.get('readiness_detail') else '')+(f'<br><b style="color:#a8071a">⏳ 入场质量门·{esc((r.get("entry_gate") or {}).get("entry_state") or "暂不可买")}：{esc("；".join((r.get("live_gate") or {}).get("reasons") or []))}</b>' if (r.get("live_gate") or {}).get("demoted") else '')+(f'<br><b style="color:#a8071a">🎯 解禁价 {esc((r.get("entry_gate") or {}).get("unlock_price"))}｜{esc((r.get("entry_gate") or {}).get("unlock_note"))}</b>' if (r.get("entry_gate") or {}).get("unlock_price") else '')+(f'<br><b style="color:#a8071a">📅 财报事件窗·{esc((r.get("earnings_risk") or {}).get("state"))}：{esc("；".join((r.get("earnings_risk") or {}).get("reasons") or []))}</b>' if (r.get("earnings_risk") or {}).get("state") in ("blackout","stale","window") else '')+(f'<br><b style="color:#0f7b45">🚀 {esc((r.get("live_gate") or {}).get("note"))}</b>' if (r.get("live_gate") or {}).get("rescued") else '')+(f'<br><small>{esc((r.get("entry_gate") or {}).get("note"))}</small>' if (r.get("entry_gate") or {}).get("note") else '')+'<br>'+missing_html+'</td>'
                         f'<td>{geometry}<b>{esc(profit_label)}</b>{profit_note}<br><small>💰 原计划情景净空间：{esc(returns_label)}<br>首段目标参考：{esc(r.get("target"))}<br>{"历史同型盈亏比（回测）" if r.get("rr_basis") else "净收益风险比"}：{esc(r.get("net_rr"))}<br>{("离场：收盘跌破60日线 "+esc(r.get("trend_exit_ma60"))) if r.get("trend_exit_ma60") and tier=='3A' else ("离场："+esc(r.get("tier_exit_text"))+(" "+esc(r.get("tier_exit_ma")) if r.get("tier_exit_ma") else "")) if r.get("tier_exit_text") else ""}</small><details><summary>测算口径与适用范围</summary><small>{esc(r.get("price_plan_method"))}<br>结构截至：{esc(r.get("price_plan_source_asof"))}<br>条件测算，非预期必得利润；往返费用假设0.5%</small><br>{esc(r.get("price_plan_scope") or "区间依据尚待补齐")}</details></td>'
                         f'<td><b>{esc(stop_label)}</b>{stop_note}<br><small>止损情景：{esc(loss_label)}<br>失效触发参考：{esc(r.get("stop"))}</small><br>{esc(r["invalidation"])}<details><summary>模型审核状态</summary>{esc(r["model_review"])}</details></td></tr>')
             out.append('</tbody></table></div>')
@@ -206,16 +246,9 @@ def html(doc=None,code=None,now=None,profiles=None):
                 out.append('<small style="display:block;padding:4px 20px;color:#64748b">'+esc(doc['independent_validation'].get('note'))+'</small>')
             out.append('<small style="display:block;padding:10px 20px">'+esc(doc.get('value_lane_status'))+'</small>')
             out.append(entry_gate_html(doc,esc,flags,code))
-            near=[r for r in doc.get('top_grade_watch',[]) if not code or r['code']==code]
-            if near and not code:out.append(near_html(near,doc,esc,flags,display))
-        if tier in ('2A','1A') and not code:
-            waiting=(doc.get('tier_watch') or {}).get(tier) or []
-            if waiting:out.append(tier_watch_html(tier,waiting,esc,flags,display))
         out.append('</section>')
-    from early_opportunity_view import html as early_html
-    out.append(early_html(raw_doc,code))
+    # Observation/early/learning pools stay in source data, outside the main recommendation list.
     if not code:
-        out.append(learning_html(doc,esc,flags))
         try:
             try:
                 import pick_review
@@ -318,20 +351,7 @@ def market_note(doc,tier,market):
     m=((doc.get('markets') or {}).get(market) or {})
     if not ((m.get('scan_counts') or {}).get('usable_quotes') or 0):
         return f'{market}本轮无最新交易日报价（本机与云端均未取得），待下次刷新；不以旧报价入选。'
-    ladder_why=(((doc.get('ladder') or {}).get('empty_reasons') or {}).get(tier) or {}).get(market)
-    dropped=((doc.get('directive_summary') or {}).get('dropped') or {}).get(market,0)
-    tail=f'另有{dropped}只入围但今天和1–3日内都买不到（过热/等大盘/等财报/离买点太远），按规则不推。' if dropped else ''
-    radar=(((doc.get('ladder') or {}).get('bottom_radar') or {}).get(market) or []) if tier=='2A' else []
-    if radar:tail+='🛰 底部雷达（观察·非推荐）：'+'；'.join(
-        f'{b.get("name") or b["code"]} 回撤{-b["drawdown_pct"]:.0f}%、低点{b["low"]:g}已{b["age"]}日未破，差：{b["gap"]}' for b in radar)+'。'
-    if ladder_why:
-        return f'{market}今日无可买{tier}（0只）：{ladder_why}。'+tail
-    if tier=='3A':
-        c=(doc.get('pool_counts') or {}).get(market) or {}
-        return f'{market}今日无可买3A（0只）：评分{c.get("scored",0)} / 企业依据{c.get("business_supported",0)} / ≥80分{c.get("score_ge_80",0)}。'+tail
-    st=((doc.get('tier_status') or {}).get(tier) or {}).get(market) or {}
-    cells='、'.join(f'{x["setup"]}（{"上行" if x["regime"]=="up" else "震荡"}）' for x in st.get('enabled_cells',[])) or '无'
-    return f'{market}今日无可买{tier}（0只）：形态匹配{st.get("matched",0)} / 计划启用{st.get("plan_enabled",0)}；本市场经验证形态：{cells}。'+tail
+    return f'{market}本轮无符合{tier}趋势与近期入场窗口的个股。'
 
 
 def tier_watch_html(tier,rows,esc,flags,display):
@@ -356,8 +376,8 @@ def near_html(near,doc,esc,flags,display):
     near=candidate_top3(near)
     counts=doc.get('pool_counts') or {}
     pool=' · '.join(f'{m} 评分{c.get("scored",0)} / 企业依据{c.get("business_supported",0)} / 有日线结构{c.get("with_structure",0)} / ≥80分{c.get("score_ge_80",0)}' for m,c in counts.items())
-    out=['<div style="padding:4px 20px 14px"><h4 style="margin:8px 0">🔎 3A名额外候补 / 接近3A · 列出差距</h4>',
-         '<small>名额外候补保留原分数与缺口；已入3A研究栏不重复列出。每市场最多3只，不因买点已满足而跳过更高分证券。研究价值与入场资格分别判断。</small>',
+    out=['<div style="padding:4px 20px 14px"><h4 style="margin:8px 0">🔎 中期研究候补 · 原筛选差距</h4>',
+         '<small>候补保留原分数与缺口；已入中期研究栏不重复列出。每市场最多3只，沿用统一分排序；评分不能替代趋势、证据与近期入场窗口核验。</small>',
          f'<p><small>候选池：{esc(pool or "待核")}</small></p>' if pool else '',
          '<div style="overflow-x:auto"><table style="min-width:1100px"><thead><tr><th>市场 / 个股</th><th>统一综合分</th><th>现价 / 行情时间</th><th>状态 / 年度结构 / 依据来源</th><th>买点触发条件 / 差距</th></tr></thead><tbody>']
     for market,flag in flags.items():
