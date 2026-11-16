@@ -97,7 +97,7 @@ def run():
     total = len(CASES)
     # 推荐违背预警判例（TCL/宁德/腾讯/分数抖动/银行轮动）同一库复算
     try:
-        from promise_sentry import run_cases
+        from promise_sentry_rules import run_cases
         _, n, sentry_drift = run_cases()
         total += n
         drift += ['预警·' + x for x in sentry_drift]
