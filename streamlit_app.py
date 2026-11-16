@@ -1128,7 +1128,10 @@ if _nav == "🧭 导航":
         for _mkt in ("美股", "A股", "港股"):
             _t = (_snap["markets"].get(_mkt) or {}).get("temperature")
             if _t:
-                st.markdown(f"🌡 **{_mkt} {_t['temp']}/100** {_t['label']} → 仓位 **{_t['position']}**")
+                _temperature_text = f"🌡 **{_mkt} {_t.get('temp', '待核')}/100** {_t.get('label', '')}"
+                if _t.get('position'):
+                    _temperature_text += f" → 仓位 **{_t['position']}**"
+                st.markdown(_temperature_text)
                 if _t.get("verdict"):
                     st.caption(f"🧭 研判：{_t['verdict']}")
         # 【V88·三层周期概率总览】与桌面首屏同源：大盘(快照l3)+板块(轮动轨迹)，自选见预警/日报
@@ -2349,7 +2352,10 @@ elif _nav == "📈 大盘板块":
             st.markdown(f"### {mkt}")
             _t = blk.get("temperature")
             if _t:
-                st.markdown(f"🌡 温度 **{_t['temp']}/100** {_t['label']}（趋势{_t['trend']}/宽度{_t['breadth']}/动量{_t['momentum']}/量能{_t.get('vol_heat','—')}）→ 仓位 {_t['position']}")
+                _temperature_text = f"🌡 温度 **{_t.get('temp', '待核')}/100** {_t.get('label', '')}（趋势{_t.get('trend','—')}/宽度{_t.get('breadth','—')}/动量{_t.get('momentum','—')}/量能{_t.get('vol_heat','—')}）"
+                if _t.get('position'):
+                    _temperature_text += f" → 仓位 {_t['position']}"
+                st.markdown(_temperature_text)
                 if _t.get("verdict"):
                     st.markdown(f"🧭 **研判**：{_t['verdict']}")
             for ix in blk.get("indices", []):
