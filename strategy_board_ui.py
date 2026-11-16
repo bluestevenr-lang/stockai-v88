@@ -214,7 +214,41 @@ def html(doc=None,code=None,now=None,profiles=None):
         out.append('</section>')
     from early_opportunity_view import html as early_html
     out.append(early_html(raw_doc,code))
-    if not code:out.append(muse_panel(muse_cache, now))
+    if not code:
+        out.append(learning_html(doc,esc,flags))
+        try:
+            import pick_review
+            out.append(pick_review.html(pick_review.read(),esc=esc))
+        except Exception:  # noqa: BLE001 — 复盘失败不影响看板
+            import logging;logging.exception('[V88] 推荐复盘渲染失败')
+        out.append(muse_panel(muse_cache, now))
+    out.append('</div>')
+    return ''.join(out)
+
+
+def learning_html(doc,esc,flags):
+    """启用形态（按市场宽度查证据表）＋学习型候选：正式可买不足3只时补足，轻仓跟踪复盘，不是买入级。"""
+    ladder=doc.get('ladder') or {}
+    book=ladder.get('playbook') or {};learn=ladder.get('learning') or {}
+    if not book and not learn:return ''
+    out=['<div style="padding:4px 20px 14px"><h4 style="margin:8px 0">🧭 今日启用形态 · 📚 学习型候选</h4>']
+    for market,flag in flags.items():
+        if book.get(market):out.append(f'<div><small>{flag} {esc(book[market].get("text"))}</small></div>')
+    rows=[r for m in flags for r in (learn.get(m) or [])]
+    if rows:
+        out.append('<small>正式可买不足3只的市场用学习型候选补足：好股（企业依据＋基本面≥60、无利润质量/公告/财报反证）＋当前最接近证据表形态者。'
+                   '<b>轻仓（≤正常仓位1/3）、按止损执行、15个交易日复盘</b>；期望见每只的「回测参考」（形态命中按周期证据表格子，无形态者期望≈0），用于学习与验证，不是买入级推荐。</small>'
+                   '<div style="overflow-x:auto"><table style="min-width:1000px;margin-top:6px"><thead><tr><th>市场 / 个股</th><th>现价</th><th>形态 / 相对强度</th>'
+                   '<th>止损（距离）</th><th>目标（2R）</th><th>回测参考</th><th>为何不是正式级</th></tr></thead><tbody>')
+        for r in rows:
+            rs=r.get('rs20_pct')
+            out.append(f'<tr><td><b>{flags.get(r["market"],"")} {esc(r.get("name"))}</b><br><small>{esc(r.get("code"))} · {esc(r.get("industry") or "")} · 基本面{esc(r.get("business_score"))}</small></td>'
+                f'<td><b>{esc(r.get("last"))} {esc(r.get("currency"))}</b></td>'
+                f'<td>{esc(r.get("pattern"))}'+(f'<br><small>20日涨幅分位 {rs*100:.0f}%</small>' if isinstance(rs,(int,float)) else '')+'</td>'
+                f'<td>{esc(r.get("stop"))}<br><small>-{esc(r.get("stop_pct"))}%</small></td>'
+                f'<td>{esc(r.get("target"))}<br><small>持有≤{esc(r.get("hold_sessions"))}日 · {esc(r.get("sizing"))}</small></td>'
+                f'<td><small>{esc(r.get("expectation"))}</small></td><td><small>{esc(r.get("why_not_formal"))}</small></td></tr>')
+        out.append('</tbody></table></div>')
     out.append('</div>')
     return ''.join(out)
 
@@ -278,8 +312,14 @@ def market_note(doc,tier,market):
     m=((doc.get('markets') or {}).get(market) or {})
     if not ((m.get('scan_counts') or {}).get('usable_quotes') or 0):
         return f'{market}本轮无最新交易日报价（本机与云端均未取得），待下次刷新；不以旧报价入选。'
+    ladder_why=(((doc.get('ladder') or {}).get('empty_reasons') or {}).get(tier) or {}).get(market)
     dropped=((doc.get('directive_summary') or {}).get('dropped') or {}).get(market,0)
     tail=f'另有{dropped}只入围但今天和1–3日内都买不到（过热/等大盘/等财报/离买点太远），按规则不推。' if dropped else ''
+    radar=(((doc.get('ladder') or {}).get('bottom_radar') or {}).get(market) or []) if tier=='2A' else []
+    if radar:tail+='🛰 底部雷达（观察·非推荐）：'+'；'.join(
+        f'{b.get("name") or b["code"]} 回撤{-b["drawdown_pct"]:.0f}%、低点{b["low"]:g}已{b["age"]}日未破，差：{b["gap"]}' for b in radar)+'。'
+    if ladder_why:
+        return f'{market}今日无可买{tier}（0只）：{ladder_why}。'+tail
     if tier=='3A':
         c=(doc.get('pool_counts') or {}).get(market) or {}
         return f'{market}今日无可买3A（0只）：评分{c.get("scored",0)} / 企业依据{c.get("business_supported",0)} / ≥80分{c.get("score_ge_80",0)}。'+tail

@@ -28,22 +28,33 @@ def html(doc, now=None, *, journal=None):
     raw_rows={r['code']:r for r in doc.get('rows',[])}
     from action_directive import publishable
     from shadow_screen import ASTRA_POSITION_NOTE, FADE_NOTE
-    d = publishable(view(doc, now), 'Astra')
+    checked = view(doc, now)
+    d = publishable(checked, 'Astra')
     if not d.get('version'): return ''
     out = ['<section id="v88-astra-monthly" style="border:1px solid #c7d2fe;border-left:5px solid #6366f1;border-radius:12px;padding:18px;margin:18px 0;background:#f8faff">',
            '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px"><b style="font-size:23px;color:#3730a3">🎯 Astra · 定期短线计划</b>',
            f'<b style="font-size:20px">⚡今日可买 {sum(r.get("buy_window")=="今日可买" for r in d.get("rows", []))} 只　·　⏳1–3日内可买 {sum(r.get("buy_window")=="1-3日内可买" for r in d.get("rows", []))} 只　·　🌱启动跟踪 {sum(r.get("buy_window")=="启动跟踪·等买点" for r in d.get("rows", []))} 只</b></div>',
            f'<p style="color:#0f7b45;font-weight:600">{text(ASTRA_POSITION_NOTE)}</p>',
            f'<p style="color:#b42318;font-weight:600">{text(FADE_NOTE)}</p>',
-           f'<p style="color:#334155">大盘触底反弹期：{text("、".join(m for m, v in (d.get("market_bottom_rebound") or {}).items() if v) or "无（右侧逼近前高的票本轮一律不做）")}。在席启动股分三档：⚡今日可买、⏳1–3日内可买、🌱启动跟踪·等买点（已启动，买点未到）。</p>',
+           f'<p style="color:#334155">当前大盘反弹标记：{text("、".join(m for m, v in (d.get("market_bottom_rebound") or {}).items() if v) or "未确认")}。个股分别标注今日可买、回踩等待、条件触发或启动跟踪。</p>',
            f'<p>📅 {text(d.get("cycle_id"))} 轮　｜　🔄 下轮 {text(d.get("next_recalculation"))}　｜　每月1、10、20日开新轮 · 每天复筛补空位</p>',
-           '<p style="color:#64748b">中港优先 · 共最多3只 · 美股最多1只且为当轮美股前5%（≥80分），仅参考。重算按自然日；目标跟踪仍按原15个交易日计算。</p>',
+           '<p style="color:#64748b">中港优先 · 共最多3只 · 美股最多1只且为当轮美股前5%（≥80分），仅参考。重算按自然日；新增入场限于本月；原合同的价格、期限与跟踪记录保留。</p>',
            money_html(d),
            f'<p style="font-size:12px;color:#64748b">本轮实际建立 {text(clock(d.get("created_at")))} · 最近计算 {text(clock(d.get("generated_at")))} · 原行情日期逐股保留</p>']
     from module_freshness import html as freshness_html
     out.append(freshness_html('astra_cycle.json',doc,now=now))
     out.append(audit_html(d, 'Astra', now, text))
     if not d.get('rows'): out.append('<p><b>本轮Astra 0只</b>；全市场没有「左侧启动或趋势延续（非M头、非过热）」且净空间/本月内可达的票。</p>')
+    published = {(r.get('market'), r.get('code'), r.get('plan_id')) for r in d.get('rows', [])}
+    retained = [r for r in checked.get('rows', []) if (r.get('market'), r.get('code'), r.get('plan_id')) not in published]
+    if retained:
+        out.append('<details><summary>原计划留档 · 当前不可执行 '+str(len(retained))+' 只</summary>')
+        for r in retained:
+            out.append('<p>'+text(r.get('name'))+' · '+text(r.get('code'))+' · '+text(r.get('status'))+
+                       ' · 现价 '+text(r.get('last'))+' '+text(r.get('currency'))+' · 报价 '+text(clock(r.get('quote_asof')))+
+                       ' · 研究入场 '+band(r.get('entry_range'))+' · 止盈 '+band(r.get('take_profit_range'))+
+                       ' · 止损 '+band(r.get('stop_range'))+' · 原截止 '+text((r.get('window') or {}).get('deadline'))+'</p>')
+        out.append('</details>')
     if d.get('plan_stability_version'):out.append('<p style="font-size:12px;color:#64748b">本轮计划固定 · 盘中更新报价、分数与风险；原入场、目标、止损和期限不随刷新移动。</p>')
     out.append(backtest_html(d.get('backtest')))
     for r in d.get('rows', []):

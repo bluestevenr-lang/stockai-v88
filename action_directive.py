@@ -809,7 +809,7 @@ def publishable(doc, module='3A'):
         c = last_change.get((r.get('market'), r.get('code')))
         exited = (c and c.get('action') == 'exited' and (not c.get('plan_id') or not r.get('plan_id') or c.get('plan_id') == r.get('plan_id'))
                   and str(c.get('at') or '') >= str(r.get('plan_created_at') or ''))
-        if exited or str(r.get('status') or '').startswith(('已退出本轮研究', '本轮到期复盘', '已止损', '计划已失效')):
+        if exited or str(r.get('status') or '').startswith(('已退出本轮研究', '本轮到期复盘', '已止损', '计划已失效', '原轮次跟踪 · 待重算', '原研究保留 · 报价待更新')):
             m = r.get('market') or '未知'
             dropped[m] = dropped.get(m, 0) + 1
             continue

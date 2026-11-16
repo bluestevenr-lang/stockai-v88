@@ -2,11 +2,11 @@
   "version": "v88-upgrade-2026-11-16",
   "source_base": "4f0cba51ce5e7c406c2658837a004afc00a9a650",
   "shared_modules": {
-    "action_directive.py": "7b7552b81bc07dc1bc7f7828b6b627343f22246f8d1eb064171548acb0e33498",
+    "action_directive.py": "35bf3f9a60b03f01684c337dd3c506e510aa1b1d76ef41ca2d0386094e52867f",
     "astra_cycle.py": "342d21d347a14041c02fdbf27731d8902e48b9f52b3bb91fa1976da1987545a7",
     "astra_cycle_state.py": "7cfa823bf2bc16812b50b5c159d9cd170391e691e29108ba1d1c54c9fc54d1f2",
     "strategy_board_state.py": "f9a2093a623f840db9f8eea4012d8a1b3a36a0fc0cd181db2173e2fbdc5f81fe",
-    "shadow_screen.py": "e7483468cc3551d3363125f1d1f6bf7c5464621a34648bbe79aba40deec9f1f6",
+    "shadow_screen.py": "2fe511ab14a9d7daf8c5b1557605c33a47f7e394e630edb8a7cde234c958747a",
     "horizon_book.py": "b5c2fbf4f3ac387bab436e7c69c42d8b0f7e4f1c362f3488f5fe7cafc0e7c38a",
     "directive_audit.py": "43c3490acf87a5d7d96a2c97f6eee2893f7191d577a2f145bd743cd1dc86e31f",
     "directive_casebook.py": "518ffa60ce7547a9dc463c209928f0197fac7538144c1a0a1e98e1f72e5deb92",
@@ -23,7 +23,8 @@
     "market_session_view.py": "983979fe52d0baeff87b0ca52248294b49147de4596459b59c2873033ae2849a"
   },
   "views": {
-    "strategy_board_ui.py": "8e0eca9177058b6660de313d7d1b0334a5fe86d43e2bc1c8adf1baca9b65be07",
-    "astra_cycle_view.py": "93c820279f21f3ce30f0a305cb39a4d4498330a442915cf720347e55d4cd12c3"
-  }
+    "strategy_board_ui.py": "869da66a417a232177e71544cb5c0150b53df5db2569c736ab17944f55223ec1",
+    "astra_cycle_view.py": "db992a302e75c3cc7d4ba6184ce4315e7bdeacdc7d4cc49af671d8b509f23e11"
+  },
+  "view_source": "Core src, desktop root and cloud runtime are identical"
 }
