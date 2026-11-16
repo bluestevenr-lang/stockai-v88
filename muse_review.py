@@ -52,7 +52,12 @@ def item(row, module):
               'crosscheck', 'price_plan_basis', 'price_plan_method', 'price_plan_scope', 'target_evidence',
               'financial_evidence', 'directive', 'research_roster', 'plan_id', 'plan_created_at', 'plan_state', 'plan_waiting_reasons',
               'plan_current_structure_target', 'plan_current_net_space_pct', 'plan_current_net_rr',
-              'plan_current_first_obstacle_pct', 'plan_current_nearest_resistance')
+              'plan_current_first_obstacle_pct', 'plan_current_nearest_resistance',
+              'grade_basis', 'ladder', 'fundamentals_state', 'astra_regime', 'astra_stop_check',
+              'entry_gate', 'live_gate', 'earnings_risk', 'entry_location', 'price_volume',
+              'decision_policy', 'max_sessions', 'monthly_entry_deadline', 'month_sessions_left',
+              'time_feasible', 'fee_allowance_pct', 'price_plan_version', 'price_plan_source_asof',
+              'stop_anchor', 'invalidation')
     facts = {k: row[k] for k in fields if k in row}
     window = row.get('buy_window')
     planned = 'buy_window' in row or bool(row.get('entry_range'))
@@ -69,8 +74,9 @@ def item(row, module):
     if row.get('directive'):
         from action_directive import public_directive
         facts['directive'] = public_directive(row['directive'], module)
-    from muse_evidence import review_evidence
+    from muse_evidence import review_evidence, decision_contract
     facts['review_evidence'] = review_evidence(row)
+    facts['decision_contract'] = decision_contract(row, module)
     identity = f'{module}:{MARKETS.get(row.get("market"), "unknown")}:{row["code"]}'
     return {'item_id': identity, 'module': module, 'market': MARKETS.get(row.get('market'), 'unknown'),
             'code': row['code'], 'display_code': display_code(row['code']), 'name': row['name'],

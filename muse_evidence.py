@@ -3,7 +3,57 @@ from copy import deepcopy
 from datetime import datetime
 import math
 
-VERSION = 'muse-evidence-v2'
+VERSION = 'muse-evidence-v3'
+
+
+def review_task():
+    """Scope of the independent stock review, not an instruction to endorse V88."""
+    return {
+        'version': 'selected-stock-review-2026-11-16-v1',
+        'task': '逐项复核本包筛选后的股票、买入/等待状态及原价格计划，给出独立结论和可追溯证据。',
+        'input': 'items[].facts；最新名单与正式定版各自绑定，不能用运行日志或端口检查代替个股复核。',
+        'policy': '先核 facts.decision_contract 与记录的规则版本；旧统一RR/评分门槛不能冒充本版系统规则。'
+                  '可以独立反对本版规则，但须注明独立判断及依据，不能仅因系统自检通过而判通过。',
+        'evidence': '核对原财务、同复权口径日线、量价拐点、位置追高、止损目标、财报及到期。'
+                    '历史回测胜率与本月利润情景不等于当前个股胜率或已实现收益。',
+        'data_failure': '无法取得或核实本版数据时保留unverified并指明缺项；传输/端口/工作流问题单列，'
+                        '不伪装为个股投资反证。复权或报告期冲突仍属于个股证据问题，必须保留。',
+        'output': '每股pass/fail/unverified、简短理由、真实核查时间及证据引用；复制原身份/状态/哈希，'
+                  '不重写系统计划、不提交订单、不用旧裁决认证新快照。',
+    }
+
+
+def decision_contract(row, module):
+    """Export the applicable rule for current producers; never relabel legacy plans."""
+    import action_directive as ad
+    from directive_audit import rr_floor, MIN_RR, FEE
+    directive = row.get('directive') or {}
+    current = directive.get('version') == ad.VERSION
+    floor = rr_floor(row, module) if current else None
+    specific = floor is not None
+    if current and floor is None:
+        floor = MIN_RR['Astra' if module == 'Astra' else '3A']
+    from grade_ladder import GOOD_FLOOR, LADDER_VERSION
+    from horizon_book import stats, SPAN
+    graded = current and (row.get('grade_basis') == 'grade-ladder-v1' or module == 'Astra')
+    rule_stats = stats((row.get('astra_regime') or {}).get('cell')) if specific else None
+    return {
+        'version': 'muse-decision-contract-v1', 'module': module,
+        'recorded_directive_version': directive.get('version'),
+        'producer_version_matches': current,
+        'status': 'CURRENT_RULE_EXPORTED' if current else 'LEGACY_OR_UNKNOWN_RULE',
+        'rule_cell': deepcopy((row.get('astra_regime') or {}).get('cell')),
+        'directive_net_rr_floor': floor,
+        'rr_floor_basis': '命中周期规则的目标/止损/费用几何' if specific else
+                         '指令层通用门槛' if current else '未确认历史生成规则，不套用当前门槛',
+        'directive_fee_allowance_pct': FEE if current else None,
+        'fundamentals_policy_version': LADDER_VERSION if graded else None,
+        'business_score_floor': GOOD_FLOOR if graded else None,
+        'fundamentals_note': '基本面分只是一个检查项；反证、利润质量、资料待补仍分别核查，不能以过分数代替核验。',
+        'rule_reference': {'statistics': rule_stats, 'sample_scope': SPAN,
+                           'meaning': '当前规则历史样本，非本股成功概率、非样本外验证'} if rule_stats else None,
+        'scope': '指令价处净RR检查参数，不是胜率或Muse结论；并行保留报价、原计划和全部硬伤。',
+    }
 
 
 def number(value):
@@ -100,6 +150,8 @@ def review_evidence(row):
         'technical': {k: deepcopy(technical.get(k)) for k in (
             'status', 'asof', 'required_completed_session', 'provenance', 'gmma',
             'price_volume', 'structure', 'gaps')},
+        'entry_progression': {k: deepcopy(row.get(k)) for k in (
+            'decision_policy', 'entry_location', 'price_volume')},
         'financial': deepcopy(row.get('financial_evidence') or {
             'status': 'MISSING', 'gaps': ['原始同报告期财务数字与来源未随本版提供']}),
         'publication_gaps': publication_gaps(row),
@@ -117,7 +169,7 @@ def snapshot_context(snapshot):
                        'rows_complete': len(audit.get('rows') or []) == audit.get('checked'),
                        'publication_excluded': deepcopy(shown.get('publication_excluded') or [])})
     return {
-        'version': VERSION, 'directive_audits': audits,
+        'version': VERSION, 'review_task': review_task(), 'directive_audits': audits,
         'environment': deepcopy(snapshot.get('review_environment') or snapshot.get('free_market_snapshot') or {}),
         'funding': deepcopy(snapshot.get('funding_watch') or {
             'status':'MISSING','reason':'资金采集快照尚未生成；正文六类字段逐项注明未取得'}),
