@@ -54,7 +54,7 @@ def audit_html(doc,module='3A',now=None,esc=escape):
             f'background:{"#f6ffed" if ok else "#fff7e6"};border:1px solid {"#b7eb8f" if ok else "#ffd591"};'
             f'color:{"#0f7b45" if ok else "#ad4e00"}"><b>{esc(a.get("text") or "")}</b>'
             '<br><small style="color:#595959">云端按同一份规则代码计算；每次运行先复算Copilot判例库，再独立复核每条指令'
-            '（价格/止损/目标顺序、追高、财报、硬伤、逆风半仓、净盈亏比≥2），不一致即降为不买。无模型调用。</small></div>')
+            '（价格/止损/目标顺序、追高、财报、硬伤、逆风半仓、匹配周期的净盈亏比门槛），不一致即降为不买。无模型调用。</small></div>')
 
 
 def html(doc=None,code=None,now=None,profiles=None):
