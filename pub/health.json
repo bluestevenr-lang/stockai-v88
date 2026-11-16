@@ -1,33 +1,35 @@
 {
   "actions": [
-    "refresh_dispatched:full"
+    "refresh_dispatched:fast"
   ],
-  "checked_at": "2026-11-15T18:52:03.638864+00:00",
+  "checked_at": "2026-11-16T06:27:39.156550+00:00",
   "checks_failed": [],
   "critical": [
     "persistent:market_rows_dropped:港股"
   ],
   "dispatches": [
-    "2026-11-15T18:52:03.638864+00:00"
+    "2026-11-16T06:27:39.156550+00:00"
   ],
   "escalated": [
-    "persistent:market_rows_dropped:港股",
-    "persistent:refresh_step_failed:free_observations"
+    "persistent:market_rows_dropped:港股"
   ],
   "external_messages": 0,
   "first_seen": {
     "market_rows_dropped:港股": "2026-11-14T18:01:53.596759+00:00",
-    "refresh_step_failed:free_observations": "2026-11-14T06:22:56.994595+00:00"
+    "refresh_step_failed:discovery": "2026-11-16T06:27:39.156550+00:00",
+    "refresh_step_failed:fundamentals": "2026-11-16T06:27:39.156550+00:00"
   },
   "issue_sync": "updated",
   "issues": [
     "market_rows_dropped:港股",
-    "refresh_step_failed:free_observations"
+    "refresh_step_failed:discovery",
+    "refresh_step_failed:fundamentals"
   ],
   "model_calls": 0,
   "plan": {
     "degraded": [
-      "refresh_step_failed:free_observations"
+      "refresh_step_failed:discovery",
+      "refresh_step_failed:fundamentals"
     ],
     "refresh": [
       "market_rows_dropped:港股"
