@@ -38,7 +38,7 @@ def html(doc, now=None, *, journal=None):
            f'<p style="color:#b42318;font-weight:600">{text(FADE_NOTE)}</p>',
            f'<p style="color:#334155">当前大盘反弹标记：{text("、".join(m for m, v in (d.get("market_bottom_rebound") or {}).items() if v) or "未确认")}。个股分别标注今日可买、回踩等待、条件触发或启动跟踪。</p>',
            f'<p>📅 {text(d.get("cycle_id"))} 轮　｜　🔄 下轮 {text(d.get("next_recalculation"))}　｜　每月1、10、20日开新轮 · 每天复筛补空位</p>',
-           '<p style="color:#64748b">中港优先 · 共最多3只 · 美股最多1只且为当轮美股前5%（≥80分），仅参考。重算按自然日；新增入场限于本月；原合同的价格、期限与跟踪记录保留。</p>',
+           '<p style="color:#64748b">中港优先 · 共最多3只 · 美股最多1只，仅在中港合格名单留有空位时列为参考。重算按自然日；新增入场限于本月；原合同的价格、期限与跟踪记录保留。</p>',
            money_html(d, now=now),
            f'<p style="font-size:12px;color:#64748b">本轮实际建立 {text(clock(d.get("created_at")))} · 最近计算 {text(clock(d.get("generated_at")))} · 原行情日期逐股保留</p>']
     from module_freshness import html as freshness_html
