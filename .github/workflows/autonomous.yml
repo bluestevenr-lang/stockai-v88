@@ -123,7 +123,10 @@ jobs:
           python - <<'PYCODE'
           import json
           d=json.load(open('/tmp/v88-preview.json'))
-          assert d.get('status')=='PREVIEW' and 'GitHub规则版' in d.get('text',''), 'Rule digest not ready'
+          text=d.get('text','')
+          assert d.get('status')=='PREVIEW' and text.startswith('🌷 V88') and len(text)<=2500, 'Single result card not ready'
+          from feishu_result_card import payload
+          assert payload(text).get('msg_type')=='interactive'
           print(json.dumps({'report_mode':'github-rules-three-slot-v1','model_calls':d.get('model_calls'),'characters':len(d['text']),'external_messages':0}))
           PYCODE
       - name: Verify Astra cycle refreshed (reports already delivered independently)
