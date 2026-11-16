@@ -23,3 +23,9 @@ def test_old_cycle_not_hidden_or_presented_as_current_executable():
     d=build({'rows':[q()]},now=NOW)
     result=html(d,now=datetime.fromisoformat('2026-10-15T10:00:00+08:00'))
     assert '原轮次跟踪 · 待重算' in result and '今日可买 0 只' in result and '研究入场' in result
+
+
+def test_unknown_progress_never_becomes_zero_gap():
+    from astra_cycle_view import money_html
+    result=money_html({'month_status':{'monthly_target_usd':200,'realized_net_usd':None},'rows':[]},now=NOW)
+    assert '实际缺口待对账' in result and '距目标缺口' not in result

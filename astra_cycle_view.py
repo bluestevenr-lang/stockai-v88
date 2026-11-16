@@ -39,7 +39,7 @@ def html(doc, now=None, *, journal=None):
            f'<p style="color:#334155">当前大盘反弹标记：{text("、".join(m for m, v in (d.get("market_bottom_rebound") or {}).items() if v) or "未确认")}。个股分别标注今日可买、回踩等待、条件触发或启动跟踪。</p>',
            f'<p>📅 {text(d.get("cycle_id"))} 轮　｜　🔄 下轮 {text(d.get("next_recalculation"))}　｜　每月1、10、20日开新轮 · 每天复筛补空位</p>',
            '<p style="color:#64748b">中港优先 · 共最多3只 · 美股最多1只且为当轮美股前5%（≥80分），仅参考。重算按自然日；新增入场限于本月；原合同的价格、期限与跟踪记录保留。</p>',
-           money_html(d),
+           money_html(d, now=now),
            f'<p style="font-size:12px;color:#64748b">本轮实际建立 {text(clock(d.get("created_at")))} · 最近计算 {text(clock(d.get("generated_at")))} · 原行情日期逐股保留</p>']
     from module_freshness import html as freshness_html
     out.append(freshness_html('astra_cycle.json',doc,now=now))
@@ -114,7 +114,7 @@ def html(doc, now=None, *, journal=None):
     return ''.join(out)
 
 
-def money_html(d):
+def money_html(d, now=None):
     ms = d.get('month_status') or {}; pol = d.get('selection_policy') or {}
     target = ms.get('monthly_target_usd', 200); risk = ms.get('risk_per_trade_usd'); cap = ms.get('monthly_risk_cap_usd')
     realized = '待对账（未对账不计零）' if ms.get('realized_net_usd') is None else f'{ms["realized_net_usd"]:g} 美元'
@@ -122,13 +122,14 @@ def money_html(d):
            f'<p style="margin:2px 0">🎯 月净收益目标 <b>${text(target)}</b>（目标，非收益承诺） · 本月已实现 <b>{text(realized)}</b> · 台账 {text(ms.get("ledger_state"))}</p>']
     from datetime import datetime, timezone
     from astra_cycle import month_sessions_left, MARKETS, SELECTION_POLICY
-    now = datetime.now(timezone.utc)
+    now = now or datetime.now(timezone.utc)
     left = {m: month_sessions_left(m, now) for m in MARKETS}
     rows = d.get('rows') or []
     scenario = round(sum(sorted(((r.get('target_contribution') or {}).get('profit_at_target_usd') or 0 for r in rows if r.get('market') != '美股'),reverse=True)[:ms.get('remaining_entries') if ms.get('remaining_entries') is not None else 2]), 1)
     if left:
-        gap = max(0.0, float(target or 200) - float(ms.get('realized_net_usd') or 0))
-        verdict = ('✅ 最多两次的理论情景覆盖目标；实际金额待核' if scenario >= gap and rows else
+        known = ms.get('realized_net_usd') is not None
+        gap = max(0.0, float(target or 200) - float(ms['realized_net_usd'])) if known else None
+        verdict = (f'本月目标 ${target:g}，实际缺口待对账；上列仅为目标价情景' if gap is None else '✅ 最多两次的理论情景覆盖目标；实际金额待核' if scenario >= gap and rows else
                    '⚠️ 当前无可推票，本月目标暂无路径；每日复筛补位，有合格启动股即补上' if not rows else
                    f'⚠️ 在推票止盈情景仅 ${scenario:g}，距目标缺口 ${gap:g} 还差 ${gap - scenario:g}；每日复筛补位')
         out.append(f'<p style="margin:2px 0">📆 本月剩余交易日：A股 {text(left.get("A股"))} · 港股 {text(left.get("港股"))} · 美股 {text(left.get("美股"))}'
