@@ -1,27 +1,17 @@
 {
-  "actions": [
-    "refresh_dispatched:fast"
-  ],
-  "checked_at": "2026-11-16T06:27:39.156550+00:00",
+  "actions": [],
+  "checked_at": "2026-11-16T16:59:57.698437+00:00",
   "checks_failed": [],
-  "critical": [
-    "persistent:market_rows_dropped:港股"
-  ],
-  "dispatches": [
-    "2026-11-16T06:27:39.156550+00:00"
-  ],
-  "escalated": [
-    "persistent:market_rows_dropped:港股"
-  ],
+  "critical": [],
+  "dispatches": [],
+  "escalated": [],
   "external_messages": 0,
   "first_seen": {
-    "market_rows_dropped:港股": "2026-11-14T18:01:53.596759+00:00",
     "refresh_step_failed:discovery": "2026-11-16T06:27:39.156550+00:00",
     "refresh_step_failed:fundamentals": "2026-11-16T06:27:39.156550+00:00"
   },
-  "issue_sync": "updated",
+  "issue_sync": "closed",
   "issues": [
-    "market_rows_dropped:港股",
     "refresh_step_failed:discovery",
     "refresh_step_failed:fundamentals"
   ],
@@ -30,12 +20,9 @@
     "degraded": [
       "refresh_step_failed:discovery",
       "refresh_step_failed:fundamentals"
-    ],
-    "refresh": [
-      "market_rows_dropped:港股"
     ]
   },
-  "status": "escalated",
+  "status": "degraded",
   "version": "v88-self-heal-v1",
   "warnings": [
     "primary_quote_coverage_partial:validated_subset_only",
