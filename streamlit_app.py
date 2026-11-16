@@ -1106,7 +1106,7 @@ if _nav == "🧭 导航":
             reverse_status=_json_text('reverse_audit_status.json'),
             relations=_json_text('module_relations_pub.json'),
             market_watch=_autonomous.get('watch'), strategy_board={})
-    if _strategy_markup:
+    if (_autonomous.get('strategy') or {}).get('version'):
         with st.expander('旧制中央审核档案 · 原评级与记录保留', expanded=False):
             try:
                 st.html(_legacy_central_view())
