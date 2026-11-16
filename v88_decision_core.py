@@ -318,7 +318,7 @@ def entry_timing(full, *, short=50.0, medium=50.0, long_avg=50.0, action="", rr=
             "breakout": breakout, "stop": stop}
 
 
-def market_regime(mk: str) -> dict:
+def market_regime(mk: str, *, context: dict | None = None) -> dict:
     """【V88·牛熊态 2026-07-27 用户大改定纲】"熊市+趋势破坏才要右侧;现在中美港都不是熊市,
     一味右侧=毛病——小米/LMT/礼来是被右侧思维拦掉的左侧机会,腾讯是右侧追入亏最大的反例。
     牛市左侧参考更多,这是辩证的。"
@@ -338,7 +338,7 @@ def market_regime(mk: str) -> dict:
       不放宽个股自身标准**(need_rr 不下调)。对称处理会在底部放进一堆烂票。
     """
     try:
-        snap = json.loads((BASE / "data" / "market_snapshot.json").read_text(encoding="utf-8"))
+        snap = (context.get("snapshot") or {}) if context is not None else json.loads((BASE / "data" / "market_snapshot.json").read_text(encoding="utf-8"))
         b = (snap.get("markets") or {}).get(mk) or {}
         p2w = dict((x[0], x[1]) for x in ((b.get("l3") or {}).get("probs") or [])).get("2周")
         vd = str((b.get("temperature") or {}).get("verdict") or "")
@@ -348,7 +348,7 @@ def market_regime(mk: str) -> dict:
         top_hit = bot_hit = 0
         top_risk = bot_opp = 0
         try:
-            _rg = json.loads((BASE / "data" / "regime_topbot.json").read_text(encoding="utf-8"))
+            _rg = (context.get("regime_topbot") or {}) if context is not None else json.loads((BASE / "data" / "regime_topbot.json").read_text(encoding="utf-8"))
             _m = ((_rg.get("markets") or {}).get(mk) or {})
             _cl, _tr = (_m.get("topbot") or {}), (_m.get("turn_risk") or {})
             top_hit, bot_hit = int(_cl.get("top_hit") or 0), int(_cl.get("bottom_hit") or 0)
@@ -535,7 +535,7 @@ def stop_decision(guard: dict, cycle: dict | None = None) -> dict:
     return out
 
 
-def env_gate(code: str, mode: str, rr: float, pos52=None, evidence: dict | None = None) -> dict:
+def env_gate(code: str, mode: str, rr: float, pos52=None, evidence: dict | None = None, *, context: dict | None = None) -> dict:
     """【V88·环境闸v2 2026-07-27 用户大改定纲"安全线太保守,不需要;要提前量"】
     v1的硬拦(改写mode='准备买·环境不合格')废除——三案取证:LMT p_up80%却被rr1.1拦死
     (创新高票阻力在头顶,rr公式结构性失真),小米+34.5%全程零推荐,中烟香港19元用户问过被拒后+15%。
@@ -552,11 +552,12 @@ def env_gate(code: str, mode: str, rr: float, pos52=None, evidence: dict | None 
     c = str(code or "").upper()
     mk = ("A股" if c.endswith((".SS", ".SZ", ".SH", ".BJ")) else
           ("港股" if c.endswith(".HK") else "美股"))
-    rg = market_regime(mk)
+    rg = market_regime(mk, context=context)
     out["regime"] = rg["regime"]
     ev_hit, ev_self = "", False
     try:
-        evs = json.loads((BASE / "data" / "macro_events.json").read_text(encoding="utf-8")).get("events") or []
+        events_doc = (context.get("macro_events") or {}) if context is not None else json.loads((BASE / "data" / "macro_events.json").read_text(encoding="utf-8"))
+        evs = events_doc.get("events") or []
         today = _dt_eg.now().date()
         base = c.split(".")[0]
         for e in evs:
@@ -764,7 +765,7 @@ def build_trade_plan(full, entry_plan=None, forward=None) -> dict:
 
 
 def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
-                      action_hint="观察", analysis_time=None, name="", code="") -> dict:
+                      action_hint="观察", analysis_time=None, name="", code="", market_context=None) -> dict:
     """返回所有模块必须展示/保存的唯一决策记录。"""
     full = full or {}
     facts = facts or build_horizon_facts(df, full=full)
@@ -865,7 +866,7 @@ def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
             # 偏暖/中性市里,技术面在"等待/双路径"的低中位良性票→升级为左侧分批,不再干等右侧确认。
             # 向宽处改写(给机会),从不向紧处改写(v1硬拦已废)。
             _rg_ls = market_regime("A股" if str(code).upper().endswith((".SS", ".SZ", ".SH", ".BJ"))
-                                   else ("港股" if str(code).upper().endswith(".HK") else "美股"))
+                                   else ("港股" if str(code).upper().endswith(".HK") else "美股"), context=market_context)
             if (_rg_ls["regime"] in ("bull", "neutral") and _tech_mode in ("等待", "双路径待触发")
                     and float(full.get("pos52") or 100) <= 60 and float(short) >= 45
                     and str(full.get("stage")) not in ("破位下跌", "趋势转弱", "放量滞涨")):
@@ -877,7 +878,7 @@ def evaluate_decision(df=None, full=None, *, facts=None, holding=None,
                                             f"现价{last:g}~回踩{_pb_ls}区间{_sz_ls},不等右侧突破确认"
                                             f"——跌破{_st_ls}认错止损;若放量突破则剩余仓改追")
                 entry_plan["note"] = f"🟢左侧低吸·{_sz_ls}·破{_st_ls}认错"
-            _eg = env_gate(code, _tech_mode, rr, pos52=full.get("pos52"),
+            _eg = env_gate(code, _tech_mode, rr, pos52=full.get("pos52"), context=market_context,
                            evidence={"obv_inflow": ("流入" in _cap_eg.split("·")[0]),
                                      "bottom_turn": ((full.get("turning") or {}).get("side") == "bottom")})
             entry_plan["env_gate"] = _eg

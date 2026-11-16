@@ -1966,7 +1966,8 @@ elif _nav == "🔍 个股搜索":
             f = r["full"]
             _concl_color = {"进攻": "🟢", "试仓": "🧪", "持有": "🔵", "等待": "⏳", "减仓": "🟡", "回避": "🔴"}
             from v88_decision_core import evaluate_decision as _evaluate_cloud_decision
-            _cloud_decision = _evaluate_cloud_decision(_df, f, name=_tname, code=_tsym)
+            _cloud_decision = _evaluate_cloud_decision(_df, f, name=_tname, code=_tsym,
+                market_context={"snapshot": _snap or {}, "macro_events": _json_text("macro_events_pub.json")})
             from grade_card import _triad_v2_rows, card_html
             from scorecard_html import profit_html
             from stock_reference import canonical as _canon_cloud

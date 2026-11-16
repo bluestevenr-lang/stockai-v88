@@ -228,6 +228,6 @@ def test_entry_midline_gives_week_range():
 
 def test_evaluate_decision_carries_entry_plan():
     df = _prices(1)
-    full = _et_full(last=float(df.Close.iloc[-1]))
+    full = _et_full(last=float(df.Close.iloc[-1]), total=70)
     dc = evaluate_decision(df, full, name="T", code="TEST")
     assert "entry_plan" in dc

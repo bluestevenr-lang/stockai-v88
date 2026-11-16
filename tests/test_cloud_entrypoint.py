@@ -11,7 +11,7 @@ from streamlit.testing.v1 import AppTest
 
 @pytest.mark.parametrize("has_strategy", [False, True])
 @pytest.mark.parametrize("temperature", [{}, {"temp": 45, "label": "中性"}])
-def test_cloud_page_starts_with_or_without_current_strategy(monkeypatch, has_strategy, temperature):
+def test_cloud_page_starts_with_or_without_current_strategy(monkeypatch, has_strategy, temperature, caplog):
     snapshot = {"generated_at": "2026-11-16T03:00:00+00:00",
                 "markets": {"A股": {"temperature": temperature}}}
     runtime = {
@@ -33,6 +33,7 @@ def test_cloud_page_starts_with_or_without_current_strategy(monkeypatch, has_str
                             default_timeout=30).run()
     assert not app.exception, [str(error.value) for error in app.exception]
     assert any("V88" in title.value for title in app.title)
+    assert "推荐复盘渲染失败" not in caplog.text
     if temperature:
         app.radio(key="_nav").set_value("📈 大盘板块").run()
         assert not app.exception, [str(error.value) for error in app.exception]

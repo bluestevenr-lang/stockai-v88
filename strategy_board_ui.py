@@ -217,8 +217,14 @@ def html(doc=None,code=None,now=None,profiles=None):
     if not code:
         out.append(learning_html(doc,esc,flags))
         try:
-            import pick_review
-            out.append(pick_review.html(pick_review.read(),esc=esc))
+            try:
+                import pick_review
+            except ModuleNotFoundError as exc:
+                if exc.name != "pick_review":
+                    raise
+                pick_review = None  # Private desktop review is optional in the public runtime.
+            if pick_review is not None:
+                out.append(pick_review.html(pick_review.read(),esc=esc))
         except Exception:  # noqa: BLE001 — 复盘失败不影响看板
             import logging;logging.exception('[V88] 推荐复盘渲染失败')
         out.append(muse_panel(muse_cache, now))
