@@ -62,4 +62,9 @@ def view(doc, now=None):
         apply_entry_review(row,now)
     out['rows'] = rows
     out['rule_matched_count'] = sum(r.get('rule_matched', False) for r in rows)
+    try:
+        from action_directive import annotate
+        annotate(out, 'Astra', now=now)
+    except Exception:
+        pass
     return out

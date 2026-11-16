@@ -1,5 +1,8 @@
 # V88 desktop maintenance requirements
 
+## 2026-11-16 unified entry upgrade
+decision_release.json records shared module hashes. Keep desktop/core/cloud copies identical. Early price-volume alerts are distinct from formal grades; conditions not yet triggered are never today's executable buys. New Astra entry windows end in the policy month; original research contracts/stops remain unchanged. The daily Feishu sender uses one compact card. strategy-learning.json is a private runtime cache, not a public artifact.
+
 
 ## 2026-10-09 用户长期要求：个股现价不可省略
 - 所有个股推荐、观察、风险、Astra及跟踪列表，必须显著保留现价、币种与真实报价时间；有已核涨跌幅时同时显示。不得只在折叠区或灰色脚注藏价格。

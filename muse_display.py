@@ -5,7 +5,7 @@ from html import escape
 import json
 from pathlib import Path
 import re
-from muse_review import BJT, CRITERIA, STOP_QUALITY_NOTICE, digest, item, moment
+from muse_review import BJT, BOARD_MODULES, CRITERIA, STOP_QUALITY_NOTICE, digest, item, moment
 
 SLOTS = {'morning': '早报 06:30 · 中港', 'afternoon': '午报 12:01 · 中港', 'evening': '晚报 19:01 · 美股'}
 
@@ -36,7 +36,7 @@ def project(ledger):
         if record.get('complete') is not True or record.get('accepted') is not True:
             continue
         row = {k: record[k] for k in ('delivery_id', 'at', 'completed_at', 'analysis_time', 'data_time',
-               'content_sha256', 'payload_parts', 'muse_review', 'supersedes') if k in record}
+               'content_sha256', 'payload_parts', 'muse_review', 'supersedes', 'archived') if k in record}
         row.setdefault('delivery_id', 'legacy-receipt:'+str(legacy_key))
         row.update(date=date_of(record), slot=slot_of(record), debug='debug-' in str(record.get('delivery_id', '')))
         rows.append(row)
@@ -57,7 +57,7 @@ def result(review, row):
             or not row.get('item_sha256') or not review.get('verdict_blob_sha')
             or not all(vote.get(k) for k in ('reason', 'checked_at', 'evidence_ref'))):
         state = 'unverified'
-    ready = bool((row.get('facts') or {}).get('buyable' if row.get('module') == '3A' else 'rule_matched'))
+    ready = bool((row.get('facts') or {}).get('buyable' if row.get('module') in BOARD_MODULES else 'rule_matched'))
     return {'state': state, 'meaning': '认可买入条件' if ready else '认可重点观察（不代表可买）',
             'reason': vote.get('reason') if state != 'unverified' else '无本版有效裁决',
             'checked_at': vote.get('checked_at'), 'evidence_ref': vote.get('evidence_ref'),
@@ -152,7 +152,7 @@ def latest_current(row, module, cache, now, source_time):
                 or not all(vote.get(k) for k in ('reason','checked_at','evidence_ref'))
                 or not moment(doc['published_at']) <= moment(vote['checked_at']) <= moment(review['received_at']) <= moment(doc['screened_at'])+timedelta(hours=24)):
             return unverified('本股裁决缺失或时间校验失败')
-        ready = bool(binding['facts'].get('buyable' if module=='3A' else 'rule_matched'))
+        ready = bool(binding['facts'].get('buyable' if module in BOARD_MODULES else 'rule_matched'))
         return dict(vote, state=vote['verdict'], meaning='认可买入条件' if ready else '认可重点观察（不代表可买）',
                     criteria_version=CRITERIA, verdict_version=review.get('verdict_blob_sha'),
                     verdict_commit_sha=review['verdict_commit_sha'], item_sha256=binding['item_sha256'],
@@ -208,8 +208,9 @@ def row_badge(row, module, cache=None, now=None, source_time=None, display_row=N
     cache = load() if cache is None else cache
     value = current(row, module, cache, now, source_time)
     if display_row is not None and 'latest_sync_status' in cache:
-        ready='buyable' if module=='3A' else 'rule_matched'
-        if display_row.get('current_source') is False or (row.get(ready) and not display_row.get(ready)):
+        ready='buyable' if module in BOARD_MODULES else 'rule_matched'
+        # 已给出今日/1–3日可买指令的行，以指令为准，不再挂「入场条件已失效」。
+        if display_row.get('current_source') is False or (row.get(ready) and not display_row.get(ready) and not display_row.get('buy_window')):
             value=unverified('当前报价或入场条件已失效；原裁决只对应核查时快照')
     markup = badge(value)
     if value['state'] != 'unverified':
@@ -231,13 +232,53 @@ def row_badge(row, module, cache=None, now=None, source_time=None, display_row=N
         return markup
 
 
-def frozen_item(review, row, identity):
+def current_roster(base=None):
+    """当前在推名单（Astra 在席 + 3A/2A/1A 行），只用于给冻结记录标注“现已退出”。"""
+    if base is None:
+        try:
+            from v88_paths import core_root
+            base = core_root()
+        except Exception:
+            return None
+    roster = {}
+    try:
+        astra = json.loads((Path(base)/'data/astra_cycle.json').read_text())
+        roster['Astra'] = {r.get('code') for r in astra.get('rows') or []}
+    except (OSError, ValueError):
+        pass
+    try:
+        board = json.loads((Path(base)/'data/strategy_board.json').read_text())
+        codes = {r.get('code') for r in board.get('rows') or []}
+        for m in ('3A', '2A', '1A'):
+            roster[m] = codes
+    except (OSError, ValueError):
+        pass
+    return roster or None
+
+
+def _identity_label(identity):
+    parts = str(identity or '').split(':')
+    if len(parts) >= 3:
+        return parts[-2][5:] + ' ' + SLOTS.get(parts[-1], parts[-1]).split(' ')[0]
+    return ''
+
+
+def frozen_item(review, row, identity, today=None, roster=None):
     facts = row.get('facts') or {}
     price = facts.get('last')
     quote = facts.get('quote_asof')
     price_line = ('现价 '+esc(price)+' '+esc(facts.get('currency')) if price is not None else '现价待核')
-    return ('<div class="muse-frozen-item"><b>'+esc(row.get('module'))+' · '+esc(row.get('name'))+' '+
-            esc(row.get('code'))+'</b><div>发送版'+price_line+' · 报价 '+esc(clock(quote) if quote else '未记录')+
+    # 冻结记录是当时已发出的版本，标题必须与上方“当前计划”区分开，否则读起来像第二套名单。
+    label = _identity_label(identity)
+    sent_day = (str(identity).split(':')[-2] if str(identity).count(':') >= 2 else '')
+    note = ''
+    if today and sent_day and sent_day < today:
+        note = '<span style="color:#64748b"> · 历史记录，非当前计划</span>'
+    elif roster is not None and row.get('module') in roster and row.get('code') not in roster[row.get('module')]:
+        note = '<span style="color:#b45309"> · 发送后已退出当前名单，以上方当前计划为准</span>'
+    head = ('📁 '+esc(label)+' 已发送版（冻结） · ' if label else '📁 已发送版（冻结） · ')
+    return ('<div class="muse-frozen-item"><span style="font-size:12px;color:#64748b">'+head+'</span><b>'+esc(row.get('module'))+' · '+esc(row.get('name'))+' '+
+            esc(row.get('code'))+'</b>'+note+'<div>发送版'+price_line+' · 报价 '+esc(clock(quote) if quote else '未记录')+
             '</div>'+badge(dict(result(review, row), delivery_id=identity))+'</div>')
 
 
@@ -289,6 +330,7 @@ def panel(cache=None, now=None, day=None):
         records = [r for r in records if r['date'] == day]
         today = day
     active = effective(records)
+    roster = current_roster() if not day else None
     out = ['<section id="v88-muse-review" style="margin:12px 0;padding:12px;border:1px solid #e2e8f0;border-radius:10px">',
            '<b>M · Muse 双重验证（试运行）</b><p style="font-size:12px">认证≠买入授权。认可重点观察只认可观察资格，不代表可买；不改变评分、榜单或持仓。无裁决、超时、改版、校验失败统一为未验证。</p>',
            '<small>只读飞书冻结回执 · 同步 '+esc(clock(cache.get('synced_at')))+' · '+esc(cache.get('sync_status') or '待同步')+'</small>']
@@ -323,7 +365,7 @@ def panel(cache=None, now=None, day=None):
                        esc(record['delivery_id'])+' · 实际发送 '+esc(clock(record.get('completed_at') or record.get('at')))+
                        '<br>筛选 '+esc(record.get('analysis_time'))+' · 行情 '+esc(record.get('data_time'))+'</p>')
             for row in review.get('items') or []:
-                out.append(frozen_item(review, row, record['delivery_id']))
+                out.append(frozen_item(review, row, record['delivery_id'], today, roster))
             out.append('</details>')
     pending = cache.get('verdict_snapshots') or {}
     if pending:
@@ -362,7 +404,7 @@ def panel(cache=None, now=None, day=None):
                 '<br>筛选 '+esc(record.get('analysis_time'))+' · 行情 '+esc(record.get('data_time'))+
                 '<br>截止 '+esc(clock(cutoff))+' · 收到裁决 '+esc(clock(arrived))+' · '+timely+'</p>')
             for row in review.get('items') or []:
-                out.append(frozen_item(review, row, identity))
+                out.append(frozen_item(review, row, identity, today, roster))
             if not review:out.append('<p>⚪ 未验证 · 旧回执没有 Muse 认证字段；不补写历史认证。</p>')
             out.append('<details><summary>已投递正文（按 payload_parts 原序）</summary><pre style="white-space:pre-wrap;font-size:12px">'+esc('\n\n'.join(record.get('payload_parts') or []))+'</pre><small>旧回执可能不含发送层时间行与分段编号，不宣称与飞书完整消息逐字一致。</small></details></details>')
         out.append('</details>')

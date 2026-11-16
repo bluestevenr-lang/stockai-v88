@@ -9,6 +9,7 @@ import hashlib
 import json
 from pathlib import Path
 import sqlite3
+from classics_evidence import _stop_evidence
 
 VERSION = 'strategy-crosscheck-v1'
 LABELS = {'aligned':'大盘·板块·个股同向', 'countertrend':'逆势研究 · 须核催化',
@@ -46,7 +47,7 @@ def business_facts(row, raw):
     return out
 
 
-def enrich(doc, source, *, base, now=None, previous=None, module="3A"):
+def enrich(doc, source, *, base, now=None, previous=None, module="3A", review_entries=True):
     """Background only; reuse validated daily series from this screening input."""
     from classics_evidence import evaluate as classical
     from market_stock_alignment import evaluate as alignment
@@ -57,7 +58,8 @@ def enrich(doc, source, *, base, now=None, previous=None, module="3A"):
     snapshot=read(base/'data/market_snapshot.json')
     old_rotation=read(base/'data/rotation_forecast.json').get('relative_strength') or {}
     rotation=build_rotation_observation(snapshot.get('markets') or {},previous=old_rotation,now=now)
-    sources={q['code']:q for q in source.get('rows',[])}
+    from market_symbols import canonical
+    sources={canonical(q['code']):q for q in source.get('rows',[])}
     financials=financial_load(base).get('records',{})
     screening=None;db=None
     try:
@@ -65,14 +67,23 @@ def enrich(doc, source, *, base, now=None, previous=None, module="3A"):
             db=sqlite3.connect((base/'data/wdata.db').resolve().as_uri()+'?mode=ro',uri=True,timeout=3)
             db.execute('BEGIN')
         for row in doc.get('rows',[]):
-            if module=='3A' and row.get('strategy_tier')!='3A':continue
-            q=sources.get(row['code']) or {};struct=q.get('structure') or {}
+            if module=='3A' and row.get('strategy_tier') not in ('3A','2A','1A'):continue
+            q=sources.get(canonical(row['code'])) or {};struct=q.get('structure') or {}
+            # Retained seats may be absent from today's discovery subset. Read their
+            # own cached series, never replace them with another name or an old quote.
+            if not struct:
+                if screening is None:screening=screen_load(base).get('records',{})
+                record=screening.get(canonical(row['code'])) or {}
+                if record.get('source_sha256') and record.get('basis') and record.get('bars'):
+                    struct={'screening_only':True,'raw_sha256':record['source_sha256'],
+                            'basis':record['basis'],'provider_source':'tencent-screen',
+                            'source_asof':record['bars'][-1][0]}
             bars=[];provenance={'source':struct.get('provider_source'),'basis':struct.get('basis'),
                 'sha256':struct.get('raw_sha256'),'source_asof':struct.get('source_asof')}
             metadata={'source_sha256':struct.get('raw_sha256'),'screening_only':bool(struct.get('screening_only'))}
             if struct.get('screening_only'):
                 if screening is None:screening=screen_load(base).get('records',{})
-                record=screening.get(row['code']) or {}
+                record=screening.get(canonical(row['code'])) or {}
                 if record.get('source_sha256') and record.get('source_sha256')==struct.get('raw_sha256'):
                     bars=(record.get('bars') or [])[-300:]
                     metadata.update({k:record[k] for k in ('fetched_at','checked_at','quality_error') if k in record})
@@ -86,16 +97,50 @@ def enrich(doc, source, *, base, now=None, previous=None, module="3A"):
                 code=row['code'],source=provenance['source'],basis=provenance['basis'],
                 business=business_facts(row,financials.get(row['code']) or {}))
             technical.pop('generated_at',None)  # recomputation time is not a changed market fact
+            from exchange_sessions import latest_completed
+            required=latest_completed(row['market'],now).isoformat()
+            prior=(row.get('crosscheck') or {}).get('technical') or {}
+            if (technical.get('status')!='OBSERVED' and prior.get('status')=='OBSERVED'
+                    and prior.get('asof')==required
+                    and (prior.get('provenance') or {}).get('input_sha256')):
+                technical=deepcopy(prior)
+                prior_provenance=technical['provenance']
+                provenance={'source':prior_provenance.get('source'),'basis':prior_provenance.get('basis'),
+                            'sha256':prior_provenance.get('source_sha256'),'source_asof':required}
+            quality=stop_quality(row,technical)
+            if technical.get('status')=='OBSERVED':
+                anchor=next(iter(quality.get('anchors') or []),None)
+                validated={'price':(row.get('stop_range') or [None])[0],
+                           'validated':quality.get('anchor_status')=='confirmed',
+                           'source':provenance['source'],'asof':technical.get('asof'),
+                           'basis':row.get('price_plan_basis'),'code':row['code']}
+                close=technical['structure'].get('reference_close')
+                if close is None and bars:
+                    close=bars[-1][2] if struct.get('screening_only') else bars[-1][3]
+                technical['structure']['validated_stop']=(_stop_evidence(validated,
+                    close=close,atr=technical['structure']['atr14'],basis=provenance['basis'],
+                    asof=technical['asof'],now=now,code=row['code']) if close is not None else
+                    {'status':'UNVERIFIED','reason':'缓存技术证据缺完整收盘参考值，不补造止损距离'})
+                technical['structure']['validated_stop']['anchor']=anchor
+            from muse_evidence import financial_facts
+            raw_financial=financials.get(canonical(row['code'])) or {}
+            expected_period=(row.get('fundamentals') or {}).get('period_end')
+            old_financial=row.get('financial_evidence') or {}
+            if raw_financial and (not expected_period or raw_financial.get('period_end')==expected_period):
+                row['financial_evidence']=financial_facts(row,raw_financial)
+            elif expected_period and old_financial.get('period_end')!=expected_period:
+                row['financial_evidence']={'status':'STALE','period_end':expected_period,
+                    'gaps':['财务缓存与本版报告期不一致，不跨期拼接']}
             context=alignment({**row,'nontechnical':q.get('nontechnical') or {}},snapshot,rotation,technical=technical,now=now)
             context.pop('evaluated_at',None)
-            data={'version':VERSION,'asof':struct.get('source_asof'),'provenance':provenance,
-                  'technical':technical,'alignment':context,'stop_check':stop_quality(row,technical),
+            data={'version':VERSION,'asof':technical.get('asof') or struct.get('source_asof'),'provenance':provenance,
+                  'technical':technical,'alignment':context,'stop_check':quality,
                   'price_indicators_are_one_family':True,
                   'model_calls':0,'rules_ready':bool(row.get('buyable') or row.get('rule_matched')),
                   'scope':'工程化证据核查，不是原书逐条复刻、独立多票或胜率证明'}
             # Bind cloud rule reviews to exact input facts and evidence, never an updated clock alone.
             row['crosscheck']=data
-            apply_entry_review(row,now)
+            if review_entries:apply_entry_review(row,now)
             data['facts_sha256']=review_hash(row)
             if row['code'] in doc.get('evaluations',{}):
                 from strategy_board import compact
@@ -118,23 +163,56 @@ def entry_gaps(row,now=None):
     expected=latest_completed(row['market'],now).isoformat()
     gaps=[];context=data.get('alignment') or {}
     if data.get('asof')!=expected:gaps.append('多重核查：完整日线待更新')
-    state=context.get('state','unknown')
     if (context.get('stock_context') or {}).get('direction')=='down':
         gaps.append('多重核查：个股技术结构下行，同向下跌也不构成买入许可')
-    if state!='aligned':
-        gaps.append('多重核查：'+LABELS.get(state,LABELS['unknown']))
-        if state=='countertrend':
-            ex=context.get('exception') or {}
-            gaps.append('多重核查：已有催化原文待人工/Muse复核，不自动抵消逆势' if ex.get('status')=='documented_for_review' else '多重核查：缺少可追溯的逆势公司催化')
+    # 大盘/板块方向不在这里再判一次：入场门（shadow_screen 环境门+轮转门+逆风试仓）
+    # 是同一类价格证据的唯一裁决口径。这里重复用另一套定义（价格<MA60即"逆势"、
+    # 缺板块代理即"证据未齐"）去否决，等于一个程序两套逻辑，且把"没有数据"当成
+    # "有风险"。方向分歧只作披露，见 alignment_note()。
     stop=data.get('stop_check') or {}
     if stop.get('status')=='within_daily_noise':gaps.append('多重核查：原止损距参考入场不超过1个ATR，落在近期日波动内')
-    if stop.get('anchor_status')!='confirmed':gaps.append('多重核查：原止损锚尚无已确认结构支撑，不自动放宽止损')
+    # 与入场门同一口径：数据口径缺失/不可比（status=unknown）是"算不出"，只披露不拦截；
+    # 同口径数据核出止损悬空（低点在止损之下）才是风险，照旧拦截。
+    if stop.get('anchor_status')!='confirmed' and stop.get('status')!='unknown':
+        gaps.append('多重核查：原止损锚尚无已确认结构支撑，不自动放宽止损')
     return list(dict.fromkeys(gaps))
+
+
+def alignment_note(row):
+    data=row.get('crosscheck') or {}
+    if data.get('version')!=VERSION:return None
+    context=data.get('alignment') or {};state=context.get('state','unknown')
+    if state=='aligned':return None
+    note=LABELS.get(state,LABELS['unknown'])
+    if state=='countertrend':
+        ex=context.get('exception') or {}
+        note+='；'+('已有催化原文待人工/Muse复核' if ex.get('status')=='documented_for_review' else '暂无可追溯的逆势公司催化')
+    return '方向披露（不作否决，环境由入场门裁决）：'+note
+
+
+def _evidence_row(row):
+    reg=row.get('astra_regime') or {}
+    if reg.get('band')!='horizon' or reg.get('grade')!='buy':return False
+    from horizon_book import live
+    try:return bool(live(reg.get('cell'))[0])
+    except Exception:return False
 
 
 def apply_entry_review(row,now=None):
     row['missing']=[g for g in row.get('missing',[]) if not g.startswith('多重核查：')]
+    note=alignment_note(row)
+    if note:row['crosscheck_note']=note
+    else:row.pop('crosscheck_note',None)
     gaps=entry_gaps(row,now)
+    if _evidence_row(row):
+        # 证据表买入级行：结构下行/止损在1个ATR内/止损锚未确认三项经全市场回测（同口径 GMMA/结构），
+        # 命中子集的规则胜率仍在50–73%，只披露不拦截（2026-11-12 用户：可买概率<50%才是逻辑问题）；
+        # 完整日线待更新是数据未到，照拦。
+        shown=[g for g in gaps if g!='多重核查：完整日线待更新']
+        if shown:
+            row['crosscheck_note']='；'.join(([row['crosscheck_note']] if row.get('crosscheck_note') else [])
+                                           +[g+'（披露：该规则回测含此情形胜率仍≥50%，不拦截）' for g in shown])
+        gaps=[g for g in gaps if g not in shown]
     if not gaps:return row
     row['missing']=list(dict.fromkeys((row.get('missing') or [])+gaps))
     row['buyable']=False
@@ -171,11 +249,19 @@ def stop_quality(row,technical):
     if not band[0]<=band[1]<entry[0]<=entry[1]:
         return {**basis,'status':'invalid','anchor_status':'unverified','reason':'原价带顺序待核','changes_stop':False}
     distance=(entry[0]-band[1])/atr
-    anchors=[p for p in structure.get('confirmed_lows',[]) if band[0]<=p['price']<=band[1]]
+    # 整个止损带必须在已确认支撑下方；只检查下沿会把带内悬空误认作有锚。
+    # 旧口径要求低点恰好落进不足1%宽的止损带内，几乎从不成立；而"止损紧贴支撑
+    # 之下"这一教科书形态反被判为无锚。低点在止损之下的（止损悬空）仍判无锚。
+    asof=technical.get('asof')
+    anchors=[p for p in structure.get('confirmed_lows',[]) if number(p.get('price'))
+             and isinstance(p.get('date'),str) and isinstance(p.get('confirmed_at'),str)
+             and isinstance(asof,str) and p['date']<=p['confirmed_at']<=asof
+             and band[1]<=p['price']<=entry[0]]
     return {**basis,'status':'within_daily_noise' if distance<=1 else 'outside_one_atr',
         'anchor_status':'confirmed' if anchors else 'unverified','anchors':anchors,
         'distance_atr':round(distance,4),'atr14':atr,'reference_entry':entry[0],
-        'stop_near_edge':band[1],'changes_stop':False,
+        'stop_near_edge':band[1],'changes_stop':False,'anchor_type':'confirmed_swing_low',
+        'validation_rule':'同复权口径；低点两侧各2根完整K线确认且确认日不晚于技术截止日；止损上沿不高于支撑低点，支撑不高于入场下沿',
         'scope':'原入场下沿到止损上沿的保守距离；1ATR为工程风险提示，非保证止损不触发；无持仓量不虚构账户损失'}
 
 

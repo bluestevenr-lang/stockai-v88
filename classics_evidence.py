@@ -301,7 +301,9 @@ def _structure(bars, stop, *, basis, asof, now, code):
         trend='higher_highs_higher_lows' if up else 'lower_highs_lower_lows' if down else 'mixed_or_range'
     atr=_atr(bars)
     return _block('OBSERVED',confirmed_highs=highs[-2:],confirmed_lows=lows[-2:],trend=trend,
-        atr14=atr,validated_stop=_stop_evidence(stop,close=bars[-1][2],atr=atr,basis=basis,asof=asof,now=now,code=code),
+        atr14=atr,reference_close=bars[-1][2],
+        ma20=fmean(b[2] for b in bars[-20:]),ma60=fmean(b[2] for b in bars[-60:]),
+        validated_stop=_stop_evidence(stop,close=bars[-1][2],atr=atr,basis=basis,asof=asof,now=now,code=code),
         interpretation='两侧各2根完整K线确认的结构枢轴；不冒称完整1-2-3/2B，MA20不是原书趋势线')
 
 

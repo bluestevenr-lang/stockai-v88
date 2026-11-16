@@ -16,6 +16,12 @@ CLOCKS = {'morning': (6, 20, 6, 30), 'afternoon': (11, 55, 12, 1), 'evening': (1
 MARKETS = {'A股': 'cn', '港股': 'hk', '美股': 'us'}
 
 
+def display_code(code):
+    import re
+    m = re.fullmatch(r'(\d{1,4})\.HK', str(code or ''))
+    return m.group(1).zfill(4) + '.HK' if m else code
+
+
 def digest(value):
     return hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()).hexdigest()
 
@@ -34,19 +40,41 @@ def capture():
         CAPTURE.reset(token)
 
 
+BOARD_MODULES = ('3A', '2A', '1A')   # 策略看板三档，均送 Muse 双重验证
+
+
 def item(row, module):
     fields = ('code', 'name', 'last', 'currency', 'quote_asof', 'source_session', 'strategy_score',
               'entry_range', 'take_profit_range', 'stop_range', 'opportunity', 'net_rr',
               'net_target_return_pct', 'period', 'window', 'reason', 'business_reason', 'business_risk',
               'buyable', 'rule_matched', 'status', 'selection_category', 'missing', 'profit_gaps',
               'first_seen_at', 'business_source', 'filing_check', 'fundamentals',
-              'crosscheck', 'price_plan_basis', 'research_roster', 'plan_id', 'plan_created_at', 'plan_state', 'plan_waiting_reasons',
-              'plan_current_structure_target', 'plan_current_net_space_pct', 'plan_current_net_rr')
+              'crosscheck', 'price_plan_basis', 'price_plan_method', 'price_plan_scope', 'target_evidence',
+              'financial_evidence', 'directive', 'research_roster', 'plan_id', 'plan_created_at', 'plan_state', 'plan_waiting_reasons',
+              'plan_current_structure_target', 'plan_current_net_space_pct', 'plan_current_net_rr',
+              'plan_current_first_obstacle_pct', 'plan_current_nearest_resistance')
     facts = {k: row[k] for k in fields if k in row}
+    window = row.get('buy_window')
+    planned = 'buy_window' in row or bool(row.get('entry_range'))
+    if window is None and planned:
+        import action_directive as ad
+        d = row.get('directive') or (ad.decide_astra(row) if module == 'Astra' else ad.decide_3a(row))
+        window = ad.buy_window(row, d)
+    # 送审事实与正文同源：可买与否只认 buy_window，不再沿用评分阶段的旧 buyable。
+    if planned:
+        facts['buy_window'] = window
+    if module in BOARD_MODULES and planned:
+        import action_directive as ad
+        facts['buyable'] = window == ad.TODAY
+    if row.get('directive'):
+        from action_directive import public_directive
+        facts['directive'] = public_directive(row['directive'], module)
+    from muse_evidence import review_evidence
+    facts['review_evidence'] = review_evidence(row)
     identity = f'{module}:{MARKETS.get(row.get("market"), "unknown")}:{row["code"]}'
     return {'item_id': identity, 'module': module, 'market': MARKETS.get(row.get('market'), 'unknown'),
-            'code': row['code'], 'name': row['name'],
-            'system_state': str(row.get('selection_category') or row.get('status') or '待核'),
+            'code': row['code'], 'display_code': display_code(row['code']), 'name': row['name'],
+            'system_state': str(window or row.get('selection_category') or row.get('status') or '待核'),
             'plan_anchor': row.get('first_seen_at') or (row.get('window') or {}).get('start'),
             'facts': facts, 'item_sha256': digest(facts)}
 
@@ -79,11 +107,18 @@ def build(snapshot, text, rows, delivery_id, slot, now, *, freeze_for_delivery=F
             items.append(dict(by_id[identity], insert_after=len(clean)))
         else:
             clean.append(line)
+    if items:
+        # Count derived from the very items Muse reviews.
+        counts = ' · '.join(f'{m} {sum(i["module"] == m for i in items)}只' for m in BOARD_MODULES + ('Astra',))
+        clean.insert(2 if freeze_for_delivery else 1, f'🔍 本报送审条目 {len(items)} 条（{counts}）；审核只认这些条目。')
+        items = [dict(i, insert_after=i['insert_after'] + 1) for i in items]
     body = '\n'.join(clean)
     # Only compilation clocks vary. Quote, screening, plan and state lines remain bound.
     semantic = '\n'.join(x for x in clean[1:] if not x.startswith('📝 摘要编制：'))
     payload = {'schema_version': SCHEMA, 'delivery_id': delivery_id, 'slot': slot['id'],
                'criteria_version': CRITERIA, 'items': items, 'semantic_body': semantic}
+    from muse_evidence import snapshot_context
+    payload['review_context'] = snapshot_context(snapshot)
     if freeze_for_delivery:
         payload['delivery_policy'] = DELIVERY_POLICY
     h, m, sh, sm = CLOCKS[slot['id']]
@@ -93,6 +128,8 @@ def build(snapshot, text, rows, delivery_id, slot, now, *, freeze_for_delivery=F
     result = {**payload, 'review_sha256': digest(payload), 'created_at': now.isoformat(),
             'date': str(date), 'cutoff_at': cutoff.isoformat(),
             'scheduled_at': cutoff.replace(hour=sh, minute=sm).isoformat(),
+            'resubmission_until': (cutoff.replace(hour=sh, minute=sm) + timedelta(minutes=2)).isoformat(),
+            'resubmission_policy': 'invalid-only-once-before-send-v1',
             'source_generated_at': snapshot.get('source_generated_at'), 'snapshot_id': snapshot.get('snapshot_id'),
             'verdict_repository': 'bluestevenr-lang/v88-muse-verdicts',
             'verdict_file': f'verdicts/{date}/{key(delivery_id)}.json',
@@ -116,13 +153,47 @@ def one_line(value, limit):
             and not any(unicodedata.category(c).startswith('C') or c in '\r\n' for c in value))
 
 
-def validate(draft, verdict, received_at):
-    """Strict envelope, independently reject bad items. received_at is our collector clock."""
+SLOT_ALIASES = {'noon': 'afternoon'}
+
+
+def _canonical_envelope(verdict):
+    """午报协议名历史上出现过 noon；系统统一用 afternoon，裁决侧写 noon 也按同一时段绑定。"""
+    if not isinstance(verdict, dict):
+        return verdict
+    out = dict(verdict)
+    slot = out.get('slot')
+    if slot in SLOT_ALIASES:
+        out['slot'] = SLOT_ALIASES[slot]
+    ident = out.get('delivery_id')
+    if isinstance(ident, str):
+        head, _, tail = ident.rpartition(':')
+        if head and tail in SLOT_ALIASES:
+            out['delivery_id'] = head + ':' + SLOT_ALIASES[tail]
+    return out
+
+
+def validate(draft, verdict, received_at, rejected=None, *, retry_until=None):
+    """Strict envelope, independently reject bad items. received_at is our collector clock.
+
+    rejected：可选列表，逐条记录被拒条目与原因，供收集状态文件诊断（不影响判定）。
+    条目未写 checked_at 时沿用裁决外层 checked_at（Muse 实际提交格式），仍须落在草案创建与接收之间。
+    """
+    note = (lambda item, why: rejected.append({'item_id': item, 'reason': why})) if rejected is not None else (lambda item, why: None)
+    verdict = _canonical_envelope(verdict)
     if not isinstance(verdict, dict) or any(verdict.get(k) != draft[k] for k in
             ('schema_version', 'delivery_id', 'slot', 'draft_sha256', 'criteria_version')):
         raise ValueError('draft binding mismatch')
     received = moment(received_at)
-    if not moment(draft['created_at']) <= received <= moment(draft['cutoff_at']):
+    cutoff = moment(draft['cutoff_at'])
+    if retry_until is not None:
+        deadline = moment(retry_until)
+        scheduled = moment(draft['scheduled_at'])
+        if (deadline != scheduled + timedelta(minutes=2) or deadline <= cutoff
+                or draft.get('resubmission_policy') != 'invalid-only-once-before-send-v1'
+                or draft.get('resubmission_until') != retry_until):
+            raise ValueError('invalid resubmission window')
+        cutoff = deadline
+    if not moment(draft['created_at']) <= received <= cutoff:
         raise ValueError('outside review window')
     if not isinstance(verdict.get('items'), list) or len(verdict['items']) > 30:
         raise ValueError('invalid item envelope')
@@ -131,30 +202,47 @@ def validate(draft, verdict, received_at):
     for v in verdict['items']:
         if isinstance(v, dict) and isinstance(v.get('item_id'), str):
             counts[v['item_id']] = counts.get(v['item_id'], 0) + 1
+    envelope_checked = verdict.get('checked_at')
     accepted = {}
     for v in verdict['items']:
         if not isinstance(v, dict):
+            note(None, 'not_object')
             continue
         identity = v.get('item_id')
         if not isinstance(identity, str):
+            note(None, 'item_id_missing')
             continue
         r = expected.get(identity)
-        if not r or counts.get(identity) != 1:
+        if not r:
+            note(identity, 'unknown_item')
             continue
-        if any(v.get(k) != r[k] for k in ('module', 'market', 'code', 'name', 'system_state', 'item_sha256')):
+        if counts.get(identity) != 1:
+            note(identity, 'duplicate_item')
+            continue
+        bad = [k for k in ('module', 'market', 'code', 'name', 'system_state', 'item_sha256') if v.get(k) != r[k]]
+        if bad:
+            note(identity, 'field_mismatch:' + ','.join(bad))
             continue
         state = v.get('verdict', v.get('claude_verdict'))
-        if state not in ('pass', 'fail', 'unverified') or not one_line(v.get('reason'), 40):
+        if state not in ('pass', 'fail', 'unverified'):
+            note(identity, 'verdict_value_invalid')
+            continue
+        if not one_line(v.get('reason'), 40):
+            note(identity, 'reason_invalid')
             continue
         if not one_line(v.get('evidence_ref'), 500):
+            note(identity, 'evidence_ref_invalid')
             continue
+        checked = v.get('checked_at') or envelope_checked
         try:
-            if not moment(draft['created_at']) <= moment(v['checked_at']) <= received:
+            if not moment(draft['created_at']) <= moment(checked) <= received:
+                note(identity, 'checked_at_outside_window')
                 continue
         except (ValueError, TypeError, KeyError):
+            note(identity, 'checked_at_invalid')
             continue
-        accepted[identity] = {k: v[k] for k in ('item_id', 'reason', 'evidence_ref', 'checked_at')}
-        accepted[identity]['verdict'] = state
+        accepted[identity] = {'item_id': identity, 'reason': v['reason'], 'evidence_ref': v['evidence_ref'],
+                              'checked_at': checked, 'verdict': state}
     return accepted
 
 
@@ -166,7 +254,7 @@ def merge(draft, accepted=None, *, error=None, verdict_sha=None):
         v = accepted.get(row['item_id'], {})
         state = v.get('verdict', 'unverified')
         counts[state] += 1
-        ready = bool(row['facts'].get('buyable') if row['module'] == '3A' else row['facts'].get('rule_matched'))
+        ready = bool(row['facts'].get('buyable') if row['module'] in BOARD_MODULES else row['facts'].get('rule_matched'))
         label = {'pass': '✅ 认可买入条件' if ready else '✅ 认可重点观察',
                  'fail': '❌ 不认可', 'unverified': '⚪ 未验证'}[state]
         suffix = '｜' + v['reason'] if v.get('reason') and state != 'unverified' else ''

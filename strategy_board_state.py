@@ -8,6 +8,9 @@ from exchange_sessions import latest_completed
 # Rows produced under older rules are never shown under the buyable heading.
 # v5: 2A/1A use the same buyable contract with backtested setups.
 FOLLOWUP_POLICY='2026-10-11-quality-followup-v8'
+PLAN_BASIS=('现价/入场上沿至计划目标与计划止损，同一区间口径，扣往返费用；'
+            '第一上方结构位单列披露，不假定突破')
+STRUCT_BASIS='现价/入场上沿至最近已验证结构位，扣往返费用；无价格计划，不以波动率外推补目标'
 RESEARCH_CATEGORY='高价值可跟进 · 重点观察'
 MIN_NET_SPACE_PCT=5.0
 MIN_CURRENT_RR=2.0
@@ -29,7 +32,7 @@ def _close_minute(market,day):
 
 def quote_timing(row,now):
     """'live' fresh in session; 'next_open' closing/lunch quote while shut; else 'stale'."""
-    from exchange_sessions import session_view
+    from market_session_view import session_view
     view=session_view(row['market'],now);state=view['market_status']
     at=datetime.fromisoformat(row['quote_asof'])
     if state=='交易中':
@@ -44,12 +47,27 @@ def quote_timing(row,now):
     if row.get('source_session')!=day.isoformat():return 'stale'
     return 'next_open' if at>=end-timedelta(minutes=20) else 'stale'
 
-def opportunity(row, structure=None):
+def opportunity(row, structure=None, *, target_basis='plan'):
     """Current price geometry, not historical payoff or a breakout assumption.
 
     Conservative entry is the worse of current price and planned entry ceiling.
-    The nearest evidenced overhead level caps the existing scenario target.
-    Existing stops and holding periods remain unchanged. No tuning to fill seats.
+    Reward and risk are measured over the same horizon: the plan's own target
+    against the plan's own stop. Capping reward at the first overhead level while
+    keeping risk at the full structural stop is a unit mismatch — it reported a
+    plan targeting +19% as "净空间-0.41%" and made 净收益风险比≥2 unreachable for
+    every stock in an uptrend, because such a stock always has a recent high just
+    overhead. Measured on 30 real ≥80分 stocks, that mixed form yielded a median
+    ratio of 0.18 and never once reached 2.
+    The nearest overhead level is still computed, published as first_obstacle_pct,
+    and still vetoes an entry sitting above it — a breakout is not assumed, it is
+    disclosed. Thresholds, stops and holding periods are unchanged.
+
+    target_basis='plan' means take_profit_range is a vetted price plan and may serve
+    as the thesis endpoint. target_basis='cap' means it is only an upper bound with
+    no structural evidence behind it (structural_opportunity passes 现价+6×ATR as a
+    measured-move ceiling); there the nearest evidenced level remains the objective,
+    because extrapolating volatility is inventing a target, not measuring one.
+    No tuning to fill seats.
     """
     import math
     good=lambda x:isinstance(x,(int,float)) and not isinstance(x,bool) and math.isfinite(x) and x>0
@@ -62,30 +80,48 @@ def opportunity(row, structure=None):
         out['gaps']=['当前入场、止损或目标结构未核实'];return out
     if not 0<stop[0]<=stop[1]<entry[0]<entry[1]<target[0]<=target[1]:
         out['gaps']=['当前价带顺序不成立'];return out
+    ceiling=max(entry[1],row['last'])
     levels=[*(row.get('resistance_levels') or []),row.get('nearest_resistance')]
     levels += [structure.get(k) for k in ('previous_high20','high60','high120','high52')]
-    levels=sorted({x for x in levels if good(x) and x>entry[0]})
+    # 以实际参考入场价为界，不是计划入场下沿。价格一旦走过入场区，低于现价的
+    # 旧高点仍会落在 entry[0] 之上并被当成"最近目标"——那是脚下的支撑，不是
+    # 上方阻力。它会把一只真实还有20%空间的票算成负空间。
+    # 取 >=：正好落在参考入场价上的结构位，是"买在阻力上"，必须算作第一障碍。
+    levels=sorted({x for x in levels if good(x) and x>=ceiling})
     if not levels:
-        out['gaps']=['缺少可核实的上方结构目标，历史盈利情景不能代替当前空间'];return out
-    ceiling=max(entry[1],row['last']);barrier=levels[0]
-    objective=min(target[0],barrier)
+        out['gaps']=['现价已越过全部可核实结构位，上方无参照目标；不以突破假设补位'];return out
+    barrier=levels[0]
     fee=row.get('fee_allowance_pct',.5)
     if not isinstance(fee,(int,float)) or not math.isfinite(fee) or fee<0:
         out['gaps']=['费用假设无效'];return out
+    if target_basis!='plan':
+        objective=min(target[0],barrier) if target[0]>ceiling else barrier
+    elif target[0]<=ceiling:
+        out['gaps']=['原计划目标已被现价越过，这份价格计划已兑现；等待新结构目标，不顺延旧目标']
+        return out
+    else:
+        objective=target[0]
     reward=(objective/ceiling-1)*100-fee
     risk=(1-stop[0]/ceiling)*100+fee
     rr=reward/risk if risk>0 else None
+    obstacle=(barrier/ceiling-1)*100-fee
     out.update(reference_entry=ceiling,first_objective=objective,nearest_resistance=barrier,
+               first_obstacle_pct=round(obstacle,4),
                stop=stop[0],fee_allowance_pct=fee,net_space_pct=round(reward,4),
                risk_pct=round(risk,4),current_net_rr=round(rr,4) if rr is not None else None,
-               basis='现价/入场上沿至最近结构目标，扣往返费用；未假定突破')
+               basis=PLAN_BASIS if target_basis=='plan' else STRUCT_BASIS)
     if reward<MIN_NET_SPACE_PCT:out['gaps'].append(f'当前净空间{reward:.2f}%不足{MIN_NET_SPACE_PCT:g}%')
     if rr is None or rr<MIN_CURRENT_RR:out['gaps'].append(f'当前净收益风险比{rr:.2f}不足{MIN_CURRENT_RR:g}' if rr is not None else '当前风险无法核实')
+    # 参考入场价已经站在最近结构位之上：这是追过头，不是空间。
+    # 'cap' 口径下 reward 本身就是这段距离，净空间门已覆盖，不重复记一笔。
+    if target_basis=='plan' and obstacle<=0:
+        out['gaps'].append(f'参考入场价已在最近上方结构位{barrier:g}之上（净距离{obstacle:.2f}%），属追过头而非空间')
     out['passed']=not out['gaps']
     return out
 
 def followup(row, structure=None):
-    """Keep the quality grade/rank; current geometry changes readiness only."""
+    """Current geometry for readiness; 3A admission itself is decided once by
+    strategy_board.apply_entry_gate using this same opportunity() formula."""
     row['opportunity']=opportunity(row,structure)
     row['buyable']=bool(row.get('buyable') and row['opportunity']['passed'])
     row['missing']=list(dict.fromkeys(row.get('missing',[])+row['opportunity']['gaps']))
@@ -99,6 +135,8 @@ def readiness(row):
     """Describe observed timing, never predict that a price will enter soon."""
     high=row.get('quality_eligible') or row.get('strategy_tier')=='3A'
     prefix='高分 · ' if high else ''
+    if row.get('grade_basis')=='grade-ladder-v1':
+        prefix={'good':'好股 · ','pending':'基本面待补 · '}.get((row.get('ladder') or {}).get('fundamentals'),prefix)
     gaps=row.get('missing') or row.get('gaps') or []
     detail='；'.join(gaps)
     roster=row.get('research_roster') or {}
@@ -179,6 +217,10 @@ def view(doc,now=None):
         for row in out.get('rows',[]):
             from earnings_quality import entry_gaps
             gaps=entry_gaps(row.get('fundamentals'))
+            if row.get('grade_basis')=='grade-ladder-v1':
+                # 与分级同一好股门：资料缺失（基本面待补）不是硬伤，不在展示时点再挡一次。
+                from grade_ladder import fundamentals_state
+                if fundamentals_state(row,now)[0]=='pending':gaps=[]
             row['missing']=list(dict.fromkeys(row.get('missing',[])+gaps))
             row['buyable']=bool(row.get('buyable') and row.get('current_source') and not row.get('research_retained') and row.get('buy_timing')!='stale' and not row.get('missing'))
             if row.get('strategy_tier')=='3A':
@@ -190,4 +232,10 @@ def view(doc,now=None):
             for market,counts in markets.items():
                 members=[r for r in out['rows'] if r['strategy_tier']==tier and r['market']==market]
                 counts['matched']=sum(bool(r.get('buyable')) for r in members)
+    # 指令跟随展示时点的状态重算（报价过期/降级后），与页面、飞书看到的是同一条。
+    if out.get('rows'):
+        try:
+            from action_directive import annotate
+            annotate(out,'3A',now=now)
+        except Exception:pass
     return out

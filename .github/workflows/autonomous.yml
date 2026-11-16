@@ -89,6 +89,7 @@ jobs:
             /fundamental-snapshot.json.gz
             /filing-check.json
             /astra-backtest.json
+            /strategy-learning.json
       - uses: actions/setup-python@v5
         if: steps.window.outputs.run == 'true'
         with:
