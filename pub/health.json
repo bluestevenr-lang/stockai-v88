@@ -1,6 +1,8 @@
 {
-  "actions": [],
-  "checked_at": "2026-11-16T16:59:57.698437+00:00",
+  "actions": [
+    "rerun:cloud_refresh.yml:43977297380"
+  ],
+  "checked_at": "2026-11-17T00:48:28.883975+00:00",
   "checks_failed": [],
   "critical": [],
   "dispatches": [],
@@ -8,21 +10,29 @@
   "external_messages": 0,
   "first_seen": {
     "refresh_step_failed:discovery": "2026-11-16T06:27:39.156550+00:00",
-    "refresh_step_failed:fundamentals": "2026-11-16T06:27:39.156550+00:00"
+    "refresh_step_failed:fundamentals": "2026-11-16T06:27:39.156550+00:00",
+    "refresh_step_failed:targeted_quotes": "2026-11-17T00:48:28.883975+00:00",
+    "workflow_failed:cloud_refresh.yml": "2026-11-17T00:48:28.883975+00:00"
   },
-  "issue_sync": "closed",
+  "issue_sync": null,
   "issues": [
     "refresh_step_failed:discovery",
-    "refresh_step_failed:fundamentals"
+    "refresh_step_failed:fundamentals",
+    "refresh_step_failed:targeted_quotes",
+    "workflow_failed:cloud_refresh.yml"
   ],
   "model_calls": 0,
   "plan": {
     "degraded": [
       "refresh_step_failed:discovery",
-      "refresh_step_failed:fundamentals"
+      "refresh_step_failed:fundamentals",
+      "refresh_step_failed:targeted_quotes"
+    ],
+    "rerun": [
+      "workflow_failed:cloud_refresh.yml"
     ]
   },
-  "status": "degraded",
+  "status": "healing",
   "version": "v88-self-heal-v1",
   "warnings": [
     "primary_quote_coverage_partial:validated_subset_only",
