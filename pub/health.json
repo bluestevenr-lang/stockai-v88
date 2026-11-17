@@ -1,18 +1,17 @@
 {
   "actions": [
-    "refresh_dispatched:full",
-    "rerun:cloud_refresh.yml:43977297380"
+    "refresh_dispatched:fast"
   ],
-  "checked_at": "2026-11-17T09:13:02.990569+00:00",
+  "checked_at": "2026-11-17T18:34:18.035250+00:00",
   "checks_failed": [],
   "critical": [
-    "persistent:workflow_failed:cloud_refresh.yml"
+    "persistent:market_rows_dropped:港股"
   ],
   "dispatches": [
-    "2026-11-17T09:13:02.990569+00:00"
+    "2026-11-17T18:34:18.035250+00:00"
   ],
   "escalated": [
-    "persistent:workflow_failed:cloud_refresh.yml",
+    "persistent:market_rows_dropped:港股",
     "persistent:refresh_step_failed:discovery",
     "persistent:refresh_step_failed:fundamentals"
   ],
@@ -21,29 +20,24 @@
     "market_rows_dropped:港股": "2026-11-17T09:13:02.990569+00:00",
     "refresh_step_failed:discovery": "2026-11-16T06:27:39.156550+00:00",
     "refresh_step_failed:fundamentals": "2026-11-16T06:27:39.156550+00:00",
-    "refresh_step_failed:targeted_quotes": "2026-11-17T00:48:28.883975+00:00",
-    "workflow_failed:cloud_refresh.yml": "2026-11-17T00:48:28.883975+00:00"
+    "refresh_step_failed:muse_screening": "2026-11-17T18:34:18.035250+00:00"
   },
-  "issue_sync": "opened",
+  "issue_sync": "updated",
   "issues": [
     "market_rows_dropped:港股",
     "refresh_step_failed:discovery",
     "refresh_step_failed:fundamentals",
-    "refresh_step_failed:targeted_quotes",
-    "workflow_failed:cloud_refresh.yml"
+    "refresh_step_failed:muse_screening"
   ],
   "model_calls": 0,
   "plan": {
     "degraded": [
       "refresh_step_failed:discovery",
       "refresh_step_failed:fundamentals",
-      "refresh_step_failed:targeted_quotes"
+      "refresh_step_failed:muse_screening"
     ],
     "refresh": [
       "market_rows_dropped:港股"
-    ],
-    "rerun": [
-      "workflow_failed:cloud_refresh.yml"
     ]
   },
   "status": "escalated",
