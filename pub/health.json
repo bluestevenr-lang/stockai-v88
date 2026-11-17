@@ -1,21 +1,32 @@
 {
   "actions": [
+    "refresh_dispatched:full",
     "rerun:cloud_refresh.yml:43977297380"
   ],
-  "checked_at": "2026-11-17T00:48:28.883975+00:00",
+  "checked_at": "2026-11-17T09:13:02.990569+00:00",
   "checks_failed": [],
-  "critical": [],
-  "dispatches": [],
-  "escalated": [],
+  "critical": [
+    "persistent:workflow_failed:cloud_refresh.yml"
+  ],
+  "dispatches": [
+    "2026-11-17T09:13:02.990569+00:00"
+  ],
+  "escalated": [
+    "persistent:workflow_failed:cloud_refresh.yml",
+    "persistent:refresh_step_failed:discovery",
+    "persistent:refresh_step_failed:fundamentals"
+  ],
   "external_messages": 0,
   "first_seen": {
+    "market_rows_dropped:港股": "2026-11-17T09:13:02.990569+00:00",
     "refresh_step_failed:discovery": "2026-11-16T06:27:39.156550+00:00",
     "refresh_step_failed:fundamentals": "2026-11-16T06:27:39.156550+00:00",
     "refresh_step_failed:targeted_quotes": "2026-11-17T00:48:28.883975+00:00",
     "workflow_failed:cloud_refresh.yml": "2026-11-17T00:48:28.883975+00:00"
   },
-  "issue_sync": null,
+  "issue_sync": "opened",
   "issues": [
+    "market_rows_dropped:港股",
     "refresh_step_failed:discovery",
     "refresh_step_failed:fundamentals",
     "refresh_step_failed:targeted_quotes",
@@ -28,14 +39,16 @@
       "refresh_step_failed:fundamentals",
       "refresh_step_failed:targeted_quotes"
     ],
+    "refresh": [
+      "market_rows_dropped:港股"
+    ],
     "rerun": [
       "workflow_failed:cloud_refresh.yml"
     ]
   },
-  "status": "healing",
+  "status": "escalated",
   "version": "v88-self-heal-v1",
   "warnings": [
-    "primary_quote_coverage_partial:validated_subset_only",
     "repository_over_5GiB:v88-daily-report"
   ]
 }
