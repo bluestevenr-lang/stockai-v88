@@ -1,604 +1,750 @@
 {
- "generated_at": "2026-11-19 01:25",
- "count": 441,
+ "generated_at": "2026-11-19 07:29",
+ "count": 443,
  "topics": [
   {
    "w": "AI",
-   "n": 111
+   "n": 100
   },
   {
    "w": "英伟达",
-   "n": 67
+   "n": 65
   },
   {
-   "w": "财报",
-   "n": 23
+   "w": "美联储",
+   "n": 26
   },
   {
    "w": "IPO",
-   "n": 19
+   "n": 25
+  },
+  {
+   "w": "财报",
+   "n": 22
+  },
+  {
+   "w": "芯片",
+   "n": 14
+  },
+  {
+   "w": "黄金",
+   "n": 14
   },
   {
    "w": "原油",
    "n": 12
-  },
-  {
-   "w": "黄金",
-   "n": 11
-  },
-  {
-   "w": "美联储",
-   "n": 11
-  },
-  {
-   "w": "美元",
-   "n": 11
   }
  ],
  "major_news": [
   {
-   "t": "Why TJX Companies Stock Jumped 10% Today - Yahoo Finance",
-   "dir": 1,
+   "t": "Democrats probe whether Lutnick helped Cantor Fitzgerald avoid Nvidia-linked losses",
+   "dir": -1,
+   "stk": [],
+   "url": "https://www.investing.com/news/stock-market-news/democrats-probe-whether-howardlutnick-helped-cantor-avoid-nvidia-losses-ft-reports-5035313",
+   "s": "Investing.com - Stock Market News",
+   "time": "2026-11-19 07:24"
+  },
+  {
+   "t": "半年最大降幅！海外美债持仓9月锐减，中日英三大“债主”齐减持，中国持债再创08年来新低",
+   "dir": -1,
+   "stk": [],
+   "url": "https://wallstreetcn.com/articles/3786234",
+   "s": "华尔街见闻",
+   "time": "2026-11-19 07:14"
+  },
+  {
+   "t": "Weil Gotshal Bankruptcy Team Heading to Skadden",
+   "dir": -1,
+   "stk": [],
+   "url": "https://www.wsj.com/business/weil-gotshals-bankruptcy-team-heading-to-skadden-feb22b3b?mod=rss_markets_main",
+   "s": "WSJ - Markets",
+   "time": "2026-11-19 07:11"
+  },
+  {
+   "t": "美股收盘：道指跌超1%，英伟达跌2.89%；费城半导体指数翻红，超威半导体涨超5%；存储概念股涨跌不一，闪迪跌超2%；黄金跳水跌超3% - 东方财富",
+   "dir": -1,
    "stk": [
     {
-     "n": "TJX",
-     "c": "TJX"
+     "n": "东方财富",
+     "c": "300059.SZ"
+    },
+    {
+     "n": "英伟达",
+     "c": "NVDA"
     }
    ],
-   "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxORklJaVZINjJsSkUwY2lnalBBMjJET215VlEwTm51QTlNYl9LY3B3RHVJTHZaUFd2T2xhenZwc0hpVTVFbkQ0X2x1TW9mT3RIVi0yVnpzRFIyd1psa19FM3ZhaW10bFdyRXFwUk9CaTNJemxlRXV2YTUxOWh5OU9kcGJVbnVrcXFzREJJd2NBcVYydVRfdUZ3TVZuRQ?oc=5",
-   "s": "Google News - EN Markets",
-   "time": "2026-11-19 00:17"
+   "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE9PbG1CVUhjQkFMUDRIcFA2Y053U0VuaEYzaUs4TlZHNHBsVUdOcWp0SXB4WlM1dkkyVmFEYWY2TF9rOHIwSTRacUdGTjFJLUVMbjBMVVV3T0oyNC15eDhUcFpXUzlwZw?oc=5",
+   "s": "Google News - 中文市场聚合",
+   "time": "2026-11-19 06:24"
   }
  ],
  "items": [
   {
-   "t": "Dealbook Summit 2026 live updates: Altman says 'hard to imagine the AI industry without Jensen'",
+   "t": "Anthropic prices IPO at $83 per share, above expected range, source tells CNBC",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/11/18/anthropic-ipo-ai-offering-price.html",
+   "time": "2026-11-19 07:25",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Democrats probe whether Lutnick helped Cantor Fitzgerald avoid Nvidia-linked losses",
+   "stk": [],
+   "dir": -1,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/democrats-probe-whether-howardlutnick-helped-cantor-avoid-nvidia-losses-ft-reports-5035313",
+   "time": "2026-11-19 07:24",
+   "cat": "global_markets",
+   "major": 1
+  },
+  {
+   "t": "美股收盘：道指跌超1%，费城半导体指数翻红，超威半导体涨超5%；光通信股涨跌互现，应用光电跌超9%；存储概念股涨跌不一，闪迪跌超2% - 东方财富",
+   "stk": [
+    {
+     "n": "东方财富",
+     "c": "300059.SZ"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE9LOTJsMXdDWVVXc1BfUmFmeElkbFBRSktGa09uOHNGVHhuTXpJcEtWWm9jcFR0ZFEwalZTd3FNRWc1b1FvWlpuVTg4Um1iNVBLcWtia0xuOWNjVDFKdGw1REZ3VQ?oc=5",
+   "time": "2026-11-19 07:24",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Dealbook Summit 2026 live updates: Musk says he feels ‘pretty foolish’ for having spent so much on midterms",
    "stk": [],
    "dir": 0,
    "s": "CNBC - Top News",
    "url": "https://www.cnbc.com/2026/11/18/dealbook-summit-2026-live-updates.html",
-   "time": "2026-11-19 01:21",
+   "time": "2026-11-19 07:19",
    "cat": "global_markets"
   },
   {
-   "t": "Dow slides 400 points, Nasdaq seesaws as Nvidia earnings bounce fizzles: Live updates",
+   "t": "半年最大降幅！海外美债持仓9月锐减，中日英三大“债主”齐减持，中国持债再创08年来新低",
    "stk": [],
    "dir": -1,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/11/17/stock-market-today-live-updates.html",
-   "time": "2026-11-19 01:20",
-   "cat": "global_markets"
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3786234",
+   "time": "2026-11-19 07:14",
+   "cat": "cn_markets",
+   "major": 1
   },
   {
-   "t": "Anthropic IPO: AI lab considers increasing the offering as investor demand surges, sources say",
+   "t": "油价延续下跌：美国原油库存连续第二周增加，产量创历史新高，市场定价转向供需",
    "stk": [],
    "dir": 1,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/11/18/anthropic-ipo-ai-offering-price.html",
-   "time": "2026-11-19 01:17",
-   "cat": "global_markets"
-  },
-  {
-   "t": "I tried TikTok’s viral ‘corporate slop lunch hacks’ — and finally escaped the $20 desk salad",
-   "stk": [],
-   "dir": 0,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/i-tried-tiktoks-viral-corporate-slop-lunch-hacks-and-finally-escaped-the-20-desk-salad-60daf133?mod=mw_rss_topstories",
-   "time": "2026-11-19 01:16",
-   "cat": "global_markets"
-  },
-  {
-   "t": "U.S. Stocks Slip After Nvidia Earnings Fail to Soothe Nerves",
-   "stk": [],
-   "dir": 0,
-   "s": "WSJ - Markets",
-   "url": "https://www.wsj.com/finance/commodities-futures/stock-futures-rally-as-nvidia-earnings-calm-ai-trade-fears-96f51546?mod=rss_markets_main",
-   "time": "2026-11-19 01:16",
-   "cat": "global_markets"
-  },
-  {
-   "t": "‘Nvidia’s turmoil has me spooked’: Has the time come to sell my stocks and buy real estate?",
-   "stk": [],
-   "dir": 0,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/nvidia-spooked-me-should-i-sell-my-stocks-or-ride-out-the-market-turmoil-560583c6?mod=mw_rss_topstories",
-   "time": "2026-11-19 01:15",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Nearly half of home builders are cutting prices and offering lower mortgage rates as they struggle to find buyers",
-   "stk": [],
-   "dir": 0,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/nearly-half-of-home-builders-are-cutting-prices-and-offering-lower-mortgage-rates-as-they-struggle-to-find-buyers-033351e1?mod=mw_rss_topstories",
-   "time": "2026-11-19 01:14",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Vance scraps schedule to address tech outages as Trump admin insists incidents aren't linked",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/11/18/trump-tech-outages-nsa-faa-microsoft.html",
-   "time": "2026-11-19 01:11",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Stock Market Midday, Nov. 18: Nvidia Doubles Revenue, but Wall Street's Sell-Off Continues - The Motley Fool",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxQYXlNbjVCWGVIek92Z0pTbHdzTE9PbE90ZkhSelZzVVdMWmMyaERNeDRRd1ZraFA4ZzBPRE1aM3E2bEh4cGdaSDFvTnRPVDBTSUxvM1NLclRpRHVET0R0YXFlc0Y3elZRUWYyeFNST2FYSGZzT0RBUE9CTno4UWhfVGZSSExNNmhNQXNmZWU0c09fb2otLVdIbmNyNFE1dms0SFZsWUI0cDFibUhDbUxmemhVclJXVEtncmxld0o3Tmw4M3k1c0NNc0l5a1BwWEFoQzVodG1haXA3NHJXRmxMZw?oc=5",
-   "time": "2026-11-19 01:10",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Sonos: 3 Key Takeaways for Long-Term Investors - Yahoo Finance",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxPWGp1TElZSzFnRVpWNEVuOUNIQ2hSWUxYYl9fVEtiRmRPN3Y5ZmNGd2UyMjVtMldmbzY4bG13NC1OWU5BOTlTb2NtNUhwT1U5dXl3ckR5WHVGUHZhY3lFU1kwVHhhN19sMmRmN0l2ZnNFRVlaVXRLOTNQeGV5MXJpWVNhbXhXcC1QVlJvUFk0Y0xTbGpMbWc?oc=5",
-   "time": "2026-11-19 01:09",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Gold, Silver Extend Losses as Copper Slides",
-   "stk": [],
-   "dir": -1,
-   "s": "WSJ - Markets",
-   "url": "https://www.wsj.com/finance/commodities-futures/gold-treads-water-as-fed-dollar-keep-weighing-3f6439e8?mod=rss_markets_main",
-   "time": "2026-11-19 01:09",
-   "cat": "global_markets"
-  },
-  {
-   "t": "What investors should know about Anthropic's unusual IPO - Yahoo Finance",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOTS00RnZlY2c5ZXZQcUxsWGUtNnpwczN6ekNTZndScEdNbkRwRElqbFJ5SEs4WjBGMkhhZjQyMXd1Y1RRdS1rVFN1NVlESEtCOGJ5b1dGdG54eXVZeHZJcS0xaUhtUDhwRHF2dVhjTzhJb3BHWDNSbEhRbXNEcG5kUTFqcFV0a0tTRm56TU1TXzBXMThkV2Y0UHI0empVd21YNl95aQ?oc=5",
-   "time": "2026-11-19 01:08",
-   "cat": "global_markets"
-  },
-  {
-   "t": "英国10月CPI同比升至3.6%创近一年新高，服务通胀低于预期",
-   "stk": [],
-   "dir": 0,
    "s": "华尔街见闻",
-   "url": "https://wallstreetcn.com/articles/3786223",
-   "time": "2026-11-19 01:06",
+   "url": "https://wallstreetcn.com/articles/3786237",
+   "time": "2026-11-19 07:14",
    "cat": "cn_markets"
   },
   {
-   "t": "The Fed's next moves come into focus - Axios",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMibEFVX3lxTE5KbmF6LXJjeHdMZ1c5SHl1d0FreWlmM1NHX1NKbkhFR0EzV3NnSXlZaVgyNXNmbGdBeERPQ2xPaUNRN2lhX3VLOTJfaF9XTmpFS3BQcDlfaU9vMExQeEYxbmJ3U1hlYTZOUkNaUw?oc=5",
-   "time": "2026-11-19 01:03",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Ford starts U.S. battery cell production using Chinese tech amid geopolitical tensions",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/11/18/ford-us-battery-cells-catl-tech.html",
-   "time": "2026-11-19 01:02",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Sweden stocks lower at close of trade; OMX Stockholm 30 down 0.95%",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/sweden-stocks-lower-at-close-of-trade-omx-stockholm-30-down-095-5036708",
-   "time": "2026-11-19 01:00",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Jeffries wins Democratic House speaker race, on track to make history in January",
-   "stk": [],
-   "dir": 1,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/11/18/jeffries-house-speaker-congress.html",
-   "time": "2026-11-19 01:00",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Finland stocks lower at close of trade; OMX Helsinki 25 down 1.06%",
-   "stk": [],
-   "dir": -1,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/finland-stocks-lower-at-close-of-trade-omx-helsinki-25-down-106-5036705",
-   "time": "2026-11-19 01:00",
-   "cat": "global_markets"
-  },
-  {
-   "t": "‘I’ve been a stay-at-home mom’: I’m 50 and have a chronic illness. My husband lost his job. Should he raid his 401(k)?",
-   "stk": [],
-   "dir": 0,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/ive-been-a-stay-at-home-mom-im-50-and-have-a-chronic-illness-my-husband-lost-his-job-should-he-raid-his-401-k-63e59123?mod=mw_rss_topstories",
-   "time": "2026-11-19 01:00",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Why is Comfort Systems USA stock rallying today?",
-   "stk": [],
-   "dir": 1,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/why-is-comfort-systems-usa-stock-rallying-today-93CH-5036704",
-   "time": "2026-11-19 00:57",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Why is Angel Studios stock rallying today?",
-   "stk": [],
-   "dir": 1,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/why-is-angel-studios-stock-rallying-today-93CH-5036703",
-   "time": "2026-11-19 00:56",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Jim Cramer looks at what turned the market lower and where stocks could go next",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/investingclub/2026/11/18/cramer-looks-at-what-turned-the-market-lower-where-stocks-could-go-next.html",
-   "time": "2026-11-19 00:54",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Why is Jumia Technologies stock plunging today?",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/why-is-jumia-technologies-stock-plunging-today-93CH-5036701",
-   "time": "2026-11-19 00:54",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Why is Ecovyst stock sliding today?",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/why-is-ecovyst-stock-sliding-today-93CH-5036700",
-   "time": "2026-11-19 00:54",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Why is Hesai ADR stock rallying today?",
-   "stk": [],
-   "dir": 1,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/why-is-hesai-adr-stock-rallying-today-93CH-5036699",
-   "time": "2026-11-19 00:54",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Why is J & J Snack Foods stock surging today?",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/why-is-j--j-snack-foods-stock-surging-today-93CH-5036698",
-   "time": "2026-11-19 00:53",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Axios BFD: Investors weigh the promises and pitfalls of AI - Yahoo Finance",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNcEE1SjZnbk1JNURFRjVPYTdBQy1PN2daRTlPeGVWMUh4TDNWZDBSeGM4Q013SS1paXNueHZaZnRJQUJMbVhzS25SRjlDSnhWdEVIUzE2MU5hTWk4MVdJbE1vQXpvd0lsYlZfcXJHdmVwU3dfXzZ1cXRQUm1vYmpLUmRsYjIyRUZVLVp4WWNEb3drdEcyZmFKa0lod2k2OW8?oc=5",
-   "time": "2026-11-19 00:53",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Jefferies Names Top Discount Retail Stocks as Sector Gains Traction",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/jefferies-names-top-discount-retail-stocks-as-sector-gains-traction-5036696",
-   "time": "2026-11-19 00:52",
-   "cat": "global_markets"
-  },
-  {
-   "t": "1 Major Lesson Anthropic Investors Can Learn From SpaceX’s IPO - Yahoo Finance",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxOTEtRQjhQVTZrX2RNVjdwbS1jRkx2eUFXVEpGaGtOYXU1T0NNMjBsXzI2WHY1U29vcGhqaENVcVBNa194UDE1RHdGS3hlT1N1bnJvQlM3eF9UcmVPLUVlY3FSeEpTUGZxbk5zRlh3YUR6MlB1MHFqVklCVk9fWVk0SjJ3YkNmcFpOVmdLcktqOWkyNVJwc0ZrbjVTQkxQWHlE?oc=5",
-   "time": "2026-11-19 00:51",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Why is Kornit Digital stock tumbling today?",
-   "stk": [],
-   "dir": 0,
-   "s": "Investing.com - Stock Market News",
-   "url": "https://www.investing.com/news/stock-market-news/why-is-kornit-digital-stock-tumbling-today-93CH-5036690",
-   "time": "2026-11-19 00:50",
-   "cat": "global_markets"
-  },
-  {
-   "t": "170 Years of Market History Just Flashed a 97% Bubble Warning — the Last Time It Was This High Was 2007 - Yahoo Finance",
-   "stk": [],
-   "dir": -1,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPcHJEcHltNjV5ekVOUUJoLVBfWG03aVdlSkJoWG9SLWw4M0R2UklmeVpENUptSVNjYU0tTVBGRGk3RXpzWGthMmQ0WFdDRTBMdURLQU9DNXBHZ19VZndXLWdyd01MVTdPbkhtY2lvM1BGUEhweWljaGlCWjRwV2I1blJaekZReUxEQlNhWlJUNm9jZnQ1R3dIRHdB?oc=5",
-   "time": "2026-11-19 00:42",
-   "cat": "global_markets"
-  },
-  {
-   "t": "US tech lower after Nvidia results",
-   "stk": [],
-   "dir": 0,
-   "s": "FT - Markets",
-   "url": "https://www.ft.com/content/f085b811-fc20-425f-88d8-9f98e178636a?syn-25a6b1a6=1",
-   "time": "2026-11-19 00:41",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Paris Hilton, Alexandria Ocasio-Cortez press House to pass Defiance Act to fight AI deepfake pornography",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/11/18/paris-hilton-aoc-defiance-act-ai-porn-deep-fake-congress.html",
-   "time": "2026-11-19 00:36",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Target shares rise 5% as retailer posts best sales growth in five years, hikes guidance",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/11/18/target-tgt-q3-2026-earnings.html",
-   "time": "2026-11-19 00:34",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Investor Kevin Simpson urges caution on Nvidia, says one quarter doesn’t mean ‘all systems go'",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/11/18/kevin-simpson-urges-caution-on-nvidia-says-one-quarter-doesnt-mean-all-systems-go.html",
-   "time": "2026-11-19 00:33",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Tech outages are causing people to panic-buy. Costco is benefiting, Mizuho says",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/11/18/tech-outage-costco-panic-buying.html",
-   "time": "2026-11-19 00:33",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Tech outages are causing people to panic-buy. Costco is benefiting, Mizuho says",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Finance",
-   "url": "https://www.cnbc.com/2026/11/18/tech-outage-costco-panic-buying.html",
-   "time": "2026-11-19 00:33",
-   "cat": "global_finance"
-  },
-  {
-   "t": "2 Unstoppable Dividend Stocks I'd Buy With $1,000 Before the End of November - Yahoo Finance",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxQdXZIMWpjUzI0VFExMnJJdEdoaFcyMXJva19qYlQzVEJxS3NoY3NiWnZpM0RHVmFLM1BmYjVSZEoxTEMwTE04bWtjWUNkV3RpeGFKQzNRWGFUeDBzWmE0WW9DcGppSVU2ZkoyNzBhdUVQdDZIaFVnbHVhaTVMRm5LUlAyMV9ER3RJX1lLQldnOFYwRFNpblBvOGpxd3FQdw?oc=5",
-   "time": "2026-11-19 00:33",
-   "cat": "global_markets"
-  },
-  {
-   "t": "A $2.8 Billion Fund Dumps These 3 Stocks - Yahoo Finance",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxNNE91TWpyeXplM3JDRFlXZzVhdUtCa2I3Ny1HSUtQZ21GcVk4SkZfa0lscVdSemNiV3p4NlB0dmhBSG5zdC0zeUJTbnE5cXlxdVZfUjBqdGEwVlliY3Q1NlBoVUUxdWZuMVVtMlNySERQYTNIUUtNeDhTT2czTUZERGlLRTFNdmF3aVlRby1zWUg?oc=5",
-   "time": "2026-11-19 00:32",
-   "cat": "global_markets"
-  },
-  {
-   "t": "JPMorgan seeks to revive stalled software debt sale with steep price cuts",
-   "stk": [],
-   "dir": 0,
-   "s": "FT - Markets",
-   "url": "https://www.ft.com/content/16a99ff4-6060-4c81-8c4f-7e43503e4a11?syn-25a6b1a6=1",
-   "time": "2026-11-19 00:30",
-   "cat": "global_markets"
-  },
-  {
-   "t": "CoreWeave’s stock drops as Nvidia talks up a ‘disciplined’ approach to financing",
-   "stk": [],
-   "dir": 0,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/coreweaves-stock-pops-even-as-nvidia-talks-up-a-disciplined-approach-to-financing-e7f00876?mod=mw_rss_topstories",
-   "time": "2026-11-19 00:30",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Copper at Lowest Since April Amid AI Market Turmoil, Chinese Demand Concerns",
-   "stk": [],
-   "dir": 0,
-   "s": "WSJ - Markets",
-   "url": "https://www.wsj.com/finance/commodities-futures/copper-at-lowest-since-april-amid-ai-market-turmoil-chinese-demand-concerns-4325361e?mod=rss_markets_main",
-   "time": "2026-11-19 00:26",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Nike Moves on Investor Day; Lowe's Reports Earnings | Stock Movers - Yahoo Finance",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxPZ3NaUTlzb3hJWEZaSVRKdF9TbWVtT2FYX1FQRDZiaHBaNXBCb2ItSkFHSU9KSDZQZGZoVmhxSEo0b1BJTXNqa3JkM3I4NXJoZ1REemtONUFmNU1KMC1YWkJfRVNwR254NTBxdXZHNTJvQmd6N1JORTZSVkpDMkFyN3lB?oc=5",
-   "time": "2026-11-19 00:23",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Stocks Fall as Nvidia’s Earnings Rally Sputters: Markets Wrap - Bloomberg.com",
-   "stk": [],
-   "dir": 1,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxOUHhZZG5FcFhON3BCMkRyY201M2FVdVRTaUF2a29ScWc3ZTd4TkI1Zm44SXNOcmZoOE9tN29nalFxMllaQV9ZQVp5SFNKbFlmVWtxVmtjdGl4WVVRRnpFeVZaVjVCVGozeFVWYzF6NnM1dERENnQ5SWpLTlNsejBDS21mS2k2aUhQeHZHNU80V2dvbG9h?oc=5",
-   "time": "2026-11-19 00:22",
-   "cat": "global_markets"
-  },
-  {
-   "t": "AI trade under pressure: Why investors should think differently - Yahoo Finance",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxQcGN5OGlvX2VwT0ZJZDBDUHdib1gxYmZrSzI5LTh1UGs0MXJBa21YYlBiVXVYQU5SVG91T3Ffc0dtaldIM0VJSEdHTkRuNnlReXpzUXY3aHNBaVpWYXprdllRT3lxSndIVFlybTA1X2w1WHdVUFZPZ1VLdFp1S0NKY1RxaFVhbTNrOUx1VnlmSm5tLTFZX0ZGSFFwVTgxYXNjLUJpYlRMdFUwWHZCU2c?oc=5",
-   "time": "2026-11-19 00:22",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Why TJX Companies Stock Jumped 10% Today - Yahoo Finance",
+   "t": "谷歌发布Gemini 4 Neon：智能指数升至全球第三，任务成本降17%、耗时缩短四成",
    "stk": [
     {
-     "n": "TJX",
-     "c": "TJX"
-    }
-   ],
-   "dir": 1,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxORklJaVZINjJsSkUwY2lnalBBMjJET215VlEwTm51QTlNYl9LY3B3RHVJTHZaUFd2T2xhenZwc0hpVTVFbkQ0X2x1TW9mT3RIVi0yVnpzRFIyd1psa19FM3ZhaW10bFdyRXFwUk9CaTNJemxlRXV2YTUxOWh5OU9kcGJVbnVrcXFzREJJd2NBcVYydVRfdUZ3TVZuRQ?oc=5",
-   "time": "2026-11-19 00:17",
-   "cat": "global_markets"
-  },
-  {
-   "t": "SpaceX Will Need Substantial Cell Tower Infrastructure To Build Mobile Network, Citi Says — Firm Sees Nearly 94% Upside In SPCX Stock - Yaho",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxNajBRYkoxRFcwYXdtNG5IYnV5ZVZZYTBFWFlOdC1HVUFfSVZfU1h1RVhrOWNmR1ZnUjk2S00wRkkzY1g4Z3A1S2pkMzBwUW8zTC1nVlFOM2kxa2xPNVRfQlg1NUR1RzFaX2Z1dnMwbXBLU2RPQ0RSdVNaNU5pQTB6TnVMdkhQSTlYcGhvclJjaTJLeXAxenNtSVBOcEd0cHdOLTRTbV8wRFRzX1FkZ3c?oc=5",
-   "time": "2026-11-19 00:14",
-   "cat": "global_markets"
-  },
-  {
-   "t": "I watched Trump, Xi and Putin gather in China. Here are my top takeaways",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/11/18/trump-xi-putin-apec-shenzhen-china.html",
-   "time": "2026-11-19 00:14",
-   "cat": "global_markets"
-  },
-  {
-   "t": "I watched Trump, Xi and Putin gather in China. Here are my top takeaways",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Finance",
-   "url": "https://www.cnbc.com/2026/11/18/trump-xi-putin-apec-shenzhen-china.html",
-   "time": "2026-11-19 00:14",
-   "cat": "global_finance"
-  },
-  {
-   "t": "Buy Alert: 5 Stocks Analysts Upgraded on Friday - Yahoo Finance",
-   "stk": [],
-   "dir": 1,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxQeGZxeEhlVkVHM2hZcXJhRElERDlYVUtpWWxKSnFzOTFVNXlfMS1hSWlFT0s3U25qcnZtLThCUi1td09sME9ralJaU0FpcmRHc3hqS3NYRkJXRHN6ZFBoZi04dFRGWExLRURrTHFLWHRwZXpCWEdjUm1ycXVLLUlPN054ZWRDVG5PYmx0Ql9CRnJQZDAzV0xj?oc=5",
-   "time": "2026-11-19 00:12",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Sell Alert: 5 Stocks Analysts Downgraded on Friday - Yahoo Finance",
-   "stk": [],
-   "dir": -1,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxQLXpXT3Y0eGJ2MkxuUTZsclg5eGd1S0pCNmRmTFRwNjVxZm4xZFFLT1JnVHpUX0FuY2ltYmd3Tl9RMWFHQzNZYW83TzVPeGNjM3p3aWZ6cWIteXFYSm10WHc2R0U0eFpPUXBrNXFMQm5yMDhCMTZnZ3BBTkdaQzhKZ2xtOGJwUTk0WFBxZXBlM2VfTzNEZjhyZQ?oc=5",
-   "time": "2026-11-19 00:11",
-   "cat": "global_markets"
-  },
-  {
-   "t": "The Deal Behind Needham’s Call on Lumentum (LITE) - Yahoo Finance",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQS1dkc2JUcXNUakRMVVgzRFBzOUowWl9leFIxV1lPekl1MEN0bmJ1NklpcTc0cmN3NVlKalo0RTE5VWE5b3RtZFZIRGh0U1NhSkJOUHdtZ0JhNmJQdHVvSDhEaWFCYVhaemFJdjJaSm11QnNwVzl0VDFWX1NsZ1U3alpBYXp0QXV0d1FDNHRtcUxnZjdCVWhEbGlIdjZLeGc?oc=5",
-   "time": "2026-11-19 00:11",
-   "cat": "global_markets"
-  },
-  {
-   "t": "GE HealthCare (GEHC) Stock May Be Below Fair Value Following Raised Guidance - Yahoo Finance",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxPTHhSUWdUMFRteXBFTExlOG9oUTVwbkNySTNlNFVSQzh3VDg1YzM2bkRya21Ya181UXVDeXdjZkFGZWlDd2JaS2lVWjlTU08zSHJ2TlRaODh5QlB4S19kQ0Qwb2FuSmhLTkFwa1JJOGR4OERIS0ZLVTVqcFl2TjZucm1TWmY1TTh6UDd5b1ZiNl9fTW8?oc=5",
-   "time": "2026-11-19 00:11",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Caseys General Stores (CASY) Stock Looks Reasonably Priced On Cash Flow - Yahoo Finance",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxOc181RlI4NDBfa2V3VmpmWEV5QUE5RjJEMlA1TDM3bkdEaDlVNWZjQ0JjUFd3VjRVa09MT2h2ZzV1T0hiRjhaMGpCV3NTcW9GaDg5UDNVT2NSMGFobkh5OEE0UUdVVkZ4UXlWZHR1WXFXRm1CZzJsTlN1R3REYTVTclJ4aVRnNlBDYjVBTF9PWnNIODZ6aDgycHBTaGV3Zw?oc=5",
-   "time": "2026-11-19 00:10",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Waymo pulls robotaxis off highways after California ban, with tech seen as 'far from perfect' - Yahoo Finance",
-   "stk": [],
-   "dir": 0,
-   "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMi6gFBVV95cUxNSFlMRHFFUzV3d0pqcElmWUE2bE9BYUh6b2xQTVItcENCdmdoVGI0RlROUS1LOFRlb1JJWVRrT3VYVkJ5WVZVWXFqTTB3WkFTZ29DX2Z0STNVQjNLX2x5S0l5djNNQTQzaGhvbE1oRmJuT3hNN21ERDQ4bllMZk5SemRhcHphX1ZFZFJYOTBUd2J6Q1JJLWpyR2NSTThFaW9jazBKRDVpQkN3Mk5aZjZvS2hwMnQyMXpSU3pzbXFFRmV4WEIxY09WdUxlaVhaT2wwTU5XU3NmaUZjdTctLVFldzRYdHpkTS00Ync?oc=5",
-   "time": "2026-11-19 00:10",
-   "cat": "global_markets"
-  },
-  {
-   "t": "Jensen Huang has agreed to appear before Senate banking committee, Chairman Scott says",
-   "stk": [],
-   "dir": 0,
-   "s": "CNBC - Top News",
-   "url": "https://www.cnbc.com/2026/11/18/jensen-huang-nvidia-tim-scott-congress.html",
-   "time": "2026-11-19 00:08",
-   "cat": "global_markets"
-  },
-  {
-   "t": "高盛、摩根士丹利与AI行情深度绑定，华尔街投行的好日子还能持续多久？",
-   "stk": [
-    {
-     "n": "摩根士丹利",
-     "c": "MS"
+     "n": "谷歌",
+     "c": "GOOG"
     }
    ],
    "dir": 0,
    "s": "华尔街见闻",
-   "url": "https://wallstreetcn.com/articles/3786215",
-   "time": "2026-11-19 00:04",
+   "url": "https://wallstreetcn.com/articles/3786238",
+   "time": "2026-11-19 07:14",
    "cat": "cn_markets"
   },
   {
-   "t": "欧央行行长：AI相关股票估值仍“非常激进”，市场终将面临修正，关键在于企业盈利",
+   "t": "Exclusive-UniCredit and Germany reach broad agreement on Commerzbank takeover",
    "stk": [],
    "dir": 0,
-   "s": "华尔街见闻",
-   "url": "https://wallstreetcn.com/articles/3786221",
-   "time": "2026-11-19 00:04",
-   "cat": "cn_markets"
-  },
-  {
-   "t": "Worried investors are paying a premium for these stocks — some with as much as 49% upside, analysts say",
-   "stk": [],
-   "dir": 0,
-   "s": "MarketWatch - Top Stories",
-   "url": "https://www.marketwatch.com/story/worried-investors-are-paying-up-for-these-stocks-some-with-up-to-49-upside-analysts-say-ea8f2c6f?mod=mw_rss_topstories",
-   "time": "2026-11-19 00:04",
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/exclusiveunicredit-and-germany-reach-broad-agreement-on-commerzbank-takeover-5037328",
+   "time": "2026-11-19 07:12",
    "cat": "global_markets"
   },
   {
-   "t": "Microsoft Corporation (MSFT) Surged on Strong Azure Growth and AI-related Demand - Yahoo Finance",
+   "t": "US lawmakers seek Microsoft briefing on reported AI deal talks with ByteDance",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/us-house-panel-seeks-microsoft-briefing-on-reported-ai-deal-talks-with-chinas-bytedance-5036932",
+   "time": "2026-11-19 07:12",
+   "cat": "global_markets"
+  },
+  {
+   "t": "What the ‘death cross’ in small-cap stocks means for the rest of the market",
+   "stk": [],
+   "dir": 0,
+   "s": "MarketWatch - Top Stories",
+   "url": "https://www.marketwatch.com/story/what-the-death-cross-in-small-cap-stocks-means-for-the-rest-of-the-stock-market-edd8e86e?mod=mw_rss_topstories",
+   "time": "2026-11-19 07:12",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Stock futures are little changed as traders gear up for Anthropic’s highly anticipated debut: Live updates",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/11/18/stock-market-today-live-updates.html",
+   "time": "2026-11-19 07:11",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Weil Gotshal Bankruptcy Team Heading to Skadden",
+   "stk": [],
+   "dir": -1,
+   "s": "WSJ - Markets",
+   "url": "https://www.wsj.com/business/weil-gotshals-bankruptcy-team-heading-to-skadden-feb22b3b?mod=rss_markets_main",
+   "time": "2026-11-19 07:11",
+   "cat": "global_markets",
+   "major": 1
+  },
+  {
+   "t": "华尔街见闻早餐FM-Radio | 2026年11月19日",
+   "stk": [],
+   "dir": 0,
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3786236",
+   "time": "2026-11-19 07:08",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Anthropic IPO to mint thousands of millionaires",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/anthropic-ipo-to-mint-thousands-ofmillionaires-5036941",
+   "time": "2026-11-19 07:06",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Stocks making the biggest moves Wednesday: Palo Alto Networks, Everpure, CrowdStrike & more",
+   "stk": [
+    {
+     "n": "CrowdStrike",
+     "c": "CRWD"
+    },
+    {
+     "n": "Palo Alto",
+     "c": "PANW"
+    }
+   ],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/11/18/stocks-moving-the-most-today-live-updates.html",
+   "time": "2026-11-19 07:05",
+   "cat": "global_markets"
+  },
+  {
+   "t": "How copper’s plunge could hurt the AI buildout",
+   "stk": [],
+   "dir": -1,
+   "s": "MarketWatch - Top Stories",
+   "url": "https://www.marketwatch.com/story/coppers-plunge-could-make-the-ai-data-center-buildout-more-painful-7057f41c?mod=mw_rss_topstories",
+   "time": "2026-11-19 07:02",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Developer lodges plans for Hong Kong towers a second time after 10% reduction in flats",
+   "stk": [],
+   "dir": 0,
+   "s": "SCMP - Business",
+   "url": "https://www.scmp.com/business/article/3374847/developer-lodges-plans-hong-kong-towers-second-time-after-10-reduction-flats",
+   "time": "2026-11-19 07:00",
+   "cat": "hk_markets"
+  },
+  {
+   "t": "Stock Market Today, Nov. 18: S&P 500 Breaks Key Support as Fed Minutes Signal More Rate Hikes Ahead - Yahoo Finance",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQQ0NhQ0JLODM0S1FxM2RYX3RiY3JrelIwRDE5NEhnLVJPVWxUUUp5TWI5aF8wdGo0bjJqS3lUdTZNYVRKNTJJbFJQSVJsNzVqVzhHd2paTlFCOXlHeXc5Ui1aU1FiaWR4YWt2Q2RpWElveGFqTGVBMDA3bEJzeXlJb1U2ajdtWFNTYWdpWkFzZktfNzY5?oc=5",
+   "time": "2026-11-19 07:00",
+   "cat": "global_markets"
+  },
+  {
+   "t": "英伟达拖累美股，标普五连跌，纳指逆势微涨，网络安全股票大涨，黄金重挫创十四个月新低",
+   "stk": [
+    {
+     "n": "英伟达",
+     "c": "NVDA"
+    }
+   ],
+   "dir": 0,
+   "s": "华尔街见闻",
+   "url": "https://wallstreetcn.com/articles/3786169",
+   "time": "2026-11-19 06:59",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "WSJ Dollar Index Rises 0.22% to 98.64",
+   "stk": [],
+   "dir": 0,
+   "s": "WSJ - Markets",
+   "url": "https://www.wsj.com/finance/currencies/asian-currencies-consolidate-but-may-be-weighed-by-risk-off-sentiment-d2acd03c?mod=rss_markets_main",
+   "time": "2026-11-19 06:59",
+   "cat": "global_markets"
+  },
+  {
+   "t": "How the Anthropic IPO stacks up against SpaceX",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/how-theanthropic-ipo-stacks-up-against-spacex-5036604",
+   "time": "2026-11-19 06:54",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Pennsylvania confirms eighth measles-related death amid US outbreak",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/pennsylvania-confirms-eighth-measlesrelated-death-amid-outbreak-5036902",
+   "time": "2026-11-19 06:54",
+   "cat": "global_markets"
+  },
+  {
+   "t": "First US Bancshares stock rises on buyback extension",
+   "stk": [],
+   "dir": 1,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/first-us-bancshares-stock-rises-on-buyback-extension-5037309",
+   "time": "2026-11-19 06:53",
+   "cat": "global_markets"
+  },
+  {
+   "t": "The stock market is being rocked by the biggest shake-up in a generation as tech falls behind",
+   "stk": [],
+   "dir": 0,
+   "s": "MarketWatch - Top Stories",
+   "url": "https://www.marketwatch.com/story/the-stock-market-is-being-rocked-by-the-biggest-shake-up-in-a-generation-as-tech-falls-behind-66c1f281?mod=mw_rss_topstories",
+   "time": "2026-11-19 06:53",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Palo Alto Networks’ stock gets a fresh AI-fueled boost from earnings",
+   "stk": [
+    {
+     "n": "Palo Alto",
+     "c": "PANW"
+    }
+   ],
+   "dir": 0,
+   "s": "MarketWatch - Top Stories",
+   "url": "https://www.marketwatch.com/story/palo-alto-networks-stock-soars-as-earnings-show-ai-has-upped-the-stakes-for-cybersecurity-308e34b8?mod=mw_rss_topstories",
+   "time": "2026-11-19 06:53",
+   "cat": "global_markets"
+  },
+  {
+   "t": "The stock market is being rocked by the biggest shake-up in a generation as tech falls behind - MarketWatch",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxQQ0F6RGVGUVBNSG54a2JlamtJWXpLeDY1Q2szNFhEMnppRHM2ekF6eTdKYkJxbkZiSlJFOTF5Qmtfamhoa0ZFWE1PNlQweUU5d0RrYlRCeGQxbGJMZFRMU3lHVXFfeUFRVlB6ZW4wYVBJN3NYTE5Vd1l4TWNvbURfX19nZGpXNGRSZU40STV0a1BJQUJBWVoyR20tMzRZVldQR21RX3NibTlpUFk1Q1F3d2Y3Y25hQlFZQXM4dWNPVTJmYTFBU1RDbGJ0U21RYWJyOXc?oc=5",
+   "time": "2026-11-19 06:53",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Markel Group stock jumps on $2.5B buyback boost",
+   "stk": [],
+   "dir": 1,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/markel-group-stock-jumps-on-25b-buyback-boost-5037308",
+   "time": "2026-11-19 06:51",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Crypto Market Today, Nov. 18: Bitcoin's 12% Weekly Plunge Has Triggered a Rare Signal With a Surprising History - Yahoo Finance",
+   "stk": [],
+   "dir": -1,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxOR2FhRzFkREVzd1NQVDdjQ3NmZldlQWJRY1IwQk95VXVWUy0yd2QtaE5vRjZpQjVTNXU2NFV1ckN6NlRBcEY3VDdHaFRQS3F6Rm5PamMwbzI0VXJMZmRmUnpyUWhHZkdmUjVOREhsOWk5VnByVmQyRXhOZUwtMkdUZnZtZ1k3QU5jM0NNM2ZWZDExVTR5b3c?oc=5",
+   "time": "2026-11-19 06:45",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Anthropic prices blockbuster IPO at $83 a share, source says - Reuters",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxPR3NST2trRTZCZkdmblYtRm5pcldXRUJTVjZkZUJ6bHJYbjFUSUJ6ZGVJNW1SMVg0ZWthVnlfVVRhZnlld192c0pBaUZSUzRZS0xGdFlYRnViSU9RYVhHWXRpVDlULS0tREUzcDhfa0NGSVIzVkFTOXBzeW5JelpBVy1RV2FFWEpwdnFhZnlqUVN0bUxWSXJaTVFzTEQxTDlFVVpkRERxQmplM0V2X3c?oc=5",
+   "time": "2026-11-19 06:44",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Moody’s cuts Nvidia credit outlook to stable after CEO Jensen Huang exits",
+   "stk": [],
+   "dir": 0,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/moodys-cuts-nvidia-credit-outlook-to-stable-after-ceo-jensen-huang-exits-5037292",
+   "time": "2026-11-19 06:44",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Anthropic sets share price at $83 for stock market debut, above expected range - The Guardian",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxPeFBzdE04UURGVW9hMHJRNm1JLTI4NS01eGczYnhHRy1Fam5Na2RaajdaS1lwcnRhVHNfTWRZelRWSHNSVFJYM05CbmV5ZTViWG9laHFaNDFZQTlQbmJSNFFvY0M5SWFBQklMWVN1Mi14LWR6QVV2LXE5UEtJYkFicHU3cVUzVmlOSU1TMTF5MFhSRkk?oc=5",
+   "time": "2026-11-19 06:44",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Invesco QQQ Is 14% Below Its October Record. Here's Where I Think It Will Be in 2030. - Yahoo Finance",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxORWxpOThLS3F5ai0wN2lZallkNUtYTmR1ZHJVUFRJZjJXTWdfZmpqYTBleENIMHRRY053TnhPaWV2RzRMOXZkVTRWcUIteWhoRjBtX2FnZTl5bWVNTHRSbW4waTdoVk1uU204VnUwV1FqeS1CWEZxamx0ZUV5RWJHNWJpdTBTM3dZRmpkazNPNnZYQWphUUdkUQ?oc=5",
+   "time": "2026-11-19 06:43",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Surge in software patches likely behind recent tech outages, experts say",
+   "stk": [],
+   "dir": 1,
+   "s": "Investing.com - Stock Market News",
+   "url": "https://www.investing.com/news/stock-market-news/patching-in-the-ai-age-may-underlie-some-of-the-major-tech-outages-experts-say-5036726",
+   "time": "2026-11-19 06:42",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Opinion | Congrats on Your Anthropic Shares",
+   "stk": [],
+   "dir": 0,
+   "s": "WSJ - Markets",
+   "url": "https://www.wsj.com/opinion/anthropic-ipo-shares-investment-pension-funds-9f4d0c52?mod=rss_markets_main",
+   "time": "2026-11-19 06:42",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Fed officials worry an AI bust could shake the financial system - The Washington Post",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNR0t0NWstc3N2V0F2RE9fWlJDYVNTY3lINGFtUHhsQUE1cDU2SkdYc3E0M3hvNlpuMXlRQmxjdFdwVzMtbGQ4bXg3QjdzWU9sYmVNangtcmFxV1NvQWQ2TG5xRV9WVl9XTGpubUd2dHh3MUNsRlBDXzduNXVTOENfa0tTdmtrOWpWT2g0ZV9mYVV5ckpzNXJxaFBHRkxvQ2U5YjhiZVBqZHRBeVFQM2JnMQ?oc=5",
+   "time": "2026-11-19 06:41",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Stock Market Today, Nov. 18: Recursion Pharmaceuticals Rises 4% on FDA Alignment for REC-4881 Phase 3 Design - Yahoo Finance",
+   "stk": [
+    {
+     "n": "Align",
+     "c": "ALGN"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxOTjZWYVVINjUtbjhPN0VMT2R5ZVBpdTdhNGxwWWtSV3FZNDJuVmd3SEFuY09nendBXy1GMnhOZFM1LW5vaUZ1MGxpekE3U0Vrei0yOXhlWGlacTUzem9HdnA4NjZiN2Y5eUJGeHF1SVZYZE1QdlRkUUZRWFdtMlFZTGRGQ29RMlZsbV8wRDBublNydVVE?oc=5",
+   "time": "2026-11-19 06:40",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Dan Ives’ Top 10 AI Revolution Stock Picks: Inside The IVES ETF - Yahoo Finance",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMiigFBVV95cUxPdV91RzZkdndVQ0U3MTJiRHR3RE9KNFRkQjlacmNua1BWem1jbmhYV1UwUnhiRHhWbklpWEhDYklScDhHMzVzNTdrVGZwZTViUlNvcXp6aVdGdzdMOUx3eF9wRjM2eEZGM0p3S0hreHNEZzAtVXhJNndkeTR4R0tyVDNCSjdPR2kzM2c?oc=5",
+   "time": "2026-11-19 06:39",
+   "cat": "global_markets"
+  },
+  {
+   "t": "美股收盘| 纳指微涨，标普5连跌；英伟达创16个月新低 - 富途牛牛",
+   "stk": [
+    {
+     "n": "英伟达",
+     "c": "NVDA"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPRVBIWGdNMEMyOEM4dXVjZUxtTjNhQ29VTnNGYXdsVG1aTUtWRUtmSWdVYVl6djVCVk5Ra0d4UW9IOUlEbXJ4TVR0NE5TVjRQaHlDeXA2Tk9RaGFROFJXOWN0elJVSk1yOUl4bjBGQnFmVklldXdGc1lHNml5TFN3d3lrOC1GSkJ3TGlJeVVvQjVnanBpOUd3?oc=5",
+   "time": "2026-11-19 06:39",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "RIOT, FLS Stocks Gain As Activist Investor Starboard Sees Undervalued Power And Infrastructure Plays - Yahoo Finance",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNV3I1OWZKRHc5SXhzNkVfcEV4RVBybW5jYzAxWS1NanJQSi1FOU1Qa3drejBYWHlEdC1IT3Q0eVdkd2VrSmE4MF9HZEJhY3FBbm1HNGQxN2VJdDJpLUpFY3Vtalh5SGhFaDI0WWE4ZThJcG5ybGFkSzdXd1dFbnpfUzI2OXNhNVlTZThTRjBVT28wX3lqNEZsaW5n?oc=5",
+   "time": "2026-11-19 06:38",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Retail investor enthusiasm for Anthropic IPO to rival SpaceX debut",
+   "stk": [],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/11/18/anthropic-ipo-retail-investors.html",
+   "time": "2026-11-19 06:37",
+   "cat": "global_markets"
+  },
+  {
+   "t": "11月18日港股红利低波ETF景顺基金份额减少100万份，重仓股中远海控、海丰国际、粤海投资 - 证券之星",
+   "stk": [
+    {
+     "n": "中远海控",
+     "c": "601919.SS"
+    },
+    {
+     "n": "海丰国际",
+     "c": "01308.HK"
+    },
+    {
+     "n": "粤海投资",
+     "c": "00270.HK"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE9kYmxJdG4tRndkejFuN0V6VU9CSmJ4aFJacmtETTA2UzhJREVQYy1zN1EzeUJqZ3RpT0lGb2Y0dFVNMTh2LXM4Mk5FTFE5NlE4VEpna2FpRWlnaHBHanN6Xy13?oc=5",
+   "time": "2026-11-19 06:36",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Anthropic Sells More Shares Than Planned at a Higher Price Than Expected",
+   "stk": [],
+   "dir": 0,
+   "s": "WSJ - Markets",
+   "url": "https://www.wsj.com/finance/stocks/anthropic-sells-more-shares-than-planned-at-a-higher-price-than-expected-4b511002?mod=rss_markets_main",
+   "time": "2026-11-19 06:35",
+   "cat": "global_markets"
+  },
+  {
+   "t": "11月18日港股通创新药ETF南方基金份额减少200万份，重仓股康方生物、百济神州、石药集团 - 证券之星",
+   "stk": [
+    {
+     "n": "百济神州",
+     "c": "688235.SS"
+    },
+    {
+     "n": "石药集团",
+     "c": "01093.HK"
+    },
+    {
+     "n": "康方生物",
+     "c": "02162.HK"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE04WFVHSGljWFZFaWNaTjhab0otOFB2TmJfVmwtakFJcTJ1R0J4RGl4TzFFcXVQNGg1Wm56Q0lFSEpHdFNJc0N2TlJNTjJqV2Q5ZDUwU29HM3J0LWd4a2lhczlB?oc=5",
+   "time": "2026-11-19 06:34",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "11月18日港股通消费ETF华安基金份额减少100万份，重仓股泡泡玛特、安踏体育、农夫山泉_基金提醒_雷达 - 证券之星",
+   "stk": [
+    {
+     "n": "安踏体育",
+     "c": "02020.HK"
+    },
+    {
+     "n": "农夫山泉",
+     "c": "09633.HK"
+    },
+    {
+     "n": "泡泡玛特",
+     "c": "09992.HK"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTFBabDZLSXJHMWxNcl9vNlJGV1FQS3RkSjgwdUd2UHlaa1doYmVNNmFXZzJKUUJUOE9Na2dqLU9LMW8tVlUzbTVjbVplcG1PRDhWTkxHOVBhNms4cXpWTVd4QVdR?oc=5",
+   "time": "2026-11-19 06:34",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "11月18日港股通科技ETF万家基金份额减少100万份，重仓股腾讯控股、阿里巴巴-W、小米集团-W - 证券之星",
+   "stk": [
+    {
+     "n": "腾讯",
+     "c": "0700.HK"
+    },
+    {
+     "n": "腾讯控股",
+     "c": "0700.HK"
+    },
+    {
+     "n": "阿里",
+     "c": "9988.HK"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTFBjN24wZ0hhcURVbUZwNUtUczU1RmhScmNGbkwwQmFNNUMyRE1iWXVrTy1VRll1My15LV9WUVVFUzM3dUVHZjM4TXN3R2R4STBnckVLamZkd1VtSHNKN19iS1RR?oc=5",
+   "time": "2026-11-19 06:33",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Nvidia shares fall despite bumper earnings - Yahoo Finance",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQTVdZQ0pDR0FrUi1MTi1fWnhhd1QwOTc0bC1fSDkycGFCMnlOaDdrQTJqc3RTSm9jNUk1ZEJjcFpfcnowOHVwdmVXTkc1djVYWVQ3MEVfQWtnX3g3NUhwaWJmbTg5cHhhYmtjRjBBMGFWVUJVcjRfQmVGaXNHblplSThOSURlcWJLVy1zdF9rNG5kNWg4VFRwcXdaUUwwS28?oc=5",
+   "time": "2026-11-19 06:33",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Nvidia’s booming demand is ‘hard to ignore,’ but these four questions loom over the stock",
+   "stk": [],
+   "dir": 0,
+   "s": "MarketWatch - Top Stories",
+   "url": "https://www.marketwatch.com/story/what-wall-street-analysts-are-now-saying-after-nvidias-beat-and-raise-quarter-9311c85d?mod=mw_rss_topstories",
+   "time": "2026-11-19 06:31",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Zoom Communications Inc. stock rises Wednesday, outperforms market - MarketWatch",
+   "stk": [
+    {
+     "n": "Zoom",
+     "c": "ZM"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxOTTc4djJ5eUduekVRQ0hLcEtqUmN2WU1qbURPREkyLWFXMFZqX2IwTHZCS1VEdjVzaTBLQ2w1d3NEcng2cUM2LTRCN2I0Z2czazhJc3UxOG4wNUU2d2NFbDB4M1VXZ1ZJbDJ3STVrVzRZTVVvV3BDc2tpY3V2aEdiVmZPR09YbVZ4Mk9EZ3ZISHpzX1Vsck1aZ1VNVTJSMml6TmhOc05HbFZvUnBBSUpnd3U0d2RSMEQxMmU1SlI2WXNwa0JrbXNzcHlNSDBsREZzRDRqOEJTZDktZw?oc=5",
+   "time": "2026-11-19 06:31",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Can Accenture Stock Jump 30%? - Yahoo Finance",
    "stk": [],
    "dir": 1,
    "s": "Google News - EN Markets",
-   "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxNVlFabXJqVFdSZkVtbkRia3FsYXRfd1ZvbHBrMkxsSHYxNHpGSWNEQzBYQ3o2cmNJUEE0VVVHWEthekJ6cV9ZUXJVLV9ENXY5Z2hCZkdHM1hEYUtCZEJSd0VpcFctX1lmcU9nSkl2c2dSdTUtZXNRVUJKbVFPVVVrdVF3R1ZlLWRkV1oxVk1TdVVUdlNpT3ExUDB1eXNoUTMtUERtZ0FqWFA?oc=5",
-   "time": "2026-11-19 00:04",
+   "url": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQdkdiWGZXQmpSUURiaU1UanNVekpVN2RFV0R4aXlMTXVlaGJtcEFSRTBVSHFrMTY2dkk3cU9GbGJFWm1aNGtLaC1NcWlwR0d0dFhYaVltSHBXY01mc2htUVZFNGItZFc4MGZsMlRKOXlsUERXNTdnUGtMaDEtSUhMOW4wNjFjVXhtV1lEZmxCLVQ3dw?oc=5",
+   "time": "2026-11-19 06:27",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Palo Alto inks $4.5 billion deal for AI startup Applied Compute, shares pop 7% on earnings",
+   "stk": [
+    {
+     "n": "Palo Alto",
+     "c": "PANW"
+    }
+   ],
+   "dir": 0,
+   "s": "CNBC - Top News",
+   "url": "https://www.cnbc.com/2026/11/18/palo-alto-networks-panw-q1-2027-earnings-.html",
+   "time": "2026-11-19 06:25",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Stock Market Today, Nov. 18: Recursion Pharmaceuticals Rises 4% on FDA Alignment for REC-4881 Phase 3 Design - The Motley Fool",
+   "stk": [
+    {
+     "n": "Align",
+     "c": "ALGN"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMi-AFBVV95cUxOWjNiZWsyWDd2dWJkQk1sMmlxMWpUcjUwRVEzRk16d0xuNmtDV1hCdWxOUE1HSEQ4NHBmcHk2MlZnV015WWItNEUtQk1UbDBnaXZHWmpkdS1VWEE4enZSZ0I0dXl3UXp2cDVieHJlMmxTamlQY25zR1lpSTZPaW9DbzhvMmI5dmsxM0o4dUJTOXB4di1lRGNfaURzeVo4eVgyQWhvaTNDbFJBQlRSYmZjR0pVNkJrRjhTdzhQelFWcG9KYi1HUkwxc2ZWcE1ZclhxYzh3S0Z3WDlzdElCb0hoNmtqZVo2akVHZFkzSTh0RGFaVmg4QzJGSg?oc=5",
+   "time": "2026-11-19 06:25",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Stock Market Today, Nov. 18: Opendoor Extends Rally for Second Straight Session as Investors Watch Housing - The Motley Fool",
+   "stk": [],
+   "dir": 1,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMi9wFBVV95cUxNOUdoUEwxUjNVZ01udnFRRVI4aFZXbzNDTXlsNnJBaFpXeFE0dlJoYjdhakVkQTd5S3hEWENQY01DMXdFSzdmZ1ZBLWoxdDBJSVlzeUZWQWhiLTdNOXlZc3FwangwbUVMdjhlcHJJazZsa2VtMTllcjE4bDVhdzhuVEh5UUtnNkFlZGROS1kyWHpZbmVGQnJaODVadlFEa2lJN05pT0JxVzN0S1VRLWQ4N2c3UW1IM2tCWXliT25mNkNOWnhleDItNHFTMkgzUWE2U1k5c0NqMFd3ZlR4YlMwLTBJN3NPU0p4Um56b0dSV1VWdlQwcmtZ?oc=5",
+   "time": "2026-11-19 06:24",
+   "cat": "global_markets"
+  },
+  {
+   "t": "美股收盘：道指跌超1%，英伟达跌2.89%；费城半导体指数翻红，超威半导体涨超5%；存储概念股涨跌不一，闪迪跌超2%；黄金跳水跌超3% - 东方财富",
+   "stk": [
+    {
+     "n": "东方财富",
+     "c": "300059.SZ"
+    },
+    {
+     "n": "英伟达",
+     "c": "NVDA"
+    }
+   ],
+   "dir": -1,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE9PbG1CVUhjQkFMUDRIcFA2Y053U0VuaEYzaUs4TlZHNHBsVUdOcWp0SXB4WlM1dkkyVmFEYWY2TF9rOHIwSTRacUdGTjFJLUVMbjBMVVV3T0oyNC15eDhUcFpXUzlwZw?oc=5",
+   "time": "2026-11-19 06:24",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "美股收盘：英伟达再挫3%创16月新低 标普连跌五天 - 富途牛牛",
+   "stk": [
+    {
+     "n": "英伟达",
+     "c": "NVDA"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQcGNFanBLUWg3WWNaZHZDVEZ2T3RWeGdSQXVCcE5sV2VkX24wTGhteUxneVVyWGI5VHU4Nl9YUk9Wd1pMX0JjazZmQUJPQ1poQ3VKQlVfYWJTMFdPSFJNWU1BM0h3WjJXMndmWW1JLXUydjNPVlpJdW5QdW5nMV96VDJ0U0hwV3BsSDRsb29yYWgzbDdydkE?oc=5",
+   "time": "2026-11-19 06:19",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "【早报】深夜巨震，美股芯片股剧烈分化；美联储纪要放鹰，几乎所有官员预计还需加息；字节、微软据悉洽谈扩容云合同 - 财联社",
+   "stk": [
+    {
+     "n": "微软",
+     "c": "MSFT"
+    }
+   ],
+   "dir": 0,
+   "s": "Google News - 中文市场聚合",
+   "url": "https://news.google.com/rss/articles/CBMiSEFVX3lxTE1JbThpYWlDUEJkU2tKNVNLQW5HMGNHdXJsNkQtdm5INGhMbFZaOXBXS0NxeGJIcExNc3M2MndpMjFiMUY4dWhKOQ?oc=5",
+   "time": "2026-11-19 06:19",
+   "cat": "cn_markets"
+  },
+  {
+   "t": "Gelsenwasser (DB:WWG) Stock Looks Reasonable As Shares Fell 57% In Five Years - Yahoo Finance",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxPeFJCR3hqMzdDa3B3SUszTFU2SGpWc2FCWk11czZVNUY0N2Y0aW1GbG5Uc1hIbmRhSldEYkx3eEg5RHVoVzhoTG85TnZWcEF1dG9FZlRyeldpWWdwcktVR2hLcW1rMVc5akczcjZLZGh3VTI0WVhIeGstdmpUTnZDSER0MGVJU3hndkxrSFNUUDBvaU54M09KWE5iQUI?oc=5",
+   "time": "2026-11-19 06:18",
+   "cat": "global_markets"
+  },
+  {
+   "t": "El Al Israel Airlines (TASE:ELAL) Stock May Be 15% Undervalued Following Mixed Q3 Results - Yahoo Finance",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQVmRNc2h5c0IzZl9ueDl6YXZxVFpQTW5uM2lKTURUTVFoOG5ndXF0VW9vNW5acVZKTVcxZUxibHgwYjNwMzJFUDJOdTZqeHFOZjEzdERXZTQ4UWIxbm1XdW95MWhJTlZpSkxwQXpZZXVuM0VDOUhyWGNRLUVMYkdRYmVabUVHdm8xRlVCczNjX2dSc21ENUE?oc=5",
+   "time": "2026-11-19 06:18",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Pony AI Inc. American Depositary Shares Q3 2026 Earnings Call Summary - Yahoo Finance",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxPeDRsN1ktejVZaTV4aFA3R050c1hSQ1hBMlQzOS1yRDdqeFB0bXhYYXd5LWFIaUlKa09qdHVqdmNidnJETW1IRFE2SWp5UUprVzFHdmlZekdJb3JSMXJjS2YxdVlmc25tY2dNMk1VNGk3RWgxM3NoTkgzVkJQclF2bG8zVV8yU2E1Sy1iRGwxX2U1MkNabVc1WmxGa3g?oc=5",
+   "time": "2026-11-19 06:15",
+   "cat": "global_markets"
+  },
+  {
+   "t": "Alcoa (AA) Stock Looks Reasonable Despite A 46% Three Year Gain - Yahoo Finance",
+   "stk": [],
+   "dir": 0,
+   "s": "Google News - EN Markets",
+   "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxQaGk5OGdVMjJ2MDlOV0NBeVdpVS1PWmZmdjhZTDN2Z1ZHa3ZYdmpaX0YyQUlDNWNwcGIwUzJKQjVndG9CaEhKM3U5bGtkb0ppMVQ5N3hTczNRZHFJU29nWTM4NGFaQ05PVVVwdS1NRFdoc3dVdGtTbjZLWTdCUUhmaEN4QXllTVB6bEdqam9wSmFSV29qa1pmaU8xS2Q?oc=5",
+   "time": "2026-11-19 06:14",
+   "cat": "global_markets"
+  },
+  {
+   "t": "U.S. Stocks Mixed, Nvidia Down Again Ahead of Anthropic IPO",
+   "stk": [],
+   "dir": 0,
+   "s": "WSJ - Markets",
+   "url": "https://www.wsj.com/finance/stocks/u-s-stocks-mixed-nvidia-falls-ahead-of-anthropic-ipo-c7de4692?mod=rss_markets_main",
+   "time": "2026-11-19 06:14",
    "cat": "global_markets"
   }
  ]
