@@ -1,16 +1,15 @@
 {
   "actions": [
-    "refresh_dispatched:full"
+    "refresh_waiting:refresh_running",
+    "rerun:bottom_turn.yml:44360893254"
   ],
-  "checked_at": "2026-11-18T10:09:36.594418+00:00",
+  "checked_at": "2026-11-18T18:51:30.188179+00:00",
   "checks_failed": [],
   "critical": [
     "active_git_blob_over_85MiB:runtime-bundle.json",
     "persistent:market_rows_dropped:港股"
   ],
-  "dispatches": [
-    "2026-11-18T10:09:36.594418+00:00"
-  ],
+  "dispatches": [],
   "escalated": [
     "active_git_blob_over_85MiB:runtime-bundle.json",
     "persistent:market_rows_dropped:港股",
@@ -21,19 +20,24 @@
     "active_git_blob_over_85MiB:runtime-bundle.json": "2026-11-18T01:37:23.803560+00:00",
     "market_rows_dropped:港股": "2026-11-17T09:13:02.990569+00:00",
     "refresh_step_failed:discovery": "2026-11-16T06:27:39.156550+00:00",
-    "refresh_step_failed:targeted_quotes": "2026-11-18T01:37:23.803560+00:00"
+    "refresh_step_failed:fundamentals": "2026-11-18T18:51:30.188179+00:00",
+    "refresh_step_failed:targeted_quotes": "2026-11-18T01:37:23.803560+00:00",
+    "workflow_failed:bottom_turn.yml": "2026-11-18T18:51:30.188179+00:00"
   },
   "issue_sync": "updated",
   "issues": [
     "active_git_blob_over_85MiB:runtime-bundle.json",
     "market_rows_dropped:港股",
     "refresh_step_failed:discovery",
-    "refresh_step_failed:targeted_quotes"
+    "refresh_step_failed:fundamentals",
+    "refresh_step_failed:targeted_quotes",
+    "workflow_failed:bottom_turn.yml"
   ],
   "model_calls": 0,
   "plan": {
     "degraded": [
       "refresh_step_failed:discovery",
+      "refresh_step_failed:fundamentals",
       "refresh_step_failed:targeted_quotes"
     ],
     "escalate": [
@@ -41,11 +45,15 @@
     ],
     "refresh": [
       "market_rows_dropped:港股"
+    ],
+    "rerun": [
+      "workflow_failed:bottom_turn.yml"
     ]
   },
   "status": "escalated",
   "version": "v88-self-heal-v1",
   "warnings": [
+    "primary_quote_coverage_partial:validated_subset_only",
     "repository_over_5GiB:v88-daily-report"
   ]
 }
