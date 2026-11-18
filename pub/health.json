@@ -1,43 +1,59 @@
 {
   "actions": [
-    "refresh_dispatched:fast"
+    "refresh_waiting:refresh_running",
+    "rerun:cloud_refresh.yml:44185878000"
   ],
-  "checked_at": "2026-11-17T18:34:18.035250+00:00",
+  "checked_at": "2026-11-18T01:37:23.803560+00:00",
   "checks_failed": [],
   "critical": [
+    "active_git_blob_over_85MiB:runtime-bundle.json",
     "persistent:market_rows_dropped:港股"
   ],
-  "dispatches": [
-    "2026-11-17T18:34:18.035250+00:00"
-  ],
+  "dispatches": [],
   "escalated": [
+    "active_git_blob_over_85MiB:runtime-bundle.json",
     "persistent:market_rows_dropped:港股",
-    "persistent:refresh_step_failed:discovery",
-    "persistent:refresh_step_failed:fundamentals"
+    "persistent:refresh_step_failed:discovery"
   ],
   "external_messages": 0,
   "first_seen": {
+    "active_git_blob_over_85MiB:runtime-bundle.json": "2026-11-18T01:37:23.803560+00:00",
+    "intraday_screening_overdue": "2026-11-18T01:37:23.803560+00:00",
+    "market_quotes_stale:A股": "2026-11-18T01:37:23.803560+00:00",
+    "market_quotes_stale:港股": "2026-11-18T01:37:23.803560+00:00",
     "market_rows_dropped:港股": "2026-11-17T09:13:02.990569+00:00",
     "refresh_step_failed:discovery": "2026-11-16T06:27:39.156550+00:00",
-    "refresh_step_failed:fundamentals": "2026-11-16T06:27:39.156550+00:00",
-    "refresh_step_failed:muse_screening": "2026-11-17T18:34:18.035250+00:00"
+    "refresh_step_failed:targeted_quotes": "2026-11-18T01:37:23.803560+00:00",
+    "workflow_failed:cloud_refresh.yml": "2026-11-18T01:37:23.803560+00:00"
   },
   "issue_sync": "updated",
   "issues": [
+    "active_git_blob_over_85MiB:runtime-bundle.json",
+    "intraday_screening_overdue",
+    "market_quotes_stale:A股",
+    "market_quotes_stale:港股",
     "market_rows_dropped:港股",
     "refresh_step_failed:discovery",
-    "refresh_step_failed:fundamentals",
-    "refresh_step_failed:muse_screening"
+    "refresh_step_failed:targeted_quotes",
+    "workflow_failed:cloud_refresh.yml"
   ],
   "model_calls": 0,
   "plan": {
     "degraded": [
       "refresh_step_failed:discovery",
-      "refresh_step_failed:fundamentals",
-      "refresh_step_failed:muse_screening"
+      "refresh_step_failed:targeted_quotes"
+    ],
+    "escalate": [
+      "active_git_blob_over_85MiB:runtime-bundle.json"
     ],
     "refresh": [
+      "intraday_screening_overdue",
+      "market_quotes_stale:A股",
+      "market_quotes_stale:港股",
       "market_rows_dropped:港股"
+    ],
+    "rerun": [
+      "workflow_failed:cloud_refresh.yml"
     ]
   },
   "status": "escalated",
