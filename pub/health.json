@@ -1,59 +1,86 @@
 {
   "actions": [
-    "rerun:bottom_turn.yml:44360893254",
+    "refresh_dispatched:full",
     "rerun:cloud_refresh.yml:44404213920",
-    "rerun:intraday_alert.yml:44414791937",
-    "rerun:report.yml:44398208220"
+    "rerun:intraday_alert.yml:44463229422",
+    "rerun:report.yml:44487821189",
+    "rerun:rotation_refresh.yml:44488645943",
+    "rerun:us_close_finalize.yml:44446774675"
   ],
-  "checked_at": "2026-11-19T01:13:14.240420+00:00",
-  "checks_failed": [
-    "publication"
-  ],
+  "checked_at": "2026-11-19T08:48:14.242664+00:00",
+  "checks_failed": [],
   "critical": [
-    "active_git_blob_over_85MiB:runtime-bundle.json",
-    "persistent:workflow_failed:bottom_turn.yml"
+    "persistent:workflow_failed:bottom_turn.yml",
+    "persistent:workflow_failed:cloud_refresh.yml",
+    "persistent:workflow_failed:intraday_alert.yml",
+    "persistent:workflow_failed:report.yml",
+    "workflow_failed:bottom_turn.yml"
   ],
-  "dispatches": [],
+  "dispatches": [
+    "2026-11-19T08:48:14.242664+00:00"
+  ],
   "escalated": [
-    "active_git_blob_over_85MiB:runtime-bundle.json",
-    "persistent:workflow_failed:bottom_turn.yml"
+    "persistent:workflow_failed:bottom_turn.yml",
+    "persistent:workflow_failed:cloud_refresh.yml",
+    "persistent:workflow_failed:intraday_alert.yml",
+    "persistent:workflow_failed:report.yml",
+    "workflow_failed:bottom_turn.yml"
   ],
   "external_messages": 0,
   "first_seen": {
-    "active_git_blob_over_85MiB:runtime-bundle.json": "2026-11-18T01:37:23.803560+00:00",
-    "publication:ChunkedEncodingError": "2026-11-19T01:13:14.240420+00:00",
+    "refresh_step_failed:discovery": "2026-11-19T08:48:14.242664+00:00",
+    "refresh_step_failed:fundamentals": "2026-11-19T08:48:14.242664+00:00",
+    "refresh_step_failed:muse_directive": "2026-11-19T08:48:14.242664+00:00",
+    "refresh_step_failed:muse_screening": "2026-11-19T08:48:14.242664+00:00",
+    "refresh_step_failed:strategy_board": "2026-11-19T08:48:14.242664+00:00",
+    "refresh_step_failed:targeted_quotes": "2026-11-19T08:48:14.242664+00:00",
     "workflow_failed:bottom_turn.yml": "2026-11-18T18:51:30.188179+00:00",
     "workflow_failed:cloud_refresh.yml": "2026-11-19T01:13:14.240420+00:00",
     "workflow_failed:intraday_alert.yml": "2026-11-19T01:13:14.240420+00:00",
-    "workflow_failed:report.yml": "2026-11-19T01:13:14.240420+00:00"
+    "workflow_failed:report.yml": "2026-11-19T01:13:14.240420+00:00",
+    "workflow_failed:rotation_refresh.yml": "2026-11-19T08:48:14.242664+00:00",
+    "workflow_failed:us_close_finalize.yml": "2026-11-19T08:48:14.242664+00:00"
   },
   "issue_sync": "updated",
   "issues": [
-    "active_git_blob_over_85MiB:runtime-bundle.json",
-    "publication:ChunkedEncodingError",
+    "refresh_step_failed:discovery",
+    "refresh_step_failed:fundamentals",
+    "refresh_step_failed:muse_directive",
+    "refresh_step_failed:muse_screening",
+    "refresh_step_failed:strategy_board",
+    "refresh_step_failed:targeted_quotes",
     "workflow_failed:bottom_turn.yml",
     "workflow_failed:cloud_refresh.yml",
     "workflow_failed:intraday_alert.yml",
-    "workflow_failed:report.yml"
+    "workflow_failed:report.yml",
+    "workflow_failed:rotation_refresh.yml",
+    "workflow_failed:us_close_finalize.yml"
   ],
   "model_calls": 0,
   "plan": {
     "degraded": [
-      "publication:ChunkedEncodingError"
+      "refresh_step_failed:discovery",
+      "refresh_step_failed:fundamentals",
+      "refresh_step_failed:muse_directive",
+      "refresh_step_failed:muse_screening",
+      "refresh_step_failed:targeted_quotes"
     ],
-    "escalate": [
-      "active_git_blob_over_85MiB:runtime-bundle.json"
+    "refresh": [
+      "refresh_step_failed:strategy_board"
     ],
     "rerun": [
       "workflow_failed:bottom_turn.yml",
       "workflow_failed:cloud_refresh.yml",
       "workflow_failed:intraday_alert.yml",
-      "workflow_failed:report.yml"
+      "workflow_failed:report.yml",
+      "workflow_failed:rotation_refresh.yml",
+      "workflow_failed:us_close_finalize.yml"
     ]
   },
   "status": "escalated",
   "version": "v88-self-heal-v1",
   "warnings": [
+    "primary_quote_coverage_partial:validated_subset_only",
     "repository_over_5GiB:v88-daily-report"
   ]
 }
