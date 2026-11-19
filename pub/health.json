@@ -1,59 +1,59 @@
 {
   "actions": [
-    "refresh_waiting:refresh_running",
-    "rerun:bottom_turn.yml:44360893254"
+    "rerun:bottom_turn.yml:44360893254",
+    "rerun:cloud_refresh.yml:44404213920",
+    "rerun:intraday_alert.yml:44414791937",
+    "rerun:report.yml:44398208220"
   ],
-  "checked_at": "2026-11-18T18:51:30.188179+00:00",
-  "checks_failed": [],
+  "checked_at": "2026-11-19T01:13:14.240420+00:00",
+  "checks_failed": [
+    "publication"
+  ],
   "critical": [
     "active_git_blob_over_85MiB:runtime-bundle.json",
-    "persistent:market_rows_dropped:港股"
+    "persistent:workflow_failed:bottom_turn.yml"
   ],
   "dispatches": [],
   "escalated": [
     "active_git_blob_over_85MiB:runtime-bundle.json",
-    "persistent:market_rows_dropped:港股",
-    "persistent:refresh_step_failed:discovery"
+    "persistent:workflow_failed:bottom_turn.yml"
   ],
   "external_messages": 0,
   "first_seen": {
     "active_git_blob_over_85MiB:runtime-bundle.json": "2026-11-18T01:37:23.803560+00:00",
-    "market_rows_dropped:港股": "2026-11-17T09:13:02.990569+00:00",
-    "refresh_step_failed:discovery": "2026-11-16T06:27:39.156550+00:00",
-    "refresh_step_failed:fundamentals": "2026-11-18T18:51:30.188179+00:00",
-    "refresh_step_failed:targeted_quotes": "2026-11-18T01:37:23.803560+00:00",
-    "workflow_failed:bottom_turn.yml": "2026-11-18T18:51:30.188179+00:00"
+    "publication:ChunkedEncodingError": "2026-11-19T01:13:14.240420+00:00",
+    "workflow_failed:bottom_turn.yml": "2026-11-18T18:51:30.188179+00:00",
+    "workflow_failed:cloud_refresh.yml": "2026-11-19T01:13:14.240420+00:00",
+    "workflow_failed:intraday_alert.yml": "2026-11-19T01:13:14.240420+00:00",
+    "workflow_failed:report.yml": "2026-11-19T01:13:14.240420+00:00"
   },
   "issue_sync": "updated",
   "issues": [
     "active_git_blob_over_85MiB:runtime-bundle.json",
-    "market_rows_dropped:港股",
-    "refresh_step_failed:discovery",
-    "refresh_step_failed:fundamentals",
-    "refresh_step_failed:targeted_quotes",
-    "workflow_failed:bottom_turn.yml"
+    "publication:ChunkedEncodingError",
+    "workflow_failed:bottom_turn.yml",
+    "workflow_failed:cloud_refresh.yml",
+    "workflow_failed:intraday_alert.yml",
+    "workflow_failed:report.yml"
   ],
   "model_calls": 0,
   "plan": {
     "degraded": [
-      "refresh_step_failed:discovery",
-      "refresh_step_failed:fundamentals",
-      "refresh_step_failed:targeted_quotes"
+      "publication:ChunkedEncodingError"
     ],
     "escalate": [
       "active_git_blob_over_85MiB:runtime-bundle.json"
     ],
-    "refresh": [
-      "market_rows_dropped:港股"
-    ],
     "rerun": [
-      "workflow_failed:bottom_turn.yml"
+      "workflow_failed:bottom_turn.yml",
+      "workflow_failed:cloud_refresh.yml",
+      "workflow_failed:intraday_alert.yml",
+      "workflow_failed:report.yml"
     ]
   },
   "status": "escalated",
   "version": "v88-self-heal-v1",
   "warnings": [
-    "primary_quote_coverage_partial:validated_subset_only",
     "repository_over_5GiB:v88-daily-report"
   ]
 }
