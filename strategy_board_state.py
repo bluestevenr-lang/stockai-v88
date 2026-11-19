@@ -179,7 +179,7 @@ def readiness(row):
         return {'readiness_label':prefix+'已在买入区 · 等待核验','readiness_detail':detail or '入场条件尚未全部通过'}
     return {'readiness_label':prefix+'研究观察 · 继续等待','readiness_detail':detail or '趋势与买点待核'}
 
-def view(doc,now=None):
+def view(doc,now=None,*,annotate_directives=True):
     now=now or datetime.now(timezone.utc);out=deepcopy(doc)
     if out.get('grade_policy') not in CURRENT_POLICIES:
         keep=[];pending=out.setdefault('investment_candidates',[])
@@ -233,7 +233,7 @@ def view(doc,now=None):
                 members=[r for r in out['rows'] if r['strategy_tier']==tier and r['market']==market]
                 counts['matched']=sum(bool(r.get('buyable')) for r in members)
     # 指令跟随展示时点的状态重算（报价过期/降级后），与页面、飞书看到的是同一条。
-    if out.get('rows'):
+    if annotate_directives and out.get('rows'):
         try:
             from action_directive import annotate
             annotate(out,'3A',now=now)

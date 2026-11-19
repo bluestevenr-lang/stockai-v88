@@ -9,7 +9,7 @@ from pathlib import Path
 import json, os
 from zoneinfo import ZoneInfo
 
-VERSION = 'astra-calendar-2026-11-16-v7-month-bound'
+VERSION = 'astra-calendar-2026-11-19-v8-native-directive'
 BASE = Path(__file__).resolve().parents[1]
 BJT = ZoneInfo('Asia/Shanghai')
 MARKETS = ('A股', '港股', '美股')
@@ -186,7 +186,10 @@ def build(source, *, now=None, profiles=None, include_pool=False, envs=None):
         lanes = [SETUP_NAMES.get(cell[3], cell[3])] if cell else [lane for tier, lane, _ in classify(q)]
         if not lanes: continue
         row = candidate(q, '2A', lanes[0], f'本轮{ASTRA_HOLD}个交易日内；到期复盘', now=now, plan_tier='ASTRA')
-        row = dated({'grade_policy': GRADE_POLICY, 'rows': [row]}, now)['rows'][0]
+        # This is an unfinished Astra candidate, not a 2A execution contract.
+        # Only check quote facts here; decide Astra after its own plan and gates.
+        row = dated({'grade_policy': GRADE_POLICY, 'rows': [row]}, now,
+                    annotate_directives=False)['rows'][0]
         if not row['current_source']: continue
         row['fundamentals_state'] = fstate
         if fstate == 'pending':
@@ -261,6 +264,18 @@ def build(source, *, now=None, profiles=None, include_pool=False, envs=None):
     # goal take a seat; others are shown as candidates with their gaps.
     watch = sorted((r for r in rows if not r['profit_gate']), key=rank)
     rows = [r for r in rows if r['profit_gate']]
+    # Keep a full-pool funnel before seat truncation; zero output must have
+    # measurable coverage/filter evidence instead of an unexplained blank.
+    from collections import Counter
+    diagnostics = {'version': 'astra-funnel-2026-11-19-v1', 'markets': {}}
+    for market in MARKETS:
+        inputs = [q for q in source.get('rows', []) if q.get('market') == market]
+        diagnostics['markets'][market] = {
+            'quote_rows': len(inputs), 'with_structure': sum(bool(q.get('structure')) for q in inputs),
+            'profit_gate_candidates': sum(r['market'] == market for r in rows),
+            'filter_reasons': dict(Counter(g for r in watch if r['market'] == market
+                                           for g in r.get('profit_gaps', []))),
+            'participation': market != '美股'}
     eligible = deepcopy(rows) if include_pool else None
     from industry_diversity import select
     diverse=[]
@@ -302,6 +317,7 @@ def build(source, *, now=None, profiles=None, include_pool=False, envs=None):
             'scope': '每月1、10、20自然日重算，休市也更新，每日复核；规则筛选分≠GPT审核分或胜率。原15交易日目标跟踪窗口独立保留，非盈利承诺。',
             'account_boundary': '月度200美元实际净收益目标及原风险约束独立保留；未对账不计零，不以情景利润当已实现。',
             'new_order_authority': False}
+    result['selection_diagnostics'] = diagnostics
     if include_pool: result['_eligible_rows'] = eligible
     return result
 
@@ -527,7 +543,16 @@ def refresh(*, base=BASE, now=None, source=None):
         except Exception as exc:
             shown = set(); doc['publish_mark_error'] = f'{type(exc).__name__}: {exc}'
         for row in doc['rows']: row['published'] = row['code'] in shown
+        doc['rule_matched_count'] = sum(bool(r.get('rule_matched')) for r in doc['rows'])
         doc['month_status']['published_count'] = len(shown)
+        diagnostics = doc['selection_diagnostics']
+        diagnostics.update(zero_publication=not bool(shown), entry_first_scan=doc.get('entry_first_scan'),
+                           migration_count=sum(bool(r.get('directive_migration')) for r in doc['rows']))
+        for market, counts in diagnostics['markets'].items():
+            members = [r for r in doc['rows'] if r.get('market') == market]
+            counts.update(selected=len(members), published=sum(r['published'] for r in members),
+                          exclusion_reasons={r['code']: (r.get('entry_window_qualification') or {}).get('reasons', [])
+                                             for r in members if not r['published']})
         for r in doc['rows']:
             r['target_contribution'] = contribution(r)
         # At most two participation entries; US is reference only. No 3-name sum.

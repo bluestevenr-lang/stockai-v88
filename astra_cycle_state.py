@@ -22,7 +22,8 @@ def view(doc, now=None):
     out = deepcopy(doc)
     if not out.get('version'): return out
     terminal = {_identity(row): deepcopy(row) for row in out.get('rows', []) if _terminal(row)}
-    rows = quote_view({'grade_policy': '2026-09-28-highest-3a-v2', 'rows': out.get('rows', [])}, now)['rows']
+    rows = quote_view({'grade_policy': '2026-09-28-highest-3a-v2', 'rows': out.get('rows', [])}, now,
+                      annotate_directives=False)['rows']
     day = now.astimezone(ZoneInfo('Asia/Shanghai')).date().isoformat()
     old_cycle = day >= str(out.get('next_recalculation') or '')
     for row in rows:

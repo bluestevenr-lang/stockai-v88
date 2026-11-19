@@ -1,11 +1,11 @@
 {
-  "version": "v88-entry-window-2026-11-16",
+  "version": "v88-astra-native-2026-11-19",
   "source_base": "e3e7c9056932a2b21cad63eb947ea88da7dc769f",
   "shared_modules": {
     "action_directive.py": "45b680c1992bf12c8115310a10cae9c3283cb4bc6cad3a7b794665145f4551c6",
-    "astra_cycle.py": "5bded3229f68c9efddad917ae4cf14d6278b0de707840df4c30b0e79e030ead3",
-    "astra_cycle_state.py": "7cfa823bf2bc16812b50b5c159d9cd170391e691e29108ba1d1c54c9fc54d1f2",
-    "strategy_board_state.py": "f9a2093a623f840db9f8eea4012d8a1b3a36a0fc0cd181db2173e2fbdc5f81fe",
+    "astra_cycle.py": "5e338b706ed9c519fec7542e3f4bffff92c5d2ecce7df0802dda502c81e36a67",
+    "astra_cycle_state.py": "d9a5ca989563a330a2f3e49a3c297e3c2306f531887c83d063369bdd26004e69",
+    "strategy_board_state.py": "967106f21003625ce2955ee9dcfaee8c376171f850b708670f2a803c932d0db3",
     "shadow_screen.py": "2fe511ab14a9d7daf8c5b1557605c33a47f7e394e630edb8a7cde234c958747a",
     "horizon_book.py": "b5c2fbf4f3ac387bab436e7c69c42d8b0f7e4f1c362f3488f5fe7cafc0e7c38a",
     "directive_audit.py": "23f595cb9d5f064606aaefbc0ba1e09cb025c018c80b1e4b2282285b6c0d3537",
@@ -25,7 +25,8 @@
     "v88_decision_core.py": "15a5f7cdc1a56de412ab21c050cc35840d3e8d1e44c43e7eabad8915c837e66b",
     "three_a_qualification.py": "ebd8b3ed03996485a8690d6ee6137d2eaf46052188f3e76ae5356ab71e6e77ee",
     "execution_readiness.py": "6eeabb58fa324a7f5b2cca7d1ae8dce472f85dbc1263787485ad9c858baae186",
-    "entry_window_policy.py": "3c135a1d6ca7635b0ca10a0c3a16e279e33c49cebc2f94baf2402e02de2395a3"
+    "entry_window_policy.py": "3c135a1d6ca7635b0ca10a0c3a16e279e33c49cebc2f94baf2402e02de2395a3",
+    "astra_cycle_stability.py": "65943bc9e43706fa553fd3514c8c3b0f6bf8cf9f1d608e8d1da20a2fea9a6b72"
   },
   "views": {
     "strategy_board_ui.py": "3e7f100f9010b4983b2dbb2f813f22c2f4ea70f29caa1120981c3f17f6d0da9c",
@@ -34,5 +35,5 @@
   },
   "view_source": "Core src, desktop root and cloud runtime are identical",
   "review_packet_version": "selected-stock-review-2026-11-16-v3",
-  "source_commit": "90002e793b093b55e38e49822356162c758cd7b6"
+  "source_commit": "c0c71a8f286b38919eec126c0f8058b303bdfa8f"
 }
