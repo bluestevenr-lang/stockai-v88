@@ -350,6 +350,10 @@ def merge_history(left, right):
             else:
                 if key(record['at']) < key(prior['at']): prior['at'],prior['row'] = record['at'],deepcopy(record['row'])
                 prior['seen_dates'] = sorted(set(prior.get('seen_dates',[])+record.get('seen_dates',[])))
+                # Desktop merges the archive without rerunning calendar.update.
+                # Retain actual publication days, never infer them from seen_dates.
+                if 'published_days' in prior or 'published_days' in record:
+                    prior['published_days'] = sorted(set(prior.get('published_days', []) + record.get('published_days', [])))
                 if key((record.get('outcome') or {}).get('checked_at',record['at'])) > key((prior.get('outcome') or {}).get('checked_at',prior['at'])):
                     prior['outcome'] = deepcopy(record.get('outcome',{}))
         unique = {json.dumps(s, sort_keys=True, ensure_ascii=False): s
