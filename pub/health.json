@@ -1,40 +1,41 @@
 {
   "actions": [
-    "rerun:bottom_turn.yml:44580694216",
+    "refresh_dispatched:full",
     "rerun:cloud_refresh.yml:44623997161",
-    "rerun:intraday_alert.yml:44632207222",
-    "rerun:report.yml:44616505469"
+    "rerun:intraday_alert.yml:44677854337",
+    "rerun:report.yml:44700324187",
+    "rerun:rotation_refresh.yml:44701131182",
+    "rerun:us_close_finalize.yml:44661706778"
   ],
-  "checked_at": "2026-11-20T00:39:49.914400+00:00",
+  "checked_at": "2026-11-20T08:32:38.263440+00:00",
   "checks_failed": [],
   "critical": [
-    "active_git_blob_over_85MiB:runtime-bundle.json",
     "persistent:workflow_failed:bottom_turn.yml",
     "persistent:workflow_failed:cloud_refresh.yml",
     "persistent:workflow_failed:intraday_alert.yml",
     "persistent:workflow_failed:report.yml",
     "persistent:workflow_failed:rotation_refresh.yml",
     "persistent:workflow_failed:us_close_finalize.yml",
-    "workflow_failed:rotation_refresh.yml",
-    "workflow_failed:us_close_finalize.yml"
+    "workflow_failed:bottom_turn.yml"
   ],
-  "dispatches": [],
+  "dispatches": [
+    "2026-11-20T08:32:38.263440+00:00"
+  ],
   "escalated": [
-    "active_git_blob_over_85MiB:runtime-bundle.json",
     "persistent:workflow_failed:bottom_turn.yml",
     "persistent:workflow_failed:cloud_refresh.yml",
     "persistent:workflow_failed:intraday_alert.yml",
     "persistent:workflow_failed:report.yml",
     "persistent:workflow_failed:rotation_refresh.yml",
     "persistent:workflow_failed:us_close_finalize.yml",
-    "workflow_failed:rotation_refresh.yml",
-    "workflow_failed:us_close_finalize.yml"
+    "workflow_failed:bottom_turn.yml"
   ],
   "external_messages": 0,
   "first_seen": {
-    "active_git_blob_over_85MiB:runtime-bundle.json": "2026-11-19T18:17:11.951069+00:00",
     "refresh_step_failed:discovery": "2026-11-19T08:48:14.242664+00:00",
-    "refresh_step_failed:targeted_quotes": "2026-11-20T00:39:49.914400+00:00",
+    "refresh_step_failed:muse_directive": "2026-11-20T08:32:38.263440+00:00",
+    "refresh_step_failed:muse_screening": "2026-11-20T08:32:38.263440+00:00",
+    "refresh_step_failed:strategy_board": "2026-11-20T08:32:38.263440+00:00",
     "workflow_failed:bottom_turn.yml": "2026-11-18T18:51:30.188179+00:00",
     "workflow_failed:cloud_refresh.yml": "2026-11-19T01:13:14.240420+00:00",
     "workflow_failed:intraday_alert.yml": "2026-11-19T01:13:14.240420+00:00",
@@ -44,9 +45,10 @@
   },
   "issue_sync": "updated",
   "issues": [
-    "active_git_blob_over_85MiB:runtime-bundle.json",
     "refresh_step_failed:discovery",
-    "refresh_step_failed:targeted_quotes",
+    "refresh_step_failed:muse_directive",
+    "refresh_step_failed:muse_screening",
+    "refresh_step_failed:strategy_board",
     "workflow_failed:bottom_turn.yml",
     "workflow_failed:cloud_refresh.yml",
     "workflow_failed:intraday_alert.yml",
@@ -58,10 +60,11 @@
   "plan": {
     "degraded": [
       "refresh_step_failed:discovery",
-      "refresh_step_failed:targeted_quotes"
+      "refresh_step_failed:muse_directive",
+      "refresh_step_failed:muse_screening"
     ],
-    "escalate": [
-      "active_git_blob_over_85MiB:runtime-bundle.json"
+    "refresh": [
+      "refresh_step_failed:strategy_board"
     ],
     "rerun": [
       "workflow_failed:bottom_turn.yml",
@@ -75,7 +78,6 @@
   "status": "escalated",
   "version": "v88-self-heal-v1",
   "warnings": [
-    "primary_quote_coverage_partial:validated_subset_only",
     "repository_over_5GiB:v88-daily-report"
   ]
 }
