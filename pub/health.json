@@ -1,13 +1,11 @@
 {
   "actions": [
     "rerun:bottom_turn.yml:44580694216",
-    "rerun:cloud_refresh.yml:44568374110",
-    "rerun:intraday_alert.yml:44549200716",
-    "rerun:report.yml:44487821189",
-    "rerun:rotation_refresh.yml:44488645943",
-    "rerun:us_close_finalize.yml:44446774675"
+    "rerun:cloud_refresh.yml:44623997161",
+    "rerun:intraday_alert.yml:44632207222",
+    "rerun:report.yml:44616505469"
   ],
-  "checked_at": "2026-11-19T18:17:11.951069+00:00",
+  "checked_at": "2026-11-20T00:39:49.914400+00:00",
   "checks_failed": [],
   "critical": [
     "active_git_blob_over_85MiB:runtime-bundle.json",
@@ -16,7 +14,9 @@
     "persistent:workflow_failed:intraday_alert.yml",
     "persistent:workflow_failed:report.yml",
     "persistent:workflow_failed:rotation_refresh.yml",
-    "persistent:workflow_failed:us_close_finalize.yml"
+    "persistent:workflow_failed:us_close_finalize.yml",
+    "workflow_failed:rotation_refresh.yml",
+    "workflow_failed:us_close_finalize.yml"
   ],
   "dispatches": [],
   "escalated": [
@@ -26,13 +26,15 @@
     "persistent:workflow_failed:intraday_alert.yml",
     "persistent:workflow_failed:report.yml",
     "persistent:workflow_failed:rotation_refresh.yml",
-    "persistent:workflow_failed:us_close_finalize.yml"
+    "persistent:workflow_failed:us_close_finalize.yml",
+    "workflow_failed:rotation_refresh.yml",
+    "workflow_failed:us_close_finalize.yml"
   ],
   "external_messages": 0,
   "first_seen": {
     "active_git_blob_over_85MiB:runtime-bundle.json": "2026-11-19T18:17:11.951069+00:00",
     "refresh_step_failed:discovery": "2026-11-19T08:48:14.242664+00:00",
-    "refresh_step_failed:fundamentals": "2026-11-19T08:48:14.242664+00:00",
+    "refresh_step_failed:targeted_quotes": "2026-11-20T00:39:49.914400+00:00",
     "workflow_failed:bottom_turn.yml": "2026-11-18T18:51:30.188179+00:00",
     "workflow_failed:cloud_refresh.yml": "2026-11-19T01:13:14.240420+00:00",
     "workflow_failed:intraday_alert.yml": "2026-11-19T01:13:14.240420+00:00",
@@ -44,7 +46,7 @@
   "issues": [
     "active_git_blob_over_85MiB:runtime-bundle.json",
     "refresh_step_failed:discovery",
-    "refresh_step_failed:fundamentals",
+    "refresh_step_failed:targeted_quotes",
     "workflow_failed:bottom_turn.yml",
     "workflow_failed:cloud_refresh.yml",
     "workflow_failed:intraday_alert.yml",
@@ -56,7 +58,7 @@
   "plan": {
     "degraded": [
       "refresh_step_failed:discovery",
-      "refresh_step_failed:fundamentals"
+      "refresh_step_failed:targeted_quotes"
     ],
     "escalate": [
       "active_git_blob_over_85MiB:runtime-bundle.json"
