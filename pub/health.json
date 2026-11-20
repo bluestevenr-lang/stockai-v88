@@ -1,14 +1,12 @@
 {
   "actions": [
-    "refresh_waiting:refresh_running",
+    "refresh_dispatched:full",
     "rerun:bottom_turn.yml:44782718869",
-    "rerun:cloud_refresh.yml:44771173298",
-    "rerun:intraday_alert.yml:44755430406",
-    "rerun:report.yml:44700324187",
-    "rerun:rotation_refresh.yml:44701131182",
-    "rerun:us_close_finalize.yml:44661706778"
+    "rerun:cloud_refresh.yml:44822460788",
+    "rerun:intraday_alert.yml:44829013711",
+    "rerun:report.yml:44815929346"
   ],
-  "checked_at": "2026-11-20T17:47:50.620205+00:00",
+  "checked_at": "2026-11-20T23:59:14.369760+00:00",
   "checks_failed": [],
   "critical": [
     "persistent:refresh_step_failed:strategy_board",
@@ -17,9 +15,13 @@
     "persistent:workflow_failed:intraday_alert.yml",
     "persistent:workflow_failed:report.yml",
     "persistent:workflow_failed:rotation_refresh.yml",
-    "persistent:workflow_failed:us_close_finalize.yml"
+    "persistent:workflow_failed:us_close_finalize.yml",
+    "workflow_failed:rotation_refresh.yml",
+    "workflow_failed:us_close_finalize.yml"
   ],
-  "dispatches": [],
+  "dispatches": [
+    "2026-11-20T23:59:14.369760+00:00"
+  ],
   "escalated": [
     "persistent:refresh_step_failed:strategy_board",
     "persistent:workflow_failed:bottom_turn.yml",
@@ -28,16 +30,20 @@
     "persistent:workflow_failed:report.yml",
     "persistent:workflow_failed:rotation_refresh.yml",
     "persistent:workflow_failed:us_close_finalize.yml",
+    "workflow_failed:rotation_refresh.yml",
+    "workflow_failed:us_close_finalize.yml",
     "persistent:refresh_step_failed:discovery"
   ],
   "external_messages": 0,
   "first_seen": {
+    "market_rows_dropped:美股": "2026-11-20T23:59:14.369760+00:00",
     "refresh_step_failed:discovery": "2026-11-19T08:48:14.242664+00:00",
     "refresh_step_failed:fundamentals": "2026-11-20T17:47:50.620205+00:00",
     "refresh_step_failed:muse_directive": "2026-11-20T08:32:38.263440+00:00",
     "refresh_step_failed:muse_screening": "2026-11-20T08:32:38.263440+00:00",
     "refresh_step_failed:strategy_board": "2026-11-20T08:32:38.263440+00:00",
     "refresh_step_failed:targeted_quotes": "2026-11-20T17:47:50.620205+00:00",
+    "scheduled_screening_overdue": "2026-11-20T23:59:14.369760+00:00",
     "workflow_failed:bottom_turn.yml": "2026-11-18T18:51:30.188179+00:00",
     "workflow_failed:cloud_refresh.yml": "2026-11-19T01:13:14.240420+00:00",
     "workflow_failed:intraday_alert.yml": "2026-11-19T01:13:14.240420+00:00",
@@ -47,12 +53,14 @@
   },
   "issue_sync": "updated",
   "issues": [
+    "market_rows_dropped:美股",
     "refresh_step_failed:discovery",
     "refresh_step_failed:fundamentals",
     "refresh_step_failed:muse_directive",
     "refresh_step_failed:muse_screening",
     "refresh_step_failed:strategy_board",
     "refresh_step_failed:targeted_quotes",
+    "scheduled_screening_overdue",
     "workflow_failed:bottom_turn.yml",
     "workflow_failed:cloud_refresh.yml",
     "workflow_failed:intraday_alert.yml",
@@ -70,7 +78,9 @@
       "refresh_step_failed:targeted_quotes"
     ],
     "refresh": [
-      "refresh_step_failed:strategy_board"
+      "market_rows_dropped:美股",
+      "refresh_step_failed:strategy_board",
+      "scheduled_screening_overdue"
     ],
     "rerun": [
       "workflow_failed:bottom_turn.yml",
