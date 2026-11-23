@@ -1,13 +1,13 @@
 {
   "actions": [
     "refresh_dispatched:full",
-    "rerun:us_close_finalize.yml:44971958343",
-    "rerun:weekend_evolution.yml:45000294240"
+    "rerun:intraday_alert.yml:45114398561",
+    "rerun:us_close_finalize.yml:45097395940",
+    "rerun:weekend_evolution.yml:45064815899"
   ],
-  "checked_at": "2026-11-22T19:40:11.201125+00:00",
+  "checked_at": "2026-11-23T07:36:48.578199+00:00",
   "checks_failed": [],
   "critical": [
-    "active_git_blob_over_85MiB:runtime-bundle.json",
     "persistent:market_rows_dropped:美股",
     "persistent:workflow_failed:bottom_turn.yml",
     "persistent:workflow_failed:cloud_refresh.yml",
@@ -18,15 +18,13 @@
     "persistent:workflow_failed:weekend_evolution.yml",
     "workflow_failed:bottom_turn.yml",
     "workflow_failed:cloud_refresh.yml",
-    "workflow_failed:intraday_alert.yml",
     "workflow_failed:report.yml",
     "workflow_failed:rotation_refresh.yml"
   ],
   "dispatches": [
-    "2026-11-22T19:40:11.201125+00:00"
+    "2026-11-23T07:36:48.578199+00:00"
   ],
   "escalated": [
-    "active_git_blob_over_85MiB:runtime-bundle.json",
     "persistent:market_rows_dropped:美股",
     "persistent:workflow_failed:bottom_turn.yml",
     "persistent:workflow_failed:cloud_refresh.yml",
@@ -37,18 +35,20 @@
     "persistent:workflow_failed:weekend_evolution.yml",
     "workflow_failed:bottom_turn.yml",
     "workflow_failed:cloud_refresh.yml",
-    "workflow_failed:intraday_alert.yml",
     "workflow_failed:report.yml",
     "workflow_failed:rotation_refresh.yml",
-    "persistent:refresh_step_failed:free_observations",
     "persistent:refresh_step_failed:fundamentals"
   ],
   "external_messages": 0,
   "first_seen": {
-    "active_git_blob_over_85MiB:runtime-bundle.json": "2026-11-21T07:07:32.812970+00:00",
     "market_rows_dropped:美股": "2026-11-20T23:59:14.369760+00:00",
-    "refresh_step_failed:free_observations": "2026-11-21T07:07:32.812970+00:00",
+    "refresh_step_failed:discovery": "2026-11-23T07:36:48.578199+00:00",
     "refresh_step_failed:fundamentals": "2026-11-20T17:47:50.620205+00:00",
+    "refresh_step_failed:muse_directive": "2026-11-23T07:36:48.578199+00:00",
+    "refresh_step_failed:muse_screening": "2026-11-23T07:36:48.578199+00:00",
+    "refresh_step_failed:strategy_board": "2026-11-23T07:36:48.578199+00:00",
+    "refresh_step_failed:targeted_quotes": "2026-11-23T07:36:48.578199+00:00",
+    "workflow_failed:autonomous.yml": "2026-11-23T07:36:48.578199+00:00",
     "workflow_failed:bottom_turn.yml": "2026-11-18T18:51:30.188179+00:00",
     "workflow_failed:cloud_refresh.yml": "2026-11-19T01:13:14.240420+00:00",
     "workflow_failed:intraday_alert.yml": "2026-11-19T01:13:14.240420+00:00",
@@ -59,10 +59,14 @@
   },
   "issue_sync": "updated",
   "issues": [
-    "active_git_blob_over_85MiB:runtime-bundle.json",
     "market_rows_dropped:美股",
-    "refresh_step_failed:free_observations",
+    "refresh_step_failed:discovery",
     "refresh_step_failed:fundamentals",
+    "refresh_step_failed:muse_directive",
+    "refresh_step_failed:muse_screening",
+    "refresh_step_failed:strategy_board",
+    "refresh_step_failed:targeted_quotes",
+    "workflow_failed:autonomous.yml",
     "workflow_failed:bottom_turn.yml",
     "workflow_failed:cloud_refresh.yml",
     "workflow_failed:intraday_alert.yml",
@@ -74,14 +78,16 @@
   "model_calls": 0,
   "plan": {
     "degraded": [
-      "refresh_step_failed:free_observations",
-      "refresh_step_failed:fundamentals"
-    ],
-    "escalate": [
-      "active_git_blob_over_85MiB:runtime-bundle.json"
+      "refresh_step_failed:discovery",
+      "refresh_step_failed:fundamentals",
+      "refresh_step_failed:muse_directive",
+      "refresh_step_failed:muse_screening",
+      "refresh_step_failed:targeted_quotes"
     ],
     "refresh": [
-      "market_rows_dropped:美股"
+      "market_rows_dropped:美股",
+      "refresh_step_failed:strategy_board",
+      "workflow_failed:autonomous.yml"
     ],
     "rerun": [
       "workflow_failed:bottom_turn.yml",
