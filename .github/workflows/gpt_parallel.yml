@@ -1,0 +1,70 @@
+name: V88 GPT 并行复核（赠送额度·零新增费用）
+on:
+  schedule:
+    - cron: '20 22 * * 0-4'
+    - cron: '50 3 * * 1-5'
+    - cron: '50 10 * * 1-5'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: v88-gpt-free-challenger
+  cancel-in-progress: false
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ secrets.PRIVATE_TOKEN }}
+      PYTHONPATH: src
+      PYTHONUNBUFFERED: '1'
+      V88_FEISHU_ALLOW_PUSH: '0'
+      V88_DISABLE_LLM: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: bluestevenr-lang/v88-daily-report
+          token: ${{ secrets.PRIVATE_TOKEN }}
+          path: core
+      - uses: actions/checkout@v4
+        with:
+          repository: bluestevenr-lang/v88-daily-report
+          token: ${{ secrets.PRIVATE_TOKEN }}
+          ref: gpt-api-state
+          path: experiment
+      - uses: actions/checkout@v4
+        with:
+          repository: bluestevenr-lang/v88-daily-report
+          token: ${{ secrets.PRIVATE_TOKEN }}
+          ref: feishu-delivery-state
+          path: facts
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /source-bundle.tar.gz
+            /runtime-core.json
+            /runtime-bundle.json
+            /feishu_sync_delivery.json
+            /history-state.json
+            /quote-cache.json.gz
+            /screen-history.json.gz
+            /fundamental-snapshot.json.gz
+            /filing-check.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install existing runtime
+        working-directory: core
+        run: pip install -q -r requirements.txt
+      - name: Configure existing private persistence
+        run: gh auth setup-git
+      - name: Restore dated facts without collecting or sending
+        working-directory: core
+        run: |
+          python src/feishu_cloud_bundle.py restore ../facts/source-bundle.tar.gz --reports-only > /tmp/v88-gpt-restore.log 2>&1
+          python -c "from private_quote_cache import restore; restore('../facts/quote-cache.json.gz','.')"
+      - name: One frozen-fact GPT review using the free grant
+        working-directory: core
+        env:
+          OPENAI_API_KEY: ${{ secrets.V88_OPENAI_FREE_API_KEY }}
+        run: python src/gpt_cloud.py --base . --state ../experiment
+      # No Feishu webhook, public report upload, production mutation or paid runner.
