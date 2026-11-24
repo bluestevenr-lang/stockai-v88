@@ -44,6 +44,11 @@ def _worker(base):
         write('running')
         result=subprocess.run([sys.executable,str(base/'src/autonomous_sync.py')],cwd=base,timeout=120)
         write('complete' if result.returncode==0 else 'failed')
+        # Optional GPT summary cannot change the core sync result.
+        gpt_script=base/'src/gpt_cloud_sync.py'
+        if gpt_script.exists():
+            try:subprocess.run([sys.executable,str(gpt_script)],cwd=base,timeout=20)
+            except (OSError,subprocess.TimeoutExpired):pass
     except (OSError,subprocess.TimeoutExpired):write('failed')
     finally:
         if muse_process is not None:
