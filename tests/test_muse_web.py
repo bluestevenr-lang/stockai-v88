@@ -22,7 +22,7 @@ def fixture(ready=False, module='3A', vote='pass'):
     return row, record, cache
 
 
-@pytest.mark.parametrize('ready,expected', [(False,'认可重点观察（不代表可买）'),(True,'认可买入条件')])
+@pytest.mark.parametrize('ready,expected', [(False,'认可重点观察（不代表可买）'),(True,'认可重点观察（不代表可买）')])
 def test_bound_badge_meaning_and_metadata(ready,expected):
     row,record,cache=fixture(ready)
     result=ui.current(row,'3A',cache,NOW)
@@ -94,7 +94,8 @@ def test_fixed_feishu_copy_and_metadata():
     draft={'items':[bound],'text':'report','delivery_id':'d','draft_sha256':'h','criteria_version':m.CRITERIA,
            'slot':'afternoon','cutoff_at':'2026-10-12T11:55:00+08:00'}
     text,audit=m.merge(draft,{bound['item_id']:{'verdict':'pass','reason':'通过','checked_at':NOW.isoformat(),'evidence_ref':'e'}},verdict_sha='v')
-    assert 'Muse 验证（试运行）：✅ 认可买入条件｜通过' in text
+    assert 'Muse 验证（试运行）：✅ 认可重点观察｜通过' in text
+    assert audit['priority_joint_buy'] == 0
     assert '仅针对本版草案，不代表收益保证' in text
     assert audit['slot']=='afternoon' and audit['cutoff_at']==draft['cutoff_at']
     text,_=m.merge(draft,{bound['item_id']:{'verdict':'fail','reason':'治理未出清'}})

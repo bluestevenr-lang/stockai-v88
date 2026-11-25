@@ -255,20 +255,42 @@ def validate(draft, verdict, received_at, rejected=None, *, retry_until=None):
         except (ValueError, TypeError, KeyError):
             note(identity, 'checked_at_invalid')
             continue
-        accepted[identity] = {'item_id': identity, 'reason': v['reason'], 'evidence_ref': v['evidence_ref'],
-                              'checked_at': checked, 'verdict': state}
+        accepted[identity] = accepted_vote(v, state, checked)
     return accepted
+
+
+def accepted_vote(vote, state, checked):
+    result = dict(item_id=vote['item_id'], reason=vote['reason'], evidence_ref=vote['evidence_ref'],
+                  checked_at=checked, verdict=state)
+    level = vote.get('approval_level')
+    if state == 'pass' and level in ('plan', 'buy'):
+        result['approval_level'] = level
+    return result
+
+
+def joint_buy(row, vote):
+    facts = row.get('facts') or {}
+    readiness = (facts.get('directive') or {}).get('execution_readiness') or {}
+    qualified = facts.get('rule_matched' if row.get('module') == 'Astra' else 'buyable')
+    return (vote.get('verdict') == 'pass' and vote.get('approval_level') == 'buy'
+            and qualified is True and readiness.get('executable_now') is True
+            and readiness.get('quote_fresh_for_execution') is True)
 
 
 def merge(draft, accepted=None, *, error=None, verdict_sha=None):
     accepted = accepted or {}
     counts = dict.fromkeys(('pass', 'fail', 'unverified'), 0)
+    priority = dict.fromkeys(counts, 0)
+    buy_count = 0
     insertions = {}
     for row in draft['items']:
         v = accepted.get(row['item_id'], {})
         state = v.get('verdict', 'unverified')
         counts[state] += 1
-        ready = bool(row['facts'].get('buyable') if row['module'] in BOARD_MODULES else row['facts'].get('rule_matched'))
+        ready = joint_buy(row, v)
+        if row['module'] in ('3A', 'Astra'):
+            priority[state] += 1
+            buy_count += int(ready)
         label = {'pass': '✅ 认可买入条件' if ready else '✅ 认可重点观察',
                  'fail': '❌ 不认可', 'unverified': '⚪ 未验证'}[state]
         suffix = '｜' + v['reason'] if v.get('reason') and state != 'unverified' else ''
@@ -279,11 +301,14 @@ def merge(draft, accepted=None, *, error=None, verdict_sha=None):
     for index, line in enumerate(draft['text'].splitlines(), 1):
         lines.append(line)
         lines.extend(insertions.get(index, []))
-    lines += ['', f'Muse 双重验证（试运行）：通过{counts["pass"]}｜未通过{counts["fail"]}｜未验证{counts["unverified"]}；仅针对本版草案，不代表收益保证；认证≠买入授权，观察通过不代表买入。',
+    lines += ['', f'Muse 全部送审条目（试运行）：通过{counts["pass"]}｜未通过{counts["fail"]}｜未验证{counts["unverified"]}；仅针对本版草案，不代表收益保证；认证≠买入授权，观察通过不代表买入。',
+              '3A/Astra 专项：模块通过{pass}｜未通过{fail}｜未验证{unverified}'.format(**priority)
+              + f'｜双方买入级 {buy_count}',
               STOP_QUALITY_NOTICE,
               '核对编号：' + draft['delivery_id'] + ' · 草案 ' + draft['draft_sha256'][:12]]
     audit = {'schema_version': SCHEMA, 'mode': 'shadow', 'draft_sha256': draft['draft_sha256'],
-             'criteria_version': draft['criteria_version'], 'counts': counts, 'verdict_blob_sha': verdict_sha,
+             'criteria_version': draft['criteria_version'], 'counts': counts, 'priority_counts': priority,
+             'priority_joint_buy': buy_count, 'verdict_blob_sha': verdict_sha,
              'delivery_id': draft['delivery_id'], 'slot': draft['slot'], 'date': draft.get('date'),
              'created_at': draft.get('created_at'), 'cutoff_at': draft.get('cutoff_at'),
              'scheduled_at': draft.get('scheduled_at'), 'review_sha256': draft.get('review_sha256'),

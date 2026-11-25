@@ -61,6 +61,21 @@ def features(bars):
             'reason': '低点抬高；收复短期均线；'+('抛压逐渐减轻' if improving and not demand else '上涨量能改善' if demand else '回撤量能收缩' if drying else '量能确认待补')}
 
 
+def confirmation_text(row):
+    """Show the frozen three-session high alongside a time-limited entry plan."""
+    qualification = row.get('entry_window_qualification') or {}
+    volume = row.get('price_volume') or {}
+    trigger = volume.get('trigger')
+    if (qualification.get('eligible') is not True or not qualification.get('entry_deadline')
+            or volume.get('state') != 'complete' or volume.get('early') is not True
+            or not number(trigger) or not 0 < trigger < float('inf')):
+        return ''
+    price = f"{trigger:.4f}".rstrip('0').rstrip('.')
+    if len(price.partition('.')[2]) < 2:
+        price = f"{trigger:.2f}"
+    return f"量价确认线 {price} · {qualification['entry_deadline']}前（含当日）收盘站上再核价，超出计划上限不追"
+
+
 def location(q):
     e = q.get('structure') or q.get('entry_gate') or {}
     pv = e.get('price_volume') or q.get('price_volume') or {}

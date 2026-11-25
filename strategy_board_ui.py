@@ -117,7 +117,7 @@ def html(doc=None,code=None,now=None,profiles=None):
     read_clock='🖥 本次打开：'+display(opened)+' · 页面读取：'+display(now)+'（北京时间）'
     from stock_profile_view import html as profile_html
     from strategy_board_state import view
-    raw_doc=doc; raw_rows={r['code']:r for r in doc.get('rows',[])}
+    raw_doc=doc; raw_rows={(r.get('strategy_tier'),r['code']):r for r in doc.get('rows',[])}
     from action_directive import publishable
     doc=publishable(view(doc,now),'3A',now=now)
     from strategy_crosscheck_view import html as crosscheck_html
@@ -233,7 +233,7 @@ def html(doc=None,code=None,now=None,profiles=None):
                     if not profile_markup:profile_markup = profile_html(r['code'], profiles, now)
                     roster=r.get('research_roster') or {}
                     roster_note=('<br><small>日度研究 · '+esc(roster.get('review_session'))+' · 入选 '+esc(roster.get('selection_score'))+'分 · '+('当前分待核' if roster.get('current_score') is None else '当前 '+esc(roster.get('current_score'))+'分')+'</small>') if roster else ''
-                    out.append(f'<tr><td><b>#{r["rank"]} <a href="{esc(href)}">{esc(r["name"])}</a></b><br><small>{esc(r["code"])}</small>{profile_markup}{roster_note}{row_badge(raw_rows.get(r['code'],r), '3A', muse_cache, now, market_screened_at(raw_doc,r['market']), display_row=r) if tier=='3A' else ''}</td>'
+                    out.append(f'<tr><td><b>#{r["rank"]} <a href="{esc(href)}">{esc(r["name"])}</a></b><br><small>{esc(r["code"])}</small>{profile_markup}{roster_note}{row_badge(raw_rows.get((tier,r['code']),r), tier, muse_cache, now, market_screened_at(raw_doc,r['market']), display_row=r) if tier in ('3A','2A','1A') else ''}</td>'
                         f'<td><b>{"未授级" if r.get("grade_pending") else esc(public_rating(r))}</b>{('<br><small>'+esc((r.get('entry_window_qualification') or {}).get('label'))+'</small>') if (r.get('entry_window_qualification') or {}).get('label') else ''}{('<br><b style="color:#0958d9">🪑 '+esc(r.get('seat_fill'))+'</b><br><small>'+esc(r.get('seat_fill_reason') or '同业已有更高分入选，为避免空席按统一分补入本席；80分线与企业依据未放宽')+'</small>') if tier=='3A' and r.get('seat_fill') else ''}<br>{score_value_html(r)}<details><summary>权重与贡献</summary><div><small>评分字段覆盖 {s["coverage"]}%（非质量通过率）· {esc(s.get("label", "旧版周期分"))}</small></div>{parts}<div>数据版本 {esc(s.get("snapshot_id"))} · 评分规则 {esc(s.get("revision"))}</div><div>共振 +{s["interaction"]} · 过热扣 {s["penalty"]}</div></details></td>'
                         f'<td class="px"><b>{r["last"]:g} {esc(r.get("currency") or {"A股":"CNY","港股":"HKD","美股":"USD"}.get(r["market"],""))}</b> · {r["change_pct"]:+.2f}%<br><small>{esc(display(r["quote_asof"]))}<br>北京时间</small></td>'
                         f'<td>'+('<b>原研究留存 · 本轮未重算</b><br><small>原评估 '+esc(display(r.get('last_evaluated_at')))+'</small><br>' if r.get('research_retained') else '')+f'<b>{esc(r["lane"])}</b> · {esc(r["period"])}'+(f' · 年度{esc(r["annual_label"])}' if r.get('annual_label') else '')+f'<br>{esc(r["reason"])}{source_tags(r,esc)}<details><summary>周期适用性 · 共用综合分</summary>{periods}<small>仅表示筛选适用；本行价带对应上方周期，其它周期须独立核验。</small></details><details><summary>🏢 企业依据与反证</summary>{esc(r["business_reason"])}<br>{esc(r.get("business_risk"))}</details>{crosscheck_html(r,now=now) if tier=="3A" else ""}</td>'

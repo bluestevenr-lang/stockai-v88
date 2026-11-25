@@ -36,7 +36,7 @@ def review_directive(row, module=None):
 def review_task():
     """Scope of the independent stock review, not an instruction to endorse V88."""
     return {
-        'version': 'selected-stock-review-2026-11-16-v3',
+        'version': 'selected-stock-review-20261125-levels',
         'task': '逐项复核本包筛选后的股票、买入/等待状态及原价格计划，给出独立结论和可追溯证据。',
         'input': 'items[].facts；最新名单与正式定版各自绑定，不能用运行日志或端口检查代替个股复核。',
         'policy': '先核 facts.decision_contract 与记录的规则版本；旧统一RR/评分门槛不能冒充本版系统规则。'
@@ -52,6 +52,8 @@ def review_task():
                      '等待核价或等待触发均不等于当下可买，保留原止损、目标与期限。',
         'data_failure': '无法取得或核实本版数据时保留unverified并指明缺项；传输/端口/工作流问题单列，'
                         '不伪装为个股投资反证。复权或报告期冲突仍属于个股证据问题，必须保留。',
+        'approval_level': '通过时由Muse明确填写approval_level：plan为计划或观察级，buy为独立确认本版当下买点；'
+                          '未填写仅计模块通过。全部送审条目与3A/Astra专项分别统计。量价确认线独立于原入场限价。',
         'output': '每股pass/fail/unverified、简短理由、真实核查时间及证据引用；复制原身份/状态/哈希，'
                   '不重写系统计划、不提交订单、不用旧裁决认证新快照。',
     }
@@ -200,6 +202,7 @@ def review_evidence(row, module=None):
 
 
 def snapshot_context(snapshot):
+    from screening_clock import screened_at
     audits = []
     for module, key in (('3A', 'strategy_board'), ('Astra', 'astra_cycle')):
         doc = snapshot.get(key) or {}
@@ -211,6 +214,8 @@ def snapshot_context(snapshot):
                        'publication_excluded': deepcopy(shown.get('publication_excluded') or [])})
     return {
         'version': VERSION, 'review_task': review_task(), 'directive_audits': audits,
+        'source_screened_at': {m: screened_at(snapshot.get(k) or {})
+                               for m, k in (('3A', 'strategy_board'), ('Astra', 'astra_cycle'))},
         'environment': deepcopy(snapshot.get('review_environment') or snapshot.get('free_market_snapshot') or {}),
         'funding': deepcopy(snapshot.get('funding_watch') or {
             'status':'MISSING','reason':'资金采集快照尚未生成；正文六类字段逐项注明未取得'}),

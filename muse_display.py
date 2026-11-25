@@ -5,7 +5,7 @@ from html import escape
 import json
 from pathlib import Path
 import re
-from muse_review import BJT, BOARD_MODULES, CRITERIA, STOP_QUALITY_NOTICE, digest, item, moment
+from muse_review import BJT, BOARD_MODULES, CRITERIA, STOP_QUALITY_NOTICE, digest, item, joint_buy, moment
 
 SLOTS = {'morning': '早报 06:30 · 中港', 'afternoon': '午报 12:01 · 中港', 'evening': '晚报 19:01 · 美股'}
 
@@ -57,7 +57,7 @@ def result(review, row):
             or not row.get('item_sha256') or not review.get('verdict_blob_sha')
             or not all(vote.get(k) for k in ('reason', 'checked_at', 'evidence_ref'))):
         state = 'unverified'
-    ready = bool((row.get('facts') or {}).get('buyable' if row.get('module') in BOARD_MODULES else 'rule_matched'))
+    ready = joint_buy(row, vote)
     return {'state': state, 'meaning': '认可买入条件' if ready else '认可重点观察（不代表可买）',
             'reason': vote.get('reason') if state != 'unverified' else '无本版有效裁决',
             'checked_at': vote.get('checked_at'), 'evidence_ref': vote.get('evidence_ref'),
@@ -152,7 +152,7 @@ def latest_current(row, module, cache, now, source_time):
                 or not all(vote.get(k) for k in ('reason','checked_at','evidence_ref'))
                 or not moment(doc['published_at']) <= moment(vote['checked_at']) <= moment(review['received_at']) <= moment(doc['screened_at'])+timedelta(hours=24)):
             return unverified('本股裁决缺失或时间校验失败')
-        ready = bool(binding['facts'].get('buyable' if module in BOARD_MODULES else 'rule_matched'))
+        ready = joint_buy(binding, vote)
         return dict(vote, state=vote['verdict'], meaning='认可买入条件' if ready else '认可重点观察（不代表可买）',
                     criteria_version=CRITERIA, verdict_version=review.get('verdict_blob_sha'),
                     verdict_commit_sha=review['verdict_commit_sha'], item_sha256=binding['item_sha256'],
@@ -207,12 +207,18 @@ def load(base=None):
 def row_badge(row, module, cache=None, now=None, source_time=None, display_row=None):
     cache = load() if cache is None else cache
     value = current(row, module, cache, now, source_time)
+    if display_row is not None and value.get('meaning') == '认可买入条件':
+        readiness = (display_row.get('directive') or {}).get('execution_readiness') or {}
+        if readiness.get('executable_now') is not True or readiness.get('quote_fresh_for_execution') is not True:
+            value = dict(value, meaning='原核查时通过，当前须重新核价')
     if display_row is not None and 'latest_sync_status' in cache:
         ready='buyable' if module in BOARD_MODULES else 'rule_matched'
         # 已给出今日/1–3日可买指令的行，以指令为准，不再挂「入场条件已失效」。
         if display_row.get('current_source') is False or (row.get(ready) and not display_row.get(ready) and not display_row.get('buy_window')):
             value=unverified('当前报价或入场条件已失效；原裁决只对应核查时快照')
-    markup = badge(value)
+    from entry_progression import confirmation_text
+    confirmation = confirmation_text(display_row if display_row is not None else row)
+    markup = badge(value) + ('<small>'+esc(confirmation)+'</small>' if confirmation else '')
     if value['state'] != 'unverified':
         return markup
     try:
@@ -336,12 +342,18 @@ def panel(cache=None, now=None, day=None):
            '<small>只读飞书冻结回执 · 同步 '+esc(clock(cache.get('synced_at')))+' · '+esc(cache.get('sync_status') or '待同步')+'</small>']
     if not day and cache.get('latest_screening'):
         latest = cache['latest_screening']; counts_latest = dict.fromkeys(('pass','fail','unverified'),0)
+        priority = dict.fromkeys(counts_latest, 0)
+        priority_buy = 0
         for row in latest.get('items',[]):
             raw = dict(row.get('facts') or {}, market={'cn':'A股','hk':'港股','us':'美股'}.get(row.get('market')))
             value = latest_current(raw,row['module'],cache,now,row.get('screened_at'))
             counts_latest[value['state']] += 1
+            if row['module'] in ('3A', 'Astra'):
+                priority[value['state']] += 1
+                priority_buy += int(value['state'] == 'pass' and joint_buy(row, value))
         out.append('<details><summary>最新筛选 · 按需验证 · 通过 {pass}｜未通过 {fail}｜未验证 {unverified}</summary>'.format(**counts_latest)+
-                   '<p>筛选 '+esc(clock(latest.get('screened_at')))+' · '+esc(latest.get('snapshot_id'))+
+                   '<p>3A/Astra 专项：通过{pass}｜未通过{fail}｜未验证{unverified}'.format(**priority)
+                   + f'｜双方买入级 {priority_buy}</p><p>筛选 '+esc(clock(latest.get('screened_at')))+' · '+esc(latest.get('snapshot_id'))+
                    '</p><small>三时段自动验证保留；在Muse说“验证最新V88”可核查此版。最新筛选独立于下方正式发送档案，事实改版需新裁决。</small></details>')
     if cache.get('receipt_conflicts'):
         out.append('<p>回执同ID内容变更待核：保留首次成功版本，冲突副本只归档，不改历史徽章。</p>')
@@ -353,7 +365,19 @@ def panel(cache=None, now=None, day=None):
         summary = ('通过 {pass}｜未通过 {fail}｜未验证 {unverified}'.format(**total) if selected else '尚无已投递回执')
         if selected and not any(r.get('muse_review') for r in selected):
             summary = '未验证 · 数量未留档'
-        out.append('<p><b>'+label+'</b> · '+summary)
+        out.append('<p><b>'+label+'</b> · 全部送审条目 · '+summary)
+        if selected and any(r.get('muse_review') for r in selected):
+            priority = dict.fromkeys(total, 0)
+            buy = 0
+            for record in selected:
+                review = record.get('muse_review') or {}
+                for row in review.get('items') or []:
+                    if row['module'] in ('3A', 'Astra'):
+                        vote = result(review, row)
+                        priority[vote['state']] += 1
+                        buy += int(vote['state'] == 'pass' and joint_buy(row, review['accepted_items'][row['item_id']]))
+            out.append(' · 3A/Astra 专项：通过{pass}｜未通过{fail}｜未验证{unverified}'.format(**priority)
+                       + f'｜双方买入级 {buy}')
         if selected and not any(r.get('muse_review') for r in selected):out.append(' · 旧回执无认证字段，不能按已验证计数')
         out.append('</p>')
         for record in selected:
