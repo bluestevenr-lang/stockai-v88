@@ -1,7 +1,9 @@
 """Production price geometry. Historical cell statistics retain their original exits."""
 from math import floor, isfinite
 
-VERSION = 'structure-entry-20261125-v1'
+VERSION = 'structure-entry-20261125-v2'
+RESISTANCE_FACTOR = .995
+SLIPPAGE_PCT = .4
 FLOORS = {'3A': 2.0, '2A': 1.5, 'Astra': 2.0}
 
 
@@ -19,6 +21,12 @@ def ratio(entry, stop, target, fee):
         return None
     cost = entry * fee / 100
     return (target - entry - cost) / (entry - stop + cost)
+
+
+def muse_ratio(entry, stop, target, fee):
+    if not all(positive(v) for v in (entry, stop, target)) or not stop < entry < target:
+        return None
+    return (target - entry - entry * (fee + SLIPPAGE_PCT) / 100) / (entry - stop)
 
 
 def swing_levels(bars):
@@ -63,10 +71,13 @@ def build(q, tier, hold, kind, min_stop_pct, max_stop_pct, fee):
         method = '确认突破后的平台量度涨幅'
     else:
         return None, '缺首道阻力或已突破平台的量度依据'
-    target = round(target, 4)
     if entry > .95 * high52 and target > high52:
         return None, '接近52周高点且首目标须创新高'
-    rr = ratio(entry, stop, target, fee)
+    # The published resistance exit is already discounted. Never discount this price twice.
+    target = floor(target * (RESISTANCE_FACTOR if above else 1) * 10000 + 1e-9) / 10000
+    system_rr = ratio(entry, stop, target, fee)
+    independent_rr = muse_ratio(entry, stop, target, fee)
+    rr = min(system_rr, independent_rr) if system_rr is not None and independent_rr is not None else None
     if rr is None or rr < FLOORS[tier]:
         return None, f'首道目标扣费净盈亏比不足{FLOORS[tier]:g}'
     # Quote only the portion of the entry band that still clears one ATR at its
@@ -88,7 +99,11 @@ def build(q, tier, hold, kind, min_stop_pct, max_stop_pct, fee):
                                'base_high':e.get('previous_high20'),'base_low':low,'source_asof':e['source_asof'],
                                'entry_upper':entry,'stop_lower':stop,'fee_pct':fee,'cost_per_share':entry*fee/100,
                                'net_reward':target-entry-entry*fee/100,'net_risk':entry-stop+entry*fee/100,
-                               'net_rr':rr,'formula':'(target-entry-cost)/(entry-stop+cost)',
+                               'system_net_rr':system_rr,'muse_net_rr':independent_rr,'governing_rr':rr,
+                               'resistance_factor':RESISTANCE_FACTOR if above else None,'slippage_pct':SLIPPAGE_PCT,
+                               'muse_net_reward':target-entry-entry*(fee+SLIPPAGE_PCT)/100,'muse_risk':entry-stop,
+                               'muse_formula':'(target-entry-entry*(fee_pct+slippage_pct)/100)/(entry-stop)',
+                               'formula':'(target-entry-cost)/(entry-stop+cost)',
                                'basis':e['basis'],'source_sha256':e['raw_sha256']}}, None
 
 
@@ -114,12 +129,14 @@ def review_gaps(row, tier, now):
             gaps.append('价带与定价时的结构证据不一致')
         ceiling = max(v for v in (entry[1],d.get('price')) if positive(v))
         stop = min(v for v in (stops[0],d.get('stop')) if positive(v))
-        objectives = [targets[0],d.get('target'),target_fact.get('resistance'),
-                      row.get('plan_current_nearest_resistance'),row.get('plan_current_structure_target'),
+        barriers = [v * RESISTANCE_FACTOR for v in (target_fact.get('resistance'),
+                    row.get('plan_current_nearest_resistance')) if positive(v)]
+        objectives = [targets[0],d.get('target'),*barriers,row.get('plan_current_structure_target'),
                       (row.get('opportunity') or {}).get('first_objective')]
         obj = min(v for v in objectives if positive(v))
         rr = ratio(ceiling,stop,obj,.5)
-        if rr is None or rr < FLOORS[tier]:
+        peer_rr = muse_ratio(ceiling,stop,obj,.5)
+        if rr is None or peer_rr is None or min(rr,peer_rr) < FLOORS[tier]:
             gaps.append(f'首目标按入场上沿及止损下沿扣费后不足{FLOORS[tier]:g}R')
         high=target_fact.get('high52')
         if not positive(high) or not positive(row.get('last')):

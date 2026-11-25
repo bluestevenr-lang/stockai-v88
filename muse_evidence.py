@@ -6,6 +6,9 @@ import math
 VERSION = 'muse-evidence-v4'
 
 
+from structural_entry_plan import VERSION as STRUCTURAL_VERSION
+
+
 def stable_review_facts(value):
     """Keep execution evidence, excluding only moving assessment clocks/ages.
 
@@ -75,7 +78,7 @@ def decision_contract(row, module):
         'status': 'CURRENT_RULE_EXPORTED' if current else 'LEGACY_OR_UNKNOWN_RULE',
         'rule_cell': deepcopy((row.get('astra_regime') or {}).get('cell')),
         'directive_net_rr_floor': floor,
-        'rr_floor_basis': '结构计划按模块计算扣费后首目标/止损' if row.get('price_plan_version')=='structure-entry-20261125-v1' else '命中周期规则的目标/止损/费用几何' if specific else
+        'rr_floor_basis': '结构计划按模块计算扣费后首目标/止损' if row.get('price_plan_version')==STRUCTURAL_VERSION else '命中周期规则的目标/止损/费用几何' if specific else
                          '指令层通用门槛' if current else '未确认历史生成规则，不套用当前门槛',
         'directive_fee_allowance_pct': FEE if current else None,
         'fundamentals_policy_version': LADDER_VERSION if graded else None,
