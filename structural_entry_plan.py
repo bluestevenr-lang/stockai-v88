@@ -86,6 +86,9 @@ def build(q, tier, hold, kind, min_stop_pct, max_stop_pct, fee):
                            'stop_level':stop,'validation':'低点两侧各两根完整日线确认','offset_atr':.25,'source_asof':e['source_asof'],'basis':e['basis']},
             'target_evidence':{'status':'SCENARIO','type':method,'target_price':target,'high52':high52,'resistance':min(above) if above else None,
                                'base_high':e.get('previous_high20'),'base_low':low,'source_asof':e['source_asof'],
+                               'entry_upper':entry,'stop_lower':stop,'fee_pct':fee,'cost_per_share':entry*fee/100,
+                               'net_reward':target-entry-entry*fee/100,'net_risk':entry-stop+entry*fee/100,
+                               'net_rr':rr,'formula':'(target-entry-cost)/(entry-stop+cost)',
                                'basis':e['basis'],'source_sha256':e['raw_sha256']}}, None
 
 
