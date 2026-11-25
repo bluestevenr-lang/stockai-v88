@@ -1,14 +1,14 @@
 {
   "actions": [
-    "refresh_dispatched:fast",
-    "rerun:bottom_turn.yml:45261471986",
-    "rerun:cloud_refresh.yml:45385028381",
-    "rerun:intraday_alert.yml:45413956651",
-    "rerun:report.yml:45377371378",
+    "refresh_dispatched:full",
+    "rerun:bottom_turn.yml:45473484147",
+    "rerun:cloud_refresh.yml:45509489441",
+    "rerun:intraday_alert.yml:45516533393",
+    "rerun:report.yml:45505405158",
     "rerun:rotation_refresh.yml:45377932120",
     "rerun:us_close_finalize.yml:45333652614"
   ],
-  "checked_at": "2026-11-24T15:53:12.843311+00:00",
+  "checked_at": "2026-11-25T00:44:34.864410+00:00",
   "checks_failed": [],
   "critical": [
     "persistent:market_rows_dropped:美股",
@@ -22,7 +22,7 @@
     "workflow_failed:weekend_evolution.yml"
   ],
   "dispatches": [
-    "2026-11-24T15:53:12.843311+00:00"
+    "2026-11-25T00:44:34.864410+00:00"
   ],
   "escalated": [
     "persistent:market_rows_dropped:美股",
