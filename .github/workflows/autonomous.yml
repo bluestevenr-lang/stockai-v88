@@ -138,7 +138,7 @@ jobs:
           assert payload(text).get('msg_type')=='interactive'
           print(json.dumps({'report_mode':'github-rules-three-slot-v1','model_calls':d.get('model_calls'),'characters':len(d['text']),'external_messages':0}))
           PYCODE
-      - name: Verify Astra cycle refreshed (reports already delivered independently)
+      - name: Verify Astra cycle and rules-only review publication
         if: steps.window.outputs.run == 'true' && inputs.rotation_only != true
         run: |
           python - <<'PY'
@@ -147,6 +147,21 @@ jobs:
           from astra_cycle import cycle_dates
           now = datetime.now(timezone.utc)
           status = json.load(open('data/autonomous_status.json'))
+          if '${{ inputs.rules_only }}' == 'true':
+              import os
+              from muse_exchange import CORE, BRANCH, read
+              from muse_screening_review import verify_snapshot
+              steps = {s['step']:s for s in status['steps']}
+              for name in ('strategy_board', 'muse_screening', 'muse_directive'):
+                  assert steps[name]['ok'], f'{name} incomplete'
+              packet, _ = read(CORE, 'latest/screening.json', BRANCH)
+              directive, _ = read(CORE, 'latest/directive.json', BRANCH)
+              verify_snapshot(packet)
+              assert packet['snapshot_id'] == steps['muse_screening']['snapshot_id']
+              assert packet['source_run'] == os.environ['GITHUB_RUN_ID']+':'+os.environ['GITHUB_RUN_ATTEMPT']
+              assert directive['directive_id'] == steps['muse_directive']['directive_id']
+              assert directive['screening_snapshot_sha256'] == packet['snapshot_sha256']
+              print(json.dumps({'validated_snapshot':packet['snapshot_id'],'review_task':packet['review_task']['version']}))
           step = next((s for s in status['steps'] if s['step'] == 'astra_cycle'), {})
           assert step.get('ok'), 'Astra refresh failed; retained history is not a new calculation'
           doc = json.load(open('data/astra_cycle.json'))
