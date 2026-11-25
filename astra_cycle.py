@@ -170,7 +170,7 @@ def build(source, *, now=None, profiles=None, include_pool=False, envs=None):
     from horizon_book import rank_pool, SETUP_NAMES
     from entry_progression import location
     rank_pool(source.get('rows', []), ok=lambda q: fundamentals_state(q, now)[0] != 'bad' and not location(q)['blocked'],
-              breadth={m: ((v or {}).get('breadth') or {}).get('value') for m, v in envs.items()} if envs else None)
+              asof=now, breadth={m: ((v or {}).get('breadth') or {}).get('value') for m, v in envs.items()} if envs else None)
     rows = []
     month_left_by = {}
     for q in source.get('rows', []):
@@ -180,7 +180,7 @@ def build(source, *, now=None, profiles=None, include_pool=False, envs=None):
         if fstate == 'bad': continue
         env = envs.get(q['market']) or {}
         breadth = (env.get('breadth') or {}).get('value')
-        tm = entry_timing(q, breadth, bool(env.get('bottom_rebound')), tiers=('Astra',))
+        tm = entry_timing(q, breadth, bool(env.get('bottom_rebound')), tiers=('Astra',), asof=now)
         # 证据表命中即以形态名为车道；旧 classify 车道只用于未命中证据表的研究候选。
         cell = (tm['regime'].get('cell') or [None] * 4) if tm['ok'] else None
         lanes = [SETUP_NAMES.get(cell[3], cell[3])] if cell else [lane for tier, lane, _ in classify(q)]
@@ -203,7 +203,7 @@ def build(source, *, now=None, profiles=None, include_pool=False, envs=None):
         row['industry_snapshot'] = deepcopy((profiles or {}).get(row['code'], {}))
         bottom_gap = None
         if tm['ok']:
-            # 与 3A/2A/1A 同一张周期证据表的 Astra 规则计划：止损＝max(10日低×0.99, 入场×0.92)，目标%与持有天数按规则。
+            # 使用本轮规则对应的价格计划，历史轮次保留原出口。
             from horizon_book import apply_plan
             apply_plan(row, tm['plan'])
             row['window'] = window(anchor,row['market'],now,hold=tm['plan']['hold'])
@@ -223,6 +223,9 @@ def build(source, *, now=None, profiles=None, include_pool=False, envs=None):
                                    if month_left is not None and remaining and month_left < remaining
                                    else f'{hold}日内目标可达性待证') if remaining else '本轮到期；只复盘，不新增')
         row['profit_gaps'] = profit_gaps(row, horizon=tm['ok']) + ([bottom_gap] if bottom_gap else [])
+        from structural_entry_plan import active
+        if active(now) and not tm['ok']:
+            row['profit_gaps'].append('缺本轮合格结构计划')
         pos = tm['position']; regime = tm['regime']
         row['astra_position'] = pos
         row['astra_regime'] = regime
@@ -671,7 +674,7 @@ def public_projection(doc, safe):
             'business_reason','business_risk','business_supported','missing','status','entry_range',
             'crosscheck','financial_evidence','target_evidence','price_plan_method',
             'take_profit_range','stop_range','net_rr','net_target_return_pct','stop_loss_pct',
-            'fee_allowance_pct','price_plan_scope','price_plan_source_asof','price_plan_basis','period','role','window',
+            'fee_allowance_pct','price_plan_version','price_plan_scope','price_plan_source_asof','price_plan_basis','period','role','window',
             'time_feasible','rule_matched','rank','first_seen_at','current_source',
             'profit_gate','profit_gaps','target_contribution','business_source','fundamentals','filing_check','structure_source','setup','annual_regime','annual_label',
             'plan_id','plan_created_at','plan_revision','plan_change_reason','plan_state','plan_retained',

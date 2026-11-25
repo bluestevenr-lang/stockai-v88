@@ -61,6 +61,8 @@ def enrich(doc, source, *, base, now=None, previous=None, module="3A", review_en
     from market_symbols import canonical
     sources={canonical(q['code']):q for q in source.get('rows',[])}
     financials=financial_load(base).get('records',{})
+    import time
+    filing_deadline = time.monotonic() + 20
     screening=None;db=None
     try:
         if (base/'data/wdata.db').exists():
@@ -131,6 +133,21 @@ def enrich(doc, source, *, base, now=None, previous=None, module="3A", review_en
             elif expected_period and old_financial.get('period_end')!=expected_period:
                 row['financial_evidence']={'status':'STALE','period_end':expected_period,
                     'gaps':['财务缓存与本版报告期不一致，不跨期拼接']}
+            from filing_source_facts import reconcile
+            from structural_entry_plan import VERSION as structural_version
+            fetch_filing = (review_entries and row.get('price_plan_version') == structural_version
+                            and technical.get('status') == 'OBSERVED' and time.monotonic() < filing_deadline)
+            comparison = reconcile(row,now,allow_fetch=fetch_filing)
+            if comparison is None:
+                cached = old_financial.get('growth_check') or {}
+                if cached.get('code') == row.get('code') and cached.get('period_end') == expected_period and cached.get('periods'):
+                    from filing_source_facts import compare
+                    comparison = compare(row, cached['periods'], cached.get('source_url'),
+                                         cached.get('published_at'), cached.get('sha256'))
+            if comparison:
+                row['financial_evidence'] = dict(row.get('financial_evidence') or {}, growth_check=comparison)
+                row['fundamentals'] = dict(row['fundamentals'],growth_period=comparison['matched_period'],
+                                           original_quarter_growth=comparison['periods'].get('单季'))
             context=alignment({**row,'nontechnical':q.get('nontechnical') or {}},snapshot,rotation,technical=technical,now=now)
             context.pop('evaluated_at',None)
             data={'version':VERSION,'asof':technical.get('asof') or struct.get('source_asof'),'provenance':provenance,

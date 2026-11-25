@@ -227,7 +227,7 @@ def recheck(original, quote, now, envs=None):
     env = (envs or {}).get(row['market']) or {}
     if ((original.get('astra_regime') or {}).get('band') not in EVIDENCE_BANDS
             and (env.get('breadth') or {}).get('value') is not None):
-        tm = entry_timing(quote, env['breadth']['value'], bool(env.get('bottom_rebound')), tiers=('Astra',))
+        tm = entry_timing(quote, env['breadth']['value'], bool(env.get('bottom_rebound')), tiers=('Astra',), asof=now)
         row['astra_regime'] = tm['regime']; row['astra_position'] = tm['position']; row['setup'] = tm['position']['state']
         if not tm['ok']:
             row['profit_gaps'].append('周期证据表：' + tm['regime']['reason'])

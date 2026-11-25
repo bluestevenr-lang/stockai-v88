@@ -458,12 +458,12 @@ def playbook(market, breadth, tiers=None):
     return {'band': band, 'active': rows, 'text': head + '：启用 ' + text}
 
 
-def entry_timing(q, breadth, bottom_rebound=False, tiers=None):
+def entry_timing(q, breadth, bottom_rebound=False, tiers=None, *, asof=None):
     """Astra 与 3A/2A/1A 共用的唯一进入时机判定：只查 horizon_book 周期证据表。
     tiers 默认 3A/2A/1A（多档命中取 3A>2A>1A）；Astra 传 ('Astra',)。命中且价格计划成立才 ok。"""
     from horizon_book import match, best, TIERS
     tiers = tuple(tiers or TIERS)
-    hb = match(q, breadth, tiers)
+    hb = match(q, breadth, tiers, asof=asof)
     hit = best(hb, tiers)
     fade = fade_risk(q) or None
     bc = bottom_confirm(q)

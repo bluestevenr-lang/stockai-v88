@@ -106,7 +106,7 @@ def grade(q, env, now, calendar=None, tiers=None):
     f = q.get('fundamentals') or {}
     bs = f.get('business_score')
     breadth = (env.get('breadth') or {}).get('value')
-    tm = entry_timing(q, breadth, bool(env.get('bottom_rebound')), tiers=tiers)
+    tm = entry_timing(q, breadth, bool(env.get('bottom_rebound')), tiers=tiers, asof=now)
     if not tm['ok']:
         return None, '时机：' + tm['regime']['reason'][:60]
     lanes = [lane for _, lane, _ in classify(q)]
@@ -266,7 +266,7 @@ def apply(doc, fresh, base, now, profiles=None):
     envs = breadth_envs(fresh, base)
     from entry_progression import location
     rank_pool(fresh, ok=lambda q: fundamentals_state(q, now)[0] != 'bad' and not location(q)['blocked'],
-              breadth={m: ((v or {}).get('breadth') or {}).get('value') for m, v in envs.items()})
+              asof=now, breadth={m: ((v or {}).get('breadth') or {}).get('value') for m, v in envs.items()})
     try:
         from earnings_risk import load_calendar
         calendar = load_calendar(base)
@@ -333,6 +333,13 @@ def apply(doc, fresh, base, now, profiles=None):
                     financial_candidates.discard(id(r))
                     if original['action'] in ARMED_ACTIONS and buy_window(r,original):
                         financial_candidates.add(id(r))
+                from structural_entry_plan import review_gaps
+                if window_eligible(r):
+                    gaps = review_gaps(r, tier, now)
+                    if gaps:
+                        r['entry_window_qualification'] = dict(r['entry_window_qualification'],
+                            eligible=False, label='送审条件未满足', reasons=gaps)
+                        r['buyable'] = False
                 funnel[r['market']]['window_checked_' + tier] += 1
                 funnel[r['market']]['window_eligible_' + tier] += int(window_eligible(r))
         for m in MARKETS:

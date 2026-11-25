@@ -23,6 +23,9 @@ MIN_RR = {'3A': 1.95, 'Astra': 1.95}   # 指令价处净盈亏比底线：入场
 # 计算——回测胜率正是在这个几何下测得，不另立 3R/2R 口径（旧口径会把胜率≥53%的 +8% 目标规则一律拒成挂单）。
 def rr_floor(row, module):
     """指令价处净盈亏比底线的唯一口径（指令生成端 rr_ok 与本复核共用）；无专门口径时返回 None。"""
+    from structural_entry_plan import VERSION as structural_version, FLOORS
+    if row.get('price_plan_version') == structural_version:
+        return FLOORS.get('Astra' if module == 'Astra' else row.get('strategy_tier'))
     reg = row.get('astra_regime') or {}
     if module == 'Astra':
         from shadow_screen import EVIDENCE_BANDS

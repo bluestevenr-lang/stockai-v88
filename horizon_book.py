@@ -120,12 +120,15 @@ def rule(key):
     return CELLS.get(key) or RANKED.get(key)
 
 
-def plan(tier, q, key=None):
+def plan(tier, q, key=None, *, asof=None):
     """回测同口径价格计划；止损距离不在[stop_min, 8]%返回 (None, 原因)。
     持有天数与目标按命中规则 key（缺省用本档缺省值，仅供排名席预检止损几何）。"""
     p = PLAN[tier]
     r = rule(key) or {}
     hold, tp = r.get('hold') or p['hold'], r.get('target_pct') or p['target_pct']
+    from structural_entry_plan import active, build, FLOORS
+    if active(asof) and tier in FLOORS:
+        return build(q or {}, tier, hold, p['kind'], p['stop_min'], STOP_MAX, FEE)
     e = (q or {}).get('structure') or {}
     last, low = (q or {}).get('last'), e.get(p['low'])
     if not (_f(last) and _f(low)) or last <= 0 or low <= 0:
@@ -166,6 +169,15 @@ def apply_plan(row, pl):
     """把证据表价格计划写进推荐行（入场区间、止损、目标、净盈亏比、持有天数）。"""
     row.update({k: pl[k] for k in ('entry_range', 'stop', 'stop_range', 'target', 'take_profit_range', 'net_rr',
                                    'net_target_return_pct')})
+    if pl.get('price_plan_version'):
+        for field in ('price_plan_version','price_plan_method','price_plan_scope','stop_anchor','target_evidence'):
+            row[field] = pl[field]
+        row['price_plan_basis'] = pl['target_evidence']['basis']
+        row['price_plan_source_asof'] = pl['target_evidence']['source_asof']
+        row['nearest_resistance'] = pl['target_evidence']['resistance']
+        row['resistance_levels'] = [row['nearest_resistance']] if row['nearest_resistance'] else []
+        row['target_return_pct'] = [round((pl['target']/p-1)*100,2) for p in reversed(pl['entry_range'])]
+        row['invalidation'] = f"跌破结构止损 {pl['stop']:g}，原计划失效"
     last = pl['entry_range'][1]
     row['stop_loss_pct'] = [round((pl['stop_range'][0] / last - 1) * 100, 2), round((pl['stop'] / last - 1) * 100, 2)]
     row['missing'] = [m for m in row.get('missing') or [] if not str(m).startswith(PLAN_GAPS)]
@@ -244,7 +256,7 @@ def _score(kind, e):
     return v if _f(v) else None
 
 
-def rank_pool(rows, ok=None, breadth=None):
+def rank_pool(rows, ok=None, breadth=None, *, asof=None):
     """排名席：每条 RANKED 规则在本市场当轮候选中按规则排序键取前 RANK_TOP（价格计划须成立、ok(q) 为真；
     规则带宽度条件时，breadth＝{市场: 宽度} 须满足）。结果写入 structure['ranked']＝{档位: [{'key','rank','of','score'}]}；
     每轮整体重算（先清旧标记）。"""
@@ -267,7 +279,7 @@ def rank_pool(rows, ok=None, breadth=None):
             if setup not in found[id(q)] or (grp == 'q' and not _in_quality(q.get('code'))):
                 continue
             sc = _score(r['score'], q['structure'])
-            if sc is None or plan(tier, q, key)[0] is None:
+            if sc is None or plan(tier, q, key, asof=asof)[0] is None:
                 continue
             pool.append((sc, str(q.get('code')), q))
         pool.sort(key=lambda x: (-x[0], x[1]))
@@ -277,7 +289,7 @@ def rank_pool(rows, ok=None, breadth=None):
     return rows
 
 
-def match(q, breadth, tiers=TIERS):
+def match(q, breadth, tiers=TIERS, *, asof=None):
     """按档位查表：返回 {'band', 'setups', 'hits': {tier: 命中}, 'misses': {tier: 原因}}。
     候选来源两类、同一张表：①宽度格子（CELLS）；②排名席（RANKED，须当轮已由 rank_pool 排进前3、且满足规则宽度条件）。
     同一档多处命中取两半段按日t较小者（rt）最高者，再比胜率。"""
@@ -321,13 +333,13 @@ def match(q, breadth, tiers=TIERS):
             misses[tier] = '；'.join(parts)
             continue
         key = max(cands, key=lambda k: (stats(k)['rt'], stats(k)['win']))
-        pl, why = plan(tier, q, key)
+        pl, why = plan(tier, q, key, asof=asof)
         if not pl:
             misses[tier] = f'{SETUP_NAMES[key[3]]}命中但{why}'
             continue
         st = stats(key)
         (a, b) = st['halves']
-        odds = f'回测胜率{st["win"]}%（前后两半段{a[3]}%/{b[3]}%）、均{st["mean"]:+.2f}%、{st["hold"]}日+{st["target_pct"]:g}%目标'
+        odds = f'旧出口形态回测胜率{st["win"]}%（前后两半段{a[3]}%/{b[3]}%）、均{st["mean"]:+.2f}%、{st["hold"]}日+{st["target_pct"]:g}%目标'
         if key in RANKED:
             tag = ranked_tags[key]
             reason = (f'{SETUP_NAMES[key[3]]}（{GROUP_NAMES[key[4]]}）当轮{m}第{tag["rank"]}/{tag["of"]}名'

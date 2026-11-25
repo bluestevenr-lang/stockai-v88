@@ -449,8 +449,12 @@ def evaluate(data, *, asof, market, now=None, code=None, source=None, basis=None
         if len(bars)<MIN_BARS:return unavailable('INSUFFICIENT','requires_at_least_120_clean_completed_bars')
         bars=bars[-MIN_BARS:]
         expected=[];day=date.fromisoformat(bars[0][0]);end=date.fromisoformat(asof)
+        from filing_source_facts import confirmed_halts
+        halts = confirmed_halts(code, market, bars[0][0], asof)
+        if halts:
+            out['provenance']['suspension_notices'] = halts
         while day<=end:
-            if is_session(day,market):expected.append(day.isoformat())
+            if day.isoformat() not in halts and is_session(day,market):expected.append(day.isoformat())
             day+=timedelta(days=1)
         if expected!=[b[0] for b in bars]:return unavailable('INVALID','missing_or_non_session_daily_bars')
         out['provenance']['calculation_bar_count']=len(bars)

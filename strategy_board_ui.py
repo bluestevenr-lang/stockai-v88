@@ -342,7 +342,10 @@ def source_tags(r,esc):
     tags.append('利润质量：'+earnings_summary(f))
     facts=[f'{k}{f[v]:+.1f}%' for k,v in (('营收同比','revenue_yoy'),('净利同比','profit_yoy')) if isinstance(f.get(v),(int,float))]
     if isinstance(f.get('roe_annual'),(int,float)):facts.append(f'年化ROE {f["roe_annual"]:.1f}%')
-    if facts:tags.append('财报（数据商口径）'+' '.join(facts)+(' · 报告期 '+f['period_end'] if f.get('period_end') else ''))
+    quarter=f.get('original_quarter_growth') or {}
+    if isinstance(quarter.get('profit_yoy'),(int,float)):
+        tags.append(f"公告单季归母净利同比 {quarter['profit_yoy']:+.1f}%")
+    if facts:tags.append('财报（'+(f.get('growth_period') or '数据商期间待核')+'）'+' '.join(facts)+(' · 报告期 '+f['period_end'] if f.get('period_end') else ''))
     return '<br><small>'+esc(' ｜ '.join(tags))+'</small>' if tags else ''
 
 

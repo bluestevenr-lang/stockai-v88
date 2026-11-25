@@ -49,7 +49,8 @@ def features(bars):
     breakout = last > max(x[3] for x in b[-6:-1]) and demand
     distribution = last < c[-2] and vr >= 1.5 and (last-b[-1][4])/(b[-1][3]-b[-1][4] or 1) < .35
     stage = '初升确认' if base and breakout else '左侧拐点' if base and (demand or drying) else '抛压减轻·左侧试探' if improving else '底部蓄势' if dd <= -12 and higher_low and drying else '趋势跟踪'
-    return {'version': VERSION, 'state': 'complete', 'asof': b[-1][0], 'reference_close': last,
+    from structural_entry_plan import swing_levels
+    return {**swing_levels(b), 'version': VERSION, 'state': 'complete', 'asof': b[-1][0], 'reference_close': last,
             'stage': stage, 'early': stage in ('左侧拐点','初升确认','抛压减轻·左侧试探'),
             'supply_easing':easing,'retest_higher':retest_higher,
             'higher_low': higher_low, 'volume_demand': demand, 'volume_drying': drying,

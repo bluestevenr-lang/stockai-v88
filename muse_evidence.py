@@ -73,14 +73,14 @@ def decision_contract(row, module):
         'status': 'CURRENT_RULE_EXPORTED' if current else 'LEGACY_OR_UNKNOWN_RULE',
         'rule_cell': deepcopy((row.get('astra_regime') or {}).get('cell')),
         'directive_net_rr_floor': floor,
-        'rr_floor_basis': '命中周期规则的目标/止损/费用几何' if specific else
+        'rr_floor_basis': '结构计划按模块计算扣费后首目标/止损' if row.get('price_plan_version')=='structure-entry-20261125-v1' else '命中周期规则的目标/止损/费用几何' if specific else
                          '指令层通用门槛' if current else '未确认历史生成规则，不套用当前门槛',
         'directive_fee_allowance_pct': FEE if current else None,
         'fundamentals_policy_version': LADDER_VERSION if graded else None,
         'business_score_floor': GOOD_FLOOR if graded else None,
         'fundamentals_note': '基本面分只是一个检查项；反证、利润质量、资料待补仍分别核查，不能以过分数代替核验。',
         'rule_reference': {'statistics': rule_stats, 'sample_scope': SPAN,
-                           'meaning': '当前规则历史样本，非本股成功概率、非样本外验证'} if rule_stats else None,
+                           'meaning': '旧出口规则历史样本，结构新版尚待独立结算'} if rule_stats else None,
         'three_a_qualification': deepcopy(row.get('three_a_qualification')),
         'entry_window_qualification': deepcopy(row.get('entry_window_qualification')),
         'scope': '指令价处净RR检查参数，不是胜率或Muse结论；并行保留报价、原计划和全部硬伤。',

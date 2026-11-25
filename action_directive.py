@@ -922,6 +922,9 @@ def publishable(doc, module='3A', *, now=None):
             m = r.get('market') or '未知'
             dropped[m] = dropped.get(m, 0) + 1
             continue
+        from structural_entry_plan import review_gaps
+        from datetime import timezone
+        tier = 'Astra' if module == 'Astra' else r.get('strategy_tier')
         gaps = publication_gaps(r)
         if gaps:
             incomplete.append({'code':r.get('code'),'name':r.get('name'),'market':r.get('market'),
@@ -944,6 +947,13 @@ def publishable(doc, module='3A', *, now=None):
         # Astra 在席股证据表已命中：今日/1–3日内买不到的也照列，标「启动跟踪·等买点」。
         # Owner requests only near-entry plans: no observation/launch fallback.
         if w:
+            gaps = review_gaps(r,tier,now or datetime.now(timezone.utc))
+            if gaps:
+                market = r.get('market') or '未知'
+                incomplete.append({'code':r.get('code'),'name':r.get('name'),'market':market,
+                                   'status':'送审前未通过','gaps':gaps})
+                dropped[market] = dropped.get(market,0)+1
+                continue
             r = {**r, 'buy_window':w}
             keep.append(r)
         else:
