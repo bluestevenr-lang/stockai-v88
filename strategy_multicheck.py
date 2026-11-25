@@ -53,14 +53,14 @@ def enrich(doc, source, *, base, now=None, previous=None, module="3A", review_en
     from market_stock_alignment import evaluate as alignment
     from sector_rotation import build_rotation_observation
     from screen_history import load as screen_load
-    from fundamental_snapshot import load as financial_load
+    from screening_financial_cache import records as financial_records
     now=now or datetime.now(timezone.utc);base=Path(base)
     snapshot=read(base/'data/market_snapshot.json')
     old_rotation=read(base/'data/rotation_forecast.json').get('relative_strength') or {}
     rotation=build_rotation_observation(snapshot.get('markets') or {},previous=old_rotation,now=now)
     from market_symbols import canonical
     sources={canonical(q['code']):q for q in source.get('rows',[])}
-    financials=financial_load(base).get('records',{})
+    financials=financial_records(base,now)
     import time
     filing_deadline = time.monotonic() + 20
     screening=None;db=None
