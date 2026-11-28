@@ -1,12 +1,13 @@
 {
   "actions": [
+    "refresh_dispatched:full",
     "rerun:bottom_turn.yml:46050090573",
     "rerun:cloud_refresh.yml:46076955240",
-    "rerun:intraday_alert.yml:46029428901",
+    "rerun:intraday_alert.yml:46084974505",
     "rerun:report.yml:46072788602",
-    "rerun:rotation_refresh.yml:45974615363"
+    "rerun:us_close_finalize.yml:46103087758"
   ],
-  "checked_at": "2026-11-27T23:27:08.147488+00:00",
+  "checked_at": "2026-11-28T07:48:33.748541+00:00",
   "checks_failed": [],
   "critical": [
     "calendar_coverage_under_35_days",
@@ -17,10 +18,12 @@
     "persistent:workflow_failed:rotation_refresh.yml",
     "persistent:workflow_failed:us_close_finalize.yml",
     "persistent:workflow_failed:weekend_evolution.yml",
-    "workflow_failed:us_close_finalize.yml",
+    "workflow_failed:rotation_refresh.yml",
     "workflow_failed:weekend_evolution.yml"
   ],
-  "dispatches": [],
+  "dispatches": [
+    "2026-11-28T07:48:33.748541+00:00"
+  ],
   "escalated": [
     "calendar_coverage_under_35_days",
     "persistent:workflow_failed:bottom_turn.yml",
@@ -30,12 +33,13 @@
     "persistent:workflow_failed:rotation_refresh.yml",
     "persistent:workflow_failed:us_close_finalize.yml",
     "persistent:workflow_failed:weekend_evolution.yml",
-    "workflow_failed:us_close_finalize.yml",
+    "workflow_failed:rotation_refresh.yml",
     "workflow_failed:weekend_evolution.yml"
   ],
   "external_messages": 0,
   "first_seen": {
     "calendar_coverage_under_35_days": "2026-11-27T05:02:35.084630+00:00",
+    "market_unscreened:美股": "2026-11-28T07:48:33.748541+00:00",
     "refresh_step_failed:astra_backtest": "2026-11-27T23:27:08.147488+00:00",
     "refresh_step_failed:free_observations": "2026-11-27T23:27:08.147488+00:00",
     "workflow_failed:bottom_turn.yml": "2026-11-18T18:51:30.188179+00:00",
@@ -49,6 +53,7 @@
   "issue_sync": "updated",
   "issues": [
     "calendar_coverage_under_35_days",
+    "market_unscreened:美股",
     "refresh_step_failed:astra_backtest",
     "refresh_step_failed:free_observations",
     "workflow_failed:bottom_turn.yml",
@@ -67,6 +72,9 @@
     ],
     "escalate": [
       "calendar_coverage_under_35_days"
+    ],
+    "refresh": [
+      "market_unscreened:美股"
     ],
     "rerun": [
       "workflow_failed:bottom_turn.yml",
